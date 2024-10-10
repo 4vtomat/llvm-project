@@ -1594,10 +1594,7 @@ define void @relax_jal_spill_32_adjust_spill_slot() {
 ; CHECK-ZICFILP-NEXT:    #APP
 ; CHECK-ZICFILP-NEXT:    # reg use t6
 ; CHECK-ZICFILP-NEXT:    #NO_APP
-; CHECK-ZICFILP-NEXT:    lui a0, 2
-; CHECK-ZICFILP-NEXT:    sub sp, s0, a0
-; CHECK-ZICFILP-NEXT:    addiw a0, a0, -2032
-; CHECK-ZICFILP-NEXT:    add sp, sp, a0
+; CHECK-ZICFILP-NEXT:    addi sp, s0, -2032
 ; CHECK-ZICFILP-NEXT:    ld ra, 2024(sp) # 8-byte Folded Reload
 ; CHECK-ZICFILP-NEXT:    ld s0, 2016(sp) # 8-byte Folded Reload
 ; CHECK-ZICFILP-NEXT:    ld s1, 2008(sp) # 8-byte Folded Reload
@@ -3540,10 +3537,7 @@ define void @relax_jal_spill_64_adjust_spill_slot() {
 ; CHECK-ZICFILP-NEXT:    #APP
 ; CHECK-ZICFILP-NEXT:    # reg use t6
 ; CHECK-ZICFILP-NEXT:    #NO_APP
-; CHECK-ZICFILP-NEXT:    lui a0, 2
-; CHECK-ZICFILP-NEXT:    sub sp, s0, a0
-; CHECK-ZICFILP-NEXT:    addiw a0, a0, -2032
-; CHECK-ZICFILP-NEXT:    add sp, sp, a0
+; CHECK-ZICFILP-NEXT:    addi sp, s0, -2032
 ; CHECK-ZICFILP-NEXT:    ld ra, 2024(sp) # 8-byte Folded Reload
 ; CHECK-ZICFILP-NEXT:    ld s0, 2016(sp) # 8-byte Folded Reload
 ; CHECK-ZICFILP-NEXT:    ld s1, 2008(sp) # 8-byte Folded Reload

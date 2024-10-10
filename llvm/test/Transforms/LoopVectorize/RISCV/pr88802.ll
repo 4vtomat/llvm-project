@@ -5,8 +5,6 @@ define void @test(ptr %p, i64 %a, i8 %b) {
 ; CHECK-LABEL: define void @test(
 ; CHECK-SAME: ptr [[P:%.*]], i64 [[A:%.*]], i8 [[B:%.*]]) #[[ATTR0:[0-9]+]] {
 ; CHECK-NEXT:  entry:
-<<<<<<< HEAD
-=======
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <4 x i64> poison, i64 [[A]], i64 0
@@ -63,10 +61,9 @@ define void @test(ptr %p, i64 %a, i8 %b) {
 ; CHECK-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 4, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ; CHECK-NEXT:    br label [[FOR_COND:%.*]]
 ; CHECK:       for.cond:
-; CHECK-NEXT:    [[IV:%.*]] = phi i32 [ 0, [[ENTRY:%.*]] ], [ [[ADD:%.*]], [[FOR_BODY:%.*]] ]
+; CHECK-NEXT:    [[IV:%.*]] = phi i32 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_BODY:%.*]] ]
 ; CHECK-NEXT:    [[ADD]] = add i32 [[IV]], 1
 ; CHECK-NEXT:    [[CMP_SLT:%.*]] = icmp slt i32 [[IV]], 2
 ; CHECK-NEXT:    [[SHL:%.*]] = shl i64 [[A]], 48
@@ -82,7 +79,7 @@ define void @test(ptr %p, i64 %a, i8 %b) {
 ; CHECK-NEXT:    [[TRUNC:%.*]] = trunc i32 [[SHL_I32]] to i8
 ; CHECK-NEXT:    store i8 [[TRUNC]], ptr [[P]], align 1
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp slt i32 [[IV]], 2
-; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_COND]], label [[EXIT:%.*]]
+; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_COND]], label [[EXIT]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    ret void
 ;
@@ -113,3 +110,9 @@ for.body:                                         ; preds = %cond.false, %for.co
 exit:                                             ; preds = %for.body
   ret void
 }
+;.
+; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; CHECK: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
+; CHECK: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+;.

@@ -335,14 +335,14 @@ define void @lower_global_rmw(i32 %a) nounwind {
 ; RV32I-SMALL-NEXT:    sw a0, %lo(G)(a1)
 ; RV32I-SMALL-NEXT:    ret
 ;
-; RV32I-MEDIUM-LABEL: lower_global_rmw:
-; RV32I-MEDIUM:       # %bb.0:
-; RV32I-MEDIUM-NEXT:  .Lpcrel_hi4:
-; RV32I-MEDIUM-NEXT:    auipc a1, %pcrel_hi(G)
-; RV32I-MEDIUM-NEXT:    lw a2, %pcrel_lo(.Lpcrel_hi4)(a1)
-; RV32I-MEDIUM-NEXT:    or a0, a2, a0
-; RV32I-MEDIUM-NEXT:    sw a0, %pcrel_lo(.Lpcrel_hi4)(a1)
-; RV32I-MEDIUM-NEXT:    ret
+; RV32F-MEDIUM-LABEL: lower_global_rmw:
+; RV32F-MEDIUM:       # %bb.0:
+; RV32F-MEDIUM-NEXT:  .Lpcrel_hi4:
+; RV32F-MEDIUM-NEXT:    auipc a1, %pcrel_hi(G)
+; RV32F-MEDIUM-NEXT:    lw a2, %pcrel_lo(.Lpcrel_hi4)(a1)
+; RV32F-MEDIUM-NEXT:    or a0, a2, a0
+; RV32F-MEDIUM-NEXT:    sw a0, %pcrel_lo(.Lpcrel_hi4)(a1)
+; RV32F-MEDIUM-NEXT:    ret
 ;
 ; RV64I-SMALL-LABEL: lower_global_rmw:
 ; RV64I-SMALL:       # %bb.0:
@@ -352,24 +352,52 @@ define void @lower_global_rmw(i32 %a) nounwind {
 ; RV64I-SMALL-NEXT:    sw a0, %lo(G)(a1)
 ; RV64I-SMALL-NEXT:    ret
 ;
-; RV64I-MEDIUM-LABEL: lower_global_rmw:
-; RV64I-MEDIUM:       # %bb.0:
-; RV64I-MEDIUM-NEXT:  .Lpcrel_hi4:
-; RV64I-MEDIUM-NEXT:    auipc a1, %pcrel_hi(G)
-; RV64I-MEDIUM-NEXT:    lw a2, %pcrel_lo(.Lpcrel_hi4)(a1)
-; RV64I-MEDIUM-NEXT:    or a0, a2, a0
-; RV64I-MEDIUM-NEXT:    sw a0, %pcrel_lo(.Lpcrel_hi4)(a1)
-; RV64I-MEDIUM-NEXT:    ret
+; RV64F-MEDIUM-LABEL: lower_global_rmw:
+; RV64F-MEDIUM:       # %bb.0:
+; RV64F-MEDIUM-NEXT:  .Lpcrel_hi4:
+; RV64F-MEDIUM-NEXT:    auipc a1, %pcrel_hi(G)
+; RV64F-MEDIUM-NEXT:    lw a2, %pcrel_lo(.Lpcrel_hi4)(a1)
+; RV64F-MEDIUM-NEXT:    or a0, a2, a0
+; RV64F-MEDIUM-NEXT:    sw a0, %pcrel_lo(.Lpcrel_hi4)(a1)
+; RV64F-MEDIUM-NEXT:    ret
 ;
-; RV64I-LARGE-LABEL: lower_global_rmw:
-; RV64I-LARGE:       # %bb.0:
-; RV64I-LARGE-NEXT:  .Lpcrel_hi4:
-; RV64I-LARGE-NEXT:    auipc a1, %pcrel_hi(.LCPI4_0)
-; RV64I-LARGE-NEXT:    ld a1, %pcrel_lo(.Lpcrel_hi4)(a1)
-; RV64I-LARGE-NEXT:    lw a2, 0(a1)
-; RV64I-LARGE-NEXT:    or a0, a2, a0
-; RV64I-LARGE-NEXT:    sw a0, 0(a1)
-; RV64I-LARGE-NEXT:    ret
+; RV64F-LARGE-LABEL: lower_global_rmw:
+; RV64F-LARGE:       # %bb.0:
+; RV64F-LARGE-NEXT:  .Lpcrel_hi4:
+; RV64F-LARGE-NEXT:    auipc a1, %pcrel_hi(.LCPI4_0)
+; RV64F-LARGE-NEXT:    ld a1, %pcrel_lo(.Lpcrel_hi4)(a1)
+; RV64F-LARGE-NEXT:    lw a2, 0(a1)
+; RV64F-LARGE-NEXT:    or a0, a2, a0
+; RV64F-LARGE-NEXT:    sw a0, 0(a1)
+; RV64F-LARGE-NEXT:    ret
+;
+; RV32FINX-MEDIUM-LABEL: lower_global_rmw:
+; RV32FINX-MEDIUM:       # %bb.0:
+; RV32FINX-MEDIUM-NEXT:  .Lpcrel_hi3:
+; RV32FINX-MEDIUM-NEXT:    auipc a1, %pcrel_hi(G)
+; RV32FINX-MEDIUM-NEXT:    lw a2, %pcrel_lo(.Lpcrel_hi3)(a1)
+; RV32FINX-MEDIUM-NEXT:    or a0, a2, a0
+; RV32FINX-MEDIUM-NEXT:    sw a0, %pcrel_lo(.Lpcrel_hi3)(a1)
+; RV32FINX-MEDIUM-NEXT:    ret
+;
+; RV64FINX-MEDIUM-LABEL: lower_global_rmw:
+; RV64FINX-MEDIUM:       # %bb.0:
+; RV64FINX-MEDIUM-NEXT:  .Lpcrel_hi3:
+; RV64FINX-MEDIUM-NEXT:    auipc a1, %pcrel_hi(G)
+; RV64FINX-MEDIUM-NEXT:    lw a2, %pcrel_lo(.Lpcrel_hi3)(a1)
+; RV64FINX-MEDIUM-NEXT:    or a0, a2, a0
+; RV64FINX-MEDIUM-NEXT:    sw a0, %pcrel_lo(.Lpcrel_hi3)(a1)
+; RV64FINX-MEDIUM-NEXT:    ret
+;
+; RV64FINX-LARGE-LABEL: lower_global_rmw:
+; RV64FINX-LARGE:       # %bb.0:
+; RV64FINX-LARGE-NEXT:  .Lpcrel_hi3:
+; RV64FINX-LARGE-NEXT:    auipc a1, %pcrel_hi(.LCPI4_0)
+; RV64FINX-LARGE-NEXT:    ld a1, %pcrel_lo(.Lpcrel_hi3)(a1)
+; RV64FINX-LARGE-NEXT:    lw a2, 0(a1)
+; RV64FINX-LARGE-NEXT:    or a0, a2, a0
+; RV64FINX-LARGE-NEXT:    sw a0, 0(a1)
+; RV64FINX-LARGE-NEXT:    ret
   %1 = load volatile i32, i32* @G
   %2 = or i32 %1, %a
   store i32 %2, i32* @G
@@ -391,18 +419,18 @@ define i32 @lower_global_rmw_multiple_blocks(i32 %a, i1 %c) nounwind {
 ; RV32I-SMALL-NEXT:  .LBB5_2: # %merge
 ; RV32I-SMALL-NEXT:    ret
 ;
-; RV32I-MEDIUM-LABEL: lower_global_rmw_multiple_blocks:
-; RV32I-MEDIUM:       # %bb.0:
-; RV32I-MEDIUM-NEXT:  .Lpcrel_hi5:
-; RV32I-MEDIUM-NEXT:    auipc a2, %pcrel_hi(G)
-; RV32I-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi5)(a2)
-; RV32I-MEDIUM-NEXT:    andi a1, a1, 1
-; RV32I-MEDIUM-NEXT:    or a0, a3, a0
-; RV32I-MEDIUM-NEXT:    beqz a1, .LBB5_2
-; RV32I-MEDIUM-NEXT:  # %bb.1: # %cond.store
-; RV32I-MEDIUM-NEXT:    sw a0, %pcrel_lo(.Lpcrel_hi5)(a2)
-; RV32I-MEDIUM-NEXT:  .LBB5_2: # %merge
-; RV32I-MEDIUM-NEXT:    ret
+; RV32F-MEDIUM-LABEL: lower_global_rmw_multiple_blocks:
+; RV32F-MEDIUM:       # %bb.0:
+; RV32F-MEDIUM-NEXT:  .Lpcrel_hi5:
+; RV32F-MEDIUM-NEXT:    auipc a2, %pcrel_hi(G)
+; RV32F-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi5)(a2)
+; RV32F-MEDIUM-NEXT:    andi a1, a1, 1
+; RV32F-MEDIUM-NEXT:    or a0, a3, a0
+; RV32F-MEDIUM-NEXT:    beqz a1, .LBB5_2
+; RV32F-MEDIUM-NEXT:  # %bb.1: # %cond.store
+; RV32F-MEDIUM-NEXT:    sw a0, %pcrel_lo(.Lpcrel_hi5)(a2)
+; RV32F-MEDIUM-NEXT:  .LBB5_2: # %merge
+; RV32F-MEDIUM-NEXT:    ret
 ;
 ; RV64I-SMALL-LABEL: lower_global_rmw_multiple_blocks:
 ; RV64I-SMALL:       # %bb.0:
@@ -416,32 +444,72 @@ define i32 @lower_global_rmw_multiple_blocks(i32 %a, i1 %c) nounwind {
 ; RV64I-SMALL-NEXT:  .LBB5_2: # %merge
 ; RV64I-SMALL-NEXT:    ret
 ;
-; RV64I-MEDIUM-LABEL: lower_global_rmw_multiple_blocks:
-; RV64I-MEDIUM:       # %bb.0:
-; RV64I-MEDIUM-NEXT:  .Lpcrel_hi5:
-; RV64I-MEDIUM-NEXT:    auipc a2, %pcrel_hi(G)
-; RV64I-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi5)(a2)
-; RV64I-MEDIUM-NEXT:    andi a1, a1, 1
-; RV64I-MEDIUM-NEXT:    or a0, a3, a0
-; RV64I-MEDIUM-NEXT:    beqz a1, .LBB5_2
-; RV64I-MEDIUM-NEXT:  # %bb.1: # %cond.store
-; RV64I-MEDIUM-NEXT:    sw a0, %pcrel_lo(.Lpcrel_hi5)(a2)
-; RV64I-MEDIUM-NEXT:  .LBB5_2: # %merge
-; RV64I-MEDIUM-NEXT:    ret
+; RV64F-MEDIUM-LABEL: lower_global_rmw_multiple_blocks:
+; RV64F-MEDIUM:       # %bb.0:
+; RV64F-MEDIUM-NEXT:  .Lpcrel_hi5:
+; RV64F-MEDIUM-NEXT:    auipc a2, %pcrel_hi(G)
+; RV64F-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi5)(a2)
+; RV64F-MEDIUM-NEXT:    andi a1, a1, 1
+; RV64F-MEDIUM-NEXT:    or a0, a3, a0
+; RV64F-MEDIUM-NEXT:    beqz a1, .LBB5_2
+; RV64F-MEDIUM-NEXT:  # %bb.1: # %cond.store
+; RV64F-MEDIUM-NEXT:    sw a0, %pcrel_lo(.Lpcrel_hi5)(a2)
+; RV64F-MEDIUM-NEXT:  .LBB5_2: # %merge
+; RV64F-MEDIUM-NEXT:    ret
 ;
-; RV64I-LARGE-LABEL: lower_global_rmw_multiple_blocks:
-; RV64I-LARGE:       # %bb.0:
-; RV64I-LARGE-NEXT:  .Lpcrel_hi5:
-; RV64I-LARGE-NEXT:    auipc a2, %pcrel_hi(.LCPI5_0)
-; RV64I-LARGE-NEXT:    ld a2, %pcrel_lo(.Lpcrel_hi5)(a2)
-; RV64I-LARGE-NEXT:    lw a3, 0(a2)
-; RV64I-LARGE-NEXT:    andi a1, a1, 1
-; RV64I-LARGE-NEXT:    or a0, a3, a0
-; RV64I-LARGE-NEXT:    beqz a1, .LBB5_2
-; RV64I-LARGE-NEXT:  # %bb.1: # %cond.store
-; RV64I-LARGE-NEXT:    sw a0, 0(a2)
-; RV64I-LARGE-NEXT:  .LBB5_2: # %merge
-; RV64I-LARGE-NEXT:    ret
+; RV64F-LARGE-LABEL: lower_global_rmw_multiple_blocks:
+; RV64F-LARGE:       # %bb.0:
+; RV64F-LARGE-NEXT:  .Lpcrel_hi5:
+; RV64F-LARGE-NEXT:    auipc a2, %pcrel_hi(.LCPI5_0)
+; RV64F-LARGE-NEXT:    ld a2, %pcrel_lo(.Lpcrel_hi5)(a2)
+; RV64F-LARGE-NEXT:    lw a3, 0(a2)
+; RV64F-LARGE-NEXT:    andi a1, a1, 1
+; RV64F-LARGE-NEXT:    or a0, a3, a0
+; RV64F-LARGE-NEXT:    beqz a1, .LBB5_2
+; RV64F-LARGE-NEXT:  # %bb.1: # %cond.store
+; RV64F-LARGE-NEXT:    sw a0, 0(a2)
+; RV64F-LARGE-NEXT:  .LBB5_2: # %merge
+; RV64F-LARGE-NEXT:    ret
+;
+; RV32FINX-MEDIUM-LABEL: lower_global_rmw_multiple_blocks:
+; RV32FINX-MEDIUM:       # %bb.0:
+; RV32FINX-MEDIUM-NEXT:  .Lpcrel_hi4:
+; RV32FINX-MEDIUM-NEXT:    auipc a2, %pcrel_hi(G)
+; RV32FINX-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi4)(a2)
+; RV32FINX-MEDIUM-NEXT:    andi a1, a1, 1
+; RV32FINX-MEDIUM-NEXT:    or a0, a3, a0
+; RV32FINX-MEDIUM-NEXT:    beqz a1, .LBB5_2
+; RV32FINX-MEDIUM-NEXT:  # %bb.1: # %cond.store
+; RV32FINX-MEDIUM-NEXT:    sw a0, %pcrel_lo(.Lpcrel_hi4)(a2)
+; RV32FINX-MEDIUM-NEXT:  .LBB5_2: # %merge
+; RV32FINX-MEDIUM-NEXT:    ret
+;
+; RV64FINX-MEDIUM-LABEL: lower_global_rmw_multiple_blocks:
+; RV64FINX-MEDIUM:       # %bb.0:
+; RV64FINX-MEDIUM-NEXT:  .Lpcrel_hi4:
+; RV64FINX-MEDIUM-NEXT:    auipc a2, %pcrel_hi(G)
+; RV64FINX-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi4)(a2)
+; RV64FINX-MEDIUM-NEXT:    andi a1, a1, 1
+; RV64FINX-MEDIUM-NEXT:    or a0, a3, a0
+; RV64FINX-MEDIUM-NEXT:    beqz a1, .LBB5_2
+; RV64FINX-MEDIUM-NEXT:  # %bb.1: # %cond.store
+; RV64FINX-MEDIUM-NEXT:    sw a0, %pcrel_lo(.Lpcrel_hi4)(a2)
+; RV64FINX-MEDIUM-NEXT:  .LBB5_2: # %merge
+; RV64FINX-MEDIUM-NEXT:    ret
+;
+; RV64FINX-LARGE-LABEL: lower_global_rmw_multiple_blocks:
+; RV64FINX-LARGE:       # %bb.0:
+; RV64FINX-LARGE-NEXT:  .Lpcrel_hi4:
+; RV64FINX-LARGE-NEXT:    auipc a2, %pcrel_hi(.LCPI5_0)
+; RV64FINX-LARGE-NEXT:    ld a2, %pcrel_lo(.Lpcrel_hi4)(a2)
+; RV64FINX-LARGE-NEXT:    lw a3, 0(a2)
+; RV64FINX-LARGE-NEXT:    andi a1, a1, 1
+; RV64FINX-LARGE-NEXT:    or a0, a3, a0
+; RV64FINX-LARGE-NEXT:    beqz a1, .LBB5_2
+; RV64FINX-LARGE-NEXT:  # %bb.1: # %cond.store
+; RV64FINX-LARGE-NEXT:    sw a0, 0(a2)
+; RV64FINX-LARGE-NEXT:  .LBB5_2: # %merge
+; RV64FINX-LARGE-NEXT:    ret
   %1 = load volatile i32, i32* @G
   %2 = or i32 %1, %a
   br i1 %c, label %cond.store, label %merge
@@ -474,21 +542,21 @@ define i32 @lower_global_nonload_use(i32 %a, i1 %c) nounwind {
 ; RV32I-SMALL-NEXT:    addi sp, sp, 16
 ; RV32I-SMALL-NEXT:    ret
 ;
-; RV32I-MEDIUM-LABEL: lower_global_nonload_use:
-; RV32I-MEDIUM:       # %bb.0:
-; RV32I-MEDIUM-NEXT:    addi sp, sp, -16
-; RV32I-MEDIUM-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
-; RV32I-MEDIUM-NEXT:    sw s0, 8(sp) # 4-byte Folded Spill
-; RV32I-MEDIUM-NEXT:  .Lpcrel_hi6:
-; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(G)
-; RV32I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi6)
-; RV32I-MEDIUM-NEXT:    lw s0, 0(a0)
-; RV32I-MEDIUM-NEXT:    call foo
-; RV32I-MEDIUM-NEXT:    mv a0, s0
-; RV32I-MEDIUM-NEXT:    lw ra, 12(sp) # 4-byte Folded Reload
-; RV32I-MEDIUM-NEXT:    lw s0, 8(sp) # 4-byte Folded Reload
-; RV32I-MEDIUM-NEXT:    addi sp, sp, 16
-; RV32I-MEDIUM-NEXT:    ret
+; RV32F-MEDIUM-LABEL: lower_global_nonload_use:
+; RV32F-MEDIUM:       # %bb.0:
+; RV32F-MEDIUM-NEXT:    addi sp, sp, -16
+; RV32F-MEDIUM-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
+; RV32F-MEDIUM-NEXT:    sw s0, 8(sp) # 4-byte Folded Spill
+; RV32F-MEDIUM-NEXT:  .Lpcrel_hi6:
+; RV32F-MEDIUM-NEXT:    auipc a0, %pcrel_hi(G)
+; RV32F-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi6)
+; RV32F-MEDIUM-NEXT:    lw s0, 0(a0)
+; RV32F-MEDIUM-NEXT:    call foo
+; RV32F-MEDIUM-NEXT:    mv a0, s0
+; RV32F-MEDIUM-NEXT:    lw ra, 12(sp) # 4-byte Folded Reload
+; RV32F-MEDIUM-NEXT:    lw s0, 8(sp) # 4-byte Folded Reload
+; RV32F-MEDIUM-NEXT:    addi sp, sp, 16
+; RV32F-MEDIUM-NEXT:    ret
 ;
 ; RV64I-SMALL-LABEL: lower_global_nonload_use:
 ; RV64I-SMALL:       # %bb.0:
@@ -505,40 +573,91 @@ define i32 @lower_global_nonload_use(i32 %a, i1 %c) nounwind {
 ; RV64I-SMALL-NEXT:    addi sp, sp, 16
 ; RV64I-SMALL-NEXT:    ret
 ;
-; RV64I-MEDIUM-LABEL: lower_global_nonload_use:
-; RV64I-MEDIUM:       # %bb.0:
-; RV64I-MEDIUM-NEXT:    addi sp, sp, -16
-; RV64I-MEDIUM-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
-; RV64I-MEDIUM-NEXT:    sd s0, 0(sp) # 8-byte Folded Spill
-; RV64I-MEDIUM-NEXT:  .Lpcrel_hi6:
-; RV64I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(G)
-; RV64I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi6)
-; RV64I-MEDIUM-NEXT:    lw s0, 0(a0)
-; RV64I-MEDIUM-NEXT:    call foo
-; RV64I-MEDIUM-NEXT:    mv a0, s0
-; RV64I-MEDIUM-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload
-; RV64I-MEDIUM-NEXT:    ld s0, 0(sp) # 8-byte Folded Reload
-; RV64I-MEDIUM-NEXT:    addi sp, sp, 16
-; RV64I-MEDIUM-NEXT:    ret
+; RV64F-MEDIUM-LABEL: lower_global_nonload_use:
+; RV64F-MEDIUM:       # %bb.0:
+; RV64F-MEDIUM-NEXT:    addi sp, sp, -16
+; RV64F-MEDIUM-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
+; RV64F-MEDIUM-NEXT:    sd s0, 0(sp) # 8-byte Folded Spill
+; RV64F-MEDIUM-NEXT:  .Lpcrel_hi6:
+; RV64F-MEDIUM-NEXT:    auipc a0, %pcrel_hi(G)
+; RV64F-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi6)
+; RV64F-MEDIUM-NEXT:    lw s0, 0(a0)
+; RV64F-MEDIUM-NEXT:    call foo
+; RV64F-MEDIUM-NEXT:    mv a0, s0
+; RV64F-MEDIUM-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload
+; RV64F-MEDIUM-NEXT:    ld s0, 0(sp) # 8-byte Folded Reload
+; RV64F-MEDIUM-NEXT:    addi sp, sp, 16
+; RV64F-MEDIUM-NEXT:    ret
 ;
-; RV64I-LARGE-LABEL: lower_global_nonload_use:
-; RV64I-LARGE:       # %bb.0:
-; RV64I-LARGE-NEXT:    addi sp, sp, -16
-; RV64I-LARGE-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
-; RV64I-LARGE-NEXT:    sd s0, 0(sp) # 8-byte Folded Spill
-; RV64I-LARGE-NEXT:  .Lpcrel_hi6:
-; RV64I-LARGE-NEXT:    auipc a0, %pcrel_hi(.LCPI6_0)
-; RV64I-LARGE-NEXT:    ld a0, %pcrel_lo(.Lpcrel_hi6)(a0)
-; RV64I-LARGE-NEXT:    lw s0, 0(a0)
-; RV64I-LARGE-NEXT:  .Lpcrel_hi7:
-; RV64I-LARGE-NEXT:    auipc a1, %pcrel_hi(.LCPI6_1)
-; RV64I-LARGE-NEXT:    ld a1, %pcrel_lo(.Lpcrel_hi7)(a1)
-; RV64I-LARGE-NEXT:    jalr a1
-; RV64I-LARGE-NEXT:    mv a0, s0
-; RV64I-LARGE-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload
-; RV64I-LARGE-NEXT:    ld s0, 0(sp) # 8-byte Folded Reload
-; RV64I-LARGE-NEXT:    addi sp, sp, 16
-; RV64I-LARGE-NEXT:    ret
+; RV64F-LARGE-LABEL: lower_global_nonload_use:
+; RV64F-LARGE:       # %bb.0:
+; RV64F-LARGE-NEXT:    addi sp, sp, -16
+; RV64F-LARGE-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
+; RV64F-LARGE-NEXT:    sd s0, 0(sp) # 8-byte Folded Spill
+; RV64F-LARGE-NEXT:  .Lpcrel_hi6:
+; RV64F-LARGE-NEXT:    auipc a0, %pcrel_hi(.LCPI6_0)
+; RV64F-LARGE-NEXT:    ld a0, %pcrel_lo(.Lpcrel_hi6)(a0)
+; RV64F-LARGE-NEXT:    lw s0, 0(a0)
+; RV64F-LARGE-NEXT:  .Lpcrel_hi7:
+; RV64F-LARGE-NEXT:    auipc a1, %pcrel_hi(.LCPI6_1)
+; RV64F-LARGE-NEXT:    ld a1, %pcrel_lo(.Lpcrel_hi7)(a1)
+; RV64F-LARGE-NEXT:    jalr a1
+; RV64F-LARGE-NEXT:    mv a0, s0
+; RV64F-LARGE-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload
+; RV64F-LARGE-NEXT:    ld s0, 0(sp) # 8-byte Folded Reload
+; RV64F-LARGE-NEXT:    addi sp, sp, 16
+; RV64F-LARGE-NEXT:    ret
+;
+; RV32FINX-MEDIUM-LABEL: lower_global_nonload_use:
+; RV32FINX-MEDIUM:       # %bb.0:
+; RV32FINX-MEDIUM-NEXT:    addi sp, sp, -16
+; RV32FINX-MEDIUM-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
+; RV32FINX-MEDIUM-NEXT:    sw s0, 8(sp) # 4-byte Folded Spill
+; RV32FINX-MEDIUM-NEXT:  .Lpcrel_hi5:
+; RV32FINX-MEDIUM-NEXT:    auipc a0, %pcrel_hi(G)
+; RV32FINX-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi5)
+; RV32FINX-MEDIUM-NEXT:    lw s0, 0(a0)
+; RV32FINX-MEDIUM-NEXT:    call foo
+; RV32FINX-MEDIUM-NEXT:    mv a0, s0
+; RV32FINX-MEDIUM-NEXT:    lw ra, 12(sp) # 4-byte Folded Reload
+; RV32FINX-MEDIUM-NEXT:    lw s0, 8(sp) # 4-byte Folded Reload
+; RV32FINX-MEDIUM-NEXT:    addi sp, sp, 16
+; RV32FINX-MEDIUM-NEXT:    ret
+;
+; RV64FINX-MEDIUM-LABEL: lower_global_nonload_use:
+; RV64FINX-MEDIUM:       # %bb.0:
+; RV64FINX-MEDIUM-NEXT:    addi sp, sp, -16
+; RV64FINX-MEDIUM-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
+; RV64FINX-MEDIUM-NEXT:    sd s0, 0(sp) # 8-byte Folded Spill
+; RV64FINX-MEDIUM-NEXT:  .Lpcrel_hi5:
+; RV64FINX-MEDIUM-NEXT:    auipc a0, %pcrel_hi(G)
+; RV64FINX-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi5)
+; RV64FINX-MEDIUM-NEXT:    lw s0, 0(a0)
+; RV64FINX-MEDIUM-NEXT:    call foo
+; RV64FINX-MEDIUM-NEXT:    mv a0, s0
+; RV64FINX-MEDIUM-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload
+; RV64FINX-MEDIUM-NEXT:    ld s0, 0(sp) # 8-byte Folded Reload
+; RV64FINX-MEDIUM-NEXT:    addi sp, sp, 16
+; RV64FINX-MEDIUM-NEXT:    ret
+;
+; RV64FINX-LARGE-LABEL: lower_global_nonload_use:
+; RV64FINX-LARGE:       # %bb.0:
+; RV64FINX-LARGE-NEXT:    addi sp, sp, -16
+; RV64FINX-LARGE-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
+; RV64FINX-LARGE-NEXT:    sd s0, 0(sp) # 8-byte Folded Spill
+; RV64FINX-LARGE-NEXT:  .Lpcrel_hi5:
+; RV64FINX-LARGE-NEXT:    auipc a0, %pcrel_hi(.LCPI6_0)
+; RV64FINX-LARGE-NEXT:    ld a0, %pcrel_lo(.Lpcrel_hi5)(a0)
+; RV64FINX-LARGE-NEXT:    lw s0, 0(a0)
+; RV64FINX-LARGE-NEXT:  .Lpcrel_hi6:
+; RV64FINX-LARGE-NEXT:    auipc a1, %pcrel_hi(.LCPI6_1)
+; RV64FINX-LARGE-NEXT:    ld a1, %pcrel_lo(.Lpcrel_hi6)(a1)
+; RV64FINX-LARGE-NEXT:    jalr a1
+; RV64FINX-LARGE-NEXT:    mv a0, s0
+; RV64FINX-LARGE-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload
+; RV64FINX-LARGE-NEXT:    ld s0, 0(sp) # 8-byte Folded Reload
+; RV64FINX-LARGE-NEXT:    addi sp, sp, 16
+; RV64FINX-LARGE-NEXT:    ret
   %1 = load volatile i32, i32* @G
   call void @foo(i32* @G)
   ret i32 %1
@@ -562,21 +681,21 @@ define void @lower_global_loop(i32* %a) {
 ; RV32I-SMALL-NEXT:  # %bb.2: # %for.cond.cleanup
 ; RV32I-SMALL-NEXT:    ret
 ;
-; RV32I-MEDIUM-LABEL: lower_global_loop:
-; RV32I-MEDIUM:       # %bb.0: # %entry
-; RV32I-MEDIUM-NEXT:    addi a1, a0, 40
-; RV32I-MEDIUM-NEXT:  .Lpcrel_hi7:
-; RV32I-MEDIUM-NEXT:    auipc a2, %pcrel_hi(G)
-; RV32I-MEDIUM-NEXT:  .LBB7_1: # %for.body
-; RV32I-MEDIUM-NEXT:    # =>This Inner Loop Header: Depth=1
-; RV32I-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi7)(a2)
-; RV32I-MEDIUM-NEXT:    lw a4, 0(a0)
-; RV32I-MEDIUM-NEXT:    or a3, a4, a3
-; RV32I-MEDIUM-NEXT:    sw a3, 0(a0)
-; RV32I-MEDIUM-NEXT:    addi a0, a0, 4
-; RV32I-MEDIUM-NEXT:    bne a0, a1, .LBB7_1
-; RV32I-MEDIUM-NEXT:  # %bb.2: # %for.cond.cleanup
-; RV32I-MEDIUM-NEXT:    ret
+; RV32F-MEDIUM-LABEL: lower_global_loop:
+; RV32F-MEDIUM:       # %bb.0: # %entry
+; RV32F-MEDIUM-NEXT:    addi a1, a0, 40
+; RV32F-MEDIUM-NEXT:  .Lpcrel_hi7:
+; RV32F-MEDIUM-NEXT:    auipc a2, %pcrel_hi(G)
+; RV32F-MEDIUM-NEXT:  .LBB7_1: # %for.body
+; RV32F-MEDIUM-NEXT:    # =>This Inner Loop Header: Depth=1
+; RV32F-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi7)(a2)
+; RV32F-MEDIUM-NEXT:    lw a4, 0(a0)
+; RV32F-MEDIUM-NEXT:    or a3, a4, a3
+; RV32F-MEDIUM-NEXT:    sw a3, 0(a0)
+; RV32F-MEDIUM-NEXT:    addi a0, a0, 4
+; RV32F-MEDIUM-NEXT:    bne a0, a1, .LBB7_1
+; RV32F-MEDIUM-NEXT:  # %bb.2: # %for.cond.cleanup
+; RV32F-MEDIUM-NEXT:    ret
 ;
 ; RV64I-SMALL-LABEL: lower_global_loop:
 ; RV64I-SMALL:       # %bb.0: # %entry
@@ -593,38 +712,87 @@ define void @lower_global_loop(i32* %a) {
 ; RV64I-SMALL-NEXT:  # %bb.2: # %for.cond.cleanup
 ; RV64I-SMALL-NEXT:    ret
 ;
-; RV64I-MEDIUM-LABEL: lower_global_loop:
-; RV64I-MEDIUM:       # %bb.0: # %entry
-; RV64I-MEDIUM-NEXT:    addi a1, a0, 40
-; RV64I-MEDIUM-NEXT:  .Lpcrel_hi7:
-; RV64I-MEDIUM-NEXT:    auipc a2, %pcrel_hi(G)
-; RV64I-MEDIUM-NEXT:  .LBB7_1: # %for.body
-; RV64I-MEDIUM-NEXT:    # =>This Inner Loop Header: Depth=1
-; RV64I-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi7)(a2)
-; RV64I-MEDIUM-NEXT:    lw a4, 0(a0)
-; RV64I-MEDIUM-NEXT:    or a3, a4, a3
-; RV64I-MEDIUM-NEXT:    sw a3, 0(a0)
-; RV64I-MEDIUM-NEXT:    addi a0, a0, 4
-; RV64I-MEDIUM-NEXT:    bne a0, a1, .LBB7_1
-; RV64I-MEDIUM-NEXT:  # %bb.2: # %for.cond.cleanup
-; RV64I-MEDIUM-NEXT:    ret
+; RV64F-MEDIUM-LABEL: lower_global_loop:
+; RV64F-MEDIUM:       # %bb.0: # %entry
+; RV64F-MEDIUM-NEXT:    addi a1, a0, 40
+; RV64F-MEDIUM-NEXT:  .Lpcrel_hi7:
+; RV64F-MEDIUM-NEXT:    auipc a2, %pcrel_hi(G)
+; RV64F-MEDIUM-NEXT:  .LBB7_1: # %for.body
+; RV64F-MEDIUM-NEXT:    # =>This Inner Loop Header: Depth=1
+; RV64F-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi7)(a2)
+; RV64F-MEDIUM-NEXT:    lw a4, 0(a0)
+; RV64F-MEDIUM-NEXT:    or a3, a4, a3
+; RV64F-MEDIUM-NEXT:    sw a3, 0(a0)
+; RV64F-MEDIUM-NEXT:    addi a0, a0, 4
+; RV64F-MEDIUM-NEXT:    bne a0, a1, .LBB7_1
+; RV64F-MEDIUM-NEXT:  # %bb.2: # %for.cond.cleanup
+; RV64F-MEDIUM-NEXT:    ret
 ;
-; RV64I-LARGE-LABEL: lower_global_loop:
-; RV64I-LARGE:       # %bb.0: # %entry
-; RV64I-LARGE-NEXT:  .Lpcrel_hi8:
-; RV64I-LARGE-NEXT:    auipc a1, %pcrel_hi(.LCPI7_0)
-; RV64I-LARGE-NEXT:    ld a1, %pcrel_lo(.Lpcrel_hi8)(a1)
-; RV64I-LARGE-NEXT:    addi a2, a0, 40
-; RV64I-LARGE-NEXT:  .LBB7_1: # %for.body
-; RV64I-LARGE-NEXT:    # =>This Inner Loop Header: Depth=1
-; RV64I-LARGE-NEXT:    lw a3, 0(a1)
-; RV64I-LARGE-NEXT:    lw a4, 0(a0)
-; RV64I-LARGE-NEXT:    or a3, a4, a3
-; RV64I-LARGE-NEXT:    sw a3, 0(a0)
-; RV64I-LARGE-NEXT:    addi a0, a0, 4
-; RV64I-LARGE-NEXT:    bne a0, a2, .LBB7_1
-; RV64I-LARGE-NEXT:  # %bb.2: # %for.cond.cleanup
-; RV64I-LARGE-NEXT:    ret
+; RV64F-LARGE-LABEL: lower_global_loop:
+; RV64F-LARGE:       # %bb.0: # %entry
+; RV64F-LARGE-NEXT:  .Lpcrel_hi8:
+; RV64F-LARGE-NEXT:    auipc a1, %pcrel_hi(.LCPI7_0)
+; RV64F-LARGE-NEXT:    ld a1, %pcrel_lo(.Lpcrel_hi8)(a1)
+; RV64F-LARGE-NEXT:    addi a2, a0, 40
+; RV64F-LARGE-NEXT:  .LBB7_1: # %for.body
+; RV64F-LARGE-NEXT:    # =>This Inner Loop Header: Depth=1
+; RV64F-LARGE-NEXT:    lw a3, 0(a1)
+; RV64F-LARGE-NEXT:    lw a4, 0(a0)
+; RV64F-LARGE-NEXT:    or a3, a4, a3
+; RV64F-LARGE-NEXT:    sw a3, 0(a0)
+; RV64F-LARGE-NEXT:    addi a0, a0, 4
+; RV64F-LARGE-NEXT:    bne a0, a2, .LBB7_1
+; RV64F-LARGE-NEXT:  # %bb.2: # %for.cond.cleanup
+; RV64F-LARGE-NEXT:    ret
+;
+; RV32FINX-MEDIUM-LABEL: lower_global_loop:
+; RV32FINX-MEDIUM:       # %bb.0: # %entry
+; RV32FINX-MEDIUM-NEXT:    addi a1, a0, 40
+; RV32FINX-MEDIUM-NEXT:  .Lpcrel_hi6:
+; RV32FINX-MEDIUM-NEXT:    auipc a2, %pcrel_hi(G)
+; RV32FINX-MEDIUM-NEXT:  .LBB7_1: # %for.body
+; RV32FINX-MEDIUM-NEXT:    # =>This Inner Loop Header: Depth=1
+; RV32FINX-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi6)(a2)
+; RV32FINX-MEDIUM-NEXT:    lw a4, 0(a0)
+; RV32FINX-MEDIUM-NEXT:    or a3, a4, a3
+; RV32FINX-MEDIUM-NEXT:    sw a3, 0(a0)
+; RV32FINX-MEDIUM-NEXT:    addi a0, a0, 4
+; RV32FINX-MEDIUM-NEXT:    bne a0, a1, .LBB7_1
+; RV32FINX-MEDIUM-NEXT:  # %bb.2: # %for.cond.cleanup
+; RV32FINX-MEDIUM-NEXT:    ret
+;
+; RV64FINX-MEDIUM-LABEL: lower_global_loop:
+; RV64FINX-MEDIUM:       # %bb.0: # %entry
+; RV64FINX-MEDIUM-NEXT:    addi a1, a0, 40
+; RV64FINX-MEDIUM-NEXT:  .Lpcrel_hi6:
+; RV64FINX-MEDIUM-NEXT:    auipc a2, %pcrel_hi(G)
+; RV64FINX-MEDIUM-NEXT:  .LBB7_1: # %for.body
+; RV64FINX-MEDIUM-NEXT:    # =>This Inner Loop Header: Depth=1
+; RV64FINX-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi6)(a2)
+; RV64FINX-MEDIUM-NEXT:    lw a4, 0(a0)
+; RV64FINX-MEDIUM-NEXT:    or a3, a4, a3
+; RV64FINX-MEDIUM-NEXT:    sw a3, 0(a0)
+; RV64FINX-MEDIUM-NEXT:    addi a0, a0, 4
+; RV64FINX-MEDIUM-NEXT:    bne a0, a1, .LBB7_1
+; RV64FINX-MEDIUM-NEXT:  # %bb.2: # %for.cond.cleanup
+; RV64FINX-MEDIUM-NEXT:    ret
+;
+; RV64FINX-LARGE-LABEL: lower_global_loop:
+; RV64FINX-LARGE:       # %bb.0: # %entry
+; RV64FINX-LARGE-NEXT:  .Lpcrel_hi7:
+; RV64FINX-LARGE-NEXT:    auipc a1, %pcrel_hi(.LCPI7_0)
+; RV64FINX-LARGE-NEXT:    ld a1, %pcrel_lo(.Lpcrel_hi7)(a1)
+; RV64FINX-LARGE-NEXT:    addi a2, a0, 40
+; RV64FINX-LARGE-NEXT:  .LBB7_1: # %for.body
+; RV64FINX-LARGE-NEXT:    # =>This Inner Loop Header: Depth=1
+; RV64FINX-LARGE-NEXT:    lw a3, 0(a1)
+; RV64FINX-LARGE-NEXT:    lw a4, 0(a0)
+; RV64FINX-LARGE-NEXT:    or a3, a4, a3
+; RV64FINX-LARGE-NEXT:    sw a3, 0(a0)
+; RV64FINX-LARGE-NEXT:    addi a0, a0, 4
+; RV64FINX-LARGE-NEXT:    bne a0, a2, .LBB7_1
+; RV64FINX-LARGE-NEXT:  # %bb.2: # %for.cond.cleanup
+; RV64FINX-LARGE-NEXT:    ret
 entry:
   br label %for.body
 
@@ -652,23 +820,13 @@ define i32 @lower_extern_weak(i32 %a) nounwind {
 ; RV32I-SMALL-NEXT:    lw a0, %lo(W)(a0)
 ; RV32I-SMALL-NEXT:    ret
 ;
-<<<<<<< HEAD
-; RV32I-MEDIUM-LABEL: lower_extern_weak:
-; RV32I-MEDIUM:       # %bb.0:
-; RV32I-MEDIUM-NEXT:  .Lpcrel_hi8:
-; RV32I-MEDIUM-NEXT:    auipc a0, %got_pcrel_hi(W)
-; RV32I-MEDIUM-NEXT:    lw a0, %pcrel_lo(.Lpcrel_hi8)(a0)
-; RV32I-MEDIUM-NEXT:    lw a0, 0(a0)
-; RV32I-MEDIUM-NEXT:    ret
-=======
 ; RV32F-MEDIUM-LABEL: lower_extern_weak:
 ; RV32F-MEDIUM:       # %bb.0:
-; RV32F-MEDIUM-NEXT:  .Lpcrel_hi4:
+; RV32F-MEDIUM-NEXT:  .Lpcrel_hi8:
 ; RV32F-MEDIUM-NEXT:    auipc a0, %got_pcrel_hi(W)
-; RV32F-MEDIUM-NEXT:    lw a0, %pcrel_lo(.Lpcrel_hi4)(a0)
+; RV32F-MEDIUM-NEXT:    lw a0, %pcrel_lo(.Lpcrel_hi8)(a0)
 ; RV32F-MEDIUM-NEXT:    lw a0, 0(a0)
 ; RV32F-MEDIUM-NEXT:    ret
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ;
 ; RV64I-SMALL-LABEL: lower_extern_weak:
 ; RV64I-SMALL:       # %bb.0:
@@ -676,63 +834,45 @@ define i32 @lower_extern_weak(i32 %a) nounwind {
 ; RV64I-SMALL-NEXT:    lw a0, %lo(W)(a0)
 ; RV64I-SMALL-NEXT:    ret
 ;
-<<<<<<< HEAD
-; RV64I-MEDIUM-LABEL: lower_extern_weak:
-; RV64I-MEDIUM:       # %bb.0:
-; RV64I-MEDIUM-NEXT:  .Lpcrel_hi8:
-; RV64I-MEDIUM-NEXT:    auipc a0, %got_pcrel_hi(W)
-; RV64I-MEDIUM-NEXT:    ld a0, %pcrel_lo(.Lpcrel_hi8)(a0)
-; RV64I-MEDIUM-NEXT:    lw a0, 0(a0)
-; RV64I-MEDIUM-NEXT:    ret
-;
-; RV64I-LARGE-LABEL: lower_extern_weak:
-; RV64I-LARGE:       # %bb.0:
-; RV64I-LARGE-NEXT:  .Lpcrel_hi9:
-; RV64I-LARGE-NEXT:    auipc a0, %pcrel_hi(.LCPI8_0)
-; RV64I-LARGE-NEXT:    ld a0, %pcrel_lo(.Lpcrel_hi9)(a0)
-; RV64I-LARGE-NEXT:    lw a0, 0(a0)
-; RV64I-LARGE-NEXT:    ret
-=======
 ; RV64F-MEDIUM-LABEL: lower_extern_weak:
 ; RV64F-MEDIUM:       # %bb.0:
-; RV64F-MEDIUM-NEXT:  .Lpcrel_hi4:
+; RV64F-MEDIUM-NEXT:  .Lpcrel_hi8:
 ; RV64F-MEDIUM-NEXT:    auipc a0, %got_pcrel_hi(W)
-; RV64F-MEDIUM-NEXT:    ld a0, %pcrel_lo(.Lpcrel_hi4)(a0)
+; RV64F-MEDIUM-NEXT:    ld a0, %pcrel_lo(.Lpcrel_hi8)(a0)
 ; RV64F-MEDIUM-NEXT:    lw a0, 0(a0)
 ; RV64F-MEDIUM-NEXT:    ret
 ;
 ; RV64F-LARGE-LABEL: lower_extern_weak:
 ; RV64F-LARGE:       # %bb.0:
-; RV64F-LARGE-NEXT:  .Lpcrel_hi4:
-; RV64F-LARGE-NEXT:    auipc a0, %pcrel_hi(.LCPI4_0)
-; RV64F-LARGE-NEXT:    ld a0, %pcrel_lo(.Lpcrel_hi4)(a0)
+; RV64F-LARGE-NEXT:  .Lpcrel_hi9:
+; RV64F-LARGE-NEXT:    auipc a0, %pcrel_hi(.LCPI8_0)
+; RV64F-LARGE-NEXT:    ld a0, %pcrel_lo(.Lpcrel_hi9)(a0)
 ; RV64F-LARGE-NEXT:    lw a0, 0(a0)
 ; RV64F-LARGE-NEXT:    ret
 ;
 ; RV32FINX-MEDIUM-LABEL: lower_extern_weak:
 ; RV32FINX-MEDIUM:       # %bb.0:
-; RV32FINX-MEDIUM-NEXT:  .Lpcrel_hi3:
+; RV32FINX-MEDIUM-NEXT:  .Lpcrel_hi7:
 ; RV32FINX-MEDIUM-NEXT:    auipc a0, %got_pcrel_hi(W)
-; RV32FINX-MEDIUM-NEXT:    lw a0, %pcrel_lo(.Lpcrel_hi3)(a0)
+; RV32FINX-MEDIUM-NEXT:    lw a0, %pcrel_lo(.Lpcrel_hi7)(a0)
 ; RV32FINX-MEDIUM-NEXT:    lw a0, 0(a0)
 ; RV32FINX-MEDIUM-NEXT:    ret
 ;
 ; RV64FINX-MEDIUM-LABEL: lower_extern_weak:
 ; RV64FINX-MEDIUM:       # %bb.0:
-; RV64FINX-MEDIUM-NEXT:  .Lpcrel_hi3:
+; RV64FINX-MEDIUM-NEXT:  .Lpcrel_hi7:
 ; RV64FINX-MEDIUM-NEXT:    auipc a0, %got_pcrel_hi(W)
-; RV64FINX-MEDIUM-NEXT:    ld a0, %pcrel_lo(.Lpcrel_hi3)(a0)
+; RV64FINX-MEDIUM-NEXT:    ld a0, %pcrel_lo(.Lpcrel_hi7)(a0)
 ; RV64FINX-MEDIUM-NEXT:    lw a0, 0(a0)
 ; RV64FINX-MEDIUM-NEXT:    ret
 ;
 ; RV64FINX-LARGE-LABEL: lower_extern_weak:
 ; RV64FINX-LARGE:       # %bb.0:
-; RV64FINX-LARGE-NEXT:  .Lpcrel_hi3:
-; RV64FINX-LARGE-NEXT:    auipc a0, %pcrel_hi(.LCPI4_0)
-; RV64FINX-LARGE-NEXT:    ld a0, %pcrel_lo(.Lpcrel_hi3)(a0)
+; RV64FINX-LARGE-NEXT:  .Lpcrel_hi8:
+; RV64FINX-LARGE-NEXT:    auipc a0, %pcrel_hi(.LCPI8_0)
+; RV64FINX-LARGE-NEXT:    ld a0, %pcrel_lo(.Lpcrel_hi8)(a0)
 ; RV64FINX-LARGE-NEXT:    lw a0, 0(a0)
 ; RV64FINX-LARGE-NEXT:    ret
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   %1 = load volatile i32, ptr @W
   ret i32 %1
 }
@@ -749,9 +889,9 @@ define half @lower_global_half(half %a) nounwind {
 ;
 ; RV32F-MEDIUM-LABEL: lower_global_half:
 ; RV32F-MEDIUM:       # %bb.0:
-; RV32F-MEDIUM-NEXT:  .Lpcrel_hi5:
+; RV32F-MEDIUM-NEXT:  .Lpcrel_hi9:
 ; RV32F-MEDIUM-NEXT:    auipc a0, %pcrel_hi(X)
-; RV32F-MEDIUM-NEXT:    flh fa5, %pcrel_lo(.Lpcrel_hi5)(a0)
+; RV32F-MEDIUM-NEXT:    flh fa5, %pcrel_lo(.Lpcrel_hi9)(a0)
 ; RV32F-MEDIUM-NEXT:    fadd.h fa0, fa0, fa5
 ; RV32F-MEDIUM-NEXT:    ret
 ;
@@ -764,17 +904,17 @@ define half @lower_global_half(half %a) nounwind {
 ;
 ; RV64F-MEDIUM-LABEL: lower_global_half:
 ; RV64F-MEDIUM:       # %bb.0:
-; RV64F-MEDIUM-NEXT:  .Lpcrel_hi5:
+; RV64F-MEDIUM-NEXT:  .Lpcrel_hi9:
 ; RV64F-MEDIUM-NEXT:    auipc a0, %pcrel_hi(X)
-; RV64F-MEDIUM-NEXT:    flh fa5, %pcrel_lo(.Lpcrel_hi5)(a0)
+; RV64F-MEDIUM-NEXT:    flh fa5, %pcrel_lo(.Lpcrel_hi9)(a0)
 ; RV64F-MEDIUM-NEXT:    fadd.h fa0, fa0, fa5
 ; RV64F-MEDIUM-NEXT:    ret
 ;
 ; RV64F-LARGE-LABEL: lower_global_half:
 ; RV64F-LARGE:       # %bb.0:
-; RV64F-LARGE-NEXT:  .Lpcrel_hi5:
-; RV64F-LARGE-NEXT:    auipc a0, %pcrel_hi(.LCPI5_0)
-; RV64F-LARGE-NEXT:    ld a0, %pcrel_lo(.Lpcrel_hi5)(a0)
+; RV64F-LARGE-NEXT:  .Lpcrel_hi10:
+; RV64F-LARGE-NEXT:    auipc a0, %pcrel_hi(.LCPI9_0)
+; RV64F-LARGE-NEXT:    ld a0, %pcrel_lo(.Lpcrel_hi10)(a0)
 ; RV64F-LARGE-NEXT:    flh fa5, 0(a0)
 ; RV64F-LARGE-NEXT:    fadd.h fa0, fa0, fa5
 ; RV64F-LARGE-NEXT:    ret
@@ -788,9 +928,9 @@ define half @lower_global_half(half %a) nounwind {
 ;
 ; RV32FINX-MEDIUM-LABEL: lower_global_half:
 ; RV32FINX-MEDIUM:       # %bb.0:
-; RV32FINX-MEDIUM-NEXT:  .Lpcrel_hi4:
+; RV32FINX-MEDIUM-NEXT:  .Lpcrel_hi8:
 ; RV32FINX-MEDIUM-NEXT:    auipc a1, %pcrel_hi(X)
-; RV32FINX-MEDIUM-NEXT:    lh a1, %pcrel_lo(.Lpcrel_hi4)(a1)
+; RV32FINX-MEDIUM-NEXT:    lh a1, %pcrel_lo(.Lpcrel_hi8)(a1)
 ; RV32FINX-MEDIUM-NEXT:    fadd.h a0, a0, a1
 ; RV32FINX-MEDIUM-NEXT:    ret
 ;
@@ -803,17 +943,17 @@ define half @lower_global_half(half %a) nounwind {
 ;
 ; RV64FINX-MEDIUM-LABEL: lower_global_half:
 ; RV64FINX-MEDIUM:       # %bb.0:
-; RV64FINX-MEDIUM-NEXT:  .Lpcrel_hi4:
+; RV64FINX-MEDIUM-NEXT:  .Lpcrel_hi8:
 ; RV64FINX-MEDIUM-NEXT:    auipc a1, %pcrel_hi(X)
-; RV64FINX-MEDIUM-NEXT:    lh a1, %pcrel_lo(.Lpcrel_hi4)(a1)
+; RV64FINX-MEDIUM-NEXT:    lh a1, %pcrel_lo(.Lpcrel_hi8)(a1)
 ; RV64FINX-MEDIUM-NEXT:    fadd.h a0, a0, a1
 ; RV64FINX-MEDIUM-NEXT:    ret
 ;
 ; RV64FINX-LARGE-LABEL: lower_global_half:
 ; RV64FINX-LARGE:       # %bb.0:
-; RV64FINX-LARGE-NEXT:  .Lpcrel_hi4:
-; RV64FINX-LARGE-NEXT:    auipc a1, %pcrel_hi(.LCPI5_0)
-; RV64FINX-LARGE-NEXT:    ld a1, %pcrel_lo(.Lpcrel_hi4)(a1)
+; RV64FINX-LARGE-NEXT:  .Lpcrel_hi9:
+; RV64FINX-LARGE-NEXT:    auipc a1, %pcrel_hi(.LCPI9_0)
+; RV64FINX-LARGE-NEXT:    ld a1, %pcrel_lo(.Lpcrel_hi9)(a1)
 ; RV64FINX-LARGE-NEXT:    lh a1, 0(a1)
 ; RV64FINX-LARGE-NEXT:    fadd.h a0, a0, a1
 ; RV64FINX-LARGE-NEXT:    ret

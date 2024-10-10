@@ -53,30 +53,6 @@ define i32 @test(ptr %pix1, ptr %pix2, i64 %idx.ext, i64 %idx.ext63, ptr %add.pt
 ; CHECK-NEXT:    [[ARRAYIDX10_2:%.*]] = getelementptr i8, ptr [[ADD_PTR64_1]], i64 1
 ; CHECK-NEXT:    [[ARRAYIDX13_2:%.*]] = getelementptr i8, ptr [[ADD_PTR_1]], i64 5
 ; CHECK-NEXT:    [[ARRAYIDX15_2:%.*]] = getelementptr i8, ptr [[ADD_PTR64_1]], i64 5
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP4:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ADD_PTR_1]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP5:%.*]] = zext <2 x i8> [[TMP4]] to <2 x i32>
-; CHECK-NEXT:    [[TMP6:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ADD_PTR64_1]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP7:%.*]] = zext <2 x i8> [[TMP6]] to <2 x i32>
-; CHECK-NEXT:    [[TMP8:%.*]] = sub <2 x i32> [[TMP5]], [[TMP7]]
-; CHECK-NEXT:    [[TMP9:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX3_2]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP13:%.*]] = zext <2 x i8> [[TMP9]] to <2 x i32>
-; CHECK-NEXT:    [[TMP26:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX5_2]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP12:%.*]] = zext <2 x i8> [[TMP26]] to <2 x i32>
-; CHECK-NEXT:    [[TMP24:%.*]] = sub <2 x i32> [[TMP13]], [[TMP12]]
-; CHECK-NEXT:    [[TMP25:%.*]] = shl <2 x i32> [[TMP24]], <i32 16, i32 16>
-; CHECK-NEXT:    [[TMP15:%.*]] = add <2 x i32> [[TMP25]], [[TMP8]]
-; CHECK-NEXT:    [[TMP16:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX8_2]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP17:%.*]] = zext <2 x i8> [[TMP16]] to <2 x i32>
-; CHECK-NEXT:    [[TMP18:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX10_2]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP19:%.*]] = zext <2 x i8> [[TMP18]] to <2 x i32>
-; CHECK-NEXT:    [[TMP20:%.*]] = sub <2 x i32> [[TMP17]], [[TMP19]]
-; CHECK-NEXT:    [[TMP21:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX13_2]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP22:%.*]] = zext <2 x i8> [[TMP21]] to <2 x i32>
-; CHECK-NEXT:    [[TMP23:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX15_2]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP28:%.*]] = zext <2 x i8> [[TMP23]] to <2 x i32>
-; CHECK-NEXT:    [[TMP36:%.*]] = sub <2 x i32> [[TMP22]], [[TMP28]]
-=======
 ; CHECK-NEXT:    [[TMP19:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ADD_PTR_1]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
 ; CHECK-NEXT:    [[TMP29:%.*]] = load i8, ptr [[ADD_PTR_1]], align 1
 ; CHECK-NEXT:    [[TMP21:%.*]] = zext <2 x i8> [[TMP19]] to <2 x i32>
@@ -103,7 +79,6 @@ define i32 @test(ptr %pix1, ptr %pix2, i64 %idx.ext, i64 %idx.ext63, ptr %add.pt
 ; CHECK-NEXT:    [[TMP40:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX15_2]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
 ; CHECK-NEXT:    [[TMP56:%.*]] = zext <2 x i8> [[TMP40]] to <2 x i32>
 ; CHECK-NEXT:    [[TMP36:%.*]] = sub <2 x i32> [[TMP39]], [[TMP56]]
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ; CHECK-NEXT:    [[TMP37:%.*]] = shl <2 x i32> [[TMP36]], <i32 16, i32 16>
 ; CHECK-NEXT:    [[TMP59:%.*]] = add <2 x i32> [[TMP37]], [[TMP52]]
 ; CHECK-NEXT:    [[TMP63:%.*]] = add <2 x i32> [[TMP59]], [[TMP31]]
@@ -124,50 +99,6 @@ define i32 @test(ptr %pix1, ptr %pix2, i64 %idx.ext, i64 %idx.ext63, ptr %add.pt
 ; CHECK-NEXT:    [[ARRAYIDX15_3:%.*]] = getelementptr i8, ptr null, i64 5
 ; CHECK-NEXT:    [[TMP43:%.*]] = load i8, ptr null, align 1
 ; CHECK-NEXT:    [[TMP53:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 null, i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP39:%.*]] = load i8, ptr null, align 1
-; CHECK-NEXT:    [[TMP42:%.*]] = zext <2 x i8> [[TMP53]] to <2 x i32>
-; CHECK-NEXT:    [[CONV_3:%.*]] = zext i8 [[TMP39]] to i32
-; CHECK-NEXT:    [[TMP54:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 null, i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP40:%.*]] = zext <2 x i8> [[TMP54]] to <2 x i32>
-; CHECK-NEXT:    [[TMP55:%.*]] = sub <2 x i32> [[TMP42]], [[TMP40]]
-; CHECK-NEXT:    [[TMP41:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX3_3]], i64 -4, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP59:%.*]] = zext <2 x i8> [[TMP41]] to <2 x i32>
-; CHECK-NEXT:    [[TMP60:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX5_3]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP62:%.*]] = zext <2 x i8> [[TMP60]] to <2 x i32>
-; CHECK-NEXT:    [[TMP45:%.*]] = sub <2 x i32> [[TMP59]], [[TMP62]]
-; CHECK-NEXT:    [[TMP46:%.*]] = shl <2 x i32> [[TMP45]], <i32 16, i32 16>
-; CHECK-NEXT:    [[TMP48:%.*]] = add <2 x i32> [[TMP46]], [[TMP55]]
-; CHECK-NEXT:    [[TMP49:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX8_3]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP50:%.*]] = zext <2 x i8> [[TMP49]] to <2 x i32>
-; CHECK-NEXT:    [[TMP51:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX10_3]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP52:%.*]] = zext <2 x i8> [[TMP51]] to <2 x i32>
-; CHECK-NEXT:    [[TMP68:%.*]] = sub <2 x i32> [[TMP50]], [[TMP52]]
-; CHECK-NEXT:    [[TMP64:%.*]] = insertelement <2 x i8> poison, i8 [[TMP44]], i32 0
-; CHECK-NEXT:    [[TMP65:%.*]] = insertelement <2 x i8> [[TMP64]], i8 [[TMP43]], i32 1
-; CHECK-NEXT:    [[TMP56:%.*]] = zext <2 x i8> [[TMP65]] to <2 x i32>
-; CHECK-NEXT:    [[TMP57:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX15_3]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP58:%.*]] = zext <2 x i8> [[TMP57]] to <2 x i32>
-; CHECK-NEXT:    [[TMP69:%.*]] = sub <2 x i32> [[TMP56]], [[TMP58]]
-; CHECK-NEXT:    [[TMP70:%.*]] = shl <2 x i32> [[TMP69]], <i32 16, i32 16>
-; CHECK-NEXT:    [[TMP76:%.*]] = add <2 x i32> [[TMP70]], [[TMP68]]
-; CHECK-NEXT:    [[TMP47:%.*]] = add <2 x i32> [[TMP76]], [[TMP48]]
-; CHECK-NEXT:    [[TMP33:%.*]] = sub <2 x i32> [[TMP48]], [[TMP76]]
-; CHECK-NEXT:    [[TMP61:%.*]] = extractelement <2 x i32> [[TMP47]], i32 0
-; CHECK-NEXT:    [[TMP79:%.*]] = extractelement <2 x i32> [[TMP47]], i32 1
-; CHECK-NEXT:    [[ADD48_3:%.*]] = add i32 [[TMP79]], [[TMP61]]
-; CHECK-NEXT:    [[SUB51_3:%.*]] = sub i32 [[TMP61]], [[TMP79]]
-; CHECK-NEXT:    [[TMP63:%.*]] = extractelement <2 x i32> [[TMP33]], i32 0
-; CHECK-NEXT:    [[TMP71:%.*]] = extractelement <2 x i32> [[TMP33]], i32 1
-; CHECK-NEXT:    [[ADD55_3:%.*]] = add i32 [[TMP71]], [[TMP63]]
-; CHECK-NEXT:    [[SUB59_3:%.*]] = sub i32 [[TMP63]], [[TMP71]]
-; CHECK-NEXT:    [[ADD94:%.*]] = add i32 [[ADD48_3]], [[ADD48_2]]
-; CHECK-NEXT:    [[SUB102:%.*]] = sub i32 [[ADD48_2]], [[ADD48_3]]
-; CHECK-NEXT:    [[SHR_I_1:%.*]] = lshr i32 [[CONV_3]], 15
-; CHECK-NEXT:    [[AND_I_1:%.*]] = and i32 [[SHR_I_1]], 65537
-; CHECK-NEXT:    [[MUL_I_1:%.*]] = mul i32 [[AND_I_1]], 65535
-; CHECK-NEXT:    [[SHR_I49_1:%.*]] = lshr i32 [[SUB47_2]], 15
-=======
 ; CHECK-NEXT:    [[TMP76:%.*]] = load i8, ptr null, align 1
 ; CHECK-NEXT:    [[TMP55:%.*]] = zext <2 x i8> [[TMP53]] to <2 x i32>
 ; CHECK-NEXT:    [[TMP77:%.*]] = zext i8 [[TMP76]] to i32
@@ -218,7 +149,6 @@ define i32 @test(ptr %pix1, ptr %pix2, i64 %idx.ext, i64 %idx.ext63, ptr %add.pt
 ; CHECK-NEXT:    [[AND_I_2:%.*]] = and i32 [[SHR_I_2]], 65537
 ; CHECK-NEXT:    [[MUL_I_2:%.*]] = mul i32 [[AND_I_2]], 65535
 ; CHECK-NEXT:    [[SHR_I49_1:%.*]] = lshr i32 [[TMP84]], 15
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ; CHECK-NEXT:    [[AND_I50_1:%.*]] = and i32 [[SHR_I49_1]], 65537
 ; CHECK-NEXT:    [[ADD94_2:%.*]] = mul i32 [[AND_I50_1]], 65535
 ; CHECK-NEXT:    [[ADD94_6:%.*]] = add i32 [[SUB51_3]], [[SUB51_2]]
@@ -233,29 +163,6 @@ define i32 @test(ptr %pix1, ptr %pix2, i64 %idx.ext, i64 %idx.ext63, ptr %add.pt
 ; CHECK-NEXT:    [[TMP66:%.*]] = load <2 x i8>, ptr [[ARRAYIDX8]], align 1
 ; CHECK-NEXT:    [[TMP102:%.*]] = zext <2 x i8> [[TMP66]] to <2 x i32>
 ; CHECK-NEXT:    [[TMP67:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[PIX2]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP77:%.*]] = zext <2 x i8> [[TMP67]] to <2 x i32>
-; CHECK-NEXT:    [[TMP72:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[TMP1]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP73:%.*]] = zext <2 x i8> [[TMP72]] to <2 x i32>
-; CHECK-NEXT:    [[TMP74:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX5]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP75:%.*]] = zext <2 x i8> [[TMP74]] to <2 x i32>
-; CHECK-NEXT:    [[TMP87:%.*]] = sub <2 x i32> [[TMP73]], [[TMP75]]
-; CHECK-NEXT:    [[TMP88:%.*]] = shl <2 x i32> [[TMP87]], <i32 16, i32 16>
-; CHECK-NEXT:    [[TMP78:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX22]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP84:%.*]] = zext <2 x i8> [[TMP78]] to <2 x i32>
-; CHECK-NEXT:    [[TMP80:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX25]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP81:%.*]] = zext <2 x i8> [[TMP80]] to <2 x i32>
-; CHECK-NEXT:    [[TMP82:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX27]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP83:%.*]] = zext <2 x i8> [[TMP82]] to <2 x i32>
-; CHECK-NEXT:    [[TMP95:%.*]] = sub <2 x i32> [[TMP81]], [[TMP83]]
-; CHECK-NEXT:    [[TMP96:%.*]] = shl <2 x i32> [[TMP95]], <i32 16, i32 16>
-; CHECK-NEXT:    [[TMP97:%.*]] = insertelement <2 x i32> [[TMP102]], i32 [[CONV33]], i32 1
-; CHECK-NEXT:    [[TMP89:%.*]] = sub <2 x i32> [[TMP97]], [[TMP84]]
-; CHECK-NEXT:    [[TMP105:%.*]] = add <2 x i32> [[TMP96]], [[TMP89]]
-; CHECK-NEXT:    [[TMP86:%.*]] = insertelement <2 x i32> [[TMP102]], i32 [[CONV1]], i32 0
-; CHECK-NEXT:    [[TMP90:%.*]] = sub <2 x i32> [[TMP86]], [[TMP77]]
-; CHECK-NEXT:    [[TMP92:%.*]] = add <2 x i32> [[TMP88]], [[TMP90]]
-=======
 ; CHECK-NEXT:    [[TMP112:%.*]] = zext <2 x i8> [[TMP67]] to <2 x i32>
 ; CHECK-NEXT:    [[TMP89:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[TMP1]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
 ; CHECK-NEXT:    [[TMP90:%.*]] = zext <2 x i8> [[TMP89]] to <2 x i32>
@@ -277,48 +184,15 @@ define i32 @test(ptr %pix1, ptr %pix2, i64 %idx.ext, i64 %idx.ext63, ptr %add.pt
 ; CHECK-NEXT:    [[TMP86:%.*]] = insertelement <2 x i32> [[TMP102]], i32 [[CONV1]], i32 0
 ; CHECK-NEXT:    [[TMP107:%.*]] = sub <2 x i32> [[TMP86]], [[TMP112]]
 ; CHECK-NEXT:    [[TMP92:%.*]] = add <2 x i32> [[TMP88]], [[TMP107]]
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ; CHECK-NEXT:    [[TMP93:%.*]] = shufflevector <2 x i32> [[TMP105]], <2 x i32> [[TMP92]], <2 x i32> <i32 0, i32 2>
 ; CHECK-NEXT:    [[TMP101:%.*]] = sub <2 x i32> [[TMP92]], [[TMP105]]
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP94:%.*]] = extractelement <2 x i32> [[TMP91]], i32 0
-; CHECK-NEXT:    [[SUB47:%.*]] = extractelement <2 x i32> [[TMP91]], i32 1
-; CHECK-NEXT:    [[ADD48:%.*]] = add i32 [[SUB47]], [[TMP94]]
-; CHECK-NEXT:    [[SUB51:%.*]] = sub i32 [[TMP94]], [[SUB47]]
-; CHECK-NEXT:    [[TMP98:%.*]] = extractelement <2 x i32> [[TMP101]], i32 0
-; CHECK-NEXT:    [[TMP99:%.*]] = extractelement <2 x i32> [[TMP101]], i32 1
-; CHECK-NEXT:    [[ADD78_1:%.*]] = add i32 [[TMP99]], [[TMP98]]
-; CHECK-NEXT:    [[SUB59:%.*]] = sub i32 [[TMP98]], [[TMP99]]
-; CHECK-NEXT:    [[SHR_I59:%.*]] = lshr i32 [[SUB47]], 15
-; CHECK-NEXT:    [[AND_I60:%.*]] = and i32 [[SHR_I59]], 65537
-; CHECK-NEXT:    [[MUL_I61:%.*]] = mul i32 [[AND_I60]], 65535
-=======
 ; CHECK-NEXT:    [[TMP111:%.*]] = extractelement <2 x i32> [[TMP101]], i32 0
 ; CHECK-NEXT:    [[TMP99:%.*]] = extractelement <2 x i32> [[TMP101]], i32 1
 ; CHECK-NEXT:    [[ADD55:%.*]] = add i32 [[TMP99]], [[TMP111]]
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ; CHECK-NEXT:    [[SHR_I59_1:%.*]] = lshr i32 [[TMP99]], 15
 ; CHECK-NEXT:    [[AND_I60_1:%.*]] = and i32 [[SHR_I59_1]], 65537
 ; CHECK-NEXT:    [[MUL_I61_1:%.*]] = mul i32 [[AND_I60_1]], 65535
 ; CHECK-NEXT:    [[TMP104:%.*]] = load <2 x i8>, ptr [[ARRAYIDX8_1]], align 1
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP110:%.*]] = zext <2 x i8> [[TMP104]] to <2 x i32>
-; CHECK-NEXT:    [[TMP107:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ADD_PTR644]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP108:%.*]] = zext <2 x i8> [[TMP107]] to <2 x i32>
-; CHECK-NEXT:    [[TMP103:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX3_1]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP115:%.*]] = zext <2 x i8> [[TMP103]] to <2 x i32>
-; CHECK-NEXT:    [[TMP116:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX5_1]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP106:%.*]] = zext <2 x i8> [[TMP116]] to <2 x i32>
-; CHECK-NEXT:    [[TMP124:%.*]] = sub <2 x i32> [[TMP115]], [[TMP106]]
-; CHECK-NEXT:    [[TMP125:%.*]] = shl <2 x i32> [[TMP124]], <i32 16, i32 16>
-; CHECK-NEXT:    [[TMP109:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX22_1]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP120:%.*]] = zext <2 x i8> [[TMP109]] to <2 x i32>
-; CHECK-NEXT:    [[TMP111:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX25_1]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP112:%.*]] = zext <2 x i8> [[TMP111]] to <2 x i32>
-; CHECK-NEXT:    [[TMP113:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX27_1]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP114:%.*]] = zext <2 x i8> [[TMP113]] to <2 x i32>
-; CHECK-NEXT:    [[TMP135:%.*]] = sub <2 x i32> [[TMP112]], [[TMP114]]
-=======
 ; CHECK-NEXT:    [[TMP113:%.*]] = zext <2 x i8> [[TMP104]] to <2 x i32>
 ; CHECK-NEXT:    [[TMP114:%.*]] = load <2 x i8>, ptr [[ADD_PTR644]], align 1
 ; CHECK-NEXT:    [[TMP134:%.*]] = zext <2 x i8> [[TMP114]] to <2 x i32>
@@ -338,34 +212,9 @@ define i32 @test(ptr %pix1, ptr %pix2, i64 %idx.ext, i64 %idx.ext63, ptr %add.pt
 ; CHECK-NEXT:    [[TMP129:%.*]] = insertelement <2 x i32> [[TMP113]], i32 [[TMP9]], i32 0
 ; CHECK-NEXT:    [[TMP130:%.*]] = sub <2 x i32> [[TMP129]], [[TMP158]]
 ; CHECK-NEXT:    [[TMP135:%.*]] = insertelement <2 x i32> [[TMP130]], i32 [[TMP16]], i32 1
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ; CHECK-NEXT:    [[TMP136:%.*]] = shl <2 x i32> [[TMP135]], <i32 16, i32 16>
 ; CHECK-NEXT:    [[TMP110:%.*]] = shufflevector <2 x i32> [[TMP130]], <2 x i32> poison, <2 x i32> <i32 1, i32 poison>
 ; CHECK-NEXT:    [[TMP137:%.*]] = insertelement <2 x i32> [[TMP110]], i32 [[CONV33_1]], i32 1
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP118:%.*]] = sub <2 x i32> [[TMP137]], [[TMP120]]
-; CHECK-NEXT:    [[TMP119:%.*]] = add <2 x i32> [[TMP136]], [[TMP118]]
-; CHECK-NEXT:    [[TMP117:%.*]] = insertelement <2 x i32> [[TMP110]], i32 [[CONV_1]], i32 0
-; CHECK-NEXT:    [[TMP121:%.*]] = sub <2 x i32> [[TMP117]], [[TMP108]]
-; CHECK-NEXT:    [[TMP122:%.*]] = add <2 x i32> [[TMP125]], [[TMP121]]
-; CHECK-NEXT:    [[TMP143:%.*]] = add <2 x i32> [[TMP119]], [[TMP122]]
-; CHECK-NEXT:    [[TMP156:%.*]] = sub <2 x i32> [[TMP122]], [[TMP119]]
-; CHECK-NEXT:    [[TMP145:%.*]] = extractelement <2 x i32> [[TMP143]], i32 0
-; CHECK-NEXT:    [[TMP146:%.*]] = extractelement <2 x i32> [[TMP143]], i32 1
-; CHECK-NEXT:    [[ADD48_1:%.*]] = add i32 [[TMP146]], [[TMP145]]
-; CHECK-NEXT:    [[SUB51_1:%.*]] = sub i32 [[TMP145]], [[TMP146]]
-; CHECK-NEXT:    [[TMP180:%.*]] = extractelement <2 x i32> [[TMP156]], i32 0
-; CHECK-NEXT:    [[TMP142:%.*]] = extractelement <2 x i32> [[TMP156]], i32 1
-; CHECK-NEXT:    [[ADD94_1:%.*]] = add i32 [[TMP142]], [[TMP180]]
-; CHECK-NEXT:    [[SUB59_1:%.*]] = sub i32 [[TMP180]], [[TMP142]]
-; CHECK-NEXT:    [[SHR_I54_1:%.*]] = lshr i32 [[TMP146]], 15
-; CHECK-NEXT:    [[AND_I55_1:%.*]] = and i32 [[SHR_I54_1]], 65537
-; CHECK-NEXT:    [[MUL_I56_1:%.*]] = mul i32 [[AND_I55_1]], 65535
-; CHECK-NEXT:    [[SHR_I54_2:%.*]] = lshr i32 [[TMP142]], 15
-; CHECK-NEXT:    [[AND_I55_2:%.*]] = and i32 [[SHR_I54_2]], 65537
-; CHECK-NEXT:    [[MUL_I56_2:%.*]] = mul i32 [[AND_I55_2]], 65535
-; CHECK-NEXT:    [[TMP147:%.*]] = lshr <2 x i32> [[TMP110]], <i32 15, i32 15>
-=======
 ; CHECK-NEXT:    [[TMP155:%.*]] = add <2 x i32> [[TMP136]], [[TMP137]]
 ; CHECK-NEXT:    [[TMP139:%.*]] = extractelement <2 x i32> [[TMP156]], i32 0
 ; CHECK-NEXT:    [[TMP142:%.*]] = extractelement <2 x i32> [[TMP156]], i32 1
@@ -401,7 +250,6 @@ define i32 @test(ptr %pix1, ptr %pix2, i64 %idx.ext, i64 %idx.ext63, ptr %add.pt
 ; CHECK-NEXT:    [[AND_I55_2:%.*]] = and i32 [[SHR_I54_2]], 65537
 ; CHECK-NEXT:    [[MUL_I56_2:%.*]] = mul i32 [[AND_I55_2]], 65535
 ; CHECK-NEXT:    [[TMP147:%.*]] = lshr <2 x i32> [[TMP113]], <i32 15, i32 15>
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ; CHECK-NEXT:    [[TMP148:%.*]] = and <2 x i32> [[TMP147]], <i32 65537, i32 65537>
 ; CHECK-NEXT:    [[TMP149:%.*]] = mul <2 x i32> [[TMP148]], <i32 65535, i32 65535>
 ; CHECK-NEXT:    [[ADD78:%.*]] = add i32 [[ADD48_1]], [[ADD48]]
@@ -410,56 +258,6 @@ define i32 @test(ptr %pix1, ptr %pix2, i64 %idx.ext, i64 %idx.ext63, ptr %add.pt
 ; CHECK-NEXT:    [[SUB104:%.*]] = sub i32 [[ADD78]], [[ADD94]]
 ; CHECK-NEXT:    [[ADD105:%.*]] = add i32 [[SUB102]], [[SUB86]]
 ; CHECK-NEXT:    [[SUB106:%.*]] = sub i32 [[SUB86]], [[SUB102]]
-<<<<<<< HEAD
-; CHECK-NEXT:    [[ADD_I:%.*]] = add i32 [[MUL_I_1]], [[ADD103]]
-; CHECK-NEXT:    [[XOR_I:%.*]] = xor i32 [[ADD_I]], [[CONV_3]]
-; CHECK-NEXT:    [[ADD_I52:%.*]] = add i32 [[MUL_I51_1]], [[ADD105]]
-; CHECK-NEXT:    [[XOR_I53:%.*]] = xor i32 [[ADD_I52]], [[SUB47_2]]
-; CHECK-NEXT:    [[ADD_I57:%.*]] = add i32 [[MUL_I56_1]], [[SUB104]]
-; CHECK-NEXT:    [[XOR_I58:%.*]] = xor i32 [[ADD_I57]], [[TMP146]]
-; CHECK-NEXT:    [[ADD_I62:%.*]] = add i32 [[MUL_I61]], [[SUB106]]
-; CHECK-NEXT:    [[XOR_I63:%.*]] = xor i32 [[ADD_I62]], [[SUB47]]
-; CHECK-NEXT:    [[ADD110:%.*]] = add i32 [[XOR_I53]], [[XOR_I]]
-; CHECK-NEXT:    [[ADD112:%.*]] = add i32 [[ADD110]], [[XOR_I58]]
-; CHECK-NEXT:    [[ADD113:%.*]] = add i32 [[ADD112]], [[XOR_I63]]
-; CHECK-NEXT:    [[TMP159:%.*]] = load <2 x i8>, ptr [[ADD_PTR_1]], align 1
-; CHECK-NEXT:    [[TMP129:%.*]] = zext <2 x i8> [[TMP159]] to <2 x i32>
-; CHECK-NEXT:    [[TMP161:%.*]] = insertelement <2 x i32> poison, i32 [[ADD55_2]], i32 0
-; CHECK-NEXT:    [[TMP162:%.*]] = shufflevector <2 x i32> [[TMP161]], <2 x i32> poison, <2 x i32> zeroinitializer
-; CHECK-NEXT:    [[TMP163:%.*]] = insertelement <2 x i32> poison, i32 [[ADD55_3]], i32 0
-; CHECK-NEXT:    [[TMP167:%.*]] = shufflevector <2 x i32> [[TMP163]], <2 x i32> poison, <2 x i32> zeroinitializer
-; CHECK-NEXT:    [[TMP169:%.*]] = sub <2 x i32> [[TMP162]], [[TMP167]]
-; CHECK-NEXT:    [[TMP170:%.*]] = add <2 x i32> [[TMP162]], [[TMP167]]
-; CHECK-NEXT:    [[TMP164:%.*]] = shufflevector <2 x i32> [[TMP169]], <2 x i32> [[TMP170]], <2 x i32> <i32 0, i32 3>
-; CHECK-NEXT:    [[TMP130:%.*]] = lshr <2 x i32> [[TMP129]], <i32 15, i32 15>
-; CHECK-NEXT:    [[TMP131:%.*]] = and <2 x i32> [[TMP130]], <i32 65537, i32 65537>
-; CHECK-NEXT:    [[TMP132:%.*]] = mul <2 x i32> [[TMP131]], <i32 65535, i32 65535>
-; CHECK-NEXT:    [[TMP133:%.*]] = insertelement <2 x i32> poison, i32 [[ADD78_1]], i32 0
-; CHECK-NEXT:    [[TMP144:%.*]] = shufflevector <2 x i32> [[TMP133]], <2 x i32> poison, <2 x i32> zeroinitializer
-; CHECK-NEXT:    [[TMP151:%.*]] = insertelement <2 x i32> poison, i32 [[ADD94_1]], i32 0
-; CHECK-NEXT:    [[TMP152:%.*]] = shufflevector <2 x i32> [[TMP151]], <2 x i32> poison, <2 x i32> zeroinitializer
-; CHECK-NEXT:    [[TMP153:%.*]] = sub <2 x i32> [[TMP144]], [[TMP152]]
-; CHECK-NEXT:    [[TMP138:%.*]] = add <2 x i32> [[TMP144]], [[TMP152]]
-; CHECK-NEXT:    [[TMP139:%.*]] = shufflevector <2 x i32> [[TMP153]], <2 x i32> [[TMP138]], <2 x i32> <i32 0, i32 3>
-; CHECK-NEXT:    [[TMP165:%.*]] = extractelement <2 x i32> [[TMP164]], i32 1
-; CHECK-NEXT:    [[TMP166:%.*]] = extractelement <2 x i32> [[TMP139]], i32 1
-; CHECK-NEXT:    [[SUB104_1:%.*]] = sub i32 [[TMP166]], [[TMP165]]
-; CHECK-NEXT:    [[TMP171:%.*]] = add <2 x i32> [[TMP164]], [[TMP139]]
-; CHECK-NEXT:    [[TMP168:%.*]] = extractelement <2 x i32> [[TMP164]], i32 0
-; CHECK-NEXT:    [[TMP155:%.*]] = extractelement <2 x i32> [[TMP139]], i32 0
-; CHECK-NEXT:    [[TMP172:%.*]] = shufflevector <2 x i32> [[TMP139]], <2 x i32> [[TMP164]], <2 x i32> <i32 0, i32 2>
-; CHECK-NEXT:    [[SUB106_1:%.*]] = sub i32 [[TMP155]], [[TMP168]]
-; CHECK-NEXT:    [[TMP140:%.*]] = add <2 x i32> [[TMP132]], [[TMP171]]
-; CHECK-NEXT:    [[TMP141:%.*]] = xor <2 x i32> [[TMP140]], [[TMP129]]
-; CHECK-NEXT:    [[ADD_I57_1:%.*]] = add i32 [[MUL_I56_2]], [[SUB104_1]]
-; CHECK-NEXT:    [[XOR_I58_1:%.*]] = xor i32 [[ADD_I57_1]], [[TMP142]]
-; CHECK-NEXT:    [[ADD_I62_1:%.*]] = add i32 [[MUL_I61_1]], [[SUB106_1]]
-; CHECK-NEXT:    [[XOR_I63_1:%.*]] = xor i32 [[ADD_I62_1]], [[TMP99]]
-; CHECK-NEXT:    [[TMP154:%.*]] = extractelement <2 x i32> [[TMP141]], i32 0
-; CHECK-NEXT:    [[ADD108_1:%.*]] = add i32 [[TMP154]], [[ADD113]]
-; CHECK-NEXT:    [[TMP160:%.*]] = extractelement <2 x i32> [[TMP141]], i32 1
-; CHECK-NEXT:    [[ADD110_1:%.*]] = add i32 [[ADD108_1]], [[TMP160]]
-=======
 ; CHECK-NEXT:    [[ADD_I:%.*]] = add i32 [[MUL_I51_3]], [[ADD103]]
 ; CHECK-NEXT:    [[XOR_I:%.*]] = xor i32 [[ADD_I]], [[TMP77]]
 ; CHECK-NEXT:    [[ADD_I52:%.*]] = add i32 [[MUL_I_1]], [[ADD105]]
@@ -487,7 +285,6 @@ define i32 @test(ptr %pix1, ptr %pix2, i64 %idx.ext, i64 %idx.ext63, ptr %add.pt
 ; CHECK-NEXT:    [[XOR_I63_1:%.*]] = xor i32 [[ADD_I62_1]], [[TMP99]]
 ; CHECK-NEXT:    [[ADD108_1:%.*]] = add i32 [[XOR_I53_1]], [[ADD113]]
 ; CHECK-NEXT:    [[ADD110_1:%.*]] = add i32 [[ADD108_1]], [[XOR_I_1]]
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ; CHECK-NEXT:    [[ADD112_1:%.*]] = add i32 [[ADD110_1]], [[XOR_I58_1]]
 ; CHECK-NEXT:    [[ADD113_1:%.*]] = add i32 [[ADD112_1]], [[XOR_I63_1]]
 ; CHECK-NEXT:    [[TMP169:%.*]] = extractelement <2 x i32> [[TMP141]], i32 0
@@ -647,21 +444,6 @@ define i32 @test(ptr %pix1, ptr %pix2, i64 %idx.ext, i64 %idx.ext63, ptr %add.pt
 ; THR15-NEXT:    [[ARRAYIDX3_3:%.*]] = getelementptr i8, ptr null, i64 4
 ; THR15-NEXT:    [[ARRAYIDX5_3:%.*]] = getelementptr i8, ptr null, i64 4
 ; THR15-NEXT:    [[TMP32:%.*]] = load <2 x i8>, ptr null, align 1
-<<<<<<< HEAD
-; THR15-NEXT:    [[TMP33:%.*]] = load i8, ptr null, align 1
-; THR15-NEXT:    [[TMP35:%.*]] = zext <2 x i8> [[TMP32]] to <2 x i32>
-; THR15-NEXT:    [[TMP63:%.*]] = zext i8 [[TMP33]] to i32
-; THR15-NEXT:    [[TMP34:%.*]] = load <2 x i8>, ptr null, align 1
-; THR15-NEXT:    [[TMP36:%.*]] = zext <2 x i8> [[TMP34]] to <2 x i32>
-; THR15-NEXT:    [[TMP38:%.*]] = sub <2 x i32> [[TMP35]], [[TMP36]]
-; THR15-NEXT:    [[TMP37:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX3_3]], i64 -4, <2 x i1> <i1 true, i1 true>, i32 2)
-; THR15-NEXT:    [[TMP39:%.*]] = zext <2 x i8> [[TMP37]] to <2 x i32>
-; THR15-NEXT:    [[TMP40:%.*]] = load <2 x i8>, ptr [[ARRAYIDX5_3]], align 1
-; THR15-NEXT:    [[TMP46:%.*]] = zext <2 x i8> [[TMP40]] to <2 x i32>
-; THR15-NEXT:    [[TMP41:%.*]] = sub <2 x i32> [[TMP39]], [[TMP46]]
-; THR15-NEXT:    [[TMP42:%.*]] = shl <2 x i32> [[TMP41]], <i32 16, i32 16>
-; THR15-NEXT:    [[TMP43:%.*]] = add <2 x i32> [[TMP42]], [[TMP38]]
-=======
 ; THR15-NEXT:    [[TMP48:%.*]] = load i8, ptr null, align 1
 ; THR15-NEXT:    [[TMP49:%.*]] = zext <2 x i8> [[TMP32]] to <2 x i32>
 ; THR15-NEXT:    [[TMP63:%.*]] = zext i8 [[TMP48]] to i32
@@ -675,35 +457,11 @@ define i32 @test(ptr %pix1, ptr %pix2, i64 %idx.ext, i64 %idx.ext63, ptr %add.pt
 ; THR15-NEXT:    [[TMP41:%.*]] = sub <2 x i32> [[TMP54]], [[TMP80]]
 ; THR15-NEXT:    [[TMP42:%.*]] = shl <2 x i32> [[TMP41]], <i32 16, i32 16>
 ; THR15-NEXT:    [[TMP43:%.*]] = add <2 x i32> [[TMP42]], [[TMP93]]
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ; THR15-NEXT:    [[ARRAYIDX20_3:%.*]] = getelementptr i8, ptr null, i64 2
 ; THR15-NEXT:    [[ARRAYIDX22_3:%.*]] = getelementptr i8, ptr null, i64 2
 ; THR15-NEXT:    [[TMP44:%.*]] = load i8, ptr null, align 1
 ; THR15-NEXT:    [[ARRAYIDX27_3:%.*]] = getelementptr i8, ptr null, i64 6
 ; THR15-NEXT:    [[TMP45:%.*]] = load i8, ptr null, align 1
-<<<<<<< HEAD
-; THR15-NEXT:    [[TMP47:%.*]] = load <2 x i8>, ptr [[ARRAYIDX20_3]], align 1
-; THR15-NEXT:    [[TMP48:%.*]] = zext <2 x i8> [[TMP47]] to <2 x i32>
-; THR15-NEXT:    [[TMP49:%.*]] = load <2 x i8>, ptr [[ARRAYIDX22_3]], align 1
-; THR15-NEXT:    [[TMP50:%.*]] = zext <2 x i8> [[TMP49]] to <2 x i32>
-; THR15-NEXT:    [[TMP53:%.*]] = sub <2 x i32> [[TMP48]], [[TMP50]]
-; THR15-NEXT:    [[TMP51:%.*]] = insertelement <2 x i8> poison, i8 [[TMP44]], i32 0
-; THR15-NEXT:    [[TMP52:%.*]] = insertelement <2 x i8> [[TMP51]], i8 [[TMP45]], i32 1
-; THR15-NEXT:    [[TMP54:%.*]] = zext <2 x i8> [[TMP52]] to <2 x i32>
-; THR15-NEXT:    [[TMP55:%.*]] = load <2 x i8>, ptr [[ARRAYIDX27_3]], align 1
-; THR15-NEXT:    [[TMP81:%.*]] = zext <2 x i8> [[TMP55]] to <2 x i32>
-; THR15-NEXT:    [[TMP56:%.*]] = sub <2 x i32> [[TMP54]], [[TMP81]]
-; THR15-NEXT:    [[TMP57:%.*]] = shl <2 x i32> [[TMP56]], <i32 16, i32 16>
-; THR15-NEXT:    [[TMP58:%.*]] = add <2 x i32> [[TMP57]], [[TMP53]]
-; THR15-NEXT:    [[TMP59:%.*]] = extractelement <2 x i32> [[TMP43]], i32 0
-; THR15-NEXT:    [[TMP60:%.*]] = extractelement <2 x i32> [[TMP43]], i32 1
-; THR15-NEXT:    [[ADD44_3:%.*]] = add i32 [[TMP60]], [[TMP59]]
-; THR15-NEXT:    [[SUB45_3:%.*]] = sub i32 [[TMP59]], [[TMP60]]
-; THR15-NEXT:    [[TMP61:%.*]] = extractelement <2 x i32> [[TMP58]], i32 0
-; THR15-NEXT:    [[TMP62:%.*]] = extractelement <2 x i32> [[TMP58]], i32 1
-; THR15-NEXT:    [[ADD46_3:%.*]] = add i32 [[TMP62]], [[TMP61]]
-; THR15-NEXT:    [[SUB47_3:%.*]] = sub i32 [[TMP61]], [[TMP62]]
-=======
 ; THR15-NEXT:    [[TMP62:%.*]] = load <2 x i8>, ptr [[ARRAYIDX20_3]], align 1
 ; THR15-NEXT:    [[TMP83:%.*]] = zext <2 x i8> [[TMP62]] to <2 x i32>
 ; THR15-NEXT:    [[TMP87:%.*]] = load <2 x i8>, ptr [[ARRAYIDX22_3]], align 1
@@ -725,7 +483,6 @@ define i32 @test(ptr %pix1, ptr %pix2, i64 %idx.ext, i64 %idx.ext63, ptr %add.pt
 ; THR15-NEXT:    [[TMP78:%.*]] = extractelement <2 x i32> [[TMP58]], i32 1
 ; THR15-NEXT:    [[ADD46_3:%.*]] = add i32 [[TMP78]], [[TMP107]]
 ; THR15-NEXT:    [[SUB47_3:%.*]] = sub i32 [[TMP107]], [[TMP78]]
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ; THR15-NEXT:    [[ADD48_3:%.*]] = add i32 [[ADD46_3]], [[ADD44_3]]
 ; THR15-NEXT:    [[SUB51_3:%.*]] = sub i32 [[ADD44_3]], [[ADD46_3]]
 ; THR15-NEXT:    [[ADD55_3:%.*]] = add i32 [[SUB47_3]], [[SUB45_3]]
@@ -765,13 +522,8 @@ define i32 @test(ptr %pix1, ptr %pix2, i64 %idx.ext, i64 %idx.ext63, ptr %add.pt
 ; THR15-NEXT:    [[TMP69:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX3]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
 ; THR15-NEXT:    [[TMP109:%.*]] = zext <2 x i8> [[TMP69]] to <2 x i32>
 ; THR15-NEXT:    [[TMP71:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX5]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
-<<<<<<< HEAD
-; THR15-NEXT:    [[TMP83:%.*]] = zext <2 x i8> [[TMP71]] to <2 x i32>
-; THR15-NEXT:    [[TMP72:%.*]] = sub <2 x i32> [[TMP70]], [[TMP83]]
-=======
 ; THR15-NEXT:    [[TMP111:%.*]] = zext <2 x i8> [[TMP71]] to <2 x i32>
 ; THR15-NEXT:    [[TMP72:%.*]] = sub <2 x i32> [[TMP109]], [[TMP111]]
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ; THR15-NEXT:    [[TMP73:%.*]] = shl <2 x i32> [[TMP72]], <i32 16, i32 16>
 ; THR15-NEXT:    [[TMP75:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 [[ARRAYIDX22]], i64 2, <2 x i1> <i1 true, i1 true>, i32 2)
 ; THR15-NEXT:    [[TMP125:%.*]] = zext <2 x i8> [[TMP75]] to <2 x i32>

@@ -15,7 +15,7 @@ define void @extractelement_int(i32 %x) {
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %nxv16i1_0 = extractelement <vscale x 16 x i1> undef, i32 0
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 24 for instruction: %nxv32i1_0 = extractelement <vscale x 32 x i1> undef, i32 0
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 40 for instruction: %nxv64i1_0 = extractelement <vscale x 64 x i1> undef, i32 0
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 72 for instruction: %nxv128i1_0 = extractelement <vscale x 128 x i1> undef, i32 0
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 57 for instruction: %nxv128i1_0 = extractelement <vscale x 128 x i1> undef, i32 0
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %v2i8_0 = extractelement <2 x i8> undef, i32 0
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %v4i8_0 = extractelement <4 x i8> undef, i32 0
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %v8i8_0 = extractelement <8 x i8> undef, i32 0
@@ -71,7 +71,7 @@ define void @extractelement_int(i32 %x) {
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 17 for instruction: %nxv16i1_1 = extractelement <vscale x 16 x i1> undef, i32 1
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 25 for instruction: %nxv32i1_1 = extractelement <vscale x 32 x i1> undef, i32 1
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 41 for instruction: %nxv64i1_1 = extractelement <vscale x 64 x i1> undef, i32 1
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 104 for instruction: %nxv128i1_1 = extractelement <vscale x 128 x i1> undef, i32 1
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 89 for instruction: %nxv128i1_1 = extractelement <vscale x 128 x i1> undef, i32 1
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 9 for instruction: %v2i8_1 = extractelement <2 x i8> undef, i32 1
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 9 for instruction: %v4i8_1 = extractelement <4 x i8> undef, i32 1
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 9 for instruction: %v8i8_1 = extractelement <8 x i8> undef, i32 1
@@ -127,7 +127,7 @@ define void @extractelement_int(i32 %x) {
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 21 for instruction: %nxv16i1_x = extractelement <vscale x 16 x i1> undef, i32 %x
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 33 for instruction: %nxv32i1_x = extractelement <vscale x 32 x i1> undef, i32 %x
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 57 for instruction: %nxv64i1_x = extractelement <vscale x 64 x i1> undef, i32 %x
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 104 for instruction: %nxv128i1_x = extractelement <vscale x 128 x i1> undef, i32 %x
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 89 for instruction: %nxv128i1_x = extractelement <vscale x 128 x i1> undef, i32 %x
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 10 for instruction: %v2i8_x = extractelement <2 x i8> undef, i32 %x
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 10 for instruction: %v4i8_x = extractelement <4 x i8> undef, i32 %x
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 10 for instruction: %v8i8_x = extractelement <8 x i8> undef, i32 %x

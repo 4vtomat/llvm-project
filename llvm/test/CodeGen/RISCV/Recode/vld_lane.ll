@@ -569,39 +569,39 @@ define void @vld3_lane_f32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    addi sp, sp, -32
 ; CHECK-NEXT:    .cfi_def_cfa_offset 32
+; CHECK-NEXT:    lbu a3, 0(a0)
+; CHECK-NEXT:    lbu a4, 1(a0)
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vlseg3e32.v v8, (a1)
-; CHECK-NEXT:    lbu a1, 1(a0)
-; CHECK-NEXT:    lbu a3, 0(a0)
-; CHECK-NEXT:    lbu a4, 2(a0)
+; CHECK-NEXT:    lbu a1, 2(a0)
 ; CHECK-NEXT:    lbu a5, 3(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    slli a4, a4, 8
+; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
+; CHECK-NEXT:    or a1, a5, a1
+; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    sw a1, 8(sp)
-; CHECK-NEXT:    lbu a1, 5(a0)
+; CHECK-NEXT:    lbu a1, 4(a0)
+; CHECK-NEXT:    lbu a3, 5(a0)
 ; CHECK-NEXT:    flw fa5, 8(sp)
-; CHECK-NEXT:    lbu a3, 4(a0)
-; CHECK-NEXT:    slli a1, a1, 8
 ; CHECK-NEXT:    lbu a4, 6(a0)
 ; CHECK-NEXT:    lbu a5, 7(a0)
-; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    slli a3, a3, 8
+; CHECK-NEXT:    or a1, a3, a1
 ; CHECK-NEXT:    vfmv.s.f v11, fa5
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
 ; CHECK-NEXT:    or a4, a5, a4
 ; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    sw a1, 16(sp)
+; CHECK-NEXT:    lbu a1, 8(a0)
+; CHECK-NEXT:    lbu a3, 9(a0)
 ; CHECK-NEXT:    flw fa5, 16(sp)
-; CHECK-NEXT:    lbu a1, 9(a0)
-; CHECK-NEXT:    lbu a3, 8(a0)
 ; CHECK-NEXT:    lbu a4, 10(a0)
 ; CHECK-NEXT:    lbu a0, 11(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    slli a3, a3, 8
+; CHECK-NEXT:    or a1, a3, a1
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a0, a0, 24
 ; CHECK-NEXT:    or a0, a0, a4
@@ -689,38 +689,38 @@ entry:
 define void @vld3_lane_s32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3_lane_s32:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    lbu a3, 0(a0)
+; CHECK-NEXT:    lbu a4, 1(a0)
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vlseg3e32.v v8, (a1)
-; CHECK-NEXT:    lbu a1, 1(a0)
-; CHECK-NEXT:    lbu a3, 0(a0)
-; CHECK-NEXT:    lbu a4, 2(a0)
+; CHECK-NEXT:    lbu a1, 2(a0)
 ; CHECK-NEXT:    lb a5, 3(a0)
-; CHECK-NEXT:    slli a1, a1, 8
+; CHECK-NEXT:    slli a4, a4, 8
+; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
+; CHECK-NEXT:    slli a5, a5, 24
+; CHECK-NEXT:    or a1, a5, a1
 ; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
-; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    lbu a3, 5(a0)
-; CHECK-NEXT:    or a1, a4, a1
+; CHECK-NEXT:    lbu a3, 4(a0)
+; CHECK-NEXT:    lbu a4, 5(a0)
 ; CHECK-NEXT:    vmv.s.x v11, a1
-; CHECK-NEXT:    lbu a1, 4(a0)
-; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    lbu a4, 6(a0)
+; CHECK-NEXT:    lbu a1, 6(a0)
 ; CHECK-NEXT:    lb a5, 7(a0)
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    slli a4, a4, 8
+; CHECK-NEXT:    or a3, a4, a3
 ; CHECK-NEXT:    vslideup.vi v8, v11, 1
-; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    slli a1, a1, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
+; CHECK-NEXT:    or a1, a5, a1
+; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    vmv.s.x v11, a1
+; CHECK-NEXT:    lbu a1, 8(a0)
+; CHECK-NEXT:    lbu a3, 9(a0)
 ; CHECK-NEXT:    vslideup.vi v9, v11, 1
-; CHECK-NEXT:    lbu a1, 9(a0)
-; CHECK-NEXT:    lbu a3, 8(a0)
 ; CHECK-NEXT:    lbu a4, 10(a0)
 ; CHECK-NEXT:    lb a0, 11(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    slli a3, a3, 8
+; CHECK-NEXT:    or a1, a3, a1
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a0, a0, 24
 ; CHECK-NEXT:    or a0, a0, a4
@@ -832,38 +832,38 @@ entry:
 define void @vld3_lane_u32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3_lane_u32:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    lbu a3, 0(a0)
+; CHECK-NEXT:    lbu a4, 1(a0)
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vlseg3e32.v v8, (a1)
-; CHECK-NEXT:    lbu a1, 1(a0)
-; CHECK-NEXT:    lbu a3, 0(a0)
-; CHECK-NEXT:    lbu a4, 2(a0)
+; CHECK-NEXT:    lbu a1, 2(a0)
 ; CHECK-NEXT:    lb a5, 3(a0)
-; CHECK-NEXT:    slli a1, a1, 8
+; CHECK-NEXT:    slli a4, a4, 8
+; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
+; CHECK-NEXT:    slli a5, a5, 24
+; CHECK-NEXT:    or a1, a5, a1
 ; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
-; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    lbu a3, 5(a0)
-; CHECK-NEXT:    or a1, a4, a1
+; CHECK-NEXT:    lbu a3, 4(a0)
+; CHECK-NEXT:    lbu a4, 5(a0)
 ; CHECK-NEXT:    vmv.s.x v11, a1
-; CHECK-NEXT:    lbu a1, 4(a0)
-; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    lbu a4, 6(a0)
+; CHECK-NEXT:    lbu a1, 6(a0)
 ; CHECK-NEXT:    lb a5, 7(a0)
-; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    slli a4, a4, 8
+; CHECK-NEXT:    or a3, a4, a3
 ; CHECK-NEXT:    vslideup.vi v8, v11, 1
-; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    slli a1, a1, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
+; CHECK-NEXT:    or a1, a5, a1
+; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    vmv.s.x v11, a1
+; CHECK-NEXT:    lbu a1, 8(a0)
+; CHECK-NEXT:    lbu a3, 9(a0)
 ; CHECK-NEXT:    vslideup.vi v9, v11, 1
-; CHECK-NEXT:    lbu a1, 9(a0)
-; CHECK-NEXT:    lbu a3, 8(a0)
 ; CHECK-NEXT:    lbu a4, 10(a0)
 ; CHECK-NEXT:    lb a0, 11(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    slli a3, a3, 8
+; CHECK-NEXT:    or a1, a3, a1
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a0, a0, 24
 ; CHECK-NEXT:    or a0, a0, a4
@@ -1004,75 +1004,75 @@ entry:
 define void @vld3q_lane_f64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3q_lane_f64:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    lbu a3, 0(a0)
+; CHECK-NEXT:    lbu a4, 1(a0)
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlseg3e64.v v8, (a1)
-; CHECK-NEXT:    lbu a1, 1(a0)
-; CHECK-NEXT:    lbu a3, 0(a0)
-; CHECK-NEXT:    lbu a4, 2(a0)
+; CHECK-NEXT:    lbu a1, 2(a0)
 ; CHECK-NEXT:    lbu a5, 3(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    slli a4, a4, 8
+; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    lbu a3, 5(a0)
+; CHECK-NEXT:    or a1, a5, a1
 ; CHECK-NEXT:    lbu a4, 4(a0)
-; CHECK-NEXT:    lbu a5, 6(a0)
-; CHECK-NEXT:    lbu a6, 7(a0)
-; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a5, a5, 16
-; CHECK-NEXT:    slli a6, a6, 24
-; CHECK-NEXT:    or a4, a6, a5
-; CHECK-NEXT:    or a3, a4, a3
-; CHECK-NEXT:    slli a3, a3, 32
-; CHECK-NEXT:    or a1, a3, a1
-; CHECK-NEXT:    vmv.s.x v11, a1
-; CHECK-NEXT:    lbu a1, 9(a0)
-; CHECK-NEXT:    lbu a3, 8(a0)
-; CHECK-NEXT:    lbu a4, 10(a0)
-; CHECK-NEXT:    lbu a5, 11(a0)
-; CHECK-NEXT:    slli a1, a1, 8
+; CHECK-NEXT:    lbu a5, 5(a0)
 ; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
-; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    lbu a3, 13(a0)
+; CHECK-NEXT:    lbu a3, 6(a0)
+; CHECK-NEXT:    lbu a6, 7(a0)
+; CHECK-NEXT:    slli a5, a5, 8
 ; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    lbu a4, 12(a0)
-; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    lbu a5, 14(a0)
-; CHECK-NEXT:    lbu a6, 15(a0)
-; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    vslideup.vi v8, v11, 1
-; CHECK-NEXT:    slli a5, a5, 16
+; CHECK-NEXT:    slli a3, a3, 16
 ; CHECK-NEXT:    slli a6, a6, 24
-; CHECK-NEXT:    or a4, a6, a5
+; CHECK-NEXT:    or a3, a6, a3
+; CHECK-NEXT:    or a3, a3, a4
+; CHECK-NEXT:    slli a3, a3, 32
+; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    lbu a3, 8(a0)
+; CHECK-NEXT:    lbu a4, 9(a0)
+; CHECK-NEXT:    vmv.s.x v11, a1
+; CHECK-NEXT:    lbu a1, 10(a0)
+; CHECK-NEXT:    lbu a5, 11(a0)
+; CHECK-NEXT:    slli a4, a4, 8
 ; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
+; CHECK-NEXT:    slli a5, a5, 24
+; CHECK-NEXT:    or a1, a5, a1
+; CHECK-NEXT:    lbu a4, 12(a0)
+; CHECK-NEXT:    lbu a5, 13(a0)
+; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    lbu a3, 14(a0)
+; CHECK-NEXT:    lbu a6, 15(a0)
+; CHECK-NEXT:    slli a5, a5, 8
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    vslideup.vi v8, v11, 1
+; CHECK-NEXT:    slli a3, a3, 16
+; CHECK-NEXT:    slli a6, a6, 24
+; CHECK-NEXT:    or a3, a6, a3
+; CHECK-NEXT:    or a3, a3, a4
 ; CHECK-NEXT:    slli a3, a3, 32
 ; CHECK-NEXT:    or a1, a3, a1
 ; CHECK-NEXT:    vmv.s.x v11, a1
+; CHECK-NEXT:    lbu a1, 16(a0)
+; CHECK-NEXT:    lbu a3, 17(a0)
 ; CHECK-NEXT:    vslideup.vi v9, v11, 1
-; CHECK-NEXT:    lbu a1, 17(a0)
-; CHECK-NEXT:    lbu a3, 16(a0)
 ; CHECK-NEXT:    lbu a4, 18(a0)
 ; CHECK-NEXT:    lbu a5, 19(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    slli a3, a3, 8
+; CHECK-NEXT:    or a1, a3, a1
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
 ; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    lbu a3, 20(a0)
+; CHECK-NEXT:    lbu a5, 21(a0)
 ; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    lbu a3, 21(a0)
-; CHECK-NEXT:    lbu a4, 20(a0)
-; CHECK-NEXT:    lbu a5, 22(a0)
+; CHECK-NEXT:    lbu a4, 22(a0)
 ; CHECK-NEXT:    lbu a0, 23(a0)
-; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a5, a5, 16
+; CHECK-NEXT:    slli a5, a5, 8
+; CHECK-NEXT:    or a3, a5, a3
+; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a0, a0, 24
-; CHECK-NEXT:    or a0, a0, a5
+; CHECK-NEXT:    or a0, a0, a4
 ; CHECK-NEXT:    or a0, a0, a3
 ; CHECK-NEXT:    slli a0, a0, 32
 ; CHECK-NEXT:    or a0, a0, a1
@@ -1154,75 +1154,75 @@ entry:
 define void @vld3q_lane_s64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3q_lane_s64:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    lbu a3, 0(a0)
+; CHECK-NEXT:    lbu a4, 1(a0)
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlseg3e64.v v8, (a1)
-; CHECK-NEXT:    lbu a1, 1(a0)
-; CHECK-NEXT:    lbu a3, 0(a0)
-; CHECK-NEXT:    lbu a4, 2(a0)
+; CHECK-NEXT:    lbu a1, 2(a0)
 ; CHECK-NEXT:    lbu a5, 3(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    slli a4, a4, 8
+; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    lbu a3, 5(a0)
+; CHECK-NEXT:    or a1, a5, a1
 ; CHECK-NEXT:    lbu a4, 4(a0)
-; CHECK-NEXT:    lbu a5, 6(a0)
-; CHECK-NEXT:    lbu a6, 7(a0)
-; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a5, a5, 16
-; CHECK-NEXT:    slli a6, a6, 24
-; CHECK-NEXT:    or a4, a6, a5
-; CHECK-NEXT:    or a3, a4, a3
-; CHECK-NEXT:    slli a3, a3, 32
-; CHECK-NEXT:    or a1, a3, a1
-; CHECK-NEXT:    vmv.s.x v11, a1
-; CHECK-NEXT:    lbu a1, 9(a0)
-; CHECK-NEXT:    lbu a3, 8(a0)
-; CHECK-NEXT:    lbu a4, 10(a0)
-; CHECK-NEXT:    lbu a5, 11(a0)
-; CHECK-NEXT:    slli a1, a1, 8
+; CHECK-NEXT:    lbu a5, 5(a0)
 ; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
-; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    lbu a3, 13(a0)
+; CHECK-NEXT:    lbu a3, 6(a0)
+; CHECK-NEXT:    lbu a6, 7(a0)
+; CHECK-NEXT:    slli a5, a5, 8
 ; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    lbu a4, 12(a0)
-; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    lbu a5, 14(a0)
-; CHECK-NEXT:    lbu a6, 15(a0)
-; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    vslideup.vi v8, v11, 1
-; CHECK-NEXT:    slli a5, a5, 16
+; CHECK-NEXT:    slli a3, a3, 16
 ; CHECK-NEXT:    slli a6, a6, 24
-; CHECK-NEXT:    or a4, a6, a5
+; CHECK-NEXT:    or a3, a6, a3
+; CHECK-NEXT:    or a3, a3, a4
+; CHECK-NEXT:    slli a3, a3, 32
+; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    lbu a3, 8(a0)
+; CHECK-NEXT:    lbu a4, 9(a0)
+; CHECK-NEXT:    vmv.s.x v11, a1
+; CHECK-NEXT:    lbu a1, 10(a0)
+; CHECK-NEXT:    lbu a5, 11(a0)
+; CHECK-NEXT:    slli a4, a4, 8
 ; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
+; CHECK-NEXT:    slli a5, a5, 24
+; CHECK-NEXT:    or a1, a5, a1
+; CHECK-NEXT:    lbu a4, 12(a0)
+; CHECK-NEXT:    lbu a5, 13(a0)
+; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    lbu a3, 14(a0)
+; CHECK-NEXT:    lbu a6, 15(a0)
+; CHECK-NEXT:    slli a5, a5, 8
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    vslideup.vi v8, v11, 1
+; CHECK-NEXT:    slli a3, a3, 16
+; CHECK-NEXT:    slli a6, a6, 24
+; CHECK-NEXT:    or a3, a6, a3
+; CHECK-NEXT:    or a3, a3, a4
 ; CHECK-NEXT:    slli a3, a3, 32
 ; CHECK-NEXT:    or a1, a3, a1
 ; CHECK-NEXT:    vmv.s.x v11, a1
+; CHECK-NEXT:    lbu a1, 16(a0)
+; CHECK-NEXT:    lbu a3, 17(a0)
 ; CHECK-NEXT:    vslideup.vi v9, v11, 1
-; CHECK-NEXT:    lbu a1, 17(a0)
-; CHECK-NEXT:    lbu a3, 16(a0)
 ; CHECK-NEXT:    lbu a4, 18(a0)
 ; CHECK-NEXT:    lbu a5, 19(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    slli a3, a3, 8
+; CHECK-NEXT:    or a1, a3, a1
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
 ; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    lbu a3, 20(a0)
+; CHECK-NEXT:    lbu a5, 21(a0)
 ; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    lbu a3, 21(a0)
-; CHECK-NEXT:    lbu a4, 20(a0)
-; CHECK-NEXT:    lbu a5, 22(a0)
+; CHECK-NEXT:    lbu a4, 22(a0)
 ; CHECK-NEXT:    lbu a0, 23(a0)
-; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a5, a5, 16
+; CHECK-NEXT:    slli a5, a5, 8
+; CHECK-NEXT:    or a3, a5, a3
+; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a0, a0, 24
-; CHECK-NEXT:    or a0, a0, a5
+; CHECK-NEXT:    or a0, a0, a4
 ; CHECK-NEXT:    or a0, a0, a3
 ; CHECK-NEXT:    slli a0, a0, 32
 ; CHECK-NEXT:    or a0, a0, a1
@@ -1331,75 +1331,75 @@ entry:
 define void @vld3q_lane_u64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld3q_lane_u64:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    lbu a3, 0(a0)
+; CHECK-NEXT:    lbu a4, 1(a0)
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlseg3e64.v v8, (a1)
-; CHECK-NEXT:    lbu a1, 1(a0)
-; CHECK-NEXT:    lbu a3, 0(a0)
-; CHECK-NEXT:    lbu a4, 2(a0)
+; CHECK-NEXT:    lbu a1, 2(a0)
 ; CHECK-NEXT:    lbu a5, 3(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
-; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    lbu a3, 5(a0)
-; CHECK-NEXT:    lbu a4, 4(a0)
-; CHECK-NEXT:    lbu a5, 6(a0)
-; CHECK-NEXT:    lbu a6, 7(a0)
-; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a5, a5, 16
-; CHECK-NEXT:    slli a6, a6, 24
-; CHECK-NEXT:    or a4, a6, a5
+; CHECK-NEXT:    slli a4, a4, 8
 ; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
+; CHECK-NEXT:    slli a5, a5, 24
+; CHECK-NEXT:    or a1, a5, a1
+; CHECK-NEXT:    lbu a4, 4(a0)
+; CHECK-NEXT:    lbu a5, 5(a0)
+; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    lbu a3, 6(a0)
+; CHECK-NEXT:    lbu a6, 7(a0)
+; CHECK-NEXT:    slli a5, a5, 8
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    slli a3, a3, 16
+; CHECK-NEXT:    slli a6, a6, 24
+; CHECK-NEXT:    or a3, a6, a3
+; CHECK-NEXT:    or a3, a3, a4
 ; CHECK-NEXT:    slli a3, a3, 32
 ; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    lbu a3, 8(a0)
+; CHECK-NEXT:    lbu a4, 9(a0)
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m1, tu, ma
 ; CHECK-NEXT:    vmv.s.x v8, a1
-; CHECK-NEXT:    lbu a1, 9(a0)
-; CHECK-NEXT:    lbu a3, 8(a0)
-; CHECK-NEXT:    lbu a4, 10(a0)
+; CHECK-NEXT:    lbu a1, 10(a0)
 ; CHECK-NEXT:    lbu a5, 11(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
-; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    lbu a3, 13(a0)
-; CHECK-NEXT:    lbu a4, 12(a0)
-; CHECK-NEXT:    lbu a5, 14(a0)
-; CHECK-NEXT:    lbu a6, 15(a0)
-; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a5, a5, 16
-; CHECK-NEXT:    slli a6, a6, 24
-; CHECK-NEXT:    or a4, a6, a5
+; CHECK-NEXT:    slli a4, a4, 8
 ; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
+; CHECK-NEXT:    slli a5, a5, 24
+; CHECK-NEXT:    or a1, a5, a1
+; CHECK-NEXT:    lbu a4, 12(a0)
+; CHECK-NEXT:    lbu a5, 13(a0)
+; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    lbu a3, 14(a0)
+; CHECK-NEXT:    lbu a6, 15(a0)
+; CHECK-NEXT:    slli a5, a5, 8
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    slli a3, a3, 16
+; CHECK-NEXT:    slli a6, a6, 24
+; CHECK-NEXT:    or a3, a6, a3
+; CHECK-NEXT:    or a3, a3, a4
 ; CHECK-NEXT:    slli a3, a3, 32
 ; CHECK-NEXT:    or a1, a3, a1
-; CHECK-NEXT:    vmv.s.x v9, a1
-; CHECK-NEXT:    lbu a1, 17(a0)
 ; CHECK-NEXT:    lbu a3, 16(a0)
-; CHECK-NEXT:    lbu a4, 18(a0)
+; CHECK-NEXT:    lbu a4, 17(a0)
+; CHECK-NEXT:    vmv.s.x v9, a1
+; CHECK-NEXT:    lbu a1, 18(a0)
 ; CHECK-NEXT:    lbu a5, 19(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    slli a4, a4, 8
+; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    lbu a3, 21(a0)
+; CHECK-NEXT:    or a1, a5, a1
 ; CHECK-NEXT:    lbu a4, 20(a0)
-; CHECK-NEXT:    lbu a5, 22(a0)
+; CHECK-NEXT:    lbu a5, 21(a0)
+; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    lbu a3, 22(a0)
 ; CHECK-NEXT:    lbu a0, 23(a0)
-; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a5, a5, 16
+; CHECK-NEXT:    slli a5, a5, 8
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    slli a3, a3, 16
 ; CHECK-NEXT:    slli a0, a0, 24
-; CHECK-NEXT:    or a0, a0, a5
 ; CHECK-NEXT:    or a0, a0, a3
+; CHECK-NEXT:    or a0, a0, a4
 ; CHECK-NEXT:    slli a0, a0, 32
 ; CHECK-NEXT:    or a0, a0, a1
 ; CHECK-NEXT:    vmv.s.x v10, a0
@@ -1487,26 +1487,26 @@ define void @vld4_lane_f32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    addi sp, sp, -32
 ; CHECK-NEXT:    .cfi_def_cfa_offset 32
+; CHECK-NEXT:    lbu a3, 0(a0)
+; CHECK-NEXT:    lbu a4, 1(a0)
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vlseg4e32.v v8, (a1)
-; CHECK-NEXT:    lbu a1, 1(a0)
-; CHECK-NEXT:    lbu a3, 0(a0)
-; CHECK-NEXT:    lbu a4, 2(a0)
+; CHECK-NEXT:    lbu a1, 2(a0)
 ; CHECK-NEXT:    lbu a5, 3(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    slli a4, a4, 8
+; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
+; CHECK-NEXT:    or a1, a5, a1
+; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    sw a1, 0(sp)
+; CHECK-NEXT:    lbu a1, 4(a0)
+; CHECK-NEXT:    lbu a3, 5(a0)
 ; CHECK-NEXT:    flw fa5, 0(sp)
-; CHECK-NEXT:    lbu a1, 5(a0)
-; CHECK-NEXT:    lbu a3, 4(a0)
 ; CHECK-NEXT:    lbu a4, 6(a0)
 ; CHECK-NEXT:    lbu a5, 7(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    slli a3, a3, 8
+; CHECK-NEXT:    or a1, a3, a1
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
 ; CHECK-NEXT:    or a4, a5, a4
@@ -1514,9 +1514,9 @@ define void @vld4_lane_f32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    sw a1, 8(sp)
 ; CHECK-NEXT:    lbu a1, 9(a0)
 ; CHECK-NEXT:    lbu a3, 8(a0)
-; CHECK-NEXT:    slli a1, a1, 8
 ; CHECK-NEXT:    lbu a4, 10(a0)
 ; CHECK-NEXT:    lbu a5, 11(a0)
+; CHECK-NEXT:    slli a1, a1, 8
 ; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    flw fa4, 8(sp)
 ; CHECK-NEXT:    slli a4, a4, 16
@@ -1524,13 +1524,13 @@ define void @vld4_lane_f32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    or a4, a5, a4
 ; CHECK-NEXT:    or a1, a4, a1
 ; CHECK-NEXT:    sw a1, 16(sp)
+; CHECK-NEXT:    lbu a1, 12(a0)
+; CHECK-NEXT:    lbu a3, 13(a0)
 ; CHECK-NEXT:    flw fa3, 16(sp)
-; CHECK-NEXT:    lbu a1, 13(a0)
-; CHECK-NEXT:    lbu a3, 12(a0)
 ; CHECK-NEXT:    lbu a4, 14(a0)
 ; CHECK-NEXT:    lbu a0, 15(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    slli a3, a3, 8
+; CHECK-NEXT:    or a1, a3, a1
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a0, a0, 24
 ; CHECK-NEXT:    or a0, a0, a4
@@ -1626,52 +1626,52 @@ entry:
 define void @vld4_lane_s32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4_lane_s32:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    lbu a3, 0(a0)
+; CHECK-NEXT:    lbu a4, 1(a0)
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vlseg4e32.v v8, (a1)
-; CHECK-NEXT:    lbu a1, 1(a0)
-; CHECK-NEXT:    lbu a3, 0(a0)
-; CHECK-NEXT:    lbu a4, 2(a0)
+; CHECK-NEXT:    lbu a1, 2(a0)
 ; CHECK-NEXT:    lb a5, 3(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    slli a4, a4, 8
+; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
+; CHECK-NEXT:    or a1, a5, a1
+; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    lbu a3, 4(a0)
+; CHECK-NEXT:    lbu a4, 5(a0)
 ; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, tu, ma
 ; CHECK-NEXT:    vmv.s.x v8, a1
-; CHECK-NEXT:    lbu a1, 5(a0)
-; CHECK-NEXT:    lbu a3, 4(a0)
-; CHECK-NEXT:    lbu a4, 6(a0)
+; CHECK-NEXT:    lbu a1, 6(a0)
 ; CHECK-NEXT:    lb a5, 7(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    slli a4, a4, 8
+; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    vmv.s.x v9, a1
-; CHECK-NEXT:    lbu a1, 9(a0)
+; CHECK-NEXT:    or a1, a5, a1
+; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    lbu a3, 8(a0)
-; CHECK-NEXT:    lbu a4, 10(a0)
+; CHECK-NEXT:    lbu a4, 9(a0)
+; CHECK-NEXT:    vmv.s.x v9, a1
+; CHECK-NEXT:    lbu a1, 10(a0)
 ; CHECK-NEXT:    lb a5, 11(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    slli a4, a4, 8
+; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    vmv.s.x v10, a1
-; CHECK-NEXT:    lbu a1, 13(a0)
-; CHECK-NEXT:    lbu a3, 12(a0)
-; CHECK-NEXT:    lbu a4, 14(a0)
-; CHECK-NEXT:    lb a0, 15(a0)
-; CHECK-NEXT:    slli a1, a1, 8
+; CHECK-NEXT:    or a1, a5, a1
 ; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    lbu a3, 12(a0)
+; CHECK-NEXT:    lbu a4, 13(a0)
+; CHECK-NEXT:    vmv.s.x v10, a1
+; CHECK-NEXT:    lbu a1, 14(a0)
+; CHECK-NEXT:    lb a0, 15(a0)
+; CHECK-NEXT:    slli a4, a4, 8
+; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
 ; CHECK-NEXT:    slli a0, a0, 24
-; CHECK-NEXT:    or a0, a0, a4
 ; CHECK-NEXT:    or a0, a0, a1
+; CHECK-NEXT:    or a0, a0, a3
 ; CHECK-NEXT:    vmv.s.x v11, a0
 ; CHECK-NEXT:    vsseg4e32.v v8, (a2)
 ; CHECK-NEXT:    ret
@@ -1789,52 +1789,52 @@ entry:
 define void @vld4_lane_u32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4_lane_u32:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    lbu a3, 0(a0)
+; CHECK-NEXT:    lbu a4, 1(a0)
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vlseg4e32.v v8, (a1)
-; CHECK-NEXT:    lbu a1, 1(a0)
-; CHECK-NEXT:    lbu a3, 0(a0)
-; CHECK-NEXT:    lbu a4, 2(a0)
+; CHECK-NEXT:    lbu a1, 2(a0)
 ; CHECK-NEXT:    lb a5, 3(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    slli a4, a4, 8
+; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
+; CHECK-NEXT:    or a1, a5, a1
+; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    lbu a3, 4(a0)
+; CHECK-NEXT:    lbu a4, 5(a0)
 ; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, tu, ma
 ; CHECK-NEXT:    vmv.s.x v8, a1
-; CHECK-NEXT:    lbu a1, 5(a0)
-; CHECK-NEXT:    lbu a3, 4(a0)
-; CHECK-NEXT:    lbu a4, 6(a0)
+; CHECK-NEXT:    lbu a1, 6(a0)
 ; CHECK-NEXT:    lb a5, 7(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    slli a4, a4, 8
+; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    vmv.s.x v9, a1
-; CHECK-NEXT:    lbu a1, 9(a0)
+; CHECK-NEXT:    or a1, a5, a1
+; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    lbu a3, 8(a0)
-; CHECK-NEXT:    lbu a4, 10(a0)
+; CHECK-NEXT:    lbu a4, 9(a0)
+; CHECK-NEXT:    vmv.s.x v9, a1
+; CHECK-NEXT:    lbu a1, 10(a0)
 ; CHECK-NEXT:    lb a5, 11(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    slli a4, a4, 8
+; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    vmv.s.x v10, a1
-; CHECK-NEXT:    lbu a1, 13(a0)
-; CHECK-NEXT:    lbu a3, 12(a0)
-; CHECK-NEXT:    lbu a4, 14(a0)
-; CHECK-NEXT:    lb a0, 15(a0)
-; CHECK-NEXT:    slli a1, a1, 8
+; CHECK-NEXT:    or a1, a5, a1
 ; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    lbu a3, 12(a0)
+; CHECK-NEXT:    lbu a4, 13(a0)
+; CHECK-NEXT:    vmv.s.x v10, a1
+; CHECK-NEXT:    lbu a1, 14(a0)
+; CHECK-NEXT:    lb a0, 15(a0)
+; CHECK-NEXT:    slli a4, a4, 8
+; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
 ; CHECK-NEXT:    slli a0, a0, 24
-; CHECK-NEXT:    or a0, a0, a4
 ; CHECK-NEXT:    or a0, a0, a1
+; CHECK-NEXT:    or a0, a0, a3
 ; CHECK-NEXT:    vmv.s.x v11, a0
 ; CHECK-NEXT:    vsseg4e32.v v8, (a2)
 ; CHECK-NEXT:    ret
@@ -1983,98 +1983,98 @@ entry:
 define void @vld4q_lane_f64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4q_lane_f64:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    lbu a3, 0(a0)
+; CHECK-NEXT:    lbu a4, 1(a0)
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlseg4e64.v v8, (a1)
-; CHECK-NEXT:    lbu a1, 1(a0)
-; CHECK-NEXT:    lbu a3, 0(a0)
-; CHECK-NEXT:    lbu a4, 2(a0)
+; CHECK-NEXT:    lbu a1, 2(a0)
 ; CHECK-NEXT:    lbu a5, 3(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
-; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    lbu a3, 5(a0)
-; CHECK-NEXT:    lbu a4, 4(a0)
-; CHECK-NEXT:    lbu a5, 6(a0)
-; CHECK-NEXT:    lbu a6, 7(a0)
-; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a5, a5, 16
-; CHECK-NEXT:    slli a6, a6, 24
-; CHECK-NEXT:    or a4, a6, a5
+; CHECK-NEXT:    slli a4, a4, 8
 ; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
+; CHECK-NEXT:    slli a5, a5, 24
+; CHECK-NEXT:    or a1, a5, a1
+; CHECK-NEXT:    lbu a4, 4(a0)
+; CHECK-NEXT:    lbu a5, 5(a0)
+; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    lbu a3, 6(a0)
+; CHECK-NEXT:    lbu a6, 7(a0)
+; CHECK-NEXT:    slli a5, a5, 8
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    slli a3, a3, 16
+; CHECK-NEXT:    slli a6, a6, 24
+; CHECK-NEXT:    or a3, a6, a3
+; CHECK-NEXT:    or a3, a3, a4
 ; CHECK-NEXT:    slli a3, a3, 32
 ; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    lbu a3, 8(a0)
+; CHECK-NEXT:    lbu a4, 9(a0)
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m1, tu, ma
 ; CHECK-NEXT:    vmv.s.x v8, a1
-; CHECK-NEXT:    lbu a1, 9(a0)
-; CHECK-NEXT:    lbu a3, 8(a0)
-; CHECK-NEXT:    lbu a4, 10(a0)
+; CHECK-NEXT:    lbu a1, 10(a0)
 ; CHECK-NEXT:    lbu a5, 11(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    slli a4, a4, 8
+; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    lbu a3, 13(a0)
+; CHECK-NEXT:    or a1, a5, a1
 ; CHECK-NEXT:    lbu a4, 12(a0)
-; CHECK-NEXT:    lbu a5, 14(a0)
+; CHECK-NEXT:    lbu a5, 13(a0)
+; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    lbu a3, 14(a0)
 ; CHECK-NEXT:    lbu a6, 15(a0)
-; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a5, a5, 16
+; CHECK-NEXT:    slli a5, a5, 8
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    slli a3, a3, 16
 ; CHECK-NEXT:    slli a6, a6, 24
-; CHECK-NEXT:    or a4, a6, a5
-; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    or a3, a6, a3
+; CHECK-NEXT:    or a3, a3, a4
 ; CHECK-NEXT:    slli a3, a3, 32
 ; CHECK-NEXT:    or a1, a3, a1
-; CHECK-NEXT:    vmv.s.x v9, a1
-; CHECK-NEXT:    lbu a1, 17(a0)
 ; CHECK-NEXT:    lbu a3, 16(a0)
-; CHECK-NEXT:    lbu a4, 18(a0)
+; CHECK-NEXT:    lbu a4, 17(a0)
+; CHECK-NEXT:    vmv.s.x v9, a1
+; CHECK-NEXT:    lbu a1, 18(a0)
 ; CHECK-NEXT:    lbu a5, 19(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
-; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    lbu a3, 21(a0)
-; CHECK-NEXT:    lbu a4, 20(a0)
-; CHECK-NEXT:    lbu a5, 22(a0)
-; CHECK-NEXT:    lbu a6, 23(a0)
-; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a5, a5, 16
-; CHECK-NEXT:    slli a6, a6, 24
-; CHECK-NEXT:    or a4, a6, a5
+; CHECK-NEXT:    slli a4, a4, 8
 ; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
+; CHECK-NEXT:    slli a5, a5, 24
+; CHECK-NEXT:    or a1, a5, a1
+; CHECK-NEXT:    lbu a4, 20(a0)
+; CHECK-NEXT:    lbu a5, 21(a0)
+; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    lbu a3, 22(a0)
+; CHECK-NEXT:    lbu a6, 23(a0)
+; CHECK-NEXT:    slli a5, a5, 8
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    slli a3, a3, 16
+; CHECK-NEXT:    slli a6, a6, 24
+; CHECK-NEXT:    or a3, a6, a3
+; CHECK-NEXT:    or a3, a3, a4
 ; CHECK-NEXT:    slli a3, a3, 32
 ; CHECK-NEXT:    or a1, a3, a1
-; CHECK-NEXT:    vmv.s.x v10, a1
-; CHECK-NEXT:    lbu a1, 25(a0)
 ; CHECK-NEXT:    lbu a3, 24(a0)
-; CHECK-NEXT:    lbu a4, 26(a0)
+; CHECK-NEXT:    lbu a4, 25(a0)
+; CHECK-NEXT:    vmv.s.x v10, a1
+; CHECK-NEXT:    lbu a1, 26(a0)
 ; CHECK-NEXT:    lbu a5, 27(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
+; CHECK-NEXT:    slli a4, a4, 8
+; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
 ; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    lbu a3, 29(a0)
+; CHECK-NEXT:    or a1, a5, a1
 ; CHECK-NEXT:    lbu a4, 28(a0)
-; CHECK-NEXT:    lbu a5, 30(a0)
+; CHECK-NEXT:    lbu a5, 29(a0)
+; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    lbu a3, 30(a0)
 ; CHECK-NEXT:    lbu a0, 31(a0)
-; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a5, a5, 16
+; CHECK-NEXT:    slli a5, a5, 8
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    slli a3, a3, 16
 ; CHECK-NEXT:    slli a0, a0, 24
-; CHECK-NEXT:    or a0, a0, a5
 ; CHECK-NEXT:    or a0, a0, a3
+; CHECK-NEXT:    or a0, a0, a4
 ; CHECK-NEXT:    slli a0, a0, 32
 ; CHECK-NEXT:    or a0, a0, a1
 ; CHECK-NEXT:    vmv.s.x v11, a0
@@ -2162,99 +2162,99 @@ entry:
 define void @vld4q_lane_s64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4q_lane_s64:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    lbu a3, 0(a0)
+; CHECK-NEXT:    lbu a4, 1(a0)
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlseg4e64.v v8, (a1)
-; CHECK-NEXT:    lbu a1, 1(a0)
-; CHECK-NEXT:    lbu a3, 0(a0)
-; CHECK-NEXT:    lbu a4, 2(a0)
+; CHECK-NEXT:    lbu a1, 2(a0)
 ; CHECK-NEXT:    lbu a5, 3(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
-; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    lbu a3, 5(a0)
-; CHECK-NEXT:    lbu a4, 4(a0)
-; CHECK-NEXT:    lbu a5, 6(a0)
-; CHECK-NEXT:    lbu a6, 7(a0)
-; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a5, a5, 16
-; CHECK-NEXT:    slli a6, a6, 24
-; CHECK-NEXT:    or a4, a6, a5
+; CHECK-NEXT:    slli a4, a4, 8
 ; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
+; CHECK-NEXT:    slli a5, a5, 24
+; CHECK-NEXT:    or a1, a5, a1
+; CHECK-NEXT:    lbu a4, 4(a0)
+; CHECK-NEXT:    lbu a5, 5(a0)
+; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    lbu a3, 6(a0)
+; CHECK-NEXT:    lbu a6, 7(a0)
+; CHECK-NEXT:    slli a5, a5, 8
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    slli a3, a3, 16
+; CHECK-NEXT:    slli a6, a6, 24
+; CHECK-NEXT:    or a3, a6, a3
+; CHECK-NEXT:    or a3, a3, a4
 ; CHECK-NEXT:    slli a3, a3, 32
 ; CHECK-NEXT:    or a1, a3, a1
 ; CHECK-NEXT:    vmv.s.x v12, a1
+; CHECK-NEXT:    lbu a1, 8(a0)
+; CHECK-NEXT:    lbu a3, 9(a0)
 ; CHECK-NEXT:    vslideup.vi v8, v12, 1
-; CHECK-NEXT:    lbu a1, 9(a0)
-; CHECK-NEXT:    lbu a3, 8(a0)
 ; CHECK-NEXT:    lbu a4, 10(a0)
 ; CHECK-NEXT:    lbu a5, 11(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    slli a3, a3, 8
+; CHECK-NEXT:    or a1, a3, a1
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
 ; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    lbu a3, 12(a0)
+; CHECK-NEXT:    lbu a5, 13(a0)
 ; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    lbu a3, 13(a0)
-; CHECK-NEXT:    lbu a4, 12(a0)
-; CHECK-NEXT:    lbu a5, 14(a0)
+; CHECK-NEXT:    lbu a4, 14(a0)
 ; CHECK-NEXT:    lbu a6, 15(a0)
-; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a5, a5, 16
-; CHECK-NEXT:    slli a6, a6, 24
-; CHECK-NEXT:    or a4, a6, a5
-; CHECK-NEXT:    or a3, a4, a3
-; CHECK-NEXT:    slli a3, a3, 32
-; CHECK-NEXT:    or a1, a3, a1
-; CHECK-NEXT:    vmv.s.x v12, a1
-; CHECK-NEXT:    lbu a1, 17(a0)
-; CHECK-NEXT:    lbu a3, 16(a0)
-; CHECK-NEXT:    lbu a4, 18(a0)
-; CHECK-NEXT:    lbu a5, 19(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    slli a5, a5, 8
+; CHECK-NEXT:    or a3, a5, a3
 ; CHECK-NEXT:    slli a4, a4, 16
-; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    lbu a3, 21(a0)
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    lbu a4, 20(a0)
-; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    lbu a5, 22(a0)
-; CHECK-NEXT:    lbu a6, 23(a0)
-; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    vslideup.vi v9, v12, 1
-; CHECK-NEXT:    slli a5, a5, 16
 ; CHECK-NEXT:    slli a6, a6, 24
-; CHECK-NEXT:    or a4, a6, a5
+; CHECK-NEXT:    or a4, a6, a4
 ; CHECK-NEXT:    or a3, a4, a3
 ; CHECK-NEXT:    slli a3, a3, 32
 ; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    lbu a3, 16(a0)
+; CHECK-NEXT:    lbu a4, 17(a0)
 ; CHECK-NEXT:    vmv.s.x v12, a1
+; CHECK-NEXT:    lbu a1, 18(a0)
+; CHECK-NEXT:    lbu a5, 19(a0)
+; CHECK-NEXT:    slli a4, a4, 8
+; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
+; CHECK-NEXT:    slli a5, a5, 24
+; CHECK-NEXT:    or a1, a5, a1
+; CHECK-NEXT:    lbu a4, 20(a0)
+; CHECK-NEXT:    lbu a5, 21(a0)
+; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    lbu a3, 22(a0)
+; CHECK-NEXT:    lbu a6, 23(a0)
+; CHECK-NEXT:    slli a5, a5, 8
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    vslideup.vi v9, v12, 1
+; CHECK-NEXT:    slli a3, a3, 16
+; CHECK-NEXT:    slli a6, a6, 24
+; CHECK-NEXT:    or a3, a6, a3
+; CHECK-NEXT:    or a3, a3, a4
+; CHECK-NEXT:    slli a3, a3, 32
+; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    vmv.s.x v12, a1
+; CHECK-NEXT:    lbu a1, 24(a0)
+; CHECK-NEXT:    lbu a3, 25(a0)
 ; CHECK-NEXT:    vslideup.vi v10, v12, 1
-; CHECK-NEXT:    lbu a1, 25(a0)
-; CHECK-NEXT:    lbu a3, 24(a0)
 ; CHECK-NEXT:    lbu a4, 26(a0)
 ; CHECK-NEXT:    lbu a5, 27(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    slli a3, a3, 8
+; CHECK-NEXT:    or a1, a3, a1
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
 ; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    lbu a3, 28(a0)
+; CHECK-NEXT:    lbu a5, 29(a0)
 ; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    lbu a3, 29(a0)
-; CHECK-NEXT:    lbu a4, 28(a0)
-; CHECK-NEXT:    lbu a5, 30(a0)
+; CHECK-NEXT:    lbu a4, 30(a0)
 ; CHECK-NEXT:    lbu a0, 31(a0)
-; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a5, a5, 16
+; CHECK-NEXT:    slli a5, a5, 8
+; CHECK-NEXT:    or a3, a5, a3
+; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a0, a0, 24
-; CHECK-NEXT:    or a0, a0, a5
+; CHECK-NEXT:    or a0, a0, a4
 ; CHECK-NEXT:    or a0, a0, a3
 ; CHECK-NEXT:    slli a0, a0, 32
 ; CHECK-NEXT:    or a0, a0, a1
@@ -2374,99 +2374,99 @@ entry:
 define void @vld4q_lane_u64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld4q_lane_u64:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    lbu a3, 0(a0)
+; CHECK-NEXT:    lbu a4, 1(a0)
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlseg4e64.v v8, (a1)
-; CHECK-NEXT:    lbu a1, 1(a0)
-; CHECK-NEXT:    lbu a3, 0(a0)
-; CHECK-NEXT:    lbu a4, 2(a0)
+; CHECK-NEXT:    lbu a1, 2(a0)
 ; CHECK-NEXT:    lbu a5, 3(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
-; CHECK-NEXT:    slli a4, a4, 16
-; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    lbu a3, 5(a0)
-; CHECK-NEXT:    lbu a4, 4(a0)
-; CHECK-NEXT:    lbu a5, 6(a0)
-; CHECK-NEXT:    lbu a6, 7(a0)
-; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a5, a5, 16
-; CHECK-NEXT:    slli a6, a6, 24
-; CHECK-NEXT:    or a4, a6, a5
+; CHECK-NEXT:    slli a4, a4, 8
 ; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
+; CHECK-NEXT:    slli a5, a5, 24
+; CHECK-NEXT:    or a1, a5, a1
+; CHECK-NEXT:    lbu a4, 4(a0)
+; CHECK-NEXT:    lbu a5, 5(a0)
+; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    lbu a3, 6(a0)
+; CHECK-NEXT:    lbu a6, 7(a0)
+; CHECK-NEXT:    slli a5, a5, 8
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    slli a3, a3, 16
+; CHECK-NEXT:    slli a6, a6, 24
+; CHECK-NEXT:    or a3, a6, a3
+; CHECK-NEXT:    or a3, a3, a4
 ; CHECK-NEXT:    slli a3, a3, 32
 ; CHECK-NEXT:    or a1, a3, a1
 ; CHECK-NEXT:    vmv.s.x v12, a1
+; CHECK-NEXT:    lbu a1, 8(a0)
+; CHECK-NEXT:    lbu a3, 9(a0)
 ; CHECK-NEXT:    vslideup.vi v8, v12, 1
-; CHECK-NEXT:    lbu a1, 9(a0)
-; CHECK-NEXT:    lbu a3, 8(a0)
 ; CHECK-NEXT:    lbu a4, 10(a0)
 ; CHECK-NEXT:    lbu a5, 11(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    slli a3, a3, 8
+; CHECK-NEXT:    or a1, a3, a1
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
 ; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    lbu a3, 12(a0)
+; CHECK-NEXT:    lbu a5, 13(a0)
 ; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    lbu a3, 13(a0)
-; CHECK-NEXT:    lbu a4, 12(a0)
-; CHECK-NEXT:    lbu a5, 14(a0)
+; CHECK-NEXT:    lbu a4, 14(a0)
 ; CHECK-NEXT:    lbu a6, 15(a0)
-; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a5, a5, 16
-; CHECK-NEXT:    slli a6, a6, 24
-; CHECK-NEXT:    or a4, a6, a5
-; CHECK-NEXT:    or a3, a4, a3
-; CHECK-NEXT:    slli a3, a3, 32
-; CHECK-NEXT:    or a1, a3, a1
-; CHECK-NEXT:    vmv.s.x v12, a1
-; CHECK-NEXT:    lbu a1, 17(a0)
-; CHECK-NEXT:    lbu a3, 16(a0)
-; CHECK-NEXT:    lbu a4, 18(a0)
-; CHECK-NEXT:    lbu a5, 19(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    slli a5, a5, 8
+; CHECK-NEXT:    or a3, a5, a3
 ; CHECK-NEXT:    slli a4, a4, 16
-; CHECK-NEXT:    slli a5, a5, 24
-; CHECK-NEXT:    lbu a3, 21(a0)
-; CHECK-NEXT:    or a4, a5, a4
-; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    lbu a4, 20(a0)
-; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    lbu a5, 22(a0)
-; CHECK-NEXT:    lbu a6, 23(a0)
-; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    vslideup.vi v9, v12, 1
-; CHECK-NEXT:    slli a5, a5, 16
 ; CHECK-NEXT:    slli a6, a6, 24
-; CHECK-NEXT:    or a4, a6, a5
+; CHECK-NEXT:    or a4, a6, a4
 ; CHECK-NEXT:    or a3, a4, a3
 ; CHECK-NEXT:    slli a3, a3, 32
 ; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    lbu a3, 16(a0)
+; CHECK-NEXT:    lbu a4, 17(a0)
 ; CHECK-NEXT:    vmv.s.x v12, a1
+; CHECK-NEXT:    lbu a1, 18(a0)
+; CHECK-NEXT:    lbu a5, 19(a0)
+; CHECK-NEXT:    slli a4, a4, 8
+; CHECK-NEXT:    or a3, a4, a3
+; CHECK-NEXT:    slli a1, a1, 16
+; CHECK-NEXT:    slli a5, a5, 24
+; CHECK-NEXT:    or a1, a5, a1
+; CHECK-NEXT:    lbu a4, 20(a0)
+; CHECK-NEXT:    lbu a5, 21(a0)
+; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    lbu a3, 22(a0)
+; CHECK-NEXT:    lbu a6, 23(a0)
+; CHECK-NEXT:    slli a5, a5, 8
+; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    vslideup.vi v9, v12, 1
+; CHECK-NEXT:    slli a3, a3, 16
+; CHECK-NEXT:    slli a6, a6, 24
+; CHECK-NEXT:    or a3, a6, a3
+; CHECK-NEXT:    or a3, a3, a4
+; CHECK-NEXT:    slli a3, a3, 32
+; CHECK-NEXT:    or a1, a3, a1
+; CHECK-NEXT:    vmv.s.x v12, a1
+; CHECK-NEXT:    lbu a1, 24(a0)
+; CHECK-NEXT:    lbu a3, 25(a0)
 ; CHECK-NEXT:    vslideup.vi v10, v12, 1
-; CHECK-NEXT:    lbu a1, 25(a0)
-; CHECK-NEXT:    lbu a3, 24(a0)
 ; CHECK-NEXT:    lbu a4, 26(a0)
 ; CHECK-NEXT:    lbu a5, 27(a0)
-; CHECK-NEXT:    slli a1, a1, 8
-; CHECK-NEXT:    or a1, a1, a3
+; CHECK-NEXT:    slli a3, a3, 8
+; CHECK-NEXT:    or a1, a3, a1
 ; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a5, a5, 24
 ; CHECK-NEXT:    or a4, a5, a4
+; CHECK-NEXT:    lbu a3, 28(a0)
+; CHECK-NEXT:    lbu a5, 29(a0)
 ; CHECK-NEXT:    or a1, a4, a1
-; CHECK-NEXT:    lbu a3, 29(a0)
-; CHECK-NEXT:    lbu a4, 28(a0)
-; CHECK-NEXT:    lbu a5, 30(a0)
+; CHECK-NEXT:    lbu a4, 30(a0)
 ; CHECK-NEXT:    lbu a0, 31(a0)
-; CHECK-NEXT:    slli a3, a3, 8
-; CHECK-NEXT:    or a3, a3, a4
-; CHECK-NEXT:    slli a5, a5, 16
+; CHECK-NEXT:    slli a5, a5, 8
+; CHECK-NEXT:    or a3, a5, a3
+; CHECK-NEXT:    slli a4, a4, 16
 ; CHECK-NEXT:    slli a0, a0, 24
-; CHECK-NEXT:    or a0, a0, a5
+; CHECK-NEXT:    or a0, a0, a4
 ; CHECK-NEXT:    or a0, a0, a3
 ; CHECK-NEXT:    slli a0, a0, 32
 ; CHECK-NEXT:    or a0, a0, a1

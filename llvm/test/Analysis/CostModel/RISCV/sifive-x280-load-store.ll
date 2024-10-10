@@ -9,7 +9,7 @@ define void @load(ptr %p) {
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %3 = load i32, ptr %p, align 4
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %4 = load i64, ptr %p, align 8
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %5 = load ptr, ptr %p, align 8
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %6 = load <1 x bfloat>, ptr %p, align 2
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %6 = load <1 x bfloat>, ptr %p, align 2
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %7 = load <2 x bfloat>, ptr %p, align 4
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %8 = load <4 x bfloat>, ptr %p, align 8
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %9 = load <8 x bfloat>, ptr %p, align 16

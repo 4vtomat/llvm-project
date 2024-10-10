@@ -14,7 +14,6 @@ define i32 @caller_tail(i32 %i) nounwind {
 ;
 ; CHECK-LARGE-ZICFILP-LABEL: caller_tail:
 ; CHECK-LARGE-ZICFILP:       # %bb.0: # %entry
-; CHECK-LARGE-ZICFILP-NEXT:    lpad 0
 ; CHECK-LARGE-ZICFILP-NEXT:  .Lpcrel_hi0:
 ; CHECK-LARGE-ZICFILP-NEXT:    auipc a1, %pcrel_hi(.LCPI0_0)
 ; CHECK-LARGE-ZICFILP-NEXT:    lw t2, %pcrel_lo(.Lpcrel_hi0)(a1)
@@ -40,7 +39,6 @@ define void @caller_extern(ptr %src) optsize {
 ;
 ; CHECK-LARGE-ZICFILP-LABEL: caller_extern:
 ; CHECK-LARGE-ZICFILP:       # %bb.0: # %entry
-; CHECK-LARGE-ZICFILP-NEXT:    lpad 0
 ; CHECK-LARGE-ZICFILP-NEXT:  .Lpcrel_hi1:
 ; CHECK-LARGE-ZICFILP-NEXT:    auipc a1, %pcrel_hi(.LCPI1_0)
 ; CHECK-LARGE-ZICFILP-NEXT:    lw a1, %pcrel_lo(.Lpcrel_hi1)(a1)
@@ -72,7 +70,6 @@ define void @caller_extern_pgso(ptr %src) !prof !14 {
 ;
 ; CHECK-LARGE-ZICFILP-LABEL: caller_extern_pgso:
 ; CHECK-LARGE-ZICFILP:       # %bb.0: # %entry
-; CHECK-LARGE-ZICFILP-NEXT:    lpad 0
 ; CHECK-LARGE-ZICFILP-NEXT:  .Lpcrel_hi3:
 ; CHECK-LARGE-ZICFILP-NEXT:    auipc a1, %pcrel_hi(.LCPI2_0)
 ; CHECK-LARGE-ZICFILP-NEXT:    lw a1, %pcrel_lo(.Lpcrel_hi3)(a1)
@@ -107,7 +104,6 @@ define void @caller_indirect_tail(i32 %a) nounwind {
 ;
 ; CHECK-LARGE-ZICFILP-LABEL: caller_indirect_tail:
 ; CHECK-LARGE-ZICFILP:       # %bb.0: # %entry
-; CHECK-LARGE-ZICFILP-NEXT:    lpad 0
 ; CHECK-LARGE-ZICFILP-NEXT:    beqz a0, .LBB3_2
 ; CHECK-LARGE-ZICFILP-NEXT:  # %bb.1: # %entry
 ; CHECK-LARGE-ZICFILP-NEXT:  .Lpcrel_hi6:
@@ -143,7 +139,6 @@ define i32 @caller_indirect_no_t0(ptr %0, i32 %1, i32 %2, i32 %3, i32 %4, i32 %5
 ;
 ; CHECK-LARGE-ZICFILP-LABEL: caller_indirect_no_t0:
 ; CHECK-LARGE-ZICFILP:       # %bb.0:
-; CHECK-LARGE-ZICFILP-NEXT:    lpad 0
 ; CHECK-LARGE-ZICFILP-NEXT:    mv t1, a0
 ; CHECK-LARGE-ZICFILP-NEXT:    mv a0, a1
 ; CHECK-LARGE-ZICFILP-NEXT:    mv a1, a2
@@ -178,7 +173,6 @@ define void @caller_varargs(i32 %a, i32 %b) nounwind {
 ;
 ; CHECK-LARGE-ZICFILP-LABEL: caller_varargs:
 ; CHECK-LARGE-ZICFILP:       # %bb.0: # %entry
-; CHECK-LARGE-ZICFILP-NEXT:    lpad 0
 ; CHECK-LARGE-ZICFILP-NEXT:    addi sp, sp, -16
 ; CHECK-LARGE-ZICFILP-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
 ; CHECK-LARGE-ZICFILP-NEXT:  .Lpcrel_hi7:
@@ -226,7 +220,6 @@ define i32 @caller_args(i32 %a, i32 %b, i32 %c, i32 %dd, i32 %e, i32 %ff, i32 %g
 ;
 ; CHECK-LARGE-ZICFILP-LABEL: caller_args:
 ; CHECK-LARGE-ZICFILP:       # %bb.0: # %entry
-; CHECK-LARGE-ZICFILP-NEXT:    lpad 0
 ; CHECK-LARGE-ZICFILP-NEXT:    addi sp, sp, -32
 ; CHECK-LARGE-ZICFILP-NEXT:    sw ra, 28(sp) # 4-byte Folded Spill
 ; CHECK-LARGE-ZICFILP-NEXT:    lw t0, 32(sp)
@@ -273,7 +266,6 @@ define void @caller_indirect_args() nounwind {
 ;
 ; CHECK-LARGE-ZICFILP-LABEL: caller_indirect_args:
 ; CHECK-LARGE-ZICFILP:       # %bb.0: # %entry
-; CHECK-LARGE-ZICFILP-NEXT:    lpad 0
 ; CHECK-LARGE-ZICFILP-NEXT:    addi sp, sp, -32
 ; CHECK-LARGE-ZICFILP-NEXT:    sw ra, 28(sp) # 4-byte Folded Spill
 ; CHECK-LARGE-ZICFILP-NEXT:    lui a0, 262128
@@ -303,7 +295,6 @@ define void @caller_weak() nounwind {
 ;
 ; CHECK-LARGE-ZICFILP-LABEL: caller_weak:
 ; CHECK-LARGE-ZICFILP:       # %bb.0: # %entry
-; CHECK-LARGE-ZICFILP-NEXT:    lpad 0
 ; CHECK-LARGE-ZICFILP-NEXT:  .Lpcrel_hi10:
 ; CHECK-LARGE-ZICFILP-NEXT:    auipc a0, %pcrel_hi(.LCPI8_0)
 ; CHECK-LARGE-ZICFILP-NEXT:    lw t2, %pcrel_lo(.Lpcrel_hi10)(a0)
@@ -422,7 +413,6 @@ define i32 @caller_byval() nounwind {
 ;
 ; CHECK-LARGE-ZICFILP-LABEL: caller_byval:
 ; CHECK-LARGE-ZICFILP:       # %bb.0: # %entry
-; CHECK-LARGE-ZICFILP-NEXT:    lpad 0
 ; CHECK-LARGE-ZICFILP-NEXT:    addi sp, sp, -16
 ; CHECK-LARGE-ZICFILP-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
 ; CHECK-LARGE-ZICFILP-NEXT:    lw a0, 8(sp)
@@ -460,7 +450,6 @@ define void @caller_nostruct() nounwind {
 ;
 ; CHECK-LARGE-ZICFILP-LABEL: caller_nostruct:
 ; CHECK-LARGE-ZICFILP:       # %bb.0: # %entry
-; CHECK-LARGE-ZICFILP-NEXT:    lpad 0
 ; CHECK-LARGE-ZICFILP-NEXT:    addi sp, sp, -16
 ; CHECK-LARGE-ZICFILP-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
 ; CHECK-LARGE-ZICFILP-NEXT:  .Lpcrel_hi13:
@@ -492,7 +481,6 @@ define void @caller_struct(ptr sret(%struct.A) %a) nounwind {
 ;
 ; CHECK-LARGE-ZICFILP-LABEL: caller_struct:
 ; CHECK-LARGE-ZICFILP:       # %bb.0: # %entry
-; CHECK-LARGE-ZICFILP-NEXT:    lpad 0
 ; CHECK-LARGE-ZICFILP-NEXT:    addi sp, sp, -16
 ; CHECK-LARGE-ZICFILP-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
 ; CHECK-LARGE-ZICFILP-NEXT:  .Lpcrel_hi15:
@@ -520,7 +508,6 @@ define i32 @disable_tail_calls(i32 %i) nounwind "disable-tail-calls"="true" {
 ;
 ; CHECK-LARGE-ZICFILP-LABEL: disable_tail_calls:
 ; CHECK-LARGE-ZICFILP:       # %bb.0: # %entry
-; CHECK-LARGE-ZICFILP-NEXT:    lpad 0
 ; CHECK-LARGE-ZICFILP-NEXT:    addi sp, sp, -16
 ; CHECK-LARGE-ZICFILP-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
 ; CHECK-LARGE-ZICFILP-NEXT:  .Lpcrel_hi16:
@@ -559,7 +546,6 @@ define i32 @duplicate_returns(i32 %a, i32 %b) nounwind {
 ;
 ; CHECK-LARGE-ZICFILP-LABEL: duplicate_returns:
 ; CHECK-LARGE-ZICFILP:       # %bb.0: # %entry
-; CHECK-LARGE-ZICFILP-NEXT:    lpad 0
 ; CHECK-LARGE-ZICFILP-NEXT:    beqz a0, .LBB14_4
 ; CHECK-LARGE-ZICFILP-NEXT:  # %bb.1: # %if.else
 ; CHECK-LARGE-ZICFILP-NEXT:    beqz a1, .LBB14_5

@@ -108,7 +108,8 @@ define <vscale x 96 x i8> @vector_interleave_nxv96i8_nxv16i8(<vscale x 16 x i8> 
 ; RV32-NEXT:    sw s0, 72(sp) # 4-byte Folded Spill
 ; RV32-NEXT:    addi s0, sp, 80
 ; RV32-NEXT:    csrr a0, vlenb
-; RV32-NEXT:    slli a0, a0, 5
+; RV32-NEXT:    li a1, 28
+; RV32-NEXT:    mul a0, a0, a1
 ; RV32-NEXT:    sub sp, sp, a0
 ; RV32-NEXT:    andi sp, sp, -64
 ; RV32-NEXT:    vmv2r.v v20, v10
@@ -180,7 +181,8 @@ define <vscale x 96 x i8> @vector_interleave_nxv96i8_nxv16i8(<vscale x 16 x i8> 
 ; RV64-NEXT:    sd s0, 64(sp) # 8-byte Folded Spill
 ; RV64-NEXT:    addi s0, sp, 80
 ; RV64-NEXT:    csrr a0, vlenb
-; RV64-NEXT:    slli a0, a0, 5
+; RV64-NEXT:    li a1, 28
+; RV64-NEXT:    mul a0, a0, a1
 ; RV64-NEXT:    sub sp, sp, a0
 ; RV64-NEXT:    andi sp, sp, -64
 ; RV64-NEXT:    vmv2r.v v20, v10
@@ -258,7 +260,8 @@ define <vscale x 48 x i16> @vector_interleave_nxv48i16_nxv8i16(<vscale x 8 x i16
 ; RV32-NEXT:    sw s0, 72(sp) # 4-byte Folded Spill
 ; RV32-NEXT:    addi s0, sp, 80
 ; RV32-NEXT:    csrr a0, vlenb
-; RV32-NEXT:    slli a0, a0, 5
+; RV32-NEXT:    li a1, 28
+; RV32-NEXT:    mul a0, a0, a1
 ; RV32-NEXT:    sub sp, sp, a0
 ; RV32-NEXT:    andi sp, sp, -64
 ; RV32-NEXT:    vmv2r.v v20, v10
@@ -330,7 +333,8 @@ define <vscale x 48 x i16> @vector_interleave_nxv48i16_nxv8i16(<vscale x 8 x i16
 ; RV64-NEXT:    sd s0, 64(sp) # 8-byte Folded Spill
 ; RV64-NEXT:    addi s0, sp, 80
 ; RV64-NEXT:    csrr a0, vlenb
-; RV64-NEXT:    slli a0, a0, 5
+; RV64-NEXT:    li a1, 28
+; RV64-NEXT:    mul a0, a0, a1
 ; RV64-NEXT:    sub sp, sp, a0
 ; RV64-NEXT:    andi sp, sp, -64
 ; RV64-NEXT:    vmv2r.v v20, v10
@@ -408,7 +412,8 @@ define <vscale x 24 x i32> @vector_interleave_nxv24i32_nxv4i32(<vscale x 4 x i32
 ; RV32-NEXT:    sw s0, 72(sp) # 4-byte Folded Spill
 ; RV32-NEXT:    addi s0, sp, 80
 ; RV32-NEXT:    csrr a0, vlenb
-; RV32-NEXT:    slli a0, a0, 5
+; RV32-NEXT:    li a1, 28
+; RV32-NEXT:    mul a0, a0, a1
 ; RV32-NEXT:    sub sp, sp, a0
 ; RV32-NEXT:    andi sp, sp, -64
 ; RV32-NEXT:    vmv2r.v v20, v10
@@ -480,7 +485,8 @@ define <vscale x 24 x i32> @vector_interleave_nxv24i32_nxv4i32(<vscale x 4 x i32
 ; RV64-NEXT:    sd s0, 64(sp) # 8-byte Folded Spill
 ; RV64-NEXT:    addi s0, sp, 80
 ; RV64-NEXT:    csrr a0, vlenb
-; RV64-NEXT:    slli a0, a0, 5
+; RV64-NEXT:    li a1, 28
+; RV64-NEXT:    mul a0, a0, a1
 ; RV64-NEXT:    sub sp, sp, a0
 ; RV64-NEXT:    andi sp, sp, -64
 ; RV64-NEXT:    vmv2r.v v20, v10
@@ -558,7 +564,8 @@ define <vscale x 12 x i64> @vector_interleave_nxv12i64_nxv2i64(<vscale x 2 x i64
 ; RV32-NEXT:    sw s0, 72(sp) # 4-byte Folded Spill
 ; RV32-NEXT:    addi s0, sp, 80
 ; RV32-NEXT:    csrr a0, vlenb
-; RV32-NEXT:    slli a0, a0, 5
+; RV32-NEXT:    li a1, 28
+; RV32-NEXT:    mul a0, a0, a1
 ; RV32-NEXT:    sub sp, sp, a0
 ; RV32-NEXT:    andi sp, sp, -64
 ; RV32-NEXT:    vmv2r.v v20, v10
@@ -630,7 +637,8 @@ define <vscale x 12 x i64> @vector_interleave_nxv12i64_nxv2i64(<vscale x 2 x i64
 ; RV64-NEXT:    sd s0, 64(sp) # 8-byte Folded Spill
 ; RV64-NEXT:    addi s0, sp, 80
 ; RV64-NEXT:    csrr a0, vlenb
-; RV64-NEXT:    slli a0, a0, 5
+; RV64-NEXT:    li a1, 28
+; RV64-NEXT:    mul a0, a0, a1
 ; RV64-NEXT:    sub sp, sp, a0
 ; RV64-NEXT:    andi sp, sp, -64
 ; RV64-NEXT:    vmv2r.v v20, v10

@@ -9,7 +9,6 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>} @vector_dein
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 1
 ; CHECK-NEXT:    sub sp, sp, a0
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v10, 0
@@ -47,7 +46,6 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>} @vector_dein
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vl1r.v v0, (a0) # Unknown-size Folded Reload
 ; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 1
 ; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret

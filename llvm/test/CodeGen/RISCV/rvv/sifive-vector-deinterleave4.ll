@@ -9,7 +9,8 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 2
+; CHECK-NEXT:    slli a1, a0, 1
+; CHECK-NEXT:    add a0, a1, a0
 ; CHECK-NEXT:    sub sp, sp, a0
 ; CHECK-NEXT:    vmv1r.v v8, v0
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
@@ -78,7 +79,8 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vl1r.v v9, (a0) # Unknown-size Folded Reload
 ; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 2
+; CHECK-NEXT:    slli a1, a0, 1
+; CHECK-NEXT:    add a0, a1, a0
 ; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret

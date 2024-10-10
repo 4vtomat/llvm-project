@@ -604,20 +604,10 @@ define <vscale x 32 x half> @vfmul_vf_nxv32f16(<vscale x 32 x half> %va, half %b
 ; ZVFHMIN-NEXT:    addi sp, sp, -16
 ; ZVFHMIN-NEXT:    .cfi_def_cfa_offset 16
 ; ZVFHMIN-NEXT:    csrr a1, vlenb
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    slli a1, a1, 1
-; ZVFHMIN-NEXT:    mv a2, a1
-; ZVFHMIN-NEXT:    slli a1, a1, 2
-; ZVFHMIN-NEXT:    add a1, a1, a2
-; ZVFHMIN-NEXT:    sub sp, sp, a1
-; ZVFHMIN-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x0a, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 10 * vlenb
-=======
-; ZVFHMIN-NEXT:    slli a2, a1, 4
+; ZVFHMIN-NEXT:    slli a2, a1, 3
 ; ZVFHMIN-NEXT:    add a1, a2, a1
 ; ZVFHMIN-NEXT:    sub sp, sp, a1
-; ZVFHMIN-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x11, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 17 * vlenb
-; ZVFHMIN-NEXT:    vmv8r.v v24, v8
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
+; ZVFHMIN-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x09, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 9 * vlenb
 ; ZVFHMIN-NEXT:    fmv.x.h a1, fa0
 ; ZVFHMIN-NEXT:    vsetvli a2, zero, e16, m8, ta, ma
 ; ZVFHMIN-NEXT:    vmv.v.x v16, a1
@@ -660,15 +650,8 @@ define <vscale x 32 x half> @vfmul_vf_nxv32f16(<vscale x 32 x half> %va, half %b
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e16, m4, ta, ma
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v16
 ; ZVFHMIN-NEXT:    csrr a0, vlenb
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    slli a0, a0, 1
-; ZVFHMIN-NEXT:    mv a1, a0
-; ZVFHMIN-NEXT:    slli a0, a0, 2
-; ZVFHMIN-NEXT:    add a0, a0, a1
-=======
-; ZVFHMIN-NEXT:    slli a1, a0, 4
+; ZVFHMIN-NEXT:    slli a1, a0, 3
 ; ZVFHMIN-NEXT:    add a0, a1, a0
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ; ZVFHMIN-NEXT:    add sp, sp, a0
 ; ZVFHMIN-NEXT:    addi sp, sp, 16
 ; ZVFHMIN-NEXT:    ret

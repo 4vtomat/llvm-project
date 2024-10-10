@@ -67,7 +67,6 @@ define i32 @test_call_external(i32 %a) nounwind {
 ;
 ; RV64I-LARGE-ZICFILP-LABEL: test_call_external:
 ; RV64I-LARGE-ZICFILP:       # %bb.0:
-; RV64I-LARGE-ZICFILP-NEXT:    lpad 0
 ; RV64I-LARGE-ZICFILP-NEXT:    addi sp, sp, -16
 ; RV64I-LARGE-ZICFILP-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
 ; RV64I-LARGE-ZICFILP-NEXT:  .Lpcrel_hi0:
@@ -134,7 +133,6 @@ define i32 @test_call_dso_local(i32 %a) nounwind {
 ;
 ; RV64I-LARGE-ZICFILP-LABEL: test_call_dso_local:
 ; RV64I-LARGE-ZICFILP:       # %bb.0:
-; RV64I-LARGE-ZICFILP-NEXT:    lpad 0
 ; RV64I-LARGE-ZICFILP-NEXT:    addi sp, sp, -16
 ; RV64I-LARGE-ZICFILP-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
 ; RV64I-LARGE-ZICFILP-NEXT:  .Lpcrel_hi1:
@@ -176,7 +174,6 @@ define i32 @defined_function(i32 %a) nounwind {
 ;
 ; RV64I-LARGE-ZICFILP-LABEL: defined_function:
 ; RV64I-LARGE-ZICFILP:       # %bb.0:
-; RV64I-LARGE-ZICFILP-NEXT:    lpad 0
 ; RV64I-LARGE-ZICFILP-NEXT:    addiw a0, a0, 1
 ; RV64I-LARGE-ZICFILP-NEXT:    ret
   %1 = add i32 %a, 1
@@ -234,7 +231,6 @@ define i32 @test_call_defined(i32 %a) nounwind {
 ;
 ; RV64I-LARGE-ZICFILP-LABEL: test_call_defined:
 ; RV64I-LARGE-ZICFILP:       # %bb.0:
-; RV64I-LARGE-ZICFILP-NEXT:    lpad 0
 ; RV64I-LARGE-ZICFILP-NEXT:    addi sp, sp, -16
 ; RV64I-LARGE-ZICFILP-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
 ; RV64I-LARGE-ZICFILP-NEXT:  .Lpcrel_hi2:
@@ -306,7 +302,6 @@ define i32 @test_call_indirect(ptr %a, i32 %b) nounwind {
 ;
 ; RV64I-LARGE-ZICFILP-LABEL: test_call_indirect:
 ; RV64I-LARGE-ZICFILP:       # %bb.0:
-; RV64I-LARGE-ZICFILP-NEXT:    lpad 0
 ; RV64I-LARGE-ZICFILP-NEXT:    addi sp, sp, -16
 ; RV64I-LARGE-ZICFILP-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
 ; RV64I-LARGE-ZICFILP-NEXT:    mv a2, a0
@@ -409,7 +404,6 @@ define i32 @test_call_indirect_no_t0(ptr %a, i32 %b, i32 %c, i32 %d, i32 %e, i32
 ;
 ; RV64I-LARGE-ZICFILP-LABEL: test_call_indirect_no_t0:
 ; RV64I-LARGE-ZICFILP:       # %bb.0:
-; RV64I-LARGE-ZICFILP-NEXT:    lpad 0
 ; RV64I-LARGE-ZICFILP-NEXT:    addi sp, sp, -16
 ; RV64I-LARGE-ZICFILP-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
 ; RV64I-LARGE-ZICFILP-NEXT:    mv t1, a0
@@ -459,7 +453,6 @@ define fastcc i32 @fastcc_function(i32 %a, i32 %b) nounwind {
 ;
 ; RV64I-LARGE-ZICFILP-LABEL: fastcc_function:
 ; RV64I-LARGE-ZICFILP:       # %bb.0:
-; RV64I-LARGE-ZICFILP-NEXT:    lpad 0
 ; RV64I-LARGE-ZICFILP-NEXT:    addw a0, a0, a1
 ; RV64I-LARGE-ZICFILP-NEXT:    ret
  %1 = add i32 %a, %b
@@ -538,7 +531,6 @@ define i32 @test_call_fastcc(i32 %a, i32 %b) nounwind {
 ;
 ; RV64I-LARGE-ZICFILP-LABEL: test_call_fastcc:
 ; RV64I-LARGE-ZICFILP:       # %bb.0:
-; RV64I-LARGE-ZICFILP-NEXT:    lpad 0
 ; RV64I-LARGE-ZICFILP-NEXT:    addi sp, sp, -16
 ; RV64I-LARGE-ZICFILP-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
 ; RV64I-LARGE-ZICFILP-NEXT:    sd s0, 0(sp) # 8-byte Folded Spill
@@ -676,7 +668,6 @@ define i32 @test_call_external_many_args(i32 %a) nounwind {
 ;
 ; RV64I-LARGE-ZICFILP-LABEL: test_call_external_many_args:
 ; RV64I-LARGE-ZICFILP:       # %bb.0:
-; RV64I-LARGE-ZICFILP-NEXT:    lpad 0
 ; RV64I-LARGE-ZICFILP-NEXT:    addi sp, sp, -32
 ; RV64I-LARGE-ZICFILP-NEXT:    sd ra, 24(sp) # 8-byte Folded Spill
 ; RV64I-LARGE-ZICFILP-NEXT:    sd s0, 16(sp) # 8-byte Folded Spill
@@ -738,7 +729,6 @@ define i32 @defined_many_args(i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 %
 ;
 ; RV64I-LARGE-ZICFILP-LABEL: defined_many_args:
 ; RV64I-LARGE-ZICFILP:       # %bb.0:
-; RV64I-LARGE-ZICFILP-NEXT:    lpad 0
 ; RV64I-LARGE-ZICFILP-NEXT:    lw a0, 8(sp)
 ; RV64I-LARGE-ZICFILP-NEXT:    addiw a0, a0, 1
 ; RV64I-LARGE-ZICFILP-NEXT:    ret
@@ -842,7 +832,6 @@ define i32 @test_call_defined_many_args(i32 %a) nounwind {
 ;
 ; RV64I-LARGE-ZICFILP-LABEL: test_call_defined_many_args:
 ; RV64I-LARGE-ZICFILP:       # %bb.0:
-; RV64I-LARGE-ZICFILP-NEXT:    lpad 0
 ; RV64I-LARGE-ZICFILP-NEXT:    addi sp, sp, -32
 ; RV64I-LARGE-ZICFILP-NEXT:    sd ra, 24(sp) # 8-byte Folded Spill
 ; RV64I-LARGE-ZICFILP-NEXT:  .Lpcrel_hi5:

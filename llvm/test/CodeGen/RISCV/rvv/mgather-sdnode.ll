@@ -1322,15 +1322,13 @@ define <vscale x 4 x bfloat> @mgather_truemask_nxv4bf16(<vscale x 4 x ptr> %ptrs
 ; RV32-LABEL: mgather_truemask_nxv4bf16:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
-; RV32-NEXT:    vluxei32.v v10, (zero), v8
-; RV32-NEXT:    vmv.v.v v8, v10
+; RV32-NEXT:    vluxei32.v v8, (zero), v8
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: mgather_truemask_nxv4bf16:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
-; RV64-NEXT:    vluxei64.v v12, (zero), v8
-; RV64-NEXT:    vmv.v.v v8, v12
+; RV64-NEXT:    vluxei64.v v8, (zero), v8
 ; RV64-NEXT:    ret
   %v = call <vscale x 4 x bfloat> @llvm.masked.gather.nxv4bf16.nxv4p0(<vscale x 4 x ptr> %ptrs, i32 2, <vscale x 4 x i1> splat (i1 1), <vscale x 4 x bfloat> %passthru)
   ret <vscale x 4 x bfloat> %v

@@ -45,8 +45,8 @@ define <5 x i8> @load_v5i8_align1(ptr %p) {
 define <6 x i8> @load_v6i8(ptr %p) {
 ; CHECK-LABEL: load_v6i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lbu a1, 5(a0)
-; CHECK-NEXT:    lbu a2, 4(a0)
+; CHECK-NEXT:    lbu a1, 4(a0)
+; CHECK-NEXT:    lbu a2, 5(a0)
 ; CHECK-NEXT:    lbu a3, 0(a0)
 ; CHECK-NEXT:    lbu a4, 1(a0)
 ; CHECK-NEXT:    lbu a5, 2(a0)
@@ -56,8 +56,8 @@ define <6 x i8> @load_v6i8(ptr %p) {
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a4
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a5
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a0
-; CHECK-NEXT:    vslide1down.vx v8, v8, a2
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a1
+; CHECK-NEXT:    vslide1down.vx v8, v8, a2
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 2
 ; CHECK-NEXT:    ret
   %x = load <6 x i8>, ptr %p
@@ -67,14 +67,14 @@ define <6 x i8> @load_v6i8(ptr %p) {
 define <12 x i8> @load_v12i8(ptr %p) {
 ; CHECK-LABEL: load_v12i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lbu a1, 11(a0)
-; CHECK-NEXT:    lbu a2, 10(a0)
-; CHECK-NEXT:    lbu a3, 9(a0)
-; CHECK-NEXT:    lbu a4, 8(a0)
-; CHECK-NEXT:    lbu a5, 7(a0)
-; CHECK-NEXT:    lbu a6, 6(a0)
-; CHECK-NEXT:    lbu a7, 5(a0)
-; CHECK-NEXT:    lbu t0, 4(a0)
+; CHECK-NEXT:    lbu a1, 8(a0)
+; CHECK-NEXT:    lbu a2, 9(a0)
+; CHECK-NEXT:    lbu a3, 10(a0)
+; CHECK-NEXT:    lbu a4, 11(a0)
+; CHECK-NEXT:    lbu a5, 4(a0)
+; CHECK-NEXT:    lbu a6, 5(a0)
+; CHECK-NEXT:    lbu a7, 6(a0)
+; CHECK-NEXT:    lbu t0, 7(a0)
 ; CHECK-NEXT:    lbu t1, 0(a0)
 ; CHECK-NEXT:    lbu t2, 1(a0)
 ; CHECK-NEXT:    lbu t3, 2(a0)
@@ -84,14 +84,14 @@ define <12 x i8> @load_v12i8(ptr %p) {
 ; CHECK-NEXT:    vslide1down.vx v8, v8, t2
 ; CHECK-NEXT:    vslide1down.vx v8, v8, t3
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a0
-; CHECK-NEXT:    vslide1down.vx v8, v8, t0
-; CHECK-NEXT:    vslide1down.vx v8, v8, a7
+; CHECK-NEXT:    vslide1down.vx v8, v8, a5
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a6
-; CHECK-NEXT:    vslide1down.vx v9, v8, a5
-; CHECK-NEXT:    vmv.v.x v8, a4
-; CHECK-NEXT:    vslide1down.vx v8, v8, a3
+; CHECK-NEXT:    vslide1down.vx v8, v8, a7
+; CHECK-NEXT:    vslide1down.vx v9, v8, t0
+; CHECK-NEXT:    vmv.v.x v8, a1
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a2
-; CHECK-NEXT:    vslide1down.vx v8, v8, a1
+; CHECK-NEXT:    vslide1down.vx v8, v8, a3
+; CHECK-NEXT:    vslide1down.vx v8, v8, a4
 ; CHECK-NEXT:    li a0, 255
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
 ; CHECK-NEXT:    vmv.s.x v0, a0
@@ -106,8 +106,8 @@ define <12 x i8> @load_v12i8(ptr %p) {
 define <6 x i16> @load_v6i16(ptr %p) {
 ; CHECK-LABEL: load_v6i16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lh a1, 10(a0)
-; CHECK-NEXT:    lh a2, 8(a0)
+; CHECK-NEXT:    lh a1, 8(a0)
+; CHECK-NEXT:    lh a2, 10(a0)
 ; CHECK-NEXT:    lh a3, 0(a0)
 ; CHECK-NEXT:    lh a4, 2(a0)
 ; CHECK-NEXT:    lh a5, 4(a0)
@@ -117,8 +117,8 @@ define <6 x i16> @load_v6i16(ptr %p) {
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a4
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a5
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a0
-; CHECK-NEXT:    vslide1down.vx v8, v8, a2
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a1
+; CHECK-NEXT:    vslide1down.vx v8, v8, a2
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 2
 ; CHECK-NEXT:    ret
   %x = load <6 x i16>, ptr %p
@@ -128,8 +128,8 @@ define <6 x i16> @load_v6i16(ptr %p) {
 define <6 x half> @load_v6f16(ptr %p) {
 ; CHECK-LABEL: load_v6f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    flh fa5, 10(a0)
-; CHECK-NEXT:    flh fa4, 8(a0)
+; CHECK-NEXT:    flh fa5, 8(a0)
+; CHECK-NEXT:    flh fa4, 10(a0)
 ; CHECK-NEXT:    flh fa3, 0(a0)
 ; CHECK-NEXT:    flh fa2, 2(a0)
 ; CHECK-NEXT:    flh fa1, 4(a0)
@@ -139,8 +139,8 @@ define <6 x half> @load_v6f16(ptr %p) {
 ; CHECK-NEXT:    vfslide1down.vf v8, v8, fa2
 ; CHECK-NEXT:    vfslide1down.vf v8, v8, fa1
 ; CHECK-NEXT:    vfslide1down.vf v8, v8, fa0
-; CHECK-NEXT:    vfslide1down.vf v8, v8, fa4
 ; CHECK-NEXT:    vfslide1down.vf v8, v8, fa5
+; CHECK-NEXT:    vfslide1down.vf v8, v8, fa4
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 2
 ; CHECK-NEXT:    ret
   %x = load <6 x half>, ptr %p
@@ -150,8 +150,8 @@ define <6 x half> @load_v6f16(ptr %p) {
 define <6 x float> @load_v6f32(ptr %p) {
 ; CHECK-LABEL: load_v6f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    flw fa5, 20(a0)
-; CHECK-NEXT:    flw fa4, 16(a0)
+; CHECK-NEXT:    flw fa5, 16(a0)
+; CHECK-NEXT:    flw fa4, 20(a0)
 ; CHECK-NEXT:    flw fa3, 0(a0)
 ; CHECK-NEXT:    flw fa2, 4(a0)
 ; CHECK-NEXT:    flw fa1, 8(a0)
@@ -161,8 +161,8 @@ define <6 x float> @load_v6f32(ptr %p) {
 ; CHECK-NEXT:    vfslide1down.vf v8, v8, fa2
 ; CHECK-NEXT:    vfslide1down.vf v8, v8, fa1
 ; CHECK-NEXT:    vfslide1down.vf v8, v8, fa0
-; CHECK-NEXT:    vfslide1down.vf v8, v8, fa4
 ; CHECK-NEXT:    vfslide1down.vf v8, v8, fa5
+; CHECK-NEXT:    vfslide1down.vf v8, v8, fa4
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 2
 ; CHECK-NEXT:    ret
   %x = load <6 x float>, ptr %p
@@ -181,18 +181,18 @@ define <6 x double> @load_v6f64(ptr %p) {
 ; RV32-NEXT:    addi s0, sp, 128
 ; RV32-NEXT:    .cfi_def_cfa s0, 0
 ; RV32-NEXT:    andi sp, sp, -64
-; RV32-NEXT:    fld fa5, 0(a0)
-; RV32-NEXT:    fld fa4, 8(a0)
+; RV32-NEXT:    fld fa5, 24(a0)
+; RV32-NEXT:    fld fa4, 32(a0)
 ; RV32-NEXT:    fld fa3, 40(a0)
-; RV32-NEXT:    fld fa2, 32(a0)
-; RV32-NEXT:    fld fa1, 24(a0)
+; RV32-NEXT:    fld fa2, 0(a0)
+; RV32-NEXT:    fld fa1, 8(a0)
 ; RV32-NEXT:    fld fa0, 16(a0)
 ; RV32-NEXT:    fsd fa3, 40(sp)
-; RV32-NEXT:    fsd fa2, 32(sp)
-; RV32-NEXT:    fsd fa1, 24(sp)
+; RV32-NEXT:    fsd fa4, 32(sp)
+; RV32-NEXT:    fsd fa5, 24(sp)
 ; RV32-NEXT:    fsd fa0, 16(sp)
-; RV32-NEXT:    fsd fa4, 8(sp)
-; RV32-NEXT:    fsd fa5, 0(sp)
+; RV32-NEXT:    fsd fa1, 8(sp)
+; RV32-NEXT:    fsd fa2, 0(sp)
 ; RV32-NEXT:    mv a0, sp
 ; RV32-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; RV32-NEXT:    vle64.v v8, (a0)
@@ -213,18 +213,18 @@ define <6 x double> @load_v6f64(ptr %p) {
 ; RV64-NEXT:    addi s0, sp, 128
 ; RV64-NEXT:    .cfi_def_cfa s0, 0
 ; RV64-NEXT:    andi sp, sp, -64
-; RV64-NEXT:    fld fa5, 0(a0)
-; RV64-NEXT:    fld fa4, 8(a0)
+; RV64-NEXT:    fld fa5, 24(a0)
+; RV64-NEXT:    fld fa4, 32(a0)
 ; RV64-NEXT:    fld fa3, 40(a0)
-; RV64-NEXT:    fld fa2, 32(a0)
-; RV64-NEXT:    fld fa1, 24(a0)
+; RV64-NEXT:    fld fa2, 0(a0)
+; RV64-NEXT:    fld fa1, 8(a0)
 ; RV64-NEXT:    fld fa0, 16(a0)
 ; RV64-NEXT:    fsd fa3, 40(sp)
-; RV64-NEXT:    fsd fa2, 32(sp)
-; RV64-NEXT:    fsd fa1, 24(sp)
+; RV64-NEXT:    fsd fa4, 32(sp)
+; RV64-NEXT:    fsd fa5, 24(sp)
 ; RV64-NEXT:    fsd fa0, 16(sp)
-; RV64-NEXT:    fsd fa4, 8(sp)
-; RV64-NEXT:    fsd fa5, 0(sp)
+; RV64-NEXT:    fsd fa1, 8(sp)
+; RV64-NEXT:    fsd fa2, 0(sp)
 ; RV64-NEXT:    mv a0, sp
 ; RV64-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; RV64-NEXT:    vle64.v v8, (a0)
@@ -340,8 +340,8 @@ define <16 x i64> @exact_vlen_i64_m8(ptr %p) vscale_range(2,2) {
 define <6 x bfloat> @load_v6bf16(ptr %p) {
 ; CHECK-LABEL: load_v6bf16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lh a1, 10(a0)
-; CHECK-NEXT:    lh a2, 8(a0)
+; CHECK-NEXT:    lh a1, 8(a0)
+; CHECK-NEXT:    lh a2, 10(a0)
 ; CHECK-NEXT:    lh a3, 0(a0)
 ; CHECK-NEXT:    lh a4, 2(a0)
 ; CHECK-NEXT:    lh a5, 4(a0)
@@ -351,8 +351,8 @@ define <6 x bfloat> @load_v6bf16(ptr %p) {
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a4
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a5
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a0
-; CHECK-NEXT:    vslide1down.vx v8, v8, a2
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a1
+; CHECK-NEXT:    vslide1down.vx v8, v8, a2
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 2
 ; CHECK-NEXT:    ret
   %x = load <6 x bfloat>, ptr %p
