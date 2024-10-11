@@ -8,8 +8,6 @@ define i64 @strlen_i8(ptr %start) {
 ; DEFAULT-LABEL: define i64 @strlen_i8(
 ; DEFAULT-SAME: ptr [[START:%.*]]) #[[ATTR0:[0-9]+]] {
 ; DEFAULT-NEXT:  entry:
-; DEFAULT-NEXT:    [[TMP0:%.*]] = call i8 @llvm.vscale.i8()
-; DEFAULT-NEXT:    [[TMP2:%.*]] = mul i8 [[TMP0]], 8
 ; DEFAULT-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; DEFAULT:       vector.body:
 ; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -50,8 +48,6 @@ define i64 @strlen_i8(ptr %start) {
 ; VLMAX-LABEL: define i64 @strlen_i8(
 ; VLMAX-SAME: ptr [[START:%.*]]) #[[ATTR0:[0-9]+]] {
 ; VLMAX-NEXT:  entry:
-; VLMAX-NEXT:    [[TMP0:%.*]] = call i8 @llvm.vscale.i8()
-; VLMAX-NEXT:    [[TMP2:%.*]] = mul i8 [[TMP0]], 8
 ; VLMAX-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; VLMAX:       vector.body:
 ; VLMAX-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -92,8 +88,6 @@ define i64 @strlen_i8(ptr %start) {
 ; VL8-LABEL: define i64 @strlen_i8(
 ; VL8-SAME: ptr [[START:%.*]]) #[[ATTR0:[0-9]+]] {
 ; VL8-NEXT:  entry:
-; VL8-NEXT:    [[TMP0:%.*]] = call i8 @llvm.vscale.i8()
-; VL8-NEXT:    [[TMP2:%.*]] = mul i8 [[TMP0]], 8
 ; VL8-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; VL8:       vector.body:
 ; VL8-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -134,8 +128,6 @@ define i64 @strlen_i8(ptr %start) {
 ; VL4-LABEL: define i64 @strlen_i8(
 ; VL4-SAME: ptr [[START:%.*]]) #[[ATTR0:[0-9]+]] {
 ; VL4-NEXT:  entry:
-; VL4-NEXT:    [[TMP0:%.*]] = call i8 @llvm.vscale.i8()
-; VL4-NEXT:    [[TMP2:%.*]] = mul i8 [[TMP0]], 8
 ; VL4-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; VL4:       vector.body:
 ; VL4-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]

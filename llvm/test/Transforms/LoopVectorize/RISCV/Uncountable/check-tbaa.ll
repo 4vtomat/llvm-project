@@ -5,8 +5,6 @@ define void @strlen(ptr %s) {
 ; CHECK-LABEL: define void @strlen(
 ; CHECK-SAME: ptr [[S:%.*]]) #[[ATTR0:[0-9]+]] {
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP9:%.*]] = call i8 @llvm.vscale.i8()
-; CHECK-NEXT:    [[TMP10:%.*]] = mul i8 [[TMP9]], 8
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]

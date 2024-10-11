@@ -21,7 +21,6 @@ define i64 @strlen_i8(ptr %start) {
 ; VPLANS-NEXT:     EMIT vp<%9> = exiting-cond ir<%cmp.not>
 ; VPLANS-NEXT:     SCALAR-CAST vp<%10> = zext vp<%8> to i64
 ; VPLANS-NEXT:     EMIT vp<%11> = add nuw vp<%10>, vp<%3>
-; VPLANS-NEXT:     EMIT vp<%12> = add nuw vp<%2>, vp<%8>
 ; VPLANS-NEXT:     EMIT branch-on-cond vp<%9>
 ; VPLANS-NEXT:   No successors
 ; VPLANS-NEXT: }

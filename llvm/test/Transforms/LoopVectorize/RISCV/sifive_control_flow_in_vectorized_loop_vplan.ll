@@ -24,31 +24,32 @@
 ; VPLAN-EMPTY:
 ; VPLAN-NEXT:  <x1> vector loop: {
 ; VPLAN-NEXT:    vector.body:
-; VPLAN-NEXT:      EMIT vp<%2> = CANONICAL-INDUCTION ir<0>, vp<%9>
-; VPLAN-NEXT:      EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%3> = phi ir<0>, vp<%9>
-; VPLAN-NEXT:      EMIT vp<%4> = EXPLICIT-VECTOR-LENGTH vp<%3>, vp<%0>
-; VPLAN-NEXT:      vp<%5> = SCALAR-STEPS vp<%3>, ir<1>
-; VPLAN-NEXT:      CLONE ir<%arrayidx> = getelementptr ir<%reg.24.val>, vp<%5>
-; VPLAN-NEXT:      vp<%6> = vector-pointer ir<%arrayidx>
-; VPLAN-NEXT:      WIDEN ir<%2> = vp.load vp<%6>, vp<%4>       unit-strided
-; VPLAN-NEXT:      WIDEN-VP ir<%3> = and ir<%2>, ir<%1>
+; VPLAN-NEXT:      EMIT vp<%2> = CANONICAL-INDUCTION ir<0>, vp<%10>
+; VPLAN-NEXT:      EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%3> = phi ir<0>, vp<%10>
+; VPLAN-NEXT:      EMIT vp<%4> = sub vp<%1>, vp<%3>
+; VPLAN-NEXT:      EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%4>
+; VPLAN-NEXT:      vp<%6> = SCALAR-STEPS vp<%3>, ir<1>
+; VPLAN-NEXT:      CLONE ir<%arrayidx> = getelementptr ir<%reg.24.val>, vp<%6>
+; VPLAN-NEXT:      vp<%7> = vector-pointer ir<%arrayidx>
+; VPLAN-NEXT:      WIDEN ir<%2> = vp.load vp<%7>, vp<%5>       unit-strided
+; VPLAN-NEXT:      WIDEN ir<%3> = and ir<%2>, ir<%1>
 ; VPLAN-NEXT:      WIDEN ir<%or.cond.not> = icmp eq ir<%3>, ir<%1>
 ; VPLAN-NEXT:    Successor(s): 
 ; VPLAN-EMPTY:
 ; VPLAN-NEXT:    if (ir<%or.cond.not> != 0) {
 ; VPLAN-NEXT:      vector.if.bb:
-; VPLAN-NEXT:        WIDEN-VP ir<%xor> = xor ir<%2>, ir<%shl11>
-; VPLAN-NEXT:        vp<%7> = vector-pointer ir<%arrayidx>
-; VPLAN-NEXT:        WIDEN vp.store vp<%7>, ir<%xor>, vp<%4>, ir<%or.cond.not> unit-strided
+; VPLAN-NEXT:        WIDEN ir<%xor> = xor ir<%2>, ir<%shl11>
+; VPLAN-NEXT:        vp<%8> = vector-pointer ir<%arrayidx>
+; VPLAN-NEXT:        WIDEN vp.store vp<%8>, ir<%xor>, vp<%5>, ir<%or.cond.not> unit-strided
 ; VPLAN-NEXT:        BRANCH-ON-MASK  All-One, vector.body.split
 ; VPLAN-NEXT:      No successors
 ; VPLAN-NEXT:    }
 ; VPLAN-NEXT:    Successor(s): vector.body.split
 ; VPLAN-EMPTY:
 ; VPLAN-NEXT:    vector.body.split:
-; VPLAN-NEXT:      SCALAR-CAST vp<%8> = zext vp<%4> to i64
-; VPLAN-NEXT:      EMIT vp<%9> = add vp<%8>, vp<%3>
-; VPLAN-NEXT:      EMIT branch-on-count vp<%9>, vp<%0>
+; VPLAN-NEXT:      SCALAR-CAST vp<%9> = zext vp<%5> to i64
+; VPLAN-NEXT:      EMIT vp<%10> = add vp<%9>, vp<%3>
+; VPLAN-NEXT:      EMIT branch-on-count vp<%10>, vp<%0>
 ; VPLAN-NEXT:    No successors
 ; VPLAN-NEXT:  }
 ; VPLAN-NEXT:  Successor(s): middle.block
