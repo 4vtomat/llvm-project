@@ -438,13 +438,6 @@ def SIFIVE_P270N :
                       !listconcat(SiFive7TuneFeatures,
                                   [TuneDLen128b, TunePseudoLIsimm32])>;
 
-// The normal RISCVTuneInfo, except with a 64 byte cache line size.
-class RISCVTuneInfo64ByteCacheLine : RISCVTuneInfo {
-  // The cache line size is 64 bytes for L1 instruction cache, L1 data cache,
-  // pL2, and L3 cache.
-  let CacheLineSize = 64;
-}
-
 def SIFIVE_X280 : RISCVProcessorModel<"sifive-x280", SiFive7VLEN512Model,
                                       [Feature64Bit,
                                        FeatureStdExtI,
@@ -465,8 +458,7 @@ def SIFIVE_X280 : RISCVProcessorModel<"sifive-x280", SiFive7VLEN512Model,
                                        FeatureVendorXSfvfhbfmin],
                       !listconcat(SiFive7TuneFeatures,
                                   [TuneDLenFactor2, TuneDLen256b,
-                                   TuneOptimizedZeroStrideLoad])>,
-                  RISCVTuneInfo64ByteCacheLine;
+                                   TuneOptimizedZeroStrideLoad])>;
 
 def SIFIVE_X280N :
   RISCVProcessorModel<"sifive-x280n", SiFive7NVLEN512Model,
@@ -492,9 +484,7 @@ def SIFIVE_X280N :
                       !listconcat(SiFive7TuneFeatures,
                                   [TuneDLenFactor2, TuneDLen256b,
                                    TuneOptimizedZeroStrideLoad,
-                                   TunePseudoLIsimm32])>,
-  RISCVTuneInfo64ByteCacheLine;
-
+                                   TunePseudoLIsimm32])>;
 
 def SIFIVE_X280O :
   RISCVProcessorModel<"sifive-x280o",
@@ -521,8 +511,7 @@ def SIFIVE_X280O :
                       !listconcat(SiFive7TuneFeatures,
                                   [TuneFastGather, TuneDLenFactor2,
                                    TuneDLen256b, TuneOptimizedZeroStrideLoad,
-                                   TunePseudoLIsimm32])>,
-  RISCVTuneInfo64ByteCacheLine;
+                                   TunePseudoLIsimm32])>;
 
 defvar SIFIVE_X390_Features = [
   Feature64Bit,
@@ -702,8 +691,7 @@ def SIFIVE_P470 : RISCVProcessorModel<"sifive-p470", SiFiveP400Model,
                                        FeatureUnalignedVectorMem],
                                       !listconcat(SiFiveP400TuneFeatures,
                                                   [TuneDLen128b,
-                                                   TuneNoSinkSplatOperands])>,
-                  RISCVTuneInfo64ByteCacheLine;
+                                                   TuneNoSinkSplatOperands])>;
 
 def SIFIVE_LEOPARD : RISCVProcessorModel<"sifive-leopard", SiFiveP400Model,
                                          [Feature64Bit,
@@ -757,8 +745,7 @@ def SIFIVE_LEOPARD : RISCVProcessorModel<"sifive-leopard", SiFiveP400Model,
                                          !listconcat([TuneSiFiveLeopard],
                                                      SiFiveMallardTuneFeatures,
                                                      [TuneDLen128b,
-                                                      TuneNoSinkSplatOperands])>,
-                     RISCVTuneInfo64ByteCacheLine;
+                                                      TuneNoSinkSplatOperands])>;
 
 def SIFIVE_P550 : RISCVProcessorModel<"sifive-p550", SiFiveP500Model,
                                       [Feature64Bit,
@@ -842,8 +829,7 @@ def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", SiFiveP600Model,
                                        FeatureUnalignedVectorMem],
                                       !listconcat(SiFiveP600TuneFeatures,
                                                   [TuneDLen128b,
-                                                   TuneNoSinkSplatOperands])>,
-                  RISCVTuneInfo64ByteCacheLine;
+                                                   TuneNoSinkSplatOperands])>;
 
 def SIFIVE_LION : RISCVProcessorModel<"sifive-lion", SiFiveP600Model,
                                       [Feature64Bit,
@@ -897,8 +883,7 @@ def SIFIVE_LION : RISCVProcessorModel<"sifive-lion", SiFiveP600Model,
                                       !listconcat([TuneSiFiveLion],
                                                   SiFiveMallardTuneFeatures,
                                                   [TuneDLen128b,
-                                                   TuneNoSinkSplatOperands])>,
-                  RISCVTuneInfo64ByteCacheLine;
+                                                   TuneNoSinkSplatOperands])>;
 
 def SIFIVE_CHEETAH : RISCVProcessorModel<"sifive-cheetah", SiFiveP800SModel,
                                          [Feature64Bit,

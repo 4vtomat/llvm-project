@@ -382,7 +382,11 @@ public:
   bool useAA() const override;
 
   unsigned getCacheLineSize() const override {
+#if SIFIVE_CUSTOMIZATION
+    return HasStdExtZic64b ? 64 : TuneInfo->CacheLineSize;
+#else
     return TuneInfo->CacheLineSize;
+#endif // SIFIVE_CUSTOMIZATION
   };
   unsigned getPrefetchDistance() const override {
     return TuneInfo->PrefetchDistance;
