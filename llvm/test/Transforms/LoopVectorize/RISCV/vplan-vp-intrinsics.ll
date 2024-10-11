@@ -3,16 +3,16 @@
 ; RUN: opt -passes=loop-vectorize -debug-only=loop-vectorize \
 ; RUN: -force-tail-folding-style=data-with-evl \
 ; RUN: -prefer-predicate-over-epilogue=predicate-dont-vectorize \
-; RUN: -mtriple=riscv64 -mattr=+v -riscv-v-vector-bits-max=128 -disable-output < %s 2>&1 | FileCheck --check-prefixes=IF-EVL,CHECK %s
+; RUN: -mtriple=riscv64 -mattr=+v -riscv-v-vector-bits-max=128 -disable-output < %s 2>&1 | FileCheck --check-prefixes=IF-EVL,CHECK-EVL %s
 
 ; RUN: opt -passes=loop-vectorize -debug-only=loop-vectorize \
 ; RUN: -force-tail-folding-style=none \
 ; RUN: -prefer-predicate-over-epilogue=predicate-else-scalar-epilogue \
+; RUN: -riscv-use-vla-vectorizer=false \
 ; RUN: -mtriple=riscv64 -mattr=+v -riscv-v-vector-bits-max=128 -disable-output < %s 2>&1 | FileCheck --check-prefixes=NO-VP,CHECK %s
 
 define void @foo(ptr noalias %a, ptr noalias %b, ptr noalias %c, i64 %N) {
-; IF-EVL: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2,vscale x 4},UF={1}' {
-; IF-EVL-NEXT: Live-in vp<[[VFUF:%[0-9]+]]> = VF * UF
+; IF-EVL: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2},UF={1}' {
 ; IF-EVL-NEXT: Live-in vp<[[VTC:%[0-9]+]]> = vector-trip-count
 ; IF-EVL-NEXT: Live-in ir<%N> = original trip-count
 ; IF-EVL-EMPTY:
@@ -38,8 +38,7 @@ define void @foo(ptr noalias %a, ptr noalias %b, ptr noalias %c, i64 %N) {
 ; IF-EVL-NEXT:    WIDEN vp.store vp<[[PTR3]]>, ir<[[ADD]]>, vp<[[EVL]]>
 ; IF-EVL-NEXT:    SCALAR-CAST vp<[[CAST:%[0-9]+]]> = zext vp<[[EVL]]> to i64
 ; IF-EVL-NEXT:    EMIT vp<[[IV_NEXT]]> = add vp<[[CAST]]>, vp<[[EVL_PHI]]>
-; IF-EVL-NEXT:    EMIT vp<[[IV_NEXT_EXIT:%[0-9]+]]> = add vp<[[IV]]>, vp<[[VFUF]]>
-; IF-EVL-NEXT:    EMIT branch-on-count  vp<[[IV_NEXT_EXIT]]>, vp<[[VTC]]>
+; IF-EVL-NEXT:    EMIT branch-on-count  vp<[[IV_NEXT]]>, vp<[[VTC]]>
 ; IF-EVL-NEXT:  No successors
 ; IF-EVL-NEXT: }
 
@@ -91,6 +90,33 @@ for.cond.cleanup:
 }
 
 define void @safe_dep(ptr %p) {
+; CHECK-EVL: VPlan 'Initial VPlan for VF={vscale x 1},UF={1}' {
+; CHECK-EVL-NEXT: Live-in vp<[[VTC:%[0-9]+]]> = vector-trip-count
+; CHECK-EVL-NEXT: Live-in ir<512> = original trip-count
+; CHECK-EVL-EMPTY:
+; CHECK-EVL:      vector.ph:
+; CHECK-EVL-NEXT: Successor(s): vector loop
+; CHECK-EVL-EMPTY:
+; CHECK-EVL-NEXT: <x1> vector loop: {
+; CHECK-EVL-NEXT:  vector.body:
+; CHECK-EVL-NEXT:    EMIT vp<%1> = CANONICAL-INDUCTION ir<0>, vp<%9>
+; CHECK-EVL-NEXT:    EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%2> = phi ir<0>, vp<%9>
+; CHECK-EVL-NEXT:    EMIT vp<%3> = sub ir<512>, vp<%2>
+; CHECK-EVL-NEXT:    EMIT vp<%4> = EXPLICIT-VECTOR-LENGTH vp<%3>
+; CHECK-EVL-NEXT:    vp<%5> = SCALAR-STEPS vp<%2>, ir<1>
+; CHECK-EVL-NEXT:    CLONE ir<%a1> = getelementptr ir<%p>, vp<%5>
+; CHECK-EVL-NEXT:    vp<%6> = vector-pointer ir<%a1>
+; CHECK-EVL-NEXT:    WIDEN ir<%v> = vp.load vp<%6>, vp<%4>     unit-strided
+; CHECK-EVL-NEXT:    CLONE ir<%offset> = add vp<%5>, ir<100>
+; CHECK-EVL-NEXT:    CLONE ir<%a2> = getelementptr ir<%p>, ir<%offset>
+; CHECK-EVL-NEXT:    vp<%7> = vector-pointer ir<%a2>
+; CHECK-EVL-NEXT:    WIDEN vp.store vp<%7>, ir<%v>, vp<%4>     unit-strided
+; CHECK-EVL-NEXT:    SCALAR-CAST vp<%8> = zext vp<%4> to i64
+; CHECK-EVL-NEXT:    EMIT vp<%9> = add vp<%8>, vp<%2>
+; CHECK-EVL-NEXT:    EMIT branch-on-count vp<%9>, vp<%0>
+; CHECK-EVL-NEXT:  No successors
+; CHECK-EVL-NEXT: }
+
 ; CHECK: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2},UF>=1' {
 ; CHECK-NEXT: Live-in vp<[[VFUF:%[0-9]+]]> = VF * UF
 ; CHECK-NEXT: Live-in vp<[[VTC:%[0-9]+]]> = vector-trip-count

@@ -32,13 +32,13 @@
 ; VPLAN-NEXT:      CLONE ir<%arrayidx> = getelementptr ir<%reg.24.val>, vp<%6>
 ; VPLAN-NEXT:      vp<%7> = vector-pointer ir<%arrayidx>
 ; VPLAN-NEXT:      WIDEN ir<%2> = vp.load vp<%7>, vp<%5>       unit-strided
-; VPLAN-NEXT:      WIDEN ir<%3> = and ir<%2>, ir<%1>
+; VPLAN-NEXT:      WIDEN ir<%3> = vp.and ir<%2>, ir<%1>
 ; VPLAN-NEXT:      WIDEN ir<%or.cond.not> = icmp eq ir<%3>, ir<%1>
-; VPLAN-NEXT:    Successor(s): 
+; VPLAN-NEXT:    Successor(s):
 ; VPLAN-EMPTY:
 ; VPLAN-NEXT:    if (ir<%or.cond.not> != 0) {
 ; VPLAN-NEXT:      vector.if.bb:
-; VPLAN-NEXT:        WIDEN ir<%xor> = xor ir<%2>, ir<%shl11>
+; VPLAN-NEXT:        WIDEN ir<%xor> = vp.xor ir<%2>, ir<%shl11>
 ; VPLAN-NEXT:        vp<%8> = vector-pointer ir<%arrayidx>
 ; VPLAN-NEXT:        WIDEN vp.store vp<%8>, ir<%xor>, vp<%5>, ir<%or.cond.not> unit-strided
 ; VPLAN-NEXT:        BRANCH-ON-MASK  All-One, vector.body.split

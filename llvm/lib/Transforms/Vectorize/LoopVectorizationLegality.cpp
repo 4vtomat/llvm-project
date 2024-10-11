@@ -2163,11 +2163,11 @@ bool LoopVectorizationLegality::canVectorize(bool UseVPlanNativePath) {
 #if SIFIVE_CUSTOMIZATION
   // Countable vs uncountable loops
   const SCEV *ExitCount = PSE.getBackedgeTakenCount();
-  if (isa<SCEVCouldNotCompute>(ExitCount)) {
+  if (isa<SCEVCouldNotCompute>(ExitCount) && useVLAVectorizer()) {
     // TODO: Consider merging memory safety analysis with LAA.
     // There are false positives that SE categorizes countable loops as
     // uncountable.
-    if (useVLAVectorizer() && canVectorizeUncountableLoop(PSE)) {
+    if (canVectorizeUncountableLoop(PSE)) {
       // Vectorizable uncountable loops still need to set up LAI.
       LLVM_DEBUG(dbgs() << "LV: Can vectorize an uncountable loop!\n");
       setVectorizableUncountable();
