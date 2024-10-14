@@ -977,6 +977,11 @@ void RVVType::applyFixedLog2LMUL(int Log2LMUL, enum FixedLMULType Type) {
 std::optional<RVVTypes>
 RVVTypeCache::computeTypes(BasicType BT, int Log2LMUL, unsigned NF,
                            ArrayRef<PrototypeDescriptor> Prototype) {
+#if SIFIVE_CUSTOMIZATION
+  // LMUL x NF must be less than or equal to 8.
+  if ((Log2LMUL >= 1) && (1 << Log2LMUL) * NF > 8)
+    return std::nullopt;
+#endif // SIFIVE_CUSTOMIZATION
   RVVTypes Types;
   for (const PrototypeDescriptor &Proto : Prototype) {
     auto T = computeType(BT, Log2LMUL, Proto);
