@@ -863,7 +863,7 @@ public:
   void fixupIVUsers(PHINode *OrigPhi, const InductionDescriptor &II,
                     Value *VectorTripCount, Value *EndValue,
                     BasicBlock *MiddleBlock, VPlan &Plan,
-                    VPTransformState &State);
+                    VPTransformState &State) override;
 };
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -2738,8 +2738,8 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
 #if SIFIVE_CUSTOMIZATION
   if (isRevectorizeWithoutStrideChecks(*OrigLoop)) {
     auto *NewPHI = PHINode::Create(
-        Builder.getInt1Ty(),
-        pred_size(TCCheckBlock), "no.scev.check", TCCheckBlock->getFirstNonPHI());
+        Builder.getInt1Ty(), pred_size(TCCheckBlock), "no.scev.check",
+        TCCheckBlock->getFirstNonPHI()->getIterator());
     for (BasicBlock *BB : predecessors(TCCheckBlock))
       NewPHI->addIncoming(BB == PrevSCEVCheckBlock ? Builder.getFalse()
                                                    : Builder.getTrue(),
@@ -5587,24 +5587,22 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
       // scalable vectors we assume that vectorization is always more profitable
       // than scalar loop.
       InstructionCost C;
+      InstructionCost Overhead = 0;
       if (UseVPlanCostModel) {
         VPlanCostModel VPCM(getPlanFor(VF), *Legal, TTI, *TLI, TypeInfo);
         C = VPCM.getCost(
             RVVPair::get(CM.WidestType, VF, PSE.getSE()->getDataLayout()));
+        if (!C.isValid()) {
+          LLVM_DEBUG(dbgs() << "LV: Vector loop of width " << VF
+                            << " yields an invalid cost. Skipping\n");
+          continue;
+        }
+        VPCostContext CostCtx(TTI, *TLI, Legal->getWidestInductionType(), CM);
+        if (!VectorizerDisableReduceOverheadEstimation && VF.isVector())
+          Overhead = getPlanFor(VF).overhead(VF, CostCtx);
       } else {
         C = CM.expectedCost(VF);
       }
-      if (!C.isValid()) {
-        LLVM_DEBUG(dbgs() << "LV: Vector loop of width " << VF
-                          << " yields an invalid cost. Skipping\n");
-        continue;
-      }
-
-      VPCostContext CostCtx(TTI, *TLI, Legal->getWidestInductionType(), CM);
-      InstructionCost Overhead = 0;
-      if (Legal->useVLAVectorizer() &&
-          !VectorizerDisableReduceOverheadEstimation && VF.isVector())
-        Overhead = getPlanFor(VF).overhead(VF, CostCtx);
       VectorizationFactor Candidate(VF, C, ScalarCost.ScalarCost, Overhead);
 #else
       InstructionCost C = CM.expectedCost(VF);
@@ -5652,17 +5650,11 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
         << "LV: Scalable vectorization could not select a viable factor\n");
     return VectorizationFactor::Disabled();
   }
-
-  LLVM_DEBUG(if (ForceVectorization && !ChosenFactor.Width.isScalar() &&
-                 !isMoreProfitable(ChosenFactor, ScalarCost)) dbgs()
-             << "LV: Vectorization seems to be not beneficial, "
-             << "but was forced by a user.\n");
-#else
-  LLVM_DEBUG(if (ForceVectorization && !ChosenFactor.Width.isScalar() &&
-                 !isMoreProfitable(ChosenFactor, ScalarCost)) dbgs()
-             << "LV: Vectorization seems to be not beneficial, "
-             << "but was forced by a user.\n");
 #endif // SIFIVE_CUSTOMIZATION
+  LLVM_DEBUG(if (ForceVectorization && !ChosenFactor.Width.isScalar() &&
+                 !isMoreProfitable(ChosenFactor, ScalarCost)) dbgs()
+             << "LV: Vectorization seems to be not beneficial, "
+             << "but was forced by a user.\n");
   LLVM_DEBUG(dbgs() << "LV: Selecting VF: " << ChosenFactor.Width << ".\n");
   return ChosenFactor;
 }
@@ -7518,15 +7510,15 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
         Decision = CM_Interleave;
         Cost = InterleaveCost;
 #if SIFIVE_CUSTOMIZATION
-      } else if (VF.isScalable() || GatherScatterCost < ScalarizationCost) {
+      } else if ((VF.isScalable() && Legal->useVLAVectorizer()) ||
+                 GatherScatterCost < ScalarizationCost) {
+        // We cannot scalarise (yet) with scalable vectors so default to
+        // gather/scatter in those cases.
 #else
       } else if (GatherScatterCost < ScalarizationCost) {
 #endif // SIFIVE_CUSTOMIZATION
-        // We cannot scalarise (yet) with scalable vectors so default to
-        // gather/scatter in those cases.
         Decision = CM_GatherScatter;
         Cost = GatherScatterCost;
-
 #if SIFIVE_CUSTOMIZATION
         InstWidening MemAccessType = getMemoryAccessType(&I);
         if (MemAccessType == CM_Strided) {

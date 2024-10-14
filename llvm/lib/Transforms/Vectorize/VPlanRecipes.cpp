@@ -3686,29 +3686,25 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
   // rather than directly getting the pointer for lane VF - 1, because the
   // pointer operand of the interleaved access is supposed to be uniform.
 #if SIFIVE_CUSTOMIZATION
-
-  Index = State.Builder.getInt32(Group->getIndex(Instr));
-
-  if (Group->isReverse()) {
-    if (State.Plan->useVLAVectorizer()) {
+  if (State.Plan->useVLAVectorizer()) {
+    Index = State.Builder.getInt32(Group->getIndex(Instr));
+    if (Group->isReverse()) {
       assert(State.EVL && "RuntimeVL must be initialized at this point");
       Value *EVL = State.Builder.CreateZExtOrTrunc(
-          State.get(State.EVL, /*NeedsScalar=*/true), State.Builder.getInt32Ty());
-      Index = State.Builder.CreateAdd(
-          Index,
-          State.Builder.CreateMul(State.Builder.CreateSub(EVL, State.Builder.getInt32(1), "",
-                                              /*NUW=*/true, /*NSW=*/true),
-                            State.Builder.getInt32(InterleaveFactor), "",
-                            /*NUW=*/true, /*NSW=*/true),
-          "", /*NUW=*/true, /*NSW=*/true);
+          State.get(State.EVL, /*NeedsScalar=*/true),
+          State.Builder.getInt32Ty());
+      Index = State.Builder.CreateSub(EVL, State.Builder.getInt32(1), "",
+                                      /*NUW=*/true, /*NSW=*/true);
+      Index = State.Builder.CreateMul(
+          Index, State.Builder.getInt32(Group->getFactor()), "",
+              /*NUW=*/true, /*NSW=*/true);
+      Index = State.Builder.CreateNeg(Index);
     } else {
-      Index = State.Builder.CreateAdd(
-          Index,
-          State.Builder.getInt32((State.VF.getKnownMinValue() - 1) * Group->getFactor()));
+      // TODO: Drop redundant 0-index GEP as follow-up.
+      Index = State.Builder.getInt32(0);
     }
-  }
-  Index = State.Builder.CreateNeg(Index);
-#else
+  } else
+#endif // SIFIVE_CUSTOMIZATION
   if (Group->isReverse()) {
     Value *RuntimeVF =
         getRuntimeVF(State.Builder, State.Builder.getInt32Ty(), State.VF);
@@ -3720,7 +3716,6 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
     // TODO: Drop redundant 0-index GEP as follow-up.
     Index = State.Builder.getInt32(0);
   }
-#endif // SIFIVE_CUSTOMIZATION
 
   VPValue *Addr = getAddr();
   Value *ResAddr = State.get(Addr, VPLane(0));

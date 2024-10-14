@@ -122,14 +122,13 @@ define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; VEC-M1-NEXT:    [[VP_OP32:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP31]], <vscale x 1 x double> [[TMP42]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP32]])
 ; VEC-M1-NEXT:    [[VP_OP33:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP51]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP32]])
 ; VEC-M1-NEXT:    [[VP_OP34:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP33]], <vscale x 1 x double> [[TMP43]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP32]])
-; VEC-M1-NEXT:    [[TMP52:%.*]] = getelementptr double, ptr [[TMP34]], i32 -5
 ; VEC-M1-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 6 x double> @llvm.experimental.vector.interleave6.nxv6f64(<vscale x 1 x double> [[VP_OP24]], <vscale x 1 x double> [[VP_OP26]], <vscale x 1 x double> [[VP_OP28]], <vscale x 1 x double> [[VP_OP30]], <vscale x 1 x double> [[VP_OP32]], <vscale x 1 x double> [[VP_OP34]])
-; VEC-M1-NEXT:    [[TMP53:%.*]] = mul nuw nsw i32 [[TMP32]], 6
-; VEC-M1-NEXT:    call void @llvm.vp.store.nxv6f64.p0(<vscale x 6 x double> [[INTERLEAVED_VEC]], ptr align 8 [[TMP52]], <vscale x 6 x i1> shufflevector (<vscale x 6 x i1> insertelement (<vscale x 6 x i1> poison, i1 true, i64 0), <vscale x 6 x i1> poison, <vscale x 6 x i32> zeroinitializer), i32 [[TMP53]])
-; VEC-M1-NEXT:    [[TMP54:%.*]] = zext i32 [[TMP32]] to i64
-; VEC-M1-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP54]], [[EVL_BASED_IV]]
-; VEC-M1-NEXT:    [[TMP55:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
-; VEC-M1-NEXT:    br i1 [[TMP55]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; VEC-M1-NEXT:    [[TMP52:%.*]] = mul nuw nsw i32 [[TMP32]], 6
+; VEC-M1-NEXT:    call void @llvm.vp.store.nxv6f64.p0(<vscale x 6 x double> [[INTERLEAVED_VEC]], ptr align 8 [[TMP36]], <vscale x 6 x i1> shufflevector (<vscale x 6 x i1> insertelement (<vscale x 6 x i1> poison, i1 true, i64 0), <vscale x 6 x i1> poison, <vscale x 6 x i32> zeroinitializer), i32 [[TMP52]])
+; VEC-M1-NEXT:    [[TMP53:%.*]] = zext i32 [[TMP32]] to i64
+; VEC-M1-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP53]], [[EVL_BASED_IV]]
+; VEC-M1-NEXT:    [[TMP54:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
+; VEC-M1-NEXT:    br i1 [[TMP54]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; VEC-M1:       middle.block:
 ; VEC-M1-NEXT:    br label [[EXIT:%.*]]
 ; VEC-M1:       scalar.ph:

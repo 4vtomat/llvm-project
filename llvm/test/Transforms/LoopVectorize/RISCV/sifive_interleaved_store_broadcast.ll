@@ -22,7 +22,7 @@ define void @store_constant(i32 %n, ptr %a){
 ; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; CHECK-NEXT:    [[TMP3:%.*]] = shl nsw i64 [[TMP0]], 2
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP3]]
-; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[TMP5]], i32 -3
+; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[TMP5]], i32 0
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul nuw nsw i32 [[TMP2]], 4
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> shufflevector (<vscale x 16 x i32> insertelement (<vscale x 16 x i32> poison, i32 -939524096, i64 0), <vscale x 16 x i32> poison, <vscale x 16 x i32> zeroinitializer), ptr align 4 [[TMP6]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP2]] to i64
@@ -112,7 +112,7 @@ define void @store_same_invariant(i32 %n, ptr %a){
 ; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; CHECK-NEXT:    [[TMP3:%.*]] = shl nsw i64 [[TMP0]], 2
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP3]]
-; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[TMP5]], i32 -3
+; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[TMP5]], i32 0
 ; CHECK-NEXT:    [[WIDE_BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 16 x i32> poison, i32 [[N]], i64 0
 ; CHECK-NEXT:    [[WIDE_BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 16 x i32> [[WIDE_BROADCAST_SPLATINSERT]], <vscale x 16 x i32> poison, <vscale x 16 x i32> zeroinitializer
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul nuw nsw i32 [[TMP2]], 4
