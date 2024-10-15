@@ -371,7 +371,6 @@ define i32 @step_cond_add(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-OUTLOOP-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP2]], [[VECTOR_PH]] ], [ [[TMP9:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-OUTLOOP-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-OUTLOOP-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i32> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
-; IF-EVL-OUTLOOP-NEXT:    [[VEC_IND_NEXT1:%.*]] = add <vscale x 2 x i32> [[VEC_IND]], [[DOTSPLAT]]
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP8:%.*]] = sub i64 [[N]], [[EVL_BASED_IV2]]
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP9]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP8]], i32 2, i1 true)
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP10:%.*]] = add i64 [[EVL_BASED_IV2]], 0
@@ -435,7 +434,6 @@ define i32 @step_cond_add(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-INLOOP-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-INLOOP-NEXT:    [[RDX:%.*]] = phi i32 [ [[START]], [[VECTOR_PH]] ], [ [[ADD:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-INLOOP-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i32> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
-; IF-EVL-INLOOP-NEXT:    [[VEC_IND_NEXT1:%.*]] = add <vscale x 2 x i32> [[VEC_IND]], [[DOTSPLAT]]
 ; IF-EVL-INLOOP-NEXT:    [[TMP7:%.*]] = sub i64 [[N]], [[EVL_BASED_IV1]]
 ; IF-EVL-INLOOP-NEXT:    [[TMP8:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP7]], i32 2, i1 true)
 ; IF-EVL-INLOOP-NEXT:    [[TMP9:%.*]] = add i64 [[EVL_BASED_IV1]], 0
@@ -560,7 +558,6 @@ define i32 @step_cond_add_pred(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-OUTLOOP-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP2]], [[VECTOR_PH]] ], [ [[TMP9:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-OUTLOOP-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-OUTLOOP-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i32> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
-; IF-EVL-OUTLOOP-NEXT:    [[VEC_IND_NEXT1:%.*]] = add <vscale x 2 x i32> [[VEC_IND]], [[DOTSPLAT]]
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP8:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP9]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP8]], i32 2, i1 true)
 ; IF-EVL-OUTLOOP-NEXT:    [[IV:%.*]] = add i64 [[EVL_BASED_IV]], 0
@@ -629,7 +626,6 @@ define i32 @step_cond_add_pred(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-INLOOP-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-INLOOP-NEXT:    [[VEC_PHI:%.*]] = phi i32 [ [[START]], [[VECTOR_PH]] ], [ [[TMP13:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-INLOOP-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i32> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
-; IF-EVL-INLOOP-NEXT:    [[VEC_IND_NEXT1:%.*]] = add <vscale x 2 x i32> [[VEC_IND]], [[DOTSPLAT]]
 ; IF-EVL-INLOOP-NEXT:    [[TMP7:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; IF-EVL-INLOOP-NEXT:    [[TMP8:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP7]], i32 2, i1 true)
 ; IF-EVL-INLOOP-NEXT:    [[IV:%.*]] = add i64 [[EVL_BASED_IV]], 0

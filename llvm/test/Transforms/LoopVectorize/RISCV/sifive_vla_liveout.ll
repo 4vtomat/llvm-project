@@ -36,7 +36,6 @@ define dso_local noundef i32 @_Z3fooiPKfPf(i32 noundef signext %N, ptr nocapture
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 4 x i32> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[VEC_IND_NEXT1:%.*]] = add <vscale x 4 x i32> [[VEC_IND]], [[DOTSPLAT]]
 ; CHECK-NEXT:    [[TMP11:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP12:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP11]], i32 4, i1 true)
 ; CHECK-NEXT:    [[TMP13:%.*]] = add i64 [[EVL_BASED_IV]], 0

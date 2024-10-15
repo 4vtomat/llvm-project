@@ -37,7 +37,6 @@ define void @masked_store(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i64> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[VEC_IND_NEXT:%.*]] = add <vscale x 2 x i64> [[VEC_IND]], [[DOTSPLAT]]
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP10:%.*]] = add i64 [[EVL_BASED_IV]], 0
@@ -164,7 +163,6 @@ define void @masked_load(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP3]], [[VECTOR_PH]] ], [ [[TMP8:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i64> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[VEC_IND_NEXT:%.*]] = add <vscale x 2 x i64> [[VEC_IND]], [[DOTSPLAT]]
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP8]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP9:%.*]] = add i64 [[EVL_BASED_IV]], 0

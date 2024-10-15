@@ -122,7 +122,6 @@ define i32 @FmoGetLastCodedMBOfSliceGroup(i32 %SliceGroupID, ptr %MBAmap, i32 %P
 ; VP-SCALABLE-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP3]], [[VECTOR_PH]] ], [ [[TMP9:%.*]], [[VECTOR_BODY]] ]
 ; VP-SCALABLE-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 4 x i32> [ shufflevector (<vscale x 4 x i32> insertelement (<vscale x 4 x i32> poison, i32 -2147483648, i64 0), <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer), [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
 ; VP-SCALABLE-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 4 x i32> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], [[VECTOR_BODY]] ]
-; VP-SCALABLE-NEXT:    [[VEC_IND_NEXT:%.*]] = add <vscale x 4 x i32> [[VEC_IND]], [[DOTSPLAT]]
 ; VP-SCALABLE-NEXT:    [[AVL:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV]]
 ; VP-SCALABLE-NEXT:    [[TMP9]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 4, i1 true)
 ; VP-SCALABLE-NEXT:    [[TMP10:%.*]] = add i64 [[EVL_BASED_IV]], 0

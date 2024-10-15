@@ -2270,10 +2270,8 @@ void VPWidenIntOrFpInductionRecipe::execute(VPTransformState &State) {
   VecInd->setDebugLoc(EntryVal->getDebugLoc());
   State.set(this, VecInd);
 
-  Instruction *LastInduction = cast<Instruction>(
-      Builder.CreateBinOp(AddOp, VecInd, SplatVF, "vec.ind.next"));
-
 #if SIFIVE_CUSTOMIZATION
+  Instruction *LastInduction = VecInd;
   if (State.Plan->useVLAVectorizer()) {
     // FIXME: Remove this code with a proper representation of pointer induction
     // in a VPlan.
@@ -2297,7 +2295,13 @@ void VPWidenIntOrFpInductionRecipe::execute(VPTransformState &State) {
     LastInduction = widenPredicatedArithmeticOp(
         State, AddOp, {LastInduction, SplatVF},
         /*Mask=*/nullptr, "step.add");
+  } else {
+    LastInduction = cast<Instruction>(
+      Builder.CreateBinOp(AddOp, VecInd, SplatVF, "vec.ind.next"));
   }
+#else
+  Instruction *LastInduction = cast<Instruction>(
+      Builder.CreateBinOp(AddOp, VecInd, SplatVF, "vec.ind.next"));
 #endif // SIFIVE_CUSTOMIZATION
 
   if (isa<TruncInst>(EntryVal))

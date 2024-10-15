@@ -89,7 +89,6 @@ define i64 @select_icmp_const_1(ptr nocapture readonly %a, i64 %n) #0 {
 ; VP-SCALABLE-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP3]], [[VECTOR_PH]] ], [ [[TMP8:%.*]], [[VECTOR_BODY]] ]
 ; VP-SCALABLE-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i64> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], [[VECTOR_BODY]] ]
 ; VP-SCALABLE-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i64> [ shufflevector (<vscale x 2 x i64> insertelement (<vscale x 2 x i64> poison, i64 -9223372036854775808, i64 0), <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer), [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
-; VP-SCALABLE-NEXT:    [[VEC_IND_NEXT:%.*]] = add <vscale x 2 x i64> [[VEC_IND]], [[DOTSPLAT]]
 ; VP-SCALABLE-NEXT:    [[AVL:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; VP-SCALABLE-NEXT:    [[TMP8]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; VP-SCALABLE-NEXT:    [[TMP9:%.*]] = add i64 [[EVL_BASED_IV]], 0
@@ -235,7 +234,6 @@ define i64 @select_icmp_const_2(ptr nocapture readonly %a, i64 %n) #0 {
 ; VP-SCALABLE-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP3]], [[VECTOR_PH]] ], [ [[TMP8:%.*]], [[VECTOR_BODY]] ]
 ; VP-SCALABLE-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i64> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], [[VECTOR_BODY]] ]
 ; VP-SCALABLE-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i64> [ shufflevector (<vscale x 2 x i64> insertelement (<vscale x 2 x i64> poison, i64 -9223372036854775808, i64 0), <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer), [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
-; VP-SCALABLE-NEXT:    [[VEC_IND_NEXT:%.*]] = add <vscale x 2 x i64> [[VEC_IND]], [[DOTSPLAT]]
 ; VP-SCALABLE-NEXT:    [[AVL:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; VP-SCALABLE-NEXT:    [[TMP8]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; VP-SCALABLE-NEXT:    [[TMP9:%.*]] = add i64 [[EVL_BASED_IV]], 0
@@ -381,7 +379,6 @@ define i64 @select_icmp_const_3(ptr nocapture readonly %a, i64 %ii, i64 %n) #0 {
 ; VP-SCALABLE-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP3]], [[VECTOR_PH]] ], [ [[TMP8:%.*]], [[VECTOR_BODY]] ]
 ; VP-SCALABLE-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i64> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], [[VECTOR_BODY]] ]
 ; VP-SCALABLE-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i64> [ shufflevector (<vscale x 2 x i64> insertelement (<vscale x 2 x i64> poison, i64 -9223372036854775808, i64 0), <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer), [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
-; VP-SCALABLE-NEXT:    [[VEC_IND_NEXT:%.*]] = add <vscale x 2 x i64> [[VEC_IND]], [[DOTSPLAT]]
 ; VP-SCALABLE-NEXT:    [[AVL:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; VP-SCALABLE-NEXT:    [[TMP8]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; VP-SCALABLE-NEXT:    [[TMP9:%.*]] = add i64 [[EVL_BASED_IV]], 0
@@ -527,7 +524,6 @@ define i64 @select_fcmp_const_fast(ptr nocapture readonly %a, i64 %n) #0 {
 ; VP-SCALABLE-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP3]], [[VECTOR_PH]] ], [ [[TMP8:%.*]], [[VECTOR_BODY]] ]
 ; VP-SCALABLE-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i64> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], [[VECTOR_BODY]] ]
 ; VP-SCALABLE-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i64> [ shufflevector (<vscale x 2 x i64> insertelement (<vscale x 2 x i64> poison, i64 -9223372036854775808, i64 0), <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer), [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
-; VP-SCALABLE-NEXT:    [[VEC_IND_NEXT:%.*]] = add <vscale x 2 x i64> [[VEC_IND]], [[DOTSPLAT]]
 ; VP-SCALABLE-NEXT:    [[AVL:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; VP-SCALABLE-NEXT:    [[TMP8]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; VP-SCALABLE-NEXT:    [[TMP9:%.*]] = add i64 [[EVL_BASED_IV]], 0
@@ -673,7 +669,6 @@ define i64 @select_fcmp_const(ptr nocapture readonly %a, i64 %n) #0 {
 ; VP-SCALABLE-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP3]], [[VECTOR_PH]] ], [ [[TMP8:%.*]], [[VECTOR_BODY]] ]
 ; VP-SCALABLE-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i64> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], [[VECTOR_BODY]] ]
 ; VP-SCALABLE-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i64> [ shufflevector (<vscale x 2 x i64> insertelement (<vscale x 2 x i64> poison, i64 -9223372036854775808, i64 0), <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer), [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
-; VP-SCALABLE-NEXT:    [[VEC_IND_NEXT:%.*]] = add <vscale x 2 x i64> [[VEC_IND]], [[DOTSPLAT]]
 ; VP-SCALABLE-NEXT:    [[AVL:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; VP-SCALABLE-NEXT:    [[TMP8]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; VP-SCALABLE-NEXT:    [[TMP9:%.*]] = add i64 [[EVL_BASED_IV]], 0
@@ -824,7 +819,6 @@ define i64 @select_icmp(ptr nocapture readonly %a, ptr nocapture readonly %b, i6
 ; VP-SCALABLE-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP3]], [[VECTOR_PH]] ], [ [[TMP8:%.*]], [[VECTOR_BODY]] ]
 ; VP-SCALABLE-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i64> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], [[VECTOR_BODY]] ]
 ; VP-SCALABLE-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i64> [ shufflevector (<vscale x 2 x i64> insertelement (<vscale x 2 x i64> poison, i64 -9223372036854775808, i64 0), <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer), [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
-; VP-SCALABLE-NEXT:    [[VEC_IND_NEXT:%.*]] = add <vscale x 2 x i64> [[VEC_IND]], [[DOTSPLAT]]
 ; VP-SCALABLE-NEXT:    [[AVL:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; VP-SCALABLE-NEXT:    [[TMP8]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; VP-SCALABLE-NEXT:    [[TMP9:%.*]] = add i64 [[EVL_BASED_IV]], 0
@@ -982,7 +976,6 @@ define i64 @select_fcmp(ptr nocapture readonly %a, ptr nocapture readonly %b, i6
 ; VP-SCALABLE-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP3]], [[VECTOR_PH]] ], [ [[TMP8:%.*]], [[VECTOR_BODY]] ]
 ; VP-SCALABLE-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i64> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], [[VECTOR_BODY]] ]
 ; VP-SCALABLE-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i64> [ shufflevector (<vscale x 2 x i64> insertelement (<vscale x 2 x i64> poison, i64 -9223372036854775808, i64 0), <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer), [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
-; VP-SCALABLE-NEXT:    [[VEC_IND_NEXT:%.*]] = add <vscale x 2 x i64> [[VEC_IND]], [[DOTSPLAT]]
 ; VP-SCALABLE-NEXT:    [[AVL:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; VP-SCALABLE-NEXT:    [[TMP8]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; VP-SCALABLE-NEXT:    [[TMP9:%.*]] = add i64 [[EVL_BASED_IV]], 0
@@ -1144,7 +1137,6 @@ define i64 @select_icmp_min_iv_start_value(ptr nocapture readonly %a, ptr nocapt
 ; VP-SCALABLE-NEXT:    [[EVL_BASED_IV2:%.*]] = phi i32 [ [[TMP3]], [[VECTOR_PH]] ], [ [[TMP8:%.*]], [[VECTOR_BODY]] ]
 ; VP-SCALABLE-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i64> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], [[VECTOR_BODY]] ]
 ; VP-SCALABLE-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i64> [ shufflevector (<vscale x 2 x i64> insertelement (<vscale x 2 x i64> poison, i64 -9223372036854775808, i64 0), <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer), [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
-; VP-SCALABLE-NEXT:    [[VEC_IND_NEXT:%.*]] = add <vscale x 2 x i64> [[VEC_IND]], [[DOTSPLAT]]
 ; VP-SCALABLE-NEXT:    [[AVL:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; VP-SCALABLE-NEXT:    [[TMP8]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; VP-SCALABLE-NEXT:    [[TMP9:%.*]] = add i64 [[EVL_BASED_IV]], 0
