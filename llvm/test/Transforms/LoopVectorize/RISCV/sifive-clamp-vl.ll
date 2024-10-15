@@ -9,8 +9,6 @@ define void @test(ptr %A) {
 ; VL0-NEXT:  entry:
 ; VL0-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; VL0:       vector.ph:
-; VL0-NEXT:    [[TMP8:%.*]] = call i64 @llvm.vscale.i64()
-; VL0-NEXT:    [[TMP9:%.*]] = mul i64 [[TMP8]], 2
 ; VL0-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; VL0:       vector.body:
 ; VL0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -48,8 +46,6 @@ define void @test(ptr %A) {
 ; VL1-NEXT:  entry:
 ; VL1-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; VL1:       vector.ph:
-; VL1-NEXT:    [[TMP9:%.*]] = call i64 @llvm.vscale.i64()
-; VL1-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 2
 ; VL1-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; VL1:       vector.body:
 ; VL1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -88,8 +84,6 @@ define void @test(ptr %A) {
 ; VL4-NEXT:  entry:
 ; VL4-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; VL4:       vector.ph:
-; VL4-NEXT:    [[TMP9:%.*]] = call i64 @llvm.vscale.i64()
-; VL4-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 2
 ; VL4-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; VL4:       vector.body:
 ; VL4-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]

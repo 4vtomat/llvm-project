@@ -6,8 +6,6 @@ define void @test() {
 ; SCALABLE-NEXT:  entry:
 ; SCALABLE-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; SCALABLE:       vector.ph:
-; SCALABLE-NEXT:    [[TMP8:%.*]] = call i64 @llvm.vscale.i64()
-; SCALABLE-NEXT:    [[TMP9:%.*]] = mul i64 [[TMP8]], 2
 ; SCALABLE-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; SCALABLE:       vector.body:
 ; SCALABLE-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]

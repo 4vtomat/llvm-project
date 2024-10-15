@@ -20,8 +20,6 @@ define void @foo(ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[DIFF_CHECK:%.*]] = icmp ult i64 [[TMP4]], [[TMP3]]
 ; CHECK-NEXT:    br i1 [[DIFF_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
-; CHECK-NEXT:    [[TMP17:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP20:%.*]] = mul i64 [[TMP17]], 2
 ; CHECK-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 10000, i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP6:%.*]] = sub i32 [[TMP5]], 1
 ; CHECK-NEXT:    [[VECTOR_RECUR_INIT:%.*]] = insertelement <vscale x 2 x float> poison, float [[X_0_PRE]], i32 [[TMP6]]

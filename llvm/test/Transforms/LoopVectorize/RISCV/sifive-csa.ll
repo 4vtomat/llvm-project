@@ -215,8 +215,6 @@ define float @simple_csa_float_select(i32 %N, ptr %data) {
 ; CHECK-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-; CHECK-NEXT:    [[TMP18:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP18]], 2
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 2, i1 true)
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
@@ -277,8 +275,6 @@ define float @simple_csa_float_select(i32 %N, ptr %data) {
 ; DISABLE-RISCV-CSA-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
 ; DISABLE-RISCV-CSA-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; DISABLE-RISCV-CSA:       vector.ph:
-; DISABLE-RISCV-CSA-NEXT:    [[TMP12:%.*]] = call i64 @llvm.vscale.i64()
-; DISABLE-RISCV-CSA-NEXT:    [[TMP13:%.*]] = mul i64 [[TMP12]], 2
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 2, i1 true)
 ; DISABLE-RISCV-CSA-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; DISABLE-RISCV-CSA:       vector.body:
@@ -836,8 +832,6 @@ define float @csa_in_series_float_select(i32 %N, ptr %data0, ptr %data1) {
 ; CHECK-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-; CHECK-NEXT:    [[TMP31:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP32:%.*]] = mul i64 [[TMP31]], 2
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 2, i1 true)
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
@@ -922,8 +916,6 @@ define float @csa_in_series_float_select(i32 %N, ptr %data0, ptr %data1) {
 ; DISABLE-RISCV-CSA-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
 ; DISABLE-RISCV-CSA-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; DISABLE-RISCV-CSA:       vector.ph:
-; DISABLE-RISCV-CSA-NEXT:    [[TMP19:%.*]] = call i64 @llvm.vscale.i64()
-; DISABLE-RISCV-CSA-NEXT:    [[TMP20:%.*]] = mul i64 [[TMP19]], 2
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 2, i1 true)
 ; DISABLE-RISCV-CSA-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; DISABLE-RISCV-CSA:       vector.body:

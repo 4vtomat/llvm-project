@@ -7,8 +7,6 @@ define i32 @reduction() {
 ; CHECK-NEXT:  for.body.preheader:
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-; CHECK-NEXT:    [[TMP7:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP8:%.*]] = mul i64 [[TMP7]], 2
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 100, i32 2, i1 true)
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
@@ -46,8 +44,6 @@ define i32 @reduction() {
 ; CHECK-NO-POSTSV-NEXT:  for.body.preheader:
 ; CHECK-NO-POSTSV-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-NO-POSTSV:       vector.ph:
-; CHECK-NO-POSTSV-NEXT:    [[TMP6:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NO-POSTSV-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP6]], 2
 ; CHECK-NO-POSTSV-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 100, i32 2, i1 true)
 ; CHECK-NO-POSTSV-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-NO-POSTSV:       vector.body:

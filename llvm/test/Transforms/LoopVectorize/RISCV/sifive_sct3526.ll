@@ -12,8 +12,6 @@ define void @test(ptr %a, ptr %b, i64 %stride) {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], [[STRIDE]]
 ; CHECK-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP1]]
-; CHECK-NEXT:    [[TMP6:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP6]], 2
 ; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP3:%.*]] = sub i32 [[TMP2]], 1
 ; CHECK-NEXT:    [[VECTOR_RECUR_INIT:%.*]] = insertelement <vscale x 2 x double> poison, double 0.000000e+00, i32 [[TMP3]]
@@ -87,8 +85,6 @@ define void @test(ptr %a, ptr %b, i64 %stride) {
 ; CHECK-VERSIONING:       vector.ph:
 ; CHECK-VERSIONING-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], [[STRIDE]]
 ; CHECK-VERSIONING-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP1]]
-; CHECK-VERSIONING-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-VERSIONING-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP4]], 2
 ; CHECK-VERSIONING-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
 ; CHECK-VERSIONING-NEXT:    [[TMP3:%.*]] = sub i32 [[TMP2]], 1
 ; CHECK-VERSIONING-NEXT:    [[VECTOR_RECUR_INIT:%.*]] = insertelement <vscale x 2 x double> poison, double 0.000000e+00, i32 [[TMP3]]

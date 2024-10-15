@@ -22,8 +22,6 @@ define  i32 @test_16x16(ptr %pix1_base, i32 %i_pix1, ptr %pix2_base, i32 %i_pix2
 ; CHECK-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[ADD_PTR]], i64 [[TMP1]]
 ; CHECK-NEXT:    [[TMP2:%.*]] = mul i64 16, [[IDX_EXT65]]
 ; CHECK-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[ADD_PTR1]], i64 [[TMP2]]
-; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 4
 ; CHECK-NEXT:    br label %[[VECTOR_BODY1:.*]]
 ; CHECK:       [[VECTOR_BODY1]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH1]] ], [ [[INDEX_EVL_NEXT120:%.*]], %[[VECTOR_BODY1]] ]
@@ -775,8 +773,6 @@ define i32 @test_8x8(ptr %pix1_base, i32 %i_pix1, ptr %pix2_base, i32 %i_pix2){
 ; CHECK-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[ADD_PTR]], i64 [[TMP82]]
 ; CHECK-NEXT:    [[TMP83:%.*]] = mul i64 16, [[IDX_EXT65]]
 ; CHECK-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[ADD_PTR1]], i64 [[TMP83]]
-; CHECK-NEXT:    [[TMP48:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP50:%.*]] = mul i64 [[TMP48]], 4
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT120:%.*]], %[[VECTOR_BODY]] ]

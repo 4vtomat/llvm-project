@@ -15,8 +15,6 @@ define void @reverse_load_store(i64 %startval, ptr noalias %ptr, ptr noalias %pt
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
 ; IF-EVL-NEXT:    [[IND_END:%.*]] = sub i64 [[STARTVAL:%.*]], 1024
-; IF-EVL-NEXT:    [[TMP18:%.*]] = call i64 @llvm.vscale.i64()
-; IF-EVL-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP18]], 2
 ; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -108,8 +106,6 @@ define void @reverse_load_store_masked(i64 %startval, ptr noalias %ptr, ptr noal
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
 ; IF-EVL-NEXT:    [[IND_END:%.*]] = sub i64 [[STARTVAL:%.*]], 1024
-; IF-EVL-NEXT:    [[TMP21:%.*]] = call i64 @llvm.vscale.i64()
-; IF-EVL-NEXT:    [[TMP22:%.*]] = mul i64 [[TMP21]], 2
 ; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]

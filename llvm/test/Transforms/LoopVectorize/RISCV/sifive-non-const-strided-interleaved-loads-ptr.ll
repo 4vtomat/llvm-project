@@ -36,7 +36,6 @@ define void @test(i32 %0, i64 %conv, ptr %call5.i.i.i4.i.i101) {
 ; CHECK-NEXT:    [[TMP13:%.*]] = or i1 [[TMP9]], [[TMP12]]
 ; CHECK-NEXT:    br i1 [[TMP13]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-; CHECK-NEXT:    [[TMP32:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP14:%.*]] = sext i32 [[TMP0]] to i64
 ; CHECK-NEXT:    [[TMP15:%.*]] = mul nsw i64 [[TMP14]], 88
 ; CHECK-NEXT:    [[TMP16:%.*]] = lshr i64 [[TMP15]], 3

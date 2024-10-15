@@ -28,8 +28,6 @@ define void @convert_to_ssa(ptr %0, ptr %elms.i159, ptr %1) {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[TMP0]], i64 274877906880
 ; CHECK-NEXT:    [[IND_END12:%.*]] = getelementptr i8, ptr [[TMP1]], i64 274877906880
-; CHECK-NEXT:    [[TMP18:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP18]], 8
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]

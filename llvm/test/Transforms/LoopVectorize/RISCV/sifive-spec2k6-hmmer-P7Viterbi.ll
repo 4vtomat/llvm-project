@@ -18,8 +18,6 @@ define float @P7Viterbi(ptr noundef %dsq, i64 noundef signext %L, ptr noundef %h
 ; X280-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; X280:       [[VECTOR_PH]]:
 ; X280-NEXT:    [[IND_END:%.*]] = add i64 1, [[TMP7]]
-; X280-NEXT:    [[TMP30:%.*]] = call i64 @llvm.vscale.i64()
-; X280-NEXT:    [[TMP42:%.*]] = mul i64 [[TMP30]], 8
 ; X280-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x i32> poison, i32 [[INT321]], i64 0
 ; X280-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 8 x i32> [[BROADCAST_SPLATINSERT]], <vscale x 8 x i32> poison, <vscale x 8 x i32> zeroinitializer
 ; X280-NEXT:    br label %[[VECTOR_BODY:.*]]
@@ -127,8 +125,6 @@ define float @P7Viterbi(ptr noundef %dsq, i64 noundef signext %L, ptr noundef %h
 ; X390-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; X390:       [[VECTOR_PH]]:
 ; X390-NEXT:    [[IND_END:%.*]] = add i64 1, [[TMP7]]
-; X390-NEXT:    [[TMP30:%.*]] = call i64 @llvm.vscale.i64()
-; X390-NEXT:    [[TMP42:%.*]] = mul i64 [[TMP30]], 16
 ; X390-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 16 x i32> poison, i32 [[INT321]], i64 0
 ; X390-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 16 x i32> [[BROADCAST_SPLATINSERT]], <vscale x 16 x i32> poison, <vscale x 16 x i32> zeroinitializer
 ; X390-NEXT:    br label %[[VECTOR_BODY:.*]]

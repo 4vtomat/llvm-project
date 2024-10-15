@@ -6,8 +6,6 @@ define void @test() {
 ; CHECK-NEXT:  while.body380.preheader:
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-; CHECK-NEXT:    [[TMP3:%.*]] = call i32 @llvm.vscale.i32()
-; CHECK-NEXT:    [[TMP4:%.*]] = mul i32 [[TMP3]], 8
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]

@@ -10,8 +10,6 @@ define void @widen_pointer_induction_update() {
 ; CHECK-NEXT:    [[DOTPRE:%.*]] = load i32, ptr @state, align 4
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 2
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.umin.i64(i64 396, i64 7)
 ; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP2:%.*]] = sub i32 [[TMP1]], 1

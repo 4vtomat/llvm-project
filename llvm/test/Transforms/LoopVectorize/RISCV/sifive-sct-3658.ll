@@ -33,8 +33,6 @@ define void @_Z3fn1v(i32 %n, ptr %k, i32 %l) {
 ; CHECK-NEXT:    [[IND_END:%.*]] = mul i64 [[N_VEC]], [[TMP0]]
 ; CHECK-NEXT:    [[DOTCAST:%.*]] = trunc i64 [[N_VEC]] to i32
 ; CHECK-NEXT:    [[IND_END1:%.*]] = add i32 1, [[DOTCAST]]
-; CHECK-NEXT:    [[TMP17:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP41:%.*]] = mul i64 [[TMP17]], 2
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -90,8 +88,6 @@ define void @_Z3fn1v(i32 %n, ptr %k, i32 %l) {
 ; CHECK-NEXT:    [[IND_END13:%.*]] = add i64 [[BC_RESUME_VAL]], [[TMP33]]
 ; CHECK-NEXT:    [[DOTCAST15:%.*]] = trunc i64 [[TMP23]] to i32
 ; CHECK-NEXT:    [[IND_END16:%.*]] = add i32 [[BC_RESUME_VAL2]], [[DOTCAST15]]
-; CHECK-NEXT:    [[TMP45:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP46:%.*]] = mul i64 [[TMP45]], 2
 ; CHECK-NEXT:    [[TMP34:%.*]] = shl nsw i64 [[TMP0]], 3
 ; CHECK-NEXT:    br label [[VECTOR_BODY18:%.*]]
 ; CHECK:       vector.body18:

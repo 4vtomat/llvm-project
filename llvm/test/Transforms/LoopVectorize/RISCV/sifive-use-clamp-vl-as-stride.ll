@@ -20,7 +20,6 @@ define void @widget(ptr %a, i64 %n) {
 ; CHECK-NEXT:    [[IND_END1:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP2]]
 ; CHECK-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP1]], -16
 ; CHECK-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP3]]
-; CHECK-NEXT:    [[TMP42:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]

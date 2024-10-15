@@ -39,8 +39,6 @@ define i32 @updateQuantizationParameter(ptr %PMADPictureC1, ptr %FCBUPFMAD, ptr 
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[IND_END:%.*]] = sub i64 [[TMP1]], [[TMP6]]
-; CHECK-NEXT:    [[TMP18:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP18]], 2
 ; CHECK-NEXT:    [[TMP8:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP6]], i32 2, i1 true)
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
@@ -117,8 +115,6 @@ define i32 @updateQuantizationParameter(ptr %PMADPictureC1, ptr %FCBUPFMAD, ptr 
 ; CHECK-NO-POSTSV-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]
 ; CHECK-NO-POSTSV:       vector.ph:
 ; CHECK-NO-POSTSV-NEXT:    [[IND_END:%.*]] = sub i64 [[TMP1]], [[TMP6]]
-; CHECK-NO-POSTSV-NEXT:    [[TMP18:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NO-POSTSV-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP18]], 2
 ; CHECK-NO-POSTSV-NEXT:    [[TMP8:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP6]], i32 2, i1 true)
 ; CHECK-NO-POSTSV-NEXT:    [[TMP9:%.*]] = insertelement <vscale x 2 x double> zeroinitializer, double [[DOTPRE]], i32 0
 ; CHECK-NO-POSTSV-NEXT:    br label [[VECTOR_BODY:%.*]]

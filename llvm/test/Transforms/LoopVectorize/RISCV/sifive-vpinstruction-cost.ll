@@ -6,7 +6,6 @@
 
 ; check cost of VPInstruction Not and LogicalAnd
 define void @foo(ptr %x, ptr %y, float %alpha, i32 %N) {
-
 entry:
   %cmp = icmp sgt i32 %N, 0
   br i1 %cmp, label %for.body.preheader, label %exit

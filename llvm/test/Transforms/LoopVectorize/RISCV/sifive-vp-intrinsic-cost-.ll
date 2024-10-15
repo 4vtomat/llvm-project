@@ -9,8 +9,6 @@ define void @buf2img() {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-; CHECK-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP2]], 32
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 32 x i16> @llvm.bswap.nxv32i16(<vscale x 32 x i16> zeroinitializer)
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:

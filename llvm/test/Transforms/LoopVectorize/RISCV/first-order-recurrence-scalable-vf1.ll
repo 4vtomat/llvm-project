@@ -12,7 +12,6 @@ define i64 @pr97452_scalable_vf1_for(ptr %src) #0 {
 ; CHECK-NEXT:  [[ENTRY:.*]]:
 ; CHECK-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
-; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 23, i32 1, i1 true)
 ; CHECK-NEXT:    [[TMP6:%.*]] = sub i32 [[TMP1]], 1
 ; CHECK-NEXT:    [[VECTOR_RECUR_INIT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 0, i32 [[TMP6]]

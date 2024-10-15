@@ -45,8 +45,6 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; X280-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[PIX1_BASE]], i64 [[TMP1]]
 ; X280-NEXT:    [[TMP2:%.*]] = mul i64 16, [[IDX_EXT63]]
 ; X280-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[PIX2_BASE]], i64 [[TMP2]]
-; X280-NEXT:    [[TMP41:%.*]] = call i64 @llvm.vscale.i64()
-; X280-NEXT:    [[TMP44:%.*]] = mul i64 [[TMP41]], 2
 ; X280-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; X280:       [[VECTOR_BODY]]:
 ; X280-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -171,8 +169,6 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; X280-NEXT:    [[IND_END65:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL2]], i64 [[TMP47]]
 ; X280-NEXT:    [[TMP48:%.*]] = mul i64 16, [[IDX_EXT63]]
 ; X280-NEXT:    [[IND_END67:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL4]], i64 [[TMP48]]
-; X280-NEXT:    [[TMP75:%.*]] = call i64 @llvm.vscale.i64()
-; X280-NEXT:    [[TMP78:%.*]] = mul i64 [[TMP75]], 2
 ; X280-NEXT:    br label %[[VECTOR_BODY69:.*]]
 ; X280:       [[VECTOR_BODY69]]:
 ; X280-NEXT:    [[INDEX70:%.*]] = phi i64 [ 0, %[[VECTOR_PH62]] ], [ [[INDEX_EVL_NEXT120:%.*]], %[[VECTOR_BODY69]] ]
@@ -388,8 +384,6 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; X280-NEXT:    [[IND_END129:%.*]] = getelementptr i8, ptr [[ADD_PTR248]], i64 [[TMP98]]
 ; X280-NEXT:    [[TMP99:%.*]] = mul i64 16, [[IDX_EXT63]]
 ; X280-NEXT:    [[IND_END131:%.*]] = getelementptr i8, ptr [[ADD_PTR249]], i64 [[TMP99]]
-; X280-NEXT:    [[TMP138:%.*]] = call i64 @llvm.vscale.i64()
-; X280-NEXT:    [[TMP141:%.*]] = mul i64 [[TMP138]], 2
 ; X280-NEXT:    br label %[[VECTOR_BODY133:.*]]
 ; X280:       [[VECTOR_BODY133]]:
 ; X280-NEXT:    [[INDEX134:%.*]] = phi i64 [ 0, %[[VECTOR_PH127]] ], [ [[INDEX_EVL_NEXT197:%.*]], %[[VECTOR_BODY133]] ]
@@ -514,8 +508,6 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; X280-NEXT:    [[IND_END205:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL130]], i64 [[TMP144]]
 ; X280-NEXT:    [[TMP145:%.*]] = mul i64 16, [[IDX_EXT63]]
 ; X280-NEXT:    [[IND_END207:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL132]], i64 [[TMP145]]
-; X280-NEXT:    [[TMP172:%.*]] = call i64 @llvm.vscale.i64()
-; X280-NEXT:    [[TMP175:%.*]] = mul i64 [[TMP172]], 2
 ; X280-NEXT:    br label %[[VECTOR_BODY209:.*]]
 ; X280:       [[VECTOR_BODY209]]:
 ; X280-NEXT:    [[INDEX210:%.*]] = phi i64 [ 0, %[[VECTOR_PH202]] ], [ [[INDEX_EVL_NEXT262:%.*]], %[[VECTOR_BODY209]] ]
@@ -1060,8 +1052,6 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; P670-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[PIX1_BASE]], i64 [[TMP1]]
 ; P670-NEXT:    [[TMP2:%.*]] = mul i64 16, [[IDX_EXT63]]
 ; P670-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[PIX2_BASE]], i64 [[TMP2]]
-; P670-NEXT:    [[TMP41:%.*]] = call i64 @llvm.vscale.i64()
-; P670-NEXT:    [[TMP44:%.*]] = mul i64 [[TMP41]], 4
 ; P670-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; P670:       [[VECTOR_BODY]]:
 ; P670-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -1298,8 +1288,6 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; P670-NEXT:    [[IND_END67:%.*]] = getelementptr i8, ptr [[ADD_PTR248]], i64 [[TMP64]]
 ; P670-NEXT:    [[TMP65:%.*]] = mul i64 16, [[IDX_EXT63]]
 ; P670-NEXT:    [[IND_END69:%.*]] = getelementptr i8, ptr [[ADD_PTR249]], i64 [[TMP65]]
-; P670-NEXT:    [[TMP104:%.*]] = call i64 @llvm.vscale.i64()
-; P670-NEXT:    [[TMP107:%.*]] = mul i64 [[TMP104]], 4
 ; P670-NEXT:    br label %[[VECTOR_BODY71:.*]]
 ; P670:       [[VECTOR_BODY71]]:
 ; P670-NEXT:    [[INDEX72:%.*]] = phi i64 [ 0, %[[VECTOR_PH65]] ], [ [[INDEX_EVL_NEXT135:%.*]], %[[VECTOR_BODY71]] ]
@@ -1865,8 +1853,6 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; LION-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[PIX1_BASE]], i64 [[TMP1]]
 ; LION-NEXT:    [[TMP2:%.*]] = mul i64 16, [[IDX_EXT63]]
 ; LION-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[PIX2_BASE]], i64 [[TMP2]]
-; LION-NEXT:    [[TMP41:%.*]] = call i64 @llvm.vscale.i64()
-; LION-NEXT:    [[TMP44:%.*]] = mul i64 [[TMP41]], 4
 ; LION-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; LION:       [[VECTOR_BODY]]:
 ; LION-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -1991,8 +1977,6 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; LION-NEXT:    [[IND_END65:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL2]], i64 [[TMP47]]
 ; LION-NEXT:    [[TMP48:%.*]] = mul i64 16, [[IDX_EXT63]]
 ; LION-NEXT:    [[IND_END67:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL4]], i64 [[TMP48]]
-; LION-NEXT:    [[TMP75:%.*]] = call i64 @llvm.vscale.i64()
-; LION-NEXT:    [[TMP78:%.*]] = mul i64 [[TMP75]], 4
 ; LION-NEXT:    br label %[[VECTOR_BODY69:.*]]
 ; LION:       [[VECTOR_BODY69]]:
 ; LION-NEXT:    [[INDEX70:%.*]] = phi i64 [ 0, %[[VECTOR_PH62]] ], [ [[INDEX_EVL_NEXT120:%.*]], %[[VECTOR_BODY69]] ]
@@ -2208,8 +2192,6 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; LION-NEXT:    [[IND_END129:%.*]] = getelementptr i8, ptr [[ADD_PTR248]], i64 [[TMP98]]
 ; LION-NEXT:    [[TMP99:%.*]] = mul i64 16, [[IDX_EXT63]]
 ; LION-NEXT:    [[IND_END131:%.*]] = getelementptr i8, ptr [[ADD_PTR249]], i64 [[TMP99]]
-; LION-NEXT:    [[TMP138:%.*]] = call i64 @llvm.vscale.i64()
-; LION-NEXT:    [[TMP141:%.*]] = mul i64 [[TMP138]], 4
 ; LION-NEXT:    br label %[[VECTOR_BODY133:.*]]
 ; LION:       [[VECTOR_BODY133]]:
 ; LION-NEXT:    [[INDEX134:%.*]] = phi i64 [ 0, %[[VECTOR_PH127]] ], [ [[INDEX_EVL_NEXT197:%.*]], %[[VECTOR_BODY133]] ]
@@ -2334,8 +2316,6 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; LION-NEXT:    [[IND_END205:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL130]], i64 [[TMP144]]
 ; LION-NEXT:    [[TMP145:%.*]] = mul i64 16, [[IDX_EXT63]]
 ; LION-NEXT:    [[IND_END207:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL132]], i64 [[TMP145]]
-; LION-NEXT:    [[TMP172:%.*]] = call i64 @llvm.vscale.i64()
-; LION-NEXT:    [[TMP175:%.*]] = mul i64 [[TMP172]], 4
 ; LION-NEXT:    br label %[[VECTOR_BODY209:.*]]
 ; LION:       [[VECTOR_BODY209]]:
 ; LION-NEXT:    [[INDEX210:%.*]] = phi i64 [ 0, %[[VECTOR_PH202]] ], [ [[INDEX_EVL_NEXT262:%.*]], %[[VECTOR_BODY209]] ]
@@ -3453,7 +3433,6 @@ define  i32 @_Z11satd_8x8_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_base
 ; X280-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[PIX1_BASE]], i64 [[TMP1]]
 ; X280-NEXT:    [[TMP2:%.*]] = mul i64 8, [[IDX_EXT63]]
 ; X280-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[PIX2_BASE]], i64 [[TMP2]]
-; X280-NEXT:    [[TMP41:%.*]] = call i64 @llvm.vscale.i64()
 ; X280-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; X280:       [[VECTOR_BODY]]:
 ; X280-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -3578,7 +3557,6 @@ define  i32 @_Z11satd_8x8_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_base
 ; X280-NEXT:    [[IND_END65:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL2]], i64 [[TMP47]]
 ; X280-NEXT:    [[TMP48:%.*]] = mul i64 8, [[IDX_EXT63]]
 ; X280-NEXT:    [[IND_END67:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL4]], i64 [[TMP48]]
-; X280-NEXT:    [[TMP75:%.*]] = call i64 @llvm.vscale.i64()
 ; X280-NEXT:    br label %[[VECTOR_BODY69:.*]]
 ; X280:       [[VECTOR_BODY69]]:
 ; X280-NEXT:    [[INDEX70:%.*]] = phi i64 [ 0, %[[VECTOR_PH62]] ], [ [[INDEX_EVL_NEXT120:%.*]], %[[VECTOR_BODY69]] ]
@@ -3884,8 +3862,6 @@ define  i32 @_Z11satd_8x8_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_base
 ; P670-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[PIX1_BASE]], i64 [[TMP1]]
 ; P670-NEXT:    [[TMP2:%.*]] = mul i64 8, [[IDX_EXT63]]
 ; P670-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[PIX2_BASE]], i64 [[TMP2]]
-; P670-NEXT:    [[TMP41:%.*]] = call i64 @llvm.vscale.i64()
-; P670-NEXT:    [[TMP44:%.*]] = mul i64 [[TMP41]], 4
 ; P670-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; P670:       [[VECTOR_BODY]]:
 ; P670-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -4212,8 +4188,6 @@ define  i32 @_Z11satd_8x8_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_base
 ; LION-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[PIX1_BASE]], i64 [[TMP1]]
 ; LION-NEXT:    [[TMP2:%.*]] = mul i64 8, [[IDX_EXT63]]
 ; LION-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[PIX2_BASE]], i64 [[TMP2]]
-; LION-NEXT:    [[TMP41:%.*]] = call i64 @llvm.vscale.i64()
-; LION-NEXT:    [[TMP44:%.*]] = mul i64 [[TMP41]], 4
 ; LION-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; LION:       [[VECTOR_BODY]]:
 ; LION-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -4338,8 +4312,6 @@ define  i32 @_Z11satd_8x8_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_base
 ; LION-NEXT:    [[IND_END65:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL2]], i64 [[TMP47]]
 ; LION-NEXT:    [[TMP48:%.*]] = mul i64 8, [[IDX_EXT63]]
 ; LION-NEXT:    [[IND_END67:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL4]], i64 [[TMP48]]
-; LION-NEXT:    [[TMP75:%.*]] = call i64 @llvm.vscale.i64()
-; LION-NEXT:    [[TMP78:%.*]] = mul i64 [[TMP75]], 4
 ; LION-NEXT:    br label %[[VECTOR_BODY69:.*]]
 ; LION:       [[VECTOR_BODY69]]:
 ; LION-NEXT:    [[INDEX70:%.*]] = phi i64 [ 0, %[[VECTOR_PH62]] ], [ [[INDEX_EVL_NEXT120:%.*]], %[[VECTOR_BODY69]] ]
@@ -4865,7 +4837,6 @@ define  i32 @_Z8satd_8x4PhiS_i(ptr %pix1, i32  %i_pix1, ptr  %pix2, i32  %i_pix2
 ; X280-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[PIX1]], i64 [[TMP1]]
 ; X280-NEXT:    [[TMP2:%.*]] = mul i64 4, [[IDX_EXT63]]
 ; X280-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[PIX2]], i64 [[TMP2]]
-; X280-NEXT:    [[TMP41:%.*]] = call i64 @llvm.vscale.i64()
 ; X280-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; X280:       [[VECTOR_BODY]]:
 ; X280-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -4990,7 +4961,6 @@ define  i32 @_Z8satd_8x4PhiS_i(ptr %pix1, i32  %i_pix1, ptr  %pix2, i32  %i_pix2
 ; X280-NEXT:    [[IND_END65:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL2]], i64 [[TMP47]]
 ; X280-NEXT:    [[TMP48:%.*]] = mul i64 4, [[IDX_EXT63]]
 ; X280-NEXT:    [[IND_END67:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL4]], i64 [[TMP48]]
-; X280-NEXT:    [[TMP75:%.*]] = call i64 @llvm.vscale.i64()
 ; X280-NEXT:    br label %[[VECTOR_BODY69:.*]]
 ; X280:       [[VECTOR_BODY69]]:
 ; X280-NEXT:    [[INDEX70:%.*]] = phi i64 [ 0, %[[VECTOR_PH62]] ], [ [[INDEX_EVL_NEXT120:%.*]], %[[VECTOR_BODY69]] ]

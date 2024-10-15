@@ -47,8 +47,6 @@ define dso_local noundef signext i32 @f(ptr noundef writeonly %c, ptr noundef re
 ; VEC-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[C]], i64 [[TMP11]]
 ; VEC-NEXT:    [[TMP12:%.*]] = mul i64 [[TMP6]], 4
 ; VEC-NEXT:    [[IND_END5:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP12]]
-; VEC-NEXT:    [[TMP13:%.*]] = call i64 @llvm.vscale.i64()
-; VEC-NEXT:    [[TMP14:%.*]] = mul i64 [[TMP13]], 2
 ; VEC-NEXT:    [[TMP31:%.*]] = call i64 @llvm.vscale.i64()
 ; VEC-NEXT:    [[TMP32:%.*]] = mul i64 [[TMP31]], 2
 ; VEC-NEXT:    [[TMP15:%.*]] = mul i64 [[TMP32]], 0

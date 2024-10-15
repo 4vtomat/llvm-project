@@ -6,8 +6,6 @@ define void @test() {
 ; CHECK-NEXT:  for.body.preheader:
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-; CHECK-NEXT:    [[TMP9:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 4
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 100, i32 4, i1 true)
 ; CHECK-NEXT:    [[TMP1:%.*]] = sub i32 [[TMP0]], 1
 ; CHECK-NEXT:    [[VECTOR_RECUR_INIT:%.*]] = insertelement <vscale x 4 x i16> poison, i16 0, i32 [[TMP1]]
