@@ -1303,8 +1303,22 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
 #endif // SIFIVE_CUSTOMIZATION
   unsigned UF = getUF();
 #if SIFIVE_CUSTOMIZATION
-  if (!isUncountable()) {
-#endif // SIFIVE_CUSTOMIZATION
+  Value *RuntimeVF = nullptr;
+  if (VF.getNumUsers()) {
+    RuntimeVF = getRuntimeVF(Builder, TCTy, State.VF);
+    VF.setUnderlyingValue(RuntimeVF);
+  }
+  if (VFxUF.getNumUsers()) {
+    if (RuntimeVF)
+      VFxUF.setUnderlyingValue(
+          UF > 1
+              ? Builder.CreateMul(RuntimeVF, ConstantInt::get(TCTy, UF))
+              : RuntimeVF);
+    else
+      VFxUF.setUnderlyingValue(
+          createStepForVF(Builder, TCTy, State.VF, UF));
+  }
+#else
   if (VF.getNumUsers()) {
     Value *RuntimeVF = getRuntimeVF(Builder, TCTy, State.VF);
     VF.setUnderlyingValue(RuntimeVF);
@@ -1313,8 +1327,6 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
                : RuntimeVF);
   } else {
     VFxUF.setUnderlyingValue(createStepForVF(Builder, TCTy, State.VF, UF));
-  }
-#if SIFIVE_CUSTOMIZATION
   }
 #endif // SIFIVE_CUSTOMIZATION
 
