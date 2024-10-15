@@ -19079,16 +19079,13 @@ static SDValue performSPLAT_VECTORCombine(SDNode *N, SelectionDAG &DAG,
   // SPLAT_VECTOR const_fp -> SPLAT_VECTOR (load (const_pool const_fp))
   if (auto *C = dyn_cast<ConstantFPSDNode>(Scalar);
       C && Subtarget.isSiFiveBulletCPU() && VT.isFloatingPoint()) {
-
     auto PtrVt = TLI.getPointerTy(DAG.getDataLayout());
-    SDValue CPE =
-        DAG.getConstantPool(C->getConstantFPValue(), PtrVt);
+    SDValue CPE = DAG.getConstantPool(C->getConstantFPValue(), PtrVt);
     MachineFunction &MF = DAG.getMachineFunction();
     MVT EltTy = VT.getVectorElementType();
-    MachineMemOperand *MMO = MF.getMachineMemOperand(
-        MachinePointerInfo::getConstantPool(MF), MachineMemOperand::MOLoad,
-        LLT(EltTy), cast<ConstantPoolSDNode>(CPE)->getAlign());
-    SDValue Ld = DAG.getLoad(EltTy, SDLoc(Scalar), DAG.getEntryNode(), CPE, MMO);
+    SDValue Ld = DAG.getLoad(EltTy, SDLoc(Scalar), DAG.getEntryNode(), CPE,
+                             MachinePointerInfo::getConstantPool(MF),
+                             cast<ConstantPoolSDNode>(CPE)->getAlign());
     return DAG.getSplatVector(VT, SDLoc(N), Ld);
   }
 
@@ -19111,12 +19108,12 @@ static SDValue performVFMV_V_F_VLCombine(SDNode *N, SelectionDAG &DAG,
         DAG.getConstantPool(C->getConstantFPValue(), PtrVt);
     MachineFunction &MF = DAG.getMachineFunction();
     MVT EltTy = VT.getVectorElementType();
-    MachineMemOperand *MMO = MF.getMachineMemOperand(
-        MachinePointerInfo::getConstantPool(MF), MachineMemOperand::MOLoad,
-        LLT(EltTy), cast<ConstantPoolSDNode>(CPE)->getAlign());
-    SDValue Ld = DAG.getLoad(EltTy, SDLoc(Scalar), DAG.getEntryNode(), CPE, MMO);
-    return DAG.getNode(RISCVISD::VFMV_V_F_VL, SDLoc(N), VT, Passthru, Ld, VL);
+    SDValue Ld = DAG.getLoad(EltTy, SDLoc(Scalar), DAG.getEntryNode(), CPE,
+                             MachinePointerInfo::getConstantPool(MF),
+                             cast<ConstantPoolSDNode>(CPE)->getAlign());
+    return DAG.getNode(N->getOpcode(), SDLoc(N), VT, Passthru, Ld, VL);
   }
+
   return SDValue();
 }
 
