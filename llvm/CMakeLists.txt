@@ -1197,6 +1197,11 @@ endif()
 
 # SIFIVE
 add_definitions("-DSIFIVE_CUSTOMIZATION=1")
+if (SIFIVE_DEFAULT_MARCH)
+  add_definitions("-DSIFIVE_DEFAULT_MARCH=\"${SIFIVE_DEFAULT_MARCH}\"")
+else()
+  add_definitions("-DSIFIVE_DEFAULT_MARCH=\"rv64imafdc\"")
+endif()
 # end SIFIVE
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
