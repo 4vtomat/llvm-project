@@ -217,7 +217,8 @@ bool RISCVLateCodeGenPrepare::optimizeZExtWUses(ZExtInst &I) {
     if (!InsertedZExt) {
       BasicBlock::iterator InsertPt = UserBB->getFirstInsertionPt();
       assert(InsertPt != UserBB->end());
-      InsertedZExt = new ZExtInst(Src, I.getType(), "", &*InsertPt);
+      InsertedZExt =
+          new ZExtInst(Src, I.getType(), "", InsertPt->getIterator());
       // Propagate the debug info.
       InsertedZExt->setDebugLoc(I.getDebugLoc());
     }
@@ -300,8 +301,8 @@ bool RISCVLateCodeGenPrepare::optimizeAndUses(BinaryOperator &BO) {
     if (!InsertedAnd) {
       BasicBlock::iterator InsertPt = UserBB->getFirstInsertionPt();
       assert(InsertPt != UserBB->end());
-      InsertedAnd = BinaryOperator::CreateAnd(BO.getOperand(0),
-                                              BO.getOperand(1), "", &*InsertPt);
+      InsertedAnd = BinaryOperator::CreateAnd(
+          BO.getOperand(0), BO.getOperand(1), "", InsertPt->getIterator());
       // Propagate the debug info.
       InsertedAnd->setDebugLoc(BO.getDebugLoc());
     }
@@ -383,8 +384,8 @@ bool RISCVLateCodeGenPrepare::visitXor(BinaryOperator &BO) {
     if (!InsertedXor) {
       BasicBlock::iterator InsertPt = UserBB->getFirstInsertionPt();
       assert(InsertPt != UserBB->end());
-      InsertedXor = BinaryOperator::CreateXor(BO.getOperand(0),
-                                              BO.getOperand(1), "", &*InsertPt);
+      InsertedXor = BinaryOperator::CreateXor(
+          BO.getOperand(0), BO.getOperand(1), "", InsertPt->getIterator());
       // Propagate the debug info.
       InsertedXor->setDebugLoc(BO.getDebugLoc());
     }

@@ -1847,9 +1847,9 @@ static bool sinkNotOfCmp(BinaryOperator *Xor, const TargetLowering &TLI) {
     if (!InsertedXor) {
       BasicBlock::iterator InsertPt = UserBB->getFirstInsertionPt();
       assert(InsertPt != UserBB->end());
-      InsertedXor = BinaryOperator::Create(Xor->getOpcode(),
-                                    Xor->getOperand(0), Xor->getOperand(1), "",
-                                    &*InsertPt);
+      InsertedXor = BinaryOperator::Create(Xor->getOpcode(), Xor->getOperand(0),
+                                           Xor->getOperand(1), "",
+                                           InsertPt->getIterator());
       // Propagate the debug info.
       InsertedXor->setDebugLoc(Xor->getDebugLoc());
     }
