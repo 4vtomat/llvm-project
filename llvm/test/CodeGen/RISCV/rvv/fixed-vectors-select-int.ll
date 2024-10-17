@@ -19,9 +19,9 @@ define <1 x i1> @select_v1i1(i1 zeroext %c, <1 x i1> %a, <1 x i1> %b) {
 define <1 x i1> @selectcc_v1i1(i1 signext %a, i1 signext %b, <1 x i1> %c, <1 x i1> %d) {
 ; CHECK-LABEL: selectcc_v1i1:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    xor a0, a0, a1
+; CHECK-NEXT:    andi a1, a1, 1
 ; CHECK-NEXT:    andi a0, a0, 1
-; CHECK-NEXT:    bnez a0, .LBB1_2
+; CHECK-NEXT:    bne a0, a1, .LBB1_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:  .LBB1_2:
@@ -46,9 +46,9 @@ define <2 x i1> @select_v2i1(i1 zeroext %c, <2 x i1> %a, <2 x i1> %b) {
 define <2 x i1> @selectcc_v2i1(i1 signext %a, i1 signext %b, <2 x i1> %c, <2 x i1> %d) {
 ; CHECK-LABEL: selectcc_v2i1:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    xor a0, a0, a1
+; CHECK-NEXT:    andi a1, a1, 1
 ; CHECK-NEXT:    andi a0, a0, 1
-; CHECK-NEXT:    bnez a0, .LBB3_2
+; CHECK-NEXT:    bne a0, a1, .LBB3_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:  .LBB3_2:
@@ -73,9 +73,9 @@ define <4 x i1> @select_v4i1(i1 zeroext %c, <4 x i1> %a, <4 x i1> %b) {
 define <4 x i1> @selectcc_v4i1(i1 signext %a, i1 signext %b, <4 x i1> %c, <4 x i1> %d) {
 ; CHECK-LABEL: selectcc_v4i1:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    xor a0, a0, a1
+; CHECK-NEXT:    andi a1, a1, 1
 ; CHECK-NEXT:    andi a0, a0, 1
-; CHECK-NEXT:    bnez a0, .LBB5_2
+; CHECK-NEXT:    bne a0, a1, .LBB5_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:  .LBB5_2:
@@ -100,9 +100,9 @@ define <8 x i1> @select_v8i1(i1 zeroext %c, <8 x i1> %a, <8 x i1> %b) {
 define <8 x i1> @selectcc_v8i1(i1 signext %a, i1 signext %b, <8 x i1> %c, <8 x i1> %d) {
 ; CHECK-LABEL: selectcc_v8i1:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    xor a0, a0, a1
+; CHECK-NEXT:    andi a1, a1, 1
 ; CHECK-NEXT:    andi a0, a0, 1
-; CHECK-NEXT:    bnez a0, .LBB7_2
+; CHECK-NEXT:    bne a0, a1, .LBB7_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:  .LBB7_2:
@@ -127,9 +127,9 @@ define <16 x i1> @select_v16i1(i1 zeroext %c, <16 x i1> %a, <16 x i1> %b) {
 define <16 x i1> @selectcc_v16i1(i1 signext %a, i1 signext %b, <16 x i1> %c, <16 x i1> %d) {
 ; CHECK-LABEL: selectcc_v16i1:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    xor a0, a0, a1
+; CHECK-NEXT:    andi a1, a1, 1
 ; CHECK-NEXT:    andi a0, a0, 1
-; CHECK-NEXT:    bnez a0, .LBB9_2
+; CHECK-NEXT:    bne a0, a1, .LBB9_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:  .LBB9_2:
