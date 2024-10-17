@@ -80,6 +80,9 @@
 ; CHECK-O23SZ-NEXT: Running pass: OpenMPOptPass
 ; CHECK-O23SZ-NEXT: Running pass: GlobalDCEPass
 ; CHECK-O23SZ-NEXT: Running pass: ArgumentPromotionPass
+; SIFIVE_CUSTOMIZATION
+; CHECK-O23SZ-NEXT: Running pass: ReassociatePass
+; SIFIVE_CUSTOMIZATION
 ; CHECK-O23SZ-NEXT: Running pass: InstCombinePass
 ; CHECK-EP-Peephole-NEXT: Running pass: NoOpFunctionPass
 ; CHECK-O23SZ-NEXT: Running pass: ConstraintEliminationPass

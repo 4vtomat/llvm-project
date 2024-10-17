@@ -319,6 +319,13 @@ static cl::opt<bool> UseLoopVersioningLICM(
     "enable-loop-versioning-licm", cl::init(false), cl::Hidden,
     cl::desc("Enable the experimental Loop Versioning LICM pass"));
 
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<bool> EnableLTOReassociate(
+    "enable-lto-reassociate", cl::init(true), cl::Hidden,
+    cl::desc("Run another round of reassociation optimization "
+             "in LTO"));
+#endif // SIFIVE_CUSTOMIZATION
+
 extern cl::opt<std::string> UseCtxProfile;
 
 namespace llvm {
@@ -2117,6 +2124,13 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
 
   FunctionPassManager FPM;
   // The IPO Passes may leave cruft around. Clean up after them.
+#if SIFIVE_CUSTOMIZATION
+  if (EnableLTOReassociate)
+    // We enable the two-phase mode for the ReassociatePass running here. We
+    // hope to optimize CSE-aware reassociate opportunities that are not
+    // accounted by the original (single-pass) ReassociatePass.
+    FPM.addPass(ReassociatePass(/*EnableTwoPhase=*/true));
+#endif // SIFIVE_CUSTOMIZATION
   FPM.addPass(InstCombinePass());
   invokePeepholeEPCallbacks(FPM, Level);
 

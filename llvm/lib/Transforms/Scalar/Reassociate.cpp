@@ -2552,6 +2552,17 @@ ReassociatePass::BuildPairMap(ReversePostOrderTraversal<Function *> &RPOT) {
 }
 
 #if SIFIVE_CUSTOMIZATION
+void ReassociatePass::printPipeline(
+    raw_ostream &OS, function_ref<StringRef(StringRef)> MapClassName2PassName) {
+  static_cast<PassInfoMixin<ReassociatePass> *>(this)->printPipeline(
+      OS, MapClassName2PassName);
+
+  OS << '<';
+  if (TwoPhaseReassoc)
+    OS << "two-phase-reassoc";
+  OS << '>';
+}
+
 PreservedAnalyses ReassociatePass::run(Function &F, FunctionAnalysisManager &) {
   // Get the functions basic blocks in Reverse Post Order. This order is used by
   // BuildRankMap to pre calculate ranks correctly. It also excludes dead basic
@@ -2560,15 +2571,16 @@ PreservedAnalyses ReassociatePass::run(Function &F, FunctionAnalysisManager &) {
   ReversePostOrderTraversal<Function *> RPOT(&F);
 
   MadeChange = false;
+  bool RunTwice = TwoPhaseReassoc || UseTwoPhases;
 
   // Calculate the rank map for F.
   BuildRankMap(F, RPOT);
-  if (!UseTwoPhases)
+  if (!RunTwice)
     BuildPairMap(RPOT);
 
   runImpl(F, RPOT);
 
-  if (UseTwoPhases) {
+  if (RunTwice) {
     // We need to rebuild both RankMaps to clean out stale entries.
     RankMap.clear();
     ValueRankMap.clear();

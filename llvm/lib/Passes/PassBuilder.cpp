@@ -1242,6 +1242,12 @@ Expected<RealtimeSanitizerOptions> parseRtSanPassOptions(StringRef Params) {
   return Result;
 }
 
+#if SIFIVE_CUSTOMIZATION
+Expected<bool> parseReassociatePassOptions(StringRef Params) {
+  return PassBuilder::parseSinglePassOption(Params, "two-phase-reassoc",
+                                            "Reassociate");
+}
+#endif
 } // namespace
 
 /// Tests whether a pass name starts with a valid prefix for a default pipeline
