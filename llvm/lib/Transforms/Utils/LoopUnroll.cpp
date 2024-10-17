@@ -112,6 +112,12 @@ UnrollVerifyLoopInfo("unroll-verify-loopinfo", cl::Hidden,
 #endif
                     );
 
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<bool>
+DisableLoadCSE("unroll-disable-load-cse", cl::init(false), cl::Hidden,
+               cl::desc("Disable load CSE after unrolling"));
+#endif
+
 
 /// Check if unrolling created a situation where we need to insert phi nodes to
 /// preserve LCSSA form.
@@ -361,7 +367,9 @@ void llvm::simplifyLoopAfterUnroll(Loop *L, bool SimplifyIVs, LoopInfo *LI,
         RecursivelyDeleteTriviallyDeadInstructions(Inst);
     }
 
-    if (AA) {
+#if SIFIVE_CUSTOMIZATION
+    if (AA && !DisableLoadCSE) {
+#endif // SIFIVE_CUSTOMIZATION
       std::unique_ptr<MemorySSA> MSSA = nullptr;
       BatchAAResults BAA(*AA);
       loadCSE(L, *DT, *SE, *LI, BAA, [L, AA, DT, &MSSA]() -> MemorySSA * {
