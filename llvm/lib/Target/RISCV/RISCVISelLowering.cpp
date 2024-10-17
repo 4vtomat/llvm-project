@@ -16244,6 +16244,9 @@ static SDValue expandMul(SDNode *N, SelectionDAG &DAG,
     return DAG.getNode(ISD::SUB, DL, VT, Shift1, Shift2);
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // The code below doesn't see profitable for our cores.
+#else
   if (HasShlAdd) {
     for (uint64_t Divisor : {3, 5, 9}) {
       if (MulAmt % Divisor != 0)
@@ -16269,6 +16272,7 @@ static SDValue expandMul(SDNode *N, SelectionDAG &DAG,
       }
     }
   }
+#endif
 
   return SDValue();
 }
