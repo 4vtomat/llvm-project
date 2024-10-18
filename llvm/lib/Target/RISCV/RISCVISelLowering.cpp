@@ -18638,24 +18638,28 @@ static bool combine_CC(SDValue &LHS, SDValue &RHS, SDValue &CC, const SDLoc &DL,
   }
 
 #if SIFIVE_CUSTOMIZATION
-  // Fold (br_cc (and (xor X, Y), C)) -> (br_cc (and X, C), (and Y, C))
-  // This reduces the critical path length since the ands can be done in
-  // parallel. Only do this if the ANDs can use ANDI.
-  if (isNullConstant(RHS) && LHS.getOpcode() == ISD::AND &&
-      isa<ConstantSDNode>(LHS.getOperand(1)) && LHS.hasOneUse() &&
-      LHS.getOperand(0).getOpcode() == ISD::XOR &&
-      LHS.getOperand(0).hasOneUse()) {
-    SDValue Mask = LHS.getOperand(1);
-    int64_t MaskC = cast<ConstantSDNode>(LHS.getOperand(1))->getSExtValue();
-    if (isInt<12>(MaskC)) {
-      RHS = LHS.getOperand(0).getOperand(1);
-      LHS = LHS.getOperand(0).getOperand(0);
+  // The enclosing optimization is not beneficial to single-issue core
+  // since it cannot benefit from the extra ILP while the code size is
+  // increasing.
+  if (Subtarget.getSchedModel().IssueWidth > 1)
+    // Fold (br_cc (and (xor X, Y), C)) -> (br_cc (and X, C), (and Y, C))
+    // This reduces the critical path length since the ands can be done in
+    // parallel. Only do this if the ANDs can use ANDI.
+    if (isNullConstant(RHS) && LHS.getOpcode() == ISD::AND &&
+        isa<ConstantSDNode>(LHS.getOperand(1)) && LHS.hasOneUse() &&
+        LHS.getOperand(0).getOpcode() == ISD::XOR &&
+        LHS.getOperand(0).hasOneUse()) {
+      SDValue Mask = LHS.getOperand(1);
+      int64_t MaskC = cast<ConstantSDNode>(LHS.getOperand(1))->getSExtValue();
+      if (isInt<12>(MaskC)) {
+        RHS = LHS.getOperand(0).getOperand(1);
+        LHS = LHS.getOperand(0).getOperand(0);
 
-      RHS = DAG.getNode(ISD::AND, DL, RHS.getValueType(), RHS, Mask);
-      LHS = DAG.getNode(ISD::AND, DL, LHS.getValueType(), LHS, Mask);
-      return true;
+        RHS = DAG.getNode(ISD::AND, DL, RHS.getValueType(), RHS, Mask);
+        LHS = DAG.getNode(ISD::AND, DL, LHS.getValueType(), LHS, Mask);
+        return true;
+      }
     }
-  }
 #endif // SIFIVE_CUSTOMIZATION
 
   return false;
