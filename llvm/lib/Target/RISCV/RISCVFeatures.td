@@ -79,8 +79,8 @@ def FeatureStdExtSs
                      "'Ss' (Supervisor Architecture)">;
 
 def FeaturesSmrnmi
-    : RISCVExperimentalExtension<"smrnmi", 0, 5,
-                                 "'Smrnmi' (Resumable Non-Maskable Interrupts)">;
+    : RISCVExtension<"smrnmi", 1, 0,
+                     "'Smrnmi' (Resumable Non-Maskable Interrupts)">;
 
 def FeatureStdExtSmwg
     : RISCVExperimentalExtension<"smwg", 0, 3,

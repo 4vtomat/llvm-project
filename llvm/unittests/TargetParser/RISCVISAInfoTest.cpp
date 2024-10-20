@@ -1074,6 +1074,7 @@ R"(All available -march extensions for RISC-V
     smcdeleg             1.0
     smcsrind             1.0
     smepmp               1.0
+    smrnmi               1.0
     smstateen            1.0
     ss                   1.13
     ss                   1.12
@@ -1165,7 +1166,6 @@ Experimental extensions
     smctr                1.0
     smmpm                1.0
     smnpm                1.0
-    smrnmi               0.5
     smwg                 0.3
     smwgd                0.3
     ssctr                1.0

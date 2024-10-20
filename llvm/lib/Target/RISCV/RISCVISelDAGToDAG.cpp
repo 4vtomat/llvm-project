@@ -535,6 +535,46 @@ void RISCVDAGToDAGISel::selectVSETVLI(SDNode *Node) {
               CurDAG->getMachineNode(Opcode, DL, XLenVT, VLOperand, VTypeIOp));
 }
 
+#if SIFIVE_CUSTOMIZATION
+void RISCVDAGToDAGISel::selectMammothVSET(SDNode *Node) {
+  if (!Subtarget->hasVendorXSfmmbase())
+    return;
+
+  assert(Node->getOpcode() == ISD::INTRINSIC_WO_CHAIN && "Unexpected opcode");
+
+  SDLoc DL(Node);
+  MVT XLenVT = Subtarget->getXLenVT();
+
+  unsigned IntNo = Node->getConstantOperandVal(0);
+
+  assert((IntNo == Intrinsic::riscv_sf_vsettnt ||
+          IntNo == Intrinsic::riscv_sf_vsettm ||
+          IntNo == Intrinsic::riscv_sf_vsettk) &&
+         "Unexpected Mammoth vset intrinsic");
+
+  unsigned SEW = RISCVVType::decodeVSEW(Node->getConstantOperandVal(2));
+  unsigned Widen = RISCVVType::decodeTWiden(Node->getConstantOperandVal(3));
+  unsigned PseudoOpCode =
+      IntNo == Intrinsic::riscv_sf_vsettnt  ? RISCV::PseudoSF_VSETTNT
+      : IntNo == Intrinsic::riscv_sf_vsettm ? RISCV::PseudoSF_VSETTM
+                                            : RISCV::PseudoSF_VSETTK;
+
+  unsigned VTypeI = RISCVVType::encodeMammothVType(SEW, Widen, 0);
+  SDValue VTypeIOp = CurDAG->getTargetConstant(VTypeI, DL, XLenVT);
+
+  if (PseudoOpCode != RISCV::PseudoSF_VSETTNT) {
+    CurDAG->getMachineNode(RISCV::PseudoSF_VSETTNT, DL, XLenVT,
+                           Node->getOperand(1), VTypeIOp);
+    ReplaceNode(Node, CurDAG->getMachineNode(PseudoOpCode, DL, XLenVT,
+                                             Node->getOperand(1), VTypeIOp));
+    return;
+  }
+
+  ReplaceNode(Node, CurDAG->getMachineNode(PseudoOpCode, DL, XLenVT,
+                                           Node->getOperand(1), VTypeIOp));
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 bool RISCVDAGToDAGISel::tryShrinkShlLogicImm(SDNode *Node) {
   MVT VT = Node->getSimpleValueType(0);
   unsigned Opcode = Node->getOpcode();
@@ -830,6 +870,11 @@ bool RISCVDAGToDAGISel::tryFixREV8W(SDNode *Node) {
       CurDAG->getTargetConstant(ShAmt - 32, DL, MVT::i64));
   ReplaceNode(Node, OuterSRLI);
   return true;
+}
+
+static Register getTileReg(uint64_t TileNum) {
+  assert(TileNum <= 15 && "Invalid tile number");
+  return RISCV::T0 + TileNum;
 }
 #endif
 
@@ -2019,6 +2064,12 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
     case Intrinsic::riscv_vsetvli:
     case Intrinsic::riscv_vsetvlimax:
       return selectVSETVLI(Node);
+#ifdef SIFIVE_CUSTOMIZATION
+    case Intrinsic::riscv_sf_vsettnt:
+    case Intrinsic::riscv_sf_vsettm:
+    case Intrinsic::riscv_sf_vsettk:
+      return selectMammothVSET(Node);
+#endif // SIFIVE_CUSTOMIZATION
     }
     break;
   }
@@ -2416,6 +2467,102 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
     case Intrinsic::riscv_sf_vc_i_se:
       selectSF_VC_X_SE(Node);
       return;
+#ifdef SIFIVE_CUSTOMIZATION
+    case Intrinsic::riscv_sf_p2mm_s_s:
+    case Intrinsic::riscv_sf_p2mm_s_u:
+    case Intrinsic::riscv_sf_p2mm_u_s:
+    case Intrinsic::riscv_sf_p2mm_u_u:
+    case Intrinsic::riscv_sf_mm_s_s:
+    case Intrinsic::riscv_sf_mm_s_u:
+    case Intrinsic::riscv_sf_mm_u_s:
+    case Intrinsic::riscv_sf_mm_u_u:
+    case Intrinsic::riscv_sf_mm_e5m2_e5m2:
+    case Intrinsic::riscv_sf_mm_e5m2_e4m3:
+    case Intrinsic::riscv_sf_mm_e4m3_e5m2:
+    case Intrinsic::riscv_sf_mm_e4m3_e4m3:
+    case Intrinsic::riscv_sf_mm_f_f: {
+      unsigned PseudoInst;
+      switch (IntNo) {
+      case Intrinsic::riscv_sf_p2mm_s_s:
+        PseudoInst = RISCV::PseudoSF_P2MM_S_S;
+        break;
+      case Intrinsic::riscv_sf_p2mm_s_u:
+        PseudoInst = RISCV::PseudoSF_P2MM_S_U;
+        break;
+      case Intrinsic::riscv_sf_p2mm_u_s:
+        PseudoInst = RISCV::PseudoSF_P2MM_U_U;
+        break;
+      case Intrinsic::riscv_sf_p2mm_u_u:
+        PseudoInst = RISCV::PseudoSF_P2MM_S_S;
+        break;
+      case Intrinsic::riscv_sf_mm_s_s:
+        PseudoInst = RISCV::PseudoSF_MM_S_S;
+        break;
+      case Intrinsic::riscv_sf_mm_s_u:
+        PseudoInst = RISCV::PseudoSF_MM_S_U;
+        break;
+      case Intrinsic::riscv_sf_mm_u_s:
+        PseudoInst = RISCV::PseudoSF_MM_U_S;
+        break;
+      case Intrinsic::riscv_sf_mm_u_u:
+        PseudoInst = RISCV::PseudoSF_MM_U_U;
+        break;
+      case Intrinsic::riscv_sf_mm_e5m2_e5m2:
+        PseudoInst = RISCV::PseudoSF_MM_E5M2_E5M2;
+        break;
+      case Intrinsic::riscv_sf_mm_e5m2_e4m3:
+        PseudoInst = RISCV::PseudoSF_MM_E5M2_E4M3;
+        break;
+      case Intrinsic::riscv_sf_mm_e4m3_e5m2:
+        PseudoInst = RISCV::PseudoSF_MM_E4M3_E5M2;
+        break;
+      case Intrinsic::riscv_sf_mm_e4m3_e4m3:
+        PseudoInst = RISCV::PseudoSF_MM_E4M3_E4M3;
+        break;
+      case Intrinsic::riscv_sf_mm_f_f:
+        if (Node->getOperand(3).getValueType().getScalarType() == MVT::bf16)
+          PseudoInst = RISCV::PseudoSF_MM_F_F_ALT;
+        else
+          PseudoInst = RISCV::PseudoSF_MM_F_F;
+        break;
+      }
+      uint64_t TileNum = Node->getConstantOperandVal(2);
+      SDValue Op1 = Node->getOperand(3);
+      SDValue Op2 = Node->getOperand(4);
+      MVT VT = Op1->getSimpleValueType(0);
+      unsigned Log2SEW = Log2_32(VT.getScalarSizeInBits());
+      SDValue TmOp = Node->getOperand(5);
+      SDValue TnOp = Node->getOperand(6);
+      SDValue TkOp = Node->getOperand(7);
+      SDValue TWidenOp = Node->getOperand(8);
+      SDValue Chain = Node->getOperand(0);
+
+      SDValue Operands[] = {CurDAG->getRegister(getTileReg(TileNum), XLenVT),
+                            Op1,
+                            Op2,
+                            TmOp,
+                            TnOp,
+                            TkOp,
+                            CurDAG->getTargetConstant(Log2SEW, DL, XLenVT),
+                            TWidenOp,
+                            Chain};
+      auto *NewNode =
+          CurDAG->getMachineNode(PseudoInst, DL, Node->getVTList(), Operands);
+
+      ReplaceNode(Node, NewNode);
+      return;
+    }
+    case Intrinsic::riscv_sf_vtzero_t: {
+      uint64_t TileNum = Node->getConstantOperandVal(2);
+      SDValue Chain = Node->getOperand(0);
+      auto *NewNode = CurDAG->getMachineNode(
+          RISCV::PseudoSF_VTZERO_T, DL, Node->getVTList(),
+          {CurDAG->getRegister(getTileReg(TileNum), XLenVT), Chain});
+
+      ReplaceNode(Node, NewNode);
+      return;
+    }
+#endif // SIFIVE_CUSTOMIZATION
     }
     break;
   }

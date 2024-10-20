@@ -91,6 +91,11 @@ protected:
   DenseMap<BasicBlock *, unsigned> RankMap;
   DenseMap<AssertingVH<Value>, unsigned> ValueRankMap;
   OrderedSet RedoInsts;
+#if SIFIVE_CUSTOMIZATION
+  // Run ReassociatePass twice, where the first stage doesn't run CSE-aware
+  // reassociation.
+  bool TwoPhaseReassoc = false;
+#endif
 
   // Arbitrary, but prevents quadratic behavior.
   static const unsigned GlobalReassociateLimit = 10;
@@ -108,6 +113,14 @@ protected:
   bool MadeChange;
 
 public:
+#if SIFIVE_CUSTOMIZATION
+  ReassociatePass(bool EnableTwoPhase = false)
+      : TwoPhaseReassoc(EnableTwoPhase) {}
+
+  void printPipeline(raw_ostream &OS,
+                     function_ref<StringRef(StringRef)> MapClassName2PassName);
+
+#endif
   PreservedAnalyses run(Function &F, FunctionAnalysisManager &);
 
 private:

@@ -16293,6 +16293,9 @@ static SDValue expandMul(SDNode *N, SelectionDAG &DAG,
     return DAG.getNode(ISD::SUB, DL, VT, Shift1, Shift2);
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // The code below doesn't see profitable for our cores.
+#else
   if (HasShlAdd) {
     for (uint64_t Divisor : {3, 5, 9}) {
       if (MulAmt % Divisor != 0)
@@ -16318,6 +16321,7 @@ static SDValue expandMul(SDNode *N, SelectionDAG &DAG,
       }
     }
   }
+#endif
 
   return SDValue();
 }
@@ -18690,6 +18694,31 @@ static bool combine_CC(SDValue &LHS, SDValue &RHS, SDValue &CC, const SDLoc &DL,
     }
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // The enclosing optimization is not beneficial to single-issue core
+  // since it cannot benefit from the extra ILP while the code size is
+  // increasing.
+  if (Subtarget.getSchedModel().IssueWidth > 1)
+    // Fold (br_cc (and (xor X, Y), C)) -> (br_cc (and X, C), (and Y, C))
+    // This reduces the critical path length since the ands can be done in
+    // parallel. Only do this if the ANDs can use ANDI.
+    if (isNullConstant(RHS) && LHS.getOpcode() == ISD::AND &&
+        isa<ConstantSDNode>(LHS.getOperand(1)) && LHS.hasOneUse() &&
+        LHS.getOperand(0).getOpcode() == ISD::XOR &&
+        LHS.getOperand(0).hasOneUse()) {
+      SDValue Mask = LHS.getOperand(1);
+      int64_t MaskC = cast<ConstantSDNode>(LHS.getOperand(1))->getSExtValue();
+      if (isInt<12>(MaskC)) {
+        RHS = LHS.getOperand(0).getOperand(1);
+        LHS = LHS.getOperand(0).getOperand(0);
+
+        RHS = DAG.getNode(ISD::AND, DL, RHS.getValueType(), RHS, Mask);
+        LHS = DAG.getNode(ISD::AND, DL, LHS.getValueType(), LHS, Mask);
+        return true;
+      }
+    }
+#endif // SIFIVE_CUSTOMIZATION
+
   return false;
 }
 
@@ -19136,16 +19165,13 @@ static SDValue performSPLAT_VECTORCombine(SDNode *N, SelectionDAG &DAG,
   // SPLAT_VECTOR const_fp -> SPLAT_VECTOR (load (const_pool const_fp))
   if (auto *C = dyn_cast<ConstantFPSDNode>(Scalar);
       C && Subtarget.isSiFiveBulletCPU() && VT.isFloatingPoint()) {
-
     auto PtrVt = TLI.getPointerTy(DAG.getDataLayout());
-    SDValue CPE =
-        DAG.getConstantPool(C->getConstantFPValue(), PtrVt);
+    SDValue CPE = DAG.getConstantPool(C->getConstantFPValue(), PtrVt);
     MachineFunction &MF = DAG.getMachineFunction();
     MVT EltTy = VT.getVectorElementType();
-    MachineMemOperand *MMO = MF.getMachineMemOperand(
-        MachinePointerInfo::getConstantPool(MF), MachineMemOperand::MOLoad,
-        LLT(EltTy), cast<ConstantPoolSDNode>(CPE)->getAlign());
-    SDValue Ld = DAG.getLoad(EltTy, SDLoc(Scalar), DAG.getEntryNode(), CPE, MMO);
+    SDValue Ld = DAG.getLoad(EltTy, SDLoc(Scalar), DAG.getEntryNode(), CPE,
+                             MachinePointerInfo::getConstantPool(MF),
+                             cast<ConstantPoolSDNode>(CPE)->getAlign());
     return DAG.getSplatVector(VT, SDLoc(N), Ld);
   }
 
@@ -19168,12 +19194,12 @@ static SDValue performVFMV_V_F_VLCombine(SDNode *N, SelectionDAG &DAG,
         DAG.getConstantPool(C->getConstantFPValue(), PtrVt);
     MachineFunction &MF = DAG.getMachineFunction();
     MVT EltTy = VT.getVectorElementType();
-    MachineMemOperand *MMO = MF.getMachineMemOperand(
-        MachinePointerInfo::getConstantPool(MF), MachineMemOperand::MOLoad,
-        LLT(EltTy), cast<ConstantPoolSDNode>(CPE)->getAlign());
-    SDValue Ld = DAG.getLoad(EltTy, SDLoc(Scalar), DAG.getEntryNode(), CPE, MMO);
-    return DAG.getNode(RISCVISD::VFMV_V_F_VL, SDLoc(N), VT, Passthru, Ld, VL);
+    SDValue Ld = DAG.getLoad(EltTy, SDLoc(Scalar), DAG.getEntryNode(), CPE,
+                             MachinePointerInfo::getConstantPool(MF),
+                             cast<ConstantPoolSDNode>(CPE)->getAlign());
+    return DAG.getNode(N->getOpcode(), SDLoc(N), VT, Passthru, Ld, VL);
   }
+
   return SDValue();
 }
 

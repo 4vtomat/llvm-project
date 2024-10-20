@@ -1090,6 +1090,14 @@ static bool lowerRISCVVMachineInstrToMCInst(const MachineInstr *MI,
     --NumOps;
   if (RISCVII::hasRoundModeOp(TSFlags))
     --NumOps;
+#if SIFIVE_CUSTOMIZATION
+  if (RISCVII::hasTWidenOp(TSFlags))
+    --NumOps;
+  if (RISCVII::hasTMOp(TSFlags))
+    --NumOps;
+  if (RISCVII::hasTKOp(TSFlags))
+    --NumOps;
+#endif // SIFIVE_CUSTOMIZATION
 
   bool hasVLOutput = RISCV::isFaultFirstLoad(*MI);
   for (unsigned OpNo = 0; OpNo != NumOps; ++OpNo) {

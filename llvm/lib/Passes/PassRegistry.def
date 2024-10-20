@@ -631,6 +631,12 @@ FUNCTION_PASS_WITH_PARAMS(
     "rtsan", "RealtimeSanitizerPass",
     [](RealtimeSanitizerOptions Opts) { return RealtimeSanitizerPass(Opts); },
     parseRtSanPassOptions, "")
+#if SIFIVE_CUSTOMIZATION
+FUNCTION_PASS_WITH_PARAMS(
+    "reassociate", "ReassociatePass",
+    [](bool EnableTwoPhase) { return ReassociatePass(EnableTwoPhase); },
+    parseReassociatePassOptions, "two-phase-reassoc")
+#endif
 #undef FUNCTION_PASS_WITH_PARAMS
 
 #ifndef LOOPNEST_PASS
