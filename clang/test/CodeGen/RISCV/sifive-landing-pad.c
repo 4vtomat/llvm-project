@@ -4,12 +4,11 @@
 
 typedef void (*FuncPtr)() __attribute__((landing_pad_value(10)));
 // CHECK-LABEL: define dso_local void @foo(
-// CHECK-SAME: ptr noundef [[FPTR:%.*]]) #[[ATTR0:[0-9]+]] {
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[FPTR_ADDR:%.*]] = alloca ptr, align 8
-// CHECK-NEXT:    store ptr [[FPTR]], ptr [[FPTR_ADDR]], align 8
-// CHECK-NEXT:    [[TMP0:%.*]] = load ptr, ptr [[FPTR_ADDR]], align 8
-// CHECK-NEXT:    call void [[TMP0]]() [ "riscv_cfi"(i32 10) ]
+// CHECK-SAME: ptr noundef [[TMP0:%.*]]) #[[ATTR0:[0-9]+]] {
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca ptr, align 8
+// CHECK-NEXT:    store ptr [[TMP0]], ptr [[TMP2]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = load ptr, ptr [[TMP2]], align 8
+// CHECK-NEXT:    call void [[TMP3]]() [ "riscv_cfi"(i32 10) ]
 // CHECK-NEXT:    ret void
 //
 void foo(FuncPtr fptr){
@@ -17,20 +16,18 @@ void foo(FuncPtr fptr){
 }
 
 // CHECK-LABEL: define dso_local void @bar(
-// CHECK-SAME: ) #[[ATTR0]] !riscv_cfi_type !7 {
-// CHECK-NEXT:  entry:
+// CHECK-SAME: ) #[[ATTR0]] !riscv_cfi_type [[META7:![0-9]+]] {
 // CHECK-NEXT:    ret void
 //
 __attribute__((landing_pad_value(10))) void bar (void){}
 
 [[riscv::landing_pad_value(10)]] typedef void (*FuncPtr2)();
 // CHECK-LABEL: define dso_local void @foo2(
-// CHECK-SAME: ptr noundef [[FPTR:%.*]]) #[[ATTR0]] {
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[FPTR_ADDR:%.*]] = alloca ptr, align 8
-// CHECK-NEXT:    store ptr [[FPTR]], ptr [[FPTR_ADDR]], align 8
-// CHECK-NEXT:    [[TMP0:%.*]] = load ptr, ptr [[FPTR_ADDR]], align 8
-// CHECK-NEXT:    call void [[TMP0]]() [ "riscv_cfi"(i32 10) ]
+// CHECK-SAME: ptr noundef [[TMP0:%.*]]) #[[ATTR0]] {
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca ptr, align 8
+// CHECK-NEXT:    store ptr [[TMP0]], ptr [[TMP2]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = load ptr, ptr [[TMP2]], align 8
+// CHECK-NEXT:    call void [[TMP3]]() [ "riscv_cfi"(i32 10) ]
 // CHECK-NEXT:    ret void
 //
 void foo2(FuncPtr2 fptr){
@@ -38,20 +35,18 @@ void foo2(FuncPtr2 fptr){
 }
 
 // CHECK-LABEL: define dso_local void @bar2(
-// CHECK-SAME: ) #[[ATTR0]] !riscv_cfi_type !7 {
-// CHECK-NEXT:  entry:
+// CHECK-SAME: ) #[[ATTR0]] !riscv_cfi_type [[META7]] {
 // CHECK-NEXT:    ret void
 //
 [[riscv::landing_pad_value(10)]] void bar2 (void){}
 
 typedef void (*FuncPtr3)() __attribute__((no_cfi_lp));
 // CHECK-LABEL: define dso_local void @foo3(
-// CHECK-SAME: ptr noundef [[FPTR:%.*]]) #[[ATTR0]] {
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[FPTR_ADDR:%.*]] = alloca ptr, align 8
-// CHECK-NEXT:    store ptr [[FPTR]], ptr [[FPTR_ADDR]], align 8
-// CHECK-NEXT:    [[TMP0:%.*]] = load ptr, ptr [[FPTR_ADDR]], align 8
-// CHECK-NEXT:    call void [[TMP0]]() [ "riscv_cfi"(i32 -1) ]
+// CHECK-SAME: ptr noundef [[TMP0:%.*]]) #[[ATTR0]] {
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca ptr, align 8
+// CHECK-NEXT:    store ptr [[TMP0]], ptr [[TMP2]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = load ptr, ptr [[TMP2]], align 8
+// CHECK-NEXT:    call void [[TMP3]]() [ "riscv_cfi"(i32 -1) ]
 // CHECK-NEXT:    ret void
 //
 void foo3(FuncPtr3 fptr){
@@ -59,20 +54,18 @@ void foo3(FuncPtr3 fptr){
 }
 
 // CHECK-LABEL: define dso_local void @bar3(
-// CHECK-SAME: ) #[[ATTR0]] !riscv_cfi_type !8 {
-// CHECK-NEXT:  entry:
+// CHECK-SAME: ) #[[ATTR0]] !riscv_cfi_type [[META8:![0-9]+]] {
 // CHECK-NEXT:    ret void
 //
 __attribute__((no_cfi_lp)) void bar3 (void){}
 
 [[riscv::no_cfi_lp]] typedef void (*FuncPtr4)();
 // CHECK-LABEL: define dso_local void @foo4(
-// CHECK-SAME: ptr noundef [[FPTR:%.*]]) #[[ATTR0]] {
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[FPTR_ADDR:%.*]] = alloca ptr, align 8
-// CHECK-NEXT:    store ptr [[FPTR]], ptr [[FPTR_ADDR]], align 8
-// CHECK-NEXT:    [[TMP0:%.*]] = load ptr, ptr [[FPTR_ADDR]], align 8
-// CHECK-NEXT:    call void [[TMP0]]() [ "riscv_cfi"(i32 -1) ]
+// CHECK-SAME: ptr noundef [[TMP0:%.*]]) #[[ATTR0]] {
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca ptr, align 8
+// CHECK-NEXT:    store ptr [[TMP0]], ptr [[TMP2]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = load ptr, ptr [[TMP2]], align 8
+// CHECK-NEXT:    call void [[TMP3]]() [ "riscv_cfi"(i32 -1) ]
 // CHECK-NEXT:    ret void
 //
 void foo4(FuncPtr4 fptr){
@@ -80,8 +73,11 @@ void foo4(FuncPtr4 fptr){
 }
 
 // CHECK-LABEL: define dso_local void @bar4(
-// CHECK-SAME: ) #[[ATTR0]] !riscv_cfi_type !8 {
-// CHECK-NEXT:  entry:
+// CHECK-SAME: ) #[[ATTR0]] !riscv_cfi_type [[META8]] {
 // CHECK-NEXT:    ret void
 //
 [[riscv::no_cfi_lp]] void bar4 (void){}
+//.
+// CHECK: [[META7]] = !{i32 10}
+// CHECK: [[META8]] = !{i32 -1}
+//.

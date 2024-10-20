@@ -5,11 +5,10 @@
 #include<arm_fp16.h>
 
 // CHECK-LABEL: @test_vcvtah_s16_f16(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call half @llvm.round.f16(half [[IN_0:%.*]])
-// CHECK-NEXT:    [[TMP1:%.*]] = call i16 @llvm.fptosi.sat.i16.f16(half [[TMP0]])
-// CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i16, ptr [[OUT:%.*]], i64 0
-// CHECK-NEXT:    store i16 [[TMP1]], ptr [[ARRAYIDX]], align 2
+// CHECK-NEXT:    [[TMP3:%.*]] = call half @llvm.round.f16(half [[TMP0:%.*]])
+// CHECK-NEXT:    [[TMP4:%.*]] = call i16 @llvm.fptosi.sat.i16.f16(half [[TMP3]])
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i16, ptr [[TMP1:%.*]], i64 0
+// CHECK-NEXT:    store i16 [[TMP4]], ptr [[TMP5]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vcvtah_s16_f16(float16_t in_0, int16_t *out)
@@ -18,11 +17,10 @@ out[0] = vcvtah_s16_f16(in_0);
 }
 
 // CHECK-LABEL: @test_vcvtah_u16_f16(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call half @llvm.round.f16(half [[IN_0:%.*]])
-// CHECK-NEXT:    [[TMP1:%.*]] = call i16 @llvm.fptoui.sat.i16.f16(half [[TMP0]])
-// CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i16, ptr [[OUT:%.*]], i64 0
-// CHECK-NEXT:    store i16 [[TMP1]], ptr [[ARRAYIDX]], align 2
+// CHECK-NEXT:    [[TMP3:%.*]] = call half @llvm.round.f16(half [[TMP0:%.*]])
+// CHECK-NEXT:    [[TMP4:%.*]] = call i16 @llvm.fptoui.sat.i16.f16(half [[TMP3]])
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i16, ptr [[TMP1:%.*]], i64 0
+// CHECK-NEXT:    store i16 [[TMP4]], ptr [[TMP5]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vcvtah_u16_f16(float16_t in_0, uint16_t *out)
@@ -31,10 +29,9 @@ out[0] = vcvtah_u16_f16(in_0);
 }
 
 // CHECK-LABEL: @test_vcvth_s16_f16(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call i16 @llvm.fptosi.sat.i16.f16(half [[IN_0:%.*]])
-// CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i16, ptr [[OUT:%.*]], i64 0
-// CHECK-NEXT:    store i16 [[TMP0]], ptr [[ARRAYIDX]], align 2
+// CHECK-NEXT:    [[TMP3:%.*]] = call i16 @llvm.fptosi.sat.i16.f16(half [[TMP0:%.*]])
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i16, ptr [[TMP1:%.*]], i64 0
+// CHECK-NEXT:    store i16 [[TMP3]], ptr [[TMP4]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vcvth_s16_f16(float16_t in_0, int16_t *out)
@@ -43,10 +40,9 @@ out[0] = vcvth_s16_f16(in_0);
 }
 
 // CHECK-LABEL: @test_vcvth_u16_f16(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call i16 @llvm.fptoui.sat.i16.f16(half [[IN_0:%.*]])
-// CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i16, ptr [[OUT:%.*]], i64 0
-// CHECK-NEXT:    store i16 [[TMP0]], ptr [[ARRAYIDX]], align 2
+// CHECK-NEXT:    [[TMP3:%.*]] = call i16 @llvm.fptoui.sat.i16.f16(half [[TMP0:%.*]])
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i16, ptr [[TMP1:%.*]], i64 0
+// CHECK-NEXT:    store i16 [[TMP3]], ptr [[TMP4]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vcvth_u16_f16(float16_t in_0, uint16_t *out)
@@ -55,11 +51,10 @@ out[0] = vcvth_u16_f16(in_0);
 }
 
 // CHECK-LABEL: @test_vcvtmh_s16_f16(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call half @llvm.floor.f16(half [[IN_0:%.*]])
-// CHECK-NEXT:    [[TMP1:%.*]] = call i16 @llvm.fptosi.sat.i16.f16(half [[TMP0]])
-// CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i16, ptr [[OUT:%.*]], i64 0
-// CHECK-NEXT:    store i16 [[TMP1]], ptr [[ARRAYIDX]], align 2
+// CHECK-NEXT:    [[TMP3:%.*]] = call half @llvm.floor.f16(half [[TMP0:%.*]])
+// CHECK-NEXT:    [[TMP4:%.*]] = call i16 @llvm.fptosi.sat.i16.f16(half [[TMP3]])
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i16, ptr [[TMP1:%.*]], i64 0
+// CHECK-NEXT:    store i16 [[TMP4]], ptr [[TMP5]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vcvtmh_s16_f16(float16_t in_0, int16_t *out)
@@ -68,11 +63,10 @@ out[0] = vcvtmh_s16_f16(in_0);
 }
 
 // CHECK-LABEL: @test_vcvtmh_u16_f16(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call half @llvm.floor.f16(half [[IN_0:%.*]])
-// CHECK-NEXT:    [[TMP1:%.*]] = call i16 @llvm.fptoui.sat.i16.f16(half [[TMP0]])
-// CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i16, ptr [[OUT:%.*]], i64 0
-// CHECK-NEXT:    store i16 [[TMP1]], ptr [[ARRAYIDX]], align 2
+// CHECK-NEXT:    [[TMP3:%.*]] = call half @llvm.floor.f16(half [[TMP0:%.*]])
+// CHECK-NEXT:    [[TMP4:%.*]] = call i16 @llvm.fptoui.sat.i16.f16(half [[TMP3]])
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i16, ptr [[TMP1:%.*]], i64 0
+// CHECK-NEXT:    store i16 [[TMP4]], ptr [[TMP5]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vcvtmh_u16_f16(float16_t in_0, uint16_t *out)
@@ -81,11 +75,10 @@ out[0] = vcvtmh_u16_f16(in_0);
 }
 
 // CHECK-LABEL: @test_vcvtnh_s16_f16(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call half @llvm.roundeven.f16(half [[IN_0:%.*]])
-// CHECK-NEXT:    [[TMP1:%.*]] = call i16 @llvm.fptosi.sat.i16.f16(half [[TMP0]])
-// CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i16, ptr [[OUT:%.*]], i64 0
-// CHECK-NEXT:    store i16 [[TMP1]], ptr [[ARRAYIDX]], align 2
+// CHECK-NEXT:    [[TMP3:%.*]] = call half @llvm.roundeven.f16(half [[TMP0:%.*]])
+// CHECK-NEXT:    [[TMP4:%.*]] = call i16 @llvm.fptosi.sat.i16.f16(half [[TMP3]])
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i16, ptr [[TMP1:%.*]], i64 0
+// CHECK-NEXT:    store i16 [[TMP4]], ptr [[TMP5]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vcvtnh_s16_f16(float16_t in_0, int16_t *out)
@@ -94,11 +87,10 @@ out[0] = vcvtnh_s16_f16(in_0);
 }
 
 // CHECK-LABEL: @test_vcvtnh_u16_f16(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call half @llvm.roundeven.f16(half [[IN_0:%.*]])
-// CHECK-NEXT:    [[TMP1:%.*]] = call i16 @llvm.fptoui.sat.i16.f16(half [[TMP0]])
-// CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i16, ptr [[OUT:%.*]], i64 0
-// CHECK-NEXT:    store i16 [[TMP1]], ptr [[ARRAYIDX]], align 2
+// CHECK-NEXT:    [[TMP3:%.*]] = call half @llvm.roundeven.f16(half [[TMP0:%.*]])
+// CHECK-NEXT:    [[TMP4:%.*]] = call i16 @llvm.fptoui.sat.i16.f16(half [[TMP3]])
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i16, ptr [[TMP1:%.*]], i64 0
+// CHECK-NEXT:    store i16 [[TMP4]], ptr [[TMP5]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vcvtnh_u16_f16(float16_t in_0, uint16_t *out)
@@ -107,11 +99,10 @@ out[0] = vcvtnh_u16_f16(in_0);
 }
 
 // CHECK-LABEL: @test_vcvtph_s16_f16(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call half @llvm.ceil.f16(half [[IN_0:%.*]])
-// CHECK-NEXT:    [[TMP1:%.*]] = call i16 @llvm.fptosi.sat.i16.f16(half [[TMP0]])
-// CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i16, ptr [[OUT:%.*]], i64 0
-// CHECK-NEXT:    store i16 [[TMP1]], ptr [[ARRAYIDX]], align 2
+// CHECK-NEXT:    [[TMP3:%.*]] = call half @llvm.ceil.f16(half [[TMP0:%.*]])
+// CHECK-NEXT:    [[TMP4:%.*]] = call i16 @llvm.fptosi.sat.i16.f16(half [[TMP3]])
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i16, ptr [[TMP1:%.*]], i64 0
+// CHECK-NEXT:    store i16 [[TMP4]], ptr [[TMP5]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vcvtph_s16_f16(float16_t in_0, int16_t *out)
@@ -120,11 +111,10 @@ out[0] = vcvtph_s16_f16(in_0);
 }
 
 // CHECK-LABEL: @test_vcvtph_u16_f16(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call half @llvm.ceil.f16(half [[IN_0:%.*]])
-// CHECK-NEXT:    [[TMP1:%.*]] = call i16 @llvm.fptoui.sat.i16.f16(half [[TMP0]])
-// CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i16, ptr [[OUT:%.*]], i64 0
-// CHECK-NEXT:    store i16 [[TMP1]], ptr [[ARRAYIDX]], align 2
+// CHECK-NEXT:    [[TMP3:%.*]] = call half @llvm.ceil.f16(half [[TMP0:%.*]])
+// CHECK-NEXT:    [[TMP4:%.*]] = call i16 @llvm.fptoui.sat.i16.f16(half [[TMP3]])
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i16, ptr [[TMP1:%.*]], i64 0
+// CHECK-NEXT:    store i16 [[TMP4]], ptr [[TMP5]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vcvtph_u16_f16(float16_t in_0, uint16_t *out)

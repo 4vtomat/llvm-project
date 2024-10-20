@@ -5,1166 +5,1078 @@
 #include <arm_neon.h>
 
 // CHECK-LABEL: @i8x8x1(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    ret <8 x i8> [[A:%.*]]
+// CHECK-NEXT:    ret <8 x i8> [[TMP0:%.*]]
 //
 int8x8_t i8x8x1(int8x8_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u8x8x1(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    ret <8 x i8> [[A:%.*]]
+// CHECK-NEXT:    ret <8 x i8> [[TMP0:%.*]]
 //
 uint8x8_t u8x8x1(uint8x8_t a) {
   return a;
 }
 
 // CHECK-LABEL: @f16x4x1(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    ret <4 x half> [[A:%.*]]
+// CHECK-NEXT:    ret <4 x half> [[TMP0:%.*]]
 //
 float16x4_t f16x4x1(float16x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i16x4x1(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    ret <4 x i16> [[A:%.*]]
+// CHECK-NEXT:    ret <4 x i16> [[TMP0:%.*]]
 //
 int16x4_t i16x4x1(int16x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u16x4x1(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    ret <4 x i16> [[A:%.*]]
+// CHECK-NEXT:    ret <4 x i16> [[TMP0:%.*]]
 //
 uint16x4_t u16x4x1(uint16x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @f32x2x1(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    ret <2 x float> [[A:%.*]]
+// CHECK-NEXT:    ret <2 x float> [[TMP0:%.*]]
 //
 float32x2_t f32x2x1(float32x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i32x2x1(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    ret <2 x i32> [[A:%.*]]
+// CHECK-NEXT:    ret <2 x i32> [[TMP0:%.*]]
 //
 int32x2_t i32x2x1(int32x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u32x2x1(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    ret <2 x i32> [[A:%.*]]
+// CHECK-NEXT:    ret <2 x i32> [[TMP0:%.*]]
 //
 uint32x2_t u32x2x1(uint32x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @f64x1x1(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    ret <1 x double> [[A:%.*]]
+// CHECK-NEXT:    ret <1 x double> [[TMP0:%.*]]
 //
 float64x1_t f64x1x1(float64x1_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i64x1x1(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    ret <1 x i64> [[A:%.*]]
+// CHECK-NEXT:    ret <1 x i64> [[TMP0:%.*]]
 //
 int64x1_t i64x1x1(int64x1_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u64x1x1(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    ret <1 x i64> [[A:%.*]]
+// CHECK-NEXT:    ret <1 x i64> [[TMP0:%.*]]
 //
 uint64x1_t u64x1x1(uint64x1_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i8x16x1(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    ret <16 x i8> [[A:%.*]]
+// CHECK-NEXT:    ret <16 x i8> [[TMP0:%.*]]
 //
 int8x16_t i8x16x1(int8x16_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u8x16x1(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    ret <16 x i8> [[A:%.*]]
+// CHECK-NEXT:    ret <16 x i8> [[TMP0:%.*]]
 //
 uint8x16_t u8x16x1(uint8x16_t a) {
   return a;
 }
 
 // CHECK-LABEL: @f16x8x1(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    ret <8 x half> [[A:%.*]]
+// CHECK-NEXT:    ret <8 x half> [[TMP0:%.*]]
 //
 float16x8_t f16x8x1(float16x8_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i16x8x1(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    ret <8 x i16> [[A:%.*]]
+// CHECK-NEXT:    ret <8 x i16> [[TMP0:%.*]]
 //
 int16x8_t i16x8x1(int16x8_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u16x8x1(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    ret <8 x i16> [[A:%.*]]
+// CHECK-NEXT:    ret <8 x i16> [[TMP0:%.*]]
 //
 uint16x8_t u16x8x1(uint16x8_t a) {
   return a;
 }
 
 // CHECK-LABEL: @f32x4x1(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    ret <4 x float> [[A:%.*]]
+// CHECK-NEXT:    ret <4 x float> [[TMP0:%.*]]
 //
 float32x4_t f32x4x1(float32x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i32x4x1(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    ret <4 x i32> [[A:%.*]]
+// CHECK-NEXT:    ret <4 x i32> [[TMP0:%.*]]
 //
 int32x4_t i32x4x1(int32x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u32x4x1(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    ret <4 x i32> [[A:%.*]]
+// CHECK-NEXT:    ret <4 x i32> [[TMP0:%.*]]
 //
 uint32x4_t u32x4x1(uint32x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @f64x2x1(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    ret <2 x double> [[A:%.*]]
+// CHECK-NEXT:    ret <2 x double> [[TMP0:%.*]]
 //
 float64x2_t f64x2x1(float64x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i64x2x1(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    ret <2 x i64> [[A:%.*]]
+// CHECK-NEXT:    ret <2 x i64> [[TMP0:%.*]]
 //
 int64x2_t i64x2x1(int64x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u64x2x1(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    ret <2 x i64> [[A:%.*]]
+// CHECK-NEXT:    ret <2 x i64> [[TMP0:%.*]]
 //
 uint64x2_t u64x2x1(uint64x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i8x8x2(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_INT8X8X2_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_INT8X8X2_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_INT8X8X2_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [2 x <8 x i8>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 16, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_INT8X8X2_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [2 x <8 x i8>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [2 x <8 x i8>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_INT8X8X2_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_INT8X8X2_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_INT8X8X2_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [2 x <8 x i8>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 16, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_INT8X8X2_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [2 x <8 x i8>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [2 x <8 x i8>] [[TMP6]]
 //
 int8x8x2_t i8x8x2(int8x8x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u8x8x2(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_UINT8X8X2_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_UINT8X8X2_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT8X8X2_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [2 x <8 x i8>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 16, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT8X8X2_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [2 x <8 x i8>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [2 x <8 x i8>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_UINT8X8X2_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_UINT8X8X2_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT8X8X2_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [2 x <8 x i8>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 16, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT8X8X2_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [2 x <8 x i8>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [2 x <8 x i8>] [[TMP6]]
 //
 uint8x8x2_t u8x8x2(uint8x8x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @f16x4x2(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_FLOAT16X4X2_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_FLOAT16X4X2_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT16X4X2_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [2 x <4 x half>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 16, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT16X4X2_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [2 x <4 x half>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [2 x <4 x half>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_FLOAT16X4X2_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_FLOAT16X4X2_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT16X4X2_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [2 x <4 x half>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 16, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT16X4X2_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [2 x <4 x half>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [2 x <4 x half>] [[TMP6]]
 //
 float16x4x2_t f16x4x2(float16x4x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i16x4x2(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_INT16X4X2_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_INT16X4X2_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_INT16X4X2_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [2 x <4 x i16>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 16, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_INT16X4X2_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [2 x <4 x i16>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [2 x <4 x i16>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_INT16X4X2_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_INT16X4X2_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_INT16X4X2_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [2 x <4 x i16>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 16, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_INT16X4X2_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [2 x <4 x i16>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [2 x <4 x i16>] [[TMP6]]
 //
 int16x4x2_t i16x4x2(int16x4x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u16x4x2(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_UINT16X4X2_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_UINT16X4X2_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT16X4X2_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [2 x <4 x i16>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 16, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT16X4X2_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [2 x <4 x i16>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [2 x <4 x i16>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_UINT16X4X2_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_UINT16X4X2_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT16X4X2_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [2 x <4 x i16>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 16, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT16X4X2_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [2 x <4 x i16>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [2 x <4 x i16>] [[TMP6]]
 //
 uint16x4x2_t u16x4x2(uint16x4x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @f32x2x2(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_FLOAT32X2X2_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_FLOAT32X2X2_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT32X2X2_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [2 x <2 x float>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 16, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT32X2X2_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [2 x <2 x float>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [2 x <2 x float>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_FLOAT32X2X2_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_FLOAT32X2X2_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT32X2X2_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [2 x <2 x float>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 16, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT32X2X2_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [2 x <2 x float>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [2 x <2 x float>] [[TMP6]]
 //
 float32x2x2_t f32x2x2(float32x2x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i32x2x2(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_INT32X2X2_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_INT32X2X2_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_INT32X2X2_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [2 x <2 x i32>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 16, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_INT32X2X2_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [2 x <2 x i32>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [2 x <2 x i32>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_INT32X2X2_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_INT32X2X2_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_INT32X2X2_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [2 x <2 x i32>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 16, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_INT32X2X2_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [2 x <2 x i32>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [2 x <2 x i32>] [[TMP6]]
 //
 int32x2x2_t i32x2x2(int32x2x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u32x2x2(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_UINT32X2X2_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_UINT32X2X2_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT32X2X2_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [2 x <2 x i32>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 16, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT32X2X2_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [2 x <2 x i32>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [2 x <2 x i32>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_UINT32X2X2_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_UINT32X2X2_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT32X2X2_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [2 x <2 x i32>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 16, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT32X2X2_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [2 x <2 x i32>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [2 x <2 x i32>] [[TMP6]]
 //
 uint32x2x2_t u32x2x2(uint32x2x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @f64x1x2(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_FLOAT64X1X2_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_FLOAT64X1X2_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT64X1X2_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [2 x <1 x double>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 16, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT64X1X2_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [2 x <1 x double>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [2 x <1 x double>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_FLOAT64X1X2_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_FLOAT64X1X2_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT64X1X2_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [2 x <1 x double>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 16, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT64X1X2_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [2 x <1 x double>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [2 x <1 x double>] [[TMP6]]
 //
 float64x1x2_t f64x1x2(float64x1x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i64x1x2(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_INT64X1X2_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_INT64X1X2_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_INT64X1X2_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [2 x <1 x i64>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 16, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_INT64X1X2_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [2 x <1 x i64>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [2 x <1 x i64>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_INT64X1X2_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_INT64X1X2_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_INT64X1X2_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [2 x <1 x i64>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 16, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_INT64X1X2_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [2 x <1 x i64>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [2 x <1 x i64>] [[TMP6]]
 //
 int64x1x2_t i64x1x2(int64x1x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u64x1x2(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_UINT64X1X2_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_UINT64X1X2_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT64X1X2_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [2 x <1 x i64>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 16, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT64X1X2_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [2 x <1 x i64>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [2 x <1 x i64>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_UINT64X1X2_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_UINT64X1X2_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT64X1X2_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [2 x <1 x i64>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 16, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT64X1X2_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [2 x <1 x i64>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [2 x <1 x i64>] [[TMP6]]
 //
 uint64x1x2_t u64x1x2(uint64x1x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i8x16x2(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_INT8X16X2_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_INT8X16X2_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_INT8X16X2_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [2 x <16 x i8>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 32, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_INT8X16X2_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [2 x <16 x i8>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [2 x <16 x i8>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_INT8X16X2_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_INT8X16X2_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_INT8X16X2_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [2 x <16 x i8>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 32, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_INT8X16X2_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [2 x <16 x i8>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [2 x <16 x i8>] [[TMP6]]
 //
 int8x16x2_t i8x16x2(int8x16x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u8x16x2(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_UINT8X16X2_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_UINT8X16X2_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT8X16X2_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [2 x <16 x i8>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 32, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT8X16X2_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [2 x <16 x i8>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [2 x <16 x i8>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_UINT8X16X2_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_UINT8X16X2_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT8X16X2_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [2 x <16 x i8>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 32, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT8X16X2_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [2 x <16 x i8>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [2 x <16 x i8>] [[TMP6]]
 //
 uint8x16x2_t u8x16x2(uint8x16x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @f16x8x2(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_FLOAT16X8X2_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_FLOAT16X8X2_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT16X8X2_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [2 x <8 x half>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 32, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT16X8X2_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [2 x <8 x half>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [2 x <8 x half>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_FLOAT16X8X2_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_FLOAT16X8X2_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT16X8X2_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [2 x <8 x half>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 32, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT16X8X2_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [2 x <8 x half>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [2 x <8 x half>] [[TMP6]]
 //
 float16x8x2_t f16x8x2(float16x8x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i16x8x2(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_INT16X8X2_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_INT16X8X2_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_INT16X8X2_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [2 x <8 x i16>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 32, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_INT16X8X2_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [2 x <8 x i16>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [2 x <8 x i16>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_INT16X8X2_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_INT16X8X2_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_INT16X8X2_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [2 x <8 x i16>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 32, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_INT16X8X2_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [2 x <8 x i16>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [2 x <8 x i16>] [[TMP6]]
 //
 int16x8x2_t i16x8x2(int16x8x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u16x8x2(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_UINT16X8X2_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_UINT16X8X2_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT16X8X2_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [2 x <8 x i16>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 32, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT16X8X2_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [2 x <8 x i16>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [2 x <8 x i16>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_UINT16X8X2_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_UINT16X8X2_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT16X8X2_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [2 x <8 x i16>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 32, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT16X8X2_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [2 x <8 x i16>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [2 x <8 x i16>] [[TMP6]]
 //
 uint16x8x2_t u16x8x2(uint16x8x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @f32x4x2(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_FLOAT32X4X2_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_FLOAT32X4X2_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT32X4X2_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [2 x <4 x float>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 32, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT32X4X2_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [2 x <4 x float>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [2 x <4 x float>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_FLOAT32X4X2_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_FLOAT32X4X2_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT32X4X2_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [2 x <4 x float>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 32, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT32X4X2_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [2 x <4 x float>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [2 x <4 x float>] [[TMP6]]
 //
 float32x4x2_t f32x4x2(float32x4x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i32x4x2(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_INT32X4X2_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_INT32X4X2_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_INT32X4X2_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [2 x <4 x i32>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 32, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_INT32X4X2_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [2 x <4 x i32>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [2 x <4 x i32>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_INT32X4X2_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_INT32X4X2_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_INT32X4X2_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [2 x <4 x i32>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 32, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_INT32X4X2_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [2 x <4 x i32>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [2 x <4 x i32>] [[TMP6]]
 //
 int32x4x2_t i32x4x2(int32x4x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u32x4x2(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_UINT32X4X2_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_UINT32X4X2_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT32X4X2_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [2 x <4 x i32>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 32, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT32X4X2_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [2 x <4 x i32>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [2 x <4 x i32>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_UINT32X4X2_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_UINT32X4X2_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT32X4X2_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [2 x <4 x i32>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 32, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT32X4X2_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [2 x <4 x i32>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [2 x <4 x i32>] [[TMP6]]
 //
 uint32x4x2_t u32x4x2(uint32x4x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @f64x2x2(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_FLOAT64X2X2_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_FLOAT64X2X2_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT64X2X2_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [2 x <2 x double>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 32, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT64X2X2_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [2 x <2 x double>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [2 x <2 x double>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_FLOAT64X2X2_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_FLOAT64X2X2_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT64X2X2_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [2 x <2 x double>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 32, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT64X2X2_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [2 x <2 x double>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [2 x <2 x double>] [[TMP6]]
 //
 float64x2x2_t f64x2x2(float64x2x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i64x2x2(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_INT64X2X2_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_INT64X2X2_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_INT64X2X2_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [2 x <2 x i64>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 32, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_INT64X2X2_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [2 x <2 x i64>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [2 x <2 x i64>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_INT64X2X2_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_INT64X2X2_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_INT64X2X2_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [2 x <2 x i64>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 32, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_INT64X2X2_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [2 x <2 x i64>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [2 x <2 x i64>] [[TMP6]]
 //
 int64x2x2_t i64x2x2(int64x2x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u64x2x2(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_UINT64X2X2_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_UINT64X2X2_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT64X2X2_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [2 x <2 x i64>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 32, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT64X2X2_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [2 x <2 x i64>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [2 x <2 x i64>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_UINT64X2X2_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_UINT64X2X2_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT64X2X2_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [2 x <2 x i64>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 32, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT64X2X2_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [2 x <2 x i64>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [2 x <2 x i64>] [[TMP6]]
 //
 uint64x2x2_t u64x2x2(uint64x2x2_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i8x8x3(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_INT8X8X3_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_INT8X8X3_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_INT8X8X3_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [3 x <8 x i8>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 24, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_INT8X8X3_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [3 x <8 x i8>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [3 x <8 x i8>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_INT8X8X3_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_INT8X8X3_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_INT8X8X3_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [3 x <8 x i8>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 24, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_INT8X8X3_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [3 x <8 x i8>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [3 x <8 x i8>] [[TMP6]]
 //
 int8x8x3_t i8x8x3(int8x8x3_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u8x8x3(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_UINT8X8X3_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_UINT8X8X3_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT8X8X3_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [3 x <8 x i8>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 24, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT8X8X3_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [3 x <8 x i8>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [3 x <8 x i8>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_UINT8X8X3_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_UINT8X8X3_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT8X8X3_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [3 x <8 x i8>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 24, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT8X8X3_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [3 x <8 x i8>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [3 x <8 x i8>] [[TMP6]]
 //
 uint8x8x3_t u8x8x3(uint8x8x3_t a) {
   return a;
 }
 
 // CHECK-LABEL: @f16x4x3(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_FLOAT16X4X3_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_FLOAT16X4X3_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT16X4X3_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [3 x <4 x half>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 24, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT16X4X3_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [3 x <4 x half>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [3 x <4 x half>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_FLOAT16X4X3_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_FLOAT16X4X3_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT16X4X3_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [3 x <4 x half>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 24, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT16X4X3_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [3 x <4 x half>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [3 x <4 x half>] [[TMP6]]
 //
 float16x4x3_t f16x4x3(float16x4x3_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i16x4x3(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_INT16X4X3_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_INT16X4X3_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_INT16X4X3_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [3 x <4 x i16>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 24, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_INT16X4X3_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [3 x <4 x i16>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [3 x <4 x i16>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_INT16X4X3_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_INT16X4X3_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_INT16X4X3_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [3 x <4 x i16>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 24, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_INT16X4X3_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [3 x <4 x i16>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [3 x <4 x i16>] [[TMP6]]
 //
 int16x4x3_t i16x4x3(int16x4x3_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u16x4x3(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_UINT16X4X3_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_UINT16X4X3_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT16X4X3_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [3 x <4 x i16>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 24, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT16X4X3_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [3 x <4 x i16>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [3 x <4 x i16>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_UINT16X4X3_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_UINT16X4X3_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT16X4X3_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [3 x <4 x i16>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 24, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT16X4X3_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [3 x <4 x i16>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [3 x <4 x i16>] [[TMP6]]
 //
 uint16x4x3_t u16x4x3(uint16x4x3_t a) {
   return a;
 }
 
 // CHECK-LABEL: @f32x2x3(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_FLOAT32X2X3_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_FLOAT32X2X3_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT32X2X3_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [3 x <2 x float>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 24, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT32X2X3_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [3 x <2 x float>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [3 x <2 x float>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_FLOAT32X2X3_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_FLOAT32X2X3_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT32X2X3_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [3 x <2 x float>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 24, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT32X2X3_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [3 x <2 x float>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [3 x <2 x float>] [[TMP6]]
 //
 float32x2x3_t f32x2x3(float32x2x3_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i32x2x3(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_INT32X2X3_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_INT32X2X3_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_INT32X2X3_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [3 x <2 x i32>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 24, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_INT32X2X3_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [3 x <2 x i32>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [3 x <2 x i32>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_INT32X2X3_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_INT32X2X3_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_INT32X2X3_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [3 x <2 x i32>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 24, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_INT32X2X3_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [3 x <2 x i32>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [3 x <2 x i32>] [[TMP6]]
 //
 int32x2x3_t i32x2x3(int32x2x3_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u32x2x3(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_UINT32X2X3_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_UINT32X2X3_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT32X2X3_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [3 x <2 x i32>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 24, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT32X2X3_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [3 x <2 x i32>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [3 x <2 x i32>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_UINT32X2X3_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_UINT32X2X3_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT32X2X3_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [3 x <2 x i32>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 24, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT32X2X3_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [3 x <2 x i32>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [3 x <2 x i32>] [[TMP6]]
 //
 uint32x2x3_t u32x2x3(uint32x2x3_t a) {
   return a;
 }
 
 // CHECK-LABEL: @f64x1x3(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_FLOAT64X1X3_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_FLOAT64X1X3_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT64X1X3_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [3 x <1 x double>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 24, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT64X1X3_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [3 x <1 x double>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [3 x <1 x double>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_FLOAT64X1X3_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_FLOAT64X1X3_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT64X1X3_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [3 x <1 x double>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 24, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT64X1X3_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [3 x <1 x double>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [3 x <1 x double>] [[TMP6]]
 //
 float64x1x3_t f64x1x3(float64x1x3_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i64x1x3(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_INT64X1X3_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_INT64X1X3_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_INT64X1X3_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [3 x <1 x i64>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 24, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_INT64X1X3_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [3 x <1 x i64>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [3 x <1 x i64>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_INT64X1X3_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_INT64X1X3_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_INT64X1X3_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [3 x <1 x i64>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 24, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_INT64X1X3_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [3 x <1 x i64>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [3 x <1 x i64>] [[TMP6]]
 //
 int64x1x3_t i64x1x3(int64x1x3_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u64x1x3(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_UINT64X1X3_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_UINT64X1X3_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT64X1X3_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [3 x <1 x i64>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 24, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT64X1X3_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [3 x <1 x i64>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [3 x <1 x i64>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_UINT64X1X3_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_UINT64X1X3_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT64X1X3_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [3 x <1 x i64>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 24, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT64X1X3_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [3 x <1 x i64>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [3 x <1 x i64>] [[TMP6]]
 //
 uint64x1x3_t u64x1x3(uint64x1x3_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i8x16x3(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_INT8X16X3_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_INT8X16X3_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_INT8X16X3_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [3 x <16 x i8>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 48, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_INT8X16X3_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [3 x <16 x i8>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [3 x <16 x i8>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_INT8X16X3_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_INT8X16X3_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_INT8X16X3_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [3 x <16 x i8>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 48, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_INT8X16X3_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [3 x <16 x i8>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [3 x <16 x i8>] [[TMP6]]
 //
 int8x16x3_t i8x16x3(int8x16x3_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u8x16x3(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_UINT8X16X3_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_UINT8X16X3_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT8X16X3_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [3 x <16 x i8>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 48, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT8X16X3_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [3 x <16 x i8>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [3 x <16 x i8>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_UINT8X16X3_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_UINT8X16X3_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT8X16X3_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [3 x <16 x i8>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 48, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT8X16X3_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [3 x <16 x i8>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [3 x <16 x i8>] [[TMP6]]
 //
 uint8x16x3_t u8x16x3(uint8x16x3_t a) {
   return a;
 }
 
 // CHECK-LABEL: @f16x8x3(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_FLOAT16X8X3_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_FLOAT16X8X3_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT16X8X3_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [3 x <8 x half>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 48, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT16X8X3_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [3 x <8 x half>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [3 x <8 x half>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_FLOAT16X8X3_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_FLOAT16X8X3_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT16X8X3_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [3 x <8 x half>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 48, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT16X8X3_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [3 x <8 x half>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [3 x <8 x half>] [[TMP6]]
 //
 float16x8x3_t f16x8x3(float16x8x3_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i16x8x3(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_INT16X8X3_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_INT16X8X3_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_INT16X8X3_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [3 x <8 x i16>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 48, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_INT16X8X3_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [3 x <8 x i16>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [3 x <8 x i16>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_INT16X8X3_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_INT16X8X3_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_INT16X8X3_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [3 x <8 x i16>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 48, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_INT16X8X3_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [3 x <8 x i16>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [3 x <8 x i16>] [[TMP6]]
 //
 int16x8x3_t i16x8x3(int16x8x3_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u16x8x3(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_UINT16X8X3_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_UINT16X8X3_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT16X8X3_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [3 x <8 x i16>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 48, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT16X8X3_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [3 x <8 x i16>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [3 x <8 x i16>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_UINT16X8X3_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_UINT16X8X3_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT16X8X3_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [3 x <8 x i16>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 48, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT16X8X3_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [3 x <8 x i16>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [3 x <8 x i16>] [[TMP6]]
 //
 uint16x8x3_t u16x8x3(uint16x8x3_t a) {
   return a;
 }
 
 // CHECK-LABEL: @f32x4x3(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_FLOAT32X4X3_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_FLOAT32X4X3_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT32X4X3_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [3 x <4 x float>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 48, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT32X4X3_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [3 x <4 x float>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [3 x <4 x float>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_FLOAT32X4X3_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_FLOAT32X4X3_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT32X4X3_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [3 x <4 x float>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 48, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT32X4X3_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [3 x <4 x float>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [3 x <4 x float>] [[TMP6]]
 //
 float32x4x3_t f32x4x3(float32x4x3_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i32x4x3(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_INT32X4X3_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_INT32X4X3_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_INT32X4X3_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [3 x <4 x i32>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 48, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_INT32X4X3_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [3 x <4 x i32>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [3 x <4 x i32>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_INT32X4X3_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_INT32X4X3_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_INT32X4X3_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [3 x <4 x i32>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 48, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_INT32X4X3_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [3 x <4 x i32>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [3 x <4 x i32>] [[TMP6]]
 //
 int32x4x3_t i32x4x3(int32x4x3_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u32x4x3(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_UINT32X4X3_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_UINT32X4X3_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT32X4X3_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [3 x <4 x i32>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 48, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT32X4X3_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [3 x <4 x i32>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [3 x <4 x i32>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_UINT32X4X3_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_UINT32X4X3_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT32X4X3_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [3 x <4 x i32>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 48, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT32X4X3_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [3 x <4 x i32>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [3 x <4 x i32>] [[TMP6]]
 //
 uint32x4x3_t u32x4x3(uint32x4x3_t a) {
   return a;
 }
 
 // CHECK-LABEL: @f64x2x3(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_FLOAT64X2X3_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_FLOAT64X2X3_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT64X2X3_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [3 x <2 x double>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 48, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT64X2X3_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [3 x <2 x double>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [3 x <2 x double>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_FLOAT64X2X3_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_FLOAT64X2X3_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT64X2X3_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [3 x <2 x double>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 48, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT64X2X3_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [3 x <2 x double>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [3 x <2 x double>] [[TMP6]]
 //
 float64x2x3_t f64x2x3(float64x2x3_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i64x2x3(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_INT64X2X3_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_INT64X2X3_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_INT64X2X3_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [3 x <2 x i64>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 48, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_INT64X2X3_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [3 x <2 x i64>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [3 x <2 x i64>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_INT64X2X3_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_INT64X2X3_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_INT64X2X3_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [3 x <2 x i64>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 48, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_INT64X2X3_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [3 x <2 x i64>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [3 x <2 x i64>] [[TMP6]]
 //
 int64x2x3_t i64x2x3(int64x2x3_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u64x2x3(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_UINT64X2X3_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_UINT64X2X3_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT64X2X3_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [3 x <2 x i64>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 48, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT64X2X3_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [3 x <2 x i64>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [3 x <2 x i64>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_UINT64X2X3_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_UINT64X2X3_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT64X2X3_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [3 x <2 x i64>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 48, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT64X2X3_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [3 x <2 x i64>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [3 x <2 x i64>] [[TMP6]]
 //
 uint64x2x3_t u64x2x3(uint64x2x3_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i8x8x4(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_INT8X8X4_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_INT8X8X4_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_INT8X8X4_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [4 x <8 x i8>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 32, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_INT8X8X4_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [4 x <8 x i8>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [4 x <8 x i8>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_INT8X8X4_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_INT8X8X4_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_INT8X8X4_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [4 x <8 x i8>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 32, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_INT8X8X4_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [4 x <8 x i8>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [4 x <8 x i8>] [[TMP6]]
 //
 int8x8x4_t i8x8x4(int8x8x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u8x8x4(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_UINT8X8X4_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_UINT8X8X4_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT8X8X4_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [4 x <8 x i8>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 32, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT8X8X4_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [4 x <8 x i8>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [4 x <8 x i8>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_UINT8X8X4_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_UINT8X8X4_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT8X8X4_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [4 x <8 x i8>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 32, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT8X8X4_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [4 x <8 x i8>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [4 x <8 x i8>] [[TMP6]]
 //
 uint8x8x4_t u8x8x4(uint8x8x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @f16x4x4(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_FLOAT16X4X4_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_FLOAT16X4X4_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT16X4X4_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [4 x <4 x half>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 32, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT16X4X4_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [4 x <4 x half>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [4 x <4 x half>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_FLOAT16X4X4_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_FLOAT16X4X4_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT16X4X4_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [4 x <4 x half>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 32, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT16X4X4_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [4 x <4 x half>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [4 x <4 x half>] [[TMP6]]
 //
 float16x4x4_t f16x4x4(float16x4x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i16x4x4(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_INT16X4X4_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_INT16X4X4_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_INT16X4X4_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [4 x <4 x i16>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 32, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_INT16X4X4_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [4 x <4 x i16>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [4 x <4 x i16>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_INT16X4X4_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_INT16X4X4_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_INT16X4X4_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [4 x <4 x i16>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 32, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_INT16X4X4_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [4 x <4 x i16>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [4 x <4 x i16>] [[TMP6]]
 //
 int16x4x4_t i16x4x4(int16x4x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u16x4x4(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_UINT16X4X4_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_UINT16X4X4_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT16X4X4_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [4 x <4 x i16>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 32, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT16X4X4_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [4 x <4 x i16>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [4 x <4 x i16>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_UINT16X4X4_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_UINT16X4X4_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT16X4X4_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [4 x <4 x i16>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 32, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT16X4X4_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [4 x <4 x i16>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [4 x <4 x i16>] [[TMP6]]
 //
 uint16x4x4_t u16x4x4(uint16x4x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @f32x2x4(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_FLOAT32X2X4_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_FLOAT32X2X4_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT32X2X4_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [4 x <2 x float>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 32, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT32X2X4_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [4 x <2 x float>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [4 x <2 x float>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_FLOAT32X2X4_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_FLOAT32X2X4_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT32X2X4_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [4 x <2 x float>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 32, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT32X2X4_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [4 x <2 x float>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [4 x <2 x float>] [[TMP6]]
 //
 float32x2x4_t f32x2x4(float32x2x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i32x2x4(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_INT32X2X4_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_INT32X2X4_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_INT32X2X4_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [4 x <2 x i32>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 32, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_INT32X2X4_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [4 x <2 x i32>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [4 x <2 x i32>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_INT32X2X4_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_INT32X2X4_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_INT32X2X4_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [4 x <2 x i32>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 32, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_INT32X2X4_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [4 x <2 x i32>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [4 x <2 x i32>] [[TMP6]]
 //
 int32x2x4_t i32x2x4(int32x2x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u32x2x4(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_UINT32X2X4_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_UINT32X2X4_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT32X2X4_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [4 x <2 x i32>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 32, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT32X2X4_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [4 x <2 x i32>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [4 x <2 x i32>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_UINT32X2X4_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_UINT32X2X4_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT32X2X4_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [4 x <2 x i32>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 32, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT32X2X4_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [4 x <2 x i32>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [4 x <2 x i32>] [[TMP6]]
 //
 uint32x2x4_t u32x2x4(uint32x2x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @f64x1x4(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_FLOAT64X1X4_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_FLOAT64X1X4_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT64X1X4_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [4 x <1 x double>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 32, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT64X1X4_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [4 x <1 x double>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [4 x <1 x double>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_FLOAT64X1X4_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_FLOAT64X1X4_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT64X1X4_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [4 x <1 x double>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 32, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT64X1X4_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [4 x <1 x double>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [4 x <1 x double>] [[TMP6]]
 //
 float64x1x4_t f64x1x4(float64x1x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i64x1x4(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_INT64X1X4_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_INT64X1X4_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_INT64X1X4_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [4 x <1 x i64>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 32, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_INT64X1X4_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [4 x <1 x i64>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [4 x <1 x i64>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_INT64X1X4_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_INT64X1X4_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_INT64X1X4_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [4 x <1 x i64>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 32, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_INT64X1X4_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [4 x <1 x i64>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [4 x <1 x i64>] [[TMP6]]
 //
 int64x1x4_t i64x1x4(int64x1x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u64x1x4(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_UINT64X1X4_T:%.*]], align 8
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_UINT64X1X4_T]], align 8
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT64X1X4_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [4 x <1 x i64>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 8
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[RETVAL]], ptr align 8 [[A]], i64 32, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT64X1X4_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [4 x <1 x i64>], ptr [[COERCE_DIVE1]], align 8
-// CHECK-NEXT:    ret [4 x <1 x i64>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_UINT64X1X4_T:%.*]], align 8
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_UINT64X1X4_T]], align 8
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT64X1X4_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [4 x <1 x i64>] [[TMP0:%.*]], ptr [[TMP4]], align 8
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 8 [[TMP2]], ptr align 8 [[TMP3]], i64 32, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT64X1X4_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [4 x <1 x i64>], ptr [[TMP5]], align 8
+// CHECK-NEXT:    ret [4 x <1 x i64>] [[TMP6]]
 //
 uint64x1x4_t u64x1x4(uint64x1x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i8x16x4(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_INT8X16X4_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_INT8X16X4_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_INT8X16X4_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [4 x <16 x i8>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 64, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_INT8X16X4_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [4 x <16 x i8>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [4 x <16 x i8>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_INT8X16X4_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_INT8X16X4_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_INT8X16X4_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [4 x <16 x i8>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 64, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_INT8X16X4_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [4 x <16 x i8>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [4 x <16 x i8>] [[TMP6]]
 //
 int8x16x4_t i8x16x4(int8x16x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u8x16x4(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_UINT8X16X4_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_UINT8X16X4_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT8X16X4_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [4 x <16 x i8>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 64, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT8X16X4_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [4 x <16 x i8>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [4 x <16 x i8>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_UINT8X16X4_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_UINT8X16X4_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT8X16X4_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [4 x <16 x i8>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 64, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT8X16X4_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [4 x <16 x i8>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [4 x <16 x i8>] [[TMP6]]
 //
 uint8x16x4_t u8x16x4(uint8x16x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @f16x8x4(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_FLOAT16X8X4_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_FLOAT16X8X4_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT16X8X4_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [4 x <8 x half>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 64, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT16X8X4_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [4 x <8 x half>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [4 x <8 x half>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_FLOAT16X8X4_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_FLOAT16X8X4_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT16X8X4_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [4 x <8 x half>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 64, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT16X8X4_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [4 x <8 x half>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [4 x <8 x half>] [[TMP6]]
 //
 float16x8x4_t f16x8x4(float16x8x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i16x8x4(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_INT16X8X4_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_INT16X8X4_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_INT16X8X4_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [4 x <8 x i16>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 64, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_INT16X8X4_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [4 x <8 x i16>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [4 x <8 x i16>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_INT16X8X4_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_INT16X8X4_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_INT16X8X4_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [4 x <8 x i16>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 64, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_INT16X8X4_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [4 x <8 x i16>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [4 x <8 x i16>] [[TMP6]]
 //
 int16x8x4_t i16x8x4(int16x8x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u16x8x4(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_UINT16X8X4_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_UINT16X8X4_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT16X8X4_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [4 x <8 x i16>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 64, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT16X8X4_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [4 x <8 x i16>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [4 x <8 x i16>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_UINT16X8X4_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_UINT16X8X4_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT16X8X4_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [4 x <8 x i16>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 64, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT16X8X4_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [4 x <8 x i16>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [4 x <8 x i16>] [[TMP6]]
 //
 uint16x8x4_t u16x8x4(uint16x8x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @f32x4x4(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_FLOAT32X4X4_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_FLOAT32X4X4_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT32X4X4_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [4 x <4 x float>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 64, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT32X4X4_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [4 x <4 x float>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [4 x <4 x float>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_FLOAT32X4X4_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_FLOAT32X4X4_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT32X4X4_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [4 x <4 x float>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 64, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT32X4X4_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [4 x <4 x float>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [4 x <4 x float>] [[TMP6]]
 //
 float32x4x4_t f32x4x4(float32x4x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i32x4x4(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_INT32X4X4_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_INT32X4X4_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_INT32X4X4_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [4 x <4 x i32>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 64, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_INT32X4X4_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [4 x <4 x i32>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [4 x <4 x i32>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_INT32X4X4_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_INT32X4X4_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_INT32X4X4_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [4 x <4 x i32>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 64, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_INT32X4X4_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [4 x <4 x i32>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [4 x <4 x i32>] [[TMP6]]
 //
 int32x4x4_t i32x4x4(int32x4x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u32x4x4(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_UINT32X4X4_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_UINT32X4X4_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT32X4X4_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [4 x <4 x i32>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 64, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT32X4X4_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [4 x <4 x i32>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [4 x <4 x i32>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_UINT32X4X4_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_UINT32X4X4_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT32X4X4_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [4 x <4 x i32>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 64, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT32X4X4_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [4 x <4 x i32>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [4 x <4 x i32>] [[TMP6]]
 //
 uint32x4x4_t u32x4x4(uint32x4x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @f64x2x4(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_FLOAT64X2X4_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_FLOAT64X2X4_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT64X2X4_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [4 x <2 x double>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 64, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT64X2X4_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [4 x <2 x double>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [4 x <2 x double>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_FLOAT64X2X4_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_FLOAT64X2X4_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT64X2X4_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [4 x <2 x double>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 64, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_FLOAT64X2X4_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [4 x <2 x double>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [4 x <2 x double>] [[TMP6]]
 //
 float64x2x4_t f64x2x4(float64x2x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @i64x2x4(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_INT64X2X4_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_INT64X2X4_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_INT64X2X4_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [4 x <2 x i64>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 64, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_INT64X2X4_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [4 x <2 x i64>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [4 x <2 x i64>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_INT64X2X4_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_INT64X2X4_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_INT64X2X4_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [4 x <2 x i64>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 64, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_INT64X2X4_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [4 x <2 x i64>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [4 x <2 x i64>] [[TMP6]]
 //
 int64x2x4_t i64x2x4(int64x2x4_t a) {
   return a;
 }
 
 // CHECK-LABEL: @u64x2x4(
-// CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[RETVAL:%.*]] = alloca [[STRUCT_UINT64X2X4_T:%.*]], align 16
-// CHECK-NEXT:    [[A:%.*]] = alloca [[STRUCT_UINT64X2X4_T]], align 16
-// CHECK-NEXT:    [[COERCE_DIVE:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT64X2X4_T]], ptr [[A]], i32 0, i32 0
-// CHECK-NEXT:    store [4 x <2 x i64>] [[A_COERCE:%.*]], ptr [[COERCE_DIVE]], align 16
-// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[RETVAL]], ptr align 16 [[A]], i64 64, i1 false)
-// CHECK-NEXT:    [[COERCE_DIVE1:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT64X2X4_T]], ptr [[RETVAL]], i32 0, i32 0
-// CHECK-NEXT:    [[TMP0:%.*]] = load [4 x <2 x i64>], ptr [[COERCE_DIVE1]], align 16
-// CHECK-NEXT:    ret [4 x <2 x i64>] [[TMP0]]
+// CHECK-NEXT:    [[TMP2:%.*]] = alloca [[STRUCT_UINT64X2X4_T:%.*]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = alloca [[STRUCT_UINT64X2X4_T]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT64X2X4_T]], ptr [[TMP3]], i32 0, i32 0
+// CHECK-NEXT:    store [4 x <2 x i64>] [[TMP0:%.*]], ptr [[TMP4]], align 16
+// CHECK-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 16 [[TMP2]], ptr align 16 [[TMP3]], i64 64, i1 false)
+// CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw [[STRUCT_UINT64X2X4_T]], ptr [[TMP2]], i32 0, i32 0
+// CHECK-NEXT:    [[TMP6:%.*]] = load [4 x <2 x i64>], ptr [[TMP5]], align 16
+// CHECK-NEXT:    ret [4 x <2 x i64>] [[TMP6]]
 //
 uint64x2x4_t u64x2x4(uint64x2x4_t a) {
   return a;
