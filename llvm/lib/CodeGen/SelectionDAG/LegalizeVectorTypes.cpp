@@ -6052,19 +6052,10 @@ SDValue DAGTypeLegalizer::WidenVecRes_LOAD(SDNode *N) {
     SDValue Mask = DAG.getAllOnesConstant(DL, WideMaskVT);
     SDValue EVL = DAG.getElementCount(DL, TLI.getVPExplicitVectorLengthTy(),
                                       LdVT.getVectorElementCount());
-<<<<<<< HEAD
-=======
-#if SIFIVE_CUSTOMIZATION
-    // SIFIVE cherry-pick from 93baa018e09bb3d4d5f4da0232321aff204caaeb
->>>>>>> origin/sifive-dev
     SDValue NewLoad =
         DAG.getLoadVP(LD->getAddressingMode(), ISD::NON_EXTLOAD, WideVT, DL,
                       LD->getChain(), LD->getBasePtr(), LD->getOffset(), Mask,
                       EVL, LD->getMemoryVT(), LD->getMemOperand());
-<<<<<<< HEAD
-=======
-#endif // SIFIVE_CUSTOMIZATION
->>>>>>> origin/sifive-dev
 
     // Modified the chain - switch anything that used the old chain to use
     // the new one.
