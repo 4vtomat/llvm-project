@@ -23,7 +23,7 @@ define void @foo(ptr noalias %a, ptr noalias %b, ptr noalias %c, i64 %N) {
 ; IF-EVL-NEXT:  vector.body:
 ; IF-EVL-NEXT:    EMIT vp<[[IV:%[0-9]+]]> = CANONICAL-INDUCTION
 ; IF-EVL-NEXT:    EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<[[EVL_PHI:%[0-9]+]]> = phi ir<0>, vp<[[IV_NEXT:%[0-9]+]]>
-; IF-EVL-NEXT:    EMIT vp<[[AVL:%.+]]> = sub ir<%N>, vp<[[EVL_PHI]]>
+; IF-EVL-NEXT:    EMIT vp<[[AVL:%.+]]> = sub vp<[[VTC]]>, vp<[[EVL_PHI]]>
 ; IF-EVL-NEXT:    EMIT vp<[[EVL:%.+]]> = EXPLICIT-VECTOR-LENGTH vp<[[AVL]]>
 ; IF-EVL-NEXT:    vp<[[ST:%[0-9]+]]> = SCALAR-STEPS vp<[[EVL_PHI]]>, ir<1>
 ; IF-EVL-NEXT:    CLONE ir<[[GEP1:%.+]]> = getelementptr inbounds ir<%b>, vp<[[ST]]>
@@ -101,7 +101,7 @@ define void @safe_dep(ptr %p) {
 ; CHECK-EVL-NEXT:  vector.body:
 ; CHECK-EVL-NEXT:    EMIT vp<%1> = CANONICAL-INDUCTION ir<0>, vp<%9>
 ; CHECK-EVL-NEXT:    EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%2> = phi ir<0>, vp<%9>
-; CHECK-EVL-NEXT:    EMIT vp<%3> = sub ir<512>, vp<%2>
+; CHECK-EVL-NEXT:    EMIT vp<%3> = sub vp<[[VTC]]>, vp<%2>
 ; CHECK-EVL-NEXT:    EMIT vp<%4> = EXPLICIT-VECTOR-LENGTH vp<%3>
 ; CHECK-EVL-NEXT:    vp<%5> = SCALAR-STEPS vp<%2>, ir<1>
 ; CHECK-EVL-NEXT:    CLONE ir<%a1> = getelementptr ir<%p>, vp<%5>

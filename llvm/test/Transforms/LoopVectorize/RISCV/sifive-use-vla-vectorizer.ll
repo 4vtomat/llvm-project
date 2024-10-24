@@ -23,7 +23,7 @@ define internal fastcc void @quantum_toffoli(i32 %reg.4.val, %struct.quantum_reg
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[TMP4:%.*]] = sub i64 [[TMP2]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP4:%.*]] = sub i64 [[N_VEC]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP4]], i32 1, i1 true)
 ; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds [[STRUCT_QUANTUM_REG_NODE_STRUCT:%.*]], ptr [[REG_16_VAL:%.*]], i64 [[TMP6]], i32 1

@@ -26,7 +26,7 @@
 ; VPLAN-NEXT:    vector.body:
 ; VPLAN-NEXT:      EMIT vp<%2> = CANONICAL-INDUCTION ir<0>, vp<%10>
 ; VPLAN-NEXT:      EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%3> = phi ir<0>, vp<%10>
-; VPLAN-NEXT:      EMIT vp<%4> = sub vp<%1>, vp<%3>
+; VPLAN-NEXT:      EMIT vp<%4> = sub vp<%0>, vp<%3>
 ; VPLAN-NEXT:      EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%4>
 ; VPLAN-NEXT:      vp<%6> = SCALAR-STEPS vp<%3>, ir<1>
 ; VPLAN-NEXT:      CLONE ir<%arrayidx> = getelementptr ir<%reg.24.val>, vp<%6>

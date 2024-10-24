@@ -19,7 +19,7 @@
 ; CHECK-NEXT:     EMIT vp<%2> = CANONICAL-INDUCTION ir<0>, vp<%11>
 ; CHECK-NEXT:     EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%3> = phi ir<0>, vp<%11>
 ; CHECK-NEXT:     EMIT ir<%ret.011> = monotonic-phi ir<0>, ir<%inc>
-; CHECK-NEXT:     EMIT vp<%4> = sub vp<%1>, vp<%3>
+; CHECK-NEXT:     EMIT vp<%4> = sub vp<%0>, vp<%3>
 ; CHECK-NEXT:     EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%4>
 ; CHECK-NEXT:     vp<%6> = SCALAR-STEPS vp<%3>, ir<1>
 ; CHECK-NEXT:     CLONE ir<%arrayidx> = getelementptr inbounds ir<%b>, vp<%6>
@@ -85,7 +85,7 @@ for.inc:
 ; CHECK-NEXT:     EMIT vp<%2> = CANONICAL-INDUCTION ir<0>, vp<%12>
 ; CHECK-NEXT:     EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%3> = phi ir<0>, vp<%12>
 ; CHECK-NEXT:     EMIT ir<%ret.013> = monotonic-phi ir<0>, ir<%inc>
-; CHECK-NEXT:     EMIT vp<%4> = sub vp<%1>, vp<%3>
+; CHECK-NEXT:     EMIT vp<%4> = sub vp<%0>, vp<%3>
 ; CHECK-NEXT:     EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%4>
 ; CHECK-NEXT:     vp<%6> = SCALAR-STEPS vp<%3>, ir<1>
 ; CHECK-NEXT:     CLONE ir<%arrayidx> = getelementptr inbounds ir<%b>, vp<%6>

@@ -38,7 +38,7 @@ define i32 @reduction(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-OUTLOOP-NEXT:    EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<[[EVL_PHI:%[0-9]+]]> = phi ir<0>, vp<[[IV_NEXT:%[0-9]+]]>
 ; IF-EVL-OUTLOOP-NEXT:    EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<[[UNUSED_EVL_PHI:%[0-9]+]]> = phi vp<%1>, vp<[[EVL:%[0-9]+]]>
 ; IF-EVL-OUTLOOP-NEXT:    WIDEN-REDUCTION-PHI ir<[[RDX_PHI:%.+]]> = phi ir<%start>, vp<[[RDX_SELECT:%.+]]>
-; IF-EVL-OUTLOOP-NEXT:    EMIT vp<[[AVL:%[0-9]+]]> = sub ir<%n>, vp<[[EVL_PHI]]>
+; IF-EVL-OUTLOOP-NEXT:    EMIT vp<[[AVL:%[0-9]+]]> = sub vp<[[VTC]]>, vp<[[EVL_PHI]]>
 ; IF-EVL-OUTLOOP-NEXT:    EMIT vp<[[EVL]]> = EXPLICIT-VECTOR-LENGTH vp<[[AVL]]>
 ; IF-EVL-OUTLOOP-NEXT:    vp<[[ST:%[0-9]+]]> = SCALAR-STEPS vp<[[EVL_PHI]]>, ir<1>
 ; IF-EVL-OUTLOOP-NEXT:    CLONE ir<[[GEP1:%.+]]> = getelementptr inbounds ir<%a>, vp<[[ST]]>
@@ -81,7 +81,7 @@ define i32 @reduction(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-INLOOP-NEXT:    EMIT vp<[[IV:%[0-9]+]]> = CANONICAL-INDUCTION
 ; IF-EVL-INLOOP-NEXT:    EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<[[EVL_PHI:%[0-9]+]]> = phi ir<0>, vp<[[IV_NEXT:%[0-9]+]]>
 ; IF-EVL-INLOOP-NEXT:    WIDEN-REDUCTION-PHI ir<[[RDX_PHI:%.+]]> = phi ir<%start>, ir<[[RDX_NEXT:%.+]]>
-; IF-EVL-INLOOP-NEXT:    EMIT vp<[[AVL:%[0-9]+]]> = sub ir<%n>, vp<[[EVL_PHI]]>
+; IF-EVL-INLOOP-NEXT:    EMIT vp<[[AVL:%[0-9]+]]> = sub vp<[[VTC]]>, vp<[[EVL_PHI]]>
 ; IF-EVL-INLOOP-NEXT:    EMIT vp<[[EVL:%.+]]> = EXPLICIT-VECTOR-LENGTH vp<[[AVL]]>
 ; IF-EVL-INLOOP-NEXT:    vp<[[ST:%[0-9]+]]> = SCALAR-STEPS vp<[[EVL_PHI]]>, ir<1>
 ; IF-EVL-INLOOP-NEXT:    CLONE ir<[[GEP1:%.+]]> = getelementptr inbounds ir<%a>, vp<[[ST]]>

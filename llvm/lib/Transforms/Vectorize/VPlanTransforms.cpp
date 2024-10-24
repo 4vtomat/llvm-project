@@ -1684,7 +1684,11 @@ static void transformRecipestoEVLRecipes(VPlan &Plan, VPValue &EVL) {
 /// ...
 /// %EVLPhi = EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI [ %StartV, %vector.ph ],
 ///                                               [ %NextEVLIV, %vector.body ]
+#if SIFIVE_CUSTOMIZATION
+/// %AVL = sub vector TC, %EVLPhi
+#else
 /// %AVL = sub original TC, %EVLPhi
+#endif // SIFIVE_CUSTOMIZATION
 /// %VPEVL = EXPLICIT-VECTOR-LENGTH %AVL
 /// ...
 /// %NextEVLIV = add IVSize (cast i32 %VPEVVL to IVSize), %EVLPhi
@@ -1724,9 +1728,16 @@ bool VPlanTransforms::tryAddExplicitVectorLength(VPlan &Plan) {
   auto *EVLPhi = new VPEVLBasedIVPHIRecipe(StartV, DebugLoc());
   EVLPhi->insertAfter(CanonicalIVPHI);
   // TODO: Add support for MaxSafeDist for correct loop emission.
+#if SIFIVE_CUSTOMIZATION
+  // Compute vector TC - IV as the AVL (application vector length).
+  auto *AVL =
+      new VPInstruction(Instruction::Sub, {&Plan.getVectorTripCount(), EVLPhi},
+                        DebugLoc(), "avl");
+#else
   // Compute original TC - IV as the AVL (application vector length).
   auto *AVL = new VPInstruction(Instruction::Sub, {Plan.getTripCount(), EVLPhi},
                                 DebugLoc(), "avl");
+#endif // SIFIVE_CUSTOMIZATION
   AVL->insertBefore(*Header, Header->getFirstNonPhi());
 
 #if SIFIVE_CUSTOMIZATION

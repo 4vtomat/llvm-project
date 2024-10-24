@@ -12,7 +12,7 @@ define void @single_constant_stride_int_scaled(ptr %p) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[AVL:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[AVL:%.*]] = sub i64 1023, [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; CHECK-NEXT:    [[TMP4:%.*]] = mul nuw nsw i64 [[TMP3]], 8
@@ -134,7 +134,7 @@ define void @single_constant_stride_ptr_iv(ptr %p) {
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[INDEX]], 8
 ; CHECK-NEXT:    [[TMP12:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; CHECK-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP12]]
-; CHECK-NEXT:    [[AVL:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[AVL:%.*]] = sub i64 1023, [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i32, ptr [[PTR_IND]], i32 0
 ; CHECK-NEXT:    [[TMP5:%.*]] = mul nuw nsw i32 [[TMP3]], 2

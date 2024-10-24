@@ -35,7 +35,7 @@ define void @convert_to_ssa(ptr %0, ptr %elms.i159, ptr %1) {
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[INDEX]], 64
 ; CHECK-NEXT:    [[TMP2:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; CHECK-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[TMP0]], i64 [[TMP2]]
-; CHECK-NEXT:    [[TMP3:%.*]] = sub i64 4294967296, [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP3:%.*]] = sub i64 4294967295, [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP3]], i32 8, i1 true)
 ; CHECK-NEXT:    [[OFFSET_IDX15:%.*]] = mul i64 [[EVL_BASED_IV]], 64
 ; CHECK-NEXT:    [[TMP5:%.*]] = add i64 [[OFFSET_IDX15]], 0
