@@ -2631,7 +2631,8 @@ void VPBlendRecipe::execute(VPTransformState &State) {
       // based on the incoming mask.
       Value *Cond = State.get(getMask(In), OnlyFirstLaneUsed);
 #if SIFIVE_CUSTOMIZATION
-      if (State.Plan->useVLAVectorizer() && Cond->getType()->isVectorTy()) {
+      if (State.Plan->useVLAVectorizer() && Cond->getType()->isVectorTy() &&
+          !isDefinedOutsideLoopRegions()) {
         Value *EVLArg = State.get(State.EVL, /*NeedsScalar=*/true);
         Result = State.Builder.CreateIntrinsic(
             Intrinsic::vp_select, {In0->getType()},
