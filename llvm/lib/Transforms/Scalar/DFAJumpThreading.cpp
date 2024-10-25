@@ -206,7 +206,9 @@ void unfold(DomTreeUpdater *DTU, LoopInfo *LI, SelectInstToUnfold SIToUnfold,
   SelectInst *SI = SIToUnfold.getInst();
   PHINode *SIUse = SIToUnfold.getUse();
   BasicBlock *StartBlock = SI->getParent();
+#if SIFIVE_CUSTOMIZATION
   BasicBlock *EndBlock = SIUse->getParent();
+#endif // SIFIVE_CUSTOMIZATION
   BranchInst *StartBlockTerm =
       dyn_cast<BranchInst>(StartBlock->getTerminator());
 
