@@ -466,24 +466,20 @@ Value *createAnyOfReduction(IRBuilderBase &B, Value *Src,
                             PHINode *OrigPhi);
 
 #if SIFIVE_CUSTOMIZATION
-Value *createAnyOfTargetReduction(IRBuilderBase &Builder, Value *Src,
-                                  const RecurrenceDescriptor &Desc,
-                                  PHINode *OrigPhi);
-
-Value *createAnyOfTargetReduction(IRBuilderBase &B, Value *Src,
-                                  const RecurrenceDescriptor &Desc,
-                                  PHINode *OrigPhi, Value *EVL);
+Value *createAnyOfReduction(IRBuilderBase &B, Value *Src,
+                            const RecurrenceDescriptor &Desc, PHINode *OrigPhi,
+                            Value *EVL);
 
 /// Create a target reduction of the given vector \p Src for a reduction of the
 /// kind RecurKind::IFindLastIV or RecurKind::FFindLastIV. The reduction
 /// operation is described by \p Desc.
-Value *createFindLastIVTargetReduction(IRBuilderBase &B, Value *Src,
-                                       const RecurrenceDescriptor &Desc);
+Value *createFindLastIVReduction(IRBuilderBase &B, Value *Src,
+                                 const RecurrenceDescriptor &Desc);
 /// Allow \p Mask when folding by \p EVL. The mask is all-true if \p Mask is
 /// nullptr.
-Value *createFindLastIVTargetReduction(IRBuilderBase &B, Value *Src,
-                                       const RecurrenceDescriptor &Desc,
-                                       Value *EVL, Value *Mask = nullptr);
+Value *createFindLastIVReduction(IRBuilderBase &B, Value *Src,
+                                 const RecurrenceDescriptor &Desc, Value *EVL,
+                                 Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
 
 /// Create a generic target reduction using a recurrence descriptor \p Desc

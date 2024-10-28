@@ -4646,7 +4646,7 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
   case RecurKind::IAnyOf:
   case RecurKind::FAnyOf: {
     // The cost references the instructions created in
-    // llvm::createAnyOfTargetReduction
+    // llvm::createAnyOfReduction
     auto *VecCondTy = cast<VectorType>(CmpInst::makeCmpResultType(VectorTy));
     InstructionCost O =
         Ctx.TTI.getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);
