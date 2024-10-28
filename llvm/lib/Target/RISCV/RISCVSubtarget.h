@@ -315,6 +315,9 @@ public:
   bool hasVInstructionsBF16Minimal() const {
     return HasStdExtZvfbfmin || HasVendorXSfvfbfa;
   }
+  bool hasVInstructionsBF16() const {
+    return HasVendorXSfvfbfa;
+  }
 #else
   bool hasVInstructionsBF16Minimal() const { return HasStdExtZvfbfmin; }
 #endif // SIFIVE_CUSTOMIZATION

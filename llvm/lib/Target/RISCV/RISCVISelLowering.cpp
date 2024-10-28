@@ -9610,6 +9610,14 @@ SDValue RISCVTargetLowering::lowerEXTRACT_VECTOR_ELT(SDValue Op,
     return DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, EltVT, Vec, Idx);
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // Allow BF16 extracts of element 0 from scalable vector with XSfvfbfa to
+  // support C intrinsics.
+  if (EltVT == MVT::bf16 && Subtarget.hasVInstructionsBF16() &&
+      isNullConstant(Idx) && !VecVT.isFixedLengthVector())
+    return Op;
+#endif // SIFIVE_CUSTOMIZATION
+
   if ((EltVT == MVT::f16 && !Subtarget.hasVInstructionsF16()) ||
       EltVT == MVT::bf16) {
     // If we don't have vfmv.f.s for f16/bf16, extract to a gpr then use fmv.h.x
