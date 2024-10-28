@@ -311,15 +311,15 @@ public:
   bool hasVInstructionsI64() const { return HasStdExtZve64x; }
   bool hasVInstructionsF16Minimal() const { return HasStdExtZvfhmin; }
   bool hasVInstructionsF16() const { return HasStdExtZvfh; }
-  bool hasVInstructionsF32() const { return HasStdExtZve32f; }
-  bool hasVInstructionsF64() const { return HasStdExtZve64d; }
 #if SIFIVE_CUSTOMIZATION
   bool hasVInstructionsBF16Minimal() const {
     return HasStdExtZvfbfmin || HasVendorXSfvfbfa;
   }
 #else
-  bool hasVInstructionsBF16() const { return HasStdExtZvfbfmin; }
+  bool hasVInstructionsBF16Minimal() const { return HasStdExtZvfbfmin; }
 #endif // SIFIVE_CUSTOMIZATION
+  bool hasVInstructionsF32() const { return HasStdExtZve32f; }
+  bool hasVInstructionsF64() const { return HasStdExtZve64d; }
   // F16 and F64 both require F32.
   bool hasVInstructionsAnyF() const { return hasVInstructionsF32(); }
   bool hasVInstructionsFullMultiply() const { return HasStdExtV; }
