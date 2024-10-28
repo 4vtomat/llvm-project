@@ -2651,17 +2651,8 @@ void VPReductionRecipe::execute(VPTransformState &State) {
   State.Builder.setFastMathFlags(RdxDesc.getFastMathFlags());
   for (unsigned Part = 0; Part < State.UF; ++Part) {
     Value *NewVecOp = State.get(getVecOp(), Part);
-#if SIFIVE_CUSTOMIZATION
-    Value *EVLPart =
-        State.EVL ? State.get(State.EVL, Part, /*NeedsScalar=*/true) : nullptr;
-    Value *NewCond = nullptr;
-    if (VPValue *Cond = getCondOp())
-      NewCond = State.get(Cond, Part, State.VF.isScalar());
-    if (NewCond && !EVLPart) {
-#else
     if (VPValue *Cond = getCondOp()) {
       Value *NewCond = State.get(Cond, Part, State.VF.isScalar());
-#endif // SIFIVE_CUSTOMIZATION
       VectorType *VecTy = dyn_cast<VectorType>(NewVecOp->getType());
       Type *ElementTy = VecTy ? VecTy->getElementType() : NewVecOp->getType();
 
@@ -2681,37 +2672,17 @@ void VPReductionRecipe::execute(VPTransformState &State) {
     Value *NewRed;
     Value *NextInChain;
     if (IsOrdered) {
-#if SIFIVE_CUSTOMIZATION
-      if (State.VF.isVector()) {
-        if (EVLPart)
-          NewRed = createOrderedReduction(State.Builder, RdxDesc, NewVecOp,
-                                          PrevInChain, EVLPart, NewCond);
-        else
-          NewRed = createOrderedReduction(State.Builder, RdxDesc, NewVecOp,
-                                          PrevInChain);
-      } else {
-#else
       if (State.VF.isVector())
         NewRed = createOrderedReduction(State.Builder, RdxDesc, NewVecOp,
                                         PrevInChain);
       else
-#endif // SIFIVE_CUSTOMIZATION
         NewRed = State.Builder.CreateBinOp(
             (Instruction::BinaryOps)RdxDesc.getOpcode(Kind), PrevInChain,
             NewVecOp);
-#if SIFIVE_CUSTOMIZATION
-      }
-#endif // SIFIVE_CUSTOMIZATION
       PrevInChain = NewRed;
       NextInChain = NewRed;
     } else {
       PrevInChain = State.get(getChainOp(), Part, /*IsScalar*/ true);
-#if SIFIVE_CUSTOMIZATION
-      if (EVLPart)
-        NewRed = createReduction(State.Builder, RdxDesc, NewVecOp, EVLPart,
-                                 nullptr, NewCond);
-      else
-#endif // SIFIVE_CUSTOMIZATION
       NewRed = createReduction(State.Builder, RdxDesc, NewVecOp);
       if (RecurrenceDescriptor::isMinMaxRecurrenceKind(Kind))
         NextInChain = createMinMaxOp(State.Builder, RdxDesc.getRecurrenceKind(),

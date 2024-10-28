@@ -1522,20 +1522,6 @@ Value *llvm::createOrderedReduction(IRBuilderBase &B,
 }
 
 #if SIFIVE_CUSTOMIZATION
-Value *llvm::createOrderedReduction(IRBuilderBase &B,
-                                    const RecurrenceDescriptor &Desc,
-                                    Value *Src, Value *Start, Value *EVL,
-                                    Value *Mask) {
-  assert((Desc.getRecurrenceKind() == RecurKind::FAdd ||
-          Desc.getRecurrenceKind() == RecurKind::FMulAdd) &&
-         "Unexpected reduction kind");
-  assert(Src->getType()->isVectorTy() && "Expected a vector type");
-  assert(!Start->getType()->isVectorTy() && "Expected a scalar type");
-  assert(EVL->getType()->isIntegerTy() && "Expected a integer type");
-
-  return B.CreateFAddReduce(Start, Src, EVL, Mask);
-}
-
 Value *llvm::createSentinelValueHandling(IRBuilderBase &Builder,
                                          const RecurrenceDescriptor &Desc,
                                          Value *Rdx) {
