@@ -2676,6 +2676,7 @@ void VPReductionRecipe::execute(VPTransformState &State) {
   // Propagate the fast-math flags carried by the underlying instruction.
   IRBuilderBase::FastMathFlagGuard FMFGuard(State.Builder);
   State.Builder.setFastMathFlags(RdxDesc.getFastMathFlags());
+<<<<<<< HEAD
   Value *NewVecOp = State.get(getVecOp());
 #if SIFIVE_CUSTOMIZATION
     Value *EVLPart =
@@ -2690,6 +2691,14 @@ void VPReductionRecipe::execute(VPTransformState &State) {
 #endif // SIFIVE_CUSTOMIZATION
     VectorType *VecTy = dyn_cast<VectorType>(NewVecOp->getType());
     Type *ElementTy = VecTy ? VecTy->getElementType() : NewVecOp->getType();
+=======
+  for (unsigned Part = 0; Part < State.UF; ++Part) {
+    Value *NewVecOp = State.get(getVecOp(), Part);
+    if (VPValue *Cond = getCondOp()) {
+      Value *NewCond = State.get(Cond, Part, State.VF.isScalar());
+      VectorType *VecTy = dyn_cast<VectorType>(NewVecOp->getType());
+      Type *ElementTy = VecTy ? VecTy->getElementType() : NewVecOp->getType();
+>>>>>>> origin/sifive-dev
 
     Value *Start;
     if (RecurrenceDescriptor::isAnyOfRecurrenceKind(Kind))
@@ -2700,6 +2709,7 @@ void VPReductionRecipe::execute(VPTransformState &State) {
     if (State.VF.isVector())
       Start = State.Builder.CreateVectorSplat(VecTy->getElementCount(), Start);
 
+<<<<<<< HEAD
     Value *Select = State.Builder.CreateSelect(NewCond, NewVecOp, Start);
     NewVecOp = Select;
   }
@@ -2744,6 +2754,35 @@ void VPReductionRecipe::execute(VPTransformState &State) {
     else
       NextInChain = State.Builder.CreateBinOp(
           (Instruction::BinaryOps)RdxDesc.getOpcode(Kind), NewRed, PrevInChain);
+=======
+      Value *Select = State.Builder.CreateSelect(NewCond, NewVecOp, Start);
+      NewVecOp = Select;
+    }
+    Value *NewRed;
+    Value *NextInChain;
+    if (IsOrdered) {
+      if (State.VF.isVector())
+        NewRed = createOrderedReduction(State.Builder, RdxDesc, NewVecOp,
+                                        PrevInChain);
+      else
+        NewRed = State.Builder.CreateBinOp(
+            (Instruction::BinaryOps)RdxDesc.getOpcode(Kind), PrevInChain,
+            NewVecOp);
+      PrevInChain = NewRed;
+      NextInChain = NewRed;
+    } else {
+      PrevInChain = State.get(getChainOp(), Part, /*IsScalar*/ true);
+      NewRed = createReduction(State.Builder, RdxDesc, NewVecOp);
+      if (RecurrenceDescriptor::isMinMaxRecurrenceKind(Kind))
+        NextInChain = createMinMaxOp(State.Builder, RdxDesc.getRecurrenceKind(),
+                                     NewRed, PrevInChain);
+      else
+        NextInChain = State.Builder.CreateBinOp(
+            (Instruction::BinaryOps)RdxDesc.getOpcode(Kind), NewRed,
+            PrevInChain);
+    }
+    State.set(this, NextInChain, Part, /*IsScalar*/ true);
+>>>>>>> origin/sifive-dev
   }
   State.set(this, NextInChain, /*IsScalar*/ true);
 }
@@ -4662,7 +4701,7 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
   case RecurKind::IAnyOf:
   case RecurKind::FAnyOf: {
     // The cost references the instructions created in
-    // llvm::createAnyOfTargetReduction
+    // llvm::createAnyOfReduction
     auto *VecCondTy = cast<VectorType>(CmpInst::makeCmpResultType(VectorTy));
     InstructionCost O =
         Ctx.TTI.getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);

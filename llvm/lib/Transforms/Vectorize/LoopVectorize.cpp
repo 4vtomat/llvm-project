@@ -2765,11 +2765,6 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
     CheckMinIters =
         Builder.CreateICmp(P, Count, CreateStep(), "min.iters.check");
   else if (VF.isScalable() &&
-#if SIFIVE_CUSTOMIZATION
-      // Don't require this overflow check as with VP-intrinsics we don't mask
-      // the loop body.
-           !useVLAVectorizer() &&
-#endif // SIFIVE_CUSTOMIZATION
            !isIndvarOverflowCheckKnownFalse(Cost, VF, UF) &&
            Style != TailFoldingStyle::DataAndControlFlowWithoutRuntimeCheck) {
     // vscale is not necessarily a power-of-2, which means we cannot guarantee

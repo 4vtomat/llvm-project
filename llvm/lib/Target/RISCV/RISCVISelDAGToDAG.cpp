@@ -70,6 +70,28 @@ void RISCVDAGToDAGISel::PreprocessISelDAG() {
           VT.isInteger() ? RISCVISD::VMV_V_X_VL : RISCVISD::VFMV_V_F_VL;
       SDLoc DL(N);
       SDValue VL = CurDAG->getRegister(RISCV::X0, Subtarget->getXLenVT());
+
+#if SIFIVE_CUSTOMIZATION
+      if (VT.isRISCVVectorTuple()) {
+        unsigned NF = VT.getRISCVVectorTupleNumFields();
+        unsigned NumScalElts = VT.getSizeInBits() / (NF * 8);
+        SDValue EltVal = CurDAG->getConstant(0, DL, Subtarget->getXLenVT());
+        MVT ScalTy =
+            MVT::getScalableVectorVT(MVT::getIntegerVT(8), NumScalElts);
+
+        SDValue Splat = CurDAG->getNode(RISCVISD::VMV_V_X_VL, DL, ScalTy,
+                                        CurDAG->getUNDEF(ScalTy), EltVal, VL);
+
+        SDValue Tup = CurDAG->getUNDEF(VT);
+        for (unsigned i = 0; i < NF; ++i)
+          Tup = CurDAG->getNode(RISCVISD::TUPLE_INSERT, DL, VT, Tup, Splat,
+                                CurDAG->getVectorIdxConstant(i, DL));
+
+        Result = Tup;
+        break;
+      }
+#endif // SIFIVE_CUSTOMIZATION
+
       SDValue Src = N->getOperand(0);
       if (VT.isInteger())
         Src = CurDAG->getNode(ISD::ANY_EXTEND, DL, Subtarget->getXLenVT(),
