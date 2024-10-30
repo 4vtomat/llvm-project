@@ -108,10 +108,17 @@ static cl::opt<unsigned> PragmaDistributeSCEVCheckThreshold(
              "Distribution for loop marked with #pragma clang loop "
              "distribute(enable)"));
 
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<bool> EnableLoopDistribute(
+    "enable-loop-distribute", cl::Hidden,
+    cl::desc("Enable the new, experimental LoopDistribution Pass"),
+    cl::init(true));
+#else
 static cl::opt<bool> EnableLoopDistribute(
     "enable-loop-distribute", cl::Hidden,
     cl::desc("Enable the new, experimental LoopDistribution Pass"),
     cl::init(false));
+#endif
 
 STATISTIC(NumLoopsDistributed, "Number of loops distributed");
 
@@ -521,6 +528,35 @@ public:
           Partition = -1;
       }
       assert(Partition != -2 && "Pointer not belonging to any partition");
+#if SIFIVE_CUSTOMIZATION
+      // All the store context uses of our address were processed,
+      // Now make sure we don't have cross partition loads.
+      if (RtPtrCheck->Pointers[I].IsWritePtr) {
+        if (Ptr->hasOneUse() || isa<GlobalVariable>(Ptr) || Partition == -1)
+          continue;
+
+        bool ProcessLoads = false;
+        for (User *U : Ptr->users())
+          if (auto *CurLoad = dyn_cast<LoadInst>(U))
+            if (L->contains(CurLoad->getParent())) {
+              ProcessLoads = true;
+              break;
+            }
+
+        if (!ProcessLoads)
+          continue;
+
+        const bool IsWritePtr = false;
+        auto Instructions = LAI.getInstructionsForAccess(Ptr, IsWritePtr);
+        for (Instruction *Inst : Instructions)
+          if (Partition != (int)this->InstToPartitionId[Inst]) {
+            // -1 means belonging to multiple partitions.
+            Partition = -1;
+            break;
+          }
+
+      }
+#endif
     }
 
     return PtrToPartitions;
