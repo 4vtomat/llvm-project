@@ -3264,9 +3264,6 @@ InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
   // TODO: Remove this and update InsertElement cost
   if (!isTypeLegal(Val) && Opcode != Instruction::ExtractElement)
     return BaseT::getVectorInstrCost(Opcode, Val, CostKind, Index, Op0, Op1);
-#else
-  if (!isTypeLegal(Val))
-    return BaseT::getVectorInstrCost(Opcode, Val, CostKind, Index, Op0, Op1);
 #endif // SIFIVE_CUSTOMIZATION
 
   // Mask vector extract/insert is expanded via e8.
@@ -3335,66 +3332,6 @@ InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
       SlideCost = 0;
     else if (Opcode == Instruction::InsertElement)
       SlideCost = 1; // With a constant index, we do not need to use addi.
-  }
-
-  // Mask vector extract/insert element is different from normal case.
-  if (Val->getScalarSizeInBits() == 1) {
-    // For extractelement, we need the following instructions:
-    // vmv.v.i v8, 0
-    // vmerge.vim v8, v8, 1, v0
-    // vsetivli zero, 1, e8, m2, ta, mu (not count)
-    // vslidedown.vx v8, v8, a0
-    // vmv.x.s a0, v8
-
-    // For insertelement, we need the following instructions:
-    // vsetvli a2, zero, e8, m1, ta, mu (not count)
-    // vmv.s.x v8, a0
-    // vmv.v.i v9, 0
-    // vmerge.vim v9, v9, 1, v0
-    // addi a0, a1, 1
-    // vsetvli zero, a0, e8, m1, tu, mu (not count)
-    // vslideup.vx v9, v8, a1
-    // vsetvli a0, zero, e8, m1, ta, mu (not count)
-    // vand.vi v8, v9, 1
-    // vmsne.vi v0, v8, 0
-
-    // TODO: should we count these special vsetvlis?
-    BaseCost = Opcode == Instruction::InsertElement ? 5 : 3;
-#if SIFIVE_CUSTOMIZATION
-    if (ST->isSiFiveCPU() && Opcode == Instruction::ExtractElement) {
-      if (Index == 0) {
-        // To extract the first bit we use vfirst.m:
-        //   vsetvli  a0, zero e8, m8, ta, ma
-        //   vfirst.m a0, v0
-        //   seqz     a0, a0
-        return V2SCost + 1;
-      } else if (LT.first > 1 &&
-                 ((Index == -1U) ||
-                  (Index != 0 && LT.second.isScalableVector()))) {
-        // Expected code sequence is:
-        //   csrr + slli + addi + minu + sh3add
-        //   address calculation for each vstore
-        //   + merge.vim
-        Type *ScalarType = Val->getScalarType();
-        Align VecAlign = DL.getPrefTypeAlign(Val);
-        Align SclAlign = DL.getPrefTypeAlign(ScalarType);
-        BaseCost =
-            5 + LT.first +
-            getMemoryOpCost(Instruction::Store, Val, VecAlign, 0, CostKind) +
-            getMemoryOpCost(Instruction::Load, ScalarType, SclAlign, 0,
-                            CostKind) +
-            ((CostKind == TTI::TCK_CodeSize)
-                 ? LT.first
-                 : LT.first * TLI->getLMULCost(LT.second));
-        return BaseCost;
-      } else {
-        InstructionCost LMULCost =
-            (CostKind == TTI::TCK_CodeSize) ? 1 : TLI->getLMULCost(LT.second);
-        BaseCost = V2SCost + LMULCost * 2;
-        return BaseCost + SlideCost;
-      }
-    }
-#endif
   }
 
 #if SIFIVE_CUSTOMIZATION
