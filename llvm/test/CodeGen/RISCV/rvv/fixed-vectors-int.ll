@@ -5528,9 +5528,9 @@ define void @mulhu_vx_v2i64(ptr %x) {
 ; RV32-NEXT:    vle64.v v8, (a0)
 ; RV32-NEXT:    lui a1, 699051
 ; RV32-NEXT:    addi a2, a1, -1366
-; RV32-NEXT:    sw a2, 12(sp)
 ; RV32-NEXT:    addi a1, a1, -1365
 ; RV32-NEXT:    sw a1, 8(sp)
+; RV32-NEXT:    sw a2, 12(sp)
 ; RV32-NEXT:    addi a1, sp, 8
 ; RV32-NEXT:    vlse64.v v9, (a1), zero
 ; RV32-NEXT:    vmulhu.vv v8, v8, v9
@@ -5633,9 +5633,9 @@ define void @mulhs_vx_v2i64(ptr %x) {
 ; RV32-NEXT:    vle64.v v8, (a0)
 ; RV32-NEXT:    lui a1, 349525
 ; RV32-NEXT:    addi a2, a1, 1365
-; RV32-NEXT:    sw a2, 12(sp)
 ; RV32-NEXT:    addi a1, a1, 1366
 ; RV32-NEXT:    sw a1, 8(sp)
+; RV32-NEXT:    sw a2, 12(sp)
 ; RV32-NEXT:    addi a1, sp, 8
 ; RV32-NEXT:    vlse64.v v9, (a1), zero
 ; RV32-NEXT:    vmulh.vv v8, v8, v9

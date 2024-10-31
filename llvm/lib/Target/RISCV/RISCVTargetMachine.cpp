@@ -119,9 +119,9 @@ static cl::opt<bool>
                            cl::desc("Enable the loop data prefetch pass"),
                            cl::init(true));
 
-static cl::opt<bool> EnableMISchedLoadClustering(
-    "riscv-misched-load-clustering", cl::Hidden,
-    cl::desc("Enable load clustering in the machine scheduler"),
+static cl::opt<bool> EnableMISchedLoadStoreClustering(
+    "riscv-misched-load-store-clustering", cl::Hidden,
+    cl::desc("Enable load and store clustering in the machine scheduler"),
     cl::init(true));
 
 static cl::opt<bool> EnableVSETVLIAfterRVVRegAlloc(
@@ -129,12 +129,19 @@ static cl::opt<bool> EnableVSETVLIAfterRVVRegAlloc(
     cl::desc("Insert vsetvls after vector register allocation"),
     cl::init(true));
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 static cl::opt<bool>
     EnableRISCVSpillRewrite("enable-riscv-spill-rewrite", cl::Hidden,
                             cl::init(false),
                             cl::desc("Enable RISC-V Spill Rewrite pass"));
 #endif // SIFIVE_CUSTOMIZATION
+=======
+static cl::opt<bool>
+    EnableVLOptimizer("riscv-enable-vl-optimizer",
+                      cl::desc("Enable the RISC-V VL Optimizer pass"),
+                      cl::init(false), cl::Hidden);
+>>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   RegisterTargetMachine<RISCVTargetMachine> X(getTheRISCV32Target());
@@ -161,6 +168,7 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   initializeRISCVPreRAExpandPseudoPass(*PR);
   initializeRISCVExpandPseudoPass(*PR);
   initializeRISCVVectorPeepholePass(*PR);
+  initializeRISCVVLOptimizerPass(*PR);
   initializeRISCVInsertVSETVLIPass(*PR);
 #ifdef SIFIVE_CUSTOMIZATION
   initializeRISCVSpillRewritePass(*PR);
@@ -393,9 +401,11 @@ public:
   ScheduleDAGInstrs *
   createMachineScheduler(MachineSchedContext *C) const override {
     ScheduleDAGMILive *DAG = nullptr;
-    if (EnableMISchedLoadClustering) {
+    if (EnableMISchedLoadStoreClustering) {
       DAG = createGenericSchedLive(C);
       DAG->addMutation(createLoadClusterDAGMutation(
+          DAG->TII, DAG->TRI, /*ReorderWhileClustering=*/true));
+      DAG->addMutation(createStoreClusterDAGMutation(
           DAG->TII, DAG->TRI, /*ReorderWhileClustering=*/true));
     }
 #if SIFIVE_CUSTOMIZATION
@@ -667,6 +677,7 @@ void RISCVPassConfig::addMachineSSAOptimization() {
 
 void RISCVPassConfig::addPreRegAlloc() {
   addPass(createRISCVPreRAExpandPseudoPass());
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (TM->getOptLevel() != CodeGenOptLevel::None) {
     addPass(createRISCVMergeBaseOffsetOptPass());
@@ -674,6 +685,13 @@ void RISCVPassConfig::addPreRegAlloc() {
       addPass(createRISCVVLOptimizerPass()); // SIFIVE
   }
 #endif
+=======
+  if (TM->getOptLevel() != CodeGenOptLevel::None) {
+    addPass(createRISCVMergeBaseOffsetOptPass());
+    if (EnableVLOptimizer)
+      addPass(createRISCVVLOptimizerPass());
+  }
+>>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 
   addPass(createRISCVInsertReadWriteCSRPass());
   addPass(createRISCVInsertWriteVXRMPass());

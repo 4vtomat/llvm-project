@@ -134,6 +134,7 @@ struct VPlanTransforms {
   /// VPCanonicalIVPHIRecipe is only used to control the loop after
   /// this transformation.
   /// \returns true if the transformation succeeds, or false if it doesn't.
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// \p EnableEVLFuzzing is used to allow the transform to handle EVL fuzzing.
   static bool tryAddExplicitVectorLength(VPlan &Plan,
@@ -143,6 +144,11 @@ struct VPlanTransforms {
 #else
   static bool tryAddExplicitVectorLength(VPlan &Plan);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  static bool
+  tryAddExplicitVectorLength(VPlan &Plan,
+                             const std::optional<unsigned> &MaxEVLSafeElements);
+>>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 
   // For each Interleave Group in \p InterleaveGroups replace the Recipes
   // widening its memory instructions with a single VPInterleaveRecipe at its

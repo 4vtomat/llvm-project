@@ -771,7 +771,8 @@ Intrinsic::ID Intrinsic::lookupIntrinsicID(StringRef Name) {
 #include "llvm/IR/IntrinsicImpl.inc"
 #undef GET_INTRINSIC_ATTRIBUTES
 
-Function *Intrinsic::getDeclaration(Module *M, ID id, ArrayRef<Type *> Tys) {
+Function *Intrinsic::getOrInsertDeclaration(Module *M, ID id,
+                                            ArrayRef<Type *> Tys) {
   // There can never be multiple globals with the same name of different types,
   // because intrinsics must be a specific type.
   auto *FT = getType(M->getContext(), id, Tys);
@@ -779,6 +780,16 @@ Function *Intrinsic::getDeclaration(Module *M, ID id, ArrayRef<Type *> Tys) {
       M->getOrInsertFunction(
            Tys.empty() ? getName(id) : getName(id, Tys, M, FT), FT)
           .getCallee());
+}
+
+Function *Intrinsic::getDeclarationIfExists(const Module *M, ID id) {
+  return M->getFunction(getName(id));
+}
+
+Function *Intrinsic::getDeclarationIfExists(Module *M, ID id,
+                                            ArrayRef<Type *> Tys,
+                                            FunctionType *FT) {
+  return M->getFunction(getName(id, Tys, M, FT));
 }
 
 // This defines the "Intrinsic::getIntrinsicForClangBuiltin()" method.
@@ -1180,7 +1191,7 @@ std::optional<Function *> Intrinsic::remangleIntrinsicFunction(Function *F) {
       // invalid and we'll get an error.
       ExistingGV->setName(WantedName + ".renamed");
     }
-    return Intrinsic::getDeclaration(F->getParent(), ID, ArgTys);
+    return Intrinsic::getOrInsertDeclaration(F->getParent(), ID, ArgTys);
   }();
 
   NewDecl->setCallingConv(F->getCallingConv());
