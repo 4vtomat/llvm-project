@@ -1418,24 +1418,13 @@ define void @lshr_32bytes(ptr %src.ptr, ptr %bitOff.ptr, ptr %dst) nounwind {
 ; RV64I-NEXT:    sd a0, 24(sp)
 ; RV64I-NEXT:    srli a0, a6, 3
 ; RV64I-NEXT:    andi a0, a0, 24
-<<<<<<< HEAD
 ; RV64I-NEXT:    add a0, sp, a0
-; RV64I-NEXT:    ld a3, 8(a0)
-; RV64I-NEXT:    ld a4, 0(a0)
-; RV64I-NEXT:    ld a5, 16(a0)
-; RV64I-NEXT:    ld a6, 24(a0)
-; RV64I-NEXT:    srl a0, a3, a1
-; RV64I-NEXT:    andi a7, a1, 63
-=======
-; RV64I-NEXT:    mv a1, sp
-; RV64I-NEXT:    add a0, a1, a0
 ; RV64I-NEXT:    ld a1, 8(a0)
 ; RV64I-NEXT:    ld a3, 0(a0)
 ; RV64I-NEXT:    ld a4, 16(a0)
 ; RV64I-NEXT:    ld a5, 24(a0)
 ; RV64I-NEXT:    srl a0, a1, a6
 ; RV64I-NEXT:    andi a7, a6, 63
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 ; RV64I-NEXT:    xori a7, a7, 63
 ; RV64I-NEXT:    slli t0, a4, 1
 ; RV64I-NEXT:    sll t0, t0, a7
@@ -2276,20 +2265,7 @@ define void @ashr_32bytes(ptr %src.ptr, ptr %bitOff.ptr, ptr %dst) nounwind {
 ; RV64I-NEXT:    sd a6, 24(sp)
 ; RV64I-NEXT:    srli a0, a7, 3
 ; RV64I-NEXT:    andi a0, a0, 24
-<<<<<<< HEAD
 ; RV64I-NEXT:    add a0, sp, a0
-; RV64I-NEXT:    ld a3, 8(a0)
-; RV64I-NEXT:    ld a4, 0(a0)
-; RV64I-NEXT:    ld a5, 16(a0)
-; RV64I-NEXT:    ld a6, 24(a0)
-; RV64I-NEXT:    srl a0, a3, a1
-; RV64I-NEXT:    andi a7, a1, 63
-; RV64I-NEXT:    xori a7, a7, 63
-; RV64I-NEXT:    slli t0, a5, 1
-; RV64I-NEXT:    sll t0, t0, a7
-=======
-; RV64I-NEXT:    mv a1, sp
-; RV64I-NEXT:    add a0, a1, a0
 ; RV64I-NEXT:    ld a1, 8(a0)
 ; RV64I-NEXT:    ld a3, 0(a0)
 ; RV64I-NEXT:    ld a4, 16(a0)
@@ -2299,7 +2275,6 @@ define void @ashr_32bytes(ptr %src.ptr, ptr %bitOff.ptr, ptr %dst) nounwind {
 ; RV64I-NEXT:    xori a6, a6, 63
 ; RV64I-NEXT:    slli t0, a4, 1
 ; RV64I-NEXT:    sll t0, t0, a6
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 ; RV64I-NEXT:    or a0, a0, t0
 ; RV64I-NEXT:    srl a3, a3, a7
 ; RV64I-NEXT:    slli a1, a1, 1

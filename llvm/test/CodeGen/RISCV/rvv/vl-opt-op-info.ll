@@ -40,14 +40,6 @@ declare <vscale x 2 x i16> @llvm.riscv.vnsrl.nxv2i16.nxv2i32.nxv2i16(
   iXLen);
 
 define <vscale x 2 x i16> @intrinsic_vnsrl_wv_nxv2i16_nxv2i32_nxv2i16(<vscale x 2 x i16> %a, <vscale x 2 x i16> %b, iXLen %2, <vscale x 2 x i32> %3, <vscale x 2 x i32> %4, <vscale x 2 x i16> %z) nounwind {
-<<<<<<< HEAD
-; CHECK-LABEL: intrinsic_vnsrl_wv_nxv2i16_nxv2i32_nxv2i16:
-; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
-; CHECK-NEXT:    vwadd.vv v10, v8, v9
-; CHECK-NEXT:    vnsrl.wv v8, v10, v12
-; CHECK-NEXT:    ret
-=======
 ; NOVLOPT-LABEL: intrinsic_vnsrl_wv_nxv2i16_nxv2i32_nxv2i16:
 ; NOVLOPT:       # %bb.0: # %entry
 ; NOVLOPT-NEXT:    vsetvli a1, zero, e16, mf2, ta, ma
@@ -62,7 +54,6 @@ define <vscale x 2 x i16> @intrinsic_vnsrl_wv_nxv2i16_nxv2i32_nxv2i16(<vscale x 
 ; VLOPT-NEXT:    vwadd.vv v10, v8, v9
 ; VLOPT-NEXT:    vnsrl.wv v8, v10, v12
 ; VLOPT-NEXT:    ret
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 entry:
   %c = sext <vscale x 2 x i16> %a to <vscale x 2 x i32>
   %d = sext <vscale x 2 x i16> %b to <vscale x 2 x i32>
@@ -83,15 +74,6 @@ declare <vscale x 2 x i16> @llvm.riscv.vnclip.nxv2i16.nxv2i32.nxv2i16(
   iXLen, iXLen);
 
 define <vscale x 2 x i16> @vnclip(<vscale x 2 x i16> %a, <vscale x 2 x i16> %b, iXLen %2, <vscale x 2 x i32> %3, <vscale x 2 x i32> %4, <vscale x 2 x i16> %z) nounwind {
-<<<<<<< HEAD
-; CHECK-LABEL: vnclip:
-; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
-; CHECK-NEXT:    vwadd.vv v10, v8, v9
-; CHECK-NEXT:    csrwi vxrm, 0
-; CHECK-NEXT:    vnclip.wv v8, v10, v12
-; CHECK-NEXT:    ret
-=======
 ; NOVLOPT-LABEL: vnclip:
 ; NOVLOPT:       # %bb.0: # %entry
 ; NOVLOPT-NEXT:    vsetvli a1, zero, e16, mf2, ta, ma
@@ -108,7 +90,6 @@ define <vscale x 2 x i16> @vnclip(<vscale x 2 x i16> %a, <vscale x 2 x i16> %b, 
 ; VLOPT-NEXT:    csrwi vxrm, 0
 ; VLOPT-NEXT:    vnclip.wv v8, v10, v12
 ; VLOPT-NEXT:    ret
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 entry:
   %c = sext <vscale x 2 x i16> %a to <vscale x 2 x i32>
   %d = sext <vscale x 2 x i16> %b to <vscale x 2 x i32>
