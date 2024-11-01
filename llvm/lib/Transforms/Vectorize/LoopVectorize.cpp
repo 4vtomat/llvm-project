@@ -1649,6 +1649,9 @@ public:
     // FIXME: use actual opcode/data type for analysis here.
     // FIXME: Investigate opportunity for fixed vector factor.
     bool EVLIsLegal = UserIC <= 1 &&
+#if SIFIVE_CUSTOMIZATION
+                      IsScalableVF &&
+#endif // SIFIVE_CUSTOMIZATION
                       TTI.hasActiveVectorLength(0, nullptr, Align()) &&
                       !EnableVPlanNativePath;
     if (!EVLIsLegal) {
@@ -10597,7 +10600,7 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
         } else {
           VPlanTransforms::optimize(*Plan);
           VPlanTransforms::tryAddExplicitVectorLength(
-              *Plan, /*EnableEVLFuzzing*/ true);
+              *Plan, CM.getMaxSafeElements(), /*EnableEVLFuzzing*/ true);
           VPlanTransforms::optimize(*Plan);
           VPlanTransforms::optimizeGEPs(*Plan);
           VPlanTransforms::optimize(*Plan);
