@@ -95,13 +95,6 @@ static cl::opt<bool> EnableRISCVCopyPropagation(
     cl::desc("Enable the copy propagation with RISC-V copy instr"),
     cl::init(true), cl::Hidden);
 
-#if SIFIVE_CUSTOMIZATION
-static cl::opt<bool> EnableVLOptimizer(
-    "riscv-enable-vloptimizer",
-    cl::desc("Enable the VL Optimizer pass"), cl::init(true),
-    cl::Hidden);
-#endif // SIFIVE_CUSTOMIZATION
-
 static cl::opt<bool> EnableRISCVDeadRegisterElimination(
     "riscv-enable-dead-defs", cl::Hidden,
     cl::desc("Enable the pass that removes dead"
@@ -129,19 +122,16 @@ static cl::opt<bool> EnableVSETVLIAfterRVVRegAlloc(
     cl::desc("Insert vsetvls after vector register allocation"),
     cl::init(true));
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 static cl::opt<bool>
     EnableRISCVSpillRewrite("enable-riscv-spill-rewrite", cl::Hidden,
                             cl::init(false),
                             cl::desc("Enable RISC-V Spill Rewrite pass"));
 #endif // SIFIVE_CUSTOMIZATION
-=======
 static cl::opt<bool>
     EnableVLOptimizer("riscv-enable-vl-optimizer",
                       cl::desc("Enable the RISC-V VL Optimizer pass"),
                       cl::init(false), cl::Hidden);
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   RegisterTargetMachine<RISCVTargetMachine> X(getTheRISCV32Target());
@@ -677,21 +667,11 @@ void RISCVPassConfig::addMachineSSAOptimization() {
 
 void RISCVPassConfig::addPreRegAlloc() {
   addPass(createRISCVPreRAExpandPseudoPass());
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  if (TM->getOptLevel() != CodeGenOptLevel::None) {
-    addPass(createRISCVMergeBaseOffsetOptPass());
-    if (EnableVLOptimizer)
-      addPass(createRISCVVLOptimizerPass()); // SIFIVE
-  }
-#endif
-=======
   if (TM->getOptLevel() != CodeGenOptLevel::None) {
     addPass(createRISCVMergeBaseOffsetOptPass());
     if (EnableVLOptimizer)
       addPass(createRISCVVLOptimizerPass());
   }
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 
   addPass(createRISCVInsertReadWriteCSRPass());
   addPass(createRISCVInsertWriteVXRMPass());
