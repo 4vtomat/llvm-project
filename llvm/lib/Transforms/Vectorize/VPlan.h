@@ -1124,13 +1124,11 @@ public:
     return cast<Instruction>(getUnderlyingValue());
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool hasUnderlyingInstr() const {
     return getVPSingleValue()->getUnderlyingValue() != nullptr;
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   /// Return the cost of this VPSingleDefRecipe.
   InstructionCost computeCost(ElementCount VF,
                               VPCostContext &Ctx) const override;
@@ -1139,7 +1137,6 @@ public:
   /// Print this VPSingleDefRecipe to dbgs() (for debugging).
   LLVM_DUMP_METHOD void dump() const;
 #endif
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 };
 
 /// Class to record LLVM IR flag for a recipe along with it.
@@ -1923,6 +1920,10 @@ public:
 
 /// A recipe for widening Call instructions using library calls.
 class VPWidenCallRecipe : public VPRecipeWithIRFlags {
+#if SIFIVE_CUSTOMIZATION
+  Intrinsic::ID VectorIntrinsicID;
+#endif // SIFIVE_CUSTOMIZATION
+
   /// Variant stores a pointer to the chosen function. There is a 1:1 mapping
   /// between a given VF and the chosen vectorized variant, so there will be a
   /// different VPlan for each VF with a valid variant.
