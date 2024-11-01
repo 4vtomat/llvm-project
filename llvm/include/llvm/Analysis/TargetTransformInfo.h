@@ -2334,20 +2334,17 @@ public:
 #endif
   virtual bool hasActiveVectorLength(unsigned Opcode, Type *DataType,
                                      Align Alignment) const = 0;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   virtual bool useVLAVectorizer() const = 0;
   virtual bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const = 0;
   virtual bool isLegalVectorInterleave(VectorType *VTy, unsigned Factor,
                                        const DataLayout &DL) const = 0;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   virtual bool
   isProfitableToSinkOperands(Instruction *I,
                              SmallVectorImpl<Use *> &OpsToSink) const = 0;
 
   virtual bool isVectorShiftByScalarCheap(Type *Ty) const = 0;
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
   virtual VPLegalization
   getVPLegalizationStrategy(const VPIntrinsic &PI) const = 0;
   virtual bool hasArmWideBranch(bool Thumb) const = 0;
@@ -3193,7 +3190,6 @@ public:
     return Impl.hasActiveVectorLength(Opcode, DataType, Alignment);
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool useVLAVectorizer() const override {
     return Impl.useVLAVectorizer();
@@ -3208,7 +3204,6 @@ public:
     return Impl.isLegalVectorInterleave(VTy, Factor, DL);
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   bool isProfitableToSinkOperands(Instruction *I,
                                   SmallVectorImpl<Use *> &Ops) const override {
     return Impl.isProfitableToSinkOperands(I, Ops);
@@ -3218,7 +3213,6 @@ public:
     return Impl.isVectorShiftByScalarCheap(Ty);
   }
 
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
   VPLegalization
   getVPLegalizationStrategy(const VPIntrinsic &PI) const override {
     return Impl.getVPLegalizationStrategy(PI);
