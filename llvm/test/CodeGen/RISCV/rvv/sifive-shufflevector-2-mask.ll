@@ -270,10 +270,10 @@ entry:
 define void @shufflevector_2_0(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_2_0:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    ld a2, 0(a0)
-; CHECK-NEXT:    ld a0, 16(a0)
-; CHECK-NEXT:    sd a2, 8(a1)
-; CHECK-NEXT:    sd a0, 0(a1)
+; CHECK-NEXT:    ld a2, 16(a0)
+; CHECK-NEXT:    ld a0, 0(a0)
+; CHECK-NEXT:    sd a2, 0(a1)
+; CHECK-NEXT:    sd a0, 8(a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i64>, ptr %in, align 8
@@ -285,10 +285,10 @@ entry:
 define void @shufflevector_2_1(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_2_1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    ld a2, 8(a0)
-; CHECK-NEXT:    ld a0, 16(a0)
-; CHECK-NEXT:    sd a2, 8(a1)
-; CHECK-NEXT:    sd a0, 0(a1)
+; CHECK-NEXT:    ld a2, 16(a0)
+; CHECK-NEXT:    ld a0, 8(a0)
+; CHECK-NEXT:    sd a2, 0(a1)
+; CHECK-NEXT:    sd a0, 8(a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i64>, ptr %in, align 8
@@ -332,10 +332,10 @@ entry:
 define void @shufflevector_2_4(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_2_4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    ld a2, 32(a0)
-; CHECK-NEXT:    ld a0, 16(a0)
-; CHECK-NEXT:    sd a2, 8(a1)
-; CHECK-NEXT:    sd a0, 0(a1)
+; CHECK-NEXT:    ld a2, 16(a0)
+; CHECK-NEXT:    ld a0, 32(a0)
+; CHECK-NEXT:    sd a2, 0(a1)
+; CHECK-NEXT:    sd a0, 8(a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i64>, ptr %in, align 8
@@ -397,10 +397,10 @@ entry:
 define void @shufflevector_3_0(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_3_0:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    ld a2, 0(a0)
-; CHECK-NEXT:    ld a0, 24(a0)
-; CHECK-NEXT:    sd a2, 8(a1)
-; CHECK-NEXT:    sd a0, 0(a1)
+; CHECK-NEXT:    ld a2, 24(a0)
+; CHECK-NEXT:    ld a0, 0(a0)
+; CHECK-NEXT:    sd a2, 0(a1)
+; CHECK-NEXT:    sd a0, 8(a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i64>, ptr %in, align 8
@@ -412,10 +412,10 @@ entry:
 define void @shufflevector_3_1(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_3_1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    ld a2, 8(a0)
-; CHECK-NEXT:    ld a0, 24(a0)
-; CHECK-NEXT:    sd a2, 8(a1)
-; CHECK-NEXT:    sd a0, 0(a1)
+; CHECK-NEXT:    ld a2, 24(a0)
+; CHECK-NEXT:    ld a0, 8(a0)
+; CHECK-NEXT:    sd a2, 0(a1)
+; CHECK-NEXT:    sd a0, 8(a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i64>, ptr %in, align 8
@@ -533,10 +533,10 @@ entry:
 define void @shufflevector_4_0(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_4_0:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    ld a2, 0(a0)
-; CHECK-NEXT:    ld a0, 32(a0)
-; CHECK-NEXT:    sd a2, 8(a1)
-; CHECK-NEXT:    sd a0, 0(a1)
+; CHECK-NEXT:    ld a2, 32(a0)
+; CHECK-NEXT:    ld a0, 0(a0)
+; CHECK-NEXT:    sd a2, 0(a1)
+; CHECK-NEXT:    sd a0, 8(a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i64>, ptr %in, align 8
@@ -548,10 +548,10 @@ entry:
 define void @shufflevector_4_1(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_4_1:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    ld a2, 8(a0)
-; CHECK-NEXT:    ld a0, 32(a0)
-; CHECK-NEXT:    sd a2, 8(a1)
-; CHECK-NEXT:    sd a0, 0(a1)
+; CHECK-NEXT:    ld a2, 32(a0)
+; CHECK-NEXT:    ld a0, 8(a0)
+; CHECK-NEXT:    sd a2, 0(a1)
+; CHECK-NEXT:    sd a0, 8(a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i64>, ptr %in, align 8
@@ -563,10 +563,10 @@ entry:
 define void @shufflevector_4_2(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_4_2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    ld a2, 16(a0)
-; CHECK-NEXT:    ld a0, 32(a0)
-; CHECK-NEXT:    sd a2, 8(a1)
-; CHECK-NEXT:    sd a0, 0(a1)
+; CHECK-NEXT:    ld a2, 32(a0)
+; CHECK-NEXT:    ld a0, 16(a0)
+; CHECK-NEXT:    sd a2, 0(a1)
+; CHECK-NEXT:    sd a0, 8(a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i64>, ptr %in, align 8
@@ -578,10 +578,10 @@ entry:
 define void @shufflevector_4_3(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_4_3:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    ld a2, 24(a0)
-; CHECK-NEXT:    ld a0, 32(a0)
-; CHECK-NEXT:    sd a2, 8(a1)
-; CHECK-NEXT:    sd a0, 0(a1)
+; CHECK-NEXT:    ld a2, 32(a0)
+; CHECK-NEXT:    ld a0, 24(a0)
+; CHECK-NEXT:    sd a2, 0(a1)
+; CHECK-NEXT:    sd a0, 8(a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i64>, ptr %in, align 8

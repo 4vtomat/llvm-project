@@ -308,9 +308,9 @@ define void @foo8(ptr %p) nounwind {
 ; RV64ZDINX-NEXT:    sd a0, 8(sp)
 ; RV64ZDINX-NEXT:    lui a0, %hi(d)
 ; RV64ZDINX-NEXT:    addi a0, a0, %lo(d)
+; RV64ZDINX-NEXT:    srli a2, a1, 32
 ; RV64ZDINX-NEXT:    sw a1, 4(a0)
-; RV64ZDINX-NEXT:    srli a1, a1, 32
-; RV64ZDINX-NEXT:    sw a1, 8(a0)
+; RV64ZDINX-NEXT:    sw a2, 8(a0)
 ; RV64ZDINX-NEXT:    addi sp, sp, 16
 ; RV64ZDINX-NEXT:    ret
 entry:
@@ -410,9 +410,9 @@ define void @foo10(ptr %p) nounwind {
 ; RV64ZDINX-NEXT:    sd a0, 8(sp)
 ; RV64ZDINX-NEXT:    lui a0, %hi(e)
 ; RV64ZDINX-NEXT:    addi a0, a0, %lo(e)
+; RV64ZDINX-NEXT:    srli a2, a1, 32
 ; RV64ZDINX-NEXT:    sw a1, 0(a0)
-; RV64ZDINX-NEXT:    srli a1, a1, 32
-; RV64ZDINX-NEXT:    sw a1, 4(a0)
+; RV64ZDINX-NEXT:    sw a2, 4(a0)
 ; RV64ZDINX-NEXT:    addi sp, sp, 16
 ; RV64ZDINX-NEXT:    ret
 entry:

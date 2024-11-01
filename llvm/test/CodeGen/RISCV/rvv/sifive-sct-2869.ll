@@ -14,8 +14,8 @@ define i64 @g() {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    lui a0, %hi(g)
 ; CHECK-NEXT:    addi a0, a0, %lo(g)
-; CHECK-NEXT:    sd zero, 16(a0)
 ; CHECK-NEXT:    sd zero, 8(a0)
+; CHECK-NEXT:    sd zero, 16(a0)
 ; CHECK-NEXT:    ret
 entry:
   tail call void @llvm.memset.p0.i64(ptr noundef nonnull align 8 dereferenceable(16) getelementptr inbounds (%struct.d, ptr @g, i64 0, i32 1), i8 0, i64 16, i1 false)

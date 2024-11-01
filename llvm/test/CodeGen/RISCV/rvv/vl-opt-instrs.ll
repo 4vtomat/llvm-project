@@ -626,16 +626,16 @@ define <vscale x 4 x i16> @vnsrl_wi(<vscale x 4 x i32> %a, <vscale x 4 x i16> %b
 ; NOVLOPT-LABEL: vnsrl_wi:
 ; NOVLOPT:       # %bb.0:
 ; NOVLOPT-NEXT:    vsetvli a1, zero, e16, m1, ta, ma
-; NOVLOPT-NEXT:    vnsrl.wi v11, v8, 5
+; NOVLOPT-NEXT:    vnsrl.wi v8, v8, 5
 ; NOVLOPT-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
-; NOVLOPT-NEXT:    vadd.vv v8, v11, v10
+; NOVLOPT-NEXT:    vadd.vv v8, v8, v10
 ; NOVLOPT-NEXT:    ret
 ;
 ; VLOPT-LABEL: vnsrl_wi:
 ; VLOPT:       # %bb.0:
 ; VLOPT-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
-; VLOPT-NEXT:    vnsrl.wi v11, v8, 5
-; VLOPT-NEXT:    vadd.vv v8, v11, v10
+; VLOPT-NEXT:    vnsrl.wi v8, v8, 5
+; VLOPT-NEXT:    vadd.vv v8, v8, v10
 ; VLOPT-NEXT:    ret
   %1 = call <vscale x 4 x i16> @llvm.riscv.vnsrl.nxv4i16.nxv4i32(<vscale x 4 x i16> poison, <vscale x 4 x i32> %a, iXLen 5, iXLen -1)
   %2 = call <vscale x 4 x i16> @llvm.riscv.vadd.nxv4i16.nxv4i16(<vscale x 4 x i16> poison, <vscale x 4 x i16> %1, <vscale x 4 x i16> %b, iXLen %vl)
@@ -1126,17 +1126,17 @@ define <vscale x 4 x i64> @vwmul_vv(<vscale x 4 x i16> %a, <vscale x 4 x i16> %b
 ; NOVLOPT-LABEL: vwmul_vv:
 ; NOVLOPT:       # %bb.0:
 ; NOVLOPT-NEXT:    vsetvli a1, zero, e16, m1, ta, ma
-; NOVLOPT-NEXT:    vwmul.vv v12, v8, v9
+; NOVLOPT-NEXT:    vwmul.vv v10, v8, v9
 ; NOVLOPT-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; NOVLOPT-NEXT:    vwmul.vv v8, v12, v12
+; NOVLOPT-NEXT:    vwmul.vv v8, v10, v10
 ; NOVLOPT-NEXT:    ret
 ;
 ; VLOPT-LABEL: vwmul_vv:
 ; VLOPT:       # %bb.0:
 ; VLOPT-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
-; VLOPT-NEXT:    vwmul.vv v12, v8, v9
+; VLOPT-NEXT:    vwmul.vv v10, v8, v9
 ; VLOPT-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; VLOPT-NEXT:    vwmul.vv v8, v12, v12
+; VLOPT-NEXT:    vwmul.vv v8, v10, v10
 ; VLOPT-NEXT:    ret
   %1 = call <vscale x 4 x i32> @llvm.riscv.vwmul.nxv4i64.nxv4i32.nxv4i32(<vscale x 4 x i32> poison, <vscale x 4 x i16> %a, <vscale x 4 x i16> %b, iXLen -1)
   %2 = call <vscale x 4 x i64> @llvm.riscv.vwmul.nxv4i64.nxv4i32.nxv4i32(<vscale x 4 x i64> poison, <vscale x 4 x i32> %1, <vscale x 4 x i32> %1, iXLen %vl)
@@ -1147,17 +1147,17 @@ define <vscale x 4 x i64> @vwmul_vx(<vscale x 4 x i16> %a, i16 %b, i32 %c, iXLen
 ; NOVLOPT-LABEL: vwmul_vx:
 ; NOVLOPT:       # %bb.0:
 ; NOVLOPT-NEXT:    vsetvli a3, zero, e16, m1, ta, ma
-; NOVLOPT-NEXT:    vwmul.vx v12, v8, a0
+; NOVLOPT-NEXT:    vwmul.vx v10, v8, a0
 ; NOVLOPT-NEXT:    vsetvli zero, a2, e32, m2, ta, ma
-; NOVLOPT-NEXT:    vwmul.vx v8, v12, a1
+; NOVLOPT-NEXT:    vwmul.vx v8, v10, a1
 ; NOVLOPT-NEXT:    ret
 ;
 ; VLOPT-LABEL: vwmul_vx:
 ; VLOPT:       # %bb.0:
 ; VLOPT-NEXT:    vsetvli zero, a2, e16, m1, ta, ma
-; VLOPT-NEXT:    vwmul.vx v12, v8, a0
+; VLOPT-NEXT:    vwmul.vx v10, v8, a0
 ; VLOPT-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; VLOPT-NEXT:    vwmul.vx v8, v12, a1
+; VLOPT-NEXT:    vwmul.vx v8, v10, a1
 ; VLOPT-NEXT:    ret
   %1 = call <vscale x 4 x i32> @llvm.riscv.vwmul.nxv4i32.nxv4i16.i16(<vscale x 4 x i32> poison, <vscale x 4 x i16> %a, i16 %b, iXLen -1)
   %2 = call <vscale x 4 x i64> @llvm.riscv.vwmul.nxv4i64.nxv4i64.i32(<vscale x 4 x i64> poison, <vscale x 4 x i32> %1, i32 %c, iXLen %vl)

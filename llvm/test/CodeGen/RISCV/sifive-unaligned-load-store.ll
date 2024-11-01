@@ -192,19 +192,12 @@ define void @store_i8(ptr %p, i8 %v) {
 }
 
 define void @store_i16(ptr %p, i16 %v) {
-; X280-LABEL: store_i16:
-; X280:       # %bb.0:
-; X280-NEXT:    srli a2, a1, 8
-; X280-NEXT:    sb a1, 0(a0)
-; X280-NEXT:    sb a2, 1(a0)
-; X280-NEXT:    ret
-;
-; P550-LABEL: store_i16:
-; P550:       # %bb.0:
-; P550-NEXT:    sb a1, 0(a0)
-; P550-NEXT:    srli a1, a1, 8
-; P550-NEXT:    sb a1, 1(a0)
-; P550-NEXT:    ret
+; SLOW-LABEL: store_i16:
+; SLOW:       # %bb.0:
+; SLOW-NEXT:    srli a2, a1, 8
+; SLOW-NEXT:    sb a1, 0(a0)
+; SLOW-NEXT:    sb a2, 1(a0)
+; SLOW-NEXT:    ret
 ;
 ; FAST-LABEL: store_i16:
 ; FAST:       # %bb.0:
@@ -226,18 +219,18 @@ define void @store_i24(ptr %p, i24 %v) {
 ;
 ; P550-LABEL: store_i24:
 ; P550:       # %bb.0:
-; P550-NEXT:    sb a1, 0(a0)
 ; P550-NEXT:    srli a2, a1, 8
-; P550-NEXT:    srli a1, a1, 16
+; P550-NEXT:    srli a3, a1, 16
+; P550-NEXT:    sb a1, 0(a0)
 ; P550-NEXT:    sb a2, 1(a0)
-; P550-NEXT:    sb a1, 2(a0)
+; P550-NEXT:    sb a3, 2(a0)
 ; P550-NEXT:    ret
 ;
 ; FAST-LABEL: store_i24:
 ; FAST:       # %bb.0:
+; FAST-NEXT:    srli a2, a1, 16
 ; FAST-NEXT:    sh a1, 0(a0)
-; FAST-NEXT:    srli a1, a1, 16
-; FAST-NEXT:    sb a1, 2(a0)
+; FAST-NEXT:    sb a2, 2(a0)
 ; FAST-NEXT:    ret
   store i24 %v, ptr %p, align 1
   ret void
@@ -246,24 +239,24 @@ define void @store_i24(ptr %p, i24 %v) {
 define void @store_i32(ptr %p, i32 %v) {
 ; X280-LABEL: store_i32:
 ; X280:       # %bb.0:
-; X280-NEXT:    srli a2, a1, 24
-; X280-NEXT:    srli a3, a1, 8
+; X280-NEXT:    srli a2, a1, 8
 ; X280-NEXT:    sb a1, 0(a0)
-; X280-NEXT:    srli a1, a1, 16
-; X280-NEXT:    sb a3, 1(a0)
-; X280-NEXT:    sb a2, 3(a0)
-; X280-NEXT:    sb a1, 2(a0)
+; X280-NEXT:    srli a3, a1, 16
+; X280-NEXT:    sb a2, 1(a0)
+; X280-NEXT:    srli a1, a1, 24
+; X280-NEXT:    sb a3, 2(a0)
+; X280-NEXT:    sb a1, 3(a0)
 ; X280-NEXT:    ret
 ;
 ; P550-LABEL: store_i32:
 ; P550:       # %bb.0:
 ; P550-NEXT:    srli a2, a1, 24
+; P550-NEXT:    srli a3, a1, 16
+; P550-NEXT:    srli a4, a1, 8
 ; P550-NEXT:    sb a1, 0(a0)
+; P550-NEXT:    sb a4, 1(a0)
+; P550-NEXT:    sb a3, 2(a0)
 ; P550-NEXT:    sb a2, 3(a0)
-; P550-NEXT:    srli a2, a1, 16
-; P550-NEXT:    srli a1, a1, 8
-; P550-NEXT:    sb a2, 2(a0)
-; P550-NEXT:    sb a1, 1(a0)
 ; P550-NEXT:    ret
 ;
 ; FAST-LABEL: store_i32:
@@ -277,40 +270,40 @@ define void @store_i32(ptr %p, i32 %v) {
 define void @store_i64(ptr %p, i64 %v) {
 ; X280-LABEL: store_i64:
 ; X280:       # %bb.0:
-; X280-NEXT:    srli a6, a1, 56
-; X280-NEXT:    srli a7, a1, 48
-; X280-NEXT:    srli a4, a1, 40
-; X280-NEXT:    srli a5, a1, 32
 ; X280-NEXT:    srli a2, a1, 8
+; X280-NEXT:    srli a3, a1, 16
 ; X280-NEXT:    sb a1, 0(a0)
 ; X280-NEXT:    sb a2, 1(a0)
-; X280-NEXT:    srli a3, a1, 24
-; X280-NEXT:    srli a1, a1, 16
-; X280-NEXT:    sb a6, 7(a0)
-; X280-NEXT:    sb a7, 6(a0)
-; X280-NEXT:    sb a4, 5(a0)
-; X280-NEXT:    sb a5, 4(a0)
-; X280-NEXT:    sb a3, 3(a0)
-; X280-NEXT:    sb a1, 2(a0)
+; X280-NEXT:    srli a2, a1, 24
+; X280-NEXT:    sb a3, 2(a0)
+; X280-NEXT:    srli a3, a1, 32
+; X280-NEXT:    sb a2, 3(a0)
+; X280-NEXT:    srli a2, a1, 40
+; X280-NEXT:    sb a3, 4(a0)
+; X280-NEXT:    srli a3, a1, 48
+; X280-NEXT:    sb a2, 5(a0)
+; X280-NEXT:    srli a1, a1, 56
+; X280-NEXT:    sb a3, 6(a0)
+; X280-NEXT:    sb a1, 7(a0)
 ; X280-NEXT:    ret
 ;
 ; P550-LABEL: store_i64:
 ; P550:       # %bb.0:
 ; P550-NEXT:    srli a2, a1, 56
-; P550-NEXT:    sb a1, 0(a0)
+; P550-NEXT:    srli a3, a1, 48
+; P550-NEXT:    srli a4, a1, 40
+; P550-NEXT:    srli a5, a1, 32
+; P550-NEXT:    sb a4, 5(a0)
+; P550-NEXT:    sb a3, 6(a0)
 ; P550-NEXT:    sb a2, 7(a0)
-; P550-NEXT:    srli a2, a1, 48
-; P550-NEXT:    sb a2, 6(a0)
-; P550-NEXT:    srli a2, a1, 40
-; P550-NEXT:    sb a2, 5(a0)
-; P550-NEXT:    srli a2, a1, 32
-; P550-NEXT:    sb a2, 4(a0)
 ; P550-NEXT:    srli a2, a1, 24
+; P550-NEXT:    srli a3, a1, 16
+; P550-NEXT:    srli a4, a1, 8
+; P550-NEXT:    sb a5, 4(a0)
+; P550-NEXT:    sb a1, 0(a0)
+; P550-NEXT:    sb a4, 1(a0)
+; P550-NEXT:    sb a3, 2(a0)
 ; P550-NEXT:    sb a2, 3(a0)
-; P550-NEXT:    srli a2, a1, 16
-; P550-NEXT:    srli a1, a1, 8
-; P550-NEXT:    sb a2, 2(a0)
-; P550-NEXT:    sb a1, 1(a0)
 ; P550-NEXT:    ret
 ;
 ; FAST-LABEL: store_i64:

@@ -102,8 +102,9 @@ define half @vp_reduce2_nxv1f16(half %s, <vscale x 1 x half> %v, i32 signext %ev
 ; RV32-NEXT:    li a1, 1
 ; RV32-NEXT:    beq a0, a1, .LBB1_6
 ; RV32-NEXT:  # %bb.2:
-; RV32-NEXT:    cpop a2, a0
-; RV32-NEXT:    beq a2, a1, .LBB1_4
+; RV32-NEXT:    cpop a1, a0
+; RV32-NEXT:    li a2, 2
+; RV32-NEXT:    bltu a1, a2, .LBB1_4
 ; RV32-NEXT:  # %bb.3:
 ; RV32-NEXT:    clz a0, a0
 ; RV32-NEXT:    lui a1, %hi(.LCPI1_0)
@@ -273,8 +274,9 @@ define float @vp_reduce2_nxv1f32(float %s, <vscale x 1 x float> %v, i32 signext 
 ; RV32-NEXT:    li a1, 1
 ; RV32-NEXT:    beq a0, a1, .LBB3_6
 ; RV32-NEXT:  # %bb.2:
-; RV32-NEXT:    cpop a2, a0
-; RV32-NEXT:    beq a2, a1, .LBB3_4
+; RV32-NEXT:    cpop a1, a0
+; RV32-NEXT:    li a2, 2
+; RV32-NEXT:    bltu a1, a2, .LBB3_4
 ; RV32-NEXT:  # %bb.3:
 ; RV32-NEXT:    clz a0, a0
 ; RV32-NEXT:    neg a0, a0
@@ -444,8 +446,9 @@ define double @vp_reduce2_nxv1f64(double %s, <vscale x 1 x double> %v, i32 signe
 ; RV32-NEXT:    li a1, 1
 ; RV32-NEXT:    beq a0, a1, .LBB5_6
 ; RV32-NEXT:  # %bb.2:
-; RV32-NEXT:    cpop a2, a0
-; RV32-NEXT:    beq a2, a1, .LBB5_4
+; RV32-NEXT:    cpop a1, a0
+; RV32-NEXT:    li a2, 2
+; RV32-NEXT:    bltu a1, a2, .LBB5_4
 ; RV32-NEXT:  # %bb.3:
 ; RV32-NEXT:    clz a0, a0
 ; RV32-NEXT:    lui a1, %hi(.LCPI5_0)

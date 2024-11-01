@@ -1653,13 +1653,13 @@ define i32 @varargs(ptr %fmt, ...) nounwind {
 ; RV32I:       # %bb.0:
 ; RV32I-NEXT:    addi sp, sp, -48
 ; RV32I-NEXT:    mv a0, a1
-; RV32I-NEXT:    sw a7, 44(sp)
-; RV32I-NEXT:    sw a6, 40(sp)
 ; RV32I-NEXT:    sw a5, 36(sp)
-; RV32I-NEXT:    sw a4, 32(sp)
-; RV32I-NEXT:    sw a3, 28(sp)
-; RV32I-NEXT:    sw a2, 24(sp)
+; RV32I-NEXT:    sw a6, 40(sp)
+; RV32I-NEXT:    sw a7, 44(sp)
 ; RV32I-NEXT:    sw a1, 20(sp)
+; RV32I-NEXT:    sw a2, 24(sp)
+; RV32I-NEXT:    sw a3, 28(sp)
+; RV32I-NEXT:    sw a4, 32(sp)
 ; RV32I-NEXT:    addi a1, sp, 24
 ; RV32I-NEXT:    sw a1, 12(sp)
 ; RV32I-NEXT:    addi sp, sp, 48
@@ -1668,23 +1668,23 @@ define i32 @varargs(ptr %fmt, ...) nounwind {
 ; RV64I-LABEL: varargs:
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    addi sp, sp, -80
-; RV64I-NEXT:    sd a7, 72(sp)
-; RV64I-NEXT:    sd a6, 64(sp)
 ; RV64I-NEXT:    sd a5, 56(sp)
-; RV64I-NEXT:    sd a4, 48(sp)
+; RV64I-NEXT:    sd a6, 64(sp)
+; RV64I-NEXT:    sd a7, 72(sp)
 ; RV64I-NEXT:    addi a0, sp, 24
 ; RV64I-NEXT:    sd a0, 8(sp)
 ; RV64I-NEXT:    lwu a0, 8(sp)
-; RV64I-NEXT:    lwu a4, 12(sp)
-; RV64I-NEXT:    sd a3, 40(sp)
-; RV64I-NEXT:    sd a2, 32(sp)
+; RV64I-NEXT:    lwu a5, 12(sp)
 ; RV64I-NEXT:    sd a1, 24(sp)
-; RV64I-NEXT:    slli a4, a4, 32
-; RV64I-NEXT:    or a0, a4, a0
+; RV64I-NEXT:    sd a2, 32(sp)
+; RV64I-NEXT:    sd a3, 40(sp)
+; RV64I-NEXT:    sd a4, 48(sp)
+; RV64I-NEXT:    slli a5, a5, 32
+; RV64I-NEXT:    or a0, a5, a0
 ; RV64I-NEXT:    addi a1, a0, 4
+; RV64I-NEXT:    srli a2, a1, 32
 ; RV64I-NEXT:    sw a1, 8(sp)
-; RV64I-NEXT:    srli a1, a1, 32
-; RV64I-NEXT:    sw a1, 12(sp)
+; RV64I-NEXT:    sw a2, 12(sp)
 ; RV64I-NEXT:    lw a0, 0(a0)
 ; RV64I-NEXT:    addi sp, sp, 80
 ; RV64I-NEXT:    ret
@@ -1693,13 +1693,13 @@ define i32 @varargs(ptr %fmt, ...) nounwind {
 ; RV32I-SR:       # %bb.0:
 ; RV32I-SR-NEXT:    addi sp, sp, -48
 ; RV32I-SR-NEXT:    mv a0, a1
-; RV32I-SR-NEXT:    sw a7, 44(sp)
-; RV32I-SR-NEXT:    sw a6, 40(sp)
 ; RV32I-SR-NEXT:    sw a5, 36(sp)
-; RV32I-SR-NEXT:    sw a4, 32(sp)
-; RV32I-SR-NEXT:    sw a3, 28(sp)
-; RV32I-SR-NEXT:    sw a2, 24(sp)
+; RV32I-SR-NEXT:    sw a6, 40(sp)
+; RV32I-SR-NEXT:    sw a7, 44(sp)
 ; RV32I-SR-NEXT:    sw a1, 20(sp)
+; RV32I-SR-NEXT:    sw a2, 24(sp)
+; RV32I-SR-NEXT:    sw a3, 28(sp)
+; RV32I-SR-NEXT:    sw a4, 32(sp)
 ; RV32I-SR-NEXT:    addi a1, sp, 24
 ; RV32I-SR-NEXT:    sw a1, 12(sp)
 ; RV32I-SR-NEXT:    addi sp, sp, 48
@@ -1708,23 +1708,23 @@ define i32 @varargs(ptr %fmt, ...) nounwind {
 ; RV64I-SR-LABEL: varargs:
 ; RV64I-SR:       # %bb.0:
 ; RV64I-SR-NEXT:    addi sp, sp, -80
-; RV64I-SR-NEXT:    sd a7, 72(sp)
-; RV64I-SR-NEXT:    sd a6, 64(sp)
 ; RV64I-SR-NEXT:    sd a5, 56(sp)
-; RV64I-SR-NEXT:    sd a4, 48(sp)
+; RV64I-SR-NEXT:    sd a6, 64(sp)
+; RV64I-SR-NEXT:    sd a7, 72(sp)
 ; RV64I-SR-NEXT:    addi a0, sp, 24
 ; RV64I-SR-NEXT:    sd a0, 8(sp)
 ; RV64I-SR-NEXT:    lwu a0, 8(sp)
-; RV64I-SR-NEXT:    lwu a4, 12(sp)
-; RV64I-SR-NEXT:    sd a3, 40(sp)
-; RV64I-SR-NEXT:    sd a2, 32(sp)
+; RV64I-SR-NEXT:    lwu a5, 12(sp)
 ; RV64I-SR-NEXT:    sd a1, 24(sp)
-; RV64I-SR-NEXT:    slli a4, a4, 32
-; RV64I-SR-NEXT:    or a0, a4, a0
+; RV64I-SR-NEXT:    sd a2, 32(sp)
+; RV64I-SR-NEXT:    sd a3, 40(sp)
+; RV64I-SR-NEXT:    sd a4, 48(sp)
+; RV64I-SR-NEXT:    slli a5, a5, 32
+; RV64I-SR-NEXT:    or a0, a5, a0
 ; RV64I-SR-NEXT:    addi a1, a0, 4
+; RV64I-SR-NEXT:    srli a2, a1, 32
 ; RV64I-SR-NEXT:    sw a1, 8(sp)
-; RV64I-SR-NEXT:    srli a1, a1, 32
-; RV64I-SR-NEXT:    sw a1, 12(sp)
+; RV64I-SR-NEXT:    sw a2, 12(sp)
 ; RV64I-SR-NEXT:    lw a0, 0(a0)
 ; RV64I-SR-NEXT:    addi sp, sp, 80
 ; RV64I-SR-NEXT:    ret
@@ -1733,13 +1733,13 @@ define i32 @varargs(ptr %fmt, ...) nounwind {
 ; RV32I-FP-SR:       # %bb.0:
 ; RV32I-FP-SR-NEXT:    addi sp, sp, -48
 ; RV32I-FP-SR-NEXT:    mv a0, a1
-; RV32I-FP-SR-NEXT:    sw a7, 44(sp)
-; RV32I-FP-SR-NEXT:    sw a6, 40(sp)
 ; RV32I-FP-SR-NEXT:    sw a5, 36(sp)
-; RV32I-FP-SR-NEXT:    sw a4, 32(sp)
-; RV32I-FP-SR-NEXT:    sw a3, 28(sp)
-; RV32I-FP-SR-NEXT:    sw a2, 24(sp)
+; RV32I-FP-SR-NEXT:    sw a6, 40(sp)
+; RV32I-FP-SR-NEXT:    sw a7, 44(sp)
 ; RV32I-FP-SR-NEXT:    sw a1, 20(sp)
+; RV32I-FP-SR-NEXT:    sw a2, 24(sp)
+; RV32I-FP-SR-NEXT:    sw a3, 28(sp)
+; RV32I-FP-SR-NEXT:    sw a4, 32(sp)
 ; RV32I-FP-SR-NEXT:    addi a1, sp, 24
 ; RV32I-FP-SR-NEXT:    sw a1, 12(sp)
 ; RV32I-FP-SR-NEXT:    addi sp, sp, 48
@@ -1748,23 +1748,23 @@ define i32 @varargs(ptr %fmt, ...) nounwind {
 ; RV64I-FP-SR-LABEL: varargs:
 ; RV64I-FP-SR:       # %bb.0:
 ; RV64I-FP-SR-NEXT:    addi sp, sp, -80
-; RV64I-FP-SR-NEXT:    sd a7, 72(sp)
-; RV64I-FP-SR-NEXT:    sd a6, 64(sp)
 ; RV64I-FP-SR-NEXT:    sd a5, 56(sp)
-; RV64I-FP-SR-NEXT:    sd a4, 48(sp)
+; RV64I-FP-SR-NEXT:    sd a6, 64(sp)
+; RV64I-FP-SR-NEXT:    sd a7, 72(sp)
 ; RV64I-FP-SR-NEXT:    addi a0, sp, 24
 ; RV64I-FP-SR-NEXT:    sd a0, 8(sp)
 ; RV64I-FP-SR-NEXT:    lwu a0, 8(sp)
-; RV64I-FP-SR-NEXT:    lwu a4, 12(sp)
-; RV64I-FP-SR-NEXT:    sd a3, 40(sp)
-; RV64I-FP-SR-NEXT:    sd a2, 32(sp)
+; RV64I-FP-SR-NEXT:    lwu a5, 12(sp)
 ; RV64I-FP-SR-NEXT:    sd a1, 24(sp)
-; RV64I-FP-SR-NEXT:    slli a4, a4, 32
-; RV64I-FP-SR-NEXT:    or a0, a4, a0
+; RV64I-FP-SR-NEXT:    sd a2, 32(sp)
+; RV64I-FP-SR-NEXT:    sd a3, 40(sp)
+; RV64I-FP-SR-NEXT:    sd a4, 48(sp)
+; RV64I-FP-SR-NEXT:    slli a5, a5, 32
+; RV64I-FP-SR-NEXT:    or a0, a5, a0
 ; RV64I-FP-SR-NEXT:    addi a1, a0, 4
+; RV64I-FP-SR-NEXT:    srli a2, a1, 32
 ; RV64I-FP-SR-NEXT:    sw a1, 8(sp)
-; RV64I-FP-SR-NEXT:    srli a1, a1, 32
-; RV64I-FP-SR-NEXT:    sw a1, 12(sp)
+; RV64I-FP-SR-NEXT:    sw a2, 12(sp)
 ; RV64I-FP-SR-NEXT:    lw a0, 0(a0)
 ; RV64I-FP-SR-NEXT:    addi sp, sp, 80
 ; RV64I-FP-SR-NEXT:    ret

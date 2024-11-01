@@ -181,18 +181,18 @@ define <6 x double> @load_v6f64(ptr %p) {
 ; RV32-NEXT:    addi s0, sp, 128
 ; RV32-NEXT:    .cfi_def_cfa s0, 0
 ; RV32-NEXT:    andi sp, sp, -64
-; RV32-NEXT:    fld fa5, 24(a0)
-; RV32-NEXT:    fld fa4, 32(a0)
-; RV32-NEXT:    fld fa3, 40(a0)
-; RV32-NEXT:    fld fa2, 0(a0)
-; RV32-NEXT:    fld fa1, 8(a0)
-; RV32-NEXT:    fld fa0, 16(a0)
-; RV32-NEXT:    fsd fa3, 40(sp)
-; RV32-NEXT:    fsd fa4, 32(sp)
-; RV32-NEXT:    fsd fa5, 24(sp)
-; RV32-NEXT:    fsd fa0, 16(sp)
-; RV32-NEXT:    fsd fa1, 8(sp)
-; RV32-NEXT:    fsd fa2, 0(sp)
+; RV32-NEXT:    fld fa5, 32(a0)
+; RV32-NEXT:    fld fa4, 40(a0)
+; RV32-NEXT:    fld fa3, 0(a0)
+; RV32-NEXT:    fld fa2, 8(a0)
+; RV32-NEXT:    fld fa1, 16(a0)
+; RV32-NEXT:    fld fa0, 24(a0)
+; RV32-NEXT:    fsd fa5, 32(sp)
+; RV32-NEXT:    fsd fa4, 40(sp)
+; RV32-NEXT:    fsd fa3, 0(sp)
+; RV32-NEXT:    fsd fa2, 8(sp)
+; RV32-NEXT:    fsd fa1, 16(sp)
+; RV32-NEXT:    fsd fa0, 24(sp)
 ; RV32-NEXT:    mv a0, sp
 ; RV32-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; RV32-NEXT:    vle64.v v8, (a0)
@@ -213,18 +213,18 @@ define <6 x double> @load_v6f64(ptr %p) {
 ; RV64-NEXT:    addi s0, sp, 128
 ; RV64-NEXT:    .cfi_def_cfa s0, 0
 ; RV64-NEXT:    andi sp, sp, -64
-; RV64-NEXT:    fld fa5, 24(a0)
-; RV64-NEXT:    fld fa4, 32(a0)
-; RV64-NEXT:    fld fa3, 40(a0)
-; RV64-NEXT:    fld fa2, 0(a0)
-; RV64-NEXT:    fld fa1, 8(a0)
-; RV64-NEXT:    fld fa0, 16(a0)
-; RV64-NEXT:    fsd fa3, 40(sp)
-; RV64-NEXT:    fsd fa4, 32(sp)
-; RV64-NEXT:    fsd fa5, 24(sp)
-; RV64-NEXT:    fsd fa0, 16(sp)
-; RV64-NEXT:    fsd fa1, 8(sp)
-; RV64-NEXT:    fsd fa2, 0(sp)
+; RV64-NEXT:    fld fa5, 32(a0)
+; RV64-NEXT:    fld fa4, 40(a0)
+; RV64-NEXT:    fld fa3, 0(a0)
+; RV64-NEXT:    fld fa2, 8(a0)
+; RV64-NEXT:    fld fa1, 16(a0)
+; RV64-NEXT:    fld fa0, 24(a0)
+; RV64-NEXT:    fsd fa5, 32(sp)
+; RV64-NEXT:    fsd fa4, 40(sp)
+; RV64-NEXT:    fsd fa3, 0(sp)
+; RV64-NEXT:    fsd fa2, 8(sp)
+; RV64-NEXT:    fsd fa1, 16(sp)
+; RV64-NEXT:    fsd fa0, 24(sp)
 ; RV64-NEXT:    mv a0, sp
 ; RV64-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; RV64-NEXT:    vle64.v v8, (a0)

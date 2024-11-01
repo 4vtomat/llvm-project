@@ -30,12 +30,12 @@ define i64 @imm64_shifted() nounwind {
 define i128 @imm128_shifted() nounwind {
 ; RV32I-LABEL: imm128_shifted:
 ; RV32I:       # %bb.0:
-; RV32I-NEXT:    sw zero, 12(a0)
 ; RV32I-NEXT:    lui a1, 74565
 ; RV32I-NEXT:    addi a1, a1, 1656
-; RV32I-NEXT:    sw a1, 8(a0)
-; RV32I-NEXT:    sw zero, 4(a0)
 ; RV32I-NEXT:    sw zero, 0(a0)
+; RV32I-NEXT:    sw zero, 4(a0)
+; RV32I-NEXT:    sw a1, 8(a0)
+; RV32I-NEXT:    sw zero, 12(a0)
 ; RV32I-NEXT:    ret
 ;
 ; RV64I-LABEL: imm128_shifted:

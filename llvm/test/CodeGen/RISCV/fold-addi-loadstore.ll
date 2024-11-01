@@ -284,8 +284,8 @@ define dso_local void @store_g_4() nounwind {
 ; RV32I:       # %bb.0: # %entry
 ; RV32I-NEXT:    lui a0, %hi(g_4)
 ; RV32I-NEXT:    addi a0, a0, %lo(g_4)
-; RV32I-NEXT:    sw zero, 4(a0)
 ; RV32I-NEXT:    sw zero, 0(a0)
+; RV32I-NEXT:    sw zero, 4(a0)
 ; RV32I-NEXT:    ret
 ;
 ; RV32I-MEDIUM-LABEL: store_g_4:
