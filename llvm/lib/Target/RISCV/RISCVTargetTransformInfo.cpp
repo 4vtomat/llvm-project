@@ -1374,7 +1374,6 @@ InstructionCost RISCVTTIImpl::getInterleavedMemoryOpCost(
     unsigned Opcode, Type *VecTy, unsigned Factor, ArrayRef<unsigned> Indices,
     Align Alignment, unsigned AddressSpace, TTI::TargetCostKind CostKind,
     bool UseMaskForCond, bool UseMaskForGaps) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // FIXME: Sync with upstream?
   if (isa<ScalableVectorType>(VecTy) && !UseMaskForGaps &&
@@ -1396,10 +1395,6 @@ InstructionCost RISCVTTIImpl::getInterleavedMemoryOpCost(
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
-  if (isa<ScalableVectorType>(VecTy) && Factor != 2)
-    return InstructionCost::getInvalid();
-=======
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 
   // The interleaved memory access pass will lower interleaved memory ops (i.e
   // a load and store followed by a specific shuffle) to vlseg/vsseg
@@ -1802,7 +1797,6 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
   VP_INTRINSIC(vp_inttoptr, 1)                                                 \
   VP_INTRINSIC(vp_ptrtoint, 1)                                                 \
   VP_INTRINSIC(vp_scatter, 1)                                                  \
-  VP_INTRINSIC(vp_merge, 1)                                                    \
   VP_INTRINSIC(vp_fabs, 1)                                                     \
   VP_INTRINSIC(vp_sqrt, 1)                                                     \
   VP_INTRINSIC(vp_copysign, 1)                                                 \
@@ -3969,6 +3963,12 @@ bool RISCVTTIImpl::canSplatOperand(Instruction *I, int Operand) const {
   case Intrinsic::fma:
   case Intrinsic::vp_fma:
     return Operand == 0 || Operand == 1;
+#if SIFIVE_CUSTOMIZATION
+  case Intrinsic::vp_gather:
+    return Operand == 0;
+  case Intrinsic::vp_scatter:
+    return Operand == 1;
+#endif // SIFIVE_CUSTOMIZATION
   case Intrinsic::vp_shl:
   case Intrinsic::vp_lshr:
   case Intrinsic::vp_ashr:
