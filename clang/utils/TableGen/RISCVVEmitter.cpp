@@ -171,33 +171,18 @@ static VectorTypeModifier getTupleVTM(unsigned NF) {
       static_cast<uint8_t>(VectorTypeModifier::Tuple2) + (NF - 2));
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-static unsigned getIndexedLoadStorePtrIdx(const RVVIntrinsic *RVVI) {
-  // We need a special rule for segment load/store since the data width is not
-  // encoded in the instrinsic name itself.
-=======
 static unsigned getIndexedLoadStorePtrIdx(const RVVIntrinsic *RVVI) {
   // We need a special rule for segment load/store since the data width is not
   // encoded in the intrinsic name itself.
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
   const StringRef IRName = RVVI->getIRName();
   constexpr unsigned RVV_VTA = 0x1;
   constexpr unsigned RVV_VMA = 0x2;
 
   if (IRName.starts_with("vloxseg") || IRName.starts_with("vluxseg")) {
     bool NoPassthru =
-<<<<<<< HEAD
-        (RVVI->isMasked() &&
-	 ((RVVI->getPolicyAttrsBits() & RVV_VTA) == RVV_VTA) &&
-         ((RVVI->getPolicyAttrsBits() & RVV_VMA) == RVV_VMA)) ||
-        (!RVVI->isMasked() &&
-	 ((RVVI->getPolicyAttrsBits() & RVV_VTA) == RVV_VTA));
-=======
         (RVVI->isMasked() && (RVVI->getPolicyAttrsBits() & RVV_VTA) &&
          (RVVI->getPolicyAttrsBits() & RVV_VMA)) ||
         (!RVVI->isMasked() && (RVVI->getPolicyAttrsBits() & RVV_VTA));
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
     return RVVI->isMasked() ? NoPassthru ? 1 : 2 : NoPassthru ? 0 : 1;
   }
   if (IRName.starts_with("vsoxseg") || IRName.starts_with("vsuxseg"))
@@ -205,30 +190,16 @@ static unsigned getIndexedLoadStorePtrIdx(const RVVIntrinsic *RVVI) {
 
   return (unsigned)-1;
 }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 
 // This function is used to get the log2SEW of each segment load/store, this
 // prevent to add a member to RVVIntrinsic.
 static unsigned getSegInstLog2SEW(StringRef InstName) {
   // clang-format off
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // We need a special rule for indexed segment load/store since the data width
-  // is not encoded in the instrinsic name itself.
-  if (InstName.starts_with("vloxseg") || InstName.starts_with("vluxseg") ||
-      InstName.starts_with("vsoxseg") || InstName.starts_with("vsuxseg"))
-    return (unsigned)-1;
-#endif // SIFIVE_CUSTOMIZATION
-=======
   // We need a special rule for indexed segment load/store since the data width
   // is not encoded in the intrinsic name itself.
   if (InstName.starts_with("vloxseg") || InstName.starts_with("vluxseg") ||
       InstName.starts_with("vsoxseg") || InstName.starts_with("vsuxseg"))
     return (unsigned)-1;
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 
 #define KEY_VAL(KEY, VAL) {#KEY, VAL}
 #define KEY_VAL_ALL_W_POLICY(KEY, VAL) \
@@ -238,10 +209,6 @@ static unsigned getSegInstLog2SEW(StringRef InstName) {
   KEY_VAL(KEY ## _tumu, VAL),          \
   KEY_VAL(KEY ## _mu, VAL)
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 #define KEY_VAL_ALL_NF_BASE(MACRO_NAME, NAME, SEW, LOG2SEW, FF) \
   MACRO_NAME(NAME ## 2e ## SEW ## FF, LOG2SEW), \
   MACRO_NAME(NAME ## 3e ## SEW ## FF, LOG2SEW), \
@@ -250,21 +217,12 @@ static unsigned getSegInstLog2SEW(StringRef InstName) {
   MACRO_NAME(NAME ## 6e ## SEW ## FF, LOG2SEW), \
   MACRO_NAME(NAME ## 7e ## SEW ## FF, LOG2SEW), \
   MACRO_NAME(NAME ## 8e ## SEW ## FF, LOG2SEW)
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 
 #define KEY_VAL_ALL_NF(NAME, SEW, LOG2SEW) \
   KEY_VAL_ALL_NF_BASE(KEY_VAL_ALL_W_POLICY, NAME, SEW, LOG2SEW,)
 
-#if SIFIVE_CUSTOMIZATION
 #define KEY_VAL_FF_ALL_NF(NAME, SEW, LOG2SEW) \
   KEY_VAL_ALL_NF_BASE(KEY_VAL_ALL_W_POLICY, NAME, SEW, LOG2SEW, ff)
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 
 #define KEY_VAL_ALL_NF_SEW_BASE(MACRO_NAME, NAME) \
   MACRO_NAME(NAME, 8, 3),  \
@@ -301,7 +259,6 @@ void emitCodeGenSwitchBody(const RVVIntrinsic *RVVI, raw_ostream &OS) {
 
   if (RVVI->hasManualCodegen()) {
     OS << "IsMasked = " << (RVVI->isMasked() ? "true" : "false") << ";\n";
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     OS << "  IsNontemporal = " << RVVI->getPolicyAttrs().isNTLPolicy() << ";\n";
     if (RVVI->getNF() >= 2)
@@ -314,20 +271,11 @@ void emitCodeGenSwitchBody(const RVVIntrinsic *RVVI, raw_ostream &OS) {
        << (RVVI->getOverloadedName().starts_with("vsoxseg") ||
            RVVI->getOverloadedName().starts_with("vsuxseg"))
        << "     && Ops.size() != (NF + IsMasked + IsNontemporal + 3)))) {\n";
-=======
-
-    // Skip the non-indexed load/store and compatible header load/store.
-    OS << "if (SegInstSEW == (unsigned)-1) {\n";
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
     OS << "  auto PointeeType = E->getArg(" << getIndexedLoadStorePtrIdx(RVVI)
        << "      )->getType()->getPointeeType();\n";
     OS << "  SegInstSEW = "
           "      llvm::Log2_64(getContext().getTypeSize(PointeeType));\n}\n";
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-=======
-
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
     OS << RVVI->getManualCodegen();
     OS << "break;\n";
     return;
