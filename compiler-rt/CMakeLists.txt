@@ -12,16 +12,14 @@ endif()
 include(${LLVM_COMMON_CMAKE_UTILS}/Modules/CMakePolicy.cmake
   NO_POLICY_SCOPE)
 
-<<<<<<< HEAD
 # SIFIVE
 add_definitions("-DSIFIVE_CUSTOMIZATION=1")
 # end SIFIVE
-=======
+
 # TODO(CMake 3.22): remove
 if(POLICY CMP0128)
   cmake_policy(SET CMP0128 NEW)
 endif()
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 
 # Check if compiler-rt is built as a standalone project.
 if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR OR COMPILER_RT_STANDALONE_BUILD)
