@@ -5051,6 +5051,9 @@ BoUpSLP::canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
             VecLdCost +=
                 TTI.getInstructionCost(cast<Instruction>(VL[Idx]), CostKind);
       }
+#if SIFIVE_CUSTOMIZATION
+      unsigned ScalarTyNumElements = getNumElements(ScalarTy);
+#endif // SIFIVE_CUSTOMIZATION
       auto *SubVecTy = getWidenedType(ScalarTy, VF);
       for (auto [I, LS] : enumerate(States)) {
         auto *LI0 = cast<LoadInst>(VL[I * VF]);
@@ -5074,11 +5077,20 @@ BoUpSLP::canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
                 SubVecTy, APInt::getAllOnes(VF),
                 /*Insert=*/true, /*Extract=*/false, CostKind);
           else
+#if SIFIVE_CUSTOMIZATION
+            VectorGEPCost +=
+                TTI.getScalarizationOverhead(
+                    SubVecTy, APInt::getOneBitSet(ScalarTyNumElements * VF, 0),
+                    /*Insert=*/true, /*Extract=*/false, CostKind) +
+                ::getShuffleCost(TTI, TTI::SK_Broadcast, SubVecTy, {},
+                                 CostKind);
+#else
             VectorGEPCost += TTI.getScalarizationOverhead(
                                  SubVecTy, APInt::getOneBitSet(VF, 0),
                                  /*Insert=*/true, /*Extract=*/false, CostKind) +
                              ::getShuffleCost(TTI, TTI::SK_Broadcast, SubVecTy,
                                               {}, CostKind);
+#endif // SIFIVE_CUSTOMIZATION
         }
         switch (LS) {
         case LoadsState::Vectorize:
