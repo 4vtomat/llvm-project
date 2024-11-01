@@ -1068,7 +1068,6 @@ private:
   SDValue expandUnalignedRVVLoad(SDValue Op, SelectionDAG &DAG) const;
   SDValue expandUnalignedRVVStore(SDValue Op, SelectionDAG &DAG) const;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   SDValue expandUnalignedVPLoad(SDValue Op, SelectionDAG &DAG) const;
   SDValue expandUnalignedVPStore(SDValue Op, SelectionDAG &DAG) const;
@@ -1084,10 +1083,8 @@ private:
                            SelectionDAG &DAG, int Enabled,
                            int &ExtraSteps) const override;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   SDValue lowerINIT_TRAMPOLINE(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerADJUST_TRAMPOLINE(SDValue Op, SelectionDAG &DAG) const;
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 
   bool isEligibleForTailCallOptimization(
       CCState &CCInfo, CallLoweringInfo &CLI, MachineFunction &MF,
