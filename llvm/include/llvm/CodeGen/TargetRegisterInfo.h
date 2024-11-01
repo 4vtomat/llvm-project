@@ -1218,7 +1218,6 @@ public:
     return false;
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   virtual bool enableTargetInterference() const { return false; }
 
@@ -1233,7 +1232,6 @@ public:
     return false;
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   virtual std::optional<uint8_t> getVRegFlagValue(StringRef Name) const {
     return {};
   }
@@ -1242,7 +1240,6 @@ public:
   getVRegFlagsOfReg(Register Reg, const MachineFunction &MF) const {
     return {};
   }
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 };
 
 //===----------------------------------------------------------------------===//
