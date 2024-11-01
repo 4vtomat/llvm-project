@@ -1704,14 +1704,14 @@ static void transformRecipestoEVLRecipes(VPlan &Plan, VPValue &EVL) {
 /// %NextEVLIV = add IVSize (cast i32 %VPEVVL to IVSize), %EVLPhi
 /// ...
 ///
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-bool VPlanTransforms::tryAddExplicitVectorLength(VPlan &Plan,
-                                                 bool EnableEVLFuzzing) {
+bool VPlanTransforms::tryAddExplicitVectorLength(
+    VPlan &Plan, const std::optional<unsigned> &MaxSafeElements,
+    bool EnableEVLFuzzing) {
 #else
-bool VPlanTransforms::tryAddExplicitVectorLength(VPlan &Plan) {
+bool VPlanTransforms::tryAddExplicitVectorLength(
+    VPlan &Plan, const std::optional<unsigned> &MaxSafeElements) {
 #endif // SIFIVE_CUSTOMIZATION
-=======
 /// If MaxSafeElements is provided, the function adds the following recipes:
 /// vector.ph:
 /// ...
@@ -1728,9 +1728,6 @@ bool VPlanTransforms::tryAddExplicitVectorLength(VPlan &Plan) {
 /// %NextEVLIV = add IVSize (cast i32 %VPEVL to IVSize), %EVLPhi
 /// ...
 ///
-bool VPlanTransforms::tryAddExplicitVectorLength(
-    VPlan &Plan, const std::optional<unsigned> &MaxSafeElements) {
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
   VPBasicBlock *Header = Plan.getVectorLoopRegion()->getEntryBasicBlock();
   // The transform updates all users of inductions to work based on EVL, instead
   // of the VF directly. At the moment, widened inductions cannot be updated, so
@@ -1758,19 +1755,24 @@ bool VPlanTransforms::tryAddExplicitVectorLength(
   // Create the ExplicitVectorLengthPhi recipe in the main loop.
   auto *EVLPhi = new VPEVLBasedIVPHIRecipe(StartV, DebugLoc());
   EVLPhi->insertAfter(CanonicalIVPHI);
-<<<<<<< HEAD
-  // TODO: Add support for MaxSafeDist for correct loop emission.
+  VPBuilder Builder(Header, Header->getFirstNonPhi());
 #if SIFIVE_CUSTOMIZATION
   // Compute vector TC - IV as the AVL (application vector length).
-  auto *AVL =
-      new VPInstruction(Instruction::Sub, {&Plan.getVectorTripCount(), EVLPhi},
-                        DebugLoc(), "avl");
+  VPValue *AVL = Builder.createNaryOp(
+      Instruction::Sub, {&Plan.getVectorTripCount(), EVLPhi}, DebugLoc(), "avl");
 #else
   // Compute original TC - IV as the AVL (application vector length).
-  auto *AVL = new VPInstruction(Instruction::Sub, {Plan.getTripCount(), EVLPhi},
-                                DebugLoc(), "avl");
+  VPValue *AVL = Builder.createNaryOp(
+      Instruction::Sub, {Plan.getTripCount(), EVLPhi}, DebugLoc(), "avl");
 #endif // SIFIVE_CUSTOMIZATION
-  AVL->insertBefore(*Header, Header->getFirstNonPhi());
+
+  if (MaxSafeElements) {
+    // Support for MaxSafeDist for correct loop emission.
+    VPValue *AVLSafe = Plan.getOrAddLiveIn(
+        ConstantInt::get(CanonicalIVPHI->getScalarType(), *MaxSafeElements));
+    VPValue *Cmp = Builder.createICmp(ICmpInst::ICMP_ULT, AVL, AVLSafe);
+    AVL = Builder.createSelect(Cmp, AVL, AVLSafe, DebugLoc(), "safe_avl");
+  }
 
 #if SIFIVE_CUSTOMIZATION
   VPEVLBasedIVPHIRecipe *PrevEVLPhi = nullptr;
@@ -1779,24 +1781,8 @@ bool VPlanTransforms::tryAddExplicitVectorLength(
     PrevEVLPhi->insertAfter(EVLPhi);
   }
 #endif // SIFIVE_CUSTOMIZATION
-  auto *VPEVL =
-      new VPInstruction(VPInstruction::ExplicitVectorLength, AVL, DebugLoc());
-  VPEVL->insertAfter(AVL);
-=======
-  VPBuilder Builder(Header, Header->getFirstNonPhi());
-  // Compute original TC - IV as the AVL (application vector length).
-  VPValue *AVL = Builder.createNaryOp(
-      Instruction::Sub, {Plan.getTripCount(), EVLPhi}, DebugLoc(), "avl");
-  if (MaxSafeElements) {
-    // Support for MaxSafeDist for correct loop emission.
-    VPValue *AVLSafe = Plan.getOrAddLiveIn(
-        ConstantInt::get(CanonicalIVPHI->getScalarType(), *MaxSafeElements));
-    VPValue *Cmp = Builder.createICmp(ICmpInst::ICMP_ULT, AVL, AVLSafe);
-    AVL = Builder.createSelect(Cmp, AVL, AVLSafe, DebugLoc(), "safe_avl");
-  }
   auto *VPEVL = Builder.createNaryOp(VPInstruction::ExplicitVectorLength, AVL,
                                      DebugLoc());
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 
   auto *CanonicalIVIncrement =
       cast<VPInstruction>(CanonicalIVPHI->getBackedgeValue());
