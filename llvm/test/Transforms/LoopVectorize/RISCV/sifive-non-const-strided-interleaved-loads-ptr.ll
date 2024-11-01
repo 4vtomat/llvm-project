@@ -45,7 +45,9 @@ define void @test(i32 %0, i64 %conv, ptr %call5.i.i.i4.i.i101) {
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP21:%.*]] = sub i64 [[TMP1]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP22:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP21]], i32 1, i1 true)
+; CHECK-NEXT:    [[TMP27:%.*]] = icmp ult i64 [[TMP21]], 1
+; CHECK-NEXT:    [[SAFE_AVL:%.*]] = select i1 [[TMP27]], i64 [[TMP21]], i64 1
+; CHECK-NEXT:    [[TMP22:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[SAFE_AVL]], i32 1, i1 true)
 ; CHECK-NEXT:    [[TMP18:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; CHECK-NEXT:    [[TMP19:%.*]] = trunc i64 [[EVL_BASED_IV]] to i32
 ; CHECK-NEXT:    [[TMP20:%.*]] = add i32 [[TMP19]], 0
@@ -53,8 +55,7 @@ define void @test(i32 %0, i64 %conv, ptr %call5.i.i.i4.i.i101) {
 ; CHECK-NEXT:    [[TMP24:%.*]] = zext i32 [[TMP23]] to i64
 ; CHECK-NEXT:    [[TMP25:%.*]] = getelementptr [[CLASS_SPARSEMATRIXEZ_16:%.*]], ptr null, i64 [[TMP24]]
 ; CHECK-NEXT:    [[TMP26:%.*]] = getelementptr i8, ptr [[TMP25]], i64 32
-; CHECK-NEXT:    [[TMP27:%.*]] = getelementptr ptr, ptr [[TMP26]], i32 0
-; CHECK-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 1 x i128> @llvm.experimental.vp.strided.load.nxv1i128.p0.i64(ptr align 8 [[TMP27]], i64 [[TMP17]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP22]])
+; CHECK-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 1 x i128> @llvm.experimental.vp.strided.load.nxv1i128.p0.i64(ptr align 8 [[TMP26]], i64 [[TMP17]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP22]])
 ; CHECK-NEXT:    [[WIDE_STRIDED_LOAD_INTCAST:%.*]] = bitcast <vscale x 1 x i128> [[WIDE_STRIDED_LOAD]] to <vscale x 2 x i64>
 ; CHECK-NEXT:    [[WIDE_STRIDED_LOAD_INTCAST_CAST:%.*]] = inttoptr <vscale x 2 x i64> [[WIDE_STRIDED_LOAD_INTCAST]] to <vscale x 2 x ptr>
 ; CHECK-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 1 x ptr>, <vscale x 1 x ptr> } @llvm.vector.deinterleave2.nxv2p0(<vscale x 2 x ptr> [[WIDE_STRIDED_LOAD_INTCAST_CAST]])
