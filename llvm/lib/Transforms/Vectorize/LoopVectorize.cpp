@@ -8070,17 +8070,13 @@ LoopVectorizationCostModel::getInstructionCost(Instruction *I,
                  Instruction::Select, ToVectorTy(ResultTy, VF),
                  ToVectorTy(Type::getInt1Ty(Phi->getContext()), VF),
                  CmpInst::BAD_ICMP_PREDICATE, CostKind);
-<<<<<<< HEAD
+    }
 #if SIFIVE_CUSTOMIZATION
     if (VF.isVector() && Legal->isCSAPhi(Phi)) {
       auto *VTy = cast<VectorType>(VectorTy);
       return getCSACost(Phi, VTy, CostKind, VF, Legal, TTI);
     }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    }
-
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
     return TTI.getCFInstrCost(Instruction::PHI, CostKind);
   }
   case Instruction::UDiv:
@@ -10613,14 +10609,9 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
 #endif // SIFIVE_CUSTOMIZATION
       VPlanTransforms::optimize(*Plan);
       // TODO: try to put it close to addActiveLaneMask().
-<<<<<<< HEAD
-      if (CM.foldTailWithEVL() &&
-          !VPlanTransforms::tryAddExplicitVectorLength(*Plan))
-=======
       // Discard the plan if it is not EVL-compatible
       if (CM.foldTailWithEVL() && !VPlanTransforms::tryAddExplicitVectorLength(
                                       *Plan, CM.getMaxSafeElements()))
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
         break;
 #if SIFIVE_CUSTOMIZATION
       }
@@ -10906,14 +10897,8 @@ addUsersInExitBlock(VPlan &Plan,
 
   auto *MiddleVPBB =
       cast<VPBasicBlock>(Plan.getVectorLoopRegion()->getSingleSuccessor());
-<<<<<<< HEAD
-  BasicBlock *ExitBB =
-      cast<VPIRBasicBlock>(MiddleVPBB->getSuccessors()[0])->getIRBasicBlock();
-=======
   VPBuilder B(MiddleVPBB, MiddleVPBB->getFirstNonPhi());
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 
-  VPBuilder B(MiddleVPBB, MiddleVPBB->getFirstNonPhi());
   // Introduce extract for exiting values and update the VPIRInstructions
   // modeling the corresponding LCSSA phis.
   for (VPIRInstruction *ExitIRI : ExitUsersToFix) {
