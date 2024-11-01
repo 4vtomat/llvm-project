@@ -1433,7 +1433,6 @@ bool TargetTransformInfo::hasActiveVectorLength(unsigned Opcode, Type *DataType,
   return TTIImpl->hasActiveVectorLength(Opcode, DataType, Alignment);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 bool TargetTransformInfo::useVLAVectorizer() const {
   return TTIImpl->useVLAVectorizer();
@@ -1474,7 +1473,6 @@ bool TargetTransformInfo::enableMonotonicsVectorization() const {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
 bool TargetTransformInfo::isProfitableToSinkOperands(
     Instruction *I, SmallVectorImpl<Use *> &OpsToSink) const {
   return TTIImpl->isProfitableToSinkOperands(I, OpsToSink);
@@ -1484,7 +1482,6 @@ bool TargetTransformInfo::isVectorShiftByScalarCheap(Type *Ty) const {
   return TTIImpl->isVectorShiftByScalarCheap(Ty);
 }
 
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 TargetTransformInfo::Concept::~Concept() = default;
 
 TargetIRAnalysis::TargetIRAnalysis() : TTICallback(&getDefaultTTI) {}
