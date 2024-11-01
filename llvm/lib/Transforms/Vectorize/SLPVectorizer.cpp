@@ -13509,6 +13509,16 @@ public:
            unsigned VF = 0,
            function_ref<void(Value *&, SmallVectorImpl<int> &)> Action = {}) {
     IsFinalized = true;
+#if SIFIVE_CUSTOMIZATION
+    unsigned ScalarTyNumElements = getNumElements(ScalarTy);
+    SmallVector<int> NewExtMask(ExtMask);
+    if (ScalarTyNumElements != 1) {
+      assert(SLPReVec && "FixedVectorType is not expected.");
+      transformScalarShuffleIndiciesToVector(ScalarTyNumElements, CommonMask);
+      transformScalarShuffleIndiciesToVector(ScalarTyNumElements, NewExtMask);
+      ExtMask = NewExtMask;
+    }
+#else
     SmallVector<int> NewExtMask(ExtMask);
     if (auto *VecTy = dyn_cast<FixedVectorType>(ScalarTy)) {
       assert(SLPReVec && "FixedVectorType is not expected.");
@@ -13518,6 +13528,7 @@ public:
                                              NewExtMask);
       ExtMask = NewExtMask;
     }
+#endif // SIFIVE_CUSTOMIZATION
     if (Action) {
       Value *Vec = InVectors.front();
       if (InVectors.size() == 2) {
@@ -13558,6 +13569,17 @@ public:
                                    return !isKnownNonNegative(
                                        V, SimplifyQuery(*R.DL));
                                  }));
+#if SIFIVE_CUSTOMIZATION
+        unsigned InsertionIndex = Idx * ScalarTyNumElements;
+        Vec = Builder.CreateInsertVector(Vec->getType(), Vec, V,
+                                         Builder.getInt64(InsertionIndex));
+        if (!CommonMask.empty()) {
+          std::iota(std::next(CommonMask.begin(), InsertionIndex),
+                    std::next(CommonMask.begin(), (Idx + E->getVectorFactor()) *
+                                                      ScalarTyNumElements),
+                    InsertionIndex);
+        }
+#else
         Vec = Builder.CreateInsertVector(Vec->getType(), Vec, V,
                                          Builder.getInt64(Idx));
         if (!CommonMask.empty()) {
@@ -13565,6 +13587,7 @@ public:
                     std::next(CommonMask.begin(), Idx + E->getVectorFactor()),
                     Idx);
         }
+#endif // SIFIVE_CUSTOMIZATION
       }
       InVectors.front() = Vec;
     }
