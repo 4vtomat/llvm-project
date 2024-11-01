@@ -41,8 +41,8 @@ static void printExtensionTable(raw_ostream &OS,
                  << R->getValueAsInt("MinorVersion") << "}},\n";
 
 #if SIFIVE_CUSTOMIZATION
-    ListInit *AdditionalVersions = R->getValueAsListInit("AdditionalVersions");
-    for (Init *VersionI : AdditionalVersions->getValues()) {
+    const ListInit *AdditionalVersions = R->getValueAsListInit("AdditionalVersions");
+    for (const Init *VersionI : AdditionalVersions->getValues()) {
       auto *VersionLI = cast<ListInit>(VersionI);
       assert(VersionLI->size() == 2);
       OS << "    {\"" << getExtensionName(R) << "\", {"
