@@ -87,146 +87,6 @@ define void @matrix_extract_insert_loop(i32 %i, ptr nonnull align 8 dereferencea
 ; CHECK-NEXT:    [[CONV6:%.*]] = zext i32 [[I]] to i64
 ; CHECK-NEXT:    br i1 [[CMP210_NOT]], label [[FOR_COND_CLEANUP:%.*]], label [[FOR_COND1_PREHEADER_US_PREHEADER:%.*]]
 ; CHECK:       for.cond1.preheader.us.preheader:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i32 [[I]], 4
-; CHECK-NEXT:    [[N_VEC:%.*]] = and i64 [[CONV6]], 252
-; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N_VEC]], [[CONV6]]
-; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[FOR_COND1_PREHEADER_US_US:%.*]], label [[FOR_COND1_PREHEADER_US_PREHEADER_SPLIT:%.*]]
-; CHECK:       for.cond1.preheader.us.us:
-; CHECK-NEXT:    [[TMP0:%.*]] = getelementptr inbounds <225 x double>, ptr [[B:%.*]], i64 0, i64 [[CONV6]]
-; CHECK-NEXT:    [[MATRIXEXT_US_US:%.*]] = load double, ptr [[A:%.*]], align 8
-; CHECK-NEXT:    [[MATRIXEXT8_US_US:%.*]] = load double, ptr [[TMP0]], align 8
-; CHECK-NEXT:    [[MUL_US_US:%.*]] = fmul double [[MATRIXEXT_US_US]], [[MATRIXEXT8_US_US]]
-; CHECK-NEXT:    [[MATRIXEXT11_US_US:%.*]] = load double, ptr [[B]], align 8
-; CHECK-NEXT:    [[SUB_US_US:%.*]] = fsub double [[MATRIXEXT11_US_US]], [[MUL_US_US]]
-; CHECK-NEXT:    store double [[SUB_US_US]], ptr [[B]], align 8
-; CHECK-NEXT:    [[EXITCOND_NOT_US:%.*]] = icmp eq i32 [[I]], 1
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT_US]], label [[FOR_COND1_FOR_COND_CLEANUP3_CRIT_EDGE_US_LOOPEXIT_US:%.*]], label [[FOR_BODY4_US_US_1:%.*]], !llvm.loop [[LOOP0:![0-9]+]]
-; CHECK:       for.body4.us.us.1:
-; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 8
-; CHECK-NEXT:    [[MATRIXEXT_US_US_1:%.*]] = load double, ptr [[TMP1]], align 8
-; CHECK-NEXT:    [[MATRIXEXT8_US_US_1:%.*]] = load double, ptr [[TMP0]], align 8
-; CHECK-NEXT:    [[MUL_US_US_1:%.*]] = fmul double [[MATRIXEXT_US_US_1]], [[MATRIXEXT8_US_US_1]]
-; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 8
-; CHECK-NEXT:    [[MATRIXEXT11_US_US_1:%.*]] = load double, ptr [[TMP2]], align 8
-; CHECK-NEXT:    [[SUB_US_US_1:%.*]] = fsub double [[MATRIXEXT11_US_US_1]], [[MUL_US_US_1]]
-; CHECK-NEXT:    store double [[SUB_US_US_1]], ptr [[TMP2]], align 8
-; CHECK-NEXT:    [[EXITCOND_NOT_US_1:%.*]] = icmp eq i32 [[I]], 2
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT_US_1]], label [[FOR_COND1_FOR_COND_CLEANUP3_CRIT_EDGE_US_LOOPEXIT_US]], label [[FOR_BODY4_US_US_2:%.*]], !llvm.loop [[LOOP0]]
-; CHECK:       for.body4.us.us.2:
-; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 16
-; CHECK-NEXT:    [[MATRIXEXT_US_US_2:%.*]] = load double, ptr [[TMP3]], align 8
-; CHECK-NEXT:    [[MATRIXEXT8_US_US_2:%.*]] = load double, ptr [[TMP0]], align 8
-; CHECK-NEXT:    [[MUL_US_US_2:%.*]] = fmul double [[MATRIXEXT_US_US_2]], [[MATRIXEXT8_US_US_2]]
-; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 16
-; CHECK-NEXT:    [[MATRIXEXT11_US_US_2:%.*]] = load double, ptr [[TMP4]], align 8
-; CHECK-NEXT:    [[SUB_US_US_2:%.*]] = fsub double [[MATRIXEXT11_US_US_2]], [[MUL_US_US_2]]
-; CHECK-NEXT:    store double [[SUB_US_US_2]], ptr [[TMP4]], align 8
-; CHECK-NEXT:    br label [[FOR_COND1_FOR_COND_CLEANUP3_CRIT_EDGE_US_LOOPEXIT_US]]
-; CHECK:       for.cond1.for.cond.cleanup3_crit_edge.us.loopexit.us:
-; CHECK-NEXT:    [[TMP5:%.*]] = add nuw nsw i64 [[CONV6]], 15
-; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds <225 x double>, ptr [[B]], i64 0, i64 [[TMP5]]
-; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 120
-; CHECK-NEXT:    [[MATRIXEXT_US_US_153:%.*]] = load double, ptr [[TMP7]], align 8
-; CHECK-NEXT:    [[MATRIXEXT8_US_US_154:%.*]] = load double, ptr [[TMP6]], align 8
-; CHECK-NEXT:    [[MUL_US_US_155:%.*]] = fmul double [[MATRIXEXT_US_US_153]], [[MATRIXEXT8_US_US_154]]
-; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 120
-; CHECK-NEXT:    [[MATRIXEXT11_US_US_156:%.*]] = load double, ptr [[TMP8]], align 8
-; CHECK-NEXT:    [[SUB_US_US_157:%.*]] = fsub double [[MATRIXEXT11_US_US_156]], [[MUL_US_US_155]]
-; CHECK-NEXT:    store double [[SUB_US_US_157]], ptr [[TMP8]], align 8
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT_US]], label [[FOR_COND1_FOR_COND_CLEANUP3_CRIT_EDGE_US_LOOPEXIT_US_1:%.*]], label [[FOR_BODY4_US_US_1_1:%.*]], !llvm.loop [[LOOP0]]
-; CHECK:       for.body4.us.us.1.1:
-; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 128
-; CHECK-NEXT:    [[MATRIXEXT_US_US_1_1:%.*]] = load double, ptr [[TMP9]], align 8
-; CHECK-NEXT:    [[MATRIXEXT8_US_US_1_1:%.*]] = load double, ptr [[TMP6]], align 8
-; CHECK-NEXT:    [[MUL_US_US_1_1:%.*]] = fmul double [[MATRIXEXT_US_US_1_1]], [[MATRIXEXT8_US_US_1_1]]
-; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 128
-; CHECK-NEXT:    [[MATRIXEXT11_US_US_1_1:%.*]] = load double, ptr [[TMP10]], align 8
-; CHECK-NEXT:    [[SUB_US_US_1_1:%.*]] = fsub double [[MATRIXEXT11_US_US_1_1]], [[MUL_US_US_1_1]]
-; CHECK-NEXT:    store double [[SUB_US_US_1_1]], ptr [[TMP10]], align 8
-; CHECK-NEXT:    [[EXITCOND_NOT_US_1_1:%.*]] = icmp eq i32 [[I]], 2
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT_US_1_1]], label [[FOR_COND1_FOR_COND_CLEANUP3_CRIT_EDGE_US_LOOPEXIT_US_1]], label [[FOR_BODY4_US_US_2_1:%.*]], !llvm.loop [[LOOP0]]
-; CHECK:       for.body4.us.us.2.1:
-; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 136
-; CHECK-NEXT:    [[MATRIXEXT_US_US_2_1:%.*]] = load double, ptr [[TMP11]], align 8
-; CHECK-NEXT:    [[MATRIXEXT8_US_US_2_1:%.*]] = load double, ptr [[TMP6]], align 8
-; CHECK-NEXT:    [[MUL_US_US_2_1:%.*]] = fmul double [[MATRIXEXT_US_US_2_1]], [[MATRIXEXT8_US_US_2_1]]
-; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 136
-; CHECK-NEXT:    [[MATRIXEXT11_US_US_2_1:%.*]] = load double, ptr [[TMP12]], align 8
-; CHECK-NEXT:    [[SUB_US_US_2_1:%.*]] = fsub double [[MATRIXEXT11_US_US_2_1]], [[MUL_US_US_2_1]]
-; CHECK-NEXT:    store double [[SUB_US_US_2_1]], ptr [[TMP12]], align 8
-; CHECK-NEXT:    br label [[FOR_COND1_FOR_COND_CLEANUP3_CRIT_EDGE_US_LOOPEXIT_US_1]]
-; CHECK:       for.cond1.for.cond.cleanup3_crit_edge.us.loopexit.us.1:
-; CHECK-NEXT:    [[TMP13:%.*]] = add nuw nsw i64 [[CONV6]], 30
-; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr inbounds <225 x double>, ptr [[B]], i64 0, i64 [[TMP13]]
-; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 240
-; CHECK-NEXT:    [[MATRIXEXT_US_US_260:%.*]] = load double, ptr [[TMP15]], align 8
-; CHECK-NEXT:    [[MATRIXEXT8_US_US_261:%.*]] = load double, ptr [[TMP14]], align 8
-; CHECK-NEXT:    [[MUL_US_US_262:%.*]] = fmul double [[MATRIXEXT_US_US_260]], [[MATRIXEXT8_US_US_261]]
-; CHECK-NEXT:    [[TMP16:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 240
-; CHECK-NEXT:    [[MATRIXEXT11_US_US_263:%.*]] = load double, ptr [[TMP16]], align 8
-; CHECK-NEXT:    [[SUB_US_US_264:%.*]] = fsub double [[MATRIXEXT11_US_US_263]], [[MUL_US_US_262]]
-; CHECK-NEXT:    store double [[SUB_US_US_264]], ptr [[TMP16]], align 8
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT_US]], label [[FOR_COND1_FOR_COND_CLEANUP3_CRIT_EDGE_US_LOOPEXIT_US_2:%.*]], label [[FOR_BODY4_US_US_1_2:%.*]], !llvm.loop [[LOOP0]]
-; CHECK:       for.body4.us.us.1.2:
-; CHECK-NEXT:    [[TMP17:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 248
-; CHECK-NEXT:    [[MATRIXEXT_US_US_1_2:%.*]] = load double, ptr [[TMP17]], align 8
-; CHECK-NEXT:    [[MATRIXEXT8_US_US_1_2:%.*]] = load double, ptr [[TMP14]], align 8
-; CHECK-NEXT:    [[MUL_US_US_1_2:%.*]] = fmul double [[MATRIXEXT_US_US_1_2]], [[MATRIXEXT8_US_US_1_2]]
-; CHECK-NEXT:    [[TMP18:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 248
-; CHECK-NEXT:    [[MATRIXEXT11_US_US_1_2:%.*]] = load double, ptr [[TMP18]], align 8
-; CHECK-NEXT:    [[SUB_US_US_1_2:%.*]] = fsub double [[MATRIXEXT11_US_US_1_2]], [[MUL_US_US_1_2]]
-; CHECK-NEXT:    store double [[SUB_US_US_1_2]], ptr [[TMP18]], align 8
-; CHECK-NEXT:    [[EXITCOND_NOT_US_1_2:%.*]] = icmp eq i32 [[I]], 2
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT_US_1_2]], label [[FOR_COND1_FOR_COND_CLEANUP3_CRIT_EDGE_US_LOOPEXIT_US_2]], label [[FOR_BODY4_US_US_2_2:%.*]], !llvm.loop [[LOOP0]]
-; CHECK:       for.body4.us.us.2.2:
-; CHECK-NEXT:    [[TMP19:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 256
-; CHECK-NEXT:    [[MATRIXEXT_US_US_2_2:%.*]] = load double, ptr [[TMP19]], align 8
-; CHECK-NEXT:    [[MATRIXEXT8_US_US_2_2:%.*]] = load double, ptr [[TMP14]], align 8
-; CHECK-NEXT:    [[MUL_US_US_2_2:%.*]] = fmul double [[MATRIXEXT_US_US_2_2]], [[MATRIXEXT8_US_US_2_2]]
-; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 256
-; CHECK-NEXT:    [[MATRIXEXT11_US_US_2_2:%.*]] = load double, ptr [[TMP20]], align 8
-; CHECK-NEXT:    [[SUB_US_US_2_2:%.*]] = fsub double [[MATRIXEXT11_US_US_2_2]], [[MUL_US_US_2_2]]
-; CHECK-NEXT:    store double [[SUB_US_US_2_2]], ptr [[TMP20]], align 8
-; CHECK-NEXT:    br label [[FOR_COND1_FOR_COND_CLEANUP3_CRIT_EDGE_US_LOOPEXIT_US_2]]
-; CHECK:       for.cond1.for.cond.cleanup3_crit_edge.us.loopexit.us.2:
-; CHECK-NEXT:    [[TMP21:%.*]] = add nuw nsw i64 [[CONV6]], 45
-; CHECK-NEXT:    [[TMP22:%.*]] = getelementptr inbounds <225 x double>, ptr [[B]], i64 0, i64 [[TMP21]]
-; CHECK-NEXT:    [[TMP23:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 360
-; CHECK-NEXT:    [[MATRIXEXT_US_US_3:%.*]] = load double, ptr [[TMP23]], align 8
-; CHECK-NEXT:    [[MATRIXEXT8_US_US_3:%.*]] = load double, ptr [[TMP22]], align 8
-; CHECK-NEXT:    [[MUL_US_US_3:%.*]] = fmul double [[MATRIXEXT_US_US_3]], [[MATRIXEXT8_US_US_3]]
-; CHECK-NEXT:    [[TMP24:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 360
-; CHECK-NEXT:    [[MATRIXEXT11_US_US_3:%.*]] = load double, ptr [[TMP24]], align 8
-; CHECK-NEXT:    [[SUB_US_US_3:%.*]] = fsub double [[MATRIXEXT11_US_US_3]], [[MUL_US_US_3]]
-; CHECK-NEXT:    store double [[SUB_US_US_3]], ptr [[TMP24]], align 8
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT_US]], label [[FOR_COND_CLEANUP]], label [[FOR_BODY4_US_US_1_3:%.*]], !llvm.loop [[LOOP0]]
-; CHECK:       for.body4.us.us.1.3:
-; CHECK-NEXT:    [[TMP25:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 368
-; CHECK-NEXT:    [[MATRIXEXT_US_US_1_3:%.*]] = load double, ptr [[TMP25]], align 8
-; CHECK-NEXT:    [[MATRIXEXT8_US_US_1_3:%.*]] = load double, ptr [[TMP22]], align 8
-; CHECK-NEXT:    [[MUL_US_US_1_3:%.*]] = fmul double [[MATRIXEXT_US_US_1_3]], [[MATRIXEXT8_US_US_1_3]]
-; CHECK-NEXT:    [[TMP26:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 368
-; CHECK-NEXT:    [[MATRIXEXT11_US_US_1_3:%.*]] = load double, ptr [[TMP26]], align 8
-; CHECK-NEXT:    [[SUB_US_US_1_3:%.*]] = fsub double [[MATRIXEXT11_US_US_1_3]], [[MUL_US_US_1_3]]
-; CHECK-NEXT:    store double [[SUB_US_US_1_3]], ptr [[TMP26]], align 8
-; CHECK-NEXT:    [[EXITCOND_NOT_US_1_3:%.*]] = icmp eq i32 [[I]], 2
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT_US_1_3]], label [[FOR_COND_CLEANUP]], label [[FOR_BODY4_US_US_2_3:%.*]], !llvm.loop [[LOOP0]]
-; CHECK:       for.body4.us.us.2.3:
-; CHECK-NEXT:    [[TMP27:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 376
-; CHECK-NEXT:    [[MATRIXEXT_US_US_2_3:%.*]] = load double, ptr [[TMP27]], align 8
-; CHECK-NEXT:    [[MATRIXEXT8_US_US_2_3:%.*]] = load double, ptr [[TMP22]], align 8
-; CHECK-NEXT:    [[MUL_US_US_2_3:%.*]] = fmul double [[MATRIXEXT_US_US_2_3]], [[MATRIXEXT8_US_US_2_3]]
-; CHECK-NEXT:    [[TMP28:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 376
-; CHECK-NEXT:    [[MATRIXEXT11_US_US_2_3:%.*]] = load double, ptr [[TMP28]], align 8
-; CHECK-NEXT:    [[SUB_US_US_2_3:%.*]] = fsub double [[MATRIXEXT11_US_US_2_3]], [[MUL_US_US_2_3]]
-; CHECK-NEXT:    store double [[SUB_US_US_2_3]], ptr [[TMP28]], align 8
-; CHECK-NEXT:    br label [[FOR_COND_CLEANUP]]
-; CHECK:       for.cond1.preheader.us.preheader.split:
-; CHECK-NEXT:    [[TMP29:%.*]] = shl nuw nsw i64 [[CONV6]], 3
-; CHECK-NEXT:    [[TMP30:%.*]] = add nuw nsw i64 [[TMP29]], 360
-; CHECK-NEXT:    [[SCEVGEP20:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP30]]
-=======
 ; CHECK-NEXT:    [[TMP0:%.*]] = shl nuw nsw i64 [[CONV6]], 3
 ; CHECK-NEXT:    [[TMP1:%.*]] = add nuw nsw i64 [[TMP0]], 360
 ; CHECK-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[B:%.*]], i64 [[TMP1]]
@@ -237,7 +97,6 @@ define void @matrix_extract_insert_loop(i32 %i, ptr nonnull align 8 dereferencea
 ; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp samesign ult i32 [[I]], 4
 ; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[FOR_BODY4_US_PREHEADER:%.*]], label [[VECTOR_MEMCHECK:%.*]]
 ; CHECK:       vector.memcheck:
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 ; CHECK-NEXT:    [[BOUND0:%.*]] = icmp ult ptr [[B]], [[SCEVGEP20]]
 ; CHECK-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP30]]
 ; CHECK-NEXT:    [[BOUND1:%.*]] = icmp ult ptr [[A]], [[SCEVGEP]]
@@ -558,21 +417,12 @@ define void @matrix_extract_insert_loop(i32 %i, ptr nonnull align 8 dereferencea
 ; CHECK-NEXT:    [[TMP187:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[TMP187]], label [[FOR_BODY4_US:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP9]]
 ; CHECK:       for.body4.us:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY4_US]] ], [ [[N_VEC]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[TMP188:%.*]] = icmp ult i64 [[INDVARS_IV]], 225
-; CHECK-NEXT:    tail call void @llvm.assume(i1 [[TMP188]])
-; CHECK-NEXT:    [[TMP189:%.*]] = getelementptr inbounds <225 x double>, ptr [[A]], i64 0, i64 [[INDVARS_IV]]
-; CHECK-NEXT:    [[MATRIXEXT_US:%.*]] = load double, ptr [[TMP189]], align 8
-; CHECK-NEXT:    [[MATRIXEXT8_US:%.*]] = load double, ptr [[TMP164]], align 8
-=======
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY4_US]] ], [ [[INDVARS_IV_PH]], [[FOR_BODY4_US_PREHEADER]] ]
 ; CHECK-NEXT:    [[TMP27:%.*]] = icmp samesign ult i64 [[INDVARS_IV]], 225
 ; CHECK-NEXT:    tail call void @llvm.assume(i1 [[TMP27]])
 ; CHECK-NEXT:    [[TMP28:%.*]] = getelementptr inbounds <225 x double>, ptr [[A]], i64 0, i64 [[INDVARS_IV]]
 ; CHECK-NEXT:    [[MATRIXEXT_US:%.*]] = load double, ptr [[TMP28]], align 8
 ; CHECK-NEXT:    [[MATRIXEXT8_US:%.*]] = load double, ptr [[TMP3]], align 8
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 ; CHECK-NEXT:    [[MUL_US:%.*]] = fmul double [[MATRIXEXT_US]], [[MATRIXEXT8_US]]
 ; CHECK-NEXT:    [[TMP190:%.*]] = getelementptr inbounds <225 x double>, ptr [[B]], i64 0, i64 [[INDVARS_IV]]
 ; CHECK-NEXT:    [[MATRIXEXT11_US:%.*]] = load double, ptr [[TMP190]], align 8
@@ -582,12 +432,6 @@ define void @matrix_extract_insert_loop(i32 %i, ptr nonnull align 8 dereferencea
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[CONV6]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND1_FOR_COND_CLEANUP3_CRIT_EDGE_US:%.*]], label [[FOR_BODY4_US]], !llvm.loop [[LOOP0]]
 ; CHECK:       for.cond1.for.cond.cleanup3_crit_edge.us:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP191:%.*]] = add nuw nsw i64 [[CONV6]], 15
-; CHECK-NEXT:    [[TMP192:%.*]] = icmp ult i32 [[I]], 210
-; CHECK-NEXT:    tail call void @llvm.assume(i1 [[TMP192]])
-; CHECK-NEXT:    [[TMP193:%.*]] = getelementptr inbounds <225 x double>, ptr [[B]], i64 0, i64 [[TMP191]]
-=======
 ; CHECK-NEXT:    [[TMP30:%.*]] = add nuw nsw i64 [[CONV6]], 15
 ; CHECK-NEXT:    [[TMP31:%.*]] = icmp samesign ult i32 [[I]], 210
 ; CHECK-NEXT:    tail call void @llvm.assume(i1 [[TMP31]])
@@ -601,7 +445,6 @@ define void @matrix_extract_insert_loop(i32 %i, ptr nonnull align 8 dereferencea
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT_1]], label [[FOR_BODY4_US_PREHEADER_1]], label [[VECTOR_PH_1:%.*]]
 ; CHECK:       vector.ph.1:
 ; CHECK-NEXT:    [[N_VEC_1:%.*]] = and i64 [[CONV6]], 252
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 ; CHECK-NEXT:    br label [[VECTOR_BODY_1:%.*]]
 ; CHECK:       vector.body.1:
 ; CHECK-NEXT:    [[INDEX_1:%.*]] = phi i64 [ 0, [[FOR_COND1_FOR_COND_CLEANUP3_CRIT_EDGE_US]] ], [ [[INDEX_NEXT_1:%.*]], [[VECTOR_BODY_1]] ]
@@ -644,15 +487,6 @@ define void @matrix_extract_insert_loop(i32 %i, ptr nonnull align 8 dereferencea
 ; CHECK-NEXT:    [[TMP217:%.*]] = icmp eq i64 [[INDEX_NEXT_1]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[TMP217]], label [[FOR_BODY4_US_1:%.*]], label [[VECTOR_BODY_1]], !llvm.loop [[LOOP9]]
 ; CHECK:       for.body4.us.1:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[INDVARS_IV_1:%.*]] = phi i64 [ [[INDVARS_IV_NEXT_1:%.*]], [[FOR_BODY4_US_1]] ], [ [[N_VEC]], [[VECTOR_BODY_1]] ]
-; CHECK-NEXT:    [[TMP218:%.*]] = add nuw nsw i64 [[INDVARS_IV_1]], 15
-; CHECK-NEXT:    [[TMP219:%.*]] = icmp ult i64 [[INDVARS_IV_1]], 210
-; CHECK-NEXT:    tail call void @llvm.assume(i1 [[TMP219]])
-; CHECK-NEXT:    [[TMP220:%.*]] = getelementptr inbounds <225 x double>, ptr [[A]], i64 0, i64 [[TMP218]]
-; CHECK-NEXT:    [[MATRIXEXT_US_1:%.*]] = load double, ptr [[TMP220]], align 8
-; CHECK-NEXT:    [[MATRIXEXT8_US_1:%.*]] = load double, ptr [[TMP193]], align 8
-=======
 ; CHECK-NEXT:    [[INDVARS_IV_1:%.*]] = phi i64 [ [[INDVARS_IV_NEXT_1:%.*]], [[FOR_BODY4_US_1]] ], [ [[INDVARS_IV_PH_1]], [[FOR_BODY4_US_PREHEADER_1]] ]
 ; CHECK-NEXT:    [[TMP57:%.*]] = add nuw nsw i64 [[INDVARS_IV_1]], 15
 ; CHECK-NEXT:    [[TMP58:%.*]] = icmp samesign ult i64 [[INDVARS_IV_1]], 210
@@ -660,7 +494,6 @@ define void @matrix_extract_insert_loop(i32 %i, ptr nonnull align 8 dereferencea
 ; CHECK-NEXT:    [[TMP59:%.*]] = getelementptr inbounds <225 x double>, ptr [[A]], i64 0, i64 [[TMP57]]
 ; CHECK-NEXT:    [[MATRIXEXT_US_1:%.*]] = load double, ptr [[TMP59]], align 8
 ; CHECK-NEXT:    [[MATRIXEXT8_US_1:%.*]] = load double, ptr [[TMP32]], align 8
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 ; CHECK-NEXT:    [[MUL_US_1:%.*]] = fmul double [[MATRIXEXT_US_1]], [[MATRIXEXT8_US_1]]
 ; CHECK-NEXT:    [[TMP221:%.*]] = getelementptr inbounds <225 x double>, ptr [[B]], i64 0, i64 [[TMP218]]
 ; CHECK-NEXT:    [[MATRIXEXT11_US_1:%.*]] = load double, ptr [[TMP221]], align 8
@@ -670,12 +503,6 @@ define void @matrix_extract_insert_loop(i32 %i, ptr nonnull align 8 dereferencea
 ; CHECK-NEXT:    [[EXITCOND_NOT_1:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT_1]], [[CONV6]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT_1]], label [[FOR_COND1_FOR_COND_CLEANUP3_CRIT_EDGE_US_1:%.*]], label [[FOR_BODY4_US_1]], !llvm.loop [[LOOP0]]
 ; CHECK:       for.cond1.for.cond.cleanup3_crit_edge.us.1:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP222:%.*]] = add nuw nsw i64 [[CONV6]], 30
-; CHECK-NEXT:    [[TMP223:%.*]] = icmp ult i32 [[I]], 195
-; CHECK-NEXT:    tail call void @llvm.assume(i1 [[TMP223]])
-; CHECK-NEXT:    [[TMP224:%.*]] = getelementptr inbounds <225 x double>, ptr [[B]], i64 0, i64 [[TMP222]]
-=======
 ; CHECK-NEXT:    [[TMP61:%.*]] = add nuw nsw i64 [[CONV6]], 30
 ; CHECK-NEXT:    [[TMP62:%.*]] = icmp samesign ult i32 [[I]], 195
 ; CHECK-NEXT:    tail call void @llvm.assume(i1 [[TMP62]])
@@ -689,7 +516,6 @@ define void @matrix_extract_insert_loop(i32 %i, ptr nonnull align 8 dereferencea
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT_2]], label [[FOR_BODY4_US_PREHEADER_2]], label [[VECTOR_PH_2:%.*]]
 ; CHECK:       vector.ph.2:
 ; CHECK-NEXT:    [[N_VEC_2:%.*]] = and i64 [[CONV6]], 252
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 ; CHECK-NEXT:    br label [[VECTOR_BODY_2:%.*]]
 ; CHECK:       vector.body.2:
 ; CHECK-NEXT:    [[INDEX_2:%.*]] = phi i64 [ 0, [[FOR_COND1_FOR_COND_CLEANUP3_CRIT_EDGE_US_1]] ], [ [[INDEX_NEXT_2:%.*]], [[VECTOR_BODY_2]] ]
@@ -732,15 +558,6 @@ define void @matrix_extract_insert_loop(i32 %i, ptr nonnull align 8 dereferencea
 ; CHECK-NEXT:    [[TMP248:%.*]] = icmp eq i64 [[INDEX_NEXT_2]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[TMP248]], label [[FOR_BODY4_US_2:%.*]], label [[VECTOR_BODY_2]], !llvm.loop [[LOOP9]]
 ; CHECK:       for.body4.us.2:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[INDVARS_IV_2:%.*]] = phi i64 [ [[INDVARS_IV_NEXT_2:%.*]], [[FOR_BODY4_US_2]] ], [ [[N_VEC]], [[VECTOR_BODY_2]] ]
-; CHECK-NEXT:    [[TMP249:%.*]] = add nuw nsw i64 [[INDVARS_IV_2]], 30
-; CHECK-NEXT:    [[TMP250:%.*]] = icmp ult i64 [[INDVARS_IV_2]], 195
-; CHECK-NEXT:    tail call void @llvm.assume(i1 [[TMP250]])
-; CHECK-NEXT:    [[TMP251:%.*]] = getelementptr inbounds <225 x double>, ptr [[A]], i64 0, i64 [[TMP249]]
-; CHECK-NEXT:    [[MATRIXEXT_US_2:%.*]] = load double, ptr [[TMP251]], align 8
-; CHECK-NEXT:    [[MATRIXEXT8_US_2:%.*]] = load double, ptr [[TMP224]], align 8
-=======
 ; CHECK-NEXT:    [[INDVARS_IV_2:%.*]] = phi i64 [ [[INDVARS_IV_NEXT_2:%.*]], [[FOR_BODY4_US_2]] ], [ [[INDVARS_IV_PH_2]], [[FOR_BODY4_US_PREHEADER_2]] ]
 ; CHECK-NEXT:    [[TMP88:%.*]] = add nuw nsw i64 [[INDVARS_IV_2]], 30
 ; CHECK-NEXT:    [[TMP89:%.*]] = icmp samesign ult i64 [[INDVARS_IV_2]], 195
@@ -748,7 +565,6 @@ define void @matrix_extract_insert_loop(i32 %i, ptr nonnull align 8 dereferencea
 ; CHECK-NEXT:    [[TMP90:%.*]] = getelementptr inbounds <225 x double>, ptr [[A]], i64 0, i64 [[TMP88]]
 ; CHECK-NEXT:    [[MATRIXEXT_US_2:%.*]] = load double, ptr [[TMP90]], align 8
 ; CHECK-NEXT:    [[MATRIXEXT8_US_2:%.*]] = load double, ptr [[TMP63]], align 8
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 ; CHECK-NEXT:    [[MUL_US_2:%.*]] = fmul double [[MATRIXEXT_US_2]], [[MATRIXEXT8_US_2]]
 ; CHECK-NEXT:    [[TMP252:%.*]] = getelementptr inbounds <225 x double>, ptr [[B]], i64 0, i64 [[TMP249]]
 ; CHECK-NEXT:    [[MATRIXEXT11_US_2:%.*]] = load double, ptr [[TMP252]], align 8
@@ -758,12 +574,6 @@ define void @matrix_extract_insert_loop(i32 %i, ptr nonnull align 8 dereferencea
 ; CHECK-NEXT:    [[EXITCOND_NOT_2:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT_2]], [[CONV6]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT_2]], label [[FOR_COND1_FOR_COND_CLEANUP3_CRIT_EDGE_US_2:%.*]], label [[FOR_BODY4_US_2]], !llvm.loop [[LOOP0]]
 ; CHECK:       for.cond1.for.cond.cleanup3_crit_edge.us.2:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP253:%.*]] = add nuw nsw i64 [[CONV6]], 45
-; CHECK-NEXT:    [[TMP254:%.*]] = icmp ult i32 [[I]], 180
-; CHECK-NEXT:    tail call void @llvm.assume(i1 [[TMP254]])
-; CHECK-NEXT:    [[TMP255:%.*]] = getelementptr inbounds <225 x double>, ptr [[B]], i64 0, i64 [[TMP253]]
-=======
 ; CHECK-NEXT:    [[TMP92:%.*]] = add nuw nsw i64 [[CONV6]], 45
 ; CHECK-NEXT:    [[TMP93:%.*]] = icmp samesign ult i32 [[I]], 180
 ; CHECK-NEXT:    tail call void @llvm.assume(i1 [[TMP93]])
@@ -777,7 +587,6 @@ define void @matrix_extract_insert_loop(i32 %i, ptr nonnull align 8 dereferencea
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT_3]], label [[FOR_BODY4_US_PREHEADER_3]], label [[VECTOR_PH_3:%.*]]
 ; CHECK:       vector.ph.3:
 ; CHECK-NEXT:    [[N_VEC_3:%.*]] = and i64 [[CONV6]], 252
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 ; CHECK-NEXT:    br label [[VECTOR_BODY_3:%.*]]
 ; CHECK:       vector.body.3:
 ; CHECK-NEXT:    [[INDEX_3:%.*]] = phi i64 [ 0, [[FOR_COND1_FOR_COND_CLEANUP3_CRIT_EDGE_US_2]] ], [ [[INDEX_NEXT_3:%.*]], [[VECTOR_BODY_3]] ]
@@ -820,15 +629,6 @@ define void @matrix_extract_insert_loop(i32 %i, ptr nonnull align 8 dereferencea
 ; CHECK-NEXT:    [[TMP279:%.*]] = icmp eq i64 [[INDEX_NEXT_3]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[TMP279]], label [[FOR_BODY4_US_3:%.*]], label [[VECTOR_BODY_3]], !llvm.loop [[LOOP9]]
 ; CHECK:       for.body4.us.3:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[INDVARS_IV_3:%.*]] = phi i64 [ [[INDVARS_IV_NEXT_3:%.*]], [[FOR_BODY4_US_3]] ], [ [[N_VEC]], [[VECTOR_BODY_3]] ]
-; CHECK-NEXT:    [[TMP280:%.*]] = add nuw nsw i64 [[INDVARS_IV_3]], 45
-; CHECK-NEXT:    [[TMP281:%.*]] = icmp ult i64 [[INDVARS_IV_3]], 180
-; CHECK-NEXT:    tail call void @llvm.assume(i1 [[TMP281]])
-; CHECK-NEXT:    [[TMP282:%.*]] = getelementptr inbounds <225 x double>, ptr [[A]], i64 0, i64 [[TMP280]]
-; CHECK-NEXT:    [[MATRIXEXT_US_3:%.*]] = load double, ptr [[TMP282]], align 8
-; CHECK-NEXT:    [[MATRIXEXT8_US_3:%.*]] = load double, ptr [[TMP255]], align 8
-=======
 ; CHECK-NEXT:    [[INDVARS_IV_3:%.*]] = phi i64 [ [[INDVARS_IV_NEXT_3:%.*]], [[FOR_BODY4_US_3]] ], [ [[INDVARS_IV_PH_3]], [[FOR_BODY4_US_PREHEADER_3]] ]
 ; CHECK-NEXT:    [[TMP119:%.*]] = add nuw nsw i64 [[INDVARS_IV_3]], 45
 ; CHECK-NEXT:    [[TMP120:%.*]] = icmp samesign ult i64 [[INDVARS_IV_3]], 180
@@ -836,7 +636,6 @@ define void @matrix_extract_insert_loop(i32 %i, ptr nonnull align 8 dereferencea
 ; CHECK-NEXT:    [[TMP121:%.*]] = getelementptr inbounds <225 x double>, ptr [[A]], i64 0, i64 [[TMP119]]
 ; CHECK-NEXT:    [[MATRIXEXT_US_3:%.*]] = load double, ptr [[TMP121]], align 8
 ; CHECK-NEXT:    [[MATRIXEXT8_US_3:%.*]] = load double, ptr [[TMP94]], align 8
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 ; CHECK-NEXT:    [[MUL_US_3:%.*]] = fmul double [[MATRIXEXT_US_3]], [[MATRIXEXT8_US_3]]
 ; CHECK-NEXT:    [[TMP283:%.*]] = getelementptr inbounds <225 x double>, ptr [[B]], i64 0, i64 [[TMP280]]
 ; CHECK-NEXT:    [[MATRIXEXT11_US_3:%.*]] = load double, ptr [[TMP283]], align 8

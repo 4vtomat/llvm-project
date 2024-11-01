@@ -262,19 +262,11 @@ define void @geps_feeding_interleave_groups_with_reuse(ptr %arg, i64 %arg1, ptr 
 ; CHECK-NEXT:    [[TMP35:%.*]] = fmul <2 x float> [[TMP34]], zeroinitializer
 ; CHECK-NEXT:    [[TMP36:%.*]] = fadd <2 x float> [[STRIDED_VEC16]], [[STRIDED_VEC20]]
 ; CHECK-NEXT:    [[TMP37:%.*]] = fmul <2 x float> [[TMP36]], zeroinitializer
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP38:%.*]] = getelementptr float, ptr [[TMP28]], i32 0
-=======
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 ; CHECK-NEXT:    [[TMP40:%.*]] = shufflevector <2 x float> [[TMP31]], <2 x float> [[TMP33]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
 ; CHECK-NEXT:    [[TMP41:%.*]] = shufflevector <2 x float> [[TMP35]], <2 x float> [[TMP37]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
 ; CHECK-NEXT:    [[TMP42:%.*]] = shufflevector <4 x float> [[TMP40]], <4 x float> [[TMP41]], <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7>
 ; CHECK-NEXT:    [[INTERLEAVED_VEC:%.*]] = shufflevector <8 x float> [[TMP42]], <8 x float> poison, <8 x i32> <i32 0, i32 2, i32 4, i32 6, i32 1, i32 3, i32 5, i32 7>
-<<<<<<< HEAD
-; CHECK-NEXT:    store <8 x float> [[INTERLEAVED_VEC]], ptr [[TMP38]], align 4
-=======
 ; CHECK-NEXT:    store <8 x float> [[INTERLEAVED_VEC]], ptr [[TMP28]], align 4
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 2
 ; CHECK-NEXT:    [[TMP43:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[TMP43]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]

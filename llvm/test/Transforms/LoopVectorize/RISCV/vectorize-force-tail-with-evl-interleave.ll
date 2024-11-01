@@ -59,8 +59,6 @@ define void @interleave(ptr noalias %a, ptr noalias %b, i64 %N) {
 ;
 ; NO-VP-LABEL: @interleave(
 ; NO-VP-NEXT:  entry:
-<<<<<<< HEAD
-=======
 ; NO-VP-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; NO-VP-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 8
 ; NO-VP-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N:%.*]], [[TMP1]]
@@ -108,7 +106,6 @@ define void @interleave(ptr noalias %a, ptr noalias %b, i64 %N) {
 ; NO-VP-NEXT:    br i1 [[CMP_N]], label [[FOR_COND_CLEANUP:%.*]], label [[SCALAR_PH]]
 ; NO-VP:       scalar.ph:
 ; NO-VP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 ; NO-VP-NEXT:    br label [[FOR_BODY:%.*]]
 ; NO-VP:       for.body:
 ; NO-VP-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]

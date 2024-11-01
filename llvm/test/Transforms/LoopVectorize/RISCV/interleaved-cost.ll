@@ -1,12 +1,5 @@
 ; REQUIRES: asserts
-<<<<<<< HEAD
-; RUN: opt -passes=loop-vectorize -mtriple=riscv64 -mattr=+v -force-vector-width=2 -debug-only=loop-vectorize -disable-output -riscv-use-vla-vectorizer=false < %s 2>&1 | FileCheck %s --check-prefix=VF_2
-; RUN: opt -passes=loop-vectorize -mtriple=riscv64 -mattr=+v -force-vector-width=4 -debug-only=loop-vectorize -disable-output -riscv-use-vla-vectorizer=false < %s 2>&1 | FileCheck %s --check-prefix=VF_4
-; RUN: opt -passes=loop-vectorize -mtriple=riscv64 -mattr=+v -force-vector-width=8 -debug-only=loop-vectorize -disable-output -riscv-use-vla-vectorizer=false < %s 2>&1 | FileCheck %s --check-prefix=VF_8
-; RUN: opt -passes=loop-vectorize -mtriple=riscv64 -mattr=+v -force-vector-width=16 -debug-only=loop-vectorize -disable-output -riscv-use-vla-vectorizer=false < %s 2>&1 | FileCheck %s --check-prefix=VF_16
-=======
 ; RUN: opt -passes=loop-vectorize -mtriple=riscv64 -mattr=+v -debug-only=loop-vectorize -disable-output < %s 2>&1 | FileCheck %s
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 
 ; SIFIVE: our cost model has different costs.
 %i8.2 = type {i8, i8}
