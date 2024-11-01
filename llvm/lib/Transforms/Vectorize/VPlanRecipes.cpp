@@ -236,14 +236,8 @@ bool VPRecipeBase::mayHaveSideEffects() const {
     Function *Fn = cast<VPWidenCallRecipe>(this)->getCalledScalarFunction();
     return mayWriteToMemory() || !Fn->doesNotThrow() || !Fn->willReturn();
   }
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  case VPVectorPointerSC:
-#endif // SIFIVE_CUSTOMIZATION
-=======
   case VPWidenIntrinsicSC:
     return cast<VPWidenIntrinsicRecipe>(this)->mayHaveSideEffects();
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
   case VPBlendSC:
   case VPReductionEVLSC:
   case VPReductionSC:
@@ -560,10 +554,10 @@ Value *VPInstruction::generate(VPTransformState &State) {
     return Builder.CreateCmp(getPredicate(), A, B, Name);
   }
   case Instruction::Select: {
-<<<<<<< HEAD
-    Value *Cond = State.get(getOperand(0));
-    Value *Op1 = State.get(getOperand(1));
-    Value *Op2 = State.get(getOperand(2));
+    bool OnlyFirstLaneUsed = vputils::onlyFirstLaneUsed(this);
+    Value *Cond = State.get(getOperand(0), OnlyFirstLaneUsed);
+    Value *Op1 = State.get(getOperand(1), OnlyFirstLaneUsed);
+    Value *Op2 = State.get(getOperand(2), OnlyFirstLaneUsed);
 #if SIFIVE_CUSTOMIZATION
     VPRegionBlock *LoopRegion = State.Plan->getVectorLoopRegion();
     VPBasicBlock *Preheader =
@@ -572,14 +566,7 @@ Value *VPInstruction::generate(VPTransformState &State) {
         Cond->getType()->isVectorTy())
       return llvm::widenPredicatedInstruction(nullptr, this, *this, State,
                                               nullptr);
-
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    bool OnlyFirstLaneUsed = vputils::onlyFirstLaneUsed(this);
-    Value *Cond = State.get(getOperand(0), OnlyFirstLaneUsed);
-    Value *Op1 = State.get(getOperand(1), OnlyFirstLaneUsed);
-    Value *Op2 = State.get(getOperand(2), OnlyFirstLaneUsed);
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
     return Builder.CreateSelect(Cond, Op1, Op2, Name);
   }
   case VPInstruction::ActiveLaneMask: {
@@ -1477,7 +1464,6 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
   assert(State.VF.isVector() && "not widening");
   State.setDebugLocFrom(getDebugLoc());
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   VPRegionBlock *LoopRegion = State.Plan->getVectorLoopRegion();
   VPBasicBlock *Preheader =
@@ -1495,14 +1481,7 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-  bool UseIntrinsic = VectorIntrinsicID != Intrinsic::not_intrinsic;
-  FunctionType *VFTy = nullptr;
-  if (Variant)
-    VFTy = Variant->getFunctionType();
-  SmallVector<Type *, 2> TysForDecl;
-=======
   FunctionType *VFTy = Variant->getFunctionType();
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
   // Add return type if intrinsic is overloaded on it.
   SmallVector<Value *, 4> Args;
   for (const auto &I : enumerate(arg_operands())) {
@@ -1590,34 +1569,11 @@ void VPWidenIntrinsicRecipe::execute(VPTransformState &State) {
     Args.push_back(Arg);
   }
 
-<<<<<<< HEAD
-  Function *VectorF;
-  if (UseIntrinsic) {
-    // Use vector version of the intrinsic.
-    Module *M = State.Builder.GetInsertBlock()->getModule();
-    VectorF = Intrinsic::getDeclaration(M, VectorIntrinsicID, TysForDecl);
-    assert(VectorF && "Can't retrieve vector intrinsic.");
-  } else {
-#ifndef NDEBUG
-    assert(Variant != nullptr && "Can't create vector function.");
-#endif
-    VectorF = Variant;
-#if SIFIVE_CUSTOMIZATION
-    // Add VL as an explicit final argument to SiFive NF Library functions
-    if (VectorF->getName().starts_with(SiFiveNFLibraryPrefix) &&
-        State.Plan->useVLAVectorizer()) {
-      Value *EVL = State.get(State.EVL, /*NeedsScalar=*/true);
-      Args.push_back(EVL);
-    }
-#endif // SIFIVE_CUSTOMIZATION
-  }
-=======
   // Use vector version of the intrinsic.
   Module *M = State.Builder.GetInsertBlock()->getModule();
   Function *VectorF =
       Intrinsic::getOrInsertDeclaration(M, VectorIntrinsicID, TysForDecl);
   assert(VectorF && "Can't retrieve vector intrinsic.");
->>>>>>> 864902e9b4d8bc6d3f0852d5c475e3dc97dd8335
 
   auto *CI = cast_or_null<CallInst>(getUnderlyingValue());
   SmallVector<OperandBundleDef, 1> OpBundles;
@@ -3811,6 +3767,7 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
   if (auto *I = dyn_cast<Instruction>(ResAddr))
     State.setDebugLocFrom(I->getDebugLoc());
 
+  Value *Index;
   // If the group is reverse, adjust the index to refer to the last vector lane
   // instead of the first. We adjust the index from the first vector lane,
   // rather than directly getting the pointer for lane VF - 1, because the
@@ -3838,7 +3795,7 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
   if (Group->isReverse()) {
     Value *RuntimeVF =
         getRuntimeVF(State.Builder, State.Builder.getInt32Ty(), State.VF);
-    Value *Index =
+    Index =
         State.Builder.CreateSub(RuntimeVF, State.Builder.getInt32(1));
     Index = State.Builder.CreateMul(Index,
                                     State.Builder.getInt32(Group->getFactor()));
