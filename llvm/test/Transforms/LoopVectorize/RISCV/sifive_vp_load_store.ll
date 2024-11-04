@@ -11,9 +11,7 @@ define void @test() {
 ; SCALABLE-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; SCALABLE-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; SCALABLE-NEXT:    [[TMP0:%.*]] = sub i64 7, [[EVL_BASED_IV]]
-; SCALABLE-NEXT:    [[TMP8:%.*]] = icmp ult i64 [[TMP0]], 1
-; SCALABLE-NEXT:    [[SAFE_AVL:%.*]] = select i1 [[TMP8]], i64 [[TMP0]], i64 1
-; SCALABLE-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[SAFE_AVL]], i32 2, i1 true)
+; SCALABLE-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
 ; SCALABLE-NEXT:    [[TMP2:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; SCALABLE-NEXT:    [[TMP3:%.*]] = getelementptr inbounds [125 x i32], ptr undef, i64 0, i64 [[TMP2]]
 ; SCALABLE-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i32, ptr [[TMP3]], i32 0

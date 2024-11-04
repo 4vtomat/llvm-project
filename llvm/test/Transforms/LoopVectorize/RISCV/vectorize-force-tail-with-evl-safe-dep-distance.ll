@@ -22,9 +22,7 @@ define void @test(ptr %p) {
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[TMP0:%.*]] = sub i64 200, [[EVL_BASED_IV]]
-; IF-EVL-NEXT:    [[TMP10:%.*]] = icmp ult i64 [[TMP0]], 1
-; IF-EVL-NEXT:    [[SAFE_AVL:%.*]] = select i1 [[TMP10]], i64 [[TMP0]], i64 1
-; IF-EVL-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[SAFE_AVL]], i32 1, i1 true)
+; IF-EVL-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 1, i1 true)
 ; IF-EVL-NEXT:    [[TMP2:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF-EVL-NEXT:    [[TMP3:%.*]] = getelementptr i64, ptr [[P:%.*]], i64 [[TMP2]]
 ; IF-EVL-NEXT:    [[TMP4:%.*]] = getelementptr i64, ptr [[TMP3]], i32 0
@@ -101,9 +99,7 @@ define void @test_may_clobber1(ptr %p) {
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[TMP0:%.*]] = sub i64 200, [[EVL_BASED_IV]]
-; IF-EVL-NEXT:    [[TMP11:%.*]] = icmp ult i64 [[TMP0]], 1
-; IF-EVL-NEXT:    [[SAFE_AVL:%.*]] = select i1 [[TMP11]], i64 [[TMP0]], i64 1
-; IF-EVL-NEXT:    [[TMP1:%.*]] = call i64 @llvm.umin.i64(i64 [[SAFE_AVL]], i64 50)
+; IF-EVL-NEXT:    [[TMP1:%.*]] = call i64 @llvm.umin.i64(i64 [[TMP0]], i64 50)
 ; IF-EVL-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP1]], i32 1, i1 true)
 ; IF-EVL-NEXT:    [[TMP3:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF-EVL-NEXT:    [[TMP4:%.*]] = getelementptr i64, ptr [[P:%.*]], i64 [[TMP3]]
@@ -179,9 +175,7 @@ define void @test_may_clobber2(ptr %p) {
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[TMP0:%.*]] = sub i64 200, [[EVL_BASED_IV]]
-; IF-EVL-NEXT:    [[TMP11:%.*]] = icmp ult i64 [[TMP0]], 1
-; IF-EVL-NEXT:    [[SAFE_AVL:%.*]] = select i1 [[TMP11]], i64 [[TMP0]], i64 1
-; IF-EVL-NEXT:    [[TMP1:%.*]] = call i64 @llvm.umin.i64(i64 [[SAFE_AVL]], i64 9)
+; IF-EVL-NEXT:    [[TMP1:%.*]] = call i64 @llvm.umin.i64(i64 [[TMP0]], i64 9)
 ; IF-EVL-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP1]], i32 1, i1 true)
 ; IF-EVL-NEXT:    [[TMP3:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF-EVL-NEXT:    [[TMP4:%.*]] = getelementptr i64, ptr [[P:%.*]], i64 [[TMP3]]
@@ -257,9 +251,7 @@ define void @test_may_clobber3(ptr %p) {
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[TMP0:%.*]] = sub i64 200, [[EVL_BASED_IV]]
-; IF-EVL-NEXT:    [[TMP11:%.*]] = icmp ult i64 [[TMP0]], 1
-; IF-EVL-NEXT:    [[SAFE_AVL:%.*]] = select i1 [[TMP11]], i64 [[TMP0]], i64 1
-; IF-EVL-NEXT:    [[TMP1:%.*]] = call i64 @llvm.umin.i64(i64 [[SAFE_AVL]], i64 10)
+; IF-EVL-NEXT:    [[TMP1:%.*]] = call i64 @llvm.umin.i64(i64 [[TMP0]], i64 10)
 ; IF-EVL-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP1]], i32 1, i1 true)
 ; IF-EVL-NEXT:    [[TMP3:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF-EVL-NEXT:    [[TMP4:%.*]] = getelementptr i64, ptr [[P:%.*]], i64 [[TMP3]]
@@ -336,9 +328,7 @@ define void @trivial_due_max_vscale(ptr %p) {
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[TMP0:%.*]] = sub i64 200, [[EVL_BASED_IV]]
-; IF-EVL-NEXT:    [[TMP10:%.*]] = icmp ult i64 [[TMP0]], 1
-; IF-EVL-NEXT:    [[SAFE_AVL:%.*]] = select i1 [[TMP10]], i64 [[TMP0]], i64 1
-; IF-EVL-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[SAFE_AVL]], i32 1, i1 true)
+; IF-EVL-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 1, i1 true)
 ; IF-EVL-NEXT:    [[TMP2:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF-EVL-NEXT:    [[TMP3:%.*]] = getelementptr i64, ptr [[P:%.*]], i64 [[TMP2]]
 ; IF-EVL-NEXT:    [[TMP4:%.*]] = getelementptr i64, ptr [[TMP3]], i32 0
@@ -414,9 +404,7 @@ define void @no_high_lmul_or_interleave(ptr %p) {
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[AVL:%.*]] = sub i64 3002, [[EVL_BASED_IV]]
-; IF-EVL-NEXT:    [[TMP1:%.*]] = icmp ult i64 [[AVL]], 1
-; IF-EVL-NEXT:    [[SAFE_AVL1:%.*]] = select i1 [[TMP1]], i64 [[AVL]], i64 1
-; IF-EVL-NEXT:    [[SAFE_AVL:%.*]] = call i64 @llvm.umin.i64(i64 [[SAFE_AVL1]], i64 64)
+; IF-EVL-NEXT:    [[SAFE_AVL:%.*]] = call i64 @llvm.umin.i64(i64 [[AVL]], i64 64)
 ; IF-EVL-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[SAFE_AVL]], i32 1, i1 true)
 ; IF-EVL-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF-EVL-NEXT:    [[TMP2:%.*]] = getelementptr i64, ptr [[P:%.*]], i64 [[TMP0]]
@@ -492,9 +480,7 @@ define void @non-power-2-storeloadforward(ptr %A) {
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[TMP0:%.*]] = sub i64 112, [[EVL_BASED_IV]]
-; IF-EVL-NEXT:    [[TMP18:%.*]] = icmp ult i64 [[TMP0]], 1
-; IF-EVL-NEXT:    [[SAFE_AVL:%.*]] = select i1 [[TMP18]], i64 [[TMP0]], i64 1
-; IF-EVL-NEXT:    [[TMP1:%.*]] = call i64 @llvm.umin.i64(i64 [[SAFE_AVL]], i64 3)
+; IF-EVL-NEXT:    [[TMP1:%.*]] = call i64 @llvm.umin.i64(i64 [[TMP0]], i64 3)
 ; IF-EVL-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP1]], i32 1, i1 true)
 ; IF-EVL-NEXT:    [[OFFSET_IDX:%.*]] = add i64 16, [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP3:%.*]] = add i64 [[OFFSET_IDX]], 0

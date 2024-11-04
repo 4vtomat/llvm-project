@@ -15,9 +15,7 @@ define void @buf2img() {
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP0:%.*]] = sub i64 0, [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP2:%.*]] = icmp ult i64 [[TMP0]], 1
-; CHECK-NEXT:    [[SAFE_AVL:%.*]] = select i1 [[TMP2]], i64 [[TMP0]], i64 1
-; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[SAFE_AVL]], i32 32, i1 true)
+; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 32, i1 true)
 ; CHECK-NEXT:    call void @llvm.vp.scatter.nxv32i16.nxv32p0(<vscale x 32 x i16> [[VP_OP]], <vscale x 32 x ptr> align 2 zeroinitializer, <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP3:%.*]] = zext i32 [[TMP1]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP3]], [[EVL_BASED_IV]]

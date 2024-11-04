@@ -233,18 +233,17 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
   llvm_unreachable("Unexpected opcode.");
 }
 
-void widenPredicatedCall(CallInst *CI, VPValue *Def, VPTransformState &State,
+void widenPredicatedIntrinsic(CallInst *CI, VPValue *Def, VPTransformState &State,
                          Intrinsic::ID VPID) {
   IRBuilderBase &Builder = State.Builder;
-  auto *Recipe = cast<VPWidenCallRecipe>(Def);
-  Function *CalledScalarFn = Recipe->getCalledScalarFunction();
+  auto *Recipe = cast<VPWidenIntrinsicRecipe>(Def);
   SmallVector<Type *, 2> TysForDecl;
   // Add return type if intrinsic is overloaded on it.
   if (isVectorIntrinsicWithOverloadTypeAtArg(VPID, -1))
     TysForDecl.push_back(VectorType::get(
-        CalledScalarFn->getReturnType()->getScalarType(), State.VF));
+        Recipe->getResultType()->getScalarType(), State.VF));
   SmallVector<Value *, 4> Args;
-  for (auto I : enumerate(Recipe->arg_operands())) {
+  for (auto I : enumerate(Recipe->operands())) {
     Value *Arg;
     if (!isVectorIntrinsicWithScalarOpAtArg(VPID, I.index()))
       Arg = State.get(I.value());

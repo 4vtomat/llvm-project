@@ -20,9 +20,7 @@ define void @reverse_load_store(i64 %startval, ptr noalias %ptr, ptr noalias %pt
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[TMP0:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
-; IF-EVL-NEXT:    [[TMP18:%.*]] = icmp ult i64 [[TMP0]], 1
-; IF-EVL-NEXT:    [[SAFE_AVL:%.*]] = select i1 [[TMP18]], i64 [[TMP0]], i64 1
-; IF-EVL-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[SAFE_AVL]], i32 2, i1 true)
+; IF-EVL-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[OFFSET_IDX:%.*]] = sub i64 [[STARTVAL]], [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP2:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; IF-EVL-NEXT:    [[TMP3:%.*]] = add i64 [[TMP2]], -1
@@ -113,9 +111,7 @@ define void @reverse_load_store_masked(i64 %startval, ptr noalias %ptr, ptr noal
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[TMP0:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
-; IF-EVL-NEXT:    [[TMP21:%.*]] = icmp ult i64 [[TMP0]], 1
-; IF-EVL-NEXT:    [[SAFE_AVL:%.*]] = select i1 [[TMP21]], i64 [[TMP0]], i64 1
-; IF-EVL-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[SAFE_AVL]], i32 2, i1 true)
+; IF-EVL-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[OFFSET_IDX:%.*]] = sub i64 [[STARTVAL]], [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP2:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; IF-EVL-NEXT:    [[OFFSET_IDX2:%.*]] = trunc i64 [[EVL_BASED_IV]] to i32

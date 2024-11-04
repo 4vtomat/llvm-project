@@ -1920,10 +1920,6 @@ public:
 
 /// A recipe for widening Call instructions using library calls.
 class VPWidenCallRecipe : public VPRecipeWithIRFlags {
-#if SIFIVE_CUSTOMIZATION
-  Intrinsic::ID VectorIntrinsicID;
-#endif // SIFIVE_CUSTOMIZATION
-
   /// Variant stores a pointer to the chosen function. There is a 1:1 mapping
   /// between a given VF and the chosen vectorized variant, so there will be a
   /// different VPlan for each VF with a valid variant.

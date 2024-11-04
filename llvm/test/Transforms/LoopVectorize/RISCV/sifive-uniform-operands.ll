@@ -13,9 +13,7 @@ define void @test(ptr %Ptr, i8 %Val) {
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP0:%.*]] = sub i64 253, [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP9:%.*]] = icmp ult i64 [[TMP0]], 1
-; CHECK-NEXT:    [[SAFE_AVL:%.*]] = select i1 [[TMP9]], i64 [[TMP0]], i64 1
-; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[SAFE_AVL]], i32 8, i1 true)
+; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 8, i1 true)
 ; CHECK-NEXT:    [[TMP2:%.*]] = mul i64 [[EVL_BASED_IV]], 4
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = add i64 10, [[TMP2]]
 ; CHECK-NEXT:    [[TMP3:%.*]] = add i64 [[OFFSET_IDX]], 0

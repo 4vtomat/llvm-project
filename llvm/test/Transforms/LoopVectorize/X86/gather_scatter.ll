@@ -164,8 +164,7 @@ define void @foo2(ptr noalias %in, ptr noalias %out, ptr noalias %trigger, ptr n
 ; FVW2-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[INDEX1]], 16
 ; FVW2-NEXT:    [[TMP0:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; FVW2-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER:%.*]], i64 [[TMP0]]
-; FVW2-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[TMP1]], i32 0
-; FVW2-NEXT:    [[WIDE_VEC:%.*]] = load <32 x i32>, ptr [[TMP2]], align 4
+; FVW2-NEXT:    [[WIDE_VEC:%.*]] = load <32 x i32>, ptr [[TMP1]], align 4
 ; FVW2-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <32 x i32> [[WIDE_VEC]], <32 x i32> poison, <2 x i32> <i32 0, i32 16>
 ; FVW2-NEXT:    [[TMP3:%.*]] = icmp sgt <2 x i32> [[STRIDED_VEC]], zeroinitializer
 ; FVW2-NEXT:    [[TMP4:%.*]] = getelementptr inbounds [[STRUCT_IN:%.*]], ptr [[IN:%.*]], <2 x i64> [[VEC_IND]], i32 1
@@ -303,8 +302,7 @@ define void @foo3(ptr noalias %in, ptr noalias %out, ptr noalias %trigger) {
 ; FVW2-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[INDEX]], 16
 ; FVW2-NEXT:    [[TMP0:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; FVW2-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER:%.*]], i64 [[TMP0]]
-; FVW2-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[TMP1]], i32 0
-; FVW2-NEXT:    [[WIDE_VEC:%.*]] = load <32 x i32>, ptr [[TMP2]], align 4
+; FVW2-NEXT:    [[WIDE_VEC:%.*]] = load <32 x i32>, ptr [[TMP1]], align 4
 ; FVW2-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <32 x i32> [[WIDE_VEC]], <32 x i32> poison, <2 x i32> <i32 0, i32 16>
 ; FVW2-NEXT:    [[TMP3:%.*]] = icmp sgt <2 x i32> [[STRIDED_VEC]], zeroinitializer
 ; FVW2-NEXT:    [[TMP4:%.*]] = getelementptr inbounds [[STRUCT_IN:%.*]], ptr [[IN:%.*]], <2 x i64> [[VEC_IND]], i32 1
@@ -429,8 +427,7 @@ define void @foo2_addrspace(ptr addrspace(1) noalias %in, ptr addrspace(1) noali
 ; FVW2-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[INDEX1]], 16
 ; FVW2-NEXT:    [[TMP0:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; FVW2-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER:%.*]], i64 [[TMP0]]
-; FVW2-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[TMP1]], i32 0
-; FVW2-NEXT:    [[WIDE_VEC:%.*]] = load <32 x i32>, ptr [[TMP2]], align 4
+; FVW2-NEXT:    [[WIDE_VEC:%.*]] = load <32 x i32>, ptr [[TMP1]], align 4
 ; FVW2-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <32 x i32> [[WIDE_VEC]], <32 x i32> poison, <2 x i32> <i32 0, i32 16>
 ; FVW2-NEXT:    [[TMP3:%.*]] = icmp sgt <2 x i32> [[STRIDED_VEC]], zeroinitializer
 ; FVW2-NEXT:    [[TMP4:%.*]] = getelementptr inbounds [[STRUCT_IN:%.*]], ptr addrspace(1) [[IN:%.*]], <2 x i64> [[VEC_IND]], i32 1
@@ -554,8 +551,7 @@ define void @foo2_addrspace2(ptr addrspace(1) noalias %in, ptr addrspace(0) noal
 ; FVW2-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[INDEX1]], 16
 ; FVW2-NEXT:    [[TMP0:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; FVW2-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER:%.*]], i64 [[TMP0]]
-; FVW2-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[TMP1]], i32 0
-; FVW2-NEXT:    [[WIDE_VEC:%.*]] = load <32 x i32>, ptr [[TMP2]], align 4
+; FVW2-NEXT:    [[WIDE_VEC:%.*]] = load <32 x i32>, ptr [[TMP1]], align 4
 ; FVW2-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <32 x i32> [[WIDE_VEC]], <32 x i32> poison, <2 x i32> <i32 0, i32 16>
 ; FVW2-NEXT:    [[TMP3:%.*]] = icmp sgt <2 x i32> [[STRIDED_VEC]], zeroinitializer
 ; FVW2-NEXT:    [[TMP4:%.*]] = getelementptr inbounds [[STRUCT_IN:%.*]], ptr addrspace(1) [[IN:%.*]], <2 x i64> [[VEC_IND]], i32 1
@@ -679,8 +675,7 @@ define void @foo2_addrspace3(ptr addrspace(0) noalias %in, ptr addrspace(1) noal
 ; FVW2-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[INDEX1]], 16
 ; FVW2-NEXT:    [[TMP0:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; FVW2-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER:%.*]], i64 [[TMP0]]
-; FVW2-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[TMP1]], i32 0
-; FVW2-NEXT:    [[WIDE_VEC:%.*]] = load <32 x i32>, ptr [[TMP2]], align 4
+; FVW2-NEXT:    [[WIDE_VEC:%.*]] = load <32 x i32>, ptr [[TMP1]], align 4
 ; FVW2-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <32 x i32> [[WIDE_VEC]], <32 x i32> poison, <2 x i32> <i32 0, i32 16>
 ; FVW2-NEXT:    [[TMP3:%.*]] = icmp sgt <2 x i32> [[STRIDED_VEC]], zeroinitializer
 ; FVW2-NEXT:    [[TMP4:%.*]] = getelementptr inbounds [[STRUCT_IN:%.*]], ptr [[IN:%.*]], <2 x i64> [[VEC_IND]], i32 1

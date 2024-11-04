@@ -20,9 +20,7 @@ define void @interleave(ptr noalias %a, ptr noalias %b, i64 %N) {
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[AVL:%.*]] = sub i64 [[N_VEC:%.*]], [[EVL_BASED_IV]]
-; IF-EVL-NEXT:    [[TMP0:%.*]] = icmp ult i64 [[AVL]], 1
-; IF-EVL-NEXT:    [[SAFE_AVL:%.*]] = select i1 [[TMP0]], i64 [[AVL]], i64 1
-; IF-EVL-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[SAFE_AVL]], i32 2, i1 true)
+; IF-EVL-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[TMP3:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF-EVL-NEXT:    [[TMP27:%.*]] = getelementptr inbounds [2 x i32], ptr [[B:%.*]], i64 [[TMP3]], i32 0
 ; IF-EVL-NEXT:    [[TMP6:%.*]] = mul nuw nsw i32 [[TMP2]], 2

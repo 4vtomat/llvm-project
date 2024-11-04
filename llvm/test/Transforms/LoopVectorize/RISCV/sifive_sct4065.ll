@@ -11,26 +11,24 @@ define fastcc i32 @S_unpack_rec(i64 %0) {
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i32 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP2:%.*]] = sub i32 536870912, [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP5:%.*]] = icmp ult i32 [[TMP2]], 1
-; CHECK-NEXT:    [[SAFE_AVL:%.*]] = select i1 [[TMP5]], i32 [[TMP2]], i32 1
-; CHECK-NEXT:    [[TMP3:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 [[SAFE_AVL]], i32 4, i1 true)
+; CHECK-NEXT:    [[TMP3:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 [[TMP2]], i32 4, i1 true)
 ; CHECK-NEXT:    store i64 0, ptr null, align 8
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i32 [[TMP3]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp eq i32 [[INDEX_EVL_NEXT]], 536870912
 ; CHECK-NEXT:    br i1 [[TMP4]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
-; CHECK-NEXT:    br label %[[BB9:.*]]
+; CHECK-NEXT:    br label %[[BB8:.*]]
 ; CHECK:       [[SCALAR_PH]]:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 0, [[TMP1:%.*]] ]
-; CHECK-NEXT:    br label %[[BB5:.*]]
-; CHECK:       [[BB5]]:
-; CHECK-NEXT:    [[TMP6:%.*]] = phi i32 [ [[TMP7:%.*]], %[[BB5]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
+; CHECK-NEXT:    br label %[[BB4:.*]]
+; CHECK:       [[BB4]]:
+; CHECK-NEXT:    [[TMP6:%.*]] = phi i32 [ [[TMP7:%.*]], %[[BB4]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
 ; CHECK-NEXT:    store i64 0, ptr null, align 8
 ; CHECK-NEXT:    [[TMP7]] = add nsw i32 [[TMP6]], -8
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i32 [[TMP6]], 1
-; CHECK-NEXT:    br i1 [[TMP8]], label %[[BB9]], label %[[BB5]], !llvm.loop [[LOOP3:![0-9]+]]
-; CHECK:       [[BB9]]:
-; CHECK-NEXT:    [[TMP10:%.*]] = phi i64 [ [[TMP0]], %[[BB5]] ], [ [[TMP0]], %[[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    br i1 [[TMP8]], label %[[BB8]], label %[[BB4]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK:       [[BB8]]:
+; CHECK-NEXT:    [[TMP9:%.*]] = phi i64 [ [[TMP0]], %[[BB4]] ], [ [[TMP0]], %[[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret i32 0
 ;
   br label %2

@@ -19,9 +19,7 @@ define void @foo(i64* %x, i64 %n, i64 %y) {
 ; V-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; V-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; V-NEXT:    [[TMP0:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
-; V-NEXT:    [[TMP8:%.*]] = icmp ult i64 [[TMP0]], 1
-; V-NEXT:    [[SAFE_AVL:%.*]] = select i1 [[TMP8]], i64 [[TMP0]], i64 1
-; V-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[SAFE_AVL]], i32 1, i1 true)
+; V-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 1, i1 true)
 ; V-NEXT:    [[TMP2:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; V-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i64, ptr [[X:%.*]], i64 [[TMP2]]
 ; V-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i64, ptr [[TMP3]], i32 0

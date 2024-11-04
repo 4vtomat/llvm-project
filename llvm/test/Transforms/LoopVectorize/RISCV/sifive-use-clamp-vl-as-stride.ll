@@ -25,9 +25,7 @@ define void @widget(ptr %a, i64 %n) {
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP4:%.*]] = sub i64 [[TMP1]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP13:%.*]] = icmp ult i64 [[TMP4]], 1
-; CHECK-NEXT:    [[SAFE_AVL:%.*]] = select i1 [[TMP13]], i64 [[TMP4]], i64 1
-; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.umin.i64(i64 [[SAFE_AVL]], i64 2)
+; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.umin.i64(i64 [[TMP4]], i64 2)
 ; CHECK-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP5]], i32 1, i1 true)
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], -16
 ; CHECK-NEXT:    [[TMP7:%.*]] = add i64 [[OFFSET_IDX]], 0

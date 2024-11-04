@@ -245,7 +245,7 @@ define void @too_many_runtime_checks(ptr nocapture noundef %p, ptr nocapture nou
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[TMP64:%.*]] = and i64 [[INDVARS_IV_NEXT]], 4294967295
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[TMP64]], 16
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[WHILE_END_LOOPEXIT:.*]], label %[[WHILE_BODY]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[WHILE_END_LOOPEXIT:.*]], label %[[WHILE_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       [[WHILE_END_LOOPEXIT]]:
 ; CHECK-NEXT:    br label %[[WHILE_END]]
 ; CHECK:       [[WHILE_END]]:
@@ -337,7 +337,7 @@ define void @overflow_indvar_known_false(ptr nocapture noundef %p, i32 noundef %
 ; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT]] = call <vscale x 16 x i1> @llvm.get.active.lane.mask.nxv16i1.i64(i64 [[INDEX_NEXT]], i64 [[TMP1]])
 ; CHECK-NEXT:    [[TMP16:%.*]] = xor <vscale x 16 x i1> [[ACTIVE_LANE_MASK_NEXT]], shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 16 x i1> [[TMP16]], i32 0
-; CHECK-NEXT:    br i1 [[TMP17]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP17]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br i1 true, label %[[WHILE_END_LOOPEXIT:.*]], label %[[SCALAR_PH]]
 ; CHECK:       [[SCALAR_PH]]:
@@ -352,7 +352,7 @@ define void @overflow_indvar_known_false(ptr nocapture noundef %p, i32 noundef %
 ; CHECK-NEXT:    store i8 [[ADD]], ptr [[ARRAYIDX]], align 1
 ; CHECK-NEXT:    [[TMP29:%.*]] = and i64 [[INDVARS_IV_NEXT]], 4294967295
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[TMP29]], 1027
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[WHILE_END_LOOPEXIT]], label %[[WHILE_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[WHILE_END_LOOPEXIT]], label %[[WHILE_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
 ; CHECK:       [[WHILE_END_LOOPEXIT]]:
 ; CHECK-NEXT:    br label %[[WHILE_END]]
 ; CHECK:       [[WHILE_END]]:
@@ -392,6 +392,7 @@ while.end:
 ; CHECK: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
 ; CHECK: [[LOOP3]] = distinct !{[[LOOP3]], [[META1]], [[META2]]}
 ; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META1]]}
-; CHECK: [[LOOP5]] = distinct !{[[LOOP5]], [[META1]], [[META2]]}
-; CHECK: [[LOOP6]] = distinct !{[[LOOP6]], [[META1]]}
+; CHECK: [[LOOP5]] = distinct !{[[LOOP5]]}
+; CHECK: [[LOOP6]] = distinct !{[[LOOP6]], [[META1]], [[META2]]}
+; CHECK: [[LOOP7]] = distinct !{[[LOOP7]], [[META1]]}
 ;.

@@ -14,9 +14,7 @@ define void @test(ptr %A) {
 ; VL0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; VL0-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; VL0-NEXT:    [[TMP0:%.*]] = sub i64 1000, [[EVL_BASED_IV]]
-; VL0-NEXT:    [[TMP8:%.*]] = icmp ult i64 [[TMP0]], 1
-; VL0-NEXT:    [[SAFE_AVL:%.*]] = select i1 [[TMP8]], i64 [[TMP0]], i64 1
-; VL0-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[SAFE_AVL]], i32 2, i1 true)
+; VL0-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
 ; VL0-NEXT:    [[TMP2:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; VL0-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[TMP2]]
 ; VL0-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i32, ptr [[TMP3]], i32 0
@@ -53,9 +51,7 @@ define void @test(ptr %A) {
 ; VL1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; VL1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; VL1-NEXT:    [[TMP0:%.*]] = sub i64 1000, [[EVL_BASED_IV]]
-; VL1-NEXT:    [[TMP9:%.*]] = icmp ult i64 [[TMP0]], 1
-; VL1-NEXT:    [[SAFE_AVL:%.*]] = select i1 [[TMP9]], i64 [[TMP0]], i64 1
-; VL1-NEXT:    [[TMP1:%.*]] = call i64 @llvm.umin.i64(i64 [[SAFE_AVL]], i64 1)
+; VL1-NEXT:    [[TMP1:%.*]] = call i64 @llvm.umin.i64(i64 [[TMP0]], i64 1)
 ; VL1-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP1]], i32 2, i1 true)
 ; VL1-NEXT:    [[TMP3:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; VL1-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[TMP3]]
@@ -93,9 +89,7 @@ define void @test(ptr %A) {
 ; VL4-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; VL4-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; VL4-NEXT:    [[TMP0:%.*]] = sub i64 1000, [[EVL_BASED_IV]]
-; VL4-NEXT:    [[TMP9:%.*]] = icmp ult i64 [[TMP0]], 1
-; VL4-NEXT:    [[SAFE_AVL:%.*]] = select i1 [[TMP9]], i64 [[TMP0]], i64 1
-; VL4-NEXT:    [[TMP1:%.*]] = call i64 @llvm.umin.i64(i64 [[SAFE_AVL]], i64 4)
+; VL4-NEXT:    [[TMP1:%.*]] = call i64 @llvm.umin.i64(i64 [[TMP0]], i64 4)
 ; VL4-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP1]], i32 2, i1 true)
 ; VL4-NEXT:    [[TMP3:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; VL4-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[TMP3]]

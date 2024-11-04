@@ -1464,23 +1464,6 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
   assert(State.VF.isVector() && "not widening");
   State.setDebugLocFrom(getDebugLoc());
 
-#if SIFIVE_CUSTOMIZATION
-  VPRegionBlock *LoopRegion = State.Plan->getVectorLoopRegion();
-  VPBasicBlock *Preheader =
-      cast<VPBasicBlock>(LoopRegion->getSinglePredecessor());
-  if (getParent() != Preheader && State.Plan->useVLAVectorizer()) {
-    // Skip if CI doesn't have vp form.
-    if (Intrinsic::ID VPID = VPIntrinsic::getForIntrinsic(VectorIntrinsicID);
-        VPIntrinsic::isVPIntrinsic(VPID)) {
-      auto *CI = cast_or_null<CallInst>(getUnderlyingInstr());
-      llvm::widenPredicatedCall(CI, this, State, VPID);
-      Value *V = State.get(this);
-      State.addMetadata(V, CI);
-      return;
-    }
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
   FunctionType *VFTy = Variant->getFunctionType();
   // Add return type if intrinsic is overloaded on it.
   SmallVector<Value *, 4> Args;
@@ -1497,6 +1480,14 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
   }
 
   assert(Variant != nullptr && "Can't create vector function.");
+#if SIFIVE_CUSTOMIZATION
+  // Add VL as an explicit final argument to SiFive NF Library functions
+  if (Variant->getName().starts_with(SiFiveNFLibraryPrefix) &&
+      State.Plan->useVLAVectorizer()) {
+    Value *EVL = State.get(State.EVL, /*NeedsScalar=*/true);
+    Args.push_back(EVL);
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   auto *CI = cast_or_null<CallInst>(getUnderlyingValue());
   SmallVector<OperandBundleDef, 1> OpBundles;
@@ -1550,6 +1541,23 @@ void VPWidenCallRecipe::print(raw_ostream &O, const Twine &Indent,
 void VPWidenIntrinsicRecipe::execute(VPTransformState &State) {
   assert(State.VF.isVector() && "not widening");
   State.setDebugLocFrom(getDebugLoc());
+
+#if SIFIVE_CUSTOMIZATION
+  VPRegionBlock *LoopRegion = State.Plan->getVectorLoopRegion();
+  VPBasicBlock *Preheader =
+      cast<VPBasicBlock>(LoopRegion->getSinglePredecessor());
+  if (getParent() != Preheader && State.Plan->useVLAVectorizer()) {
+    // Skip if CI doesn't have vp form.
+    if (Intrinsic::ID VPID = VPIntrinsic::getForIntrinsic(VectorIntrinsicID);
+        VPIntrinsic::isVPIntrinsic(VPID)) {
+      auto *CI = cast_or_null<CallInst>(getUnderlyingInstr());
+      llvm::widenPredicatedIntrinsic(CI, this, State, VPID);
+      Value *V = State.get(this);
+      State.addMetadata(V, CI);
+      return;
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   SmallVector<Type *, 2> TysForDecl;
   // Add return type if intrinsic is overloaded on it.

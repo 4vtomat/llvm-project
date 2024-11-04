@@ -86,9 +86,7 @@ define i32 @compress_store(i32 %n, ptr noalias %a, ptr noalias %b) {
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY_SPLIT]] ]
 ; CHECK-NEXT:    [[MONOTONIC_PHI:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[MONOTONIC_UPDATE:%.*]], [[VECTOR_BODY_SPLIT]] ]
 ; CHECK-NEXT:    [[TMP1:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP12:%.*]] = icmp ult i64 [[TMP1]], 1
-; CHECK-NEXT:    [[SAFE_AVL:%.*]] = select i1 [[TMP12]], i64 [[TMP1]], i64 1
-; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[SAFE_AVL]], i32 8, i1 true)
+; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP1]], i32 8, i1 true)
 ; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP0]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i32, ptr [[TMP3]], i32 0
@@ -333,9 +331,7 @@ define i32 @expand_load(i32 %n, ptr noalias %a, ptr noalias %b) {
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY_SPLIT]] ]
 ; CHECK-NEXT:    [[MONOTONIC_PHI:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[MONOTONIC_UPDATE:%.*]], [[VECTOR_BODY_SPLIT]] ]
 ; CHECK-NEXT:    [[TMP18:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP15:%.*]] = icmp ult i64 [[TMP18]], 1
-; CHECK-NEXT:    [[SAFE_AVL:%.*]] = select i1 [[TMP15]], i64 [[TMP18]], i64 1
-; CHECK-NEXT:    [[TMP19:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[SAFE_AVL]], i32 8, i1 true)
+; CHECK-NEXT:    [[TMP19:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP18]], i32 8, i1 true)
 ; CHECK-NEXT:    [[TMP2:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP2]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i32, ptr [[TMP3]], i32 0

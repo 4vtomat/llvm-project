@@ -20,7 +20,7 @@ namespace llvm {
 Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
                                   VPTransformState &State, VPValue *BlockInMask);
 
-void widenPredicatedCall(CallInst *CI, VPValue *Def, VPTransformState &State,
+void widenPredicatedIntrinsic(CallInst *CI, VPValue *Def, VPTransformState &State,
                          Intrinsic::ID VPID);
 
 /// Build and return either `vp.gather`/`vp.scatter` or

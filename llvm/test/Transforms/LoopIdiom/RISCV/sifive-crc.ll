@@ -17,7 +17,7 @@ define zeroext i16 @crcu8(i8 zeroext %data, i16 zeroext %crc) {
 ; CHECK-NEXT:    [[TMP3:%.*]] = xor i16 [[TMP2]], -24575
 ; CHECK-NEXT:    [[CRC_ADDR_2]] = select i1 [[CMP10_NOT]], i16 [[TMP2]], i16 [[TMP3]]
 ; CHECK-NEXT:    [[INC]] = add nuw nsw i8 [[I_036]], 1
-; CHECK-NEXT:    [[CMP:%.*]] = icmp ult i8 [[I_036]], 7
+; CHECK-NEXT:    [[CMP:%.*]] = icmp samesign ult i8 [[I_036]], 7
 ; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END:%.*]]
 ; CHECK:       for.end:
 ; CHECK-NEXT:    ret i16 [[CRC_ADDR_2]]
