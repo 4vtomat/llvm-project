@@ -54,7 +54,10 @@ define void @Ppmd8_EncodeSymbol(ptr %p, i8 %0) {
 ; CHECK-NEXT:    [[TMP13:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; CHECK-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[S180_06_LCSSA]], i64 [[TMP13]]
 ; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr inbounds [[STRUCT_CPPMD_STATE_19_114_124_235_343_467_495_627_635_651_662_682_701_702_704_722_741_759_778:%.*]], ptr [[NEXT_GEP]], i64 0, i32 1
-; CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 8 x i8> @llvm.experimental.vp.strided.load.nxv8i8.p0.i64(ptr align 1 [[TMP14]], i64 6, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
+; CHECK-NEXT:    [[TMP15:%.*]] = mul nuw nsw i32 [[TMP12]], 6
+; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 48 x i8> @llvm.vp.load.nxv48i8.p0(ptr align 1 [[TMP14]], <vscale x 48 x i1> shufflevector (<vscale x 48 x i1> insertelement (<vscale x 48 x i1> poison, i1 true, i64 0), <vscale x 48 x i1> poison, <vscale x 48 x i32> zeroinitializer), i32 [[TMP15]])
+; CHECK-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8> } @llvm.experimental.vector.deinterleave6.nxv48i8(<vscale x 48 x i8> [[WIDE_MASKED_LOAD]])
+; CHECK-NEXT:    [[TMP17:%.*]] = extractvalue { <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8> } [[DEINTERLEAVED_RESULTS]], 0
 ; CHECK-NEXT:    [[VP_CAST]] = call <vscale x 8 x i32> @llvm.vp.zext.nxv8i32.nxv8i8(<vscale x 8 x i8> [[TMP17]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
 ; CHECK-NEXT:    [[TMP18:%.*]] = zext i32 [[TMP12]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP18]], [[EVL_BASED_IV]]

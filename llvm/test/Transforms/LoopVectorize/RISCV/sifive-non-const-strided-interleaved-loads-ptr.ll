@@ -45,9 +45,7 @@ define void @test(i32 %0, i64 %conv, ptr %call5.i.i.i4.i.i101) {
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP21:%.*]] = sub i64 [[TMP1]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP27:%.*]] = icmp ult i64 [[TMP21]], 1
-; CHECK-NEXT:    [[SAFE_AVL:%.*]] = select i1 [[TMP27]], i64 [[TMP21]], i64 1
-; CHECK-NEXT:    [[TMP22:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[SAFE_AVL]], i32 1, i1 true)
+; CHECK-NEXT:    [[TMP22:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP21]], i32 1, i1 true)
 ; CHECK-NEXT:    [[TMP18:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; CHECK-NEXT:    [[TMP19:%.*]] = trunc i64 [[EVL_BASED_IV]] to i32
 ; CHECK-NEXT:    [[TMP20:%.*]] = add i32 [[TMP19]], 0

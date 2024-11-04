@@ -3998,6 +3998,9 @@ bool LoopVectorizationCostModel::interleavedAccessCanBeWidened(
   if (hasIrregularType(ScalarTy, DL))
     return false;
 
+#if SIFIVE_CUSTOMIZATION
+  if (!Legal->useVLAVectorizer())
+#endif
   // We currently only know how to emit interleave/deinterleave with
   // Factor=2 for scalable vectors. This is purely an implementation
   // limit.
@@ -4917,8 +4920,7 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
   case CM_ScalarEpilogueAllowed:
 #if SIFIVE_CUSTOMIZATION
   {
-    // FIXME: Is this supposed to be MaxTC like upstream?
-    FixedScalableVFPair MaxVF = computeFeasibleMaxVF(TC, UserVF, false);
+    FixedScalableVFPair MaxVF = computeFeasibleMaxVF(MaxTC, UserVF, false);
     if (Hints->isFixedVectorizationDisabled() && !MaxVF)
       reportVectorizationFailure(
           "Cannot vectorize operations on unsupported scalable vector type",
