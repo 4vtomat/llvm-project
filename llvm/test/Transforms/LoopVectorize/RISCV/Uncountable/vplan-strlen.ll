@@ -10,18 +10,18 @@ define i64 @strlen_i8(ptr %start) {
 ; VPLANS-EMPTY:
 ; VPLANS-NEXT: <x1> vector loop: {
 ; VPLANS-NEXT:   vector.body:
-; VPLANS-NEXT:     EMIT vp<%2> = CANONICAL-INDUCTION ir<0>, vp<%11>
-; VPLANS-NEXT:     EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%3> = phi ir<0>, vp<%11>
+; VPLANS-NEXT:     EMIT vp<%2> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; VPLANS-NEXT:     EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%3> = phi ir<0>, vp<%index.evl.next>
 ; VPLANS-NEXT:     EMIT vp<%4> = EXPLICIT-VECTOR-LENGTH
 ; VPLANS-NEXT:     vp<%5> = SCALAR-STEPS vp<%3>, ir<1>
-; VPLANS-NEXT:     EMIT vp<%6> = ptradd ir<%start>, vp<%5>
-; VPLANS-NEXT:     vp<%7> = vector-pointer vp<%6>
-; VPLANS-NEXT:     WIDEN-SPECULATIVE-INSTRUCTION ir<%0>, vp<%8> = vp.load vp<%7>, vp<%4>	unit-strided
+; VPLANS-NEXT:     EMIT vp<%next.gep> = ptradd ir<%start>, vp<%5>
+; VPLANS-NEXT:     vp<%6> = vector-pointer vp<%next.gep>
+; VPLANS-NEXT:     WIDEN-SPECULATIVE-INSTRUCTION ir<%0>, vp<%7> = vp.load vp<%6>, vp<%4>	unit-strided
 ; VPLANS-NEXT:     WIDEN ir<%cmp.not> = icmp eq ir<%0>, ir<0>
-; VPLANS-NEXT:     EMIT vp<%9> = exiting-cond ir<%cmp.not>
-; VPLANS-NEXT:     SCALAR-CAST vp<%10> = zext vp<%8> to i64
-; VPLANS-NEXT:     EMIT vp<%11> = add nuw vp<%10>, vp<%3>
-; VPLANS-NEXT:     EMIT branch-on-cond vp<%9>
+; VPLANS-NEXT:     EMIT vp<%exitcond> = exiting-cond ir<%cmp.not>
+; VPLANS-NEXT:     SCALAR-CAST vp<%8> = zext vp<%7> to i64
+; VPLANS-NEXT:     EMIT vp<%index.evl.next> = add nuw vp<%8>, vp<%3>
+; VPLANS-NEXT:     EMIT branch-on-cond vp<%exitcond>
 ; VPLANS-NEXT:   No successors
 ; VPLANS-NEXT: }
 entry:
