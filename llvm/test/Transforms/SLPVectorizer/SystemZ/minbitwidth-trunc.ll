@@ -4,14 +4,11 @@
 define void @test() {
 ; CHECK-LABEL: define void @test(
 ; CHECK-SAME: ) #[[ATTR0:[0-9]+]] {
-; CHECK-NEXT:    [[TMP1:%.*]] = zext i8 0 to i32
 ; CHECK-NEXT:    [[TMP2:%.*]] = zext i8 0 to i32
 ; CHECK-NEXT:    [[TMP3:%.*]] = zext i8 0 to i32
-; CHECK-NEXT:    [[DOTNOT_3:%.*]] = icmp sgt i32 0, [[TMP3]]
-; CHECK-NEXT:    [[TMP4:%.*]] = insertelement <7 x i1> <i1 poison, i1 poison, i1 poison, i1 poison, i1 false, i1 false, i1 false>, i1 [[DOTNOT_3]], i32 3
-; CHECK-NEXT:    [[TMP5:%.*]] = call <7 x i1> @llvm.vector.insert.v7i1.v3i1(<7 x i1> [[TMP4]], <3 x i1> zeroinitializer, i64 0)
-; CHECK-NEXT:    [[TMP6:%.*]] = insertelement <7 x i32> <i32 poison, i32 0, i32 0, i32 0, i32 0, i32 poison, i32 poison>, i32 [[TMP2]], i32 0
-; CHECK-NEXT:    [[TMP7:%.*]] = insertelement <7 x i32> [[TMP6]], i32 [[TMP1]], i32 5
+; CHECK-NEXT:    [[TMP5:%.*]] = call <7 x i1> @llvm.vector.insert.v7i1.v4i1(<7 x i1> <i1 poison, i1 poison, i1 poison, i1 poison, i1 false, i1 false, i1 false>, <4 x i1> zeroinitializer, i64 0)
+; CHECK-NEXT:    [[TMP4:%.*]] = insertelement <7 x i32> <i32 poison, i32 0, i32 0, i32 0, i32 0, i32 poison, i32 poison>, i32 [[TMP3]], i32 0
+; CHECK-NEXT:    [[TMP7:%.*]] = insertelement <7 x i32> [[TMP4]], i32 [[TMP2]], i32 5
 ; CHECK-NEXT:    [[TMP8:%.*]] = shufflevector <7 x i32> [[TMP7]], <7 x i32> poison, <7 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 0>
 ; CHECK-NEXT:    [[TMP10:%.*]] = select <7 x i1> [[TMP5]], <7 x i32> zeroinitializer, <7 x i32> [[TMP8]]
 ; CHECK-NEXT:    [[OP_RDX2:%.*]] = call i32 @llvm.vector.reduce.xor.v7i32(<7 x i32> [[TMP10]])
