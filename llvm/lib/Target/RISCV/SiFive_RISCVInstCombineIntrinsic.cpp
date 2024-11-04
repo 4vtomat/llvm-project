@@ -32,7 +32,7 @@ static cl::opt<bool>
 static CallInst *CreateIntrinsic(IntrinsicInst *II, Intrinsic::ID IID,
                                  ArrayRef<Type *> Types,
                                  ArrayRef<Value *> Args) {
-  Function *Merge = Intrinsic::getDeclaration(II->getModule(), IID, Types);
+  Function *Merge = Intrinsic::getOrInsertDeclaration(II->getModule(), IID, Types);
   return CallInst::Create(Merge, Args);
 }
 

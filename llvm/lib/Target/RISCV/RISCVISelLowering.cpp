@@ -25059,11 +25059,11 @@ bool RISCVTargetLowering::lowerInterleavedScalableLoad(
   Function *VlsegNFunc;
   if (Mask) {
     VlsegNFunc =
-        Intrinsic::getDeclaration(Load->getModule(), IntrMaskIds[Factor - 2],
-                                  {VecTupTy, Mask->getType(), EVL->getType()});
+        Intrinsic::getOrInsertDeclaration(Load->getModule(), IntrMaskIds[Factor - 2],
+                                          {VecTupTy, Mask->getType(), EVL->getType()});
     Operands.push_back(Mask);
   } else {
-    VlsegNFunc = Intrinsic::getDeclaration(
+    VlsegNFunc = Intrinsic::getOrInsertDeclaration(
         Load->getModule(), IntrIds[Factor - 2], {VecTupTy, EVL->getType()});
   }
 
@@ -25080,7 +25080,7 @@ bool RISCVTargetLowering::lowerInterleavedScalableLoad(
   SmallVector<Type *, 8> AggrTypes{Factor, VTy};
   Value *Return =
       PoisonValue::get(StructType::get(Load->getContext(), AggrTypes));
-  Function *VecExtractFunc = Intrinsic::getDeclaration(
+  Function *VecExtractFunc = Intrinsic::getOrInsertDeclaration(
       Load->getModule(), Intrinsic::riscv_tuple_extract,
       {VTy, VecTupTy});
   for (unsigned i = 0; i < Factor; ++i) {
@@ -25211,7 +25211,7 @@ bool RISCVTargetLowering::lowerInterleavedScalableStore(
                               NumElts * SEW / 8),
       Factor);
 
-  Function *VecInsertFunc = Intrinsic::getDeclaration(
+  Function *VecInsertFunc = Intrinsic::getOrInsertDeclaration(
       Store->getModule(), Intrinsic::riscv_tuple_insert, {VecTupTy, VTy});
   Value *StoredVal = PoisonValue::get(VecTupTy);
   for (unsigned i = 0; i < Factor; ++i)
@@ -25226,11 +25226,11 @@ bool RISCVTargetLowering::lowerInterleavedScalableStore(
   Function *VssegNFunc;
   if (Mask) {
     VssegNFunc =
-        Intrinsic::getDeclaration(Store->getModule(), IntrMaskIds[Factor - 2],
-                                  {VecTupTy, Mask->getType(), EVL->getType()});
+        Intrinsic::getOrInsertDeclaration(Store->getModule(), IntrMaskIds[Factor - 2],
+                                          {VecTupTy, Mask->getType(), EVL->getType()});
     Operands.push_back(Mask);
   } else {
-    VssegNFunc = Intrinsic::getDeclaration(
+    VssegNFunc = Intrinsic::getOrInsertDeclaration(
         Store->getModule(), IntrIds[Factor - 2], {VecTupTy, EVL->getType()});
   }
 
@@ -25349,18 +25349,18 @@ bool RISCVTargetLowering::lowerDeinterleaveIntrinsicToStridedLoad(
   Function *VlssegNFunc;
   if (IsMasked) {
     VlssegNFunc =
-        Intrinsic::getDeclaration(StridedLoad->getModule(), VlssegNID,
+        Intrinsic::getOrInsertDeclaration(StridedLoad->getModule(), VlssegNID,
                                   {VecTupTy, EVL->getType(), Mask->getType()});
   } else {
-    VlssegNFunc = Intrinsic::getDeclaration(StridedLoad->getModule(), VlssegNID,
-                                            {VecTupTy, EVL->getType()});
+    VlssegNFunc = Intrinsic::getOrInsertDeclaration(StridedLoad->getModule(), VlssegNID,
+                                                    {VecTupTy, EVL->getType()});
   }
   CallInst *VlssegN = Builder.CreateCall(VlssegNFunc, Operands);
 
   SmallVector<Type *, 8> AggrTypes{Factor, ResTy};
   Value *Return =
       PoisonValue::get(StructType::get(StridedLoad->getContext(), AggrTypes));
-  Function *VecExtractFunc = Intrinsic::getDeclaration(
+  Function *VecExtractFunc = Intrinsic::getOrInsertDeclaration(
       StridedLoad->getModule(), Intrinsic::riscv_tuple_extract,
       {ResTy, VecTupTy});
   for (unsigned i = 0; i < Factor; ++i) {
