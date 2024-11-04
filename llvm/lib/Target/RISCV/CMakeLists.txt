@@ -68,7 +68,6 @@ add_llvm_target(RISCVCodeGen
   RISCVTargetObjectFile.cpp
   RISCVTargetTransformInfo.cpp
   RISCVVectorPeephole.cpp
-  RISCVVLOptimizer.cpp
   RISCVZacasABIFix.cpp
   SiFive_RISCVTypePromotion.cpp
   SiFive_RISCVVLOptimizer.cpp

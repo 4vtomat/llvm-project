@@ -667,11 +667,8 @@ void RISCVPassConfig::addMachineSSAOptimization() {
 
 void RISCVPassConfig::addPreRegAlloc() {
   addPass(createRISCVPreRAExpandPseudoPass());
-  if (TM->getOptLevel() != CodeGenOptLevel::None) {
+  if (TM->getOptLevel() != CodeGenOptLevel::None)
     addPass(createRISCVMergeBaseOffsetOptPass());
-    if (EnableVLOptimizer)
-      addPass(createRISCVVLOptimizerPass());
-  }
 
   addPass(createRISCVInsertReadWriteCSRPass());
   addPass(createRISCVInsertWriteVXRMPass());
