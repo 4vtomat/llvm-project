@@ -31,7 +31,7 @@ vint32m1_t test_vr(vint32m1_t a, vint32m1_t b) {
 
 vint32m1_t test_vd(vint32m1_t a, vint32m1_t b) {
 // CHECK-LABEL: define{{.*}} @test_vd
-// CHECK: %0 = tail call <vscale x 2 x i32> asm sideeffect "vadd.vv $0, $1, $2", "=^vd,^vd,^vd"(<vscale x 2 x i32> %a, <vscale x 2 x i32> %b)
+// CHECK: %0 = tail call <vscale x 2 x i32> asm sideeffect "vadd.vv $0, $1, $2", "=^vd,^vd,^vd,~{vl},~{vtype}"(<vscale x 2 x i32> %a, <vscale x 2 x i32> %b)
   vint32m1_t ret;
   asm volatile ("vadd.vv %0, %1, %2" : "=vd"(ret) : "vd"(a), "vd"(b));
   return ret;

@@ -7,17 +7,17 @@
 
 long test_r(long x) {
 // CHECK-LABEL: define{{.*}} {{i64|i32}} @test_r(
-// CHECK: call {{i64|i32}} asm sideeffect "", "=r,r"({{i64|i32}} %{{.*}})
+// CHECK: call {{i64|i32}} asm sideeffect "", "=r,r,~{vl},~{vtype}"({{i64|i32}} %{{.*}})
   long ret;
   asm volatile ("" : "=r"(ret) : "r"(x));
-// CHECK: call {{i64|i32}} asm sideeffect "", "=r,r"({{i64|i32}} %{{.*}})
+// CHECK: call {{i64|i32}} asm sideeffect "", "=r,r,~{vl},~{vtype}"({{i64|i32}} %{{.*}})
   asm volatile ("" : "=r"(ret) : "r"(x));
   return ret;
 }
 
 long test_cr(long x) {
 // CHECK-LABEL: define{{.*}} {{i64|i32}} @test_cr(
-// CHECK: call {{i64|i32}} asm sideeffect "", "=^cr,^cr"({{i64|i32}} %{{.*}})
+// CHECK: call {{i64|i32}} asm sideeffect "", "=^cr,^cr,~{vl},~{vtype}"({{i64|i32}} %{{.*}})
   long ret;
   asm volatile ("" : "=cr"(ret) : "cr"(x));
   return ret;
@@ -27,9 +27,9 @@ float cf;
 double cd;
 void test_cf(float f, double d) {
 // CHECK-LABEL: define{{.*}} void @test_cf(
-// CHECK: call float asm sideeffect "", "=^cf,^cf"(float %{{.*}})
+// CHECK: call float asm sideeffect "", "=^cf,^cf,~{vl},~{vtype}"(float %{{.*}})
   asm volatile("" : "=cf"(cf) : "cf"(f));
-// CHECK: call double asm sideeffect "", "=^cf,^cf"(double %{{.*}})
+// CHECK: call double asm sideeffect "", "=^cf,^cf,~{vl},~{vtype}"(double %{{.*}})
   asm volatile("" : "=cf"(cd) : "cf"(d));
 }
 
@@ -88,9 +88,9 @@ void test_s(void) {
 }
 
 // CHECK-LABEL: test_modifiers(
-// CHECK: call void asm sideeffect "// ${0:i} ${1:i}", "r,r"({{i32|i64}} %val, i32 37)
-// CHECK: call void asm sideeffect "// ${0:z} ${1:z}", "i,i"(i32 0, i32 1)
-// CHECK: call void asm sideeffect "// ${0:N}", "r"({{i32|i64}} %val)
+// CHECK: call void asm sideeffect "// ${0:i} ${1:i}", "r,r,~{vl},~{vtype}"({{i32|i64}} %val, i32 37)
+// CHECK: call void asm sideeffect "// ${0:z} ${1:z}", "i,i,~{vl},~{vtype}"(i32 0, i32 1)
+// CHECK: call void asm sideeffect "// ${0:N}", "r,~{vl},~{vtype}"({{i32|i64}} %val)
 void test_modifiers(long val) {
   asm volatile("// %i0 %i1" :: "r"(val), "r"(37));
   asm volatile("// %z0 %z1" :: "i"(0), "i"(1));
