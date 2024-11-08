@@ -7482,6 +7482,13 @@ BoUpSLP::TreeEntry::EntryState BoUpSLP::getScalarsVectorizationState(
       LLVM_DEBUG(dbgs() << "SLP: Non-vectorizable call.\n");
       return TreeEntry::NeedToGather;
     }
+#if SIFIVE_CUSTOMIZATION
+    if (!VecFunc && Intrinsic::isTargetIntrinsic(ID) &&
+        !TTI->isTypeLegal(getWidenedType(getValueType(CI), VL.size()))) {
+      LLVM_DEBUG(dbgs() << "SLP: Vectorized result type is illegal.\n");
+      return TreeEntry::NeedToGather;
+    }
+#endif // SIFIVE_CUSTOMIZATION
     Function *F = CI->getCalledFunction();
     unsigned NumArgs = CI->arg_size();
     SmallVector<Value *, 4> ScalarArgs(NumArgs, nullptr);

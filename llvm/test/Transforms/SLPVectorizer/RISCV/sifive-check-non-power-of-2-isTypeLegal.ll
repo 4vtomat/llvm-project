@@ -5,12 +5,19 @@ define void @test(ptr %in0, ptr %in1, ptr %out) {
 ; CHECK-LABEL: @test(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[GEP0:%.*]] = getelementptr inbounds float, ptr [[IN0:%.*]], i64 0
+; CHECK-NEXT:    [[GEP2:%.*]] = getelementptr inbounds float, ptr [[IN0]], i64 8
 ; CHECK-NEXT:    [[GEP3:%.*]] = getelementptr inbounds float, ptr [[IN1:%.*]], i64 0
+; CHECK-NEXT:    [[GEP5:%.*]] = getelementptr inbounds float, ptr [[IN1]], i64 8
+; CHECK-NEXT:    [[TMP0:%.*]] = load <4 x float>, ptr [[GEP2]], align 4
+; CHECK-NEXT:    [[TMP1:%.*]] = load <4 x float>, ptr [[GEP5]], align 4
+; CHECK-NEXT:    [[TMP2:%.*]] = call <4 x float> @llvm.aarch64.neon.fmin.v4f32(<4 x float> [[TMP0]], <4 x float> [[TMP1]])
 ; CHECK-NEXT:    [[GEP6:%.*]] = getelementptr inbounds float, ptr [[OUT:%.*]], i64 0
-; CHECK-NEXT:    [[TMP0:%.*]] = load <12 x float>, ptr [[GEP0]], align 4
-; CHECK-NEXT:    [[TMP1:%.*]] = load <12 x float>, ptr [[GEP3]], align 4
-; CHECK-NEXT:    [[TMP2:%.*]] = call <12 x float> @llvm.aarch64.neon.fmin.v12f32(<12 x float> [[TMP0]], <12 x float> [[TMP1]])
-; CHECK-NEXT:    store <12 x float> [[TMP2]], ptr [[GEP6]], align 4
+; CHECK-NEXT:    [[GEP8:%.*]] = getelementptr inbounds float, ptr [[OUT]], i64 8
+; CHECK-NEXT:    [[TMP3:%.*]] = load <8 x float>, ptr [[GEP0]], align 4
+; CHECK-NEXT:    [[TMP4:%.*]] = load <8 x float>, ptr [[GEP3]], align 4
+; CHECK-NEXT:    [[TMP5:%.*]] = call <8 x float> @llvm.aarch64.neon.fmin.v8f32(<8 x float> [[TMP3]], <8 x float> [[TMP4]])
+; CHECK-NEXT:    store <8 x float> [[TMP5]], ptr [[GEP6]], align 4
+; CHECK-NEXT:    store <4 x float> [[TMP2]], ptr [[GEP8]], align 4
 ; CHECK-NEXT:    ret void
 ;
 entry:
