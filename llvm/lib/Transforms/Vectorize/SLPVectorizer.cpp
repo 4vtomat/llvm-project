@@ -10533,7 +10533,12 @@ BoUpSLP::getEntryCost(const TreeEntry *E, ArrayRef<Value *> VectorizedVals,
     // If the selects are the only uses of the compares, they will be
     // dead and we can adjust the cost by removing their cost.
     if (VI && SelectOnly) {
+#if SIFIVE_CUSTOMIZATION
+      assert((!Ty->isVectorTy() || SLPReVec) &&
+             "Expected only for scalar type.");
+#else
       assert(!Ty->isVectorTy() && "Expected only for scalar type.");
+#endif // SIFIVE_CUSTOMIZATION
       auto *CI = cast<CmpInst>(VI->getOperand(0));
       IntrinsicCost -= TTI->getCmpSelInstrCost(
           CI->getOpcode(), Ty, Builder.getInt1Ty(), CI->getPredicate(),
