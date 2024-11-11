@@ -11,14 +11,14 @@ define void @f(%union.31.33* %agg.result) {
 ; CHECK-SAME: ptr [[AGG_RESULT:%.*]]) {
 ; CHECK-NEXT:  [[ENTRY:.*:]]
 ; CHECK-NEXT:    [[TMP0:%.*]] = bitcast ptr [[AGG_RESULT]] to ptr
-; CHECK-NEXT:    br i1 undef, label %[[ENTRY_SPLIT_US:.*]], label %[[ENTRY_ENTRY_SPLIT_CRIT_EDGE:.*]]
-; CHECK:       [[ENTRY_ENTRY_SPLIT_CRIT_EDGE]]:
+; CHECK-NEXT:    br i1 undef, label %[[ENTRY_SPLIT_US:.*]], label %[[CLEANUP_CONT_US:.*]]
+; CHECK:       [[CLEANUP_CONT_US]]:
 ; CHECK-NEXT:    br label %[[LBL1_LVER_CHECK:.*]]
 ; CHECK:       [[ENTRY_SPLIT_US]]:
 ; CHECK-NEXT:    br label %[[LBL1_US:.*]]
 ; CHECK:       [[LBL1_US]]:
 ; CHECK-NEXT:    br label %[[CLEANUP4_LOOPEXIT_US:.*]]
-; CHECK:       [[CLEANUP_CONT_US:.*:]]
+; CHECK:       [[CLEANUP_CONT_US1:.*:]]
 ; CHECK-NEXT:    br label %[[FOR_END_US:.*]]
 ; CHECK:       [[FOR_END_US]]:
 ; CHECK-NEXT:    unreachable
@@ -42,8 +42,8 @@ define void @f(%union.31.33* %agg.result) {
 ; CHECK:       [[FOR_END_LVER_ORIG]]:
 ; CHECK-NEXT:    store i16 undef, ptr @d, align 1
 ; CHECK-NEXT:    store i32 undef, ptr [[TMP0]], align 1
-; CHECK-NEXT:    br label %[[CLEANUP4_LVER_ORIG:.*]]
-; CHECK:       [[CLEANUP4_LVER_ORIG]]:
+; CHECK-NEXT:    br label %[[CLEANUP_CONT:.*]]
+; CHECK:       [[CLEANUP_CONT]]:
 ; CHECK-NEXT:    br i1 false, label %[[LBL1_LVER_ORIG]], label %[[RETURN_US_LCSSA_LOOPEXIT:.*]]
 ; CHECK:       [[LBL1_PH_LDIST1]]:
 ; CHECK-NEXT:    br label %[[LBL1_LDIST1:.*]]
@@ -58,13 +58,13 @@ define void @f(%union.31.33* %agg.result) {
 ; CHECK:       [[LBL1_PH]]:
 ; CHECK-NEXT:    br label %[[LBL1:.*]]
 ; CHECK:       [[LBL1]]:
-; CHECK-NEXT:    br label %[[FOR_END:.*]]
-; CHECK:       [[CLEANUP_CONT:.*:]]
+; CHECK-NEXT:    br label %[[CLEANUP4_LOOPEXIT:.*]]
+; CHECK:       [[CLEANUP_CONT1:.*:]]
 ; CHECK-NEXT:    unreachable
-; CHECK:       [[FOR_END]]:
+; CHECK:       [[CLEANUP4_LOOPEXIT]]:
 ; CHECK-NEXT:    store i32 undef, ptr [[TMP0]], align 1, !alias.scope [[META3]]
 ; CHECK-NEXT:    br label %[[CLEANUP4:.*]]
-; CHECK:       [[CLEANUP4_LOOPEXIT:.*:]]
+; CHECK:       [[CLEANUP4_LOOPEXIT1:.*:]]
 ; CHECK-NEXT:    unreachable
 ; CHECK:       [[CLEANUP4]]:
 ; CHECK-NEXT:    br i1 false, label %[[LBL1]], label %[[RETURN_US_LCSSA_LOOPEXIT1:.*]]
