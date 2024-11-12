@@ -1713,7 +1713,8 @@ static Value *evaluateVPReversed(Value *V, InstCombinerImpl &IC) {
     Value *NewOp1 = evaluateVPReversed(VPI->getArgOperand(1), IC);
     // If we get the same operands, we don't need to create a new intrinsic.
     if (NewOp0 != VPI->getArgOperand(0) || NewOp1 != VPI->getArgOperand(1)) {
-      Function *F = Intrinsic::getDeclaration(VPI->getModule(), VPI->getIntrinsicID(), VPI->getType());
+      Function *F = Intrinsic::getOrInsertDeclaration(
+          VPI->getModule(), VPI->getIntrinsicID(), VPI->getType());
       Instruction *Intrin = CallInst::Create(F, {NewOp0, NewOp1, Mask, VL});
       Intrin->takeName(VPI);
       return IC.InsertNewInstWith(Intrin, VPI->getIterator());
@@ -1727,7 +1728,9 @@ static Value *evaluateVPReversed(Value *V, InstCombinerImpl &IC) {
     Value *NewOp = evaluateVPReversed(VPI->getArgOperand(0), IC);
     // If we get the same operands, we don't need to create a new intrinsic.
     if (NewOp != VPI->getArgOperand(0)) {
-      Function *F = Intrinsic::getDeclaration(VPI->getModule(), VPI->getIntrinsicID(), {VPI->getType(), NewOp->getType()});
+      Function *F = Intrinsic::getOrInsertDeclaration(
+          VPI->getModule(), VPI->getIntrinsicID(),
+          {VPI->getType(), NewOp->getType()});
       Instruction *Intrin = CallInst::Create(F, {NewOp, Mask, VL});
       Intrin->takeName(VPI);
       return IC.InsertNewInstWith(Intrin, VPI->getIterator());

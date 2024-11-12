@@ -651,7 +651,7 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
                                     {VecTupTy, VL->getType()}, Ops);
 
         Value *NewDes = PoisonValue::get(DesTy);
-        Function *TupExtractFunc = Intrinsic::getDeclaration(
+        Function *TupExtractFunc = Intrinsic::getOrInsertDeclaration(
             II->getModule(), Intrinsic::riscv_tuple_extract,
             {ScalableStructElementType, VecTupTy});
         for (unsigned i = 0; i != StructNumElements; ++i) {
@@ -957,7 +957,7 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
                                     NumElts * SEW / 8),
             StructNumElements);
 
-        Function *VecInsertFunc = Intrinsic::getDeclaration(
+        Function *VecInsertFunc = Intrinsic::getOrInsertDeclaration(
             II->getModule(), Intrinsic::riscv_tuple_insert,
             {VecTupTy, ScalableStructElementType});
         Value *StoredVal = PoisonValue::get(VecTupTy);

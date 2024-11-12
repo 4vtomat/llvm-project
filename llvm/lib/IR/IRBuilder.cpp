@@ -408,7 +408,7 @@ CallInst *IRBuilderBase::getReductionIntrinsic(Intrinsic::ID ID, Value *Acc,
   EVL = CreateIntCast(EVL, getInt32Ty(), /*isSigned=*/false);
   Value *Ops[] = {Acc, Src, Mask, EVL};
   Type *Tys[] = {SrcTy};
-  auto Decl = Intrinsic::getDeclaration(M, ID, Tys);
+  auto Decl = Intrinsic::getOrInsertDeclaration(M, ID, Tys);
   return CreateCall(Decl, Ops);
 }
 #endif // SIFIVE_CUSTOMIZATION

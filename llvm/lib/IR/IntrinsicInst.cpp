@@ -676,11 +676,11 @@ Function *VPIntrinsic::getOrInsertDeclarationForParams(
     break;
 #if SIFIVE_CUSTOMIZATION
   case Intrinsic::vp_load_ff:
-    VPFunc = Intrinsic::getDeclaration(
+    VPFunc = Intrinsic::getOrInsertDeclaration(
         M, VPID, {ReturnType->getStructElementType(0), Params[0]->getType()});
     break;
   case Intrinsic::vp_powi:
-    VPFunc = Intrinsic::getDeclaration(
+    VPFunc = Intrinsic::getOrInsertDeclaration(
         M, VPID, {Params[0]->getType(), Params[1]->getType()});
     break;
 #endif // SIFIVE_CUSTOMIZATION
