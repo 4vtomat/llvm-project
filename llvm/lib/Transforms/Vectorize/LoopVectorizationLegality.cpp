@@ -2843,7 +2843,11 @@ public:
   bool visitSignExtendExpr(const SCEVSignExtendExpr *S) { return visitExpr(S); }
   bool visitAddExpr(const SCEVAddExpr *S) { return visitExpr(S); }
   bool visitMulExpr(const SCEVMulExpr *S) { return visitExpr(S); }
-  bool visitUDivExpr(const SCEVUDivExpr *S) { return visitExpr(S); }
+  bool visitUDivExpr(const SCEVUDivExpr *S) {
+    if (!LVL.getScalarEvolution()->isKnownNonZero(S->getRHS()))
+      return false;
+    return visitExpr(S);
+  }
   bool visitAddRecExpr(const SCEVAddRecExpr *S) { return visitExpr(S); }
   bool visitSMaxExpr(const SCEVSMaxExpr *S) { return visitExpr(S); }
   bool visitUMaxExpr(const SCEVUMaxExpr *S) { return visitExpr(S); }
