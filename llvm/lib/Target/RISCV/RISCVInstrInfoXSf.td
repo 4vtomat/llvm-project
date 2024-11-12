@@ -1977,4 +1977,74 @@ foreach vti = [VI8M8, VI16M8, VI32M8, VI64M8, VF16M8, VF32M8, VF64M8, VBF16M8] i
 }
 
 def : VPatMammothVTDiscard<"int_riscv_sf_vtdiscard", "PseudoSF_VTDISCARD">;
+
+// SSCI
+
+def uimm3_lsb0 : RISCVOp<i32>,
+                 TImmLeaf<i32, [{return isShiftedUInt<2, 1>(Imm);}]> {
+  let ParserMatchClass = UImmAsmOperand<3, "Lsb0">;
+  let DecoderMethod = "decodeUImmOperand<3>";
+  let OperandType = "OPERAND_UIMM3_LSB0";
+}
+def uimm7_timm : RISCVOp<i32>,
+                 TImmLeaf<i32, [{return isUInt<7>(Imm);}]> {
+  let ParserMatchClass = UImmAsmOperand<7>;
+  let DecoderMethod = "decodeUImmOperand<7>";
+  let OperandType = "OPERAND_UIMM7";
+}
+
+let hasSideEffects = 0, mayLoad = 0, mayStore = 0,
+    Predicates = [HasVendorXSfsci], DecoderNamespace = "XSfsci" in
+def SF_SCI : RVInst<(outs GPR:$rd),
+                    (ins uimm3_lsb0:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2),
+                    "sf.sci", "$funct3, $funct7, $rd, $rs1, $rs2", [],
+                    InstFormatR>,
+                    Sched<[WriteSCI, ReadSCI, ReadSCI]> {
+  bits<7> funct7;
+  bits<3> funct3;
+
+  bits<5> rs2;
+  bits<5> rs1;
+  bits<5> rd;
+
+  let Inst{31-25} = funct7;
+  let Inst{24-20} = rs2;
+  let Inst{19-15} = rs1;
+  let Inst{14-13} = funct3{2-1};
+  let Inst{12} = 0b0;
+  let Inst{11-7} = rd;
+  let Inst{6-0} = OPC_CUSTOM_3.Value;
+}
+
+// Pseudo instructions with side effects. Will be converted to the generic
+// version when we convert MachineInstr to MCInst.
+let hasSideEffects = 1, mayLoad = 0, mayStore = 0 in {
+  def SF_SCI_X_XX_SE
+    : Pseudo<(outs GPR:$rd ), (ins uimm3_lsb0:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2),
+             []>,
+             PseudoInstExpansion<(SF_SCI GPR:$rd, uimm3_lsb0:$funct3,
+                                         uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2)>,
+             Sched<[WriteSCI, ReadSCI, ReadSCI]>;
+  def SF_SCI_XX_SE
+    : Pseudo<(outs), (ins uimm3_lsb0:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2),
+             []>,
+             PseudoInstExpansion<(SF_SCI X0, uimm3_lsb0:$funct3, uimm7_timm:$funct7,
+                                         GPR:$rs1, GPR:$rs2)>,
+             Sched<[WriteSCI, ReadSCI, ReadSCI]>;
+}
+
+def : Pat<(XLenVT (int_riscv_sf_sci_x_xx uimm3_lsb0:$funct3, uimm7_timm:$funct7,
+                                         (XLenVT GPR:$rs1), (XLenVT GPR:$rs2))),
+          (SF_SCI uimm3_lsb0:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2)>;
+
+def : Pat<(XLenVT (int_riscv_sf_sci_x_xx_se uimm3_lsb0:$funct3,
+                                            uimm7_timm:$funct7,
+                                            (XLenVT GPR:$rs1),
+                                            (XLenVT GPR:$rs2))),
+          (SF_SCI_X_XX_SE uimm3_lsb0:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2)>;
+def : Pat<(int_riscv_sf_sci_xx_se uimm3_lsb0:$funct3,
+                                  uimm7_timm:$funct7,
+                                  (XLenVT GPR:$rs1),
+                                  (XLenVT GPR:$rs2)),
+          (SF_SCI_XX_SE uimm3_lsb0:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2)>;
 #endif // SIFIVE_CUSTOMIZATION

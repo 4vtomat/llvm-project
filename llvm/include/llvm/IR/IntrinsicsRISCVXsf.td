@@ -316,4 +316,26 @@ let TargetPrefix = "riscv" in {
   def int_riscv_sf_vtdiscard
       : DefaultAttrsIntrinsic<[], [], [IntrNoMem, IntrHasSideEffects]>,
         RISCVVIntrinsic;
+
+#ifdef SIFIVE_CUSTOMIZATION
+  //===--------------------------------------------------------------------===//
+  // SSCI
+  //===--------------------------------------------------------------------===//
+  def int_riscv_sf_sci_x_xx
+      : DefaultAttrsIntrinsic<[llvm_anyint_ty],
+                              [llvm_i32_ty, llvm_i32_ty, LLVMMatchType<0>, LLVMMatchType<0>],
+                              [IntrNoMem, ImmArg<ArgIndex<0>>,
+                               ImmArg<ArgIndex<1>>]>;
+  def int_riscv_sf_sci_x_xx_se
+      : DefaultAttrsIntrinsic<[llvm_anyint_ty],
+                              [llvm_i32_ty, llvm_i32_ty, LLVMMatchType<0>, LLVMMatchType<0>],
+                              [IntrNoMem, IntrHasSideEffects,
+                               ImmArg<ArgIndex<0>>, ImmArg<ArgIndex<1>>]>;
+  def int_riscv_sf_sci_xx_se
+      : DefaultAttrsIntrinsic<[],
+                              [llvm_i32_ty, llvm_i32_ty, llvm_anyint_ty, LLVMMatchType<0>],
+                              [IntrNoMem, IntrHasSideEffects,
+                               ImmArg<ArgIndex<0>>, ImmArg<ArgIndex<1>>]>;
+#endif // SIFIVE_CUSTOMIZATION
+
 } // TargetPrefix = "riscv"

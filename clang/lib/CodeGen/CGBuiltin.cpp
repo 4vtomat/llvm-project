@@ -22501,6 +22501,24 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     ID = Intrinsic::riscv_cv_alu_subuRN;
     break;
 
+#if SIFIVE_CUSTOMIZATION
+  case RISCV::BI__builtin_riscv_sf_sci_x_xx_32:
+  case RISCV::BI__builtin_riscv_sf_sci_x_xx_64:
+    ID = Intrinsic::riscv_sf_sci_x_xx;
+    IntrinsicTypes = {ResultType};
+    break;
+  case RISCV::BI__builtin_riscv_sf_sci_x_xx_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_x_xx_se_64:
+    ID = Intrinsic::riscv_sf_sci_x_xx_se;
+    IntrinsicTypes = {ResultType};
+    break;
+  case RISCV::BI__builtin_riscv_sf_sci_xx_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_xx_se_64:
+    ID = Intrinsic::riscv_sf_sci_xx_se;
+    IntrinsicTypes = {Ops[2]->getType()};
+    break;
+#endif
+
     // Vector builtins are handled from here.
 #include "clang/Basic/riscv_vector_builtin_cg.inc"
 

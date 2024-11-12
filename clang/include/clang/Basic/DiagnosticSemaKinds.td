@@ -12417,6 +12417,10 @@ def err_riscv_builtin_invalid_lmul : Error<
 def err_riscv_type_requires_extension : Error<
   "RISC-V type %0 requires the '%1' extension"
 >;
+#ifdef SIFIVE_CUSTOMIZATION
+def err_riscv_builin_invalid_funct3 : Error<
+  "funct3 must be an even value in the range [0, 6]">;
+#endif
 
 def err_std_source_location_impl_not_found : Error<
   "'std::source_location::__impl' was not found; it must be defined before '__builtin_source_location' is called">;

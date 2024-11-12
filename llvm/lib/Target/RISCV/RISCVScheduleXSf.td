@@ -57,3 +57,16 @@ foreach f = ["FPR16", "FPR32", "FPR64"] in {
 }
 }
 }
+
+#ifdef SIFIVE_CUSTOMIZATION
+def WriteSCI : SchedWrite;
+def ReadSCI  : SchedRead;
+
+multiclass UnsupportedSchedXSfsci {
+let Unsupported = true in {
+def : WriteRes<WriteSCI, []>;
+def : ReadAdvance<ReadSCI, 0>;
+} // Unsupported = true
+}
+
+#endif

@@ -183,6 +183,7 @@ multiclass SCR_Unsupported {
   defm : UnsupportedSchedSFB;
   defm : UnsupportedSchedV;
   defm : UnsupportedSchedXsfvcp;
+  defm : UnsupportedSchedXSfsci; // SIFIVE
   defm : UnsupportedSchedZabha;
   defm : UnsupportedSchedZba;
   defm : UnsupportedSchedZbb;

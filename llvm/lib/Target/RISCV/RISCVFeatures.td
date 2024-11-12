@@ -1292,6 +1292,14 @@ def HasVendorXSfvcp : Predicate<"Subtarget->hasVendorXSfvcp()">,
                           "'XSfvcp' (SiFive Custom Vector Coprocessor Interface Instructions)">;
 
 #ifdef SIFIVE_CUSTOMIZATION
+def FeatureVendorXSfsci
+    : RISCVExtension<"xsfsci", 1, 0,
+                     "'XSfsci' (SiFive Custom Scalar Coprocessor Interface Instructions)",
+                     [FeatureStdExtZve32x]>;
+def HasVendorXSfsci : Predicate<"Subtarget->hasVendorXSfsci()">,
+                      AssemblerPredicate<(all_of FeatureVendorXSfsci),
+                          "'XSfsci' (SiFive Custom Scalar Coprocessor Interface Instructions)">;
+
 def FeatureVendorXSfpmpmt
     : RISCVExtension<"xsfpmpmt", 0, 1,
                      "'Xsfpmpmt' (SiFive PMP-based Memory Types Extension)">;
