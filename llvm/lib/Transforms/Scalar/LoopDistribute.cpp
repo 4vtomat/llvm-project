@@ -113,6 +113,8 @@ static cl::opt<bool> EnableLoopDistribute(
     "enable-loop-distribute", cl::Hidden,
     cl::desc("Enable the new, experimental LoopDistribution Pass"),
     cl::init(true));
+
+    static const char *DistributedCountMetaData = "llvm.loop.distribute.count";
 #else
 static cl::opt<bool> EnableLoopDistribute(
     "enable-loop-distribute", cl::Hidden,
@@ -860,6 +862,10 @@ public:
           {LLVMLoopDistributeFollowupAll, LLVMLoopDistributeFollowupFallback},
           "llvm.loop.distribute.", true);
       LVer.getNonVersionedLoop()->setLoopID(UnversionedLoopID);
+#if SIFIVE_CUSTOMIZATION
+      addStringMetadataToLoop(LVer.getNonVersionedLoop(),
+                              DistributedCountMetaData, Partitions.getSize());
+#endif
     }
 
     // Create identical copies of the original loop for each partition and hook
@@ -1023,6 +1029,9 @@ static bool runImpl(Function &F, LoopInfo *LI, DominatorTree *DT,
     // If distribution was forced for the specific loop to be
     // enabled/disabled, follow that.  Otherwise use the global flag.
 #if SIFIVE_CUSTOMIZATION
+    if (auto Distributed = getOptionalIntLoopAttribute(L, DistributedCountMetaData))
+      continue;
+
     if (LDL.isForced().value_or(EnableLoopDistribute ||
                                 EnableLoopDistributeAndPeel))
       Changed |= LDL.processLoop();
