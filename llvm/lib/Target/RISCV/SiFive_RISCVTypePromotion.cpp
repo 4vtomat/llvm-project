@@ -212,6 +212,8 @@ void IRPromoter::PromoteTree() {
       II->setCalledFunction(F);
       // FIXME: Promotion should apply to Range.
       II->removeRetAttr(llvm::Attribute::Range);
+      II->removeParamAttr(0, llvm::Attribute::Range);
+      II->removeParamAttr(1, llvm::Attribute::Range);
     }
   }
 }
