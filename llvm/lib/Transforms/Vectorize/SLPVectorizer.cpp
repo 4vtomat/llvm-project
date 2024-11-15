@@ -7031,7 +7031,12 @@ void BoUpSLP::tryToVectorizeGatheredLoads(
                 OrdersType Order;
                 SmallVector<Value *> PointerOps;
                 // Segmented load detected - vectorize at maximum vector factor.
+#if SIFIVE_CUSTOMIZATION
+                if (InterleaveFactor <= Slice.size() &&
+                    TTI.isLegalInterleavedAccessType(
+#else
                 if (TTI.isLegalInterleavedAccessType(
+#endif // SIFIVE_CUSTOMIZATION
                         getWidenedType(Slice.front()->getType(), VF),
                         InterleaveFactor,
                         cast<LoadInst>(Slice.front())->getAlign(),
