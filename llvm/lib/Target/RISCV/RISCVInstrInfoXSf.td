@@ -1921,7 +1921,9 @@ foreach e1 = [5, 4] in
         : VPseudoSF_MatMul<TRM4>;
 
 let hasSideEffects = 1, mayLoad = 0, mayStore = 0 in {
-  def PseudoSF_VTZERO_T : Pseudo<(outs), (ins TR:$rd), []>, RISCVVPseudo;
+  let HasVLOp = 1, HasTmOp = 1, HasTWidenOp = 1, HasSEWOp = 1 in
+    def PseudoSF_VTZERO_T
+        : Pseudo<(outs), (ins TR:$rd, AVL:$atm, AVL:$atn, ixlenimm:$sew, ixlenimm:$twiden), []>, RISCVVPseudo;
   def PseudoSF_VTDISCARD : Pseudo<(outs), (ins), []>, RISCVVPseudo;
 }
 

@@ -307,8 +307,11 @@ let TargetPrefix = "riscv" in {
   // Output: ()
   // Input: (mtd)
   def int_riscv_sf_vtzero_t
-      : DefaultAttrsIntrinsic<[], [llvm_anyint_ty], [ImmArg<ArgIndex<0>>,
-                                                     IntrNoMem, IntrHasSideEffects]>,
+      : DefaultAttrsIntrinsic<[],
+                              [llvm_anyint_ty, LLVMMatchType<0>,LLVMMatchType<0>,
+                               LLVMMatchType<0>, LLVMMatchType<0>],
+                              [ImmArg<ArgIndex<0>>, ImmArg<ArgIndex<3>>,
+                               ImmArg<ArgIndex<4>>, IntrNoMem, IntrHasSideEffects]>,
         RISCVVIntrinsic;
 
   // Output: ()

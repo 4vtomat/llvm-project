@@ -247,7 +247,7 @@ static inline unsigned getTNOpNum(const MCInstrDesc &Desc) {
   const uint64_t TSFlags = Desc.TSFlags;
   assert(hasTWidenOp(TSFlags) && hasVLOp(TSFlags));
   unsigned Offset = 3;
-  if (hasTMOp(TSFlags))
+  if (hasTKOp(TSFlags))
     Offset = 4;
   return Desc.getNumOperands() - Offset;
 }
@@ -255,7 +255,10 @@ static inline unsigned getTNOpNum(const MCInstrDesc &Desc) {
 static inline unsigned getTMOpNum(const MCInstrDesc &Desc) {
   const uint64_t TSFlags = Desc.TSFlags;
   assert(hasTWidenOp(TSFlags) && hasTMOp(TSFlags));
-  return Desc.getNumOperands() - 5;
+  if (hasTKOp(TSFlags))
+    return Desc.getNumOperands() - 5;
+  // vtzero.t
+  return Desc.getNumOperands() - 4;
 }
 
 static inline unsigned getTKOpNum(const MCInstrDesc &Desc) {
