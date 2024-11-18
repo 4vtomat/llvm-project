@@ -4,11 +4,9 @@
 define double @test() {
 ; CHECK-LABEL: define double @test() {
 ; CHECK-NEXT:  bb:
-; CHECK-NEXT:    [[TMP8:%.*]] = call <4 x i32> @llvm.vector.insert.v4i32.v2i32(<4 x i32> poison, <2 x i32> zeroinitializer, i64 0)
-; CHECK-NEXT:    [[TMP1:%.*]] = call <4 x i32> @llvm.vector.insert.v4i32.v2i32(<4 x i32> [[TMP8]], <2 x i32> zeroinitializer, i64 2)
 ; CHECK-NEXT:    br label [[BB7:%.*]]
 ; CHECK:       bb7:
-; CHECK-NEXT:    [[TMP9:%.*]] = phi <4 x i32> [ [[TMP12:%.*]], [[BB9:%.*]] ], [ [[TMP1]], [[BB:%.*]] ]
+; CHECK-NEXT:    [[TMP9:%.*]] = phi <4 x i32> [ poison, [[BB9:%.*]] ], [ zeroinitializer, [[BB:%.*]] ]
 ; CHECK-NEXT:    [[TMP0:%.*]] = call <2 x i32> @llvm.vector.extract.v2i32.v4i32(<4 x i32> [[TMP9]], i64 2)
 ; CHECK-NEXT:    [[TMP2:%.*]] = zext <2 x i32> [[TMP0]] to <2 x i64>
 ; CHECK-NEXT:    [[TMP3:%.*]] = extractelement <2 x i32> [[TMP0]], i32 0
@@ -19,9 +17,6 @@ define double @test() {
 ; CHECK-NEXT:    [[TMP7:%.*]] = shufflevector <2 x i64> zeroinitializer, <2 x i64> [[TMP2]], <2 x i32> <i32 3, i32 1>
 ; CHECK-NEXT:    ret double 0.000000e+00
 ; CHECK:       bb9:
-; CHECK-NEXT:    [[TMP10:%.*]] = call <4 x i32> @llvm.vector.insert.v4i32.v2i32(<4 x i32> poison, <2 x i32> poison, i64 0)
-; CHECK-NEXT:    [[TMP11:%.*]] = call <4 x i32> @llvm.vector.insert.v4i32.v2i32(<4 x i32> [[TMP10]], <2 x i32> poison, i64 2)
-; CHECK-NEXT:    [[TMP12]] = shufflevector <4 x i32> [[TMP11]], <4 x i32> poison, <4 x i32> poison
 ; CHECK-NEXT:    br label [[BB7]]
 ;
 bb:

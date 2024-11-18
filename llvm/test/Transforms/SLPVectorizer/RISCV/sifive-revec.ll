@@ -44,8 +44,7 @@ define void @test2(ptr %s, i8 %0) {
 ; CHECK-NEXT:    [[TMP6:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 null, i64 4, <2 x i1> <i1 true, i1 true>, i32 2)
 ; CHECK-NEXT:    [[TMP7:%.*]] = extractelement <2 x i8> [[TMP6]], i32 0
 ; CHECK-NEXT:    [[TMP8:%.*]] = insertelement <2 x i8> [[TMP6]], i8 [[TMP0:%.*]], i32 1
-; CHECK-NEXT:    [[TMP9:%.*]] = call <8 x i8> @llvm.vector.insert.v8i8.v2i8(<8 x i8> poison, <2 x i8> zeroinitializer, i64 0)
-; CHECK-NEXT:    [[TMP10:%.*]] = call <8 x i8> @llvm.vector.insert.v8i8.v2i8(<8 x i8> [[TMP9]], <2 x i8> [[TMP6]], i64 2)
+; CHECK-NEXT:    [[TMP10:%.*]] = call <8 x i8> @llvm.vector.insert.v8i8.v2i8(<8 x i8> <i8 0, i8 0, i8 poison, i8 poison, i8 poison, i8 poison, i8 poison, i8 poison>, <2 x i8> [[TMP6]], i64 2)
 ; CHECK-NEXT:    [[TMP11:%.*]] = call <8 x i8> @llvm.vector.insert.v8i8.v2i8(<8 x i8> [[TMP10]], <2 x i8> [[TMP8]], i64 4)
 ; CHECK-NEXT:    [[TMP12:%.*]] = call <8 x i8> @llvm.vector.insert.v8i8.v2i8(<8 x i8> [[TMP11]], <2 x i8> [[TMP3]], i64 6)
 ; CHECK-NEXT:    [[TMP13:%.*]] = icmp eq <8 x i8> [[TMP12]], [[TMP5]]
@@ -123,23 +122,13 @@ define void @test4() {
 ; CHECK-NEXT:    [[TMP4:%.*]] = load <8 x float>, ptr [[TMP2]], align 4
 ; CHECK-NEXT:    [[TMP5:%.*]] = load <16 x float>, ptr [[TMP0]], align 4
 ; CHECK-NEXT:    [[TMP21:%.*]] = shufflevector <16 x float> [[TMP5]], <16 x float> poison, <16 x i32> <i32 8, i32 9, i32 10, i32 11, i32 12, i32 13, i32 14, i32 15, i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7>
-; CHECK-NEXT:    [[TMP22:%.*]] = call <32 x float> @llvm.vector.insert.v32f32.v8f32(<32 x float> poison, <8 x float> poison, i64 16)
-; CHECK-NEXT:    [[TMP23:%.*]] = call <32 x float> @llvm.vector.insert.v32f32.v8f32(<32 x float> [[TMP22]], <8 x float> poison, i64 24)
-; CHECK-NEXT:    [[TMP6:%.*]] = call <32 x float> @llvm.vector.insert.v32f32.v8f32(<32 x float> [[TMP23]], <8 x float> [[TMP4]], i64 0)
+; CHECK-NEXT:    [[TMP6:%.*]] = call <32 x float> @llvm.vector.insert.v32f32.v8f32(<32 x float> poison, <8 x float> [[TMP4]], i64 0)
 ; CHECK-NEXT:    [[TMP7:%.*]] = call <32 x float> @llvm.vector.insert.v32f32.v8f32(<32 x float> [[TMP6]], <8 x float> [[TMP3]], i64 8)
 ; CHECK-NEXT:    [[TMP8:%.*]] = call <32 x float> @llvm.vector.insert.v32f32.v16f32(<32 x float> [[TMP7]], <16 x float> [[TMP21]], i64 16)
 ; CHECK-NEXT:    [[TMP9:%.*]] = fpext <32 x float> [[TMP8]] to <32 x double>
-; CHECK-NEXT:    [[TMP10:%.*]] = call <32 x double> @llvm.vector.insert.v32f64.v8f64(<32 x double> poison, <8 x double> zeroinitializer, i64 0)
-; CHECK-NEXT:    [[TMP11:%.*]] = call <32 x double> @llvm.vector.insert.v32f64.v8f64(<32 x double> [[TMP10]], <8 x double> zeroinitializer, i64 8)
-; CHECK-NEXT:    [[TMP12:%.*]] = call <32 x double> @llvm.vector.insert.v32f64.v8f64(<32 x double> [[TMP11]], <8 x double> zeroinitializer, i64 16)
-; CHECK-NEXT:    [[TMP13:%.*]] = call <32 x double> @llvm.vector.insert.v32f64.v8f64(<32 x double> [[TMP12]], <8 x double> zeroinitializer, i64 24)
-; CHECK-NEXT:    [[TMP14:%.*]] = fadd <32 x double> [[TMP13]], [[TMP9]]
+; CHECK-NEXT:    [[TMP14:%.*]] = fadd <32 x double> zeroinitializer, [[TMP9]]
 ; CHECK-NEXT:    [[TMP15:%.*]] = fptrunc <32 x double> [[TMP14]] to <32 x float>
-; CHECK-NEXT:    [[TMP16:%.*]] = call <32 x float> @llvm.vector.insert.v32f32.v8f32(<32 x float> poison, <8 x float> zeroinitializer, i64 0)
-; CHECK-NEXT:    [[TMP17:%.*]] = call <32 x float> @llvm.vector.insert.v32f32.v8f32(<32 x float> [[TMP16]], <8 x float> zeroinitializer, i64 8)
-; CHECK-NEXT:    [[TMP18:%.*]] = call <32 x float> @llvm.vector.insert.v32f32.v8f32(<32 x float> [[TMP17]], <8 x float> zeroinitializer, i64 16)
-; CHECK-NEXT:    [[TMP19:%.*]] = call <32 x float> @llvm.vector.insert.v32f32.v8f32(<32 x float> [[TMP18]], <8 x float> zeroinitializer, i64 24)
-; CHECK-NEXT:    [[TMP20:%.*]] = fcmp ogt <32 x float> [[TMP19]], [[TMP15]]
+; CHECK-NEXT:    [[TMP13:%.*]] = fcmp ogt <32 x float> zeroinitializer, [[TMP15]]
 ; CHECK-NEXT:    ret void
 ;
 entry:
@@ -175,21 +164,17 @@ define void @test5(float %0) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    br label [[FOR_BODY_LR_PH:%.*]]
 ; CHECK:       for.body.lr.ph:
-; CHECK-NEXT:    [[TMP1:%.*]] = call <4 x float> @llvm.vector.insert.v4f32.v2f32(<4 x float> poison, <2 x float> zeroinitializer, i64 0)
-; CHECK-NEXT:    [[TMP2:%.*]] = call <4 x float> @llvm.vector.insert.v4f32.v2f32(<4 x float> [[TMP1]], <2 x float> zeroinitializer, i64 2)
 ; CHECK-NEXT:    br i1 false, label [[FOR_COND_CLEANUP:%.*]], label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup:
-; CHECK-NEXT:    [[TMP3:%.*]] = phi <4 x float> [ [[TMP2]], [[FOR_BODY_LR_PH]] ], [ [[TMP10:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[TMP1:%.*]] = phi <4 x float> [ zeroinitializer, [[FOR_BODY_LR_PH]] ], [ [[TMP7:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    ret void
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[TMP4:%.*]] = load <2 x float>, ptr null, align 4
 ; CHECK-NEXT:    [[TMP5:%.*]] = fcmp olt <2 x float> zeroinitializer, [[TMP4]]
-; CHECK-NEXT:    [[TMP6:%.*]] = call <4 x i1> @llvm.vector.insert.v4i1.v2i1(<4 x i1> poison, <2 x i1> <i1 true, i1 true>, i64 0)
-; CHECK-NEXT:    [[TMP7:%.*]] = call <4 x i1> @llvm.vector.insert.v4i1.v2i1(<4 x i1> [[TMP6]], <2 x i1> [[TMP5]], i64 2)
-; CHECK-NEXT:    [[TMP11:%.*]] = call <4 x float> @llvm.vector.insert.v4f32.v2f32(<4 x float> poison, <2 x float> poison, i64 2)
-; CHECK-NEXT:    [[TMP8:%.*]] = call <4 x float> @llvm.vector.insert.v4f32.v2f32(<4 x float> [[TMP11]], <2 x float> [[TMP4]], i64 0)
+; CHECK-NEXT:    [[TMP6:%.*]] = call <4 x i1> @llvm.vector.insert.v4i1.v2i1(<4 x i1> <i1 true, i1 true, i1 poison, i1 poison>, <2 x i1> [[TMP5]], i64 2)
+; CHECK-NEXT:    [[TMP8:%.*]] = call <4 x float> @llvm.vector.insert.v4f32.v2f32(<4 x float> poison, <2 x float> [[TMP4]], i64 0)
 ; CHECK-NEXT:    [[TMP9:%.*]] = shufflevector <4 x float> [[TMP8]], <4 x float> poison, <4 x i32> <i32 0, i32 1, i32 0, i32 1>
-; CHECK-NEXT:    [[TMP10]] = select <4 x i1> [[TMP7]], <4 x float> [[TMP9]], <4 x float> [[TMP2]]
+; CHECK-NEXT:    [[TMP7]] = select <4 x i1> [[TMP6]], <4 x float> [[TMP9]], <4 x float> zeroinitializer
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP]]
 ;
 entry:

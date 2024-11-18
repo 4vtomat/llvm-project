@@ -309,15 +309,12 @@ define <4 x float> @simple_select_users(<4 x float> %a, <4 x float> %b, <4 x i32
 ; Unused insertelement
 define <4 x float> @simple_select_no_users(<4 x float> %a, <4 x float> %b, <4 x i32> %c) #0 {
 ; THRESHOLD-LABEL: @simple_select_no_users(
-; THRESHOLD-NEXT:    [[TMP1:%.*]] = call <8 x i32> @llvm.vector.insert.v8i32.v4i32(<8 x i32> poison, <4 x i32> poison, i64 4)
-; THRESHOLD-NEXT:    [[TMP2:%.*]] = call <8 x i32> @llvm.vector.insert.v8i32.v4i32(<8 x i32> [[TMP1]], <4 x i32> [[C:%.*]], i64 0)
+; THRESHOLD-NEXT:    [[TMP2:%.*]] = call <8 x i32> @llvm.vector.insert.v8i32.v4i32(<8 x i32> poison, <4 x i32> [[C:%.*]], i64 0)
 ; THRESHOLD-NEXT:    [[TMP3:%.*]] = shufflevector <8 x i32> [[TMP2]], <8 x i32> poison, <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 0, i32 1, i32 2, i32 3>
 ; THRESHOLD-NEXT:    [[TMP4:%.*]] = shufflevector <8 x i32> [[TMP2]], <8 x i32> poison, <4 x i32> <i32 2, i32 3, i32 0, i32 1>
 ; THRESHOLD-NEXT:    [[TMP5:%.*]] = shufflevector <4 x float> [[A:%.*]], <4 x float> poison, <2 x i32> <i32 0, i32 1>
 ; THRESHOLD-NEXT:    [[TMP6:%.*]] = shufflevector <4 x float> [[B:%.*]], <4 x float> poison, <2 x i32> <i32 0, i32 1>
-; THRESHOLD-NEXT:    [[TMP7:%.*]] = call <4 x i32> @llvm.vector.insert.v4i32.v2i32(<4 x i32> poison, <2 x i32> zeroinitializer, i64 0)
-; THRESHOLD-NEXT:    [[TMP8:%.*]] = call <4 x i32> @llvm.vector.insert.v4i32.v2i32(<4 x i32> [[TMP7]], <2 x i32> zeroinitializer, i64 2)
-; THRESHOLD-NEXT:    [[TMP9:%.*]] = icmp ne <4 x i32> [[TMP4]], [[TMP8]]
+; THRESHOLD-NEXT:    [[TMP9:%.*]] = icmp ne <4 x i32> [[TMP4]], zeroinitializer
 ; THRESHOLD-NEXT:    [[TMP10:%.*]] = call <2 x i1> @llvm.vector.extract.v2i1.v4i1(<4 x i1> [[TMP9]], i64 2)
 ; THRESHOLD-NEXT:    [[TMP11:%.*]] = select <2 x i1> [[TMP10]], <2 x float> [[TMP5]], <2 x float> [[TMP6]]
 ; THRESHOLD-NEXT:    [[TMP12:%.*]] = shufflevector <4 x float> [[A]], <4 x float> poison, <2 x i32> <i32 2, i32 3>
@@ -330,15 +327,12 @@ define <4 x float> @simple_select_no_users(<4 x float> %a, <4 x float> %b, <4 x 
 ; THRESHOLD-NEXT:    ret <4 x float> [[RD1]]
 ;
 ; MINTREESIZE-LABEL: @simple_select_no_users(
-; MINTREESIZE-NEXT:    [[TMP1:%.*]] = call <8 x i32> @llvm.vector.insert.v8i32.v4i32(<8 x i32> poison, <4 x i32> poison, i64 4)
-; MINTREESIZE-NEXT:    [[TMP2:%.*]] = call <8 x i32> @llvm.vector.insert.v8i32.v4i32(<8 x i32> [[TMP1]], <4 x i32> [[C:%.*]], i64 0)
+; MINTREESIZE-NEXT:    [[TMP2:%.*]] = call <8 x i32> @llvm.vector.insert.v8i32.v4i32(<8 x i32> poison, <4 x i32> [[C:%.*]], i64 0)
 ; MINTREESIZE-NEXT:    [[TMP3:%.*]] = shufflevector <8 x i32> [[TMP2]], <8 x i32> poison, <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 0, i32 1, i32 2, i32 3>
 ; MINTREESIZE-NEXT:    [[TMP4:%.*]] = shufflevector <8 x i32> [[TMP2]], <8 x i32> poison, <4 x i32> <i32 2, i32 3, i32 0, i32 1>
 ; MINTREESIZE-NEXT:    [[TMP5:%.*]] = shufflevector <4 x float> [[A:%.*]], <4 x float> poison, <2 x i32> <i32 0, i32 1>
 ; MINTREESIZE-NEXT:    [[TMP6:%.*]] = shufflevector <4 x float> [[B:%.*]], <4 x float> poison, <2 x i32> <i32 0, i32 1>
-; MINTREESIZE-NEXT:    [[TMP7:%.*]] = call <4 x i32> @llvm.vector.insert.v4i32.v2i32(<4 x i32> poison, <2 x i32> zeroinitializer, i64 0)
-; MINTREESIZE-NEXT:    [[TMP8:%.*]] = call <4 x i32> @llvm.vector.insert.v4i32.v2i32(<4 x i32> [[TMP7]], <2 x i32> zeroinitializer, i64 2)
-; MINTREESIZE-NEXT:    [[TMP9:%.*]] = icmp ne <4 x i32> [[TMP4]], [[TMP8]]
+; MINTREESIZE-NEXT:    [[TMP9:%.*]] = icmp ne <4 x i32> [[TMP4]], zeroinitializer
 ; MINTREESIZE-NEXT:    [[TMP10:%.*]] = call <2 x i1> @llvm.vector.extract.v2i1.v4i1(<4 x i1> [[TMP9]], i64 2)
 ; MINTREESIZE-NEXT:    [[TMP11:%.*]] = select <2 x i1> [[TMP10]], <2 x float> [[TMP5]], <2 x float> [[TMP6]]
 ; MINTREESIZE-NEXT:    [[TMP12:%.*]] = shufflevector <4 x float> [[A]], <4 x float> poison, <2 x i32> <i32 2, i32 3>

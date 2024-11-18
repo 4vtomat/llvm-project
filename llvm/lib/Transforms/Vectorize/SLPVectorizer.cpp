@@ -13009,6 +13009,31 @@ Value *BoUpSLP::gather(ArrayRef<Value *> VL, Value *Root, Type *ScalarTy) {
     Instruction *InsElt;
     if (auto *VecTy = dyn_cast<FixedVectorType>(Scalar->getType())) {
       assert(SLPReVec && "FixedVectorType is not expected.");
+#if SIFIVE_CUSTOMIZATION
+      // This is an optimization which should be done by
+      // IRBuilderBase::CreateInsertVector.
+      // reference: https://github.com/llvm/llvm-project/pull/116229
+      auto *CVec = dyn_cast<Constant>(Vec);
+      auto *CScalar = dyn_cast<Constant>(Scalar);
+      if (CVec && CScalar) {
+        unsigned VecNumElements =
+            cast<FixedVectorType>(Vec->getType())->getNumElements();
+        unsigned ScalarNumElements = VecTy->getNumElements();
+        SmallVector<Constant *, 16> Result(VecNumElements);
+        auto *Int32Ty = Type::getInt32Ty(Vec->getContext());
+        unsigned InsertPos = Pos * ScalarNumElements;
+        for (unsigned I : seq<unsigned>(VecNumElements)) {
+          if (InsertPos <= I && I < InsertPos + ScalarNumElements) {
+            Result[I] = ConstantExpr::getExtractElement(
+                CScalar, ConstantInt::get(Int32Ty, I - InsertPos));
+            continue;
+          }
+          Result[I] = ConstantExpr::getExtractElement(
+              CVec, ConstantInt::get(Int32Ty, I));
+        }
+        return cast<Value>(ConstantVector::get(Result));
+      }
+#endif // SIFIVE_CUSTOMIZATION
       Vec = InsElt = Builder.CreateInsertVector(
           Vec->getType(), Vec, Scalar,
           Builder.getInt64(Pos * VecTy->getNumElements()));
