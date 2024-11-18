@@ -2189,7 +2189,7 @@ static void findRISCVMultilibs(const Driver &D,
 
 #if SIFIVE_CUSTOMIZATION
   StringRef GCCPathForCFI =
-      "rv64imafdc_zicsr_zifencei_zicfilp_zicfiss/lp64d/cfi";
+      "lib64/lp64d/cfi";
   MultilibBuilder Lp64dCFI =
       MultilibBuilder(GCCPathForCFI, "lib-cfi", GCCPathForCFI)
           .flag("-m64")
