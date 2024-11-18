@@ -1069,12 +1069,6 @@ static bool isMSP430(llvm::Triple::ArchType Arch) {
   return Arch == llvm::Triple::msp430;
 }
 
-#if SIFIVE_CUSTOMIZATION
-static Multilib makeMultilib(StringRef commonSuffix) {
-  return Multilib(commonSuffix, commonSuffix, commonSuffix);
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 static bool findMipsCsMultilibs(const Driver &D,
                                 const Multilib::flags_list &Flags,
                                 FilterNonExistent &NonExistent,
@@ -1954,7 +1948,7 @@ static bool scanRISCVGCCMultilibConfig(const Driver &D,
 
   llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> File =
       D.getVFS().getBufferForFile(MultilibOutput);
-  std::vector<Multilib> Ms;
+  std::vector<MultilibBuilder> Ms;
 
   if (!File) {
     // Ooops, some thing wrong during open file, let's fallback.
@@ -1989,7 +1983,7 @@ static bool scanRISCVGCCMultilibConfig(const Driver &D,
     SmallVector<StringRef, 2> OptionList;
     Options.split(OptionList, '@');
     // multilib path rule is ${march}/${mabi}
-    auto Multilib = makeMultilib(Path);
+    MultilibBuilder Multilib(Path);
     for (StringRef Option : OptionList) {
       Multilib.flag(Twine("-", Option).str());
 
@@ -2029,8 +2023,9 @@ static bool scanRISCVGCCMultilibConfig(const Driver &D,
   }
 
   MultilibSet RISCVMultilibs =
-      MultilibSet()
-          .Either(ArrayRef<Multilib>(Ms))
+      MultilibSetBuilder()
+          .Either(Ms)
+	  .makeMultilibSet()
           .FilterOut(NonExistent)
           .setFilePathsCallback([](const Multilib &M) {
             return std::vector<std::string>(

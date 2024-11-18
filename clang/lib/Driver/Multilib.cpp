@@ -30,50 +30,17 @@ using namespace clang;
 using namespace driver;
 using namespace llvm::sys;
 
-#if SIFIVE_CUSTOMIZATION
-/// normalize Segment to "/foo/bar" or "".
-static void normalizePathSegment(std::string &Segment) {
-  StringRef seg = Segment;
-
-  // Prune trailing "/" or "./"
-  while (true) {
-    StringRef last = path::filename(seg);
-    if (last != ".")
-      break;
-    seg = path::parent_path(seg);
-  }
-
-  if (seg.empty() || seg == "/") {
-    Segment.clear();
-    return;
-  }
-
-  // Add leading '/'
-  if (seg.front() != '/') {
-    Segment = "/" + seg.str();
-  } else {
-    Segment = std::string(seg);
-  }
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 Multilib::Multilib(StringRef GCCSuffix, StringRef OSSuffix,
                    StringRef IncludeSuffix, const flags_list &Flags,
                    StringRef ExclusiveGroup, std::optional<StringRef> Error)
     : GCCSuffix(GCCSuffix), OSSuffix(OSSuffix), IncludeSuffix(IncludeSuffix),
       Flags(Flags), ExclusiveGroup(ExclusiveGroup), Error(Error) {
-#if SIFIVE_CUSTOMIZATION
-  normalizePathSegment(this->GCCSuffix);
-  normalizePathSegment(this->OSSuffix);
-  normalizePathSegment(this->IncludeSuffix);
-#else
   assert(GCCSuffix.empty() ||
          (StringRef(GCCSuffix).front() == '/' && GCCSuffix.size() > 1));
   assert(OSSuffix.empty() ||
          (StringRef(OSSuffix).front() == '/' && OSSuffix.size() > 1));
   assert(IncludeSuffix.empty() ||
          (StringRef(IncludeSuffix).front() == '/' && IncludeSuffix.size() > 1));
-#endif // SIFIVE_CUSTOMIZATION
 }
 
 LLVM_DUMP_METHOD void Multilib::dump() const {
@@ -81,9 +48,6 @@ LLVM_DUMP_METHOD void Multilib::dump() const {
 }
 
 void Multilib::print(raw_ostream &OS) const {
-#if SIFIVE_CUSTOMIZATION
-  assert(GCCSuffix.empty() || (StringRef(GCCSuffix).front() == '/'));
-#endif // SIFIVE_CUSTOMIZATION
   if (GCCSuffix.empty())
     OS << ".";
   else {
@@ -95,24 +59,6 @@ void Multilib::print(raw_ostream &OS) const {
       OS << "@" << Flag.substr(1);
   }
 }
-
-#if SIFIVE_CUSTOMIZATION
-bool Multilib::isValid() const {
-  llvm::StringMap<int> FlagSet;
-  for (unsigned I = 0, N = Flags.size(); I != N; ++I) {
-    StringRef Flag(Flags[I]);
-    llvm::StringMap<int>::iterator SI = FlagSet.find(Flag.substr(1));
-
-    assert(StringRef(Flag).front() == '+' || StringRef(Flag).front() == '-');
-
-    if (SI == FlagSet.end())
-      FlagSet[Flag.substr(1)] = I;
-    else if (Flags[I] != Flags[SI->getValue()])
-      return false;
-  }
-  return true;
-}
-#endif // SIFIVE_CUSTOMIZATION
 
 bool Multilib::operator==(const Multilib &Other) const {
   // Check whether the flags sets match
@@ -141,50 +87,6 @@ raw_ostream &clang::driver::operator<<(raw_ostream &OS, const Multilib &M) {
   M.print(OS);
   return OS;
 }
-
-#if SIFIVE_CUSTOMIZATION
-// TODO: convert the use of Either to MultilibSetBuilder usage model
-//       and eliminate these two functions.
-static Multilib compose(const Multilib &Base, const Multilib &New) {
-  SmallString<128> GCCSuffix;
-  llvm::sys::path::append(GCCSuffix, "/", Base.gccSuffix(), New.gccSuffix());
-  SmallString<128> OSSuffix;
-  llvm::sys::path::append(OSSuffix, "/", Base.osSuffix(), New.osSuffix());
-  SmallString<128> IncludeSuffix;
-  llvm::sys::path::append(IncludeSuffix, "/", Base.includeSuffix(),
-                          New.includeSuffix());
-
-  Multilib Composed(GCCSuffix, OSSuffix, IncludeSuffix);
-
-  Multilib::flags_list &Flags = Composed.flags();
-
-  Flags.insert(Flags.end(), Base.flags().begin(), Base.flags().end());
-  Flags.insert(Flags.end(), New.flags().begin(), New.flags().end());
-
-  return Composed;
-}
-
-MultilibSet &MultilibSet::Either(ArrayRef<Multilib> MultilibSegments) {
-  multilib_list Composed;
-
-  if (Multilibs.empty())
-    Multilibs.insert(Multilibs.end(), MultilibSegments.begin(),
-                     MultilibSegments.end());
-  else {
-    for (const auto &New : MultilibSegments) {
-      for (const auto &Base : *this) {
-        Multilib MO = compose(Base, New);
-        if (MO.isValid())
-          Composed.push_back(MO);
-      }
-    }
-
-    Multilibs = Composed;
-  }
-
-  return *this;
-}
-#endif // SIFIVE_CUSTOMIZATION
 
 MultilibSet &MultilibSet::FilterOut(FilterCallback F) {
   llvm::erase_if(Multilibs, F);
