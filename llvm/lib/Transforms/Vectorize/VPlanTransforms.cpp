@@ -576,6 +576,9 @@ void VPlanTransforms::optimizeGEPs(VPlan &Plan) {
 void VPlanTransforms::simplifyMonotonics(VPlan &Plan) {
   ReversePostOrderTraversal<VPBlockDeepTraversalWrapper<VPBlockBase *>> RPOT(
       Plan.getEntry());
+  auto *MiddleVPBB =
+      cast<VPBasicBlock>(Plan.getVectorLoopRegion()->getSingleSuccessor());
+  VPBasicBlock *ExitVPBB = cast<VPBasicBlock>(MiddleVPBB->getSuccessors()[0]);
   for (VPBasicBlock *VPBB : VPBlockUtils::blocksOnly<VPBasicBlock>(RPOT))
     for (VPRecipeBase &R : *VPBB) {
       auto *MonotonicPhi = dyn_cast<VPMonotonicHeaderPHIRecipe>(&R);
@@ -622,10 +625,23 @@ void VPlanTransforms::simplifyMonotonics(VPlan &Plan) {
       // Use VPValue of the monotonic update instruction in a header phi
       // instead
       MonotonicPhi->setOperand(1, VPMUI);
-      for (auto &PV : Plan.getLiveOuts()) {
-        VPLiveOut *LO = PV.second;
-        if (ToRemove.contains(LO->getOperand(0)->getDefiningRecipe()))
-          LO->setOperand(0, VPMUI);
+      for (VPRecipeBase &R : *ExitVPBB) {
+        auto *ExitIRI = dyn_cast<VPIRInstruction>(&R);
+        if (!ExitIRI)
+          continue;
+        auto *ExitPhi = dyn_cast<PHINode>(&ExitIRI->getInstruction());
+        if (!ExitPhi)
+          break;
+        VPValue *Op0;
+        VPRecipeBase *LiveOut = ExitIRI->getOperand(0)->getDefiningRecipe();
+        if (match(LiveOut, VPlanPatternMatch::m_VPInstruction<
+                               VPInstruction::ExtractFromEnd>(
+                               VPlanPatternMatch::m_VPValue(Op0),
+                               VPlanPatternMatch::m_VPValue())))
+          if (ToRemove.contains(Op0->getDefiningRecipe())) {
+            ExitIRI->setOperand(0, VPMUI);
+            LiveOut->eraseFromParent();
+          }
       }
       for (VPRecipeBase *RR : ToRemove)
         RR->eraseFromParent();

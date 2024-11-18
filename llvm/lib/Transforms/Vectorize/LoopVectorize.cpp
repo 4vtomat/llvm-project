@@ -10776,13 +10776,6 @@ static SetVector<VPIRInstruction *> collectUsersInExitBlock(
            return P && CSAs.contains(P);
          })))
       continue;
-    if (Legal->isMonotonicPhi(IncomingValue) ||
-        (isa<Instruction>(IncomingValue) &&
-         Legal->isMonotonicUpdate(cast<Instruction>(IncomingValue)))) {
-      // TODO: Remove this hack and avoid extract-from-end recipe for this case
-      Plan.addLiveOut(ExitPhi, V);
-      continue;
-    }
 #endif // SIFIVE_CUSTOMIZATION
     ExitUsersToFix.insert(ExitIRI);
     ExitIRI->addOperand(V);
