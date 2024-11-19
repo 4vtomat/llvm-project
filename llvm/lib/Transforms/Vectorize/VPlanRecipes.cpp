@@ -1053,15 +1053,6 @@ Value *VPInstruction::generate(VPTransformState &State) {
     Value *StartV = PhiR->getStartValue()->getLiveInIRValue();
     ReducedPartRdx = Builder.CreateSelect(MaskPartRdx, ReducedPartRdx, StartV);
 
-    // If there were stores of the reduction value to a uniform memory address
-    // inside the loop, create the final store here.
-    // TODO: Create a recipe for intermediate store to avoid duplicate code.
-    if (StoreInst *SI = RdxDesc.IntermediateStore) {
-      auto *NewSI = Builder.CreateAlignedStore(
-          ReducedPartRdx, SI->getPointerOperand(), SI->getAlign());
-      propagateMetadata(NewSI, SI);
-    }
-
     return ReducedPartRdx;
   }
 #endif // SIFIVE_CUSTOMIZATION
