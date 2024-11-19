@@ -10715,8 +10715,7 @@ addCSAPostprocessRecipes(VPRecipeBuilder &RecipeBuilder,
 static SetVector<VPIRInstruction *> collectUsersInExitBlock(
     Loop *OrigLoop, VPRecipeBuilder &Builder, VPlan &Plan,
     const MapVector<PHINode *, InductionDescriptor> &Inductions,
-    const MapVector<PHINode *, CSADescriptor> &CSAs,
-    LoopVectorizationLegality *Legal) {
+    const MapVector<PHINode *, CSADescriptor> &CSAs) {
 #else
 static SetVector<VPIRInstruction *> collectUsersInExitBlock(
     Loop *OrigLoop, VPRecipeBuilder &Builder, VPlan &Plan,
@@ -11209,9 +11208,9 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   RecipeBuilder.fixHeaderPhis();
 
 #if SIFIVE_CUSTOMIZATION
-  SetVector<VPIRInstruction *> ExitUsersToFix = collectUsersInExitBlock(
-      OrigLoop, RecipeBuilder, *Plan, Legal->getInductionVars(),
-      Legal->getCSAs(), Legal);
+  SetVector<VPIRInstruction *> ExitUsersToFix =
+      collectUsersInExitBlock(OrigLoop, RecipeBuilder, *Plan,
+                              Legal->getInductionVars(), Legal->getCSAs());
   addLiveOutsForFirstOrderRecurrences(*Plan, ExitUsersToFix, *Legal, CM);
 #else
   SetVector<VPIRInstruction *> ExitUsersToFix = collectUsersInExitBlock(
