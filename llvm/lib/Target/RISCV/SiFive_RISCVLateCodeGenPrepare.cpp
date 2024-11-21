@@ -470,6 +470,12 @@ void RISCVLateCodeGenPrepare::expandMemSetUnknownSize(MemSetInst *M) {
   Value *DstAddr = M->getRawDest();
   Value *CopyLen = M->getLength();
 
+  if (auto *CI = dyn_cast<ConstantInt>(CopyLen)) {
+    // Fix memsets that might have a non-xlen size.
+    Type *XLenType = Type::getIntNTy(M->getContext(), ST->getXLen());
+    CopyLen = ConstantInt::get(XLenType, CI->getZExtValue());
+  }
+
   createMemsetLoopBody(ForwardLoopBB, PreLoopBB, PostLoopBB, Val, DstAddr,
                        CopyLen);
 
@@ -941,6 +947,10 @@ void RISCVLateCodeGenPrepare::expandMemSetKnownSize(MemSetInst *M) {
   unsigned UnrollCount =
       divideCeil(CI->getZExtValue(), (ST->getRealMinVLen() / 8) * MemsetLMUL);
 
+  // Fix memsets that might have a non-xlen size.
+  Type *XLenType = Type::getIntNTy(M->getContext(), ST->getXLen());
+  CopyLen = ConstantInt::get(XLenType, CI->getZExtValue());
+
   createMemsetLoopBody(ForwardLoopBB, PreLoopBB, PostLoopBB, Val, DstAddr,
                        CopyLen, UnrollCount);
 
@@ -1030,6 +1040,12 @@ void RISCVLateCodeGenPrepare::expandMemSetUnknownSizeAligned(MemSetInst *M) {
   Value *Val = M->getValue();
   Value *DstAddr = M->getRawDest();
   Value *CopyLen = M->getLength();
+
+  if (auto *CI = dyn_cast<ConstantInt>(CopyLen)) {
+    // Fix memsets that might have a non-xlen size.
+    Type *XLenType = Type::getIntNTy(M->getContext(), ST->getXLen());
+    CopyLen = ConstantInt::get(XLenType, CI->getZExtValue());
+  }
 
   Type *Int8Type = Type::getInt8Ty(PreLoopBB->getContext());
   ScalableVectorType *VTy = ScalableVectorType::get(
