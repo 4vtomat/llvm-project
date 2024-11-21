@@ -3775,38 +3775,39 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
   if (auto *I = dyn_cast<Instruction>(ResAddr))
     State.setDebugLocFrom(I->getDebugLoc());
 
-  Value *Index;
   // If the group is reverse, adjust the index to refer to the last vector lane
   // instead of the first. We adjust the index from the first vector lane,
   // rather than directly getting the pointer for lane VF - 1, because the
   // pointer operand of the interleaved access is supposed to be uniform.
+  if (Group->isReverse()) {
 #if SIFIVE_CUSTOMIZATION
-  if (State.Plan->useVLAVectorizer()) {
-    Index = State.Builder.getInt32(Group->getIndex(Instr));
-    if (Group->isReverse()) {
+    Value *Index;
+    if (State.Plan->useVLAVectorizer()) {
       assert(State.EVL && "RuntimeVL must be initialized at this point");
       Value *EVL = State.Builder.CreateZExtOrTrunc(
           State.get(State.EVL, /*NeedsScalar=*/true),
           State.Builder.getInt32Ty());
+      // ?? Should we upstream the nuw and nsw flags?
       Index = State.Builder.CreateSub(EVL, State.Builder.getInt32(1), "",
                                       /*NUW=*/true, /*NSW=*/true);
       Index = State.Builder.CreateMul(
           Index, State.Builder.getInt32(Group->getFactor()), "",
-              /*NUW=*/true, /*NSW=*/true);
-      Index = State.Builder.CreateNeg(Index);
+          /*NUW=*/true, /*NSW=*/true);
     } else {
-      // TODO: Drop redundant 0-index GEP as follow-up.
-      Index = State.Builder.getInt32(0);
-    }
-  } else
 #endif // SIFIVE_CUSTOMIZATION
-  if (Group->isReverse()) {
     Value *RuntimeVF =
         getRuntimeVF(State.Builder, State.Builder.getInt32Ty(), State.VF);
+#if SIFIVE_CUSTOMIZATION
     Index =
+#else
+    Value *Index =
+#endif // SIFIVE_CUSTOMIZATION
         State.Builder.CreateSub(RuntimeVF, State.Builder.getInt32(1));
     Index = State.Builder.CreateMul(Index,
                                     State.Builder.getInt32(Group->getFactor()));
+#if SIFIVE_CUSTOMIZATION
+    }
+#endif // SIFIVE_CUSTOMIZATION
     Index = State.Builder.CreateNeg(Index);
 
     bool InBounds = false;
