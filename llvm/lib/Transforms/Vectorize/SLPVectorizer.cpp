@@ -5950,8 +5950,14 @@ void BoUpSLP::reorderTopToBottom() {
       }
       if ((TE->State == TreeEntry::Vectorize ||
            TE->State == TreeEntry::StridedVectorize) &&
+#if SIFIVE_CUSTOMIZATION
+          (isa<ExtractElementInst, ExtractValueInst, LoadInst, StoreInst,
+               InsertElementInst>(TE->getMainOp()) ||
+           (SLPReVec && isa<ShuffleVectorInst>(TE->getMainOp()))) &&
+#else
           isa<ExtractElementInst, ExtractValueInst, LoadInst, StoreInst,
               InsertElementInst>(TE->getMainOp()) &&
+#endif // SIFIVE_CUSTOMIZATION
           !TE->isAltShuffle()) {
         // Build correct orders for extract{element,value}, loads and
         // stores.
