@@ -1,9 +1,11 @@
 // REQUIRES: riscv-registered-target
 // RUN: %clang_cc1 -triple riscv64 -target-feature +v -verify %s
-// expected-no-diagnostics
 
 #include <riscv_ntlh.h>
+#define __rvv_0p11_compatible_intrinsics
 #include <riscv_vector.h>
+
+// expected-warning@rvv_v0p11_compatible/riscv_vector.h:4 {{The RVV intrinsic version 0.11 compatible header is deprecated and will be removed in the next release. Please refer to the latest version of the interfaces.}}
 
 // v0.11 segment load
 void test_vlseg2e32_v_i32m1(vint32m1_t *v0, vint32m1_t *v1, const int32_t *base, size_t vl) {

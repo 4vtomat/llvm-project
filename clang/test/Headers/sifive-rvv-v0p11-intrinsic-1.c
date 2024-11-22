@@ -4,6 +4,8 @@
 #define __rvv_0p10_compatible_intrinsics
 #include <riscv_vector.h>
 
+// expected-warning@rvv_v0p10_compatible/riscv_vector.h:4 {{The RVV intrinsic version 0.10 compatible header is deprecated and will be removed in the next release. Please refer to the latest version of the interfaces.}}
+
 void test_vlseg2e32_v_i32m1(vint32m1_t *v0, vint32m1_t *v1, const int32_t *base, size_t vl) {
   return __riscv_vlseg2e32_v_i32m1(v0, v1, base, vl); /* expected-error {{call to undeclared function '__riscv_vlseg2e32_v_i32m1'; ISO C99 and later do not support implicit function declarations}} expected-error {{void function 'test_vlseg2e32_v_i32m1' should not return a value}} */
 }
