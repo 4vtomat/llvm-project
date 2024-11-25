@@ -11608,9 +11608,23 @@ bool BoUpSLP::isTreeTinyAndNotFullyVectorizable(bool ForReduction) const {
       }))
     return false;
 
+#if SIFIVE_CUSTOMIZATION
+  if (VectorizableTree.back()->isGather() &&
+      VectorizableTree.back()->isAltShuffle() &&
+      VectorizableTree.back()->getVectorFactor() > 2 &&
+      allSameBlock(VectorizableTree.back()->Scalars) &&
+      !VectorizableTree.back()->Scalars.front()->getType()->isVectorTy() &&
+      TTI->getScalarizationOverhead(
+          getWidenedType(VectorizableTree.back()->Scalars.front()->getType(),
+                         VectorizableTree.back()->getVectorFactor()),
+          APInt::getAllOnes(VectorizableTree.back()->getVectorFactor()),
+          /*Insert=*/true, /*Extract=*/false,
+          TTI::TCK_RecipThroughput) > -SLPCostThreshold)
+#else
   if (VectorizableTree.back()->isGather() &&
       VectorizableTree.back()->isAltShuffle() &&
       VectorizableTree.back()->getVectorFactor() > 2)
+#endif // SIFIVE_CUSTOMIZATION
     return false;
 
   assert(VectorizableTree.empty()
