@@ -16112,6 +16112,21 @@ BoUpSLP::vectorizeTree(const ExtraValueToDebugLocsMap &ExternallyUsedValues,
     for (Instruction *I : RemovedInsts) {
       const TreeEntry *IE = getTreeEntry(I);
       if (IE->Idx != 0 &&
+#if SIFIVE_CUSTOMIZATION
+          !(VectorizableTree.front()->isGather() &&
+            !IE->UserTreeIndices.empty() &&
+            (ValueToGatherNodes.lookup(I).contains(
+                 VectorizableTree.front().get()) ||
+             any_of(IE->UserTreeIndices,
+                    [&](const EdgeInfo &EI) {
+                      return EI.UserTE == VectorizableTree.front().get() &&
+                             EI.EdgeIdx == UINT_MAX;
+                    }))) &&
+          !(GatheredLoadsEntriesFirst.has_value() &&
+            IE->Idx >= *GatheredLoadsEntriesFirst &&
+            VectorizableTree.front()->isGather() &&
+            is_contained(VectorizableTree.front()->Scalars, I)))
+#else
           !(VectorizableTree.front()->isGather() && isa<LoadInst>(I) &&
             !IE->UserTreeIndices.empty() &&
             any_of(IE->UserTreeIndices,
@@ -16123,6 +16138,7 @@ BoUpSLP::vectorizeTree(const ExtraValueToDebugLocsMap &ExternallyUsedValues,
             IE->Idx >= *GatheredLoadsEntriesFirst &&
             VectorizableTree.front()->isGather() &&
             is_contained(VectorizableTree.front()->Scalars, I)))
+#endif // SIFIVE_CUSTOMIZATION
         continue;
       SmallVector<SelectInst *> LogicalOpSelects;
       I->replaceUsesWithIf(PoisonValue::get(I->getType()), [&](Use &U) {
