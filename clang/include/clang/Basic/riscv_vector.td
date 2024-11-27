@@ -2165,7 +2165,11 @@ let HasMasked = false,
     let RequiredFeatures = ["Zvfhmin"] in
       defm vmv_v : RVVOutBuiltinSet<"vmv_v_v", "x",
                                     [["v", "v", "vv"]]>;
-    let RequiredFeatures = ["Zvfbfmin"] in
+#ifdef SIFIVE_CUSTOMIZATION
+      let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+#else
+      let RequiredFeatures = ["Zvfbfmin"] in
+#endif // SIFIVE_CUSTOMIZATION
       defm vmv_v : RVVOutBuiltinSet<"vmv_v_v", "y",
                                     [["v", "v", "vv"]]>;
   let SupportOverloading = false in
@@ -2965,7 +2969,11 @@ let HasMasked = false,
   let RequiredFeatures = ["Zvfhmin"] in
     defm vmerge : RVVOutOp1BuiltinSet<"vmerge", "x",
                                       [["vvm", "v", "vvvm"]]>;
-  let RequiredFeatures = ["Zvfbfmin"] in
+#ifdef SIFIVE_CUSTOMIZATION
+      let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+#else
+      let RequiredFeatures = ["Zvfbfmin"] in
+#endif // SIFIVE_CUSTOMIZATION
     defm vmerge : RVVOutOp1BuiltinSet<"vmerge", "y",
                                       [["vvm", "v", "vvvm"]]>;
   defm vfmerge : RVVOutOp1BuiltinSet<"vfmerge", "xfd",
@@ -3468,7 +3476,11 @@ let RequiredFeatures = ["Zvfhmin"] in {
   defm vrgather : RVVOutBuiltinSet<"vrgather_vx", "x",
                                    [["vx", "v", "vvz"]]>;
 }
-let RequiredFeatures = ["Zvfbfmin"] in {
+#ifdef SIFIVE_CUSTOMIZATION
+      let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in {
+#else
+      let RequiredFeatures = ["Zvfbfmin"] in {
+#endif // SIFIVE_CUSTOMIZATION
   defm vrgather : RVVOutBuiltinSet<"vrgather_vv", "y",
                                    [["vv", "v", "vvUv"]]>;
   defm vrgather : RVVOutBuiltinSet<"vrgather_vx", "y",
