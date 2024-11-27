@@ -4,6 +4,27 @@
 @struct0 = external global [2 x [6 x [4 x [4 x i32]]]]
 
 define void @test() {
+; CHECK-LABEL: @test(
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    [[TMP0:%.*]] = load <4 x ptr>, ptr getelementptr inbounds (i8, ptr null, i64 8), align 8
+; CHECK-NEXT:    [[TMP1:%.*]] = load <4 x ptr>, ptr getelementptr inbounds (i8, ptr null, i64 8), align 8
+; CHECK-NEXT:    [[TMP2:%.*]] = call <8 x ptr> @llvm.masked.gather.v8p0.v8p0(<8 x ptr> getelementptr (ptr, <8 x ptr> <ptr null, ptr null, ptr null, ptr null, ptr inttoptr (i64 16 to ptr), ptr inttoptr (i64 16 to ptr), ptr inttoptr (i64 16 to ptr), ptr inttoptr (i64 16 to ptr)>, <8 x i64> <i64 0, i64 1, i64 2, i64 3, i64 0, i64 1, i64 2, i64 3>), i32 8, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, <8 x ptr> poison)
+; CHECK-NEXT:    [[TMP3:%.*]] = icmp ult <8 x ptr> [[TMP2]], <ptr null, ptr inttoptr (i64 768 to ptr), ptr inttoptr (i64 768 to ptr), ptr inttoptr (i64 768 to ptr), ptr null, ptr null, ptr null, ptr null>
+; CHECK-NEXT:    [[TMP4:%.*]] = call <4 x i1> @llvm.vector.extract.v4i1.v8i1(<8 x i1> [[TMP3]], i64 4)
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <4 x i1> [[TMP4]], i32 1
+; CHECK-NEXT:    [[FOUND_CONFLICT199:%.*]] = and i1 false, [[TMP5]]
+; CHECK-NEXT:    [[TMP6:%.*]] = shufflevector <4 x i1> [[TMP4]], <4 x i1> poison, <3 x i32> <i32 0, i32 poison, i32 3>
+; CHECK-NEXT:    [[TMP7:%.*]] = shufflevector <3 x i1> <i1 poison, i1 false, i1 poison>, <3 x i1> [[TMP6]], <3 x i32> <i32 3, i32 1, i32 5>
+; CHECK-NEXT:    [[TMP8:%.*]] = and <3 x i1> zeroinitializer, [[TMP7]]
+; CHECK-NEXT:    [[TMP9:%.*]] = call i1 @llvm.vector.reduce.or.v3i1(<3 x i1> [[TMP8]])
+; CHECK-NEXT:    [[TMP10:%.*]] = icmp ult <4 x ptr> [[TMP1]], <ptr inttoptr (i64 384 to ptr), ptr inttoptr (i64 384 to ptr), ptr inttoptr (i64 384 to ptr), ptr inttoptr (i64 768 to ptr)>
+; CHECK-NEXT:    [[TMP11:%.*]] = icmp ult <4 x ptr> [[TMP0]], <ptr getelementptr inbounds nuw (i8, ptr @struct0, i64 768), ptr getelementptr inbounds nuw (i8, ptr @struct0, i64 768), ptr getelementptr inbounds nuw (i8, ptr @struct0, i64 768), ptr @struct0>
+; CHECK-NEXT:    br i1 [[TMP9]], label [[FOR_COND1_PREHEADER_US_PREHEADER:%.*]], label [[FOR_COND1_PREHEADER_PREHEADER:%.*]]
+; CHECK:       for.cond1.preheader.preheader:
+; CHECK-NEXT:    ret void
+; CHECK:       for.cond1.preheader.us.preheader:
+; CHECK-NEXT:    ret void
+;
 entry:
   %0 = load ptr, ptr null, align 8
   %1 = load ptr, ptr getelementptr inbounds (i8, ptr null, i64 8), align 8

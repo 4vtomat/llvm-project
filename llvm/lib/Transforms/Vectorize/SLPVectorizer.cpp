@@ -5128,7 +5128,11 @@ BoUpSLP::canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
                        getUnderlyingObject(PointerOps.front());
               }))
             VectorGEPCost += TTI.getScalarizationOverhead(
+#if SIFIVE_CUSTOMIZATION
+                SubVecTy, APInt::getAllOnes(ScalarTyNumElements * VF),
+#else
                 SubVecTy, APInt::getAllOnes(VF),
+#endif // SIFIVE_CUSTOMIZATION
                 /*Insert=*/true, /*Extract=*/false, CostKind);
           else
 #if SIFIVE_CUSTOMIZATION
