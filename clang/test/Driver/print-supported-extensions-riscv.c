@@ -176,6 +176,7 @@
 // CHECK-NEXT:     xsfmmbase            0.6       'XSfmmbase' All non arithmetic instructions for all TEWs and sf.vtzero
 // CHECK-NEXT:     xsfpgflushdlone      0.1       'XSfpgflushdlone' (Cache Flush/Power Down Instructions)
 // CHECK-NEXT:     xsfpmpmt             0.1       'Xsfpmpmt' (SiFive PMP-based Memory Types Extension)
+// CHECK-NEXT:     xsfsci               1.0       'XSfsci' (SiFive Custom Scalar Coprocessor Interface Instructions)
 // CHECK-NEXT:     xsfvcp               1.0       'XSfvcp' (SiFive Custom Vector Coprocessor Interface Instructions)
 // CHECK-NEXT:     xsfvfbfa             0.1       'XSfvfbfa' (SiFive custom additional BF16 vector compute support)
 // CHECK-NEXT:     xsfvfbfexp16e        0.1       'Xsfvfbfexp16e' (SiFive Vector Floating-Point Exponential Function Instruction, BFloat16)

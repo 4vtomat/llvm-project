@@ -9,6 +9,7 @@
 // RUN:  -target-feature +xsfvfwmaccqqq -disable-O0-optnone -emit-llvm %s -o - | \
 // RUN:  opt -S -passes=mem2reg | FileCheck %s
 
+#define __rvv_0p11_compatible_intrinsics
 #include <riscv_vector.h>
 
 #include <riscv_ntlh.h>

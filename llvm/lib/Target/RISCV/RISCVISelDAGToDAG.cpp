@@ -2576,10 +2576,14 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
     }
     case Intrinsic::riscv_sf_vtzero_t: {
       uint64_t TileNum = Node->getConstantOperandVal(2);
+      SDValue Tm = Node->getOperand(3);
+      SDValue Tn = Node->getOperand(4);
+      SDValue Log2SEW = Node->getOperand(5);
+      SDValue TWiden = Node->getOperand(6);
       SDValue Chain = Node->getOperand(0);
       auto *NewNode = CurDAG->getMachineNode(
           RISCV::PseudoSF_VTZERO_T, DL, Node->getVTList(),
-          {CurDAG->getRegister(getTileReg(TileNum), XLenVT), Chain});
+          {CurDAG->getRegister(getTileReg(TileNum), XLenVT), Tm, Tn, Log2SEW, TWiden, Chain});
 
       ReplaceNode(Node, NewNode);
       return;

@@ -371,5 +371,6 @@ defm : UnsupportedSchedZbkb;
 defm : UnsupportedSchedZbkx;
 defm : UnsupportedSchedZfa;
 defm : UnsupportedSchedXsfvcp;
+defm : UnsupportedSchedXSfsci; // SIFIVE
 defm : UnsupportedSchedZvk;
 }

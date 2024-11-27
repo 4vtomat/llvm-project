@@ -118,7 +118,11 @@ static cl::opt<bool>
                         cl::desc("Run the SLP vectorization passes"));
 
 static cl::opt<bool>
+#if SIFIVE_CUSTOMIZATION
+    SLPReVec("slp-revec", cl::init(true), cl::Hidden,
+#else
     SLPReVec("slp-revec", cl::init(false), cl::Hidden,
+#endif // SIFIVE_CUSTOMIZATION
              cl::desc("Enable vectorization for wider vector utilization"));
 
 static cl::opt<int>
@@ -5101,6 +5105,9 @@ BoUpSLP::canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
             VecLdCost +=
                 TTI.getInstructionCost(cast<Instruction>(VL[Idx]), CostKind);
       }
+#if SIFIVE_CUSTOMIZATION
+      unsigned ScalarTyNumElements = getNumElements(ScalarTy);
+#endif // SIFIVE_CUSTOMIZATION
       auto *SubVecTy = getWidenedType(ScalarTy, VF);
       for (auto [I, LS] : enumerate(States)) {
         auto *LI0 = cast<LoadInst>(VL[I * VF]);
@@ -5124,11 +5131,20 @@ BoUpSLP::canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
                 SubVecTy, APInt::getAllOnes(VF),
                 /*Insert=*/true, /*Extract=*/false, CostKind);
           else
+#if SIFIVE_CUSTOMIZATION
+            VectorGEPCost +=
+                TTI.getScalarizationOverhead(
+                    SubVecTy, APInt::getOneBitSet(ScalarTyNumElements * VF, 0),
+                    /*Insert=*/true, /*Extract=*/false, CostKind) +
+                ::getShuffleCost(TTI, TTI::SK_Broadcast, SubVecTy, {},
+                                 CostKind);
+#else
             VectorGEPCost += TTI.getScalarizationOverhead(
                                  SubVecTy, APInt::getOneBitSet(VF, 0),
                                  /*Insert=*/true, /*Extract=*/false, CostKind) +
                              ::getShuffleCost(TTI, TTI::SK_Broadcast, SubVecTy,
                                               {}, CostKind);
+#endif // SIFIVE_CUSTOMIZATION
         }
         switch (LS) {
         case LoadsState::Vectorize:
@@ -5957,6 +5973,25 @@ void BoUpSLP::reorderTopToBottom() {
                                      TE->Scalars.size();
                         }) &&
                  "All users must be of VF size.");
+#if SIFIVE_CUSTOMIZATION
+          if (SLPReVec) {
+            assert(SLPReVec && "Only supported by REVEC.");
+            // ShuffleVectorInst does not do reorderOperands (and it should not
+            // because ShuffleVectorInst supports only a limited set of
+            // patterns). Only do reorderNodeWithReuses if all of the users are
+            // not ShuffleVectorInst.
+            if (all_of(TE->UserTreeIndices, [&](const EdgeInfo &EI) {
+                  return isa<ShuffleVectorInst>(EI.UserTE->getMainOp());
+                }))
+              continue;
+            assert(all_of(TE->UserTreeIndices,
+                          [&](const EdgeInfo &EI) {
+                            return !isa<ShuffleVectorInst>(
+                                EI.UserTE->getMainOp());
+                          }) &&
+                   "Does not know how to reorder.");
+          }
+#endif // SIFIVE_CUSTOMIZATION
           // Update ordering of the operands with the smaller VF than the given
           // one.
           reorderNodeWithReuses(*TE, Mask);
@@ -5965,8 +6000,14 @@ void BoUpSLP::reorderTopToBottom() {
       }
       if ((TE->State == TreeEntry::Vectorize ||
            TE->State == TreeEntry::StridedVectorize) &&
+#if SIFIVE_CUSTOMIZATION
+          (isa<ExtractElementInst, ExtractValueInst, LoadInst, StoreInst,
+               InsertElementInst>(TE->getMainOp()) ||
+           (SLPReVec && isa<ShuffleVectorInst>(TE->getMainOp()))) &&
+#else
           isa<ExtractElementInst, ExtractValueInst, LoadInst, StoreInst,
               InsertElementInst>(TE->getMainOp()) &&
+#endif // SIFIVE_CUSTOMIZATION
           !TE->isAltShuffle()) {
         // Build correct orders for extract{element,value}, loads and
         // stores.
@@ -7674,6 +7715,13 @@ BoUpSLP::TreeEntry::EntryState BoUpSLP::getScalarsVectorizationState(
       LLVM_DEBUG(dbgs() << "SLP: Non-vectorizable call.\n");
       return TreeEntry::NeedToGather;
     }
+#if SIFIVE_CUSTOMIZATION
+    if (!VecFunc && Intrinsic::isTargetIntrinsic(ID) &&
+        !TTI->isTypeLegal(getWidenedType(getValueType(CI), VL.size()))) {
+      LLVM_DEBUG(dbgs() << "SLP: Vectorized result type is illegal.\n");
+      return TreeEntry::NeedToGather;
+    }
+#endif // SIFIVE_CUSTOMIZATION
     Function *F = CI->getCalledFunction();
     unsigned NumArgs = CI->arg_size();
     SmallVector<Value *, 4> ScalarArgs(NumArgs, nullptr);
@@ -10773,7 +10821,12 @@ BoUpSLP::getEntryCost(const TreeEntry *E, ArrayRef<Value *> VectorizedVals,
     // If the selects are the only uses of the compares, they will be
     // dead and we can adjust the cost by removing their cost.
     if (VI && SelectOnly) {
+#if SIFIVE_CUSTOMIZATION
+      assert((!Ty->isVectorTy() || SLPReVec) &&
+             "Expected only for scalar type.");
+#else
       assert(!Ty->isVectorTy() && "Expected only for scalar type.");
+#endif // SIFIVE_CUSTOMIZATION
       auto *CI = cast<CmpInst>(VI->getOperand(0));
       IntrinsicCost -= TTI->getCmpSelInstrCost(
           CI->getOpcode(), Ty, Builder.getInt1Ty(), CI->getPredicate(),
@@ -13309,6 +13362,31 @@ Value *BoUpSLP::gather(ArrayRef<Value *> VL, Value *Root, Type *ScalarTy) {
     Instruction *InsElt;
     if (auto *VecTy = dyn_cast<FixedVectorType>(Scalar->getType())) {
       assert(SLPReVec && "FixedVectorType is not expected.");
+#if SIFIVE_CUSTOMIZATION
+      // This is an optimization which should be done by
+      // IRBuilderBase::CreateInsertVector.
+      // reference: https://github.com/llvm/llvm-project/pull/116229
+      auto *CVec = dyn_cast<Constant>(Vec);
+      auto *CScalar = dyn_cast<Constant>(Scalar);
+      if (CVec && CScalar) {
+        unsigned VecNumElements =
+            cast<FixedVectorType>(Vec->getType())->getNumElements();
+        unsigned ScalarNumElements = VecTy->getNumElements();
+        SmallVector<Constant *, 16> Result(VecNumElements);
+        auto *Int32Ty = Type::getInt32Ty(Vec->getContext());
+        unsigned InsertPos = Pos * ScalarNumElements;
+        for (unsigned I : seq<unsigned>(VecNumElements)) {
+          if (InsertPos <= I && I < InsertPos + ScalarNumElements) {
+            Result[I] = ConstantExpr::getExtractElement(
+                CScalar, ConstantInt::get(Int32Ty, I - InsertPos));
+            continue;
+          }
+          Result[I] = ConstantExpr::getExtractElement(
+              CVec, ConstantInt::get(Int32Ty, I));
+        }
+        return cast<Value>(ConstantVector::get(Result));
+      }
+#endif // SIFIVE_CUSTOMIZATION
       Vec = InsElt = Builder.CreateInsertVector(
           Vec->getType(), Vec, Scalar,
           Builder.getInt64(Pos * VecTy->getNumElements()));
@@ -13830,6 +13908,16 @@ public:
            unsigned VF = 0,
            function_ref<void(Value *&, SmallVectorImpl<int> &)> Action = {}) {
     IsFinalized = true;
+#if SIFIVE_CUSTOMIZATION
+    unsigned ScalarTyNumElements = getNumElements(ScalarTy);
+    SmallVector<int> NewExtMask(ExtMask);
+    if (ScalarTyNumElements != 1) {
+      assert(SLPReVec && "FixedVectorType is not expected.");
+      transformScalarShuffleIndiciesToVector(ScalarTyNumElements, CommonMask);
+      transformScalarShuffleIndiciesToVector(ScalarTyNumElements, NewExtMask);
+      ExtMask = NewExtMask;
+    }
+#else
     SmallVector<int> NewExtMask(ExtMask);
     if (auto *VecTy = dyn_cast<FixedVectorType>(ScalarTy)) {
       assert(SLPReVec && "FixedVectorType is not expected.");
@@ -13839,6 +13927,7 @@ public:
                                              NewExtMask);
       ExtMask = NewExtMask;
     }
+#endif // SIFIVE_CUSTOMIZATION
     if (Action) {
       Value *Vec = InVectors.front();
       if (InVectors.size() == 2) {
@@ -13879,6 +13968,17 @@ public:
                                    return !isKnownNonNegative(
                                        V, SimplifyQuery(*R.DL));
                                  }));
+#if SIFIVE_CUSTOMIZATION
+        unsigned InsertionIndex = Idx * ScalarTyNumElements;
+        Vec = Builder.CreateInsertVector(Vec->getType(), Vec, V,
+                                         Builder.getInt64(InsertionIndex));
+        if (!CommonMask.empty()) {
+          std::iota(std::next(CommonMask.begin(), InsertionIndex),
+                    std::next(CommonMask.begin(), (Idx + E->getVectorFactor()) *
+                                                      ScalarTyNumElements),
+                    InsertionIndex);
+        }
+#else
         Vec = Builder.CreateInsertVector(Vec->getType(), Vec, V,
                                          Builder.getInt64(Idx));
         if (!CommonMask.empty()) {
@@ -13886,6 +13986,7 @@ public:
                     std::next(CommonMask.begin(), Idx + E->getVectorFactor()),
                     Idx);
         }
+#endif // SIFIVE_CUSTOMIZATION
       }
       InVectors.front() = Vec;
     }
@@ -15367,15 +15468,31 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E, bool PostponedPHIs) {
     case Instruction::ShuffleVector: {
       Value *V;
       if (SLPReVec && !E->isAltShuffle()) {
+#ifndef SIFIVE_CUSTOMIZATION
         assert(E->ReuseShuffleIndices.empty() &&
                "Not support ReuseShuffleIndices yet.");
         assert(E->ReorderIndices.empty() && "Not support ReorderIndices yet.");
+#endif // SIFIVE_CUSTOMIZATION
         setInsertPointAfterBundle(E);
         Value *Src = vectorizeOperand(E, 0, PostponedPHIs);
         if (E->VectorizedValue) {
           LLVM_DEBUG(dbgs() << "SLP: Diamond merged for " << *VL0 << ".\n");
           return E->VectorizedValue;
         }
+#if SIFIVE_CUSTOMIZATION
+        SmallVector<int> ThisMask(calculateShufflevectorMask(E->Scalars));
+        if (auto *SVSrc = dyn_cast<ShuffleVectorInst>(Src)) {
+          assert(isa<PoisonValue>(SVSrc->getOperand(1)) &&
+                 "Not supported shufflevector usage.");
+          SmallVector<int> NewMask(ThisMask.size());
+          transform(ThisMask, NewMask.begin(), [&SVSrc](int Mask) {
+            return SVSrc->getShuffleMask()[Mask];
+          });
+          V = Builder.CreateShuffleVector(SVSrc->getOperand(0), NewMask);
+        } else {
+          V = Builder.CreateShuffleVector(Src, ThisMask);
+        }
+#else
         assert(isa<ShuffleVectorInst>(Src) &&
                "Not supported shufflevector usage.");
         auto *SVSrc = cast<ShuffleVectorInst>(Src);
@@ -15386,7 +15503,13 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E, bool PostponedPHIs) {
         transform(ThisMask, NewMask.begin(),
                   [&SVSrc](int Mask) { return SVSrc->getShuffleMask()[Mask]; });
         V = Builder.CreateShuffleVector(SVSrc->getOperand(0), NewMask);
+#endif // SIFIVE_CUSTOMIZATION
         propagateIRFlags(V, E->Scalars, VL0);
+#if SIFIVE_CUSTOMIZATION
+        if (auto *I = dyn_cast<Instruction>(V))
+          V = propagateMetadata(I, E->Scalars);
+        V = FinalShuffle(V, E);
+#endif // SIFIVE_CUSTOMIZATION
       } else {
         assert(E->isAltShuffle() &&
                ((Instruction::isBinaryOp(E->getOpcode()) &&
@@ -15517,12 +15640,17 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E, bool PostponedPHIs) {
           transformScalarShuffleIndiciesToVector(VecTy->getNumElements(), Mask);
         }
         V = Builder.CreateShuffleVector(V0, V1, Mask);
+#ifndef SIFIVE_CUSTOMIZATION
       }
+#endif // SIFIVE_CUSTOMIZATION
       if (auto *I = dyn_cast<Instruction>(V)) {
         V = propagateMetadata(I, E->Scalars);
         GatherShuffleExtractSeq.insert(I);
         CSEBlocks.insert(I->getParent());
       }
+#if SIFIVE_CUSTOMIZATION
+      }
+#endif // SIFIVE_CUSTOMIZATION
 
       E->VectorizedValue = V;
       ++NumVectorInstructions;

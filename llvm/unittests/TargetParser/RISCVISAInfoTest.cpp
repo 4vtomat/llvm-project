@@ -1121,6 +1121,7 @@ R"(All available -march extensions for RISC-V
     xsfmmbase            0.6
     xsfpgflushdlone      0.1
     xsfpmpmt             0.1
+    xsfsci               1.0
     xsfvcp               1.0
     xsfvfbfa             0.1
     xsfvfbfexp16e        0.1

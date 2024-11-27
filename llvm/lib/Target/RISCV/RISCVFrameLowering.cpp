@@ -832,9 +832,10 @@ void RISCVFrameLowering::emitEpilogue(MachineFunction &MF,
   uint64_t StackSize = FirstSPAdjustAmount ? FirstSPAdjustAmount
                                            : getStackSizeWithRVVPadding(MF) -
                                                  RVFI->getReservedSpillsSize();
-  uint64_t FPOffset = FirstSPAdjustAmount ? FirstSPAdjustAmount
-                                          : getStackSizeWithRVVPadding(MF) -
-                                                RVFI->getVarArgsSaveSize();
+#if SIFIVE_CUSTOMIZATION
+  // patch from upstream #114316
+  uint64_t FPOffset = RealStackSize - RVFI->getVarArgsSaveSize();
+#endif // SIFIVE_CUSTOMIZATION
   uint64_t RVVStackSize = RVFI->getRVVStackSize();
 
   bool RestoreFP = RI->hasStackRealignment(MF) || MFI.hasVarSizedObjects() ||

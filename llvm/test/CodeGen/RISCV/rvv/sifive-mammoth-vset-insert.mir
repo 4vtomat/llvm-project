@@ -67,6 +67,12 @@
     ret i64 %0
   }
 
+  define void @sf_vtzero(i64 %tm, i64 %tn) {
+  entry:
+    call void @llvm.riscv.sf.vtzero.i64(i64 1, i64 %tm, i64 %tn, i64 3, i64 4)
+    ret void
+  }
+
   declare void @llvm.riscv.sf.mm.f.f.i64.nxv32f16(i64, <vscale x 32 x half>, <vscale x 32 x half>, i64, i64, i64, i64)
   declare void @llvm.riscv.sf.mm.f.f.i64.nxv32bf16(i64, <vscale x 32 x bfloat>, <vscale x 32 x bfloat>, i64, i64, i64, i64)
   declare <vscale x 64 x i8> @llvm.riscv.sf.vtmv.v.t.nxv64i8.i64(i64, i64)
@@ -76,6 +82,7 @@
   declare i64 @llvm.riscv.sf.vsettm.i64(i64, i64, i64)
   declare i64 @llvm.riscv.sf.vsettn.i64(i64, i64, i64)
   declare i64 @llvm.riscv.sf.vsettk.i64(i64, i64, i64)
+  declare void @llvm.riscv.sf.vtzero.i64(i64, i64, i64, i64, i64)
 ...
 ---
 name:            mammoth_same_state
@@ -429,4 +436,34 @@ body:             |
     %1:gprnox0 = PseudoSF_VSETTK %0:gprnox0, 520, implicit-def $vtype, implicit $vtype
     $x10 = COPY %1:gprnox0
     PseudoRET implicit $x10
+...
+---
+name:            sf_vtzero
+alignment:       4
+tracksRegLiveness: true
+registers:
+  - { id: 0, class: gprnox0 }
+  - { id: 1, class: gprnox0 }
+liveins:
+  - { reg: '$x10', virtual-reg: '%0' }
+  - { reg: '$x11', virtual-reg: '%1' }
+frameInfo:
+  maxAlignment:    1
+machineFunctionInfo: {}
+body:             |
+  bb.0.entry:
+    liveins: $x10, $x11
+    ; CHECK-LABEL: name: sf_vtzero
+    ; CHECK: liveins: $x10, $x11
+    ; CHECK-NEXT: {{  $}}
+    ; CHECK-NEXT: [[COPY:%[0-9]+]]:gprnox0 = COPY $x10
+    ; CHECK-NEXT: [[COPY1:%[0-9]+]]:gprnox0 = COPY $x11
+    ; CHECK-NEXT: dead $x0 = PseudoSF_VSETTNT [[COPY1]], 1536, implicit-def $vtype, implicit-def $vl
+    ; CHECK-NEXT: dead $x0 = PseudoSF_VSETTM [[COPY]], 1536, implicit-def $vtype, implicit $vtype
+    ; CHECK-NEXT: PseudoSF_VTZERO_T $t1, $noreg, $noreg, 3 /* e8 */, 4, implicit $vtype
+    ; CHECK-NEXT: PseudoRET
+    %0:gprnox0 = COPY $x10
+    %1:gprnox0 = COPY $x11
+    PseudoSF_VTZERO_T $t1, %0:gprnox0, %1:gprnox0, 3, 4
+    PseudoRET
 ...

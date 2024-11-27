@@ -1,6 +1,9 @@
 #ifndef __RVV_0P10_COMPATIBLE_HEADERS_NON_OVERLOADED_NON_POLICY_H
 #define __RVV_0P10_COMPATIBLE_HEADERS_NON_OVERLOADED_NON_POLICY_H
 
+#warning                                                                       \
+    "The RVV intrinsic version 0.10 compatible header is deprecated and will be removed in the next release. Please refer to the latest version of the interfaces."
+
 #if __has_include("riscv_vector.h")
 #include <riscv_vector.h>
 #endif

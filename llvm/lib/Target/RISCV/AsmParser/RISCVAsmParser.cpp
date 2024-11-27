@@ -872,6 +872,18 @@ public:
            VK == RISCVMCExpr::VK_RISCV_None;
   }
 
+#if SIFIVE_CUSTOMIZATION
+  bool isUImm3Lsb0() const {
+    if (!isImm())
+      return false;
+    int64_t Imm;
+    RISCVMCExpr::VariantKind VK = RISCVMCExpr::VK_RISCV_None;
+    bool IsConstantImm = evaluateConstantImm(getImm(), Imm, VK);
+    return IsConstantImm && isShiftedUInt<2, 1>(Imm) &&
+           VK == RISCVMCExpr::VK_RISCV_None;
+  }
+#endif
+
   bool isUImm5Lsb0() const {
     if (!isImm())
       return false;
@@ -1598,6 +1610,12 @@ bool RISCVAsmParser::matchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
     return generateImmOutOfRangeError(
         Operands, ErrorInfo, 1, (1 << 5) - 1,
         "immediate must be in [0xfffe0, 0xfffff] or");
+#if SIFIVE_CUSTOMIZATION
+  case Match_InvalidUImm3Lsb0:
+    return generateImmOutOfRangeError(
+        Operands, ErrorInfo, 0, (1 << 3) - 2,
+        "immediate must be a multiple of 2 bytes in the range");
+#endif
   case Match_InvalidUImm5Lsb0:
     return generateImmOutOfRangeError(
         Operands, ErrorInfo, 0, (1 << 5) - 2,

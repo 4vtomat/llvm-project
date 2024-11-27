@@ -305,6 +305,8 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
               [&](const VPInstruction *VPI) -> InstructionCost {
                 return getInstructionCost(VPI, RVL);
               })
+          .Case<VPIRInstruction>(
+              [&](const VPIRInstruction *VPIRI) { return 0; })
           .Case<VPSingleDefRecipe>([&](const VPSingleDefRecipe *VPSDR)
                                        -> InstructionCost {
             // FIXME: The code here should not access underlying instruction and
@@ -505,7 +507,7 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
 
   // Any use of monotonic within a vector context is not allowed
   if (!isa<VPReplicateRecipe, VPMonotonicHeaderPHIRecipe,
-           VPMonotonicUpdateInstruction>(Recipe))
+           VPMonotonicUpdateInstruction, VPIRInstruction>(Recipe))
     for (const VPValue *Operand : Recipe->operands())
       if (const VPRecipeBase *DefR = Operand->getDefiningRecipe())
         if (isa<VPMonotonicHeaderPHIRecipe, VPMonotonicUpdateInstruction>(

@@ -4,6 +4,7 @@
 // RUN:   -emit-llvm %s -o - | opt -S -passes=mem2reg | \
 // RUN:   FileCheck --check-prefix=CHECK-RV64 %s
 
+#define __rvv_0p11_compatible_intrinsics
 #include <riscv_vector.h>
 
 // CHECK-RV64-LABEL: define dso_local <vscale x 1 x i8> @test_vaaddu_vv_u8mf8

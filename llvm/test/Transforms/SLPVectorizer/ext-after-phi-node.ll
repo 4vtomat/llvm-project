@@ -6,8 +6,8 @@ define double @test() {
 ; CHECK-NEXT:  bb:
 ; CHECK-NEXT:    br label [[BB7:%.*]]
 ; CHECK:       bb7:
-; CHECK-NEXT:    [[TMP0:%.*]] = phi <2 x i32> [ poison, [[BB9:%.*]] ], [ zeroinitializer, [[BB:%.*]] ]
-; CHECK-NEXT:    [[TMP1:%.*]] = phi <2 x i32> [ zeroinitializer, [[BB9]] ], [ zeroinitializer, [[BB]] ]
+; CHECK-NEXT:    [[TMP9:%.*]] = phi <4 x i32> [ poison, [[BB9:%.*]] ], [ zeroinitializer, [[BB:%.*]] ]
+; CHECK-NEXT:    [[TMP0:%.*]] = call <2 x i32> @llvm.vector.extract.v2i32.v4i32(<4 x i32> [[TMP9]], i64 2)
 ; CHECK-NEXT:    [[TMP2:%.*]] = zext <2 x i32> [[TMP0]] to <2 x i64>
 ; CHECK-NEXT:    [[TMP3:%.*]] = extractelement <2 x i32> [[TMP0]], i32 0
 ; CHECK-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP3]] to i64

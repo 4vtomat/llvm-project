@@ -106,6 +106,22 @@
 // C-RV64-LINUX-MULTI-LP64D: "-L{{.*}}/Inputs/multilib_riscv_linux_sdk/sysroot/lib64/lp64d"
 // C-RV64-LINUX-MULTI-LP64D: "-L{{.*}}/Inputs/multilib_riscv_linux_sdk/sysroot/usr/lib64/lp64d"
 
+// RUN: env "PATH=" %clang -### %s -fuse-ld=ld -no-pie \
+// RUN:   --target=riscv64-unknown-linux-gnu --rtlib=platform --unwindlib=platform \
+// RUN:   -march=rv64imafdc_zicsr_zifencei_zicfilp_zicfiss \
+// RUN:   -menable-experimental-extensions -fcf-protection=full \
+// RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv_linux_sdk \
+// RUN:   --sysroot=%S/Inputs/multilib_riscv_linux_sdk/sysroot 2>&1 \
+// RUN:   | FileCheck -check-prefix=C-RV64-LINUX-MULTI-LP64D-CFI %s
+
+// C-RV64-LINUX-MULTI-LP64D-CFI: "{{.*}}/Inputs/multilib_riscv_linux_sdk/lib/gcc/riscv64-unknown-linux-gnu/7.2.0/../../../../riscv64-unknown-linux-gnu/bin/ld"
+// C-RV64-LINUX-MULTI-LP64D-CFI: "--sysroot={{.*}}/Inputs/multilib_riscv_linux_sdk/sysroot"
+// C-RV64-LINUX-MULTI-LP64D-CFI: "-m" "elf64lriscv"
+// C-RV64-LINUX-MULTI-LP64D-CFI: "-dynamic-linker" "/lib/ld-linux-riscv64-lp64d-cfi.so.1"
+// C-RV64-LINUX-MULTI-LP64D-CFI: "{{.*}}/Inputs/multilib_riscv_linux_sdk/lib/gcc/riscv64-unknown-linux-gnu/7.2.0/lib64/lp64d/cfi/crtbegin.o"
+// C-RV64-LINUX-MULTI-LP64D-CFI: "-L{{.*}}/Inputs/multilib_riscv_linux_sdk/lib/gcc/riscv64-unknown-linux-gnu/7.2.0/lib64/lp64d/cfi"
+// C-RV64-LINUX-MULTI-LP64D-CFI: "-L{{.*}}/Inputs/multilib_riscv_linux_sdk/sysroot/lib/../lib-cfi"
+
 // RUN: env "PATH=" %clang -### %s -fuse-ld=ld \
 // RUN:   --target=riscv64-unknown-elf --rtlib=platform --unwindlib=platform --sysroot= \
 // RUN:   -march=rv64imac -mabi=lp64\

@@ -487,7 +487,12 @@ multiclass BulletWriteResBase<
     def : WriteRes<WriteFMovI64ToF64, [PipeA]>;
     def : WriteRes<WriteFMovF64ToI64, [PipeA]>;
   }
-  
+
+#ifdef SIFIVE_CUSTOMIZATION
+  let Latency = 3 in
+  def : WriteRes<WriteSCI, [PipeB]>; // FIXME: Is this correct?
+#endif
+
   // 6. Configuration-Setting Instructions
   let Latency = 3 in {
     def : WriteRes<WriteVSETVLI, [PipeA]>;
@@ -1148,7 +1153,11 @@ multiclass BulletReadAdvance {
   def : ReadAdvance<ReadFClass16, 0>;
   def : ReadAdvance<ReadFClass32, 0>;
   def : ReadAdvance<ReadFClass64, 0>;
-  
+
+#ifdef SIFIVE_CUSTOMIZATION
+  def : ReadAdvance<ReadSCI, 0>; // FIXME: Is this correct?
+#endif
+
   // 6. Configuration-Setting Instructions
   def : ReadAdvance<ReadVSETVLI, 2>;
   def : ReadAdvance<ReadVSETVL, 2>;

@@ -10820,8 +10820,7 @@ addCSAPostprocessRecipes(VPRecipeBuilder &RecipeBuilder,
 static SetVector<VPIRInstruction *> collectUsersInExitBlock(
     Loop *OrigLoop, VPRecipeBuilder &Builder, VPlan &Plan,
     const MapVector<PHINode *, InductionDescriptor> &Inductions,
-    const MapVector<PHINode *, CSADescriptor> &CSAs,
-    LoopVectorizationLegality *Legal) {
+    const MapVector<PHINode *, CSADescriptor> &CSAs) {
 #else
 static SetVector<VPIRInstruction *> collectUsersInExitBlock(
     Loop *OrigLoop, VPRecipeBuilder &Builder, VPlan &Plan,
@@ -10881,13 +10880,6 @@ static SetVector<VPIRInstruction *> collectUsersInExitBlock(
            return P && CSAs.contains(P);
          })))
       continue;
-    if (Legal->isMonotonicPhi(IncomingValue) ||
-        (isa<Instruction>(IncomingValue) &&
-         Legal->isMonotonicUpdate(cast<Instruction>(IncomingValue)))) {
-      // TODO: Remove this hack and avoid extract-from-end recipe for this case
-      Plan.addLiveOut(ExitPhi, V);
-      continue;
-    }
 #endif // SIFIVE_CUSTOMIZATION
     ExitUsersToFix.insert(ExitIRI);
     ExitIRI->addOperand(V);
@@ -11319,9 +11311,9 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   RecipeBuilder.fixHeaderPhis();
 
 #if SIFIVE_CUSTOMIZATION
-  SetVector<VPIRInstruction *> ExitUsersToFix = collectUsersInExitBlock(
-      OrigLoop, RecipeBuilder, *Plan, Legal->getInductionVars(),
-      Legal->getCSAs(), Legal);
+  SetVector<VPIRInstruction *> ExitUsersToFix =
+      collectUsersInExitBlock(OrigLoop, RecipeBuilder, *Plan,
+                              Legal->getInductionVars(), Legal->getCSAs());
   addLiveOutsForFirstOrderRecurrences(*Plan, ExitUsersToFix, *Legal, CM);
 #else
   SetVector<VPIRInstruction *> ExitUsersToFix = collectUsersInExitBlock(
@@ -11705,6 +11697,20 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
     // debugging.
     DebugLoc ExitDL = OrigLoop->getLoopLatch()->getTerminator()->getDebugLoc();
 
+    // TODO: At the moment ComputeReductionResult also drives creation of the
+    // bc.merge.rdx phi nodes, hence it needs to be created unconditionally here
+    // even for in-loop reductions, until the reduction resume value handling is
+    // also modeled in VPlan.
+    auto *FinalReductionResult = new VPInstruction(
+        VPInstruction::ComputeReductionResult, {PhiR, NewExitingVPV}, ExitDL);
+    // Update all users outside the vector region.
+    OrigExitingVPV->replaceUsesWithIf(
+        FinalReductionResult, [](VPUser &User, unsigned) {
+          auto *Parent = cast<VPRecipeBase>(&User)->getParent();
+         return Parent && !Parent->getParent();
+        });
+    FinalReductionResult->insertBefore(*MiddleVPBB, IP);
+
 #if SIFIVE_CUSTOMIZATION
     RecurKind Kind = RdxDesc.getRecurrenceKind();
     if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(Kind)) {
@@ -11719,33 +11725,16 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
         auto *FinalReductionMask =
             new VPInstruction(Instruction::ICmp, CmpInst::ICMP_NE,
                               NewExitingVPV, SentinelVPV, ExitDL);
-        auto *FinalReductionResult = new VPInstruction(
+        auto *FinalReductionMaskedResult = new VPInstruction(
             VPInstruction::ComputeReductionResultWithMask,
             {PhiR, NewExitingVPV, FinalReductionMask}, ExitDL);
-        FinalReductionResult->insertBefore(*MiddleVPBB, IP);
-        FinalReductionMask->insertBefore(FinalReductionResult);
-        OrigExitingVPV->replaceUsesWithIf(
-            FinalReductionResult, [](VPUser &User, unsigned) {
-              return match(&User, m_Binary<VPInstruction::ExtractFromEnd>(
-                                      m_VPValue(), m_VPValue()));
-            });
-        continue;
+        FinalReductionMaskedResult->insertBefore(FinalReductionResult);
+	FinalReductionMask->insertBefore(FinalReductionMaskedResult);
+        FinalReductionResult->replaceAllUsesWith(FinalReductionMaskedResult);
+        FinalReductionResult->eraseFromParent();
       }
     }
 #endif // SIFIVE_CUSTOMIZATION
-    // TODO: At the moment ComputeReductionResult also drives creation of the
-    // bc.merge.rdx phi nodes, hence it needs to be created unconditionally here
-    // even for in-loop reductions, until the reduction resume value handling is
-    // also modeled in VPlan.
-    auto *FinalReductionResult = new VPInstruction(
-        VPInstruction::ComputeReductionResult, {PhiR, NewExitingVPV}, ExitDL);
-    // Update all users outside the vector region.
-    OrigExitingVPV->replaceUsesWithIf(
-        FinalReductionResult, [](VPUser &User, unsigned) {
-          auto *Parent = cast<VPRecipeBase>(&User)->getParent();
-          return Parent && !Parent->getParent();
-        });
-    FinalReductionResult->insertBefore(*MiddleVPBB, IP);
 
     // Adjust AnyOf reductions; replace the reduction phi for the selected value
     // with a boolean reduction phi node to check if the condition is true in

@@ -123,6 +123,7 @@ set(riscv_files
         riscv_corev_alu.h
   riscv_crypto.h
   riscv_ntlh.h
+  sifive_sci.h # SIFIVE
   sifive_vector.h
   )
 

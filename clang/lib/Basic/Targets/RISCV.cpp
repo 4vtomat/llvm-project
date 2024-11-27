@@ -229,10 +229,6 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
 
   if (ISAInfo->hasExtension("zve32x")) {
     Builder.defineMacro("__riscv_vector");
-#if SIFIVE_CUSTOMIZATION
-    // Enable the inclusion for compatibility support of v0.11 intrinsics
-    Builder.defineMacro("__rvv_0p11_compatible_intrinsics");
-#endif
     // Currently we support the v0.12 RISC-V V intrinsics.
     Builder.defineMacro("__riscv_v_intrinsic", Twine(getVersionValue(0, 12)));
   }

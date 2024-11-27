@@ -1,6 +1,9 @@
 #ifndef __RVV_0P11_COMPATIBLE_HEADERS_NON_OVERLOADED_NON_POLICY_H
 #define __RVV_0P11_COMPATIBLE_HEADERS_NON_OVERLOADED_NON_POLICY_H
 
+#warning                                                                       \
+    "The RVV intrinsic version 0.11 compatible header is deprecated and will be removed in the next release. Please refer to the latest version of the interfaces."
+
 // The maximum number of parameters is 6.
 #define _GET_OVERRIDE_6(_1, _2, _3, _4, _5, _6, NAME, ...) NAME
 
