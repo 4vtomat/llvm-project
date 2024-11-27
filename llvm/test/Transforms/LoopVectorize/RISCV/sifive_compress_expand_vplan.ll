@@ -30,32 +30,8 @@
 ; CHECK-NEXT:     EMIT vp<%7> = not ir<%tobool.not>
 ; CHECK-NEXT:     CLONE ir<%idx.ext> = sext ir<%ret.011>
 ; CHECK-NEXT:     CLONE ir<%add.ptr> = getelementptr ir<%a>, ir<%idx.ext>
-<<<<<<< HEAD
 ; CHECK-NEXT:     vp<%8> = vector-pointer ir<%add.ptr>
-; CHECK-NEXT:     WIDEN vp.store vp<%8>, ir<%0>, vp<%4>, vp<%7>	unit-strided
-=======
-; CHECK-NEXT:     vp<%9> = vector-pointer ir<%add.ptr>
-; CHECK-NEXT:     WIDEN vp.store vp<%9>, ir<%0>, vp<%5>, vp<%8>	unit-strided
-; CHECK-NEXT:     monotonic-update ir<%inc> = add ir<%ret.011>, ir<1> @vp<%8>
-; CHECK-NEXT:     SCALAR-CAST vp<%10> = zext vp<%5> to i64
-; CHECK-NEXT:     EMIT vp<%11> = add vp<%10>, vp<%3>
-; CHECK-NEXT:     EMIT branch-on-count vp<%11>, vp<%0>
-; CHECK-NEXT:   No successors
-; CHECK-NEXT: }
-; CHECK-NEXT: Successor(s): middle.block
-; CHECK-EMPTY:
-; CHECK-NEXT: middle.block:
-; CHECK-NEXT:   EMIT branch-on-cond ir<true>
-; CHECK-NEXT: Successor(s): ir-bb<for.cond.cleanup.loopexit>, scalar.ph
-; CHECK-EMPTY:
-; CHECK-NEXT: ir-bb<for.cond.cleanup.loopexit>:
-; CHECK-NEXT:   IR   %ret.1.lcssa = phi i32 [ %ret.1, %for.inc ] (extra operand: ir<%inc>)
-; CHECK-NEXT: No successors
-; CHECK-EMPTY:
-; CHECK-NEXT: scalar.ph:
-; CHECK-NEXT: No successors
-; CHECK-NEXT: }
->>>>>>> sf/sifive-dev
+; CHECK-NEXT:     WIDEN vp.store vp<%8>, ir<%0>, vp<%4>, vp<%7>        unit-strided
 
 define i32 @compress_store(i32 %n, ptr noalias %a, ptr noalias %b) {
 entry:
@@ -120,38 +96,11 @@ for.inc:
 ; CHECK-NEXT:     EMIT vp<%7> = not ir<%tobool.not>
 ; CHECK-NEXT:     CLONE ir<%idxprom1> = sext ir<%ret.013>
 ; CHECK-NEXT:     CLONE ir<%arrayidx2> = getelementptr ir<%b>, ir<%idxprom1>
-<<<<<<< HEAD
 ; CHECK-NEXT:     vp<%8> = vector-pointer ir<%arrayidx2>
-; CHECK-NEXT:     WIDEN ir<%1> = vp.load vp<%8>, vp<%4>, vp<%7>	unit-strided
+; CHECK-NEXT:     WIDEN ir<%1> = vp.load vp<%8>, vp<%4>, vp<%7>        unit-strided
 ; CHECK-NEXT:     CLONE ir<%arrayidx4> = getelementptr ir<%a>, vp<%5>
 ; CHECK-NEXT:     vp<%9> = vector-pointer ir<%arrayidx4>
-; CHECK-NEXT:     WIDEN vp.store vp<%9>, ir<%1>, vp<%4>, vp<%7>	unit-strided
-=======
-; CHECK-NEXT:     vp<%9> = vector-pointer ir<%arrayidx2>
-; CHECK-NEXT:     WIDEN ir<%1> = vp.load vp<%9>, vp<%5>, vp<%8>	unit-strided
-; CHECK-NEXT:     CLONE ir<%arrayidx4> = getelementptr ir<%a>, vp<%6>
-; CHECK-NEXT:     vp<%10> = vector-pointer ir<%arrayidx4>
-; CHECK-NEXT:     WIDEN vp.store vp<%10>, ir<%1>, vp<%5>, vp<%8>	unit-strided
-; CHECK-NEXT:     monotonic-update ir<%inc> = add ir<%ret.013>, ir<1> @vp<%8>
-; CHECK-NEXT:     SCALAR-CAST vp<%11> = zext vp<%5> to i64
-; CHECK-NEXT:     EMIT vp<%12> = add vp<%11>, vp<%3>
-; CHECK-NEXT:     EMIT branch-on-count vp<%12>, vp<%0>
-; CHECK-NEXT:   No successors
-; CHECK-NEXT: }
-; CHECK-NEXT: Successor(s): middle.block
-; CHECK-EMPTY:
-; CHECK-NEXT: middle.block:
-; CHECK-NEXT:   EMIT branch-on-cond ir<true>
-; CHECK-NEXT: Successor(s): ir-bb<for.cond.cleanup.loopexit>, scalar.ph
-; CHECK-EMPTY:
-; CHECK-NEXT: ir-bb<for.cond.cleanup.loopexit>:
-; CHECK-NEXT:   IR   %ret.1.lcssa = phi i32 [ %ret.1, %for.inc ] (extra operand: ir<%inc>)
-; CHECK-NEXT: No successors
-; CHECK-EMPTY:
-; CHECK-NEXT: scalar.ph:
-; CHECK-NEXT: No successors
-; CHECK-NEXT: }
->>>>>>> sf/sifive-dev
+; CHECK-NEXT:     WIDEN vp.store vp<%9>, ir<%1>, vp<%4>, vp<%7>        unit-strided
 
 define i32 @expand_load(i32 %n, ptr noalias %a, ptr noalias %b) {
 entry:

@@ -18,13 +18,13 @@ define dso_local void @_Z3fooPKcz(ptr noundef %0, ...) "frame-pointer"="all" {
 ; RV64V-NEXT:    lui t0, 2
 ; RV64V-NEXT:    addiw t0, t0, -576
 ; RV64V-NEXT:    sub sp, sp, t0
-; RV64V-NEXT:    sd a7, 56(s0)
-; RV64V-NEXT:    sd a6, 48(s0)
 ; RV64V-NEXT:    sd a5, 40(s0)
-; RV64V-NEXT:    sd a4, 32(s0)
-; RV64V-NEXT:    sd a3, 24(s0)
-; RV64V-NEXT:    sd a2, 16(s0)
+; RV64V-NEXT:    sd a6, 48(s0)
+; RV64V-NEXT:    sd a7, 56(s0)
 ; RV64V-NEXT:    sd a1, 8(s0)
+; RV64V-NEXT:    sd a2, 16(s0)
+; RV64V-NEXT:    sd a3, 24(s0)
+; RV64V-NEXT:    sd a4, 32(s0)
 ; RV64V-NEXT:    sd a0, -32(s0)
 ; RV64V-NEXT:    addi a0, s0, 8
 ; RV64V-NEXT:    sd a0, -40(s0)
