@@ -11,9 +11,9 @@ define void @foo() {
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vmv.v.i v9, 0
-; CHECK-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
+; CHECK-NEXT:    vsetivli zero, 2, e32, m4, ta, ma
 ; CHECK-NEXT:    vmv.v.i v12, 0
-; CHECK-NEXT:    vsetivli zero, 2, e8, m1, tu, ma
+; CHECK-NEXT:    vsetvli zero, zero, e8, m1, tu, ma
 ; CHECK-NEXT:    vluxseg2ei32.v v8, (zero), v12
 ; CHECK-NEXT:    call bar
 ; CHECK-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload

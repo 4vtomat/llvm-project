@@ -1108,8 +1108,9 @@ define void @mulhu_v8i16(ptr %x) {
 ; CHECK-NEXT:    addi a1, a1, %lo(.LCPI66_0)
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v11, (a1)
+; CHECK-NEXT:    vsetivli zero, 7, e16, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v12, 1
-; CHECK-NEXT:    vsetivli zero, 7, e16, m1, tu, ma
+; CHECK-NEXT:    vsetvli zero, zero, e16, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vi v9, v12, 6
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vsrl.vv v9, v8, v9

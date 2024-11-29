@@ -130,9 +130,8 @@ entry:
 define i32 @vp_reduce3(i32 %s, <vscale x 1 x i32> %v, <vscale x 1 x i1> %m, i32 signext %evl) {
 ; RV32-LABEL: vp_reduce3:
 ; RV32:       # %bb.0: # %entry
-; RV32-NEXT:    vsetvli a2, zero, e32, mf2, ta, ma
-; RV32-NEXT:    vmv.v.i v9, 1
 ; RV32-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
+; RV32-NEXT:    vmv.v.i v9, 1
 ; RV32-NEXT:    vmerge.vvm v8, v9, v8, v0
 ; RV32-NEXT:    beqz a1, .LBB2_7
 ; RV32-NEXT:  # %bb.1:
@@ -172,9 +171,8 @@ define i32 @vp_reduce3(i32 %s, <vscale x 1 x i32> %v, <vscale x 1 x i1> %m, i32 
 ; RV64:       # %bb.0: # %entry
 ; RV64-NEXT:    slli a2, a1, 32
 ; RV64-NEXT:    srli a2, a2, 32
-; RV64-NEXT:    vsetvli a3, zero, e32, mf2, ta, ma
-; RV64-NEXT:    vmv.v.i v9, 1
 ; RV64-NEXT:    vsetvli zero, a2, e32, mf2, ta, ma
+; RV64-NEXT:    vmv.v.i v9, 1
 ; RV64-NEXT:    vmerge.vvm v8, v9, v8, v0
 ; RV64-NEXT:    beqz a1, .LBB2_7
 ; RV64-NEXT:  # %bb.1:

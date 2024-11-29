@@ -1,4 +1,4 @@
-  //===-- RISCVTargetMachine.cpp - Define TargetMachine for RISC-V ----------===//
+//===-- RISCVTargetMachine.cpp - Define TargetMachine for RISC-V ----------===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -131,7 +131,7 @@ static cl::opt<bool>
 static cl::opt<bool>
     EnableVLOptimizer("riscv-enable-vl-optimizer",
                       cl::desc("Enable the RISC-V VL Optimizer pass"),
-                      cl::init(false), cl::Hidden);
+                      cl::init(true), cl::Hidden); // SIFIVE
 
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   RegisterTargetMachine<RISCVTargetMachine> X(getTheRISCV32Target());
@@ -168,7 +168,6 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   initializeRISCVDAGToDAGISelLegacyPass(*PR);
 #if SIFIVE_CUSTOMIZATION
   initializeRISCVPeepholePass(*PR);
-  initializeRISCVVLOptimizerPass(*PR);
   initializeRISCVMachineConstPropagationPass(*PR);
 #endif // SIFIVE_CUSTOMIZATION
   initializeRISCVMoveMergePass(*PR);
@@ -667,8 +666,11 @@ void RISCVPassConfig::addMachineSSAOptimization() {
 
 void RISCVPassConfig::addPreRegAlloc() {
   addPass(createRISCVPreRAExpandPseudoPass());
-  if (TM->getOptLevel() != CodeGenOptLevel::None)
+  if (TM->getOptLevel() != CodeGenOptLevel::None) {
     addPass(createRISCVMergeBaseOffsetOptPass());
+    if (EnableVLOptimizer)
+      addPass(createRISCVVLOptimizerPass());
+  }
 
   addPass(createRISCVInsertReadWriteCSRPass());
   addPass(createRISCVInsertWriteVXRMPass());
