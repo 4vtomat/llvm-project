@@ -208,14 +208,7 @@ bool llvm::isVectorIntrinsicWithOverloadTypeAtArg(
 #endif // SIFIVE_CUSTOMIZATION
     return OpdIdx == -1 || OpdIdx == 0;
   case Intrinsic::is_fpclass:
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   case Intrinsic::vp_is_fpclass:
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-=======
-  case Intrinsic::vp_is_fpclass:
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
     return OpdIdx == 0;
   case Intrinsic::powi:
 #if SIFIVE_CUSTOMIZATION
