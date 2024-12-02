@@ -223,9 +223,9 @@ using AllUnaryRecipe_match =
     UnaryRecipe_match<Op0_t, Opcode, VPWidenRecipe, VPReplicateRecipe,
                       VPWidenCastRecipe, VPInstruction>;
 
+#if SIFIVE_CUSTOMIZATION
 template <typename Op0_t, typename Op1_t, unsigned Opcode, bool Commutative,
           typename... RecipeTys>
-<<<<<<< HEAD
 struct BinaryRecipe_match {
   Op0_t Op0;
   Op1_t Op1;
@@ -244,53 +244,21 @@ struct BinaryRecipe_match {
   bool match(const VPRecipeBase *R) const {
     if (!detail::MatchRecipeAndOpcode<Opcode, RecipeTys...>::match(R))
       return false;
-#if SIFIVE_CUSTOMIZATION
     assert((R->getNumOperands() == 2 ||
             (R->getNumOperands() == 3 && isa<VPInstruction>(R->getOperand(2)) &&
              cast<VPInstruction>(R->getOperand(2))->getOpcode() ==
                  VPInstruction::ExplicitVectorLength)) &&
            "recipe with matched opcode does not have 2 operands");
+    if (Op0.match(R->getOperand(0)) && Op1.match(R->getOperand(1)))
+      return true;
+    return Commutative && Op0.match(R->getOperand(1)) &&
+           Op1.match(R->getOperand(0));
+  }
+};
 #else
-    assert(R->getNumOperands() == 2 &&
-           "recipe with matched opcode does not have 2 operands");
-#endif // SIFIVE_CUSTOMIZATION
-    if (Op0.match(R->getOperand(0)) && Op1.match(R->getOperand(1)))
-      return true;
-    return Commutative && Op0.match(R->getOperand(1)) &&
-           Op1.match(R->getOperand(0));
-  }
-};
-||||||| 864902e9b4d8
-struct BinaryRecipe_match {
-  Op0_t Op0;
-  Op1_t Op1;
-
-  BinaryRecipe_match(Op0_t Op0, Op1_t Op1) : Op0(Op0), Op1(Op1) {}
-
-  bool match(const VPValue *V) const {
-    auto *DefR = V->getDefiningRecipe();
-    return DefR && match(DefR);
-  }
-
-  bool match(const VPSingleDefRecipe *R) const {
-    return match(static_cast<const VPRecipeBase *>(R));
-  }
-
-  bool match(const VPRecipeBase *R) const {
-    if (!detail::MatchRecipeAndOpcode<Opcode, RecipeTys...>::match(R))
-      return false;
-    assert(R->getNumOperands() == 2 &&
-           "recipe with matched opcode does not have 2 operands");
-    if (Op0.match(R->getOperand(0)) && Op1.match(R->getOperand(1)))
-      return true;
-    return Commutative && Op0.match(R->getOperand(1)) &&
-           Op1.match(R->getOperand(0));
-  }
-};
-=======
 using BinaryRecipe_match =
     Recipe_match<std::tuple<Op0_t, Op1_t>, Opcode, Commutative, RecipeTys...>;
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+#endif // SIFIVE_CUSTOMIZATION
 
 template <typename Op0_t, typename Op1_t, unsigned Opcode>
 using BinaryVPInstruction_match =
