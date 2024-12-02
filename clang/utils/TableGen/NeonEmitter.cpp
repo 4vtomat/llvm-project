@@ -2358,7 +2358,6 @@ static void emitNeonTypeDefs(const std::string &types, raw_ostream &OS,
   for (auto &TS : TDTypeVec) {
     bool IsA64 = false;
     Type T(TS, ".");
-<<<<<<< HEAD
 
 #if SIFIVE_CUSTOMIZATION
     // We don't support any poly type for Recode.
@@ -2366,12 +2365,7 @@ static void emitNeonTypeDefs(const std::string &types, raw_ostream &OS,
       continue;
 #endif
 
-    if (T.isDouble())
-||||||| 864902e9b4d8
-    if (T.isDouble())
-=======
     if (T.isDouble() || T.isMFloat8())
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
       IsA64 = true;
 
     if (InIfdef && !IsA64) {
@@ -2409,7 +2403,6 @@ static void emitNeonTypeDefs(const std::string &types, raw_ostream &OS,
     for (auto &TS : TDTypeVec) {
       bool IsA64 = false;
       Type T(TS, ".");
-<<<<<<< HEAD
 
 #if SIFIVE_CUSTOMIZATION
       // We don't support any poly type for Recode.
@@ -2417,12 +2410,7 @@ static void emitNeonTypeDefs(const std::string &types, raw_ostream &OS,
         continue;
 #endif
 
-      if (T.isDouble())
-||||||| 864902e9b4d8
-      if (T.isDouble())
-=======
       if (T.isDouble() || T.isMFloat8())
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
         IsA64 = true;
 
       if (InIfdef && !IsA64) {
