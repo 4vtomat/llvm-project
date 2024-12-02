@@ -257,14 +257,7 @@ llvm::MDNode *CodeGenTBAA::getTypeInfoHelper(const Type *Ty) {
 #else
     if (!CodeGenOpts.PointerTBAA)
       return AnyPtr;
-<<<<<<< HEAD
 #endif
-    // Compute the depth of the pointer and generate a tag of the form "p<depth>
-    // <base type tag>".
-||||||| 864902e9b4d8
-    // Compute the depth of the pointer and generate a tag of the form "p<depth>
-    // <base type tag>".
-=======
     // C++ [basic.lval]p11 permits objects to accessed through an l-value of
     // similar type. Two types are similar under C++ [conv.qual]p2 if the
     // decomposition of the types into pointers, member pointers, and arrays has
@@ -281,23 +274,11 @@ llvm::MDNode *CodeGenTBAA::getTypeInfoHelper(const Type *Ty) {
     // we just conservatively bail out with AnyPtr (below) rather than trying to
     // create a tag that honors the similar-type rules while still
     // distinguishing different kinds of member pointer.
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
     unsigned PtrDepth = 0;
     do {
       PtrDepth++;
-<<<<<<< HEAD
-      Ty = Ty->getPointeeType().getTypePtr();
-    } while (Ty->isPointerType() || Ty->isReferenceType());
-    // TODO: Implement C++'s type "similarity" and consider dis-"similar"
-    // pointers distinct for non-builtin types.
-||||||| 864902e9b4d8
-      Ty = Ty->getPointeeType().getTypePtr();
-    } while (Ty->isPointerType());
-    // TODO: Implement C++'s type "similarity" and consider dis-"similar"
-    // pointers distinct for non-builtin types.
-=======
       Ty = Ty->getPointeeType()->getBaseElementTypeUnsafe();
-    } while (Ty->isPointerType());
+    } while (Ty->isPointerType() || Ty->isReferenceType()); // SIFIVE
     assert(!isa<VariableArrayType>(Ty));
     // When the underlying type is a builtin type, we compute the pointee type
     // string recursively, which is implicitly more forgiving than the standards
@@ -307,7 +288,6 @@ llvm::MDNode *CodeGenTBAA::getTypeInfoHelper(const Type *Ty) {
     // signedness mismatches that only apply at the top level.  As a result, we
     // are allowing e.g. `int *` l-values to access `unsigned *` objects.
     SmallString<256> TyName;
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
     if (isa<BuiltinType>(Ty)) {
 #if SIFIVE_CUSTOMIZATION
       // Void/Char types are generic placeholders, use
@@ -345,47 +325,29 @@ llvm::MDNode *CodeGenTBAA::getTypeInfoHelper(const Type *Ty) {
       if (!RT->getDecl()->getDeclName())
         return AnyPtr;
 
+#if SIFIVE_CUSTOMIZATION
+      if (CodeGenOpts.NewStructPathTBAA) {
+        bool IsClass;
+        if (isMayAliasType(RT, IsClass, Context, PtrDepth))
+          return AnyPtr;
+      }
+      if (!CodeGenOpts.NewStructPathTBAA || Features.CPlusPlus) {
+#endif //SIFIVE_CUSTOMIZATION
       // For non-builtin types use the mangled name of the canonical type.
       llvm::raw_svector_ostream TyOut(TyName);
       MangleCtx->mangleCanonicalTypeName(QualType(Ty, 0), TyOut);
-    }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-    if (auto *TTy = dyn_cast<RecordType>(Ty)) {
-      if (CodeGenOpts.NewStructPathTBAA) {
-        bool IsClass;
-        if (isMayAliasType(TTy, IsClass, Context, PtrDepth))
-          return AnyPtr;
-
-        SmallString<256> OutName("p");
-        OutName += std::to_string(PtrDepth);
-        OutName += " ";
-        if (Features.CPlusPlus) {
-          SmallString<256> Name;
-          // Don't use the mangler for C code.
-          OutName += (IsClass) ? "class " : "struct ";
-          llvm::raw_svector_ostream Out(Name);
-          CGTypes.getCXXABI().getMangleContext().mangleCanonicalTypeName(
-              QualType(Ty, 0), Out);
-          OutName += Name;
-        } else {
-          OutName += QualType(Ty, 0).getAsString(Context.getPrintingPolicy());
-        }
-        return createScalarTypeNode(OutName, AnyPtr, Size);
+      } else {
+        TyName = QualType(Ty, 0).getAsString(Context.getPrintingPolicy());
       }
-    }
 #endif //SIFIVE_CUSTOMIZATION
-    return AnyPtr;
-||||||| 864902e9b4d8
-    return AnyPtr;
-=======
+    }
 
     SmallString<256> OutName("p");
     OutName += std::to_string(PtrDepth);
     OutName += " ";
     OutName += TyName;
     return createScalarTypeNode(OutName, AnyPtr, Size);
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
   }
 
   // Accesses to arrays are accesses to objects of their element types.
