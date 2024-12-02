@@ -37,15 +37,11 @@
 #include "llvm/Analysis/DomTreeUpdater.h"
 #include "llvm/Analysis/IVDescriptors.h"
 #include "llvm/Analysis/LoopInfo.h"
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/Analysis/ScalarEvolution.h"
 #include "llvm/Analysis/ScalarEvolutionExpressions.h"
 #endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-=======
 #include "llvm/Analysis/TargetTransformInfo.h"
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 #include "llvm/Analysis/VectorUtils.h"
 #include "llvm/IR/DebugLoc.h"
 #include "llvm/IR/FMF.h"
@@ -320,30 +316,17 @@ public:
 /// VPTransformState holds information passed down when "executing" a VPlan,
 /// needed for generating the output IR.
 struct VPTransformState {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
-                   DominatorTree *DT, IRBuilderBase &Builder,
-                   InnerLoopVectorizer *ILV, VPlan *Plan,
-                   bool EnableRISCVCSA);
-#else
-  VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
-                   DominatorTree *DT, IRBuilderBase &Builder,
-||||||| 864902e9b4d8
-  VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
-                   DominatorTree *DT, IRBuilderBase &Builder,
-=======
   VPTransformState(const TargetTransformInfo *TTI, ElementCount VF, unsigned UF,
                    LoopInfo *LI, DominatorTree *DT, IRBuilderBase &Builder,
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+                   InnerLoopVectorizer *ILV, VPlan *Plan, bool EnableRISCVCSA);
+#else
+  VPTransformState(const TargetTransformInfo *TTI, ElementCount VF, unsigned UF,
+                   LoopInfo *LI, DominatorTree *DT, IRBuilderBase &Builder,
                    InnerLoopVectorizer *ILV, VPlan *Plan);
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-=======
   /// Target Transform Info.
   const TargetTransformInfo *TTI;
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 
   /// The chosen Vectorization Factor of the loop being vectorized.
   ElementCount VF;
@@ -1101,23 +1084,11 @@ public:
     return cast<Instruction>(getUnderlyingValue());
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool hasUnderlyingInstr() const {
     return getVPSingleValue()->getUnderlyingValue() != nullptr;
   }
 #endif // SIFIVE_CUSTOMIZATION
-  /// Return the cost of this VPSingleDefRecipe.
-  InstructionCost computeCost(ElementCount VF,
-                              VPCostContext &Ctx) const override;
-
-||||||| 864902e9b4d8
-  /// Return the cost of this VPSingleDefRecipe.
-  InstructionCost computeCost(ElementCount VF,
-                              VPCostContext &Ctx) const override;
-
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print this VPSingleDefRecipe to dbgs() (for debugging).
   LLVM_DUMP_METHOD void dump() const;
@@ -2237,7 +2208,6 @@ public:
   /// Generate the gep nodes.
   void execute(VPTransformState &State) override;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool getIsPtrLoopInvariant() const { return isPointerLoopInvariant(); }
   bool getIsIndexLoopInvariantr(int Idx) const {
@@ -2245,8 +2215,6 @@ public:
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-||||||| 864902e9b4d8
-=======
   /// Return the cost of this VPWidenGEPRecipe.
   InstructionCost computeCost(ElementCount VF,
                               VPCostContext &Ctx) const override {
@@ -2254,7 +2222,6 @@ public:
     return 0;
   }
 
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print the recipe.
   void print(raw_ostream &O, const Twine &Indent,
@@ -4596,24 +4563,10 @@ class VPlan {
   /// definitions are VPValues that hold a pointer to their underlying IR.
   SmallVector<VPValue *, 16> VPLiveInsToFree;
 
-<<<<<<< HEAD
-  /// Values used outside the plan. It contains live-outs that need fixing. Any
-  /// live-out that is fixed outside VPlan needs to be removed. The remaining
-  /// live-outs are fixed via VPLiveOut::fixPhi.
-  MapVector<PHINode *, VPLiveOut *> LiveOuts;
-
 #if SIFIVE_CUSTOMIZATION
   MapVector<PHINode *, VPCSAState *> CSAStates;
 #endif // SIFIVE_CUSTOMIZATION
 
-||||||| 864902e9b4d8
-  /// Values used outside the plan. It contains live-outs that need fixing. Any
-  /// live-out that is fixed outside VPlan needs to be removed. The remaining
-  /// live-outs are fixed via VPLiveOut::fixPhi.
-  MapVector<PHINode *, VPLiveOut *> LiveOuts;
-
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
   /// Mapping from SCEVs to the VPValues representing their expansions.
   /// NOTE: This mapping is temporary and will be removed once all users have
   /// been modeled in VPlan directly.
@@ -4636,26 +4589,19 @@ public:
   /// scalar loop. At the moment, \p Preheader and \p Entry need to be
   /// disconnected, as the bypass blocks between them are not yet modeled in
   /// VPlan.
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   VPlan(VPBasicBlock *Preheader, VPBasicBlock *Entry,
-        bool IsUncountable = false)
-      : Entry(Entry), Preheader(Preheader), IsUncountable(IsUncountable) {
+        VPIRBasicBlock *ScalarHeader, bool IsUncountable = false)
+      : Entry(Entry), Preheader(Preheader), ScalarHeader(ScalarHeader),
+        IsUncountable(IsUncountable) {
     // FIXME: Uncountable vectorization should set the flag in a proper xform
     if (IsUncountable)
       setUseVLAVectorizer(true);
 #else
-  VPlan(VPBasicBlock *Preheader, VPBasicBlock *Entry)
-      : Entry(Entry), Preheader(Preheader) {
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-  VPlan(VPBasicBlock *Preheader, VPBasicBlock *Entry)
-      : Entry(Entry), Preheader(Preheader) {
-=======
   VPlan(VPBasicBlock *Preheader, VPBasicBlock *Entry,
         VPIRBasicBlock *ScalarHeader)
       : Entry(Entry), Preheader(Preheader), ScalarHeader(ScalarHeader) {
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+#endif // SIFIVE_CUSTOMIZATION
     Entry->setPlan(this);
     Preheader->setPlan(this);
     assert(Preheader->getNumSuccessors() == 0 &&
