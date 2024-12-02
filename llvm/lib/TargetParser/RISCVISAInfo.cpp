@@ -933,7 +933,6 @@ Error RISCVISAInfo::checkDependency() {
   if (HasZvl && !HasVector)
     return getExtensionRequiresError("zvl*b", "v' or 'zve*");
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (Exts.count("zvkns") && !HasVector)
     return createStringError(
@@ -952,31 +951,6 @@ Error RISCVISAInfo::checkDependency() {
                              "'xsfvfbfa' extension to also be specified");
 #endif // SIFIVE_CUSTOMIZATION
 
-  if (!HasVector)
-    for (auto Ext :
-         {"zvbb", "zvbc32e", "zvkb", "zvkg", "zvkgs", "zvkned", "zvknha", "zvksed", "zvksh"})
-      if (Exts.count(Ext))
-        return getExtensionRequiresError(Ext, "v' or 'zve*");
-
-  if (!Exts.count("zve64x"))
-    for (auto Ext : {"zvknhb", "zvbc"})
-      if (Exts.count(Ext))
-        return getExtensionRequiresError(Ext, "v' or 'zve64*");
-
-||||||| 864902e9b4d8
-  if (!HasVector)
-    for (auto Ext :
-         {"zvbb", "zvbc32e", "zvkb", "zvkg", "zvkgs", "zvkned", "zvknha", "zvksed", "zvksh"})
-      if (Exts.count(Ext))
-        return getExtensionRequiresError(Ext, "v' or 'zve*");
-
-  if (!Exts.count("zve64x"))
-    for (auto Ext : {"zvknhb", "zvbc"})
-      if (Exts.count(Ext))
-        return getExtensionRequiresError(Ext, "v' or 'zve64*");
-
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
   if ((HasZcmt || Exts.count("zcmp")) && HasD && (HasC || Exts.count("zcd")))
     return getError(Twine("'") + (HasZcmt ? "zcmt" : "zcmp") +
                     "' extension is incompatible with '" +
