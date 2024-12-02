@@ -4189,7 +4189,6 @@ Instruction *InstCombinerImpl::visitSelectInst(SelectInst &SI) {
   if (sinkNotIntoOtherHandOfLogicalOp(SI))
     return &SI;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Match (select (X < 0), (sub 1<<C, (zext X)), (zext X)) where C is the bit
   // width of X. Replace with (zext (abs X)).
@@ -4210,12 +4209,7 @@ Instruction *InstCombinerImpl::visitSelectInst(SelectInst &SI) {
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-  if (Instruction *I = foldBitCeil(SI, Builder))
-||||||| 864902e9b4d8
-  if (Instruction *I = foldBitCeil(SI, Builder))
-=======
   if (Instruction *I = foldBitCeil(SI, Builder, *this))
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
     return I;
 
   if (Instruction *I = foldSelectToCmp(SI))
