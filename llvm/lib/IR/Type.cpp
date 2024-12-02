@@ -989,17 +989,12 @@ static TargetTypeInfo getTargetTypeInfo(const TargetExtType *Ty) {
                  RISCV::RVVBitsPerBlock / 8) *
         Ty->getIntParameter(0);
     return TargetTypeInfo(
-<<<<<<< HEAD
+        ScalableVectorType::get(Type::getInt8Ty(C), TotalNumElts),
 #if SIFIVE_CUSTOMIZATION
-        ScalableVectorType::get(Type::getInt8Ty(C), TotalNumElts),
         TargetExtType::HasZeroInit);
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-        ScalableVectorType::get(Type::getInt8Ty(C), TotalNumElts));
-=======
-        ScalableVectorType::get(Type::getInt8Ty(C), TotalNumElts),
+#else
         TargetExtType::CanBeLocal);
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   // DirectX resources
