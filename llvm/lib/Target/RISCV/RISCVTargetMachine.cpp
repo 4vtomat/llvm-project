@@ -409,7 +409,6 @@ public:
       DAG->addMutation(createStoreClusterDAGMutation(
           DAG->TII, DAG->TRI, /*ReorderWhileClustering=*/true));
     }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
     if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
@@ -418,34 +417,15 @@ public:
       DAG->addMutation(createRISCVMaskInstDAGMutation());
     }
 #endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-=======
 
     const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
     if (!DisableVectorMaskMutation && ST.hasVInstructions()) {
       DAG = DAG ? DAG : createGenericSchedLive(C);
       DAG->addMutation(createRISCVVectorMaskDAGMutation(DAG->TRI));
     }
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
     return DAG;
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  ScheduleDAGInstrs *
-  createPostMachineScheduler(MachineSchedContext *C) const override {
-    const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
-    ScheduleDAGMI *DAG = nullptr;
-    if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
-      DAG = createGenericSchedPostRA(C);
-      DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
-    }
-    return DAG;
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
-||||||| 864902e9b4d8
-=======
   ScheduleDAGInstrs *
   createPostMachineScheduler(MachineSchedContext *C) const override {
     ScheduleDAGMI *DAG = nullptr;
@@ -456,10 +436,15 @@ public:
       DAG->addMutation(createStoreClusterDAGMutation(
           DAG->TII, DAG->TRI, /*ReorderWhileClustering=*/true));
     }
+#if SIFIVE_CUSTOMIZATION
+    if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
+      DAG = createGenericSchedPostRA(C);
+      DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
+    }
+#endif // SIFIVE_CUSTOMIZATION
     return DAG;
   }
-  
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+
   void addIRPasses() override;
   bool addPreISel() override;
   void addCodeGenPrepare() override;
@@ -520,19 +505,11 @@ bool RISCVPassConfig::addRegAssignAndRewriteFast() {
 bool RISCVPassConfig::addRegAssignAndRewriteOptimized() {
   addPass(createRVVRegAllocPass(true));
   addPass(createVirtRegRewriter(false));
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   if (EnableRISCVSpillRewrite)
     addPass(createRISCVSpillRewritePass());
 #endif // SIFIVE_CUSTOMIZATION
-  if (EnableVSETVLIAfterRVVRegAlloc)
-    addPass(createRISCVInsertVSETVLIPass());
-||||||| 864902e9b4d8
-  if (EnableVSETVLIAfterRVVRegAlloc)
-    addPass(createRISCVInsertVSETVLIPass());
-=======
   addPass(createRISCVInsertVSETVLIPass());
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
   if (TM->getOptLevel() != CodeGenOptLevel::None &&
       EnableRISCVDeadRegisterElimination)
     addPass(createRISCVDeadRegisterDefinitionsPass());
@@ -580,18 +557,6 @@ bool RISCVPassConfig::addPreISel() {
     addPass(createBarrierNoopPass());
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // Enable GlobalMerge pass by default on non-O0 opt levels.
-  if (TM->getOptLevel() != CodeGenOptLevel::None &&
-      (EnableGlobalMerge == cl::BOU_TRUE ||
-       EnableGlobalMerge == cl::BOU_UNSET)) {
-#else
-  if (EnableGlobalMerge == cl::BOU_TRUE) {
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-  if (EnableGlobalMerge == cl::BOU_TRUE) {
-=======
   if ((TM->getOptLevel() != CodeGenOptLevel::None &&
        EnableGlobalMerge == cl::BOU_UNSET) ||
       EnableGlobalMerge == cl::BOU_TRUE) {
@@ -599,7 +564,6 @@ bool RISCVPassConfig::addPreISel() {
     // concerns it might regress some workloads. Unlike AArch64, we don't
     // currently support enabling the pass in an "OnlyOptimizeForSize" mode.
     // Investigating and addressing both items are TODO.
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
     addPass(createGlobalMergePass(TM, /* MaxOffset */ 2047,
                                   /* OnlyOptimizeForSize */ false,
                                   /* MergeExternalByDefault */
