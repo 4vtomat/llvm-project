@@ -1786,21 +1786,17 @@ defm debug_info_for_profiling : BoolFOption<"debug-info-for-profiling",
   PosFlag<SetTrue, [], [ClangOption, CC1Option],
           "Emit extra debug info to make sample profile more accurate">,
   NegFlag<SetFalse>>;
-<<<<<<< HEAD
 // SIFIVE_CUSTOMIZATION
 def fsifive_loop_count_profile_generate : Flag<["-"], "fsifive-loop-count-profile-generate">,
     Group<f_Group>, Visibility<[ClangOption, CLOption, DXCOption]>,
     HelpText<"Generate Loop profile output into `loopProfile.output` file (overriden by LOOP_PROFILE env var)">;
 // end SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-=======
 def fprofile_generate_cold_function_coverage : Flag<["-"], "fprofile-generate-cold-function-coverage">, 
     Group<f_Group>, Visibility<[ClangOption, CLOption]>,
     HelpText<"Generate instrumented code to collect coverage info for cold functions into default.profraw file (overridden by '=' form of option or LLVM_PROFILE_FILE env var)">;
 def fprofile_generate_cold_function_coverage_EQ : Joined<["-"], "fprofile-generate-cold-function-coverage=">, 
     Group<f_Group>, Visibility<[ClangOption, CLOption]>, MetaVarName<"<directory>">,
     HelpText<"Generate instrumented code to collect coverage info for cold functions into <directory>/default.profraw (overridden by LLVM_PROFILE_FILE env var)">; 
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 def fprofile_instr_generate : Flag<["-"], "fprofile-instr-generate">,
     Group<f_Group>, Visibility<[ClangOption, CLOption]>,
     HelpText<"Generate instrumented code to collect execution counts into default.profraw file (overridden by '=' form of option or LLVM_PROFILE_FILE env var)">;
@@ -3435,18 +3431,12 @@ def fno_experimental_isel : Flag<["-"], "fno-experimental-isel">, Group<f_clang_
 def fveclib : Joined<["-"], "fveclib=">, Group<f_Group>,
   Visibility<[ClangOption, CC1Option, FlangOption, FC1Option]>,
     HelpText<"Use the given vector functions library">,
-<<<<<<< HEAD
-// SIFIVE_CUSTOMIZATION
-    Values<"Accelerate,libmvec,MASSV,SiFive_NF,SVML,SLEEF,Darwin_libsystem_m,ArmPL,AMDLIBM,none">,
-// end SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-    Values<"Accelerate,libmvec,MASSV,SVML,SLEEF,Darwin_libsystem_m,ArmPL,AMDLIBM,none">,
-=======
     HelpTextForVariants<[ClangOption, CC1Option],
       "Use the given vector functions library. "
       "Note: -fveclib={ArmPL,SLEEF} implies -fno-math-errno">,
-    Values<"Accelerate,libmvec,MASSV,SVML,SLEEF,Darwin_libsystem_m,ArmPL,AMDLIBM,none">,
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+// SIFIVE_CUSTOMIZATION
+    Values<"Accelerate,libmvec,MASSV,SiFive_NF,SVML,SLEEF,Darwin_libsystem_m,ArmPL,AMDLIBM,none">,
+// end SIFIVE_CUSTOMIZATION
     NormalizedValuesScope<"llvm::driver::VectorLibrary">,
 // SIFIVE_CUSTOMIZATION
     NormalizedValues<["Accelerate", "LIBMVEC", "MASSV", "SiFive_NF", "SVML", "SLEEF",
@@ -4960,11 +4950,6 @@ def msave_restore : Flag<["-"], "msave-restore">, Group<m_riscv_Features_Group>,
   HelpText<"Enable using library calls for save and restore">;
 def mno_save_restore : Flag<["-"], "mno-save-restore">, Group<m_riscv_Features_Group>,
   HelpText<"Disable using library calls for save and restore">;
-<<<<<<< HEAD
-def mforced_sw_shadow_stack : Flag<["-"], "mforced-sw-shadow-stack">, Group<m_riscv_Features_Group>,
-  HelpText<"Force using software shadow stack when shadow-stack enabled">;
-def mno_forced_sw_shadow_stack : Flag<["-"], "mno-forced-sw-shadow-stack">, Group<m_riscv_Features_Group>,
-  HelpText<"Not force using software shadow stack when shadow-stack enabled">;
 // SIFIVE_CUSTOMIZATION
 def mcfi_ss : Flag<["-"], "mcfi-ss">, Group<m_Group>,
   HelpText<"Enable Zicfiss shadow stack feature.">;
@@ -4979,13 +4964,6 @@ def mno_cfi_lp : Flag<["-"], "mno-cfi-lp">, Group<m_Group>,
   Alias<mcfi_lp_EQ>, AliasArgs<["disable"]>,
   HelpText<"Disable Zicfilp landing pad">;
 // end SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-def mforced_sw_shadow_stack : Flag<["-"], "mforced-sw-shadow-stack">, Group<m_riscv_Features_Group>,
-  HelpText<"Force using software shadow stack when shadow-stack enabled">;
-def mno_forced_sw_shadow_stack : Flag<["-"], "mno-forced-sw-shadow-stack">, Group<m_riscv_Features_Group>,
-  HelpText<"Not force using software shadow stack when shadow-stack enabled">;
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 } // let Flags = [TargetSpecific]
 // SIFIVE
 def fuse_vla_vectorizer : Flag<["-"], "fuse-vla-vectorizer">, Group<f_Group>,
