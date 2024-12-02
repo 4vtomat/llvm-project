@@ -393,10 +393,6 @@ public:
 
   bool enableSubRegLiveness() const override;
 
-<<<<<<< HEAD
-  void getPostRAMutations(std::vector<std::unique_ptr<ScheduleDAGMutation>>
-                              &Mutations) const override;
-
 #if SIFIVE_CUSTOMIZATION
   void overrideSchedPolicy(MachineSchedPolicy &Policy,
                            unsigned NumRegionInstrs) const override;
@@ -404,12 +400,7 @@ public:
 
   unsigned getMemToRVVLMUL() const;
 #endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-  void getPostRAMutations(std::vector<std::unique_ptr<ScheduleDAGMutation>>
-                              &Mutations) const override;
 
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
   bool useAA() const override;
 
   unsigned getCacheLineSize() const override {
