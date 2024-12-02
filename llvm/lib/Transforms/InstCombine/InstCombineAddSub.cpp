@@ -1864,14 +1864,11 @@ Instruction *InstCombinerImpl::visitAdd(BinaryOperator &I) {
   if (Instruction *Res = foldBinOpOfSelectAndCastOfSelectCondition(I))
     return Res;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (Instruction *Res = foldNeutralVPReduce(I))
     return Res;
 #endif
 
-||||||| 864902e9b4d8
-=======
   // Re-enqueue users of the induction variable of add recurrence if we infer
   // new nuw/nsw flags.
   if (Changed) {
@@ -1881,7 +1878,6 @@ Instruction *InstCombinerImpl::visitAdd(BinaryOperator &I) {
       Worklist.pushUsersToWorkList(*PHI);
   }
 
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
   return Changed ? &I : nullptr;
 }
 
