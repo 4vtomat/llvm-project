@@ -60,19 +60,11 @@ bool LiveRegMatrixWrapperLegacy::runOnMachineFunction(MachineFunction &MF) {
 void LiveRegMatrix::init(MachineFunction &MF, LiveIntervals &pLIS,
                          VirtRegMap &pVRM) {
   TRI = MF.getSubtarget().getRegisterInfo();
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   MRI = &MF.getRegInfo();
 #endif // SIFIVE_CUSTOMIZATION
-  LIS = &getAnalysis<LiveIntervalsWrapperPass>().getLIS();
-  VRM = &getAnalysis<VirtRegMap>();
-||||||| 864902e9b4d8
-  LIS = &getAnalysis<LiveIntervalsWrapperPass>().getLIS();
-  VRM = &getAnalysis<VirtRegMap>();
-=======
   LIS = &pLIS;
   VRM = &pVRM;
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 
   unsigned NumRegUnits = TRI->getNumRegUnits();
   if (NumRegUnits != Matrix.size())
