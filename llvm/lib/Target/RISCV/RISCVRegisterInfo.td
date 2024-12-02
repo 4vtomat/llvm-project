@@ -462,7 +462,6 @@ def FPR64C : RISCVRegisterClass<[f64], 64, (add
   (sequence "F%u_D", 8, 9)
 )>;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 foreach Index = 0-15 in
   def T#Index : RISCVTileReg<Index, "mt"#Index, []>, DwarfRegNum<[Index]>;
@@ -477,8 +476,6 @@ let RegInfos = XLenRI in {
 }
 #endif //SIFIVE_CUSTOMIZATION
 
-||||||| 864902e9b4d8
-=======
 //===----------------------------------------------------------------------===//
 // GPR Classes for "H/F/D in X"
 //===----------------------------------------------------------------------===//
@@ -505,7 +502,6 @@ def GPRF32C : RISCVRegisterClass<[f32], 32, (add (sequence "X%u_W", 10, 15),
 def GPRF32NoX0 : RISCVRegisterClass<[f32], 32, (sub GPRF32, X0_W)>;
 
 //===----------------------------------------------------------------------===//
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 // Vector type mapping to LLVM types.
 //===----------------------------------------------------------------------===//
 
