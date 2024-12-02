@@ -16,17 +16,9 @@
 #include "clang/Sema/DelayedDiagnostic.h"
 #include "clang/Sema/ParsedAttr.h"
 #include "clang/Sema/ScopeInfo.h"
-<<<<<<< HEAD
-#include "clang/Sema/SemaInternal.h"
-#include "llvm/ADT/StringExtras.h"
 #include "llvm/Support/CommandLine.h"            // SIFIVE
 #include "llvm/Support/MathExtras.h"             // SIFIVE
 #include "llvm/TargetParser/RISCVTargetParser.h" // SIFIVE
-||||||| 864902e9b4d8
-#include "clang/Sema/SemaInternal.h"
-#include "llvm/ADT/StringExtras.h"
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 #include <optional>
 
 using namespace clang;
