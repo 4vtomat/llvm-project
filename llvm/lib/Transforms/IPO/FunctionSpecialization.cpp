@@ -90,7 +90,6 @@ static cl::opt<bool> SpecializeLiteralConstant(
         "Enable specialization of functions that take a literal constant as an "
         "argument"));
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static cl::opt<bool> PropagateConstants(
     "funcspec-propagate-constants", cl::init(false), cl::Hidden,
@@ -98,15 +97,8 @@ static cl::opt<bool> PropagateConstants(
         "Propagate constants to clones even if we don't specialize for them"));
 #endif
 
-bool InstCostVisitor::canEliminateSuccessor(BasicBlock *BB, BasicBlock *Succ,
-                                         DenseSet<BasicBlock *> &DeadBlocks) {
-||||||| 864902e9b4d8
-bool InstCostVisitor::canEliminateSuccessor(BasicBlock *BB, BasicBlock *Succ,
-                                         DenseSet<BasicBlock *> &DeadBlocks) {
-=======
 bool InstCostVisitor::canEliminateSuccessor(BasicBlock *BB,
                                             BasicBlock *Succ) const {
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
   unsigned I = 0;
   return all_of(predecessors(Succ), [&I, BB, Succ, this](BasicBlock *Pred) {
     return I++ < MaxBlockPredecessors &&
@@ -797,18 +789,12 @@ bool FunctionSpecializer::run() {
   SmallVector<Function *> Clones;
   for (unsigned I = 0; I < NSpecs; ++I) {
     Spec &S = AllSpecs[BestSpecs[I]];
-<<<<<<< HEAD
-    S.Clone = createSpecialization(S.F, S.Sig, S.CallSites); // SIFIVE
-||||||| 864902e9b4d8
-    S.Clone = createSpecialization(S.F, S.Sig);
-=======
 
     // Accumulate the codesize growth for the function, now we are creating the
     // specialization.
     FunctionGrowth[S.F] += S.CodeSize;
 
-    S.Clone = createSpecialization(S.F, S.Sig);
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+    S.Clone = createSpecialization(S.F, S.Sig, S.CallSites); // SIFIVE
 
     // Update the known call sites to call the clone.
     for (CallBase *Call : S.CallSites) {
