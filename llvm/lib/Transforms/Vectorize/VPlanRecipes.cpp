@@ -2712,64 +2712,8 @@ void VPVectorPointerRecipe::execute(VPTransformState &State) {
   Value *Ptr = State.get(getOperand(0), VPLane(0));
   bool InBounds = isInBounds();
 
-<<<<<<< HEAD
-  Value *ResultPtr = nullptr;
-  if (IsReverse) {
-    // If the address is consecutive but reversed, then the
-    // wide store needs to start at the last vector element.
-    // RunTimeVF =  VScale * VF.getKnownMinValue()
-    // For fixed-width VScale is 1, then RunTimeVF = VF.getKnownMinValue()
-#if SIFIVE_CUSTOMIZATION
-    Value *RunTimeVF;
-    if (State.Plan->useVLAVectorizer()) {
-      VPValue *EVL = State.EVL;
-      // If EVL is not nullptr, then EVL must be a valid value set during plan
-      // creation and must be used to correctly reverse the address
-      RunTimeVF = State.get(EVL, /*NeedsScalar=*/true);
-      if (RunTimeVF->getType() != IndexTy)
-        RunTimeVF = Builder.CreateZExtOrTrunc(RunTimeVF, IndexTy);
-    } else {
-      RunTimeVF = getRuntimeVF(Builder, IndexTy, State.VF);
-    }
-#else
-    Value *RunTimeVF = getRuntimeVF(Builder, IndexTy, State.VF);
-#endif // SIFIVE_CUSTOMIZATION
-    // NumElt = -CurrentPart * RunTimeVF
-    Value *NumElt = Builder.CreateMul(
-        ConstantInt::get(IndexTy, -(int64_t)CurrentPart), RunTimeVF);
-    // LastLane = 1 - RunTimeVF
-    Value *LastLane =
-        Builder.CreateSub(ConstantInt::get(IndexTy, 1), RunTimeVF);
-    ResultPtr = Builder.CreateGEP(IndexedTy, Ptr, NumElt, "", InBounds);
-    ResultPtr = Builder.CreateGEP(IndexedTy, ResultPtr, LastLane, "", InBounds);
-  } else {
-    Value *Increment = createStepForVF(Builder, IndexTy, State.VF, CurrentPart);
-    ResultPtr = Builder.CreateGEP(IndexedTy, Ptr, Increment, "", InBounds);
-  }
-||||||| 864902e9b4d8
-  Value *ResultPtr = nullptr;
-  if (IsReverse) {
-    // If the address is consecutive but reversed, then the
-    // wide store needs to start at the last vector element.
-    // RunTimeVF =  VScale * VF.getKnownMinValue()
-    // For fixed-width VScale is 1, then RunTimeVF = VF.getKnownMinValue()
-    Value *RunTimeVF = getRuntimeVF(Builder, IndexTy, State.VF);
-    // NumElt = -CurrentPart * RunTimeVF
-    Value *NumElt = Builder.CreateMul(
-        ConstantInt::get(IndexTy, -(int64_t)CurrentPart), RunTimeVF);
-    // LastLane = 1 - RunTimeVF
-    Value *LastLane =
-        Builder.CreateSub(ConstantInt::get(IndexTy, 1), RunTimeVF);
-    ResultPtr = Builder.CreateGEP(IndexedTy, Ptr, NumElt, "", InBounds);
-    ResultPtr = Builder.CreateGEP(IndexedTy, ResultPtr, LastLane, "", InBounds);
-  } else {
-    Value *Increment = createStepForVF(Builder, IndexTy, State.VF, CurrentPart);
-    ResultPtr = Builder.CreateGEP(IndexedTy, Ptr, Increment, "", InBounds);
-  }
-=======
   Value *Increment = createStepForVF(Builder, IndexTy, State.VF, CurrentPart);
   Value *ResultPtr = Builder.CreateGEP(IndexedTy, Ptr, Increment, "", InBounds);
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 
   State.set(this, ResultPtr, /*IsScalar*/ true);
 }
