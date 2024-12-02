@@ -330,7 +330,6 @@ static void emitRISCVExtensionBitmask(const RecordKeeper &RK, raw_ostream &OS) {
   OS << "#endif\n";
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static void emitRISCVProfilesJSON(const std::vector<const Record *> &Profiles,
                                   raw_ostream &OS) {
@@ -358,19 +357,13 @@ static void emitRISCVProfilesJSON(const std::vector<const Record *> &Profiles,
 }
 #endif
 
-static void EmitRISCVTargetDef(const RecordKeeper &RK, raw_ostream &OS) {
-||||||| 864902e9b4d8
-static void EmitRISCVTargetDef(const RecordKeeper &RK, raw_ostream &OS) {
-=======
 static void emitRiscvTargetDef(const RecordKeeper &RK, raw_ostream &OS) {
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
   emitRISCVExtensions(RK, OS);
   emitRISCVProfiles(RK, OS);
   emitRISCVProcs(RK, OS);
   emitRISCVExtensionBitmask(RK, OS);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static void EmitRISCVISAInfoJSON(const RecordKeeper &RK, raw_ostream &OS) {
   std::vector<const Record *> Extensions =
@@ -393,12 +386,7 @@ static void EmitRISCVProfileJSON(const RecordKeeper &RK, raw_ostream &OS) {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-static TableGen::Emitter::Opt X("gen-riscv-target-def", EmitRISCVTargetDef,
-||||||| 864902e9b4d8
-static TableGen::Emitter::Opt X("gen-riscv-target-def", EmitRISCVTargetDef,
-=======
 static TableGen::Emitter::Opt X("gen-riscv-target-def", emitRiscvTargetDef,
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
                                 "Generate the list of CPUs and extensions for "
                                 "RISC-V");
 
