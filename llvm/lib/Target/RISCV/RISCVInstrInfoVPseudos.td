@@ -3712,33 +3712,9 @@ multiclass VPseudoVWCVTI_V_RM {
   }
 }
 
-<<<<<<< HEAD
-multiclass VPseudoVWCVTI_RM_V {
-  defvar constraint = "@earlyclobber $rd";
-  foreach m = MxListFW in {
-    defm _V : VPseudoConversionRM<m.wvrclass, m.vrclass, m, constraint>,
-              SchedUnary<"WriteVFWCvtFToIV", "ReadVFWCvtFToIV", m.MX,
-                         forcePassthruRead=true>;
-  }
-}
-
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPseudoVWCVTF_V<bit IsBF16 = 0> {
 #endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-multiclass VPseudoVWCVTI_RM_V {
-  defvar constraint = "@earlyclobber $rd";
-  foreach m = MxListFW in {
-    defm _V : VPseudoConversionRM<m.wvrclass, m.vrclass, m, constraint>,
-              SchedUnary<"WriteVFWCvtFToIV", "ReadVFWCvtFToIV", m.MX,
-                         forcePassthruRead=true>;
-  }
-}
-
-multiclass VPseudoVWCVTF_V {
-=======
-multiclass VPseudoVWCVTF_V {
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
   defvar constraint = "@earlyclobber $rd";
   foreach m = MxListW in {
     foreach e = SchedSEWSet<m.MX, isF=0, isWidening=1>.val in
@@ -3798,37 +3774,9 @@ multiclass VPseudoVNCVTF_W_RM {
   }
 }
 
-<<<<<<< HEAD
-multiclass VPseudoVNCVTF_RM_W {
-  defvar constraint = "@earlyclobber $rd";
-  foreach m = MxListFW in {
-    foreach e = SchedSEWSet<m.MX, isF=1, isWidening=1>.val in
-      defm _W : VPseudoConversionRM<m.vrclass, m.wvrclass, m, constraint, sew=e,
-                                    TargetConstraintType=2>,
-                SchedUnary<"WriteVFNCvtIToFV", "ReadVFNCvtIToFV", m.MX, e,
-                           forcePassthruRead=true>;
-  }
-}
-
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPseudoVNCVTD_W<bit IsBF16 = 0> {
 #endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-multiclass VPseudoVNCVTF_RM_W {
-  defvar constraint = "@earlyclobber $rd";
-  foreach m = MxListFW in {
-    foreach e = SchedSEWSet<m.MX, isF=1, isWidening=1>.val in
-      defm _W : VPseudoConversionRM<m.vrclass, m.wvrclass, m, constraint, sew=e,
-                                    TargetConstraintType=2>,
-                SchedUnary<"WriteVFNCvtIToFV", "ReadVFNCvtIToFV", m.MX, e,
-                           forcePassthruRead=true>;
-  }
-}
-
-multiclass VPseudoVNCVTD_W {
-=======
-multiclass VPseudoVNCVTD_W {
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
   defvar constraint = "@earlyclobber $rd";
   foreach m = MxListFW in {
     foreach e = SchedSEWSet<m.MX, isF=1, isWidening=1>.val in
@@ -4564,51 +4512,22 @@ class VPatTernaryNoMaskWithPolicy<string intrinsic,
                                   ValueType result_type,
                                   ValueType op1_type,
                                   ValueType op2_type,
-<<<<<<< HEAD
-                                  int log2sew, // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-                                  int sew,
-=======
                                   int log2sew,
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
                                   LMULInfo vlmul,
                                   VReg result_reg_class,
                                   RegisterClass op1_reg_class,
-<<<<<<< HEAD
-                                  DAGOperand op2_kind,
-                                  bit sew_aware = false> : // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-                                  DAGOperand op2_kind> :
-=======
                                   DAGOperand op2_kind,
                                   bit isSEWAware = false> :
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
   Pat<(result_type (!cast<Intrinsic>(intrinsic)
                     (result_type result_reg_class:$rs3),
                     (op1_type op1_reg_class:$rs1),
                     (op2_type op2_kind:$rs2),
                     VLOpFrag, (XLenVT timm:$policy))),
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-                   (!cast<Instruction>(inst#"_"#kind#"_"#vlmul.MX#!if(sew_aware, "_E"#!shl(1, log2sew), ""))
-#else
-                   (!cast<Instruction>(inst#"_"#kind#"_"#vlmul.MX)
-#endif
-||||||| 864902e9b4d8
-                   (!cast<Instruction>(inst#"_"#kind#"_"#vlmul.MX)
-=======
                    (!cast<Instruction>(inst#"_"#kind#"_"#vlmul.MX#!if(isSEWAware, "_E"#!shl(1, log2sew), ""))
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
                     result_reg_class:$rs3,
                     (op1_type op1_reg_class:$rs1),
                     op2_kind:$rs2,
-<<<<<<< HEAD
-                    GPR:$vl, log2sew, (XLenVT timm:$policy))>; // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-                    GPR:$vl, sew, (XLenVT timm:$policy))>;
-=======
                     GPR:$vl, log2sew, (XLenVT timm:$policy))>;
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 
 class VPatTernaryNoMaskWithPolicyRoundingMode<string intrinsic,
                                   string inst,
@@ -6661,16 +6580,10 @@ defm PseudoVFRSUB : VPseudoVALU_VF_RM;
 //===----------------------------------------------------------------------===//
 // 13.3. Vector Widening Floating-Point Add/Subtract Instructions
 //===----------------------------------------------------------------------===//
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 let IsWiden = 1 in {
 #endif // SIFIVE_CUSTOMIZATION
-let mayRaiseFPException = true, hasSideEffects = 0, hasPostISelHook = 1 in {
-||||||| 864902e9b4d8
-let mayRaiseFPException = true, hasSideEffects = 0, hasPostISelHook = 1 in {
-=======
 let mayRaiseFPException = true, hasSideEffects = 0 in {
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 defm PseudoVFWADD : VPseudoVFWALU_VV_VF_RM;
 defm PseudoVFWSUB : VPseudoVFWALU_VV_VF_RM;
 defm PseudoVFWADD : VPseudoVFWALU_WV_WF_RM;
@@ -6715,16 +6628,10 @@ defm PseudoVFNMSUB : VPseudoVMAC_VV_VF_AAXA_RM;
 //===----------------------------------------------------------------------===//
 // 13.7. Vector Widening Floating-Point Fused Multiply-Add Instructions
 //===----------------------------------------------------------------------===//
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 let IsWiden = 1 in {
 #endif // SIFIVE_CUSTOMIZATION
-let mayRaiseFPException = true, hasSideEffects = 0, hasPostISelHook = 1 in {
-||||||| 864902e9b4d8
-let mayRaiseFPException = true, hasSideEffects = 0, hasPostISelHook = 1 in {
-=======
 let mayRaiseFPException = true, hasSideEffects = 0 in {
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 defm PseudoVFWMACC  : VPseudoVWMAC_VV_VF_RM;
 defm PseudoVFWNMACC : VPseudoVWMAC_VV_VF_RM;
 defm PseudoVFWMSAC  : VPseudoVWMAC_VV_VF_RM;
@@ -6913,20 +6820,10 @@ defm PseudoVFREDMAX  : VPseudoVFREDMINMAX_VS;
 //===----------------------------------------------------------------------===//
 // 14.4. Vector Widening Floating-Point Reduction Instructions
 //===----------------------------------------------------------------------===//
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 let IsWiden = 1 in {
 #endif // SIFIVE_CUSTOMIZATION
-let IsRVVWideningReduction = 1,
-    hasSideEffects = 0,
-    mayRaiseFPException = true in {
-||||||| 864902e9b4d8
-let IsRVVWideningReduction = 1,
-    hasSideEffects = 0,
-    mayRaiseFPException = true in {
-=======
 let IsRVVWideningReduction = 1, hasSideEffects = 0, mayRaiseFPException = true in {
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 defm PseudoVFWREDUSUM  : VPseudoVFWRED_VS_RM;
 defm PseudoVFWREDOSUM  : VPseudoVFWREDO_VS_RM;
 }
