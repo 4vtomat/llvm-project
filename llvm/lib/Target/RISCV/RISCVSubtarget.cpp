@@ -230,12 +230,6 @@ bool RISCVSubtarget::useRVVForFixedLengthVectors() const {
 
 bool RISCVSubtarget::enableSubRegLiveness() const { return true; }
 
-<<<<<<< HEAD
-void RISCVSubtarget::getPostRAMutations(
-    std::vector<std::unique_ptr<ScheduleDAGMutation>> &Mutations) const {
-  Mutations.push_back(createMacroFusionDAGMutation(getMacroFusions()));
-}
-
 #if SIFIVE_CUSTOMIZATION
 void RISCVSubtarget::overrideSchedPolicy(MachineSchedPolicy &Policy,
                                          unsigned NumRegionInstrs) const {
@@ -249,14 +243,7 @@ unsigned RISCVSubtarget::getMemToRVVLMUL() const {
   return 8;
 }
 #endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-void RISCVSubtarget::getPostRAMutations(
-    std::vector<std::unique_ptr<ScheduleDAGMutation>> &Mutations) const {
-  Mutations.push_back(createMacroFusionDAGMutation(getMacroFusions()));
-}
 
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
   /// Enable use of alias analysis during code generation (during MI
   /// scheduling, DAGCombine, etc.).
 bool RISCVSubtarget::useAA() const { return UseAA; }
