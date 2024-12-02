@@ -61,7 +61,6 @@ public:
       : BaseT(TM, F.getDataLayout()), ST(TM->getSubtargetImpl(F)),
         TLI(ST->getTargetLowering()) {}
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   std::optional<Instruction *> instCombineIntrinsic(InstCombiner &IC,
                                                     IntrinsicInst &II) const;
@@ -73,15 +72,6 @@ public:
   bool hasFlattenControlFlowPenalty() const;
 #endif // SIFIVE_CUSTOMIZATION
 
-  bool areInlineCompatible(const Function *Caller,
-                           const Function *Callee) const;
-
-||||||| 864902e9b4d8
-  bool areInlineCompatible(const Function *Caller,
-                           const Function *Callee) const;
-
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
   /// Return the cost of materializing an immediate for a value operand of
   /// a store instruction.
   InstructionCost getStoreImmCost(Type *VecTy, TTI::OperandValueInfo OpInfo,
