@@ -16,15 +16,9 @@
 #include "VPlan.h"
 #include "VPlanCFG.h"
 #include "VPlanDominatorTree.h"
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 #include "VPlanUtils.h"
 #endif // SIFIVE_CUSTOMIZATION
-#include "llvm/ADT/DepthFirstIterator.h"
-||||||| 864902e9b4d8
-#include "llvm/ADT/DepthFirstIterator.h"
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 #include "llvm/ADT/SmallPtrSet.h"
 #include "llvm/ADT/TypeSwitch.h"
 
@@ -159,126 +153,6 @@ bool VPlanVerifier::verifyEVLRecipe(const VPInstruction &EVL) const {
     }
     return true;
   };
-<<<<<<< HEAD
-  for (const VPUser *U : EVL.users()) {
-    if (!TypeSwitch<const VPUser *, bool>(U)
-             .Case<VPWidenIntrinsicRecipe>(
-                 [&](const VPWidenIntrinsicRecipe *S) {
-                   return VerifyEVLUse(*S, S->getNumOperands() - 1);
-                 })
-             .Case<VPWidenStoreEVLRecipe>([&](const VPWidenStoreEVLRecipe *S) {
-               return VerifyEVLUse(*S, 2);
-             })
-             .Case<VPWidenLoadEVLRecipe>([&](const VPWidenLoadEVLRecipe *L) {
-               return VerifyEVLUse(*L, 1);
-             })
-             .Case<VPWidenEVLRecipe>([&](const VPWidenEVLRecipe *W) {
-               return VerifyEVLUse(
-                   *W, Instruction::isUnaryOp(W->getOpcode()) ? 1 : 2);
-             })
-             .Case<VPReductionEVLRecipe>([&](const VPReductionEVLRecipe *R) {
-               return VerifyEVLUse(*R, 2);
-             })
-             .Case<VPScalarCastRecipe>(
-                 [&](const VPScalarCastRecipe *S) { return true; })
-             .Case<VPInstruction>([&](const VPInstruction *I) {
-               if (I->getOpcode() != Instruction::Add) {
-                 errs()
-                     << "EVL is used as an operand in non-VPInstruction::Add\n";
-                 return false;
-               }
-#if SIFIVE_CUSTOMIZATION
-               if (any_of(I->users(), [](VPUser *U) {
-                     return !isa<VPCanonicalIVPHIRecipe, VPEVLBasedIVPHIRecipe,
-                                 VPInstruction>(U) ||
-                            (isa<VPInstruction>(U) &&
-                             cast<VPInstruction>(U)->getOpcode() !=
-                                 VPInstruction::BranchOnCount);
-                   })) {
-                 errs() << "Result of VPInstruction::Add with EVL operand is "
-                           "not used by VPEVLBasedIVPHIRecipe, "
-                           "VPCanonicalIVPHIRecipe, or "
-                           "VPInstruction::BranchOnCount\n";
-                 return false;
-               }
-#else
-               if (I->getNumUsers() != 1) {
-                 errs() << "EVL is used in VPInstruction:Add with multiple "
-                           "users\n";
-                 return false;
-               }
-               if (!isa<VPEVLBasedIVPHIRecipe>(*I->users().begin())) {
-                 errs() << "Result of VPInstruction::Add with EVL operand is "
-                           "not used by VPEVLBasedIVPHIRecipe\n";
-                 return false;
-               }
-#endif // SIFIVE_CUSTOMIZATION
-               return true;
-             })
-#if SIFIVE_CUSTOMIZATION
-             .Case<VPEVLBasedIVPHIRecipe>(
-                 [&](const VPEVLBasedIVPHIRecipe *EVLPhi) {
-                   // For previous EVL
-                   return VerifyEVLUse(*EVLPhi, 1);
-                 })
-#endif // SIFIVE_CUSTOMIZATION
-             .Default([&](const VPUser *U) {
-               errs() << "EVL has unexpected user\n";
-               return false;
-             })) {
-      return false;
-    }
-  }
-  return true;
-||||||| 864902e9b4d8
-  for (const VPUser *U : EVL.users()) {
-    if (!TypeSwitch<const VPUser *, bool>(U)
-             .Case<VPWidenIntrinsicRecipe>(
-                 [&](const VPWidenIntrinsicRecipe *S) {
-                   return VerifyEVLUse(*S, S->getNumOperands() - 1);
-                 })
-             .Case<VPWidenStoreEVLRecipe>([&](const VPWidenStoreEVLRecipe *S) {
-               return VerifyEVLUse(*S, 2);
-             })
-             .Case<VPWidenLoadEVLRecipe>([&](const VPWidenLoadEVLRecipe *L) {
-               return VerifyEVLUse(*L, 1);
-             })
-             .Case<VPWidenEVLRecipe>([&](const VPWidenEVLRecipe *W) {
-               return VerifyEVLUse(
-                   *W, Instruction::isUnaryOp(W->getOpcode()) ? 1 : 2);
-             })
-             .Case<VPReductionEVLRecipe>([&](const VPReductionEVLRecipe *R) {
-               return VerifyEVLUse(*R, 2);
-             })
-             .Case<VPScalarCastRecipe>(
-                 [&](const VPScalarCastRecipe *S) { return true; })
-             .Case<VPInstruction>([&](const VPInstruction *I) {
-               if (I->getOpcode() != Instruction::Add) {
-                 errs()
-                     << "EVL is used as an operand in non-VPInstruction::Add\n";
-                 return false;
-               }
-               if (I->getNumUsers() != 1) {
-                 errs() << "EVL is used in VPInstruction:Add with multiple "
-                           "users\n";
-                 return false;
-               }
-               if (!isa<VPEVLBasedIVPHIRecipe>(*I->users().begin())) {
-                 errs() << "Result of VPInstruction::Add with EVL operand is "
-                           "not used by VPEVLBasedIVPHIRecipe\n";
-                 return false;
-               }
-               return true;
-             })
-             .Default([&](const VPUser *U) {
-               errs() << "EVL has unexpected user\n";
-               return false;
-             })) {
-      return false;
-    }
-  }
-  return true;
-=======
   return all_of(EVL.users(), [&VerifyEVLUse](VPUser *U) {
     return TypeSwitch<const VPUser *, bool>(U)
         .Case<VPWidenIntrinsicRecipe>([&](const VPWidenIntrinsicRecipe *S) {
@@ -299,6 +173,21 @@ bool VPlanVerifier::verifyEVLRecipe(const VPInstruction &EVL) const {
             errs() << "EVL is used as an operand in non-VPInstruction::Add\n";
             return false;
           }
+#if SIFIVE_CUSTOMIZATION
+          if (any_of(I->users(), [](VPUser *U) {
+                return !isa<VPCanonicalIVPHIRecipe, VPEVLBasedIVPHIRecipe,
+                            VPInstruction>(U) ||
+                       (isa<VPInstruction>(U) &&
+                        cast<VPInstruction>(U)->getOpcode() !=
+                            VPInstruction::BranchOnCount);
+              })) {
+            errs() << "Result of VPInstruction::Add with EVL operand is "
+                      "not used by VPEVLBasedIVPHIRecipe, "
+                      "VPCanonicalIVPHIRecipe, or "
+                      "VPInstruction::BranchOnCount\n";
+            return false;
+          }
+#else
           if (I->getNumUsers() != 1) {
             errs() << "EVL is used in VPInstruction:Add with multiple "
                       "users\n";
@@ -309,14 +198,21 @@ bool VPlanVerifier::verifyEVLRecipe(const VPInstruction &EVL) const {
                       "not used by VPEVLBasedIVPHIRecipe\n";
             return false;
           }
+#endif // SIFIVE_CUSTOMIZATION
           return true;
         })
+#if SIFIVE_CUSTOMIZATION
+        .Case<VPEVLBasedIVPHIRecipe>(
+            [&](const VPEVLBasedIVPHIRecipe *EVLPhi) {
+              // For previous EVL
+              return VerifyEVLUse(*EVLPhi, 1);
+            })
+#endif // SIFIVE_CUSTOMIZATION
         .Default([&](const VPUser *U) {
           errs() << "EVL has unexpected user\n";
           return false;
         });
   });
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 }
 
 bool VPlanVerifier::verifyVPBasicBlock(const VPBasicBlock *VPBB) {
