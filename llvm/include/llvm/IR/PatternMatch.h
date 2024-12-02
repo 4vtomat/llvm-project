@@ -792,7 +792,6 @@ inline cstfp_pred_ty<is_non_zero_fp> m_NonZeroFP() {
   return cstfp_pred_ty<is_non_zero_fp>();
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 struct match_fast_math_flags {
   FastMathFlags FMF;
@@ -825,8 +824,6 @@ inline match_fast_math_flags m_FMF(FastMathFlags FMF,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-||||||| 864902e9b4d8
-=======
 struct is_non_zero_not_denormal_fp {
   bool isValue(const APFloat &C) { return !C.isDenormal() && C.isNonZero(); }
 };
@@ -837,7 +834,6 @@ inline cstfp_pred_ty<is_non_zero_not_denormal_fp> m_NonZeroNotDenormalFP() {
   return cstfp_pred_ty<is_non_zero_not_denormal_fp>();
 }
 
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ///////////////////////////////////////////////////////////////////////////////
 
 template <typename Class> struct bind_ty {
