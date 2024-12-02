@@ -81,16 +81,7 @@ static ParseRet tryParseVLEN(StringRef &ParseString, VFISAKind ISA,
                              std::pair<unsigned, bool> &ParsedVF) {
   if (ParseString.consume_front("x")) {
     // SVE is the only scalable ISA currently supported.
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    // RVV is supported in SiFive internal.
     if (ISA != VFISAKind::SVE && ISA != VFISAKind::RVV) {
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-    if (ISA != VFISAKind::SVE) {
-=======
-    if (ISA != VFISAKind::SVE && ISA != VFISAKind::RVV) {
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
       LLVM_DEBUG(dbgs() << "Vector function variant declared with scalable VF "
                         << "but ISA supported for SVE and RVV only\n");
       return ParseRet::Error;
