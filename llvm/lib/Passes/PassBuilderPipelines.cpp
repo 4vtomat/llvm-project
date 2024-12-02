@@ -320,7 +320,6 @@ static cl::opt<bool> UseLoopVersioningLICM(
     "enable-loop-versioning-licm", cl::init(false), cl::Hidden,
     cl::desc("Enable the experimental Loop Versioning LICM pass"));
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static cl::opt<bool> EnableLTOReassociate(
     "enable-lto-reassociate", cl::init(true), cl::Hidden,
@@ -328,15 +327,12 @@ static cl::opt<bool> EnableLTOReassociate(
              "in LTO"));
 #endif // SIFIVE_CUSTOMIZATION
 
-||||||| 864902e9b4d8
-=======
 static cl::opt<std::string> InstrumentColdFuncOnlyPath(
     "instrument-cold-function-only-path", cl::init(""),
     cl::desc("File path for cold function only instrumentation(requires use "
              "with --pgo-instrument-cold-function-only)"),
     cl::Hidden);
 
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 extern cl::opt<std::string> UseCtxProfile;
 extern cl::opt<bool> PGOInstrumentColdFunctionOnly;
 
@@ -1735,19 +1731,13 @@ PassBuilder::buildModuleOptimizationPipeline(OptimizationLevel Level,
   MPM.addPass(createModuleToFunctionPassAdaptor(std::move(OptimizePM),
                                                 PTO.EagerlyInvalidateAnalyses));
 
-<<<<<<< HEAD
   // Add Loop Profile pass in optimizing pipeline
 #if SIFIVE_CUSTOMIZATION
   if (ClEnableLoopProfiler && !LTOPreLink)
     MPM.addPass(LoopCountProfilerPass());
 #endif // SIFIVE_CUSTOMIZATION
 
-  invokeOptimizerLastEPCallbacks(MPM, Level);
-||||||| 864902e9b4d8
-  invokeOptimizerLastEPCallbacks(MPM, Level);
-=======
   invokeOptimizerLastEPCallbacks(MPM, Level, LTOPhase);
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 
   // Split out cold code. Splitting is done late to avoid hiding context from
   // other optimizations and inadvertently regressing performance. The tradeoff
