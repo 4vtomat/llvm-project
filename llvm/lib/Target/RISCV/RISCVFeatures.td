@@ -1154,13 +1154,6 @@ def FeatureStdExtSvpbmt
     : RISCVExtension<"svpbmt", 1, 0,
                      "'Svpbmt' (Page-Based Memory Types)">;
 
-<<<<<<< HEAD
-def FeatureStdExtSvukte
-    : RISCVExperimentalExtension<"svukte", 0, 3,
-                                 "'Svukte' (Address-Independent Latency of User-Mode Faults to Supervisor Addresses)">;
-
-||||||| 864902e9b4d8
-=======
 def FeatureStdExtSvvptc
     : RISCVExtension<"svvptc", 1, 0,
                      "'svvptc' (Obviating Memory-Management Instructions after Marking PTEs Valid)">;
@@ -1176,7 +1169,6 @@ def FeatureStdExtSvukte
     : RISCVExperimentalExtension<"svukte", 0, 3,
                                  "'Svukte' (Address-Independent Latency of User-Mode Faults to Supervisor Addresses)">;
 
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 // Pointer Masking extensions
 
 // A supervisor-level extension that provides pointer masking for the next lower
