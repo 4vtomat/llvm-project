@@ -16,15 +16,9 @@
 #include "RISCV.h"
 #include "RISCVMachineFunctionInfo.h"
 #include "RISCVSubtarget.h"
-<<<<<<< HEAD
-#include "RISCVTargetMachine.h"
 #if SIFIVE_CUSTOMIZATION
 #include "SiFive_RISCVHazardRecognizer.h"
 #endif  // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-#include "RISCVTargetMachine.h"
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/Analysis/MemoryLocation.h"
@@ -2676,14 +2670,11 @@ bool RISCVInstrInfo::verifyInstruction(const MachineInstr &MI,
         case RISCVOp::OPERAND_SPIMM:
           Ok = (Imm & 0xf) == 0;
           break;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
         case RISCVOp::OPERAND_MAMMOTHVTYPE:
           Ok = RISCVVType::isValidMammothVType(Imm);
           break;
 #endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-=======
         case RISCVOp::OPERAND_FRMARG:
           Ok = RISCVFPRndMode::isValidRoundingMode(Imm);
           break;
@@ -2706,7 +2697,6 @@ bool RISCVInstrInfo::verifyInstruction(const MachineInstr &MI,
           else
             Ok = RISCVFPRndMode::isValidRoundingMode(Imm);
           break;
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
         }
         if (!Ok) {
           ErrInfo = "Invalid immediate";
@@ -2779,14 +2769,6 @@ bool RISCVInstrInfo::verifyInstruction(const MachineInstr &MI,
     }
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  if (hasTargetInterference(&MI) && isEarlyClobberMI(&MI))
-    return false;
-#endif // SIFIVE_CUSTOMIZATION
-
-||||||| 864902e9b4d8
-=======
   if (int Idx = RISCVII::getFRMOpNum(Desc);
       Idx >= 0 && MI.getOperand(Idx).getImm() == RISCVFPRndMode::DYN &&
       !MI.readsRegister(RISCV::FRM, /*TRI=*/nullptr)) {
@@ -2794,7 +2776,11 @@ bool RISCVInstrInfo::verifyInstruction(const MachineInstr &MI,
     return false;
   }
 
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+#if SIFIVE_CUSTOMIZATION
+  if (hasTargetInterference(&MI) && isEarlyClobberMI(&MI))
+    return false;
+#endif // SIFIVE_CUSTOMIZATION
+
   return true;
 }
 
