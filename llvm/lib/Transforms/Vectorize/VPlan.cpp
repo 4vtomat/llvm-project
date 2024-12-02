@@ -51,8 +51,6 @@
 #include "llvm/Transforms/Utils/LoopVersioning.h"
 #include <cassert>
 #include <string>
-<<<<<<< HEAD
-#include <vector>
 #if SIFIVE_CUSTOMIZATION
 #include "SiFive_VPlanPredicatedInstructions.h"
 #include "VPlanValue.h"
@@ -62,10 +60,6 @@
 #include "llvm/IR/Intrinsics.h"
 #include "llvm/IR/PatternMatch.h"
 #endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-#include <vector>
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 
 using namespace llvm;
 using namespace llvm::VPlanPatternMatch;
@@ -345,26 +339,15 @@ VPBasicBlock::iterator VPBasicBlock::getFirstNonPhi() {
 VPTransformState::VPTransformState(const TargetTransformInfo *TTI,
                                    ElementCount VF, unsigned UF, LoopInfo *LI,
                                    DominatorTree *DT, IRBuilderBase &Builder,
-<<<<<<< HEAD
                                    InnerLoopVectorizer *ILV, VPlan *Plan,
                                    bool EnableRISCVCSA) // SIFIVE)
-    : VF(VF), CFG(DT), LI(LI), Builder(Builder), ILV(ILV), Plan(Plan),
-      LVer(nullptr), TypeAnalysis(Plan->getCanonicalIV()->getScalarType())
-#if SIFIVE_CUSTOMIZATION
-      ,
-      EnableRISCVCSA(EnableRISCVCSA)
-#endif // SIFIVE_CUSTOMIZATION
-{
-}
-||||||| 864902e9b4d8
-                                   InnerLoopVectorizer *ILV, VPlan *Plan)
-    : VF(VF), CFG(DT), LI(LI), Builder(Builder), ILV(ILV), Plan(Plan),
-      LVer(nullptr), TypeAnalysis(Plan->getCanonicalIV()->getScalarType()) {}
-=======
-                                   InnerLoopVectorizer *ILV, VPlan *Plan)
     : TTI(TTI), VF(VF), CFG(DT), LI(LI), Builder(Builder), ILV(ILV), Plan(Plan),
+#if SIFIVE_CUSTOMIZATION
+      LVer(nullptr), TypeAnalysis(Plan->getCanonicalIV()->getScalarType(),
+      EnableRISCVCSA(EnableRISCVCSA) {}
+#else
       LVer(nullptr), TypeAnalysis(Plan->getCanonicalIV()->getScalarType()) {}
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+#endif // SIFIVE_CUSTOMIZATION
 
 Value *VPTransformState::get(VPValue *Def, const VPLane &Lane) {
   if (Def->isLiveIn())
@@ -601,28 +584,19 @@ void VPBasicBlock::connectToPredecessors(VPTransformState::CFGState &CFG) {
       // Set each forward successor here when it is created, excluding
       // backedges. A backward successor is set when the branch is created.
       unsigned idx = PredVPSuccessors.front() == this ? 0 : 1;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       if (PredVPSuccessors.size() == 1)
         if (auto *Region = dyn_cast<VPRegionBlock>(PredVPSuccessors[0]))
           idx = Region->getEntry() == this ? 0 : 1;
 #endif // SIFIVE_CUSTOMIZATION
-      assert(!TermBr->getSuccessor(idx) &&
-             "Trying to reset an existing successor block.");
-||||||| 864902e9b4d8
-      assert(!TermBr->getSuccessor(idx) &&
-             "Trying to reset an existing successor block.");
-=======
       assert(
           (!TermBr->getSuccessor(idx) ||
            (isa<VPIRBasicBlock>(this) && TermBr->getSuccessor(idx) == NewBB)) &&
           "Trying to reset an existing successor block.");
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
       TermBr->setSuccessor(idx, NewBB);
     }
     CFG.DTU.applyUpdates({{DominatorTree::Insert, PredBB, NewBB}});
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Extra adjustment is needed when predecessor is VPConditionalRegionBlock, since loop above
   // does not cover immediate successor (if condition was false) to that BB
@@ -648,11 +622,6 @@ void VPBasicBlock::connectToPredecessors(VPTransformState::CFGState &CFG) {
     CFG.DTU.applyUpdates({{DominatorTree::Insert, PredBB, NewBB}});
   }
 #endif // SIFIVE_CUSTOMIZATION
-  return NewBB;
-||||||| 864902e9b4d8
-  return NewBB;
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 }
 
 void VPIRBasicBlock::execute(VPTransformState *State) {
@@ -674,58 +643,7 @@ void VPIRBasicBlock::execute(VPTransformState *State) {
         "other blocks must be terminated by a branch");
   }
 
-<<<<<<< HEAD
-  for (VPBlockBase *PredVPBlock : getHierarchicalPredecessors()) {
-    VPBasicBlock *PredVPBB = PredVPBlock->getExitingBasicBlock();
-    BasicBlock *PredBB = State->CFG.VPBB2IRBB[PredVPBB];
-    assert(PredBB && "Predecessor basic-block not found building successor.");
-    LLVM_DEBUG(dbgs() << "LV: draw edge from" << PredBB->getName() << '\n');
-
-    auto *PredBBTerminator = PredBB->getTerminator();
-    auto *TermBr = cast<BranchInst>(PredBBTerminator);
-    // Set each forward successor here when it is created, excluding
-    // backedges. A backward successor is set when the branch is created.
-    const auto &PredVPSuccessors = PredVPBB->getHierarchicalSuccessors();
-#if SIFIVE_CUSTOMIZATION
-    // TODO: That has to be moved into transforms and proper representation of
-    // BranchOnCond. As of now, it's a quick hack to unblock pulldown
-    if (State->Plan->useVLAVectorizer() && !State->Plan->isUncountable() &&
-        PredVPBB->getTerminator() &&
-        match(PredVPBB->getTerminator(), m_BranchOnCond(m_True()))) {
-      if (PredVPSuccessors.front() == this) {
-        TermBr->setSuccessor(0, IRBB);
-        State->CFG.DTU.applyUpdates({{DominatorTree::Insert, PredBB, IRBB}});
-      }
-      return;
-    }
-#endif // SIFIVE_CUSTOMIZATION
-    unsigned idx = PredVPSuccessors.front() == this ? 0 : 1;
-    assert(!TermBr->getSuccessor(idx) &&
-           "Trying to reset an existing successor block.");
-    TermBr->setSuccessor(idx, IRBB);
-    State->CFG.DTU.applyUpdates({{DominatorTree::Insert, PredBB, IRBB}});
-  }
-||||||| 864902e9b4d8
-  for (VPBlockBase *PredVPBlock : getHierarchicalPredecessors()) {
-    VPBasicBlock *PredVPBB = PredVPBlock->getExitingBasicBlock();
-    BasicBlock *PredBB = State->CFG.VPBB2IRBB[PredVPBB];
-    assert(PredBB && "Predecessor basic-block not found building successor.");
-    LLVM_DEBUG(dbgs() << "LV: draw edge from" << PredBB->getName() << '\n');
-
-    auto *PredBBTerminator = PredBB->getTerminator();
-    auto *TermBr = cast<BranchInst>(PredBBTerminator);
-    // Set each forward successor here when it is created, excluding
-    // backedges. A backward successor is set when the branch is created.
-    const auto &PredVPSuccessors = PredVPBB->getHierarchicalSuccessors();
-    unsigned idx = PredVPSuccessors.front() == this ? 0 : 1;
-    assert(!TermBr->getSuccessor(idx) &&
-           "Trying to reset an existing successor block.");
-    TermBr->setSuccessor(idx, IRBB);
-    State->CFG.DTU.applyUpdates({{DominatorTree::Insert, PredBB, IRBB}});
-  }
-=======
   connectToPredecessors(State->CFG);
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 }
 
 void VPBasicBlock::execute(VPTransformState *State) {
@@ -1217,19 +1135,14 @@ VPlanPtr VPlan::createInitialVPlan(Type *InductionTy,
   VPIRBasicBlock *Entry =
       VPIRBasicBlock::fromBasicBlock(TheLoop->getLoopPreheader());
   VPBasicBlock *VecPreheader = new VPBasicBlock("vector.ph");
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  auto Plan = std::make_unique<VPlan>(Entry, VecPreheader, IsUncountable);
-#else
-  auto Plan = std::make_unique<VPlan>(Entry, VecPreheader);
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-  auto Plan = std::make_unique<VPlan>(Entry, VecPreheader);
-=======
   VPIRBasicBlock *ScalarHeader =
       VPIRBasicBlock::fromBasicBlock(TheLoop->getHeader());
+#if SIFIVE_CUSTOMIZATION
+  auto Plan = std::make_unique<VPlan>(Entry, VecPreheader, ScalarHeader,
+                                      IsUncountable);
+#else
   auto Plan = std::make_unique<VPlan>(Entry, VecPreheader, ScalarHeader);
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+#endif // SIFIVE_CUSTOMIZATION
 
   // Create SCEV and VPValue for the trip count.
 
