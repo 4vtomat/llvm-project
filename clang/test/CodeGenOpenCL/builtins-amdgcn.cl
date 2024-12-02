@@ -1,12 +1,6 @@
 // REQUIRES: amdgpu-registered-target
 // RUN: %clang_cc1 -cl-std=CL2.0 -triple amdgcn-unknown-unknown -target-cpu tahiti -emit-llvm -o - %s | FileCheck -enable-var-scope --check-prefixes=CHECK-AMDGCN,CHECK %s
-<<<<<<< HEAD
-// RUN: %clang_cc1 -cl-std=CL2.0 -triple spirv64-amd-amdhsa -emit-llvm -o - %s | FileCheck -enable-var-scope --check-prefixes=CHECK-SPIRV64,CHECK %s
-||||||| 864902e9b4d8
-// RUN: %clang_cc1 -cl-std=CL2.0 -triple spirv64-amd-amdhsa -emit-llvm -o - %s | FileCheck -enable-var-scope --check-prefix=CHECK %s
-=======
 // RUN: %clang_cc1 -cl-std=CL2.0 -triple spirv64-amd-amdhsa -emit-llvm -o - %s | FileCheck -enable-var-scope --check-prefixes=CHECK,CHECK-SPIRV %s
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 
 
 #pragma OPENCL EXTENSION cl_khr_fp64 : enable
@@ -644,21 +638,8 @@ void test_get_workgroup_size(int d, global int *out)
 
 // CHECK-LABEL: @test_get_grid_size(
 // CHECK: {{.*}}call align 4 dereferenceable(64){{.*}} ptr addrspace(4) @llvm.amdgcn.dispatch.ptr()
-<<<<<<< HEAD
-// SIFIVE
-// CHECK-AMDGCN: getelementptr inbounds i8, ptr addrspace(4) %{{.*}}, i64 12
-// CHECK-AMDGCN: getelementptr inbounds i8, ptr addrspace(4) %{{.*}}, i64 16
-// CHECK-AMDGCN: getelementptr inbounds i8, ptr addrspace(4) %{{.*}}, i64 20
-// CHECK-SPIRV64: getelementptr inbounds i8, ptr addrspace(4) %{{.*}}, i64 %.sink
-// END SIFIVE
-// CHECK: load i32, ptr addrspace(4) %{{.*}}, align 4, !invariant.load
-||||||| 864902e9b4d8
-// CHECK: getelementptr inbounds i8, ptr addrspace(4) %{{.*}}, i64 %.sink
-// CHECK: load i32, ptr addrspace(4) %{{.*}}, align 4, !invariant.load
-=======
 // CHECK: getelementptr inbounds i8, ptr addrspace(4) %{{.*}}, i64 %{{.+}}
 // CHECK: load i32, ptr addrspace(4) %{{.*}}, align 4, !range [[$GRID_RANGE:![0-9]+]], !invariant.load
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 void test_get_grid_size(int d, global int *out)
 {
 	switch (d) {
