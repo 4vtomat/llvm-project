@@ -2391,7 +2391,6 @@ public:
   getVPLegalizationStrategy(const VPIntrinsic &PI) const = 0;
   virtual bool hasArmWideBranch(bool Thumb) const = 0;
   virtual unsigned getMaxNumArgs() const = 0;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   virtual bool enableUncountableVectorization() const = 0;
   virtual bool enableNonPower2SLPFPVectorization() const = 0;
@@ -2400,11 +2399,8 @@ public:
   virtual unsigned getCSAOverheadFactor() const = 0;
   virtual bool enableMonotonicsVectorization() const = 0;
 #endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-=======
   virtual unsigned getNumBytesToPadGlobalArray(unsigned Size,
                                                Type *ArrayType) const = 0;
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 };
 
 template <typename T>
@@ -3288,7 +3284,6 @@ public:
   unsigned getMaxNumArgs() const override {
     return Impl.getMaxNumArgs();
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool enableUncountableVectorization() const override {
     return Impl.enableUncountableVectorization();
@@ -3313,14 +3308,11 @@ public:
     return Impl.enableMonotonicsVectorization();
   }
 #endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-=======
 
   unsigned getNumBytesToPadGlobalArray(unsigned Size,
                                        Type *ArrayType) const override {
     return Impl.getNumBytesToPadGlobalArray(Size, ArrayType);
   }
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 };
 
 template <typename T>
