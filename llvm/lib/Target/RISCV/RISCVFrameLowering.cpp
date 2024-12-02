@@ -125,24 +125,12 @@ static const std::pair<MCPhysReg, int8_t> FixedCSRFIMap[] = {
 static void emitSCSPrologue(MachineFunction &MF, MachineBasicBlock &MBB,
                             MachineBasicBlock::iterator MI,
                             const DebugLoc &DL) {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  bool HasHWShadowStack =
-      MF.getFunction().hasFnAttribute("hw-shadow-stack");
-  bool HasSWShadowStack =
-      MF.getFunction().hasFnAttribute(Attribute::ShadowCallStack);
-  if (!HasHWShadowStack && !HasSWShadowStack)
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-  if (!MF.getFunction().hasFnAttribute(Attribute::ShadowCallStack))
-=======
   const auto &STI = MF.getSubtarget<RISCVSubtarget>();
   bool HasHWShadowStack = MF.getFunction().hasFnAttribute("hw-shadow-stack") &&
                           STI.hasStdExtZicfiss();
   bool HasSWShadowStack =
       MF.getFunction().hasFnAttribute(Attribute::ShadowCallStack);
   if (!HasHWShadowStack && !HasSWShadowStack)
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
     return;
 
   const llvm::RISCVRegisterInfo *TRI = STI.getRegisterInfo();
@@ -156,17 +144,7 @@ static void emitSCSPrologue(MachineFunction &MF, MachineBasicBlock &MBB,
     return;
 
   const RISCVInstrInfo *TII = STI.getInstrInfo();
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // FIXME: We should specify the behavior if SW & HW shadow stack attribute
-  // co-exist. Let HW always shadows SW for now
-  if (HasHWShadowStack && STI.hasStdExtZicfiss()) {
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-  if (!STI.hasForcedSWShadowStack() && STI.hasStdExtZicfiss()) {
-=======
   if (HasHWShadowStack) {
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
     BuildMI(MBB, MI, DL, TII->get(RISCV::SSPUSH)).addReg(RAReg);
     return;
   }
@@ -213,24 +191,12 @@ static void emitSCSPrologue(MachineFunction &MF, MachineBasicBlock &MBB,
 static void emitSCSEpilogue(MachineFunction &MF, MachineBasicBlock &MBB,
                             MachineBasicBlock::iterator MI,
                             const DebugLoc &DL) {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  bool HasHWShadowStack =
-      MF.getFunction().hasFnAttribute("hw-shadow-stack");
-  bool HasSWShadowStack =
-      MF.getFunction().hasFnAttribute(Attribute::ShadowCallStack);
-  if (!HasHWShadowStack && !HasSWShadowStack)
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-  if (!MF.getFunction().hasFnAttribute(Attribute::ShadowCallStack))
-=======
   const auto &STI = MF.getSubtarget<RISCVSubtarget>();
   bool HasHWShadowStack = MF.getFunction().hasFnAttribute("hw-shadow-stack") &&
                           STI.hasStdExtZicfiss();
   bool HasSWShadowStack =
       MF.getFunction().hasFnAttribute(Attribute::ShadowCallStack);
   if (!HasHWShadowStack && !HasSWShadowStack)
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
     return;
 
   Register RAReg = STI.getRegisterInfo()->getRARegister();
@@ -242,17 +208,7 @@ static void emitSCSEpilogue(MachineFunction &MF, MachineBasicBlock &MBB,
     return;
 
   const RISCVInstrInfo *TII = STI.getInstrInfo();
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // FIXME: We should specify the behavior if SW & HW shadow stack attribute
-  // co-exist. Let HW always shadows SW for now
-  if (HasHWShadowStack && STI.hasStdExtZicfiss()) {
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-  if (!STI.hasForcedSWShadowStack() && STI.hasStdExtZicfiss()) {
-=======
   if (HasHWShadowStack) {
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
     BuildMI(MBB, MI, DL, TII->get(RISCV::SSPOPCHK)).addReg(RAReg);
     return;
   }
@@ -934,18 +890,7 @@ void RISCVFrameLowering::emitEpilogue(MachineFunction &MF,
   uint64_t StackSize = FirstSPAdjustAmount ? FirstSPAdjustAmount
                                            : getStackSizeWithRVVPadding(MF) -
                                                  RVFI->getReservedSpillsSize();
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // patch from upstream #114316
   uint64_t FPOffset = RealStackSize - RVFI->getVarArgsSaveSize();
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-  uint64_t FPOffset = FirstSPAdjustAmount ? FirstSPAdjustAmount
-                                          : getStackSizeWithRVVPadding(MF) -
-                                                RVFI->getVarArgsSaveSize();
-=======
-  uint64_t FPOffset = RealStackSize - RVFI->getVarArgsSaveSize();
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
   uint64_t RVVStackSize = RVFI->getRVVStackSize();
 
   bool RestoreSPFromFP = RI->hasStackRealignment(MF) ||
