@@ -7822,14 +7822,11 @@ Instruction *InstCombinerImpl::visitICmpInst(ICmpInst &I) {
   if (Instruction *Res = foldReductionIdiom(I, Builder, DL))
     return Res;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (Instruction *Res = foldVSetvliRecurrence(I, *this))
     return Res;
 #endif
 
-||||||| 864902e9b4d8
-=======
   {
     Value *A;
     const APInt *C1, *C2;
@@ -7856,7 +7853,6 @@ Instruction *InstCombinerImpl::visitICmpInst(ICmpInst &I) {
     }
   }
 
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
   return Changed ? &I : nullptr;
 }
 
