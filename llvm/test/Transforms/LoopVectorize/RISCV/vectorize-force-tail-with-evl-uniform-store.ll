@@ -26,13 +26,32 @@ define void @lshift_significand(i32 %n, ptr nocapture writeonly %dst) {
 ; CHECK-NEXT:    [[TMP12:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; CHECK-NEXT:    [[TMP13:%.*]] = sub nuw nsw i64 1, [[TMP12]]
 ; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr i64, ptr [[DST]], i64 [[TMP13]]
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP16:%.*]] = zext i32 [[TMP11]] to i64
 ; CHECK-NEXT:    [[TMP17:%.*]] = mul i64 0, [[TMP16]]
 ; CHECK-NEXT:    [[TMP18:%.*]] = sub i64 1, [[TMP16]]
+||||||| 864902e9b4d8
+; CHECK-NEXT:    [[TMP15:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    [[TMP16:%.*]] = mul i64 [[TMP15]], 2
+; CHECK-NEXT:    [[TMP17:%.*]] = mul i64 0, [[TMP16]]
+; CHECK-NEXT:    [[TMP18:%.*]] = sub i64 1, [[TMP16]]
+=======
+; CHECK-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP11]] to i64
+; CHECK-NEXT:    [[TMP17:%.*]] = mul i64 0, [[TMP15]]
+; CHECK-NEXT:    [[TMP18:%.*]] = sub i64 1, [[TMP15]]
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    [[TMP19:%.*]] = getelementptr i64, ptr [[TMP14]], i64 [[TMP17]]
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i64, ptr [[TMP19]], i64 [[TMP18]]
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[VP_REVERSE:%.*]] = call <vscale x 4 x i64> @llvm.experimental.vp.reverse.nxv4i64(<vscale x 4 x i64> zeroinitializer, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP11]])
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv4i64.p0(<vscale x 4 x i64> [[VP_REVERSE]], ptr align 8 [[TMP20]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP11]])
+||||||| 864902e9b4d8
+; CHECK-NEXT:    [[VP_REVERSE:%.*]] = call <vscale x 2 x i64> @llvm.experimental.vp.reverse.nxv2i64(<vscale x 2 x i64> zeroinitializer, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP11]])
+; CHECK-NEXT:    call void @llvm.vp.store.nxv2i64.p0(<vscale x 2 x i64> [[VP_REVERSE]], ptr align 8 [[TMP20]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP11]])
+=======
+; CHECK-NEXT:    [[VP_REVERSE:%.*]] = call <vscale x 2 x i64> @llvm.experimental.vp.reverse.nxv2i64(<vscale x 2 x i64> zeroinitializer, <vscale x 2 x i1> splat (i1 true), i32 [[TMP11]])
+; CHECK-NEXT:    call void @llvm.vp.store.nxv2i64.p0(<vscale x 2 x i64> [[VP_REVERSE]], ptr align 8 [[TMP20]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP11]])
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    [[TMP21:%.*]] = zext i32 [[TMP11]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP21]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP15:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP0]]

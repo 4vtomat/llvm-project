@@ -107,6 +107,7 @@ for.end:                                          ; preds = %entry, %for.cond.fo
 
 define i32 @test_debug_loc_on_branch_in_loop(ptr noalias %src, ptr noalias %dst) {
 ; CHECK-LABEL: define i32 @test_debug_loc_on_branch_in_loop(
+<<<<<<< HEAD
 ; CHECK-SAME: ptr noalias [[SRC:%.*]], ptr noalias [[DST:%.*]]) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
@@ -159,6 +160,35 @@ define i32 @test_debug_loc_on_branch_in_loop(ptr noalias %src, ptr noalias %dst)
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[LOOP_HEADER]], !llvm.loop [[LOOP31:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    ret i32 0
+||||||| 864902e9b4d8
+; CHECK-LABEL: vector.body:
+; CHECK:        [[LOAD:%.+]] = load <2 x i32>, ptr {{.+}}, align 4
+; CHECK-NEXT:   [[CMP:%.+]] = icmp eq <2 x i32> [[LOAD]], <i32 10, i32 10>
+; CHECK-NEXT:   [[XOR:%.+]] = xor <2 x i1> [[CMP:%.+]], <i1 true, i1 true>, !dbg [[LOC3:!.+]]
+; CHECK-NEXT:   [[EXT:%.+]] = extractelement <2 x i1> [[XOR]], i32 0, !dbg [[LOC3]]
+; CHECK-NEXT:   br i1 [[EXT]], label %pred.store.if, label %pred.store.continue
+; CHECK-NOT:  !dbg
+; CHECK-EMPTY:
+; CHECK-NEXT: pred.store.if:
+; CHECK-NEXT:   [[GEP:%.+]] = getelementptr inbounds i32, ptr %dst, i64 {{.+}}, !dbg [[LOC3]]
+; CHECK-NEXT:   store i32 0, ptr [[GEP]], align 4, !dbg [[LOC3]]
+; CHECK-NEXT:   br label %pred.store.continue, !dbg [[LOC3]]
+; CHECK-EMPTY:
+=======
+; CHECK-LABEL: vector.body:
+; CHECK:        [[LOAD:%.+]] = load <2 x i32>, ptr {{.+}}, align 4
+; CHECK-NEXT:   [[CMP:%.+]] = icmp eq <2 x i32> [[LOAD]], splat (i32 10)
+; CHECK-NEXT:   [[XOR:%.+]] = xor <2 x i1> [[CMP:%.+]], splat (i1 true), !dbg [[LOC3:!.+]]
+; CHECK-NEXT:   [[EXT:%.+]] = extractelement <2 x i1> [[XOR]], i32 0, !dbg [[LOC3]]
+; CHECK-NEXT:   br i1 [[EXT]], label %pred.store.if, label %pred.store.continue
+; CHECK-NOT:  !dbg
+; CHECK-EMPTY:
+; CHECK-NEXT: pred.store.if:
+; CHECK-NEXT:   [[GEP:%.+]] = getelementptr inbounds i32, ptr %dst, i64 {{.+}}, !dbg [[LOC3]]
+; CHECK-NEXT:   store i32 0, ptr [[GEP]], align 4, !dbg [[LOC3]]
+; CHECK-NEXT:   br label %pred.store.continue, !dbg [[LOC3]]
+; CHECK-EMPTY:
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ;
 entry:
   br label %loop.header
@@ -186,6 +216,7 @@ exit:
 
 define i32 @test_different_debug_loc_on_replicate_recipe(ptr noalias %src, ptr noalias %dst) {
 ; CHECK-LABEL: define i32 @test_different_debug_loc_on_replicate_recipe(
+<<<<<<< HEAD
 ; CHECK-SAME: ptr noalias [[SRC:%.*]], ptr noalias [[DST:%.*]]) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
@@ -238,6 +269,35 @@ define i32 @test_different_debug_loc_on_replicate_recipe(ptr noalias %src, ptr n
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[LOOP_HEADER]], !llvm.loop [[LOOP37:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    ret i32 0
+||||||| 864902e9b4d8
+; CHECK-LABEL: vector.body:
+; CHECK:        [[LOAD:%.+]] = load <2 x i32>, ptr {{.+}}, align 4
+; CHECK-NEXT:   [[CMP:%.+]] = icmp eq <2 x i32> [[LOAD]], <i32 10, i32 10>
+; CHECK-NEXT:   [[XOR:%.+]] = xor <2 x i1> [[CMP:%.+]], <i1 true, i1 true>, !dbg [[LOC4:!.+]]
+; CHECK-NEXT:   [[EXT:%.+]] = extractelement <2 x i1> [[XOR]], i32 0, !dbg [[LOC4]]
+; CHECK-NEXT:   br i1 [[EXT]], label %pred.store.if, label %pred.store.continue
+; CHECK-NOT:  !dbg
+; CHECK-EMPTY:
+; CHECK-NEXT: pred.store.if:
+; CHECK-NEXT:   [[GEP:%.+]] = getelementptr inbounds i32, ptr %dst, i64 {{.+}}, !dbg [[LOC5:!.+]]
+; CHECK-NEXT:   store i32 0, ptr [[GEP]], align 4, !dbg [[LOC5]]
+; CHECK-NEXT:   br label %pred.store.continue, !dbg [[LOC4]]
+; CHECK-EMPTY:
+=======
+; CHECK-LABEL: vector.body:
+; CHECK:        [[LOAD:%.+]] = load <2 x i32>, ptr {{.+}}, align 4
+; CHECK-NEXT:   [[CMP:%.+]] = icmp eq <2 x i32> [[LOAD]], splat (i32 10)
+; CHECK-NEXT:   [[XOR:%.+]] = xor <2 x i1> [[CMP:%.+]], splat (i1 true), !dbg [[LOC4:!.+]]
+; CHECK-NEXT:   [[EXT:%.+]] = extractelement <2 x i1> [[XOR]], i32 0, !dbg [[LOC4]]
+; CHECK-NEXT:   br i1 [[EXT]], label %pred.store.if, label %pred.store.continue
+; CHECK-NOT:  !dbg
+; CHECK-EMPTY:
+; CHECK-NEXT: pred.store.if:
+; CHECK-NEXT:   [[GEP:%.+]] = getelementptr inbounds i32, ptr %dst, i64 {{.+}}, !dbg [[LOC5:!.+]]
+; CHECK-NEXT:   store i32 0, ptr [[GEP]], align 4, !dbg [[LOC5]]
+; CHECK-NEXT:   br label %pred.store.continue, !dbg [[LOC4]]
+; CHECK-EMPTY:
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ;
 entry:
   br label %loop.header
@@ -280,10 +340,22 @@ define void @test_misc(ptr nocapture %a, ptr noalias %b, i64 %size) !dbg !35 {
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP0]]
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[TMP1]], i32 0
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <2 x i32>, ptr [[TMP3]], align 4
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp uge <2 x i32> [[WIDE_LOAD]], <i32 10, i32 10>
 ; CHECK-NEXT:    [[TMP5:%.*]] = select <2 x i1> [[TMP4]], <2 x i32> [[WIDE_LOAD]], <2 x i32> zeroinitializer, !dbg [[DBG39:![0-9]+]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[TMP2]], i32 0, !dbg [[DBG41:![0-9]+]]
 ; CHECK-NEXT:    store <2 x i32> [[TMP5]], ptr [[TMP6]], align 4, !dbg [[DBG41]]
+||||||| 864902e9b4d8
+; CHECK-NEXT:    [[TMP4:%.*]] = icmp uge <2 x i32> [[WIDE_LOAD]], <i32 10, i32 10>
+; CHECK-NEXT:    [[TMP5:%.*]] = select <2 x i1> [[TMP4]], <2 x i32> [[WIDE_LOAD]], <2 x i32> zeroinitializer, !dbg [[LOC6:![0-9]+]]
+; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[TMP2]], i32 0, !dbg [[LOC7:![0-9]+]]
+; CHECK-NEXT:    store <2 x i32> [[TMP5]], ptr [[TMP6]], align 4, !dbg [[LOC7]]
+=======
+; CHECK-NEXT:    [[TMP4:%.*]] = icmp uge <2 x i32> [[WIDE_LOAD]], splat (i32 10)
+; CHECK-NEXT:    [[TMP5:%.*]] = select <2 x i1> [[TMP4]], <2 x i32> [[WIDE_LOAD]], <2 x i32> zeroinitializer, !dbg [[LOC6:![0-9]+]]
+; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[TMP2]], i32 0, !dbg [[LOC7:![0-9]+]]
+; CHECK-NEXT:    store <2 x i32> [[TMP5]], ptr [[TMP6]], align 4, !dbg [[LOC7]]
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 2
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP42:![0-9]+]]

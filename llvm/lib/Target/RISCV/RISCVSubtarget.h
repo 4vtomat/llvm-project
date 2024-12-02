@@ -330,6 +330,27 @@ public:
     return hasVInstructions() ? MaxInterleaveFactor : 1;
   }
 
+  bool hasOptimizedSegmentLoadStore(unsigned NF) const {
+    switch (NF) {
+    case 2:
+      return hasOptimizedNF2SegmentLoadStore();
+    case 3:
+      return hasOptimizedNF3SegmentLoadStore();
+    case 4:
+      return hasOptimizedNF4SegmentLoadStore();
+    case 5:
+      return hasOptimizedNF5SegmentLoadStore();
+    case 6:
+      return hasOptimizedNF6SegmentLoadStore();
+    case 7:
+      return hasOptimizedNF7SegmentLoadStore();
+    case 8:
+      return hasOptimizedNF8SegmentLoadStore();
+    default:
+      llvm_unreachable("Unexpected NF");
+    }
+  }
+
   // Returns VLEN divided by DLEN. Where DLEN is the datapath width of the
   // vector hardware implementation which may be less than VLEN.
   unsigned getDLenFactor() const {
@@ -372,6 +393,7 @@ public:
 
   bool enableSubRegLiveness() const override;
 
+<<<<<<< HEAD
   void getPostRAMutations(std::vector<std::unique_ptr<ScheduleDAGMutation>>
                               &Mutations) const override;
 
@@ -382,6 +404,12 @@ public:
 
   unsigned getMemToRVVLMUL() const;
 #endif // SIFIVE_CUSTOMIZATION
+||||||| 864902e9b4d8
+  void getPostRAMutations(std::vector<std::unique_ptr<ScheduleDAGMutation>>
+                              &Mutations) const override;
+
+=======
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
   bool useAA() const override;
 
   unsigned getCacheLineSize() const override {
@@ -409,6 +437,9 @@ public:
   unsigned getTailDupAggressiveThreshold() const {
     return TuneInfo->TailDupAggressiveThreshold;
   }
+
+  void overrideSchedPolicy(MachineSchedPolicy &Policy,
+                           unsigned NumRegionInstrs) const override;
 };
 } // End llvm namespace
 

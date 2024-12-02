@@ -1173,9 +1173,9 @@ define void @add_of_constant() {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %2 = add <4 x i32> undef, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %3 = add <4 x i32> zeroinitializer, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %4 = add <2 x i64> zeroinitializer, undef
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %5 = add <4 x i32> <i32 1, i32 1, i32 1, i32 1>, undef
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %6 = add <2 x i64> <i64 1, i64 1>, undef
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %7 = add <4 x i32> <i32 4096, i32 4096, i32 4096, i32 4096>, undef
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %5 = add <4 x i32> splat (i32 1), undef
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %6 = add <2 x i64> splat (i64 1), undef
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %7 = add <4 x i32> splat (i32 4096), undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %8 = add <4 x i32> <i32 1, i32 1, i32 2, i32 1>, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %9 = add <4 x i32> <i32 2, i32 1, i32 1, i32 1>, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %10 = add <4 x i32> <i32 0, i32 1, i32 2, i32 3>, undef
@@ -1187,6 +1187,7 @@ define void @add_of_constant() {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
 ; SIFIVE-X280-LABEL: 'add_of_constant'
+<<<<<<< HEAD
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %1 = add <4 x i32> poison, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %2 = add <4 x i32> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %3 = add <4 x i32> zeroinitializer, undef
@@ -1202,6 +1203,39 @@ define void @add_of_constant() {
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: %13 = add <4 x i32> <i32 2, i32 4, i32 6, i32 8>, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: %14 = add <4 x i32> <i32 -1, i32 0, i32 2, i32 1>, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: %15 = add <4 x i32> <i32 256, i32 4096, i32 57, i32 1>, undef
+||||||| 864902e9b4d8
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %1 = add <4 x i32> poison, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %2 = add <4 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %3 = add <4 x i32> zeroinitializer, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %4 = add <2 x i64> zeroinitializer, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %5 = add <4 x i32> <i32 1, i32 1, i32 1, i32 1>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %6 = add <2 x i64> <i64 1, i64 1>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %7 = add <4 x i32> <i32 4096, i32 4096, i32 4096, i32 4096>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %8 = add <4 x i32> <i32 1, i32 1, i32 2, i32 1>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %9 = add <4 x i32> <i32 2, i32 1, i32 1, i32 1>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %10 = add <4 x i32> <i32 0, i32 1, i32 2, i32 3>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %11 = add <4 x i32> <i32 1, i32 2, i32 3, i32 4>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %12 = add <4 x i32> <i32 -1, i32 -2, i32 -3, i32 -4>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %13 = add <4 x i32> <i32 2, i32 4, i32 6, i32 8>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %14 = add <4 x i32> <i32 -1, i32 0, i32 2, i32 1>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %15 = add <4 x i32> <i32 256, i32 4096, i32 57, i32 1>, undef
+=======
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %1 = add <4 x i32> poison, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %2 = add <4 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %3 = add <4 x i32> zeroinitializer, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %4 = add <2 x i64> zeroinitializer, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %5 = add <4 x i32> splat (i32 1), undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %6 = add <2 x i64> splat (i64 1), undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %7 = add <4 x i32> splat (i32 4096), undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %8 = add <4 x i32> <i32 1, i32 1, i32 2, i32 1>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %9 = add <4 x i32> <i32 2, i32 1, i32 1, i32 1>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %10 = add <4 x i32> <i32 0, i32 1, i32 2, i32 3>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %11 = add <4 x i32> <i32 1, i32 2, i32 3, i32 4>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %12 = add <4 x i32> <i32 -1, i32 -2, i32 -3, i32 -4>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %13 = add <4 x i32> <i32 2, i32 4, i32 6, i32 8>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %14 = add <4 x i32> <i32 -1, i32 0, i32 2, i32 1>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %15 = add <4 x i32> <i32 256, i32 4096, i32 57, i32 1>, undef
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
 

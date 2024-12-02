@@ -69,39 +69,39 @@ define signext i32 @test3(i32 signext %v, i32 signext %w, i32 signext %x, i32 si
 ;
 ; RV64SFB-LABEL: test3:
 ; RV64SFB:       # %bb.0:
-; RV64SFB-NEXT:    bnez a4, .LBB2_2
+; RV64SFB-NEXT:    beqz a4, .LBB2_2
 ; RV64SFB-NEXT:  # %bb.1:
-; RV64SFB-NEXT:    mv a0, a1
-; RV64SFB-NEXT:  .LBB2_2:
-; RV64SFB-NEXT:    beqz a4, .LBB2_4
-; RV64SFB-NEXT:  # %bb.3:
 ; RV64SFB-NEXT:    mv a2, a3
+; RV64SFB-NEXT:  .LBB2_2:
+; RV64SFB-NEXT:    bnez a4, .LBB2_4
+; RV64SFB-NEXT:  # %bb.3:
+; RV64SFB-NEXT:    mv a0, a1
 ; RV64SFB-NEXT:  .LBB2_4:
 ; RV64SFB-NEXT:    addw a0, a0, a2
 ; RV64SFB-NEXT:    ret
 ;
 ; ZICOND-LABEL: test3:
 ; ZICOND:       # %bb.0:
-; ZICOND-NEXT:    bnez a4, .LBB2_2
+; ZICOND-NEXT:    beqz a4, .LBB2_2
 ; ZICOND-NEXT:  # %bb.1:
-; ZICOND-NEXT:    mv a0, a1
-; ZICOND-NEXT:  .LBB2_2:
-; ZICOND-NEXT:    beqz a4, .LBB2_4
-; ZICOND-NEXT:  # %bb.3:
 ; ZICOND-NEXT:    mv a2, a3
+; ZICOND-NEXT:  .LBB2_2:
+; ZICOND-NEXT:    bnez a4, .LBB2_4
+; ZICOND-NEXT:  # %bb.3:
+; ZICOND-NEXT:    mv a0, a1
 ; ZICOND-NEXT:  .LBB2_4:
 ; ZICOND-NEXT:    addw a0, a0, a2
 ; ZICOND-NEXT:    ret
 ;
 ; RV32SFB-LABEL: test3:
 ; RV32SFB:       # %bb.0:
-; RV32SFB-NEXT:    bnez a4, .LBB2_2
+; RV32SFB-NEXT:    beqz a4, .LBB2_2
 ; RV32SFB-NEXT:  # %bb.1:
-; RV32SFB-NEXT:    mv a0, a1
-; RV32SFB-NEXT:  .LBB2_2:
-; RV32SFB-NEXT:    beqz a4, .LBB2_4
-; RV32SFB-NEXT:  # %bb.3:
 ; RV32SFB-NEXT:    mv a2, a3
+; RV32SFB-NEXT:  .LBB2_2:
+; RV32SFB-NEXT:    bnez a4, .LBB2_4
+; RV32SFB-NEXT:  # %bb.3:
+; RV32SFB-NEXT:    mv a0, a1
 ; RV32SFB-NEXT:  .LBB2_4:
 ; RV32SFB-NEXT:    add a0, a0, a2
 ; RV32SFB-NEXT:    ret
@@ -1225,7 +1225,14 @@ define i64 @select_slli(i64 %A, i64 %C, i1 zeroext %cond) {
 ; RV32SFB-NEXT:  # %bb.1: # %entry
 ; RV32SFB-NEXT:    li a2, 0
 ; RV32SFB-NEXT:  .LBB28_2: # %entry
+<<<<<<< HEAD
 ; RV32SFB-NEXT:    beqz a4, .LBB28_4
+||||||| 864902e9b4d8
+; RV32SFB-NEXT:    bnez a4, .LBB28_4
+=======
+; RV32SFB-NEXT:    mv a0, a2
+; RV32SFB-NEXT:    beqz a4, .LBB28_4
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; RV32SFB-NEXT:  # %bb.3: # %entry
 ; RV32SFB-NEXT:    mv a1, a3
 ; RV32SFB-NEXT:  .LBB28_4: # %entry
@@ -1565,11 +1572,11 @@ define i64 @select_andn(i64 %A, i64 %B, i64 %C, i1 zeroext %cond) {
 ; RV32SFB:       # %bb.0: # %entry
 ; RV32SFB-NEXT:    bnez a6, .LBB36_2
 ; RV32SFB-NEXT:  # %bb.1: # %entry
-; RV32SFB-NEXT:    andn a4, a0, a2
+; RV32SFB-NEXT:    andn a5, a1, a3
 ; RV32SFB-NEXT:  .LBB36_2: # %entry
 ; RV32SFB-NEXT:    bnez a6, .LBB36_4
 ; RV32SFB-NEXT:  # %bb.3: # %entry
-; RV32SFB-NEXT:    andn a5, a1, a3
+; RV32SFB-NEXT:    andn a4, a0, a2
 ; RV32SFB-NEXT:  .LBB36_4: # %entry
 ; RV32SFB-NEXT:    mv a0, a4
 ; RV32SFB-NEXT:    mv a1, a5
@@ -1613,11 +1620,11 @@ define i64 @select_orn(i64 %A, i64 %B, i64 %C, i1 zeroext %cond) {
 ; RV32SFB:       # %bb.0: # %entry
 ; RV32SFB-NEXT:    bnez a6, .LBB37_2
 ; RV32SFB-NEXT:  # %bb.1: # %entry
-; RV32SFB-NEXT:    orn a4, a0, a2
+; RV32SFB-NEXT:    orn a5, a1, a3
 ; RV32SFB-NEXT:  .LBB37_2: # %entry
 ; RV32SFB-NEXT:    bnez a6, .LBB37_4
 ; RV32SFB-NEXT:  # %bb.3: # %entry
-; RV32SFB-NEXT:    orn a5, a1, a3
+; RV32SFB-NEXT:    orn a4, a0, a2
 ; RV32SFB-NEXT:  .LBB37_4: # %entry
 ; RV32SFB-NEXT:    mv a0, a4
 ; RV32SFB-NEXT:    mv a1, a5
@@ -1661,11 +1668,11 @@ define i64 @select_xnor(i64 %A, i64 %B, i64 %C, i1 zeroext %cond) {
 ; RV32SFB:       # %bb.0: # %entry
 ; RV32SFB-NEXT:    bnez a6, .LBB38_2
 ; RV32SFB-NEXT:  # %bb.1: # %entry
-; RV32SFB-NEXT:    xnor a4, a0, a2
+; RV32SFB-NEXT:    xnor a5, a1, a3
 ; RV32SFB-NEXT:  .LBB38_2: # %entry
 ; RV32SFB-NEXT:    bnez a6, .LBB38_4
 ; RV32SFB-NEXT:  # %bb.3: # %entry
-; RV32SFB-NEXT:    xnor a5, a1, a3
+; RV32SFB-NEXT:    xnor a4, a0, a2
 ; RV32SFB-NEXT:  .LBB38_4: # %entry
 ; RV32SFB-NEXT:    mv a0, a4
 ; RV32SFB-NEXT:    mv a1, a5

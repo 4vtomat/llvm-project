@@ -18,6 +18,16 @@ define i1 @test(i64 %v1, ptr %v2, i32 %v3, i1 %v4) {
 ; CHECK-NEXT:    [[TMP21:%.*]] = icmp ult i32 [[TMP7]], 1333788672
 ; CHECK-NEXT:    [[CONV_I_I1743_3:%.*]] = fptoui float [[TMP17]] to i32
 ; CHECK-NEXT:    [[TMP18:%.*]] = icmp ne i32 [[CONV_I_I1743_3]], 0
+<<<<<<< HEAD
+||||||| 864902e9b4d8
+; CHECK-NEXT:    [[TMP19:%.*]] = bitcast <4 x float> [[TMP16]] to <4 x i32>
+; CHECK-NEXT:    [[TMP20:%.*]] = icmp ult <4 x i32> [[TMP19]], <i32 1333788672, i32 1333788672, i32 1333788672, i32 1333788672>
+; CHECK-NEXT:    [[TMP21:%.*]] = extractelement <4 x i1> [[TMP20]], i32 3
+=======
+; CHECK-NEXT:    [[TMP19:%.*]] = bitcast <4 x float> [[TMP16]] to <4 x i32>
+; CHECK-NEXT:    [[TMP20:%.*]] = icmp ult <4 x i32> [[TMP19]], splat (i32 1333788672)
+; CHECK-NEXT:    [[TMP21:%.*]] = extractelement <4 x i1> [[TMP20]], i32 3
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    [[NARROW:%.*]] = select i1 [[TMP21]], i1 [[TMP18]], i1 false
 ; CHECK-NEXT:    [[TMP24:%.*]] = zext i1 [[NARROW]] to i32
 ; CHECK-NEXT:    [[TMP9:%.*]] = insertelement <3 x i32> poison, i32 [[V3]], i32 0

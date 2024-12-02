@@ -1635,7 +1635,6 @@ define i64 @addshl64_5_8(i64 %a, i64 %b) {
 }
 
 ; Make sure we use sext.h+slli+srli for Zba+Zbb.
-; FIXME: The RV64I and Zba only cases can be done with only 3 shifts.
 define zeroext i32 @sext_ashr_zext_i8(i8 %a) nounwind {
 ; RV64I-LABEL: sext_ashr_zext_i8:
 ; RV64I:       # %bb.0:
@@ -1752,7 +1751,6 @@ entry:
 }
 
 ; Make sure we use sext.h+slli+srli for Zba+Zbb.
-; FIXME: The RV64I and Zba only cases can be done with only 3 shifts.
 define zeroext i32 @sext_ashr_zext_i16(i16 %a) nounwind {
 ; RV64I-LABEL: sext_ashr_zext_i16:
 ; RV64I:       # %bb.0:
@@ -2184,8 +2182,8 @@ define i64 @srli_4_sh3add(ptr %0, i64 %1) {
   ret i64 %5
 }
 
-define signext i16 @shl_2_sh1add(ptr %0, i32 signext %1) {
-; RV64I-LABEL: shl_2_sh1add:
+define signext i16 @shl_2_sh1adduw(ptr %0, i32 signext %1) {
+; RV64I-LABEL: shl_2_sh1adduw:
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    slli a1, a1, 34
 ; RV64I-NEXT:    srli a1, a1, 31
@@ -2193,7 +2191,7 @@ define signext i16 @shl_2_sh1add(ptr %0, i32 signext %1) {
 ; RV64I-NEXT:    lh a0, 0(a0)
 ; RV64I-NEXT:    ret
 ;
-; RV64ZBA-LABEL: shl_2_sh1add:
+; RV64ZBA-LABEL: shl_2_sh1adduw:
 ; RV64ZBA:       # %bb.0:
 ; RV64ZBA-NEXT:    slli a1, a1, 2
 ; RV64ZBA-NEXT:    sh1add.uw a0, a1, a0
@@ -2206,8 +2204,8 @@ define signext i16 @shl_2_sh1add(ptr %0, i32 signext %1) {
   ret i16 %6
 }
 
-define signext i32 @shl_16_sh2add(ptr %0, i32 signext %1) {
-; RV64I-LABEL: shl_16_sh2add:
+define signext i32 @shl_16_sh2adduw(ptr %0, i32 signext %1) {
+; RV64I-LABEL: shl_16_sh2adduw:
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    slli a1, a1, 48
 ; RV64I-NEXT:    srli a1, a1, 30
@@ -2215,7 +2213,7 @@ define signext i32 @shl_16_sh2add(ptr %0, i32 signext %1) {
 ; RV64I-NEXT:    lw a0, 0(a0)
 ; RV64I-NEXT:    ret
 ;
-; RV64ZBA-LABEL: shl_16_sh2add:
+; RV64ZBA-LABEL: shl_16_sh2adduw:
 ; RV64ZBA:       # %bb.0:
 ; RV64ZBA-NEXT:    slli a1, a1, 16
 ; RV64ZBA-NEXT:    sh2add.uw a0, a1, a0
@@ -2228,8 +2226,8 @@ define signext i32 @shl_16_sh2add(ptr %0, i32 signext %1) {
   ret i32 %6
 }
 
-define i64 @shl_31_sh3add(ptr %0, i32 signext %1) {
-; RV64I-LABEL: shl_31_sh3add:
+define i64 @shl_31_sh3adduw(ptr %0, i32 signext %1) {
+; RV64I-LABEL: shl_31_sh3adduw:
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    slli a1, a1, 63
 ; RV64I-NEXT:    srli a1, a1, 29
@@ -2237,7 +2235,7 @@ define i64 @shl_31_sh3add(ptr %0, i32 signext %1) {
 ; RV64I-NEXT:    ld a0, 0(a0)
 ; RV64I-NEXT:    ret
 ;
-; RV64ZBA-LABEL: shl_31_sh3add:
+; RV64ZBA-LABEL: shl_31_sh3adduw:
 ; RV64ZBA:       # %bb.0:
 ; RV64ZBA-NEXT:    slli a1, a1, 31
 ; RV64ZBA-NEXT:    sh3add.uw a0, a1, a0
@@ -2580,8 +2578,8 @@ define i64 @array_index_lshr_sh3_sh3(ptr %p, i64 %idx1, i64 %idx2) {
 ; RV64I-LABEL: array_index_lshr_sh3_sh3:
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    srli a1, a1, 58
-; RV64I-NEXT:    slli a1, a1, 6
 ; RV64I-NEXT:    slli a2, a2, 3
+; RV64I-NEXT:    slli a1, a1, 6
 ; RV64I-NEXT:    add a0, a0, a2
 ; RV64I-NEXT:    add a0, a0, a1
 ; RV64I-NEXT:    ld a0, 0(a0)
@@ -2683,8 +2681,8 @@ define ptr @test_gep_gep_dont_crash(ptr %p, i64 %a1, i64 %a2) {
 ; RV64I-LABEL: test_gep_gep_dont_crash:
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    srliw a2, a2, 6
-; RV64I-NEXT:    slli a2, a2, 3
 ; RV64I-NEXT:    slli a1, a1, 3
+; RV64I-NEXT:    slli a2, a2, 3
 ; RV64I-NEXT:    add a0, a0, a1
 ; RV64I-NEXT:    add a0, a0, a2
 ; RV64I-NEXT:    ret

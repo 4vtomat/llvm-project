@@ -1014,7 +1014,8 @@ public:
 
     // Third, try to fuse candidates.
     for (CallInst *CI : MaybeFusableInsts)
-      LowerMatrixMultiplyFused(CI, FusedInsts, LifetimeEnds);
+      if (!FusedInsts.contains(CI))
+        LowerMatrixMultiplyFused(CI, FusedInsts, LifetimeEnds);
 
     Changed = !FusedInsts.empty();
 
@@ -1462,9 +1463,12 @@ public:
       if (!CanBeFlattened(Op))
         return;
 
-      if (match(Op, m_BinOp()) && ShapeMap.find(Op) != ShapeMap.end()) {
-        ShapeMap[Op] = ShapeMap[Op].t();
-        return;
+      if (match(Op, m_BinOp())) {
+        auto It = ShapeMap.find(Op);
+        if (It != ShapeMap.end()) {
+          It->second = It->second.t();
+          return;
+        }
       }
 
       FusedInsts.insert(cast<Instruction>(Op));

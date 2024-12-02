@@ -16,10 +16,15 @@
 #include "RISCVSubtarget.h"
 #include "llvm/CodeGen/MachineFunctionPass.h"
 #include "llvm/CodeGen/MachineInstrBuilder.h"
+<<<<<<< HEAD
 #include "llvm/InitializePasses.h"
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/IR/Module.h"
 #endif // SIFIVE_CUSTOMIZATION
+||||||| 864902e9b4d8
+#include "llvm/InitializePasses.h"
+=======
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 
 using namespace llvm;
 

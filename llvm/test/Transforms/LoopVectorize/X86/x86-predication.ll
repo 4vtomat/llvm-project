@@ -226,8 +226,16 @@ define i32 @scalarize_and_sink_gather(ptr %a, i1 %c, i32 %x, i64 %n) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[PRED_UDIV_CONTINUE2:%.*]] ]
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <2 x i64> [ <i64 0, i64 1>, [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[PRED_UDIV_CONTINUE2]] ]
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP15:%.*]], [[PRED_UDIV_CONTINUE2]] ]
 ; CHECK-NEXT:    [[TMP0:%.*]] = mul <2 x i64> [[VEC_IND]], <i64 777, i64 777>
+||||||| 864902e9b4d8
+; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP18:%.*]], [[PRED_UDIV_CONTINUE2]] ]
+; CHECK-NEXT:    [[TMP0:%.*]] = mul <2 x i64> [[VEC_IND]], <i64 777, i64 777>
+=======
+; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP18:%.*]], [[PRED_UDIV_CONTINUE2]] ]
+; CHECK-NEXT:    [[TMP0:%.*]] = mul <2 x i64> [[VEC_IND]], splat (i64 777)
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    [[TMP1:%.*]] = extractelement <2 x i1> [[BROADCAST_SPLAT]], i32 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[PRED_UDIV_IF:%.*]], label [[PRED_UDIV_CONTINUE:%.*]]
 ; CHECK:       pred.udiv.if:
@@ -253,9 +261,19 @@ define i32 @scalarize_and_sink_gather(ptr %a, i1 %c, i32 %x, i64 %n) {
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <2 x i1> [[BROADCAST_SPLAT]], <2 x i32> [[TMP14]], <2 x i32> [[BROADCAST_SPLAT4]]
 ; CHECK-NEXT:    [[TMP15]] = add <2 x i32> [[VEC_PHI]], [[PREDPHI]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 2
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <2 x i64> [[VEC_IND]], <i64 2, i64 2>
 ; CHECK-NEXT:    [[TMP16:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+||||||| 864902e9b4d8
+; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <2 x i64> [[VEC_IND]], <i64 2, i64 2>
+; CHECK-NEXT:    [[TMP19:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
+; CHECK-NEXT:    br i1 [[TMP19]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+=======
+; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <2 x i64> [[VEC_IND]], splat (i64 2)
+; CHECK-NEXT:    [[TMP19:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
+; CHECK-NEXT:    br i1 [[TMP19]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP17:%.*]] = call i32 @llvm.vector.reduce.add.v2i32(<2 x i32> [[TMP15]])
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[SMAX]], [[N_VEC]]
@@ -300,8 +318,16 @@ define i32 @scalarize_and_sink_gather(ptr %a, i1 %c, i32 %x, i64 %n) {
 ; SINK-GATHER:       vector.body:
 ; SINK-GATHER-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[PRED_UDIV_CONTINUE14:%.*]] ]
 ; SINK-GATHER-NEXT:    [[VEC_IND:%.*]] = phi <8 x i64> [ <i64 0, i64 1, i64 2, i64 3, i64 4, i64 5, i64 6, i64 7>, [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[PRED_UDIV_CONTINUE14]] ]
+<<<<<<< HEAD
 ; SINK-GATHER-NEXT:    [[VEC_PHI:%.*]] = phi <8 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP57:%.*]], [[PRED_UDIV_CONTINUE14]] ]
 ; SINK-GATHER-NEXT:    [[TMP0:%.*]] = mul <8 x i64> [[VEC_IND]], <i64 777, i64 777, i64 777, i64 777, i64 777, i64 777, i64 777, i64 777>
+||||||| 864902e9b4d8
+; SINK-GATHER-NEXT:    [[VEC_PHI:%.*]] = phi <8 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP66:%.*]], [[PRED_UDIV_CONTINUE14]] ]
+; SINK-GATHER-NEXT:    [[TMP0:%.*]] = mul <8 x i64> [[VEC_IND]], <i64 777, i64 777, i64 777, i64 777, i64 777, i64 777, i64 777, i64 777>
+=======
+; SINK-GATHER-NEXT:    [[VEC_PHI:%.*]] = phi <8 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP66:%.*]], [[PRED_UDIV_CONTINUE14]] ]
+; SINK-GATHER-NEXT:    [[TMP0:%.*]] = mul <8 x i64> [[VEC_IND]], splat (i64 777)
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; SINK-GATHER-NEXT:    [[TMP1:%.*]] = extractelement <8 x i1> [[BROADCAST_SPLAT]], i32 0
 ; SINK-GATHER-NEXT:    br i1 [[TMP1]], label [[PRED_UDIV_IF:%.*]], label [[PRED_UDIV_CONTINUE:%.*]]
 ; SINK-GATHER:       pred.udiv.if:
@@ -393,9 +419,19 @@ define i32 @scalarize_and_sink_gather(ptr %a, i1 %c, i32 %x, i64 %n) {
 ; SINK-GATHER-NEXT:    [[PREDPHI:%.*]] = select <8 x i1> [[BROADCAST_SPLAT]], <8 x i32> [[TMP56]], <8 x i32> [[BROADCAST_SPLAT16]]
 ; SINK-GATHER-NEXT:    [[TMP57]] = add <8 x i32> [[VEC_PHI]], [[PREDPHI]]
 ; SINK-GATHER-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 8
+<<<<<<< HEAD
 ; SINK-GATHER-NEXT:    [[VEC_IND_NEXT]] = add <8 x i64> [[VEC_IND]], <i64 8, i64 8, i64 8, i64 8, i64 8, i64 8, i64 8, i64 8>
 ; SINK-GATHER-NEXT:    [[TMP58:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; SINK-GATHER-NEXT:    br i1 [[TMP58]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+||||||| 864902e9b4d8
+; SINK-GATHER-NEXT:    [[VEC_IND_NEXT]] = add <8 x i64> [[VEC_IND]], <i64 8, i64 8, i64 8, i64 8, i64 8, i64 8, i64 8, i64 8>
+; SINK-GATHER-NEXT:    [[TMP67:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
+; SINK-GATHER-NEXT:    br i1 [[TMP67]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+=======
+; SINK-GATHER-NEXT:    [[VEC_IND_NEXT]] = add <8 x i64> [[VEC_IND]], splat (i64 8)
+; SINK-GATHER-NEXT:    [[TMP67:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
+; SINK-GATHER-NEXT:    br i1 [[TMP67]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; SINK-GATHER:       middle.block:
 ; SINK-GATHER-NEXT:    [[TMP59:%.*]] = call i32 @llvm.vector.reduce.add.v8i32(<8 x i32> [[TMP57]])
 ; SINK-GATHER-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[SMAX]], [[N_VEC]]

@@ -61,6 +61,7 @@ public:
       : BaseT(TM, F.getDataLayout()), ST(TM->getSubtargetImpl(F)),
         TLI(ST->getTargetLowering()) {}
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   std::optional<Instruction *> instCombineIntrinsic(InstCombiner &IC,
                                                     IntrinsicInst &II) const;
@@ -75,6 +76,12 @@ public:
   bool areInlineCompatible(const Function *Caller,
                            const Function *Callee) const;
 
+||||||| 864902e9b4d8
+  bool areInlineCompatible(const Function *Caller,
+                           const Function *Callee) const;
+
+=======
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
   /// Return the cost of materializing an immediate for a value operand of
   /// a store instruction.
   InstructionCost getStoreImmCost(Type *VecTy, TTI::OperandValueInfo OpInfo,
@@ -360,7 +367,6 @@ public:
       return false;
 
     return TLI->isLegalElementTypeForRVV(ElemType);
-
   }
 
   bool isLegalMaskedLoad(Type *DataType, Align Alignment) {
@@ -421,6 +427,8 @@ public:
                                              DL);
   }
 
+  bool isLegalMaskedExpandLoad(Type *DataType, Align Alignment);
+
   bool isLegalMaskedCompressStore(Type *DataTy, Align Alignment);
 
   bool isVScaleKnownToBeAPowerOfTwo() const {
@@ -475,6 +483,12 @@ public:
 
     Type *Ty = RdxDesc.getRecurrenceType();
     if (!TLI->isLegalElementTypeForRVV(TLI->getValueType(DL, Ty)))
+      return false;
+
+    // We can't promote f16/bf16 fadd reductions and scalable vectors can't be
+    // expanded.
+    // TODO: Promote f16/bf16 fmin/fmax reductions
+    if (Ty->isBFloatTy() || (Ty->isHalfTy() && !ST->hasVInstructionsF16()))
       return false;
 
     switch (RdxDesc.getRecurrenceKind()) {
@@ -613,6 +627,9 @@ public:
 
   bool isProfitableToSinkOperands(Instruction *I,
                                   SmallVectorImpl<Use *> &Ops) const;
+
+  TTI::MemCmpExpansionOptions enableMemCmpExpansion(bool OptSize,
+                                                    bool IsZeroCmp) const;
 };
 
 } // end namespace llvm

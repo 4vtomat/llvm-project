@@ -22,6 +22,7 @@ define void @vf_will_not_generate_any_vector_insts(ptr %src, ptr %dst) {
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP0:%.*]] = sub i64 100, [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
@@ -31,6 +32,21 @@ define void @vf_will_not_generate_any_vector_insts(ptr %src, ptr %dst) {
 ; CHECK-NEXT:    call void @llvm.vp.scatter.nxv2i32.nxv2p0(<vscale x 2 x i32> [[BROADCAST_SPLAT]], <vscale x 2 x ptr> align 4 [[BROADCAST_SPLAT3]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP4]]), !alias.scope [[META3:![0-9]+]], !noalias [[META0]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP4]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[TMP6]], [[EVL_BASED_IV]]
+||||||| 864902e9b4d8
+; CHECK-NEXT:    [[TMP0:%.*]] = load i32, ptr [[SRC]], align 4, !alias.scope [[META0:![0-9]+]]
+; CHECK-NEXT:    [[BROADCAST_SPLATINSERT4:%.*]] = insertelement <2 x i32> poison, i32 [[TMP0]], i64 0
+; CHECK-NEXT:    [[BROADCAST_SPLAT5:%.*]] = shufflevector <2 x i32> [[BROADCAST_SPLATINSERT4]], <2 x i32> poison, <2 x i32> zeroinitializer
+; CHECK-NEXT:    call void @llvm.masked.scatter.v2i32.v2p0(<2 x i32> [[BROADCAST_SPLAT5]], <2 x ptr> [[BROADCAST_SPLAT3]], i32 4, <2 x i1> <i1 true, i1 true>), !alias.scope [[META3:![0-9]+]], !noalias [[META0]]
+; CHECK-NEXT:    call void @llvm.masked.scatter.v2i32.v2p0(<2 x i32> [[BROADCAST_SPLAT5]], <2 x ptr> [[BROADCAST_SPLAT3]], i32 4, <2 x i1> <i1 true, i1 true>), !alias.scope [[META3]], !noalias [[META0]]
+; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
+=======
+; CHECK-NEXT:    [[TMP0:%.*]] = load i32, ptr [[SRC]], align 4, !alias.scope [[META0:![0-9]+]]
+; CHECK-NEXT:    [[BROADCAST_SPLATINSERT4:%.*]] = insertelement <2 x i32> poison, i32 [[TMP0]], i64 0
+; CHECK-NEXT:    [[BROADCAST_SPLAT5:%.*]] = shufflevector <2 x i32> [[BROADCAST_SPLATINSERT4]], <2 x i32> poison, <2 x i32> zeroinitializer
+; CHECK-NEXT:    call void @llvm.masked.scatter.v2i32.v2p0(<2 x i32> [[BROADCAST_SPLAT5]], <2 x ptr> [[BROADCAST_SPLAT3]], i32 4, <2 x i1> splat (i1 true)), !alias.scope [[META3:![0-9]+]], !noalias [[META0]]
+; CHECK-NEXT:    call void @llvm.masked.scatter.v2i32.v2p0(<2 x i32> [[BROADCAST_SPLAT5]], <2 x ptr> [[BROADCAST_SPLAT3]], i32 4, <2 x i1> splat (i1 true)), !alias.scope [[META3]], !noalias [[META0]]
+; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp eq i64 [[INDEX_NEXT]], 100
 ; CHECK-NEXT:    br i1 [[TMP1]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:

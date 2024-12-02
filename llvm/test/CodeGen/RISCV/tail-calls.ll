@@ -41,9 +41,9 @@ define void @caller_extern(ptr %src) optsize {
 ; CHECK-LARGE-ZICFILP:       # %bb.0: # %entry
 ; CHECK-LARGE-ZICFILP-NEXT:  .Lpcrel_hi1:
 ; CHECK-LARGE-ZICFILP-NEXT:    auipc a1, %pcrel_hi(.LCPI1_0)
-; CHECK-LARGE-ZICFILP-NEXT:    lw a1, %pcrel_lo(.Lpcrel_hi1)(a1)
 ; CHECK-LARGE-ZICFILP-NEXT:  .Lpcrel_hi2:
 ; CHECK-LARGE-ZICFILP-NEXT:    auipc a2, %pcrel_hi(.LCPI1_1)
+; CHECK-LARGE-ZICFILP-NEXT:    lw a1, %pcrel_lo(.Lpcrel_hi1)(a1)
 ; CHECK-LARGE-ZICFILP-NEXT:    lw t2, %pcrel_lo(.Lpcrel_hi2)(a2)
 ; CHECK-LARGE-ZICFILP-NEXT:    li a2, 7
 ; CHECK-LARGE-ZICFILP-NEXT:    mv a3, a0
@@ -72,9 +72,9 @@ define void @caller_extern_pgso(ptr %src) !prof !14 {
 ; CHECK-LARGE-ZICFILP:       # %bb.0: # %entry
 ; CHECK-LARGE-ZICFILP-NEXT:  .Lpcrel_hi3:
 ; CHECK-LARGE-ZICFILP-NEXT:    auipc a1, %pcrel_hi(.LCPI2_0)
-; CHECK-LARGE-ZICFILP-NEXT:    lw a1, %pcrel_lo(.Lpcrel_hi3)(a1)
 ; CHECK-LARGE-ZICFILP-NEXT:  .Lpcrel_hi4:
 ; CHECK-LARGE-ZICFILP-NEXT:    auipc a2, %pcrel_hi(.LCPI2_1)
+; CHECK-LARGE-ZICFILP-NEXT:    lw a1, %pcrel_lo(.Lpcrel_hi3)(a1)
 ; CHECK-LARGE-ZICFILP-NEXT:    lw t2, %pcrel_lo(.Lpcrel_hi4)(a2)
 ; CHECK-LARGE-ZICFILP-NEXT:    li a2, 7
 ; CHECK-LARGE-ZICFILP-NEXT:    mv a3, a0
@@ -454,9 +454,9 @@ define void @caller_nostruct() nounwind {
 ; CHECK-LARGE-ZICFILP-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
 ; CHECK-LARGE-ZICFILP-NEXT:  .Lpcrel_hi13:
 ; CHECK-LARGE-ZICFILP-NEXT:    auipc a0, %pcrel_hi(.LCPI11_0)
-; CHECK-LARGE-ZICFILP-NEXT:    lw a0, %pcrel_lo(.Lpcrel_hi13)(a0)
 ; CHECK-LARGE-ZICFILP-NEXT:  .Lpcrel_hi14:
 ; CHECK-LARGE-ZICFILP-NEXT:    auipc a1, %pcrel_hi(.LCPI11_1)
+; CHECK-LARGE-ZICFILP-NEXT:    lw a0, %pcrel_lo(.Lpcrel_hi13)(a0)
 ; CHECK-LARGE-ZICFILP-NEXT:    lw t2, %pcrel_lo(.Lpcrel_hi14)(a1)
 ; CHECK-LARGE-ZICFILP-NEXT:    jalr t2
 ; CHECK-LARGE-ZICFILP-NEXT:    lw ra, 12(sp) # 4-byte Folded Reload

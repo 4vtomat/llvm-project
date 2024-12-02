@@ -117,8 +117,13 @@
 // CHECK-NEXT:     zvl8192b             1.0       'Zvl' (Minimum Vector Length) 8192
 // CHECK-NEXT:     zhinx                1.0       'Zhinx' (Half Float in Integer)
 // CHECK-NEXT:     zhinxmin             1.0       'Zhinxmin' (Half Float in Integer Minimal)
+<<<<<<< HEAD
 // CHECK-NEXT:     sdext                1.0       'Sdext' (External Debugging Extension)
 // CHECK-NEXT:     sdtrig               1.0       'Sdtrig' (Debugging Triggers)
+||||||| 864902e9b4d8
+=======
+// CHECK-NEXT:     sha                  1.0       'Sha' (Augmented Hypervisor)
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 // CHECK-NEXT:     shcounterenw         1.0       'Shcounterenw' (Support writeable hcounteren enable bit for any hpmcounter that is not read-only zero)
 // CHECK-NEXT:     shgatpa              1.0       'Sgatpa' (SvNNx4 mode supported for all modes supported by satp, as well as Bare)
 // CHECK-NEXT:     shtvala              1.0       'Shtvala' (htval provides all needed values)
@@ -128,8 +133,16 @@
 // CHECK-NEXT:     smaia                1.0       'Smaia' (Advanced Interrupt Architecture Machine Level)
 // CHECK-NEXT:     smcdeleg             1.0       'Smcdeleg' (Counter Delegation Machine Level)
 // CHECK-NEXT:     smcsrind             1.0       'Smcsrind' (Indirect CSR Access Machine Level)
+// CHECK-NEXT:     smdbltrp             1.0       'Smdbltrp' (Double Trap Machine Level)
 // CHECK-NEXT:     smepmp               1.0       'Smepmp' (Enhanced Physical Memory Protection)
+<<<<<<< HEAD
 // CHECK-NEXT:     smrnmi               1.0       'Smrnmi' (Resumable Non-Maskable Interrupts)
+||||||| 864902e9b4d8
+=======
+// CHECK-NEXT:     smmpm                1.0       'Smmpm' (Machine-level Pointer Masking for M-mode)
+// CHECK-NEXT:     smnpm                1.0       'Smnpm' (Machine-level Pointer Masking for next lower privilege mode)
+// CHECK-NEXT:     smrnmi               1.0       'Smrnmi' (Resumable Non-Maskable Interrupts)
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 // CHECK-NEXT:     smstateen            1.0       'Smstateen' (Machine-mode view of the state-enable extension)
 // CHECK-NEXT:     ss                   1.13      'Ss' (Supervisor Architecture)
 // CHECK-NEXT:     ss                   1.12      'Ss' (Supervisor Architecture)
@@ -139,6 +152,9 @@
 // CHECK-NEXT:     sscofpmf             1.0       'Sscofpmf' (Count Overflow and Mode-Based Filtering)
 // CHECK-NEXT:     sscounterenw         1.0       'Sscounterenw' (Support writeable scounteren enable bit for any hpmcounter that is not read-only zero)
 // CHECK-NEXT:     sscsrind             1.0       'Sscsrind' (Indirect CSR Access Supervisor Level)
+// CHECK-NEXT:     ssdbltrp             1.0       'Ssdbltrp' (Double Trap Supervisor Level)
+// CHECK-NEXT:     ssnpm                1.0       'Ssnpm' (Supervisor-level Pointer Masking for next lower privilege mode)
+// CHECK-NEXT:     sspm                 1.0       'Sspm' (Indicates Supervisor-mode Pointer Masking)
 // CHECK-NEXT:     ssqosid              1.0       'Ssqosid' (Quality-of-Service (QoS) Identifiers)
 // CHECK-NEXT:     ssstateen            1.0       'Ssstateen' (Supervisor-mode view of the state-enable extension)
 // CHECK-NEXT:     ssstrict             1.0       'Ssstrict' (No non-conforming extensions are present)
@@ -146,12 +162,14 @@
 // CHECK-NEXT:     sstvala              1.0       'Sstvala' (stval provides all needed values)
 // CHECK-NEXT:     sstvecd              1.0       'Sstvecd' (stvec supports Direct mode)
 // CHECK-NEXT:     ssu64xl              1.0       'Ssu64xl' (UXLEN=64 supported)
+// CHECK-NEXT:     supm                 1.0       'Supm' (Indicates User-mode Pointer Masking)
 // CHECK-NEXT:     svade                1.0       'Svade' (Raise exceptions on improper A/D bits)
 // CHECK-NEXT:     svadu                1.0       'Svadu' (Hardware A/D updates)
 // CHECK-NEXT:     svbare               1.0       'Svbare' $(satp mode Bare supported)
 // CHECK-NEXT:     svinval              1.0       'Svinval' (Fine-Grained Address-Translation Cache Invalidation)
 // CHECK-NEXT:     svnapot              1.0       'Svnapot' (NAPOT Translation Contiguity)
 // CHECK-NEXT:     svpbmt               1.0       'Svpbmt' (Page-Based Memory Types)
+// CHECK-NEXT:     svvptc               1.0       'svvptc' (Obviating Memory-Management Instructions after Marking PTEs Valid)
 // CHECK-NEXT:     xcvalu               1.0       'XCValu' (CORE-V ALU Operations)
 // CHECK-NEXT:     xcvbi                1.0       'XCVbi' (CORE-V Immediate Branching)
 // CHECK-NEXT:     xcvbitmanip          1.0       'XCVbitmanip' (CORE-V Bit Manipulation)
@@ -220,22 +238,39 @@
 // CHECK-NEXT:     zvbc32e              0.7       'Zvbc32e' (Vector Carryless Multiplication with 32-bits elements)
 // CHECK-NEXT:     zvkgs                0.7       'Zvkgs' (Vector-Scalar GCM instructions for Cryptography)
 // CHECK-NEXT:     smctr                1.0       'Smctr' (Control Transfer Records Machine Level)
+<<<<<<< HEAD
 // CHECK-NEXT:     smmpm                1.0       'Smmpm' (Machine-level Pointer Masking for M-mode)
 // CHECK-NEXT:     smnpm                1.0       'Smnpm' (Machine-level Pointer Masking for next lower privilege mode)
 // CHECK-NEXT:     smwg                 0.3       'Smwg' (The Smwg extension adds the mlwid CSR, which is an M-mode read-write CSR, whose least-significant bits set the WID to be used by lower-privilege modes.)
 // CHECK-NEXT:     smwgd                0.3       'Smwgd' (The Smwgd extension adds the mwiddeleg M-mode read-write CSR. The mwiddeleg register represents a set of WIDs as a bit vector with WID i represented by bit i of the register.)
+||||||| 864902e9b4d8
+// CHECK-NEXT:     smmpm                1.0       'Smmpm' (Machine-level Pointer Masking for M-mode)
+// CHECK-NEXT:     smnpm                1.0       'Smnpm' (Machine-level Pointer Masking for next lower privilege mode)
+=======
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 // CHECK-NEXT:     ssctr                1.0       'Ssctr' (Control Transfer Records Supervisor Level)
+<<<<<<< HEAD
 // CHECK-NEXT:     ssnpm                1.0       'Ssnpm' (Supervisor-level Pointer Masking for next lower privilege mode)
 // CHECK-NEXT:     sspm                 1.0       'Sspm' (Indicates Supervisor-mode Pointer Masking)
 // CHECK-NEXT:     sswg                 0.3       'Sswg' (The Sswg extension adds the [H]S-mode read-write slwid CSR, which sets the WID used for modes lower than [H]S-mode.)
 // CHECK-NEXT:     supm                 1.0       'Supm' (Indicates User-mode Pointer Masking)
 // CHECK-NEXT:     svukte               0.3       'Svukte' (Address-Independent Latency of User-Mode Faults to Supervisor Addresses)
+||||||| 864902e9b4d8
+// CHECK-NEXT:     ssnpm                1.0       'Ssnpm' (Supervisor-level Pointer Masking for next lower privilege mode)
+// CHECK-NEXT:     sspm                 1.0       'Sspm' (Indicates Supervisor-mode Pointer Masking)
+// CHECK-NEXT:     supm                 1.0       'Supm' (Indicates User-mode Pointer Masking)
+=======
+// CHECK-NEXT:     svukte               0.3       'Svukte' (Address-Independent Latency of User-Mode Faults to Supervisor Addresses)
+// CHECK-NEXT:     xqcicsr              0.2       'Xqcicsr' (Qualcomm uC CSR Extension)
+// CHECK-NEXT:     xqcisls              0.2       'Xqcisls' (Qualcomm uC Scaled Load Store Extension)
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 // CHECK-EMPTY:
 // CHECK-NEXT: Supported Profiles
 // CHECK-NEXT:     rva20s64
 // CHECK-NEXT:     rva20u64
 // CHECK-NEXT:     rva22s64
 // CHECK-NEXT:     rva22u64
+<<<<<<< HEAD
 // CHECK-NEXT:     rvi20u32
 // CHECK-NEXT:     rvi20u64
 // CHECK-NEXT:     sfa23
@@ -246,10 +281,21 @@
 // CHECK-NEXT:     sfx23
 // CHECK-EMPTY:
 // CHECK-NEXT: Experimental Profiles
+||||||| 864902e9b4d8
+// CHECK-NEXT:     rvi20u32
+// CHECK-NEXT:     rvi20u64
+// CHECK-EMPTY:
+// CHECK-NEXT: Experimental Profiles
+=======
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 // CHECK-NEXT:     rva23s64
 // CHECK-NEXT:     rva23u64
 // CHECK-NEXT:     rvb23s64
 // CHECK-NEXT:     rvb23u64
+// CHECK-NEXT:     rvi20u32
+// CHECK-NEXT:     rvi20u64
+// CHECK-EMPTY:
+// CHECK-NEXT: Experimental Profiles
 // CHECK-NEXT:     rvm23u32
 // CHECK-EMPTY:
 // CHECK-NEXT: Use -march to specify the target's extension.

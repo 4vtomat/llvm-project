@@ -75,20 +75,30 @@
 ; CHECK-NEXT:       Scalarize Masked Memory Intrinsics
 ; CHECK-NEXT:       Expand reduction intrinsics
 ; CHECK-NEXT:       Natural Loop Information
+<<<<<<< HEAD
 ; CHECK-NEXT:       TLS Variable Hoist
 ; CHECK-NEXT:       RISC-V Late CodeGenPrepare
 ; CHECK-NEXT:       RISC-V Type Promotion
 ; CHECK-NEXT:       Dominator Tree Construction
 ; CHECK-NEXT:       Natural Loop Information
+||||||| 864902e9b4d8
+; CHECK-NEXT:       TLS Variable Hoist
+=======
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:       Type Promotion
 ; CHECK-NEXT:       CodeGen Prepare
 ; CHECK-NEXT:       Dominator Tree Construction
 ; CHECK-NEXT:       Exception handling preparation
 ; CHECK-NEXT:     A No-Op Barrier Pass
 ; CHECK-NEXT:     FunctionPass Manager
+<<<<<<< HEAD
 ; SIFIVE_CUSTOMIZATION
 ; CHECK-NEXT:       Merge internal globals
 ; SIFIVE_CUSTOMIZATION
+||||||| 864902e9b4d8
+=======
+; CHECK-NEXT:       Merge internal globals
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:       Dominator Tree Construction
 ; CHECK-NEXT:       Basic Alias Analysis (stateless AA impl)
 ; CHECK-NEXT:       Function Alias Analysis Results
@@ -213,6 +223,7 @@
 ; CHECK-NEXT:       Machine Sanitizer Binary Metadata
 ; CHECK-NEXT:     Machine Outliner
 ; CHECK-NEXT:     FunctionPass Manager
+; CHECK-NEXT:       Insert CFI remember/restore state instructions
 ; CHECK-NEXT:       Lazy Machine Block Frequency Analysis
 ; CHECK-NEXT:       Machine Optimization Remark Emitter
 ; CHECK-NEXT:       Stack Frame Layout Analysis

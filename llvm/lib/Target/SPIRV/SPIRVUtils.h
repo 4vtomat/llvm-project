@@ -15,9 +15,11 @@
 
 #include "MCTargetDesc/SPIRVBaseInfo.h"
 #include "llvm/Analysis/LoopInfo.h"
+#include "llvm/CodeGen/MachineBasicBlock.h"
 #include "llvm/IR/Dominators.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/TypedPointerType.h"
+#include <queue>
 #include <string>
 #include <unordered_set>
 
@@ -38,6 +40,8 @@ class SPIRVSubtarget;
 // directed graphs with cycles, so this assumes cycles are a single node, and
 // ignores back-edges. The cycle is visited from the entry in the same
 // topological-like ordering.
+//
+// Note: this visitor REQUIRES a reducible graph.
 //
 // This means once we visit a node, we know all the possible ancestors have been
 // visited.
@@ -62,7 +66,9 @@ class SPIRVSubtarget;
 class PartialOrderingVisitor {
   DomTreeBuilder::BBDomTree DT;
   LoopInfo LI;
-  std::unordered_set<BasicBlock *> Visited = {};
+
+  std::unordered_set<BasicBlock *> Queued = {};
+  std::queue<BasicBlock *> ToVisit = {};
 
   struct OrderInfo {
     size_t Rank;
@@ -80,7 +86,11 @@ class PartialOrderingVisitor {
   // Visits |BB| with the current rank being |Rank|.
   size_t visit(BasicBlock *BB, size_t Rank);
 
+  bool CanBeVisited(BasicBlock *BB) const;
+
 public:
+  size_t GetNodeRank(BasicBlock *BB) const;
+
   // Build the visitor to operate on the function F.
   PartialOrderingVisitor(Function &F);
 
@@ -133,6 +143,10 @@ void buildOpDecorate(Register Reg, MachineInstr &I, const SPIRVInstrInfo &TII,
 void buildOpSpirvDecorations(Register Reg, MachineIRBuilder &MIRBuilder,
                              const MDNode *GVarMD);
 
+// Return a valid position for the OpVariable instruction inside a function,
+// i.e., at the beginning of the first block of the function.
+MachineBasicBlock::iterator getOpVariableMBBIt(MachineInstr &I);
+
 // Convert a SPIR-V storage class to the corresponding LLVM IR address space.
 // TODO: maybe the following two functions should be handled in the subtarget
 // to allow for different OpenCL vs Vulkan handling.
@@ -155,6 +169,8 @@ storageClassToAddressSpace(SPIRV::StorageClass::StorageClass SC) {
     return 6;
   case SPIRV::StorageClass::Input:
     return 7;
+  case SPIRV::StorageClass::CodeSectionINTEL:
+    return 9;
   default:
     report_fatal_error("Unable to get address space id");
   }

@@ -13,9 +13,20 @@ define void @foo() {
 ; CHECK-NEXT:    .cfi_def_cfa_offset 4294967280
 ; CHECK-NEXT:    addi a0, sp, 4
 ; CHECK-NEXT:    call use
+<<<<<<< HEAD
 ; CHECK-NEXT:    addi sp, sp, -2048
+||||||| 864902e9b4d8
+; CHECK-NEXT:    li a0, -2048
+; CHECK-NEXT:    add sp, sp, a0
+=======
+; CHECK-NEXT:    li a0, -2048
+; CHECK-NEXT:    add sp, sp, a0
+; CHECK-NEXT:    .cfi_def_cfa_offset 2032
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    lw ra, 2028(sp) # 4-byte Folded Reload
+; CHECK-NEXT:    .cfi_restore ra
 ; CHECK-NEXT:    addi sp, sp, 2032
+; CHECK-NEXT:    .cfi_def_cfa_offset 0
 ; CHECK-NEXT:    ret
   %1 = alloca [1073741818 x i32], align 4
   call void @use(ptr %1)

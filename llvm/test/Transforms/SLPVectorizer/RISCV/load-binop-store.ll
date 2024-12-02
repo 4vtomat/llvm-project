@@ -7,12 +7,13 @@ define void @vec_add(ptr %dest, ptr %p) {
 ; CHECK-LABEL: @vec_add(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load <2 x i16>, ptr [[P:%.*]], align 4
-; CHECK-NEXT:    [[TMP1:%.*]] = add <2 x i16> [[TMP0]], <i16 1, i16 1>
+; CHECK-NEXT:    [[TMP1:%.*]] = add <2 x i16> [[TMP0]], splat (i16 1)
 ; CHECK-NEXT:    store <2 x i16> [[TMP1]], ptr [[DEST:%.*]], align 4
 ; CHECK-NEXT:    ret void
 ;
 ; DEFAULT-LABEL: @vec_add(
 ; DEFAULT-NEXT:  entry:
+<<<<<<< HEAD
 ; DEFAULT-NEXT:    [[E0:%.*]] = load i16, ptr [[P:%.*]], align 4
 ; DEFAULT-NEXT:    [[INC:%.*]] = getelementptr inbounds i16, ptr [[P]], i64 1
 ; DEFAULT-NEXT:    [[E1:%.*]] = load i16, ptr [[INC]], align 2
@@ -21,6 +22,15 @@ define void @vec_add(ptr %dest, ptr %p) {
 ; DEFAULT-NEXT:    store i16 [[A0]], ptr [[DEST:%.*]], align 4
 ; DEFAULT-NEXT:    [[INC2:%.*]] = getelementptr inbounds i16, ptr [[DEST]], i64 1
 ; DEFAULT-NEXT:    store i16 [[A1]], ptr [[INC2]], align 2
+||||||| 864902e9b4d8
+; DEFAULT-NEXT:    [[TMP0:%.*]] = load <2 x i16>, ptr [[P:%.*]], align 4
+; DEFAULT-NEXT:    [[TMP1:%.*]] = add <2 x i16> [[TMP0]], <i16 1, i16 1>
+; DEFAULT-NEXT:    store <2 x i16> [[TMP1]], ptr [[DEST:%.*]], align 4
+=======
+; DEFAULT-NEXT:    [[TMP0:%.*]] = load <2 x i16>, ptr [[P:%.*]], align 4
+; DEFAULT-NEXT:    [[TMP1:%.*]] = add <2 x i16> [[TMP0]], splat (i16 1)
+; DEFAULT-NEXT:    store <2 x i16> [[TMP1]], ptr [[DEST:%.*]], align 4
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; DEFAULT-NEXT:    ret void
 ;
 entry:
@@ -41,12 +51,13 @@ define void @vec_sub(ptr %dest, ptr %p) {
 ; CHECK-LABEL: @vec_sub(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load <2 x i16>, ptr [[P:%.*]], align 4
-; CHECK-NEXT:    [[TMP1:%.*]] = sub <2 x i16> [[TMP0]], <i16 17, i16 17>
+; CHECK-NEXT:    [[TMP1:%.*]] = sub <2 x i16> [[TMP0]], splat (i16 17)
 ; CHECK-NEXT:    store <2 x i16> [[TMP1]], ptr [[DEST:%.*]], align 4
 ; CHECK-NEXT:    ret void
 ;
 ; DEFAULT-LABEL: @vec_sub(
 ; DEFAULT-NEXT:  entry:
+<<<<<<< HEAD
 ; DEFAULT-NEXT:    [[E0:%.*]] = load i16, ptr [[P:%.*]], align 4
 ; DEFAULT-NEXT:    [[INC:%.*]] = getelementptr inbounds i16, ptr [[P]], i64 1
 ; DEFAULT-NEXT:    [[E1:%.*]] = load i16, ptr [[INC]], align 2
@@ -55,6 +66,15 @@ define void @vec_sub(ptr %dest, ptr %p) {
 ; DEFAULT-NEXT:    store i16 [[A0]], ptr [[DEST:%.*]], align 4
 ; DEFAULT-NEXT:    [[INC2:%.*]] = getelementptr inbounds i16, ptr [[DEST]], i64 1
 ; DEFAULT-NEXT:    store i16 [[A1]], ptr [[INC2]], align 2
+||||||| 864902e9b4d8
+; DEFAULT-NEXT:    [[TMP0:%.*]] = load <2 x i16>, ptr [[P:%.*]], align 4
+; DEFAULT-NEXT:    [[TMP1:%.*]] = sub <2 x i16> [[TMP0]], <i16 17, i16 17>
+; DEFAULT-NEXT:    store <2 x i16> [[TMP1]], ptr [[DEST:%.*]], align 4
+=======
+; DEFAULT-NEXT:    [[TMP0:%.*]] = load <2 x i16>, ptr [[P:%.*]], align 4
+; DEFAULT-NEXT:    [[TMP1:%.*]] = sub <2 x i16> [[TMP0]], splat (i16 17)
+; DEFAULT-NEXT:    store <2 x i16> [[TMP1]], ptr [[DEST:%.*]], align 4
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; DEFAULT-NEXT:    ret void
 ;
 entry:
@@ -75,12 +95,13 @@ define void @vec_rsub(ptr %dest, ptr %p) {
 ; CHECK-LABEL: @vec_rsub(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load <2 x i16>, ptr [[P:%.*]], align 4
-; CHECK-NEXT:    [[TMP1:%.*]] = sub <2 x i16> <i16 29, i16 29>, [[TMP0]]
+; CHECK-NEXT:    [[TMP1:%.*]] = sub <2 x i16> splat (i16 29), [[TMP0]]
 ; CHECK-NEXT:    store <2 x i16> [[TMP1]], ptr [[DEST:%.*]], align 4
 ; CHECK-NEXT:    ret void
 ;
 ; DEFAULT-LABEL: @vec_rsub(
 ; DEFAULT-NEXT:  entry:
+<<<<<<< HEAD
 ; DEFAULT-NEXT:    [[E0:%.*]] = load i16, ptr [[P:%.*]], align 4
 ; DEFAULT-NEXT:    [[INC:%.*]] = getelementptr inbounds i16, ptr [[P]], i64 1
 ; DEFAULT-NEXT:    [[E1:%.*]] = load i16, ptr [[INC]], align 2
@@ -89,6 +110,15 @@ define void @vec_rsub(ptr %dest, ptr %p) {
 ; DEFAULT-NEXT:    store i16 [[A0]], ptr [[DEST:%.*]], align 4
 ; DEFAULT-NEXT:    [[INC2:%.*]] = getelementptr inbounds i16, ptr [[DEST]], i64 1
 ; DEFAULT-NEXT:    store i16 [[A1]], ptr [[INC2]], align 2
+||||||| 864902e9b4d8
+; DEFAULT-NEXT:    [[TMP0:%.*]] = load <2 x i16>, ptr [[P:%.*]], align 4
+; DEFAULT-NEXT:    [[TMP1:%.*]] = sub <2 x i16> <i16 29, i16 29>, [[TMP0]]
+; DEFAULT-NEXT:    store <2 x i16> [[TMP1]], ptr [[DEST:%.*]], align 4
+=======
+; DEFAULT-NEXT:    [[TMP0:%.*]] = load <2 x i16>, ptr [[P:%.*]], align 4
+; DEFAULT-NEXT:    [[TMP1:%.*]] = sub <2 x i16> splat (i16 29), [[TMP0]]
+; DEFAULT-NEXT:    store <2 x i16> [[TMP1]], ptr [[DEST:%.*]], align 4
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; DEFAULT-NEXT:    ret void
 ;
 entry:
@@ -109,12 +139,13 @@ define void @vec_mul(ptr %dest, ptr %p) {
 ; CHECK-LABEL: @vec_mul(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load <2 x i16>, ptr [[P:%.*]], align 4
-; CHECK-NEXT:    [[TMP1:%.*]] = mul <2 x i16> [[TMP0]], <i16 7, i16 7>
+; CHECK-NEXT:    [[TMP1:%.*]] = mul <2 x i16> [[TMP0]], splat (i16 7)
 ; CHECK-NEXT:    store <2 x i16> [[TMP1]], ptr [[DEST:%.*]], align 4
 ; CHECK-NEXT:    ret void
 ;
 ; DEFAULT-LABEL: @vec_mul(
 ; DEFAULT-NEXT:  entry:
+<<<<<<< HEAD
 ; DEFAULT-NEXT:    [[E0:%.*]] = load i16, ptr [[P:%.*]], align 4
 ; DEFAULT-NEXT:    [[INC:%.*]] = getelementptr inbounds i16, ptr [[P]], i64 1
 ; DEFAULT-NEXT:    [[E1:%.*]] = load i16, ptr [[INC]], align 2
@@ -123,6 +154,15 @@ define void @vec_mul(ptr %dest, ptr %p) {
 ; DEFAULT-NEXT:    store i16 [[A0]], ptr [[DEST:%.*]], align 4
 ; DEFAULT-NEXT:    [[INC2:%.*]] = getelementptr inbounds i16, ptr [[DEST]], i64 1
 ; DEFAULT-NEXT:    store i16 [[A1]], ptr [[INC2]], align 2
+||||||| 864902e9b4d8
+; DEFAULT-NEXT:    [[TMP0:%.*]] = load <2 x i16>, ptr [[P:%.*]], align 4
+; DEFAULT-NEXT:    [[TMP1:%.*]] = mul <2 x i16> [[TMP0]], <i16 7, i16 7>
+; DEFAULT-NEXT:    store <2 x i16> [[TMP1]], ptr [[DEST:%.*]], align 4
+=======
+; DEFAULT-NEXT:    [[TMP0:%.*]] = load <2 x i16>, ptr [[P:%.*]], align 4
+; DEFAULT-NEXT:    [[TMP1:%.*]] = mul <2 x i16> [[TMP0]], splat (i16 7)
+; DEFAULT-NEXT:    store <2 x i16> [[TMP1]], ptr [[DEST:%.*]], align 4
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; DEFAULT-NEXT:    ret void
 ;
 entry:
@@ -143,12 +183,13 @@ define void @vec_sdiv(ptr %dest, ptr %p) {
 ; CHECK-LABEL: @vec_sdiv(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load <2 x i16>, ptr [[P:%.*]], align 4
-; CHECK-NEXT:    [[TMP1:%.*]] = sdiv <2 x i16> [[TMP0]], <i16 7, i16 7>
+; CHECK-NEXT:    [[TMP1:%.*]] = sdiv <2 x i16> [[TMP0]], splat (i16 7)
 ; CHECK-NEXT:    store <2 x i16> [[TMP1]], ptr [[DEST:%.*]], align 4
 ; CHECK-NEXT:    ret void
 ;
 ; DEFAULT-LABEL: @vec_sdiv(
 ; DEFAULT-NEXT:  entry:
+<<<<<<< HEAD
 ; DEFAULT-NEXT:    [[E0:%.*]] = load i16, ptr [[P:%.*]], align 4
 ; DEFAULT-NEXT:    [[INC:%.*]] = getelementptr inbounds i16, ptr [[P]], i64 1
 ; DEFAULT-NEXT:    [[E1:%.*]] = load i16, ptr [[INC]], align 2
@@ -157,6 +198,15 @@ define void @vec_sdiv(ptr %dest, ptr %p) {
 ; DEFAULT-NEXT:    store i16 [[A0]], ptr [[DEST:%.*]], align 4
 ; DEFAULT-NEXT:    [[INC2:%.*]] = getelementptr inbounds i16, ptr [[DEST]], i64 1
 ; DEFAULT-NEXT:    store i16 [[A1]], ptr [[INC2]], align 2
+||||||| 864902e9b4d8
+; DEFAULT-NEXT:    [[TMP0:%.*]] = load <2 x i16>, ptr [[P:%.*]], align 4
+; DEFAULT-NEXT:    [[TMP1:%.*]] = sdiv <2 x i16> [[TMP0]], <i16 7, i16 7>
+; DEFAULT-NEXT:    store <2 x i16> [[TMP1]], ptr [[DEST:%.*]], align 4
+=======
+; DEFAULT-NEXT:    [[TMP0:%.*]] = load <2 x i16>, ptr [[P:%.*]], align 4
+; DEFAULT-NEXT:    [[TMP1:%.*]] = sdiv <2 x i16> [[TMP0]], splat (i16 7)
+; DEFAULT-NEXT:    store <2 x i16> [[TMP1]], ptr [[DEST:%.*]], align 4
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; DEFAULT-NEXT:    ret void
 ;
 entry:

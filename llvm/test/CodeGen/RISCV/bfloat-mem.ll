@@ -50,14 +50,28 @@ define bfloat @flh_fsh_global(bfloat %a, bfloat %b) nounwind {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    fcvt.s.bf16 fa5, fa1
 ; CHECK-NEXT:    fcvt.s.bf16 fa4, fa0
-; CHECK-NEXT:    fadd.s fa5, fa4, fa5
-; CHECK-NEXT:    fcvt.bf16.s fa0, fa5
 ; CHECK-NEXT:    lui a0, %hi(G)
+<<<<<<< HEAD
 ; CHECK-NEXT:    addi a0, a0, %lo(G)
 ; CHECK-NEXT:    flh fa5, 0(a0)
 ; CHECK-NEXT:    fsh fa0, 0(a0)
 ; CHECK-NEXT:    flh fa5, 18(a0)
 ; CHECK-NEXT:    fsh fa0, 18(a0)
+||||||| 864902e9b4d8
+; CHECK-NEXT:    flh fa5, %lo(G)(a0)
+; CHECK-NEXT:    addi a1, a0, %lo(G)
+; CHECK-NEXT:    fsh fa0, %lo(G)(a0)
+; CHECK-NEXT:    flh fa5, 18(a1)
+; CHECK-NEXT:    fsh fa0, 18(a1)
+=======
+; CHECK-NEXT:    fadd.s fa5, fa4, fa5
+; CHECK-NEXT:    flh fa4, %lo(G)(a0)
+; CHECK-NEXT:    fcvt.bf16.s fa0, fa5
+; CHECK-NEXT:    addi a1, a0, %lo(G)
+; CHECK-NEXT:    fsh fa0, %lo(G)(a0)
+; CHECK-NEXT:    flh fa5, 18(a1)
+; CHECK-NEXT:    fsh fa0, 18(a1)
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    ret
   %1 = fadd bfloat %a, %b
   %2 = load volatile bfloat, ptr @G

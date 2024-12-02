@@ -2483,9 +2483,13 @@ let ManualCodegen = [{
 
     // 13.5. Vector Widening Floating-Point Multiply
     let Log2LMUL = [-2, -1, 0, 1, 2] in {
-      defm vfwmul : RVVOutOp0Op1BuiltinSet<"vfwmul", "xf",
-                                          [["vv", "w", "wvvu"],
+      defm vfwmul : RVVOutOp0Op1BuiltinSet<"vfwmul", "f",
+                                           [["vv", "w", "wvvu"],
                                             ["vf", "w", "wveu"]]>;
+      let RequiredFeatures = ["Zvfh"] in
+        defm vfwmul : RVVOutOp0Op1BuiltinSet<"vfwmul", "x",
+                                             [["vv", "w", "wvvu"],
+                                              ["vf", "w", "wveu"]]>;
     }
 #ifdef SIFIVE_CUSTOMIZATION
     let RequiredFeatures = ["Xsfvfbfa"] in {
@@ -2513,9 +2517,13 @@ let ManualCodegen = [{
 
   // 13.5. Vector Widening Floating-Point Multiply
   let Log2LMUL = [-2, -1, 0, 1, 2] in {
-    defm vfwmul : RVVOutOp0Op1BuiltinSet<"vfwmul", "xf",
-                                        [["vv", "w", "wvv"],
+    defm vfwmul : RVVOutOp0Op1BuiltinSet<"vfwmul", "f",
+                                         [["vv", "w", "wvv"],
                                           ["vf", "w", "wve"]]>;
+    let RequiredFeatures = ["Zvfh"] in
+      defm vfwmul : RVVOutOp0Op1BuiltinSet<"vfwmul", "x",
+                                           [["vv", "w", "wvv"],
+                                            ["vf", "w", "wve"]]>;
   }
 #ifdef SIFIVE_CUSTOMIZATION
   let RequiredFeatures = ["Xsfvfbfa"] in {
@@ -2830,27 +2838,48 @@ let ManualCodegen = [{
 }] in {
   let HasFRMRoundModeOp = 1 in {
     // 13.8. Vector Floating-Point Square-Root Instruction
-    defm vfsqrt : RVVOutBuiltinSet<"vfsqrt", "xfd", [["v", "v", "vvu"]]>;
+    defm vfsqrt : RVVOutBuiltinSet<"vfsqrt", "fd", [["v", "v", "vvu"]]>;
+    let RequiredFeatures = ["Zvfh"] in
+      defm vfsqrt : RVVOutBuiltinSet<"vfsqrt", "x", [["v", "v", "vvu"]]>;
 
     // 13.10. Vector Floating-Point Reciprocal Estimate Instruction
+<<<<<<< HEAD
     defm vfrec7 : RVVOutBuiltinSet<"vfrec7", "xfd", [["v", "v", "vvu"]]>;
 #ifdef SIFIVE_CUSTOMIZATION
   let RequiredFeatures = ["Xsfvfbfa"], Name = "vfrec7_v" in
     defm : RVVOutBuiltinSet<"vfrec7", "y", [["", "v", "vvu"]]>;
 #endif // SIFIVE_CUSTOMIZATION
+||||||| 864902e9b4d8
+    defm vfrec7 : RVVOutBuiltinSet<"vfrec7", "xfd", [["v", "v", "vvu"]]>;
+=======
+    defm vfrec7 : RVVOutBuiltinSet<"vfrec7", "fd", [["v", "v", "vvu"]]>;
+    let RequiredFeatures = ["Zvfh"] in
+      defm vfrec7 : RVVOutBuiltinSet<"vfrec7", "x", [["v", "v", "vvu"]]>;
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
   }
   // 13.8. Vector Floating-Point Square-Root Instruction
-  defm vfsqrt : RVVOutBuiltinSet<"vfsqrt", "xfd", [["v", "v", "vv"]]>;
+  defm vfsqrt : RVVOutBuiltinSet<"vfsqrt", "fd", [["v", "v", "vv"]]>;
+  let RequiredFeatures = ["Zvfh"] in
+    defm vfsqrt : RVVOutBuiltinSet<"vfsqrt", "x", [["v", "v", "vv"]]>;
 
   // 13.10. Vector Floating-Point Reciprocal Estimate Instruction
+<<<<<<< HEAD
   defm vfrec7 : RVVOutBuiltinSet<"vfrec7", "xfd", [["v", "v", "vv"]]>;
 #ifdef SIFIVE_CUSTOMIZATION
   let RequiredFeatures = ["Xsfvfbfa"], Name = "vfrec7_v" in
     defm : RVVOutBuiltinSet<"vfrec7", "y", [["", "v", "vv"]]>;
 #endif // SIFIVE_CUSTOMIZATION
+||||||| 864902e9b4d8
+  defm vfrec7 : RVVOutBuiltinSet<"vfrec7", "xfd", [["v", "v", "vv"]]>;
+=======
+  defm vfrec7 : RVVOutBuiltinSet<"vfrec7", "fd", [["v", "v", "vv"]]>;
+  let RequiredFeatures = ["Zvfh"] in
+    defm vfrec7 : RVVOutBuiltinSet<"vfrec7", "x", [["v", "v", "vv"]]>;
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 }
 
 // 13.9. Vector Floating-Point Reciprocal Square-Root Estimate Instruction
+<<<<<<< HEAD
 def vfrsqrt7 : RVVFloatingUnaryVVBuiltin;
 #ifdef SIFIVE_CUSTOMIZATION
 let RequiredFeatures = ["Xsfvfbfa"],
@@ -2859,6 +2888,13 @@ let RequiredFeatures = ["Xsfvfbfa"],
     MaskedIRName = "vfrsqrt7_mask" in
   def : RVVOutBuiltin<"v", "vv", "y">;
 #endif // SIFIVE_CUSTOMIZATION
+||||||| 864902e9b4d8
+def vfrsqrt7 : RVVFloatingUnaryVVBuiltin;
+=======
+defm vfrsqrt7 : RVVOutBuiltinSet<"vfrsqrt7", "fd", [["v", "v", "vv"]]>;
+let RequiredFeatures = ["Zvfh"] in
+  defm vfrsqrt7 : RVVOutBuiltinSet<"vfrsqrt7", "x", [["v", "v", "vv"]]>;
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 
 // 13.11. Vector Floating-Point MIN/MAX Instructions
 defm vfmin : RVVFloatingBinBuiltinSet;
@@ -2897,8 +2933,12 @@ let RequiredFeatures = ["Xsfvfbfa"] in {
 }
 #endif // SIFIVE_CUSTOMIZATION
 }
-defm vfneg_v : RVVPseudoVFUnaryBuiltin<"vfsgnjn", "xfd">;
-defm vfabs_v : RVVPseudoVFUnaryBuiltin<"vfsgnjx", "xfd">;
+defm vfneg_v : RVVPseudoVFUnaryBuiltin<"vfsgnjn", "fd">;
+let RequiredFeatures = ["Zvfh"] in
+  defm vfneg_v : RVVPseudoVFUnaryBuiltin<"vfsgnjn", "x">;
+defm vfabs_v : RVVPseudoVFUnaryBuiltin<"vfsgnjx", "fd">;
+let RequiredFeatures = ["Zvfh"] in
+  defm vfabs_v : RVVPseudoVFUnaryBuiltin<"vfsgnjx", "x">;
 
 // 13.13. Vector Floating-Point Compare Instructions
 let MaskedPolicyScheme = HasPassthruOperand,
@@ -2940,6 +2980,7 @@ let RequiredFeatures = ["Xsfvfbfa"] in {
 }
 
 // 13.14. Vector Floating-Point Classify Instruction
+<<<<<<< HEAD
 let Name = "vfclass_v", UnMaskedPolicyScheme = HasPassthruOperand in
 #ifdef SIFIVE_CUSTOMIZATION
 {
@@ -2952,6 +2993,16 @@ let Name = "vfclass_v", UnMaskedPolicyScheme = HasPassthruOperand in
     def : RVVOp0Builtin<"UvYv", "Uvv", "y">;
 }
 #endif // SIFIVE_CUSTOMIZATION
+||||||| 864902e9b4d8
+let Name = "vfclass_v", UnMaskedPolicyScheme = HasPassthruOperand in
+  def vfclass : RVVOp0Builtin<"Uv", "Uvv", "xfd">;
+=======
+let UnMaskedPolicyScheme = HasPassthruOperand in {
+defm vfclass : RVVOp0BuiltinSet<"vfclass", "fd", [["v", "Uv", "Uvv"]]>;
+let RequiredFeatures = ["Zvfh"] in
+  defm vfclass : RVVOp0BuiltinSet<"vfclass", "x", [["v", "Uv", "Uvv"]]>;
+}
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 
 // 13.15. Vector Floating-Point Merge Instruction
 // C/C++ Operand: (mask, op1, op2, vl), Builtin: (op1, op2, mask, vl)
@@ -2976,12 +3027,19 @@ let HasMasked = false,
 #endif // SIFIVE_CUSTOMIZATION
     defm vmerge : RVVOutOp1BuiltinSet<"vmerge", "y",
                                       [["vvm", "v", "vvvm"]]>;
-  defm vfmerge : RVVOutOp1BuiltinSet<"vfmerge", "xfd",
+  defm vfmerge : RVVOutOp1BuiltinSet<"vfmerge", "fd",
                                      [["vfm", "v", "vvem"]]>;
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   let RequiredFeatures = ["Xsfvfbfa"], Name = "vfmerge_vfm" in
     defm : RVVOutOp1BuiltinSet<"vfmerge", "y", [["", "v", "vvem"]]>;
 #endif // SIFIVE_CUSTOMIZATION
+||||||| 864902e9b4d8
+=======
+  let RequiredFeatures = ["Zvfh"] in
+    defm vfmerge : RVVOutOp1BuiltinSet<"vfmerge", "x",
+                                       [["vfm", "v", "vvem"]]>;
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 }
 
 // 13.16. Vector Floating-Point Move Instruction
@@ -2989,6 +3047,7 @@ let HasMasked = false,
     UnMaskedPolicyScheme = HasPassthruOperand,
     SupportOverloading = false,
     MaskedPolicyScheme = NonePolicy,
+<<<<<<< HEAD
     OverloadedName = "vfmv_v" in
 #ifdef SIFIVE_CUSTOMIZATION
 {
@@ -3000,35 +3059,53 @@ let HasMasked = false,
     defm : RVVOutBuiltinSet<"vfmv_v_f", "y", [["", "v", "ve"]]>;
 }
 #endif // SIFIVE_CUSTOMIZATION
+||||||| 864902e9b4d8
+    OverloadedName = "vfmv_v" in
+  defm vfmv_v : RVVOutBuiltinSet<"vfmv_v_f", "xfd",
+                                  [["f", "v", "ve"]]>;
+=======
+    OverloadedName = "vfmv_v" in {
+  defm vfmv_v : RVVOutBuiltinSet<"vfmv_v_f", "fd",
+                                 [["f", "v", "ve"]]>;
+  let RequiredFeatures = ["Zvfh"] in
+    defm vfmv_v : RVVOutBuiltinSet<"vfmv_v_f", "x",
+                                   [["f", "v", "ve"]]>;
+}
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 
 // 13.17. Single-Width Floating-Point/Integer Type-Convert Instructions
 let UnMaskedPolicyScheme = HasPassthruOperand in {
-def vfcvt_rtz_xu_f_v : RVVConvToUnsignedBuiltin<"vfcvt_rtz_xu">;
-def vfcvt_rtz_x_f_v : RVVConvToSignedBuiltin<"vfcvt_rtz_x">;
+let OverloadedName = "vfcvt_rtz_xu" in {
+  defm : RVVConvBuiltinSet<"vfcvt_rtz_xu_f_v", "fd", [["Uv", "Uvv"]]>;
+  let RequiredFeatures = ["Zvfh"] in
+    defm : RVVConvBuiltinSet<"vfcvt_rtz_xu_f_v", "x", [["Uv", "Uvv"]]>;
+}
+let OverloadedName = "vfcvt_rtz_x" in {
+  defm : RVVConvBuiltinSet<"vfcvt_rtz_x_f_v", "fd", [["Iv", "Ivv"]]>;
+  let RequiredFeatures = ["Zvfh"] in
+    defm : RVVConvBuiltinSet<"vfcvt_rtz_x_f_v", "x", [["Iv", "Ivv"]]>;
+}
 
 // 13.18. Widening Floating-Point/Integer Type-Convert Instructions
 let Log2LMUL = [-3, -2, -1, 0, 1, 2] in {
-  def vfwcvt_rtz_xu_f_v : RVVConvToWidenUnsignedBuiltin<"vfwcvt_rtz_xu">;
-  def vfwcvt_rtz_x_f_v : RVVConvToWidenSignedBuiltin<"vfwcvt_rtz_x">;
-  def vfwcvt_f_xu_v : RVVConvBuiltin<"Fw", "FwUv", "si", "vfwcvt_f">;
-  def vfwcvt_f_x_v : RVVConvBuiltin<"Fw", "Fwv", "si", "vfwcvt_f">;
-  let RequiredFeatures = ["Zvfh"] in {
-    let Name = "vfwcvt_f_xu_v",
-        IRName = "vfwcvt_f_xu_v",
-        MaskedIRName = "vfwcvt_f_xu_v_mask" in
-      def : RVVConvBuiltin<"Fw", "FwUv", "c", "vfwcvt_f">;
-    let Name = "vfwcvt_f_x_v",
-        IRName = "vfwcvt_f_x_v",
-        MaskedIRName = "vfwcvt_f_x_v_mask" in
-      def : RVVConvBuiltin<"Fw", "Fwv", "c", "vfwcvt_f">;
+  let OverloadedName = "vfwcvt_rtz_xu" in {
+    defm : RVVConvBuiltinSet<"vfwcvt_rtz_xu_f_v", "f", [["Uw", "Uwv"]]>;
+    let RequiredFeatures = ["Zvfh"] in
+      defm : RVVConvBuiltinSet<"vfwcvt_rtz_xu_f_v", "x", [["Uw", "Uwv"]]>;
   }
-  def vfwcvt_f_f_v : RVVConvBuiltin<"w", "wv", "f", "vfwcvt_f">;
-  let RequiredFeatures = ["Zvfhmin"] in
-    def vfwcvt_f_f_v_fp16 : RVVConvBuiltin<"w", "wv", "x", "vfwcvt_f"> {
-      let Name = "vfwcvt_f_f_v";
-      let IRName = "vfwcvt_f_f_v";
-      let MaskedIRName = "vfwcvt_f_f_v_mask";
+  let OverloadedName = "vfwcvt_rtz_x" in {
+    defm : RVVConvBuiltinSet<"vfwcvt_rtz_x_f_v", "f", [["Iw", "Iwv"]]>;
+    let RequiredFeatures = ["Zvfh"] in
+      defm : RVVConvBuiltinSet<"vfwcvt_rtz_x_f_v", "x", [["Iw", "Iwv"]]>;
+  }
+  let OverloadedName = "vfwcvt_f" in {
+    defm : RVVConvBuiltinSet<"vfwcvt_f_xu_v", "si", [["Fw", "FwUv"]]>;
+    defm : RVVConvBuiltinSet<"vfwcvt_f_x_v", "si", [["Fw", "Fwv"]]>;
+    let RequiredFeatures = ["Zvfh"] in {
+      defm : RVVConvBuiltinSet<"vfwcvt_f_xu_v", "c", [["Fw", "FwUv"]]>;
+      defm : RVVConvBuiltinSet<"vfwcvt_f_x_v", "c", [["Fw", "Fwv"]]>;
     }
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   let RequiredFeatures = ["Xsfvfbfa"] in {
     let Name = "vfwcvt_f_f_v",
@@ -3045,22 +3122,35 @@ let Log2LMUL = [-3, -2, -1, 0, 1, 2] in {
       def : RVVConvBuiltin<"Yw", "Ywv", "c", "vfwcvt_bf">;
   }
 #endif // SIFIVE_CUSTOMIZATION
+||||||| 864902e9b4d8
+=======
+  }
+  let OverloadedName = "vfwcvt_f" in {
+    defm : RVVConvBuiltinSet<"vfwcvt_f_f_v", "f", [["w", "wv"]]>;
+    let RequiredFeatures = ["Zvfhmin"] in
+      defm : RVVConvBuiltinSet<"vfwcvt_f_f_v", "x", [["w", "wv"]]>;
+  }
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 }
 
 // 13.19. Narrowing Floating-Point/Integer Type-Convert Instructions
 let Log2LMUL = [-3, -2, -1, 0, 1, 2] in {
-  def vfncvt_rtz_xu_f_w : RVVConvToNarrowingUnsignedBuiltin<"vfncvt_rtz_xu">;
-  def vfncvt_rtz_x_f_w : RVVConvToNarrowingSignedBuiltin<"vfncvt_rtz_x">;
-  let RequiredFeatures = ["Zvfh"] in {
-    let Name = "vfncvt_rtz_xu_f_w",
-        IRName = "vfncvt_rtz_xu_f_w",
-        MaskedIRName = "vfncvt_rtz_xu_f_w_mask" in
-      def : RVVConvBuiltin<"Uv", "UvFw", "c", "vfncvt_rtz_xu">;
-    let Name = "vfncvt_rtz_x_f_w",
-        IRName = "vfncvt_rtz_x_f_w",
-        MaskedIRName = "vfncvt_rtz_x_f_w_mask" in
-      def : RVVConvBuiltin<"Iv", "IvFw", "c", "vfncvt_rtz_x">;
+  let OverloadedName = "vfncvt_rtz_xu" in {
+    defm : RVVConvBuiltinSet<"vfncvt_rtz_xu_f_w", "si", [["Uv", "UvFw"]]>;
+    let RequiredFeatures = ["Zvfh"] in
+      defm : RVVConvBuiltinSet<"vfncvt_rtz_xu_f_w", "c", [["Uv", "UvFw"]]>;
   }
+  let OverloadedName = "vfncvt_rtz_x" in {
+    defm : RVVConvBuiltinSet<"vfncvt_rtz_x_f_w", "si", [["Iv", "IvFw"]]>;
+    let RequiredFeatures = ["Zvfh"] in
+      defm : RVVConvBuiltinSet<"vfncvt_rtz_x_f_w", "c", [["Iv", "IvFw"]]>;
+  }
+  let OverloadedName = "vfncvt_rod_f" in {
+    defm : RVVConvBuiltinSet<"vfncvt_rod_f_f_w", "f", [["v", "vw"]]>;
+    let RequiredFeatures = ["Zvfh"] in
+      defm : RVVConvBuiltinSet<"vfncvt_rod_f_f_w", "x", [["v", "vw"]]>;
+  }
+<<<<<<< HEAD
   def vfncvt_rod_f_f_w : RVVConvBuiltin<"v", "vw", "xf", "vfncvt_rod_f">;
 #ifdef SIFIVE_CUSTOMIZATION
   let RequiredFeatures = ["Xsfvfbfa"] in {
@@ -3078,6 +3168,10 @@ let Log2LMUL = [-3, -2, -1, 0, 1, 2] in {
       def : RVVConvBuiltin<"v", "vw", "y", "vfncvt_rod_bf">;
   }
 #endif // SIFIVE_CUSTOMIZATION
+||||||| 864902e9b4d8
+  def vfncvt_rod_f_f_w : RVVConvBuiltin<"v", "vw", "xf", "vfncvt_rod_f">;
+=======
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 }
 
 // Zvfbfmin - Vector convert BF16 to FP32
@@ -3129,30 +3223,41 @@ let ManualCodegen = [{
 }] in {
   let HasFRMRoundModeOp = 1 in {
     // 14.17. Single-Width Floating-Point/Integer Type-Convert Instructions
-    let OverloadedName = "vfcvt_x" in
-      defm :
-        RVVConvBuiltinSet<"vfcvt_x_f_v", "xfd", [["Iv", "Ivvu"]]>;
-    let OverloadedName = "vfcvt_xu" in
-      defm :
-        RVVConvBuiltinSet<"vfcvt_xu_f_v", "xfd", [["Uv", "Uvvu"]]>;
+    let OverloadedName = "vfcvt_x" in {
+      defm : RVVConvBuiltinSet<"vfcvt_x_f_v", "fd", [["Iv", "Ivvu"]]>;
+      let RequiredFeatures = ["Zvfh"] in
+        defm : RVVConvBuiltinSet<"vfcvt_x_f_v", "x", [["Iv", "Ivvu"]]>;
+    }
+    let OverloadedName = "vfcvt_xu" in {
+      defm : RVVConvBuiltinSet<"vfcvt_xu_f_v", "fd", [["Uv", "Uvvu"]]>;
+      let RequiredFeatures = ["Zvfh"] in
+        defm : RVVConvBuiltinSet<"vfcvt_xu_f_v", "x", [["Uv", "Uvvu"]]>;
+    }
     let OverloadedName = "vfcvt_f" in {
-      defm :
-        RVVConvBuiltinSet<"vfcvt_f_x_v", "xfd", [["v", "vIvu"]]>;
-      defm :
-        RVVConvBuiltinSet<"vfcvt_f_xu_v", "xfd", [["v", "vUvu"]]>;
+      defm : RVVConvBuiltinSet<"vfcvt_f_x_v", "fd", [["v", "vIvu"]]>;
+      defm : RVVConvBuiltinSet<"vfcvt_f_xu_v", "fd", [["v", "vUvu"]]>;
+      let RequiredFeatures = ["Zvfh"] in {
+        defm : RVVConvBuiltinSet<"vfcvt_f_x_v", "x", [["v", "vIvu"]]>;
+        defm : RVVConvBuiltinSet<"vfcvt_f_xu_v", "x", [["v", "vUvu"]]>;
+      }
     }
 
     // 13.18. Widening Floating-Point/Integer Type-Convert Instructions
     let Log2LMUL = [-3, -2, -1, 0, 1, 2] in {
-      let OverloadedName = "vfwcvt_x" in
-        defm :
-          RVVConvBuiltinSet<"vfwcvt_x_f_v", "xf", [["Iw", "Iwvu"]]>;
-      let OverloadedName = "vfwcvt_xu" in
-        defm :
-          RVVConvBuiltinSet<"vfwcvt_xu_f_v", "xf", [["Uw", "Uwvu"]]>;
+      let OverloadedName = "vfwcvt_x" in {
+        defm : RVVConvBuiltinSet<"vfwcvt_x_f_v", "f", [["Iw", "Iwvu"]]>;
+        let RequiredFeatures = ["Zvfh"] in
+          defm : RVVConvBuiltinSet<"vfwcvt_x_f_v", "x", [["Iw", "Iwvu"]]>;
+      }
+      let OverloadedName = "vfwcvt_xu" in {
+        defm : RVVConvBuiltinSet<"vfwcvt_xu_f_v", "f", [["Uw", "Uwvu"]]>;
+        let RequiredFeatures = ["Zvfh"] in
+          defm : RVVConvBuiltinSet<"vfwcvt_xu_f_v", "x", [["Uw", "Uwvu"]]>;
+      }
     }
     // 13.19. Narrowing Floating-Point/Integer Type-Convert Instructions
     let Log2LMUL = [-3, -2, -1, 0, 1, 2] in {
+<<<<<<< HEAD
       let OverloadedName = "vfncvt_x" in
         defm :
           RVVConvBuiltinSet<"vfncvt_x_f_w", "si", [["Iv", "IvFwu"]]>;
@@ -3174,17 +3279,44 @@ let ManualCodegen = [{
         let OverloadedName = "vfncvt_xu" in
           defm :
             RVVConvBuiltinSet<"vfncvt_xu_f_w", "c", [["Uv", "UvFwu"]]>;
+||||||| 864902e9b4d8
+      let OverloadedName = "vfncvt_x" in
+        defm :
+          RVVConvBuiltinSet<"vfncvt_x_f_w", "si", [["Iv", "IvFwu"]]>;
+      let OverloadedName = "vfncvt_xu" in
+        defm :
+          RVVConvBuiltinSet<"vfncvt_xu_f_w", "si", [["Uv", "UvFwu"]]>;
+      let RequiredFeatures = ["Zvfh"] in {
+        let OverloadedName = "vfncvt_x" in
+          defm :
+            RVVConvBuiltinSet<"vfncvt_x_f_w", "c", [["Iv", "IvFwu"]]>;
+        let OverloadedName = "vfncvt_xu" in
+          defm :
+            RVVConvBuiltinSet<"vfncvt_xu_f_w", "c", [["Uv", "UvFwu"]]>;
+=======
+      let OverloadedName = "vfncvt_x" in {
+        defm : RVVConvBuiltinSet<"vfncvt_x_f_w", "si", [["Iv", "IvFwu"]]>;
+        let RequiredFeatures = ["Zvfh"] in
+          defm : RVVConvBuiltinSet<"vfncvt_x_f_w", "c", [["Iv", "IvFwu"]]>;
+      }
+      let OverloadedName = "vfncvt_xu" in {
+        defm : RVVConvBuiltinSet<"vfncvt_xu_f_w", "si", [["Uv", "UvFwu"]]>;
+        let RequiredFeatures = ["Zvfh"] in
+          defm : RVVConvBuiltinSet<"vfncvt_xu_f_w", "c", [["Uv", "UvFwu"]]>;
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
       }
       let OverloadedName = "vfncvt_f" in {
-        defm :
-          RVVConvBuiltinSet<"vfncvt_f_x_w", "xf", [["v", "vIwu"]]>;
-        defm :
-          RVVConvBuiltinSet<"vfncvt_f_xu_w", "xf", [["v", "vUwu"]]>;
+        defm : RVVConvBuiltinSet<"vfncvt_f_x_w", "f", [["v", "vIwu"]]>;
+        defm : RVVConvBuiltinSet<"vfncvt_f_xu_w", "f", [["v", "vUwu"]]>;
+        let RequiredFeatures = ["Zvfh"] in {
+          defm : RVVConvBuiltinSet<"vfncvt_f_x_w", "x", [["v", "vIwu"]]>;
+          defm : RVVConvBuiltinSet<"vfncvt_f_xu_w", "x", [["v", "vUwu"]]>;
+        }
       }
       let OverloadedName = "vfncvt_f" in {
         defm : RVVConvBuiltinSet<"vfncvt_f_f_w", "f", [["v", "vwu"]]>;
         let RequiredFeatures = ["Zvfhmin"] in
-        defm : RVVConvBuiltinSet<"vfncvt_f_f_w", "x", [["v", "vwu"]]>;
+          defm : RVVConvBuiltinSet<"vfncvt_f_f_w", "x", [["v", "vwu"]]>;
       }
 #ifdef SIFIVE_CUSTOMIZATION
       let RequiredFeatures = ["Xsfvfbfa"], Name = "vfncvt_bf_f_w", OverloadedName = "vfncvt_bf" in
@@ -3199,30 +3331,41 @@ let ManualCodegen = [{
   }
 
   // 13.17. Single-Width Floating-Point/Integer Type-Convert Instructions
-  let OverloadedName = "vfcvt_x" in
-    defm :
-      RVVConvBuiltinSet<"vfcvt_x_f_v", "xfd", [["Iv", "Ivv"]]>;
-  let OverloadedName = "vfcvt_xu" in
-    defm :
-      RVVConvBuiltinSet<"vfcvt_xu_f_v", "xfd", [["Uv", "Uvv"]]>;
+  let OverloadedName = "vfcvt_x" in {
+    defm : RVVConvBuiltinSet<"vfcvt_x_f_v", "fd", [["Iv", "Ivv"]]>;
+    let RequiredFeatures = ["Zvfh"] in
+      defm : RVVConvBuiltinSet<"vfcvt_x_f_v", "x", [["Iv", "Ivv"]]>;
+  }
+  let OverloadedName = "vfcvt_xu" in {
+    defm : RVVConvBuiltinSet<"vfcvt_xu_f_v", "fd", [["Uv", "Uvv"]]>;
+    let RequiredFeatures = ["Zvfh"] in
+      defm : RVVConvBuiltinSet<"vfcvt_xu_f_v", "x", [["Uv", "Uvv"]]>;
+  }
   let OverloadedName = "vfcvt_f" in {
-    defm :
-      RVVConvBuiltinSet<"vfcvt_f_x_v", "xfd", [["v", "vIv"]]>;
-    defm :
-      RVVConvBuiltinSet<"vfcvt_f_xu_v", "xfd", [["v", "vUv"]]>;
+    defm : RVVConvBuiltinSet<"vfcvt_f_x_v", "fd", [["v", "vIv"]]>;
+    defm : RVVConvBuiltinSet<"vfcvt_f_xu_v", "fd", [["v", "vUv"]]>;
+    let RequiredFeatures = ["Zvfh"] in {
+      defm : RVVConvBuiltinSet<"vfcvt_f_x_v", "x", [["v", "vIv"]]>;
+      defm : RVVConvBuiltinSet<"vfcvt_f_xu_v", "x", [["v", "vUv"]]>;
+    }
   }
 
   // 13.18. Widening Floating-Point/Integer Type-Convert Instructions
   let Log2LMUL = [-3, -2, -1, 0, 1, 2] in {
-    let OverloadedName = "vfwcvt_x" in
-      defm :
-        RVVConvBuiltinSet<"vfwcvt_x_f_v", "xf", [["Iw", "Iwv"]]>;
-    let OverloadedName = "vfwcvt_xu" in
-      defm :
-        RVVConvBuiltinSet<"vfwcvt_xu_f_v", "xf", [["Uw", "Uwv"]]>;
+    let OverloadedName = "vfwcvt_x" in {
+      defm : RVVConvBuiltinSet<"vfwcvt_x_f_v", "f", [["Iw", "Iwv"]]>;
+      let RequiredFeatures = ["Zvfh"] in
+        defm : RVVConvBuiltinSet<"vfwcvt_x_f_v", "x", [["Iw", "Iwv"]]>;
+    }
+    let OverloadedName = "vfwcvt_xu" in {
+      defm : RVVConvBuiltinSet<"vfwcvt_xu_f_v", "f", [["Uw", "Uwv"]]>;
+      let RequiredFeatures = ["Zvfh"] in
+        defm : RVVConvBuiltinSet<"vfwcvt_xu_f_v", "x", [["Uw", "Uwv"]]>;
+    }
   }
   // 13.19. Narrowing Floating-Point/Integer Type-Convert Instructions
   let Log2LMUL = [-3, -2, -1, 0, 1, 2] in {
+<<<<<<< HEAD
     let OverloadedName = "vfncvt_x" in
       defm :
         RVVConvBuiltinSet<"vfncvt_x_f_w", "si", [["Iv", "IvFw"]]>;
@@ -3244,17 +3387,44 @@ let ManualCodegen = [{
       let OverloadedName = "vfncvt_xu" in
         defm :
           RVVConvBuiltinSet<"vfncvt_xu_f_w", "c", [["Uv", "UvFw"]]>;
+||||||| 864902e9b4d8
+    let OverloadedName = "vfncvt_x" in
+      defm :
+        RVVConvBuiltinSet<"vfncvt_x_f_w", "si", [["Iv", "IvFw"]]>;
+    let OverloadedName = "vfncvt_xu" in
+      defm :
+        RVVConvBuiltinSet<"vfncvt_xu_f_w", "si", [["Uv", "UvFw"]]>;
+    let RequiredFeatures = ["Zvfh"] in {
+      let OverloadedName = "vfncvt_x" in
+        defm :
+          RVVConvBuiltinSet<"vfncvt_x_f_w", "c", [["Iv", "IvFw"]]>;
+      let OverloadedName = "vfncvt_xu" in
+        defm :
+          RVVConvBuiltinSet<"vfncvt_xu_f_w", "c", [["Uv", "UvFw"]]>;
+=======
+    let OverloadedName = "vfncvt_x" in {
+      defm : RVVConvBuiltinSet<"vfncvt_x_f_w", "si", [["Iv", "IvFw"]]>;
+      let RequiredFeatures = ["Zvfh"] in
+        defm : RVVConvBuiltinSet<"vfncvt_x_f_w", "c", [["Iv", "IvFw"]]>;
+    }
+    let OverloadedName = "vfncvt_xu" in {
+      defm : RVVConvBuiltinSet<"vfncvt_xu_f_w", "si", [["Uv", "UvFw"]]>;
+      let RequiredFeatures = ["Zvfh"] in
+        defm : RVVConvBuiltinSet<"vfncvt_xu_f_w", "c", [["Uv", "UvFw"]]>;
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
     }
     let OverloadedName = "vfncvt_f" in {
-      defm :
-        RVVConvBuiltinSet<"vfncvt_f_x_w", "xf", [["v", "vIw"]]>;
-      defm :
-        RVVConvBuiltinSet<"vfncvt_f_xu_w", "xf", [["v", "vUw"]]>;
+      defm : RVVConvBuiltinSet<"vfncvt_f_x_w", "f", [["v", "vIw"]]>;
+      defm : RVVConvBuiltinSet<"vfncvt_f_xu_w", "f", [["v", "vUw"]]>;
+      let RequiredFeatures = ["Zvfh"] in {
+        defm : RVVConvBuiltinSet<"vfncvt_f_x_w", "x", [["v", "vIw"]]>;
+        defm : RVVConvBuiltinSet<"vfncvt_f_xu_w", "x", [["v", "vUw"]]>;
+      }
     }
     let OverloadedName = "vfncvt_f" in {
       defm : RVVConvBuiltinSet<"vfncvt_f_f_w", "f", [["v", "vw"]]>;
       let RequiredFeatures = ["Zvfhmin"] in
-      defm : RVVConvBuiltinSet<"vfncvt_f_f_w", "x", [["v", "vw"]]>;
+        defm : RVVConvBuiltinSet<"vfncvt_f_f_w", "x", [["v", "vw"]]>;
     }
 #ifdef SIFIVE_CUSTOMIZATION
     let RequiredFeatures = ["Xsfvfbfa"], Name = "vfncvt_bf_f_w", OverloadedName = "vfncvt_bf" in
@@ -3418,15 +3588,24 @@ let HasMasked = false, MaskedPolicyScheme = NonePolicy in {
 
 // 16.2. Floating-Point Scalar Move Instructions
 let HasMasked = false, MaskedPolicyScheme = NonePolicy in {
-  let HasVL = false, OverloadedName = "vfmv_f" in
-    defm vfmv_f : RVVOp0BuiltinSet<"vfmv_f_s", "xfd",
+  let HasVL = false, OverloadedName = "vfmv_f" in {
+    defm vfmv_f : RVVOp0BuiltinSet<"vfmv_f_s", "fd",
+                                   [["s", "ve", "ev"]]>;
+    let RequiredFeatures = ["Zvfh"] in
+      defm vfmv_f : RVVOp0BuiltinSet<"vfmv_f_s", "x",
                                      [["s", "ve", "ev"]]>;
+  }
   let OverloadedName = "vfmv_s",
       UnMaskedPolicyScheme = HasPassthruOperand,
-      SupportOverloading = false in
-    defm vfmv_s : RVVOutBuiltinSet<"vfmv_s_f", "xfd",
+      SupportOverloading = false in {
+    defm vfmv_s : RVVOutBuiltinSet<"vfmv_s_f", "fd",
+                                   [["f", "v", "ve"],
+                                    ["x", "Uv", "UvUe"]]>;
+    let RequiredFeatures = ["Zvfh"] in
+      defm vfmv_s : RVVOutBuiltinSet<"vfmv_s_f", "x",
                                      [["f", "v", "ve"],
                                       ["x", "Uv", "UvUe"]]>;
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   let RequiredFeatures = ["Xsfvfbfa"] in {
     let Name = "vfmv_f_s", HasVL = false, OverloadedName = "vfmv_f" in
@@ -3438,6 +3617,10 @@ let HasMasked = false, MaskedPolicyScheme = NonePolicy in {
       defm : RVVOutBuiltinSet<"vfmv_s_f", "y", [["f", "v", "ve"]]>;
   }
 #endif // SIFIVE_CUSTOMIZATION
+||||||| 864902e9b4d8
+=======
+  }
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 }
 
 // 16.3. Vector Slide Instructions
@@ -3486,7 +3669,10 @@ let RequiredFeatures = ["Zvfhmin"] in {
   defm vrgather : RVVOutBuiltinSet<"vrgather_vx", "y",
                                    [["vx", "v", "vvz"]]>;
 }
-defm vrgatherei16 : RVVOutBuiltinSet<"vrgatherei16_vv", "csilxfd",
+defm vrgatherei16 : RVVOutBuiltinSet<"vrgatherei16_vv", "csilfd",
+                                     [["vv", "v", "vv(Log2EEW:4)Uv"]]>;
+let RequiredFeatures = ["Zvfh"] in
+defm vrgatherei16 : RVVOutBuiltinSet<"vrgatherei16_vv", "x",
                                      [["vv", "v", "vv(Log2EEW:4)Uv"]]>;
 // unsigned type
 defm vrgather : RVVOutBuiltinSet<"vrgather_vv", "csil",

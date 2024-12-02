@@ -159,6 +159,7 @@ BlockT *LoopBase<BlockT, LoopT>::getUniqueExitBlock() const {
   return getExitBlockHelper(this, true).first;
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 /// Cherry-pick from #88385
 template <class BlockT, class LoopT>
@@ -172,6 +173,20 @@ BlockT *LoopBase<BlockT, LoopT>::getLatchExitBlock() const {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+||||||| 864902e9b4d8
+=======
+template <class BlockT, class LoopT>
+BlockT *LoopBase<BlockT, LoopT>::getUniqueLatchExitBlock() const {
+  BlockT *Latch = getLoopLatch();
+  assert(Latch && "Latch block must exists");
+  auto IsExitBlock = [this](BlockT *BB, bool AllowRepeats) -> BlockT * {
+    assert(!AllowRepeats && "Unexpected parameter value.");
+    return !contains(BB) ? BB : nullptr;
+  };
+  return find_singleton<BlockT>(children<BlockT *>(Latch), IsExitBlock);
+}
+
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 /// getExitEdges - Return all pairs of (_inside_block_,_outside_block_).
 template <class BlockT, class LoopT>
 void LoopBase<BlockT, LoopT>::getExitEdges(

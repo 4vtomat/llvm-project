@@ -79,6 +79,7 @@ bool llvm::isTriviallyVectorizable(Intrinsic::ID ID) {
   case Intrinsic::asin:
   case Intrinsic::acos:
   case Intrinsic::atan:
+  case Intrinsic::atan2:
   case Intrinsic::sin:
   case Intrinsic::cos:
   case Intrinsic::tan:
@@ -86,6 +87,7 @@ bool llvm::isTriviallyVectorizable(Intrinsic::ID ID) {
   case Intrinsic::cosh:
   case Intrinsic::tanh:
   case Intrinsic::exp:
+  case Intrinsic::exp10:
   case Intrinsic::exp2:
   case Intrinsic::log:
   case Intrinsic::log10:
@@ -153,9 +155,13 @@ bool llvm::isVectorIntrinsicWithScalarOpAtArg(Intrinsic::ID ID,
                                               unsigned ScalarOpdIdx) {
   switch (ID) {
   case Intrinsic::abs:
+  case Intrinsic::vp_abs:
   case Intrinsic::ctlz:
+  case Intrinsic::vp_ctlz:
   case Intrinsic::cttz:
+  case Intrinsic::vp_cttz:
   case Intrinsic::is_fpclass:
+  case Intrinsic::vp_is_fpclass:
   case Intrinsic::powi:
 #if SIFIVE_CUSTOMIZATION
   case Intrinsic::vp_abs:
@@ -180,15 +186,20 @@ bool llvm::isVectorIntrinsicWithScalarOpAtArg(Intrinsic::ID ID,
   }
 }
 
-bool llvm::isVectorIntrinsicWithOverloadTypeAtArg(Intrinsic::ID ID,
-                                                  int OpdIdx) {
+bool llvm::isVectorIntrinsicWithOverloadTypeAtArg(
+    Intrinsic::ID ID, int OpdIdx, const TargetTransformInfo *TTI) {
   assert(ID != Intrinsic::not_intrinsic && "Not an intrinsic!");
+
+  if (TTI && Intrinsic::isTargetIntrinsic(ID))
+    return TTI->isVectorIntrinsicWithOverloadTypeAtArg(ID, OpdIdx);
 
   switch (ID) {
   case Intrinsic::fptosi_sat:
   case Intrinsic::fptoui_sat:
   case Intrinsic::lrint:
   case Intrinsic::llrint:
+  case Intrinsic::vp_lrint:
+  case Intrinsic::vp_llrint:
   case Intrinsic::ucmp:
   case Intrinsic::scmp:
 #if SIFIVE_CUSTOMIZATION
@@ -197,9 +208,14 @@ bool llvm::isVectorIntrinsicWithOverloadTypeAtArg(Intrinsic::ID ID,
 #endif // SIFIVE_CUSTOMIZATION
     return OpdIdx == -1 || OpdIdx == 0;
   case Intrinsic::is_fpclass:
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case Intrinsic::vp_is_fpclass:
 #endif // SIFIVE_CUSTOMIZATION
+||||||| 864902e9b4d8
+=======
+  case Intrinsic::vp_is_fpclass:
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
     return OpdIdx == 0;
   case Intrinsic::powi:
 #if SIFIVE_CUSTOMIZATION
@@ -208,6 +224,16 @@ bool llvm::isVectorIntrinsicWithOverloadTypeAtArg(Intrinsic::ID ID,
     return OpdIdx == -1 || OpdIdx == 1;
   default:
     return OpdIdx == -1;
+  }
+}
+
+bool llvm::isVectorIntrinsicWithStructReturnOverloadAtField(Intrinsic::ID ID,
+                                                            int RetIdx) {
+  switch (ID) {
+  case Intrinsic::frexp:
+    return RetIdx == 0 || RetIdx == 1;
+  default:
+    return RetIdx == 0;
   }
 }
 

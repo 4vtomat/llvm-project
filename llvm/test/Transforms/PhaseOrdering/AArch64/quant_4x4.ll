@@ -23,6 +23,7 @@ define i32 @quant_4x4(ptr noundef %dct, ptr noundef %mf, ptr noundef %bias) {
 ; CHECK-NEXT:    br i1 [[CONFLICT_RDX]], label [[FOR_BODY:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP0:%.*]] = getelementptr inbounds i8, ptr [[DCT]], i64 16
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i8, ptr [[BIAS]], i64 16
 ; CHECK-NEXT:    [[WIDE_LOAD30:%.*]] = load <8 x i16>, ptr [[BIAS]], align 2, !alias.scope [[META0:![0-9]+]]
 ; CHECK-NEXT:    [[WIDE_LOAD31:%.*]] = load <8 x i16>, ptr [[TMP1]], align 2, !alias.scope [[META0]]
@@ -45,16 +46,79 @@ define i32 @quant_4x4(ptr noundef %dct, ptr noundef %mf, ptr noundef %bias) {
 ; CHECK-NEXT:    [[TMP14:%.*]] = mul <8 x i32> [[TMP12]], [[TMP6]]
 ; CHECK-NEXT:    [[TMP15:%.*]] = lshr <8 x i32> [[TMP13]], <i32 16, i32 16, i32 16, i32 16, i32 16, i32 16, i32 16, i32 16>
 ; CHECK-NEXT:    [[TMP16:%.*]] = lshr <8 x i32> [[TMP14]], <i32 16, i32 16, i32 16, i32 16, i32 16, i32 16, i32 16, i32 16>
+||||||| 864902e9b4d8
+; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <8 x i16>, ptr [[DCT]], align 2, !alias.scope [[META0:![0-9]+]], !noalias [[META3:![0-9]+]]
+; CHECK-NEXT:    [[WIDE_LOAD29:%.*]] = load <8 x i16>, ptr [[TMP0]], align 2, !alias.scope [[META0]], !noalias [[META3]]
+; CHECK-NEXT:    [[TMP1:%.*]] = sext <8 x i16> [[WIDE_LOAD]] to <8 x i32>
+; CHECK-NEXT:    [[TMP2:%.*]] = sext <8 x i16> [[WIDE_LOAD29]] to <8 x i32>
+; CHECK-NEXT:    [[TMP3:%.*]] = icmp sgt <8 x i16> [[WIDE_LOAD]], zeroinitializer
+; CHECK-NEXT:    [[TMP4:%.*]] = icmp sgt <8 x i16> [[WIDE_LOAD29]], zeroinitializer
+; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i8, ptr [[BIAS]], i64 16
+; CHECK-NEXT:    [[WIDE_LOAD30:%.*]] = load <8 x i16>, ptr [[BIAS]], align 2, !alias.scope [[META6:![0-9]+]]
+; CHECK-NEXT:    [[WIDE_LOAD31:%.*]] = load <8 x i16>, ptr [[TMP5]], align 2, !alias.scope [[META6]]
+; CHECK-NEXT:    [[TMP6:%.*]] = zext <8 x i16> [[WIDE_LOAD30]] to <8 x i32>
+; CHECK-NEXT:    [[TMP7:%.*]] = zext <8 x i16> [[WIDE_LOAD31]] to <8 x i32>
+; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i8, ptr [[MF]], i64 16
+; CHECK-NEXT:    [[WIDE_LOAD32:%.*]] = load <8 x i16>, ptr [[MF]], align 2, !alias.scope [[META7:![0-9]+]]
+; CHECK-NEXT:    [[WIDE_LOAD33:%.*]] = load <8 x i16>, ptr [[TMP8]], align 2, !alias.scope [[META7]]
+; CHECK-NEXT:    [[TMP9:%.*]] = zext <8 x i16> [[WIDE_LOAD32]] to <8 x i32>
+; CHECK-NEXT:    [[TMP10:%.*]] = zext <8 x i16> [[WIDE_LOAD33]] to <8 x i32>
+; CHECK-NEXT:    [[TMP11:%.*]] = sub nsw <8 x i32> [[TMP6]], [[TMP1]]
+; CHECK-NEXT:    [[TMP12:%.*]] = sub nsw <8 x i32> [[TMP7]], [[TMP2]]
+; CHECK-NEXT:    [[TMP13:%.*]] = mul <8 x i32> [[TMP11]], [[TMP9]]
+; CHECK-NEXT:    [[TMP14:%.*]] = mul <8 x i32> [[TMP12]], [[TMP10]]
+; CHECK-NEXT:    [[TMP15:%.*]] = lshr <8 x i32> [[TMP13]], <i32 16, i32 16, i32 16, i32 16, i32 16, i32 16, i32 16, i32 16>
+; CHECK-NEXT:    [[TMP16:%.*]] = lshr <8 x i32> [[TMP14]], <i32 16, i32 16, i32 16, i32 16, i32 16, i32 16, i32 16, i32 16>
+=======
+; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <8 x i16>, ptr [[DCT]], align 2, !alias.scope [[META0:![0-9]+]], !noalias [[META3:![0-9]+]]
+; CHECK-NEXT:    [[WIDE_LOAD29:%.*]] = load <8 x i16>, ptr [[TMP0]], align 2, !alias.scope [[META0]], !noalias [[META3]]
+; CHECK-NEXT:    [[TMP1:%.*]] = sext <8 x i16> [[WIDE_LOAD]] to <8 x i32>
+; CHECK-NEXT:    [[TMP2:%.*]] = sext <8 x i16> [[WIDE_LOAD29]] to <8 x i32>
+; CHECK-NEXT:    [[TMP3:%.*]] = icmp sgt <8 x i16> [[WIDE_LOAD]], zeroinitializer
+; CHECK-NEXT:    [[TMP4:%.*]] = icmp sgt <8 x i16> [[WIDE_LOAD29]], zeroinitializer
+; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i8, ptr [[BIAS]], i64 16
+; CHECK-NEXT:    [[WIDE_LOAD30:%.*]] = load <8 x i16>, ptr [[BIAS]], align 2, !alias.scope [[META6:![0-9]+]]
+; CHECK-NEXT:    [[WIDE_LOAD31:%.*]] = load <8 x i16>, ptr [[TMP5]], align 2, !alias.scope [[META6]]
+; CHECK-NEXT:    [[TMP6:%.*]] = zext <8 x i16> [[WIDE_LOAD30]] to <8 x i32>
+; CHECK-NEXT:    [[TMP7:%.*]] = zext <8 x i16> [[WIDE_LOAD31]] to <8 x i32>
+; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i8, ptr [[MF]], i64 16
+; CHECK-NEXT:    [[WIDE_LOAD32:%.*]] = load <8 x i16>, ptr [[MF]], align 2, !alias.scope [[META7:![0-9]+]]
+; CHECK-NEXT:    [[WIDE_LOAD33:%.*]] = load <8 x i16>, ptr [[TMP8]], align 2, !alias.scope [[META7]]
+; CHECK-NEXT:    [[TMP9:%.*]] = zext <8 x i16> [[WIDE_LOAD32]] to <8 x i32>
+; CHECK-NEXT:    [[TMP10:%.*]] = zext <8 x i16> [[WIDE_LOAD33]] to <8 x i32>
+; CHECK-NEXT:    [[TMP11:%.*]] = sub nsw <8 x i32> [[TMP6]], [[TMP1]]
+; CHECK-NEXT:    [[TMP12:%.*]] = sub nsw <8 x i32> [[TMP7]], [[TMP2]]
+; CHECK-NEXT:    [[TMP13:%.*]] = mul <8 x i32> [[TMP11]], [[TMP9]]
+; CHECK-NEXT:    [[TMP14:%.*]] = mul <8 x i32> [[TMP12]], [[TMP10]]
+; CHECK-NEXT:    [[TMP15:%.*]] = lshr <8 x i32> [[TMP13]], splat (i32 16)
+; CHECK-NEXT:    [[TMP16:%.*]] = lshr <8 x i32> [[TMP14]], splat (i32 16)
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    [[TMP17:%.*]] = trunc nuw <8 x i32> [[TMP15]] to <8 x i16>
 ; CHECK-NEXT:    [[TMP18:%.*]] = trunc nuw <8 x i32> [[TMP16]] to <8 x i16>
 ; CHECK-NEXT:    [[TMP19:%.*]] = sub <8 x i16> zeroinitializer, [[TMP17]]
 ; CHECK-NEXT:    [[TMP20:%.*]] = sub <8 x i16> zeroinitializer, [[TMP18]]
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP21:%.*]] = add nuw nsw <8 x i32> [[TMP2]], [[TMP7]]
 ; CHECK-NEXT:    [[TMP22:%.*]] = add nuw nsw <8 x i32> [[TMP3]], [[TMP8]]
 ; CHECK-NEXT:    [[TMP23:%.*]] = mul <8 x i32> [[TMP21]], [[TMP5]]
 ; CHECK-NEXT:    [[TMP24:%.*]] = mul <8 x i32> [[TMP22]], [[TMP6]]
 ; CHECK-NEXT:    [[TMP25:%.*]] = lshr <8 x i32> [[TMP23]], <i32 16, i32 16, i32 16, i32 16, i32 16, i32 16, i32 16, i32 16>
 ; CHECK-NEXT:    [[TMP26:%.*]] = lshr <8 x i32> [[TMP24]], <i32 16, i32 16, i32 16, i32 16, i32 16, i32 16, i32 16, i32 16>
+||||||| 864902e9b4d8
+; CHECK-NEXT:    [[TMP21:%.*]] = add nuw nsw <8 x i32> [[TMP6]], [[TMP1]]
+; CHECK-NEXT:    [[TMP22:%.*]] = add nuw nsw <8 x i32> [[TMP7]], [[TMP2]]
+; CHECK-NEXT:    [[TMP23:%.*]] = mul <8 x i32> [[TMP21]], [[TMP9]]
+; CHECK-NEXT:    [[TMP24:%.*]] = mul <8 x i32> [[TMP22]], [[TMP10]]
+; CHECK-NEXT:    [[TMP25:%.*]] = lshr <8 x i32> [[TMP23]], <i32 16, i32 16, i32 16, i32 16, i32 16, i32 16, i32 16, i32 16>
+; CHECK-NEXT:    [[TMP26:%.*]] = lshr <8 x i32> [[TMP24]], <i32 16, i32 16, i32 16, i32 16, i32 16, i32 16, i32 16, i32 16>
+=======
+; CHECK-NEXT:    [[TMP21:%.*]] = add nuw nsw <8 x i32> [[TMP6]], [[TMP1]]
+; CHECK-NEXT:    [[TMP22:%.*]] = add nuw nsw <8 x i32> [[TMP7]], [[TMP2]]
+; CHECK-NEXT:    [[TMP23:%.*]] = mul <8 x i32> [[TMP21]], [[TMP9]]
+; CHECK-NEXT:    [[TMP24:%.*]] = mul <8 x i32> [[TMP22]], [[TMP10]]
+; CHECK-NEXT:    [[TMP25:%.*]] = lshr <8 x i32> [[TMP23]], splat (i32 16)
+; CHECK-NEXT:    [[TMP26:%.*]] = lshr <8 x i32> [[TMP24]], splat (i32 16)
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    [[TMP27:%.*]] = trunc nuw <8 x i32> [[TMP25]] to <8 x i16>
 ; CHECK-NEXT:    [[TMP28:%.*]] = trunc nuw <8 x i32> [[TMP26]] to <8 x i16>
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <8 x i1> [[TMP9]], <8 x i16> [[TMP27]], <8 x i16> [[TMP19]]

@@ -12,6 +12,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "llvm/ADT/DenseSet.h"
+#include "llvm/Support/Format.h"
 #include "llvm/Support/RISCVISAUtils.h"
 #include "llvm/TableGen/Record.h"
 #include "llvm/TableGen/TableGenBackend.h"
@@ -177,7 +178,7 @@ static void emitRISCVProfiles(const RecordKeeper &Records, raw_ostream &OS) {
 static void emitRISCVProcs(const RecordKeeper &RK, raw_ostream &OS) {
   OS << "#ifndef PROC\n"
      << "#define PROC(ENUM, NAME, DEFAULT_MARCH, FAST_SCALAR_UNALIGN"
-     << ", FAST_VECTOR_UNALIGN)\n"
+     << ", FAST_VECTOR_UNALIGN, MVENDORID, MARCHID, MIMPID)\n"
      << "#endif\n\n";
 
   // Iterate on all definition records.
@@ -203,8 +204,17 @@ static void emitRISCVProcs(const RecordKeeper &RK, raw_ostream &OS) {
       printMArch(OS, Features);
     else
       OS << MArch;
+
+    uint32_t MVendorID = Rec->getValueAsInt("MVendorID");
+    uint64_t MArchID = Rec->getValueAsInt("MArchID");
+    uint64_t MImpID = Rec->getValueAsInt("MImpID");
+
     OS << "\"}, " << FastScalarUnalignedAccess << ", "
-       << FastVectorUnalignedAccess << ")\n";
+       << FastVectorUnalignedAccess;
+    OS << ", " << format_hex(MVendorID, 10);
+    OS << ", " << format_hex(MArchID, 18);
+    OS << ", " << format_hex(MImpID, 18);
+    OS << ")\n";
   }
   OS << "\n#undef PROC\n";
   OS << "\n";
@@ -320,6 +330,7 @@ static void emitRISCVExtensionBitmask(const RecordKeeper &RK, raw_ostream &OS) {
   OS << "#endif\n";
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static void emitRISCVProfilesJSON(const std::vector<const Record *> &Profiles,
                                   raw_ostream &OS) {
@@ -348,12 +359,18 @@ static void emitRISCVProfilesJSON(const std::vector<const Record *> &Profiles,
 #endif
 
 static void EmitRISCVTargetDef(const RecordKeeper &RK, raw_ostream &OS) {
+||||||| 864902e9b4d8
+static void EmitRISCVTargetDef(const RecordKeeper &RK, raw_ostream &OS) {
+=======
+static void emitRiscvTargetDef(const RecordKeeper &RK, raw_ostream &OS) {
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
   emitRISCVExtensions(RK, OS);
   emitRISCVProfiles(RK, OS);
   emitRISCVProcs(RK, OS);
   emitRISCVExtensionBitmask(RK, OS);
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static void EmitRISCVISAInfoJSON(const RecordKeeper &RK, raw_ostream &OS) {
   std::vector<const Record *> Extensions =
@@ -377,6 +394,11 @@ static void EmitRISCVProfileJSON(const RecordKeeper &RK, raw_ostream &OS) {
 #endif // SIFIVE_CUSTOMIZATION
 
 static TableGen::Emitter::Opt X("gen-riscv-target-def", EmitRISCVTargetDef,
+||||||| 864902e9b4d8
+static TableGen::Emitter::Opt X("gen-riscv-target-def", EmitRISCVTargetDef,
+=======
+static TableGen::Emitter::Opt X("gen-riscv-target-def", emitRiscvTargetDef,
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
                                 "Generate the list of CPUs and extensions for "
                                 "RISC-V");
 

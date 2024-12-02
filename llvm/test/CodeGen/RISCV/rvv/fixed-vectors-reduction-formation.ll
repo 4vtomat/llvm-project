@@ -437,8 +437,8 @@ define i32 @reduce_sum_4xi32_reduce_order(<4 x i32> %v) {
 ; RV32-NEXT:    vslidedown.vi v9, v8, 1
 ; RV32-NEXT:    vmv.x.s a1, v9
 ; RV32-NEXT:    vslidedown.vi v9, v8, 2
-; RV32-NEXT:    vmv.x.s a2, v9
 ; RV32-NEXT:    vslidedown.vi v8, v8, 3
+; RV32-NEXT:    vmv.x.s a2, v9
 ; RV32-NEXT:    vmv.x.s a3, v8
 ; RV32-NEXT:    add a1, a1, a2
 ; RV32-NEXT:    add a0, a0, a3
@@ -452,8 +452,8 @@ define i32 @reduce_sum_4xi32_reduce_order(<4 x i32> %v) {
 ; RV64-NEXT:    vslidedown.vi v9, v8, 1
 ; RV64-NEXT:    vmv.x.s a1, v9
 ; RV64-NEXT:    vslidedown.vi v9, v8, 2
-; RV64-NEXT:    vmv.x.s a2, v9
 ; RV64-NEXT:    vslidedown.vi v8, v8, 3
+; RV64-NEXT:    vmv.x.s a2, v9
 ; RV64-NEXT:    vmv.x.s a3, v8
 ; RV64-NEXT:    add a1, a1, a2
 ; RV64-NEXT:    add a0, a0, a3
@@ -850,11 +850,29 @@ define float @reduce_fadd_4xi32_non_associative(ptr %p) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 3, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
+<<<<<<< HEAD
 ; CHECK-NEXT:    flw fa5, 12(a0)
+||||||| 864902e9b4d8
+; CHECK-NEXT:    vslidedown.vi v9, v8, 3
+; CHECK-NEXT:    vfmv.f.s fa5, v9
+=======
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    lui a0, 524288
 ; CHECK-NEXT:    vmv.s.x v9, a0
+<<<<<<< HEAD
 ; CHECK-NEXT:    vfredusum.vs v8, v8, v9
 ; CHECK-NEXT:    vfmv.f.s fa4, v8
+||||||| 864902e9b4d8
+; CHECK-NEXT:    vsetivli zero, 3, e32, m1, ta, ma
+; CHECK-NEXT:    vfredusum.vs v8, v8, v9
+; CHECK-NEXT:    vfmv.f.s fa4, v8
+=======
+; CHECK-NEXT:    vsetivli zero, 3, e32, m1, ta, ma
+; CHECK-NEXT:    vfredusum.vs v9, v8, v9
+; CHECK-NEXT:    vslidedown.vi v8, v8, 3
+; CHECK-NEXT:    vfmv.f.s fa5, v8
+; CHECK-NEXT:    vfmv.f.s fa4, v9
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    fadd.s fa0, fa4, fa5
 ; CHECK-NEXT:    ret
   %v = load <4 x float>, ptr %p, align 256
@@ -873,10 +891,32 @@ define float @reduce_fadd_4xi32_non_associative(ptr %p) {
 define float @reduce_fadd_4xi32_non_associative2(ptr %p) {
 ; CHECK-LABEL: reduce_fadd_4xi32_non_associative2:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    flw fa5, 0(a0)
 ; CHECK-NEXT:    flw fa4, 4(a0)
 ; CHECK-NEXT:    flw fa3, 8(a0)
 ; CHECK-NEXT:    flw fa2, 12(a0)
+||||||| 864902e9b4d8
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
+; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    vfmv.f.s fa5, v8
+; CHECK-NEXT:    vslidedown.vi v9, v8, 1
+; CHECK-NEXT:    vfmv.f.s fa4, v9
+; CHECK-NEXT:    vslidedown.vi v9, v8, 2
+; CHECK-NEXT:    vfmv.f.s fa3, v9
+; CHECK-NEXT:    vslidedown.vi v8, v8, 3
+; CHECK-NEXT:    vfmv.f.s fa2, v8
+=======
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
+; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    vfmv.f.s fa5, v8
+; CHECK-NEXT:    vslidedown.vi v9, v8, 1
+; CHECK-NEXT:    vfmv.f.s fa4, v9
+; CHECK-NEXT:    vslidedown.vi v9, v8, 2
+; CHECK-NEXT:    vslidedown.vi v8, v8, 3
+; CHECK-NEXT:    vfmv.f.s fa3, v9
+; CHECK-NEXT:    vfmv.f.s fa2, v8
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    fadd.s fa5, fa5, fa4
 ; CHECK-NEXT:    fadd.s fa4, fa3, fa2
 ; CHECK-NEXT:    fadd.s fa0, fa5, fa4

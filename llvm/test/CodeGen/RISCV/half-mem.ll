@@ -134,28 +134,58 @@ define half @flh_fsh_global(half %a, half %b) nounwind {
 ; CHECKIZFHMIN:       # %bb.0:
 ; CHECKIZFHMIN-NEXT:    fcvt.s.h fa5, fa1
 ; CHECKIZFHMIN-NEXT:    fcvt.s.h fa4, fa0
-; CHECKIZFHMIN-NEXT:    fadd.s fa5, fa4, fa5
-; CHECKIZFHMIN-NEXT:    fcvt.h.s fa0, fa5
 ; CHECKIZFHMIN-NEXT:    lui a0, %hi(G)
+<<<<<<< HEAD
 ; CHECKIZFHMIN-NEXT:    addi a0, a0, %lo(G)
 ; CHECKIZFHMIN-NEXT:    flh fa5, 0(a0)
 ; CHECKIZFHMIN-NEXT:    fsh fa0, 0(a0)
 ; CHECKIZFHMIN-NEXT:    flh fa5, 18(a0)
 ; CHECKIZFHMIN-NEXT:    fsh fa0, 18(a0)
+||||||| 864902e9b4d8
+; CHECKIZFHMIN-NEXT:    flh fa5, %lo(G)(a0)
+; CHECKIZFHMIN-NEXT:    addi a1, a0, %lo(G)
+; CHECKIZFHMIN-NEXT:    fsh fa0, %lo(G)(a0)
+; CHECKIZFHMIN-NEXT:    flh fa5, 18(a1)
+; CHECKIZFHMIN-NEXT:    fsh fa0, 18(a1)
+=======
+; CHECKIZFHMIN-NEXT:    fadd.s fa5, fa4, fa5
+; CHECKIZFHMIN-NEXT:    flh fa4, %lo(G)(a0)
+; CHECKIZFHMIN-NEXT:    fcvt.h.s fa0, fa5
+; CHECKIZFHMIN-NEXT:    addi a1, a0, %lo(G)
+; CHECKIZFHMIN-NEXT:    fsh fa0, %lo(G)(a0)
+; CHECKIZFHMIN-NEXT:    flh fa5, 18(a1)
+; CHECKIZFHMIN-NEXT:    fsh fa0, 18(a1)
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECKIZFHMIN-NEXT:    ret
 ;
 ; CHECKIZHINXMIN-LABEL: flh_fsh_global:
 ; CHECKIZHINXMIN:       # %bb.0:
 ; CHECKIZHINXMIN-NEXT:    fcvt.s.h a1, a1
 ; CHECKIZHINXMIN-NEXT:    fcvt.s.h a0, a0
+; CHECKIZHINXMIN-NEXT:    lui a2, %hi(G)
 ; CHECKIZHINXMIN-NEXT:    fadd.s a0, a0, a1
+; CHECKIZHINXMIN-NEXT:    lh zero, %lo(G)(a2)
 ; CHECKIZHINXMIN-NEXT:    fcvt.h.s a0, a0
+<<<<<<< HEAD
 ; CHECKIZHINXMIN-NEXT:    lui a1, %hi(G)
 ; CHECKIZHINXMIN-NEXT:    addi a1, a1, %lo(G)
 ; CHECKIZHINXMIN-NEXT:    lh zero, 0(a1)
 ; CHECKIZHINXMIN-NEXT:    sh a0, 0(a1)
 ; CHECKIZHINXMIN-NEXT:    lh zero, 18(a1)
 ; CHECKIZHINXMIN-NEXT:    sh a0, 18(a1)
+||||||| 864902e9b4d8
+; CHECKIZHINXMIN-NEXT:    lui a1, %hi(G)
+; CHECKIZHINXMIN-NEXT:    lh zero, %lo(G)(a1)
+; CHECKIZHINXMIN-NEXT:    addi a2, a1, %lo(G)
+; CHECKIZHINXMIN-NEXT:    sh a0, %lo(G)(a1)
+; CHECKIZHINXMIN-NEXT:    lh zero, 18(a2)
+; CHECKIZHINXMIN-NEXT:    sh a0, 18(a2)
+=======
+; CHECKIZHINXMIN-NEXT:    addi a1, a2, %lo(G)
+; CHECKIZHINXMIN-NEXT:    sh a0, %lo(G)(a2)
+; CHECKIZHINXMIN-NEXT:    lh zero, 18(a1)
+; CHECKIZHINXMIN-NEXT:    sh a0, 18(a1)
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECKIZHINXMIN-NEXT:    ret
   %1 = fadd half %a, %b
   %2 = load volatile half, ptr @G

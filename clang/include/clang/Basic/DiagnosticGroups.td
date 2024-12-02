@@ -125,6 +125,7 @@ def FloatZeroConversion : DiagGroup<"float-zero-conversion">;
 def FloatConversion :
   DiagGroup<"float-conversion", [FloatOverflowConversion,
                                  FloatZeroConversion]>;
+def MathErrnoEnabledWithVecLib : DiagGroup<"math-errno-enabled-with-veclib">;
 
 def FrameAddress : DiagGroup<"frame-address">;
 def FreeNonHeapObject : DiagGroup<"free-nonheap-object">;
@@ -452,6 +453,7 @@ def ShiftOpParentheses: DiagGroup<"shift-op-parentheses">;
 def OverloadedShiftOpParentheses: DiagGroup<"overloaded-shift-op-parentheses">;
 def DanglingAssignment: DiagGroup<"dangling-assignment">;
 def DanglingAssignmentGsl : DiagGroup<"dangling-assignment-gsl">;
+def DanglingCapture : DiagGroup<"dangling-capture">;
 def DanglingElse: DiagGroup<"dangling-else">;
 def DanglingField : DiagGroup<"dangling-field">;
 def DanglingInitializerList : DiagGroup<"dangling-initializer-list">;
@@ -461,6 +463,7 @@ def ReturnStackAddress : DiagGroup<"return-stack-address">;
 def : DiagGroup<"return-local-addr", [ReturnStackAddress]>;
 def Dangling : DiagGroup<"dangling", [DanglingAssignment,
                                       DanglingAssignmentGsl,
+                                      DanglingCapture,
                                       DanglingField,
                                       DanglingInitializerList,
                                       DanglingGsl,
@@ -680,7 +683,8 @@ def SizeofArrayDecay : DiagGroup<"sizeof-array-decay">;
 def SizeofPointerMemaccess : DiagGroup<"sizeof-pointer-memaccess">;
 def MemsetTransposedArgs : DiagGroup<"memset-transposed-args">;
 def DynamicClassMemaccess : DiagGroup<"dynamic-class-memaccess">;
-def NonTrivialMemaccess : DiagGroup<"nontrivial-memaccess">;
+def NonTrivialMemcall : DiagGroup<"nontrivial-memcall">;
+def NonTrivialMemaccess : DiagGroup<"nontrivial-memaccess", [NonTrivialMemcall]>;
 def SuspiciousBzero : DiagGroup<"suspicious-bzero">;
 def SuspiciousMemaccess : DiagGroup<"suspicious-memaccess",
   [SizeofPointerMemaccess, DynamicClassMemaccess,
@@ -1591,4 +1595,3 @@ def ExplicitSpecializationStorageClass : DiagGroup<"explicit-specialization-stor
 
 // A warning for options that enable a feature that is not yet complete
 def ExperimentalOption : DiagGroup<"experimental-option">;
-

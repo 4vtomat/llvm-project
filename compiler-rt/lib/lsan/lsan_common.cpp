@@ -521,13 +521,14 @@ static void ProcessThread(tid_t os_id, uptr sp,
       }
     }
 #    if SANITIZER_ANDROID
+    extra_ranges.clear();
     auto *cb = +[](void *dtls_begin, void *dtls_end, uptr /*dso_idd*/,
                    void *arg) -> void {
-      ScanForPointers(
-          reinterpret_cast<uptr>(dtls_begin), reinterpret_cast<uptr>(dtls_end),
-          reinterpret_cast<Frontier *>(arg), "DTLS", kReachable, accessor);
+      reinterpret_cast<InternalMmapVector<Range> *>(arg)->push_back(
+          {reinterpret_cast<uptr>(dtls_begin),
+           reinterpret_cast<uptr>(dtls_end)});
     };
-
+    ScanRanges(extra_ranges, frontier, "DTLS", accessor);
     // FIXME: There might be a race-condition here (and in Bionic) if the
     // thread is suspended in the middle of updating its DTLS. IOWs, we
     // could scan already freed memory. (probably fine for now)
@@ -568,7 +569,7 @@ static void ProcessThreads(SuspendedThreadsList const &suspended_threads,
     PtraceRegistersStatus have_registers =
         suspended_threads.GetRegistersAndSP(i, &registers, &sp);
     if (have_registers != REGISTERS_AVAILABLE) {
-      Report("Unable to get registers from thread %llu.\n", os_id);
+      VReport(1, "Unable to get registers from thread %llu.\n", os_id);
       // If unable to get SP, consider the entire stack to be reachable unless
       // GetRegistersAndSP failed with ESRCH.
       if (have_registers == REGISTERS_UNAVAILABLE_FATAL)

@@ -19,6 +19,7 @@
 #include "SiFive_RISCVMaskInstDAGMutation.h"
 #endif // SIFIVE_CUSTOMIZATION
 #include "RISCVTargetMachine.h"
+#include "llvm/CodeGen/MachineScheduler.h"
 #include "llvm/CodeGen/MacroFusion.h"
 #include "llvm/CodeGen/MachineScheduler.h"
 #include "llvm/CodeGen/ScheduleDAGMutation.h"
@@ -229,6 +230,7 @@ bool RISCVSubtarget::useRVVForFixedLengthVectors() const {
 
 bool RISCVSubtarget::enableSubRegLiveness() const { return true; }
 
+<<<<<<< HEAD
 void RISCVSubtarget::getPostRAMutations(
     std::vector<std::unique_ptr<ScheduleDAGMutation>> &Mutations) const {
   Mutations.push_back(createMacroFusionDAGMutation(getMacroFusions()));
@@ -247,6 +249,14 @@ unsigned RISCVSubtarget::getMemToRVVLMUL() const {
   return 8;
 }
 #endif // SIFIVE_CUSTOMIZATION
+||||||| 864902e9b4d8
+void RISCVSubtarget::getPostRAMutations(
+    std::vector<std::unique_ptr<ScheduleDAGMutation>> &Mutations) const {
+  Mutations.push_back(createMacroFusionDAGMutation(getMacroFusions()));
+}
+
+=======
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
   /// Enable use of alias analysis during code generation (during MI
   /// scheduling, DAGCombine, etc.).
 bool RISCVSubtarget::useAA() const { return UseAA; }
@@ -255,4 +265,20 @@ unsigned RISCVSubtarget::getMinimumJumpTableEntries() const {
   return RISCVMinimumJumpTableEntries.getNumOccurrences() > 0
              ? RISCVMinimumJumpTableEntries
              : TuneInfo->MinimumJumpTableEntries;
+}
+
+void RISCVSubtarget::overrideSchedPolicy(MachineSchedPolicy &Policy,
+                                         unsigned NumRegionInstrs) const {
+  // Do bidirectional scheduling since it provides a more balanced scheduling
+  // leading to better performance. This will increase compile time.
+  Policy.OnlyTopDown = false;
+  Policy.OnlyBottomUp = false;
+
+  // Disabling the latency heuristic can reduce the number of spills/reloads but
+  // will cause some regressions on some cores.
+  Policy.DisableLatencyHeuristic = DisableLatencySchedHeuristic;
+
+  // Spilling is generally expensive on all RISC-V cores, so always enable
+  // register-pressure tracking. This will increase compile time.
+  Policy.ShouldTrackPressure = true;
 }

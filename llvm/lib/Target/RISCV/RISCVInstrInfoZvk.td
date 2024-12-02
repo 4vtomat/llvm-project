@@ -256,7 +256,7 @@ class ZvkMxSet<string vd_lmul> {
 
 class VPseudoBinaryNoMask_Zvk<DAGOperand RetClass, VReg OpClass> :
       Pseudo<(outs RetClass:$rd_wb),
-        (ins RetClass:$rd, OpClass:$rs2, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
+        (ins RetClass:$rd, OpClass:$rs2, AVL:$vl, sew:$sew, vec_policy:$policy), []>,
         RISCVVPseudo {
   let mayLoad = 0;
   let mayStore = 0;
@@ -273,7 +273,7 @@ class VPseudoTernaryNoMask_Zvk<VReg RetClass,
                                DAGOperand Op2Class> :
         Pseudo<(outs RetClass:$rd_wb),
                (ins RetClass:$rd, Op1Class:$rs2, Op2Class:$rs1,
-                    AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
+                    AVL:$vl, sew:$sew, vec_policy:$policy), []>,
         RISCVVPseudo {
   let mayLoad = 0;
   let mayStore = 0;
@@ -299,6 +299,7 @@ multiclass VPseudoBinaryNoMaskPolicy_Zvk<VReg RetClass,
 multiclass VPseudoTernaryNoMask_Zvk<VReg RetClass,
                                     VReg Op1Class,
                                     DAGOperand Op2Class,
+<<<<<<< HEAD
                                     LMULInfo MInfo, int sew = 0> { // SIFIVE_CUSTOMIZATION
 #ifdef SIFIVE_CUSTOMIZATION
   let VLMul = MInfo.value, SEW = sew in {
@@ -309,6 +310,17 @@ multiclass VPseudoTernaryNoMask_Zvk<VReg RetClass,
   let VLMul = MInfo.value in
     def "_" # MInfo.MX : VPseudoTernaryNoMask_Zvk<RetClass, Op1Class, Op2Class>;
 #endif
+||||||| 864902e9b4d8
+                                    LMULInfo MInfo> {
+  let VLMul = MInfo.value in
+    def "_" # MInfo.MX : VPseudoTernaryNoMask_Zvk<RetClass, Op1Class, Op2Class>;
+=======
+                                    LMULInfo MInfo, int sew = 0> {
+  let VLMul = MInfo.value, SEW = sew in {
+    defvar suffix = !if(sew, "_" # MInfo.MX # "_E" # sew, "_" # MInfo.MX);
+    def suffix : VPseudoTernaryNoMask_Zvk<RetClass, Op1Class, Op2Class>;
+  }
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 }
 
 multiclass VPseudoBinaryV_V_NoMask_Zvk<LMULInfo m> {
@@ -380,6 +392,7 @@ multiclass VPseudoVSHA2CL {
   }
 }
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPseudoVSHA2MS<int sew = 0> {
   foreach m = !if(!eq(sew, 64), MxListVF8, MxListVF4) in {
@@ -392,10 +405,17 @@ multiclass VPseudoVSHA2MS<int sew = 0> {
 #else
 multiclass VPseudoVSHA2MS {
   foreach m = MxListVF4 in {
+||||||| 864902e9b4d8
+multiclass VPseudoVSHA2MS {
+  foreach m = MxListVF4 in {
+=======
+multiclass VPseudoVSHA2MS<int sew = 0> {
+  foreach m = !if(!eq(sew, 64), MxListVF8, MxListVF4) in {
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
     defvar mx = m.MX;
-    defm _VV : VPseudoTernaryNoMask_Zvk<m.vrclass, m.vrclass, m.vrclass, m>,
+    defm _VV : VPseudoTernaryNoMask_Zvk<m.vrclass, m.vrclass, m.vrclass, m, sew = sew>,
                SchedTernary<"WriteVSHA2MSV", "ReadVSHA2MSV", "ReadVSHA2MSV",
-                            "ReadVSHA2MSV", mx>;
+                            "ReadVSHA2MSV", mx, sew>;
   }
 }
 #endif
@@ -627,6 +647,7 @@ let Predicates = [HasStdExtZvkned] in {
 let Predicates = [HasStdExtZvknhaOrZvknhb] in {
   defm PseudoVSHA2CH : VPseudoVSHA2CH;
   defm PseudoVSHA2CL : VPseudoVSHA2CL;
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   defm PseudoVSHA2MS : VPseudoVSHA2MS<sew=32>;
   let Predicates = [HasStdExtZvknhb] in
@@ -634,6 +655,13 @@ let Predicates = [HasStdExtZvknhaOrZvknhb] in {
 #else
   defm PseudoVSHA2MS : VPseudoVSHA2MS;
 #endif
+||||||| 864902e9b4d8
+  defm PseudoVSHA2MS : VPseudoVSHA2MS;
+=======
+  defm PseudoVSHA2MS : VPseudoVSHA2MS<sew=32>;
+  let Predicates = [HasStdExtZvknhb] in
+  defm PseudoVSHA2MS : VPseudoVSHA2MS<sew=64>;
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 } // Predicates = [HasStdExtZvknhaOrZvknhb]
 
 let Predicates = [HasStdExtZvksed] in {
@@ -1013,14 +1041,28 @@ multiclass VPatUnaryV_V_S_NoMask_Zvk<string intrinsic, string instruction,
 }
 
 multiclass VPatBinaryV_VV_NoMask<string intrinsic, string instruction,
+<<<<<<< HEAD
                                  list<VTypeInfo> vtilist,
                                  bit isSEWAware = false> { // SIFIVE_CUSTOMIZATION
+||||||| 864902e9b4d8
+                                 list<VTypeInfo> vtilist> {
+=======
+                                 list<VTypeInfo> vtilist,
+                                 bit isSEWAware = false> {
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
   foreach vti = vtilist in
     def : VPatTernaryNoMaskWithPolicy<intrinsic, instruction, "VV",
                                       vti.Vector, vti.Vector, vti.Vector,
                                       vti.Log2SEW, vti.LMul, vti.RegClass,
+<<<<<<< HEAD
                                       vti.RegClass, vti.RegClass,
                                       sew_aware = isSEWAware>; // SIFIVE_CUSTOMIZATION
+||||||| 864902e9b4d8
+                                      vti.RegClass, vti.RegClass>;
+=======
+                                      vti.RegClass, vti.RegClass,
+                                      isSEWAware = isSEWAware>;
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 }
 
 multiclass VPatBinaryV_VI_NoMask<string intrinsic, string instruction,
@@ -1186,21 +1228,33 @@ let Predicates = [HasStdExtZvkned] in {
 let Predicates = [HasStdExtZvknha] in {
   defm : VPatBinaryV_VV_NoMask<"int_riscv_vsha2ch", "PseudoVSHA2CH", I32IntegerVectors>;
   defm : VPatBinaryV_VV_NoMask<"int_riscv_vsha2cl", "PseudoVSHA2CH", I32IntegerVectors>;
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   defm : VPatBinaryV_VV_NoMask<"int_riscv_vsha2ms", "PseudoVSHA2MS", I32IntegerVectors, isSEWAware=true>;
 #else
   defm : VPatBinaryV_VV_NoMask<"int_riscv_vsha2ms", "PseudoVSHA2MS", I32IntegerVectors>;
 #endif
+||||||| 864902e9b4d8
+  defm : VPatBinaryV_VV_NoMask<"int_riscv_vsha2ms", "PseudoVSHA2MS", I32IntegerVectors>;
+=======
+  defm : VPatBinaryV_VV_NoMask<"int_riscv_vsha2ms", "PseudoVSHA2MS", I32IntegerVectors, isSEWAware=true>;
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 } // Predicates = [HasStdExtZvknha]
 
 let Predicates = [HasStdExtZvknhb] in {
   defm : VPatBinaryV_VV_NoMask<"int_riscv_vsha2ch", "PseudoVSHA2CH", I32I64IntegerVectors>;
   defm : VPatBinaryV_VV_NoMask<"int_riscv_vsha2cl", "PseudoVSHA2CH", I32I64IntegerVectors>;
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   defm : VPatBinaryV_VV_NoMask<"int_riscv_vsha2ms", "PseudoVSHA2MS", I32I64IntegerVectors, isSEWAware=true>;
 #else
   defm : VPatBinaryV_VV_NoMask<"int_riscv_vsha2ms", "PseudoVSHA2MS", I32I64IntegerVectors>;
 #endif
+||||||| 864902e9b4d8
+  defm : VPatBinaryV_VV_NoMask<"int_riscv_vsha2ms", "PseudoVSHA2MS", I32I64IntegerVectors>;
+=======
+  defm : VPatBinaryV_VV_NoMask<"int_riscv_vsha2ms", "PseudoVSHA2MS", I32I64IntegerVectors, isSEWAware=true>;
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 } // Predicates = [HasStdExtZvknhb]
 
 let Predicates = [HasStdExtZvksed] in {

@@ -792,6 +792,7 @@ inline cstfp_pred_ty<is_non_zero_fp> m_NonZeroFP() {
   return cstfp_pred_ty<is_non_zero_fp>();
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 struct match_fast_math_flags {
   FastMathFlags FMF;
@@ -824,6 +825,19 @@ inline match_fast_math_flags m_FMF(FastMathFlags FMF,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+||||||| 864902e9b4d8
+=======
+struct is_non_zero_not_denormal_fp {
+  bool isValue(const APFloat &C) { return !C.isDenormal() && C.isNonZero(); }
+};
+
+/// Match a floating-point non-zero that is not a denormal.
+/// For vectors, this includes constants with undefined elements.
+inline cstfp_pred_ty<is_non_zero_not_denormal_fp> m_NonZeroNotDenormalFP() {
+  return cstfp_pred_ty<is_non_zero_not_denormal_fp>();
+}
+
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ///////////////////////////////////////////////////////////////////////////////
 
 template <typename Class> struct bind_ty {
@@ -1778,7 +1792,8 @@ template <typename T0, typename T1, unsigned Opcode> struct TwoOps_match {
 };
 
 /// Matches instructions with Opcode and three operands.
-template <typename T0, typename T1, typename T2, unsigned Opcode>
+template <typename T0, typename T1, typename T2, unsigned Opcode,
+          bool CommutableOp2Op3 = false>
 struct ThreeOps_match {
   T0 Op1;
   T1 Op2;
@@ -1790,8 +1805,12 @@ struct ThreeOps_match {
   template <typename OpTy> bool match(OpTy *V) {
     if (V->getValueID() == Value::InstructionVal + Opcode) {
       auto *I = cast<Instruction>(V);
-      return Op1.match(I->getOperand(0)) && Op2.match(I->getOperand(1)) &&
-             Op3.match(I->getOperand(2));
+      if (!Op1.match(I->getOperand(0)))
+        return false;
+      if (Op2.match(I->getOperand(1)) && Op3.match(I->getOperand(2)))
+        return true;
+      return CommutableOp2Op3 && Op2.match(I->getOperand(2)) &&
+             Op3.match(I->getOperand(1));
     }
     return false;
   }
@@ -1841,6 +1860,14 @@ inline ThreeOps_match<Cond, constantint_match<L>, constantint_match<R>,
                       Instruction::Select>
 m_SelectCst(const Cond &C) {
   return m_Select(C, m_ConstantInt<L>(), m_ConstantInt<R>());
+}
+
+/// Match Select(C, LHS, RHS) or Select(C, RHS, LHS)
+template <typename LHS, typename RHS>
+inline ThreeOps_match<decltype(m_Value()), LHS, RHS, Instruction::Select, true>
+m_c_Select(const LHS &L, const RHS &R) {
+  return ThreeOps_match<decltype(m_Value()), LHS, RHS, Instruction::Select,
+                        true>(m_Value(), L, R);
 }
 
 /// Matches FreezeInst.

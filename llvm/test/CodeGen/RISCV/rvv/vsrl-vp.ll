@@ -10,9 +10,24 @@ define <vscale x 8 x i7> @vsrl_vx_nxv8i7(<vscale x 8 x i7> %a, i7 signext %b, <v
 ; CHECK-LABEL: vsrl_vx_nxv8i7:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    li a2, 127
+<<<<<<< HEAD
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m1, ta, ma
 ; CHECK-NEXT:    vand.vx v8, v8, a2, v0.t
+||||||| 864902e9b4d8
+; CHECK-NEXT:    vsetvli zero, a1, e8, m1, ta, ma
+; CHECK-NEXT:    vand.vx v8, v8, a2, v0.t
+; CHECK-NEXT:    vsetvli a3, zero, e8, m1, ta, ma
+=======
+; CHECK-NEXT:    vsetvli a3, zero, e8, m1, ta, ma
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    vmv.v.x v9, a0
+<<<<<<< HEAD
+||||||| 864902e9b4d8
+; CHECK-NEXT:    vsetvli zero, a1, e8, m1, ta, ma
+=======
+; CHECK-NEXT:    vsetvli zero, a1, e8, m1, ta, ma
+; CHECK-NEXT:    vand.vx v8, v8, a2, v0.t
+>>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    vand.vx v9, v9, a2, v0.t
 ; CHECK-NEXT:    vsrl.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
