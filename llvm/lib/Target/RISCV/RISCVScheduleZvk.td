@@ -36,17 +36,7 @@ defm "" : LMULSchedWrites<"WriteVGMULV">;
 /// Zvknha or Zvknhb extensions
 defm "" : LMULSchedWrites<"WriteVSHA2CHV">;
 defm "" : LMULSchedWrites<"WriteVSHA2CLV">;
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
 defm "" : LMULSEWSchedWrites<"WriteVSHA2MSV">;
-#else
-defm "" : LMULSchedWrites<"WriteVSHA2MSV">;
-#endif
-||||||| 864902e9b4d8
-defm "" : LMULSchedWrites<"WriteVSHA2MSV">;
-=======
-defm "" : LMULSEWSchedWrites<"WriteVSHA2MSV">;
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 
 /// Zvkned extension
 defm "" : LMULSchedWrites<"WriteVAESMVV">;
@@ -89,17 +79,7 @@ defm "" : LMULSchedReads<"ReadVGMULV">;
 /// Zvknha or Zvknhb extensions
 defm "" : LMULSchedReads<"ReadVSHA2CHV">;
 defm "" : LMULSchedReads<"ReadVSHA2CLV">;
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
 defm "" : LMULSEWSchedReads<"ReadVSHA2MSV">;
-#else
-defm "" : LMULSchedReads<"ReadVSHA2MSV">;
-#endif
-||||||| 864902e9b4d8
-defm "" : LMULSchedReads<"ReadVSHA2MSV">;
-=======
-defm "" : LMULSEWSchedReads<"ReadVSHA2MSV">;
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 
 /// Zvkned extension
 defm "" : LMULSchedReads<"ReadVAESMVV">;
@@ -173,31 +153,11 @@ multiclass UnsupportedSchedZvknhaOrZvknhb {
 let Unsupported = true in {
 defm "" : LMULWriteRes<"WriteVSHA2CHV", []>;
 defm "" : LMULWriteRes<"WriteVSHA2CLV", []>;
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
 defm "" : LMULSEWWriteRes<"WriteVSHA2MSV", []>;
-#else
-defm "" : LMULWriteRes<"WriteVSHA2MSV", []>;
-#endif
-||||||| 864902e9b4d8
-defm "" : LMULWriteRes<"WriteVSHA2MSV", []>;
-=======
-defm "" : LMULSEWWriteRes<"WriteVSHA2MSV", []>;
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 
 defm "" : LMULReadAdvance<"ReadVSHA2CHV", 0>;
 defm "" : LMULReadAdvance<"ReadVSHA2CLV", 0>;
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
 defm "" : LMULSEWReadAdvance<"ReadVSHA2MSV", 0>;
-#else
-defm "" : LMULReadAdvance<"ReadVSHA2MSV", 0>;
-#endif
-||||||| 864902e9b4d8
-defm "" : LMULReadAdvance<"ReadVSHA2MSV", 0>;
-=======
-defm "" : LMULSEWReadAdvance<"ReadVSHA2MSV", 0>;
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 }
 }
 
