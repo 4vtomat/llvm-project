@@ -5203,14 +5203,7 @@ BoUpSLP::canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
             VecLdCost +=
                 TTI.getInstructionCost(cast<Instruction>(VL[Idx]), CostKind);
       }
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
       unsigned ScalarTyNumElements = getNumElements(ScalarTy);
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-=======
-      unsigned ScalarTyNumElements = getNumElements(ScalarTy);
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
       auto *SubVecTy = getWidenedType(ScalarTy, VF);
       for (auto [I, LS] : enumerate(States)) {
         auto *LI0 = cast<LoadInst>(VL[I * VF]);
@@ -5238,35 +5231,12 @@ BoUpSLP::canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
 #endif // SIFIVE_CUSTOMIZATION
                 /*Insert=*/true, /*Extract=*/false, CostKind);
           else
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
             VectorGEPCost +=
                 TTI.getScalarizationOverhead(
                     SubVecTy, APInt::getOneBitSet(ScalarTyNumElements * VF, 0),
                     /*Insert=*/true, /*Extract=*/false, CostKind) +
                 ::getShuffleCost(TTI, TTI::SK_Broadcast, SubVecTy, {},
                                  CostKind);
-#else
-            VectorGEPCost += TTI.getScalarizationOverhead(
-                                 SubVecTy, APInt::getOneBitSet(VF, 0),
-                                 /*Insert=*/true, /*Extract=*/false, CostKind) +
-                             ::getShuffleCost(TTI, TTI::SK_Broadcast, SubVecTy,
-                                              {}, CostKind);
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-            VectorGEPCost += TTI.getScalarizationOverhead(
-                                 SubVecTy, APInt::getOneBitSet(VF, 0),
-                                 /*Insert=*/true, /*Extract=*/false, CostKind) +
-                             ::getShuffleCost(TTI, TTI::SK_Broadcast, SubVecTy,
-                                              {}, CostKind);
-=======
-            VectorGEPCost +=
-                TTI.getScalarizationOverhead(
-                    SubVecTy, APInt::getOneBitSet(ScalarTyNumElements * VF, 0),
-                    /*Insert=*/true, /*Extract=*/false, CostKind) +
-                ::getShuffleCost(TTI, TTI::SK_Broadcast, SubVecTy, {},
-                                 CostKind);
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
         }
         switch (LS) {
         case LoadsState::Vectorize:
@@ -6154,28 +6124,12 @@ void BoUpSLP::reorderTopToBottom() {
       }
       if ((TE->State == TreeEntry::Vectorize ||
            TE->State == TreeEntry::StridedVectorize) &&
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-          (isa<ExtractElementInst, ExtractValueInst, LoadInst, StoreInst,
-               InsertElementInst>(TE->getMainOp()) ||
-           (SLPReVec && isa<ShuffleVectorInst>(TE->getMainOp()))) &&
-#else
-          isa<ExtractElementInst, ExtractValueInst, LoadInst, StoreInst,
-              InsertElementInst>(TE->getMainOp()) &&
-#endif // SIFIVE_CUSTOMIZATION
-          !TE->isAltShuffle()) {
-||||||| 864902e9b4d8
-          isa<ExtractElementInst, ExtractValueInst, LoadInst, StoreInst,
-              InsertElementInst>(TE->getMainOp()) &&
-          !TE->isAltShuffle()) {
-=======
           (isa<ExtractElementInst, ExtractValueInst, LoadInst, StoreInst,
                InsertElementInst>(TE->getMainOp()) ||
            (SLPReVec && isa<ShuffleVectorInst>(TE->getMainOp())))) {
         assert(!TE->isAltShuffle() &&
                "Alternate instructions are only supported by BinaryOperator "
                "and CastInst.");
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
         // Build correct orders for extract{element,value}, loads and
         // stores.
         reorderOrder(TE->ReorderIndices, Mask);
@@ -7247,19 +7201,8 @@ void BoUpSLP::tryToVectorizeGatheredLoads(
                 OrdersType Order;
                 SmallVector<Value *> PointerOps;
                 // Segmented load detected - vectorize at maximum vector factor.
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
                 if (InterleaveFactor <= Slice.size() &&
                     TTI.isLegalInterleavedAccessType(
-#else
-                if (TTI.isLegalInterleavedAccessType(
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-                if (TTI.isLegalInterleavedAccessType(
-=======
-                if (InterleaveFactor <= Slice.size() &&
-                    TTI.isLegalInterleavedAccessType(
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
                         getWidenedType(Slice.front()->getType(), VF),
                         InterleaveFactor,
                         cast<LoadInst>(Slice.front())->getAlign(),
@@ -10325,48 +10268,14 @@ class BoUpSLP::ShuffleCostEstimator : public BaseShuffleAnalysis {
             ::getShuffleCost(TTI, *RegShuffleKind,
                              getWidenedType(ScalarTy, EltsPerVector), SubMask);
       }
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
       const unsigned BaseVF = getFullVectorNumberOfElements(
           *R.TTI, VL.front()->getType(), alignTo(NumElts, EltsPerVector));
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-=======
-      const unsigned BaseVF = getFullVectorNumberOfElements(
-          *R.TTI, VL.front()->getType(), alignTo(NumElts, EltsPerVector));
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
       for (unsigned Idx : Indices) {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
         assert((Idx + EltsPerVector) <= BaseVF &&
                "SK_ExtractSubvector index out of range");
         Cost += ::getShuffleCost(TTI, TTI::SK_ExtractSubvector,
                                  getWidenedType(ScalarTy, BaseVF), {}, CostKind,
                                  Idx, getWidenedType(ScalarTy, EltsPerVector));
-#else // SIFIVE_CUSTOMIZATION
-        assert((Idx + EltsPerVector) <= alignTo(NumElts, EltsPerVector) &&
-||||||| 864902e9b4d8
-        assert((Idx + EltsPerVector) <= alignTo(NumElts, EltsPerVector) &&
-=======
-        assert((Idx + EltsPerVector) <= BaseVF &&
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
-               "SK_ExtractSubvector index out of range");
-<<<<<<< HEAD
-        Cost += ::getShuffleCost(
-            TTI, TTI::SK_ExtractSubvector,
-            getWidenedType(ScalarTy, alignTo(NumElts, EltsPerVector)), {},
-            CostKind, Idx, getWidenedType(ScalarTy, EltsPerVector));
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-        Cost += ::getShuffleCost(
-            TTI, TTI::SK_ExtractSubvector,
-            getWidenedType(ScalarTy, alignTo(NumElts, EltsPerVector)), {},
-            CostKind, Idx, getWidenedType(ScalarTy, EltsPerVector));
-=======
-        Cost += ::getShuffleCost(TTI, TTI::SK_ExtractSubvector,
-                                 getWidenedType(ScalarTy, BaseVF), {}, CostKind,
-                                 Idx, getWidenedType(ScalarTy, EltsPerVector));
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
       }
       // Second attempt to check, if just a permute is better estimated than
       // subvector extract.
@@ -11323,19 +11232,8 @@ BoUpSLP::getEntryCost(const TreeEntry *E, ArrayRef<Value *> VectorizedVals,
     // If the selects are the only uses of the compares, they will be
     // dead and we can adjust the cost by removing their cost.
     if (VI && SelectOnly) {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
       assert((!Ty->isVectorTy() || SLPReVec) &&
              "Expected only for scalar type.");
-#else
-      assert(!Ty->isVectorTy() && "Expected only for scalar type.");
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-      assert(!Ty->isVectorTy() && "Expected only for scalar type.");
-=======
-      assert((!Ty->isVectorTy() || SLPReVec) &&
-             "Expected only for scalar type.");
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
       auto *CI = cast<CmpInst>(VI->getOperand(0));
       IntrinsicCost -= TTI->getCmpSelInstrCost(
           CI->getOpcode(), Ty, Builder.getInt1Ty(), CI->getPredicate(),
@@ -12212,7 +12110,6 @@ bool BoUpSLP::isTreeTinyAndNotFullyVectorizable(bool ForReduction) const {
       }))
     return false;
 
-#if SIFIVE_CUSTOMIZATION
   if (VectorizableTree.back()->isGather() &&
       VectorizableTree.back()->isAltShuffle() &&
       VectorizableTree.back()->getVectorFactor() > 2 &&
@@ -12224,25 +12121,6 @@ bool BoUpSLP::isTreeTinyAndNotFullyVectorizable(bool ForReduction) const {
           APInt::getAllOnes(VectorizableTree.back()->getVectorFactor()),
           /*Insert=*/true, /*Extract=*/false,
           TTI::TCK_RecipThroughput) > -SLPCostThreshold)
-#else
-  if (VectorizableTree.back()->isGather() &&
-      VectorizableTree.back()->isAltShuffle() &&
-<<<<<<< HEAD
-      VectorizableTree.back()->getVectorFactor() > 2)
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-      VectorizableTree.back()->getVectorFactor() > 2)
-=======
-      VectorizableTree.back()->getVectorFactor() > 2 &&
-      allSameBlock(VectorizableTree.back()->Scalars) &&
-      !VectorizableTree.back()->Scalars.front()->getType()->isVectorTy() &&
-      TTI->getScalarizationOverhead(
-          getWidenedType(VectorizableTree.back()->Scalars.front()->getType(),
-                         VectorizableTree.back()->getVectorFactor()),
-          APInt::getAllOnes(VectorizableTree.back()->getVectorFactor()),
-          /*Insert=*/true, /*Extract=*/false,
-          TTI::TCK_RecipThroughput) > -SLPCostThreshold)
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
     return false;
 
   // Otherwise, we can't vectorize the tree. It is both tiny and not fully
@@ -13256,17 +13134,7 @@ BoUpSLP::isGatherShuffledSingleRegisterEntry(
     // Build a list of tree entries where V is used.
     SmallPtrSet<const TreeEntry *, 4> VToTEs;
     for (const TreeEntry *TEPtr : ValueToGatherNodes.find(V)->second) {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
       if (TEPtr == TE || TEPtr->Idx == 0)
-#else
-      if (TEPtr == TE)
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-      if (TEPtr == TE)
-=======
-      if (TEPtr == TE || TEPtr->Idx == 0)
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
         continue;
       assert(any_of(TEPtr->Scalars,
                     [&](Value *V) { return GatheredScalars.contains(V); }) &&
@@ -14533,8 +14401,6 @@ public:
            ArrayRef<int> SubVectorsMask, unsigned VF = 0,
            function_ref<void(Value *&, SmallVectorImpl<int> &)> Action = {}) {
     IsFinalized = true;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
     unsigned ScalarTyNumElements = getNumElements(ScalarTy);
     SmallVector<int> NewExtMask(ExtMask);
     if (ScalarTyNumElements != 1) {
@@ -14543,19 +14409,6 @@ public:
       transformScalarShuffleIndiciesToVector(ScalarTyNumElements, NewExtMask);
       ExtMask = NewExtMask;
     }
-#else
-||||||| 864902e9b4d8
-=======
-    unsigned ScalarTyNumElements = getNumElements(ScalarTy);
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
-    SmallVector<int> NewExtMask(ExtMask);
-    if (ScalarTyNumElements != 1) {
-      assert(SLPReVec && "FixedVectorType is not expected.");
-      transformScalarShuffleIndiciesToVector(ScalarTyNumElements, CommonMask);
-      transformScalarShuffleIndiciesToVector(ScalarTyNumElements, NewExtMask);
-      ExtMask = NewExtMask;
-    }
-#endif // SIFIVE_CUSTOMIZATION
     if (Action) {
       Value *Vec = InVectors.front();
       if (InVectors.size() == 2) {
@@ -14589,46 +14442,6 @@ public:
       for (unsigned Idx = 0, Sz = CommonMask.size(); Idx < Sz; ++Idx)
         if (CommonMask[Idx] != PoisonMaskElem)
           CommonMask[Idx] = Idx;
-<<<<<<< HEAD
-      for (auto [E, Idx] : SubVectors) {
-        Value *V = E->VectorizedValue;
-        if (V->getType()->isIntOrIntVectorTy())
-          V = castToScalarTyElem(V, any_of(E->Scalars, [&](Value *V) {
-                                   return !isKnownNonNegative(
-                                       V, SimplifyQuery(*R.DL));
-                                 }));
-#if SIFIVE_CUSTOMIZATION
-        unsigned InsertionIndex = Idx * ScalarTyNumElements;
-        Vec = Builder.CreateInsertVector(Vec->getType(), Vec, V,
-                                         Builder.getInt64(InsertionIndex));
-        if (!CommonMask.empty()) {
-          std::iota(std::next(CommonMask.begin(), InsertionIndex),
-                    std::next(CommonMask.begin(), (Idx + E->getVectorFactor()) *
-                                                      ScalarTyNumElements),
-                    InsertionIndex);
-        }
-#else
-        Vec = Builder.CreateInsertVector(Vec->getType(), Vec, V,
-                                         Builder.getInt64(Idx));
-        if (!CommonMask.empty()) {
-          std::iota(std::next(CommonMask.begin(), Idx),
-                    std::next(CommonMask.begin(), Idx + E->getVectorFactor()),
-                    Idx);
-||||||| 864902e9b4d8
-      for (auto [E, Idx] : SubVectors) {
-        Value *V = E->VectorizedValue;
-        if (V->getType()->isIntOrIntVectorTy())
-          V = castToScalarTyElem(V, any_of(E->Scalars, [&](Value *V) {
-                                   return !isKnownNonNegative(
-                                       V, SimplifyQuery(*R.DL));
-                                 }));
-        Vec = Builder.CreateInsertVector(Vec->getType(), Vec, V,
-                                         Builder.getInt64(Idx));
-        if (!CommonMask.empty()) {
-          std::iota(std::next(CommonMask.begin(), Idx),
-                    std::next(CommonMask.begin(), Idx + E->getVectorFactor()),
-                    Idx);
-=======
       auto CreateSubVectors = [&](Value *Vec,
                                   SmallVectorImpl<int> &CommonMask) {
         for (auto [E, Idx] : SubVectors) {
@@ -14685,9 +14498,7 @@ public:
         for (unsigned I : seq<unsigned>(CommonMask.size())) {
           if (SVMask[I] != PoisonMaskElem)
             CommonMask[I] = I;
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
         }
-#endif // SIFIVE_CUSTOMIZATION
       }
       InVectors.front() = Vec;
     }
@@ -16223,26 +16034,12 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E, bool PostponedPHIs) {
     case Instruction::ShuffleVector: {
       Value *V;
       if (SLPReVec && !E->isAltShuffle()) {
-<<<<<<< HEAD
-#ifndef SIFIVE_CUSTOMIZATION
-        assert(E->ReuseShuffleIndices.empty() &&
-               "Not support ReuseShuffleIndices yet.");
-        assert(E->ReorderIndices.empty() && "Not support ReorderIndices yet.");
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-        assert(E->ReuseShuffleIndices.empty() &&
-               "Not support ReuseShuffleIndices yet.");
-        assert(E->ReorderIndices.empty() && "Not support ReorderIndices yet.");
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
         setInsertPointAfterBundle(E);
         Value *Src = vectorizeOperand(E, 0, PostponedPHIs);
         if (E->VectorizedValue) {
           LLVM_DEBUG(dbgs() << "SLP: Diamond merged for " << *VL0 << ".\n");
           return E->VectorizedValue;
         }
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
         SmallVector<int> ThisMask(calculateShufflevectorMask(E->Scalars));
         if (auto *SVSrc = dyn_cast<ShuffleVectorInst>(Src)) {
           assert(isa<PoisonValue>(SVSrc->getOperand(1)) &&
@@ -16255,58 +16052,10 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E, bool PostponedPHIs) {
         } else {
           V = Builder.CreateShuffleVector(Src, ThisMask);
         }
-#else
-        assert(isa<ShuffleVectorInst>(Src) &&
-               "Not supported shufflevector usage.");
-        auto *SVSrc = cast<ShuffleVectorInst>(Src);
-        assert(isa<PoisonValue>(SVSrc->getOperand(1)) &&
-               "Not supported shufflevector usage.");
-||||||| 864902e9b4d8
-        assert(isa<ShuffleVectorInst>(Src) &&
-               "Not supported shufflevector usage.");
-        auto *SVSrc = cast<ShuffleVectorInst>(Src);
-        assert(isa<PoisonValue>(SVSrc->getOperand(1)) &&
-               "Not supported shufflevector usage.");
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
-        SmallVector<int> ThisMask(calculateShufflevectorMask(E->Scalars));
-<<<<<<< HEAD
-        SmallVector<int> NewMask(ThisMask.size());
-        transform(ThisMask, NewMask.begin(),
-                  [&SVSrc](int Mask) { return SVSrc->getShuffleMask()[Mask]; });
-        V = Builder.CreateShuffleVector(SVSrc->getOperand(0), NewMask);
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-        SmallVector<int> NewMask(ThisMask.size());
-        transform(ThisMask, NewMask.begin(),
-                  [&SVSrc](int Mask) { return SVSrc->getShuffleMask()[Mask]; });
-        V = Builder.CreateShuffleVector(SVSrc->getOperand(0), NewMask);
-=======
-        if (auto *SVSrc = dyn_cast<ShuffleVectorInst>(Src)) {
-          assert(isa<PoisonValue>(SVSrc->getOperand(1)) &&
-                 "Not supported shufflevector usage.");
-          SmallVector<int> NewMask(ThisMask.size());
-          transform(ThisMask, NewMask.begin(), [&SVSrc](int Mask) {
-            return SVSrc->getShuffleMask()[Mask];
-          });
-          V = Builder.CreateShuffleVector(SVSrc->getOperand(0), NewMask);
-        } else {
-          V = Builder.CreateShuffleVector(Src, ThisMask);
-        }
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
         propagateIRFlags(V, E->Scalars, VL0);
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-        if (auto *I = dyn_cast<Instruction>(V))
-          V = propagateMetadata(I, E->Scalars);
-        V = FinalShuffle(V, E);
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-=======
         if (auto *I = dyn_cast<Instruction>(V))
           V = ::propagateMetadata(I, E->Scalars);
         V = FinalShuffle(V, E);
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
       } else {
         assert(E->isAltShuffle() &&
                ((Instruction::isBinaryOp(E->getOpcode()) &&
@@ -16438,31 +16187,12 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E, bool PostponedPHIs) {
           transformScalarShuffleIndiciesToVector(VecTy->getNumElements(), Mask);
         }
         V = Builder.CreateShuffleVector(V0, V1, Mask);
-<<<<<<< HEAD
-#ifndef SIFIVE_CUSTOMIZATION
-      }
-#endif // SIFIVE_CUSTOMIZATION
-      if (auto *I = dyn_cast<Instruction>(V)) {
-        V = propagateMetadata(I, E->Scalars);
-        GatherShuffleExtractSeq.insert(I);
-        CSEBlocks.insert(I->getParent());
-||||||| 864902e9b4d8
-      }
-      if (auto *I = dyn_cast<Instruction>(V)) {
-        V = propagateMetadata(I, E->Scalars);
-        GatherShuffleExtractSeq.insert(I);
-        CSEBlocks.insert(I->getParent());
-=======
         if (auto *I = dyn_cast<Instruction>(V)) {
           V = ::propagateMetadata(I, E->Scalars);
           GatherShuffleExtractSeq.insert(I);
           CSEBlocks.insert(I->getParent());
         }
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
       }
-#if SIFIVE_CUSTOMIZATION
-      }
-#endif // SIFIVE_CUSTOMIZATION
 
       E->VectorizedValue = V;
       ++NumVectorInstructions;
@@ -17069,8 +16799,6 @@ BoUpSLP::vectorizeTree(const ExtraValueToDebugLocsMap &ExternallyUsedValues,
     for (Instruction *I : RemovedInsts) {
       const TreeEntry *IE = getTreeEntry(I);
       if (IE->Idx != 0 &&
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
           !(VectorizableTree.front()->isGather() &&
             !IE->UserTreeIndices.empty() &&
             (ValueToGatherNodes.lookup(I).contains(
@@ -17084,26 +16812,6 @@ BoUpSLP::vectorizeTree(const ExtraValueToDebugLocsMap &ExternallyUsedValues,
             IE->Idx >= *GatheredLoadsEntriesFirst &&
             VectorizableTree.front()->isGather() &&
             is_contained(VectorizableTree.front()->Scalars, I)))
-#else
-          !(VectorizableTree.front()->isGather() && isa<LoadInst>(I) &&
-||||||| 864902e9b4d8
-          !(VectorizableTree.front()->isGather() && isa<LoadInst>(I) &&
-=======
-          !(VectorizableTree.front()->isGather() &&
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
-            !IE->UserTreeIndices.empty() &&
-            (ValueToGatherNodes.lookup(I).contains(
-                 VectorizableTree.front().get()) ||
-             any_of(IE->UserTreeIndices,
-                    [&](const EdgeInfo &EI) {
-                      return EI.UserTE == VectorizableTree.front().get() &&
-                             EI.EdgeIdx == UINT_MAX;
-                    }))) &&
-          !(GatheredLoadsEntriesFirst.has_value() &&
-            IE->Idx >= *GatheredLoadsEntriesFirst &&
-            VectorizableTree.front()->isGather() &&
-            is_contained(VectorizableTree.front()->Scalars, I)))
-#endif // SIFIVE_CUSTOMIZATION
         continue;
       SmallVector<SelectInst *> LogicalOpSelects;
       I->replaceUsesWithIf(PoisonValue::get(I->getType()), [&](Use &U) {
