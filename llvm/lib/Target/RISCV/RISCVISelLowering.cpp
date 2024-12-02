@@ -1485,41 +1485,11 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
           continue;
         }
 
-<<<<<<< HEAD
-        setOperationAction({ISD::BUILD_VECTOR, ISD::VECTOR_SHUFFLE,
-                            ISD::INSERT_VECTOR_ELT, ISD::EXTRACT_VECTOR_ELT},
-                           VT, Custom);
-
-        setOperationAction(
-            {ISD::MLOAD, ISD::MSTORE, ISD::MGATHER, ISD::MSCATTER}, VT, Custom);
-
-#if SIFIVE_CUSTOMIZATION
-        setOperationAction(ISD::SETCC, VT, Custom);
-#endif
-
-        setOperationAction({ISD::EXPERIMENTAL_VP_STRIDED_LOAD,
-                            ISD::EXPERIMENTAL_VP_STRIDED_STORE, ISD::VP_GATHER,
-                            ISD::VP_SCATTER},
-                           VT, Custom);
 #if SIFIVE_CUSTOMIZATION
         setOperationAction(ISD::VP_LOAD_FF, VT, Custom);
 #endif
-||||||| 864902e9b4d8
-        setOperationAction({ISD::BUILD_VECTOR, ISD::VECTOR_SHUFFLE,
-                            ISD::INSERT_VECTOR_ELT, ISD::EXTRACT_VECTOR_ELT},
-                           VT, Custom);
-
-        setOperationAction(
-            {ISD::MLOAD, ISD::MSTORE, ISD::MGATHER, ISD::MSCATTER}, VT, Custom);
-
-        setOperationAction({ISD::EXPERIMENTAL_VP_STRIDED_LOAD,
-                            ISD::EXPERIMENTAL_VP_STRIDED_STORE, ISD::VP_GATHER,
-                            ISD::VP_SCATTER},
-                           VT, Custom);
-=======
         setOperationAction({ISD::BUILD_VECTOR, ISD::SCALAR_TO_VECTOR}, VT,
                            Custom);
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 
         setOperationAction({ISD::FADD, ISD::FSUB, ISD::FMUL, ISD::FDIV,
                             ISD::FNEG, ISD::FABS, ISD::FCOPYSIGN, ISD::FSQRT,
@@ -1758,18 +1728,6 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
       MemTy = MemTy->getScalarType();
 
     Info.memVT = getValueType(DL, MemTy);
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    if (MemTy->isTargetExtTy()) {
-      // RISC-V vector tuple type's alignment type should be its element type.
-      if (cast<TargetExtType>(MemTy)->getName() == "riscv.vector.tuple")
-        MemTy = Type::getIntNTy(
-            MemTy->getContext(),
-            1 << cast<ConstantInt>(I.getArgOperand(I.arg_size() - 1))
-                ->getZExtValue());
-||||||| 864902e9b4d8
-    if (MemTy->isTargetExtTy())
-=======
     if (MemTy->isTargetExtTy()) {
       // RISC-V vector tuple type's alignment type should be its element type.
       if (cast<TargetExtType>(MemTy)->getName() == "riscv.vector.tuple")
@@ -1777,25 +1735,10 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
             MemTy->getContext(),
             1 << cast<ConstantInt>(I.getArgOperand(I.arg_size() - 1))
                      ->getZExtValue());
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
       Info.align = DL.getABITypeAlign(MemTy);
-<<<<<<< HEAD
     } else {
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-    else
-=======
-    } else {
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
       Info.align = Align(DL.getTypeSizeInBits(MemTy->getScalarType()) / 8);
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
     }
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-=======
-    }
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
     Info.size = MemoryLocation::UnknownSize;
     Info.flags |=
         IsStore ? MachineMemOperand::MOStore : MachineMemOperand::MOLoad;
@@ -6686,13 +6629,7 @@ static bool hasPassthruOp(unsigned Opcode) {
          Opcode <= RISCVISD::LAST_RISCV_STRICTFP_OPCODE &&
          "not a RISC-V target specific op");
   static_assert(RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
-<<<<<<< HEAD
-                    141 && // SIFIVE
-||||||| 864902e9b4d8
-                    130 &&
-=======
-                    128 &&
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+                    139 && // SIFIVE
                 RISCVISD::LAST_RISCV_STRICTFP_OPCODE -
                         ISD::FIRST_TARGET_STRICTFP_OPCODE ==
                     21 &&
@@ -6718,13 +6655,7 @@ static bool hasMaskOp(unsigned Opcode) {
          Opcode <= RISCVISD::LAST_RISCV_STRICTFP_OPCODE &&
          "not a RISC-V target specific op");
   static_assert(RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
-<<<<<<< HEAD
-                    141 && // SIFIVE
-||||||| 864902e9b4d8
-                    130 &&
-=======
-                    128 &&
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+                    139 && // SIFIVE
                 RISCVISD::LAST_RISCV_STRICTFP_OPCODE -
                         ISD::FIRST_TARGET_STRICTFP_OPCODE ==
                     21 &&
@@ -19893,7 +19824,6 @@ static SDValue combineTruncToVnclip(SDNode *N, SelectionDAG &DAG,
   return Val;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // Combine (truncate_vector_vl (vfcvt_rtz_xu_f_vl (vfmin_vl X, 255.0))) ->
 // (vnclipu_vl (vfcvt_rtz_xu_f_vl X)). The vfcvt will return MAX_UINT for values
@@ -19976,8 +19906,6 @@ static SDValue combineTruncOfFPToUIFMin(SDNode *N, SelectionDAG &DAG,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-||||||| 864902e9b4d8
-=======
 // Convert
 //   (iX ctpop (bitcast (vXi1 A)))
 // ->
@@ -20024,7 +19952,6 @@ static SDValue combineScalarCTPOPToVCPOP(SDNode *N, SelectionDAG &DAG,
   return DAG.getZExtOrTrunc(Pop, DL, VT);
 }
 
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
                                                DAGCombinerInfo &DCI) const {
   SelectionDAG &DAG = DCI.DAG;
