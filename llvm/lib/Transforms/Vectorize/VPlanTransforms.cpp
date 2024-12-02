@@ -1884,30 +1884,10 @@ bool VPlanTransforms::tryAddExplicitVectorLength(
     return isa<VPWidenIntOrFpInductionRecipe, VPWidenPointerInductionRecipe>(
         &Phi);
   });
-<<<<<<< HEAD
-  // FIXME: Remove this once we can transform (select header_mask, true_value,
-  // false_value) into vp.merge.
-  bool ContainsOutloopReductions =
-      any_of(Header->phis(), [&](VPRecipeBase &Phi) {
-        auto *R = dyn_cast<VPReductionPHIRecipe>(&Phi);
-        return R && !R->isInLoop();
-      });
 #if SIFIVE_CUSTOMIZATION
   if (!EnableEVLFuzzing)
 #endif // SIFIVE_CUSTOMIZATION
-  if (ContainsWidenInductions || ContainsOutloopReductions)
-||||||| 864902e9b4d8
-  // FIXME: Remove this once we can transform (select header_mask, true_value,
-  // false_value) into vp.merge.
-  bool ContainsOutloopReductions =
-      any_of(Header->phis(), [&](VPRecipeBase &Phi) {
-        auto *R = dyn_cast<VPReductionPHIRecipe>(&Phi);
-        return R && !R->isInLoop();
-      });
-  if (ContainsWidenInductions || ContainsOutloopReductions)
-=======
   if (ContainsWidenInductions)
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
     return false;
 
   auto *CanonicalIVPHI = Plan.getCanonicalIV();
