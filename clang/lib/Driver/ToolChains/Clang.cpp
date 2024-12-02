@@ -4619,7 +4619,9 @@ static void RenderDiagnosticsOptions(const Driver &D, const ArgList &Args,
 
   Args.addOptOutFlag(CmdArgs, options::OPT_fspell_checking,
                      options::OPT_fno_spell_checking);
-<<<<<<< HEAD
+
+  Args.addLastArg(CmdArgs, options::OPT_warning_suppression_mappings_EQ);
+
 #if SIFIVE_CUSTOMIZATION
   // Show iteration counts of loops by runtime profile.
   if (Args.hasArg(options::OPT_fdiagnostics_show_profile_count)) {
@@ -4632,11 +4634,6 @@ static void RenderDiagnosticsOptions(const Driver &D, const ArgList &Args,
     CmdArgs.append({"-mllvm", "-enable-profile-count-metadata"});
   }
 #endif // SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-=======
-
-  Args.addLastArg(CmdArgs, options::OPT_warning_suppression_mappings_EQ);
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 }
 
 DwarfFissionKind tools::getDebugFissionKind(const Driver &D,
