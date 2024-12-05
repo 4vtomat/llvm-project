@@ -990,12 +990,15 @@ Value *VPInstruction::generate(VPTransformState &State) {
            "Expected only UF == 1 when VLA vectorizing");
 
     VectorParts RdxParts(UF);
+    // The operand 1, 3, 5, ... 1 + 2n are the operands to be computed reduction
+    // result.
     for (unsigned Part = 0; Part < UF; ++Part)
-      RdxParts[Part] = State.get(getOperand(1 + Part), PhiR->isInLoop());
+      RdxParts[Part] = State.get(getOperand(1 + Part * 2), false);
 
     VectorParts MaskParts(UF);
+    // The operand 2, 4, 6, ... 2 + 2n are the mask operands.
     for (unsigned Part = 0; Part < UF; ++Part)
-      MaskParts[Part] = State.get(getOperand(1 + UF + Part), false);
+      MaskParts[Part] = State.get(getOperand(2 + Part * 2), false);
 
     // If the vector reduction can be performed in a smaller type, we truncate
     // then extend the loop exit value to enable InstCombine to evaluate the
