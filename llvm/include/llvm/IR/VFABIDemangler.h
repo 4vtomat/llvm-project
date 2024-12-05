@@ -49,9 +49,6 @@ enum class VFISAKind {
   AVX,          // x86 AVX
   AVX2,         // x86 AVX2
   AVX512,       // x86 AVX512
-#if SIFIVE_CUSTOMIZATION
-  RVV,          // RISC-V vector
-#endif  // SIFIVE_CUSTOMIZATION
   LLVM,         // LLVM internal ISA for functions that are not
   // attached to an existing ABI via name mangling.
   Unknown // Unknown ISA

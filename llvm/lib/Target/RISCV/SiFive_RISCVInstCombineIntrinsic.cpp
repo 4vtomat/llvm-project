@@ -746,7 +746,8 @@ static Instruction *foldVmvVRgatherVle(InstCombiner &IC, IntrinsicInst &II,
         isa<UndefValue>(Vle->getArgOperand(0)) &&
         isa<ConstantInt>(Vle->getArgOperand(2)) &&
         !cast<ConstantInt>(Vle->getArgOperand(2))->isZero()) {
-      PointerType *SrcPtrTy = Vle->getType()->getScalarType()->getPointerTo();
+      PointerType *SrcPtrTy =
+          PointerType::get(Vle->getType()->getContext(), /*AddressSpace=*/0);
       IRBuilderBase::InsertPointGuard Guard(IC.Builder);
       IC.Builder.SetInsertPoint(Vle);
       Value *SrcPtr =

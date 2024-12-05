@@ -164,10 +164,6 @@ bool llvm::isVectorIntrinsicWithScalarOpAtArg(Intrinsic::ID ID,
   case Intrinsic::vp_is_fpclass:
   case Intrinsic::powi:
 #if SIFIVE_CUSTOMIZATION
-  case Intrinsic::vp_abs:
-  case Intrinsic::vp_ctlz:
-  case Intrinsic::vp_cttz:
-  case Intrinsic::vp_is_fpclass:
   case Intrinsic::vp_powi:
   case Intrinsic::aarch64_neon_rshrn:
   case Intrinsic::aarch64_neon_sqrshrn:
@@ -202,10 +198,6 @@ bool llvm::isVectorIntrinsicWithOverloadTypeAtArg(
   case Intrinsic::vp_llrint:
   case Intrinsic::ucmp:
   case Intrinsic::scmp:
-#if SIFIVE_CUSTOMIZATION
-  case Intrinsic::vp_lrint:
-  case Intrinsic::vp_llrint:
-#endif // SIFIVE_CUSTOMIZATION
     return OpdIdx == -1 || OpdIdx == 0;
   case Intrinsic::is_fpclass:
   case Intrinsic::vp_is_fpclass:

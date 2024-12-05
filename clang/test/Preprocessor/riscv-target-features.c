@@ -1420,14 +1420,6 @@
 // RUN: -o - | FileCheck --check-prefix=CHECK-SS-EXT %s
 // CHECK-SS-EXT: __riscv_ss  1013000{{$}}
 
-// RUN: %clang --target=riscv32 \
-// RUN:   -march=rv32i_smrnmi1p0 -E -dM %s \
-// RUN:   -o - | FileCheck --check-prefix=CHECK-SMRNMI-EXT %s
-// RUN: %clang --target=riscv64 \
-// RUN:   -march=rv64i_smrnmi1p0 -E -dM %s \
-// RUN:   -o - | FileCheck --check-prefix=CHECK-SMRNMI-EXT %s
-// CHECK-SMRNMI-EXT: __riscv_smrnmi 1000000{{$}}
-
 // RUN: %clang --target=riscv32 -menable-experimental-extensions \
 // RUN: -march=rv32ismwg -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-SMWG-EXT %s

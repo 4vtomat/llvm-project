@@ -14,6 +14,9 @@
 
 #include "RISCV.h"
 #include "RISCVInstrInfo.h"
+#if SIFIVE_CUSTOMIZATION
+#include "RISCVTargetMachine.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/CodeGen/MachineFunctionPass.h"
 #include "llvm/CodeGen/MachineInstrBuilder.h"
 

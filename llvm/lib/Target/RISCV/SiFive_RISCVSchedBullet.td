@@ -681,6 +681,9 @@ multiclass BulletWriteResBase<
       defm "" : LMULWriteResMX<"WriteVICALUV",    [VCQ, VA1], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVICALUX",    [VCQ, VA1], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVICALUI",    [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVICALUMV",   [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVICALUMX",   [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVICALUMI",   [VCQ, VA1], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVShiftV",    [VCQ, VA1OrVA2], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVShiftX",    [VCQ, VA1OrVA2], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVShiftI",    [VCQ, VA1OrVA2], mx, IsWorstCase>;

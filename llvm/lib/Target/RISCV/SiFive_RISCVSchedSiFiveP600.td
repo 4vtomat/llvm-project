@@ -674,6 +674,9 @@ foreach mx = SchedMxList in {
       defm "" : LMULWriteResMX<"WriteVICALUV",   [SiFiveP600VectorArith], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVICALUX",   [SiFiveP600VectorArith], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVICALUI",   [SiFiveP600VectorArith], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVICALUMV",  [SiFiveP600VectorArith], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVICALUMX",  [SiFiveP600VectorArith], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVICALUMI",  [SiFiveP600VectorArith], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVIMergeV",  [SiFiveP600VectorArith], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVIMergeX",  [SiFiveP600VectorArith], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVIMergeI",  [SiFiveP600VectorArith], mx, IsWorstCase>;

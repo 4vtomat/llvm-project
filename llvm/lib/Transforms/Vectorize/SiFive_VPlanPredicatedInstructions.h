@@ -20,8 +20,9 @@ namespace llvm {
 Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
                                   VPTransformState &State, VPValue *BlockInMask);
 
-void widenPredicatedIntrinsic(CallInst *CI, VPValue *Def, VPTransformState &State,
-                         Intrinsic::ID VPID);
+void widenPredicatedIntrinsic(CallInst *CI, VPValue *Def,
+                              VPTransformState &State, Intrinsic::ID VPID,
+                              const TargetTransformInfo *TTI);
 
 /// Build and return either `vp.gather`/`vp.scatter` or
 /// `vp.strided_load`/`vp.strided_store` if previous analysis indicated it's

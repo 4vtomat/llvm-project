@@ -22,6 +22,9 @@
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/InstVisitor.h"
 #include "llvm/IR/Intrinsics.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/IR/IntrinsicsRISCV.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/IR/PatternMatch.h"
 #include "llvm/InitializePasses.h"
 #include "llvm/Pass.h"

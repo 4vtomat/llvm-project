@@ -40,7 +40,7 @@ typedef __int128_t double_xlen_t;
 #endif
 double_xlen_t test_R_wide_scalar(double_xlen_t p) {
 // CHECK-LABEL: define{{.*}} {{i128|i64}} @test_R_wide_scalar(
-// CHECK: call {{i128|i64}} asm sideeffect "", "=R,R"({{i128|i64}} %{{.*}})
+// CHECK: call {{i128|i64}} asm sideeffect "", "=R,R,~{vl},~{vtype}"({{i128|i64}} %{{.*}})
   double_xlen_t ret;
   asm volatile("" : "=R"(ret) : "R"(p));
   return ret;

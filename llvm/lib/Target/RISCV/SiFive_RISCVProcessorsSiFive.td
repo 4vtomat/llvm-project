@@ -42,7 +42,7 @@ defvar SiFiveMallardTuneFeatures = [TuneNoDefaultUnroll,
                                     TuneConditionalCompressedMoveFusion,
                                     TuneLUIADDIFusion,
                                     TuneAUIPCADDIFusion,
-                                    FeaturePostRAScheduler];
+                                    TunePostRAScheduler];
 
 defvar SiFiveP400TuneFeatures = !listconcat([TuneSiFiveP400],
                                             SiFiveMallardTuneFeatures);
@@ -219,7 +219,7 @@ def SIFIVE_S61 : RISCVProcessorModel<"sifive-s61", SiFive6Model,
                                       FeatureStdExtC,
                                       FeatureStdExtZba,
                                       FeatureStdExtZbb],
-                                     [TuneSiFive6, FeaturePostRAScheduler]>;
+                                     [TuneSiFive6, TunePostRAScheduler]>;
 
 def SIFIVE_S61R : RISCVProcessorModel<"sifive-s61r", SiFive6Model,
                                       [Feature64Bit,
@@ -242,7 +242,7 @@ def SIFIVE_S61R : RISCVProcessorModel<"sifive-s61r", SiFive6Model,
                                        FeatureStdExtZcmp,
                                        FeatureStdExtZcmt,
                                        FeatureStdExtZkt],
-                                     [TuneSiFive6, FeaturePostRAScheduler]>;
+                                     [TuneSiFive6, TunePostRAScheduler]>;
 
 def SIFIVE_S76M : RISCVProcessorModel<"sifive-s76m", SiFive7Model,
                                       [Feature64Bit,
@@ -309,7 +309,7 @@ def SIFIVE_U64 : RISCVProcessorModel<"sifive-u64", SiFive6Model,
                                       FeatureStdExtC,
                                       FeatureStdExtZba,
                                       FeatureStdExtZbb],
-                                     [TuneSiFive6, FeaturePostRAScheduler]>;
+                                     [TuneSiFive6, TunePostRAScheduler]>;
 
 def SIFIVE_U64R : RISCVProcessorModel<"sifive-u64r", SiFive6Model,
                                       [Feature64Bit,
@@ -340,7 +340,7 @@ def SIFIVE_U64R : RISCVProcessorModel<"sifive-u64r", SiFive6Model,
                                        FeatureStdExtZkt,
                                        FeatureVendorXSiFivecdiscarddlone,
                                        FeatureVendorXSiFivecflushdlone],
-                                      [TuneSiFive6, FeaturePostRAScheduler]>;
+                                      [TuneSiFive6, TunePostRAScheduler]>;
 
 def SIFIVE_U74M : RISCVProcessorModel<"sifive-u74m", SiFive7Model,
                                       [Feature64Bit,

@@ -1084,15 +1084,6 @@ defm : VPatConversionWF_VF_BF<"int_riscv_sf_vfwcvt_f_bf16_v", "PseudoVFWCVTBF16_
 defm : XPatConversionVF_WF<"int_riscv_sf_vfncvt_bf16_f_w", "PseudoVFNCVTBF16_F_F", isSEWAware=1>;
 }
 
-let isBarrier = 1, isReturn = 1, isTerminator = 1,
-    hasNoSchedulingInfo = 1 in {
-def MNRET : Priv<"mnret", 0b0111000>, Sched<[]> {
-  let rd = 0;
-  let rs1 = 0;
-  let rs2 = 0b00010;
-}
-} // let isBarrier = 1, ...
-
 let hasNoSchedulingInfo = 1, hasSideEffects = 1,
     mayLoad = 0, mayStore = 0 in {
 def CFLUSH_D_L1

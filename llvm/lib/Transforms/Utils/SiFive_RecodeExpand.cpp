@@ -576,7 +576,8 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         LoadInst *Load = Builder.CreateAlignedLoad(
             ConcatenateTy,
             Builder.CreateBitCast(II->getArgOperand(0),
-                                  ConcatenateTy->getPointerTo()),
+                                  PointerType::get(ConcatenateTy->getContext(),
+                                                   /*AddressSpace=*/0)),
             DL.getABITypeAlign(DesTy->getElementType(0)->getScalarType()));
         Value *Des = PoisonValue::get(DesTy);
         for (unsigned i = 0; i != StructNumElements; ++i) {
@@ -676,7 +677,8 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         LoadInst *Load = Builder.CreateAlignedLoad(
             ConcatenateTy,
             Builder.CreateBitCast(II->getArgOperand(II->arg_size() - 1),
-                                  ConcatenateTy->getPointerTo()),
+                                  PointerType::get(ConcatenateTy->getContext(),
+                                                   /*AddressSpace=*/0)),
             Align(1));
         ConstantInt *Lane =
             cast<ConstantInt>(II->getArgOperand(StructNumElements));
@@ -928,7 +930,8 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         II->replaceAllUsesWith(Builder.CreateAlignedStore(
             glue(Builder, Arg),
             Builder.CreateBitCast(II->getArgOperand(StructNumElements),
-                                  ConcatenateTy->getPointerTo()),
+                                  PointerType::get(ConcatenateTy->getContext(),
+                                                   /*AddressSpace=*/0)),
             DL.getABITypeAlign(VecElementTy)));
         break;
       }
@@ -995,7 +998,8 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         II->replaceAllUsesWith(Builder.CreateAlignedStore(
             Des,
             Builder.CreateBitCast(II->getArgOperand(StructNumElements + 1),
-                                  DesTy->getPointerTo()),
+                                  PointerType::get(DesTy->getContext(),
+                                                   /*AddressSpace=*/0)),
             Align(1)));
         break;
       }

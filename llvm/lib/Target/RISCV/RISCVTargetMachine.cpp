@@ -409,20 +409,19 @@ public:
       DAG->addMutation(createStoreClusterDAGMutation(
           DAG->TII, DAG->TRI, /*ReorderWhileClustering=*/true));
     }
-#if SIFIVE_CUSTOMIZATION
-    const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
-    if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
-      DAG = DAG ? DAG : createGenericSchedLive(C);
-      DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
-      DAG->addMutation(createRISCVMaskInstDAGMutation());
-    }
-#endif // SIFIVE_CUSTOMIZATION
 
     const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
     if (!DisableVectorMaskMutation && ST.hasVInstructions()) {
       DAG = DAG ? DAG : createGenericSchedLive(C);
       DAG->addMutation(createRISCVVectorMaskDAGMutation(DAG->TRI));
     }
+#if SIFIVE_CUSTOMIZATION
+    if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
+      DAG = DAG ? DAG : createGenericSchedLive(C);
+      DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
+      DAG->addMutation(createRISCVMaskInstDAGMutation());
+    }
+#endif // SIFIVE_CUSTOMIZATION
     return DAG;
   }
 
@@ -437,6 +436,7 @@ public:
           DAG->TII, DAG->TRI, /*ReorderWhileClustering=*/true));
     }
 #if SIFIVE_CUSTOMIZATION
+    const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
     if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
       DAG = createGenericSchedPostRA(C);
       DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));

@@ -1816,7 +1816,6 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
   // IntrinsicEnums.inc.
 #define VP_INTRINSIC_LIST                                                      \
   VP_INTRINSIC(vp_fma, 1)                                                      \
-  VP_INTRINSIC(vp_fneg, 1)                                                     \
   VP_INTRINSIC(vp_gather, 1)                                                   \
   VP_INTRINSIC(vp_inttoptr, 1)                                                 \
   VP_INTRINSIC(vp_ptrtoint, 1)                                                 \

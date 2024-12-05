@@ -157,15 +157,6 @@ public:
 
 #if SIFIVE_CUSTOMIZATION
   bool
-  checkCFProtectionReturnSupported(DiagnosticsEngine &Diags) const override {
-    if (ISAInfo->hasExtension("zicfiss"))
-      return true;
-    return TargetInfo::checkCFProtectionReturnSupported(Diags);
-  };
-#endif // SIFIVE_CUSTOMIZATION
-
-#if SIFIVE_CUSTOMIZATION
-  bool
   checkCFProtectionBranchSupported(DiagnosticsEngine &Diags) const override {
     // TODO: Don't need require zicfilp in future release
     if (ISAInfo->hasExtension("zicfilp"))

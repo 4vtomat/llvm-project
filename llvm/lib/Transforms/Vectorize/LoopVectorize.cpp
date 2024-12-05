@@ -832,10 +832,10 @@ public:
       ElementCount MinProfitableTripCount, unsigned UnrollFactor,
       LoopVectorizationLegality *LVL, llvm::LoopVectorizationCostModel *CM,
       BlockFrequencyInfo *BFI, ProfileSummaryInfo *PSI,
-      GeneratedRTChecks &Checks)
+      GeneratedRTChecks &Checks, VPlan &Plan)
       : InnerLoopVectorizer(OrigLoop, PSE, LI, DT, TLI, TTI, AC, ORE, VecWidth,
                             MinProfitableTripCount, UnrollFactor, LVL, CM, BFI,
-                            PSI, Checks) {
+                            PSI, Checks, Plan) {
     assert(UnrollFactor == 1 && "UF is not 1 for uncountable loops");
   }
 
@@ -843,8 +843,7 @@ public:
 
   /// Set up the values of the IVs correctly when exiting the vector loop.
   void fixupIVUsers(PHINode *OrigPhi, const InductionDescriptor &II,
-                    Value *VectorTripCount, Value *EndValue,
-                    BasicBlock *MiddleBlock, VPlan &Plan,
+                    Value *VectorTripCount, BasicBlock *MiddleBlock,
                     VPTransformState &State) override;
 };
 #endif // SIFIVE_CUSTOMIZATION
@@ -3364,7 +3363,7 @@ void InnerLoopVectorizer::fixCSALiveOuts(VPTransformState &State, VPlan &Plan) {
     llvm::SmallPtrSet<PHINode *, 2> ToFix;
     for (User *U : V->users())
       if (auto *Phi = dyn_cast<PHINode>(U);
-          Phi && Phi->getParent() == LoopExitBlock)
+          Phi && Phi->getParent() == OrigLoop->getUniqueLatchExitBlock())
         ToFix.insert(Phi);
     for (PHINode *Phi : ToFix)
       Phi->addIncoming(ExtractedScalar, LoopMiddleBlock);
@@ -3542,13 +3541,12 @@ void InnerLoopVectorizer::fixNonInductionPHIs(VPTransformState &State) {
 
 /// Set up the values of IVs when exiting the vector loop.
 void UncountableInnerLoopVectorizer::fixupIVUsers(
-    PHINode *OrigPhi, const InductionDescriptor &II, Value *VectorTripCount,
-    Value *EndValue, BasicBlock *MiddleBlock,
-    VPlan &Plan, VPTransformState &State) {
+    PHINode *OrigPhi, const InductionDescriptor &II, 
+    Value *VectorTripCount, BasicBlock *MiddleBlock,
+    VPTransformState &State) {
 
   assert(Legal->isVectorizableUncountable() && "Not an uncountable loop");
   assert(!VectorTripCount && "VectorTripCount not null for uncountable loop");
-  assert(!EndValue && "EndValue not null for uncountable loop");
 
   // Compute trip count as (CanonicalIVPHI + VFirst)
   // FIXME: This only works on strlen(). When loop exits normally (not early),
@@ -5294,7 +5292,7 @@ bool LoopVectorizationPlanner::isMoreProfitable(
     auto RTCostB = GetCost(CostB, B.Overhead, EstimatedWidthB, B.Width);
     return RTCostA < RTCostB;
   }
-#endif
+#endif // SIFIVE_CUSTOMIZATION
 
   // Assume vscale may be larger than 1 (or the value being tuned for),
   // so that scalable vectorization is slightly favorable over fixed-width
@@ -5354,6 +5352,7 @@ hasOnlyNonUnitStrideMemoryAccesses(Loop *L, LoopVectorizationLegality *Legal) {
   }
   return HasMemoryAccess;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 bool LoopVectorizationPlanner::isMoreProfitable(
     const VectorizationFactor &A, const VectorizationFactor &B) const {
@@ -11355,15 +11354,12 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
 #if SIFIVE_CUSTOMIZATION
   SetVector<VPIRInstruction *> ExitUsersToFix = collectUsersInExitBlocks(
       OrigLoop, RecipeBuilder, *Plan, Legal->getInductionVars(), Legal->getCSAs());
-  addLiveOutsForFirstOrderRecurrences(*Plan, ExitUsersToFix, *Legal, CM);
+  addExitUsersForFirstOrderRecurrences(*Plan, ExitUsersToFix, *Legal, CM);
 #else
   SetVector<VPIRInstruction *> ExitUsersToFix = collectUsersInExitBlocks(
       OrigLoop, RecipeBuilder, *Plan, Legal->getInductionVars());
-  addLiveOutsForFirstOrderRecurrences(*Plan, ExitUsersToFix);
-#endif // SIFIVE_CUSTOMIZATION
-  addUsersInExitBlock(*Plan, ExitUsersToFix);
-
   addExitUsersForFirstOrderRecurrences(*Plan, ExitUsersToFix);
+#endif // SIFIVE_CUSTOMIZATION
   addUsersInExitBlocks(*Plan, ExitUsersToFix);
   // ---------------------------------------------------------------------------
   // Transform initial VPlan: Apply previously taken decisions, in order, to
@@ -12782,11 +12778,11 @@ bool LoopVectorizePass::processLoop(Loop *L) {
           DisableRuntimeUnroll = true;
 #if SIFIVE_CUSTOMIZATION
       } else if (LVL.isVectorizableUncountable()) {
+        VPlan &BestPlan = LVP.getPlanFor(VF.Width);
         UncountableInnerLoopVectorizer UILV(L, PSE, LI, DT, TLI, TTI, AC, ORE,
                                             VF.Width, VF.MinProfitableTripCount,
-                                            IC, &LVL, &CM, BFI, PSI, Checks);
+                                            IC, &LVL, &CM, BFI, PSI, Checks, BestPlan);
         SCEVBlockRAII SCEVRAII(UILV, IgnoreSCEVMemCheckBB);
-        VPlan &BestPlan = LVP.getPlanFor(VF.Width);
         LVP.executePlan(VF.Width, IC, BestPlan, UILV, DT, false);
         ++LoopsVectorized;
         ++UncountableLoopsVectorized;

@@ -394,8 +394,6 @@ public:
   bool enableSubRegLiveness() const override;
 
 #if SIFIVE_CUSTOMIZATION
-  void overrideSchedPolicy(MachineSchedPolicy &Policy,
-                           unsigned NumRegionInstrs) const override;
   bool useAltGPROrder() const;
 
   unsigned getMemToRVVLMUL() const;

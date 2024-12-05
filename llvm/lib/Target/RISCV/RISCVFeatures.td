@@ -78,10 +78,6 @@ def FeatureStdExtSs
     : RISCVExtension<"ss", 1, 13,
                      "'Ss' (Supervisor Architecture)">;
 
-def FeaturesSmrnmi
-    : RISCVExtension<"smrnmi", 1, 0,
-                     "'Smrnmi' (Resumable Non-Maskable Interrupts)">;
-
 def FeatureStdExtSmwg
     : RISCVExperimentalExtension<"smwg", 0, 3,
                                  "'Smwg' (The Smwg extension adds the mlwid CSR, which is "

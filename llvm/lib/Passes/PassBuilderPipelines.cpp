@@ -2471,7 +2471,7 @@ PassBuilder::buildO0DefaultPipeline(OptimizationLevel Level,
   MPM.addPass(createModuleToFunctionPassAdaptor(AnnotationRemarksPass()));
 #if SIFIVE_CUSTOMIZATION
   // Add LoopProfile pass
-  if (ClEnableLoopProfiler && !LTOPreLink)
+  if (ClEnableLoopProfiler && !isLTOPreLink(Phase))
     MPM.addPass(LoopCountProfilerPass());
 #endif // SIFIVE_CUSTOMIZATION
 

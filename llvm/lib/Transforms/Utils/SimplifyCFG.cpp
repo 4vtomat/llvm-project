@@ -72,6 +72,9 @@
 #include "llvm/Support/KnownBits.h"
 #include "llvm/Support/MathExtras.h"
 #include "llvm/Support/raw_ostream.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/TargetParser/Triple.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/Transforms/Utils/BasicBlockUtils.h"
 #include "llvm/Transforms/Utils/Local.h"
 #include "llvm/Transforms/Utils/ValueMapper.h"
@@ -2274,7 +2277,9 @@ static bool canSinkInstructions(
         }
         return false;
       };
-      if (any_of(Insts, LoadStoreUseFoldableGEP))
+      if (Triple(Insts.front()->getParent()->getModule()->getTargetTriple())
+              .isRISCV() &&
+          any_of(Insts, LoadStoreUseFoldableGEP))
         return false;
 #endif
 
@@ -2543,7 +2548,7 @@ static bool sinkCommonCodeFromPredecessors(BasicBlock *BB,
   LockstepReverseIterator LRI(UnconditionalPreds);
   while (LRI.isValid() &&
 #if SIFIVE_CUSTOMIZATION
-         canSinkInstructions(*LRI, PHIOperands, TTI)) {
+          canSinkInstructions(*LRI, PHIOperands, TTI)) {
 #endif
     LLVM_DEBUG(dbgs() << "SINK: instruction can be sunk: " << *(*LRI)[0]
                       << "\n");

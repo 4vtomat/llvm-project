@@ -231,12 +231,6 @@ bool RISCVSubtarget::useRVVForFixedLengthVectors() const {
 bool RISCVSubtarget::enableSubRegLiveness() const { return true; }
 
 #if SIFIVE_CUSTOMIZATION
-void RISCVSubtarget::overrideSchedPolicy(MachineSchedPolicy &Policy,
-                                         unsigned NumRegionInstrs) const {
-  if (getProcFamily() == RISCVSubtarget::SiFive7)
-    Policy.OnlyBottomUp = false;
-}
-
 bool RISCVSubtarget::useAltGPROrder() const { return UseAltGPROrder; }
 
 unsigned RISCVSubtarget::getMemToRVVLMUL() const {

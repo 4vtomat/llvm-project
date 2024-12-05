@@ -172,8 +172,6 @@ InstructionCost VPlanCostModel::getCost(const RVVPair &RVL) {
         // because onlyFirstLaneUsed doesn't work with VPLiveOut
         if (auto *WPtrIV = dyn_cast<VPWidenPointerInductionRecipe>(U))
           return any_of(WPtrIV->users(), [WPtrIV](VPUser *U) {
-            if (isa<VPLiveOut>(U))
-              return false;
             return !U->onlyFirstLaneUsed(WPtrIV);
           });
         return true;

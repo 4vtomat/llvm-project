@@ -343,7 +343,7 @@ VPTransformState::VPTransformState(const TargetTransformInfo *TTI,
                                    bool EnableRISCVCSA) // SIFIVE)
     : TTI(TTI), VF(VF), CFG(DT), LI(LI), Builder(Builder), ILV(ILV), Plan(Plan),
 #if SIFIVE_CUSTOMIZATION
-      LVer(nullptr), TypeAnalysis(Plan->getCanonicalIV()->getScalarType(),
+      LVer(nullptr), TypeAnalysis(Plan->getCanonicalIV()->getScalarType()),
       EnableRISCVCSA(EnableRISCVCSA) {}
 #else
       LVer(nullptr), TypeAnalysis(Plan->getCanonicalIV()->getScalarType()) {}

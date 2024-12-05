@@ -1511,7 +1511,7 @@ void VPWidenIntrinsicRecipe::execute(VPTransformState &State) {
     if (Intrinsic::ID VPID = VPIntrinsic::getForIntrinsic(VectorIntrinsicID);
         VPIntrinsic::isVPIntrinsic(VPID)) {
       auto *CI = cast_or_null<CallInst>(getUnderlyingInstr());
-      llvm::widenPredicatedIntrinsic(CI, this, State, VPID);
+      llvm::widenPredicatedIntrinsic(CI, this, State, VPID, State.TTI);
       Value *V = State.get(this);
       State.addMetadata(V, CI);
       return;
@@ -2404,7 +2404,8 @@ void VPWidenIntOrFpInductionRecipe::execute(VPTransformState &State) {
     if (!State.EVLPlaceholder) {
       Type *I32Ty = Builder.getInt32Ty();
       State.EVLPlaceholder = EVLPart = State.Builder.CreateLoad(
-          I32Ty, UndefValue::get(I32Ty->getPointerTo()));
+          I32Ty, PoisonValue::get(PointerType::get(I32Ty->getContext(),
+                                                  /*AddressSpace=*/0)));
     } else {
       EVLPart = State.EVLPlaceholder;
     }
@@ -4545,8 +4546,9 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
     assert(!State.EVL &&
            "Runtime VL is available, but code was not updated to use it.");
     if (!State.EVLPlaceholder)
-      State.EVLPlaceholder = State.Builder.CreateLoad(PhiType,
-                                     UndefValue::get(PhiType->getPointerTo()));
+      State.EVLPlaceholder = State.Builder.CreateLoad(
+          PhiType, PoisonValue::get(PointerType::get(PhiType->getContext(),
+                                                     /*AddressSpace=*/0)));
     RuntimeVF = State.Builder.CreateIntCast(State.EVLPlaceholder, PhiType,
                                             /*IsSigned=*/false);
   }
