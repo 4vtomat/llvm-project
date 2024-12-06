@@ -221,12 +221,15 @@ InstructionCost VPlanCostModel::getCost(const VPBlockBase *Block,
         // true, therefore requires execution of the nested vector code.
         LLVM_DEBUG(dbgs() << "Adjust cost of the VPConditionalRegionBlock from " << Cost);
         Cost /= std::max(SiFiveVectorConditionFrequency.getValue(), 1U);
-        LLVM_DEBUG(dbgs() << " to " << Cost);
+        LLVM_DEBUG(dbgs() << " to " << Cost << '\n');
 
         Type *CondTy = TypeInfo.inferScalarType(IfBlock->getCondition());
         auto *VectorTy = cast<VectorType>(getVectorType(CondTy, RVL));
         Type *VLTy = getVLType(RVL);
-        Cost += getIntrinsicCost(Intrinsic::vp_first, CondTy, {VectorTy, VLTy});
+        Type *RetTy = Type::getInt32Ty(VLTy->getContext());
+        Cost += getIntrinsicCost(Intrinsic::vp_first, RetTy, {VectorTy, VLTy});
+        LLVM_DEBUG(dbgs() << "VPlanCM: cost " << Cost << " for RVL " << RVL
+                          << " for VPConditionalRegionBlock\n");
         return Cost;
       })
       .Case<VPRegionBlock>([&](const VPRegionBlock *RegionBlock) {
