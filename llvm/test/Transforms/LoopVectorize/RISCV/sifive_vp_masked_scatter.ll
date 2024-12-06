@@ -25,13 +25,13 @@ define internal fastcc void @quantum_toffoli(i32 %reg.4.val, %struct.quantum_reg
 ; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds [[STRUCT_QUANTUM_REG_NODE_STRUCT:%.*]], ptr [[REG_16_VAL:%.*]], i64 [[TMP6]], i32 1
 ; CHECK-NEXT:    [[TMP9:%.*]] = mul nuw nsw i32 [[TMP5]], 2
-; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 2 x i64> @llvm.vp.load.nxv2i64.p0(ptr align 8 [[TMP7]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP9]])
+; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 2 x i64> @llvm.vp.load.nxv2i64.p0(ptr align 8 [[TMP7]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP9]])
 ; CHECK-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 1 x i64>, <vscale x 1 x i64> } @llvm.vector.deinterleave2.nxv2i64(<vscale x 2 x i64> [[WIDE_MASKED_LOAD]])
 ; CHECK-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 1 x i64>, <vscale x 1 x i64> } [[DEINTERLEAVED_RESULTS]], 0
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 1 x i1> @llvm.vp.icmp.nxv1i64(<vscale x 1 x i64> [[TMP10]], <vscale x 1 x i64> zeroinitializer, metadata !"eq", <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP5]])
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 1 x i1> @llvm.vp.icmp.nxv1i64(<vscale x 1 x i64> [[TMP10]], <vscale x 1 x i64> zeroinitializer, metadata !"eq", <vscale x 1 x i1> splat (i1 true), i32 [[TMP5]])
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv1i64.p0.i64(<vscale x 1 x i64> zeroinitializer, ptr align 8 [[TMP7]], i64 16, <vscale x 1 x i1> [[VP_OP_ICMP]], i32 [[TMP5]])
 ; CHECK-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP5]] to i64
-; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP11]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP11]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[TMP12]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:

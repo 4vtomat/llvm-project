@@ -95,23 +95,8 @@ define void @test4(ptr %in, ptr %out) {
 ; CHECK-NEXT:    [[TMP0:%.*]] = load <8 x float>, ptr [[IN:%.*]], align 4
 ; CHECK-NEXT:    [[TMP2:%.*]] = call <16 x float> @llvm.vector.insert.v16f32.v8f32(<16 x float> poison, <8 x float> [[TMP0]], i64 0)
 ; CHECK-NEXT:    [[TMP3:%.*]] = shufflevector <16 x float> [[TMP2]], <16 x float> poison, <16 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7, i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7>
-<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP6:%.*]] = fmul <16 x float> [[TMP3]], zeroinitializer
 ; CHECK-NEXT:    [[TMP9:%.*]] = shufflevector <16 x float> [[TMP2]], <16 x float> <float poison, float poison, float poison, float poison, float poison, float poison, float poison, float poison, float 0.000000e+00, float 0.000000e+00, float 0.000000e+00, float 0.000000e+00, float 0.000000e+00, float 0.000000e+00, float 0.000000e+00, float 0.000000e+00>, <16 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7, i32 24, i32 25, i32 26, i32 27, i32 28, i32 29, i32 30, i32 31>
-||||||| 864902e9b4d8
-; CHECK-NEXT:    [[TMP4:%.*]] = call <16 x float> @llvm.vector.insert.v16f32.v8f32(<16 x float> poison, <8 x float> zeroinitializer, i64 0)
-; CHECK-NEXT:    [[TMP5:%.*]] = call <16 x float> @llvm.vector.insert.v16f32.v8f32(<16 x float> [[TMP4]], <8 x float> zeroinitializer, i64 8)
-; CHECK-NEXT:    [[TMP6:%.*]] = fmul <16 x float> [[TMP3]], [[TMP5]]
-; CHECK-NEXT:    [[TMP7:%.*]] = call <16 x float> @llvm.vector.insert.v16f32.v8f32(<16 x float> poison, <8 x float> poison, i64 0)
-; CHECK-NEXT:    [[TMP8:%.*]] = call <16 x float> @llvm.vector.insert.v16f32.v8f32(<16 x float> [[TMP7]], <8 x float> zeroinitializer, i64 8)
-; CHECK-NEXT:    [[TMP9:%.*]] = shufflevector <16 x float> [[TMP2]], <16 x float> [[TMP8]], <16 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7, i32 24, i32 25, i32 26, i32 27, i32 28, i32 29, i32 30, i32 31>
-=======
-; CHECK-NEXT:    [[TMP4:%.*]] = call <16 x float> @llvm.vector.insert.v16f32.v8f32(<16 x float> poison, <8 x float> zeroinitializer, i64 0)
-; CHECK-NEXT:    [[TMP5:%.*]] = call <16 x float> @llvm.vector.insert.v16f32.v8f32(<16 x float> [[TMP4]], <8 x float> zeroinitializer, i64 8)
-; CHECK-NEXT:    [[TMP6:%.*]] = fmul <16 x float> [[TMP3]], [[TMP5]]
-; CHECK-NEXT:    [[TMP8:%.*]] = call <16 x float> @llvm.vector.insert.v16f32.v8f32(<16 x float> poison, <8 x float> zeroinitializer, i64 8)
-; CHECK-NEXT:    [[TMP9:%.*]] = shufflevector <16 x float> [[TMP2]], <16 x float> [[TMP8]], <16 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7, i32 24, i32 25, i32 26, i32 27, i32 28, i32 29, i32 30, i32 31>
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    [[TMP10:%.*]] = fadd <16 x float> [[TMP9]], [[TMP6]]
 ; CHECK-NEXT:    [[TMP11:%.*]] = fcmp ogt <16 x float> [[TMP10]], zeroinitializer
 ; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr i1, ptr [[OUT:%.*]], i64 8
@@ -165,26 +150,7 @@ define <4 x i1> @test6(ptr %in1, ptr %in2) {
 ; CHECK-NEXT:    [[TMP1:%.*]] = load <4 x i16>, ptr [[IN2:%.*]], align 2
 ; CHECK-NEXT:    [[TMP5:%.*]] = call <16 x i32> @llvm.vector.insert.v16i32.v4i32(<16 x i32> poison, <4 x i32> [[TMP0]], i64 0)
 ; CHECK-NEXT:    [[TMP6:%.*]] = shufflevector <16 x i32> [[TMP5]], <16 x i32> poison, <16 x i32> <i32 0, i32 1, i32 2, i32 3, i32 0, i32 1, i32 2, i32 3, i32 0, i32 1, i32 2, i32 3, i32 0, i32 1, i32 2, i32 3>
-<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP15:%.*]] = call <16 x i16> @llvm.vector.insert.v16i16.v4i16(<16 x i16> poison, <4 x i16> [[TMP1]], i64 0)
-||||||| 864902e9b4d8
-; CHECK-NEXT:    [[TMP7:%.*]] = call <16 x i32> @llvm.vector.insert.v16i32.v4i32(<16 x i32> poison, <4 x i32> zeroinitializer, i64 0)
-; CHECK-NEXT:    [[TMP8:%.*]] = call <16 x i32> @llvm.vector.insert.v16i32.v4i32(<16 x i32> [[TMP7]], <4 x i32> zeroinitializer, i64 4)
-; CHECK-NEXT:    [[TMP9:%.*]] = call <16 x i32> @llvm.vector.insert.v16i32.v4i32(<16 x i32> [[TMP8]], <4 x i32> zeroinitializer, i64 8)
-; CHECK-NEXT:    [[TMP10:%.*]] = call <16 x i32> @llvm.vector.insert.v16i32.v4i32(<16 x i32> [[TMP9]], <4 x i32> zeroinitializer, i64 12)
-; CHECK-NEXT:    [[TMP11:%.*]] = icmp ugt <16 x i32> [[TMP6]], [[TMP10]]
-; CHECK-NEXT:    [[TMP12:%.*]] = call <16 x i16> @llvm.vector.insert.v16i16.v4i16(<16 x i16> poison, <4 x i16> poison, i64 4)
-; CHECK-NEXT:    [[TMP13:%.*]] = call <16 x i16> @llvm.vector.insert.v16i16.v4i16(<16 x i16> [[TMP12]], <4 x i16> poison, i64 8)
-; CHECK-NEXT:    [[TMP14:%.*]] = call <16 x i16> @llvm.vector.insert.v16i16.v4i16(<16 x i16> [[TMP13]], <4 x i16> poison, i64 12)
-; CHECK-NEXT:    [[TMP15:%.*]] = call <16 x i16> @llvm.vector.insert.v16i16.v4i16(<16 x i16> [[TMP14]], <4 x i16> [[TMP1]], i64 0)
-=======
-; CHECK-NEXT:    [[TMP7:%.*]] = call <16 x i32> @llvm.vector.insert.v16i32.v4i32(<16 x i32> poison, <4 x i32> zeroinitializer, i64 0)
-; CHECK-NEXT:    [[TMP8:%.*]] = call <16 x i32> @llvm.vector.insert.v16i32.v4i32(<16 x i32> [[TMP7]], <4 x i32> zeroinitializer, i64 4)
-; CHECK-NEXT:    [[TMP9:%.*]] = call <16 x i32> @llvm.vector.insert.v16i32.v4i32(<16 x i32> [[TMP8]], <4 x i32> zeroinitializer, i64 8)
-; CHECK-NEXT:    [[TMP10:%.*]] = call <16 x i32> @llvm.vector.insert.v16i32.v4i32(<16 x i32> [[TMP9]], <4 x i32> zeroinitializer, i64 12)
-; CHECK-NEXT:    [[TMP11:%.*]] = icmp ugt <16 x i32> [[TMP6]], [[TMP10]]
-; CHECK-NEXT:    [[TMP15:%.*]] = call <16 x i16> @llvm.vector.insert.v16i16.v4i16(<16 x i16> poison, <4 x i16> [[TMP1]], i64 0)
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    [[TMP16:%.*]] = shufflevector <16 x i16> [[TMP15]], <16 x i16> poison, <16 x i32> <i32 0, i32 1, i32 2, i32 3, i32 0, i32 1, i32 2, i32 3, i32 0, i32 1, i32 2, i32 3, i32 0, i32 1, i32 2, i32 3>
 ; CHECK-NEXT:    [[TMP21:%.*]] = icmp eq <16 x i16> [[TMP16]], zeroinitializer
 ; CHECK-NEXT:    [[TMP7:%.*]] = call <32 x i32> @llvm.vector.insert.v32i32.v16i32(<32 x i32> poison, <16 x i32> [[TMP6]], i64 0)
@@ -380,17 +346,9 @@ define void @test12() {
 ; CHECK-NEXT:    [[TMP7:%.*]] = call <32 x float> @llvm.vector.insert.v32f32.v8f32(<32 x float> [[TMP6]], <8 x float> [[TMP3]], i64 8)
 ; CHECK-NEXT:    [[TMP8:%.*]] = call <32 x float> @llvm.vector.insert.v32f32.v16f32(<32 x float> [[TMP7]], <16 x float> [[TMP5]], i64 16)
 ; CHECK-NEXT:    [[TMP9:%.*]] = fpext <32 x float> [[TMP8]] to <32 x double>
-; CHECK-NEXT:    [[TMP10:%.*]] = call <32 x double> @llvm.vector.insert.v32f64.v8f64(<32 x double> poison, <8 x double> zeroinitializer, i64 0)
-; CHECK-NEXT:    [[TMP11:%.*]] = call <32 x double> @llvm.vector.insert.v32f64.v8f64(<32 x double> [[TMP10]], <8 x double> zeroinitializer, i64 8)
-; CHECK-NEXT:    [[TMP12:%.*]] = call <32 x double> @llvm.vector.insert.v32f64.v8f64(<32 x double> [[TMP11]], <8 x double> zeroinitializer, i64 16)
-; CHECK-NEXT:    [[TMP13:%.*]] = call <32 x double> @llvm.vector.insert.v32f64.v8f64(<32 x double> [[TMP12]], <8 x double> zeroinitializer, i64 24)
-; CHECK-NEXT:    [[TMP14:%.*]] = fadd <32 x double> [[TMP13]], [[TMP9]]
+; CHECK-NEXT:    [[TMP14:%.*]] = fadd <32 x double> zeroinitializer, [[TMP9]]
 ; CHECK-NEXT:    [[TMP15:%.*]] = fptrunc <32 x double> [[TMP14]] to <32 x float>
-; CHECK-NEXT:    [[TMP16:%.*]] = call <32 x float> @llvm.vector.insert.v32f32.v8f32(<32 x float> poison, <8 x float> zeroinitializer, i64 0)
-; CHECK-NEXT:    [[TMP17:%.*]] = call <32 x float> @llvm.vector.insert.v32f32.v8f32(<32 x float> [[TMP16]], <8 x float> zeroinitializer, i64 8)
-; CHECK-NEXT:    [[TMP18:%.*]] = call <32 x float> @llvm.vector.insert.v32f32.v8f32(<32 x float> [[TMP17]], <8 x float> zeroinitializer, i64 16)
-; CHECK-NEXT:    [[TMP19:%.*]] = call <32 x float> @llvm.vector.insert.v32f32.v8f32(<32 x float> [[TMP18]], <8 x float> zeroinitializer, i64 24)
-; CHECK-NEXT:    [[TMP20:%.*]] = fcmp ogt <32 x float> [[TMP19]], [[TMP15]]
+; CHECK-NEXT:    [[TMP12:%.*]] = fcmp ogt <32 x float> zeroinitializer, [[TMP15]]
 ; CHECK-NEXT:    ret void
 ;
 entry:

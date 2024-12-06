@@ -14,9 +14,9 @@ define i32 @test() {
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 0, [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 4, i1 true)
 ; CHECK-NEXT:    [[TMP1:%.*]] = add i64 [[EVL_BASED_IV]], 0
-; CHECK-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 4 x i1> @llvm.vp.xor.nxv4i1(<vscale x 4 x i1> zeroinitializer, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP0]])
-; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i1> @llvm.vp.or.nxv4i1(<vscale x 4 x i1> [[PRED_NOT]], <vscale x 4 x i1> zeroinitializer, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP0]])
-; CHECK-NEXT:    [[PRED_NOT1:%.*]] = call <vscale x 4 x i1> @llvm.vp.xor.nxv4i1(<vscale x 4 x i1> zeroinitializer, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP0]])
+; CHECK-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 4 x i1> @llvm.vp.xor.nxv4i1(<vscale x 4 x i1> zeroinitializer, <vscale x 4 x i1> splat (i1 true), <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
+; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i1> @llvm.vp.or.nxv4i1(<vscale x 4 x i1> [[PRED_NOT]], <vscale x 4 x i1> zeroinitializer, <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
+; CHECK-NEXT:    [[PRED_NOT1:%.*]] = call <vscale x 4 x i1> @llvm.vp.xor.nxv4i1(<vscale x 4 x i1> zeroinitializer, <vscale x 4 x i1> splat (i1 true), <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 4 x i1> @llvm.vp.select.nxv4i1(<vscale x 4 x i1> [[VP_OP]], <vscale x 4 x i1> [[PRED_NOT1]], <vscale x 4 x i1> zeroinitializer, i32 [[TMP0]])
 ; CHECK-NEXT:    [[TMP3:%.*]] = add i64 1, [[TMP1]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr double, ptr null, i64 [[TMP3]]
@@ -24,7 +24,7 @@ define i32 @test() {
 ; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x double> @llvm.vp.load.nxv4f64.p0(ptr align 8 [[TMP5]], <vscale x 4 x i1> [[TMP2]], i32 [[TMP0]])
 ; CHECK-NEXT:    call void @llvm.vp.scatter.nxv4f64.nxv4p0(<vscale x 4 x double> [[VP_OP_LOAD]], <vscale x 4 x ptr> align 8 zeroinitializer, <vscale x 4 x i1> [[TMP2]], i32 [[TMP0]])
 ; CHECK-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP0]] to i64
-; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP6]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP6]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 0
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:

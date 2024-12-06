@@ -20,16 +20,16 @@ define void @foo(i32 %n, ptr noalias noundef %a, ptr noalias noundef %b, ptr noa
 ; CHECK-NEXT:    [[TMP2:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds double, ptr [[A:%.*]], i64 [[TMP2]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds double, ptr [[TMP3]], i32 0
-; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 1 x double> @llvm.vp.load.nxv1f64.p0(ptr align 8 [[TMP4]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 1 x double> @llvm.vp.load.nxv1f64.p0(ptr align 8 [[TMP4]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds double, ptr [[B:%.*]], i64 [[TMP2]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds double, ptr [[TMP5]], i32 0
-; CHECK-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 1 x double> @llvm.vp.load.nxv1f64.p0(ptr align 8 [[TMP6]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP1]])
-; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x double> @llvm.vp.copysign.nxv1f64(<vscale x 1 x double> [[VP_OP_LOAD]], <vscale x 1 x double> [[VP_OP_LOAD1]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 1 x double> @llvm.vp.load.nxv1f64.p0(ptr align 8 [[TMP6]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x double> @llvm.vp.copysign.nxv1f64(<vscale x 1 x double> [[VP_OP_LOAD]], <vscale x 1 x double> [[VP_OP_LOAD1]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds double, ptr [[C:%.*]], i64 [[TMP2]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds double, ptr [[TMP7]], i32 0
-; CHECK-NEXT:    call void @llvm.vp.store.nxv1f64.p0(<vscale x 1 x double> [[VP_OP]], ptr align 8 [[TMP8]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP1]])
+; CHECK-NEXT:    call void @llvm.vp.store.nxv1f64.p0(<vscale x 1 x double> [[VP_OP]], ptr align 8 [[TMP8]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP1]] to i64
-; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP9]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP9]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:

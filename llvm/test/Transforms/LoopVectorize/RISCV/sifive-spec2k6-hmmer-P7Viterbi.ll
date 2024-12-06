@@ -31,46 +31,46 @@ define float @P7Viterbi(ptr noundef %dsq, i64 noundef signext %L, ptr noundef %h
 ; X280-NEXT:    [[TMP11:%.*]] = add nsw i64 [[TMP10]], -1
 ; X280-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[DSQ]], i64 [[TMP11]]
 ; X280-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i32, ptr [[TMP12]], i32 0
-; X280-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP13]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]])
+; X280-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP13]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
 ; X280-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i32, ptr [[HMM]], i64 [[TMP11]]
 ; X280-NEXT:    [[TMP15:%.*]] = getelementptr inbounds i32, ptr [[TMP14]], i32 0
-; X280-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP15]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]])
-; X280-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VP_OP_LOAD1]], <vscale x 8 x i32> [[VP_OP_LOAD]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]])
+; X280-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP15]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
+; X280-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VP_OP_LOAD1]], <vscale x 8 x i32> [[VP_OP_LOAD]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
 ; X280-NEXT:    [[TMP16:%.*]] = getelementptr inbounds i32, ptr [[TMP0]], i64 [[TMP10]]
 ; X280-NEXT:    [[TMP17:%.*]] = getelementptr inbounds i32, ptr [[TMP16]], i32 0
-; X280-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[VP_OP]], ptr align 4 [[TMP17]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]])
+; X280-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[VP_OP]], ptr align 4 [[TMP17]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
 ; X280-NEXT:    [[TMP18:%.*]] = getelementptr inbounds i32, ptr [[TMP1]], i64 [[TMP11]]
 ; X280-NEXT:    [[TMP19:%.*]] = getelementptr inbounds i32, ptr [[TMP18]], i32 0
-; X280-NEXT:    [[VP_OP_LOAD2:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP19]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]])
+; X280-NEXT:    [[VP_OP_LOAD2:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP19]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
 ; X280-NEXT:    [[TMP20:%.*]] = getelementptr inbounds i32, ptr [[TMP2]], i64 [[TMP11]]
 ; X280-NEXT:    [[TMP21:%.*]] = getelementptr inbounds i32, ptr [[TMP20]], i32 0
-; X280-NEXT:    [[VP_OP_LOAD3:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP21]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]])
-; X280-NEXT:    [[VP_OP4:%.*]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VP_OP_LOAD3]], <vscale x 8 x i32> [[VP_OP_LOAD2]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]])
-; X280-NEXT:    [[VP_OP5:%.*]] = call <vscale x 8 x i32> @llvm.vp.smax.nxv8i32(<vscale x 8 x i32> [[VP_OP4]], <vscale x 8 x i32> [[VP_OP]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]])
-; X280-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[VP_OP5]], ptr align 4 [[TMP17]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]])
+; X280-NEXT:    [[VP_OP_LOAD3:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP21]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
+; X280-NEXT:    [[VP_OP4:%.*]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VP_OP_LOAD3]], <vscale x 8 x i32> [[VP_OP_LOAD2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
+; X280-NEXT:    [[VP_OP5:%.*]] = call <vscale x 8 x i32> @llvm.vp.smax.nxv8i32(<vscale x 8 x i32> [[VP_OP4]], <vscale x 8 x i32> [[VP_OP]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
+; X280-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[VP_OP5]], ptr align 4 [[TMP17]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
 ; X280-NEXT:    [[TMP22:%.*]] = getelementptr inbounds i32, ptr [[TMP3]], i64 [[TMP11]]
 ; X280-NEXT:    [[TMP23:%.*]] = getelementptr inbounds i32, ptr [[TMP22]], i32 0
-; X280-NEXT:    [[VP_OP_LOAD6:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP23]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]])
+; X280-NEXT:    [[VP_OP_LOAD6:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP23]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
 ; X280-NEXT:    [[TMP24:%.*]] = getelementptr inbounds i32, ptr [[TMP4]], i64 [[TMP11]]
 ; X280-NEXT:    [[TMP25:%.*]] = getelementptr inbounds i32, ptr [[TMP24]], i32 0
-; X280-NEXT:    [[VP_OP_LOAD7:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP25]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]])
-; X280-NEXT:    [[VP_OP8:%.*]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VP_OP_LOAD7]], <vscale x 8 x i32> [[VP_OP_LOAD6]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]])
-; X280-NEXT:    [[VP_OP9:%.*]] = call <vscale x 8 x i32> @llvm.vp.smax.nxv8i32(<vscale x 8 x i32> [[VP_OP8]], <vscale x 8 x i32> [[VP_OP5]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]])
-; X280-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[VP_OP9]], ptr align 4 [[TMP17]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]])
+; X280-NEXT:    [[VP_OP_LOAD7:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP25]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
+; X280-NEXT:    [[VP_OP8:%.*]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VP_OP_LOAD7]], <vscale x 8 x i32> [[VP_OP_LOAD6]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
+; X280-NEXT:    [[VP_OP9:%.*]] = call <vscale x 8 x i32> @llvm.vp.smax.nxv8i32(<vscale x 8 x i32> [[VP_OP8]], <vscale x 8 x i32> [[VP_OP5]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
+; X280-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[VP_OP9]], ptr align 4 [[TMP17]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
 ; X280-NEXT:    [[TMP26:%.*]] = getelementptr inbounds i32, ptr [[TMP5]], i64 [[TMP10]]
 ; X280-NEXT:    [[TMP27:%.*]] = getelementptr inbounds i32, ptr [[TMP26]], i32 0
-; X280-NEXT:    [[VP_OP_LOAD10:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP27]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]])
-; X280-NEXT:    [[VP_OP11:%.*]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VP_OP_LOAD10]], <vscale x 8 x i32> [[BROADCAST_SPLAT]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]])
-; X280-NEXT:    [[VP_OP12:%.*]] = call <vscale x 8 x i32> @llvm.vp.smax.nxv8i32(<vscale x 8 x i32> [[VP_OP11]], <vscale x 8 x i32> [[VP_OP9]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]])
-; X280-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[VP_OP12]], ptr align 4 [[TMP17]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]])
+; X280-NEXT:    [[VP_OP_LOAD10:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP27]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
+; X280-NEXT:    [[VP_OP11:%.*]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VP_OP_LOAD10]], <vscale x 8 x i32> [[BROADCAST_SPLAT]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
+; X280-NEXT:    [[VP_OP12:%.*]] = call <vscale x 8 x i32> @llvm.vp.smax.nxv8i32(<vscale x 8 x i32> [[VP_OP11]], <vscale x 8 x i32> [[VP_OP9]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
+; X280-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[VP_OP12]], ptr align 4 [[TMP17]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
 ; X280-NEXT:    [[TMP28:%.*]] = getelementptr inbounds i32, ptr [[TMP6]], i64 [[TMP10]]
 ; X280-NEXT:    [[TMP29:%.*]] = getelementptr inbounds i32, ptr [[TMP28]], i32 0
-; X280-NEXT:    [[VP_OP_LOAD13:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP29]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]])
-; X280-NEXT:    [[VP_OP14:%.*]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VP_OP12]], <vscale x 8 x i32> [[VP_OP_LOAD13]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]])
-; X280-NEXT:    [[VP_OP15:%.*]] = call <vscale x 8 x i32> @llvm.vp.smax.nxv8i32(<vscale x 8 x i32> [[VP_OP14]], <vscale x 8 x i32> shufflevector (<vscale x 8 x i32> insertelement (<vscale x 8 x i32> poison, i32 -987654321, i64 0), <vscale x 8 x i32> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]])
-; X280-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[VP_OP15]], ptr align 4 [[TMP17]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]])
+; X280-NEXT:    [[VP_OP_LOAD13:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP29]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
+; X280-NEXT:    [[VP_OP14:%.*]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VP_OP12]], <vscale x 8 x i32> [[VP_OP_LOAD13]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
+; X280-NEXT:    [[VP_OP15:%.*]] = call <vscale x 8 x i32> @llvm.vp.smax.nxv8i32(<vscale x 8 x i32> [[VP_OP14]], <vscale x 8 x i32> splat (i32 -987654321), <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
+; X280-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[VP_OP15]], ptr align 4 [[TMP17]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
 ; X280-NEXT:    [[TMP31:%.*]] = zext i32 [[TMP9]] to i64
-; X280-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP31]], [[EVL_BASED_IV]]
+; X280-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP31]], [[EVL_BASED_IV]]
 ; X280-NEXT:    [[TMP32:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP7]]
 ; X280-NEXT:    br i1 [[TMP32]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; X280:       [[MIDDLE_BLOCK]]:
@@ -138,46 +138,46 @@ define float @P7Viterbi(ptr noundef %dsq, i64 noundef signext %L, ptr noundef %h
 ; X390-NEXT:    [[TMP11:%.*]] = add nsw i64 [[TMP10]], -1
 ; X390-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[DSQ]], i64 [[TMP11]]
 ; X390-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i32, ptr [[TMP12]], i32 0
-; X390-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr align 4 [[TMP13]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr align 4 [[TMP13]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
 ; X390-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i32, ptr [[HMM]], i64 [[TMP11]]
 ; X390-NEXT:    [[TMP15:%.*]] = getelementptr inbounds i32, ptr [[TMP14]], i32 0
-; X390-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr align 4 [[TMP15]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP9]])
-; X390-NEXT:    [[VP_OP:%.*]] = call <vscale x 16 x i32> @llvm.vp.add.nxv16i32(<vscale x 16 x i32> [[VP_OP_LOAD1]], <vscale x 16 x i32> [[VP_OP_LOAD]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr align 4 [[TMP15]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP:%.*]] = call <vscale x 16 x i32> @llvm.vp.add.nxv16i32(<vscale x 16 x i32> [[VP_OP_LOAD1]], <vscale x 16 x i32> [[VP_OP_LOAD]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
 ; X390-NEXT:    [[TMP16:%.*]] = getelementptr inbounds i32, ptr [[TMP0]], i64 [[TMP10]]
 ; X390-NEXT:    [[TMP17:%.*]] = getelementptr inbounds i32, ptr [[TMP16]], i32 0
-; X390-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[VP_OP]], ptr align 4 [[TMP17]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP9]])
+; X390-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[VP_OP]], ptr align 4 [[TMP17]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
 ; X390-NEXT:    [[TMP18:%.*]] = getelementptr inbounds i32, ptr [[TMP1]], i64 [[TMP11]]
 ; X390-NEXT:    [[TMP19:%.*]] = getelementptr inbounds i32, ptr [[TMP18]], i32 0
-; X390-NEXT:    [[VP_OP_LOAD2:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr align 4 [[TMP19]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP_LOAD2:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr align 4 [[TMP19]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
 ; X390-NEXT:    [[TMP20:%.*]] = getelementptr inbounds i32, ptr [[TMP2]], i64 [[TMP11]]
 ; X390-NEXT:    [[TMP21:%.*]] = getelementptr inbounds i32, ptr [[TMP20]], i32 0
-; X390-NEXT:    [[VP_OP_LOAD3:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr align 4 [[TMP21]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP9]])
-; X390-NEXT:    [[VP_OP4:%.*]] = call <vscale x 16 x i32> @llvm.vp.add.nxv16i32(<vscale x 16 x i32> [[VP_OP_LOAD3]], <vscale x 16 x i32> [[VP_OP_LOAD2]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP9]])
-; X390-NEXT:    [[VP_OP5:%.*]] = call <vscale x 16 x i32> @llvm.vp.smax.nxv16i32(<vscale x 16 x i32> [[VP_OP4]], <vscale x 16 x i32> [[VP_OP]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP9]])
-; X390-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[VP_OP5]], ptr align 4 [[TMP17]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP_LOAD3:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr align 4 [[TMP21]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP4:%.*]] = call <vscale x 16 x i32> @llvm.vp.add.nxv16i32(<vscale x 16 x i32> [[VP_OP_LOAD3]], <vscale x 16 x i32> [[VP_OP_LOAD2]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP5:%.*]] = call <vscale x 16 x i32> @llvm.vp.smax.nxv16i32(<vscale x 16 x i32> [[VP_OP4]], <vscale x 16 x i32> [[VP_OP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[VP_OP5]], ptr align 4 [[TMP17]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
 ; X390-NEXT:    [[TMP22:%.*]] = getelementptr inbounds i32, ptr [[TMP3]], i64 [[TMP11]]
 ; X390-NEXT:    [[TMP23:%.*]] = getelementptr inbounds i32, ptr [[TMP22]], i32 0
-; X390-NEXT:    [[VP_OP_LOAD6:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr align 4 [[TMP23]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP_LOAD6:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr align 4 [[TMP23]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
 ; X390-NEXT:    [[TMP24:%.*]] = getelementptr inbounds i32, ptr [[TMP4]], i64 [[TMP11]]
 ; X390-NEXT:    [[TMP25:%.*]] = getelementptr inbounds i32, ptr [[TMP24]], i32 0
-; X390-NEXT:    [[VP_OP_LOAD7:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr align 4 [[TMP25]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP9]])
-; X390-NEXT:    [[VP_OP8:%.*]] = call <vscale x 16 x i32> @llvm.vp.add.nxv16i32(<vscale x 16 x i32> [[VP_OP_LOAD7]], <vscale x 16 x i32> [[VP_OP_LOAD6]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP9]])
-; X390-NEXT:    [[VP_OP9:%.*]] = call <vscale x 16 x i32> @llvm.vp.smax.nxv16i32(<vscale x 16 x i32> [[VP_OP8]], <vscale x 16 x i32> [[VP_OP5]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP9]])
-; X390-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[VP_OP9]], ptr align 4 [[TMP17]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP_LOAD7:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr align 4 [[TMP25]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP8:%.*]] = call <vscale x 16 x i32> @llvm.vp.add.nxv16i32(<vscale x 16 x i32> [[VP_OP_LOAD7]], <vscale x 16 x i32> [[VP_OP_LOAD6]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP9:%.*]] = call <vscale x 16 x i32> @llvm.vp.smax.nxv16i32(<vscale x 16 x i32> [[VP_OP8]], <vscale x 16 x i32> [[VP_OP5]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[VP_OP9]], ptr align 4 [[TMP17]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
 ; X390-NEXT:    [[TMP26:%.*]] = getelementptr inbounds i32, ptr [[TMP5]], i64 [[TMP10]]
 ; X390-NEXT:    [[TMP27:%.*]] = getelementptr inbounds i32, ptr [[TMP26]], i32 0
-; X390-NEXT:    [[VP_OP_LOAD10:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr align 4 [[TMP27]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP9]])
-; X390-NEXT:    [[VP_OP11:%.*]] = call <vscale x 16 x i32> @llvm.vp.add.nxv16i32(<vscale x 16 x i32> [[VP_OP_LOAD10]], <vscale x 16 x i32> [[BROADCAST_SPLAT]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP9]])
-; X390-NEXT:    [[VP_OP12:%.*]] = call <vscale x 16 x i32> @llvm.vp.smax.nxv16i32(<vscale x 16 x i32> [[VP_OP11]], <vscale x 16 x i32> [[VP_OP9]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP9]])
-; X390-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[VP_OP12]], ptr align 4 [[TMP17]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP_LOAD10:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr align 4 [[TMP27]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP11:%.*]] = call <vscale x 16 x i32> @llvm.vp.add.nxv16i32(<vscale x 16 x i32> [[VP_OP_LOAD10]], <vscale x 16 x i32> [[BROADCAST_SPLAT]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP12:%.*]] = call <vscale x 16 x i32> @llvm.vp.smax.nxv16i32(<vscale x 16 x i32> [[VP_OP11]], <vscale x 16 x i32> [[VP_OP9]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[VP_OP12]], ptr align 4 [[TMP17]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
 ; X390-NEXT:    [[TMP28:%.*]] = getelementptr inbounds i32, ptr [[TMP6]], i64 [[TMP10]]
 ; X390-NEXT:    [[TMP29:%.*]] = getelementptr inbounds i32, ptr [[TMP28]], i32 0
-; X390-NEXT:    [[VP_OP_LOAD13:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr align 4 [[TMP29]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP9]])
-; X390-NEXT:    [[VP_OP14:%.*]] = call <vscale x 16 x i32> @llvm.vp.add.nxv16i32(<vscale x 16 x i32> [[VP_OP12]], <vscale x 16 x i32> [[VP_OP_LOAD13]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP9]])
-; X390-NEXT:    [[VP_OP15:%.*]] = call <vscale x 16 x i32> @llvm.vp.smax.nxv16i32(<vscale x 16 x i32> [[VP_OP14]], <vscale x 16 x i32> shufflevector (<vscale x 16 x i32> insertelement (<vscale x 16 x i32> poison, i32 -987654321, i64 0), <vscale x 16 x i32> poison, <vscale x 16 x i32> zeroinitializer), <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP9]])
-; X390-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[VP_OP15]], ptr align 4 [[TMP17]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP_LOAD13:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr align 4 [[TMP29]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP14:%.*]] = call <vscale x 16 x i32> @llvm.vp.add.nxv16i32(<vscale x 16 x i32> [[VP_OP12]], <vscale x 16 x i32> [[VP_OP_LOAD13]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP15:%.*]] = call <vscale x 16 x i32> @llvm.vp.smax.nxv16i32(<vscale x 16 x i32> [[VP_OP14]], <vscale x 16 x i32> splat (i32 -987654321), <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[VP_OP15]], ptr align 4 [[TMP17]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
 ; X390-NEXT:    [[TMP31:%.*]] = zext i32 [[TMP9]] to i64
-; X390-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP31]], [[EVL_BASED_IV]]
+; X390-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP31]], [[EVL_BASED_IV]]
 ; X390-NEXT:    [[TMP32:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP7]]
 ; X390-NEXT:    br i1 [[TMP32]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; X390:       [[MIDDLE_BLOCK]]:

@@ -21,9 +21,9 @@ define void @store_constant(i32 %n, ptr %a){
 ; CHECK-NEXT:    [[TMP3:%.*]] = shl nsw i64 [[TMP0]], 2
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP3]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = mul nuw nsw i32 [[TMP2]], 4
-; CHECK-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> shufflevector (<vscale x 16 x i32> insertelement (<vscale x 16 x i32> poison, i32 -939524096, i64 0), <vscale x 16 x i32> poison, <vscale x 16 x i32> zeroinitializer), ptr align 4 [[TMP5]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP4]])
+; CHECK-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> splat (i32 -939524096), ptr align 4 [[TMP5]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP4]])
 ; CHECK-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP2]] to i64
-; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP9]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP9]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
@@ -110,9 +110,9 @@ define void @store_same_invariant(i32 %n, ptr %a){
 ; CHECK-NEXT:    [[WIDE_BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 16 x i32> poison, i32 [[N]], i64 0
 ; CHECK-NEXT:    [[WIDE_BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 16 x i32> [[WIDE_BROADCAST_SPLATINSERT]], <vscale x 16 x i32> poison, <vscale x 16 x i32> zeroinitializer
 ; CHECK-NEXT:    [[TMP4:%.*]] = mul nuw nsw i32 [[TMP2]], 4
-; CHECK-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[WIDE_BROADCAST_SPLAT]], ptr align 4 [[TMP5]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP4]])
+; CHECK-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[WIDE_BROADCAST_SPLAT]], ptr align 4 [[TMP5]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP4]])
 ; CHECK-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP2]] to i64
-; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP9]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP9]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       middle.block:

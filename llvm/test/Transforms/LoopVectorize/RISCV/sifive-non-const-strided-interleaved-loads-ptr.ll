@@ -53,21 +53,21 @@ define void @test(i32 %0, i64 %conv, ptr %call5.i.i.i4.i.i101) {
 ; CHECK-NEXT:    [[TMP24:%.*]] = zext i32 [[TMP23]] to i64
 ; CHECK-NEXT:    [[TMP25:%.*]] = getelementptr [[CLASS_SPARSEMATRIXEZ_16:%.*]], ptr null, i64 [[TMP24]]
 ; CHECK-NEXT:    [[TMP26:%.*]] = getelementptr i8, ptr [[TMP25]], i64 32
-; CHECK-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 1 x i128> @llvm.experimental.vp.strided.load.nxv1i128.p0.i64(ptr align 8 [[TMP26]], i64 [[TMP17]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP22]])
+; CHECK-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 1 x i128> @llvm.experimental.vp.strided.load.nxv1i128.p0.i64(ptr align 8 [[TMP26]], i64 [[TMP17]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP22]])
 ; CHECK-NEXT:    [[WIDE_STRIDED_LOAD_INTCAST:%.*]] = bitcast <vscale x 1 x i128> [[WIDE_STRIDED_LOAD]] to <vscale x 2 x i64>
 ; CHECK-NEXT:    [[WIDE_STRIDED_LOAD_INTCAST_CAST:%.*]] = inttoptr <vscale x 2 x i64> [[WIDE_STRIDED_LOAD_INTCAST]] to <vscale x 2 x ptr>
 ; CHECK-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 1 x ptr>, <vscale x 1 x ptr> } @llvm.vector.deinterleave2.nxv2p0(<vscale x 2 x ptr> [[WIDE_STRIDED_LOAD_INTCAST_CAST]])
 ; CHECK-NEXT:    [[TMP28:%.*]] = extractvalue { <vscale x 1 x ptr>, <vscale x 1 x ptr> } [[DEINTERLEAVED_RESULTS]], 0
 ; CHECK-NEXT:    [[TMP29:%.*]] = extractvalue { <vscale x 1 x ptr>, <vscale x 1 x ptr> } [[DEINTERLEAVED_RESULTS]], 1
-; CHECK-NEXT:    [[VP_CAST:%.*]] = call <vscale x 1 x i64> @llvm.vp.ptrtoint.nxv1i64.nxv1p0(<vscale x 1 x ptr> [[TMP29]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP22]])
-; CHECK-NEXT:    [[VP_CAST1:%.*]] = call <vscale x 1 x i64> @llvm.vp.ptrtoint.nxv1i64.nxv1p0(<vscale x 1 x ptr> [[TMP28]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP22]])
-; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x i64> @llvm.vp.or.nxv1i64(<vscale x 1 x i64> [[VP_CAST]], <vscale x 1 x i64> [[VP_CAST1]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP22]])
-; CHECK-NEXT:    [[VP_CAST2:%.*]] = call <vscale x 1 x i32> @llvm.vp.trunc.nxv1i32.nxv1i64(<vscale x 1 x i64> [[VP_OP]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP22]])
+; CHECK-NEXT:    [[VP_CAST:%.*]] = call <vscale x 1 x i64> @llvm.vp.ptrtoint.nxv1i64.nxv1p0(<vscale x 1 x ptr> [[TMP29]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP22]])
+; CHECK-NEXT:    [[VP_CAST1:%.*]] = call <vscale x 1 x i64> @llvm.vp.ptrtoint.nxv1i64.nxv1p0(<vscale x 1 x ptr> [[TMP28]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP22]])
+; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x i64> @llvm.vp.or.nxv1i64(<vscale x 1 x i64> [[VP_CAST]], <vscale x 1 x i64> [[VP_CAST1]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP22]])
+; CHECK-NEXT:    [[VP_CAST2:%.*]] = call <vscale x 1 x i32> @llvm.vp.trunc.nxv1i32.nxv1i64(<vscale x 1 x i64> [[VP_OP]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP22]])
 ; CHECK-NEXT:    [[TMP30:%.*]] = getelementptr i32, ptr [[CALL5_I_I_I4_I_I101]], i64 [[TMP18]]
 ; CHECK-NEXT:    [[TMP31:%.*]] = getelementptr i32, ptr [[TMP30]], i32 0
-; CHECK-NEXT:    call void @llvm.vp.store.nxv1i32.p0(<vscale x 1 x i32> [[VP_CAST2]], ptr align 4 [[TMP31]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP22]])
+; CHECK-NEXT:    call void @llvm.vp.store.nxv1i32.p0(<vscale x 1 x i32> [[VP_CAST2]], ptr align 4 [[TMP31]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP22]])
 ; CHECK-NEXT:    [[TMP33:%.*]] = zext i32 [[TMP22]] to i64
-; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP33]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP33]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP34:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP1]]
 ; CHECK-NEXT:    br i1 [[TMP34]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:

@@ -39,12 +39,12 @@ define void @widget(ptr %a, i64 %n) {
 ; CHECK-NEXT:    [[TMP12:%.*]] = sub i32 0, [[TMP11]]
 ; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr ptr, ptr [[TMP9]], i32 [[TMP12]]
 ; CHECK-NEXT:    [[TMP15:%.*]] = mul nuw nsw i32 [[TMP6]], 2
-; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 2 x ptr> @llvm.vp.load.nxv2p0.p0(ptr align 8 [[TMP13]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP15]])
+; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 2 x ptr> @llvm.vp.load.nxv2p0.p0(ptr align 8 [[TMP13]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP15]])
 ; CHECK-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 1 x ptr>, <vscale x 1 x ptr> } @llvm.vector.deinterleave2.nxv2p0(<vscale x 2 x ptr> [[WIDE_MASKED_LOAD]])
 ; CHECK-NEXT:    [[TMP16:%.*]] = extractvalue { <vscale x 1 x ptr>, <vscale x 1 x ptr> } [[DEINTERLEAVED_RESULTS]], 0
-; CHECK-NEXT:    [[DEINTERLEAVED_RESULT_REVERSE:%.*]] = call <vscale x 1 x ptr> @llvm.experimental.vp.reverse.nxv1p0(<vscale x 1 x ptr> [[TMP16]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP6]])
+; CHECK-NEXT:    [[DEINTERLEAVED_RESULT_REVERSE:%.*]] = call <vscale x 1 x ptr> @llvm.experimental.vp.reverse.nxv1p0(<vscale x 1 x ptr> [[TMP16]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]])
 ; CHECK-NEXT:    [[TMP17:%.*]] = extractvalue { <vscale x 1 x ptr>, <vscale x 1 x ptr> } [[DEINTERLEAVED_RESULTS]], 1
-; CHECK-NEXT:    [[DEINTERLEAVED_RESULT_REVERSE7:%.*]] = call <vscale x 1 x ptr> @llvm.experimental.vp.reverse.nxv1p0(<vscale x 1 x ptr> [[TMP17]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP6]])
+; CHECK-NEXT:    [[DEINTERLEAVED_RESULT_REVERSE7:%.*]] = call <vscale x 1 x ptr> @llvm.experimental.vp.reverse.nxv1p0(<vscale x 1 x ptr> [[TMP17]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]])
 ; CHECK-NEXT:    [[TMP18:%.*]] = ptrtoint <vscale x 1 x ptr> [[DEINTERLEAVED_RESULT_REVERSE7]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP19:%.*]] = bitcast <vscale x 1 x i64> [[TMP18]] to <vscale x 1 x double>
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr [[STRUCT]], ptr [[NEXT_GEP]], i64 -2, i32 0
@@ -52,15 +52,15 @@ define void @widget(ptr %a, i64 %n) {
 ; CHECK-NEXT:    [[TMP22:%.*]] = mul nuw nsw i32 [[TMP21]], 2
 ; CHECK-NEXT:    [[TMP23:%.*]] = sub i32 0, [[TMP22]]
 ; CHECK-NEXT:    [[TMP24:%.*]] = getelementptr double, ptr [[TMP20]], i32 [[TMP23]]
-; CHECK-NEXT:    [[RESULT_REVERSE:%.*]] = call <vscale x 1 x ptr> @llvm.experimental.vp.reverse.nxv1p0(<vscale x 1 x ptr> [[DEINTERLEAVED_RESULT_REVERSE]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP6]])
+; CHECK-NEXT:    [[RESULT_REVERSE:%.*]] = call <vscale x 1 x ptr> @llvm.experimental.vp.reverse.nxv1p0(<vscale x 1 x ptr> [[DEINTERLEAVED_RESULT_REVERSE]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]])
 ; CHECK-NEXT:    [[TMP26:%.*]] = ptrtoint <vscale x 1 x ptr> [[RESULT_REVERSE]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP27:%.*]] = bitcast <vscale x 1 x i64> [[TMP26]] to <vscale x 1 x double>
-; CHECK-NEXT:    [[RESULT_REVERSE8:%.*]] = call <vscale x 1 x double> @llvm.experimental.vp.reverse.nxv1f64(<vscale x 1 x double> [[TMP19]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP6]])
+; CHECK-NEXT:    [[RESULT_REVERSE8:%.*]] = call <vscale x 1 x double> @llvm.experimental.vp.reverse.nxv1f64(<vscale x 1 x double> [[TMP19]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]])
 ; CHECK-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 2 x double> @llvm.vector.interleave2.nxv2f64(<vscale x 1 x double> [[TMP27]], <vscale x 1 x double> [[RESULT_REVERSE8]])
 ; CHECK-NEXT:    [[TMP28:%.*]] = mul nuw nsw i32 [[TMP6]], 2
-; CHECK-NEXT:    call void @llvm.vp.store.nxv2f64.p0(<vscale x 2 x double> [[INTERLEAVED_VEC]], ptr align 8 [[TMP24]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP28]])
+; CHECK-NEXT:    call void @llvm.vp.store.nxv2f64.p0(<vscale x 2 x double> [[INTERLEAVED_VEC]], ptr align 8 [[TMP24]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP28]])
 ; CHECK-NEXT:    [[TMP29:%.*]] = zext i32 [[TMP6]] to i64
-; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP29]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP29]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP30:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP1]]
 ; CHECK-NEXT:    br i1 [[TMP30]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:

@@ -4,7 +4,7 @@
 define i32 @add(i32 %k, <vscale x 8 x i32> %merge) {
 ; CHECK-LABEL: define i32 @add(
 ; CHECK-SAME: i32 [[K:%.*]], <vscale x 8 x i32> [[MERGE:%.*]]) {
-; CHECK-NEXT:    [[R:%.*]] = call i32 @llvm.vp.reduce.add.nxv8i32(i32 [[K]], <vscale x 8 x i32> [[MERGE]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
+; CHECK-NEXT:    [[R:%.*]] = call i32 @llvm.vp.reduce.add.nxv8i32(i32 [[K]], <vscale x 8 x i32> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
 ; CHECK-NEXT:    ret i32 [[R]]
 ;
   %a = call i32 @llvm.vp.reduce.add.nxv8i32(i32 0, <vscale x 8 x i32> %merge, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
@@ -15,7 +15,7 @@ define i32 @add(i32 %k, <vscale x 8 x i32> %merge) {
 define i32 @mul(i32 %k, <vscale x 8 x i32> %merge) {
 ; CHECK-LABEL: define i32 @mul(
 ; CHECK-SAME: i32 [[K:%.*]], <vscale x 8 x i32> [[MERGE:%.*]]) {
-; CHECK-NEXT:    [[R:%.*]] = call i32 @llvm.vp.reduce.mul.nxv8i32(i32 [[K]], <vscale x 8 x i32> [[MERGE]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
+; CHECK-NEXT:    [[R:%.*]] = call i32 @llvm.vp.reduce.mul.nxv8i32(i32 [[K]], <vscale x 8 x i32> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
 ; CHECK-NEXT:    ret i32 [[R]]
 ;
   %a = call i32 @llvm.vp.reduce.mul.nxv8i32(i32 1, <vscale x 8 x i32> %merge, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
@@ -26,7 +26,7 @@ define i32 @mul(i32 %k, <vscale x 8 x i32> %merge) {
 define i32 @and(i32 %k, <vscale x 8 x i32> %merge) {
 ; CHECK-LABEL: define i32 @and(
 ; CHECK-SAME: i32 [[K:%.*]], <vscale x 8 x i32> [[MERGE:%.*]]) {
-; CHECK-NEXT:    [[R:%.*]] = call i32 @llvm.vp.reduce.and.nxv8i32(i32 [[K]], <vscale x 8 x i32> [[MERGE]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
+; CHECK-NEXT:    [[R:%.*]] = call i32 @llvm.vp.reduce.and.nxv8i32(i32 [[K]], <vscale x 8 x i32> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
 ; CHECK-NEXT:    ret i32 [[R]]
 ;
   %a = call i32 @llvm.vp.reduce.and.nxv8i32(i32 4294967295, <vscale x 8 x i32> %merge, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
@@ -37,7 +37,7 @@ define i32 @and(i32 %k, <vscale x 8 x i32> %merge) {
 define i32 @or(i32 %k, <vscale x 8 x i32> %merge) {
 ; CHECK-LABEL: define i32 @or(
 ; CHECK-SAME: i32 [[K:%.*]], <vscale x 8 x i32> [[MERGE:%.*]]) {
-; CHECK-NEXT:    [[R:%.*]] = call i32 @llvm.vp.reduce.or.nxv8i32(i32 [[K]], <vscale x 8 x i32> [[MERGE]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
+; CHECK-NEXT:    [[R:%.*]] = call i32 @llvm.vp.reduce.or.nxv8i32(i32 [[K]], <vscale x 8 x i32> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
 ; CHECK-NEXT:    ret i32 [[R]]
 ;
   %a = call i32 @llvm.vp.reduce.or.nxv8i32(i32 0, <vscale x 8 x i32> %merge, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
@@ -48,7 +48,7 @@ define i32 @or(i32 %k, <vscale x 8 x i32> %merge) {
 define i32 @xor(i32 %k, <vscale x 8 x i32> %merge) {
 ; CHECK-LABEL: define i32 @xor(
 ; CHECK-SAME: i32 [[K:%.*]], <vscale x 8 x i32> [[MERGE:%.*]]) {
-; CHECK-NEXT:    [[R:%.*]] = call i32 @llvm.vp.reduce.xor.nxv8i32(i32 [[K]], <vscale x 8 x i32> [[MERGE]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
+; CHECK-NEXT:    [[R:%.*]] = call i32 @llvm.vp.reduce.xor.nxv8i32(i32 [[K]], <vscale x 8 x i32> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
 ; CHECK-NEXT:    ret i32 [[R]]
 ;
   %a = call i32 @llvm.vp.reduce.xor.nxv8i32(i32 0, <vscale x 8 x i32> %merge, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
@@ -59,7 +59,7 @@ define i32 @xor(i32 %k, <vscale x 8 x i32> %merge) {
 define i32 @smin(i32 %k, <vscale x 8 x i32> %merge) {
 ; CHECK-LABEL: define i32 @smin(
 ; CHECK-SAME: i32 [[K:%.*]], <vscale x 8 x i32> [[MERGE:%.*]]) {
-; CHECK-NEXT:    [[R:%.*]] = call i32 @llvm.vp.reduce.smin.nxv8i32(i32 [[K]], <vscale x 8 x i32> [[MERGE]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
+; CHECK-NEXT:    [[R:%.*]] = call i32 @llvm.vp.reduce.smin.nxv8i32(i32 [[K]], <vscale x 8 x i32> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
 ; CHECK-NEXT:    ret i32 [[R]]
 ;
   %a = call i32 @llvm.vp.reduce.smin.nxv8i32(i32 2147483647, <vscale x 8 x i32> %merge, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
@@ -70,7 +70,7 @@ define i32 @smin(i32 %k, <vscale x 8 x i32> %merge) {
 define i32 @smax(i32 %k, <vscale x 8 x i32> %merge) {
 ; CHECK-LABEL: define i32 @smax(
 ; CHECK-SAME: i32 [[K:%.*]], <vscale x 8 x i32> [[MERGE:%.*]]) {
-; CHECK-NEXT:    [[R:%.*]] = call i32 @llvm.vp.reduce.smax.nxv8i32(i32 [[K]], <vscale x 8 x i32> [[MERGE]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
+; CHECK-NEXT:    [[R:%.*]] = call i32 @llvm.vp.reduce.smax.nxv8i32(i32 [[K]], <vscale x 8 x i32> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
 ; CHECK-NEXT:    ret i32 [[R]]
 ;
   %a = call i32 @llvm.vp.reduce.smax.nxv8i32(i32 -2147483648, <vscale x 8 x i32> %merge, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
@@ -81,7 +81,7 @@ define i32 @smax(i32 %k, <vscale x 8 x i32> %merge) {
 define i32 @umin(i32 %k, <vscale x 8 x i32> %merge) {
 ; CHECK-LABEL: define i32 @umin(
 ; CHECK-SAME: i32 [[K:%.*]], <vscale x 8 x i32> [[MERGE:%.*]]) {
-; CHECK-NEXT:    [[R:%.*]] = call i32 @llvm.vp.reduce.umin.nxv8i32(i32 [[K]], <vscale x 8 x i32> [[MERGE]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
+; CHECK-NEXT:    [[R:%.*]] = call i32 @llvm.vp.reduce.umin.nxv8i32(i32 [[K]], <vscale x 8 x i32> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
 ; CHECK-NEXT:    ret i32 [[R]]
 ;
   %a = call i32 @llvm.vp.reduce.umin.nxv8i32(i32 4294967295, <vscale x 8 x i32> %merge, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
@@ -92,7 +92,7 @@ define i32 @umin(i32 %k, <vscale x 8 x i32> %merge) {
 define i32 @umax(i32 %k, <vscale x 8 x i32> %merge) {
 ; CHECK-LABEL: define i32 @umax(
 ; CHECK-SAME: i32 [[K:%.*]], <vscale x 8 x i32> [[MERGE:%.*]]) {
-; CHECK-NEXT:    [[R:%.*]] = call i32 @llvm.vp.reduce.umax.nxv8i32(i32 [[K]], <vscale x 8 x i32> [[MERGE]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
+; CHECK-NEXT:    [[R:%.*]] = call i32 @llvm.vp.reduce.umax.nxv8i32(i32 [[K]], <vscale x 8 x i32> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
 ; CHECK-NEXT:    ret i32 [[R]]
 ;
   %a = call i32 @llvm.vp.reduce.umax.nxv8i32(i32 0, <vscale x 8 x i32> %merge, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
@@ -103,7 +103,7 @@ define i32 @umax(i32 %k, <vscale x 8 x i32> %merge) {
 define float @fadd(float %k, <vscale x 8 x float> %merge) {
 ; CHECK-LABEL: define float @fadd(
 ; CHECK-SAME: float [[K:%.*]], <vscale x 8 x float> [[MERGE:%.*]]) {
-; CHECK-NEXT:    [[R:%.*]] = call reassoc float @llvm.vp.reduce.fadd.nxv8f32(float [[K]], <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
+; CHECK-NEXT:    [[R:%.*]] = call reassoc float @llvm.vp.reduce.fadd.nxv8f32(float [[K]], <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
 ; CHECK-NEXT:    ret float [[R]]
 ;
   %a = call reassoc float @llvm.vp.reduce.fadd.nxv8f32(float -0.0, <vscale x 8 x float> %merge, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
@@ -114,7 +114,7 @@ define float @fadd(float %k, <vscale x 8 x float> %merge) {
 define float @fadd_nsz(float %k, <vscale x 8 x float> %merge) {
 ; CHECK-LABEL: define float @fadd_nsz(
 ; CHECK-SAME: float [[K:%.*]], <vscale x 8 x float> [[MERGE:%.*]]) {
-; CHECK-NEXT:    [[R:%.*]] = call reassoc nsz float @llvm.vp.reduce.fadd.nxv8f32(float [[K]], <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
+; CHECK-NEXT:    [[R:%.*]] = call reassoc nsz float @llvm.vp.reduce.fadd.nxv8f32(float [[K]], <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
 ; CHECK-NEXT:    ret float [[R]]
 ;
   %a = call reassoc nsz float @llvm.vp.reduce.fadd.nxv8f32(float 0.0, <vscale x 8 x float> %merge, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
@@ -125,7 +125,7 @@ define float @fadd_nsz(float %k, <vscale x 8 x float> %merge) {
 define float @fmul(float %k, <vscale x 8 x float> %merge) {
 ; CHECK-LABEL: define float @fmul(
 ; CHECK-SAME: float [[K:%.*]], <vscale x 8 x float> [[MERGE:%.*]]) {
-; CHECK-NEXT:    [[R:%.*]] = call reassoc float @llvm.vp.reduce.fmul.nxv8f32(float [[K]], <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
+; CHECK-NEXT:    [[R:%.*]] = call reassoc float @llvm.vp.reduce.fmul.nxv8f32(float [[K]], <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
 ; CHECK-NEXT:    ret float [[R]]
 ;
   %a = call reassoc float @llvm.vp.reduce.fmul.nxv8f32(float 1.0, <vscale x 8 x float> %merge, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
@@ -137,9 +137,9 @@ define float @fmin(float %k, <vscale x 8 x float> %merge) {
   ; Neutral = Inf
 ; CHECK-LABEL: define float @fmin(
 ; CHECK-SAME: float [[K:%.*]], <vscale x 8 x float> [[MERGE:%.*]]) {
-; CHECK-NEXT:    [[R:%.*]] = call nnan float @llvm.vp.reduce.fmin.nxv8f32(float [[K]], <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
-; CHECK-NEXT:    [[R1:%.*]] = call ninf float @llvm.vp.reduce.fmin.nxv8f32(float [[R]], <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
-; CHECK-NEXT:    [[R2:%.*]] = call float @llvm.vp.reduce.fmin.nxv8f32(float [[R1]], <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
+; CHECK-NEXT:    [[R:%.*]] = call nnan float @llvm.vp.reduce.fmin.nxv8f32(float [[K]], <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
+; CHECK-NEXT:    [[R1:%.*]] = call ninf float @llvm.vp.reduce.fmin.nxv8f32(float [[R]], <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
+; CHECK-NEXT:    [[R2:%.*]] = call float @llvm.vp.reduce.fmin.nxv8f32(float [[R1]], <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
 ; CHECK-NEXT:    ret float [[R2]]
 ;
   %a = call nnan float @llvm.vp.reduce.fmin.nxv8f32(float 0x7FF0000000000000, <vscale x 8 x float> %merge, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
@@ -157,9 +157,9 @@ define float @fmax(float %k, <vscale x 8 x float> %merge) {
   ; Neutral = -Inf
 ; CHECK-LABEL: define float @fmax(
 ; CHECK-SAME: float [[K:%.*]], <vscale x 8 x float> [[MERGE:%.*]]) {
-; CHECK-NEXT:    [[R:%.*]] = call nnan float @llvm.vp.reduce.fmax.nxv8f32(float [[K]], <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
-; CHECK-NEXT:    [[R1:%.*]] = call ninf float @llvm.vp.reduce.fmax.nxv8f32(float [[R]], <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
-; CHECK-NEXT:    [[R2:%.*]] = call float @llvm.vp.reduce.fmax.nxv8f32(float [[R1]], <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
+; CHECK-NEXT:    [[R:%.*]] = call nnan float @llvm.vp.reduce.fmax.nxv8f32(float [[K]], <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
+; CHECK-NEXT:    [[R1:%.*]] = call ninf float @llvm.vp.reduce.fmax.nxv8f32(float [[R]], <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
+; CHECK-NEXT:    [[R2:%.*]] = call float @llvm.vp.reduce.fmax.nxv8f32(float [[R1]], <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
 ; CHECK-NEXT:    ret float [[R2]]
 ;
   %a = call nnan float @llvm.vp.reduce.fmax.nxv8f32(float 0xFFF0000000000000, <vscale x 8 x float> %merge, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)

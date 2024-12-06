@@ -61,7 +61,7 @@ define dso_local noundef signext i32 @f(ptr noundef writeonly %c, ptr noundef re
 ; VEC-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[A]], [[VECTOR_PH]] ], [ [[PTR_IND:%.*]], [[VECTOR_BODY]] ]
 ; VEC-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; VEC-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; VEC-NEXT:    [[VECTOR_GEP:%.*]] = mul <vscale x 2 x i64> [[TMP17]], shufflevector (<vscale x 2 x i64> insertelement (<vscale x 2 x i64> poison, i64 4, i64 0), <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer)
+; VEC-NEXT:    [[VECTOR_GEP:%.*]] = mul <vscale x 2 x i64> [[TMP17]], splat (i64 4)
 ; VEC-NEXT:    [[TMP18:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 2 x i64> [[VECTOR_GEP]]
 ; VEC-NEXT:    [[TMP19:%.*]] = sub i64 [[TMP6]], [[EVL_BASED_IV]]
 ; VEC-NEXT:    [[TMP20:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP19]], i32 2, i1 true)
@@ -69,16 +69,16 @@ define dso_local noundef signext i32 @f(ptr noundef writeonly %c, ptr noundef re
 ; VEC-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 4
 ; VEC-NEXT:    [[TMP22:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; VEC-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[C]], i64 [[TMP22]]
-; VEC-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2p0(<vscale x 2 x ptr> [[TMP18]], <vscale x 2 x ptr> [[BROADCAST_SPLAT]], metadata !"ult", <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP20]])
-; VEC-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 2 x i1> @llvm.vp.xor.nxv2i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP20]])
+; VEC-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2p0(<vscale x 2 x ptr> [[TMP18]], <vscale x 2 x ptr> [[BROADCAST_SPLAT]], metadata !"ult", <vscale x 2 x i1> splat (i1 true), i32 [[TMP20]])
+; VEC-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 2 x i1> @llvm.vp.xor.nxv2i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> splat (i1 true), <vscale x 2 x i1> splat (i1 true), i32 [[TMP20]])
 ; VEC-NEXT:    [[TMP23:%.*]] = extractelement <vscale x 2 x ptr> [[TMP18]], i32 0
 ; VEC-NEXT:    [[TMP24:%.*]] = getelementptr i32, ptr [[TMP23]], i32 0
 ; VEC-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0(ptr align 4 [[TMP24]], <vscale x 2 x i1> [[VP_OP_ICMP]], i32 [[TMP20]])
 ; VEC-NEXT:    [[PREDPHI:%.*]] = call <vscale x 2 x i32> @llvm.vp.select.nxv2i32(<vscale x 2 x i1> [[PRED_NOT]], <vscale x 2 x i32> zeroinitializer, <vscale x 2 x i32> [[VP_OP_LOAD]], i32 [[TMP20]])
 ; VEC-NEXT:    [[TMP25:%.*]] = getelementptr i32, ptr [[NEXT_GEP]], i32 0
-; VEC-NEXT:    call void @llvm.vp.store.nxv2i32.p0(<vscale x 2 x i32> [[PREDPHI]], ptr align 4 [[TMP25]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP20]])
+; VEC-NEXT:    call void @llvm.vp.store.nxv2i32.p0(<vscale x 2 x i32> [[PREDPHI]], ptr align 4 [[TMP25]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP20]])
 ; VEC-NEXT:    [[TMP26:%.*]] = zext i32 [[TMP20]] to i64
-; VEC-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP26]], [[EVL_BASED_IV]]
+; VEC-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP26]], [[EVL_BASED_IV]]
 ; VEC-NEXT:    [[TMP27:%.*]] = mul i64 [[TMP21]], 1
 ; VEC-NEXT:    [[TMP28:%.*]] = mul i64 4, [[TMP27]]
 ; VEC-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP28]]

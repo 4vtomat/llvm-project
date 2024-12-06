@@ -51,23 +51,22 @@ define i32 @updateQuantizationParameter(ptr %PMADPictureC1, ptr %FCBUPFMAD, ptr 
 ; CHECK-NEXT:    [[TMP11:%.*]] = load double, ptr [[FCBUPFMAD]], align 8, !alias.scope [[META0:![0-9]+]]
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 2 x double> poison, double [[TMP11]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 2 x double> [[BROADCAST_SPLATINSERT]], <vscale x 2 x double> poison, <vscale x 2 x i32> zeroinitializer
-; CHECK-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 2 x double> @llvm.vp.fadd.nxv2f64(<vscale x 2 x double> [[VEC_PHI]], <vscale x 2 x double> [[BROADCAST_SPLAT]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP10]])
-; CHECK-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x double> @llvm.vp.merge.nxv2f64(<vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), <vscale x 2 x double> [[VP_OP]], <vscale x 2 x double> [[VEC_PHI]], i32 [[TMP10]])
+; CHECK-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 2 x double> @llvm.vp.fadd.nxv2f64(<vscale x 2 x double> [[VEC_PHI]], <vscale x 2 x double> [[BROADCAST_SPLAT]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP10]])
+; CHECK-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x double> @llvm.vp.merge.nxv2f64(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x double> [[VP_OP]], <vscale x 2 x double> [[VEC_PHI]], i32 [[TMP10]])
 ; CHECK-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP10]] to i64
-; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP12]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP12]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP6]]
 ; CHECK-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP14:%.*]] = call fast double @llvm.vp.reduce.fadd.nxv2f64(double -0.000000e+00, <vscale x 2 x double> [[VP_OP_MERGE]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP8]])
+; CHECK-NEXT:    [[TMP14:%.*]] = call fast double @llvm.vp.reduce.fadd.nxv2f64(double -0.000000e+00, <vscale x 2 x double> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP8]])
 ; CHECK-NEXT:    [[TMP15:%.*]] = fadd fast double [[DOTPRE]], [[TMP14]]
 ; CHECK-NEXT:    store double [[TMP15]], ptr [[PMADPICTUREC1]], align 8, !alias.scope [[META6:![0-9]+]], !noalias [[META0]]
 ; CHECK-NEXT:    br label [[IF_END831_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[TMP1]], [[FOR_BODY_PREHEADER]] ], [ [[TMP1]], [[VECTOR_MEMCHECK]] ]
-; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi double [ [[DOTPRE]], [[VECTOR_MEMCHECK]] ], [ [[DOTPRE]], [[FOR_BODY_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[TMP16:%.*]] = phi double [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[ADD808:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[TMP16:%.*]] = phi double [ [[DOTPRE]], [[SCALAR_PH]] ], [ [[ADD808:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[INDVARS_IV141:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT1421:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT1421]] = add nsw i64 [[INDVARS_IV141]], -1
 ; CHECK-NEXT:    [[ARRAYIDX8042:%.*]] = getelementptr inbounds double, ptr [[TMP2:%.*]], i64 [[INDVARS_IV_NEXT142:%.*]]
@@ -128,22 +127,21 @@ define i32 @updateQuantizationParameter(ptr %PMADPictureC1, ptr %FCBUPFMAD, ptr 
 ; CHECK-NO-POSTSV-NEXT:    [[TMP12:%.*]] = load double, ptr [[FCBUPFMAD]], align 8, !alias.scope [[META0:![0-9]+]]
 ; CHECK-NO-POSTSV-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 2 x double> poison, double [[TMP12]], i64 0
 ; CHECK-NO-POSTSV-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 2 x double> [[BROADCAST_SPLATINSERT]], <vscale x 2 x double> poison, <vscale x 2 x i32> zeroinitializer
-; CHECK-NO-POSTSV-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 2 x double> @llvm.vp.fadd.nxv2f64(<vscale x 2 x double> [[VEC_PHI]], <vscale x 2 x double> [[BROADCAST_SPLAT]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP11]])
-; CHECK-NO-POSTSV-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x double> @llvm.vp.merge.nxv2f64(<vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), <vscale x 2 x double> [[VP_OP]], <vscale x 2 x double> [[VEC_PHI]], i32 [[TMP11]])
+; CHECK-NO-POSTSV-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 2 x double> @llvm.vp.fadd.nxv2f64(<vscale x 2 x double> [[VEC_PHI]], <vscale x 2 x double> [[BROADCAST_SPLAT]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP11]])
+; CHECK-NO-POSTSV-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x double> @llvm.vp.merge.nxv2f64(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x double> [[VP_OP]], <vscale x 2 x double> [[VEC_PHI]], i32 [[TMP11]])
 ; CHECK-NO-POSTSV-NEXT:    [[TMP13:%.*]] = zext i32 [[TMP11]] to i64
-; CHECK-NO-POSTSV-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP13]], [[EVL_BASED_IV]]
+; CHECK-NO-POSTSV-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP13]], [[EVL_BASED_IV]]
 ; CHECK-NO-POSTSV-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP6]]
 ; CHECK-NO-POSTSV-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK-NO-POSTSV:       middle.block:
-; CHECK-NO-POSTSV-NEXT:    [[TMP15:%.*]] = call fast double @llvm.vp.reduce.fadd.nxv2f64(double -0.000000e+00, <vscale x 2 x double> [[VP_OP_MERGE]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP8]])
+; CHECK-NO-POSTSV-NEXT:    [[TMP15:%.*]] = call fast double @llvm.vp.reduce.fadd.nxv2f64(double -0.000000e+00, <vscale x 2 x double> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP8]])
 ; CHECK-NO-POSTSV-NEXT:    store double [[TMP15]], ptr [[PMADPICTUREC1]], align 8, !alias.scope [[META6:![0-9]+]], !noalias [[META0]]
 ; CHECK-NO-POSTSV-NEXT:    br label [[IF_END831_LOOPEXIT:%.*]]
 ; CHECK-NO-POSTSV:       scalar.ph:
 ; CHECK-NO-POSTSV-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[TMP1]], [[FOR_BODY_PREHEADER]] ], [ [[TMP1]], [[VECTOR_MEMCHECK]] ]
-; CHECK-NO-POSTSV-NEXT:    [[BC_MERGE_RDX:%.*]] = phi double [ [[DOTPRE]], [[VECTOR_MEMCHECK]] ], [ [[DOTPRE]], [[FOR_BODY_PREHEADER]] ]
 ; CHECK-NO-POSTSV-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-NO-POSTSV:       for.body:
-; CHECK-NO-POSTSV-NEXT:    [[TMP16:%.*]] = phi double [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[ADD808:%.*]], [[FOR_BODY]] ]
+; CHECK-NO-POSTSV-NEXT:    [[TMP16:%.*]] = phi double [ [[DOTPRE]], [[SCALAR_PH]] ], [ [[ADD808:%.*]], [[FOR_BODY]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[INDVARS_IV141:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT1421:%.*]], [[FOR_BODY]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[INDVARS_IV_NEXT1421]] = add nsw i64 [[INDVARS_IV141]], -1
 ; CHECK-NO-POSTSV-NEXT:    [[ARRAYIDX8042:%.*]] = getelementptr inbounds double, ptr [[TMP2:%.*]], i64 [[INDVARS_IV_NEXT142:%.*]]

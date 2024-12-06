@@ -22,13 +22,13 @@ define void @gather_scatter(ptr noalias %in, ptr noalias %out, ptr noalias %inde
 ; IF-EVL-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 1, i1 true)
 ; IF-EVL-NEXT:    [[TMP2:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF-EVL-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[INDEX:%.*]], i64 [[TMP2]]
-; IF-EVL-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 1 x i64> @llvm.experimental.vp.strided.load.nxv1i64.p0.i64(ptr align 8 [[TMP3]], i64 4, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP1]])
+; IF-EVL-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 1 x i64> @llvm.experimental.vp.strided.load.nxv1i64.p0.i64(ptr align 8 [[TMP3]], i64 4, <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
 ; IF-EVL-NEXT:    [[TMP4:%.*]] = getelementptr inbounds float, ptr [[IN:%.*]], <vscale x 1 x i64> [[VP_STRIDED_LOAD]]
-; IF-EVL-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <vscale x 1 x float> @llvm.vp.gather.nxv1f32.nxv1p0(<vscale x 1 x ptr> align 4 [[TMP4]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP1]])
+; IF-EVL-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <vscale x 1 x float> @llvm.vp.gather.nxv1f32.nxv1p0(<vscale x 1 x ptr> align 4 [[TMP4]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
 ; IF-EVL-NEXT:    [[TMP5:%.*]] = getelementptr inbounds float, ptr [[OUT:%.*]], <vscale x 1 x i64> [[VP_STRIDED_LOAD]]
-; IF-EVL-NEXT:    call void @llvm.vp.scatter.nxv1f32.nxv1p0(<vscale x 1 x float> [[WIDE_MASKED_GATHER]], <vscale x 1 x ptr> align 4 [[TMP5]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP1]])
+; IF-EVL-NEXT:    call void @llvm.vp.scatter.nxv1f32.nxv1p0(<vscale x 1 x float> [[WIDE_MASKED_GATHER]], <vscale x 1 x ptr> align 4 [[TMP5]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
 ; IF-EVL-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP1]] to i64
-; IF-EVL-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP6]], [[EVL_BASED_IV]]
+; IF-EVL-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP6]], [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; IF-EVL-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; IF-EVL:       middle.block:

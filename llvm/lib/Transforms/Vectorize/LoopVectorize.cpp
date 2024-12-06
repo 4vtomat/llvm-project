@@ -803,6 +803,13 @@ protected:
   /// The profitablity analysis.
   LoopVectorizationCostModel *Cost;
 
+#if SIFIVE_CUSTOMIZATION
+  // FIXME Remove it once the upstream vectorizer used.
+  // Holds the end values for each induction variable. We save the end values
+  // so we can later fix-up the external users of the induction variables.
+  DenseMap<PHINode *, Value *> IVEndValues;
+#endif // SIFIVE_CUSTOMIZATION
+
   // Record whether runtime checks are added.
   bool AddedSafetyChecks = false;
 
@@ -2941,7 +2948,11 @@ PHINode *InnerLoopVectorizer::createInductionResumeValue(
   assert(VectorTripCount && "Expected valid arguments");
 
   Instruction *OldInduction = Legal->getPrimaryInduction();
+#if SIFIVE_CUSTOMIZATION
+  Value *&EndValue = IVEndValues[OrigPhi];
+#else
   Value *EndValue = nullptr;
+#endif // SIFIVE_CUSTOMIZATION
   Value *EndValueFromAdditionalBypass = AdditionalBypass.second;
   if (OrigPhi == OldInduction) {
     // We know what the end value is.
@@ -3159,9 +3170,13 @@ void InnerLoopVectorizer::fixupIVUsers(PHINode *OrigPhi,
 
   DenseMap<Value *, Value *> MissingVals;
 
+#if SIFIVE_CUSTOMIZATION
+  Value *EndValue = IVEndValues.at(OrigPhi);
+#else
   Value *EndValue = cast<PHINode>(OrigPhi->getIncomingValueForBlock(
                                       OrigLoop->getLoopPreheader()))
                         ->getIncomingValueForBlock(MiddleBlock);
+#endif // SIFIVE_CUSTOMIZATION
 
   // An external user of the last iteration's value should see the value that
   // the remainder loop uses to initialize its own IV.
@@ -11350,6 +11365,9 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
          "VPBasicBlock");
   RecipeBuilder.fixHeaderPhis();
 
+#if SIFIVE_CUSTOMIZATION
+  if (!Legal->useVLAVectorizer() || CM.requiresScalarEpilogue(true))
+#endif // SIFIVE_CUSTOMIZATION
   addScalarResumePhis(RecipeBuilder, *Plan);
 #if SIFIVE_CUSTOMIZATION
   SetVector<VPIRInstruction *> ExitUsersToFix = collectUsersInExitBlocks(

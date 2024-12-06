@@ -7,8 +7,8 @@ define <vscale x 16 x i1> @test(<vscale x 16 x i32> %vx, <vscale x 16 x i32> %vy
 ; CHECK-NEXT:  [[ENTRY:.*:]]
 ; CHECK-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.vsetvli.i64(i64 [[VL]], i64 3, i64 3)
 ; CHECK-NEXT:    [[TMP1:%.*]] = trunc nuw nsw i64 [[TMP0]] to i32
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = tail call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i32(<vscale x 16 x i32> [[VX]], <vscale x 16 x i32> [[VY]], metadata !"slt", <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP1]])
-; CHECK-NEXT:    [[VP_CAST:%.*]] = tail call <vscale x 16 x i8> @llvm.vp.zext.nxv16i8.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = tail call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i32(<vscale x 16 x i32> [[VX]], <vscale x 16 x i32> [[VY]], metadata !"slt", <vscale x 16 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_CAST:%.*]] = tail call <vscale x 16 x i8> @llvm.vp.zext.nxv16i8.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP2:%.*]] = tail call <vscale x 16 x i1> @llvm.riscv.vmsne.nxv16i8.i8.i64(<vscale x 16 x i8> [[VP_CAST]], i8 0, i64 [[TMP0]])
 ; CHECK-NEXT:    ret <vscale x 16 x i1> [[TMP2]]
 ;
@@ -30,11 +30,11 @@ define <vscale x 16 x i1> @multiple_zext_uses(<vscale x 16 x i32> %vx, <vscale x
 ; CHECK-NEXT:  [[ENTRY:.*:]]
 ; CHECK-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.vsetvli.i64(i64 [[VL]], i64 3, i64 3)
 ; CHECK-NEXT:    [[TMP1:%.*]] = trunc nuw nsw i64 [[TMP0]] to i32
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = tail call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i32(<vscale x 16 x i32> [[VX]], <vscale x 16 x i32> [[VY]], metadata !"slt", <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP1]])
-; CHECK-NEXT:    [[VP_CAST:%.*]] = tail call <vscale x 16 x i8> @llvm.vp.zext.nxv16i8.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = tail call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i32(<vscale x 16 x i32> [[VX]], <vscale x 16 x i32> [[VY]], metadata !"slt", <vscale x 16 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_CAST:%.*]] = tail call <vscale x 16 x i8> @llvm.vp.zext.nxv16i8.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP2:%.*]] = tail call <vscale x 16 x i1> @llvm.riscv.vmsne.nxv16i8.i8.i64(<vscale x 16 x i8> [[VP_CAST]], i8 0, i64 [[TMP0]])
 ; CHECK-NEXT:    [[TMP3:%.*]] = tail call <vscale x 16 x i1> @llvm.riscv.vmsne.nxv16i8.i8.i64(<vscale x 16 x i8> [[VP_CAST]], i8 1, i64 [[TMP0]])
-; CHECK-NEXT:    [[TMP4:%.*]] = tail call <vscale x 16 x i1> @llvm.vp.add.nxv16i1(<vscale x 16 x i1> [[TMP3]], <vscale x 16 x i1> [[TMP2]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP1]])
+; CHECK-NEXT:    [[TMP4:%.*]] = tail call <vscale x 16 x i1> @llvm.vp.add.nxv16i1(<vscale x 16 x i1> [[TMP3]], <vscale x 16 x i1> [[TMP2]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    ret <vscale x 16 x i1> [[TMP4]]
 ;
 entry:
@@ -54,8 +54,8 @@ define <vscale x 16 x i1> @vsne_one(<vscale x 16 x i32> %vx, <vscale x 16 x i32>
 ; CHECK-NEXT:  [[ENTRY:.*:]]
 ; CHECK-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.vsetvli.i64(i64 [[VL]], i64 3, i64 3)
 ; CHECK-NEXT:    [[TMP1:%.*]] = trunc nuw nsw i64 [[TMP0]] to i32
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = tail call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i32(<vscale x 16 x i32> [[VX]], <vscale x 16 x i32> [[VY]], metadata !"slt", <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP1]])
-; CHECK-NEXT:    [[VP_CAST:%.*]] = tail call <vscale x 16 x i8> @llvm.vp.zext.nxv16i8.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = tail call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i32(<vscale x 16 x i32> [[VX]], <vscale x 16 x i32> [[VY]], metadata !"slt", <vscale x 16 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_CAST:%.*]] = tail call <vscale x 16 x i8> @llvm.vp.zext.nxv16i8.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP2:%.*]] = tail call <vscale x 16 x i1> @llvm.riscv.vmsne.nxv16i8.i8.i64(<vscale x 16 x i8> [[VP_CAST]], i8 1, i64 [[TMP0]])
 ; CHECK-NEXT:    ret <vscale x 16 x i1> [[TMP2]]
 ;
@@ -74,7 +74,7 @@ define <vscale x 16 x i1> @wrong_vp_mask(<vscale x 16 x i32> %vx, <vscale x 16 x
 ; CHECK-NEXT:  [[ENTRY:.*:]]
 ; CHECK-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.vsetvli.i64(i64 [[VL]], i64 3, i64 3)
 ; CHECK-NEXT:    [[TMP1:%.*]] = trunc nuw nsw i64 [[TMP0]] to i32
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = tail call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i32(<vscale x 16 x i32> [[VX]], <vscale x 16 x i32> [[VY]], metadata !"slt", <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = tail call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i32(<vscale x 16 x i32> [[VX]], <vscale x 16 x i32> [[VY]], metadata !"slt", <vscale x 16 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[VP_CAST:%.*]] = tail call <vscale x 16 x i8> @llvm.vp.zext.nxv16i8.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> [[VP_OP_ICMP]], i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP2:%.*]] = tail call <vscale x 16 x i1> @llvm.riscv.vmsne.nxv16i8.i8.i64(<vscale x 16 x i8> [[VP_CAST]], i8 1, i64 [[TMP0]])
 ; CHECK-NEXT:    ret <vscale x 16 x i1> [[TMP2]]

@@ -13,12 +13,12 @@ define void @strlen(ptr %s) {
 ; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; CHECK-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[S]], i64 [[TMP0]]
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
-; CHECK-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 8 x i8>, i32 } @llvm.vp.load.ff.nxv8i8.p0(ptr align 1 [[TMP2]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP1]]), !tbaa [[TBAA0:![0-9]+]]
+; CHECK-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 8 x i8>, i32 } @llvm.vp.load.ff.nxv8i8.p0(ptr align 1 [[TMP2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP1]]), !tbaa [[TBAA0:![0-9]+]]
 ; CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 8 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
 ; CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 8 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
 ; CHECK-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP3]] to i64
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP4]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP3]])
-; CHECK-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP3]])
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP4]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]])
+; CHECK-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]])
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]

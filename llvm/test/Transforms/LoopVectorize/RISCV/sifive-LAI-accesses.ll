@@ -25,15 +25,15 @@ define i32 @sct3313() {
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 4 x i64> [ zeroinitializer, [[VECTOR_BODY]] ], [ [[TMP17:%.*]], [[FOR_PREHEADER1]] ]
 ; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr i32, ptr null, <vscale x 4 x i64> [[VEC_PHI]]
 ; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr i32, <vscale x 4 x ptr> [[TMP12]], i64 1
-; CHECK-NEXT:    call void @llvm.masked.scatter.nxv4i32.nxv4p0(<vscale x 4 x i32> shufflevector (<vscale x 4 x i32> insertelement (<vscale x 4 x i32> poison, i32 1, i64 0), <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x ptr> [[TMP13]], i32 4, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer))
+; CHECK-NEXT:    call void @llvm.masked.scatter.nxv4i32.nxv4p0(<vscale x 4 x i32> splat (i32 1), <vscale x 4 x ptr> [[TMP13]], i32 4, <vscale x 4 x i1> splat (i1 true))
 ; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr i32, <vscale x 4 x ptr> [[TMP12]], i64 2
-; CHECK-NEXT:    call void @llvm.masked.scatter.nxv4i32.nxv4p0(<vscale x 4 x i32> shufflevector (<vscale x 4 x i32> insertelement (<vscale x 4 x i32> poison, i32 2, i64 0), <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x ptr> [[TMP14]], i32 4, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer))
+; CHECK-NEXT:    call void @llvm.masked.scatter.nxv4i32.nxv4p0(<vscale x 4 x i32> splat (i32 2), <vscale x 4 x ptr> [[TMP14]], i32 4, <vscale x 4 x i1> splat (i1 true))
 ; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr i32, <vscale x 4 x ptr> [[TMP12]], i64 3
-; CHECK-NEXT:    call void @llvm.masked.scatter.nxv4i32.nxv4p0(<vscale x 4 x i32> shufflevector (<vscale x 4 x i32> insertelement (<vscale x 4 x i32> poison, i32 3, i64 0), <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x ptr> [[TMP15]], i32 4, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer))
+; CHECK-NEXT:    call void @llvm.masked.scatter.nxv4i32.nxv4p0(<vscale x 4 x i32> splat (i32 3), <vscale x 4 x ptr> [[TMP15]], i32 4, <vscale x 4 x i1> splat (i1 true))
 ; CHECK-NEXT:    [[TMP16:%.*]] = getelementptr i32, <vscale x 4 x ptr> [[TMP12]], i64 4
-; CHECK-NEXT:    call void @llvm.masked.scatter.nxv4i32.nxv4p0(<vscale x 4 x i32> shufflevector (<vscale x 4 x i32> insertelement (<vscale x 4 x i32> poison, i32 4, i64 0), <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x ptr> [[TMP16]], i32 4, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer))
-; CHECK-NEXT:    [[TMP17]] = add nuw nsw <vscale x 4 x i64> [[VEC_PHI]], shufflevector (<vscale x 4 x i64> insertelement (<vscale x 4 x i64> poison, i64 1, i64 0), <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP18:%.*]] = icmp eq <vscale x 4 x i64> [[TMP17]], shufflevector (<vscale x 4 x i64> insertelement (<vscale x 4 x i64> poison, i64 5, i64 0), <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer)
+; CHECK-NEXT:    call void @llvm.masked.scatter.nxv4i32.nxv4p0(<vscale x 4 x i32> splat (i32 4), <vscale x 4 x ptr> [[TMP16]], i32 4, <vscale x 4 x i1> splat (i1 true))
+; CHECK-NEXT:    [[TMP17]] = add nuw nsw <vscale x 4 x i64> [[VEC_PHI]], splat (i64 1)
+; CHECK-NEXT:    [[TMP18:%.*]] = icmp eq <vscale x 4 x i64> [[TMP17]], splat (i64 5)
 ; CHECK-NEXT:    [[TMP19:%.*]] = extractelement <vscale x 4 x i1> [[TMP18]], i32 0
 ; CHECK-NEXT:    br i1 [[TMP19]], label [[FOR_OUTER_CLEANUP2]], label [[FOR_PREHEADER1]]
 ; CHECK:       vector.latch:
@@ -92,15 +92,15 @@ define i32 @sct3313() {
 ; CHECK-VLA-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 4 x i64> [ zeroinitializer, [[VECTOR_BODY]] ], [ [[TMP17:%.*]], [[FOR_PREHEADER1]] ]
 ; CHECK-VLA-NEXT:    [[TMP12:%.*]] = getelementptr i32, ptr null, <vscale x 4 x i64> [[VEC_PHI]]
 ; CHECK-VLA-NEXT:    [[TMP13:%.*]] = getelementptr i32, <vscale x 4 x ptr> [[TMP12]], i64 1
-; CHECK-VLA-NEXT:    call void @llvm.masked.scatter.nxv4i32.nxv4p0(<vscale x 4 x i32> shufflevector (<vscale x 4 x i32> insertelement (<vscale x 4 x i32> poison, i32 1, i64 0), <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x ptr> [[TMP13]], i32 4, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer))
+; CHECK-VLA-NEXT:    call void @llvm.masked.scatter.nxv4i32.nxv4p0(<vscale x 4 x i32> splat (i32 1), <vscale x 4 x ptr> [[TMP13]], i32 4, <vscale x 4 x i1> splat (i1 true))
 ; CHECK-VLA-NEXT:    [[TMP14:%.*]] = getelementptr i32, <vscale x 4 x ptr> [[TMP12]], i64 2
-; CHECK-VLA-NEXT:    call void @llvm.masked.scatter.nxv4i32.nxv4p0(<vscale x 4 x i32> shufflevector (<vscale x 4 x i32> insertelement (<vscale x 4 x i32> poison, i32 2, i64 0), <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x ptr> [[TMP14]], i32 4, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer))
+; CHECK-VLA-NEXT:    call void @llvm.masked.scatter.nxv4i32.nxv4p0(<vscale x 4 x i32> splat (i32 2), <vscale x 4 x ptr> [[TMP14]], i32 4, <vscale x 4 x i1> splat (i1 true))
 ; CHECK-VLA-NEXT:    [[TMP15:%.*]] = getelementptr i32, <vscale x 4 x ptr> [[TMP12]], i64 3
-; CHECK-VLA-NEXT:    call void @llvm.masked.scatter.nxv4i32.nxv4p0(<vscale x 4 x i32> shufflevector (<vscale x 4 x i32> insertelement (<vscale x 4 x i32> poison, i32 3, i64 0), <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x ptr> [[TMP15]], i32 4, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer))
+; CHECK-VLA-NEXT:    call void @llvm.masked.scatter.nxv4i32.nxv4p0(<vscale x 4 x i32> splat (i32 3), <vscale x 4 x ptr> [[TMP15]], i32 4, <vscale x 4 x i1> splat (i1 true))
 ; CHECK-VLA-NEXT:    [[TMP16:%.*]] = getelementptr i32, <vscale x 4 x ptr> [[TMP12]], i64 4
-; CHECK-VLA-NEXT:    call void @llvm.masked.scatter.nxv4i32.nxv4p0(<vscale x 4 x i32> shufflevector (<vscale x 4 x i32> insertelement (<vscale x 4 x i32> poison, i32 4, i64 0), <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x ptr> [[TMP16]], i32 4, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer))
-; CHECK-VLA-NEXT:    [[TMP17]] = add nuw nsw <vscale x 4 x i64> [[VEC_PHI]], shufflevector (<vscale x 4 x i64> insertelement (<vscale x 4 x i64> poison, i64 1, i64 0), <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer)
-; CHECK-VLA-NEXT:    [[TMP18:%.*]] = icmp eq <vscale x 4 x i64> [[TMP17]], shufflevector (<vscale x 4 x i64> insertelement (<vscale x 4 x i64> poison, i64 5, i64 0), <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer)
+; CHECK-VLA-NEXT:    call void @llvm.masked.scatter.nxv4i32.nxv4p0(<vscale x 4 x i32> splat (i32 4), <vscale x 4 x ptr> [[TMP16]], i32 4, <vscale x 4 x i1> splat (i1 true))
+; CHECK-VLA-NEXT:    [[TMP17]] = add nuw nsw <vscale x 4 x i64> [[VEC_PHI]], splat (i64 1)
+; CHECK-VLA-NEXT:    [[TMP18:%.*]] = icmp eq <vscale x 4 x i64> [[TMP17]], splat (i64 5)
 ; CHECK-VLA-NEXT:    [[TMP19:%.*]] = extractelement <vscale x 4 x i1> [[TMP18]], i32 0
 ; CHECK-VLA-NEXT:    br i1 [[TMP19]], label [[FOR_OUTER_CLEANUP2]], label [[FOR_PREHEADER1]]
 ; CHECK-VLA:       vector.latch:

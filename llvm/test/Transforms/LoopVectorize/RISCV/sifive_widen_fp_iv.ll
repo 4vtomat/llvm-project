@@ -19,7 +19,7 @@ define void @test(i32 %input, ptr %0) {
 ; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 4 x i64> @llvm.stepvector.nxv4i64()
 ; CHECK-NEXT:    [[TMP4:%.*]] = uitofp <vscale x 4 x i64> [[TMP3]] to <vscale x 4 x double>
 ; CHECK-NEXT:    [[TMP5:%.*]] = fadd reassoc <vscale x 4 x double> [[TMP4]], zeroinitializer
-; CHECK-NEXT:    [[TMP6:%.*]] = fmul reassoc <vscale x 4 x double> [[TMP5]], shufflevector (<vscale x 4 x double> insertelement (<vscale x 4 x double> poison, double 1.000000e+00, i64 0), <vscale x 4 x double> poison, <vscale x 4 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = fmul reassoc <vscale x 4 x double> [[TMP5]], splat (double 1.000000e+00)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = fadd reassoc <vscale x 4 x double> zeroinitializer, [[TMP6]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = uitofp i32 [[TMP8]] to double
 ; CHECK-NEXT:    [[TMP10:%.*]] = fmul reassoc double 1.000000e+00, [[TMP9]]
@@ -35,13 +35,13 @@ define void @test(i32 %input, ptr %0) {
 ; CHECK-NEXT:    [[TMP11:%.*]] = add i32 [[EVL_BASED_IV1]], 0
 ; CHECK-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP11]] to i64
 ; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr [[POINT:%.*]], ptr [[TMP0]], i64 [[TMP14]], i32 0, i32 0, i64 2
-; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VEC_IND]], ptr align 8 [[TMP15]], i64 24, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP12]])
-; CHECK-NEXT:    [[INDEX_EVL_NEXT1]] = add i32 [[TMP12]], [[EVL_BASED_IV1]]
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VEC_IND]], ptr align 8 [[TMP15]], i64 24, <vscale x 4 x i1> splat (i1 true), i32 [[TMP12]])
+; CHECK-NEXT:    [[INDEX_EVL_NEXT1]] = add nuw i32 [[TMP12]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP18:%.*]] = uitofp i32 [[TMP12]] to double
 ; CHECK-NEXT:    [[TMP17:%.*]] = fmul reassoc double 1.000000e+00, [[TMP18]]
 ; CHECK-NEXT:    [[DOTSPLATINSERT2:%.*]] = insertelement <vscale x 4 x double> poison, double [[TMP17]], i64 0
 ; CHECK-NEXT:    [[DOTSPLAT3:%.*]] = shufflevector <vscale x 4 x double> [[DOTSPLATINSERT2]], <vscale x 4 x double> poison, <vscale x 4 x i32> zeroinitializer
-; CHECK-NEXT:    [[VEC_IND_NEXT]] = call reassoc <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VEC_IND]], <vscale x 4 x double> [[DOTSPLAT3]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP12]])
+; CHECK-NEXT:    [[VEC_IND_NEXT]] = call reassoc <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VEC_IND]], <vscale x 4 x double> [[DOTSPLAT3]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP12]])
 ; CHECK-NEXT:    [[TMP16:%.*]] = icmp eq i32 [[INDEX_EVL_NEXT1]], [[TMP1]]
 ; CHECK-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:

@@ -34,14 +34,14 @@ define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr
 ; X280-NEXT:    [[TMP4:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; X280-NEXT:    [[TMP5:%.*]] = getelementptr i64, ptr [[REG_24_VAL]], i64 [[TMP4]]
 ; X280-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i64, ptr [[TMP5]], i32 0
-; X280-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[TMP6]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP3]])
-; X280-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i64> @llvm.vp.and.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i64> [[BROADCAST_SPLAT]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP3]])
-; X280-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i64(<vscale x 4 x i64> [[VP_OP]], <vscale x 4 x i64> [[BROADCAST_SPLAT]], metadata !"eq", <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP3]])
-; X280-NEXT:    [[VP_OP3:%.*]] = call <vscale x 4 x i64> @llvm.vp.xor.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i64> [[BROADCAST_SPLAT2]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP3]])
+; X280-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[TMP6]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
+; X280-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i64> @llvm.vp.and.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i64> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
+; X280-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i64(<vscale x 4 x i64> [[VP_OP]], <vscale x 4 x i64> [[BROADCAST_SPLAT]], metadata !"eq", <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
+; X280-NEXT:    [[VP_OP3:%.*]] = call <vscale x 4 x i64> @llvm.vp.xor.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i64> [[BROADCAST_SPLAT2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
 ; X280-NEXT:    [[TMP7:%.*]] = getelementptr i64, ptr [[TMP5]], i32 0
 ; X280-NEXT:    call void @llvm.vp.store.nxv4i64.p0(<vscale x 4 x i64> [[VP_OP3]], ptr align 8 [[TMP7]], <vscale x 4 x i1> [[VP_OP_ICMP]], i32 [[TMP3]])
 ; X280-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP3]] to i64
-; X280-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP9]], [[EVL_BASED_IV]]
+; X280-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP9]], [[EVL_BASED_IV]]
 ; X280-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
 ; X280-NEXT:    br i1 [[TMP10]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; X280:       [[MIDDLE_BLOCK]]:
@@ -99,20 +99,20 @@ define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr
 ; P470-NEXT:    [[TMP4:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; P470-NEXT:    [[TMP5:%.*]] = getelementptr i64, ptr [[REG_24_VAL]], i64 [[TMP4]]
 ; P470-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i64, ptr [[TMP5]], i32 0
-; P470-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[TMP6]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP3]])
-; P470-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i64> @llvm.vp.and.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i64> [[BROADCAST_SPLAT]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP3]])
-; P470-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i64(<vscale x 4 x i64> [[VP_OP]], <vscale x 4 x i64> [[BROADCAST_SPLAT]], metadata !"eq", <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP3]])
-; P470-NEXT:    [[TMP7:%.*]] = call i32 @llvm.vp.first.nxv4i1(<vscale x 4 x i1> [[VP_OP_ICMP]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP3]])
+; P470-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[TMP6]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
+; P470-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i64> @llvm.vp.and.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i64> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
+; P470-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i64(<vscale x 4 x i64> [[VP_OP]], <vscale x 4 x i64> [[BROADCAST_SPLAT]], metadata !"eq", <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
+; P470-NEXT:    [[TMP7:%.*]] = call i32 @llvm.vp.first.nxv4i1(<vscale x 4 x i1> [[VP_OP_ICMP]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
 ; P470-NEXT:    [[TMP8:%.*]] = icmp ne i32 [[TMP7]], -1
 ; P470-NEXT:    br i1 [[TMP8]], label %[[VECTOR_IF_BB:.*]], label %[[VECTOR_BODY_SPLIT]]
 ; P470:       [[VECTOR_IF_BB]]:
-; P470-NEXT:    [[VP_OP3:%.*]] = call <vscale x 4 x i64> @llvm.vp.xor.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i64> [[BROADCAST_SPLAT2]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP3]])
+; P470-NEXT:    [[VP_OP3:%.*]] = call <vscale x 4 x i64> @llvm.vp.xor.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i64> [[BROADCAST_SPLAT2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
 ; P470-NEXT:    [[TMP9:%.*]] = getelementptr i64, ptr [[TMP5]], i32 0
 ; P470-NEXT:    call void @llvm.vp.store.nxv4i64.p0(<vscale x 4 x i64> [[VP_OP3]], ptr align 8 [[TMP9]], <vscale x 4 x i1> [[VP_OP_ICMP]], i32 [[TMP3]])
 ; P470-NEXT:    br label %[[VECTOR_BODY_SPLIT]]
 ; P470:       [[VECTOR_BODY_SPLIT]]:
 ; P470-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP3]] to i64
-; P470-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP11]], [[EVL_BASED_IV]]
+; P470-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP11]], [[EVL_BASED_IV]]
 ; P470-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
 ; P470-NEXT:    br i1 [[TMP12]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; P470:       [[MIDDLE_BLOCK]]:
@@ -170,14 +170,14 @@ define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr
 ; P670-NEXT:    [[TMP4:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; P670-NEXT:    [[TMP5:%.*]] = getelementptr i64, ptr [[REG_24_VAL]], i64 [[TMP4]]
 ; P670-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i64, ptr [[TMP5]], i32 0
-; P670-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[TMP6]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP3]])
-; P670-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i64> @llvm.vp.and.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i64> [[BROADCAST_SPLAT]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP3]])
-; P670-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i64(<vscale x 4 x i64> [[VP_OP]], <vscale x 4 x i64> [[BROADCAST_SPLAT]], metadata !"eq", <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP3]])
-; P670-NEXT:    [[VP_OP3:%.*]] = call <vscale x 4 x i64> @llvm.vp.xor.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i64> [[BROADCAST_SPLAT2]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP3]])
+; P670-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[TMP6]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
+; P670-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i64> @llvm.vp.and.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i64> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
+; P670-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i64(<vscale x 4 x i64> [[VP_OP]], <vscale x 4 x i64> [[BROADCAST_SPLAT]], metadata !"eq", <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
+; P670-NEXT:    [[VP_OP3:%.*]] = call <vscale x 4 x i64> @llvm.vp.xor.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i64> [[BROADCAST_SPLAT2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
 ; P670-NEXT:    [[TMP7:%.*]] = getelementptr i64, ptr [[TMP5]], i32 0
 ; P670-NEXT:    call void @llvm.vp.store.nxv4i64.p0(<vscale x 4 x i64> [[VP_OP3]], ptr align 8 [[TMP7]], <vscale x 4 x i1> [[VP_OP_ICMP]], i32 [[TMP3]])
 ; P670-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP3]] to i64
-; P670-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP9]], [[EVL_BASED_IV]]
+; P670-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP9]], [[EVL_BASED_IV]]
 ; P670-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
 ; P670-NEXT:    br i1 [[TMP10]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; P670:       [[MIDDLE_BLOCK]]:

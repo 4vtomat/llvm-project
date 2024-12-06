@@ -243,6 +243,7 @@ InstructionCost VPlanCostModel::getCost(const VPBlockBase *Block,
 
 InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
                                         const RVVPair &RVL) {
+
   InstructionCost Cost =
       TypeSwitch<const VPRecipeBase *, InstructionCost>(Recipe)
           .Case<VPWidenMemoryRecipe>([&](const VPWidenMemoryRecipe *VPWMIR) {

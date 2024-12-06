@@ -50,7 +50,7 @@ define dso_local <vscale x 16 x i1> @_ZN7attempt23vbinarypred_vv_i32m8_b4Eu15__r
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp ne i64 [[TMP0]], 0
 ; CHECK-NEXT:    tail call void @llvm.assume(i1 [[CMP]])
 ; CHECK-NEXT:    [[TMP1:%.*]] = trunc nuw nsw i64 [[TMP0]] to i32
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = tail call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i32(<vscale x 16 x i32> [[VX]], <vscale x 16 x i32> [[VY]], metadata !"slt", <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = tail call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i32(<vscale x 16 x i32> [[VX]], <vscale x 16 x i32> [[VY]], metadata !"slt", <vscale x 16 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    ret <vscale x 16 x i1> [[VP_OP_ICMP]]
 ;
 entry:

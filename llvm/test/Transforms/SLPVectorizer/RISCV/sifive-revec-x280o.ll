@@ -8,7 +8,7 @@ define void @test() {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load <4 x ptr>, ptr getelementptr inbounds (i8, ptr null, i64 8), align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = load <4 x ptr>, ptr getelementptr inbounds (i8, ptr null, i64 8), align 8
-; CHECK-NEXT:    [[TMP2:%.*]] = call <8 x ptr> @llvm.masked.gather.v8p0.v8p0(<8 x ptr> getelementptr (ptr, <8 x ptr> <ptr null, ptr null, ptr null, ptr null, ptr inttoptr (i64 16 to ptr), ptr inttoptr (i64 16 to ptr), ptr inttoptr (i64 16 to ptr), ptr inttoptr (i64 16 to ptr)>, <8 x i64> <i64 0, i64 1, i64 2, i64 3, i64 0, i64 1, i64 2, i64 3>), i32 8, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, <8 x ptr> poison)
+; CHECK-NEXT:    [[TMP2:%.*]] = call <8 x ptr> @llvm.masked.gather.v8p0.v8p0(<8 x ptr> getelementptr (ptr, <8 x ptr> <ptr null, ptr null, ptr null, ptr null, ptr inttoptr (i64 16 to ptr), ptr inttoptr (i64 16 to ptr), ptr inttoptr (i64 16 to ptr), ptr inttoptr (i64 16 to ptr)>, <8 x i64> <i64 0, i64 1, i64 2, i64 3, i64 0, i64 1, i64 2, i64 3>), i32 8, <8 x i1> splat (i1 true), <8 x ptr> poison)
 ; CHECK-NEXT:    [[TMP3:%.*]] = icmp ult <8 x ptr> [[TMP2]], <ptr null, ptr inttoptr (i64 768 to ptr), ptr inttoptr (i64 768 to ptr), ptr inttoptr (i64 768 to ptr), ptr null, ptr null, ptr null, ptr null>
 ; CHECK-NEXT:    [[TMP4:%.*]] = call <4 x i1> @llvm.vector.extract.v4i1.v8i1(<8 x i1> [[TMP3]], i64 4)
 ; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <4 x i1> [[TMP4]], i32 1

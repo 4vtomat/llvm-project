@@ -728,7 +728,7 @@ define void @double_stride_ptr_iv(ptr %p, ptr %p2, i64 %stride) {
 ; NOSTRIDED-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 4 x i64> [[DOTSPLATINSERT]], <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer
 ; NOSTRIDED-NEXT:    [[TMP14:%.*]] = call <vscale x 4 x i64> @llvm.stepvector.nxv4i64()
 ; NOSTRIDED-NEXT:    [[TMP15:%.*]] = add <vscale x 4 x i64> [[DOTSPLAT]], [[TMP14]]
-; NOSTRIDED-NEXT:    [[TMP16:%.*]] = mul <vscale x 4 x i64> [[TMP15]], shufflevector (<vscale x 4 x i64> insertelement (<vscale x 4 x i64> poison, i64 1, i64 0), <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer)
+; NOSTRIDED-NEXT:    [[TMP16:%.*]] = mul <vscale x 4 x i64> [[TMP15]], splat (i64 1)
 ; NOSTRIDED-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 4 x i64> [[TMP16]]
 ; NOSTRIDED-NEXT:    [[TMP17:%.*]] = call i64 @llvm.vscale.i64()
 ; NOSTRIDED-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP17]], 4
@@ -739,11 +739,11 @@ define void @double_stride_ptr_iv(ptr %p, ptr %p2, i64 %stride) {
 ; NOSTRIDED-NEXT:    [[DOTSPLAT8:%.*]] = shufflevector <vscale x 4 x i64> [[DOTSPLATINSERT7]], <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer
 ; NOSTRIDED-NEXT:    [[TMP22:%.*]] = call <vscale x 4 x i64> @llvm.stepvector.nxv4i64()
 ; NOSTRIDED-NEXT:    [[TMP23:%.*]] = add <vscale x 4 x i64> [[DOTSPLAT8]], [[TMP22]]
-; NOSTRIDED-NEXT:    [[TMP24:%.*]] = mul <vscale x 4 x i64> [[TMP23]], shufflevector (<vscale x 4 x i64> insertelement (<vscale x 4 x i64> poison, i64 1, i64 0), <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer)
+; NOSTRIDED-NEXT:    [[TMP24:%.*]] = mul <vscale x 4 x i64> [[TMP23]], splat (i64 1)
 ; NOSTRIDED-NEXT:    [[VECTOR_GEP9:%.*]] = getelementptr i8, ptr [[POINTER_PHI5]], <vscale x 4 x i64> [[TMP24]]
-; NOSTRIDED-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <vscale x 4 x i32> @llvm.masked.gather.nxv4i32.nxv4p0(<vscale x 4 x ptr> [[VECTOR_GEP]], i32 4, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x i32> poison), !alias.scope [[META16:![0-9]+]]
-; NOSTRIDED-NEXT:    [[TMP25:%.*]] = add <vscale x 4 x i32> [[WIDE_MASKED_GATHER]], shufflevector (<vscale x 4 x i32> insertelement (<vscale x 4 x i32> poison, i32 1, i64 0), <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer)
-; NOSTRIDED-NEXT:    call void @llvm.masked.scatter.nxv4i32.nxv4p0(<vscale x 4 x i32> [[TMP25]], <vscale x 4 x ptr> [[VECTOR_GEP9]], i32 4, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer)), !alias.scope [[META19:![0-9]+]], !noalias [[META16]]
+; NOSTRIDED-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <vscale x 4 x i32> @llvm.masked.gather.nxv4i32.nxv4p0(<vscale x 4 x ptr> [[VECTOR_GEP]], i32 4, <vscale x 4 x i1> splat (i1 true), <vscale x 4 x i32> poison), !alias.scope [[META16:![0-9]+]]
+; NOSTRIDED-NEXT:    [[TMP25:%.*]] = add <vscale x 4 x i32> [[WIDE_MASKED_GATHER]], splat (i32 1)
+; NOSTRIDED-NEXT:    call void @llvm.masked.scatter.nxv4i32.nxv4p0(<vscale x 4 x i32> [[TMP25]], <vscale x 4 x ptr> [[VECTOR_GEP9]], i32 4, <vscale x 4 x i1> splat (i1 true)), !alias.scope [[META19:![0-9]+]], !noalias [[META16]]
 ; NOSTRIDED-NEXT:    [[NEXTI]] = add nuw i64 [[I]], [[TMP8]]
 ; NOSTRIDED-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP12]]
 ; NOSTRIDED-NEXT:    [[PTR_IND6]] = getelementptr i8, ptr [[POINTER_PHI5]], i64 [[TMP20]]
