@@ -11028,6 +11028,10 @@ static void addExitUsersForFirstOrderRecurrences(
   auto *MiddleVPBB = Plan.getMiddleBlock();
   VPBuilder ScalarPHBuilder(ScalarPHVPBB);
   VPBuilder MiddleBuilder(MiddleVPBB, MiddleVPBB->getFirstNonPhi());
+#if SIFIVE_CUSTOMIZATION
+  VPValue *OneVPV = Plan.getOrAddLiveIn(
+      ConstantInt::get(Plan.getCanonicalIV()->getScalarType(), 1));
+#endif // SIFIVE_CUSTOMIZATION
   VPValue *TwoVPV = Plan.getOrAddLiveIn(
       ConstantInt::get(Plan.getCanonicalIV()->getScalarType(), 2));
 
@@ -11106,6 +11110,16 @@ static void addExitUsersForFirstOrderRecurrences(
     // Now update VPIRInstructions modeling LCSSA phis in the exit block.
     // Extract the penultimate value of the recurrence and use it as operand for
     // the VPIRInstruction modeling the phi.
+#if SIFIVE_CUSTOMIZATION
+    // TODO: Upstream change to require scalar epilogue
+    if (Legal.useVLAVectorizer() && !CM.requiresScalarEpilogue(true)) {
+      // Extract the resume value and create a new VPLiveOut for it.
+      MiddleBuilder.createNaryOp(VPInstruction::ExtractFromEnd,
+                                 {FOR->getBackedgeValue(), OneVPV}, {},
+                                 "vector.recur.extract");
+      continue;
+    }
+#endif // SIFIVE_CUSTOMIZATION
     for (VPIRInstruction *ExitIRI : ExitUsersToFix) {
       if (ExitIRI->getOperand(0) != FOR)
         continue;
