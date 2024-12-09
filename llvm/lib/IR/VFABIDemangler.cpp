@@ -47,7 +47,6 @@ static ParseRet tryParseISA(StringRef &MangledName, VFISAKind &ISA) {
               .Case("c", VFISAKind::AVX)
               .Case("d", VFISAKind::AVX2)
               .Case("e", VFISAKind::AVX512)
-              .Case("r", VFISAKind::RVV) // SIFIVE
               .Default(VFISAKind::Unknown);
     MangledName = MangledName.drop_front(1);
   }
@@ -584,7 +583,8 @@ FunctionType *VFABI::createFunctionType(const VFInfo &Info,
 
 #if SIFIVE_CUSTOMIZATION
   // Add explicit VL argument for NF Library functions
-  if (Info.ISA == VFISAKind::RVV)
+  if (Info.ISA == VFISAKind::RVV &&
+      Info.VectorName.find("skl_vf") != std::string::npos)
     VecTypes.push_back(Type::getInt32Ty(ScalarFTy->getContext()));
 #endif // SIFIVE_CUSTOMIZATION
 
