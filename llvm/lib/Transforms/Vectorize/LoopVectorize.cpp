@@ -5351,6 +5351,8 @@ void LoopVectorizationPlanner::emitInvalidCostRemarks(
                             CM);
 #if SIFIVE_CUSTOMIZATION
       precomputeCosts(*Plan, VF, CostCtx);
+      if (VF.isScalar())
+        continue;
 #endif // SIFIVE_CUSTOMIZATION
       auto Iter = vp_depth_first_deep(Plan->getVectorLoopRegion()->getEntry());
       for (VPBasicBlock *VPBB : VPBlockUtils::blocksOnly<VPBasicBlock>(Iter)) {
