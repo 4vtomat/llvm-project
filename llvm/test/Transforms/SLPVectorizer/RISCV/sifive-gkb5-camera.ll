@@ -96,15 +96,15 @@ define void @foo(ptr align 8 %array, [2 x i64] %black_point.coerce, [2 x i64] %w
 ; PROFITABLE-NEXT:    [[TMP13:%.*]] = insertelement <3 x i32> [[TMP11]], i32 [[TMP12]], i32 2
 ; PROFITABLE-NEXT:    [[TMP14:%.*]] = bitcast <3 x i32> [[TMP13]] to <3 x float>
 ; PROFITABLE-NEXT:    [[TMP15:%.*]] = fsub fast <3 x float> [[TMP7]], [[TMP14]]
-; PROFITABLE-NEXT:    [[TMP16:%.*]] = fdiv fast <3 x float> <float 1.000000e+00, float 1.000000e+00, float 1.000000e+00>, [[TMP15]]
-; PROFITABLE-NEXT:    [[TMP17:%.*]] = fmul fast <3 x float> [[TMP14]], <float 2.550000e+02, float 2.550000e+02, float 2.550000e+02>
+; PROFITABLE-NEXT:    [[TMP16:%.*]] = fdiv fast <3 x float> splat (float 1.000000e+00), [[TMP15]]
+; PROFITABLE-NEXT:    [[TMP17:%.*]] = fmul fast <3 x float> [[TMP14]], splat (float 2.550000e+02)
 ; PROFITABLE-NEXT:    [[TMP18:%.*]] = load <3 x i8>, ptr [[ARRAYIDX_0]], align 1
 ; PROFITABLE-NEXT:    [[TMP19:%.*]] = uitofp <3 x i8> [[TMP18]] to <3 x float>
 ; PROFITABLE-NEXT:    [[TMP20:%.*]] = fsub fast <3 x float> [[TMP19]], [[TMP17]]
 ; PROFITABLE-NEXT:    [[TMP21:%.*]] = fmul fast <3 x float> [[TMP20]], [[TMP16]]
 ; PROFITABLE-NEXT:    [[TMP22:%.*]] = fcmp fast olt <3 x float> [[TMP21]], zeroinitializer
 ; PROFITABLE-NEXT:    [[TMP23:%.*]] = select <3 x i1> [[TMP22]], <3 x float> zeroinitializer, <3 x float> [[TMP21]]
-; PROFITABLE-NEXT:    [[TMP24:%.*]] = call fast <3 x float> @llvm.minnum.v3f32(<3 x float> [[TMP23]], <3 x float> <float 2.550000e+02, float 2.550000e+02, float 2.550000e+02>)
+; PROFITABLE-NEXT:    [[TMP24:%.*]] = call fast <3 x float> @llvm.minnum.v3f32(<3 x float> [[TMP23]], <3 x float> splat (float 2.550000e+02))
 ; PROFITABLE-NEXT:    [[TMP25:%.*]] = fptoui <3 x float> [[TMP24]] to <3 x i8>
 ; PROFITABLE-NEXT:    store <3 x i8> [[TMP25]], ptr [[ARRAYIDX_0]], align 1
 ; PROFITABLE-NEXT:    ret void

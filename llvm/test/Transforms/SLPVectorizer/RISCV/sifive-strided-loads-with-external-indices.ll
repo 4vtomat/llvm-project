@@ -15,7 +15,7 @@ define void @test() {
 ; CHECK-NEXT:    [[SUB4_I_I65_US:%.*]] = or disjoint i64 0, 1
 ; CHECK-NEXT:    [[ADD_PTR_I63_I_I66_US:%.*]] = getelementptr [[CLASS_A]], ptr null, i64 [[SUB4_I_I65_US]]
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i32, ptr [[ADD_PTR_I63_I_I66_US]], align 4
-; CHECK-NEXT:    [[TMP1:%.*]] = call <2 x i32> @llvm.experimental.vp.strided.load.v2i32.p0.i64(ptr align 4 [[ADD_PTR_I_I_I64_US]], i64 8, <2 x i1> <i1 true, i1 true>, i32 2)
+; CHECK-NEXT:    [[TMP1:%.*]] = call <2 x i32> @llvm.experimental.vp.strided.load.v2i32.p0.i64(ptr align 4 [[ADD_PTR_I_I_I64_US]], i64 8, <2 x i1> splat (i1 true), i32 2)
 ; CHECK-NEXT:    [[TMP2:%.*]] = load i32, ptr [[ADD_PTR_I_I_I64_US]], align 4
 ; CHECK-NEXT:    [[CMP_I_I_I_I67_US:%.*]] = icmp slt i32 [[TMP2]], [[TMP0]]
 ; CHECK-NEXT:    [[SPEC_SELECT_I_I68_US:%.*]] = select i1 false, i64 [[SUB4_I_I65_US]], i64 0

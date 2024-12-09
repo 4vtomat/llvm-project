@@ -85,8 +85,8 @@ define void @SetupFastFullPelSearch(i16 signext %ref, i32 signext %list) {
 ; CHECK-NEXT:    [[TYPE:%.*]] = getelementptr inbounds [[STRUCT_IMAGEPARAMETERS]], ptr [[TMP7]], i64 0, i32 6
 ; CHECK-NEXT:    [[TMP15:%.*]] = load i32, ptr [[TYPE]], align 4
 ; CHECK-NEXT:    switch i32 [[TMP15]], label [[LOR_RHS]] [
-; CHECK-NEXT:    i32 0, label [[LOR_END_THREAD:%.*]]
-; CHECK-NEXT:    i32 3, label [[LOR_END_THREAD]]
+; CHECK-NEXT:      i32 0, label [[LOR_END_THREAD:%.*]]
+; CHECK-NEXT:      i32 3, label [[LOR_END_THREAD]]
 ; CHECK-NEXT:    ]
 ; CHECK:       lor.rhs:
 ; CHECK-NEXT:    [[WEIGHTED_BIPRED_IDC:%.*]] = getelementptr inbounds [[STRUCT_PIC_PARAMETER_SET_RBSP_T]], ptr [[TMP13]], i64 0, i32 20

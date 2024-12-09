@@ -39,7 +39,6 @@ define void @_ZNSt5dequeIN10xalanc_1_89NameSpaceESaIS1_EED2Ev(ptr %this, ptr %ag
 ; NON-PROFITABLE-NEXT:    store ptr [[TMP2]], ptr [[_M_LAST_I_I9]], align 8
 ; NON-PROFITABLE-NEXT:    store ptr [[TMP3]], ptr [[_M_NODE_I_I11]], align 8
 ; NON-PROFITABLE-NEXT:    ret void
-;
 entry:
   %_M_start.i = getelementptr inbounds %"struct.std::_Deque_base<xalanc_1_8::NameSpace, std::allocator<xalanc_1_8::NameSpace> >::_Deque_impl_data", ptr %this, i64 0, i32 2
   %_M_first3.i.i = getelementptr inbounds %"struct.std::_Deque_base<xalanc_1_8::NameSpace, std::allocator<xalanc_1_8::NameSpace> >::_Deque_impl_data", ptr %this, i64 0, i32 2, i32 1

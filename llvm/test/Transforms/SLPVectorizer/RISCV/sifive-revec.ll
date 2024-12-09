@@ -41,7 +41,7 @@ define void @test2(ptr %s, i8 %0) {
 ; CHECK-NEXT:    [[TMP3:%.*]] = shufflevector <2 x i8> [[TMP2]], <2 x i8> poison, <2 x i32> zeroinitializer
 ; CHECK-NEXT:    [[TMP4:%.*]] = load <4 x i8>, ptr [[ARRAYIDX11_I]], align 1
 ; CHECK-NEXT:    [[TMP5:%.*]] = shufflevector <4 x i8> [[TMP4]], <4 x i8> poison, <8 x i32> <i32 2, i32 3, i32 2, i32 3, i32 0, i32 1, i32 0, i32 1>
-; CHECK-NEXT:    [[TMP6:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 null, i64 4, <2 x i1> <i1 true, i1 true>, i32 2)
+; CHECK-NEXT:    [[TMP6:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 null, i64 4, <2 x i1> splat (i1 true), i32 2)
 ; CHECK-NEXT:    [[TMP7:%.*]] = extractelement <2 x i8> [[TMP6]], i32 0
 ; CHECK-NEXT:    [[TMP8:%.*]] = insertelement <2 x i8> [[TMP6]], i8 [[TMP0:%.*]], i32 1
 ; CHECK-NEXT:    [[TMP10:%.*]] = call <8 x i8> @llvm.vector.insert.v8i8.v2i8(<8 x i8> <i8 0, i8 0, i8 poison, i8 poison, i8 poison, i8 poison, i8 poison, i8 poison>, <2 x i8> [[TMP6]], i64 2)
