@@ -3716,11 +3716,20 @@ void RISCVTTIImpl::getUnrollingPreferences(Loop *L, ScalarEvolution &SE,
 
   LLVM_DEBUG(dbgs() << "Cost of loop: " << Cost << "\n");
 
+#if SIFIVE_CUSTOMIZATION
+  if (ST->getProcFamily() != RISCVSubtarget::SiFiveP400) {
+    UP.Partial = true;
+    UP.Runtime = true;
+    UP.UnrollRemainder = true;
+  }
+  UP.UnrollAndJam = true;
+#else
   UP.Partial = true;
   UP.Runtime = true;
   UP.UnrollRemainder = true;
   UP.UnrollAndJam = true;
   UP.UnrollAndJamInnerLoopThreshold = 60;
+#endif // SIFIVE_CUSTOMIZATION
 
   // Force unrolling small loops can be very useful because of the branch
   // taken cost of the backedge.
