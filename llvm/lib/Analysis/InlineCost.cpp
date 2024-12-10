@@ -25,6 +25,9 @@
 #include "llvm/Analysis/MemoryBuiltins.h"
 #include "llvm/Analysis/OptimizationRemarkEmitter.h"
 #include "llvm/Analysis/ProfileSummaryInfo.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Analysis/SiFive_LiveValues.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/Analysis/TargetLibraryInfo.h"
 #include "llvm/Analysis/TargetTransformInfo.h"
 #include "llvm/Analysis/ValueTracking.h"
@@ -101,6 +104,12 @@ static cl::opt<int> InlineLeafThresholdLimit(
 cl::opt<bool> LoopConcatCanonicalize(
     "loop-concat-canonicalize", cl::Hidden, cl::init(false),
     cl::desc("Bypass Full Unrolling for strided loops and LC Canonicalize"));
+
+static cl::opt<int> GPRValuePressureThreshold(
+    "gpr-value-pressure-threshold", cl::Hidden, cl::init(10),
+    cl::desc("Added Threshold for int/GPR Value Pressure analysis"));
+
+extern cl::opt<uint32_t> EnableValuePressureAnalysis;
 #endif // SIFIVE_CUSTOMIZATION
 
 static cl::opt<bool> InlineEnableCostBenefitAnalysis(
@@ -477,6 +486,10 @@ protected:
   // Custom analysis routines.
   InlineResult analyzeBlock(BasicBlock *BB,
                             SmallPtrSetImpl<const Value *> &EphValues);
+
+#if SIFIVE_CUSTOMIZATION
+  bool maySpillForCandidate(CallBase &Call, Function *Callee);
+#endif
 
   // Disable several entry points to the visitor so we don't accidentally use
   // them by declaring but not defining them here.
@@ -1100,12 +1113,23 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
     	!T.isAMDGCN() &&
     	(NumParams >= 6) &&
     	(FuncSize <= 500) &&
-    	(Cost - Threshold <= 150))
-       return InlineResult::success();
+      (Cost - Threshold <= 150)) {
+        if (maySpillForCandidate(CandidateCall, &F))
+          return InlineResult::failure("high value pressure cost");
+
+        return InlineResult::success();
+      }
 #endif // SIFIVE_CUSTOMIZATION
 
     if (IgnoreThreshold)
       return InlineResult::success();
+
+#if SIFIVE_CUSTOMIZATION
+    // For all succeeding inline candidates, check value pressure.
+    if (Cost < std::max(1, Threshold))
+      if (maySpillForCandidate(CandidateCall, &F))
+        return InlineResult::failure("high value pressure cost");
+#endif
 
     DecidedByCostThreshold = true;
     return Cost < std::max(1, Threshold)
@@ -1976,6 +2000,94 @@ bool InlineCostCallAnalyzer::isLeafFunction(Function &Callee) {
     }
 
   return IsLeaf;
+}
+
+bool CallAnalyzer::maySpillForCandidate(CallBase &Call,
+                                        Function *Callee) {
+  // Can we examine this callee?
+  if (Callee->empty())
+    return false;
+
+  LiveValues LvCallee;
+  if (EnableValuePressureAnalysis >= LVUsageDescr::Inline) {
+    LvCallee.setAssumptionCache(&GetAssumptionCache(*Callee));
+    // For inlining use the base level
+    LvCallee.setOptLevel(LVUsageDescr::Baseline);
+    LvCallee.doDataFlowAnalysis(*Callee);
+  }
+  LLVMContext &C = Callee->getContext();
+  unsigned IntRC = TTI.getRegisterClassForType(false, Type::getInt32Ty(C));
+  unsigned FpRC = TTI.getRegisterClassForType(false, Type::getFloatTy(C));
+  unsigned VecRC = TTI.getRegisterClassForType(true);
+  // The usage of model of this evaluation was data mined to the current default
+  // value of GPRValuePressureThreshold, which is subject to change pending
+  // broader application.
+  int NumIntRC = TTI.getNumberOfRegisters(IntRC) + GPRValuePressureThreshold;
+  int NumFpRC = TTI.getNumberOfRegisters(FpRC);
+  int NumVecRC = TTI.getNumberOfRegisters(VecRC);
+  int NumIntUsed = 0;
+  int NumFpUsed = 0;
+  int NumVecUsed = 0;
+  Function *Caller = Call.getCaller();
+  // If the callee already has to large of register pressure, we are done.
+  if (LvCallee.haveLiveValueAnalysis()) {
+    // All the reg class allocations are passed by reference, where
+    // we will modify these to hold what we actually used for
+    // analysis at the call site.
+    NumIntUsed = NumIntRC;
+    NumFpUsed = NumFpRC;
+    NumVecUsed = NumVecRC;
+    if (LvCallee.exceedValuePressureForFunction(NumIntUsed, NumFpUsed,
+                                                NumVecUsed, Callee)) {
+      LvCallee.clearDataFlowAnalysis();
+      LLVM_DEBUG(llvm::dbgs() << "InlineCost: Callee Excessive Value Pressure at edge: "
+                 << Caller->getName() << " <==> "
+                 << Callee->getName() << " not inlined\n");
+      return true;
+    }
+  }
+
+  LiveValues LvCaller;
+  if (EnableValuePressureAnalysis >= LVUsageDescr::Inline) {
+    LvCaller.setAssumptionCache(&GetAssumptionCache(*Caller));
+    LvCaller.setOptLevel(LVUsageDescr::Baseline);
+    LvCaller.doDataFlowAnalysis(*Caller);
+  }
+  if (LvCaller.haveLiveValueAnalysis() &&
+      LvCallee.haveLiveValueAnalysis()) {
+    DominatorTree DT(*Caller);
+    BasicBlock *TargetBB = Call.getParent();
+    SmallVector<BasicBlock *, 4> Worklist;
+    Worklist.push_back(TargetBB);
+
+    SmallPtrSet<const Value *, 4> IgnoreValues;
+    SmallVector<Use *> AddValues;
+    BasicBlock *EndBlock = nullptr;
+
+    // We will pass in the number of register we used in the callee
+    // to reduce the amount we count in the caller, this is an approximation
+    // to inlining this call edge.  We only care about the register pressure
+    // in TargetBB.
+    if (LvCaller.exceedValuePressureForBlocks(
+        Worklist, AddValues, IgnoreValues, &DT, EndBlock, NumIntRC - NumIntUsed,
+        NumFpRC - NumFpUsed, NumVecRC - NumVecUsed, &Call,
+        /* IsHoistContext */ false)) {
+      LvCallee.clearDataFlowAnalysis();
+      LvCaller.clearDataFlowAnalysis();
+      LLVM_DEBUG(llvm::dbgs() << "InlineCost: Caller Excessive Value Pressure at edge: "
+                 << Caller->getName() << " <==> "
+                 << Callee->getName() << " not inlined\n");
+      return true;
+    }
+    LLVM_DEBUG(llvm::dbgs() << "InlineCost: Value Pressure Analysis at edge: "
+                   << Caller->getName() << " <==> "
+                   << Callee->getName() << " unconstrained\n");
+  }
+  LvCallee.clearDataFlowAnalysis();
+  LvCaller.clearDataFlowAnalysis();
+
+  // Unconstrained
+  return false;
 }
 #endif // SIFIVE_CUSTOMIZATION
 

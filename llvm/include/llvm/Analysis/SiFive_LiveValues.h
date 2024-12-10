@@ -53,6 +53,18 @@ struct PressureTracker {
   int LocalMaxima = 0;
 };
 
+enum LVUsageDescr : unsigned {
+  None = 0,
+  // Baseline Data Flow and Value Pressure Analysis.
+  Baseline = 1,
+  // Aggresive Hueristic Value Pressure Analysis
+  Aggressive = 2,
+  // Inlining Value Pressure Analysis
+  Inline = 3,
+  // Both Aggressive and Inlining Value Pressure Analysis
+  InlineAndAggressive = 4
+};
+
 class LiveValues : public AssemblyAnnotationWriter {
 private:
   // Use to track initial/final & local min/max value pressure for
@@ -203,22 +215,29 @@ public:
   /// Calculate register pressure foreach block in F and
   /// determine if we exceed it for machine RCs.
   bool exceedValuePressureForFunction(
-    int NumGprs, int NumFprs, int NumVrs, Function *F);
+    int &NumGprs, int &NumFprs, int &NumVrs, Function *F);
 
   /// Using a list of blocks, calculate the register pressure
-  /// data for each block.
+  /// data for each block, ignore some provided values,
+  /// possibly add some values to the scope of the analysis,
+  /// collect the local maxima of the register classes,
+  /// monitor the targeted instruction and use hoisting
+  /// context if provided for additional hueristics.
   bool exceedValuePressureForBlocks(
       SmallVectorImpl<BasicBlock *> &Worklist,
       SmallVectorImpl<Use *> &AddValues,
       SmallPtrSetImpl<const Value *> &IgnoreValues, DominatorTree *DT,
       BasicBlock *EndBlock, int NumGprs, int NumFprs, int NumVrs,
-      Instruction *TargetI);
+      Instruction *TargetI, bool IsHoistContext);
 
   /// Function level data flow analysis.
   void doDataFlowAnalysis(Function &F);
 
   /// Clear and recalculate liveness.
   void recalcDataFlowAnalysis(Function &F);
+
+  /// Clear all data flow constructs
+  void clearDataFlowAnalysis();
 
   /// Give names to Instruction/Blocks where hasName is false.
   void nameInstructions(Function &F);

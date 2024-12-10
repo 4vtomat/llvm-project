@@ -43,11 +43,13 @@ static cl::opt<bool>
 
 // 0 is default to off
 // 1 is baseline
-// 2 is aggressive
-static cl::opt<uint32_t>
+// 2 is aggressive licm
+// 3 is inline usage
+// 4 is aggressive licm and inline
+cl::opt<uint32_t>
     EnableValuePressureAnalysis("value-liveness-enable", cl::Hidden,
                                 cl::init(0),
-                                cl::desc("Analysis of Value Liveness: (0..2)"));
+                                cl::desc("Analysis of Value Liveness: (0..4)"));
 
 static cl::opt<bool>
     EnableValuePressureBypass("value-liveness-gpr-bypass", cl::Hidden,
@@ -288,7 +290,9 @@ void LiveValues::createFullSegment(Value *Start, unsigned SlotStart, Value *End,
   ValueSlotIndex FirstIndex(&Indices[Start], SlotStart);
   ValueSlotIndex LastIndex(&Indices[End], SlotEnd);
   ValueSlotInfo *VNI = *LIs[V].vni_begin();
-  LIs[V].addSegment(ValueLiveInterval::Segment(FirstIndex, LastIndex, VNI));
+  bool IsBlockSeg = true;
+  LIs[V].addSegment(ValueLiveInterval::Segment(FirstIndex, LastIndex, VNI),
+                                               IsBlockSeg);
 }
 
 void LiveValues::createSegmentStart(Value *Start, unsigned Slot, Value *V,
@@ -774,9 +778,10 @@ Instruction *LiveValues::processBlock(
 }
 
 bool LiveValues::exceedValuePressureForFunction(
-    int NumGprs, int NumFprs, int NumVrs, Function *F) {
+    int &NumGprs, int &NumFprs, int &NumVrs, Function *F) {
   SmallVector<PressureTracker, ValueDescr::Types_End> InsnPT;
   SmallVector<PressureTracker, ValueDescr::Types_End> MachinePT;
+  SmallVector<PressureTracker, ValueDescr::Types_End> UsedPT;
   DenseMap<const BasicBlock *,
           SmallVector<PressureTracker, ValueDescr::Types_End>> PressureMap;
 
@@ -787,8 +792,20 @@ bool LiveValues::exceedValuePressureForFunction(
   MachinePT[ValueDescr::Types_Float].LocalMaxima = NumFprs;
   MachinePT[ValueDescr::Types_Vector].LocalMaxima = NumVrs;
 
+  UsedPT.resize(ValueDescr::Types_End);
+
+  UsedPT[ValueDescr::Types_Integer].LocalMaxima = 0;
+  UsedPT[ValueDescr::Types_Float].LocalMaxima = 0;
+  UsedPT[ValueDescr::Types_Vector].LocalMaxima = 0;
+
   SmallPtrSet<const Value *, 4> IgnoreValues;
   SmallVector<Use *> AddValues;
+
+  // Add all params to IgnoreValues, for this usage we are
+  // examining the effects of a call edge, params are already
+  // counted in the caller.
+  for (auto &ArgI : F->args())
+    IgnoreValues.insert(&ArgI);
 
   Instruction *TargetI = nullptr;
   unsigned SumInstructions;
@@ -810,10 +827,19 @@ bool LiveValues::exceedValuePressureForFunction(
     processBlock(&BB, TargetI, MachinePT, InsnPT, PT, IgnoreValues, AddValues);
 
     for (unsigned Idx = ValueDescr::Types_Integer;
-         Idx < ValueDescr::Types_End; ++Idx)
+         Idx < ValueDescr::Types_End; ++Idx) {
       if (PT[Idx].LocalMaxima > MachinePT[Idx].LocalMaxima)
         return true;
+
+      if (PT[Idx].LocalMaxima > UsedPT[Idx].LocalMaxima)
+        UsedPT[Idx].LocalMaxima = PT[Idx].LocalMaxima;
+    }
   }
+
+  // Save what we used
+  NumGprs = UsedPT[ValueDescr::Types_Integer].LocalMaxima;
+  NumFprs = UsedPT[ValueDescr::Types_Float].LocalMaxima;
+  NumVrs = UsedPT[ValueDescr::Types_Vector].LocalMaxima;
 
   return false;
 }
@@ -823,7 +849,7 @@ bool LiveValues::exceedValuePressureForBlocks(
     SmallVectorImpl<Use *> &AddValues,
     SmallPtrSetImpl<const Value *> &IgnoreValues, DominatorTree *DT,
     BasicBlock *EndBlock, int NumGprs, int NumFprs, int NumVrs,
-    Instruction *TargetI) {
+    Instruction *TargetI, bool IsHoistContext) {
   BasicBlock *TargetBB = TargetI->getParent();
   Function *F = TargetBB->getParent();
   SmallVector<PressureTracker, ValueDescr::Types_End> InsnPT;
@@ -886,11 +912,21 @@ bool LiveValues::exceedValuePressureForBlocks(
     for (unsigned Idx = ValueDescr::Types_Integer; Idx < ValueDescr::Types_End;
          ++Idx)
       if (SummaryPT[Idx].LocalMaxima > MachinePT[Idx].LocalMaxima &&
-          InsnPT[Idx].FinalPressure > 0) {
+          ((!IsHoistContext) ||
+           (IsHoistContext && InsnPT[Idx].FinalPressure > 0))) {
         if (BB == TargetBB) {
-          // Check if TargetI is before a local machine maxima.
-          if (FirstMaxPointI && DT->dominates(FirstMaxPointI, TargetI))
+          if (IsHoistContext) {
+            // Check if TargetI is after a local machine maxima.
+            if (FirstMaxPointI && DT->dominates(FirstMaxPointI, TargetI))
+              return true;
+
+            // Do we run out ValueDescr registers right at TargetI?
+            if (InsnPT[Idx].CurPressure > MachinePT[Idx].LocalMaxima)
+              return true;
+          } else {
+            // For the general case we are out ValueDescr registers.
             return true;
+          }
 
           continue;
         }
@@ -924,7 +960,8 @@ bool LiveValues::exceedValuePressureForBlocks(
   }
 
   // Now remove TargetI from the Index list since it will be optimized.
-  Indices[TargetI].setIndex(EMPTY_INDEX);
+  if (IsHoistContext)
+    Indices[TargetI].setIndex(EMPTY_INDEX);
 
   return false;
 }
@@ -981,15 +1018,26 @@ void LiveValues::doDataFlowAnalysis(Function &F) {
 }
 
 void LiveValues::recalcDataFlowAnalysis(Function &F) {
+  clearDataFlowAnalysis();
+  doDataFlowAnalysis(F);
+}
+
+void LiveValues::clearDataFlowAnalysis() {
+  if (!haveLiveValueAnalysis())
+    return;
+
   LiveIn.clear();
   LiveOut.clear();
   PhiValues.clear();
-  BvIdxToValue.clear();
   InstrLiveIn.clear();
+  EphValues.clear();
   LIs.clear();
+  BvIdxToValue.clear();
   Visited.clear();
-
-  doDataFlowAnalysis(F);
+  Indices.clear();
+  ResidentValues.clear();
+  VSInfoAllocator.Reset();
+  LiveValuesAvailable = false;
 }
 
 // Borrowed from instnamer to make the annotated dumps nicer.
@@ -1022,8 +1070,22 @@ bool LiveValues::invalidate(Function &F, const PreservedAnalyses &PA,
 }
 
 unsigned LiveValues::getAndSetOptLevel() {
-  if (OptLevel == 0)
-    setOptLevel(EnableValuePressureAnalysis);
+  if (OptLevel == 0) {
+    switch (EnableValuePressureAnalysis) {
+    case LVUsageDescr::Baseline:
+    case LVUsageDescr::Aggressive:
+      setOptLevel(EnableValuePressureAnalysis);
+      break;
+    case LVUsageDescr::Inline:
+      setOptLevel(LVUsageDescr::Baseline);
+      break;
+    case LVUsageDescr::InlineAndAggressive:
+      setOptLevel(LVUsageDescr::Aggressive);
+      break;
+    default:
+      setOptLevel(LVUsageDescr::None);
+    }
+  }
 
   return OptLevel;
 }
@@ -1039,10 +1101,13 @@ unsigned LiveValues::getAndSetOptLevel() {
 
 LiveValues LiveValuesAnalysis::run(Function &F, FunctionAnalysisManager &AM) {
   LiveValues LV;
-  if (EnableValuePressureAnalysis > 0 && EnableValuePressureAnalysis <= 2) {
-    LV.setAssumptionCache(&AM.getResult<AssumptionAnalysis>(F));
-    LV.setOptLevel(EnableValuePressureAnalysis);
-    LV.doDataFlowAnalysis(F);
+  if (EnableValuePressureAnalysis) {
+    if (EnableValuePressureAnalysis <= LVUsageDescr::Aggressive ||
+        EnableValuePressureAnalysis == LVUsageDescr::InlineAndAggressive) {
+      LV.setAssumptionCache(&AM.getResult<AssumptionAnalysis>(F));
+      LV.getAndSetOptLevel();
+      LV.doDataFlowAnalysis(F);
+    }
   }
 
   return LV;
