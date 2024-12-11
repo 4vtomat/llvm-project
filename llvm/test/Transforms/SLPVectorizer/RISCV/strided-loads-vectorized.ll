@@ -244,22 +244,10 @@ define void @test3(ptr %p, ptr noalias %s) {
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds [48 x float], ptr [[P:%.*]], i64 0, i64 0
 ; CHECK-NEXT:    [[ARRAYIDX1:%.*]] = getelementptr inbounds [48 x float], ptr [[P]], i64 0, i64 30
 ; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds float, ptr [[S:%.*]], i64 0
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP0:%.*]] = call <8 x float> @llvm.experimental.vp.strided.load.v8f32.p0.i64(ptr align 4 [[ARRAYIDX]], i64 16, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 8)
-; CHECK-NEXT:    [[TMP1:%.*]] = call <8 x float> @llvm.experimental.vp.strided.load.v8f32.p0.i64(ptr align 4 [[ARRAYIDX1]], i64 -4, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 8)
-; CHECK-NEXT:    [[TMP2:%.*]] = fsub fast <8 x float> [[TMP1]], [[TMP0]]
-; CHECK-NEXT:    store <8 x float> [[TMP2]], ptr [[ARRAYIDX2]], align 4
-||||||| 864902e9b4d8
-; CHECK-NEXT:    [[TMP0:%.*]] = call <8 x float> @llvm.experimental.vp.strided.load.v8f32.p0.i64(ptr align 4 [[ARRAYIDX]], i64 16, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 8)
-; CHECK-NEXT:    [[TMP2:%.*]] = call <8 x float> @llvm.experimental.vp.strided.load.v8f32.p0.i64(ptr align 4 [[ARRAYIDX1]], i64 -4, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 8)
-; CHECK-NEXT:    [[TMP3:%.*]] = fsub fast <8 x float> [[TMP2]], [[TMP0]]
-; CHECK-NEXT:    store <8 x float> [[TMP3]], ptr [[ARRAYIDX2]], align 4
-=======
 ; CHECK-NEXT:    [[TMP0:%.*]] = call <8 x float> @llvm.experimental.vp.strided.load.v8f32.p0.i64(ptr align 4 [[ARRAYIDX]], i64 16, <8 x i1> splat (i1 true), i32 8)
 ; CHECK-NEXT:    [[TMP2:%.*]] = call <8 x float> @llvm.experimental.vp.strided.load.v8f32.p0.i64(ptr align 4 [[ARRAYIDX1]], i64 -4, <8 x i1> splat (i1 true), i32 8)
 ; CHECK-NEXT:    [[TMP3:%.*]] = fsub fast <8 x float> [[TMP2]], [[TMP0]]
 ; CHECK-NEXT:    store <8 x float> [[TMP3]], ptr [[ARRAYIDX2]], align 4
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    ret void
 ;
 entry:

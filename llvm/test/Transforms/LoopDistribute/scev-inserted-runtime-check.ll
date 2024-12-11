@@ -45,26 +45,14 @@ define void @f(ptr noalias %a, ptr noalias %b, ptr noalias %c, ptr noalias %d, p
 ; CHECK-NEXT:    [[MUL_LDIST1:%.*]] = mul i32 [[IND1_LDIST1]], 2
 ; CHECK-NEXT:    [[MUL_EXT_LDIST1:%.*]] = zext i32 [[MUL_LDIST1]] to i64
 ; CHECK-NEXT:    [[ARRAYIDXA_LDIST1:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[MUL_EXT_LDIST1]]
-<<<<<<< HEAD
 ; CHECK-NEXT:    [[LOADA_LDIST1:%.*]] = load i32, ptr [[ARRAYIDXA_LDIST1]], align 4, !alias.scope [[META2:![0-9]+]]
-||||||| 864902e9b4d8
-; CHECK-NEXT:    [[LOADA_LDIST1:%.*]] = load i32, ptr [[ARRAYIDXA_LDIST1]], align 4, !alias.scope !0
-=======
-; CHECK-NEXT:    [[LOADA_LDIST1:%.*]] = load i32, ptr [[ARRAYIDXA_LDIST1]], align 4, !alias.scope [[META0:![0-9]+]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    [[ARRAYIDXB_LDIST1:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[MUL_EXT_LDIST1]]
 ; CHECK-NEXT:    [[LOADB_LDIST1:%.*]] = load i32, ptr [[ARRAYIDXB_LDIST1]], align 4
 ; CHECK-NEXT:    [[MULA_LDIST1:%.*]] = mul i32 [[LOADB_LDIST1]], [[LOADA_LDIST1]]
 ; CHECK-NEXT:    [[ADD_LDIST1]] = add nuw nsw i64 [[IND_LDIST1]], 1
 ; CHECK-NEXT:    [[INC1_LDIST1]] = add i32 [[IND1_LDIST1]], 1
 ; CHECK-NEXT:    [[ARRAYIDXA_PLUS_4_LDIST1:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[ADD_LDIST1]]
-<<<<<<< HEAD
 ; CHECK-NEXT:    store i32 [[MULA_LDIST1]], ptr [[ARRAYIDXA_PLUS_4_LDIST1]], align 4, !alias.scope [[META5:![0-9]+]]
-||||||| 864902e9b4d8
-; CHECK-NEXT:    store i32 [[MULA_LDIST1]], ptr [[ARRAYIDXA_PLUS_4_LDIST1]], align 4, !alias.scope !3
-=======
-; CHECK-NEXT:    store i32 [[MULA_LDIST1]], ptr [[ARRAYIDXA_PLUS_4_LDIST1]], align 4, !alias.scope [[META3:![0-9]+]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    [[EXITCOND_LDIST1:%.*]] = icmp eq i64 [[ADD_LDIST1]], [[N]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_LDIST1]], label [[FOR_BODY_PH:%.*]], label [[FOR_BODY_LDIST1]]
 ; CHECK:       for.body.ph:
@@ -182,26 +170,14 @@ define void @f_with_offset(ptr noalias %b, ptr noalias %c, ptr noalias %d, ptr n
 ; CHECK-NEXT:    [[MUL_LDIST1:%.*]] = mul i32 [[IND1_LDIST1]], 2
 ; CHECK-NEXT:    [[MUL_EXT_LDIST1:%.*]] = zext i32 [[MUL_LDIST1]] to i64
 ; CHECK-NEXT:    [[ARRAYIDXA_LDIST1:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[MUL_EXT_LDIST1]]
-<<<<<<< HEAD
 ; CHECK-NEXT:    [[LOADA_LDIST1:%.*]] = load i32, ptr [[ARRAYIDXA_LDIST1]], align 4, !alias.scope [[META8:![0-9]+]]
-||||||| 864902e9b4d8
-; CHECK-NEXT:    [[LOADA_LDIST1:%.*]] = load i32, ptr [[ARRAYIDXA_LDIST1]], align 4, !alias.scope !5
-=======
-; CHECK-NEXT:    [[LOADA_LDIST1:%.*]] = load i32, ptr [[ARRAYIDXA_LDIST1]], align 4, !alias.scope [[META5:![0-9]+]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    [[ARRAYIDXB_LDIST1:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[MUL_EXT_LDIST1]]
 ; CHECK-NEXT:    [[LOADB_LDIST1:%.*]] = load i32, ptr [[ARRAYIDXB_LDIST1]], align 4
 ; CHECK-NEXT:    [[MULA_LDIST1:%.*]] = mul i32 [[LOADB_LDIST1]], [[LOADA_LDIST1]]
 ; CHECK-NEXT:    [[ADD_LDIST1]] = add nuw nsw i64 [[IND_LDIST1]], 1
 ; CHECK-NEXT:    [[INC1_LDIST1]] = add i32 [[IND1_LDIST1]], 1
 ; CHECK-NEXT:    [[ARRAYIDXA_PLUS_4_LDIST1:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[ADD_LDIST1]]
-<<<<<<< HEAD
 ; CHECK-NEXT:    store i32 [[MULA_LDIST1]], ptr [[ARRAYIDXA_PLUS_4_LDIST1]], align 4, !alias.scope [[META11:![0-9]+]]
-||||||| 864902e9b4d8
-; CHECK-NEXT:    store i32 [[MULA_LDIST1]], ptr [[ARRAYIDXA_PLUS_4_LDIST1]], align 4, !alias.scope !8
-=======
-; CHECK-NEXT:    store i32 [[MULA_LDIST1]], ptr [[ARRAYIDXA_PLUS_4_LDIST1]], align 4, !alias.scope [[META8:![0-9]+]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    [[EXITCOND_LDIST1:%.*]] = icmp eq i64 [[ADD_LDIST1]], [[N]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_LDIST1]], label [[FOR_BODY_PH:%.*]], label [[FOR_BODY_LDIST1]]
 ; CHECK:       for.body.ph:

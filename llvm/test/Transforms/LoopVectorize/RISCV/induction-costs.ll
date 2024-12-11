@@ -83,16 +83,8 @@ define void @skip_free_iv_truncate(i16 %x, ptr %A) #0 {
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 8 x i64> [ [[INDUCTION]], %[[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], %[[VECTOR_BODY]] ]
-<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP57:%.*]] = getelementptr i16, ptr [[A]], <vscale x 8 x i64> [[VEC_IND]]
-; CHECK-NEXT:    call void @llvm.masked.scatter.nxv8i16.nxv8p0(<vscale x 8 x i16> zeroinitializer, <vscale x 8 x ptr> [[TMP57]], i32 2, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer)), !alias.scope [[META0:![0-9]+]], !noalias [[META3:![0-9]+]]
-||||||| 864902e9b4d8
-; CHECK-NEXT:    [[TMP59:%.*]] = getelementptr i16, ptr [[A]], <vscale x 8 x i64> [[VEC_IND]]
-; CHECK-NEXT:    call void @llvm.masked.scatter.nxv8i16.nxv8p0(<vscale x 8 x i16> zeroinitializer, <vscale x 8 x ptr> [[TMP59]], i32 2, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer)), !alias.scope [[META0:![0-9]+]], !noalias [[META3:![0-9]+]]
-=======
-; CHECK-NEXT:    [[TMP59:%.*]] = getelementptr i16, ptr [[A]], <vscale x 8 x i64> [[VEC_IND]]
-; CHECK-NEXT:    call void @llvm.masked.scatter.nxv8i16.nxv8p0(<vscale x 8 x i16> zeroinitializer, <vscale x 8 x ptr> [[TMP59]], i32 2, <vscale x 8 x i1> splat (i1 true)), !alias.scope [[META0:![0-9]+]], !noalias [[META3:![0-9]+]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+; CHECK-NEXT:    call void @llvm.masked.scatter.nxv8i16.nxv8p0(<vscale x 8 x i16> zeroinitializer, <vscale x 8 x ptr> [[TMP57]], i32 2, <vscale x 8 x i1> splat (i1 true)), !alias.scope [[META0:![0-9]+]], !noalias [[META3:![0-9]+]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP52]]
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <vscale x 8 x i64> [[VEC_IND]], [[DOTSPLAT25]]
 ; CHECK-NEXT:    [[TMP60:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]

@@ -9,7 +9,7 @@ define <vscale x 16 x i32> @test(<vscale x 16 x i32> %vx, i64 noundef %avl) vsca
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp ne i64 [[TMP0]], 0
 ; CHECK-NEXT:    tail call void @llvm.assume(i1 [[CMP]])
 ; CHECK-NEXT:    [[TMP2:%.*]] = trunc nuw nsw i64 [[TMP0]] to i32
-; CHECK-NEXT:    [[TMP7:%.*]] = call <vscale x 16 x i32> @llvm.vp.sub.nxv16i32(<vscale x 16 x i32> zeroinitializer, <vscale x 16 x i32> [[VX]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP2]])
+; CHECK-NEXT:    [[TMP7:%.*]] = call <vscale x 16 x i32> @llvm.vp.sub.nxv16i32(<vscale x 16 x i32> zeroinitializer, <vscale x 16 x i32> [[VX]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    ret <vscale x 16 x i32> [[TMP7]]
 ;
 entry:

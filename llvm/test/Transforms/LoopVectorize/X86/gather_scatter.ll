@@ -132,8 +132,7 @@ define void @foo2(ptr noalias %in, ptr noalias %out, ptr noalias %trigger, ptr n
 ; AVX512-NEXT:    [[TMP4:%.*]] = getelementptr inbounds float, ptr [[OUT:%.*]], <16 x i64> [[VEC_IND]]
 ; AVX512-NEXT:    call void @llvm.masked.scatter.v16f32.v16p0(<16 x float> [[TMP3]], <16 x ptr> [[TMP4]], i32 4, <16 x i1> [[TMP1]])
 ; AVX512-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX1]], 16
-<<<<<<< HEAD
-; AVX512-NEXT:    [[VEC_IND_NEXT]] = add <16 x i64> [[VEC_IND]], <i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256>
+; AVX512-NEXT:    [[VEC_IND_NEXT]] = add <16 x i64> [[VEC_IND]], splat (i64 256)
 ; AVX512-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], 240
 ; AVX512-NEXT:    br i1 [[TMP5]], label [[FOR_BODY:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ; AVX512:       for.body:
@@ -153,15 +152,6 @@ define void @foo2(ptr noalias %in, ptr noalias %out, ptr noalias %trigger, ptr n
 ; AVX512-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 16
 ; AVX512-NEXT:    [[CMP:%.*]] = icmp ult i64 [[INDVARS_IV]], 4080
 ; AVX512-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END:%.*]], !llvm.loop [[LOOP4:![0-9]+]]
-||||||| 864902e9b4d8
-; AVX512-NEXT:    [[VEC_IND_NEXT]] = add <16 x i64> [[VEC_IND]], <i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256>
-; AVX512-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], 256
-; AVX512-NEXT:    br i1 [[TMP5]], label [[FOR_END:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
-=======
-; AVX512-NEXT:    [[VEC_IND_NEXT]] = add <16 x i64> [[VEC_IND]], splat (i64 256)
-; AVX512-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], 256
-; AVX512-NEXT:    br i1 [[TMP5]], label [[FOR_END:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; AVX512:       for.end:
 ; AVX512-NEXT:    ret void
 ;
@@ -173,45 +163,15 @@ define void @foo2(ptr noalias %in, ptr noalias %out, ptr noalias %trigger, ptr n
 ; FVW2-NEXT:    [[VEC_IND:%.*]] = phi <2 x i64> [ <i64 0, i64 16>, [[ENTRY]] ], [ [[VEC_IND_NEXT:%.*]], [[PRED_STORE_CONTINUE3]] ]
 ; FVW2-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[INDEX1]], 16
 ; FVW2-NEXT:    [[TMP0:%.*]] = add i64 [[OFFSET_IDX]], 0
-<<<<<<< HEAD
 ; FVW2-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER:%.*]], i64 [[TMP0]]
 ; FVW2-NEXT:    [[WIDE_VEC:%.*]] = load <32 x i32>, ptr [[TMP1]], align 4
 ; FVW2-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <32 x i32> [[WIDE_VEC]], <32 x i32> poison, <2 x i32> <i32 0, i32 16>
 ; FVW2-NEXT:    [[TMP3:%.*]] = icmp sgt <2 x i32> [[STRIDED_VEC]], zeroinitializer
 ; FVW2-NEXT:    [[TMP4:%.*]] = getelementptr inbounds [[STRUCT_IN:%.*]], ptr [[IN:%.*]], <2 x i64> [[VEC_IND]], i32 1
 ; FVW2-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <2 x float> @llvm.masked.gather.v2f32.v2p0(<2 x ptr> [[TMP4]], i32 4, <2 x i1> [[TMP3]], <2 x float> poison)
-; FVW2-NEXT:    [[TMP5:%.*]] = fadd <2 x float> [[WIDE_MASKED_GATHER]], <float 5.000000e-01, float 5.000000e-01>
+; FVW2-NEXT:    [[TMP5:%.*]] = fadd <2 x float> [[WIDE_MASKED_GATHER]], splat (float 5.000000e-01)
 ; FVW2-NEXT:    [[TMP6:%.*]] = extractelement <2 x i1> [[TMP3]], i32 0
 ; FVW2-NEXT:    br i1 [[TMP6]], label [[PRED_STORE_IF:%.*]], label [[PRED_STORE_CONTINUE:%.*]]
-||||||| 864902e9b4d8
-; FVW2-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 16
-; FVW2-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER:%.*]], i64 [[TMP0]]
-; FVW2-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER]], i64 [[TMP1]]
-; FVW2-NEXT:    [[TMP4:%.*]] = load i32, ptr [[TMP2]], align 4
-; FVW2-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP3]], align 4
-; FVW2-NEXT:    [[TMP6:%.*]] = insertelement <2 x i32> poison, i32 [[TMP4]], i32 0
-; FVW2-NEXT:    [[TMP7:%.*]] = insertelement <2 x i32> [[TMP6]], i32 [[TMP5]], i32 1
-; FVW2-NEXT:    [[TMP8:%.*]] = icmp sgt <2 x i32> [[TMP7]], zeroinitializer
-; FVW2-NEXT:    [[TMP9:%.*]] = getelementptr inbounds [[STRUCT_IN:%.*]], ptr [[IN:%.*]], <2 x i64> [[VEC_IND]], i32 1
-; FVW2-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <2 x float> @llvm.masked.gather.v2f32.v2p0(<2 x ptr> [[TMP9]], i32 4, <2 x i1> [[TMP8]], <2 x float> poison)
-; FVW2-NEXT:    [[TMP10:%.*]] = fadd <2 x float> [[WIDE_MASKED_GATHER]], <float 5.000000e-01, float 5.000000e-01>
-; FVW2-NEXT:    [[TMP11:%.*]] = extractelement <2 x i1> [[TMP8]], i32 0
-; FVW2-NEXT:    br i1 [[TMP11]], label [[PRED_STORE_IF:%.*]], label [[PRED_STORE_CONTINUE:%.*]]
-=======
-; FVW2-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 16
-; FVW2-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER:%.*]], i64 [[TMP0]]
-; FVW2-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER]], i64 [[TMP1]]
-; FVW2-NEXT:    [[TMP4:%.*]] = load i32, ptr [[TMP2]], align 4
-; FVW2-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP3]], align 4
-; FVW2-NEXT:    [[TMP6:%.*]] = insertelement <2 x i32> poison, i32 [[TMP4]], i32 0
-; FVW2-NEXT:    [[TMP7:%.*]] = insertelement <2 x i32> [[TMP6]], i32 [[TMP5]], i32 1
-; FVW2-NEXT:    [[TMP8:%.*]] = icmp sgt <2 x i32> [[TMP7]], zeroinitializer
-; FVW2-NEXT:    [[TMP9:%.*]] = getelementptr inbounds [[STRUCT_IN:%.*]], ptr [[IN:%.*]], <2 x i64> [[VEC_IND]], i32 1
-; FVW2-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <2 x float> @llvm.masked.gather.v2f32.v2p0(<2 x ptr> [[TMP9]], i32 4, <2 x i1> [[TMP8]], <2 x float> poison)
-; FVW2-NEXT:    [[TMP10:%.*]] = fadd <2 x float> [[WIDE_MASKED_GATHER]], splat (float 5.000000e-01)
-; FVW2-NEXT:    [[TMP11:%.*]] = extractelement <2 x i1> [[TMP8]], i32 0
-; FVW2-NEXT:    br i1 [[TMP11]], label [[PRED_STORE_IF:%.*]], label [[PRED_STORE_CONTINUE:%.*]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; FVW2:       pred.store.if:
 ; FVW2-NEXT:    [[TMP7:%.*]] = getelementptr inbounds float, ptr [[OUT:%.*]], i64 [[TMP0]]
 ; FVW2-NEXT:    [[TMP8:%.*]] = extractelement <2 x float> [[TMP5]], i32 0
@@ -228,8 +188,7 @@ define void @foo2(ptr noalias %in, ptr noalias %out, ptr noalias %trigger, ptr n
 ; FVW2-NEXT:    br label [[PRED_STORE_CONTINUE3]]
 ; FVW2:       pred.store.continue3:
 ; FVW2-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX1]], 2
-<<<<<<< HEAD
-; FVW2-NEXT:    [[VEC_IND_NEXT]] = add <2 x i64> [[VEC_IND]], <i64 32, i64 32>
+; FVW2-NEXT:    [[VEC_IND_NEXT]] = add <2 x i64> [[VEC_IND]], splat (i64 32)
 ; FVW2-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_NEXT]], 254
 ; FVW2-NEXT:    br i1 [[TMP13]], label [[FOR_BODY:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ; FVW2:       for.body:
@@ -249,15 +208,6 @@ define void @foo2(ptr noalias %in, ptr noalias %out, ptr noalias %trigger, ptr n
 ; FVW2-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 16
 ; FVW2-NEXT:    [[CMP:%.*]] = icmp ult i64 [[INDVARS_IV]], 4080
 ; FVW2-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END:%.*]], !llvm.loop [[LOOP4:![0-9]+]]
-||||||| 864902e9b4d8
-; FVW2-NEXT:    [[VEC_IND_NEXT]] = add <2 x i64> [[VEC_IND]], <i64 32, i64 32>
-; FVW2-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_NEXT]], 256
-; FVW2-NEXT:    br i1 [[TMP17]], label [[FOR_END:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
-=======
-; FVW2-NEXT:    [[VEC_IND_NEXT]] = add <2 x i64> [[VEC_IND]], splat (i64 32)
-; FVW2-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_NEXT]], 256
-; FVW2-NEXT:    br i1 [[TMP17]], label [[FOR_END:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; FVW2:       for.end:
 ; FVW2-NEXT:    ret void
 ;
@@ -320,8 +270,7 @@ define void @foo3(ptr noalias %in, ptr noalias %out, ptr noalias %trigger) {
 ; AVX512-NEXT:    [[TMP4:%.*]] = getelementptr inbounds [[STRUCT_OUT:%.*]], ptr [[OUT:%.*]], <16 x i64> [[VEC_IND]], i32 1
 ; AVX512-NEXT:    call void @llvm.masked.scatter.v16f32.v16p0(<16 x float> [[TMP3]], <16 x ptr> [[TMP4]], i32 4, <16 x i1> [[TMP1]])
 ; AVX512-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
-<<<<<<< HEAD
-; AVX512-NEXT:    [[VEC_IND_NEXT]] = add <16 x i64> [[VEC_IND]], <i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256>
+; AVX512-NEXT:    [[VEC_IND_NEXT]] = add <16 x i64> [[VEC_IND]], splat (i64 256)
 ; AVX512-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], 240
 ; AVX512-NEXT:    br i1 [[TMP5]], label [[FOR_BODY:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; AVX512:       for.body:
@@ -341,15 +290,6 @@ define void @foo3(ptr noalias %in, ptr noalias %out, ptr noalias %trigger) {
 ; AVX512-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 16
 ; AVX512-NEXT:    [[CMP:%.*]] = icmp ult i64 [[INDVARS_IV]], 4080
 ; AVX512-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END:%.*]], !llvm.loop [[LOOP6:![0-9]+]]
-||||||| 864902e9b4d8
-; AVX512-NEXT:    [[VEC_IND_NEXT]] = add <16 x i64> [[VEC_IND]], <i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256>
-; AVX512-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], 256
-; AVX512-NEXT:    br i1 [[TMP5]], label [[FOR_END:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
-=======
-; AVX512-NEXT:    [[VEC_IND_NEXT]] = add <16 x i64> [[VEC_IND]], splat (i64 256)
-; AVX512-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], 256
-; AVX512-NEXT:    br i1 [[TMP5]], label [[FOR_END:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; AVX512:       for.end:
 ; AVX512-NEXT:    ret void
 ;
@@ -361,45 +301,15 @@ define void @foo3(ptr noalias %in, ptr noalias %out, ptr noalias %trigger) {
 ; FVW2-NEXT:    [[VEC_IND:%.*]] = phi <2 x i64> [ <i64 0, i64 16>, [[ENTRY]] ], [ [[VEC_IND_NEXT:%.*]], [[PRED_STORE_CONTINUE2]] ]
 ; FVW2-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[INDEX]], 16
 ; FVW2-NEXT:    [[TMP0:%.*]] = add i64 [[OFFSET_IDX]], 0
-<<<<<<< HEAD
 ; FVW2-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER:%.*]], i64 [[TMP0]]
 ; FVW2-NEXT:    [[WIDE_VEC:%.*]] = load <32 x i32>, ptr [[TMP1]], align 4
 ; FVW2-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <32 x i32> [[WIDE_VEC]], <32 x i32> poison, <2 x i32> <i32 0, i32 16>
 ; FVW2-NEXT:    [[TMP3:%.*]] = icmp sgt <2 x i32> [[STRIDED_VEC]], zeroinitializer
 ; FVW2-NEXT:    [[TMP4:%.*]] = getelementptr inbounds [[STRUCT_IN:%.*]], ptr [[IN:%.*]], <2 x i64> [[VEC_IND]], i32 1
 ; FVW2-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <2 x float> @llvm.masked.gather.v2f32.v2p0(<2 x ptr> [[TMP4]], i32 4, <2 x i1> [[TMP3]], <2 x float> poison)
-; FVW2-NEXT:    [[TMP5:%.*]] = fadd <2 x float> [[WIDE_MASKED_GATHER]], <float 5.000000e-01, float 5.000000e-01>
+; FVW2-NEXT:    [[TMP5:%.*]] = fadd <2 x float> [[WIDE_MASKED_GATHER]], splat (float 5.000000e-01)
 ; FVW2-NEXT:    [[TMP6:%.*]] = extractelement <2 x i1> [[TMP3]], i32 0
 ; FVW2-NEXT:    br i1 [[TMP6]], label [[PRED_STORE_IF:%.*]], label [[PRED_STORE_CONTINUE:%.*]]
-||||||| 864902e9b4d8
-; FVW2-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 16
-; FVW2-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER:%.*]], i64 [[TMP0]]
-; FVW2-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER]], i64 [[TMP1]]
-; FVW2-NEXT:    [[TMP4:%.*]] = load i32, ptr [[TMP2]], align 4
-; FVW2-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP3]], align 4
-; FVW2-NEXT:    [[TMP6:%.*]] = insertelement <2 x i32> poison, i32 [[TMP4]], i32 0
-; FVW2-NEXT:    [[TMP7:%.*]] = insertelement <2 x i32> [[TMP6]], i32 [[TMP5]], i32 1
-; FVW2-NEXT:    [[TMP8:%.*]] = icmp sgt <2 x i32> [[TMP7]], zeroinitializer
-; FVW2-NEXT:    [[TMP9:%.*]] = getelementptr inbounds [[STRUCT_IN:%.*]], ptr [[IN:%.*]], <2 x i64> [[VEC_IND]], i32 1
-; FVW2-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <2 x float> @llvm.masked.gather.v2f32.v2p0(<2 x ptr> [[TMP9]], i32 4, <2 x i1> [[TMP8]], <2 x float> poison)
-; FVW2-NEXT:    [[TMP10:%.*]] = fadd <2 x float> [[WIDE_MASKED_GATHER]], <float 5.000000e-01, float 5.000000e-01>
-; FVW2-NEXT:    [[TMP11:%.*]] = extractelement <2 x i1> [[TMP8]], i32 0
-; FVW2-NEXT:    br i1 [[TMP11]], label [[PRED_STORE_IF:%.*]], label [[PRED_STORE_CONTINUE:%.*]]
-=======
-; FVW2-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 16
-; FVW2-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER:%.*]], i64 [[TMP0]]
-; FVW2-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER]], i64 [[TMP1]]
-; FVW2-NEXT:    [[TMP4:%.*]] = load i32, ptr [[TMP2]], align 4
-; FVW2-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP3]], align 4
-; FVW2-NEXT:    [[TMP6:%.*]] = insertelement <2 x i32> poison, i32 [[TMP4]], i32 0
-; FVW2-NEXT:    [[TMP7:%.*]] = insertelement <2 x i32> [[TMP6]], i32 [[TMP5]], i32 1
-; FVW2-NEXT:    [[TMP8:%.*]] = icmp sgt <2 x i32> [[TMP7]], zeroinitializer
-; FVW2-NEXT:    [[TMP9:%.*]] = getelementptr inbounds [[STRUCT_IN:%.*]], ptr [[IN:%.*]], <2 x i64> [[VEC_IND]], i32 1
-; FVW2-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <2 x float> @llvm.masked.gather.v2f32.v2p0(<2 x ptr> [[TMP9]], i32 4, <2 x i1> [[TMP8]], <2 x float> poison)
-; FVW2-NEXT:    [[TMP10:%.*]] = fadd <2 x float> [[WIDE_MASKED_GATHER]], splat (float 5.000000e-01)
-; FVW2-NEXT:    [[TMP11:%.*]] = extractelement <2 x i1> [[TMP8]], i32 0
-; FVW2-NEXT:    br i1 [[TMP11]], label [[PRED_STORE_IF:%.*]], label [[PRED_STORE_CONTINUE:%.*]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; FVW2:       pred.store.if:
 ; FVW2-NEXT:    [[TMP7:%.*]] = getelementptr inbounds [[STRUCT_OUT:%.*]], ptr [[OUT:%.*]], i64 [[TMP0]], i32 1
 ; FVW2-NEXT:    [[TMP8:%.*]] = extractelement <2 x float> [[TMP5]], i32 0
@@ -416,8 +326,7 @@ define void @foo3(ptr noalias %in, ptr noalias %out, ptr noalias %trigger) {
 ; FVW2-NEXT:    br label [[PRED_STORE_CONTINUE2]]
 ; FVW2:       pred.store.continue2:
 ; FVW2-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 2
-<<<<<<< HEAD
-; FVW2-NEXT:    [[VEC_IND_NEXT]] = add <2 x i64> [[VEC_IND]], <i64 32, i64 32>
+; FVW2-NEXT:    [[VEC_IND_NEXT]] = add <2 x i64> [[VEC_IND]], splat (i64 32)
 ; FVW2-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_NEXT]], 254
 ; FVW2-NEXT:    br i1 [[TMP13]], label [[FOR_BODY:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; FVW2:       for.body:
@@ -437,15 +346,6 @@ define void @foo3(ptr noalias %in, ptr noalias %out, ptr noalias %trigger) {
 ; FVW2-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 16
 ; FVW2-NEXT:    [[CMP:%.*]] = icmp ult i64 [[INDVARS_IV]], 4080
 ; FVW2-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END:%.*]], !llvm.loop [[LOOP6:![0-9]+]]
-||||||| 864902e9b4d8
-; FVW2-NEXT:    [[VEC_IND_NEXT]] = add <2 x i64> [[VEC_IND]], <i64 32, i64 32>
-; FVW2-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_NEXT]], 256
-; FVW2-NEXT:    br i1 [[TMP17]], label [[FOR_END:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
-=======
-; FVW2-NEXT:    [[VEC_IND_NEXT]] = add <2 x i64> [[VEC_IND]], splat (i64 32)
-; FVW2-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_NEXT]], 256
-; FVW2-NEXT:    br i1 [[TMP17]], label [[FOR_END:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; FVW2:       for.end:
 ; FVW2-NEXT:    ret void
 ;
@@ -495,8 +395,7 @@ define void @foo2_addrspace(ptr addrspace(1) noalias %in, ptr addrspace(1) noali
 ; AVX512-NEXT:    [[TMP4:%.*]] = getelementptr inbounds float, ptr addrspace(1) [[OUT:%.*]], <16 x i64> [[VEC_IND]]
 ; AVX512-NEXT:    call void @llvm.masked.scatter.v16f32.v16p1(<16 x float> [[TMP3]], <16 x ptr addrspace(1)> [[TMP4]], i32 4, <16 x i1> [[TMP1]])
 ; AVX512-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX1]], 16
-<<<<<<< HEAD
-; AVX512-NEXT:    [[VEC_IND_NEXT]] = add <16 x i64> [[VEC_IND]], <i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256>
+; AVX512-NEXT:    [[VEC_IND_NEXT]] = add <16 x i64> [[VEC_IND]], splat (i64 256)
 ; AVX512-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], 240
 ; AVX512-NEXT:    br i1 [[TMP5]], label [[FOR_BODY:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
 ; AVX512:       for.body:
@@ -516,15 +415,6 @@ define void @foo2_addrspace(ptr addrspace(1) noalias %in, ptr addrspace(1) noali
 ; AVX512-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 16
 ; AVX512-NEXT:    [[CMP:%.*]] = icmp ult i64 [[INDVARS_IV]], 4080
 ; AVX512-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END:%.*]], !llvm.loop [[LOOP8:![0-9]+]]
-||||||| 864902e9b4d8
-; AVX512-NEXT:    [[VEC_IND_NEXT]] = add <16 x i64> [[VEC_IND]], <i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256>
-; AVX512-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], 256
-; AVX512-NEXT:    br i1 [[TMP5]], label [[FOR_END:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
-=======
-; AVX512-NEXT:    [[VEC_IND_NEXT]] = add <16 x i64> [[VEC_IND]], splat (i64 256)
-; AVX512-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], 256
-; AVX512-NEXT:    br i1 [[TMP5]], label [[FOR_END:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; AVX512:       for.end:
 ; AVX512-NEXT:    ret void
 ;
@@ -536,45 +426,15 @@ define void @foo2_addrspace(ptr addrspace(1) noalias %in, ptr addrspace(1) noali
 ; FVW2-NEXT:    [[VEC_IND:%.*]] = phi <2 x i64> [ <i64 0, i64 16>, [[ENTRY]] ], [ [[VEC_IND_NEXT:%.*]], [[PRED_STORE_CONTINUE3]] ]
 ; FVW2-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[INDEX1]], 16
 ; FVW2-NEXT:    [[TMP0:%.*]] = add i64 [[OFFSET_IDX]], 0
-<<<<<<< HEAD
 ; FVW2-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER:%.*]], i64 [[TMP0]]
 ; FVW2-NEXT:    [[WIDE_VEC:%.*]] = load <32 x i32>, ptr [[TMP1]], align 4
 ; FVW2-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <32 x i32> [[WIDE_VEC]], <32 x i32> poison, <2 x i32> <i32 0, i32 16>
 ; FVW2-NEXT:    [[TMP3:%.*]] = icmp sgt <2 x i32> [[STRIDED_VEC]], zeroinitializer
 ; FVW2-NEXT:    [[TMP4:%.*]] = getelementptr inbounds [[STRUCT_IN:%.*]], ptr addrspace(1) [[IN:%.*]], <2 x i64> [[VEC_IND]], i32 1
 ; FVW2-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <2 x float> @llvm.masked.gather.v2f32.v2p1(<2 x ptr addrspace(1)> [[TMP4]], i32 4, <2 x i1> [[TMP3]], <2 x float> poison)
-; FVW2-NEXT:    [[TMP5:%.*]] = fadd <2 x float> [[WIDE_MASKED_GATHER]], <float 5.000000e-01, float 5.000000e-01>
+; FVW2-NEXT:    [[TMP5:%.*]] = fadd <2 x float> [[WIDE_MASKED_GATHER]], splat (float 5.000000e-01)
 ; FVW2-NEXT:    [[TMP6:%.*]] = extractelement <2 x i1> [[TMP3]], i32 0
 ; FVW2-NEXT:    br i1 [[TMP6]], label [[PRED_STORE_IF:%.*]], label [[PRED_STORE_CONTINUE:%.*]]
-||||||| 864902e9b4d8
-; FVW2-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 16
-; FVW2-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER:%.*]], i64 [[TMP0]]
-; FVW2-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER]], i64 [[TMP1]]
-; FVW2-NEXT:    [[TMP4:%.*]] = load i32, ptr [[TMP2]], align 4
-; FVW2-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP3]], align 4
-; FVW2-NEXT:    [[TMP6:%.*]] = insertelement <2 x i32> poison, i32 [[TMP4]], i32 0
-; FVW2-NEXT:    [[TMP7:%.*]] = insertelement <2 x i32> [[TMP6]], i32 [[TMP5]], i32 1
-; FVW2-NEXT:    [[TMP8:%.*]] = icmp sgt <2 x i32> [[TMP7]], zeroinitializer
-; FVW2-NEXT:    [[TMP9:%.*]] = getelementptr inbounds [[STRUCT_IN:%.*]], ptr addrspace(1) [[IN:%.*]], <2 x i64> [[VEC_IND]], i32 1
-; FVW2-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <2 x float> @llvm.masked.gather.v2f32.v2p1(<2 x ptr addrspace(1)> [[TMP9]], i32 4, <2 x i1> [[TMP8]], <2 x float> poison)
-; FVW2-NEXT:    [[TMP10:%.*]] = fadd <2 x float> [[WIDE_MASKED_GATHER]], <float 5.000000e-01, float 5.000000e-01>
-; FVW2-NEXT:    [[TMP11:%.*]] = extractelement <2 x i1> [[TMP8]], i32 0
-; FVW2-NEXT:    br i1 [[TMP11]], label [[PRED_STORE_IF:%.*]], label [[PRED_STORE_CONTINUE:%.*]]
-=======
-; FVW2-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 16
-; FVW2-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER:%.*]], i64 [[TMP0]]
-; FVW2-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER]], i64 [[TMP1]]
-; FVW2-NEXT:    [[TMP4:%.*]] = load i32, ptr [[TMP2]], align 4
-; FVW2-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP3]], align 4
-; FVW2-NEXT:    [[TMP6:%.*]] = insertelement <2 x i32> poison, i32 [[TMP4]], i32 0
-; FVW2-NEXT:    [[TMP7:%.*]] = insertelement <2 x i32> [[TMP6]], i32 [[TMP5]], i32 1
-; FVW2-NEXT:    [[TMP8:%.*]] = icmp sgt <2 x i32> [[TMP7]], zeroinitializer
-; FVW2-NEXT:    [[TMP9:%.*]] = getelementptr inbounds [[STRUCT_IN:%.*]], ptr addrspace(1) [[IN:%.*]], <2 x i64> [[VEC_IND]], i32 1
-; FVW2-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <2 x float> @llvm.masked.gather.v2f32.v2p1(<2 x ptr addrspace(1)> [[TMP9]], i32 4, <2 x i1> [[TMP8]], <2 x float> poison)
-; FVW2-NEXT:    [[TMP10:%.*]] = fadd <2 x float> [[WIDE_MASKED_GATHER]], splat (float 5.000000e-01)
-; FVW2-NEXT:    [[TMP11:%.*]] = extractelement <2 x i1> [[TMP8]], i32 0
-; FVW2-NEXT:    br i1 [[TMP11]], label [[PRED_STORE_IF:%.*]], label [[PRED_STORE_CONTINUE:%.*]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; FVW2:       pred.store.if:
 ; FVW2-NEXT:    [[TMP7:%.*]] = getelementptr inbounds float, ptr addrspace(1) [[OUT:%.*]], i64 [[TMP0]]
 ; FVW2-NEXT:    [[TMP8:%.*]] = extractelement <2 x float> [[TMP5]], i32 0
@@ -591,8 +451,7 @@ define void @foo2_addrspace(ptr addrspace(1) noalias %in, ptr addrspace(1) noali
 ; FVW2-NEXT:    br label [[PRED_STORE_CONTINUE3]]
 ; FVW2:       pred.store.continue3:
 ; FVW2-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX1]], 2
-<<<<<<< HEAD
-; FVW2-NEXT:    [[VEC_IND_NEXT]] = add <2 x i64> [[VEC_IND]], <i64 32, i64 32>
+; FVW2-NEXT:    [[VEC_IND_NEXT]] = add <2 x i64> [[VEC_IND]], splat (i64 32)
 ; FVW2-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_NEXT]], 254
 ; FVW2-NEXT:    br i1 [[TMP13]], label [[FOR_BODY:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
 ; FVW2:       for.body:
@@ -612,15 +471,6 @@ define void @foo2_addrspace(ptr addrspace(1) noalias %in, ptr addrspace(1) noali
 ; FVW2-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 16
 ; FVW2-NEXT:    [[CMP:%.*]] = icmp ult i64 [[INDVARS_IV]], 4080
 ; FVW2-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END:%.*]], !llvm.loop [[LOOP8:![0-9]+]]
-||||||| 864902e9b4d8
-; FVW2-NEXT:    [[VEC_IND_NEXT]] = add <2 x i64> [[VEC_IND]], <i64 32, i64 32>
-; FVW2-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_NEXT]], 256
-; FVW2-NEXT:    br i1 [[TMP17]], label [[FOR_END:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
-=======
-; FVW2-NEXT:    [[VEC_IND_NEXT]] = add <2 x i64> [[VEC_IND]], splat (i64 32)
-; FVW2-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_NEXT]], 256
-; FVW2-NEXT:    br i1 [[TMP17]], label [[FOR_END:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; FVW2:       for.end:
 ; FVW2-NEXT:    ret void
 ;
@@ -669,8 +519,7 @@ define void @foo2_addrspace2(ptr addrspace(1) noalias %in, ptr addrspace(0) noal
 ; AVX512-NEXT:    [[TMP4:%.*]] = getelementptr inbounds float, ptr [[OUT:%.*]], <16 x i64> [[VEC_IND]]
 ; AVX512-NEXT:    call void @llvm.masked.scatter.v16f32.v16p0(<16 x float> [[TMP3]], <16 x ptr> [[TMP4]], i32 4, <16 x i1> [[TMP1]])
 ; AVX512-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX1]], 16
-<<<<<<< HEAD
-; AVX512-NEXT:    [[VEC_IND_NEXT]] = add <16 x i64> [[VEC_IND]], <i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256>
+; AVX512-NEXT:    [[VEC_IND_NEXT]] = add <16 x i64> [[VEC_IND]], splat (i64 256)
 ; AVX512-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], 240
 ; AVX512-NEXT:    br i1 [[TMP5]], label [[FOR_BODY:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
 ; AVX512:       for.body:
@@ -690,15 +539,6 @@ define void @foo2_addrspace2(ptr addrspace(1) noalias %in, ptr addrspace(0) noal
 ; AVX512-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 16
 ; AVX512-NEXT:    [[CMP:%.*]] = icmp ult i64 [[INDVARS_IV]], 4080
 ; AVX512-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END:%.*]], !llvm.loop [[LOOP10:![0-9]+]]
-||||||| 864902e9b4d8
-; AVX512-NEXT:    [[VEC_IND_NEXT]] = add <16 x i64> [[VEC_IND]], <i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256>
-; AVX512-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], 256
-; AVX512-NEXT:    br i1 [[TMP5]], label [[FOR_END:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
-=======
-; AVX512-NEXT:    [[VEC_IND_NEXT]] = add <16 x i64> [[VEC_IND]], splat (i64 256)
-; AVX512-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], 256
-; AVX512-NEXT:    br i1 [[TMP5]], label [[FOR_END:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; AVX512:       for.end:
 ; AVX512-NEXT:    ret void
 ;
@@ -710,45 +550,15 @@ define void @foo2_addrspace2(ptr addrspace(1) noalias %in, ptr addrspace(0) noal
 ; FVW2-NEXT:    [[VEC_IND:%.*]] = phi <2 x i64> [ <i64 0, i64 16>, [[ENTRY]] ], [ [[VEC_IND_NEXT:%.*]], [[PRED_STORE_CONTINUE3]] ]
 ; FVW2-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[INDEX1]], 16
 ; FVW2-NEXT:    [[TMP0:%.*]] = add i64 [[OFFSET_IDX]], 0
-<<<<<<< HEAD
 ; FVW2-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER:%.*]], i64 [[TMP0]]
 ; FVW2-NEXT:    [[WIDE_VEC:%.*]] = load <32 x i32>, ptr [[TMP1]], align 4
 ; FVW2-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <32 x i32> [[WIDE_VEC]], <32 x i32> poison, <2 x i32> <i32 0, i32 16>
 ; FVW2-NEXT:    [[TMP3:%.*]] = icmp sgt <2 x i32> [[STRIDED_VEC]], zeroinitializer
 ; FVW2-NEXT:    [[TMP4:%.*]] = getelementptr inbounds [[STRUCT_IN:%.*]], ptr addrspace(1) [[IN:%.*]], <2 x i64> [[VEC_IND]], i32 1
 ; FVW2-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <2 x float> @llvm.masked.gather.v2f32.v2p1(<2 x ptr addrspace(1)> [[TMP4]], i32 4, <2 x i1> [[TMP3]], <2 x float> poison)
-; FVW2-NEXT:    [[TMP5:%.*]] = fadd <2 x float> [[WIDE_MASKED_GATHER]], <float 5.000000e-01, float 5.000000e-01>
+; FVW2-NEXT:    [[TMP5:%.*]] = fadd <2 x float> [[WIDE_MASKED_GATHER]], splat (float 5.000000e-01)
 ; FVW2-NEXT:    [[TMP6:%.*]] = extractelement <2 x i1> [[TMP3]], i32 0
 ; FVW2-NEXT:    br i1 [[TMP6]], label [[PRED_STORE_IF:%.*]], label [[PRED_STORE_CONTINUE:%.*]]
-||||||| 864902e9b4d8
-; FVW2-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 16
-; FVW2-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER:%.*]], i64 [[TMP0]]
-; FVW2-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER]], i64 [[TMP1]]
-; FVW2-NEXT:    [[TMP4:%.*]] = load i32, ptr [[TMP2]], align 4
-; FVW2-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP3]], align 4
-; FVW2-NEXT:    [[TMP6:%.*]] = insertelement <2 x i32> poison, i32 [[TMP4]], i32 0
-; FVW2-NEXT:    [[TMP7:%.*]] = insertelement <2 x i32> [[TMP6]], i32 [[TMP5]], i32 1
-; FVW2-NEXT:    [[TMP8:%.*]] = icmp sgt <2 x i32> [[TMP7]], zeroinitializer
-; FVW2-NEXT:    [[TMP9:%.*]] = getelementptr inbounds [[STRUCT_IN:%.*]], ptr addrspace(1) [[IN:%.*]], <2 x i64> [[VEC_IND]], i32 1
-; FVW2-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <2 x float> @llvm.masked.gather.v2f32.v2p1(<2 x ptr addrspace(1)> [[TMP9]], i32 4, <2 x i1> [[TMP8]], <2 x float> poison)
-; FVW2-NEXT:    [[TMP10:%.*]] = fadd <2 x float> [[WIDE_MASKED_GATHER]], <float 5.000000e-01, float 5.000000e-01>
-; FVW2-NEXT:    [[TMP11:%.*]] = extractelement <2 x i1> [[TMP8]], i32 0
-; FVW2-NEXT:    br i1 [[TMP11]], label [[PRED_STORE_IF:%.*]], label [[PRED_STORE_CONTINUE:%.*]]
-=======
-; FVW2-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 16
-; FVW2-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER:%.*]], i64 [[TMP0]]
-; FVW2-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER]], i64 [[TMP1]]
-; FVW2-NEXT:    [[TMP4:%.*]] = load i32, ptr [[TMP2]], align 4
-; FVW2-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP3]], align 4
-; FVW2-NEXT:    [[TMP6:%.*]] = insertelement <2 x i32> poison, i32 [[TMP4]], i32 0
-; FVW2-NEXT:    [[TMP7:%.*]] = insertelement <2 x i32> [[TMP6]], i32 [[TMP5]], i32 1
-; FVW2-NEXT:    [[TMP8:%.*]] = icmp sgt <2 x i32> [[TMP7]], zeroinitializer
-; FVW2-NEXT:    [[TMP9:%.*]] = getelementptr inbounds [[STRUCT_IN:%.*]], ptr addrspace(1) [[IN:%.*]], <2 x i64> [[VEC_IND]], i32 1
-; FVW2-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <2 x float> @llvm.masked.gather.v2f32.v2p1(<2 x ptr addrspace(1)> [[TMP9]], i32 4, <2 x i1> [[TMP8]], <2 x float> poison)
-; FVW2-NEXT:    [[TMP10:%.*]] = fadd <2 x float> [[WIDE_MASKED_GATHER]], splat (float 5.000000e-01)
-; FVW2-NEXT:    [[TMP11:%.*]] = extractelement <2 x i1> [[TMP8]], i32 0
-; FVW2-NEXT:    br i1 [[TMP11]], label [[PRED_STORE_IF:%.*]], label [[PRED_STORE_CONTINUE:%.*]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; FVW2:       pred.store.if:
 ; FVW2-NEXT:    [[TMP7:%.*]] = getelementptr inbounds float, ptr [[OUT:%.*]], i64 [[TMP0]]
 ; FVW2-NEXT:    [[TMP8:%.*]] = extractelement <2 x float> [[TMP5]], i32 0
@@ -765,8 +575,7 @@ define void @foo2_addrspace2(ptr addrspace(1) noalias %in, ptr addrspace(0) noal
 ; FVW2-NEXT:    br label [[PRED_STORE_CONTINUE3]]
 ; FVW2:       pred.store.continue3:
 ; FVW2-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX1]], 2
-<<<<<<< HEAD
-; FVW2-NEXT:    [[VEC_IND_NEXT]] = add <2 x i64> [[VEC_IND]], <i64 32, i64 32>
+; FVW2-NEXT:    [[VEC_IND_NEXT]] = add <2 x i64> [[VEC_IND]], splat (i64 32)
 ; FVW2-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_NEXT]], 254
 ; FVW2-NEXT:    br i1 [[TMP13]], label [[FOR_BODY:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
 ; FVW2:       for.body:
@@ -786,15 +595,6 @@ define void @foo2_addrspace2(ptr addrspace(1) noalias %in, ptr addrspace(0) noal
 ; FVW2-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 16
 ; FVW2-NEXT:    [[CMP:%.*]] = icmp ult i64 [[INDVARS_IV]], 4080
 ; FVW2-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END:%.*]], !llvm.loop [[LOOP10:![0-9]+]]
-||||||| 864902e9b4d8
-; FVW2-NEXT:    [[VEC_IND_NEXT]] = add <2 x i64> [[VEC_IND]], <i64 32, i64 32>
-; FVW2-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_NEXT]], 256
-; FVW2-NEXT:    br i1 [[TMP17]], label [[FOR_END:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
-=======
-; FVW2-NEXT:    [[VEC_IND_NEXT]] = add <2 x i64> [[VEC_IND]], splat (i64 32)
-; FVW2-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_NEXT]], 256
-; FVW2-NEXT:    br i1 [[TMP17]], label [[FOR_END:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; FVW2:       for.end:
 ; FVW2-NEXT:    ret void
 ;
@@ -843,8 +643,7 @@ define void @foo2_addrspace3(ptr addrspace(0) noalias %in, ptr addrspace(1) noal
 ; AVX512-NEXT:    [[TMP4:%.*]] = getelementptr inbounds float, ptr addrspace(1) [[OUT:%.*]], <16 x i64> [[VEC_IND]]
 ; AVX512-NEXT:    call void @llvm.masked.scatter.v16f32.v16p1(<16 x float> [[TMP3]], <16 x ptr addrspace(1)> [[TMP4]], i32 4, <16 x i1> [[TMP1]])
 ; AVX512-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX1]], 16
-<<<<<<< HEAD
-; AVX512-NEXT:    [[VEC_IND_NEXT]] = add <16 x i64> [[VEC_IND]], <i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256>
+; AVX512-NEXT:    [[VEC_IND_NEXT]] = add <16 x i64> [[VEC_IND]], splat (i64 256)
 ; AVX512-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], 240
 ; AVX512-NEXT:    br i1 [[TMP5]], label [[FOR_BODY:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP11:![0-9]+]]
 ; AVX512:       for.body:
@@ -864,15 +663,6 @@ define void @foo2_addrspace3(ptr addrspace(0) noalias %in, ptr addrspace(1) noal
 ; AVX512-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 16
 ; AVX512-NEXT:    [[CMP:%.*]] = icmp ult i64 [[INDVARS_IV]], 4080
 ; AVX512-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END:%.*]], !llvm.loop [[LOOP12:![0-9]+]]
-||||||| 864902e9b4d8
-; AVX512-NEXT:    [[VEC_IND_NEXT]] = add <16 x i64> [[VEC_IND]], <i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256, i64 256>
-; AVX512-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], 256
-; AVX512-NEXT:    br i1 [[TMP5]], label [[FOR_END:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
-=======
-; AVX512-NEXT:    [[VEC_IND_NEXT]] = add <16 x i64> [[VEC_IND]], splat (i64 256)
-; AVX512-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], 256
-; AVX512-NEXT:    br i1 [[TMP5]], label [[FOR_END:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; AVX512:       for.end:
 ; AVX512-NEXT:    ret void
 ;
@@ -884,45 +674,15 @@ define void @foo2_addrspace3(ptr addrspace(0) noalias %in, ptr addrspace(1) noal
 ; FVW2-NEXT:    [[VEC_IND:%.*]] = phi <2 x i64> [ <i64 0, i64 16>, [[ENTRY]] ], [ [[VEC_IND_NEXT:%.*]], [[PRED_STORE_CONTINUE3]] ]
 ; FVW2-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[INDEX1]], 16
 ; FVW2-NEXT:    [[TMP0:%.*]] = add i64 [[OFFSET_IDX]], 0
-<<<<<<< HEAD
 ; FVW2-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER:%.*]], i64 [[TMP0]]
 ; FVW2-NEXT:    [[WIDE_VEC:%.*]] = load <32 x i32>, ptr [[TMP1]], align 4
 ; FVW2-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <32 x i32> [[WIDE_VEC]], <32 x i32> poison, <2 x i32> <i32 0, i32 16>
 ; FVW2-NEXT:    [[TMP3:%.*]] = icmp sgt <2 x i32> [[STRIDED_VEC]], zeroinitializer
 ; FVW2-NEXT:    [[TMP4:%.*]] = getelementptr inbounds [[STRUCT_IN:%.*]], ptr [[IN:%.*]], <2 x i64> [[VEC_IND]], i32 1
 ; FVW2-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <2 x float> @llvm.masked.gather.v2f32.v2p0(<2 x ptr> [[TMP4]], i32 4, <2 x i1> [[TMP3]], <2 x float> poison)
-; FVW2-NEXT:    [[TMP5:%.*]] = fadd <2 x float> [[WIDE_MASKED_GATHER]], <float 5.000000e-01, float 5.000000e-01>
+; FVW2-NEXT:    [[TMP5:%.*]] = fadd <2 x float> [[WIDE_MASKED_GATHER]], splat (float 5.000000e-01)
 ; FVW2-NEXT:    [[TMP6:%.*]] = extractelement <2 x i1> [[TMP3]], i32 0
 ; FVW2-NEXT:    br i1 [[TMP6]], label [[PRED_STORE_IF:%.*]], label [[PRED_STORE_CONTINUE:%.*]]
-||||||| 864902e9b4d8
-; FVW2-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 16
-; FVW2-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER:%.*]], i64 [[TMP0]]
-; FVW2-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER]], i64 [[TMP1]]
-; FVW2-NEXT:    [[TMP4:%.*]] = load i32, ptr [[TMP2]], align 4
-; FVW2-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP3]], align 4
-; FVW2-NEXT:    [[TMP6:%.*]] = insertelement <2 x i32> poison, i32 [[TMP4]], i32 0
-; FVW2-NEXT:    [[TMP7:%.*]] = insertelement <2 x i32> [[TMP6]], i32 [[TMP5]], i32 1
-; FVW2-NEXT:    [[TMP8:%.*]] = icmp sgt <2 x i32> [[TMP7]], zeroinitializer
-; FVW2-NEXT:    [[TMP9:%.*]] = getelementptr inbounds [[STRUCT_IN:%.*]], ptr [[IN:%.*]], <2 x i64> [[VEC_IND]], i32 1
-; FVW2-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <2 x float> @llvm.masked.gather.v2f32.v2p0(<2 x ptr> [[TMP9]], i32 4, <2 x i1> [[TMP8]], <2 x float> poison)
-; FVW2-NEXT:    [[TMP10:%.*]] = fadd <2 x float> [[WIDE_MASKED_GATHER]], <float 5.000000e-01, float 5.000000e-01>
-; FVW2-NEXT:    [[TMP11:%.*]] = extractelement <2 x i1> [[TMP8]], i32 0
-; FVW2-NEXT:    br i1 [[TMP11]], label [[PRED_STORE_IF:%.*]], label [[PRED_STORE_CONTINUE:%.*]]
-=======
-; FVW2-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 16
-; FVW2-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER:%.*]], i64 [[TMP0]]
-; FVW2-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[TRIGGER]], i64 [[TMP1]]
-; FVW2-NEXT:    [[TMP4:%.*]] = load i32, ptr [[TMP2]], align 4
-; FVW2-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP3]], align 4
-; FVW2-NEXT:    [[TMP6:%.*]] = insertelement <2 x i32> poison, i32 [[TMP4]], i32 0
-; FVW2-NEXT:    [[TMP7:%.*]] = insertelement <2 x i32> [[TMP6]], i32 [[TMP5]], i32 1
-; FVW2-NEXT:    [[TMP8:%.*]] = icmp sgt <2 x i32> [[TMP7]], zeroinitializer
-; FVW2-NEXT:    [[TMP9:%.*]] = getelementptr inbounds [[STRUCT_IN:%.*]], ptr [[IN:%.*]], <2 x i64> [[VEC_IND]], i32 1
-; FVW2-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <2 x float> @llvm.masked.gather.v2f32.v2p0(<2 x ptr> [[TMP9]], i32 4, <2 x i1> [[TMP8]], <2 x float> poison)
-; FVW2-NEXT:    [[TMP10:%.*]] = fadd <2 x float> [[WIDE_MASKED_GATHER]], splat (float 5.000000e-01)
-; FVW2-NEXT:    [[TMP11:%.*]] = extractelement <2 x i1> [[TMP8]], i32 0
-; FVW2-NEXT:    br i1 [[TMP11]], label [[PRED_STORE_IF:%.*]], label [[PRED_STORE_CONTINUE:%.*]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; FVW2:       pred.store.if:
 ; FVW2-NEXT:    [[TMP7:%.*]] = getelementptr inbounds float, ptr addrspace(1) [[OUT:%.*]], i64 [[TMP0]]
 ; FVW2-NEXT:    [[TMP8:%.*]] = extractelement <2 x float> [[TMP5]], i32 0
@@ -939,8 +699,7 @@ define void @foo2_addrspace3(ptr addrspace(0) noalias %in, ptr addrspace(1) noal
 ; FVW2-NEXT:    br label [[PRED_STORE_CONTINUE3]]
 ; FVW2:       pred.store.continue3:
 ; FVW2-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX1]], 2
-<<<<<<< HEAD
-; FVW2-NEXT:    [[VEC_IND_NEXT]] = add <2 x i64> [[VEC_IND]], <i64 32, i64 32>
+; FVW2-NEXT:    [[VEC_IND_NEXT]] = add <2 x i64> [[VEC_IND]], splat (i64 32)
 ; FVW2-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_NEXT]], 254
 ; FVW2-NEXT:    br i1 [[TMP13]], label [[FOR_BODY:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP11:![0-9]+]]
 ; FVW2:       for.body:
@@ -960,15 +719,6 @@ define void @foo2_addrspace3(ptr addrspace(0) noalias %in, ptr addrspace(1) noal
 ; FVW2-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 16
 ; FVW2-NEXT:    [[CMP:%.*]] = icmp ult i64 [[INDVARS_IV]], 4080
 ; FVW2-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END:%.*]], !llvm.loop [[LOOP12:![0-9]+]]
-||||||| 864902e9b4d8
-; FVW2-NEXT:    [[VEC_IND_NEXT]] = add <2 x i64> [[VEC_IND]], <i64 32, i64 32>
-; FVW2-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_NEXT]], 256
-; FVW2-NEXT:    br i1 [[TMP17]], label [[FOR_END:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
-=======
-; FVW2-NEXT:    [[VEC_IND_NEXT]] = add <2 x i64> [[VEC_IND]], splat (i64 32)
-; FVW2-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_NEXT]], 256
-; FVW2-NEXT:    br i1 [[TMP17]], label [[FOR_END:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; FVW2:       for.end:
 ; FVW2-NEXT:    ret void
 ;
@@ -1053,37 +803,15 @@ define void @test_gather_not_profitable_pr48429(i32 %d, ptr readonly noalias %pt
 ; AVX512-NEXT:    [[TMP14:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <16 x i64> <i64 0, i64 64, i64 128, i64 192, i64 256, i64 320, i64 384, i64 448, i64 512, i64 576, i64 640, i64 704, i64 768, i64 832, i64 896, i64 960>
 ; AVX512-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[INDEX]], 4
 ; AVX512-NEXT:    [[TMP15:%.*]] = add i64 [[OFFSET_IDX]], 0
-<<<<<<< HEAD
 ; AVX512-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[PTR]], i64 [[TMP15]]
 ; AVX512-NEXT:    [[TMP16:%.*]] = getelementptr inbounds float, ptr [[NEXT_GEP]], i64 [[IDXPROM]]
 ; AVX512-NEXT:    [[TMP17:%.*]] = getelementptr inbounds float, ptr [[TMP16]], i32 0
 ; AVX512-NEXT:    [[WIDE_LOAD:%.*]] = load <16 x float>, ptr [[TMP17]], align 4, !alias.scope [[META13:![0-9]+]]
-; AVX512-NEXT:    call void @llvm.masked.scatter.v16f32.v16p0(<16 x float> [[WIDE_LOAD]], <16 x ptr> [[TMP14]], i32 4, <16 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>), !alias.scope [[META16:![0-9]+]], !noalias [[META18:![0-9]+]]
+; AVX512-NEXT:    call void @llvm.masked.scatter.v16f32.v16p0(<16 x float> [[WIDE_LOAD]], <16 x ptr> [[TMP14]], i32 4, <16 x i1> splat (i1 true)), !alias.scope [[META16:![0-9]+]], !noalias [[META18:![0-9]+]]
 ; AVX512-NEXT:    [[TMP18:%.*]] = getelementptr float, ptr [[NEXT_GEP]], i32 0
 ; AVX512-NEXT:    [[WIDE_LOAD8:%.*]] = load <16 x float>, ptr [[TMP18]], align 4, !alias.scope [[META20:![0-9]+]]
 ; AVX512-NEXT:    [[TMP19:%.*]] = getelementptr inbounds float, <16 x ptr> [[TMP14]], i64 1
-; AVX512-NEXT:    call void @llvm.masked.scatter.v16f32.v16p0(<16 x float> [[WIDE_LOAD8]], <16 x ptr> [[TMP19]], i32 4, <16 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>), !alias.scope [[META16]], !noalias [[META18]]
-||||||| 864902e9b4d8
-; AVX512-NEXT:    [[TMP16:%.*]] = getelementptr i8, ptr [[PTR]], i64 [[TMP15]]
-; AVX512-NEXT:    [[TMP17:%.*]] = getelementptr inbounds float, ptr [[TMP16]], i64 [[IDXPROM]]
-; AVX512-NEXT:    [[TMP18:%.*]] = getelementptr inbounds float, ptr [[TMP17]], i32 0
-; AVX512-NEXT:    [[WIDE_LOAD:%.*]] = load <16 x float>, ptr [[TMP18]], align 4, !alias.scope [[META8:![0-9]+]]
-; AVX512-NEXT:    call void @llvm.masked.scatter.v16f32.v16p0(<16 x float> [[WIDE_LOAD]], <16 x ptr> [[TMP14]], i32 4, <16 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>), !alias.scope [[META11:![0-9]+]], !noalias [[META13:![0-9]+]]
-; AVX512-NEXT:    [[TMP19:%.*]] = getelementptr float, ptr [[TMP16]], i32 0
-; AVX512-NEXT:    [[WIDE_LOAD8:%.*]] = load <16 x float>, ptr [[TMP19]], align 4, !alias.scope [[META15:![0-9]+]]
-; AVX512-NEXT:    [[TMP20:%.*]] = getelementptr inbounds float, <16 x ptr> [[TMP14]], i64 1
-; AVX512-NEXT:    call void @llvm.masked.scatter.v16f32.v16p0(<16 x float> [[WIDE_LOAD8]], <16 x ptr> [[TMP20]], i32 4, <16 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>), !alias.scope [[META11]], !noalias [[META13]]
-=======
-; AVX512-NEXT:    [[TMP16:%.*]] = getelementptr i8, ptr [[PTR]], i64 [[TMP15]]
-; AVX512-NEXT:    [[TMP17:%.*]] = getelementptr inbounds float, ptr [[TMP16]], i64 [[IDXPROM]]
-; AVX512-NEXT:    [[TMP18:%.*]] = getelementptr inbounds float, ptr [[TMP17]], i32 0
-; AVX512-NEXT:    [[WIDE_LOAD:%.*]] = load <16 x float>, ptr [[TMP18]], align 4, !alias.scope [[META8:![0-9]+]]
-; AVX512-NEXT:    call void @llvm.masked.scatter.v16f32.v16p0(<16 x float> [[WIDE_LOAD]], <16 x ptr> [[TMP14]], i32 4, <16 x i1> splat (i1 true)), !alias.scope [[META11:![0-9]+]], !noalias [[META13:![0-9]+]]
-; AVX512-NEXT:    [[TMP19:%.*]] = getelementptr float, ptr [[TMP16]], i32 0
-; AVX512-NEXT:    [[WIDE_LOAD8:%.*]] = load <16 x float>, ptr [[TMP19]], align 4, !alias.scope [[META15:![0-9]+]]
-; AVX512-NEXT:    [[TMP20:%.*]] = getelementptr inbounds float, <16 x ptr> [[TMP14]], i64 1
-; AVX512-NEXT:    call void @llvm.masked.scatter.v16f32.v16p0(<16 x float> [[WIDE_LOAD8]], <16 x ptr> [[TMP20]], i32 4, <16 x i1> splat (i1 true)), !alias.scope [[META11]], !noalias [[META13]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+; AVX512-NEXT:    call void @llvm.masked.scatter.v16f32.v16p0(<16 x float> [[WIDE_LOAD8]], <16 x ptr> [[TMP19]], i32 4, <16 x i1> splat (i1 true)), !alias.scope [[META16]], !noalias [[META18]]
 ; AVX512-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
 ; AVX512-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 1024
 ; AVX512-NEXT:    [[TMP20:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
@@ -1114,43 +842,17 @@ define void @test_gather_not_profitable_pr48429(i32 %d, ptr readonly noalias %pt
 ; AVX512-NEXT:    [[INDEX18:%.*]] = phi i64 [ [[VEC_EPILOG_RESUME_VAL]], [[VEC_EPILOG_PH]] ], [ [[INDEX_NEXT25:%.*]], [[VEC_EPILOG_VECTOR_BODY]] ]
 ; AVX512-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[POINTER_PHI19]], <8 x i64> <i64 0, i64 64, i64 128, i64 192, i64 256, i64 320, i64 384, i64 448>
 ; AVX512-NEXT:    [[OFFSET_IDX21:%.*]] = mul i64 [[INDEX18]], 4
-<<<<<<< HEAD
 ; AVX512-NEXT:    [[TMP26:%.*]] = add i64 [[OFFSET_IDX21]], 0
 ; AVX512-NEXT:    [[NEXT_GEP22:%.*]] = getelementptr i8, ptr [[PTR]], i64 [[TMP26]]
 ; AVX512-NEXT:    [[TMP27:%.*]] = getelementptr inbounds float, ptr [[NEXT_GEP22]], i64 [[IDXPROM]]
 ; AVX512-NEXT:    [[TMP28:%.*]] = getelementptr inbounds float, ptr [[TMP27]], i32 0
-; AVX512-NEXT:    [[WIDE_LOAD23:%.*]] = load <8 x float>, ptr [[TMP28]], align 4, !alias.scope [[META22:![0-9]+]]
-; AVX512-NEXT:    call void @llvm.masked.scatter.v8f32.v8p0(<8 x float> [[WIDE_LOAD23]], <8 x ptr> [[TMP32]], i32 4, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>), !alias.scope [[META25:![0-9]+]], !noalias [[META27:![0-9]+]]
+; AVX512-NEXT:    [[WIDE_LOAD22:%.*]] = load <8 x float>, ptr [[TMP28]], align 4, !alias.scope [[META22:![0-9]+]]
+; AVX512-NEXT:    call void @llvm.masked.scatter.v8f32.v8p0(<8 x float> [[WIDE_LOAD22]], <8 x ptr> [[TMP32]], i32 4, <8 x i1> splat (i1 true)), !alias.scope [[META25:![0-9]+]], !noalias [[META27:![0-9]+]]
 ; AVX512-NEXT:    [[TMP29:%.*]] = getelementptr float, ptr [[NEXT_GEP22]], i32 0
-; AVX512-NEXT:    [[WIDE_LOAD24:%.*]] = load <8 x float>, ptr [[TMP29]], align 4, !alias.scope [[META29:![0-9]+]]
+; AVX512-NEXT:    [[WIDE_LOAD23:%.*]] = load <8 x float>, ptr [[TMP29]], align 4, !alias.scope [[META29:![0-9]+]]
 ; AVX512-NEXT:    [[TMP30:%.*]] = getelementptr inbounds float, <8 x ptr> [[TMP32]], i64 1
-; AVX512-NEXT:    call void @llvm.masked.scatter.v8f32.v8p0(<8 x float> [[WIDE_LOAD24]], <8 x ptr> [[TMP30]], i32 4, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>), !alias.scope [[META25]], !noalias [[META27]]
+; AVX512-NEXT:    call void @llvm.masked.scatter.v8f32.v8p0(<8 x float> [[WIDE_LOAD23]], <8 x ptr> [[TMP30]], i32 4, <8 x i1> splat (i1 true)), !alias.scope [[META25]], !noalias [[META27]]
 ; AVX512-NEXT:    [[INDEX_NEXT25]] = add nuw i64 [[INDEX18]], 8
-||||||| 864902e9b4d8
-; AVX512-NEXT:    [[TMP27:%.*]] = add i64 [[OFFSET_IDX21]], 0
-; AVX512-NEXT:    [[TMP28:%.*]] = getelementptr i8, ptr [[PTR]], i64 [[TMP27]]
-; AVX512-NEXT:    [[TMP29:%.*]] = getelementptr inbounds float, ptr [[TMP28]], i64 [[IDXPROM]]
-; AVX512-NEXT:    [[TMP30:%.*]] = getelementptr inbounds float, ptr [[TMP29]], i32 0
-; AVX512-NEXT:    [[WIDE_LOAD22:%.*]] = load <8 x float>, ptr [[TMP30]], align 4, !alias.scope [[META17:![0-9]+]]
-; AVX512-NEXT:    call void @llvm.masked.scatter.v8f32.v8p0(<8 x float> [[WIDE_LOAD22]], <8 x ptr> [[TMP26]], i32 4, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>), !alias.scope [[META20:![0-9]+]], !noalias [[META22:![0-9]+]]
-; AVX512-NEXT:    [[TMP31:%.*]] = getelementptr float, ptr [[TMP28]], i32 0
-; AVX512-NEXT:    [[WIDE_LOAD23:%.*]] = load <8 x float>, ptr [[TMP31]], align 4, !alias.scope [[META24:![0-9]+]]
-; AVX512-NEXT:    [[TMP32:%.*]] = getelementptr inbounds float, <8 x ptr> [[TMP26]], i64 1
-; AVX512-NEXT:    call void @llvm.masked.scatter.v8f32.v8p0(<8 x float> [[WIDE_LOAD23]], <8 x ptr> [[TMP32]], i32 4, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>), !alias.scope [[META20]], !noalias [[META22]]
-; AVX512-NEXT:    [[INDEX_NEXT24]] = add nuw i64 [[INDEX18]], 8
-=======
-; AVX512-NEXT:    [[TMP27:%.*]] = add i64 [[OFFSET_IDX21]], 0
-; AVX512-NEXT:    [[TMP28:%.*]] = getelementptr i8, ptr [[PTR]], i64 [[TMP27]]
-; AVX512-NEXT:    [[TMP29:%.*]] = getelementptr inbounds float, ptr [[TMP28]], i64 [[IDXPROM]]
-; AVX512-NEXT:    [[TMP30:%.*]] = getelementptr inbounds float, ptr [[TMP29]], i32 0
-; AVX512-NEXT:    [[WIDE_LOAD23:%.*]] = load <8 x float>, ptr [[TMP30]], align 4, !alias.scope [[META17:![0-9]+]]
-; AVX512-NEXT:    call void @llvm.masked.scatter.v8f32.v8p0(<8 x float> [[WIDE_LOAD23]], <8 x ptr> [[TMP26]], i32 4, <8 x i1> splat (i1 true)), !alias.scope [[META20:![0-9]+]], !noalias [[META22:![0-9]+]]
-; AVX512-NEXT:    [[TMP31:%.*]] = getelementptr float, ptr [[TMP28]], i32 0
-; AVX512-NEXT:    [[WIDE_LOAD24:%.*]] = load <8 x float>, ptr [[TMP31]], align 4, !alias.scope [[META24:![0-9]+]]
-; AVX512-NEXT:    [[TMP32:%.*]] = getelementptr inbounds float, <8 x ptr> [[TMP26]], i64 1
-; AVX512-NEXT:    call void @llvm.masked.scatter.v8f32.v8p0(<8 x float> [[WIDE_LOAD24]], <8 x ptr> [[TMP32]], i32 4, <8 x i1> splat (i1 true)), !alias.scope [[META20]], !noalias [[META22]]
-; AVX512-NEXT:    [[INDEX_NEXT24]] = add nuw i64 [[INDEX18]], 8
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; AVX512-NEXT:    [[PTR_IND20]] = getelementptr i8, ptr [[POINTER_PHI19]], i64 512
 ; AVX512-NEXT:    [[TMP31:%.*]] = icmp eq i64 [[INDEX_NEXT25]], [[N_VEC10]]
 ; AVX512-NEXT:    br i1 [[TMP31]], label [[VEC_EPILOG_MIDDLE_BLOCK:%.*]], label [[VEC_EPILOG_VECTOR_BODY]], !llvm.loop [[LOOP30:![0-9]+]]

@@ -642,10 +642,14 @@ Value *VPInstruction::generate(VPTransformState &State) {
     const bool UnconditionalBranch =
         State.Plan->useVLAVectorizer() && !State.Plan->isUncountable() &&
         match(Cond, PatternMatch::m_One()) && !getParent()->isExiting();
-    BranchInst *CondBr =
-        UnconditionalBranch
-            ? Builder.CreateBr(Builder.GetInsertBlock())
-            : Builder.CreateCondBr(Cond, Builder.GetInsertBlock(), nullptr);
+    BranchInst *CondBr;
+    if (State.Plan->useVLAVectorizer())
+      CondBr =
+          UnconditionalBranch
+              ? Builder.CreateBr(Builder.GetInsertBlock())
+              : Builder.CreateCondBr(Cond, Builder.GetInsertBlock(), nullptr);
+    else
+      CondBr = Builder.CreateCondBr(Cond, Builder.GetInsertBlock(), nullptr);
 #else
     BranchInst *CondBr =
             Builder.CreateCondBr(Cond, Builder.GetInsertBlock(), nullptr);

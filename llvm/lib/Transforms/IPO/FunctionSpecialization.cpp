@@ -1061,9 +1061,9 @@ Function *FunctionSpecializer::createSpecialization(Function *F,
   if (!SpecializeLiteralConstant && PropagateConstants) {
     SmallVector<ArgInfo, 4> Args;
 
-    auto Iter = S.Args.begin();
+    const auto *Iter = S.Args.begin();
     Function::arg_iterator Arg = F->arg_begin();
-    for (auto End = F->arg_end(); Arg != End; ++Arg) {
+    for (auto *End = F->arg_end(); Arg != End; ++Arg) {
       // Copy args over from S.Args.
       if (Iter != Args.end() && Iter->Formal == &*Arg) {
         Args.push_back(*Iter);

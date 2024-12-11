@@ -20,7 +20,7 @@ define void @WriteProfile(i32* nocapture readnone %M, float*** nocapture readnon
 ; CHECK-NEXT:    [[RVL:%.*]] = call i64 @llvm.umin.i64(i64 [[TMP6]], i64 [[TMP8]])
 ; CHECK-NEXT:    [[TMP9:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[RVL]], i64 2, i64 1)
 ; CHECK-NEXT:    [[TMP10:%.*]] = trunc i64 [[TMP9]] to i32
-; CHECK-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 4 x float> @llvm.vp.fadd.nxv4f32(<vscale x 4 x float> [[VEC_PHI]], <vscale x 4 x float> [[BROADCAST_SPLAT7]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i32 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP10]])
+; CHECK-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 4 x float> @llvm.vp.fadd.nxv4f32(<vscale x 4 x float> [[VEC_PHI]], <vscale x 4 x float> [[BROADCAST_SPLAT7]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP10]])
 ; CHECK-NEXT:    [[EVL_SPLATINSERT:%.*]] = insertelement <vscale x 4 x i32> poison, i32 [[TMP10]], i64 0
 ; CHECK-NEXT:    [[EVL_SPLAT:%.*]] = shufflevector <vscale x 4 x i32> [[EVL_SPLATINSERT]], <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer
 ; CHECK-NEXT:    [[STEP_VEC:%.*]] = call <vscale x 4 x i32> @llvm.stepvector.nxv4i32()

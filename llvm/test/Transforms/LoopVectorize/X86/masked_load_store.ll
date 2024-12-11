@@ -1367,13 +1367,7 @@ define void @foo4(ptr nocapture %A, ptr nocapture readonly %B, ptr nocapture rea
 ; AVX512:       for.inc:
 ; AVX512-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 16
 ; AVX512-NEXT:    [[CMP:%.*]] = icmp ult i64 [[INDVARS_IV_NEXT]], 10000
-<<<<<<< HEAD
-; AVX512-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END:%.*]], !llvm.loop [[LOOP30:![0-9]+]]
-||||||| 864902e9b4d8
-; AVX512-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END]], !llvm.loop [[LOOP30:![0-9]+]]
-=======
-; AVX512-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END]], !llvm.loop [[LOOP39:![0-9]+]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+; AVX512-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END:%.*]], !llvm.loop [[LOOP39:![0-9]+]]
 ; AVX512:       for.end:
 ; AVX512-NEXT:    ret void
 ;

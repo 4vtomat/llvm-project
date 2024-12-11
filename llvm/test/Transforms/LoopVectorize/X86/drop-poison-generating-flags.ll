@@ -1,4 +1,4 @@
-; RUN: opt %s -passes=loop-vectorize -force-vector-width=4 -force-vector-interleave=1 -S | FileCheck %s
+; RUN: opt %s -passes=loop-vectorize -force-vector-width=4 -force-vector-interleave=1 -S --riscv-use-vla-vectorizer=false | FileCheck %s
 
 ; Make sure that integer poison-generating flags (i.e., nuw/nsw, exact and inbounds)
 ; are dropped from instructions in blocks that need predication and are linearized
@@ -281,18 +281,12 @@ define void @drop_zext_nneg(ptr noalias %p, ptr noalias %p1) #0 {
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <4 x i32> [ <i32 0, i32 1, i32 2, i32 3>, [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP0:%.*]] = icmp eq <4 x i32> [[VEC_IND]], zeroinitializer
-; CHECK-NEXT:    [[TMP5:%.*]] = xor <4 x i1> [[TMP0]], <i1 true, i1 true, i1 true, i1 true>
+; CHECK-NEXT:    [[TMP5:%.*]] = xor <4 x i1> [[TMP0]], splat (i1 true)
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <4 x i32> [[VEC_IND]] to <4 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = extractelement <4 x i64> [[TMP1]], i32 0
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr double, ptr [[P]], i64 [[TMP2]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr double, ptr [[TMP3]], i32 0
 ; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x double> @llvm.masked.load.v4f64.p0(ptr [[TMP4]], i32 8, <4 x i1> [[TMP0]], <4 x double> poison)
-<<<<<<< HEAD
-||||||| 864902e9b4d8
-; CHECK-NEXT:    [[TMP5:%.*]] = xor <4 x i1> [[TMP0]], <i1 true, i1 true, i1 true, i1 true>
-=======
-; CHECK-NEXT:    [[TMP5:%.*]] = xor <4 x i1> [[TMP0]], splat (i1 true)
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP5]], <4 x double> zeroinitializer, <4 x double> [[WIDE_MASKED_LOAD]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = extractelement <4 x double> [[PREDPHI]], i32 3
 ; CHECK-NEXT:    store double [[TMP6]], ptr [[P1]], align 8

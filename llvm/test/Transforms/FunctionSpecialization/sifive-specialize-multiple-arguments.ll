@@ -35,21 +35,21 @@ define i64 @main(i64 %x, i64 %y, i1 %flag) {
 ; ONE-NEXT:  entry:
 ; ONE-NEXT:    br i1 [[FLAG:%.*]], label [[PLUS:%.*]], label [[MINUS:%.*]]
 ; ONE:       plus:
-; ONE-NEXT:    [[TMP0:%.*]] = call i64 @compute(i64 [[X:%.*]], i64 [[Y:%.*]], ptr @power, ptr @mul)
+; ONE-NEXT:    [[TMP0:%.*]] = call i64 @compute.specialized.3(i64 [[X:%.*]], i64 [[Y:%.*]], ptr @power, ptr @mul)
 ; ONE-NEXT:    br label [[MERGE:%.*]]
 ; ONE:       minus:
 ; ONE-NEXT:    [[TMP1:%.*]] = call i64 @compute.specialized.1(i64 [[X]], i64 [[Y]], ptr @plus, ptr @minus)
 ; ONE-NEXT:    br label [[MERGE]]
 ; ONE:       merge:
 ; ONE-NEXT:    [[TMP2:%.*]] = phi i64 [ [[TMP0]], [[PLUS]] ], [ [[TMP1]], [[MINUS]] ]
-; ONE-NEXT:    [[TMP3:%.*]] = call i64 @compute(i64 [[TMP2]], i64 42, ptr @minus, ptr @power)
+; ONE-NEXT:    [[TMP3:%.*]] = call i64 @compute.specialized.2(i64 [[TMP2]], i64 42, ptr @minus, ptr @power)
 ; ONE-NEXT:    ret i64 [[TMP3]]
 ;
 ; TWO-LABEL: @main(
 ; TWO-NEXT:  entry:
 ; TWO-NEXT:    br i1 [[FLAG:%.*]], label [[PLUS:%.*]], label [[MINUS:%.*]]
 ; TWO:       plus:
-; TWO-NEXT:    [[TMP0:%.*]] = call i64 @compute(i64 [[X:%.*]], i64 [[Y:%.*]], ptr @power, ptr @mul)
+; TWO-NEXT:    [[TMP0:%.*]] = call i64 @compute.specialized.3(i64 [[X:%.*]], i64 [[Y:%.*]], ptr @power, ptr @mul)
 ; TWO-NEXT:    br label [[MERGE:%.*]]
 ; TWO:       minus:
 ; TWO-NEXT:    [[TMP1:%.*]] = call i64 @compute.specialized.2(i64 [[X]], i64 [[Y]], ptr @plus, ptr @minus)

@@ -19,7 +19,7 @@ define <vscale x 8 x i32> @redundant_vp_merge(<vscale x 8 x i1> %m, <vscale x 8 
 define <vscale x 8 x i32> @redundant_vp_merge_convert_to_select(<vscale x 8 x i1> %m, <vscale x 8 x i32> %t, <vscale x 8 x i32> %f, i32 %evl) {
 ; CHECK-LABEL: define <vscale x 8 x i32> @redundant_vp_merge_convert_to_select(
 ; CHECK-SAME: <vscale x 8 x i1> [[M:%.*]], <vscale x 8 x i32> [[T:%.*]], <vscale x 8 x i32> [[F:%.*]], i32 [[EVL:%.*]]) {
-; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 8 x i1> @llvm.vp.xor.nxv8i1(<vscale x 8 x i1> [[M]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[EVL]])
+; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 8 x i1> @llvm.vp.xor.nxv8i1(<vscale x 8 x i1> [[M]], <vscale x 8 x i1> splat (i1 true), <vscale x 8 x i1> splat (i1 true), i32 [[EVL]])
 ; CHECK-NEXT:    [[B:%.*]] = call <vscale x 8 x i32> @llvm.vp.merge.nxv8i32(<vscale x 8 x i1> [[TMP1]], <vscale x 8 x i32> [[T]], <vscale x 8 x i32> [[F]], i32 [[EVL]])
 ; CHECK-NEXT:    ret <vscale x 8 x i32> [[B]]
 ;
@@ -31,7 +31,7 @@ define <vscale x 8 x i32> @redundant_vp_merge_convert_to_select(<vscale x 8 x i1
 define <vscale x 8 x i32> @redundant_vp_merge_convert_to_select2(<vscale x 8 x i1> %m, <vscale x 8 x i32> %t, <vscale x 8 x i32> %f, i32 %evl) {
 ; CHECK-LABEL: define <vscale x 8 x i32> @redundant_vp_merge_convert_to_select2(
 ; CHECK-SAME: <vscale x 8 x i1> [[M:%.*]], <vscale x 8 x i32> [[T:%.*]], <vscale x 8 x i32> [[F:%.*]], i32 [[EVL:%.*]]) {
-; CHECK-NEXT:    [[A:%.*]] = call <vscale x 8 x i32> @llvm.vp.select.nxv8i32(<vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i32> [[T]], <vscale x 8 x i32> [[F]], i32 [[EVL]])
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 8 x i32> @llvm.vp.select.nxv8i32(<vscale x 8 x i1> splat (i1 true), <vscale x 8 x i32> [[T]], <vscale x 8 x i32> [[F]], i32 [[EVL]])
 ; CHECK-NEXT:    [[B:%.*]] = call <vscale x 8 x i32> @llvm.vp.select.nxv8i32(<vscale x 8 x i1> [[M]], <vscale x 8 x i32> [[A]], <vscale x 8 x i32> [[T]], i32 [[EVL]])
 ; CHECK-NEXT:    ret <vscale x 8 x i32> [[B]]
 ;
@@ -43,7 +43,7 @@ define <vscale x 8 x i32> @redundant_vp_merge_convert_to_select2(<vscale x 8 x i
 define <vscale x 8 x i32> @redundant_vp_merge_convert_to_select3(<vscale x 8 x i1> %m, <vscale x 8 x i32> %t, <vscale x 8 x i32> %f, i32 %evl) {
 ; CHECK-LABEL: define <vscale x 8 x i32> @redundant_vp_merge_convert_to_select3(
 ; CHECK-SAME: <vscale x 8 x i1> [[M:%.*]], <vscale x 8 x i32> [[T:%.*]], <vscale x 8 x i32> [[F:%.*]], i32 [[EVL:%.*]]) {
-; CHECK-NEXT:    [[A:%.*]] = call <vscale x 8 x i32> @llvm.vp.select.nxv8i32(<vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i32> [[T]], <vscale x 8 x i32> [[F]], i32 [[EVL]])
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 8 x i32> @llvm.vp.select.nxv8i32(<vscale x 8 x i1> splat (i1 true), <vscale x 8 x i32> [[T]], <vscale x 8 x i32> [[F]], i32 [[EVL]])
 ; CHECK-NEXT:    [[B:%.*]] = call <vscale x 8 x i32> @llvm.vp.select.nxv8i32(<vscale x 8 x i1> [[M]], <vscale x 8 x i32> [[T]], <vscale x 8 x i32> [[A]], i32 [[EVL]])
 ; CHECK-NEXT:    ret <vscale x 8 x i32> [[B]]
 ;

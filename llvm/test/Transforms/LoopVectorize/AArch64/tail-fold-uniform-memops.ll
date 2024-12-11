@@ -23,7 +23,6 @@ define void @uniform_load(ptr noalias %dst, ptr noalias readonly %src, i64 %n) #
 ; CHECK-NEXT:    [[ACTIVE_LANE_MASK_ENTRY:%.*]] = call <4 x i1> @llvm.get.active.lane.mask.v4i1.i64(i64 0, i64 [[N]])
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
-<<<<<<< HEAD
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = phi <4 x i1> [ [[ACTIVE_LANE_MASK_ENTRY]], [[VECTOR_PH]] ], [ [[ACTIVE_LANE_MASK_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP3:%.*]] = add i64 [[INDEX]], 0
@@ -35,7 +34,7 @@ define void @uniform_load(ptr noalias %dst, ptr noalias readonly %src, i64 %n) #
 ; CHECK-NEXT:    call void @llvm.masked.store.v4i32.p0(<4 x i32> [[BROADCAST_SPLAT]], ptr [[TMP6]], i32 4, <4 x i1> [[ACTIVE_LANE_MASK]])
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], 4
 ; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT]] = call <4 x i1> @llvm.get.active.lane.mask.v4i1.i64(i64 [[INDEX]], i64 [[TMP2]])
-; CHECK-NEXT:    [[TMP7:%.*]] = xor <4 x i1> [[ACTIVE_LANE_MASK_NEXT]], <i1 true, i1 true, i1 true, i1 true>
+; CHECK-NEXT:    [[TMP7:%.*]] = xor <4 x i1> [[ACTIVE_LANE_MASK_NEXT]], splat (i1 true)
 ; CHECK-NEXT:    [[TMP8:%.*]] = extractelement <4 x i1> [[TMP7]], i32 0
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
@@ -54,39 +53,6 @@ define void @uniform_load(ptr noalias %dst, ptr noalias readonly %src, i64 %n) #
 ; CHECK:       for.end:
 ; CHECK-NEXT:    ret void
 ;
-||||||| 864902e9b4d8
-; CHECK-NEXT:    [[IDX:%.*]] = phi i64 [ 0, %vector.ph ], [ [[IDX_NEXT:%.*]], %vector.body ]
-; CHECK-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = phi <4 x i1> [ [[INIT_ACTIVE_LANE_MASK]], %vector.ph ], [ [[NEXT_ACTIVE_LANE_MASK:%.*]], %vector.body ]
-; CHECK-NEXT:    [[TMP3:%.*]] = add i64 [[IDX]], 0
-; CHECK-NEXT:    [[LOAD_VAL:%.*]] = load i32, ptr %src, align 4
-; CHECK-NOT:     load i32, ptr %src, align 4
-; CHECK-NEXT:    [[TMP4:%.*]] = insertelement <4 x i32> poison, i32 [[LOAD_VAL]], i64 0
-; CHECK-NEXT:    [[TMP5:%.*]] = shufflevector <4 x i32> [[TMP4]], <4 x i32> poison, <4 x i32> zeroinitializer
-; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr %dst, i64 [[TMP3]]
-; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i32, ptr [[TMP6]], i32 0
-; CHECK-NEXT:    call void @llvm.masked.store.v4i32.p0(<4 x i32> [[TMP5]], ptr [[TMP7]], i32 4, <4 x i1> [[ACTIVE_LANE_MASK]])
-; CHECK-NEXT:    [[IDX_NEXT]] = add i64 [[IDX]], 4
-; CHECK-NEXT:    [[NEXT_ACTIVE_LANE_MASK]] = call <4 x i1> @llvm.get.active.lane.mask.v4i1.i64(i64 [[IDX]], i64 [[N2]])
-; CHECK-NEXT:    [[NOT_ACTIVE_LANE_MASK:%.*]] = xor <4 x i1> [[NEXT_ACTIVE_LANE_MASK]], <i1 true, i1 true, i1 true, i1 true>
-; CHECK-NEXT:    [[FIRST_LANE_SET:%.*]] = extractelement <4 x i1> [[NOT_ACTIVE_LANE_MASK]], i32 0
-; CHECK-NEXT:    br i1 [[FIRST_LANE_SET]], label %middle.block, label %vector.body
-=======
-; CHECK-NEXT:    [[IDX:%.*]] = phi i64 [ 0, %vector.ph ], [ [[IDX_NEXT:%.*]], %vector.body ]
-; CHECK-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = phi <4 x i1> [ [[INIT_ACTIVE_LANE_MASK]], %vector.ph ], [ [[NEXT_ACTIVE_LANE_MASK:%.*]], %vector.body ]
-; CHECK-NEXT:    [[TMP3:%.*]] = add i64 [[IDX]], 0
-; CHECK-NEXT:    [[LOAD_VAL:%.*]] = load i32, ptr %src, align 4
-; CHECK-NOT:     load i32, ptr %src, align 4
-; CHECK-NEXT:    [[TMP4:%.*]] = insertelement <4 x i32> poison, i32 [[LOAD_VAL]], i64 0
-; CHECK-NEXT:    [[TMP5:%.*]] = shufflevector <4 x i32> [[TMP4]], <4 x i32> poison, <4 x i32> zeroinitializer
-; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr %dst, i64 [[TMP3]]
-; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i32, ptr [[TMP6]], i32 0
-; CHECK-NEXT:    call void @llvm.masked.store.v4i32.p0(<4 x i32> [[TMP5]], ptr [[TMP7]], i32 4, <4 x i1> [[ACTIVE_LANE_MASK]])
-; CHECK-NEXT:    [[IDX_NEXT]] = add i64 [[IDX]], 4
-; CHECK-NEXT:    [[NEXT_ACTIVE_LANE_MASK]] = call <4 x i1> @llvm.get.active.lane.mask.v4i1.i64(i64 [[IDX]], i64 [[N2]])
-; CHECK-NEXT:    [[NOT_ACTIVE_LANE_MASK:%.*]] = xor <4 x i1> [[NEXT_ACTIVE_LANE_MASK]], splat (i1 true)
-; CHECK-NEXT:    [[FIRST_LANE_SET:%.*]] = extractelement <4 x i1> [[NOT_ACTIVE_LANE_MASK]], i32 0
-; CHECK-NEXT:    br i1 [[FIRST_LANE_SET]], label %middle.block, label %vector.body
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 
 entry:
   br label %for.body
@@ -138,7 +104,6 @@ define void @cond_uniform_load(ptr nocapture %dst, ptr nocapture readonly %src, 
 ; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <4 x ptr> [[BROADCAST_SPLATINSERT]], <4 x ptr> poison, <4 x i32> zeroinitializer
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
-<<<<<<< HEAD
 ; CHECK-NEXT:    [[INDEX6:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT7:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = phi <4 x i1> [ [[ACTIVE_LANE_MASK_ENTRY]], [[VECTOR_PH]] ], [ [[ACTIVE_LANE_MASK_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP4:%.*]] = add i64 [[INDEX6]], 0
@@ -146,7 +111,7 @@ define void @cond_uniform_load(ptr nocapture %dst, ptr nocapture readonly %src, 
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[TMP5]], i32 0
 ; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x i32> @llvm.masked.load.v4i32.p0(ptr [[TMP6]], i32 4, <4 x i1> [[ACTIVE_LANE_MASK]], <4 x i32> poison), !alias.scope [[META4:![0-9]+]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq <4 x i32> [[WIDE_MASKED_LOAD]], zeroinitializer
-; CHECK-NEXT:    [[TMP8:%.*]] = xor <4 x i1> [[TMP7]], <i1 true, i1 true, i1 true, i1 true>
+; CHECK-NEXT:    [[TMP8:%.*]] = xor <4 x i1> [[TMP7]], splat (i1 true)
 ; CHECK-NEXT:    [[TMP9:%.*]] = select <4 x i1> [[ACTIVE_LANE_MASK]], <4 x i1> [[TMP8]], <4 x i1> zeroinitializer
 ; CHECK-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <4 x i32> @llvm.masked.gather.v4i32.v4p0(<4 x ptr> [[BROADCAST_SPLAT]], i32 4, <4 x i1> [[TMP9]], <4 x i32> poison), !alias.scope [[META7:![0-9]+]]
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP9]], <4 x i32> [[WIDE_MASKED_GATHER]], <4 x i32> zeroinitializer
@@ -155,7 +120,7 @@ define void @cond_uniform_load(ptr nocapture %dst, ptr nocapture readonly %src, 
 ; CHECK-NEXT:    call void @llvm.masked.store.v4i32.p0(<4 x i32> [[PREDPHI]], ptr [[TMP11]], i32 4, <4 x i1> [[ACTIVE_LANE_MASK]]), !alias.scope [[META9:![0-9]+]], !noalias [[META11:![0-9]+]]
 ; CHECK-NEXT:    [[INDEX_NEXT7]] = add i64 [[INDEX6]], 4
 ; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT]] = call <4 x i1> @llvm.get.active.lane.mask.v4i1.i64(i64 [[INDEX6]], i64 [[TMP3]])
-; CHECK-NEXT:    [[TMP12:%.*]] = xor <4 x i1> [[ACTIVE_LANE_MASK_NEXT]], <i1 true, i1 true, i1 true, i1 true>
+; CHECK-NEXT:    [[TMP12:%.*]] = xor <4 x i1> [[ACTIVE_LANE_MASK_NEXT]], splat (i1 true)
 ; CHECK-NEXT:    [[TMP13:%.*]] = extractelement <4 x i1> [[TMP12]], i32 0
 ; CHECK-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
 ; CHECK:       middle.block:
@@ -182,25 +147,6 @@ define void @cond_uniform_load(ptr nocapture %dst, ptr nocapture readonly %src, 
 ; CHECK:       for.end:
 ; CHECK-NEXT:    ret void
 ;
-||||||| 864902e9b4d8
-; CHECK-NEXT:    [[IDX:%.*]] = phi i64 [ 0, %vector.ph ], [ [[IDX_NEXT:%.*]], %vector.body ]
-; CHECK-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = phi <4 x i1> [ [[INIT_ACTIVE_LANE_MASK]], %vector.ph ], [ [[NEXT_ACTIVE_LANE_MASK:%.*]], %vector.body ]
-; CHECK-NEXT:    [[TMP3:%.*]] = add i64 [[IDX]], 0
-; CHECK:         [[COND_LOAD:%.*]] = call <4 x i32> @llvm.masked.load.v4i32.p0(ptr {{%.*}}, i32 4, <4 x i1> [[ACTIVE_LANE_MASK]], <4 x i32> poison)
-; CHECK-NEXT:    [[TMP4:%.*]] = icmp eq <4 x i32> [[COND_LOAD]], zeroinitializer
-; CHECK-NEXT:    [[TMP5:%.*]] = xor <4 x i1> [[TMP4]], <i1 true, i1 true, i1 true, i1 true>
-; CHECK-NEXT:    [[MASK:%.*]] = select <4 x i1> [[ACTIVE_LANE_MASK]], <4 x i1> [[TMP5]], <4 x i1> zeroinitializer
-; CHECK-NEXT:    call <4 x i32> @llvm.masked.gather.v4i32.v4p0(<4 x ptr> [[SRC_SPLAT]], i32 4, <4 x i1> [[MASK]], <4 x i32> poison)
-=======
-; CHECK-NEXT:    [[IDX:%.*]] = phi i64 [ 0, %vector.ph ], [ [[IDX_NEXT:%.*]], %vector.body ]
-; CHECK-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = phi <4 x i1> [ [[INIT_ACTIVE_LANE_MASK]], %vector.ph ], [ [[NEXT_ACTIVE_LANE_MASK:%.*]], %vector.body ]
-; CHECK-NEXT:    [[TMP3:%.*]] = add i64 [[IDX]], 0
-; CHECK:         [[COND_LOAD:%.*]] = call <4 x i32> @llvm.masked.load.v4i32.p0(ptr {{%.*}}, i32 4, <4 x i1> [[ACTIVE_LANE_MASK]], <4 x i32> poison)
-; CHECK-NEXT:    [[TMP4:%.*]] = icmp eq <4 x i32> [[COND_LOAD]], zeroinitializer
-; CHECK-NEXT:    [[TMP5:%.*]] = xor <4 x i1> [[TMP4]], splat (i1 true)
-; CHECK-NEXT:    [[MASK:%.*]] = select <4 x i1> [[ACTIVE_LANE_MASK]], <4 x i1> [[TMP5]], <4 x i1> zeroinitializer
-; CHECK-NEXT:    call <4 x i32> @llvm.masked.gather.v4i32.v4p0(<4 x ptr> [[SRC_SPLAT]], i32 4, <4 x i1> [[MASK]], <4 x i32> poison)
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 entry:
   br label %for.body
 

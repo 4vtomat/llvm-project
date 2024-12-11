@@ -34,7 +34,7 @@
  ; IF-EVL-NEXT:     vp<[[PTR3:%.+]]> = vector-pointer ir<[[GEP3]]>
  ; IF-EVL-NEXT:     WIDEN vp.store vp<[[PTR3]]>, ir<[[ADD]]>, vp<[[EVL]]>
  ; IF-EVL-NEXT:     SCALAR-CAST vp<[[CAST:%[0-9]+]]> = zext vp<[[EVL]]> to i64
- ; IF-EVL-NEXT:     EMIT vp<[[IV_NEX]]> = add vp<[[CAST]]>, vp<[[EVL_PHI]]>
+ ; IF-EVL-NEXT:     EMIT vp<[[IV_NEX]]> = add nuw vp<[[CAST]]>, vp<[[EVL_PHI]]>
  ; IF-EVL-NEXT:     EMIT branch-on-count vp<[[IV_NEX]]>,  vp<[[VTC]]>
  ; IF-EVL-NEXT:   No successors
  ; IF-EVL-NEXT: }

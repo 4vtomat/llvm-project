@@ -42,12 +42,10 @@ define i64 @findlastiv(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-NEXT: Successor(s): ir-bb<exit>, scalar.ph
 ; CHECK-EMPTY:
 ; CHECK-NEXT: ir-bb<exit>:
-; CHECK-NEXT: IR   %cond.lcssa = phi i64 [ %cond, %for.body ] (extra operand: vp<[[EXT]]>)
+; CHECK-NEXT: IR   %cond.lcssa = phi i64 [ %cond, %for.body ] (extra operand: vp<[[EXT]]> from middle.block)
 ; CHECK-NEXT: No successors
 ; CHECK-EMPTY:
 ; CHECK-NEXT: scalar.ph:
-; CHECK-NEXT: No successors
-; CHECK-NEXT: }
 ;
 entry:
   br label %for.body
@@ -113,12 +111,10 @@ define i64 @findlastiv_need_mask(ptr %a, ptr %b, i64 %ii, i64 %iv_start, i64 %n)
 ; CHECK-NEXT: Successor(s): ir-bb<exit.loopexit>, scalar.ph
 ; CHECK-EMPTY:
 ; CHECK-NEXT: ir-bb<exit.loopexit>:
-; CHECK-NEXT:   IR   %cond.lcssa1 = phi i64 [ %cond, %for.body ] (extra operand: vp<[[EXT]]>)
+; CHECK-NEXT:   IR   %cond.lcssa1 = phi i64 [ %cond, %for.body ] (extra operand: vp<[[EXT]]>  from middle.block)
 ; CHECK-NEXT: No successors
 ; CHECK-EMPTY:
 ; CHECK-NEXT: scalar.ph:
-; CHECK-NEXT: No successors
-; CHECK-NEXT: }
 ;
 entry:
   %guard = icmp slt i64 %iv_start, %n
@@ -187,12 +183,10 @@ define i64 @findlastiv_need_mask_with_intermediate_store(ptr %a, ptr %b, i64 %ii
 ; CHECK-NEXT: Successor(s): ir-bb<exit.loopexit>, scalar.ph
 ; CHECK-EMPTY:
 ; CHECK-NEXT: ir-bb<exit.loopexit>:
-; CHECK-NEXT:   IR   %cond.lcssa1 = phi i64 [ %cond, %for.body ] (extra operand: vp<[[EXT]]>)
+; CHECK-NEXT:   IR   %cond.lcssa1 = phi i64 [ %cond, %for.body ] (extra operand: vp<[[EXT]]> from middle.block)
 ; CHECK-NEXT: No successors
 ; CHECK-EMPTY:
 ; CHECK-NEXT: scalar.ph:
-; CHECK-NEXT: No successors
-; CHECK-NEXT: }
 ;
 entry:
   %guard = icmp slt i64 %iv_start, %n

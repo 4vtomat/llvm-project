@@ -26,26 +26,16 @@ define i64 @pr97452_scalable_vf1_for(ptr %src) #0 {
 ; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i64, ptr [[SRC]], i64 [[TMP0]]
 ; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i64, ptr [[TMP2]], i32 0
-; CHECK-NEXT:    [[VP_OP_LOAD]] = call <vscale x 1 x i64> @llvm.vp.load.nxv1i64.p0(ptr align 8 [[TMP12]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP3]])
-; CHECK-NEXT:    [[TMP7:%.*]] = call <vscale x 1 x i64> @llvm.experimental.vp.splice.nxv1i64(<vscale x 1 x i64> [[VECTOR_RECUR]], <vscale x 1 x i64> [[VP_OP_LOAD]], i32 -1, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[EVL_BASED_IV1]], i32 [[TMP3]])
+; CHECK-NEXT:    [[VP_OP_LOAD]] = call <vscale x 1 x i64> @llvm.vp.load.nxv1i64.p0(ptr align 8 [[TMP12]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP3]])
+; CHECK-NEXT:    [[TMP7:%.*]] = call <vscale x 1 x i64> @llvm.experimental.vp.splice.nxv1i64(<vscale x 1 x i64> [[VECTOR_RECUR]], <vscale x 1 x i64> [[VP_OP_LOAD]], i32 -1, <vscale x 1 x i1> splat (i1 true), i32 [[EVL_BASED_IV1]], i32 [[TMP3]])
 ; CHECK-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP3]] to i64
-; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP8]], [[INDEX]]
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP8]], [[INDEX]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 23
 ; CHECK-NEXT:    br i1 [[TMP9]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
-<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP10:%.*]] = sub i32 [[TMP3]], 1
 ; CHECK-NEXT:    [[TMP11:%.*]] = extractelement <vscale x 1 x i64> [[TMP7]], i32 [[TMP10]]
 ; CHECK-NEXT:    br label %[[EXIT:.*]]
-||||||| 864902e9b4d8
-; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <4 x i64> [[WIDE_LOAD1]], i32 3
-; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT_FOR_PHI:%.*]] = extractelement <4 x i64> [[WIDE_LOAD1]], i32 2
-; CHECK-NEXT:    br i1 false, label %[[EXIT:.*]], label %[[SCALAR_PH]]
-=======
-; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT_FOR_PHI:%.*]] = extractelement <4 x i64> [[WIDE_LOAD1]], i32 2
-; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <4 x i64> [[WIDE_LOAD1]], i32 3
-; CHECK-NEXT:    br i1 false, label %[[EXIT:.*]], label %[[SCALAR_PH]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK:       [[SCALAR_PH]]:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
 ; CHECK-NEXT:    br label %[[LOOP:.*]]

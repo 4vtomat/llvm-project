@@ -272,8 +272,8 @@ define void @test_exit_branch_cost(ptr %dst, i64 %x, i32 %y, ptr %dst.1, i1 %c.4
 ; CHECK-NEXT:    [[TMP19:%.*]] = select <2 x i1> [[TMP5]], <2 x i1> [[BROADCAST_SPLAT41]], <2 x i1> zeroinitializer
 ; CHECK-NEXT:    [[TMP20:%.*]] = select <2 x i1> [[TMP18]], <2 x i1> [[BROADCAST_SPLAT57]], <2 x i1> zeroinitializer
 ; CHECK-NEXT:    [[TMP21:%.*]] = select <2 x i1> [[TMP19]], <2 x i1> [[BROADCAST_SPLAT57]], <2 x i1> zeroinitializer
-; CHECK-NEXT:    [[TMP32:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT57]], <i1 true, i1 true>
-; CHECK-NEXT:    [[TMP33:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT57]], <i1 true, i1 true>
+; CHECK-NEXT:    [[TMP32:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT57]], splat (i1 true)
+; CHECK-NEXT:    [[TMP33:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT57]], splat (i1 true)
 ; CHECK-NEXT:    [[TMP34:%.*]] = select <2 x i1> [[TMP18]], <2 x i1> [[TMP32]], <2 x i1> zeroinitializer
 ; CHECK-NEXT:    [[TMP35:%.*]] = select <2 x i1> [[TMP19]], <2 x i1> [[TMP33]], <2 x i1> zeroinitializer
 ; CHECK-NEXT:    [[TMP22:%.*]] = or <2 x i1> [[TMP47]], [[TMP20]]
@@ -308,18 +308,6 @@ define void @test_exit_branch_cost(ptr %dst, i64 %x, i32 %y, ptr %dst.1, i1 %c.4
 ; CHECK-NEXT:    store i64 [[TMP31]], ptr [[DST_2]], align 8, !alias.scope [[META17]], !noalias [[META18]]
 ; CHECK-NEXT:    br label %[[PRED_STORE_CONTINUE66]]
 ; CHECK:       [[PRED_STORE_CONTINUE66]]:
-<<<<<<< HEAD
-||||||| 864902e9b4d8
-; CHECK-NEXT:    [[TMP32:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT57]], <i1 true, i1 true>
-; CHECK-NEXT:    [[TMP33:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT57]], <i1 true, i1 true>
-; CHECK-NEXT:    [[TMP34:%.*]] = select <2 x i1> [[TMP18]], <2 x i1> [[TMP32]], <2 x i1> zeroinitializer
-; CHECK-NEXT:    [[TMP35:%.*]] = select <2 x i1> [[TMP19]], <2 x i1> [[TMP33]], <2 x i1> zeroinitializer
-=======
-; CHECK-NEXT:    [[TMP32:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT57]], splat (i1 true)
-; CHECK-NEXT:    [[TMP33:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT57]], splat (i1 true)
-; CHECK-NEXT:    [[TMP34:%.*]] = select <2 x i1> [[TMP18]], <2 x i1> [[TMP32]], <2 x i1> zeroinitializer
-; CHECK-NEXT:    [[TMP35:%.*]] = select <2 x i1> [[TMP19]], <2 x i1> [[TMP33]], <2 x i1> zeroinitializer
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    [[TMP36:%.*]] = or <2 x i1> [[TMP22]], [[TMP34]]
 ; CHECK-NEXT:    [[TMP37:%.*]] = or <2 x i1> [[TMP23]], [[TMP35]]
 ; CHECK-NEXT:    [[TMP38:%.*]] = extractelement <2 x i1> [[TMP36]], i32 0

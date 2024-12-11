@@ -1970,7 +1970,7 @@ define i32 @scalarize_induction_variable_05(ptr %a, i32 %x, i1 %c, i32 %n) {
 ; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i32 [[TMP0]]
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[TMP1]], i32 0
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <2 x i32>, ptr [[TMP2]], align 4
-; CHECK-NEXT:    [[TMP14:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT]], <i1 true, i1 true>
+; CHECK-NEXT:    [[TMP14:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT]], splat (i1 true)
 ; CHECK-NEXT:    [[TMP3:%.*]] = extractelement <2 x i1> [[BROADCAST_SPLAT]], i32 0
 ; CHECK-NEXT:    br i1 [[TMP3]], label [[PRED_UDIV_IF:%.*]], label [[PRED_UDIV_CONTINUE:%.*]]
 ; CHECK:       pred.udiv.if:
@@ -1990,12 +1990,6 @@ define i32 @scalarize_induction_variable_05(ptr %a, i32 %x, i1 %c, i32 %n) {
 ; CHECK-NEXT:    br label [[PRED_UDIV_CONTINUE2]]
 ; CHECK:       pred.udiv.continue2:
 ; CHECK-NEXT:    [[TMP13:%.*]] = phi <2 x i32> [ [[TMP7]], [[PRED_UDIV_CONTINUE]] ], [ [[TMP12]], [[PRED_UDIV_IF1]] ]
-<<<<<<< HEAD
-||||||| 864902e9b4d8
-; CHECK-NEXT:    [[TMP14:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT]], <i1 true, i1 true>
-=======
-; CHECK-NEXT:    [[TMP14:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT]], splat (i1 true)
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <2 x i1> [[TMP14]], <2 x i32> [[WIDE_LOAD]], <2 x i32> [[TMP13]]
 ; CHECK-NEXT:    [[TMP15]] = add <2 x i32> [[PREDPHI]], [[VEC_PHI]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i32 [[INDEX]], 2
@@ -2206,8 +2200,8 @@ define i32 @scalarize_induction_variable_05(ptr %a, i32 %x, i1 %c, i32 %n) {
 ; UNROLL-NO-IC-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[TMP1]], i32 2
 ; UNROLL-NO-IC-NEXT:    [[WIDE_LOAD:%.*]] = load <2 x i32>, ptr [[TMP2]], align 4
 ; UNROLL-NO-IC-NEXT:    [[WIDE_LOAD2:%.*]] = load <2 x i32>, ptr [[TMP3]], align 4
-; UNROLL-NO-IC-NEXT:    [[TMP27:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT]], <i1 true, i1 true>
-; UNROLL-NO-IC-NEXT:    [[TMP28:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT]], <i1 true, i1 true>
+; UNROLL-NO-IC-NEXT:    [[TMP27:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT]], splat (i1 true)
+; UNROLL-NO-IC-NEXT:    [[TMP28:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT]], splat (i1 true)
 ; UNROLL-NO-IC-NEXT:    [[TMP4:%.*]] = extractelement <2 x i1> [[BROADCAST_SPLAT]], i32 0
 ; UNROLL-NO-IC-NEXT:    br i1 [[TMP4]], label [[PRED_UDIV_IF:%.*]], label [[PRED_UDIV_CONTINUE:%.*]]
 ; UNROLL-NO-IC:       pred.udiv.if:
@@ -2247,14 +2241,6 @@ define i32 @scalarize_induction_variable_05(ptr %a, i32 %x, i1 %c, i32 %n) {
 ; UNROLL-NO-IC-NEXT:    br label [[PRED_UDIV_CONTINUE8]]
 ; UNROLL-NO-IC:       pred.udiv.continue8:
 ; UNROLL-NO-IC-NEXT:    [[TMP26:%.*]] = phi <2 x i32> [ [[TMP20]], [[PRED_UDIV_CONTINUE6]] ], [ [[TMP25]], [[PRED_UDIV_IF7]] ]
-<<<<<<< HEAD
-||||||| 864902e9b4d8
-; UNROLL-NO-IC-NEXT:    [[TMP27:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT]], <i1 true, i1 true>
-; UNROLL-NO-IC-NEXT:    [[TMP28:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT]], <i1 true, i1 true>
-=======
-; UNROLL-NO-IC-NEXT:    [[TMP27:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT]], splat (i1 true)
-; UNROLL-NO-IC-NEXT:    [[TMP28:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT]], splat (i1 true)
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; UNROLL-NO-IC-NEXT:    [[PREDPHI:%.*]] = select <2 x i1> [[TMP27]], <2 x i32> [[WIDE_LOAD]], <2 x i32> [[TMP14]]
 ; UNROLL-NO-IC-NEXT:    [[PREDPHI9:%.*]] = select <2 x i1> [[TMP28]], <2 x i32> [[WIDE_LOAD2]], <2 x i32> [[TMP26]]
 ; UNROLL-NO-IC-NEXT:    [[TMP29]] = add <2 x i32> [[PREDPHI]], [[VEC_PHI]]

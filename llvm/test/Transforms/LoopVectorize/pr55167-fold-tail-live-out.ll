@@ -22,27 +22,11 @@ define i32 @test(i32 %a, i1 %c.1, i1 %c.2 ) #0 {
 ; CHECK-NEXT:    [[TMP0:%.*]] = add <2 x i32> [[VEC_PHI]], splat (i32 10)
 ; CHECK-NEXT:    [[TMP6:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT4]], splat (i1 true)
 ; CHECK-NEXT:    [[TMP7:%.*]] = select <2 x i1> [[TMP4]], <2 x i1> [[TMP6]], <2 x i1> zeroinitializer
-<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP5:%.*]] = select <2 x i1> [[TMP4]], <2 x i1> [[BROADCAST_SPLAT4]], <2 x i1> zeroinitializer
-; CHECK-NEXT:    [[TMP1:%.*]] = add <2 x i32> [[TMP0]], <i32 20, i32 20>
-||||||| 864902e9b4d8
-; CHECK-NEXT:    [[TMP1:%.*]] = add <2 x i32> [[TMP0]], <i32 20, i32 20>
-=======
 ; CHECK-NEXT:    [[TMP1:%.*]] = add <2 x i32> [[TMP0]], splat (i32 20)
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <2 x i32> [[TMP1]], [[TMP2]]
-<<<<<<< HEAD
-; CHECK-NEXT:    [[PREDPHI:%.*]] = select <2 x i1> [[TMP5]], <2 x i32> <i32 9, i32 9>, <2 x i32> [[VEC_IND]]
-; CHECK-NEXT:    [[PREDPHI5:%.*]] = select <2 x i1> [[TMP7]], <2 x i32> <i32 9, i32 9>, <2 x i32> [[PREDPHI]]
-||||||| 864902e9b4d8
-; CHECK-NEXT:    [[TMP5:%.*]] = select <2 x i1> [[TMP4]], <2 x i1> [[BROADCAST_SPLAT4]], <2 x i1> zeroinitializer
-; CHECK-NEXT:    [[PREDPHI:%.*]] = select <2 x i1> [[TMP5]], <2 x i32> <i32 9, i32 9>, <2 x i32> [[VEC_IND]]
-; CHECK-NEXT:    [[PREDPHI5:%.*]] = select <2 x i1> [[TMP7]], <2 x i32> <i32 9, i32 9>, <2 x i32> [[PREDPHI]]
-=======
-; CHECK-NEXT:    [[TMP5:%.*]] = select <2 x i1> [[TMP4]], <2 x i1> [[BROADCAST_SPLAT4]], <2 x i1> zeroinitializer
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <2 x i1> [[TMP5]], <2 x i32> splat (i32 9), <2 x i32> [[VEC_IND]]
 ; CHECK-NEXT:    [[PREDPHI5:%.*]] = select <2 x i1> [[TMP7]], <2 x i32> splat (i32 9), <2 x i32> [[PREDPHI]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    [[PREDPHI6:%.*]] = select <2 x i1> [[TMP5]], <2 x i32> [[TMP0]], <2 x i32> [[VEC_PHI]]
 ; CHECK-NEXT:    [[PREDPHI7]] = select <2 x i1> [[TMP7]], <2 x i32> [[TMP3]], <2 x i32> [[PREDPHI6]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i32 [[INDEX]], 2

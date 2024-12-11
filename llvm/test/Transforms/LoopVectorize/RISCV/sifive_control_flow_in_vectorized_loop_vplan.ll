@@ -49,7 +49,7 @@
 ; VPLAN-EMPTY:
 ; VPLAN-NEXT:    vector.body.split:
 ; VPLAN-NEXT:      SCALAR-CAST vp<%8> = zext vp<%4> to i64
-; VPLAN-NEXT:      EMIT vp<%index.evl.next> = add vp<%8>, vp<%3>
+; VPLAN-NEXT:      EMIT vp<%index.evl.next> = add nuw vp<%8>, vp<%3>
 ; VPLAN-NEXT:      EMIT branch-on-count vp<%index.evl.next>, vp<%0>
 ; VPLAN-NEXT:    No successors
 ; VPLAN-NEXT:  }
@@ -63,8 +63,6 @@
 ; VPLAN-NEXT:  No successors
 ; VPLAN-EMPTY:
 ; VPLAN-NEXT:  scalar.ph:
-; VPLAN-NEXT:  No successors
-; VPLAN-NEXT:  }
 
 define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr %reg.24.val) {
 entry:

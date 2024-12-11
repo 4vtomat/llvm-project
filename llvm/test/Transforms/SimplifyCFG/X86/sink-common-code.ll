@@ -474,22 +474,12 @@ declare i32 @bar(i32)
 define i32 @test14(i1 zeroext %flag, i32 %w, i32 %x, i32 %y, ptr %s) {
 ; CHECK-LABEL: @test14(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    br i1 [[FLAG:%.*]], label [[IF_THEN:%.*]], label [[IF_ELSE:%.*]]
-; CHECK:       if.then:
-; CHECK-NEXT:    [[DUMMY:%.*]] = add i32 [[X:%.*]], 1
-; CHECK-NEXT:    [[GEPA:%.*]] = getelementptr inbounds [[STRUCT_ANON:%.*]], ptr [[S:%.*]], i32 0, i32 1
-; CHECK-NEXT:    [[SV1:%.*]] = load i32, ptr [[GEPA]], align 4
-; CHECK-NEXT:    [[CMP1:%.*]] = icmp eq i32 [[SV1]], 56
-; CHECK-NEXT:    br label [[IF_END:%.*]]
-; CHECK:       if.else:
-; CHECK-NEXT:    [[DUMMY2:%.*]] = add i32 [[X]], 4
-; CHECK-NEXT:    [[GEPB:%.*]] = getelementptr inbounds [[STRUCT_ANON]], ptr [[S]], i32 0, i32 1
+; CHECK-NEXT:    [[DOT:%.*]] = select i1 [[FLAG:%.*]], i32 1, i32 4
+; CHECK-NEXT:    [[DOT2:%.*]] = select i1 [[FLAG]], i32 56, i32 57
+; CHECK-NEXT:    [[DUMMY2:%.*]] = add i32 [[X:%.*]], [[DOT]]
+; CHECK-NEXT:    [[GEPB:%.*]] = getelementptr inbounds [[STRUCT_ANON:%.*]], ptr [[S:%.*]], i32 0, i32 1
 ; CHECK-NEXT:    [[SV2:%.*]] = load i32, ptr [[GEPB]], align 4
-; CHECK-NEXT:    [[CMP2:%.*]] = icmp eq i32 [[SV2]], 57
-; CHECK-NEXT:      #dbg_value(i32 0, [[META7:![0-9]+]], !DIExpression(), [[META9:![0-9]+]])
-; CHECK-NEXT:    br label [[IF_END]]
-; CHECK:       if.end:
-; CHECK-NEXT:    [[P:%.*]] = phi i1 [ [[CMP1]], [[IF_THEN]] ], [ [[CMP2]], [[IF_ELSE]] ]
+; CHECK-NEXT:    [[CMP2:%.*]] = icmp eq i32 [[SV2]], [[DOT2]]
 ; CHECK-NEXT:    ret i32 1
 ;
 entry:
@@ -1568,7 +1558,7 @@ end:
 define void @nontemporal(ptr %ptr, i1 %cond) {
 ; CHECK-LABEL: @nontemporal(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    store i64 0, ptr [[PTR:%.*]], align 8, !nontemporal [[META10:![0-9]+]]
+; CHECK-NEXT:    store i64 0, ptr [[PTR:%.*]], align 8, !nontemporal [[META7:![0-9]+]]
 ; CHECK-NEXT:    ret void
 ;
 entry:
@@ -1779,20 +1769,13 @@ define i64 @multi_use_in_block(i1 %cond, ptr %p, i64 %a, i64 %b) {
 ; CHECK-NEXT:    br i1 [[COND:%.*]], label [[IF:%.*]], label [[ELSE:%.*]]
 ; CHECK:       if:
 ; CHECK-NEXT:    call void @dummy()
-; CHECK-NEXT:    [[GEP1_A:%.*]] = getelementptr i8, ptr [[P:%.*]], i64 [[A:%.*]]
-; CHECK-NEXT:    [[V_A:%.*]] = load i64, ptr [[GEP1_A]], align 8
-; CHECK-NEXT:    [[GEP2_A:%.*]] = getelementptr i8, ptr [[GEP1_A]], i64 [[V_A]]
-; CHECK-NEXT:    br label [[JOIN:%.*]]
-; CHECK:       else:
-; CHECK-NEXT:    [[GEP1_B:%.*]] = getelementptr i8, ptr [[P]], i64 [[A]]
+; CHECK-NEXT:    br label [[ELSE]]
+; CHECK:       join:
+; CHECK-NEXT:    [[GEP1_B:%.*]] = getelementptr i8, ptr [[P:%.*]], i64 [[A:%.*]]
 ; CHECK-NEXT:    [[V_B:%.*]] = load i64, ptr [[GEP1_B]], align 8
 ; CHECK-NEXT:    [[GEP2_B:%.*]] = getelementptr i8, ptr [[GEP1_B]], i64 [[V_B]]
-; CHECK-NEXT:    br label [[JOIN]]
-; CHECK:       join:
-; CHECK-NEXT:    [[PHI1:%.*]] = phi i64 [ [[V_A]], [[IF]] ], [ [[V_B]], [[ELSE]] ]
-; CHECK-NEXT:    [[PHI2:%.*]] = phi ptr [ [[GEP2_A]], [[IF]] ], [ [[GEP2_B]], [[ELSE]] ]
-; CHECK-NEXT:    call void @use.ptr(ptr [[PHI2]])
-; CHECK-NEXT:    ret i64 [[PHI1]]
+; CHECK-NEXT:    call void @use.ptr(ptr [[GEP2_B]])
+; CHECK-NEXT:    ret i64 [[V_B]]
 ;
   br i1 %cond, label %if, label %else
 
@@ -1863,15 +1846,11 @@ define i64 @load_with_sunk_gep(i1 %cond, ptr %p, i64 %a, i64 %b) {
 ; CHECK-NEXT:    br i1 [[COND:%.*]], label [[IF:%.*]], label [[ELSE:%.*]]
 ; CHECK:       if:
 ; CHECK-NEXT:    call void @dummy()
-; CHECK-NEXT:    [[GEP_A:%.*]] = getelementptr i8, ptr [[P:%.*]], i64 [[A:%.*]]
-; CHECK-NEXT:    [[V_A:%.*]] = load i64, ptr [[GEP_A]], align 8
-; CHECK-NEXT:    br label [[JOIN:%.*]]
-; CHECK:       else:
-; CHECK-NEXT:    [[GEP_B:%.*]] = getelementptr i8, ptr [[P]], i64 [[B:%.*]]
-; CHECK-NEXT:    [[V_B:%.*]] = load i64, ptr [[GEP_B]], align 8
-; CHECK-NEXT:    br label [[JOIN]]
+; CHECK-NEXT:    br label [[ELSE]]
 ; CHECK:       join:
-; CHECK-NEXT:    [[V:%.*]] = phi i64 [ [[V_A]], [[IF]] ], [ [[V_B]], [[ELSE]] ]
+; CHECK-NEXT:    [[B_SINK:%.*]] = phi i64 [ [[A:%.*]], [[IF]] ], [ [[B:%.*]], [[TMP0:%.*]] ]
+; CHECK-NEXT:    [[GEP_B:%.*]] = getelementptr i8, ptr [[P:%.*]], i64 [[B_SINK]]
+; CHECK-NEXT:    [[V:%.*]] = load i64, ptr [[GEP_B]], align 8
 ; CHECK-NEXT:    ret i64 [[V]]
 ;
   br i1 %cond, label %if, label %else

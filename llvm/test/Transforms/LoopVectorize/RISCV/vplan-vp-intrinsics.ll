@@ -37,7 +37,7 @@ define void @foo(ptr noalias %a, ptr noalias %b, ptr noalias %c, i64 %N) {
 ; IF-EVL-NEXT:    vp<[[PTR3:%[0-9]+]]> = vector-pointer ir<[[GEP3]]>
 ; IF-EVL-NEXT:    WIDEN vp.store vp<[[PTR3]]>, ir<[[ADD]]>, vp<[[EVL]]>
 ; IF-EVL-NEXT:    SCALAR-CAST vp<[[CAST:%[0-9]+]]> = zext vp<[[EVL]]> to i64
-; IF-EVL-NEXT:    EMIT vp<[[IV_NEXT]]> = add vp<[[CAST]]>, vp<[[EVL_PHI]]>
+; IF-EVL-NEXT:    EMIT vp<[[IV_NEXT]]> = add nuw vp<[[CAST]]>, vp<[[EVL_PHI]]>
 ; IF-EVL-NEXT:    EMIT branch-on-count  vp<[[IV_NEXT]]>, vp<[[VTC]]>
 ; IF-EVL-NEXT:  No successors
 ; IF-EVL-NEXT: }
@@ -112,7 +112,7 @@ define void @safe_dep(ptr %p) {
 ; CHECK-EVL-NEXT:    vp<%6> = vector-pointer ir<%a2>
 ; CHECK-EVL-NEXT:    WIDEN vp.store vp<%6>, ir<%v>, vp<%3>     unit-strided
 ; CHECK-EVL-NEXT:    SCALAR-CAST vp<%7> = zext vp<%3> to i64
-; CHECK-EVL-NEXT:    EMIT vp<%index.evl.next> = add vp<%7>, vp<%2>
+; CHECK-EVL-NEXT:    EMIT vp<%index.evl.next> = add nuw vp<%7>, vp<%2>
 ; CHECK-EVL-NEXT:    EMIT branch-on-count vp<%index.evl.next>, vp<%0>
 ; CHECK-EVL-NEXT:  No successors
 ; CHECK-EVL-NEXT: }

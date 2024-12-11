@@ -1342,26 +1342,10 @@ define float @fcmp_fadd_fsub(ptr nocapture readonly %a, i32 %n) nounwind readonl
 ; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP0]]
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds float, ptr [[TMP1]], i32 0
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x float>, ptr [[TMP2]], align 4
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP3:%.*]] = fcmp ogt <4 x float> [[WIDE_LOAD]], <float 1.000000e+00, float 1.000000e+00, float 1.000000e+00, float 1.000000e+00>
-; CHECK-NEXT:    [[TMP4:%.*]] = xor <4 x i1> [[TMP3]], <i1 true, i1 true, i1 true, i1 true>
-; CHECK-NEXT:    [[TMP5:%.*]] = fcmp olt <4 x float> [[WIDE_LOAD]], <float 3.000000e+00, float 3.000000e+00, float 3.000000e+00, float 3.000000e+00>
-; CHECK-NEXT:    [[TMP8:%.*]] = xor <4 x i1> [[TMP5]], <i1 true, i1 true, i1 true, i1 true>
-||||||| 864902e9b4d8
-; CHECK-NEXT:    [[TMP3:%.*]] = fcmp ogt <4 x float> [[WIDE_LOAD]], <float 1.000000e+00, float 1.000000e+00, float 1.000000e+00, float 1.000000e+00>
-; CHECK-NEXT:    [[TMP4:%.*]] = xor <4 x i1> [[TMP3]], <i1 true, i1 true, i1 true, i1 true>
-; CHECK-NEXT:    [[TMP5:%.*]] = fcmp olt <4 x float> [[WIDE_LOAD]], <float 3.000000e+00, float 3.000000e+00, float 3.000000e+00, float 3.000000e+00>
-; CHECK-NEXT:    [[TMP6:%.*]] = fsub fast <4 x float> [[VEC_PHI]], [[WIDE_LOAD]]
-; CHECK-NEXT:    [[TMP7:%.*]] = fadd fast <4 x float> [[WIDE_LOAD]], [[VEC_PHI]]
-; CHECK-NEXT:    [[TMP8:%.*]] = xor <4 x i1> [[TMP5]], <i1 true, i1 true, i1 true, i1 true>
-=======
 ; CHECK-NEXT:    [[TMP3:%.*]] = fcmp ogt <4 x float> [[WIDE_LOAD]], splat (float 1.000000e+00)
 ; CHECK-NEXT:    [[TMP4:%.*]] = xor <4 x i1> [[TMP3]], splat (i1 true)
 ; CHECK-NEXT:    [[TMP5:%.*]] = fcmp olt <4 x float> [[WIDE_LOAD]], splat (float 3.000000e+00)
-; CHECK-NEXT:    [[TMP6:%.*]] = fsub fast <4 x float> [[VEC_PHI]], [[WIDE_LOAD]]
-; CHECK-NEXT:    [[TMP7:%.*]] = fadd fast <4 x float> [[WIDE_LOAD]], [[VEC_PHI]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = xor <4 x i1> [[TMP5]], splat (i1 true)
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    [[TMP9:%.*]] = select <4 x i1> [[TMP4]], <4 x i1> [[TMP8]], <4 x i1> zeroinitializer
 ; CHECK-NEXT:    [[TMP6:%.*]] = fsub fast <4 x float> [[VEC_PHI]], [[WIDE_LOAD]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = fadd fast <4 x float> [[WIDE_LOAD]], [[VEC_PHI]]

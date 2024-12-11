@@ -333,7 +333,7 @@ define void @bug18724(i1 %cond, ptr %ptr, i1 %cond.2, i64 %v.1, i32 %v.2) {
 ; VEC-NEXT:    [[TMP7:%.*]] = getelementptr inbounds [768 x i32], ptr [[PTR:%.*]], i64 0, i64 [[TMP6]]
 ; VEC-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i32, ptr [[TMP7]], i32 0
 ; VEC-NEXT:    [[WIDE_LOAD:%.*]] = load <2 x i32>, ptr [[TMP8]], align 4
-; VEC-NEXT:    [[TMP9:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT]], <i1 true, i1 true>
+; VEC-NEXT:    [[TMP9:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT]], splat (i1 true)
 ; VEC-NEXT:    [[TMP10:%.*]] = extractelement <2 x i1> [[BROADCAST_SPLAT]], i32 0
 ; VEC-NEXT:    br i1 [[TMP10]], label [[PRED_STORE_IF:%.*]], label [[PRED_STORE_CONTINUE:%.*]]
 ; VEC:       pred.store.if:
@@ -351,18 +351,8 @@ define void @bug18724(i1 %cond, ptr %ptr, i1 %cond.2, i64 %v.1, i32 %v.2) {
 ; VEC-NEXT:    store i32 [[TMP16]], ptr [[TMP15]], align 4
 ; VEC-NEXT:    br label [[PRED_STORE_CONTINUE2]]
 ; VEC:       pred.store.continue2:
-<<<<<<< HEAD
-; VEC-NEXT:    [[TMP17:%.*]] = add <2 x i32> [[VEC_PHI]], <i32 1, i32 1>
+; VEC-NEXT:    [[TMP17:%.*]] = add <2 x i32> [[VEC_PHI]], splat (i32 1)
 ; VEC-NEXT:    [[PREDPHI]] = select <2 x i1> [[TMP9]], <2 x i32> [[VEC_PHI]], <2 x i32> [[TMP17]]
-||||||| 864902e9b4d8
-; VEC-NEXT:    [[TMP16:%.*]] = add <2 x i32> [[VEC_PHI]], <i32 1, i32 1>
-; VEC-NEXT:    [[TMP17:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT]], <i1 true, i1 true>
-; VEC-NEXT:    [[PREDPHI]] = select <2 x i1> [[TMP17]], <2 x i32> [[VEC_PHI]], <2 x i32> [[TMP16]]
-=======
-; VEC-NEXT:    [[TMP16:%.*]] = add <2 x i32> [[VEC_PHI]], splat (i32 1)
-; VEC-NEXT:    [[TMP17:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT]], splat (i1 true)
-; VEC-NEXT:    [[PREDPHI]] = select <2 x i1> [[TMP17]], <2 x i32> [[VEC_PHI]], <2 x i32> [[TMP16]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; VEC-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 2
 ; VEC-NEXT:    [[TMP18:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; VEC-NEXT:    br i1 [[TMP18]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]

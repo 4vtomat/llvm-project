@@ -24,21 +24,20 @@ define float @fadd(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-ORDERED-NEXT:    [[TMP3:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; CHECK-ORDERED-NEXT:    [[TMP4:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[TMP3]]
 ; CHECK-ORDERED-NEXT:    [[TMP5:%.*]] = getelementptr inbounds float, ptr [[TMP4]], i32 0
-; CHECK-ORDERED-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0(ptr align 4 [[TMP5]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP2]])
-; CHECK-ORDERED-NEXT:    [[TMP6]] = call float @llvm.vp.reduce.fadd.nxv2f32(float [[VEC_PHI]], <vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP2]])
+; CHECK-ORDERED-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0(ptr align 4 [[TMP5]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-ORDERED-NEXT:    [[TMP6]] = call float @llvm.vp.reduce.fadd.nxv2f32(float [[VEC_PHI]], <vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-ORDERED-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP2]] to i64
-; CHECK-ORDERED-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP7]], [[EVL_BASED_IV]]
+; CHECK-ORDERED-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP7]], [[EVL_BASED_IV]]
 ; CHECK-ORDERED-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; CHECK-ORDERED-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-ORDERED:       middle.block:
 ; CHECK-ORDERED-NEXT:    br label [[FOR_END:%.*]]
 ; CHECK-ORDERED:       scalar.ph:
 ; CHECK-ORDERED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
-; CHECK-ORDERED-NEXT:    [[BC_MERGE_RDX:%.*]] = phi float [ 0.000000e+00, [[ENTRY]] ]
 ; CHECK-ORDERED-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-ORDERED:       for.body:
 ; CHECK-ORDERED-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
-; CHECK-ORDERED-NEXT:    [[SUM_07:%.*]] = phi float [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
+; CHECK-ORDERED-NEXT:    [[SUM_07:%.*]] = phi float [ 0.000000e+00, [[SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
 ; CHECK-ORDERED-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[IV]]
 ; CHECK-ORDERED-NEXT:    [[TMP9:%.*]] = load float, ptr [[ARRAYIDX]], align 4
 ; CHECK-ORDERED-NEXT:    [[ADD]] = fadd float [[TMP9]], [[SUM_07]]

@@ -194,22 +194,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK:         IR   %indvars.iv.next = add nsw i64 %indvars.iv, -1
 ; CHECK-NEXT:  No successors
 ; CHECK-NEXT:  }
-<<<<<<< HEAD
-; CHECK-NEXT:  LV: Loop does not require scalar epilogue
-; CHECK-NEXT:  LV: Loop does not require scalar epilogue
-; CHECK-NEXT:  LV: Interleaving disabled by the pass manager
-; CHECK-NEXT:  LV: Loop does not require scalar epilogue
-; CHECK-EMPTY:
-||||||| 864902e9b4d8
-; CHECK-NEXT:  LV: Loop does not require scalar epilogue
-; CHECK-NEXT:  LV: Loop does not require scalar epilogue
-; CHECK-NEXT:  LV: Interleaving disabled by the pass manager
-; CHECK-NEXT:  LV: Loop does not require scalar epilogue
-; CHECK-NEXT:  LV: Vectorizing: innermost loop.
-; CHECK-EMPTY:
-=======
 ; CHECK:  LV: Loop does not require scalar epilogue
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ;
 entry:
   %cmp7 = icmp sgt i32 %n, 0
@@ -423,20 +408,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK:         IR   %indvars.iv.next = add nsw i64 %indvars.iv, -1
 ; CHECK-NEXT:  No successors
 ; CHECK-NEXT:  }
-<<<<<<< HEAD
-; CHECK-NEXT:  LV: Loop does not require scalar epilogue
-; CHECK-NEXT:  LV: Loop does not require scalar epilogue
-; CHECK-NEXT:  LV: Interleaving disabled by the pass manager
-; CHECK-NEXT:  LV: Loop does not require scalar epilogue
-||||||| 864902e9b4d8
-; CHECK-NEXT:  LV: Loop does not require scalar epilogue
-; CHECK-NEXT:  LV: Loop does not require scalar epilogue
-; CHECK-NEXT:  LV: Interleaving disabled by the pass manager
-; CHECK-NEXT:  LV: Loop does not require scalar epilogue
-; CHECK-NEXT:  LV: Vectorizing: innermost loop.
-=======
 ; CHECK:  LV: Loop does not require scalar epilogue
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ;
 entry:
   %cmp7 = icmp sgt i32 %n, 0

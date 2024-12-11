@@ -156,22 +156,10 @@ define void @test_if_then(ptr noalias %a, ptr readnone %b) #4 {
 ; TFNONE-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; TFNONE-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i64, ptr [[A:%.*]], i64 [[INDEX]]
 ; TFNONE-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 2 x i64>, ptr [[TMP6]], align 8
-<<<<<<< HEAD
-; TFNONE-NEXT:    [[TMP7:%.*]] = icmp ugt <vscale x 2 x i64> [[WIDE_LOAD]], shufflevector (<vscale x 2 x i64> insertelement (<vscale x 2 x i64> poison, i64 50, i64 0), <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer)
-; TFNONE-NEXT:    [[TMP8:%.*]] = xor <vscale x 2 x i1> [[TMP7]], shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer)
+; TFNONE-NEXT:    [[TMP7:%.*]] = icmp ugt <vscale x 2 x i64> [[WIDE_LOAD]], splat (i64 50)
+; TFNONE-NEXT:    [[TMP8:%.*]] = xor <vscale x 2 x i1> [[TMP7]], splat (i1 true)
 ; TFNONE-NEXT:    [[TMP9:%.*]] = call <vscale x 2 x i64> @foo_vector(<vscale x 2 x i64> [[WIDE_LOAD]], <vscale x 2 x i1> [[TMP7]])
 ; TFNONE-NEXT:    [[PREDPHI:%.*]] = select <vscale x 2 x i1> [[TMP8]], <vscale x 2 x i64> zeroinitializer, <vscale x 2 x i64> [[TMP9]]
-||||||| 864902e9b4d8
-; TFNONE-NEXT:    [[TMP7:%.*]] = icmp ugt <vscale x 2 x i64> [[WIDE_LOAD]], shufflevector (<vscale x 2 x i64> insertelement (<vscale x 2 x i64> poison, i64 50, i64 0), <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer)
-; TFNONE-NEXT:    [[TMP8:%.*]] = call <vscale x 2 x i64> @foo_vector(<vscale x 2 x i64> [[WIDE_LOAD]], <vscale x 2 x i1> [[TMP7]])
-; TFNONE-NEXT:    [[TMP9:%.*]] = xor <vscale x 2 x i1> [[TMP7]], shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer)
-; TFNONE-NEXT:    [[PREDPHI:%.*]] = select <vscale x 2 x i1> [[TMP9]], <vscale x 2 x i64> zeroinitializer, <vscale x 2 x i64> [[TMP8]]
-=======
-; TFNONE-NEXT:    [[TMP7:%.*]] = icmp ugt <vscale x 2 x i64> [[WIDE_LOAD]], splat (i64 50)
-; TFNONE-NEXT:    [[TMP8:%.*]] = call <vscale x 2 x i64> @foo_vector(<vscale x 2 x i64> [[WIDE_LOAD]], <vscale x 2 x i1> [[TMP7]])
-; TFNONE-NEXT:    [[TMP9:%.*]] = xor <vscale x 2 x i1> [[TMP7]], splat (i1 true)
-; TFNONE-NEXT:    [[PREDPHI:%.*]] = select <vscale x 2 x i1> [[TMP9]], <vscale x 2 x i64> zeroinitializer, <vscale x 2 x i64> [[TMP8]]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; TFNONE-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i64, ptr [[B:%.*]], i64 [[INDEX]]
 ; TFNONE-NEXT:    store <vscale x 2 x i64> [[PREDPHI]], ptr [[TMP10]], align 8
 ; TFNONE-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]

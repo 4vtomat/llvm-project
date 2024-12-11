@@ -2,7 +2,7 @@
 ; RUN: opt -passes=loop-vectorize -debug-only=loop-vectorize \
 ; RUN: -force-tail-folding-style=data-with-evl \
 ; RUN: -prefer-predicate-over-epilogue=predicate-dont-vectorize \
-; RUN: -mtriple=riscv64 -mattr=+v -S < %s 2>&1 | FileCheck %s
+; RUN: -mtriple=riscv64 -mattr=+v -S --riscv-use-vla-vectorizer=false < %s 2>&1 | FileCheck %s
 
 ; CHECK: Cost of 2 for VF vscale x 4: WIDEN-INTRINSIC vp<%{{.+}}> = call llvm.vp.merge(ir<true>, ir<%add>, ir<%rdx>, vp<%{{.+}}>)
 ; CHECK: LV: Found an estimated cost of 2 for VF vscale x 4 For instruction:   %rdx = phi i32 [ %start, %entry ], [ %add, %loop ]

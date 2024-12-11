@@ -474,17 +474,9 @@ define void @switch_all_dests_distinct_variant_using_branches(ptr %start, ptr %e
 ; COST-NEXT:    [[TMP10:%.*]] = xor <4 x i1> [[TMP7]], splat (i1 true)
 ; COST-NEXT:    [[TMP11:%.*]] = xor <4 x i1> [[TMP8]], splat (i1 true)
 ; COST-NEXT:    [[TMP12:%.*]] = select <4 x i1> [[TMP10]], <4 x i1> [[TMP11]], <4 x i1> zeroinitializer
-<<<<<<< HEAD
-||||||| 864902e9b4d8
-; COST-NEXT:    [[TMP13:%.*]] = select <4 x i1> [[TMP12]], <4 x i1> [[TMP9]], <4 x i1> zeroinitializer
-; COST-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> <i64 1, i64 1, i64 1, i64 1>, ptr [[TMP6]], i32 1, <4 x i1> [[TMP13]])
-=======
-; COST-NEXT:    [[TMP13:%.*]] = select <4 x i1> [[TMP12]], <4 x i1> [[TMP9]], <4 x i1> zeroinitializer
-; COST-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> splat (i64 1), ptr [[TMP6]], i32 1, <4 x i1> [[TMP13]])
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; COST-NEXT:    [[TMP14:%.*]] = select <4 x i1> [[TMP10]], <4 x i1> [[TMP8]], <4 x i1> zeroinitializer
 ; COST-NEXT:    [[TMP16:%.*]] = select <4 x i1> [[TMP12]], <4 x i1> [[TMP9]], <4 x i1> zeroinitializer
-; COST-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> <i64 1, i64 1, i64 1, i64 1>, ptr [[TMP6]], i32 1, <4 x i1> [[TMP16]])
+; COST-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> splat (i64 1), ptr [[TMP6]], i32 1, <4 x i1> [[TMP16]])
 ; COST-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> zeroinitializer, ptr [[TMP6]], i32 1, <4 x i1> [[TMP14]])
 ; COST-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> splat (i64 42), ptr [[TMP6]], i32 1, <4 x i1> [[TMP7]])
 ; COST-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
@@ -564,24 +556,12 @@ define void @switch_all_dests_distinct_variant_using_branches(ptr %start, ptr %e
 ; FORCED-NEXT:    [[TMP18:%.*]] = xor <4 x i1> [[TMP12]], splat (i1 true)
 ; FORCED-NEXT:    [[TMP19:%.*]] = select <4 x i1> [[TMP15]], <4 x i1> [[TMP17]], <4 x i1> zeroinitializer
 ; FORCED-NEXT:    [[TMP20:%.*]] = select <4 x i1> [[TMP16]], <4 x i1> [[TMP18]], <4 x i1> zeroinitializer
-<<<<<<< HEAD
-||||||| 864902e9b4d8
-; FORCED-NEXT:    [[TMP21:%.*]] = select <4 x i1> [[TMP19]], <4 x i1> [[TMP13]], <4 x i1> zeroinitializer
-; FORCED-NEXT:    [[TMP22:%.*]] = select <4 x i1> [[TMP20]], <4 x i1> [[TMP14]], <4 x i1> zeroinitializer
-; FORCED-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> <i64 1, i64 1, i64 1, i64 1>, ptr [[TMP7]], i32 1, <4 x i1> [[TMP21]])
-; FORCED-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> <i64 1, i64 1, i64 1, i64 1>, ptr [[TMP8]], i32 1, <4 x i1> [[TMP22]])
-=======
-; FORCED-NEXT:    [[TMP21:%.*]] = select <4 x i1> [[TMP19]], <4 x i1> [[TMP13]], <4 x i1> zeroinitializer
-; FORCED-NEXT:    [[TMP22:%.*]] = select <4 x i1> [[TMP20]], <4 x i1> [[TMP14]], <4 x i1> zeroinitializer
-; FORCED-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> splat (i64 1), ptr [[TMP7]], i32 1, <4 x i1> [[TMP21]])
-; FORCED-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> splat (i64 1), ptr [[TMP8]], i32 1, <4 x i1> [[TMP22]])
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; FORCED-NEXT:    [[TMP23:%.*]] = select <4 x i1> [[TMP15]], <4 x i1> [[TMP11]], <4 x i1> zeroinitializer
 ; FORCED-NEXT:    [[TMP24:%.*]] = select <4 x i1> [[TMP16]], <4 x i1> [[TMP12]], <4 x i1> zeroinitializer
 ; FORCED-NEXT:    [[TMP26:%.*]] = select <4 x i1> [[TMP19]], <4 x i1> [[TMP13]], <4 x i1> zeroinitializer
 ; FORCED-NEXT:    [[TMP27:%.*]] = select <4 x i1> [[TMP20]], <4 x i1> [[TMP14]], <4 x i1> zeroinitializer
-; FORCED-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> <i64 1, i64 1, i64 1, i64 1>, ptr [[TMP7]], i32 1, <4 x i1> [[TMP26]])
-; FORCED-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> <i64 1, i64 1, i64 1, i64 1>, ptr [[TMP8]], i32 1, <4 x i1> [[TMP27]])
+; FORCED-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> splat (i64 1), ptr [[TMP7]], i32 1, <4 x i1> [[TMP26]])
+; FORCED-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> splat (i64 1), ptr [[TMP8]], i32 1, <4 x i1> [[TMP27]])
 ; FORCED-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> zeroinitializer, ptr [[TMP7]], i32 1, <4 x i1> [[TMP23]])
 ; FORCED-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> zeroinitializer, ptr [[TMP8]], i32 1, <4 x i1> [[TMP24]])
 ; FORCED-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> splat (i64 42), ptr [[TMP7]], i32 1, <4 x i1> [[TMP9]])
@@ -1234,20 +1214,8 @@ define void @br_under_switch_default_common_dest_with_case(ptr %start, ptr %end,
 ; FORCED-NEXT:    [[TMP30:%.*]] = or <4 x i1> [[TMP28]], [[TMP26]]
 ; FORCED-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> zeroinitializer, ptr [[TMP7]], i32 1, <4 x i1> [[TMP29]])
 ; FORCED-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> zeroinitializer, ptr [[TMP8]], i32 1, <4 x i1> [[TMP30]])
-<<<<<<< HEAD
-; FORCED-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> <i64 42, i64 42, i64 42, i64 42>, ptr [[TMP7]], i32 1, <4 x i1> [[TMP32]])
-; FORCED-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> <i64 42, i64 42, i64 42, i64 42>, ptr [[TMP8]], i32 1, <4 x i1> [[TMP33]])
-||||||| 864902e9b4d8
-; FORCED-NEXT:    [[TMP32:%.*]] = select <4 x i1> [[TMP9]], <4 x i1> [[TMP17]], <4 x i1> zeroinitializer
-; FORCED-NEXT:    [[TMP33:%.*]] = select <4 x i1> [[TMP10]], <4 x i1> [[TMP18]], <4 x i1> zeroinitializer
-; FORCED-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> <i64 42, i64 42, i64 42, i64 42>, ptr [[TMP7]], i32 1, <4 x i1> [[TMP32]])
-; FORCED-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> <i64 42, i64 42, i64 42, i64 42>, ptr [[TMP8]], i32 1, <4 x i1> [[TMP33]])
-=======
-; FORCED-NEXT:    [[TMP32:%.*]] = select <4 x i1> [[TMP9]], <4 x i1> [[TMP17]], <4 x i1> zeroinitializer
-; FORCED-NEXT:    [[TMP33:%.*]] = select <4 x i1> [[TMP10]], <4 x i1> [[TMP18]], <4 x i1> zeroinitializer
 ; FORCED-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> splat (i64 42), ptr [[TMP7]], i32 1, <4 x i1> [[TMP32]])
 ; FORCED-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> splat (i64 42), ptr [[TMP8]], i32 1, <4 x i1> [[TMP33]])
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; FORCED-NEXT:    [[TMP36:%.*]] = or <4 x i1> [[TMP32]], [[TMP15]]
 ; FORCED-NEXT:    [[TMP37:%.*]] = or <4 x i1> [[TMP33]], [[TMP16]]
 ; FORCED-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> splat (i64 2), ptr [[TMP7]], i32 1, <4 x i1> [[TMP36]])

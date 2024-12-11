@@ -1714,7 +1714,6 @@ void VPlanTransforms::addActiveLaneMask(
     HeaderMask->replaceAllUsesWith(LaneMask);
 }
 
-#ifndef SIFIVE_CUSTOMIZATION
 /// Replace recipes with their EVL variants.
 static void transformRecipestoEVLRecipes(VPlan &Plan, VPValue &EVL) {
   using namespace llvm::VPlanPatternMatch;
@@ -1823,7 +1822,6 @@ static void transformRecipestoEVLRecipes(VPlan &Plan, VPValue &EVL) {
     recursivelyDeleteDeadRecipes(HeaderMask);
   }
 }
-#endif
 
 /// Add a VPEVLBasedIVPHIRecipe and related recipes to \p Plan and
 /// replaces all uses except the canonical IV increment of
@@ -1900,7 +1898,10 @@ bool VPlanTransforms::tryAddExplicitVectorLength(
 #if SIFIVE_CUSTOMIZATION
   // Compute vector TC - IV as the AVL (application vector length).
   VPValue *AVL = Builder.createNaryOp(
-      Instruction::Sub, {&Plan.getVectorTripCount(), EVLPhi}, DebugLoc(), "avl");
+      Instruction::Sub,
+      {EnableEVLFuzzing ? &Plan.getVectorTripCount() : Plan.getTripCount(),
+       EVLPhi},
+      DebugLoc(), "avl");
 #else
   // Compute original TC - IV as the AVL (application vector length).
   VPValue *AVL = Builder.createNaryOp(
@@ -1944,78 +1945,79 @@ bool VPlanTransforms::tryAddExplicitVectorLength(
   EVLPhi->addOperand(NextEVLIV);
 
 #if SIFIVE_CUSTOMIZATION
-  if (PrevEVLPhi) {
-    Plan.setPrevEVL(PrevEVLPhi);
-    PrevEVLPhi->addOperand(VPEVL);
-  }
-  ReversePostOrderTraversal<VPBlockDeepTraversalWrapper<VPBlockBase *>> RPOT(
-      Plan.getEntry());
+  if (EnableEVLFuzzing) {
+    if (PrevEVLPhi) {
+      Plan.setPrevEVL(PrevEVLPhi);
+      PrevEVLPhi->addOperand(VPEVL);
+    }
+    ReversePostOrderTraversal<VPBlockDeepTraversalWrapper<VPBlockBase *>> RPOT(
+        Plan.getEntry());
 
-  VPRegionBlock *LoopRegion = Plan.getVectorLoopRegion();
-  VPBasicBlock *Preheader =
-      cast<VPBasicBlock>(LoopRegion->getSinglePredecessor());
-  for (VPBasicBlock *VPBB : VPBlockUtils::blocksOnly<VPBasicBlock>(RPOT)) {
-    if (VPBB == Preheader)
-      continue;
-    // The recipes in the block are processed in reverse order, to catch chains
-    // of dead recipes.
-    for (VPRecipeBase &R : make_early_inc_range(reverse(*VPBB))) {
-      VPRecipeBase *CurRecipe = &R;
-      VPRecipeBase *NewRecipe = nullptr;
+    VPRegionBlock *LoopRegion = Plan.getVectorLoopRegion();
+    VPBasicBlock *Preheader =
+        cast<VPBasicBlock>(LoopRegion->getSinglePredecessor());
+    for (VPBasicBlock *VPBB : VPBlockUtils::blocksOnly<VPBasicBlock>(RPOT)) {
+      if (VPBB == Preheader)
+        continue;
+      // The recipes in the block are processed in reverse order, to catch
+      // chains of dead recipes.
+      for (VPRecipeBase &R : make_early_inc_range(reverse(*VPBB))) {
+        VPRecipeBase *CurRecipe = &R;
+        VPRecipeBase *NewRecipe = nullptr;
 
-      auto GetNewMask = [&](VPValue *OrigMask) -> VPValue * {
-        return OrigMask;
-      };
-      if (auto *MemR = dyn_cast<VPWidenMemoryRecipe>(CurRecipe)) {
-        VPValue *NewMask = GetNewMask(MemR->getMask());
-        if (auto *L = dyn_cast<VPWidenLoadRecipe>(MemR))
-          NewRecipe = new VPWidenLoadEVLRecipe(*L, *VPEVL, NewMask);
-        else if (auto *S = dyn_cast<VPWidenStoreRecipe>(MemR))
-          NewRecipe = new VPWidenStoreEVLRecipe(*S, *VPEVL, NewMask);
-        else
-          llvm_unreachable("unsupported recipe");
-      } else if (auto *W = dyn_cast<VPWidenRecipe>(CurRecipe)) {
-        unsigned Opcode = W->getOpcode();
-        if (Instruction::isBinaryOp(Opcode) ||
-            Instruction::isUnaryOp(Opcode))
-          NewRecipe = new VPWidenEVLRecipe(*W, *VPEVL);
-      } else if (auto *RedR = dyn_cast<VPReductionRecipe>(CurRecipe)) {
-        NewRecipe = new VPReductionEVLRecipe(*RedR, *VPEVL,
-                                             GetNewMask(RedR->getCondOp()));
-      }
-
-      if (NewRecipe) {
-        [[maybe_unused]] unsigned NumDefVal = NewRecipe->getNumDefinedValues();
-        assert(NumDefVal == CurRecipe->getNumDefinedValues() &&
-               "New recipe must define the same number of values as the "
-               "original.");
-        assert(
-            NumDefVal <= 1 &&
-            "Only supports recipes with a single definition or without users.");
-        NewRecipe->insertBefore(CurRecipe);
-        if (isa<VPSingleDefRecipe, VPWidenLoadEVLRecipe>(NewRecipe)) {
-          VPValue *CurVPV = CurRecipe->getVPSingleValue();
-          CurVPV->replaceAllUsesWith(NewRecipe->getVPSingleValue());
+        auto GetNewMask = [&](VPValue *OrigMask) -> VPValue * {
+          return OrigMask;
+        };
+        if (auto *MemR = dyn_cast<VPWidenMemoryRecipe>(CurRecipe)) {
+          VPValue *NewMask = GetNewMask(MemR->getMask());
+          if (auto *L = dyn_cast<VPWidenLoadRecipe>(MemR))
+            NewRecipe = new VPWidenLoadEVLRecipe(*L, *VPEVL, NewMask);
+          else if (auto *S = dyn_cast<VPWidenStoreRecipe>(MemR))
+            NewRecipe = new VPWidenStoreEVLRecipe(*S, *VPEVL, NewMask);
+          else
+            llvm_unreachable("unsupported recipe");
+        } else if (auto *W = dyn_cast<VPWidenRecipe>(CurRecipe)) {
+          unsigned Opcode = W->getOpcode();
+          if (Instruction::isBinaryOp(Opcode) || Instruction::isUnaryOp(Opcode))
+            NewRecipe = new VPWidenEVLRecipe(*W, *VPEVL);
+        } else if (auto *RedR = dyn_cast<VPReductionRecipe>(CurRecipe)) {
+          NewRecipe = new VPReductionEVLRecipe(*RedR, *VPEVL,
+                                               GetNewMask(RedR->getCondOp()));
         }
-        CurRecipe->eraseFromParent();
+
+        if (NewRecipe) {
+          [[maybe_unused]] unsigned NumDefVal =
+              NewRecipe->getNumDefinedValues();
+          assert(NumDefVal == CurRecipe->getNumDefinedValues() &&
+                 "New recipe must define the same number of values as the "
+                 "original.");
+          assert(NumDefVal <= 1 && "Only supports recipes with a single "
+                                   "definition or without users.");
+          NewRecipe->insertBefore(CurRecipe);
+          if (isa<VPSingleDefRecipe, VPWidenLoadEVLRecipe>(NewRecipe)) {
+            VPValue *CurVPV = CurRecipe->getVPSingleValue();
+            CurVPV->replaceAllUsesWith(NewRecipe->getVPSingleValue());
+          }
+          CurRecipe->eraseFromParent();
+        }
       }
     }
-  }
-#else
-  transformRecipestoEVLRecipes(Plan, *VPEVL);
+  } else
 #endif // SIFIVE_CUSTOMIZATION
+  transformRecipestoEVLRecipes(Plan, *VPEVL);
 
   // Replace all uses of VPCanonicalIVPHIRecipe by
   // VPEVLBasedIVPHIRecipe except for the canonical IV increment.
   CanonicalIVPHI->replaceAllUsesWith(EVLPhi);
 #if SIFIVE_CUSTOMIZATION
-  CanonicalIVIncrement->replaceAllUsesWith(NextEVLIV);
-  CanonicalIVIncrement->eraseFromParent();
-  Plan.getVFxUF().replaceAllUsesWith(VPEVL);
-  Plan.setUseVLAVectorizer(true);
-#else
-  CanonicalIVIncrement->setOperand(0, CanonicalIVPHI);
+  if (EnableEVLFuzzing) {
+    CanonicalIVIncrement->replaceAllUsesWith(NextEVLIV);
+    CanonicalIVIncrement->eraseFromParent();
+    Plan.getVFxUF().replaceAllUsesWith(VPEVL);
+    Plan.setUseVLAVectorizer(true);
+  } else
 #endif // SIFIVE_CUSTOMIZATION
+  CanonicalIVIncrement->setOperand(0, CanonicalIVPHI);
   // TODO: support unroll factor > 1.
   Plan.setUF(1);
   return true;
