@@ -53,9 +53,9 @@ define i32 @vp_reduce(i32 %s, <vscale x 1 x i32> %v, i32 signext %evl) {
 ; RV64-NEXT:    beq a3, a2, .LBB0_4
 ; RV64-NEXT:  # %bb.3:
 ; RV64-NEXT:    clzw a2, a1
-; RV64-NEXT:    negw a2, a2
 ; RV64-NEXT:    li a3, 1
 ; RV64-NEXT:    slli a1, a1, 32
+; RV64-NEXT:    negw a2, a2
 ; RV64-NEXT:    sllw a2, a3, a2
 ; RV64-NEXT:    slli a3, a2, 32
 ; RV64-NEXT:    srli a3, a3, 32

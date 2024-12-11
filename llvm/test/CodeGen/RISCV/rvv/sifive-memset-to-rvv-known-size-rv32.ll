@@ -11,12 +11,12 @@ define void @KnownSize(i8* nocapture %dst, i8 %val) {
 ; MIN-512-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
 ; MIN-512-NEXT:    vmv.v.x v8, a1
 ; MIN-512-NEXT:    add a1, a0, a2
-; MIN-512-NEXT:    add a3, a1, a2
-; MIN-512-NEXT:    add a2, a3, a2
 ; MIN-512-NEXT:    vse8.v v8, (a0)
-; MIN-512-NEXT:    vse8.v v8, (a1)
-; MIN-512-NEXT:    vse8.v v8, (a3)
 ; MIN-512-NEXT:    li a0, 504
+; MIN-512-NEXT:    add a3, a1, a2
+; MIN-512-NEXT:    vse8.v v8, (a1)
+; MIN-512-NEXT:    add a2, a3, a2
+; MIN-512-NEXT:    vse8.v v8, (a3)
 ; MIN-512-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
 ; MIN-512-NEXT:    vse8.v v8, (a2)
 ; MIN-512-NEXT:    ret
@@ -27,20 +27,20 @@ define void @KnownSize(i8* nocapture %dst, i8 %val) {
 ; MIN-256-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
 ; MIN-256-NEXT:    vmv.v.x v8, a1
 ; MIN-256-NEXT:    add a1, a0, a2
-; MIN-256-NEXT:    add a3, a1, a2
-; MIN-256-NEXT:    add a4, a3, a2
-; MIN-256-NEXT:    add a5, a4, a2
-; MIN-256-NEXT:    add a6, a5, a2
-; MIN-256-NEXT:    add a7, a6, a2
-; MIN-256-NEXT:    add a2, a7, a2
 ; MIN-256-NEXT:    vse8.v v8, (a0)
-; MIN-256-NEXT:    vse8.v v8, (a1)
-; MIN-256-NEXT:    vse8.v v8, (a3)
-; MIN-256-NEXT:    vse8.v v8, (a4)
-; MIN-256-NEXT:    vse8.v v8, (a5)
-; MIN-256-NEXT:    vse8.v v8, (a6)
-; MIN-256-NEXT:    vse8.v v8, (a7)
 ; MIN-256-NEXT:    li a0, 248
+; MIN-256-NEXT:    add a3, a1, a2
+; MIN-256-NEXT:    vse8.v v8, (a1)
+; MIN-256-NEXT:    add a1, a3, a2
+; MIN-256-NEXT:    vse8.v v8, (a3)
+; MIN-256-NEXT:    add a3, a1, a2
+; MIN-256-NEXT:    vse8.v v8, (a1)
+; MIN-256-NEXT:    add a1, a3, a2
+; MIN-256-NEXT:    vse8.v v8, (a3)
+; MIN-256-NEXT:    add a3, a1, a2
+; MIN-256-NEXT:    vse8.v v8, (a1)
+; MIN-256-NEXT:    add a2, a3, a2
+; MIN-256-NEXT:    vse8.v v8, (a3)
 ; MIN-256-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
 ; MIN-256-NEXT:    vse8.v v8, (a2)
 ; MIN-256-NEXT:    ret
@@ -91,11 +91,11 @@ define void @KnownSize2(i8* nocapture %dst, i8 %val) {
 ; MIN-256-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
 ; MIN-256-NEXT:    vmv.v.x v8, a1
 ; MIN-256-NEXT:    add a1, a0, a2
-; MIN-256-NEXT:    add a3, a1, a2
-; MIN-256-NEXT:    add a2, a3, a2
 ; MIN-256-NEXT:    vse8.v v8, (a0)
+; MIN-256-NEXT:    add a0, a1, a2
 ; MIN-256-NEXT:    vse8.v v8, (a1)
-; MIN-256-NEXT:    vse8.v v8, (a3)
+; MIN-256-NEXT:    add a2, a0, a2
+; MIN-256-NEXT:    vse8.v v8, (a0)
 ; MIN-256-NEXT:    vse8.v v8, (a2)
 ; MIN-256-NEXT:    ret
 entry:
@@ -114,12 +114,12 @@ define void @KnownSize3(i8* nocapture %dst, i8 %val) {
 ; MIN-512-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
 ; MIN-512-NEXT:    vmv.v.x v8, a1
 ; MIN-512-NEXT:    add a1, a0, a2
-; MIN-512-NEXT:    add a3, a1, a2
-; MIN-512-NEXT:    add a2, a3, a2
 ; MIN-512-NEXT:    vse8.v v8, (a0)
-; MIN-512-NEXT:    vse8.v v8, (a1)
-; MIN-512-NEXT:    vse8.v v8, (a3)
 ; MIN-512-NEXT:    li a0, 504
+; MIN-512-NEXT:    add a3, a1, a2
+; MIN-512-NEXT:    vse8.v v8, (a1)
+; MIN-512-NEXT:    add a2, a3, a2
+; MIN-512-NEXT:    vse8.v v8, (a3)
 ; MIN-512-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
 ; MIN-512-NEXT:    vse8.v v8, (a2)
 ; MIN-512-NEXT:    ret
@@ -130,20 +130,20 @@ define void @KnownSize3(i8* nocapture %dst, i8 %val) {
 ; MIN-256-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
 ; MIN-256-NEXT:    vmv.v.x v8, a1
 ; MIN-256-NEXT:    add a1, a0, a2
-; MIN-256-NEXT:    add a3, a1, a2
-; MIN-256-NEXT:    add a4, a3, a2
-; MIN-256-NEXT:    add a5, a4, a2
-; MIN-256-NEXT:    add a6, a5, a2
-; MIN-256-NEXT:    add a7, a6, a2
-; MIN-256-NEXT:    add a2, a7, a2
 ; MIN-256-NEXT:    vse8.v v8, (a0)
-; MIN-256-NEXT:    vse8.v v8, (a1)
-; MIN-256-NEXT:    vse8.v v8, (a3)
-; MIN-256-NEXT:    vse8.v v8, (a4)
-; MIN-256-NEXT:    vse8.v v8, (a5)
-; MIN-256-NEXT:    vse8.v v8, (a6)
-; MIN-256-NEXT:    vse8.v v8, (a7)
 ; MIN-256-NEXT:    li a0, 248
+; MIN-256-NEXT:    add a3, a1, a2
+; MIN-256-NEXT:    vse8.v v8, (a1)
+; MIN-256-NEXT:    add a1, a3, a2
+; MIN-256-NEXT:    vse8.v v8, (a3)
+; MIN-256-NEXT:    add a3, a1, a2
+; MIN-256-NEXT:    vse8.v v8, (a1)
+; MIN-256-NEXT:    add a1, a3, a2
+; MIN-256-NEXT:    vse8.v v8, (a3)
+; MIN-256-NEXT:    add a3, a1, a2
+; MIN-256-NEXT:    vse8.v v8, (a1)
+; MIN-256-NEXT:    add a2, a3, a2
+; MIN-256-NEXT:    vse8.v v8, (a3)
 ; MIN-256-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
 ; MIN-256-NEXT:    vse8.v v8, (a2)
 ; MIN-256-NEXT:    ret
@@ -195,11 +195,11 @@ define void @KnownSize5(i8* nocapture %dst, i8 %val) {
 ; MIN-256-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
 ; MIN-256-NEXT:    vmv.v.x v8, a1
 ; MIN-256-NEXT:    add a1, a0, a2
-; MIN-256-NEXT:    add a3, a1, a2
-; MIN-256-NEXT:    add a2, a3, a2
 ; MIN-256-NEXT:    vse8.v v8, (a0)
+; MIN-256-NEXT:    add a0, a1, a2
 ; MIN-256-NEXT:    vse8.v v8, (a1)
-; MIN-256-NEXT:    vse8.v v8, (a3)
+; MIN-256-NEXT:    add a2, a0, a2
+; MIN-256-NEXT:    vse8.v v8, (a0)
 ; MIN-256-NEXT:    vse8.v v8, (a2)
 ; MIN-256-NEXT:    ret
 entry:

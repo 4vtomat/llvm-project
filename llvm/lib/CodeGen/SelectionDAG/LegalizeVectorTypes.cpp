@@ -4566,9 +4566,9 @@ SDValue DAGTypeLegalizer::SplitVecOp_VP_FIRST(SDNode *N) {
   SDValue ResLo = DAG.getNode(ISD::VP_FIRST, dl, ResVT, Lo, MaskLo, EVLLo);
   SDValue ResHi = DAG.getNode(ISD::VP_FIRST, dl, ResVT, Hi, MaskHi, EVLHi);
   SDValue ResMerge = DAG.getNode(ISD::ADD, dl, ResVT, EVLLo, ResHi);
-  SDValue ResTmp =
-      DAG.getSelectCC(dl, ResHi, DAG.getConstant(0, dl, ResVT),
-                      DAG.getConstant(-1, dl, ResVT), ResMerge, ISD::SETLT);
+  SDValue ResTmp = DAG.getSelectCC(dl, ResHi, DAG.getConstant(0, dl, ResVT),
+                                   DAG.getSignedConstant(-1, dl, ResVT),
+                                   ResMerge, ISD::SETLT);
   return DAG.getSelectCC(dl, ResLo, DAG.getConstant(0, dl, ResVT), ResTmp,
                          ResLo, ISD::SETLT);
 }

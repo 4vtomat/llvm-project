@@ -21,13 +21,13 @@ define void @test1() {
 ; PIC-NEXT:    auipc a0, %pcrel_hi(__global_pointer__)
 ; PIC-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi0)
 ; PIC-NEXT:    ld a1, 0(a0)
+; PIC-NEXT:    lui a2, %got_gprel_hi(src)
 ; PIC-NEXT:    add a0, a0, a1
-; PIC-NEXT:    lui a1, %got_gprel_hi(src)
-; PIC-NEXT:    add a1, a1, a0, %got_gprel(src)
+; PIC-NEXT:    add a1, a2, a0, %got_gprel(src)
 ; PIC-NEXT:    ld a1, %got_gprel_lo(src)(a1)
-; PIC-NEXT:    lw a1, 0(a1)
 ; PIC-NEXT:    lui a2, %got_gprel_hi(dst)
 ; PIC-NEXT:    add a0, a2, a0, %got_gprel(dst)
+; PIC-NEXT:    lw a1, 0(a1)
 ; PIC-NEXT:    ld a0, %got_gprel_lo(dst)(a0)
 ; PIC-NEXT:    sw a1, 0(a0)
 ; PIC-NEXT:    ret
@@ -37,9 +37,9 @@ define void @test1() {
 ; NoPIC-NEXT:    lui a0, %got_gprel_hi(src)
 ; NoPIC-NEXT:    add a0, a0, gp, %got_gprel(src)
 ; NoPIC-NEXT:    ld a0, %got_gprel_lo(src)(a0)
-; NoPIC-NEXT:    lw a0, 0(a0)
 ; NoPIC-NEXT:    lui a1, %got_gprel_hi(dst)
 ; NoPIC-NEXT:    add a1, a1, gp, %got_gprel(dst)
+; NoPIC-NEXT:    lw a0, 0(a0)
 ; NoPIC-NEXT:    ld a1, %got_gprel_lo(dst)(a1)
 ; NoPIC-NEXT:    sw a0, 0(a1)
 ; NoPIC-NEXT:    ret
@@ -56,12 +56,12 @@ define void @test2() {
 ; PIC-NEXT:    auipc a0, %pcrel_hi(__global_pointer__)
 ; PIC-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi1)
 ; PIC-NEXT:    ld a1, 0(a0)
+; PIC-NEXT:    lui a2, %got_gprel_hi(ptr)
 ; PIC-NEXT:    add a0, a0, a1
-; PIC-NEXT:    lui a1, %got_gprel_hi(ptr)
-; PIC-NEXT:    add a1, a1, a0, %got_gprel(ptr)
-; PIC-NEXT:    ld a1, %got_gprel_lo(ptr)(a1)
-; PIC-NEXT:    lui a2, %got_gprel_hi(lsrc)
-; PIC-NEXT:    add a0, a2, a0, %got_gprel(lsrc)
+; PIC-NEXT:    lui a1, %got_gprel_hi(lsrc)
+; PIC-NEXT:    add a2, a2, a0, %got_gprel(ptr)
+; PIC-NEXT:    add a0, a1, a0, %got_gprel(lsrc)
+; PIC-NEXT:    ld a1, %got_gprel_lo(ptr)(a2)
 ; PIC-NEXT:    ld a0, %got_gprel_lo(lsrc)(a0)
 ; PIC-NEXT:    sd a0, 0(a1)
 ; PIC-NEXT:    ret
@@ -69,10 +69,10 @@ define void @test2() {
 ; NoPIC-LABEL: test2:
 ; NoPIC:       # %bb.0: # %entry
 ; NoPIC-NEXT:    lui a0, %got_gprel_hi(ptr)
-; NoPIC-NEXT:    add a0, a0, gp, %got_gprel(ptr)
-; NoPIC-NEXT:    ld a0, %got_gprel_lo(ptr)(a0)
 ; NoPIC-NEXT:    lui a1, %got_gprel_hi(lsrc)
+; NoPIC-NEXT:    add a0, a0, gp, %got_gprel(ptr)
 ; NoPIC-NEXT:    add a1, a1, gp, %got_gprel(lsrc)
+; NoPIC-NEXT:    ld a0, %got_gprel_lo(ptr)(a0)
 ; NoPIC-NEXT:    ld a1, %got_gprel_lo(lsrc)(a1)
 ; NoPIC-NEXT:    sd a1, 0(a0)
 ; NoPIC-NEXT:    ret
@@ -88,12 +88,12 @@ define void @test3() {
 ; PIC-NEXT:    auipc a0, %pcrel_hi(__global_pointer__)
 ; PIC-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi2)
 ; PIC-NEXT:    ld a1, 0(a0)
+; PIC-NEXT:    lui a2, %got_gprel_hi(ptr)
 ; PIC-NEXT:    add a0, a0, a1
-; PIC-NEXT:    lui a1, %got_gprel_hi(ptr)
-; PIC-NEXT:    add a1, a1, a0, %got_gprel(ptr)
-; PIC-NEXT:    ld a1, %got_gprel_lo(ptr)(a1)
-; PIC-NEXT:    lui a2, %got_gprel_hi(src)
-; PIC-NEXT:    add a0, a2, a0, %got_gprel(src)
+; PIC-NEXT:    lui a1, %got_gprel_hi(src)
+; PIC-NEXT:    add a2, a2, a0, %got_gprel(ptr)
+; PIC-NEXT:    add a0, a1, a0, %got_gprel(src)
+; PIC-NEXT:    ld a1, %got_gprel_lo(ptr)(a2)
 ; PIC-NEXT:    ld a0, %got_gprel_lo(src)(a0)
 ; PIC-NEXT:    sd a0, 0(a1)
 ; PIC-NEXT:    ret
@@ -101,10 +101,10 @@ define void @test3() {
 ; NoPIC-LABEL: test3:
 ; NoPIC:       # %bb.0: # %entry
 ; NoPIC-NEXT:    lui a0, %got_gprel_hi(ptr)
-; NoPIC-NEXT:    add a0, a0, gp, %got_gprel(ptr)
-; NoPIC-NEXT:    ld a0, %got_gprel_lo(ptr)(a0)
 ; NoPIC-NEXT:    lui a1, %got_gprel_hi(src)
+; NoPIC-NEXT:    add a0, a0, gp, %got_gprel(ptr)
 ; NoPIC-NEXT:    add a1, a1, gp, %got_gprel(src)
+; NoPIC-NEXT:    ld a0, %got_gprel_lo(ptr)(a0)
 ; NoPIC-NEXT:    ld a1, %got_gprel_lo(src)(a1)
 ; NoPIC-NEXT:    sd a1, 0(a0)
 ; NoPIC-NEXT:    ret

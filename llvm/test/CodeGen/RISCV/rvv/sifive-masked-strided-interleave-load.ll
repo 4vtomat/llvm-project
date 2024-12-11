@@ -277,37 +277,38 @@ define {<vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 
 ; RV32-NEXT:    vsetvli a0, zero, e32, m4, ta, ma
 ; RV32-NEXT:    vid.v v8
 ; RV32-NEXT:    vsll.vi v16, v8, 2
-; RV32-NEXT:    vrgather.vv v8, v12, v16
 ; RV32-NEXT:    vadd.vi v20, v16, 1
-; RV32-NEXT:    vrgather.vv v24, v12, v20
-; RV32-NEXT:    vadd.vi v20, v16, 2
-; RV32-NEXT:    vrgather.vv v28, v12, v20
-; RV32-NEXT:    vadd.vi v16, v16, 3
-; RV32-NEXT:    vrgather.vv v20, v12, v16
-; RV32-NEXT:    vmv1r.v v9, v24
-; RV32-NEXT:    vmv1r.v v10, v28
-; RV32-NEXT:    vmv1r.v v11, v20
+; RV32-NEXT:    vadd.vi v24, v16, 2
+; RV32-NEXT:    vadd.vi v28, v16, 3
+; RV32-NEXT:    vrgather.vv v8, v12, v16
+; RV32-NEXT:    vrgather.vv v16, v12, v20
+; RV32-NEXT:    vrgather.vv v20, v12, v24
+; RV32-NEXT:    vrgather.vv v24, v12, v28
+; RV32-NEXT:    vmv1r.v v9, v16
+; RV32-NEXT:    vmv1r.v v10, v20
+; RV32-NEXT:    vmv1r.v v11, v24
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: not_vlsseg_factor4_v2:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    slli a2, a2, 32
-; RV64-NEXT:    srli a2, a2, 32
-; RV64-NEXT:    vsetvli zero, a2, e64, m4, ta, ma
-; RV64-NEXT:    vlse64.v v12, (a0), a1, v0.t
-; RV64-NEXT:    vsetvli a0, zero, e32, m4, ta, ma
+; RV64-NEXT:    vsetvli a3, zero, e32, m4, ta, ma
 ; RV64-NEXT:    vid.v v8
-; RV64-NEXT:    vsll.vi v16, v8, 2
-; RV64-NEXT:    vrgather.vv v8, v12, v16
-; RV64-NEXT:    vadd.vi v20, v16, 1
-; RV64-NEXT:    vrgather.vv v24, v12, v20
-; RV64-NEXT:    vadd.vi v20, v16, 2
-; RV64-NEXT:    vrgather.vv v28, v12, v20
-; RV64-NEXT:    vadd.vi v16, v16, 3
-; RV64-NEXT:    vrgather.vv v20, v12, v16
-; RV64-NEXT:    vmv1r.v v9, v24
-; RV64-NEXT:    vmv1r.v v10, v28
-; RV64-NEXT:    vmv1r.v v11, v20
+; RV64-NEXT:    srli a2, a2, 32
+; RV64-NEXT:    vsll.vi v12, v8, 2
+; RV64-NEXT:    vsetvli zero, a2, e64, m4, ta, ma
+; RV64-NEXT:    vlse64.v v16, (a0), a1, v0.t
+; RV64-NEXT:    vsetvli a0, zero, e32, m4, ta, ma
+; RV64-NEXT:    vadd.vi v20, v12, 1
+; RV64-NEXT:    vadd.vi v24, v12, 2
+; RV64-NEXT:    vadd.vi v28, v12, 3
+; RV64-NEXT:    vrgather.vv v8, v16, v12
+; RV64-NEXT:    vrgather.vv v12, v16, v20
+; RV64-NEXT:    vrgather.vv v20, v16, v24
+; RV64-NEXT:    vrgather.vv v24, v16, v28
+; RV64-NEXT:    vmv1r.v v9, v12
+; RV64-NEXT:    vmv1r.v v10, v20
+; RV64-NEXT:    vmv1r.v v11, v24
 ; RV64-NEXT:    ret
   %wide.strided.load = call <vscale x 4 x i64> @llvm.experimental.vp.strided.load.nxv4i64.p0.iXLen(ptr align 4 %ptr, iXLen %stride, <vscale x 4 x i1> %mask, i32 %rvl)
   %wide.strided.load.cast = bitcast <vscale x 4 x i64> %wide.strided.load to <vscale x 8 x i32>

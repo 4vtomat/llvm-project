@@ -122,18 +122,17 @@ define void @vqrshl_s64(ptr nocapture noundef readonly %src, ptr nocapture nound
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vmsle.vi v0, v8, -1
 ; CHECK-NEXT:    li a0, -1
-; CHECK-NEXT:    li a2, 63
-; CHECK-NEXT:    vsll.vx v9, v8, a2
-; CHECK-NEXT:    vsra.vx v10, v9, a2
 ; CHECK-NEXT:    srli a2, a0, 1
-; CHECK-NEXT:    vmsne.vv v8, v8, v10
-; CHECK-NEXT:    vmv.s.x v10, a2
+; CHECK-NEXT:    vmv.s.x v9, a2
+; CHECK-NEXT:    li a2, 63
 ; CHECK-NEXT:    slli a0, a0, 63
-; CHECK-NEXT:    vmerge.vxm v10, v10, a0, v0
-; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v9, v10, v0
+; CHECK-NEXT:    vmsle.vi v0, v8, -1
+; CHECK-NEXT:    vsll.vx v10, v8, a2
+; CHECK-NEXT:    vmerge.vxm v9, v9, a0, v0
+; CHECK-NEXT:    vsra.vx v11, v10, a2
+; CHECK-NEXT:    vmsne.vv v0, v8, v11
+; CHECK-NEXT:    vmerge.vvm v8, v10, v9, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:

@@ -17,7 +17,9 @@ define void @foo() {
 ; CHECK-NEXT:    vluxseg2ei32.v v8, (zero), v12
 ; CHECK-NEXT:    call bar
 ; CHECK-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload
+; CHECK-NEXT:    .cfi_restore ra
 ; CHECK-NEXT:    addi sp, sp, 16
+; CHECK-NEXT:    .cfi_def_cfa_offset 0
 ; CHECK-NEXT:    ret
 entry:
   %v_0 = call target("riscv.vector.tuple", <vscale x 8 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_2t.nxv8i8(target("riscv.vector.tuple", <vscale x 8 x i8>, 2) poison, <vscale x 8 x i8> zeroinitializer, i32 0)

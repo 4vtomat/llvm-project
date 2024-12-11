@@ -19,6 +19,8 @@ define dso_local void @main() local_unnamed_addr {
 ; CHECK-NEXT:    sub sp, sp, a0
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x20, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 32 + 16 * vlenb
 ; CHECK-NEXT:    li a0, 55
+; CHECK-NEXT:    vsetvli a2, zero, e8, m2, ta, ma
+; CHECK-NEXT:    vmclr.m v0
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
 ; CHECK-NEXT:    vloxseg2ei16.v v12, (a1), v8
 ; CHECK-NEXT:    csrr a0, vlenb
@@ -30,8 +32,6 @@ define dso_local void @main() local_unnamed_addr {
 ; CHECK-NEXT:    vs4r.v v12, (a0) # Unknown-size Folded Spill
 ; CHECK-NEXT:    add a0, a0, a1
 ; CHECK-NEXT:    vs4r.v v16, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
-; CHECK-NEXT:    vmclr.m v0
 ; CHECK-NEXT:    li s0, 36
 ; CHECK-NEXT:    vsetvli zero, s0, e16, m4, ta, ma
 ; CHECK-NEXT:    vfwadd.vv v16, v8, v12, v0.t

@@ -7,20 +7,21 @@ define i32 @main() {
 ; CHECK-NEXT:    vsetvli a0, zero, e32, m4, ta, ma
 ; CHECK-NEXT:    vmclr.m v0
 ; CHECK-NEXT:    vmv.v.i v12, 0
-; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    vsetvli a0, zero, e32, m1, ta, ma
+; CHECK-NEXT:    vmv.v.i v16, 1
+; CHECK-NEXT:    vmv4r.v v8, v12
 ; CHECK-NEXT:    vsetivli zero, 0, e32, m4, tu, mu
 ; CHECK-NEXT:    vssubu.vv v8, v12, v12, v0.t
-; CHECK-NEXT:    vsetivli zero, 2, e32, m4, ta, ma
-; CHECK-NEXT:    vmul.vv v16, v12, v8
-; CHECK-NEXT:    vsetivli zero, 1, e32, m4, ta, ma
-; CHECK-NEXT:    vfcvt.f.xu.v v8, v16
 ; CHECK-NEXT:    vsetvli a0, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vmv.v.i v20, 1
-; CHECK-NEXT:    vmv.v.i v21, 0
+; CHECK-NEXT:    vmv.v.i v17, 0
+; CHECK-NEXT:    vsetivli zero, 2, e32, m4, ta, ma
+; CHECK-NEXT:    vmul.vv v20, v12, v8
+; CHECK-NEXT:    vsetivli zero, 1, e32, m4, ta, ma
+; CHECK-NEXT:    vfcvt.f.xu.v v8, v20
 ; CHECK-NEXT:    vsetivli zero, 2, e32, m4, tu, ma
-; CHECK-NEXT:    vredmaxu.vs v21, v16, v20
+; CHECK-NEXT:    vredmaxu.vs v17, v20, v16
 ; CHECK-NEXT:    vsetivli zero, 0, e32, m1, ta, ma
-; CHECK-NEXT:    vse32.v v21, (zero)
+; CHECK-NEXT:    vse32.v v17, (zero)
 ; CHECK-NEXT:    vsetivli zero, 0, e32, m4, ta, ma
 ; CHECK-NEXT:    vsseg2e32.v v8, (zero)
 ; CHECK-NEXT:    li a0, 0

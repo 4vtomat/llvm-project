@@ -14,14 +14,14 @@ define float @blas_dot(i64 %0, float* nocapture readonly %1, i64 %2, float* noca
 ; CHECK-NEXT:  .LBB0_2: # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    vle32.v v16, (a1)
 ; CHECK-NEXT:    vle32.v v24, (a3)
-; CHECK-NEXT:    vsetvli zero, zero, e32, m8, tu, ma
-; CHECK-NEXT:    vfmacc.vv v8, v16, v24
 ; CHECK-NEXT:    mul a7, a5, a2
 ; CHECK-NEXT:    slli a7, a7, 2
 ; CHECK-NEXT:    add a1, a1, a7
 ; CHECK-NEXT:    mul a7, a5, a4
-; CHECK-NEXT:    slli a7, a7, 2
 ; CHECK-NEXT:    sub a6, a6, a5
+; CHECK-NEXT:    slli a7, a7, 2
+; CHECK-NEXT:    vsetvli zero, zero, e32, m8, tu, ma
+; CHECK-NEXT:    vfmacc.vv v8, v16, v24
 ; CHECK-NEXT:    vsetvli a5, a6, e32, m8, ta, ma
 ; CHECK-NEXT:    add a3, a3, a7
 ; CHECK-NEXT:    bnez a5, .LBB0_2

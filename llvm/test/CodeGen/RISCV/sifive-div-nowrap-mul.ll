@@ -34,9 +34,9 @@ define i32 @udiv_negative_test(i32 %x) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    slli a1, a0, 1
 ; CHECK-NEXT:    add a0, a1, a0
-; CHECK-NEXT:    slli a0, a0, 32
 ; CHECK-NEXT:    lui a1, 699051
 ; CHECK-NEXT:    addi a1, a1, -1365
+; CHECK-NEXT:    slli a0, a0, 32
 ; CHECK-NEXT:    slli a1, a1, 32
 ; CHECK-NEXT:    mulhu a0, a0, a1
 ; CHECK-NEXT:    srli a0, a0, 33
@@ -80,12 +80,12 @@ define i32 @urem_negative_test(i32 %x) {
 ; CHECK-LABEL: urem_negative_test:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    slli a1, a0, 1
-; CHECK-NEXT:    add a0, a1, a0
-; CHECK-NEXT:    slli a1, a0, 32
 ; CHECK-NEXT:    lui a2, 699051
-; CHECK-NEXT:    addi a2, a2, -1365
-; CHECK-NEXT:    slli a2, a2, 32
-; CHECK-NEXT:    mulhu a1, a1, a2
+; CHECK-NEXT:    add a0, a1, a0
+; CHECK-NEXT:    addi a1, a2, -1365
+; CHECK-NEXT:    slli a2, a0, 32
+; CHECK-NEXT:    slli a1, a1, 32
+; CHECK-NEXT:    mulhu a1, a2, a1
 ; CHECK-NEXT:    srli a1, a1, 33
 ; CHECK-NEXT:    slli a2, a1, 1
 ; CHECK-NEXT:    add a1, a2, a1
@@ -175,9 +175,9 @@ define i32 @srem_negative_test(i32 %x) {
 ; CHECK-LABEL: srem_negative_test:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    slli a1, a0, 1
+; CHECK-NEXT:    lui a2, 349525
 ; CHECK-NEXT:    addw a0, a1, a0
-; CHECK-NEXT:    lui a1, 349525
-; CHECK-NEXT:    addiw a1, a1, 1366
+; CHECK-NEXT:    addiw a1, a2, 1366
 ; CHECK-NEXT:    mul a1, a0, a1
 ; CHECK-NEXT:    srli a2, a1, 63
 ; CHECK-NEXT:    srli a1, a1, 32

@@ -47,10 +47,10 @@ define void @vsli_n_s64(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    vle64.v v9, (a1)
 ; CHECK-NEXT:    li a0, -1
+; CHECK-NEXT:    li a1, 50
 ; CHECK-NEXT:    srli a0, a0, 14
 ; CHECK-NEXT:    vand.vx v8, v8, a0
-; CHECK-NEXT:    li a0, 50
-; CHECK-NEXT:    vsll.vx v9, v9, a0
+; CHECK-NEXT:    vsll.vx v9, v9, a1
 ; CHECK-NEXT:    vor.vv v8, v8, v9
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
@@ -211,10 +211,10 @@ define void @vsliq_n_s64(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    vle64.v v9, (a1)
 ; CHECK-NEXT:    li a0, -1
+; CHECK-NEXT:    li a1, 36
 ; CHECK-NEXT:    srli a0, a0, 28
 ; CHECK-NEXT:    vand.vx v8, v8, a0
-; CHECK-NEXT:    li a0, 36
-; CHECK-NEXT:    vsll.vx v9, v9, a0
+; CHECK-NEXT:    vsll.vx v9, v9, a1
 ; CHECK-NEXT:    vor.vv v8, v8, v9
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret

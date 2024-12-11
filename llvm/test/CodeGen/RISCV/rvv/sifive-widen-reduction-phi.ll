@@ -20,8 +20,8 @@ define float @sum(i32 %n, ptr %arr, float %s) {
 ; CHECK-NEXT:  .LBB0_2: # %vector.body
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    sub a3, a0, a2
-; CHECK-NEXT:    vsetvli a3, a3, e32, m4, ta, ma
 ; CHECK-NEXT:    slli a4, a2, 2
+; CHECK-NEXT:    vsetvli a3, a3, e32, m4, ta, ma
 ; CHECK-NEXT:    add a4, a1, a4
 ; CHECK-NEXT:    vle32.v v12, (a4)
 ; CHECK-NEXT:    add a2, a2, a3
@@ -70,8 +70,8 @@ define float @sum2(i32 %n, ptr %arr) {
 ; CHECK-NEXT:  .LBB1_2: # %vector.body
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    sub a3, a0, a2
-; CHECK-NEXT:    vsetvli a3, a3, e32, m4, ta, ma
 ; CHECK-NEXT:    slli a4, a2, 2
+; CHECK-NEXT:    vsetvli a3, a3, e32, m4, ta, ma
 ; CHECK-NEXT:    add a4, a1, a4
 ; CHECK-NEXT:    vle32.v v12, (a4)
 ; CHECK-NEXT:    add a2, a2, a3

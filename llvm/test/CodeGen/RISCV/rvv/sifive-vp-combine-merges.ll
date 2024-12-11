@@ -6,9 +6,9 @@ define <vscale x 2 x double> @test_combine_vp_merges(<vscale x 2 x i64> %arg, <v
 ; CHECK:       # %bb.0: # %bb
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    vmseq.vi v0, v8, 0
-; CHECK-NEXT:    vmv2r.v v8, v12
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, tu, ma
-; CHECK-NEXT:    vmerge.vvm v8, v12, v10, v0
+; CHECK-NEXT:    vmerge.vvm v12, v12, v10, v0
+; CHECK-NEXT:    vmv2r.v v8, v12
 ; CHECK-NEXT:    ret
 bb:
   %tmp = tail call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i64(<vscale x 2 x i64> %arg, <vscale x 2 x i64> zeroinitializer, metadata !"eq", <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 %arg3)

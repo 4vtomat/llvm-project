@@ -403,8 +403,8 @@ define <vscale x 1 x i64> @vpudiv_by_const_with_add_nxv1i64(<vscale x 1 x i64> %
 ; CHECK-NEXT:    ld a1, %lo(.LCPI23_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vmulhu.vx v9, v8, a1, v0.t
-; CHECK-NEXT:    vsub.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    li a0, -1
+; CHECK-NEXT:    vsub.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    slli a0, a0, 63
 ; CHECK-NEXT:    vmulhu.vx v8, v8, a0, v0.t
 ; CHECK-NEXT:    vadd.vv v8, v8, v9, v0.t
@@ -538,12 +538,12 @@ define <vscale x 4 x i16> @vpsdiv_pow2_nxv4i16(<vscale x 4 x i16> %va, <vscale x
 ; CHECK-NEXT:    vsrl.vi v11, v11, 14, v0.t
 ; CHECK-NEXT:    vadd.vv v11, v8, v11, v0.t
 ; CHECK-NEXT:    vsra.vi v11, v11, 2, v0.t
+; CHECK-NEXT:    vmv.v.i v12, 0
 ; CHECK-NEXT:    vmv.v.v v0, v10
 ; CHECK-NEXT:    vmerge.vvm v8, v11, v8, v0
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vrsub.vi v10, v8, 0, v0.t
-; CHECK-NEXT:    vmv.v.i v11, 0
-; CHECK-NEXT:    vmsgt.vi v0, v11, 4, v0.t
+; CHECK-NEXT:    vmsgt.vi v0, v12, 4, v0.t
 ; CHECK-NEXT:    vmerge.vvm v8, v8, v10, v0
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 4 x i16> undef, i16 4, i32 0
@@ -565,12 +565,12 @@ define <vscale x 8 x i8> @vpsdiv_pow2_nxv8i8(<vscale x 8 x i8> %va, <vscale x 8 
 ; CHECK-NEXT:    vsrl.vi v11, v11, 6, v0.t
 ; CHECK-NEXT:    vadd.vv v11, v8, v11, v0.t
 ; CHECK-NEXT:    vsra.vi v11, v11, 2, v0.t
+; CHECK-NEXT:    vmv.v.i v12, 0
 ; CHECK-NEXT:    vmv.v.v v0, v10
 ; CHECK-NEXT:    vmerge.vvm v8, v11, v8, v0
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vrsub.vi v10, v8, 0, v0.t
-; CHECK-NEXT:    vmv.v.i v11, 0
-; CHECK-NEXT:    vmsgt.vi v0, v11, 4, v0.t
+; CHECK-NEXT:    vmsgt.vi v0, v12, 4, v0.t
 ; CHECK-NEXT:    vmerge.vvm v8, v8, v10, v0
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 8 x i8> undef, i8 4, i32 0
@@ -592,12 +592,12 @@ define <vscale x 2 x i32> @vpsdiv_pow2_nxv2i32(<vscale x 2 x i32> %va, <vscale x
 ; CHECK-NEXT:    vsrl.vi v11, v11, 30, v0.t
 ; CHECK-NEXT:    vadd.vv v11, v8, v11, v0.t
 ; CHECK-NEXT:    vsra.vi v11, v11, 2, v0.t
+; CHECK-NEXT:    vmv.v.i v12, 0
 ; CHECK-NEXT:    vmv.v.v v0, v10
 ; CHECK-NEXT:    vmerge.vvm v8, v11, v8, v0
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vrsub.vi v10, v8, 0, v0.t
-; CHECK-NEXT:    vmv.v.i v11, 0
-; CHECK-NEXT:    vmsgt.vi v0, v11, 4, v0.t
+; CHECK-NEXT:    vmsgt.vi v0, v12, 4, v0.t
 ; CHECK-NEXT:    vmerge.vvm v8, v8, v10, v0
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 2 x i32> undef, i32 4, i32 0
@@ -639,21 +639,21 @@ define <vscale x 1 x i64> @vpsdiv_pow2_nxv1i64(<vscale x 1 x i64> %va, <vscale x
 ; CHECK-NEXT:    vmv1r.v v9, v0
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v10, 4
+; CHECK-NEXT:    li a0, 63
 ; CHECK-NEXT:    vmseq.vi v11, v10, -1, v0.t
 ; CHECK-NEXT:    vmseq.vi v10, v10, 1, v0.t
-; CHECK-NEXT:    vmor.mm v10, v10, v11
-; CHECK-NEXT:    li a0, 63
-; CHECK-NEXT:    vsra.vx v11, v8, a0, v0.t
+; CHECK-NEXT:    vsra.vx v12, v8, a0, v0.t
 ; CHECK-NEXT:    li a0, 62
-; CHECK-NEXT:    vsrl.vx v11, v11, a0, v0.t
+; CHECK-NEXT:    vmor.mm v10, v10, v11
+; CHECK-NEXT:    vsrl.vx v11, v12, a0, v0.t
 ; CHECK-NEXT:    vadd.vv v11, v8, v11, v0.t
 ; CHECK-NEXT:    vsra.vi v11, v11, 2, v0.t
+; CHECK-NEXT:    vmv.v.i v12, 0
 ; CHECK-NEXT:    vmv.v.v v0, v10
 ; CHECK-NEXT:    vmerge.vvm v8, v11, v8, v0
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vrsub.vi v10, v8, 0, v0.t
-; CHECK-NEXT:    vmv.v.i v11, 0
-; CHECK-NEXT:    vmsgt.vi v0, v11, 4, v0.t
+; CHECK-NEXT:    vmsgt.vi v0, v12, 4, v0.t
 ; CHECK-NEXT:    vmerge.vvm v8, v8, v10, v0
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 1 x i64> undef, i64 4, i32 0
@@ -1094,8 +1094,8 @@ define <vscale x 1 x i64> @vpsrem_by_const_nxv1i64(<vscale x 1 x i64> %va, <vsca
 ; CHECK-NEXT:    ld a1, %lo(.LCPI61_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vmulh.vx v9, v8, a1, v0.t
-; CHECK-NEXT:    vsra.vi v9, v9, 1, v0.t
 ; CHECK-NEXT:    li a0, 63
+; CHECK-NEXT:    vsra.vi v9, v9, 1, v0.t
 ; CHECK-NEXT:    vsrl.vx v10, v9, a0, v0.t
 ; CHECK-NEXT:    vand.vi v10, v10, -1, v0.t
 ; CHECK-NEXT:    vadd.vv v9, v9, v10, v0.t

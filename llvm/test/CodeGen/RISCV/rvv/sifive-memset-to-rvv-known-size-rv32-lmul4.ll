@@ -9,20 +9,20 @@ define void @KnownSize(i8* nocapture %dst, i8 %val) {
 ; CHECK-NEXT:    vsetvli a2, a2, e8, m4, ta, ma
 ; CHECK-NEXT:    vmv.v.x v8, a1
 ; CHECK-NEXT:    add a1, a0, a2
-; CHECK-NEXT:    add a3, a1, a2
-; CHECK-NEXT:    add a4, a3, a2
-; CHECK-NEXT:    add a5, a4, a2
-; CHECK-NEXT:    add a6, a5, a2
-; CHECK-NEXT:    add a7, a6, a2
-; CHECK-NEXT:    add a2, a7, a2
 ; CHECK-NEXT:    vse8.v v8, (a0)
-; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    vse8.v v8, (a3)
-; CHECK-NEXT:    vse8.v v8, (a4)
-; CHECK-NEXT:    vse8.v v8, (a5)
-; CHECK-NEXT:    vse8.v v8, (a6)
-; CHECK-NEXT:    vse8.v v8, (a7)
 ; CHECK-NEXT:    li a0, 248
+; CHECK-NEXT:    add a3, a1, a2
+; CHECK-NEXT:    vse8.v v8, (a1)
+; CHECK-NEXT:    add a1, a3, a2
+; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    add a3, a1, a2
+; CHECK-NEXT:    vse8.v v8, (a1)
+; CHECK-NEXT:    add a1, a3, a2
+; CHECK-NEXT:    vse8.v v8, (a3)
+; CHECK-NEXT:    add a3, a1, a2
+; CHECK-NEXT:    vse8.v v8, (a1)
+; CHECK-NEXT:    add a2, a3, a2
+; CHECK-NEXT:    vse8.v v8, (a3)
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m4, ta, ma
 ; CHECK-NEXT:    vse8.v v8, (a2)
 ; CHECK-NEXT:    ret

@@ -6,29 +6,29 @@ define void @vmaxv_f16(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 1
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
-; CHECK-NEXT:    vmfne.vv v10, v9, v9
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_0)
 ; CHECK-NEXT:    flh fa5, %lo(.LCPI0_0)(a0)
-; CHECK-NEXT:    vmfne.vv v11, v8, v8
-; CHECK-NEXT:    vmor.mm v0, v11, v10
+; CHECK-NEXT:    vslidedown.vi v9, v8, 1
+; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
+; CHECK-NEXT:    vmfne.vv v10, v8, v8
+; CHECK-NEXT:    vsetivli zero, 1, e16, mf2, ta, ma
+; CHECK-NEXT:    vslidedown.vi v11, v8, 2
+; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
+; CHECK-NEXT:    vmfne.vv v12, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v10, v12
 ; CHECK-NEXT:    vfmax.vv v9, v8, v9
 ; CHECK-NEXT:    vfmerge.vfm v9, v9, fa5, v0
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf2, ta, ma
-; CHECK-NEXT:    vslidedown.vi v10, v8, 2
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
-; CHECK-NEXT:    vmfne.vv v11, v9, v9
-; CHECK-NEXT:    vmfne.vv v12, v10, v10
-; CHECK-NEXT:    vmor.mm v0, v11, v12
-; CHECK-NEXT:    vfmax.vv v9, v9, v10
-; CHECK-NEXT:    vfmerge.vfm v9, v9, fa5, v0
+; CHECK-NEXT:    vmfne.vv v10, v11, v11
+; CHECK-NEXT:    vmfne.vv v12, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v12, v10
 ; CHECK-NEXT:    vsetivli zero, 1, e16, mf2, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 3
 ; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
-; CHECK-NEXT:    vmfne.vv v10, v9, v9
-; CHECK-NEXT:    vmfne.vv v11, v8, v8
-; CHECK-NEXT:    vmor.mm v0, v10, v11
+; CHECK-NEXT:    vfmax.vv v9, v9, v11
+; CHECK-NEXT:    vfmerge.vfm v9, v9, fa5, v0
+; CHECK-NEXT:    vmfne.vv v10, v8, v8
+; CHECK-NEXT:    vmfne.vv v11, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v11, v10
 ; CHECK-NEXT:    vfmax.vv v8, v9, v8
 ; CHECK-NEXT:    vfmerge.vfm v8, v8, fa5, v0
 ; CHECK-NEXT:    vse16.v v8, (a1)
@@ -47,12 +47,12 @@ define void @vmaxv_f32(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vslidedown.vi v9, v8, 1
 ; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; CHECK-NEXT:    vfmax.vv v10, v8, v9
-; CHECK-NEXT:    vmfne.vv v9, v9, v9
-; CHECK-NEXT:    vmfne.vv v8, v8, v8
-; CHECK-NEXT:    vmor.mm v0, v8, v9
+; CHECK-NEXT:    vmfne.vv v10, v8, v8
+; CHECK-NEXT:    vmfne.vv v11, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v10, v11
 ; CHECK-NEXT:    lui a0, 523264
-; CHECK-NEXT:    vmerge.vxm v8, v10, a0, v0
+; CHECK-NEXT:    vfmax.vv v8, v8, v9
+; CHECK-NEXT:    vmerge.vxm v8, v8, a0, v0
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -67,61 +67,61 @@ define void @vmaxvq_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 1
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
-; CHECK-NEXT:    vmfne.vv v10, v9, v9
 ; CHECK-NEXT:    lui a0, %hi(.LCPI2_0)
 ; CHECK-NEXT:    flh fa5, %lo(.LCPI2_0)(a0)
-; CHECK-NEXT:    vmfne.vv v11, v8, v8
-; CHECK-NEXT:    vmor.mm v0, v11, v10
+; CHECK-NEXT:    vslidedown.vi v9, v8, 1
+; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
+; CHECK-NEXT:    vmfne.vv v10, v8, v8
+; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
+; CHECK-NEXT:    vslidedown.vi v11, v8, 2
+; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
+; CHECK-NEXT:    vmfne.vv v12, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v10, v12
 ; CHECK-NEXT:    vfmax.vv v9, v8, v9
 ; CHECK-NEXT:    vfmerge.vfm v9, v9, fa5, v0
-; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vi v10, v8, 2
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
-; CHECK-NEXT:    vmfne.vv v11, v9, v9
-; CHECK-NEXT:    vmfne.vv v12, v10, v10
-; CHECK-NEXT:    vmor.mm v0, v11, v12
-; CHECK-NEXT:    vfmax.vv v9, v9, v10
-; CHECK-NEXT:    vfmerge.vfm v9, v9, fa5, v0
+; CHECK-NEXT:    vmfne.vv v10, v11, v11
+; CHECK-NEXT:    vmfne.vv v12, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v12, v10
 ; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v10, v8, 3
 ; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
-; CHECK-NEXT:    vmfne.vv v11, v9, v9
-; CHECK-NEXT:    vmfne.vv v12, v10, v10
-; CHECK-NEXT:    vmor.mm v0, v11, v12
-; CHECK-NEXT:    vfmax.vv v9, v9, v10
+; CHECK-NEXT:    vfmax.vv v9, v9, v11
 ; CHECK-NEXT:    vfmerge.vfm v9, v9, fa5, v0
+; CHECK-NEXT:    vmfne.vv v11, v10, v10
+; CHECK-NEXT:    vmfne.vv v12, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v12, v11
 ; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vi v10, v8, 4
+; CHECK-NEXT:    vslidedown.vi v11, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
-; CHECK-NEXT:    vmfne.vv v11, v9, v9
-; CHECK-NEXT:    vmfne.vv v12, v10, v10
-; CHECK-NEXT:    vmor.mm v0, v11, v12
 ; CHECK-NEXT:    vfmax.vv v9, v9, v10
 ; CHECK-NEXT:    vfmerge.vfm v9, v9, fa5, v0
+; CHECK-NEXT:    vmfne.vv v10, v11, v11
+; CHECK-NEXT:    vmfne.vv v12, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v12, v10
 ; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v10, v8, 5
 ; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
-; CHECK-NEXT:    vmfne.vv v11, v9, v9
-; CHECK-NEXT:    vmfne.vv v12, v10, v10
-; CHECK-NEXT:    vmor.mm v0, v11, v12
-; CHECK-NEXT:    vfmax.vv v9, v9, v10
+; CHECK-NEXT:    vfmax.vv v9, v9, v11
 ; CHECK-NEXT:    vfmerge.vfm v9, v9, fa5, v0
+; CHECK-NEXT:    vmfne.vv v11, v10, v10
+; CHECK-NEXT:    vmfne.vv v12, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v12, v11
 ; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vi v10, v8, 6
+; CHECK-NEXT:    vslidedown.vi v11, v8, 6
 ; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
-; CHECK-NEXT:    vmfne.vv v11, v9, v9
-; CHECK-NEXT:    vmfne.vv v12, v10, v10
-; CHECK-NEXT:    vmor.mm v0, v11, v12
 ; CHECK-NEXT:    vfmax.vv v9, v9, v10
 ; CHECK-NEXT:    vfmerge.vfm v9, v9, fa5, v0
+; CHECK-NEXT:    vmfne.vv v10, v11, v11
+; CHECK-NEXT:    vmfne.vv v12, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v12, v10
 ; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 7
 ; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
-; CHECK-NEXT:    vmfne.vv v10, v9, v9
-; CHECK-NEXT:    vmfne.vv v11, v8, v8
-; CHECK-NEXT:    vmor.mm v0, v10, v11
+; CHECK-NEXT:    vfmax.vv v9, v9, v11
+; CHECK-NEXT:    vfmerge.vfm v9, v9, fa5, v0
+; CHECK-NEXT:    vmfne.vv v10, v8, v8
+; CHECK-NEXT:    vmfne.vv v11, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v11, v10
 ; CHECK-NEXT:    vfmax.vv v8, v9, v8
 ; CHECK-NEXT:    vfmerge.vfm v8, v8, fa5, v0
 ; CHECK-NEXT:    vse16.v v8, (a1)
@@ -138,28 +138,28 @@ define void @vmaxvq_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    lui a0, 523264
 ; CHECK-NEXT:    vslidedown.vi v9, v8, 1
 ; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; CHECK-NEXT:    vfmax.vv v10, v8, v9
-; CHECK-NEXT:    vmfne.vv v9, v9, v9
-; CHECK-NEXT:    vmfne.vv v11, v8, v8
-; CHECK-NEXT:    vmor.mm v0, v11, v9
-; CHECK-NEXT:    lui a0, 523264
-; CHECK-NEXT:    vmerge.vxm v9, v10, a0, v0
+; CHECK-NEXT:    vmfne.vv v10, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vi v10, v8, 2
+; CHECK-NEXT:    vslidedown.vi v11, v8, 2
 ; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; CHECK-NEXT:    vmfne.vv v11, v9, v9
-; CHECK-NEXT:    vmfne.vv v12, v10, v10
-; CHECK-NEXT:    vmor.mm v0, v11, v12
-; CHECK-NEXT:    vfmax.vv v9, v9, v10
+; CHECK-NEXT:    vmfne.vv v12, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v10, v12
+; CHECK-NEXT:    vfmax.vv v9, v8, v9
 ; CHECK-NEXT:    vmerge.vxm v9, v9, a0, v0
+; CHECK-NEXT:    vmfne.vv v10, v11, v11
+; CHECK-NEXT:    vmfne.vv v12, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v12, v10
 ; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 3
 ; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; CHECK-NEXT:    vmfne.vv v10, v9, v9
-; CHECK-NEXT:    vmfne.vv v11, v8, v8
-; CHECK-NEXT:    vmor.mm v0, v10, v11
+; CHECK-NEXT:    vfmax.vv v9, v9, v11
+; CHECK-NEXT:    vmerge.vxm v9, v9, a0, v0
+; CHECK-NEXT:    vmfne.vv v10, v8, v8
+; CHECK-NEXT:    vmfne.vv v11, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v11, v10
 ; CHECK-NEXT:    vfmax.vv v8, v9, v8
 ; CHECK-NEXT:    vmerge.vxm v8, v8, a0, v0
 ; CHECK-NEXT:    vse32.v v8, (a1)
@@ -176,13 +176,13 @@ define void @vmaxvq_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 1
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-; CHECK-NEXT:    vmfne.vv v10, v9, v9
 ; CHECK-NEXT:    lui a0, %hi(.LCPI4_0)
 ; CHECK-NEXT:    fld fa5, %lo(.LCPI4_0)(a0)
-; CHECK-NEXT:    vmfne.vv v11, v8, v8
-; CHECK-NEXT:    vmor.mm v0, v11, v10
+; CHECK-NEXT:    vslidedown.vi v9, v8, 1
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
+; CHECK-NEXT:    vmfne.vv v10, v8, v8
+; CHECK-NEXT:    vmfne.vv v11, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v10, v11
 ; CHECK-NEXT:    vfmax.vv v8, v8, v9
 ; CHECK-NEXT:    vfmerge.vfm v8, v8, fa5, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
@@ -199,29 +199,29 @@ define void @vminv_f16(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 1
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
-; CHECK-NEXT:    vmfne.vv v10, v9, v9
 ; CHECK-NEXT:    lui a0, %hi(.LCPI5_0)
 ; CHECK-NEXT:    flh fa5, %lo(.LCPI5_0)(a0)
-; CHECK-NEXT:    vmfne.vv v11, v8, v8
-; CHECK-NEXT:    vmor.mm v0, v11, v10
+; CHECK-NEXT:    vslidedown.vi v9, v8, 1
+; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
+; CHECK-NEXT:    vmfne.vv v10, v8, v8
+; CHECK-NEXT:    vsetivli zero, 1, e16, mf2, ta, ma
+; CHECK-NEXT:    vslidedown.vi v11, v8, 2
+; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
+; CHECK-NEXT:    vmfne.vv v12, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v10, v12
 ; CHECK-NEXT:    vfmin.vv v9, v8, v9
 ; CHECK-NEXT:    vfmerge.vfm v9, v9, fa5, v0
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf2, ta, ma
-; CHECK-NEXT:    vslidedown.vi v10, v8, 2
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
-; CHECK-NEXT:    vmfne.vv v11, v9, v9
-; CHECK-NEXT:    vmfne.vv v12, v10, v10
-; CHECK-NEXT:    vmor.mm v0, v11, v12
-; CHECK-NEXT:    vfmin.vv v9, v9, v10
-; CHECK-NEXT:    vfmerge.vfm v9, v9, fa5, v0
+; CHECK-NEXT:    vmfne.vv v10, v11, v11
+; CHECK-NEXT:    vmfne.vv v12, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v12, v10
 ; CHECK-NEXT:    vsetivli zero, 1, e16, mf2, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 3
 ; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
-; CHECK-NEXT:    vmfne.vv v10, v9, v9
-; CHECK-NEXT:    vmfne.vv v11, v8, v8
-; CHECK-NEXT:    vmor.mm v0, v10, v11
+; CHECK-NEXT:    vfmin.vv v9, v9, v11
+; CHECK-NEXT:    vfmerge.vfm v9, v9, fa5, v0
+; CHECK-NEXT:    vmfne.vv v10, v8, v8
+; CHECK-NEXT:    vmfne.vv v11, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v11, v10
 ; CHECK-NEXT:    vfmin.vv v8, v9, v8
 ; CHECK-NEXT:    vfmerge.vfm v8, v8, fa5, v0
 ; CHECK-NEXT:    vse16.v v8, (a1)
@@ -240,12 +240,12 @@ define void @vminv_f32(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vslidedown.vi v9, v8, 1
 ; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; CHECK-NEXT:    vfmin.vv v10, v8, v9
-; CHECK-NEXT:    vmfne.vv v9, v9, v9
-; CHECK-NEXT:    vmfne.vv v8, v8, v8
-; CHECK-NEXT:    vmor.mm v0, v8, v9
+; CHECK-NEXT:    vmfne.vv v10, v8, v8
+; CHECK-NEXT:    vmfne.vv v11, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v10, v11
 ; CHECK-NEXT:    lui a0, 523264
-; CHECK-NEXT:    vmerge.vxm v8, v10, a0, v0
+; CHECK-NEXT:    vfmin.vv v8, v8, v9
+; CHECK-NEXT:    vmerge.vxm v8, v8, a0, v0
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -260,61 +260,61 @@ define void @vminvq_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 1
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
-; CHECK-NEXT:    vmfne.vv v10, v9, v9
 ; CHECK-NEXT:    lui a0, %hi(.LCPI7_0)
 ; CHECK-NEXT:    flh fa5, %lo(.LCPI7_0)(a0)
-; CHECK-NEXT:    vmfne.vv v11, v8, v8
-; CHECK-NEXT:    vmor.mm v0, v11, v10
+; CHECK-NEXT:    vslidedown.vi v9, v8, 1
+; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
+; CHECK-NEXT:    vmfne.vv v10, v8, v8
+; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
+; CHECK-NEXT:    vslidedown.vi v11, v8, 2
+; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
+; CHECK-NEXT:    vmfne.vv v12, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v10, v12
 ; CHECK-NEXT:    vfmin.vv v9, v8, v9
 ; CHECK-NEXT:    vfmerge.vfm v9, v9, fa5, v0
-; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vi v10, v8, 2
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
-; CHECK-NEXT:    vmfne.vv v11, v9, v9
-; CHECK-NEXT:    vmfne.vv v12, v10, v10
-; CHECK-NEXT:    vmor.mm v0, v11, v12
-; CHECK-NEXT:    vfmin.vv v9, v9, v10
-; CHECK-NEXT:    vfmerge.vfm v9, v9, fa5, v0
+; CHECK-NEXT:    vmfne.vv v10, v11, v11
+; CHECK-NEXT:    vmfne.vv v12, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v12, v10
 ; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v10, v8, 3
 ; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
-; CHECK-NEXT:    vmfne.vv v11, v9, v9
-; CHECK-NEXT:    vmfne.vv v12, v10, v10
-; CHECK-NEXT:    vmor.mm v0, v11, v12
-; CHECK-NEXT:    vfmin.vv v9, v9, v10
+; CHECK-NEXT:    vfmin.vv v9, v9, v11
 ; CHECK-NEXT:    vfmerge.vfm v9, v9, fa5, v0
+; CHECK-NEXT:    vmfne.vv v11, v10, v10
+; CHECK-NEXT:    vmfne.vv v12, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v12, v11
 ; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vi v10, v8, 4
+; CHECK-NEXT:    vslidedown.vi v11, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
-; CHECK-NEXT:    vmfne.vv v11, v9, v9
-; CHECK-NEXT:    vmfne.vv v12, v10, v10
-; CHECK-NEXT:    vmor.mm v0, v11, v12
 ; CHECK-NEXT:    vfmin.vv v9, v9, v10
 ; CHECK-NEXT:    vfmerge.vfm v9, v9, fa5, v0
+; CHECK-NEXT:    vmfne.vv v10, v11, v11
+; CHECK-NEXT:    vmfne.vv v12, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v12, v10
 ; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v10, v8, 5
 ; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
-; CHECK-NEXT:    vmfne.vv v11, v9, v9
-; CHECK-NEXT:    vmfne.vv v12, v10, v10
-; CHECK-NEXT:    vmor.mm v0, v11, v12
-; CHECK-NEXT:    vfmin.vv v9, v9, v10
+; CHECK-NEXT:    vfmin.vv v9, v9, v11
 ; CHECK-NEXT:    vfmerge.vfm v9, v9, fa5, v0
+; CHECK-NEXT:    vmfne.vv v11, v10, v10
+; CHECK-NEXT:    vmfne.vv v12, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v12, v11
 ; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vi v10, v8, 6
+; CHECK-NEXT:    vslidedown.vi v11, v8, 6
 ; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
-; CHECK-NEXT:    vmfne.vv v11, v9, v9
-; CHECK-NEXT:    vmfne.vv v12, v10, v10
-; CHECK-NEXT:    vmor.mm v0, v11, v12
 ; CHECK-NEXT:    vfmin.vv v9, v9, v10
 ; CHECK-NEXT:    vfmerge.vfm v9, v9, fa5, v0
+; CHECK-NEXT:    vmfne.vv v10, v11, v11
+; CHECK-NEXT:    vmfne.vv v12, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v12, v10
 ; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 7
 ; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
-; CHECK-NEXT:    vmfne.vv v10, v9, v9
-; CHECK-NEXT:    vmfne.vv v11, v8, v8
-; CHECK-NEXT:    vmor.mm v0, v10, v11
+; CHECK-NEXT:    vfmin.vv v9, v9, v11
+; CHECK-NEXT:    vfmerge.vfm v9, v9, fa5, v0
+; CHECK-NEXT:    vmfne.vv v10, v8, v8
+; CHECK-NEXT:    vmfne.vv v11, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v11, v10
 ; CHECK-NEXT:    vfmin.vv v8, v9, v8
 ; CHECK-NEXT:    vfmerge.vfm v8, v8, fa5, v0
 ; CHECK-NEXT:    vse16.v v8, (a1)
@@ -331,28 +331,28 @@ define void @vminvq_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    lui a0, 523264
 ; CHECK-NEXT:    vslidedown.vi v9, v8, 1
 ; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; CHECK-NEXT:    vfmin.vv v10, v8, v9
-; CHECK-NEXT:    vmfne.vv v9, v9, v9
-; CHECK-NEXT:    vmfne.vv v11, v8, v8
-; CHECK-NEXT:    vmor.mm v0, v11, v9
-; CHECK-NEXT:    lui a0, 523264
-; CHECK-NEXT:    vmerge.vxm v9, v10, a0, v0
+; CHECK-NEXT:    vmfne.vv v10, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vi v10, v8, 2
+; CHECK-NEXT:    vslidedown.vi v11, v8, 2
 ; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; CHECK-NEXT:    vmfne.vv v11, v9, v9
-; CHECK-NEXT:    vmfne.vv v12, v10, v10
-; CHECK-NEXT:    vmor.mm v0, v11, v12
-; CHECK-NEXT:    vfmin.vv v9, v9, v10
+; CHECK-NEXT:    vmfne.vv v12, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v10, v12
+; CHECK-NEXT:    vfmin.vv v9, v8, v9
 ; CHECK-NEXT:    vmerge.vxm v9, v9, a0, v0
+; CHECK-NEXT:    vmfne.vv v10, v11, v11
+; CHECK-NEXT:    vmfne.vv v12, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v12, v10
 ; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 3
 ; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; CHECK-NEXT:    vmfne.vv v10, v9, v9
-; CHECK-NEXT:    vmfne.vv v11, v8, v8
-; CHECK-NEXT:    vmor.mm v0, v10, v11
+; CHECK-NEXT:    vfmin.vv v9, v9, v11
+; CHECK-NEXT:    vmerge.vxm v9, v9, a0, v0
+; CHECK-NEXT:    vmfne.vv v10, v8, v8
+; CHECK-NEXT:    vmfne.vv v11, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v11, v10
 ; CHECK-NEXT:    vfmin.vv v8, v9, v8
 ; CHECK-NEXT:    vmerge.vxm v8, v8, a0, v0
 ; CHECK-NEXT:    vse32.v v8, (a1)
@@ -369,13 +369,13 @@ define void @vminvq_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 1
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-; CHECK-NEXT:    vmfne.vv v10, v9, v9
 ; CHECK-NEXT:    lui a0, %hi(.LCPI9_0)
 ; CHECK-NEXT:    fld fa5, %lo(.LCPI9_0)(a0)
-; CHECK-NEXT:    vmfne.vv v11, v8, v8
-; CHECK-NEXT:    vmor.mm v0, v11, v10
+; CHECK-NEXT:    vslidedown.vi v9, v8, 1
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
+; CHECK-NEXT:    vmfne.vv v10, v8, v8
+; CHECK-NEXT:    vmfne.vv v11, v9, v9
+; CHECK-NEXT:    vmor.mm v0, v10, v11
 ; CHECK-NEXT:    vfmin.vv v8, v8, v9
 ; CHECK-NEXT:    vfmerge.vfm v8, v8, fa5, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)

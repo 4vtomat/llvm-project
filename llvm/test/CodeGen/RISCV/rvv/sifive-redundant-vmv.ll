@@ -5,32 +5,33 @@
 define dso_local void @test(i64 %channel, i32* nocapture readonly %output_shift, i32* nocapture readonly %bias_data, i32* nocapture %output_data) local_unnamed_addr {
 ; CHECK-LABEL: test:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli a4, a0, e8, m1, ta, ma
-; CHECK-NEXT:    beq a4, zero, .LBB0_3
+; CHECK-NEXT:    vsetvli a5, a0, e8, m1, ta, ma
+; CHECK-NEXT:    beq a5, zero, .LBB0_3
 ; CHECK-NEXT:  # %bb.1: # %while.body.preheader
-; CHECK-NEXT:    addi a5, zero, 0
+; CHECK-NEXT:    addi a4, zero, 0
+; CHECK-NEXT:    csrrwi zero, vxrm, 3
 ; CHECK-NEXT:  .LBB0_2: # %while.body
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
-; CHECK-NEXT:    slli a6, a5, 2
+; CHECK-NEXT:    slli a6, a4, 2
+; CHECK-NEXT:    vsetvli zero, a5, e32, m4, ta, ma
+; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    sub a0, a0, a5
 ; CHECK-NEXT:    add a7, a1, a6
-; CHECK-NEXT:    vsetvli zero, a4, e32, m4, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a7)
-; CHECK-NEXT:    vmslt.vx v0, v8, zero
-; CHECK-NEXT:    add a7, a2, a6
 ; CHECK-NEXT:    vle32.v v12, (a7)
-; CHECK-NEXT:    vmv.v.i v16, 0
-; CHECK-NEXT:    vsetvli zero, zero, e32, m4, tu, mu
-; CHECK-NEXT:    vrsub.vi v16, v8, 0, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
-; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
-; CHECK-NEXT:    vsll.vv v8, v12, v8
-; CHECK-NEXT:    vssra.vv v8, v8, v16
+; CHECK-NEXT:    add a4, a5, a4
+; CHECK-NEXT:    add a5, a2, a6
+; CHECK-NEXT:    vle32.v v16, (a5)
+; CHECK-NEXT:    vmslt.vx v0, v12, zero
 ; CHECK-NEXT:    add a6, a3, a6
+; CHECK-NEXT:    vsetvli zero, zero, e32, m4, tu, mu
+; CHECK-NEXT:    vrsub.vi v8, v12, 0, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
+; CHECK-NEXT:    vmerge.vim v12, v12, 0, v0
+; CHECK-NEXT:    vsll.vv v12, v16, v12
+; CHECK-NEXT:    vssra.vv v8, v12, v8
 ; CHECK-NEXT:    vse32.v v8, (a6)
-; CHECK-NEXT:    sub a0, a0, a4
-; CHECK-NEXT:    add a5, a4, a5
-; CHECK-NEXT:    vsetvli a4, a0, e8, m1, ta, ma
-; CHECK-NEXT:    bne a4, zero, .LBB0_2
+; CHECK-NEXT:    vsetvli a5, a0, e8, m1, ta, ma
+; CHECK-NEXT:    bne a5, zero, .LBB0_2
 ; CHECK-NEXT:  .LBB0_3: # %while.end
 ; CHECK-NEXT:    jalr zero, 0(ra)
 entry:
@@ -54,7 +55,7 @@ while.body:                                       ; preds = %entry, %while.body
   %9 = call <vscale x 8 x i32> @llvm.riscv.vmerge.nxv8i32.i32.i64(<vscale x 8 x i32> undef, <vscale x 8 x i32> %3, i32 0, <vscale x 8 x i1> %5, i64 %1)
   %10 = call <vscale x 8 x i32> @llvm.riscv.vmv.v.v.nxv8i32.i64(<vscale x 8 x i32> undef, <vscale x 8 x i32> %7, i64 %1)
   %11 = call <vscale x 8 x i32> @llvm.riscv.vsll.nxv8i32.nxv8i32.i64(<vscale x 8 x i32> undef, <vscale x 8 x i32> %10, <vscale x 8 x i32> %9, i64 %1)
-  %12 = call <vscale x 8 x i32> @llvm.riscv.vssra.nxv8i32.nxv8i32.i64(<vscale x 8 x i32> undef, <vscale x 8 x i32> %11, <vscale x 8 x i32> %8, i64 7, i64 %1)
+  %12 = call <vscale x 8 x i32> @llvm.riscv.vssra.nxv8i32.nxv8i32.i64(<vscale x 8 x i32> undef, <vscale x 8 x i32> %11, <vscale x 8 x i32> %8, i64 3, i64 %1)
   %add.ptr2 = getelementptr inbounds i32, i32* %output_data, i64 %current_channel.021
   %13 = bitcast i32* %add.ptr2 to <vscale x 8 x i32>*
   call void @llvm.riscv.vse.nxv8i32.i64(<vscale x 8 x i32> %12, <vscale x 8 x i32>* %13, i64 %1)

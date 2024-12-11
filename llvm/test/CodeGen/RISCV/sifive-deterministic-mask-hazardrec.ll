@@ -57,47 +57,47 @@ define void @baz(ptr %arg) {
 ; CHECK-NEXT:    vadd.vx v16, v8, a3
 ; CHECK-NEXT:    li a3, -63
 ; CHECK-NEXT:    vl8r.v v8, (a7) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmsltu.vx v16, v16, a5
+; CHECK-NEXT:    vmsltu.vx v25, v16, a5
 ; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
 ; CHECK-NEXT:    addi a4, sp, 16
+; CHECK-NEXT:    vl8r.v v16, (a4) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vadd.vx v8, v8, a3
-; CHECK-NEXT:    vmsltu.vx v17, v8, a5
+; CHECK-NEXT:    vmsltu.vx v8, v8, a5
 ; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
-; CHECK-NEXT:    vl8r.v v8, (a4) # Unknown-size Folded Reload
 ; CHECK-NEXT:    add a2, a1, a1
-; CHECK-NEXT:    vadd.vx v8, v8, a3
-; CHECK-NEXT:    vmsltu.vx v18, v8, a5
+; CHECK-NEXT:    vadd.vx v16, v16, a3
+; CHECK-NEXT:    vmsltu.vx v9, v16, a5
 ; CHECK-NEXT:    vsetvli zero, a2, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v7, a1
 ; CHECK-NEXT:    vsetvli zero, a6, e8, m2, ta, ma
-; CHECK-NEXT:    vmorn.mm v9, v0, v0
-; CHECK-NEXT:    vsetvli zero, a2, e8, mf4, ta, ma
-; CHECK-NEXT:    vslideup.vx v24, v16, a1
-; CHECK-NEXT:    vsetvli zero, a6, e8, m2, ta, ma
 ; CHECK-NEXT:    vle8.v v10, (a0), v0.t
-; CHECK-NEXT:    vmand.mm v8, v9, v24
 ; CHECK-NEXT:    vor.vi v10, v10, 1
-; CHECK-NEXT:    vmorn.mm v12, v8, v24
 ; CHECK-NEXT:    vse8.v v10, (a0), v0.t
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmand.mm v12, v12, v9
-; CHECK-NEXT:    vmandn.mm v9, v8, v9
-; CHECK-NEXT:    vmor.mm v9, v12, v9
+; CHECK-NEXT:    vmorn.mm v10, v0, v0
 ; CHECK-NEXT:    vsetvli zero, a2, e8, mf4, ta, ma
-; CHECK-NEXT:    vslideup.vx v17, v18, a1
+; CHECK-NEXT:    vslideup.vx v24, v25, a1
 ; CHECK-NEXT:    vsetvli zero, a6, e8, m2, ta, ma
-; CHECK-NEXT:    vle8.v v10, (a0), v0.t
-; CHECK-NEXT:    vmand.mm v9, v9, v17
-; CHECK-NEXT:    vor.vi v10, v10, 2
-; CHECK-NEXT:    vse8.v v10, (a0), v0.t
-; CHECK-NEXT:    vmv1r.v v0, v9
-; CHECK-NEXT:    vle8.v v10, (a0), v0.t
-; CHECK-NEXT:    vor.vi v10, v10, 4
-; CHECK-NEXT:    vse8.v v10, (a0), v0.t
+; CHECK-NEXT:    vmand.mm v0, v10, v24
+; CHECK-NEXT:    vle8.v v12, (a0), v0.t
+; CHECK-NEXT:    vmorn.mm v11, v0, v24
+; CHECK-NEXT:    vor.vi v12, v12, 2
+; CHECK-NEXT:    vse8.v v12, (a0), v0.t
+; CHECK-NEXT:    vmandn.mm v12, v0, v10
+; CHECK-NEXT:    vmand.mm v10, v11, v10
+; CHECK-NEXT:    vmor.mm v10, v10, v12
+; CHECK-NEXT:    vsetvli zero, a2, e8, mf4, ta, ma
+; CHECK-NEXT:    vslideup.vx v8, v9, a1
+; CHECK-NEXT:    vsetvli zero, a6, e8, m2, ta, ma
+; CHECK-NEXT:    vmand.mm v0, v10, v8
+; CHECK-NEXT:    vle8.v v8, (a0), v0.t
+; CHECK-NEXT:    vor.vi v8, v8, 4
+; CHECK-NEXT:    vse8.v v8, (a0), v0.t
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 4
 ; CHECK-NEXT:    add sp, sp, a0
+; CHECK-NEXT:    .cfi_def_cfa sp, 16
 ; CHECK-NEXT:    addi sp, sp, 16
+; CHECK-NEXT:    .cfi_def_cfa_offset 0
 ; CHECK-NEXT:    ret
 bb:
   %call = call <vscale x 16 x i64> @llvm.experimental.stepvector.nxv16i64()

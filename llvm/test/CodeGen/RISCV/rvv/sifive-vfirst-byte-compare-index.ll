@@ -11,43 +11,43 @@ define i32 @compare_bytes_simple(ptr %a, ptr %b, i32 %len, i32 %n) {
 ; CHECK-NEXT:    bltu a4, a2, .LBB0_5
 ; CHECK-NEXT:  # %bb.1: # %mismatch_mem_check
 ; CHECK-NEXT:    slli a5, a2, 32
-; CHECK-NEXT:    srli a5, a5, 32
-; CHECK-NEXT:    slli a3, a3, 32
-; CHECK-NEXT:    srli a3, a3, 32
-; CHECK-NEXT:    add a6, a0, a5
-; CHECK-NEXT:    add a7, a0, a3
+; CHECK-NEXT:    slli a6, a3, 32
+; CHECK-NEXT:    srli a3, a5, 32
+; CHECK-NEXT:    srli a5, a6, 32
+; CHECK-NEXT:    add a6, a0, a3
+; CHECK-NEXT:    add a7, a0, a5
 ; CHECK-NEXT:    srli a6, a6, 12
 ; CHECK-NEXT:    srli a7, a7, 12
 ; CHECK-NEXT:    bne a6, a7, .LBB0_5
 ; CHECK-NEXT:  # %bb.2: # %mismatch_mem_check
-; CHECK-NEXT:    add a6, a1, a5
-; CHECK-NEXT:    add a7, a1, a3
+; CHECK-NEXT:    add a6, a1, a3
+; CHECK-NEXT:    add a7, a1, a5
 ; CHECK-NEXT:    srli a6, a6, 12
 ; CHECK-NEXT:    srli a7, a7, 12
 ; CHECK-NEXT:    bne a6, a7, .LBB0_5
 ; CHECK-NEXT:  .LBB0_3: # %mismatch_vec_loop
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
-; CHECK-NEXT:    sub a2, a3, a5
+; CHECK-NEXT:    sub a2, a5, a3
+; CHECK-NEXT:    add a6, a0, a3
 ; CHECK-NEXT:    vsetvli a2, a2, e8, m2, ta, ma
-; CHECK-NEXT:    add a6, a0, a5
 ; CHECK-NEXT:    vle8.v v8, (a6)
-; CHECK-NEXT:    add a6, a1, a5
+; CHECK-NEXT:    add a6, a1, a3
 ; CHECK-NEXT:    vle8.v v10, (a6)
 ; CHECK-NEXT:    vmsne.vv v8, v8, v10
 ; CHECK-NEXT:    vfirst.m a6, v8
 ; CHECK-NEXT:    bgez a6, .LBB0_9
 ; CHECK-NEXT:  # %bb.4: # %mismatch_vec_loop_inc
 ; CHECK-NEXT:    # in Loop: Header=BB0_3 Depth=1
-; CHECK-NEXT:    add a5, a5, a2
-; CHECK-NEXT:    bne a5, a3, .LBB0_3
+; CHECK-NEXT:    add a3, a3, a2
+; CHECK-NEXT:    bne a3, a5, .LBB0_3
 ; CHECK-NEXT:    j .LBB0_7
 ; CHECK-NEXT:  .LBB0_5: # %mismatch_loop
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    slli a3, a2, 32
 ; CHECK-NEXT:    srli a3, a3, 32
 ; CHECK-NEXT:    add a5, a0, a3
-; CHECK-NEXT:    lbu a5, 0(a5)
 ; CHECK-NEXT:    add a3, a1, a3
+; CHECK-NEXT:    lbu a5, 0(a5)
 ; CHECK-NEXT:    lbu a3, 0(a3)
 ; CHECK-NEXT:    bne a5, a3, .LBB0_8
 ; CHECK-NEXT:  # %bb.6: # %mismatch_loop_inc
@@ -61,7 +61,7 @@ define i32 @compare_bytes_simple(ptr %a, ptr %b, i32 %len, i32 %n) {
 ; CHECK-NEXT:    mv a0, a2
 ; CHECK-NEXT:    ret
 ; CHECK-NEXT:  .LBB0_9: # %mismatch_vec_loop_found
-; CHECK-NEXT:    addw a0, a5, a6
+; CHECK-NEXT:    addw a0, a3, a6
 ; CHECK-NEXT:    ret
 entry:
   %0 = add i32 %len, 1

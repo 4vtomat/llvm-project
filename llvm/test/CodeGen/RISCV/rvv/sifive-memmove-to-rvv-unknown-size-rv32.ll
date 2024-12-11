@@ -26,9 +26,9 @@ define void @UnKnownSize(i8* nocapture readonly %src, i8* nocapture %dst, i32 si
 ; NOALIGN-NEXT:    # =>This Inner Loop Header: Depth=1
 ; NOALIGN-NEXT:    vsetvli a3, a2, e8, m8, ta, ma
 ; NOALIGN-NEXT:    vle8.v v8, (a0)
-; NOALIGN-NEXT:    vse8.v v8, (a1)
 ; NOALIGN-NEXT:    sub a2, a2, a3
 ; NOALIGN-NEXT:    add a0, a0, a3
+; NOALIGN-NEXT:    vse8.v v8, (a1)
 ; NOALIGN-NEXT:    add a1, a1, a3
 ; NOALIGN-NEXT:    bnez a2, .LBB0_3
 ; NOALIGN-NEXT:  .LBB0_4: # %memmove-post-loop
@@ -82,9 +82,9 @@ define void @UnKnownSize(i8* nocapture readonly %src, i8* nocapture %dst, i32 si
 ; ALIGN-NEXT:    # =>This Inner Loop Header: Depth=1
 ; ALIGN-NEXT:    vsetvli a3, a2, e8, m8, ta, ma
 ; ALIGN-NEXT:    vle8.v v8, (a0)
-; ALIGN-NEXT:    vse8.v v8, (a1)
 ; ALIGN-NEXT:    sub a2, a2, a3
 ; ALIGN-NEXT:    add a0, a0, a3
+; ALIGN-NEXT:    vse8.v v8, (a1)
 ; ALIGN-NEXT:    add a1, a1, a3
 ; ALIGN-NEXT:    bnez a2, .LBB0_9
 ; ALIGN-NEXT:  .LBB0_10: # %memmove-post-loop

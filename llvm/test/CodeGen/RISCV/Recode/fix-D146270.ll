@@ -131,7 +131,9 @@ define <8 x i8> @vqshlb_u8() {
 ; CHECK-NEXT:    li a1, 6
 ; CHECK-NEXT:    mul a0, a0, a1
 ; CHECK-NEXT:    add sp, sp, a0
+; CHECK-NEXT:    .cfi_def_cfa sp, 48
 ; CHECK-NEXT:    addi sp, sp, 48
+; CHECK-NEXT:    .cfi_def_cfa_offset 0
 ; CHECK-NEXT:    ret
 entry:
   %__p0.addr.i = alloca i8, align 1

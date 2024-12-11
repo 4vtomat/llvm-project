@@ -73,7 +73,7 @@ void RISCVDAGToDAGISel::PreprocessISelDAG() {
 #if SIFIVE_CUSTOMIZATION
       if (VT.isRISCVVectorTuple()) {
         unsigned NF = VT.getRISCVVectorTupleNumFields();
-        unsigned NumScalElts = VT.getSizeInBits() / (NF * 8);
+        unsigned NumScalElts = VT.getSizeInBits().getKnownMinValue() / (NF * 8);
         SDValue EltVal = CurDAG->getConstant(0, DL, Subtarget->getXLenVT());
         MVT ScalTy =
             MVT::getScalableVectorVT(MVT::getIntegerVT(8), NumScalElts);

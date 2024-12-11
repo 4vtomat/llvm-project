@@ -12,12 +12,18 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>} @vector_dein
 ; CHECK-NEXT:    sub sp, sp, a0
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v10, 0
-; CHECK-NEXT:    vmerge.vim v16, v10, 1, v0
 ; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    vsetvli a1, zero, e8, m8, ta, ma
+; CHECK-NEXT:    vid.v v24
+; CHECK-NEXT:    li a1, 3
+; CHECK-NEXT:    vsetvli a2, zero, e8, m2, ta, ma
+; CHECK-NEXT:    vmerge.vim v16, v10, 1, v0
+; CHECK-NEXT:    vsetvli a2, zero, e8, m8, ta, ma
+; CHECK-NEXT:    vmul.vx v24, v24, a1
 ; CHECK-NEXT:    srli a1, a0, 2
+; CHECK-NEXT:    srli a0, a0, 1
 ; CHECK-NEXT:    vsetvli a2, zero, e8, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v8, v0, a1
-; CHECK-NEXT:    srli a0, a0, 1
 ; CHECK-NEXT:    vslidedown.vx v9, v0, a0
 ; CHECK-NEXT:    vmv.v.v v0, v8
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
@@ -25,9 +31,6 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>} @vector_dein
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vmerge.vim v20, v10, 1, v0
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m8, ta, ma
-; CHECK-NEXT:    vid.v v8
-; CHECK-NEXT:    li a0, 3
-; CHECK-NEXT:    vmul.vx v24, v8, a0
 ; CHECK-NEXT:    vrgather.vv v8, v16, v24
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v8, 0
@@ -35,11 +38,11 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>} @vector_dein
 ; CHECK-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m8, ta, ma
 ; CHECK-NEXT:    vadd.vi v0, v24, 1
+; CHECK-NEXT:    vadd.vi v24, v24, 2
 ; CHECK-NEXT:    vrgather.vv v8, v16, v0
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v8, 0
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m8, ta, ma
-; CHECK-NEXT:    vadd.vi v24, v24, 2
 ; CHECK-NEXT:    vrgather.vv v0, v16, v24
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v9, v0, 0
@@ -69,13 +72,13 @@ define {<vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>} @vector_dein
 ; CHECK-NEXT:    vrgather.vv v16, v8, v24
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vadd.vi v16, v24, 1
-; CHECK-NEXT:    vrgather.vv v0, v8, v16
-; CHECK-NEXT:    vadd.vi v16, v24, 2
-; CHECK-NEXT:    vrgather.vv v24, v8, v16
+; CHECK-NEXT:    vadd.vi v0, v24, 1
+; CHECK-NEXT:    vadd.vi v24, v24, 2
+; CHECK-NEXT:    vrgather.vv v16, v8, v0
+; CHECK-NEXT:    vrgather.vv v0, v8, v24
 ; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmv2r.v v10, v0
-; CHECK-NEXT:    vmv2r.v v12, v24
+; CHECK-NEXT:    vmv2r.v v10, v16
+; CHECK-NEXT:    vmv2r.v v12, v0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add sp, sp, a0
@@ -101,13 +104,13 @@ define {<vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>} @vector_dein
 ; CHECK-NEXT:    vrgather.vv v16, v8, v24
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vadd.vi v16, v24, 1
-; CHECK-NEXT:    vrgather.vv v0, v8, v16
-; CHECK-NEXT:    vadd.vi v16, v24, 2
-; CHECK-NEXT:    vrgather.vv v24, v8, v16
+; CHECK-NEXT:    vadd.vi v0, v24, 1
+; CHECK-NEXT:    vadd.vi v24, v24, 2
+; CHECK-NEXT:    vrgather.vv v16, v8, v0
+; CHECK-NEXT:    vrgather.vv v0, v8, v24
 ; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmv2r.v v10, v0
-; CHECK-NEXT:    vmv2r.v v12, v24
+; CHECK-NEXT:    vmv2r.v v10, v16
+; CHECK-NEXT:    vmv2r.v v12, v0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add sp, sp, a0
@@ -133,13 +136,13 @@ define {<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>} @vector_dein
 ; CHECK-NEXT:    vrgather.vv v16, v8, v24
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vadd.vi v16, v24, 1
-; CHECK-NEXT:    vrgather.vv v0, v8, v16
-; CHECK-NEXT:    vadd.vi v16, v24, 2
-; CHECK-NEXT:    vrgather.vv v24, v8, v16
+; CHECK-NEXT:    vadd.vi v0, v24, 1
+; CHECK-NEXT:    vadd.vi v24, v24, 2
+; CHECK-NEXT:    vrgather.vv v16, v8, v0
+; CHECK-NEXT:    vrgather.vv v0, v8, v24
 ; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmv2r.v v10, v0
-; CHECK-NEXT:    vmv2r.v v12, v24
+; CHECK-NEXT:    vmv2r.v v10, v16
+; CHECK-NEXT:    vmv2r.v v12, v0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add sp, sp, a0
@@ -191,13 +194,13 @@ define {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>} @vector_dein
 ; RV64-NEXT:    vrgather.vv v16, v8, v24
 ; RV64-NEXT:    addi a0, sp, 16
 ; RV64-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
-; RV64-NEXT:    vadd.vi v16, v24, 1
-; RV64-NEXT:    vrgather.vv v0, v8, v16
-; RV64-NEXT:    vadd.vi v16, v24, 2
-; RV64-NEXT:    vrgather.vv v24, v8, v16
+; RV64-NEXT:    vadd.vi v0, v24, 1
+; RV64-NEXT:    vadd.vi v24, v24, 2
+; RV64-NEXT:    vrgather.vv v16, v8, v0
+; RV64-NEXT:    vrgather.vv v0, v8, v24
 ; RV64-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; RV64-NEXT:    vmv2r.v v10, v0
-; RV64-NEXT:    vmv2r.v v12, v24
+; RV64-NEXT:    vmv2r.v v10, v16
+; RV64-NEXT:    vmv2r.v v12, v0
 ; RV64-NEXT:    csrr a0, vlenb
 ; RV64-NEXT:    slli a0, a0, 3
 ; RV64-NEXT:    add sp, sp, a0

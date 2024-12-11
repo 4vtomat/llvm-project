@@ -40,10 +40,10 @@ define <vscale x 1 x float> @foo(<vscale x 1 x float> %a, i32 %b, <vscale x 1 x 
 ; RV64-LABEL: foo:
 ; RV64:       # %bb.0: # %entry
 ; RV64-NEXT:    lui a2, 260096
-; RV64-NEXT:    vsetvli a3, zero, e32, mf2, ta, ma
-; RV64-NEXT:    vmv.v.x v9, a2
 ; RV64-NEXT:    sext.w a0, a0
 ; RV64-NEXT:    slli a1, a1, 32
+; RV64-NEXT:    vsetvli a3, zero, e32, mf2, ta, ma
+; RV64-NEXT:    vmv.v.x v9, a2
 ; RV64-NEXT:    srli a1, a1, 32
 ; RV64-NEXT:    mv a2, a0
 ; RV64-NEXT:    j .LBB0_2

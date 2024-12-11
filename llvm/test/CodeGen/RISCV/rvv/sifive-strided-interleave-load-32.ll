@@ -225,16 +225,16 @@ define {<vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 
 ; CHECK-NEXT:    vsetvli a0, zero, e32, m4, ta, ma
 ; CHECK-NEXT:    vid.v v8
 ; CHECK-NEXT:    vsll.vi v16, v8, 2
-; CHECK-NEXT:    vrgather.vv v8, v12, v16
 ; CHECK-NEXT:    vadd.vi v20, v16, 1
-; CHECK-NEXT:    vrgather.vv v24, v12, v20
-; CHECK-NEXT:    vadd.vi v20, v16, 2
-; CHECK-NEXT:    vrgather.vv v28, v12, v20
-; CHECK-NEXT:    vadd.vi v16, v16, 3
-; CHECK-NEXT:    vrgather.vv v20, v12, v16
-; CHECK-NEXT:    vmv1r.v v9, v24
-; CHECK-NEXT:    vmv1r.v v10, v28
-; CHECK-NEXT:    vmv1r.v v11, v20
+; CHECK-NEXT:    vadd.vi v24, v16, 2
+; CHECK-NEXT:    vadd.vi v28, v16, 3
+; CHECK-NEXT:    vrgather.vv v8, v12, v16
+; CHECK-NEXT:    vrgather.vv v16, v12, v20
+; CHECK-NEXT:    vrgather.vv v20, v12, v24
+; CHECK-NEXT:    vrgather.vv v24, v12, v28
+; CHECK-NEXT:    vmv1r.v v9, v16
+; CHECK-NEXT:    vmv1r.v v10, v20
+; CHECK-NEXT:    vmv1r.v v11, v24
 ; CHECK-NEXT:    ret
   %wide.strided.load = call <vscale x 4 x i64> @llvm.experimental.vp.strided.load.nxv4i64.p0.i32(ptr align 4 %ptr, i32 %stride, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 %rvl)
   %wide.strided.load.cast = bitcast <vscale x 4 x i64> %wide.strided.load to <vscale x 8 x i32>

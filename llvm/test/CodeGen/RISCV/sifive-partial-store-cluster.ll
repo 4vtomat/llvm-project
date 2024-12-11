@@ -40,7 +40,9 @@ define signext i32 @main() {
 ; CHECK-NEXT:    sb zero, 38(sp)
 ; CHECK-NEXT:    call foo
 ; CHECK-NEXT:    ld ra, 72(sp) # 8-byte Folded Reload
+; CHECK-NEXT:    .cfi_restore ra
 ; CHECK-NEXT:    addi sp, sp, 80
+; CHECK-NEXT:    .cfi_def_cfa_offset 0
 ; CHECK-NEXT:    ret
 entry:
   %Loc_1 = alloca [31 x i8], align 8

@@ -138,8 +138,8 @@ define void @UnKnownSize2(i8* nocapture %dst, i8 %val) {
 ; ALIGN-VLEN-NEXT:    andi a1, a0, 15
 ; ALIGN-VLEN-NEXT:    li a2, 16
 ; ALIGN-VLEN-NEXT:    sub a2, a2, a1
-; ALIGN-VLEN-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
 ; ALIGN-VLEN-NEXT:    lui a1, 2
+; ALIGN-VLEN-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
 ; ALIGN-VLEN-NEXT:    sub a1, a1, a2
 ; ALIGN-VLEN-NEXT:    vse8.v v8, (a0)
 ; ALIGN-VLEN-NEXT:    add a0, a0, a2

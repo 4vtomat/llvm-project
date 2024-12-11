@@ -7,12 +7,12 @@ define void @vmaxnm_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vle16.v v9, (a1)
-; CHECK-NEXT:    vfclass.v v10, v8
-; CHECK-NEXT:    vfclass.v v11, v9
-; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    li a0, 256
 ; CHECK-NEXT:    lui a1, %hi(.LCPI0_0)
 ; CHECK-NEXT:    flh fa5, %lo(.LCPI0_0)(a1)
+; CHECK-NEXT:    vfclass.v v10, v8
+; CHECK-NEXT:    vfclass.v v11, v9
+; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    vand.vx v10, v10, a0
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
 ; CHECK-NEXT:    vfmax.vv v8, v8, v9
@@ -33,15 +33,15 @@ define void @vmaxnm_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vle32.v v9, (a1)
+; CHECK-NEXT:    li a0, 256
+; CHECK-NEXT:    lui a1, 523264
 ; CHECK-NEXT:    vfclass.v v10, v8
 ; CHECK-NEXT:    vfclass.v v11, v9
+; CHECK-NEXT:    vor.vv v10, v10, v11
+; CHECK-NEXT:    vand.vx v10, v10, a0
+; CHECK-NEXT:    vmsne.vi v0, v10, 0
 ; CHECK-NEXT:    vfmax.vv v8, v8, v9
-; CHECK-NEXT:    vor.vv v9, v10, v11
-; CHECK-NEXT:    li a0, 256
-; CHECK-NEXT:    vand.vx v9, v9, a0
-; CHECK-NEXT:    vmsne.vi v0, v9, 0
-; CHECK-NEXT:    lui a0, 523264
-; CHECK-NEXT:    vmerge.vxm v8, v8, a0, v0
+; CHECK-NEXT:    vmerge.vxm v8, v8, a1, v0
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -58,12 +58,12 @@ define void @vmaxnm_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    vle64.v v9, (a1)
-; CHECK-NEXT:    vfclass.v v10, v8
-; CHECK-NEXT:    vfclass.v v11, v9
-; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    li a0, 256
 ; CHECK-NEXT:    lui a1, %hi(.LCPI2_0)
 ; CHECK-NEXT:    fld fa5, %lo(.LCPI2_0)(a1)
+; CHECK-NEXT:    vfclass.v v10, v8
+; CHECK-NEXT:    vfclass.v v11, v9
+; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    vand.vx v10, v10, a0
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
 ; CHECK-NEXT:    vfmax.vv v8, v8, v9
@@ -84,12 +84,12 @@ define void @vmaxnmq_f16(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vle16.v v9, (a1)
-; CHECK-NEXT:    vfclass.v v10, v8
-; CHECK-NEXT:    vfclass.v v11, v9
-; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    li a0, 256
 ; CHECK-NEXT:    lui a1, %hi(.LCPI3_0)
 ; CHECK-NEXT:    flh fa5, %lo(.LCPI3_0)(a1)
+; CHECK-NEXT:    vfclass.v v10, v8
+; CHECK-NEXT:    vfclass.v v11, v9
+; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    vand.vx v10, v10, a0
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
 ; CHECK-NEXT:    vfmax.vv v8, v8, v9
@@ -110,15 +110,15 @@ define void @vmaxnmq_f32(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vle32.v v9, (a1)
+; CHECK-NEXT:    li a0, 256
+; CHECK-NEXT:    lui a1, 523264
 ; CHECK-NEXT:    vfclass.v v10, v8
 ; CHECK-NEXT:    vfclass.v v11, v9
+; CHECK-NEXT:    vor.vv v10, v10, v11
+; CHECK-NEXT:    vand.vx v10, v10, a0
+; CHECK-NEXT:    vmsne.vi v0, v10, 0
 ; CHECK-NEXT:    vfmax.vv v8, v8, v9
-; CHECK-NEXT:    vor.vv v9, v10, v11
-; CHECK-NEXT:    li a0, 256
-; CHECK-NEXT:    vand.vx v9, v9, a0
-; CHECK-NEXT:    vmsne.vi v0, v9, 0
-; CHECK-NEXT:    lui a0, 523264
-; CHECK-NEXT:    vmerge.vxm v8, v8, a0, v0
+; CHECK-NEXT:    vmerge.vxm v8, v8, a1, v0
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -135,12 +135,12 @@ define void @vmaxnmq_f64(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    vle64.v v9, (a1)
-; CHECK-NEXT:    vfclass.v v10, v8
-; CHECK-NEXT:    vfclass.v v11, v9
-; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    li a0, 256
 ; CHECK-NEXT:    lui a1, %hi(.LCPI5_0)
 ; CHECK-NEXT:    fld fa5, %lo(.LCPI5_0)(a1)
+; CHECK-NEXT:    vfclass.v v10, v8
+; CHECK-NEXT:    vfclass.v v11, v9
+; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    vand.vx v10, v10, a0
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
 ; CHECK-NEXT:    vfmax.vv v8, v8, v9
@@ -161,12 +161,12 @@ define void @vminnm_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vle16.v v9, (a1)
-; CHECK-NEXT:    vfclass.v v10, v8
-; CHECK-NEXT:    vfclass.v v11, v9
-; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    li a0, 256
 ; CHECK-NEXT:    lui a1, %hi(.LCPI6_0)
 ; CHECK-NEXT:    flh fa5, %lo(.LCPI6_0)(a1)
+; CHECK-NEXT:    vfclass.v v10, v8
+; CHECK-NEXT:    vfclass.v v11, v9
+; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    vand.vx v10, v10, a0
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
 ; CHECK-NEXT:    vfmin.vv v8, v8, v9
@@ -187,15 +187,15 @@ define void @vminnm_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vle32.v v9, (a1)
+; CHECK-NEXT:    li a0, 256
+; CHECK-NEXT:    lui a1, 523264
 ; CHECK-NEXT:    vfclass.v v10, v8
 ; CHECK-NEXT:    vfclass.v v11, v9
+; CHECK-NEXT:    vor.vv v10, v10, v11
+; CHECK-NEXT:    vand.vx v10, v10, a0
+; CHECK-NEXT:    vmsne.vi v0, v10, 0
 ; CHECK-NEXT:    vfmin.vv v8, v8, v9
-; CHECK-NEXT:    vor.vv v9, v10, v11
-; CHECK-NEXT:    li a0, 256
-; CHECK-NEXT:    vand.vx v9, v9, a0
-; CHECK-NEXT:    vmsne.vi v0, v9, 0
-; CHECK-NEXT:    lui a0, 523264
-; CHECK-NEXT:    vmerge.vxm v8, v8, a0, v0
+; CHECK-NEXT:    vmerge.vxm v8, v8, a1, v0
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -212,12 +212,12 @@ define void @vminnm_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    vle64.v v9, (a1)
-; CHECK-NEXT:    vfclass.v v10, v8
-; CHECK-NEXT:    vfclass.v v11, v9
-; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    li a0, 256
 ; CHECK-NEXT:    lui a1, %hi(.LCPI8_0)
 ; CHECK-NEXT:    fld fa5, %lo(.LCPI8_0)(a1)
+; CHECK-NEXT:    vfclass.v v10, v8
+; CHECK-NEXT:    vfclass.v v11, v9
+; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    vand.vx v10, v10, a0
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
 ; CHECK-NEXT:    vfmin.vv v8, v8, v9
@@ -238,12 +238,12 @@ define void @vminnmq_f16(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vle16.v v9, (a1)
-; CHECK-NEXT:    vfclass.v v10, v8
-; CHECK-NEXT:    vfclass.v v11, v9
-; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    li a0, 256
 ; CHECK-NEXT:    lui a1, %hi(.LCPI9_0)
 ; CHECK-NEXT:    flh fa5, %lo(.LCPI9_0)(a1)
+; CHECK-NEXT:    vfclass.v v10, v8
+; CHECK-NEXT:    vfclass.v v11, v9
+; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    vand.vx v10, v10, a0
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
 ; CHECK-NEXT:    vfmin.vv v8, v8, v9
@@ -264,15 +264,15 @@ define void @vminnmq_f32(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vle32.v v9, (a1)
+; CHECK-NEXT:    li a0, 256
+; CHECK-NEXT:    lui a1, 523264
 ; CHECK-NEXT:    vfclass.v v10, v8
 ; CHECK-NEXT:    vfclass.v v11, v9
+; CHECK-NEXT:    vor.vv v10, v10, v11
+; CHECK-NEXT:    vand.vx v10, v10, a0
+; CHECK-NEXT:    vmsne.vi v0, v10, 0
 ; CHECK-NEXT:    vfmin.vv v8, v8, v9
-; CHECK-NEXT:    vor.vv v9, v10, v11
-; CHECK-NEXT:    li a0, 256
-; CHECK-NEXT:    vand.vx v9, v9, a0
-; CHECK-NEXT:    vmsne.vi v0, v9, 0
-; CHECK-NEXT:    lui a0, 523264
-; CHECK-NEXT:    vmerge.vxm v8, v8, a0, v0
+; CHECK-NEXT:    vmerge.vxm v8, v8, a1, v0
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -289,12 +289,12 @@ define void @vminnmq_f64(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    vle64.v v9, (a1)
-; CHECK-NEXT:    vfclass.v v10, v8
-; CHECK-NEXT:    vfclass.v v11, v9
-; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    li a0, 256
 ; CHECK-NEXT:    lui a1, %hi(.LCPI11_0)
 ; CHECK-NEXT:    fld fa5, %lo(.LCPI11_0)(a1)
+; CHECK-NEXT:    vfclass.v v10, v8
+; CHECK-NEXT:    vfclass.v v11, v9
+; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    vand.vx v10, v10, a0
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
 ; CHECK-NEXT:    vfmin.vv v8, v8, v9

@@ -9,42 +9,42 @@ define void @wombat(ptr %arg, ptr %arg1, ptr %arg2, i64 %arg3, i32 %arg4, i32 %a
 ; CHECK-NEXT:    li a6, 0
 ; CHECK-NEXT:    andi a5, a5, 7
 ; CHECK-NEXT:    li a7, 8
-; CHECK-NEXT:    subw t0, a7, a5
 ; CHECK-NEXT:    andi a4, a4, 7
+; CHECK-NEXT:    subw t0, a7, a5
 ; CHECK-NEXT:    subw a7, a7, a4
-; CHECK-NEXT:    mul t1, a7, a5
-; CHECK-NEXT:    mul a5, a4, a5
+; CHECK-NEXT:    mul t1, a4, a5
+; CHECK-NEXT:    mul a5, a7, a5
 ; CHECK-NEXT:    mul a7, a7, t0
 ; CHECK-NEXT:    mul a4, a4, t0
 ; CHECK-NEXT:    vsetvli t0, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vmv.v.x v8, a7
-; CHECK-NEXT:    vmv.v.x v9, a4
-; CHECK-NEXT:    vmv.v.x v10, t1
+; CHECK-NEXT:    vmv.v.x v8, t1
+; CHECK-NEXT:    vmv.v.x v9, a7
+; CHECK-NEXT:    vmv.v.x v10, a4
 ; CHECK-NEXT:    vmv.v.x v11, a5
 ; CHECK-NEXT:    li a4, 32
 ; CHECK-NEXT:  .LBB0_1: # %bb20
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    sub a5, a3, a6
-; CHECK-NEXT:    vsetvli a5, a5, e8, m1, ta, ma
 ; CHECK-NEXT:    addi a7, a6, 1
+; CHECK-NEXT:    vsetvli a5, a5, e8, m1, ta, ma
 ; CHECK-NEXT:    add t0, a1, a7
 ; CHECK-NEXT:    vle8.v v12, (t0)
+; CHECK-NEXT:    add t0, a0, a6
+; CHECK-NEXT:    vle8.v v13, (t0)
 ; CHECK-NEXT:    add t0, a1, a6
 ; CHECK-NEXT:    add a7, a0, a7
-; CHECK-NEXT:    vle8.v v13, (a7)
-; CHECK-NEXT:    add a7, a0, a6
 ; CHECK-NEXT:    vle8.v v14, (a7)
+; CHECK-NEXT:    add a7, a2, a6
 ; CHECK-NEXT:    vle8.v v15, (t0)
-; CHECK-NEXT:    vwmulu.vv v16, v9, v12
-; CHECK-NEXT:    vwmulu.vv v12, v11, v13
-; CHECK-NEXT:    vwmaccu.vv v12, v10, v14
-; CHECK-NEXT:    vwmaccu.vv v16, v8, v15
+; CHECK-NEXT:    vwmulu.vv v16, v10, v12
+; CHECK-NEXT:    vwmulu.vv v18, v8, v14
+; CHECK-NEXT:    vwmaccu.vv v18, v11, v13
+; CHECK-NEXT:    vwmaccu.vv v16, v9, v15
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
-; CHECK-NEXT:    vadd.vx v14, v16, a4
-; CHECK-NEXT:    vadd.vv v12, v14, v12
+; CHECK-NEXT:    vadd.vx v12, v16, a4
+; CHECK-NEXT:    vadd.vv v12, v12, v18
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, ma
 ; CHECK-NEXT:    vnsrl.wi v12, v12, 6
-; CHECK-NEXT:    add a7, a2, a6
 ; CHECK-NEXT:    add a6, a6, a5
 ; CHECK-NEXT:    vse8.v v12, (a7)
 ; CHECK-NEXT:    bne a6, a3, .LBB0_1

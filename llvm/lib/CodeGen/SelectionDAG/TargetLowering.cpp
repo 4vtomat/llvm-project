@@ -6555,9 +6555,9 @@ SDValue TargetLowering::BuildVPSDIV(SDNode *N, SelectionDAG &DAG,
     }
 
     MagicFactors.push_back(DAG.getConstant(magics.Magic, DL, SVT));
-    Factors.push_back(DAG.getConstant(NumeratorFactor, DL, SVT));
+    Factors.push_back(DAG.getSignedConstant(NumeratorFactor, DL, SVT));
     Shifts.push_back(DAG.getConstant(magics.ShiftAmount, DL, ShSVT));
-    ShiftMasks.push_back(DAG.getConstant(ShiftMask, DL, SVT));
+    ShiftMasks.push_back(DAG.getSignedConstant(ShiftMask, DL, SVT));
     return true;
   };
 

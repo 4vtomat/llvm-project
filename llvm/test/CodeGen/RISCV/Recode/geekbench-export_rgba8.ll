@@ -6,11 +6,11 @@ define void @_Z12export_rgba8PhiPfi(ptr nocapture noundef writeonly %dst, i32 no
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    blez a3, .LBB0_3
 ; CHECK-NEXT:  # %bb.1: # %for.body.lr.ph
-; CHECK-NEXT:    slli a3, a3, 4
-; CHECK-NEXT:    add a3, a2, a3
+; CHECK-NEXT:    slli a4, a3, 4
 ; CHECK-NEXT:    fmv.w.x fa5, zero
-; CHECK-NEXT:    lui a4, 523264
+; CHECK-NEXT:    lui a3, 523264
 ; CHECK-NEXT:    lui a5, 276464
+; CHECK-NEXT:    add a4, a2, a4
 ; CHECK-NEXT:    fmv.w.x fa4, a5
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
@@ -18,12 +18,13 @@ define void @_Z12export_rgba8PhiPfi(ptr nocapture noundef writeonly %dst, i32 no
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v9, (a2)
+; CHECK-NEXT:    addi a2, a2, 16
 ; CHECK-NEXT:    vmfne.vv v0, v9, v9
 ; CHECK-NEXT:    vfmax.vf v9, v9, fa5
-; CHECK-NEXT:    vmerge.vxm v9, v9, a4, v0
+; CHECK-NEXT:    vmerge.vxm v9, v9, a3, v0
 ; CHECK-NEXT:    vmfne.vv v0, v9, v9
 ; CHECK-NEXT:    vfmin.vf v9, v9, fa4
-; CHECK-NEXT:    vmerge.vxm v9, v9, a4, v0
+; CHECK-NEXT:    vmerge.vxm v9, v9, a3, v0
 ; CHECK-NEXT:    vmfne.vv v0, v9, v9
 ; CHECK-NEXT:    vfcvt.rtz.xu.f.v v9, v9
 ; CHECK-NEXT:    vmerge.vim v9, v9, 0, v0
@@ -35,9 +36,8 @@ define void @_Z12export_rgba8PhiPfi(ptr nocapture noundef writeonly %dst, i32 no
 ; CHECK-NEXT:    vnclipu.wi v9, v9, 0
 ; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; CHECK-NEXT:    vse32.v v9, (a0)
-; CHECK-NEXT:    addi a2, a2, 16
 ; CHECK-NEXT:    add a0, a0, a1
-; CHECK-NEXT:    bne a2, a3, .LBB0_2
+; CHECK-NEXT:    bne a2, a4, .LBB0_2
 ; CHECK-NEXT:  .LBB0_3: # %for.cond.cleanup
 ; CHECK-NEXT:    ret
 entry:
