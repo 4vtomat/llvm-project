@@ -15,7 +15,7 @@ define dso_local float @no_rt_overflow_check(i32 signext %zero) local_unnamed_ad
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <2 x float> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP10:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <2 x i32> [ <i32 0, i32 1>, [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[TMP0:%.*]] = and <2 x i32> [[VEC_IND]], <i32 7, i32 7>
+; CHECK-NEXT:    [[TMP0:%.*]] = and <2 x i32> [[VEC_IND]], splat (i32 7)
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <2 x i32> [[TMP0]] to <2 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = extractelement <2 x i64> [[TMP1]], i32 0
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds [8192 x float], ptr @arr1, i64 0, i64 [[TMP2]]
@@ -27,7 +27,7 @@ define dso_local float @no_rt_overflow_check(i32 signext %zero) local_unnamed_ad
 ; CHECK-NEXT:    [[TMP9:%.*]] = insertelement <2 x float> [[TMP8]], float [[TMP7]], i32 1
 ; CHECK-NEXT:    [[TMP10]] = fadd fast <2 x float> [[TMP9]], [[VEC_PHI]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i32 [[INDEX]], 2
-; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <2 x i32> [[VEC_IND]], <i32 2, i32 2>
+; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <2 x i32> [[VEC_IND]], splat (i32 2)
 ; CHECK-NEXT:    [[TMP11:%.*]] = icmp eq i32 [[INDEX_NEXT]], 65536
 ; CHECK-NEXT:    br i1 [[TMP11]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       middle.block:
@@ -82,8 +82,8 @@ define dso_local float @no_rt_overflow_check_9(i32 signext %zero) local_unnamed_
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[PRED_LOAD_CONTINUE2:%.*]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <2 x float> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP15:%.*]], [[PRED_LOAD_CONTINUE2]] ]
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <2 x i32> [ <i32 0, i32 1>, [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[PRED_LOAD_CONTINUE2]] ]
-; CHECK-NEXT:    [[TMP0:%.*]] = icmp ule <2 x i32> [[VEC_IND]], <i32 8, i32 8>
-; CHECK-NEXT:    [[TMP1:%.*]] = and <2 x i32> [[VEC_IND]], <i32 7, i32 7>
+; CHECK-NEXT:    [[TMP0:%.*]] = icmp ule <2 x i32> [[VEC_IND]], splat (i32 8)
+; CHECK-NEXT:    [[TMP1:%.*]] = and <2 x i32> [[VEC_IND]], splat (i32 7)
 ; CHECK-NEXT:    [[TMP2:%.*]] = zext <2 x i32> [[TMP1]] to <2 x i64>
 ; CHECK-NEXT:    [[TMP3:%.*]] = extractelement <2 x i1> [[TMP0]], i32 0
 ; CHECK-NEXT:    br i1 [[TMP3]], label [[PRED_LOAD_IF:%.*]], label [[PRED_LOAD_CONTINUE:%.*]]
@@ -107,8 +107,8 @@ define dso_local float @no_rt_overflow_check_9(i32 signext %zero) local_unnamed_
 ; CHECK-NEXT:    [[TMP14:%.*]] = phi <2 x float> [ [[TMP8]], [[PRED_LOAD_CONTINUE]] ], [ [[TMP13]], [[PRED_LOAD_IF1]] ]
 ; CHECK-NEXT:    [[TMP15]] = fadd fast <2 x float> [[TMP14]], [[VEC_PHI]]
 ; CHECK-NEXT:    [[TMP16:%.*]] = select fast <2 x i1> [[TMP0]], <2 x float> [[TMP15]], <2 x float> [[VEC_PHI]]
-; CHECK-NEXT:    [[INDEX_NEXT]] = add i32 [[INDEX]], 2
-; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <2 x i32> [[VEC_IND]], <i32 2, i32 2>
+; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i32 [[INDEX]], 2
+; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <2 x i32> [[VEC_IND]], splat (i32 2)
 ; CHECK-NEXT:    [[TMP17:%.*]] = icmp eq i32 [[INDEX_NEXT]], 10
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
 ; CHECK:       middle.block:
