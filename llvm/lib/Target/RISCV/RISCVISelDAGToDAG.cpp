@@ -32,6 +32,11 @@ using namespace llvm;
 #if SIFIVE_CUSTOMIZATION
 extern cl::opt<bool> ForceTailUndisturbed;
 extern cl::opt<bool> ForceMaskUndisturbed;
+
+static cl::opt<bool> AggressiveVLSE(
+    "riscv-aggressive-constant-vlse", cl::Hidden,
+    cl::desc("Aggressively use vlse to load constants into vector registers"),
+    cl::init(false));
 #endif // SIFIVE_CUSTOMIZATION
 static cl::opt<bool> UsePseudoMovImm(
     "riscv-use-rematerializable-movimm", cl::Hidden,
@@ -891,6 +896,74 @@ bool RISCVDAGToDAGISel::tryFixREV8W(SDNode *Node) {
       RISCV::SRLI, DL, MVT::i64, SDValue(InnerSRLI, 0),
       CurDAG->getTargetConstant(ShAmt - 32, DL, MVT::i64));
   ReplaceNode(Node, OuterSRLI);
+  return true;
+}
+
+bool RISCVDAGToDAGISel::tryReplaceConstantSplatWithStridedLoad(SDNode *Node) {
+  SDValue Src = Node->getOperand(1);
+
+  if (!AggressiveVLSE || !Subtarget->hasOptimizedZeroStrideLoad())
+    return false;
+
+  auto *CI = dyn_cast<ConstantSDNode>(Src);
+  if (!CI)
+    return false;
+
+  MVT XLenVT = Subtarget->getXLenVT();
+  SDLoc DL(Node);
+  MVT VT = Node->getSimpleValueType(0);
+
+  bool IsScalarMove = Node->getOpcode() == RISCVISD::VMV_S_X_VL ||
+                      Node->getOpcode() == RISCVISD::VFMV_S_F_VL;
+
+  SDValue VL;
+  if (IsScalarMove) {
+    // We could deal with more VL if we update the VSETVLI insert pass to
+    // avoid introducing more VSETVLI.
+    if (!isOneConstant(Node->getOperand(2)))
+      return false;
+    selectVLOp(Node->getOperand(2), VL);
+  } else {
+    selectVLOp(Node->getOperand(2), VL);
+  }
+
+  unsigned Log2SEW = Log2_32(VT.getScalarSizeInBits());
+  SDValue SEW = CurDAG->getTargetConstant(Log2SEW, DL, XLenVT);
+
+  // If VL=1, then we don't need to do a strided load and can just do a
+  // regular load.
+  bool IsStrided = !isOneConstant(VL);
+
+  ConstantPoolSDNode *CP = cast<ConstantPoolSDNode>(CurDAG->getConstantPool(
+      ConstantInt::get(
+          EVT(VT.getVectorElementType()).getTypeForEVT(*CurDAG->getContext()),
+          CI->getSExtValue()),
+      Src.getValueType()));
+  SDValue Addr = getAddr(CP, *CurDAG);
+  MachineFunction &MF = CurDAG->getMachineFunction();
+  MachineMemOperand *MemOp = MF.getMachineMemOperand(
+      MachinePointerInfo::getConstantPool(MF), MachineMemOperand::MOLoad,
+      LLT(VT.getVectorElementType()), CP->getAlign());
+
+  SmallVector<SDValue> Operands = {
+      SDValue(CurDAG->getMachineNode(TargetOpcode::IMPLICIT_DEF, DL, VT), 0),
+      Addr};
+  if (IsStrided)
+    Operands.push_back(CurDAG->getRegister(RISCV::X0, XLenVT));
+  uint64_t Policy = RISCVII::MASK_AGNOSTIC | RISCVII::TAIL_AGNOSTIC;
+  SDValue PolicyOp = CurDAG->getTargetConstant(Policy, DL, XLenVT);
+  Operands.append({VL, SEW, PolicyOp, CurDAG->getEntryNode()});
+
+  RISCVII::VLMUL LMUL = RISCVTargetLowering::getLMUL(VT);
+  const RISCV::VLEPseudo *P = RISCV::getVLEPseudo(
+      /*IsMasked=*/false, IsStrided, /*FF=*/false, Log2SEW,
+      static_cast<unsigned>(LMUL));
+  MachineSDNode *Load =
+      CurDAG->getMachineNode(P->Pseudo, DL, {VT, MVT::Other}, Operands);
+  // Record the mem-refs
+  CurDAG->setNodeMemRefs(Load, {MemOp});
+  // Replace the splat with the vlse.
+  ReplaceNode(Node, Load);
   return true;
 }
 
@@ -2726,6 +2799,12 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
                         Node->getOpcode() == RISCVISD::VFMV_S_F_VL;
     if (!Node->getOperand(0).isUndef())
       break;
+
+#if SIFIVE_CUSTOMIZATION
+    if (tryReplaceConstantSplatWithStridedLoad(Node))
+      return;
+#endif // SIFIVE_CUSTOMIZATION
+
     SDValue Src = Node->getOperand(1);
     auto *Ld = dyn_cast<LoadSDNode>(Src);
     // Can't fold load update node because the second
@@ -4556,6 +4635,164 @@ bool RISCVDAGToDAGISel::doPeepholeNoRegPassThru() {
   return MadeChange;
 }
 
+#if SIFIVE_CUSTOMIZATION
+// FIXME: This is copied from RISCVISelLowering.cpp.
+static SDValue getTargetNode(ConstantPoolSDNode *N, const SDLoc &DL, EVT Ty,
+                             SelectionDAG &DAG, unsigned Flags) {
+  return DAG.getTargetConstantPool(N->getConstVal(), Ty, N->getAlign(),
+                                   N->getOffset(), Flags);
+}
+
+// FIXME: This is copied from RISCVISelLowering.cpp.
+static SDValue getGlobalBaseReg(SelectionDAG &DAG,
+                                const RISCVSubtarget &Subtarget) {
+  const TargetLowering &TLI = DAG.getTargetLoweringInfo();
+  MachineFunction &MF = DAG.getMachineFunction();
+  Register GlobalBaseReg = Subtarget.getInstrInfo()->getGlobalBaseReg(&MF);
+  return DAG.getRegister(GlobalBaseReg, TLI.getPointerTy(DAG.getDataLayout()));
+}
+
+// FIXME: This is copied from RISCVTargetLowering and modified to use
+// MachineOpodes
+template <class NodeTy>
+SDValue RISCVDAGToDAGISel::getCompactAddr(NodeTy *N, SelectionDAG &DAG,
+                                          unsigned FlagsHi) const {
+  SDLoc DL(N);
+  EVT Ty = TLI->getPointerTy(DAG.getDataLayout());
+  unsigned FlagsAdd;
+  unsigned FlagsLo;
+
+  switch (FlagsHi) {
+  default:
+    report_fatal_error("Don't support this relaxation type");
+  case RISCVII::MO_GOT_GPREL_HI:
+    FlagsAdd = RISCVII::MO_GOT_GPREL_ADD;
+    FlagsLo = RISCVII::MO_GOT_GPREL_LO;
+    break;
+  case RISCVII::MO_TLS_GOT_GPREL_HI:
+    FlagsAdd = RISCVII::MO_TLS_GOT_GPREL_ADD;
+    FlagsLo = RISCVII::MO_TLS_GOT_GPREL_LO;
+    break;
+  case RISCVII::MO_TLS_GD_GPREL_HI:
+    FlagsAdd = RISCVII::MO_TLS_GD_GPREL_ADD;
+    FlagsLo = RISCVII::MO_TLS_GD_GPREL_LO;
+    break;
+  }
+
+  SDValue AddrHi = getTargetNode(N, DL, Ty, DAG, FlagsHi);
+  SDValue AddrAdd = getTargetNode(N, DL, Ty, DAG, FlagsAdd);
+  SDValue AddrLo = getTargetNode(N, DL, Ty, DAG, FlagsLo);
+  SDValue GPReg = getGlobalBaseReg(DAG, *Subtarget);
+
+  SDValue MNHi = SDValue(DAG.getMachineNode(RISCV::LUI, DL, Ty, AddrHi), 0);
+  SDValue MNAdd = SDValue(
+      DAG.getMachineNode(RISCV::PseudoAddRegRel, DL, Ty, MNHi, GPReg, AddrAdd),
+      0);
+  SDValue MNAddLo =
+      SDValue(DAG.getMachineNode(RISCV::ADDI, DL, Ty, MNAdd, AddrLo), 0);
+
+  if (FlagsHi == RISCVII::MO_TLS_GD_GPREL_HI)
+    return MNAddLo;
+
+  SDValue Load =
+      SDValue(DAG.getMachineNode(RISCV::LD, DL, Ty, MNAdd, AddrLo), 0);
+  MachineFunction &MF = DAG.getMachineFunction();
+  MachineMemOperand *MemOp = MF.getMachineMemOperand(
+      MachinePointerInfo::getGOT(MF),
+      MachineMemOperand::MOLoad | MachineMemOperand::MODereferenceable |
+          MachineMemOperand::MOInvariant,
+      LLT(Ty.getSimpleVT()), Align(Ty.getFixedSizeInBits() / 8));
+  DAG.setNodeMemRefs(cast<MachineSDNode>(Load.getNode()), {MemOp});
+  return Load;
+}
+
+// FIXME: This is copied from RISCVTargetLowering and modified to use
+// MachineOpodes
+template <class NodeTy>
+SDValue RISCVDAGToDAGISel::getAddr(NodeTy *N, SelectionDAG &DAG, bool IsLocal,
+                                   bool IsExternWeak) const {
+  SDLoc DL(N);
+  EVT Ty = TLI->getPointerTy(DAG.getDataLayout());
+
+  // When HWASAN is used and tagging of global variables is enabled
+  // they should be accessed via the GOT, since the tagged address of a global
+  // is incompatible with existing code models. This also applies to non-pic
+  // mode.
+  if ((TLI->isPositionIndependent() || Subtarget->allowTaggedGlobals()) &&
+      TLI->getTargetMachine().getCodeModel() != CodeModel::Compact) {
+    SDValue Addr = getTargetNode(N, DL, Ty, DAG, 0);
+    if (IsLocal && !Subtarget->allowTaggedGlobals())
+      // Use PC-relative addressing to access the symbol. This generates the
+      // pattern (PseudoLLA sym), which expands to (addi (auipc %pcrel_hi(sym))
+      // %pcrel_lo(auipc)).
+      return SDValue(DAG.getMachineNode(RISCV::PseudoLLA, DL, Ty, Addr), 0);
+
+    // Use PC-relative addressing to access the GOT for this symbol, then load
+    // the address from the GOT. This generates the pattern (PseudoLGA sym),
+    // which expands to (ld (addi (auipc %got_pcrel_hi(sym)) %pcrel_lo(auipc))).
+    SDValue Load =
+        SDValue(DAG.getMachineNode(RISCV::PseudoLGA, DL, Ty, Addr), 0);
+    MachineFunction &MF = DAG.getMachineFunction();
+    MachineMemOperand *MemOp = MF.getMachineMemOperand(
+        MachinePointerInfo::getGOT(MF),
+        MachineMemOperand::MOLoad | MachineMemOperand::MODereferenceable |
+            MachineMemOperand::MOInvariant,
+        LLT(Ty.getSimpleVT()), Align(Ty.getFixedSizeInBits() / 8));
+    DAG.setNodeMemRefs(cast<MachineSDNode>(Load.getNode()), {MemOp});
+    return Load;
+  }
+
+  switch (TLI->getTargetMachine().getCodeModel()) {
+  default:
+    report_fatal_error("Unsupported code model for lowering");
+  case CodeModel::Small: {
+    // Generate a sequence for accessing addresses within the first 2 GiB of
+    // address space. This generates the pattern (addi (lui %hi(sym)) %lo(sym)).
+    SDValue AddrHi = getTargetNode(N, DL, Ty, DAG, RISCVII::MO_HI);
+    SDValue AddrLo = getTargetNode(N, DL, Ty, DAG, RISCVII::MO_LO);
+    SDValue MNHi = SDValue(DAG.getMachineNode(RISCV::LUI, DL, Ty, AddrHi), 0);
+    return SDValue(DAG.getMachineNode(RISCV::ADDI, DL, Ty, MNHi, AddrLo), 0);
+  }
+  case CodeModel::Medium: {
+    SDValue Addr = getTargetNode(N, DL, Ty, DAG, 0);
+    if (IsExternWeak) {
+      // An extern weak symbol may be undefined, i.e. have value 0, which may
+      // not be within 2GiB of PC, so use GOT-indirect addressing to access the
+      // symbol. This generates the pattern (PseudoLGA sym), which expands to
+      // (ld (addi (auipc %got_pcrel_hi(sym)) %pcrel_lo(auipc))).
+      SDValue Load =
+          SDValue(DAG.getMachineNode(RISCV::PseudoLGA, DL, Ty, Addr), 0);
+      MachineFunction &MF = DAG.getMachineFunction();
+      MachineMemOperand *MemOp = MF.getMachineMemOperand(
+          MachinePointerInfo::getGOT(MF),
+          MachineMemOperand::MOLoad | MachineMemOperand::MODereferenceable |
+              MachineMemOperand::MOInvariant,
+          LLT(Ty.getSimpleVT()), Align(Ty.getFixedSizeInBits() / 8));
+      DAG.setNodeMemRefs(cast<MachineSDNode>(Load.getNode()), {MemOp});
+      return Load;
+    }
+
+    // Generate a sequence for accessing addresses within any 2GiB range within
+    // the address space. This generates the pattern (PseudoLLA sym), which
+    // expands to (addi (auipc %pcrel_hi(sym)) %pcrel_lo(auipc)).
+    return SDValue(DAG.getMachineNode(RISCV::PseudoLLA, DL, Ty, Addr), 0);
+  }
+  case CodeModel::Compact: {
+    // Generate a sequence for accessing the whole 64-bit address space,
+    // with the appropriate adjustment for the global pointer offset.
+    // The generates the pattern of global symbol:
+    // (ld (add_gprel (lui %gprel_hi(sym)) gp %gprel(sym)) %gprel_lo(sym))
+    return getCompactAddr(N, DAG, RISCVII::MO_GOT_GPREL_HI);
+  }
+  case CodeModel::Large: {
+    // Using pc-relative mode for other node type.
+    SDValue Addr = getTargetNode(N, DL, Ty, DAG, 0);
+    return SDValue(DAG.getMachineNode(RISCV::PseudoLLA, DL, Ty, Addr), 0);
+  }
+  }
+}
+
+#endif
 
 // This pass converts a legalized DAG into a RISCV-specific DAG, ready
 // for instruction scheduling.

@@ -8025,9 +8025,7 @@ static SDValue getGlobalBaseReg(SelectionDAG &DAG,
   Register GlobalBaseReg = Subtarget.getInstrInfo()->getGlobalBaseReg(&MF);
   return DAG.getRegister(GlobalBaseReg, TLI.getPointerTy(DAG.getDataLayout()));
 }
-#endif // SIFIVE_CUSTOMIZATION
 
-#if SIFIVE_CUSTOMIZATION
 template <class NodeTy>
 SDValue RISCVTargetLowering::getCompactAddr(NodeTy *N, SelectionDAG &DAG,
                                             unsigned FlagsHi) const {
