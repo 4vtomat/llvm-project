@@ -8,17 +8,17 @@ define <vscale x 1 x float> @foo(<vscale x 1 x float> %a, i32 %b, <vscale x 1 x 
 ; CHECK:       powi-expansion-loop:
 ; CHECK-NEXT:    [[BASE:%.*]] = phi <vscale x 1 x float> [ [[A:%.*]], [[ENTRY:%.*]] ], [ [[TMP5:%.*]], [[POWI_EXPANSION_LOOP]] ]
 ; CHECK-NEXT:    [[EXP:%.*]] = phi i32 [ [[B:%.*]], [[ENTRY]] ], [ [[TMP4:%.*]], [[POWI_EXPANSION_LOOP]] ]
-; CHECK-NEXT:    [[RES:%.*]] = phi <vscale x 1 x float> [ shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 1.000000e+00, i64 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), [[ENTRY]] ], [ [[TMP3:%.*]], [[POWI_EXPANSION_LOOP]] ]
-; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x float> @llvm.vp.fmul.nxv1f32(<vscale x 1 x float> [[RES]], <vscale x 1 x float> [[BASE]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[EVL:%.*]])
+; CHECK-NEXT:    [[RES:%.*]] = phi <vscale x 1 x float> [ splat (float 1.000000e+00), [[ENTRY]] ], [ [[TMP3:%.*]], [[POWI_EXPANSION_LOOP]] ]
+; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x float> @llvm.vp.fmul.nxv1f32(<vscale x 1 x float> [[RES]], <vscale x 1 x float> [[BASE]], <vscale x 1 x i1> splat (i1 true), i32 [[EVL:%.*]])
 ; CHECK-NEXT:    [[TMP1:%.*]] = and i32 [[EXP]], 1
 ; CHECK-NEXT:    [[TMP2:%.*]] = icmp ne i32 [[TMP1]], 0
 ; CHECK-NEXT:    [[TMP3]] = select i1 [[TMP2]], <vscale x 1 x float> [[TMP0]], <vscale x 1 x float> [[RES]]
 ; CHECK-NEXT:    [[TMP4]] = lshr i32 [[EXP]], 1
-; CHECK-NEXT:    [[TMP5]] = call <vscale x 1 x float> @llvm.vp.fmul.nxv1f32(<vscale x 1 x float> [[BASE]], <vscale x 1 x float> [[BASE]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[EVL]])
+; CHECK-NEXT:    [[TMP5]] = call <vscale x 1 x float> @llvm.vp.fmul.nxv1f32(<vscale x 1 x float> [[BASE]], <vscale x 1 x float> [[BASE]], <vscale x 1 x i1> splat (i1 true), i32 [[EVL]])
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp eq i32 [[TMP4]], 0
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[POWI_POST_LOOP:%.*]], label [[POWI_EXPANSION_LOOP]]
 ; CHECK:       powi-post-loop:
-; CHECK-NEXT:    [[TMP7:%.*]] = call <vscale x 1 x float> @llvm.vp.fdiv.nxv1f32(<vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 1.000000e+00, i64 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[M:%.*]], i32 [[EVL]])
+; CHECK-NEXT:    [[TMP7:%.*]] = call <vscale x 1 x float> @llvm.vp.fdiv.nxv1f32(<vscale x 1 x float> splat (float 1.000000e+00), <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[M:%.*]], i32 [[EVL]])
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp slt i32 [[B]], 0
 ; CHECK-NEXT:    [[TMP9:%.*]] = select i1 [[TMP8]], <vscale x 1 x float> [[TMP7]], <vscale x 1 x float> [[TMP3]]
 ; CHECK-NEXT:    ret <vscale x 1 x float> [[TMP9]]
@@ -37,17 +37,17 @@ define <vscale x 1 x float> @foo2(<vscale x 1 x float> %a, i32 %b) {
 ; CHECK:       powi-expansion-loop:
 ; CHECK-NEXT:    [[BASE:%.*]] = phi <vscale x 1 x float> [ [[A:%.*]], [[ENTRY:%.*]] ], [ [[TMP6:%.*]], [[POWI_EXPANSION_LOOP]] ]
 ; CHECK-NEXT:    [[EXP:%.*]] = phi i32 [ [[B:%.*]], [[ENTRY]] ], [ [[TMP5:%.*]], [[POWI_EXPANSION_LOOP]] ]
-; CHECK-NEXT:    [[RES:%.*]] = phi <vscale x 1 x float> [ shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 1.000000e+00, i64 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), [[ENTRY]] ], [ [[TMP4:%.*]], [[POWI_EXPANSION_LOOP]] ]
-; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 1 x float> @llvm.vp.fmul.nxv1f32(<vscale x 1 x float> [[RES]], <vscale x 1 x float> [[BASE]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP0]])
+; CHECK-NEXT:    [[RES:%.*]] = phi <vscale x 1 x float> [ splat (float 1.000000e+00), [[ENTRY]] ], [ [[TMP4:%.*]], [[POWI_EXPANSION_LOOP]] ]
+; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 1 x float> @llvm.vp.fmul.nxv1f32(<vscale x 1 x float> [[RES]], <vscale x 1 x float> [[BASE]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    [[TMP2:%.*]] = and i32 [[EXP]], 1
 ; CHECK-NEXT:    [[TMP3:%.*]] = icmp ne i32 [[TMP2]], 0
 ; CHECK-NEXT:    [[TMP4]] = select i1 [[TMP3]], <vscale x 1 x float> [[TMP1]], <vscale x 1 x float> [[RES]]
 ; CHECK-NEXT:    [[TMP5]] = lshr i32 [[EXP]], 1
-; CHECK-NEXT:    [[TMP6]] = call <vscale x 1 x float> @llvm.vp.fmul.nxv1f32(<vscale x 1 x float> [[BASE]], <vscale x 1 x float> [[BASE]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP0]])
+; CHECK-NEXT:    [[TMP6]] = call <vscale x 1 x float> @llvm.vp.fmul.nxv1f32(<vscale x 1 x float> [[BASE]], <vscale x 1 x float> [[BASE]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i32 [[TMP5]], 0
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[POWI_POST_LOOP:%.*]], label [[POWI_EXPANSION_LOOP]]
 ; CHECK:       powi-post-loop:
-; CHECK-NEXT:    [[TMP8:%.*]] = call <vscale x 1 x float> @llvm.vp.fdiv.nxv1f32(<vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 1.000000e+00, i64 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x float> [[TMP4]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP0]])
+; CHECK-NEXT:    [[TMP8:%.*]] = call <vscale x 1 x float> @llvm.vp.fdiv.nxv1f32(<vscale x 1 x float> splat (float 1.000000e+00), <vscale x 1 x float> [[TMP4]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp slt i32 [[B]], 0
 ; CHECK-NEXT:    [[TMP10:%.*]] = select i1 [[TMP9]], <vscale x 1 x float> [[TMP8]], <vscale x 1 x float> [[TMP4]]
 ; CHECK-NEXT:    ret <vscale x 1 x float> [[TMP10]]

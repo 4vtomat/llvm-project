@@ -53,8 +53,9 @@ define dso_local signext i32 @reduction_vec(i32 noundef signext %n, i32* nocaptu
 ; CHECK-NEXT:    [[TMP18:%.*]] = extractelement <vscale x 2 x i64> [[VP_OP]], i32 0
 ; CHECK-NEXT:    [[TMP19:%.*]] = and i64 [[TMP18]], 4294967295
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i32, ptr [[X:%.*]], i64 [[TMP19]]
-; CHECK-NEXT:    [[TMP22:%.*]] = mul i64 0, [[TMP10]]
-; CHECK-NEXT:    [[TMP23:%.*]] = sub i64 1, [[TMP10]]
+; CHECK-NEXT:    [[TMP21:%.*]] = zext i32 [[TMP17]] to i64
+; CHECK-NEXT:    [[TMP22:%.*]] = mul i64 0, [[TMP21]]
+; CHECK-NEXT:    [[TMP23:%.*]] = sub i64 1, [[TMP21]]
 ; CHECK-NEXT:    [[TMP24:%.*]] = getelementptr i32, ptr [[TMP20]], i64 [[TMP22]]
 ; CHECK-NEXT:    [[TMP25:%.*]] = getelementptr i32, ptr [[TMP24]], i64 [[TMP23]]
 ; CHECK-NEXT:    [[VP_REVERSE_MASK:%.*]] = call <vscale x 2 x i1> @llvm.experimental.vp.reverse.nxv2i1(<vscale x 2 x i1> [[PRED_NOT]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP17]])
@@ -153,8 +154,9 @@ define dso_local signext i32 @reduction_vec(i32 noundef signext %n, i32* nocaptu
 ; CHECK-NO-POSTSV-NEXT:    [[TMP18:%.*]] = extractelement <vscale x 2 x i64> [[VP_OP]], i32 0
 ; CHECK-NO-POSTSV-NEXT:    [[TMP19:%.*]] = and i64 [[TMP18]], 4294967295
 ; CHECK-NO-POSTSV-NEXT:    [[TMP20:%.*]] = getelementptr i32, ptr [[X:%.*]], i64 [[TMP19]]
-; CHECK-NO-POSTSV-NEXT:    [[TMP22:%.*]] = mul i64 0, [[TMP10]]
-; CHECK-NO-POSTSV-NEXT:    [[TMP23:%.*]] = sub i64 1, [[TMP10]]
+; CHECK-NO-POSTSV-NEXT:    [[TMP21:%.*]] = zext i32 [[TMP17]] to i64
+; CHECK-NO-POSTSV-NEXT:    [[TMP22:%.*]] = mul i64 0, [[TMP21]]
+; CHECK-NO-POSTSV-NEXT:    [[TMP23:%.*]] = sub i64 1, [[TMP21]]
 ; CHECK-NO-POSTSV-NEXT:    [[TMP24:%.*]] = getelementptr i32, ptr [[TMP20]], i64 [[TMP22]]
 ; CHECK-NO-POSTSV-NEXT:    [[TMP25:%.*]] = getelementptr i32, ptr [[TMP24]], i64 [[TMP23]]
 ; CHECK-NO-POSTSV-NEXT:    [[VP_REVERSE_MASK:%.*]] = call <vscale x 2 x i1> @llvm.experimental.vp.reverse.nxv2i1(<vscale x 2 x i1> [[PRED_NOT]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP17]])

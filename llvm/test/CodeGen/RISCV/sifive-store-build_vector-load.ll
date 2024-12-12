@@ -44,7 +44,10 @@ define void @test_0(ptr %in, ptr %out) {
 ; CHECK-NEXT:    sb a2, 3(a1)
 ; CHECK-NEXT:    ld s0, 8(sp) # 8-byte Folded Reload
 ; CHECK-NEXT:    ld s1, 0(sp) # 8-byte Folded Reload
+; CHECK-NEXT:    .cfi_restore s0
+; CHECK-NEXT:    .cfi_restore s1
 ; CHECK-NEXT:    addi sp, sp, 16
+; CHECK-NEXT:    .cfi_def_cfa_offset 0
 ; CHECK-NEXT:    ret
 entry:
   %arrayidx = getelementptr inbounds i8, ptr %in, i64 15
@@ -229,7 +232,10 @@ define void @test_4(ptr %in, ptr %out) {
 ; CHECK-NEXT:    sb a2, 3(a1)
 ; CHECK-NEXT:    ld s0, 8(sp) # 8-byte Folded Reload
 ; CHECK-NEXT:    ld s1, 0(sp) # 8-byte Folded Reload
+; CHECK-NEXT:    .cfi_restore s0
+; CHECK-NEXT:    .cfi_restore s1
 ; CHECK-NEXT:    addi sp, sp, 16
+; CHECK-NEXT:    .cfi_def_cfa_offset 0
 ; CHECK-NEXT:    ret
 entry:
   %arrayidx = getelementptr inbounds i16, ptr %in, i64 15
@@ -422,7 +428,10 @@ define void @test_8(ptr %in, ptr %out) {
 ; CHECK-NEXT:    sb a2, 3(a1)
 ; CHECK-NEXT:    ld s0, 8(sp) # 8-byte Folded Reload
 ; CHECK-NEXT:    ld s1, 0(sp) # 8-byte Folded Reload
+; CHECK-NEXT:    .cfi_restore s0
+; CHECK-NEXT:    .cfi_restore s1
 ; CHECK-NEXT:    addi sp, sp, 16
+; CHECK-NEXT:    .cfi_def_cfa_offset 0
 ; CHECK-NEXT:    ret
 entry:
   %arrayidx = getelementptr inbounds i32, ptr %in, i64 15
@@ -619,7 +628,10 @@ define void @test_12(ptr %in, ptr %out) {
 ; CHECK-NEXT:    sb a2, 3(a1)
 ; CHECK-NEXT:    ld s0, 8(sp) # 8-byte Folded Reload
 ; CHECK-NEXT:    ld s1, 0(sp) # 8-byte Folded Reload
+; CHECK-NEXT:    .cfi_restore s0
+; CHECK-NEXT:    .cfi_restore s1
 ; CHECK-NEXT:    addi sp, sp, 16
+; CHECK-NEXT:    .cfi_def_cfa_offset 0
 ; CHECK-NEXT:    ret
 entry:
   %arrayidx = getelementptr inbounds i64, ptr %in, i64 15
@@ -838,7 +850,10 @@ define void @test_16(ptr %in, ptr %out) {
 ; CHECK-NEXT:    sb a2, 3(a1)
 ; CHECK-NEXT:    ld s0, 8(sp) # 8-byte Folded Reload
 ; CHECK-NEXT:    ld s1, 0(sp) # 8-byte Folded Reload
+; CHECK-NEXT:    .cfi_restore s0
+; CHECK-NEXT:    .cfi_restore s1
 ; CHECK-NEXT:    addi sp, sp, 16
+; CHECK-NEXT:    .cfi_def_cfa_offset 0
 ; CHECK-NEXT:    ret
 entry:
   %arrayidx = getelementptr inbounds i8, ptr %in, i64 15
@@ -1023,7 +1038,10 @@ define void @test_20(ptr %in, ptr %out) {
 ; CHECK-NEXT:    sb a2, 3(a1)
 ; CHECK-NEXT:    ld s0, 8(sp) # 8-byte Folded Reload
 ; CHECK-NEXT:    ld s1, 0(sp) # 8-byte Folded Reload
+; CHECK-NEXT:    .cfi_restore s0
+; CHECK-NEXT:    .cfi_restore s1
 ; CHECK-NEXT:    addi sp, sp, 16
+; CHECK-NEXT:    .cfi_def_cfa_offset 0
 ; CHECK-NEXT:    ret
 entry:
   %arrayidx = getelementptr inbounds i16, ptr %in, i64 15
@@ -1216,7 +1234,10 @@ define void @test_24(ptr %in, ptr %out) {
 ; CHECK-NEXT:    sb a2, 3(a1)
 ; CHECK-NEXT:    ld s0, 8(sp) # 8-byte Folded Reload
 ; CHECK-NEXT:    ld s1, 0(sp) # 8-byte Folded Reload
+; CHECK-NEXT:    .cfi_restore s0
+; CHECK-NEXT:    .cfi_restore s1
 ; CHECK-NEXT:    addi sp, sp, 16
+; CHECK-NEXT:    .cfi_def_cfa_offset 0
 ; CHECK-NEXT:    ret
 entry:
   %arrayidx = getelementptr inbounds i32, ptr %in, i64 15
@@ -1413,7 +1434,10 @@ define void @test_28(ptr %in, ptr %out) {
 ; CHECK-NEXT:    sb a2, 3(a1)
 ; CHECK-NEXT:    ld s0, 8(sp) # 8-byte Folded Reload
 ; CHECK-NEXT:    ld s1, 0(sp) # 8-byte Folded Reload
+; CHECK-NEXT:    .cfi_restore s0
+; CHECK-NEXT:    .cfi_restore s1
 ; CHECK-NEXT:    addi sp, sp, 16
+; CHECK-NEXT:    .cfi_def_cfa_offset 0
 ; CHECK-NEXT:    ret
 entry:
   %arrayidx = getelementptr inbounds i64, ptr %in, i64 15

@@ -99,31 +99,30 @@ define <4 x i32> @v4i32_v16i32(<16 x i32>) {
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetivli zero, 8, e32, m4, ta, ma
 ; RV32-NEXT:    vslidedown.vi v16, v8, 8
-; RV32-NEXT:    vmv4r.v v20, v8
+; RV32-NEXT:    vsetivli zero, 2, e16, m1, ta, ma
+; RV32-NEXT:    vmv.v.i v14, 1
+; RV32-NEXT:    vmv2r.v v10, v12
 ; RV32-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; RV32-NEXT:    vmv.v.i v8, 1
-; RV32-NEXT:    vmv2r.v v22, v12
-; RV32-NEXT:    vmv.v.i v10, 6
+; RV32-NEXT:    vmv.v.i v12, 6
 ; RV32-NEXT:    li a0, 32
 ; RV32-NEXT:    vmv.v.i v0, 10
 ; RV32-NEXT:    vsetivli zero, 2, e16, m1, tu, ma
-; RV32-NEXT:    vslideup.vi v10, v8, 1
+; RV32-NEXT:    vslideup.vi v12, v14, 1
 ; RV32-NEXT:    vsetivli zero, 8, e32, m2, ta, mu
-; RV32-NEXT:    vnsrl.wx v8, v20, a0
-; RV32-NEXT:    vrgatherei16.vv v8, v16, v10, v0.t
+; RV32-NEXT:    vnsrl.wx v8, v8, a0
+; RV32-NEXT:    vrgatherei16.vv v8, v16, v12, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: v4i32_v16i32:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    vsetivli zero, 8, e32, m4, ta, ma
 ; RV64-NEXT:    vslidedown.vi v16, v8, 8
-; RV64-NEXT:    vmv4r.v v20, v8
 ; RV64-NEXT:    li a0, 32
-; RV64-NEXT:    vmv2r.v v22, v12
+; RV64-NEXT:    vmv2r.v v10, v12
 ; RV64-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
 ; RV64-NEXT:    vmv.v.i v0, 10
 ; RV64-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
-; RV64-NEXT:    vnsrl.wx v8, v20, a0
+; RV64-NEXT:    vnsrl.wx v8, v8, a0
 ; RV64-NEXT:    li a0, 3
 ; RV64-NEXT:    slli a0, a0, 33
 ; RV64-NEXT:    addi a0, a0, 1
@@ -317,8 +316,7 @@ define <32 x i8> @vnsrl_v32i8_v64i8(<64 x i8> %in) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    li a0, 32
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, ma
-; CHECK-NEXT:    vnsrl.wi v12, v8, 8
-; CHECK-NEXT:    vmv.v.v v8, v12
+; CHECK-NEXT:    vnsrl.wi v8, v8, 8
 ; CHECK-NEXT:    ret
   %res = shufflevector <64 x i8> %in, <64 x i8> poison, <32 x i32> <i32 1, i32 3, i32 5, i32 7, i32 9, i32 11, i32 13, i32 15, i32 17, i32 19, i32 21, i32 23, i32 25, i32 27, i32 29, i32 31, i32 33, i32 35, i32 37, i32 39, i32 41, i32 43, i32 45, i32 47, i32 49, i32 51, i32 53, i32 55, i32 57, i32 59, i32 61, i32 63>
   ret <32 x i8> %res

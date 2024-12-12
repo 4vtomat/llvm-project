@@ -74,31 +74,17 @@
 ; CHECK-NEXT:       Instrument function entry/exit with calls to e.g. mcount() (post inlining)
 ; CHECK-NEXT:       Scalarize Masked Memory Intrinsics
 ; CHECK-NEXT:       Expand reduction intrinsics
-; CHECK-NEXT:       Natural Loop Information
-<<<<<<< HEAD
-; CHECK-NEXT:       TLS Variable Hoist
 ; CHECK-NEXT:       RISC-V Late CodeGenPrepare
 ; CHECK-NEXT:       RISC-V Type Promotion
 ; CHECK-NEXT:       Dominator Tree Construction
 ; CHECK-NEXT:       Natural Loop Information
-||||||| 864902e9b4d8
-; CHECK-NEXT:       TLS Variable Hoist
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:       Type Promotion
 ; CHECK-NEXT:       CodeGen Prepare
 ; CHECK-NEXT:       Dominator Tree Construction
 ; CHECK-NEXT:       Exception handling preparation
 ; CHECK-NEXT:     A No-Op Barrier Pass
 ; CHECK-NEXT:     FunctionPass Manager
-<<<<<<< HEAD
-; SIFIVE_CUSTOMIZATION
 ; CHECK-NEXT:       Merge internal globals
-; SIFIVE_CUSTOMIZATION
-||||||| 864902e9b4d8
-=======
-; CHECK-NEXT:       Merge internal globals
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:       Dominator Tree Construction
 ; CHECK-NEXT:       Basic Alias Analysis (stateless AA impl)
 ; CHECK-NEXT:       Function Alias Analysis Results

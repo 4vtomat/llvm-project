@@ -75,29 +75,28 @@ define <12 x i8> @load_v12i8(ptr %p) {
 ; CHECK-NEXT:    lbu a6, 5(a0)
 ; CHECK-NEXT:    lbu a7, 6(a0)
 ; CHECK-NEXT:    lbu t0, 7(a0)
+; CHECK-NEXT:    li t1, 255
+; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
+; CHECK-NEXT:    vmv.s.x v0, t1
 ; CHECK-NEXT:    lbu t1, 0(a0)
 ; CHECK-NEXT:    lbu t2, 1(a0)
 ; CHECK-NEXT:    lbu t3, 2(a0)
 ; CHECK-NEXT:    lbu a0, 3(a0)
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
 ; CHECK-NEXT:    vmv.v.x v8, t1
+; CHECK-NEXT:    vmv.v.x v9, a1
 ; CHECK-NEXT:    vslide1down.vx v8, v8, t2
+; CHECK-NEXT:    vslide1down.vx v9, v9, a2
 ; CHECK-NEXT:    vslide1down.vx v8, v8, t3
+; CHECK-NEXT:    vslide1down.vx v9, v9, a3
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a0
+; CHECK-NEXT:    vslide1down.vx v9, v9, a4
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a5
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a6
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a7
-; CHECK-NEXT:    vslide1down.vx v9, v8, t0
-; CHECK-NEXT:    vmv.v.x v8, a1
-; CHECK-NEXT:    vslide1down.vx v8, v8, a2
-; CHECK-NEXT:    vslide1down.vx v8, v8, a3
-; CHECK-NEXT:    vslide1down.vx v8, v8, a4
-; CHECK-NEXT:    li a0, 255
-; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
-; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vslidedown.vi v8, v8, 4
-; CHECK-NEXT:    vslidedown.vi v8, v9, 8, v0.t
+; CHECK-NEXT:    vslide1down.vx v10, v8, t0
+; CHECK-NEXT:    vslidedown.vi v8, v9, 4
+; CHECK-NEXT:    vslidedown.vi v8, v10, 8, v0.t
 ; CHECK-NEXT:    ret
   %x = load <12 x i8>, ptr %p
   ret <12 x i8> %x
@@ -197,9 +196,13 @@ define <6 x double> @load_v6f64(ptr %p) {
 ; RV32-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; RV32-NEXT:    vle64.v v8, (a0)
 ; RV32-NEXT:    addi sp, s0, -128
+; RV32-NEXT:    .cfi_def_cfa sp, 128
 ; RV32-NEXT:    lw ra, 124(sp) # 4-byte Folded Reload
 ; RV32-NEXT:    lw s0, 120(sp) # 4-byte Folded Reload
+; RV32-NEXT:    .cfi_restore ra
+; RV32-NEXT:    .cfi_restore s0
 ; RV32-NEXT:    addi sp, sp, 128
+; RV32-NEXT:    .cfi_def_cfa_offset 0
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: load_v6f64:
@@ -229,9 +232,13 @@ define <6 x double> @load_v6f64(ptr %p) {
 ; RV64-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; RV64-NEXT:    vle64.v v8, (a0)
 ; RV64-NEXT:    addi sp, s0, -128
+; RV64-NEXT:    .cfi_def_cfa sp, 128
 ; RV64-NEXT:    ld ra, 120(sp) # 8-byte Folded Reload
 ; RV64-NEXT:    ld s0, 112(sp) # 8-byte Folded Reload
+; RV64-NEXT:    .cfi_restore ra
+; RV64-NEXT:    .cfi_restore s0
 ; RV64-NEXT:    addi sp, sp, 128
+; RV64-NEXT:    .cfi_def_cfa_offset 0
 ; RV64-NEXT:    ret
   %x = load <6 x double>, ptr %p
   ret <6 x double> %x

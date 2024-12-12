@@ -214,8 +214,8 @@ define dso_local i64 @ld_sd_global(i64 %a) nounwind {
 ; RV64I-LABEL: ld_sd_global:
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    lui a2, %hi(G)
-; RV64I-NEXT:    ld a1, %lo(G)(a2)
 ; RV64I-NEXT:    lui a3, %hi(G+72)
+; RV64I-NEXT:    ld a1, %lo(G)(a2)
 ; RV64I-NEXT:    sd a0, %lo(G)(a2)
 ; RV64I-NEXT:    ld zero, %lo(G+72)(a3)
 ; RV64I-NEXT:    sd a0, %lo(G+72)(a3)

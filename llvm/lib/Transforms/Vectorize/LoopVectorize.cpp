@@ -10667,7 +10667,7 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
         } else {
           VPlanTransforms::optimize(*Plan);
           VPlanTransforms::tryAddExplicitVectorLength(
-              *Plan, CM.getMaxSafeElements(), /*EnableEVLFuzzing*/ true);
+              *Plan, CM.getMaxSafeElements(), /*EnableEVLFuzzing=*/true);
           VPlanTransforms::optimize(*Plan);
           VPlanTransforms::optimizeGEPs(*Plan);
           VPlanTransforms::optimize(*Plan);

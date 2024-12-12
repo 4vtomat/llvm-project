@@ -2680,7 +2680,19 @@ void VPReverseVectorPointerRecipe::execute(VPTransformState &State) {
                                 CurrentPart, Builder);
 
   // The wide store needs to start at the last vector element.
+#if SIFIVE_CUSTOMIZATION
+    Value *RunTimeVF;
+    if (State.Plan->useVLAVectorizer()) {
+      VPValue *EVL = State.EVL;
+      // If EVL is not nullptr, then EVL must be a valid value set during plan
+      // creation and must be used to correctly reverse the address
+      RunTimeVF = State.get(EVL, /*NeedsScalar=*/true);
+    } else {
+      RunTimeVF = State.get(getVFValue(), VPLane(0));
+    }
+#else
   Value *RunTimeVF = State.get(getVFValue(), VPLane(0));
+#endif // SIFIVE_CUSTOMIZATION
   if (IndexTy != RunTimeVF->getType())
     RunTimeVF = Builder.CreateZExtOrTrunc(RunTimeVF, IndexTy);
   // NumElt = -CurrentPart * RunTimeVF

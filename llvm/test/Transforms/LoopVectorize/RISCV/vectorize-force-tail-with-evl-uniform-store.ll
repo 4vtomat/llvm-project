@@ -28,8 +28,9 @@ define void @lshift_significand(i32 %n, ptr nocapture writeonly %dst) {
 ; CHECK-NEXT:    [[TMP12:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; CHECK-NEXT:    [[TMP13:%.*]] = sub nuw nsw i64 1, [[TMP12]]
 ; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr i64, ptr [[DST]], i64 [[TMP13]]
-; CHECK-NEXT:    [[TMP17:%.*]] = mul i64 0, [[TMP16]]
-; CHECK-NEXT:    [[TMP18:%.*]] = sub i64 1, [[TMP16]]
+; CHECK-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP11]] to i64
+; CHECK-NEXT:    [[TMP17:%.*]] = mul i64 0, [[TMP7]]
+; CHECK-NEXT:    [[TMP18:%.*]] = sub i64 1, [[TMP7]]
 ; CHECK-NEXT:    [[TMP19:%.*]] = getelementptr i64, ptr [[TMP14]], i64 [[TMP17]]
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i64, ptr [[TMP19]], i64 [[TMP18]]
 ; CHECK-NEXT:    [[VP_REVERSE:%.*]] = call <vscale x 4 x i64> @llvm.experimental.vp.reverse.nxv4i64(<vscale x 4 x i64> zeroinitializer, <vscale x 4 x i1> splat (i1 true), i32 [[TMP11]])

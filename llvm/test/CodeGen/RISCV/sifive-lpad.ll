@@ -94,15 +94,19 @@ define void @invoke(ptr %f) personality ptr @__gxx_personality_v0 {
 ; RV32-NEXT:    .cfi_def_cfa_offset 16
 ; RV32-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
 ; RV32-NEXT:    .cfi_offset ra, -4
+; RV32-NEXT:    .cfi_remember_state
 ; RV32-NEXT:  .Ltmp0:
 ; RV32-NEXT:    lui t2, 1
 ; RV32-NEXT:    jalr a0
 ; RV32-NEXT:  .Ltmp1:
 ; RV32-NEXT:  .LBB2_1: # %try.cont
 ; RV32-NEXT:    lw ra, 12(sp) # 4-byte Folded Reload
+; RV32-NEXT:    .cfi_restore ra
 ; RV32-NEXT:    addi sp, sp, 16
+; RV32-NEXT:    .cfi_def_cfa_offset 0
 ; RV32-NEXT:    ret
 ; RV32-NEXT:  .LBB2_2: # %lpad
+; RV32-NEXT:   .cfi_restore_state
 ; RV32-NEXT:  .Ltmp2:
 ; RV32-NEXT:    j .LBB2_1
 ;
@@ -113,15 +117,19 @@ define void @invoke(ptr %f) personality ptr @__gxx_personality_v0 {
 ; RV64-NEXT:    .cfi_def_cfa_offset 16
 ; RV64-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
 ; RV64-NEXT:    .cfi_offset ra, -8
+; RV64-NEXT:    .cfi_remember_state
 ; RV64-NEXT:  .Ltmp0:
 ; RV64-NEXT:    lui t2, 1
 ; RV64-NEXT:    jalr a0
 ; RV64-NEXT:  .Ltmp1:
 ; RV64-NEXT:  .LBB2_1: # %try.cont
 ; RV64-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload
+; RV64-NEXT:    .cfi_restore ra
 ; RV64-NEXT:    addi sp, sp, 16
+; RV64-NEXT:    .cfi_def_cfa_offset 0
 ; RV64-NEXT:    ret
 ; RV64-NEXT:  .LBB2_2: # %lpad
+; RV64-NEXT:   .cfi_restore_state
 ; RV64-NEXT:  .Ltmp2:
 ; RV64-NEXT:    j .LBB2_1
 entry:
@@ -287,14 +295,18 @@ define void @invoke(ptr %f) personality ptr @__gxx_personality_v0 {
 ; UNLABELED-RV32-NEXT:    .cfi_def_cfa_offset 16
 ; UNLABELED-RV32-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
 ; UNLABELED-RV32-NEXT:    .cfi_offset ra, -4
+; UNLABELED-RV32-NEXT:    .cfi_remember_state
 ; UNLABELED-RV32-NEXT:  .Ltmp0:
 ; UNLABELED-RV32-NEXT:    jalr a0
 ; UNLABELED-RV32-NEXT:  .Ltmp1:
 ; UNLABELED-RV32-NEXT:  .LBB2_1: # %try.cont
 ; UNLABELED-RV32-NEXT:    lw ra, 12(sp) # 4-byte Folded Reload
+; UNLABELED-RV32-NEXT:    .cfi_restore ra
 ; UNLABELED-RV32-NEXT:    addi sp, sp, 16
+; UNLABELED-RV32-NEXT:    .cfi_def_cfa_offset 0
 ; UNLABELED-RV32-NEXT:    ret
 ; UNLABELED-RV32-NEXT:  .LBB2_2: # %lpad
+; UNLABELED-RV32-NEXT:    .cfi_restore_state
 ; UNLABELED-RV32-NEXT:  .Ltmp2:
 ; UNLABELED-RV32-NEXT:    j .LBB2_1
 ;
@@ -305,14 +317,18 @@ define void @invoke(ptr %f) personality ptr @__gxx_personality_v0 {
 ; UNLABELED-RV64-NEXT:    .cfi_def_cfa_offset 16
 ; UNLABELED-RV64-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
 ; UNLABELED-RV64-NEXT:    .cfi_offset ra, -8
+; UNLABELED-RV64-NEXT:    .cfi_remember_state
 ; UNLABELED-RV64-NEXT:  .Ltmp0:
 ; UNLABELED-RV64-NEXT:    jalr a0
 ; UNLABELED-RV64-NEXT:  .Ltmp1:
 ; UNLABELED-RV64-NEXT:  .LBB2_1: # %try.cont
 ; UNLABELED-RV64-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload
+; UNLABELED-RV64-NEXT:    .cfi_restore ra
 ; UNLABELED-RV64-NEXT:    addi sp, sp, 16
+; UNLABELED-RV64-NEXT:    .cfi_def_cfa_offset 0
 ; UNLABELED-RV64-NEXT:    ret
 ; UNLABELED-RV64-NEXT:  .LBB2_2: # %lpad
+; UNLABELED-RV64-NEXT:    .cfi_restore_state
 ; UNLABELED-RV64-NEXT:  .Ltmp2:
 ; UNLABELED-RV64-NEXT:    j .LBB2_1
 entry:
@@ -466,14 +482,18 @@ define void @invoke(ptr %f) personality ptr @__gxx_personality_v0 {
 ; DISABLED-RV32-NEXT:    .cfi_def_cfa_offset 16
 ; DISABLED-RV32-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
 ; DISABLED-RV32-NEXT:    .cfi_offset ra, -4
+; DISABLED-RV32-NEXT:    .cfi_remember_state
 ; DISABLED-RV32-NEXT:  .Ltmp0:
 ; DISABLED-RV32-NEXT:    jalr a0
 ; DISABLED-RV32-NEXT:  .Ltmp1:
 ; DISABLED-RV32-NEXT:  .LBB2_1: # %try.cont
 ; DISABLED-RV32-NEXT:    lw ra, 12(sp) # 4-byte Folded Reload
+; DISABLED-RV32-NEXT:    .cfi_restore ra
 ; DISABLED-RV32-NEXT:    addi sp, sp, 16
+; DISABLED-RV32-NEXT:    .cfi_def_cfa_offset 0
 ; DISABLED-RV32-NEXT:    ret
 ; DISABLED-RV32-NEXT:  .LBB2_2: # %lpad
+; DISABLED-RV32-NEXT:    .cfi_restore_state
 ; DISABLED-RV32-NEXT:  .Ltmp2:
 ; DISABLED-RV32-NEXT:    j .LBB2_1
 ;
@@ -483,14 +503,18 @@ define void @invoke(ptr %f) personality ptr @__gxx_personality_v0 {
 ; DISABLED-RV64-NEXT:    .cfi_def_cfa_offset 16
 ; DISABLED-RV64-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
 ; DISABLED-RV64-NEXT:    .cfi_offset ra, -8
+; DISABLED-RV64-NEXT:    .cfi_remember_state
 ; DISABLED-RV64-NEXT:  .Ltmp0:
 ; DISABLED-RV64-NEXT:    jalr a0
 ; DISABLED-RV64-NEXT:  .Ltmp1:
 ; DISABLED-RV64-NEXT:  .LBB2_1: # %try.cont
 ; DISABLED-RV64-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload
+; DISABLED-RV64-NEXT:    .cfi_restore ra
 ; DISABLED-RV64-NEXT:    addi sp, sp, 16
+; DISABLED-RV64-NEXT:    .cfi_def_cfa_offset 0
 ; DISABLED-RV64-NEXT:    ret
 ; DISABLED-RV64-NEXT:  .LBB2_2: # %lpad
+; DISABLED-RV64-NEXT:    .cfi_restore_state
 ; DISABLED-RV64-NEXT:  .Ltmp2:
 ; DISABLED-RV64-NEXT:    j .LBB2_1
 entry:

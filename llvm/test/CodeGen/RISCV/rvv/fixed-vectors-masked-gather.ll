@@ -7074,15 +7074,13 @@ define <4 x bfloat> @mgather_truemask_v4bf16(<4 x ptr> %ptrs, <4 x bfloat> %pass
 ; RV32-LABEL: mgather_truemask_v4bf16:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; RV32-NEXT:    vluxei32.v v9, (zero), v8
-; RV32-NEXT:    vmv1r.v v8, v9
+; RV32-NEXT:    vluxei32.v v8, (zero), v8
 ; RV32-NEXT:    ret
 ;
 ; RV64V-LABEL: mgather_truemask_v4bf16:
 ; RV64V:       # %bb.0:
 ; RV64V-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; RV64V-NEXT:    vluxei64.v v10, (zero), v8
-; RV64V-NEXT:    vmv1r.v v8, v10
+; RV64V-NEXT:    vluxei64.v v8, (zero), v8
 ; RV64V-NEXT:    ret
 ;
 ; RV64ZVE32F-LABEL: mgather_truemask_v4bf16:

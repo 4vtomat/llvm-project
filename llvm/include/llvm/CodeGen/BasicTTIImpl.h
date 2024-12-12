@@ -1693,6 +1693,20 @@ public:
           }
         }
       }
+#if SIFIVE_CUSTOMIZATION
+      else if (ICA.getID() == Intrinsic::vp_load_ff) {
+        Align Alignment;
+        if (auto *VPI = dyn_cast_or_null<VPIntrinsic>(ICA.getInst()))
+          Alignment = VPI->getPointerAlignment().valueOrOne();
+        unsigned AS = 0;
+        if (ICA.getArgTypes().size() > 1)
+          if (auto *PtrTy = dyn_cast<PointerType>(ICA.getArgTypes()[0]))
+            AS = PtrTy->getAddressSpace();
+        return thisT()->getMaskedMemoryOpCost(
+            Instruction::Load, ICA.getReturnType()->getStructElementType(0),
+            Alignment, AS, CostKind);
+      }
+#endif // SIFIVE_CUSTOMIZATION
 
       std::optional<Intrinsic::ID> FID =
           VPIntrinsic::getFunctionalIntrinsicIDForVP(ICA.getID());

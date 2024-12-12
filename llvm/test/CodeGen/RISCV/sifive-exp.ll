@@ -471,7 +471,12 @@ define void @skl_exp_f64(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280-NEXT:    ld s1, 16(sp) # 8-byte Folded Reload
 ; X280-NEXT:    ld s2, 8(sp) # 8-byte Folded Reload
 ; X280-NEXT:    ld s3, 0(sp) # 8-byte Folded Reload
+; X280-NEXT:    .cfi_restore s0
+; X280-NEXT:    .cfi_restore s1
+; X280-NEXT:    .cfi_restore s2
+; X280-NEXT:    .cfi_restore s3
 ; X280-NEXT:    addi sp, sp, 32
+; X280-NEXT:    .cfi_def_cfa_offset 0
 ; X280-NEXT:  .LBB2_4: # %for.cond.cleanup
 ; X280-NEXT:    ret
 ;
@@ -583,7 +588,12 @@ define void @skl_exp_f64(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280N-NEXT:    ld s1, 16(sp) # 8-byte Folded Reload
 ; X280N-NEXT:    ld s2, 8(sp) # 8-byte Folded Reload
 ; X280N-NEXT:    ld s3, 0(sp) # 8-byte Folded Reload
+; X280N-NEXT:    .cfi_restore s0
+; X280N-NEXT:    .cfi_restore s1
+; X280N-NEXT:    .cfi_restore s2
+; X280N-NEXT:    .cfi_restore s3
 ; X280N-NEXT:    addi sp, sp, 32
+; X280N-NEXT:    .cfi_def_cfa_offset 0
 ; X280N-NEXT:  .LBB2_4: # %for.cond.cleanup
 ; X280N-NEXT:    ret
 entry:

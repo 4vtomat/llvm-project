@@ -28,8 +28,9 @@ define void @reverse(ptr %y, i64 %alpha, i32 %N) {
 ; CHECK-NEXT:    [[TMP3:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; CHECK-NEXT:    [[TMP4:%.*]] = add nsw i64 [[TMP3]], -1
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i64, ptr [[Y]], i64 [[TMP4]]
-; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 0, [[TMP6]]
-; CHECK-NEXT:    [[TMP8:%.*]] = sub i64 1, [[TMP6]]
+; CHECK-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP2]] to i64
+; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 0, [[TMP11]]
+; CHECK-NEXT:    [[TMP8:%.*]] = sub i64 1, [[TMP11]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i64, ptr [[TMP5]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i64, ptr [[TMP9]], i64 [[TMP8]]
 ; CHECK-NEXT:    [[VP_REVERSE:%.*]] = call <vscale x 1 x i64> @llvm.experimental.vp.reverse.nxv1i64(<vscale x 1 x i64> [[BROADCAST_SPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP2]])
