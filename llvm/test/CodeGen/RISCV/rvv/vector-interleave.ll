@@ -169,28 +169,13 @@ define <vscale x 128 x i1> @vector_interleave_nxv128i1_nxv64i1(<vscale x 64 x i1
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vmerge.vim v24, v24, 1, v0
 ; CHECK-NEXT:    vsetvli a1, zero, e8, m4, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vwaddu.vv v8, v12, v20
-; CHECK-NEXT:    vwmaccu.vx v8, a0, v20
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vwaddu.vv v24, v12, v20
-; CHECK-NEXT:    vwmaccu.vx v24, a0, v20
-=======
 ; CHECK-NEXT:    vwaddu.vv v8, v24, v16
-; CHECK-NEXT:    vwaddu.vv v0, v28, v20
+; CHECK-NEXT:    vwaddu.vv v24, v28, v20
 ; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
-; CHECK-NEXT:    vwmaccu.vx v0, a0, v20
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+; CHECK-NEXT:    vwmaccu.vx v24, a0, v20
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m8, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vmsne.vi v8, v8, 0
-||||||| 864902e9b4d8
+; CHECK-NEXT:    vmsne.vi v0, v8, 0
 ; CHECK-NEXT:    vmsne.vi v8, v24, 0
-=======
-; CHECK-NEXT:    vmsne.vi v16, v8, 0
-; CHECK-NEXT:    vmsne.vi v8, v0, 0
-; CHECK-NEXT:    vmv1r.v v0, v16
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    ret
 ;
 ; ZVBB-LABEL: vector_interleave_nxv128i1_nxv64i1:
@@ -202,29 +187,12 @@ define <vscale x 128 x i1> @vector_interleave_nxv128i1_nxv64i1(<vscale x 64 x i1
 ; ZVBB-NEXT:    vmerge.vim v24, v24, 1, v0
 ; ZVBB-NEXT:    vsetvli a0, zero, e8, m4, ta, ma
 ; ZVBB-NEXT:    vwsll.vi v8, v24, 8
-; ZVBB-NEXT:    vwsll.vi v0, v28, 8
+; ZVBB-NEXT:    vwsll.vi v24, v28, 8
 ; ZVBB-NEXT:    vwaddu.wv v8, v8, v16
-; ZVBB-NEXT:    vwaddu.wv v0, v0, v20
-; ZVBB-NEXT:    vsetvli a0, zero, e8, m8, ta, ma
-<<<<<<< HEAD
-; ZVBB-NEXT:    vmsne.vi v0, v24, 0
-; ZVBB-NEXT:    vsetvli a0, zero, e8, m4, ta, ma
-; ZVBB-NEXT:    vwsll.vi v8, v12, 8
-; ZVBB-NEXT:    vwaddu.wv v8, v8, v20
-; ZVBB-NEXT:    vsetvli a0, zero, e8, m8, ta, ma
-; ZVBB-NEXT:    vmsne.vi v8, v8, 0
-||||||| 864902e9b4d8
-; ZVBB-NEXT:    vmsne.vi v0, v24, 0
-; ZVBB-NEXT:    vsetvli a0, zero, e8, m4, ta, ma
-; ZVBB-NEXT:    vwsll.vi v24, v12, 8
 ; ZVBB-NEXT:    vwaddu.wv v24, v24, v20
 ; ZVBB-NEXT:    vsetvli a0, zero, e8, m8, ta, ma
+; ZVBB-NEXT:    vmsne.vi v0, v8, 0
 ; ZVBB-NEXT:    vmsne.vi v8, v24, 0
-=======
-; ZVBB-NEXT:    vmsne.vi v16, v8, 0
-; ZVBB-NEXT:    vmsne.vi v8, v0, 0
-; ZVBB-NEXT:    vmv1r.v v0, v16
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVBB-NEXT:    ret
   %res = call <vscale x 128 x i1> @llvm.vector.interleave2.nxv128i1(<vscale x 64 x i1> %a, <vscale x 64 x i1> %b)
   ret <vscale x 128 x i1> %res
@@ -237,22 +205,10 @@ define <vscale x 128 x i8> @vector_interleave_nxv128i8_nxv64i8(<vscale x 64 x i8
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m4, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v8, v24, v16
 ; CHECK-NEXT:    li a0, -1
-<<<<<<< HEAD
-; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
 ; CHECK-NEXT:    vwaddu.vv v24, v28, v20
+; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
 ; CHECK-NEXT:    vwmaccu.vx v24, a0, v20
 ; CHECK-NEXT:    vmv8r.v v16, v24
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
-; CHECK-NEXT:    vwaddu.vv v0, v28, v20
-; CHECK-NEXT:    vwmaccu.vx v0, a0, v20
-; CHECK-NEXT:    vmv8r.v v16, v0
-=======
-; CHECK-NEXT:    vwaddu.vv v0, v28, v20
-; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
-; CHECK-NEXT:    vwmaccu.vx v0, a0, v20
-; CHECK-NEXT:    vmv8r.v v16, v0
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    ret
 ;
 ; ZVBB-LABEL: vector_interleave_nxv128i8_nxv64i8:
@@ -260,21 +216,9 @@ define <vscale x 128 x i8> @vector_interleave_nxv128i8_nxv64i8(<vscale x 64 x i8
 ; ZVBB-NEXT:    vmv8r.v v24, v8
 ; ZVBB-NEXT:    vsetvli a0, zero, e8, m4, ta, ma
 ; ZVBB-NEXT:    vwsll.vi v8, v16, 8
-<<<<<<< HEAD
-; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
 ; ZVBB-NEXT:    vwsll.vi v16, v20, 8
+; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
 ; ZVBB-NEXT:    vwaddu.wv v16, v16, v28
-||||||| 864902e9b4d8
-; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
-; ZVBB-NEXT:    vwsll.vi v0, v20, 8
-; ZVBB-NEXT:    vwaddu.wv v0, v0, v28
-; ZVBB-NEXT:    vmv8r.v v16, v0
-=======
-; ZVBB-NEXT:    vwsll.vi v0, v20, 8
-; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
-; ZVBB-NEXT:    vwaddu.wv v0, v0, v28
-; ZVBB-NEXT:    vmv8r.v v16, v0
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVBB-NEXT:    ret
   %res = call <vscale x 128 x i8> @llvm.vector.interleave2.nxv128i8(<vscale x 64 x i8> %a, <vscale x 64 x i8> %b)
   ret <vscale x 128 x i8> %res
@@ -287,22 +231,10 @@ define <vscale x 64 x i16> @vector_interleave_nxv64i16_nxv32i16(<vscale x 32 x i
 ; CHECK-NEXT:    vsetvli a0, zero, e16, m4, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v8, v24, v16
 ; CHECK-NEXT:    li a0, -1
-<<<<<<< HEAD
-; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
 ; CHECK-NEXT:    vwaddu.vv v24, v28, v20
+; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
 ; CHECK-NEXT:    vwmaccu.vx v24, a0, v20
 ; CHECK-NEXT:    vmv8r.v v16, v24
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
-; CHECK-NEXT:    vwaddu.vv v0, v28, v20
-; CHECK-NEXT:    vwmaccu.vx v0, a0, v20
-; CHECK-NEXT:    vmv8r.v v16, v0
-=======
-; CHECK-NEXT:    vwaddu.vv v0, v28, v20
-; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
-; CHECK-NEXT:    vwmaccu.vx v0, a0, v20
-; CHECK-NEXT:    vmv8r.v v16, v0
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    ret
 ;
 ; ZVBB-LABEL: vector_interleave_nxv64i16_nxv32i16:
@@ -310,21 +242,9 @@ define <vscale x 64 x i16> @vector_interleave_nxv64i16_nxv32i16(<vscale x 32 x i
 ; ZVBB-NEXT:    vmv8r.v v24, v8
 ; ZVBB-NEXT:    vsetvli a0, zero, e16, m4, ta, ma
 ; ZVBB-NEXT:    vwsll.vi v8, v16, 16
-<<<<<<< HEAD
-; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
 ; ZVBB-NEXT:    vwsll.vi v16, v20, 16
+; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
 ; ZVBB-NEXT:    vwaddu.wv v16, v16, v28
-||||||| 864902e9b4d8
-; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
-; ZVBB-NEXT:    vwsll.vi v0, v20, 16
-; ZVBB-NEXT:    vwaddu.wv v0, v0, v28
-; ZVBB-NEXT:    vmv8r.v v16, v0
-=======
-; ZVBB-NEXT:    vwsll.vi v0, v20, 16
-; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
-; ZVBB-NEXT:    vwaddu.wv v0, v0, v28
-; ZVBB-NEXT:    vmv8r.v v16, v0
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVBB-NEXT:    ret
   %res = call <vscale x 64 x i16> @llvm.vector.interleave2.nxv64i16(<vscale x 32 x i16> %a, <vscale x 32 x i16> %b)
   ret <vscale x 64 x i16> %res
@@ -337,22 +257,10 @@ define <vscale x 32 x i32> @vector_interleave_nxv32i32_nxv16i32(<vscale x 16 x i
 ; CHECK-NEXT:    vsetvli a0, zero, e32, m4, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v8, v24, v16
 ; CHECK-NEXT:    li a0, -1
-<<<<<<< HEAD
-; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
 ; CHECK-NEXT:    vwaddu.vv v24, v28, v20
+; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
 ; CHECK-NEXT:    vwmaccu.vx v24, a0, v20
 ; CHECK-NEXT:    vmv8r.v v16, v24
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
-; CHECK-NEXT:    vwaddu.vv v0, v28, v20
-; CHECK-NEXT:    vwmaccu.vx v0, a0, v20
-; CHECK-NEXT:    vmv8r.v v16, v0
-=======
-; CHECK-NEXT:    vwaddu.vv v0, v28, v20
-; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
-; CHECK-NEXT:    vwmaccu.vx v0, a0, v20
-; CHECK-NEXT:    vmv8r.v v16, v0
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    ret
 ;
 ; ZVBB-LABEL: vector_interleave_nxv32i32_nxv16i32:
@@ -361,21 +269,9 @@ define <vscale x 32 x i32> @vector_interleave_nxv32i32_nxv16i32(<vscale x 16 x i
 ; ZVBB-NEXT:    li a0, 32
 ; ZVBB-NEXT:    vsetvli a1, zero, e32, m4, ta, ma
 ; ZVBB-NEXT:    vwsll.vx v8, v16, a0
-<<<<<<< HEAD
-; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
 ; ZVBB-NEXT:    vwsll.vx v16, v20, a0
+; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
 ; ZVBB-NEXT:    vwaddu.wv v16, v16, v28
-||||||| 864902e9b4d8
-; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
-; ZVBB-NEXT:    vwsll.vx v0, v20, a0
-; ZVBB-NEXT:    vwaddu.wv v0, v0, v28
-; ZVBB-NEXT:    vmv8r.v v16, v0
-=======
-; ZVBB-NEXT:    vwsll.vx v0, v20, a0
-; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
-; ZVBB-NEXT:    vwaddu.wv v0, v0, v28
-; ZVBB-NEXT:    vmv8r.v v16, v0
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVBB-NEXT:    ret
   %res = call <vscale x 32 x i32> @llvm.vector.interleave2.nxv32i32(<vscale x 16 x i32> %a, <vscale x 16 x i32> %b)
   ret <vscale x 32 x i32> %res
@@ -678,22 +574,10 @@ define <vscale x 64 x bfloat> @vector_interleave_nxv64bf16_nxv32bf16(<vscale x 3
 ; CHECK-NEXT:    vsetvli a0, zero, e16, m4, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v8, v24, v16
 ; CHECK-NEXT:    li a0, -1
-<<<<<<< HEAD
-; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
 ; CHECK-NEXT:    vwaddu.vv v24, v28, v20
+; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
 ; CHECK-NEXT:    vwmaccu.vx v24, a0, v20
 ; CHECK-NEXT:    vmv8r.v v16, v24
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
-; CHECK-NEXT:    vwaddu.vv v0, v28, v20
-; CHECK-NEXT:    vwmaccu.vx v0, a0, v20
-; CHECK-NEXT:    vmv8r.v v16, v0
-=======
-; CHECK-NEXT:    vwaddu.vv v0, v28, v20
-; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
-; CHECK-NEXT:    vwmaccu.vx v0, a0, v20
-; CHECK-NEXT:    vmv8r.v v16, v0
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    ret
 ;
 ; ZVBB-LABEL: vector_interleave_nxv64bf16_nxv32bf16:
@@ -701,21 +585,9 @@ define <vscale x 64 x bfloat> @vector_interleave_nxv64bf16_nxv32bf16(<vscale x 3
 ; ZVBB-NEXT:    vmv8r.v v24, v8
 ; ZVBB-NEXT:    vsetvli a0, zero, e16, m4, ta, ma
 ; ZVBB-NEXT:    vwsll.vi v8, v16, 16
-<<<<<<< HEAD
-; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
 ; ZVBB-NEXT:    vwsll.vi v16, v20, 16
+; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
 ; ZVBB-NEXT:    vwaddu.wv v16, v16, v28
-||||||| 864902e9b4d8
-; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
-; ZVBB-NEXT:    vwsll.vi v0, v20, 16
-; ZVBB-NEXT:    vwaddu.wv v0, v0, v28
-; ZVBB-NEXT:    vmv8r.v v16, v0
-=======
-; ZVBB-NEXT:    vwsll.vi v0, v20, 16
-; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
-; ZVBB-NEXT:    vwaddu.wv v0, v0, v28
-; ZVBB-NEXT:    vmv8r.v v16, v0
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVBB-NEXT:    ret
   %res = call <vscale x 64 x bfloat> @llvm.vector.interleave2.nxv64bf16(<vscale x 32 x bfloat> %a, <vscale x 32 x bfloat> %b)
   ret <vscale x 64 x bfloat> %res
@@ -728,22 +600,10 @@ define <vscale x 64 x half> @vector_interleave_nxv64f16_nxv32f16(<vscale x 32 x 
 ; CHECK-NEXT:    vsetvli a0, zero, e16, m4, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v8, v24, v16
 ; CHECK-NEXT:    li a0, -1
-<<<<<<< HEAD
-; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
 ; CHECK-NEXT:    vwaddu.vv v24, v28, v20
+; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
 ; CHECK-NEXT:    vwmaccu.vx v24, a0, v20
 ; CHECK-NEXT:    vmv8r.v v16, v24
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
-; CHECK-NEXT:    vwaddu.vv v0, v28, v20
-; CHECK-NEXT:    vwmaccu.vx v0, a0, v20
-; CHECK-NEXT:    vmv8r.v v16, v0
-=======
-; CHECK-NEXT:    vwaddu.vv v0, v28, v20
-; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
-; CHECK-NEXT:    vwmaccu.vx v0, a0, v20
-; CHECK-NEXT:    vmv8r.v v16, v0
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    ret
 ;
 ; ZVBB-LABEL: vector_interleave_nxv64f16_nxv32f16:
@@ -751,21 +611,9 @@ define <vscale x 64 x half> @vector_interleave_nxv64f16_nxv32f16(<vscale x 32 x 
 ; ZVBB-NEXT:    vmv8r.v v24, v8
 ; ZVBB-NEXT:    vsetvli a0, zero, e16, m4, ta, ma
 ; ZVBB-NEXT:    vwsll.vi v8, v16, 16
-<<<<<<< HEAD
-; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
 ; ZVBB-NEXT:    vwsll.vi v16, v20, 16
+; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
 ; ZVBB-NEXT:    vwaddu.wv v16, v16, v28
-||||||| 864902e9b4d8
-; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
-; ZVBB-NEXT:    vwsll.vi v0, v20, 16
-; ZVBB-NEXT:    vwaddu.wv v0, v0, v28
-; ZVBB-NEXT:    vmv8r.v v16, v0
-=======
-; ZVBB-NEXT:    vwsll.vi v0, v20, 16
-; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
-; ZVBB-NEXT:    vwaddu.wv v0, v0, v28
-; ZVBB-NEXT:    vmv8r.v v16, v0
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVBB-NEXT:    ret
   %res = call <vscale x 64 x half> @llvm.vector.interleave2.nxv64f16(<vscale x 32 x half> %a, <vscale x 32 x half> %b)
   ret <vscale x 64 x half> %res
@@ -778,22 +626,10 @@ define <vscale x 32 x float> @vector_interleave_nxv32f32_nxv16f32(<vscale x 16 x
 ; CHECK-NEXT:    vsetvli a0, zero, e32, m4, ta, ma
 ; CHECK-NEXT:    vwaddu.vv v8, v24, v16
 ; CHECK-NEXT:    li a0, -1
-<<<<<<< HEAD
-; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
 ; CHECK-NEXT:    vwaddu.vv v24, v28, v20
+; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
 ; CHECK-NEXT:    vwmaccu.vx v24, a0, v20
 ; CHECK-NEXT:    vmv8r.v v16, v24
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
-; CHECK-NEXT:    vwaddu.vv v0, v28, v20
-; CHECK-NEXT:    vwmaccu.vx v0, a0, v20
-; CHECK-NEXT:    vmv8r.v v16, v0
-=======
-; CHECK-NEXT:    vwaddu.vv v0, v28, v20
-; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
-; CHECK-NEXT:    vwmaccu.vx v0, a0, v20
-; CHECK-NEXT:    vmv8r.v v16, v0
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    ret
 ;
 ; ZVBB-LABEL: vector_interleave_nxv32f32_nxv16f32:
@@ -802,21 +638,9 @@ define <vscale x 32 x float> @vector_interleave_nxv32f32_nxv16f32(<vscale x 16 x
 ; ZVBB-NEXT:    li a0, 32
 ; ZVBB-NEXT:    vsetvli a1, zero, e32, m4, ta, ma
 ; ZVBB-NEXT:    vwsll.vx v8, v16, a0
-<<<<<<< HEAD
-; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
 ; ZVBB-NEXT:    vwsll.vx v16, v20, a0
+; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
 ; ZVBB-NEXT:    vwaddu.wv v16, v16, v28
-||||||| 864902e9b4d8
-; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
-; ZVBB-NEXT:    vwsll.vx v0, v20, a0
-; ZVBB-NEXT:    vwaddu.wv v0, v0, v28
-; ZVBB-NEXT:    vmv8r.v v16, v0
-=======
-; ZVBB-NEXT:    vwsll.vx v0, v20, a0
-; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
-; ZVBB-NEXT:    vwaddu.wv v0, v0, v28
-; ZVBB-NEXT:    vmv8r.v v16, v0
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVBB-NEXT:    ret
   %res = call <vscale x 32 x float> @llvm.vector.interleave2.nxv32f32(<vscale x 16 x float> %a, <vscale x 16 x float> %b)
   ret <vscale x 32 x float> %res

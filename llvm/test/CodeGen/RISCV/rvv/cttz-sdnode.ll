@@ -1218,16 +1218,6 @@ define <vscale x 1 x i64> @cttz_nxv1i64(<vscale x 1 x i64> %va) {
 ; CHECK-F-NEXT:    vsetvli a0, zero, e64, m1, ta, ma
 ; CHECK-F-NEXT:    vrsub.vi v9, v8, 0
 ; CHECK-F-NEXT:    fsrmi a0, 1
-<<<<<<< HEAD
-; CHECK-F-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-; CHECK-F-NEXT:    vfncvt.f.xu.w v9, v9
-; CHECK-F-NEXT:    vsrl.vi v9, v9, 23
-||||||| 864902e9b4d8
-; CHECK-F-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-; CHECK-F-NEXT:    vfncvt.f.xu.w v10, v9
-; CHECK-F-NEXT:    vsrl.vi v9, v10, 23
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-F-NEXT:    li a1, 127
 ; CHECK-F-NEXT:    vand.vv v9, v8, v9
 ; CHECK-F-NEXT:    vmseq.vi v0, v8, 0
@@ -1354,16 +1344,6 @@ define <vscale x 2 x i64> @cttz_nxv2i64(<vscale x 2 x i64> %va) {
 ; CHECK-F-NEXT:    vsetvli a0, zero, e64, m2, ta, ma
 ; CHECK-F-NEXT:    vrsub.vi v10, v8, 0
 ; CHECK-F-NEXT:    fsrmi a0, 1
-<<<<<<< HEAD
-; CHECK-F-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-F-NEXT:    vfncvt.f.xu.w v10, v10
-; CHECK-F-NEXT:    vsrl.vi v10, v10, 23
-||||||| 864902e9b4d8
-; CHECK-F-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-F-NEXT:    vfncvt.f.xu.w v12, v10
-; CHECK-F-NEXT:    vsrl.vi v10, v12, 23
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-F-NEXT:    li a1, 127
 ; CHECK-F-NEXT:    vand.vv v10, v8, v10
 ; CHECK-F-NEXT:    vmseq.vi v0, v8, 0
@@ -1490,16 +1470,6 @@ define <vscale x 4 x i64> @cttz_nxv4i64(<vscale x 4 x i64> %va) {
 ; CHECK-F-NEXT:    vsetvli a0, zero, e64, m4, ta, ma
 ; CHECK-F-NEXT:    vrsub.vi v12, v8, 0
 ; CHECK-F-NEXT:    fsrmi a0, 1
-<<<<<<< HEAD
-; CHECK-F-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-F-NEXT:    vfncvt.f.xu.w v12, v12
-; CHECK-F-NEXT:    vsrl.vi v12, v12, 23
-||||||| 864902e9b4d8
-; CHECK-F-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-F-NEXT:    vfncvt.f.xu.w v16, v12
-; CHECK-F-NEXT:    vsrl.vi v12, v16, 23
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-F-NEXT:    li a1, 127
 ; CHECK-F-NEXT:    vand.vv v12, v8, v12
 ; CHECK-F-NEXT:    vmseq.vi v0, v8, 0
@@ -1626,16 +1596,6 @@ define <vscale x 8 x i64> @cttz_nxv8i64(<vscale x 8 x i64> %va) {
 ; CHECK-F-NEXT:    vsetvli a0, zero, e64, m8, ta, ma
 ; CHECK-F-NEXT:    vrsub.vi v16, v8, 0
 ; CHECK-F-NEXT:    fsrmi a0, 1
-<<<<<<< HEAD
-; CHECK-F-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
-; CHECK-F-NEXT:    vfncvt.f.xu.w v16, v16
-; CHECK-F-NEXT:    vsrl.vi v16, v16, 23
-||||||| 864902e9b4d8
-; CHECK-F-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
-; CHECK-F-NEXT:    vfncvt.f.xu.w v24, v16
-; CHECK-F-NEXT:    vsrl.vi v16, v24, 23
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-F-NEXT:    li a1, 127
 ; CHECK-F-NEXT:    vand.vv v16, v8, v16
 ; CHECK-F-NEXT:    vmseq.vi v0, v8, 0

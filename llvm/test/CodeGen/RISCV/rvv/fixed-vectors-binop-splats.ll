@@ -126,29 +126,16 @@ define <32 x i1> @v32i1(i1 %x, i1 %y) {
 ; CHECK-NEXT:    andi a1, a1, 1
 ; CHECK-NEXT:    vsetvli zero, a2, e8, m2, ta, ma
 ; CHECK-NEXT:    vmv.v.x v8, a0
-<<<<<<< HEAD
 ; CHECK-NEXT:    vmsne.vi v8, v8, 0
-; CHECK-NEXT:    andi a1, a1, 1
 ; CHECK-NEXT:    vmv.v.x v10, a1
 ; CHECK-NEXT:    vmsne.vi v9, v10, 0
 ; CHECK-NEXT:    vmxor.mm v0, v8, v9
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vmsne.vi v10, v8, 0
-; CHECK-NEXT:    andi a1, a1, 1
-; CHECK-NEXT:    vmv.v.x v8, a1
-; CHECK-NEXT:    vmsne.vi v11, v8, 0
-; CHECK-NEXT:    vmxor.mm v0, v10, v11
-=======
-; CHECK-NEXT:    vmsne.vi v10, v8, 0
-; CHECK-NEXT:    vmv.v.x v8, a1
-; CHECK-NEXT:    vmsne.vi v11, v8, 0
-; CHECK-NEXT:    vmxor.mm v0, v10, v11
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vmerge.vim v8, v8, 1, v0
 ; CHECK-NEXT:    vrgather.vi v10, v8, 0
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
 ; CHECK-NEXT:    ret
+
   %head.x = insertelement <32 x i1> poison, i1 %x, i32 0
   %splat.x = shufflevector <32 x i1> %head.x, <32 x i1> poison, <32 x i32> zeroinitializer
   %head.y = insertelement <32 x i1> poison, i1 %y, i32 0
@@ -165,29 +152,16 @@ define <64 x i1> @v64i1(i1 %x, i1 %y) {
 ; CHECK-NEXT:    andi a1, a1, 1
 ; CHECK-NEXT:    vsetvli zero, a2, e8, m4, ta, ma
 ; CHECK-NEXT:    vmv.v.x v8, a0
-<<<<<<< HEAD
 ; CHECK-NEXT:    vmsne.vi v8, v8, 0
-; CHECK-NEXT:    andi a1, a1, 1
 ; CHECK-NEXT:    vmv.v.x v12, a1
 ; CHECK-NEXT:    vmsne.vi v9, v12, 0
 ; CHECK-NEXT:    vmxor.mm v0, v8, v9
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vmsne.vi v12, v8, 0
-; CHECK-NEXT:    andi a1, a1, 1
-; CHECK-NEXT:    vmv.v.x v8, a1
-; CHECK-NEXT:    vmsne.vi v13, v8, 0
-; CHECK-NEXT:    vmxor.mm v0, v12, v13
-=======
-; CHECK-NEXT:    vmsne.vi v12, v8, 0
-; CHECK-NEXT:    vmv.v.x v8, a1
-; CHECK-NEXT:    vmsne.vi v13, v8, 0
-; CHECK-NEXT:    vmxor.mm v0, v12, v13
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vmerge.vim v8, v8, 1, v0
 ; CHECK-NEXT:    vrgather.vi v12, v8, 0
 ; CHECK-NEXT:    vmsne.vi v0, v12, 0
 ; CHECK-NEXT:    ret
+
   %head.x = insertelement <64 x i1> poison, i1 %x, i32 0
   %splat.x = shufflevector <64 x i1> %head.x, <64 x i1> poison, <64 x i32> zeroinitializer
   %head.y = insertelement <64 x i1> poison, i1 %y, i32 0

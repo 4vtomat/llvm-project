@@ -241,35 +241,17 @@ define zeroext i1 @vpreduce_and_v256i1(i1 zeroext %s, <256 x i1> %v, <256 x i1> 
 ; CHECK-NEXT:  .LBB14_2:
 ; CHECK-NEXT:    vmv1r.v v0, v11
 ; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vmnot.m v11, v0
-; CHECK-NEXT:    vmv1r.v v0, v9
-; CHECK-NEXT:    vcpop.m a2, v11, v0.t
-; CHECK-NEXT:    addi a3, a1, -128
-; CHECK-NEXT:    sltu a1, a1, a3
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vmnot.m v11, v0
-; CHECK-NEXT:    vmv1r.v v0, v9
-; CHECK-NEXT:    vcpop.m a2, v11, v0.t
-; CHECK-NEXT:    seqz a2, a2
-; CHECK-NEXT:    and a0, a2, a0
-; CHECK-NEXT:    addi a2, a1, -128
-; CHECK-NEXT:    sltu a1, a1, a2
-=======
 ; CHECK-NEXT:    vmnot.m v9, v9
-; CHECK-NEXT:    vcpop.m a2, v9, v0.t
-; CHECK-NEXT:    seqz a2, a2
-; CHECK-NEXT:    and a0, a2, a0
 ; CHECK-NEXT:    addi a2, a1, -128
+; CHECK-NEXT:    vcpop.m a3, v9, v0.t
 ; CHECK-NEXT:    sltu a1, a1, a2
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    addi a1, a1, -1
-; CHECK-NEXT:    and a1, a1, a3
+; CHECK-NEXT:    and a1, a1, a2
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m8, ta, ma
 ; CHECK-NEXT:    vmnot.m v8, v8
 ; CHECK-NEXT:    vmv1r.v v0, v10
 ; CHECK-NEXT:    vcpop.m a1, v8, v0.t
-; CHECK-NEXT:    or a1, a1, a2
+; CHECK-NEXT:    or a1, a1, a3
 ; CHECK-NEXT:    seqz a1, a1
 ; CHECK-NEXT:    and a0, a0, a1
 ; CHECK-NEXT:    ret

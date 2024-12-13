@@ -12,14 +12,8 @@ define void @complex_gep(ptr %p, <vscale x 2 x i64> %vec.ind, <vscale x 2 x i1> 
 ; RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; RV32-NEXT:    vnsrl.wi v8, v8, 0
 ; RV32-NEXT:    li a1, 48
-<<<<<<< HEAD
-; RV32-NEXT:    vmul.vx v8, v8, a1
-||||||| 864902e9b4d8
-; RV32-NEXT:    vmul.vx v8, v10, a1
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; RV32-NEXT:    addi a0, a0, 28
-; RV32-NEXT:    vmul.vx v8, v10, a1
+; RV32-NEXT:    vmul.vx v8, v8, a1
 ; RV32-NEXT:    vmv.v.i v9, 0
 ; RV32-NEXT:    vsoxei32.v v9, (a0), v8, v0.t
 ; RV32-NEXT:    ret

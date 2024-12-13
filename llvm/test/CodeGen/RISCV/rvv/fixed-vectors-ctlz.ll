@@ -44,18 +44,8 @@ define void @ctlz_v16i8(ptr %x, ptr %y) nounwind {
 ; RVF-NEXT:    vfwcvt.f.xu.v v8, v10
 ; RVF-NEXT:    vnsrl.wi v8, v8, 23
 ; RVF-NEXT:    vsetvli zero, zero, e8, m1, ta, ma
-<<<<<<< HEAD
 ; RVF-NEXT:    vnsrl.wi v8, v8, 0
-; RVF-NEXT:    li a1, 134
 ; RVF-NEXT:    vrsub.vx v8, v8, a1
-||||||| 864902e9b4d8
-; RVF-NEXT:    vnsrl.wi v10, v8, 0
-; RVF-NEXT:    li a1, 134
-; RVF-NEXT:    vrsub.vx v8, v10, a1
-=======
-; RVF-NEXT:    vnsrl.wi v10, v8, 0
-; RVF-NEXT:    vrsub.vx v8, v10, a1
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; RVF-NEXT:    li a1, 8
 ; RVF-NEXT:    vminu.vx v8, v8, a1
 ; RVF-NEXT:    vse8.v v8, (a0)
@@ -70,18 +60,8 @@ define void @ctlz_v16i8(ptr %x, ptr %y) nounwind {
 ; RVD-NEXT:    vfwcvt.f.xu.v v8, v10
 ; RVD-NEXT:    vnsrl.wi v8, v8, 23
 ; RVD-NEXT:    vsetvli zero, zero, e8, m1, ta, ma
-<<<<<<< HEAD
 ; RVD-NEXT:    vnsrl.wi v8, v8, 0
-; RVD-NEXT:    li a1, 134
 ; RVD-NEXT:    vrsub.vx v8, v8, a1
-||||||| 864902e9b4d8
-; RVD-NEXT:    vnsrl.wi v10, v8, 0
-; RVD-NEXT:    li a1, 134
-; RVD-NEXT:    vrsub.vx v8, v10, a1
-=======
-; RVD-NEXT:    vnsrl.wi v10, v8, 0
-; RVD-NEXT:    vrsub.vx v8, v10, a1
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; RVD-NEXT:    li a1, 8
 ; RVD-NEXT:    vminu.vx v8, v8, a1
 ; RVD-NEXT:    vse8.v v8, (a0)
@@ -453,18 +433,8 @@ define void @ctlz_v32i8(ptr %x, ptr %y) nounwind {
 ; RVF-NEXT:    vfwcvt.f.xu.v v8, v12
 ; RVF-NEXT:    vnsrl.wi v8, v8, 23
 ; RVF-NEXT:    vsetvli zero, zero, e8, m2, ta, ma
-<<<<<<< HEAD
 ; RVF-NEXT:    vnsrl.wi v8, v8, 0
-; RVF-NEXT:    li a1, 134
 ; RVF-NEXT:    vrsub.vx v8, v8, a1
-||||||| 864902e9b4d8
-; RVF-NEXT:    vnsrl.wi v12, v8, 0
-; RVF-NEXT:    li a1, 134
-; RVF-NEXT:    vrsub.vx v8, v12, a1
-=======
-; RVF-NEXT:    vnsrl.wi v12, v8, 0
-; RVF-NEXT:    vrsub.vx v8, v12, a1
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; RVF-NEXT:    li a1, 8
 ; RVF-NEXT:    vminu.vx v8, v8, a1
 ; RVF-NEXT:    vse8.v v8, (a0)
@@ -480,18 +450,8 @@ define void @ctlz_v32i8(ptr %x, ptr %y) nounwind {
 ; RVD-NEXT:    vfwcvt.f.xu.v v8, v12
 ; RVD-NEXT:    vnsrl.wi v8, v8, 23
 ; RVD-NEXT:    vsetvli zero, zero, e8, m2, ta, ma
-<<<<<<< HEAD
 ; RVD-NEXT:    vnsrl.wi v8, v8, 0
-; RVD-NEXT:    li a1, 134
 ; RVD-NEXT:    vrsub.vx v8, v8, a1
-||||||| 864902e9b4d8
-; RVD-NEXT:    vnsrl.wi v12, v8, 0
-; RVD-NEXT:    li a1, 134
-; RVD-NEXT:    vrsub.vx v8, v12, a1
-=======
-; RVD-NEXT:    vnsrl.wi v12, v8, 0
-; RVD-NEXT:    vrsub.vx v8, v12, a1
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; RVD-NEXT:    li a1, 8
 ; RVD-NEXT:    vminu.vx v8, v8, a1
 ; RVD-NEXT:    vse8.v v8, (a0)

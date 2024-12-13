@@ -11,26 +11,14 @@ define <vscale x 8 x i7> @vrem_vx_nxv8i7(<vscale x 8 x i7> %a, i7 signext %b, <v
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m1, ta, ma
 ; CHECK-NEXT:    vsll.vi v8, v8, 1, v0.t
-<<<<<<< HEAD
-; CHECK-NEXT:    vsra.vi v8, v8, 1, v0.t
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vsra.vi v8, v8, 1, v0.t
-; CHECK-NEXT:    vsetvli a2, zero, e8, m1, ta, ma
-=======
-; CHECK-NEXT:    vsetvli a2, zero, e8, m1, ta, ma
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    vmv.v.x v9, a0
-<<<<<<< HEAD
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vsetvli zero, a1, e8, m1, ta, ma
-=======
-; CHECK-NEXT:    vsetvli zero, a1, e8, m1, ta, ma
 ; CHECK-NEXT:    vsra.vi v8, v8, 1, v0.t
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    vsll.vi v9, v9, 1, v0.t
 ; CHECK-NEXT:    vsra.vi v9, v9, 1, v0.t
 ; CHECK-NEXT:    vrem.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
+
+
   %elt.head = insertelement <vscale x 8 x i7> poison, i7 %b, i32 0
   %vb = shufflevector <vscale x 8 x i7> %elt.head, <vscale x 8 x i7> poison, <vscale x 8 x i32> zeroinitializer
   %v = call <vscale x 8 x i7> @llvm.vp.srem.nxv8i7(<vscale x 8 x i7> %a, <vscale x 8 x i7> %vb, <vscale x 8 x i1> %mask, i32 %evl)

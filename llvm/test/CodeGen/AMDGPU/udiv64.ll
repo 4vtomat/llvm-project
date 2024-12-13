@@ -153,19 +153,9 @@ define amdgpu_kernel void @s_test_udiv_i64(ptr addrspace(1) %out, i64 %x, i64 %y
 ; GCN-IR-NEXT:    s_lshl_b64 s[8:9], s[2:3], s8
 ; GCN-IR-NEXT:    s_cbranch_vccz .LBB0_4
 ; GCN-IR-NEXT:  ; %bb.2: ; %udiv-preheader
-<<<<<<< HEAD
 ; GCN-IR-NEXT:    s_lshr_b64 s[12:13], s[2:3], s12
-; GCN-IR-NEXT:    s_add_u32 s14, s4, -1
-; GCN-IR-NEXT:    s_addc_u32 s15, s5, -1
-||||||| 864902e9b4d8
-; GCN-IR-NEXT:    s_lshr_b64 s[12:13], s[2:3], s14
-; GCN-IR-NEXT:    s_add_u32 s14, s4, -1
-; GCN-IR-NEXT:    s_addc_u32 s15, s5, -1
-=======
-; GCN-IR-NEXT:    s_lshr_b64 s[12:13], s[2:3], s14
 ; GCN-IR-NEXT:    s_add_u32 s14, s6, -1
 ; GCN-IR-NEXT:    s_addc_u32 s15, s7, -1
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; GCN-IR-NEXT:    s_not_b64 s[2:3], s[10:11]
 ; GCN-IR-NEXT:    s_add_u32 s2, s2, s16
 ; GCN-IR-NEXT:    s_addc_u32 s3, s3, 0
@@ -194,13 +184,7 @@ define amdgpu_kernel void @s_test_udiv_i64(ptr addrspace(1) %out, i64 %x, i64 %y
 ; GCN-IR-NEXT:    s_cbranch_vccz .LBB0_3
 ; GCN-IR-NEXT:  .LBB0_4: ; %Flow7
 ; GCN-IR-NEXT:    s_lshl_b64 s[2:3], s[8:9], 1
-<<<<<<< HEAD
-; GCN-IR-NEXT:    s_or_b64 s[12:13], s[6:7], s[2:3]
-||||||| 864902e9b4d8
-; GCN-IR-NEXT:    s_or_b64 s[8:9], s[6:7], s[2:3]
-=======
-; GCN-IR-NEXT:    s_or_b64 s[8:9], s[4:5], s[2:3]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+; GCN-IR-NEXT:    s_or_b64 s[12:13], s[4:5], s[2:3]
 ; GCN-IR-NEXT:  .LBB0_5: ; %udiv-end
 ; GCN-IR-NEXT:    v_mov_b32_e32 v0, s12
 ; GCN-IR-NEXT:    s_mov_b32 s3, 0xf000
@@ -861,13 +845,7 @@ define amdgpu_kernel void @s_test_udiv24_i48(ptr addrspace(1) %out, i48 %x, i48 
 ; GCN-IR-NEXT:    v_cmp_eq_u64_e64 s[2:3], s[0:1], 0
 ; GCN-IR-NEXT:    v_cmp_eq_u64_e64 s[6:7], s[8:9], 0
 ; GCN-IR-NEXT:    s_flbit_i32_b64 s10, s[0:1]
-<<<<<<< HEAD
-; GCN-IR-NEXT:    s_or_b64 s[14:15], s[4:5], s[6:7]
-||||||| 864902e9b4d8
-; GCN-IR-NEXT:    s_or_b64 s[6:7], s[4:5], s[6:7]
-=======
-; GCN-IR-NEXT:    s_or_b64 s[6:7], s[2:3], s[6:7]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+; GCN-IR-NEXT:    s_or_b64 s[14:15], s[2:3], s[6:7]
 ; GCN-IR-NEXT:    s_flbit_i32_b64 s16, s[8:9]
 ; GCN-IR-NEXT:    s_sub_u32 s12, s10, s16
 ; GCN-IR-NEXT:    s_subb_u32 s13, 0, 0

@@ -138,28 +138,18 @@ define <64 x i1> @fv64(ptr %p, i64 %index, i64 %tc) {
 ; CHECK-NEXT:    vmsltu.vx v0, v8, a2
 ; CHECK-NEXT:    vsext.vf8 v8, v16
 ; CHECK-NEXT:    vsaddu.vx v8, v8, a1
-; CHECK-NEXT:    vmsltu.vx v16, v8, a2
-; CHECK-NEXT:    vsext.vf8 v8, v17
-; CHECK-NEXT:    vsaddu.vx v8, v8, a1
-; CHECK-NEXT:    vmsltu.vx v17, v8, a2
-; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, tu, ma
-; CHECK-NEXT:    vslideup.vi v0, v16, 2
-; CHECK-NEXT:    vsetivli zero, 6, e8, mf2, tu, ma
-; CHECK-NEXT:    vslideup.vi v0, v17, 4
-; CHECK-NEXT:    vsetivli zero, 16, e64, m8, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vsext.vf8 v16, v8
-; CHECK-NEXT:    vsaddu.vx v8, v16, a1
 ; CHECK-NEXT:    vmsltu.vx v8, v8, a2
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vsext.vf8 v16, v8
-; CHECK-NEXT:    vsaddu.vx v8, v16, a1
-; CHECK-NEXT:    vmsltu.vx v16, v8, a2
-=======
+; CHECK-NEXT:    vsext.vf8 v24, v17
+; CHECK-NEXT:    vsaddu.vx v24, v24, a1
+; CHECK-NEXT:    vmsltu.vx v9, v24, a2
+; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, tu, ma
+; CHECK-NEXT:    vslideup.vi v0, v8, 2
+; CHECK-NEXT:    vsetivli zero, 6, e8, mf2, tu, ma
+; CHECK-NEXT:    vslideup.vi v0, v9, 4
+; CHECK-NEXT:    vsetivli zero, 16, e64, m8, ta, ma
 ; CHECK-NEXT:    vsext.vf8 v8, v18
 ; CHECK-NEXT:    vsaddu.vx v8, v8, a1
-; CHECK-NEXT:    vmsltu.vx v16, v8, a2
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+; CHECK-NEXT:    vmsltu.vx v8, v8, a2
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v0, v8, 6
 ; CHECK-NEXT:    ret
@@ -197,36 +187,36 @@ define <128 x i1> @fv128(ptr %p, i64 %index, i64 %tc) {
 ; CHECK-NEXT:    vmsltu.vx v0, v8, a2
 ; CHECK-NEXT:    vsext.vf8 v8, v16
 ; CHECK-NEXT:    vsaddu.vx v8, v8, a1
-; CHECK-NEXT:    vmsltu.vx v16, v8, a2
-; CHECK-NEXT:    vsext.vf8 v8, v17
-; CHECK-NEXT:    vsaddu.vx v8, v8, a1
-; CHECK-NEXT:    vmsltu.vx v17, v8, a2
-; CHECK-NEXT:    vsext.vf8 v8, v18
-; CHECK-NEXT:    vsaddu.vx v8, v8, a1
-; CHECK-NEXT:    vmsltu.vx v18, v8, a2
-; CHECK-NEXT:    vsext.vf8 v8, v19
-; CHECK-NEXT:    vsaddu.vx v8, v8, a1
-; CHECK-NEXT:    vmsltu.vx v19, v8, a2
-; CHECK-NEXT:    vsext.vf8 v8, v20
-; CHECK-NEXT:    vsaddu.vx v8, v8, a1
-; CHECK-NEXT:    vmsltu.vx v20, v8, a2
-; CHECK-NEXT:    vsext.vf8 v8, v21
-; CHECK-NEXT:    vsaddu.vx v8, v8, a1
-; CHECK-NEXT:    vmsltu.vx v21, v8, a2
-; CHECK-NEXT:    vsext.vf8 v8, v22
-; CHECK-NEXT:    vsaddu.vx v8, v8, a1
-; CHECK-NEXT:    vmsltu.vx v22, v8, a2
+; CHECK-NEXT:    vmsltu.vx v8, v8, a2
+; CHECK-NEXT:    vsext.vf8 v24, v17
+; CHECK-NEXT:    vsaddu.vx v24, v24, a1
+; CHECK-NEXT:    vmsltu.vx v9, v24, a2
+; CHECK-NEXT:    vsext.vf8 v24, v18
+; CHECK-NEXT:    vsaddu.vx v24, v24, a1
+; CHECK-NEXT:    vmsltu.vx v10, v24, a2
+; CHECK-NEXT:    vsext.vf8 v24, v19
+; CHECK-NEXT:    vsaddu.vx v24, v24, a1
+; CHECK-NEXT:    vmsltu.vx v11, v24, a2
+; CHECK-NEXT:    vsext.vf8 v24, v20
+; CHECK-NEXT:    vsaddu.vx v24, v24, a1
+; CHECK-NEXT:    vmsltu.vx v12, v24, a2
+; CHECK-NEXT:    vsext.vf8 v24, v21
+; CHECK-NEXT:    vsaddu.vx v24, v24, a1
+; CHECK-NEXT:    vmsltu.vx v13, v24, a2
+; CHECK-NEXT:    vsext.vf8 v24, v22
+; CHECK-NEXT:    vsaddu.vx v16, v24, a1
+; CHECK-NEXT:    vmsltu.vx v14, v16, a2
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, tu, ma
-; CHECK-NEXT:    vslideup.vi v17, v16, 2
-; CHECK-NEXT:    vslideup.vi v0, v20, 2
+; CHECK-NEXT:    vslideup.vi v9, v8, 2
+; CHECK-NEXT:    vslideup.vi v0, v12, 2
 ; CHECK-NEXT:    vsetivli zero, 6, e8, mf2, tu, ma
-; CHECK-NEXT:    vslideup.vi v17, v18, 4
-; CHECK-NEXT:    vslideup.vi v0, v21, 4
+; CHECK-NEXT:    vslideup.vi v9, v10, 4
+; CHECK-NEXT:    vslideup.vi v0, v13, 4
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vslideup.vi v17, v19, 6
-; CHECK-NEXT:    vslideup.vi v0, v22, 6
+; CHECK-NEXT:    vslideup.vi v9, v11, 6
+; CHECK-NEXT:    vslideup.vi v0, v14, 6
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vslideup.vi v0, v17, 8
+; CHECK-NEXT:    vslideup.vi v0, v9, 8
 ; CHECK-NEXT:    ret
   %mask = call <128 x i1> @llvm.get.active.lane.mask.v128i1.i64(i64 %index, i64 %tc)
   ret <128 x i1> %mask

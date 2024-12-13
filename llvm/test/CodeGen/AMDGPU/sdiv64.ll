@@ -155,19 +155,9 @@ define amdgpu_kernel void @s_test_sdiv(ptr addrspace(1) %out, i64 %x, i64 %y) {
 ; GCN-IR-NEXT:    s_sub_u32 s2, s2, s6
 ; GCN-IR-NEXT:    s_subb_u32 s3, s3, s6
 ; GCN-IR-NEXT:    v_cmp_eq_u64_e64 s[8:9], s[12:13], 0
-<<<<<<< HEAD
-; GCN-IR-NEXT:    v_cmp_eq_u64_e64 s[10:11], s[6:7], 0
-; GCN-IR-NEXT:    s_flbit_i32_b64 s14, s[6:7]
-; GCN-IR-NEXT:    s_or_b64 s[18:19], s[10:11], s[8:9]
-||||||| 864902e9b4d8
-; GCN-IR-NEXT:    v_cmp_eq_u64_e64 s[10:11], s[6:7], 0
-; GCN-IR-NEXT:    s_flbit_i32_b64 s14, s[6:7]
-; GCN-IR-NEXT:    s_or_b64 s[10:11], s[10:11], s[8:9]
-=======
 ; GCN-IR-NEXT:    v_cmp_eq_u64_e64 s[10:11], s[2:3], 0
 ; GCN-IR-NEXT:    s_flbit_i32_b64 s14, s[2:3]
-; GCN-IR-NEXT:    s_or_b64 s[10:11], s[10:11], s[8:9]
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+; GCN-IR-NEXT:    s_or_b64 s[18:19], s[10:11], s[8:9]
 ; GCN-IR-NEXT:    s_flbit_i32_b64 s20, s[12:13]
 ; GCN-IR-NEXT:    s_sub_u32 s16, s14, s20
 ; GCN-IR-NEXT:    s_subb_u32 s17, 0, 0

@@ -97,104 +97,24 @@ define void @vector_interleave_store_nxv8i64_nxv4i64(<vscale x 4 x i64> %a, <vsc
 define void @vector_interleave_store_nxv16i64_nxv8i64(<vscale x 8 x i64> %a, <vscale x 8 x i64> %b, ptr %p) {
 ; CHECK-LABEL: vector_interleave_store_nxv16i64_nxv8i64:
 ; CHECK:       # %bb.0:
-<<<<<<< HEAD
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slli a1, a1, 3
-; CHECK-NEXT:    sub sp, sp, a1
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * vlenb
-; CHECK-NEXT:    vmv8r.v v0, v8
-||||||| 864902e9b4d8
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slli a1, a1, 4
-; CHECK-NEXT:    sub sp, sp, a1
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * vlenb
-; CHECK-NEXT:    addi a1, sp, 16
-; CHECK-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    vsetvli a2, zero, e16, m2, ta, mu
 ; CHECK-NEXT:    vid.v v6
 ; CHECK-NEXT:    vmv8r.v v24, v8
 ; CHECK-NEXT:    srli a2, a1, 1
-<<<<<<< HEAD
-; CHECK-NEXT:    vsetvli a3, zero, e16, m2, ta, mu
-; CHECK-NEXT:    vid.v v24
-; CHECK-NEXT:    vand.vi v26, v24, 1
-; CHECK-NEXT:    vmsne.vi v26, v26, 0
-; CHECK-NEXT:    vsrl.vi v24, v24, 1
-; CHECK-NEXT:    vmv4r.v v28, v4
-; CHECK-NEXT:    vmv1r.v v0, v26
-; CHECK-NEXT:    vadd.vx v24, v24, a2, v0.t
-; CHECK-NEXT:    vmv4r.v v12, v16
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vrgatherei16.vv v0, v8, v24
-; CHECK-NEXT:    addi a2, sp, 16
-; CHECK-NEXT:    vs8r.v v0, (a2) # Unknown-size Folded Spill
-; CHECK-NEXT:    vmv4r.v v16, v28
-; CHECK-NEXT:    vrgatherei16.vv v8, v16, v24
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vsetvli a3, zero, e16, m2, ta, mu
-; CHECK-NEXT:    vid.v v24
-; CHECK-NEXT:    vand.vi v26, v24, 1
-; CHECK-NEXT:    vmsne.vi v28, v26, 0
-; CHECK-NEXT:    vsrl.vi v24, v24, 1
-; CHECK-NEXT:    vmv1r.v v0, v28
-; CHECK-NEXT:    vadd.vx v24, v24, a2, v0.t
-; CHECK-NEXT:    vmv4r.v v12, v16
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vrgatherei16.vv v0, v8, v24
-; CHECK-NEXT:    csrr a2, vlenb
-; CHECK-NEXT:    slli a2, a2, 3
-; CHECK-NEXT:    add a2, sp, a2
-; CHECK-NEXT:    addi a2, a2, 16
-; CHECK-NEXT:    vs8r.v v0, (a2) # Unknown-size Folded Spill
-; CHECK-NEXT:    addi a2, sp, 16
-; CHECK-NEXT:    vl8r.v v8, (a2) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmv4r.v v16, v12
-; CHECK-NEXT:    vrgatherei16.vv v8, v16, v24
-=======
 ; CHECK-NEXT:    vmv4r.v v28, v16
 ; CHECK-NEXT:    vmv4r.v v16, v12
 ; CHECK-NEXT:    vsrl.vi v8, v6, 1
 ; CHECK-NEXT:    vand.vi v10, v6, 1
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    slli a1, a1, 3
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
 ; CHECK-NEXT:    add a1, a0, a1
-<<<<<<< HEAD
-; CHECK-NEXT:    vs8r.v v8, (a1)
-; CHECK-NEXT:    addi a1, sp, 16
-; CHECK-NEXT:    vl8r.v v8, (a1) # Unknown-size Folded Reload
-; CHECK-NEXT:    vs8r.v v8, (a0)
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add sp, sp, a0
-; CHECK-NEXT:    addi sp, sp, 16
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vs8r.v v8, (a1)
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slli a1, a1, 3
-; CHECK-NEXT:    add a1, sp, a1
-; CHECK-NEXT:    addi a1, a1, 16
-; CHECK-NEXT:    vl8r.v v8, (a1) # Unknown-size Folded Reload
-; CHECK-NEXT:    vs8r.v v8, (a0)
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 4
-; CHECK-NEXT:    add sp, sp, a0
-; CHECK-NEXT:    addi sp, sp, 16
-=======
 ; CHECK-NEXT:    vadd.vx v8, v8, a2, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
 ; CHECK-NEXT:    vrgatherei16.vv v0, v24, v8
 ; CHECK-NEXT:    vrgatherei16.vv v24, v16, v8
 ; CHECK-NEXT:    vs8r.v v24, (a1)
 ; CHECK-NEXT:    vs8r.v v0, (a0)
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    ret
   %res = call <vscale x 16 x i64> @llvm.vector.interleave2.nxv16i64(<vscale x 8 x i64> %a, <vscale x 8 x i64> %b)
   store <vscale x 16 x i64> %res, ptr %p

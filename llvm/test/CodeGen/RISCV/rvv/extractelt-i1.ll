@@ -140,42 +140,16 @@ define i1 @extractelt_nxv128i1(ptr %x, i64 %idx) nounwind {
 ; RV32-NEXT:    sub sp, sp, a3
 ; RV32-NEXT:    andi sp, sp, -64
 ; RV32-NEXT:    addi a3, sp, 64
-; RV32-NEXT:    vl8r.v v8, (a0)
-; RV32-NEXT:    slli a2, a2, 3
-<<<<<<< HEAD
-; RV32-NEXT:    add a3, a0, a2
-; RV32-NEXT:    vl8r.v v8, (a3)
 ; RV32-NEXT:    vl8r.v v16, (a0)
-; RV32-NEXT:    addi a0, sp, 64
-; RV32-NEXT:    add a1, a0, a1
-; RV32-NEXT:    vsetvli a3, zero, e8, m8, ta, ma
-; RV32-NEXT:    vmseq.vi v8, v8, 0
-; RV32-NEXT:    vmseq.vi v0, v16, 0
-; RV32-NEXT:    vmv.v.i v16, 0
-; RV32-NEXT:    vmerge.vim v24, v16, 1, v0
-; RV32-NEXT:    vs8r.v v24, (a0)
-||||||| 864902e9b4d8
-; RV32-NEXT:    add a3, a0, a2
-; RV32-NEXT:    vl8r.v v16, (a3)
-; RV32-NEXT:    vl8r.v v24, (a0)
-; RV32-NEXT:    addi a0, sp, 64
-; RV32-NEXT:    add a1, a0, a1
-; RV32-NEXT:    vsetvli a3, zero, e8, m8, ta, ma
-; RV32-NEXT:    vmseq.vi v8, v16, 0
-; RV32-NEXT:    vmseq.vi v0, v24, 0
-; RV32-NEXT:    vmv.v.i v16, 0
-; RV32-NEXT:    vmerge.vim v24, v16, 1, v0
-; RV32-NEXT:    vs8r.v v24, (a0)
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+; RV32-NEXT:    slli a2, a2, 3
 ; RV32-NEXT:    add a0, a0, a2
-; RV32-NEXT:    vl8r.v v24, (a0)
+; RV32-NEXT:    vl8r.v v8, (a0)
 ; RV32-NEXT:    vsetvli a0, zero, e8, m8, ta, ma
-; RV32-NEXT:    vmseq.vi v0, v8, 0
+; RV32-NEXT:    vmseq.vi v0, v16, 0
 ; RV32-NEXT:    vmv.v.i v16, 0
 ; RV32-NEXT:    add a1, a3, a1
 ; RV32-NEXT:    add a2, a3, a2
-; RV32-NEXT:    vmseq.vi v8, v24, 0
+; RV32-NEXT:    vmseq.vi v8, v8, 0
 ; RV32-NEXT:    vmerge.vim v24, v16, 1, v0
 ; RV32-NEXT:    vs8r.v v24, (a3)
 ; RV32-NEXT:    vmv1r.v v0, v8
@@ -206,42 +180,16 @@ define i1 @extractelt_nxv128i1(ptr %x, i64 %idx) nounwind {
 ; RV64-NEXT:    sub sp, sp, a3
 ; RV64-NEXT:    andi sp, sp, -64
 ; RV64-NEXT:    addi a3, sp, 64
-; RV64-NEXT:    vl8r.v v8, (a0)
-; RV64-NEXT:    slli a2, a2, 3
-<<<<<<< HEAD
-; RV64-NEXT:    add a3, a0, a2
-; RV64-NEXT:    vl8r.v v8, (a3)
 ; RV64-NEXT:    vl8r.v v16, (a0)
-; RV64-NEXT:    addi a0, sp, 64
-; RV64-NEXT:    add a1, a0, a1
-; RV64-NEXT:    vsetvli a3, zero, e8, m8, ta, ma
-; RV64-NEXT:    vmseq.vi v8, v8, 0
-; RV64-NEXT:    vmseq.vi v0, v16, 0
-; RV64-NEXT:    vmv.v.i v16, 0
-; RV64-NEXT:    vmerge.vim v24, v16, 1, v0
-; RV64-NEXT:    vs8r.v v24, (a0)
-||||||| 864902e9b4d8
-; RV64-NEXT:    add a3, a0, a2
-; RV64-NEXT:    vl8r.v v16, (a3)
-; RV64-NEXT:    vl8r.v v24, (a0)
-; RV64-NEXT:    addi a0, sp, 64
-; RV64-NEXT:    add a1, a0, a1
-; RV64-NEXT:    vsetvli a3, zero, e8, m8, ta, ma
-; RV64-NEXT:    vmseq.vi v8, v16, 0
-; RV64-NEXT:    vmseq.vi v0, v24, 0
-; RV64-NEXT:    vmv.v.i v16, 0
-; RV64-NEXT:    vmerge.vim v24, v16, 1, v0
-; RV64-NEXT:    vs8r.v v24, (a0)
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+; RV64-NEXT:    slli a2, a2, 3
 ; RV64-NEXT:    add a0, a0, a2
-; RV64-NEXT:    vl8r.v v24, (a0)
+; RV64-NEXT:    vl8r.v v8, (a0)
 ; RV64-NEXT:    vsetvli a0, zero, e8, m8, ta, ma
-; RV64-NEXT:    vmseq.vi v0, v8, 0
+; RV64-NEXT:    vmseq.vi v0, v16, 0
 ; RV64-NEXT:    vmv.v.i v16, 0
 ; RV64-NEXT:    add a1, a3, a1
 ; RV64-NEXT:    add a2, a3, a2
-; RV64-NEXT:    vmseq.vi v8, v24, 0
+; RV64-NEXT:    vmseq.vi v8, v8, 0
 ; RV64-NEXT:    vmerge.vim v24, v16, 1, v0
 ; RV64-NEXT:    vs8r.v v24, (a3)
 ; RV64-NEXT:    vmv1r.v v0, v8

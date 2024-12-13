@@ -1602,29 +1602,13 @@ define void @fmsub_v8bf16(ptr %x, ptr %y, ptr %z) {
 ; CHECK-NEXT:    vle16.v v10, (a1)
 ; CHECK-NEXT:    lui a1, 8
 ; CHECK-NEXT:    vxor.vx v8, v8, a1
-<<<<<<< HEAD
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v12, v8
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v8, v9
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v14, v10
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v12, v8
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v14, v9
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v8, v10
-=======
 ; CHECK-NEXT:    vfwcvtbf16.f.f.v v12, v9
 ; CHECK-NEXT:    vfwcvtbf16.f.f.v v14, v8
 ; CHECK-NEXT:    vfwcvtbf16.f.f.v v8, v10
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vfmadd.vv v14, v8, v12
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vfmadd.vv v8, v14, v12
-=======
 ; CHECK-NEXT:    vfmadd.vv v8, v12, v14
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v14
+; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v8
 ; CHECK-NEXT:    vse16.v v8, (a0)
 ; CHECK-NEXT:    ret
   %a = load <8 x bfloat>, ptr %x
@@ -1646,29 +1630,13 @@ define void @fmsub_v6bf16(ptr %x, ptr %y, ptr %z) {
 ; CHECK-NEXT:    lui a1, 8
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vxor.vx v8, v8, a1
-<<<<<<< HEAD
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v12, v8
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v8, v9
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v14, v10
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v12, v8
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v14, v9
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v8, v10
-=======
 ; CHECK-NEXT:    vfwcvtbf16.f.f.v v12, v9
 ; CHECK-NEXT:    vfwcvtbf16.f.f.v v14, v8
 ; CHECK-NEXT:    vfwcvtbf16.f.f.v v8, v10
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vfmadd.vv v14, v8, v12
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vfmadd.vv v8, v14, v12
-=======
 ; CHECK-NEXT:    vfmadd.vv v8, v12, v14
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    vsetivli zero, 6, e16, m1, ta, ma
-; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v14
+; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v8
 ; CHECK-NEXT:    vse16.v v8, (a0)
 ; CHECK-NEXT:    ret
   %a = load <6 x bfloat>, ptr %x
@@ -1699,29 +1667,13 @@ define void @fmsub_v8f16(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMIN-NEXT:    vle16.v v10, (a1)
 ; ZVFHMIN-NEXT:    lui a1, 8
 ; ZVFHMIN-NEXT:    vxor.vx v8, v8, a1
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v14, v10
-||||||| 864902e9b4d8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v14, v9
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
-=======
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v14, v8
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vfmadd.vv v14, v8, v12
-||||||| 864902e9b4d8
-; ZVFHMIN-NEXT:    vfmadd.vv v8, v14, v12
-=======
 ; ZVFHMIN-NEXT:    vfmadd.vv v8, v12, v14
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v14
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
@@ -1753,29 +1705,13 @@ define void @fmsub_v6f16(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMIN-NEXT:    lui a1, 8
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vxor.vx v8, v8, a1
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v14, v10
-||||||| 864902e9b4d8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v14, v9
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
-=======
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v14, v8
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vfmadd.vv v14, v8, v12
-||||||| 864902e9b4d8
-; ZVFHMIN-NEXT:    vfmadd.vv v8, v14, v12
-=======
 ; ZVFHMIN-NEXT:    vfmadd.vv v8, v12, v14
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVFHMIN-NEXT:    vsetivli zero, 6, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v14
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <6 x half>, ptr %x
@@ -3784,29 +3720,13 @@ define void @fmsub_vf_v8bf16(ptr %x, ptr %y, bfloat %z) {
 ; CHECK-NEXT:    lui a1, 8
 ; CHECK-NEXT:    vmv.v.x v10, a2
 ; CHECK-NEXT:    vxor.vx v8, v8, a1
-<<<<<<< HEAD
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v12, v8
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v8, v9
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v14, v10
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v12, v8
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v14, v9
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v8, v10
-=======
 ; CHECK-NEXT:    vfwcvtbf16.f.f.v v12, v9
 ; CHECK-NEXT:    vfwcvtbf16.f.f.v v14, v8
 ; CHECK-NEXT:    vfwcvtbf16.f.f.v v8, v10
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vfmadd.vv v14, v8, v12
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vfmadd.vv v8, v14, v12
-=======
 ; CHECK-NEXT:    vfmadd.vv v8, v12, v14
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v14
+; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v8
 ; CHECK-NEXT:    vse16.v v8, (a0)
 ; CHECK-NEXT:    ret
   %a = load <8 x bfloat>, ptr %x
@@ -3830,29 +3750,13 @@ define void @fmsub_vf_v6bf16(ptr %x, ptr %y, bfloat %z) {
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.x v10, a2
 ; CHECK-NEXT:    vxor.vx v8, v8, a1
-<<<<<<< HEAD
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v12, v8
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v8, v9
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v14, v10
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v12, v8
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v14, v9
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v8, v10
-=======
 ; CHECK-NEXT:    vfwcvtbf16.f.f.v v12, v9
 ; CHECK-NEXT:    vfwcvtbf16.f.f.v v14, v8
 ; CHECK-NEXT:    vfwcvtbf16.f.f.v v8, v10
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vfmadd.vv v14, v8, v12
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vfmadd.vv v8, v14, v12
-=======
 ; CHECK-NEXT:    vfmadd.vv v8, v12, v14
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    vsetivli zero, 6, e16, m1, ta, ma
-; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v14
+; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v8
 ; CHECK-NEXT:    vse16.v v8, (a0)
 ; CHECK-NEXT:    ret
   %a = load <6 x bfloat>, ptr %x
@@ -3884,29 +3788,13 @@ define void @fmsub_vf_v8f16(ptr %x, ptr %y, half %z) {
 ; ZVFHMIN-NEXT:    lui a1, 8
 ; ZVFHMIN-NEXT:    vmv.v.x v10, a2
 ; ZVFHMIN-NEXT:    vxor.vx v8, v8, a1
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v14, v10
-||||||| 864902e9b4d8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v14, v9
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
-=======
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v14, v8
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vfmadd.vv v14, v8, v12
-||||||| 864902e9b4d8
-; ZVFHMIN-NEXT:    vfmadd.vv v8, v14, v12
-=======
 ; ZVFHMIN-NEXT:    vfmadd.vv v8, v12, v14
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v14
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
@@ -3939,29 +3827,13 @@ define void @fmsub_vf_v6f16(ptr %x, ptr %y, half %z) {
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vmv.v.x v10, a2
 ; ZVFHMIN-NEXT:    vxor.vx v8, v8, a1
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v14, v10
-||||||| 864902e9b4d8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v14, v9
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
-=======
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v14, v8
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vfmadd.vv v14, v8, v12
-||||||| 864902e9b4d8
-; ZVFHMIN-NEXT:    vfmadd.vv v8, v14, v12
-=======
 ; ZVFHMIN-NEXT:    vfmadd.vv v8, v12, v14
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVFHMIN-NEXT:    vsetivli zero, 6, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v14
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <6 x half>, ptr %x

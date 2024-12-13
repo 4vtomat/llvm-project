@@ -1100,54 +1100,17 @@ define void @mulhu_v8i16(ptr %x) {
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vmv.v.i v9, 0
-<<<<<<< HEAD
-; CHECK-NEXT:    lui a1, 1048568
-; CHECK-NEXT:    vmv.v.i v10, 0
-; CHECK-NEXT:    vsetvli zero, zero, e16, m1, tu, ma
-; CHECK-NEXT:    vmv.s.x v10, a1
-; CHECK-NEXT:    lui a1, %hi(.LCPI66_0)
-; CHECK-NEXT:    addi a1, a1, %lo(.LCPI66_0)
-; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vle16.v v11, (a1)
 ; CHECK-NEXT:    vsetivli zero, 7, e16, m1, ta, ma
-; CHECK-NEXT:    vmv.v.i v12, 1
-; CHECK-NEXT:    vsetvli zero, zero, e16, m1, tu, ma
-; CHECK-NEXT:    vslideup.vi v9, v12, 6
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vsrl.vv v9, v8, v9
-; CHECK-NEXT:    vmulhu.vv v9, v9, v11
-; CHECK-NEXT:    vsub.vv v8, v8, v9
-; CHECK-NEXT:    vmulhu.vv v8, v8, v10
-; CHECK-NEXT:    vadd.vv v8, v8, v9
-||||||| 864902e9b4d8
-; CHECK-NEXT:    lui a1, 1048568
-; CHECK-NEXT:    vmv.v.i v10, 0
-; CHECK-NEXT:    vsetvli zero, zero, e16, m1, tu, ma
-; CHECK-NEXT:    vmv.s.x v10, a1
-; CHECK-NEXT:    lui a1, %hi(.LCPI66_0)
-; CHECK-NEXT:    addi a1, a1, %lo(.LCPI66_0)
-; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vle16.v v11, (a1)
-; CHECK-NEXT:    vmv.v.i v12, 1
-; CHECK-NEXT:    vsetivli zero, 7, e16, m1, tu, ma
-; CHECK-NEXT:    vslideup.vi v9, v12, 6
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vsrl.vv v9, v8, v9
-; CHECK-NEXT:    vmulhu.vv v9, v9, v11
-; CHECK-NEXT:    vsub.vv v8, v8, v9
-; CHECK-NEXT:    vmulhu.vv v8, v8, v10
-; CHECK-NEXT:    vadd.vv v8, v8, v9
-=======
 ; CHECK-NEXT:    vmv.v.i v10, 1
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    li a1, 33
 ; CHECK-NEXT:    vmv.s.x v0, a1
 ; CHECK-NEXT:    lui a1, %hi(.LCPI66_0)
 ; CHECK-NEXT:    addi a1, a1, %lo(.LCPI66_0)
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v11, 3
 ; CHECK-NEXT:    vle16.v v12, (a1)
 ; CHECK-NEXT:    vmerge.vim v11, v11, 2, v0
-; CHECK-NEXT:    vmv.v.i v13, 0
+; CHECK-NEXT:    vmv1r.v v13, v9
 ; CHECK-NEXT:    vsetivli zero, 7, e16, m1, tu, ma
 ; CHECK-NEXT:    vslideup.vi v9, v10, 6
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma

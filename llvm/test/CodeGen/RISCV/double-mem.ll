@@ -84,8 +84,8 @@ define dso_local double @fld_fsd_global(double %a, double %b) nounwind {
 ; CHECKIFD:       # %bb.0:
 ; CHECKIFD-NEXT:    fadd.d fa0, fa0, fa1
 ; CHECKIFD-NEXT:    lui a0, %hi(G)
-; CHECKIFD-NEXT:    fld fa5, %lo(G)(a0)
 ; CHECKIFD-NEXT:    lui a1, %hi(G+72)
+; CHECKIFD-NEXT:    fld fa5, %lo(G)(a0)
 ; CHECKIFD-NEXT:    fsd fa0, %lo(G)(a0)
 ; CHECKIFD-NEXT:    fld fa5, %lo(G+72)(a1)
 ; CHECKIFD-NEXT:    fsd fa0, %lo(G+72)(a1)
@@ -95,48 +95,24 @@ define dso_local double @fld_fsd_global(double %a, double %b) nounwind {
 ; RV32IZFINXZDINX:       # %bb.0:
 ; RV32IZFINXZDINX-NEXT:    lui a4, %hi(G)
 ; RV32IZFINXZDINX-NEXT:    fadd.d a0, a0, a2
-<<<<<<< HEAD
-; RV32IZFINXZDINX-NEXT:    lui a2, %hi(G)
-; RV32IZFINXZDINX-NEXT:    lw a4, %lo(G)(a2)
-; RV32IZFINXZDINX-NEXT:    lw a5, %lo(G+4)(a2)
-; RV32IZFINXZDINX-NEXT:    lui a3, %hi(G)
-; RV32IZFINXZDINX-NEXT:    addi a3, a3, %lo(G)
-; RV32IZFINXZDINX-NEXT:    sw a0, %lo(G)(a2)
-; RV32IZFINXZDINX-NEXT:    sw a1, %lo(G+4)(a2)
-; RV32IZFINXZDINX-NEXT:    lw a4, 72(a3)
-; RV32IZFINXZDINX-NEXT:    lw a5, 76(a3)
-; RV32IZFINXZDINX-NEXT:    sw a0, 72(a3)
-; RV32IZFINXZDINX-NEXT:    sw a1, 76(a3)
-||||||| 864902e9b4d8
-; RV32IZFINXZDINX-NEXT:    lui a2, %hi(G)
-; RV32IZFINXZDINX-NEXT:    lw a4, %lo(G)(a2)
-; RV32IZFINXZDINX-NEXT:    lw a5, %lo(G+4)(a2)
-; RV32IZFINXZDINX-NEXT:    addi a3, a2, %lo(G)
-; RV32IZFINXZDINX-NEXT:    sw a0, %lo(G)(a2)
-; RV32IZFINXZDINX-NEXT:    sw a1, %lo(G+4)(a2)
-; RV32IZFINXZDINX-NEXT:    lw a4, 72(a3)
-; RV32IZFINXZDINX-NEXT:    lw a5, 76(a3)
-; RV32IZFINXZDINX-NEXT:    sw a0, 72(a3)
-; RV32IZFINXZDINX-NEXT:    sw a1, 76(a3)
-=======
 ; RV32IZFINXZDINX-NEXT:    lw a2, %lo(G)(a4)
 ; RV32IZFINXZDINX-NEXT:    lw a3, %lo(G+4)(a4)
-; RV32IZFINXZDINX-NEXT:    addi a2, a4, %lo(G)
+; RV32IZFINXZDINX-NEXT:    lui a2, %hi(G)
+; RV32IZFINXZDINX-NEXT:    addi a2, a2, %lo(G)
 ; RV32IZFINXZDINX-NEXT:    sw a0, %lo(G)(a4)
 ; RV32IZFINXZDINX-NEXT:    sw a1, %lo(G+4)(a4)
 ; RV32IZFINXZDINX-NEXT:    lw a4, 72(a2)
 ; RV32IZFINXZDINX-NEXT:    lw a5, 76(a2)
 ; RV32IZFINXZDINX-NEXT:    sw a0, 72(a2)
 ; RV32IZFINXZDINX-NEXT:    sw a1, 76(a2)
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; RV32IZFINXZDINX-NEXT:    ret
 ;
 ; RV64IZFINXZDINX-LABEL: fld_fsd_global:
 ; RV64IZFINXZDINX:       # %bb.0:
 ; RV64IZFINXZDINX-NEXT:    fadd.d a0, a0, a1
 ; RV64IZFINXZDINX-NEXT:    lui a1, %hi(G)
-; RV64IZFINXZDINX-NEXT:    ld zero, %lo(G)(a1)
 ; RV64IZFINXZDINX-NEXT:    lui a2, %hi(G+72)
+; RV64IZFINXZDINX-NEXT:    ld zero, %lo(G)(a1)
 ; RV64IZFINXZDINX-NEXT:    sd a0, %lo(G)(a1)
 ; RV64IZFINXZDINX-NEXT:    ld zero, %lo(G+72)(a2)
 ; RV64IZFINXZDINX-NEXT:    sd a0, %lo(G+72)(a2)

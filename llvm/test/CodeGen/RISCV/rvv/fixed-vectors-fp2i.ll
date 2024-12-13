@@ -121,44 +121,18 @@ define <3 x i15> @fp2si_v3f32_v3i15(<3 x float> %x) {
 ; ZVFH32-LABEL: fp2si_v3f32_v3i15:
 ; ZVFH32:       # %bb.0:
 ; ZVFH32-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-<<<<<<< HEAD
 ; ZVFH32-NEXT:    vfncvt.rtz.x.f.w v8, v8
-; ZVFH32-NEXT:    vslidedown.vi v9, v8, 2
-; ZVFH32-NEXT:    vmv.x.s a1, v9
-; ZVFH32-NEXT:    vmv.x.s a2, v8
-; ZVFH32-NEXT:    lui a3, 8
-; ZVFH32-NEXT:    addi a3, a3, -1
-; ZVFH32-NEXT:    and a2, a2, a3
-; ZVFH32-NEXT:    vslidedown.vi v8, v8, 1
-; ZVFH32-NEXT:    vmv.x.s a4, v8
-; ZVFH32-NEXT:    and a3, a4, a3
-; ZVFH32-NEXT:    slli a4, a1, 17
-||||||| 864902e9b4d8
-; ZVFH32-NEXT:    vfncvt.rtz.x.f.w v9, v8
-; ZVFH32-NEXT:    vslidedown.vi v8, v9, 2
-; ZVFH32-NEXT:    vmv.x.s a1, v8
-; ZVFH32-NEXT:    vmv.x.s a2, v9
-; ZVFH32-NEXT:    lui a3, 8
-; ZVFH32-NEXT:    addi a3, a3, -1
-; ZVFH32-NEXT:    and a2, a2, a3
-; ZVFH32-NEXT:    vslidedown.vi v8, v9, 1
-; ZVFH32-NEXT:    vmv.x.s a4, v8
-; ZVFH32-NEXT:    and a3, a4, a3
-; ZVFH32-NEXT:    slli a4, a1, 17
-=======
-; ZVFH32-NEXT:    vfncvt.rtz.x.f.w v9, v8
 ; ZVFH32-NEXT:    lui a1, 8
-; ZVFH32-NEXT:    vslidedown.vi v8, v9, 2
-; ZVFH32-NEXT:    vmv.x.s a2, v9
+; ZVFH32-NEXT:    vslidedown.vi v9, v8, 2
+; ZVFH32-NEXT:    vmv.x.s a2, v8
 ; ZVFH32-NEXT:    addi a1, a1, -1
-; ZVFH32-NEXT:    vslidedown.vi v9, v9, 1
-; ZVFH32-NEXT:    vmv.x.s a3, v8
+; ZVFH32-NEXT:    vslidedown.vi v8, v8, 1
+; ZVFH32-NEXT:    vmv.x.s a3, v9
 ; ZVFH32-NEXT:    and a2, a2, a1
-; ZVFH32-NEXT:    vmv.x.s a4, v9
+; ZVFH32-NEXT:    vmv.x.s a4, v8
 ; ZVFH32-NEXT:    and a1, a4, a1
 ; ZVFH32-NEXT:    slli a4, a3, 17
 ; ZVFH32-NEXT:    slli a3, a3, 30
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVFH32-NEXT:    srli a4, a4, 19
 ; ZVFH32-NEXT:    slli a1, a1, 15
 ; ZVFH32-NEXT:    or a2, a2, a3
@@ -170,42 +144,16 @@ define <3 x i15> @fp2si_v3f32_v3i15(<3 x float> %x) {
 ; ZVFH64-LABEL: fp2si_v3f32_v3i15:
 ; ZVFH64:       # %bb.0:
 ; ZVFH64-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-<<<<<<< HEAD
 ; ZVFH64-NEXT:    vfncvt.rtz.x.f.w v8, v8
-; ZVFH64-NEXT:    vmv.x.s a1, v8
-; ZVFH64-NEXT:    lui a2, 8
-; ZVFH64-NEXT:    addiw a2, a2, -1
-; ZVFH64-NEXT:    and a1, a1, a2
-; ZVFH64-NEXT:    vslidedown.vi v9, v8, 1
-; ZVFH64-NEXT:    vmv.x.s a3, v9
-; ZVFH64-NEXT:    and a2, a3, a2
-; ZVFH64-NEXT:    slli a2, a2, 15
-; ZVFH64-NEXT:    vslidedown.vi v8, v8, 2
-; ZVFH64-NEXT:    vmv.x.s a3, v8
-||||||| 864902e9b4d8
-; ZVFH64-NEXT:    vfncvt.rtz.x.f.w v9, v8
-; ZVFH64-NEXT:    vmv.x.s a1, v9
-; ZVFH64-NEXT:    lui a2, 8
-; ZVFH64-NEXT:    addiw a2, a2, -1
-; ZVFH64-NEXT:    and a1, a1, a2
-; ZVFH64-NEXT:    vslidedown.vi v8, v9, 1
-; ZVFH64-NEXT:    vmv.x.s a3, v8
-; ZVFH64-NEXT:    and a2, a3, a2
-; ZVFH64-NEXT:    slli a2, a2, 15
-; ZVFH64-NEXT:    vslidedown.vi v8, v9, 2
-; ZVFH64-NEXT:    vmv.x.s a3, v8
-=======
-; ZVFH64-NEXT:    vfncvt.rtz.x.f.w v9, v8
 ; ZVFH64-NEXT:    lui a1, 8
-; ZVFH64-NEXT:    vmv.x.s a2, v9
+; ZVFH64-NEXT:    vmv.x.s a2, v8
 ; ZVFH64-NEXT:    addiw a1, a1, -1
-; ZVFH64-NEXT:    vslidedown.vi v8, v9, 1
-; ZVFH64-NEXT:    vslidedown.vi v9, v9, 2
+; ZVFH64-NEXT:    vslidedown.vi v9, v8, 1
+; ZVFH64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFH64-NEXT:    and a2, a2, a1
-; ZVFH64-NEXT:    vmv.x.s a3, v8
-; ZVFH64-NEXT:    and a1, a3, a1
 ; ZVFH64-NEXT:    vmv.x.s a3, v9
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+; ZVFH64-NEXT:    and a1, a3, a1
+; ZVFH64-NEXT:    vmv.x.s a3, v8
 ; ZVFH64-NEXT:    slli a3, a3, 30
 ; ZVFH64-NEXT:    slli a1, a1, 15
 ; ZVFH64-NEXT:    or a2, a2, a3
@@ -219,44 +167,18 @@ define <3 x i15> @fp2si_v3f32_v3i15(<3 x float> %x) {
 ; ZVFHMIN32-LABEL: fp2si_v3f32_v3i15:
 ; ZVFHMIN32:       # %bb.0:
 ; ZVFHMIN32-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-<<<<<<< HEAD
 ; ZVFHMIN32-NEXT:    vfncvt.rtz.x.f.w v8, v8
-; ZVFHMIN32-NEXT:    vslidedown.vi v9, v8, 2
-; ZVFHMIN32-NEXT:    vmv.x.s a1, v9
-; ZVFHMIN32-NEXT:    vmv.x.s a2, v8
-; ZVFHMIN32-NEXT:    lui a3, 8
-; ZVFHMIN32-NEXT:    addi a3, a3, -1
-; ZVFHMIN32-NEXT:    and a2, a2, a3
-; ZVFHMIN32-NEXT:    vslidedown.vi v8, v8, 1
-; ZVFHMIN32-NEXT:    vmv.x.s a4, v8
-; ZVFHMIN32-NEXT:    and a3, a4, a3
-; ZVFHMIN32-NEXT:    slli a4, a1, 17
-||||||| 864902e9b4d8
-; ZVFHMIN32-NEXT:    vfncvt.rtz.x.f.w v9, v8
-; ZVFHMIN32-NEXT:    vslidedown.vi v8, v9, 2
-; ZVFHMIN32-NEXT:    vmv.x.s a1, v8
-; ZVFHMIN32-NEXT:    vmv.x.s a2, v9
-; ZVFHMIN32-NEXT:    lui a3, 8
-; ZVFHMIN32-NEXT:    addi a3, a3, -1
-; ZVFHMIN32-NEXT:    and a2, a2, a3
-; ZVFHMIN32-NEXT:    vslidedown.vi v8, v9, 1
-; ZVFHMIN32-NEXT:    vmv.x.s a4, v8
-; ZVFHMIN32-NEXT:    and a3, a4, a3
-; ZVFHMIN32-NEXT:    slli a4, a1, 17
-=======
-; ZVFHMIN32-NEXT:    vfncvt.rtz.x.f.w v9, v8
 ; ZVFHMIN32-NEXT:    lui a1, 8
-; ZVFHMIN32-NEXT:    vslidedown.vi v8, v9, 2
-; ZVFHMIN32-NEXT:    vmv.x.s a2, v9
+; ZVFHMIN32-NEXT:    vslidedown.vi v9, v8, 2
+; ZVFHMIN32-NEXT:    vmv.x.s a2, v8
 ; ZVFHMIN32-NEXT:    addi a1, a1, -1
-; ZVFHMIN32-NEXT:    vslidedown.vi v9, v9, 1
-; ZVFHMIN32-NEXT:    vmv.x.s a3, v8
+; ZVFHMIN32-NEXT:    vslidedown.vi v8, v8, 1
+; ZVFHMIN32-NEXT:    vmv.x.s a3, v9
 ; ZVFHMIN32-NEXT:    and a2, a2, a1
-; ZVFHMIN32-NEXT:    vmv.x.s a4, v9
+; ZVFHMIN32-NEXT:    vmv.x.s a4, v8
 ; ZVFHMIN32-NEXT:    and a1, a4, a1
 ; ZVFHMIN32-NEXT:    slli a4, a3, 17
 ; ZVFHMIN32-NEXT:    slli a3, a3, 30
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVFHMIN32-NEXT:    srli a4, a4, 19
 ; ZVFHMIN32-NEXT:    slli a1, a1, 15
 ; ZVFHMIN32-NEXT:    or a2, a2, a3
@@ -268,42 +190,16 @@ define <3 x i15> @fp2si_v3f32_v3i15(<3 x float> %x) {
 ; ZVFHMIN64-LABEL: fp2si_v3f32_v3i15:
 ; ZVFHMIN64:       # %bb.0:
 ; ZVFHMIN64-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-<<<<<<< HEAD
 ; ZVFHMIN64-NEXT:    vfncvt.rtz.x.f.w v8, v8
-; ZVFHMIN64-NEXT:    vmv.x.s a1, v8
-; ZVFHMIN64-NEXT:    lui a2, 8
-; ZVFHMIN64-NEXT:    addiw a2, a2, -1
-; ZVFHMIN64-NEXT:    and a1, a1, a2
-; ZVFHMIN64-NEXT:    vslidedown.vi v9, v8, 1
-; ZVFHMIN64-NEXT:    vmv.x.s a3, v9
-; ZVFHMIN64-NEXT:    and a2, a3, a2
-; ZVFHMIN64-NEXT:    slli a2, a2, 15
-; ZVFHMIN64-NEXT:    vslidedown.vi v8, v8, 2
-; ZVFHMIN64-NEXT:    vmv.x.s a3, v8
-||||||| 864902e9b4d8
-; ZVFHMIN64-NEXT:    vfncvt.rtz.x.f.w v9, v8
-; ZVFHMIN64-NEXT:    vmv.x.s a1, v9
-; ZVFHMIN64-NEXT:    lui a2, 8
-; ZVFHMIN64-NEXT:    addiw a2, a2, -1
-; ZVFHMIN64-NEXT:    and a1, a1, a2
-; ZVFHMIN64-NEXT:    vslidedown.vi v8, v9, 1
-; ZVFHMIN64-NEXT:    vmv.x.s a3, v8
-; ZVFHMIN64-NEXT:    and a2, a3, a2
-; ZVFHMIN64-NEXT:    slli a2, a2, 15
-; ZVFHMIN64-NEXT:    vslidedown.vi v8, v9, 2
-; ZVFHMIN64-NEXT:    vmv.x.s a3, v8
-=======
-; ZVFHMIN64-NEXT:    vfncvt.rtz.x.f.w v9, v8
 ; ZVFHMIN64-NEXT:    lui a1, 8
-; ZVFHMIN64-NEXT:    vmv.x.s a2, v9
+; ZVFHMIN64-NEXT:    vmv.x.s a2, v8
 ; ZVFHMIN64-NEXT:    addiw a1, a1, -1
-; ZVFHMIN64-NEXT:    vslidedown.vi v8, v9, 1
-; ZVFHMIN64-NEXT:    vslidedown.vi v9, v9, 2
+; ZVFHMIN64-NEXT:    vslidedown.vi v9, v8, 1
+; ZVFHMIN64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMIN64-NEXT:    and a2, a2, a1
-; ZVFHMIN64-NEXT:    vmv.x.s a3, v8
-; ZVFHMIN64-NEXT:    and a1, a3, a1
 ; ZVFHMIN64-NEXT:    vmv.x.s a3, v9
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+; ZVFHMIN64-NEXT:    and a1, a3, a1
+; ZVFHMIN64-NEXT:    vmv.x.s a3, v8
 ; ZVFHMIN64-NEXT:    slli a3, a3, 30
 ; ZVFHMIN64-NEXT:    slli a1, a1, 15
 ; ZVFHMIN64-NEXT:    or a2, a2, a3
@@ -322,44 +218,18 @@ define <3 x i15> @fp2ui_v3f32_v3i15(<3 x float> %x) {
 ; ZVFH32-LABEL: fp2ui_v3f32_v3i15:
 ; ZVFH32:       # %bb.0:
 ; ZVFH32-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-<<<<<<< HEAD
 ; ZVFH32-NEXT:    vfncvt.rtz.x.f.w v8, v8
-; ZVFH32-NEXT:    vslidedown.vi v9, v8, 2
-; ZVFH32-NEXT:    vmv.x.s a1, v9
-; ZVFH32-NEXT:    vmv.x.s a2, v8
-; ZVFH32-NEXT:    lui a3, 16
-; ZVFH32-NEXT:    addi a3, a3, -1
-; ZVFH32-NEXT:    and a2, a2, a3
-; ZVFH32-NEXT:    vslidedown.vi v8, v8, 1
-; ZVFH32-NEXT:    vmv.x.s a4, v8
-; ZVFH32-NEXT:    and a3, a4, a3
-; ZVFH32-NEXT:    slli a4, a1, 17
-||||||| 864902e9b4d8
-; ZVFH32-NEXT:    vfncvt.rtz.x.f.w v9, v8
-; ZVFH32-NEXT:    vslidedown.vi v8, v9, 2
-; ZVFH32-NEXT:    vmv.x.s a1, v8
-; ZVFH32-NEXT:    vmv.x.s a2, v9
-; ZVFH32-NEXT:    lui a3, 16
-; ZVFH32-NEXT:    addi a3, a3, -1
-; ZVFH32-NEXT:    and a2, a2, a3
-; ZVFH32-NEXT:    vslidedown.vi v8, v9, 1
-; ZVFH32-NEXT:    vmv.x.s a4, v8
-; ZVFH32-NEXT:    and a3, a4, a3
-; ZVFH32-NEXT:    slli a4, a1, 17
-=======
-; ZVFH32-NEXT:    vfncvt.rtz.x.f.w v9, v8
 ; ZVFH32-NEXT:    lui a1, 16
-; ZVFH32-NEXT:    vslidedown.vi v8, v9, 2
-; ZVFH32-NEXT:    vmv.x.s a2, v9
+; ZVFH32-NEXT:    vslidedown.vi v9, v8, 2
+; ZVFH32-NEXT:    vmv.x.s a2, v8
 ; ZVFH32-NEXT:    addi a1, a1, -1
-; ZVFH32-NEXT:    vslidedown.vi v9, v9, 1
-; ZVFH32-NEXT:    vmv.x.s a3, v8
+; ZVFH32-NEXT:    vslidedown.vi v8, v8, 1
+; ZVFH32-NEXT:    vmv.x.s a3, v9
 ; ZVFH32-NEXT:    and a2, a2, a1
-; ZVFH32-NEXT:    vmv.x.s a4, v9
+; ZVFH32-NEXT:    vmv.x.s a4, v8
 ; ZVFH32-NEXT:    and a1, a4, a1
 ; ZVFH32-NEXT:    slli a4, a3, 17
 ; ZVFH32-NEXT:    slli a3, a3, 30
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVFH32-NEXT:    srli a4, a4, 19
 ; ZVFH32-NEXT:    slli a1, a1, 15
 ; ZVFH32-NEXT:    or a2, a2, a3
@@ -371,42 +241,16 @@ define <3 x i15> @fp2ui_v3f32_v3i15(<3 x float> %x) {
 ; ZVFH64-LABEL: fp2ui_v3f32_v3i15:
 ; ZVFH64:       # %bb.0:
 ; ZVFH64-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-<<<<<<< HEAD
 ; ZVFH64-NEXT:    vfncvt.rtz.x.f.w v8, v8
-; ZVFH64-NEXT:    vmv.x.s a1, v8
-; ZVFH64-NEXT:    lui a2, 16
-; ZVFH64-NEXT:    addiw a2, a2, -1
-; ZVFH64-NEXT:    and a1, a1, a2
-; ZVFH64-NEXT:    vslidedown.vi v9, v8, 1
-; ZVFH64-NEXT:    vmv.x.s a3, v9
-; ZVFH64-NEXT:    and a2, a3, a2
-; ZVFH64-NEXT:    slli a2, a2, 15
-; ZVFH64-NEXT:    vslidedown.vi v8, v8, 2
-; ZVFH64-NEXT:    vmv.x.s a3, v8
-||||||| 864902e9b4d8
-; ZVFH64-NEXT:    vfncvt.rtz.x.f.w v9, v8
-; ZVFH64-NEXT:    vmv.x.s a1, v9
-; ZVFH64-NEXT:    lui a2, 16
-; ZVFH64-NEXT:    addiw a2, a2, -1
-; ZVFH64-NEXT:    and a1, a1, a2
-; ZVFH64-NEXT:    vslidedown.vi v8, v9, 1
-; ZVFH64-NEXT:    vmv.x.s a3, v8
-; ZVFH64-NEXT:    and a2, a3, a2
-; ZVFH64-NEXT:    slli a2, a2, 15
-; ZVFH64-NEXT:    vslidedown.vi v8, v9, 2
-; ZVFH64-NEXT:    vmv.x.s a3, v8
-=======
-; ZVFH64-NEXT:    vfncvt.rtz.x.f.w v9, v8
 ; ZVFH64-NEXT:    lui a1, 16
-; ZVFH64-NEXT:    vmv.x.s a2, v9
+; ZVFH64-NEXT:    vmv.x.s a2, v8
 ; ZVFH64-NEXT:    addiw a1, a1, -1
-; ZVFH64-NEXT:    vslidedown.vi v8, v9, 1
-; ZVFH64-NEXT:    vslidedown.vi v9, v9, 2
+; ZVFH64-NEXT:    vslidedown.vi v9, v8, 1
+; ZVFH64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFH64-NEXT:    and a2, a2, a1
-; ZVFH64-NEXT:    vmv.x.s a3, v8
-; ZVFH64-NEXT:    and a1, a3, a1
 ; ZVFH64-NEXT:    vmv.x.s a3, v9
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+; ZVFH64-NEXT:    and a1, a3, a1
+; ZVFH64-NEXT:    vmv.x.s a3, v8
 ; ZVFH64-NEXT:    slli a3, a3, 30
 ; ZVFH64-NEXT:    slli a1, a1, 15
 ; ZVFH64-NEXT:    or a2, a2, a3
@@ -420,44 +264,18 @@ define <3 x i15> @fp2ui_v3f32_v3i15(<3 x float> %x) {
 ; ZVFHMIN32-LABEL: fp2ui_v3f32_v3i15:
 ; ZVFHMIN32:       # %bb.0:
 ; ZVFHMIN32-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-<<<<<<< HEAD
 ; ZVFHMIN32-NEXT:    vfncvt.rtz.x.f.w v8, v8
-; ZVFHMIN32-NEXT:    vslidedown.vi v9, v8, 2
-; ZVFHMIN32-NEXT:    vmv.x.s a1, v9
-; ZVFHMIN32-NEXT:    vmv.x.s a2, v8
-; ZVFHMIN32-NEXT:    lui a3, 16
-; ZVFHMIN32-NEXT:    addi a3, a3, -1
-; ZVFHMIN32-NEXT:    and a2, a2, a3
-; ZVFHMIN32-NEXT:    vslidedown.vi v8, v8, 1
-; ZVFHMIN32-NEXT:    vmv.x.s a4, v8
-; ZVFHMIN32-NEXT:    and a3, a4, a3
-; ZVFHMIN32-NEXT:    slli a4, a1, 17
-||||||| 864902e9b4d8
-; ZVFHMIN32-NEXT:    vfncvt.rtz.x.f.w v9, v8
-; ZVFHMIN32-NEXT:    vslidedown.vi v8, v9, 2
-; ZVFHMIN32-NEXT:    vmv.x.s a1, v8
-; ZVFHMIN32-NEXT:    vmv.x.s a2, v9
-; ZVFHMIN32-NEXT:    lui a3, 16
-; ZVFHMIN32-NEXT:    addi a3, a3, -1
-; ZVFHMIN32-NEXT:    and a2, a2, a3
-; ZVFHMIN32-NEXT:    vslidedown.vi v8, v9, 1
-; ZVFHMIN32-NEXT:    vmv.x.s a4, v8
-; ZVFHMIN32-NEXT:    and a3, a4, a3
-; ZVFHMIN32-NEXT:    slli a4, a1, 17
-=======
-; ZVFHMIN32-NEXT:    vfncvt.rtz.x.f.w v9, v8
 ; ZVFHMIN32-NEXT:    lui a1, 16
-; ZVFHMIN32-NEXT:    vslidedown.vi v8, v9, 2
-; ZVFHMIN32-NEXT:    vmv.x.s a2, v9
+; ZVFHMIN32-NEXT:    vslidedown.vi v9, v8, 2
+; ZVFHMIN32-NEXT:    vmv.x.s a2, v8
 ; ZVFHMIN32-NEXT:    addi a1, a1, -1
-; ZVFHMIN32-NEXT:    vslidedown.vi v9, v9, 1
-; ZVFHMIN32-NEXT:    vmv.x.s a3, v8
+; ZVFHMIN32-NEXT:    vslidedown.vi v8, v8, 1
+; ZVFHMIN32-NEXT:    vmv.x.s a3, v9
 ; ZVFHMIN32-NEXT:    and a2, a2, a1
-; ZVFHMIN32-NEXT:    vmv.x.s a4, v9
+; ZVFHMIN32-NEXT:    vmv.x.s a4, v8
 ; ZVFHMIN32-NEXT:    and a1, a4, a1
 ; ZVFHMIN32-NEXT:    slli a4, a3, 17
 ; ZVFHMIN32-NEXT:    slli a3, a3, 30
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVFHMIN32-NEXT:    srli a4, a4, 19
 ; ZVFHMIN32-NEXT:    slli a1, a1, 15
 ; ZVFHMIN32-NEXT:    or a2, a2, a3
@@ -469,42 +287,16 @@ define <3 x i15> @fp2ui_v3f32_v3i15(<3 x float> %x) {
 ; ZVFHMIN64-LABEL: fp2ui_v3f32_v3i15:
 ; ZVFHMIN64:       # %bb.0:
 ; ZVFHMIN64-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-<<<<<<< HEAD
 ; ZVFHMIN64-NEXT:    vfncvt.rtz.x.f.w v8, v8
-; ZVFHMIN64-NEXT:    vmv.x.s a1, v8
-; ZVFHMIN64-NEXT:    lui a2, 16
-; ZVFHMIN64-NEXT:    addiw a2, a2, -1
-; ZVFHMIN64-NEXT:    and a1, a1, a2
-; ZVFHMIN64-NEXT:    vslidedown.vi v9, v8, 1
-; ZVFHMIN64-NEXT:    vmv.x.s a3, v9
-; ZVFHMIN64-NEXT:    and a2, a3, a2
-; ZVFHMIN64-NEXT:    slli a2, a2, 15
-; ZVFHMIN64-NEXT:    vslidedown.vi v8, v8, 2
-; ZVFHMIN64-NEXT:    vmv.x.s a3, v8
-||||||| 864902e9b4d8
-; ZVFHMIN64-NEXT:    vfncvt.rtz.x.f.w v9, v8
-; ZVFHMIN64-NEXT:    vmv.x.s a1, v9
-; ZVFHMIN64-NEXT:    lui a2, 16
-; ZVFHMIN64-NEXT:    addiw a2, a2, -1
-; ZVFHMIN64-NEXT:    and a1, a1, a2
-; ZVFHMIN64-NEXT:    vslidedown.vi v8, v9, 1
-; ZVFHMIN64-NEXT:    vmv.x.s a3, v8
-; ZVFHMIN64-NEXT:    and a2, a3, a2
-; ZVFHMIN64-NEXT:    slli a2, a2, 15
-; ZVFHMIN64-NEXT:    vslidedown.vi v8, v9, 2
-; ZVFHMIN64-NEXT:    vmv.x.s a3, v8
-=======
-; ZVFHMIN64-NEXT:    vfncvt.rtz.x.f.w v9, v8
 ; ZVFHMIN64-NEXT:    lui a1, 16
-; ZVFHMIN64-NEXT:    vmv.x.s a2, v9
+; ZVFHMIN64-NEXT:    vmv.x.s a2, v8
 ; ZVFHMIN64-NEXT:    addiw a1, a1, -1
-; ZVFHMIN64-NEXT:    vslidedown.vi v8, v9, 1
-; ZVFHMIN64-NEXT:    vslidedown.vi v9, v9, 2
+; ZVFHMIN64-NEXT:    vslidedown.vi v9, v8, 1
+; ZVFHMIN64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMIN64-NEXT:    and a2, a2, a1
-; ZVFHMIN64-NEXT:    vmv.x.s a3, v8
-; ZVFHMIN64-NEXT:    and a1, a3, a1
 ; ZVFHMIN64-NEXT:    vmv.x.s a3, v9
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+; ZVFHMIN64-NEXT:    and a1, a3, a1
+; ZVFHMIN64-NEXT:    vmv.x.s a3, v8
 ; ZVFHMIN64-NEXT:    slli a3, a3, 30
 ; ZVFHMIN64-NEXT:    slli a1, a1, 15
 ; ZVFHMIN64-NEXT:    or a2, a2, a3

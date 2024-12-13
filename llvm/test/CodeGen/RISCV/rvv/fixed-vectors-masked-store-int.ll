@@ -238,79 +238,13 @@ define void @masked_store_v32i32(<32 x i32> %val, ptr %a, <32 x i1> %mask) {
 define void @masked_store_v32i64(<32 x i64> %val, ptr %a, <32 x i1> %mask) {
 ; CHECK-LABEL: masked_store_v32i64:
 ; CHECK:       # %bb.0:
-<<<<<<< HEAD
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    csrr a3, vlenb
-; CHECK-NEXT:    slli a3, a3, 3
-; CHECK-NEXT:    sub sp, sp, a3
-||||||| 864902e9b4d8
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    csrr a3, vlenb
-; CHECK-NEXT:    slli a3, a3, 4
-; CHECK-NEXT:    sub sp, sp, a3
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    vsetivli zero, 16, e64, m8, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vle64.v v8, (a2)
-; CHECK-NEXT:    addi a2, a2, 128
-; CHECK-NEXT:    vle64.v v16, (a2)
-; CHECK-NEXT:    addi a2, sp, 16
-; CHECK-NEXT:    vs8r.v v16, (a2) # Unknown-size Folded Spill
-; CHECK-NEXT:    vmseq.vi v0, v8, 0
-; CHECK-NEXT:    vle64.v v24, (a0)
-; CHECK-NEXT:    addi a0, a0, 128
-; CHECK-NEXT:    vle64.v v16, (a0)
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmseq.vi v8, v8, 0
-; CHECK-NEXT:    vse64.v v24, (a1), v0.t
-; CHECK-NEXT:    addi a0, a1, 128
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vse64.v v16, (a0), v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add sp, sp, a0
-; CHECK-NEXT:    addi sp, sp, 16
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vle64.v v8, (a2)
-; CHECK-NEXT:    addi a2, a2, 128
-; CHECK-NEXT:    vle64.v v16, (a2)
-; CHECK-NEXT:    csrr a2, vlenb
-; CHECK-NEXT:    slli a2, a2, 3
-; CHECK-NEXT:    add a2, sp, a2
-; CHECK-NEXT:    addi a2, a2, 16
-; CHECK-NEXT:    vs8r.v v16, (a2) # Unknown-size Folded Spill
-; CHECK-NEXT:    vmseq.vi v0, v8, 0
-; CHECK-NEXT:    vle64.v v24, (a0)
-; CHECK-NEXT:    addi a0, a0, 128
-; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add a0, sp, a0
-; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmseq.vi v8, v16, 0
-; CHECK-NEXT:    vse64.v v24, (a1), v0.t
-; CHECK-NEXT:    addi a0, a1, 128
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    addi a1, sp, 16
-; CHECK-NEXT:    vl8r.v v8, (a1) # Unknown-size Folded Reload
-; CHECK-NEXT:    vse64.v v8, (a0), v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 4
-; CHECK-NEXT:    add sp, sp, a0
-; CHECK-NEXT:    addi sp, sp, 16
-=======
 ; CHECK-NEXT:    vse64.v v8, (a0), v0.t
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v0, v0, 2
 ; CHECK-NEXT:    addi a0, a0, 128
 ; CHECK-NEXT:    vsetivli zero, 16, e64, m8, ta, ma
 ; CHECK-NEXT:    vse64.v v16, (a0), v0.t
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    ret
   call void @llvm.masked.store.v32i64.p0(<32 x i64> %val, ptr %a, i32 8, <32 x i1> %mask)
   ret void
@@ -341,71 +275,6 @@ define void @masked_store_v64i16(<64 x i16> %val, ptr %a, <64 x i1> %mask) {
 define void @masked_store_v64i32(<64 x i32> %val, ptr %a, <64 x i1> %mask) {
 ; CHECK-LABEL: masked_store_v64i32:
 ; CHECK:       # %bb.0:
-<<<<<<< HEAD
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    csrr a3, vlenb
-; CHECK-NEXT:    slli a3, a3, 3
-; CHECK-NEXT:    sub sp, sp, a3
-; CHECK-NEXT:    li a3, 32
-; CHECK-NEXT:    vsetvli zero, a3, e32, m8, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a2)
-; CHECK-NEXT:    addi a2, a2, 128
-; CHECK-NEXT:    vle32.v v16, (a2)
-; CHECK-NEXT:    addi a2, sp, 16
-; CHECK-NEXT:    vs8r.v v16, (a2) # Unknown-size Folded Spill
-; CHECK-NEXT:    vmseq.vi v0, v8, 0
-; CHECK-NEXT:    vle32.v v24, (a0)
-; CHECK-NEXT:    addi a0, a0, 128
-; CHECK-NEXT:    vle32.v v16, (a0)
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmseq.vi v8, v8, 0
-; CHECK-NEXT:    vse32.v v24, (a1), v0.t
-; CHECK-NEXT:    addi a0, a1, 128
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vse32.v v16, (a0), v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add sp, sp, a0
-; CHECK-NEXT:    addi sp, sp, 16
-||||||| 864902e9b4d8
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    csrr a3, vlenb
-; CHECK-NEXT:    slli a3, a3, 4
-; CHECK-NEXT:    sub sp, sp, a3
-; CHECK-NEXT:    li a3, 32
-; CHECK-NEXT:    vsetvli zero, a3, e32, m8, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a2)
-; CHECK-NEXT:    addi a2, a2, 128
-; CHECK-NEXT:    vle32.v v16, (a2)
-; CHECK-NEXT:    csrr a2, vlenb
-; CHECK-NEXT:    slli a2, a2, 3
-; CHECK-NEXT:    add a2, sp, a2
-; CHECK-NEXT:    addi a2, a2, 16
-; CHECK-NEXT:    vs8r.v v16, (a2) # Unknown-size Folded Spill
-; CHECK-NEXT:    vmseq.vi v0, v8, 0
-; CHECK-NEXT:    vle32.v v24, (a0)
-; CHECK-NEXT:    addi a0, a0, 128
-; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add a0, sp, a0
-; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmseq.vi v8, v16, 0
-; CHECK-NEXT:    vse32.v v24, (a1), v0.t
-; CHECK-NEXT:    addi a0, a1, 128
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    addi a1, sp, 16
-; CHECK-NEXT:    vl8r.v v8, (a1) # Unknown-size Folded Reload
-; CHECK-NEXT:    vse32.v v8, (a0), v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 4
-; CHECK-NEXT:    add sp, sp, a0
-; CHECK-NEXT:    addi sp, sp, 16
-=======
 ; CHECK-NEXT:    li a1, 32
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v24, v0, 4
@@ -414,7 +283,6 @@ define void @masked_store_v64i32(<64 x i32> %val, ptr %a, <64 x i1> %mask) {
 ; CHECK-NEXT:    addi a0, a0, 128
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vse32.v v16, (a0), v0.t
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    ret
   call void @llvm.masked.store.v64i32.p0(<64 x i32> %val, ptr %a, i32 8, <64 x i1> %mask)
   ret void
@@ -434,71 +302,6 @@ define void @masked_store_v128i8(<128 x i8> %val, ptr %a, <128 x i1> %mask) {
 define void @masked_store_v128i16(<128 x i16> %val, ptr %a, <128 x i1> %mask) {
 ; CHECK-LABEL: masked_store_v128i16:
 ; CHECK:       # %bb.0:
-<<<<<<< HEAD
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    csrr a3, vlenb
-; CHECK-NEXT:    slli a3, a3, 3
-; CHECK-NEXT:    sub sp, sp, a3
-; CHECK-NEXT:    li a3, 64
-; CHECK-NEXT:    vsetvli zero, a3, e16, m8, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a2)
-; CHECK-NEXT:    addi a2, a2, 128
-; CHECK-NEXT:    vle16.v v16, (a2)
-; CHECK-NEXT:    addi a2, sp, 16
-; CHECK-NEXT:    vs8r.v v16, (a2) # Unknown-size Folded Spill
-; CHECK-NEXT:    vmseq.vi v0, v8, 0
-; CHECK-NEXT:    vle16.v v24, (a0)
-; CHECK-NEXT:    addi a0, a0, 128
-; CHECK-NEXT:    vle16.v v16, (a0)
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmseq.vi v8, v8, 0
-; CHECK-NEXT:    vse16.v v24, (a1), v0.t
-; CHECK-NEXT:    addi a0, a1, 128
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vse16.v v16, (a0), v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add sp, sp, a0
-; CHECK-NEXT:    addi sp, sp, 16
-||||||| 864902e9b4d8
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    csrr a3, vlenb
-; CHECK-NEXT:    slli a3, a3, 4
-; CHECK-NEXT:    sub sp, sp, a3
-; CHECK-NEXT:    li a3, 64
-; CHECK-NEXT:    vsetvli zero, a3, e16, m8, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a2)
-; CHECK-NEXT:    addi a2, a2, 128
-; CHECK-NEXT:    vle16.v v16, (a2)
-; CHECK-NEXT:    csrr a2, vlenb
-; CHECK-NEXT:    slli a2, a2, 3
-; CHECK-NEXT:    add a2, sp, a2
-; CHECK-NEXT:    addi a2, a2, 16
-; CHECK-NEXT:    vs8r.v v16, (a2) # Unknown-size Folded Spill
-; CHECK-NEXT:    vmseq.vi v0, v8, 0
-; CHECK-NEXT:    vle16.v v24, (a0)
-; CHECK-NEXT:    addi a0, a0, 128
-; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add a0, sp, a0
-; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmseq.vi v8, v16, 0
-; CHECK-NEXT:    vse16.v v24, (a1), v0.t
-; CHECK-NEXT:    addi a0, a1, 128
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    addi a1, sp, 16
-; CHECK-NEXT:    vl8r.v v8, (a1) # Unknown-size Folded Reload
-; CHECK-NEXT:    vse16.v v8, (a0), v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 4
-; CHECK-NEXT:    add sp, sp, a0
-; CHECK-NEXT:    addi sp, sp, 16
-=======
 ; CHECK-NEXT:    li a1, 64
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v24, v0, 8
@@ -507,7 +310,6 @@ define void @masked_store_v128i16(<128 x i16> %val, ptr %a, <128 x i1> %mask) {
 ; CHECK-NEXT:    addi a0, a0, 128
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vse16.v v16, (a0), v0.t
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    ret
   call void @llvm.masked.store.v128i16.p0(<128 x i16> %val, ptr %a, i32 8, <128 x i1> %mask)
   ret void
@@ -516,71 +318,6 @@ define void @masked_store_v128i16(<128 x i16> %val, ptr %a, <128 x i1> %mask) {
 define void @masked_store_v256i8(<256 x i8> %val, ptr %a, <256 x i1> %mask) {
 ; CHECK-LABEL: masked_store_v256i8:
 ; CHECK:       # %bb.0:
-<<<<<<< HEAD
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    csrr a3, vlenb
-; CHECK-NEXT:    slli a3, a3, 3
-; CHECK-NEXT:    sub sp, sp, a3
-; CHECK-NEXT:    li a3, 128
-; CHECK-NEXT:    vsetvli zero, a3, e8, m8, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a2)
-; CHECK-NEXT:    addi a2, a2, 128
-; CHECK-NEXT:    vle8.v v16, (a2)
-; CHECK-NEXT:    addi a2, sp, 16
-; CHECK-NEXT:    vs8r.v v16, (a2) # Unknown-size Folded Spill
-; CHECK-NEXT:    vmseq.vi v0, v8, 0
-; CHECK-NEXT:    vle8.v v24, (a0)
-; CHECK-NEXT:    addi a0, a0, 128
-; CHECK-NEXT:    vle8.v v16, (a0)
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmseq.vi v8, v8, 0
-; CHECK-NEXT:    vse8.v v24, (a1), v0.t
-; CHECK-NEXT:    addi a0, a1, 128
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vse8.v v16, (a0), v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add sp, sp, a0
-; CHECK-NEXT:    addi sp, sp, 16
-||||||| 864902e9b4d8
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    csrr a3, vlenb
-; CHECK-NEXT:    slli a3, a3, 4
-; CHECK-NEXT:    sub sp, sp, a3
-; CHECK-NEXT:    li a3, 128
-; CHECK-NEXT:    vsetvli zero, a3, e8, m8, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a2)
-; CHECK-NEXT:    addi a2, a2, 128
-; CHECK-NEXT:    vle8.v v16, (a2)
-; CHECK-NEXT:    csrr a2, vlenb
-; CHECK-NEXT:    slli a2, a2, 3
-; CHECK-NEXT:    add a2, sp, a2
-; CHECK-NEXT:    addi a2, a2, 16
-; CHECK-NEXT:    vs8r.v v16, (a2) # Unknown-size Folded Spill
-; CHECK-NEXT:    vmseq.vi v0, v8, 0
-; CHECK-NEXT:    vle8.v v24, (a0)
-; CHECK-NEXT:    addi a0, a0, 128
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add a0, sp, a0
-; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmseq.vi v8, v16, 0
-; CHECK-NEXT:    vse8.v v24, (a1), v0.t
-; CHECK-NEXT:    addi a0, a1, 128
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    addi a1, sp, 16
-; CHECK-NEXT:    vl8r.v v8, (a1) # Unknown-size Folded Reload
-; CHECK-NEXT:    vse8.v v8, (a0), v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 4
-; CHECK-NEXT:    add sp, sp, a0
-; CHECK-NEXT:    addi sp, sp, 16
-=======
 ; CHECK-NEXT:    li a2, 128
 ; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
 ; CHECK-NEXT:    vlm.v v24, (a1)
@@ -588,7 +325,6 @@ define void @masked_store_v256i8(<256 x i8> %val, ptr %a, <256 x i1> %mask) {
 ; CHECK-NEXT:    vse8.v v8, (a0), v0.t
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vse8.v v16, (a1), v0.t
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    ret
   call void @llvm.masked.store.v256i8.p0(<256 x i8> %val, ptr %a, i32 8, <256 x i1> %mask)
   ret void

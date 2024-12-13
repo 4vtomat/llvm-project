@@ -2637,22 +2637,10 @@ define <16 x i1> @fcmps_uno_vf_v16f16(<16 x half> %va, half %b) nounwind strictf
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v10, fa0
-<<<<<<< HEAD
-; CHECK-NEXT:    vmfle.vf v10, v10, fa0
 ; CHECK-NEXT:    vmfle.vv v8, v8, v8
+; CHECK-NEXT:    vmfle.vf v9, v10, fa0
 ; CHECK-NEXT:    vmnot.m v8, v8
-; CHECK-NEXT:    vmorn.mm v0, v8, v10
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vmfle.vf v12, v10, fa0
-; CHECK-NEXT:    vmfle.vv v10, v8, v8
-; CHECK-NEXT:    vmnot.m v8, v10
-; CHECK-NEXT:    vmorn.mm v0, v8, v12
-=======
-; CHECK-NEXT:    vmfle.vv v12, v8, v8
-; CHECK-NEXT:    vmfle.vf v8, v10, fa0
-; CHECK-NEXT:    vmnot.m v9, v12
-; CHECK-NEXT:    vmorn.mm v0, v9, v8
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+; CHECK-NEXT:    vmorn.mm v0, v8, v9
 ; CHECK-NEXT:    ret
   %head = insertelement <16 x half> poison, half %b, i32 0
   %splat = shufflevector <16 x half> %head, <16 x half> poison, <16 x i32> zeroinitializer
@@ -3222,22 +3210,10 @@ define <32 x i1> @fcmps_uno_vf_v32f16(<32 x half> %va, half %b) nounwind strictf
 ; CHECK-NEXT:    li a0, 32
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v12, fa0
-<<<<<<< HEAD
-; CHECK-NEXT:    vmfle.vf v12, v12, fa0
 ; CHECK-NEXT:    vmfle.vv v8, v8, v8
+; CHECK-NEXT:    vmfle.vf v9, v12, fa0
 ; CHECK-NEXT:    vmnot.m v8, v8
-; CHECK-NEXT:    vmorn.mm v0, v8, v12
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vmfle.vf v16, v12, fa0
-; CHECK-NEXT:    vmfle.vv v12, v8, v8
-; CHECK-NEXT:    vmnot.m v8, v12
-; CHECK-NEXT:    vmorn.mm v0, v8, v16
-=======
-; CHECK-NEXT:    vmfle.vv v16, v8, v8
-; CHECK-NEXT:    vmfle.vf v8, v12, fa0
-; CHECK-NEXT:    vmnot.m v9, v16
-; CHECK-NEXT:    vmorn.mm v0, v9, v8
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+; CHECK-NEXT:    vmorn.mm v0, v8, v9
 ; CHECK-NEXT:    ret
   %head = insertelement <32 x half> poison, half %b, i32 0
   %splat = shufflevector <32 x half> %head, <32 x half> poison, <32 x i32> zeroinitializer
@@ -5363,22 +5339,10 @@ define <8 x i1> @fcmps_uno_vf_v8f32(<8 x float> %va, float %b) nounwind strictfp
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v10, fa0
-<<<<<<< HEAD
-; CHECK-NEXT:    vmfle.vf v10, v10, fa0
 ; CHECK-NEXT:    vmfle.vv v8, v8, v8
+; CHECK-NEXT:    vmfle.vf v9, v10, fa0
 ; CHECK-NEXT:    vmnot.m v8, v8
-; CHECK-NEXT:    vmorn.mm v0, v8, v10
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vmfle.vf v12, v10, fa0
-; CHECK-NEXT:    vmfle.vv v10, v8, v8
-; CHECK-NEXT:    vmnot.m v8, v10
-; CHECK-NEXT:    vmorn.mm v0, v8, v12
-=======
-; CHECK-NEXT:    vmfle.vv v12, v8, v8
-; CHECK-NEXT:    vmfle.vf v8, v10, fa0
-; CHECK-NEXT:    vmnot.m v9, v12
-; CHECK-NEXT:    vmorn.mm v0, v9, v8
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+; CHECK-NEXT:    vmorn.mm v0, v8, v9
 ; CHECK-NEXT:    ret
   %head = insertelement <8 x float> poison, float %b, i32 0
   %splat = shufflevector <8 x float> %head, <8 x float> poison, <8 x i32> zeroinitializer
@@ -5907,22 +5871,10 @@ define <16 x i1> @fcmps_uno_vf_v16f32(<16 x float> %va, float %b) nounwind stric
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 16, e32, m4, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v12, fa0
-<<<<<<< HEAD
-; CHECK-NEXT:    vmfle.vf v12, v12, fa0
 ; CHECK-NEXT:    vmfle.vv v8, v8, v8
+; CHECK-NEXT:    vmfle.vf v9, v12, fa0
 ; CHECK-NEXT:    vmnot.m v8, v8
-; CHECK-NEXT:    vmorn.mm v0, v8, v12
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vmfle.vf v16, v12, fa0
-; CHECK-NEXT:    vmfle.vv v12, v8, v8
-; CHECK-NEXT:    vmnot.m v8, v12
-; CHECK-NEXT:    vmorn.mm v0, v8, v16
-=======
-; CHECK-NEXT:    vmfle.vv v16, v8, v8
-; CHECK-NEXT:    vmfle.vf v8, v12, fa0
-; CHECK-NEXT:    vmnot.m v9, v16
-; CHECK-NEXT:    vmorn.mm v0, v9, v8
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+; CHECK-NEXT:    vmorn.mm v0, v8, v9
 ; CHECK-NEXT:    ret
   %head = insertelement <16 x float> poison, float %b, i32 0
   %splat = shufflevector <16 x float> %head, <16 x float> poison, <16 x i32> zeroinitializer
@@ -7515,22 +7467,10 @@ define <4 x i1> @fcmps_uno_vf_v4f64(<4 x double> %va, double %b) nounwind strict
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v10, fa0
-<<<<<<< HEAD
-; CHECK-NEXT:    vmfle.vf v10, v10, fa0
 ; CHECK-NEXT:    vmfle.vv v8, v8, v8
+; CHECK-NEXT:    vmfle.vf v9, v10, fa0
 ; CHECK-NEXT:    vmnot.m v8, v8
-; CHECK-NEXT:    vmorn.mm v0, v8, v10
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vmfle.vf v12, v10, fa0
-; CHECK-NEXT:    vmfle.vv v10, v8, v8
-; CHECK-NEXT:    vmnot.m v8, v10
-; CHECK-NEXT:    vmorn.mm v0, v8, v12
-=======
-; CHECK-NEXT:    vmfle.vv v12, v8, v8
-; CHECK-NEXT:    vmfle.vf v8, v10, fa0
-; CHECK-NEXT:    vmnot.m v9, v12
-; CHECK-NEXT:    vmorn.mm v0, v9, v8
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+; CHECK-NEXT:    vmorn.mm v0, v8, v9
 ; CHECK-NEXT:    ret
   %head = insertelement <4 x double> poison, double %b, i32 0
   %splat = shufflevector <4 x double> %head, <4 x double> poison, <4 x i32> zeroinitializer
@@ -8059,22 +7999,10 @@ define <8 x i1> @fcmps_uno_vf_v8f64(<8 x double> %va, double %b) nounwind strict
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v12, fa0
-<<<<<<< HEAD
-; CHECK-NEXT:    vmfle.vf v12, v12, fa0
 ; CHECK-NEXT:    vmfle.vv v8, v8, v8
+; CHECK-NEXT:    vmfle.vf v9, v12, fa0
 ; CHECK-NEXT:    vmnot.m v8, v8
-; CHECK-NEXT:    vmorn.mm v0, v8, v12
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vmfle.vf v16, v12, fa0
-; CHECK-NEXT:    vmfle.vv v12, v8, v8
-; CHECK-NEXT:    vmnot.m v8, v12
-; CHECK-NEXT:    vmorn.mm v0, v8, v16
-=======
-; CHECK-NEXT:    vmfle.vv v16, v8, v8
-; CHECK-NEXT:    vmfle.vf v8, v12, fa0
-; CHECK-NEXT:    vmnot.m v9, v16
-; CHECK-NEXT:    vmorn.mm v0, v9, v8
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+; CHECK-NEXT:    vmorn.mm v0, v8, v9
 ; CHECK-NEXT:    ret
   %head = insertelement <8 x double> poison, double %b, i32 0
   %splat = shufflevector <8 x double> %head, <8 x double> poison, <8 x i32> zeroinitializer

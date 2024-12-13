@@ -261,18 +261,8 @@ define <vscale x 64 x i1> @test_vp_reverse_nxv64i1_masked(<vscale x 64 x i1> %sr
 ; CHECK-NEXT:    sub a1, a1, a0
 ; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vslidedown.vx v16, v16, a1, v0.t
-; CHECK-NEXT:    vmsne.vi v0, v16, 0, v0.t
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vslidedown.vx v16, v16, a1, v0.t
-; CHECK-NEXT:    vmsne.vi v8, v16, 0, v0.t
-; CHECK-NEXT:    vmv1r.v v0, v8
-=======
 ; CHECK-NEXT:    vslidedown.vx v16, v24, a1, v0.t
-; CHECK-NEXT:    vmsne.vi v8, v16, 0, v0.t
-; CHECK-NEXT:    vmv1r.v v0, v8
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+; CHECK-NEXT:    vmsne.vi v0, v16, 0, v0.t
 ; CHECK-NEXT:    ret
   %dst = call <vscale x 64 x i1> @llvm.experimental.vp.reverse.nxv64i1(<vscale x 64 x i1> %src, <vscale x 64 x i1> %mask, i32 %evl)
   ret <vscale x 64 x i1> %dst

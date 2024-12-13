@@ -942,26 +942,8 @@ define i64 @vreduce_add_v1i64(ptr %x) {
 define i64 @vwreduce_add_v1i64(ptr %x) {
 ; RV32-LABEL: vwreduce_add_v1i64:
 ; RV32:       # %bb.0:
-<<<<<<< HEAD
 ; RV32-NEXT:    lw a0, 0(a0)
 ; RV32-NEXT:    srai a1, a0, 31
-||||||| 864902e9b4d8
-; RV32-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-; RV32-NEXT:    vle32.v v8, (a0)
-; RV32-NEXT:    vsext.vf2 v9, v8
-; RV32-NEXT:    li a0, 32
-; RV32-NEXT:    vsrl.vx v8, v9, a0
-; RV32-NEXT:    vmv.x.s a1, v8
-; RV32-NEXT:    vmv.x.s a0, v9
-=======
-; RV32-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-; RV32-NEXT:    vle32.v v8, (a0)
-; RV32-NEXT:    li a0, 32
-; RV32-NEXT:    vsext.vf2 v9, v8
-; RV32-NEXT:    vsrl.vx v8, v9, a0
-; RV32-NEXT:    vmv.x.s a1, v8
-; RV32-NEXT:    vmv.x.s a0, v9
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: vwreduce_add_v1i64:
@@ -977,26 +959,8 @@ define i64 @vwreduce_add_v1i64(ptr %x) {
 define i64 @vwreduce_uadd_v1i64(ptr %x) {
 ; RV32-LABEL: vwreduce_uadd_v1i64:
 ; RV32:       # %bb.0:
-<<<<<<< HEAD
 ; RV32-NEXT:    lw a0, 0(a0)
 ; RV32-NEXT:    li a1, 0
-||||||| 864902e9b4d8
-; RV32-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-; RV32-NEXT:    vle32.v v8, (a0)
-; RV32-NEXT:    vzext.vf2 v9, v8
-; RV32-NEXT:    li a0, 32
-; RV32-NEXT:    vsrl.vx v8, v9, a0
-; RV32-NEXT:    vmv.x.s a1, v8
-; RV32-NEXT:    vmv.x.s a0, v9
-=======
-; RV32-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-; RV32-NEXT:    vle32.v v8, (a0)
-; RV32-NEXT:    li a0, 32
-; RV32-NEXT:    vzext.vf2 v9, v8
-; RV32-NEXT:    vsrl.vx v8, v9, a0
-; RV32-NEXT:    vmv.x.s a1, v8
-; RV32-NEXT:    vmv.x.s a0, v9
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: vwreduce_uadd_v1i64:

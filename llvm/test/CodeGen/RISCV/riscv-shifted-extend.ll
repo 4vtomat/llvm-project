@@ -5,17 +5,7 @@
 define void @test(ptr nocapture noundef writeonly %array1, i32 noundef signext %a, i32 noundef signext %b) {
 ; RV64-LABEL: test:
 ; RV64:       # %bb.0: # %entry
-<<<<<<< HEAD
 ; RV64-NEXT:    addi a3, a1, 5
-; RV64-NEXT:    slli a4, a3, 2
-; RV64-NEXT:    add a4, a0, a4
-||||||| 864902e9b4d8
-; RV64-NEXT:    addiw a3, a1, 5
-; RV64-NEXT:    slli a4, a3, 2
-; RV64-NEXT:    add a4, a0, a4
-=======
-; RV64-NEXT:    addiw a3, a1, 5
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; RV64-NEXT:    slli a1, a1, 2
 ; RV64-NEXT:    slli a4, a3, 2
 ; RV64-NEXT:    add a1, a1, a0

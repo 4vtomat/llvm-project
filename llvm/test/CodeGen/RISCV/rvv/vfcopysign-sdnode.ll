@@ -229,15 +229,7 @@ define <vscale x 1 x half> @vfcopysign_exttrunc_vf_nxv1f16_nxv1f32(<vscale x 1 x
 ; ZVFHMIN-NEXT:    vfmv.v.f v9, fa0
 ; ZVFHMIN-NEXT:    lui a0, 8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-<<<<<<< HEAD
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v9
-; ZVFHMIN-NEXT:    lui a0, 8
-||||||| 864902e9b4d8
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v9
-; ZVFHMIN-NEXT:    lui a0, 8
-=======
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v9
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVFHMIN-NEXT:    addi a1, a0, -1
 ; ZVFHMIN-NEXT:    vand.vx v8, v8, a1
 ; ZVFHMIN-NEXT:    vand.vx v9, v9, a0
@@ -261,25 +253,11 @@ define <vscale x 1 x half> @vfcopynsign_exttrunc_vv_nxv1f16_nxv1f32(<vscale x 1 
 ; ZVFHMIN-LABEL: vfcopynsign_exttrunc_vv_nxv1f16_nxv1f32:
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    lui a0, 8
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    addi a1, a0, -1
-; ZVFHMIN-NEXT:    vsetvli a2, zero, e16, mf4, ta, ma
-; ZVFHMIN-NEXT:    vand.vx v8, v8, a1
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v9
-; ZVFHMIN-NEXT:    vxor.vx v9, v9, a0
-||||||| 864902e9b4d8
-; ZVFHMIN-NEXT:    addi a1, a0, -1
-; ZVFHMIN-NEXT:    vsetvli a2, zero, e16, mf4, ta, ma
-; ZVFHMIN-NEXT:    vand.vx v8, v8, a1
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v9
-; ZVFHMIN-NEXT:    vxor.vx v9, v10, a0
-=======
 ; ZVFHMIN-NEXT:    vsetvli a1, zero, e16, mf4, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMIN-NEXT:    addi a1, a0, -1
-; ZVFHMIN-NEXT:    vxor.vx v9, v10, a0
+; ZVFHMIN-NEXT:    vxor.vx v9, v9, a0
 ; ZVFHMIN-NEXT:    vand.vx v8, v8, a1
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVFHMIN-NEXT:    vand.vx v9, v9, a0
 ; ZVFHMIN-NEXT:    vor.vv v8, v8, v9
 ; ZVFHMIN-NEXT:    ret
@@ -306,19 +284,9 @@ define <vscale x 1 x half> @vfcopynsign_exttrunc_vf_nxv1f16_nxv1f32(<vscale x 1 
 ; ZVFHMIN-NEXT:    lui a0, 8
 ; ZVFHMIN-NEXT:    addi a1, a0, -1
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vand.vx v8, v8, a1
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v9
+; ZVFHMIN-NEXT:    vand.vx v8, v8, a1
 ; ZVFHMIN-NEXT:    vxor.vx v9, v9, a0
-||||||| 864902e9b4d8
-; ZVFHMIN-NEXT:    vand.vx v8, v8, a1
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v9
-; ZVFHMIN-NEXT:    vxor.vx v9, v10, a0
-=======
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v9
-; ZVFHMIN-NEXT:    vand.vx v8, v8, a1
-; ZVFHMIN-NEXT:    vxor.vx v9, v10, a0
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVFHMIN-NEXT:    vand.vx v9, v9, a0
 ; ZVFHMIN-NEXT:    vor.vv v8, v8, v9
 ; ZVFHMIN-NEXT:    ret
@@ -343,24 +311,10 @@ define <vscale x 1 x half> @vfcopysign_exttrunc_vv_nxv1f16_nxv1f64(<vscale x 1 x
 ; ZVFHMIN-LABEL: vfcopysign_exttrunc_vv_nxv1f16_nxv1f64:
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e32, mf2, ta, ma
-<<<<<<< HEAD
 ; ZVFHMIN-NEXT:    vfncvt.rod.f.f.w v9, v9
-||||||| 864902e9b4d8
-; ZVFHMIN-NEXT:    vfncvt.rod.f.f.w v10, v9
-=======
-; ZVFHMIN-NEXT:    vfncvt.rod.f.f.w v10, v9
 ; ZVFHMIN-NEXT:    lui a0, 8
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-<<<<<<< HEAD
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v9
-; ZVFHMIN-NEXT:    lui a0, 8
-||||||| 864902e9b4d8
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
-; ZVFHMIN-NEXT:    lui a0, 8
-=======
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVFHMIN-NEXT:    addi a1, a0, -1
 ; ZVFHMIN-NEXT:    vand.vx v8, v8, a1
 ; ZVFHMIN-NEXT:    vand.vx v9, v9, a0
@@ -389,26 +343,10 @@ define <vscale x 1 x half> @vfcopysign_exttrunc_vf_nxv1f16_nxv1f64(<vscale x 1 x
 ; ZVFHMIN-NEXT:    vfmv.v.f v9, fa0
 ; ZVFHMIN-NEXT:    lui a0, 8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-<<<<<<< HEAD
 ; ZVFHMIN-NEXT:    vfncvt.rod.f.f.w v9, v9
-||||||| 864902e9b4d8
-; ZVFHMIN-NEXT:    vfncvt.rod.f.f.w v10, v9
-=======
-; ZVFHMIN-NEXT:    vfncvt.rod.f.f.w v10, v9
 ; ZVFHMIN-NEXT:    addi a1, a0, -1
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-<<<<<<< HEAD
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v9
-; ZVFHMIN-NEXT:    lui a0, 8
-; ZVFHMIN-NEXT:    addi a1, a0, -1
-||||||| 864902e9b4d8
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
-; ZVFHMIN-NEXT:    lui a0, 8
-; ZVFHMIN-NEXT:    addi a1, a0, -1
-=======
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVFHMIN-NEXT:    vand.vx v8, v8, a1
 ; ZVFHMIN-NEXT:    vand.vx v9, v9, a0
 ; ZVFHMIN-NEXT:    vor.vv v8, v8, v9
@@ -433,32 +371,12 @@ define <vscale x 1 x half> @vfcopynsign_exttrunc_vv_nxv1f16_nxv1f64(<vscale x 1 
 ; ZVFHMIN-LABEL: vfcopynsign_exttrunc_vv_nxv1f16_nxv1f64:
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    lui a0, 8
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    addi a1, a0, -1
-; ZVFHMIN-NEXT:    vsetvli a2, zero, e16, mf4, ta, ma
-; ZVFHMIN-NEXT:    vand.vx v8, v8, a1
-; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.rod.f.f.w v9, v9
-||||||| 864902e9b4d8
-; ZVFHMIN-NEXT:    addi a1, a0, -1
-; ZVFHMIN-NEXT:    vsetvli a2, zero, e16, mf4, ta, ma
-; ZVFHMIN-NEXT:    vand.vx v8, v8, a1
-; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.rod.f.f.w v10, v9
-=======
 ; ZVFHMIN-NEXT:    vsetvli a1, zero, e32, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.rod.f.f.w v10, v9
+; ZVFHMIN-NEXT:    vfncvt.rod.f.f.w v9, v9
 ; ZVFHMIN-NEXT:    addi a1, a0, -1
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-<<<<<<< HEAD
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v9
-||||||| 864902e9b4d8
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
-=======
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vand.vx v8, v8, a1
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; ZVFHMIN-NEXT:    vxor.vx v9, v9, a0
 ; ZVFHMIN-NEXT:    vand.vx v9, v9, a0
 ; ZVFHMIN-NEXT:    vor.vv v8, v8, v9
@@ -490,14 +408,8 @@ define <vscale x 1 x half> @vfcopynsign_exttrunc_vf_nxv1f16_nxv1f64(<vscale x 1 
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
 ; ZVFHMIN-NEXT:    vfncvt.rod.f.f.w v9, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v9
-||||||| 864902e9b4d8
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
-=======
 ; ZVFHMIN-NEXT:    vand.vx v8, v8, a1
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMIN-NEXT:    vxor.vx v9, v9, a0
 ; ZVFHMIN-NEXT:    vand.vx v9, v9, a0
 ; ZVFHMIN-NEXT:    vor.vv v8, v8, v9

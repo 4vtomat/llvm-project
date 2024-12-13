@@ -239,24 +239,6 @@ define <32 x i64> @masked_load_v32i64(ptr %a, <32 x i1> %mask) {
 ; CHECK-LABEL: masked_load_v32i64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 16, e64, m8, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vle64.v v8, (a1)
-; CHECK-NEXT:    vle64.v v16, (a3)
-; CHECK-NEXT:    vmseq.vi v8, v8, 0
-; CHECK-NEXT:    vmseq.vi v0, v16, 0
-; CHECK-NEXT:    addi a1, a0, 128
-; CHECK-NEXT:    vle64.v v16, (a1), v0.t
-; CHECK-NEXT:    vmv1r.v v0, v8
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vle64.v v16, (a1)
-; CHECK-NEXT:    vle64.v v24, (a3)
-; CHECK-NEXT:    vmseq.vi v8, v16, 0
-; CHECK-NEXT:    vmseq.vi v0, v24, 0
-; CHECK-NEXT:    addi a1, a0, 128
-; CHECK-NEXT:    vle64.v v16, (a1), v0.t
-; CHECK-NEXT:    vmv1r.v v0, v8
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    vle64.v v8, (a0), v0.t
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v0, v0, 2
@@ -264,6 +246,7 @@ define <32 x i64> @masked_load_v32i64(ptr %a, <32 x i1> %mask) {
 ; CHECK-NEXT:    vsetivli zero, 16, e64, m8, ta, ma
 ; CHECK-NEXT:    vle64.v v16, (a0), v0.t
 ; CHECK-NEXT:    ret
+
   %load = call <32 x i64> @llvm.masked.load.v32i64(ptr %a, i32 8, <32 x i1> %mask, <32 x i64> undef)
   ret <32 x i64> %load
 }
@@ -293,39 +276,16 @@ define <64 x i16> @masked_load_v64i16(ptr %a, <64 x i1> %mask) {
 define <64 x i32> @masked_load_v64i32(ptr %a, <64 x i1> %mask) {
 ; CHECK-LABEL: masked_load_v64i32:
 ; CHECK:       # %bb.0:
-<<<<<<< HEAD
-; CHECK-NEXT:    addi a3, a1, 128
-; CHECK-NEXT:    li a4, 32
-; CHECK-NEXT:    vsetvli zero, a4, e32, m8, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a1)
-; CHECK-NEXT:    vle32.v v16, (a3)
-; CHECK-NEXT:    vmseq.vi v8, v8, 0
-; CHECK-NEXT:    vmseq.vi v0, v16, 0
-; CHECK-NEXT:    addi a1, a0, 128
-; CHECK-NEXT:    vle32.v v16, (a1), v0.t
-; CHECK-NEXT:    vmv1r.v v0, v8
-||||||| 864902e9b4d8
-; CHECK-NEXT:    addi a3, a1, 128
-; CHECK-NEXT:    li a4, 32
-; CHECK-NEXT:    vsetvli zero, a4, e32, m8, ta, ma
-; CHECK-NEXT:    vle32.v v16, (a1)
-; CHECK-NEXT:    vle32.v v24, (a3)
-; CHECK-NEXT:    vmseq.vi v8, v16, 0
-; CHECK-NEXT:    vmseq.vi v0, v24, 0
-; CHECK-NEXT:    addi a1, a0, 128
-; CHECK-NEXT:    vle32.v v16, (a1), v0.t
-; CHECK-NEXT:    vmv1r.v v0, v8
-=======
 ; CHECK-NEXT:    li a1, 32
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v16, v0, 4
 ; CHECK-NEXT:    vsetvli zero, a1, e32, m8, ta, ma
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    vle32.v v8, (a0), v0.t
 ; CHECK-NEXT:    addi a0, a0, 128
 ; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    vle32.v v16, (a0), v0.t
 ; CHECK-NEXT:    ret
+
   %load = call <64 x i32> @llvm.masked.load.v64i32(ptr %a, i32 8, <64 x i1> %mask, <64 x i32> undef)
   ret <64 x i32> %load
 }
@@ -360,38 +320,15 @@ define <128 x i16> @masked_load_v128i16(ptr %a, <128 x i1> %mask) {
 define <256 x i8> @masked_load_v256i8(ptr %a, <256 x i1> %mask) {
 ; CHECK-LABEL: masked_load_v256i8:
 ; CHECK:       # %bb.0:
-<<<<<<< HEAD
-; CHECK-NEXT:    addi a3, a1, 128
-; CHECK-NEXT:    li a4, 128
-; CHECK-NEXT:    vsetvli zero, a4, e8, m8, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a1)
-; CHECK-NEXT:    vle8.v v16, (a3)
-; CHECK-NEXT:    vmseq.vi v8, v8, 0
-; CHECK-NEXT:    vmseq.vi v0, v16, 0
-; CHECK-NEXT:    addi a1, a0, 128
-; CHECK-NEXT:    vle8.v v16, (a1), v0.t
-; CHECK-NEXT:    vmv1r.v v0, v8
-||||||| 864902e9b4d8
-; CHECK-NEXT:    addi a3, a1, 128
-; CHECK-NEXT:    li a4, 128
-; CHECK-NEXT:    vsetvli zero, a4, e8, m8, ta, ma
-; CHECK-NEXT:    vle8.v v16, (a1)
-; CHECK-NEXT:    vle8.v v24, (a3)
-; CHECK-NEXT:    vmseq.vi v8, v16, 0
-; CHECK-NEXT:    vmseq.vi v0, v24, 0
-; CHECK-NEXT:    addi a1, a0, 128
-; CHECK-NEXT:    vle8.v v16, (a1), v0.t
-; CHECK-NEXT:    vmv1r.v v0, v8
-=======
 ; CHECK-NEXT:    vmv1r.v v16, v8
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m8, ta, ma
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    vle8.v v8, (a0), v0.t
 ; CHECK-NEXT:    addi a0, a0, 128
 ; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    vle8.v v16, (a0), v0.t
 ; CHECK-NEXT:    ret
+
   %load = call <256 x i8> @llvm.masked.load.v256i8(ptr %a, i32 8, <256 x i1> %mask, <256 x i8> undef)
   ret <256 x i8> %load
 }

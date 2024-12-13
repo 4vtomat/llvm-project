@@ -498,13 +498,7 @@ define <vscale x 16 x double> @vselect_combine_regression(<vscale x 16 x i64> %v
 ; CHECK-NEXT:    vmseq.vi v24, v16, 0
 ; CHECK-NEXT:    vmseq.vi v0, v8, 0
 ; CHECK-NEXT:    vmv.v.i v16, 0
-<<<<<<< HEAD
-; CHECK-NEXT:    vmseq.vi v24, v24, 0
-||||||| 864902e9b4d8
-; CHECK-NEXT:    vmseq.vi v7, v24, 0
-=======
 ; CHECK-NEXT:    slli a1, a1, 3
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    add a1, a0, a1
 ; CHECK-NEXT:    vle64.v v8, (a0), v0.t
