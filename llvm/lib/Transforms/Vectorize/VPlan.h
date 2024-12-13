@@ -3252,6 +3252,8 @@ public:
     return new VPCSAExtractScalarRecipe(Ops);
   }
 
+  VP_CLASSOF_IMPL(VPDef::VPCSAExtractScalarSC)
+
   void execute(VPTransformState &State) override;
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)

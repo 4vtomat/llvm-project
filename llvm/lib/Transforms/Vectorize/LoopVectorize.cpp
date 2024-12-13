@@ -5402,11 +5402,24 @@ void LoopVectorizationPlanner::emitInvalidCostRemarks(
         TypeSwitch<const VPRecipeBase *, unsigned>(R)
             .Case<VPHeaderPHIRecipe>(
                 [](const auto *R) { return Instruction::PHI; })
+#if SIFIVE_CUSTOMIZATION
+            .Case<VPWidenSelectRecipe, VPCSADataUpdateRecipe,
+                  VPCSAExtractScalarRecipe>(
+#else
             .Case<VPWidenSelectRecipe>(
+#endif // SIFIVE_CUSTOMIZATION
                 [](const auto *R) { return Instruction::Select; })
+#if SIFIVE_CUSTOMIZATION
+            .Case<VPWidenStoreRecipe, VPWidenStoreEVLRecipe>(
+#else
             .Case<VPWidenStoreRecipe>(
+#endif // SIFIVE_CUSTOMIZATION
                 [](const auto *R) { return Instruction::Store; })
+#if SIFIVE_CUSTOMIZATION
+            .Case<VPWidenLoadRecipe, VPWidenLoadEVLRecipe>(
+#else
             .Case<VPWidenLoadRecipe>(
+#endif // SIFIVE_CUSTOMIZATION
                 [](const auto *R) { return Instruction::Load; })
             .Case<VPWidenCallRecipe, VPWidenIntrinsicRecipe>(
                 [](const auto *R) { return Instruction::Call; })
