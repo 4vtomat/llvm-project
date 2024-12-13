@@ -1038,13 +1038,9 @@ R"(All available -march extensions for RISC-V
     zvl8192b             1.0
     zhinx                1.0
     zhinxmin             1.0
-<<<<<<< HEAD
     sdext                1.0
     sdtrig               1.0
-||||||| 864902e9b4d8
-=======
     sha                  1.0
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
     shcounterenw         1.0
     shgatpa              1.0
     shtvala              1.0
@@ -1056,14 +1052,9 @@ R"(All available -march extensions for RISC-V
     smcsrind             1.0
     smdbltrp             1.0
     smepmp               1.0
-<<<<<<< HEAD
-    smrnmi               1.0
-||||||| 864902e9b4d8
-=======
     smmpm                1.0
     smnpm                1.0
     smrnmi               1.0
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
     smstateen            1.0
     ss                   1.13
     ss                   1.12
@@ -1159,39 +1150,23 @@ Experimental extensions
     zvbc32e              0.7
     zvkgs                0.7
     smctr                1.0
-<<<<<<< HEAD
-    smmpm                1.0
-    smnpm                1.0
     smwg                 0.3
     smwgd                0.3
-||||||| 864902e9b4d8
-    smmpm                1.0
-    smnpm                1.0
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
     ssctr                1.0
-<<<<<<< HEAD
-    ssnpm                1.0
-    sspm                 1.0
     sswg                 0.3
-    supm                 1.0
-    svukte               0.3
-||||||| 864902e9b4d8
-    ssnpm                1.0
-    sspm                 1.0
-    supm                 1.0
-=======
     svukte               0.3
     xqcicsr              0.2
     xqcisls              0.2
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 
 Supported Profiles
     rva20s64
     rva20u64
     rva22s64
     rva22u64
-<<<<<<< HEAD
+    rva23s64
+    rva23u64
+    rvb23s64
+    rvb23u64
     rvi20u32
     rvi20u64
     sfa23
@@ -1200,21 +1175,6 @@ Supported Profiles
     sfp23
     sfs23
     sfx23
-
-Experimental Profiles
-||||||| 864902e9b4d8
-    rvi20u32
-    rvi20u64
-
-Experimental Profiles
-=======
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
-    rva23s64
-    rva23u64
-    rvb23s64
-    rvb23u64
-    rvi20u32
-    rvi20u64
 
 Experimental Profiles
     rvm23u32

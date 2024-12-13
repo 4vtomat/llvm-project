@@ -18,7 +18,7 @@ define <vscale x 1 x i32> @intrinsic_vle_v_nxv1i32_nxv1i32(<vscale x 1 x i32>* a
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP4]] ], [ [[IV_NEXT:%.*]], [[TMP11:%.*]] ]
-; CHECK-NEXT:    [[TMP7:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP7:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[TMP8:%.*]], label [[TMP11]]
 ; CHECK:       8:
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr <vscale x 1 x i32>, ptr [[TMP0:%.*]], i64 0, i64 [[IV]]
@@ -103,7 +103,7 @@ define void @intrinsic_vse_v_nxv1i32_nxv1i32(<vscale x 1 x i32> %0, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP5]] ], [ [[IV_NEXT:%.*]], [[TMP12:%.*]] ]
-; CHECK-NEXT:    [[TMP8:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP8:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP9:%.*]], label [[TMP12]]
 ; CHECK:       9:
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr <vscale x 1 x i32>, ptr [[TMP1:%.*]], i64 0, i64 [[IV]]
@@ -187,7 +187,7 @@ define <vscale x 1 x i32> @test_vlseg2_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 8
@@ -211,7 +211,7 @@ define <vscale x 1 x i32> @test_vlseg2_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 8
@@ -313,7 +313,7 @@ define <vscale x 1 x i32> @test_vlseg3_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 12
@@ -337,7 +337,7 @@ define <vscale x 1 x i32> @test_vlseg3_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 12
@@ -361,7 +361,7 @@ define <vscale x 1 x i32> @test_vlseg3_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 12
@@ -487,7 +487,7 @@ define <vscale x 1 x i32> @test_vlseg4_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 16
@@ -511,7 +511,7 @@ define <vscale x 1 x i32> @test_vlseg4_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 16
@@ -535,7 +535,7 @@ define <vscale x 1 x i32> @test_vlseg4_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 16
@@ -559,7 +559,7 @@ define <vscale x 1 x i32> @test_vlseg4_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 16
@@ -709,7 +709,7 @@ define <vscale x 1 x i32> @test_vlseg5_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 20
@@ -733,7 +733,7 @@ define <vscale x 1 x i32> @test_vlseg5_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 20
@@ -757,7 +757,7 @@ define <vscale x 1 x i32> @test_vlseg5_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 20
@@ -781,7 +781,7 @@ define <vscale x 1 x i32> @test_vlseg5_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 20
@@ -805,7 +805,7 @@ define <vscale x 1 x i32> @test_vlseg5_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP50]] ], [ [[IV8_NEXT:%.*]], [[TMP58:%.*]] ]
-; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP53]], label [[TMP54:%.*]], label [[TMP58]]
 ; CHECK:       54:
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], 20
@@ -979,7 +979,7 @@ define <vscale x 1 x i32> @test_vlseg6_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 24
@@ -1003,7 +1003,7 @@ define <vscale x 1 x i32> @test_vlseg6_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 24
@@ -1027,7 +1027,7 @@ define <vscale x 1 x i32> @test_vlseg6_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 24
@@ -1051,7 +1051,7 @@ define <vscale x 1 x i32> @test_vlseg6_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 24
@@ -1075,7 +1075,7 @@ define <vscale x 1 x i32> @test_vlseg6_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP50]] ], [ [[IV8_NEXT:%.*]], [[TMP58:%.*]] ]
-; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP53]], label [[TMP54:%.*]], label [[TMP58]]
 ; CHECK:       54:
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], 24
@@ -1099,7 +1099,7 @@ define <vscale x 1 x i32> @test_vlseg6_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP62]] ], [ [[IV10_NEXT:%.*]], [[TMP70:%.*]] ]
-; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP65]], label [[TMP66:%.*]], label [[TMP70]]
 ; CHECK:       66:
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], 24
@@ -1297,7 +1297,7 @@ define <vscale x 1 x i32> @test_vlseg7_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 28
@@ -1321,7 +1321,7 @@ define <vscale x 1 x i32> @test_vlseg7_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 28
@@ -1345,7 +1345,7 @@ define <vscale x 1 x i32> @test_vlseg7_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 28
@@ -1369,7 +1369,7 @@ define <vscale x 1 x i32> @test_vlseg7_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 28
@@ -1393,7 +1393,7 @@ define <vscale x 1 x i32> @test_vlseg7_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP50]] ], [ [[IV8_NEXT:%.*]], [[TMP58:%.*]] ]
-; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP53]], label [[TMP54:%.*]], label [[TMP58]]
 ; CHECK:       54:
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], 28
@@ -1417,7 +1417,7 @@ define <vscale x 1 x i32> @test_vlseg7_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP62]] ], [ [[IV10_NEXT:%.*]], [[TMP70:%.*]] ]
-; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP65]], label [[TMP66:%.*]], label [[TMP70]]
 ; CHECK:       66:
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], 28
@@ -1441,7 +1441,7 @@ define <vscale x 1 x i32> @test_vlseg7_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT11:%.*]]
 ; CHECK:       .split11:
 ; CHECK-NEXT:    [[IV12:%.*]] = phi i64 [ 0, [[TMP74]] ], [ [[IV12_NEXT:%.*]], [[TMP82:%.*]] ]
-; CHECK-NEXT:    [[TMP77:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV12]]
+; CHECK-NEXT:    [[TMP77:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV12]]
 ; CHECK-NEXT:    br i1 [[TMP77]], label [[TMP78:%.*]], label [[TMP82]]
 ; CHECK:       78:
 ; CHECK-NEXT:    [[TMP79:%.*]] = mul i64 [[IV12]], 28
@@ -1663,7 +1663,7 @@ define <vscale x 1 x i32> @test_vlseg8_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 32
@@ -1687,7 +1687,7 @@ define <vscale x 1 x i32> @test_vlseg8_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 32
@@ -1711,7 +1711,7 @@ define <vscale x 1 x i32> @test_vlseg8_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 32
@@ -1735,7 +1735,7 @@ define <vscale x 1 x i32> @test_vlseg8_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 32
@@ -1759,7 +1759,7 @@ define <vscale x 1 x i32> @test_vlseg8_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP50]] ], [ [[IV8_NEXT:%.*]], [[TMP58:%.*]] ]
-; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP53]], label [[TMP54:%.*]], label [[TMP58]]
 ; CHECK:       54:
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], 32
@@ -1783,7 +1783,7 @@ define <vscale x 1 x i32> @test_vlseg8_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP62]] ], [ [[IV10_NEXT:%.*]], [[TMP70:%.*]] ]
-; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP65]], label [[TMP66:%.*]], label [[TMP70]]
 ; CHECK:       66:
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], 32
@@ -1807,7 +1807,7 @@ define <vscale x 1 x i32> @test_vlseg8_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT11:%.*]]
 ; CHECK:       .split11:
 ; CHECK-NEXT:    [[IV12:%.*]] = phi i64 [ 0, [[TMP74]] ], [ [[IV12_NEXT:%.*]], [[TMP82:%.*]] ]
-; CHECK-NEXT:    [[TMP77:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV12]]
+; CHECK-NEXT:    [[TMP77:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV12]]
 ; CHECK-NEXT:    br i1 [[TMP77]], label [[TMP78:%.*]], label [[TMP82]]
 ; CHECK:       78:
 ; CHECK-NEXT:    [[TMP79:%.*]] = mul i64 [[IV12]], 32
@@ -1831,7 +1831,7 @@ define <vscale x 1 x i32> @test_vlseg8_nxv1i32(ptr %base, i64 %vl) sanitize_addr
 ; CHECK-NEXT:    br label [[DOTSPLIT13:%.*]]
 ; CHECK:       .split13:
 ; CHECK-NEXT:    [[IV14:%.*]] = phi i64 [ 0, [[TMP86]] ], [ [[IV14_NEXT:%.*]], [[TMP94:%.*]] ]
-; CHECK-NEXT:    [[TMP89:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV14]]
+; CHECK-NEXT:    [[TMP89:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV14]]
 ; CHECK-NEXT:    br i1 [[TMP89]], label [[TMP90:%.*]], label [[TMP94]]
 ; CHECK:       90:
 ; CHECK-NEXT:    [[TMP91:%.*]] = mul i64 [[IV14]], 32
@@ -2077,7 +2077,7 @@ define void @test_vsseg2_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 8
@@ -2101,7 +2101,7 @@ define void @test_vsseg2_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 8
@@ -2199,7 +2199,7 @@ define void @test_vsseg3_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 12
@@ -2223,7 +2223,7 @@ define void @test_vsseg3_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 12
@@ -2247,7 +2247,7 @@ define void @test_vsseg3_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 12
@@ -2369,7 +2369,7 @@ define void @test_vsseg4_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 16
@@ -2393,7 +2393,7 @@ define void @test_vsseg4_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 16
@@ -2417,7 +2417,7 @@ define void @test_vsseg4_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 16
@@ -2441,7 +2441,7 @@ define void @test_vsseg4_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 16
@@ -2587,7 +2587,7 @@ define void @test_vsseg5_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 20
@@ -2611,7 +2611,7 @@ define void @test_vsseg5_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 20
@@ -2635,7 +2635,7 @@ define void @test_vsseg5_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 20
@@ -2659,7 +2659,7 @@ define void @test_vsseg5_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 20
@@ -2683,7 +2683,7 @@ define void @test_vsseg5_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP50]] ], [ [[IV8_NEXT:%.*]], [[TMP58:%.*]] ]
-; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP53]], label [[TMP54:%.*]], label [[TMP58]]
 ; CHECK:       54:
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], 20
@@ -2853,7 +2853,7 @@ define void @test_vsseg6_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 24
@@ -2877,7 +2877,7 @@ define void @test_vsseg6_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 24
@@ -2901,7 +2901,7 @@ define void @test_vsseg6_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 24
@@ -2925,7 +2925,7 @@ define void @test_vsseg6_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 24
@@ -2949,7 +2949,7 @@ define void @test_vsseg6_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP50]] ], [ [[IV8_NEXT:%.*]], [[TMP58:%.*]] ]
-; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP53]], label [[TMP54:%.*]], label [[TMP58]]
 ; CHECK:       54:
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], 24
@@ -2973,7 +2973,7 @@ define void @test_vsseg6_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP62]] ], [ [[IV10_NEXT:%.*]], [[TMP70:%.*]] ]
-; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP65]], label [[TMP66:%.*]], label [[TMP70]]
 ; CHECK:       66:
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], 24
@@ -3167,7 +3167,7 @@ define void @test_vsseg7_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 28
@@ -3191,7 +3191,7 @@ define void @test_vsseg7_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 28
@@ -3215,7 +3215,7 @@ define void @test_vsseg7_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 28
@@ -3239,7 +3239,7 @@ define void @test_vsseg7_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 28
@@ -3263,7 +3263,7 @@ define void @test_vsseg7_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP50]] ], [ [[IV8_NEXT:%.*]], [[TMP58:%.*]] ]
-; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP53]], label [[TMP54:%.*]], label [[TMP58]]
 ; CHECK:       54:
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], 28
@@ -3287,7 +3287,7 @@ define void @test_vsseg7_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP62]] ], [ [[IV10_NEXT:%.*]], [[TMP70:%.*]] ]
-; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP65]], label [[TMP66:%.*]], label [[TMP70]]
 ; CHECK:       66:
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], 28
@@ -3311,7 +3311,7 @@ define void @test_vsseg7_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT11:%.*]]
 ; CHECK:       .split11:
 ; CHECK-NEXT:    [[IV12:%.*]] = phi i64 [ 0, [[TMP74]] ], [ [[IV12_NEXT:%.*]], [[TMP82:%.*]] ]
-; CHECK-NEXT:    [[TMP77:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV12]]
+; CHECK-NEXT:    [[TMP77:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV12]]
 ; CHECK-NEXT:    br i1 [[TMP77]], label [[TMP78:%.*]], label [[TMP82]]
 ; CHECK:       78:
 ; CHECK-NEXT:    [[TMP79:%.*]] = mul i64 [[IV12]], 28
@@ -3529,7 +3529,7 @@ define void @test_vsseg8_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 32
@@ -3553,7 +3553,7 @@ define void @test_vsseg8_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 32
@@ -3577,7 +3577,7 @@ define void @test_vsseg8_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 32
@@ -3601,7 +3601,7 @@ define void @test_vsseg8_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 32
@@ -3625,7 +3625,7 @@ define void @test_vsseg8_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP50]] ], [ [[IV8_NEXT:%.*]], [[TMP58:%.*]] ]
-; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP53]], label [[TMP54:%.*]], label [[TMP58]]
 ; CHECK:       54:
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], 32
@@ -3649,7 +3649,7 @@ define void @test_vsseg8_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP62]] ], [ [[IV10_NEXT:%.*]], [[TMP70:%.*]] ]
-; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP65]], label [[TMP66:%.*]], label [[TMP70]]
 ; CHECK:       66:
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], 32
@@ -3673,7 +3673,7 @@ define void @test_vsseg8_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT11:%.*]]
 ; CHECK:       .split11:
 ; CHECK-NEXT:    [[IV12:%.*]] = phi i64 [ 0, [[TMP74]] ], [ [[IV12_NEXT:%.*]], [[TMP82:%.*]] ]
-; CHECK-NEXT:    [[TMP77:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV12]]
+; CHECK-NEXT:    [[TMP77:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV12]]
 ; CHECK-NEXT:    br i1 [[TMP77]], label [[TMP78:%.*]], label [[TMP82]]
 ; CHECK:       78:
 ; CHECK-NEXT:    [[TMP79:%.*]] = mul i64 [[IV12]], 32
@@ -3697,7 +3697,7 @@ define void @test_vsseg8_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>,
 ; CHECK-NEXT:    br label [[DOTSPLIT13:%.*]]
 ; CHECK:       .split13:
 ; CHECK-NEXT:    [[IV14:%.*]] = phi i64 [ 0, [[TMP86]] ], [ [[IV14_NEXT:%.*]], [[TMP94:%.*]] ]
-; CHECK-NEXT:    [[TMP89:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV14]]
+; CHECK-NEXT:    [[TMP89:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV14]]
 ; CHECK-NEXT:    br i1 [[TMP89]], label [[TMP90:%.*]], label [[TMP94]]
 ; CHECK:       90:
 ; CHECK-NEXT:    [[TMP91:%.*]] = mul i64 [[IV14]], 32
@@ -3943,7 +3943,7 @@ define <vscale x 1 x i32> @intrinsic_vlse_v_nxv1i32_nxv1i32(<vscale x 1 x i32>* 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP5]] ], [ [[IV_NEXT:%.*]], [[TMP13:%.*]] ]
-; CHECK-NEXT:    [[TMP8:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP8:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP9:%.*]], label [[TMP13]]
 ; CHECK:       9:
 ; CHECK-NEXT:    [[TMP10:%.*]] = mul i64 [[IV]], [[TMP1:%.*]]
@@ -4039,7 +4039,7 @@ define void @intrinsic_vsse_v_nxv1i32_nxv1i32(<vscale x 1 x i32> %0, <vscale x 1
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP6]] ], [ [[IV_NEXT:%.*]], [[TMP14:%.*]] ]
-; CHECK-NEXT:    [[TMP9:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP9:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[TMP10:%.*]], label [[TMP14]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[TMP11:%.*]] = mul i64 [[IV]], [[TMP2:%.*]]
@@ -4131,7 +4131,7 @@ define <vscale x 1 x i32> @test_vlsseg2_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], [[OFFSET:%.*]]
@@ -4155,7 +4155,7 @@ define <vscale x 1 x i32> @test_vlsseg2_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], [[OFFSET]]
@@ -4257,7 +4257,7 @@ define <vscale x 1 x i32> @test_vlsseg3_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], [[OFFSET:%.*]]
@@ -4281,7 +4281,7 @@ define <vscale x 1 x i32> @test_vlsseg3_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], [[OFFSET]]
@@ -4305,7 +4305,7 @@ define <vscale x 1 x i32> @test_vlsseg3_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], [[OFFSET]]
@@ -4431,7 +4431,7 @@ define <vscale x 1 x i32> @test_vlsseg4_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], [[OFFSET:%.*]]
@@ -4455,7 +4455,7 @@ define <vscale x 1 x i32> @test_vlsseg4_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], [[OFFSET]]
@@ -4479,7 +4479,7 @@ define <vscale x 1 x i32> @test_vlsseg4_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], [[OFFSET]]
@@ -4503,7 +4503,7 @@ define <vscale x 1 x i32> @test_vlsseg4_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], [[OFFSET]]
@@ -4653,7 +4653,7 @@ define <vscale x 1 x i32> @test_vlsseg5_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], [[OFFSET:%.*]]
@@ -4677,7 +4677,7 @@ define <vscale x 1 x i32> @test_vlsseg5_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], [[OFFSET]]
@@ -4701,7 +4701,7 @@ define <vscale x 1 x i32> @test_vlsseg5_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], [[OFFSET]]
@@ -4725,7 +4725,7 @@ define <vscale x 1 x i32> @test_vlsseg5_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], [[OFFSET]]
@@ -4749,7 +4749,7 @@ define <vscale x 1 x i32> @test_vlsseg5_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP50]] ], [ [[IV8_NEXT:%.*]], [[TMP58:%.*]] ]
-; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP53]], label [[TMP54:%.*]], label [[TMP58]]
 ; CHECK:       54:
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], [[OFFSET]]
@@ -4923,7 +4923,7 @@ define <vscale x 1 x i32> @test_vlsseg6_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], [[OFFSET:%.*]]
@@ -4947,7 +4947,7 @@ define <vscale x 1 x i32> @test_vlsseg6_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], [[OFFSET]]
@@ -4971,7 +4971,7 @@ define <vscale x 1 x i32> @test_vlsseg6_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], [[OFFSET]]
@@ -4995,7 +4995,7 @@ define <vscale x 1 x i32> @test_vlsseg6_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], [[OFFSET]]
@@ -5019,7 +5019,7 @@ define <vscale x 1 x i32> @test_vlsseg6_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP50]] ], [ [[IV8_NEXT:%.*]], [[TMP58:%.*]] ]
-; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP53]], label [[TMP54:%.*]], label [[TMP58]]
 ; CHECK:       54:
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], [[OFFSET]]
@@ -5043,7 +5043,7 @@ define <vscale x 1 x i32> @test_vlsseg6_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP62]] ], [ [[IV10_NEXT:%.*]], [[TMP70:%.*]] ]
-; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP65]], label [[TMP66:%.*]], label [[TMP70]]
 ; CHECK:       66:
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], [[OFFSET]]
@@ -5241,7 +5241,7 @@ define <vscale x 1 x i32> @test_vlsseg7_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], [[OFFSET:%.*]]
@@ -5265,7 +5265,7 @@ define <vscale x 1 x i32> @test_vlsseg7_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], [[OFFSET]]
@@ -5289,7 +5289,7 @@ define <vscale x 1 x i32> @test_vlsseg7_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], [[OFFSET]]
@@ -5313,7 +5313,7 @@ define <vscale x 1 x i32> @test_vlsseg7_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], [[OFFSET]]
@@ -5337,7 +5337,7 @@ define <vscale x 1 x i32> @test_vlsseg7_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP50]] ], [ [[IV8_NEXT:%.*]], [[TMP58:%.*]] ]
-; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP53]], label [[TMP54:%.*]], label [[TMP58]]
 ; CHECK:       54:
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], [[OFFSET]]
@@ -5361,7 +5361,7 @@ define <vscale x 1 x i32> @test_vlsseg7_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP62]] ], [ [[IV10_NEXT:%.*]], [[TMP70:%.*]] ]
-; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP65]], label [[TMP66:%.*]], label [[TMP70]]
 ; CHECK:       66:
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], [[OFFSET]]
@@ -5385,7 +5385,7 @@ define <vscale x 1 x i32> @test_vlsseg7_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT11:%.*]]
 ; CHECK:       .split11:
 ; CHECK-NEXT:    [[IV12:%.*]] = phi i64 [ 0, [[TMP74]] ], [ [[IV12_NEXT:%.*]], [[TMP82:%.*]] ]
-; CHECK-NEXT:    [[TMP77:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV12]]
+; CHECK-NEXT:    [[TMP77:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV12]]
 ; CHECK-NEXT:    br i1 [[TMP77]], label [[TMP78:%.*]], label [[TMP82]]
 ; CHECK:       78:
 ; CHECK-NEXT:    [[TMP79:%.*]] = mul i64 [[IV12]], [[OFFSET]]
@@ -5607,7 +5607,7 @@ define <vscale x 1 x i32> @test_vlsseg8_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], [[OFFSET:%.*]]
@@ -5631,7 +5631,7 @@ define <vscale x 1 x i32> @test_vlsseg8_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], [[OFFSET]]
@@ -5655,7 +5655,7 @@ define <vscale x 1 x i32> @test_vlsseg8_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], [[OFFSET]]
@@ -5679,7 +5679,7 @@ define <vscale x 1 x i32> @test_vlsseg8_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], [[OFFSET]]
@@ -5703,7 +5703,7 @@ define <vscale x 1 x i32> @test_vlsseg8_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP50]] ], [ [[IV8_NEXT:%.*]], [[TMP58:%.*]] ]
-; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP53]], label [[TMP54:%.*]], label [[TMP58]]
 ; CHECK:       54:
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], [[OFFSET]]
@@ -5727,7 +5727,7 @@ define <vscale x 1 x i32> @test_vlsseg8_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP62]] ], [ [[IV10_NEXT:%.*]], [[TMP70:%.*]] ]
-; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP65]], label [[TMP66:%.*]], label [[TMP70]]
 ; CHECK:       66:
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], [[OFFSET]]
@@ -5751,7 +5751,7 @@ define <vscale x 1 x i32> @test_vlsseg8_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT11:%.*]]
 ; CHECK:       .split11:
 ; CHECK-NEXT:    [[IV12:%.*]] = phi i64 [ 0, [[TMP74]] ], [ [[IV12_NEXT:%.*]], [[TMP82:%.*]] ]
-; CHECK-NEXT:    [[TMP77:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV12]]
+; CHECK-NEXT:    [[TMP77:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV12]]
 ; CHECK-NEXT:    br i1 [[TMP77]], label [[TMP78:%.*]], label [[TMP82]]
 ; CHECK:       78:
 ; CHECK-NEXT:    [[TMP79:%.*]] = mul i64 [[IV12]], [[OFFSET]]
@@ -5775,7 +5775,7 @@ define <vscale x 1 x i32> @test_vlsseg8_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK-NEXT:    br label [[DOTSPLIT13:%.*]]
 ; CHECK:       .split13:
 ; CHECK-NEXT:    [[IV14:%.*]] = phi i64 [ 0, [[TMP86]] ], [ [[IV14_NEXT:%.*]], [[TMP94:%.*]] ]
-; CHECK-NEXT:    [[TMP89:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV14]]
+; CHECK-NEXT:    [[TMP89:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV14]]
 ; CHECK-NEXT:    br i1 [[TMP89]], label [[TMP90:%.*]], label [[TMP94]]
 ; CHECK:       90:
 ; CHECK-NEXT:    [[TMP91:%.*]] = mul i64 [[IV14]], [[OFFSET]]
@@ -6021,7 +6021,7 @@ define void @test_vssseg2_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], [[OFFSET:%.*]]
@@ -6045,7 +6045,7 @@ define void @test_vssseg2_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], [[OFFSET]]
@@ -6143,7 +6143,7 @@ define void @test_vssseg3_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], [[OFFSET:%.*]]
@@ -6167,7 +6167,7 @@ define void @test_vssseg3_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], [[OFFSET]]
@@ -6191,7 +6191,7 @@ define void @test_vssseg3_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], [[OFFSET]]
@@ -6313,7 +6313,7 @@ define void @test_vssseg4_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], [[OFFSET:%.*]]
@@ -6337,7 +6337,7 @@ define void @test_vssseg4_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], [[OFFSET]]
@@ -6361,7 +6361,7 @@ define void @test_vssseg4_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], [[OFFSET]]
@@ -6385,7 +6385,7 @@ define void @test_vssseg4_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], [[OFFSET]]
@@ -6531,7 +6531,7 @@ define void @test_vssseg5_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], [[OFFSET:%.*]]
@@ -6555,7 +6555,7 @@ define void @test_vssseg5_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], [[OFFSET]]
@@ -6579,7 +6579,7 @@ define void @test_vssseg5_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], [[OFFSET]]
@@ -6603,7 +6603,7 @@ define void @test_vssseg5_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], [[OFFSET]]
@@ -6627,7 +6627,7 @@ define void @test_vssseg5_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP50]] ], [ [[IV8_NEXT:%.*]], [[TMP58:%.*]] ]
-; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP53]], label [[TMP54:%.*]], label [[TMP58]]
 ; CHECK:       54:
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], [[OFFSET]]
@@ -6797,7 +6797,7 @@ define void @test_vssseg6_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], [[OFFSET:%.*]]
@@ -6821,7 +6821,7 @@ define void @test_vssseg6_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], [[OFFSET]]
@@ -6845,7 +6845,7 @@ define void @test_vssseg6_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], [[OFFSET]]
@@ -6869,7 +6869,7 @@ define void @test_vssseg6_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], [[OFFSET]]
@@ -6893,7 +6893,7 @@ define void @test_vssseg6_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP50]] ], [ [[IV8_NEXT:%.*]], [[TMP58:%.*]] ]
-; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP53]], label [[TMP54:%.*]], label [[TMP58]]
 ; CHECK:       54:
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], [[OFFSET]]
@@ -6917,7 +6917,7 @@ define void @test_vssseg6_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP62]] ], [ [[IV10_NEXT:%.*]], [[TMP70:%.*]] ]
-; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP65]], label [[TMP66:%.*]], label [[TMP70]]
 ; CHECK:       66:
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], [[OFFSET]]
@@ -7111,7 +7111,7 @@ define void @test_vssseg7_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], [[OFFSET:%.*]]
@@ -7135,7 +7135,7 @@ define void @test_vssseg7_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], [[OFFSET]]
@@ -7159,7 +7159,7 @@ define void @test_vssseg7_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], [[OFFSET]]
@@ -7183,7 +7183,7 @@ define void @test_vssseg7_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], [[OFFSET]]
@@ -7207,7 +7207,7 @@ define void @test_vssseg7_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP50]] ], [ [[IV8_NEXT:%.*]], [[TMP58:%.*]] ]
-; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP53]], label [[TMP54:%.*]], label [[TMP58]]
 ; CHECK:       54:
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], [[OFFSET]]
@@ -7231,7 +7231,7 @@ define void @test_vssseg7_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP62]] ], [ [[IV10_NEXT:%.*]], [[TMP70:%.*]] ]
-; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP65]], label [[TMP66:%.*]], label [[TMP70]]
 ; CHECK:       66:
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], [[OFFSET]]
@@ -7255,7 +7255,7 @@ define void @test_vssseg7_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT11:%.*]]
 ; CHECK:       .split11:
 ; CHECK-NEXT:    [[IV12:%.*]] = phi i64 [ 0, [[TMP74]] ], [ [[IV12_NEXT:%.*]], [[TMP82:%.*]] ]
-; CHECK-NEXT:    [[TMP77:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV12]]
+; CHECK-NEXT:    [[TMP77:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV12]]
 ; CHECK-NEXT:    br i1 [[TMP77]], label [[TMP78:%.*]], label [[TMP82]]
 ; CHECK:       78:
 ; CHECK-NEXT:    [[TMP79:%.*]] = mul i64 [[IV12]], [[OFFSET]]
@@ -7473,7 +7473,7 @@ define void @test_vssseg8_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], [[OFFSET:%.*]]
@@ -7497,7 +7497,7 @@ define void @test_vssseg8_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], [[OFFSET]]
@@ -7521,7 +7521,7 @@ define void @test_vssseg8_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], [[OFFSET]]
@@ -7545,7 +7545,7 @@ define void @test_vssseg8_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], [[OFFSET]]
@@ -7569,7 +7569,7 @@ define void @test_vssseg8_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP50]] ], [ [[IV8_NEXT:%.*]], [[TMP58:%.*]] ]
-; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP53]], label [[TMP54:%.*]], label [[TMP58]]
 ; CHECK:       54:
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], [[OFFSET]]
@@ -7593,7 +7593,7 @@ define void @test_vssseg8_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP62]] ], [ [[IV10_NEXT:%.*]], [[TMP70:%.*]] ]
-; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP65]], label [[TMP66:%.*]], label [[TMP70]]
 ; CHECK:       66:
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], [[OFFSET]]
@@ -7617,7 +7617,7 @@ define void @test_vssseg8_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT11:%.*]]
 ; CHECK:       .split11:
 ; CHECK-NEXT:    [[IV12:%.*]] = phi i64 [ 0, [[TMP74]] ], [ [[IV12_NEXT:%.*]], [[TMP82:%.*]] ]
-; CHECK-NEXT:    [[TMP77:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV12]]
+; CHECK-NEXT:    [[TMP77:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV12]]
 ; CHECK-NEXT:    br i1 [[TMP77]], label [[TMP78:%.*]], label [[TMP82]]
 ; CHECK:       78:
 ; CHECK-NEXT:    [[TMP79:%.*]] = mul i64 [[IV12]], [[OFFSET]]
@@ -7641,7 +7641,7 @@ define void @test_vssseg8_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>
 ; CHECK-NEXT:    br label [[DOTSPLIT13:%.*]]
 ; CHECK:       .split13:
 ; CHECK-NEXT:    [[IV14:%.*]] = phi i64 [ 0, [[TMP86]] ], [ [[IV14_NEXT:%.*]], [[TMP94:%.*]] ]
-; CHECK-NEXT:    [[TMP89:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV14]]
+; CHECK-NEXT:    [[TMP89:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV14]]
 ; CHECK-NEXT:    br i1 [[TMP89]], label [[TMP90:%.*]], label [[TMP94]]
 ; CHECK:       90:
 ; CHECK-NEXT:    [[TMP91:%.*]] = mul i64 [[IV14]], [[OFFSET]]
@@ -7881,7 +7881,7 @@ define <vscale x 1 x i32> @intrinsic_vlse_v_nxv1i32_nxv1i32_align(<vscale x 1 x 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP5]] ], [ [[IV_NEXT:%.*]], [[TMP13:%.*]] ]
-; CHECK-NEXT:    [[TMP8:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP8:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP9:%.*]], label [[TMP13]]
 ; CHECK:       9:
 ; CHECK-NEXT:    [[TMP10:%.*]] = mul i64 [[IV]], 4
@@ -7929,7 +7929,7 @@ define <vscale x 1 x i32> @intrinsic_vloxei_v_nxv1i32_nxv1i32_nxv1i16(<vscale x 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP7]] ], [ [[IV_NEXT:%.*]], [[TMP14:%.*]] ]
-; CHECK-NEXT:    [[TMP10:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP10:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[TMP11:%.*]], label [[TMP14]]
 ; CHECK:       11:
 ; CHECK-NEXT:    [[TMP12:%.*]] = extractelement <vscale x 1 x ptr> [[TMP5]], i64 [[IV]]
@@ -8026,7 +8026,7 @@ define <vscale x 1 x float> @intrinsic_vloxei_v_nxv1f32_nxv1f32_nxv1i16(<vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP7]] ], [ [[IV_NEXT:%.*]], [[TMP14:%.*]] ]
-; CHECK-NEXT:    [[TMP10:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP10:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[TMP11:%.*]], label [[TMP14]]
 ; CHECK:       11:
 ; CHECK-NEXT:    [[TMP12:%.*]] = extractelement <vscale x 1 x ptr> [[TMP5]], i64 [[IV]]
@@ -8073,7 +8073,7 @@ define <vscale x 1 x i32> @intrinsic_vluxei_v_nxv1i32_nxv1i32_nxv1i16(<vscale x 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP7]] ], [ [[IV_NEXT:%.*]], [[TMP14:%.*]] ]
-; CHECK-NEXT:    [[TMP10:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP10:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[TMP11:%.*]], label [[TMP14]]
 ; CHECK:       11:
 ; CHECK-NEXT:    [[TMP12:%.*]] = extractelement <vscale x 1 x ptr> [[TMP5]], i64 [[IV]]
@@ -8170,7 +8170,7 @@ define void @intrinsic_vsoxei_v_nxv1i32_nxv1i32_nxv1i16(<vscale x 1 x i32> %0, <
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP8]] ], [ [[IV_NEXT:%.*]], [[TMP15:%.*]] ]
-; CHECK-NEXT:    [[TMP11:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP11:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP11]], label [[TMP12:%.*]], label [[TMP15]]
 ; CHECK:       12:
 ; CHECK-NEXT:    [[TMP13:%.*]] = extractelement <vscale x 1 x ptr> [[TMP6]], i64 [[IV]]
@@ -8266,7 +8266,7 @@ define void @intrinsic_vsuxei_v_nxv1i32_nxv1i32_nxv1i16(<vscale x 1 x i32> %0, <
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP8]] ], [ [[IV_NEXT:%.*]], [[TMP15:%.*]] ]
-; CHECK-NEXT:    [[TMP11:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP11:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP11]], label [[TMP12:%.*]], label [[TMP15]]
 ; CHECK:       12:
 ; CHECK-NEXT:    [[TMP13:%.*]] = extractelement <vscale x 1 x ptr> [[TMP6]], i64 [[IV]]
@@ -8351,7 +8351,7 @@ define <vscale x 1 x i32> @test_vloxseg2_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP4]], label [[TMP5:%.*]], label [[TMP13:%.*]]
@@ -8361,7 +8361,7 @@ define <vscale x 1 x i32> @test_vloxseg2_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP5]] ], [ [[IV_NEXT:%.*]], [[TMP12:%.*]] ]
-; CHECK-NEXT:    [[TMP8:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP8:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP9:%.*]], label [[TMP12]]
 ; CHECK:       9:
 ; CHECK-NEXT:    [[TMP10:%.*]] = extractelement <vscale x 1 x ptr> [[TMP3]], i64 [[IV]]
@@ -8384,7 +8384,7 @@ define <vscale x 1 x i32> @test_vloxseg2_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP16]] ], [ [[IV2_NEXT:%.*]], [[TMP23:%.*]] ]
-; CHECK-NEXT:    [[TMP19:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP19:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP19]], label [[TMP20:%.*]], label [[TMP23]]
 ; CHECK:       20:
 ; CHECK-NEXT:    [[TMP21:%.*]] = extractelement <vscale x 1 x ptr> [[TMP14]], i64 [[IV2]]
@@ -8413,7 +8413,7 @@ define <vscale x 1 x i32> @test_vloxseg2_mask_nxv1i32_nxv1i16(ptr %base, <vscale
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP4]], label [[TMP5:%.*]], label [[TMP13:%.*]]
@@ -8479,8 +8479,8 @@ define <vscale x 1 x i32> @test_vloxseg3_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP14:%.*]]
@@ -8490,7 +8490,7 @@ define <vscale x 1 x i32> @test_vloxseg3_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP6]] ], [ [[IV_NEXT:%.*]], [[TMP13:%.*]] ]
-; CHECK-NEXT:    [[TMP9:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP9:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[TMP10:%.*]], label [[TMP13]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[TMP11:%.*]] = extractelement <vscale x 1 x ptr> [[TMP4]], i64 [[IV]]
@@ -8513,7 +8513,7 @@ define <vscale x 1 x i32> @test_vloxseg3_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP17]] ], [ [[IV2_NEXT:%.*]], [[TMP24:%.*]] ]
-; CHECK-NEXT:    [[TMP20:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP20:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP20]], label [[TMP21:%.*]], label [[TMP24]]
 ; CHECK:       21:
 ; CHECK-NEXT:    [[TMP22:%.*]] = extractelement <vscale x 1 x ptr> [[TMP15]], i64 [[IV2]]
@@ -8536,7 +8536,7 @@ define <vscale x 1 x i32> @test_vloxseg3_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP28]] ], [ [[IV4_NEXT:%.*]], [[TMP35:%.*]] ]
-; CHECK-NEXT:    [[TMP31:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP31:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP31]], label [[TMP32:%.*]], label [[TMP35]]
 ; CHECK:       32:
 ; CHECK-NEXT:    [[TMP33:%.*]] = extractelement <vscale x 1 x ptr> [[TMP26]], i64 [[IV4]]
@@ -8565,8 +8565,8 @@ define <vscale x 1 x i32> @test_vloxseg3_mask_nxv1i32_nxv1i16(ptr %base, <vscale
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP14:%.*]]
@@ -8655,9 +8655,9 @@ define <vscale x 1 x i32> @test_vloxseg4_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[TMP7:%.*]], label [[TMP15:%.*]]
@@ -8667,7 +8667,7 @@ define <vscale x 1 x i32> @test_vloxseg4_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP7]] ], [ [[IV_NEXT:%.*]], [[TMP14:%.*]] ]
-; CHECK-NEXT:    [[TMP10:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP10:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[TMP11:%.*]], label [[TMP14]]
 ; CHECK:       11:
 ; CHECK-NEXT:    [[TMP12:%.*]] = extractelement <vscale x 1 x ptr> [[TMP5]], i64 [[IV]]
@@ -8690,7 +8690,7 @@ define <vscale x 1 x i32> @test_vloxseg4_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP18]] ], [ [[IV2_NEXT:%.*]], [[TMP25:%.*]] ]
-; CHECK-NEXT:    [[TMP21:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP21:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP21]], label [[TMP22:%.*]], label [[TMP25]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[TMP23:%.*]] = extractelement <vscale x 1 x ptr> [[TMP16]], i64 [[IV2]]
@@ -8713,7 +8713,7 @@ define <vscale x 1 x i32> @test_vloxseg4_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP29]] ], [ [[IV4_NEXT:%.*]], [[TMP36:%.*]] ]
-; CHECK-NEXT:    [[TMP32:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP32:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP32]], label [[TMP33:%.*]], label [[TMP36]]
 ; CHECK:       33:
 ; CHECK-NEXT:    [[TMP34:%.*]] = extractelement <vscale x 1 x ptr> [[TMP27]], i64 [[IV4]]
@@ -8736,7 +8736,7 @@ define <vscale x 1 x i32> @test_vloxseg4_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP40]] ], [ [[IV6_NEXT:%.*]], [[TMP47:%.*]] ]
-; CHECK-NEXT:    [[TMP43:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP43:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP43]], label [[TMP44:%.*]], label [[TMP47]]
 ; CHECK:       44:
 ; CHECK-NEXT:    [[TMP45:%.*]] = extractelement <vscale x 1 x ptr> [[TMP38]], i64 [[IV6]]
@@ -8765,9 +8765,9 @@ define <vscale x 1 x i32> @test_vloxseg4_mask_nxv1i32_nxv1i16(ptr %base, <vscale
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[TMP7:%.*]], label [[TMP15:%.*]]
@@ -8879,10 +8879,10 @@ define <vscale x 1 x i32> @test_vloxseg5_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[TMP8:%.*]], label [[TMP16:%.*]]
@@ -8892,7 +8892,7 @@ define <vscale x 1 x i32> @test_vloxseg5_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP8]] ], [ [[IV_NEXT:%.*]], [[TMP15:%.*]] ]
-; CHECK-NEXT:    [[TMP11:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP11:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP11]], label [[TMP12:%.*]], label [[TMP15]]
 ; CHECK:       12:
 ; CHECK-NEXT:    [[TMP13:%.*]] = extractelement <vscale x 1 x ptr> [[TMP6]], i64 [[IV]]
@@ -8915,7 +8915,7 @@ define <vscale x 1 x i32> @test_vloxseg5_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP19]] ], [ [[IV2_NEXT:%.*]], [[TMP26:%.*]] ]
-; CHECK-NEXT:    [[TMP22:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP22:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP22]], label [[TMP23:%.*]], label [[TMP26]]
 ; CHECK:       23:
 ; CHECK-NEXT:    [[TMP24:%.*]] = extractelement <vscale x 1 x ptr> [[TMP17]], i64 [[IV2]]
@@ -8938,7 +8938,7 @@ define <vscale x 1 x i32> @test_vloxseg5_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP30]] ], [ [[IV4_NEXT:%.*]], [[TMP37:%.*]] ]
-; CHECK-NEXT:    [[TMP33:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP33:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP33]], label [[TMP34:%.*]], label [[TMP37]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[TMP35:%.*]] = extractelement <vscale x 1 x ptr> [[TMP28]], i64 [[IV4]]
@@ -8961,7 +8961,7 @@ define <vscale x 1 x i32> @test_vloxseg5_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP41]] ], [ [[IV6_NEXT:%.*]], [[TMP48:%.*]] ]
-; CHECK-NEXT:    [[TMP44:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP44:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP44]], label [[TMP45:%.*]], label [[TMP48]]
 ; CHECK:       45:
 ; CHECK-NEXT:    [[TMP46:%.*]] = extractelement <vscale x 1 x ptr> [[TMP39]], i64 [[IV6]]
@@ -8984,7 +8984,7 @@ define <vscale x 1 x i32> @test_vloxseg5_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP52]] ], [ [[IV8_NEXT:%.*]], [[TMP59:%.*]] ]
-; CHECK-NEXT:    [[TMP55:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP55:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP55]], label [[TMP56:%.*]], label [[TMP59]]
 ; CHECK:       56:
 ; CHECK-NEXT:    [[TMP57:%.*]] = extractelement <vscale x 1 x ptr> [[TMP50]], i64 [[IV8]]
@@ -9013,10 +9013,10 @@ define <vscale x 1 x i32> @test_vloxseg5_mask_nxv1i32_nxv1i16(ptr %base, <vscale
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[TMP8:%.*]], label [[TMP16:%.*]]
@@ -9151,11 +9151,11 @@ define <vscale x 1 x i32> @test_vloxseg6_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 20)
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP9:%.*]], label [[TMP17:%.*]]
@@ -9165,7 +9165,7 @@ define <vscale x 1 x i32> @test_vloxseg6_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP9]] ], [ [[IV_NEXT:%.*]], [[TMP16:%.*]] ]
-; CHECK-NEXT:    [[TMP12:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP12:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP12]], label [[TMP13:%.*]], label [[TMP16]]
 ; CHECK:       13:
 ; CHECK-NEXT:    [[TMP14:%.*]] = extractelement <vscale x 1 x ptr> [[TMP7]], i64 [[IV]]
@@ -9188,7 +9188,7 @@ define <vscale x 1 x i32> @test_vloxseg6_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP20]] ], [ [[IV2_NEXT:%.*]], [[TMP27:%.*]] ]
-; CHECK-NEXT:    [[TMP23:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP23:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP23]], label [[TMP24:%.*]], label [[TMP27]]
 ; CHECK:       24:
 ; CHECK-NEXT:    [[TMP25:%.*]] = extractelement <vscale x 1 x ptr> [[TMP18]], i64 [[IV2]]
@@ -9211,7 +9211,7 @@ define <vscale x 1 x i32> @test_vloxseg6_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP31]] ], [ [[IV4_NEXT:%.*]], [[TMP38:%.*]] ]
-; CHECK-NEXT:    [[TMP34:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP34:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP34]], label [[TMP35:%.*]], label [[TMP38]]
 ; CHECK:       35:
 ; CHECK-NEXT:    [[TMP36:%.*]] = extractelement <vscale x 1 x ptr> [[TMP29]], i64 [[IV4]]
@@ -9234,7 +9234,7 @@ define <vscale x 1 x i32> @test_vloxseg6_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP42]] ], [ [[IV6_NEXT:%.*]], [[TMP49:%.*]] ]
-; CHECK-NEXT:    [[TMP45:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP45:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP45]], label [[TMP46:%.*]], label [[TMP49]]
 ; CHECK:       46:
 ; CHECK-NEXT:    [[TMP47:%.*]] = extractelement <vscale x 1 x ptr> [[TMP40]], i64 [[IV6]]
@@ -9257,7 +9257,7 @@ define <vscale x 1 x i32> @test_vloxseg6_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP53]] ], [ [[IV8_NEXT:%.*]], [[TMP60:%.*]] ]
-; CHECK-NEXT:    [[TMP56:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP56:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP56]], label [[TMP57:%.*]], label [[TMP60]]
 ; CHECK:       57:
 ; CHECK-NEXT:    [[TMP58:%.*]] = extractelement <vscale x 1 x ptr> [[TMP51]], i64 [[IV8]]
@@ -9280,7 +9280,7 @@ define <vscale x 1 x i32> @test_vloxseg6_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP64]] ], [ [[IV10_NEXT:%.*]], [[TMP71:%.*]] ]
-; CHECK-NEXT:    [[TMP67:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP67:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP67]], label [[TMP68:%.*]], label [[TMP71]]
 ; CHECK:       68:
 ; CHECK-NEXT:    [[TMP69:%.*]] = extractelement <vscale x 1 x ptr> [[TMP62]], i64 [[IV10]]
@@ -9309,11 +9309,11 @@ define <vscale x 1 x i32> @test_vloxseg6_mask_nxv1i32_nxv1i16(ptr %base, <vscale
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 20)
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP9:%.*]], label [[TMP17:%.*]]
@@ -9471,12 +9471,12 @@ define <vscale x 1 x i32> @test_vloxseg7_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 20)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 24)
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[TMP10:%.*]], label [[TMP18:%.*]]
@@ -9486,7 +9486,7 @@ define <vscale x 1 x i32> @test_vloxseg7_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP10]] ], [ [[IV_NEXT:%.*]], [[TMP17:%.*]] ]
-; CHECK-NEXT:    [[TMP13:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP13:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP13]], label [[TMP14:%.*]], label [[TMP17]]
 ; CHECK:       14:
 ; CHECK-NEXT:    [[TMP15:%.*]] = extractelement <vscale x 1 x ptr> [[TMP8]], i64 [[IV]]
@@ -9509,7 +9509,7 @@ define <vscale x 1 x i32> @test_vloxseg7_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP21]] ], [ [[IV2_NEXT:%.*]], [[TMP28:%.*]] ]
-; CHECK-NEXT:    [[TMP24:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP24:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP24]], label [[TMP25:%.*]], label [[TMP28]]
 ; CHECK:       25:
 ; CHECK-NEXT:    [[TMP26:%.*]] = extractelement <vscale x 1 x ptr> [[TMP19]], i64 [[IV2]]
@@ -9532,7 +9532,7 @@ define <vscale x 1 x i32> @test_vloxseg7_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP32]] ], [ [[IV4_NEXT:%.*]], [[TMP39:%.*]] ]
-; CHECK-NEXT:    [[TMP35:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP35:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP35]], label [[TMP36:%.*]], label [[TMP39]]
 ; CHECK:       36:
 ; CHECK-NEXT:    [[TMP37:%.*]] = extractelement <vscale x 1 x ptr> [[TMP30]], i64 [[IV4]]
@@ -9555,7 +9555,7 @@ define <vscale x 1 x i32> @test_vloxseg7_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP43]] ], [ [[IV6_NEXT:%.*]], [[TMP50:%.*]] ]
-; CHECK-NEXT:    [[TMP46:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP46:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP46]], label [[TMP47:%.*]], label [[TMP50]]
 ; CHECK:       47:
 ; CHECK-NEXT:    [[TMP48:%.*]] = extractelement <vscale x 1 x ptr> [[TMP41]], i64 [[IV6]]
@@ -9578,7 +9578,7 @@ define <vscale x 1 x i32> @test_vloxseg7_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP54]] ], [ [[IV8_NEXT:%.*]], [[TMP61:%.*]] ]
-; CHECK-NEXT:    [[TMP57:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP57:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP57]], label [[TMP58:%.*]], label [[TMP61]]
 ; CHECK:       58:
 ; CHECK-NEXT:    [[TMP59:%.*]] = extractelement <vscale x 1 x ptr> [[TMP52]], i64 [[IV8]]
@@ -9601,7 +9601,7 @@ define <vscale x 1 x i32> @test_vloxseg7_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP65]] ], [ [[IV10_NEXT:%.*]], [[TMP72:%.*]] ]
-; CHECK-NEXT:    [[TMP68:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP68:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP68]], label [[TMP69:%.*]], label [[TMP72]]
 ; CHECK:       69:
 ; CHECK-NEXT:    [[TMP70:%.*]] = extractelement <vscale x 1 x ptr> [[TMP63]], i64 [[IV10]]
@@ -9624,7 +9624,7 @@ define <vscale x 1 x i32> @test_vloxseg7_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT11:%.*]]
 ; CHECK:       .split11:
 ; CHECK-NEXT:    [[IV12:%.*]] = phi i64 [ 0, [[TMP76]] ], [ [[IV12_NEXT:%.*]], [[TMP83:%.*]] ]
-; CHECK-NEXT:    [[TMP79:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV12]]
+; CHECK-NEXT:    [[TMP79:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV12]]
 ; CHECK-NEXT:    br i1 [[TMP79]], label [[TMP80:%.*]], label [[TMP83]]
 ; CHECK:       80:
 ; CHECK-NEXT:    [[TMP81:%.*]] = extractelement <vscale x 1 x ptr> [[TMP74]], i64 [[IV12]]
@@ -9653,12 +9653,12 @@ define <vscale x 1 x i32> @test_vloxseg7_mask_nxv1i32_nxv1i16(ptr %base, <vscale
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 20)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 24)
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[TMP10:%.*]], label [[TMP18:%.*]]
@@ -9839,13 +9839,13 @@ define <vscale x 1 x i32> @test_vloxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 28, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 20)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 24)
+; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 28)
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[TMP11:%.*]], label [[TMP19:%.*]]
@@ -9855,7 +9855,7 @@ define <vscale x 1 x i32> @test_vloxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP11]] ], [ [[IV_NEXT:%.*]], [[TMP18:%.*]] ]
-; CHECK-NEXT:    [[TMP14:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP14:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP14]], label [[TMP15:%.*]], label [[TMP18]]
 ; CHECK:       15:
 ; CHECK-NEXT:    [[TMP16:%.*]] = extractelement <vscale x 1 x ptr> [[TMP9]], i64 [[IV]]
@@ -9878,7 +9878,7 @@ define <vscale x 1 x i32> @test_vloxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP22]] ], [ [[IV2_NEXT:%.*]], [[TMP29:%.*]] ]
-; CHECK-NEXT:    [[TMP25:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP25:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP25]], label [[TMP26:%.*]], label [[TMP29]]
 ; CHECK:       26:
 ; CHECK-NEXT:    [[TMP27:%.*]] = extractelement <vscale x 1 x ptr> [[TMP20]], i64 [[IV2]]
@@ -9901,7 +9901,7 @@ define <vscale x 1 x i32> @test_vloxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP33]] ], [ [[IV4_NEXT:%.*]], [[TMP40:%.*]] ]
-; CHECK-NEXT:    [[TMP36:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP36:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP36]], label [[TMP37:%.*]], label [[TMP40]]
 ; CHECK:       37:
 ; CHECK-NEXT:    [[TMP38:%.*]] = extractelement <vscale x 1 x ptr> [[TMP31]], i64 [[IV4]]
@@ -9924,7 +9924,7 @@ define <vscale x 1 x i32> @test_vloxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP44]] ], [ [[IV6_NEXT:%.*]], [[TMP51:%.*]] ]
-; CHECK-NEXT:    [[TMP47:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP47:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP47]], label [[TMP48:%.*]], label [[TMP51]]
 ; CHECK:       48:
 ; CHECK-NEXT:    [[TMP49:%.*]] = extractelement <vscale x 1 x ptr> [[TMP42]], i64 [[IV6]]
@@ -9947,7 +9947,7 @@ define <vscale x 1 x i32> @test_vloxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP55]] ], [ [[IV8_NEXT:%.*]], [[TMP62:%.*]] ]
-; CHECK-NEXT:    [[TMP58:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP58:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP58]], label [[TMP59:%.*]], label [[TMP62]]
 ; CHECK:       59:
 ; CHECK-NEXT:    [[TMP60:%.*]] = extractelement <vscale x 1 x ptr> [[TMP53]], i64 [[IV8]]
@@ -9970,7 +9970,7 @@ define <vscale x 1 x i32> @test_vloxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP66]] ], [ [[IV10_NEXT:%.*]], [[TMP73:%.*]] ]
-; CHECK-NEXT:    [[TMP69:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP69:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP69]], label [[TMP70:%.*]], label [[TMP73]]
 ; CHECK:       70:
 ; CHECK-NEXT:    [[TMP71:%.*]] = extractelement <vscale x 1 x ptr> [[TMP64]], i64 [[IV10]]
@@ -9993,7 +9993,7 @@ define <vscale x 1 x i32> @test_vloxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT11:%.*]]
 ; CHECK:       .split11:
 ; CHECK-NEXT:    [[IV12:%.*]] = phi i64 [ 0, [[TMP77]] ], [ [[IV12_NEXT:%.*]], [[TMP84:%.*]] ]
-; CHECK-NEXT:    [[TMP80:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV12]]
+; CHECK-NEXT:    [[TMP80:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV12]]
 ; CHECK-NEXT:    br i1 [[TMP80]], label [[TMP81:%.*]], label [[TMP84]]
 ; CHECK:       81:
 ; CHECK-NEXT:    [[TMP82:%.*]] = extractelement <vscale x 1 x ptr> [[TMP75]], i64 [[IV12]]
@@ -10016,7 +10016,7 @@ define <vscale x 1 x i32> @test_vloxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT13:%.*]]
 ; CHECK:       .split13:
 ; CHECK-NEXT:    [[IV14:%.*]] = phi i64 [ 0, [[TMP88]] ], [ [[IV14_NEXT:%.*]], [[TMP95:%.*]] ]
-; CHECK-NEXT:    [[TMP91:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV14]]
+; CHECK-NEXT:    [[TMP91:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV14]]
 ; CHECK-NEXT:    br i1 [[TMP91]], label [[TMP92:%.*]], label [[TMP95]]
 ; CHECK:       92:
 ; CHECK-NEXT:    [[TMP93:%.*]] = extractelement <vscale x 1 x ptr> [[TMP86]], i64 [[IV14]]
@@ -10045,13 +10045,13 @@ define <vscale x 1 x i32> @test_vloxseg8_mask_nxv1i32_nxv1i16(ptr %base, <vscale
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 28, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 20)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 24)
+; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 28)
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[TMP11:%.*]], label [[TMP19:%.*]]
@@ -10255,7 +10255,7 @@ define <vscale x 1 x i32> @test_vluxseg2_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP4]], label [[TMP5:%.*]], label [[TMP13:%.*]]
@@ -10265,7 +10265,7 @@ define <vscale x 1 x i32> @test_vluxseg2_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP5]] ], [ [[IV_NEXT:%.*]], [[TMP12:%.*]] ]
-; CHECK-NEXT:    [[TMP8:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP8:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP9:%.*]], label [[TMP12]]
 ; CHECK:       9:
 ; CHECK-NEXT:    [[TMP10:%.*]] = extractelement <vscale x 1 x ptr> [[TMP3]], i64 [[IV]]
@@ -10288,7 +10288,7 @@ define <vscale x 1 x i32> @test_vluxseg2_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP16]] ], [ [[IV2_NEXT:%.*]], [[TMP23:%.*]] ]
-; CHECK-NEXT:    [[TMP19:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP19:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP19]], label [[TMP20:%.*]], label [[TMP23]]
 ; CHECK:       20:
 ; CHECK-NEXT:    [[TMP21:%.*]] = extractelement <vscale x 1 x ptr> [[TMP14]], i64 [[IV2]]
@@ -10317,7 +10317,7 @@ define <vscale x 1 x i32> @test_vluxseg2_mask_nxv1i32_nxv1i16(ptr %base, <vscale
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP4]], label [[TMP5:%.*]], label [[TMP13:%.*]]
@@ -10383,8 +10383,8 @@ define <vscale x 1 x i32> @test_vluxseg3_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP14:%.*]]
@@ -10394,7 +10394,7 @@ define <vscale x 1 x i32> @test_vluxseg3_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP6]] ], [ [[IV_NEXT:%.*]], [[TMP13:%.*]] ]
-; CHECK-NEXT:    [[TMP9:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP9:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[TMP10:%.*]], label [[TMP13]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[TMP11:%.*]] = extractelement <vscale x 1 x ptr> [[TMP4]], i64 [[IV]]
@@ -10417,7 +10417,7 @@ define <vscale x 1 x i32> @test_vluxseg3_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP17]] ], [ [[IV2_NEXT:%.*]], [[TMP24:%.*]] ]
-; CHECK-NEXT:    [[TMP20:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP20:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP20]], label [[TMP21:%.*]], label [[TMP24]]
 ; CHECK:       21:
 ; CHECK-NEXT:    [[TMP22:%.*]] = extractelement <vscale x 1 x ptr> [[TMP15]], i64 [[IV2]]
@@ -10440,7 +10440,7 @@ define <vscale x 1 x i32> @test_vluxseg3_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP28]] ], [ [[IV4_NEXT:%.*]], [[TMP35:%.*]] ]
-; CHECK-NEXT:    [[TMP31:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP31:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP31]], label [[TMP32:%.*]], label [[TMP35]]
 ; CHECK:       32:
 ; CHECK-NEXT:    [[TMP33:%.*]] = extractelement <vscale x 1 x ptr> [[TMP26]], i64 [[IV4]]
@@ -10469,8 +10469,8 @@ define <vscale x 1 x i32> @test_vluxseg3_mask_nxv1i32_nxv1i16(ptr %base, <vscale
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP14:%.*]]
@@ -10559,9 +10559,9 @@ define <vscale x 1 x i32> @test_vluxseg4_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[TMP7:%.*]], label [[TMP15:%.*]]
@@ -10571,7 +10571,7 @@ define <vscale x 1 x i32> @test_vluxseg4_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP7]] ], [ [[IV_NEXT:%.*]], [[TMP14:%.*]] ]
-; CHECK-NEXT:    [[TMP10:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP10:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[TMP11:%.*]], label [[TMP14]]
 ; CHECK:       11:
 ; CHECK-NEXT:    [[TMP12:%.*]] = extractelement <vscale x 1 x ptr> [[TMP5]], i64 [[IV]]
@@ -10594,7 +10594,7 @@ define <vscale x 1 x i32> @test_vluxseg4_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP18]] ], [ [[IV2_NEXT:%.*]], [[TMP25:%.*]] ]
-; CHECK-NEXT:    [[TMP21:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP21:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP21]], label [[TMP22:%.*]], label [[TMP25]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[TMP23:%.*]] = extractelement <vscale x 1 x ptr> [[TMP16]], i64 [[IV2]]
@@ -10617,7 +10617,7 @@ define <vscale x 1 x i32> @test_vluxseg4_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP29]] ], [ [[IV4_NEXT:%.*]], [[TMP36:%.*]] ]
-; CHECK-NEXT:    [[TMP32:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP32:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP32]], label [[TMP33:%.*]], label [[TMP36]]
 ; CHECK:       33:
 ; CHECK-NEXT:    [[TMP34:%.*]] = extractelement <vscale x 1 x ptr> [[TMP27]], i64 [[IV4]]
@@ -10640,7 +10640,7 @@ define <vscale x 1 x i32> @test_vluxseg4_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP40]] ], [ [[IV6_NEXT:%.*]], [[TMP47:%.*]] ]
-; CHECK-NEXT:    [[TMP43:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP43:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP43]], label [[TMP44:%.*]], label [[TMP47]]
 ; CHECK:       44:
 ; CHECK-NEXT:    [[TMP45:%.*]] = extractelement <vscale x 1 x ptr> [[TMP38]], i64 [[IV6]]
@@ -10669,9 +10669,9 @@ define <vscale x 1 x i32> @test_vluxseg4_mask_nxv1i32_nxv1i16(ptr %base, <vscale
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[TMP7:%.*]], label [[TMP15:%.*]]
@@ -10783,10 +10783,10 @@ define <vscale x 1 x i32> @test_vluxseg5_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[TMP8:%.*]], label [[TMP16:%.*]]
@@ -10796,7 +10796,7 @@ define <vscale x 1 x i32> @test_vluxseg5_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP8]] ], [ [[IV_NEXT:%.*]], [[TMP15:%.*]] ]
-; CHECK-NEXT:    [[TMP11:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP11:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP11]], label [[TMP12:%.*]], label [[TMP15]]
 ; CHECK:       12:
 ; CHECK-NEXT:    [[TMP13:%.*]] = extractelement <vscale x 1 x ptr> [[TMP6]], i64 [[IV]]
@@ -10819,7 +10819,7 @@ define <vscale x 1 x i32> @test_vluxseg5_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP19]] ], [ [[IV2_NEXT:%.*]], [[TMP26:%.*]] ]
-; CHECK-NEXT:    [[TMP22:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP22:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP22]], label [[TMP23:%.*]], label [[TMP26]]
 ; CHECK:       23:
 ; CHECK-NEXT:    [[TMP24:%.*]] = extractelement <vscale x 1 x ptr> [[TMP17]], i64 [[IV2]]
@@ -10842,7 +10842,7 @@ define <vscale x 1 x i32> @test_vluxseg5_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP30]] ], [ [[IV4_NEXT:%.*]], [[TMP37:%.*]] ]
-; CHECK-NEXT:    [[TMP33:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP33:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP33]], label [[TMP34:%.*]], label [[TMP37]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[TMP35:%.*]] = extractelement <vscale x 1 x ptr> [[TMP28]], i64 [[IV4]]
@@ -10865,7 +10865,7 @@ define <vscale x 1 x i32> @test_vluxseg5_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP41]] ], [ [[IV6_NEXT:%.*]], [[TMP48:%.*]] ]
-; CHECK-NEXT:    [[TMP44:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP44:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP44]], label [[TMP45:%.*]], label [[TMP48]]
 ; CHECK:       45:
 ; CHECK-NEXT:    [[TMP46:%.*]] = extractelement <vscale x 1 x ptr> [[TMP39]], i64 [[IV6]]
@@ -10888,7 +10888,7 @@ define <vscale x 1 x i32> @test_vluxseg5_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP52]] ], [ [[IV8_NEXT:%.*]], [[TMP59:%.*]] ]
-; CHECK-NEXT:    [[TMP55:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP55:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP55]], label [[TMP56:%.*]], label [[TMP59]]
 ; CHECK:       56:
 ; CHECK-NEXT:    [[TMP57:%.*]] = extractelement <vscale x 1 x ptr> [[TMP50]], i64 [[IV8]]
@@ -10917,10 +10917,10 @@ define <vscale x 1 x i32> @test_vluxseg5_mask_nxv1i32_nxv1i16(ptr %base, <vscale
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[TMP8:%.*]], label [[TMP16:%.*]]
@@ -11055,11 +11055,11 @@ define <vscale x 1 x i32> @test_vluxseg6_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 20)
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP9:%.*]], label [[TMP17:%.*]]
@@ -11069,7 +11069,7 @@ define <vscale x 1 x i32> @test_vluxseg6_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP9]] ], [ [[IV_NEXT:%.*]], [[TMP16:%.*]] ]
-; CHECK-NEXT:    [[TMP12:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP12:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP12]], label [[TMP13:%.*]], label [[TMP16]]
 ; CHECK:       13:
 ; CHECK-NEXT:    [[TMP14:%.*]] = extractelement <vscale x 1 x ptr> [[TMP7]], i64 [[IV]]
@@ -11092,7 +11092,7 @@ define <vscale x 1 x i32> @test_vluxseg6_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP20]] ], [ [[IV2_NEXT:%.*]], [[TMP27:%.*]] ]
-; CHECK-NEXT:    [[TMP23:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP23:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP23]], label [[TMP24:%.*]], label [[TMP27]]
 ; CHECK:       24:
 ; CHECK-NEXT:    [[TMP25:%.*]] = extractelement <vscale x 1 x ptr> [[TMP18]], i64 [[IV2]]
@@ -11115,7 +11115,7 @@ define <vscale x 1 x i32> @test_vluxseg6_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP31]] ], [ [[IV4_NEXT:%.*]], [[TMP38:%.*]] ]
-; CHECK-NEXT:    [[TMP34:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP34:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP34]], label [[TMP35:%.*]], label [[TMP38]]
 ; CHECK:       35:
 ; CHECK-NEXT:    [[TMP36:%.*]] = extractelement <vscale x 1 x ptr> [[TMP29]], i64 [[IV4]]
@@ -11138,7 +11138,7 @@ define <vscale x 1 x i32> @test_vluxseg6_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP42]] ], [ [[IV6_NEXT:%.*]], [[TMP49:%.*]] ]
-; CHECK-NEXT:    [[TMP45:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP45:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP45]], label [[TMP46:%.*]], label [[TMP49]]
 ; CHECK:       46:
 ; CHECK-NEXT:    [[TMP47:%.*]] = extractelement <vscale x 1 x ptr> [[TMP40]], i64 [[IV6]]
@@ -11161,7 +11161,7 @@ define <vscale x 1 x i32> @test_vluxseg6_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP53]] ], [ [[IV8_NEXT:%.*]], [[TMP60:%.*]] ]
-; CHECK-NEXT:    [[TMP56:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP56:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP56]], label [[TMP57:%.*]], label [[TMP60]]
 ; CHECK:       57:
 ; CHECK-NEXT:    [[TMP58:%.*]] = extractelement <vscale x 1 x ptr> [[TMP51]], i64 [[IV8]]
@@ -11184,7 +11184,7 @@ define <vscale x 1 x i32> @test_vluxseg6_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP64]] ], [ [[IV10_NEXT:%.*]], [[TMP71:%.*]] ]
-; CHECK-NEXT:    [[TMP67:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP67:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP67]], label [[TMP68:%.*]], label [[TMP71]]
 ; CHECK:       68:
 ; CHECK-NEXT:    [[TMP69:%.*]] = extractelement <vscale x 1 x ptr> [[TMP62]], i64 [[IV10]]
@@ -11213,11 +11213,11 @@ define <vscale x 1 x i32> @test_vluxseg6_mask_nxv1i32_nxv1i16(ptr %base, <vscale
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 20)
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP9:%.*]], label [[TMP17:%.*]]
@@ -11375,12 +11375,12 @@ define <vscale x 1 x i32> @test_vluxseg7_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 20)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 24)
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[TMP10:%.*]], label [[TMP18:%.*]]
@@ -11390,7 +11390,7 @@ define <vscale x 1 x i32> @test_vluxseg7_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP10]] ], [ [[IV_NEXT:%.*]], [[TMP17:%.*]] ]
-; CHECK-NEXT:    [[TMP13:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP13:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP13]], label [[TMP14:%.*]], label [[TMP17]]
 ; CHECK:       14:
 ; CHECK-NEXT:    [[TMP15:%.*]] = extractelement <vscale x 1 x ptr> [[TMP8]], i64 [[IV]]
@@ -11413,7 +11413,7 @@ define <vscale x 1 x i32> @test_vluxseg7_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP21]] ], [ [[IV2_NEXT:%.*]], [[TMP28:%.*]] ]
-; CHECK-NEXT:    [[TMP24:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP24:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP24]], label [[TMP25:%.*]], label [[TMP28]]
 ; CHECK:       25:
 ; CHECK-NEXT:    [[TMP26:%.*]] = extractelement <vscale x 1 x ptr> [[TMP19]], i64 [[IV2]]
@@ -11436,7 +11436,7 @@ define <vscale x 1 x i32> @test_vluxseg7_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP32]] ], [ [[IV4_NEXT:%.*]], [[TMP39:%.*]] ]
-; CHECK-NEXT:    [[TMP35:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP35:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP35]], label [[TMP36:%.*]], label [[TMP39]]
 ; CHECK:       36:
 ; CHECK-NEXT:    [[TMP37:%.*]] = extractelement <vscale x 1 x ptr> [[TMP30]], i64 [[IV4]]
@@ -11459,7 +11459,7 @@ define <vscale x 1 x i32> @test_vluxseg7_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP43]] ], [ [[IV6_NEXT:%.*]], [[TMP50:%.*]] ]
-; CHECK-NEXT:    [[TMP46:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP46:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP46]], label [[TMP47:%.*]], label [[TMP50]]
 ; CHECK:       47:
 ; CHECK-NEXT:    [[TMP48:%.*]] = extractelement <vscale x 1 x ptr> [[TMP41]], i64 [[IV6]]
@@ -11482,7 +11482,7 @@ define <vscale x 1 x i32> @test_vluxseg7_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP54]] ], [ [[IV8_NEXT:%.*]], [[TMP61:%.*]] ]
-; CHECK-NEXT:    [[TMP57:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP57:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP57]], label [[TMP58:%.*]], label [[TMP61]]
 ; CHECK:       58:
 ; CHECK-NEXT:    [[TMP59:%.*]] = extractelement <vscale x 1 x ptr> [[TMP52]], i64 [[IV8]]
@@ -11505,7 +11505,7 @@ define <vscale x 1 x i32> @test_vluxseg7_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP65]] ], [ [[IV10_NEXT:%.*]], [[TMP72:%.*]] ]
-; CHECK-NEXT:    [[TMP68:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP68:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP68]], label [[TMP69:%.*]], label [[TMP72]]
 ; CHECK:       69:
 ; CHECK-NEXT:    [[TMP70:%.*]] = extractelement <vscale x 1 x ptr> [[TMP63]], i64 [[IV10]]
@@ -11528,7 +11528,7 @@ define <vscale x 1 x i32> @test_vluxseg7_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT11:%.*]]
 ; CHECK:       .split11:
 ; CHECK-NEXT:    [[IV12:%.*]] = phi i64 [ 0, [[TMP76]] ], [ [[IV12_NEXT:%.*]], [[TMP83:%.*]] ]
-; CHECK-NEXT:    [[TMP79:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV12]]
+; CHECK-NEXT:    [[TMP79:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV12]]
 ; CHECK-NEXT:    br i1 [[TMP79]], label [[TMP80:%.*]], label [[TMP83]]
 ; CHECK:       80:
 ; CHECK-NEXT:    [[TMP81:%.*]] = extractelement <vscale x 1 x ptr> [[TMP74]], i64 [[IV12]]
@@ -11557,12 +11557,12 @@ define <vscale x 1 x i32> @test_vluxseg7_mask_nxv1i32_nxv1i16(ptr %base, <vscale
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 20)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 24)
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[TMP10:%.*]], label [[TMP18:%.*]]
@@ -11743,13 +11743,13 @@ define <vscale x 1 x i32> @test_vluxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 28, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 20)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 24)
+; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 28)
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[TMP11:%.*]], label [[TMP19:%.*]]
@@ -11759,7 +11759,7 @@ define <vscale x 1 x i32> @test_vluxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP11]] ], [ [[IV_NEXT:%.*]], [[TMP18:%.*]] ]
-; CHECK-NEXT:    [[TMP14:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP14:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP14]], label [[TMP15:%.*]], label [[TMP18]]
 ; CHECK:       15:
 ; CHECK-NEXT:    [[TMP16:%.*]] = extractelement <vscale x 1 x ptr> [[TMP9]], i64 [[IV]]
@@ -11782,7 +11782,7 @@ define <vscale x 1 x i32> @test_vluxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP22]] ], [ [[IV2_NEXT:%.*]], [[TMP29:%.*]] ]
-; CHECK-NEXT:    [[TMP25:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP25:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP25]], label [[TMP26:%.*]], label [[TMP29]]
 ; CHECK:       26:
 ; CHECK-NEXT:    [[TMP27:%.*]] = extractelement <vscale x 1 x ptr> [[TMP20]], i64 [[IV2]]
@@ -11805,7 +11805,7 @@ define <vscale x 1 x i32> @test_vluxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP33]] ], [ [[IV4_NEXT:%.*]], [[TMP40:%.*]] ]
-; CHECK-NEXT:    [[TMP36:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP36:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP36]], label [[TMP37:%.*]], label [[TMP40]]
 ; CHECK:       37:
 ; CHECK-NEXT:    [[TMP38:%.*]] = extractelement <vscale x 1 x ptr> [[TMP31]], i64 [[IV4]]
@@ -11828,7 +11828,7 @@ define <vscale x 1 x i32> @test_vluxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP44]] ], [ [[IV6_NEXT:%.*]], [[TMP51:%.*]] ]
-; CHECK-NEXT:    [[TMP47:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP47:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP47]], label [[TMP48:%.*]], label [[TMP51]]
 ; CHECK:       48:
 ; CHECK-NEXT:    [[TMP49:%.*]] = extractelement <vscale x 1 x ptr> [[TMP42]], i64 [[IV6]]
@@ -11851,7 +11851,7 @@ define <vscale x 1 x i32> @test_vluxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP55]] ], [ [[IV8_NEXT:%.*]], [[TMP62:%.*]] ]
-; CHECK-NEXT:    [[TMP58:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP58:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP58]], label [[TMP59:%.*]], label [[TMP62]]
 ; CHECK:       59:
 ; CHECK-NEXT:    [[TMP60:%.*]] = extractelement <vscale x 1 x ptr> [[TMP53]], i64 [[IV8]]
@@ -11874,7 +11874,7 @@ define <vscale x 1 x i32> @test_vluxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP66]] ], [ [[IV10_NEXT:%.*]], [[TMP73:%.*]] ]
-; CHECK-NEXT:    [[TMP69:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP69:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP69]], label [[TMP70:%.*]], label [[TMP73]]
 ; CHECK:       70:
 ; CHECK-NEXT:    [[TMP71:%.*]] = extractelement <vscale x 1 x ptr> [[TMP64]], i64 [[IV10]]
@@ -11897,7 +11897,7 @@ define <vscale x 1 x i32> @test_vluxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT11:%.*]]
 ; CHECK:       .split11:
 ; CHECK-NEXT:    [[IV12:%.*]] = phi i64 [ 0, [[TMP77]] ], [ [[IV12_NEXT:%.*]], [[TMP84:%.*]] ]
-; CHECK-NEXT:    [[TMP80:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV12]]
+; CHECK-NEXT:    [[TMP80:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV12]]
 ; CHECK-NEXT:    br i1 [[TMP80]], label [[TMP81:%.*]], label [[TMP84]]
 ; CHECK:       81:
 ; CHECK-NEXT:    [[TMP82:%.*]] = extractelement <vscale x 1 x ptr> [[TMP75]], i64 [[IV12]]
@@ -11920,7 +11920,7 @@ define <vscale x 1 x i32> @test_vluxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    br label [[DOTSPLIT13:%.*]]
 ; CHECK:       .split13:
 ; CHECK-NEXT:    [[IV14:%.*]] = phi i64 [ 0, [[TMP88]] ], [ [[IV14_NEXT:%.*]], [[TMP95:%.*]] ]
-; CHECK-NEXT:    [[TMP91:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV14]]
+; CHECK-NEXT:    [[TMP91:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV14]]
 ; CHECK-NEXT:    br i1 [[TMP91]], label [[TMP92:%.*]], label [[TMP95]]
 ; CHECK:       92:
 ; CHECK-NEXT:    [[TMP93:%.*]] = extractelement <vscale x 1 x ptr> [[TMP86]], i64 [[IV14]]
@@ -11949,13 +11949,13 @@ define <vscale x 1 x i32> @test_vluxseg8_mask_nxv1i32_nxv1i16(ptr %base, <vscale
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 28, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 20)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 24)
+; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 28)
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[TMP11:%.*]], label [[TMP19:%.*]]
@@ -12159,7 +12159,7 @@ define void @test_vsoxseg2_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP4]], label [[TMP5:%.*]], label [[TMP13:%.*]]
@@ -12169,7 +12169,7 @@ define void @test_vsoxseg2_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP5]] ], [ [[IV_NEXT:%.*]], [[TMP12:%.*]] ]
-; CHECK-NEXT:    [[TMP8:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP8:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP9:%.*]], label [[TMP12]]
 ; CHECK:       9:
 ; CHECK-NEXT:    [[TMP10:%.*]] = extractelement <vscale x 1 x ptr> [[TMP3]], i64 [[IV]]
@@ -12192,7 +12192,7 @@ define void @test_vsoxseg2_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP16]] ], [ [[IV2_NEXT:%.*]], [[TMP23:%.*]] ]
-; CHECK-NEXT:    [[TMP19:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP19:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP19]], label [[TMP20:%.*]], label [[TMP23]]
 ; CHECK:       20:
 ; CHECK-NEXT:    [[TMP21:%.*]] = extractelement <vscale x 1 x ptr> [[TMP14]], i64 [[IV2]]
@@ -12219,7 +12219,7 @@ define void @test_vsoxseg2_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vs
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP4]], label [[TMP5:%.*]], label [[TMP13:%.*]]
@@ -12283,8 +12283,8 @@ define void @test_vsoxseg3_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP14:%.*]]
@@ -12294,7 +12294,7 @@ define void @test_vsoxseg3_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP6]] ], [ [[IV_NEXT:%.*]], [[TMP13:%.*]] ]
-; CHECK-NEXT:    [[TMP9:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP9:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[TMP10:%.*]], label [[TMP13]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[TMP11:%.*]] = extractelement <vscale x 1 x ptr> [[TMP4]], i64 [[IV]]
@@ -12317,7 +12317,7 @@ define void @test_vsoxseg3_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP17]] ], [ [[IV2_NEXT:%.*]], [[TMP24:%.*]] ]
-; CHECK-NEXT:    [[TMP20:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP20:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP20]], label [[TMP21:%.*]], label [[TMP24]]
 ; CHECK:       21:
 ; CHECK-NEXT:    [[TMP22:%.*]] = extractelement <vscale x 1 x ptr> [[TMP15]], i64 [[IV2]]
@@ -12340,7 +12340,7 @@ define void @test_vsoxseg3_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP28]] ], [ [[IV4_NEXT:%.*]], [[TMP35:%.*]] ]
-; CHECK-NEXT:    [[TMP31:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP31:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP31]], label [[TMP32:%.*]], label [[TMP35]]
 ; CHECK:       32:
 ; CHECK-NEXT:    [[TMP33:%.*]] = extractelement <vscale x 1 x ptr> [[TMP26]], i64 [[IV4]]
@@ -12367,8 +12367,8 @@ define void @test_vsoxseg3_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vs
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP14:%.*]]
@@ -12455,9 +12455,9 @@ define void @test_vsoxseg4_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[TMP7:%.*]], label [[TMP15:%.*]]
@@ -12467,7 +12467,7 @@ define void @test_vsoxseg4_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP7]] ], [ [[IV_NEXT:%.*]], [[TMP14:%.*]] ]
-; CHECK-NEXT:    [[TMP10:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP10:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[TMP11:%.*]], label [[TMP14]]
 ; CHECK:       11:
 ; CHECK-NEXT:    [[TMP12:%.*]] = extractelement <vscale x 1 x ptr> [[TMP5]], i64 [[IV]]
@@ -12490,7 +12490,7 @@ define void @test_vsoxseg4_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP18]] ], [ [[IV2_NEXT:%.*]], [[TMP25:%.*]] ]
-; CHECK-NEXT:    [[TMP21:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP21:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP21]], label [[TMP22:%.*]], label [[TMP25]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[TMP23:%.*]] = extractelement <vscale x 1 x ptr> [[TMP16]], i64 [[IV2]]
@@ -12513,7 +12513,7 @@ define void @test_vsoxseg4_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP29]] ], [ [[IV4_NEXT:%.*]], [[TMP36:%.*]] ]
-; CHECK-NEXT:    [[TMP32:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP32:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP32]], label [[TMP33:%.*]], label [[TMP36]]
 ; CHECK:       33:
 ; CHECK-NEXT:    [[TMP34:%.*]] = extractelement <vscale x 1 x ptr> [[TMP27]], i64 [[IV4]]
@@ -12536,7 +12536,7 @@ define void @test_vsoxseg4_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP40]] ], [ [[IV6_NEXT:%.*]], [[TMP47:%.*]] ]
-; CHECK-NEXT:    [[TMP43:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP43:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP43]], label [[TMP44:%.*]], label [[TMP47]]
 ; CHECK:       44:
 ; CHECK-NEXT:    [[TMP45:%.*]] = extractelement <vscale x 1 x ptr> [[TMP38]], i64 [[IV6]]
@@ -12563,9 +12563,9 @@ define void @test_vsoxseg4_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vs
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[TMP7:%.*]], label [[TMP15:%.*]]
@@ -12675,10 +12675,10 @@ define void @test_vsoxseg5_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[TMP8:%.*]], label [[TMP16:%.*]]
@@ -12688,7 +12688,7 @@ define void @test_vsoxseg5_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP8]] ], [ [[IV_NEXT:%.*]], [[TMP15:%.*]] ]
-; CHECK-NEXT:    [[TMP11:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP11:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP11]], label [[TMP12:%.*]], label [[TMP15]]
 ; CHECK:       12:
 ; CHECK-NEXT:    [[TMP13:%.*]] = extractelement <vscale x 1 x ptr> [[TMP6]], i64 [[IV]]
@@ -12711,7 +12711,7 @@ define void @test_vsoxseg5_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP19]] ], [ [[IV2_NEXT:%.*]], [[TMP26:%.*]] ]
-; CHECK-NEXT:    [[TMP22:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP22:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP22]], label [[TMP23:%.*]], label [[TMP26]]
 ; CHECK:       23:
 ; CHECK-NEXT:    [[TMP24:%.*]] = extractelement <vscale x 1 x ptr> [[TMP17]], i64 [[IV2]]
@@ -12734,7 +12734,7 @@ define void @test_vsoxseg5_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP30]] ], [ [[IV4_NEXT:%.*]], [[TMP37:%.*]] ]
-; CHECK-NEXT:    [[TMP33:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP33:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP33]], label [[TMP34:%.*]], label [[TMP37]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[TMP35:%.*]] = extractelement <vscale x 1 x ptr> [[TMP28]], i64 [[IV4]]
@@ -12757,7 +12757,7 @@ define void @test_vsoxseg5_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP41]] ], [ [[IV6_NEXT:%.*]], [[TMP48:%.*]] ]
-; CHECK-NEXT:    [[TMP44:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP44:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP44]], label [[TMP45:%.*]], label [[TMP48]]
 ; CHECK:       45:
 ; CHECK-NEXT:    [[TMP46:%.*]] = extractelement <vscale x 1 x ptr> [[TMP39]], i64 [[IV6]]
@@ -12780,7 +12780,7 @@ define void @test_vsoxseg5_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP52]] ], [ [[IV8_NEXT:%.*]], [[TMP59:%.*]] ]
-; CHECK-NEXT:    [[TMP55:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP55:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP55]], label [[TMP56:%.*]], label [[TMP59]]
 ; CHECK:       56:
 ; CHECK-NEXT:    [[TMP57:%.*]] = extractelement <vscale x 1 x ptr> [[TMP50]], i64 [[IV8]]
@@ -12807,10 +12807,10 @@ define void @test_vsoxseg5_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vs
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[TMP8:%.*]], label [[TMP16:%.*]]
@@ -12943,11 +12943,11 @@ define void @test_vsoxseg6_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 20)
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP9:%.*]], label [[TMP17:%.*]]
@@ -12957,7 +12957,7 @@ define void @test_vsoxseg6_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP9]] ], [ [[IV_NEXT:%.*]], [[TMP16:%.*]] ]
-; CHECK-NEXT:    [[TMP12:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP12:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP12]], label [[TMP13:%.*]], label [[TMP16]]
 ; CHECK:       13:
 ; CHECK-NEXT:    [[TMP14:%.*]] = extractelement <vscale x 1 x ptr> [[TMP7]], i64 [[IV]]
@@ -12980,7 +12980,7 @@ define void @test_vsoxseg6_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP20]] ], [ [[IV2_NEXT:%.*]], [[TMP27:%.*]] ]
-; CHECK-NEXT:    [[TMP23:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP23:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP23]], label [[TMP24:%.*]], label [[TMP27]]
 ; CHECK:       24:
 ; CHECK-NEXT:    [[TMP25:%.*]] = extractelement <vscale x 1 x ptr> [[TMP18]], i64 [[IV2]]
@@ -13003,7 +13003,7 @@ define void @test_vsoxseg6_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP31]] ], [ [[IV4_NEXT:%.*]], [[TMP38:%.*]] ]
-; CHECK-NEXT:    [[TMP34:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP34:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP34]], label [[TMP35:%.*]], label [[TMP38]]
 ; CHECK:       35:
 ; CHECK-NEXT:    [[TMP36:%.*]] = extractelement <vscale x 1 x ptr> [[TMP29]], i64 [[IV4]]
@@ -13026,7 +13026,7 @@ define void @test_vsoxseg6_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP42]] ], [ [[IV6_NEXT:%.*]], [[TMP49:%.*]] ]
-; CHECK-NEXT:    [[TMP45:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP45:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP45]], label [[TMP46:%.*]], label [[TMP49]]
 ; CHECK:       46:
 ; CHECK-NEXT:    [[TMP47:%.*]] = extractelement <vscale x 1 x ptr> [[TMP40]], i64 [[IV6]]
@@ -13049,7 +13049,7 @@ define void @test_vsoxseg6_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP53]] ], [ [[IV8_NEXT:%.*]], [[TMP60:%.*]] ]
-; CHECK-NEXT:    [[TMP56:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP56:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP56]], label [[TMP57:%.*]], label [[TMP60]]
 ; CHECK:       57:
 ; CHECK-NEXT:    [[TMP58:%.*]] = extractelement <vscale x 1 x ptr> [[TMP51]], i64 [[IV8]]
@@ -13072,7 +13072,7 @@ define void @test_vsoxseg6_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP64]] ], [ [[IV10_NEXT:%.*]], [[TMP71:%.*]] ]
-; CHECK-NEXT:    [[TMP67:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP67:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP67]], label [[TMP68:%.*]], label [[TMP71]]
 ; CHECK:       68:
 ; CHECK-NEXT:    [[TMP69:%.*]] = extractelement <vscale x 1 x ptr> [[TMP62]], i64 [[IV10]]
@@ -13099,11 +13099,11 @@ define void @test_vsoxseg6_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vs
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 20)
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP9:%.*]], label [[TMP17:%.*]]
@@ -13259,12 +13259,12 @@ define void @test_vsoxseg7_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 20)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 24)
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[TMP10:%.*]], label [[TMP18:%.*]]
@@ -13274,7 +13274,7 @@ define void @test_vsoxseg7_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP10]] ], [ [[IV_NEXT:%.*]], [[TMP17:%.*]] ]
-; CHECK-NEXT:    [[TMP13:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP13:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP13]], label [[TMP14:%.*]], label [[TMP17]]
 ; CHECK:       14:
 ; CHECK-NEXT:    [[TMP15:%.*]] = extractelement <vscale x 1 x ptr> [[TMP8]], i64 [[IV]]
@@ -13297,7 +13297,7 @@ define void @test_vsoxseg7_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP21]] ], [ [[IV2_NEXT:%.*]], [[TMP28:%.*]] ]
-; CHECK-NEXT:    [[TMP24:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP24:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP24]], label [[TMP25:%.*]], label [[TMP28]]
 ; CHECK:       25:
 ; CHECK-NEXT:    [[TMP26:%.*]] = extractelement <vscale x 1 x ptr> [[TMP19]], i64 [[IV2]]
@@ -13320,7 +13320,7 @@ define void @test_vsoxseg7_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP32]] ], [ [[IV4_NEXT:%.*]], [[TMP39:%.*]] ]
-; CHECK-NEXT:    [[TMP35:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP35:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP35]], label [[TMP36:%.*]], label [[TMP39]]
 ; CHECK:       36:
 ; CHECK-NEXT:    [[TMP37:%.*]] = extractelement <vscale x 1 x ptr> [[TMP30]], i64 [[IV4]]
@@ -13343,7 +13343,7 @@ define void @test_vsoxseg7_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP43]] ], [ [[IV6_NEXT:%.*]], [[TMP50:%.*]] ]
-; CHECK-NEXT:    [[TMP46:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP46:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP46]], label [[TMP47:%.*]], label [[TMP50]]
 ; CHECK:       47:
 ; CHECK-NEXT:    [[TMP48:%.*]] = extractelement <vscale x 1 x ptr> [[TMP41]], i64 [[IV6]]
@@ -13366,7 +13366,7 @@ define void @test_vsoxseg7_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP54]] ], [ [[IV8_NEXT:%.*]], [[TMP61:%.*]] ]
-; CHECK-NEXT:    [[TMP57:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP57:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP57]], label [[TMP58:%.*]], label [[TMP61]]
 ; CHECK:       58:
 ; CHECK-NEXT:    [[TMP59:%.*]] = extractelement <vscale x 1 x ptr> [[TMP52]], i64 [[IV8]]
@@ -13389,7 +13389,7 @@ define void @test_vsoxseg7_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP65]] ], [ [[IV10_NEXT:%.*]], [[TMP72:%.*]] ]
-; CHECK-NEXT:    [[TMP68:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP68:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP68]], label [[TMP69:%.*]], label [[TMP72]]
 ; CHECK:       69:
 ; CHECK-NEXT:    [[TMP70:%.*]] = extractelement <vscale x 1 x ptr> [[TMP63]], i64 [[IV10]]
@@ -13412,7 +13412,7 @@ define void @test_vsoxseg7_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT11:%.*]]
 ; CHECK:       .split11:
 ; CHECK-NEXT:    [[IV12:%.*]] = phi i64 [ 0, [[TMP76]] ], [ [[IV12_NEXT:%.*]], [[TMP83:%.*]] ]
-; CHECK-NEXT:    [[TMP79:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV12]]
+; CHECK-NEXT:    [[TMP79:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV12]]
 ; CHECK-NEXT:    br i1 [[TMP79]], label [[TMP80:%.*]], label [[TMP83]]
 ; CHECK:       80:
 ; CHECK-NEXT:    [[TMP81:%.*]] = extractelement <vscale x 1 x ptr> [[TMP74]], i64 [[IV12]]
@@ -13439,12 +13439,12 @@ define void @test_vsoxseg7_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vs
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 20)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 24)
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[TMP10:%.*]], label [[TMP18:%.*]]
@@ -13623,13 +13623,13 @@ define void @test_vsoxseg8_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 28, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 20)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 24)
+; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 28)
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[TMP11:%.*]], label [[TMP19:%.*]]
@@ -13639,7 +13639,7 @@ define void @test_vsoxseg8_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP11]] ], [ [[IV_NEXT:%.*]], [[TMP18:%.*]] ]
-; CHECK-NEXT:    [[TMP14:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP14:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP14]], label [[TMP15:%.*]], label [[TMP18]]
 ; CHECK:       15:
 ; CHECK-NEXT:    [[TMP16:%.*]] = extractelement <vscale x 1 x ptr> [[TMP9]], i64 [[IV]]
@@ -13662,7 +13662,7 @@ define void @test_vsoxseg8_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP22]] ], [ [[IV2_NEXT:%.*]], [[TMP29:%.*]] ]
-; CHECK-NEXT:    [[TMP25:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP25:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP25]], label [[TMP26:%.*]], label [[TMP29]]
 ; CHECK:       26:
 ; CHECK-NEXT:    [[TMP27:%.*]] = extractelement <vscale x 1 x ptr> [[TMP20]], i64 [[IV2]]
@@ -13685,7 +13685,7 @@ define void @test_vsoxseg8_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP33]] ], [ [[IV4_NEXT:%.*]], [[TMP40:%.*]] ]
-; CHECK-NEXT:    [[TMP36:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP36:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP36]], label [[TMP37:%.*]], label [[TMP40]]
 ; CHECK:       37:
 ; CHECK-NEXT:    [[TMP38:%.*]] = extractelement <vscale x 1 x ptr> [[TMP31]], i64 [[IV4]]
@@ -13708,7 +13708,7 @@ define void @test_vsoxseg8_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP44]] ], [ [[IV6_NEXT:%.*]], [[TMP51:%.*]] ]
-; CHECK-NEXT:    [[TMP47:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP47:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP47]], label [[TMP48:%.*]], label [[TMP51]]
 ; CHECK:       48:
 ; CHECK-NEXT:    [[TMP49:%.*]] = extractelement <vscale x 1 x ptr> [[TMP42]], i64 [[IV6]]
@@ -13731,7 +13731,7 @@ define void @test_vsoxseg8_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP55]] ], [ [[IV8_NEXT:%.*]], [[TMP62:%.*]] ]
-; CHECK-NEXT:    [[TMP58:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP58:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP58]], label [[TMP59:%.*]], label [[TMP62]]
 ; CHECK:       59:
 ; CHECK-NEXT:    [[TMP60:%.*]] = extractelement <vscale x 1 x ptr> [[TMP53]], i64 [[IV8]]
@@ -13754,7 +13754,7 @@ define void @test_vsoxseg8_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP66]] ], [ [[IV10_NEXT:%.*]], [[TMP73:%.*]] ]
-; CHECK-NEXT:    [[TMP69:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP69:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP69]], label [[TMP70:%.*]], label [[TMP73]]
 ; CHECK:       70:
 ; CHECK-NEXT:    [[TMP71:%.*]] = extractelement <vscale x 1 x ptr> [[TMP64]], i64 [[IV10]]
@@ -13777,7 +13777,7 @@ define void @test_vsoxseg8_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT11:%.*]]
 ; CHECK:       .split11:
 ; CHECK-NEXT:    [[IV12:%.*]] = phi i64 [ 0, [[TMP77]] ], [ [[IV12_NEXT:%.*]], [[TMP84:%.*]] ]
-; CHECK-NEXT:    [[TMP80:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV12]]
+; CHECK-NEXT:    [[TMP80:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV12]]
 ; CHECK-NEXT:    br i1 [[TMP80]], label [[TMP81:%.*]], label [[TMP84]]
 ; CHECK:       81:
 ; CHECK-NEXT:    [[TMP82:%.*]] = extractelement <vscale x 1 x ptr> [[TMP75]], i64 [[IV12]]
@@ -13800,7 +13800,7 @@ define void @test_vsoxseg8_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT13:%.*]]
 ; CHECK:       .split13:
 ; CHECK-NEXT:    [[IV14:%.*]] = phi i64 [ 0, [[TMP88]] ], [ [[IV14_NEXT:%.*]], [[TMP95:%.*]] ]
-; CHECK-NEXT:    [[TMP91:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV14]]
+; CHECK-NEXT:    [[TMP91:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV14]]
 ; CHECK-NEXT:    br i1 [[TMP91]], label [[TMP92:%.*]], label [[TMP95]]
 ; CHECK:       92:
 ; CHECK-NEXT:    [[TMP93:%.*]] = extractelement <vscale x 1 x ptr> [[TMP86]], i64 [[IV14]]
@@ -13827,13 +13827,13 @@ define void @test_vsoxseg8_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vs
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 28, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 20)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 24)
+; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 28)
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[TMP11:%.*]], label [[TMP19:%.*]]
@@ -14035,7 +14035,7 @@ define void @test_vsuxseg2_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP4]], label [[TMP5:%.*]], label [[TMP13:%.*]]
@@ -14045,7 +14045,7 @@ define void @test_vsuxseg2_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP5]] ], [ [[IV_NEXT:%.*]], [[TMP12:%.*]] ]
-; CHECK-NEXT:    [[TMP8:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP8:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP9:%.*]], label [[TMP12]]
 ; CHECK:       9:
 ; CHECK-NEXT:    [[TMP10:%.*]] = extractelement <vscale x 1 x ptr> [[TMP3]], i64 [[IV]]
@@ -14068,7 +14068,7 @@ define void @test_vsuxseg2_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP16]] ], [ [[IV2_NEXT:%.*]], [[TMP23:%.*]] ]
-; CHECK-NEXT:    [[TMP19:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP19:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP19]], label [[TMP20:%.*]], label [[TMP23]]
 ; CHECK:       20:
 ; CHECK-NEXT:    [[TMP21:%.*]] = extractelement <vscale x 1 x ptr> [[TMP14]], i64 [[IV2]]
@@ -14095,7 +14095,7 @@ define void @test_vsuxseg2_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vs
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP4]], label [[TMP5:%.*]], label [[TMP13:%.*]]
@@ -14159,8 +14159,8 @@ define void @test_vsuxseg3_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP14:%.*]]
@@ -14170,7 +14170,7 @@ define void @test_vsuxseg3_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP6]] ], [ [[IV_NEXT:%.*]], [[TMP13:%.*]] ]
-; CHECK-NEXT:    [[TMP9:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP9:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[TMP10:%.*]], label [[TMP13]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[TMP11:%.*]] = extractelement <vscale x 1 x ptr> [[TMP4]], i64 [[IV]]
@@ -14193,7 +14193,7 @@ define void @test_vsuxseg3_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP17]] ], [ [[IV2_NEXT:%.*]], [[TMP24:%.*]] ]
-; CHECK-NEXT:    [[TMP20:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP20:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP20]], label [[TMP21:%.*]], label [[TMP24]]
 ; CHECK:       21:
 ; CHECK-NEXT:    [[TMP22:%.*]] = extractelement <vscale x 1 x ptr> [[TMP15]], i64 [[IV2]]
@@ -14216,7 +14216,7 @@ define void @test_vsuxseg3_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP28]] ], [ [[IV4_NEXT:%.*]], [[TMP35:%.*]] ]
-; CHECK-NEXT:    [[TMP31:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP31:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP31]], label [[TMP32:%.*]], label [[TMP35]]
 ; CHECK:       32:
 ; CHECK-NEXT:    [[TMP33:%.*]] = extractelement <vscale x 1 x ptr> [[TMP26]], i64 [[IV4]]
@@ -14243,8 +14243,8 @@ define void @test_vsuxseg3_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vs
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP14:%.*]]
@@ -14331,9 +14331,9 @@ define void @test_vsuxseg4_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[TMP7:%.*]], label [[TMP15:%.*]]
@@ -14343,7 +14343,7 @@ define void @test_vsuxseg4_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP7]] ], [ [[IV_NEXT:%.*]], [[TMP14:%.*]] ]
-; CHECK-NEXT:    [[TMP10:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP10:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[TMP11:%.*]], label [[TMP14]]
 ; CHECK:       11:
 ; CHECK-NEXT:    [[TMP12:%.*]] = extractelement <vscale x 1 x ptr> [[TMP5]], i64 [[IV]]
@@ -14366,7 +14366,7 @@ define void @test_vsuxseg4_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP18]] ], [ [[IV2_NEXT:%.*]], [[TMP25:%.*]] ]
-; CHECK-NEXT:    [[TMP21:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP21:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP21]], label [[TMP22:%.*]], label [[TMP25]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[TMP23:%.*]] = extractelement <vscale x 1 x ptr> [[TMP16]], i64 [[IV2]]
@@ -14389,7 +14389,7 @@ define void @test_vsuxseg4_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP29]] ], [ [[IV4_NEXT:%.*]], [[TMP36:%.*]] ]
-; CHECK-NEXT:    [[TMP32:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP32:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP32]], label [[TMP33:%.*]], label [[TMP36]]
 ; CHECK:       33:
 ; CHECK-NEXT:    [[TMP34:%.*]] = extractelement <vscale x 1 x ptr> [[TMP27]], i64 [[IV4]]
@@ -14412,7 +14412,7 @@ define void @test_vsuxseg4_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP40]] ], [ [[IV6_NEXT:%.*]], [[TMP47:%.*]] ]
-; CHECK-NEXT:    [[TMP43:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP43:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP43]], label [[TMP44:%.*]], label [[TMP47]]
 ; CHECK:       44:
 ; CHECK-NEXT:    [[TMP45:%.*]] = extractelement <vscale x 1 x ptr> [[TMP38]], i64 [[IV6]]
@@ -14439,9 +14439,9 @@ define void @test_vsuxseg4_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vs
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[TMP7:%.*]], label [[TMP15:%.*]]
@@ -14551,10 +14551,10 @@ define void @test_vsuxseg5_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[TMP8:%.*]], label [[TMP16:%.*]]
@@ -14564,7 +14564,7 @@ define void @test_vsuxseg5_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP8]] ], [ [[IV_NEXT:%.*]], [[TMP15:%.*]] ]
-; CHECK-NEXT:    [[TMP11:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP11:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP11]], label [[TMP12:%.*]], label [[TMP15]]
 ; CHECK:       12:
 ; CHECK-NEXT:    [[TMP13:%.*]] = extractelement <vscale x 1 x ptr> [[TMP6]], i64 [[IV]]
@@ -14587,7 +14587,7 @@ define void @test_vsuxseg5_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP19]] ], [ [[IV2_NEXT:%.*]], [[TMP26:%.*]] ]
-; CHECK-NEXT:    [[TMP22:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP22:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP22]], label [[TMP23:%.*]], label [[TMP26]]
 ; CHECK:       23:
 ; CHECK-NEXT:    [[TMP24:%.*]] = extractelement <vscale x 1 x ptr> [[TMP17]], i64 [[IV2]]
@@ -14610,7 +14610,7 @@ define void @test_vsuxseg5_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP30]] ], [ [[IV4_NEXT:%.*]], [[TMP37:%.*]] ]
-; CHECK-NEXT:    [[TMP33:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP33:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP33]], label [[TMP34:%.*]], label [[TMP37]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[TMP35:%.*]] = extractelement <vscale x 1 x ptr> [[TMP28]], i64 [[IV4]]
@@ -14633,7 +14633,7 @@ define void @test_vsuxseg5_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP41]] ], [ [[IV6_NEXT:%.*]], [[TMP48:%.*]] ]
-; CHECK-NEXT:    [[TMP44:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP44:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP44]], label [[TMP45:%.*]], label [[TMP48]]
 ; CHECK:       45:
 ; CHECK-NEXT:    [[TMP46:%.*]] = extractelement <vscale x 1 x ptr> [[TMP39]], i64 [[IV6]]
@@ -14656,7 +14656,7 @@ define void @test_vsuxseg5_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP52]] ], [ [[IV8_NEXT:%.*]], [[TMP59:%.*]] ]
-; CHECK-NEXT:    [[TMP55:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP55:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP55]], label [[TMP56:%.*]], label [[TMP59]]
 ; CHECK:       56:
 ; CHECK-NEXT:    [[TMP57:%.*]] = extractelement <vscale x 1 x ptr> [[TMP50]], i64 [[IV8]]
@@ -14683,10 +14683,10 @@ define void @test_vsuxseg5_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vs
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[TMP8:%.*]], label [[TMP16:%.*]]
@@ -14819,11 +14819,11 @@ define void @test_vsuxseg6_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 20)
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP9:%.*]], label [[TMP17:%.*]]
@@ -14833,7 +14833,7 @@ define void @test_vsuxseg6_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP9]] ], [ [[IV_NEXT:%.*]], [[TMP16:%.*]] ]
-; CHECK-NEXT:    [[TMP12:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP12:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP12]], label [[TMP13:%.*]], label [[TMP16]]
 ; CHECK:       13:
 ; CHECK-NEXT:    [[TMP14:%.*]] = extractelement <vscale x 1 x ptr> [[TMP7]], i64 [[IV]]
@@ -14856,7 +14856,7 @@ define void @test_vsuxseg6_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP20]] ], [ [[IV2_NEXT:%.*]], [[TMP27:%.*]] ]
-; CHECK-NEXT:    [[TMP23:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP23:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP23]], label [[TMP24:%.*]], label [[TMP27]]
 ; CHECK:       24:
 ; CHECK-NEXT:    [[TMP25:%.*]] = extractelement <vscale x 1 x ptr> [[TMP18]], i64 [[IV2]]
@@ -14879,7 +14879,7 @@ define void @test_vsuxseg6_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP31]] ], [ [[IV4_NEXT:%.*]], [[TMP38:%.*]] ]
-; CHECK-NEXT:    [[TMP34:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP34:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP34]], label [[TMP35:%.*]], label [[TMP38]]
 ; CHECK:       35:
 ; CHECK-NEXT:    [[TMP36:%.*]] = extractelement <vscale x 1 x ptr> [[TMP29]], i64 [[IV4]]
@@ -14902,7 +14902,7 @@ define void @test_vsuxseg6_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP42]] ], [ [[IV6_NEXT:%.*]], [[TMP49:%.*]] ]
-; CHECK-NEXT:    [[TMP45:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP45:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP45]], label [[TMP46:%.*]], label [[TMP49]]
 ; CHECK:       46:
 ; CHECK-NEXT:    [[TMP47:%.*]] = extractelement <vscale x 1 x ptr> [[TMP40]], i64 [[IV6]]
@@ -14925,7 +14925,7 @@ define void @test_vsuxseg6_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP53]] ], [ [[IV8_NEXT:%.*]], [[TMP60:%.*]] ]
-; CHECK-NEXT:    [[TMP56:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP56:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP56]], label [[TMP57:%.*]], label [[TMP60]]
 ; CHECK:       57:
 ; CHECK-NEXT:    [[TMP58:%.*]] = extractelement <vscale x 1 x ptr> [[TMP51]], i64 [[IV8]]
@@ -14948,7 +14948,7 @@ define void @test_vsuxseg6_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP64]] ], [ [[IV10_NEXT:%.*]], [[TMP71:%.*]] ]
-; CHECK-NEXT:    [[TMP67:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP67:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP67]], label [[TMP68:%.*]], label [[TMP71]]
 ; CHECK:       68:
 ; CHECK-NEXT:    [[TMP69:%.*]] = extractelement <vscale x 1 x ptr> [[TMP62]], i64 [[IV10]]
@@ -14975,11 +14975,11 @@ define void @test_vsuxseg6_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vs
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 20)
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP9:%.*]], label [[TMP17:%.*]]
@@ -15135,12 +15135,12 @@ define void @test_vsuxseg7_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 20)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 24)
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[TMP10:%.*]], label [[TMP18:%.*]]
@@ -15150,7 +15150,7 @@ define void @test_vsuxseg7_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP10]] ], [ [[IV_NEXT:%.*]], [[TMP17:%.*]] ]
-; CHECK-NEXT:    [[TMP13:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP13:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP13]], label [[TMP14:%.*]], label [[TMP17]]
 ; CHECK:       14:
 ; CHECK-NEXT:    [[TMP15:%.*]] = extractelement <vscale x 1 x ptr> [[TMP8]], i64 [[IV]]
@@ -15173,7 +15173,7 @@ define void @test_vsuxseg7_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP21]] ], [ [[IV2_NEXT:%.*]], [[TMP28:%.*]] ]
-; CHECK-NEXT:    [[TMP24:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP24:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP24]], label [[TMP25:%.*]], label [[TMP28]]
 ; CHECK:       25:
 ; CHECK-NEXT:    [[TMP26:%.*]] = extractelement <vscale x 1 x ptr> [[TMP19]], i64 [[IV2]]
@@ -15196,7 +15196,7 @@ define void @test_vsuxseg7_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP32]] ], [ [[IV4_NEXT:%.*]], [[TMP39:%.*]] ]
-; CHECK-NEXT:    [[TMP35:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP35:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP35]], label [[TMP36:%.*]], label [[TMP39]]
 ; CHECK:       36:
 ; CHECK-NEXT:    [[TMP37:%.*]] = extractelement <vscale x 1 x ptr> [[TMP30]], i64 [[IV4]]
@@ -15219,7 +15219,7 @@ define void @test_vsuxseg7_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP43]] ], [ [[IV6_NEXT:%.*]], [[TMP50:%.*]] ]
-; CHECK-NEXT:    [[TMP46:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP46:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP46]], label [[TMP47:%.*]], label [[TMP50]]
 ; CHECK:       47:
 ; CHECK-NEXT:    [[TMP48:%.*]] = extractelement <vscale x 1 x ptr> [[TMP41]], i64 [[IV6]]
@@ -15242,7 +15242,7 @@ define void @test_vsuxseg7_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP54]] ], [ [[IV8_NEXT:%.*]], [[TMP61:%.*]] ]
-; CHECK-NEXT:    [[TMP57:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP57:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP57]], label [[TMP58:%.*]], label [[TMP61]]
 ; CHECK:       58:
 ; CHECK-NEXT:    [[TMP59:%.*]] = extractelement <vscale x 1 x ptr> [[TMP52]], i64 [[IV8]]
@@ -15265,7 +15265,7 @@ define void @test_vsuxseg7_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP65]] ], [ [[IV10_NEXT:%.*]], [[TMP72:%.*]] ]
-; CHECK-NEXT:    [[TMP68:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP68:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP68]], label [[TMP69:%.*]], label [[TMP72]]
 ; CHECK:       69:
 ; CHECK-NEXT:    [[TMP70:%.*]] = extractelement <vscale x 1 x ptr> [[TMP63]], i64 [[IV10]]
@@ -15288,7 +15288,7 @@ define void @test_vsuxseg7_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT11:%.*]]
 ; CHECK:       .split11:
 ; CHECK-NEXT:    [[IV12:%.*]] = phi i64 [ 0, [[TMP76]] ], [ [[IV12_NEXT:%.*]], [[TMP83:%.*]] ]
-; CHECK-NEXT:    [[TMP79:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV12]]
+; CHECK-NEXT:    [[TMP79:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV12]]
 ; CHECK-NEXT:    br i1 [[TMP79]], label [[TMP80:%.*]], label [[TMP83]]
 ; CHECK:       80:
 ; CHECK-NEXT:    [[TMP81:%.*]] = extractelement <vscale x 1 x ptr> [[TMP74]], i64 [[IV12]]
@@ -15315,12 +15315,12 @@ define void @test_vsuxseg7_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vs
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 20)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 24)
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[TMP10:%.*]], label [[TMP18:%.*]]
@@ -15499,13 +15499,13 @@ define void @test_vsuxseg8_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 28, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 20)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 24)
+; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 28)
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[TMP11:%.*]], label [[TMP19:%.*]]
@@ -15515,7 +15515,7 @@ define void @test_vsuxseg8_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP11]] ], [ [[IV_NEXT:%.*]], [[TMP18:%.*]] ]
-; CHECK-NEXT:    [[TMP14:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP14:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP14]], label [[TMP15:%.*]], label [[TMP18]]
 ; CHECK:       15:
 ; CHECK-NEXT:    [[TMP16:%.*]] = extractelement <vscale x 1 x ptr> [[TMP9]], i64 [[IV]]
@@ -15538,7 +15538,7 @@ define void @test_vsuxseg8_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP22]] ], [ [[IV2_NEXT:%.*]], [[TMP29:%.*]] ]
-; CHECK-NEXT:    [[TMP25:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP25:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP25]], label [[TMP26:%.*]], label [[TMP29]]
 ; CHECK:       26:
 ; CHECK-NEXT:    [[TMP27:%.*]] = extractelement <vscale x 1 x ptr> [[TMP20]], i64 [[IV2]]
@@ -15561,7 +15561,7 @@ define void @test_vsuxseg8_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP33]] ], [ [[IV4_NEXT:%.*]], [[TMP40:%.*]] ]
-; CHECK-NEXT:    [[TMP36:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP36:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP36]], label [[TMP37:%.*]], label [[TMP40]]
 ; CHECK:       37:
 ; CHECK-NEXT:    [[TMP38:%.*]] = extractelement <vscale x 1 x ptr> [[TMP31]], i64 [[IV4]]
@@ -15584,7 +15584,7 @@ define void @test_vsuxseg8_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP44]] ], [ [[IV6_NEXT:%.*]], [[TMP51:%.*]] ]
-; CHECK-NEXT:    [[TMP47:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP47:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP47]], label [[TMP48:%.*]], label [[TMP51]]
 ; CHECK:       48:
 ; CHECK-NEXT:    [[TMP49:%.*]] = extractelement <vscale x 1 x ptr> [[TMP42]], i64 [[IV6]]
@@ -15607,7 +15607,7 @@ define void @test_vsuxseg8_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP55]] ], [ [[IV8_NEXT:%.*]], [[TMP62:%.*]] ]
-; CHECK-NEXT:    [[TMP58:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP58:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP58]], label [[TMP59:%.*]], label [[TMP62]]
 ; CHECK:       59:
 ; CHECK-NEXT:    [[TMP60:%.*]] = extractelement <vscale x 1 x ptr> [[TMP53]], i64 [[IV8]]
@@ -15630,7 +15630,7 @@ define void @test_vsuxseg8_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP66]] ], [ [[IV10_NEXT:%.*]], [[TMP73:%.*]] ]
-; CHECK-NEXT:    [[TMP69:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP69:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP69]], label [[TMP70:%.*]], label [[TMP73]]
 ; CHECK:       70:
 ; CHECK-NEXT:    [[TMP71:%.*]] = extractelement <vscale x 1 x ptr> [[TMP64]], i64 [[IV10]]
@@ -15653,7 +15653,7 @@ define void @test_vsuxseg8_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT11:%.*]]
 ; CHECK:       .split11:
 ; CHECK-NEXT:    [[IV12:%.*]] = phi i64 [ 0, [[TMP77]] ], [ [[IV12_NEXT:%.*]], [[TMP84:%.*]] ]
-; CHECK-NEXT:    [[TMP80:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV12]]
+; CHECK-NEXT:    [[TMP80:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV12]]
 ; CHECK-NEXT:    br i1 [[TMP80]], label [[TMP81:%.*]], label [[TMP84]]
 ; CHECK:       81:
 ; CHECK-NEXT:    [[TMP82:%.*]] = extractelement <vscale x 1 x ptr> [[TMP75]], i64 [[IV12]]
@@ -15676,7 +15676,7 @@ define void @test_vsuxseg8_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale 
 ; CHECK-NEXT:    br label [[DOTSPLIT13:%.*]]
 ; CHECK:       .split13:
 ; CHECK-NEXT:    [[IV14:%.*]] = phi i64 [ 0, [[TMP88]] ], [ [[IV14_NEXT:%.*]], [[TMP95:%.*]] ]
-; CHECK-NEXT:    [[TMP91:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV14]]
+; CHECK-NEXT:    [[TMP91:%.*]] = extractelement <vscale x 1 x i1> splat (i1 true), i64 [[IV14]]
 ; CHECK-NEXT:    br i1 [[TMP91]], label [[TMP92:%.*]], label [[TMP95]]
 ; CHECK:       92:
 ; CHECK-NEXT:    [[TMP93:%.*]] = extractelement <vscale x 1 x ptr> [[TMP86]], i64 [[IV14]]
@@ -15703,13 +15703,13 @@ define void @test_vsuxseg8_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vs
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 28, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 8)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 12)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 16)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 20)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 24)
+; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP1]], splat (i64 28)
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[TMP11:%.*]], label [[TMP19:%.*]]

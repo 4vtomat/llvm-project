@@ -47,34 +47,14 @@ vsha2ch.vv v8, v16, v24
 vsha2cl.vv v8, v16, v24
 
 # CHECK:      Iterations:        1
-<<<<<<< HEAD
-# CHECK-NEXT: Instructions:      32
-# CHECK-NEXT: Total Cycles:      108
-# CHECK-NEXT: Total uOps:        32
-||||||| 864902e9b4d8
-# CHECK-NEXT: Instructions:      32
-# CHECK-NEXT: Total Cycles:      68
-# CHECK-NEXT: Total uOps:        32
-=======
 # CHECK-NEXT: Instructions:      33
-# CHECK-NEXT: Total Cycles:      119
+# CHECK-NEXT: Total Cycles:      115
 # CHECK-NEXT: Total uOps:        33
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
 
 # CHECK:      Dispatch Width:    4
-<<<<<<< HEAD
-# CHECK-NEXT: uOps Per Cycle:    0.30
-# CHECK-NEXT: IPC:               0.30
-# CHECK-NEXT: Block RThroughput: 97.0
-||||||| 864902e9b4d8
-# CHECK-NEXT: uOps Per Cycle:    0.47
-# CHECK-NEXT: IPC:               0.47
-# CHECK-NEXT: Block RThroughput: 45.0
-=======
-# CHECK-NEXT: uOps Per Cycle:    0.28
-# CHECK-NEXT: IPC:               0.28
-# CHECK-NEXT: Block RThroughput: 109.0
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+# CHECK-NEXT: uOps Per Cycle:    0.29
+# CHECK-NEXT: IPC:               0.29
+# CHECK-NEXT: Block RThroughput: 105.0
 
 # CHECK:      Instruction Info:
 # CHECK-NEXT: [1]: #uOps
@@ -85,7 +65,7 @@ vsha2cl.vv v8, v16, v24
 # CHECK-NEXT: [6]: HasSideEffects (U)
 
 # CHECK:      [1]    [2]    [3]    [4]    [5]    [6]    Instructions:
-# CHECK-NEXT:  1      3     12.00                       vsha2ms.vv	v4, v8, v12
+# CHECK-NEXT:  1      3     8.00                        vsha2ms.vv	v4, v8, v12
 # CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu
 # CHECK-NEXT:  1      3     1.00                        vsha2ms.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                        vsha2ch.vv	v4, v8, v12
@@ -139,17 +119,11 @@ vsha2cl.vv v8, v16, v24
 
 # CHECK:      Resource pressure per iteration:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8.0]  [8.1]  [9]    [10]   [11]   [12]   [13]   [14]
-<<<<<<< HEAD
-# CHECK-NEXT:  -      -      -      -     8.00    -      -      -      -      -      -     97.00   -      -      -      -
-||||||| 864902e9b4d8
-# CHECK-NEXT:  -      -      -      -     8.00    -      -      -      -      -      -     44.00  46.00   -      -      -
-=======
-# CHECK-NEXT:  -      -      -      -     8.00    -      -      -      -      -      -     109.00  -      -      -      -
->>>>>>> fe042904829b83a61c1f4bc904f8f9e5b6da891e
+# CHECK-NEXT:  -      -      -      -     8.00    -      -      -      -      -      -     105.00  -      -      -      -
 
 # CHECK:      Resource pressure by instruction:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8.0]  [8.1]  [9]    [10]   [11]   [12]   [13]   [14]   Instructions:
-# CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     12.00   -      -      -      -     vsha2ms.vv	v4, v8, v12
+# CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     8.00    -      -      -      -     vsha2ms.vv	v4, v8, v12
 # CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -      -      -      -      -      -      -     vsetvli	zero, zero, e32, m1, tu, mu
 # CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     1.00    -      -      -      -     vsha2ms.vv	v4, v8, v12
 # CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     1.00    -      -      -      -     vsha2ch.vv	v4, v8, v12
