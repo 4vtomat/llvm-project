@@ -1828,8 +1828,7 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
   VP_INTRINSIC(vp_fmuladd, 1)                                                  \
   VP_INTRINSIC(vp_abs, 2)                                                      \
   VP_INTRINSIC(experimental_vp_splice, 1)                                      \
-  VP_INTRINSIC(experimental_vp_reverse, 1)                                     \
-  VP_INTRINSIC(vp_first, 1)
+  VP_INTRINSIC(experimental_vp_reverse, 1)
 #define VP_INTRINSIC(name, cost)                                               \
   case Intrinsic::name:                                                        \
     return cost;
@@ -1887,6 +1886,13 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
     break;
   }
 #if SIFIVE_CUSTOMIZATION
+  case Intrinsic::vp_first: {
+    Type *MaskTy = ICA.getArgTypes()[0];
+    auto LT = getTypeLegalizationCost(MaskTy);
+    if (!LT.first.isValid())
+      return InstructionCost::getInvalid();
+    return getRISCVInstructionCost(RISCV::VFIRST_M, LT.second, CostKind);
+  }
   case Intrinsic::vp_smax:
   case Intrinsic::vp_smin:
   case Intrinsic::vp_umax:

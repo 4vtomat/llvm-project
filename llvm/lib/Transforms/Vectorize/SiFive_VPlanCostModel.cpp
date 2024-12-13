@@ -219,14 +219,15 @@ InstructionCost VPlanCostModel::getCost(const VPBlockBase *Block,
         // true, therefore requires execution of the nested vector code.
         LLVM_DEBUG(dbgs() << "Adjust cost of the VPConditionalRegionBlock from " << Cost);
         Cost /= std::max(SiFiveVectorConditionFrequency.getValue(), 1U);
-        LLVM_DEBUG(dbgs() << " to " << Cost);
+        LLVM_DEBUG(dbgs() << " to " << Cost << '\n');
 
         Type *CondTy = TypeInfo.inferScalarType(IfBlock->getCondition());
         auto *VectorTy = cast<VectorType>(getVectorType(CondTy, RVL));
         Type *VLTy = getVLType(RVL);
-        Cost += getIntrinsicCost(Intrinsic::vp_first, CondTy,
-                         {PoisonValue::get(VectorTy), PoisonValue::get(VLTy)},
-                         FastMathFlags());
+        Type *RetTy = Type::getInt32Ty(VLTy->getContext());
+        Cost += getIntrinsicCost(Intrinsic::vp_first, RetTy, {VectorTy, VLTy});
+        LLVM_DEBUG(dbgs() << "VPlanCM: cost " << Cost << " for RVL " << RVL
+                          << " for VPConditionalRegionBlock\n");
         return Cost;
       })
       .Case<VPRegionBlock>([&](const VPRegionBlock *RegionBlock) {
@@ -739,19 +740,14 @@ VPlanCostModel::getMemoryOpCost(const VPWidenMemoryRecipe *VPWMIR,
     if (VPWMIR->isMonotonic()) {
       Type *MaskTy = getMaskType(RVL);
       Type *VLTy = getVLType(RVL);
-      Cost +=
-          getIntrinsicCost(Intrinsic::experimental_vp_expand, VectorTy,
-                           {PoisonValue::get(VectorTy),
-                            PoisonValue::get(MaskTy), PoisonValue::get(VLTy)},
-                           FastMathFlags());
+      Cost += getIntrinsicCost(Intrinsic::experimental_vp_expand, VectorTy,
+                               {VectorTy, MaskTy, VLTy});
     }
   } else if (VPWMIR->isMonotonic()) {
     Type *MaskTy = getMaskType(RVL);
     Type *VLTy = getVLType(RVL);
     Cost += getIntrinsicCost(Intrinsic::experimental_vp_compress, VectorTy,
-                             {PoisonValue::get(VectorTy),
-                              PoisonValue::get(MaskTy), PoisonValue::get(VLTy)},
-                             FastMathFlags());
+                             {VectorTy, MaskTy, VLTy});
   }
   return Cost + getMemoryOpCost(I, VectorTy, VPWMIR->isConsecutive(), IsMasked,
                                 VPWMIR->isReverse(), VPWMIR->isSpeculative());
@@ -989,20 +985,14 @@ VPlanCostModel::getMonotonicUpdateCost(const VPMonotonicUpdateInstruction *VPM,
 
   Type *MaskTy = getMaskType(RVL);
   Type *VLTy = getVLType(RVL);
-  PoisonValue *PoisonMask = PoisonValue::get(MaskTy);
-  PoisonValue *PoisonVL = PoisonValue::get(VLTy);
   return getIntrinsicCost(Intrinsic::experimental_vp_popcount, RetTy,
-                          {PoisonMask, PoisonMask, PoisonVL}, FastMathFlags());
+                          {MaskTy, MaskTy, VLTy});
 }
 
 InstructionCost VPlanCostModel::getIntrinsicCost(Intrinsic::ID Id, Type *RetTy,
-                                                 ArrayRef<Value *> Arguments,
+                                                 ArrayRef<Type *> ArgTypes,
                                                  FastMathFlags FMF) const {
-  SmallVector<Type *> ParamTys;
-  for (Value *V : Arguments)
-    ParamTys.push_back(V->getType());
-
-  IntrinsicCostAttributes CostAttrs(Id, RetTy, Arguments, ParamTys, FMF);
+  IntrinsicCostAttributes CostAttrs(Id, RetTy, ArgTypes, FMF);
   return TTI.getIntrinsicInstrCost(CostAttrs, CostKind);
 }
 

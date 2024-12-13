@@ -2,6 +2,12 @@
 ; RUN: opt < %s -passes=loop-vectorize -sifive-enable-csa -force-vectorization -mtriple riscv64 -riscv-v-vector-bits-min=256 -mattr="+v" -S | FileCheck %s
 ; RUN: opt < %s -passes=loop-vectorize -sifive-enable-csa -force-vectorization -sifive-enable-riscv-csa=false -mtriple riscv64 -riscv-v-vector-bits-min=256 -mattr="+v" -S | FileCheck %s -check-prefix=DISABLE-RISCV-CSA
 
+; Check if LV can emit invalid costs normally for our custom recipes(VPCSA*Recipes).
+; RUN: opt < %s -passes=loop-vectorize -sifive-enable-csa -force-vectorization -mtriple riscv64 -riscv-v-vector-bits-min=256 -mattr="+v" -S -pass-remarks-analysis=loop-vectorize
+; RUN: opt < %s -passes=loop-vectorize -sifive-enable-csa -force-vectorization -mtriple riscv64 -mcpu=sifive-x280 -S -pass-remarks-analysis=loop-vectorize
+; RUN: opt < %s -passes=loop-vectorize -sifive-enable-csa -force-vectorization -mtriple riscv64 -mcpu=sifive-p470 -S -pass-remarks-analysis=loop-vectorize
+; RUN: opt < %s -passes=loop-vectorize -sifive-enable-csa -force-vectorization -mtriple riscv64 -mcpu=sifive-p670 -S -pass-remarks-analysis=loop-vectorize
+
 ; This function is generated from the following C/C++ program:
 ; int simple_csa_int_select(int N, int *data) {
 ;   int t = -1;

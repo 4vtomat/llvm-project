@@ -732,8 +732,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         ISD::VP_ZERO_EXTEND, ISD::VP_TRUNCATE,    ISD::VP_SMIN,
         ISD::VP_SMAX,        ISD::VP_UMIN,        ISD::VP_UMAX,
 #if SIFIVE_CUSTOMIZATION
-        ISD::VP_MULHU, ISD::VP_MULHS, ISD::EXPERIMENTAL_VP_SPLICE,
-        ISD::VP_ABDS, ISD::VP_ABDU,
+        ISD::VP_MULHU, ISD::VP_MULHS, ISD::VP_ABDS, ISD::VP_ABDU,
 #endif // SIFIVE_CUSTOMIZATION
         ISD::VP_ABS, ISD::EXPERIMENTAL_VP_REVERSE, ISD::EXPERIMENTAL_VP_SPLICE,
         ISD::VP_SADDSAT,     ISD::VP_UADDSAT,     ISD::VP_SSUBSAT,
@@ -749,7 +748,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         ISD::VP_SETCC,       ISD::VP_FP_ROUND,    ISD::VP_FP_EXTEND,
         ISD::VP_SQRT,        ISD::VP_FMINNUM,     ISD::VP_FMAXNUM,
         ISD::VP_FCEIL,       ISD::VP_FFLOOR,      ISD::VP_FROUND,
-        ISD::EXPERIMENTAL_VP_SPLICE, // SIFIVE
         ISD::VP_FROUNDEVEN,  ISD::VP_FCOPYSIGN,   ISD::VP_FROUNDTOZERO,
         ISD::VP_FRINT,       ISD::VP_FNEARBYINT,  ISD::VP_IS_FPCLASS,
         ISD::VP_FMINIMUM,    ISD::VP_FMAXIMUM,    ISD::VP_LRINT,
@@ -1574,8 +1572,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     setIndexedStoreAction(ISD::POST_INC, MVT::i16, Legal);
     setIndexedStoreAction(ISD::POST_INC, MVT::i32, Legal);
   }
-
-  EnableExtLdPromotion = true; // SIFIVE
 
   // Function alignments.
   const Align FunctionAlignment(Subtarget.hasStdExtCOrZca() ? 2 : 4);
@@ -8105,9 +8101,7 @@ static SDValue getGlobalBaseReg(SelectionDAG &DAG,
   Register GlobalBaseReg = Subtarget.getInstrInfo()->getGlobalBaseReg(&MF);
   return DAG.getRegister(GlobalBaseReg, TLI.getPointerTy(DAG.getDataLayout()));
 }
-#endif // SIFIVE_CUSTOMIZATION
 
-#if SIFIVE_CUSTOMIZATION
 template <class NodeTy>
 SDValue RISCVTargetLowering::getCompactAddr(NodeTy *N, SelectionDAG &DAG,
                                             unsigned FlagsHi) const {
@@ -8787,28 +8781,6 @@ SDValue RISCVTargetLowering::lowerSELECT(SDValue Op, SelectionDAG &DAG) const {
   SDValue LHS = CondV.getOperand(0);
   SDValue RHS = CondV.getOperand(1);
   ISD::CondCode CCVal = cast<CondCodeSDNode>(CondV.getOperand(2))->get();
-#if SIFIVE_CUSTOMIZATION
-  // Match one variation of a signum or spaceship operator pattern.
-  // (select (X >s Y) ? 1 : (sext_inreg (X != Y), i1)
-  // This returns 1 if X is greater than Y, -1 if X is less than Y or zero if
-  // X is equal to Y.
-  // This can be replaced with (X >s Y) - (X <s Y).
-  // TODO: There are other ways this could be written.
-  if (isOneConstant(TrueV) && CCVal == ISD::SETGT && CondV.hasOneUse() &&
-      FalseV.getOpcode() == ISD::SIGN_EXTEND_INREG && FalseV.hasOneUse() &&
-      cast<VTSDNode>(FalseV.getOperand(1))->getVT() == MVT::i1 &&
-      FalseV.getOperand(0).getOpcode() == ISD::SETCC &&
-      FalseV.getOperand(0).hasOneUse()) {
-    SDValue OtherSetcc = FalseV.getOperand(0);
-    SDValue OtherLHS = OtherSetcc.getOperand(0);
-    SDValue OtherRHS = OtherSetcc.getOperand(1);
-    if (cast<CondCodeSDNode>(OtherSetcc.getOperand(2))->get() == ISD::SETNE &&
-        LHS == OtherLHS && RHS == OtherRHS) {
-      SDValue LT = DAG.getSetCC(DL, XLenVT, LHS, RHS, ISD::SETLT);
-      return DAG.getNode(ISD::SUB, DL, XLenVT, CondV, LT);
-    }
-  }
-#endif // SIFIVE_CUSTOMIZATION
 
   // Special case for a select of 2 constants that have a diffence of 1.
   // Normally this is done by DAGCombine, but if the select is introduced by

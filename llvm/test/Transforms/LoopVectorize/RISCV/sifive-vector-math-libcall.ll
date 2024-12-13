@@ -2621,3 +2621,453 @@ for.body:                                         ; preds = %for.body.preheader,
   %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
+
+define void @test_llvm_asinf32(i32 %n, ptr noundef %a, ptr noundef %b) {
+; M1-LABEL: @test_llvm_asinf32(
+; M1:  call <vscale x 2 x float> @skl_vfasin_v_f32m1(<vscale x 2 x float> {{%.*}}, i32 {{%.*}})
+; M2-LABEL: @test_llvm_asinf32(
+; M2:  call <vscale x 4 x float> @skl_vfasin_v_f32m2(<vscale x 4 x float> {{%.*}}, i32 {{%.*}})
+; M4-LABEL: @test_llvm_asinf32(
+; M4:  call <vscale x 8 x float> @skl_vfasin_v_f32m4(<vscale x 8 x float> {{%.*}}, i32 {{%.*}})
+; M8-LABEL: @test_llvm_asinf32(
+; M8:  call <vscale x 16 x float> @skl_vfasin_v_f32m8(<vscale x 16 x float> {{%.*}}, i32 {{%.*}})
+entry:
+  %cmp10 = icmp sgt i32 %n, 0
+  br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
+
+for.body.preheader:                               ; preds = %entry
+  %wide.trip.count = zext i32 %n to i64
+  br label %for.body
+
+for.cond.cleanup:                                 ; preds = %for.body, %entry
+  ret void
+
+for.body:                                         ; preds = %for.body.preheader, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds float, ptr %a, i64 %indvars.iv
+  %arrayidx2 = getelementptr inbounds float, ptr %b, i64 %indvars.iv
+  %0 = load float, ptr %arrayidx, align 4
+  %1 = call float @llvm.asin.f32(float %0)
+  store float %1, ptr %arrayidx, align 4
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
+  br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
+}
+
+define void @test_llvm_asinf64(i32 %n, ptr noundef %a, ptr noundef %b) {
+; M1-LABEL: @test_llvm_asinf64(
+; M1:  call <vscale x 1 x double> @skl_vfasin_v_f64m1(<vscale x 1 x double> {{%.*}}, i32 {{%.*}})
+; M2-LABEL: @test_llvm_asinf64(
+; M2:  call <vscale x 2 x double> @skl_vfasin_v_f64m2(<vscale x 2 x double> {{%.*}}, i32 {{%.*}})
+; M4-LABEL: @test_llvm_asinf64(
+; M4:  call <vscale x 4 x double> @skl_vfasin_v_f64m4(<vscale x 4 x double> {{%.*}}, i32 {{%.*}})
+; M8-LABEL: @test_llvm_asinf64(
+; M8:  call <vscale x 8 x double> @skl_vfasin_v_f64m8(<vscale x 8 x double> {{%.*}}, i32 {{%.*}})
+entry:
+  %cmp10 = icmp sgt i32 %n, 0
+  br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
+
+for.body.preheader:                               ; preds = %entry
+  %wide.trip.count = zext i32 %n to i64
+  br label %for.body
+
+for.cond.cleanup:                                 ; preds = %for.body, %entry
+  ret void
+
+for.body:                                         ; preds = %for.body.preheader, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds double, ptr %a, i64 %indvars.iv
+  %arrayidx2 = getelementptr inbounds double, ptr %b, i64 %indvars.iv
+  %0 = load double, ptr %arrayidx, align 8
+  %1 = call double @llvm.asin.f64(double %0)
+  store double %1, ptr %arrayidx, align 8
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
+  br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
+}
+
+define void @test_llvm_acosf32(i32 %n, ptr noundef %a, ptr noundef %b) {
+; M1-LABEL: @test_llvm_acosf32(
+; M1:  call <vscale x 2 x float> @skl_vfacos_v_f32m1(<vscale x 2 x float> {{%.*}}, i32 {{%.*}})
+; M2-LABEL: @test_llvm_acosf32(
+; M2:  call <vscale x 4 x float> @skl_vfacos_v_f32m2(<vscale x 4 x float> {{%.*}}, i32 {{%.*}})
+; M4-LABEL: @test_llvm_acosf32(
+; M4:  call <vscale x 8 x float> @skl_vfacos_v_f32m4(<vscale x 8 x float> {{%.*}}, i32 {{%.*}})
+; M8-LABEL: @test_llvm_acosf32(
+; M8:  call <vscale x 16 x float> @skl_vfacos_v_f32m8(<vscale x 16 x float> {{%.*}}, i32 {{%.*}})
+entry:
+  %cmp10 = icmp sgt i32 %n, 0
+  br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
+
+for.body.preheader:                               ; preds = %entry
+  %wide.trip.count = zext i32 %n to i64
+  br label %for.body
+
+for.cond.cleanup:                                 ; preds = %for.body, %entry
+  ret void
+
+for.body:                                         ; preds = %for.body.preheader, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds float, ptr %a, i64 %indvars.iv
+  %arrayidx2 = getelementptr inbounds float, ptr %b, i64 %indvars.iv
+  %0 = load float, ptr %arrayidx, align 4
+  %1 = call float @llvm.acos.f32(float %0)
+  store float %1, ptr %arrayidx, align 4
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
+  br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
+}
+
+define void @test_llvm_acosf64(i32 %n, ptr noundef %a, ptr noundef %b) {
+; M1-LABEL: @test_llvm_acosf64(
+; M1:  call <vscale x 1 x double> @skl_vfacos_v_f64m1(<vscale x 1 x double> {{%.*}}, i32 {{%.*}})
+; M2-LABEL: @test_llvm_acosf64(
+; M2:  call <vscale x 2 x double> @skl_vfacos_v_f64m2(<vscale x 2 x double> {{%.*}}, i32 {{%.*}})
+; M4-LABEL: @test_llvm_acosf64(
+; M4:  call <vscale x 4 x double> @skl_vfacos_v_f64m4(<vscale x 4 x double> {{%.*}}, i32 {{%.*}})
+; M8-LABEL: @test_llvm_acosf64(
+; M8:  call <vscale x 8 x double> @skl_vfacos_v_f64m8(<vscale x 8 x double> {{%.*}}, i32 {{%.*}})
+entry:
+  %cmp10 = icmp sgt i32 %n, 0
+  br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
+
+for.body.preheader:                               ; preds = %entry
+  %wide.trip.count = zext i32 %n to i64
+  br label %for.body
+
+for.cond.cleanup:                                 ; preds = %for.body, %entry
+  ret void
+
+for.body:                                         ; preds = %for.body.preheader, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds double, ptr %a, i64 %indvars.iv
+  %arrayidx2 = getelementptr inbounds double, ptr %b, i64 %indvars.iv
+  %0 = load double, ptr %arrayidx, align 8
+  %1 = call double @llvm.acos.f64(double %0)
+  store double %1, ptr %arrayidx, align 8
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
+  br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
+}
+
+define void @test_llvm_atanf32(i32 %n, ptr noundef %a, ptr noundef %b) {
+; M1-LABEL: @test_llvm_atanf32(
+; M1:  call <vscale x 2 x float> @skl_vfatan_v_f32m1(<vscale x 2 x float> {{%.*}}, i32 {{%.*}})
+; M2-LABEL: @test_llvm_atanf32(
+; M2:  call <vscale x 4 x float> @skl_vfatan_v_f32m2(<vscale x 4 x float> {{%.*}}, i32 {{%.*}})
+; M4-LABEL: @test_llvm_atanf32(
+; M4:  call <vscale x 8 x float> @skl_vfatan_v_f32m4(<vscale x 8 x float> {{%.*}}, i32 {{%.*}})
+; M8-LABEL: @test_llvm_atanf32(
+; M8:  call <vscale x 16 x float> @skl_vfatan_v_f32m8(<vscale x 16 x float> {{%.*}}, i32 {{%.*}})
+entry:
+  %cmp10 = icmp sgt i32 %n, 0
+  br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
+
+for.body.preheader:                               ; preds = %entry
+  %wide.trip.count = zext i32 %n to i64
+  br label %for.body
+
+for.cond.cleanup:                                 ; preds = %for.body, %entry
+  ret void
+
+for.body:                                         ; preds = %for.body.preheader, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds float, ptr %a, i64 %indvars.iv
+  %arrayidx2 = getelementptr inbounds float, ptr %b, i64 %indvars.iv
+  %0 = load float, ptr %arrayidx, align 4
+  %1 = call float @llvm.atan.f32(float %0)
+  store float %1, ptr %arrayidx, align 4
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
+  br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
+}
+
+define void @test_llvm_atanf64(i32 %n, ptr noundef %a, ptr noundef %b) {
+; M1-LABEL: @test_llvm_atanf64(
+; M1:  call <vscale x 1 x double> @skl_vfatan_v_f64m1(<vscale x 1 x double> {{%.*}}, i32 {{%.*}})
+; M2-LABEL: @test_llvm_atanf64(
+; M2:  call <vscale x 2 x double> @skl_vfatan_v_f64m2(<vscale x 2 x double> {{%.*}}, i32 {{%.*}})
+; M4-LABEL: @test_llvm_atanf64(
+; M4:  call <vscale x 4 x double> @skl_vfatan_v_f64m4(<vscale x 4 x double> {{%.*}}, i32 {{%.*}})
+; M8-LABEL: @test_llvm_atanf64(
+; M8:  call <vscale x 8 x double> @skl_vfatan_v_f64m8(<vscale x 8 x double> {{%.*}}, i32 {{%.*}})
+entry:
+  %cmp10 = icmp sgt i32 %n, 0
+  br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
+
+for.body.preheader:                               ; preds = %entry
+  %wide.trip.count = zext i32 %n to i64
+  br label %for.body
+
+for.cond.cleanup:                                 ; preds = %for.body, %entry
+  ret void
+
+for.body:                                         ; preds = %for.body.preheader, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds double, ptr %a, i64 %indvars.iv
+  %arrayidx2 = getelementptr inbounds double, ptr %b, i64 %indvars.iv
+  %0 = load double, ptr %arrayidx, align 8
+  %1 = call double @llvm.atan.f64(double %0)
+  store double %1, ptr %arrayidx, align 8
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
+  br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
+}
+
+define void @test_llvm_sinhf32(i32 %n, ptr noundef %a, ptr noundef %b) {
+; M1-LABEL: @test_llvm_sinhf32(
+; M1:  call <vscale x 2 x float> @skl_vfsinh_v_f32m1(<vscale x 2 x float> {{%.*}}, i32 {{%.*}})
+; M2-LABEL: @test_llvm_sinhf32(
+; M2:  call <vscale x 4 x float> @skl_vfsinh_v_f32m2(<vscale x 4 x float> {{%.*}}, i32 {{%.*}})
+; M4-LABEL: @test_llvm_sinhf32(
+; M4:  call <vscale x 8 x float> @skl_vfsinh_v_f32m4(<vscale x 8 x float> {{%.*}}, i32 {{%.*}})
+; M8-LABEL: @test_llvm_sinhf32(
+; M8:  call <vscale x 16 x float> @skl_vfsinh_v_f32m8(<vscale x 16 x float> {{%.*}}, i32 {{%.*}})
+entry:
+  %cmp10 = icmp sgt i32 %n, 0
+  br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
+
+for.body.preheader:                               ; preds = %entry
+  %wide.trip.count = zext i32 %n to i64
+  br label %for.body
+
+for.cond.cleanup:                                 ; preds = %for.body, %entry
+  ret void
+
+for.body:                                         ; preds = %for.body.preheader, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds float, ptr %a, i64 %indvars.iv
+  %arrayidx2 = getelementptr inbounds float, ptr %b, i64 %indvars.iv
+  %0 = load float, ptr %arrayidx, align 4
+  %1 = call float @llvm.sinh.f32(float %0)
+  store float %1, ptr %arrayidx, align 4
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
+  br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
+}
+
+define void @test_llvm_sinhf64(i32 %n, ptr noundef %a, ptr noundef %b) {
+; M1-LABEL: @test_llvm_sinhf64(
+; M1:  call <vscale x 1 x double> @skl_vfsinh_v_f64m1(<vscale x 1 x double> {{%.*}}, i32 {{%.*}})
+; M2-LABEL: @test_llvm_sinhf64(
+; M2:  call <vscale x 2 x double> @skl_vfsinh_v_f64m2(<vscale x 2 x double> {{%.*}}, i32 {{%.*}})
+; M4-LABEL: @test_llvm_sinhf64(
+; M4:  call <vscale x 4 x double> @skl_vfsinh_v_f64m4(<vscale x 4 x double> {{%.*}}, i32 {{%.*}})
+; M8-LABEL: @test_llvm_sinhf64(
+; M8:  call <vscale x 8 x double> @skl_vfsinh_v_f64m8(<vscale x 8 x double> {{%.*}}, i32 {{%.*}})
+entry:
+  %cmp10 = icmp sgt i32 %n, 0
+  br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
+
+for.body.preheader:                               ; preds = %entry
+  %wide.trip.count = zext i32 %n to i64
+  br label %for.body
+
+for.cond.cleanup:                                 ; preds = %for.body, %entry
+  ret void
+
+for.body:                                         ; preds = %for.body.preheader, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds double, ptr %a, i64 %indvars.iv
+  %arrayidx2 = getelementptr inbounds double, ptr %b, i64 %indvars.iv
+  %0 = load double, ptr %arrayidx, align 8
+  %1 = call double @llvm.sinh.f64(double %0)
+  store double %1, ptr %arrayidx, align 8
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
+  br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
+}
+
+define void @test_llvm_coshf32(i32 %n, ptr noundef %a, ptr noundef %b) {
+; M1-LABEL: @test_llvm_coshf32(
+; M1:  call <vscale x 2 x float> @skl_vfcosh_v_f32m1(<vscale x 2 x float> {{%.*}}, i32 {{%.*}})
+; M2-LABEL: @test_llvm_coshf32(
+; M2:  call <vscale x 4 x float> @skl_vfcosh_v_f32m2(<vscale x 4 x float> {{%.*}}, i32 {{%.*}})
+; M4-LABEL: @test_llvm_coshf32(
+; M4:  call <vscale x 8 x float> @skl_vfcosh_v_f32m4(<vscale x 8 x float> {{%.*}}, i32 {{%.*}})
+; M8-LABEL: @test_llvm_coshf32(
+; M8:  call <vscale x 16 x float> @skl_vfcosh_v_f32m8(<vscale x 16 x float> {{%.*}}, i32 {{%.*}})
+entry:
+  %cmp10 = icmp sgt i32 %n, 0
+  br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
+
+for.body.preheader:                               ; preds = %entry
+  %wide.trip.count = zext i32 %n to i64
+  br label %for.body
+
+for.cond.cleanup:                                 ; preds = %for.body, %entry
+  ret void
+
+for.body:                                         ; preds = %for.body.preheader, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds float, ptr %a, i64 %indvars.iv
+  %arrayidx2 = getelementptr inbounds float, ptr %b, i64 %indvars.iv
+  %0 = load float, ptr %arrayidx, align 4
+  %1 = call float @llvm.cosh.f32(float %0)
+  store float %1, ptr %arrayidx, align 4
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
+  br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
+}
+
+define void @test_llvm_coshf64(i32 %n, ptr noundef %a, ptr noundef %b) {
+; M1-LABEL: @test_llvm_coshf64(
+; M1:  call <vscale x 1 x double> @skl_vfcosh_v_f64m1(<vscale x 1 x double> {{%.*}}, i32 {{%.*}})
+; M2-LABEL: @test_llvm_coshf64(
+; M2:  call <vscale x 2 x double> @skl_vfcosh_v_f64m2(<vscale x 2 x double> {{%.*}}, i32 {{%.*}})
+; M4-LABEL: @test_llvm_coshf64(
+; M4:  call <vscale x 4 x double> @skl_vfcosh_v_f64m4(<vscale x 4 x double> {{%.*}}, i32 {{%.*}})
+; M8-LABEL: @test_llvm_coshf64(
+; M8:  call <vscale x 8 x double> @skl_vfcosh_v_f64m8(<vscale x 8 x double> {{%.*}}, i32 {{%.*}})
+entry:
+  %cmp10 = icmp sgt i32 %n, 0
+  br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
+
+for.body.preheader:                               ; preds = %entry
+  %wide.trip.count = zext i32 %n to i64
+  br label %for.body
+
+for.cond.cleanup:                                 ; preds = %for.body, %entry
+  ret void
+
+for.body:                                         ; preds = %for.body.preheader, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds double, ptr %a, i64 %indvars.iv
+  %arrayidx2 = getelementptr inbounds double, ptr %b, i64 %indvars.iv
+  %0 = load double, ptr %arrayidx, align 8
+  %1 = call double @llvm.cosh.f64(double %0)
+  store double %1, ptr %arrayidx, align 8
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
+  br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
+}
+
+define void @test_llvm_tanhf32(i32 %n, ptr noundef %a, ptr noundef %b) {
+; M1-LABEL: @test_llvm_tanhf32(
+; M1:  call <vscale x 2 x float> @skl_vftanh_v_f32m1(<vscale x 2 x float> {{%.*}}, i32 {{%.*}})
+; M2-LABEL: @test_llvm_tanhf32(
+; M2:  call <vscale x 4 x float> @skl_vftanh_v_f32m2(<vscale x 4 x float> {{%.*}}, i32 {{%.*}})
+; M4-LABEL: @test_llvm_tanhf32(
+; M4:  call <vscale x 8 x float> @skl_vftanh_v_f32m4(<vscale x 8 x float> {{%.*}}, i32 {{%.*}})
+; M8-LABEL: @test_llvm_tanhf32(
+; M8:  call <vscale x 16 x float> @skl_vftanh_v_f32m8(<vscale x 16 x float> {{%.*}}, i32 {{%.*}})
+entry:
+  %cmp10 = icmp sgt i32 %n, 0
+  br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
+
+for.body.preheader:                               ; preds = %entry
+  %wide.trip.count = zext i32 %n to i64
+  br label %for.body
+
+for.cond.cleanup:                                 ; preds = %for.body, %entry
+  ret void
+
+for.body:                                         ; preds = %for.body.preheader, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds float, ptr %a, i64 %indvars.iv
+  %arrayidx2 = getelementptr inbounds float, ptr %b, i64 %indvars.iv
+  %0 = load float, ptr %arrayidx, align 4
+  %1 = call float @llvm.tanh.f32(float %0)
+  store float %1, ptr %arrayidx, align 4
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
+  br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
+}
+
+define void @test_llvm_tanhf64(i32 %n, ptr noundef %a, ptr noundef %b) {
+; M1-LABEL: @test_llvm_tanhf64(
+; M1:  call <vscale x 1 x double> @skl_vftanh_v_f64m1(<vscale x 1 x double> {{%.*}}, i32 {{%.*}})
+; M2-LABEL: @test_llvm_tanhf64(
+; M2:  call <vscale x 2 x double> @skl_vftanh_v_f64m2(<vscale x 2 x double> {{%.*}}, i32 {{%.*}})
+; M4-LABEL: @test_llvm_tanhf64(
+; M4:  call <vscale x 4 x double> @skl_vftanh_v_f64m4(<vscale x 4 x double> {{%.*}}, i32 {{%.*}})
+; M8-LABEL: @test_llvm_tanhf64(
+; M8:  call <vscale x 8 x double> @skl_vftanh_v_f64m8(<vscale x 8 x double> {{%.*}}, i32 {{%.*}})
+entry:
+  %cmp10 = icmp sgt i32 %n, 0
+  br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
+
+for.body.preheader:                               ; preds = %entry
+  %wide.trip.count = zext i32 %n to i64
+  br label %for.body
+
+for.cond.cleanup:                                 ; preds = %for.body, %entry
+  ret void
+
+for.body:                                         ; preds = %for.body.preheader, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds double, ptr %a, i64 %indvars.iv
+  %arrayidx2 = getelementptr inbounds double, ptr %b, i64 %indvars.iv
+  %0 = load double, ptr %arrayidx, align 8
+  %1 = call double @llvm.tanh.f64(double %0)
+  store double %1, ptr %arrayidx, align 8
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
+  br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
+}
+
+define void @test_llvm_atan2f32(i32 %n, ptr noundef %a, ptr noundef %b) {
+; M1-LABEL: @test_llvm_atan2f32(
+; M1:  call <vscale x 2 x float> @skl_vfatan2_vv_f32m1({{(<vscale x 2 x float> %.*){2}, i32 %.*}})
+; M2-LABEL: @test_llvm_atan2f32(
+; M2:  call <vscale x 4 x float> @skl_vfatan2_vv_f32m2({{(<vscale x 4 x float> %.*){2}, i32 %.*}})
+; M4-LABEL: @test_llvm_atan2f32(
+; M4:  call <vscale x 8 x float> @skl_vfatan2_vv_f32m4({{(<vscale x 8 x float> %.*){2}, i32 %.*}})
+; M8-LABEL: @test_llvm_atan2f32(
+; M8:  call <vscale x 16 x float> @skl_vfatan2_vv_f32m8({{(<vscale x 16 x float> %.*){2}, i32 %.*}})
+entry:
+  %cmp10 = icmp sgt i32 %n, 0
+  br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
+
+for.body.preheader:                               ; preds = %entry
+  %wide.trip.count = zext i32 %n to i64
+  br label %for.body
+
+for.cond.cleanup:                                 ; preds = %for.body, %entry
+  ret void
+
+for.body:                                         ; preds = %for.body.preheader, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds float, ptr %a, i64 %indvars.iv
+  %arrayidx2 = getelementptr inbounds float, ptr %b, i64 %indvars.iv
+  %0 = load float, ptr %arrayidx, align 4
+  %1 = load float, ptr %arrayidx2, align 4
+  %2 = call float @llvm.atan2.f32(float %0, float %1)
+  store float %2, ptr %arrayidx, align 4
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
+  br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
+}
+
+define void @test_llvm_atan2f64(i32 %n, ptr noundef %a, ptr noundef %b) {
+; M1-LABEL: @test_llvm_atan2f64(
+; M1:  call <vscale x 1 x double> @skl_vfatan2_vv_f64m1({{(<vscale x 1 x double> %.*){2}, i32 %.*}})
+; M2-LABEL: @test_llvm_atan2f64(
+; M2:  call <vscale x 2 x double> @skl_vfatan2_vv_f64m2({{(<vscale x 2 x double> %.*){2}, i32 %.*}})
+; M4-LABEL: @test_llvm_atan2f64(
+; M4:  call <vscale x 4 x double> @skl_vfatan2_vv_f64m4({{(<vscale x 4 x double> %.*){2}, i32 %.*}})
+; M8-LABEL: @test_llvm_atan2f64(
+; M8:  call <vscale x 8 x double> @skl_vfatan2_vv_f64m8({{(<vscale x 8 x double> %.*){2}, i32 %.*}})
+entry:
+  %cmp10 = icmp sgt i32 %n, 0
+  br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
+
+for.body.preheader:                               ; preds = %entry
+  %wide.trip.count = zext i32 %n to i64
+  br label %for.body
+
+for.cond.cleanup:                                 ; preds = %for.body, %entry
+  ret void
+
+for.body:                                         ; preds = %for.body.preheader, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds double, ptr %a, i64 %indvars.iv
+  %arrayidx2 = getelementptr inbounds double, ptr %b, i64 %indvars.iv
+  %0 = load double, ptr %arrayidx, align 8
+  %1 = load double, ptr %arrayidx2, align 8
+  %2 = call double @llvm.atan2.f64(double %0, double %1)
+  store double %2, ptr %arrayidx, align 8
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
+  br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
+}

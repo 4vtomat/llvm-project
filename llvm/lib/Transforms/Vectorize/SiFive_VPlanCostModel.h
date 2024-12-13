@@ -202,8 +202,8 @@ private:
 
   /// Convenient method to return cost of an intrinsic
   InstructionCost getIntrinsicCost(Intrinsic::ID Id, Type *RetTy,
-                                   ArrayRef<Value *> Arguments,
-                                   FastMathFlags FMF) const;
+                                   ArrayRef<Type *> ArgTypes,
+                                   FastMathFlags FMF = FastMathFlags()) const;
 
   /// VPlan for which cost is computed
   const VPlan &Plan;

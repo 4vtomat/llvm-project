@@ -85,6 +85,7 @@ public:
   bool tryIndexedLoad(SDNode *Node);
 #if SIFIVE_CUSTOMIZATION
   bool tryFixREV8W(SDNode *Node);
+  bool tryReplaceConstantSplatWithStridedLoad(SDNode *Node);
 #endif
 
   bool selectShiftMask(SDValue N, unsigned ShiftWidth, SDValue &ShAmt);
@@ -201,6 +202,14 @@ private:
   bool doPeepholeMergeVVMFold();
   bool doPeepholeNoRegPassThru();
   bool performCombineVMergeAndVOps(SDNode *N);
+
+#if SIFIVE_CUSTOMIZATION
+  template <class NodeTy>
+  SDValue getAddr(NodeTy *N, SelectionDAG &DAG, bool IsLocal = true,
+                  bool IsExternWeak = false) const;
+  template <class NodeTy>
+  SDValue getCompactAddr(NodeTy *N, SelectionDAG &DAG, unsigned RelaxHi) const;
+#endif
 };
 
 class RISCVDAGToDAGISelLegacy : public SelectionDAGISelLegacy {

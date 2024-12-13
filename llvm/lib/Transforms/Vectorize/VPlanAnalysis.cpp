@@ -64,6 +64,15 @@ Type *VPTypeAnalysis::inferScalarTypeForRecipe(const VPInstruction *R) {
     // operand. More over, this will lead to crash in this analysis if its
     // result is later or-ed with i1
     return IntegerType::get(Ctx, 1);
+  case VPInstruction::ComputeReductionResultWithMask:
+  case VPInstruction::ExitingCond:
+  case VPInstruction::CSAInitMask:
+  case VPInstruction::CSAInitData:
+  case VPInstruction::CSAMaskPhi:
+  case VPInstruction::CSAMaskSel:
+  case VPInstruction::CSAAnyActive:
+  case VPInstruction::MonotonicUpdate:
+    return inferScalarType(R->getOperand(0));
 #endif // SIFIVE_CUSTOMIZATION
   case VPInstruction::ActiveLaneMask:
     return inferScalarType(R->getOperand(1));
@@ -219,6 +228,9 @@ Type *VPTypeAnalysis::inferScalarType(const VPValue *V) {
       TypeSwitch<const VPRecipeBase *, Type *>(V->getDefiningRecipe())
           .Case<VPActiveLaneMaskPHIRecipe, VPCanonicalIVPHIRecipe,
                 VPFirstOrderRecurrencePHIRecipe, VPReductionPHIRecipe,
+#if SIFIVE_CUSTOMIZATION
+                VPCSAHeaderPHIRecipe, VPMonotonicHeaderPHIRecipe,
+#endif // SIFIVE_CUSTOMIZATION
                 VPWidenPointerInductionRecipe, VPEVLBasedIVPHIRecipe>(
               [this](const auto *R) {
                 // Handle header phi recipes, except VPWidenIntOrFpInduction
@@ -230,6 +242,9 @@ Type *VPTypeAnalysis::inferScalarType(const VPValue *V) {
           .Case<VPWidenIntOrFpInductionRecipe, VPDerivedIVRecipe>(
               [](const auto *R) { return R->getScalarType(); })
           .Case<VPReductionRecipe, VPPredInstPHIRecipe, VPWidenPHIRecipe,
+#if SIFIVE_CUSTOMIZATION
+                VPCSADataUpdateRecipe, VPCSAExtractScalarRecipe,
+#endif // SIFIVE_CUSTOMIZATION
                 VPScalarIVStepsRecipe, VPWidenGEPRecipe, VPVectorPointerRecipe,
                 VPReverseVectorPointerRecipe, VPWidenCanonicalIVRecipe>(
               [this](const VPRecipeBase *R) {
