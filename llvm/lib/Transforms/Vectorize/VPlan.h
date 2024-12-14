@@ -3311,6 +3311,12 @@ public:
   // This value is only used by the non RISC-V version of CSA
   VPValue *getVPAnyActive() const { return getOperand(5); }
   void setVPAnyActive(VPValue *AnyActive) { addOperand(AnyActive); }
+  /// Return the cost.
+  InstructionCost computeCost(ElementCount VF,
+                              VPCostContext &Ctx) const override {
+    // TODO: Compute accurate cost after retiring the legacy cost model.
+    return 0;
+  }
 };
 
 class VPCSAExtractScalarRecipe final : public VPSingleDefRecipe {
@@ -3339,6 +3345,12 @@ public:
   VPValue *getVPMaskSel() const { return getOperand(1); }
   VPValue *getVPDataSel() const { return getOperand(2); }
   VPValue *getVPCSAVLSel() const { return getOperand(3); }
+  /// Return the cost.
+  InstructionCost computeCost(ElementCount VF,
+                              VPCostContext &Ctx) const override {
+    // TODO: Compute accurate cost after retiring the legacy cost model.
+    return 0;
+  }
 };
 
 class VPMonotonicHeaderPHIRecipe final : public VPHeaderPHIRecipe {

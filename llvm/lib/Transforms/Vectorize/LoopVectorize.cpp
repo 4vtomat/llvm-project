@@ -5384,6 +5384,7 @@ void LoopVectorizationPlanner::emitInvalidCostRemarks(
       VPCostContext CostCtx(CM.TTI, *CM.TLI, Legal->getWidestInductionType(),
                             CM);
       precomputeCosts(*Plan, VF, CostCtx);
+#if SIFIVE_CUSTOMIZATION
       if (VF.isScalar())
         continue;
 #endif // SIFIVE_CUSTOMIZATION
