@@ -222,9 +222,13 @@ public:
     return MergeTo;
   }
 
-  iterator addSegment(Segment S) {
+  iterator addSegment(Segment S, bool IsBlockSeg) {
     ValueSlotIndex Start = S.Start, End = S.End;
     iterator I = impl().findInsertPos(S);
+
+    // blanketly add block segments
+    if (IsBlockSeg)
+      return LiveSegments().insert(I, S);
 
     // If the inserted segment starts in the middle or right at the end of
     // another segment, just extend that segment to contain the segment of S.
@@ -504,18 +508,19 @@ void ValueLiveRange::RenumberValues() {
   }
 }
 
-void ValueLiveRange::addSegmentToSet(Segment S) {
-  CalcValueLiveRangeUtilSet(this).addSegment(S);
+void ValueLiveRange::addSegmentToSet(Segment S, bool IsBlockSeg) {
+  CalcValueLiveRangeUtilSet(this).addSegment(S, IsBlockSeg);
 }
 
-ValueLiveRange::iterator ValueLiveRange::addSegment(Segment S) {
+ValueLiveRange::iterator ValueLiveRange::addSegment(Segment S,
+                                                    bool IsBlockSeg) {
   // Use the segment set, if it is available.
   if (segmentSet != nullptr) {
-    addSegmentToSet(S);
+    addSegmentToSet(S, IsBlockSeg);
     return end();
   }
   // Otherwise use the segment vector.
-  return CalcValueLiveRangeUtilVector(this).addSegment(S);
+  return CalcValueLiveRangeUtilVector(this).addSegment(S, IsBlockSeg);
 }
 
 void ValueLiveRange::append(const Segment S) {
@@ -961,7 +966,7 @@ void ValueLiveRangeUpdater::add(ValueLiveRange::Segment Seg) {
   // Fall back to the regular add method if the live range
   // is using the segment set instead of the segment vector.
   if (LR->segmentSet != nullptr) {
-    LR->addSegmentToSet(Seg);
+    LR->addSegmentToSet(Seg, false);
     return;
   }
 

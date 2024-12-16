@@ -1995,7 +1995,8 @@ static bool maySpillForCandidate(
         Worklist, AddValues, IgnoreValues, DT, EndBlock,
         TTI->getNumberOfRegisters(IntRC),
         TTI->getNumberOfRegisters(FpRC),
-        TTI->getNumberOfRegisters(VecRC), Inst);
+        TTI->getNumberOfRegisters(VecRC), Inst,
+        /* IsHoistContext */ true);
   }
 
   // No data optmistically allow.

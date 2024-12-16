@@ -459,8 +459,9 @@ public:
 
   /// Add the specified Segment to this range, merging segments as
   /// appropriate.  This returns an iterator to the inserted segment (which
-  /// may have grown since it was inserted).
-  iterator addSegment(Segment S);
+  /// may have grown since it was inserted). Block segments are live in
+  /// and live out with no uses within the segment block(s).
+  iterator addSegment(Segment S, bool IsBlockSeg);
 
   /// Attempt to extend a value defined after @p StartIdx to include @p Use.
   /// Both @p StartIdx and @p Use should be in the same basic block.
@@ -643,7 +644,7 @@ protected:
 
 private:
   friend class ValueLiveRangeUpdater;
-  void addSegmentToSet(Segment S);
+  void addSegmentToSet(Segment S, bool IsBlockSeg);
   void markValNoForDeletion(ValueSlotInfo *V);
 };
 
