@@ -13266,7 +13266,11 @@ BoUpSLP::isGatherShuffledSingleRegisterEntry(
       // Clear undef scalars.
       for (int I = 0, Sz = VL.size(); I < Sz; ++I)
         if (isa<PoisonValue>(VL[I]))
+#if SIFIVE_CUSTOMIZATION
+          Mask[Part * VL.size() + I] = PoisonMaskElem;
+#else
           Mask[I] = PoisonMaskElem;
+#endif // SIFIVE_CUSTOMIZATION
       return TargetTransformInfo::SK_PermuteSingleSrc;
     }
     // No perfect match, just shuffle, so choose the first tree node from the
