@@ -224,11 +224,11 @@ void unamed_struct_typedef(TypedefS *ptr) {
 // ENABLED: [[P1CHAR_0]] = !{[[P1CHAR:!.+]], [[P1CHAR]], i64 0}
 // ENABLED: [[P1CHAR]] = !{!"p1 omnipotent char", [[ANY_POINTER]], i64 0}
 // ENABLED: [[P2S1_TAG]] = !{[[P2S1:!.+]], [[P2S1]], i64 0}
-// ENABLED: [[P2S1]] = !{!"p2 _ZTS2S1", [[ANY_POINTER]], i64 0}
+// ENABLED: [[P2S1]] = !{!"p2 struct S1", [[ANY_POINTER]], i64 0}
 // ENABLED: [[P1S1_TAG:!.+]] = !{[[P1S1:!.+]], [[P1S1]], i64 0}
-// ENABLED: [[P1S1]] = !{!"p1 _ZTS2S1", [[ANY_POINTER]], i64 0}
+// ENABLED: [[P1S1]] = !{!"p1 struct S1", [[ANY_POINTER]], i64 0}
 // ENABLED: [[P1S2_TAG]] = !{[[P1S2:!.+]], [[P1S2]], i64 0}
-// ENABLED: [[P1S2]] = !{!"p1 _ZTS2S2", [[ANY_POINTER]], i64 0}
+// ENABLED: [[P1S2]] = !{!"p1 struct S2", [[ANY_POINTER]], i64 0}
 
 // ENABLED: [[S2_S_TAG]]  = !{[[S2_TY:!.+]], [[P1S1]], i64 0}
 // ENABLED: [[S2_TY]]  = !{!"S2", [[P1S1]], i64 0}

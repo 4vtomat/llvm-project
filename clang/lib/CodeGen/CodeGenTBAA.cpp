@@ -330,8 +330,23 @@ llvm::MDNode *CodeGenTBAA::getTypeInfoHelper(const Type *Ty) {
         bool IsClass;
         if (isMayAliasType(RT, IsClass, Context, PtrDepth))
           return AnyPtr;
+        SmallString<256> OutName("p");
+        OutName += std::to_string(PtrDepth);
+        OutName += " ";
+        if (Features.CPlusPlus) {
+          SmallString<256> Name;
+          // Don't use the mangler for C code.
+          OutName += (IsClass) ? "class " : "struct ";
+          llvm::raw_svector_ostream Out(Name);
+          CGTypes.getCXXABI().getMangleContext().mangleCanonicalTypeName(
+              QualType(Ty, 0), Out);
+          OutName += Name;
+        } else {
+          OutName += QualType(Ty, 0).getAsString(Context.getPrintingPolicy());
+        }
+        return createScalarTypeNode(OutName, AnyPtr, Size);
       }
-      if (!CodeGenOpts.NewStructPathTBAA || Features.CPlusPlus) {
+      if (Features.CPlusPlus) {
 #endif //SIFIVE_CUSTOMIZATION
       // For non-builtin types use the mangled name of the canonical type.
       llvm::raw_svector_ostream TyOut(TyName);
@@ -340,7 +355,7 @@ llvm::MDNode *CodeGenTBAA::getTypeInfoHelper(const Type *Ty) {
       } else {
         TyName = QualType(Ty, 0).getAsString(Context.getPrintingPolicy());
       }
-#endif //SIFIVE_CUSTOMIZATION
+#endif // SIFIVE_CUSTOMIZATION
     }
 
     SmallString<256> OutName("p");
