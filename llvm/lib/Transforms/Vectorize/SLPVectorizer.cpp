@@ -9136,6 +9136,16 @@ protected:
 
   BaseShuffleAnalysis(Type *ScalarTy) : ScalarTy(ScalarTy) {}
 
+#if SIFIVE_CUSTOMIZATION
+  void adjustMask(SmallVectorImpl<int> &Mask) {
+    unsigned ScalarTyNumElements = getNumElements(ScalarTy);
+    if (ScalarTyNumElements != 1) {
+      assert(SLPReVec && "FixedVectorType is not expected.");
+      transformScalarShuffleIndiciesToVector(ScalarTyNumElements, Mask);
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   /// V is expected to be a vectorized value.
   /// When REVEC is disabled, there is no difference between VF and
   /// VNumElements.
@@ -9146,6 +9156,9 @@ protected:
     assert(V && "V cannot be nullptr");
     assert(isa<FixedVectorType>(V->getType()) &&
            "V does not have FixedVectorType");
+#if SIFIVE_CUSTOMIZATION
+    return getNumElements(V->getType());
+#else
     assert(ScalarTy && "ScalarTy cannot be nullptr");
     unsigned ScalarTyNumElements = getNumElements(ScalarTy);
     unsigned VNumElements =
@@ -9155,6 +9168,7 @@ protected:
     assert(VNumElements % ScalarTyNumElements == 0 &&
            "the number of elements of V is not a vectorized value");
     return VNumElements / ScalarTyNumElements;
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   /// Checks if the mask is an identity mask.
@@ -10465,8 +10479,15 @@ class BoUpSLP::ShuffleCostEstimator : public BaseShuffleAnalysis {
       // Shuffle 2 entry nodes.
       const TreeEntry *E = P1.get<const TreeEntry *>();
       unsigned VF = E->getVectorFactor();
+#if SIFIVE_CUSTOMIZATION
+      VF *= getNumElements(E->Scalars.front()->getType());
+#endif // SIFIVE_CUSTOMIZATION
       const TreeEntry *E2 = P2.get<const TreeEntry *>();
+#if SIFIVE_CUSTOMIZATION
+      CommonVF = std::max(VF, E2->getVectorFactor() * getNumElements(E->Scalars.front()->getType()));
+#else
       CommonVF = std::max(VF, E2->getVectorFactor());
+#endif // SIFIVE_CUSTOMIZATION
       assert(all_of(Mask,
                     [=](int Idx) {
                       return Idx < 2 * static_cast<int>(CommonVF);
@@ -10499,6 +10520,9 @@ class BoUpSLP::ShuffleCostEstimator : public BaseShuffleAnalysis {
       // Shuffle single entry node.
       const TreeEntry *E = P1.get<const TreeEntry *>();
       unsigned VF = E->getVectorFactor();
+#if SIFIVE_CUSTOMIZATION
+      VF *= getNumElements(E->Scalars.front()->getType());
+#endif // SIFIVE_CUSTOMIZATION
       CommonVF = VF;
       assert(
           all_of(Mask,
@@ -10507,11 +10531,17 @@ class BoUpSLP::ShuffleCostEstimator : public BaseShuffleAnalysis {
       if (E->Scalars.size() == Mask.size() && VF != Mask.size()) {
         SmallVector<int> EMask = E->getCommonMask();
         assert(!EMask.empty() && "Expected non-empty common mask.");
+#if SIFIVE_CUSTOMIZATION
+      BaseShuffleAnalysis::adjustMask(EMask);
+#endif // SIFIVE_CUSTOMIZATION
         for (int &Idx : CommonMask) {
           if (Idx != PoisonMaskElem)
             Idx = EMask[Idx];
         }
         CommonVF = E->Scalars.size();
+#if SIFIVE_CUSTOMIZATION
+        CommonVF *= getNumElements(E->Scalars.front()->getType());
+#endif // SIFIVE_CUSTOMIZATION
       } else if (unsigned Factor = E->getInterleaveFactor();
                  Factor > 0 && E->Scalars.size() != Mask.size() &&
                  ShuffleVectorInst::isDeInterleaveMaskOfFactor(CommonMask,
@@ -10547,7 +10577,11 @@ class BoUpSLP::ShuffleCostEstimator : public BaseShuffleAnalysis {
       // Shuffle vector and tree node.
       unsigned VF = getVF(V1);
       const TreeEntry *E2 = P2.get<const TreeEntry *>();
+#if SIFIVE_CUSTOMIZATION
+      CommonVF = std::max(VF, E2->getVectorFactor() * getNumElements(E2->Scalars.front()->getType()));
+#else
       CommonVF = std::max(VF, E2->getVectorFactor());
+#endif // SIFIVE_CUSTOMIZATION
       assert(all_of(Mask,
                     [=](int Idx) {
                       return Idx < 2 * static_cast<int>(CommonVF);
@@ -10556,6 +10590,9 @@ class BoUpSLP::ShuffleCostEstimator : public BaseShuffleAnalysis {
       if (E2->Scalars.size() == VF && VF != CommonVF) {
         SmallVector<int> E2Mask = E2->getCommonMask();
         assert(!E2Mask.empty() && "Expected non-empty common mask.");
+#if SIFIVE_CUSTOMIZATION
+        BaseShuffleAnalysis::adjustMask(E2Mask);
+#endif // SIFIVE_CUSTOMIZATION
         for (int &Idx : CommonMask) {
           if (Idx == PoisonMaskElem)
             continue;
@@ -10573,7 +10610,11 @@ class BoUpSLP::ShuffleCostEstimator : public BaseShuffleAnalysis {
       // Shuffle vector and tree node.
       unsigned VF = getVF(V2);
       const TreeEntry *E1 = P1.get<const TreeEntry *>();
+#if SIFIVE_CUSTOMIZATION
+      CommonVF = std::max(VF, E1->getVectorFactor() * getNumElements(E1->Scalars.front()->getType()));
+#else
       CommonVF = std::max(VF, E1->getVectorFactor());
+#endif // SIFIVE_CUSTOMIZATION
       assert(all_of(Mask,
                     [=](int Idx) {
                       return Idx < 2 * static_cast<int>(CommonVF);
@@ -10582,6 +10623,9 @@ class BoUpSLP::ShuffleCostEstimator : public BaseShuffleAnalysis {
       if (E1->Scalars.size() == VF && VF != CommonVF) {
         SmallVector<int> E1Mask = E1->getCommonMask();
         assert(!E1Mask.empty() && "Expected non-empty common mask.");
+#if SIFIVE_CUSTOMIZATION
+        BaseShuffleAnalysis::adjustMask(E1Mask);
+#endif // SIFIVE_CUSTOMIZATION
         for (int &Idx : CommonMask) {
           if (Idx == PoisonMaskElem)
             continue;
@@ -10618,11 +10662,13 @@ class BoUpSLP::ShuffleCostEstimator : public BaseShuffleAnalysis {
           V2 = getAllOnesValue(*R.DL, getWidenedType(ScalarTy, CommonVF));
       }
     }
+#ifndef SIFIVE_CUSTOMIZATION
     if (auto *VecTy = dyn_cast<FixedVectorType>(ScalarTy)) {
       assert(SLPReVec && "FixedVectorType is not expected.");
       transformScalarShuffleIndiciesToVector(VecTy->getNumElements(),
                                              CommonMask);
     }
+#endif // SIFIVE_CUSTOMIZATION
     InVectors.front() =
         Constant::getNullValue(getWidenedType(ScalarTy, CommonMask.size()));
     if (InVectors.size() == 2)
@@ -10759,6 +10805,11 @@ public:
       add(E1, Mask);
       return;
     }
+#if SIFIVE_CUSTOMIZATION
+    SmallVector<int> NewMask(Mask);
+    BaseShuffleAnalysis::adjustMask(NewMask);
+    Mask = NewMask;
+#endif // SIFIVE_CUSTOMIZATION
     if (InVectors.empty()) {
       CommonMask.assign(Mask.begin(), Mask.end());
       InVectors.assign({&E1, &E2});
@@ -10779,6 +10830,11 @@ public:
     estimateNodesPermuteCost(E1, &E2, Mask, Part, SliceSize);
   }
   void add(const TreeEntry &E1, ArrayRef<int> Mask) {
+#if SIFIVE_CUSTOMIZATION
+    SmallVector<int> NewMask(Mask);
+    BaseShuffleAnalysis::adjustMask(NewMask);
+    Mask = NewMask;
+#endif // SIFIVE_CUSTOMIZATION
     if (InVectors.empty()) {
       CommonMask.assign(Mask.begin(), Mask.end());
       InVectors.assign(1, &E1);
@@ -10819,6 +10875,11 @@ public:
   }
   /// Adds another one input vector and the mask for the shuffling.
   void add(Value *V1, ArrayRef<int> Mask, bool ForExtracts = false) {
+#if SIFIVE_CUSTOMIZATION
+    SmallVector<int> NewMask(Mask);
+    BaseShuffleAnalysis::adjustMask(NewMask);
+    Mask = NewMask;
+#endif // SIFIVE_CUSTOMIZATION
     if (InVectors.empty()) {
       assert(CommonMask.empty() && !ForExtracts &&
              "Expected empty input mask/vectors.");
@@ -10918,6 +10979,18 @@ public:
            ArrayRef<int> SubVectorsMask, unsigned VF = 0,
            function_ref<void(Value *&, SmallVectorImpl<int> &)> Action = {}) {
     IsFinalized = true;
+#if SIFIVE_CUSTOMIZATION
+    unsigned ScalarTyNumElements = getNumElements(ScalarTy);
+    SmallVector<int> NewExtMask(ExtMask);
+    SmallVector<int> NewSubVectorsMask(SubVectorsMask);
+    if (ScalarTyNumElements != 1) {
+      assert(SLPReVec && "FixedVectorType is not expected.");
+      transformScalarShuffleIndiciesToVector(ScalarTyNumElements, NewExtMask);
+      ExtMask = NewExtMask;
+      transformScalarShuffleIndiciesToVector(ScalarTyNumElements, NewSubVectorsMask);
+      SubVectorsMask = NewSubVectorsMask;
+    }
+#endif // SIFIVE_CUSTOMIZATION
     if (Action) {
       const PointerUnion<Value *, const TreeEntry *> &Vec = InVectors.front();
       if (InVectors.size() == 2)
@@ -14307,6 +14380,11 @@ public:
            "castToScalarTyElem expects V1 and V2 to be FixedVectorType");
     V1 = castToScalarTyElem(V1);
     V2 = castToScalarTyElem(V2);
+#if SIFIVE_CUSTOMIZATION
+    SmallVector<int> NewMask(Mask);
+    BaseShuffleAnalysis::adjustMask(NewMask);
+    Mask = NewMask;
+#endif // SIFIVE_CUSTOMIZATION
     if (InVectors.empty()) {
       InVectors.push_back(V1);
       InVectors.push_back(V2);
@@ -14338,6 +14416,11 @@ public:
     assert(isa<FixedVectorType>(V1->getType()) &&
            "castToScalarTyElem expects V1 to be FixedVectorType");
     V1 = castToScalarTyElem(V1);
+#if SIFIVE_CUSTOMIZATION
+    SmallVector<int> NewMask(Mask);
+    BaseShuffleAnalysis::adjustMask(NewMask);
+    Mask = NewMask;
+#endif // SIFIVE_CUSTOMIZATION
     if (InVectors.empty()) {
       InVectors.push_back(V1);
       CommonMask.assign(Mask.begin(), Mask.end());
@@ -14411,11 +14494,20 @@ public:
     IsFinalized = true;
     unsigned ScalarTyNumElements = getNumElements(ScalarTy);
     SmallVector<int> NewExtMask(ExtMask);
+#if SIFIVE_CUSTOMIZATION
+    SmallVector<int> NewSubVectorsMask(SubVectorsMask);
+#endif // SIFIVE_CUSTOMIZATION
     if (ScalarTyNumElements != 1) {
       assert(SLPReVec && "FixedVectorType is not expected.");
+#ifndef SIFIVE_CUSTOMIZATION
       transformScalarShuffleIndiciesToVector(ScalarTyNumElements, CommonMask);
+#endif // SIFIVE_CUSTOMIZATION
       transformScalarShuffleIndiciesToVector(ScalarTyNumElements, NewExtMask);
       ExtMask = NewExtMask;
+#if SIFIVE_CUSTOMIZATION
+      transformScalarShuffleIndiciesToVector(ScalarTyNumElements, NewSubVectorsMask);
+      SubVectorsMask = NewSubVectorsMask;
+#endif // SIFIVE_CUSTOMIZATION
     }
     if (Action) {
       Value *Vec = InVectors.front();
