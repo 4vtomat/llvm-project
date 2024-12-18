@@ -35,7 +35,6 @@
 
 #include <atomic>
 #include <type_traits>
-#if SIFIVE_CUSTOMIZATION
 
 #include "llvm/Transforms/IPO/SiFive_LoopDataLayout.h"
 #include "llvm/Transforms/Vectorize/LoopVectorize.h"
@@ -123,6 +122,31 @@ static bool isInductionPHI(PHINode *Index, Loop *L, ScalarEvolution &SE) {
       return Rec->isAffine() && !SE.containsUndefs(SE.getSCEV(P));
     return false;
   };
+  auto isInductionUnderInternalFlow = [&](PHINode *P, Loop *L) {
+    if (!SE.isSCEVable(P->getType()))
+      return false;
+    // Obtain the backedge phi input
+    Value *InVal = P->getIncomingValueForBlock(L->getLoopLatch());
+    if (!InVal->hasOneUse())
+      return false;
+    // Currently only detect simple flow.
+    auto *PN = dyn_cast<PHINode>(InVal);
+    if (PN && PN->getNumIncomingValues() == 2) {
+      for (Value *IncValue : PN->incoming_values()) {
+        // ignore the outer PHI we started with.
+        if (IncValue == P)
+          continue;
+        auto *InInst = dyn_cast<Instruction>(IncValue);
+        if (!InInst)
+          continue;
+        if (!L->contains(InInst->getParent()))
+          continue;
+        if (isa<SCEVAddExpr>(SE.getSCEV(InInst)))
+          return !SE.containsUndefs(SE.getSCEV(InInst));
+      }
+    }
+    return false;
+  };
   auto FindAltLatchCmp = [&](Instruction *StepInst, Loop *L) -> ICmpInst * {
     for (User *U : StepInst->users())
       if (auto *CurCmp = dyn_cast<ICmpInst>(U))
@@ -175,6 +199,8 @@ static bool isInductionPHI(PHINode *Index, Loop *L, ScalarEvolution &SE) {
       FoundInductionVar |= (any_of(StepInst->operands(), [=](const Value *Op) {
         return (Op == Index);
       }));
+    } else if (isInductionUnderInternalFlow(Index, L)) {
+      FoundInductionVar = true;
     }
   }
   return FoundInductionVar;
@@ -195,8 +221,46 @@ static bool matchBaseGEP(GetElementPtrInst *GEP, Type *RefTy, Value *RefPtr,
           (GEP->getOperand(2) == Indices[1]));
 }
 
+static Value *findStoredAddress(Value *SrcPtr) {
+  Value *SrcGEP = nullptr;
+  // Find any related stores that consume this SrcPtr
+  // and return their address descriptor.
+  for (User *U : SrcPtr->users())
+    if (auto *SI = dyn_cast<StoreInst>(U))
+      if (SI->getValueOperand() == SrcPtr) {
+        Value *Ptr = SI->getPointerOperand();
+        if (isa<GetElementPtrInst>(Ptr)) {
+          SrcGEP = Ptr;
+          break;
+        }
+      }
+
+  return SrcGEP;
+}
+
+static StoreInst *findRelatedStore(Value *SrcPtr) {
+  // Find any related stores that consume this SrcPtr
+  // and return their store verified via value.
+  for (User *U : SrcPtr->users())
+    if (auto *SI = dyn_cast<StoreInst>(U))
+      if (SI->getValueOperand() == SrcPtr)
+        return SI;
+
+  return nullptr;
+}
+
+static bool isMallocOrCallocFn(const Value *V, const TargetLibraryInfo *TLI) {
+  if (auto *CI = dyn_cast<CallInst>(V)) {
+    LibFunc TLIFn;
+    TLI->getLibFunc(*CI, TLIFn);
+    return ((TLIFn == LibFunc_calloc) || (TLIFn == LibFunc_malloc));
+  }
+  return false;
+}
+
 static LoopDataLayoutResult detectArrayOfStructDataAccess(
-    Loop *L, LoopInfo &LI, ScalarEvolution &SE, unsigned MaxElements,
+    Loop *L, LoopInfo &LI, ScalarEvolution &SE,
+    const TargetLibraryInfo &TLI, unsigned MaxElements,
     SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>, int>
         &LocalCandidateMap, bool &IsVectorized) {
   bool FoundArrayOfStructDataAccessor = false;
@@ -247,12 +311,16 @@ static LoopDataLayoutResult detectArrayOfStructDataAccess(
           continue;
 
         Value *SrcPtr = GEP->getPointerOperand();
+        Value *Ptr = nullptr;
         // TODO: possibly other patterns?
-        auto *Ld = dyn_cast<LoadInst>(SrcPtr);
-        if (!Ld)
+        if (auto *Ld = dyn_cast<LoadInst>(SrcPtr))
+          Ptr = Ld->getPointerOperand();
+        else if(isMallocOrCallocFn(SrcPtr, &TLI))
+          Ptr = findStoredAddress(SrcPtr);
+
+        if (!Ptr)
           continue;
 
-        Value *Ptr = Ld->getPointerOperand();
         auto *SrcGEP = dyn_cast<GetElementPtrInst>(Ptr);
         if (!SrcGEP)
           continue;
@@ -764,7 +832,9 @@ static void splitAddressStoresForAllocations(
     Value *SrcPtr, Type *AltTy, StructType *ArrayST,
     const TargetLibraryInfo &TLI, const DataLayout &DL,
     SmallPtrSetImpl<StoreInst *> &VisitedStores,
-    SmallPtrSetImpl<StoreInst *> &AddedStores, const uint64_t StartingOffset,
+    SmallPtrSetImpl<StoreInst *> &AddedStores,
+    SmallDenseMap<GetElementPtrInst *, Value *> &LocalAddressMap,
+    const uint64_t StartingOffset,
     Instruction *RefInst, bool ReallocReuseGEPs) {
   Function *F = RefInst->getParent()->getParent();
   auto *CurCB = dyn_cast<CallBase>(SrcPtr);
@@ -807,11 +877,9 @@ static void splitAddressStoresForAllocations(
 
       // Only related stores with GEPs are processed.
       Value *Ptr = SI->getPointerOperand();
-      if (isa<GetElementPtrInst>(Ptr)) {
-        if (VisitedStores.insert(SI).second) {
+      if (isa<GetElementPtrInst>(Ptr))
+        if (VisitedStores.insert(SI).second)
           Worklist.push_back(SI);
-        }
-      }
     }
   }
 
@@ -869,15 +937,13 @@ static void splitAddressStoresForAllocations(
         IRB.SetInsertPoint(SI);
         auto *Store = IRB.CreateStore(NewI, BaseAddr);
         AddedStores.insert(Store);
-        // Now process all the GEP uses of the original allocation function and
-        // replace its ptr via type matching so that its usage model is correct.
-        SmallVector<GetElementPtrInst *, 4> GEPWorklist;
-        for (User *U : OrigI->users()) {
+        // Now add a map entry for every non base field access that we will
+        // need to replace SrcPtr's use with NewI.
+        for (User *U : SrcPtr->users())
           if (auto *UserGEP = dyn_cast<GetElementPtrInst>(U))
             if (EltTy == UserGEP->getResultElementType())
-              if (UserGEP->getPointerOperand() != NewI)
-                UserGEP->setOperand(0, NewI);
-        }
+              LocalAddressMap[UserGEP] = NewI;
+
       } else {
         // Check if we have an orthogonal formed DerivedGEP and replace it if
         // we do, else just use the one we have.  The orthogonal formed GEPs
@@ -1005,15 +1071,6 @@ static bool isFreeCall(const Value *V, const TargetLibraryInfo *TLI) {
     LibFunc TLIFn;
     TLI->getLibFunc(*CI, TLIFn);
     return (TLIFn == LibFunc_free);
-  }
-  return false;
-}
-
-static bool isMallocOrCallocFn(const Value *V, const TargetLibraryInfo *TLI) {
-  if (auto *CI = dyn_cast<CallInst>(V)) {
-    LibFunc TLIFn;
-    TLI->getLibFunc(*CI, TLIFn);
-    return ((TLIFn == LibFunc_calloc) || (TLIFn == LibFunc_malloc));
   }
   return false;
 }
@@ -1164,12 +1221,16 @@ static void doActionsForMatchedType(
     SmallPtrSetImpl<StoreInst *> &VisitedStores,
     SmallPtrSetImpl<StoreInst *> &AddedStores,
     const SmallDenseMap<Type *, Type *> &TranslatedTypeMap,
-    DenseMap<Type *, SmallVector<Value *>> &GEPTypeToIndices) {
+    DenseMap<Type *, SmallVector<Value *>> &GEPTypeToIndices,
+    SmallDenseMap<GetElementPtrInst* , Value *> &LocalAddressMap) {
   auto *Ld = dyn_cast<LoadInst>(RefInst);
   auto *St = dyn_cast<StoreInst>(RefInst);
   if (Ld || St) {
     auto *Ptr = (Ld) ? Ld->getPointerOperand() : St->getPointerOperand();
     if (auto *CurGEP = dyn_cast<GetElementPtrInst>(Ptr)) {
+      if (LocalAddressMap[CurGEP] == nullptr)
+        LocalAddressMap[CurGEP] = CurGEP->getPointerOperand();
+
       Type *CurTy = CurGEP->getSourceElementType();
       if (IsBaseTy && (CurTy == RefTy)) {
         updateAddressWithGlossary(GEPTypeToIndices, CurGEP, CurTy, AltTy);
@@ -1187,10 +1248,13 @@ static void doActionsForMatchedType(
 
         // Find the matching candidate to obtain its SrcGEP info.
         GetElementPtrInst *SrcGEP = nullptr;
+        bool IgnoreSrcGEP =
+            (St && isMallocOrCallocFn(CurGEP->getPointerOperand(), &TLI));
         for (auto &Candididates : LocalCandidateMap) {
           GetElementPtrInst *GEP = Candididates.first.first;
           if (GEP == CurGEP) {
-            SrcGEP = Candididates.first.second;
+            if (!IgnoreSrcGEP)
+              SrcGEP = Candididates.first.second;
             break;
           }
         }
@@ -1205,9 +1269,10 @@ static void doActionsForMatchedType(
             // the new field arrays.
             splitAddressStoresForAllocations(
                 SrcPtr, AltTy, ArrayST, TLI, DL, VisitedStores, AddedStores,
-                StartingOffset, RefInst, /* ReallocReuseGEPs */ false);
+                LocalAddressMap, StartingOffset, RefInst,
+                /* ReallocReuseGEPs */ false);
             // We may have updated this GEP, so re-fetch its ptr.
-            SrcPtr = CurGEP->getPointerOperand();
+            SrcPtr = LocalAddressMap[CurGEP];
             handleArrayOfStructuresAddressTranslation(
                 Builder, VisitedAddresses, ArrayST, Indices, CurGEP, SrcPtr, DL,
                 AltTy, TLI, UpdateSrcGEP, ArrayTyIdx, StartingOffset);
@@ -1261,14 +1326,14 @@ static void doActionsForMatchedType(
               // update its GEP so that we have the correct address for each field.
               splitAddressStoresForAllocations(
                   V, AltTy, ArrayST, TLI, DL, VisitedStores, AddedStores,
-                  StartingOffset, RefInst, ReallocReuseGEPs);
+                  LocalAddressMap, StartingOffset, RefInst, ReallocReuseGEPs);
             }
           }
 
         // Update non standard SrcGEPs that cannot be matched.
         Value *BasePtr = SrcGEP->getPointerOperand();
         if (UpdateSrcGEP) {
-          BasePtr = CurGEP->getPointerOperand();
+          BasePtr = LocalAddressMap[CurGEP];
           // Check and update the SrcGEP with AltTy blanketly.
           SrcGEP->setSourceElementType(AltTy);
           // Then update the last index with StartingOffset, the index we
@@ -1280,7 +1345,7 @@ static void doActionsForMatchedType(
           AltTy = ArrayST->getElementType(ArrayTyIdx);
         }
         if (ArrayTyIdx == 0)
-          BasePtr = CurGEP->getPointerOperand();
+          BasePtr = LocalAddressMap[CurGEP];
 
         handleArrayOfStructuresAddressTranslation(
             Builder, VisitedAddresses, ArrayST, Indices, CurGEP, BasePtr, DL,
@@ -1323,6 +1388,7 @@ static bool translateReferences(
   SmallPtrSet<GetElementPtrInst *, 8> VisitedAddresses;
   SmallPtrSet<StoreInst *, 8> VisitedStores;
   SmallPtrSet<StoreInst *, 8> AddedStores;
+  SmallDenseMap<GetElementPtrInst *, Value *> LocalAddressMap;
   DataLayout DL = F->getParent()->getDataLayout();
   bool HaveTransformations = false;
   // For each Local Reference there is an entry in UniqueTypeMap and in the
@@ -1357,7 +1423,7 @@ static bool translateReferences(
                                       IsBaseTy, LocalCandidateMap, DL, TLI,
                                       VisitedAddresses, VisitedStores,
                                       AddedStores, TranslatedTypeMap,
-                                      GEPTypeToIndices);
+                                      GEPTypeToIndices, LocalAddressMap);
               break;
             }
           }
@@ -1378,7 +1444,8 @@ static bool translateReferences(
 }
 
 static bool runOnLoops(
-    LoopInfo &LI, ScalarEvolution &SE, unsigned MaxElements,
+    LoopInfo &LI, ScalarEvolution &SE,
+    unsigned MaxElements,  const TargetLibraryInfo &TLI,
     SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>, int>
         &LocalCandidateMap) {
   bool FoundOpportunities = false;
@@ -1397,7 +1464,8 @@ static bool runOnLoops(
         if (CurL == L)
           continue;
 
-        auto Result = detectArrayOfStructDataAccess(CurL, LI, SE, MaxElements,
+        auto Result = detectArrayOfStructDataAccess(CurL, LI, SE, TLI,
+                                                    MaxElements,
                                                     LocalCandidateMap,
                                                     IsVectorized);
 
@@ -1406,7 +1474,8 @@ static bool runOnLoops(
       }
     }
     // Always process L regardless of loop nest context
-    auto Result = detectArrayOfStructDataAccess(L, LI, SE, MaxElements,
+    auto Result = detectArrayOfStructDataAccess(L, LI, SE, TLI,
+                                                MaxElements,
                                                 LocalCandidateMap,
                                                 IsVectorized);
 
@@ -1657,12 +1726,24 @@ static bool runOnFunction(
     Type *Ty = GEP->getSourceElementType();
     GetElementPtrInst *SrcGEP = Candididates.first.second;
     Value *SrcPtr = GEP->getPointerOperand();
-    auto *Ld = cast<LoadInst>(SrcPtr);
-    auto CandLocOpt = MemoryLocation::getOrNone(Ld);
-    if (!CandLocOpt)
-      continue;
+    auto *Ld = dyn_cast<LoadInst>(SrcPtr);
+    StoreInst *St = nullptr;
+    if (!Ld)
+      St = findRelatedStore(SrcPtr);
 
-    MemoryLocation CandLoc = *CandLocOpt;
+    MemoryLocation CandLoc;
+    if (Ld) {
+      auto CandLocOpt = MemoryLocation::getOrNone(Ld);
+      if (!CandLocOpt)
+        continue;
+      CandLoc = *CandLocOpt;
+    } else if (St) {
+      auto CandLocOpt = MemoryLocation::getOrNone(St);
+      if (!CandLocOpt)
+        continue;
+      CandLoc = *CandLocOpt;
+    }
+
     for (BasicBlock &BB : *F) {
       for (Instruction &I : BB) {
         if ((Ld == &I) || (GEP == &I) || (SrcGEP == &I))
@@ -2153,6 +2234,7 @@ static LoopDataLayoutResult analyzeWholeProgram(
   // The thinLTO interface is for testing purposes only right now.
   bool FoundOpportunities = false;
   for (Function &F : M) {
+    TargetLibraryInfo &TLI = LookupTLI(F);
     if (F.isDeclaration())
       continue;
 
@@ -2165,7 +2247,7 @@ static LoopDataLayoutResult analyzeWholeProgram(
     ScalarEvolution &SE = LookupScalarEvolutionInfo(F);
     SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>, int>
         &LocalCandidateMap = CandidateMap[&F];
-    if (runOnLoops(LI, SE, MaxElements, LocalCandidateMap)) {
+    if (runOnLoops(LI, SE, MaxElements, TLI, LocalCandidateMap)) {
       FoundOpportunities |= true;
       AAResults &AAR = AARGetter(F);
       SmallVector<Type *> &LocalParamMap = ParamMap[&F];
@@ -2409,5 +2491,3 @@ void LoopDataLayoutPass::printPipeline(
   static_cast<PassInfoMixin<LoopDataLayoutPass> *>(this)->printPipeline(
       OS, MapClassName2PassName);
 }
-
-#endif // SIFIVE_CUSTOMIZATION
