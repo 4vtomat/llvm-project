@@ -5,8 +5,10 @@ define i32 @foo() {
 ; CHECK-LABEL: @foo(
 ; CHECK-NEXT:  bb:
 ; CHECK-NEXT:    [[TMP0:%.*]] = extractelement <2 x i32> zeroinitializer, i32 0
-; CHECK-NEXT:    [[TMP1:%.*]] = extractelement <4 x i32> zeroinitializer, i32 0
-; CHECK-NEXT:    [[TMP2:%.*]] = add <4 x i32> zeroinitializer, zeroinitializer
+; CHECK-NEXT:    [[TMP4:%.*]] = or <4 x i32> zeroinitializer, zeroinitializer
+; CHECK-NEXT:    [[TMP1:%.*]] = extractelement <4 x i32> [[TMP4]], i32 0
+; CHECK-NEXT:    [[TMP5:%.*]] = mul <4 x i32> [[TMP4]], zeroinitializer
+; CHECK-NEXT:    [[TMP2:%.*]] = add <4 x i32> [[TMP5]], zeroinitializer
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i32 @llvm.vector.reduce.mul.v4i32(<4 x i32> [[TMP2]])
 ; CHECK-NEXT:    [[OP_RDX:%.*]] = mul i32 0, [[TMP3]]
 ; CHECK-NEXT:    [[OP_RDX1:%.*]] = mul i32 [[OP_RDX]], 0

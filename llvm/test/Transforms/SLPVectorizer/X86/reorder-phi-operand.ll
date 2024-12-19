@@ -100,7 +100,9 @@ define void @test2(ptr %p1, ptr %p2) {
 ; CHECK-NEXT:    [[TMP8:%.*]] = fmul fast <2 x double> [[TMP7]], <double 3.000000e+00, double 3.100000e+00>
 ; CHECK-NEXT:    br label [[BB1:%.*]]
 ; CHECK:       bb1:
-; CHECK-NEXT:    [[OP_RDX:%.*]] = fadd fast <2 x double> <double 9.000000e+00, double 0x4022999999999999>, [[TMP8]]
+; CHECK-NEXT:    [[TMP14:%.*]] = fadd fast <2 x double> <double 4.000000e+00, double 4.100000e+00>, [[TMP8]]
+; CHECK-NEXT:    [[TMP15:%.*]] = fadd fast <2 x double> [[TMP14]], <double 2.000000e+00, double 2.100000e+00>
+; CHECK-NEXT:    [[OP_RDX:%.*]] = fadd fast <2 x double> [[TMP15]], <double 3.000000e+00, double 3.100000e+00>
 ; CHECK-NEXT:    br label [[BB2:%.*]]
 ; CHECK:       bb2:
 ; CHECK-NEXT:    [[TMP9:%.*]] = phi <2 x double> [ [[OP_RDX]], [[BB1]] ], [ [[TMP13:%.*]], [[BB6:%.*]] ]

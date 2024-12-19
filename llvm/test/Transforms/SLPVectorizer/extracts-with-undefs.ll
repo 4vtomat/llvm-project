@@ -21,7 +21,8 @@ define void @test() {
 ; CHECK-NEXT:    [[TMP2:%.*]] = shufflevector <2 x i1> <i1 poison, i1 false>, <2 x i1> [[TMP1]], <2 x i32> <i32 2, i32 1>
 ; CHECK-NEXT:    [[TMP3:%.*]] = select <2 x i1> [[TMP2]], <2 x double> zeroinitializer, <2 x double> zeroinitializer
 ; CHECK-NEXT:    [[OP_RDX:%.*]] = fmul fast <2 x double> zeroinitializer, [[TMP3]]
-; CHECK-NEXT:    [[TMP4:%.*]] = fadd fast <2 x double> [[OP_RDX]], zeroinitializer
+; CHECK-NEXT:    [[TMP6:%.*]] = fmul fast <2 x double> [[OP_RDX]], zeroinitializer
+; CHECK-NEXT:    [[TMP4:%.*]] = fadd fast <2 x double> [[TMP6]], zeroinitializer
 ; CHECK-NEXT:    br label [[IF_END209_I]]
 ; CHECK:       if.end209.i:
 ; CHECK-NEXT:    [[TMP5:%.*]] = phi <2 x double> [ [[TMP4]], [[IF_THEN135_I]] ], [ zeroinitializer, [[EXIT]] ]

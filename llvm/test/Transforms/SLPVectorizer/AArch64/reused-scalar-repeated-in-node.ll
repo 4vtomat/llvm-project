@@ -56,8 +56,9 @@ define void @test() {
 ; CHECK-NEXT:    [[TMP24:%.*]] = shufflevector <16 x float> [[TMP23]], <16 x float> poison, <16 x i32> <i32 0, i32 1, i32 2, i32 3, i32 1, i32 5, i32 3, i32 1, i32 3, i32 9, i32 3, i32 1, i32 12, i32 13, i32 14, i32 15>
 ; CHECK-NEXT:    [[TMP18:%.*]] = fmul fast <16 x float> [[TMP24]], [[TMP13]]
 ; CHECK-NEXT:    [[TMP26:%.*]] = fmul fast <16 x float> [[TMP38]], [[TMP25]]
-; CHECK-NEXT:    [[OP_RDX:%.*]] = fadd fast <16 x float> poison, [[TMP26]]
-; CHECK-NEXT:    [[TMP29:%.*]] = fadd fast <16 x float> [[OP_RDX]], [[TMP18]]
+; CHECK-NEXT:    [[TMP40:%.*]] = fadd fast <16 x float> [[TMP26]], [[TMP18]]
+; CHECK-NEXT:    [[TMP41:%.*]] = fadd fast <16 x float> [[TMP40]], poison
+; CHECK-NEXT:    [[TMP29:%.*]] = fadd fast <16 x float> [[TMP41]], poison
 ; CHECK-NEXT:    [[TMP36]] = shufflevector <16 x float> [[TMP29]], <16 x float> poison, <8 x i32> <i32 5, i32 11, i32 12, i32 10, i32 14, i32 15, i32 poison, i32 poison>
 ; CHECK-NEXT:    [[TMP37]] = shufflevector <16 x float> [[TMP29]], <16 x float> poison, <2 x i32> <i32 6, i32 7>
 ; CHECK-NEXT:    br i1 poison, label %[[BB78]], label %[[BB167]]
