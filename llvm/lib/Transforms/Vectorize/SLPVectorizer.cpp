@@ -20825,13 +20825,12 @@ static RecurKind getRdxKind(Value *V) {
   return HorizontalReduction::getRdxKind(V);
 }
 static std::optional<unsigned> getAggregateSize(Instruction *InsertInst) {
-  if (auto *IE = dyn_cast<InsertElementInst>(InsertInst)) {
 #if SIFIVE_CUSTOMIZATION
-    if (isa<ScalableVectorType>(IE->getType()))
-      return std::nullopt;
+  if (isa<ScalableVectorType>(InsertInst->getType()))
+    return std::nullopt;
 #endif // SIFIVE_CUSTOMIZATION
+  if (auto *IE = dyn_cast<InsertElementInst>(InsertInst))
     return cast<FixedVectorType>(IE->getType())->getNumElements();
-  }
 
   unsigned AggregateSize = 1;
   auto *IV = cast<InsertValueInst>(InsertInst);
