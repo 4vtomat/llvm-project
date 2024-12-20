@@ -10476,11 +10476,11 @@ class BoUpSLP::ShuffleCostEstimator : public BaseShuffleAnalysis {
       const TreeEntry *E = P1.get<const TreeEntry *>();
       unsigned VF = E->getVectorFactor();
 #if SIFIVE_CUSTOMIZATION
-      VF *= getNumElements(ScalarTy);
+      VF *= getNumElements(E->Scalars.front()->getType());
 #endif // SIFIVE_CUSTOMIZATION
       const TreeEntry *E2 = P2.get<const TreeEntry *>();
 #if SIFIVE_CUSTOMIZATION
-      CommonVF = std::max(VF, E2->getVectorFactor() * getNumElements(ScalarTy));
+      CommonVF = std::max(VF, E2->getVectorFactor() * getNumElements(E->Scalars.front()->getType()));
 #else
       CommonVF = std::max(VF, E2->getVectorFactor());
 #endif // SIFIVE_CUSTOMIZATION
@@ -10517,18 +10517,14 @@ class BoUpSLP::ShuffleCostEstimator : public BaseShuffleAnalysis {
       const TreeEntry *E = P1.get<const TreeEntry *>();
       unsigned VF = E->getVectorFactor();
 #if SIFIVE_CUSTOMIZATION
-      VF *= getNumElements(ScalarTy);
+      VF *= getNumElements(E->Scalars.front()->getType());
 #endif // SIFIVE_CUSTOMIZATION
       CommonVF = VF;
       assert(
           all_of(Mask,
                  [=](int Idx) { return Idx < static_cast<int>(CommonVF); }) &&
           "All elements in mask must be less than CommonVF.");
-#if SIFIVE_CUSTOMIZATION
-      if (!ScalarTy->isVectorTy() && E->Scalars.size() == Mask.size() && VF != Mask.size()) {
-#else
       if (E->Scalars.size() == Mask.size() && VF != Mask.size()) {
-#endif // SIFIVE_CUSTOMIZATION
         SmallVector<int> EMask = E->getCommonMask();
         assert(!EMask.empty() && "Expected non-empty common mask.");
 #if SIFIVE_CUSTOMIZATION
@@ -10540,13 +10536,10 @@ class BoUpSLP::ShuffleCostEstimator : public BaseShuffleAnalysis {
         }
         CommonVF = E->Scalars.size();
 #if SIFIVE_CUSTOMIZATION
-        CommonVF *= getNumElements(ScalarTy);
+        CommonVF *= getNumElements(E->Scalars.front()->getType());
 #endif // SIFIVE_CUSTOMIZATION
       } else if (unsigned Factor = E->getInterleaveFactor();
                  Factor > 0 && E->Scalars.size() != Mask.size() &&
-#if SIFIVE_CUSTOMIZATION
-                 !ScalarTy->isVectorTy() &&
-#endif // SIFIVE_CUSTOMIZATION
                  ShuffleVectorInst::isDeInterleaveMaskOfFactor(CommonMask,
                                                                Factor)) {
         // Deinterleaved nodes are free.
@@ -10581,7 +10574,7 @@ class BoUpSLP::ShuffleCostEstimator : public BaseShuffleAnalysis {
       unsigned VF = getVF(V1);
       const TreeEntry *E2 = P2.get<const TreeEntry *>();
 #if SIFIVE_CUSTOMIZATION
-      CommonVF = std::max(VF, E2->getVectorFactor() * getNumElements(ScalarTy));
+      CommonVF = std::max(VF, E2->getVectorFactor() * getNumElements(E2->Scalars.front()->getType()));
 #else
       CommonVF = std::max(VF, E2->getVectorFactor());
 #endif // SIFIVE_CUSTOMIZATION
@@ -10590,11 +10583,7 @@ class BoUpSLP::ShuffleCostEstimator : public BaseShuffleAnalysis {
                       return Idx < 2 * static_cast<int>(CommonVF);
                     }) &&
              "All elements in mask must be less than 2 * CommonVF.");
-#if SIFIVE_CUSTOMIZATION
-      if (!ScalarTy->isVectorTy() &&E2->Scalars.size() == VF && VF != CommonVF) {
-#else
       if (E2->Scalars.size() == VF && VF != CommonVF) {
-#endif // SIFIVE_CUSTOMIZATION
         SmallVector<int> E2Mask = E2->getCommonMask();
         assert(!E2Mask.empty() && "Expected non-empty common mask.");
 #if SIFIVE_CUSTOMIZATION
@@ -10618,7 +10607,7 @@ class BoUpSLP::ShuffleCostEstimator : public BaseShuffleAnalysis {
       unsigned VF = getVF(V2);
       const TreeEntry *E1 = P1.get<const TreeEntry *>();
 #if SIFIVE_CUSTOMIZATION
-      CommonVF = std::max(VF, E1->getVectorFactor() * getNumElements(ScalarTy));
+      CommonVF = std::max(VF, E1->getVectorFactor() * getNumElements(E1->Scalars.front()->getType()));
 #else
       CommonVF = std::max(VF, E1->getVectorFactor());
 #endif // SIFIVE_CUSTOMIZATION
@@ -10627,11 +10616,7 @@ class BoUpSLP::ShuffleCostEstimator : public BaseShuffleAnalysis {
                       return Idx < 2 * static_cast<int>(CommonVF);
                     }) &&
              "All elements in mask must be less than 2 * CommonVF.");
-#if SIFIVE_CUSTOMIZATION
-      if (!ScalarTy->isVectorTy() && E1->Scalars.size() == VF && VF != CommonVF) {
-#else
       if (E1->Scalars.size() == VF && VF != CommonVF) {
-#endif // SIFIVE_CUSTOMIZATION
         SmallVector<int> E1Mask = E1->getCommonMask();
         assert(!E1Mask.empty() && "Expected non-empty common mask.");
 #if SIFIVE_CUSTOMIZATION
