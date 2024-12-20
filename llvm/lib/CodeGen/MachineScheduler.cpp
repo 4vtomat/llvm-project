@@ -1883,6 +1883,16 @@ void BaseMemOpClusterMutation::clusterNeighboringMemOps(
                             MemOpb.Width.getValue().getKnownMinValue();
     }
 
+#if SIFIVE_CUSTOMIZATION
+    SUnit *SUa = MemOpa.SU;
+    SUnit *SUb = MemOpb.SU;
+    if (!TII->shouldClusterMemOps(SUa, MemOpa.BaseOps, MemOpa.Offset,
+                                  MemOpa.OffsetIsScalable, SUb, MemOpb.BaseOps,
+                                  MemOpb.Offset, MemOpb.OffsetIsScalable,
+                                  ClusterLength, CurrentClusterBytes, IsLoad))
+      continue;
+
+#else
     if (!TII->shouldClusterMemOps(MemOpa.BaseOps, MemOpa.Offset,
                                   MemOpa.OffsetIsScalable, MemOpb.BaseOps,
                                   MemOpb.Offset, MemOpb.OffsetIsScalable,
@@ -1891,6 +1901,7 @@ void BaseMemOpClusterMutation::clusterNeighboringMemOps(
 
     SUnit *SUa = MemOpa.SU;
     SUnit *SUb = MemOpb.SU;
+#endif
     if (!ReorderWhileClustering && SUa->NodeNum > SUb->NodeNum)
       std::swap(SUa, SUb);
 

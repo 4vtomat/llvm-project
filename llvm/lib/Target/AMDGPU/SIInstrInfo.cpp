@@ -546,12 +546,15 @@ static bool memOpsHaveSameBasePtr(const MachineInstr &MI1,
   return Base1 == Base2;
 }
 
-bool SIInstrInfo::shouldClusterMemOps(ArrayRef<const MachineOperand *> BaseOps1,
+bool SIInstrInfo::shouldClusterMemOps(SUnit *SU1, // SIFIVE
+                                      ArrayRef<const MachineOperand *> BaseOps1,
                                       int64_t Offset1, bool OffsetIsScalable1,
+                                      SUnit *SU2, // SIFIVE
                                       ArrayRef<const MachineOperand *> BaseOps2,
                                       int64_t Offset2, bool OffsetIsScalable2,
-                                      unsigned ClusterSize,
-                                      unsigned NumBytes) const {
+                                      unsigned ClusterSize, unsigned NumBytes,
+                                      bool IsLoad // SIFIVE
+) const {
   // If the mem ops (to be clustered) do not have the same base ptr, then they
   // should not be clustered
   if (!BaseOps1.empty() && !BaseOps2.empty()) {

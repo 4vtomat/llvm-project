@@ -230,8 +230,14 @@ public:
               // allocation so there is no need for that kind of limit.
               // We also lie about the Offset and OffsetIsScalable parameters,
               // as they aren't used in the SIInstrInfo implementation.
+#if SIFIVE_CUSTOMIZATION
+              !SII->shouldClusterMemOps(nullptr, CI.BaseOps, 0, false, nullptr,
+                                        BaseOps, 0, false, 2, 2,
+                                        /*IsLoad=*/false)))) {
+#else
               !SII->shouldClusterMemOps(CI.BaseOps, 0, false, BaseOps, 0, false,
                                         2, 2)))) {
+#endif
           // Finish the current clause.
           Changed |= emitClause(CI, SII);
           CI = ClauseInfo();

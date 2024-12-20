@@ -32,6 +32,7 @@
 #include "llvm/CodeGen/MachineRegisterInfo.h"
 #include "llvm/CodeGen/MachineTraceMetrics.h"
 #include "llvm/CodeGen/RegisterScavenging.h"
+#include "llvm/CodeGen/ScheduleDAG.h"
 #include "llvm/CodeGen/StackMaps.h"
 #include "llvm/IR/DebugInfoMetadata.h"
 #include "llvm/IR/Module.h"
@@ -61,6 +62,16 @@ static cl::opt<MachineTraceStrategy> ForceMachineCombinerStrategy(
                           "Local strategy."),
                clEnumValN(MachineTraceStrategy::TS_MinInstrCount, "min-instr",
                           "MinInstrCount strategy.")));
+
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<unsigned>
+    LimitLoadClusterSuccSize("riscv-limit-load-cluster-succ-size",
+                             cl::desc("Only cluster two loads if the"
+                                      " # of successors of the first load is"
+                                      " less than a percentage of the enclosing"
+                                      " block size designated by this flag."),
+                             cl::Hidden, cl::init(8));
+#endif
 
 namespace llvm::RISCVVPseudosTable {
 
@@ -2957,13 +2968,35 @@ static bool memOpsHaveSameBasePtr(const MachineInstr &MI1,
 }
 
 bool RISCVInstrInfo::shouldClusterMemOps(
+    SUnit *SU1, // SIFIVE
     ArrayRef<const MachineOperand *> BaseOps1, int64_t Offset1,
-    bool OffsetIsScalable1, ArrayRef<const MachineOperand *> BaseOps2,
-    int64_t Offset2, bool OffsetIsScalable2, unsigned ClusterSize,
-    unsigned NumBytes) const {
+    bool OffsetIsScalable1,
+    SUnit *SU2, // SIFIVE
+    ArrayRef<const MachineOperand *> BaseOps2, int64_t Offset2,
+    bool OffsetIsScalable2, unsigned ClusterSize, unsigned NumBytes,
+    bool IsLoad // SIFIVE
+) const {
 #if SIFIVE_CUSTOMIZATION
   if (STI.getProcFamily() == RISCVSubtarget::SiFive7)
     return shouldClusterMemOpsSiFive7(BaseOps1, BaseOps2);
+
+  // We want to limit the number of clusters on P400 cores, which have smaller
+  // number of scalar pipes (especially FEX), to prevent a single EX pipe from
+  // being saturated.
+  assert(LimitLoadClusterSuccSize <= 100U &&
+         "-riscv-limit-load-cluster-succ-size should be a percentage");
+  if (STI.getProcFamily() == RISCVSubtarget::SiFiveP400 && IsLoad && SU1 &&
+      SU1->getInstr()) {
+    // Note that it's SU1's successors we are interested in. However,
+    // when the load/store clustering in MachineScheduler is configured
+    // with ReorderWhileClustering equal to false, there is a chance that
+    // SU1 and SU2 are swapped. Currently for P400 ReorderWhileClustering
+    // is set to true.
+    size_t NumInstrs = SU1->getInstr()->getParent()->size();
+    if (llvm::divideCeil(SU1->Succs.size() * 100U, NumInstrs) >
+        LimitLoadClusterSuccSize)
+      return false;
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   // If the mem ops (to be clustered) do not have the same base ptr, then they

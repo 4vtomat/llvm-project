@@ -573,12 +573,15 @@ public:
 
   /// Returns true if the two given memory operations should be scheduled
   /// adjacent.
-  bool shouldClusterMemOps(ArrayRef<const MachineOperand *> BaseOps1,
+  bool shouldClusterMemOps(SUnit *SU1, // SIFIVE
+                           ArrayRef<const MachineOperand *> BaseOps1,
                            int64_t Offset1, bool OffsetIsScalable1,
+                           SUnit *SU2, // SIFIVE
                            ArrayRef<const MachineOperand *> BaseOps2,
                            int64_t Offset2, bool OffsetIsScalable2,
-                           unsigned ClusterSize,
-                           unsigned NumBytes) const override;
+                           unsigned ClusterSize, unsigned NumBytes,
+                           bool IsLoad // SIFIVE
+  ) const override;
 
   /// Return true if two MIs access different memory addresses and false
   /// otherwise

@@ -327,12 +327,15 @@ public:
   static bool getMemOpInfo(unsigned Opcode, TypeSize &Scale, TypeSize &Width,
                            int64_t &MinOffset, int64_t &MaxOffset);
 
-  bool shouldClusterMemOps(ArrayRef<const MachineOperand *> BaseOps1,
+  bool shouldClusterMemOps(SUnit *SU1, // SIFIVE
+                           ArrayRef<const MachineOperand *> BaseOps1,
                            int64_t Offset1, bool OffsetIsScalable1,
+                           SUnit *SU2, // SIFIVE
                            ArrayRef<const MachineOperand *> BaseOps2,
                            int64_t Offset2, bool OffsetIsScalable2,
-                           unsigned ClusterSize,
-                           unsigned NumBytes) const override;
+                           unsigned ClusterSize, unsigned NumBytes,
+                           bool IsLoad // SIFIVE
+  ) const override;
 
   void copyPhysRegTuple(MachineBasicBlock &MBB, MachineBasicBlock::iterator I,
                         const DebugLoc &DL, MCRegister DestReg,

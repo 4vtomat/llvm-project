@@ -172,12 +172,15 @@ public:
       int64_t &Offset, bool &OffsetIsScalable, LocationSize &Width,
       const TargetRegisterInfo *TRI) const override;
 
-  bool shouldClusterMemOps(ArrayRef<const MachineOperand *> BaseOps1,
+  bool shouldClusterMemOps(SUnit *SU1, // SIFIVE
+                           ArrayRef<const MachineOperand *> BaseOps1,
                            int64_t Offset1, bool OffsetIsScalable1,
+                           SUnit *SU2, // SIFIVE
                            ArrayRef<const MachineOperand *> BaseOps2,
                            int64_t Offset2, bool OffsetIsScalable2,
-                           unsigned ClusterSize,
-                           unsigned NumBytes) const override;
+                           unsigned ClusterSize, unsigned NumBytes,
+                           bool IsLoad // SIFIVE
+  ) const override;
 
   bool getMemOperandWithOffsetWidth(const MachineInstr &LdSt,
                                     const MachineOperand *&BaseOp,

@@ -246,12 +246,15 @@ public:
       bool &OffsetIsScalable, LocationSize &Width,
       const TargetRegisterInfo *TRI) const final;
 
-  bool shouldClusterMemOps(ArrayRef<const MachineOperand *> BaseOps1,
+  bool shouldClusterMemOps(SUnit *SU1, // SIFIVE
+                           ArrayRef<const MachineOperand *> BaseOps1,
                            int64_t Offset1, bool OffsetIsScalable1,
+                           SUnit *SU2, // SIFIVE
                            ArrayRef<const MachineOperand *> BaseOps2,
                            int64_t Offset2, bool OffsetIsScalable2,
-                           unsigned ClusterSize,
-                           unsigned NumBytes) const override;
+                           unsigned ClusterSize, unsigned NumBytes,
+                           bool IsLoad // SIFIVE
+  ) const override;
 
   bool shouldScheduleLoadsNear(SDNode *Load0, SDNode *Load1, int64_t Offset0,
                                int64_t Offset1, unsigned NumLoads) const override;
