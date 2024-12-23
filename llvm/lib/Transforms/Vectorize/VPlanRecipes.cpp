@@ -1179,17 +1179,6 @@ bool VPInstruction::isFPMathOp() const {
          Opcode == Instruction::FCmp || Opcode == Instruction::Select;
 }
 #endif
-#if SIFIVE_CUSTOMIZATION
-InstructionCost VPInstruction::computeCost(ElementCount VF,
-                                           VPCostContext &Ctx) const {
-  if (getOpcode() == VPInstruction::MonotonicUpdate && VF.isVector() &&
-      !all_of(users(), IsaPred<VPIRInstruction>))
-    return InstructionCost::getInvalid();
-
-  // Currently upstream vplan-based cost model return 0 on every VPInstruction.
-  return 0;
-}
-#endif // SIFIVE_CUSTOMIZATION
 
 void VPInstruction::execute(VPTransformState &State) {
   assert(!State.Lane && "VPInstruction executing an Lane");

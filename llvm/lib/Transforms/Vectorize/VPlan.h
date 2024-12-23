@@ -1508,14 +1508,19 @@ public:
   /// TODO: We currently execute only per-part unless a specific instance is
   /// provided.
   void execute(VPTransformState &State) override;
-#if SIFIVE_CUSTOMIZATION
-  InstructionCost computeCost(ElementCount VF,
-                              VPCostContext &Ctx) const override;
-#endif // SIFIVE_CUSTOMIZATION
 
   /// Return the cost of this VPInstruction.
   InstructionCost computeCost(ElementCount VF,
                               VPCostContext &Ctx) const override {
+#if SIFIVE_CUSTOMIZATION
+    if (getOpcode() == VPInstruction::MonotonicUpdate && VF.isVector() &&
+        !all_of(users(), [](VPUser *R) {
+          return cast<VPRecipeBase>(R)->getVPDefID() ==
+                 VPRecipeBase::VPIRInstructionSC;
+        }))
+      return InstructionCost::getInvalid();
+#endif // SIFIVE_CUSTOMIZATION
+
     // TODO: Compute accurate cost after retiring the legacy cost model.
     return 0;
   }
@@ -1574,7 +1579,8 @@ public:
   bool isSingleScalar() const;
 
   /// Returns the symbolic name assigned to the VPInstruction.
-  StringRef getName() const { return Name; }
+  StringRef getName() const {
+      return Name; }
 };
 
 /// A recipe to wrap on original IR instruction not to be modified during

@@ -359,7 +359,7 @@ define internal fastcc signext range(i32 0, 2) i32 @bmeasure(i32 noundef signext
 ; CHECK-NEXT:    [[I225:%.*]] = phi i64 [ 0, %[[BB275]] ], [ [[I211]], %[[BB210]] ], [ [[I223]], %[[BB220]] ]
 ; CHECK-NEXT:    [[I226:%.*]] = tail call i32 @llvm.experimental.get.vector.length.i32(i32 [[I128]], i32 4, i1 true)
 ; CHECK-NEXT:    [[I227:%.*]] = tail call <vscale x 4 x i32> @llvm.stepvector.nxv4i32()
-; CHECK-NEXT:    [[I228:%.*]] = sub <vscale x 4 x i32> shufflevector (<vscale x 4 x i32> insertelement (<vscale x 4 x i32> poison, i32 63, i64 0), <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer), [[I227]]
+; CHECK-NEXT:    [[I228:%.*]] = sub <vscale x 4 x i32> splat (i32 63), [[I227]]
 ; CHECK-NEXT:    br label %[[BB229:.*]]
 ; CHECK:       [[BB229]]:
 ; CHECK-NEXT:    [[I230:%.*]] = phi i32 [ 0, %[[BB224]] ], [ [[I239:%.*]], %[[BB229]] ]
@@ -367,19 +367,19 @@ define internal fastcc signext range(i32 0, 2) i32 @bmeasure(i32 noundef signext
 ; CHECK-NEXT:    [[I232:%.*]] = phi <vscale x 4 x i64> [ zeroinitializer, %[[BB224]] ], [ [[I238:%.*]], %[[BB229]] ]
 ; CHECK-NEXT:    [[I233:%.*]] = sub i32 [[I128]], [[I230]]
 ; CHECK-NEXT:    [[I234:%.*]] = tail call i32 @llvm.experimental.get.vector.length.i32(i32 [[I233]], i32 4, i1 true)
-; CHECK-NEXT:    [[I235:%.*]] = tail call <vscale x 4 x i64> @llvm.vp.zext.nxv4i64.nxv4i32(<vscale x 4 x i32> [[I231]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[I234]])
-; CHECK-NEXT:    [[I236:%.*]] = tail call <vscale x 4 x i64> @llvm.vp.shl.nxv4i64(<vscale x 4 x i64> shufflevector (<vscale x 4 x i64> insertelement (<vscale x 4 x i64> poison, i64 1, i64 0), <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x i64> [[I235]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[I234]])
-; CHECK-NEXT:    [[I237:%.*]] = tail call <vscale x 4 x i64> @llvm.vp.add.nxv4i64(<vscale x 4 x i64> [[I236]], <vscale x 4 x i64> [[I232]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[I234]])
-; CHECK-NEXT:    [[I238]] = tail call <vscale x 4 x i64> @llvm.vp.merge.nxv4i64(<vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x i64> [[I237]], <vscale x 4 x i64> [[I232]], i32 [[I234]])
+; CHECK-NEXT:    [[I235:%.*]] = tail call <vscale x 4 x i64> @llvm.vp.zext.nxv4i64.nxv4i32(<vscale x 4 x i32> [[I231]], <vscale x 4 x i1> splat (i1 true), i32 [[I234]])
+; CHECK-NEXT:    [[I236:%.*]] = tail call <vscale x 4 x i64> @llvm.vp.shl.nxv4i64(<vscale x 4 x i64> splat (i64 1), <vscale x 4 x i64> [[I235]], <vscale x 4 x i1> splat (i1 true), i32 [[I234]])
+; CHECK-NEXT:    [[I237:%.*]] = tail call <vscale x 4 x i64> @llvm.vp.add.nxv4i64(<vscale x 4 x i64> [[I236]], <vscale x 4 x i64> [[I232]], <vscale x 4 x i1> splat (i1 true), i32 [[I234]])
+; CHECK-NEXT:    [[I238]] = tail call <vscale x 4 x i64> @llvm.vp.merge.nxv4i64(<vscale x 4 x i1> splat (i1 true), <vscale x 4 x i64> [[I237]], <vscale x 4 x i64> [[I232]], i32 [[I234]])
 ; CHECK-NEXT:    [[I239]] = add i32 [[I234]], [[I230]]
 ; CHECK-NEXT:    [[I240:%.*]] = sub i32 0, [[I234]]
 ; CHECK-NEXT:    [[I241:%.*]] = insertelement <vscale x 4 x i32> poison, i32 [[I240]], i64 0
 ; CHECK-NEXT:    [[I242:%.*]] = shufflevector <vscale x 4 x i32> [[I241]], <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer
-; CHECK-NEXT:    [[I243]] = tail call <vscale x 4 x i32> @llvm.vp.add.nxv4i32(<vscale x 4 x i32> [[I231]], <vscale x 4 x i32> [[I242]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[I234]])
+; CHECK-NEXT:    [[I243]] = tail call <vscale x 4 x i32> @llvm.vp.add.nxv4i32(<vscale x 4 x i32> [[I231]], <vscale x 4 x i32> [[I242]], <vscale x 4 x i1> splat (i1 true), i32 [[I234]])
 ; CHECK-NEXT:    [[I244:%.*]] = icmp eq i32 [[I239]], [[I128]]
 ; CHECK-NEXT:    br i1 [[I244]], label %[[BB245:.*]], label %[[BB229]], !llvm.loop [[LOOP33:![0-9]+]]
 ; CHECK:       [[BB245]]:
-; CHECK-NEXT:    [[I246:%.*]] = tail call i64 @llvm.vp.reduce.add.nxv4i64(i64 0, <vscale x 4 x i64> [[I238]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[I226]])
+; CHECK-NEXT:    [[I246:%.*]] = tail call i64 @llvm.vp.reduce.add.nxv4i64(i64 0, <vscale x 4 x i64> [[I238]], <vscale x 4 x i1> splat (i1 true), i32 [[I226]])
 ; CHECK-NEXT:    [[I247:%.*]] = and i64 [[I225]], [[I206]]
 ; CHECK-NEXT:    [[I248:%.*]] = and i64 [[I246]], [[I206]]
 ; CHECK-NEXT:    [[I249:%.*]] = lshr i64 [[I248]], 1
