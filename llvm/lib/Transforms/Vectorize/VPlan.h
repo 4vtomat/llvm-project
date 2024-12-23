@@ -1551,6 +1551,10 @@ public:
   /// TODO: We currently execute only per-part unless a specific instance is
   /// provided.
   void execute(VPTransformState &State) override;
+#if SIFIVE_CUSTOMIZATION
+  InstructionCost computeCost(ElementCount VF,
+                              VPCostContext &Ctx) const override;
+#endif // SIFIVE_CUSTOMIZATION
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print the VPInstruction to \p O.
@@ -3284,6 +3288,9 @@ public:
     return new VPMonotonicHeaderPHIRecipe(cast<PHINode>(getUnderlyingInstr()),
                                           getOperand(0));
   }
+
+  InstructionCost computeCost(ElementCount VF,
+                              VPCostContext &Ctx) const override;
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print the recipe.
