@@ -302,21 +302,6 @@ static inline unsigned getSEWOpNum(const MCInstrDesc &Desc) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-static inline unsigned getRoundModeOpNum(const MCInstrDesc &Desc) {
-  uint64_t TSFlags = Desc.TSFlags;
-  assert(hasRoundModeOp(TSFlags) && hasSEWOp(TSFlags) && hasVLOp(TSFlags));
-  //                   ----------------------------
-  // The operand order | n-4 | n-3 | n-2 |  n-1   |
-  //                   |  rm | vl  | sew | policy |
-  //                   ----------------------------
-  unsigned Offset = 3;
-  if (hasVecPolicyOp(TSFlags))
-    Offset = 4;
-  return Desc.getNumOperands() - Offset;
-}
-#endif // SIFIVE_CUSTOMIZATION
-
-#if SIFIVE_CUSTOMIZATION
 /// \returns the number of V registers grouped by LMUL.
 static inline unsigned getLMULGroups(VLMUL LMul) {
   switch (LMul) {

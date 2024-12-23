@@ -1179,6 +1179,17 @@ bool VPInstruction::isFPMathOp() const {
          Opcode == Instruction::FCmp || Opcode == Instruction::Select;
 }
 #endif
+#if SIFIVE_CUSTOMIZATION
+InstructionCost VPInstruction::computeCost(ElementCount VF,
+                                           VPCostContext &Ctx) const {
+  if (getOpcode() == VPInstruction::MonotonicUpdate && VF.isVector() &&
+      !all_of(users(), IsaPred<VPIRInstruction>))
+    return InstructionCost::getInvalid();
+
+  // Currently upstream vplan-based cost model return 0 on every VPInstruction.
+  return 0;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 void VPInstruction::execute(VPTransformState &State) {
   assert(!State.Lane && "VPInstruction executing an Lane");
@@ -3257,6 +3268,16 @@ void VPCSAExtractScalarRecipe::execute(VPTransformState &State) {
 
 InstructionCost VPMonotonicHeaderPHIRecipe::overhead(ElementCount VF,
                                                      VPCostContext &Ctx) const {
+  return 0;
+}
+
+InstructionCost
+VPMonotonicHeaderPHIRecipe::computeCost(ElementCount VF,
+                                        VPCostContext &Ctx) const {
+  // Align to our custom cost model.
+  // Any use of monotonic update in the vector region is not allowed.
+  if (VF.isVector() && !all_of(users(), IsaPred<VPIRInstruction>))
+    return InstructionCost::getInvalid();
   return 0;
 }
 #endif // SIFIVE_CUSTOMIZATION
