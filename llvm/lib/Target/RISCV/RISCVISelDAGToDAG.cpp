@@ -4415,8 +4415,9 @@ bool RISCVDAGToDAGISel::doPeepholeLUIADDI(SDNode *N) {
 
   EVT VT = N->getValueType(0);
   SDLoc DL(N);
-  SDNode *Result = CurDAG->getMachineNode(
-      RISCV::PseudoMovImm, DL, VT, CurDAG->getTargetConstant(Imm, DL, VT));
+  SDNode *Result =
+      CurDAG->getMachineNode(RISCV::PseudoMovImm, DL, VT,
+                             CurDAG->getSignedTargetConstant(Imm, DL, VT));
   ReplaceUses(N, Result);
   return true;
 }
