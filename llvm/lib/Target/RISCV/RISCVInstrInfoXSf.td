@@ -1799,7 +1799,6 @@ class VPseudoSF_VTileLoad
   let HasSEWOp = 1;
   let HasTWidenOp = 1;
   let hasSideEffects = 1;
-  let BaseInstr = !cast<Instruction>(PseudoToVInst<NAME>.VInst);
 }
 
 class VPseudoSF_VTileStore
@@ -1812,7 +1811,6 @@ class VPseudoSF_VTileStore
   let HasSEWOp = 1;
   let HasTWidenOp = 1;
   let hasSideEffects = 1;
-  let BaseInstr = !cast<Instruction>(PseudoToVInst<NAME>.VInst);
 }
 
 class VPseudoSF_VTileMove_V_T
@@ -1825,7 +1823,6 @@ class VPseudoSF_VTileMove_V_T
   let HasSEWOp = 1;
   let HasTWidenOp = 1;
   let hasSideEffects = 1;
-  let BaseInstr = !cast<Instruction>(PseudoToVInst<NAME>.VInst);
 }
 
 class VPseudoSF_VTileMove_T_V
@@ -1838,7 +1835,6 @@ class VPseudoSF_VTileMove_T_V
   let HasSEWOp = 1;
   let HasTWidenOp = 1;
   let hasSideEffects = 1;
-  let BaseInstr = !cast<Instruction>(PseudoToVInst<NAME>.VInst);
 }
 
 class VPseudoSF_MatMul<RegisterClass mtd_class>
@@ -1854,7 +1850,6 @@ class VPseudoSF_MatMul<RegisterClass mtd_class>
   let HasSEWOp = 1;
   let HasTWidenOp = 1;
   let hasSideEffects = 1;
-  let BaseInstr = !cast<Instruction>(PseudoToVInst<NAME>.VInst);
 }
 
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
