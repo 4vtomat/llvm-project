@@ -59,15 +59,15 @@ body:             |
     ; MEMCLUSTER: liveins: $x6, $x10, $x14, $x15, $x16, $x17
     ; MEMCLUSTER-NEXT: {{  $}}
     ; MEMCLUSTER-NEXT: renamable $x5 = LW renamable $x15, 0 :: (load (s32))
+    ; MEMCLUSTER-NEXT: renamable $x11 = ADDW killed renamable $x6, killed renamable $x5
     ; MEMCLUSTER-NEXT: renamable $x7 = LW renamable $x15, 8 :: (load (s32))
     ; MEMCLUSTER-NEXT: renamable $x28 = LW renamable $x15, 16 :: (load (s32))
     ; MEMCLUSTER-NEXT: renamable $x29 = LW renamable $x15, 24 :: (load (s32))
+    ; MEMCLUSTER-NEXT: renamable $x13 = ADDW killed renamable $x7, killed renamable $x28
     ; MEMCLUSTER-NEXT: SW renamable $x14, renamable $x15, 0 :: (store (s32))
     ; MEMCLUSTER-NEXT: SW renamable $x14, renamable $x15, 8 :: (store (s32))
     ; MEMCLUSTER-NEXT: SW renamable $x14, renamable $x15, 16 :: (store (s32))
     ; MEMCLUSTER-NEXT: SW killed renamable $x14, killed renamable $x15, 24 :: (store (s32))
-    ; MEMCLUSTER-NEXT: renamable $x11 = ADDW killed renamable $x6, killed renamable $x5
-    ; MEMCLUSTER-NEXT: renamable $x13 = ADDW killed renamable $x7, killed renamable $x28
     ; MEMCLUSTER-NEXT: renamable $x11 = ADDW killed renamable $x11, killed renamable $x13
     ; MEMCLUSTER-NEXT: renamable $x6 = ADDW killed renamable $x11, killed renamable $x29
     ; MEMCLUSTER-NEXT: PseudoRET
