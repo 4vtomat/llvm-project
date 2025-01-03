@@ -2576,6 +2576,7 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
     case Intrinsic::riscv_sf_mm_e4m3_e5m2:
     case Intrinsic::riscv_sf_mm_e4m3_e4m3:
     case Intrinsic::riscv_sf_mm_f_f: {
+      bool HasFRM = false;
       unsigned PseudoInst;
       switch (IntNo) {
       case Intrinsic::riscv_sf_p2mm_s_s:
@@ -2604,21 +2605,26 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
         break;
       case Intrinsic::riscv_sf_mm_e5m2_e5m2:
         PseudoInst = RISCV::PseudoSF_MM_E5M2_E5M2;
+        HasFRM = true;
         break;
       case Intrinsic::riscv_sf_mm_e5m2_e4m3:
         PseudoInst = RISCV::PseudoSF_MM_E5M2_E4M3;
+        HasFRM = true;
         break;
       case Intrinsic::riscv_sf_mm_e4m3_e5m2:
         PseudoInst = RISCV::PseudoSF_MM_E4M3_E5M2;
+        HasFRM = true;
         break;
       case Intrinsic::riscv_sf_mm_e4m3_e4m3:
         PseudoInst = RISCV::PseudoSF_MM_E4M3_E4M3;
+        HasFRM = true;
         break;
       case Intrinsic::riscv_sf_mm_f_f:
         if (Node->getOperand(3).getValueType().getScalarType() == MVT::bf16)
           PseudoInst = RISCV::PseudoSF_MM_F_F_ALT;
         else
           PseudoInst = RISCV::PseudoSF_MM_F_F;
+        HasFRM = true;
         break;
       }
       uint64_t TileNum = Node->getConstantOperandVal(2);
@@ -2632,15 +2638,15 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
       SDValue TWidenOp = Node->getOperand(8);
       SDValue Chain = Node->getOperand(0);
 
-      SDValue Operands[] = {CurDAG->getRegister(getTileReg(TileNum), XLenVT),
-                            Op1,
-                            Op2,
-                            TmOp,
-                            TnOp,
-                            TkOp,
-                            CurDAG->getTargetConstant(Log2SEW, DL, XLenVT),
-                            TWidenOp,
-                            Chain};
+      SmallVector<SDValue, 10> Operands(
+          {CurDAG->getRegister(getTileReg(TileNum), XLenVT), Op1, Op2});
+      if (HasFRM)
+        Operands.push_back(
+            CurDAG->getTargetConstant(RISCVFPRndMode::DYN, DL, XLenVT));
+      Operands.append({TmOp, TnOp, TkOp,
+                       CurDAG->getTargetConstant(Log2SEW, DL, XLenVT), TWidenOp,
+                       Chain});
+
       auto *NewNode =
           CurDAG->getMachineNode(PseudoInst, DL, Node->getVTList(), Operands);
 
