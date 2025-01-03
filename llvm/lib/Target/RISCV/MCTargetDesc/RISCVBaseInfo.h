@@ -333,6 +333,11 @@ static inline int getFRMOpNum(const MCInstrDesc &Desc) {
   if (!hasRoundModeOp(TSFlags) || usesVXRM(TSFlags))
     return -1;
 
+#if SIFIVE_CUSTOMIZATION
+  if (hasTWidenOp(TSFlags) && hasTMOp(TSFlags))
+    return getTMOpNum(Desc) - 1;
+#endif
+
   // The operand order
   // --------------------------------------
   // | n-1 (if any)   | n-2  | n-3 | n-4 |

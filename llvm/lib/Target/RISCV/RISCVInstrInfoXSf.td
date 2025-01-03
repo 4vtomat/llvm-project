@@ -1430,7 +1430,8 @@ let hasSideEffects = 0, mayLoad = 0, mayStore = 1 in {
 
 let Predicates = [HasVendorXSfmm32eaOrXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f],
     DecoderNamespace = "HasVendorXSfmm32eaOrXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f" in {
-let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
+let hasSideEffects = 0, mayLoad = 0, mayStore = 0, Uses = [FRM],
+    mayRaiseFPException = true in {
   def SF_MM_F_F   : RVInstMatmulF<0b00, (outs), (ins TRM2:$rd, VR:$vs2, VR:$vs1),
                                   "sf.mm.f.f", "$rd, $vs2, $vs1">;
 }
@@ -1448,7 +1449,8 @@ let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
 } // Predicates = [HasVendorXSfmm32a8i]
 
 let Predicates = [HasVendorXSfmm32a8f], DecoderNamespace = "XSfmm32a8f" in {
-let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
+let hasSideEffects = 0, mayLoad = 0, mayStore = 0, Uses = [FRM],
+    mayRaiseFPException = true in {
   foreach a = F8Encodes in
     foreach b = F8Encodes in
       def SF_MM_#!toupper(a.Name)#_#!toupper(b.Name)
@@ -1852,6 +1854,24 @@ class VPseudoSF_MatMul<RegisterClass mtd_class>
   let hasSideEffects = 1;
 }
 
+class VPseudoSF_MatMul_FRM<RegisterClass mtd_class>
+    : Pseudo<(outs),
+             (ins mtd_class:$rd, VRM8:$vs2, VRM8:$vs1, ixlenimm:$frm,
+                  AVL:$atm, AVL:$atn, AVL:$atk, ixlenimm:$sew,
+                  ixlenimm:$twiden), []>,
+      RISCVVPseudo {
+  let mayLoad = 0;
+  let mayStore = 0;
+  let HasTmOp = 1;
+  let HasVLOp = 1; // Tn
+  let HasTkOp = 1;
+  let HasSEWOp = 1;
+  let HasRoundModeOp = 1;
+  let HasTWidenOp = 1;
+  let hasSideEffects = 1;
+  let BaseInstr = !cast<Instruction>(PseudoToVInst<NAME>.VInst);
+}
+
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
 let Defs = [VTYPE, VL] in {
   def PseudoSF_VSETTNT
@@ -1896,14 +1916,14 @@ foreach a = I8Encodes in {
 }
 
 let AltfmtType = IS_NOT_ALTFMT in
-  def PseudoSF_MM_F_F : VPseudoSF_MatMul<TRM2>;
+  def PseudoSF_MM_F_F : VPseudoSF_MatMul_FRM<TRM2>;
 let AltfmtType = IS_ALTFMT in
-  def PseudoSF_MM_F_F_ALT : VPseudoSF_MatMul<TRM2>;
+  def PseudoSF_MM_F_F_ALT : VPseudoSF_MatMul_FRM<TRM2>;
 
 foreach e1 = [5, 4] in
   foreach e2 = [5, 4] in
     def PseudoSF_MM_E # e1 # M # !sub(7, e1) # _E # e2 # M # !sub(7, e2)
-        : VPseudoSF_MatMul<TRM4>;
+        : VPseudoSF_MatMul_FRM<TRM4>;
 
 let hasSideEffects = 1, mayLoad = 0, mayStore = 0 in {
   let HasVLOp = 1, HasTmOp = 1, HasTWidenOp = 1, HasSEWOp = 1 in
