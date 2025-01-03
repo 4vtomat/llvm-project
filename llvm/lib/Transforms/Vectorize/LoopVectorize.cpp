@@ -9419,7 +9419,7 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
                         << "\n");
     }
     unsigned Numerator = SEW * State.VF.getKnownMinValue();
-    unsigned Denominator = TTI.getMaxElementWidth();
+    unsigned Denominator = RISCV::RVVBitsPerBlock;
     State.LMULExp = Numerator >= Denominator
                      ? Log2_32(Numerator / Denominator)
                      : (8 - Log2_32(Denominator / Numerator));
