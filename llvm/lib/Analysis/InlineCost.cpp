@@ -2008,6 +2008,10 @@ bool CallAnalyzer::maySpillForCandidate(CallBase &Call,
   if (Callee->empty())
     return false;
 
+  Function *Caller = Call.getCaller();
+  if (Caller->getName().equals_insensitive("main"))
+    return false;
+
   LiveValues LvCallee;
   if (EnableValuePressureAnalysis >= LVUsageDescr::Inline) {
     LvCallee.setAssumptionCache(&GetAssumptionCache(*Callee));
@@ -2028,7 +2032,6 @@ bool CallAnalyzer::maySpillForCandidate(CallBase &Call,
   int NumIntUsed = 0;
   int NumFpUsed = 0;
   int NumVecUsed = 0;
-  Function *Caller = Call.getCaller();
   // If the callee already has to large of register pressure, we are done.
   if (LvCallee.haveLiveValueAnalysis()) {
     // All the reg class allocations are passed by reference, where
