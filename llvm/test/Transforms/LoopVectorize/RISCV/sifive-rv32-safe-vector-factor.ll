@@ -25,8 +25,8 @@ define void @test(ptr %cval_memcpy_s1, ptr %incdec.ptr) {
 ; CHECK-NEXT:    [[TMP1:%.*]] = load i8, ptr [[INCDEC_PTR]], align 1, !alias.scope [[META0:![0-9]+]]
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 64 x i8> poison, i8 [[TMP1]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 64 x i8> [[BROADCAST_SPLATINSERT]], <vscale x 64 x i8> poison, <vscale x 64 x i32> zeroinitializer
-; CHECK-NEXT:    call void @llvm.vp.scatter.nxv64i8.nxv64p0(<vscale x 64 x i8> [[BROADCAST_SPLAT]], <vscale x 64 x ptr> align 1 [[BROADCAST_SPLAT3]], <vscale x 64 x i1> shufflevector (<vscale x 64 x i1> insertelement (<vscale x 64 x i1> poison, i1 true, i64 0), <vscale x 64 x i1> poison, <vscale x 64 x i32> zeroinitializer), i32 [[TMP0]]), !alias.scope [[META3:![0-9]+]], !noalias [[META0]]
-; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i32 [[TMP0]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    call void @llvm.vp.scatter.nxv64i8.nxv64p0(<vscale x 64 x i8> [[BROADCAST_SPLAT]], <vscale x 64 x ptr> align 1 [[BROADCAST_SPLAT3]], <vscale x 64 x i1> splat (i1 true), i32 [[TMP0]]), !alias.scope [[META3:![0-9]+]], !noalias [[META0]]
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i32 [[TMP0]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP2:%.*]] = icmp eq i32 [[INDEX_EVL_NEXT]], 0
 ; CHECK-NEXT:    br i1 [[TMP2]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
