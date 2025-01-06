@@ -718,11 +718,7 @@ public:
              "we either have intervals or we don't");
       if (!getAVLVNInfo())
         return getAVLReg() == Other.getAVLReg();
-#ifdef SIFIVE_CUSTOMIZATION
-      return getAVLVNInfo()->def == Other.getAVLVNInfo()->def &&
-#else
       return getAVLVNInfo()->id == Other.getAVLVNInfo()->id &&
-#endif // SIFIVE_CUSTOMIZATION
              getAVLReg() == Other.getAVLReg();
     }
 
