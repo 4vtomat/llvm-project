@@ -46,6 +46,7 @@ include "RISCVMacroFusion.td"
 // RISC-V Scheduling Models
 //===----------------------------------------------------------------------===//
 
+include "RISCVSchedMIPSP8700.td"
 include "RISCVSchedRocket.td"
 //include "RISCVSchedSiFive7.td" // SIFIVE
 //include "RISCVSchedSiFiveP400.td" // SIFIVE
@@ -53,6 +54,7 @@ include "RISCVSchedRocket.td"
 include "RISCVSchedSyntacoreSCR1.td"
 include "RISCVSchedSyntacoreSCR345.td"
 include "RISCVSchedSyntacoreSCR7.td"
+include "RISCVSchedTTAscalonD8.td"
 include "RISCVSchedXiangShanNanHu.td"
 #ifdef SIFIVE_CUSTOMIZATION
 include "SiFive_RISCVSchedBullet.td"

@@ -1247,6 +1247,7 @@ Value *llvm::createAnyOfReduction(IRBuilderBase &Builder, Value *Src,
   return Builder.CreateSelect(AnyOf, NewVal, InitVal, "rdx.select");
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 Value *llvm::createAnyOfReduction(IRBuilderBase &Builder, Value *Src,
                                   const RecurrenceDescriptor &Desc,
@@ -1278,11 +1279,14 @@ Value *llvm::createAnyOfReduction(IRBuilderBase &Builder, Value *Src,
   return Builder.CreateSelect(AnyOf, NewVal, InitVal, "rdx.select");
 }
 
+=======
+>>>>>>> 21edac2
 Value *llvm::createFindLastIVReduction(IRBuilderBase &Builder, Value *Src,
                                        const RecurrenceDescriptor &Desc) {
   assert(RecurrenceDescriptor::isFindLastIVRecurrenceKind(
              Desc.getRecurrenceKind()) &&
          "Unexpected reduction kind");
+<<<<<<< HEAD
   return Builder.CreateIntMaxReduce(Src, true);
 }
 
@@ -1296,6 +1300,20 @@ Value *llvm::createFindLastIVReduction(IRBuilderBase &Builder, Value *Src,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+  Value *StartVal = Desc.getRecurrenceStartValue();
+  Value *Sentinel = Desc.getSentinelValue();
+  Value *MaxRdx = Src->getType()->isVectorTy()
+                      ? Builder.CreateIntMaxReduce(Src, true)
+                      : Src;
+  // Correct the final reduction result back to the start value if the maximum
+  // reduction is sentinel value.
+  Value *Cmp =
+      Builder.CreateCmp(CmpInst::ICMP_NE, MaxRdx, Sentinel, "rdx.select.cmp");
+  return Builder.CreateSelect(Cmp, MaxRdx, StartVal, "rdx.select");
+}
+
+>>>>>>> 21edac2
 Value *llvm::getReductionIdentity(Intrinsic::ID RdxID, Type *Ty,
                                   FastMathFlags Flags) {
   bool Negative = false;
@@ -1443,10 +1461,15 @@ Value *llvm::createReduction(IRBuilderBase &B,
   RecurKind RK = Desc.getRecurrenceKind();
   if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RK))
     return createAnyOfReduction(B, Src, Desc, OrigPhi);
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
     return createFindLastIVReduction(B, Src, Desc);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
+    return createFindLastIVReduction(B, Src, Desc);
+>>>>>>> 21edac2
 
   return createSimpleReduction(B, Src, RK);
 }

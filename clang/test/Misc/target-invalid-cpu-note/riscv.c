@@ -33,6 +33,7 @@
 // RISCV64: error: unknown target CPU 'not-a-cpu'
 // RISCV64-NEXT: note: valid target CPU values are:
 // RISCV64-SAME: {{^}} generic-rv64
+// RISCV64-SAME: {{^}}, mips-p8700
 // RISCV64-SAME: {{^}}, rocket-rv64
 // RISCV64-SAME: {{^}}, sifive-cheetah
 // RISCV64-SAME: {{^}}, sifive-leopard
@@ -118,6 +119,7 @@
 // TUNE-RISCV64: error: unknown target CPU 'not-a-cpu'
 // TUNE-RISCV64-NEXT: note: valid target CPU values are:
 // TUNE-RISCV64-SAME: {{^}} generic-rv64
+// TUNE-RISCV64-SAME: {{^}}, mips-p8700
 // TUNE-RISCV64-SAME: {{^}}, rocket-rv64
 // TUNE-RISCV64-SAME: {{^}}, sifive-cheetah
 // TUNE-RISCV64-SAME: {{^}}, sifive-leopard

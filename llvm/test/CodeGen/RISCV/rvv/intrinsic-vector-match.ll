@@ -6,9 +6,15 @@ define <vscale x 16 x i1> @match_nxv16i8_v1i8(<vscale x 16 x i8> %op1, <1 x i8> 
 ; CHECK-LABEL: match_nxv16i8_v1i8:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
+<<<<<<< HEAD
 ; CHECK-NEXT:    vmv.x.s a0, v10
 ; CHECK-NEXT:    vmseq.vx v8, v8, a0
 ; CHECK-NEXT:    vmand.mm v0, v8, v0
+=======
+; CHECK-NEXT:    vrgather.vi v12, v10, 0
+; CHECK-NEXT:    vmseq.vv v10, v8, v12
+; CHECK-NEXT:    vmand.mm v0, v10, v0
+>>>>>>> 21edac2
 ; CHECK-NEXT:    ret
   %r = tail call <vscale x 16 x i1> @llvm.experimental.vector.match(<vscale x 16 x i8> %op1, <1 x i8> %op2, <vscale x 16 x i1> %mask)
   ret <vscale x 16 x i1> %r
@@ -17,6 +23,7 @@ define <vscale x 16 x i1> @match_nxv16i8_v1i8(<vscale x 16 x i8> %op1, <1 x i8> 
 define <vscale x 16 x i1> @match_nxv16i8_v2i8(<vscale x 16 x i8> %op1, <2 x i8> %op2, <vscale x 16 x i1> %mask) {
 ; CHECK-LABEL: match_nxv16i8_v2i8:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
 ; CHECK-NEXT:    vmv.x.s a0, v10
 ; CHECK-NEXT:    vslidedown.vi v10, v10, 1
@@ -25,6 +32,14 @@ define <vscale x 16 x i1> @match_nxv16i8_v2i8(<vscale x 16 x i8> %op1, <2 x i8> 
 ; CHECK-NEXT:    vmv.x.s a0, v10
 ; CHECK-NEXT:    vmseq.vx v8, v8, a0
 ; CHECK-NEXT:    vmor.mm v8, v11, v8
+=======
+; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
+; CHECK-NEXT:    vrgather.vi v12, v10, 1
+; CHECK-NEXT:    vmseq.vv v14, v8, v12
+; CHECK-NEXT:    vrgather.vi v12, v10, 0
+; CHECK-NEXT:    vmseq.vv v10, v8, v12
+; CHECK-NEXT:    vmor.mm v8, v10, v14
+>>>>>>> 21edac2
 ; CHECK-NEXT:    vmand.mm v0, v8, v0
 ; CHECK-NEXT:    ret
   %r = tail call <vscale x 16 x i1> @llvm.experimental.vector.match(<vscale x 16 x i8> %op1, <2 x i8> %op2, <vscale x 16 x i1> %mask)
@@ -34,6 +49,7 @@ define <vscale x 16 x i1> @match_nxv16i8_v2i8(<vscale x 16 x i8> %op1, <2 x i8> 
 define <vscale x 16 x i1> @match_nxv16i8_v4i8(<vscale x 16 x i8> %op1, <4 x i8> %op2, <vscale x 16 x i1> %mask) {
 ; CHECK-LABEL: match_nxv16i8_v4i8:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    vsetivli zero, 1, e8, mf4, ta, ma
 ; CHECK-NEXT:    vmv.x.s a0, v10
 ; CHECK-NEXT:    vslidedown.vi v11, v10, 1
@@ -50,6 +66,20 @@ define <vscale x 16 x i1> @match_nxv16i8_v4i8(<vscale x 16 x i8> %op1, <4 x i8> 
 ; CHECK-NEXT:    vmor.mm v10, v11, v10
 ; CHECK-NEXT:    vmseq.vx v8, v8, a1
 ; CHECK-NEXT:    vmor.mm v8, v10, v8
+=======
+; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
+; CHECK-NEXT:    vrgather.vi v12, v10, 1
+; CHECK-NEXT:    vmseq.vv v14, v8, v12
+; CHECK-NEXT:    vrgather.vi v12, v10, 0
+; CHECK-NEXT:    vmseq.vv v15, v8, v12
+; CHECK-NEXT:    vmor.mm v12, v15, v14
+; CHECK-NEXT:    vrgather.vi v14, v10, 2
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vrgather.vi v14, v10, 3
+; CHECK-NEXT:    vmor.mm v10, v12, v13
+; CHECK-NEXT:    vmseq.vv v11, v8, v14
+; CHECK-NEXT:    vmor.mm v8, v10, v11
+>>>>>>> 21edac2
 ; CHECK-NEXT:    vmand.mm v0, v8, v0
 ; CHECK-NEXT:    ret
   %r = tail call <vscale x 16 x i1> @llvm.experimental.vector.match(<vscale x 16 x i8> %op1, <4 x i8> %op2, <vscale x 16 x i1> %mask)
@@ -59,6 +89,7 @@ define <vscale x 16 x i1> @match_nxv16i8_v4i8(<vscale x 16 x i8> %op1, <4 x i8> 
 define <vscale x 16 x i1> @match_nxv16i8_v8i8(<vscale x 16 x i8> %op1, <8 x i8> %op2, <vscale x 16 x i1> %mask) {
 ; CHECK-LABEL: match_nxv16i8_v8i8:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    vsetivli zero, 1, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.x.s a0, v10
 ; CHECK-NEXT:    vslidedown.vi v11, v10, 1
@@ -91,6 +122,32 @@ define <vscale x 16 x i1> @match_nxv16i8_v8i8(<vscale x 16 x i8> %op1, <8 x i8> 
 ; CHECK-NEXT:    vmor.mm v10, v10, v11
 ; CHECK-NEXT:    vmseq.vx v8, v8, a1
 ; CHECK-NEXT:    vmor.mm v8, v10, v8
+=======
+; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
+; CHECK-NEXT:    vrgather.vi v12, v10, 1
+; CHECK-NEXT:    vmseq.vv v14, v8, v12
+; CHECK-NEXT:    vrgather.vi v12, v10, 0
+; CHECK-NEXT:    vmseq.vv v15, v8, v12
+; CHECK-NEXT:    vmor.mm v12, v15, v14
+; CHECK-NEXT:    vrgather.vi v14, v10, 2
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vmor.mm v12, v12, v13
+; CHECK-NEXT:    vrgather.vi v14, v10, 3
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vmor.mm v12, v12, v13
+; CHECK-NEXT:    vrgather.vi v14, v10, 4
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vmor.mm v12, v12, v13
+; CHECK-NEXT:    vrgather.vi v14, v10, 5
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vmor.mm v12, v12, v13
+; CHECK-NEXT:    vrgather.vi v14, v10, 6
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vrgather.vi v14, v10, 7
+; CHECK-NEXT:    vmor.mm v10, v12, v13
+; CHECK-NEXT:    vmseq.vv v11, v8, v14
+; CHECK-NEXT:    vmor.mm v8, v10, v11
+>>>>>>> 21edac2
 ; CHECK-NEXT:    vmand.mm v0, v8, v0
 ; CHECK-NEXT:    ret
   %r = tail call <vscale x 16 x i1> @llvm.experimental.vector.match(<vscale x 16 x i8> %op1, <8 x i8> %op2, <vscale x 16 x i1> %mask)
@@ -100,6 +157,7 @@ define <vscale x 16 x i1> @match_nxv16i8_v8i8(<vscale x 16 x i8> %op1, <8 x i8> 
 define <vscale x 16 x i1> @match_nxv16i8_v16i8(<vscale x 16 x i8> %op1, <16 x i8> %op2, <vscale x 16 x i1> %mask) {
 ; CHECK-LABEL: match_nxv16i8_v16i8:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv.x.s a0, v10
 ; CHECK-NEXT:    vslidedown.vi v11, v10, 1
@@ -164,6 +222,56 @@ define <vscale x 16 x i1> @match_nxv16i8_v16i8(<vscale x 16 x i8> %op1, <16 x i8
 ; CHECK-NEXT:    vmor.mm v10, v10, v11
 ; CHECK-NEXT:    vmseq.vx v8, v8, a1
 ; CHECK-NEXT:    vmor.mm v8, v10, v8
+=======
+; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
+; CHECK-NEXT:    vrgather.vi v12, v10, 1
+; CHECK-NEXT:    vmseq.vv v14, v8, v12
+; CHECK-NEXT:    vrgather.vi v12, v10, 0
+; CHECK-NEXT:    vmseq.vv v15, v8, v12
+; CHECK-NEXT:    vmor.mm v12, v15, v14
+; CHECK-NEXT:    vrgather.vi v14, v10, 2
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vmor.mm v12, v12, v13
+; CHECK-NEXT:    vrgather.vi v14, v10, 3
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vmor.mm v12, v12, v13
+; CHECK-NEXT:    vrgather.vi v14, v10, 4
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vmor.mm v12, v12, v13
+; CHECK-NEXT:    vrgather.vi v14, v10, 5
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vmor.mm v12, v12, v13
+; CHECK-NEXT:    vrgather.vi v14, v10, 6
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vmor.mm v12, v12, v13
+; CHECK-NEXT:    vrgather.vi v14, v10, 7
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vmor.mm v12, v12, v13
+; CHECK-NEXT:    vrgather.vi v14, v10, 8
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vmor.mm v12, v12, v13
+; CHECK-NEXT:    vrgather.vi v14, v10, 9
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vmor.mm v12, v12, v13
+; CHECK-NEXT:    vrgather.vi v14, v10, 10
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vmor.mm v12, v12, v13
+; CHECK-NEXT:    vrgather.vi v14, v10, 11
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vmor.mm v12, v12, v13
+; CHECK-NEXT:    vrgather.vi v14, v10, 12
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vmor.mm v12, v12, v13
+; CHECK-NEXT:    vrgather.vi v14, v10, 13
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vmor.mm v12, v12, v13
+; CHECK-NEXT:    vrgather.vi v14, v10, 14
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vrgather.vi v14, v10, 15
+; CHECK-NEXT:    vmor.mm v10, v12, v13
+; CHECK-NEXT:    vmseq.vv v11, v8, v14
+; CHECK-NEXT:    vmor.mm v8, v10, v11
+>>>>>>> 21edac2
 ; CHECK-NEXT:    vmand.mm v0, v8, v0
 ; CHECK-NEXT:    ret
   %r = tail call <vscale x 16 x i1> @llvm.experimental.vector.match(<vscale x 16 x i8> %op1, <16 x i8> %op2, <vscale x 16 x i1> %mask)
@@ -173,9 +281,10 @@ define <vscale x 16 x i1> @match_nxv16i8_v16i8(<vscale x 16 x i8> %op1, <16 x i8
 define <16 x i1> @match_v16i8_v1i8(<16 x i8> %op1, <1 x i8> %op2, <16 x i1> %mask) {
 ; CHECK-LABEL: match_v16i8_v1i8:
 ; CHECK:       # %bb.0:
+; CHECK-NEXT:    vsetvli a0, zero, e8, m1, ta, ma
+; CHECK-NEXT:    vrgather.vi v10, v9, 0
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vmv.x.s a0, v9
-; CHECK-NEXT:    vmseq.vx v8, v8, a0
+; CHECK-NEXT:    vmseq.vv v8, v8, v10
 ; CHECK-NEXT:    vmand.mm v0, v8, v0
 ; CHECK-NEXT:    ret
   %r = tail call <16 x i1> @llvm.experimental.vector.match(<16 x i8> %op1, <1 x i8> %op2, <16 x i1> %mask)
@@ -185,14 +294,12 @@ define <16 x i1> @match_v16i8_v1i8(<16 x i8> %op1, <1 x i8> %op2, <16 x i1> %mas
 define <16 x i1> @match_v16i8_v2i8(<16 x i8> %op1, <2 x i8> %op2, <16 x i1> %mask) {
 ; CHECK-LABEL: match_v16i8_v2i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
-; CHECK-NEXT:    vmv.x.s a0, v9
-; CHECK-NEXT:    vslidedown.vi v9, v9, 1
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vmseq.vx v10, v8, a0
-; CHECK-NEXT:    vmv.x.s a0, v9
-; CHECK-NEXT:    vmseq.vx v8, v8, a0
-; CHECK-NEXT:    vmor.mm v8, v10, v8
+; CHECK-NEXT:    vrgather.vi v10, v9, 1
+; CHECK-NEXT:    vrgather.vi v11, v9, 0
+; CHECK-NEXT:    vmseq.vv v9, v8, v10
+; CHECK-NEXT:    vmseq.vv v8, v8, v11
+; CHECK-NEXT:    vmor.mm v8, v8, v9
 ; CHECK-NEXT:    vmand.mm v0, v8, v0
 ; CHECK-NEXT:    ret
   %r = tail call <16 x i1> @llvm.experimental.vector.match(<16 x i8> %op1, <2 x i8> %op2, <16 x i1> %mask)
@@ -202,21 +309,17 @@ define <16 x i1> @match_v16i8_v2i8(<16 x i8> %op1, <2 x i8> %op2, <16 x i1> %mas
 define <16 x i1> @match_v16i8_v4i8(<16 x i8> %op1, <4 x i8> %op2, <16 x i1> %mask) {
 ; CHECK-LABEL: match_v16i8_v4i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 1, e8, mf4, ta, ma
-; CHECK-NEXT:    vmv.x.s a0, v9
-; CHECK-NEXT:    vslidedown.vi v10, v9, 1
-; CHECK-NEXT:    vslidedown.vi v11, v9, 2
-; CHECK-NEXT:    vslidedown.vi v9, v9, 3
-; CHECK-NEXT:    vmv.x.s a1, v10
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vmseq.vx v10, v8, a0
-; CHECK-NEXT:    vmv.x.s a0, v11
-; CHECK-NEXT:    vmseq.vx v11, v8, a1
-; CHECK-NEXT:    vmv.x.s a1, v9
-; CHECK-NEXT:    vmseq.vx v9, v8, a0
-; CHECK-NEXT:    vmor.mm v10, v10, v11
+; CHECK-NEXT:    vrgather.vi v10, v9, 1
+; CHECK-NEXT:    vrgather.vi v11, v9, 0
+; CHECK-NEXT:    vmseq.vv v10, v8, v10
+; CHECK-NEXT:    vmseq.vv v11, v8, v11
+; CHECK-NEXT:    vmor.mm v10, v11, v10
+; CHECK-NEXT:    vrgather.vi v11, v9, 2
+; CHECK-NEXT:    vrgather.vi v12, v9, 3
+; CHECK-NEXT:    vmseq.vv v9, v8, v11
 ; CHECK-NEXT:    vmor.mm v9, v10, v9
-; CHECK-NEXT:    vmseq.vx v8, v8, a1
+; CHECK-NEXT:    vmseq.vv v8, v8, v12
 ; CHECK-NEXT:    vmor.mm v8, v9, v8
 ; CHECK-NEXT:    vmand.mm v0, v8, v0
 ; CHECK-NEXT:    ret
@@ -227,37 +330,29 @@ define <16 x i1> @match_v16i8_v4i8(<16 x i8> %op1, <4 x i8> %op2, <16 x i1> %mas
 define <16 x i1> @match_v16i8_v8i8(<16 x i8> %op1, <8 x i8> %op2, <16 x i1> %mask) {
 ; CHECK-LABEL: match_v16i8_v8i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 1, e8, mf2, ta, ma
-; CHECK-NEXT:    vmv.x.s a0, v9
-; CHECK-NEXT:    vslidedown.vi v10, v9, 1
-; CHECK-NEXT:    vslidedown.vi v11, v9, 2
-; CHECK-NEXT:    vmv.x.s a1, v10
-; CHECK-NEXT:    vslidedown.vi v10, v9, 3
-; CHECK-NEXT:    vmv.x.s a2, v11
-; CHECK-NEXT:    vslidedown.vi v11, v9, 4
-; CHECK-NEXT:    vmv.x.s a3, v10
-; CHECK-NEXT:    vslidedown.vi v10, v9, 5
-; CHECK-NEXT:    vmv.x.s a4, v11
-; CHECK-NEXT:    vslidedown.vi v11, v9, 6
-; CHECK-NEXT:    vslidedown.vi v9, v9, 7
-; CHECK-NEXT:    vmv.x.s a5, v10
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vmseq.vx v10, v8, a0
-; CHECK-NEXT:    vmv.x.s a0, v11
-; CHECK-NEXT:    vmseq.vx v11, v8, a1
-; CHECK-NEXT:    vmv.x.s a1, v9
-; CHECK-NEXT:    vmseq.vx v9, v8, a2
+; CHECK-NEXT:    vrgather.vi v10, v9, 1
+; CHECK-NEXT:    vrgather.vi v11, v9, 0
+; CHECK-NEXT:    vmseq.vv v10, v8, v10
+; CHECK-NEXT:    vmseq.vv v11, v8, v11
+; CHECK-NEXT:    vmor.mm v10, v11, v10
+; CHECK-NEXT:    vrgather.vi v11, v9, 2
+; CHECK-NEXT:    vmseq.vv v11, v8, v11
 ; CHECK-NEXT:    vmor.mm v10, v10, v11
-; CHECK-NEXT:    vmseq.vx v11, v8, a3
+; CHECK-NEXT:    vrgather.vi v11, v9, 3
+; CHECK-NEXT:    vmseq.vv v11, v8, v11
+; CHECK-NEXT:    vmor.mm v10, v10, v11
+; CHECK-NEXT:    vrgather.vi v11, v9, 4
+; CHECK-NEXT:    vmseq.vv v11, v8, v11
+; CHECK-NEXT:    vmor.mm v10, v10, v11
+; CHECK-NEXT:    vrgather.vi v11, v9, 5
+; CHECK-NEXT:    vmseq.vv v11, v8, v11
+; CHECK-NEXT:    vmor.mm v10, v10, v11
+; CHECK-NEXT:    vrgather.vi v11, v9, 6
+; CHECK-NEXT:    vrgather.vi v12, v9, 7
+; CHECK-NEXT:    vmseq.vv v9, v8, v11
 ; CHECK-NEXT:    vmor.mm v9, v10, v9
-; CHECK-NEXT:    vmseq.vx v10, v8, a4
-; CHECK-NEXT:    vmor.mm v9, v9, v11
-; CHECK-NEXT:    vmseq.vx v11, v8, a5
-; CHECK-NEXT:    vmor.mm v9, v9, v10
-; CHECK-NEXT:    vmseq.vx v10, v8, a0
-; CHECK-NEXT:    vmor.mm v9, v9, v11
-; CHECK-NEXT:    vmor.mm v9, v9, v10
-; CHECK-NEXT:    vmseq.vx v8, v8, a1
+; CHECK-NEXT:    vmseq.vv v8, v8, v12
 ; CHECK-NEXT:    vmor.mm v8, v9, v8
 ; CHECK-NEXT:    vmand.mm v0, v8, v0
 ; CHECK-NEXT:    ret
@@ -358,6 +453,7 @@ define <8 x i1> @match_v8i8_v8i8(<8 x i8> %op1, <8 x i8> %op2, <8 x i1> %mask) {
 define <vscale x 8 x i1> @match_nxv8i16_v8i16(<vscale x 8 x i16> %op1, <8 x i16> %op2, <vscale x 8 x i1> %mask) {
 ; CHECK-LABEL: match_nxv8i16_v8i16:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; CHECK-NEXT:    vmv.x.s a0, v10
 ; CHECK-NEXT:    vslidedown.vi v11, v10, 1
@@ -390,6 +486,32 @@ define <vscale x 8 x i1> @match_nxv8i16_v8i16(<vscale x 8 x i16> %op1, <8 x i16>
 ; CHECK-NEXT:    vmor.mm v10, v10, v11
 ; CHECK-NEXT:    vmseq.vx v8, v8, a1
 ; CHECK-NEXT:    vmor.mm v8, v10, v8
+=======
+; CHECK-NEXT:    vsetvli a0, zero, e16, m2, ta, ma
+; CHECK-NEXT:    vrgather.vi v12, v10, 1
+; CHECK-NEXT:    vmseq.vv v14, v8, v12
+; CHECK-NEXT:    vrgather.vi v12, v10, 0
+; CHECK-NEXT:    vmseq.vv v15, v8, v12
+; CHECK-NEXT:    vmor.mm v12, v15, v14
+; CHECK-NEXT:    vrgather.vi v14, v10, 2
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vmor.mm v12, v12, v13
+; CHECK-NEXT:    vrgather.vi v14, v10, 3
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vmor.mm v12, v12, v13
+; CHECK-NEXT:    vrgather.vi v14, v10, 4
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vmor.mm v12, v12, v13
+; CHECK-NEXT:    vrgather.vi v14, v10, 5
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vmor.mm v12, v12, v13
+; CHECK-NEXT:    vrgather.vi v14, v10, 6
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vrgather.vi v14, v10, 7
+; CHECK-NEXT:    vmor.mm v10, v12, v13
+; CHECK-NEXT:    vmseq.vv v11, v8, v14
+; CHECK-NEXT:    vmor.mm v8, v10, v11
+>>>>>>> 21edac2
 ; CHECK-NEXT:    vmand.mm v0, v8, v0
 ; CHECK-NEXT:    ret
   %r = tail call <vscale x 8 x i1> @llvm.experimental.vector.match(<vscale x 8 x i16> %op1, <8 x i16> %op2, <vscale x 8 x i1> %mask)
@@ -1281,6 +1403,7 @@ define <16 x i1> @match_v16i8_v32i8(<16 x i8> %op1, <32 x i8> %op2, <16 x i1> %m
 define <vscale x 4 x i1> @match_nxv4xi32_v4i32(<vscale x 4 x i32> %op1, <4 x i32> %op2, <vscale x 4 x i1> %mask) {
 ; CHECK-LABEL: match_nxv4xi32_v4i32:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; CHECK-NEXT:    vmv.x.s a0, v10
 ; CHECK-NEXT:    vslidedown.vi v11, v10, 1
@@ -1297,6 +1420,20 @@ define <vscale x 4 x i1> @match_nxv4xi32_v4i32(<vscale x 4 x i32> %op1, <4 x i32
 ; CHECK-NEXT:    vmor.mm v10, v11, v10
 ; CHECK-NEXT:    vmseq.vx v8, v8, a1
 ; CHECK-NEXT:    vmor.mm v8, v10, v8
+=======
+; CHECK-NEXT:    vsetvli a0, zero, e32, m2, ta, ma
+; CHECK-NEXT:    vrgather.vi v12, v10, 1
+; CHECK-NEXT:    vmseq.vv v14, v8, v12
+; CHECK-NEXT:    vrgather.vi v12, v10, 0
+; CHECK-NEXT:    vmseq.vv v15, v8, v12
+; CHECK-NEXT:    vmor.mm v12, v15, v14
+; CHECK-NEXT:    vrgather.vi v14, v10, 2
+; CHECK-NEXT:    vmseq.vv v13, v8, v14
+; CHECK-NEXT:    vrgather.vi v14, v10, 3
+; CHECK-NEXT:    vmor.mm v10, v12, v13
+; CHECK-NEXT:    vmseq.vv v11, v8, v14
+; CHECK-NEXT:    vmor.mm v8, v10, v11
+>>>>>>> 21edac2
 ; CHECK-NEXT:    vmand.mm v0, v8, v0
 ; CHECK-NEXT:    ret
   %r = tail call <vscale x 4 x i1> @llvm.experimental.vector.match(<vscale x 4 x i32> %op1, <4 x i32> %op2, <vscale x 4 x i1> %mask)
@@ -1304,6 +1441,7 @@ define <vscale x 4 x i1> @match_nxv4xi32_v4i32(<vscale x 4 x i32> %op1, <4 x i32
 }
 
 define <vscale x 2 x i1> @match_nxv2xi64_v2i64(<vscale x 2 x i64> %op1, <2 x i64> %op2, <vscale x 2 x i1> %mask) {
+<<<<<<< HEAD
 ; RV32-LABEL: match_nxv2xi64_v2i64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    addi sp, sp, -16
@@ -1346,6 +1484,18 @@ define <vscale x 2 x i1> @match_nxv2xi64_v2i64(<vscale x 2 x i64> %op1, <2 x i64
 ; RV64-NEXT:    vmor.mm v8, v11, v8
 ; RV64-NEXT:    vmand.mm v0, v8, v0
 ; RV64-NEXT:    ret
+=======
+; CHECK-LABEL: match_nxv2xi64_v2i64:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    vsetvli a0, zero, e64, m2, ta, ma
+; CHECK-NEXT:    vrgather.vi v12, v10, 1
+; CHECK-NEXT:    vmseq.vv v14, v8, v12
+; CHECK-NEXT:    vrgather.vi v12, v10, 0
+; CHECK-NEXT:    vmseq.vv v10, v8, v12
+; CHECK-NEXT:    vmor.mm v8, v10, v14
+; CHECK-NEXT:    vmand.mm v0, v8, v0
+; CHECK-NEXT:    ret
+>>>>>>> 21edac2
   %r = tail call <vscale x 2 x i1> @llvm.experimental.vector.match(<vscale x 2 x i64> %op1, <2 x i64> %op2, <vscale x 2 x i1> %mask)
   ret <vscale x 2 x i1> %r
 }

@@ -990,10 +990,14 @@ static TargetTypeInfo getTargetTypeInfo(const TargetExtType *Ty) {
         Ty->getIntParameter(0);
     return TargetTypeInfo(
         ScalableVectorType::get(Type::getInt8Ty(C), TotalNumElts),
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
         TargetExtType::HasZeroInit,
 #endif // SIFIVE_CUSTOMIZATION
         TargetExtType::CanBeLocal);
+=======
+        TargetExtType::CanBeLocal, TargetExtType::HasZeroInit);
+>>>>>>> 21edac2
   }
 
   // DirectX resources

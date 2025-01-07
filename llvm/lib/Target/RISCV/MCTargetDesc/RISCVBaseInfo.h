@@ -419,6 +419,8 @@ enum OperandType : unsigned {
   OPERAND_UIMM3_LSB0, // SIFIVE
   OPERAND_UIMM4,
   OPERAND_UIMM5,
+  OPERAND_UIMM5_NONZERO,
+  OPERAND_UIMM5_GT3,
   OPERAND_UIMM5_LSB0,
   OPERAND_UIMM6,
   OPERAND_UIMM6_LSB0,
@@ -430,8 +432,12 @@ enum OperandType : unsigned {
   OPERAND_UIMM8_GE32,
   OPERAND_UIMM9_LSB000,
   OPERAND_UIMM10_LSB00_NONZERO,
+  OPERAND_UIMM11,
   OPERAND_UIMM12,
   OPERAND_UIMM16,
+  OPERAND_UIMM20,
+  OPERAND_UIMMLOG2XLEN,
+  OPERAND_UIMMLOG2XLEN_NONZERO,
   OPERAND_UIMM32,
   OPERAND_UIMM48,
   OPERAND_UIMM64,
@@ -443,9 +449,6 @@ enum OperandType : unsigned {
   OPERAND_SIMM10_LSB0000_NONZERO,
   OPERAND_SIMM12,
   OPERAND_SIMM12_LSB00000,
-  OPERAND_UIMM20,
-  OPERAND_UIMMLOG2XLEN,
-  OPERAND_UIMMLOG2XLEN_NONZERO,
   OPERAND_CLUI_IMM,
   OPERAND_VTYPEI10,
   OPERAND_VTYPEI11,
@@ -466,8 +469,10 @@ enum OperandType : unsigned {
   OPERAND_COND_CODE,
   // Vector policy operand.
   OPERAND_VEC_POLICY,
-  // Vector SEW operand.
+  // Vector SEW operand. Stores in log2(SEW).
   OPERAND_SEW,
+  // Special SEW for mask only instructions. Always 0.
+  OPERAND_SEW_MASK,
   // Vector rounding mode for VXRM or FRM.
   OPERAND_VEC_RM,
   OPERAND_LAST_RISCV_IMM = OPERAND_VEC_RM,
@@ -572,9 +577,7 @@ int getLoadFPImm(APFloat FPImm);
 
 namespace RISCVSysReg {
 struct SysReg {
-  const char *Name;
-  const char *AltName;
-  const char *DeprecatedName;
+  const char Name[32];
   unsigned Encoding;
   // FIXME: add these additional fields when needed.
   // Privilege Access: Read, Write, Read-Only.
@@ -586,11 +589,13 @@ struct SysReg {
   // Register number without the privilege bits.
   // unsigned Number;
   FeatureBitset FeaturesRequired;
-  bool isRV32Only;
+  bool IsRV32Only;
+  bool IsAltName;
+  bool IsDeprecatedName;
 
   bool haveRequiredFeatures(const FeatureBitset &ActiveFeatures) const {
     // Not in 32-bit mode.
-    if (isRV32Only && ActiveFeatures[RISCV::Feature64Bit])
+    if (IsRV32Only && ActiveFeatures[RISCV::Feature64Bit])
       return false;
     // No required feature associated with the system register.
     if (FeaturesRequired.none())

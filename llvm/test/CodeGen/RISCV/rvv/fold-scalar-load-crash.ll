@@ -17,10 +17,14 @@ define i32 @test(i32 %size, ptr %add.ptr, i64 %const) {
 ; RV32-NEXT:    addi a2, a0, 1
 ; RV32-NEXT:  .LBB0_1: # %for.body
 ; RV32-NEXT:    # =>This Inner Loop Header: Depth=1
+<<<<<<< HEAD
 ; RV32-NEXT:    add a0, a1, a0
 ; RV32-NEXT:    lbu a0, -1(a0)
+=======
+; RV32-NEXT:    th.lrb a0, a1, a0, 0
+; RV32-NEXT:    vsetivli zero, 1, e8, m1, tu, ma
+>>>>>>> 21edac2
 ; RV32-NEXT:    vmv1r.v v9, v8
-; RV32-NEXT:    vsetivli zero, 8, e8, m1, tu, ma
 ; RV32-NEXT:    vmv.s.x v9, a0
 ; RV32-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; RV32-NEXT:    vmseq.vi v9, v9, 0
@@ -45,10 +49,14 @@ define i32 @test(i32 %size, ptr %add.ptr, i64 %const) {
 ; RV64-NEXT:  .LBB0_1: # %for.body
 ; RV64-NEXT:    # =>This Inner Loop Header: Depth=1
 ; RV64-NEXT:    sext.w a0, a0
+<<<<<<< HEAD
 ; RV64-NEXT:    add a0, a1, a0
 ; RV64-NEXT:    lbu a0, -1(a0)
+=======
+; RV64-NEXT:    th.lrb a0, a1, a0, 0
+; RV64-NEXT:    vsetivli zero, 1, e8, m1, tu, ma
+>>>>>>> 21edac2
 ; RV64-NEXT:    vmv1r.v v9, v8
-; RV64-NEXT:    vsetivli zero, 8, e8, m1, tu, ma
 ; RV64-NEXT:    vmv.s.x v9, a0
 ; RV64-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; RV64-NEXT:    vmseq.vi v9, v9, 0

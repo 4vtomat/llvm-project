@@ -146,6 +146,7 @@
 #include "llvm/Transforms/Utils/CanonicalizeAliases.h"
 #include "llvm/Transforms/Utils/CountVisits.h"
 #include "llvm/Transforms/Utils/EntryExitInstrumenter.h"
+#include "llvm/Transforms/Utils/ExtraPassManager.h"
 #include "llvm/Transforms/Utils/InjectTLIMappings.h"
 #include "llvm/Transforms/Utils/LibCallsShrinkWrap.h"
 #include "llvm/Transforms/Utils/Mem2Reg.h"
@@ -713,7 +714,7 @@ PassBuilder::buildFunctionSimplificationPipeline(OptimizationLevel Level,
   LPM2.addPass(IndVarSimplifyPass());
 
   {
-    ExtraSimpleLoopUnswitchPassManager ExtraPasses;
+    ExtraLoopPassManager<ShouldRunExtraSimpleLoopUnswitch> ExtraPasses;
     ExtraPasses.addPass(SimpleLoopUnswitchPass(/* NonTrivial */ Level ==
                                                OptimizationLevel::O3));
     LPM2.addPass(std::move(ExtraPasses));
@@ -1405,8 +1406,12 @@ void PassBuilder::addVectorPasses(OptimizationLevel Level,
       ExtraVectorizerPasses) {
 #else
   if (Level.getSpeedupLevel() > 1 && ExtraVectorizerPasses) {
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
     ExtraVectorPassManager ExtraPasses;
+=======
+    ExtraFunctionPassManager<ShouldRunExtraVectorPasses> ExtraPasses;
+>>>>>>> 21edac2
     // At higher optimization levels, try to clean up any runtime overlap and
     // alignment checks inserted by the vectorizer. We want to track correlated
     // runtime checks for two inner loops in the same outer loop, fold any

@@ -40,6 +40,7 @@ using namespace llvm;
 STATISTIC(NumInsertedVSETVL, "Number of VSETVL inst inserted");
 STATISTIC(NumCoalescedVSETVL, "Number of VSETVL inst coalesced");
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 cl::opt<bool> ForceTailUndisturbed(
     "riscv-force-tail-undisturbed", cl::init(false), cl::Hidden,
@@ -48,6 +49,13 @@ cl::opt<bool> ForceMaskUndisturbed(
     "riscv-force-mask-undisturbed", cl::init(false), cl::Hidden,
     cl::desc("Force to use mask undisturbed for all vector intrinsics."));
 #endif // SIFIVE_CUSTOMIZATION
+=======
+static cl::opt<bool> EnsureWholeVectorRegisterMoveValidVTYPE(
+    DEBUG_TYPE "-whole-vector-register-move-valid-vtype", cl::Hidden,
+    cl::desc("Insert vsetvlis before vmvNr.vs to ensure vtype is valid and "
+             "vill is cleared"),
+    cl::init(true));
+>>>>>>> 21edac2
 
 namespace {
 
@@ -212,6 +220,14 @@ static bool hasUndefinedPassthru(const MachineInstr &MI) {
   return UseMO.getReg() == RISCV::NoRegister || UseMO.isUndef();
 }
 
+/// Return true if \p MI is a copy that will be lowered to one or more vmvNr.vs.
+static bool isVectorCopy(const TargetRegisterInfo *TRI,
+                         const MachineInstr &MI) {
+  return MI.isCopy() && MI.getOperand(0).getReg().isPhysical() &&
+         RISCVRegisterInfo::isRVVRegClass(
+             TRI->getMinimalPhysRegClass(MI.getOperand(0).getReg()));
+}
+
 /// Which subfields of VL or VTYPE have values we need to preserve?
 struct DemandedFields {
   // Some unknown property of VL is used.  If demanded, must preserve entire
@@ -221,6 +237,7 @@ struct DemandedFields {
   bool VLZeroness = false;
   // What properties of SEW we need to preserve.
   enum : uint8_t {
+<<<<<<< HEAD
     SEWEqual = 3,              // The exact value of SEW needs to be preserved.
 #if SIFIVE_CUSTOMIZATION
     // SIFIVE: upstream has the priority of these in the wrong order.
@@ -232,6 +249,16 @@ struct DemandedFields {
                                // than or equal to the original value.
 #endif // SIFIVE_CUSTOMIZATION
     SEWNone = 0 // We don't need to preserve SEW at all.
+=======
+    SEWEqual = 3, // The exact value of SEW needs to be preserved.
+    SEWGreaterThanOrEqualAndLessThan64 =
+        2, // SEW can be changed as long as it's greater
+           // than or equal to the original value, but must be less
+           // than 64.
+    SEWGreaterThanOrEqual = 1, // SEW can be changed as long as it's greater
+                               // than or equal to the original value.
+    SEWNone = 0                // We don't need to preserve SEW at all.
+>>>>>>> 21edac2
   } SEW = SEWNone;
   enum : uint8_t {
     LMULEqual = 2, // The exact value of LMUL needs to be preserved.
@@ -241,6 +268,7 @@ struct DemandedFields {
   bool SEWLMULRatio = false;
   bool TailPolicy = false;
   bool MaskPolicy = false;
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   bool UseTWiden = false;
   bool UseAltfmt = false;
@@ -252,6 +280,15 @@ struct DemandedFields {
     return SEW || LMUL || SEWLMULRatio || TailPolicy || MaskPolicy ||
            UseTWiden || UseAltfmt;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  // If this is true, we demand that VTYPE is set to some legal state, i.e. that
+  // vill is unset.
+  bool VILL = false;
+
+  // Return true if any part of VTYPE was used
+  bool usedVTYPE() const {
+    return SEW || LMUL || SEWLMULRatio || TailPolicy || MaskPolicy || VILL;
+>>>>>>> 21edac2
   }
 
   // Return true if any property of VL was used
@@ -266,10 +303,14 @@ struct DemandedFields {
     SEWLMULRatio = true;
     TailPolicy = true;
     MaskPolicy = true;
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
     UseTWiden = true;
     UseAltfmt = true;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    VILL = true;
+>>>>>>> 21edac2
   }
 
   // Mark all VL properties as demanded
@@ -294,10 +335,14 @@ struct DemandedFields {
     SEWLMULRatio |= B.SEWLMULRatio;
     TailPolicy |= B.TailPolicy;
     MaskPolicy |= B.MaskPolicy;
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
     UseAltfmt |= B.UseAltfmt;
     UseTWiden |= B.UseTWiden;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    VILL |= B.VILL;
+>>>>>>> 21edac2
   }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
@@ -343,11 +388,16 @@ struct DemandedFields {
     OS << ", ";
     OS << "SEWLMULRatio=" << SEWLMULRatio << ", ";
     OS << "TailPolicy=" << TailPolicy << ", ";
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
     OS << "MaskPolicy=" << MaskPolicy << ", ";
     OS << "UseAltfmt=" << UseAltfmt << ", ";
     OS << "UseTWiden=" << UseTWiden;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    OS << "MaskPolicy=" << MaskPolicy << ", ";
+    OS << "VILL=" << VILL;
+>>>>>>> 21edac2
     OS << "}";
   }
 #endif
@@ -556,12 +606,29 @@ DemandedFields getDemanded(const MachineInstr &MI, const RISCVSubtarget *ST) {
     }
   }
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   Res.UseAltfmt = RISCVII::getAltfmtType(MI.getDesc().TSFlags) !=
                   RISCVII::AltfmtType::DontCare;
   Res.UseTWiden = RISCVII::hasTWidenOp(MI.getDesc().TSFlags) ||
                   isMammothVectorConfigInstr(MI);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  // In §32.16.6, whole vector register moves have a dependency on SEW. At the
+  // MIR level though we don't encode the element type, and it gives the same
+  // result whatever the SEW may be.
+  //
+  // However it does need valid SEW, i.e. vill must be cleared. The entry to a
+  // function, calls and inline assembly may all set it, so make sure we clear
+  // it for whole register copies. Do this by leaving VILL demanded.
+  if (isVectorCopy(ST->getRegisterInfo(), MI)) {
+    Res.LMUL = DemandedFields::LMULNone;
+    Res.SEW = DemandedFields::SEWNone;
+    Res.SEWLMULRatio = false;
+    Res.TailPolicy = false;
+    Res.MaskPolicy = false;
+  }
+>>>>>>> 21edac2
 
   return Res;
 }
@@ -659,7 +726,7 @@ public:
     return MI;
   }
 
-  void setAVL(VSETVLIInfo Info) {
+  void setAVL(const VSETVLIInfo &Info) {
     assert(Info.isValid());
     if (Info.isUnknown())
       setUnknown();
@@ -1079,8 +1146,8 @@ public:
     AU.addUsedIfAvailable<LiveIntervalsWrapperPass>();
     AU.addPreserved<LiveIntervalsWrapperPass>();
     AU.addPreserved<SlotIndexesWrapperPass>();
-    AU.addPreserved<LiveDebugVariables>();
-    AU.addPreserved<LiveStacks>();
+    AU.addPreserved<LiveDebugVariablesWrapperLegacy>();
+    AU.addPreserved<LiveStacksWrapperLegacy>();
 
     MachineFunctionPass::getAnalysisUsage(AU);
   }
@@ -1526,7 +1593,8 @@ bool RISCVInsertVSETVLI::needVSETVLI(const DemandedFields &Used,
 // If we don't use LMUL or the SEW/LMUL ratio, then adjust LMUL so that we
 // maintain the SEW/LMUL ratio. This allows us to eliminate VL toggles in more
 // places.
-static VSETVLIInfo adjustIncoming(VSETVLIInfo PrevInfo, VSETVLIInfo NewInfo,
+static VSETVLIInfo adjustIncoming(const VSETVLIInfo &PrevInfo,
+                                  const VSETVLIInfo &NewInfo,
                                   DemandedFields &Demanded) {
   VSETVLIInfo Info = NewInfo;
 
@@ -1546,10 +1614,26 @@ static VSETVLIInfo adjustIncoming(VSETVLIInfo PrevInfo, VSETVLIInfo NewInfo,
 // legal for MI, but may not be the state requested by MI.
 void RISCVInsertVSETVLI::transferBefore(VSETVLIInfo &Info,
                                         const MachineInstr &MI) const {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (!RISCVII::hasSEWOp(MI.getDesc().TSFlags) &&
       !isMammothVectorConfigInstr(MI))
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  if (isVectorCopy(ST->getRegisterInfo(), MI) &&
+      (Info.isUnknown() || !Info.isValid() || Info.hasSEWLMULRatioOnly())) {
+    // Use an arbitrary but valid AVL and VTYPE so vill will be cleared. It may
+    // be coalesced into another vsetvli since we won't demand any fields.
+    VSETVLIInfo NewInfo; // Need a new VSETVLIInfo to clear SEWLMULRatioOnly
+    NewInfo.setAVLImm(1);
+    NewInfo.setVTYPE(RISCVII::VLMUL::LMUL_1, /*sew*/ 8, /*ta*/ true,
+                     /*ma*/ true);
+    Info = NewInfo;
+    return;
+  }
+
+  if (!RISCVII::hasSEWOp(MI.getDesc().TSFlags))
+>>>>>>> 21edac2
     return;
 
   DemandedFields Demanded = getDemanded(MI, ST);
@@ -1649,10 +1733,15 @@ bool RISCVInsertVSETVLI::computeVLVTYPEChanges(const MachineBasicBlock &MBB,
   for (const MachineInstr &MI : MBB) {
     transferBefore(Info, MI);
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (isVectorConfigInstr(MI) || RISCVII::hasSEWOp(MI.getDesc().TSFlags) ||
         isMammothVectorConfigInstr(MI))
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    if (isVectorConfigInstr(MI) || RISCVII::hasSEWOp(MI.getDesc().TSFlags) ||
+        isVectorCopy(ST->getRegisterInfo(), MI))
+>>>>>>> 21edac2
       HadVectorOp = true;
 
     transferAfter(Info, MI);
@@ -1789,12 +1878,24 @@ void RISCVInsertVSETVLI::emitVSETVLIs(MachineBasicBlock &MBB) {
       PrefixTransparent = false;
     }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (isMammothVectorConfigInstr(MI)) {
       MI.getOperand(3).setIsDead(false);
       PrefixTransparent = false;
     }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    if (EnsureWholeVectorRegisterMoveValidVTYPE &&
+        isVectorCopy(ST->getRegisterInfo(), MI)) {
+      if (!PrevInfo.isCompatible(DemandedFields::all(), CurInfo, LIS)) {
+        insertVSETVLI(MBB, MI, MI.getDebugLoc(), CurInfo, PrevInfo);
+        PrefixTransparent = false;
+      }
+      MI.addOperand(MachineOperand::CreateReg(RISCV::VTYPE, /*isDef*/ false,
+                                              /*isImp*/ true));
+    }
+>>>>>>> 21edac2
 
     uint64_t TSFlags = MI.getDesc().TSFlags;
 #if SIFIVE_CUSTOMIZATION
@@ -2058,14 +2159,15 @@ bool RISCVInsertVSETVLI::canMutatePriorConfig(
     }
 
     auto &AVL = MI.getOperand(1);
-    auto &PrevAVL = PrevMI.getOperand(1);
 
-    // If the AVL is a register, we need to make sure MI's AVL dominates PrevMI.
-    // For now just check that PrevMI uses the same virtual register.
-    if (AVL.isReg() && AVL.getReg() != RISCV::X0 &&
-        (!MRI->hasOneDef(AVL.getReg()) || !PrevAVL.isReg() ||
-         PrevAVL.getReg() != AVL.getReg()))
-      return false;
+    // If the AVL is a register, we need to make sure its definition is the same
+    // at PrevMI as it was at MI.
+    if (AVL.isReg() && AVL.getReg() != RISCV::X0) {
+      VNInfo *VNI = getVNInfoFromReg(AVL.getReg(), MI, LIS);
+      VNInfo *PrevVNI = getVNInfoFromReg(AVL.getReg(), PrevMI, LIS);
+      if (!VNI || !PrevVNI || VNI != PrevVNI)
+        return false;
+    }
   }
 
   assert(PrevMI.getOperand(2).isImm() && MI.getOperand(2).isImm());

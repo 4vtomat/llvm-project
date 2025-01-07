@@ -323,8 +323,13 @@ struct VPTransformState {
 #else
   VPTransformState(const TargetTransformInfo *TTI, ElementCount VF, unsigned UF,
                    LoopInfo *LI, DominatorTree *DT, IRBuilderBase &Builder,
+<<<<<<< HEAD
                    InnerLoopVectorizer *ILV, VPlan *Plan);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+                   InnerLoopVectorizer *ILV, VPlan *Plan,
+                   Loop *CurrentParentLoop, Type *CanonicalIVTy);
+>>>>>>> 21edac2
   /// Target Transform Info.
   const TargetTransformInfo *TTI;
 
@@ -509,8 +514,8 @@ struct VPTransformState {
   /// Pointer to the VPlan code is generated for.
   VPlan *Plan;
 
-  /// The loop object for the current parent region, or nullptr.
-  Loop *CurrentVectorLoop = nullptr;
+  /// The parent loop object for the current scope, or nullptr.
+  Loop *CurrentParentLoop = nullptr;
 
   /// LoopVersioning.  It's only set up (non-null) if memchecks were
   /// used.
@@ -772,6 +777,14 @@ public:
   /// Remove all the successors of this block.
   void clearSuccessors() { Successors.clear(); }
 
+  /// Swap successors of the block. The block must have exactly 2 successors.
+  // TODO: This should be part of introducing conditional branch recipes rather
+  // than being independent.
+  void swapSuccessors() {
+    assert(Successors.size() == 2 && "must have 2 successors to swap");
+    std::swap(Successors[0], Successors[1]);
+  }
+
   /// The method which generates the output IR that correspond to this
   /// VPBlockBase, thereby "executing" the VPlan.
   virtual void execute(VPTransformState *State) = 0;
@@ -785,19 +798,12 @@ public:
   /// Return the cost of the block.
   virtual InstructionCost cost(ElementCount VF, VPCostContext &Ctx) = 0;
 
-  /// Delete all blocks reachable from a given VPBlockBase, inclusive.
-  static void deleteCFG(VPBlockBase *Entry);
-
   /// Return true if it is legal to hoist instructions into this block.
   bool isLegalToHoistInto() {
     // There are currently no constraints that prevent an instruction to be
     // hoisted into a VPBlockBase.
     return true;
   }
-
-  /// Replace all operands of VPUsers in the block with \p NewValue and also
-  /// replaces all uses of VPValues defined in the block with NewValue.
-  virtual void dropAllReferences(VPValue *NewValue) = 0;
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   void printAsOperand(raw_ostream &OS, bool PrintType = false) const {
@@ -1121,11 +1127,6 @@ public:
     DisjointFlagsTy(bool IsDisjoint) : IsDisjoint(IsDisjoint) {}
   };
 
-  struct GEPFlagsTy {
-    char IsInBounds : 1;
-    GEPFlagsTy(bool IsInBounds) : IsInBounds(IsInBounds) {}
-  };
-
 private:
   struct ExactFlagsTy {
     char IsExact : 1;
@@ -1152,7 +1153,7 @@ private:
     WrapFlagsTy WrapFlags;
     DisjointFlagsTy DisjointFlags;
     ExactFlagsTy ExactFlags;
-    GEPFlagsTy GEPFlags;
+    GEPNoWrapFlags GEPFlags;
     NonNegFlagsTy NonNegFlags;
     FastMathFlagsTy FMFs;
     unsigned AllFlags;
@@ -1189,7 +1190,7 @@ public:
       ExactFlags.IsExact = Op->isExact();
     } else if (auto *GEP = dyn_cast<GetElementPtrInst>(&I)) {
       OpType = OperationType::GEPOp;
-      GEPFlags.IsInBounds = GEP->isInBounds();
+      GEPFlags = GEP->getNoWrapFlags();
     } else if (auto *PNNI = dyn_cast<PossiblyNonNegInst>(&I)) {
       OpType = OperationType::NonNegOp;
       NonNegFlags.NonNeg = PNNI->hasNonNeg();
@@ -1229,7 +1230,7 @@ public:
 protected:
   template <typename IterT>
   VPRecipeWithIRFlags(const unsigned char SC, IterT Operands,
-                      GEPFlagsTy GEPFlags, DebugLoc DL = {})
+                      GEPNoWrapFlags GEPFlags, DebugLoc DL = {})
       : VPSingleDefRecipe(SC, Operands, DL), OpType(OperationType::GEPOp),
         GEPFlags(GEPFlags) {}
 
@@ -1266,7 +1267,7 @@ public:
       ExactFlags.IsExact = false;
       break;
     case OperationType::GEPOp:
-      GEPFlags.IsInBounds = false;
+      GEPFlags = GEPNoWrapFlags::none();
       break;
     case OperationType::FPMathOp:
       FMFs.NoNaNs = false;
@@ -1295,10 +1296,7 @@ public:
       I->setIsExact(ExactFlags.IsExact);
       break;
     case OperationType::GEPOp:
-      // TODO(gep_nowrap): Track the full GEPNoWrapFlags in VPlan.
-      cast<GetElementPtrInst>(I)->setNoWrapFlags(
-          GEPFlags.IsInBounds ? GEPNoWrapFlags::inBounds()
-                              : GEPNoWrapFlags::none());
+      cast<GetElementPtrInst>(I)->setNoWrapFlags(GEPFlags);
       break;
     case OperationType::FPMathOp:
       I->setHasAllowReassoc(FMFs.AllowReassoc);
@@ -1324,11 +1322,7 @@ public:
     return CmpPredicate;
   }
 
-  bool isInBounds() const {
-    assert(OpType == OperationType::GEPOp &&
-           "recipe doesn't have inbounds flag");
-    return GEPFlags.IsInBounds;
-  }
+  GEPNoWrapFlags getGEPNoWrapFlags() const { return GEPFlags; }
 
   /// Returns true if the recipe has fast-math flags.
   bool hasFastMathFlags() const { return OpType == OperationType::FPMathOp; }
@@ -1409,6 +1403,7 @@ public:
     // operand). Only generates scalar values (either for the first lane only or
     // for all lanes, depending on its uses).
     PtrAdd,
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     ComputeReductionResultWithMask,
     ExitingCond,
@@ -1421,6 +1416,11 @@ public:
     CSAAnyActive,
     MonotonicUpdate,
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    // Returns a scalar boolean value, which is true if any lane of its single
+    // operand is true.
+    AnyOf,
+>>>>>>> 21edac2
   };
 
 private:
@@ -1484,7 +1484,7 @@ public:
     assert(Opcode == Instruction::Or && "only OR opcodes can be disjoint");
   }
 
-  VPInstruction(VPValue *Ptr, VPValue *Offset, GEPFlagsTy Flags,
+  VPInstruction(VPValue *Ptr, VPValue *Offset, GEPNoWrapFlags Flags,
                 DebugLoc DL = {}, const Twine &Name = "")
       : VPRecipeWithIRFlags(VPDef::VPInstructionSC,
                             ArrayRef<VPValue *>({Ptr, Offset}), Flags, DL),
@@ -1533,14 +1533,6 @@ public:
   /// Print the VPInstruction to dbgs() (for debugging).
   LLVM_DUMP_METHOD void dump() const;
 #endif
-
-  /// Return true if this instruction may modify memory.
-  bool mayWriteToMemory() const {
-    // TODO: we can use attributes of the called function to rule out memory
-    //       modifications.
-    return Opcode == Instruction::Store || Opcode == Instruction::Call ||
-           Opcode == Instruction::Invoke || Opcode == SLPStore;
-  }
 
   bool hasResult() const {
     // CallInst may or may not have a result, depending on the called function.
@@ -1794,14 +1786,16 @@ class VPScalarCastRecipe : public VPSingleDefRecipe {
   Value *generate(VPTransformState &State);
 
 public:
-  VPScalarCastRecipe(Instruction::CastOps Opcode, VPValue *Op, Type *ResultTy)
-      : VPSingleDefRecipe(VPDef::VPScalarCastSC, {Op}), Opcode(Opcode),
+  VPScalarCastRecipe(Instruction::CastOps Opcode, VPValue *Op, Type *ResultTy,
+                     DebugLoc DL)
+      : VPSingleDefRecipe(VPDef::VPScalarCastSC, {Op}, DL), Opcode(Opcode),
         ResultTy(ResultTy) {}
 
   ~VPScalarCastRecipe() override = default;
 
   VPScalarCastRecipe *clone() override {
-    return new VPScalarCastRecipe(Opcode, getOperand(0), ResultTy);
+    return new VPScalarCastRecipe(Opcode, getOperand(0), ResultTy,
+                                  getDebugLoc());
   }
 
   VP_CLASSOF_IMPL(VPDef::VPScalarCastSC)
@@ -1861,7 +1855,7 @@ public:
   VPWidenIntrinsicRecipe(Intrinsic::ID VectorIntrinsicID,
                          ArrayRef<VPValue *> CallArguments, Type *Ty,
                          DebugLoc DL = {})
-      : VPRecipeWithIRFlags(VPDef::VPWidenIntrinsicSC, CallArguments),
+      : VPRecipeWithIRFlags(VPDef::VPWidenIntrinsicSC, CallArguments, DL),
         VectorIntrinsicID(VectorIntrinsicID), ResultTy(Ty) {
     LLVMContext &Ctx = Ty->getContext();
     AttributeList Attrs = Intrinsic::getAttributes(Ctx, VectorIntrinsicID);
@@ -1895,6 +1889,9 @@ public:
   /// Return the cost of this vector intrinsic.
   InstructionCost computeCost(ElementCount VF,
                               VPCostContext &Ctx) const override;
+
+  /// Return the ID of the intrinsic.
+  Intrinsic::ID getVectorIntrinsicID() const { return VectorIntrinsicID; }
 
   /// Return the scalar return type of the intrinsic.
   Type *getResultType() const { return ResultTy; }
@@ -2247,10 +2244,9 @@ class VPReverseVectorPointerRecipe : public VPRecipeWithIRFlags,
 
 public:
   VPReverseVectorPointerRecipe(VPValue *Ptr, VPValue *VF, Type *IndexedTy,
-                               bool IsInBounds, DebugLoc DL)
+                               GEPNoWrapFlags GEPFlags, DebugLoc DL)
       : VPRecipeWithIRFlags(VPDef::VPReverseVectorPointerSC,
-                            ArrayRef<VPValue *>({Ptr, VF}),
-                            GEPFlagsTy(IsInBounds), DL),
+                            ArrayRef<VPValue *>({Ptr, VF}), GEPFlags, DL),
         IndexedTy(IndexedTy) {}
 
   VP_CLASSOF_IMPL(VPDef::VPReverseVectorPointerSC)
@@ -2282,8 +2278,9 @@ public:
   }
 
   VPReverseVectorPointerRecipe *clone() override {
-    return new VPReverseVectorPointerRecipe(
-        getOperand(0), getVFValue(), IndexedTy, isInBounds(), getDebugLoc());
+    return new VPReverseVectorPointerRecipe(getOperand(0), getVFValue(),
+                                            IndexedTy, getGEPNoWrapFlags(),
+                                            getDebugLoc());
   }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
@@ -2299,10 +2296,10 @@ class VPVectorPointerRecipe : public VPRecipeWithIRFlags,
   Type *IndexedTy;
 
 public:
-  VPVectorPointerRecipe(VPValue *Ptr, Type *IndexedTy, bool IsInBounds,
+  VPVectorPointerRecipe(VPValue *Ptr, Type *IndexedTy, GEPNoWrapFlags GEPFlags,
                         DebugLoc DL)
       : VPRecipeWithIRFlags(VPDef::VPVectorPointerSC, ArrayRef<VPValue *>(Ptr),
-                            GEPFlagsTy(IsInBounds), DL),
+                            GEPFlags, DL),
         IndexedTy(IndexedTy) {}
 
   VP_CLASSOF_IMPL(VPDef::VPVectorPointerSC)
@@ -2324,8 +2321,8 @@ public:
   }
 
   VPVectorPointerRecipe *clone() override {
-    return new VPVectorPointerRecipe(getOperand(0), IndexedTy, isInBounds(),
-                                     getDebugLoc());
+    return new VPVectorPointerRecipe(getOperand(0), IndexedTy,
+                                     getGEPNoWrapFlags(), getDebugLoc());
   }
 
   /// Return the cost of this VPHeaderPHIRecipe.
@@ -2424,11 +2421,10 @@ public:
   }
 };
 
-/// A recipe for handling phi nodes of integer and floating-point inductions,
-/// producing their vector values.
-class VPWidenIntOrFpInductionRecipe : public VPHeaderPHIRecipe {
-  PHINode *IV;
-  TruncInst *Trunc;
+/// Base class for widened induction (VPWidenIntOrFpInductionRecipe and
+/// VPWidenPointerInductionRecipe), providing shared functionality, including
+/// retrieving the step value, induction descriptor and original phi node.
+class VPWidenInductionRecipe : public VPHeaderPHIRecipe {
   const InductionDescriptor &IndDesc;
 
 #if SIFIVE_CUSTOMIZATION
@@ -2436,6 +2432,7 @@ class VPWidenIntOrFpInductionRecipe : public VPHeaderPHIRecipe {
 #endif
 
 public:
+<<<<<<< HEAD
   VPWidenIntOrFpInductionRecipe(PHINode *IV, VPValue *Start, VPValue *Step,
 		                VPValue *VF,
 #if SIFIVE_CUSTOMIZATION
@@ -2450,10 +2447,16 @@ public:
 #else
         Trunc(nullptr), IndDesc(IndDesc) {
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  VPWidenInductionRecipe(unsigned char Kind, PHINode *IV, VPValue *Start,
+                         VPValue *Step, const InductionDescriptor &IndDesc,
+                         DebugLoc DL)
+      : VPHeaderPHIRecipe(Kind, IV, Start, DL), IndDesc(IndDesc) {
+>>>>>>> 21edac2
     addOperand(Step);
-    addOperand(VF);
   }
 
+<<<<<<< HEAD
   VPWidenIntOrFpInductionRecipe(PHINode *IV, VPValue *Start, VPValue *Step,
                                 VPValue *VF, const InductionDescriptor &IndDesc,
 #if SIFIVE_CUSTOMIZATION
@@ -2469,21 +2472,25 @@ public:
 #endif // SIFIVE_CUSTOMIZATION
     addOperand(Step);
     addOperand(VF);
+=======
+  static inline bool classof(const VPRecipeBase *R) {
+    return R->getVPDefID() == VPDef::VPWidenIntOrFpInductionSC ||
+           R->getVPDefID() == VPDef::VPWidenPointerInductionSC;
+>>>>>>> 21edac2
   }
 
-  ~VPWidenIntOrFpInductionRecipe() override = default;
-
-  VPWidenIntOrFpInductionRecipe *clone() override {
-    return new VPWidenIntOrFpInductionRecipe(
-        IV, getStartValue(), getStepValue(), getVFValue(), IndDesc, Trunc);
+  static inline bool classof(const VPValue *V) {
+    auto *R = V->getDefiningRecipe();
+    return R && classof(R);
   }
 
-  VP_CLASSOF_IMPL(VPDef::VPWidenIntOrFpInductionSC)
+  static inline bool classof(const VPHeaderPHIRecipe *R) {
+    return classof(static_cast<const VPRecipeBase *>(R));
+  }
 
-  /// Generate the vectorized and scalarized versions of the phi node as
-  /// needed by their users.
-  void execute(VPTransformState &State) override;
+  virtual void execute(VPTransformState &State) override = 0;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool isUncountable() const { return IsUncountable; }
 #endif
@@ -2493,6 +2500,16 @@ public:
   void print(raw_ostream &O, const Twine &Indent,
              VPSlotTracker &SlotTracker) const override;
 #endif
+=======
+  /// Returns the step value of the induction.
+  VPValue *getStepValue() { return getOperand(1); }
+  const VPValue *getStepValue() const { return getOperand(1); }
+
+  PHINode *getPHINode() const { return cast<PHINode>(getUnderlyingValue()); }
+
+  /// Returns the induction descriptor for the recipe.
+  const InductionDescriptor &getInductionDescriptor() const { return IndDesc; }
+>>>>>>> 21edac2
 
   VPValue *getBackedgeValue() override {
     // TODO: All operands of base recipe must exist and be at same index in
@@ -2507,10 +2524,51 @@ public:
     llvm_unreachable(
         "VPWidenIntOrFpInductionRecipe generates its own backedge value");
   }
+};
 
-  /// Returns the step value of the induction.
-  VPValue *getStepValue() { return getOperand(1); }
-  const VPValue *getStepValue() const { return getOperand(1); }
+/// A recipe for handling phi nodes of integer and floating-point inductions,
+/// producing their vector values.
+class VPWidenIntOrFpInductionRecipe : public VPWidenInductionRecipe {
+  TruncInst *Trunc;
+
+public:
+  VPWidenIntOrFpInductionRecipe(PHINode *IV, VPValue *Start, VPValue *Step,
+                                VPValue *VF, const InductionDescriptor &IndDesc,
+                                DebugLoc DL)
+      : VPWidenInductionRecipe(VPDef::VPWidenIntOrFpInductionSC, IV, Start,
+                               Step, IndDesc, DL),
+        Trunc(nullptr) {
+    addOperand(VF);
+  }
+
+  VPWidenIntOrFpInductionRecipe(PHINode *IV, VPValue *Start, VPValue *Step,
+                                VPValue *VF, const InductionDescriptor &IndDesc,
+                                TruncInst *Trunc, DebugLoc DL)
+      : VPWidenInductionRecipe(VPDef::VPWidenIntOrFpInductionSC, IV, Start,
+                               Step, IndDesc, DL),
+        Trunc(Trunc) {
+    addOperand(VF);
+  }
+
+  ~VPWidenIntOrFpInductionRecipe() override = default;
+
+  VPWidenIntOrFpInductionRecipe *clone() override {
+    return new VPWidenIntOrFpInductionRecipe(
+        getPHINode(), getStartValue(), getStepValue(), getVFValue(),
+        getInductionDescriptor(), Trunc, getDebugLoc());
+  }
+
+  VP_CLASSOF_IMPL(VPDef::VPWidenIntOrFpInductionSC)
+
+  /// Generate the vectorized and scalarized versions of the phi node as
+  /// needed by their users.
+  void execute(VPTransformState &State) override;
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+  /// Print the recipe.
+  void print(raw_ostream &O, const Twine &Indent,
+             VPSlotTracker &SlotTracker) const override;
+#endif
 
   VPValue *getVFValue() { return getOperand(2); }
   const VPValue *getVFValue() const { return getOperand(2); }
@@ -2526,11 +2584,6 @@ public:
   TruncInst *getTruncInst() { return Trunc; }
   const TruncInst *getTruncInst() const { return Trunc; }
 
-  PHINode *getPHINode() { return IV; }
-
-  /// Returns the induction descriptor for the recipe.
-  const InductionDescriptor &getInductionDescriptor() const { return IndDesc; }
-
   /// Returns true if the induction is canonical, i.e. starting at 0 and
   /// incremented by UF * VF (= the original IV is incremented by 1) and has the
   /// same type as the canonical induction.
@@ -2538,7 +2591,7 @@ public:
 
   /// Returns the scalar type of the induction.
   Type *getScalarType() const {
-    return Trunc ? Trunc->getType() : IV->getType();
+    return Trunc ? Trunc->getType() : getPHINode()->getType();
   }
 
   /// Returns the VPValue representing the value of this induction at
@@ -2549,10 +2602,8 @@ public:
   }
 };
 
-class VPWidenPointerInductionRecipe : public VPHeaderPHIRecipe,
+class VPWidenPointerInductionRecipe : public VPWidenInductionRecipe,
                                       public VPUnrollPartAccessor<3> {
-  const InductionDescriptor &IndDesc;
-
   bool IsScalarAfterVectorization;
 
 #if SIFIVE_CUSTOMIZATION
@@ -2565,6 +2616,7 @@ public:
   /// Start.
   VPWidenPointerInductionRecipe(PHINode *Phi, VPValue *Start, VPValue *Step,
                                 const InductionDescriptor &IndDesc,
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
                                 bool IsScalarAfterVectorization,
                                 bool IsUncountable)
@@ -2582,6 +2634,12 @@ public:
     addOperand(Start);
     addOperand(Step);
   }
+=======
+                                bool IsScalarAfterVectorization, DebugLoc DL)
+      : VPWidenInductionRecipe(VPDef::VPWidenPointerInductionSC, Phi, Start,
+                               Step, IndDesc, DL),
+        IsScalarAfterVectorization(IsScalarAfterVectorization) {}
+>>>>>>> 21edac2
 
   ~VPWidenPointerInductionRecipe() override = default;
 
@@ -2593,8 +2651,12 @@ public:
 #else
     return new VPWidenPointerInductionRecipe(
         cast<PHINode>(getUnderlyingInstr()), getOperand(0), getOperand(1),
+<<<<<<< HEAD
         IndDesc, IsScalarAfterVectorization);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+        getInductionDescriptor(), IsScalarAfterVectorization, getDebugLoc());
+>>>>>>> 21edac2
   }
 
   VP_CLASSOF_IMPL(VPDef::VPWidenPointerInductionSC)
@@ -2604,9 +2666,6 @@ public:
 
   /// Returns true if only scalar values will be generated.
   bool onlyScalarsGenerated(bool IsScalable);
-
-  /// Returns the induction descriptor for the recipe.
-  const InductionDescriptor &getInductionDescriptor() const { return IndDesc; }
 
   /// Returns the VPValue representing the value of this induction at
   /// the first unrolled part, if it exists. Returns itself if unrolling did not
@@ -2632,6 +2691,45 @@ public:
     return Step && Step->isOne();
   }
 #endif // SIFIVE_CUSTOMIZATION
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+  /// Print the recipe.
+  void print(raw_ostream &O, const Twine &Indent,
+             VPSlotTracker &SlotTracker) const override;
+#endif
+};
+
+/// Recipe to generate a scalar PHI. Used to generate code for recipes that
+/// produce scalar header phis, including VPCanonicalIVPHIRecipe and
+/// VPEVLBasedIVPHIRecipe.
+class VPScalarPHIRecipe : public VPHeaderPHIRecipe {
+  std::string Name;
+
+public:
+  VPScalarPHIRecipe(VPValue *Start, VPValue *BackedgeValue, DebugLoc DL,
+                    StringRef Name)
+      : VPHeaderPHIRecipe(VPDef::VPScalarPHISC, nullptr, Start, DL),
+        Name(Name.str()) {
+    addOperand(BackedgeValue);
+  }
+
+  ~VPScalarPHIRecipe() override = default;
+
+  VPScalarPHIRecipe *clone() override {
+    llvm_unreachable("cloning not implemented yet");
+  }
+
+  VP_CLASSOF_IMPL(VPDef::VPScalarPHISC)
+
+  /// Generate the phi/select nodes.
+  void execute(VPTransformState &State) override;
+
+  /// Returns true if the recipe only uses the first lane of operand \p Op.
+  bool onlyFirstLaneUsed(const VPValue *Op) const override {
+    assert(is_contained(operands(), Op) &&
+           "Op must be an operand of the recipe");
+    return true;
+  }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print the recipe.
@@ -2982,8 +3080,9 @@ class VPReductionRecipe : public VPSingleDefRecipe {
 protected:
   VPReductionRecipe(const unsigned char SC, const RecurrenceDescriptor &R,
                     Instruction *I, ArrayRef<VPValue *> Operands,
-                    VPValue *CondOp, bool IsOrdered)
-      : VPSingleDefRecipe(SC, Operands, I), RdxDesc(R), IsOrdered(IsOrdered) {
+                    VPValue *CondOp, bool IsOrdered, DebugLoc DL)
+      : VPSingleDefRecipe(SC, Operands, I, DL), RdxDesc(R),
+        IsOrdered(IsOrdered) {
     if (CondOp) {
       IsConditional = true;
       addOperand(CondOp);
@@ -2993,16 +3092,17 @@ protected:
 public:
   VPReductionRecipe(const RecurrenceDescriptor &R, Instruction *I,
                     VPValue *ChainOp, VPValue *VecOp, VPValue *CondOp,
-                    bool IsOrdered)
+                    bool IsOrdered, DebugLoc DL = {})
       : VPReductionRecipe(VPDef::VPReductionSC, R, I,
                           ArrayRef<VPValue *>({ChainOp, VecOp}), CondOp,
-                          IsOrdered) {}
+                          IsOrdered, DL) {}
 
   ~VPReductionRecipe() override = default;
 
   VPReductionRecipe *clone() override {
     return new VPReductionRecipe(RdxDesc, getUnderlyingInstr(), getChainOp(),
-                                 getVecOp(), getCondOp(), IsOrdered);
+                                 getVecOp(), getCondOp(), IsOrdered,
+                                 getDebugLoc());
   }
 
   static inline bool classof(const VPRecipeBase *R) {
@@ -3057,7 +3157,7 @@ public:
             VPDef::VPReductionEVLSC, R.getRecurrenceDescriptor(),
             cast_or_null<Instruction>(R.getUnderlyingValue()),
             ArrayRef<VPValue *>({R.getChainOp(), R.getVecOp(), &EVL}), CondOp,
-            R.isOrdered()) {}
+            R.isOrdered(), R.getDebugLoc()) {}
 
   ~VPReductionEVLRecipe() override = default;
 
@@ -3406,12 +3506,12 @@ class VPPredInstPHIRecipe : public VPSingleDefRecipe {
 public:
   /// Construct a VPPredInstPHIRecipe given \p PredInst whose value needs a phi
   /// nodes after merging back from a Branch-on-Mask.
-  VPPredInstPHIRecipe(VPValue *PredV)
-      : VPSingleDefRecipe(VPDef::VPPredInstPHISC, PredV) {}
+  VPPredInstPHIRecipe(VPValue *PredV, DebugLoc DL)
+      : VPSingleDefRecipe(VPDef::VPPredInstPHISC, PredV, DL) {}
   ~VPPredInstPHIRecipe() override = default;
 
   VPPredInstPHIRecipe *clone() override {
-    return new VPPredInstPHIRecipe(getOperand(0));
+    return new VPPredInstPHIRecipe(getOperand(0), getDebugLoc());
   }
 
   VP_CLASSOF_IMPL(VPDef::VPPredInstPHISC)
@@ -3866,8 +3966,10 @@ public:
     return D->getVPDefID() == VPDef::VPCanonicalIVPHISC;
   }
 
-  /// Generate the canonical scalar induction phi of the vector loop.
-  void execute(VPTransformState &State) override;
+  void execute(VPTransformState &State) override {
+    llvm_unreachable(
+        "cannot execute this recipe, should be replaced by VPScalarPHIRecipe");
+  }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print the recipe.
@@ -3893,11 +3995,6 @@ public:
            "Op must be an operand of the recipe");
     return true;
   }
-
-  /// Check if the induction described by \p Kind, /p Start and \p Step is
-  /// canonical, i.e.  has the same start and step (of 1) as the canonical IV.
-  bool isCanonical(InductionDescriptor::InductionKind Kind, VPValue *Start,
-                   VPValue *Step) const;
 
   /// Return the cost of this VPCanonicalIVPHIRecipe.
   InstructionCost computeCost(ElementCount VF,
@@ -3963,9 +4060,10 @@ public:
     return D->getVPDefID() == VPDef::VPEVLBasedIVPHISC;
   }
 
-  /// Generate phi for handling IV based on EVL over iterations correctly.
-  /// TODO: investigate if it can share the code with VPCanonicalIVPHIRecipe.
-  void execute(VPTransformState &State) override;
+  void execute(VPTransformState &State) override {
+    llvm_unreachable(
+        "cannot execute this recipe, should be replaced by VPScalarPHIRecipe");
+  }
 
   /// Return the cost of this VPEVLBasedIVPHIRecipe.
   InstructionCost computeCost(ElementCount VF,
@@ -4245,8 +4343,6 @@ public:
     return make_range(begin(), getFirstNonPhi());
   }
 
-  void dropAllReferences(VPValue *NewValue) override;
-
   /// Split current block at \p SplitAt by inserting a new block between the
   /// current block and its successors and moving all recipes starting at
   /// SplitAt to the new block. Returns the new block.
@@ -4276,12 +4372,7 @@ public:
 
   /// Clone the current block and it's recipes, without updating the operands of
   /// the cloned recipes.
-  VPBasicBlock *clone() override {
-    auto *NewBlock = new VPBasicBlock(getName());
-    for (VPRecipeBase &R : *this)
-      NewBlock->appendRecipe(R.clone());
-    return NewBlock;
-  }
+  VPBasicBlock *clone() override;
 
 protected:
   /// Execute the recipes in the IR basic block \p BB.
@@ -4317,20 +4408,11 @@ public:
     return V->getVPBlockID() == VPBlockBase::VPIRBasicBlockSC;
   }
 
-  /// Create a VPIRBasicBlock from \p IRBB containing VPIRInstructions for all
-  /// instructions in \p IRBB, except its terminator which is managed in VPlan.
-  static VPIRBasicBlock *fromBasicBlock(BasicBlock *IRBB);
-
   /// The method which generates the output IR instructions that correspond to
   /// this VPBasicBlock, thereby "executing" the VPlan.
   void execute(VPTransformState *State) override;
 
-  VPIRBasicBlock *clone() override {
-    auto *NewBlock = new VPIRBasicBlock(IRBB);
-    for (VPRecipeBase &R : Recipes)
-      NewBlock->appendRecipe(R.clone());
-    return NewBlock;
-  }
+  VPIRBasicBlock *clone() override;
 
   BasicBlock *getIRBasicBlock() const { return IRBB; }
 };
@@ -4381,13 +4463,7 @@ public:
       : VPBlockBase(VPRegionBlockSC, Name), Entry(nullptr), Exiting(nullptr),
         IsReplicator(IsReplicator) {}
 
-  ~VPRegionBlock() override {
-    if (Entry) {
-      VPValue DummyValue;
-      Entry->dropAllReferences(&DummyValue);
-      deleteCFG(Entry);
-    }
-  }
+  ~VPRegionBlock() override {}
 
   /// Method to support type inquiry through isa, cast, and dyn_cast.
   static inline bool classof(const VPBlockBase *V) {
@@ -4444,8 +4520,6 @@ public:
 
   // Return the cost of this region.
   InstructionCost cost(ElementCount VF, VPCostContext &Ctx) override;
-
-  void dropAllReferences(VPValue *NewValue) override;
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print this VPRegionBlock to \p O (recursively), prefixing all lines with
@@ -4519,14 +4593,12 @@ class VPlan {
   friend class VPlanPrinter;
   friend class VPSlotTracker;
 
-  /// Hold the single entry to the Hierarchical CFG of the VPlan, i.e. the
-  /// preheader of the vector loop.
-  VPBasicBlock *Entry;
-
   /// VPBasicBlock corresponding to the original preheader. Used to place
   /// VPExpandSCEV recipes for expressions used during skeleton creation and the
   /// rest of VPlan execution.
-  VPBasicBlock *Preheader;
+  /// When this VPlan is used for the epilogue vector loop, the entry will be
+  /// replaced by a new entry block created during skeleton creation.
+  VPBasicBlock *Entry;
 
   /// VPIRBasicBlock wrapping the header of the original scalar loop.
   VPIRBasicBlock *ScalarHeader;
@@ -4599,18 +4671,11 @@ class VPlan {
   /// been modeled in VPlan directly.
   DenseMap<const SCEV *, VPValue *> SCEVToExpansion;
 
-public:
-  /// Construct a VPlan with original preheader \p Preheader, trip count \p TC,
-  /// \p Entry to the plan and with \p ScalarHeader wrapping the original header
-  /// of the scalar loop. At the moment, \p Preheader and \p Entry need to be
-  /// disconnected, as the bypass blocks between them are not yet modeled in
-  /// VPlan.
-  VPlan(VPBasicBlock *Preheader, VPValue *TC, VPBasicBlock *Entry,
-        VPIRBasicBlock *ScalarHeader)
-      : VPlan(Preheader, Entry, ScalarHeader) {
-    TripCount = TC;
-  }
+  /// Blocks allocated and owned by the VPlan. They will be deleted once the
+  /// VPlan is destroyed.
+  SmallVector<VPBlockBase *> CreatedBlocks;
 
+<<<<<<< HEAD
   /// Construct a VPlan with original preheader \p Preheader, \p Entry to
   /// the plan and with \p ScalarHeader wrapping the original header of the
   /// scalar loop. At the moment, \p Preheader and \p Entry need to be
@@ -4629,17 +4694,34 @@ public:
         VPIRBasicBlock *ScalarHeader)
       : Entry(Entry), Preheader(Preheader), ScalarHeader(ScalarHeader) {
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  /// Construct a VPlan with \p Entry to the plan and with \p ScalarHeader
+  /// wrapping the original header of the scalar loop.
+  VPlan(VPBasicBlock *Entry, VPIRBasicBlock *ScalarHeader)
+      : Entry(Entry), ScalarHeader(ScalarHeader) {
+>>>>>>> 21edac2
     Entry->setPlan(this);
-    Preheader->setPlan(this);
-    assert(Preheader->getNumSuccessors() == 0 &&
-           Preheader->getNumPredecessors() == 0 &&
-           "preheader must be disconnected");
     assert(ScalarHeader->getNumSuccessors() == 0 &&
            "scalar header must be a leaf node");
   }
 
+public:
+  /// Construct a VPlan for \p L. This will create VPIRBasicBlocks wrapping the
+  /// original preheader and scalar header of \p L, to be used as entry and
+  /// scalar header blocks of the new VPlan.
+  VPlan(Loop *L);
+
+  /// Construct a VPlan with a new VPBasicBlock as entry, a VPIRBasicBlock
+  /// wrapping \p ScalarHeaderBB and a trip count of \p TC.
+  VPlan(BasicBlock *ScalarHeaderBB, VPValue *TC) {
+    setEntry(createVPBasicBlock("preheader"));
+    ScalarHeader = createVPIRBasicBlock(ScalarHeaderBB);
+    TripCount = TC;
+  }
+
   ~VPlan();
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   void addCSAState(PHINode *Phi, VPCSAState * S) {
     CSAStates.insert({Phi , S});
@@ -4650,15 +4732,23 @@ public:
   }
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+  void setEntry(VPBasicBlock *VPBB) {
+    Entry = VPBB;
+    VPBB->setPlan(this);
+  }
+
+>>>>>>> 21edac2
   /// Create initial VPlan, having an "entry" VPBasicBlock (wrapping
-  /// original scalar pre-header ) which contains SCEV expansions that need
-  /// to happen before the CFG is modified; a VPBasicBlock for the vector
-  /// pre-header, followed by a region for the vector loop, followed by the
-  /// middle VPBasicBlock. If a check is needed to guard executing the scalar
-  /// epilogue loop, it will be added to the middle block, together with
-  /// VPBasicBlocks for the scalar preheader and exit blocks.
-  /// \p InductionTy is the type of the canonical induction and used for related
-  /// values, like the trip count expression.
+  /// original scalar pre-header) which contains SCEV expansions that need
+  /// to happen before the CFG is modified (when executing a VPlan for the
+  /// epilogue vector loop, the original entry needs to be replaced by a new
+  /// one); a VPBasicBlock for the vector pre-header, followed by a region for
+  /// the vector loop, followed by the middle VPBasicBlock. If a check is needed
+  /// to guard executing the scalar epilogue loop, it will be added to the
+  /// middle block, together with VPBasicBlocks for the scalar preheader and
+  /// exit blocks. \p InductionTy is the type of the canonical induction and
+  /// used for related values, like the trip count expression.
   static VPlanPtr createInitialVPlan(Type *InductionTy,
                                      PredicatedScalarEvolution &PSE,
                                      bool RequiresScalarEpilogueCheck,
@@ -4668,7 +4758,7 @@ public:
 
   /// Prepare the plan for execution, setting up the required live-in values.
   void prepareToExecute(Value *TripCount, Value *VectorTripCount,
-                        Value *CanonicalIVStartValue, VPTransformState &State);
+                        VPTransformState &State);
 
   /// Generate the IR code for this VPlan.
   void execute(VPTransformState *State);
@@ -4683,32 +4773,32 @@ public:
   VPBasicBlock *getEntry() { return Entry; }
   const VPBasicBlock *getEntry() const { return Entry; }
 
-  /// Returns the preheader of the vector loop region.
+  /// Returns the preheader of the vector loop region, if one exists, or null
+  /// otherwise.
   VPBasicBlock *getVectorPreheader() {
-    return cast<VPBasicBlock>(getVectorLoopRegion()->getSinglePredecessor());
+    VPRegionBlock *VectorRegion = getVectorLoopRegion();
+    return VectorRegion
+               ? cast<VPBasicBlock>(VectorRegion->getSinglePredecessor())
+               : nullptr;
   }
 
   /// Returns the VPRegionBlock of the vector loop.
-  VPRegionBlock *getVectorLoopRegion() {
-    return cast<VPRegionBlock>(getEntry()->getSingleSuccessor());
-  }
-  const VPRegionBlock *getVectorLoopRegion() const {
-    return cast<VPRegionBlock>(getEntry()->getSingleSuccessor());
-  }
+  VPRegionBlock *getVectorLoopRegion();
+  const VPRegionBlock *getVectorLoopRegion() const;
 
   /// Returns the 'middle' block of the plan, that is the block that selects
   /// whether to execute the scalar tail loop or the exit block from the loop
   /// latch.
   const VPBasicBlock *getMiddleBlock() const {
-    return cast<VPBasicBlock>(getVectorLoopRegion()->getSingleSuccessor());
+    return cast<VPBasicBlock>(getScalarPreheader()->getPredecessors().front());
   }
   VPBasicBlock *getMiddleBlock() {
-    return cast<VPBasicBlock>(getVectorLoopRegion()->getSingleSuccessor());
+    return cast<VPBasicBlock>(getScalarPreheader()->getPredecessors().front());
   }
 
   /// Return the VPBasicBlock for the preheader of the scalar loop.
   VPBasicBlock *getScalarPreheader() const {
-    return cast<VPBasicBlock>(ScalarHeader->getSinglePredecessor());
+    return cast<VPBasicBlock>(getScalarHeader()->getSinglePredecessor());
   }
 
   /// Return the VPIRBasicBlock wrapping the header of the scalar loop.
@@ -4919,13 +5009,52 @@ public:
     SCEVToExpansion[S] = V;
   }
 
-  /// \return The block corresponding to the original preheader.
-  VPBasicBlock *getPreheader() { return Preheader; }
-  const VPBasicBlock *getPreheader() const { return Preheader; }
-
   /// Clone the current VPlan, update all VPValues of the new VPlan and cloned
   /// recipes to refer to the clones, and return it.
   VPlan *duplicate();
+
+  /// Create a new VPBasicBlock with \p Name and containing \p Recipe if
+  /// present. The returned block is owned by the VPlan and deleted once the
+  /// VPlan is destroyed.
+  VPBasicBlock *createVPBasicBlock(const Twine &Name,
+                                   VPRecipeBase *Recipe = nullptr) {
+    auto *VPB = new VPBasicBlock(Name, Recipe);
+    CreatedBlocks.push_back(VPB);
+    return VPB;
+  }
+
+  /// Create a new VPRegionBlock with \p Entry, \p Exiting and \p Name. If \p
+  /// IsReplicator is true, the region is a replicate region. The returned block
+  /// is owned by the VPlan and deleted once the VPlan is destroyed.
+  VPRegionBlock *createVPRegionBlock(VPBlockBase *Entry, VPBlockBase *Exiting,
+                                     const std::string &Name = "",
+                                     bool IsReplicator = false) {
+    auto *VPB = new VPRegionBlock(Entry, Exiting, Name, IsReplicator);
+    CreatedBlocks.push_back(VPB);
+    return VPB;
+  }
+
+  /// Create a new VPRegionBlock with \p Name and entry and exiting blocks set
+  /// to nullptr. If \p IsReplicator is true, the region is a replicate region.
+  /// The returned block is owned by the VPlan and deleted once the VPlan is
+  /// destroyed.
+  VPRegionBlock *createVPRegionBlock(const std::string &Name = "",
+                                     bool IsReplicator = false) {
+    auto *VPB = new VPRegionBlock(Name, IsReplicator);
+    CreatedBlocks.push_back(VPB);
+    return VPB;
+  }
+
+  /// Create a VPIRBasicBlock wrapping \p IRBB, but do not create
+  /// VPIRInstructions wrapping the instructions in t\p IRBB.  The returned
+  /// block is owned by the VPlan and deleted once the VPlan is destroyed.
+  VPIRBasicBlock *createEmptyVPIRBasicBlock(BasicBlock *IRBB);
+
+  /// Create a VPIRBasicBlock from \p IRBB containing VPIRInstructions for all
+  /// instructions in \p IRBB, except its terminator which is managed by the
+  /// successors of the block in VPlan. The returned block is owned by the VPlan
+  /// and deleted once the VPlan is destroyed.
+  VPIRBasicBlock *createVPIRBasicBlock(BasicBlock *IRBB);
 };
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
@@ -5071,8 +5200,6 @@ public:
            "Can't connect two block with different parents");
     assert((SuccIdx != -1u || From->getNumSuccessors() < 2) &&
            "Blocks can't have more than two successors.");
-    assert((PredIdx != -1u || To->getNumPredecessors() < 2) &&
-           "Blocks can't have more than two predecessors.");
     if (SuccIdx == -1u)
       From->appendSuccessor(To);
     else

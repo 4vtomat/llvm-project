@@ -2447,7 +2447,7 @@ static bool detectShiftUntilBitTestIdiom(Loop *CurLoop, Value *&BaseX,
 
   // Step 1: Check if the loop backedge is in desirable form.
 
-  ICmpInst::Predicate Pred;
+  CmpPredicate Pred;
   Value *CmpLHS, *CmpRHS;
   BasicBlock *TrueBB, *FalseBB;
   if (!match(LoopHeaderBB->getTerminator(),
@@ -2812,7 +2812,7 @@ static bool detectShiftUntilZeroIdiom(Loop *CurLoop, ScalarEvolution *SE,
 
   // Step 1: Check if the loop backedge, condition is in desirable form.
 
-  ICmpInst::Predicate Pred;
+  CmpPredicate Pred;
   BasicBlock *TrueBB, *FalseBB;
   if (!match(LoopHeaderBB->getTerminator(),
              m_Br(m_Instruction(ValShiftedIsZero), m_BasicBlock(TrueBB),

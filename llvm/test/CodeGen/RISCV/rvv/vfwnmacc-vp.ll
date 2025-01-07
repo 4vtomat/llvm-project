@@ -348,9 +348,15 @@ define <vscale x 4 x float> @vfnmacc_vf_nxv4f32(<vscale x 4 x half> %a, half %b,
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    fmv.x.h a1, fa0
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
+<<<<<<< HEAD
 ; ZVFHMIN-NEXT:    vmv.v.x v9, a1
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8, v0.t
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9, v0.t
+=======
+; ZVFHMIN-NEXT:    vmv.v.x v12, a1
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v14, v8, v0.t
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v12, v0.t
+>>>>>>> 21edac2
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
 ; ZVFHMIN-NEXT:    vfnmadd.vv v8, v12, v10, v0.t
 ; ZVFHMIN-NEXT:    ret
@@ -406,9 +412,15 @@ define <vscale x 4 x float> @vfnmacc_vf_nxv4f32_unmasked(<vscale x 4 x half> %a,
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    fmv.x.h a1, fa0
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
+<<<<<<< HEAD
 ; ZVFHMIN-NEXT:    vmv.v.x v9, a1
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
+=======
+; ZVFHMIN-NEXT:    vmv.v.x v12, a1
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v14, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v12
+>>>>>>> 21edac2
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
 ; ZVFHMIN-NEXT:    vfnmadd.vv v8, v12, v10
 ; ZVFHMIN-NEXT:    ret
@@ -486,9 +498,15 @@ define <vscale x 8 x float> @vfnmacc_vf_nxv8f32(<vscale x 8 x half> %a, half %b,
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    fmv.x.h a1, fa0
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
+<<<<<<< HEAD
 ; ZVFHMIN-NEXT:    vmv.v.x v10, a1
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v16, v8, v0.t
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10, v0.t
+=======
+; ZVFHMIN-NEXT:    vmv.v.x v16, a1
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v20, v8, v0.t
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v16, v0.t
+>>>>>>> 21edac2
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
 ; ZVFHMIN-NEXT:    vfnmadd.vv v8, v16, v12, v0.t
 ; ZVFHMIN-NEXT:    ret
@@ -544,9 +562,15 @@ define <vscale x 8 x float> @vfnmacc_vf_nxv8f32_unmasked(<vscale x 8 x half> %a,
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    fmv.x.h a1, fa0
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
+<<<<<<< HEAD
 ; ZVFHMIN-NEXT:    vmv.v.x v10, a1
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v16, v8
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
+=======
+; ZVFHMIN-NEXT:    vmv.v.x v16, a1
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v20, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v16
+>>>>>>> 21edac2
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
 ; ZVFHMIN-NEXT:    vfnmadd.vv v8, v16, v12
 ; ZVFHMIN-NEXT:    ret
@@ -624,7 +648,11 @@ define <vscale x 16 x float> @vfnmacc_vf_nxv16f32(<vscale x 16 x half> %a, half 
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    fmv.x.h a1, fa0
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
+<<<<<<< HEAD
 ; ZVFHMIN-NEXT:    vmv.v.x v12, a1
+=======
+; ZVFHMIN-NEXT:    vmv.v.x v4, a1
+>>>>>>> 21edac2
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v24, v8, v0.t
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v12, v0.t
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m8, ta, ma
@@ -653,7 +681,11 @@ define <vscale x 16 x float> @vfnmacc_vf_nxv16f32_commute(<vscale x 16 x half> %
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    fmv.x.h a1, fa0
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
+<<<<<<< HEAD
 ; ZVFHMIN-NEXT:    vmv.v.x v12, a1
+=======
+; ZVFHMIN-NEXT:    vmv.v.x v4, a1
+>>>>>>> 21edac2
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v24, v8, v0.t
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v12, v0.t
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m8, ta, ma
@@ -682,9 +714,15 @@ define <vscale x 16 x float> @vfnmacc_vf_nxv16f32_unmasked(<vscale x 16 x half> 
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    fmv.x.h a1, fa0
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
+<<<<<<< HEAD
 ; ZVFHMIN-NEXT:    vmv.v.x v12, a1
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v24, v8
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v12
+=======
+; ZVFHMIN-NEXT:    vmv.v.x v24, a1
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v0, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v24
+>>>>>>> 21edac2
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m8, ta, ma
 ; ZVFHMIN-NEXT:    vfnmadd.vv v8, v24, v16
 ; ZVFHMIN-NEXT:    ret

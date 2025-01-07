@@ -53,6 +53,7 @@ enum class RecurKind {
   FMulAdd,  ///< Sum of float products with llvm.fmuladd(a * b + sum).
   IAnyOf,   ///< Any_of reduction with select(icmp(),x,y) where one of (x,y) is
             ///< loop invariant, and both x and y are integer type.
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   FAnyOf,   ///< Any_of reduction with select(fcmp(),x,y) where one of (x,y) is
             ///< loop invariant, and both x and y are integer type.
@@ -69,6 +70,18 @@ enum class RecurKind {
             ///< loop invariant, and both x and y are integer type.
   // TODO: Any_of reduction need not be restricted to integer type only.
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  FAnyOf,   ///< Any_of reduction with select(fcmp(),x,y) where one of (x,y) is
+            ///< loop invariant, and both x and y are integer type.
+  IFindLastIV, ///< FindLast reduction with select(icmp(),x,y) where one of
+               ///< (x,y) is increasing loop induction, and both x and y are
+               ///< integer type.
+  FFindLastIV ///< FindLast reduction with select(fcmp(),x,y) where one of (x,y)
+              ///< is increasing loop induction, and both x and y are integer
+              ///< type.
+  // TODO: Any_of and FindLast reduction need not be restricted to integer type
+  // only.
+>>>>>>> 21edac2
 };
 
 /// The RecurrenceDescriptor is used to identify recurrences variables in a
@@ -177,8 +190,12 @@ public:
 #else
   static InstDesc isRecurrenceInstr(Loop *L, PHINode *Phi, Instruction *I,
                                     RecurKind Kind, InstDesc &Prev,
+<<<<<<< HEAD
                                     FastMathFlags FuncFMF);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+                                    FastMathFlags FuncFMF, ScalarEvolution *SE);
+>>>>>>> 21edac2
 
   /// Returns true if instruction I has multiple uses in Insts
   static bool hasMultipleUsesOf(Instruction *I,
@@ -205,17 +222,27 @@ public:
   static InstDesc isAnyOfPattern(Loop *Loop, PHINode *OrigPhi, Instruction *I,
                                  InstDesc &Prev);
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> 21edac2
   /// Returns a struct describing whether the instruction is either a
   ///   Select(ICmp(A, B), X, Y), or
   ///   Select(FCmp(A, B), X, Y)
   /// where one of (X, Y) is an increasing loop induction variable, and the
   /// other is a PHI value.
+<<<<<<< HEAD
   // TODO: FindLast does not need be restricted to increasing loop induction
   // variables.
   static InstDesc isFindLastIVPattern(PHINode *OrigPhi, Instruction *I,
                                       ScalarEvolution *SE);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  // TODO: Support non-monotonic variable. FindLast does not need be restricted
+  // to increasing loop induction variables.
+  static InstDesc isFindLastIVPattern(Loop *TheLoop, PHINode *OrigPhi,
+                                      Instruction *I, ScalarEvolution &SE);
+>>>>>>> 21edac2
 
   /// Returns a struct describing if the instruction is a
   /// Select(FCmp(X, Y), (Z = X op PHINode), PHINode) instruction pattern.
@@ -302,17 +329,32 @@ public:
     return Kind == RecurKind::IAnyOf || Kind == RecurKind::FAnyOf;
   }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> 21edac2
   /// Returns true if the recurrence kind is of the form
   ///   select(cmp(),x,y) where one of (x,y) is increasing loop induction.
   static bool isFindLastIVRecurrenceKind(RecurKind Kind) {
     return Kind == RecurKind::IFindLastIV || Kind == RecurKind::FFindLastIV;
   }
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> 21edac2
 
   /// Returns the type of the recurrence. This type can be narrower than the
   /// actual type of the Phi if the recurrence has been type-promoted.
   Type *getRecurrenceType() const { return RecurrenceType; }
+
+  /// Returns the sentinel value for FindLastIV recurrences to replace the start
+  /// value.
+  Value *getSentinelValue() const {
+    assert(isFindLastIVRecurrenceKind(Kind) && "Unexpected recurrence kind");
+    Type *Ty = StartValue->getType();
+    return ConstantInt::get(Ty,
+                            APInt::getSignedMinValue(Ty->getIntegerBitWidth()));
+  }
 
   /// Returns a reference to the instructions used for type-promoting the
   /// recurrence.
