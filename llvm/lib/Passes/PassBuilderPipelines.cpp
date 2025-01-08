@@ -1406,12 +1406,8 @@ void PassBuilder::addVectorPasses(OptimizationLevel Level,
       ExtraVectorizerPasses) {
 #else
   if (Level.getSpeedupLevel() > 1 && ExtraVectorizerPasses) {
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-    ExtraVectorPassManager ExtraPasses;
-=======
     ExtraFunctionPassManager<ShouldRunExtraVectorPasses> ExtraPasses;
->>>>>>> 21edac2
     // At higher optimization levels, try to clean up any runtime overlap and
     // alignment checks inserted by the vectorizer. We want to track correlated
     // runtime checks for two inner loops in the same outer loop, fold any
