@@ -1897,16 +1897,6 @@ SDValue SelectionDAGBuilder::getValueImpl(const Value *V) {
                          DAG.getConstant(0, getCurSDLoc(), MVT::nxv16i1));
     }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    if (VT.isRISCVVectorTuple()) {
-      assert(C->isNullValue() && "Can only zero this target type!");
-      return NodeMap[V] = DAG.getNode(
-                 ISD::SPLAT_VECTOR, getCurSDLoc(), VT,
-                 DAG.getConstant(0, getCurSDLoc(), MVT::getIntegerVT(8)));
-    }
-#endif // SIFIVE_CUSTOMIZATION
-=======
     if (VT.isRISCVVectorTuple()) {
       assert(C->isNullValue() && "Can only zero this target type!");
       return NodeMap[V] = DAG.getNode(
@@ -1918,7 +1908,6 @@ SDValue SelectionDAGBuilder::getValueImpl(const Value *V) {
                                       true),
                      DAG.getConstant(0, getCurSDLoc(), MVT::getIntegerVT(8))));
     }
->>>>>>> 21edac2
 
     VectorType *VecTy = cast<VectorType>(V->getType());
 
