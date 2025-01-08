@@ -3765,19 +3765,11 @@ bool AMDGPUInstructionSelector::selectBITOP3(MachineInstr &MI) const {
   if (!Subtarget->hasBitOp3Insts())
     return false;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 21edac2
   Register DstReg = MI.getOperand(0).getReg();
   const RegisterBank *DstRB = RBI.getRegBank(DstReg, *MRI, TRI);
   const bool IsVALU = DstRB->getID() == AMDGPU::VGPRRegBankID;
   if (!IsVALU)
     return false;
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 21edac2
 
   SmallVector<Register, 3> Src;
   uint8_t TTbl;
@@ -3793,11 +3785,7 @@ bool AMDGPUInstructionSelector::selectBITOP3(MachineInstr &MI) const {
   // For a uniform case threshold should be higher to account for moves between
   // VGPRs and SGPRs. It needs one operand in a VGPR, rest two can be in SGPRs
   // and a readtfirstlane after.
-<<<<<<< HEAD
-  if (NumOpcodes < 4) // SIFIVE
-=======
   if (NumOpcodes < 4)
->>>>>>> 21edac2
     return false;
 
   bool IsB32 = MRI->getType(DstReg) == LLT::scalar(32);
