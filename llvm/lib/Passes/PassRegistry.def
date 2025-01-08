@@ -638,23 +638,17 @@ FUNCTION_PASS_WITH_PARAMS(
     },
     parseWinEHPrepareOptions, "demote-catchswitch-only")
 FUNCTION_PASS_WITH_PARAMS(
-<<<<<<< HEAD
-    "rtsan", "RealtimeSanitizerPass",
-    [](RealtimeSanitizerOptions Opts) { return RealtimeSanitizerPass(Opts); },
-    parseRtSanPassOptions, "")
+    "bounds-checking", "BoundsCheckingPass",
+    [](BoundsCheckingPass::BoundsCheckingOptions Options) {
+      return BoundsCheckingPass(Options);
+    },
+    parseBoundsCheckingOptions, "trap")
 #if SIFIVE_CUSTOMIZATION
 FUNCTION_PASS_WITH_PARAMS(
     "reassociate", "ReassociatePass",
     [](bool EnableTwoPhase) { return ReassociatePass(EnableTwoPhase); },
     parseReassociatePassOptions, "two-phase-reassoc")
 #endif
-=======
-    "bounds-checking", "BoundsCheckingPass",
-    [](BoundsCheckingPass::BoundsCheckingOptions Options) {
-      return BoundsCheckingPass(Options);
-    },
-    parseBoundsCheckingOptions, "trap")
->>>>>>> 21edac2
 #undef FUNCTION_PASS_WITH_PARAMS
 
 #ifndef LOOPNEST_PASS
