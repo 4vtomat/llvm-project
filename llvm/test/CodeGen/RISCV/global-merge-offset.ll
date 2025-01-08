@@ -37,40 +37,6 @@ define void @f1(i32 %a) nounwind {
 ; CHECK-TOOBIG-NEXT:    sw a0, 408(a2)
 ; CHECK-TOOBIG-NEXT:    sw a0, 0(a2)
 ; CHECK-TOOBIG-NEXT:    ret
-; RV32-LABEL: f1:
-; RV32:       # %bb.0:
-; RV32-NEXT:    lui a1, %hi(.L_MergedGlobals)
-; RV32-NEXT:    addi a1, a1, %lo(.L_MergedGlobals)
-; RV32-NEXT:    sw a0, 2044(a1)
-; RV32-NEXT:    sw a0, 404(a1)
-; RV32-NEXT:    sw a0, 0(a1)
-; RV32-NEXT:    ret
-; RV64-LABEL: f1:
-; RV64:       # %bb.0:
-; RV64-NEXT:    lui a1, %hi(.L_MergedGlobals)
-; RV64-NEXT:    addi a1, a1, %lo(.L_MergedGlobals)
-; RV64-NEXT:    sw a0, 2044(a1)
-; RV64-NEXT:    sw a0, 404(a1)
-; RV64-NEXT:    sw a0, 0(a1)
-; RV64-NEXT:    ret
-; CHECK-TOOBIG-RV32-LABEL: f1:
-; CHECK-TOOBIG-RV32:       # %bb.0:
-; CHECK-TOOBIG-RV32-NEXT:    lui a1, %hi(ga1+1640)
-; CHECK-TOOBIG-RV32-NEXT:    lui a2, %hi(.L_MergedGlobals)
-; CHECK-TOOBIG-RV32-NEXT:    addi a2, a2, %lo(.L_MergedGlobals)
-; CHECK-TOOBIG-RV32-NEXT:    sw a0, %lo(ga1+1640)(a1)
-; CHECK-TOOBIG-RV32-NEXT:    sw a0, 408(a2)
-; CHECK-TOOBIG-RV32-NEXT:    sw a0, 0(a2)
-; CHECK-TOOBIG-RV32-NEXT:    ret
-; CHECK-TOOBIG-RV64-LABEL: f1:
-; CHECK-TOOBIG-RV64:       # %bb.0:
-; CHECK-TOOBIG-RV64-NEXT:    lui a1, %hi(ga1+1640)
-; CHECK-TOOBIG-RV64-NEXT:    lui a2, %hi(.L_MergedGlobals)
-; CHECK-TOOBIG-RV64-NEXT:    addi a2, a2, %lo(.L_MergedGlobals)
-; CHECK-TOOBIG-RV64-NEXT:    sw a0, %lo(ga1+1640)(a1)
-; CHECK-TOOBIG-RV64-NEXT:    sw a0, 408(a2)
-; CHECK-TOOBIG-RV64-NEXT:    sw a0, 0(a2)
-; CHECK-TOOBIG-RV64-NEXT:    ret
   %ga1_end = getelementptr inbounds [410 x i32], ptr @ga1, i32 0, i64 410
   %ga2_end = getelementptr inbounds [ArrSize x i32], ptr @ga2, i32 0, i64 ArrSize
   store i32 %a, ptr %ga1_end, align 4
