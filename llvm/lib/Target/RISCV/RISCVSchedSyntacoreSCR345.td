@@ -179,28 +179,11 @@ multiclass SCR_Other {
 }
 
 // Unsupported scheduling classes for SCR3-5.
-<<<<<<< HEAD
-multiclass SCR_Unsupported {
-  defm : UnsupportedSchedSFB;
-  defm : UnsupportedSchedV;
-  defm : UnsupportedSchedXsfvcp;
-  defm : UnsupportedSchedXSfsci; // SIFIVE
-  defm : UnsupportedSchedZabha;
-  defm : UnsupportedSchedZba;
-  defm : UnsupportedSchedZbb;
-  defm : UnsupportedSchedZbc;
-  defm : UnsupportedSchedZbs;
-  defm : UnsupportedSchedZbkb;
-  defm : UnsupportedSchedZbkx;
-  defm : UnsupportedSchedZfa;
-  defm : UnsupportedSchedZfh;
-  defm : UnsupportedSchedZvk;
-}
-=======
 multiclass SCR_Unsupported :
   UnsupportedSchedSFB,
   UnsupportedSchedV,
   UnsupportedSchedXsfvcp,
+  UnsupportedSchedXSfsci, // SIFIVE
   UnsupportedSchedZabha,
   UnsupportedSchedZba,
   UnsupportedSchedZbb,
@@ -210,7 +193,6 @@ multiclass SCR_Unsupported :
   UnsupportedSchedZbkx,
   UnsupportedSchedZfa,
   UnsupportedSchedZvk;
->>>>>>> 21edac2
 
 multiclass SCR3_Unsupported :
   SCR_Unsupported,
