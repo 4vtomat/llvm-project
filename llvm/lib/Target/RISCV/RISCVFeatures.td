@@ -76,40 +76,32 @@ class RISCVExperimentalExtension<int major, int minor, string desc,
 // Integer Extensions
 
 #ifdef SIFIVE_CUSTOMIZATION
-def FeatureStdExtSdext
-    : RISCVExtension<"sdext", 1, 0,
-                     "'Sdext' (External Debugging Extension)">;
-
-def FeatureStdExtSdtrig
-    : RISCVExtension<"sdtrig", 1, 0,
-                     "'Sdtrig' (Debugging Triggers)">;
-
 let AdditionalVersions = [[1, 12]] in // SIFIVE
 def FeatureStdExtSs
-    : RISCVExtension<"ss", 1, 13,
+    : RISCVExtension<1, 13,
                      "'Ss' (Supervisor Architecture)">;
 
 def FeatureStdExtSmwg
-    : RISCVExperimentalExtension<"smwg", 0, 3,
+    : RISCVExperimentalExtension<0, 3,
                                  "'Smwg' (The Smwg extension adds the mlwid CSR, which is "
                                  "an M-mode read-write CSR, whose least-significant bits "
                                  "set the WID to be used by lower-privilege modes.)">;
 
 def FeatureStdExtSmwgd
-    : RISCVExperimentalExtension<"smwgd", 0, 3,
+    : RISCVExperimentalExtension<0, 3,
                                  "'Smwgd' (The Smwgd extension adds the mwiddeleg M-mode "
                                  "read-write CSR. The mwiddeleg register represents a set "
                                  "of WIDs as a bit vector with WID i represented by bit i "
                                  "of the register.)">;
 
 def FeatureStdExtSswg
-    : RISCVExperimentalExtension<"sswg", 0, 3,
+    : RISCVExperimentalExtension<0, 3,
                                  "'Sswg' (The Sswg extension adds the [H]S-mode read-write "
                                  "slwid CSR, which sets the WID used for modes lower than "
                                  "[H]S-mode.)">;
 
 def FeatureVendorXSfpgflushdlone
-    : RISCVExtension<"xsfpgflushdlone", 0, 1,
+    : RISCVExtension<0, 1,
                      "'XSfpgflushdlone' (Cache Flush/Power Down Instructions)">;
 def HasVendorXSfpgflushdlone
     : Predicate<"Subtarget->hasVendorXSfpgflushdlone()">,
@@ -858,7 +850,7 @@ def FeatureStdExtZvknhb0p1
                        "'Zvknhb' (Vector SHA-2. (SHA-256 and SHA-512))",
                        [FeatureStdExtZvknha0p1]>;
 def FeatureStdExtZvkns
-    : RISCVExtension<"zvkns", 0, 1,
+    : RISCVExtension<0, 1,
                      "'Zvkns' (Vector AES Encryption & Decryption (Single Round))">;
 def HasStdExtZvknsOrZvkned
     : Predicate<"Subtarget->hasStdExtZvkns() || Subtarget->hasStdExtZvkned()">,
@@ -1120,7 +1112,7 @@ def HasStdExtSmctrOrSsctr : Predicate<"Subtarget->hasStdExtSmctrOrSsctr()">,
 
 #ifdef SIFIVE_CUSTOMIZATION
 def FeatureStdExtZjid
-    : RISCVExperimentalExtension<"zjid", 0, 0,
+    : RISCVExperimentalExtension<0, 0,
                                  "'Zjid' (Instruction/Data Cache Synchronization)">;
 
 def HasStdExtZjid : Predicate<"Subtarget->hasStdExtZjid()">,
@@ -1231,7 +1223,7 @@ def HasVendorXSfvcp : Predicate<"Subtarget->hasVendorXSfvcp()">,
 
 #ifdef SIFIVE_CUSTOMIZATION
 def FeatureVendorXSfsci
-    : RISCVExtension<"xsfsci", 1, 0,
+    : RISCVExtension<1, 0,
                      "'XSfsci' (SiFive Custom Scalar Coprocessor Interface Instructions)",
                      [FeatureStdExtZve32x]>;
 def HasVendorXSfsci : Predicate<"Subtarget->hasVendorXSfsci()">,
@@ -1239,22 +1231,22 @@ def HasVendorXSfsci : Predicate<"Subtarget->hasVendorXSfsci()">,
                           "'XSfsci' (SiFive Custom Scalar Coprocessor Interface Instructions)">;
 
 def FeatureVendorXSfpmpmt
-    : RISCVExtension<"xsfpmpmt", 0, 1,
+    : RISCVExtension<0, 1,
                      "'Xsfpmpmt' (SiFive PMP-based Memory Types Extension)">;
 
 def FeatureVendorXSfvfbfexp16e
-    : RISCVExtension<"xsfvfbfexp16e", 0, 1,
+    : RISCVExtension<0, 1,
                      "'Xsfvfbfexp16e' (SiFive Vector Floating-Point Exponential Function Instruction, BFloat16)">;
 def HasVendorXSfvfbfexp16e : Predicate<"Subtarget->hasVendorXSfvfbfexp16e()">;
 
 def FeatureVendorXSfvfexp16e
-    : RISCVExtension<"xsfvfexp16e", 0, 1,
+    : RISCVExtension<0, 1,
                      "'Xsfvfexp16e' (SiFive Vector Floating-Point Exponential Function Instruction, Half Precision)",
                      [FeatureStdExtZvfh]>;
 def HasVendorXSfvfexp16e : Predicate<"Subtarget->hasVendorXSfvfexp16e()">;
 
 def FeatureVendorXSfvfexp32e
-    : RISCVExtension<"xsfvfexp32e", 0, 1,
+    : RISCVExtension<0, 1,
                      "'Xsfvfexp32e' (SiFive Vector Floating-Point Exponential Function Instruction, Single Precision)",
                      [FeatureStdExtZve32f]>;
 def HasVendorXSfvfexp32e : Predicate<"Subtarget->hasVendorXSfvfexp32e()">;
@@ -1265,7 +1257,7 @@ def HasVendorXSfvfexpAny : Predicate<"Subtarget->hasVendorXSfvfbfexp16e() || Sub
                            "'Xsfvfbfexp16e/Xsfvfexp16e/Xsfvfexp32e' (SiFive Vector Floating-Point Exponential Function Instruction)">;
 
 def FeatureVendorXSfvfexpa
-    : RISCVExtension<"xsfvfexpa", 0, 2,
+    : RISCVExtension<0, 2,
                      "'Xsfvfexpa' (SiFive Vector Floating-Point Exponential Approximation Instruction)",
                      [FeatureStdExtZve32f]>;
 def HasVendorXSfvfexpa : Predicate<"Subtarget->hasVendorXSfvfexpa()">,
@@ -1273,13 +1265,13 @@ def HasVendorXSfvfexpa : Predicate<"Subtarget->hasVendorXSfvfexpa()">,
                          "'Xsfvfexpa' (SiFive Vector Floating-Point Exponential Approximation Instruction)">;
 
 def FeatureVendorXSfvfexpa64e
-    : RISCVExtension<"xsfvfexpa64e", 0, 2,
+    : RISCVExtension<0, 2,
                      "'Xsfvfexpa64e' (SiFive Vector Floating-Point Exponential Approximation Instruction with Double-Precision)",
                      [FeatureVendorXSfvfexpa, FeatureStdExtZve64d]>;
 def HasVendorXSfvfexpa64e : Predicate<"Subtarget->hasVendorXSfvfexpa64e()">;
 
 def FeatureVendorXSfvfhbfmin
-    : RISCVExtension<"xsfvfhbfmin", 0, 1,
+    : RISCVExtension<0, 1,
                      "'Xsfvfhbfmin' (SiFive custom minimal BF16 vector support)",
                      [FeatureStdExtZvfbfmin]>;
 def HasVendorXSfvfhbfmin : Predicate<"Subtarget->hasVendorXSfvfhbfmin()">,
@@ -1287,7 +1279,7 @@ def HasVendorXSfvfhbfmin : Predicate<"Subtarget->hasVendorXSfvfhbfmin()">,
                          "'Xsfvfhbfmin' (SiFive custom minimal BF16 vector support)">;
 
 def FeatureVendorXSfvqdotq
-    : RISCVExtension<"xsfvqdotq", 0, 1,
+    : RISCVExtension<0, 1,
                      "'Xsfvqdotq' (SiFive Vector Quad-Widening 4D Dot Product Instructions)",
                      [FeatureStdExtZve32x]>;
 def HasVendorXSfvqdotq : Predicate<"Subtarget->hasVendorXSfvqdotq()">,
@@ -1295,7 +1287,7 @@ def HasVendorXSfvqdotq : Predicate<"Subtarget->hasVendorXSfvqdotq()">,
                          "'Xsfvqdotq' (SiFive Vector Quad-Widening 4D Dot Product Instructions)">;
 
 def FeatureVendorXSfvfbfa
-    : RISCVExtension<"xsfvfbfa", 0, 1,
+    : RISCVExtension<0, 1,
                      "'XSfvfbfa' (SiFive custom additional BF16 vector compute support)",
                      [FeatureStdExtZve32f, FeatureStdExtZfbfmin]>;
 def HasVendorXSfvfbfa
@@ -1304,12 +1296,12 @@ def HasVendorXSfvfbfa
                          "'XSfvfbfa' (SiFive custom additional BF16 vector compute support)">;
 
 def FeatureVendorXSfmm32ea
-    : RISCVExtension<"xsfmm32ea", 0, 6,
+    : RISCVExtension<0, 6,
                      "'XSfmm32ea' (TEW=32-bit accumulation) instructions: sf.vset*, sf.vtmv*, sf.mm.f.f (SEW=32), sf.vtzero",
                      [FeatureStdExtV]>;
 
 def FeatureVendorXSfmmbase
-    : RISCVExtension<"xsfmmbase", 0, 6,
+    : RISCVExtension<0, 6,
                      "'XSfmmbase' All non arithmetic instructions for all TEWs and sf.vtzero",
                      [FeatureStdExtV]>;
 def HasVendorXSfmmbase : Predicate<"Subtarget->hasVendorXSfmmbase()">,
@@ -1321,7 +1313,7 @@ def HasVendorXSfmm32eaOrXSfmmbase
                     "XSfmm32ea/XSfmmbase">;
 
 def FeatureVendorXSfmm32a8f
-    : RISCVExtension<"xsfmm32a8f", 0, 6,
+    : RISCVExtension<0, 6,
                      "'XSfmm32a8f' (TEW=32-bit accumulation) operands - float: fp8",
                      [FeatureVendorXSfmmbase]>;
 def HasVendorXSfmm32a8f : Predicate<"Subtarget->hasVendorXSfmm32a8f()">,
@@ -1329,17 +1321,17 @@ def HasVendorXSfmm32a8f : Predicate<"Subtarget->hasVendorXSfmm32a8f()">,
                               "'XSfmm32a8f' (TEW=32-bit accumulation) operands - float: fp8">;
 
 def FeatureVendorXSfmm32a16f
-    : RISCVExtension<"xsfmm32a16f", 0, 6,
+    : RISCVExtension<0, 6,
                      "'XSfmm32a16f' (TEW=32-bit accumulation) operands - float: 16b, widen=2 (IEEE, BF)",
                      [FeatureVendorXSfmmbase]>;
 
 def FeatureVendorXSfmm32a32f
-    : RISCVExtension<"xsfmm32a32f", 0, 6,
+    : RISCVExtension<0, 6,
                      "'XSfmm32a32f' (TEW=32-bit accumulation) operands - float: 32b",
                      [FeatureVendorXSfmmbase]>;
 
 def FeatureVendorXSfmm32a4i
-    : RISCVExtension<"xsfmm32a4i", 0, 6,
+    : RISCVExtension<0, 6,
                      "'XSfmm32a4i' (TEW=32-bit accumulation) operands - int: 4b (packed)",
                      [FeatureVendorXSfmmbase]>;
 def HasVendorXSfmm32a4i : Predicate<"Subtarget->hasVendorXSfmm32a4i()">,
@@ -1347,7 +1339,7 @@ def HasVendorXSfmm32a4i : Predicate<"Subtarget->hasVendorXSfmm32a4i()">,
                               "'XSfmm32a4i' (TEW=32-bit accumulation) operands - int: 4b (packed)">;
 
 def FeatureVendorXSfmm32a8i
-    : RISCVExtension<"xsfmm32a8i", 0, 6,
+    : RISCVExtension<0, 6,
                      "'XSfmm32a8i' (TEW=32-bit accumulation) operands - int: 8b",
                      [FeatureVendorXSfmmbase]>;
 def HasVendorXSfmm32a8i : Predicate<"Subtarget->hasVendorXSfmm32a8i()">,
@@ -1355,12 +1347,12 @@ def HasVendorXSfmm32a8i : Predicate<"Subtarget->hasVendorXSfmm32a8i()">,
                               "'XSfmm32a8i' (TEW=32-bit accumulation) operands - int: 8b">;
 
 def FeatureVendorXSfmm32a
-    : RISCVExtension<"xsfmm32a", 0, 6,
+    : RISCVExtension<0, 6,
                      "'XSfmm32a' (TEW=32-bit accumulation) operands - int: 8b; float: fp16, bf16, fp32",
                      [FeatureVendorXSfmm32a8i, FeatureVendorXSfmm32a16f, FeatureVendorXSfmm32a32f]>;
 
 def FeatureVendorXSfmm64a64f
-    : RISCVExtension<"xsfmm64a64f", 0, 6,
+    : RISCVExtension<0, 6,
                      "'XSfmm64a64f' (TEW=64-bit accumulation) operands - float: fp64",
                      [FeatureVendorXSfmmbase]>;
 def HasVendorXSfmm32eaOrXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f
@@ -1372,22 +1364,22 @@ def HasVendorXSfmm32eaOrXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f
                     "XSfmm32ea/XSfmm32a16f/XSfmm32a32f/XSfmm64a64f">;
 
 def FeatureVendorXSfmm16t
-    : RISCVExtension<"xsfmm16t", 0, 6,
+    : RISCVExtension<0, 6,
                      "'XSfmm16t' TE=16 configuration",
                      [FeatureVendorXSfmmbase], "XSfmmTE", "16">;
 
 def FeatureVendorXSfmm32t
-    : RISCVExtension<"xsfmm32t", 0, 6,
+    : RISCVExtension<0, 6,
                      "'XSfmm32t' TE=32 configuration",
                      [FeatureVendorXSfmmbase], "XSfmmTE", "32">;
 
 def FeatureVendorXSfmm64t
-    : RISCVExtension<"xsfmm64t", 0, 6,
+    : RISCVExtension<0, 6,
                      "'XSfmm64t' TE=64 configuration",
                      [FeatureVendorXSfmmbase], "XSfmmTE", "64">;
 
 def FeatureVendorXSfmm128t
-    : RISCVExtension<"xsfmm128t", 0, 6,
+    : RISCVExtension<0, 6,
                      "'XSfmm128t' TE=128 configuration",
                      [FeatureVendorXSfmmbase], "XSfmmTE", "128">;
 #endif // SIFIVE_CUSTOMIZATION
@@ -1434,13 +1426,8 @@ def HasVendorXSfvfnrclipxfqf
 
 let AdditionalVersions = [[1, 0]]  in // SIFIVE
 def FeatureVendorXSiFivecdiscarddlone
-<<<<<<< HEAD
-    : RISCVExtension<"xsifivecdiscarddlone", 0, 1, // SIFIVE
-                     "'XSiFivecdiscarddlone' (SiFive sf.cdiscard.d.l1 Instruction)", []>;
-=======
     : RISCVExtension<1, 0,
                      "SiFive sf.cdiscard.d.l1 Instruction", []>;
->>>>>>> 21edac2
 def HasVendorXSiFivecdiscarddlone
     : Predicate<"Subtarget->hasVendorXSiFivecdiscarddlone()">,
       AssemblerPredicate<(all_of FeatureVendorXSiFivecdiscarddlone),
@@ -1448,13 +1435,8 @@ def HasVendorXSiFivecdiscarddlone
 
 let AdditionalVersions = [[1, 0]]  in // SIFIVE
 def FeatureVendorXSiFivecflushdlone
-<<<<<<< HEAD
-    : RISCVExtension<"xsifivecflushdlone", 0, 1, // SIFIVE
-                     "'XSiFivecflushdlone' (SiFive sf.cflush.d.l1 Instruction)", []>;
-=======
     : RISCVExtension<1, 0,
                      "SiFive sf.cflush.d.l1 Instruction", []>;
->>>>>>> 21edac2
 def HasVendorXSiFivecflushdlone
     : Predicate<"Subtarget->hasVendorXSiFivecflushdlone()">,
       AssemblerPredicate<(all_of FeatureVendorXSiFivecflushdlone),
@@ -1462,13 +1444,8 @@ def HasVendorXSiFivecflushdlone
 
 let AdditionalVersions = [[1, 0]]  in // SIFIVE
 def FeatureVendorXSfcease
-<<<<<<< HEAD
-    : RISCVExtension<"xsfcease", 0, 1, // SIFIVE
-                     "'XSfcease' (SiFive sf.cease Instruction)", []>;
-=======
     : RISCVExtension<1, 0,
                      "SiFive sf.cease Instruction", []>;
->>>>>>> 21edac2
 def HasVendorXSfcease
     : Predicate<"Subtarget->hasVendorXSfcease()">,
       AssemblerPredicate<(all_of FeatureVendorXSfcease),
