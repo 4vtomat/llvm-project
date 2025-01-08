@@ -42,13 +42,10 @@ class RegScavenger;
 class VirtRegMap;
 class LiveIntervals;
 class LiveInterval;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 class LiveRange;
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> 21edac2
 class TargetRegisterClass {
 public:
   using iterator = const MCPhysReg *;
