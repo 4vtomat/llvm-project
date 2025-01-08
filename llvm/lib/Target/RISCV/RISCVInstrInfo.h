@@ -309,16 +309,14 @@ public:
 
   unsigned getTailDuplicateSize(CodeGenOptLevel OptLevel) const override;
 
-<<<<<<< HEAD
+  std::unique_ptr<TargetInstrInfo::PipelinerLoopInfo>
+  analyzeLoopForPipelining(MachineBasicBlock *LoopBB) const override;
+
 #if SIFIVE_CUSTOMIZATION
   ScheduleHazardRecognizer *
   CreateTargetMIHazardRecognizer(const InstrItineraryData *II,
                                  const ScheduleDAGMI *DAG) const override;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  std::unique_ptr<TargetInstrInfo::PipelinerLoopInfo>
-  analyzeLoopForPipelining(MachineBasicBlock *LoopBB) const override;
->>>>>>> 21edac2
 
 protected:
   const RISCVSubtarget &STI;
