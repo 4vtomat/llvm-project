@@ -1006,30 +1006,6 @@ multiclass VPatBinaryWVL_VV_VX_WV_WX<SDPatternOperator vop, SDNode vop_w,
   }
 }
 
-<<<<<<< HEAD
-multiclass VPatBinaryNVL_WV_WX_WI<SDPatternOperator vop, string instruction_name> {
-  foreach VtiToWti = AllWidenableIntVectors in {
-    defvar vti = VtiToWti.Vti;
-    defvar wti = VtiToWti.Wti;
-    let Predicates = !listconcat(GetVTypePredicates<vti>.Predicates,
-                                 GetVTypePredicates<wti>.Predicates) in {
-      def : VPatBinaryVL_V<vop, instruction_name, "WV",
-                           vti.Vector, wti.Vector, vti.Vector, vti.Mask,
-                           vti.Log2SEW, vti.LMul, vti.RegClass, wti.RegClass,
-                           vti.RegClass>;
-      def : VPatBinaryVL_XI<vop, instruction_name, "WX",
-                            vti.Vector, wti.Vector, vti.Vector, vti.Mask,
-                            vti.Log2SEW, vti.LMul, vti.RegClass, wti.RegClass,
-                            SplatPat, GPR>;
-      def : VPatBinaryVL_XI<vop, instruction_name, "WI",
-                            vti.Vector, wti.Vector, vti.Vector, vti.Mask,
-                            vti.Log2SEW, vti.LMul, vti.RegClass, wti.RegClass,
-                            !cast<ComplexPattern>(SplatPat#_#uimm5),
-                            uimm5>;
-    }
-  }
-}
-
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPatBinaryRM_NVL_WV_WX_WI<SDNode vop, string instruction_name> {
   foreach VtiToWti = AllWidenableIntVectors in {
@@ -1050,8 +1026,6 @@ multiclass VPatBinaryRM_NVL_WV_WX_WI<SDNode vop, string instruction_name> {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> 21edac2
 class VPatBinaryVL_VF<SDPatternOperator vop,
                       string instruction_name,
                       ValueType result_type,
