@@ -15,13 +15,10 @@
 #include "GISel/RISCVLegalizerInfo.h"
 #include "RISCV.h"
 #include "RISCVFrameLowering.h"
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 #include "SiFive_RISCVMaskInstDAGMutation.h"
 #endif // SIFIVE_CUSTOMIZATION
-=======
 #include "RISCVSelectionDAGInfo.h"
->>>>>>> 21edac2
 #include "RISCVTargetMachine.h"
 #include "llvm/CodeGen/MacroFusion.h"
 #include "llvm/CodeGen/MachineScheduler.h"
@@ -241,7 +238,10 @@ bool RISCVSubtarget::useRVVForFixedLengthVectors() const {
 
 bool RISCVSubtarget::enableSubRegLiveness() const { return true; }
 
-<<<<<<< HEAD
+bool RISCVSubtarget::enableMachinePipeliner() const {
+  return getSchedModel().hasInstrSchedModel();
+}
+
 #if SIFIVE_CUSTOMIZATION
 bool RISCVSubtarget::useAltGPROrder() const { return UseAltGPROrder; }
 
@@ -249,11 +249,6 @@ unsigned RISCVSubtarget::getMemToRVVLMUL() const {
   return 8;
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-bool RISCVSubtarget::enableMachinePipeliner() const {
-  return getSchedModel().hasInstrSchedModel();
-}
->>>>>>> 21edac2
 
   /// Enable use of alias analysis during code generation (during MI
   /// scheduling, DAGCombine, etc.).
