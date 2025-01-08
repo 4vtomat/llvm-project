@@ -40,7 +40,6 @@ using namespace llvm;
 STATISTIC(NumInsertedVSETVL, "Number of VSETVL inst inserted");
 STATISTIC(NumCoalescedVSETVL, "Number of VSETVL inst coalesced");
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 cl::opt<bool> ForceTailUndisturbed(
     "riscv-force-tail-undisturbed", cl::init(false), cl::Hidden,
@@ -49,13 +48,11 @@ cl::opt<bool> ForceMaskUndisturbed(
     "riscv-force-mask-undisturbed", cl::init(false), cl::Hidden,
     cl::desc("Force to use mask undisturbed for all vector intrinsics."));
 #endif // SIFIVE_CUSTOMIZATION
-=======
 static cl::opt<bool> EnsureWholeVectorRegisterMoveValidVTYPE(
     DEBUG_TYPE "-whole-vector-register-move-valid-vtype", cl::Hidden,
     cl::desc("Insert vsetvlis before vmvNr.vs to ensure vtype is valid and "
              "vill is cleared"),
     cl::init(true));
->>>>>>> 21edac2
 
 namespace {
 
@@ -237,19 +234,6 @@ struct DemandedFields {
   bool VLZeroness = false;
   // What properties of SEW we need to preserve.
   enum : uint8_t {
-<<<<<<< HEAD
-    SEWEqual = 3,              // The exact value of SEW needs to be preserved.
-#if SIFIVE_CUSTOMIZATION
-    // SIFIVE: upstream has the priority of these in the wrong order.
-    SEWGreaterThanOrEqualAndLessThan64 =
-        2,      // SEW can be changed as long as it's greater
-                // than or equal to the original value, but must be less
-                // than 64.
-    SEWGreaterThanOrEqual = 1, // SEW can be changed as long as it's greater
-                               // than or equal to the original value.
-#endif // SIFIVE_CUSTOMIZATION
-    SEWNone = 0 // We don't need to preserve SEW at all.
-=======
     SEWEqual = 3, // The exact value of SEW needs to be preserved.
     SEWGreaterThanOrEqualAndLessThan64 =
         2, // SEW can be changed as long as it's greater
@@ -258,7 +242,6 @@ struct DemandedFields {
     SEWGreaterThanOrEqual = 1, // SEW can be changed as long as it's greater
                                // than or equal to the original value.
     SEWNone = 0                // We don't need to preserve SEW at all.
->>>>>>> 21edac2
   } SEW = SEWNone;
   enum : uint8_t {
     LMULEqual = 2, // The exact value of LMUL needs to be preserved.
@@ -268,7 +251,9 @@ struct DemandedFields {
   bool SEWLMULRatio = false;
   bool TailPolicy = false;
   bool MaskPolicy = false;
-<<<<<<< HEAD
+  // If this is true, we demand that VTYPE is set to some legal state, i.e. that
+  // vill is unset.
+  bool VILL = false;
 #ifdef SIFIVE_CUSTOMIZATION
   bool UseTWiden = false;
   bool UseAltfmt = false;
@@ -277,18 +262,9 @@ struct DemandedFields {
   // Return true if any part of VTYPE was used
   bool usedVTYPE() const {
 #ifdef SIFIVE_CUSTOMIZATION
-    return SEW || LMUL || SEWLMULRatio || TailPolicy || MaskPolicy ||
+    return SEW || LMUL || SEWLMULRatio || TailPolicy || MaskPolicy || VILL ||
            UseTWiden || UseAltfmt;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  // If this is true, we demand that VTYPE is set to some legal state, i.e. that
-  // vill is unset.
-  bool VILL = false;
-
-  // Return true if any part of VTYPE was used
-  bool usedVTYPE() const {
-    return SEW || LMUL || SEWLMULRatio || TailPolicy || MaskPolicy || VILL;
->>>>>>> 21edac2
   }
 
   // Return true if any property of VL was used
@@ -303,14 +279,11 @@ struct DemandedFields {
     SEWLMULRatio = true;
     TailPolicy = true;
     MaskPolicy = true;
-<<<<<<< HEAD
+    VILL = true;
 #ifdef SIFIVE_CUSTOMIZATION
     UseTWiden = true;
     UseAltfmt = true;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    VILL = true;
->>>>>>> 21edac2
   }
 
   // Mark all VL properties as demanded
@@ -335,14 +308,11 @@ struct DemandedFields {
     SEWLMULRatio |= B.SEWLMULRatio;
     TailPolicy |= B.TailPolicy;
     MaskPolicy |= B.MaskPolicy;
-<<<<<<< HEAD
+    VILL |= B.VILL;
 #ifdef SIFIVE_CUSTOMIZATION
     UseAltfmt |= B.UseAltfmt;
     UseTWiden |= B.UseTWiden;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    VILL |= B.VILL;
->>>>>>> 21edac2
   }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
@@ -388,16 +358,13 @@ struct DemandedFields {
     OS << ", ";
     OS << "SEWLMULRatio=" << SEWLMULRatio << ", ";
     OS << "TailPolicy=" << TailPolicy << ", ";
-<<<<<<< HEAD
+    OS << "MaskPolicy=" << MaskPolicy << ", ";
+    OS << "VILL=" << VILL;
 #ifdef SIFIVE_CUSTOMIZATION
     OS << "MaskPolicy=" << MaskPolicy << ", ";
     OS << "UseAltfmt=" << UseAltfmt << ", ";
     OS << "UseTWiden=" << UseTWiden;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    OS << "MaskPolicy=" << MaskPolicy << ", ";
-    OS << "VILL=" << VILL;
->>>>>>> 21edac2
     OS << "}";
   }
 #endif
@@ -606,14 +573,6 @@ DemandedFields getDemanded(const MachineInstr &MI, const RISCVSubtarget *ST) {
     }
   }
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-  Res.UseAltfmt = RISCVII::getAltfmtType(MI.getDesc().TSFlags) !=
-                  RISCVII::AltfmtType::DontCare;
-  Res.UseTWiden = RISCVII::hasTWidenOp(MI.getDesc().TSFlags) ||
-                  isMammothVectorConfigInstr(MI);
-#endif // SIFIVE_CUSTOMIZATION
-=======
   // In §32.16.6, whole vector register moves have a dependency on SEW. At the
   // MIR level though we don't encode the element type, and it gives the same
   // result whatever the SEW may be.
@@ -628,7 +587,13 @@ DemandedFields getDemanded(const MachineInstr &MI, const RISCVSubtarget *ST) {
     Res.TailPolicy = false;
     Res.MaskPolicy = false;
   }
->>>>>>> 21edac2
+
+#ifdef SIFIVE_CUSTOMIZATION
+  Res.UseAltfmt = RISCVII::getAltfmtType(MI.getDesc().TSFlags) !=
+                  RISCVII::AltfmtType::DontCare;
+  Res.UseTWiden = RISCVII::hasTWidenOp(MI.getDesc().TSFlags) ||
+                  isMammothVectorConfigInstr(MI);
+#endif // SIFIVE_CUSTOMIZATION
 
   return Res;
 }
@@ -1614,12 +1579,6 @@ static VSETVLIInfo adjustIncoming(const VSETVLIInfo &PrevInfo,
 // legal for MI, but may not be the state requested by MI.
 void RISCVInsertVSETVLI::transferBefore(VSETVLIInfo &Info,
                                         const MachineInstr &MI) const {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  if (!RISCVII::hasSEWOp(MI.getDesc().TSFlags) &&
-      !isMammothVectorConfigInstr(MI))
-#endif // SIFIVE_CUSTOMIZATION
-=======
   if (isVectorCopy(ST->getRegisterInfo(), MI) &&
       (Info.isUnknown() || !Info.isValid() || Info.hasSEWLMULRatioOnly())) {
     // Use an arbitrary but valid AVL and VTYPE so vill will be cleared. It may
@@ -1632,8 +1591,10 @@ void RISCVInsertVSETVLI::transferBefore(VSETVLIInfo &Info,
     return;
   }
 
-  if (!RISCVII::hasSEWOp(MI.getDesc().TSFlags))
->>>>>>> 21edac2
+#if SIFIVE_CUSTOMIZATION
+  if (!RISCVII::hasSEWOp(MI.getDesc().TSFlags) &&
+      !isMammothVectorConfigInstr(MI))
+#endif // SIFIVE_CUSTOMIZATION
     return;
 
   DemandedFields Demanded = getDemanded(MI, ST);
@@ -1733,15 +1694,11 @@ bool RISCVInsertVSETVLI::computeVLVTYPEChanges(const MachineBasicBlock &MBB,
   for (const MachineInstr &MI : MBB) {
     transferBefore(Info, MI);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (isVectorConfigInstr(MI) || RISCVII::hasSEWOp(MI.getDesc().TSFlags) ||
+        isVectorCopy(ST->getRegisterInfo(), MI) ||
         isMammothVectorConfigInstr(MI))
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    if (isVectorConfigInstr(MI) || RISCVII::hasSEWOp(MI.getDesc().TSFlags) ||
-        isVectorCopy(ST->getRegisterInfo(), MI))
->>>>>>> 21edac2
       HadVectorOp = true;
 
     transferAfter(Info, MI);
@@ -1878,14 +1835,6 @@ void RISCVInsertVSETVLI::emitVSETVLIs(MachineBasicBlock &MBB) {
       PrefixTransparent = false;
     }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    if (isMammothVectorConfigInstr(MI)) {
-      MI.getOperand(3).setIsDead(false);
-      PrefixTransparent = false;
-    }
-#endif // SIFIVE_CUSTOMIZATION
-=======
     if (EnsureWholeVectorRegisterMoveValidVTYPE &&
         isVectorCopy(ST->getRegisterInfo(), MI)) {
       if (!PrevInfo.isCompatible(DemandedFields::all(), CurInfo, LIS)) {
@@ -1895,7 +1844,13 @@ void RISCVInsertVSETVLI::emitVSETVLIs(MachineBasicBlock &MBB) {
       MI.addOperand(MachineOperand::CreateReg(RISCV::VTYPE, /*isDef*/ false,
                                               /*isImp*/ true));
     }
->>>>>>> 21edac2
+
+#if SIFIVE_CUSTOMIZATION
+    if (isMammothVectorConfigInstr(MI)) {
+      MI.getOperand(3).setIsDead(false);
+      PrefixTransparent = false;
+    }
+#endif // SIFIVE_CUSTOMIZATION
 
     uint64_t TSFlags = MI.getDesc().TSFlags;
 #if SIFIVE_CUSTOMIZATION
