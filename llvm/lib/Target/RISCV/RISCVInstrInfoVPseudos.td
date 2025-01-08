@@ -6375,7 +6375,9 @@ defm PseudoVWADDU : VPseudoVWALU_WV_WX;
 defm PseudoVWSUBU : VPseudoVWALU_WV_WX;
 defm PseudoVWADD  : VPseudoVWALU_WV_WX;
 defm PseudoVWSUB  : VPseudoVWALU_WV_WX;
-}
+#ifdef SIFIVE_CUSTOMIZATION
+} // IsWiden = 1
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 11.3. Vector Integer Extension
@@ -6463,7 +6465,9 @@ let IsWiden = 1 in {
 defm PseudoVWMUL   : VPseudoVWMUL_VV_VX<Commutable=1>;
 defm PseudoVWMULU  : VPseudoVWMUL_VV_VX<Commutable=1>;
 defm PseudoVWMULSU : VPseudoVWMUL_VV_VX;
-}
+#ifdef SIFIVE_CUSTOMIZATION
+} // IsWiden = 1
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 11.13. Vector Single-Width Integer Multiply-Add Instructions
@@ -6483,7 +6487,9 @@ defm PseudoVWMACCU  : VPseudoVWMAC_VV_VX<Commutable=1>;
 defm PseudoVWMACC   : VPseudoVWMAC_VV_VX<Commutable=1>;
 defm PseudoVWMACCSU : VPseudoVWMAC_VV_VX;
 defm PseudoVWMACCUS : VPseudoVWMAC_VX;
-}
+#ifdef SIFIVE_CUSTOMIZATION
+} // IsWiden = 1
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 11.15. Vector Integer Merge Instructions
@@ -6589,7 +6595,9 @@ defm PseudoVFWSUB : VPseudoVFWALU_VV_VF_RM;
 defm PseudoVFWADD : VPseudoVFWALU_WV_WF_RM;
 defm PseudoVFWSUB : VPseudoVFWALU_WV_WF_RM;
 }
-}
+#ifdef SIFIVE_CUSTOMIZATION
+} // IsWiden = 1
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.4. Vector Single-Width Floating-Point Multiply/Divide Instructions
@@ -6609,7 +6617,9 @@ let IsWiden = 1 in {
 let mayRaiseFPException = true, hasSideEffects = 0 in {
 defm PseudoVFWMUL : VPseudoVWMUL_VV_VF_RM;
 }
-}
+#ifdef SIFIVE_CUSTOMIZATION
+} // IsWiden = 1
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.6. Vector Single-Width Floating-Point Fused Multiply-Add Instructions
@@ -6639,7 +6649,9 @@ defm PseudoVFWNMSAC : VPseudoVWMAC_VV_VF_RM;
 let Predicates = [HasStdExtZvfbfwma] in
 defm PseudoVFWMACCBF16  : VPseudoVWMAC_VV_VF_BF_RM;
 }
-}
+#ifdef SIFIVE_CUSTOMIZATION
+} // IsWiden = 1
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.8. Vector Floating-Point Square-Root Instruction
@@ -6740,10 +6752,11 @@ defm PseudoVFWCVT_F_XU     : VPseudoVWCVTF_V;
 defm PseudoVFWCVT_F_X      : VPseudoVWCVTF_V;
 
 defm PseudoVFWCVT_F_F      : VPseudoVWCVTD_V;
-
 defm PseudoVFWCVTBF16_F_F :  VPseudoVWCVTD_V;
 } // mayRaiseFPException = true
-}
+#ifdef SIFIVE_CUSTOMIZATION
+} // IsWiden = 1
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.19. Narrowing Floating-Point/Integer Type-Convert Instructions
@@ -6764,7 +6777,6 @@ defm PseudoVFNCVT_F_X      : VPseudoVNCVTF_W_RM;
 
 let hasSideEffects = 0 in {
 defm PseudoVFNCVT_F_F      : VPseudoVNCVTD_W_RM;
-
 defm PseudoVFNCVTBF16_F_F :  VPseudoVNCVTD_W_RM;
 }
 
@@ -6800,7 +6812,9 @@ defm PseudoVWREDSUMU   : VPseudoVWRED_VS;
 defm PseudoVWREDSUM    : VPseudoVWRED_VS;
 }
 } // Predicates = [HasVInstructions]
-}
+#ifdef SIFIVE_CUSTOMIZATION
+} // IsWiden = 1
+#endif // SIFIVE_CUSTOMIZATION
 
 #ifdef SIFIVE_CUSTOMIZATION
 let AltfmtType = IS_NOT_ALTFMT, Predicates = [HasVInstructionsAnyF] in {
@@ -6829,7 +6843,9 @@ defm PseudoVFWREDOSUM  : VPseudoVFWREDO_VS_RM;
 }
 
 } // Predicates = [HasVInstructionsAnyF]
-}
+#ifdef SIFIVE_CUSTOMIZATION
+} // IsWiden = 1
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 15. Vector Mask Instructions
