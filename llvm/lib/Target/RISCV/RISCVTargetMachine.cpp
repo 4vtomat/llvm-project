@@ -129,11 +129,7 @@ static cl::opt<bool>
 static cl::opt<bool>
     EnableVLOptimizer("riscv-enable-vl-optimizer",
                       cl::desc("Enable the RISC-V VL Optimizer pass"),
-<<<<<<< HEAD
-                      cl::init(true), cl::Hidden); // SIFIVE
-=======
                       cl::init(true), cl::Hidden);
->>>>>>> 21edac2
 
 static cl::opt<bool> DisableVectorMaskMutation(
     "riscv-disable-vector-mask-mutation",
