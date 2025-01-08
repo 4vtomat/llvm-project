@@ -416,17 +416,15 @@ public:
 
   bool enableSubRegLiveness() const override;
 
-<<<<<<< HEAD
+  bool enableMachinePipeliner() const override;
+
+  bool useDFAforSMS() const override { return false; }
+
 #if SIFIVE_CUSTOMIZATION
   bool useAltGPROrder() const;
 
   unsigned getMemToRVVLMUL() const;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  bool enableMachinePipeliner() const override;
-
-  bool useDFAforSMS() const override { return false; }
->>>>>>> 21edac2
 
   bool useAA() const override;
 
