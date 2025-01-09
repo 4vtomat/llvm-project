@@ -1553,15 +1553,10 @@ void VPlanTransforms::optimize(VPlan &Plan) {
   removeDeadRecipes(Plan);
 
   createAndOptimizeReplicateRegions(Plan);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // After CFG is flattened, remove all unnecessary blends of monotonics
   simplifyMonotonics(Plan);
 #endif // SIFIVE_CUSTOMIZATION
-
-  removeRedundantExpandSCEVRecipes(Plan);
-=======
->>>>>>> 21edac2
   mergeBlocksIntoPredecessors(Plan);
   licm(Plan);
 }
@@ -1949,19 +1944,12 @@ bool VPlanTransforms::tryAddExplicitVectorLength(
   // The transform updates all users of inductions to work based on EVL, instead
   // of the VF directly. At the moment, widened inductions cannot be updated, so
   // bail out if the plan contains any.
-<<<<<<< HEAD
-  bool ContainsWidenInductions = any_of(Header->phis(), [](VPRecipeBase &Phi) {
-    return isa<VPWidenIntOrFpInductionRecipe, VPWidenPointerInductionRecipe>(
-        &Phi);
-  });
-#if SIFIVE_CUSTOMIZATION
-  if (!EnableEVLFuzzing)
-#endif // SIFIVE_CUSTOMIZATION
-=======
   bool ContainsWidenInductions = any_of(
       Header->phis(),
       IsaPred<VPWidenIntOrFpInductionRecipe, VPWidenPointerInductionRecipe>);
->>>>>>> 21edac2
+#if SIFIVE_CUSTOMIZATION
+  if (!EnableEVLFuzzing)
+#endif // SIFIVE_CUSTOMIZATION
   if (ContainsWidenInductions)
     return false;
 
