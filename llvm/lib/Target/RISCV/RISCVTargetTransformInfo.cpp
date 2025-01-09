@@ -2852,7 +2852,6 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
     }
   }
 
-<<<<<<< HEAD
   // IR Reduction is composed by two vmv and one rvv reduction instruction.
 #if SIFIVE_CUSTOMIZATION
   if (ST->isSiFiveCPU() && CostKind == TTI::TCK_CodeSize)
@@ -2868,11 +2867,9 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
   // IR Reduction of or/and is composed by one vmv and one rvv reduction
   // instruction, and others is composed by two vmv and one rvv reduction
   // instruction
->>>>>>> 21edac2
   unsigned SplitOp;
   SmallVector<unsigned, 3> Opcodes;
   switch (ISD) {
@@ -3378,7 +3375,6 @@ InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
       SlideCost = 1; // With a constant index, we do not need to use addi.
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // TODO: Remove this and update InsertElement cost
   if (Opcode == Instruction::ExtractElement && LT.first > 1 &&
@@ -3396,7 +3392,6 @@ InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
     return BaseCost;
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   // When the vector needs to split into multiple register groups and the index
   // exceeds single vector register group, we need to insert/extract the element
   // via stack.
@@ -3424,7 +3419,6 @@ InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
                            CostKind) +
            IdxCost;
   }
->>>>>>> 21edac2
 
   // Extract i64 in the target that has XLEN=32 need more instruction.
   if (Val->getScalarType()->isIntegerTy() &&
@@ -3840,7 +3834,6 @@ unsigned RISCVTTIImpl::getMaximumVF(unsigned ElemWidth, unsigned Opcode) const {
   return std::max<unsigned>(1U, RegWidth.getFixedValue() / ElemWidth);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 unsigned RISCVTTIImpl::getInliningThresholdMultiplier() const {
   return InliningThresholdMultiplier;
@@ -3882,7 +3875,6 @@ bool RISCVTTIImpl::isLegalVectorInterleave(VectorType *VTy, unsigned Factor,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
 TTI::AddressingModeKind
 RISCVTTIImpl::getPreferredAddressingMode(const Loop *L,
                                          ScalarEvolution *SE) const {
@@ -3892,7 +3884,6 @@ RISCVTTIImpl::getPreferredAddressingMode(const Loop *L,
   return BasicTTIImplBase::getPreferredAddressingMode(L, SE);
 }
 
->>>>>>> 21edac2
 bool RISCVTTIImpl::isLSRCostLess(const TargetTransformInfo::LSRCost &C1,
                                  const TargetTransformInfo::LSRCost &C2) {
   // RISC-V specific here are "instruction number 1st priority".
