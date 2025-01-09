@@ -3395,7 +3395,7 @@ static bool optimizeCRC(Loop *CurLoop, PHINode &PN, unsigned TC) {
 
   // The data operands are correct. Check the condition is checking that bit 0
   // of the crc and data phis is 0.
-  ICmpInst::Predicate Pred;
+  CmpPredicate Pred;
   if (!match(Cond, m_OneUse(m_ICmp(
                        Pred, m_OneUse(m_And(m_Specific(Xor), m_SpecificInt(1))),
                        m_ZeroInt()))) ||

@@ -1312,7 +1312,7 @@ bool llvm::peelLoopEpilog(Loop *L, unsigned PeelCount, LoopInfo *LI,
   bool MatchingCaseFound = false;
   if (BI) {
     Value *Condition = BI->getCondition();
-    CmpInst::Predicate Pred;
+    CmpPredicate Pred;
     if (match(Condition, m_ICmp(Pred, m_Instruction(LeftInst),
                                 m_Value(RightVal)))) {
       // Mine the data from LeftInst and save it for later use.

@@ -759,7 +759,7 @@ RecurrenceDescriptor::isFindLastIVPattern(Loop *TheLoop, PHINode *OrigPhi,
 <<<<<<< HEAD
   // Only match select with single use cmp condition.
   // TODO: Only handle single use for now.
-  CmpInst::Predicate Pred;
+  CmpPredicate Pred;
   if (!match(I, m_Select(m_OneUse(m_Cmp(Pred, m_Value(), m_Value())), m_Value(),
                          m_Value())))
     return InstDesc(false, I);

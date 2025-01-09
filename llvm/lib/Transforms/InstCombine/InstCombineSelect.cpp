@@ -4295,7 +4295,7 @@ Instruction *InstCombinerImpl::visitSelectInst(SelectInst &SI) {
   // Match (select (X < 0), (sub 1<<C, (zext X)), (zext X)) where C is the bit
   // width of X. Replace with (zext (abs X)).
   Value *V;
-  ICmpInst::Predicate Pred;
+  CmpPredicate Pred;
   if (match(CondVal, m_ICmp(Pred, m_Value(V), m_ZeroInt())) &&
       Pred == ICmpInst::ICMP_SLT && match(FalseVal, m_ZExt(m_Specific(V))) &&
       FalseVal->hasNUses(2)) {

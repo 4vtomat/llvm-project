@@ -11150,7 +11150,7 @@ ScalarEvolution::evaluateAsLikeLatch(ICmpInst::Predicate Pred, const Value *LHS,
       // Currently only upcounting single step loops qualify
       // Question: will this work for any constant inc/dec value?
       if (match(StepVal, m_Add(m_Value(), m_One()))) {
-        CmpInst::Predicate Pred2;
+        CmpPredicate Pred2;
         Value *LatchLHS, *LatchRHS;
         // The notion here is that IV compares that fit the pattern
         // for isImpliedTrueByMatchingCmp, that have a single step loop

@@ -141,7 +141,7 @@ isLoopCanonical(Loop *L, PHINode *IV, ScalarEvolution *SE,
 
 static CmpInst::Predicate EvaluatePred(Value *Condition, ScalarEvolution *SE) {
   using namespace PatternMatch;
-  CmpInst::Predicate Pred;
+  CmpPredicate Pred;
   Value *LeftVal, *RightVal;
   if (match(Condition, m_ICmp(Pred, m_Value(LeftVal), m_Value(RightVal)))) {
     const SCEV *LeftSCEV = SE->getSCEV(LeftVal);
