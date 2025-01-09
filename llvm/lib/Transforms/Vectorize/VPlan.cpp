@@ -333,7 +333,7 @@ VPTransformState::VPTransformState(const TargetTransformInfo *TTI,
                                    ElementCount VF, unsigned UF, LoopInfo *LI,
                                    DominatorTree *DT, IRBuilderBase &Builder,
                                    InnerLoopVectorizer *ILV, VPlan *Plan,
-<<<<<<< HEAD
+// <<<<<<< HEAD
                                    bool EnableRISCVCSA) // SIFIVE)
     : TTI(TTI), VF(VF), CFG(DT), LI(LI), Builder(Builder), ILV(ILV), Plan(Plan),
 #if SIFIVE_CUSTOMIZATION
@@ -342,12 +342,12 @@ VPTransformState::VPTransformState(const TargetTransformInfo *TTI,
 #else
       LVer(nullptr), TypeAnalysis(Plan->getCanonicalIV()->getScalarType()) {}
 #endif // SIFIVE_CUSTOMIZATION
-=======
-                                   Loop *CurrentParentLoop, Type *CanonicalIVTy)
-    : TTI(TTI), VF(VF), CFG(DT), LI(LI), Builder(Builder), ILV(ILV), Plan(Plan),
-      CurrentParentLoop(CurrentParentLoop), LVer(nullptr),
-      TypeAnalysis(CanonicalIVTy) {}
->>>>>>> 21edac2
+// =======
+//                                    Loop *CurrentParentLoop, Type *CanonicalIVTy)
+//     : TTI(TTI), VF(VF), CFG(DT), LI(LI), Builder(Builder), ILV(ILV), Plan(Plan),
+//       CurrentParentLoop(CurrentParentLoop), LVer(nullptr),
+//       TypeAnalysis(CanonicalIVTy) {}
+// >>>>>>> 21edac2
 
 Value *VPTransformState::get(VPValue *Def, const VPLane &Lane) {
   if (Def->isLiveIn())
@@ -1059,7 +1059,7 @@ void VPConditionalRegionBlock::print(raw_ostream &O, const Twine &Indent,
 #endif // SIFIVE_CUSTOMIZATION
 #endif
 
-<<<<<<< HEAD
+// <<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 InstructionCost VPlan::overhead(ElementCount VF, VPCostContext &Ctx) const {
   InstructionCost Overhead;
@@ -1096,13 +1096,13 @@ InstructionCost VPBasicBlock::overhead(ElementCount VF,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
-VPlan::VPlan(Loop *L) {
-  setEntry(createVPIRBasicBlock(L->getLoopPreheader()));
-  ScalarHeader = createVPIRBasicBlock(L->getHeader());
-}
-
->>>>>>> 21edac2
+// =======
+// VPlan::VPlan(Loop *L) {
+//   setEntry(createVPIRBasicBlock(L->getLoopPreheader()));
+//   ScalarHeader = createVPIRBasicBlock(L->getHeader());
+// }
+// 
+// >>>>>>> 21edac2
 VPlan::~VPlan() {
   VPValue DummyValue;
 
@@ -1139,7 +1139,7 @@ VPlan::~VPlan() {
 VPlanPtr VPlan::createInitialVPlan(Type *InductionTy,
                                    PredicatedScalarEvolution &PSE,
                                    bool RequiresScalarEpilogueCheck,
-<<<<<<< HEAD
+// <<<<<<< HEAD
                                    bool TailFolded,
 
 #if SIFIVE_CUSTOMIZATION
@@ -1157,34 +1157,34 @@ VPlanPtr VPlan::createInitialVPlan(Type *InductionTy,
 #else
   auto Plan = std::make_unique<VPlan>(Entry, VecPreheader, ScalarHeader);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-                                   bool TailFolded, Loop *TheLoop) {
-  auto Plan = std::make_unique<VPlan>(TheLoop);
-  VPBlockBase *ScalarHeader = Plan->getScalarHeader();
-
-  // Connect entry only to vector preheader initially. Entry will also be
-  // connected to the scalar preheader later, during skeleton creation when
-  // runtime guards are added as needed. Note that when executing the VPlan for
-  // an epilogue vector loop, the original entry block here will be replaced by
-  // a new VPIRBasicBlock wrapping the entry to the epilogue vector loop after
-  // generating code for the main vector loop.
-  VPBasicBlock *VecPreheader = Plan->createVPBasicBlock("vector.ph");
-  VPBlockUtils::connectBlocks(Plan->getEntry(), VecPreheader);
->>>>>>> 21edac2
+// =======
+//                                    bool TailFolded, Loop *TheLoop) {
+//   auto Plan = std::make_unique<VPlan>(TheLoop);
+//   VPBlockBase *ScalarHeader = Plan->getScalarHeader();
+// 
+//   // Connect entry only to vector preheader initially. Entry will also be
+//   // connected to the scalar preheader later, during skeleton creation when
+//   // runtime guards are added as needed. Note that when executing the VPlan for
+//   // an epilogue vector loop, the original entry block here will be replaced by
+//   // a new VPIRBasicBlock wrapping the entry to the epilogue vector loop after
+//   // generating code for the main vector loop.
+//   VPBasicBlock *VecPreheader = Plan->createVPBasicBlock("vector.ph");
+//   VPBlockUtils::connectBlocks(Plan->getEntry(), VecPreheader);
+// >>>>>>> 21edac2
 
   // Create SCEV and VPValue for the trip count.
   // We use the symbolic max backedge-taken-count, which works also when
   // vectorizing loops with uncountable early exits.
   const SCEV *BackedgeTakenCountSCEV = PSE.getSymbolicMaxBackedgeTakenCount();
-<<<<<<< HEAD
+// <<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (!IsUncountable)
 #endif
   assert((!isa<SCEVCouldNotCompute>(BackedgeTakenCountSCEV) &&
           BackedgeTakenCountSCEV == PSE.getBackedgeTakenCount()) &&
-=======
-  assert(!isa<SCEVCouldNotCompute>(BackedgeTakenCountSCEV) &&
->>>>>>> 21edac2
+// =======
+//   assert(!isa<SCEVCouldNotCompute>(BackedgeTakenCountSCEV) &&
+// >>>>>>> 21edac2
          "Invalid loop count");
   ScalarEvolution &SE = *PSE.getSE();
 #if SIFIVE_CUSTOMIZATION
@@ -1290,17 +1290,17 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
 
   IRBuilder<> Builder(State.CFG.PrevBB->getTerminator());
   // FIXME: Model VF * UF computation completely in VPlan.
-<<<<<<< HEAD
+// <<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   assert((useVLAVectorizer() || VFxUF.getNumUsers()) &&
          "VFxUF expected to always have users");
 #else
   assert(VFxUF.getNumUsers() && "VFxUF expected to always have users");
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  assert((!getVectorLoopRegion() || VFxUF.getNumUsers()) &&
-         "VFxUF expected to always have users");
->>>>>>> 21edac2
+// =======
+//   assert((!getVectorLoopRegion() || VFxUF.getNumUsers()) &&
+//          "VFxUF expected to always have users");
+// >>>>>>> 21edac2
   unsigned UF = getUF();
 #if SIFIVE_CUSTOMIZATION
   Value *RuntimeVF = nullptr;
@@ -1328,7 +1328,7 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
   } else {
     VFxUF.setUnderlyingValue(createStepForVF(Builder, TCTy, State.VF, UF));
   }
-<<<<<<< HEAD
+// <<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
 
   // When vectorizing the epilogue loop, the canonical induction start value
@@ -1378,8 +1378,8 @@ static void replaceVPBBWithIRVPBB(VPBasicBlock *VPBB, BasicBlock *IRBB) {
   VPBlockUtils::reassociateBlocks(VPBB, IRVPBB);
 
   delete VPBB;
-=======
->>>>>>> 21edac2
+// =======
+// >>>>>>> 21edac2
 }
 
 /// Generate the code inside the preheader and body of the vectorized loop.
@@ -1474,7 +1474,7 @@ void VPlan::execute(VPTransformState *State) {
     }
 
     auto *PhiR = cast<VPHeaderPHIRecipe>(&R);
-<<<<<<< HEAD
+// <<<<<<< HEAD
     bool NeedsScalar =
         isa<VPCanonicalIVPHIRecipe, VPEVLBasedIVPHIRecipe>(PhiR) ||
 #if SIFIVE_CUSTOMIZATION
@@ -1483,11 +1483,11 @@ void VPlan::execute(VPTransformState *State) {
 #endif // SIFIVE_CUSTOMIZATION
         (isa<VPReductionPHIRecipe>(PhiR) &&
          cast<VPReductionPHIRecipe>(PhiR)->isInLoop());
-=======
-    bool NeedsScalar = isa<VPScalarPHIRecipe>(PhiR) ||
-                       (isa<VPReductionPHIRecipe>(PhiR) &&
-                        cast<VPReductionPHIRecipe>(PhiR)->isInLoop());
->>>>>>> 21edac2
+// =======
+//     bool NeedsScalar = isa<VPScalarPHIRecipe>(PhiR) ||
+//                        (isa<VPReductionPHIRecipe>(PhiR) &&
+//                         cast<VPReductionPHIRecipe>(PhiR)->isInLoop());
+// >>>>>>> 21edac2
     Value *Phi = State->get(PhiR, NeedsScalar);
     Value *Val = State->get(PhiR->getBackedgeValue(), NeedsScalar);
 #if SIFIVE_CUSTOMIZATION
@@ -1500,7 +1500,7 @@ void VPlan::execute(VPTransformState *State) {
 #endif // SIFIVE_CUSTOMIZATION
     cast<PHINode>(Phi)->addIncoming(Val, VectorLatchBB);
   }
-<<<<<<< HEAD
+// <<<<<<< HEAD
 
 #if SIFIVE_CUSTOMIZATION
   if (Value *EVLPlaceholder = State->EVLPlaceholder) {
@@ -1519,8 +1519,8 @@ void VPlan::execute(VPTransformState *State) {
   assert(State->CFG.DTU.getDomTree().verify(
              DominatorTree::VerificationLevel::Fast) &&
          "DT not preserved correctly");
-=======
->>>>>>> 21edac2
+// =======
+// >>>>>>> 21edac2
 }
 
 InstructionCost VPlan::cost(ElementCount VF, VPCostContext &Ctx) {
