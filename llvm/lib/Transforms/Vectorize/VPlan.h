@@ -323,13 +323,13 @@ struct VPTransformState {
 #else
   VPTransformState(const TargetTransformInfo *TTI, ElementCount VF, unsigned UF,
                    LoopInfo *LI, DominatorTree *DT, IRBuilderBase &Builder,
-<<<<<<< HEAD
+// <<<<<<< HEAD
                    InnerLoopVectorizer *ILV, VPlan *Plan);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-                   InnerLoopVectorizer *ILV, VPlan *Plan,
-                   Loop *CurrentParentLoop, Type *CanonicalIVTy);
->>>>>>> 21edac2
+// =======
+//                    InnerLoopVectorizer *ILV, VPlan *Plan,
+//                    Loop *CurrentParentLoop, Type *CanonicalIVTy);
+// >>>>>>> 21edac2
   /// Target Transform Info.
   const TargetTransformInfo *TTI;
 
@@ -1403,7 +1403,7 @@ public:
     // operand). Only generates scalar values (either for the first lane only or
     // for all lanes, depending on its uses).
     PtrAdd,
-<<<<<<< HEAD
+// <<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     ComputeReductionResultWithMask,
     ExitingCond,
@@ -1416,11 +1416,11 @@ public:
     CSAAnyActive,
     MonotonicUpdate,
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    // Returns a scalar boolean value, which is true if any lane of its single
-    // operand is true.
-    AnyOf,
->>>>>>> 21edac2
+// =======
+//     // Returns a scalar boolean value, which is true if any lane of its single
+//     // operand is true.
+//     AnyOf,
+// >>>>>>> 21edac2
   };
 
 private:
@@ -2432,7 +2432,7 @@ class VPWidenInductionRecipe : public VPHeaderPHIRecipe {
 #endif
 
 public:
-<<<<<<< HEAD
+// <<<<<<< HEAD
   VPWidenIntOrFpInductionRecipe(PHINode *IV, VPValue *Start, VPValue *Step,
 		                VPValue *VF,
 #if SIFIVE_CUSTOMIZATION
@@ -2447,16 +2447,16 @@ public:
 #else
         Trunc(nullptr), IndDesc(IndDesc) {
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  VPWidenInductionRecipe(unsigned char Kind, PHINode *IV, VPValue *Start,
-                         VPValue *Step, const InductionDescriptor &IndDesc,
-                         DebugLoc DL)
-      : VPHeaderPHIRecipe(Kind, IV, Start, DL), IndDesc(IndDesc) {
->>>>>>> 21edac2
+// =======
+//   VPWidenInductionRecipe(unsigned char Kind, PHINode *IV, VPValue *Start,
+//                          VPValue *Step, const InductionDescriptor &IndDesc,
+//                          DebugLoc DL)
+//       : VPHeaderPHIRecipe(Kind, IV, Start, DL), IndDesc(IndDesc) {
+// >>>>>>> 21edac2
     addOperand(Step);
   }
 
-<<<<<<< HEAD
+// <<<<<<< HEAD
   VPWidenIntOrFpInductionRecipe(PHINode *IV, VPValue *Start, VPValue *Step,
                                 VPValue *VF, const InductionDescriptor &IndDesc,
 #if SIFIVE_CUSTOMIZATION
@@ -2472,11 +2472,11 @@ public:
 #endif // SIFIVE_CUSTOMIZATION
     addOperand(Step);
     addOperand(VF);
-=======
-  static inline bool classof(const VPRecipeBase *R) {
-    return R->getVPDefID() == VPDef::VPWidenIntOrFpInductionSC ||
-           R->getVPDefID() == VPDef::VPWidenPointerInductionSC;
->>>>>>> 21edac2
+// =======
+//   static inline bool classof(const VPRecipeBase *R) {
+//     return R->getVPDefID() == VPDef::VPWidenIntOrFpInductionSC ||
+//            R->getVPDefID() == VPDef::VPWidenPointerInductionSC;
+// >>>>>>> 21edac2
   }
 
   static inline bool classof(const VPValue *V) {
@@ -2490,7 +2490,7 @@ public:
 
   virtual void execute(VPTransformState &State) override = 0;
 
-<<<<<<< HEAD
+// <<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool isUncountable() const { return IsUncountable; }
 #endif
@@ -2500,16 +2500,16 @@ public:
   void print(raw_ostream &O, const Twine &Indent,
              VPSlotTracker &SlotTracker) const override;
 #endif
-=======
-  /// Returns the step value of the induction.
-  VPValue *getStepValue() { return getOperand(1); }
-  const VPValue *getStepValue() const { return getOperand(1); }
-
-  PHINode *getPHINode() const { return cast<PHINode>(getUnderlyingValue()); }
-
-  /// Returns the induction descriptor for the recipe.
-  const InductionDescriptor &getInductionDescriptor() const { return IndDesc; }
->>>>>>> 21edac2
+// =======
+//   /// Returns the step value of the induction.
+//   VPValue *getStepValue() { return getOperand(1); }
+//   const VPValue *getStepValue() const { return getOperand(1); }
+// 
+//   PHINode *getPHINode() const { return cast<PHINode>(getUnderlyingValue()); }
+// 
+//   /// Returns the induction descriptor for the recipe.
+//   const InductionDescriptor &getInductionDescriptor() const { return IndDesc; }
+// >>>>>>> 21edac2
 
   VPValue *getBackedgeValue() override {
     // TODO: All operands of base recipe must exist and be at same index in
@@ -2616,7 +2616,7 @@ public:
   /// Start.
   VPWidenPointerInductionRecipe(PHINode *Phi, VPValue *Start, VPValue *Step,
                                 const InductionDescriptor &IndDesc,
-<<<<<<< HEAD
+// <<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
                                 bool IsScalarAfterVectorization,
                                 bool IsUncountable)
@@ -2634,12 +2634,12 @@ public:
     addOperand(Start);
     addOperand(Step);
   }
-=======
-                                bool IsScalarAfterVectorization, DebugLoc DL)
-      : VPWidenInductionRecipe(VPDef::VPWidenPointerInductionSC, Phi, Start,
-                               Step, IndDesc, DL),
-        IsScalarAfterVectorization(IsScalarAfterVectorization) {}
->>>>>>> 21edac2
+// =======
+//                                 bool IsScalarAfterVectorization, DebugLoc DL)
+//       : VPWidenInductionRecipe(VPDef::VPWidenPointerInductionSC, Phi, Start,
+//                                Step, IndDesc, DL),
+//         IsScalarAfterVectorization(IsScalarAfterVectorization) {}
+// >>>>>>> 21edac2
 
   ~VPWidenPointerInductionRecipe() override = default;
 
@@ -2651,12 +2651,12 @@ public:
 #else
     return new VPWidenPointerInductionRecipe(
         cast<PHINode>(getUnderlyingInstr()), getOperand(0), getOperand(1),
-<<<<<<< HEAD
+// <<<<<<< HEAD
         IndDesc, IsScalarAfterVectorization);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-        getInductionDescriptor(), IsScalarAfterVectorization, getDebugLoc());
->>>>>>> 21edac2
+// =======
+//         getInductionDescriptor(), IsScalarAfterVectorization, getDebugLoc());
+// >>>>>>> 21edac2
   }
 
   VP_CLASSOF_IMPL(VPDef::VPWidenPointerInductionSC)
@@ -4675,7 +4675,7 @@ class VPlan {
   /// VPlan is destroyed.
   SmallVector<VPBlockBase *> CreatedBlocks;
 
-<<<<<<< HEAD
+// <<<<<<< HEAD
   /// Construct a VPlan with original preheader \p Preheader, \p Entry to
   /// the plan and with \p ScalarHeader wrapping the original header of the
   /// scalar loop. At the moment, \p Preheader and \p Entry need to be
@@ -4694,12 +4694,12 @@ class VPlan {
         VPIRBasicBlock *ScalarHeader)
       : Entry(Entry), Preheader(Preheader), ScalarHeader(ScalarHeader) {
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  /// Construct a VPlan with \p Entry to the plan and with \p ScalarHeader
-  /// wrapping the original header of the scalar loop.
-  VPlan(VPBasicBlock *Entry, VPIRBasicBlock *ScalarHeader)
-      : Entry(Entry), ScalarHeader(ScalarHeader) {
->>>>>>> 21edac2
+// =======
+//   /// Construct a VPlan with \p Entry to the plan and with \p ScalarHeader
+//   /// wrapping the original header of the scalar loop.
+//   VPlan(VPBasicBlock *Entry, VPIRBasicBlock *ScalarHeader)
+//       : Entry(Entry), ScalarHeader(ScalarHeader) {
+// >>>>>>> 21edac2
     Entry->setPlan(this);
     assert(ScalarHeader->getNumSuccessors() == 0 &&
            "scalar header must be a leaf node");
@@ -4721,7 +4721,7 @@ public:
 
   ~VPlan();
 
-<<<<<<< HEAD
+// <<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   void addCSAState(PHINode *Phi, VPCSAState * S) {
     CSAStates.insert({Phi , S});
@@ -4732,13 +4732,13 @@ public:
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
-  void setEntry(VPBasicBlock *VPBB) {
-    Entry = VPBB;
-    VPBB->setPlan(this);
-  }
-
->>>>>>> 21edac2
+// =======
+//   void setEntry(VPBasicBlock *VPBB) {
+//     Entry = VPBB;
+//     VPBB->setPlan(this);
+//   }
+// 
+// >>>>>>> 21edac2
   /// Create initial VPlan, having an "entry" VPBasicBlock (wrapping
   /// original scalar pre-header) which contains SCEV expansions that need
   /// to happen before the CFG is modified (when executing a VPlan for the
