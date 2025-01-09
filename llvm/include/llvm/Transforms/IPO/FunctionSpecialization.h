@@ -306,9 +306,7 @@ private:
   /// @param F Function to specialize
   /// @param S Which specialization to create
   /// @return The new, cloned function
-  Function *
-  createSpecialization(Function *F, const SpecSig &S,                 // SIFIVE
-                       const SmallVectorImpl<CallBase *> &CallSites); // SIFIVE
+  Function *createSpecialization(Function *F, const SpecSig &S);
 
   /// Determine if it is possible to specialise the function for constant values
   /// of the formal parameter \p A.
