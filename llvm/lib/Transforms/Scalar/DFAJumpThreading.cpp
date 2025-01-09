@@ -105,15 +105,15 @@ static cl::opt<unsigned> MaxPathLength(
     cl::desc("Max number of blocks searched to find a threading path"),
     cl::Hidden, cl::init(20));
 
-<<<<<<< HEAD
-=======
-static cl::opt<unsigned> MaxNumVisitiedPaths(
-    "dfa-max-num-visited-paths",
-    cl::desc(
-        "Max number of blocks visited while enumerating paths around a switch"),
-    cl::Hidden, cl::init(2500));
-
->>>>>>> 21edac2
+// <<<<<<< HEAD
+// =======
+// static cl::opt<unsigned> MaxNumVisitiedPaths(
+//     "dfa-max-num-visited-paths",
+//     cl::desc(
+//         "Max number of blocks visited while enumerating paths around a switch"),
+//     cl::Hidden, cl::init(2500));
+// 
+// >>>>>>> 21edac2
 static cl::opt<unsigned>
     MaxNumPaths("dfa-max-num-paths",
                 cl::desc("Max number of paths enumerated around a switch"),
@@ -650,7 +650,7 @@ private:
     return Res;
   }
 
-<<<<<<< HEAD
+// <<<<<<< HEAD
   /// Walk the use-def chain and collect all the state-defining instructions.
   ///
   /// Return an empty map if unpredictable values encountered inside the basic
@@ -668,14 +668,14 @@ private:
     Value *FirstDef = Switch->getOperand(0);
 
     assert(isa<PHINode>(FirstDef) && "The first definition must be a phi.");
-=======
-  /// Walk the use-def chain and collect all the state-defining blocks and the
-  /// PHI nodes in those blocks that define the state.
-  StateDefMap getStateDefMap() const {
-    StateDefMap Res;
-    PHINode *FirstDef = dyn_cast<PHINode>(Switch->getOperand(0));
-    assert(FirstDef && "The first definition must be a phi.");
->>>>>>> 21edac2
+// =======
+//   /// Walk the use-def chain and collect all the state-defining blocks and the
+//   /// PHI nodes in those blocks that define the state.
+//   StateDefMap getStateDefMap() const {
+//     StateDefMap Res;
+//     PHINode *FirstDef = dyn_cast<PHINode>(Switch->getOperand(0));
+//     assert(FirstDef && "The first definition must be a phi.");
+// >>>>>>> 21edac2
 
     SmallVector<PHINode *, 8> Stack;
     Stack.push_back(FirstDef);
@@ -688,19 +688,19 @@ private:
       SeenValues.insert(CurPhi);
 
       for (BasicBlock *IncomingBB : CurPhi->blocks()) {
-<<<<<<< HEAD
+// <<<<<<< HEAD
         Value *Incoming = CurPhi->getIncomingValueForBlock(IncomingBB);
         bool IsOutsideLoops = LoopBBs.count(IncomingBB) == 0;
         if (Incoming == FirstDef || isa<ConstantInt>(Incoming) ||
             SeenValues.contains(Incoming) || IsOutsideLoops) {
-=======
-        PHINode *IncomingPhi =
-            dyn_cast<PHINode>(CurPhi->getIncomingValueForBlock(IncomingBB));
-        if (!IncomingPhi)
-          continue;
-        bool IsOutsideLoops = !SwitchOuterLoop->contains(IncomingBB);
-        if (SeenValues.contains(IncomingPhi) || IsOutsideLoops)
->>>>>>> 21edac2
+// =======
+//         PHINode *IncomingPhi =
+//             dyn_cast<PHINode>(CurPhi->getIncomingValueForBlock(IncomingBB));
+//         if (!IncomingPhi)
+//           continue;
+//         bool IsOutsideLoops = !SwitchOuterLoop->contains(IncomingBB);
+//         if (SeenValues.contains(IncomingPhi) || IsOutsideLoops)
+// >>>>>>> 21edac2
           continue;
 
         Stack.push_back(IncomingPhi);
