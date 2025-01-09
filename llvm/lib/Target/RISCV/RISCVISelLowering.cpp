@@ -800,21 +800,13 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
                          Custom);
 
       setOperationAction(ISD::SELECT, VT, Custom);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-      // VP_MERGE is expand in upstream.
-      setOperationAction(
-          {ISD::SELECT_CC, ISD::VSELECT, ISD::VP_SELECT}, VT,
-          Expand);
-      setOperationAction(ISD::VP_MERGE, VT, Custom);
       setOperationAction(ISD::VP_FIRST, VT, Custom);
       setOperationAction(ISD::EXPERIMENTAL_VP_POPCOUNT, VT, Custom);
 #endif
-=======
       setOperationAction({ISD::SELECT_CC, ISD::VSELECT, ISD::VP_SELECT}, VT,
                          Expand);
       setOperationAction(ISD::VP_MERGE, VT, Custom);
->>>>>>> 21edac2
 
       setOperationAction({ISD::VP_CTTZ_ELTS, ISD::VP_CTTZ_ELTS_ZERO_UNDEF}, VT,
                          Custom);
@@ -1304,17 +1296,12 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
                               ISD::VP_SETCC, ISD::VP_TRUNCATE},
                              VT, Custom);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-          setOperationAction(ISD::VP_MERGE, VT, Custom);
-
           setOperationAction(ISD::VP_FIRST, VT, Custom);
           setOperationAction(ISD::EXPERIMENTAL_VP_POPCOUNT, VT, Custom);
 #endif // SIFIVE_CUSTOMIZATION
-=======
           setOperationAction(ISD::VP_MERGE, VT, Custom);
 
->>>>>>> 21edac2
           setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
           setOperationAction(ISD::EXPERIMENTAL_VP_REVERSE, VT, Custom);
           continue;
@@ -6773,19 +6760,12 @@ static bool hasPassthruOp(unsigned Opcode) {
   assert(Opcode > RISCVISD::FIRST_NUMBER &&
          Opcode <= RISCVISD::LAST_STRICTFP_OPCODE &&
          "not a RISC-V target specific op");
-<<<<<<< HEAD
   static_assert(RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
                     139 && // SIFIVE
                 RISCVISD::LAST_RISCV_STRICTFP_OPCODE -
                         ISD::FIRST_TARGET_STRICTFP_OPCODE ==
                     21 &&
                 "adding target specific op should update this function");
-=======
-  static_assert(
-      RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP == 127 &&
-      RISCVISD::LAST_STRICTFP_OPCODE - RISCVISD::FIRST_STRICTFP_OPCODE == 21 &&
-      "adding target specific op should update this function");
->>>>>>> 21edac2
   if (Opcode >= RISCVISD::ADD_VL && Opcode <= RISCVISD::VFMAX_VL)
     return true;
   if (Opcode == RISCVISD::FCOPYSIGN_VL)
@@ -6806,19 +6786,12 @@ static bool hasMaskOp(unsigned Opcode) {
   assert(Opcode > RISCVISD::FIRST_NUMBER &&
          Opcode <= RISCVISD::LAST_STRICTFP_OPCODE &&
          "not a RISC-V target specific op");
-<<<<<<< HEAD
   static_assert(RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
                     139 && // SIFIVE
                 RISCVISD::LAST_RISCV_STRICTFP_OPCODE -
                         ISD::FIRST_TARGET_STRICTFP_OPCODE ==
                     21 &&
                 "adding target specific op should update this function");
-=======
-  static_assert(
-      RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP == 127 &&
-      RISCVISD::LAST_STRICTFP_OPCODE - RISCVISD::FIRST_STRICTFP_OPCODE == 21 &&
-      "adding target specific op should update this function");
->>>>>>> 21edac2
   if (Opcode >= RISCVISD::TRUNCATE_VECTOR_VL && Opcode <= RISCVISD::SETCC_VL)
     return true;
   if (Opcode >= RISCVISD::VRGATHER_VX_VL && Opcode <= RISCVISD::VFIRST_VL)
@@ -7927,18 +7900,10 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
   case ISD::EH_DWARF_CFA:
     return lowerEH_DWARF_CFA(Op, DAG);
   case ISD::VP_MERGE:
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    if (Op.getSimpleValueType().getVectorElementType() == MVT::i1)
-      return lowerVPMergeMask(Op, DAG);
-    return lowerVPOp(Op, DAG);
-#endif // SIFIVE_CUSTOMIZATION
-=======
     if (Op.getSimpleValueType().getVectorElementType() == MVT::i1)
       return lowerVPMergeMask(Op, DAG);
     [[fallthrough]];
   case ISD::VP_SELECT:
->>>>>>> 21edac2
   case ISD::VP_ADD:
   case ISD::VP_SUB:
   case ISD::VP_MUL:
@@ -11938,7 +11903,7 @@ SDValue RISCVTargetLowering::lowerVECTOR_DEINTERLEAVE(SDValue Op,
 #else
   // ELEN
   if (VecVT.getScalarSizeInBits() < Subtarget.getELen()) {
-<<<<<<< HEAD
+// <<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
     SDValue Even =
         getDeinterleaveViaVNSRL(DL, VecVT, Concat, true, Subtarget, DAG);
@@ -11954,36 +11919,36 @@ SDValue RISCVTargetLowering::lowerVECTOR_DEINTERLEAVE(SDValue Op,
       DAG.getStepVector(DL, IdxVT, APInt(IdxVT.getScalarSizeInBits(), Factor));
 
   SmallVector<SDValue, 8> Res(Factor);
-=======
-    SDValue Even = getDeinterleaveShiftAndTrunc(DL, VecVT, Concat, 2, 0, DAG);
-    SDValue Odd = getDeinterleaveShiftAndTrunc(DL, VecVT, Concat, 2, 1, DAG);
-    return DAG.getMergeValues({Even, Odd}, DL);
-  }
-
-  // For the indices, use the vmv.v.x of an i8 constant to fill the largest
-  // possibly mask vector, then extract the required subvector.  Doing this
-  // (instead of a vid, vmsne sequence) reduces LMUL, and allows the mask
-  // creation to be rematerialized during register allocation to reduce
-  // register pressure if needed.
-
-  MVT MaskVT = ConcatVT.changeVectorElementType(MVT::i1);
-
-  SDValue EvenSplat = DAG.getConstant(0b01010101, DL, MVT::nxv8i8);
-  EvenSplat = DAG.getBitcast(MVT::nxv64i1, EvenSplat);
-  SDValue EvenMask = DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, MaskVT, EvenSplat,
-                                 DAG.getVectorIdxConstant(0, DL));
-
-  SDValue OddSplat = DAG.getConstant(0b10101010, DL, MVT::nxv8i8);
-  OddSplat = DAG.getBitcast(MVT::nxv64i1, OddSplat);
-  SDValue OddMask = DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, MaskVT, OddSplat,
-                                DAG.getVectorIdxConstant(0, DL));
-
-  // vcompress the even and odd elements into two separate vectors
-  SDValue EvenWide = DAG.getNode(ISD::VECTOR_COMPRESS, DL, ConcatVT, Concat,
-                                 EvenMask, DAG.getUNDEF(ConcatVT));
-  SDValue OddWide = DAG.getNode(ISD::VECTOR_COMPRESS, DL, ConcatVT, Concat,
-                                OddMask, DAG.getUNDEF(ConcatVT));
->>>>>>> 21edac2
+// =======
+//     SDValue Even = getDeinterleaveShiftAndTrunc(DL, VecVT, Concat, 2, 0, DAG);
+//     SDValue Odd = getDeinterleaveShiftAndTrunc(DL, VecVT, Concat, 2, 1, DAG);
+//     return DAG.getMergeValues({Even, Odd}, DL);
+//   }
+// 
+//   // For the indices, use the vmv.v.x of an i8 constant to fill the largest
+//   // possibly mask vector, then extract the required subvector.  Doing this
+//   // (instead of a vid, vmsne sequence) reduces LMUL, and allows the mask
+//   // creation to be rematerialized during register allocation to reduce
+//   // register pressure if needed.
+// 
+//   MVT MaskVT = ConcatVT.changeVectorElementType(MVT::i1);
+// 
+//   SDValue EvenSplat = DAG.getConstant(0b01010101, DL, MVT::nxv8i8);
+//   EvenSplat = DAG.getBitcast(MVT::nxv64i1, EvenSplat);
+//   SDValue EvenMask = DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, MaskVT, EvenSplat,
+//                                  DAG.getVectorIdxConstant(0, DL));
+// 
+//   SDValue OddSplat = DAG.getConstant(0b10101010, DL, MVT::nxv8i8);
+//   OddSplat = DAG.getBitcast(MVT::nxv64i1, OddSplat);
+//   SDValue OddMask = DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, MaskVT, OddSplat,
+//                                 DAG.getVectorIdxConstant(0, DL));
+// 
+//   // vcompress the even and odd elements into two separate vectors
+//   SDValue EvenWide = DAG.getNode(ISD::VECTOR_COMPRESS, DL, ConcatVT, Concat,
+//                                  EvenMask, DAG.getUNDEF(ConcatVT));
+//   SDValue OddWide = DAG.getNode(ISD::VECTOR_COMPRESS, DL, ConcatVT, Concat,
+//                                 OddMask, DAG.getUNDEF(ConcatVT));
+// >>>>>>> 21edac2
 
   // Gather the elements into Factor separate vectors
   for (unsigned i = 0; i != Factor; ++i) {
@@ -13374,13 +13339,8 @@ SDValue RISCVTargetLowering::lowerVPFPIntConvOp(SDValue Op,
   return convertFromScalableVector(VT, Result, DAG, Subtarget);
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-SDValue RISCVTargetLowering::lowerVPMergeMask(SDValue Op, SelectionDAG &DAG) const {
-=======
 SDValue RISCVTargetLowering::lowerVPMergeMask(SDValue Op,
                                               SelectionDAG &DAG) const {
->>>>>>> 21edac2
   SDLoc DL(Op);
   MVT VT = Op.getSimpleValueType();
   MVT XLenVT = Subtarget.getXLenVT();
@@ -13390,15 +13350,12 @@ SDValue RISCVTargetLowering::lowerVPMergeMask(SDValue Op,
   SDValue FalseVal = Op.getOperand(2);
   SDValue VL = Op.getOperand(3);
 
-<<<<<<< HEAD
-=======
   // Use default legalization if a vector of EVL type would be legal.
   EVT EVLVecVT = EVT::getVectorVT(*DAG.getContext(), VL.getValueType(),
                                   VT.getVectorElementCount());
   if (isTypeLegal(EVLVecVT))
     return SDValue();
 
->>>>>>> 21edac2
   MVT ContainerVT = VT;
   if (VT.isFixedLengthVector()) {
     ContainerVT = getContainerForFixedLengthVector(VT);
@@ -13407,10 +13364,7 @@ SDValue RISCVTargetLowering::lowerVPMergeMask(SDValue Op,
     FalseVal = convertToScalableVector(ContainerVT, FalseVal, DAG, Subtarget);
   }
 
-<<<<<<< HEAD
-=======
   // Promote to a vector of i8.
->>>>>>> 21edac2
   MVT PromotedVT = ContainerVT.changeVectorElementType(MVT::i8);
 
   // Promote TrueVal and FalseVal using VLMax.
@@ -13422,25 +13376,15 @@ SDValue RISCVTargetLowering::lowerVPMergeMask(SDValue Op,
   SDValue SplatZero = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, PromotedVT,
                                   DAG.getUNDEF(PromotedVT),
                                   DAG.getConstant(0, DL, XLenVT), VLMax);
-<<<<<<< HEAD
-  TrueVal = DAG.getNode(RISCVISD::VMERGE_VL, DL, PromotedVT, TrueVal,
-                        SplatOne, SplatZero, DAG.getUNDEF(PromotedVT), VL);
-=======
   TrueVal = DAG.getNode(RISCVISD::VMERGE_VL, DL, PromotedVT, TrueVal, SplatOne,
                         SplatZero, DAG.getUNDEF(PromotedVT), VL);
->>>>>>> 21edac2
   // Any element past VL uses FalseVal, so use VLMax
   FalseVal = DAG.getNode(RISCVISD::VMERGE_VL, DL, PromotedVT, FalseVal,
                          SplatOne, SplatZero, DAG.getUNDEF(PromotedVT), VLMax);
 
   // VP_MERGE the two promoted values.
-<<<<<<< HEAD
-  SDValue VPMerge = DAG.getNode(RISCVISD::VMERGE_VL, DL, PromotedVT,
-                                Mask, TrueVal, FalseVal, FalseVal, VL);
-=======
   SDValue VPMerge = DAG.getNode(RISCVISD::VMERGE_VL, DL, PromotedVT, Mask,
                                 TrueVal, FalseVal, FalseVal, VL);
->>>>>>> 21edac2
 
   // Convert back to mask.
   SDValue TrueMask = DAG.getNode(RISCVISD::VMSET_VL, DL, ContainerVT, VL);
@@ -13453,10 +13397,6 @@ SDValue RISCVTargetLowering::lowerVPMergeMask(SDValue Op,
     Result = convertFromScalableVector(VT, Result, DAG, Subtarget);
   return Result;
 }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 21edac2
 
 SDValue
 RISCVTargetLowering::lowerVPSpliceExperimental(SDValue Op,
