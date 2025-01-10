@@ -1059,6 +1059,57 @@ multiclass BulletWriteResBase<
 
   // FIXME: This could be better modeled by looking at the regclasses of the operands.
   def : InstRW<[WriteIALU, ReadIALU], (instrs COPY)>;
+
+  // VCIX
+  //
+  // In principle we don't know the latency of any VCIX instructions (they
+  // depends on a particular coprocessor implementation). However, the default
+  // latency of 1 can lead to issues [1]. So instead we set the latency to the
+  // default provided by `SiFive7GetCyclesDefault`. This is still not accurate
+  // and can lead to suboptimal codegen, but should hopefully be a better
+  // starting point.
+  //
+  // [1] https://github.com/llvm/llvm-project/issues/83391
+  foreach mx = SchedMxList in {
+    defvar Cycles = BulletGetCyclesDefault<mx>.c;
+    defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxList>.c;
+    let Latency = Cycles,
+        AcquireAtCycles = [0, 1],
+        ReleaseAtCycles = [1, !add(1, Cycles)] in {
+      defm "" : LMULWriteResMX<"WriteVC_V_I",   [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVC_V_X",   [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVC_V_IV",  [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVC_V_VV",  [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVC_V_XV",  [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVC_V_IVV", [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVC_V_IVW", [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVC_V_VVV", [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVC_V_VVW", [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVC_V_XVV", [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVC_V_XVW", [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      foreach f = ["FPR16", "FPR32", "FPR64"] in {
+        defm "" : LMULWriteResMX<"WriteVC_V_" # f # "V",  [VCQ, VA1OrVA2], mx, IsWorstCase>;
+        defm "" : LMULWriteResMX<"WriteVC_V_" # f # "VV", [VCQ, VA1OrVA2], mx, IsWorstCase>;
+        defm "" : LMULWriteResMX<"WriteVC_V_" # f # "VW", [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      }
+      defm "" : LMULWriteResMX<"WriteVC_I",   [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVC_X",   [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVC_IV",  [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVC_VV",  [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVC_XV",  [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVC_IVV", [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVC_IVW", [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVC_VVV", [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVC_VVW", [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVC_XVV", [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVC_XVW", [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      foreach f = ["FPR16", "FPR32", "FPR64"] in {
+        defm "" : LMULWriteResMX<"WriteVC_" # f # "V",  [VCQ, VA1OrVA2], mx, IsWorstCase>;
+        defm "" : LMULWriteResMX<"WriteVC_" # f # "VV", [VCQ, VA1OrVA2], mx, IsWorstCase>;
+        defm "" : LMULWriteResMX<"WriteVC_" # f # "VW", [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      }
+    }
+  }
 }
 
 multiclass BulletReadAdvance {
