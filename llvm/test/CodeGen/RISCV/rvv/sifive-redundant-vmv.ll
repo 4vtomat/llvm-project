@@ -9,7 +9,6 @@ define dso_local void @test(i64 %channel, i32* nocapture readonly %output_shift,
 ; CHECK-NEXT:    beq a5, zero, .LBB0_3
 ; CHECK-NEXT:  # %bb.1: # %while.body.preheader
 ; CHECK-NEXT:    addi a4, zero, 0
-; CHECK-NEXT:    csrrwi zero, vxrm, 3
 ; CHECK-NEXT:  .LBB0_2: # %while.body
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    slli a6, a4, 2
@@ -55,7 +54,7 @@ while.body:                                       ; preds = %entry, %while.body
   %9 = call <vscale x 8 x i32> @llvm.riscv.vmerge.nxv8i32.i32.i64(<vscale x 8 x i32> undef, <vscale x 8 x i32> %3, i32 0, <vscale x 8 x i1> %5, i64 %1)
   %10 = call <vscale x 8 x i32> @llvm.riscv.vmv.v.v.nxv8i32.i64(<vscale x 8 x i32> undef, <vscale x 8 x i32> %7, i64 %1)
   %11 = call <vscale x 8 x i32> @llvm.riscv.vsll.nxv8i32.nxv8i32.i64(<vscale x 8 x i32> undef, <vscale x 8 x i32> %10, <vscale x 8 x i32> %9, i64 %1)
-  %12 = call <vscale x 8 x i32> @llvm.riscv.vssra.nxv8i32.nxv8i32.i64(<vscale x 8 x i32> undef, <vscale x 8 x i32> %11, <vscale x 8 x i32> %8, i64 3, i64 %1)
+  %12 = call <vscale x 8 x i32> @llvm.riscv.vssra.nxv8i32.nxv8i32.i64(<vscale x 8 x i32> undef, <vscale x 8 x i32> %11, <vscale x 8 x i32> %8, i64 7, i64 %1)
   %add.ptr2 = getelementptr inbounds i32, i32* %output_data, i64 %current_channel.021
   %13 = bitcast i32* %add.ptr2 to <vscale x 8 x i32>*
   call void @llvm.riscv.vse.nxv8i32.i64(<vscale x 8 x i32> %12, <vscale x 8 x i32>* %13, i64 %1)
