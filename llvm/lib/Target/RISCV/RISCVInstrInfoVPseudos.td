@@ -1248,7 +1248,7 @@ class VPseudoBinaryNoMaskRoundingMode<VReg RetClass,
   let HasVecPolicyOp = 1;
   let HasRoundModeOp = 1;
   let UsesVXRM = UsesVXRM_;
-  let hasPostISelHook = !not(UsesVXRM_);
+  let hasPostISelHook = 1; // SIFIVE
 }
 
 class VPseudoBinaryMaskPolicyRoundingMode<VReg RetClass,
@@ -1273,7 +1273,7 @@ class VPseudoBinaryMaskPolicyRoundingMode<VReg RetClass,
   let UsesMaskPolicy = 1;
   let HasRoundModeOp = 1;
   let UsesVXRM = UsesVXRM_;
-  let hasPostISelHook = !not(UsesVXRM_);
+  let hasPostISelHook = 1; // SIFIVE
 }
 
 // Special version of VPseudoBinaryNoMask where we pretend the first source is
@@ -6518,52 +6518,31 @@ let Defs = [VXSAT] in {
 //===----------------------------------------------------------------------===//
 // 12.2. Vector Single-Width Averaging Add and Subtract
 //===----------------------------------------------------------------------===//
-#ifdef SIFIVE_CUSTOMIZATION
-let hasPostISelHook = 1 in {
-#endif
 defm PseudoVAADDU : VPseudoVAALU_VV_VX_RM<Commutable=1>;
 defm PseudoVAADD  : VPseudoVAALU_VV_VX_RM<Commutable=1>;
 defm PseudoVASUBU : VPseudoVAALU_VV_VX_RM;
 defm PseudoVASUB  : VPseudoVAALU_VV_VX_RM;
-#ifdef SIFIVE_CUSTOMIZATION
-} // hasPostISelHook = 1
-#endif
 
 //===----------------------------------------------------------------------===//
 // 12.3. Vector Single-Width Fractional Multiply with Rounding and Saturation
 //===----------------------------------------------------------------------===//
 let Defs = [VXSAT] in {
-#ifdef SIFIVE_CUSTOMIZATION
-  let hasPostISelHook = 1 in
-#endif
   defm PseudoVSMUL : VPseudoVSMUL_VV_VX_RM;
 }
 
 //===----------------------------------------------------------------------===//
 // 12.4. Vector Single-Width Scaling Shift Instructions
 //===----------------------------------------------------------------------===//
-#ifdef SIFIVE_CUSTOMIZATION
-let hasPostISelHook = 1 in {
-#endif
 defm PseudoVSSRL : VPseudoVSSHT_VV_VX_VI_RM;
 defm PseudoVSSRA : VPseudoVSSHT_VV_VX_VI_RM;
-#ifdef SIFIVE_CUSTOMIZATION
-} // hasPostISelHook = 1
-#endif
 
 //===----------------------------------------------------------------------===//
 // 12.5. Vector Narrowing Fixed-Point Clip Instructions
 //===----------------------------------------------------------------------===//
-#ifdef SIFIVE_CUSTOMIZATION
-let hasPostISelHook = 1 in {
-#endif
 let Defs = [VXSAT] in {
   defm PseudoVNCLIP  : VPseudoVNCLP_WV_WX_WI_RM;
   defm PseudoVNCLIPU : VPseudoVNCLP_WV_WX_WI_RM;
 }
-#ifdef SIFIVE_CUSTOMIZATION
-} // hasPostISelHook = 1
-#endif
 
 } // Predicates = [HasVInstructions]
 
