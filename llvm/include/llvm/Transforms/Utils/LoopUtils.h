@@ -465,21 +465,16 @@ Value *createAnyOfReduction(IRBuilderBase &B, Value *Src,
                             const RecurrenceDescriptor &Desc,
                             PHINode *OrigPhi);
 
-// <<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 Value *createAnyOfReduction(IRBuilderBase &B, Value *Src,
                             const RecurrenceDescriptor &Desc, PHINode *OrigPhi,
                             Value *EVL);
 
 /// Create a target reduction of the given vector \p Src for a reduction of the
-// =======
-// /// Create a reduction of the given vector \p Src for a reduction of the
-// >>>>>>> 21edac2
 /// kind RecurKind::IFindLastIV or RecurKind::FFindLastIV. The reduction
 /// operation is described by \p Desc.
 Value *createFindLastIVReduction(IRBuilderBase &B, Value *Src,
                                  const RecurrenceDescriptor &Desc);
-// <<<<<<< HEAD
 /// Allow \p Mask when folding by \p EVL. The mask is all-true if \p Mask is
 /// nullptr.
 Value *createFindLastIVReduction(IRBuilderBase &B, Value *Src,
@@ -496,9 +491,6 @@ Value *createReduction(IRBuilderBase &B, const RecurrenceDescriptor &Desc,
                        Value *Src, Value *EVL, PHINode *OrigPhi = nullptr,
                        Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
-// =======
-// 
-// >>>>>>> 21edac2
 /// Create a generic reduction using a recurrence descriptor \p Desc
 /// Fast-math-flags are propagated using the RecurrenceDescriptor.
 Value *createReduction(IRBuilderBase &B, const RecurrenceDescriptor &Desc,
