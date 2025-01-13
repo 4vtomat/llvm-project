@@ -348,15 +348,8 @@ static unsigned getShufflevectorNumGroups(ArrayRef<Value *> VL) {
   unsigned SVNumElements =
       cast<FixedVectorType>(SV->getOperand(0)->getType())->getNumElements();
   unsigned ShuffleMaskSize = SV->getShuffleMask().size();
-// <<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   if (SVNumElements % ShuffleMaskSize != 0)
     return 0;
-#endif // SIFIVE_CUSTOMIZATION
-// =======
-//   if (SVNumElements % ShuffleMaskSize != 0)
-//     return 0;
-// >>>>>>> 21edac2
   unsigned GroupSize = SVNumElements / ShuffleMaskSize;
   if (GroupSize == 0 || (VL.size() % GroupSize) != 0)
     return 0;
@@ -6111,10 +6104,6 @@ void BoUpSLP::reorderTopToBottom() {
                                      TE->Scalars.size();
                         }) &&
                  "All users must be of VF size.");
-// <<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-// =======
-// >>>>>>> 21edac2
           if (SLPReVec) {
             assert(SLPReVec && "Only supported by REVEC.");
             // ShuffleVectorInst does not do reorderOperands (and it should not
@@ -6125,24 +6114,13 @@ void BoUpSLP::reorderTopToBottom() {
                   return isa<ShuffleVectorInst>(EI.UserTE->getMainOp());
                 }))
               continue;
-// <<<<<<< HEAD
-            assert(all_of(TE->UserTreeIndices,
-                          [&](const EdgeInfo &EI) {
-                            return !isa<ShuffleVectorInst>(
-                                EI.UserTE->getMainOp());
-                          }) &&
+            assert(none_of(TE->UserTreeIndices,
+                           [&](const EdgeInfo &EI) {
+                             return isa<ShuffleVectorInst>(
+                                 EI.UserTE->getMainOp());
+                           }) &&
                    "Does not know how to reorder.");
           }
-#endif // SIFIVE_CUSTOMIZATION
-// =======
-//             assert(none_of(TE->UserTreeIndices,
-//                            [&](const EdgeInfo &EI) {
-//                              return isa<ShuffleVectorInst>(
-//                                  EI.UserTE->getMainOp());
-//                            }) &&
-//                    "Does not know how to reorder.");
-//           }
-// >>>>>>> 21edac2
           // Update ordering of the operands with the smaller VF than the given
           // one.
           reorderNodeWithReuses(*TE, Mask);
@@ -13272,15 +13250,7 @@ BoUpSLP::isGatherShuffledSingleRegisterEntry(
       // Clear undef scalars.
       for (unsigned I : seq<unsigned>(VL.size()))
         if (isa<PoisonValue>(VL[I]))
-// <<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
           Mask[Part * VL.size() + I] = PoisonMaskElem;
-#else
-          Mask[I] = PoisonMaskElem;
-#endif // SIFIVE_CUSTOMIZATION
-// =======
-//           Mask[Part * VL.size() + I] = PoisonMaskElem;
-// >>>>>>> 21edac2
       return TargetTransformInfo::SK_PermuteSingleSrc;
     }
     // No perfect match, just shuffle, so choose the first tree node from the
@@ -19191,17 +19161,13 @@ bool SLPVectorizerPass::tryToVectorizeList(ArrayRef<Value *> VL, BoUpSLP &R,
   if (!S)
     return false;
 
-// <<<<<<< HEAD
-  Instruction *I0 = cast<Instruction>(S.OpValue);
+  Instruction *I0 = S.getMainOp();
 #if SIFIVE_CUSTOMIZATION
   // Ignore scalable vectors for now.
   if (isa<ScalableVectorType>(I0->getType()))
     return false;
 #endif // SIFIVE_CUSTOMIZATION
 
-// =======
-//   Instruction *I0 = S.getMainOp();
-// >>>>>>> 21edac2
   // Make sure invalid types (including vector type) are rejected before
   // determining vectorization factor for scalar instructions.
   for (Value *V : VL) {
@@ -20759,15 +20725,8 @@ private:
     case RecurKind::FMulAdd:
     case RecurKind::IAnyOf:
     case RecurKind::FAnyOf:
-// <<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
     case RecurKind::IFindLastIV:
     case RecurKind::FFindLastIV:
-#endif // SIFIVE_CUSTOMIZATION
-// =======
-//     case RecurKind::IFindLastIV:
-//     case RecurKind::FFindLastIV:
-// >>>>>>> 21edac2
     case RecurKind::None:
       llvm_unreachable("Unexpected reduction kind for repeated scalar.");
     }
@@ -20865,15 +20824,8 @@ private:
     case RecurKind::FMulAdd:
     case RecurKind::IAnyOf:
     case RecurKind::FAnyOf:
-// <<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
     case RecurKind::IFindLastIV:
     case RecurKind::FFindLastIV:
-#endif // SIFIVE_CUSTOMIZATION
-// =======
-//     case RecurKind::IFindLastIV:
-//     case RecurKind::FFindLastIV:
-// >>>>>>> 21edac2
     case RecurKind::None:
       llvm_unreachable("Unexpected reduction kind for reused scalars.");
     }
