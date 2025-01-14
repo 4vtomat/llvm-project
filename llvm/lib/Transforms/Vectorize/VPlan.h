@@ -319,17 +319,15 @@ struct VPTransformState {
 #if SIFIVE_CUSTOMIZATION
   VPTransformState(const TargetTransformInfo *TTI, ElementCount VF, unsigned UF,
                    LoopInfo *LI, DominatorTree *DT, IRBuilderBase &Builder,
-                   InnerLoopVectorizer *ILV, VPlan *Plan, bool EnableRISCVCSA);
+                   InnerLoopVectorizer *ILV, VPlan *Plan,
+                   Loop *CurrentParentLoop, Type *CanonicalIVTy,
+                   bool EnableRISCVCSA);
 #else
   VPTransformState(const TargetTransformInfo *TTI, ElementCount VF, unsigned UF,
                    LoopInfo *LI, DominatorTree *DT, IRBuilderBase &Builder,
-// <<<<<<< HEAD
-                   InnerLoopVectorizer *ILV, VPlan *Plan);
+                   InnerLoopVectorizer *ILV, VPlan *Plan,
+                   Loop *CurrentParentLoop, Type *CanonicalIVTy);
 #endif // SIFIVE_CUSTOMIZATION
-// =======
-//                    InnerLoopVectorizer *ILV, VPlan *Plan,
-//                    Loop *CurrentParentLoop, Type *CanonicalIVTy);
-// >>>>>>> 21edac2
   /// Target Transform Info.
   const TargetTransformInfo *TTI;
 
@@ -1403,7 +1401,9 @@ public:
     // operand). Only generates scalar values (either for the first lane only or
     // for all lanes, depending on its uses).
     PtrAdd,
-// <<<<<<< HEAD
+    // Returns a scalar boolean value, which is true if any lane of its single
+    // operand is true.
+    AnyOf,
 #if SIFIVE_CUSTOMIZATION
     ComputeReductionResultWithMask,
     ExitingCond,
@@ -1416,11 +1416,6 @@ public:
     CSAAnyActive,
     MonotonicUpdate,
 #endif // SIFIVE_CUSTOMIZATION
-// =======
-//     // Returns a scalar boolean value, which is true if any lane of its single
-//     // operand is true.
-//     AnyOf,
-// >>>>>>> 21edac2
   };
 
 private:
@@ -2427,56 +2422,17 @@ public:
 class VPWidenInductionRecipe : public VPHeaderPHIRecipe {
   const InductionDescriptor &IndDesc;
 
-#if SIFIVE_CUSTOMIZATION
-  bool IsUncountable = false;
-#endif
-
 public:
-// <<<<<<< HEAD
-  VPWidenIntOrFpInductionRecipe(PHINode *IV, VPValue *Start, VPValue *Step,
-		                VPValue *VF,
-#if SIFIVE_CUSTOMIZATION
-                                const InductionDescriptor &IndDesc,
-                                bool IsUncountable = false)
-#else
-                                const InductionDescriptor &IndDesc)
-#endif // SIFIVE_CUSTOMIZATION
-      : VPHeaderPHIRecipe(VPDef::VPWidenIntOrFpInductionSC, IV, Start), IV(IV),
-#if SIFIVE_CUSTOMIZATION
-        Trunc(nullptr), IndDesc(IndDesc), IsUncountable(IsUncountable) {
-#else
-        Trunc(nullptr), IndDesc(IndDesc) {
-#endif // SIFIVE_CUSTOMIZATION
-// =======
-//   VPWidenInductionRecipe(unsigned char Kind, PHINode *IV, VPValue *Start,
-//                          VPValue *Step, const InductionDescriptor &IndDesc,
-//                          DebugLoc DL)
-//       : VPHeaderPHIRecipe(Kind, IV, Start, DL), IndDesc(IndDesc) {
-// >>>>>>> 21edac2
+  VPWidenInductionRecipe(unsigned char Kind, PHINode *IV, VPValue *Start,
+                         VPValue *Step, const InductionDescriptor &IndDesc,
+                         DebugLoc DL)
+      : VPHeaderPHIRecipe(Kind, IV, Start, DL), IndDesc(IndDesc) {
     addOperand(Step);
   }
 
-// <<<<<<< HEAD
-  VPWidenIntOrFpInductionRecipe(PHINode *IV, VPValue *Start, VPValue *Step,
-                                VPValue *VF, const InductionDescriptor &IndDesc,
-#if SIFIVE_CUSTOMIZATION
-                                TruncInst *Trunc, bool IsUncountable = false)
-#else
-                                TruncInst *Trunc)
-#endif // SIFIVE_CUSTOMIZATION
-      : VPHeaderPHIRecipe(VPDef::VPWidenIntOrFpInductionSC, Trunc, Start),
-#if SIFIVE_CUSTOMIZATION
-        IV(IV), Trunc(Trunc), IndDesc(IndDesc), IsUncountable(IsUncountable) {
-#else
-        IV(IV), Trunc(Trunc), IndDesc(IndDesc) {
-#endif // SIFIVE_CUSTOMIZATION
-    addOperand(Step);
-    addOperand(VF);
-// =======
-//   static inline bool classof(const VPRecipeBase *R) {
-//     return R->getVPDefID() == VPDef::VPWidenIntOrFpInductionSC ||
-//            R->getVPDefID() == VPDef::VPWidenPointerInductionSC;
-// >>>>>>> 21edac2
+  static inline bool classof(const VPRecipeBase *R) {
+    return R->getVPDefID() == VPDef::VPWidenIntOrFpInductionSC ||
+           R->getVPDefID() == VPDef::VPWidenPointerInductionSC;
   }
 
   static inline bool classof(const VPValue *V) {
@@ -2490,26 +2446,14 @@ public:
 
   virtual void execute(VPTransformState &State) override = 0;
 
-// <<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  bool isUncountable() const { return IsUncountable; }
-#endif
+  /// Returns the step value of the induction.
+  VPValue *getStepValue() { return getOperand(1); }
+  const VPValue *getStepValue() const { return getOperand(1); }
 
-#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
-  /// Print the recipe.
-  void print(raw_ostream &O, const Twine &Indent,
-             VPSlotTracker &SlotTracker) const override;
-#endif
-// =======
-//   /// Returns the step value of the induction.
-//   VPValue *getStepValue() { return getOperand(1); }
-//   const VPValue *getStepValue() const { return getOperand(1); }
-// 
-//   PHINode *getPHINode() const { return cast<PHINode>(getUnderlyingValue()); }
-// 
-//   /// Returns the induction descriptor for the recipe.
-//   const InductionDescriptor &getInductionDescriptor() const { return IndDesc; }
-// >>>>>>> 21edac2
+  PHINode *getPHINode() const { return cast<PHINode>(getUnderlyingValue()); }
+
+  /// Returns the induction descriptor for the recipe.
+  const InductionDescriptor &getInductionDescriptor() const { return IndDesc; }
 
   VPValue *getBackedgeValue() override {
     // TODO: All operands of base recipe must exist and be at same index in
@@ -2606,57 +2550,22 @@ class VPWidenPointerInductionRecipe : public VPWidenInductionRecipe,
                                       public VPUnrollPartAccessor<3> {
   bool IsScalarAfterVectorization;
 
-#if SIFIVE_CUSTOMIZATION
-  /// Indicator if only the pointer induction variable is an uniform
-  bool IsUncountable = false;
-#endif // SIFIVE_CUSTOMIZATION
-
 public:
   /// Create a new VPWidenPointerInductionRecipe for \p Phi with start value \p
   /// Start.
   VPWidenPointerInductionRecipe(PHINode *Phi, VPValue *Start, VPValue *Step,
                                 const InductionDescriptor &IndDesc,
-// <<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-                                bool IsScalarAfterVectorization,
-                                bool IsUncountable)
-#else
-                                bool IsScalarAfterVectorization)
-#endif // SIFIVE_CUSTOMIZATION
-      : VPHeaderPHIRecipe(VPDef::VPWidenPointerInductionSC, Phi),
-        IndDesc(IndDesc),
-#if SIFIVE_CUSTOMIZATION
-        IsScalarAfterVectorization(IsScalarAfterVectorization),
-        IsUncountable(IsUncountable) {
-#else
-        IsScalarAfterVectorization(IsScalarAfterVectorization) {
-#endif // SIFIVE_CUSTOMIZATION
-    addOperand(Start);
-    addOperand(Step);
-  }
-// =======
-//                                 bool IsScalarAfterVectorization, DebugLoc DL)
-//       : VPWidenInductionRecipe(VPDef::VPWidenPointerInductionSC, Phi, Start,
-//                                Step, IndDesc, DL),
-//         IsScalarAfterVectorization(IsScalarAfterVectorization) {}
-// >>>>>>> 21edac2
+                                bool IsScalarAfterVectorization, DebugLoc DL)
+      : VPWidenInductionRecipe(VPDef::VPWidenPointerInductionSC, Phi, Start,
+                               Step, IndDesc, DL),
+        IsScalarAfterVectorization(IsScalarAfterVectorization) {}
 
   ~VPWidenPointerInductionRecipe() override = default;
 
   VPWidenPointerInductionRecipe *clone() override {
-#if SIFIVE_CUSTOMIZATION
     return new VPWidenPointerInductionRecipe(
         cast<PHINode>(getUnderlyingInstr()), getOperand(0), getOperand(1),
-        IndDesc, IsScalarAfterVectorization, IsUncountable);
-#else
-    return new VPWidenPointerInductionRecipe(
-        cast<PHINode>(getUnderlyingInstr()), getOperand(0), getOperand(1),
-// <<<<<<< HEAD
-        IndDesc, IsScalarAfterVectorization);
-#endif // SIFIVE_CUSTOMIZATION
-// =======
-//         getInductionDescriptor(), IsScalarAfterVectorization, getDebugLoc());
-// >>>>>>> 21edac2
+        getInductionDescriptor(), IsScalarAfterVectorization, getDebugLoc());
   }
 
   VP_CLASSOF_IMPL(VPDef::VPWidenPointerInductionSC)
@@ -4675,31 +4584,10 @@ class VPlan {
   /// VPlan is destroyed.
   SmallVector<VPBlockBase *> CreatedBlocks;
 
-// <<<<<<< HEAD
-  /// Construct a VPlan with original preheader \p Preheader, \p Entry to
-  /// the plan and with \p ScalarHeader wrapping the original header of the
-  /// scalar loop. At the moment, \p Preheader and \p Entry need to be
-  /// disconnected, as the bypass blocks between them are not yet modeled in
-  /// VPlan.
-#if SIFIVE_CUSTOMIZATION
-  VPlan(VPBasicBlock *Preheader, VPBasicBlock *Entry,
-        VPIRBasicBlock *ScalarHeader, bool IsUncountable = false)
-      : Entry(Entry), Preheader(Preheader), ScalarHeader(ScalarHeader),
-        IsUncountable(IsUncountable) {
-    // FIXME: Uncountable vectorization should set the flag in a proper xform
-    if (IsUncountable)
-      setUseVLAVectorizer(true);
-#else
-  VPlan(VPBasicBlock *Preheader, VPBasicBlock *Entry,
-        VPIRBasicBlock *ScalarHeader)
-      : Entry(Entry), Preheader(Preheader), ScalarHeader(ScalarHeader) {
-#endif // SIFIVE_CUSTOMIZATION
-// =======
-//   /// Construct a VPlan with \p Entry to the plan and with \p ScalarHeader
-//   /// wrapping the original header of the scalar loop.
-//   VPlan(VPBasicBlock *Entry, VPIRBasicBlock *ScalarHeader)
-//       : Entry(Entry), ScalarHeader(ScalarHeader) {
-// >>>>>>> 21edac2
+  /// Construct a VPlan with \p Entry to the plan and with \p ScalarHeader
+  /// wrapping the original header of the scalar loop.
+  VPlan(VPBasicBlock *Entry, VPIRBasicBlock *ScalarHeader)
+      : Entry(Entry), ScalarHeader(ScalarHeader) {
     Entry->setPlan(this);
     assert(ScalarHeader->getNumSuccessors() == 0 &&
            "scalar header must be a leaf node");
@@ -4709,7 +4597,11 @@ public:
   /// Construct a VPlan for \p L. This will create VPIRBasicBlocks wrapping the
   /// original preheader and scalar header of \p L, to be used as entry and
   /// scalar header blocks of the new VPlan.
+#if SIFIVE_CUSTOMIZATION
   VPlan(Loop *L);
+#else
+  VPlan(Loop *L, bool IsUncountable = false);
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Construct a VPlan with a new VPBasicBlock as entry, a VPIRBasicBlock
   /// wrapping \p ScalarHeaderBB and a trip count of \p TC.
@@ -4721,7 +4613,6 @@ public:
 
   ~VPlan();
 
-// <<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   void addCSAState(PHINode *Phi, VPCSAState * S) {
     CSAStates.insert({Phi , S});
@@ -4732,13 +4623,11 @@ public:
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-// =======
-//   void setEntry(VPBasicBlock *VPBB) {
-//     Entry = VPBB;
-//     VPBB->setPlan(this);
-//   }
-// 
-// >>>>>>> 21edac2
+  void setEntry(VPBasicBlock *VPBB) {
+    Entry = VPBB;
+    VPBB->setPlan(this);
+  }
+
   /// Create initial VPlan, having an "entry" VPBasicBlock (wrapping
   /// original scalar pre-header) which contains SCEV expansions that need
   /// to happen before the CFG is modified (when executing a VPlan for the
