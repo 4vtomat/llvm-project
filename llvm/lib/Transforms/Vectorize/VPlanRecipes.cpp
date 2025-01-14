@@ -432,16 +432,13 @@ bool VPInstruction::canGenerateScalarForFirstLane() const {
   case VPInstruction::CanonicalIVIncrementForPart:
   case VPInstruction::PtrAdd:
   case VPInstruction::ExplicitVectorLength:
-// <<<<<<< HEAD
+  case VPInstruction::AnyOf:
 #if SIFIVE_CUSTOMIZATION
   case VPInstruction::CSAVLSel:
   case VPInstruction::CSAVLPhi:
   case VPInstruction::CSAAnyActive:
   case VPInstruction::ExitingCond:
 #endif // SIFIVE_CUSTOMIZATION
-// =======
-//   case VPInstruction::AnyOf:
-// >>>>>>> 21edac2
     return true;
   default:
     return false;
@@ -878,16 +875,9 @@ Value *VPInstruction::generate(VPTransformState &State) {
         if (Op != Instruction::ICmp && Op != Instruction::FCmp)
           ReducedPartRdx = Builder.CreateBinOp(
               (Instruction::BinaryOps)Op, RdxPart, ReducedPartRdx, "bin.rdx");
-// <<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
         else if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
-          ReducedPartRdx = createFindLastIVOp(Builder, ReducedPartRdx, RdxPart);
-#endif // SIFIVE_CUSTOMIZATION
-// =======
-//         else if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
-//           ReducedPartRdx =
-//               createMinMaxOp(Builder, RecurKind::SMax, ReducedPartRdx, RdxPart);
-// >>>>>>> 21edac2
+          ReducedPartRdx =
+              createMinMaxOp(Builder, RecurKind::SMax, ReducedPartRdx, RdxPart);
         else
           ReducedPartRdx = createMinMaxOp(Builder, RK, ReducedPartRdx, RdxPart);
       }
@@ -1171,15 +1161,11 @@ Value *VPInstruction::generate(VPTransformState &State) {
 
 bool VPInstruction::isVectorToScalar() const {
   return getOpcode() == VPInstruction::ExtractFromEnd ||
-// <<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
          getOpcode() == VPInstruction::ComputeReductionResultWithMask ||
 #endif // SIFIVE_CUSTOMIZATION
-         getOpcode() == VPInstruction::ComputeReductionResult;
-// =======
-//          getOpcode() == VPInstruction::ComputeReductionResult ||
-//          getOpcode() == VPInstruction::AnyOf;
-// >>>>>>> 21edac2
+         getOpcode() == VPInstruction::ComputeReductionResult ||
+         getOpcode() == VPInstruction::AnyOf;
 }
 
 bool VPInstruction::isSingleScalar() const {
@@ -4564,9 +4550,8 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
 
   // A pointer induction, performed by using a gep
   BasicBlock::iterator InductionLoc = State.Builder.GetInsertPoint();
-// <<<<<<< HEAD
-  Value *ScalarStepValue = State.get(getOperand(1), VPLane(0));
-  Type *PhiType = IndDesc.getStep()->getType();
+  Value *ScalarStepValue = State.get(getStepValue(), VPLane(0));
+  Type *PhiType = State.TypeAnalysis.inferScalarType(getStepValue());
 #if SIFIVE_CUSTOMIZATION
   Value *RuntimeVF;
   if (State.Plan->useVLAVectorizer()) {
@@ -4584,10 +4569,6 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
   else
     RuntimeVF = getRuntimeVF(State.Builder, PhiType, State.VF);
 #else
-// =======
-//   Value *ScalarStepValue = State.get(getStepValue(), VPLane(0));
-//   Type *PhiType = State.TypeAnalysis.inferScalarType(getStepValue());
-// >>>>>>> 21edac2
   Value *RuntimeVF = getRuntimeVF(State.Builder, PhiType, State.VF);
 #endif // SIFIVE_CUSTOMIZATION
   // Add induction update using an incorrect block temporarily. The phi node
@@ -4844,42 +4825,22 @@ void VPReductionPHIRecipe::execute(VPTransformState &State) {
       Builder.SetInsertPoint(VectorPH->getTerminator());
       StartV = Iden = State.get(StartVPV);
     }
-// <<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   } else if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK)) {
-    // [I|F]FindLastIV will use a sentinel value as the identity to initialize
-    // the reduction phi. In the middle block, createSentinelValueHandling will
-    // generate checks to verify if the reduction result is the sentinel value.
-    // If the result is the sentinel value, it will be corrected back to the
-    // start value.
+    // [I|F]FindLastIV will use a sentinel value to initialize the reduction
+    // phi or the resume value from the main vector loop when vectorizing the
+    // epilogue loop. In the exit block, ComputeReductionResult will generate
+    // checks to verify if the reduction result is the sentinel value. If the
+    // result is the sentinel value, it will be corrected back to the start
+    // value.
     // TODO: The sentinel value is not always necessary. When the start value is
     // a constant, and smaller than the start value of the induction variable,
     // the start value can be directly used to initialize the reduction phi.
-    assert(RdxDesc.needsSentinelValue() &&
-           "[I|F]FindLastIV idioms currently require sentinel value support.");
-    StartV = Iden = RdxDesc.getSentinelValue();
-// =======
-//   } else if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK)) {
-//     // [I|F]FindLastIV will use a sentinel value to initialize the reduction
-//     // phi or the resume value from the main vector loop when vectorizing the
-//     // epilogue loop. In the exit block, ComputeReductionResult will generate
-//     // checks to verify if the reduction result is the sentinel value. If the
-//     // result is the sentinel value, it will be corrected back to the start
-//     // value.
-//     // TODO: The sentinel value is not always necessary. When the start value is
-//     // a constant, and smaller than the start value of the induction variable,
-//     // the start value can be directly used to initialize the reduction phi.
-//     Iden = StartV;
-// >>>>>>> 21edac2
+    Iden = StartV;
     if (!ScalarPHI) {
       IRBuilderBase::InsertPointGuard IPBuilder(Builder);
       Builder.SetInsertPoint(VectorPH->getTerminator());
       StartV = Iden = Builder.CreateVectorSplat(State.VF, Iden);
     }
-// <<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-// =======
-// >>>>>>> 21edac2
   } else {
     Iden = llvm::getRecurrenceIdentity(RK, VecTy->getScalarType(),
                                        RdxDesc.getFastMathFlags());
@@ -5049,8 +5010,18 @@ void VPActiveLaneMaskPHIRecipe::print(raw_ostream &O, const Twine &Indent,
 }
 #endif
 
-// <<<<<<< HEAD
-void VPEVLBasedIVPHIRecipe::execute(VPTransformState &State) {
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+void VPEVLBasedIVPHIRecipe::print(raw_ostream &O, const Twine &Indent,
+                                  VPSlotTracker &SlotTracker) const {
+  O << Indent << "EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI ";
+
+  printAsOperand(O, SlotTracker);
+  O << " = phi ";
+  printOperands(O, SlotTracker);
+}
+#endif
+
+void VPScalarPHIRecipe::execute(VPTransformState &State) {
   BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
 #if SIFIVE_CUSTOMIZATION
   // FIXME: Initial VL must be explicitly represented in VPlan, but as a
@@ -5066,33 +5037,11 @@ void VPEVLBasedIVPHIRecipe::execute(VPTransformState &State) {
                      State.Plan->isUncountable());
     State.set(State.Plan->getInitEVL(), Start, /*IsScalar=*/true);
   } else {
-    Start = State.get(getOperand(0), VPLane(0));
+    Start = State.get(getStartValue(), VPLane(0));
   }
 #else
-  Value *Start = State.get(getOperand(0), VPLane(0));
-#endif // SIFIVE_CUSTOMIZATION
-  PHINode *Phi = State.Builder.CreatePHI(Start->getType(), 2, "evl.based.iv");
-  Phi->addIncoming(Start, VectorPH);
-  Phi->setDebugLoc(getDebugLoc());
-  State.set(this, Phi, /*IsScalar=*/true);
-}
-
-// =======
-// >>>>>>> 21edac2
-#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
-void VPEVLBasedIVPHIRecipe::print(raw_ostream &O, const Twine &Indent,
-                                  VPSlotTracker &SlotTracker) const {
-  O << Indent << "EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI ";
-
-  printAsOperand(O, SlotTracker);
-  O << " = phi ";
-  printOperands(O, SlotTracker);
-}
-#endif
-
-void VPScalarPHIRecipe::execute(VPTransformState &State) {
-  BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
   Value *Start = State.get(getStartValue(), VPLane(0));
+#endif // SIFIVE_CUSTOMIZATION
   PHINode *Phi = State.Builder.CreatePHI(Start->getType(), 2, Name);
   Phi->addIncoming(Start, VectorPH);
   Phi->setDebugLoc(getDebugLoc());
