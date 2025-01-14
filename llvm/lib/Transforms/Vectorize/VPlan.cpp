@@ -333,21 +333,19 @@ VPTransformState::VPTransformState(const TargetTransformInfo *TTI,
                                    ElementCount VF, unsigned UF, LoopInfo *LI,
                                    DominatorTree *DT, IRBuilderBase &Builder,
                                    InnerLoopVectorizer *ILV, VPlan *Plan,
-// <<<<<<< HEAD
-                                   bool EnableRISCVCSA) // SIFIVE)
-    : TTI(TTI), VF(VF), CFG(DT), LI(LI), Builder(Builder), ILV(ILV), Plan(Plan),
 #if SIFIVE_CUSTOMIZATION
-      LVer(nullptr), TypeAnalysis(Plan->getCanonicalIV()->getScalarType()),
-      EnableRISCVCSA(EnableRISCVCSA) {}
+                                   Loop *CurrentParentLoop, Type *CanonicalIVTy,
+                                   bool EnableRISCVCSA)
 #else
-      LVer(nullptr), TypeAnalysis(Plan->getCanonicalIV()->getScalarType()) {}
+                                   Loop *CurrentParentLoop, Type *CanonicalIVTy)
 #endif // SIFIVE_CUSTOMIZATION
-// =======
-//                                    Loop *CurrentParentLoop, Type *CanonicalIVTy)
-//     : TTI(TTI), VF(VF), CFG(DT), LI(LI), Builder(Builder), ILV(ILV), Plan(Plan),
-//       CurrentParentLoop(CurrentParentLoop), LVer(nullptr),
-//       TypeAnalysis(CanonicalIVTy) {}
-// >>>>>>> 21edac2
+    : TTI(TTI), VF(VF), CFG(DT), LI(LI), Builder(Builder), ILV(ILV), Plan(Plan),
+      CurrentParentLoop(CurrentParentLoop), LVer(nullptr),
+#if SIFIVE_CUSTOMIZATION
+      TypeAnalysis(CanonicalIVTy), EnableRISCVCSA(EnableRISCVCSA) {}
+#else
+      TypeAnalysis(CanonicalIVTy) {}
+#endif // SIFIVE_CUSTOMIZATION
 
 Value *VPTransformState::get(VPValue *Def, const VPLane &Lane) {
   if (Def->isLiveIn())
@@ -1059,7 +1057,6 @@ void VPConditionalRegionBlock::print(raw_ostream &O, const Twine &Indent,
 #endif // SIFIVE_CUSTOMIZATION
 #endif
 
-// <<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 InstructionCost VPlan::overhead(ElementCount VF, VPCostContext &Ctx) const {
   InstructionCost Overhead;
@@ -1096,13 +1093,18 @@ InstructionCost VPBasicBlock::overhead(ElementCount VF,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-// =======
-// VPlan::VPlan(Loop *L) {
-//   setEntry(createVPIRBasicBlock(L->getLoopPreheader()));
-//   ScalarHeader = createVPIRBasicBlock(L->getHeader());
-// }
-// 
-// >>>>>>> 21edac2
+#if SIFIVE_CUSTOMIZATION
+VPlan::VPlan(Loop *L, bool IsUncountable) {
+  // FIXME: Uncountable vectorization should set the flag in a proper xform
+  if (IsUncountable)
+    setUseVLAVectorizer(true);
+#else
+VPlan::VPlan(Loop *L) {
+#endif // SIFIVE_CUSTOMIZATION
+  setEntry(createVPIRBasicBlock(L->getLoopPreheader()));
+  ScalarHeader = createVPIRBasicBlock(L->getHeader());
+}
+
 VPlan::~VPlan() {
   VPValue DummyValue;
 
@@ -1139,52 +1141,37 @@ VPlan::~VPlan() {
 VPlanPtr VPlan::createInitialVPlan(Type *InductionTy,
                                    PredicatedScalarEvolution &PSE,
                                    bool RequiresScalarEpilogueCheck,
-// <<<<<<< HEAD
+#if SIFIVE_CUSTOMIZATION
                                    bool TailFolded,
-
-#if SIFIVE_CUSTOMIZATION
                                    bool IsUncountable,
-#endif // SIFIVE_CUSTOMIZATION
                                    Loop *TheLoop) {
-  VPIRBasicBlock *Entry =
-      VPIRBasicBlock::fromBasicBlock(TheLoop->getLoopPreheader());
-  VPBasicBlock *VecPreheader = new VPBasicBlock("vector.ph");
-  VPIRBasicBlock *ScalarHeader =
-      VPIRBasicBlock::fromBasicBlock(TheLoop->getHeader());
-#if SIFIVE_CUSTOMIZATION
-  auto Plan = std::make_unique<VPlan>(Entry, VecPreheader, ScalarHeader,
-                                      IsUncountable);
 #else
-  auto Plan = std::make_unique<VPlan>(Entry, VecPreheader, ScalarHeader);
+                                   bool TailFolded, Loop *TheLoop) {
 #endif // SIFIVE_CUSTOMIZATION
-// =======
-//                                    bool TailFolded, Loop *TheLoop) {
-//   auto Plan = std::make_unique<VPlan>(TheLoop);
-//   VPBlockBase *ScalarHeader = Plan->getScalarHeader();
-// 
-//   // Connect entry only to vector preheader initially. Entry will also be
-//   // connected to the scalar preheader later, during skeleton creation when
-//   // runtime guards are added as needed. Note that when executing the VPlan for
-//   // an epilogue vector loop, the original entry block here will be replaced by
-//   // a new VPIRBasicBlock wrapping the entry to the epilogue vector loop after
-//   // generating code for the main vector loop.
-//   VPBasicBlock *VecPreheader = Plan->createVPBasicBlock("vector.ph");
-//   VPBlockUtils::connectBlocks(Plan->getEntry(), VecPreheader);
-// >>>>>>> 21edac2
+#if SIFIVE_CUSTOMIZATION
+  auto Plan = std::make_unique<VPlan>(TheLoop, IsUncountable);
+#else
+  auto Plan = std::make_unique<VPlan>(TheLoop);
+#endif // SIFIVE_CUSTOMIZATION
+  VPBlockBase *ScalarHeader = Plan->getScalarHeader();
+
+  // Connect entry only to vector preheader initially. Entry will also be
+  // connected to the scalar preheader later, during skeleton creation when
+  // runtime guards are added as needed. Note that when executing the VPlan for
+  // an epilogue vector loop, the original entry block here will be replaced by
+  // a new VPIRBasicBlock wrapping the entry to the epilogue vector loop after
+  // generating code for the main vector loop.
+  VPBasicBlock *VecPreheader = Plan->createVPBasicBlock("vector.ph");
+  VPBlockUtils::connectBlocks(Plan->getEntry(), VecPreheader);
 
   // Create SCEV and VPValue for the trip count.
   // We use the symbolic max backedge-taken-count, which works also when
   // vectorizing loops with uncountable early exits.
   const SCEV *BackedgeTakenCountSCEV = PSE.getSymbolicMaxBackedgeTakenCount();
-// <<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (!IsUncountable)
 #endif
-  assert((!isa<SCEVCouldNotCompute>(BackedgeTakenCountSCEV) &&
-          BackedgeTakenCountSCEV == PSE.getBackedgeTakenCount()) &&
-// =======
-//   assert(!isa<SCEVCouldNotCompute>(BackedgeTakenCountSCEV) &&
-// >>>>>>> 21edac2
+  assert(!isa<SCEVCouldNotCompute>(BackedgeTakenCountSCEV) &&
          "Invalid loop count");
   ScalarEvolution &SE = *PSE.getSE();
 #if SIFIVE_CUSTOMIZATION
@@ -1290,17 +1277,13 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
 
   IRBuilder<> Builder(State.CFG.PrevBB->getTerminator());
   // FIXME: Model VF * UF computation completely in VPlan.
-// <<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  assert((useVLAVectorizer() || VFxUF.getNumUsers()) &&
-         "VFxUF expected to always have users");
+  assert((useVLAVectorizer() || !getVectorLoopRegion() ||
+         VFxUF.getNumUsers()) &&
 #else
-  assert(VFxUF.getNumUsers() && "VFxUF expected to always have users");
+  assert((!getVectorLoopRegion() || VFxUF.getNumUsers()) &&
 #endif // SIFIVE_CUSTOMIZATION
-// =======
-//   assert((!getVectorLoopRegion() || VFxUF.getNumUsers()) &&
-//          "VFxUF expected to always have users");
-// >>>>>>> 21edac2
+         "VFxUF expected to always have users");
   unsigned UF = getUF();
 #if SIFIVE_CUSTOMIZATION
   Value *RuntimeVF = nullptr;
@@ -1328,7 +1311,6 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
   } else {
     VFxUF.setUnderlyingValue(createStepForVF(Builder, TCTy, State.VF, UF));
   }
-// <<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
 
   // When vectorizing the epilogue loop, the canonical induction start value
@@ -1363,24 +1345,6 @@ void VPlan::initializeMasks(VPTransformState &State) {
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
-
-/// Replace \p VPBB with a VPIRBasicBlock wrapping \p IRBB. All recipes from \p
-/// VPBB are moved to the end of the newly created VPIRBasicBlock. VPBB must
-/// have a single predecessor, which is rewired to the new VPIRBasicBlock. All
-/// successors of VPBB, if any, are rewired to the new VPIRBasicBlock.
-static void replaceVPBBWithIRVPBB(VPBasicBlock *VPBB, BasicBlock *IRBB) {
-  VPIRBasicBlock *IRVPBB = VPIRBasicBlock::fromBasicBlock(IRBB);
-  for (auto &R : make_early_inc_range(*VPBB)) {
-    assert(!R.isPhi() && "Tried to move phi recipe to end of block");
-    R.moveBefore(*IRVPBB, IRVPBB->end());
-  }
-
-  VPBlockUtils::reassociateBlocks(VPBB, IRVPBB);
-
-  delete VPBB;
-// =======
-// >>>>>>> 21edac2
-}
 
 /// Generate the code inside the preheader and body of the vectorized loop.
 /// Assumes a single pre-header basic-block was created for this. Introduce
@@ -1474,20 +1438,13 @@ void VPlan::execute(VPTransformState *State) {
     }
 
     auto *PhiR = cast<VPHeaderPHIRecipe>(&R);
-// <<<<<<< HEAD
-    bool NeedsScalar =
-        isa<VPCanonicalIVPHIRecipe, VPEVLBasedIVPHIRecipe>(PhiR) ||
+    bool NeedsScalar = isa<VPScalarPHIRecipe>(PhiR) ||
 #if SIFIVE_CUSTOMIZATION
                        isa<VPEVLBasedIVPHIRecipe>(PhiR) ||
                        isa<VPMonotonicHeaderPHIRecipe>(PhiR) ||
 #endif // SIFIVE_CUSTOMIZATION
-        (isa<VPReductionPHIRecipe>(PhiR) &&
-         cast<VPReductionPHIRecipe>(PhiR)->isInLoop());
-// =======
-//     bool NeedsScalar = isa<VPScalarPHIRecipe>(PhiR) ||
-//                        (isa<VPReductionPHIRecipe>(PhiR) &&
-//                         cast<VPReductionPHIRecipe>(PhiR)->isInLoop());
-// >>>>>>> 21edac2
+                       (isa<VPReductionPHIRecipe>(PhiR) &&
+                        cast<VPReductionPHIRecipe>(PhiR)->isInLoop());
     Value *Phi = State->get(PhiR, NeedsScalar);
     Value *Val = State->get(PhiR->getBackedgeValue(), NeedsScalar);
 #if SIFIVE_CUSTOMIZATION
@@ -1500,7 +1457,6 @@ void VPlan::execute(VPTransformState *State) {
 #endif // SIFIVE_CUSTOMIZATION
     cast<PHINode>(Phi)->addIncoming(Val, VectorLatchBB);
   }
-// <<<<<<< HEAD
 
 #if SIFIVE_CUSTOMIZATION
   if (Value *EVLPlaceholder = State->EVLPlaceholder) {
@@ -1514,13 +1470,6 @@ void VPlan::execute(VPTransformState *State) {
     cast<Instruction>(EVLPlaceholder)->eraseFromParent();
   }
 #endif // SIFIVE_CUSTOMIZATION
-
-  State->CFG.DTU.flush();
-  assert(State->CFG.DTU.getDomTree().verify(
-             DominatorTree::VerificationLevel::Fast) &&
-         "DT not preserved correctly");
-// =======
-// >>>>>>> 21edac2
 }
 
 InstructionCost VPlan::cost(ElementCount VF, VPCostContext &Ctx) {
