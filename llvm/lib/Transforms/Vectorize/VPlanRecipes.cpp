@@ -926,11 +926,6 @@ Value *VPInstruction::generate(VPTransformState &State) {
                              ? Builder.CreateSExt(ReducedPartRdx, PhiTy)
                              : Builder.CreateZExt(ReducedPartRdx, PhiTy);
     }
-#if SIFIVE_CUSTOMIZATION
-    if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
-      ReducedPartRdx =
-          createSentinelValueHandling(Builder, RdxDesc, ReducedPartRdx);
-#endif // SIFIVE_CUSTOMIZATION
 
     return ReducedPartRdx;
   }
@@ -995,8 +990,8 @@ Value *VPInstruction::generate(VPTransformState &State) {
     Value *ReducedPartRdx = RdxParts[0];
     Value *MaskPartRdx = MaskParts[0];
     for (unsigned Part = 1; Part < UF; ++Part) {
-      ReducedPartRdx =
-          createFindLastIVOp(Builder, ReducedPartRdx, RdxParts[Part]);
+      ReducedPartRdx = createMinMaxOp(Builder, RecurKind::SMax, ReducedPartRdx,
+                                      RdxParts[Part]);
       MaskPartRdx =
           Builder.CreateBinOp(Instruction::Or, MaskParts[Part], MaskPartRdx);
     }
@@ -1009,13 +1004,13 @@ Value *VPInstruction::generate(VPTransformState &State) {
         assert(InitEVL &&
                "InitEVL must be initialized in emitIterationCountCheck when "
                "using VP intrinsic to generate unordered reduction");
-        ReducedPartRdx = createReduction(Builder, RdxDesc, ReducedPartRdx,
-                                         InitEVL, OrigPhi, MaskPartRdx);
+        ReducedPartRdx = createSimpleReduction(
+            Builder, ReducedPartRdx, RecurKind::SMax, InitEVL, MaskPartRdx);
         MaskPartRdx =
             createSimpleReduction(Builder, MaskPartRdx, RecurKind::Or, InitEVL);
       } else {
         ReducedPartRdx =
-            createReduction(Builder, RdxDesc, ReducedPartRdx, OrigPhi);
+            createSimpleReduction(Builder, MaskPartRdx, RecurKind::SMax);
         MaskPartRdx =
             createSimpleReduction(Builder, MaskPartRdx, RecurKind::Or);
       }

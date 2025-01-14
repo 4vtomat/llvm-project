@@ -1105,13 +1105,6 @@ CmpInst::Predicate llvm::getMinMaxReductionPredicate(RecurKind RK) {
   }
 }
 
-#if SIFIVE_CUSTOMIZATION
-Value *llvm::createFindLastIVOp(IRBuilderBase &Builder, Value *Left,
-                                Value *Right) {
-  return createMinMaxOp(Builder, RecurKind::SMax, Left, Right);
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 Value *llvm::createMinMaxOp(IRBuilderBase &Builder, RecurKind RK, Value *Left,
                             Value *Right) {
   Type *Ty = Left->getType();
@@ -1281,12 +1274,9 @@ Value *llvm::createAnyOfReduction(IRBuilderBase &Builder, Value *Src,
 
 Value *llvm::createFindLastIVReduction(IRBuilderBase &Builder, Value *Src,
                                        const RecurrenceDescriptor &Desc) {
-#if SIFIVE_CUSTOMIZATION
   assert(RecurrenceDescriptor::isFindLastIVRecurrenceKind(
              Desc.getRecurrenceKind()) &&
          "Unexpected reduction kind");
-  return Builder.CreateIntMaxReduce(Src, true);
-#else
   Value *StartVal = Desc.getRecurrenceStartValue();
   Value *Sentinel = Desc.getSentinelValue();
   Value *MaxRdx = Src->getType()->isVectorTy()
@@ -1297,7 +1287,6 @@ Value *llvm::createFindLastIVReduction(IRBuilderBase &Builder, Value *Src,
   Value *Cmp =
       Builder.CreateCmp(CmpInst::ICMP_NE, MaxRdx, Sentinel, "rdx.select.cmp");
   return Builder.CreateSelect(Cmp, MaxRdx, StartVal, "rdx.select");
-#endif
 }
 
 #if SIFIVE_CUSTOMIZATION
@@ -1458,10 +1447,8 @@ Value *llvm::createReduction(IRBuilderBase &B,
   RecurKind RK = Desc.getRecurrenceKind();
   if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RK))
     return createAnyOfReduction(B, Src, Desc, OrigPhi);
-#if SIFIVE_CUSTOMIZATION
   if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
     return createFindLastIVReduction(B, Src, Desc);
-#endif // SIFIVE_CUSTOMIZATION
 
   return createSimpleReduction(B, Src, RK);
 }
@@ -1499,18 +1486,6 @@ Value *llvm::createOrderedReduction(IRBuilderBase &B,
 
   return B.CreateFAddReduce(Start, Src);
 }
-
-#if SIFIVE_CUSTOMIZATION
-Value *llvm::createSentinelValueHandling(IRBuilderBase &Builder,
-                                         const RecurrenceDescriptor &Desc,
-                                         Value *Rdx) {
-  Value *InitVal = Desc.getRecurrenceStartValue();
-  Value *SentinelVal = Desc.getSentinelValue();
-  Value *Cmp =
-      Builder.CreateCmp(CmpInst::ICMP_NE, Rdx, SentinelVal, "rdx.select.cmp");
-  return Builder.CreateSelect(Cmp, Rdx, InitVal, "rdx.select");
-}
-#endif // SIFIVE_CUSTOMIZATION
 
 Value *llvm::createOrderedReduction(VectorBuilder &VBuilder,
                                     const RecurrenceDescriptor &Desc,

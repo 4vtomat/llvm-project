@@ -6455,20 +6455,9 @@ LoopVectorizationCostModel::selectInterleaveCount(ElementCount VF,
         HasReductions &&
         any_of(Legal->getReductionVars(), [&](auto &Reduction) -> bool {
           const RecurrenceDescriptor &RdxDesc = Reduction.second;
-// <<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
           RecurKind RK = RdxDesc.getRecurrenceKind();
           return RecurrenceDescriptor::isAnyOfRecurrenceKind(RK) ||
                  RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK);
-#else
-          return RecurrenceDescriptor::isAnyOfRecurrenceKind(
-              RdxDesc.getRecurrenceKind());
-#endif // SIFIVE_CUSTOMIZATION
-// =======
-//           RecurKind RK = RdxDesc.getRecurrenceKind();
-//           return RecurrenceDescriptor::isAnyOfRecurrenceKind(RK) ||
-//                  RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK);
-// >>>>>>> 21edac2
         });
     if (HasSelectCmpReductions) {
       LLVM_DEBUG(dbgs() << "LV: Not interleaving select-cmp reductions.\n");
@@ -11968,22 +11957,10 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
 
     const RecurrenceDescriptor &RdxDesc = PhiR->getRecurrenceDescriptor();
     RecurKind Kind = RdxDesc.getRecurrenceKind();
-// <<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
     assert(
-        (!RecurrenceDescriptor::isAnyOfRecurrenceKind(Kind) &&
-         !RecurrenceDescriptor::isFindLastIVRecurrenceKind(Kind)) &&
+        !RecurrenceDescriptor::isAnyOfRecurrenceKind(Kind) &&
+        !RecurrenceDescriptor::isFindLastIVRecurrenceKind(Kind) &&
         "AnyOf and FindLast reductions are not allowed for in-loop reductions");
-#else
-    assert(!RecurrenceDescriptor::isAnyOfRecurrenceKind(Kind) &&
-           "AnyOf reductions are not allowed for in-loop reductions");
-#endif // SIFIVE_CUSTOMIZATION
-// =======
-//     assert(
-//         !RecurrenceDescriptor::isAnyOfRecurrenceKind(Kind) &&
-//         !RecurrenceDescriptor::isFindLastIVRecurrenceKind(Kind) &&
-//         "AnyOf and FindLast reductions are not allowed for in-loop reductions");
-// >>>>>>> 21edac2
 
     // Collect the chain of "link" recipes for the reduction starting at PhiR.
     SetVector<VPSingleDefRecipe *> Worklist;
