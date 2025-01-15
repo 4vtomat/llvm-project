@@ -1585,8 +1585,10 @@ void RISCVInsertVSETVLI::transferBefore(VSETVLIInfo &Info,
     // be coalesced into another vsetvli since we won't demand any fields.
     VSETVLIInfo NewInfo; // Need a new VSETVLIInfo to clear SEWLMULRatioOnly
     NewInfo.setAVLImm(1);
+#if SIFIVE_CUSTOMIZATION
     NewInfo.setVTYPE(RISCVII::VLMUL::LMUL_1, /*sew*/ 8, /*ta*/ true,
-                     /*ma*/ true);
+                     /*ma*/ true, /*Altfmt*/ false, /*W*/ 0);
+#endif // SIFIVE_CUSTOMIZATION
     Info = NewInfo;
     return;
   }
