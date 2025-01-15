@@ -153,8 +153,8 @@ void RISCVSpillRewrite::getAnalysisUsage(AnalysisUsage &AU) const {
   AU.addRequired<LiveIntervalsWrapperPass>();
   AU.addPreserved<SlotIndexesWrapperPass>();
   AU.addRequired<SlotIndexesWrapperPass>();
-  AU.addPreserved<LiveDebugVariables>();
-  AU.addPreserved<LiveStacks>();
+  AU.addPreserved<LiveDebugVariablesWrapperLegacy>();
+  AU.addPreserved<LiveStacksWrapperLegacy>();
 
   MachineFunctionPass::getAnalysisUsage(AU);
 }
