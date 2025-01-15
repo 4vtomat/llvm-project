@@ -11894,6 +11894,10 @@ SDValue RISCVTargetLowering::lowerVECTOR_DEINTERLEAVE(SDValue Op,
     Ops.append(PowerOf2Ceil(Factor) - Factor, DAG.getUNDEF(VecVT));
   SDValue Concat = DAG.getNode(ISD::CONCAT_VECTORS, DL, ConcatVT, Ops);
 
+  // We want to operate on all lanes, so get the mask and VL and mask for it
+  auto [Mask, VL] = getDefaultScalableVLOps(ConcatVT, DL, DAG, Subtarget);
+  SDValue Passthru = DAG.getUNDEF(ConcatVT);
+
   // We can deinterleave through vnsrl.wi if the element type is smaller than
 #if SIFIVE_CUSTOMIZATION
   // ELEN and the factor is 2.
@@ -11903,12 +11907,9 @@ SDValue RISCVTargetLowering::lowerVECTOR_DEINTERLEAVE(SDValue Op,
 #else
   // ELEN
   if (VecVT.getScalarSizeInBits() < Subtarget.getELen()) {
-// <<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-    SDValue Even =
-        getDeinterleaveViaVNSRL(DL, VecVT, Concat, true, Subtarget, DAG);
-    SDValue Odd =
-        getDeinterleaveViaVNSRL(DL, VecVT, Concat, false, Subtarget, DAG);
+    SDValue Even = getDeinterleaveShiftAndTrunc(DL, VecVT, Concat, 2, 0, DAG);
+    SDValue Odd = getDeinterleaveShiftAndTrunc(DL, VecVT, Concat, 2, 1, DAG);
     return DAG.getMergeValues({Even, Odd}, DL);
   }
 
@@ -11919,36 +11920,6 @@ SDValue RISCVTargetLowering::lowerVECTOR_DEINTERLEAVE(SDValue Op,
       DAG.getStepVector(DL, IdxVT, APInt(IdxVT.getScalarSizeInBits(), Factor));
 
   SmallVector<SDValue, 8> Res(Factor);
-// =======
-//     SDValue Even = getDeinterleaveShiftAndTrunc(DL, VecVT, Concat, 2, 0, DAG);
-//     SDValue Odd = getDeinterleaveShiftAndTrunc(DL, VecVT, Concat, 2, 1, DAG);
-//     return DAG.getMergeValues({Even, Odd}, DL);
-//   }
-// 
-//   // For the indices, use the vmv.v.x of an i8 constant to fill the largest
-//   // possibly mask vector, then extract the required subvector.  Doing this
-//   // (instead of a vid, vmsne sequence) reduces LMUL, and allows the mask
-//   // creation to be rematerialized during register allocation to reduce
-//   // register pressure if needed.
-// 
-//   MVT MaskVT = ConcatVT.changeVectorElementType(MVT::i1);
-// 
-//   SDValue EvenSplat = DAG.getConstant(0b01010101, DL, MVT::nxv8i8);
-//   EvenSplat = DAG.getBitcast(MVT::nxv64i1, EvenSplat);
-//   SDValue EvenMask = DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, MaskVT, EvenSplat,
-//                                  DAG.getVectorIdxConstant(0, DL));
-// 
-//   SDValue OddSplat = DAG.getConstant(0b10101010, DL, MVT::nxv8i8);
-//   OddSplat = DAG.getBitcast(MVT::nxv64i1, OddSplat);
-//   SDValue OddMask = DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, MaskVT, OddSplat,
-//                                 DAG.getVectorIdxConstant(0, DL));
-// 
-//   // vcompress the even and odd elements into two separate vectors
-//   SDValue EvenWide = DAG.getNode(ISD::VECTOR_COMPRESS, DL, ConcatVT, Concat,
-//                                  EvenMask, DAG.getUNDEF(ConcatVT));
-//   SDValue OddWide = DAG.getNode(ISD::VECTOR_COMPRESS, DL, ConcatVT, Concat,
-//                                 OddMask, DAG.getUNDEF(ConcatVT));
-// >>>>>>> 21edac2
 
   // Gather the elements into Factor separate vectors
   for (unsigned i = 0; i != Factor; ++i) {
