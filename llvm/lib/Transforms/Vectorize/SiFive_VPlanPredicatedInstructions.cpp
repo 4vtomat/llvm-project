@@ -246,7 +246,7 @@ void widenPredicatedIntrinsic(CallInst *CI, VPValue *Def,
   SmallVector<Value *, 4> Args;
   for (auto I : enumerate(Recipe->operands())) {
     Value *Arg;
-    if (!isVectorIntrinsicWithScalarOpAtArg(VPID, I.index()))
+    if (!isVectorIntrinsicWithScalarOpAtArg(VPID, I.index(), TTI))
       Arg = State.get(I.value());
     else
       Arg = State.get(I.value(), VPLane(0));

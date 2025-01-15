@@ -2592,11 +2592,9 @@ public:
                   [this](VPUser *U) { return U->onlyFirstLaneUsed(this); });
   }
 
-  bool isUncountable() const { return IsUncountable; }
-
   /// Returns whether the pointer iv is an uniform
   bool isUniform() const {
-    ConstantInt *Step = IndDesc.getConstIntStepValue();
+    ConstantInt *Step = getInductionDescriptor().getConstIntStepValue();
     return Step && Step->isOne();
   }
 #endif // SIFIVE_CUSTOMIZATION
@@ -4598,9 +4596,9 @@ public:
   /// original preheader and scalar header of \p L, to be used as entry and
   /// scalar header blocks of the new VPlan.
 #if SIFIVE_CUSTOMIZATION
-  VPlan(Loop *L);
-#else
   VPlan(Loop *L, bool IsUncountable = false);
+#else
+  VPlan(Loop *L);
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Construct a VPlan with a new VPBasicBlock as entry, a VPIRBasicBlock

@@ -2109,7 +2109,8 @@ void VPlanTransforms::addExplicitVectorLengthUncountable(VPlan &Plan) {
       IVSize != 32) {
     OpVPEVL = new VPScalarCastRecipe(IVSize < 32 ? Instruction::Trunc
                                                  : Instruction::ZExt,
-                                     OpVPEVL, CanonicalIVPHI->getScalarType());
+                                     OpVPEVL, CanonicalIVPHI->getScalarType(),
+                                     CanonicalIVIncrement->getDebugLoc());
     OpVPEVL->insertBefore(CanonicalIVIncrement);
   }
   auto *NextEVLIV =

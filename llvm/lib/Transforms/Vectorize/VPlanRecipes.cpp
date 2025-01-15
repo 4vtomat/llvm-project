@@ -4879,7 +4879,7 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
   TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput;
   RecurKind RdxKind = RdxDesc.getRecurrenceKind();
   Type *ElementTy = RdxDesc.getRecurrenceType();
-  auto *VectorTy = cast<VectorType>(ToVectorTy(ElementTy, VF));
+  auto *VectorTy = cast<VectorType>(toVectorTy(ElementTy, VF));
   // TODO: Add broadcast cost for all recurrence kinds
   switch (RdxKind) {
   case RecurKind::Add:

@@ -455,7 +455,7 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
               if (!RVVPair::isValidType(SrcScalarTy, RVL))
                 return InstructionCost::getInvalid();
               Type *SrcVecTy = VectorTy->isVectorTy()
-                                   ? ToVectorTy(SrcScalarTy, VF)
+                                   ? toVectorTy(SrcScalarTy, VF)
                                    : SrcScalarTy;
 
               const unsigned RegID =
