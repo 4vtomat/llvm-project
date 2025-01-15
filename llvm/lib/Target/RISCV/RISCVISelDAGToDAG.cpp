@@ -841,7 +841,7 @@ bool RISCVDAGToDAGISel::tryFixREV8W(SDNode *Node) {
   // All the other uses should be a SRLI with 32 or a another srl that can be
   // optimized.
   for (auto UI = N0->use_begin(), UE = N0->use_end(); UI != UE; ++UI) {
-    SDNode *User = *UI;
+    SDNode *User = UI->getUser();
 
     // Handle already selected user.
     if (User->isMachineOpcode()) {
@@ -3107,7 +3107,7 @@ static bool isWorthFoldingAdd(SDValue Add) {
 // To prevent SelectAddrRegImm from folding offsets that conflicts with the fusion of PseudoLIAddr
 // Check if the offset of every use of a given address is within the alignment
 static bool areOffsetsWithinAlignment(SDValue Addr, Align Alignment) {
-  for (auto *Use : Addr->uses()) {
+  for (auto *Use : Addr->users()) {
     if (!(Use->isMachineOpcode())) {
       // Don't allow stores of the value. It must be used as the address.
       if (Use->getOpcode() == ISD::STORE &&

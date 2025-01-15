@@ -15457,11 +15457,12 @@ static SDValue reassociateAddressArith(SDNode *N, SDValue N0, SDValue N1,
   // Users should be base pointer operand of scalar loads and stores that can
   // fold the immediate into the addressing.
   for (auto UI = N->use_begin(), UE = N->use_end(); UI != UE; ++UI) {
-    if (UI->getOpcode() == ISD::STORE && UI.getOperandNo() == 2 &&
-        !UI->getOperand(1).getValueType().isVector())
+    SDNode *TheUser = UI->getUser();
+    if (TheUser->getOpcode() == ISD::STORE && UI->getOperandNo() == 2 &&
+        !TheUser->getOperand(1).getValueType().isVector())
       continue;
-    if (UI->getOpcode() == ISD::LOAD && UI.getOperandNo() == 1 &&
-        !UI->getValueType(0).isVector())
+    if (TheUser->getOpcode() == ISD::LOAD && UI->getOperandNo() == 1 &&
+        !TheUser->getValueType(0).isVector())
       continue;
     return SDValue();
   }
@@ -19566,7 +19567,7 @@ static SDValue combineVZEXT_VL(SDNode *N, SelectionDAG &DAG) {
         Src0.getOperand(1) == Src1.getOperand(0)))
     return SDValue();
 
-  SDNode *U = *N->use_begin();
+  SDNode *U = *N->user_begin();
 
   // Result should be part of a sum. We might have already formed a widening
   // add so we need to check for that too.
