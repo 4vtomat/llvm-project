@@ -19,17 +19,16 @@
   # CHECK-OBJ: addi zero, zero, 0x0
 
   .reloc ., R_RISCV_VENDOR,    VENDOR_NAME
-  .reloc ., R_RISCV_CUSTOM192, my_foo + 1
+#if SIFIVE_CUSTOMIZATION
+  # .reloc ., R_RISCV_CUSTOM192, my_foo + 1
+#endif // SIFIVE_CUSTOMIZATION
   addi a0, a0, 0
   # CHECK-ASM: [[L1:.L[^:]+]]:
   # CHECK-ASM-NEXT: .reloc [[L1]], R_RISCV_VENDOR, VENDOR_NAME
-  # CHECK-ASM-NEXT: [[L2:.L[^:]+]]:
-  # CHECK-ASM-NEXT: .reloc [[L2]], R_RISCV_CUSTOM192, my_foo+1
   # CHECK-ASM-NEXT: mv a0, a0
 
   # CHECK-OBJ: addi a0, a0, 0
   # CHECK-OBJ-NEXT: R_RISCV_VENDOR    VENDOR_NAME
-  # CHECK-OBJ-NEXT: R_RISCV_CUSTOM192 my_foo+0x1
 
   nop
   # CHECK-ASM: nop

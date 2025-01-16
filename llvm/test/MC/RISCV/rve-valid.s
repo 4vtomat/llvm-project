@@ -3,11 +3,7 @@
 # RUN: llvm-mc -filetype=obj -triple=riscv32 -mattr=+e < %s \
 # RUN:     | llvm-objdump --no-print-imm-hex -M no-aliases -d -r - \
 # RUN:     | FileCheck -check-prefixes=CHECK-OBJ,CHECK-ASM-AND-OBJ %s
-<<<<<<< HEAD:llvm/test/MC/RISCV/rv32e-valid.s
-# RUN: llvm-mc %s -triple=riscv64 --mattr=+zicsr --mattr=+zifencei -riscv-no-aliases -mattr=+e -show-encoding \
-=======
-# RUN: llvm-mc %s -triple=riscv64 -M no-aliases -mattr=+e -show-encoding \
->>>>>>> 21edac2:llvm/test/MC/RISCV/rve-valid.s
+# RUN: llvm-mc %s -triple=riscv64 --mattr=+zicsr --mattr=+zifencei -M no-aliases -mattr=+e -show-encoding \
 # RUN:     | FileCheck -check-prefixes=CHECK-ASM,CHECK-ASM-AND-OBJ %s
 # RUN: llvm-mc -filetype=obj -triple=riscv64 --mattr=+zicsr --mattr=+zifencei -mattr=+e < %s \
 # RUN:     | llvm-objdump --no-print-imm-hex -M no-aliases -d -r --mattr=+zicsr --mattr=+zifencei - \

@@ -207,32 +207,21 @@
 // CHECK-RV64-SAME: "-x" "c++" "{{.*}}baremetal.cpp"
 // CHECK-RV64-NEXT: ld{{(.exe)?}}" "{{.*}}.o" "-Bstatic"
 // CHECK-RV64-SAME: "-Lsome{{[/\\]+}}directory{{[/\\]+}}user{{[/\\]+}}asked{{[/\\]+}}for"
-<<<<<<< HEAD
 // CHECK-RV64-SAME: "-L[[SYSROOT:[^"]+]]{{[/\\]+}}rv64imafdc{{[/\\]+}}lp64d{{[/\\]+}}lib"
-// CHECK-RV64-SAME: "-lc" "-lm" "{{[^"]*}}libclang_rt.builtins.a" "-X" "-o" "{{.*}}.tmp.out"
-=======
-// CHECK-RV64-SAME: "-L[[SYSROOT:[^"]+]]{{[/\\]+}}lib"
 // CHECK-RV64-SAME: "{{[^"]*}}libclang_rt.builtins.a"
 // CHECK-RV64-SAME: "-lc"
 // CHECK-RV64-SAME: "-X" "-o" "{{.*}}.tmp.out"
->>>>>>> 21edac2
 
 // RUN: %clangxx %s -### --target=riscv64-unknown-elf 2>&1 \
 // RUN:     --sysroot=%S/Inputs/basic_riscv64_tree/riscv64-unknown-elf \
 // RUN:   | FileCheck --check-prefix=CHECK-RV64-DEFAULTCXX %s
 // CHECK-RV64-DEFAULTCXX: "-resource-dir" "[[RESOURCE_DIR:[^"]+]]"
 // CHECK-RV64-DEFAULTCXX: ld{{(.exe)?}}" "{{.*}}.o" "-Bstatic"
-<<<<<<< HEAD
 // CHECK-RV64-DEFAULTCXX-SAME: "-L{{[^"]*}}{{[/\\]+}}Inputs{{[/\\]+}}basic_riscv64_tree{{[/\\]+}}riscv64-unknown-elf{{[/\\]+}}rv64imafdc{{[/\\]+}}lp64d{{[/\\]+}}lib"
-// CHECK-RV64-DEFAULTCXX-SAME: "-lc++" "-lc++abi" "-lunwind"
-// CHECK-RV64-DEFAULTCXX-SAME: "-lc" "-lm" "{{[^"]*}}libclang_rt.builtins.a" "-X" "-o" "a.out"
-=======
-// CHECK-RV64-DEFAULTCXX-SAME: "-L{{[^"]*}}{{[/\\]+}}Inputs{{[/\\]+}}basic_riscv64_tree{{[/\\]+}}riscv64-unknown-elf{{[/\\]+}}lib"
 // CHECK-RV64-DEFAULTCXX-SAME: "-lc++" "-lm"
 // CHECK-RV64-DEFAULTCXX-SAME: "{{[^"]*}}libclang_rt.builtins.a"
 // CHECK-RV64-DEFAULTCXX-SAME: "-lc"
 // CHECK-RV64-DEFAULTCXX-SAME: "-X" "-o" "a.out"
->>>>>>> 21edac2
 
 // RUN: %clangxx %s -### --target=riscv64-unknown-elf 2>&1 \
 // RUN:     --sysroot=%S/Inputs/basic_riscv64_tree/riscv64-unknown-elf \
@@ -242,17 +231,11 @@
 // CHECK-RV64-LIBCXX-NOT: "-internal-isystem" "{{[^"]+}}{{[/\\]+}}include{{[/\\]+}}c++{{[/\\]+}}{{[^v].*}}"
 // CHECK-RV64-LIBCXX-SAME: "-internal-isystem" "{{[^"]+}}{{[/\\]+}}include{{[/\\]+}}c++{{[/\\]+}}v1"
 // CHECK-RV64-LIBCXX: ld{{(.exe)?}}" "{{.*}}.o" "-Bstatic"
-<<<<<<< HEAD
 // CHECK-RV64-LIBCXX-SAME: "-L{{[^"]*}}{{[/\\]+}}Inputs{{[/\\]+}}basic_riscv64_tree{{[/\\]+}}riscv64-unknown-elf{{[/\\]+}}rv64imafdc{{[/\\]+}}lp64d{{[/\\]+}}lib"
-// CHECK-RV64-LIBCXX-SAME: "-lc++" "-lc++abi" "-lunwind"
-// CHECK-RV64-LIBCXX-SAME: "-lc" "-lm" "{{[^"]*}}libclang_rt.builtins.a" "-X" "-o" "a.out"
-=======
-// CHECK-RV64-LIBCXX-SAME: "-L{{[^"]*}}{{[/\\]+}}Inputs{{[/\\]+}}basic_riscv64_tree{{[/\\]+}}riscv64-unknown-elf{{[/\\]+}}lib"
 // CHECK-RV64-LIBCXX-SAME: "-lc++" "-lm"
 // CHECK-RV64-LIBCXX-SAME: "{{[^"]*}}libclang_rt.builtins.a"
 // CHECK-RV64-LIBCXX-SAME: "-lc"
 // CHECK-RV64-LIBCXX-SAME: "-X" "-o" "a.out"
->>>>>>> 21edac2
 
 // RUN: %clangxx %s -### 2>&1 --target=riscv64-unknown-elf \
 // RUN:     --sysroot=%S/Inputs/basic_riscv64_tree/riscv64-unknown-elf \
@@ -262,17 +245,11 @@
 // CHECK-RV64-LIBSTDCXX-NOT: "-internal-isystem" "{{[^"]+}}{{[/\\]+}}include{{[/\\]+}}c++{{[/\\]+}}v1"
 // CHECK-RV64-LIBSTDCXX-SAME: "-internal-isystem" "{{[^"]+}}{{[/\\]+}}include{{[/\\]+}}c++{{[/\\]+}}8.0.1"
 // CHECK-RV64-LIBSTDCXX: ld{{(.exe)?}}" "{{.*}}.o" "-Bstatic"
-<<<<<<< HEAD
 // CHECK-RV64-LIBSTDCXX-SAME: "-L{{[^"]*}}{{[/\\]+}}Inputs{{[/\\]+}}basic_riscv64_tree{{[/\\]+}}riscv64-unknown-elf{{[/\\]+}}rv64imafdc{{[/\\]+}}lp64d{{[/\\]+}}lib"
-// CHECK-RV64-LIBSTDCXX-SAME: "-lstdc++" "-lsupc++" "-lunwind"
-// CHECK-RV64-LIBSTDCXX-SAME: "-lc" "-lm" "{{[^"]*}}libclang_rt.builtins.a" "-X" "-o" "a.out"
-=======
-// CHECK-RV64-LIBSTDCXX-SAME: "-L{{[^"]*}}{{[/\\]+}}Inputs{{[/\\]+}}basic_riscv64_tree{{[/\\]+}}riscv64-unknown-elf{{[/\\]+}}lib"
 // CHECK-RV64-LIBSTDCXX-SAME: "-lstdc++" "-lm"
 // CHECK-RV64-LIBSTDCXX-SAME: "{{[^"]*}}libclang_rt.builtins.a"
 // CHECK-RV64-LIBSTDCXX-SAME: "-lc"
 // CHECK-RV64-LIBSTDCXX-SAME: "-X" "-o" "a.out"
->>>>>>> 21edac2
 
 // RUN: %clang %s -### 2>&1 --target=riscv32-unknown-elf \
 // RUN:     -L some/directory/user/asked/for \
