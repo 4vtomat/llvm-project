@@ -135,11 +135,7 @@ while.end:                                        ; preds = %while.body, %entry
 ; CHECK-COST: Cost of 1 for VF 8: WIDEN-INTRINSIC ir<%1> = call llvm.umin(ir<%0>, ir<%offset>)
 ; CHECK-COST: Cost of 1 for VF 16: WIDEN-INTRINSIC ir<%1> = call llvm.umin(ir<%0>, ir<%offset>)
 
-<<<<<<< HEAD
 ; SIFIVE: checks have been updated to combine (add (zext (add X, -1)), 1) to (zext X)
-=======
-
->>>>>>> 21edac2
 define void @umin(ptr nocapture readonly %pSrc, i8 signext %offset, ptr nocapture noalias %pDst, i32 %blockSize) #0 {
 ; CHECK-LABEL: @umin(
 ; CHECK-NEXT:  entry:
