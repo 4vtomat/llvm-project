@@ -9,20 +9,6 @@ define fastcc i64 @zot(float %arg, float %arg1, float %arg2, float %arg3, float 
 ; CHECK-LABEL: @zot(
 ; CHECK-NEXT:  bb:
 ; CHECK-NEXT:    [[VAL9:%.*]] = fmul fast float 0.000000e+00, [[ARG:%.*]]
-<<<<<<< HEAD
-; CHECK-NEXT:    [[VAL10:%.*]] = fmul fast float [[ARG3:%.*]], 1.000000e+00
-; CHECK-NEXT:    [[VAL11:%.*]] = fmul fast float [[ARG3]], 1.000000e+00
-; CHECK-NEXT:    [[VAL12:%.*]] = fadd fast float [[ARG3]], 1.000000e+00
-; CHECK-NEXT:    [[VAL13:%.*]] = fadd fast float [[VAL12]], 2.000000e+00
-; CHECK-NEXT:    [[VAL16:%.*]] = fadd fast float [[ARG3]], 1.000000e+00
-; CHECK-NEXT:    [[VAL17:%.*]] = fadd fast float [[ARG3]], 1.000000e+00
-; CHECK-NEXT:    br i1 [[ARG6:%.*]], label [[BB18:%.*]], label [[BB57:%.*]]
-; CHECK:       bb18:
-; CHECK-NEXT:    [[VAL19:%.*]] = phi float [ [[VAL13]], [[BB:%.*]] ]
-; CHECK-NEXT:    [[VAL20:%.*]] = phi float [ 1.000000e+00, [[BB]] ]
-; CHECK-NEXT:    [[VAL21:%.*]] = phi float [ [[VAL16]], [[BB]] ]
-; CHECK-NEXT:    [[VAL22:%.*]] = phi float [ [[VAL17]], [[BB]] ]
-=======
 ; CHECK-NEXT:    [[TMP0:%.*]] = insertelement <4 x float> <float 0.000000e+00, float poison, float poison, float poison>, float [[ARG]], i32 1
 ; CHECK-NEXT:    [[TMP1:%.*]] = insertelement <4 x float> [[TMP0]], float [[ARG3:%.*]], i32 2
 ; CHECK-NEXT:    [[TMP2:%.*]] = shufflevector <4 x float> [[TMP1]], <4 x float> poison, <4 x i32> <i32 0, i32 1, i32 2, i32 2>
@@ -35,7 +21,6 @@ define fastcc i64 @zot(float %arg, float %arg1, float %arg2, float %arg3, float 
 ; CHECK:       bb18:
 ; CHECK-NEXT:    [[TMP8:%.*]] = phi <4 x float> [ [[TMP7]], [[BB:%.*]] ]
 ; CHECK-NEXT:    [[VAL16:%.*]] = extractelement <4 x float> [[TMP7]], i32 2
->>>>>>> 21edac2
 ; CHECK-NEXT:    [[VAL23:%.*]] = fmul fast float [[VAL16]], 2.000000e+00
 ; CHECK-NEXT:    [[VAL17:%.*]] = extractelement <4 x float> [[TMP7]], i32 3
 ; CHECK-NEXT:    [[VAL24:%.*]] = fmul fast float [[VAL17]], 3.000000e+00
