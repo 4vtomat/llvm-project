@@ -528,8 +528,8 @@ define <vscale x 2 x i32> @vpsdiv_by_min_nxv2i32(<vscale x 2 x i32> %va, <vscale
 define <vscale x 4 x i16> @vpsdiv_pow2_nxv4i16(<vscale x 4 x i16> %va, <vscale x 4 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vpsdiv_pow2_nxv4i16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vmv1r.v v9, v0
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
+; CHECK-NEXT:    vmv1r.v v9, v0
 ; CHECK-NEXT:    vmv.v.i v10, 4
 ; CHECK-NEXT:    vmseq.vi v11, v10, -1, v0.t
 ; CHECK-NEXT:    vmseq.vi v10, v10, 1, v0.t
@@ -555,8 +555,8 @@ define <vscale x 4 x i16> @vpsdiv_pow2_nxv4i16(<vscale x 4 x i16> %va, <vscale x
 define <vscale x 8 x i8> @vpsdiv_pow2_nxv8i8(<vscale x 8 x i8> %va, <vscale x 8 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vpsdiv_pow2_nxv8i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vmv1r.v v9, v0
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
+; CHECK-NEXT:    vmv1r.v v9, v0
 ; CHECK-NEXT:    vmv.v.i v10, 4
 ; CHECK-NEXT:    vmseq.vi v11, v10, -1, v0.t
 ; CHECK-NEXT:    vmseq.vi v10, v10, 1, v0.t
@@ -582,8 +582,8 @@ define <vscale x 8 x i8> @vpsdiv_pow2_nxv8i8(<vscale x 8 x i8> %va, <vscale x 8 
 define <vscale x 2 x i32> @vpsdiv_pow2_nxv2i32(<vscale x 2 x i32> %va, <vscale x 2 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vpsdiv_pow2_nxv2i32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vmv1r.v v9, v0
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
+; CHECK-NEXT:    vmv1r.v v9, v0
 ; CHECK-NEXT:    vmv.v.i v10, 4
 ; CHECK-NEXT:    vmseq.vi v11, v10, -1, v0.t
 ; CHECK-NEXT:    vmseq.vi v10, v10, 1, v0.t
@@ -609,8 +609,8 @@ define <vscale x 2 x i32> @vpsdiv_pow2_nxv2i32(<vscale x 2 x i32> %va, <vscale x
 define <vscale x 16 x i32> @vpsdiv_pow2_nxv16i32(<vscale x 16 x i32> %va, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vpsdiv_pow2_nxv16i32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vmv1r.v v16, v0
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
+; CHECK-NEXT:    vmv1r.v v16, v0
 ; CHECK-NEXT:    vmv.v.i v24, 4
 ; CHECK-NEXT:    vmseq.vi v17, v24, -1, v0.t
 ; CHECK-NEXT:    vmseq.vi v18, v24, 1, v0.t
@@ -636,8 +636,8 @@ define <vscale x 16 x i32> @vpsdiv_pow2_nxv16i32(<vscale x 16 x i32> %va, <vscal
 define <vscale x 1 x i64> @vpsdiv_pow2_nxv1i64(<vscale x 1 x i64> %va, <vscale x 1 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vpsdiv_pow2_nxv1i64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vmv1r.v v9, v0
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
+; CHECK-NEXT:    vmv1r.v v9, v0
 ; CHECK-NEXT:    vmv.v.i v10, 4
 ; CHECK-NEXT:    li a0, 63
 ; CHECK-NEXT:    vmseq.vi v11, v10, -1, v0.t

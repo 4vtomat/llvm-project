@@ -5,23 +5,23 @@
 define void @add_sext_shl_moreOneUse_add(ptr %array1, i32 %a, i32 %b) {
 ; NO-ZBA-LABEL: add_sext_shl_moreOneUse_add:
 ; NO-ZBA:       # %bb.0: # %entry
-; NO-ZBA-NEXT:    addi a3, a1, 5
-; NO-ZBA-NEXT:    sext.w a1, a1
-; NO-ZBA-NEXT:    slli a1, a1, 2
-; NO-ZBA-NEXT:    add a0, a1, a0
+; NO-ZBA-NEXT:    sext.w a3, a1
+; NO-ZBA-NEXT:    addi a1, a1, 5
+; NO-ZBA-NEXT:    slli a3, a3, 2
+; NO-ZBA-NEXT:    add a0, a3, a0
 ; NO-ZBA-NEXT:    sw a2, 20(a0)
 ; NO-ZBA-NEXT:    sw a2, 24(a0)
-; NO-ZBA-NEXT:    sw a3, 140(a0)
+; NO-ZBA-NEXT:    sw a1, 140(a0)
 ; NO-ZBA-NEXT:    ret
 ;
 ; ZBA-LABEL: add_sext_shl_moreOneUse_add:
 ; ZBA:       # %bb.0: # %entry
-; ZBA-NEXT:    addi a3, a1, 5
-; ZBA-NEXT:    sext.w a1, a1
-; ZBA-NEXT:    sh2add a0, a1, a0
+; ZBA-NEXT:    sext.w a3, a1
+; ZBA-NEXT:    addi a1, a1, 5
+; ZBA-NEXT:    sh2add a0, a3, a0
 ; ZBA-NEXT:    sw a2, 20(a0)
 ; ZBA-NEXT:    sw a2, 24(a0)
-; ZBA-NEXT:    sw a3, 140(a0)
+; ZBA-NEXT:    sw a1, 140(a0)
 ; ZBA-NEXT:    ret
 entry:
   %add = add nsw i32 %a, 5
@@ -42,28 +42,28 @@ entry:
 define void @add_sext_shl_moreOneUse_addexceedsign12(ptr %array1, i32 %a, i32 %b) {
 ; NO-ZBA-LABEL: add_sext_shl_moreOneUse_addexceedsign12:
 ; NO-ZBA:       # %bb.0: # %entry
-; NO-ZBA-NEXT:    addi a3, a1, 2047
+; NO-ZBA-NEXT:    sext.w a3, a1
+; NO-ZBA-NEXT:    addi a1, a1, 2047
 ; NO-ZBA-NEXT:    lui a4, 2
-; NO-ZBA-NEXT:    sext.w a1, a1
-; NO-ZBA-NEXT:    addi a3, a3, 1
-; NO-ZBA-NEXT:    slli a1, a1, 2
+; NO-ZBA-NEXT:    addi a1, a1, 1
+; NO-ZBA-NEXT:    slli a3, a3, 2
 ; NO-ZBA-NEXT:    add a0, a0, a4
-; NO-ZBA-NEXT:    add a0, a0, a1
+; NO-ZBA-NEXT:    add a0, a0, a3
 ; NO-ZBA-NEXT:    sw a2, 0(a0)
-; NO-ZBA-NEXT:    sw a3, 4(a0)
+; NO-ZBA-NEXT:    sw a1, 4(a0)
 ; NO-ZBA-NEXT:    sw a2, 120(a0)
 ; NO-ZBA-NEXT:    ret
 ;
 ; ZBA-LABEL: add_sext_shl_moreOneUse_addexceedsign12:
 ; ZBA:       # %bb.0: # %entry
-; ZBA-NEXT:    addi a3, a1, 2047
+; ZBA-NEXT:    sext.w a3, a1
+; ZBA-NEXT:    addi a1, a1, 2047
 ; ZBA-NEXT:    lui a4, 2
-; ZBA-NEXT:    sext.w a1, a1
-; ZBA-NEXT:    addi a3, a3, 1
-; ZBA-NEXT:    sh2add a0, a1, a0
+; ZBA-NEXT:    addi a1, a1, 1
+; ZBA-NEXT:    sh2add a0, a3, a0
 ; ZBA-NEXT:    add a0, a0, a4
 ; ZBA-NEXT:    sw a2, 0(a0)
-; ZBA-NEXT:    sw a3, 4(a0)
+; ZBA-NEXT:    sw a1, 4(a0)
 ; ZBA-NEXT:    sw a2, 120(a0)
 ; ZBA-NEXT:    ret
 entry:

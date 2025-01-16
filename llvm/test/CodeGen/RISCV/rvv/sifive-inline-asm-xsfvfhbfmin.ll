@@ -8,6 +8,7 @@ define <vscale x 4 x float> @test_from_bf16(<vscale x 4 x i16> %in) nounwind {
 ; CHECK-NEXT:    #APP
 ; CHECK-NEXT:    sf.vfwcvt.f.bf16.v v16, v8
 ; CHECK-NEXT:    #NO_APP
+; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv2r.v v8, v16
 ; CHECK-NEXT:    ret
 entry:
@@ -21,6 +22,7 @@ define <vscale x 4 x i16> @test_to_bf16(<vscale x 4 x float> %in) nounwind {
 ; CHECK-NEXT:    #APP
 ; CHECK-NEXT:    sf.vfncvt.bf16.f.w v16, v8
 ; CHECK-NEXT:    #NO_APP
+; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv1r.v v8, v16
 ; CHECK-NEXT:    ret
 entry:

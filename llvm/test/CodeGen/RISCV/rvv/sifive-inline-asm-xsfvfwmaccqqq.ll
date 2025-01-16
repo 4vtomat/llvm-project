@@ -8,6 +8,7 @@ define <vscale x 4 x float> @sf_vfwmacc_4x4x4(<vscale x 4 x i16> %a, <vscale x 4
 ; CHECK-NEXT:    #APP
 ; CHECK-NEXT:    sf.vfwmacc.4x4x4 v10, v8, v9
 ; CHECK-NEXT:    #NO_APP
+; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv2r.v v8, v10
 ; CHECK-NEXT:    ret
 entry:

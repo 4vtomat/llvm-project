@@ -208,6 +208,7 @@ declare i32 @llvm.vp.first.nxv128i1(<vscale x 128 x i1>, <vscale x 128 x i1>, i3
 define i32 @vp_first_nxv128i1(<vscale x 128 x i1> %m, <vscale x 128 x i1> %op, i32 zeroext %evl) {
 ; RV32-LABEL: vp_first_nxv128i1:
 ; RV32:       # %bb.0: # %entry
+; RV32-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; RV32-NEXT:    vmv1r.v v11, v8
 ; RV32-NEXT:    vmv1r.v v8, v0
 ; RV32-NEXT:    csrr a1, vlenb
@@ -237,6 +238,7 @@ define i32 @vp_first_nxv128i1(<vscale x 128 x i1> %m, <vscale x 128 x i1> %op, i
 ;
 ; RV64-LABEL: vp_first_nxv128i1:
 ; RV64:       # %bb.0: # %entry
+; RV64-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; RV64-NEXT:    vmv1r.v v11, v8
 ; RV64-NEXT:    vmv1r.v v8, v0
 ; RV64-NEXT:    csrr a1, vlenb

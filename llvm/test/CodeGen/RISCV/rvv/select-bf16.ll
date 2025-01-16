@@ -9,6 +9,7 @@ define <vscale x 1 x bfloat> @select_nxv1bf16(i1 zeroext %c, <vscale x 1 x bfloa
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    bnez a0, .LBB0_2
 ; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:  .LBB0_2:
 ; CHECK-NEXT:    ret
@@ -24,6 +25,7 @@ define <vscale x 1 x bfloat> @selectcc_nxv1bf16(bfloat %a, bfloat %b, <vscale x 
 ; CHECK-NEXT:    feq.s a0, fa4, fa5
 ; CHECK-NEXT:    bnez a0, .LBB1_2
 ; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:  .LBB1_2:
 ; CHECK-NEXT:    ret
@@ -37,6 +39,7 @@ define <vscale x 2 x bfloat> @select_nxv2bf16(i1 zeroext %c, <vscale x 2 x bfloa
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    bnez a0, .LBB2_2
 ; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:  .LBB2_2:
 ; CHECK-NEXT:    ret
@@ -52,6 +55,7 @@ define <vscale x 2 x bfloat> @selectcc_nxv2bf16(bfloat %a, bfloat %b, <vscale x 
 ; CHECK-NEXT:    feq.s a0, fa4, fa5
 ; CHECK-NEXT:    bnez a0, .LBB3_2
 ; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:  .LBB3_2:
 ; CHECK-NEXT:    ret
@@ -65,6 +69,7 @@ define <vscale x 4 x bfloat> @select_nxv4bf16(i1 zeroext %c, <vscale x 4 x bfloa
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    bnez a0, .LBB4_2
 ; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:  .LBB4_2:
 ; CHECK-NEXT:    ret
@@ -80,6 +85,7 @@ define <vscale x 4 x bfloat> @selectcc_nxv4bf16(bfloat %a, bfloat %b, <vscale x 
 ; CHECK-NEXT:    feq.s a0, fa4, fa5
 ; CHECK-NEXT:    bnez a0, .LBB5_2
 ; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:  .LBB5_2:
 ; CHECK-NEXT:    ret
@@ -93,6 +99,7 @@ define <vscale x 8 x bfloat> @select_nxv8bf16(i1 zeroext %c, <vscale x 8 x bfloa
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    bnez a0, .LBB6_2
 ; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv2r.v v8, v10
 ; CHECK-NEXT:  .LBB6_2:
 ; CHECK-NEXT:    ret
@@ -108,6 +115,7 @@ define <vscale x 8 x bfloat> @selectcc_nxv8bf16(bfloat %a, bfloat %b, <vscale x 
 ; CHECK-NEXT:    feq.s a0, fa4, fa5
 ; CHECK-NEXT:    bnez a0, .LBB7_2
 ; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv2r.v v8, v10
 ; CHECK-NEXT:  .LBB7_2:
 ; CHECK-NEXT:    ret
@@ -121,6 +129,7 @@ define <vscale x 16 x bfloat> @select_nxv16bf16(i1 zeroext %c, <vscale x 16 x bf
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    bnez a0, .LBB8_2
 ; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv4r.v v8, v12
 ; CHECK-NEXT:  .LBB8_2:
 ; CHECK-NEXT:    ret
@@ -136,6 +145,7 @@ define <vscale x 16 x bfloat> @selectcc_nxv16bf16(bfloat %a, bfloat %b, <vscale 
 ; CHECK-NEXT:    feq.s a0, fa4, fa5
 ; CHECK-NEXT:    bnez a0, .LBB9_2
 ; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv4r.v v8, v12
 ; CHECK-NEXT:  .LBB9_2:
 ; CHECK-NEXT:    ret
@@ -149,6 +159,7 @@ define <vscale x 32 x bfloat> @select_nxv32bf16(i1 zeroext %c, <vscale x 32 x bf
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    bnez a0, .LBB10_2
 ; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv8r.v v8, v16
 ; CHECK-NEXT:  .LBB10_2:
 ; CHECK-NEXT:    ret
@@ -164,6 +175,7 @@ define <vscale x 32 x bfloat> @selectcc_nxv32bf16(bfloat %a, bfloat %b, <vscale 
 ; CHECK-NEXT:    feq.s a0, fa4, fa5
 ; CHECK-NEXT:    bnez a0, .LBB11_2
 ; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv8r.v v8, v16
 ; CHECK-NEXT:  .LBB11_2:
 ; CHECK-NEXT:    ret

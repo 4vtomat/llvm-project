@@ -53,16 +53,9 @@ declare <128 x i7> @llvm.vp.trunc.v128i7.v128i16(<128 x i16>, <128 x i1>, i32)
 define <128 x i7> @vtrunc_v128i7_v128i16(<128 x i16> %a, <128 x i1> %m, i32 zeroext %vl) {
 ; CHECK-LABEL: vtrunc_v128i7_v128i16:
 ; CHECK:       # %bb.0:
-<<<<<<< HEAD
 ; CHECK-NEXT:    li a1, 64
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v24, v0, 8
-=======
-; CHECK-NEXT:    vsetivli zero, 8, e8, m1, ta, ma
-; CHECK-NEXT:    vmv8r.v v24, v8
-; CHECK-NEXT:    li a1, 64
-; CHECK-NEXT:    vslidedown.vi v12, v0, 8
->>>>>>> 21edac2
 ; CHECK-NEXT:    mv a2, a0
 ; CHECK-NEXT:    bltu a0, a1, .LBB4_2
 ; CHECK-NEXT:  # %bb.1:
@@ -235,12 +228,8 @@ define <128 x i32> @vtrunc_v128i32_v128i64(<128 x i64> %a, <128 x i1> %m, i32 ze
 ; CHECK-NEXT:    csrr a2, vlenb
 ; CHECK-NEXT:    slli a2, a2, 6
 ; CHECK-NEXT:    sub sp, sp, a2
-<<<<<<< HEAD
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0e, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0xc0, 0x00, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 64 * vlenb
-=======
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0e, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0xc8, 0x00, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 72 * vlenb
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m1, ta, ma
->>>>>>> 21edac2
 ; CHECK-NEXT:    vmv1r.v v7, v0
 ; CHECK-NEXT:    csrr a2, vlenb
 ; CHECK-NEXT:    li a3, 24
@@ -253,12 +242,7 @@ define <128 x i32> @vtrunc_v128i32_v128i64(<128 x i64> %a, <128 x i1> %m, i32 ze
 ; CHECK-NEXT:    add a2, sp, a2
 ; CHECK-NEXT:    addi a2, a2, 16
 ; CHECK-NEXT:    vs8r.v v8, (a2) # Unknown-size Folded Spill
-<<<<<<< HEAD
-; CHECK-NEXT:    vsetivli zero, 8, e8, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v25, v0, 8
-=======
-; CHECK-NEXT:    vslidedown.vi v6, v0, 8
->>>>>>> 21edac2
 ; CHECK-NEXT:    addi a2, a1, 512
 ; CHECK-NEXT:    addi a3, a1, 640
 ; CHECK-NEXT:    addi a4, a7, -64
@@ -510,16 +494,9 @@ declare <32 x i32> @llvm.vp.trunc.v32i32.v32i64(<32 x i64>, <32 x i1>, i32)
 define <32 x i32> @vtrunc_v32i32_v32i64(<32 x i64> %a, <32 x i1> %m, i32 zeroext %vl) {
 ; CHECK-LABEL: vtrunc_v32i32_v32i64:
 ; CHECK:       # %bb.0:
-<<<<<<< HEAD
 ; CHECK-NEXT:    li a2, 16
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v24, v0, 2
-=======
-; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
-; CHECK-NEXT:    vmv8r.v v24, v8
-; CHECK-NEXT:    li a2, 16
-; CHECK-NEXT:    vslidedown.vi v12, v0, 2
->>>>>>> 21edac2
 ; CHECK-NEXT:    mv a1, a0
 ; CHECK-NEXT:    bltu a0, a2, .LBB17_2
 ; CHECK-NEXT:  # %bb.1:

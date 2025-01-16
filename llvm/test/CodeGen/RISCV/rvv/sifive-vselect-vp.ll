@@ -49,6 +49,7 @@ define <vscale x 2 x i1> @select_orn_nxv2i1(<vscale x 2 x i1> %a, <vscale x 2 x 
 define <vscale x 2 x i1> @select_false_nvx2i1(<vscale x 2 x i1> %a, <vscale x 2 x i1> %b, i32 zeroext %evl) {
 ; CHECK-LABEL: select_false_nvx2i1:
 ; CHECK:       # %bb.0:
+; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    ret
   %v = call <vscale x 2 x i1> @llvm.vp.select.nxv2i1(<vscale x 2 x i1> zeroinitializer, <vscale x 2 x i1> %a, <vscale x 2 x i1> %b, i32 %evl)

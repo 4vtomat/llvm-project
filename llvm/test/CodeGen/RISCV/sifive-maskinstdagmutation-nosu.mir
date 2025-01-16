@@ -12,11 +12,11 @@ body:             |
     ; CHECK-NEXT: {{  $}}
     ; CHECK-NEXT: [[COPY:%[0-9]+]]:vr = COPY $v0
     ; CHECK-NEXT: DBG_VALUE $noreg
-    ; CHECK-NEXT: dead [[PseudoVMAND_MM_M2_:%[0-9]+]]:vr = PseudoVMAND_MM_M2 [[COPY]], [[COPY]], $noreg, 0 /* e8 */, implicit $vl, implicit $vtype
+    ; CHECK-NEXT: dead [[PseudoVMAND_MM_B4_:%[0-9]+]]:vr = PseudoVMAND_MM_B4 [[COPY]], [[COPY]], $noreg, 0 /* e8 */, implicit $vl, implicit $vtype
     ; CHECK-NEXT: PseudoRET implicit $x10
     %0:vr = COPY $v0
     DBG_VALUE $noreg
-    %1:vr = PseudoVMAND_MM_M2 %0, %0, $noreg, 0 /* e8 */, implicit $vl, implicit $vtype
+    %1:vr = PseudoVMAND_MM_B4 %0, %0, $noreg, 0 /* e8 */, implicit $vl, implicit $vtype
     PseudoRET implicit killed $x10
 
 ...

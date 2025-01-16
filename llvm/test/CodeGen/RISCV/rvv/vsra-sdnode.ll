@@ -940,7 +940,7 @@ define <vscale x 8 x i32> @vsra_vi_mask_nxv8i32(<vscale x 8 x i32> %va, <vscale 
 define <vscale x 1 x i8> @vsra_vv_nxv1i8_sext_zext_mixed_trunc(<vscale x 1 x i8> %va, <vscale x 1 x i8> %vb, <vscale x 1 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vsra_vv_nxv1i8_sext_zext_mixed_trunc:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, ma
+; CHECK-NEXT:    vsetvli a1, zero, e32, mf2, ta, ma
 ; CHECK-NEXT:    vsext.vf4 v9, v8
 ; CHECK-NEXT:    vzext.vf4 v10, v8
 ; CHECK-NEXT:    vsra.vv v8, v9, v10

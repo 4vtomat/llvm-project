@@ -2541,14 +2541,9 @@ define <32 x double> @vpgather_baseidx_v32f64(ptr %base, <32 x i64> %idxs, <32 x
 ; RV32-LABEL: vpgather_baseidx_v32f64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetivli zero, 16, e32, m4, ta, ma
-<<<<<<< HEAD
+; RV32-NEXT:    vmv1r.v v7, v0
 ; RV32-NEXT:    vnsrl.wi v16, v16, 0
 ; RV32-NEXT:    vnsrl.wi v8, v8, 0
-=======
-; RV32-NEXT:    vmv1r.v v7, v0
-; RV32-NEXT:    vnsrl.wi v24, v16, 0
-; RV32-NEXT:    vnsrl.wi v16, v8, 0
->>>>>>> 21edac2
 ; RV32-NEXT:    li a2, 32
 ; RV32-NEXT:    addi a3, a1, -16
 ; RV32-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma

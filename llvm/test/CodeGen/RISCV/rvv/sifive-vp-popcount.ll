@@ -208,6 +208,7 @@ declare i32 @llvm.experimental.vp.popcount.nxv128i1(<vscale x 128 x i1>, <vscale
 define i32 @vp_popcount_nxv128i1(<vscale x 128 x i1> %m, <vscale x 128 x i1> %op, i32 zeroext %evl) {
 ; CHECK-LABEL: vp_popcount_nxv128i1:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv1r.v v11, v8
 ; CHECK-NEXT:    vmv1r.v v8, v0
 ; CHECK-NEXT:    csrr a1, vlenb

@@ -293,18 +293,11 @@ define i32 @mul160(i32 %a) {
 }
 
 define i32 @mul200(i32 %a) {
-; RV32I-LABEL: mul200:
-; RV32I:       # %bb.0:
-; RV32I-NEXT:    li a1, 200
-; RV32I-NEXT:    mul a0, a0, a1
-; RV32I-NEXT:    ret
-;
-; RV32XTHEADBA-LABEL: mul200:
-; RV32XTHEADBA:       # %bb.0:
-; RV32XTHEADBA-NEXT:    th.addsl a0, a0, a0, 2
-; RV32XTHEADBA-NEXT:    th.addsl a0, a0, a0, 2
-; RV32XTHEADBA-NEXT:    slli a0, a0, 3
-; RV32XTHEADBA-NEXT:    ret
+; CHECK-LABEL: mul200:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    li a1, 200
+; CHECK-NEXT:    mul a0, a0, a1
+; CHECK-NEXT:    ret
   %c = mul i32 %a, 200
   ret i32 %c
 }

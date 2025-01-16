@@ -5,9 +5,9 @@ define <vscale x 16 x half> @foo(<vscale x 16 x half> %x, <vscale x 16 x half> %
 ; CHECK-LABEL: foo:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    fmv.h.x fa5, zero
-; CHECK-NEXT:    vmv4r.v v16, v8
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, mu
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_1)
+; CHECK-NEXT:    vmv4r.v v16, v8
 ; CHECK-NEXT:    vfrsqrt7.v v8, v8
 ; CHECK-NEXT:    vmfne.vf v20, v16, fa5
 ; CHECK-NEXT:    flh fa5, %lo(.LCPI0_1)(a0)

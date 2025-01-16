@@ -180,24 +180,71 @@ define <4 x i64> @m2_splat_into_slide_two_source(<4 x i64> %v1, <4 x i64> %v2) v
 }
 
 define void @shuffle1(ptr %explicit_0, ptr %explicit_1) vscale_range(2,2) {
-; CHECK-LABEL: shuffle1:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    addi a0, a0, 252
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vid.v v8
-; CHECK-NEXT:    vsetivli zero, 3, e32, m1, ta, ma
-; CHECK-NEXT:    vle32.v v9, (a0)
-; CHECK-NEXT:    li a0, 175
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vsrl.vi v8, v8, 1
-; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vadd.vi v8, v8, 1
-; CHECK-NEXT:    vrgather.vv v11, v9, v8
-; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
-; CHECK-NEXT:    vmerge.vim v8, v10, 0, v0
-; CHECK-NEXT:    addi a0, a1, 672
-; CHECK-NEXT:    vs2r.v v8, (a0)
-; CHECK-NEXT:    ret
+; RV32-LABEL: shuffle1:
+; RV32:       # %bb.0:
+; RV32-NEXT:    lbu a2, 261(a0)
+; RV32-NEXT:    lbu a3, 262(a0)
+; RV32-NEXT:    lbu a4, 263(a0)
+; RV32-NEXT:    lbu a5, 260(a0)
+; RV32-NEXT:    slli a2, a2, 8
+; RV32-NEXT:    slli a3, a3, 16
+; RV32-NEXT:    slli a4, a4, 24
+; RV32-NEXT:    or a2, a2, a5
+; RV32-NEXT:    lbu a5, 256(a0)
+; RV32-NEXT:    lbu a6, 257(a0)
+; RV32-NEXT:    or a3, a4, a3
+; RV32-NEXT:    lbu a4, 258(a0)
+; RV32-NEXT:    lbu a0, 259(a0)
+; RV32-NEXT:    slli a6, a6, 8
+; RV32-NEXT:    or a5, a6, a5
+; RV32-NEXT:    slli a4, a4, 16
+; RV32-NEXT:    slli a0, a0, 24
+; RV32-NEXT:    or a0, a0, a4
+; RV32-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
+; RV32-NEXT:    vmv.v.i v8, 0
+; RV32-NEXT:    or a2, a3, a2
+; RV32-NEXT:    or a0, a0, a5
+; RV32-NEXT:    vsetvli zero, zero, e32, m2, tu, ma
+; RV32-NEXT:    vmv.s.x v9, a0
+; RV32-NEXT:    vmv.s.x v10, a2
+; RV32-NEXT:    vsetivli zero, 3, e32, m1, tu, ma
+; RV32-NEXT:    vslideup.vi v9, v10, 2
+; RV32-NEXT:    addi a0, a1, 672
+; RV32-NEXT:    vs2r.v v8, (a0)
+; RV32-NEXT:    ret
+;
+; RV64-LABEL: shuffle1:
+; RV64:       # %bb.0:
+; RV64-NEXT:    lbu a2, 261(a0)
+; RV64-NEXT:    lbu a3, 262(a0)
+; RV64-NEXT:    lb a4, 263(a0)
+; RV64-NEXT:    lbu a5, 260(a0)
+; RV64-NEXT:    slli a2, a2, 8
+; RV64-NEXT:    slli a3, a3, 16
+; RV64-NEXT:    slli a4, a4, 24
+; RV64-NEXT:    or a2, a2, a5
+; RV64-NEXT:    lbu a5, 256(a0)
+; RV64-NEXT:    lbu a6, 257(a0)
+; RV64-NEXT:    or a3, a4, a3
+; RV64-NEXT:    lbu a4, 258(a0)
+; RV64-NEXT:    lb a0, 259(a0)
+; RV64-NEXT:    slli a6, a6, 8
+; RV64-NEXT:    or a5, a6, a5
+; RV64-NEXT:    slli a4, a4, 16
+; RV64-NEXT:    slli a0, a0, 24
+; RV64-NEXT:    or a0, a0, a4
+; RV64-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
+; RV64-NEXT:    vmv.v.i v8, 0
+; RV64-NEXT:    or a2, a3, a2
+; RV64-NEXT:    or a0, a0, a5
+; RV64-NEXT:    vsetvli zero, zero, e32, m2, tu, ma
+; RV64-NEXT:    vmv.s.x v9, a0
+; RV64-NEXT:    vmv.s.x v10, a2
+; RV64-NEXT:    vsetivli zero, 3, e32, m1, tu, ma
+; RV64-NEXT:    vslideup.vi v9, v10, 2
+; RV64-NEXT:    addi a0, a1, 672
+; RV64-NEXT:    vs2r.v v8, (a0)
+; RV64-NEXT:    ret
   %1 = getelementptr i32, ptr %explicit_0, i64 63
   %2 = load <3 x i32>, ptr %1, align 1
   %3 = shufflevector <3 x i32> %2, <3 x i32> undef, <2 x i32> <i32 1, i32 2>

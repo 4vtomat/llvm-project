@@ -36,6 +36,7 @@ declare void @llvm.riscv.vse.nxv1f64.i64(
 define void @test_vsetvl_avl(<vscale x 1 x double> %value, <vscale x 1 x double>* %v, <vscale x 1 x i1> %mask, i64 signext %avl) nounwind {
 ; CHECK-O0-LABEL: test_vsetvl_avl:
 ; CHECK-O0:       # %bb.0:
+; CHECK-O0-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-O0-NEXT:    vmv1r.v v9, v8
 ; CHECK-O0-NEXT:    vsetvli a1, a1, e64, m1, ta, ma
 ; CHECK-O0-NEXT:    vsetvli zero, a1, e64, m1, tu, mu

@@ -12,8 +12,8 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16
 ; CHECK-NEXT:    li a1, 104
 ; CHECK-NEXT:    mul a0, a0, a1
 ; CHECK-NEXT:    sub sp, sp, a0
-; CHECK-NEXT:    vmv1r.v v9, v0
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
+; CHECK-NEXT:    vmv1r.v v9, v0
 ; CHECK-NEXT:    vmv.v.i v14, 0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    vsetvli a1, zero, e8, m8, ta, ma
@@ -370,6 +370,7 @@ define {<vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16
 ; CHECK-NEXT:    li a1, 104
 ; CHECK-NEXT:    mul a0, a0, a1
 ; CHECK-NEXT:    sub sp, sp, a0
+; CHECK-NEXT:    vsetvli a0, zero, e8, m8, ta, ma
 ; CHECK-NEXT:    vmv8r.v v0, v8
 ; CHECK-NEXT:    vmv2r.v v12, v18
 ; CHECK-NEXT:    vmv2r.v v8, v6
@@ -382,7 +383,6 @@ define {<vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16
 ; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
 ; CHECK-NEXT:    vmv2r.v v10, v16
-; CHECK-NEXT:    vsetvli a0, zero, e8, m8, ta, ma
 ; CHECK-NEXT:    vid.v v16
 ; CHECK-NEXT:    li a0, 6
 ; CHECK-NEXT:    vmul.vx v16, v16, a0
@@ -738,6 +738,7 @@ define {<vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 
 ; CHECK-NEXT:    li a1, 104
 ; CHECK-NEXT:    mul a0, a0, a1
 ; CHECK-NEXT:    sub sp, sp, a0
+; CHECK-NEXT:    vsetvli a0, zero, e16, m8, ta, ma
 ; CHECK-NEXT:    vmv8r.v v0, v8
 ; CHECK-NEXT:    vmv2r.v v12, v18
 ; CHECK-NEXT:    vmv2r.v v8, v6
@@ -750,7 +751,6 @@ define {<vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 
 ; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
 ; CHECK-NEXT:    vmv2r.v v10, v16
-; CHECK-NEXT:    vsetvli a0, zero, e16, m8, ta, ma
 ; CHECK-NEXT:    vid.v v16
 ; CHECK-NEXT:    li a0, 6
 ; CHECK-NEXT:    vmul.vx v16, v16, a0
@@ -1106,6 +1106,7 @@ define {<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 
 ; CHECK-NEXT:    li a1, 104
 ; CHECK-NEXT:    mul a0, a0, a1
 ; CHECK-NEXT:    sub sp, sp, a0
+; CHECK-NEXT:    vsetvli a0, zero, e32, m8, ta, ma
 ; CHECK-NEXT:    vmv8r.v v0, v8
 ; CHECK-NEXT:    vmv2r.v v12, v18
 ; CHECK-NEXT:    vmv2r.v v8, v6
@@ -1118,7 +1119,6 @@ define {<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 
 ; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
 ; CHECK-NEXT:    vmv2r.v v10, v16
-; CHECK-NEXT:    vsetvli a0, zero, e32, m8, ta, ma
 ; CHECK-NEXT:    vid.v v16
 ; CHECK-NEXT:    li a0, 6
 ; CHECK-NEXT:    vmul.vx v16, v16, a0
@@ -1474,6 +1474,7 @@ define {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 
 ; RV32-NEXT:    li a1, 104
 ; RV32-NEXT:    mul a0, a0, a1
 ; RV32-NEXT:    sub sp, sp, a0
+; RV32-NEXT:    vsetvli a0, zero, e64, m8, ta, ma
 ; RV32-NEXT:    vmv2r.v v4, v18
 ; RV32-NEXT:    vmv2r.v v0, v14
 ; RV32-NEXT:    vmv8r.v v24, v8
@@ -1485,7 +1486,6 @@ define {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 
 ; RV32-NEXT:    addi a0, a0, 16
 ; RV32-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
 ; RV32-NEXT:    vmv2r.v v2, v16
-; RV32-NEXT:    vsetvli a0, zero, e64, m8, ta, ma
 ; RV32-NEXT:    vid.v v16
 ; RV32-NEXT:    li a0, 6
 ; RV32-NEXT:    vmul.vx v16, v16, a0
@@ -1819,6 +1819,7 @@ define {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 
 ; RV64-NEXT:    li a1, 104
 ; RV64-NEXT:    mul a0, a0, a1
 ; RV64-NEXT:    sub sp, sp, a0
+; RV64-NEXT:    vsetvli a0, zero, e64, m8, ta, ma
 ; RV64-NEXT:    vmv8r.v v0, v8
 ; RV64-NEXT:    vmv2r.v v12, v18
 ; RV64-NEXT:    vmv2r.v v8, v6
@@ -1831,7 +1832,6 @@ define {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 
 ; RV64-NEXT:    addi a0, a0, 16
 ; RV64-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
 ; RV64-NEXT:    vmv2r.v v10, v16
-; RV64-NEXT:    vsetvli a0, zero, e64, m8, ta, ma
 ; RV64-NEXT:    vid.v v16
 ; RV64-NEXT:    li a0, 6
 ; RV64-NEXT:    vmul.vx v16, v16, a0

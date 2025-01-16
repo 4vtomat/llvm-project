@@ -327,20 +327,12 @@ entry:
 define void @deinterleave7_0_i32_subvec(ptr %in, ptr %out) {
 ; CHECK-LABEL: deinterleave7_0_i32_subvec:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 16, e32, m4, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    li a0, 129
-; CHECK-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
-; CHECK-NEXT:    vmv.v.i v0, 4
-; CHECK-NEXT:    vmv.s.x v12, a0
-; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
-; CHECK-NEXT:    vcompress.vm v14, v8, v12
-; CHECK-NEXT:    vsetivli zero, 8, e32, m4, ta, ma
-; CHECK-NEXT:    vslidedown.vi v8, v8, 8
-; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, mu
-; CHECK-NEXT:    vrgather.vi v14, v8, 6, v0.t
-; CHECK-NEXT:    vsetivli zero, 3, e32, m1, ta, ma
-; CHECK-NEXT:    vse32.v v14, (a1)
+; CHECK-NEXT:    lw a2, 0(a0)
+; CHECK-NEXT:    lw a3, 28(a0)
+; CHECK-NEXT:    lw a0, 56(a0)
+; CHECK-NEXT:    sw a2, 0(a1)
+; CHECK-NEXT:    sw a3, 4(a1)
+; CHECK-NEXT:    sw a0, 8(a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i32>, ptr %in
@@ -353,15 +345,10 @@ entry:
 define void @deinterleave8_0_i8_subvec(ptr %in, ptr %out) {
 ; CHECK-LABEL: deinterleave8_0_i8_subvec:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vslidedown.vi v9, v8, 8
-; CHECK-NEXT:    vmv.x.s a0, v8
-; CHECK-NEXT:    vmv.x.s a2, v9
-; CHECK-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
-; CHECK-NEXT:    vmv.v.x v8, a0
-; CHECK-NEXT:    vslide1down.vx v8, v8, a2
-; CHECK-NEXT:    vse8.v v8, (a1)
+; CHECK-NEXT:    lbu a2, 0(a0)
+; CHECK-NEXT:    lbu a0, 8(a0)
+; CHECK-NEXT:    sb a2, 0(a1)
+; CHECK-NEXT:    sb a0, 1(a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in, align 1

@@ -224,13 +224,8 @@ define <16 x half> @vfmin_vv_v16f16(<16 x half> %va, <16 x half> %vb, <16 x i1> 
 ; ZVFH-LABEL: vfmin_vv_v16f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
-<<<<<<< HEAD
-; ZVFH-NEXT:    vmfeq.vv v0, v8, v8, v0.t
-=======
 ; ZVFH-NEXT:    vmv1r.v v12, v0
-; ZVFH-NEXT:    vmfeq.vv v13, v8, v8, v0.t
-; ZVFH-NEXT:    vmv1r.v v0, v13
->>>>>>> 21edac2
+; ZVFH-NEXT:    vmfeq.vv v0, v8, v8, v0.t
 ; ZVFH-NEXT:    vmerge.vvm v14, v8, v10, v0
 ; ZVFH-NEXT:    vmv1r.v v0, v12
 ; ZVFH-NEXT:    vmfeq.vv v0, v10, v10, v0.t
@@ -365,13 +360,8 @@ define <8 x float> @vfmin_vv_v8f32(<8 x float> %va, <8 x float> %vb, <8 x i1> %m
 ; CHECK-LABEL: vfmin_vv_v8f32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vmfeq.vv v0, v8, v8, v0.t
-=======
 ; CHECK-NEXT:    vmv1r.v v12, v0
-; CHECK-NEXT:    vmfeq.vv v13, v8, v8, v0.t
-; CHECK-NEXT:    vmv1r.v v0, v13
->>>>>>> 21edac2
+; CHECK-NEXT:    vmfeq.vv v0, v8, v8, v0.t
 ; CHECK-NEXT:    vmerge.vvm v14, v8, v10, v0
 ; CHECK-NEXT:    vmv1r.v v0, v12
 ; CHECK-NEXT:    vmfeq.vv v0, v10, v10, v0.t
@@ -403,13 +393,8 @@ define <16 x float> @vfmin_vv_v16f32(<16 x float> %va, <16 x float> %vb, <16 x i
 ; CHECK-LABEL: vfmin_vv_v16f32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vmfeq.vv v0, v8, v8, v0.t
-=======
 ; CHECK-NEXT:    vmv1r.v v16, v0
-; CHECK-NEXT:    vmfeq.vv v17, v8, v8, v0.t
-; CHECK-NEXT:    vmv1r.v v0, v17
->>>>>>> 21edac2
+; CHECK-NEXT:    vmfeq.vv v0, v8, v8, v0.t
 ; CHECK-NEXT:    vmerge.vvm v20, v8, v12, v0
 ; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    vmfeq.vv v0, v12, v12, v0.t
@@ -474,13 +459,8 @@ define <4 x double> @vfmin_vv_v4f64(<4 x double> %va, <4 x double> %vb, <4 x i1>
 ; CHECK-LABEL: vfmin_vv_v4f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vmfeq.vv v0, v8, v8, v0.t
-=======
 ; CHECK-NEXT:    vmv1r.v v12, v0
-; CHECK-NEXT:    vmfeq.vv v13, v8, v8, v0.t
-; CHECK-NEXT:    vmv1r.v v0, v13
->>>>>>> 21edac2
+; CHECK-NEXT:    vmfeq.vv v0, v8, v8, v0.t
 ; CHECK-NEXT:    vmerge.vvm v14, v8, v10, v0
 ; CHECK-NEXT:    vmv1r.v v0, v12
 ; CHECK-NEXT:    vmfeq.vv v0, v10, v10, v0.t
@@ -512,13 +492,8 @@ define <8 x double> @vfmin_vv_v8f64(<8 x double> %va, <8 x double> %vb, <8 x i1>
 ; CHECK-LABEL: vfmin_vv_v8f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vmfeq.vv v0, v8, v8, v0.t
-=======
 ; CHECK-NEXT:    vmv1r.v v16, v0
-; CHECK-NEXT:    vmfeq.vv v17, v8, v8, v0.t
-; CHECK-NEXT:    vmv1r.v v0, v17
->>>>>>> 21edac2
+; CHECK-NEXT:    vmfeq.vv v0, v8, v8, v0.t
 ; CHECK-NEXT:    vmerge.vvm v20, v8, v12, v0
 ; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    vmfeq.vv v0, v12, v12, v0.t
@@ -556,13 +531,8 @@ define <16 x double> @vfmin_vv_v16f64(<16 x double> %va, <16 x double> %vb, <16 
 ; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * vlenb
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vmfeq.vv v0, v8, v8, v0.t
-=======
 ; CHECK-NEXT:    vmv1r.v v7, v0
-; CHECK-NEXT:    vmfeq.vv v25, v8, v8, v0.t
-; CHECK-NEXT:    vmv1r.v v0, v25
->>>>>>> 21edac2
+; CHECK-NEXT:    vmfeq.vv v0, v8, v8, v0.t
 ; CHECK-NEXT:    vmerge.vvm v24, v8, v16, v0
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
@@ -609,17 +579,8 @@ define <32 x double> @vfmin_vv_v32f64(<32 x double> %va, <32 x double> %vb, <32 
 ; CHECK-NEXT:    slli a1, a1, 5
 ; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x20, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 32 * vlenb
-<<<<<<< HEAD
-; CHECK-NEXT:    vmv1r.v v6, v0
-=======
 ; CHECK-NEXT:    vsetivli zero, 16, e64, m8, ta, ma
-; CHECK-NEXT:    vmv1r.v v25, v0
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slli a1, a1, 4
-; CHECK-NEXT:    add a1, sp, a1
-; CHECK-NEXT:    addi a1, a1, 16
-; CHECK-NEXT:    vs8r.v v16, (a1) # Unknown-size Folded Spill
->>>>>>> 21edac2
+; CHECK-NEXT:    vmv1r.v v6, v0
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    li a3, 24
 ; CHECK-NEXT:    mul a1, a1, a3

@@ -453,25 +453,11 @@ define <8 x i8> @splat_ve2_we0_ins_i2we4(<8 x i8> %v, <8 x i8> %w) {
 define <8 x i8> @splat_ve2_we0_ins_i2ve4_i5we6(<8 x i8> %v, <8 x i8> %w) {
 ; CHECK-LABEL: splat_ve2_we0_ins_i2ve4_i5we6:
 ; CHECK:       # %bb.0:
-<<<<<<< HEAD
-; CHECK-NEXT:    vsetivli zero, 6, e8, mf2, ta, ma
-; CHECK-NEXT:    vmv.v.i v10, 6
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vmv.v.i v11, 0
-; CHECK-NEXT:    lui a0, 8256
-; CHECK-NEXT:    addi a0, a0, 2
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-NEXT:    vmv.v.x v12, a0
-; CHECK-NEXT:    li a0, 98
-; CHECK-NEXT:    vsetivli zero, 6, e8, mf2, tu, ma
-; CHECK-NEXT:    vslideup.vi v11, v10, 5
-=======
 ; CHECK-NEXT:    lui a0, %hi(.LCPI26_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI26_0)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v10, (a0)
 ; CHECK-NEXT:    li a0, 20
->>>>>>> 21edac2
 ; CHECK-NEXT:    vmv.s.x v0, a0
 ; CHECK-NEXT:    vmerge.vvm v9, v9, v8, v0
 ; CHECK-NEXT:    vrgather.vv v8, v9, v10
@@ -731,9 +717,9 @@ define <8 x i8> @shuffle_v64i8_v8i8(<64 x i8> %wide.vec) {
 ; CHECK-LABEL: shuffle_v64i8_v8i8:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
-; CHECK-NEXT:    vnsrl.wi v12, v8, 0
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vnsrl.wi v8, v12, 0
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0
 ; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vnsrl.wi v8, v8, 0
 ; CHECK-NEXT:    ret

@@ -410,8 +410,7 @@ define i32 @f8(i64 %i) local_unnamed_addr #0 {
 ; RV64I-NEXT:    .cfi_def_cfa s0, 0
 ; RV64I-NEXT:    andi sp, sp, -64
 ; RV64I-NEXT:    slli a0, a0, 2
-; RV64I-NEXT:    mv a1, sp
-; RV64I-NEXT:    add a0, a1, a0
+; RV64I-NEXT:    add a0, sp, a0
 ; RV64I-NEXT:    li a1, 1
 ; RV64I-NEXT:    sw a1, 0(a0)
 ; RV64I-NEXT:    lw a0, 0(sp)
@@ -437,8 +436,7 @@ define i32 @f8(i64 %i) local_unnamed_addr #0 {
 ; RV32I-NEXT:    .cfi_def_cfa s0, 0
 ; RV32I-NEXT:    andi sp, sp, -64
 ; RV32I-NEXT:    slli a0, a0, 2
-; RV32I-NEXT:    mv a1, sp
-; RV32I-NEXT:    add a0, a1, a0
+; RV32I-NEXT:    add a0, sp, a0
 ; RV32I-NEXT:    li a1, 1
 ; RV32I-NEXT:    sw a1, 0(a0)
 ; RV32I-NEXT:    lw a0, 0(sp)

@@ -115,6 +115,7 @@ define <vscale x 112 x i8> @vector_interleave_nxv112i8_nxv16i8(<vscale x 16 x i8
 ; RV32-NEXT:    slli a0, a0, 5
 ; RV32-NEXT:    sub sp, sp, a0
 ; RV32-NEXT:    andi sp, sp, -64
+; RV32-NEXT:    vsetvli a0, zero, e8, m1, ta, ma
 ; RV32-NEXT:    vmv2r.v v26, v20
 ; RV32-NEXT:    addi a0, sp, 64
 ; RV32-NEXT:    vmv2r.v v24, v16
@@ -142,7 +143,6 @@ define <vscale x 112 x i8> @vector_interleave_nxv112i8_nxv16i8(<vscale x 16 x i8
 ; RV32-NEXT:    vmv1r.v v22, v11
 ; RV32-NEXT:    add a6, a7, a2
 ; RV32-NEXT:    vmv1r.v v24, v15
-; RV32-NEXT:    vsetvli t0, zero, e8, m1, ta, ma
 ; RV32-NEXT:    vsseg7e8.v v1, (a0)
 ; RV32-NEXT:    vmv1r.v v26, v19
 ; RV32-NEXT:    vsseg7e8.v v21, (a1)
@@ -197,6 +197,7 @@ define <vscale x 112 x i8> @vector_interleave_nxv112i8_nxv16i8(<vscale x 16 x i8
 ; RV64-NEXT:    slli a0, a0, 5
 ; RV64-NEXT:    sub sp, sp, a0
 ; RV64-NEXT:    andi sp, sp, -64
+; RV64-NEXT:    vsetvli a0, zero, e8, m1, ta, ma
 ; RV64-NEXT:    vmv2r.v v26, v20
 ; RV64-NEXT:    addi a0, sp, 64
 ; RV64-NEXT:    vmv2r.v v24, v16
@@ -224,7 +225,6 @@ define <vscale x 112 x i8> @vector_interleave_nxv112i8_nxv16i8(<vscale x 16 x i8
 ; RV64-NEXT:    vmv1r.v v22, v11
 ; RV64-NEXT:    add a6, a7, a2
 ; RV64-NEXT:    vmv1r.v v24, v15
-; RV64-NEXT:    vsetvli t0, zero, e8, m1, ta, ma
 ; RV64-NEXT:    vsseg7e8.v v1, (a0)
 ; RV64-NEXT:    vmv1r.v v26, v19
 ; RV64-NEXT:    vsseg7e8.v v21, (a1)
@@ -285,6 +285,7 @@ define <vscale x 56 x i16> @vector_interleave_nxv56i16_nxv8i16(<vscale x 8 x i16
 ; RV32-NEXT:    slli a0, a0, 5
 ; RV32-NEXT:    sub sp, sp, a0
 ; RV32-NEXT:    andi sp, sp, -64
+; RV32-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
 ; RV32-NEXT:    vmv2r.v v26, v20
 ; RV32-NEXT:    addi a0, sp, 64
 ; RV32-NEXT:    vmv2r.v v24, v16
@@ -312,7 +313,6 @@ define <vscale x 56 x i16> @vector_interleave_nxv56i16_nxv8i16(<vscale x 8 x i16
 ; RV32-NEXT:    vmv1r.v v22, v11
 ; RV32-NEXT:    add a6, a7, a2
 ; RV32-NEXT:    vmv1r.v v24, v15
-; RV32-NEXT:    vsetvli t0, zero, e16, m1, ta, ma
 ; RV32-NEXT:    vsseg7e16.v v1, (a0)
 ; RV32-NEXT:    vmv1r.v v26, v19
 ; RV32-NEXT:    vsseg7e16.v v21, (a1)
@@ -367,6 +367,7 @@ define <vscale x 56 x i16> @vector_interleave_nxv56i16_nxv8i16(<vscale x 8 x i16
 ; RV64-NEXT:    slli a0, a0, 5
 ; RV64-NEXT:    sub sp, sp, a0
 ; RV64-NEXT:    andi sp, sp, -64
+; RV64-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
 ; RV64-NEXT:    vmv2r.v v26, v20
 ; RV64-NEXT:    addi a0, sp, 64
 ; RV64-NEXT:    vmv2r.v v24, v16
@@ -394,7 +395,6 @@ define <vscale x 56 x i16> @vector_interleave_nxv56i16_nxv8i16(<vscale x 8 x i16
 ; RV64-NEXT:    vmv1r.v v22, v11
 ; RV64-NEXT:    add a6, a7, a2
 ; RV64-NEXT:    vmv1r.v v24, v15
-; RV64-NEXT:    vsetvli t0, zero, e16, m1, ta, ma
 ; RV64-NEXT:    vsseg7e16.v v1, (a0)
 ; RV64-NEXT:    vmv1r.v v26, v19
 ; RV64-NEXT:    vsseg7e16.v v21, (a1)
@@ -455,6 +455,7 @@ define <vscale x 28 x i32> @vector_interleave_nxv28i32_nxv4i32(<vscale x 4 x i32
 ; RV32-NEXT:    slli a0, a0, 5
 ; RV32-NEXT:    sub sp, sp, a0
 ; RV32-NEXT:    andi sp, sp, -64
+; RV32-NEXT:    vsetvli a0, zero, e32, m1, ta, ma
 ; RV32-NEXT:    vmv2r.v v26, v20
 ; RV32-NEXT:    addi a0, sp, 64
 ; RV32-NEXT:    vmv2r.v v24, v16
@@ -482,7 +483,6 @@ define <vscale x 28 x i32> @vector_interleave_nxv28i32_nxv4i32(<vscale x 4 x i32
 ; RV32-NEXT:    vmv1r.v v22, v11
 ; RV32-NEXT:    add a6, a7, a2
 ; RV32-NEXT:    vmv1r.v v24, v15
-; RV32-NEXT:    vsetvli t0, zero, e32, m1, ta, ma
 ; RV32-NEXT:    vsseg7e32.v v1, (a0)
 ; RV32-NEXT:    vmv1r.v v26, v19
 ; RV32-NEXT:    vsseg7e32.v v21, (a1)
@@ -537,6 +537,7 @@ define <vscale x 28 x i32> @vector_interleave_nxv28i32_nxv4i32(<vscale x 4 x i32
 ; RV64-NEXT:    slli a0, a0, 5
 ; RV64-NEXT:    sub sp, sp, a0
 ; RV64-NEXT:    andi sp, sp, -64
+; RV64-NEXT:    vsetvli a0, zero, e32, m1, ta, ma
 ; RV64-NEXT:    vmv2r.v v26, v20
 ; RV64-NEXT:    addi a0, sp, 64
 ; RV64-NEXT:    vmv2r.v v24, v16
@@ -564,7 +565,6 @@ define <vscale x 28 x i32> @vector_interleave_nxv28i32_nxv4i32(<vscale x 4 x i32
 ; RV64-NEXT:    vmv1r.v v22, v11
 ; RV64-NEXT:    add a6, a7, a2
 ; RV64-NEXT:    vmv1r.v v24, v15
-; RV64-NEXT:    vsetvli t0, zero, e32, m1, ta, ma
 ; RV64-NEXT:    vsseg7e32.v v1, (a0)
 ; RV64-NEXT:    vmv1r.v v26, v19
 ; RV64-NEXT:    vsseg7e32.v v21, (a1)
@@ -625,6 +625,7 @@ define <vscale x 14 x i64> @vector_interleave_nxv14i64_nxv2i64(<vscale x 2 x i64
 ; RV32-NEXT:    slli a0, a0, 5
 ; RV32-NEXT:    sub sp, sp, a0
 ; RV32-NEXT:    andi sp, sp, -64
+; RV32-NEXT:    vsetvli a0, zero, e64, m1, ta, ma
 ; RV32-NEXT:    vmv2r.v v26, v20
 ; RV32-NEXT:    addi a0, sp, 64
 ; RV32-NEXT:    vmv2r.v v24, v16
@@ -652,7 +653,6 @@ define <vscale x 14 x i64> @vector_interleave_nxv14i64_nxv2i64(<vscale x 2 x i64
 ; RV32-NEXT:    vmv1r.v v22, v11
 ; RV32-NEXT:    add a6, a7, a2
 ; RV32-NEXT:    vmv1r.v v24, v15
-; RV32-NEXT:    vsetvli t0, zero, e64, m1, ta, ma
 ; RV32-NEXT:    vsseg7e64.v v1, (a0)
 ; RV32-NEXT:    vmv1r.v v26, v19
 ; RV32-NEXT:    vsseg7e64.v v21, (a1)
@@ -707,6 +707,7 @@ define <vscale x 14 x i64> @vector_interleave_nxv14i64_nxv2i64(<vscale x 2 x i64
 ; RV64-NEXT:    slli a0, a0, 5
 ; RV64-NEXT:    sub sp, sp, a0
 ; RV64-NEXT:    andi sp, sp, -64
+; RV64-NEXT:    vsetvli a0, zero, e64, m1, ta, ma
 ; RV64-NEXT:    vmv2r.v v26, v20
 ; RV64-NEXT:    addi a0, sp, 64
 ; RV64-NEXT:    vmv2r.v v24, v16
@@ -734,7 +735,6 @@ define <vscale x 14 x i64> @vector_interleave_nxv14i64_nxv2i64(<vscale x 2 x i64
 ; RV64-NEXT:    vmv1r.v v22, v11
 ; RV64-NEXT:    add a6, a7, a2
 ; RV64-NEXT:    vmv1r.v v24, v15
-; RV64-NEXT:    vsetvli t0, zero, e64, m1, ta, ma
 ; RV64-NEXT:    vsseg7e64.v v1, (a0)
 ; RV64-NEXT:    vmv1r.v v26, v19
 ; RV64-NEXT:    vsseg7e64.v v21, (a1)

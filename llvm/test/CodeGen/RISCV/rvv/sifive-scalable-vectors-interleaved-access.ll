@@ -278,6 +278,7 @@ define void @store_factor3_v2(<vscale x 1 x i32> %v0, <vscale x 1 x i32> %v1, pt
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    lui a2, 699051
 ; RV32-NEXT:    addi a2, a2, -1365
+; RV32-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; RV32-NEXT:    vmv1r.v v10, v8
 ; RV32-NEXT:    mulhu a1, a1, a2
 ; RV32-NEXT:    srli a1, a1, 1
@@ -290,6 +291,7 @@ define void @store_factor3_v2(<vscale x 1 x i32> %v0, <vscale x 1 x i32> %v1, pt
 ; RV64-NEXT:    slli a1, a1, 32
 ; RV64-NEXT:    lui a2, 699051
 ; RV64-NEXT:    addi a2, a2, -1365
+; RV64-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; RV64-NEXT:    vmv1r.v v10, v8
 ; RV64-NEXT:    slli a2, a2, 32
 ; RV64-NEXT:    mulhu a1, a1, a2
@@ -306,18 +308,18 @@ define void @store_factor4_v2(<vscale x 1 x i32> %v0, <vscale x 1 x i32> %v1, pt
 ; RV32-LABEL: store_factor4_v2:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    srli a1, a1, 2
+; RV32-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
 ; RV32-NEXT:    vmv1r.v v10, v8
 ; RV32-NEXT:    vmv1r.v v11, v9
-; RV32-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
 ; RV32-NEXT:    vsseg4e32.v v8, (a0)
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: store_factor4_v2:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    srliw a1, a1, 2
+; RV64-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
 ; RV64-NEXT:    vmv1r.v v10, v8
 ; RV64-NEXT:    vmv1r.v v11, v9
-; RV64-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
 ; RV64-NEXT:    vsseg4e32.v v8, (a0)
 ; RV64-NEXT:    ret
   %interleaved.vec = call <vscale x 4 x i32> @llvm.experimental.vector.interleave4.nxv4i32(<vscale x 1 x i32> %v0, <vscale x 1 x i32> %v1, <vscale x 1 x i32> %v0, <vscale x 1 x i32> %v1)
@@ -330,6 +332,7 @@ define void @store_factor5_v2(<vscale x 1 x i32> %v0, <vscale x 1 x i32> %v1, pt
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    lui a2, 838861
 ; RV32-NEXT:    addi a2, a2, -819
+; RV32-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; RV32-NEXT:    vmv1r.v v10, v8
 ; RV32-NEXT:    mulhu a1, a1, a2
 ; RV32-NEXT:    vmv1r.v v11, v9
@@ -344,6 +347,7 @@ define void @store_factor5_v2(<vscale x 1 x i32> %v0, <vscale x 1 x i32> %v1, pt
 ; RV64-NEXT:    slli a1, a1, 32
 ; RV64-NEXT:    lui a2, 838861
 ; RV64-NEXT:    addi a2, a2, -819
+; RV64-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; RV64-NEXT:    vmv1r.v v10, v8
 ; RV64-NEXT:    slli a2, a2, 32
 ; RV64-NEXT:    vmv1r.v v11, v9
@@ -363,6 +367,7 @@ define void @store_factor6_v2(<vscale x 1 x i32> %v0, <vscale x 1 x i32> %v1, pt
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    lui a2, 699051
 ; RV32-NEXT:    addi a2, a2, -1365
+; RV32-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; RV32-NEXT:    vmv1r.v v10, v8
 ; RV32-NEXT:    vmv1r.v v11, v9
 ; RV32-NEXT:    mulhu a1, a1, a2
@@ -378,6 +383,7 @@ define void @store_factor6_v2(<vscale x 1 x i32> %v0, <vscale x 1 x i32> %v1, pt
 ; RV64-NEXT:    slli a1, a1, 32
 ; RV64-NEXT:    lui a2, 699051
 ; RV64-NEXT:    addi a2, a2, -1365
+; RV64-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; RV64-NEXT:    vmv1r.v v10, v8
 ; RV64-NEXT:    slli a2, a2, 32
 ; RV64-NEXT:    vmv1r.v v11, v9
@@ -398,6 +404,7 @@ define void @store_factor7_v2(<vscale x 1 x i32> %v0, <vscale x 1 x i32> %v1, pt
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    lui a2, 149797
 ; RV32-NEXT:    addi a2, a2, -1755
+; RV32-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; RV32-NEXT:    vmv1r.v v10, v8
 ; RV32-NEXT:    mulhu a2, a1, a2
 ; RV32-NEXT:    vmv1r.v v11, v9
@@ -417,6 +424,7 @@ define void @store_factor7_v2(<vscale x 1 x i32> %v0, <vscale x 1 x i32> %v1, pt
 ; RV64-NEXT:    slli a2, a1, 32
 ; RV64-NEXT:    lui a3, 149797
 ; RV64-NEXT:    addi a3, a3, -1755
+; RV64-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; RV64-NEXT:    vmv1r.v v10, v8
 ; RV64-NEXT:    slli a3, a3, 32
 ; RV64-NEXT:    vmv1r.v v11, v9
@@ -441,26 +449,26 @@ define void @store_factor8_v2(<vscale x 1 x i32> %v0, <vscale x 1 x i32> %v1, pt
 ; RV32-LABEL: store_factor8_v2:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    srli a1, a1, 3
+; RV32-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
 ; RV32-NEXT:    vmv1r.v v10, v8
 ; RV32-NEXT:    vmv1r.v v11, v9
 ; RV32-NEXT:    vmv1r.v v12, v8
 ; RV32-NEXT:    vmv1r.v v13, v9
 ; RV32-NEXT:    vmv1r.v v14, v8
 ; RV32-NEXT:    vmv1r.v v15, v9
-; RV32-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
 ; RV32-NEXT:    vsseg8e32.v v8, (a0)
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: store_factor8_v2:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    srliw a1, a1, 3
+; RV64-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
 ; RV64-NEXT:    vmv1r.v v10, v8
 ; RV64-NEXT:    vmv1r.v v11, v9
 ; RV64-NEXT:    vmv1r.v v12, v8
 ; RV64-NEXT:    vmv1r.v v13, v9
 ; RV64-NEXT:    vmv1r.v v14, v8
 ; RV64-NEXT:    vmv1r.v v15, v9
-; RV64-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
 ; RV64-NEXT:    vsseg8e32.v v8, (a0)
 ; RV64-NEXT:    ret
   %interleaved.vec = call <vscale x 8 x i32> @llvm.experimental.vector.interleave8.nxv8i32(<vscale x 1 x i32> %v0, <vscale x 1 x i32> %v1, <vscale x 1 x i32> %v0, <vscale x 1 x i32> %v1, <vscale x 1 x i32> %v0, <vscale x 1 x i32> %v1, <vscale x 1 x i32> %v0, <vscale x 1 x i32> %v1)
@@ -731,16 +739,16 @@ define void @masked_store_factor2_v2(<vscale x 1 x i1> %mask, <vscale x 1 x i32>
 ; RV32-LABEL: masked_store_factor2_v2:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    srli a1, a1, 1
-; RV32-NEXT:    vmv1r.v v9, v8
 ; RV32-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
+; RV32-NEXT:    vmv1r.v v9, v8
 ; RV32-NEXT:    vsseg2e32.v v8, (a0), v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: masked_store_factor2_v2:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    srliw a1, a1, 1
-; RV64-NEXT:    vmv1r.v v9, v8
 ; RV64-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
+; RV64-NEXT:    vmv1r.v v9, v8
 ; RV64-NEXT:    vsseg2e32.v v8, (a0), v0.t
 ; RV64-NEXT:    ret
   %interleaved.mask = tail call <vscale x 2 x i1> @llvm.experimental.vector.interleave2.nxv2i1(<vscale x 1 x i1> %mask, <vscale x 1 x i1> %mask)
@@ -778,8 +786,8 @@ define void @masked_load_store_factor2_v2_shared_mask(<vscale x 2 x i1> %mask, p
 define i32 @masked_load_store_factor2_v2_shared_mask_extract(<vscale x 2 x i1> %mask, ptr %ptr, i32 %rvl) {
 ; RV32-LABEL: masked_load_store_factor2_v2_shared_mask_extract:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    vmv1r.v v8, v0
 ; RV32-NEXT:    vsetvli a2, zero, e8, mf4, ta, ma
+; RV32-NEXT:    vmv1r.v v8, v0
 ; RV32-NEXT:    vmv.v.i v9, 0
 ; RV32-NEXT:    li a2, -1
 ; RV32-NEXT:    vsetvli a3, zero, e8, mf2, ta, ma
@@ -818,8 +826,8 @@ define i32 @masked_load_store_factor2_v2_shared_mask_extract(<vscale x 2 x i1> %
 ;
 ; RV64-LABEL: masked_load_store_factor2_v2_shared_mask_extract:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    vmv1r.v v8, v0
 ; RV64-NEXT:    vsetvli a2, zero, e8, mf4, ta, ma
+; RV64-NEXT:    vmv1r.v v8, v0
 ; RV64-NEXT:    vmv.v.i v9, 0
 ; RV64-NEXT:    li a2, -1
 ; RV64-NEXT:    vsetvli a3, zero, e8, mf2, ta, ma
@@ -873,6 +881,7 @@ define void @masked_store_factor3_v2(<vscale x 1 x i1> %mask, <vscale x 1 x i32>
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    lui a2, 699051
 ; RV32-NEXT:    addi a2, a2, -1365
+; RV32-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; RV32-NEXT:    vmv1r.v v10, v8
 ; RV32-NEXT:    mulhu a1, a1, a2
 ; RV32-NEXT:    srli a1, a1, 1
@@ -885,6 +894,7 @@ define void @masked_store_factor3_v2(<vscale x 1 x i1> %mask, <vscale x 1 x i32>
 ; RV64-NEXT:    slli a1, a1, 32
 ; RV64-NEXT:    lui a2, 699051
 ; RV64-NEXT:    addi a2, a2, -1365
+; RV64-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; RV64-NEXT:    vmv1r.v v10, v8
 ; RV64-NEXT:    slli a2, a2, 32
 ; RV64-NEXT:    mulhu a1, a1, a2
@@ -902,18 +912,18 @@ define void @masked_store_factor4_v2(<vscale x 1 x i1> %mask, <vscale x 1 x i32>
 ; RV32-LABEL: masked_store_factor4_v2:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    srli a1, a1, 2
+; RV32-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
 ; RV32-NEXT:    vmv1r.v v10, v8
 ; RV32-NEXT:    vmv1r.v v11, v9
-; RV32-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
 ; RV32-NEXT:    vsseg4e32.v v8, (a0), v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: masked_store_factor4_v2:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    srliw a1, a1, 2
+; RV64-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
 ; RV64-NEXT:    vmv1r.v v10, v8
 ; RV64-NEXT:    vmv1r.v v11, v9
-; RV64-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
 ; RV64-NEXT:    vsseg4e32.v v8, (a0), v0.t
 ; RV64-NEXT:    ret
   %interleaved.mask = tail call <vscale x 4 x i1> @llvm.experimental.vector.interleave4.nxv4i1(<vscale x 1 x i1> %mask, <vscale x 1 x i1> %mask, <vscale x 1 x i1> %mask, <vscale x 1 x i1> %mask)
@@ -927,6 +937,7 @@ define void @masked_store_factor5_v2(<vscale x 1 x i1> %mask, <vscale x 1 x i32>
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    lui a2, 838861
 ; RV32-NEXT:    addi a2, a2, -819
+; RV32-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; RV32-NEXT:    vmv1r.v v10, v8
 ; RV32-NEXT:    mulhu a1, a1, a2
 ; RV32-NEXT:    vmv1r.v v11, v9
@@ -941,6 +952,7 @@ define void @masked_store_factor5_v2(<vscale x 1 x i1> %mask, <vscale x 1 x i32>
 ; RV64-NEXT:    slli a1, a1, 32
 ; RV64-NEXT:    lui a2, 838861
 ; RV64-NEXT:    addi a2, a2, -819
+; RV64-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; RV64-NEXT:    vmv1r.v v10, v8
 ; RV64-NEXT:    slli a2, a2, 32
 ; RV64-NEXT:    vmv1r.v v11, v9
@@ -961,6 +973,7 @@ define void @masked_store_factor6_v2(<vscale x 1 x i1> %mask, <vscale x 1 x i32>
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    lui a2, 699051
 ; RV32-NEXT:    addi a2, a2, -1365
+; RV32-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; RV32-NEXT:    vmv1r.v v10, v8
 ; RV32-NEXT:    vmv1r.v v11, v9
 ; RV32-NEXT:    mulhu a1, a1, a2
@@ -976,6 +989,7 @@ define void @masked_store_factor6_v2(<vscale x 1 x i1> %mask, <vscale x 1 x i32>
 ; RV64-NEXT:    slli a1, a1, 32
 ; RV64-NEXT:    lui a2, 699051
 ; RV64-NEXT:    addi a2, a2, -1365
+; RV64-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; RV64-NEXT:    vmv1r.v v10, v8
 ; RV64-NEXT:    slli a2, a2, 32
 ; RV64-NEXT:    vmv1r.v v11, v9
@@ -997,6 +1011,7 @@ define void @masked_store_factor7_v2(<vscale x 1 x i1> %mask, <vscale x 1 x i32>
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    lui a2, 149797
 ; RV32-NEXT:    addi a2, a2, -1755
+; RV32-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; RV32-NEXT:    vmv1r.v v10, v8
 ; RV32-NEXT:    mulhu a2, a1, a2
 ; RV32-NEXT:    vmv1r.v v11, v9
@@ -1016,6 +1031,7 @@ define void @masked_store_factor7_v2(<vscale x 1 x i1> %mask, <vscale x 1 x i32>
 ; RV64-NEXT:    slli a2, a1, 32
 ; RV64-NEXT:    lui a3, 149797
 ; RV64-NEXT:    addi a3, a3, -1755
+; RV64-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; RV64-NEXT:    vmv1r.v v10, v8
 ; RV64-NEXT:    slli a3, a3, 32
 ; RV64-NEXT:    vmv1r.v v11, v9
@@ -1041,26 +1057,26 @@ define void @masked_store_factor8_v2(<vscale x 1 x i1> %mask, <vscale x 1 x i32>
 ; RV32-LABEL: masked_store_factor8_v2:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    srli a1, a1, 3
+; RV32-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
 ; RV32-NEXT:    vmv1r.v v10, v8
 ; RV32-NEXT:    vmv1r.v v11, v9
 ; RV32-NEXT:    vmv1r.v v12, v8
 ; RV32-NEXT:    vmv1r.v v13, v9
 ; RV32-NEXT:    vmv1r.v v14, v8
 ; RV32-NEXT:    vmv1r.v v15, v9
-; RV32-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
 ; RV32-NEXT:    vsseg8e32.v v8, (a0), v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: masked_store_factor8_v2:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    srliw a1, a1, 3
+; RV64-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
 ; RV64-NEXT:    vmv1r.v v10, v8
 ; RV64-NEXT:    vmv1r.v v11, v9
 ; RV64-NEXT:    vmv1r.v v12, v8
 ; RV64-NEXT:    vmv1r.v v13, v9
 ; RV64-NEXT:    vmv1r.v v14, v8
 ; RV64-NEXT:    vmv1r.v v15, v9
-; RV64-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
 ; RV64-NEXT:    vsseg8e32.v v8, (a0), v0.t
 ; RV64-NEXT:    ret
   %interleaved.mask = tail call <vscale x 8 x i1> @llvm.experimental.vector.interleave8.nxv8i1(<vscale x 1 x i1> %mask, <vscale x 1 x i1> %mask, <vscale x 1 x i1> %mask, <vscale x 1 x i1> %mask, <vscale x 1 x i1> %mask, <vscale x 1 x i1> %mask, <vscale x 1 x i1> %mask, <vscale x 1 x i1> %mask)

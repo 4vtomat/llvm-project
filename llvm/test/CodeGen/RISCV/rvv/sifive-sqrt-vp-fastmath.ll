@@ -1978,11 +1978,11 @@ define <vscale x 8 x double> @rsqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 
 ; RV32-NEXT:    mul a1, a1, a2
 ; RV32-NEXT:    sub sp, sp, a1
 ; RV32-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x28, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 40 * vlenb
+; RV32-NEXT:    vsetvli a1, zero, e64, m8, ta, ma
 ; RV32-NEXT:    vmv8r.v v16, v8
 ; RV32-NEXT:    lui a1, %hi(.LCPI26_0)
 ; RV32-NEXT:    fld fa5, %lo(.LCPI26_0)(a1)
 ; RV32-NEXT:    lui a1, %hi(.LCPI26_1)
-; RV32-NEXT:    vsetvli a2, zero, e64, m8, ta, ma
 ; RV32-NEXT:    vfmv.v.f v8, fa5
 ; RV32-NEXT:    csrr a2, vlenb
 ; RV32-NEXT:    slli a2, a2, 5
@@ -2122,11 +2122,11 @@ define <vscale x 8 x double> @rsqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 
 ; RV64-NEXT:    mul a1, a1, a2
 ; RV64-NEXT:    sub sp, sp, a1
 ; RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x28, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 40 * vlenb
+; RV64-NEXT:    vsetvli a1, zero, e64, m8, ta, ma
 ; RV64-NEXT:    vmv8r.v v16, v8
 ; RV64-NEXT:    lui a1, %hi(.LCPI26_0)
 ; RV64-NEXT:    fld fa5, %lo(.LCPI26_0)(a1)
 ; RV64-NEXT:    lui a1, %hi(.LCPI26_1)
-; RV64-NEXT:    vsetvli a2, zero, e64, m8, ta, ma
 ; RV64-NEXT:    vfmv.v.f v8, fa5
 ; RV64-NEXT:    csrr a2, vlenb
 ; RV64-NEXT:    slli a2, a2, 5

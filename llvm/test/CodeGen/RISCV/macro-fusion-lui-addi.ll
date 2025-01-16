@@ -30,26 +30,18 @@ define void @foo(i32 signext %0, i32 signext %1) {
 ; FUSION-NEXT:    addi a0, a0, %lo(.L.str)
 ; FUSION-NEXT:    tail bar
 ;
-<<<<<<< HEAD
-; FUSION-POSTRA-LABEL: foo:
-; FUSION-POSTRA:       # %bb.0:
-; FUSION-POSTRA-NEXT:    fcvt.s.w fa0, a1
-; FUSION-POSTRA-NEXT:    lui a0, %hi(.L.str)
-; FUSION-POSTRA-NEXT:    addi a0, a0, %lo(.L.str)
-; FUSION-POSTRA-NEXT:    tail bar
-=======
 ; FUSION-POSTRA-TOPDOWN-LABEL: foo:
 ; FUSION-POSTRA-TOPDOWN:       # %bb.0:
+; FUSION-POSTRA-TOPDOWN-NEXT:    fcvt.s.w fa0, a1
 ; FUSION-POSTRA-TOPDOWN-NEXT:    lui a0, %hi(.L.str)
 ; FUSION-POSTRA-TOPDOWN-NEXT:    addi a0, a0, %lo(.L.str)
-; FUSION-POSTRA-TOPDOWN-NEXT:    fcvt.s.w fa0, a1
 ; FUSION-POSTRA-TOPDOWN-NEXT:    tail bar
 ;
 ; FUSION-POSTRA-BOTTOMUP-LABEL: foo:
 ; FUSION-POSTRA-BOTTOMUP:       # %bb.0:
-; FUSION-POSTRA-BOTTOMUP-NEXT:    fcvt.s.w fa0, a1
 ; FUSION-POSTRA-BOTTOMUP-NEXT:    lui a0, %hi(.L.str)
 ; FUSION-POSTRA-BOTTOMUP-NEXT:    addi a0, a0, %lo(.L.str)
+; FUSION-POSTRA-BOTTOMUP-NEXT:    fcvt.s.w fa0, a1
 ; FUSION-POSTRA-BOTTOMUP-NEXT:    tail bar
 ;
 ; FUSION-POSTRA-BIDIRECTIONAL-LABEL: foo:
@@ -58,7 +50,6 @@ define void @foo(i32 signext %0, i32 signext %1) {
 ; FUSION-POSTRA-BIDIRECTIONAL-NEXT:    addi a0, a0, %lo(.L.str)
 ; FUSION-POSTRA-BIDIRECTIONAL-NEXT:    fcvt.s.w fa0, a1
 ; FUSION-POSTRA-BIDIRECTIONAL-NEXT:    tail bar
->>>>>>> 21edac2
   %3 = sitofp i32 %1 to float
   tail call void @bar(ptr @.str, float %3)
   ret void

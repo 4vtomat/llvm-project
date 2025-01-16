@@ -14,6 +14,7 @@ define <vscale x 1 x i1> @selectcc_nxv1i1(i1 signext %a, i1 signext %b, <vscale 
 ; CHECK-NEXT:    andi a0, a0, 1
 ; CHECK-NEXT:    bne a0, a1, .LBB0_2
 ; CHECK-NEXT:  # %bb.1:
+; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:  .LBB0_2:
 ; CHECK-NEXT:    ret

@@ -97,22 +97,6 @@ define <4 x i32> @v4i32_v8i32(<8 x i32>) {
 define <4 x i32> @v4i32_v16i32(<16 x i32>) {
 ; RV32-LABEL: v4i32_v16i32:
 ; RV32:       # %bb.0:
-<<<<<<< HEAD
-; RV32-NEXT:    vsetivli zero, 8, e32, m4, ta, ma
-; RV32-NEXT:    vslidedown.vi v16, v8, 8
-; RV32-NEXT:    vsetivli zero, 2, e16, m1, ta, ma
-; RV32-NEXT:    vmv.v.i v14, 1
-; RV32-NEXT:    vmv2r.v v10, v12
-; RV32-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; RV32-NEXT:    vmv.v.i v12, 6
-; RV32-NEXT:    li a0, 32
-; RV32-NEXT:    vmv.v.i v0, 10
-; RV32-NEXT:    vsetivli zero, 2, e16, m1, tu, ma
-; RV32-NEXT:    vslideup.vi v12, v14, 1
-; RV32-NEXT:    vsetivli zero, 8, e32, m2, ta, mu
-; RV32-NEXT:    vnsrl.wx v8, v8, a0
-; RV32-NEXT:    vrgatherei16.vv v8, v16, v12, v0.t
-=======
 ; RV32-NEXT:    vsetivli zero, 2, e16, m1, ta, ma
 ; RV32-NEXT:    vmv.v.i v12, 1
 ; RV32-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
@@ -128,28 +112,16 @@ define <4 x i32> @v4i32_v16i32(<16 x i32>) {
 ; RV32-NEXT:    vsetivli zero, 8, e32, m2, ta, mu
 ; RV32-NEXT:    vrgatherei16.vv v12, v8, v14, v0.t
 ; RV32-NEXT:    vmv1r.v v8, v12
->>>>>>> 21edac2
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: v4i32_v16i32:
 ; RV64:       # %bb.0:
-<<<<<<< HEAD
-; RV64-NEXT:    vsetivli zero, 8, e32, m4, ta, ma
-; RV64-NEXT:    vslidedown.vi v16, v8, 8
-; RV64-NEXT:    li a0, 32
-; RV64-NEXT:    vmv2r.v v10, v12
-; RV64-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
-; RV64-NEXT:    vmv.v.i v0, 10
-; RV64-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
-; RV64-NEXT:    vnsrl.wx v8, v8, a0
-=======
 ; RV64-NEXT:    li a0, 32
 ; RV64-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; RV64-NEXT:    vmv.v.i v0, 10
 ; RV64-NEXT:    vnsrl.wx v12, v8, a0
 ; RV64-NEXT:    vsetivli zero, 8, e32, m4, ta, ma
 ; RV64-NEXT:    vslidedown.vi v8, v8, 8
->>>>>>> 21edac2
 ; RV64-NEXT:    li a0, 3
 ; RV64-NEXT:    slli a0, a0, 33
 ; RV64-NEXT:    addi a0, a0, 1

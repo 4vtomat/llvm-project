@@ -592,18 +592,10 @@ define <256 x i1> @icmp_eq_vv_v256i8(<256 x i8> %va, <256 x i8> %vb, <256 x i1> 
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    csrr a1, vlenb
-<<<<<<< HEAD
-=======
-; CHECK-NEXT:    slli a1, a1, 4
-; CHECK-NEXT:    sub sp, sp, a1
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * vlenb
-; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
-; CHECK-NEXT:    vmv1r.v v7, v0
-; CHECK-NEXT:    csrr a1, vlenb
->>>>>>> 21edac2
 ; CHECK-NEXT:    slli a1, a1, 3
 ; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * vlenb
+; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv1r.v v7, v0
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill

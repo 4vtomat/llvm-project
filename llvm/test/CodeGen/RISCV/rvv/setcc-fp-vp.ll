@@ -1450,12 +1450,8 @@ define <vscale x 64 x i1> @fcmp_oeq_vv_nxv64bf16(<vscale x 64 x bfloat> %va, <vs
 ; CHECK-NEXT:    slli a3, a1, 5
 ; CHECK-NEXT:    add a1, a3, a1
 ; CHECK-NEXT:    sub sp, sp, a1
-<<<<<<< HEAD
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x21, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 33 * vlenb
-=======
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x29, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 41 * vlenb
 ; CHECK-NEXT:    vsetvli a1, zero, e8, m1, ta, ma
->>>>>>> 21edac2
 ; CHECK-NEXT:    vmv1r.v v24, v0
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    mv a3, a1
@@ -3699,12 +3695,8 @@ define <vscale x 64 x i1> @fcmp_oeq_vv_nxv64f16(<vscale x 64 x half> %va, <vscal
 ; ZVFHMIN-NEXT:    slli a3, a1, 5
 ; ZVFHMIN-NEXT:    add a1, a3, a1
 ; ZVFHMIN-NEXT:    sub sp, sp, a1
-<<<<<<< HEAD
 ; ZVFHMIN-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x21, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 33 * vlenb
-=======
-; ZVFHMIN-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x29, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 41 * vlenb
 ; ZVFHMIN-NEXT:    vsetvli a1, zero, e8, m1, ta, ma
->>>>>>> 21edac2
 ; ZVFHMIN-NEXT:    vmv1r.v v24, v0
 ; ZVFHMIN-NEXT:    csrr a1, vlenb
 ; ZVFHMIN-NEXT:    mv a3, a1
