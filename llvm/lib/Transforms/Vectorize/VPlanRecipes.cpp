@@ -631,22 +631,8 @@ Value *VPInstruction::generate(VPTransformState &State) {
     // Replace the temporary unreachable terminator with a new conditional
     // branch, hooking it up to backward destination for exiting blocks now and
     // to forward destination(s) later when they are created.
-#if SIFIVE_CUSTOMIZATION
-    const bool UnconditionalBranch =
-        State.Plan->useVLAVectorizer() && !State.Plan->isUncountable() &&
-        match(Cond, PatternMatch::m_One()) && !getParent()->isExiting();
-    BranchInst *CondBr;
-    if (State.Plan->useVLAVectorizer())
-      CondBr =
-          UnconditionalBranch
-              ? Builder.CreateBr(Builder.GetInsertBlock())
-              : Builder.CreateCondBr(Cond, Builder.GetInsertBlock(), nullptr);
-    else
-      CondBr = Builder.CreateCondBr(Cond, Builder.GetInsertBlock(), nullptr);
-#else
     BranchInst *CondBr =
             Builder.CreateCondBr(Cond, Builder.GetInsertBlock(), nullptr);
-#endif // SIFIVE_CUSTOMIZATION
     CondBr->setSuccessor(0, nullptr);
     Builder.GetInsertBlock()->getTerminator()->eraseFromParent();
 

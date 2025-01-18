@@ -9550,6 +9550,27 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
   //    predication, updating analyses.
   ILV.fixVectorizedLoop(State);
 
+#if SIFIVE_CUSTOMIZATION
+  // optimize conditional branch in middle.block after execution
+  // if condition is always true, use unconditional branch instead.
+  if (Legal->useVLAVectorizer()) {
+    auto *ScalarPhVPBB = BestVPlan.getScalarPreheader();
+    BasicBlock *MiddleBB = State.CFG.VPBB2IRBB[MiddleVPBB];
+    BasicBlock *ScalarPhBB = State.CFG.VPBB2IRBB[ScalarPhVPBB];
+    auto *MiddleTerm =
+        cast<BranchInst>(MiddleBB->getTerminator());
+    if (MiddleTerm->isConditional() && ScalarPhBB->hasNPredecessorsOrMore(2)) {
+      auto *Cond = dyn_cast<ConstantInt>(MiddleTerm->getCondition());
+      if (Cond && Cond->isOne() && MiddleTerm->getSuccessor(1) == ScalarPhBB) {
+        ScalarPhBB->removePredecessor(MiddleBB, false);
+        BranchInst *BI = BranchInst::Create(MiddleTerm->getSuccessor(0));
+        ReplaceInstWithInst(MiddleTerm, BI);
+        State.CFG.DTU.applyUpdates({{DominatorTree::Delete, MiddleBB, ScalarPhBB}});
+      }
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   ILV.printDebugTracesAtEnd();
 
   // 4. Adjust branch weight of the branch in the middle block.
@@ -11556,9 +11577,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     VPlanTransforms::handleUncountableEarlyExit(
         *Plan, *PSE.getSE(), OrigLoop, UncountableExitingBlock, RecipeBuilder);
   }
-#if SIFIVE_CUSTOMIZATION
-  if (!Legal->useVLAVectorizer() || CM.requiresScalarEpilogue(true))
-#endif // SIFIVE_CUSTOMIZATION
   addScalarResumePhis(RecipeBuilder, *Plan);
 #if SIFIVE_CUSTOMIZATION
   SetVector<VPIRInstruction *> ExitUsersToFix =

@@ -564,17 +564,6 @@ void VPBasicBlock::connectToPredecessors(VPTransformState::CFGState &CFG) {
 
     auto *TermBr = dyn_cast<BranchInst>(PredBBTerminator);
 #if SIFIVE_CUSTOMIZATION
-    // TODO: That has to be moved into transforms and proper representation of
-    // BranchOnCond. As of now, it's a quick hack to unblock pulldown
-    if (isa<VPIRBasicBlock>(this) && getPlan()->useVLAVectorizer() &&
-        !getPlan()->isUncountable() && PredVPBB->getTerminator() &&
-        match(PredVPBB->getTerminator(), m_BranchOnCond(m_True()))) {
-      if (PredVPSuccessors.front() == this) {
-        TermBr->setSuccessor(0, NewBB);
-        CFG.DTU.applyUpdates({{DominatorTree::Insert, PredBB, NewBB}});
-      }
-      return;
-    }
     if (isa<UnreachableInst>(PredBBTerminator) &&
         !isa<VPConditionalRegionBlock>(PredVPSuccessors[0])) {
 #else
