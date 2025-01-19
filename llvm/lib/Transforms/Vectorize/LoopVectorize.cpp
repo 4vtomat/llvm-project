@@ -3154,7 +3154,10 @@ BasicBlock *InnerLoopVectorizer::createVectorizedLoopSkeleton(
       BranchInst *Br = BranchInst::Create(Succ);
       ReplaceInstWithInst(OrigBr, Br);
       LoopBypassBlocks.erase(LoopBypassBlocks.begin() + PrevTCCheckBlockID);
-      DT->changeImmediateDominator(LoopScalarPreHeader, Succ);
+
+      VPBlockBase *TCCheckVPBB = Plan.getEntry();
+      VPBlockBase *ScalarPh = Plan.getScalarPreheader();
+      VPBlockUtils::disconnectBlocks(TCCheckVPBB, ScalarPh);
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
