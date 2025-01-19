@@ -46,10 +46,10 @@ define void @foo(ptr %a, ptr %b, i32 %n, i32 %alpha) {
 ; CHECK-NEXT:    ret void
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
-; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[INDVARS_IV]]
+; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds nuw i8, ptr [[A]], i64 [[INDVARS_IV]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
 ; CHECK-NEXT:    [[CONV:%.*]] = zext i8 [[TMP9]] to i32
-; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 [[INDVARS_IV]]
+; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds nuw i8, ptr [[B]], i64 [[INDVARS_IV]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = load i8, ptr [[ARRAYIDX2]], align 1
 ; CHECK-NEXT:    [[CONV3:%.*]] = zext i8 [[TMP10]] to i32
 ; CHECK-NEXT:    [[MUL14:%.*]] = add nuw nsw i32 [[CONV3]], [[CONV]]

@@ -31,10 +31,10 @@ define i1 @fn(ptr %nno) #0 {
 ; CHECK-NEXT:    [[REVERSE:%.*]] = shufflevector <4 x i1> [[TMP1]], <4 x i1> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
 ; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x i32> @llvm.masked.load.v4i32.p0(ptr [[TMP6]], i32 4, <4 x i1> [[REVERSE]], <4 x i32> poison)
 ; CHECK-NEXT:    [[REVERSE1:%.*]] = shufflevector <4 x i32> [[WIDE_MASKED_LOAD]], <4 x i32> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
-; CHECK-NEXT:    [[TMP7:%.*]] = shl <4 x i32> [[REVERSE1]], splat (i32 1)
-; CHECK-NEXT:    [[TMP8:%.*]] = urem <4 x i32> [[TMP7]], splat (i32 10)
 ; CHECK-NEXT:    [[TMP9:%.*]] = xor <4 x i1> [[TMP3]], splat (i1 true)
 ; CHECK-NEXT:    [[TMP10:%.*]] = select <4 x i1> [[TMP1]], <4 x i1> [[TMP9]], <4 x i1> zeroinitializer
+; CHECK-NEXT:    [[TMP16:%.*]] = shl <4 x i32> [[REVERSE1]], splat (i32 1)
+; CHECK-NEXT:    [[TMP8:%.*]] = urem <4 x i32> [[TMP16]], splat (i32 10)
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP10]], <4 x i32> [[REVERSE1]], <4 x i32> [[TMP8]]
 ; CHECK-NEXT:    [[TMP11]] = or <4 x i32> [[PREDPHI]], [[VEC_PHI]]
 ; CHECK-NEXT:    [[TMP12:%.*]] = select <4 x i1> [[TMP1]], <4 x i32> [[TMP11]], <4 x i32> [[VEC_PHI]]

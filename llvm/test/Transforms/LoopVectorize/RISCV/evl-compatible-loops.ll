@@ -12,8 +12,7 @@ define void @test_wide_integer_induction(ptr noalias %a, i64 %N) {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 1 x i64> @llvm.stepvector.nxv1i64()
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], zeroinitializer
-; CHECK-NEXT:    [[TMP3:%.*]] = mul <vscale x 1 x i64> [[TMP2]], splat (i64 1)
+; CHECK-NEXT:    [[TMP3:%.*]] = mul <vscale x 1 x i64> [[TMP1]], splat (i64 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 1 x i64> zeroinitializer, [[TMP3]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = mul i64 1, [[TMP4]]
 ; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[TMP5]], i64 0
@@ -41,10 +40,9 @@ define void @test_wide_integer_induction(ptr noalias %a, i64 %N) {
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY1:%.*]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY1:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[IV1:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT1:%.*]], [[FOR_BODY1]] ]
+; CHECK-NEXT:    [[IV1:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT1:%.*]], [[FOR_BODY1]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i64, ptr [[A]], i64 [[IV1]]
 ; CHECK-NEXT:    store i64 [[IV1]], ptr [[ARRAYIDX]], align 8
 ; CHECK-NEXT:    [[IV_NEXT1]] = add nuw nsw i64 [[IV1]], 1
@@ -107,12 +105,10 @@ define void @test_wide_ptr_induction(ptr noalias %a, ptr noalias %b, i64 %N) {
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL1:%.*]] = phi ptr [ [[B]], [[ENTRY]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
-; CHECK-NEXT:    [[ADDR:%.*]] = phi ptr [ [[INCDEC_PTR:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL1]], [[SCALAR_PH]] ]
+; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[ADDR:%.*]] = phi ptr [ [[INCDEC_PTR:%.*]], [[FOR_BODY]] ], [ [[B]], [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[ADDR]], i64 8
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i64, ptr [[A]], i64 [[IV]]
 ; CHECK-NEXT:    store ptr [[ADDR]], ptr [[ARRAYIDX]], align 8

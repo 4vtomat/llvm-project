@@ -33,10 +33,9 @@ define float @fadd(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-ORDERED:       middle.block:
 ; CHECK-ORDERED-NEXT:    br label [[FOR_END:%.*]]
 ; CHECK-ORDERED:       scalar.ph:
-; CHECK-ORDERED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-ORDERED-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-ORDERED:       for.body:
-; CHECK-ORDERED-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-ORDERED-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-ORDERED-NEXT:    [[SUM_07:%.*]] = phi float [ 0.000000e+00, [[SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
 ; CHECK-ORDERED-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[IV]]
 ; CHECK-ORDERED-NEXT:    [[TMP9:%.*]] = load float, ptr [[ARRAYIDX]], align 4

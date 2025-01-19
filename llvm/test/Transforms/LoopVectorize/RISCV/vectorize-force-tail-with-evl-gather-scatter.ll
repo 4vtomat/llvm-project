@@ -34,10 +34,9 @@ define void @gather_scatter(ptr noalias %in, ptr noalias %out, ptr noalias %inde
 ; IF-EVL:       middle.block:
 ; IF-EVL-NEXT:    br label [[FOR_END:%.*]]
 ; IF-EVL:       scalar.ph:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; IF-EVL-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL:       for.body:
-; IF-EVL-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; IF-EVL-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds i32, ptr [[INDEX]], i64 [[INDVARS_IV]]
 ; IF-EVL-NEXT:    [[TMP8:%.*]] = load i64, ptr [[ARRAYIDX3]], align 8
 ; IF-EVL-NEXT:    [[ARRAYIDX5:%.*]] = getelementptr inbounds float, ptr [[IN]], i64 [[TMP8]]

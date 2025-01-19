@@ -24,10 +24,9 @@ define void @buf2img() {
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[FOR_COND:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[IV114:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV115:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[IV114:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV115:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[REV69:%.*]] = tail call i16 @llvm.bswap.i16(i16 0)
 ; CHECK-NEXT:    store i16 [[REV69]], ptr null, align 2
 ; CHECK-NEXT:    [[IV115]] = add i64 [[IV114]], 1

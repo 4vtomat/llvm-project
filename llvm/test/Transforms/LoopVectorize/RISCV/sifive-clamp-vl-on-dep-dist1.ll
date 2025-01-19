@@ -38,12 +38,11 @@ define void @test(ptr nocapture noundef %A) {
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup:
 ; CHECK-NEXT:    ret void
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[INDVARS_IV]]
 ; CHECK-NEXT:    [[TMP11:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
 ; CHECK-NEXT:    [[ADD:%.*]] = add nsw i32 [[TMP11]], 1
@@ -81,12 +80,11 @@ define void @test(ptr nocapture noundef %A) {
 ; VL1:       middle.block:
 ; VL1-NEXT:    br label [[FOR_COND_CLEANUP:%.*]]
 ; VL1:       scalar.ph:
-; VL1-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; VL1-NEXT:    br label [[FOR_BODY:%.*]]
 ; VL1:       for.cond.cleanup:
 ; VL1-NEXT:    ret void
 ; VL1:       for.body:
-; VL1-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; VL1-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; VL1-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[INDVARS_IV]]
 ; VL1-NEXT:    [[TMP11:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
 ; VL1-NEXT:    [[ADD:%.*]] = add nsw i32 [[TMP11]], 1
@@ -124,12 +122,11 @@ define void @test(ptr nocapture noundef %A) {
 ; VL32:       middle.block:
 ; VL32-NEXT:    br label [[FOR_COND_CLEANUP:%.*]]
 ; VL32:       scalar.ph:
-; VL32-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; VL32-NEXT:    br label [[FOR_BODY:%.*]]
 ; VL32:       for.cond.cleanup:
 ; VL32-NEXT:    ret void
 ; VL32:       for.body:
-; VL32-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; VL32-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; VL32-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[INDVARS_IV]]
 ; VL32-NEXT:    [[TMP11:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
 ; VL32-NEXT:    [[ADD:%.*]] = add nsw i32 [[TMP11]], 1

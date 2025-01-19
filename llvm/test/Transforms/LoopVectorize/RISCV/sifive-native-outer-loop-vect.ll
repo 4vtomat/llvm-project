@@ -17,8 +17,7 @@ define void @sct3433(ptr %g) {
 ; CHECK-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP4]], 4
 ; CHECK-NEXT:    [[TMP6:%.*]] = call <vscale x 4 x i64> @llvm.stepvector.nxv4i64()
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 4 x i64> [[TMP6]], zeroinitializer
-; CHECK-NEXT:    [[TMP8:%.*]] = mul <vscale x 4 x i64> [[TMP7]], splat (i64 1)
+; CHECK-NEXT:    [[TMP8:%.*]] = mul <vscale x 4 x i64> [[TMP6]], splat (i64 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 4 x i64> zeroinitializer, [[TMP8]]
 ; CHECK-NEXT:    [[TMP11:%.*]] = mul i64 1, [[TMP5]]
 ; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 4 x i64> poison, i64 [[TMP11]], i64 0

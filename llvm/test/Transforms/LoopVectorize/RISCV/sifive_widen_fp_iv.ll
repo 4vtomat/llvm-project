@@ -11,15 +11,14 @@ define void @test(i32 %input, ptr %0) {
 ; CHECK-NEXT:    [[TMP1:%.*]] = add i32 [[INPUT]], 1
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
+; CHECK-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vscale.i32()
+; CHECK-NEXT:    [[TMP8:%.*]] = mul i32 [[TMP5]], 4
 ; CHECK-NEXT:    [[DOTCAST:%.*]] = sitofp i32 [[TMP1]] to double
 ; CHECK-NEXT:    [[TMP2:%.*]] = fmul reassoc double 1.000000e+00, [[DOTCAST]]
 ; CHECK-NEXT:    [[IND_END:%.*]] = fadd reassoc double 0.000000e+00, [[TMP2]]
-; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.vscale.i32()
-; CHECK-NEXT:    [[TMP8:%.*]] = mul i32 [[TMP7]], 4
 ; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 4 x i64> @llvm.stepvector.nxv4i64()
 ; CHECK-NEXT:    [[TMP4:%.*]] = uitofp <vscale x 4 x i64> [[TMP3]] to <vscale x 4 x double>
-; CHECK-NEXT:    [[TMP5:%.*]] = fadd reassoc <vscale x 4 x double> [[TMP4]], zeroinitializer
-; CHECK-NEXT:    [[TMP6:%.*]] = fmul reassoc <vscale x 4 x double> [[TMP5]], splat (double 1.000000e+00)
+; CHECK-NEXT:    [[TMP6:%.*]] = fmul reassoc <vscale x 4 x double> [[TMP4]], splat (double 1.000000e+00)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = fadd reassoc <vscale x 4 x double> zeroinitializer, [[TMP6]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = uitofp i32 [[TMP8]] to double
 ; CHECK-NEXT:    [[TMP10:%.*]] = fmul reassoc double 1.000000e+00, [[TMP9]]
@@ -47,12 +46,10 @@ define void @test(i32 %input, ptr %0) {
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 0, [[ENTRY:%.*]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL1:%.*]] = phi double [ 0.000000e+00, [[ENTRY]] ]
 ; CHECK-NEXT:    br label [[PREHEADER:%.*]]
 ; CHECK:       preheader:
-; CHECK-NEXT:    [[IV:%.*]] = phi i32 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[PREHEADER]] ]
-; CHECK-NEXT:    [[Y:%.*]] = phi double [ [[BC_RESUME_VAL1]], [[SCALAR_PH]] ], [ [[Y_NEXT:%.*]], [[PREHEADER]] ]
+; CHECK-NEXT:    [[IV:%.*]] = phi i32 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[PREHEADER]] ]
+; CHECK-NEXT:    [[Y:%.*]] = phi double [ 0.000000e+00, [[SCALAR_PH]] ], [ [[Y_NEXT:%.*]], [[PREHEADER]] ]
 ; CHECK-NEXT:    [[CONV:%.*]] = zext i32 [[IV]] to i64
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr [[POINT]], ptr [[TMP0]], i64 [[CONV]], i32 0, i32 0, i64 2
 ; CHECK-NEXT:    store double [[Y]], ptr [[ARRAYIDX]], align 8

@@ -21,10 +21,9 @@ define void @test() {
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[FOR_END_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_LR_PH:%.*]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_INC:%.*]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_INC:%.*]] ]
 ; CHECK-NEXT:    [[TOBOOL3_NOT:%.*]] = icmp eq i64 0, 0
 ; CHECK-NEXT:    br i1 [[TOBOOL3_NOT]], label [[FOR_INC]], label [[IF_THEN4:%.*]]
 ; CHECK:       if.then4:

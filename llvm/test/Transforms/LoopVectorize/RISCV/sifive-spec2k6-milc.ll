@@ -129,10 +129,9 @@ define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; VEC-M1:       middle.block:
 ; VEC-M1-NEXT:    br label [[EXIT:%.*]]
 ; VEC-M1:       scalar.ph:
-; VEC-M1-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[VECTOR_SCEVCHECK]] ], [ 0, [[VECTOR_MEMCHECK]] ]
 ; VEC-M1-NEXT:    br label [[LOOP:%.*]]
 ; VEC-M1:       loop:
-; VEC-M1-NEXT:    [[COUNTER:%.*]] = phi i64 [ [[COUNTER_NEXT:%.*]], [[LOOP]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
+; VEC-M1-NEXT:    [[COUNTER:%.*]] = phi i64 [ [[COUNTER_NEXT:%.*]], [[LOOP]] ], [ 0, [[SCALAR_PH]] ]
 ; VEC-M1-NEXT:    [[ADDRA:%.*]] = getelementptr [[STRUCT_SU3_VECTOR]], ptr [[A]], i64 [[COUNTER]]
 ; VEC-M1-NEXT:    [[ADDRB:%.*]] = getelementptr [[STRUCT_SU3_VECTOR]], ptr [[B]], i64 [[COUNTER]]
 ; VEC-M1-NEXT:    [[A0R:%.*]] = load double, ptr [[ADDRA]], align 8
@@ -307,10 +306,9 @@ define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; VEC-M4:       middle.block:
 ; VEC-M4-NEXT:    br label [[EXIT:%.*]]
 ; VEC-M4:       scalar.ph:
-; VEC-M4-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[VECTOR_SCEVCHECK]] ], [ 0, [[VECTOR_MEMCHECK]] ]
 ; VEC-M4-NEXT:    br label [[LOOP:%.*]]
 ; VEC-M4:       loop:
-; VEC-M4-NEXT:    [[COUNTER:%.*]] = phi i64 [ [[COUNTER_NEXT:%.*]], [[LOOP]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
+; VEC-M4-NEXT:    [[COUNTER:%.*]] = phi i64 [ [[COUNTER_NEXT:%.*]], [[LOOP]] ], [ 0, [[SCALAR_PH]] ]
 ; VEC-M4-NEXT:    [[ADDRA:%.*]] = getelementptr [[STRUCT_SU3_VECTOR]], ptr [[A]], i64 [[COUNTER]]
 ; VEC-M4-NEXT:    [[ADDRB:%.*]] = getelementptr [[STRUCT_SU3_VECTOR]], ptr [[B]], i64 [[COUNTER]]
 ; VEC-M4-NEXT:    [[A0R:%.*]] = load double, ptr [[ADDRA]], align 8

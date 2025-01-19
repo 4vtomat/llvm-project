@@ -19,10 +19,9 @@ define void @test() {
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[FINISH_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 0, [[WHILE_BODY380_PREHEADER:%.*]] ]
 ; CHECK-NEXT:    br label [[WHILE_BODY380:%.*]]
 ; CHECK:       while.body380:
-; CHECK-NEXT:    [[LEN_4735:%.*]] = phi i32 [ [[DEC378:%.*]], [[WHILE_BODY380]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
+; CHECK-NEXT:    [[LEN_4735:%.*]] = phi i32 [ [[DEC378:%.*]], [[WHILE_BODY380]] ], [ 0, [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[DEC378]] = add nsw i32 [[LEN_4735]], 1
 ; CHECK-NEXT:    [[AND385681:%.*]] = and i8 0, 0
 ; CHECK-NEXT:    store i8 [[AND385681]], ptr null, align 1

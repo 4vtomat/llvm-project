@@ -42,7 +42,6 @@ define i32 @foo(i32 %n, ptr %a) {
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP11:%.*]] = add i32 0, [[TMP10]]
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK-HAS-PROF-RTCHECK:       scalar.ph:
-; CHECK-HAS-PROF-RTCHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-HAS-PROF-RTCHECK:       for.cond.cleanup.loopexit:
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[ADD:%.*]], [[FOR_BODY]] ], [ [[TMP11]], [[MIDDLE_BLOCK]] ]
@@ -51,7 +50,7 @@ define i32 @foo(i32 %n, ptr %a) {
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[SUM_0_LCSSA:%.*]] = phi i32 [ 0, [[ENTRY:%.*]] ], [ [[ADD_LCSSA]], [[FOR_COND_CLEANUP_LOOPEXIT]] ]
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    ret i32 [[SUM_0_LCSSA]]
 ; CHECK-HAS-PROF-RTCHECK:       for.body:
-; CHECK-HAS-PROF-RTCHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-HAS-PROF-RTCHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[SUM_05:%.*]] = phi i32 [ 0, [[SCALAR_PH]] ], [ [[ADD]], [[FOR_BODY]] ]
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[INDVARS_IV]]
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP12:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
@@ -93,7 +92,6 @@ define i32 @foo(i32 %n, ptr %a) {
 ; CHECK-NO-PROF-RTCHECK-NEXT:    [[TMP10:%.*]] = add i32 0, [[TMP9]]
 ; CHECK-NO-PROF-RTCHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK-NO-PROF-RTCHECK:       scalar.ph:
-; CHECK-NO-PROF-RTCHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; CHECK-NO-PROF-RTCHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-NO-PROF-RTCHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NO-PROF-RTCHECK-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[ADD:%.*]], [[FOR_BODY]] ], [ [[TMP10]], [[MIDDLE_BLOCK]] ]
@@ -102,7 +100,7 @@ define i32 @foo(i32 %n, ptr %a) {
 ; CHECK-NO-PROF-RTCHECK-NEXT:    [[SUM_0_LCSSA:%.*]] = phi i32 [ 0, [[ENTRY:%.*]] ], [ [[ADD_LCSSA]], [[FOR_COND_CLEANUP_LOOPEXIT]] ]
 ; CHECK-NO-PROF-RTCHECK-NEXT:    ret i32 [[SUM_0_LCSSA]]
 ; CHECK-NO-PROF-RTCHECK:       for.body:
-; CHECK-NO-PROF-RTCHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NO-PROF-RTCHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NO-PROF-RTCHECK-NEXT:    [[SUM_05:%.*]] = phi i32 [ 0, [[SCALAR_PH]] ], [ [[ADD]], [[FOR_BODY]] ]
 ; CHECK-NO-PROF-RTCHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[INDVARS_IV]]
 ; CHECK-NO-PROF-RTCHECK-NEXT:    [[TMP11:%.*]] = load i32, ptr [[ARRAYIDX]], align 4

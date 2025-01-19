@@ -113,7 +113,7 @@ define i32 @select_icmp(i32 %x, i32 %y, ptr nocapture readonly %c, i64 %n) #0 {
 ;
 ; VP_SCALABLE-LABEL: define i32 @select_icmp(
 ; VP_SCALABLE-SAME: i32 [[X:%.*]], i32 [[Y:%.*]], ptr nocapture readonly [[C:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
-; VP_SCALABLE-NEXT:  [[ENTRY:.*]]:
+; VP_SCALABLE-NEXT:  [[ENTRY:.*:]]
 ; VP_SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP_SCALABLE-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
 ; VP_SCALABLE-NEXT:    br i1 [[TMP0]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
@@ -147,10 +147,9 @@ define i32 @select_icmp(i32 %x, i32 %y, ptr nocapture readonly %c, i64 %n) #0 {
 ; VP_SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[TMP11]], i32 [[Y]], i32 0
 ; VP_SCALABLE-NEXT:    br label %[[FOR_END:.*]]
 ; VP_SCALABLE:       [[SCALAR_PH]]:
-; VP_SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
 ; VP_SCALABLE-NEXT:    br label %[[FOR_BODY:.*]]
 ; VP_SCALABLE:       [[FOR_BODY]]:
-; VP_SCALABLE-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_BODY]] ]
+; VP_SCALABLE-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_BODY]] ]
 ; VP_SCALABLE-NEXT:    [[A:%.*]] = phi i32 [ 0, %[[SCALAR_PH]] ], [ [[COND:%.*]], %[[FOR_BODY]] ]
 ; VP_SCALABLE-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[C]], i64 [[INDVARS_IV]]
 ; VP_SCALABLE-NEXT:    [[TMP12:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
@@ -286,7 +285,7 @@ define i32 @select_fcmp(float %x, i32 %y, ptr nocapture readonly %c, i64 %n) #0 
 ;
 ; VP_SCALABLE-LABEL: define i32 @select_fcmp(
 ; VP_SCALABLE-SAME: float [[X:%.*]], i32 [[Y:%.*]], ptr nocapture readonly [[C:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
-; VP_SCALABLE-NEXT:  [[ENTRY:.*]]:
+; VP_SCALABLE-NEXT:  [[ENTRY:.*:]]
 ; VP_SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP_SCALABLE-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
 ; VP_SCALABLE-NEXT:    br i1 [[TMP0]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
@@ -320,10 +319,9 @@ define i32 @select_fcmp(float %x, i32 %y, ptr nocapture readonly %c, i64 %n) #0 
 ; VP_SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[TMP11]], i32 [[Y]], i32 0
 ; VP_SCALABLE-NEXT:    br label %[[FOR_END:.*]]
 ; VP_SCALABLE:       [[SCALAR_PH]]:
-; VP_SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
 ; VP_SCALABLE-NEXT:    br label %[[FOR_BODY:.*]]
 ; VP_SCALABLE:       [[FOR_BODY]]:
-; VP_SCALABLE-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_BODY]] ]
+; VP_SCALABLE-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_BODY]] ]
 ; VP_SCALABLE-NEXT:    [[A:%.*]] = phi i32 [ 0, %[[SCALAR_PH]] ], [ [[COND:%.*]], %[[FOR_BODY]] ]
 ; VP_SCALABLE-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[C]], i64 [[INDVARS_IV]]
 ; VP_SCALABLE-NEXT:    [[TMP12:%.*]] = load float, ptr [[ARRAYIDX]], align 4
@@ -455,7 +453,7 @@ define i32 @select_const_i32_from_icmp(ptr nocapture readonly %v, i64 %n) #0 {
 ;
 ; VP_SCALABLE-LABEL: define i32 @select_const_i32_from_icmp(
 ; VP_SCALABLE-SAME: ptr nocapture readonly [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
-; VP_SCALABLE-NEXT:  [[ENTRY:.*]]:
+; VP_SCALABLE-NEXT:  [[ENTRY:.*:]]
 ; VP_SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP_SCALABLE-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
 ; VP_SCALABLE-NEXT:    br i1 [[TMP0]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
@@ -487,10 +485,9 @@ define i32 @select_const_i32_from_icmp(ptr nocapture readonly %v, i64 %n) #0 {
 ; VP_SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[TMP11]], i32 7, i32 3
 ; VP_SCALABLE-NEXT:    br label %[[EXIT:.*]]
 ; VP_SCALABLE:       [[SCALAR_PH]]:
-; VP_SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
 ; VP_SCALABLE-NEXT:    br label %[[FOR_BODY:.*]]
 ; VP_SCALABLE:       [[FOR_BODY]]:
-; VP_SCALABLE-NEXT:    [[TMP12:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[TMP18:%.*]], %[[FOR_BODY]] ]
+; VP_SCALABLE-NEXT:    [[TMP12:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[TMP18:%.*]], %[[FOR_BODY]] ]
 ; VP_SCALABLE-NEXT:    [[TMP13:%.*]] = phi i32 [ 3, %[[SCALAR_PH]] ], [ [[TMP17:%.*]], %[[FOR_BODY]] ]
 ; VP_SCALABLE-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i32, ptr [[V]], i64 [[TMP12]]
 ; VP_SCALABLE-NEXT:    [[TMP15:%.*]] = load i32, ptr [[TMP14]], align 4
@@ -622,7 +619,7 @@ define i32 @select_i32_from_icmp(ptr nocapture readonly %v, i32 %a, i32 %b, i64 
 ;
 ; VP_SCALABLE-LABEL: define i32 @select_i32_from_icmp(
 ; VP_SCALABLE-SAME: ptr nocapture readonly [[V:%.*]], i32 [[A:%.*]], i32 [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
-; VP_SCALABLE-NEXT:  [[ENTRY:.*]]:
+; VP_SCALABLE-NEXT:  [[ENTRY:.*:]]
 ; VP_SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP_SCALABLE-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
 ; VP_SCALABLE-NEXT:    br i1 [[TMP0]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
@@ -654,10 +651,9 @@ define i32 @select_i32_from_icmp(ptr nocapture readonly %v, i32 %a, i32 %b, i64 
 ; VP_SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[TMP11]], i32 [[B]], i32 [[A]]
 ; VP_SCALABLE-NEXT:    br label %[[EXIT:.*]]
 ; VP_SCALABLE:       [[SCALAR_PH]]:
-; VP_SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
 ; VP_SCALABLE-NEXT:    br label %[[FOR_BODY:.*]]
 ; VP_SCALABLE:       [[FOR_BODY]]:
-; VP_SCALABLE-NEXT:    [[TMP12:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[TMP18:%.*]], %[[FOR_BODY]] ]
+; VP_SCALABLE-NEXT:    [[TMP12:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[TMP18:%.*]], %[[FOR_BODY]] ]
 ; VP_SCALABLE-NEXT:    [[TMP13:%.*]] = phi i32 [ [[A]], %[[SCALAR_PH]] ], [ [[TMP17:%.*]], %[[FOR_BODY]] ]
 ; VP_SCALABLE-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i32, ptr [[V]], i64 [[TMP12]]
 ; VP_SCALABLE-NEXT:    [[TMP15:%.*]] = load i32, ptr [[TMP14]], align 4
@@ -789,7 +785,7 @@ define i32 @select_const_i32_from_fcmp(ptr nocapture readonly %v, i64 %n) #0 {
 ;
 ; VP_SCALABLE-LABEL: define i32 @select_const_i32_from_fcmp(
 ; VP_SCALABLE-SAME: ptr nocapture readonly [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
-; VP_SCALABLE-NEXT:  [[ENTRY:.*]]:
+; VP_SCALABLE-NEXT:  [[ENTRY:.*:]]
 ; VP_SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP_SCALABLE-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
 ; VP_SCALABLE-NEXT:    br i1 [[TMP0]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
@@ -821,10 +817,9 @@ define i32 @select_const_i32_from_fcmp(ptr nocapture readonly %v, i64 %n) #0 {
 ; VP_SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[TMP11]], i32 1, i32 2
 ; VP_SCALABLE-NEXT:    br label %[[EXIT:.*]]
 ; VP_SCALABLE:       [[SCALAR_PH]]:
-; VP_SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
 ; VP_SCALABLE-NEXT:    br label %[[FOR_BODY:.*]]
 ; VP_SCALABLE:       [[FOR_BODY]]:
-; VP_SCALABLE-NEXT:    [[TMP12:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[TMP18:%.*]], %[[FOR_BODY]] ]
+; VP_SCALABLE-NEXT:    [[TMP12:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[TMP18:%.*]], %[[FOR_BODY]] ]
 ; VP_SCALABLE-NEXT:    [[TMP13:%.*]] = phi i32 [ 2, %[[SCALAR_PH]] ], [ [[TMP17:%.*]], %[[FOR_BODY]] ]
 ; VP_SCALABLE-NEXT:    [[TMP14:%.*]] = getelementptr inbounds float, ptr [[V]], i64 [[TMP12]]
 ; VP_SCALABLE-NEXT:    [[TMP15:%.*]] = load float, ptr [[TMP14]], align 4
@@ -1053,7 +1048,7 @@ define i32 @pred_select_const_i32_from_icmp(ptr noalias nocapture readonly %src1
 ;
 ; VP_SCALABLE-LABEL: define i32 @pred_select_const_i32_from_icmp(
 ; VP_SCALABLE-SAME: ptr noalias nocapture readonly [[SRC1:%.*]], ptr noalias nocapture readonly [[SRC2:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
-; VP_SCALABLE-NEXT:  [[ENTRY:.*]]:
+; VP_SCALABLE-NEXT:  [[ENTRY:.*:]]
 ; VP_SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP_SCALABLE-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
 ; VP_SCALABLE-NEXT:    br i1 [[TMP0]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
@@ -1089,10 +1084,9 @@ define i32 @pred_select_const_i32_from_icmp(ptr noalias nocapture readonly %src1
 ; VP_SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[TMP13]], i32 1, i32 0
 ; VP_SCALABLE-NEXT:    br label %[[FOR_END_LOOPEXIT:.*]]
 ; VP_SCALABLE:       [[SCALAR_PH]]:
-; VP_SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
 ; VP_SCALABLE-NEXT:    br label %[[FOR_BODY:.*]]
 ; VP_SCALABLE:       [[FOR_BODY]]:
-; VP_SCALABLE-NEXT:    [[I_013:%.*]] = phi i64 [ [[INC:%.*]], %[[FOR_INC:.*]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
+; VP_SCALABLE-NEXT:    [[I_013:%.*]] = phi i64 [ [[INC:%.*]], %[[FOR_INC:.*]] ], [ 0, %[[SCALAR_PH]] ]
 ; VP_SCALABLE-NEXT:    [[R_012:%.*]] = phi i32 [ [[R_1:%.*]], %[[FOR_INC]] ], [ 0, %[[SCALAR_PH]] ]
 ; VP_SCALABLE-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[SRC1]], i64 [[I_013]]
 ; VP_SCALABLE-NEXT:    [[TMP14:%.*]] = load i32, ptr [[ARRAYIDX]], align 4

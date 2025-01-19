@@ -28,12 +28,11 @@ define void @test(ptr %A) {
 ; VL0:       middle.block:
 ; VL0-NEXT:    br label [[FOR_COND_CLEANUP:%.*]]
 ; VL0:       scalar.ph:
-; VL0-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; VL0-NEXT:    br label [[FOR_BODY:%.*]]
 ; VL0:       for.cond.cleanup:
 ; VL0-NEXT:    ret void
 ; VL0:       for.body:
-; VL0-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; VL0-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; VL0-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[INDVARS_IV]]
 ; VL0-NEXT:    [[TMP7:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
 ; VL0-NEXT:    [[ADD:%.*]] = add nsw i32 [[TMP7]], 1
@@ -66,12 +65,11 @@ define void @test(ptr %A) {
 ; VL1:       middle.block:
 ; VL1-NEXT:    br label [[FOR_COND_CLEANUP:%.*]]
 ; VL1:       scalar.ph:
-; VL1-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; VL1-NEXT:    br label [[FOR_BODY:%.*]]
 ; VL1:       for.cond.cleanup:
 ; VL1-NEXT:    ret void
 ; VL1:       for.body:
-; VL1-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; VL1-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; VL1-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[INDVARS_IV]]
 ; VL1-NEXT:    [[TMP8:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
 ; VL1-NEXT:    [[ADD:%.*]] = add nsw i32 [[TMP8]], 1
@@ -104,12 +102,11 @@ define void @test(ptr %A) {
 ; VL4:       middle.block:
 ; VL4-NEXT:    br label [[FOR_COND_CLEANUP:%.*]]
 ; VL4:       scalar.ph:
-; VL4-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; VL4-NEXT:    br label [[FOR_BODY:%.*]]
 ; VL4:       for.cond.cleanup:
 ; VL4-NEXT:    ret void
 ; VL4:       for.body:
-; VL4-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; VL4-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; VL4-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[INDVARS_IV]]
 ; VL4-NEXT:    [[TMP8:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
 ; VL4-NEXT:    [[ADD:%.*]] = add nsw i32 [[TMP8]], 1

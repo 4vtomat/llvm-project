@@ -26,13 +26,12 @@ define i32 @reduction() {
 ; CHECK-NEXT:    [[TMP6:%.*]] = add i32 0, [[TMP5]]
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER:%.*]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[ADD:%.*]], [[FOR_BODY]] ], [ [[TMP6]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret i32 0
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[RED_07:%.*]] = phi i32 [ 0, [[SCALAR_PH]] ], [ [[ADD]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ADD]] = add nsw i32 0, [[RED_07]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
@@ -61,13 +60,12 @@ define i32 @reduction() {
 ; CHECK-NO-POSTSV-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NO-POSTSV-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK-NO-POSTSV:       scalar.ph:
-; CHECK-NO-POSTSV-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER:%.*]] ]
 ; CHECK-NO-POSTSV-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-NO-POSTSV:       for.cond.cleanup.loopexit:
 ; CHECK-NO-POSTSV-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[ADD:%.*]], [[FOR_BODY]] ], [ [[TMP5]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NO-POSTSV-NEXT:    ret i32 0
 ; CHECK-NO-POSTSV:       for.body:
-; CHECK-NO-POSTSV-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NO-POSTSV-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[RED_07:%.*]] = phi i32 [ 0, [[SCALAR_PH]] ], [ [[ADD]], [[FOR_BODY]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[ADD]] = add nsw i32 0, [[RED_07]]
 ; CHECK-NO-POSTSV-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1

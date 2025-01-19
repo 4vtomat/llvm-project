@@ -36,10 +36,9 @@ define i32 @add(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL:       middle.block:
 ; IF-EVL-NEXT:    br label [[FOR_END:%.*]]
 ; IF-EVL:       scalar.ph:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; IF-EVL-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL:       for.body:
-; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
+; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[RDX:%.*]] = phi i32 [ [[START]], [[SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV]]
 ; IF-EVL-NEXT:    [[TMP18:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
@@ -160,10 +159,9 @@ define i32 @or(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL:       middle.block:
 ; IF-EVL-NEXT:    br label [[FOR_END:%.*]]
 ; IF-EVL:       scalar.ph:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; IF-EVL-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL:       for.body:
-; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
+; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[RDX:%.*]] = phi i32 [ [[START]], [[SCALAR_PH]] ], [ [[OR:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV]]
 ; IF-EVL-NEXT:    [[TMP18:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
@@ -233,10 +231,9 @@ define i32 @and(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL:       middle.block:
 ; IF-EVL-NEXT:    br label [[FOR_END:%.*]]
 ; IF-EVL:       scalar.ph:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; IF-EVL-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL:       for.body:
-; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
+; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[RDX:%.*]] = phi i32 [ [[START]], [[SCALAR_PH]] ], [ [[AND:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV]]
 ; IF-EVL-NEXT:    [[TMP18:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
@@ -306,10 +303,9 @@ define i32 @xor(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL:       middle.block:
 ; IF-EVL-NEXT:    br label [[FOR_END:%.*]]
 ; IF-EVL:       scalar.ph:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; IF-EVL-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL:       for.body:
-; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
+; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[RDX:%.*]] = phi i32 [ [[START]], [[SCALAR_PH]] ], [ [[XOR:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV]]
 ; IF-EVL-NEXT:    [[TMP18:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
@@ -379,10 +375,9 @@ define i32 @smin(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL:       middle.block:
 ; IF-EVL-NEXT:    br label [[FOR_END:%.*]]
 ; IF-EVL:       scalar.ph:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; IF-EVL-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL:       for.body:
-; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
+; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[RDX:%.*]] = phi i32 [ [[START]], [[SCALAR_PH]] ], [ [[SMIN:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV]]
 ; IF-EVL-NEXT:    [[TMP17:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
@@ -455,10 +450,9 @@ define i32 @smax(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL:       middle.block:
 ; IF-EVL-NEXT:    br label [[FOR_END:%.*]]
 ; IF-EVL:       scalar.ph:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; IF-EVL-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL:       for.body:
-; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
+; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[RDX:%.*]] = phi i32 [ [[START]], [[SCALAR_PH]] ], [ [[SMAX:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV]]
 ; IF-EVL-NEXT:    [[TMP17:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
@@ -531,10 +525,9 @@ define i32 @umin(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL:       middle.block:
 ; IF-EVL-NEXT:    br label [[FOR_END:%.*]]
 ; IF-EVL:       scalar.ph:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; IF-EVL-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL:       for.body:
-; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
+; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[RDX:%.*]] = phi i32 [ [[START]], [[SCALAR_PH]] ], [ [[UMIN:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV]]
 ; IF-EVL-NEXT:    [[TMP17:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
@@ -607,10 +600,9 @@ define i32 @umax(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL:       middle.block:
 ; IF-EVL-NEXT:    br label [[FOR_END:%.*]]
 ; IF-EVL:       scalar.ph:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; IF-EVL-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL:       for.body:
-; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
+; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[RDX:%.*]] = phi i32 [ [[START]], [[SCALAR_PH]] ], [ [[UMAX:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV]]
 ; IF-EVL-NEXT:    [[TMP17:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
@@ -683,10 +675,9 @@ define float @fadd(ptr %a, i64 %n, float %start) {
 ; IF-EVL:       middle.block:
 ; IF-EVL-NEXT:    br label [[FOR_END:%.*]]
 ; IF-EVL:       scalar.ph:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; IF-EVL-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL:       for.body:
-; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
+; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[RDX:%.*]] = phi float [ [[START]], [[SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[IV]]
 ; IF-EVL-NEXT:    [[TMP18:%.*]] = load float, ptr [[ARRAYIDX]], align 4
@@ -808,10 +799,9 @@ define float @fmin(ptr %a, i64 %n, float %start) #0 {
 ; IF-EVL:       middle.block:
 ; IF-EVL-NEXT:    br label [[FOR_END:%.*]]
 ; IF-EVL:       scalar.ph:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; IF-EVL-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL:       for.body:
-; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
+; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[RDX:%.*]] = phi float [ [[START]], [[SCALAR_PH]] ], [ [[MIN:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[IV]]
 ; IF-EVL-NEXT:    [[TMP17:%.*]] = load float, ptr [[ARRAYIDX]], align 4
@@ -885,10 +875,9 @@ define float @fmax(ptr %a, i64 %n, float %start) #0 {
 ; IF-EVL:       middle.block:
 ; IF-EVL-NEXT:    br label [[FOR_END:%.*]]
 ; IF-EVL:       scalar.ph:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; IF-EVL-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL:       for.body:
-; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
+; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[RDX:%.*]] = phi float [ [[START]], [[SCALAR_PH]] ], [ [[MAX:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[IV]]
 ; IF-EVL-NEXT:    [[TMP17:%.*]] = load float, ptr [[ARRAYIDX]], align 4
@@ -1065,10 +1054,9 @@ define float @fmuladd(ptr %a, ptr %b, i64 %n, float %start) {
 ; IF-EVL:       middle.block:
 ; IF-EVL-NEXT:    br label [[FOR_END:%.*]]
 ; IF-EVL:       scalar.ph:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; IF-EVL-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL:       for.body:
-; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
+; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[RDX:%.*]] = phi float [ [[START]], [[SCALAR_PH]] ], [ [[MULADD:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[IV]]
 ; IF-EVL-NEXT:    [[TMP21:%.*]] = load float, ptr [[ARRAYIDX]], align 4
@@ -1150,10 +1138,9 @@ define i32 @anyof_icmp(ptr %a, i64 %n, i32 %start, i32 %inv) {
 ; IF-EVL-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[TMP10]], i32 [[INV:%.*]], i32 [[START1:%.*]]
 ; IF-EVL-NEXT:    br label [[FOR_END:%.*]]
 ; IF-EVL:       scalar.ph:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY1:%.*]] ]
 ; IF-EVL-NEXT:    br label [[FOR_BODY1:%.*]]
 ; IF-EVL:       for.body:
-; IF-EVL-NEXT:    [[IV1:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT1:%.*]], [[FOR_BODY1]] ]
+; IF-EVL-NEXT:    [[IV1:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT1:%.*]], [[FOR_BODY1]] ]
 ; IF-EVL-NEXT:    [[RDX1:%.*]] = phi i32 [ [[START1]], [[SCALAR_PH]] ], [ [[ANYOF1:%.*]], [[FOR_BODY1]] ]
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV1]]
 ; IF-EVL-NEXT:    [[TMP0:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
@@ -1232,10 +1219,9 @@ define i32 @anyof_fcmp(ptr %a, i64 %n, i32 %start, i32 %inv) {
 ; IF-EVL-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[TMP10]], i32 [[INV:%.*]], i32 [[START1:%.*]]
 ; IF-EVL-NEXT:    br label [[FOR_END:%.*]]
 ; IF-EVL:       scalar.ph:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY1:%.*]] ]
 ; IF-EVL-NEXT:    br label [[FOR_BODY1:%.*]]
 ; IF-EVL:       for.body:
-; IF-EVL-NEXT:    [[IV1:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT1:%.*]], [[FOR_BODY1]] ]
+; IF-EVL-NEXT:    [[IV1:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT1:%.*]], [[FOR_BODY1]] ]
 ; IF-EVL-NEXT:    [[RDX1:%.*]] = phi i32 [ [[START1]], [[SCALAR_PH]] ], [ [[ANYOF1:%.*]], [[FOR_BODY1]] ]
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV1]]
 ; IF-EVL-NEXT:    [[TMP0:%.*]] = load float, ptr [[ARRAYIDX]], align 4

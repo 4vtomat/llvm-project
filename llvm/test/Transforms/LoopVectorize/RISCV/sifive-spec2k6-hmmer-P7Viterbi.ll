@@ -13,7 +13,7 @@
 define float @P7Viterbi(ptr noundef %dsq, i64 noundef signext %L, ptr noundef %hmm, ptr noundef %mx, i32 %int321, ptr noalias %0, ptr noalias %1, ptr noalias %2, ptr noalias %3, ptr noalias %4, ptr noalias %5, ptr noalias %6) {
 ; X280-LABEL: define float @P7Viterbi(
 ; X280-SAME: ptr noundef [[DSQ:%.*]], i64 noundef signext [[L:%.*]], ptr noundef [[HMM:%.*]], ptr noundef [[MX:%.*]], i32 [[INT321:%.*]], ptr noalias [[TMP0:%.*]], ptr noalias [[TMP1:%.*]], ptr noalias [[TMP2:%.*]], ptr noalias [[TMP3:%.*]], ptr noalias [[TMP4:%.*]], ptr noalias [[TMP5:%.*]], ptr noalias [[TMP6:%.*]]) #[[ATTR0:[0-9]+]] {
-; X280-NEXT:  [[ENTRY:.*]]:
+; X280-NEXT:  [[ENTRY:.*:]]
 ; X280-NEXT:    [[TMP7:%.*]] = add i64 [[L]], -1
 ; X280-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; X280:       [[VECTOR_PH]]:
@@ -76,10 +76,9 @@ define float @P7Viterbi(ptr noundef %dsq, i64 noundef signext %L, ptr noundef %h
 ; X280:       [[MIDDLE_BLOCK]]:
 ; X280-NEXT:    br label %[[FOR_EXIT:.*]]
 ; X280:       [[SCALAR_PH]]:
-; X280-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1, %[[ENTRY]] ]
 ; X280-NEXT:    br label %[[FOR_BODY:.*]]
 ; X280:       [[FOR_BODY]]:
-; X280-NEXT:    [[INDVARS_IV179_LDIST1:%.*]] = phi i64 [ [[INDVARS_IV_NEXT180_LDIST1:%.*]], %[[FOR_BODY]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
+; X280-NEXT:    [[INDVARS_IV179_LDIST1:%.*]] = phi i64 [ [[INDVARS_IV_NEXT180_LDIST1:%.*]], %[[FOR_BODY]] ], [ 1, %[[SCALAR_PH]] ]
 ; X280-NEXT:    [[TMP33:%.*]] = add nsw i64 [[INDVARS_IV179_LDIST1]], -1
 ; X280-NEXT:    [[ARRAYIDX75_LDIST1:%.*]] = getelementptr inbounds i32, ptr [[DSQ]], i64 [[TMP33]]
 ; X280-NEXT:    [[TMP34:%.*]] = load i32, ptr [[ARRAYIDX75_LDIST1]], align 4
@@ -120,7 +119,7 @@ define float @P7Viterbi(ptr noundef %dsq, i64 noundef signext %L, ptr noundef %h
 ;
 ; X390-LABEL: define float @P7Viterbi(
 ; X390-SAME: ptr noundef [[DSQ:%.*]], i64 noundef signext [[L:%.*]], ptr noundef [[HMM:%.*]], ptr noundef [[MX:%.*]], i32 [[INT321:%.*]], ptr noalias [[TMP0:%.*]], ptr noalias [[TMP1:%.*]], ptr noalias [[TMP2:%.*]], ptr noalias [[TMP3:%.*]], ptr noalias [[TMP4:%.*]], ptr noalias [[TMP5:%.*]], ptr noalias [[TMP6:%.*]]) #[[ATTR0:[0-9]+]] {
-; X390-NEXT:  [[ENTRY:.*]]:
+; X390-NEXT:  [[ENTRY:.*:]]
 ; X390-NEXT:    [[TMP7:%.*]] = add i64 [[L]], -1
 ; X390-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; X390:       [[VECTOR_PH]]:
@@ -183,10 +182,9 @@ define float @P7Viterbi(ptr noundef %dsq, i64 noundef signext %L, ptr noundef %h
 ; X390:       [[MIDDLE_BLOCK]]:
 ; X390-NEXT:    br label %[[FOR_EXIT:.*]]
 ; X390:       [[SCALAR_PH]]:
-; X390-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1, %[[ENTRY]] ]
 ; X390-NEXT:    br label %[[FOR_BODY:.*]]
 ; X390:       [[FOR_BODY]]:
-; X390-NEXT:    [[INDVARS_IV179_LDIST1:%.*]] = phi i64 [ [[INDVARS_IV_NEXT180_LDIST1:%.*]], %[[FOR_BODY]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
+; X390-NEXT:    [[INDVARS_IV179_LDIST1:%.*]] = phi i64 [ [[INDVARS_IV_NEXT180_LDIST1:%.*]], %[[FOR_BODY]] ], [ 1, %[[SCALAR_PH]] ]
 ; X390-NEXT:    [[TMP33:%.*]] = add nsw i64 [[INDVARS_IV179_LDIST1]], -1
 ; X390-NEXT:    [[ARRAYIDX75_LDIST1:%.*]] = getelementptr inbounds i32, ptr [[DSQ]], i64 [[TMP33]]
 ; X390-NEXT:    [[TMP34:%.*]] = load i32, ptr [[ARRAYIDX75_LDIST1]], align 4

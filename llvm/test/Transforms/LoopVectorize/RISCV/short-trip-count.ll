@@ -11,7 +11,6 @@ define void @small_trip_count_min_vlen_128(ptr nocapture %a) nounwind vscale_ran
 ; CHECK-NEXT:    [[N_RND_UP:%.*]] = add i32 4, [[TMP1]]
 ; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i32 [[N_RND_UP]], [[TMP0]]
 ; CHECK-NEXT:    [[N_VEC:%.*]] = sub i32 [[N_RND_UP]], [[N_MOD_VF]]
-; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.vscale.i32()
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = call <vscale x 1 x i1> @llvm.get.active.lane.mask.nxv1i1.i32(i32 0, i32 4)
@@ -67,8 +66,6 @@ define void @small_trip_count_min_vlen_32(ptr nocapture %a) nounwind vscale_rang
 ; CHECK-NEXT:    [[N_RND_UP:%.*]] = add i32 4, [[TMP2]]
 ; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i32 [[N_RND_UP]], [[TMP1]]
 ; CHECK-NEXT:    [[N_VEC:%.*]] = sub i32 [[N_RND_UP]], [[N_MOD_VF]]
-; CHECK-NEXT:    [[TMP3:%.*]] = call i32 @llvm.vscale.i32()
-; CHECK-NEXT:    [[TMP4:%.*]] = mul i32 [[TMP3]], 4
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i32(i32 0, i32 4)

@@ -48,7 +48,6 @@ define void @interleaved_load_factor_3(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP15:%.*]] = add i32 [[B_PROMOTED]], [[TMP14]]
 ; CHECK-NEXT:    br label [[FOR_COND_FOR_COND_CLEANUP_CRIT_EDGE:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_LR_PH]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.for.cond.cleanup_crit_edge:
 ; CHECK-NEXT:    [[ADD13_LCSSA:%.*]] = phi i32 [ [[ADD13:%.*]], [[FOR_BODY]] ], [ [[TMP15]], [[MIDDLE_BLOCK]] ]
@@ -57,7 +56,7 @@ define void @interleaved_load_factor_3(i32 %n, ptr %b, ptr %a) {
 ; CHECK:       for.cond.cleanup:
 ; CHECK-NEXT:    ret void
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ADD1324:%.*]] = phi i32 [ [[B_PROMOTED]], [[SCALAR_PH]] ], [ [[ADD13]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP16:%.*]] = mul nuw nsw i64 [[INDVARS_IV]], 3
 ; CHECK-NEXT:    [[TMP17:%.*]] = add nuw nsw i64 [[TMP16]], 2
@@ -163,7 +162,6 @@ define void @interleaved_load_factor_4(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP16:%.*]] = add i32 [[B_PROMOTED]], [[TMP15]]
 ; CHECK-NEXT:    br label [[FOR_COND_FOR_COND_CLEANUP_CRIT_EDGE:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_LR_PH]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.for.cond.cleanup_crit_edge:
 ; CHECK-NEXT:    [[ADD19_LCSSA:%.*]] = phi i32 [ [[ADD19:%.*]], [[FOR_BODY]] ], [ [[TMP16]], [[MIDDLE_BLOCK]] ]
@@ -172,7 +170,7 @@ define void @interleaved_load_factor_4(i32 %n, ptr %b, ptr %a) {
 ; CHECK:       for.cond.cleanup:
 ; CHECK-NEXT:    ret void
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ADD1933:%.*]] = phi i32 [ [[B_PROMOTED]], [[SCALAR_PH]] ], [ [[ADD19]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP17:%.*]] = shl nsw i64 [[INDVARS_IV]], 2
 ; CHECK-NEXT:    [[TMP18:%.*]] = or disjoint i64 [[TMP17]], 3
@@ -288,7 +286,6 @@ define void @interleaved_load_factor_5(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP17:%.*]] = add i32 [[B_PROMOTED]], [[TMP16]]
 ; CHECK-NEXT:    br label [[FOR_COND_FOR_COND_CLEANUP_CRIT_EDGE:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_LR_PH]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.for.cond.cleanup_crit_edge:
 ; CHECK-NEXT:    [[ADD25_LCSSA:%.*]] = phi i32 [ [[ADD25:%.*]], [[FOR_BODY]] ], [ [[TMP17]], [[MIDDLE_BLOCK]] ]
@@ -297,7 +294,7 @@ define void @interleaved_load_factor_5(i32 %n, ptr %b, ptr %a) {
 ; CHECK:       for.cond.cleanup:
 ; CHECK-NEXT:    ret void
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ADD2542:%.*]] = phi i32 [ [[B_PROMOTED]], [[SCALAR_PH]] ], [ [[ADD25]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP18:%.*]] = mul nuw nsw i64 [[INDVARS_IV]], 5
 ; CHECK-NEXT:    [[TMP19:%.*]] = add nuw nsw i64 [[TMP18]], 4
@@ -423,7 +420,6 @@ define void @interleaved_load_factor_6(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP18:%.*]] = add i32 [[B_PROMOTED]], [[TMP17]]
 ; CHECK-NEXT:    br label [[FOR_COND_FOR_COND_CLEANUP_CRIT_EDGE:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_LR_PH]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.for.cond.cleanup_crit_edge:
 ; CHECK-NEXT:    [[ADD31_LCSSA:%.*]] = phi i32 [ [[ADD31:%.*]], [[FOR_BODY]] ], [ [[TMP18]], [[MIDDLE_BLOCK]] ]
@@ -432,7 +428,7 @@ define void @interleaved_load_factor_6(i32 %n, ptr %b, ptr %a) {
 ; CHECK:       for.cond.cleanup:
 ; CHECK-NEXT:    ret void
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ADD3151:%.*]] = phi i32 [ [[B_PROMOTED]], [[SCALAR_PH]] ], [ [[ADD31]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul nuw nsw i64 [[INDVARS_IV]], 6
 ; CHECK-NEXT:    [[TMP20:%.*]] = add nuw nsw i64 [[TMP19]], 5
@@ -568,7 +564,6 @@ define void @interleaved_load_factor_7(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP19:%.*]] = add i32 [[B_PROMOTED]], [[TMP18]]
 ; CHECK-NEXT:    br label [[FOR_COND_FOR_COND_CLEANUP_CRIT_EDGE:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_LR_PH]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.for.cond.cleanup_crit_edge:
 ; CHECK-NEXT:    [[ADD37_LCSSA:%.*]] = phi i32 [ [[ADD37:%.*]], [[FOR_BODY]] ], [ [[TMP19]], [[MIDDLE_BLOCK]] ]
@@ -577,7 +572,7 @@ define void @interleaved_load_factor_7(i32 %n, ptr %b, ptr %a) {
 ; CHECK:       for.cond.cleanup:
 ; CHECK-NEXT:    ret void
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ADD3760:%.*]] = phi i32 [ [[B_PROMOTED]], [[SCALAR_PH]] ], [ [[ADD37]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP20:%.*]] = mul nuw nsw i64 [[INDVARS_IV]], 7
 ; CHECK-NEXT:    [[TMP21:%.*]] = add nuw nsw i64 [[TMP20]], 6
@@ -723,7 +718,6 @@ define void @interleaved_load_factor_8(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP20:%.*]] = add i32 [[B_PROMOTED]], [[TMP19]]
 ; CHECK-NEXT:    br label [[FOR_COND_FOR_COND_CLEANUP_CRIT_EDGE:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_LR_PH]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.for.cond.cleanup_crit_edge:
 ; CHECK-NEXT:    [[ADD43_LCSSA:%.*]] = phi i32 [ [[ADD43:%.*]], [[FOR_BODY]] ], [ [[TMP20]], [[MIDDLE_BLOCK]] ]
@@ -732,7 +726,7 @@ define void @interleaved_load_factor_8(i32 %n, ptr %b, ptr %a) {
 ; CHECK:       for.cond.cleanup:
 ; CHECK-NEXT:    ret void
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ADD4369:%.*]] = phi i32 [ [[B_PROMOTED]], [[SCALAR_PH]] ], [ [[ADD43]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP21:%.*]] = shl nsw i64 [[INDVARS_IV]], 3
 ; CHECK-NEXT:    [[TMP22:%.*]] = or disjoint i64 [[TMP21]], 7

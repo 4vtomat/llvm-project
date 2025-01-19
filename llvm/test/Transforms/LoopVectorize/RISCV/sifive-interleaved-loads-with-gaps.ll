@@ -746,10 +746,9 @@ define i32 @load_factor_3_with_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[TMP15:%.*]] = add i32 0, [[TMP14]]
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[RED_060:%.*]] = phi i32 [ 0, [[SCALAR_PH]] ], [ [[ADD6:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP16:%.*]] = mul nuw nsw i64 [[INDVARS_IV]], 3
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP16]]
@@ -825,10 +824,9 @@ define i32 @load_factor_4_with_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[TMP16:%.*]] = add i32 0, [[TMP15]]
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[RED_069:%.*]] = phi i32 [ 0, [[SCALAR_PH]] ], [ [[ADD11:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP17:%.*]] = shl nsw i64 [[INDVARS_IV]], 2
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP17]]
@@ -916,10 +914,9 @@ define i32 @load_factor_5_with_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[TMP17:%.*]] = add i32 0, [[TMP16]]
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[RED_060:%.*]] = phi i32 [ 0, [[SCALAR_PH]] ], [ [[ADD16:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP18:%.*]] = mul nuw nsw i64 [[INDVARS_IV]], 5
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP18]]
@@ -1011,10 +1008,9 @@ define i32 @load_factor_6_with_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[TMP18:%.*]] = add i32 0, [[TMP17]]
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[RED_060:%.*]] = phi i32 [ 0, [[SCALAR_PH]] ], [ [[ADD21:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul nuw nsw i64 [[INDVARS_IV]], 6
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP19]]
@@ -1114,10 +1110,9 @@ define i32 @load_factor_7_with_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[TMP19:%.*]] = add i32 0, [[TMP18]]
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[RED_060:%.*]] = phi i32 [ 0, [[SCALAR_PH]] ], [ [[ADD26:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP20:%.*]] = mul nuw nsw i64 [[INDVARS_IV]], 7
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP20]]
@@ -1225,10 +1220,9 @@ define i32 @load_factor_8_with_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[TMP20:%.*]] = add i32 0, [[TMP19]]
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[RED_069:%.*]] = phi i32 [ 0, [[SCALAR_PH]] ], [ [[ADD31:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP21:%.*]] = shl nsw i64 [[INDVARS_IV]], 3
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP21]]

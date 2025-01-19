@@ -19,13 +19,12 @@ define dso_local noundef i32 @_Z3fooiPKfPf(i32 noundef signext %N, ptr nocapture
 ; CHECK-NEXT:    [[DIFF_CHECK:%.*]] = icmp ult i64 [[TMP3]], [[TMP2]]
 ; CHECK-NEXT:    br i1 [[DIFF_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-; CHECK-NEXT:    [[DOTCAST:%.*]] = trunc i64 [[WIDE_TRIP_COUNT]] to i32
-; CHECK-NEXT:    [[IND_END:%.*]] = mul i32 [[DOTCAST]], 2
 ; CHECK-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP4]], 4
+; CHECK-NEXT:    [[DOTCAST:%.*]] = trunc i64 [[WIDE_TRIP_COUNT]] to i32
+; CHECK-NEXT:    [[IND_END:%.*]] = mul i32 [[DOTCAST]], 2
 ; CHECK-NEXT:    [[TMP6:%.*]] = call <vscale x 4 x i32> @llvm.stepvector.nxv4i32()
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 4 x i32> [[TMP6]], zeroinitializer
-; CHECK-NEXT:    [[TMP8:%.*]] = mul <vscale x 4 x i32> [[TMP7]], splat (i32 2)
+; CHECK-NEXT:    [[TMP8:%.*]] = mul <vscale x 4 x i32> [[TMP6]], splat (i32 2)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 4 x i32> zeroinitializer, [[TMP8]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = trunc i64 [[TMP5]] to i32
 ; CHECK-NEXT:    [[TMP10:%.*]] = mul i32 2, [[TMP9]]
@@ -57,8 +56,6 @@ define dso_local noundef i32 @_Z3fooiPKfPf(i32 noundef signext %N, ptr nocapture
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[VECTOR_MEMCHECK]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL3:%.*]] = phi i32 [ 0, [[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NEXT:    [[ADD3_LCSSA:%.*]] = phi i32 [ [[ADD3:%.*]], [[FOR_BODY]] ], [ [[IND_END]], [[MIDDLE_BLOCK]] ]
@@ -67,8 +64,8 @@ define dso_local noundef i32 @_Z3fooiPKfPf(i32 noundef signext %N, ptr nocapture
 ; CHECK-NEXT:    [[LINEAR_0_LCSSA:%.*]] = phi i32 [ 0, [[ENTRY:%.*]] ], [ [[ADD3_LCSSA]], [[FOR_COND_CLEANUP_LOOPEXIT]] ]
 ; CHECK-NEXT:    ret i32 [[LINEAR_0_LCSSA]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
-; CHECK-NEXT:    [[LINEAR_010:%.*]] = phi i32 [ [[BC_RESUME_VAL3]], [[SCALAR_PH]] ], [ [[ADD3]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[LINEAR_010:%.*]] = phi i32 [ 0, [[SCALAR_PH]] ], [ [[ADD3]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[INDVARS_IV]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = load i32, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA3]]
 ; CHECK-NEXT:    [[ADD:%.*]] = add i32 [[LINEAR_010]], [[TMP21]]

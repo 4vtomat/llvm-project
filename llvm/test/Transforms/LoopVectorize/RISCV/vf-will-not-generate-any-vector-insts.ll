@@ -36,14 +36,9 @@ define void @vf_will_not_generate_any_vector_insts(ptr %src, ptr %dst) {
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br label %[[EXIT:.*]]
 ; CHECK:       [[SCALAR_PH]]:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_MEMCHECK]] ]
-=======
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 100, %[[MIDDLE_BLOCK]] ], [ 0, %[[VECTOR_MEMCHECK]] ], [ 0, %[[ENTRY]] ]
->>>>>>> 21edac2
 ; CHECK-NEXT:    br label %[[LOOP:.*]]
 ; CHECK:       [[LOOP]]:
-; CHECK-NEXT:    [[TMP2:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[TMP3:%.*]], %[[LOOP]] ]
+; CHECK-NEXT:    [[TMP2:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[TMP3:%.*]], %[[LOOP]] ]
 ; CHECK-NEXT:    [[DOTPRE:%.*]] = load i32, ptr [[SRC]], align 4
 ; CHECK-NEXT:    store i32 [[DOTPRE]], ptr [[DST]], align 4
 ; CHECK-NEXT:    [[TMP3]] = add nuw i64 [[TMP2]], 1

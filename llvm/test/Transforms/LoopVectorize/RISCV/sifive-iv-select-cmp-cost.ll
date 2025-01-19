@@ -17,8 +17,7 @@ define i64 @select_icmp(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 1, i1 true)
 ; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 1 x i64> @llvm.stepvector.nxv1i64()
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], zeroinitializer
-; CHECK-NEXT:    [[TMP4:%.*]] = mul <vscale x 1 x i64> [[TMP3]], splat (i64 1)
+; CHECK-NEXT:    [[TMP4:%.*]] = mul <vscale x 1 x i64> [[TMP2]], splat (i64 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 1 x i64> zeroinitializer, [[TMP4]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = mul i64 1, [[TMP5]]
 ; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[TMP6]], i64 0
@@ -53,14 +52,11 @@ define i64 @select_icmp(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP19:%.*]] = call i64 @llvm.vp.reduce.smax.nxv1i64(i64 -9223372036854775808, <vscale x 1 x i64> [[VP_OP_MERGE]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
-; CHECK-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i64 [[TMP19]], -9223372036854775808
-; CHECK-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i64 [[TMP19]], i64 [[II]]
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[I_010:%.*]] = phi i64 [ [[INC:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
+; CHECK-NEXT:    [[I_010:%.*]] = phi i64 [ [[INC:%.*]], [[FOR_BODY]] ], [ 0, [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[IDX_09:%.*]] = phi i64 [ [[COND:%.*]], [[FOR_BODY]] ], [ [[II]], [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i64, ptr [[A]], i64 [[I_010]]
 ; CHECK-NEXT:    [[TMP20:%.*]] = load i64, ptr [[ARRAYIDX]], align 8
@@ -72,7 +68,7 @@ define i64 @select_icmp(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], [[N]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       exit:
-; CHECK-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND]], [[FOR_BODY]] ], [ [[TMP19]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret i64 [[COND_LCSSA]]
 ;
 entry:
@@ -109,8 +105,7 @@ define i64 @select_fcmp(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 1, i1 true)
 ; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 1 x i64> @llvm.stepvector.nxv1i64()
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], zeroinitializer
-; CHECK-NEXT:    [[TMP4:%.*]] = mul <vscale x 1 x i64> [[TMP3]], splat (i64 1)
+; CHECK-NEXT:    [[TMP4:%.*]] = mul <vscale x 1 x i64> [[TMP2]], splat (i64 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 1 x i64> zeroinitializer, [[TMP4]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = mul i64 1, [[TMP5]]
 ; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[TMP6]], i64 0
@@ -145,14 +140,11 @@ define i64 @select_fcmp(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP19:%.*]] = call i64 @llvm.vp.reduce.smax.nxv1i64(i64 -9223372036854775808, <vscale x 1 x i64> [[VP_OP_MERGE]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
-; CHECK-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i64 [[TMP19]], -9223372036854775808
-; CHECK-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i64 [[TMP19]], i64 [[II]]
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[I_010:%.*]] = phi i64 [ [[INC:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
+; CHECK-NEXT:    [[I_010:%.*]] = phi i64 [ [[INC:%.*]], [[FOR_BODY]] ], [ 0, [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[IDX_09:%.*]] = phi i64 [ [[COND:%.*]], [[FOR_BODY]] ], [ [[II]], [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[I_010]]
 ; CHECK-NEXT:    [[TMP20:%.*]] = load float, ptr [[ARRAYIDX]], align 4
@@ -164,7 +156,7 @@ define i64 @select_fcmp(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], [[N]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       exit:
-; CHECK-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND]], [[FOR_BODY]] ], [ [[TMP19]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret i64 [[COND_LCSSA]]
 ;
 entry:

@@ -69,8 +69,8 @@ define void @Ppmd8_EncodeSymbol(ptr %p, i8 %0) {
 ; CHECK-NEXT:    br label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ [[S180_06_LCSSA]], [[DO_BODY220_PREHEADER]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL5:%.*]] = phi i32 [ [[IND_END4]], [[MIDDLE_BLOCK]] ], [ [[I182_0_LCSSA]], [[DO_BODY220_PREHEADER]] ]
 ; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i32 [ [[VECTOR_RECUR_EXTRACT]], [[MIDDLE_BLOCK]] ], [ 0, [[DO_BODY220_PREHEADER]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL5:%.*]] = phi i32 [ [[IND_END4]], [[MIDDLE_BLOCK]] ], [ [[I182_0_LCSSA]], [[DO_BODY220_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[DO_BODY220:%.*]]
 ; CHECK:       do.body220:
 ; CHECK-NEXT:    [[S180_1:%.*]] = phi ptr [ [[INCDEC_PTR230:%.*]], [[DO_BODY220]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]

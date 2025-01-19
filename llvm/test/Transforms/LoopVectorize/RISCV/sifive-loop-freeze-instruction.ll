@@ -23,10 +23,9 @@ define void @test(i32 %sub.pn.i194) {
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[FOR_END230_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY213_PREHEADER:%.*]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY213:%.*]]
 ; CHECK:       for.body213:
-; CHECK-NEXT:    [[INDVARS_IV1351:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT1352:%.*]], [[FOR_BODY213]] ]
+; CHECK-NEXT:    [[INDVARS_IV1351:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT1352:%.*]], [[FOR_BODY213]] ]
 ; CHECK-NEXT:    [[SUB_PN_FR_I198:%.*]] = freeze i32 [[SUB_PN_I194]]
 ; CHECK-NEXT:    store i32 [[SUB_PN_FR_I198]], ptr null, align 4
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT1352]] = add nuw nsw i64 [[INDVARS_IV1351]], 1

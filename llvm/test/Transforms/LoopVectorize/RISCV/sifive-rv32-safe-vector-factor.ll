@@ -32,10 +32,9 @@ define void @test(ptr %cval_memcpy_s1, ptr %incdec.ptr) {
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br label %[[FOR_END_LOOPEXIT:.*]]
 ; CHECK:       [[SCALAR_PH]]:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 0, %[[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    br label %[[FOR_BODY:.*]]
 ; CHECK:       [[FOR_BODY]]:
-; CHECK-NEXT:    [[N_ADDR_03:%.*]] = phi i32 [ [[DEC:%.*]], %[[FOR_BODY]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
+; CHECK-NEXT:    [[N_ADDR_03:%.*]] = phi i32 [ [[DEC:%.*]], %[[FOR_BODY]] ], [ 0, %[[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[TMP3:%.*]] = load i8, ptr [[INCDEC_PTR]], align 1
 ; CHECK-NEXT:    store i8 [[TMP3]], ptr [[CVAL_MEMCPY_S1]], align 1
 ; CHECK-NEXT:    [[DEC]] = add i32 [[N_ADDR_03]], 1

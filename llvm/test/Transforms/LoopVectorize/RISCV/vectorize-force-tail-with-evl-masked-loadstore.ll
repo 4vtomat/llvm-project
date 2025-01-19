@@ -37,10 +37,9 @@ define void @masked_loadstore(ptr noalias %a, ptr noalias %b, i64 %n) {
 ; IF-EVL:       middle.block:
 ; IF-EVL-NEXT:    br label [[EXIT:%.*]]
 ; IF-EVL:       scalar.ph:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; IF-EVL-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL:       for.body:
-; IF-EVL-NEXT:    [[I_011:%.*]] = phi i64 [ [[INC:%.*]], [[FOR_INC:%.*]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
+; IF-EVL-NEXT:    [[I_011:%.*]] = phi i64 [ [[INC:%.*]], [[FOR_INC:%.*]] ], [ 0, [[SCALAR_PH]] ]
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[I_011]]
 ; IF-EVL-NEXT:    [[TMP8:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
 ; IF-EVL-NEXT:    [[CMP1:%.*]] = icmp ne i32 [[TMP8]], 0

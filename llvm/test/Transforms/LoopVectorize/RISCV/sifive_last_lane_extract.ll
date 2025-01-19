@@ -11,8 +11,7 @@ define ptr @Perl_newSV(ptr %call.i) {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 1 x i64> @llvm.stepvector.nxv1i64()
-; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], zeroinitializer
-; CHECK-NEXT:    [[TMP3:%.*]] = mul <vscale x 1 x i64> [[TMP2]], splat (i64 11)
+; CHECK-NEXT:    [[TMP3:%.*]] = mul <vscale x 1 x i64> [[TMP1]], splat (i64 11)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 1 x i64> splat (i64 1), [[TMP3]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = mul i64 11, [[TMP0]]
 ; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[TMP4]], i64 0
@@ -54,10 +53,9 @@ define ptr @Perl_newSV(ptr %call.i) {
 ; CHECK-NEXT:    [[TMP22:%.*]] = extractelement <vscale x 1 x ptr> [[TMP16]], i32 [[TMP21]]
 ; CHECK-NEXT:    br label [[PERL_SV_ADD_ARENA_EXIT14_I:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1, [[IF_ELSE_I:%.*]] ]
 ; CHECK-NEXT:    br label [[WHILE_BODY_I11_I:%.*]]
 ; CHECK:       while.body.i11.i:
-; CHECK-NEXT:    [[SV_026_I6_IDX_I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[SV_026_I6_ADD_I_10:%.*]], [[WHILE_BODY_I11_I]] ]
+; CHECK-NEXT:    [[SV_026_I6_IDX_I:%.*]] = phi i64 [ 1, [[SCALAR_PH]] ], [ [[SV_026_I6_ADD_I_10:%.*]], [[WHILE_BODY_I11_I]] ]
 ; CHECK-NEXT:    [[SV_026_I6_ADD_I_3:%.*]] = add nuw nsw i64 [[SV_026_I6_IDX_I]], 1
 ; CHECK-NEXT:    [[SV_REFCNT7_I8_I_4:%.*]] = getelementptr inbounds [[STRUCT_SV]], ptr [[CALL_I]], i64 [[SV_026_I6_ADD_I_3]], i32 1
 ; CHECK-NEXT:    store i32 0, ptr [[SV_REFCNT7_I8_I_4]], align 8, !tbaa [[TBAA0]]

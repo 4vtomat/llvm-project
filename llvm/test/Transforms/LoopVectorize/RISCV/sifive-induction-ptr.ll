@@ -87,12 +87,10 @@ define dso_local noundef signext i32 @f(ptr noundef writeonly %c, ptr noundef re
 ; VEC:       middle.block:
 ; VEC-NEXT:    br label [[FOR_END_LOOPEXIT:%.*]]
 ; VEC:       scalar.ph:
-; VEC-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ [[C]], [[VECTOR_MEMCHECK]] ]
-; VEC-NEXT:    [[BC_RESUME_VAL6:%.*]] = phi ptr [ [[A]], [[VECTOR_MEMCHECK]] ]
 ; VEC-NEXT:    br label [[FOR_BODY:%.*]]
 ; VEC:       for.body:
-; VEC-NEXT:    [[C_ADDR_012:%.*]] = phi ptr [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INCDEC_PTR4:%.*]], [[FOR_INC:%.*]] ]
-; VEC-NEXT:    [[A_ADDR_011:%.*]] = phi ptr [ [[BC_RESUME_VAL6]], [[SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_INC]] ]
+; VEC-NEXT:    [[C_ADDR_012:%.*]] = phi ptr [ [[C]], [[SCALAR_PH]] ], [ [[INCDEC_PTR4:%.*]], [[FOR_INC:%.*]] ]
+; VEC-NEXT:    [[A_ADDR_011:%.*]] = phi ptr [ [[A]], [[SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_INC]] ]
 ; VEC-NEXT:    [[CMP3:%.*]] = icmp ult ptr [[A_ADDR_011]], [[ADD_PTR2]]
 ; VEC-NEXT:    br i1 [[CMP3]], label [[IF_THEN:%.*]], label [[FOR_INC]]
 ; VEC:       if.then:

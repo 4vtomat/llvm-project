@@ -122,7 +122,7 @@ define float @fadd_fmf_reduction(float* noalias nocapture readonly %a, i64 %n, f
 ; CHECK-SCALABLE:       for.body:
 ; CHECK-SCALABLE-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-SCALABLE-NEXT:    [[SUM_07:%.*]] = phi float [ [[START]], [[SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
-; CHECK-SCALABLE-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[IV]]
+; CHECK-SCALABLE-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds nuw float, ptr [[A]], i64 [[IV]]
 ; CHECK-SCALABLE-NEXT:    [[TMP7:%.*]] = load float, ptr [[ARRAYIDX]], align 4
 ; CHECK-SCALABLE-NEXT:    [[ADD]] = fadd fast float [[TMP7]], [[SUM_07]]
 ; CHECK-SCALABLE-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -161,7 +161,7 @@ define float @fadd_fmf_reduction(float* noalias nocapture readonly %a, i64 %n, f
 ; CHECK-SCALABLE-NO-POSTSV:       for.body:
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[SUM_07:%.*]] = phi float [ [[START]], [[SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[IV]]
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds nuw float, ptr [[A]], i64 [[IV]]
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP8:%.*]] = load float, ptr [[ARRAYIDX]], align 4
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[ADD]] = fadd fast float [[TMP8]], [[SUM_07]]
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1

@@ -27,10 +27,9 @@ define void @test() {
 ; CHECK-NEXT:    [[TMP6:%.*]] = fadd reassoc double 0.000000e+00, [[TMP5]]
 ; CHECK-NEXT:    br label [[FOR_END277_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY264_PREHEADER:%.*]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY264:%.*]]
 ; CHECK:       for.body264:
-; CHECK-NEXT:    [[INDVARS_IV914:%.*]] = phi i64 [ [[INDVARS_IV_NEXT915:%.*]], [[FOR_BODY264]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
+; CHECK-NEXT:    [[INDVARS_IV914:%.*]] = phi i64 [ [[INDVARS_IV_NEXT915:%.*]], [[FOR_BODY264]] ], [ 0, [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[YE_0849:%.*]] = phi double [ [[TMP7:%.*]], [[FOR_BODY264]] ], [ 0.000000e+00, [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[TMP7]] = tail call reassoc double @llvm.fmuladd.f64(double 0.000000e+00, double 0.000000e+00, double [[YE_0849]])
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT915]] = add nuw nsw i64 [[INDVARS_IV914]], 1
@@ -63,10 +62,9 @@ define void @test() {
 ; CHECK-NO-POSTSV-NEXT:    [[TMP5:%.*]] = call reassoc double @llvm.vp.reduce.fadd.nxv8f64(double -0.000000e+00, <vscale x 8 x double> [[VP_OP_MERGE]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NO-POSTSV-NEXT:    br label [[FOR_END277_LOOPEXIT:%.*]]
 ; CHECK-NO-POSTSV:       scalar.ph:
-; CHECK-NO-POSTSV-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY264_PREHEADER:%.*]] ]
 ; CHECK-NO-POSTSV-NEXT:    br label [[FOR_BODY264:%.*]]
 ; CHECK-NO-POSTSV:       for.body264:
-; CHECK-NO-POSTSV-NEXT:    [[INDVARS_IV914:%.*]] = phi i64 [ [[INDVARS_IV_NEXT915:%.*]], [[FOR_BODY264]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
+; CHECK-NO-POSTSV-NEXT:    [[INDVARS_IV914:%.*]] = phi i64 [ [[INDVARS_IV_NEXT915:%.*]], [[FOR_BODY264]] ], [ 0, [[SCALAR_PH]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[YE_0849:%.*]] = phi double [ [[TMP6:%.*]], [[FOR_BODY264]] ], [ 0.000000e+00, [[SCALAR_PH]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[TMP6]] = tail call reassoc double @llvm.fmuladd.f64(double 0.000000e+00, double 0.000000e+00, double [[YE_0849]])
 ; CHECK-NO-POSTSV-NEXT:    [[INDVARS_IV_NEXT915]] = add nuw nsw i64 [[INDVARS_IV914]], 1

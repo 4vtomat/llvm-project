@@ -73,10 +73,9 @@ define void @test(i32 %0, i64 %conv, ptr %call5.i.i.i4.i.i101) {
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP21:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[VECTOR_SCEVCHECK]] ]
 ; CHECK-NEXT:    br label [[INVOKE_CONT14:%.*]]
 ; CHECK:       invoke.cont14:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[INVOKE_CONT14]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[INVOKE_CONT14]] ]
 ; CHECK-NEXT:    [[TMP35:%.*]] = trunc i64 [[INDVARS_IV]] to i32
 ; CHECK-NEXT:    [[MUL_I:%.*]] = mul i32 [[TMP35]], [[TMP0]]
 ; CHECK-NEXT:    [[IDX_EXT_I:%.*]] = zext i32 [[MUL_I]] to i64

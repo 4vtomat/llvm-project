@@ -23,10 +23,9 @@ define void @test() {
 ; SCALABLE:       middle.block:
 ; SCALABLE-NEXT:    br label [[FOR_COND_PREHEADER:%.*]]
 ; SCALABLE:       scalar.ph:
-; SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; SCALABLE-NEXT:    br label [[FOR_BODY_I:%.*]]
 ; SCALABLE:       for.body.i:
-; SCALABLE-NEXT:    [[INDVARS_IV_I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT_I:%.*]], [[FOR_BODY_I]] ]
+; SCALABLE-NEXT:    [[INDVARS_IV_I:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT_I:%.*]], [[FOR_BODY_I]] ]
 ; SCALABLE-NEXT:    [[ARRAYIDX_I:%.*]] = getelementptr inbounds [125 x i32], ptr undef, i64 0, i64 [[INDVARS_IV_I]]
 ; SCALABLE-NEXT:    [[TMP7:%.*]] = load i32, ptr [[ARRAYIDX_I]], align 4
 ; SCALABLE-NEXT:    [[ARRAYIDX2_I:%.*]] = getelementptr inbounds [125 x i32], ptr undef, i64 0, i64 [[INDVARS_IV_I]]

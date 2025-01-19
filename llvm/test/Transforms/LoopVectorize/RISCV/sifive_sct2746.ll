@@ -66,12 +66,11 @@ define i32 @test(i32 %start, ptr %tmpbuf, ptr %buffers, ptr %weights, ptr %endpo
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       loopexit:
 ; CHECK-NEXT:    ret i32 0
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ARRAYIDX28:%.*]] = getelementptr float, ptr [[ERRORS]], i64 [[IV]]
 ; CHECK-NEXT:    store float 0.000000e+00, ptr [[ARRAYIDX28]], align 4
 ; CHECK-NEXT:    [[ARRAYIDX30:%.*]] = getelementptr i8, ptr [[BQL17]], i64 [[IV]]

@@ -30,10 +30,9 @@ define i32 @test() {
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[FOR_EXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-NEXT:    br label [[FOR_PH:%.*]]
 ; CHECK:       for.ph:
-; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_COND:%.*]] ]
+; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_COND:%.*]] ]
 ; CHECK-NEXT:    br i1 false, label [[FOR_COND_LCSSA:%.*]], label [[FOR_BODY:%.*]]
 ; CHECK:       for.exit:
 ; CHECK-NEXT:    ret i32 0

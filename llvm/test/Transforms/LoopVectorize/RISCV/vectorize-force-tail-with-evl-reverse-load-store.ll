@@ -14,22 +14,9 @@ define void @reverse_load_store(i64 %startval, ptr noalias %ptr, ptr noalias %pt
 ; IF-EVL-NEXT:  entry:
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
-<<<<<<< HEAD
-; IF-EVL-NEXT:    [[IND_END:%.*]] = sub i64 [[STARTVAL:%.*]], 1024
 ; IF-EVL-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-NEXT:    [[TMP17:%.*]] = mul i64 [[TMP2]], 2
-=======
-; IF-EVL-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; IF-EVL-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
-; IF-EVL-NEXT:    [[TMP2:%.*]] = sub i64 [[TMP1]], 1
-; IF-EVL-NEXT:    [[N_RND_UP:%.*]] = add i64 1024, [[TMP2]]
-; IF-EVL-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N_RND_UP]], [[TMP1]]
-; IF-EVL-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
-; IF-EVL-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
-; IF-EVL-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 4
-; IF-EVL-NEXT:    [[IND_END:%.*]] = sub i64 [[STARTVAL:%.*]], [[N_VEC]]
-; IF-EVL-NEXT:    [[IND_END1:%.*]] = trunc i64 [[N_VEC]] to i32
->>>>>>> 21edac2
+; IF-EVL-NEXT:    [[TMP20:%.*]] = sub i64 [[STARTVAL:%.*]], 1024
 ; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -62,12 +49,10 @@ define void @reverse_load_store(i64 %startval, ptr noalias %ptr, ptr noalias %pt
 ; IF-EVL:       middle.block:
 ; IF-EVL-NEXT:    br label [[LOOPEND:%.*]]
 ; IF-EVL:       scalar.ph:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[STARTVAL]], [[ENTRY:%.*]] ]
-; IF-EVL-NEXT:    [[BC_RESUME_VAL1:%.*]] = phi i32 [ 0, [[ENTRY]] ]
 ; IF-EVL-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL:       for.body:
-; IF-EVL-NEXT:    [[ADD_PHI:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
-; IF-EVL-NEXT:    [[I:%.*]] = phi i32 [ [[BC_RESUME_VAL1]], [[SCALAR_PH]] ], [ [[INC:%.*]], [[FOR_BODY]] ]
+; IF-EVL-NEXT:    [[ADD_PHI:%.*]] = phi i64 [ [[STARTVAL]], [[SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
+; IF-EVL-NEXT:    [[I:%.*]] = phi i32 [ 0, [[SCALAR_PH]] ], [ [[INC:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[ADD]] = add i64 [[ADD_PHI]], -1
 ; IF-EVL-NEXT:    [[GEPL:%.*]] = getelementptr inbounds i32, ptr [[PTR]], i64 [[ADD]]
 ; IF-EVL-NEXT:    [[TMP:%.*]] = load i32, ptr [[GEPL]], align 4
@@ -120,22 +105,9 @@ define void @reverse_load_store_masked(i64 %startval, ptr noalias %ptr, ptr noal
 ; IF-EVL-NEXT:  entry:
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
-<<<<<<< HEAD
-; IF-EVL-NEXT:    [[IND_END:%.*]] = sub i64 [[STARTVAL:%.*]], 1024
 ; IF-EVL-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-NEXT:    [[TMP20:%.*]] = mul i64 [[TMP2]], 2
-=======
-; IF-EVL-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; IF-EVL-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
-; IF-EVL-NEXT:    [[TMP2:%.*]] = sub i64 [[TMP1]], 1
-; IF-EVL-NEXT:    [[N_RND_UP:%.*]] = add i64 1024, [[TMP2]]
-; IF-EVL-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N_RND_UP]], [[TMP1]]
-; IF-EVL-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
-; IF-EVL-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
-; IF-EVL-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 4
-; IF-EVL-NEXT:    [[IND_END:%.*]] = sub i64 [[STARTVAL:%.*]], [[N_VEC]]
-; IF-EVL-NEXT:    [[IND_END1:%.*]] = trunc i64 [[N_VEC]] to i32
->>>>>>> 21edac2
+; IF-EVL-NEXT:    [[TMP23:%.*]] = sub i64 [[STARTVAL:%.*]], 1024
 ; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -176,12 +148,10 @@ define void @reverse_load_store_masked(i64 %startval, ptr noalias %ptr, ptr noal
 ; IF-EVL:       middle.block:
 ; IF-EVL-NEXT:    br label [[LOOPEND:%.*]]
 ; IF-EVL:       scalar.ph:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[STARTVAL]], [[ENTRY:%.*]] ]
-; IF-EVL-NEXT:    [[BC_RESUME_VAL1:%.*]] = phi i32 [ 0, [[ENTRY]] ]
 ; IF-EVL-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL:       for.body:
-; IF-EVL-NEXT:    [[ADD_PHI:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_INC:%.*]] ]
-; IF-EVL-NEXT:    [[I:%.*]] = phi i32 [ [[BC_RESUME_VAL1]], [[SCALAR_PH]] ], [ [[INC:%.*]], [[FOR_INC]] ]
+; IF-EVL-NEXT:    [[ADD_PHI:%.*]] = phi i64 [ [[STARTVAL]], [[SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_INC:%.*]] ]
+; IF-EVL-NEXT:    [[I:%.*]] = phi i32 [ 0, [[SCALAR_PH]] ], [ [[INC:%.*]], [[FOR_INC]] ]
 ; IF-EVL-NEXT:    [[ADD]] = add i64 [[ADD_PHI]], -1
 ; IF-EVL-NEXT:    [[GEPL:%.*]] = getelementptr inbounds i32, ptr [[PTR]], i32 [[I]]
 ; IF-EVL-NEXT:    [[TMP:%.*]] = load i32, ptr [[GEPL]], align 4

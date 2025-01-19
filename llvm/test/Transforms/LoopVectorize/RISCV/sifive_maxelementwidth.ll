@@ -33,14 +33,13 @@ define void @foo(i64* %x, i64 %n, i64 %y) {
 ; V:       middle.block:
 ; V-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; V:       scalar.ph:
-; V-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; V-NEXT:    br label [[FOR_BODY:%.*]]
 ; V:       for.cond.cleanup.loopexit:
 ; V-NEXT:    br label [[FOR_COND_CLEANUP]]
 ; V:       for.cond.cleanup:
 ; V-NEXT:    ret void
 ; V:       for.body:
-; V-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
+; V-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ], [ 0, [[SCALAR_PH]] ]
 ; V-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i64, ptr [[X]], i64 [[INDVARS_IV]]
 ; V-NEXT:    [[TMP7:%.*]] = load i64, ptr [[ARRAYIDX]], align 8
 ; V-NEXT:    [[ADD:%.*]] = add nsw i64 [[TMP7]], [[Y]]

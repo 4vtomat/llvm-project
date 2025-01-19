@@ -55,15 +55,15 @@ define void @_Z3fn1v(i32 %n, ptr %k, i32 %l) {
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ], [ 0, [[VECTOR_SCEVCHECK]] ], [ 0, [[VECTOR_MEMCHECK]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL2:%.*]] = phi i32 [ [[IND_END1]], [[MIDDLE_BLOCK]] ], [ 1, [[ENTRY]] ], [ 1, [[VECTOR_SCEVCHECK]] ], [ 1, [[VECTOR_MEMCHECK]] ]
-; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ true, [[MIDDLE_BLOCK]] ], [ true, [[VECTOR_MEMCHECK]] ], [ false, [[VECTOR_SCEVCHECK]] ], [ true, [[ENTRY]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ 0, [[VECTOR_MEMCHECK]] ], [ 0, [[VECTOR_SCEVCHECK]] ], [ 0, [[ENTRY:%.*]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL2:%.*]] = phi i32 [ [[IND_END1]], [[MIDDLE_BLOCK]] ], [ 1, [[VECTOR_MEMCHECK]] ], [ 1, [[VECTOR_SCEVCHECK]] ], [ 1, [[ENTRY]] ]
+; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ true, [[VECTOR_MEMCHECK]] ], [ false, [[VECTOR_SCEVCHECK]] ], [ true, [[ENTRY]] ], [ true, [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    [[TMP20:%.*]] = add i32 [[N]], -1
 ; CHECK-NEXT:    [[TMP21:%.*]] = sub i32 [[TMP20]], [[BC_RESUME_VAL2]]
 ; CHECK-NEXT:    [[TMP22:%.*]] = zext i32 [[TMP21]] to i64
 ; CHECK-NEXT:    [[TMP23:%.*]] = add nuw nsw i64 [[TMP22]], 1
 ; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label [[SCALAR_PH11:%.*]], label [[VECTOR_MEMCHECK3:%.*]]
-; CHECK:       vector.memcheck3:
+; CHECK:       vector.memcheck2:
 ; CHECK-NEXT:    [[TMP24:%.*]] = add i32 [[N]], -1
 ; CHECK-NEXT:    [[TMP25:%.*]] = sub i32 [[TMP24]], [[BC_RESUME_VAL2]]
 ; CHECK-NEXT:    [[TMP26:%.*]] = zext i32 [[TMP25]] to i64
@@ -82,14 +82,14 @@ define void @_Z3fn1v(i32 %n, ptr %k, i32 %l) {
 ; CHECK-NEXT:    [[BOUND18:%.*]] = icmp ult ptr [[UMIN]], getelementptr inbounds nuw (i8, ptr @m, i64 4)
 ; CHECK-NEXT:    [[FOUND_CONFLICT9:%.*]] = and i1 [[BOUND07]], [[BOUND18]]
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT9]], label [[SCALAR_PH11]], label [[VECTOR_PH12:%.*]]
-; CHECK:       vector.ph12:
+; CHECK:       vector.ph11:
 ; CHECK-NEXT:    [[TMP33:%.*]] = mul i64 [[TMP23]], [[TMP0]]
 ; CHECK-NEXT:    [[IND_END13:%.*]] = add i64 [[BC_RESUME_VAL]], [[TMP33]]
 ; CHECK-NEXT:    [[DOTCAST15:%.*]] = trunc i64 [[TMP23]] to i32
 ; CHECK-NEXT:    [[IND_END16:%.*]] = add i32 [[BC_RESUME_VAL2]], [[DOTCAST15]]
 ; CHECK-NEXT:    [[TMP34:%.*]] = shl nsw i64 [[TMP0]], 3
 ; CHECK-NEXT:    br label [[VECTOR_BODY18:%.*]]
-; CHECK:       vector.body18:
+; CHECK:       vector.body13:
 ; CHECK-NEXT:    [[INDEX19:%.*]] = phi i64 [ 0, [[VECTOR_PH12]] ], [ [[INDEX_EVL_NEXT22:%.*]], [[VECTOR_BODY18]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV20:%.*]] = phi i64 [ 0, [[VECTOR_PH12]] ], [ [[INDEX_EVL_NEXT22]], [[VECTOR_BODY18]] ]
 ; CHECK-NEXT:    [[TMP38:%.*]] = sub i64 [[TMP23]], [[EVL_BASED_IV20]]
@@ -104,16 +104,14 @@ define void @_Z3fn1v(i32 %n, ptr %k, i32 %l) {
 ; CHECK-NEXT:    [[TMP42:%.*]] = zext i32 [[TMP39]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT22]] = add nuw i64 [[TMP42]], [[EVL_BASED_IV20]]
 ; CHECK-NEXT:    [[TMP43:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT22]], [[TMP23]]
-; CHECK-NEXT:    br i1 [[TMP43]], label [[MIDDLE_BLOCK10:%.*]], label [[VECTOR_BODY18]], !llvm.loop [[LOOP13:![0-9]+]]
-; CHECK:       middle.block10:
+; CHECK-NEXT:    br i1 [[TMP43]], label [[MIDDLE_BLOCK9:%.*]], label [[VECTOR_BODY18]], !llvm.loop [[LOOP13:![0-9]+]]
+; CHECK:       middle.block9:
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
-; CHECK:       scalar.ph11:
-; CHECK-NEXT:    [[BC_RESUME_VAL14:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[BC_RESUME_VAL]], [[VECTOR_MEMCHECK3]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL17:%.*]] = phi i32 [ [[BC_RESUME_VAL2]], [[SCALAR_PH]] ], [ [[BC_RESUME_VAL2]], [[VECTOR_MEMCHECK3]] ]
+; CHECK:       scalar.ph10:
 ; CHECK-NEXT:    br label [[FOR_BODY_I:%.*]]
 ; CHECK:       for.body.i:
-; CHECK-NEXT:    [[INDVARS_IV_I:%.*]] = phi i64 [ [[BC_RESUME_VAL14]], [[SCALAR_PH11]] ], [ [[INDVARS_IV_NEXT_I:%.*]], [[FOR_BODY_I]] ]
-; CHECK-NEXT:    [[H_08_I:%.*]] = phi i32 [ [[BC_RESUME_VAL17]], [[SCALAR_PH11]] ], [ [[INC_I:%.*]], [[FOR_BODY_I]] ]
+; CHECK-NEXT:    [[INDVARS_IV_I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH11]] ], [ [[INDVARS_IV_NEXT_I:%.*]], [[FOR_BODY_I]] ]
+; CHECK-NEXT:    [[H_08_I:%.*]] = phi i32 [ [[BC_RESUME_VAL2]], [[SCALAR_PH11]] ], [ [[INC_I:%.*]], [[FOR_BODY_I]] ]
 ; CHECK-NEXT:    [[ARRAYIDX_I:%.*]] = getelementptr inbounds [[CLASS_A]], ptr [[K]], i64 [[INDVARS_IV_I]]
 ; CHECK-NEXT:    [[TMP44:%.*]] = load i32, ptr [[ARRAYIDX_I]], align 4
 ; CHECK-NEXT:    store i32 [[TMP44]], ptr @m, align 4

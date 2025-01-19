@@ -46,7 +46,6 @@ define void @foo(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[VECTOR_SCEVCHECK]] ], [ 0, [[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ true, [[VECTOR_MEMCHECK]] ], [ false, [[VECTOR_SCEVCHECK]] ]
 ; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label [[SCALAR_PH10:%.*]], label [[VECTOR_MEMCHECK3:%.*]]
 ; CHECK:       vector.memcheck3:
@@ -70,17 +69,15 @@ define void @foo(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CHECK-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH10]], label [[VECTOR_PH11:%.*]]
 ; CHECK:       vector.ph11:
-; CHECK-NEXT:    [[IND_END:%.*]] = add i64 [[BC_RESUME_VAL]], [[WIDE_TRIP_COUNT]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = shl nsw i64 [[TMP0]], 2
 ; CHECK-NEXT:    [[TMP22:%.*]] = shl nsw i64 [[TMP0]], 2
 ; CHECK-NEXT:    br label [[VECTOR_BODY13:%.*]]
-; CHECK:       vector.body13:
+; CHECK:       vector.body12:
 ; CHECK-NEXT:    [[INDEX14:%.*]] = phi i64 [ 0, [[VECTOR_PH11]] ], [ [[INDEX_EVL_NEXT16:%.*]], [[VECTOR_BODY13]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV15:%.*]] = phi i64 [ 0, [[VECTOR_PH11]] ], [ [[INDEX_EVL_NEXT16]], [[VECTOR_BODY13]] ]
 ; CHECK-NEXT:    [[TMP23:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV15]]
 ; CHECK-NEXT:    [[TMP24:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP23]], i32 2, i1 true)
-; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = add i64 [[BC_RESUME_VAL]], [[EVL_BASED_IV15]]
-; CHECK-NEXT:    [[TMP25:%.*]] = add i64 [[OFFSET_IDX]], 0
+; CHECK-NEXT:    [[TMP25:%.*]] = add i64 [[EVL_BASED_IV15]], 0
 ; CHECK-NEXT:    [[TMP26:%.*]] = mul nsw i64 [[TMP25]], [[TMP0]]
 ; CHECK-NEXT:    [[TMP27:%.*]] = getelementptr inbounds i32, ptr [[S]], i64 [[TMP26]]
 ; CHECK-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.experimental.vp.strided.load.nxv2i32.p0.i64(ptr align 4 [[TMP27]], i64 [[TMP21]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP24]]), !alias.scope [[META3:![0-9]+]]
@@ -93,10 +90,9 @@ define void @foo(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CHECK:       middle.block9:
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT]]
 ; CHECK:       scalar.ph10:
-; CHECK-NEXT:    [[BC_RESUME_VAL12:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[BC_RESUME_VAL]], [[VECTOR_MEMCHECK3]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL12]], [[SCALAR_PH10]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH10]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul nsw i64 [[INDVARS_IV]], [[TMP0]]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[S]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP32:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
@@ -151,10 +147,9 @@ define void @foo(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CONSECUTIVE:       middle.block:
 ; CONSECUTIVE-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT:%.*]]
 ; CONSECUTIVE:       scalar.ph:
-; CONSECUTIVE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[VECTOR_SCEVCHECK]] ], [ 0, [[VECTOR_MEMCHECK]] ]
 ; CONSECUTIVE-NEXT:    br label [[FOR_BODY:%.*]]
 ; CONSECUTIVE:       for.body:
-; CONSECUTIVE-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CONSECUTIVE-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CONSECUTIVE-NEXT:    [[TMP14:%.*]] = mul nsw i64 [[INDVARS_IV]], [[TMP0]]
 ; CONSECUTIVE-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[S]], i64 [[TMP14]]
 ; CONSECUTIVE-NEXT:    [[TMP15:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
@@ -218,10 +213,9 @@ define void @foo(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; STRIDED:       middle.block:
 ; STRIDED-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT:%.*]]
 ; STRIDED:       scalar.ph:
-; STRIDED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[VECTOR_MEMCHECK]] ]
 ; STRIDED-NEXT:    br label [[FOR_BODY:%.*]]
 ; STRIDED:       for.body:
-; STRIDED-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; STRIDED-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; STRIDED-NEXT:    [[TMP18:%.*]] = mul nsw i64 [[INDVARS_IV]], [[TMP0]]
 ; STRIDED-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[S]], i64 [[TMP18]]
 ; STRIDED-NEXT:    [[TMP19:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
@@ -307,7 +301,6 @@ define void @bar(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[VECTOR_SCEVCHECK]] ], [ 0, [[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ true, [[VECTOR_MEMCHECK]] ], [ false, [[VECTOR_SCEVCHECK]] ]
 ; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label [[SCALAR_PH11:%.*]], label [[VECTOR_SCEVCHECK3:%.*]]
 ; CHECK:       vector.scevcheck3:
@@ -354,19 +347,17 @@ define void @bar(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CHECK-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH11]], label [[VECTOR_PH12:%.*]]
 ; CHECK:       vector.ph12:
-; CHECK-NEXT:    [[IND_END:%.*]] = add i64 [[BC_RESUME_VAL]], [[WIDE_TRIP_COUNT]]
 ; CHECK-NEXT:    [[TMP43:%.*]] = trunc i32 [[SCALE]] to i2
 ; CHECK-NEXT:    [[TMP44:%.*]] = sext i2 [[TMP43]] to i64
 ; CHECK-NEXT:    [[TMP45:%.*]] = shl nsw i64 [[TMP44]], 2
 ; CHECK-NEXT:    [[TMP46:%.*]] = shl nsw i64 [[TMP0]], 2
 ; CHECK-NEXT:    br label [[VECTOR_BODY14:%.*]]
-; CHECK:       vector.body14:
+; CHECK:       vector.body13:
 ; CHECK-NEXT:    [[INDEX15:%.*]] = phi i64 [ 0, [[VECTOR_PH12]] ], [ [[INDEX_EVL_NEXT17:%.*]], [[VECTOR_BODY14]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV16:%.*]] = phi i64 [ 0, [[VECTOR_PH12]] ], [ [[INDEX_EVL_NEXT17]], [[VECTOR_BODY14]] ]
 ; CHECK-NEXT:    [[TMP47:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV16]]
 ; CHECK-NEXT:    [[TMP48:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP47]], i32 2, i1 true)
-; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = add i64 [[BC_RESUME_VAL]], [[EVL_BASED_IV16]]
-; CHECK-NEXT:    [[TMP49:%.*]] = add i64 [[OFFSET_IDX]], 0
+; CHECK-NEXT:    [[TMP49:%.*]] = add i64 [[EVL_BASED_IV16]], 0
 ; CHECK-NEXT:    [[TMP50:%.*]] = mul nsw i64 [[TMP49]], [[TMP0]]
 ; CHECK-NEXT:    [[TMP51:%.*]] = urem i64 [[TMP50]], 4
 ; CHECK-NEXT:    [[TMP52:%.*]] = getelementptr inbounds i32, ptr [[S]], i64 [[TMP51]]
@@ -380,10 +371,9 @@ define void @bar(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CHECK:       middle.block10:
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT]]
 ; CHECK:       scalar.ph11:
-; CHECK-NEXT:    [[BC_RESUME_VAL13:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[BC_RESUME_VAL]], [[VECTOR_SCEVCHECK3]] ], [ [[BC_RESUME_VAL]], [[VECTOR_MEMCHECK4]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL13]], [[SCALAR_PH11]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH11]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP56:%.*]] = mul nsw i64 [[INDVARS_IV]], [[TMP0]]
 ; CHECK-NEXT:    [[CLAMPED_INDEX:%.*]] = urem i64 [[TMP56]], 4
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[S]], i64 [[CLAMPED_INDEX]]
@@ -443,10 +433,9 @@ define void @bar(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CONSECUTIVE:       middle.block:
 ; CONSECUTIVE-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT:%.*]]
 ; CONSECUTIVE:       scalar.ph:
-; CONSECUTIVE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[VECTOR_SCEVCHECK]] ], [ 0, [[VECTOR_MEMCHECK]] ]
 ; CONSECUTIVE-NEXT:    br label [[FOR_BODY:%.*]]
 ; CONSECUTIVE:       for.body:
-; CONSECUTIVE-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CONSECUTIVE-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CONSECUTIVE-NEXT:    [[TMP18:%.*]] = mul nsw i64 [[INDVARS_IV]], [[TMP0]]
 ; CONSECUTIVE-NEXT:    [[CLAMPED_INDEX:%.*]] = urem i64 [[TMP18]], 4
 ; CONSECUTIVE-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[S]], i64 [[CLAMPED_INDEX]]
@@ -537,10 +526,9 @@ define void @bar(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; STRIDED:       middle.block:
 ; STRIDED-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT_LOOPEXIT:%.*]]
 ; STRIDED:       scalar.ph:
-; STRIDED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[VECTOR_SCEVCHECK]] ], [ 0, [[VECTOR_MEMCHECK]] ]
 ; STRIDED-NEXT:    br label [[FOR_BODY:%.*]]
 ; STRIDED:       for.body:
-; STRIDED-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; STRIDED-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; STRIDED-NEXT:    [[TMP39:%.*]] = mul nsw i64 [[INDVARS_IV]], [[TMP0]]
 ; STRIDED-NEXT:    [[CLAMPED_INDEX:%.*]] = urem i64 [[TMP39]], 4
 ; STRIDED-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[S]], i64 [[CLAMPED_INDEX]]
@@ -619,22 +607,21 @@ define i32 @baz(ptr %a, i32 %b, i32 %c, i32 %d) {
 ; CHECK-NEXT:    [[TMP13:%.*]] = extractelement <vscale x 2 x i32> [[VP_OP_LOAD]], i32 [[TMP12]]
 ; CHECK-NEXT:    br label [[FOR_END_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[TMP0]], [[VECTOR_SCEVCHECK]] ]
 ; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ false, [[VECTOR_SCEVCHECK]] ]
 ; CHECK-NEXT:    [[TMP14:%.*]] = sub i32 -1, [[C]]
 ; CHECK-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP14]] to i64
 ; CHECK-NEXT:    [[TMP16:%.*]] = add nuw nsw i64 [[TMP15]], 1
 ; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label [[SCALAR_PH2:%.*]], label [[VECTOR_PH3:%.*]]
 ; CHECK:       vector.ph3:
-; CHECK-NEXT:    [[IND_END4:%.*]] = add i64 [[BC_RESUME_VAL]], [[TMP16]]
+; CHECK-NEXT:    [[TMP31:%.*]] = add i64 [[TMP0]], [[TMP16]]
 ; CHECK-NEXT:    [[TMP17:%.*]] = shl nsw i64 [[TMP1]], 2
 ; CHECK-NEXT:    br label [[VECTOR_BODY6:%.*]]
-; CHECK:       vector.body6:
+; CHECK:       vector.body4:
 ; CHECK-NEXT:    [[INDEX7:%.*]] = phi i64 [ 0, [[VECTOR_PH3]] ], [ [[INDEX_EVL_NEXT10:%.*]], [[VECTOR_BODY6]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV8:%.*]] = phi i64 [ 0, [[VECTOR_PH3]] ], [ [[INDEX_EVL_NEXT10]], [[VECTOR_BODY6]] ]
 ; CHECK-NEXT:    [[TMP18:%.*]] = sub i64 [[TMP16]], [[EVL_BASED_IV8]]
 ; CHECK-NEXT:    [[TMP19:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP18]], i32 2, i1 true)
-; CHECK-NEXT:    [[OFFSET_IDX9:%.*]] = add i64 [[BC_RESUME_VAL]], [[EVL_BASED_IV8]]
+; CHECK-NEXT:    [[OFFSET_IDX9:%.*]] = add i64 [[TMP0]], [[EVL_BASED_IV8]]
 ; CHECK-NEXT:    [[TMP20:%.*]] = add i64 [[OFFSET_IDX9]], 0
 ; CHECK-NEXT:    [[TMP21:%.*]] = mul nsw i64 [[TMP20]], [[TMP1]]
 ; CHECK-NEXT:    [[TMP22:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP21]]
@@ -648,10 +635,9 @@ define i32 @baz(ptr %a, i32 %b, i32 %c, i32 %d) {
 ; CHECK-NEXT:    [[TMP26:%.*]] = extractelement <vscale x 2 x i32> [[VP_STRIDED_LOAD]], i32 [[TMP25]]
 ; CHECK-NEXT:    br label [[FOR_END_LOOPEXIT]]
 ; CHECK:       scalar.ph2:
-; CHECK-NEXT:    [[BC_RESUME_VAL5:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL5]], [[SCALAR_PH2]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[TMP0]], [[SCALAR_PH2]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP27:%.*]] = mul nsw i64 [[INDVARS_IV]], [[TMP1]]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP27]]
 ; CHECK-NEXT:    [[TMP28:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
@@ -702,10 +688,9 @@ define i32 @baz(ptr %a, i32 %b, i32 %c, i32 %d) {
 ; CONSECUTIVE-NEXT:    [[TMP13:%.*]] = extractelement <vscale x 2 x i32> [[VP_OP_LOAD]], i32 [[TMP12]]
 ; CONSECUTIVE-NEXT:    br label [[FOR_END_LOOPEXIT:%.*]]
 ; CONSECUTIVE:       scalar.ph:
-; CONSECUTIVE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[TMP0]], [[VECTOR_SCEVCHECK]] ]
 ; CONSECUTIVE-NEXT:    br label [[FOR_BODY:%.*]]
 ; CONSECUTIVE:       for.body:
-; CONSECUTIVE-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CONSECUTIVE-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[TMP0]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CONSECUTIVE-NEXT:    [[TMP14:%.*]] = mul nsw i64 [[INDVARS_IV]], [[TMP1]]
 ; CONSECUTIVE-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP14]]
 ; CONSECUTIVE-NEXT:    [[TMP15:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
@@ -754,10 +739,9 @@ define i32 @baz(ptr %a, i32 %b, i32 %c, i32 %d) {
 ; STRIDED-NEXT:    [[TMP14:%.*]] = extractelement <vscale x 2 x i32> [[VP_STRIDED_LOAD]], i32 [[TMP13]]
 ; STRIDED-NEXT:    br label [[FOR_END_LOOPEXIT:%.*]]
 ; STRIDED:       scalar.ph:
-; STRIDED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[TMP0]], [[FOR_BODY_PREHEADER]] ]
 ; STRIDED-NEXT:    br label [[FOR_BODY:%.*]]
 ; STRIDED:       for.body:
-; STRIDED-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; STRIDED-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[TMP0]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; STRIDED-NEXT:    [[TMP15:%.*]] = mul nsw i64 [[INDVARS_IV]], [[TMP1]]
 ; STRIDED-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP15]]
 ; STRIDED-NEXT:    [[TMP16:%.*]] = load i32, ptr [[ARRAYIDX]], align 4

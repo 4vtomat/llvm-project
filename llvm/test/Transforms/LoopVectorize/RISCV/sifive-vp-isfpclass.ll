@@ -40,10 +40,9 @@ define void @isnormal(ptr %src, ptr %dst, i64 %n) {
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br label %[[FOR_END_LOOPEXIT:.*]]
 ; CHECK:       [[SCALAR_PH]]:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    br label %[[FOR_BODY:.*]]
 ; CHECK:       [[FOR_BODY]]:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_BODY]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_BODY]] ], [ 0, %[[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds double, ptr [[SRC]], i64 [[INDVARS_IV]]
 ; CHECK-NEXT:    [[TMP12:%.*]] = load double, ptr [[ARRAYIDX]], align 8
 ; CHECK-NEXT:    [[TMP13:%.*]] = tail call noundef i1 @llvm.is.fpclass.f64(double [[TMP12]], i32 264)

@@ -842,34 +842,20 @@ define void @test_gather_not_profitable_pr48429(i32 %d, ptr readonly noalias %pt
 ; AVX512-NEXT:    [[INDEX18:%.*]] = phi i64 [ [[VEC_EPILOG_RESUME_VAL]], [[VEC_EPILOG_PH]] ], [ [[INDEX_NEXT25:%.*]], [[VEC_EPILOG_VECTOR_BODY]] ]
 ; AVX512-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[POINTER_PHI19]], <8 x i64> <i64 0, i64 64, i64 128, i64 192, i64 256, i64 320, i64 384, i64 448>
 ; AVX512-NEXT:    [[OFFSET_IDX21:%.*]] = mul i64 [[INDEX18]], 4
-<<<<<<< HEAD
-; AVX512-NEXT:    [[TMP26:%.*]] = add i64 [[OFFSET_IDX21]], 0
-; AVX512-NEXT:    [[NEXT_GEP22:%.*]] = getelementptr i8, ptr [[PTR]], i64 [[TMP26]]
-; AVX512-NEXT:    [[TMP27:%.*]] = getelementptr inbounds float, ptr [[NEXT_GEP22]], i64 [[IDXPROM]]
-; AVX512-NEXT:    [[TMP28:%.*]] = getelementptr inbounds float, ptr [[TMP27]], i32 0
-; AVX512-NEXT:    [[WIDE_LOAD22:%.*]] = load <8 x float>, ptr [[TMP28]], align 4, !alias.scope [[META22:![0-9]+]]
-; AVX512-NEXT:    call void @llvm.masked.scatter.v8f32.v8p0(<8 x float> [[WIDE_LOAD22]], <8 x ptr> [[TMP32]], i32 4, <8 x i1> splat (i1 true)), !alias.scope [[META25:![0-9]+]], !noalias [[META27:![0-9]+]]
-; AVX512-NEXT:    [[TMP29:%.*]] = getelementptr float, ptr [[NEXT_GEP22]], i32 0
-; AVX512-NEXT:    [[WIDE_LOAD23:%.*]] = load <8 x float>, ptr [[TMP29]], align 4, !alias.scope [[META29:![0-9]+]]
-; AVX512-NEXT:    [[TMP30:%.*]] = getelementptr inbounds float, <8 x ptr> [[TMP32]], i64 1
-; AVX512-NEXT:    call void @llvm.masked.scatter.v8f32.v8p0(<8 x float> [[WIDE_LOAD23]], <8 x ptr> [[TMP30]], i32 4, <8 x i1> splat (i1 true)), !alias.scope [[META25]], !noalias [[META27]]
-; AVX512-NEXT:    [[INDEX_NEXT25]] = add nuw i64 [[INDEX18]], 8
-=======
 ; AVX512-NEXT:    [[TMP27:%.*]] = add i64 [[OFFSET_IDX21]], 0
 ; AVX512-NEXT:    [[TMP28:%.*]] = getelementptr i8, ptr [[PTR]], i64 [[TMP27]]
 ; AVX512-NEXT:    [[TMP29:%.*]] = getelementptr inbounds float, ptr [[TMP28]], i64 [[IDXPROM]]
 ; AVX512-NEXT:    [[TMP30:%.*]] = getelementptr inbounds float, ptr [[TMP29]], i32 0
-; AVX512-NEXT:    [[WIDE_LOAD17:%.*]] = load <8 x float>, ptr [[TMP30]], align 4, !alias.scope [[META17:![0-9]+]]
-; AVX512-NEXT:    call void @llvm.masked.scatter.v8f32.v8p0(<8 x float> [[WIDE_LOAD17]], <8 x ptr> [[TMP26]], i32 4, <8 x i1> splat (i1 true)), !alias.scope [[META20:![0-9]+]], !noalias [[META22:![0-9]+]]
+; AVX512-NEXT:    [[WIDE_LOAD17:%.*]] = load <8 x float>, ptr [[TMP30]], align 4, !alias.scope [[META22:![0-9]+]]
+; AVX512-NEXT:    call void @llvm.masked.scatter.v8f32.v8p0(<8 x float> [[WIDE_LOAD17]], <8 x ptr> [[TMP32]], i32 4, <8 x i1> splat (i1 true)), !alias.scope [[META25:![0-9]+]], !noalias [[META27:![0-9]+]]
 ; AVX512-NEXT:    [[TMP31:%.*]] = getelementptr float, ptr [[TMP28]], i32 0
-; AVX512-NEXT:    [[WIDE_LOAD18:%.*]] = load <8 x float>, ptr [[TMP31]], align 4, !alias.scope [[META24:![0-9]+]]
-; AVX512-NEXT:    [[TMP32:%.*]] = getelementptr inbounds float, <8 x ptr> [[TMP26]], i64 1
-; AVX512-NEXT:    call void @llvm.masked.scatter.v8f32.v8p0(<8 x float> [[WIDE_LOAD18]], <8 x ptr> [[TMP32]], i32 4, <8 x i1> splat (i1 true)), !alias.scope [[META20]], !noalias [[META22]]
-; AVX512-NEXT:    [[INDEX_NEXT24]] = add nuw i64 [[INDEX18]], 8
->>>>>>> 21edac2
+; AVX512-NEXT:    [[WIDE_LOAD18:%.*]] = load <8 x float>, ptr [[TMP31]], align 4, !alias.scope [[META29:![0-9]+]]
+; AVX512-NEXT:    [[TMP36:%.*]] = getelementptr inbounds float, <8 x ptr> [[TMP32]], i64 1
+; AVX512-NEXT:    call void @llvm.masked.scatter.v8f32.v8p0(<8 x float> [[WIDE_LOAD18]], <8 x ptr> [[TMP36]], i32 4, <8 x i1> splat (i1 true)), !alias.scope [[META25]], !noalias [[META27]]
+; AVX512-NEXT:    [[INDEX_NEXT25]] = add nuw i64 [[INDEX18]], 8
 ; AVX512-NEXT:    [[PTR_IND20]] = getelementptr i8, ptr [[POINTER_PHI19]], i64 512
-; AVX512-NEXT:    [[TMP31:%.*]] = icmp eq i64 [[INDEX_NEXT25]], [[N_VEC10]]
-; AVX512-NEXT:    br i1 [[TMP31]], label [[VEC_EPILOG_MIDDLE_BLOCK:%.*]], label [[VEC_EPILOG_VECTOR_BODY]], !llvm.loop [[LOOP30:![0-9]+]]
+; AVX512-NEXT:    [[TMP33:%.*]] = icmp eq i64 [[INDEX_NEXT25]], [[N_VEC10]]
+; AVX512-NEXT:    br i1 [[TMP33]], label [[VEC_EPILOG_MIDDLE_BLOCK:%.*]], label [[VEC_EPILOG_VECTOR_BODY]], !llvm.loop [[LOOP30:![0-9]+]]
 ; AVX512:       vec.epilog.middle.block:
 ; AVX512-NEXT:    [[CMP_N17:%.*]] = icmp eq i64 [[TMP3]], [[N_VEC10]]
 ; AVX512-NEXT:    br i1 [[CMP_N17]], label [[FOR_END]], label [[VEC_EPILOG_SCALAR_PH]]

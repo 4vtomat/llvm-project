@@ -66,14 +66,11 @@ define void @widget(ptr %a, i64 %n) {
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N]], [[PH:%.*]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL2:%.*]] = phi ptr [ [[A]], [[PH]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL4:%.*]] = phi ptr [ [[B]], [[PH]] ]
 ; CHECK-NEXT:    br label [[LOOP:%.*]]
 ; CHECK:       loop:
-; CHECK-NEXT:    [[TMP31:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV:%.*]], [[LOOP]] ]
-; CHECK-NEXT:    [[TMP32:%.*]] = phi ptr [ [[BC_RESUME_VAL2]], [[SCALAR_PH]] ], [ [[TMP34:%.*]], [[LOOP]] ]
-; CHECK-NEXT:    [[TMP33:%.*]] = phi ptr [ [[BC_RESUME_VAL4]], [[SCALAR_PH]] ], [ [[TMP35:%.*]], [[LOOP]] ]
+; CHECK-NEXT:    [[TMP31:%.*]] = phi i64 [ [[N]], [[SCALAR_PH]] ], [ [[IV:%.*]], [[LOOP]] ]
+; CHECK-NEXT:    [[TMP32:%.*]] = phi ptr [ [[A]], [[SCALAR_PH]] ], [ [[TMP34:%.*]], [[LOOP]] ]
+; CHECK-NEXT:    [[TMP33:%.*]] = phi ptr [ [[B]], [[SCALAR_PH]] ], [ [[TMP35:%.*]], [[LOOP]] ]
 ; CHECK-NEXT:    [[TMP34]] = getelementptr inbounds [[STRUCT]], ptr [[TMP32]], i64 -1
 ; CHECK-NEXT:    [[TMP35]] = getelementptr inbounds [[STRUCT]], ptr [[TMP33]], i64 -1
 ; CHECK-NEXT:    [[TMP36:%.*]] = getelementptr [[STRUCT]], ptr [[TMP33]], i64 -1, i32 0

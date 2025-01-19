@@ -27,13 +27,12 @@ define double @foo() {
 ; CHECK-NEXT:    [[TMP6:%.*]] = fadd fast double 0.000000e+00, [[TMP5]]
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 2, [[FOR_BODY_PREHEADER:%.*]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NEXT:    [[ADD_LCSSA:%.*]] = phi double [ [[ADD:%.*]], [[FOR_BODY]] ], [ [[TMP6]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret double 0.000000e+00
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 2, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[SUM_08:%.*]] = phi double [ 0.000000e+00, [[SCALAR_PH]] ], [ [[ADD]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP7:%.*]] = load i32, ptr null, align 4
 ; CHECK-NEXT:    [[ADD]] = fadd fast double [[SUM_08]], 0.000000e+00
@@ -64,13 +63,12 @@ define double @foo() {
 ; CHECK-NO-POSTSV-NEXT:    [[TMP5:%.*]] = call fast double @llvm.vp.reduce.fadd.nxv1f64(double -0.000000e+00, <vscale x 1 x double> [[VP_OP_MERGE]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NO-POSTSV-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK-NO-POSTSV:       scalar.ph:
-; CHECK-NO-POSTSV-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 2, [[FOR_BODY_PREHEADER:%.*]] ]
 ; CHECK-NO-POSTSV-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-NO-POSTSV:       for.cond.cleanup.loopexit:
 ; CHECK-NO-POSTSV-NEXT:    [[ADD_LCSSA:%.*]] = phi double [ [[ADD:%.*]], [[FOR_BODY]] ], [ [[TMP5]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NO-POSTSV-NEXT:    ret double 0.000000e+00
 ; CHECK-NO-POSTSV:       for.body:
-; CHECK-NO-POSTSV-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NO-POSTSV-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 2, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[SUM_08:%.*]] = phi double [ 0.000000e+00, [[SCALAR_PH]] ], [ [[ADD]], [[FOR_BODY]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[TMP6:%.*]] = load i32, ptr null, align 4
 ; CHECK-NO-POSTSV-NEXT:    [[ADD]] = fadd fast double [[SUM_08]], 0.000000e+00

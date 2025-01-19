@@ -19,10 +19,9 @@ define fastcc i32 @S_unpack_rec(i64 %0) {
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br label %[[BB8:.*]]
 ; CHECK:       [[SCALAR_PH]]:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 0, [[TMP1:%.*]] ]
 ; CHECK-NEXT:    br label %[[BB4:.*]]
 ; CHECK:       [[BB4]]:
-; CHECK-NEXT:    [[TMP6:%.*]] = phi i32 [ [[TMP7:%.*]], %[[BB4]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
+; CHECK-NEXT:    [[TMP6:%.*]] = phi i32 [ [[TMP7:%.*]], %[[BB4]] ], [ 0, %[[SCALAR_PH]] ]
 ; CHECK-NEXT:    store i64 0, ptr null, align 8
 ; CHECK-NEXT:    [[TMP7]] = add nsw i32 [[TMP6]], -8
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i32 [[TMP6]], 1

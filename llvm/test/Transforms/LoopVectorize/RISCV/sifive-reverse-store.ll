@@ -14,8 +14,8 @@ define void @reverse(ptr %y, i64 %alpha, i32 %N) {
 ; CHECK-NEXT:    [[TMP0:%.*]] = sext i32 [[N]] to i64
 ; CHECK-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
-; CHECK-NEXT:    [[IND_END:%.*]] = sub i64 [[TMP0]], [[TMP0]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    [[TMP14:%.*]] = sub i64 [[TMP0]], [[TMP0]]
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[ALPHA]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 1 x i64> [[BROADCAST_SPLATINSERT]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
@@ -42,10 +42,9 @@ define void @reverse(ptr %y, i64 %alpha, i32 %N) {
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br label %[[EXIT_LOOPEXIT:.*]]
 ; CHECK:       [[SCALAR_PH]]:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[TMP0]], %[[PREHEADER]] ]
 ; CHECK-NEXT:    br label %[[WHILE_BODY:.*]]
 ; CHECK:       [[WHILE_BODY]]:
-; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[WHILE_BODY]] ]
+; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ [[TMP0]], %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[WHILE_BODY]] ]
 ; CHECK-NEXT:    [[IV_NEXT]] = add nsw i64 [[IV]], -1
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i64, ptr [[Y]], i64 [[IV_NEXT]]
 ; CHECK-NEXT:    store i64 [[ALPHA]], ptr [[ARRAYIDX]], align 8

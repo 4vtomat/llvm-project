@@ -703,12 +703,10 @@ define void @double_stride_ptr_iv(ptr %p, ptr %p2, i64 %stride) {
 ; NOSTRIDED-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 4
 ; NOSTRIDED-NEXT:    [[N_MOD_VF:%.*]] = urem i64 1024, [[TMP4]]
 ; NOSTRIDED-NEXT:    [[N_VEC:%.*]] = sub i64 1024, [[N_MOD_VF]]
-; NOSTRIDED-NEXT:    [[TMP5:%.*]] = mul i64 [[N_VEC]], [[STRIDE]]
-; NOSTRIDED-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[P]], i64 [[TMP5]]
-; NOSTRIDED-NEXT:    [[TMP6:%.*]] = mul i64 [[N_VEC]], [[STRIDE]]
-; NOSTRIDED-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[P2]], i64 [[TMP6]]
 ; NOSTRIDED-NEXT:    [[TMP7:%.*]] = call i64 @llvm.vscale.i64()
 ; NOSTRIDED-NEXT:    [[TMP8:%.*]] = mul i64 [[TMP7]], 4
+; NOSTRIDED-NEXT:    [[TMP27:%.*]] = getelementptr i8, ptr [[P]], i64 [[N_VEC]]
+; NOSTRIDED-NEXT:    [[TMP28:%.*]] = getelementptr i8, ptr [[P2]], i64 [[N_VEC]]
 ; NOSTRIDED-NEXT:    br label [[LOOP:%.*]]
 ; NOSTRIDED:       vector.body:
 ; NOSTRIDED-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[P]], [[ENTRY]] ], [ [[PTR_IND:%.*]], [[LOOP]] ]
@@ -748,9 +746,9 @@ define void @double_stride_ptr_iv(ptr %p, ptr %p2, i64 %stride) {
 ; NOSTRIDED-NEXT:    [[CMP_N:%.*]] = icmp eq i64 1024, [[N_VEC]]
 ; NOSTRIDED-NEXT:    br i1 [[CMP_N]], label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; NOSTRIDED:       scalar.ph:
-; NOSTRIDED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY1:%.*]] ], [ 0, [[VECTOR_SCEVCHECK]] ], [ 0, [[VECTOR_MEMCHECK]] ]
-; NOSTRIDED-NEXT:    [[BC_RESUME_VAL2:%.*]] = phi ptr [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ [[P]], [[ENTRY1]] ], [ [[P]], [[VECTOR_SCEVCHECK]] ], [ [[P]], [[VECTOR_MEMCHECK]] ]
-; NOSTRIDED-NEXT:    [[BC_RESUME_VAL4:%.*]] = phi ptr [ [[IND_END3]], [[MIDDLE_BLOCK]] ], [ [[P2]], [[ENTRY1]] ], [ [[P2]], [[VECTOR_SCEVCHECK]] ], [ [[P2]], [[VECTOR_MEMCHECK]] ]
+; NOSTRIDED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[VECTOR_MEMCHECK]] ], [ 0, [[VECTOR_SCEVCHECK]] ], [ 0, [[ENTRY1:%.*]] ]
+; NOSTRIDED-NEXT:    [[BC_RESUME_VAL2:%.*]] = phi ptr [ [[TMP27]], [[MIDDLE_BLOCK]] ], [ [[P]], [[VECTOR_MEMCHECK]] ], [ [[P]], [[VECTOR_SCEVCHECK]] ], [ [[P]], [[ENTRY1]] ]
+; NOSTRIDED-NEXT:    [[BC_RESUME_VAL4:%.*]] = phi ptr [ [[TMP28]], [[MIDDLE_BLOCK]] ], [ [[P2]], [[VECTOR_MEMCHECK]] ], [ [[P2]], [[VECTOR_SCEVCHECK]] ], [ [[P2]], [[ENTRY1]] ]
 ; NOSTRIDED-NEXT:    br label [[LOOP1:%.*]]
 ; NOSTRIDED:       loop:
 ; NOSTRIDED-NEXT:    [[I1:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[NEXTI1:%.*]], [[LOOP1]] ]
