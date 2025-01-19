@@ -459,14 +459,14 @@ Value *VPInstruction::generate(VPTransformState &State) {
   IRBuilderBase &Builder = State.Builder;
 
 #if SIFIVE_CUSTOMIZATION
-  VPBasicBlock *Preheader = cast<VPBasicBlock>(State.Plan->getEntry());
+  bool IsDefinedInLoopRegion = getParent()->getEnclosingLoopRegion();
 #endif // SIFIVE_CUSTOMIZATION
   if (Instruction::isBinaryOp(getOpcode())) {
     bool OnlyFirstLaneUsed = vputils::onlyFirstLaneUsed(this);
     Value *A = State.get(getOperand(0), OnlyFirstLaneUsed);
     Value *B = State.get(getOperand(1), OnlyFirstLaneUsed);
 #if SIFIVE_CUSTOMIZATION
-    if (getParent() != Preheader && State.Plan->useVLAVectorizer() &&
+    if (IsDefinedInLoopRegion && State.Plan->useVLAVectorizer() &&
         A->getType()->isVectorTy())
       return llvm::widenPredicatedInstruction(nullptr, this, *this, State,
                                               nullptr);
@@ -492,7 +492,7 @@ Value *VPInstruction::generate(VPTransformState &State) {
   case VPInstruction::Not: {
     Value *A = State.get(getOperand(0));
 #if SIFIVE_CUSTOMIZATION
-    if (getParent() != Preheader && State.Plan->useVLAVectorizer() &&
+    if (IsDefinedInLoopRegion && State.Plan->useVLAVectorizer() &&
         A->getType()->isVectorTy())
       return llvm::widenPredicatedInstruction(nullptr, this, *this, State,
                                               nullptr);
@@ -503,7 +503,7 @@ Value *VPInstruction::generate(VPTransformState &State) {
     bool OnlyFirstLaneUsed = vputils::onlyFirstLaneUsed(this);
     Value *A = State.get(getOperand(0), OnlyFirstLaneUsed);
 #if SIFIVE_CUSTOMIZATION
-    if (getParent() != Preheader && State.Plan->useVLAVectorizer() &&
+    if (IsDefinedInLoopRegion && State.Plan->useVLAVectorizer() &&
         A->getType()->isVectorTy())
       return llvm::widenPredicatedInstruction(nullptr, this, *this, State,
                                               nullptr);
@@ -517,7 +517,7 @@ Value *VPInstruction::generate(VPTransformState &State) {
     Value *Op1 = State.get(getOperand(1), OnlyFirstLaneUsed);
     Value *Op2 = State.get(getOperand(2), OnlyFirstLaneUsed);
 #if SIFIVE_CUSTOMIZATION
-    if (getParent() != Preheader && State.Plan->useVLAVectorizer() &&
+    if (IsDefinedInLoopRegion && State.Plan->useVLAVectorizer() &&
         Cond->getType()->isVectorTy())
       return llvm::widenPredicatedInstruction(nullptr, this, *this, State,
                                               nullptr);
@@ -1495,8 +1495,8 @@ void VPWidenIntrinsicRecipe::execute(VPTransformState &State) {
   State.setDebugLocFrom(getDebugLoc());
 
 #if SIFIVE_CUSTOMIZATION
-  VPBasicBlock *Preheader = cast<VPBasicBlock>(State.Plan->getEntry());
-  if (getParent() != Preheader && State.Plan->useVLAVectorizer()) {
+  bool IsDefinedInLoopRegion = getParent()->getEnclosingLoopRegion();
+  if (IsDefinedInLoopRegion && State.Plan->useVLAVectorizer()) {
     // Skip if CI doesn't have vp form.
     if (Intrinsic::ID VPID = VPIntrinsic::getForIntrinsic(VectorIntrinsicID);
         VPIntrinsic::isVPIntrinsic(VPID)) {
@@ -1912,9 +1912,9 @@ void VPRecipeWithIRFlags::printFlags(raw_ostream &O) const {
 void VPWidenRecipe::execute(VPTransformState &State) {
   State.setDebugLocFrom(getDebugLoc());
 #if SIFIVE_CUSTOMIZATION
-  VPBasicBlock *Preheader = cast<VPBasicBlock>(State.Plan->getEntry());
+  bool IsDefinedInLoopRegion = getParent()->getEnclosingLoopRegion();
   auto *I = cast_or_null<Instruction>(getUnderlyingValue());
-  if (getParent() != Preheader && I && State.Plan->useVLAVectorizer() &&
+  if (IsDefinedInLoopRegion && I && State.Plan->useVLAVectorizer() &&
       State.get(getOperand(0), 0)->getType()->isVectorTy() &&
       !isa<BitCastInst>(I) && !isa<FreezeInst>(I)) {
     // Bitcasts are not supported.
