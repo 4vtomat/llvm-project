@@ -43,15 +43,15 @@ define void @widen_pointer_induction_update() {
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP18:%.*]] = sub i32 [[TMP11]], 1
 ; CHECK-NEXT:    [[TMP34:%.*]] = extractelement <vscale x 2 x i32> [[TMP12]], i32 [[TMP18]]
+; CHECK-NEXT:    [[TMP20:%.*]] = sub i32 [[TMP11]], 1
+; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <vscale x 2 x i32> [[VP_OP]], i32 [[TMP20]]
 ; CHECK-NEXT:    br label [[FOR_END:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 396, [[ENTRY:%.*]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL1:%.*]] = phi ptr [ @state, [[ENTRY]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[SCALAR_RECUR:%.*]] = phi i32 [ [[DOTPRE]], [[SCALAR_PH]] ], [ [[TMP32:%.*]], [[FOR_BODY]] ]
-; CHECK-NEXT:    [[DEC18:%.*]] = phi i32 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[DEC:%.*]], [[FOR_BODY]] ]
-; CHECK-NEXT:    [[P_017:%.*]] = phi ptr [ [[BC_RESUME_VAL1]], [[SCALAR_PH]] ], [ [[ARRAYIDX2:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[DEC18:%.*]] = phi i32 [ 396, [[SCALAR_PH]] ], [ [[DEC:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[P_017:%.*]] = phi ptr [ @state, [[SCALAR_PH]] ], [ [[ARRAYIDX2:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[P_017]], i64 -227
 ; CHECK-NEXT:    [[ARRAYIDX2]] = getelementptr inbounds i32, ptr [[P_017]], i64 1
 ; CHECK-NEXT:    [[TMP30:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
