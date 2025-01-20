@@ -52,35 +52,22 @@ define void @arm_mult_q15(ptr %pSrcA, ptr %pSrcB, ptr noalias %pDst, i32 %blockS
 ; CHECK-NEXT:    [[PSRCB_ADDR_03_PH:%.*]] = phi ptr [ [[PSRCB]], [[WHILE_BODY_PREHEADER]] ], [ [[IND_END11]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    br label [[WHILE_BODY:%.*]]
 ; CHECK:       while.body:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[BLKCNT_06:%.*]] = phi i32 [ [[DEC:%.*]], [[WHILE_BODY]] ], [ [[BLKCNT_06_PH]], [[WHILE_BODY_PREHEADER18]] ]
-; CHECK-NEXT:    [[PSRCA_ADDR_05:%.*]] = phi ptr [ [[INCDEC_PTR:%.*]], [[WHILE_BODY]] ], [ [[PSRCA_ADDR_05_PH]], [[WHILE_BODY_PREHEADER18]] ]
-; CHECK-NEXT:    [[PDST_ADDR_04:%.*]] = phi ptr [ [[INCDEC_PTR4:%.*]], [[WHILE_BODY]] ], [ [[PDST_ADDR_04_PH]], [[WHILE_BODY_PREHEADER18]] ]
-; CHECK-NEXT:    [[PSRCB_ADDR_03:%.*]] = phi ptr [ [[INCDEC_PTR1:%.*]], [[WHILE_BODY]] ], [ [[PSRCB_ADDR_03_PH]], [[WHILE_BODY_PREHEADER18]] ]
-; CHECK-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[PSRCA_ADDR_05]], i32 2
-; CHECK-NEXT:    [[TMP8:%.*]] = load i16, ptr [[PSRCA_ADDR_05]], align 2
-; CHECK-NEXT:    [[CONV:%.*]] = sext i16 [[TMP8]] to i32
-; CHECK-NEXT:    [[INCDEC_PTR1]] = getelementptr inbounds i8, ptr [[PSRCB_ADDR_03]], i32 2
-; CHECK-NEXT:    [[TMP9:%.*]] = load i16, ptr [[PSRCB_ADDR_03]], align 2
-; CHECK-NEXT:    [[CONV2:%.*]] = sext i16 [[TMP9]] to i32
-=======
 ; CHECK-NEXT:    [[BLKCNT_06:%.*]] = phi i32 [ [[DEC:%.*]], [[WHILE_BODY]] ], [ [[BLKCNT_06_PH]], [[WHILE_BODY_PREHEADER15]] ]
-; CHECK-NEXT:    [[PSRCA_ADDR_05:%.*]] = phi ptr [ [[INCDEC_PTR:%.*]], [[WHILE_BODY]] ], [ [[PSRCA_ADDR_05_PH]], [[WHILE_BODY_PREHEADER15]] ]
-; CHECK-NEXT:    [[PDST_ADDR_04:%.*]] = phi ptr [ [[INCDEC_PTR4:%.*]], [[WHILE_BODY]] ], [ [[PDST_ADDR_04_PH]], [[WHILE_BODY_PREHEADER15]] ]
+; CHECK-NEXT:    [[PDST_ADDR_04:%.*]] = phi ptr [ [[INCDEC_PTR4:%.*]], [[WHILE_BODY]] ], [ [[PSRCA_ADDR_05_PH]], [[WHILE_BODY_PREHEADER15]] ]
+; CHECK-NEXT:    [[PDST_ADDR_4:%.*]] = phi ptr [ [[INCDEC_PTR5:%.*]], [[WHILE_BODY]] ], [ [[PDST_ADDR_04_PH]], [[WHILE_BODY_PREHEADER15]] ]
 ; CHECK-NEXT:    [[PSRCB_ADDR_03:%.*]] = phi ptr [ [[INCDEC_PTR1:%.*]], [[WHILE_BODY]] ], [ [[PSRCB_ADDR_03_PH]], [[WHILE_BODY_PREHEADER15]] ]
-; CHECK-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds nuw i8, ptr [[PSRCA_ADDR_05]], i32 2
-; CHECK-NEXT:    [[TMP10:%.*]] = load i16, ptr [[PSRCA_ADDR_05]], align 2
-; CHECK-NEXT:    [[CONV:%.*]] = sext i16 [[TMP10]] to i32
+; CHECK-NEXT:    [[INCDEC_PTR4]] = getelementptr inbounds nuw i8, ptr [[PDST_ADDR_04]], i32 2
+; CHECK-NEXT:    [[TMP12:%.*]] = load i16, ptr [[PDST_ADDR_04]], align 2
+; CHECK-NEXT:    [[CONV:%.*]] = sext i16 [[TMP12]] to i32
 ; CHECK-NEXT:    [[INCDEC_PTR1]] = getelementptr inbounds nuw i8, ptr [[PSRCB_ADDR_03]], i32 2
-; CHECK-NEXT:    [[TMP11:%.*]] = load i16, ptr [[PSRCB_ADDR_03]], align 2
-; CHECK-NEXT:    [[CONV2:%.*]] = sext i16 [[TMP11]] to i32
->>>>>>> 21edac2
+; CHECK-NEXT:    [[TMP13:%.*]] = load i16, ptr [[PSRCB_ADDR_03]], align 2
+; CHECK-NEXT:    [[CONV2:%.*]] = sext i16 [[TMP13]] to i32
 ; CHECK-NEXT:    [[MUL:%.*]] = mul nsw i32 [[CONV2]], [[CONV]]
 ; CHECK-NEXT:    [[SHR:%.*]] = ashr i32 [[MUL]], 15
 ; CHECK-NEXT:    [[SPEC_SELECT_I:%.*]] = tail call i32 @llvm.smin.i32(i32 [[SHR]], i32 32767)
 ; CHECK-NEXT:    [[CONV3:%.*]] = trunc nsw i32 [[SPEC_SELECT_I]] to i16
-; CHECK-NEXT:    [[INCDEC_PTR4]] = getelementptr inbounds nuw i8, ptr [[PDST_ADDR_04]], i32 2
-; CHECK-NEXT:    store i16 [[CONV3]], ptr [[PDST_ADDR_04]], align 2
+; CHECK-NEXT:    [[INCDEC_PTR5]] = getelementptr inbounds nuw i8, ptr [[PDST_ADDR_4]], i32 2
+; CHECK-NEXT:    store i16 [[CONV3]], ptr [[PDST_ADDR_4]], align 2
 ; CHECK-NEXT:    [[DEC]] = add i32 [[BLKCNT_06]], -1
 ; CHECK-NEXT:    [[CMP_NOT:%.*]] = icmp eq i32 [[DEC]], 0
 ; CHECK-NEXT:    br i1 [[CMP_NOT]], label [[WHILE_END]], label [[WHILE_BODY]], !llvm.loop [[LOOP3:![0-9]+]]

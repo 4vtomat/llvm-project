@@ -14,26 +14,17 @@ define void @test(i32 noundef %nface, i32 noundef %ncell, ptr noalias noundef %f
 ; CHECK-NEXT:    br i1 [[CMP8]], label %[[FOR_BODY_PREHEADER:.*]], label %[[FOR_COND_CLEANUP:.*]]
 ; CHECK:       [[FOR_BODY_PREHEADER]]:
 ; CHECK-NEXT:    [[TMP0:%.*]] = zext nneg i32 [[NFACE]] to i64
-<<<<<<< HEAD
-; CHECK-NEXT:    [[INVARIANT_GEP:%.*]] = getelementptr inbounds i32, ptr [[FACE_CELL]], i64 [[TMP0]]
+; CHECK-NEXT:    [[INVARIANT_GEP:%.*]] = getelementptr inbounds nuw i32, ptr [[FACE_CELL]], i64 [[TMP0]]
 ; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp samesign ult i32 [[NFACE]], 4
 ; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[FOR_BODY_PREHEADER14:.*]], label %[[VECTOR_PH:.*]]
-; CHECK:       [[FOR_BODY_PREHEADER14]]:
-; CHECK-NEXT:    [[INDVARS_IV_PH:%.*]] = phi i64 [ 0, %[[FOR_BODY_PREHEADER]] ], [ [[UNROLL_ITER:%.*]], %[[MIDDLE_BLOCK:.*]] ]
-; CHECK-NEXT:    br label %[[FOR_BODY:.*]]
-=======
-; CHECK-NEXT:    [[INVARIANT_GEP:%.*]] = getelementptr inbounds nuw i32, ptr [[FACE_CELL]], i64 [[TMP0]]
-; CHECK-NEXT:    [[TMP1:%.*]] = icmp ult i32 [[NFACE]], 4
-; CHECK-NEXT:    br i1 [[TMP1]], label %[[FOR_BODY_PREHEADER14:.*]], label %[[VECTOR_PH:.*]]
->>>>>>> 21edac2
 ; CHECK:       [[VECTOR_PH]]:
-; CHECK-NEXT:    [[UNROLL_ITER:%.*]] = and i64 [[TMP0]], 2147483644
+; CHECK-NEXT:    [[N_VEC:%.*]] = and i64 [[TMP0]], 2147483644
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
-; CHECK-NEXT:    [[INDVARS_IV_EPIL:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds nuw i32, ptr [[FACE_CELL]], i64 [[INDVARS_IV_EPIL]]
-; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i32>, ptr [[TMP10]], align 4, !tbaa [[TBAA0:![0-9]+]], !llvm.access.group [[ACC_GRP4:![0-9]+]]
-; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds nuw i32, ptr [[INVARIANT_GEP]], i64 [[INDVARS_IV_EPIL]]
+; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds nuw i32, ptr [[FACE_CELL]], i64 [[INDEX]]
+; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i32>, ptr [[TMP1]], align 4, !tbaa [[TBAA0:![0-9]+]], !llvm.access.group [[ACC_GRP4:![0-9]+]]
+; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds nuw i32, ptr [[INVARIANT_GEP]], i64 [[INDEX]]
 ; CHECK-NEXT:    [[WIDE_LOAD12:%.*]] = load <4 x i32>, ptr [[TMP2]], align 4, !tbaa [[TBAA0]], !llvm.access.group [[ACC_GRP4]]
 ; CHECK-NEXT:    [[TMP3:%.*]] = sext <4 x i32> [[WIDE_LOAD]] to <4 x i64>
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds double, ptr [[Y]], <4 x i64> [[TMP3]]
@@ -44,33 +35,33 @@ define void @test(i32 noundef %nface, i32 noundef %ncell, ptr noalias noundef %f
 ; CHECK-NEXT:    [[TMP7:%.*]] = fcmp fast olt <4 x double> [[WIDE_MASKED_GATHER]], [[WIDE_MASKED_GATHER13]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = select <4 x i1> [[TMP7]], <4 x double> [[WIDE_MASKED_GATHER13]], <4 x double> [[WIDE_MASKED_GATHER]]
 ; CHECK-NEXT:    tail call void @llvm.masked.scatter.v4f64.v4p0(<4 x double> [[TMP8]], <4 x ptr> [[TMP4]], i32 8, <4 x i1> splat (i1 true)), !tbaa [[TBAA5]], !llvm.access.group [[ACC_GRP4]]
-; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDVARS_IV_EPIL]], 4
-; CHECK-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[UNROLL_ITER]]
+; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
+; CHECK-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[TMP9]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
-; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[UNROLL_ITER]], [[TMP0]]
+; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N_VEC]], [[TMP0]]
 ; CHECK-NEXT:    br i1 [[CMP_N]], label %[[FOR_COND_CLEANUP]], label %[[FOR_BODY_PREHEADER14]]
 ; CHECK:       [[FOR_BODY_PREHEADER14]]:
-; CHECK-NEXT:    [[INDVARS_IV_PH:%.*]] = phi i64 [ 0, %[[FOR_BODY_PREHEADER]] ], [ [[UNROLL_ITER]], %[[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[INDVARS_IV_PH:%.*]] = phi i64 [ 0, %[[FOR_BODY_PREHEADER]] ], [ [[N_VEC]], %[[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    br label %[[FOR_BODY:.*]]
 ; CHECK:       [[FOR_COND_CLEANUP]]:
 ; CHECK-NEXT:    ret void
 ; CHECK:       [[FOR_BODY]]:
-; CHECK-NEXT:    [[INDVARS_IV_NEXT_2:%.*]] = phi i64 [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_BODY]] ], [ [[INDVARS_IV_PH]], %[[FOR_BODY_PREHEADER14]] ]
-; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds nuw i32, ptr [[FACE_CELL]], i64 [[INDVARS_IV_NEXT_2]]
-; CHECK-NEXT:    [[TMP22:%.*]] = load i32, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA0]], !llvm.access.group [[ACC_GRP4]]
-; CHECK-NEXT:    [[GEP:%.*]] = getelementptr inbounds nuw i32, ptr [[INVARIANT_GEP]], i64 [[INDVARS_IV_NEXT_2]]
-; CHECK-NEXT:    [[TMP23:%.*]] = load i32, ptr [[GEP]], align 4, !tbaa [[TBAA0]], !llvm.access.group [[ACC_GRP4]]
-; CHECK-NEXT:    [[IDXPROM3_3:%.*]] = sext i32 [[TMP22]] to i64
-; CHECK-NEXT:    [[ARRAYIDX4_3:%.*]] = getelementptr inbounds double, ptr [[Y]], i64 [[IDXPROM3_3]]
-; CHECK-NEXT:    [[IDXPROM5_3:%.*]] = sext i32 [[TMP23]] to i64
-; CHECK-NEXT:    [[ARRAYIDX6_3:%.*]] = getelementptr inbounds double, ptr [[X]], i64 [[IDXPROM5_3]]
-; CHECK-NEXT:    [[TMP24:%.*]] = load double, ptr [[ARRAYIDX4_3]], align 8, !tbaa [[TBAA5]], !llvm.access.group [[ACC_GRP4]]
-; CHECK-NEXT:    [[TMP25:%.*]] = load double, ptr [[ARRAYIDX6_3]], align 8, !tbaa [[TBAA5]], !llvm.access.group [[ACC_GRP4]]
-; CHECK-NEXT:    [[CMP_I_3:%.*]] = fcmp fast olt double [[TMP24]], [[TMP25]]
-; CHECK-NEXT:    [[TMP26:%.*]] = select i1 [[CMP_I_3]], double [[TMP25]], double [[TMP24]]
-; CHECK-NEXT:    store double [[TMP26]], ptr [[ARRAYIDX4_3]], align 8, !tbaa [[TBAA5]], !llvm.access.group [[ACC_GRP4]]
-; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV_NEXT_2]], 1
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_BODY]] ], [ [[INDVARS_IV_PH]], %[[FOR_BODY_PREHEADER14]] ]
+; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds nuw i32, ptr [[FACE_CELL]], i64 [[INDVARS_IV]]
+; CHECK-NEXT:    [[TMP10:%.*]] = load i32, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA0]], !llvm.access.group [[ACC_GRP4]]
+; CHECK-NEXT:    [[GEP:%.*]] = getelementptr inbounds nuw i32, ptr [[INVARIANT_GEP]], i64 [[INDVARS_IV]]
+; CHECK-NEXT:    [[TMP11:%.*]] = load i32, ptr [[GEP]], align 4, !tbaa [[TBAA0]], !llvm.access.group [[ACC_GRP4]]
+; CHECK-NEXT:    [[IDXPROM3:%.*]] = sext i32 [[TMP10]] to i64
+; CHECK-NEXT:    [[ARRAYIDX4:%.*]] = getelementptr inbounds double, ptr [[Y]], i64 [[IDXPROM3]]
+; CHECK-NEXT:    [[IDXPROM5:%.*]] = sext i32 [[TMP11]] to i64
+; CHECK-NEXT:    [[ARRAYIDX6:%.*]] = getelementptr inbounds double, ptr [[X]], i64 [[IDXPROM5]]
+; CHECK-NEXT:    [[TMP12:%.*]] = load double, ptr [[ARRAYIDX4]], align 8, !tbaa [[TBAA5]], !llvm.access.group [[ACC_GRP4]]
+; CHECK-NEXT:    [[TMP13:%.*]] = load double, ptr [[ARRAYIDX6]], align 8, !tbaa [[TBAA5]], !llvm.access.group [[ACC_GRP4]]
+; CHECK-NEXT:    [[CMP_I:%.*]] = fcmp fast olt double [[TMP12]], [[TMP13]]
+; CHECK-NEXT:    [[TMP14:%.*]] = select i1 [[CMP_I]], double [[TMP13]], double [[TMP12]]
+; CHECK-NEXT:    store double [[TMP14]], ptr [[ARRAYIDX4]], align 8, !tbaa [[TBAA5]], !llvm.access.group [[ACC_GRP4]]
+; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[TMP0]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_COND_CLEANUP]], label %[[FOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
 ;
