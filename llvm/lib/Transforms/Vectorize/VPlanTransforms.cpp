@@ -2381,6 +2381,13 @@ void VPlanTransforms::convertToConcreteRecipes(VPlan &Plan) {
           new VPScalarPHIRecipe(PhiR->getStartValue(), PhiR->getBackedgeValue(),
                                 PhiR->getDebugLoc(), Name);
       ScalarR->insertBefore(PhiR);
+
+#if SIFIVE_CUSTOMIZATION
+      if (isa<VPEVLBasedIVPHIRecipe>(&R)) {
+        if (Plan.getPrevEVL() == R.getVPSingleValue())
+          Plan.setPrevEVL(ScalarR);
+      }
+#endif // SIFIVE_CUSTOMIZATION
       PhiR->replaceAllUsesWith(ScalarR);
       PhiR->eraseFromParent();
     }

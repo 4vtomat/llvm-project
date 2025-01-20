@@ -4735,7 +4735,8 @@ public:
 
   /// Sets PrevEVL
   void setPrevEVL(VPValue *EVL) {
-    assert(!PrevEVL && "PrevEVL can only be set once");
+    // This would be overwritten by convertToConcreteRecipes
+    // as VPEVLBasedIVPHIRecipe is no longer a concrete recipe
     PrevEVL = EVL;
   }
 
