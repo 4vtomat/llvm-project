@@ -161,6 +161,14 @@ static cl::opt<bool> EnableCyclicPath("misched-cyclicpath", cl::Hidden,
 static cl::opt<bool> EnableMemOpCluster("misched-cluster", cl::Hidden,
                                         cl::desc("Enable memop clustering."),
                                         cl::init(true));
+
+#ifdef SIFIVE_CUSTOMIZATION
+static cl::opt<bool>
+    EnableReleasePendingQ("misched-release-pending-queue", cl::Hidden,
+                          cl::desc("Release the pending queue"),
+                          cl::init(true));
+#endif // SIFIVE_CUSTOMIZATION
+
 static cl::opt<bool>
     ForceFastCluster("force-fast-cluster", cl::Hidden,
                      cl::desc("Switch to fast cluster algorithm with the lost "
@@ -3669,6 +3677,43 @@ void GenericScheduler::pickNodeFromQueue(SchedBoundary &Zone,
   }
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+void GenericScheduler::bumpCycleUntilReleaseSUFromPending(bool IsTop) {
+  if (!DAG->isTrackingPressure())
+    return;
+  auto releasePending = [&](ReadyQueue &Q, const RegPressureTracker &RegP,
+                            ArrayRef<unsigned> MaxSetP, SchedBoundary &SchedB) {
+    for (SUnit *SU : Q) {
+      RegPressureTracker &TempTracker = const_cast<RegPressureTracker &>(RegP);
+      CandPolicy TempPolicy;
+      SchedCandidate TryCand(TempPolicy);
+      initCandidate(TryCand, SU, IsTop, RegP, TempTracker);
+
+      PressureDiff PDiff = DAG->getPressureDiff(SU);
+
+      SmallVector<unsigned> PSetIDs;
+      SmallVector<int> UnitIncs;
+      for (const auto &PChange : PDiff) {
+        if (!PChange.isValid())
+          continue;
+        PSetIDs.push_back(PChange.getPSet());
+        UnitIncs.push_back(PChange.getUnitInc());
+      }
+
+      if (TRI->needReleaseSUFromPendingQueue(DAG->MF, PSetIDs, UnitIncs))
+        SchedB.bumpCycleUntilReleaseSUFromPending(SU);
+    }
+  };
+
+  if (IsTop)
+    releasePending(Top.Pending, DAG->getTopRPTracker(),
+                   DAG->getTopRPTracker().getPressure().MaxSetPressure, Top);
+  else
+    releasePending(Bot.Pending, DAG->getBotRPTracker(),
+                   DAG->getBotRPTracker().getPressure().MaxSetPressure, Bot);
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 /// Pick the best candidate node from either the top or bottom queue.
 SUnit *GenericScheduler::pickNodeBidirectional(bool &IsTopNode) {
   // Schedule as far as possible in the direction of no choice. This is most
@@ -3754,6 +3799,18 @@ SUnit *GenericScheduler::pickNode(bool &IsTopNode) {
            Bot.Available.empty() && Bot.Pending.empty() && "ReadyQ garbage");
     return nullptr;
   }
+
+#ifdef SIFIVE_CUSTOMIZATION
+  if (EnableReleasePendingQ && !RegionPolicy.OnlyBottomUp &&
+      TRI->needReleasePendingQueue(
+          DAG->MF, DAG->getTopRPTracker().getPressure().MaxSetPressure))
+    bumpCycleUntilReleaseSUFromPending(/*IsTop=*/true);
+  if (EnableReleasePendingQ && !RegionPolicy.OnlyTopDown &&
+      TRI->needReleasePendingQueue(
+          DAG->MF, DAG->getBotRPTracker().getPressure().MaxSetPressure))
+    bumpCycleUntilReleaseSUFromPending(/*IsTop=*/false);
+#endif // SIFIVE_CUSTOMIZATION
+
   SUnit *SU;
   do {
     if (RegionPolicy.OnlyTopDown) {

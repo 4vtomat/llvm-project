@@ -1060,6 +1060,15 @@ public:
   /// Dump the state of the information that tracks resource usage.
   void dumpReservedCycles() const;
   void dumpScheduledState() const;
+
+#ifdef SIFIVE_CUSTOMIZATION
+  void bumpCycleUntilReleaseSUFromPending(SUnit *SU) {
+    while (!Pending.empty() && llvm::find(Pending, SU) != Pending.end()) {
+      bumpCycle(CurrCycle + 1);
+      releasePending();
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 /// Base class for GenericScheduler. This class maintains information about
@@ -1253,6 +1262,10 @@ public:
     Bot.releaseNode(SU, SU->BotReadyCycle, false);
     BotCand.SU = nullptr;
   }
+
+#ifdef SIFIVE_CUSTOMIZATION
+  void bumpCycleUntilReleaseSUFromPending(bool IsTop);
+#endif // SIFIVE_CUSTOMIZATION
 
   void registerRoots() override;
 

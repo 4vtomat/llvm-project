@@ -374,7 +374,7 @@ define {<vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16
 ; CHECK-NEXT:    vmv2r.v v12, v18
 ; CHECK-NEXT:    vmv2r.v v8, v6
 ; CHECK-NEXT:    vmv8r.v v24, v0
-; CHECK-NEXT:    vmv2r.v v30, v18
+; CHECK-NEXT:    vmv2r.v v30, v20
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    li a1, 96
 ; CHECK-NEXT:    mul a0, a0, a1
@@ -742,7 +742,7 @@ define {<vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 
 ; CHECK-NEXT:    vmv2r.v v12, v18
 ; CHECK-NEXT:    vmv2r.v v8, v6
 ; CHECK-NEXT:    vmv8r.v v24, v0
-; CHECK-NEXT:    vmv2r.v v30, v18
+; CHECK-NEXT:    vmv2r.v v30, v20
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    li a1, 96
 ; CHECK-NEXT:    mul a0, a0, a1
@@ -1110,7 +1110,7 @@ define {<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 
 ; CHECK-NEXT:    vmv2r.v v12, v18
 ; CHECK-NEXT:    vmv2r.v v8, v6
 ; CHECK-NEXT:    vmv8r.v v24, v0
-; CHECK-NEXT:    vmv2r.v v30, v18
+; CHECK-NEXT:    vmv2r.v v30, v20
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    li a1, 96
 ; CHECK-NEXT:    mul a0, a0, a1
@@ -1477,7 +1477,7 @@ define {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 
 ; RV32-NEXT:    vmv2r.v v4, v18
 ; RV32-NEXT:    vmv2r.v v0, v14
 ; RV32-NEXT:    vmv8r.v v24, v8
-; RV32-NEXT:    vmv2r.v v30, v18
+; RV32-NEXT:    vmv2r.v v30, v20
 ; RV32-NEXT:    csrr a0, vlenb
 ; RV32-NEXT:    li a1, 96
 ; RV32-NEXT:    mul a0, a0, a1
@@ -1823,7 +1823,7 @@ define {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 
 ; RV64-NEXT:    vmv2r.v v12, v18
 ; RV64-NEXT:    vmv2r.v v8, v6
 ; RV64-NEXT:    vmv8r.v v24, v0
-; RV64-NEXT:    vmv2r.v v30, v18
+; RV64-NEXT:    vmv2r.v v30, v20
 ; RV64-NEXT:    csrr a0, vlenb
 ; RV64-NEXT:    li a1, 96
 ; RV64-NEXT:    mul a0, a0, a1

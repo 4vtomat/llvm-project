@@ -165,6 +165,15 @@ struct RISCVRegisterInfo : public RISCVGenRegisterInfo {
   static bool isRVVRegClass(const TargetRegisterClass *RC) {
     return RISCVRI::isVRegClass(RC->TSFlags);
   }
+
+#if SIFIVE_CUSTOMIZATION
+  bool
+  needReleasePendingQueue(MachineFunction &MF,
+                          ArrayRef<unsigned> MaxSetPressure) const override;
+  bool needReleaseSUFromPendingQueue(MachineFunction &MF,
+                                     ArrayRef<unsigned> PSetID,
+                                     ArrayRef<int> UnitInc) const override;
+#endif // SIFIVE_CUSTOMIZATION
 };
 } // namespace llvm
 
