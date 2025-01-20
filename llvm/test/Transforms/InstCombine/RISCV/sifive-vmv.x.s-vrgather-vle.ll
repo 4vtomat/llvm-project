@@ -40,7 +40,7 @@ define void @test3(i8* nocapture readonly %in, i8* nocapture writeonly %out) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i8, ptr [[IN:%.*]], align 1
 ; CHECK-NEXT:    [[IDXPROM:%.*]] = zext i8 [[TMP0]] to i64
-; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[OUT:%.*]], i64 [[IDXPROM]]
+; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds nuw i8, ptr [[OUT:%.*]], i64 [[IDXPROM]]
 ; CHECK-NEXT:    store i8 0, ptr [[ARRAYIDX]], align 1
 ; CHECK-NEXT:    ret void
 ;

@@ -159,7 +159,7 @@ define <vscale x 16 x i32> @extra_use_of_ptr(<vscale x 16 x i32> %vx, i64 nounde
 ; CHECK-NEXT:    tail call void @llvm.assume(i1 [[CMP]])
 ; CHECK-NEXT:    [[VLA:%.*]] = alloca i32, i64 [[TMP0]], align 8
 ; CHECK-NEXT:    [[VLA1:%.*]] = alloca i32, i64 [[TMP0]], align 8
-; CHECK-NEXT:    [[VLA_PLUS_ONE:%.*]] = getelementptr inbounds i8, ptr [[VLA]], i64 4
+; CHECK-NEXT:    [[VLA_PLUS_ONE:%.*]] = getelementptr inbounds nuw i8, ptr [[VLA]], i64 4
 ; CHECK-NEXT:    call void @llvm.riscv.vse.nxv16i32.i64(<vscale x 16 x i32> [[VX]], ptr nonnull [[VLA_PLUS_ONE]], i64 [[TMP0]])
 ; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 16, i1 true)
 ; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr nonnull align 4 [[VLA]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP1]])

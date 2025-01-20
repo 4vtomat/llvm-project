@@ -4,8 +4,8 @@
 define double @test(ptr %this, i1 %cmp) {
 ; CHECK-LABEL: define double @test(
 ; CHECK-SAME: ptr [[THIS:%.*]], i1 [[CMP:%.*]]) {
-; CHECK-NEXT:    [[P0:%.*]] = getelementptr inbounds i8, ptr [[THIS]], i64 1240
-; CHECK-NEXT:    [[P1:%.*]] = getelementptr inbounds i8, ptr [[THIS]], i64 1264
+; CHECK-NEXT:    [[P0:%.*]] = getelementptr inbounds nuw i8, ptr [[THIS]], i64 1240
+; CHECK-NEXT:    [[P1:%.*]] = getelementptr inbounds nuw i8, ptr [[THIS]], i64 1264
 ; CHECK-NEXT:    [[TMP1:%.*]] = load double, ptr [[P0]], align 8
 ; CHECK-NEXT:    [[TMP2:%.*]] = load double, ptr [[P1]], align 8
 ; CHECK-NEXT:    [[D:%.*]] = select i1 [[CMP]], double [[TMP2]], double [[TMP1]]
