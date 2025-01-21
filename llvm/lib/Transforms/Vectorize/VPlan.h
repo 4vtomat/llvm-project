@@ -4742,6 +4742,11 @@ public:
 
   /// Returns VPValue for InitEVL
   VPValue *getInitEVL() const { return InitEVL; }
+  void setInitEVL(VPValue *EVL) {
+    // This would be overwritten by convertToConcreteRecipes
+    // as VPEVLBasedIVPHIRecipe is no longer a concrete recipe
+    InitEVL = EVL;
+  }
 
   /// Creates InitEVL VPValue
   void createInitEVL() {

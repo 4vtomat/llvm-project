@@ -2386,6 +2386,8 @@ void VPlanTransforms::convertToConcreteRecipes(VPlan &Plan) {
       if (isa<VPEVLBasedIVPHIRecipe>(&R)) {
         if (Plan.getPrevEVL() == R.getVPSingleValue())
           Plan.setPrevEVL(ScalarR);
+        else if (Plan.getInitEVL() == R.getVPSingleValue())
+          Plan.setInitEVL(ScalarR);
       }
 #endif // SIFIVE_CUSTOMIZATION
       PhiR->replaceAllUsesWith(ScalarR);
