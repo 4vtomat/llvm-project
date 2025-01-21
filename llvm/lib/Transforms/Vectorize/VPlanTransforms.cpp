@@ -761,8 +761,9 @@ void VPlanTransforms::optimizeConditionalRecipes(
     VPBasicBlock *ContBB = ParentBB->splitAt(LR->getIterator());
 
     // 2. Create VPBB, VPConditionalRegionBlock and insert it inbetween of ParentBB and ContBB
-    VPBasicBlock *IfBB = new VPBasicBlock("vector.if.bb");
-    VPConditionalRegionBlock *IfBlock = new VPConditionalRegionBlock(*M, IfBB, IfBB);
+    VPBasicBlock *IfBB = Plan.createVPBasicBlock("vector.if.bb");
+    VPConditionalRegionBlock *IfBlock =
+        Plan.createVPConditionalRegionBlock(*M, IfBB, IfBB);
     VPBlockUtils::insertBlockAfter(IfBlock, ParentBB);
     if (ContBB->getNumSuccessors() == 0)
       ParentBB->getEnclosingLoopRegion()->setExiting(ContBB);

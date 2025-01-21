@@ -4937,6 +4937,15 @@ public:
     CreatedBlocks.push_back(VPB);
     return VPB;
   }
+#if SIFIVE_CUSTOMIZATION
+  VPConditionalRegionBlock *createVPConditionalRegionBlock(VPValue &Cond,
+                                                           VPBlockBase *Entry,
+                                                           VPBlockBase *Exit) {
+    auto *VPB = new VPConditionalRegionBlock(Cond, Entry, Exit);
+    CreatedBlocks.push_back(VPB);
+    return VPB;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Create a VPIRBasicBlock wrapping \p IRBB, but do not create
   /// VPIRInstructions wrapping the instructions in t\p IRBB.  The returned
