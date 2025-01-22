@@ -11099,20 +11099,6 @@ collectUsersInExitBlocks(Loop *OrigLoop, VPRecipeBuilder &Builder,
   auto *MiddleVPBB = Plan.getMiddleBlock();
   SetVector<VPIRInstruction *> ExitUsersToFix;
   for (VPIRBasicBlock *ExitVPBB : Plan.getExitBlocks()) {
-    BasicBlock *ExitBB = ExitVPBB->getIRBasicBlock();
-    BasicBlock *ExitingBB = find_singleton<BasicBlock>(
-        to_vector(predecessors(ExitBB)),
-        [OrigLoop](BasicBlock *Pred, bool AllowRepeats) {
-          return OrigLoop->contains(Pred) ? Pred : nullptr;
-        });
-#if SIFIVE_CUSTOMIZATION
-    // Only handle single-exit loops with unique exit blocks for now.
-    if (!ExitVPBB || !ExitVPBB->getSinglePredecessor() || !ExitingBB)
-      if (!ExitVPBB || !ExitingBB ||
-          !isRevectorizeWithoutStrideChecks(*OrigLoop) ||
-          ExitVPBB->getNumPredecessors() != 2)
-        return {};
-#endif // SIFIVE_CUSTOMIZATION
     for (VPRecipeBase &R : *ExitVPBB) {
       auto *ExitIRI = dyn_cast<VPIRInstruction>(&R);
       if (!ExitIRI)
