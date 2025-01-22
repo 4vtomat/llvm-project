@@ -1082,14 +1082,7 @@ InstructionCost VPBasicBlock::overhead(ElementCount VF,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-#if SIFIVE_CUSTOMIZATION
-VPlan::VPlan(Loop *L, bool IsUncountable) {
-  // FIXME: Uncountable vectorization should set the flag in a proper xform
-  if (IsUncountable)
-    setUseVLAVectorizer(true);
-#else
 VPlan::VPlan(Loop *L) {
-#endif // SIFIVE_CUSTOMIZATION
   setEntry(createVPIRBasicBlock(L->getLoopPreheader()));
   ScalarHeader = createVPIRBasicBlock(L->getHeader());
 }
@@ -1137,10 +1130,10 @@ VPlanPtr VPlan::createInitialVPlan(Type *InductionTy,
 #else
                                    bool TailFolded, Loop *TheLoop) {
 #endif // SIFIVE_CUSTOMIZATION
-#if SIFIVE_CUSTOMIZATION
-  auto Plan = std::make_unique<VPlan>(TheLoop, IsUncountable);
-#else
   auto Plan = std::make_unique<VPlan>(TheLoop);
+#if SIFIVE_CUSTOMIZATION
+  if (IsUncountable)
+    Plan->setUncountable();
 #endif // SIFIVE_CUSTOMIZATION
   VPBlockBase *ScalarHeader = Plan->getScalarHeader();
 

@@ -1434,6 +1434,11 @@ void VPlanTransforms::truncateToMinimalBitwidths(
                VPWidenSelectRecipe, VPWidenLoadRecipe>(&R))
         continue;
 
+#if SIFIVE_CUSTOMIZATION
+      // FIXME: speculative load does not need the returned evl at this stage
+      if (R.getNumDefinedValues() != 1)
+        continue;
+#endif // SIFIVE_CUSTOMIZATION
       VPValue *ResultVPV = R.getVPSingleValue();
       auto *UI = cast_or_null<Instruction>(ResultVPV->getUnderlyingValue());
       unsigned NewResSizeInBits = MinBWs.lookup(UI);

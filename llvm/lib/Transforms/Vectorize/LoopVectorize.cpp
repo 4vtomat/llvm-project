@@ -3590,8 +3590,9 @@ void UncountableInnerLoopVectorizer::fixupIVUsers(
   // Compute trip count as (CanonicalIVPHI + VFirst)
   // FIXME: This only works on strlen(). When loop exits normally (not early),
   // the vfirst is -1 and cannot be used.
-  Value *CanonicalIVPHI =
-      State.get(Plan.getCanonicalIV(), /*NeedsScalar=*/true);
+  VPBasicBlock *EntryVPBB = Plan.getVectorLoopRegion()->getEntryBasicBlock();
+  VPValue *CanonicalV = EntryVPBB->begin()->getVPSingleValue();
+  Value *CanonicalIVPHI = State.get(CanonicalV, /*NeedsScalar=*/true);
 
   // ATM, all IVs in uncountable loops have their exiting values routed to the
   // penultimate value (the value that feeds into the phi from the loop latch).
@@ -11568,6 +11569,9 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     VPlanTransforms::handleUncountableEarlyExit(
         *Plan, *PSE.getSE(), OrigLoop, UncountableExitingBlock, RecipeBuilder);
   }
+#if SIFIVE_CUSTOMIZATION
+  if (!Plan->isUncountable())
+#endif // SIFIVE_CUSTOMIZATION
   addScalarResumePhis(RecipeBuilder, *Plan);
 #if SIFIVE_CUSTOMIZATION
   SetVector<VPIRInstruction *> ExitUsersToFix =
@@ -12074,6 +12078,11 @@ void VPDerivedIVRecipe::execute(VPTransformState &State) {
   // prepareToExecute, leading to missed simplifications, e.g. if it is 0.
   // TODO: Remove the special case for the vector trip count once it is computed
   // in VPlan and can be used during VPlan simplification.
+#if SIFIVE_CUSTOMIZATION
+  // This assertion calls getVectorTripCount() which is not supported by
+  // uncountable loops
+  if (!getParent()->getPlan()->isUncountable())
+#endif // SIFIVE_CUSTOMIZATION
   assert((DerivedIV != Index ||
           getOperand(1) == &getParent()->getPlan()->getVectorTripCount()) &&
          "IV didn't need transforming?");

@@ -4595,11 +4595,7 @@ public:
   /// Construct a VPlan for \p L. This will create VPIRBasicBlocks wrapping the
   /// original preheader and scalar header of \p L, to be used as entry and
   /// scalar header blocks of the new VPlan.
-#if SIFIVE_CUSTOMIZATION
-  VPlan(Loop *L, bool IsUncountable = false);
-#else
   VPlan(Loop *L);
-#endif // SIFIVE_CUSTOMIZATION
 
   /// Construct a VPlan with a new VPBasicBlock as entry, a VPIRBasicBlock
   /// wrapping \p ScalarHeaderBB and a trip count of \p TC.
@@ -4729,6 +4725,7 @@ public:
 #if SIFIVE_CUSTOMIZATION
   /// Return whether the vPlan is uncountable
   bool isUncountable() const { return IsUncountable; }
+  void setUncountable() { IsUncountable = true; }
 
   /// Returns VPValue for PrevEVL.
   VPValue *getPrevEVL() const { return PrevEVL; }
