@@ -17,8 +17,8 @@ define i64 @findlastiv(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-NEXT: <x1> vector loop: {
 ; CHECK-NEXT:  vector.body:
 ; CHECK-NEXT:    EMIT vp<[[IV:%[0-9]+]]> = CANONICAL-INDUCTION
-; CHECK-NEXT:    WIDEN-INDUCTION [[IV_PHI:%.+]] = phi
-; CHECK-NEXT:    WIDEN-REDUCTION-PHI ir<[[RDX_PHI:%.+]]> = phi ir<%ii>, ir<[[RDX_NEXT:%.+]]>
+; CHECK-NEXT:    ir<[[IV_PHI:%.+]]> = WIDEN-INDUCTION  ir<0>, ir<1>, vp<[[VF]]>
+; CHECK-NEXT:    WIDEN-REDUCTION-PHI ir<[[RDX_PHI:%.+]]> = phi ir<-9223372036854775808>, ir<[[RDX_NEXT:%.+]]>
 ; CHECK-NEXT:    vp<[[ST:%[0-9]+]]> = SCALAR-STEPS vp<[[IV]]>, ir<1>
 ; CHECK-NEXT:    CLONE ir<[[GEP1:%.+]]> = getelementptr inbounds ir<%a>, vp<[[ST]]>
 ; CHECK-NEXT:    vp<[[PTR1:%[0-9]+]]> = vector-pointer ir<[[GEP1]]>
@@ -41,11 +41,28 @@ define i64 @findlastiv(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-NEXT:   EMIT branch-on-cond vp<[[EXIT_COND]]>
 ; CHECK-NEXT: Successor(s): ir-bb<exit>, scalar.ph
 ; CHECK-EMPTY:
-; CHECK-NEXT: ir-bb<exit>:
-; CHECK-NEXT: IR   %cond.lcssa = phi i64 [ %cond, %for.body ] (extra operand: vp<[[EXT]]> from middle.block)
+; CHECK-NEXT: scalar.ph:
+; CHECK-NEXT:   EMIT vp<%bc.resume.val> = resume-phi vp<%2>, ir<0>
+; CHECK-NEXT:   EMIT vp<%bc.merge.rdx> = resume-phi vp<%8>, ir<%ii>
+; CHECK-NEXT: Successor(s): ir-bb<for.body>
+; CHECK-EMPTY:
+; CHECK-NEXT: ir-bb<for.body>:
+; CHECK-NEXT:   IR   %iv = phi i64 [ %inc, %for.body ], [ 0, %entry ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:   IR   %rdx = phi i64 [ %cond, %for.body ], [ %ii, %entry ] (extra operand: vp<%bc.merge.rdx> from scalar.ph)
+; CHECK-NEXT:   IR   %arrayidx = getelementptr inbounds i64, ptr %a, i64 %iv
+; CHECK-NEXT:   IR   %0 = load i64, ptr %arrayidx, align 8
+; CHECK-NEXT:   IR   %arrayidx1 = getelementptr inbounds i64, ptr %b, i64 %iv
+; CHECK-NEXT:   IR   %1 = load i64, ptr %arrayidx1, align 8
+; CHECK-NEXT:   IR   %cmp2 = icmp sgt i64 %0, %1
+; CHECK-NEXT:   IR   %cond = select i1 %cmp2, i64 %iv, i64 %rdx
+; CHECK-NEXT:   IR   %inc = add nuw nsw i64 %iv, 1
+; CHECK-NEXT:   IR   %exitcond.not = icmp eq i64 %inc, %n
 ; CHECK-NEXT: No successors
 ; CHECK-EMPTY:
-; CHECK-NEXT: scalar.ph:
+; CHECK-NEXT: ir-bb<exit>:
+; CHECK-NEXT:   IR   %cond.lcssa = phi i64 [ %cond, %for.body ] (extra operand: vp<[[EXT]]> from middle.block)
+; CHECK-NEXT: No successors
+; CHECK-NEXT: }
 ;
 entry:
   br label %for.body
@@ -76,16 +93,17 @@ define i64 @findlastiv_need_mask(ptr %a, ptr %b, i64 %ii, i64 %iv_start, i64 %n)
 ; CHECK-EMPTY:
 ; CHECK:      ir-bb<for.body.preheader>:
 ; CHECK-NEXT:   EMIT vp<[[OTC]]> = EXPAND SCEV ((-1 * %iv_start) + %n)
-; CHECK-NEXT: No successors
+; CHECK-NEXT: Successor(s): vector.ph
 ; CHECK-EMPTY:
 ; CHECK:      vector.ph:
+; CHECK-NEXT:    vp<[[DIV0:%.+]]> = DERIVED-IV ir<%iv_start> + vp<%2> * ir<1>
 ; CHECK-NEXT: Successor(s): vector loop
 ; CHECK-EMPTY:
 ; CHECK-NEXT: <x1> vector loop: {
 ; CHECK-NEXT:  vector.body:
 ; CHECK-NEXT:    EMIT vp<[[IV:%[0-9]+]]> = CANONICAL-INDUCTION
-; CHECK-NEXT:    WIDEN-INDUCTION [[IV_PHI:%.+]] = phi
-; CHECK-NEXT:    WIDEN-REDUCTION-PHI ir<[[RDX_PHI:%.+]]> = phi ir<%ii>, ir<[[RDX_NEXT:%.+]]>
+; CHECK-NEXT:    ir<[[IV_PHI:%.+]]> = WIDEN-INDUCTION  ir<%iv_start>, ir<1>, vp<[[VF]]>
+; CHECK-NEXT:    WIDEN-REDUCTION-PHI ir<[[RDX_PHI:%.+]]> = phi ir<9223372036854775807>, ir<[[RDX_NEXT:%.+]]>
 ; CHECK-NEXT:    vp<[[DIV:%[0-9]+]]>    = DERIVED-IV ir<%iv_start> + vp<[[IV]]> * ir<1>
 ; CHECK-NEXT:    vp<[[ST:%[0-9]+]]> = SCALAR-STEPS vp<[[DIV]]>, ir<1>
 ; CHECK-NEXT:    CLONE ir<[[GEP1:%.+]]> = getelementptr inbounds ir<%a>, vp<[[ST]]>
@@ -110,11 +128,28 @@ define i64 @findlastiv_need_mask(ptr %a, ptr %b, i64 %ii, i64 %iv_start, i64 %n)
 ; CHECK-NEXT:   EMIT branch-on-cond vp<[[EXIT_COND]]>
 ; CHECK-NEXT: Successor(s): ir-bb<exit.loopexit>, scalar.ph
 ; CHECK-EMPTY:
-; CHECK-NEXT: ir-bb<exit.loopexit>:
-; CHECK-NEXT:   IR   %cond.lcssa1 = phi i64 [ %cond, %for.body ] (extra operand: vp<[[EXT]]>  from middle.block)
+; CHECK-NEXT: scalar.ph:
+; CHECK-NEXT:   EMIT vp<%bc.resume.val> = resume-phi vp<%4>, ir<%iv_start>
+; CHECK-NEXT:   EMIT vp<%bc.merge.rdx> = resume-phi vp<%12>, ir<%ii>
+; CHECK-NEXT: Successor(s): ir-bb<for.body>
+; CHECK-EMPTY:
+; CHECK-NEXT: ir-bb<for.body>:
+; CHECK-NEXT:   IR   %iv = phi i64 [ %inc, %for.body ], [ %iv_start, %for.body.preheader ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:   IR   %rdx = phi i64 [ %cond, %for.body ], [ %ii, %for.body.preheader ] (extra operand: vp<%bc.merge.rdx> from scalar.ph)
+; CHECK-NEXT:   IR   %arrayidx = getelementptr inbounds i64, ptr %a, i64 %iv
+; CHECK-NEXT:   IR   %0 = load i64, ptr %arrayidx, align 8
+; CHECK-NEXT:   IR   %arrayidx1 = getelementptr inbounds i64, ptr %b, i64 %iv
+; CHECK-NEXT:   IR   %1 = load i64, ptr %arrayidx1, align 8
+; CHECK-NEXT:   IR   %cmp2 = icmp sgt i64 %0, %1
+; CHECK-NEXT:   IR   %cond = select i1 %cmp2, i64 %iv, i64 %rdx
+; CHECK-NEXT:   IR   %inc = add nuw nsw i64 %iv, 1
+; CHECK-NEXT:   IR   %exitcond.not = icmp eq i64 %inc, %n
 ; CHECK-NEXT: No successors
 ; CHECK-EMPTY:
-; CHECK-NEXT: scalar.ph:
+; CHECK-NEXT: ir-bb<exit.loopexit>:
+; CHECK-NEXT:   IR   %cond.lcssa1 = phi i64 [ %cond, %for.body ] (extra operand: vp<[[EXT]]> from middle.block)
+; CHECK-NEXT: No successors
+; CHECK-NEXT: }
 ;
 entry:
   %guard = icmp slt i64 %iv_start, %n
@@ -147,16 +182,17 @@ define i64 @findlastiv_need_mask_with_intermediate_store(ptr %a, ptr %b, i64 %ii
 ; CHECK-EMPTY:
 ; CHECK:      ir-bb<for.body.preheader>:
 ; CHECK-NEXT:   EMIT vp<[[OTC]]> = EXPAND SCEV ((-1 * %iv_start) + %n)
-; CHECK-NEXT: No successors
+; CHECK-NEXT: Successor(s): vector.ph
 ; CHECK-EMPTY:
 ; CHECK:      vector.ph:
+; CHECK-NEXT:   vp<%4> = DERIVED-IV ir<%iv_start> + vp<[[VTC]]> * ir<1>
 ; CHECK-NEXT: Successor(s): vector loop
 ; CHECK-EMPTY:
 ; CHECK-NEXT: <x1> vector loop: {
 ; CHECK-NEXT:  vector.body:
 ; CHECK-NEXT:    EMIT vp<[[IV:%[0-9]+]]> = CANONICAL-INDUCTION
-; CHECK-NEXT:    WIDEN-INDUCTION [[IV_PHI:%.+]] = phi
-; CHECK-NEXT:    WIDEN-REDUCTION-PHI ir<[[RDX_PHI:%.+]]> = phi ir<%ii>, ir<[[RDX_NEXT:%.+]]>
+; CHECK-NEXT:    ir<[[IV_PHI:%.+]]> = WIDEN-INDUCTION ir<%iv_start>, ir<1>, vp<[[VF]]>
+; CHECK-NEXT:    WIDEN-REDUCTION-PHI ir<[[RDX_PHI:%.+]]> = phi ir<9223372036854775807>, ir<[[RDX_NEXT:%.+]]>
 ; CHECK-NEXT:    vp<[[DIV:%[0-9]+]]>    = DERIVED-IV ir<%iv_start> + vp<[[IV]]> * ir<1>
 ; CHECK-NEXT:    vp<[[ST:%[0-9]+]]> = SCALAR-STEPS vp<[[DIV]]>, ir<1>
 ; CHECK-NEXT:    CLONE ir<[[GEP1:%.+]]> = getelementptr inbounds ir<%a>, vp<[[ST]]>
@@ -182,11 +218,29 @@ define i64 @findlastiv_need_mask_with_intermediate_store(ptr %a, ptr %b, i64 %ii
 ; CHECK-NEXT:   EMIT branch-on-cond vp<[[EXIT_COND]]>
 ; CHECK-NEXT: Successor(s): ir-bb<exit.loopexit>, scalar.ph
 ; CHECK-EMPTY:
+; CHECK-NEXT: scalar.ph:
+; CHECK-NEXT:   EMIT vp<%bc.resume.val> = resume-phi vp<%4>, ir<%iv_start>
+; CHECK-NEXT:   EMIT vp<%bc.merge.rdx> = resume-phi vp<%12>, ir<%ii>
+; CHECK-NEXT: Successor(s): ir-bb<for.body>
+; CHECK-EMPTY:
+; CHECK-NEXT: ir-bb<for.body>:
+; CHECK-NEXT:   IR   %iv = phi i64 [ %inc, %for.body ], [ %iv_start, %for.body.preheader ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:   IR   %rdx = phi i64 [ %cond, %for.body ], [ %ii, %for.body.preheader ] (extra operand: vp<%bc.merge.rdx> from scalar.ph)
+; CHECK-NEXT:   IR   %arrayidx = getelementptr inbounds i64, ptr %a, i64 %iv
+; CHECK-NEXT:   IR   %0 = load i64, ptr %arrayidx, align 8
+; CHECK-NEXT:   IR   %arrayidx1 = getelementptr inbounds i64, ptr %b, i64 %iv
+; CHECK-NEXT:   IR   %1 = load i64, ptr %arrayidx1, align 8
+; CHECK-NEXT:   IR   %cmp2 = icmp sgt i64 %0, %1
+; CHECK-NEXT:   IR   %cond = select i1 %cmp2, i64 %iv, i64 %rdx
+; CHECK-NEXT:   IR   store i64 %cond, ptr %dst, align 8
+; CHECK-NEXT:   IR   %inc = add nuw nsw i64 %iv, 1
+; CHECK-NEXT:   IR   %exitcond.not = icmp eq i64 %inc, %n
+; CHECK-NEXT: No successors
+; CHECK-EMPTY:
 ; CHECK-NEXT: ir-bb<exit.loopexit>:
 ; CHECK-NEXT:   IR   %cond.lcssa1 = phi i64 [ %cond, %for.body ] (extra operand: vp<[[EXT]]> from middle.block)
 ; CHECK-NEXT: No successors
-; CHECK-EMPTY:
-; CHECK-NEXT: scalar.ph:
+; CHECK-NEXT: }
 ;
 entry:
   %guard = icmp slt i64 %iv_start, %n

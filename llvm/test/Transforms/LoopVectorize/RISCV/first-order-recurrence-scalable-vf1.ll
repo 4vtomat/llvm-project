@@ -9,7 +9,7 @@ target triple = "riscv64-unknown-linux-gnu"
 define i64 @pr97452_scalable_vf1_for(ptr %src) #0 {
 ; CHECK-LABEL: define i64 @pr97452_scalable_vf1_for(
 ; CHECK-SAME: ptr [[SRC:%.*]]) #[[ATTR0:[0-9]+]] {
-; CHECK-NEXT:  [[ENTRY:.*]]:
+; CHECK-NEXT:  [[ENTRY:.*:]]
 ; CHECK-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
 ; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 23, i32 1, i1 true)
@@ -35,18 +35,14 @@ define i64 @pr97452_scalable_vf1_for(ptr %src) #0 {
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    [[TMP10:%.*]] = sub i32 [[TMP3]], 1
 ; CHECK-NEXT:    [[TMP11:%.*]] = extractelement <vscale x 1 x i64> [[TMP7]], i32 [[TMP10]]
+; CHECK-NEXT:    [[TMP13:%.*]] = sub i32 [[TMP3]], 1
+; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <vscale x 1 x i64> [[VP_OP_LOAD]], i32 [[TMP13]]
 ; CHECK-NEXT:    br label %[[EXIT:.*]]
 ; CHECK:       [[SCALAR_PH]]:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
-=======
-; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i64 [ [[VECTOR_RECUR_EXTRACT]], %[[MIDDLE_BLOCK]] ], [ 0, %[[ENTRY]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 16, %[[MIDDLE_BLOCK]] ], [ 0, %[[ENTRY]] ]
->>>>>>> 21edac2
 ; CHECK-NEXT:    br label %[[LOOP:.*]]
 ; CHECK:       [[LOOP]]:
 ; CHECK-NEXT:    [[FOR:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[L:%.*]], %[[LOOP]] ]
-; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[LOOP]] ]
+; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[LOOP]] ]
 ; CHECK-NEXT:    [[IV_NEXT]] = add i64 [[IV]], 1
 ; CHECK-NEXT:    [[GEP:%.*]] = getelementptr inbounds i64, ptr [[SRC]], i64 [[IV]]
 ; CHECK-NEXT:    [[L]] = load i64, ptr [[GEP]], align 8

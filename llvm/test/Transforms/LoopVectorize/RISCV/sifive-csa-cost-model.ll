@@ -22,8 +22,7 @@ define i32 @simple_csa_int_select_TC78(ptr %data) {
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 78, i32 1, i1 true)
 ; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 1 x i64> @llvm.stepvector.nxv1i64()
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], zeroinitializer
-; CHECK-NEXT:    [[TMP4:%.*]] = mul <vscale x 1 x i64> [[TMP3]], splat (i64 1)
+; CHECK-NEXT:    [[TMP4:%.*]] = mul <vscale x 1 x i64> [[TMP2]], splat (i64 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 1 x i64> zeroinitializer, [[TMP4]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = mul i64 1, [[TMP0]]
 ; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[TMP5]], i64 0
@@ -67,7 +66,6 @@ define i32 @simple_csa_int_select_TC78(ptr %data) {
 ; CHECK-NEXT:    [[TMP23:%.*]] = select i1 [[TMP22]], i32 [[CSA_EXTRACT]], i32 -1
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ], [ [[TMP23]], [[MIDDLE_BLOCK]] ]
@@ -76,7 +74,7 @@ define i32 @simple_csa_int_select_TC78(ptr %data) {
 ; CHECK-NEXT:    [[T_0_LCSSA:%.*]] = phi i32 [ -1, [[ENTRY:%.*]] ], [ [[SPEC_SELECT_LCSSA]], [[FOR_COND_CLEANUP_LOOPEXIT]] ]
 ; CHECK-NEXT:    ret i32 [[T_0_LCSSA]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[T_010:%.*]] = phi i32 [ -1, [[SCALAR_PH]] ], [ [[SPEC_SELECT]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[DATA]], i64 [[INDVARS_IV]]
 ; CHECK-NEXT:    [[TMP24:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
@@ -203,8 +201,7 @@ define i32 @simple_csa_int_select_TCN(i32 %N, ptr %data) {
 ; CHECK-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 8
 ; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 8, i1 true)
 ; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 8 x i64> @llvm.stepvector.nxv8i64()
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 8 x i64> [[TMP3]], zeroinitializer
-; CHECK-NEXT:    [[TMP5:%.*]] = mul <vscale x 8 x i64> [[TMP4]], splat (i64 1)
+; CHECK-NEXT:    [[TMP5:%.*]] = mul <vscale x 8 x i64> [[TMP3]], splat (i64 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 8 x i64> zeroinitializer, [[TMP5]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = mul i64 1, [[TMP1]]
 ; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 8 x i64> poison, i64 [[TMP6]], i64 0
@@ -248,7 +245,6 @@ define i32 @simple_csa_int_select_TCN(i32 %N, ptr %data) {
 ; CHECK-NEXT:    [[TMP24:%.*]] = select i1 [[TMP23]], i32 [[CSA_EXTRACT]], i32 -1
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ], [ [[TMP24]], [[MIDDLE_BLOCK]] ]
@@ -257,7 +253,7 @@ define i32 @simple_csa_int_select_TCN(i32 %N, ptr %data) {
 ; CHECK-NEXT:    [[T_0_LCSSA:%.*]] = phi i32 [ -1, [[ENTRY:%.*]] ], [ [[SPEC_SELECT_LCSSA]], [[FOR_COND_CLEANUP_LOOPEXIT]] ]
 ; CHECK-NEXT:    ret i32 [[T_0_LCSSA]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[T_010:%.*]] = phi i32 [ -1, [[SCALAR_PH]] ], [ [[SPEC_SELECT]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[DATA]], i64 [[INDVARS_IV]]
 ; CHECK-NEXT:    [[TMP25:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
@@ -320,8 +316,7 @@ define ptr @simple_csa_ptr_select(i32 %N, ptr %data) {
 ; CHECK-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
 ; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 4, i1 true)
 ; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 4 x i64> @llvm.stepvector.nxv4i64()
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 4 x i64> [[TMP3]], zeroinitializer
-; CHECK-NEXT:    [[TMP5:%.*]] = mul <vscale x 4 x i64> [[TMP4]], splat (i64 1)
+; CHECK-NEXT:    [[TMP5:%.*]] = mul <vscale x 4 x i64> [[TMP3]], splat (i64 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 4 x i64> zeroinitializer, [[TMP5]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = mul i64 1, [[TMP1]]
 ; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 4 x i64> poison, i64 [[TMP6]], i64 0
@@ -366,7 +361,6 @@ define ptr @simple_csa_ptr_select(i32 %N, ptr %data) {
 ; CHECK-NEXT:    [[TMP24:%.*]] = select i1 [[TMP23]], ptr [[CSA_EXTRACT]], ptr null
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi ptr [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ], [ [[TMP24]], [[MIDDLE_BLOCK]] ]
@@ -375,7 +369,7 @@ define ptr @simple_csa_ptr_select(i32 %N, ptr %data) {
 ; CHECK-NEXT:    [[T_0_LCSSA:%.*]] = phi ptr [ null, [[ENTRY:%.*]] ], [ [[SPEC_SELECT_LCSSA]], [[FOR_COND_CLEANUP_LOOPEXIT]] ]
 ; CHECK-NEXT:    ret ptr [[T_0_LCSSA]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[T_010:%.*]] = phi ptr [ null, [[SCALAR_PH]] ], [ [[SPEC_SELECT]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds ptr, ptr [[DATA]], i64 [[INDVARS_IV]]
 ; CHECK-NEXT:    [[TMP25:%.*]] = load ptr, ptr [[ARRAYIDX]], align 8
