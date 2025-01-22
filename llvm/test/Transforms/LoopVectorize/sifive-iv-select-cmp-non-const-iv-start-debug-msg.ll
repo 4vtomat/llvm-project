@@ -3,7 +3,7 @@
 
 ; CHECK-LABEL: LV: Checking a loop in 'select_non_const_iv_start_signed_guard'
 ; CHECK: LV: FindLastIV valid range is [-9223372036854775808,9223372036854775807), and the signed range of {%iv_start,+,1}<nsw><%for.body> is [-9223372036854775808,9223372036854775807)
-; CHECK: Found a FindLastIV reduction PHI.
+; CHECK: Found a IFindLastIV reduction PHI.
 ;
 define i64 @select_non_const_iv_start_signed_guard(ptr %a, i64 %ii, i64 %iv_start ,i64 %n) {
 entry:
@@ -28,7 +28,7 @@ for.cond.cleanup:                                 ; preds = %for.body, %entry
 
 ; CHECK-LABEL: LV: Checking a loop in 'select_trunc_non_const_iv_start_signed_guard'
 ; CHECK: LV: FindLastIV valid range is [-2147483647,-2147483648), and the signed range of {%iv_start,+,1}<%for.body> is full-set
-; CHECK-NOT: Found a FindLastIV reduction PHI.
+; CHECK-NOT: Found a IFindLastIV reduction PHI.
 ;
 define i32 @select_trunc_non_const_iv_start_signed_guard(ptr %a, i32 %ii, i32 %iv_start ,i32 %n) {
 entry:

@@ -47,10 +47,9 @@ define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr
 ; X280:       [[MIDDLE_BLOCK]]:
 ; X280-NEXT:    br label %[[FOR_END_LOOPEXIT:.*]]
 ; X280:       [[SCALAR_PH]]:
-; X280-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[FOR_BODY_LR_PH]] ]
 ; X280-NEXT:    br label %[[FOR_BODY:.*]]
 ; X280:       [[FOR_BODY]]:
-; X280-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_INC:.*]] ]
+; X280-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_INC:.*]] ]
 ; X280-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i64, ptr [[REG_24_VAL]], i64 [[INDVARS_IV]]
 ; X280-NEXT:    [[TMP11:%.*]] = load i64, ptr [[ARRAYIDX]], align 8
 ; X280-NEXT:    [[TMP12:%.*]] = and i64 [[TMP11]], [[TMP1]]
@@ -118,10 +117,9 @@ define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr
 ; P470:       [[MIDDLE_BLOCK]]:
 ; P470-NEXT:    br label %[[FOR_END_LOOPEXIT:.*]]
 ; P470:       [[SCALAR_PH]]:
-; P470-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[FOR_BODY_LR_PH]] ]
 ; P470-NEXT:    br label %[[FOR_BODY:.*]]
 ; P470:       [[FOR_BODY]]:
-; P470-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_INC:.*]] ]
+; P470-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_INC:.*]] ]
 ; P470-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i64, ptr [[REG_24_VAL]], i64 [[INDVARS_IV]]
 ; P470-NEXT:    [[TMP13:%.*]] = load i64, ptr [[ARRAYIDX]], align 8
 ; P470-NEXT:    [[TMP14:%.*]] = and i64 [[TMP13]], [[TMP1]]
@@ -183,10 +181,9 @@ define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr
 ; P670:       [[MIDDLE_BLOCK]]:
 ; P670-NEXT:    br label %[[FOR_END_LOOPEXIT:.*]]
 ; P670:       [[SCALAR_PH]]:
-; P670-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[FOR_BODY_LR_PH]] ]
 ; P670-NEXT:    br label %[[FOR_BODY:.*]]
 ; P670:       [[FOR_BODY]]:
-; P670-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_INC:.*]] ]
+; P670-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_INC:.*]] ]
 ; P670-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i64, ptr [[REG_24_VAL]], i64 [[INDVARS_IV]]
 ; P670-NEXT:    [[TMP11:%.*]] = load i64, ptr [[ARRAYIDX]], align 8
 ; P670-NEXT:    [[TMP12:%.*]] = and i64 [[TMP11]], [[TMP1]]

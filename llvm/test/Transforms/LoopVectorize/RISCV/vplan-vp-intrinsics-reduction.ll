@@ -62,13 +62,6 @@ define i32 @reduction(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-OUTLOOP-NEXT:   EMIT branch-on-cond ir<true>
 ; IF-EVL-OUTLOOP-NEXT: Successor(s): ir-bb<for.end>, scalar.ph
 ; IF-EVL-OUTLOOP-EMPTY:
-<<<<<<< HEAD
-; IF-EVL-OUTLOOP-NEXT: ir-bb<for.end>:
-; IF-EVL-OUTLOOP-NEXT:   IR   %add.lcssa = phi i32 [ %add, %for.body ] (extra operand: vp<[[EXT]]> from middle.block)
-; IF-EVL-OUTLOOP-NEXT: No successors
-; IF-EVL-OUTLOOP-EMPTY:
-; IF-EVL-OUTLOOP-NEXT: scalar.ph:
-=======
 ; IF-EVL-OUTLOOP-NEXT: scalar.ph:
 ; IF-EVL-OUTLOOP-NEXT:   EMIT vp<[[IV_RESUME:%.+]]> = resume-phi vp<[[VTC]]>, ir<0>
 ; IF-EVL-OUTLOOP-NEXT:   EMIT vp<[[RED_RESUME:%.+]]> = resume-phi vp<[[RDX]]>, ir<%start>
@@ -81,10 +74,9 @@ define i32 @reduction(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-OUTLOOP-NEXT: No successors
 ; IF-EVL-OUTLOOP-EMPTY:
 ; IF-EVL-OUTLOOP-NEXT: ir-bb<for.end>:
-; IF-EVL-OUTLOOP-NEXT:   IR   %add.lcssa = phi i32 [ %add, %for.body ] (extra operand: vp<[[RDX_EX]]> from middle.block)
+; IF-EVL-OUTLOOP-NEXT:   IR   %add.lcssa = phi i32 [ %add, %for.body ] (extra operand: vp<[[EXT]]> from middle.block)
 ; IF-EVL-OUTLOOP-NEXT: No successors
 ; IF-EVL-OUTLOOP-NEXT: }
->>>>>>> 21edac2
 ;
 
 ; IF-EVL-INLOOP: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2},UF={1}' {
@@ -121,11 +113,8 @@ define i32 @reduction(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-INLOOP-NEXT: Successor(s): ir-bb<for.end>, scalar.ph
 ; IF-EVL-INLOOP-EMPTY:
 ; IF-EVL-INLOOP-NEXT: scalar.ph:
-<<<<<<< HEAD
-=======
 ; IF-EVL-INLOOP-NEXT:   EMIT vp<[[IV_RESUME:%.+]]> = resume-phi vp<[[VTC]]>, ir<0>
 ; IF-EVL-INLOOP-NEXT:   EMIT vp<[[RED_RESUME:%.+]]> = resume-phi vp<[[RDX]]>, ir<%start>
->>>>>>> 21edac2
 ; IF-EVL-INLOOP-NEXT: Successor(s): ir-bb<for.body>
 ; IF-EVL-INLOOP-EMPTY:
 ; IF-EVL-INLOOP-NEXT: ir-bb<for.body>:
