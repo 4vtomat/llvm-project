@@ -3083,4 +3083,13 @@ void tools::renderCommonIntegerOverflowOptions(const ArgList &Args,
     if (A->getOption().matches(options::OPT_fno_strict_overflow))
       CmdArgs.push_back("-fwrapv");
   }
+
+#if SIFIVE_CUSTOMIZATION
+  // We don't need to add `-fno-strict-pointer-overflow` if signed overflow
+  // is already defined.
+  if (StringRef(CmdArgs.back()) != "-fwrapv")
+    Args.AddLastArg(CmdArgs, options::OPT_fno_strict_pointer_overflow);
+  else
+    Args.ClaimAllArgs(options::OPT_fno_strict_pointer_overflow);
+#endif // SIFIVE_CUSTOMIZATION
 }
