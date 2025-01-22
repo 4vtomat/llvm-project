@@ -642,8 +642,10 @@ void VPlanTransforms::simplifyMonotonics(VPlan &Plan) {
             LiveOut->eraseFromParent();
           }
       }
-      for (VPRecipeBase *RR : ToRemove)
+      for (VPRecipeBase *RR : ToRemove) {
+        RR->getVPSingleValue()->replaceAllUsesWith(VPMUI);
         RR->eraseFromParent();
+      }
     }
 }
 
