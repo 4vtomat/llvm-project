@@ -4251,6 +4251,8 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
   // Skip this if the loop is uncountable.
   if (!Legal->isVectorizableUncountable())
     for (BasicBlock *E : Exiting) {
+      if (Legal->hasUncountableEarlyExit() && TheLoop->getLoopLatch() != E)
+        continue;
       auto *Cmp = dyn_cast<Instruction>(E->getTerminator()->getOperand(0));
       if (Cmp && TheLoop->contains(Cmp) && Cmp->hasOneUse())
         AddToWorklistIfAllowed(Cmp);
