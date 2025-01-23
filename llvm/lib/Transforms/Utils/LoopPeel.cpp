@@ -72,7 +72,7 @@ static cl::opt<bool>
 
 // SIFIVE
 static cl::opt<bool> AllowEpilogPeeling(
-    "allow-epilog-peeling", cl::init(false), cl::Hidden,
+    "allow-epilog-peeling", cl::init(true), cl::Hidden,
     cl::desc("Allows peeling from final iterations of loops."));
 // end SIFIVE
 
@@ -113,6 +113,16 @@ bool llvm::canPeel(const Loop *L) {
 }
 
 #if SIFIVE_CUSTOMIZATION
+static Value *peekThroughExtTrunc(Value *Val) {
+  if (auto *ZI = dyn_cast<ZExtInst>(Val))
+    Val = ZI->getOperand(0);
+  else if (auto *SI = dyn_cast<SExtInst>(Val))
+    Val = SI->getOperand(0);
+  else if (auto *TI = dyn_cast<TruncInst>(Val))
+    Val = TI->getOperand(0);
+  return Val;
+}
+
 bool llvm::canPeelEpilog(const Loop *L) {
   if (!L->isLoopSimplifyForm())
      return false;
@@ -128,6 +138,25 @@ bool llvm::canPeelEpilog(const Loop *L) {
    // Peeling is only supported if the latch is a branch.
    if (!isa<BranchInst>(Latch->getTerminator()))
      return false;
+
+   // Peeling is only supported for latch compares that
+   // have comparable/resolvable values
+   ICmpInst *CmpInst = L->getLatchCmpInst();
+   if (CmpInst && any_of(CmpInst->operands(), [=](Value *Op) {
+         Op = peekThroughExtTrunc(Op);
+         if (auto *PN = dyn_cast<PHINode>(Op))
+           if (!L->contains(PN->getParent()))
+             return true;
+
+         return isa<CallInst>(Op);
+   }))
+     return false;
+
+   // This a complex flow case, currently not supported.
+   for (BasicBlock *BB : L->blocks())
+     for (Instruction &I : *BB)
+       if (isa<SwitchInst>(I))
+         return false;
 
    SmallVector<BasicBlock *, 4> Exits;
    L->getUniqueNonLatchExitBlocks(Exits);
@@ -372,6 +401,29 @@ static unsigned peelToTurnInvariantLoadsDerefencebale(Loop &L,
   return 0;
 }
 
+#if SIFIVE_CUSTOMIZATION
+static bool isCanonicalForm(Loop &L, Value *Condition,
+                            ScalarEvolution &SE,
+                            bool PeelProlog) {
+  if (PeelProlog)
+    return true;
+
+  ICmpInst *CmpInst = dyn_cast<ICmpInst>(Condition);
+  if (!CmpInst)
+    return false;
+
+  bool IsCanonicalForm = false;
+  for (PHINode &IndVar : L.getHeader()->phis()) {
+    InductionDescriptor IndDesc;
+    if (InductionDescriptor::isInductionPHI(&IndVar, &L, &SE, IndDesc))
+      IsCanonicalForm |= (any_of(CmpInst->operands(), [&](Value *Op) {
+        return (peekThroughExtTrunc(Op) == &IndVar);
+      }));
+  }
+  return IsCanonicalForm;
+}
+#endif
+
 // Return the number of iterations to peel off that make conditions in the
 // body true/false. For example, if we peel 2 iterations off the loop below,
 // the condition i < 2 can be evaluated at compile time.
@@ -465,6 +517,19 @@ static unsigned countToEliminateCompares(Loop &L, unsigned MaxPeelCount,
       } else
         return;
     }
+
+#if SIFIVE_CUSTOMIZATION
+    if (auto *ZExt = dyn_cast<SCEVZeroExtendExpr>(RightSCEV)) {
+      const SCEV *Op = ZExt->getOperand();
+      // Relationship is not close in comparison
+      if (isa<SCEVUDivExpr>(Op) || isa<SCEVMulExpr>(Op) || isa<SCEVUnknown>(Op))
+        return;
+    }
+
+    // Relationship is not close in comparison
+    if (isa<SCEVUDivExpr>(RightSCEV) || isa<SCEVMulExpr>(RightSCEV))
+      return;
+#endif
 
     const SCEVAddRecExpr *LeftAR = cast<SCEVAddRecExpr>(LeftSCEV);
 
@@ -573,12 +638,22 @@ static unsigned countToEliminateCompares(Loop &L, unsigned MaxPeelCount,
   };
 
   for (BasicBlock *BB : L.blocks()) {
+#if SIFIVE_CUSTOMIZATION
+    if (PeelProlog)
+      for (Instruction &I : *BB) {
+        if (SelectInst *SI = dyn_cast<SelectInst>(&I))
+          ComputePeelCount(SI->getCondition(), 0);
+        if (MinMaxIntrinsic *MinMax = dyn_cast<MinMaxIntrinsic>(&I))
+          ComputePeelCountMinMax(MinMax);
+      }
+#else
     for (Instruction &I : *BB) {
       if (SelectInst *SI = dyn_cast<SelectInst>(&I))
         ComputePeelCount(SI->getCondition(), 0);
       if (MinMaxIntrinsic *MinMax = dyn_cast<MinMaxIntrinsic>(&I))
         ComputePeelCountMinMax(MinMax);
     }
+#endif
 
     auto *BI = dyn_cast<BranchInst>(BB->getTerminator());
     if (!BI || BI->isUnconditional())
@@ -588,7 +663,12 @@ static unsigned countToEliminateCompares(Loop &L, unsigned MaxPeelCount,
     if (L.getLoopLatch() == BB)
       continue;
 
+#if SIFIVE_CUSTOMIZATION
+    if (isCanonicalForm(L, BI->getCondition(), SE, PeelProlog))
+      ComputePeelCount(BI->getCondition(), 0);
+#else
     ComputePeelCount(BI->getCondition(), 0);
+#endif
   }
 
   return DesiredPeelCount;
