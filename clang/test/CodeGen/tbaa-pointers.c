@@ -211,7 +211,6 @@ void unamed_struct_typedef(TypedefS *ptr) {
 // COMMON: [[ANY_POINTER]] = !{!"any pointer", [[CHAR:!.+]], i64 0}
 // COMMON: [[CHAR]] = !{!"omnipotent char", [[TBAA_ROOT:!.+]], i64 0}
 // COMMON: [[TBAA_ROOT]] = !{!"Simple C/C++ TBAA"}
-<<<<<<< HEAD
 // ENABLED: [[P1INT_0]] = !{[[P1INT:!.+]], [[P1INT]], i64 0}
 // ENABLED: [[P1INT]] = !{!"p1 int", [[ANY_POINTER]], i64 0}
 // ENABLED: [[P3INT_0]] = !{[[P3INT:!.+]], [[P3INT]], i64 0}
@@ -230,7 +229,6 @@ void unamed_struct_typedef(TypedefS *ptr) {
 // ENABLED: [[P1S1]] = !{!"p1 struct S1", [[ANY_POINTER]], i64 0}
 // ENABLED: [[P1S2_TAG]] = !{[[P1S2:!.+]], [[P1S2]], i64 0}
 // ENABLED: [[P1S2]] = !{!"p1 struct S2", [[ANY_POINTER]], i64 0}
-=======
 // DEFAULT: [[P1INT_0]] = !{[[P1INT:!.+]], [[P1INT]], i64 0}
 // DEFAULT: [[P1INT]] = !{!"p1 int", [[ANY_POINTER]], i64 0}
 // DEFAULT: [[P3INT_0]] = !{[[P3INT:!.+]], [[P3INT]], i64 0}
@@ -244,12 +242,8 @@ void unamed_struct_typedef(TypedefS *ptr) {
 // DEFAULT: [[P1CHAR_0]] = !{[[P1CHAR:!.+]], [[P1CHAR]], i64 0}
 // DEFAULT: [[P1CHAR]] = !{!"p1 omnipotent char", [[ANY_POINTER]], i64 0}
 // DEFAULT: [[P2S1_TAG]] = !{[[P2S1:!.+]], [[P2S1]], i64 0}
-// DEFAULT: [[P2S1]] = !{!"p2 _ZTS2S1", [[ANY_POINTER]], i64 0}
 // DEFAULT: [[P1S1_TAG:!.+]] = !{[[P1S1:!.+]], [[P1S1]], i64 0}
-// DEFAULT: [[P1S1]] = !{!"p1 _ZTS2S1", [[ANY_POINTER]], i64 0}
 // DEFAULT: [[P1S2_TAG]] = !{[[P1S2:!.+]], [[P1S2]], i64 0}
-// DEFAULT: [[P1S2]] = !{!"p1 _ZTS2S2", [[ANY_POINTER]], i64 0}
->>>>>>> 21edac2
 
 // DEFAULT: [[S2_S_TAG]]  = !{[[S2_TY:!.+]], [[P1S1]], i64 0}
 // DEFAULT: [[S2_TY]]  = !{!"S2", [[P1S1]], i64 0}
