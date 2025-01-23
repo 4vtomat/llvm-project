@@ -11008,6 +11008,11 @@ static void addScalarResumePhis(VPRecipeBuilder &Builder, VPlan &Plan) {
       continue;
     }
 
+#if SIFIVE_CUSTOMIZATION
+    if (dyn_cast<VPCSAHeaderPHIRecipe>(VectorPhiR))
+      continue;
+#endif // SIFIVE_CUSTOMIZATION
+
     // The backedge value provides the value to resume coming out of a loop,
     // which for FORs is a vector whose last element needs to be extracted. The
     // start value provides the value if the loop is bypassed.
