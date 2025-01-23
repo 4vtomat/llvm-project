@@ -1108,20 +1108,11 @@ define <vscale x 16 x double> @vfma_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    csrr a1, vlenb
-<<<<<<< HEAD
-; CHECK-NEXT:    li a3, 48
-; CHECK-NEXT:    mul a1, a1, a3
-; CHECK-NEXT:    sub sp, sp, a1
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x30, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 48 * vlenb
-; CHECK-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
-; CHECK-NEXT:    vmv1r.v v7, v0
-; CHECK-NEXT:    csrr a1, vlenb
-=======
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    li a3, 24
 ; CHECK-NEXT:    mul a1, a1, a3
 ; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * vlenb
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vmv1r.v v7, v0
 ; CHECK-NEXT:    vmv8r.v v24, v16
 ; CHECK-NEXT:    csrr a1, vlenb
@@ -1133,36 +1124,6 @@ define <vscale x 16 x double> @vfma_vv_nxv16f64(<vscale x 16 x double> %va, <vsc
 ; CHECK-NEXT:    srli a3, a1, 3
 ; CHECK-NEXT:    slli a5, a1, 3
 ; CHECK-NEXT:    sub a6, a4, a1
-<<<<<<< HEAD
-; CHECK-NEXT:    add a7, a2, a5
-; CHECK-NEXT:    add a5, a0, a5
-; CHECK-NEXT:    vl8re64.v v8, (a7)
-; CHECK-NEXT:    csrr a7, vlenb
-; CHECK-NEXT:    slli a7, a7, 3
-; CHECK-NEXT:    add a7, sp, a7
-; CHECK-NEXT:    addi a7, a7, 16
-; CHECK-NEXT:    vs8r.v v8, (a7) # Unknown-size Folded Spill
-; CHECK-NEXT:    sltu a7, a4, a6
-; CHECK-NEXT:    addi a7, a7, -1
-; CHECK-NEXT:    vl8re64.v v8, (a5)
-; CHECK-NEXT:    csrr a5, vlenb
-; CHECK-NEXT:    li t0, 40
-; CHECK-NEXT:    mul a5, a5, t0
-; CHECK-NEXT:    add a5, sp, a5
-; CHECK-NEXT:    addi a5, a5, 16
-; CHECK-NEXT:    vs8r.v v8, (a5) # Unknown-size Folded Spill
-; CHECK-NEXT:    vl8re64.v v8, (a2)
-; CHECK-NEXT:    csrr a2, vlenb
-; CHECK-NEXT:    slli a2, a2, 4
-; CHECK-NEXT:    add a2, sp, a2
-; CHECK-NEXT:    addi a2, a2, 16
-; CHECK-NEXT:    vs8r.v v8, (a2) # Unknown-size Folded Spill
-; CHECK-NEXT:    vl8re64.v v8, (a0)
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
-=======
-; CHECK-NEXT:    vsetvli a7, zero, e8, mf4, ta, ma
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    vslidedown.vx v0, v0, a3
 ; CHECK-NEXT:    add a3, a2, a5
 ; CHECK-NEXT:    vl8re64.v v8, (a3)

@@ -1091,11 +1091,7 @@ define <vscale x 128 x i1> @icmp_eq_vv_nxv128i8(<vscale x 128 x i8> %va, <vscale
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
 ; CHECK-NEXT:    csrr a1, vlenb
-<<<<<<< HEAD
-=======
 ; CHECK-NEXT:    vl8r.v v8, (a0)
-; CHECK-NEXT:    vsetvli a4, zero, e8, m8, ta, ma
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    vlm.v v0, (a2)
 ; CHECK-NEXT:    slli a1, a1, 3
 ; CHECK-NEXT:    add a0, a0, a1
@@ -2197,21 +2193,9 @@ define <vscale x 32 x i1> @icmp_eq_vv_nxv32i32(<vscale x 32 x i32> %va, <vscale 
 ; CHECK-NEXT:    addi a5, a5, -1
 ; CHECK-NEXT:    and a5, a5, a0
 ; CHECK-NEXT:    srli a0, a3, 2
-; CHECK-NEXT:    vsetvli a3, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v0, v0, a0
 ; CHECK-NEXT:    vl8re32.v v8, (a4)
-<<<<<<< HEAD
-; CHECK-NEXT:    sltu a4, a2, a5
-; CHECK-NEXT:    addi a4, a4, -1
-; CHECK-NEXT:    vl8re32.v v0, (a0)
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vs8r.v v0, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vslidedown.vx v0, v24, a1
-; CHECK-NEXT:    and a4, a4, a5
-; CHECK-NEXT:    vsetvli zero, a4, e32, m8, ta, ma
-=======
 ; CHECK-NEXT:    vsetvli zero, a5, e32, m8, ta, ma
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    vmseq.vv v16, v16, v8, v0.t
 ; CHECK-NEXT:    bltu a2, a1, .LBB189_2
 ; CHECK-NEXT:  # %bb.1:

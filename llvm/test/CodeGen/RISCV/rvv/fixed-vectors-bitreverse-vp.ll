@@ -1678,13 +1678,9 @@ define <15 x i64> @vp_bitreverse_v15i64(<15 x i64> %va, <15 x i1> %m, i32 zeroex
 ; RV32-NEXT:    sw a3, 36(sp)
 ; RV32-NEXT:    lui a3, 4080
 ; RV32-NEXT:    addi a4, a5, 1365
-<<<<<<< HEAD
-=======
 ; RV32-NEXT:    sw a4, 24(sp)
 ; RV32-NEXT:    sw a4, 28(sp)
 ; RV32-NEXT:    addi a4, sp, 16
-; RV32-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
->>>>>>> origin/sifive-dev
 ; RV32-NEXT:    vsll.vx v16, v8, a1, v0.t
 ; RV32-NEXT:    addi a5, a6, -256
 ; RV32-NEXT:    vand.vx v8, v8, a5, v0.t
@@ -1874,6 +1870,7 @@ define <15 x i64> @vp_bitreverse_v15i64_unmasked(<15 x i64> %va, i32 zeroext %ev
 ; RV32-NEXT:    slli a1, a1, 4
 ; RV32-NEXT:    sub sp, sp, a1
 ; RV32-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x30, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 48 + 16 * vlenb
+; RV32-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; RV32-NEXT:    vmv8r.v v16, v8
 ; RV32-NEXT:    lui a1, 1044480
 ; RV32-NEXT:    lui a2, 61681
@@ -1881,7 +1878,6 @@ define <15 x i64> @vp_bitreverse_v15i64_unmasked(<15 x i64> %va, i32 zeroext %ev
 ; RV32-NEXT:    lui a4, 349525
 ; RV32-NEXT:    li a5, 56
 ; RV32-NEXT:    lui a6, 16
-; RV32-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; RV32-NEXT:    vsll.vx v8, v8, a5
 ; RV32-NEXT:    vsrl.vx v24, v16, a5
 ; RV32-NEXT:    li a5, 40
@@ -2080,13 +2076,9 @@ define <16 x i64> @vp_bitreverse_v16i64(<16 x i64> %va, <16 x i1> %m, i32 zeroex
 ; RV32-NEXT:    sw a3, 36(sp)
 ; RV32-NEXT:    lui a3, 4080
 ; RV32-NEXT:    addi a4, a5, 1365
-<<<<<<< HEAD
-=======
 ; RV32-NEXT:    sw a4, 24(sp)
 ; RV32-NEXT:    sw a4, 28(sp)
 ; RV32-NEXT:    addi a4, sp, 16
-; RV32-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
->>>>>>> origin/sifive-dev
 ; RV32-NEXT:    vsll.vx v16, v8, a1, v0.t
 ; RV32-NEXT:    addi a5, a6, -256
 ; RV32-NEXT:    vand.vx v8, v8, a5, v0.t
@@ -2276,6 +2268,7 @@ define <16 x i64> @vp_bitreverse_v16i64_unmasked(<16 x i64> %va, i32 zeroext %ev
 ; RV32-NEXT:    slli a1, a1, 4
 ; RV32-NEXT:    sub sp, sp, a1
 ; RV32-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x30, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 48 + 16 * vlenb
+; RV32-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; RV32-NEXT:    vmv8r.v v16, v8
 ; RV32-NEXT:    lui a1, 1044480
 ; RV32-NEXT:    lui a2, 61681
@@ -2283,7 +2276,6 @@ define <16 x i64> @vp_bitreverse_v16i64_unmasked(<16 x i64> %va, i32 zeroext %ev
 ; RV32-NEXT:    lui a4, 349525
 ; RV32-NEXT:    li a5, 56
 ; RV32-NEXT:    lui a6, 16
-; RV32-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; RV32-NEXT:    vsll.vx v8, v8, a5
 ; RV32-NEXT:    vsrl.vx v24, v16, a5
 ; RV32-NEXT:    li a5, 40

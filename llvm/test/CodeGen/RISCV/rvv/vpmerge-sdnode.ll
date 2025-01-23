@@ -566,11 +566,7 @@ define <vscale x 128 x i8> @vpmerge_vv_nxv128i8(<vscale x 128 x i8> %va, <vscale
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
 ; CHECK-NEXT:    csrr a1, vlenb
-<<<<<<< HEAD
-=======
 ; CHECK-NEXT:    vl8r.v v8, (a0)
-; CHECK-NEXT:    vsetvli a4, zero, e8, m8, ta, ma
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    vlm.v v0, (a2)
 ; CHECK-NEXT:    slli a1, a1, 3
 ; CHECK-NEXT:    add a0, a0, a1

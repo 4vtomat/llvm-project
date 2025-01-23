@@ -229,12 +229,7 @@ define <256 x i8> @test_expandload_v256i8(ptr %base, <256 x i1> %mask, <256 x i8
 ; CHECK-RV32-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-RV32-NEXT:    vmv1r.v v7, v8
 ; CHECK-RV32-NEXT:    li a2, 128
-<<<<<<< HEAD
-; CHECK-RV32-NEXT:    vslidedown.vi v9, v0, 1
-=======
-; CHECK-RV32-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-RV32-NEXT:    vslidedown.vi v6, v0, 1
->>>>>>> origin/sifive-dev
 ; CHECK-RV32-NEXT:    li a3, 32
 ; CHECK-RV32-NEXT:    vmv.x.s a4, v0
 ; CHECK-RV32-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
@@ -302,25 +297,11 @@ define <256 x i8> @test_expandload_v256i8(ptr %base, <256 x i1> %mask, <256 x i8
 ; CHECK-RV64-NEXT:    csrr a2, vlenb
 ; CHECK-RV64-NEXT:    slli a2, a2, 4
 ; CHECK-RV64-NEXT:    sub sp, sp, a2
-<<<<<<< HEAD
-; CHECK-RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x20, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 32 * vlenb
-; CHECK-RV64-NEXT:    csrr a2, vlenb
-; CHECK-RV64-NEXT:    li a3, 24
-; CHECK-RV64-NEXT:    mul a2, a2, a3
-; CHECK-RV64-NEXT:    add a2, sp, a2
-; CHECK-RV64-NEXT:    addi a2, a2, 16
-; CHECK-RV64-NEXT:    vs8r.v v16, (a2) # Unknown-size Folded Spill
-; CHECK-RV64-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-; CHECK-RV64-NEXT:    vmv1r.v v7, v8
-; CHECK-RV64-NEXT:    li a2, 128
-; CHECK-RV64-NEXT:    vslidedown.vi v9, v0, 1
-=======
 ; CHECK-RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * vlenb
+; CHECK-RV64-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-RV64-NEXT:    vmv1r.v v7, v8
 ; CHECK-RV64-NEXT:    li a2, 128
-; CHECK-RV64-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-RV64-NEXT:    vslidedown.vi v6, v0, 1
->>>>>>> origin/sifive-dev
 ; CHECK-RV64-NEXT:    vmv.x.s a3, v0
 ; CHECK-RV64-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
 ; CHECK-RV64-NEXT:    viota.m v8, v0
@@ -1072,9 +1053,8 @@ define <64 x i32> @test_expandload_v64i32(ptr %base, <64 x i1> %mask, <64 x i32>
 ; CHECK-RV64-NEXT:    vs8r.v v8, (a2) # Unknown-size Folded Spill
 ; CHECK-RV64-NEXT:    vsetivli zero, 4, e8, mf2, ta, ma
 ; CHECK-RV64-NEXT:    vslidedown.vi v24, v0, 4
-; CHECK-RV64-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-RV64-NEXT:    vmv.x.s a2, v0
 ; CHECK-RV64-NEXT:    vsetvli zero, a1, e32, m8, ta, ma
+; CHECK-RV64-NEXT:    vmv.x.s a2, v0
 ; CHECK-RV64-NEXT:    vcpop.m a3, v24
 ; CHECK-RV64-NEXT:    cpopw a2, a2
 ; CHECK-RV64-NEXT:    viota.m v0, v24

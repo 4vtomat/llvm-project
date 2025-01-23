@@ -117,13 +117,13 @@ define i32 @fcvt_wu_d(double %a) nounwind {
 }
 
 define i32 @fcvt_wu_d_multiple_use(double %x, ptr %y) nounwind {
-<<<<<<< HEAD
 ; CHECKIFD-LABEL: fcvt_wu_d_multiple_use:
 ; CHECKIFD:       # %bb.0:
-; CHECKIFD-NEXT:    fcvt.wu.d a0, fa0, rtz
-; CHECKIFD-NEXT:    bnez a0, .LBB4_2
-; CHECKIFD-NEXT:  # %bb.1:
+; CHECKIFD-NEXT:    fcvt.wu.d a1, fa0, rtz
 ; CHECKIFD-NEXT:    li a0, 1
+; CHECKIFD-NEXT:    beqz a1, .LBB4_2
+; CHECKIFD-NEXT:  # %bb.1:
+; CHECKIFD-NEXT:    mv a0, a1
 ; CHECKIFD-NEXT:  .LBB4_2:
 ; CHECKIFD-NEXT:    ret
 ;
@@ -131,12 +131,16 @@ define i32 @fcvt_wu_d_multiple_use(double %x, ptr %y) nounwind {
 ; RV32I:       # %bb.0:
 ; RV32I-NEXT:    addi sp, sp, -16
 ; RV32I-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
+; RV32I-NEXT:    sw s0, 8(sp) # 4-byte Folded Spill
+; RV32I-NEXT:    li s0, 1
 ; RV32I-NEXT:    call __fixunsdfsi
-; RV32I-NEXT:    bnez a0, .LBB4_2
+; RV32I-NEXT:    beqz a0, .LBB4_2
 ; RV32I-NEXT:  # %bb.1:
-; RV32I-NEXT:    li a0, 1
+; RV32I-NEXT:    mv s0, a0
 ; RV32I-NEXT:  .LBB4_2:
+; RV32I-NEXT:    mv a0, s0
 ; RV32I-NEXT:    lw ra, 12(sp) # 4-byte Folded Reload
+; RV32I-NEXT:    lw s0, 8(sp) # 4-byte Folded Reload
 ; RV32I-NEXT:    addi sp, sp, 16
 ; RV32I-NEXT:    ret
 ;
@@ -144,38 +148,19 @@ define i32 @fcvt_wu_d_multiple_use(double %x, ptr %y) nounwind {
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    addi sp, sp, -16
 ; RV64I-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
+; RV64I-NEXT:    sd s0, 0(sp) # 8-byte Folded Spill
+; RV64I-NEXT:    li s0, 1
 ; RV64I-NEXT:    call __fixunsdfsi
 ; RV64I-NEXT:    sext.w a1, a0
-; RV64I-NEXT:    bnez a1, .LBB4_2
+; RV64I-NEXT:    beqz a1, .LBB4_2
 ; RV64I-NEXT:  # %bb.1:
-; RV64I-NEXT:    li a0, 1
+; RV64I-NEXT:    mv s0, a0
 ; RV64I-NEXT:  .LBB4_2:
+; RV64I-NEXT:    mv a0, s0
 ; RV64I-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload
+; RV64I-NEXT:    ld s0, 0(sp) # 8-byte Folded Reload
 ; RV64I-NEXT:    addi sp, sp, 16
 ; RV64I-NEXT:    ret
-=======
-; RV32IFD-LABEL: fcvt_wu_d_multiple_use:
-; RV32IFD:       # %bb.0:
-; RV32IFD-NEXT:    fcvt.wu.d a1, fa0, rtz
-; RV32IFD-NEXT:    li a0, 1
-; RV32IFD-NEXT:    beqz a1, .LBB4_2
-; RV32IFD-NEXT:  # %bb.1:
-; RV32IFD-NEXT:    mv a0, a1
-; RV32IFD-NEXT:  .LBB4_2:
-; RV32IFD-NEXT:    ret
-;
-; RV64IFD-LABEL: fcvt_wu_d_multiple_use:
-; RV64IFD:       # %bb.0:
-; RV64IFD-NEXT:    fcvt.wu.d a1, fa0, rtz
-; RV64IFD-NEXT:    slli a0, a1, 32
-; RV64IFD-NEXT:    srli a2, a0, 32
-; RV64IFD-NEXT:    li a0, 1
-; RV64IFD-NEXT:    beqz a2, .LBB4_2
-; RV64IFD-NEXT:  # %bb.1:
-; RV64IFD-NEXT:    mv a0, a1
-; RV64IFD-NEXT:  .LBB4_2:
-; RV64IFD-NEXT:    ret
->>>>>>> origin/sifive-dev
   %a = fptoui double %x to i32
   %b = icmp eq i32 %a, 0
   %c = select i1 %b, i32 1, i32 %a

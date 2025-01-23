@@ -372,6 +372,7 @@ define fastcc <vscale x 32 x i32> @ret_nxv32i32_call_nxv32i32_nxv32i32_nxv32i32_
 ; RV32-NEXT:    andi sp, sp, -128
 ; RV32-NEXT:    addi a1, sp, 128
 ; RV32-NEXT:    vs8r.v v16, (a1) # Unknown-size Folded Spill
+; RV32-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; RV32-NEXT:    vmv8r.v v0, v8
 ; RV32-NEXT:    csrr a1, vlenb
 ; RV32-NEXT:    vl8re32.v v8, (a2)
@@ -416,12 +417,7 @@ define fastcc <vscale x 32 x i32> @ret_nxv32i32_call_nxv32i32_nxv32i32_nxv32i32_
 ; RV32-NEXT:    add a1, sp, a1
 ; RV32-NEXT:    addi a1, a1, 128
 ; RV32-NEXT:    vl8r.v v8, (a1) # Unknown-size Folded Reload
-<<<<<<< HEAD
-; RV32-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
-; RV32-NEXT:    vmv8r.v v16, v0
-=======
 ; RV32-NEXT:    vmv8r.v v16, v24
->>>>>>> origin/sifive-dev
 ; RV32-NEXT:    call ext3
 ; RV32-NEXT:    addi sp, s0, -144
 ; RV32-NEXT:    .cfi_def_cfa sp, 144
@@ -450,6 +446,7 @@ define fastcc <vscale x 32 x i32> @ret_nxv32i32_call_nxv32i32_nxv32i32_nxv32i32_
 ; RV64-NEXT:    andi sp, sp, -128
 ; RV64-NEXT:    addi a1, sp, 128
 ; RV64-NEXT:    vs8r.v v16, (a1) # Unknown-size Folded Spill
+; RV64-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; RV64-NEXT:    vmv8r.v v0, v8
 ; RV64-NEXT:    csrr a1, vlenb
 ; RV64-NEXT:    vl8re32.v v8, (a2)
@@ -494,12 +491,7 @@ define fastcc <vscale x 32 x i32> @ret_nxv32i32_call_nxv32i32_nxv32i32_nxv32i32_
 ; RV64-NEXT:    add a1, sp, a1
 ; RV64-NEXT:    addi a1, a1, 128
 ; RV64-NEXT:    vl8r.v v8, (a1) # Unknown-size Folded Reload
-<<<<<<< HEAD
-; RV64-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
-; RV64-NEXT:    vmv8r.v v16, v0
-=======
 ; RV64-NEXT:    vmv8r.v v16, v24
->>>>>>> origin/sifive-dev
 ; RV64-NEXT:    call ext3
 ; RV64-NEXT:    addi sp, s0, -144
 ; RV64-NEXT:    .cfi_def_cfa sp, 144

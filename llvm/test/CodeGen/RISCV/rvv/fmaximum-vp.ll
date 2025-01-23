@@ -1460,15 +1460,8 @@ define <vscale x 16 x double> @vfmax_vv_nxv16f64(<vscale x 16 x double> %va, <vs
 ; CHECK-NEXT:    addi a1, a1, 16
 ; CHECK-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
 ; CHECK-NEXT:    csrr a1, vlenb
-<<<<<<< HEAD
-; CHECK-NEXT:    slli a3, a1, 3
-; CHECK-NEXT:    srli a4, a1, 3
-; CHECK-NEXT:    vslidedown.vx v6, v0, a4
-=======
 ; CHECK-NEXT:    srli a3, a1, 3
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    sub a4, a2, a1
-; CHECK-NEXT:    vsetvli a5, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v6, v0, a3
 ; CHECK-NEXT:    sltu a3, a2, a4
 ; CHECK-NEXT:    addi a3, a3, -1

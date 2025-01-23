@@ -371,29 +371,14 @@ define <vscale x 32 x i32> @select_nxv32i32(<vscale x 32 x i1> %a, <vscale x 32 
 ; CHECK-NEXT:    slli a4, a3, 3
 ; CHECK-NEXT:    slli a1, a3, 1
 ; CHECK-NEXT:    srli a3, a3, 2
-<<<<<<< HEAD
-; CHECK-NEXT:    add a4, a0, a4
-; CHECK-NEXT:    sub a5, a2, a1
-; CHECK-NEXT:    vl8re32.v v8, (a4)
-; CHECK-NEXT:    sltu a4, a2, a5
-; CHECK-NEXT:    addi a4, a4, -1
-; CHECK-NEXT:    vl8re32.v v0, (a0)
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vs8r.v v0, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vslidedown.vx v0, v24, a3
-; CHECK-NEXT:    and a4, a4, a5
-; CHECK-NEXT:    vsetvli zero, a4, e32, m8, ta, ma
-=======
 ; CHECK-NEXT:    add a0, a0, a4
 ; CHECK-NEXT:    sub a4, a2, a1
-; CHECK-NEXT:    vsetvli a5, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v0, v0, a3
 ; CHECK-NEXT:    sltu a3, a2, a4
 ; CHECK-NEXT:    addi a3, a3, -1
 ; CHECK-NEXT:    and a3, a3, a4
 ; CHECK-NEXT:    vl8re32.v v8, (a0)
 ; CHECK-NEXT:    vsetvli zero, a3, e32, m8, ta, ma
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    vmerge.vvm v16, v8, v16, v0
 ; CHECK-NEXT:    bltu a2, a1, .LBB27_2
 ; CHECK-NEXT:  # %bb.1:
@@ -445,27 +430,13 @@ define <vscale x 32 x i32> @select_evl_nxv32i32(<vscale x 32 x i1> %a, <vscale x
 ; CHECK-NEXT:    slli a3, a1, 3
 ; CHECK-NEXT:    slli a2, a1, 1
 ; CHECK-NEXT:    srli a4, a1, 2
-<<<<<<< HEAD
-; CHECK-NEXT:    add a3, a0, a3
-; CHECK-NEXT:    sub a5, a1, a2
-; CHECK-NEXT:    vl8re32.v v8, (a3)
-; CHECK-NEXT:    sltu a3, a1, a5
-; CHECK-NEXT:    addi a3, a3, -1
-; CHECK-NEXT:    vl8re32.v v0, (a0)
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vs8r.v v0, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vslidedown.vx v0, v24, a4
-; CHECK-NEXT:    and a3, a3, a5
-=======
 ; CHECK-NEXT:    add a0, a0, a3
 ; CHECK-NEXT:    sub a3, a1, a2
-; CHECK-NEXT:    vsetvli a5, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v0, v0, a4
 ; CHECK-NEXT:    sltu a4, a1, a3
 ; CHECK-NEXT:    addi a4, a4, -1
 ; CHECK-NEXT:    and a3, a4, a3
 ; CHECK-NEXT:    vl8re32.v v8, (a0)
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    vsetvli zero, a3, e32, m8, ta, ma
 ; CHECK-NEXT:    vmerge.vvm v16, v8, v16, v0
 ; CHECK-NEXT:    bltu a1, a2, .LBB28_2
@@ -749,22 +720,12 @@ define <vscale x 16 x double> @select_nxv16f64(<vscale x 16 x i1> %a, <vscale x 
 ; CHECK-NEXT:    sub a4, a2, a1
 ; CHECK-NEXT:    add a0, a0, a3
 ; CHECK-NEXT:    srli a3, a1, 3
-<<<<<<< HEAD
-; CHECK-NEXT:    vl8re64.v v0, (a0)
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vs8r.v v0, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vslidedown.vx v0, v24, a3
-; CHECK-NEXT:    and a4, a5, a4
-; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
-=======
-; CHECK-NEXT:    vsetvli a5, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v0, v0, a3
 ; CHECK-NEXT:    sltu a3, a2, a4
 ; CHECK-NEXT:    addi a3, a3, -1
 ; CHECK-NEXT:    and a3, a3, a4
 ; CHECK-NEXT:    vl8re64.v v8, (a0)
 ; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    vmerge.vvm v16, v8, v16, v0
 ; CHECK-NEXT:    bltu a2, a1, .LBB48_2
 ; CHECK-NEXT:  # %bb.1:
