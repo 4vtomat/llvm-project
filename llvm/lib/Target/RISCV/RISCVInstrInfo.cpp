@@ -2727,7 +2727,7 @@ bool RISCVInstrInfo::verifyInstruction(const MachineInstr &MI,
         case RISCVOp::OPERAND_VEC_RM:
           assert(RISCVII::hasRoundModeOp(Desc.TSFlags));
           if (RISCVII::usesVXRM(Desc.TSFlags))
-            Ok = isUInt<2>(Imm);
+            Ok = isUInt<2>(Imm) || Imm == 7; // SIFIVE
           else
             Ok = RISCVFPRndMode::isValidRoundingMode(Imm);
           break;
@@ -2811,6 +2811,13 @@ bool RISCVInstrInfo::verifyInstruction(const MachineInstr &MI,
   }
 
 #if SIFIVE_CUSTOMIZATION
+  if (int Idx = RISCVII::getVXRMOpNum(Desc);
+      Idx >= 0 && MI.getOperand(Idx).getImm() == 7 &&
+      !MI.readsRegister(RISCV::VXRM, /*TRI=*/nullptr)) {
+    ErrInfo = "dynamic rounding mode should read VXRM";
+    return false;
+  }
+
   if (hasTargetInterference(&MI) && isEarlyClobberMI(&MI))
     return false;
 #endif // SIFIVE_CUSTOMIZATION

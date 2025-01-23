@@ -464,7 +464,7 @@ def FPR64C : RISCVRegisterClass<[f64], 64, (add
 
 #ifdef SIFIVE_CUSTOMIZATION
 foreach Index = 0-15 in
-  def T#Index : RISCVTileReg<Index, "mt"#Index, []>, DwarfRegNum<[Index]>;
+  def T#Index : RISCVTileReg<Index, "mt"#Index, []>;
 
 let RegInfos = XLenRI in {
   def TR : RegisterClass<"RISCV", [untyped], 32,

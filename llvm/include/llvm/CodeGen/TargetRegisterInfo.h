@@ -1253,6 +1253,20 @@ public:
   getVRegFlagsOfReg(Register Reg, const MachineFunction &MF) const {
     return {};
   }
+
+#ifdef SIFIVE_CUSTOMIZATION
+  virtual bool
+  needReleasePendingQueue(MachineFunction &MF,
+                          ArrayRef<unsigned> MaxSetPressure) const {
+    return false;
+  }
+
+  virtual bool needReleaseSUFromPendingQueue(MachineFunction &MF,
+                                             ArrayRef<unsigned> PSetID,
+                                             ArrayRef<int> UnitInc) const {
+    return false;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 //===----------------------------------------------------------------------===//

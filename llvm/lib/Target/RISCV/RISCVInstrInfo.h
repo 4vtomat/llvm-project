@@ -79,8 +79,14 @@ public:
   bool isReallyTriviallyReMaterializable(const MachineInstr &MI) const override;
 
   bool shouldBreakCriticalEdgeToSink(MachineInstr &MI) const override {
+#if SIFIVE_CUSTOMIZATION
+    // Regresses some benchmarks.
+    // FIXME: Find profitable cases and improve heuristic.
+    return false;
+#else
     return MI.getOpcode() == RISCV::ADDI && MI.getOperand(1).isReg() &&
            MI.getOperand(1).getReg() == RISCV::X0;
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   void copyPhysRegVector(MachineBasicBlock &MBB,

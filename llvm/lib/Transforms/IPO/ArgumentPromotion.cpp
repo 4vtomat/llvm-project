@@ -70,6 +70,9 @@
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/Utils/Local.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Transforms/Utils/LoopUtils.h"
+#endif
 #include "llvm/Transforms/Utils/PromoteMemToReg.h"
 #include <algorithm>
 #include <cassert>
@@ -650,6 +653,11 @@ static bool findArgParts(Argument *Arg, const DataLayout &DL, AAResults &AAR,
     if (auto *GEP = dyn_cast<GetElementPtrInst>(V)) {
       if (!GEP->hasAllConstantIndices())
         return false;
+#if SIFIVE_CUSTOMIZATION
+      // Do no promote struct Args if we might rewrite the struct type.
+      if (GEP->getSourceElementType()->isStructTy() && EnableLoopDataLayout)
+        return false;
+#endif
       AppendUses(V);
       continue;
     }

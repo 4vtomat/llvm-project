@@ -7657,10 +7657,13 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
         Decision = CM_Interleave;
         Cost = InterleaveCost;
 #if SIFIVE_CUSTOMIZATION
-      } else if ((VF.isScalable() && Legal->useVLAVectorizer()) ||
+      } else if ((VF.isScalable() && Legal->useVLAVectorizer() &&
+                  GatherScatterCost.isValid()) ||
                  GatherScatterCost < ScalarizationCost) {
         // We cannot scalarise (yet) with scalable vectors so default to
         // gather/scatter in those cases.
+        // If the gather/scatter is invalid, choose to scalarize the loop to
+        // align the behavior of upstream.
 #else
       } else if (GatherScatterCost < ScalarizationCost) {
 #endif // SIFIVE_CUSTOMIZATION

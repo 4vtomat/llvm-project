@@ -89,7 +89,6 @@ multiclass SiFive7NSchedResources<int VLEN, bit ExtraVALU = false,
   defm : UnsupportedSchedZbkb;
   defm : UnsupportedSchedZbkx;
   defm : UnsupportedSchedZfa;
-  defm : UnsupportedSchedXsfvcp;
   defm : UnsupportedSchedZvk;
 }
 

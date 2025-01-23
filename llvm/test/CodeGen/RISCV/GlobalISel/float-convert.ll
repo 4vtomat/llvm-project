@@ -65,6 +65,7 @@ define i32 @fcvt_wu_s(float %a) nounwind {
 ; Test where the fptoui has multiple uses, one of which causes a sext to be
 ; inserted on RV64.
 define i32 @fcvt_wu_s_multiple_use(float %x, ptr %y) nounwind {
+<<<<<<< HEAD
 ; CHECKIF-LABEL: fcvt_wu_s_multiple_use:
 ; CHECKIF:       # %bb.0:
 ; CHECKIF-NEXT:    fcvt.wu.s a0, fa0, rtz
@@ -100,6 +101,29 @@ define i32 @fcvt_wu_s_multiple_use(float %x, ptr %y) nounwind {
 ; RV64I-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload
 ; RV64I-NEXT:    addi sp, sp, 16
 ; RV64I-NEXT:    ret
+=======
+; RV32IF-LABEL: fcvt_wu_s_multiple_use:
+; RV32IF:       # %bb.0:
+; RV32IF-NEXT:    fcvt.wu.s a1, fa0, rtz
+; RV32IF-NEXT:    li a0, 1
+; RV32IF-NEXT:    beqz a1, .LBB2_2
+; RV32IF-NEXT:  # %bb.1:
+; RV32IF-NEXT:    mv a0, a1
+; RV32IF-NEXT:  .LBB2_2:
+; RV32IF-NEXT:    ret
+;
+; RV64IF-LABEL: fcvt_wu_s_multiple_use:
+; RV64IF:       # %bb.0:
+; RV64IF-NEXT:    fcvt.wu.s a1, fa0, rtz
+; RV64IF-NEXT:    slli a0, a1, 32
+; RV64IF-NEXT:    srli a2, a0, 32
+; RV64IF-NEXT:    li a0, 1
+; RV64IF-NEXT:    beqz a2, .LBB2_2
+; RV64IF-NEXT:  # %bb.1:
+; RV64IF-NEXT:    mv a0, a1
+; RV64IF-NEXT:  .LBB2_2:
+; RV64IF-NEXT:    ret
+>>>>>>> origin/sifive-dev
   %a = fptoui float %x to i32
   %b = icmp eq i32 %a, 0
   %c = select i1 %b, i32 1, i32 %a

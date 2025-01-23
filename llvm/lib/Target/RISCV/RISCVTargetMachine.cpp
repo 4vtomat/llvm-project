@@ -400,6 +400,18 @@ public:
   ScheduleDAGInstrs *
   createMachineScheduler(MachineSchedContext *C) const override {
     ScheduleDAGMILive *DAG = nullptr;
+#if SIFIVE_CUSTOMIZATION
+    {
+      const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
+      // FIXME integrate this with upstream code?
+      if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
+        DAG = createGenericSchedLive(C);
+        DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
+        DAG->addMutation(createRISCVMaskInstDAGMutation());
+        return DAG;
+      }
+    }
+#endif // SIFIVE_CUSTOMIZATION
     if (EnableMISchedLoadStoreClustering) {
       DAG = createGenericSchedLive(C);
       DAG->addMutation(createLoadClusterDAGMutation(
@@ -413,19 +425,21 @@ public:
       DAG = DAG ? DAG : createGenericSchedLive(C);
       DAG->addMutation(createRISCVVectorMaskDAGMutation(DAG->TRI));
     }
-#if SIFIVE_CUSTOMIZATION
-    if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
-      DAG = DAG ? DAG : createGenericSchedLive(C);
-      DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
-      DAG->addMutation(createRISCVMaskInstDAGMutation());
-    }
-#endif // SIFIVE_CUSTOMIZATION
     return DAG;
   }
 
   ScheduleDAGInstrs *
   createPostMachineScheduler(MachineSchedContext *C) const override {
     ScheduleDAGMI *DAG = nullptr;
+#if SIFIVE_CUSTOMIZATION
+    // FIXME integrate this with below?
+    const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
+    if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
+      DAG = createGenericSchedPostRA(C);
+      DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
+      return DAG;
+    }
+#endif // SIFIVE_CUSTOMIZATION
     if (EnablePostMISchedLoadStoreClustering) {
       DAG = createGenericSchedPostRA(C);
       DAG->addMutation(createLoadClusterDAGMutation(
@@ -433,13 +447,6 @@ public:
       DAG->addMutation(createStoreClusterDAGMutation(
           DAG->TII, DAG->TRI, /*ReorderWhileClustering=*/true));
     }
-#if SIFIVE_CUSTOMIZATION
-    const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
-    if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
-      DAG = createGenericSchedPostRA(C);
-      DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
-    }
-#endif // SIFIVE_CUSTOMIZATION
     return DAG;
   }
 

@@ -2019,9 +2019,6 @@ bool CallAnalyzer::maySpillForCandidate(CallBase &Call,
     return false;
 
   Function *Caller = Call.getCaller();
-  if (Caller->getName().equals_insensitive("main"))
-    return false;
-
   LiveValues LvCallee;
   if (EnableValuePressureAnalysis >= LVUsageDescr::Inline) {
     LvCallee.setAssumptionCache(&GetAssumptionCache(*Callee));

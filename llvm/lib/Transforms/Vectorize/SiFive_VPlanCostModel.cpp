@@ -930,10 +930,8 @@ InstructionCost VPlanCostModel::getReplicateOpCost(const VPReplicateRecipe *VPR,
   if (isa<CallInst>(I))
     return InstructionCost::getInvalid();
 
-  assert(0 &&
-         "non-uniform replicate recipe is not yet supported by VLA vectorizer");
-  // FIXME:This estimation is not correct. It should return VLMAX
-  return getElementCount(RVL).getKnownMinValue();
+  // Non-uniform replicate recipe is not yet supported by VLA vectorizer.
+  return InstructionCost::getInvalid();
 }
 
 void VPlanCostModel::addRegisterUsage(const VPValue *VPV, const unsigned RegID,

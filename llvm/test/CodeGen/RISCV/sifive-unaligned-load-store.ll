@@ -225,13 +225,13 @@ define void @store_i24(ptr %p, i24 %v) {
 define void @store_i32(ptr %p, i32 %v) {
 ; X280-LABEL: store_i32:
 ; X280:       # %bb.0:
-; X280-NEXT:    srli a2, a1, 8
+; X280-NEXT:    srli a2, a1, 24
+; X280-NEXT:    srli a3, a1, 8
 ; X280-NEXT:    sb a1, 0(a0)
-; X280-NEXT:    srli a3, a1, 16
-; X280-NEXT:    sb a2, 1(a0)
-; X280-NEXT:    srli a1, a1, 24
-; X280-NEXT:    sb a3, 2(a0)
-; X280-NEXT:    sb a1, 3(a0)
+; X280-NEXT:    srli a1, a1, 16
+; X280-NEXT:    sb a3, 1(a0)
+; X280-NEXT:    sb a2, 3(a0)
+; X280-NEXT:    sb a1, 2(a0)
 ; X280-NEXT:    ret
 ;
 ; P550-LABEL: store_i32:
@@ -256,21 +256,21 @@ define void @store_i32(ptr %p, i32 %v) {
 define void @store_i64(ptr %p, i64 %v) {
 ; X280-LABEL: store_i64:
 ; X280:       # %bb.0:
+; X280-NEXT:    srli a6, a1, 56
+; X280-NEXT:    srli a7, a1, 48
+; X280-NEXT:    srli a4, a1, 40
+; X280-NEXT:    srli a5, a1, 32
 ; X280-NEXT:    srli a2, a1, 8
-; X280-NEXT:    srli a3, a1, 16
 ; X280-NEXT:    sb a1, 0(a0)
 ; X280-NEXT:    sb a2, 1(a0)
-; X280-NEXT:    srli a2, a1, 24
-; X280-NEXT:    sb a3, 2(a0)
-; X280-NEXT:    srli a3, a1, 32
-; X280-NEXT:    sb a2, 3(a0)
-; X280-NEXT:    srli a2, a1, 40
-; X280-NEXT:    sb a3, 4(a0)
-; X280-NEXT:    srli a3, a1, 48
-; X280-NEXT:    sb a2, 5(a0)
-; X280-NEXT:    srli a1, a1, 56
-; X280-NEXT:    sb a3, 6(a0)
-; X280-NEXT:    sb a1, 7(a0)
+; X280-NEXT:    srli a3, a1, 24
+; X280-NEXT:    srli a1, a1, 16
+; X280-NEXT:    sb a6, 7(a0)
+; X280-NEXT:    sb a7, 6(a0)
+; X280-NEXT:    sb a4, 5(a0)
+; X280-NEXT:    sb a5, 4(a0)
+; X280-NEXT:    sb a3, 3(a0)
+; X280-NEXT:    sb a1, 2(a0)
 ; X280-NEXT:    ret
 ;
 ; P550-LABEL: store_i64:
