@@ -987,7 +987,7 @@ Value *VPInstruction::generate(VPTransformState &State) {
             createSimpleReduction(Builder, MaskPartRdx, RecurKind::Or, InitEVL);
       } else {
         ReducedPartRdx =
-            createSimpleReduction(Builder, MaskPartRdx, RecurKind::SMax);
+            createSimpleReduction(Builder, ReducedPartRdx, RecurKind::SMax);
         MaskPartRdx =
             createSimpleReduction(Builder, MaskPartRdx, RecurKind::Or);
       }
