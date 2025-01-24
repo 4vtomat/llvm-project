@@ -1,4 +1,4 @@
-//===-------------- SiFive_RISCVVLOptimizer.cpp - VL Optimizer ------------===//
+//===----------- SiFive_SiFiveRISCVVLOptimizer.cpp - VL Optimizer ---------===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -29,20 +29,20 @@
 
 using namespace llvm;
 
-#define DEBUG_TYPE "riscv-vl-optimizer"
+#define DEBUG_TYPE "sifive-riscv-vl-optimizer"
 
 STATISTIC(NumVLReduced, "Number of VLs that were reduced");
 
 namespace {
 
-class RISCVVLOptimizer : public MachineFunctionPass {
+class SiFiveRISCVVLOptimizer : public MachineFunctionPass {
   const MachineRegisterInfo *MRI;
   const MachineDominatorTree *MDT;
 
 public:
   static char ID;
 
-  RISCVVLOptimizer() : MachineFunctionPass(ID) { }
+  SiFiveRISCVVLOptimizer() : MachineFunctionPass(ID) { }
 
   bool runOnMachineFunction(MachineFunction &MF) override;
 
@@ -52,7 +52,9 @@ public:
     MachineFunctionPass::getAnalysisUsage(AU);
   }
 
-  StringRef getPassName() const override { return "RISC-V VL Optimizer"; }
+  StringRef getPassName() const override {
+    return "SiFive RISC-V VL Optimizer";
+  }
 
 private:
   bool tryReduceVL(MachineInstr &MI);
@@ -96,15 +98,15 @@ struct VLInfo {
 
 } // end anonymous namespace
 
-char RISCVVLOptimizer::ID = 0;
-INITIALIZE_PASS_BEGIN(RISCVVLOptimizer, DEBUG_TYPE, "RISC-V VL Optimizer",
-                      false, false)
+char SiFiveRISCVVLOptimizer::ID = 0;
+INITIALIZE_PASS_BEGIN(SiFiveRISCVVLOptimizer, DEBUG_TYPE,
+                      "SiFive RISC-V VL Optimizer", false, false)
 INITIALIZE_PASS_DEPENDENCY(MachineDominatorTreeWrapperPass)
-INITIALIZE_PASS_END(RISCVVLOptimizer, DEBUG_TYPE, "RISC-V VL Optimizer", false,
-                    false)
+INITIALIZE_PASS_END(SiFiveRISCVVLOptimizer, DEBUG_TYPE,
+                    "SiFive RISC-V VL Optimizer", false, false)
 
-FunctionPass *llvm::createRISCVVLOptimizerPass() {
-  return new RISCVVLOptimizer();
+FunctionPass *llvm::createSiFiveRISCVVLOptimizerPass() {
+  return new SiFiveRISCVVLOptimizer();
 }
 
 /// Return true if R is a physical or virtual vector register, false otherwise.
@@ -1410,7 +1412,7 @@ static bool safeToPropgateVL(const MachineInstr &MI) {
   }
 }
 
-bool RISCVVLOptimizer::isCandidate(const MachineInstr &MI) const {
+bool SiFiveRISCVVLOptimizer::isCandidate(const MachineInstr &MI) const {
 
   LLVM_DEBUG(
       dbgs() << "Check whether the instruction is a candidate for reducing VL:"
@@ -1477,7 +1479,7 @@ bool RISCVVLOptimizer::isCandidate(const MachineInstr &MI) const {
   return true;
 }
 
-bool RISCVVLOptimizer::tryReduceVL(MachineInstr &OrigMI) {
+bool SiFiveRISCVVLOptimizer::tryReduceVL(MachineInstr &OrigMI) {
   SetVector<MachineInstr *> Worklist;
   Worklist.insert(&OrigMI);
 
@@ -1624,7 +1626,7 @@ bool RISCVVLOptimizer::tryReduceVL(MachineInstr &OrigMI) {
   return MadeChange;
 }
 
-bool RISCVVLOptimizer::runOnMachineFunction(MachineFunction &MF) {
+bool SiFiveRISCVVLOptimizer::runOnMachineFunction(MachineFunction &MF) {
   if (skipFunction(MF.getFunction()))
     return false;
 
