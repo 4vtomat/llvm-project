@@ -234,8 +234,8 @@ define void @skl_exp_f32(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280-NEXT:    vwadd.vx v16, v8, t3
 ; X280-NEXT:    vsetvli zero, zero, e32, m4, tu, ma
 ; X280-NEXT:    vsll.vi v8, v12, 23
-; X280-NEXT:    vfmul.vv v8, v20, v8
 ; X280-NEXT:    vsll.vi v12, v16, 23
+; X280-NEXT:    vfmul.vv v8, v20, v8
 ; X280-NEXT:    vfmul.vv v8, v8, v12
 ; X280-NEXT:    vse32.v v8, (a5)
 ; X280-NEXT:    bltu a3, a2, .LBB1_2
@@ -306,8 +306,8 @@ define void @skl_exp_f32(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280N-NEXT:    vwadd.vx v16, v8, t3
 ; X280N-NEXT:    vsetvli zero, zero, e32, m4, tu, ma
 ; X280N-NEXT:    vsll.vi v8, v12, 23
-; X280N-NEXT:    vfmul.vv v8, v20, v8
 ; X280N-NEXT:    vsll.vi v12, v16, 23
+; X280N-NEXT:    vfmul.vv v8, v20, v8
 ; X280N-NEXT:    vfmul.vv v8, v8, v12
 ; X280N-NEXT:    vse32.v v8, (a5)
 ; X280N-NEXT:    bltu a3, a2, .LBB1_2
