@@ -74,6 +74,10 @@ static bool isVectorRegClass(Register R, const MachineRegisterInfo *MRI) {
   return RISCVRI::isVRegClass(RC->TSFlags);
 }
 
+#if SIFIVE_CUSTOMIZATION
+namespace {
+#endif
+
 /// Represents the EMUL and EEW of a MachineOperand.
 struct OperandInfo {
   enum class State {
@@ -120,6 +124,10 @@ struct OperandInfo {
     OS << ", EEW: " << (1 << Log2EEW);
   }
 };
+
+#if SIFIVE_CUSTOMIZATION
+} // end anonymous namespace
+#endif
 
 LLVM_ATTRIBUTE_UNUSED
 static raw_ostream &operator<<(raw_ostream &OS, const OperandInfo &OI) {

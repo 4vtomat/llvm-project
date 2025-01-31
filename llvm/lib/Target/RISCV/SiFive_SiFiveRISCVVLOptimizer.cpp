@@ -96,30 +96,6 @@ struct VLInfo {
   }
 };
 
-} // end anonymous namespace
-
-char SiFiveRISCVVLOptimizer::ID = 0;
-INITIALIZE_PASS_BEGIN(SiFiveRISCVVLOptimizer, DEBUG_TYPE,
-                      "SiFive RISC-V VL Optimizer", false, false)
-INITIALIZE_PASS_DEPENDENCY(MachineDominatorTreeWrapperPass)
-INITIALIZE_PASS_END(SiFiveRISCVVLOptimizer, DEBUG_TYPE,
-                    "SiFive RISC-V VL Optimizer", false, false)
-
-FunctionPass *llvm::createSiFiveRISCVVLOptimizerPass() {
-  return new SiFiveRISCVVLOptimizer();
-}
-
-/// Return true if R is a physical or virtual vector register, false otherwise.
-static bool isVectorRegClass(Register R, const MachineRegisterInfo *MRI) {
-  if (R.isPhysical())
-    return RISCV::VRRegClass.contains(R);
-  const TargetRegisterClass *RC = MRI->getRegClass(R);
-  return RISCV::VRRegClass.hasSubClassEq(RC) ||
-         RISCV::VRM2RegClass.hasSubClassEq(RC) ||
-         RISCV::VRM4RegClass.hasSubClassEq(RC) ||
-         RISCV::VRM8RegClass.hasSubClassEq(RC);
-}
-
 /// Represents the EMUL and EEW of a MachineOperand.
 struct OperandInfo {
   enum class State {
@@ -168,6 +144,30 @@ struct OperandInfo {
     OS << ", EEW: " << (1 << Log2EEW);
   }
 };
+
+} // end anonymous namespace
+
+char SiFiveRISCVVLOptimizer::ID = 0;
+INITIALIZE_PASS_BEGIN(SiFiveRISCVVLOptimizer, DEBUG_TYPE,
+                      "SiFive RISC-V VL Optimizer", false, false)
+INITIALIZE_PASS_DEPENDENCY(MachineDominatorTreeWrapperPass)
+INITIALIZE_PASS_END(SiFiveRISCVVLOptimizer, DEBUG_TYPE,
+                    "SiFive RISC-V VL Optimizer", false, false)
+
+FunctionPass *llvm::createSiFiveRISCVVLOptimizerPass() {
+  return new SiFiveRISCVVLOptimizer();
+}
+
+/// Return true if R is a physical or virtual vector register, false otherwise.
+static bool isVectorRegClass(Register R, const MachineRegisterInfo *MRI) {
+  if (R.isPhysical())
+    return RISCV::VRRegClass.contains(R);
+  const TargetRegisterClass *RC = MRI->getRegClass(R);
+  return RISCV::VRRegClass.hasSubClassEq(RC) ||
+         RISCV::VRM2RegClass.hasSubClassEq(RC) ||
+         RISCV::VRM4RegClass.hasSubClassEq(RC) ||
+         RISCV::VRM8RegClass.hasSubClassEq(RC);
+}
 
 static raw_ostream &operator<<(raw_ostream &OS, const OperandInfo &OI) {
   OI.print(OS);
