@@ -3719,6 +3719,28 @@ KnownBits SelectionDAG::computeKnownBits(SDValue Op, const APInt &DemandedElts,
     Known ^= Known2;
     break;
   case ISD::MUL: {
+#if SIFIVE_CUSTOMIZATION
+    ConstantSDNode *C = nullptr;
+    // Look for (mul (mul X, Y), 32897) where X and Y are known to be 8 bits or
+    // less. The maximum multiply result will be 65025. Multiplying that by
+    // 32897 will not exceed 31 bits. The naive handling will assume 32 bits.
+    // This shows up when dividing the product of two 8-bit numbers by 255.
+    if (Op.getOperand(0).getOpcode() == ISD::MUL &&
+        (C = isConstOrConstSplat(Op.getOperand(1))) &&
+        C->getZExtValue() == 32897 && BitWidth >= 32 &&
+        (Depth + 1) < MaxRecursionDepth) {
+      Known = computeKnownBits(Op.getOperand(0).getOperand(1), DemandedElts,
+                               Depth + 2);
+      Known2 = computeKnownBits(Op.getOperand(0).getOperand(0), DemandedElts,
+                                Depth + 2);
+      if (Known.countMaxActiveBits() <= 8 && Known2.countMaxActiveBits() <= 8) {
+        Known.One.clearAllBits();
+        Known.Zero = APInt::getBitsSetFrom(BitWidth, 31);
+        break;
+      }
+    }
+#endif // SIFIVE_CUSTOMIZATION
+
     Known = computeKnownBits(Op.getOperand(1), DemandedElts, Depth + 1);
     Known2 = computeKnownBits(Op.getOperand(0), DemandedElts, Depth + 1);
     bool SelfMultiply = Op.getOperand(0) == Op.getOperand(1);

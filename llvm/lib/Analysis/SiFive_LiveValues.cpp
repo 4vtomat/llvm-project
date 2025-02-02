@@ -102,7 +102,8 @@ size_t LiveValues::doAnalysis(Workqueue &W) {
   bool Changed = statementTransferFunction(BB, NumOperations);
   for (auto PI = pred_begin(BB), PE = pred_end(BB); PI != PE; ++PI)
     if (Changed || !Visited.contains(*PI))
-      W.push_back(*PI);
+      if (!llvm::is_contained(W, *PI))
+        W.push_back(*PI);
 
   return NumOperations;
 }
@@ -136,7 +137,7 @@ bool LiveValues::analyzeFunction(Function &F) {
   df_iterator_default_set<BasicBlock *> DfsSet;
   for (BasicBlock *BB : depth_first_ext(&F, DfsSet)) {
     NumBlocks++;
-    if (succ_empty(BB))
+    if (succ_empty(BB) && !llvm::is_contained(W, BB))
       W.push_back(BB);
   }
 

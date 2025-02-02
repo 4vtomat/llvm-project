@@ -109,8 +109,8 @@ void initializeRISCVPeepholePass(PassRegistry &);
 FunctionPass *createRISCVMachineConstPropagationPass();
 void initializeRISCVMachineConstPropagationPass(PassRegistry &);
 
-FunctionPass *createRISCVVLOptimizerPass();
-void initializeRISCVVLOptimizerPass(PassRegistry &);
+FunctionPass *createSiFiveRISCVVLOptimizerPass();
+void initializeSiFiveRISCVVLOptimizerPass(PassRegistry &);
 #endif // SIFIVE_CUSTOMIZATION
 
 FunctionPass *createRISCVMoveMergePass();
@@ -136,6 +136,9 @@ void initializeRISCVO0PreLegalizerCombinerPass(PassRegistry &);
 
 FunctionPass *createRISCVPreLegalizerCombiner();
 void initializeRISCVPreLegalizerCombinerPass(PassRegistry &);
+
+FunctionPass *createRISCVVLOptimizerPass();
+void initializeRISCVVLOptimizerPass(PassRegistry &);
 } // namespace llvm
 
 #endif

@@ -684,9 +684,6 @@ multiclass BulletWriteResBase<
       defm "" : LMULWriteResMX<"WriteVICALUMV",   [VCQ, VA1], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVICALUMX",   [VCQ, VA1], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVICALUMI",   [VCQ, VA1], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVShiftV",    [VCQ, VA1OrVA2], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVShiftX",    [VCQ, VA1OrVA2], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVShiftI",    [VCQ, VA1OrVA2], mx, IsWorstCase>;
       // min max requires merge
       defm "" : LMULWriteResMX<"WriteVIMinMaxV",  [VCQ, VA1], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVIMinMaxX",  [VCQ, VA1], mx, IsWorstCase>;
@@ -700,6 +697,9 @@ multiclass BulletWriteResBase<
       defm "" : LMULWriteResMX<"WriteVExtV",      [VCQ, VA1], mx, IsWorstCase>;
     }
     let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
+      defm "" : LMULWriteResMX<"WriteVShiftV",    [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVShiftX",    [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVShiftI",    [VCQ, VA1OrVA2], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVIMulV",     [VCQ, VA1OrVA2], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVIMulX",     [VCQ, VA1OrVA2], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVIMulAddV",  [VCQ, VA1OrVA2], mx, IsWorstCase>;
