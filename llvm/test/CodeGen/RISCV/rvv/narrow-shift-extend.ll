@@ -119,9 +119,9 @@ define <vscale x 4 x i32> @test_vloxei6(ptr %ptr, <vscale x 4 x i7> %offset, i64
 ; CHECK-LABEL: test_vloxei6:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    li a2, 127
-; CHECK-NEXT:    vsetvli a3, zero, e8, mf2, ta, ma
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf2, ta, ma
 ; CHECK-NEXT:    vand.vx v8, v8, a2
-; CHECK-NEXT:    vsetvli zero, a1, e16, m1, ta, ma
+; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
 ; CHECK-NEXT:    vzext.vf2 v9, v8
 ; CHECK-NEXT:    vsll.vi v9, v9, 4
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma

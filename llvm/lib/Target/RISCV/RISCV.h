@@ -108,9 +108,6 @@ void initializeRISCVPeepholePass(PassRegistry &);
 
 FunctionPass *createRISCVMachineConstPropagationPass();
 void initializeRISCVMachineConstPropagationPass(PassRegistry &);
-
-FunctionPass *createSiFiveRISCVVLOptimizerPass();
-void initializeSiFiveRISCVVLOptimizerPass(PassRegistry &);
 #endif // SIFIVE_CUSTOMIZATION
 
 FunctionPass *createRISCVMoveMergePass();

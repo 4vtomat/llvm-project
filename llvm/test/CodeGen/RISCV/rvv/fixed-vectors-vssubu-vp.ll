@@ -125,8 +125,9 @@ define <4 x i8> @vssubu_vx_v4i8(<4 x i8> %va, i8 %b, <4 x i1> %m, i32 zeroext %e
 define <4 x i8> @vssubu_vx_v4i8_commute(<4 x i8> %va, i8 %b, <4 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vssubu_vx_v4i8_commute:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
 ; CHECK-NEXT:    vmv.v.x v9, a0
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
 ; CHECK-NEXT:    vssubu.vv v8, v9, v8, v0.t
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <4 x i8> poison, i8 %b, i32 0

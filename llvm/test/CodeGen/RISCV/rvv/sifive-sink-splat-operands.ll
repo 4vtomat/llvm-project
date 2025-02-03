@@ -146,7 +146,9 @@ define void @sink_splat_vp_add(ptr nocapture %a, i32 signext %x, <4 x i1> %m, i3
 ; CHECK-NEXT:  .LBB2_1: # %vector.body
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    vle32.v v9, (a0)
+; CHECK-NEXT:    vsetvli zero, a2, e32, m1, ta, ma
 ; CHECK-NEXT:    vadd.vv v9, v9, v8, v0.t
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vse32.v v9, (a0)
 ; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    bne a0, a1, .LBB2_1

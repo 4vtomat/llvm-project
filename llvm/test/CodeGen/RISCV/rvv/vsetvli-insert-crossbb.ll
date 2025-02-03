@@ -1102,9 +1102,8 @@ define void @vlmax_avl_phi(i1 %cmp, ptr %p, i64 %a, i64 %b) {
 ; CHECK-NEXT:  .LBB26_2: # %bar
 ; CHECK-NEXT:    vsetvli zero, a3, e8, m1, ta, ma
 ; CHECK-NEXT:  .LBB26_3: # %exit
-; CHECK-NEXT:    # implicit-def: $x10
-; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
