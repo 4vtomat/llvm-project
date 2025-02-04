@@ -1606,7 +1606,7 @@ vsoxseg8ei64.v  v8, (a0), v16
 
 # CHECK:      Iterations:        1
 # CHECK-NEXT: Instructions:      1540
-# CHECK-NEXT: Total Cycles:      25587
+# CHECK-NEXT: Total Cycles:      24845
 # CHECK-NEXT: Total uOps:        1540
 
 # CHECK:      Dispatch Width:    4
