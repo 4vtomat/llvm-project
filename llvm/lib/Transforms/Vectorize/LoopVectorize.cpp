@@ -3232,6 +3232,9 @@ void InnerLoopVectorizer::fixupIVUsers(PHINode *OrigPhi,
     }
   }
 
+#if SIFIVE_CUSTOMIZATION
+  if (!isRevectorizeWithoutStrideChecks(*OrigLoop))
+#endif // SIFIVE_CUSTOMIZATION
   assert((MissingVals.empty() ||
           all_of(MissingVals,
                  [MiddleBlock, this](const std::pair<Value *, Value *> &P) {
