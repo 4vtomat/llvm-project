@@ -11101,10 +11101,10 @@ static bool isOptimizableIVOrUse(VPValue *VPV) {
 // VPWidenIntOrFpInductionRecipe, VPWidenPointerInductionRecipe and induction
 // increments.
 #if SIFIVE_CUSTOMIZATION
-static SetVector<VPIRInstruction *>
-collectUsersInExitBlocks(Loop *OrigLoop, VPRecipeBuilder &Builder,
-                         VPlan &Plan,
-                         const MapVector<PHINode *, CSADescriptor> &CSAs) {
+static SetVector<VPIRInstruction *> collectUsersInExitBlocks(
+    Loop *OrigLoop, VPRecipeBuilder &Builder, VPlan &Plan,
+    const MapVector<PHINode *, InductionDescriptor> &Inductions,
+    const MapVector<PHINode *, CSADescriptor> &CSAs) {
 #else
 static SetVector<VPIRInstruction *>
 collectUsersInExitBlocks(Loop *OrigLoop, VPRecipeBuilder &Builder,
@@ -11144,8 +11144,16 @@ collectUsersInExitBlocks(Loop *OrigLoop, VPRecipeBuilder &Builder,
                return P && CSAs.contains(P);
              })))
           continue;
-#endif // SIFIVE_CUSTOMIZATION
+        bool IsIVUse = isa<Instruction>(IncomingValue) &&
+                       OrigLoop->contains(cast<Instruction>(IncomingValue)) &&
+                       any_of(IncomingValue->users(), [&Inductions](User *U) {
+                         auto *P = dyn_cast<PHINode>(U);
+                         return P && Inductions.contains(P);
+                       });
+        if ((IsIVUse || isOptimizableIVOrUse(V)) &&
+#else
         if (isOptimizableIVOrUse(V) &&
+#endif // SIFIVE_CUSTOMIZATION
             ExitVPBB->getSinglePredecessor() == MiddleVPBB)
           continue;
         ExitUsersToFix.insert(ExitIRI);
@@ -11586,7 +11594,8 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   addScalarResumePhis(RecipeBuilder, *Plan);
 #if SIFIVE_CUSTOMIZATION
   SetVector<VPIRInstruction *> ExitUsersToFix =
-      collectUsersInExitBlocks(OrigLoop, RecipeBuilder, *Plan, Legal->getCSAs());
+      collectUsersInExitBlocks(OrigLoop, RecipeBuilder, *Plan,
+                               Legal->getInductionVars(), Legal->getCSAs());
   addExitUsersForFirstOrderRecurrences(*Plan, ExitUsersToFix, *Legal, CM);
 #else
   SetVector<VPIRInstruction *> ExitUsersToFix =

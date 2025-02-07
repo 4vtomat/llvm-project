@@ -18,15 +18,11 @@ define void @test() {
 ; CHECK-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[CALL6]], i64 [[TMP1]]
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 102, [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 1, i1 true)
-; CHECK-NEXT:    [[TMP3:%.*]] = mul i64 [[EVL_BASED_IV]], 32
-; CHECK-NEXT:    [[OFFSET_IDX1:%.*]] = add i64 32, [[TMP3]]
-; CHECK-NEXT:    [[TMP4:%.*]] = add i64 [[OFFSET_IDX1]], 0
-; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[CALL6]], i64 [[TMP4]]
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv1p0.p0.i64(<vscale x 1 x ptr> zeroinitializer, ptr align 8 [[NEXT_GEP]], i64 32, <vscale x 1 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP2]] to i64
-; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP6]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 102
-; CHECK-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    [[TMP3:%.*]] = zext i32 [[TMP2]] to i64
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP3]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP4:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 102
+; CHECK-NEXT:    br i1 [[TMP4]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
@@ -40,7 +36,7 @@ define void @test() {
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp ult i64 [[IDX]], 3264
 ; CHECK-NEXT:    br i1 [[CMP]], label [[CI]], label [[EXIT]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       exit:
-; CHECK-NEXT:    [[PTR_LCSSA:%.*]] = phi ptr [ [[PTR]], [[CI]] ], [ [[TMP5]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[PTR_LCSSA:%.*]] = phi ptr [ [[PTR]], [[CI]] ], [ [[TMP0]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    store ptr null, ptr [[PTR_LCSSA]], align 8
 ; CHECK-NEXT:    ret void
 ;
