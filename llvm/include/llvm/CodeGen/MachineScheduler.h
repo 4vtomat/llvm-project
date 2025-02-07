@@ -1062,8 +1062,9 @@ public:
   void dumpScheduledState() const;
 
 #ifdef SIFIVE_CUSTOMIZATION
-  void bumpCycleUntilReleaseSUFromPending(SUnit *SU) {
-    while (!Pending.empty() && llvm::find(Pending, SU) != Pending.end()) {
+  void bumpCycleUntilReleaseSUFromPending(SUnit *SU, unsigned ReadyListLimit) {
+    while (Available.size() < ReadyListLimit && !Pending.empty() &&
+           llvm::find(Pending, SU) != Pending.end()) {
       bumpCycle(CurrCycle + 1);
       releasePending();
     }
