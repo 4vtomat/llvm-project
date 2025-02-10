@@ -1296,7 +1296,16 @@ Value *llvm::createFindLastIVReduction(IRBuilderBase &Builder, Value *Src,
   assert(RecurrenceDescriptor::isFindLastIVRecurrenceKind(
              Desc.getRecurrenceKind()) &&
          "Unexpected reduction kind");
-  return Builder.CreateIntMaxReduce(Src, EVL, true, Mask);
+  Value *StartVal = Desc.getRecurrenceStartValue();
+  Value *Sentinel = Desc.getSentinelValue();
+  Value *MaxRdx = Src->getType()->isVectorTy()
+                      ? Builder.CreateIntMaxReduce(Src, EVL, true, Mask)
+                      : Src;
+  // Correct the final reduction result back to the start value if the maximum
+  // reduction is sentinel value.
+  Value *Cmp =
+      Builder.CreateCmp(CmpInst::ICMP_NE, MaxRdx, Sentinel, "rdx.select.cmp");
+  return Builder.CreateSelect(Cmp, MaxRdx, StartVal, "rdx.select");
 }
 #endif // SIFIVE_CUSTOMIZATION
 

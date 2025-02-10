@@ -140,6 +140,8 @@ define i32 @FmoGetLastCodedMBOfSliceGroup(i32 %SliceGroupID, ptr %MBAmap, i32 %P
 ; VP-SCALABLE-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; VP-SCALABLE:       middle.block:
 ; VP-SCALABLE-NEXT:    [[TMP15:%.*]] = call i32 @llvm.vp.reduce.smax.nxv4i32(i32 -2147483648, <vscale x 4 x i32> [[VP_OP_MERGE]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
+; VP-SCALABLE-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i32 [[TMP15]], -2147483648
+; VP-SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i32 [[TMP15]], i32 -1
 ; VP-SCALABLE-NEXT:    br label [[FOR_END_LOOPEXIT:%.*]]
 ; VP-SCALABLE:       scalar.ph:
 ; VP-SCALABLE-NEXT:    br label [[FOR_BODY:%.*]]
@@ -156,7 +158,7 @@ define i32 @FmoGetLastCodedMBOfSliceGroup(i32 %SliceGroupID, ptr %MBAmap, i32 %P
 ; VP-SCALABLE-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
 ; VP-SCALABLE-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ; VP-SCALABLE:       for.end.loopexit:
-; VP-SCALABLE-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT]], [[FOR_BODY]] ], [ [[TMP15]], [[MIDDLE_BLOCK]] ]
+; VP-SCALABLE-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; VP-SCALABLE-NEXT:    br label [[FOR_END]]
 ; VP-SCALABLE:       for.end:
 ; VP-SCALABLE-NEXT:    [[LASTMB_0_LCSSA:%.*]] = phi i32 [ -1, [[ENTRY:%.*]] ], [ [[SPEC_SELECT_LCSSA]], [[FOR_END_LOOPEXIT]] ]
