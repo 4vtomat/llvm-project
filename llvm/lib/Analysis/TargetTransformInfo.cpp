@@ -667,11 +667,6 @@ bool TargetTransformInfo::getMemoryRefInfo(
   return TTIImpl->getMemoryRefInfo(Interesting, II);
 }
 
-VectorType *
-TargetTransformInfo::getBestVectorTypeForLoopIdiom(LLVMContext &Context) const {
-  return TTIImpl->getBestVectorTypeForLoopIdiom(Context);
-}
-
 bool TargetTransformInfo::hasFlattenControlFlowPenalty() const {
   return TTIImpl->hasFlattenControlFlowPenalty();
 }

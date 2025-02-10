@@ -67,8 +67,6 @@ public:
   bool getMemoryRefInfo(SmallVectorImpl<InterestingMemoryOperand> &Interesting,
                         IntrinsicInst *II) const;
 
-  VectorType *getBestVectorTypeForLoopIdiom(LLVMContext &Ctx) const;
-
   bool hasFlattenControlFlowPenalty() const;
 #endif // SIFIVE_CUSTOMIZATION
 

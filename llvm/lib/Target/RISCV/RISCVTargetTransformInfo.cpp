@@ -375,35 +375,6 @@ bool RISCVTTIImpl::getMemoryRefInfo(
   return false;
 }
 
-VectorType *
-RISCVTTIImpl::getBestVectorTypeForLoopIdiom(LLVMContext &Ctx) const {
-  unsigned LMULExp;
-  switch (ST->getProcFamily()) {
-  case RISCVSubtarget::VentanaVeyron:
-  case RISCVSubtarget::Others:
-    LMULExp = 1;
-    break;
-  case RISCVSubtarget::SiFive6:
-  case RISCVSubtarget::SiFive7:
-  case RISCVSubtarget::SiFiveP400:
-  case RISCVSubtarget::SiFiveLeopard:
-  case RISCVSubtarget::SiFiveP500:
-  case RISCVSubtarget::SiFiveP600:
-  case RISCVSubtarget::SiFiveLion:
-  case RISCVSubtarget::SiFiveP800:
-  case RISCVSubtarget::SiFiveCheetah:
-    LMULExp = 1;
-    break;
-  }
-
-  LMULExp = CustomizeXZLoopIdiomLMUL.getNumOccurrences() == 0
-                ? LMULExp
-                : std::min(3U, CustomizeXZLoopIdiomLMUL.getValue());
-  unsigned VF = (RISCV::RVVBitsPerBlock / 8) << LMULExp;
-  ElementCount EC = ElementCount::getScalable(VF);
-  return VectorType::get(Type::getInt8Ty(Ctx), EC);
-}
-
 bool RISCVTTIImpl::hasFlattenControlFlowPenalty() const {
   if (HasVectorFlattenControlFlowPenalty.getNumOccurrences() > 0)
     return HasVectorFlattenControlFlowPenalty.getValue();
