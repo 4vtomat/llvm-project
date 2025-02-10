@@ -109,6 +109,7 @@ void RISCVSubtarget::initializeProperties() {
   // features.
   switch (getProcFamily()) {
   case VentanaVeyron:
+  case MIPSP8700:
   case Others:
     break;
   case RISCVSubtarget::SiFive7:
