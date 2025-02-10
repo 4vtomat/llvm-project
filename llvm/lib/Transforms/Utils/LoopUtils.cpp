@@ -1298,9 +1298,9 @@ Value *llvm::createFindLastIVReduction(IRBuilderBase &Builder, Value *Src,
          "Unexpected reduction kind");
   Value *StartVal = Desc.getRecurrenceStartValue();
   Value *Sentinel = Desc.getSentinelValue();
-  Value *MaxRdx = Src->getType()->isVectorTy()
-                      ? Builder.CreateIntMaxReduce(Src, EVL, true, Mask)
-                      : Src;
+  assert(Src->getType()->isVectorTy() &&
+         "Must be vector type for tail folding with EVL");
+  Value *MaxRdx = Builder.CreateIntMaxReduce(Src, EVL, true, Mask);
   // Correct the final reduction result back to the start value if the maximum
   // reduction is sentinel value.
   Value *Cmp =
