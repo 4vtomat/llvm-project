@@ -12915,6 +12915,18 @@ bool LoopVectorizePass::processLoop(Loop *L) {
     }
   }
 
+#if SIFIVE_CUSTOMIZATION
+    // Bail out if we try and do CSA with scalar epilogue. Scalar epilogue
+    // causes us to have no edge from the middle block to the unique exit block
+    // and we don't use the extracted value correctly.
+    if (!LVL.getCSAs().empty() && CM.requiresScalarEpilogue(true)) {
+      LLVM_DEBUG(dbgs() << "LV: Not vectorizing: Cannot vectorize CSA with "
+                           "scalar epilogue.\n");
+      Hints.emitRemarkWithHints();
+      return false;
+    }
+#endif // SIFIVE_CUSTOMIZATION
+
   // Identify the diagnostic messages that should be produced.
   std::pair<StringRef, std::string> VecDiagMsg, IntDiagMsg;
   bool VectorizeLoop = true, InterleaveLoop = true;
