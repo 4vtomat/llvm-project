@@ -42,6 +42,13 @@
     ret <vscale x 64 x i8> %2
   }
 
+  define void @consecutive_mammoth(<vscale x 32 x half> %tile, i64 %tm, i64 %tn, i64 %tk, ptr %base) {
+  entry:
+    tail call void @llvm.riscv.sf.mm.f.f.i64.nxv32f16(i64 0, <vscale x 32 x half> %tile, <vscale x 32 x half> %tile, i64 %tm, i64 %tn, i64 %tk, i64 2)
+    call void @llvm.riscv.sf.vste16.i64(i64 0, ptr %base, i64 %tn)
+    ret void
+  }
+
   define i64 @vsettnt_max(i64 %vl) {
   entry:
     %0 = call i64 @llvm.riscv.sf.vsettm.i64(i64 %vl, i64 1, i64 2)
@@ -324,6 +331,52 @@ body:             |
     PseudoSF_VSTE16 %3:gpr, %2:gpr, %1:gprnox0, 4, 1
     $v8m8 = COPY %6:vrm8
     PseudoRET implicit $v8m8
+...
+---
+name:            consecutive_mammoth
+alignment:       4
+tracksRegLiveness: true
+registers:
+  - { id: 0, class: vrm8 }
+  - { id: 1, class: gprnox0 }
+  - { id: 2, class: gprnox0 }
+  - { id: 3, class: gprnox0 }
+  - { id: 4, class: gprnox0 }
+liveins:
+  - { reg: '$v8m8', virtual-reg: '%0' }
+  - { reg: '$x10', virtual-reg: '%1' }
+  - { reg: '$x11', virtual-reg: '%2' }
+  - { reg: '$x12', virtual-reg: '%3' }
+  - { reg: '$x13', virtual-reg: '%4' }
+frameInfo:
+  maxAlignment:    1
+machineFunctionInfo: {}
+body:             |
+  bb.0.entry:
+    liveins: $v8m8, $x10, $x11, $x12, $x13
+    ; CHECK-LABEL: name: consecutive_mammoth
+    ; CHECK: liveins: $v8m8, $x10, $x11, $x12, $x13
+    ; CHECK-NEXT: {{  $}}
+    ; CHECK-NEXT: [[COPY:%[0-9]+]]:vrm8 = COPY $v8m8
+    ; CHECK-NEXT: [[COPY1:%[0-9]+]]:gprnox0 = COPY $x10
+    ; CHECK-NEXT: [[COPY2:%[0-9]+]]:gprnox0 = COPY $x11
+    ; CHECK-NEXT: [[COPY3:%[0-9]+]]:gprnox0 = COPY $x12
+    ; CHECK-NEXT: dead [[COPY4:%[0-9]+]]:gprnox0 = COPY $x13
+    ; CHECK-NEXT: dead $x0 = PseudoSF_VSETTNT [[COPY2]], 1032, implicit-def $vtype, implicit-def $vl
+    ; CHECK-NEXT: dead $x0 = PseudoSF_VSETTM [[COPY1]], 1032, implicit-def $vtype, implicit $vtype
+    ; CHECK-NEXT: dead $x0 = PseudoSF_VSETTK [[COPY3]], 1032, implicit-def $vtype, implicit $vtype
+    ; CHECK-NEXT: PseudoSF_MM_F_F $t2, [[COPY]], [[COPY]], 7, $noreg, $noreg, $noreg, 4 /* e16 */, 2, implicit $frm, implicit $vtype
+    ; CHECK-NEXT: dead $x0 = PseudoSF_VSETTNT [[COPY3]], 520, implicit-def $vtype, implicit-def $vl
+    ; CHECK-NEXT: PseudoSF_VSTE16 [[COPY1]], [[COPY2]], $noreg, 4 /* e16 */, 1, implicit $vtype
+    ; CHECK-NEXT: PseudoRET
+    %0:vrm8 = COPY $v8m8
+    %1:gprnox0 = COPY $x10
+    %2:gprnox0 = COPY $x11
+    %3:gprnox0 = COPY $x12
+    %4:gprnox0 = COPY $x13
+    PseudoSF_MM_F_F $t2, %0:vrm8, %0:vrm8, 7, %1:gprnox0, %2:gprnox0, %3:gprnox0, 4, 2, implicit $frm
+    PseudoSF_VSTE16 %1:gprnox0, %2:gprnox0, %3:gprnox0, 4, 1
+    PseudoRET
 ...
 ---
 name:            vsettnt_max
