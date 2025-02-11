@@ -365,9 +365,9 @@ body:             |
     ; CHECK-NEXT: dead $x0 = PseudoSF_VSETTNT [[COPY2]], 1032, implicit-def $vtype, implicit-def $vl
     ; CHECK-NEXT: dead $x0 = PseudoSF_VSETTM [[COPY1]], 1032, implicit-def $vtype, implicit $vtype
     ; CHECK-NEXT: dead $x0 = PseudoSF_VSETTK [[COPY3]], 1032, implicit-def $vtype, implicit $vtype
-    ; CHECK-NEXT: PseudoSF_MM_F_F $t2, [[COPY]], [[COPY]], 7, $noreg, $noreg, $noreg, 4 /* e16 */, 2, implicit $frm, implicit $vtype
+    ; CHECK-NEXT: PseudoSF_MM_F_F $t2, [[COPY]], [[COPY]], 7, $noreg, $noreg, $noreg, 4 /* e16 */, 2, implicit $frm, implicit $vl, implicit $vtype
     ; CHECK-NEXT: dead $x0 = PseudoSF_VSETTNT [[COPY3]], 520, implicit-def $vtype, implicit-def $vl
-    ; CHECK-NEXT: PseudoSF_VSTE16 [[COPY1]], [[COPY2]], $noreg, 4 /* e16 */, 1, implicit $vtype
+    ; CHECK-NEXT: PseudoSF_VSTE16 [[COPY1]], [[COPY2]], $noreg, 4 /* e16 */, 1, implicit $vl, implicit $vtype
     ; CHECK-NEXT: PseudoRET
     %0:vrm8 = COPY $v8m8
     %1:gprnox0 = COPY $x10
