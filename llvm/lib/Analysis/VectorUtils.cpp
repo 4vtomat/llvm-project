@@ -187,11 +187,6 @@ bool llvm::isVectorIntrinsicWithScalarOpAtArg(Intrinsic::ID ID,
   case Intrinsic::powi:
 #if SIFIVE_CUSTOMIZATION
   case Intrinsic::vp_powi:
-  case Intrinsic::aarch64_neon_rshrn:
-  case Intrinsic::aarch64_neon_sqrshrn:
-  case Intrinsic::aarch64_neon_sqshrn:
-  case Intrinsic::aarch64_neon_uqrshrn:
-  case Intrinsic::aarch64_neon_uqshrn:
 #endif // SIFIVE_CUSTOMIZATION
     return (ScalarOpdIdx == 1);
   case Intrinsic::smul_fix:

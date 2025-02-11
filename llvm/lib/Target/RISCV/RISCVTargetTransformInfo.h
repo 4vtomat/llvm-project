@@ -64,6 +64,8 @@ public:
 #if SIFIVE_CUSTOMIZATION
   std::optional<Instruction *> instCombineIntrinsic(InstCombiner &IC,
                                                     IntrinsicInst &II) const;
+  bool isTargetIntrinsicWithScalarOpAtArg(Intrinsic::ID ID,
+                                          unsigned ScalarOpdIdx);
   bool getMemoryRefInfo(SmallVectorImpl<InterestingMemoryOperand> &Interesting,
                         IntrinsicInst *II) const;
 

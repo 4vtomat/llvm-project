@@ -94,6 +94,20 @@ static cl::opt<bool> HasVectorFlattenControlFlowPenalty(
 #endif
 
 #if SIFIVE_CUSTOMIZATION
+bool RISCVTTIImpl::isTargetIntrinsicWithScalarOpAtArg(Intrinsic::ID ID,
+                                                      unsigned ScalarOpdIdx) {
+  switch (ID) {
+  case Intrinsic::aarch64_neon_rshrn:
+  case Intrinsic::aarch64_neon_sqrshrn:
+  case Intrinsic::aarch64_neon_sqshrn:
+  case Intrinsic::aarch64_neon_uqrshrn:
+  case Intrinsic::aarch64_neon_uqshrn:
+    return ScalarOpdIdx == 1;
+  default:
+    return false;
+  }
+}
+
 bool RISCVTTIImpl::getMemoryRefInfo(
     SmallVectorImpl<InterestingMemoryOperand> &Interesting,
     IntrinsicInst *II) const {
