@@ -1879,8 +1879,11 @@ void RISCVInsertVSETVLI::emitVSETVLIs(MachineBasicBlock &MBB) {
         }
       };
       const MCInstrDesc &Desc = MI.getDesc();
-      if (!isMammothVectorConfigInstr(MI) && RISCVII::hasTWidenOp(TSFlags))
+      if (!isMammothVectorConfigInstr(MI) && RISCVII::hasTWidenOp(TSFlags)) {
         shrinkIntervalAndRemoveDeadMI(MI.getOperand(RISCVII::getTNOpNum(Desc)));
+        MI.addOperand(MachineOperand::CreateReg(RISCV::VL, /*isDef*/ false,
+                                                /*isImp*/ true));
+      }
       if (RISCVII::hasTMOp(TSFlags))
         shrinkIntervalAndRemoveDeadMI(MI.getOperand(RISCVII::getTMOpNum(Desc)));
       if (RISCVII::hasTKOp(TSFlags))
