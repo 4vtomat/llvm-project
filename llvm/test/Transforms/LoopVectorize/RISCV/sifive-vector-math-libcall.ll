@@ -1116,6 +1116,73 @@ for.body:                                         ; preds = %for.body.preheader,
   %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
+
+declare float @exp10f(float)
+define void @test_exp10f(i32 %n, ptr noundef %a, ptr noundef %b) {
+; M1-LABEL: @test_exp10f(
+; M1:  call <vscale x 2 x float> @skl_vfexp10_v_f32m1(<vscale x 2 x float> {{%.*}}, i32 {{%.*}})
+; M2-LABEL: @test_exp10f(
+; M2:  call <vscale x 4 x float> @skl_vfexp10_v_f32m2(<vscale x 4 x float> {{%.*}}, i32 {{%.*}})
+; M4-LABEL: @test_exp10f(
+; M4:  call <vscale x 8 x float> @skl_vfexp10_v_f32m4(<vscale x 8 x float> {{%.*}}, i32 {{%.*}})
+; M8-LABEL: @test_exp10f(
+; M8:  call <vscale x 16 x float> @skl_vfexp10_v_f32m8(<vscale x 16 x float> {{%.*}}, i32 {{%.*}})
+entry:
+  %cmp10 = icmp sgt i32 %n, 0
+  br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
+
+for.body.preheader:                               ; preds = %entry
+  %wide.trip.count = zext i32 %n to i64
+  br label %for.body
+
+for.cond.cleanup:                                 ; preds = %for.body, %entry
+  ret void
+
+for.body:                                         ; preds = %for.body.preheader, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds float, ptr %a, i64 %indvars.iv
+  %arrayidx2 = getelementptr inbounds float, ptr %b, i64 %indvars.iv
+  %0 = load float, ptr %arrayidx, align 4
+  %1 = call float @exp10f(float %0)
+  store float %1, ptr %arrayidx, align 4
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
+  br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
+}
+
+declare double @exp10(double)
+define void @test_exp10(i32 %n, ptr noundef %a, ptr noundef %b) {
+; M1-LABEL: @test_exp10(
+; M1:  call <vscale x 1 x double> @skl_vfexp10_v_f64m1(<vscale x 1 x double> {{%.*}}, i32 {{%.*}})
+; M2-LABEL: @test_exp10(
+; M2:  call <vscale x 2 x double> @skl_vfexp10_v_f64m2(<vscale x 2 x double> {{%.*}}, i32 {{%.*}})
+; M4-LABEL: @test_exp10(
+; M4:  call <vscale x 4 x double> @skl_vfexp10_v_f64m4(<vscale x 4 x double> {{%.*}}, i32 {{%.*}})
+; M8-LABEL: @test_exp10(
+; M8:  call <vscale x 8 x double> @skl_vfexp10_v_f64m8(<vscale x 8 x double> {{%.*}}, i32 {{%.*}})
+entry:
+  %cmp10 = icmp sgt i32 %n, 0
+  br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
+
+for.body.preheader:                               ; preds = %entry
+  %wide.trip.count = zext i32 %n to i64
+  br label %for.body
+
+for.cond.cleanup:                                 ; preds = %for.body, %entry
+  ret void
+
+for.body:                                         ; preds = %for.body.preheader, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds double, ptr %a, i64 %indvars.iv
+  %arrayidx2 = getelementptr inbounds double, ptr %b, i64 %indvars.iv
+  %0 = load double, ptr %arrayidx, align 8
+  %1 = call double @exp10(double %0)
+  store double %1, ptr %arrayidx, align 8
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
+  br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
+}
+
 declare float @exp2f(float)
 define void @test_exp2f(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_exp2f(
@@ -1181,6 +1248,7 @@ for.body:                                         ; preds = %for.body.preheader,
   %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
+
 declare float @expm1f(float)
 define void @test_expm1f(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_expm1f(
@@ -2165,6 +2233,70 @@ for.body:                                         ; preds = %for.body.preheader,
   %arrayidx2 = getelementptr inbounds double, ptr %b, i64 %indvars.iv
   %0 = load double, ptr %arrayidx, align 8
   %1 = call double @llvm.exp.f64(double %0)
+  store double %1, ptr %arrayidx, align 8
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
+  br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
+}
+
+define void @test_llvm_exp10f32(i32 %n, ptr noundef %a, ptr noundef %b) {
+; M1-LABEL: @test_llvm_exp10f32(
+; M1:  call <vscale x 2 x float> @skl_vfexp10_v_f32m1(<vscale x 2 x float> {{%.*}}, i32 {{%.*}})
+; M2-LABEL: @test_llvm_exp10f32(
+; M2:  call <vscale x 4 x float> @skl_vfexp10_v_f32m2(<vscale x 4 x float> {{%.*}}, i32 {{%.*}})
+; M4-LABEL: @test_llvm_exp10f32(
+; M4:  call <vscale x 8 x float> @skl_vfexp10_v_f32m4(<vscale x 8 x float> {{%.*}}, i32 {{%.*}})
+; M8-LABEL: @test_llvm_exp10f32(
+; M8:  call <vscale x 16 x float> @skl_vfexp10_v_f32m8(<vscale x 16 x float> {{%.*}}, i32 {{%.*}})
+entry:
+  %cmp10 = icmp sgt i32 %n, 0
+  br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
+
+for.body.preheader:                               ; preds = %entry
+  %wide.trip.count = zext i32 %n to i64
+  br label %for.body
+
+for.cond.cleanup:                                 ; preds = %for.body, %entry
+  ret void
+
+for.body:                                         ; preds = %for.body.preheader, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds float, ptr %a, i64 %indvars.iv
+  %arrayidx2 = getelementptr inbounds float, ptr %b, i64 %indvars.iv
+  %0 = load float, ptr %arrayidx, align 4
+  %1 = call float @llvm.exp10.f32(float %0)
+  store float %1, ptr %arrayidx, align 4
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
+  br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
+}
+
+define void @test_llvm_exp10f64(i32 %n, ptr noundef %a, ptr noundef %b) {
+; M1-LABEL: @test_llvm_exp10f64(
+; M1:  call <vscale x 1 x double> @skl_vfexp10_v_f64m1(<vscale x 1 x double> {{%.*}}, i32 {{%.*}})
+; M2-LABEL: @test_llvm_exp10f64(
+; M2:  call <vscale x 2 x double> @skl_vfexp10_v_f64m2(<vscale x 2 x double> {{%.*}}, i32 {{%.*}})
+; M4-LABEL: @test_llvm_exp10f64(
+; M4:  call <vscale x 4 x double> @skl_vfexp10_v_f64m4(<vscale x 4 x double> {{%.*}}, i32 {{%.*}})
+; M8-LABEL: @test_llvm_exp10f64(
+; M8:  call <vscale x 8 x double> @skl_vfexp10_v_f64m8(<vscale x 8 x double> {{%.*}}, i32 {{%.*}})
+entry:
+  %cmp10 = icmp sgt i32 %n, 0
+  br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
+
+for.body.preheader:                               ; preds = %entry
+  %wide.trip.count = zext i32 %n to i64
+  br label %for.body
+
+for.cond.cleanup:                                 ; preds = %for.body, %entry
+  ret void
+
+for.body:                                         ; preds = %for.body.preheader, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds double, ptr %a, i64 %indvars.iv
+  %arrayidx2 = getelementptr inbounds double, ptr %b, i64 %indvars.iv
+  %0 = load double, ptr %arrayidx, align 8
+  %1 = call double @llvm.exp10.f64(double %0)
   store double %1, ptr %arrayidx, align 8
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
   %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count

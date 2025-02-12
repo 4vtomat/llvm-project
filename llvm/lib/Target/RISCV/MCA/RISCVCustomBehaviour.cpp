@@ -14,11 +14,34 @@
 #include "RISCVCustomBehaviour.h"
 #include "MCTargetDesc/RISCVMCTargetDesc.h"
 #include "RISCV.h"
+#include "RISCVISelDAGToDAG.h" // SIFIVE
 #include "TargetInfo/RISCVTargetInfo.h"
 #include "llvm/MC/TargetRegistry.h"
 #include "llvm/Support/Debug.h"
 
 #define DEBUG_TYPE "llvm-mca-riscv-custombehaviour"
+
+#if SIFIVE_CUSTOMIZATION
+namespace llvm::RISCV::mca {
+struct VXMemOpInfo {
+  unsigned Log2IdxEEW : 3;
+  unsigned IsOrdered : 1;
+  unsigned IsStore : 1;
+  unsigned NF : 4;
+  unsigned BaseInstr;
+};
+
+#define GET_RISCVBaseVXMemOpTable_DECL
+#define GET_RISCVBaseVXMemOpTable_IMPL
+// We need to include the implementation code here because RISCVCustomBehavior
+// is not linked against RISCVCodeGen.
+#define GET_RISCVVLXSEGTable_IMPL
+#define GET_RISCVVSXSEGTable_IMPL
+#define GET_RISCVVLXTable_IMPL
+#define GET_RISCVVSXTable_IMPL
+#include "RISCVGenSearchableTables.inc"
+} // namespace llvm::RISCV::mca
+#endif // SIFIVE_CUSTOMIZATION
 
 namespace llvm {
 namespace mca {
@@ -247,21 +270,69 @@ unsigned RISCVInstrumentManager::getSchedClassID(
   // and SEW, or (Opcode, LMUL, 0) if does not depend on SEW.
   uint8_t SEW = SI ? SI->getSEW() : 0;
 
-  const RISCVVInversePseudosTable::PseudoInfo *RVV = nullptr;
+#if SIFIVE_CUSTOMIZATION
+  std::optional<unsigned> VPOpcode;
+  if (const auto *VXMO = RISCV::mca::getVXMemOpInfo(Opcode)) {
+    // Calculate the expected index EMUL. For indexed operations,
+    // the DataEEW and DataEMUL are equal to SEW and LMUL, respectively.
+    unsigned IndexEMUL = ((1 << VXMO->Log2IdxEEW) * LMUL) / SEW;
+
+    if (!VXMO->NF) {
+      // Indexed Load / Store.
+      if (VXMO->IsStore) {
+        if (const auto *VXP = RISCV::mca::getVSXPseudo(
+                /*Masked=*/0, VXMO->IsOrdered, VXMO->Log2IdxEEW, LMUL,
+                IndexEMUL))
+          VPOpcode = VXP->Pseudo;
+      } else {
+        if (const auto *VXP = RISCV::mca::getVLXPseudo(
+                /*Masked=*/0, VXMO->IsOrdered, VXMO->Log2IdxEEW, LMUL,
+                IndexEMUL))
+          VPOpcode = VXP->Pseudo;
+      }
+    } else {
+      // Segmented Indexed Load / Store.
+      if (VXMO->IsStore) {
+        if (const auto *VXP = RISCV::mca::getVSXSEGPseudo(
+                VXMO->NF, /*Masked=*/0, VXMO->IsOrdered, VXMO->Log2IdxEEW, LMUL,
+                IndexEMUL))
+          VPOpcode = VXP->Pseudo;
+      } else {
+        if (const auto *VXP = RISCV::mca::getVLXSEGPseudo(
+                VXMO->NF, /*Masked=*/0, VXMO->IsOrdered, VXMO->Log2IdxEEW, LMUL,
+                IndexEMUL))
+          VPOpcode = VXP->Pseudo;
+      }
+    }
+  } else if (opcodeHasEEWAndEMULInfo(Opcode)) {
+#else
   if (opcodeHasEEWAndEMULInfo(Opcode)) {
+#endif // SIFIVE_CUSTOMIZATION
     RISCVII::VLMUL VLMUL = static_cast<RISCVII::VLMUL>(LMUL);
     auto [EEW, EMUL] = getEEWAndEMUL(Opcode, VLMUL, SEW);
+#if SIFIVE_CUSTOMIZATION
+    if (const auto *RVV =
+            RISCVVInversePseudosTable::getBaseInfo(Opcode, EMUL, EEW))
+      VPOpcode = RVV->Pseudo;
+#else
     RVV = RISCVVInversePseudosTable::getBaseInfo(Opcode, EMUL, EEW);
+#endif // SIFIVE_CUSTOMIZATION
   } else {
     // Check if it depends on LMUL and SEW
-    RVV = RISCVVInversePseudosTable::getBaseInfo(Opcode, LMUL, SEW);
+    const auto *RVV =
+        RISCVVInversePseudosTable::getBaseInfo(Opcode, LMUL, SEW); // SIFIVE
     // Check if it depends only on LMUL
     if (!RVV)
       RVV = RISCVVInversePseudosTable::getBaseInfo(Opcode, LMUL, 0);
+
+#if SIFIVE_CUSTOMIZATION
+    if (RVV)
+      VPOpcode = RVV->Pseudo;
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   // Not a RVV instr
-  if (!RVV) {
+  if (!VPOpcode) { // SIFIVE
     LLVM_DEBUG(
         dbgs() << "RVCB: Could not find PseudoInstruction for Opcode "
                << MCII.getName(Opcode)
@@ -277,8 +348,8 @@ unsigned RISCVInstrumentManager::getSchedClassID(
                     << MCII.getName(Opcode) << ", LMUL=" << LI->getData()
                     << ", SEW=" << (SI ? SI->getData() : "Unspecified")
                     << ". Overriding original SchedClassID=" << SchedClassID
-                    << " with " << MCII.getName(RVV->Pseudo) << '\n');
-  return MCII.get(RVV->Pseudo).getSchedClass();
+                    << " with " << MCII.getName(*VPOpcode) << '\n'); // SIFIVE
+  return MCII.get(*VPOpcode).getSchedClass();                        // SIFIVE
 }
 
 } // namespace mca

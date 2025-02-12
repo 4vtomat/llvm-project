@@ -98,6 +98,8 @@ inline static bool isValidLMUL(unsigned LMUL, bool Fractional) {
 unsigned encodeVTYPE(RISCVII::VLMUL VLMUL, unsigned SEW, bool TailAgnostic,
 #if SIFIVE_CUSTOMIZATION
                      bool MaskAgnostic, bool IsAltfmt);
+#else
+                     bool MaskAgnostic);
 #endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION

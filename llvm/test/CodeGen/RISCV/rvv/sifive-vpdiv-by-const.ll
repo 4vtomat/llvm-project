@@ -1394,3 +1394,47 @@ define <vscale x 1 x i64> @vpsrem_by_neg1_nxv1i64(<vscale x 1 x i64> %va, <vscal
   %v = call <vscale x 1 x i64> @llvm.vp.srem.nxv1i64(<vscale x 1 x i64> %va, <vscale x 1 x i64> %splat, <vscale x 1 x i1> %m, i32 %evl)
   ret <vscale x 1 x i64> %v
 }
+
+define <vscale x 8 x i8> @vpsdivrem_nxv8i8(<vscale x 8 x i8> %va, <vscale x 8 x i8> %vb, <vscale x 8 x i1> %m, i32 zeroext %evl) {
+; CHECK-LABEL: vpsdivrem_nxv8i8:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    li a1, 109
+; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
+; CHECK-NEXT:    vmulh.vx v9, v8, a1, v0.t
+; CHECK-NEXT:    li a0, -7
+; CHECK-NEXT:    vsub.vv v9, v9, v8, v0.t
+; CHECK-NEXT:    vsra.vi v9, v9, 2, v0.t
+; CHECK-NEXT:    vsrl.vi v10, v9, 7, v0.t
+; CHECK-NEXT:    vand.vi v10, v10, -1, v0.t
+; CHECK-NEXT:    vadd.vv v9, v9, v10, v0.t
+; CHECK-NEXT:    vmul.vx v10, v9, a0, v0.t
+; CHECK-NEXT:    vadd.vv v8, v8, v9, v0.t
+; CHECK-NEXT:    vsub.vv v8, v8, v10, v0.t
+; CHECK-NEXT:    ret
+  %v = call <vscale x 8 x i8> @llvm.vp.srem.nxv8i8(<vscale x 8 x i8> %va, <vscale x 8 x i8> splat (i8 -7), <vscale x 8 x i1> %m, i32 %evl)
+  %w = call <vscale x 8 x i8> @llvm.vp.sdiv.nxv8i8(<vscale x 8 x i8> %va, <vscale x 8 x i8> splat (i8 -7), <vscale x 8 x i1> %m, i32 %evl)
+  %x = call <vscale x 8 x i8> @llvm.vp.add.nxv8i8(<vscale x 8 x i8> %v, <vscale x 8 x i8> %w, <vscale x 8 x i1> %m, i32 %evl)
+  ret <vscale x 8 x i8> %x
+}
+
+define <vscale x 8 x i8> @vpudivrem_nxv8i8(<vscale x 8 x i8> %va, <vscale x 8 x i1> %m, i32 zeroext %evl) {
+; CHECK-LABEL: vpudivrem_nxv8i8:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    li a1, 37
+; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
+; CHECK-NEXT:    vmulhu.vx v9, v8, a1, v0.t
+; CHECK-NEXT:    li a0, -128
+; CHECK-NEXT:    vsub.vv v10, v8, v9, v0.t
+; CHECK-NEXT:    vmulhu.vx v10, v10, a0, v0.t
+; CHECK-NEXT:    li a0, 7
+; CHECK-NEXT:    vadd.vv v9, v10, v9, v0.t
+; CHECK-NEXT:    vsrl.vi v9, v9, 2, v0.t
+; CHECK-NEXT:    vmul.vx v10, v9, a0, v0.t
+; CHECK-NEXT:    vadd.vv v8, v8, v9, v0.t
+; CHECK-NEXT:    vsub.vv v8, v8, v10, v0.t
+; CHECK-NEXT:    ret
+  %v = call <vscale x 8 x i8> @llvm.vp.urem.nxv8i8(<vscale x 8 x i8> %va, <vscale x 8 x i8> splat (i8 7), <vscale x 8 x i1> %m, i32 %evl)
+  %w = call <vscale x 8 x i8> @llvm.vp.udiv.nxv8i8(<vscale x 8 x i8> %va, <vscale x 8 x i8> splat (i8 7), <vscale x 8 x i1> %m, i32 %evl)
+  %x = call <vscale x 8 x i8> @llvm.vp.add.nxv8i8(<vscale x 8 x i8> %v, <vscale x 8 x i8> %w, <vscale x 8 x i1> %m, i32 %evl)
+  ret <vscale x 8 x i8> %x
+}

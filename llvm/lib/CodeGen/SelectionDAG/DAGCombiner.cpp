@@ -28020,7 +28020,7 @@ SDValue DAGCombiner::visitVPSDIV(SDNode *N) {
   if (SDValue V = visitVPSDIVLike(N0, N1, N)) {
     // If the corresponding remainder node exists, update its users with
     // (Dividend - (Quotient * Divisor).
-    if (SDNode *RemNode = DAG.getNodeIfExists(ISD::SREM, N->getVTList(),
+    if (SDNode *RemNode = DAG.getNodeIfExists(ISD::VP_SREM, N->getVTList(),
                                               {N0, N1, Mask, VL})) {
       SDValue Mul = DAG.getNode(ISD::VP_MUL, DL, VT, V, N1, Mask, VL);
       SDValue Sub = DAG.getNode(ISD::VP_SUB, DL, VT, N0, Mul, Mask, VL);

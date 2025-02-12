@@ -1130,7 +1130,7 @@ private:
 #if SIFIVE_CUSTOMIZATION
   void insertVSETTNandVSETTK(MachineBasicBlock &MBB,
                              MachineBasicBlock::iterator InsertPt, DebugLoc DL,
-                             const VSETVLIInfo &Info);
+                             const VSETVLIInfo &Info, uint64_t TSFlags);
 #endif // SIFIVE_CUSTOMIZATION
 
   void transferBefore(VSETVLIInfo &Info, const MachineInstr &MI) const;
@@ -1518,9 +1518,10 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
 #if SIFIVE_CUSTOMIZATION
 void RISCVInsertVSETVLI::insertVSETTNandVSETTK(
     MachineBasicBlock &MBB, MachineBasicBlock::iterator InsertPt, DebugLoc DL,
-    const VSETVLIInfo &Info) {
+    const VSETVLIInfo &Info, uint64_t TSFlags) {
   assert(Info.isMammoth());
-  if (Info.hasATMReg() && InsertPt->getOpcode() != RISCV::PseudoSF_VSETTM) {
+  if (Info.hasATMReg() && RISCVII::hasTMOp(TSFlags) &&
+      InsertPt->getOpcode() != RISCV::PseudoSF_VSETTM) {
     ++NumInsertedVSETVL;
     auto MI = BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoSF_VSETTM))
                   .addReg(RISCV::X0, RegState::Define | RegState::Dead)
@@ -1529,7 +1530,8 @@ void RISCVInsertVSETVLI::insertVSETTNandVSETTK(
     if (LIS)
       LIS->InsertMachineInstrInMaps(*MI);
   }
-  if (Info.hasATKReg() && InsertPt->getOpcode() != RISCV::PseudoSF_VSETTK) {
+  if (Info.hasATKReg() && RISCVII::hasTKOp(TSFlags) &&
+      InsertPt->getOpcode() != RISCV::PseudoSF_VSETTK) {
     ++NumInsertedVSETVL;
     auto MI = BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoSF_VSETTK))
                   .addReg(RISCV::X0, RegState::Define | RegState::Dead)
@@ -1872,7 +1874,7 @@ void RISCVInsertVSETVLI::emitVSETVLIs(MachineBasicBlock &MBB) {
           insertVSETVLI(MBB, MI, MI.getDebugLoc(), CurInfo, PrevInfo);
           if (CurInfo.isMammoth())
             insertVSETTNandVSETTK(MBB, MachineBasicBlock::iterator(&MI),
-                                  MI.getDebugLoc(), CurInfo);
+                                  MI.getDebugLoc(), CurInfo, TSFlags);
         }
 #endif // SIFIVE_CUSTOMIZATION
         PrefixTransparent = false;
@@ -1935,8 +1937,11 @@ void RISCVInsertVSETVLI::emitVSETVLIs(MachineBasicBlock &MBB) {
         }
       };
       const MCInstrDesc &Desc = MI.getDesc();
-      if (!isMammothVectorConfigInstr(MI) && RISCVII::hasTWidenOp(TSFlags))
+      if (!isMammothVectorConfigInstr(MI) && RISCVII::hasTWidenOp(TSFlags)) {
         shrinkIntervalAndRemoveDeadMI(MI.getOperand(RISCVII::getTNOpNum(Desc)));
+        MI.addOperand(MachineOperand::CreateReg(RISCV::VL, /*isDef*/ false,
+                                                /*isImp*/ true));
+      }
       if (RISCVII::hasTMOp(TSFlags))
         shrinkIntervalAndRemoveDeadMI(MI.getOperand(RISCVII::getTMOpNum(Desc)));
       if (RISCVII::hasTKOp(TSFlags))

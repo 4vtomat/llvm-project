@@ -3700,7 +3700,7 @@ void GenericScheduler::bumpCycleUntilReleaseSUFromPending(bool IsTop) {
       }
 
       if (TRI->needReleaseSUFromPendingQueue(DAG->MF, PSetIDs, UnitIncs))
-        SchedB.bumpCycleUntilReleaseSUFromPending(SU);
+        SchedB.bumpCycleUntilReleaseSUFromPending(SU, ReadyListLimit);
     }
   };
 
