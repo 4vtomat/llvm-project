@@ -1794,7 +1794,7 @@ def fsifive_loop_count_profile_generate : Flag<["-"], "fsifive-loop-count-profil
     Group<f_Group>, Visibility<[ClangOption, CLOption, DXCOption]>,
     HelpText<"Generate Loop profile output into `loopProfile.output` file (overriden by LOOP_PROFILE env var)">;
 // end SIFIVE_CUSTOMIZATION
-def fprofile_generate_cold_function_coverage : Flag<["-"], "fprofile-generate-cold-function-coverage">, 
+def fprofile_generate_cold_function_coverage : Flag<["-"], "fprofile-generate-cold-function-coverage">,
     Group<f_Group>, Visibility<[ClangOption, CLOption]>,
     HelpText<"Generate instrumented code to collect coverage info for cold functions into default.profraw file (overridden by '=' form of option or LLVM_PROFILE_FILE env var)">;
 def fprofile_generate_cold_function_coverage_EQ : Joined<["-"], "fprofile-generate-cold-function-coverage=">,
