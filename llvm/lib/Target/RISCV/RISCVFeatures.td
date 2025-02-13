@@ -1426,24 +1426,27 @@ def HasVendorXSfvfnrclipxfqf
       AssemblerPredicate<(all_of FeatureVendorXSfvfnrclipxfqf),
                          "'XSfvfnrclipxfqf' (SiFive FP32-to-int8 Ranged Clip Instructions)">;
 
+let AdditionalVersions = [[1, 0]] in // SIFIVE
 def FeatureVendorXSiFivecdiscarddlone
-    : RISCVExtension<1, 0,
+    : RISCVExtension<0, 1, // SIFIVE
                      "SiFive sf.cdiscard.d.l1 Instruction", []>;
 def HasVendorXSiFivecdiscarddlone
     : Predicate<"Subtarget->hasVendorXSiFivecdiscarddlone()">,
       AssemblerPredicate<(all_of FeatureVendorXSiFivecdiscarddlone),
                          "'XSiFivecdiscarddlone' (SiFive sf.cdiscard.d.l1 Instruction)">;
 
+let AdditionalVersions = [[1, 0]] in // SIFIVE
 def FeatureVendorXSiFivecflushdlone
-    : RISCVExtension<1, 0,
+    : RISCVExtension<0, 1, // SIFIVE
                      "SiFive sf.cflush.d.l1 Instruction", []>;
 def HasVendorXSiFivecflushdlone
     : Predicate<"Subtarget->hasVendorXSiFivecflushdlone()">,
       AssemblerPredicate<(all_of FeatureVendorXSiFivecflushdlone),
                          "'XSiFivecflushdlone' (SiFive sf.cflush.d.l1 Instruction)">;
 
+let AdditionalVersions = [[1, 0]] in // SIFIVE
 def FeatureVendorXSfcease
-    : RISCVExtension<1, 0,
+    : RISCVExtension<0, 1, // SIFIVE
                      "SiFive sf.cease Instruction", []>;
 def HasVendorXSfcease
     : Predicate<"Subtarget->hasVendorXSfcease()">,

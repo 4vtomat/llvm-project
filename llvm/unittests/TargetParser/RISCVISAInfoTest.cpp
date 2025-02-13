@@ -1093,6 +1093,7 @@ R"(All available -march extensions for RISC-V
     xcvmac               1.0
     xcvmem               1.0
     xcvsimd              1.0
+    xsfcease             0.1
     xsfcease             1.0
     xsfmm128t            0.6
     xsfmm16t             0.6
@@ -1127,7 +1128,9 @@ R"(All available -march extensions for RISC-V
     xsfvqmaccdod         0.1
     xsfvqmaccqoq         1.0
     xsfvqmaccqoq         0.1
+    xsifivecdiscarddlone 0.1
     xsifivecdiscarddlone 1.0
+    xsifivecflushdlone   0.1
     xsifivecflushdlone   1.0
     xtheadba             1.0
     xtheadbb             1.0

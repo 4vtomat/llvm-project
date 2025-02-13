@@ -180,11 +180,7 @@
 // CHECK-NOT: __riscv_zvl32768b {{.*$}}
 // CHECK-NOT: __riscv_zvl65536b {{.*$}}
 // SIFIVE_CUSTOMIZATION
-// CHECK-NOT: __riscv_sdext
-// CHECK-NOT: __riscv_sdtrig
 // CHECK-NOT: __riscv_ss
-// CHECK-NOT: __riscv_smctr
-// CHECK-NOT: __riscv_ssctr
 // CHECK-NOT: __sifive_recode_neon
 // CHECK-NOT: __sifive_slow_vector_fp64
 // CHECK-NOT: __riscv_zvkns
@@ -609,7 +605,15 @@
 // RUN: %clang --target=riscv64-unknown-linux-gnu \
 // RUN:   -march=rv64ixsfcease -E -dM %s \
 // RUN:   -o - | FileCheck --check-prefix=CHECK-XSFCEASE-EXT %s
-// CHECK-XSFCEASE-EXT: __riscv_xsfcease 1000000{{$}}
+// CHECK-XSFCEASE-EXT: __riscv_xsfcease 1000{{$}}
+
+// RUN: %clang --target=riscv32-unknown-linux-gnu \
+// RUN:   -march=rv32ixsfcease0p1 -E -dM %s \
+// RUN:   -o - | FileCheck --check-prefix=CHECK-XSFCEASE0P1-EXT %s
+// RUN: %clang --target=riscv64-unknown-linux-gnu \
+// RUN:   -march=rv64ixsfcease0p1 -E -dM %s \
+// RUN:   -o - | FileCheck --check-prefix=CHECK-XSFCEASE0P1-EXT %s
+// CHECK-XSFCEASE0P1-EXT: __riscv_xsfcease 1000{{$}}
 
 // RUN: %clang --target=riscv32-unknown-linux-gnu \
 // RUN:   -march=rv32ixsfvcp -E -dM %s \
@@ -657,7 +661,7 @@
 // RUN: %clang --target=riscv64-unknown-linux-gnu \
 // RUN:   -march=rv64ixsifivecdiscarddlone -E -dM %s \
 // RUN:   -o - | FileCheck --check-prefix=CHECK-XSIFIVECDISCARDDLONE-EXT %s
-// CHECK-XSIFIVECDISCARDDLONE-EXT: __riscv_xsifivecdiscarddlone 1000000{{$}}
+// CHECK-XSIFIVECDISCARDDLONE-EXT: __riscv_xsifivecdiscarddlone 1000{{$}}
 
 // RUN: %clang --target=riscv32-unknown-linux-gnu \
 // RUN:   -march=rv32ixsifivecflushdlone -E -dM %s \
@@ -665,7 +669,7 @@
 // RUN: %clang --target=riscv64-unknown-linux-gnu \
 // RUN:   -march=rv64ixsifivecflushdlone -E -dM %s \
 // RUN:   -o - | FileCheck --check-prefix=CHECK-XSIFIVECFLUSHDLONE-EXT %s
-// CHECK-XSIFIVECFLUSHDLONE-EXT: __riscv_xsifivecflushdlone 1000000{{$}}
+// CHECK-XSIFIVECFLUSHDLONE-EXT: __riscv_xsifivecflushdlone 1000{{$}}
 
 // RUN: %clang --target=riscv32-unknown-linux-gnu \
 // RUN:   -march=rv32ixtheadba -E -dM %s \
