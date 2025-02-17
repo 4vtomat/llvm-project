@@ -41,7 +41,7 @@ define i64 @select_non_const_iv_start_signed_guard(ptr %a, i64 %ii, i64 %iv_star
 ; CHECK-VF4IC1-NEXT:    [[TMP8:%.*]] = select <4 x i1> [[TMP7]], <4 x i64> [[TMP5]], <4 x i64> splat (i64 -9223372036854775808)
 ; CHECK-VF4IC1-NEXT:    [[TMP9:%.*]] = call i64 @llvm.vector.reduce.smax.v4i64(<4 x i64> [[TMP8]])
 ; CHECK-VF4IC1-NEXT:    [[TMP10:%.*]] = call i1 @llvm.vector.reduce.or.v4i1(<4 x i1> [[TMP7]])
-; CHECK-VF4IC1-NEXT:    [[TMP11:%.*]] = select i1 [[TMP10]], i64 [[TMP9]], i64 9223372036854775807
+; CHECK-VF4IC1-NEXT:    [[TMP11:%.*]] = select i1 [[TMP10]], i64 [[TMP9]], i64 [[II]]
 ; CHECK-VF4IC1-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[TMP12]], [[N_VEC]]
 ; CHECK-VF4IC1-NEXT:    br i1 [[CMP_N]], label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-VF4IC1:       scalar.ph:
@@ -132,7 +132,7 @@ define i64 @select_non_const_iv_start_signed_guard(ptr %a, i64 %ii, i64 %iv_star
 ; CHECK-VF4IC4-NEXT:    [[TMP32:%.*]] = or <4 x i1> [[TMP25]], [[TMP31]]
 ; CHECK-VF4IC4-NEXT:    [[TMP33:%.*]] = call i64 @llvm.vector.reduce.smax.v4i64(<4 x i64> [[RDX_MINMAX8]])
 ; CHECK-VF4IC4-NEXT:    [[TMP34:%.*]] = call i1 @llvm.vector.reduce.or.v4i1(<4 x i1> [[TMP32]])
-; CHECK-VF4IC4-NEXT:    [[TMP35:%.*]] = select i1 [[TMP34]], i64 [[TMP33]], i64 9223372036854775807
+; CHECK-VF4IC4-NEXT:    [[TMP35:%.*]] = select i1 [[TMP34]], i64 [[TMP33]], i64 [[II]]
 ; CHECK-VF4IC4-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[TMP36]], [[N_VEC]]
 ; CHECK-VF4IC4-NEXT:    br i1 [[CMP_N]], label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-VF4IC4:       scalar.ph:
@@ -215,7 +215,7 @@ define i64 @select_non_const_iv_start_signed_guard(ptr %a, i64 %ii, i64 %iv_star
 ; CHECK-VF1IC4-NEXT:    [[TMP31:%.*]] = or i1 [[TMP24]], [[TMP30]]
 ; CHECK-VF1IC4-NEXT:    [[RDX_MINMAX5:%.*]] = call i64 @llvm.smax.i64(i64 [[RDX_MINMAX4]], i64 [[TMP29]])
 ; CHECK-VF1IC4-NEXT:    [[TMP32:%.*]] = or i1 [[TMP25]], [[TMP31]]
-; CHECK-VF1IC4-NEXT:    [[TMP35:%.*]] = select i1 [[TMP32]], i64 [[RDX_MINMAX5]], i64 9223372036854775807
+; CHECK-VF1IC4-NEXT:    [[TMP35:%.*]] = select i1 [[TMP32]], i64 [[RDX_MINMAX5]], i64 [[II]]
 ; CHECK-VF1IC4-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[TMP34]], [[N_VEC]]
 ; CHECK-VF1IC4-NEXT:    br i1 [[CMP_N]], label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-VF1IC4:       scalar.ph:

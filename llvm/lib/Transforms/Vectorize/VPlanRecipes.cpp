@@ -1001,7 +1001,7 @@ Value *VPInstruction::generate(VPTransformState &State) {
     }
 
     // Mask the reduction result
-    Value *StartV = PhiR->getStartValue()->getLiveInIRValue();
+    Value *StartV = RdxDesc.getRecurrenceStartValue();
     ReducedPartRdx = Builder.CreateSelect(MaskPartRdx, ReducedPartRdx, StartV);
 
     return ReducedPartRdx;
