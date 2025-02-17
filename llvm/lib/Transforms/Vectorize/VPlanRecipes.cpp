@@ -41,6 +41,7 @@
 #include "SiFive_VPlanPredicatedInstructions.h"
 #include "llvm/IR/PatternMatch.h"
 #include "llvm/IR/IntrinsicsRISCV.h"
+#include "llvm/TargetParser/Triple.h"
 #endif // SIFIVE_CUSTOMIZATION
 
 using namespace llvm;
@@ -721,13 +722,22 @@ Value *VPInstruction::generate(VPTransformState &State) {
 
     Value *InitEVL64 =
         State.Builder.CreateZExtOrTrunc(InitEVL, State.Builder.getInt64Ty());
-    Value *SBF = State.Builder.CreateIntrinsic(WidenedCond->getType(),
-                                               Intrinsic::riscv_vmsbf,
-                                               {UndistCond, InitEVL64});
-    Value *MaskPhi = State.get(getOperand(1));
-    Value *OldMask = MaskPhi;
     Value *InitEVL32 =
         State.Builder.CreateZExtOrTrunc(InitEVL, State.Builder.getInt32Ty());
+
+    // We are creating RISC-V target intrinsic, so it's fine to assume it must
+    // be RISC-V here.
+    Module *M = State.Builder.GetInsertBlock()->getModule();
+    Triple TargetTriple(M->getTargetTriple());
+    assert (TargetTriple.isRISCV () && "Only RISCV target is supported");
+
+    Value *RVEVL = TargetTriple.isRISCV32 () ? InitEVL32 : InitEVL64;
+
+    Value *SBF = State.Builder.CreateIntrinsic(WidenedCond->getType(),
+                                               Intrinsic::riscv_vmsbf,
+                                               {UndistCond, RVEVL});
+    Value *MaskPhi = State.get(getOperand(1));
+    Value *OldMask = MaskPhi;
     Value *VAnd =
         State.Builder.CreateIntrinsic(WidenedCond->getType(), Intrinsic::vp_and,
                                       {SBF, OldMask, AllTrue, InitEVL32});
