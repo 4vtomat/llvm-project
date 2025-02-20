@@ -3174,58 +3174,9 @@ foreach vti = AllIntegerVectors in {
               (!cast<Instruction>("PseudoVID_V_"#vti.LMul.MX#"_MASK")
                   (vti.Vector (IMPLICIT_DEF)), (vti.Mask V0), GPR:$vl, vti.Log2SEW,
                   TAIL_AGNOSTIC)>;
-
-#ifdef SIFIVE_CUSTOMIZATION
-    // Copied from BSC
-    def : Pat<(vti.Vector (riscv_vid_vl (vti.Mask V0),
-                                        VLOpFrag)),
-              (!cast<Instruction>("PseudoVID_V_"#vti.LMul.MX#"_MASK")
-                  (vti.Vector (IMPLICIT_DEF)), (vti.Mask V0), GPR:$vl, vti.Log2SEW,
-                  TAIL_AGNOSTIC)>;
-#endif // SIFIVE_CUSTOMIZATION
   }
 }
 
-
-foreach vti = AllVectors in {
-  let Predicates = GetVTypePredicates<vti>.Predicates in {
-
-#ifdef SIFIVE_CUSTOMIZATION
-  // Copied from BSC
-  def : Pat<(vti.Vector (riscv_slideup_vl (vti.Vector vti.RegClass:$rs3),
-                                          (vti.Vector vti.RegClass:$rs1),
-                                          uimm5:$rs2, (vti.Mask V0),
-                                          VLOpFrag, (XLenVT timm:$policy))),
-            (!cast<Instruction>("PseudoVSLIDEUP_VI_"#vti.LMul.MX#"_MASK")
-                vti.RegClass:$rs3, vti.RegClass:$rs1, uimm5:$rs2,
-                (vti.Mask V0), GPR:$vl, vti.Log2SEW, (XLenVT timm:$policy))>;
-
-  def : Pat<(vti.Vector (riscv_slideup_vl (vti.Vector vti.RegClass:$rs3),
-                                          (vti.Vector vti.RegClass:$rs1),
-                                          GPR:$rs2, (vti.Mask V0),
-                                          VLOpFrag, (XLenVT timm:$policy))),
-            (!cast<Instruction>("PseudoVSLIDEUP_VX_"#vti.LMul.MX#"_MASK")
-                vti.RegClass:$rs3, vti.RegClass:$rs1, GPR:$rs2,
-                (vti.Mask V0), GPR:$vl, vti.Log2SEW, (XLenVT timm:$policy))>;
-
-  def : Pat<(vti.Vector (riscv_slidedown_vl (vti.Vector vti.RegClass:$rs3),
-                                            (vti.Vector vti.RegClass:$rs1),
-                                            uimm5:$rs2, (vti.Mask V0),
-                                            VLOpFrag, (XLenVT timm:$policy))),
-            (!cast<Instruction>("PseudoVSLIDEDOWN_VI_"#vti.LMul.MX#"_MASK")
-                vti.RegClass:$rs3, vti.RegClass:$rs1, uimm5:$rs2,
-                (vti.Mask V0), GPR:$vl, vti.Log2SEW, (XLenVT timm:$policy))>;
-
-  def : Pat<(vti.Vector (riscv_slidedown_vl (vti.Vector vti.RegClass:$rs3),
-                                            (vti.Vector vti.RegClass:$rs1),
-                                            GPR:$rs2, (vti.Mask V0),
-                                            VLOpFrag, (XLenVT timm:$policy))),
-            (!cast<Instruction>("PseudoVSLIDEDOWN_VX_"#vti.LMul.MX#"_MASK")
-                vti.RegClass:$rs3, vti.RegClass:$rs1, GPR:$rs2,
-                (vti.Mask V0), GPR:$vl, vti.Log2SEW, (XLenVT timm:$policy))>;
-#endif // SIFIVE_CUSTOMIZATION
-  }
-}
 
 defm : VPatSlideVL_VX_VI<riscv_slideup_vl, "PseudoVSLIDEUP">;
 defm : VPatSlideVL_VX_VI<riscv_slidedown_vl, "PseudoVSLIDEDOWN">;
