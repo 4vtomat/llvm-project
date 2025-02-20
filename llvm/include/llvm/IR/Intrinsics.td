@@ -2401,6 +2401,11 @@ let IntrProperties = [IntrNoMem, IntrNoSync, IntrWillReturn] in {
                            llvm_i32_ty],
               [IntrNoMem, IntrNoSync, IntrWillReturn]>;
 
+  def int_experimental_vp_set_before_first : Intrinsic<[llvm_anyvector_ty],
+                                                       [LLVMMatchType<0>,
+                                                        LLVMMatchType<0>,
+                                                        llvm_i32_ty],
+                                                       [IntrNoMem]>;
 // END OF SIFIVE_CUSTOMIZATION
 }
 

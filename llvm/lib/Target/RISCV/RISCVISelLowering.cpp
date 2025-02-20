@@ -803,6 +803,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
 #if SIFIVE_CUSTOMIZATION
       setOperationAction(ISD::VP_FIRST, VT, Custom);
       setOperationAction(ISD::EXPERIMENTAL_VP_POPCOUNT, VT, Custom);
+      setOperationAction(ISD::EXPERIMENTAL_VP_SET_BEFORE_FIRST, VT, Custom);
 #endif
       setOperationAction({ISD::SELECT_CC, ISD::VSELECT, ISD::VP_SELECT}, VT,
                          Expand);
@@ -1299,6 +1300,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
 #if SIFIVE_CUSTOMIZATION
           setOperationAction(ISD::VP_FIRST, VT, Custom);
           setOperationAction(ISD::EXPERIMENTAL_VP_POPCOUNT, VT, Custom);
+          setOperationAction(ISD::EXPERIMENTAL_VP_SET_BEFORE_FIRST, VT, Custom);
 #endif // SIFIVE_CUSTOMIZATION
           setOperationAction(ISD::VP_MERGE, VT, Custom);
 
@@ -6749,6 +6751,10 @@ static unsigned getRISCVVLOp(SDValue Op) {
   case ISD::LLRINT:
   case ISD::VP_LLRINT:
     return RISCVISD::VFCVT_RM_X_F_VL;
+#if SIFIVE_CUSTOMIZATION
+  case ISD::EXPERIMENTAL_VP_SET_BEFORE_FIRST:
+    return RISCVISD::VMSBF_VL;
+#endif
   }
   // clang-format on
 #undef OP_CASE
@@ -6761,7 +6767,7 @@ static bool hasPassthruOp(unsigned Opcode) {
          Opcode <= RISCVISD::LAST_STRICTFP_OPCODE &&
          "not a RISC-V target specific op");
   static_assert(RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
-                    138 && // SIFIVE
+                    139 && // SIFIVE
                 RISCVISD::LAST_STRICTFP_OPCODE -
                         RISCVISD::FIRST_STRICTFP_OPCODE ==
                     21 &&
@@ -6787,7 +6793,7 @@ static bool hasMaskOp(unsigned Opcode) {
          Opcode <= RISCVISD::LAST_STRICTFP_OPCODE &&
          "not a RISC-V target specific op");
   static_assert(RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
-                    138 && // SIFIVE
+                    139 && // SIFIVE
                 RISCVISD::LAST_STRICTFP_OPCODE -
                         RISCVISD::FIRST_STRICTFP_OPCODE ==
                     21 &&
@@ -8039,6 +8045,8 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
     return lowerVPFirst(Op, DAG);
   case ISD::EXPERIMENTAL_VP_POPCOUNT:
     return lowerVPPopcount(Op, DAG);
+  case ISD::EXPERIMENTAL_VP_SET_BEFORE_FIRST:
+    return lowerVPOp(Op, DAG);
 #endif // SIFIVE_CUSTOMIZATION
   case ISD::VP_FMAXIMUM:
   case ISD::VP_FMINIMUM:
@@ -23918,6 +23926,7 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(VRGATHEREI16_VV_VL)
   NODE_NAME_CASE(VSEXT_VL)
   NODE_NAME_CASE(VZEXT_VL)
+  NODE_NAME_CASE(VMSBF_VL) // SIFIVE
   NODE_NAME_CASE(VCPOP_VL)
   NODE_NAME_CASE(VFIRST_VL)
   NODE_NAME_CASE(READ_CSR)

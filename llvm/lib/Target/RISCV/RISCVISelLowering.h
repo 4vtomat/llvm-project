@@ -418,6 +418,10 @@ enum NodeType : unsigned {
   VSEXT_VL,
   VZEXT_VL,
 
+#if SIFIVE_CUSTOMIZATION
+  VMSBF_VL,
+#endif // SIFIVE_CUSTOMIZATION
+
   //  vcpop.m with additional mask and VL operands.
   VCPOP_VL,
 

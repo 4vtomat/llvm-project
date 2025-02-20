@@ -1387,6 +1387,9 @@ void DAGTypeLegalizer::SplitVectorResult(SDNode *N, unsigned ResNo) {
   case ISD::EXPERIMENTAL_VP_SPLICE:
     SplitVecRes_VP_SPLICE(N, Lo, Hi);
     break;
+  case ISD::EXPERIMENTAL_VP_SET_BEFORE_FIRST:
+    SplitVecRes_VP_SET_BEFORE_FIRST(N, Lo, Hi);
+    break;
 #endif
   case ISD::EXPERIMENTAL_VP_REVERSE:
     SplitVecRes_VP_REVERSE(N, Lo, Hi);
@@ -3281,6 +3284,34 @@ void DAGTypeLegalizer::SplitVecRes_VP_SPLICE(SDNode *N, SDValue &Lo,
       DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, HiVT, Load,
                   DAG.getVectorIdxConstant(LoVT.getVectorMinNumElements(), DL));
 }
+
+void DAGTypeLegalizer::SplitVecRes_VP_SET_BEFORE_FIRST(SDNode *N, SDValue &Lo,
+                                                       SDValue &Hi) {
+  SDLoc DL(N);
+
+  SDValue OpLo, OpHi;
+  GetSplitVector(N->getOperand(0), OpLo, OpHi);
+
+  SDValue MaskLo, MaskHi;
+  std::tie(MaskLo, MaskHi) = SplitMask(N->getOperand(1));
+
+  SDValue EVLLo, EVLHi;
+  std::tie(EVLLo, EVLHi) =
+      DAG.SplitEVL(N->getOperand(2), N->getValueType(0), DL);
+
+  Lo =
+      DAG.getNode(N->getOpcode(), DL, OpLo.getValueType(), OpLo, MaskLo, EVLLo);
+  Hi =
+      DAG.getNode(N->getOpcode(), DL, OpHi.getValueType(), OpHi, MaskHi, EVLHi);
+
+  // Zero Hi if low is non-zero.
+  EVT EVLLoVT = EVLLo.getValueType();
+  SDValue VFirst = DAG.getNode(ISD::VP_FIRST, DL, EVLLoVT, Lo, MaskLo, EVLLo);
+  SDValue LoZero = DAG.getSetCC(DL, getSetCCResultType(EVLLoVT), VFirst,
+                                DAG.getConstant(0, DL, EVLLoVT), ISD::SETLT);
+  Hi = DAG.getSelect(DL, OpHi.getValueType(), LoZero, Hi,
+                     DAG.getConstant(0, DL, OpHi.getValueType()));
+}
 #endif
 
 void DAGTypeLegalizer::SplitVecRes_VECTOR_DEINTERLEAVE(SDNode *N) {
@@ -4964,6 +4995,9 @@ void DAGTypeLegalizer::WidenVectorResult(SDNode *N, unsigned ResNo) {
   case ISD::FREEZE:
   case ISD::ARITH_FENCE:
   case ISD::FCANONICALIZE:
+#if SIFIVE_CUSTOMIZATION
+  case ISD::EXPERIMENTAL_VP_SET_BEFORE_FIRST:
+#endif // SIFIVE_CUSTOMIZATION
     Res = WidenVecRes_Unary(N);
     break;
   case ISD::FMA: case ISD::VP_FMA:

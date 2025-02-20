@@ -775,6 +775,11 @@ BEGIN_REGISTER_VP(experimental_vp_popcount, 1, 2,
 VP_PROPERTY_FUNCTIONAL_INTRINSIC(experimental_vp_popcount)
 END_REGISTER_VP(experimental_vp_popcount, EXPERIMENTAL_VP_POPCOUNT)
 
+// llvm.experimental.vp.set.before.first(x,mask,vlen)
+BEGIN_REGISTER_VP(experimental_vp_set_before_first, 1, 2, EXPERIMENTAL_VP_SET_BEFORE_FIRST, -1)
+VP_PROPERTY_NO_FUNCTIONAL
+END_REGISTER_VP(experimental_vp_set_before_first, EXPERIMENTAL_VP_SET_BEFORE_FIRST)
+
 BEGIN_REGISTER_VP_SDNODE(VP_ABDS, -1, vp_abds, 2, 3)
 VP_PROPERTY_FUNCTIONAL_SDOPC(ABDS)
 END_REGISTER_VP_SDNODE(VP_ABDS)

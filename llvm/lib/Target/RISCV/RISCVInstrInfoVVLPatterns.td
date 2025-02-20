@@ -422,6 +422,15 @@ def true_mask : PatLeaf<(riscv_vmset_vl (XLenVT srcvalue))>;
 def riscv_vmnot_vl : PatFrag<(ops node:$rs, node:$vl),
                              (riscv_vmxor_vl node:$rs, true_mask, node:$vl)>;
 
+#ifdef SIFIVE_CUSTOMIZATION
+def riscv_vmsbf_vl : SDNode<"RISCVISD::VMSBF_VL",
+                            SDTypeProfile<1, 3, [SDTCisVec<0>, SDTCisInt<0>,
+                                                 SDTCVecEltisVT<0, i1>,
+                                                 SDTCisSameAs<0, 1>,
+                                                 SDTCisSameAs<0, 2>,
+                                                 SDTCisVT<3, XLenVT>]>>;
+#endif // SIFIVE_CUSTOMIZATION
+
 def riscv_vcpop_vl : SDNode<"RISCVISD::VCPOP_VL",
                             SDTypeProfile<1, 3, [SDTCisVT<0, XLenVT>,
                                                  SDTCisVec<1>, SDTCisInt<1>,
@@ -2980,6 +2989,18 @@ foreach mti = AllMasks in {
     def : Pat<(mti.Mask (riscv_vmnot_vl VR:$rs, VLOpFrag)),
               (!cast<Instruction>("PseudoVMNAND_MM_" # mti.BX)
                    VR:$rs, VR:$rs, GPR:$vl, mti.Log2SEW)>;
+
+#ifdef SIFIVE_CUSTOMIZATION
+    def : Pat<(mti.Mask (riscv_vmsbf_vl (mti.Mask VR:$rs2), (mti.Mask true_mask),
+                                        VLOpFrag)),
+              (!cast<Instruction>("PseudoVMSBF_M_" # mti.BX)
+                   VR:$rs2, GPR:$vl, mti.Log2SEW)>;
+    def : Pat<(mti.Mask (riscv_vmsbf_vl (mti.Mask VR:$rs2), (mti.Mask V0),
+                                        VLOpFrag)),
+              (!cast<Instruction>("PseudoVMSBF_M_" # mti.BX # "_MASK")
+                   (mti.Mask (IMPLICIT_DEF)), VR:$rs2, (mti.Mask V0), GPR:$vl,
+                   mti.Log2SEW, TA_MA)>;
+#endif
 
     // 15.2 Vector count population in mask vcpop.m
     def : Pat<(XLenVT (riscv_vcpop_vl (mti.Mask VR:$rs2), (mti.Mask true_mask),
