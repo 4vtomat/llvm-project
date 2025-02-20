@@ -3,7 +3,7 @@
 
 ; FIXME: Make sure we don't end up with back to back vsetvli's in the final reduction block.
 
-define float @blas_dot(i64 %0, float* nocapture readonly %1, i64 %2, float* nocapture readonly %3, i64 %4) nounwind {
+define float @blas_dot(i64 %0, ptr nocapture readonly %1, i64 %2, ptr nocapture readonly %3, i64 %4) nounwind {
 ; CHECK-LABEL: blas_dot:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a5, a0, e32, m8, ta, ma
@@ -42,18 +42,16 @@ define float @blas_dot(i64 %0, float* nocapture readonly %1, i64 %2, float* noca
 10:                                               ; preds = %10, %5
   %11 = phi i64 [ %26, %10 ], [ %8, %5 ]
   %12 = phi <vscale x 16 x float> [ %20, %10 ], [ %7, %5 ]
-  %13 = phi float* [ %22, %10 ], [ %1, %5 ]
-  %14 = phi float* [ %24, %10 ], [ %3, %5 ]
+  %13 = phi ptr [ %22, %10 ], [ %1, %5 ]
+  %14 = phi ptr [ %24, %10 ], [ %3, %5 ]
   %15 = phi i64 [ %25, %10 ], [ %0, %5 ]
-  %16 = bitcast float* %13 to <vscale x 16 x float>*
-  %17 = tail call fast <vscale x 16 x float> @llvm.riscv.vle.nxv16f32(<vscale x 16 x float> undef, <vscale x 16 x float>* %16, i64 %11)
-  %18 = bitcast float* %14 to <vscale x 16 x float>*
-  %19 = tail call fast <vscale x 16 x float> @llvm.riscv.vle.nxv16f32(<vscale x 16 x float> undef, <vscale x 16 x float>* %18, i64 %11)
+  %17 = tail call fast <vscale x 16 x float> @llvm.riscv.vle.nxv16f32(<vscale x 16 x float> undef, ptr %13, i64 %11)
+  %19 = tail call fast <vscale x 16 x float> @llvm.riscv.vle.nxv16f32(<vscale x 16 x float> undef, ptr %14, i64 %11)
   %20 = tail call fast <vscale x 16 x float> @llvm.riscv.vfmacc.nxv16f32.nxv16f32(<vscale x 16 x float> %12, <vscale x 16 x float> %17, <vscale x 16 x float> %19, i64 7, i64 %11, i64 0)
   %21 = mul i64 %11, %2
-  %22 = getelementptr inbounds float, float* %13, i64 %21
+  %22 = getelementptr inbounds float, ptr %13, i64 %21
   %23 = mul i64 %11, %4
-  %24 = getelementptr inbounds float, float* %14, i64 %23
+  %24 = getelementptr inbounds float, ptr %14, i64 %23
   %25 = sub i64 %15, %11
   %26 = tail call i64 @llvm.riscv.vsetvli(i64 %25, i64 2, i64 3)
   %27 = icmp eq i64 %26, 0
@@ -69,7 +67,7 @@ define float @blas_dot(i64 %0, float* nocapture readonly %1, i64 %2, float* noca
 }
 
 declare <vscale x 16 x float> @llvm.riscv.vfmv.v.f.nxv16f32.f32(<vscale x 16 x float>,float, i64)
-declare <vscale x 16 x float> @llvm.riscv.vle.nxv16f32(<vscale x 16 x float>, <vscale x 16 x float>* nocapture, i64)
+declare <vscale x 16 x float> @llvm.riscv.vle.nxv16f32(<vscale x 16 x float>, ptr nocapture, i64)
 declare <vscale x 16 x float> @llvm.riscv.vfmacc.nxv16f32.nxv16f32(<vscale x 16 x float>, <vscale x 16 x float>, <vscale x 16 x float>, i64, i64, i64)
 declare <vscale x 2 x float> @llvm.riscv.vfmv.v.f.nxv2f32.f32(<vscale x 2 x float>, float, i64)
 declare <vscale x 2 x float> @llvm.riscv.vfredusum.nxv2f32.nxv16f32(<vscale x 2 x float>, <vscale x 16 x float>, <vscale x 2 x float>, i64, i64)

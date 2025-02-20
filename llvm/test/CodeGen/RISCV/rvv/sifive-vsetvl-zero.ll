@@ -20,15 +20,15 @@ declare <vscale x 1 x double> @llvm.riscv.vfadd.nxv1f64.nxv1f64(
 
 declare <vscale x 1 x double> @llvm.riscv.vle.nxv1f64(
   <vscale x 1 x double>,
-  <vscale x 1 x double>*,
+  ptr,
   i64);
 
 declare void @llvm.riscv.vse.nxv1f64(
   <vscale x 1 x double>,
-  <vscale x 1 x double>*,
+  ptr,
   i64);
 
-define void @test_vsetvl_avl(<vscale x 1 x double>* %v, i64 signext %avl) nounwind
+define void @test_vsetvl_avl(ptr %v, i64 signext %avl) nounwind
 ;
 ; CHECK-O0-LABEL: test_vsetvl_avl:
 ; CHECK-O0:       # %bb.0:
@@ -60,7 +60,7 @@ define void @test_vsetvl_avl(<vscale x 1 x double>* %v, i64 signext %avl) nounwi
 
   %vec = call <vscale x 1 x double> @llvm.riscv.vle.nxv1f64(
     <vscale x 1 x double> undef,
-    <vscale x 1 x double>* %v,
+    ptr %v,
     i64 %gvl)
 
   %add = call <vscale x 1 x double> @llvm.riscv.vfadd.nxv1f64.nxv1f64(
@@ -69,17 +69,15 @@ define void @test_vsetvl_avl(<vscale x 1 x double>* %v, i64 signext %avl) nounwi
     <vscale x 1 x double> %vec,
     i64 7, i64 %gvl)
 
-  %store_addr = bitcast i8* @scratch to <vscale x 1 x double>*
-
   call void @llvm.riscv.vse.nxv1f64(
     <vscale x 1 x double> %add,
-    <vscale x 1 x double>* %store_addr,
+    ptr @scratch,
     i64 %gvl)
 
     ret void
 }
 
-define void @test_vsetvl_zero(<vscale x 1 x double>* %v) nounwind
+define void @test_vsetvl_zero(ptr %v) nounwind
 ;
 ; CHECK-O0-LABEL: test_vsetvl_zero:
 ; CHECK-O0:       # %bb.0:
@@ -111,7 +109,7 @@ define void @test_vsetvl_zero(<vscale x 1 x double>* %v) nounwind
 
   %vec = call <vscale x 1 x double> @llvm.riscv.vle.nxv1f64(
     <vscale x 1 x double> undef,
-    <vscale x 1 x double>* %v,
+    ptr %v,
     i64 %gvl)
 
   %add = call <vscale x 1 x double> @llvm.riscv.vfadd.nxv1f64.nxv1f64(
@@ -120,17 +118,15 @@ define void @test_vsetvl_zero(<vscale x 1 x double>* %v) nounwind
     <vscale x 1 x double> %vec,
     i64 7, i64 %gvl)
 
-  %store_addr = bitcast i8* @scratch to <vscale x 1 x double>*
-
   call void @llvm.riscv.vse.nxv1f64(
     <vscale x 1 x double> %add,
-    <vscale x 1 x double>* %store_addr,
+    ptr @scratch,
     i64 %gvl)
 
     ret void
 }
 
-define void @test_vsetvlmax(<vscale x 1 x double>* %v) nounwind
+define void @test_vsetvlmax(ptr %v) nounwind
 ;
 ; CHECK-O0-LABEL: test_vsetvlmax:
 ; CHECK-O0:       # %bb.0:
@@ -162,7 +158,7 @@ define void @test_vsetvlmax(<vscale x 1 x double>* %v) nounwind
 
   %vec = call <vscale x 1 x double> @llvm.riscv.vle.nxv1f64(
     <vscale x 1 x double> undef,
-    <vscale x 1 x double>* %v,
+    ptr %v,
     i64 %vlmax)
 
   %add = call <vscale x 1 x double> @llvm.riscv.vfadd.nxv1f64.nxv1f64(
@@ -171,17 +167,15 @@ define void @test_vsetvlmax(<vscale x 1 x double>* %v) nounwind
     <vscale x 1 x double> %vec,
     i64 7, i64 %vlmax)
 
-  %store_addr = bitcast i8* @scratch to <vscale x 1 x double>*
-
   call void @llvm.riscv.vse.nxv1f64(
     <vscale x 1 x double> %add,
-    <vscale x 1 x double>* %store_addr,
+    ptr @scratch,
     i64 %vlmax)
 
     ret void
 }
 
-define void @test_gvl_zero(<vscale x 1 x double>* %v) nounwind
+define void @test_gvl_zero(ptr %v) nounwind
 ;
 ; CHECK-O0-LABEL: test_gvl_zero:
 ; CHECK-O0:       # %bb.0:
@@ -207,7 +201,7 @@ define void @test_gvl_zero(<vscale x 1 x double>* %v) nounwind
 {
   %vec = call <vscale x 1 x double> @llvm.riscv.vle.nxv1f64(
     <vscale x 1 x double> undef,
-    <vscale x 1 x double>* %v,
+    ptr %v,
     i64 0)
 
   %add = call <vscale x 1 x double> @llvm.riscv.vfadd.nxv1f64.nxv1f64(
@@ -216,17 +210,15 @@ define void @test_gvl_zero(<vscale x 1 x double>* %v) nounwind
     <vscale x 1 x double> %vec,
     i64 7, i64 0)
 
-  %store_addr = bitcast i8* @scratch to <vscale x 1 x double>*
-
   call void @llvm.riscv.vse.nxv1f64(
     <vscale x 1 x double> %add,
-    <vscale x 1 x double>* %store_addr,
+    ptr @scratch,
     i64 0)
 
     ret void
 }
 
-define void @test_implicit_vlmax(<vscale x 1 x double>* %v) nounwind
+define void @test_implicit_vlmax(ptr %v) nounwind
 ;
 ; CHECK-O0-LABEL: test_implicit_vlmax:
 ; CHECK-O0:       # %bb.0:
@@ -250,13 +242,11 @@ define void @test_implicit_vlmax(<vscale x 1 x double>* %v) nounwind
 ; CHECK-O2-NEXT:    vs1r.v v8, (a0)
 ; CHECK-O2-NEXT:    ret
 {
-  %vec = load <vscale x 1 x double>, <vscale x 1 x double>* %v
+  %vec = load <vscale x 1 x double>, ptr %v
 
   %add = fadd <vscale x 1 x double> %vec, %vec
 
-  %store_addr = bitcast i8* @scratch to <vscale x 1 x double>*
-
-  store <vscale x 1 x double> %add, <vscale x 1 x double>* %store_addr
+  store <vscale x 1 x double> %add, ptr @scratch
 
   ret void
 }

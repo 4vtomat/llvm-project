@@ -2,7 +2,7 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+v -riscv-v-vector-bits-min=512 -riscv-mem-to-rvv=true -riscv-mem-to-rvv-lmul=4 -O3 \
 ; RUN:   -verify-machineinstrs < %s | FileCheck %s
 
-define void @KnownSize(i8* nocapture readonly %src, i8* nocapture %dst) {
+define void @KnownSize(ptr nocapture readonly %src, ptr nocapture %dst) {
 ; CHECK-LABEL: KnownSize:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    li a2, 256
@@ -33,8 +33,8 @@ define void @KnownSize(i8* nocapture readonly %src, i8* nocapture %dst) {
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %dst, i8* align 1 %src, i64 1337, i1 false)
+  tail call void @llvm.memcpy.p0.p0.i64(ptr align 1 %dst, ptr align 1 %src, i64 1337, i1 false)
   ret void
 }
 
-declare void @llvm.memcpy.p0i8.p0i8.i64(i8* noalias nocapture writeonly, i8* noalias nocapture readonly, i64, i1 immarg)
+declare void @llvm.memcpy.p0.p0.i64(ptr noalias nocapture writeonly, ptr noalias nocapture readonly, i64, i1 immarg)

@@ -2,7 +2,7 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+v -riscv-v-vector-bits-min=512 -riscv-mem-to-rvv=true -riscv-mem-to-rvv-lmul=4 -O3 \
 ; RUN:   -verify-machineinstrs < %s | FileCheck %s
 
-define void @KnownSize(i8* nocapture %dst, i8 %val) {
+define void @KnownSize(ptr nocapture %dst, i8 %val) {
 ; CHECK-LABEL: KnownSize:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    li a2, 256
@@ -27,11 +27,11 @@ define void @KnownSize(i8* nocapture %dst, i8 %val) {
 ; CHECK-NEXT:    vse8.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
-  tail call void @llvm.memset.p0i8.i8.i64(i8* align 1 %dst, i8 %val, i64 2040, i1 false)
+  tail call void @llvm.memset.p0.i8.i64(ptr align 1 %dst, i8 %val, i64 2040, i1 false)
   ret void
 }
 
-define void @KnownSize1(i8* nocapture %dst, i8 %val) {
+define void @KnownSize1(ptr nocapture %dst, i8 %val) {
 ; CHECK-LABEL: KnownSize1:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    li a2, 256
@@ -44,11 +44,11 @@ define void @KnownSize1(i8* nocapture %dst, i8 %val) {
 ; CHECK-NEXT:    vse8.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
-  tail call void @llvm.memset.p0i8.i8.i64(i8* align 1 %dst, i8 %val, i64 384, i1 false)
+  tail call void @llvm.memset.p0.i8.i64(ptr align 1 %dst, i8 %val, i64 384, i1 false)
   ret void
 }
 
-define void @KnownSize2(i8* nocapture %dst, i8 %val) {
+define void @KnownSize2(ptr nocapture %dst, i8 %val) {
 ; CHECK-LABEL: KnownSize2:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    li a2, 1
@@ -65,8 +65,8 @@ define void @KnownSize2(i8* nocapture %dst, i8 %val) {
 ; CHECK-NEXT:  # %bb.2: # %memset-post-loop
 ; CHECK-NEXT:    ret
 entry:
-  tail call void @llvm.memset.p0i8.i8.i64(i8* align 1 %dst, i8 %val, i64 2048, i1 false)
+  tail call void @llvm.memset.p0.i8.i64(ptr align 1 %dst, i8 %val, i64 2048, i1 false)
   ret void
 }
 
-declare void @llvm.memset.p0i8.i8.i64(i8* noalias nocapture writeonly, i8, i64, i1 immarg)
+declare void @llvm.memset.p0.i8.i64(ptr noalias nocapture writeonly, i8, i64, i1 immarg)

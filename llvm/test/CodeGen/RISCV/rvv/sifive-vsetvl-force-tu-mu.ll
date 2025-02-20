@@ -23,17 +23,17 @@ declare <vscale x 1 x double> @llvm.riscv.vfadd.nxv1f64.nxv1f64.i64(
 
 declare <vscale x 1 x double> @llvm.riscv.vle.mask.nxv1f64.i64(
   <vscale x 1 x double>,
-  <vscale x 1 x double>*,
+  ptr,
   <vscale x 1 x i1>,
   i64,
   i64)
 
 declare void @llvm.riscv.vse.nxv1f64.i64(
   <vscale x 1 x double>,
-  <vscale x 1 x double>*,
+  ptr,
   i64)
 
-define void @test_vsetvl_avl(<vscale x 1 x double> %value, <vscale x 1 x double>* %v, <vscale x 1 x i1> %mask, i64 signext %avl) nounwind {
+define void @test_vsetvl_avl(<vscale x 1 x double> %value, ptr %v, <vscale x 1 x i1> %mask, i64 signext %avl) nounwind {
 ; CHECK-O0-LABEL: test_vsetvl_avl:
 ; CHECK-O0:       # %bb.0:
 ; CHECK-O0-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
@@ -96,7 +96,7 @@ define void @test_vsetvl_avl(<vscale x 1 x double> %value, <vscale x 1 x double>
 
   %vec = call <vscale x 1 x double> @llvm.riscv.vle.mask.nxv1f64.i64(
     <vscale x 1 x double> %value,
-    <vscale x 1 x double>* %v,
+    ptr %v,
     <vscale x 1 x i1> %mask,
     i64 %gvl,
     i64 0)
@@ -107,11 +107,9 @@ define void @test_vsetvl_avl(<vscale x 1 x double> %value, <vscale x 1 x double>
     <vscale x 1 x double> %vec,
     i64 7, i64 %gvl)
 
-  %store_addr = bitcast i8* @scratch to <vscale x 1 x double>*
-
   call void @llvm.riscv.vse.nxv1f64.i64(
     <vscale x 1 x double> %add,
-    <vscale x 1 x double>* %store_addr,
+    ptr @scratch,
     i64 %gvl)
 
   ret void

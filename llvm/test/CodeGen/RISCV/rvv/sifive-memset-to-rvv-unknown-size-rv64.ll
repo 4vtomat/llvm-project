@@ -8,7 +8,7 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+v -mcpu=sifive-p470 -riscv-mem-to-rvv=true -riscv-mem-to-rvv-dlen-align=true -riscv-mem-to-rvv-lmul=8 -O3 \
 ; RUN:   -verify-machineinstrs < %s | FileCheck %s --check-prefixes=ALIGN-VLEN-MALLARD
 
-define void @UnKnownSize(i8* nocapture readonly %dst, i8 %val, i64 signext %n) {
+define void @UnKnownSize(ptr nocapture readonly %dst, i8 %val, i64 signext %n) {
 ; NOALIGN-LABEL: UnKnownSize:
 ; NOALIGN:       # %bb.0: # %entry
 ; NOALIGN-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
@@ -97,8 +97,8 @@ define void @UnKnownSize(i8* nocapture readonly %dst, i8 %val, i64 signext %n) {
 ; ALIGN-VLEN-MALLARD-NEXT:  # %bb.2: # %memset-post-loop
 ; ALIGN-VLEN-MALLARD-NEXT:    ret
 entry:
-  tail call void @llvm.memset.p0i8.i8.i64(i8* align 1 %dst, i8 %val, i64 %n, i1 false)
+  tail call void @llvm.memset.p0.i8.i64(ptr align 1 %dst, i8 %val, i64 %n, i1 false)
   ret void
 }
 
-declare void @llvm.memset.p0i8.i8.i64(i8* noalias nocapture writeonly, i8, i64, i1 immarg)
+declare void @llvm.memset.p0.i8.i64(ptr noalias nocapture writeonly, i8, i64, i1 immarg)

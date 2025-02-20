@@ -6,7 +6,7 @@
 ; RUN: llc -mtriple=riscv32 -mattr=+v,+dlen128b -riscv-mem-to-rvv=true -riscv-mem-to-rvv-dlen-align=true -riscv-mem-to-rvv-lmul=8 -O3 \
 ; RUN:   -riscv-v-vector-bits-max=128 -verify-machineinstrs < %s | FileCheck %s --check-prefixes=ALIGN-VLEN
 
-define void @UnKnownSize(i8* nocapture %dst, i8 %val, i32 signext %n) {
+define void @UnKnownSize(ptr nocapture %dst, i8 %val, i32 signext %n) {
 ; NOALIGN-LABEL: UnKnownSize:
 ; NOALIGN:       # %bb.0: # %entry
 ; NOALIGN-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
@@ -82,13 +82,13 @@ define void @UnKnownSize(i8* nocapture %dst, i8 %val, i32 signext %n) {
 ; ALIGN-VLEN-NEXT:  # %bb.6: # %memset-post-loop
 ; ALIGN-VLEN-NEXT:    ret
 entry:
-  tail call void @llvm.memset.p0i8.i8.i32(i8* align 1 %dst, i8 %val, i32 %n, i1 false)
+  tail call void @llvm.memset.p0.i8.i32(ptr align 1 %dst, i8 %val, i32 %n, i1 false)
   ret void
 }
 
 ; Size is known, but it is larger than our constant size thresholds.
 ; Give the size in i64 instead of XLen to make sure that cases is handled.
-define void @UnKnownSize2(i8* nocapture %dst, i8 %val) {
+define void @UnKnownSize2(ptr nocapture %dst, i8 %val) {
 ; NOALIGN-LABEL: UnKnownSize2:
 ; NOALIGN:       # %bb.0: # %entry
 ; NOALIGN-NEXT:    lui a2, 2
@@ -153,6 +153,6 @@ define void @UnKnownSize2(i8* nocapture %dst, i8 %val) {
 ; ALIGN-VLEN-NEXT:  # %bb.2: # %memset-post-loop
 ; ALIGN-VLEN-NEXT:    ret
 entry:
-  tail call void @llvm.memset.p0i8.i8.i64(i8* align 1 %dst, i8 %val, i64 8192, i1 false)
+  tail call void @llvm.memset.p0.i8.i64(ptr align 1 %dst, i8 %val, i64 8192, i1 false)
   ret void
 }

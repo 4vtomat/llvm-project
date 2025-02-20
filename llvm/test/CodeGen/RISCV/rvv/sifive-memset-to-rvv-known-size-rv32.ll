@@ -4,7 +4,7 @@
 ; RUN: llc -mtriple=riscv32 -mattr=+v -riscv-v-vector-bits-min=256 -riscv-mem-to-rvv=true -riscv-mem-to-rvv-lmul=8 -O3 \
 ; RUN:   -verify-machineinstrs < %s | FileCheck %s --check-prefixes=MIN-256
 
-define void @KnownSize(i8* nocapture %dst, i8 %val) {
+define void @KnownSize(ptr nocapture %dst, i8 %val) {
 ; MIN-512-LABEL: KnownSize:
 ; MIN-512:       # %bb.0: # %entry
 ; MIN-512-NEXT:    li a2, 512
@@ -45,11 +45,11 @@ define void @KnownSize(i8* nocapture %dst, i8 %val) {
 ; MIN-256-NEXT:    vse8.v v8, (a2)
 ; MIN-256-NEXT:    ret
 entry:
-  tail call void @llvm.memset.p0i8.i8.i32(i8* align 1 %dst, i8 %val, i32 2040, i1 false)
+  tail call void @llvm.memset.p0.i8.i32(ptr align 1 %dst, i8 %val, i32 2040, i1 false)
   ret void
 }
 
-define void @KnownSize1(i8* nocapture %dst, i8 %val) {
+define void @KnownSize1(ptr nocapture %dst, i8 %val) {
 ; MIN-512-LABEL: KnownSize1:
 ; MIN-512:       # %bb.0: # %entry
 ; MIN-512-NEXT:    li a2, 384
@@ -70,11 +70,11 @@ define void @KnownSize1(i8* nocapture %dst, i8 %val) {
 ; MIN-256-NEXT:    vse8.v v8, (a2)
 ; MIN-256-NEXT:    ret
 entry:
-  tail call void @llvm.memset.p0i8.i8.i32(i8* align 1 %dst, i8 %val, i32 384, i1 false)
+  tail call void @llvm.memset.p0.i8.i32(ptr align 1 %dst, i8 %val, i32 384, i1 false)
   ret void
 }
 
-define void @KnownSize2(i8* nocapture %dst, i8 %val) {
+define void @KnownSize2(ptr nocapture %dst, i8 %val) {
 ; MIN-512-LABEL: KnownSize2:
 ; MIN-512:       # %bb.0: # %entry
 ; MIN-512-NEXT:    li a2, 512
@@ -99,15 +99,15 @@ define void @KnownSize2(i8* nocapture %dst, i8 %val) {
 ; MIN-256-NEXT:    vse8.v v8, (a2)
 ; MIN-256-NEXT:    ret
 entry:
-  tail call void @llvm.memset.p0i8.i8.i32(i8* align 1 %dst, i8 %val, i32 1024, i1 false)
+  tail call void @llvm.memset.p0.i8.i32(ptr align 1 %dst, i8 %val, i32 1024, i1 false)
   ret void
 }
 
 
-declare void @llvm.memset.p0i8.i8.i32(i8* noalias nocapture writeonly, i8 noalias readonly, i32, i1 immarg)
+declare void @llvm.memset.p0.i8.i32(ptr noalias nocapture writeonly, i8 noalias readonly, i32, i1 immarg)
 
 ; Test size given as i64 instead of XLen
-define void @KnownSize3(i8* nocapture %dst, i8 %val) {
+define void @KnownSize3(ptr nocapture %dst, i8 %val) {
 ; MIN-512-LABEL: KnownSize3:
 ; MIN-512:       # %bb.0: # %entry
 ; MIN-512-NEXT:    li a2, 512
@@ -148,11 +148,11 @@ define void @KnownSize3(i8* nocapture %dst, i8 %val) {
 ; MIN-256-NEXT:    vse8.v v8, (a2)
 ; MIN-256-NEXT:    ret
 entry:
-  tail call void @llvm.memset.p0i8.i8.i64(i8* align 1 %dst, i8 %val, i64 2040, i1 false)
+  tail call void @llvm.memset.p0.i8.i64(ptr align 1 %dst, i8 %val, i64 2040, i1 false)
   ret void
 }
 
-define void @KnownSize4(i8* nocapture %dst, i8 %val) {
+define void @KnownSize4(ptr nocapture %dst, i8 %val) {
 ; MIN-512-LABEL: KnownSize4:
 ; MIN-512:       # %bb.0: # %entry
 ; MIN-512-NEXT:    li a2, 384
@@ -173,12 +173,12 @@ define void @KnownSize4(i8* nocapture %dst, i8 %val) {
 ; MIN-256-NEXT:    vse8.v v8, (a2)
 ; MIN-256-NEXT:    ret
 entry:
-  tail call void @llvm.memset.p0i8.i8.i64(i8* align 1 %dst, i8 %val, i64 384, i1 false)
+  tail call void @llvm.memset.p0.i8.i64(ptr align 1 %dst, i8 %val, i64 384, i1 false)
   ret void
 }
 
 ; Test size given as i64 instead of XLen
-define void @KnownSize5(i8* nocapture %dst, i8 %val) {
+define void @KnownSize5(ptr nocapture %dst, i8 %val) {
 ; MIN-512-LABEL: KnownSize5:
 ; MIN-512:       # %bb.0: # %entry
 ; MIN-512-NEXT:    li a2, 512
@@ -203,13 +203,13 @@ define void @KnownSize5(i8* nocapture %dst, i8 %val) {
 ; MIN-256-NEXT:    vse8.v v8, (a2)
 ; MIN-256-NEXT:    ret
 entry:
-  tail call void @llvm.memset.p0i8.i8.i64(i8* align 1 %dst, i8 %val, i64 1024, i1 false)
+  tail call void @llvm.memset.p0.i8.i64(ptr align 1 %dst, i8 %val, i64 1024, i1 false)
   ret void
 }
 
 ; Test size given as i64 instead of XLen. Size is larger than our unrolling
 ; treshold.
-define void @KnownSize6(i8* nocapture %dst, i8 %val) {
+define void @KnownSize6(ptr nocapture %dst, i8 %val) {
 ; MIN-512-LABEL: KnownSize6:
 ; MIN-512:       # %bb.0: # %entry
 ; MIN-512-NEXT:    lui a2, 2
@@ -240,6 +240,6 @@ define void @KnownSize6(i8* nocapture %dst, i8 %val) {
 ; MIN-256-NEXT:  # %bb.2: # %memset-post-loop
 ; MIN-256-NEXT:    ret
 entry:
-  tail call void @llvm.memset.p0i8.i8.i64(i8* align 1 %dst, i8 %val, i64 8192, i1 false)
+  tail call void @llvm.memset.p0.i8.i64(ptr align 1 %dst, i8 %val, i64 8192, i1 false)
   ret void
 }

@@ -2,7 +2,7 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+v -verify-machineinstrs \
 ; RUN:   --riscv-no-aliases < %s | FileCheck %s
 
-define dso_local void @test(i64 %channel, i32* nocapture readonly %output_shift, i32* nocapture readonly %bias_data, i32* nocapture %output_data) local_unnamed_addr {
+define dso_local void @test(i64 %channel, ptr nocapture readonly %output_shift, ptr nocapture readonly %bias_data, ptr nocapture %output_data) local_unnamed_addr {
 ; CHECK-LABEL: test:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli a5, a0, e8, m1, ta, ma
@@ -42,22 +42,19 @@ while.body:                                       ; preds = %entry, %while.body
   %1 = phi i64 [ %14, %while.body ], [ %0, %entry ]
   %channel.addr.022 = phi i64 [ %sub, %while.body ], [ %channel, %entry ]
   %current_channel.021 = phi i64 [ %add, %while.body ], [ 0, %entry ]
-  %add.ptr = getelementptr inbounds i32, i32* %output_shift, i64 %current_channel.021
-  %2 = bitcast i32* %add.ptr to <vscale x 8 x i32>*
-  %3 = call <vscale x 8 x i32> @llvm.riscv.vle.nxv8i32.i64(<vscale x 8 x i32> undef, <vscale x 8 x i32>* %2, i64 %1)
-  %4 = call <vscale x 8 x i32> @llvm.riscv.vmv.v.x.nxv8i32.i64(<vscale x 8 x i32> undef, i32 0, i64 %1)
-  %5 = call <vscale x 8 x i1> @llvm.riscv.vmslt.nxv8i32.i32.i64(<vscale x 8 x i32> %3, i32 0, i64 %1)
-  %add.ptr1 = getelementptr inbounds i32, i32* %bias_data, i64 %current_channel.021
-  %6 = bitcast i32* %add.ptr1 to <vscale x 8 x i32>*
-  %7 = call <vscale x 8 x i32> @llvm.riscv.vle.nxv8i32.i64(<vscale x 8 x i32> undef, <vscale x 8 x i32>* %6, i64 %1)
-  %8 = call <vscale x 8 x i32> @llvm.riscv.vrsub.mask.nxv8i32.i32.i64(<vscale x 8 x i32> %4, <vscale x 8 x i32> %3, i32 0, <vscale x 8 x i1> %5, i64 %1, i64 0)
-  %9 = call <vscale x 8 x i32> @llvm.riscv.vmerge.nxv8i32.i32.i64(<vscale x 8 x i32> undef, <vscale x 8 x i32> %3, i32 0, <vscale x 8 x i1> %5, i64 %1)
-  %10 = call <vscale x 8 x i32> @llvm.riscv.vmv.v.v.nxv8i32.i64(<vscale x 8 x i32> undef, <vscale x 8 x i32> %7, i64 %1)
+  %add.ptr = getelementptr inbounds i32, ptr %output_shift, i64 %current_channel.021
+  %2 = call <vscale x 8 x i32> @llvm.riscv.vle.nxv8i32.i64(<vscale x 8 x i32> undef, ptr %add.ptr, i64 %1)
+  %3 = call <vscale x 8 x i32> @llvm.riscv.vmv.v.x.nxv8i32.i64(<vscale x 8 x i32> undef, i32 0, i64 %1)
+  %4 = call <vscale x 8 x i1> @llvm.riscv.vmslt.nxv8i32.i32.i64(<vscale x 8 x i32> %2, i32 0, i64 %1)
+  %add.ptr1 = getelementptr inbounds i32, ptr %bias_data, i64 %current_channel.021
+  %6 = call <vscale x 8 x i32> @llvm.riscv.vle.nxv8i32.i64(<vscale x 8 x i32> undef, ptr %add.ptr1, i64 %1)
+  %8 = call <vscale x 8 x i32> @llvm.riscv.vrsub.mask.nxv8i32.i32.i64(<vscale x 8 x i32> %3, <vscale x 8 x i32> %2, i32 0, <vscale x 8 x i1> %4, i64 %1, i64 0)
+  %9 = call <vscale x 8 x i32> @llvm.riscv.vmerge.nxv8i32.i32.i64(<vscale x 8 x i32> undef, <vscale x 8 x i32> %2, i32 0, <vscale x 8 x i1> %4, i64 %1)
+  %10 = call <vscale x 8 x i32> @llvm.riscv.vmv.v.v.nxv8i32.i64(<vscale x 8 x i32> undef, <vscale x 8 x i32> %6, i64 %1)
   %11 = call <vscale x 8 x i32> @llvm.riscv.vsll.nxv8i32.nxv8i32.i64(<vscale x 8 x i32> undef, <vscale x 8 x i32> %10, <vscale x 8 x i32> %9, i64 %1)
   %12 = call <vscale x 8 x i32> @llvm.riscv.vssra.nxv8i32.nxv8i32.i64(<vscale x 8 x i32> undef, <vscale x 8 x i32> %11, <vscale x 8 x i32> %8, i64 7, i64 %1)
-  %add.ptr2 = getelementptr inbounds i32, i32* %output_data, i64 %current_channel.021
-  %13 = bitcast i32* %add.ptr2 to <vscale x 8 x i32>*
-  call void @llvm.riscv.vse.nxv8i32.i64(<vscale x 8 x i32> %12, <vscale x 8 x i32>* %13, i64 %1)
+  %add.ptr2 = getelementptr inbounds i32, ptr %output_data, i64 %current_channel.021
+  call void @llvm.riscv.vse.nxv8i32.i64(<vscale x 8 x i32> %12, ptr %add.ptr2, i64 %1)
   %sub = sub i64 %channel.addr.022, %1
   %add = add i64 %1, %current_channel.021
   %14 = call i64 @llvm.riscv.vsetvli.i64(i64 %sub, i64 0, i64 0)

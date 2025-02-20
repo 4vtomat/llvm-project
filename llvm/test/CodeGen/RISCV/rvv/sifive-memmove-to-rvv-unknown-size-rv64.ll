@@ -4,7 +4,7 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+v -mcpu=sifive-x280 -riscv-mem-to-rvv=true -riscv-mem-to-rvv-dlen-align=true -riscv-mem-to-rvv-lmul=8 -O3 \
 ; RUN:   -verify-machineinstrs < %s | FileCheck %s --check-prefixes=ALIGN
 
-define void @UnKnownSize(i8* nocapture readonly %src, i8* nocapture %dst, i64 signext %n) {
+define void @UnKnownSize(ptr nocapture readonly %src, ptr nocapture %dst, i64 signext %n) {
 ; NOALIGN-LABEL: UnKnownSize:
 ; NOALIGN:       # %bb.0: # %entry
 ; NOALIGN-NEXT:    sub a3, a1, a0
@@ -84,8 +84,8 @@ define void @UnKnownSize(i8* nocapture readonly %src, i8* nocapture %dst, i64 si
 ; ALIGN-NEXT:  .LBB0_6: # %memmove-post-loop
 ; ALIGN-NEXT:    ret
 entry:
-  tail call void @llvm.memmove.p0i8.p0i8.i64(i8* align 1 %dst, i8* align 1 %src, i64 %n, i1 false)
+  tail call void @llvm.memmove.p0.p0.i64(ptr align 1 %dst, ptr align 1 %src, i64 %n, i1 false)
   ret void
 }
 
-declare void @llvm.memmove.p0i8.p0i8.i64(i8* noalias nocapture writeonly, i8* noalias nocapture readonly, i64, i1 immarg)
+declare void @llvm.memmove.p0.p0.i64(ptr noalias nocapture writeonly, ptr noalias nocapture readonly, i64, i1 immarg)

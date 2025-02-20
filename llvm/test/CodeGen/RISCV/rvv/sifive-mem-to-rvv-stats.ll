@@ -6,19 +6,19 @@
 
 target triple = "riscv64"
 
-define void @KnownSize(i8* nocapture readonly %src, i8* nocapture %dst, i8 %val) {
+define void @KnownSize(ptr nocapture readonly %src, ptr nocapture %dst, i8 %val) {
 entry:
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %dst, i8* align 1 %src, i64 384, i1 false)
-  tail call void @llvm.memmove.p0i8.p0i8.i64(i8* align 1 %dst, i8* align 1 %src, i64 384, i1 false)
-  tail call void @llvm.memset.p0i8.p0i8.i64(i8* align 1 %dst, i8 %val, i64 384, i1 false)
+  tail call void @llvm.memcpy.p0.p0.i64(ptr align 1 %dst, ptr align 1 %src, i64 384, i1 false)
+  tail call void @llvm.memmove.p0.p0.i64(ptr align 1 %dst, ptr align 1 %src, i64 384, i1 false)
+  tail call void @llvm.memset.p0.p0.i64(ptr align 1 %dst, i8 %val, i64 384, i1 false)
   ret void
 }
 
-define void @UnknownSize(i8* nocapture readonly %src, i8* nocapture %dst, i64 %sz, i8 %val) {
+define void @UnknownSize(ptr nocapture readonly %src, ptr nocapture %dst, i64 %sz, i8 %val) {
 entry:
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %dst, i8* align 1 %src, i64 %sz, i1 false)
-  tail call void @llvm.memmove.p0i8.p0i8.i64(i8* align 1 %dst, i8* align 1 %src, i64 %sz, i1 false)
-  tail call void @llvm.memset.p0i8.p0i8.i64(i8* align 1 %dst, i8 %val, i64 %sz, i1 false)
+  tail call void @llvm.memcpy.p0.p0.i64(ptr align 1 %dst, ptr align 1 %src, i64 %sz, i1 false)
+  tail call void @llvm.memmove.p0.p0.i64(ptr align 1 %dst, ptr align 1 %src, i64 %sz, i1 false)
+  tail call void @llvm.memset.p0.p0.i64(ptr align 1 %dst, i8 %val, i64 %sz, i1 false)
   ret void
 }
 

@@ -84,8 +84,8 @@ define void @main() {
 ; SUBREG_LIVENESS-NEXT:    vsetivli zero, 0, e64, m2, ta, ma
 ; SUBREG_LIVENESS-NEXT:    vsseg2e64.v v8, (a0)
 entry:
-  %0 = tail call <vscale x 4 x i64> @llvm.riscv.vle.nxv4i64.i64(<vscale x 4 x i64> undef, <vscale x 4 x i64>* nonnull null, i64 0)
-  %1 = tail call <vscale x 4 x i64> @llvm.riscv.vle.nxv4i64.i64(<vscale x 4 x i64> undef, <vscale x 4 x i64>* nonnull undef, i64 0)
+  %0 = tail call <vscale x 4 x i64> @llvm.riscv.vle.nxv4i64.i64(<vscale x 4 x i64> undef, ptr nonnull null, i64 0)
+  %1 = tail call <vscale x 4 x i64> @llvm.riscv.vle.nxv4i64.i64(<vscale x 4 x i64> undef, ptr nonnull undef, i64 0)
   %2 = tail call <vscale x 4 x i64> @llvm.riscv.vmacc.nxv4i64.nxv4i64.i64(<vscale x 4 x i64> undef, <vscale x 4 x i64> undef, <vscale x 4 x i64> undef, i64 0, i64 0)
   %3 = tail call <vscale x 4 x i64> @llvm.riscv.vand.nxv4i64.i64.i64(<vscale x 4 x i64> undef, <vscale x 4 x i64> zeroinitializer, i64 -1241310002212835732, i64 0)
   %4 = tail call <vscale x 4 x i1> @llvm.riscv.vmsne.mask.nxv4i8.i8.i64(<vscale x 4 x i1> zeroinitializer, <vscale x 4 x i8> undef, i8 108, <vscale x 4 x i1> zeroinitializer, i64 0)
@@ -93,7 +93,7 @@ entry:
   %6 = tail call <vscale x 4 x i64> @llvm.riscv.vxor.mask.nxv4i64.i64.i64(<vscale x 4 x i64> %3, <vscale x 4 x i64> %5, i64 -5080950929949460471, <vscale x 4 x i1> %4, i64 0, i64 0)
   %v_0 = call target("riscv.vector.tuple", <vscale x 32 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv32i8_2t.nxv4i64(target("riscv.vector.tuple", <vscale x 32 x i8>, 2) poison, <vscale x 4 x i64> %6, i32 0)
   %v_1 = call target("riscv.vector.tuple", <vscale x 32 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv32i8_2t.nxv4i64(target("riscv.vector.tuple", <vscale x 32 x i8>, 2) %v_0, <vscale x 4 x i64> %6, i32 1)
-  %7 = call target("riscv.vector.tuple", <vscale x 32 x i8>, 2) @llvm.riscv.vluxseg2.mask.triscv.vector.tuple_nxv32i8_2t.nxv4i64.nxv4i1(target("riscv.vector.tuple", <vscale x 32 x i8>, 2) %v_1, i64* getelementptr inbounds ([123 x i64], [123 x i64]* @__const.main.var_272, i64 0, i64 0), <vscale x 4 x i8> poison, <vscale x 4 x i1> %4, i64 0, i64 0, i64 6)
+  %7 = call target("riscv.vector.tuple", <vscale x 32 x i8>, 2) @llvm.riscv.vluxseg2.mask.triscv.vector.tuple_nxv32i8_2t.nxv4i64.nxv4i1(target("riscv.vector.tuple", <vscale x 32 x i8>, 2) %v_1, ptr getelementptr inbounds ([123 x i64], ptr @__const.main.var_272, i64 0, i64 0), <vscale x 4 x i8> poison, <vscale x 4 x i1> %4, i64 0, i64 0, i64 6)
   %8 = call <vscale x 4 x i64> @llvm.riscv.tuple.extract.nxv4i64.triscv.vector.tuple_nxv32i8_2t(target("riscv.vector.tuple", <vscale x 32 x i8>, 2) %7,         i32 0)
   %9 = tail call <vscale x 4 x i64> @llvm.riscv.vaaddu.nxv4i64.nxv4i64.i64(<vscale x 4 x i64> undef, <vscale x 4 x i64> %8, <vscale x 4 x i64> %6, i64 7, i64 0)
   %11 = tail call <vscale x 4 x i64> @llvm.riscv.vremu.mask.nxv4i64.i64.i64(<vscale x 4 x i64> %9, <vscale x 4 x i64> undef, i64 1965442527733090436, <vscale x 4 x i1> undef, i64 0, i64 0)
@@ -102,14 +102,14 @@ entry:
   %15 = tail call <vscale x 4 x i32> @llvm.riscv.vnmsac.mask.nxv4i32.i32.i64(<vscale x 4 x i32> %12, i32 -794696995, <vscale x 4 x i32> undef, <vscale x 4 x i1> undef, i64 0, i64 0)
   %data0_0 = call target("riscv.vector.tuple", <vscale x 32 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv32i8_2t.nxv4i64(target("riscv.vector.tuple", <vscale x 32 x i8>, 2) poison, <vscale x 4 x i64> %14, i32 0)
   %data0_1 = call target("riscv.vector.tuple", <vscale x 32 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv32i8_2t.nxv4i64(target("riscv.vector.tuple", <vscale x 32 x i8>, 2) %data0_0, <vscale x 4 x i64> %0, i32 1)
-  tail call void @llvm.riscv.vsseg2.triscv.vector.tuple_nxv32i8_2t(target("riscv.vector.tuple", <vscale x 32 x i8>, 2) %data0_1, i64* nonnull undef, i64 0, i64 6)
+  tail call void @llvm.riscv.vsseg2.triscv.vector.tuple_nxv32i8_2t(target("riscv.vector.tuple", <vscale x 32 x i8>, 2) %data0_1, ptr nonnull undef, i64 0, i64 6)
   %data1_0 = call target("riscv.vector.tuple", <vscale x 16 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv16i8_2t.nxv4i32(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) poison, <vscale x 4 x i32> %15, i32 0)
   %data1_1 = call target("riscv.vector.tuple", <vscale x 16 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv16i8_2t.nxv4i32(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) poison, <vscale x 4 x i32> undef, i32 1)
-  tail call void @llvm.riscv.vsseg2.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %data1_1, i32* nonnull undef, i64 0, i64 6)
+  tail call void @llvm.riscv.vsseg2.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %data1_1, ptr nonnull undef, i64 0, i64 6)
   unreachable
 }
 
-declare <vscale x 4 x i64> @llvm.riscv.vle.nxv4i64.i64(<vscale x 4 x i64>, <vscale x 4 x i64>* nocapture, i64)
+declare <vscale x 4 x i64> @llvm.riscv.vle.nxv4i64.i64(<vscale x 4 x i64>, ptr nocapture, i64)
 declare <vscale x 4 x i64> @llvm.riscv.vmacc.nxv4i64.nxv4i64.i64(<vscale x 4 x i64>, <vscale x 4 x i64>, <vscale x 4 x i64>, i64, i64 immarg)
 declare <vscale x 4 x i64> @llvm.riscv.vand.nxv4i64.i64.i64(<vscale x 4 x i64>, <vscale x 4 x i64>, i64, i64)
 declare <vscale x 4 x i1> @llvm.riscv.vmsne.mask.nxv4i8.i8.i64(<vscale x 4 x i1>, <vscale x 4 x i8>, i8, <vscale x 4 x i1>, i64)
@@ -119,8 +119,8 @@ declare <vscale x 4 x i64> @llvm.riscv.vaaddu.nxv4i64.nxv4i64.i64(<vscale x 4 x 
 declare <vscale x 4 x i64> @llvm.riscv.vssrl.mask.nxv4i64.i64.i64(<vscale x 4 x i64>, <vscale x 4 x i64>, i64, <vscale x 4 x i1>, i64, i64, i64 immarg)
 declare <vscale x 4 x i64> @llvm.riscv.vremu.mask.nxv4i64.i64.i64(<vscale x 4 x i64>, <vscale x 4 x i64>, i64, <vscale x 4 x i1>, i64, i64 immarg)
 declare <vscale x 4 x i32> @llvm.riscv.vnsrl.mask.nxv4i32.nxv4i64.i64.i64(<vscale x 4 x i32>, <vscale x 4 x i64>, i64, <vscale x 4 x i1>, i64, i64 immarg)
-declare void @llvm.riscv.vsseg2.triscv.vector.tuple_nxv32i8_2t(target("riscv.vector.tuple", <vscale x 32 x i8>, 2), i64* nocapture, i64, i64)
+declare void @llvm.riscv.vsseg2.triscv.vector.tuple_nxv32i8_2t(target("riscv.vector.tuple", <vscale x 32 x i8>, 2), ptr nocapture, i64, i64)
 declare <vscale x 4 x i64> @llvm.riscv.vaaddu.mask.nxv4i64.nxv4i64.i64(<vscale x 4 x i64>, <vscale x 4 x i64>, <vscale x 4 x i64>, <vscale x 4 x i1>, i64, i64, i64 immarg)
 declare <vscale x 4 x i64> @llvm.riscv.vmadd.mask.nxv4i64.i64.i64(<vscale x 4 x i64>, i64, <vscale x 4 x i64>, <vscale x 4 x i1>, i64, i64 immarg)
 declare <vscale x 4 x i32> @llvm.riscv.vnmsac.mask.nxv4i32.i32.i64(<vscale x 4 x i32>, i32, <vscale x 4 x i32>, <vscale x 4 x i1>, i64, i64 immarg)
-declare void @llvm.riscv.vsseg2.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2), i32* nocapture, i64, i64)
+declare void @llvm.riscv.vsseg2.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2), ptr nocapture, i64, i64)

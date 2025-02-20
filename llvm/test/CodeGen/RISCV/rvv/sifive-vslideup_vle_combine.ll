@@ -2,65 +2,57 @@
 ; RUN: sed 's/XLen/32/g' %s | llc -mtriple=riscv32 -mattr=+m,+v | FileCheck %s --check-prefixes=CHECK
 ; RUN: sed 's/XLen/64/g' %s | llc -mtriple=riscv64 -mattr=+m,+v | FileCheck %s --check-prefixes=CHECK
 
-declare <vscale x 8 x i8> @llvm.riscv.vle.nxv8i8.iXLen(<vscale x 8 x i8>, <vscale x 8 x i8>*, iXLen)
-declare <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.iXLen(<vscale x 2 x i32>, <vscale x 2 x i32>*, iXLen)
+declare <vscale x 8 x i8> @llvm.riscv.vle.nxv8i8.iXLen(<vscale x 8 x i8>, ptr, iXLen)
+declare <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.iXLen(<vscale x 2 x i32>, ptr, iXLen)
 declare <vscale x 16 x i8> @llvm.riscv.vslideup.nxv16i8.iXLen(<vscale x 16 x i8>, <vscale x 16 x i8>, iXLen, iXLen, iXLen)
 declare <vscale x 4 x i32> @llvm.riscv.vslideup.nxv4i32.iXLen(<vscale x 4 x i32>, <vscale x 4 x i32>, iXLen, iXLen, iXLen)
 declare <vscale x 16 x i8> @llvm.experimental.vector.insert.nxv16i8.nxv8i8(<vscale x 16 x i8>, <vscale x 8 x i8>, i64)
 declare <vscale x 4 x i32> @llvm.experimental.vector.insert.nxv4i32.nxv2i32(<vscale x 4 x i32>, <vscale x 2 x i32>, i64)
-declare void @llvm.riscv.vse.nxv4i32(<vscale x 4 x i32>, <vscale x 4 x i32>*, iXLen)
+declare void @llvm.riscv.vse.nxv4i32(<vscale x 4 x i32>, ptr, iXLen)
 
-define <vscale x 16 x i8> @test_vle8x2(i8* %0) {
+define <vscale x 16 x i8> @test_vle8x2(ptr %0) {
 ; CHECK-LABEL: test_vle8x2:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m2, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    ret
-  %add.ptr0 = getelementptr inbounds i8, i8* %0, iXLen 8
-  %base0 = bitcast i8* %0 to <vscale x 8 x i8>*
-  %base1 = bitcast i8* %add.ptr0 to <vscale x 8 x i8>*
-  %a = call <vscale x 8 x i8> @llvm.riscv.vle.nxv8i8.iXLen(<vscale x 8 x i8> undef, <vscale x 8 x i8>* %base0, iXLen 8)
-  %b = call <vscale x 8 x i8> @llvm.riscv.vle.nxv8i8.iXLen(<vscale x 8 x i8> undef, <vscale x 8 x i8>* %base1, iXLen 8)
+  %add.ptr0 = getelementptr inbounds i8, ptr %0, iXLen 8
+  %a = call <vscale x 8 x i8> @llvm.riscv.vle.nxv8i8.iXLen(<vscale x 8 x i8> undef, ptr %0, iXLen 8)
+  %b = call <vscale x 8 x i8> @llvm.riscv.vle.nxv8i8.iXLen(<vscale x 8 x i8> undef, ptr %add.ptr0, iXLen 8)
   %c = call <vscale x 16 x i8> @llvm.experimental.vector.insert.nxv16i8.nxv8i8(<vscale x 16 x i8> undef, <vscale x 8 x i8> %a, i64 0)
   %d = call <vscale x 16 x i8> @llvm.experimental.vector.insert.nxv16i8.nxv8i8(<vscale x 16 x i8> undef, <vscale x 8 x i8> %b, i64 0)
   %e = call <vscale x 16 x i8> @llvm.riscv.vslideup.nxv16i8.iXLen(<vscale x 16 x i8> %c, <vscale x 16 x i8> %d, iXLen 8, iXLen 16, iXLen 0)
   ret <vscale x 16 x i8> %e
 }
 
-define void @test_vle32x2(i32* %0, i32* %1) {
+define void @test_vle32x2(ptr %0, ptr %1) {
 ; CHECK-LABEL: test_vle32x2:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 16, e32, m2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
-  %add.ptr0 = getelementptr inbounds i32, i32* %0, iXLen 8
-  %base0 = bitcast i32* %0 to <vscale x 2 x i32>*
-  %base1 = bitcast i32* %add.ptr0 to <vscale x 2 x i32>*
-  %a = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.iXLen(<vscale x 2 x i32> undef, <vscale x 2 x i32>* %base0, iXLen 8)
-  %b = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.iXLen(<vscale x 2 x i32> undef, <vscale x 2 x i32>* %base1, iXLen 8)
+  %add.ptr0 = getelementptr inbounds i32, ptr %0, iXLen 8
+  %a = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.iXLen(<vscale x 2 x i32> undef, ptr %0, iXLen 8)
+  %b = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.iXLen(<vscale x 2 x i32> undef, ptr %add.ptr0, iXLen 8)
   %c = call <vscale x 4 x i32> @llvm.experimental.vector.insert.nxv4i32.nxv2i32(<vscale x 4 x i32> undef, <vscale x 2 x i32> %a, i64 0)
   %d = call <vscale x 4 x i32> @llvm.experimental.vector.insert.nxv4i32.nxv2i32(<vscale x 4 x i32> undef, <vscale x 2 x i32> %b, i64 0)
   %e = call <vscale x 4 x i32> @llvm.riscv.vslideup.nxv4i32.iXLen(<vscale x 4 x i32> %c, <vscale x 4 x i32> %d, iXLen 8, iXLen 16, iXLen 0)
-  %base2 = bitcast i32* %1 to <vscale x 4 x i32>*
-  call void @llvm.riscv.vse.nxv4i32(<vscale x 4 x i32> %e, <vscale x 4 x i32>* %base2, iXLen 16)
+  call void @llvm.riscv.vse.nxv4i32(<vscale x 4 x i32> %e, ptr %1, iXLen 16)
   ret void
 }
 
-define <vscale x 4 x i32> @test_vle32x3(i32* %0) {
+define <vscale x 4 x i32> @test_vle32x3(ptr %0) {
 ; CHECK-LABEL: test_vle32x3:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 24, e32, m2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    ret
-  %add.ptr0 = getelementptr inbounds i32, i32* %0, iXLen 8
-  %add.ptr1 = getelementptr inbounds i32, i32* %0, iXLen 16
-  %base0 = bitcast i32* %0 to <vscale x 2 x i32>*
-  %base1 = bitcast i32* %add.ptr0 to <vscale x 2 x i32>*
-  %base2 = bitcast i32* %add.ptr1 to <vscale x 2 x i32>*
-  %a = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.iXLen(<vscale x 2 x i32> undef, <vscale x 2 x i32>* %base0, iXLen 8)
-  %b = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.iXLen(<vscale x 2 x i32> undef, <vscale x 2 x i32>* %base1, iXLen 8)
-  %c = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.iXLen(<vscale x 2 x i32> undef, <vscale x 2 x i32>* %base2, iXLen 8)
+  %add.ptr0 = getelementptr inbounds i32, ptr %0, iXLen 8
+  %add.ptr1 = getelementptr inbounds i32, ptr %0, iXLen 16
+  %a = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.iXLen(<vscale x 2 x i32> undef, ptr %0, iXLen 8)
+  %b = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.iXLen(<vscale x 2 x i32> undef, ptr %add.ptr0, iXLen 8)
+  %c = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.iXLen(<vscale x 2 x i32> undef, ptr %add.ptr1, iXLen 8)
   %d = call <vscale x 4 x i32> @llvm.experimental.vector.insert.nxv4i32.nxv2i32(<vscale x 4 x i32> undef, <vscale x 2 x i32> %a, i64 0)
   %e = call <vscale x 4 x i32> @llvm.experimental.vector.insert.nxv4i32.nxv2i32(<vscale x 4 x i32> undef, <vscale x 2 x i32> %b, i64 0)
   %f = call <vscale x 4 x i32> @llvm.experimental.vector.insert.nxv4i32.nxv2i32(<vscale x 4 x i32> undef, <vscale x 2 x i32> %c, i64 0)
@@ -69,24 +61,20 @@ define <vscale x 4 x i32> @test_vle32x3(i32* %0) {
   ret <vscale x 4 x i32> %h
 }
 
-define <vscale x 4 x i32> @test_vle32x4(i32* %0) {
+define <vscale x 4 x i32> @test_vle32x4(ptr %0) {
 ; CHECK-LABEL: test_vle32x4:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    li a1, 32
 ; CHECK-NEXT:    vsetvli zero, a1, e32, m2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    ret
-  %add.ptr0 = getelementptr inbounds i32, i32* %0, iXLen 8
-  %add.ptr1 = getelementptr inbounds i32, i32* %0, iXLen 16
-  %add.ptr2 = getelementptr inbounds i32, i32* %0, iXLen 24
-  %base0 = bitcast i32* %0 to <vscale x 2 x i32>*
-  %base1 = bitcast i32* %add.ptr0 to <vscale x 2 x i32>*
-  %base2 = bitcast i32* %add.ptr1 to <vscale x 2 x i32>*
-  %base3 = bitcast i32* %add.ptr2 to <vscale x 2 x i32>*
-  %a = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.iXLen(<vscale x 2 x i32> undef, <vscale x 2 x i32>* %base0, iXLen 8)
-  %b = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.iXLen(<vscale x 2 x i32> undef, <vscale x 2 x i32>* %base1, iXLen 8)
-  %c = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.iXLen(<vscale x 2 x i32> undef, <vscale x 2 x i32>* %base2, iXLen 8)
-  %d = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.iXLen(<vscale x 2 x i32> undef, <vscale x 2 x i32>* %base3, iXLen 8)
+  %add.ptr0 = getelementptr inbounds i32, ptr %0, iXLen 8
+  %add.ptr1 = getelementptr inbounds i32, ptr %0, iXLen 16
+  %add.ptr2 = getelementptr inbounds i32, ptr %0, iXLen 24
+  %a = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.iXLen(<vscale x 2 x i32> undef, ptr %0, iXLen 8)
+  %b = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.iXLen(<vscale x 2 x i32> undef, ptr %add.ptr0, iXLen 8)
+  %c = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.iXLen(<vscale x 2 x i32> undef, ptr %add.ptr1, iXLen 8)
+  %d = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.iXLen(<vscale x 2 x i32> undef, ptr %add.ptr2, iXLen 8)
   %e = call <vscale x 4 x i32> @llvm.experimental.vector.insert.nxv4i32.nxv2i32(<vscale x 4 x i32> undef, <vscale x 2 x i32> %a, i64 0)
   %f = call <vscale x 4 x i32> @llvm.experimental.vector.insert.nxv4i32.nxv2i32(<vscale x 4 x i32> undef, <vscale x 2 x i32> %b, i64 0)
   %g = call <vscale x 4 x i32> @llvm.experimental.vector.insert.nxv4i32.nxv2i32(<vscale x 4 x i32> undef, <vscale x 2 x i32> %c, i64 0)

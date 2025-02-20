@@ -4,7 +4,7 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+v -riscv-v-vector-bits-min=256 -riscv-mem-to-rvv=true -riscv-mem-to-rvv-lmul=8 -O3 \
 ; RUN:   -verify-machineinstrs < %s | FileCheck %s --check-prefixes=MIN-256
 
-define void @KnownSize(i8* nocapture readonly %src, i8* nocapture %dst) {
+define void @KnownSize(ptr nocapture readonly %src, ptr nocapture %dst) {
 ; MIN-512-LABEL: KnownSize:
 ; MIN-512:       # %bb.0: # %entry
 ; MIN-512-NEXT:    sub a2, a1, a0
@@ -137,11 +137,11 @@ define void @KnownSize(i8* nocapture readonly %src, i8* nocapture %dst) {
 ; MIN-256-NEXT:    vse8.v v8, (a1)
 ; MIN-256-NEXT:    ret
 entry:
-  tail call void @llvm.memmove.p0i8.p0i8.i64(i8* align 1 %dst, i8* align 1 %src, i64 2040, i1 false)
+  tail call void @llvm.memmove.p0.p0.i64(ptr align 1 %dst, ptr align 1 %src, i64 2040, i1 false)
   ret void
 }
 
-define void @KnownSize2(i8* nocapture readonly %src, i8* nocapture %dst) {
+define void @KnownSize2(ptr nocapture readonly %src, ptr nocapture %dst) {
 ; MIN-512-LABEL: KnownSize2:
 ; MIN-512:       # %bb.0: # %entry
 ; MIN-512-NEXT:    li a2, 384
@@ -184,11 +184,11 @@ define void @KnownSize2(i8* nocapture readonly %src, i8* nocapture %dst) {
 ; MIN-256-NEXT:    vse8.v v8, (a1)
 ; MIN-256-NEXT:    ret
 entry:
-  tail call void @llvm.memmove.p0i8.p0i8.i64(i8* align 1 %dst, i8* align 1 %src, i64 384, i1 false)
+  tail call void @llvm.memmove.p0.p0.i64(ptr align 1 %dst, ptr align 1 %src, i64 384, i1 false)
   ret void
 }
 
-define void @KnownSize3(i8* nocapture readonly %src, i8* nocapture %dst) {
+define void @KnownSize3(ptr nocapture readonly %src, ptr nocapture %dst) {
 ; MIN-512-LABEL: KnownSize3:
 ; MIN-512:       # %bb.0: # %entry
 ; MIN-512-NEXT:    sub a2, a1, a0
@@ -265,8 +265,8 @@ define void @KnownSize3(i8* nocapture readonly %src, i8* nocapture %dst) {
 ; MIN-256-NEXT:    vse8.v v8, (a1)
 ; MIN-256-NEXT:    ret
 entry:
-  tail call void @llvm.memmove.p0i8.p0i8.i64(i8* align 1 %dst, i8* align 1 %src, i64 1024, i1 false)
+  tail call void @llvm.memmove.p0.p0.i64(ptr align 1 %dst, ptr align 1 %src, i64 1024, i1 false)
   ret void
 }
 
-declare void @llvm.memmove.p0i8.p0i8.i64(i8* noalias nocapture writeonly, i8* noalias nocapture readonly, i64, i1 immarg)
+declare void @llvm.memmove.p0.p0.i64(ptr noalias nocapture writeonly, ptr noalias nocapture readonly, i64, i1 immarg)

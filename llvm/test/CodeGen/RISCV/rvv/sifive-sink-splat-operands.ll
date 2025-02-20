@@ -7,7 +7,7 @@
 ; limits performance.
 ; FIXME: This is potentially bad for register pressure. Need a better heuristic.
 
-define void @sink_splat_add(i32* nocapture %a, i32 signext %x) {
+define void @sink_splat_add(ptr nocapture %a, i32 signext %x) {
 ; CHECK-LABEL: sink_splat_add:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
@@ -30,12 +30,10 @@ entry:
 
 vector.body:                                      ; preds = %vector.body, %entry
   %index = phi i64 [ 0, %entry ], [ %index.next, %vector.body ]
-  %0 = getelementptr inbounds i32, i32* %a, i64 %index
-  %1 = bitcast i32* %0 to <4 x i32>*
-  %wide.load = load <4 x i32>, <4 x i32>* %1, align 4
+  %0 = getelementptr inbounds i32, ptr %a, i64 %index
+  %wide.load = load <4 x i32>, ptr %0, align 4
   %2 = add <4 x i32> %wide.load, %broadcast.splat
-  %3 = bitcast i32* %0 to <4 x i32>*
-  store <4 x i32> %2, <4 x i32>* %3, align 4
+  store <4 x i32> %2, ptr %0, align 4
   %index.next = add nuw i64 %index, 4
   %4 = icmp eq i64 %index.next, 1024
   br i1 %4, label %for.cond.cleanup, label %vector.body
@@ -46,7 +44,7 @@ for.cond.cleanup:                                 ; preds = %vector.body
 
 declare i64 @llvm.vscale.i64()
 
-define void @sink_splat_add_scalable(i32* nocapture %a, i32 signext %x) {
+define void @sink_splat_add_scalable(ptr nocapture %a, i32 signext %x) {
 ; CHECK-LABEL: sink_splat_add_scalable:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    csrr a3, vlenb
@@ -106,12 +104,10 @@ vector.ph:                                        ; preds = %entry
 
 vector.body:                                      ; preds = %vector.body, %vector.ph
   %index = phi i64 [ 0, %vector.ph ], [ %index.next, %vector.body ]
-  %6 = getelementptr inbounds i32, i32* %a, i64 %index
-  %7 = bitcast i32* %6 to <vscale x 4 x i32>*
-  %wide.load = load <vscale x 4 x i32>, <vscale x 4 x i32>* %7, align 4
+  %6 = getelementptr inbounds i32, ptr %a, i64 %index
+  %wide.load = load <vscale x 4 x i32>, ptr %6, align 4
   %8 = add <vscale x 4 x i32> %wide.load, %broadcast.splat
-  %9 = bitcast i32* %6 to <vscale x 4 x i32>*
-  store <vscale x 4 x i32> %8, <vscale x 4 x i32>* %9, align 4
+  store <vscale x 4 x i32> %8, ptr %6, align 4
   %index.next = add nuw i64 %index, %5
   %10 = icmp eq i64 %index.next, %n.vec
   br i1 %10, label %middle.block, label %vector.body
@@ -129,10 +125,10 @@ for.cond.cleanup:                                 ; preds = %for.body, %middle.b
 
 for.body:                                         ; preds = %for.body.preheader, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ %indvars.iv.ph, %for.body.preheader ]
-  %arrayidx = getelementptr inbounds i32, i32* %a, i64 %indvars.iv
-  %11 = load i32, i32* %arrayidx, align 4
+  %arrayidx = getelementptr inbounds i32, ptr %a, i64 %indvars.iv
+  %11 = load i32, ptr %arrayidx, align 4
   %add = add i32 %11, %x
-  store i32 %add, i32* %arrayidx, align 4
+  store i32 %add, ptr %arrayidx, align 4
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
   %cmp.not = icmp eq i64 %indvars.iv.next, 1024
   br i1 %cmp.not, label %for.cond.cleanup, label %for.body
@@ -140,7 +136,7 @@ for.body:                                         ; preds = %for.body.preheader,
 
 declare <4 x i32> @llvm.vp.add.v4i32(<4 x i32>, <4 x i32>, <4 x i1>, i32)
 
-define void @sink_splat_vp_add(i32* nocapture %a, i32 signext %x, <4 x i1> %m, i32 zeroext %vl) {
+define void @sink_splat_vp_add(ptr nocapture %a, i32 signext %x, <4 x i1> %m, i32 zeroext %vl) {
 ; CHECK-LABEL: sink_splat_vp_add:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
@@ -163,12 +159,10 @@ entry:
 
 vector.body:                                      ; preds = %vector.body, %entry
   %index = phi i64 [ 0, %entry ], [ %index.next, %vector.body ]
-  %0 = getelementptr inbounds i32, i32* %a, i64 %index
-  %1 = bitcast i32* %0 to <4 x i32>*
-  %wide.load = load <4 x i32>, <4 x i32>* %1, align 4
+  %0 = getelementptr inbounds i32, ptr %a, i64 %index
+  %wide.load = load <4 x i32>, ptr %0, align 4
   %2 = call <4 x i32> @llvm.vp.add.v4i32(<4 x i32> %wide.load, <4 x i32> %broadcast.splat, <4 x i1> %m, i32 %vl)
-  %3 = bitcast i32* %0 to <4 x i32>*
-  store <4 x i32> %2, <4 x i32>* %3, align 4
+  store <4 x i32> %2, ptr %0, align 4
   %index.next = add nuw i64 %index, 4
   %4 = icmp eq i64 %index.next, 1024
   br i1 %4, label %for.cond.cleanup, label %vector.body
@@ -177,7 +171,7 @@ for.cond.cleanup:                                 ; preds = %vector.body
   ret void
 }
 
-define void @sink_splat_fadd(float* nocapture %a, float %x) {
+define void @sink_splat_fadd(ptr nocapture %a, float %x) {
 ; CHECK-LABEL: sink_splat_fadd:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
@@ -200,12 +194,10 @@ entry:
 
 vector.body:                                      ; preds = %vector.body, %entry
   %index = phi i64 [ 0, %entry ], [ %index.next, %vector.body ]
-  %0 = getelementptr inbounds float, float* %a, i64 %index
-  %1 = bitcast float* %0 to <4 x float>*
-  %wide.load = load <4 x float>, <4 x float>* %1, align 4
+  %0 = getelementptr inbounds float, ptr %a, i64 %index
+  %wide.load = load <4 x float>, ptr %0, align 4
   %2 = fadd <4 x float> %wide.load, %broadcast.splat
-  %3 = bitcast float* %0 to <4 x float>*
-  store <4 x float> %2, <4 x float>* %3, align 4
+  store <4 x float> %2, ptr %0, align 4
   %index.next = add nuw i64 %index, 4
   %4 = icmp eq i64 %index.next, 1024
   br i1 %4, label %for.cond.cleanup, label %vector.body
@@ -214,7 +206,7 @@ for.cond.cleanup:                                 ; preds = %vector.body
   ret void
 }
 
-define void @sink_splat_fadd_scalable(float* nocapture %a, float %x) {
+define void @sink_splat_fadd_scalable(ptr nocapture %a, float %x) {
 ; CHECK-LABEL: sink_splat_fadd_scalable:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    csrr a2, vlenb
@@ -274,12 +266,10 @@ vector.ph:                                        ; preds = %entry
 
 vector.body:                                      ; preds = %vector.body, %vector.ph
   %index = phi i64 [ 0, %vector.ph ], [ %index.next, %vector.body ]
-  %6 = getelementptr inbounds float, float* %a, i64 %index
-  %7 = bitcast float* %6 to <vscale x 2 x float>*
-  %wide.load = load <vscale x 2 x float>, <vscale x 2 x float>* %7, align 4
+  %6 = getelementptr inbounds float, ptr %a, i64 %index
+  %wide.load = load <vscale x 2 x float>, ptr %6, align 4
   %8 = fadd <vscale x 2 x float> %wide.load, %broadcast.splat
-  %9 = bitcast float* %6 to <vscale x 2 x float>*
-  store <vscale x 2 x float> %8, <vscale x 2 x float>* %9, align 4
+  store <vscale x 2 x float> %8, ptr %6, align 4
   %index.next = add nuw i64 %index, %5
   %10 = icmp eq i64 %index.next, %n.vec
   br i1 %10, label %middle.block, label %vector.body
@@ -297,10 +287,10 @@ for.cond.cleanup:                                 ; preds = %for.body, %middle.b
 
 for.body:                                         ; preds = %for.body.preheader, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ %indvars.iv.ph, %for.body.preheader ]
-  %arrayidx = getelementptr inbounds float, float* %a, i64 %indvars.iv
-  %11 = load float, float* %arrayidx, align 4
+  %arrayidx = getelementptr inbounds float, ptr %a, i64 %indvars.iv
+  %11 = load float, ptr %arrayidx, align 4
   %mul = fadd float %11, %x
-  store float %mul, float* %arrayidx, align 4
+  store float %mul, ptr %arrayidx, align 4
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
   %cmp.not = icmp eq i64 %indvars.iv.next, 1024
   br i1 %cmp.not, label %for.cond.cleanup, label %for.body
@@ -308,7 +298,7 @@ for.body:                                         ; preds = %for.body.preheader,
 
 declare <4 x float> @llvm.vp.fadd.v4i32(<4 x float>, <4 x float>, <4 x i1>, i32)
 
-define void @sink_splat_vp_fadd(float* nocapture %a, float %x, <4 x i1> %m, i32 zeroext %vl) {
+define void @sink_splat_vp_fadd(ptr nocapture %a, float %x, <4 x i1> %m, i32 zeroext %vl) {
 ; CHECK-LABEL: sink_splat_vp_fadd:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
@@ -333,12 +323,10 @@ entry:
 
 vector.body:                                      ; preds = %vector.body, %entry
   %index = phi i64 [ 0, %entry ], [ %index.next, %vector.body ]
-  %0 = getelementptr inbounds float, float* %a, i64 %index
-  %1 = bitcast float* %0 to <4 x float>*
-  %wide.load = load <4 x float>, <4 x float>* %1, align 4
+  %0 = getelementptr inbounds float, ptr %a, i64 %index
+  %wide.load = load <4 x float>, ptr %0, align 4
   %2 = call <4 x float> @llvm.vp.fadd.v4i32(<4 x float> %wide.load, <4 x float> %broadcast.splat, <4 x i1> %m, i32 %vl)
-  %3 = bitcast float* %0 to <4 x float>*
-  store <4 x float> %2, <4 x float>* %3, align 4
+  store <4 x float> %2, ptr %0, align 4
   %index.next = add nuw i64 %index, 4
   %4 = icmp eq i64 %index.next, 1024
   br i1 %4, label %for.cond.cleanup, label %vector.body
