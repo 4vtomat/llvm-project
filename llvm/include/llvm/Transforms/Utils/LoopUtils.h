@@ -57,7 +57,6 @@ typedef std::pair<const RuntimeCheckingPtrGroup *,
 
 #if SIFIVE_CUSTOMIZATION
 extern cl::opt<bool> EnableLoopDataLayout;
-extern cl::opt<bool> EnableLoopDistributeAndPeel;
 #endif // SIFIVE_CUSTOMIZATION
 
 template <typename T, unsigned N> class SmallSetVector;

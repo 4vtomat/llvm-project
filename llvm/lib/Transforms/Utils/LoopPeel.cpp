@@ -1116,7 +1116,7 @@ llvm::gatherPeelingPreferences(Loop *L, ScalarEvolution &SE,
   // If both LoopDistribute and EpilogPeeling are not
   // specified by the user, the defaults are off.
   if (PP.AllowEpilogPeeling)
-    PP.AllowEpilogPeeling = AllowEpilogPeeling || EnableLoopDistributeAndPeel;
+    PP.AllowEpilogPeeling = AllowEpilogPeeling;
 #endif // SIFIVE_CUSTOMIZATION
 
   // User specified values using cl::opt.

@@ -1030,14 +1030,10 @@ static bool runImpl(Function &F, LoopInfo *LI, DominatorTree *DT,
 #if SIFIVE_CUSTOMIZATION
     if (auto Distributed = getOptionalIntLoopAttribute(L, DistributedCountMetaData))
       continue;
+#endif
 
-    if (LDL.isForced().value_or(EnableLoopDistribute ||
-                                EnableLoopDistributeAndPeel))
-      Changed |= LDL.processLoop();
-#else
     if (LDL.isForced().value_or(EnableLoopDistribute))
       Changed |= LDL.processLoop();
-#endif
   }
 
   // Process each loop nest in the function.
