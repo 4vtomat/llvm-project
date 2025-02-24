@@ -604,6 +604,7 @@ struct SysReg {
   }
 };
 
+#define GET_SysRegEncodings_DECL
 #define GET_SysRegsList_DECL
 #include "RISCVGenSearchableTables.inc"
 } // end namespace RISCVSysReg
