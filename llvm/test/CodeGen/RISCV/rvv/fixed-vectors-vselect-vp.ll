@@ -462,11 +462,18 @@ define <32 x i64> @select_evl_v32i64(<32 x i1> %a, <32 x i64> %b, <32 x i64> %c)
 ; CHECK-NEXT:    addi a1, a0, 128
 ; CHECK-NEXT:    vsetivli zero, 16, e64, m8, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
+<<<<<<< HEAD
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
+=======
+; CHECK-NEXT:    vsetivli zero, 1, e64, m8, ta, ma
+; CHECK-NEXT:    vle64.v v16, (a1)
+; CHECK-NEXT:    addi a0, sp, 16
+; CHECK-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
+>>>>>>> refs/rewritten/36e4176f1d83d04cdebb4e1870561099b2478d80-2
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v24, v0, 2
 ; CHECK-NEXT:    vsetivli zero, 16, e64, m8, ta, ma

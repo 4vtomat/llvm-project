@@ -53,7 +53,8 @@ inline bool isUniformAfterVectorization(const VPValue *VPV) {
 #endif // SIFIVE_CUSTOMIZATION
   if (auto *VPI = dyn_cast<VPInstruction>(Def))
     return VPI->isSingleScalar() || VPI->isVectorToScalar();
-  return false;
+  // VPExpandSCEVRecipes must be placed in the entry and are alway uniform.
+  return isa<VPExpandSCEVRecipe>(Def);
 }
 
 #if SIFIVE_CUSTOMIZATION
