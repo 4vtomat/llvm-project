@@ -719,31 +719,18 @@ Value *VPInstruction::generate(VPTransformState &State) {
         State.Plan->useVLAVectorizer()
             ? State.get(State.Plan->getInitEVL(), /*NeedsScalar=*/true)
             : getRuntimeVF(Builder, State.Builder.getInt32Ty(), State.VF);
+    Value *SBF = State.Builder.CreateIntrinsic(
+        WidenedCond->getType(), Intrinsic::experimental_vp_set_before_first,
+        {UndistCond, AllTrue, InitEVL});
 
-    Value *InitEVL64 =
-        State.Builder.CreateZExtOrTrunc(InitEVL, State.Builder.getInt64Ty());
-    Value *InitEVL32 =
-        State.Builder.CreateZExtOrTrunc(InitEVL, State.Builder.getInt32Ty());
-
-    // We are creating RISC-V target intrinsic, so it's fine to assume it must
-    // be RISC-V here.
-    Module *M = State.Builder.GetInsertBlock()->getModule();
-    Triple TargetTriple(M->getTargetTriple());
-    assert (TargetTriple.isRISCV () && "Only RISCV target is supported");
-
-    Value *RVEVL = TargetTriple.isRISCV32 () ? InitEVL32 : InitEVL64;
-
-    Value *SBF = State.Builder.CreateIntrinsic(WidenedCond->getType(),
-                                               Intrinsic::riscv_vmsbf,
-                                               {UndistCond, RVEVL});
     Value *MaskPhi = State.get(getOperand(1));
     Value *OldMask = MaskPhi;
     Value *VAnd =
         State.Builder.CreateIntrinsic(WidenedCond->getType(), Intrinsic::vp_and,
-                                      {SBF, OldMask, AllTrue, InitEVL32});
+                                      {SBF, OldMask, AllTrue, InitEVL});
     Value *NewMask =
         State.Builder.CreateIntrinsic(WidenedCond->getType(), Intrinsic::vp_or,
-                                      {VAnd, UndistCond, AllTrue, InitEVL32});
+                                      {VAnd, UndistCond, AllTrue, InitEVL});
 
     cast<PHINode>(MaskPhi)->addIncoming(NewMask, State.CFG.PrevBB);
 
@@ -3213,10 +3200,8 @@ void VPCSAExtractScalarRecipe::execute(VPTransformState &State) {
       State.Plan->useVLAVectorizer()
           ? State.get(State.Plan->getInitEVL(), /*NeedsScalar=*/true)
           : getRuntimeVF(State.Builder, State.Builder.getInt32Ty(), State.VF);
-  Value *InitEVL32 =
-      State.Builder.CreateZExtOrTrunc(InitEVL, State.Builder.getInt32Ty());
 
-  Value *VLToUse = State.EnableRISCVCSA ? InitEVL32
+  Value *VLToUse = State.EnableRISCVCSA ? InitEVL
                                         : State.get(getVPCSAVLSel(),
                                                     /*NeedsScalar=*/true);
   Value *InitScalar = getVPInitScalar()->getLiveInIRValue();

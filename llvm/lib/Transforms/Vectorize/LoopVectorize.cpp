@@ -7964,12 +7964,9 @@ static InstructionCost getCSACost(PHINode *Phi, VectorType *&VTy,
   C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
   // Convert the non masked mask to mask type
   C += TTI.getArithmeticInstrCost(Instruction::ICmp, MaskTy, CostKind);
-  // ZExt init EVL
-  C += TTI.getArithmeticInstrCost(
-      Instruction::ZExt, IntegerType::getInt32Ty(VTy->getContext()), CostKind);
-  // RISCV_VMSBF
-  IntrinsicCostAttributes CostAttrs(Intrinsic::riscv_vmsbf, VTy,
-                                    {VTy, Type::getInt64Ty(VTy->getContext())});
+  IntrinsicCostAttributes CostAttrs(Intrinsic::experimental_vp_set_before_first,
+                                    VTy,
+                                    {VTy, Type::getInt32Ty(VTy->getContext())});
   C += TTI.getIntrinsicInstrCost(CostAttrs, CostKind);
   // VPAnd
   C += TTI.getArithmeticInstrCost(Instruction::And, MaskTy, CostKind);

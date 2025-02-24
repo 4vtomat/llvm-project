@@ -53,8 +53,7 @@ define i32 @simple_csa_int_select(i32 %N, ptr %data) {
 ; CHECK-NEXT:    [[VP_CAST:%.*]] = call <vscale x 2 x i64> @llvm.vp.sext.nxv2i64.nxv2i32(<vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP8]])
 ; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i64(<vscale x 2 x i64> [[VEC_IND]], <vscale x 2 x i64> [[VP_CAST]], metadata !"slt", <vscale x 2 x i1> splat (i1 true), i32 [[TMP8]])
 ; CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 2 x i1> @llvm.vp.merge.nxv2i1(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> zeroinitializer, i32 [[TMP8]])
-; CHECK-NEXT:    [[TMP13:%.*]] = zext i32 [[TMP2]] to i64
-; CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i1> @llvm.riscv.vmsbf.nxv2i1.i64(<vscale x 2 x i1> [[TMP12]], i64 [[TMP13]])
+; CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i1> @llvm.experimental.vp.set.before.first.nxv2i1(<vscale x 2 x i1> [[TMP12]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 2 x i1> @llvm.vp.and.nxv2i1(<vscale x 2 x i1> [[TMP14]], <vscale x 2 x i1> [[CSA_MASK_PHI]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP16]] = call <vscale x 2 x i1> @llvm.vp.or.nxv2i1(<vscale x 2 x i1> [[TMP15]], <vscale x 2 x i1> [[TMP12]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP17]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i32> [[CSA_DATA_PHI]], i32 [[TMP8]])
@@ -202,8 +201,7 @@ define i32 @simple_csa_int_select(i32 %N, ptr %data) {
 ; CHECK-RV32-NEXT:    [[VP_CAST:%.*]] = call <vscale x 2 x i64> @llvm.vp.sext.nxv2i64.nxv2i32(<vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-RV32-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i64(<vscale x 2 x i64> [[VEC_IND]], <vscale x 2 x i64> [[VP_CAST]], metadata !"slt", <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-RV32-NEXT:    [[TMP11:%.*]] = call <vscale x 2 x i1> @llvm.vp.merge.nxv2i1(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> zeroinitializer, i32 [[TMP7]])
-; CHECK-RV32-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP2]] to i64
-; CHECK-RV32-NEXT:    [[TMP13:%.*]] = call <vscale x 2 x i1> @llvm.riscv.vmsbf.nxv2i1.i32(<vscale x 2 x i1> [[TMP11]], i32 [[TMP2]])
+; CHECK-RV32-NEXT:    [[TMP13:%.*]] = call <vscale x 2 x i1> @llvm.experimental.vp.set.before.first.nxv2i1(<vscale x 2 x i1> [[TMP11]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-RV32-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i1> @llvm.vp.and.nxv2i1(<vscale x 2 x i1> [[TMP13]], <vscale x 2 x i1> [[CSA_MASK_PHI]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-RV32-NEXT:    [[TMP15]] = call <vscale x 2 x i1> @llvm.vp.or.nxv2i1(<vscale x 2 x i1> [[TMP14]], <vscale x 2 x i1> [[TMP11]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-RV32-NEXT:    [[TMP16]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i32> [[CSA_DATA_PHI]], i32 [[TMP7]])
@@ -307,8 +305,7 @@ define float @simple_csa_float_select(i32 %N, ptr %data) {
 ; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0(ptr align 4 [[TMP5]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[VP_OP_FCMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x float> zeroinitializer, metadata !"ogt", <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP6:%.*]] = call <vscale x 2 x i1> @llvm.vp.merge.nxv2i1(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i1> [[VP_OP_FCMP]], <vscale x 2 x i1> zeroinitializer, i32 [[TMP2]])
-; CHECK-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP0]] to i64
-; CHECK-NEXT:    [[TMP8:%.*]] = call <vscale x 2 x i1> @llvm.riscv.vmsbf.nxv2i1.i64(<vscale x 2 x i1> [[TMP6]], i64 [[TMP7]])
+; CHECK-NEXT:    [[TMP8:%.*]] = call <vscale x 2 x i1> @llvm.experimental.vp.set.before.first.nxv2i1(<vscale x 2 x i1> [[TMP6]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    [[TMP9:%.*]] = call <vscale x 2 x i1> @llvm.vp.and.nxv2i1(<vscale x 2 x i1> [[TMP8]], <vscale x 2 x i1> [[CSA_MASK_PHI]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    [[TMP10]] = call <vscale x 2 x i1> @llvm.vp.or.nxv2i1(<vscale x 2 x i1> [[TMP9]], <vscale x 2 x i1> [[TMP6]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    [[TMP11]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> [[VP_OP_FCMP]], <vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x float> [[CSA_DATA_PHI]], i32 [[TMP2]])
@@ -424,8 +421,7 @@ define float @simple_csa_float_select(i32 %N, ptr %data) {
 ; CHECK-RV32-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0(ptr align 4 [[TMP4]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-RV32-NEXT:    [[VP_OP_FCMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x float> zeroinitializer, metadata !"ogt", <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-RV32-NEXT:    [[TMP5:%.*]] = call <vscale x 2 x i1> @llvm.vp.merge.nxv2i1(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i1> [[VP_OP_FCMP]], <vscale x 2 x i1> zeroinitializer, i32 [[TMP1]])
-; CHECK-RV32-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP0]] to i64
-; CHECK-RV32-NEXT:    [[TMP7:%.*]] = call <vscale x 2 x i1> @llvm.riscv.vmsbf.nxv2i1.i32(<vscale x 2 x i1> [[TMP5]], i32 [[TMP0]])
+; CHECK-RV32-NEXT:    [[TMP7:%.*]] = call <vscale x 2 x i1> @llvm.experimental.vp.set.before.first.nxv2i1(<vscale x 2 x i1> [[TMP5]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-RV32-NEXT:    [[TMP8:%.*]] = call <vscale x 2 x i1> @llvm.vp.and.nxv2i1(<vscale x 2 x i1> [[TMP7]], <vscale x 2 x i1> [[CSA_MASK_PHI]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-RV32-NEXT:    [[TMP9]] = call <vscale x 2 x i1> @llvm.vp.or.nxv2i1(<vscale x 2 x i1> [[TMP8]], <vscale x 2 x i1> [[TMP5]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-RV32-NEXT:    [[TMP10]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> [[VP_OP_FCMP]], <vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x float> [[CSA_DATA_PHI]], i32 [[TMP1]])
@@ -797,8 +793,7 @@ define i32 @csa_in_series_int_select(i32 %N, ptr %data0, ptr %data1) {
 ; CHECK-NEXT:    [[VP_CAST:%.*]] = call <vscale x 2 x i64> @llvm.vp.sext.nxv2i64.nxv2i32(<vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP8]])
 ; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i64(<vscale x 2 x i64> [[VEC_IND]], <vscale x 2 x i64> [[VP_CAST]], metadata !"slt", <vscale x 2 x i1> splat (i1 true), i32 [[TMP8]])
 ; CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 2 x i1> @llvm.vp.merge.nxv2i1(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> zeroinitializer, i32 [[TMP8]])
-; CHECK-NEXT:    [[TMP13:%.*]] = zext i32 [[TMP2]] to i64
-; CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i1> @llvm.riscv.vmsbf.nxv2i1.i64(<vscale x 2 x i1> [[TMP12]], i64 [[TMP13]])
+; CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i1> @llvm.experimental.vp.set.before.first.nxv2i1(<vscale x 2 x i1> [[TMP12]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 2 x i1> @llvm.vp.and.nxv2i1(<vscale x 2 x i1> [[TMP14]], <vscale x 2 x i1> [[CSA_MASK_PHI2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP16]] = call <vscale x 2 x i1> @llvm.vp.or.nxv2i1(<vscale x 2 x i1> [[TMP15]], <vscale x 2 x i1> [[TMP12]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP17]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i32> [[CSA_DATA_PHI5]], i32 [[TMP8]])
@@ -808,8 +803,7 @@ define i32 @csa_in_series_int_select(i32 %N, ptr %data0, ptr %data1) {
 ; CHECK-NEXT:    [[VP_CAST7:%.*]] = call <vscale x 2 x i64> @llvm.vp.sext.nxv2i64.nxv2i32(<vscale x 2 x i32> [[VP_OP_LOAD6]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP8]])
 ; CHECK-NEXT:    [[VP_OP_ICMP8:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i64(<vscale x 2 x i64> [[VEC_IND]], <vscale x 2 x i64> [[VP_CAST7]], metadata !"slt", <vscale x 2 x i1> splat (i1 true), i32 [[TMP8]])
 ; CHECK-NEXT:    [[TMP20:%.*]] = call <vscale x 2 x i1> @llvm.vp.merge.nxv2i1(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i1> [[VP_OP_ICMP8]], <vscale x 2 x i1> zeroinitializer, i32 [[TMP8]])
-; CHECK-NEXT:    [[TMP21:%.*]] = zext i32 [[TMP2]] to i64
-; CHECK-NEXT:    [[TMP22:%.*]] = call <vscale x 2 x i1> @llvm.riscv.vmsbf.nxv2i1.i64(<vscale x 2 x i1> [[TMP20]], i64 [[TMP21]])
+; CHECK-NEXT:    [[TMP22:%.*]] = call <vscale x 2 x i1> @llvm.experimental.vp.set.before.first.nxv2i1(<vscale x 2 x i1> [[TMP20]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP23:%.*]] = call <vscale x 2 x i1> @llvm.vp.and.nxv2i1(<vscale x 2 x i1> [[TMP22]], <vscale x 2 x i1> [[CSA_MASK_PHI]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP24]] = call <vscale x 2 x i1> @llvm.vp.or.nxv2i1(<vscale x 2 x i1> [[TMP23]], <vscale x 2 x i1> [[TMP20]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP25]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> [[VP_OP_ICMP8]], <vscale x 2 x i32> [[VP_OP_LOAD6]], <vscale x 2 x i32> [[CSA_DATA_PHI]], i32 [[TMP8]])
@@ -997,8 +991,7 @@ define i32 @csa_in_series_int_select(i32 %N, ptr %data0, ptr %data1) {
 ; CHECK-RV32-NEXT:    [[VP_CAST:%.*]] = call <vscale x 2 x i64> @llvm.vp.sext.nxv2i64.nxv2i32(<vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-RV32-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i64(<vscale x 2 x i64> [[VEC_IND]], <vscale x 2 x i64> [[VP_CAST]], metadata !"slt", <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-RV32-NEXT:    [[TMP11:%.*]] = call <vscale x 2 x i1> @llvm.vp.merge.nxv2i1(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> zeroinitializer, i32 [[TMP7]])
-; CHECK-RV32-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP2]] to i64
-; CHECK-RV32-NEXT:    [[TMP13:%.*]] = call <vscale x 2 x i1> @llvm.riscv.vmsbf.nxv2i1.i32(<vscale x 2 x i1> [[TMP11]], i32 [[TMP2]])
+; CHECK-RV32-NEXT:    [[TMP13:%.*]] = call <vscale x 2 x i1> @llvm.experimental.vp.set.before.first.nxv2i1(<vscale x 2 x i1> [[TMP11]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-RV32-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i1> @llvm.vp.and.nxv2i1(<vscale x 2 x i1> [[TMP13]], <vscale x 2 x i1> [[CSA_MASK_PHI2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-RV32-NEXT:    [[TMP15]] = call <vscale x 2 x i1> @llvm.vp.or.nxv2i1(<vscale x 2 x i1> [[TMP14]], <vscale x 2 x i1> [[TMP11]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-RV32-NEXT:    [[TMP16]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i32> [[CSA_DATA_PHI5]], i32 [[TMP7]])
@@ -1008,8 +1001,7 @@ define i32 @csa_in_series_int_select(i32 %N, ptr %data0, ptr %data1) {
 ; CHECK-RV32-NEXT:    [[VP_CAST7:%.*]] = call <vscale x 2 x i64> @llvm.vp.sext.nxv2i64.nxv2i32(<vscale x 2 x i32> [[VP_OP_LOAD6]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-RV32-NEXT:    [[VP_OP_ICMP8:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i64(<vscale x 2 x i64> [[VEC_IND]], <vscale x 2 x i64> [[VP_CAST7]], metadata !"slt", <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-RV32-NEXT:    [[TMP19:%.*]] = call <vscale x 2 x i1> @llvm.vp.merge.nxv2i1(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i1> [[VP_OP_ICMP8]], <vscale x 2 x i1> zeroinitializer, i32 [[TMP7]])
-; CHECK-RV32-NEXT:    [[TMP20:%.*]] = zext i32 [[TMP2]] to i64
-; CHECK-RV32-NEXT:    [[TMP21:%.*]] = call <vscale x 2 x i1> @llvm.riscv.vmsbf.nxv2i1.i32(<vscale x 2 x i1> [[TMP19]], i32 [[TMP2]])
+; CHECK-RV32-NEXT:    [[TMP21:%.*]] = call <vscale x 2 x i1> @llvm.experimental.vp.set.before.first.nxv2i1(<vscale x 2 x i1> [[TMP19]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-RV32-NEXT:    [[TMP22:%.*]] = call <vscale x 2 x i1> @llvm.vp.and.nxv2i1(<vscale x 2 x i1> [[TMP21]], <vscale x 2 x i1> [[CSA_MASK_PHI]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-RV32-NEXT:    [[TMP23]] = call <vscale x 2 x i1> @llvm.vp.or.nxv2i1(<vscale x 2 x i1> [[TMP22]], <vscale x 2 x i1> [[TMP19]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-RV32-NEXT:    [[TMP24]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> [[VP_OP_ICMP8]], <vscale x 2 x i32> [[VP_OP_LOAD6]], <vscale x 2 x i32> [[CSA_DATA_PHI]], i32 [[TMP7]])
@@ -1138,8 +1130,7 @@ define float @csa_in_series_float_select(i32 %N, ptr %data0, ptr %data1) {
 ; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0(ptr align 4 [[TMP5]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[VP_OP_FCMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x float> zeroinitializer, metadata !"ogt", <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP6:%.*]] = call <vscale x 2 x i1> @llvm.vp.merge.nxv2i1(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i1> [[VP_OP_FCMP]], <vscale x 2 x i1> zeroinitializer, i32 [[TMP2]])
-; CHECK-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP0]] to i64
-; CHECK-NEXT:    [[TMP8:%.*]] = call <vscale x 2 x i1> @llvm.riscv.vmsbf.nxv2i1.i64(<vscale x 2 x i1> [[TMP6]], i64 [[TMP7]])
+; CHECK-NEXT:    [[TMP8:%.*]] = call <vscale x 2 x i1> @llvm.experimental.vp.set.before.first.nxv2i1(<vscale x 2 x i1> [[TMP6]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    [[TMP9:%.*]] = call <vscale x 2 x i1> @llvm.vp.and.nxv2i1(<vscale x 2 x i1> [[TMP8]], <vscale x 2 x i1> [[CSA_MASK_PHI2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    [[TMP10]] = call <vscale x 2 x i1> @llvm.vp.or.nxv2i1(<vscale x 2 x i1> [[TMP9]], <vscale x 2 x i1> [[TMP6]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    [[TMP11]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> [[VP_OP_FCMP]], <vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x float> [[CSA_DATA_PHI3]], i32 [[TMP2]])
@@ -1148,8 +1139,7 @@ define float @csa_in_series_float_select(i32 %N, ptr %data0, ptr %data1) {
 ; CHECK-NEXT:    [[VP_OP_LOAD4:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0(ptr align 4 [[TMP13]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[VP_OP_FCMP5:%.*]] = call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> [[VP_OP_LOAD4]], <vscale x 2 x float> zeroinitializer, metadata !"ogt", <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i1> @llvm.vp.merge.nxv2i1(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i1> [[VP_OP_FCMP5]], <vscale x 2 x i1> zeroinitializer, i32 [[TMP2]])
-; CHECK-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP0]] to i64
-; CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 2 x i1> @llvm.riscv.vmsbf.nxv2i1.i64(<vscale x 2 x i1> [[TMP14]], i64 [[TMP15]])
+; CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 2 x i1> @llvm.experimental.vp.set.before.first.nxv2i1(<vscale x 2 x i1> [[TMP14]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 2 x i1> @llvm.vp.and.nxv2i1(<vscale x 2 x i1> [[TMP16]], <vscale x 2 x i1> [[CSA_MASK_PHI]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    [[TMP18]] = call <vscale x 2 x i1> @llvm.vp.or.nxv2i1(<vscale x 2 x i1> [[TMP17]], <vscale x 2 x i1> [[TMP14]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    [[TMP19]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> [[VP_OP_FCMP5]], <vscale x 2 x float> [[VP_OP_LOAD4]], <vscale x 2 x float> [[CSA_DATA_PHI]], i32 [[TMP2]])
@@ -1302,8 +1292,7 @@ define float @csa_in_series_float_select(i32 %N, ptr %data0, ptr %data1) {
 ; CHECK-RV32-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0(ptr align 4 [[TMP4]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-RV32-NEXT:    [[VP_OP_FCMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x float> zeroinitializer, metadata !"ogt", <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-RV32-NEXT:    [[TMP5:%.*]] = call <vscale x 2 x i1> @llvm.vp.merge.nxv2i1(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i1> [[VP_OP_FCMP]], <vscale x 2 x i1> zeroinitializer, i32 [[TMP1]])
-; CHECK-RV32-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP0]] to i64
-; CHECK-RV32-NEXT:    [[TMP7:%.*]] = call <vscale x 2 x i1> @llvm.riscv.vmsbf.nxv2i1.i32(<vscale x 2 x i1> [[TMP5]], i32 [[TMP0]])
+; CHECK-RV32-NEXT:    [[TMP7:%.*]] = call <vscale x 2 x i1> @llvm.experimental.vp.set.before.first.nxv2i1(<vscale x 2 x i1> [[TMP5]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-RV32-NEXT:    [[TMP8:%.*]] = call <vscale x 2 x i1> @llvm.vp.and.nxv2i1(<vscale x 2 x i1> [[TMP7]], <vscale x 2 x i1> [[CSA_MASK_PHI2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-RV32-NEXT:    [[TMP9]] = call <vscale x 2 x i1> @llvm.vp.or.nxv2i1(<vscale x 2 x i1> [[TMP8]], <vscale x 2 x i1> [[TMP5]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-RV32-NEXT:    [[TMP10]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> [[VP_OP_FCMP]], <vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x float> [[CSA_DATA_PHI3]], i32 [[TMP1]])
@@ -1312,8 +1301,7 @@ define float @csa_in_series_float_select(i32 %N, ptr %data0, ptr %data1) {
 ; CHECK-RV32-NEXT:    [[VP_OP_LOAD4:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0(ptr align 4 [[TMP12]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-RV32-NEXT:    [[VP_OP_FCMP5:%.*]] = call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> [[VP_OP_LOAD4]], <vscale x 2 x float> zeroinitializer, metadata !"ogt", <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-RV32-NEXT:    [[TMP13:%.*]] = call <vscale x 2 x i1> @llvm.vp.merge.nxv2i1(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i1> [[VP_OP_FCMP5]], <vscale x 2 x i1> zeroinitializer, i32 [[TMP1]])
-; CHECK-RV32-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP0]] to i64
-; CHECK-RV32-NEXT:    [[TMP15:%.*]] = call <vscale x 2 x i1> @llvm.riscv.vmsbf.nxv2i1.i32(<vscale x 2 x i1> [[TMP13]], i32 [[TMP0]])
+; CHECK-RV32-NEXT:    [[TMP15:%.*]] = call <vscale x 2 x i1> @llvm.experimental.vp.set.before.first.nxv2i1(<vscale x 2 x i1> [[TMP13]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-RV32-NEXT:    [[TMP16:%.*]] = call <vscale x 2 x i1> @llvm.vp.and.nxv2i1(<vscale x 2 x i1> [[TMP15]], <vscale x 2 x i1> [[CSA_MASK_PHI]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-RV32-NEXT:    [[TMP17]] = call <vscale x 2 x i1> @llvm.vp.or.nxv2i1(<vscale x 2 x i1> [[TMP16]], <vscale x 2 x i1> [[TMP13]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-RV32-NEXT:    [[TMP18]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> [[VP_OP_FCMP5]], <vscale x 2 x float> [[VP_OP_LOAD4]], <vscale x 2 x float> [[CSA_DATA_PHI]], i32 [[TMP1]])
@@ -3456,8 +3444,7 @@ define i64 @idx_scalar(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-NEXT:    [[VP_OP_LOAD4:%.*]] = call <vscale x 1 x i64> @llvm.vp.load.nxv1i64.p0(ptr align 8 [[TMP12]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 1 x i1> @llvm.vp.icmp.nxv1i64(<vscale x 1 x i64> [[VP_OP_LOAD]], <vscale x 1 x i64> [[VP_OP_LOAD4]], metadata !"sgt", <vscale x 1 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 1 x i1> @llvm.vp.merge.nxv1i1(<vscale x 1 x i1> splat (i1 true), <vscale x 1 x i1> [[VP_OP_ICMP]], <vscale x 1 x i1> zeroinitializer, i32 [[TMP7]])
-; CHECK-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP1]] to i64
-; CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 1 x i1> @llvm.riscv.vmsbf.nxv1i1.i64(<vscale x 1 x i1> [[TMP13]], i64 [[TMP14]])
+; CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 1 x i1> @llvm.experimental.vp.set.before.first.nxv1i1(<vscale x 1 x i1> [[TMP13]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 1 x i1> @llvm.vp.and.nxv1i1(<vscale x 1 x i1> [[TMP15]], <vscale x 1 x i1> [[CSA_MASK_PHI]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP17]] = call <vscale x 1 x i1> @llvm.vp.or.nxv1i1(<vscale x 1 x i1> [[TMP16]], <vscale x 1 x i1> [[TMP13]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP18]] = call <vscale x 1 x i64> @llvm.vp.merge.nxv1i64(<vscale x 1 x i1> [[VP_OP_ICMP]], <vscale x 1 x i64> [[VEC_IND]], <vscale x 1 x i64> [[CSA_DATA_PHI]], i32 [[TMP7]])
@@ -3607,8 +3594,7 @@ define i64 @idx_scalar(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-RV32-NEXT:    [[VP_OP_LOAD4:%.*]] = call <vscale x 1 x i64> @llvm.vp.load.nxv1i64.p0(ptr align 8 [[TMP11]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]])
 ; CHECK-RV32-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 1 x i1> @llvm.vp.icmp.nxv1i64(<vscale x 1 x i64> [[VP_OP_LOAD]], <vscale x 1 x i64> [[VP_OP_LOAD4]], metadata !"sgt", <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]])
 ; CHECK-RV32-NEXT:    [[TMP12:%.*]] = call <vscale x 1 x i1> @llvm.vp.merge.nxv1i1(<vscale x 1 x i1> splat (i1 true), <vscale x 1 x i1> [[VP_OP_ICMP]], <vscale x 1 x i1> zeroinitializer, i32 [[TMP6]])
-; CHECK-RV32-NEXT:    [[TMP13:%.*]] = zext i32 [[TMP1]] to i64
-; CHECK-RV32-NEXT:    [[TMP14:%.*]] = call <vscale x 1 x i1> @llvm.riscv.vmsbf.nxv1i1.i32(<vscale x 1 x i1> [[TMP12]], i32 [[TMP1]])
+; CHECK-RV32-NEXT:    [[TMP14:%.*]] = call <vscale x 1 x i1> @llvm.experimental.vp.set.before.first.nxv1i1(<vscale x 1 x i1> [[TMP12]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-RV32-NEXT:    [[TMP15:%.*]] = call <vscale x 1 x i1> @llvm.vp.and.nxv1i1(<vscale x 1 x i1> [[TMP14]], <vscale x 1 x i1> [[CSA_MASK_PHI]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-RV32-NEXT:    [[TMP16]] = call <vscale x 1 x i1> @llvm.vp.or.nxv1i1(<vscale x 1 x i1> [[TMP15]], <vscale x 1 x i1> [[TMP12]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-RV32-NEXT:    [[TMP17]] = call <vscale x 1 x i64> @llvm.vp.merge.nxv1i64(<vscale x 1 x i1> [[VP_OP_ICMP]], <vscale x 1 x i64> [[VEC_IND]], <vscale x 1 x i64> [[CSA_DATA_PHI]], i32 [[TMP6]])
@@ -3736,8 +3722,7 @@ define dso_local i64 @idx_scalar_dec(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-NEXT:    [[VP_REVERSE7:%.*]] = call <vscale x 1 x i64> @llvm.experimental.vp.reverse.nxv1i64(<vscale x 1 x i64> [[VP_OP_LOAD6]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 1 x i1> @llvm.vp.icmp.nxv1i64(<vscale x 1 x i64> [[VP_REVERSE]], <vscale x 1 x i64> [[VP_REVERSE7]], metadata !"sgt", <vscale x 1 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP21:%.*]] = call <vscale x 1 x i1> @llvm.vp.merge.nxv1i1(<vscale x 1 x i1> splat (i1 true), <vscale x 1 x i1> [[VP_OP_ICMP]], <vscale x 1 x i1> zeroinitializer, i32 [[TMP7]])
-; CHECK-NEXT:    [[TMP22:%.*]] = zext i32 [[TMP1]] to i64
-; CHECK-NEXT:    [[TMP23:%.*]] = call <vscale x 1 x i1> @llvm.riscv.vmsbf.nxv1i1.i64(<vscale x 1 x i1> [[TMP21]], i64 [[TMP22]])
+; CHECK-NEXT:    [[TMP23:%.*]] = call <vscale x 1 x i1> @llvm.experimental.vp.set.before.first.nxv1i1(<vscale x 1 x i1> [[TMP21]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP24:%.*]] = call <vscale x 1 x i1> @llvm.vp.and.nxv1i1(<vscale x 1 x i1> [[TMP23]], <vscale x 1 x i1> [[CSA_MASK_PHI]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP25]] = call <vscale x 1 x i1> @llvm.vp.or.nxv1i1(<vscale x 1 x i1> [[TMP24]], <vscale x 1 x i1> [[TMP21]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP26]] = call <vscale x 1 x i64> @llvm.vp.merge.nxv1i64(<vscale x 1 x i1> [[VP_OP_ICMP]], <vscale x 1 x i64> [[VEC_IND]], <vscale x 1 x i64> [[CSA_DATA_PHI]], i32 [[TMP7]])
@@ -3913,8 +3898,7 @@ define dso_local i64 @idx_scalar_dec(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-RV32-NEXT:    [[VP_REVERSE7:%.*]] = call <vscale x 1 x i64> @llvm.experimental.vp.reverse.nxv1i64(<vscale x 1 x i64> [[VP_OP_LOAD6]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]])
 ; CHECK-RV32-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 1 x i1> @llvm.vp.icmp.nxv1i64(<vscale x 1 x i64> [[VP_REVERSE]], <vscale x 1 x i64> [[VP_REVERSE7]], metadata !"sgt", <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]])
 ; CHECK-RV32-NEXT:    [[TMP18:%.*]] = call <vscale x 1 x i1> @llvm.vp.merge.nxv1i1(<vscale x 1 x i1> splat (i1 true), <vscale x 1 x i1> [[VP_OP_ICMP]], <vscale x 1 x i1> zeroinitializer, i32 [[TMP6]])
-; CHECK-RV32-NEXT:    [[TMP19:%.*]] = zext i32 [[TMP1]] to i64
-; CHECK-RV32-NEXT:    [[TMP20:%.*]] = call <vscale x 1 x i1> @llvm.riscv.vmsbf.nxv1i1.i32(<vscale x 1 x i1> [[TMP18]], i32 [[TMP1]])
+; CHECK-RV32-NEXT:    [[TMP20:%.*]] = call <vscale x 1 x i1> @llvm.experimental.vp.set.before.first.nxv1i1(<vscale x 1 x i1> [[TMP18]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-RV32-NEXT:    [[TMP21:%.*]] = call <vscale x 1 x i1> @llvm.vp.and.nxv1i1(<vscale x 1 x i1> [[TMP20]], <vscale x 1 x i1> [[CSA_MASK_PHI]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-RV32-NEXT:    [[TMP22]] = call <vscale x 1 x i1> @llvm.vp.or.nxv1i1(<vscale x 1 x i1> [[TMP21]], <vscale x 1 x i1> [[TMP18]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-RV32-NEXT:    [[TMP23]] = call <vscale x 1 x i64> @llvm.vp.merge.nxv1i64(<vscale x 1 x i1> [[VP_OP_ICMP]], <vscale x 1 x i64> [[VEC_IND]], <vscale x 1 x i64> [[CSA_DATA_PHI]], i32 [[TMP6]])
@@ -4032,8 +4016,7 @@ define i32 @simple_csa_int_select_neg_cond(i32 %N, ptr %data) {
 ; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i64(<vscale x 2 x i64> [[VEC_IND]], <vscale x 2 x i64> [[VP_CAST]], metadata !"eq", <vscale x 2 x i1> splat (i1 true), i32 [[TMP8]])
 ; CHECK-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 2 x i1> @llvm.vp.xor.nxv2i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> splat (i1 true), <vscale x 2 x i1> splat (i1 true), i32 [[TMP8]])
 ; CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 2 x i1> @llvm.vp.merge.nxv2i1(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i1> [[PRED_NOT]], <vscale x 2 x i1> zeroinitializer, i32 [[TMP8]])
-; CHECK-NEXT:    [[TMP13:%.*]] = zext i32 [[TMP2]] to i64
-; CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i1> @llvm.riscv.vmsbf.nxv2i1.i64(<vscale x 2 x i1> [[TMP12]], i64 [[TMP13]])
+; CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i1> @llvm.experimental.vp.set.before.first.nxv2i1(<vscale x 2 x i1> [[TMP12]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 2 x i1> @llvm.vp.and.nxv2i1(<vscale x 2 x i1> [[TMP14]], <vscale x 2 x i1> [[CSA_MASK_PHI]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP16]] = call <vscale x 2 x i1> @llvm.vp.or.nxv2i1(<vscale x 2 x i1> [[TMP15]], <vscale x 2 x i1> [[TMP12]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP17]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> [[PRED_NOT]], <vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i32> [[CSA_DATA_PHI]], i32 [[TMP8]])
@@ -4183,8 +4166,7 @@ define i32 @simple_csa_int_select_neg_cond(i32 %N, ptr %data) {
 ; CHECK-RV32-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i64(<vscale x 2 x i64> [[VEC_IND]], <vscale x 2 x i64> [[VP_CAST]], metadata !"eq", <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-RV32-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 2 x i1> @llvm.vp.xor.nxv2i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> splat (i1 true), <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-RV32-NEXT:    [[TMP11:%.*]] = call <vscale x 2 x i1> @llvm.vp.merge.nxv2i1(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i1> [[PRED_NOT]], <vscale x 2 x i1> zeroinitializer, i32 [[TMP7]])
-; CHECK-RV32-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP2]] to i64
-; CHECK-RV32-NEXT:    [[TMP13:%.*]] = call <vscale x 2 x i1> @llvm.riscv.vmsbf.nxv2i1.i32(<vscale x 2 x i1> [[TMP11]], i32 [[TMP2]])
+; CHECK-RV32-NEXT:    [[TMP13:%.*]] = call <vscale x 2 x i1> @llvm.experimental.vp.set.before.first.nxv2i1(<vscale x 2 x i1> [[TMP11]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-RV32-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i1> @llvm.vp.and.nxv2i1(<vscale x 2 x i1> [[TMP13]], <vscale x 2 x i1> [[CSA_MASK_PHI]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-RV32-NEXT:    [[TMP15]] = call <vscale x 2 x i1> @llvm.vp.or.nxv2i1(<vscale x 2 x i1> [[TMP14]], <vscale x 2 x i1> [[TMP11]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-RV32-NEXT:    [[TMP16]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> [[PRED_NOT]], <vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i32> [[CSA_DATA_PHI]], i32 [[TMP7]])
@@ -4298,8 +4280,7 @@ define ptr @simple_csa_ptr_select(i32 %N, ptr %data) {
 ; CHECK-NEXT:    [[VP_CAST:%.*]] = call <vscale x 1 x i64> @llvm.vp.sext.nxv1i64.nxv1i32(<vscale x 1 x i32> [[WIDE_MASKED_GATHER]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 1 x i1> @llvm.vp.icmp.nxv1i64(<vscale x 1 x i64> [[VEC_IND]], <vscale x 1 x i64> [[VP_CAST]], metadata !"slt", <vscale x 1 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 1 x i1> @llvm.vp.merge.nxv1i1(<vscale x 1 x i1> splat (i1 true), <vscale x 1 x i1> [[VP_OP_ICMP]], <vscale x 1 x i1> zeroinitializer, i32 [[TMP7]])
-; CHECK-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP1]] to i64
-; CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 1 x i1> @llvm.riscv.vmsbf.nxv1i1.i64(<vscale x 1 x i1> [[TMP11]], i64 [[TMP12]])
+; CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 1 x i1> @llvm.experimental.vp.set.before.first.nxv1i1(<vscale x 1 x i1> [[TMP11]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 1 x i1> @llvm.vp.and.nxv1i1(<vscale x 1 x i1> [[TMP13]], <vscale x 1 x i1> [[CSA_MASK_PHI]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP15]] = call <vscale x 1 x i1> @llvm.vp.or.nxv1i1(<vscale x 1 x i1> [[TMP14]], <vscale x 1 x i1> [[TMP11]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP16]] = call <vscale x 1 x ptr> @llvm.vp.merge.nxv1p0(<vscale x 1 x i1> [[VP_OP_ICMP]], <vscale x 1 x ptr> [[VP_OP_LOAD]], <vscale x 1 x ptr> [[CSA_DATA_PHI]], i32 [[TMP7]])
@@ -4450,8 +4431,7 @@ define ptr @simple_csa_ptr_select(i32 %N, ptr %data) {
 ; CHECK-RV32-NEXT:    [[VP_CAST:%.*]] = call <vscale x 2 x i64> @llvm.vp.sext.nxv2i64.nxv2i32(<vscale x 2 x i32> [[WIDE_MASKED_GATHER]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-RV32-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i64(<vscale x 2 x i64> [[VEC_IND]], <vscale x 2 x i64> [[VP_CAST]], metadata !"slt", <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-RV32-NEXT:    [[TMP11:%.*]] = call <vscale x 2 x i1> @llvm.vp.merge.nxv2i1(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> zeroinitializer, i32 [[TMP7]])
-; CHECK-RV32-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP2]] to i64
-; CHECK-RV32-NEXT:    [[TMP13:%.*]] = call <vscale x 2 x i1> @llvm.riscv.vmsbf.nxv2i1.i32(<vscale x 2 x i1> [[TMP11]], i32 [[TMP2]])
+; CHECK-RV32-NEXT:    [[TMP13:%.*]] = call <vscale x 2 x i1> @llvm.experimental.vp.set.before.first.nxv2i1(<vscale x 2 x i1> [[TMP11]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-RV32-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i1> @llvm.vp.and.nxv2i1(<vscale x 2 x i1> [[TMP13]], <vscale x 2 x i1> [[CSA_MASK_PHI]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-RV32-NEXT:    [[TMP15]] = call <vscale x 2 x i1> @llvm.vp.or.nxv2i1(<vscale x 2 x i1> [[TMP14]], <vscale x 2 x i1> [[TMP11]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-RV32-NEXT:    [[TMP16]] = call <vscale x 2 x ptr> @llvm.vp.merge.nxv2p0(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x ptr> [[VP_OP_LOAD]], <vscale x 2 x ptr> [[CSA_DATA_PHI]], i32 [[TMP7]])
