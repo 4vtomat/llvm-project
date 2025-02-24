@@ -23,12 +23,29 @@
   # .reloc ., R_RISCV_CUSTOM192, my_foo + 1
 #endif // SIFIVE_CUSTOMIZATION
   addi a0, a0, 0
-  # CHECK-ASM: [[L1:.L[^:]+]]:
+  # CHECK-ASM:      [[L1:.L[^:]+]]:
   # CHECK-ASM-NEXT: .reloc [[L1]], R_RISCV_VENDOR, VENDOR_NAME
   # CHECK-ASM-NEXT: mv a0, a0
 
-  # CHECK-OBJ: addi a0, a0, 0
+  # CHECK-OBJ:      addi a0, a0, 0
   # CHECK-OBJ-NEXT: R_RISCV_VENDOR    VENDOR_NAME
+
+  nop
+  # CHECK-ASM: nop
+  # CHECK-OBJ: addi zero, zero, 0x0
+
+  .reloc ., R_RISCV_VENDOR,     QUALCOMM
+  .reloc ., R_RISCV_QC_ABS20_U, my_bar + 2
+  addi a1, a1, 0
+  # CHECK-ASM:      [[L3:.L[^:]+]]:
+  # CHECK-ASM-NEXT: .reloc [[L3]], R_RISCV_VENDOR, QUALCOMM
+  # CHECK-ASM-NEXT: [[L4:.L[^:]+]]:
+  # CHECK-ASM-NEXT: .reloc [[L4]], R_RISCV_QC_ABS20_U, my_bar+2
+  # CHECK-ASM-NEXT: mv a1, a1
+
+  # CHECK-OBJ:      addi a1, a1, 0
+  # CHECK-OBJ-NEXT: R_RISCV_VENDOR    QUALCOMM
+  # CHECK-OBJ-NEXT: R_RISCV_CUSTOM192 my_bar+0x2
 
   nop
   # CHECK-ASM: nop
