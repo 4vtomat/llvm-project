@@ -200,13 +200,8 @@ define signext i32 @findLastSet_i32(i32 signext %a) nounwind {
 ; RV64I-NEXT:    li s0, -1
 ; RV64I-NEXT:    srliw a0, a0, 1
 ; RV64I-NEXT:    lui a1, 349525
-<<<<<<< HEAD
 ; RV64I-NEXT:    or a0, s1, a0
-; RV64I-NEXT:    addiw a1, a1, 1365
-=======
-; RV64I-NEXT:    or a0, s0, a0
 ; RV64I-NEXT:    addi a1, a1, 1365
->>>>>>> refs/rewritten/dde5546b79f784ab71cac325e0a0698c67c4dcde-2
 ; RV64I-NEXT:    srliw a2, a0, 2
 ; RV64I-NEXT:    or a0, a0, a2
 ; RV64I-NEXT:    srliw a2, a0, 4
