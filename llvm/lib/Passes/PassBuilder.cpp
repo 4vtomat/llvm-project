@@ -354,6 +354,9 @@
 #include "llvm/Transforms/Utils/SymbolRewriter.h"
 #include "llvm/Transforms/Utils/UnifyFunctionExitNodes.h"
 #include "llvm/Transforms/Utils/UnifyLoopExits.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Transforms/Vectorize/SiFive_EVLIndVarSimplify.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/Transforms/Vectorize/LoadStoreVectorizer.h"
 #include "llvm/Transforms/Vectorize/LoopIdiomVectorize.h"
 #include "llvm/Transforms/Vectorize/LoopVectorize.h"

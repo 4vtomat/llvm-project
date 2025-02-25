@@ -677,6 +677,9 @@ LOOP_ANALYSIS("should-run-extra-simple-loop-unswitch",
 #endif
 LOOP_PASS("canon-freeze", CanonicalizeFreezeInLoopsPass())
 LOOP_PASS("dot-ddg", DDGDotPrinterPass())
+#if SIFIVE_CUSTOMIZATION
+LOOP_PASS("evl-iv-simplify", EVLIndVarSimplifyPass())
+#endif
 LOOP_PASS("guard-widening", GuardWideningPass())
 LOOP_PASS("extra-simple-loop-unswitch-passes",
               ExtraLoopPassManager<ShouldRunExtraSimpleLoopUnswitch>())
