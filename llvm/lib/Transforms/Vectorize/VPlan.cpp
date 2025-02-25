@@ -674,7 +674,13 @@ void VPBasicBlock::execute(VPTransformState *State) {
     UnreachableInst *Terminator = State->Builder.CreateUnreachable();
     // Register NewBB in its loop. In innermost loops its the same for all
     // BB's.
+#if SIFIVE_CUSTOMIZATION
+    // cherry-pick from #88385
+    VPRegionBlock *Region = getPlan()->getVectorLoopRegion();
+    if (State->CurrentParentLoop && (!Region || this != Region->getEarlyExit()))
+#else
     if (State->CurrentParentLoop)
+#endif // SIFIVE_CUSTOMIZATION
       State->CurrentParentLoop->addBasicBlockToLoop(NewBB, *State->LI);
     State->Builder.SetInsertPoint(Terminator);
 
@@ -1158,11 +1164,12 @@ VPlanPtr VPlan::createInitialVPlan(Type *InductionTy,
   ScalarEvolution &SE = *PSE.getSE();
 #if SIFIVE_CUSTOMIZATION
   const SCEV *TripCount =
-      IsUncountable ? nullptr
-                    : SE.getTripCountFromExitCount(BackedgeTakenCountSCEV,
-                                                   InductionTy, TheLoop);
+      isa<SCEVCouldNotCompute>(BackedgeTakenCountSCEV)
+          ? nullptr
+          : SE.getTripCountFromExitCount(BackedgeTakenCountSCEV, InductionTy,
+                                         TheLoop);
 
-  if (!IsUncountable)
+  if (!IsUncountable || TripCount)
     Plan->TripCount =
         vputils::getOrCreateVPValueForSCEVExpr(*Plan, TripCount, SE);
 #else
@@ -1239,7 +1246,7 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
                              VPTransformState &State) {
 #if SIFIVE_CUSTOMIZATION
   Type *TCTy;
-  if (!isUncountable()) {
+  if (!isUncountable() || getVectorLoopRegion()->getEarlyExit()) {
     TCTy = TripCountV->getType();
 #else
   Type *TCTy = TripCountV->getType();
@@ -1432,6 +1439,23 @@ void VPlan::execute(VPTransformState *State) {
     EVL = State->Builder.CreateZExtOrTrunc(EVL, EVLPlaceholder->getType());
     EVLPlaceholder->replaceAllUsesWith(EVL);
     cast<Instruction>(EVLPlaceholder)->eraseFromParent();
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
+#if SIFIVE_CUSTOMIZATION
+  /// Cherry-pick from #88385
+  // Patch up early exiting vector block to jump to the original scalar loop's
+  // early exit block.
+  VPRegionBlock *Region = getVectorLoopRegion();
+  if (Region && Region->getEarlyExit()) {
+    auto *EarlyExitVPBB = cast<VPBasicBlock>(Region->getEarlyExit());
+    BasicBlock *VectorEarlyExitBB = State->CFG.VPBB2IRBB[EarlyExitVPBB];
+    BasicBlock *OrigEarlyExitBB = State->CFG.EarlyExitBB;
+    BranchInst *BI = BranchInst::Create(OrigEarlyExitBB);
+    BI->insertBefore(VectorEarlyExitBB->getTerminator());
+    VectorEarlyExitBB->getTerminator()->eraseFromParent();
+    State->CFG.DTU.applyUpdates(
+        {{DominatorTree::Insert, VectorEarlyExitBB, OrigEarlyExitBB}});
   }
 #endif // SIFIVE_CUSTOMIZATION
 }

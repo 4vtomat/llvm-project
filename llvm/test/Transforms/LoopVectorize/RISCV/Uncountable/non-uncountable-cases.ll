@@ -2,21 +2,49 @@
 ; RUN: opt -mtriple riscv64 -passes=loop-vectorize -mcpu=sifive-p670 -S < %s | FileCheck %s
 @global = constant [13 x i8] c"diagnostic.c\00"
 
-; Check that it is not vectorized by uncountable loop
+; Check that SCEVNotCompute exiting block is found by uncountable loop
+; This case can be optimized further because data string is constant.
 define void @foo() {
 ; CHECK-LABEL: define void @foo(
 ; CHECK-SAME: ) #[[ATTR0:[0-9]+]] {
 ; CHECK-NEXT:  [[ENTRY:.*]]:
+; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
+; CHECK:       [[VECTOR_BODY]]:
+; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[ENTRY]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[ENTRY]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 4, i1 true)
+; CHECK-NEXT:    [[TMP1:%.*]] = add i64 [[EVL_BASED_IV]], 0
+; CHECK-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr @global, i64 [[TMP1]]
+; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i64 1
+; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[TMP2]], i32 0
+; CHECK-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 4 x i8>, i32 } @llvm.vp.load.ff.nxv4i8.p0(ptr align 1 [[TMP3]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
+; CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 4 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 4 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; CHECK-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP4]] to i64
+; CHECK-NEXT:    [[VP_OP_LOAD_FF1:%.*]] = call { <vscale x 4 x i8>, i32 } @llvm.vp.load.ff.nxv4i8.p0(ptr align 1 [[TMP3]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP4]])
+; CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 4 x i8>, i32 } [[VP_OP_LOAD_FF1]], 1
+; CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 4 x i8>, i32 } [[VP_OP_LOAD_FF1]], 0
+; CHECK-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP7]] to i64
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i8(<vscale x 4 x i8> [[TMP5]], <vscale x 4 x i8> [[TMP8]], metadata !"ne", <vscale x 4 x i1> splat (i1 true), i32 [[TMP7]])
+; CHECK-NEXT:    [[VP_OP_ICMP2:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i8(<vscale x 4 x i8> [[TMP5]], <vscale x 4 x i8> zeroinitializer, metadata !"eq", <vscale x 4 x i1> splat (i1 true), i32 [[TMP7]])
+; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i1> @llvm.vp.or.nxv4i1(<vscale x 4 x i1> [[VP_OP_ICMP2]], <vscale x 4 x i1> [[VP_OP_ICMP]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP7]])
+; CHECK-NEXT:    [[TMP10:%.*]] = call i32 @llvm.vp.first.nxv4i1(<vscale x 4 x i1> [[VP_OP]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP7]])
+; CHECK-NEXT:    [[TMP11:%.*]] = icmp sge i32 [[TMP10]], 0
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP9]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    br i1 [[TMP11]], label %[[VEC_UNCOUNTABLE_MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK:       [[VEC_UNCOUNTABLE_MIDDLE_BLOCK]]:
+; CHECK-NEXT:    br i1 true, label %[[EXIT:.*]], label %[[VEC_UNCOUNTABLE_SCALAR_PH:.*]]
+; CHECK:       [[VEC_UNCOUNTABLE_SCALAR_PH]]:
 ; CHECK-NEXT:    br label %[[LOOP:.*]]
 ; CHECK:       [[LOOP]]:
-; CHECK-NEXT:    [[PHI:%.*]] = phi ptr [ [[GETELEMENTPTR:%.*]], %[[LOOP]] ], [ @global, %[[ENTRY]] ]
+; CHECK-NEXT:    [[PHI:%.*]] = phi ptr [ [[GETELEMENTPTR:%.*]], %[[LOOP]] ], [ @global, %[[VEC_UNCOUNTABLE_SCALAR_PH]] ]
 ; CHECK-NEXT:    [[GETELEMENTPTR]] = getelementptr i8, ptr [[PHI]], i64 1
 ; CHECK-NEXT:    [[LOAD:%.*]] = load i8, ptr [[GETELEMENTPTR]], align 1
 ; CHECK-NEXT:    [[LOAD3:%.*]] = load i8, ptr [[GETELEMENTPTR]], align 1
 ; CHECK-NEXT:    [[ICMP:%.*]] = icmp ne i8 [[LOAD]], [[LOAD3]]
 ; CHECK-NEXT:    [[ICMP4:%.*]] = icmp eq i8 [[LOAD]], 0
 ; CHECK-NEXT:    [[OR:%.*]] = or i1 [[ICMP4]], [[ICMP]]
-; CHECK-NEXT:    br i1 [[OR]], label %[[EXIT:.*]], label %[[LOOP]]
+; CHECK-NEXT:    br i1 [[OR]], label %[[EXIT]], label %[[LOOP]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       [[EXIT]]:
 ; CHECK-NEXT:    ret void
 ;
@@ -36,3 +64,9 @@ loop:
 exit:
   ret void
 }
+;.
+; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; CHECK: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
+; CHECK: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+;.

@@ -1062,6 +1062,9 @@ public:
                                const DataLayout &DL) const {
     return false;
   }
+
+  unsigned getMinEarlyExitTripCount() const { return 0; }
+
 #endif // SIFIVE_CUSTOMIZATION
   unsigned getMinTripCountTailFoldingThreshold() const { return 0; }
 

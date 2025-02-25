@@ -1824,6 +1824,11 @@ public:
   /// type \p VTy and given interleave factor \p Factor
   bool isLegalVectorInterleave(VectorType *VTy, unsigned Factor,
                                const DataLayout &DL) const;
+
+  /// \returns the lower bound of a trip count to decide on vectorization
+  /// for early-exit loops.
+  unsigned getMinEarlyExitTripCount() const;
+
 #endif // SIFIVE_CUSTOMIZATION
   /// \returns the lower bound of a trip count to decide on vectorization
   /// while tail-folding.
@@ -2374,6 +2379,9 @@ public:
   virtual ReductionShuffle
   getPreferredExpandedReductionShuffle(const IntrinsicInst *II) const = 0;
   virtual unsigned getGISelRematGlobalCost() const = 0;
+#if SIFIVE_CUSTOMIZATION
+  virtual unsigned getMinEarlyExitTripCount() const = 0;
+#endif // SIFIVE_CUSTOMIZATION
   virtual unsigned getMinTripCountTailFoldingThreshold() const = 0;
   virtual bool enableScalableVectorization() const = 0;
   virtual bool supportsScalableVectors() const = 0;
@@ -3232,6 +3240,12 @@ public:
   unsigned getGISelRematGlobalCost() const override {
     return Impl.getGISelRematGlobalCost();
   }
+
+#if SIFIVE_CUSTOMIZATION
+  unsigned getMinEarlyExitTripCount() const override {
+    return Impl.getMinEarlyExitTripCount();
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   unsigned getMinTripCountTailFoldingThreshold() const override {
     return Impl.getMinTripCountTailFoldingThreshold();

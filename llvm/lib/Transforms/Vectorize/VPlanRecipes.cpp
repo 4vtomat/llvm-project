@@ -91,8 +91,13 @@ static Value *GetSetVL(VPTransformState &State, Value *EVL,
   assert(State.MaxSafeNumElems != 0 &&
          "Max safe number of elements that can be vectorized cannot be 0.");
   // Clamp EVL for finite dependence distances and user provided upper bounds
-  if (State.MaxSafeNumElems != VPTransformState::UnknownNumSafeElems ||
-      LoopVectorizerVLUpperBound) {
+  if (IsUncountable && LoopVectorizerSpeculativeVLUpperBound.getValue()) {
+    uint64_t MaxEVL = LoopVectorizerSpeculativeVLUpperBound.getValue();
+    Constant *EVLUpperBound = ConstantInt::get(EVL->getType(), MaxEVL);
+    EVL = State.Builder.CreateBinaryIntrinsic(Intrinsic::umin, EVL,
+                                              EVLUpperBound);
+  } else if (State.MaxSafeNumElems != VPTransformState::UnknownNumSafeElems ||
+             LoopVectorizerVLUpperBound) {
     uint64_t MaxEVL;
     if (State.MaxSafeNumElems != VPTransformState::UnknownNumSafeElems &&
         LoopVectorizerVLUpperBound)
@@ -590,7 +595,7 @@ Value *VPInstruction::generate(VPTransformState &State) {
   case VPInstruction::ExplicitVectorLength: {
 #if SIFIVE_CUSTOMIZATION
     Value *AVL = nullptr;
-    if (!State.Plan->isUncountable()) {
+    if (!State.Plan->isUncountable() || (getNumOperands() == 1)) {
       assert(getNumOperands() != 0 &&
              "Countable loop vectorization must use AVL");
       AVL = State.get(getOperand(0), /*IsScalar*/ true);

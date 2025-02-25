@@ -2106,8 +2106,18 @@ void VPlanTransforms::addExplicitVectorLengthUncountable(VPlan &Plan) {
   EVLPhi->insertAfter(CanonicalIVPHI);
 
   // Create VSetVLIMax recipe
-  auto *VPEVL = new VPInstruction(VPInstruction::ExplicitVectorLength, {});
-  VPEVL->insertBefore(*Header, Header->getFirstNonPhi());
+  VPInstruction *VPEVL;
+  VPBuilder Builder(Header, Header->getFirstNonPhi());
+  if (Plan.getTripCount()) {
+    // Compute vector TC - IV as the AVL (application vector length).
+    VPValue *AVL = Builder.createNaryOp(
+        Instruction::Sub, {Plan.getTripCount(), EVLPhi}, DebugLoc(), "avl");
+    VPEVL = Builder.createNaryOp(VPInstruction::ExplicitVectorLength, AVL,
+                                 DebugLoc());
+  } else {
+    VPEVL = Builder.createNaryOp(VPInstruction::ExplicitVectorLength, {},
+                                 DebugLoc());
+  }
 
   // Create EVLIncrement recipe
   auto *CanonicalIVIncrement =
@@ -2407,6 +2417,13 @@ void VPlanTransforms::convertToConcreteRecipes(VPlan &Plan) {
 void VPlanTransforms::handleUncountableEarlyExit(
     VPlan &Plan, ScalarEvolution &SE, Loop *OrigLoop,
     BasicBlock *UncountableExitingBlock, VPRecipeBuilder &RecipeBuilder) {
+#if SIFIVE_CUSTOMIZATION
+  // SiFive: Bail out if it is SiFive uncountable loop
+  //         because SiFive uncountable loop exits early in the loop
+  //         do not need this transform.
+  if (Plan.isUncountable())
+    return;
+#endif // SIFIVE_CUSTOMIZATION
   VPRegionBlock *LoopRegion = Plan.getVectorLoopRegion();
   auto *LatchVPBB = cast<VPBasicBlock>(LoopRegion->getExiting());
   VPBuilder Builder(LatchVPBB->getTerminator());

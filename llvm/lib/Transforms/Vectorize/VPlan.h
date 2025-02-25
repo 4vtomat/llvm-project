@@ -462,6 +462,14 @@ struct VPTransformState {
     /// vector loop.
     BasicBlock *ExitBB = nullptr;
 
+#if SIFIVE_CUSTOMIZATION
+    // cherry-pick from #88385
+    /// We need to keep track of the early exit block from the original scalar
+    /// loop in order to update the dominator tree correctly, since the vector
+    /// early exit will also jump to the original.
+    BasicBlock *EarlyExitBB = nullptr;
+#endif // SIFIVE_CUSTOMIZATION
+
     /// A mapping of each VPBasicBlock to the corresponding BasicBlock. In case
     /// of replication, maps the BasicBlock of the last replica created.
     SmallDenseMap<VPBasicBlock *, BasicBlock *> VPBB2IRBB;
@@ -4340,6 +4348,12 @@ class VPRegionBlock : public VPBlockBase {
   /// VPRegionBlock.
   VPBlockBase *Exiting;
 
+#if SIFIVE_CUSTOMIZATION
+  /// Cherry-pick from #88385
+  /// Hold the Early Exit block of the SEME region, if one exists.
+  VPBlockBase *EarlyExit = nullptr;
+#endif // SIFIVE_CUSTOMIZATION
+
   /// An indicator whether this region is to generate multiple replicated
   /// instances of output IR corresponding to its VPBlockBases.
   bool IsReplicator;
@@ -4394,6 +4408,18 @@ public:
     Entry = EntryBlock;
     EntryBlock->setParent(this);
   }
+
+#if SIFIVE_CUSTOMIZATION
+  void setEarlyExit(VPBlockBase *ExitBlock) {
+    assert(ExitBlock->getSuccessors().empty() &&
+           "Exit block cannot have successors.");
+    EarlyExit = ExitBlock;
+    ExitBlock->setParent(this);
+  }
+
+  const VPBlockBase *getEarlyExit() const { return EarlyExit; }
+  VPBlockBase *getEarlyExit() { return EarlyExit; }
+#endif // SIFIVE_CUSTOMIZATION
 
   const VPBlockBase *getExiting() const { return Exiting; }
   VPBlockBase *getExiting() { return Exiting; }
@@ -4696,7 +4722,8 @@ public:
   /// The trip count of the original loop.
   VPValue *getTripCount() const {
 #if SIFIVE_CUSTOMIZATION
-    if (isUncountable())
+    // TripCount can be nullptr for uncountable loop, e.g. strlen()
+    if (isUncountable() && !getVectorLoopRegion()->getEarlyExit())
       return nullptr;
 #endif
     assert(TripCount && "trip count needs to be set before accessing it");
@@ -4783,7 +4810,7 @@ public:
   /// The vector trip count.
 #if SIFIVE_CUSTOMIZATION
   VPValue &getVectorTripCount() {
-    assert(!isUncountable() &&
+    assert((!isUncountable() || getVectorLoopRegion()->getEarlyExit()) &&
            "Should not get vectro trip count for uncountable loops");
     return VectorTripCount;
   }

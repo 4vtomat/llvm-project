@@ -1431,6 +1431,12 @@ unsigned TargetTransformInfo::getGISelRematGlobalCost() const {
   return TTIImpl->getGISelRematGlobalCost();
 }
 
+#if SIFIVE_CUSTOMIZATION
+unsigned TargetTransformInfo::getMinEarlyExitTripCount() const {
+  return TTIImpl->getMinEarlyExitTripCount();
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 unsigned TargetTransformInfo::getMinTripCountTailFoldingThreshold() const {
   return TTIImpl->getMinTripCountTailFoldingThreshold();
 }

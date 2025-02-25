@@ -530,11 +530,19 @@ public:
 
   /// Returns the uncountable early exiting block.
   BasicBlock *getUncountableEarlyExitingBlock() const {
+
+#if SIFIVE_CUSTOMIZATION
+    // FIXME: Assertions are triggered because upsream call this without
+    // checking hasUncountableEarlyExit
+    if (getUncountableExitingBlocks().empty())
+      return nullptr;
+#else
     if (!HasUncountableEarlyExit) {
       assert(getUncountableExitingBlocks().empty() &&
              "Expected no uncountable exiting blocks");
       return nullptr;
     }
+#endif // SIFIVE_CUSTOMIZATION
     assert(getUncountableExitingBlocks().size() == 1 &&
            "Expected only a single uncountable exiting block");
     return getUncountableExitingBlocks()[0];

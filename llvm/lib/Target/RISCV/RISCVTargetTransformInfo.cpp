@@ -94,6 +94,13 @@ static cl::opt<bool> HasVectorFlattenControlFlowPenalty(
 #endif
 
 #if SIFIVE_CUSTOMIZATION
+unsigned RISCVTTIImpl::getMinEarlyExitTripCount() const {
+  if ((ST->getProcFamily() == RISCVSubtarget::SiFiveP600) ||
+      (ST->getProcFamily() == RISCVSubtarget::SiFiveLion))
+    return 10;
+  return 0;
+}
+
 bool RISCVTTIImpl::isTargetIntrinsicWithScalarOpAtArg(Intrinsic::ID ID,
                                                       unsigned ScalarOpdIdx) {
   switch (ID) {

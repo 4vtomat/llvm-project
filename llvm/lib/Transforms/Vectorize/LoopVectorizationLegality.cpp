@@ -61,10 +61,6 @@ STATISTIC(NumOfUncountableLoopsWithUnsupportedPHI,
           "Number of uncountable loops with unsupported phi");
 STATISTIC(NumOfUncountableLoopsWithoutHeaderPHI,
           "Number of uncountable loops without a PHI in header");
-STATISTIC(NumOfUncountableLoopsWithMultipleExitBlocks,
-          "Number of uncountable loops with multiple exit blocks");
-STATISTIC(NumOfUncountableLoopsWithMultipleLiveOutValues,
-          "Number of uncountable loops with multiple live out values");
 STATISTIC(NumOfUncountableLoopsWithNonPtrIVs,
           "Number of uncountable loops with non-ptr induction variables");
 STATISTIC(NumOfUncountableLoopsWithNonIVLiveOutValues,
@@ -2504,22 +2500,6 @@ bool LoopVectorizationLegality::canVectorizeUncountableLoop(
     return false;
   }
 
-  // TODO: Consider supporting multi exit blocks
-  BasicBlock *ExitBB = TheLoop->getUniqueExitBlock();
-  if (!ExitBB) {
-    ORE->emit([&]() {
-      return OptimizationRemarkAnalysis(
-                 Hints->vectorizeAnalysisPassName(),
-                 "loop not vectorized: ", TheLoop->getStartLoc(),
-                 TheLoop->getHeader())
-             << "Uncountable loop does not have unique exit block";
-    });
-    LLVM_DEBUG(
-        dbgs() << "\nUncountable Loop: Loop does not have unique exit block\n");
-    NumOfUncountableLoopsWithMultipleExitBlocks++;
-    return false;
-  }
-
   // Limit to single block to cover strlen-like loops first.
   // TODO: Expand to support multi-block uncountable loops.
   const unsigned NumBlocks = TheLoop->getNumBlocks();
@@ -2530,8 +2510,8 @@ bool LoopVectorizationLegality::canVectorizeUncountableLoop(
   else
     NumOfUncountableLoopsWithMoreThanTwoBlocks++;
 
-  // Limit to single block to cover strlen-like loops first.
-  if (NumBlocks != 1) {
+  // Limit to two blocks to cover strlen-like & std::find loops first.
+  if (NumBlocks > 2) {
     ORE->emit([&]() {
       return OptimizationRemarkAnalysis(
                  Hints->vectorizeAnalysisPassName(),
@@ -2543,11 +2523,16 @@ bool LoopVectorizationLegality::canVectorizeUncountableLoop(
     return false;
   }
 
+  if (!TheLoop->getUniqueExitBlock()) {
+    LLVM_DEBUG(dbgs() << "\nUncountable Loop: Loop doesn't have unique exit block\n");
+    return false;
+  }
   // Limit to conditional exit branches first
   // TODO: Support unconditional exit branches
   SmallVector<BasicBlock *, 8> ExitingBlocks;
   TheLoop->getExitingBlocks(ExitingBlocks);
 
+  SmallVector<const SCEVPredicate *, 4> Predicates;
   for (BasicBlock *ExitingBB : ExitingBlocks) {
     auto *BI = dyn_cast<BranchInst>(ExitingBB->getTerminator());
     if (!BI || !BI->isConditional() || isa<ConstantInt>(BI->getCondition())) {
@@ -2565,15 +2550,47 @@ bool LoopVectorizationLegality::canVectorizeUncountableLoop(
       NumOfUncountableLoopsNotEndingWithConditionalBranch++;
       return false;
     }
-    ScalarEvolution::ExitLimit EL = PSE.getSE()->computeExitLimitFromCond(
-        TheLoop, BI->getCondition(), /*ExitIfTrue*/ true,
-        /*ControlsOnlyExit*/ true);
-    if (isa<SCEVCouldNotCompute>(EL.SymbolicMaxNotTaken))
+    const SCEV *EC =
+        PSE.getSE()->getPredicatedExitCount(TheLoop, ExitingBB, &Predicates);
+    if (isa<SCEVCouldNotCompute>(EC)) {
       CouldNotComputeExitingBlock = ExitingBB;
+      UncountableExitingBlocks.push_back(ExitingBB);
+    } else
+      CountableExitingBlocks.push_back(ExitingBB);
   }
 
-  if (!CouldNotComputeExitingBlock)
+  // We only support one uncountable early exit.
+  if (getUncountableExitingBlocks().size() != 1) {
+    reportVectorizationFailure(
+        "Loop has too many uncountable exits",
+        "Cannot vectorize early exit loop with more than one early exit",
+        "TooManyUncountableEarlyExits", ORE, TheLoop);
     return false;
+  }
+
+  if (!CouldNotComputeExitingBlock) {
+    LLVM_DEBUG(
+        dbgs() << "\nUncountable Loop: Does not have a speculative exit\n");
+    return false;
+  }
+
+  // Handle countable loops with early exits
+  if (!getCountableExitingBlocks().empty()) {
+    BasicBlock *LatchBB = TheLoop->getLoopLatch();
+    // make sure the early exit is not the latch
+    if (CouldNotComputeExitingBlock == LatchBB) {
+      LLVM_DEBUG(dbgs() << "\nUncountable Loop: Expect the latch to be "
+                           "countable when there is an early exiting\n");
+      return false;
+    }
+    for (BasicBlock *BB : successors(CouldNotComputeExitingBlock))
+      if (BB != LatchBB) {
+        UncountableExitBlocks.push_back(BB);
+        break;
+      }
+
+    HasUncountableEarlyExit = true;
+  }
 
   // Exclude integer induction variables first.
   // TODO: Support signed and unsigned induction variables.
@@ -2651,26 +2668,13 @@ bool LoopVectorizationLegality::canVectorizeUncountableLoop(
 
   SmallPtrSet<Value *, 4> LiveOutValues;
   for (BasicBlock *ExitingBB : ExitingBlocks) {
-    for (PHINode &ExitPhi : ExitBB->phis()) {
-      Value *IncomingValue = ExitPhi.getIncomingValueForBlock(ExitingBB);
-      auto *I = dyn_cast<Instruction>(IncomingValue);
-      if (I && TheLoop->contains(I))
-        LiveOutValues.insert(IncomingValue);
-    }
-  }
-
-  // TODO: Remove this restriction.
-  if (LiveOutValues.size() > 1) {
-    ORE->emit([&]() {
-      return OptimizationRemarkAnalysis(
-                 Hints->vectorizeAnalysisPassName(),
-                 "loop not vectorized: ", TheLoop->getStartLoc(),
-                 TheLoop->getHeader())
-             << "Uncountable loop have multiple liveouts";
-    });
-    LLVM_DEBUG(dbgs() << "\nUncountable Loop: Have multiple liveouts\n");
-    NumOfUncountableLoopsWithMultipleLiveOutValues++;
-    return false;
+    for (BasicBlock *ExitBB : successors(ExitingBB))
+      for (PHINode &ExitPhi : ExitBB->phis()) {
+        Value *IncomingValue = ExitPhi.getIncomingValueForBlock(ExitingBB);
+        if (auto *I = dyn_cast<Instruction>(IncomingValue);
+            I && TheLoop->contains(I))
+          LiveOutValues.insert(IncomingValue);
+      }
   }
 
   // Limit liveouts to IVs or their next op only
