@@ -606,7 +606,7 @@ BEGIN_REGISTER_VP_INTRINSIC(vp_load_ff, 1, 2)
 // val,chain = VP_LOAD_FF chain,base,offset,mask,evl
 BEGIN_REGISTER_VP_SDNODE(VP_LOAD_FF, -1, vp_load_ff, 2, 3)
 HELPER_MAP_VPID_TO_VPSD(vp_load_ff, VP_LOAD_FF)
-VP_PROPERTY_FUNCTIONAL_INTRINSIC(vp_load_ff)
+VP_PROPERTY_NO_FUNCTIONAL
 END_REGISTER_VP(vp_load_ff, VP_LOAD_FF)
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -766,13 +766,13 @@ END_REGISTER_VP(experimental_vp_reverse, EXPERIMENTAL_VP_REVERSE)
 // Return lowest-numbered active element of the source mask vector that has the
 // value 1. Return -1, if no active element has the value 1.
 BEGIN_REGISTER_VP(vp_first, 1, 2, VP_FIRST, 0)
-VP_PROPERTY_FUNCTIONAL_INTRINSIC(vp_first)
+VP_PROPERTY_NO_FUNCTIONAL
 END_REGISTER_VP(vp_first, VP_FIRST)
 
 // llvm.experimental.vp.popcount(x,mask,vlen)
 BEGIN_REGISTER_VP(experimental_vp_popcount, 1, 2,
                   EXPERIMENTAL_VP_POPCOUNT, 0)
-VP_PROPERTY_FUNCTIONAL_INTRINSIC(experimental_vp_popcount)
+VP_PROPERTY_NO_FUNCTIONAL
 END_REGISTER_VP(experimental_vp_popcount, EXPERIMENTAL_VP_POPCOUNT)
 
 // llvm.experimental.vp.set.before.first(x,mask,vlen)
