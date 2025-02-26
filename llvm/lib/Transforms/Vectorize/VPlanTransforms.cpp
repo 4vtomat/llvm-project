@@ -852,9 +852,19 @@ static void legalizeAndOptimizeInductions(VPlan &Plan) {
   VPBuilder Builder(HeaderVPBB, HeaderVPBB->getFirstNonPhi());
   for (VPRecipeBase &Phi : HeaderVPBB->phis()) {
     auto *PhiR = dyn_cast<VPHeaderPHIRecipe>(&Phi);
+#if SIFIVE_CUSTOMIZATION
+    auto *VPI = dyn_cast<VPInstruction>(&Phi);
+    bool IsCSAMaskPhi = VPI && (VPI->getOpcode() == VPInstruction::CSAMaskPhi);
+    if (!PhiR && !IsCSAMaskPhi)
+      break;
+#else
     if (!PhiR)
       break;
+#endif // SIFIVE_CUSTOMIZATION
 
+#if SIFIVE_CUSTOMIZATION
+    if (!IsCSAMaskPhi) {
+#endif // SIFIVE_CUSTOMIZATION
     // Check if any uniform VPReplicateRecipes using the phi recipe are used by
     // ExtractFromEnd. Those must be replaced by a regular VPReplicateRecipe to
     // ensure the final value is available.
@@ -876,6 +886,9 @@ static void legalizeAndOptimizeInductions(VPlan &Plan) {
       Clone->insertAfter(RepR);
       RepR->replaceAllUsesWith(Clone);
     }
+#if SIFIVE_CUSTOMIZATION
+    } // end of IsCSAMaskPhi
+#endif // SIFIVE_CUSTOMIZATION
 
     // Replace wide pointer inductions which have only their scalars used by
     // PtrAdd(IndStart, ScalarIVSteps (0, Step)).
