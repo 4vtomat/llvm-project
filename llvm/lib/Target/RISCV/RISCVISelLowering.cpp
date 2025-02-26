@@ -1581,12 +1581,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
   setPrefFunctionAlignment(Subtarget.getPrefFunctionAlignment());
   setPrefLoopAlignment(Subtarget.getPrefLoopAlignment());
 
-#if SIFIVE_CUSTOMIZATION
-  // Increase number of stores for memcpy expansion for RV32.
-  if (!Subtarget.is64Bit())
-    MaxStoresPerMemcpy = 12;
-#endif // SIFIVE_CUSTOMIZATION
-
   setTargetDAGCombine({ISD::INTRINSIC_VOID, ISD::INTRINSIC_W_CHAIN,
                        ISD::INTRINSIC_WO_CHAIN, ISD::ADD, ISD::SUB, ISD::MUL,
                        ISD::AND, ISD::OR, ISD::XOR, ISD::SETCC, ISD::SELECT});
@@ -1653,6 +1647,12 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
   MaxGluedStoresPerMemcpy = Subtarget.getMaxGluedStoresPerMemcpy();
   MaxStoresPerMemcpyOptSize = Subtarget.getMaxStoresPerMemcpy(/*OptSize=*/true);
   MaxStoresPerMemcpy = Subtarget.getMaxStoresPerMemcpy(/*OptSize=*/false);
+#if SIFIVE_CUSTOMIZATION
+  // Increase number of stores for memcpy expansion for RV32.
+  if (!Subtarget.is64Bit())
+    MaxStoresPerMemcpy = std::max(MaxStoresPerMemcpy, 12U);
+#endif // SIFIVE_CUSTOMIZATION
+
 
   MaxStoresPerMemmoveOptSize =
       Subtarget.getMaxStoresPerMemmove(/*OptSize=*/true);
