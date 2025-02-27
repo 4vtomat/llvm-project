@@ -8196,21 +8196,26 @@ static InstructionCost getCSACost(PHINode *Phi, VectorType *&VTy,
   InstructionCost C = 0;
   if (!EnableRISCVCSA) {
     // AnyActive
-    C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
+    C += TTI.getCmpSelInstrCost(Instruction::Select, VTy, MaskTy,
+                                CmpInst::BAD_ICMP_PREDICATE, CostKind);
     // vp.reduce.or
     C += TTI.getArithmeticReductionCost(Instruction::Or, VTy, std::nullopt,
                                         CostKind);
     // VPVLSel
-    C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
+    C += TTI.getCmpSelInstrCost(Instruction::Select, VTy, MaskTy,
+                                CmpInst::BAD_ICMP_PREDICATE, CostKind);
     // MaskUpdate
-    C += TTI.getArithmeticInstrCost(Instruction::Select, MaskTy, CostKind);
+    C += TTI.getCmpSelInstrCost(Instruction::Select, MaskTy, MaskTy,
+                                CmpInst::BAD_ICMP_PREDICATE, CostKind);
     // Data Update
-    C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
+    C += TTI.getCmpSelInstrCost(Instruction::Select, VTy, MaskTy,
+                                CmpInst::BAD_ICMP_PREDICATE, CostKind);
     return C;
   }
   // CSAMaskUpdate
   // UndistCond is a VPMerge and happens on non mask type
-  C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
+  C += TTI.getCmpSelInstrCost(Instruction::Select, VTy, MaskTy,
+                              CmpInst::BAD_ICMP_PREDICATE, CostKind);
   // Convert the non masked mask to mask type
   C += TTI.getArithmeticInstrCost(Instruction::ICmp, MaskTy, CostKind);
   IntrinsicCostAttributes CostAttrs(Intrinsic::experimental_vp_set_before_first,
@@ -8224,7 +8229,8 @@ static InstructionCost getCSACost(PHINode *Phi, VectorType *&VTy,
 
   // DataUpdate
   // VPMerge
-  C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
+  C += TTI.getCmpSelInstrCost(Instruction::Select, VTy, MaskTy,
+                              CmpInst::BAD_ICMP_PREDICATE, CostKind);
 
   // The cost returned by the cost model is larger than that of the cycle count
   // that is returned by MCA for the scalar CSA loop. It is believed that the
