@@ -246,6 +246,7 @@ define void @test_exit_branch_cost(ptr %dst, ptr noalias %x.ptr, ptr noalias %y.
 ; CHECK:       [[PRED_STORE_CONTINUE47]]:
 ; CHECK-NEXT:    [[TMP19:%.*]] = select <2 x i1> [[TMP5]], <2 x i1> [[BROADCAST_SPLAT41]], <2 x i1> zeroinitializer
 ; CHECK-NEXT:    [[TMP21:%.*]] = select <2 x i1> [[TMP19]], <2 x i1> [[BROADCAST_SPLAT57]], <2 x i1> zeroinitializer
+; CHECK-NEXT:    [[TMP35:%.*]] = select <2 x i1> [[TMP19]], <2 x i1> [[TMP33]], <2 x i1> zeroinitializer
 ; CHECK-NEXT:    [[TMP23:%.*]] = or <2 x i1> [[TMP47]], [[TMP21]]
 ; CHECK-NEXT:    [[PREDPHI58:%.*]] = select <2 x i1> [[TMP21]], <2 x i64> zeroinitializer, <2 x i64> splat (i64 1)
 ; CHECK-NEXT:    [[TMP28:%.*]] = extractelement <2 x i1> [[TMP23]], i32 0
@@ -255,74 +256,13 @@ define void @test_exit_branch_cost(ptr %dst, ptr noalias %x.ptr, ptr noalias %y.
 ; CHECK-NEXT:    store i64 [[TMP29]], ptr [[DST_2]], align 8, !alias.scope [[META17:![0-9]+]], !noalias [[META18:![0-9]+]]
 ; CHECK-NEXT:    br label %[[PRED_STORE_CONTINUE49]]
 ; CHECK:       [[PRED_STORE_CONTINUE49]]:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP15:%.*]] = extractelement <2 x i1> [[TMP12]], i32 1
-; CHECK-NEXT:    br i1 [[TMP15]], label %[[PRED_STORE_IF50:.*]], label %[[PRED_STORE_CONTINUE51:.*]]
-; CHECK:       [[PRED_STORE_IF50]]:
-; CHECK-NEXT:    store i64 0, ptr [[DST_3]], align 8, !alias.scope [[META15]], !noalias [[META16]]
-; CHECK-NEXT:    br label %[[PRED_STORE_CONTINUE51]]
-; CHECK:       [[PRED_STORE_CONTINUE51]]:
-; CHECK-NEXT:    [[TMP16:%.*]] = extractelement <2 x i1> [[TMP13]], i32 0
-; CHECK-NEXT:    br i1 [[TMP16]], label %[[PRED_STORE_IF52:.*]], label %[[PRED_STORE_CONTINUE53:.*]]
-; CHECK:       [[PRED_STORE_IF52]]:
-; CHECK-NEXT:    store i64 0, ptr [[DST_3]], align 8, !alias.scope [[META15]], !noalias [[META16]]
-; CHECK-NEXT:    br label %[[PRED_STORE_CONTINUE53]]
-; CHECK:       [[PRED_STORE_CONTINUE53]]:
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <2 x i1> [[TMP13]], i32 1
-; CHECK-NEXT:    br i1 [[TMP17]], label %[[PRED_STORE_IF54:.*]], label %[[PRED_STORE_CONTINUE55:.*]]
-; CHECK:       [[PRED_STORE_IF54]]:
-; CHECK-NEXT:    store i64 0, ptr [[DST_3]], align 8, !alias.scope [[META15]], !noalias [[META16]]
-; CHECK-NEXT:    br label %[[PRED_STORE_CONTINUE55]]
-; CHECK:       [[PRED_STORE_CONTINUE55]]:
-; CHECK-NEXT:    [[TMP18:%.*]] = select <2 x i1> [[TMP4]], <2 x i1> [[BROADCAST_SPLAT41]], <2 x i1> zeroinitializer
-; CHECK-NEXT:    [[TMP19:%.*]] = select <2 x i1> [[TMP5]], <2 x i1> [[BROADCAST_SPLAT41]], <2 x i1> zeroinitializer
-; CHECK-NEXT:    [[TMP20:%.*]] = select <2 x i1> [[TMP18]], <2 x i1> [[BROADCAST_SPLAT57]], <2 x i1> zeroinitializer
-; CHECK-NEXT:    [[TMP21:%.*]] = select <2 x i1> [[TMP19]], <2 x i1> [[BROADCAST_SPLAT57]], <2 x i1> zeroinitializer
-; CHECK-NEXT:    [[TMP32:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT57]], splat (i1 true)
-; CHECK-NEXT:    [[TMP33:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT57]], splat (i1 true)
-; CHECK-NEXT:    [[TMP34:%.*]] = select <2 x i1> [[TMP18]], <2 x i1> [[TMP32]], <2 x i1> zeroinitializer
-; CHECK-NEXT:    [[TMP35:%.*]] = select <2 x i1> [[TMP19]], <2 x i1> [[TMP33]], <2 x i1> zeroinitializer
-; CHECK-NEXT:    [[TMP22:%.*]] = or <2 x i1> [[TMP47]], [[TMP20]]
-; CHECK-NEXT:    [[TMP23:%.*]] = or <2 x i1> [[TMP47]], [[TMP21]]
-; CHECK-NEXT:    [[PREDPHI:%.*]] = select <2 x i1> [[TMP20]], <2 x i64> zeroinitializer, <2 x i64> splat (i64 1)
-; CHECK-NEXT:    [[PREDPHI58:%.*]] = select <2 x i1> [[TMP21]], <2 x i64> zeroinitializer, <2 x i64> splat (i64 1)
-; CHECK-NEXT:    [[TMP24:%.*]] = extractelement <2 x i1> [[TMP22]], i32 0
-; CHECK-NEXT:    br i1 [[TMP24]], label %[[PRED_STORE_IF59:.*]], label %[[PRED_STORE_CONTINUE60:.*]]
-; CHECK:       [[PRED_STORE_IF59]]:
-; CHECK-NEXT:    [[TMP25:%.*]] = extractelement <2 x i64> [[PREDPHI]], i32 0
-; CHECK-NEXT:    store i64 [[TMP25]], ptr [[DST_2]], align 8, !alias.scope [[META17:![0-9]+]], !noalias [[META18:![0-9]+]]
-; CHECK-NEXT:    br label %[[PRED_STORE_CONTINUE60]]
-; CHECK:       [[PRED_STORE_CONTINUE60]]:
-; CHECK-NEXT:    [[TMP26:%.*]] = extractelement <2 x i1> [[TMP22]], i32 1
-; CHECK-NEXT:    br i1 [[TMP26]], label %[[PRED_STORE_IF61:.*]], label %[[PRED_STORE_CONTINUE62:.*]]
-; CHECK:       [[PRED_STORE_IF61]]:
-; CHECK-NEXT:    [[TMP27:%.*]] = extractelement <2 x i64> [[PREDPHI]], i32 1
-; CHECK-NEXT:    store i64 [[TMP27]], ptr [[DST_2]], align 8, !alias.scope [[META17]], !noalias [[META18]]
-; CHECK-NEXT:    br label %[[PRED_STORE_CONTINUE62]]
-; CHECK:       [[PRED_STORE_CONTINUE62]]:
-; CHECK-NEXT:    [[TMP28:%.*]] = extractelement <2 x i1> [[TMP23]], i32 0
-; CHECK-NEXT:    br i1 [[TMP28]], label %[[PRED_STORE_IF63:.*]], label %[[PRED_STORE_CONTINUE64:.*]]
-; CHECK:       [[PRED_STORE_IF63]]:
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <2 x i64> [[PREDPHI58]], i32 0
-; CHECK-NEXT:    store i64 [[TMP29]], ptr [[DST_2]], align 8, !alias.scope [[META17]], !noalias [[META18]]
-; CHECK-NEXT:    br label %[[PRED_STORE_CONTINUE64]]
-; CHECK:       [[PRED_STORE_CONTINUE64]]:
-=======
->>>>>>> refs/rewritten/f0d5104c944b329c479802788571ed6df41e0e86-2
 ; CHECK-NEXT:    [[TMP30:%.*]] = extractelement <2 x i1> [[TMP23]], i32 1
 ; CHECK-NEXT:    br i1 [[TMP30]], label %[[PRED_STORE_IF50:.*]], label %[[PRED_STORE_CONTINUE51:.*]]
 ; CHECK:       [[PRED_STORE_IF50]]:
 ; CHECK-NEXT:    [[TMP31:%.*]] = extractelement <2 x i64> [[PREDPHI58]], i32 1
 ; CHECK-NEXT:    store i64 [[TMP31]], ptr [[DST_2]], align 8, !alias.scope [[META17]], !noalias [[META18]]
-<<<<<<< HEAD
-; CHECK-NEXT:    br label %[[PRED_STORE_CONTINUE66]]
-; CHECK:       [[PRED_STORE_CONTINUE66]]:
-; CHECK-NEXT:    [[TMP36:%.*]] = or <2 x i1> [[TMP22]], [[TMP34]]
-=======
 ; CHECK-NEXT:    br label %[[PRED_STORE_CONTINUE51]]
 ; CHECK:       [[PRED_STORE_CONTINUE51]]:
-; CHECK-NEXT:    [[TMP35:%.*]] = select <2 x i1> [[TMP19]], <2 x i1> [[TMP33]], <2 x i1> zeroinitializer
->>>>>>> refs/rewritten/f0d5104c944b329c479802788571ed6df41e0e86-2
 ; CHECK-NEXT:    [[TMP37:%.*]] = or <2 x i1> [[TMP23]], [[TMP35]]
 ; CHECK-NEXT:    [[TMP42:%.*]] = extractelement <2 x i1> [[TMP37]], i32 0
 ; CHECK-NEXT:    br i1 [[TMP42]], label %[[PRED_STORE_IF52:.*]], label %[[PRED_STORE_CONTINUE53:.*]]

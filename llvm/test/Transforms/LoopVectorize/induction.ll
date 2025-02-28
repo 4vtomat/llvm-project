@@ -1971,7 +1971,6 @@ define i32 @scalarize_induction_variable_05(ptr %a, i32 %x, i1 %c, i32 %n) {
 ; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i32 [[TMP0]]
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[TMP1]], i32 0
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <2 x i32>, ptr [[TMP2]], align 4
-; CHECK-NEXT:    [[TMP14:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT]], splat (i1 true)
 ; CHECK-NEXT:    [[TMP3:%.*]] = extractelement <2 x i1> [[BROADCAST_SPLAT]], i32 0
 ; CHECK-NEXT:    br i1 [[TMP3]], label [[PRED_UDIV_IF:%.*]], label [[PRED_UDIV_CONTINUE:%.*]]
 ; CHECK:       pred.udiv.if:
@@ -2040,8 +2039,6 @@ define i32 @scalarize_induction_variable_05(ptr %a, i32 %x, i1 %c, i32 %n) {
 ; IND-NEXT:    [[TMP0:%.*]] = sext i32 [[INDEX]] to i64
 ; IND-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[TMP0]]
 ; IND-NEXT:    [[WIDE_LOAD:%.*]] = load <2 x i32>, ptr [[TMP1]], align 4
-; IND-NEXT:    [[TMP11:%.*]] = xor <2 x i1> [[BROADCAST_SPLATINSERT]], <i1 true, i1 poison>
-; IND-NEXT:    [[TMP12:%.*]] = shufflevector <2 x i1> [[TMP11]], <2 x i1> poison, <2 x i32> zeroinitializer
 ; IND-NEXT:    br i1 [[C]], label [[PRED_UDIV_IF:%.*]], label [[PRED_UDIV_CONTINUE:%.*]]
 ; IND:       pred.udiv.if:
 ; IND-NEXT:    [[TMP2:%.*]] = extractelement <2 x i32> [[WIDE_LOAD]], i64 0
@@ -2205,8 +2202,6 @@ define i32 @scalarize_induction_variable_05(ptr %a, i32 %x, i1 %c, i32 %n) {
 ; UNROLL-NO-IC-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[TMP1]], i32 2
 ; UNROLL-NO-IC-NEXT:    [[WIDE_LOAD:%.*]] = load <2 x i32>, ptr [[TMP2]], align 4
 ; UNROLL-NO-IC-NEXT:    [[WIDE_LOAD2:%.*]] = load <2 x i32>, ptr [[TMP3]], align 4
-; UNROLL-NO-IC-NEXT:    [[TMP27:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT]], splat (i1 true)
-; UNROLL-NO-IC-NEXT:    [[TMP28:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT]], splat (i1 true)
 ; UNROLL-NO-IC-NEXT:    [[TMP4:%.*]] = extractelement <2 x i1> [[BROADCAST_SPLAT]], i32 0
 ; UNROLL-NO-IC-NEXT:    br i1 [[TMP4]], label [[PRED_UDIV_IF:%.*]], label [[PRED_UDIV_CONTINUE:%.*]]
 ; UNROLL-NO-IC:       pred.udiv.if:

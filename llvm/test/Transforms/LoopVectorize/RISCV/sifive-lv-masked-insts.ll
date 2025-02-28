@@ -12,8 +12,7 @@ define void @test() {
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP0:%.*]] = sub i64 100, [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 1, i1 true)
-; CHECK-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 1 x i1> @llvm.vp.xor.nxv1i1(<vscale x 1 x i1> splat (i1 true), <vscale x 1 x i1> splat (i1 true), <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
-; CHECK-NEXT:    call void @llvm.vp.scatter.nxv1i64.nxv1p0(<vscale x 1 x i64> zeroinitializer, <vscale x 1 x ptr> align 8 zeroinitializer, <vscale x 1 x i1> [[PRED_NOT]], i32 [[TMP1]])
+; CHECK-NEXT:    call void @llvm.vp.scatter.nxv1i64.nxv1p0(<vscale x 1 x i64> zeroinitializer, <vscale x 1 x ptr> align 8 zeroinitializer, <vscale x 1 x i1> zeroinitializer, i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP2:%.*]] = zext i32 [[TMP1]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP2]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP3:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 100
