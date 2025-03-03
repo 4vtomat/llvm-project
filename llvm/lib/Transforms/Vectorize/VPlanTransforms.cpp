@@ -696,7 +696,9 @@ void VPlanTransforms::optimizeConditionalRecipes(
     SetVector<VPRecipeBase *> CurrentTree;
     CurrentTree.insert(LR);
 
-    auto End = M->hasDefiningRecipe()
+    VPBasicBlock *MaskBlock =
+        M->hasDefiningRecipe() ? M->getDefiningRecipe()->getParent() : nullptr;
+    auto End = MaskBlock == LR->getParent()
                    ? M->getDefiningRecipe()->getReverseIterator()
                    : LR->getParent()->getFirstNonPhi()->getReverseIterator();
     // Greedily add all recipes that are used to compute stored value to the
