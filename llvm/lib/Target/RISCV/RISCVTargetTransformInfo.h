@@ -604,6 +604,9 @@ public:
   /// \returns true if ISA supports all needed instructions to vectorize
   /// monotonics
   bool enableMonotonicsVectorization() const;
+
+  /// Enabled dropping solutions by default
+  bool shouldDropLSRSolutionIfLessProfitable() const { return true; }
 #endif // SIFIVE_CUSTOMIZATION
 
   bool isLSRCostLess(const TargetTransformInfo::LSRCost &C1,

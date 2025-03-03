@@ -1,6 +1,6 @@
 ; REQUIRES: asserts
 ; RUN: llc < %s -O3 -mattr=+v -debug -lsr-drop-solution 2>&1 | FileCheck --check-prefix=DEBUG %s
-; RUN: llc < %s -O3 -mattr=+v -debug 2>&1 | FileCheck --check-prefix=DEBUG2 %s
+; RUN: llc < %s -O3 -mattr=+v -debug -lsr-drop-solution=false 2>&1 | FileCheck --check-prefix=DEBUG2 %s
 
 target datalayout = "e-m:e-p:64:64-i64:64-i128:128-n64-S128"
 target triple = "riscv64-unknown-linux-gnu"
