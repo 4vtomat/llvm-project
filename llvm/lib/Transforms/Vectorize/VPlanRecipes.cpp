@@ -449,15 +449,12 @@ Value *VPInstruction::generatePerLane(VPTransformState &State,
 Value *VPInstruction::generate(VPTransformState &State) {
   IRBuilderBase &Builder = State.Builder;
 
-#if SIFIVE_CUSTOMIZATION
-  bool IsDefinedInLoopRegion = getParent()->getEnclosingLoopRegion();
-#endif // SIFIVE_CUSTOMIZATION
   if (Instruction::isBinaryOp(getOpcode())) {
     bool OnlyFirstLaneUsed = vputils::onlyFirstLaneUsed(this);
     Value *A = State.get(getOperand(0), OnlyFirstLaneUsed);
     Value *B = State.get(getOperand(1), OnlyFirstLaneUsed);
 #if SIFIVE_CUSTOMIZATION
-    if (IsDefinedInLoopRegion && State.Plan->useVLAVectorizer() && State.EVL &&
+    if (State.Plan->useVLAVectorizer() && State.EVL &&
         A->getType()->isVectorTy())
       return llvm::widenPredicatedInstruction(nullptr, this, *this, State,
                                               nullptr);
@@ -483,7 +480,7 @@ Value *VPInstruction::generate(VPTransformState &State) {
   case VPInstruction::Not: {
     Value *A = State.get(getOperand(0));
 #if SIFIVE_CUSTOMIZATION
-    if (IsDefinedInLoopRegion && State.Plan->useVLAVectorizer() && State.EVL &&
+    if (State.Plan->useVLAVectorizer() && State.EVL &&
         A->getType()->isVectorTy())
       return llvm::widenPredicatedInstruction(nullptr, this, *this, State,
                                               nullptr);
@@ -494,7 +491,7 @@ Value *VPInstruction::generate(VPTransformState &State) {
     bool OnlyFirstLaneUsed = vputils::onlyFirstLaneUsed(this);
     Value *A = State.get(getOperand(0), OnlyFirstLaneUsed);
 #if SIFIVE_CUSTOMIZATION
-    if (IsDefinedInLoopRegion && State.Plan->useVLAVectorizer() && State.EVL &&
+    if (State.Plan->useVLAVectorizer() && State.EVL &&
         A->getType()->isVectorTy())
       return llvm::widenPredicatedInstruction(nullptr, this, *this, State,
                                               nullptr);
@@ -508,7 +505,7 @@ Value *VPInstruction::generate(VPTransformState &State) {
     Value *Op1 = State.get(getOperand(1), OnlyFirstLaneUsed);
     Value *Op2 = State.get(getOperand(2), OnlyFirstLaneUsed);
 #if SIFIVE_CUSTOMIZATION
-    if (IsDefinedInLoopRegion && State.Plan->useVLAVectorizer() && State.EVL &&
+    if (State.Plan->useVLAVectorizer() && State.EVL &&
         Cond->getType()->isVectorTy())
       return llvm::widenPredicatedInstruction(nullptr, this, *this, State,
                                               nullptr);
@@ -550,7 +547,7 @@ Value *VPInstruction::generate(VPTransformState &State) {
     if (!V1->getType()->isVectorTy())
       return V1;
 #if SIFIVE_CUSTOMIZATION
-    if (State.Plan->useVLAVectorizer()) {
+    if (State.Plan->useVLAVectorizer() && State.EVL) {
       Value *V2 = State.get(getOperand(1));
       Value *PrevEVL =
           State.get(State.Plan->getPrevEVL(), /*NeedsScalar=*/true);
@@ -1075,7 +1072,7 @@ Value *VPInstruction::generate(VPTransformState &State) {
     Value *A = State.get(getOperand(0));
     Value *B = State.get(getOperand(1));
 #if SIFIVE_CUSTOMIZATION
-    if (State.Plan->useVLAVectorizer())
+    if (State.Plan->useVLAVectorizer() && State.EVL)
       return Builder.CreateIntrinsic(
           Intrinsic::vp_select, {B->getType()},
           {A, B, ConstantInt::getNullValue(B->getType()),
@@ -1441,7 +1438,7 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
   assert(Variant != nullptr && "Can't create vector function.");
 #if SIFIVE_CUSTOMIZATION
   // Add VL as an explicit final argument to SiFive NF Library functions
-  if (Variant->getName().starts_with(SiFiveNFLibraryPrefix) &&
+  if (Variant->getName().starts_with(SiFiveNFLibraryPrefix) && State.EVL &&
       State.Plan->useVLAVectorizer()) {
     Value *EVL = State.get(State.EVL, /*NeedsScalar=*/true);
     Args.push_back(EVL);
@@ -1502,8 +1499,7 @@ void VPWidenIntrinsicRecipe::execute(VPTransformState &State) {
   State.setDebugLocFrom(getDebugLoc());
 
 #if SIFIVE_CUSTOMIZATION
-  bool IsDefinedInLoopRegion = getParent()->getEnclosingLoopRegion();
-  if (IsDefinedInLoopRegion && State.Plan->useVLAVectorizer() && State.EVL) {
+  if (State.Plan->useVLAVectorizer() && State.EVL) {
     // Skip if CI doesn't have vp form.
     if (Intrinsic::ID VPID = VPIntrinsic::getForIntrinsic(VectorIntrinsicID);
         VPIntrinsic::isVPIntrinsic(VPID)) {
@@ -1805,8 +1801,7 @@ void VPWidenSelectRecipe::execute(VPTransformState &State) {
   Value *Op1 = State.get(getOperand(2));
 #if SIFIVE_CUSTOMIZATION
   Value *Sel;
-  VPBasicBlock *Preheader = cast<VPBasicBlock>(State.Plan->getEntry());
-  if (getParent() != Preheader && State.Plan->useVLAVectorizer() &&
+  if (State.Plan->useVLAVectorizer() && State.EVL &&
       Cond->getType()->isVectorTy()) {
     Value *EVLArg = State.get(State.EVL, /*NeedsScalar=*/true);
     Sel = State.Builder.CreateIntrinsic(Intrinsic::vp_select, {Op0->getType()},
@@ -1919,10 +1914,9 @@ void VPRecipeWithIRFlags::printFlags(raw_ostream &O) const {
 void VPWidenRecipe::execute(VPTransformState &State) {
   State.setDebugLocFrom(getDebugLoc());
 #if SIFIVE_CUSTOMIZATION
-  bool IsDefinedInLoopRegion = getParent()->getEnclosingLoopRegion();
   auto *I = cast_or_null<Instruction>(getUnderlyingValue());
-  if (IsDefinedInLoopRegion && I && State.Plan->useVLAVectorizer() &&
-      State.EVL && State.get(getOperand(0), 0)->getType()->isVectorTy() &&
+  if (I && State.Plan->useVLAVectorizer() && State.EVL &&
+      State.get(getOperand(0), 0)->getType()->isVectorTy() &&
       !isa<BitCastInst>(I) && !isa<FreezeInst>(I)) {
     // Bitcasts are not supported.
     Value *V = llvm::widenPredicatedInstruction(I, this, *this, State,
@@ -2661,15 +2655,15 @@ void VPReverseVectorPointerRecipe::execute(VPTransformState &State) {
 
   // The wide store needs to start at the last vector element.
 #if SIFIVE_CUSTOMIZATION
-    Value *RunTimeVF;
-    if (State.Plan->useVLAVectorizer()) {
-      VPValue *EVL = State.EVL;
-      // If EVL is not nullptr, then EVL must be a valid value set during plan
-      // creation and must be used to correctly reverse the address
-      RunTimeVF = State.get(EVL, /*NeedsScalar=*/true);
-    } else {
-      RunTimeVF = State.get(getVFValue(), VPLane(0));
-    }
+  Value *RunTimeVF;
+  if (State.Plan->useVLAVectorizer() && State.EVL) {
+    VPValue *EVL = State.EVL;
+    // If EVL is not nullptr, then EVL must be a valid value set during plan
+    // creation and must be used to correctly reverse the address
+    RunTimeVF = State.get(EVL, /*NeedsScalar=*/true);
+  } else {
+    RunTimeVF = State.get(getVFValue(), VPLane(0));
+  }
 #else
   Value *RunTimeVF = State.get(getVFValue(), VPLane(0));
 #endif // SIFIVE_CUSTOMIZATION
@@ -2759,7 +2753,7 @@ void VPBlendRecipe::execute(VPTransformState &State) {
       Value *Cond = State.get(getMask(In), OnlyFirstLaneUsed);
 #if SIFIVE_CUSTOMIZATION
       if (State.Plan->useVLAVectorizer() && Cond->getType()->isVectorTy() &&
-          !isDefinedOutsideLoopRegions()) {
+          !isDefinedOutsideLoopRegions() && State.EVL) {
         Value *EVLArg = State.get(State.EVL, /*NeedsScalar=*/true);
         Result = State.Builder.CreateIntrinsic(
             Intrinsic::vp_select, {In0->getType()},
@@ -3872,7 +3866,7 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
   if (Group->isReverse()) {
 #if SIFIVE_CUSTOMIZATION
     Value *Index;
-    if (State.Plan->useVLAVectorizer()) {
+    if (State.Plan->useVLAVectorizer() && State.EVL) {
       assert(State.EVL && "RuntimeVL must be initialized at this point");
       Value *EVL = State.Builder.CreateZExtOrTrunc(
           State.get(State.EVL, /*NeedsScalar=*/true),
@@ -4043,7 +4037,7 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
     Instruction *NewLoad;
 #if SIFIVE_CUSTOMIZATION
     ArrayRef<VPValue *> VPDefs = definedValues();
-    if (State.Plan->useVLAVectorizer()) {
+    if (State.Plan->useVLAVectorizer() && State.EVL) {
       CallInst *WideLoad;
       Value *GroupMask;
       if (BlockInMask || MaskForGaps) {
@@ -4274,7 +4268,7 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
       !Group->isStrided() &&
       "Interleaving for stores with non-const stride is not supported for VLA");
 
-  if (State.Plan->useVLAVectorizer()) {
+  if (State.Plan->useVLAVectorizer() && State.EVL) {
     ArrayRef<VPValue *> StoredValues = getStoredValues();
     assert(Group->getFactor() == Group->getNumMembers() &&
            "Interleaving for stores with gaps is not supported for VLA");
