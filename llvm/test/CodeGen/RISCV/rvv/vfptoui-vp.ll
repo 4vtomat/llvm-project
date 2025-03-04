@@ -269,9 +269,9 @@ define <vscale x 2 x i64> @vfptoui_nxv2i64_nxv2f16(<vscale x 2 x half> %va, <vsc
 ; ZVFHMIN-LABEL: vfptoui_nxv2i64_nxv2f16:
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfwcvt.rtz.xu.f.v v8, v10, v0.t
+; ZVFHMIN-NEXT:    vfwcvt.rtz.xu.f.v v8, v9, v0.t
 ; ZVFHMIN-NEXT:    ret
   %v = call <vscale x 2 x i64> @llvm.vp.fptoui.nxv2i64.nxv2f16(<vscale x 2 x half> %va, <vscale x 2 x i1> %m, i32 %evl)
   ret <vscale x 2 x i64> %v
@@ -281,9 +281,9 @@ define <vscale x 2 x i64> @vfptoui_nxv2i64_nxv2f16_unmasked(<vscale x 2 x half> 
 ; CHECK-LABEL: vfptoui_nxv2i64_nxv2f16_unmasked:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
-; CHECK-NEXT:    vfwcvt.f.f.v v10, v8
+; CHECK-NEXT:    vfwcvt.f.f.v v9, v8
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vfwcvt.rtz.xu.f.v v8, v10
+; CHECK-NEXT:    vfwcvt.rtz.xu.f.v v8, v9
 ; CHECK-NEXT:    ret
   %v = call <vscale x 2 x i64> @llvm.vp.fptoui.nxv2i64.nxv2f16(<vscale x 2 x half> %va, <vscale x 2 x i1> splat (i1 true), i32 %evl)
   ret <vscale x 2 x i64> %v

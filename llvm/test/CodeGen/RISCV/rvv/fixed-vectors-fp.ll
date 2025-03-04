@@ -1257,8 +1257,8 @@ define void @copysign_neg_trunc_v3f16_v3f32(ptr %x, ptr %y) {
 ; ZVFH-NEXT:    vsetivli zero, 3, e16, mf2, ta, ma
 ; ZVFH-NEXT:    vle32.v v8, (a1)
 ; ZVFH-NEXT:    vle16.v v9, (a0)
-; ZVFH-NEXT:    vfncvt.f.f.w v10, v8
-; ZVFH-NEXT:    vfsgnjn.vv v8, v9, v10
+; ZVFH-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFH-NEXT:    vfsgnjn.vv v8, v9, v8
 ; ZVFH-NEXT:    vse16.v v8, (a0)
 ; ZVFH-NEXT:    ret
 ;
@@ -1270,8 +1270,8 @@ define void @copysign_neg_trunc_v3f16_v3f32(ptr %x, ptr %y) {
 ; ZVFHMIN-NEXT:    lui a1, 8
 ; ZVFHMIN-NEXT:    addi a2, a1, -1
 ; ZVFHMIN-NEXT:    vand.vx v8, v8, a2
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v9
-; ZVFHMIN-NEXT:    vxor.vx v9, v10, a1
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v9
+; ZVFHMIN-NEXT:    vxor.vx v9, v9, a1
 ; ZVFHMIN-NEXT:    vand.vx v9, v9, a1
 ; ZVFHMIN-NEXT:    vor.vv v8, v8, v9
 ; ZVFHMIN-NEXT:    vse16.v v8, (a0)
