@@ -234,10 +234,8 @@ define i32 @negative_tree_sums_v16i32(i32 %start, <16 x i32> %v0, <8 x i32> %v1)
 ; CHECK-LABEL: define i32 @negative_tree_sums_v16i32(
 ; CHECK-SAME: i32 [[START:%.*]], <16 x i32> [[V0:%.*]], <8 x i32> [[V1:%.*]]) {
 ; CHECK-NEXT:    [[OP_RDX419:%.*]] = call i32 @llvm.vector.reduce.add.v16i32(<16 x i32> [[V0]])
-; CHECK-NEXT:    [[OP_RDX420:%.*]] = shl i32 [[START]], 1
-; CHECK-NEXT:    [[OP_RDX421:%.*]] = shl i32 [[START]], 1
-; CHECK-NEXT:    [[OP_RDX422:%.*]] = add i32 [[OP_RDX419]], [[OP_RDX420]]
-; CHECK-NEXT:    [[OP_RDX424:%.*]] = add i32 [[OP_RDX422]], [[OP_RDX421]]
+; CHECK-NEXT:    [[TMP1:%.*]] = shl i32 [[START]], 2
+; CHECK-NEXT:    [[OP_RDX424:%.*]] = add i32 [[TMP1]], [[OP_RDX419]]
 ; CHECK-NEXT:    [[OP_RDX419_1:%.*]] = call i32 @llvm.vector.reduce.add.v8i32(<8 x i32> [[V1]])
 ; CHECK-NEXT:    [[OP_RDX420_1:%.*]] = shl i32 [[START]], 1
 ; CHECK-NEXT:    [[OP_RDX421_1:%.*]] = shl i32 [[START]], 1
