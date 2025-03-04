@@ -23426,6 +23426,7 @@ SDValue RISCVTargetLowering::LowerCall(CallLoweringInfo &CLI,
   for (auto &Reg : RegsToPass)
     Ops.push_back(DAG.getRegister(Reg.first, Reg.second.getValueType()));
 
+<<<<<<< HEAD
 #ifndef SIFIVE_CUSTOMIZATION
   if (!IsTailCall) {
 #endif
@@ -23437,6 +23438,13 @@ SDValue RISCVTargetLowering::LowerCall(CallLoweringInfo &CLI,
 #ifndef SIFIVE_CUSTOMIZATION
   }
 #endif
+=======
+  // Add a register mask operand representing the call-preserved registers.
+  const TargetRegisterInfo *TRI = Subtarget.getRegisterInfo();
+  const uint32_t *Mask = TRI->getCallPreservedMask(MF, CallConv);
+  assert(Mask && "Missing call preserved mask for calling convention");
+  Ops.push_back(DAG.getRegisterMask(Mask));
+>>>>>>> refs/rewritten/b0f11dfc7506dd33ad5b43be9faba919b70d1959-2
 
   // Glue the call to the argument copies, if any.
   if (Glue.getNode())
