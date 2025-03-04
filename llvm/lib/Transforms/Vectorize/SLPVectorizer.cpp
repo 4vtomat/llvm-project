@@ -5375,20 +5375,9 @@ static bool clusterSortPtrAccesses(ArrayRef<Value *> VL,
     Value *P1 = Ptr1;
     Value *P2 = Ptr2;
     unsigned Depth = 0;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
     while (!FirstPointers.contains(P2) && !SecondPointers.contains(P1)) {
       if (P1 == P2 || Depth > RecursionMaxDepth)
         return false;
-#else
-    while (!FirstPointers.contains(P2) && !SecondPointers.contains(P1) &&
-           Depth <= RecursionMaxDepth) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
-    while (!FirstPointers.contains(P2) && !SecondPointers.contains(P1)) {
-      if (P1 == P2 || Depth > RecursionMaxDepth)
-        return false;
->>>>>>> refs/rewritten/1160994602b90890efd4df4e134e46cc3ad34bc8-2
       FirstPointers.insert(P1);
       SecondPointers.insert(P2);
       P1 = getUnderlyingObject(P1, /*MaxLookup=*/1);
