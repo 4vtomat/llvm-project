@@ -4,9 +4,8 @@
 define i32 @add_of_reduce_add(<16 x i32> %v0, <16 x i32> %v1) {
 ; CHECK-LABEL: define i32 @add_of_reduce_add(
 ; CHECK-SAME: <16 x i32> [[V0:%.*]], <16 x i32> [[V1:%.*]]) {
-; CHECK-NEXT:    [[V0_RED:%.*]] = tail call i32 @llvm.vector.reduce.add.v16i32(<16 x i32> [[V0]])
-; CHECK-NEXT:    [[V1_RED:%.*]] = tail call i32 @llvm.vector.reduce.add.v16i32(<16 x i32> [[V1]])
-; CHECK-NEXT:    [[RES:%.*]] = add i32 [[V0_RED]], [[V1_RED]]
+; CHECK-NEXT:    [[COMBINED_REDUCE:%.*]] = add <16 x i32> [[V0]], [[V1]]
+; CHECK-NEXT:    [[RES:%.*]] = tail call i32 @llvm.vector.reduce.add.v16i32(<16 x i32> [[COMBINED_REDUCE]])
 ; CHECK-NEXT:    ret i32 [[RES]]
 ;
   %v0_red = tail call i32 @llvm.vector.reduce.add.v16i32(<16 x i32> %v0)
@@ -161,9 +160,8 @@ define i32 @multiple_use_of_reduction_1(<16 x i32> %v0, <16 x i32> %v1, ptr %p) 
 define i32 @do_not_preserve_overflow_flags(<16 x i32> %v0, <16 x i32> %v1) {
 ; CHECK-LABEL: define i32 @do_not_preserve_overflow_flags(
 ; CHECK-SAME: <16 x i32> [[V0:%.*]], <16 x i32> [[V1:%.*]]) {
-; CHECK-NEXT:    [[V0_RED:%.*]] = tail call i32 @llvm.vector.reduce.add.v16i32(<16 x i32> [[V0]])
-; CHECK-NEXT:    [[V1_RED:%.*]] = tail call i32 @llvm.vector.reduce.add.v16i32(<16 x i32> [[V1]])
-; CHECK-NEXT:    [[RES:%.*]] = add nuw nsw i32 [[V0_RED]], [[V1_RED]]
+; CHECK-NEXT:    [[COMBINED_REDUCE:%.*]] = add <16 x i32> [[V0]], [[V1]]
+; CHECK-NEXT:    [[RES:%.*]] = tail call i32 @llvm.vector.reduce.add.v16i32(<16 x i32> [[COMBINED_REDUCE]])
 ; CHECK-NEXT:    ret i32 [[RES]]
 ;
   %v0_red = tail call i32 @llvm.vector.reduce.add.v16i32(<16 x i32> %v0)
@@ -189,9 +187,8 @@ define i32 @preserve_disjoint_flags(<16 x i32> %v0, <16 x i32> %v1) {
 define i32 @add_of_reduce_add_vscale(<vscale x 16 x i32> %v0, <vscale x 16 x i32> %v1) {
 ; CHECK-LABEL: define i32 @add_of_reduce_add_vscale(
 ; CHECK-SAME: <vscale x 16 x i32> [[V0:%.*]], <vscale x 16 x i32> [[V1:%.*]]) {
-; CHECK-NEXT:    [[V0_RED:%.*]] = tail call i32 @llvm.vector.reduce.add.nxv16i32(<vscale x 16 x i32> [[V0]])
-; CHECK-NEXT:    [[V1_RED:%.*]] = tail call i32 @llvm.vector.reduce.add.nxv16i32(<vscale x 16 x i32> [[V1]])
-; CHECK-NEXT:    [[RES:%.*]] = add i32 [[V0_RED]], [[V1_RED]]
+; CHECK-NEXT:    [[COMBINED_REDUCE:%.*]] = add <vscale x 16 x i32> [[V0]], [[V1]]
+; CHECK-NEXT:    [[RES:%.*]] = tail call i32 @llvm.vector.reduce.add.nxv16i32(<vscale x 16 x i32> [[COMBINED_REDUCE]])
 ; CHECK-NEXT:    ret i32 [[RES]]
 ;
   %v0_red = tail call i32 @llvm.vector.reduce.add.nxv16i32(<vscale x 16 x i32> %v0)

@@ -96,10 +96,10 @@ define void @fadd_v6f16(ptr %x, ptr %y) {
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vfadd.vv v8, v12, v10
+; ZVFHMIN-NEXT:    vfadd.vv v8, v8, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v8
-; ZVFHMIN-NEXT:    vse16.v v10, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <6 x half>, ptr %x
   %b = load <6 x half>, ptr %y
@@ -231,10 +231,10 @@ define void @fsub_v6f16(ptr %x, ptr %y) {
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vfsub.vv v8, v12, v10
+; ZVFHMIN-NEXT:    vfsub.vv v8, v8, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v8
-; ZVFHMIN-NEXT:    vse16.v v10, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <6 x half>, ptr %x
   %b = load <6 x half>, ptr %y
@@ -2332,10 +2332,10 @@ define void @fadd_vf_v6f16(ptr %x, half %y) {
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vfadd.vv v8, v10, v12
+; ZVFHMIN-NEXT:    vfadd.vv v8, v10, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v8
-; ZVFHMIN-NEXT:    vse16.v v10, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <6 x half>, ptr %x
   %b = insertelement <6 x half> poison, half %y, i32 0
@@ -2473,10 +2473,10 @@ define void @fadd_fv_v6f16(ptr %x, half %y) {
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vfadd.vv v8, v12, v10
+; ZVFHMIN-NEXT:    vfadd.vv v8, v8, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v8
-; ZVFHMIN-NEXT:    vse16.v v10, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <6 x half>, ptr %x
   %b = insertelement <6 x half> poison, half %y, i32 0
@@ -2614,10 +2614,10 @@ define void @fsub_vf_v6f16(ptr %x, half %y) {
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vfsub.vv v8, v10, v12
+; ZVFHMIN-NEXT:    vfsub.vv v8, v10, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v8
-; ZVFHMIN-NEXT:    vse16.v v10, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <6 x half>, ptr %x
   %b = insertelement <6 x half> poison, half %y, i32 0
@@ -2755,10 +2755,10 @@ define void @fsub_fv_v6f16(ptr %x, half %y) {
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vfsub.vv v8, v12, v10
+; ZVFHMIN-NEXT:    vfsub.vv v8, v8, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v8
-; ZVFHMIN-NEXT:    vse16.v v10, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <6 x half>, ptr %x
   %b = insertelement <6 x half> poison, half %y, i32 0
@@ -4997,16 +4997,16 @@ define void @fmuladd_v6f16(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vfmul.vv v8, v14, v12
+; ZVFHMIN-NEXT:    vfmul.vv v8, v8, v12
 ; ZVFHMIN-NEXT:    vsetivli zero, 6, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v11, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v11
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v10
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vfadd.vv v8, v8, v12
+; ZVFHMIN-NEXT:    vfadd.vv v8, v12, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v8
-; ZVFHMIN-NEXT:    vse16.v v10, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <6 x half>, ptr %x
   %b = load <6 x half>, ptr %y
@@ -5174,16 +5174,16 @@ define void @fmsub_fmuladd_v6f16(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vfmul.vv v8, v14, v12
+; ZVFHMIN-NEXT:    vfmul.vv v8, v8, v12
 ; ZVFHMIN-NEXT:    vsetivli zero, 6, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v11, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v11
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v10
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vfsub.vv v8, v8, v12
+; ZVFHMIN-NEXT:    vfsub.vv v8, v12, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v8
-; ZVFHMIN-NEXT:    vse16.v v10, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <6 x half>, ptr %x
   %b = load <6 x half>, ptr %y
