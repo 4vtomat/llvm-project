@@ -852,6 +852,7 @@ static void legalizeAndOptimizeInductions(VPlan &Plan) {
   bool HasOnlyVectorVFs = !Plan.hasVF(ElementCount::getFixed(1));
   VPBuilder Builder(HeaderVPBB, HeaderVPBB->getFirstNonPhi());
   for (VPRecipeBase &Phi : HeaderVPBB->phis()) {
+<<<<<<< HEAD
     auto *PhiR = dyn_cast<VPHeaderPHIRecipe>(&Phi);
 #if SIFIVE_CUSTOMIZATION
     auto *VPI = dyn_cast<VPInstruction>(&Phi);
@@ -862,6 +863,11 @@ static void legalizeAndOptimizeInductions(VPlan &Plan) {
     if (!PhiR)
       break;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    auto *PhiR = dyn_cast<VPWidenInductionRecipe>(&Phi);
+    if (!PhiR)
+      continue;
+>>>>>>> refs/rewritten/7f59b4e9982f92431f3069645dab6171363c3404-2
 
 #if SIFIVE_CUSTOMIZATION
     if (!IsCSAMaskPhi) {
@@ -914,9 +920,7 @@ static void legalizeAndOptimizeInductions(VPlan &Plan) {
 
     // Replace widened induction with scalar steps for users that only use
     // scalars.
-    auto *WideIV = dyn_cast<VPWidenIntOrFpInductionRecipe>(&Phi);
-    if (!WideIV)
-      continue;
+    auto *WideIV = cast<VPWidenIntOrFpInductionRecipe>(&Phi);
     if (HasOnlyVectorVFs && none_of(WideIV->users(), [WideIV](VPUser *U) {
           return U->usesScalars(WideIV);
         }))
