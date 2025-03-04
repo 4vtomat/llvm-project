@@ -44,7 +44,10 @@
 // RISCV64-SAME: {{^}}, sifive-p450
 // RISCV64-SAME: {{^}}, sifive-p470
 // RISCV64-SAME: {{^}}, sifive-p550
+<<<<<<< HEAD
 // RISCV64-SAME: {{^}}, sifive-p650
+=======
+>>>>>>> refs/rewritten/5d03235c73476dfa3d2dd48c76de106fd1aa2ac7-2
 // RISCV64-SAME: {{^}}, sifive-p670
 // RISCV64-SAME: {{^}}, sifive-s21
 // RISCV64-SAME: {{^}}, sifive-s21r
@@ -131,7 +134,10 @@
 // TUNE-RISCV64-SAME: {{^}}, sifive-p450
 // TUNE-RISCV64-SAME: {{^}}, sifive-p470
 // TUNE-RISCV64-SAME: {{^}}, sifive-p550
+<<<<<<< HEAD
 // TUNE-RISCV64-SAME: {{^}}, sifive-p650
+=======
+>>>>>>> refs/rewritten/5d03235c73476dfa3d2dd48c76de106fd1aa2ac7-2
 // TUNE-RISCV64-SAME: {{^}}, sifive-p670
 // TUNE-RISCV64-SAME: {{^}}, sifive-s21
 // TUNE-RISCV64-SAME: {{^}}, sifive-s21r
