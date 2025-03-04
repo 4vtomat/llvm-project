@@ -480,10 +480,9 @@ define void @test1(ptr nocapture noundef writeonly %dst, i32 noundef signext %i_
 ; RV64-NEXT:    j .LBB0_11
 ; RV64-NEXT:  .LBB0_8: # %vector.ph
 ; RV64-NEXT:    # in Loop: Header=BB0_6 Depth=1
-; RV64-NEXT:    slli t5, t0, 1
 ; RV64-NEXT:    slli t6, t0, 28
-; RV64-NEXT:    sub t5, t6, t5
-; RV64-NEXT:    and t5, t5, a6
+; RV64-NEXT:    sub t6, t6, t1
+; RV64-NEXT:    and t6, t6, a6
 ; RV64-NEXT:    csrwi vxrm, 0
 ; RV64-NEXT:    mv t6, a2
 ; RV64-NEXT:    mv s0, a4
