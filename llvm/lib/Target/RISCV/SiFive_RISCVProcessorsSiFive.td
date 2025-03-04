@@ -417,7 +417,9 @@ def SIFIVE_P270 :
                        FeatureStdExtZvfh,
                        FeatureStdExtZba,
                        FeatureStdExtZbb],
-                      !listconcat(SiFive7TuneFeatures, [TuneDLen128b])>;
+                      !listconcat(SiFive7TuneFeatures,
+                                  [TuneDLenFactor2, TuneDLen128b,
+                                   TuneOptimizedZeroStrideLoad])>;
 
 def SIFIVE_P270N :
   RISCVProcessorModel<"sifive-p270n", SiFive7NVLEN256Model,
@@ -436,7 +438,9 @@ def SIFIVE_P270N :
                        FeatureStdExtZba,
                        FeatureStdExtZbb],
                       !listconcat(SiFive7TuneFeatures,
-                                  [TuneDLen128b, TunePseudoLIsimm32])>;
+                                  [TuneDLenFactor2, TuneDLen128b,
+                                   TuneOptimizedZeroStrideLoad,
+                                   TunePseudoLIsimm32])>;
 
 def SIFIVE_X280 : RISCVProcessorModel<"sifive-x280", SiFive7VLEN512Model,
                                       [Feature64Bit,
