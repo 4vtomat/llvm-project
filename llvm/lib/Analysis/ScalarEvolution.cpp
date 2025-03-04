@@ -11171,10 +11171,10 @@ ScalarEvolution::evaluateAsLikeLatch(ICmpInst::Predicate Pred, const Value *LHS,
           Value *X, *Y;
           if (match(LatchRHS, m_ZExt(m_Value(X)))) {
             if (match(RHS, m_SExt(m_Value(Y))) && (X == Y))
-              if (CmpInst::isImpliedTrueByMatchingCmp(Pred, Pred2))
+              if (ICmpInst::isImpliedTrueByMatchingCmp(Pred, Pred2))
                 return true;
           } else if (match(LatchRHS, m_Sub(m_Value(X), m_One())) && X == RHS) {
-            if (CmpInst::isImpliedTrueByMatchingCmp(Pred, Pred2))
+            if (ICmpInst::isImpliedTrueByMatchingCmp(Pred, Pred2))
               return true;
           }
         }
