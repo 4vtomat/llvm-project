@@ -13,13 +13,10 @@
 #include "llvm/CodeGen/BasicTTIImpl.h"
 #include "llvm/CodeGen/CostTable.h"
 #include "llvm/CodeGen/TargetLowering.h"
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/TargetParser/RISCVTargetParser.h"
 #endif // SIFIVE_CUSTOMIZATION
-=======
 #include "llvm/CodeGen/ValueTypes.h"
->>>>>>> refs/rewritten/98e5962b7c9fee60b81164025dc17ab31f49f5b7-2
 #include "llvm/IR/Instructions.h"
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/IR/IntrinsicsAArch64.h"
