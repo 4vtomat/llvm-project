@@ -2157,6 +2157,7 @@ void SelectionDAGLegalize::ExpandFPLibCall(SDNode* Node,
     EVT RetVT = Node->getValueType(0);
     SmallVector<SDValue, 4> Ops(drop_begin(Node->ops()));
     TargetLowering::MakeLibCallOptions CallOptions;
+    CallOptions.IsPostTypeLegalization = true;
     // FIXME: This doesn't support tail calls.
     std::pair<SDValue, SDValue> Tmp = TLI.makeLibCall(DAG, LC, RetVT,
                                                       Ops, CallOptions,
@@ -4346,6 +4347,8 @@ void SelectionDAGLegalize::ConvertNodeToLibcall(SDNode *Node) {
   LLVM_DEBUG(dbgs() << "Trying to convert node to libcall\n");
   SmallVector<SDValue, 8> Results;
   SDLoc dl(Node);
+  TargetLowering::MakeLibCallOptions CallOptions;
+  CallOptions.IsPostTypeLegalization = true;
   // FIXME: Check flags on the node to see if we can use a finite call.
   unsigned Opc = Node->getOpcode();
   switch (Opc) {
@@ -4388,7 +4391,6 @@ void SelectionDAGLegalize::ConvertNodeToLibcall(SDNode *Node) {
     AtomicOrdering Order = cast<AtomicSDNode>(Node)->getMergedOrdering();
     RTLIB::Libcall LC = RTLIB::getOUTLINE_ATOMIC(Opc, Order, VT);
     EVT RetVT = Node->getValueType(0);
-    TargetLowering::MakeLibCallOptions CallOptions;
     SmallVector<SDValue, 4> Ops;
     if (TLI.getLibcallName(LC)) {
       // If outline atomic available, prepare its arguments and expand.
@@ -4426,7 +4428,6 @@ void SelectionDAGLegalize::ConvertNodeToLibcall(SDNode *Node) {
     break;
   }
   case ISD::CLEAR_CACHE: {
-    TargetLowering::MakeLibCallOptions CallOptions;
     SDValue InputChain = Node->getOperand(0);
     SDValue StartVal = Node->getOperand(1);
     SDValue EndVal = Node->getOperand(2);
@@ -4732,7 +4733,6 @@ void SelectionDAGLegalize::ConvertNodeToLibcall(SDNode *Node) {
     break;
   case ISD::STRICT_BF16_TO_FP:
     if (Node->getValueType(0) == MVT::f32) {
-      TargetLowering::MakeLibCallOptions CallOptions;
       std::pair<SDValue, SDValue> Tmp = TLI.makeLibCall(
           DAG, RTLIB::FPEXT_BF16_F32, MVT::f32, Node->getOperand(1),
           CallOptions, SDLoc(Node), Node->getOperand(0));
@@ -4742,7 +4742,6 @@ void SelectionDAGLegalize::ConvertNodeToLibcall(SDNode *Node) {
     break;
   case ISD::STRICT_FP16_TO_FP: {
     if (Node->getValueType(0) == MVT::f32) {
-      TargetLowering::MakeLibCallOptions CallOptions;
       std::pair<SDValue, SDValue> Tmp = TLI.makeLibCall(
           DAG, RTLIB::FPEXT_F16_F32, MVT::f32, Node->getOperand(1), CallOptions,
           SDLoc(Node), Node->getOperand(0));
@@ -4797,7 +4796,6 @@ void SelectionDAGLegalize::ConvertNodeToLibcall(SDNode *Node) {
     // Sign/zero extend the argument if the libcall takes a larger type.
     SDValue Op = DAG.getNode(Signed ? ISD::SIGN_EXTEND : ISD::ZERO_EXTEND, dl,
                              NVT, Node->getOperand(IsStrict ? 1 : 0));
-    TargetLowering::MakeLibCallOptions CallOptions;
     CallOptions.setIsSigned(Signed);
     std::pair<SDValue, SDValue> Tmp =
         TLI.makeLibCall(DAG, LC, RVT, Op, CallOptions, dl, Chain);
@@ -4837,7 +4835,6 @@ void SelectionDAGLegalize::ConvertNodeToLibcall(SDNode *Node) {
     assert(LC != RTLIB::UNKNOWN_LIBCALL && "Unable to legalize as libcall");
 
     SDValue Chain = IsStrict ? Node->getOperand(0) : SDValue();
-    TargetLowering::MakeLibCallOptions CallOptions;
     std::pair<SDValue, SDValue> Tmp =
         TLI.makeLibCall(DAG, LC, NVT, Op, CallOptions, dl, Chain);
 
@@ -4865,7 +4862,6 @@ void SelectionDAGLegalize::ConvertNodeToLibcall(SDNode *Node) {
     RTLIB::Libcall LC = RTLIB::getFPROUND(Op.getValueType(), VT);
     assert(LC != RTLIB::UNKNOWN_LIBCALL && "Unable to legalize as libcall");
 
-    TargetLowering::MakeLibCallOptions CallOptions;
     std::pair<SDValue, SDValue> Tmp =
         TLI.makeLibCall(DAG, LC, VT, Op, CallOptions, SDLoc(Node), Chain);
     Results.push_back(Tmp.first);
@@ -4894,7 +4890,6 @@ void SelectionDAGLegalize::ConvertNodeToLibcall(SDNode *Node) {
 
     assert(LC != RTLIB::UNKNOWN_LIBCALL && "Unable to legalize as libcall");
 
-    TargetLowering::MakeLibCallOptions CallOptions;
     std::pair<SDValue, SDValue> Tmp =
         TLI.makeLibCall(DAG, LC, Node->getValueType(0), Node->getOperand(1),
                         CallOptions, SDLoc(Node), Node->getOperand(0));
