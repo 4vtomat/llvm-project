@@ -233,7 +233,7 @@
 // CHECK-NEXT:     smwgd                0.3       'Smwgd' (The Smwgd extension adds the mwiddeleg M-mode read-write CSR. The mwiddeleg register represents a set of WIDs as a bit vector with WID i represented by bit i of the register.)
 // CHECK-NEXT:     ssctr                1.0       'Ssctr' (Control Transfer Records Supervisor Level)
 // CHECK-NEXT:     sswg                 0.3       'Sswg' (The Sswg extension adds the [H]S-mode read-write slwid CSR, which sets the WID used for modes lower than [H]S-mode.)
-// CHECK-NEXT:     svukte               0.3       'Svukte' (Address-Independent Latency of User-Mode Faults to Supervisor Addresses)
+// CHECK-NEXT:     svukte               0.4       'Svukte' (Address-Independent Latency of User-Mode Faults to Supervisor Addresses)
 // CHECK-NEXT:     xqcia                0.2       'Xqcia' (Qualcomm uC Arithmetic Extension)
 // CHECK-NEXT:     xqciac               0.2       'Xqciac' (Qualcomm uC Load-Store Address Calculation Extension)
 // CHECK-NEXT:     xqcicli              0.2       'Xqcicli' (Qualcomm uC Conditional Load Immediate Extension)
