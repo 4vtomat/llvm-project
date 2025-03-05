@@ -4506,6 +4506,15 @@ KnownBits SelectionDAG::computeKnownBits(SDValue Op, const APInt &DemandedElts,
     }
     break;
   }
+#if SIFIVE_CUSTOMIZATION
+  case ISD::VP_LOAD_FF: {
+    if (Op.getResNo() == 1) {
+      Known2 = computeKnownBits(Op.getOperand(3), DemandedElts, Depth + 1);
+      Known.Zero.setHighBits(Known2.countMinLeadingZeros());
+    }
+    break;
+  }
+#endif
   case ISD::FrameIndex:
   case ISD::TargetFrameIndex:
     TLI->computeKnownBitsForFrameIndex(cast<FrameIndexSDNode>(Op)->getIndex(),
