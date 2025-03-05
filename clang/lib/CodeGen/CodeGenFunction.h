@@ -3876,6 +3876,8 @@ public:
   void EmitOMPMasterTaskLoopDirective(const OMPMasterTaskLoopDirective &S);
   void
   EmitOMPMasterTaskLoopSimdDirective(const OMPMasterTaskLoopSimdDirective &S);
+  void
+  EmitOMPMaskedTaskLoopSimdDirective(const OMPMaskedTaskLoopSimdDirective &S);
   void EmitOMPParallelMasterTaskLoopDirective(
       const OMPParallelMasterTaskLoopDirective &S);
   void EmitOMPParallelMaskedTaskLoopDirective(
