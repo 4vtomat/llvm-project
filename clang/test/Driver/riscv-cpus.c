@@ -327,6 +327,43 @@
 // MCPU-SIFIVE-E76M: "-target-feature" "+zba" "-target-feature" "+zbb"
 // MCPU-SIFIVE-E76M: "-target-abi" "ilp32f"
 
+// Check target CPUs are correctly passed.
+// mcpu with default march
+// RUN: %clang --target=riscv32 -### -c %s 2>&1 -mcpu=sifive-turtle | FileCheck -check-prefix=MCPU-SIFIVE-TURTLE %s
+// MCPU-SIFIVE-TURTLE: "-nostdsysteminc" "-target-cpu" "sifive-turtle"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+m"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+a"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+f"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+c"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zicbop"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zicntr"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zicond"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zicsr"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zifencei"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zihintntl"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zihintpause"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zihpm"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zimop"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zfa"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zfh"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zcb"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zce"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zcmop"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zcmp"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zcmt"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zba"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zbb"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zbs"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zkt"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zvbb"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zve32f"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zvfbfmin"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zvfbfwma"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zvfh"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+zvl128b"
+// MCPU-SIFIVE-TURTLE: "-target-feature" "+xsfcease"
+// MCPU-SIFIVE-TURTLE: "-target-abi" "ilp32f"
+
 // mcpu with mabi option
 // RUN: %clang --target=riscv64 -### -c %s 2>&1 -mcpu=sifive-u74 -mabi=lp64 | FileCheck -check-prefix=MCPU-ABI-SIFIVE-U74 %s
 // MCPU-ABI-SIFIVE-U74: "-nostdsysteminc" "-target-cpu" "sifive-u74"
