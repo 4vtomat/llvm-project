@@ -3910,6 +3910,21 @@ bool RISCVTTIImpl::enableUncountableVectorization() const {
   }
 }
 
+bool RISCVTTIImpl::shouldDropLSRSolutionIfLessProfitable() const {
+  switch (ST->getProcFamily()) {
+  default:
+    return false;
+  case RISCVSubtarget::SiFive7:
+  case RISCVSubtarget::SiFiveP400:
+  case RISCVSubtarget::SiFiveLeopard:
+  case RISCVSubtarget::SiFiveP600:
+  case RISCVSubtarget::SiFiveLion:
+  case RISCVSubtarget::SiFiveP800:
+  case RISCVSubtarget::SiFiveCheetah:
+    return true;
+  }
+}
+
 bool RISCVTTIImpl::enableCSAVectorization() const {
   return ST->hasVInstructions() &&
          ST->getProcFamily() == RISCVSubtarget::SiFive7;
