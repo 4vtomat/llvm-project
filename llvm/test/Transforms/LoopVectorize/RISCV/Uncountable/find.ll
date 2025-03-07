@@ -228,9 +228,57 @@ define i64 @ham(ptr %arg, i64 %arg1, i32 %arg2, ptr %arg3, i32 %arg4) {
 ; CHECK-NEXT:    br label [[BB10]]
 ; CHECK:       bb10:
 ; CHECK-NEXT:    [[PHI:%.*]] = phi ptr [ [[ARG:%.*]], [[BB:%.*]] ], [ null, [[BB10_LOOPEXIT:%.*]] ]
+; CHECK-NEXT:    [[PHI1:%.*]] = ptrtoint ptr [[PHI]] to i64
+; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[PHI1]], 1
+; CHECK-NEXT:    [[UMAX:%.*]] = call i64 @llvm.umax.i64(i64 [[TMP0]], i64 -4)
+; CHECK-NEXT:    [[TMP1:%.*]] = sub i64 [[UMAX]], [[PHI1]]
+; CHECK-NEXT:    br i1 false, label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK:       vector.ph:
+; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[PHI]], i64 [[TMP1]]
+; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 8
+; CHECK-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP4]], 0
+; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 8 x i64> poison, i64 [[TMP5]], i64 0
+; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 8 x i64> [[DOTSPLATINSERT]], <vscale x 8 x i64> poison, <vscale x 8 x i32> zeroinitializer
+; CHECK-NEXT:    [[TMP6:%.*]] = call <vscale x 8 x i64> @llvm.stepvector.nxv8i64()
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 8 x i64> [[DOTSPLAT]], [[TMP6]]
 ; CHECK-NEXT:    br label [[BB13:%.*]]
+; CHECK:       vector.body:
+; CHECK-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[PHI]], [[VECTOR_PH]] ], [ [[PTR_IND:%.*]], [[BB182:%.*]] ]
+; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[BB182]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[BB182]] ]
+; CHECK-NEXT:    [[TMP8:%.*]] = mul <vscale x 8 x i64> [[TMP7]], splat (i64 1)
+; CHECK-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 8 x i64> [[TMP8]]
+; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[TMP1]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP9:%.*]] = call i64 @llvm.umin.i64(i64 [[AVL]], i64 16)
+; CHECK-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP9]], i32 8, i1 true)
+; CHECK-NEXT:    [[TMP11:%.*]] = extractelement <vscale x 8 x ptr> [[VECTOR_GEP]], i32 0
+; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr i8, ptr [[TMP11]], i32 0
+; CHECK-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 8 x i8>, i32 } @llvm.vp.load.ff.nxv8i8.p0(ptr align 1 [[TMP12]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP10]])
+; CHECK-NEXT:    [[TMP13:%.*]] = extractvalue { <vscale x 8 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; CHECK-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP13]] to i64
+; CHECK-NEXT:    [[TMP15:%.*]] = extractvalue { <vscale x 8 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; CHECK-NEXT:    [[TMP16:%.*]] = zext i32 [[TMP13]] to i64
+; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i8> @llvm.vp.and.nxv8i8(<vscale x 8 x i8> [[TMP15]], <vscale x 8 x i8> splat (i8 -2), <vscale x 8 x i1> splat (i1 true), i32 [[TMP13]])
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP]], <vscale x 8 x i8> splat (i8 -24), metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP13]])
+; CHECK-NEXT:    [[TMP17:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP13]])
+; CHECK-NEXT:    [[TMP18:%.*]] = icmp sge i32 [[TMP17]], 0
+; CHECK-NEXT:    br i1 [[TMP18]], label [[VECTOR_EARLY_EXIT:%.*]], label [[BB182]]
+; CHECK:       bb182:
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP16]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP14]], 1
+; CHECK-NEXT:    [[TMP20:%.*]] = mul i64 1, [[TMP19]]
+; CHECK-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP20]]
+; CHECK-NEXT:    [[TMP21:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP1]]
+; CHECK-NEXT:    br i1 [[TMP21]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[BB13]], !llvm.loop [[LOOP6:![0-9]+]]
+; CHECK:       vector.early.exit:
+; CHECK-NEXT:    br label [[BB10_LOOPEXIT]]
+; CHECK:       vec.uncountable.middle.block:
+; CHECK-NEXT:    br label [[BB109:%.*]]
+; CHECK:       vec.uncountable.scalar.ph:
+; CHECK-NEXT:    br label [[BB14:%.*]]
 ; CHECK:       bb13:
-; CHECK-NEXT:    [[PHI14:%.*]] = phi ptr [ [[PHI]], [[BB10]] ], [ [[GETELEMENTPTR19:%.*]], [[BB18:%.*]] ]
+; CHECK-NEXT:    [[PHI14:%.*]] = phi ptr [ [[PHI]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[GETELEMENTPTR19:%.*]], [[BB18:%.*]] ]
 ; CHECK-NEXT:    [[LOAD15:%.*]] = load i8, ptr [[PHI14]], align 1
 ; CHECK-NEXT:    [[AND16:%.*]] = and i8 [[LOAD15]], -2
 ; CHECK-NEXT:    [[ICMP17:%.*]] = icmp eq i8 [[AND16]], -24
@@ -238,7 +286,7 @@ define i64 @ham(ptr %arg, i64 %arg1, i32 %arg2, ptr %arg3, i32 %arg4) {
 ; CHECK:       bb18:
 ; CHECK-NEXT:    [[GETELEMENTPTR19]] = getelementptr i8, ptr [[PHI14]], i64 1
 ; CHECK-NEXT:    [[ICMP20:%.*]] = icmp ult ptr [[GETELEMENTPTR19]], [[GETELEMENTPTR6]]
-; CHECK-NEXT:    br i1 [[ICMP20]], label [[BB13]], label [[BB109:%.*]]
+; CHECK-NEXT:    br i1 [[ICMP20]], label [[BB14]], label [[BB109]], !llvm.loop [[LOOP7:![0-9]+]]
 ; CHECK:       bb109:
 ; CHECK-NEXT:    ret i64 0
 ;

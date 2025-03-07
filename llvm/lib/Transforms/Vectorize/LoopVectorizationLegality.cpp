@@ -2523,10 +2523,6 @@ bool LoopVectorizationLegality::canVectorizeUncountableLoop(
     return false;
   }
 
-  if (!TheLoop->getUniqueExitBlock()) {
-    LLVM_DEBUG(dbgs() << "\nUncountable Loop: Loop doesn't have unique exit block\n");
-    return false;
-  }
   // Limit to conditional exit branches first
   // TODO: Support unconditional exit branches
   SmallVector<BasicBlock *, 8> ExitingBlocks;
