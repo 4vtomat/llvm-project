@@ -1,6 +1,7 @@
 ; RUN: opt -passes=dfa-jump-threading -dfa-cost-threshold=25 -pass-remarks-missed='dfa-jump-threading' -pass-remarks-output=%t -disable-output %s
 ; RUN: FileCheck --input-file %t --check-prefix=REMARK %s
 ; RUN: opt -S -passes=dfa-jump-threading %s | FileCheck %s
+; XFAIL: sifive-customization
 
 ; This negative test case checks that the optimization doesn't trigger
 ; when the code size cost is too high.

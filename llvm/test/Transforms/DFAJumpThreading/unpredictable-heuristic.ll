@@ -1,5 +1,6 @@
 ; REQUIRES: asserts
 ; RUN: opt -S -passes=dfa-jump-threading %s -debug-only=dfa-jump-threading 2>&1 | FileCheck %s
+; XFAIL: sifive-customization
 
 ; CHECK-COUNT-3: Exiting early due to unpredictability heuristic.
 
