@@ -7235,6 +7235,9 @@ InstructionCost LoopVectorizationCostModel::expectedCost(ElementCount VF) {
     addFullyUnrolledInstructionsToIgnore(TheLoop, Legal->getInductionVars(),
                                          ValuesToIgnoreForVF);
 
+#if SIFIVE_CUSTOMIZATION
+  BasicBlock *LatchBB = TheLoop->getLoopLatch();
+#endif // SIFIVE_CUSTOMIZATION
   // For each block.
   for (BasicBlock *BB : TheLoop->blocks()) {
     InstructionCost BlockCost;
@@ -7264,8 +7267,16 @@ InstructionCost LoopVectorizationCostModel::expectedCost(ElementCount VF) {
     // the predicated block, if it is an if-else block. Thus, scale the block's
     // cost by the probability of executing it. blockNeedsPredication from
     // Legal is used so as to not include all blocks in tail folded loops.
+#if SIFIVE_CUSTOMIZATION
+    // The predicated latch block in early-exit loops executes in all
+    // but the final iteration, so we must account for its cost per iteration.
+    if (VF.isScalar() && Legal->blockNeedsPredication(BB) &&
+        ((LatchBB != BB) || !Legal->useVLAVectorizer()))
+      BlockCost /= getReciprocalPredBlockProb();
+#else
     if (VF.isScalar() && Legal->blockNeedsPredication(BB))
       BlockCost /= getReciprocalPredBlockProb();
+#endif // SIFIVE_CUSTOMIZATION
 
     Cost += BlockCost;
   }
