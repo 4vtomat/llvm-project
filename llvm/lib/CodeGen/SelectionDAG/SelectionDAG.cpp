@@ -6535,10 +6535,6 @@ SDValue SelectionDAG::getNode(unsigned Opcode, const SDLoc &DL, EVT VT,
       return getNode(ISD::VECREDUCE_AND, DL, VT, N1);
     break;
   case ISD::SPLAT_VECTOR:
-#if SIFIVE_CUSTOMIZATION
-    if (VT.isRISCVVectorTuple())
-      break;
-#endif // SIFIVE_CUSTOMIZATION
     assert(VT.isVector() && "Wrong return type!");
     // FIXME: Hexagon uses i32 scalar for a floating point zero vector so allow
     // that for now.
