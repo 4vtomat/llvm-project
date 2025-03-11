@@ -1400,13 +1400,16 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
     // TODO: Duplicate it for now and delete in coalesceVSETVLIs function.
     if (InsertPt->getOpcode() != RISCV::PseudoSF_VSETTNT) {
       if (Info.hasAVLVLMAX()) {
+        Register DestReg = MRI->createVirtualRegister(&RISCV::GPRRegClass);
         auto MI =
             BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoSF_VSETTNTX0))
-                .addReg(RISCV::X0, RegState::Define | RegState::Dead)
-                .addReg(RISCV::X0)
+                .addReg(DestReg, RegState::Define | RegState::Dead)
+                .addReg(RISCV::X0, RegState::Kill)
                 .addImm(Info.encodeVTYPE());
-        if (LIS)
+        if (LIS) {
           LIS->InsertMachineInstrInMaps(*MI);
+          LIS->createAndComputeVirtRegInterval(DestReg);
+        }
       } else {
         auto MI = BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoSF_VSETTNT))
                       .addReg(RISCV::X0, RegState::Define | RegState::Dead)
