@@ -5186,6 +5186,9 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
           "Cannot vectorize operations on unsupported scalable vector type",
           "UnsupportedScalableVectorType", ORE, TheLoop);
 
+    bool IsOptSize = ScalarEpilogueStatus == CM_ScalarEpilogueNotAllowedOptSize;
+    if (IsOptSize && runtimeChecksRequired())
+      return FixedScalableVFPair::getNone();
     return MaxVF;
   }
 #endif // SIFIVE_CUSTOMIZATION
