@@ -855,6 +855,16 @@ static void AddNodeIDCustom(FoldingSetNodeID &ID, const SDNode *N) {
     ID.AddInteger(ELD->getMemOperand()->getFlags());
     break;
   }
+#if SIFIVE_CUSTOMIZATION
+  case ISD::VP_LOAD_FF: {
+    const VPLoadFFSDNode *LD = cast<VPLoadFFSDNode>(N);
+    ID.AddInteger(LD->getMemoryVT().getRawBits());
+    ID.AddInteger(LD->getRawSubclassData());
+    ID.AddInteger(LD->getPointerInfo().getAddrSpace());
+    ID.AddInteger(LD->getMemOperand()->getFlags());
+    break;
+  }
+#endif
   case ISD::VP_STORE: {
     const VPStoreSDNode *EST = cast<VPStoreSDNode>(N);
     ID.AddInteger(EST->getMemoryVT().getRawBits());
