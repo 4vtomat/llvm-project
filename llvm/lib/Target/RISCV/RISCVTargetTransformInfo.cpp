@@ -3014,45 +3014,6 @@ InstructionCost RISCVTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
   InstructionCost Cost = 0;
   if (Opcode == Instruction::Store && OpInfo.isConstant())
     Cost += getStoreImmCost(Src, OpInfo, CostKind);
-#if SIFIVE_CUSTOMIZATION
-  // FIXME: Merge with upstream code?
-  std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Src);
-  if (!LT.second.isVector())
-    return Cost + BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
-                                         CostKind, OpInfo, I);
-  if (CostKind == TTI::TCK_CodeSize)
-    return Cost + BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
-                                         CostKind, OpInfo, I);
-  if (ST->isSiFiveCPU()) {
-    if (Opcode == Instruction::Store && isa<FixedVectorType>(Src)) {
-      // Note: vector memory accesses check the L1 D$. On a miss, the access is
-      // forwarded to the L2$.
-      // Based on how the data would be used later, vector store may not be
-      // good in all cases. For vector store which VL < 4, we make the cost
-      // equivalent to LMUL_M1 to discourage the use of vector store on small
-      // VL.
-      if (cast<FixedVectorType>(Src)->getNumElements() < 4)
-        return Cost + 2;
-    }
-  }
-  Cost += LT.first * TLI->getLMULCost(LT.second);
-
-  /// Extra penalty for misaligned load or store
-  if (!Alignment ||
-      (ST->hasKnownDLen() && Alignment.value() < Align(ST->getDLen() / 8)))
-    Cost += 1;
-
-  // Load/store instructions with large lmul will run out of outstandings which
-  // may drop the performance.
-  // We only have 18 outstanding memory ops on x280, and a m8 vector
-  // load/store will occupy 16 outstandings.
-  if (ST->getProcFamily() == RISCVSubtarget::SiFive7 &&
-      ST->getRealMinVLen() == 512 && LT.second.getScalarSizeInBits() >= 16) {
-    Cost += (TLI->getLMULCost(LT.second) / 16) * 2;
-  }
-
-  return Cost;
-#else
 
   std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Src);
 
@@ -3069,20 +3030,50 @@ InstructionCost RISCVTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
     if (Src->isVectorTy() && LT.second.isVector() &&
         TypeSize::isKnownLT(DL.getTypeStoreSizeInBits(Src),
                             LT.second.getSizeInBits()))
-        return Cost;
+      return Cost;
 
     return BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
                                   CostKind, OpInfo, I);
   }();
 
+#if SIFIVE_CUSTOMIZATION
+  if (!LT.second.isVector() || CostKind == TTI::TCK_CodeSize)
+    return Cost + BaseCost;
+
+  if (ST->isSiFiveCPU()) {
+    if (Opcode == Instruction::Store && isa<FixedVectorType>(Src)) {
+      // Note: vector memory accesses check the L1 D$. On a miss, the access is
+      // forwarded to the L2$.
+      // Based on how the data would be used later, vector store may not be
+      // good in all cases. For vector store which VL < 4, we make the cost
+      // equivalent to LMUL_M1 to discourage the use of vector store on small
+      // VL.
+      if (cast<FixedVectorType>(Src)->getNumElements() < 4)
+        return Cost + 2;
+    }
+  }
+
+  /// Extra penalty for misaligned load or store
+  if (!Alignment ||
+      (ST->hasKnownDLen() && Alignment.value() < Align(ST->getDLen() / 8)))
+    Cost += 1;
+
+  // Load/store instructions with large lmul will run out of outstandings which
+  // may drop the performance.
+  // We only have 18 outstanding memory ops on x280, and a m8 vector
+  // load/store will occupy 16 outstandings.
+  if (ST->getProcFamily() == RISCVSubtarget::SiFive7 &&
+      ST->getRealMinVLen() == 512 && LT.second.getScalarSizeInBits() >= 16) {
+    Cost += (TLI->getLMULCost(LT.second) / 16) * 2;
+  }
+
+#endif // SIFIVE_CUSTOMIZATION
   // Assume memory ops cost scale with the number of vector registers
   // possible accessed by the instruction.  Note that BasicTTI already
   // handles the LT.first term for us.
   if (LT.second.isVector() && CostKind != TTI::TCK_CodeSize)
     BaseCost *= TLI->getLMULCost(LT.second);
   return Cost + BaseCost;
-
-#endif // SIFIVE_CUSTOMIZATION
 }
 
 InstructionCost RISCVTTIImpl::getCmpSelInstrCost(
