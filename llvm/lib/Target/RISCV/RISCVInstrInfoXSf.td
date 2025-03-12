@@ -11,54 +11,6 @@
 //===----------------------------------------------------------------------===//
 
 #ifdef SIFIVE_CUSTOMIZATION
-class RVInstVVCustom2<bits<6> funct6, RISCVVFormat opv, dag outs, dag ins,
-                      string opcodestr, string argstr>
-    : RVInst<outs, ins, opcodestr, argstr, [], InstFormatR> {
-  bits<5> vs2;
-  bits<5> vs1;
-  bits<5> vd;
-  bit vm;
-
-  let Inst{31-26} = funct6;
-  let Inst{25} = vm;
-  let Inst{24-20} = vs2;
-  let Inst{19-15} = vs1;
-  let Inst{14-12} = opv.Value;
-  let Inst{11-7} = vd;
-  let Inst{6-0}= OPC_CUSTOM_2.Value;
-
-  let Uses = [VTYPE, VL];
-  let RVVConstraint = NoConstraint;
-}
-
-class RVInstVXCustom2<bits<6> funct6, RISCVVFormat opv, dag outs, dag ins,
-                      string opcodestr, string argstr>
-    : RVInst<outs, ins, opcodestr, argstr, [], InstFormatR> {
-  bits<5> vs2;
-  bits<5> rs1;
-  bits<5> vd;
-  bit vm;
-
-  let Inst{31-26} = funct6;
-  let Inst{25} = vm;
-  let Inst{24-20} = vs2;
-  let Inst{19-15} = rs1;
-  let Inst{14-12} = opv.Value;
-  let Inst{11-7} = vd;
-  let Inst{6-0} = OPC_CUSTOM_2.Value;
-
-  let Uses = [VTYPE, VL];
-  let RVVConstraint = NoConstraint;
-}
-
-class CustomSiFiveVV<string opcodestr,  RISCVVFormat opv, bits<6> funct6>
-  : RVInstVVCustom2<funct6, opv, (outs VR:$vd),
-                    (ins VR:$vs1, VR:$vs2), opcodestr, "$vd, $vs1, $vs2"> {
-  let hasSideEffects = 0;
-  let mayLoad = 0;
-  let mayStore = 0;
-}
-
 // FIXME: might need to put more constraint
 let RVVConstraint = VMConstraint, Predicates = [HasVendorXSfvqdotq],
     DecoderNamespace = "XSfvqdotq" in {
@@ -80,15 +32,6 @@ def : InstAlias<"sf.vfncvt.bf16.f.w $vd, $vs2$vm",
                 (VFNCVTBF16_F_F_W VR:$vd, VR:$vs2, VMaskOp:$vm)>;
 def : InstAlias<"sf.vfncvt.bf16.f.w $vd, $vs2",
                 (VFNCVTBF16_F_F_W VR:$vd, VR:$vs2, zero_reg)>;
-}
-
-class CustomSiFiveVF<string opcodestr,  RISCVVFormat opv, bits<6> funct6>
-  : RVInstVXCustom2<funct6, opv, (outs VR:$vd),
-                    (ins VR:$vs2, FPR32:$rs1, VMaskOp:$vm), opcodestr,
-                    "$vd, $vs2, $rs1$vm"> {
-  let hasSideEffects = 0;
-  let mayLoad = 0;
-  let mayStore = 0;
 }
 
 defvar VQDOTLMuls = [VI32MF2, VI32M1, VI32M2, VI32M4, VI32M8];
