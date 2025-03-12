@@ -269,7 +269,15 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
                   AddOp = Instruction::Add;
                 else
                   AddOp = ID.getInductionOpcode();
-                return TTI.getArithmeticInstrCost(AddOp, VectorTy, CostKind);
+
+                const unsigned RegID =
+                    TTI.getRegisterClassForType(true /*vector*/, VectorTy);
+                const unsigned NumUsedRegs = TTI.getRegUsageForType(VectorTy);
+                addRegisterUsage(Recipe->getVPSingleValue(), RegID,
+                                 NumUsedRegs);
+
+                return getRegisterPressureCost(RegID, VectorTy) +
+                       TTI.getArithmeticInstrCost(AddOp, VectorTy, CostKind);
               })
           .Case<VPWidenPointerInductionRecipe>(
               [&](const VPWidenPointerInductionRecipe *PIR) -> InstructionCost {
@@ -277,7 +285,18 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
                     PIR->getInductionDescriptor().getStep()->getType();
                 if (!TTI.isElementTypeLegalForScalableVector(PhiTy))
                   return InstructionCost::getInvalid();
-                return 1;
+
+                Type *VectorTy = getVectorType(PhiTy, RVL);
+                const unsigned RegID =
+                    TTI.getRegisterClassForType(true /*vector*/, VectorTy);
+                const unsigned NumUsedRegs = TTI.getRegUsageForType(VectorTy);
+                addRegisterUsage(Recipe->getVPSingleValue(), RegID,
+                                 NumUsedRegs);
+
+                // Implicit live-in value for start offset.
+                addRegisterUsage(Recipe->getOperand(0), RegID, NumUsedRegs);
+
+                return getRegisterPressureCost(RegID, VectorTy) + 1;
               })
           .Case<VPCanonicalIVPHIRecipe, VPScalarIVStepsRecipe,
                 VPReductionPHIRecipe>(
@@ -726,11 +745,10 @@ VPlanCostModel::getMemoryOpCost(const VPWidenMemoryRecipe *VPWMIR,
     return InstructionCost::getInvalid();
   auto *VectorTy = cast<VectorType>(getVectorType(ValTy, RVL));
 
+  const unsigned RegID = TTI.getRegisterClassForType(true /*vector*/, VectorTy);
+  const unsigned NumUsedRegs = TTI.getRegUsageForType(VectorTy);
   InstructionCost Cost = 0;
   if (isa<VPWidenLoadEVLRecipe, VPWidenLoadRecipe>(VPWMIR)) {
-    const unsigned RegID =
-        TTI.getRegisterClassForType(true /*vector*/, VectorTy);
-    const unsigned NumUsedRegs = TTI.getRegUsageForType(VectorTy);
     const VPValue *Data;
     if (VPWMIR->isSpeculative())
       Data = VPWMIR->getVPValue(0);
@@ -751,6 +769,23 @@ VPlanCostModel::getMemoryOpCost(const VPWidenMemoryRecipe *VPWMIR,
     Cost += getIntrinsicCost(Intrinsic::experimental_vp_compress, VectorTy,
                              {VectorTy, MaskTy, VLTy});
   }
+
+  // Calculate register pressure for store recipes because we cannot fold scalar
+  // into `vse`.
+  if (isa<VPWidenStoreEVLRecipe, VPWidenStoreRecipe>(VPWMIR)) {
+    Value *OpV = VPWMIR->getOperand(1)->getUnderlyingValue();
+
+    // Calculate the register usage when the stored value is loop invariant or
+    // live-in.
+    if ((OpV && Legal.isInvariant(OpV)) ||
+        (!OpV &&
+         !(SiFiveEstimateLiveInRegisterPressure && !TTI.sinkSplatOperands()))) {
+      addRegisterUsage(VPWMIR->getOperand(1), RegID, NumUsedRegs);
+      Cost += getRegisterPressureCost(RegID, VectorTy);
+      RegistersUsage.LiveRegister[RegID] -= NumUsedRegs;
+    }
+  }
+
   return Cost + getMemoryOpCost(I, VectorTy, VPWMIR->isConsecutive(), IsMasked,
                                 VPWMIR->isReverse(), VPWMIR->isSpeculative());
 } // namespace llvm

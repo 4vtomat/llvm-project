@@ -13,7 +13,7 @@ declare iXLen @llvm.riscv.sf.vsettm.iXLen(iXLen, iXLen, iXLen)
 define iXLen @test_sf_vsettm(iXLen %tm) {
 ; CHECK-LABEL: test_sf_vsettm:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    sf.vsettnt zero, zero, e8, w4
+; CHECK-NEXT:    sf.vsettnt a1, zero, e8, w4
 ; CHECK-NEXT:    sf.vsettm a0, a0
 ; CHECK-NEXT:    ret
   entry:

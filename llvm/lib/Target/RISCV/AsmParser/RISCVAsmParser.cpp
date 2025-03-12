@@ -3736,9 +3736,6 @@ bool RISCVAsmParser::emitCompactLoadAddress(MCInst &Inst, unsigned Opcode,
   emitToStreamer(Out, MCInstBuilder(RISCV::LUI)
                           .addOperand(DestReg)
                           .addExpr(SymbolHi));
-  MCRegister Reg = PseudoGpReg.getReg();
-  if (Reg == RISCV::NoRegister)
-    PseudoGpReg.setReg(RISCV::X3);
   emitToStreamer(Out, MCInstBuilder(RISCV::PseudoAddRegRel)
                           .addOperand(DestReg)
                           .addOperand(PseudoGpReg)
@@ -3779,9 +3776,6 @@ void RISCVAsmParser::emitCompactLoadStoreSymbol(MCInst &Inst, unsigned Opcode,
   emitToStreamer(Out, MCInstBuilder(RISCV::LUI)
                           .addOperand(TmpReg)
                           .addExpr(SymbolHi));
-  MCRegister Reg = PseudoGpReg.getReg();
-  if (Reg == RISCV::NoRegister)
-    PseudoGpReg.setReg(RISCV::X3);
   emitToStreamer(Out, MCInstBuilder(RISCV::PseudoAddRegRel)
                           .addOperand(TmpReg)
                           .addOperand(PseudoGpReg)
@@ -3972,8 +3966,8 @@ std::unique_ptr<RISCVOperand> RISCVAsmParser::defaultFRMArgOp() const {
 
 #if SIFIVE_CUSTOMIZATION
 std::unique_ptr<RISCVOperand> RISCVAsmParser::defaultPseudoGPRegisterOperands() const {
-  return RISCVOperand::createReg(RISCV::NoRegister, llvm::SMLoc(),
-                                 llvm::SMLoc(), isRV64());
+  return RISCVOperand::createReg(RISCV::X3, llvm::SMLoc(), llvm::SMLoc(),
+                                 isRV64());
 }
 #endif // SIFIVE_CUSTOMIZATION
 

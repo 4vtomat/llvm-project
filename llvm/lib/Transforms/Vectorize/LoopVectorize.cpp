@@ -5186,6 +5186,9 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
           "Cannot vectorize operations on unsupported scalable vector type",
           "UnsupportedScalableVectorType", ORE, TheLoop);
 
+    bool IsOptSize = ScalarEpilogueStatus == CM_ScalarEpilogueNotAllowedOptSize;
+    if (IsOptSize && runtimeChecksRequired())
+      return FixedScalableVFPair::getNone();
     return MaxVF;
   }
 #endif // SIFIVE_CUSTOMIZATION
@@ -7235,6 +7238,9 @@ InstructionCost LoopVectorizationCostModel::expectedCost(ElementCount VF) {
     addFullyUnrolledInstructionsToIgnore(TheLoop, Legal->getInductionVars(),
                                          ValuesToIgnoreForVF);
 
+#if SIFIVE_CUSTOMIZATION
+  BasicBlock *LatchBB = TheLoop->getLoopLatch();
+#endif // SIFIVE_CUSTOMIZATION
   // For each block.
   for (BasicBlock *BB : TheLoop->blocks()) {
     InstructionCost BlockCost;
@@ -7264,8 +7270,16 @@ InstructionCost LoopVectorizationCostModel::expectedCost(ElementCount VF) {
     // the predicated block, if it is an if-else block. Thus, scale the block's
     // cost by the probability of executing it. blockNeedsPredication from
     // Legal is used so as to not include all blocks in tail folded loops.
+#if SIFIVE_CUSTOMIZATION
+    // The predicated latch block in early-exit loops executes in all
+    // but the final iteration, so we must account for its cost per iteration.
+    if (VF.isScalar() && Legal->blockNeedsPredication(BB) &&
+        ((LatchBB != BB) || !Legal->useVLAVectorizer()))
+      BlockCost /= getReciprocalPredBlockProb();
+#else
     if (VF.isScalar() && Legal->blockNeedsPredication(BB))
       BlockCost /= getReciprocalPredBlockProb();
+#endif // SIFIVE_CUSTOMIZATION
 
     Cost += BlockCost;
   }
@@ -9834,9 +9848,28 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
       auto *Cond = dyn_cast<ConstantInt>(MiddleTerm->getCondition());
       if (Cond && Cond->isOne() && MiddleTerm->getSuccessor(1) == ScalarPhBB) {
         ScalarPhBB->removePredecessor(MiddleBB, false);
-        BranchInst *BI = BranchInst::Create(MiddleTerm->getSuccessor(0));
+        BasicBlock *SuccBlock = MiddleTerm->getSuccessor(0);
+        BranchInst *BI = BranchInst::Create(SuccBlock);
         ReplaceInstWithInst(MiddleTerm, BI);
         State.CFG.DTU.applyUpdates({{DominatorTree::Delete, MiddleBB, ScalarPhBB}});
+        // MiddleBlock now can be exit of the parent loop.
+        // Need to update Loop analysis.
+        Loop *LoopForExit = LI->getLoopFor(SuccBlock);
+        Loop *LoopForMiddle = LI->getLoopFor(MiddleBB);
+        if (LoopForExit != LoopForMiddle) {
+          // Remove from current loop and its parents.
+          if (LoopForMiddle) {
+            LoopForMiddle->removeBlockFromLoop(MiddleBB);
+            LI->changeLoopFor(MiddleBB, nullptr);
+
+            // Remove from all ancestor loops
+            for (Loop *Parent = LoopForMiddle->getParentLoop(); Parent;
+                 Parent = Parent->getParentLoop())
+              Parent->removeBlockFromLoop(MiddleBB);
+          }
+          if (LoopForExit)
+            LoopForExit->addBasicBlockToLoop(MiddleBB, *LI);
+        }
       }
     }
   }

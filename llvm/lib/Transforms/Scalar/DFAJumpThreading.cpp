@@ -98,7 +98,7 @@ static cl::opt<bool>
 static cl::opt<bool> EarlyExitHeuristic(
     "dfa-early-exit-heuristic",
     cl::desc("Exit early if an unpredictable value come from the same loop"),
-    cl::Hidden, cl::init(true));
+    cl::Hidden, cl::init(false)); // SIFIVE
 
 static cl::opt<unsigned> MaxPathLength(
     "dfa-max-path-length",

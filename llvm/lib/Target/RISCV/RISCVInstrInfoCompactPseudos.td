@@ -80,7 +80,7 @@ def PseudoLD_GPREL : Pseudo<(outs GPR:$rd),
                             (ins bare_symbol:$symbol, pseudo_gp:$optional), [],
                             "ld.gprel", "$rd, $symbol, $optional">;
 
-let Predicates = [HasStdExtZfh] in
+let Predicates = [HasStdExtZfhmin] in
 def PseudoFLH_GPREL : Pseudo<(outs FPR16:$rs, GPR:$tmp),
                              (ins bare_symbol:$symbol, pseudo_gp:$optional), [],
                              "flh.gprel", "$rs, $symbol, $tmp, $optional">;
@@ -115,7 +115,7 @@ def PseudoSD_GPREL : Pseudo<(outs GPR:$rs, GPR:$tmp),
                             (ins bare_symbol:$symbol, pseudo_gp:$optional), [],
                             "sd.gprel", "$rs, $symbol, $tmp, $optional">;
 
-let Predicates = [HasStdExtZfh] in
+let Predicates = [HasStdExtZfhmin] in
 def PseudoFSH_GPREL : Pseudo<(outs FPR16:$rs, GPR:$tmp),
                              (ins bare_symbol:$symbol, pseudo_gp:$optional), [],
                              "fsh.gprel", "$rs, $symbol, $tmp, $optional">;

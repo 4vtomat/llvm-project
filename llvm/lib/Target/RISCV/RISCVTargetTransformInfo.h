@@ -606,7 +606,7 @@ public:
   bool enableMonotonicsVectorization() const;
 
   /// Enabled dropping solutions by default
-  bool shouldDropLSRSolutionIfLessProfitable() const { return true; }
+  bool shouldDropLSRSolutionIfLessProfitable() const;
 #endif // SIFIVE_CUSTOMIZATION
 
   bool isLSRCostLess(const TargetTransformInfo::LSRCost &C1,
