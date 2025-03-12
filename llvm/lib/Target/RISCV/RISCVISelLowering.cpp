@@ -1157,6 +1157,9 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
                           ISD::EXPERIMENTAL_VP_STRIDED_STORE, ISD::VP_GATHER,
                           ISD::VP_SCATTER},
                          VT, Custom);
+#if SIFIVE_CUSTOMIZATION
+      setOperationAction(ISD::VP_LOAD_FF, VT, Custom);
+#endif
 
       setOperationAction(ISD::FNEG, VT, Expand);
       setOperationAction(ISD::FABS, VT, Expand);
@@ -1425,6 +1428,9 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
                             ISD::VP_SCATTER, ISD::EXPERIMENTAL_VP_STRIDED_LOAD,
                             ISD::EXPERIMENTAL_VP_STRIDED_STORE},
                            VT, Custom);
+#if SIFIVE_CUSTOMIZATION
+        setOperationAction(ISD::VP_LOAD_FF, VT, Custom);
+#endif
 
         setOperationAction({ISD::FP_ROUND, ISD::FP_EXTEND}, VT, Custom);
         setOperationAction({ISD::STRICT_FP_ROUND, ISD::STRICT_FP_EXTEND}, VT,
@@ -1484,9 +1490,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
           continue;
         }
 
-#if SIFIVE_CUSTOMIZATION
-        setOperationAction(ISD::VP_LOAD_FF, VT, Custom);
-#endif
         setOperationAction({ISD::BUILD_VECTOR, ISD::SCALAR_TO_VECTOR}, VT,
                            Custom);
 

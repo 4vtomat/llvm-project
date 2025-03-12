@@ -603,7 +603,7 @@ END_REGISTER_VP(vp_load, VP_LOAD)
 
 #if SIFIVE_CUSTOMIZATION
 BEGIN_REGISTER_VP_INTRINSIC(vp_load_ff, 1, 2)
-// val,chain = VP_LOAD_FF chain,base,offset,mask,evl
+// val,chain = VP_LOAD_FF chain,base,mask,evl
 BEGIN_REGISTER_VP_SDNODE(VP_LOAD_FF, -1, vp_load_ff, 2, 3)
 HELPER_MAP_VPID_TO_VPSD(vp_load_ff, VP_LOAD_FF)
 VP_PROPERTY_NO_FUNCTIONAL
