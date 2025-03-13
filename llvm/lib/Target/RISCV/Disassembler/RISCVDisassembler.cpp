@@ -701,44 +701,12 @@ DecodeStatus RISCVDisassembler::getInstruction32(MCInst &MI, uint64_t &Size,
   TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfvqdotq,
                         DecoderTableXSfvqdotq32,
                         "SiFive vqdotq custom opcode table");
-  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfmmbase,
-                        DecoderTableXSfmmbase32,
-                        "SiFive XSfmmbase extension custom opcode table");
   TRY_TO_DECODE_FEATURE(
-      RISCV::FeatureVendorXSfmm32ea, DecoderTableXSfmm32eaOrXSfmmbase32,
-      "SiFive XSfmm32ea/XSfmmbase extension custom opcode table");
+      RISCV::FeatureVendorXSfmmbase, DecoderTableXSfmm32,
+      "SiFive XSfmm32 extension custom opcode table");
   TRY_TO_DECODE_FEATURE(
-      RISCV::FeatureVendorXSfmmbase, DecoderTableXSfmm32eaOrXSfmmbase32,
-      "SiFive XSfmm32ea/XSfmmbase extension custom opcode table");
-  TRY_TO_DECODE_FEATURE(
-      RISCV::FeatureVendorXSfmm32a16f,
-      DecoderTableHasVendorXSfmm32eaOrXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f32,
-      "SiFive XSfmm32ea/XSfmm32a16f/XSfmm32a32f/XSfmm64a64f extension custom "
-      "opcode table");
-  TRY_TO_DECODE_FEATURE(
-      RISCV::FeatureVendorXSfmm32a32f,
-      DecoderTableHasVendorXSfmm32eaOrXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f32,
-      "SiFive XSfmm32ea/XSfmm32a16f/XSfmm32a32f/XSfmm64a64f extension custom "
-      "opcode table");
-  TRY_TO_DECODE_FEATURE(
-      RISCV::FeatureVendorXSfmm64a64f,
-      DecoderTableHasVendorXSfmm32eaOrXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f32,
-      "SiFive XSfmm32ea/XSfmm32a16f/XSfmm32a32f/XSfmm64a64f extension custom "
-      "opcode table");
-  TRY_TO_DECODE_FEATURE(
-      RISCV::FeatureVendorXSfmm32ea,
-      DecoderTableHasVendorXSfmm32eaOrXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f32,
-      "SiFive XSfmm32ea/XSfmm32a16f/XSfmm32a32f/XSfmm64a64f extension custom "
-      "opcode table");
-  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfmm32a8f,
-                        DecoderTableXSfmm32a8f32,
-                        "SiFive XSfmm32a8f extension custom opcode table");
-  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfmm32a4i,
-                        DecoderTableXSfmm32a4i32,
-                        "SiFive XSfmm32a4i extension custom opcode table");
-  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfmm32a8i,
-                        DecoderTableXSfmm32a8i32,
-                        "SiFive XSfmm32a8i extension custom opcode table");
+      RISCV::FeatureVendorXSfmm32ea, DecoderTableXSfmm32,
+      "SiFive XSfmm32 extension custom opcode table");
   TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfsci, DecoderTableXSfsci32,
                         "SiFive SCI custom opcode table");
 #endif // SIFIVE_CUSTOMIZATION
