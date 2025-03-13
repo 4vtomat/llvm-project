@@ -6567,7 +6567,7 @@ let Defs = [VXSAT] in {
 //===----------------------------------------------------------------------===//
 
 #ifdef SIFIVE_CUSTOMIZATION
-let AltfmtType = IS_NOT_ALTFMT, Predicates = [HasVInstructionsAnyF] in {
+let AltFmtType = IS_NOT_ALTFMT, Predicates = [HasVInstructionsAnyF] in {
 #endif // SIFIVE_CUSTOMIZATION
 //===----------------------------------------------------------------------===//
 // 13.2. Vector Single-Width Floating-Point Add/Subtract Instructions
@@ -6812,7 +6812,7 @@ defm PseudoVWREDSUM    : VPseudoVWRED_VS;
 #endif // SIFIVE_CUSTOMIZATION
 
 #ifdef SIFIVE_CUSTOMIZATION
-let AltfmtType = IS_NOT_ALTFMT, Predicates = [HasVInstructionsAnyF] in {
+let AltFmtType = IS_NOT_ALTFMT, Predicates = [HasVInstructionsAnyF] in {
 #endif // SIFIVE_CUSTOMIZATION
 //===----------------------------------------------------------------------===//
 // 14.3. Vector Single-Width Floating-Point Reduction Instructions
@@ -6934,7 +6934,7 @@ let mayLoad = 0, mayStore = 0, hasSideEffects = 0 in {
 //===----------------------------------------------------------------------===//
 
 #ifdef SIFIVE_CUSTOMIZATION
-let AltfmtType = IS_NOT_ALTFMT, Predicates = [HasVInstructionsAnyF] in {
+let AltFmtType = IS_NOT_ALTFMT, Predicates = [HasVInstructionsAnyF] in {
 #endif // SIFIVE_CUSTOMIZATION
 let mayLoad = 0, mayStore = 0, hasSideEffects = 0 in {
   foreach f = FPList in {
@@ -6967,7 +6967,7 @@ let Predicates = [HasVInstructions] in {
 } // Predicates = [HasVInstructions]
 
 #ifdef SIFIVE_CUSTOMIZATION
-let AltfmtType = IS_NOT_ALTFMT, Predicates = [HasVInstructionsAnyF] in {
+let AltFmtType = IS_NOT_ALTFMT, Predicates = [HasVInstructionsAnyF] in {
 #endif // SIFIVE_CUSTOMIZATION
   defm PseudoVFSLIDE1UP  : VPseudoVSLD1_VF<"@earlyclobber $rd">;
   defm PseudoVFSLIDE1DOWN : VPseudoVSLD1_VF;

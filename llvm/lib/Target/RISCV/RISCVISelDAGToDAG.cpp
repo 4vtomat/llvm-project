@@ -528,7 +528,7 @@ void RISCVDAGToDAGISel::selectVSETVLI(SDNode *Node) {
 #if SIFIVE_CUSTOMIZATION
   unsigned VTypeI = RISCVVType::encodeVTYPE(
       VLMul, SEW, /*TailAgnostic*/ !ForceTailUndisturbed,
-      /*MaskAgnostic*/ !ForceMaskUndisturbed, /*IsAltfmt*/ false);
+      /*MaskAgnostic*/ !ForceMaskUndisturbed, /*AltFmt*/ false);
 #endif // SIFIVE_CUSTOMIZATION
   SDValue VTypeIOp = CurDAG->getTargetConstant(VTypeI, DL, XLenVT);
 

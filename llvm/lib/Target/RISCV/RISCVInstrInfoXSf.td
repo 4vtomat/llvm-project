@@ -479,7 +479,7 @@ let Predicates = [HasVendorXSfvcp] in {
   foreach f = FPList in {
     foreach m = f.MxList in {
 #ifdef SIFIVE_CUSTOMIZATION
-      let AltfmtType = IS_NOT_ALTFMT in {
+      let AltFmtType = IS_NOT_ALTFMT in {
         defm f.FX # "V" : VPseudoVC_XV<m, f.fprclass, payload1>;
         defm f.FX # "VV" : VPseudoVC_XVV<m, f.fprclass, payload1>;
       }
@@ -494,7 +494,7 @@ let Predicates = [HasVendorXSfvcp] in {
   foreach f = FPListW in {
     foreach m = f.MxList in
 #ifdef SIFIVE_CUSTOMIZATION
-      let AltfmtType = IS_NOT_ALTFMT in
+      let AltFmtType = IS_NOT_ALTFMT in
         defm f.FX # "VW" : VPseudoVC_XVW<m, f.fprclass, payload1>;
 #endif // SIFIVE_CUSTOMIZATION
   }
@@ -525,13 +525,13 @@ let Predicates = [HasVendorXSfvfnrclipxfqf] in {
 
 #ifdef SIFIVE_CUSTOMIZATION
 let Predicates = [HasVendorXSfvfbfexp16e], hasSideEffects = 0 in {
-  let AltfmtType = IS_ALTFMT in{
+  let AltFmtType = IS_ALTFMT in{
     defm PseudoVFEXP_ALT : VPseudoVRCP_V<IsBF16=1>;
   }
 }
 
 let Predicates = [HasVendorXSfvfexpAnyFloat], hasSideEffects = 0 in {
-  let AltfmtType = IS_NOT_ALTFMT in{
+  let AltFmtType = IS_NOT_ALTFMT in{
     defm PseudoVFEXP : VPseudoVRCP_V;
   }
 }
@@ -1416,7 +1416,7 @@ let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
 //       add much complexity for refactoring.
 
 let Predicates = [HasVendorXSfvfbfa] in {
-let AltfmtType = IS_ALTFMT in {
+let AltFmtType = IS_ALTFMT in {
 //===----------------------------------------------------------------------===//
 // 13.2. Vector Single-Width Floating-Point Add/Subtract Instructions
 //===----------------------------------------------------------------------===//
@@ -1851,9 +1851,9 @@ foreach a = I8Encodes in {
   }
 }
 
-let AltfmtType = IS_NOT_ALTFMT in
+let AltFmtType = IS_NOT_ALTFMT in
   def PseudoSF_MM_F_F : VPseudoSF_MatMul_FRM<TRM2>;
-let AltfmtType = IS_ALTFMT in
+let AltFmtType = IS_ALTFMT in
   def PseudoSF_MM_F_F_ALT : VPseudoSF_MatMul_FRM<TRM2>;
 
 foreach e1 = [5, 4] in

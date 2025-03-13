@@ -230,8 +230,8 @@ void RISCVInstPrinter::printMammothVType(const MCInst *MI, unsigned OpNo,
   assert(RISCVVType::isValidMammothVType(Imm));
   unsigned SEW = RISCVVType::getSEW(Imm);
   O << "e" << SEW;
-  bool Altfmt = RISCVVType::getMammothAltfmt(Imm);
-  if (Altfmt)
+  bool AltFmt = RISCVVType::getMammothAltFmt(Imm);
+  if (AltFmt)
     O << "alt";
   unsigned Widen = RISCVVType::getMammothWiden(Imm);
   O << ", w" << Widen;

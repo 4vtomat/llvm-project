@@ -256,8 +256,8 @@ class RVInstCommon<dag outs, dag ins, string opcodestr, string argstr,
   // 0 -> Don't care about altfmt bit in VTYPE.
   // 1 -> Is not altfmt.
   // 2 -> Is altfmt(BF16).
-  bits<2> AltfmtType = 0;
-  let TSFlags{28-27} = AltfmtType;
+  bits<2> AltFmtType = 0;
+  let TSFlags{28-27} = AltFmtType;
 
   bit IsWiden = 0;
   let TSFlags{29} = IsWiden;
