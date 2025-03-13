@@ -438,11 +438,11 @@ static bool areCompatibleVTYPEs(uint64_t CurVType, uint64_t NewVType,
   // TODO: Since normal RVV instructions don't care about twiden, so we might be
   // able to reuse it if the previous twiden is same as we need for this
   // instruction.
-  if (Used.UseTWiden && (RISCVVType::hasMammothWiden(CurVType) !=
-                             RISCVVType::hasMammothWiden(NewVType) ||
-                         (RISCVVType::hasMammothWiden(CurVType) &&
-                          RISCVVType::getMammothWiden(CurVType) !=
-                              RISCVVType::getMammothWiden(NewVType))))
+  if (Used.UseTWiden && (RISCVVType::hasXSfmmWiden(CurVType) !=
+                             RISCVVType::hasXSfmmWiden(NewVType) ||
+                         (RISCVVType::hasXSfmmWiden(CurVType) &&
+                          RISCVVType::getXSfmmWiden(CurVType) !=
+                              RISCVVType::getXSfmmWiden(NewVType))))
     return false;
   if (Used.UseAltFmt == true &&
       RISCVVType::isAltFmt(CurVType) != RISCVVType::isAltFmt(NewVType))
@@ -787,9 +787,8 @@ public:
     MaskAgnostic = RISCVVType::isMaskAgnostic(VType);
 #if SIFIVE_CUSTOMIZATION
     AltFmt = RISCVVType::isAltFmt(VType);
-    TWiden = RISCVVType::hasMammothWiden(VType)
-                 ? RISCVVType::getMammothWiden(VType)
-                 : 0;
+    TWiden =
+        RISCVVType::hasXSfmmWiden(VType) ? RISCVVType::getXSfmmWiden(VType) : 0;
 #endif // SIFIVE_CUSTOMIZATION
   }
 #if SIFIVE_CUSTOMIZATION
@@ -851,7 +850,7 @@ public:
            "Can't encode VTYPE for uninitialized or unknown");
 #if SIFIVE_CUSTOMIZATION
     if (TWiden != 0)
-      return RISCVVType::encodeMammothVType(SEW, TWiden, AltFmt);
+      return RISCVVType::encodeXSfmmVType(SEW, TWiden, AltFmt);
     return RISCVVType::encodeVTYPE(VLMul, SEW, TailAgnostic, MaskAgnostic,
                                    AltFmt);
 #endif // SIFIVE_CUSTOMIZATION
@@ -1271,8 +1270,7 @@ RISCVInsertVSETVLI::computeInfoForInstr(const MachineInstr &MI) const {
     InstrInfo.setIsMammoth(true);
     InstrInfo.setVTYPE(InstrInfo.getVLMUL(), RISCVVType::getSEW(VTYPE),
                        InstrInfo.getTailAgnostic(), InstrInfo.getMaskAgnostic(),
-                       InstrInfo.getAltFmt(),
-                       RISCVVType::getMammothWiden(VTYPE));
+                       InstrInfo.getAltFmt(), RISCVVType::getXSfmmWiden(VTYPE));
 
     Register ATReg = MI.getOperand(1).getReg();
     switch (MI.getOpcode()) {

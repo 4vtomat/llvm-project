@@ -2702,8 +2702,8 @@ bool RISCVInstrInfo::verifyInstruction(const MachineInstr &MI,
           Ok = (Imm & 0xf) == 0;
           break;
 #if SIFIVE_CUSTOMIZATION
-        case RISCVOp::OPERAND_MAMMOTHVTYPE:
-          Ok = RISCVVType::isValidMammothVType(Imm);
+        case RISCVOp::OPERAND_XSFMM_VTYPE:
+          Ok = RISCVVType::isValidXSfmmVType(Imm);
           break;
 #endif // SIFIVE_CUSTOMIZATION
         case RISCVOp::OPERAND_FRMARG:

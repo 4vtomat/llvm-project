@@ -49,8 +49,8 @@ public:
   void printVTypeI(const MCInst *MI, unsigned OpNo, const MCSubtargetInfo &STI,
                    raw_ostream &O);
 #if SIFIVE_CUSTOMIZATION
-  void printMammothVType(const MCInst *MI, unsigned OpNo,
-                         const MCSubtargetInfo &STI, raw_ostream &O);
+  void printXSfmmVType(const MCInst *MI, unsigned OpNo,
+                       const MCSubtargetInfo &STI, raw_ostream &O);
 #endif // SIFIVE_CUSTOMIZATION
   void printVMaskReg(const MCInst *MI, unsigned OpNo,
                      const MCSubtargetInfo &STI, raw_ostream &O);

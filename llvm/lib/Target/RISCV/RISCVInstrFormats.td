@@ -262,7 +262,7 @@ class RVInstCommon<dag outs, dag ins, string opcodestr, string argstr,
   bit IsWiden = 0;
   let TSFlags{29} = IsWiden;
 
-  // Mammoth.
+  // XSfmmbase
   bit HasTWidenOp = 0;
   let TSFlags{30} = HasTWidenOp;
 

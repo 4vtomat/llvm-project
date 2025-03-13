@@ -1130,24 +1130,24 @@ let Predicates = [HasVendorXSfvfexpa64e] in {
 #endif // SIFIVE_CUSTOMIZATION
 
 #ifdef SIFIVE_CUSTOMIZATION
-def MammothVTypeAsmOperand : AsmOperandClass {
-  let Name = "MammothVType";
-  let ParserMethod = "parseMammothVType";
-  let DiagnosticType = "InvalidMammothVType";
+def XSfmmVTypeAsmOperand : AsmOperandClass {
+  let Name = "XSfmmVType";
+  let ParserMethod = "parseXSfmmVType";
+  let DiagnosticType = "InvalidXSfmmVType";
   let RenderMethod = "addVTypeIOperands";
 }
 
-def MammothVTypeOp : RISCVOp {
-  let ParserMatchClass = MammothVTypeAsmOperand;
-  let PrintMethod = "printMammothVType";
-  let OperandType = "OPERAND_MAMMOTHVTYPE";
+def XSfmmVTypeOp : RISCVOp {
+  let ParserMatchClass = XSfmmVTypeAsmOperand;
+  let PrintMethod = "printXSfmmVType";
+  let OperandType = "OPERAND_XSFMM_VTYPE";
   let MCOperandPredicate = [{
     int64_t Imm;
     if (!MCOp.evaluateAsConstantImm(Imm))
       return false;
     if (!isUInt<32>(Imm))
       return false;
-    return RISCVVType::isValidMammothVType(Imm);
+    return RISCVVType::isValidXSfmmVType(Imm);
   }];
 }
 
@@ -1322,7 +1322,7 @@ class RVInstVtDiscard<string opcodestr>
 
 let Predicates = [HasVendorXSfmm32eaOrXSfmmbase] in
 def : InstAlias<"sf.vsettnt $rd, $rs1, $vtypei",
-                (VSETVLI GPR:$rd, GPR:$rs1, MammothVTypeOp:$vtypei)>;
+                (VSETVLI GPR:$rd, GPR:$rs1, XSfmmVTypeOp:$vtypei)>;
 
 let Predicates = [HasVendorXSfmm32eaOrXSfmmbase], DecoderNamespace = "XSfmm32eaOrXSfmmbase" in {
 let hasSideEffects = 1, mayLoad = 0, mayStore = 0 in {
@@ -1812,24 +1812,24 @@ let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
 let Defs = [VTYPE, VL] in {
   def PseudoSF_VSETTNT
       : Pseudo<(outs GPR:$rd),
-               (ins GPRNoX0:$rs1, MammothVTypeOp:$vtypei), []>,
+               (ins GPRNoX0:$rs1, XSfmmVTypeOp:$vtypei), []>,
         PseudoInstExpansion<(VSETVLI GPR:$rd, GPR:$rs1, VTypeIOp11:$vtypei)>, 
         Sched<[WriteVSETVLI, ReadVSETVLI]>;
   def PseudoSF_VSETTNTX0
       : Pseudo<(outs GPR:$rd),
-               (ins GPRX0:$rs1, MammothVTypeOp:$vtypei), []>,
+               (ins GPRX0:$rs1, XSfmmVTypeOp:$vtypei), []>,
         PseudoInstExpansion<(VSETVLI GPR:$rd, GPR:$rs1, VTypeIOp11:$vtypei)>, 
         Sched<[WriteVSETVLI, ReadVSETVLI]>;
 }
 
 let Defs = [VTYPE], Uses = [VTYPE] in {
   def PseudoSF_VSETTM
-      : Pseudo<(outs GPR:$rd), (ins GPR:$rs1, MammothVTypeOp:$vtypei), []>,
-        PseudoInstExpansion<(SF_VSETTM GPR:$rd, GPR:$rs1)>, 
+      : Pseudo<(outs GPR:$rd), (ins GPR:$rs1, XSfmmVTypeOp:$vtypei), []>,
+        PseudoInstExpansion<(SF_VSETTM GPR:$rd, GPR:$rs1)>,
         Sched<[WriteVSETVLI, ReadVSETVLI]>;
   def PseudoSF_VSETTK
-      : Pseudo<(outs GPR:$rd), (ins GPR:$rs1, MammothVTypeOp:$vtypei), []>,
-        PseudoInstExpansion<(SF_VSETTK GPR:$rd, GPR:$rs1)>, 
+      : Pseudo<(outs GPR:$rd), (ins GPR:$rs1, XSfmmVTypeOp:$vtypei), []>,
+        PseudoInstExpansion<(SF_VSETTK GPR:$rd, GPR:$rs1)>,
         Sched<[WriteVSETVLI, ReadVSETVLI]>;
 }
 }

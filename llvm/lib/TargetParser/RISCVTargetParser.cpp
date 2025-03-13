@@ -186,7 +186,7 @@ unsigned encodeVTYPE(RISCVII::VLMUL VLMUL, unsigned SEW, bool TailAgnostic,
 }
 
 #if SIFIVE_CUSTOMIZATION
-unsigned encodeMammothVType(unsigned SEW, unsigned Widen, bool AltFmt) {
+unsigned encodeXSfmmVType(unsigned SEW, unsigned Widen, bool AltFmt) {
   assert(isValidSEW(SEW) && "Invalid SEW");
   assert((Widen == 1 || Widen == 2 || Widen == 4) && "Invalid Widen");
   unsigned VSEWBits = encodeSEW(SEW);

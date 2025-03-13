@@ -136,9 +136,9 @@ class RISCVAsmParser : public MCTargetAsmParser {
   bool generateVTypeError(SMLoc ErrorLoc);
 
 #if SIFIVE_CUSTOMIZATION
-  bool parseMammothVTypeToken(const AsmToken &Tok, WWEEState &State,
-                              unsigned &WW, unsigned &EE, bool &AltFmt);
-  bool generateMammothVTypeError(SMLoc ErrorLoc);
+  bool parseXSfmmVTypeToken(const AsmToken &Tok, WWEEState &State, unsigned &WW,
+                            unsigned &EE, bool &AltFmt);
+  bool generateXSfmmVTypeError(SMLoc ErrorLoc);
 #endif // SIFIVE_CUSTOMIZATION
 
   // Helper to actually emit an instruction to the MCStreamer. Also, when
@@ -247,7 +247,7 @@ class RISCVAsmParser : public MCTargetAsmParser {
   ParseStatus parseReglist(OperandVector &Operands);
   ParseStatus parseRegReg(OperandVector &Operands);
 #if SIFIVE_CUSTOMIZATION
-  ParseStatus parseMammothVType(OperandVector &Operands);
+  ParseStatus parseXSfmmVType(OperandVector &Operands);
 #endif // SIFIVE_CUSTOMIZATION
   ParseStatus parseRetval(OperandVector &Operands);
   ParseStatus parseZcmpStackAdj(OperandVector &Operands,
@@ -653,8 +653,8 @@ public:
   }
 
 #if SIFIVE_CUSTOMIZATION
-  bool isMammothVType() const {
-    return Kind == KindTy::VType && RISCVVType::isValidMammothVType(VType.Val);
+  bool isXSfmmVType() const {
+    return Kind == KindTy::VType && RISCVVType::isValidXSfmmVType(VType.Val);
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -1743,9 +1743,9 @@ bool RISCVAsmParser::matchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
                            "%tprel_add, %gprel, %got_gprel, %tls_ie_gprel "
                            "and %tls_gd_gprel modifier");
   }
-  case Match_InvalidMammothVType: {
+  case Match_InvalidXSfmmVType: {
     SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
-    return generateMammothVTypeError(ErrorLoc);
+    return generateXSfmmVTypeError(ErrorLoc);
   }
 #endif // SIFIVE_CUSTOMIZATION
   case Match_InvalidTLSDESCCallSymbol: {
@@ -2482,9 +2482,9 @@ bool RISCVAsmParser::generateVTypeError(SMLoc ErrorLoc) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-bool RISCVAsmParser::parseMammothVTypeToken(const AsmToken &Tok,
-                                            WWEEState &State, unsigned &WW,
-                                            unsigned &EE, bool &AltFmt) {
+bool RISCVAsmParser::parseXSfmmVTypeToken(const AsmToken &Tok, WWEEState &State,
+                                          unsigned &WW, unsigned &EE,
+                                          bool &AltFmt) {
   if (getLexer().isNot(AsmToken::Identifier))
     return true;
 
@@ -2522,7 +2522,7 @@ bool RISCVAsmParser::parseMammothVTypeToken(const AsmToken &Tok,
   return true;
 }
 
-ParseStatus RISCVAsmParser::parseMammothVType(OperandVector &Operands) {
+ParseStatus RISCVAsmParser::parseXSfmmVType(OperandVector &Operands) {
   SMLoc S = getLoc();
 
   unsigned Widen = 0;
@@ -2531,29 +2531,29 @@ ParseStatus RISCVAsmParser::parseMammothVType(OperandVector &Operands) {
 
   WWEEState State = WWEEState_SEW;
 
-  if (parseMammothVTypeToken(getTok(), State, Widen, SEW, AltFmt))
-    return generateMammothVTypeError(S);
+  if (parseXSfmmVTypeToken(getTok(), State, Widen, SEW, AltFmt))
+    return generateXSfmmVTypeError(S);
 
   getLexer().Lex();
 
   if (!parseOptionalToken(AsmToken::Comma))
-    return generateMammothVTypeError(S);
+    return generateXSfmmVTypeError(S);
 
-  if (parseMammothVTypeToken(getTok(), State, Widen, SEW, AltFmt))
-    return generateMammothVTypeError(S);
+  if (parseXSfmmVTypeToken(getTok(), State, Widen, SEW, AltFmt))
+    return generateXSfmmVTypeError(S);
 
   getLexer().Lex();
 
   if (getLexer().is(AsmToken::EndOfStatement) && State == WWEEState_Done) {
     Operands.push_back(RISCVOperand::createVType(
-        RISCVVType::encodeMammothVType(SEW, Widen, AltFmt), S));
+        RISCVVType::encodeXSfmmVType(SEW, Widen, AltFmt), S));
     return ParseStatus::Success;
   }
 
-  return generateMammothVTypeError(S);
+  return generateXSfmmVTypeError(S);
 }
 
-bool RISCVAsmParser::generateMammothVTypeError(SMLoc ErrorLoc) {
+bool RISCVAsmParser::generateXSfmmVTypeError(SMLoc ErrorLoc) {
   return Error(ErrorLoc, "operand must be e[8|16|16alt|32|64],w[1|2|4]");
 }
 #endif // SIFIVE_CUSTOMIZATION

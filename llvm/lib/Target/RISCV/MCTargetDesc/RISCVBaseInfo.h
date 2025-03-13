@@ -151,7 +151,7 @@ enum {
   IsWidenShift = AltFmtTypeShift + 2,
   IsWidenMask = 1ULL << IsWidenShift,
 
-  // Mammoth
+  // XSfmmbase
   HasTWidenOpShift = IsWidenShift + 1,
   HasTWidenOpMask = 1ULL << HasTWidenOpShift,
 
@@ -234,7 +234,7 @@ static inline bool elementsDependOnMask(uint64_t TSFlags) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-// Mammoth
+// XSfmmbase
 static inline bool hasTWidenOp(uint64_t TSFlags) {
   return TSFlags & HasTWidenOpMask;
 }
@@ -274,7 +274,7 @@ static inline unsigned getVLOpNum(const MCInstrDesc &Desc) {
   // instructions with VL also have SEW.
   assert(hasSEWOp(TSFlags) && hasVLOp(TSFlags));
 #if SIFIVE_CUSTOMIZATION
-  // In Mammoth, TN is alias to VL, so here we use the same TSFlags bit.
+  // In Xsfmmbase, TN is alias for VL, so here we use the same TSFlags bit.
   if (hasTWidenOp(TSFlags))
     return getTNOpNum(Desc);
 #endif // SIFIVE_CUSTOMIZATION
@@ -457,7 +457,7 @@ enum OperandType : unsigned {
   OPERAND_RVKRNUM_1_10,
   OPERAND_RVKRNUM_2_14,
 #if SIFIVE_CUSTOMIZATION
-  OPERAND_MAMMOTHVTYPE,
+  OPERAND_XSFMM_VTYPE,
 #endif // SIFIVE_CUSTOMIZATION
   OPERAND_SPIMM,
   // Operand is a 3-bit rounding mode, '111' indicates FRM register.
