@@ -249,13 +249,11 @@ let Predicates = [HasVendorXSfvcp], mayLoad = 0, mayStore = 0,
 }
 
 #ifdef SIFIVE_CUSTOMIZATION
-let mayLoad = 0, mayStore = 0, hasSideEffects = 0,
-    Predicates = [HasVendorXSfvfexpAny], DecoderNamespace = "XSfvfexp" in {
+let Predicates = [HasVendorXSfvfexpAny], DecoderNamespace = "XSfvfexp" in {
   def VFEXP_V : VALUVs2<0b010011, 0b00111, OPFVV, "sf.vfexp.v">;
 }
 
-let mayLoad = 0, mayStore = 0, hasSideEffects = 0,
-    Predicates = [HasVendorXSfvfexpa], DecoderNamespace = "XSfvfexpa" in {
+let Predicates = [HasVendorXSfvfexpa], DecoderNamespace = "XSfvfexpa" in {
   def VFEXPA_V : VALUVs2<0b010011, 0b00110, OPFVV, "sf.vfexpa.v">;
 }
 #endif // SIFIVE_CUSTOMIZATION
