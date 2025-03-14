@@ -528,7 +528,7 @@ void RISCVDAGToDAGISel::selectVSETVLI(SDNode *Node) {
 #if SIFIVE_CUSTOMIZATION
   unsigned VTypeI = RISCVVType::encodeVTYPE(
       VLMul, SEW, /*TailAgnostic*/ !ForceTailUndisturbed,
-      /*MaskAgnostic*/ !ForceMaskUndisturbed, /*IsAltfmt*/ false);
+      /*MaskAgnostic*/ !ForceMaskUndisturbed, /*AltFmt*/ false);
 #endif // SIFIVE_CUSTOMIZATION
   SDValue VTypeIOp = CurDAG->getTargetConstant(VTypeI, DL, XLenVT);
 
@@ -584,7 +584,7 @@ void RISCVDAGToDAGISel::selectMammothVSET(SDNode *Node) {
       : IntNo == Intrinsic::riscv_sf_vsettm ? RISCV::PseudoSF_VSETTM
                                             : RISCV::PseudoSF_VSETTK;
 
-  unsigned VTypeI = RISCVVType::encodeMammothVType(SEW, Widen, 0);
+  unsigned VTypeI = RISCVVType::encodeXSfmmVType(SEW, Widen, 0);
   SDValue VTypeIOp = CurDAG->getTargetConstant(VTypeI, DL, XLenVT);
 
   if (PseudoOpCode != RISCV::PseudoSF_VSETTNT) {

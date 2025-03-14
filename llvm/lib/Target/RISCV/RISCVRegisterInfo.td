@@ -35,13 +35,6 @@ class RISCVReg32<RISCVReg16 subreg>
   let SubRegIndices = [sub_16];
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
-class RISCVTileReg<bits<4> Enc, string n, list<string> alt = []> : Register<n> {
-  let HWEncoding{3-0} = Enc;
-  let AltNames = alt;
-}
-#endif //SIFIVE_CUSTOMIZATION
-
 // Because RISCVReg64 register have AsmName and AltNames that alias with their
 // 16/32-bit sub-register, RISCVAsmParser will need to coerce a register number
 // from a RISCVReg16/RISCVReg32 to the equivalent RISCVReg64 when appropriate.
@@ -462,21 +455,6 @@ def FPR64C : RISCVRegisterClass<[f64], 64, (add
   (sequence "F%u_D", 8, 9)
 )>;
 
-#ifdef SIFIVE_CUSTOMIZATION
-foreach Index = 0-15 in
-  def T#Index : RISCVTileReg<Index, "mt"#Index, []>,
-                DwarfRegNum<[!add(Index, 3072)]>;
-
-let RegInfos = XLenRI in {
-  def TR : RegisterClass<"RISCV", [untyped], 32,
-                         (add (sequence "T%u", 0, 15))>;
-  def TRM2 : RegisterClass<"RISCV", [untyped], 32,
-                           (add (decimate TR, 2))>;
-  def TRM4 : RegisterClass<"RISCV", [untyped], 32,
-                           (add (decimate TR, 4))>;
-}
-#endif //SIFIVE_CUSTOMIZATION
-
 //===----------------------------------------------------------------------===//
 // GPR Classes for "H/F/D in X"
 //===----------------------------------------------------------------------===//
@@ -846,3 +824,18 @@ def : RISCVRegisterClass<[XLenVT], 32, (add SF_VCIX_STATE)> {
   let RegInfos = XLenRI;
   let isAllocatable = 0;
 }
+
+#ifdef SIFIVE_CUSTOMIZATION
+//===----------------------------------------------------------------------===//
+// XSfmmbase tiles
+//===----------------------------------------------------------------------===//
+foreach Index = 0-15 in
+  def T#Index : RISCVReg<Index, "mt"#Index, []>,
+                DwarfRegNum<[!add(Index, 3072)]>;
+
+let RegInfos = XLenRI in {
+  def TR   : RISCVRegisterClass<[untyped], 32, (add (sequence "T%u", 0, 15))>;
+  def TRM2 : RISCVRegisterClass<[untyped], 32, (add (decimate TR, 2))>;
+  def TRM4 : RISCVRegisterClass<[untyped], 32, (add (decimate TR, 4))>;
+}
+#endif //SIFIVE_CUSTOMIZATION

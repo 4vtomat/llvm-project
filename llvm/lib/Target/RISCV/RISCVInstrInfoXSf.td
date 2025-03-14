@@ -11,54 +11,6 @@
 //===----------------------------------------------------------------------===//
 
 #ifdef SIFIVE_CUSTOMIZATION
-class RVInstVVCustom2<bits<6> funct6, RISCVVFormat opv, dag outs, dag ins,
-                      string opcodestr, string argstr>
-    : RVInst<outs, ins, opcodestr, argstr, [], InstFormatR> {
-  bits<5> vs2;
-  bits<5> vs1;
-  bits<5> vd;
-  bit vm;
-
-  let Inst{31-26} = funct6;
-  let Inst{25} = vm;
-  let Inst{24-20} = vs2;
-  let Inst{19-15} = vs1;
-  let Inst{14-12} = opv.Value;
-  let Inst{11-7} = vd;
-  let Inst{6-0}= OPC_CUSTOM_2.Value;
-
-  let Uses = [VTYPE, VL];
-  let RVVConstraint = NoConstraint;
-}
-
-class RVInstVXCustom2<bits<6> funct6, RISCVVFormat opv, dag outs, dag ins,
-                      string opcodestr, string argstr>
-    : RVInst<outs, ins, opcodestr, argstr, [], InstFormatR> {
-  bits<5> vs2;
-  bits<5> rs1;
-  bits<5> vd;
-  bit vm;
-
-  let Inst{31-26} = funct6;
-  let Inst{25} = vm;
-  let Inst{24-20} = vs2;
-  let Inst{19-15} = rs1;
-  let Inst{14-12} = opv.Value;
-  let Inst{11-7} = vd;
-  let Inst{6-0} = OPC_CUSTOM_2.Value;
-
-  let Uses = [VTYPE, VL];
-  let RVVConstraint = NoConstraint;
-}
-
-class CustomSiFiveVV<string opcodestr,  RISCVVFormat opv, bits<6> funct6>
-  : RVInstVVCustom2<funct6, opv, (outs VR:$vd),
-                    (ins VR:$vs1, VR:$vs2), opcodestr, "$vd, $vs1, $vs2"> {
-  let hasSideEffects = 0;
-  let mayLoad = 0;
-  let mayStore = 0;
-}
-
 // FIXME: might need to put more constraint
 let RVVConstraint = VMConstraint, Predicates = [HasVendorXSfvqdotq],
     DecoderNamespace = "XSfvqdotq" in {
@@ -80,15 +32,6 @@ def : InstAlias<"sf.vfncvt.bf16.f.w $vd, $vs2$vm",
                 (VFNCVTBF16_F_F_W VR:$vd, VR:$vs2, VMaskOp:$vm)>;
 def : InstAlias<"sf.vfncvt.bf16.f.w $vd, $vs2",
                 (VFNCVTBF16_F_F_W VR:$vd, VR:$vs2, zero_reg)>;
-}
-
-class CustomSiFiveVF<string opcodestr,  RISCVVFormat opv, bits<6> funct6>
-  : RVInstVXCustom2<funct6, opv, (outs VR:$vd),
-                    (ins VR:$vs2, FPR32:$rs1, VMaskOp:$vm), opcodestr,
-                    "$vd, $vs2, $rs1$vm"> {
-  let hasSideEffects = 0;
-  let mayLoad = 0;
-  let mayStore = 0;
 }
 
 defvar VQDOTLMuls = [VI32MF2, VI32M1, VI32M2, VI32M4, VI32M8];
@@ -306,13 +249,11 @@ let Predicates = [HasVendorXSfvcp], mayLoad = 0, mayStore = 0,
 }
 
 #ifdef SIFIVE_CUSTOMIZATION
-let mayLoad = 0, mayStore = 0, hasSideEffects = 0,
-    Predicates = [HasVendorXSfvfexpAny], DecoderNamespace = "XSfvfexp" in {
+let Predicates = [HasVendorXSfvfexpAny], DecoderNamespace = "XSfvfexp" in {
   def VFEXP_V : VALUVs2<0b010011, 0b00111, OPFVV, "sf.vfexp.v">;
 }
 
-let mayLoad = 0, mayStore = 0, hasSideEffects = 0,
-    Predicates = [HasVendorXSfvfexpa], DecoderNamespace = "XSfvfexpa" in {
+let Predicates = [HasVendorXSfvfexpa], DecoderNamespace = "XSfvfexpa" in {
   def VFEXPA_V : VALUVs2<0b010011, 0b00110, OPFVV, "sf.vfexpa.v">;
 }
 #endif // SIFIVE_CUSTOMIZATION
@@ -538,7 +479,7 @@ let Predicates = [HasVendorXSfvcp] in {
   foreach f = FPList in {
     foreach m = f.MxList in {
 #ifdef SIFIVE_CUSTOMIZATION
-      let AltfmtType = IS_NOT_ALTFMT in {
+      let AltFmtType = IS_NOT_ALTFMT in {
         defm f.FX # "V" : VPseudoVC_XV<m, f.fprclass, payload1>;
         defm f.FX # "VV" : VPseudoVC_XVV<m, f.fprclass, payload1>;
       }
@@ -553,7 +494,7 @@ let Predicates = [HasVendorXSfvcp] in {
   foreach f = FPListW in {
     foreach m = f.MxList in
 #ifdef SIFIVE_CUSTOMIZATION
-      let AltfmtType = IS_NOT_ALTFMT in
+      let AltFmtType = IS_NOT_ALTFMT in
         defm f.FX # "VW" : VPseudoVC_XVW<m, f.fprclass, payload1>;
 #endif // SIFIVE_CUSTOMIZATION
   }
@@ -584,13 +525,13 @@ let Predicates = [HasVendorXSfvfnrclipxfqf] in {
 
 #ifdef SIFIVE_CUSTOMIZATION
 let Predicates = [HasVendorXSfvfbfexp16e], hasSideEffects = 0 in {
-  let AltfmtType = IS_ALTFMT in{
+  let AltFmtType = IS_ALTFMT in{
     defm PseudoVFEXP_ALT : VPseudoVRCP_V<IsBF16=1>;
   }
 }
 
 let Predicates = [HasVendorXSfvfexpAnyFloat], hasSideEffects = 0 in {
-  let AltfmtType = IS_NOT_ALTFMT in{
+  let AltFmtType = IS_NOT_ALTFMT in{
     defm PseudoVFEXP : VPseudoVRCP_V;
   }
 }
@@ -1189,27 +1130,28 @@ let Predicates = [HasVendorXSfvfexpa64e] in {
 #endif // SIFIVE_CUSTOMIZATION
 
 #ifdef SIFIVE_CUSTOMIZATION
-def MammothVTypeAsmOperand : AsmOperandClass {
-  let Name = "MammothVType";
-  let ParserMethod = "parseMammothVType";
-  let DiagnosticType = "InvalidMammothVType";
+def XSfmmVTypeAsmOperand : AsmOperandClass {
+  let Name = "XSfmmVType";
+  let ParserMethod = "parseXSfmmVType";
+  let DiagnosticType = "InvalidXSfmmVType";
   let RenderMethod = "addVTypeIOperands";
 }
 
-def MammothVTypeOp : RISCVOp {
-  let ParserMatchClass = MammothVTypeAsmOperand;
-  let PrintMethod = "printMammothVType";
-  let OperandType = "OPERAND_MAMMOTHVTYPE";
+def XSfmmVTypeOp : RISCVOp {
+  let ParserMatchClass = XSfmmVTypeAsmOperand;
+  let PrintMethod = "printXSfmmVType";
+  let OperandType = "OPERAND_XSFMM_VTYPE";
   let MCOperandPredicate = [{
     int64_t Imm;
     if (!MCOp.evaluateAsConstantImm(Imm))
       return false;
     if (!isUInt<32>(Imm))
       return false;
-    return RISCVVType::isValidMammothVType(Imm);
+    return RISCVVType::isValidXSfmmVType(Imm);
   }];
 }
 
+let hasSideEffects = 1, mayLoad = 0, mayStore = 0 in
 class RVInstSetSingle<dag outs, dag ins, bits<5> rs2, string opcodestr,
                       string argstr>
     : RVInst<outs, ins, opcodestr, argstr, [], InstFormatI> {
@@ -1226,7 +1168,7 @@ class RVInstSetSingle<dag outs, dag ins, bits<5> rs2, string opcodestr,
   let Defs = [VTYPE, VL];
 }
 
-class RVInstTileMemOp<dag outs, dag ins, bits<3> nf, bits<7> opcode,
+class RVInstTileMemOp<dag outs, dag ins, bits<3> nf, RISCVOpcode opcode,
                       string opcodestr, string argstr>
     : RVInst<outs, ins, opcodestr, argstr, [], InstFormatR> {
   bits<5> rs2;
@@ -1240,19 +1182,22 @@ class RVInstTileMemOp<dag outs, dag ins, bits<3> nf, bits<7> opcode,
   let Inst{19-15} = rs1;
   let Inst{14-12} = 0b111;
   let Inst{11-7} = 0b00000;
-  let Inst{6-0} = opcode;
+  let Inst{6-0} = opcode.Value;
 
   let Uses = [VTYPE, VL];
 }
 
+let hasSideEffects = 0, mayLoad = 1, mayStore = 0 in
 class RVInstTileLoad<bits<3> nf, string opcodestr>
-    : RVInstTileMemOp<(outs), (ins GPR:$rs2, GPRMemZeroOffset:$rs1), nf, OPC_LOAD_FP.Value,
-                      opcodestr, "$rs2, ${rs1}">;
+    : RVInstTileMemOp<(outs), (ins GPR:$rs2, GPRMemZeroOffset:$rs1), nf,
+                      OPC_LOAD_FP, opcodestr, "$rs2, ${rs1}">;
 
+let hasSideEffects = 0, mayLoad = 0, mayStore = 1 in
 class RVInstTileStore<bits<3> nf, string opcodestr>
-    : RVInstTileMemOp<(outs), (ins GPR:$rs2, GPRMemZeroOffset:$rs1), nf, OPC_STORE_FP.Value,
-                      opcodestr, "$rs2, ${rs1}">;
+    : RVInstTileMemOp<(outs), (ins GPR:$rs2, GPRMemZeroOffset:$rs1), nf,
+                      OPC_STORE_FP, opcodestr, "$rs2, ${rs1}">;
 
+let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in
 class RVInstTileMoveOp<bits<6> funct6, dag outs, dag ins, string opcodestr,
                        string argstr>
     : RVInst<outs, ins, opcodestr, argstr, [], InstFormatR> {
@@ -1271,12 +1216,12 @@ class RVInstTileMoveOp<bits<6> funct6, dag outs, dag ins, string opcodestr,
   let Uses = [VTYPE, VL];
 }
 
-class RVInstMatmulF<bits<2> rd_lsb2, dag outs, dag ins, string opcodestr,
-                    string argstr>
+let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in
+class RVInstMatmulF<dag outs, dag ins, string opcodestr, string argstr>
     : RVInst<outs, ins, opcodestr, argstr, [], InstFormatR> {
   bits<5> vs2;
   bits<5> vs1;
-  bits<5> rd;
+  bits<4> rd;
 
   let Inst{31-26} = 0b111100;
   let Inst{25} = 1;
@@ -1284,90 +1229,94 @@ class RVInstMatmulF<bits<2> rd_lsb2, dag outs, dag ins, string opcodestr,
   let Inst{19-15} = vs1;
   let Inst{14-12} = OPFVV.Value;
   let Inst{11-9} = rd{3-1};
-  let Inst{8-7} = rd_lsb2;
+  let Inst{8-7} = 0b00;
   let Inst{6-0} = OPC_OP_VE.Value;
 
   let Uses = [VTYPE, VL];
 }
 
-class RVInstMatmulF8<bit funct6_lsb, bit rd_lsb, dag outs, dag ins,
+let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in
+class RVInstMatmulF8<bit a, bit b, dag outs, dag ins,
                      string opcodestr, string argstr>
     : RVInst<outs, ins, opcodestr, argstr, [], InstFormatR> {
   bits<5> vs2;
   bits<5> vs1;
-  bits<5> rd;
+  bits<4> rd;
 
   let Inst{31-27} = 0b11111;
-  let Inst{26} = funct6_lsb;
+  let Inst{26} = a;
   let Inst{25} = 1;
   let Inst{24-20} = vs2;
   let Inst{19-15} = vs1;
   let Inst{14-12} = OPFVV.Value;
   let Inst{11-10} = rd{3-2};
   let Inst{9-8} = 0b00;
-  let Inst{7} = rd_lsb;
+  let Inst{7} = b;
   let Inst{6-0} = OPC_OP_VE.Value;
 
   let Uses = [VTYPE, VL];
 }
 
 
-class F8Encode<bit encode_bit, string encode_name> {
-  bit Bit = encode_bit;
-  string Name = encode_name;
+class F8Encode<bit encoding, string name> {
+  bit Encoding = encoding;
+  string Name = name;
 }
 
 defvar F8Encodes = [F8Encode<0b0, "e5m2">,
                     F8Encode<0b1, "e4m3">];
 
-class RVInstMatmulI8<bit funct6_lsb2, bit funct6_lsb1, bit rd_lsb1, dag outs, dag ins,
+let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in
+class RVInstMatmulI8<bit funct6_1, bit a, bit b, dag outs, dag ins,
                      string opcodestr, string argstr>
     : RVInst<outs, ins, opcodestr, argstr, [], InstFormatR> {
   bits<5> vs2;
   bits<5> vs1;
-  bits<5> rd;
+  bits<4> rd;
 
   let Inst{31-28} = 0b1111;
-  let Inst{27} = funct6_lsb2;
-  let Inst{26} = funct6_lsb1;
+  let Inst{27} = funct6_1;
+  let Inst{26} = a;
   let Inst{25} = 1;
   let Inst{24-20} = vs2;
   let Inst{19-15} = vs1;
   let Inst{14-12} = OPIVV.Value;
   let Inst{11-10} = rd{3-2};
   let Inst{9-8} = 0b00;
-  let Inst{7} = rd_lsb1;
+  let Inst{7} = b;
   let Inst{6-0} = OPC_OP_VE.Value;
 
   let Uses = [VTYPE, VL];
 }
 
-class I8Encode<bit encode_bit, string encode_name> {
-  bit Bit = encode_bit;
-  string Name = encode_name;
+class I8Encode<bit encoding, string name> {
+  bit Encoding = encoding;
+  string Name = name;
 }
 
 defvar I8Encodes = [I8Encode<0, "u">,
                     I8Encode<1, "s">];
 
+let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in
 class RVInstSetZero<dag outs, dag ins, string opcodestr, string argstr>
     : RVInst<outs, ins, opcodestr, argstr, [], InstFormatR> {
   bits<5> vs2;
   bits<5> vs1;
-  bits<5> rd;
+  bits<4> rd;
 
   let Inst{31-26} = 0b010000;
   let Inst{25} = 1;
   let Inst{24-20} = 0b11110;
   let Inst{19-15} = 0b00000;
   let Inst{14-12} = OPMVX.Value;
-  let Inst{11-8} = rd{3-0};
+  let Inst{11-8} = rd;
   let Inst{7} = 0;
   let Inst{6-0} = OPC_OP_V.Value;
 
   let Uses = [VTYPE, VL];
 }
 
+let hasSideEffects = 1, mayLoad = 0, mayStore = 0 in
 class RVInstVtDiscard<string opcodestr>
     : RVInst<(outs), (ins), opcodestr, "", [], InstFormatR> {
   let Inst{31-26} = 0b010000;
@@ -1381,10 +1330,11 @@ class RVInstVtDiscard<string opcodestr>
 
 let Predicates = [HasVendorXSfmm32eaOrXSfmmbase] in
 def : InstAlias<"sf.vsettnt $rd, $rs1, $vtypei",
-                (VSETVLI GPR:$rd, GPR:$rs1, MammothVTypeOp:$vtypei)>;
+                (VSETVLI GPR:$rd, GPR:$rs1, XSfmmVTypeOp:$vtypei)>;
 
-let Predicates = [HasVendorXSfmm32eaOrXSfmmbase], DecoderNamespace = "XSfmm32eaOrXSfmmbase" in {
-let hasSideEffects = 1, mayLoad = 0, mayStore = 0 in {
+let DecoderNamespace = "XSfmm" in {
+
+let Predicates = [HasVendorXSfmm32eaOrXSfmmbase] in {
   def SF_VSETTN : RVInstSetSingle<(outs GPR:$rd), (ins GPR:$rs1), 0b00000,
                                   "sf.vsettn", "$rd, $rs1">;
   def SF_VSETTM : RVInstSetSingle<(outs GPR:$rd), (ins GPR:$rs1), 0b00001,
@@ -1392,78 +1342,67 @@ let hasSideEffects = 1, mayLoad = 0, mayStore = 0 in {
   def SF_VSETTK  : RVInstSetSingle<(outs GPR:$rd), (ins GPR:$rs1), 0b00010,
                                    "sf.vsettk", "$rd, $rs1">;
   def SF_VTDISCARD : RVInstVtDiscard<"sf.vtdiscard">;
-}
 
-let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
-  let rs2 = 0b11111 in
   def SF_VTMV_V_T : RVInstTileMoveOp<0b010000, (outs VR:$vd), (ins GPR:$rs1),
-                                     "sf.vtmv.v.t", "$vd, $rs1">;
-  let vd = 0b00000 in
+                                     "sf.vtmv.v.t", "$vd, $rs1"> {
+    let rs2 = 0b11111;
+  }
   def SF_VTMV_T_V : RVInstTileMoveOp<0b010111, (outs), (ins GPR:$rs1, VR:$rs2),
-                                     "sf.vtmv.t.v", "$rs1, $rs2">;
+                                     "sf.vtmv.t.v", "$rs1, $rs2"> {
+    let vd = 0b00000;
+  }
 
   def SF_VTZERO_T : RVInstSetZero<(outs), (ins TR:$rd), "sf.vtzero.t", "$rd">;
-}
 } // Predicates = [HasVendorXSfmm32eaOrXSfmmbase]
 
-let Predicates = [HasVendorXSfmmbase], DecoderNamespace = "XSfmmbase" in {
-let hasSideEffects = 0, mayLoad = 1, mayStore = 0 in {
+let Predicates = [HasVendorXSfmmbase] in {
   def SF_VLTE8  : RVInstTileLoad<0b000, "sf.vlte8">;
   def SF_VLTE16 : RVInstTileLoad<0b001, "sf.vlte16">;
   def SF_VLTE32 : RVInstTileLoad<0b010, "sf.vlte32">;
   def SF_VLTE64 : RVInstTileLoad<0b011, "sf.vlte64">;
-}
 
-let hasSideEffects = 0, mayLoad = 0, mayStore = 1 in {
   def SF_VSTE8  : RVInstTileStore<0b000, "sf.vste8">;
   def SF_VSTE16 : RVInstTileStore<0b001, "sf.vste16">;
   def SF_VSTE32 : RVInstTileStore<0b010, "sf.vste32">;
   def SF_VSTE64 : RVInstTileStore<0b011, "sf.vste64">;
-}
 } // Predicates = [HasVendorXSfmmbase]
 
-let Predicates = [HasVendorXSfmm32eaOrXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f],
-    DecoderNamespace = "HasVendorXSfmm32eaOrXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f" in {
-let hasSideEffects = 0, mayLoad = 0, mayStore = 0, Uses = [FRM],
-    mayRaiseFPException = true in {
-  def SF_MM_F_F   : RVInstMatmulF<0b00, (outs), (ins TRM2:$rd, VR:$vs2, VR:$vs1),
+let Predicates = [HasVendorXSfmm32eaOrXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f] in {
+  let Uses = [FRM], mayRaiseFPException = true in
+  def SF_MM_F_F   : RVInstMatmulF<(outs), (ins TRM2:$rd, VR:$vs2, VR:$vs1),
                                   "sf.mm.f.f", "$rd, $vs2, $vs1">;
-}
 } // Predicates = [HasVendorXSfmm32eaOrXSfmm32a16fOrXSfmm64a32fOrXSfmm64a64f]
 
-let Predicates = [HasVendorXSfmm32a8i], DecoderNamespace = "XSfmm32a8i" in {
-let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
+let Predicates = [HasVendorXSfmm32a8i] in {
   foreach a = I8Encodes in
     foreach b = I8Encodes in
       def SF_MM_#!toupper(a.Name)#_#!toupper(b.Name)
-          : RVInstMatmulI8<0, a.Bit, b.Bit,
+          : RVInstMatmulI8<0, a.Encoding, b.Encoding,
                            (outs), (ins TRM4:$rd, VR:$vs2, VR:$vs1),
                            "sf.mm."#a.Name#"."#b.Name, "$rd, $vs2, $vs1">;
-}
 } // Predicates = [HasVendorXSfmm32a8i]
 
-let Predicates = [HasVendorXSfmm32a8f], DecoderNamespace = "XSfmm32a8f" in {
-let hasSideEffects = 0, mayLoad = 0, mayStore = 0, Uses = [FRM],
-    mayRaiseFPException = true in {
+let Predicates = [HasVendorXSfmm32a8f] in {
+let Uses = [FRM], mayRaiseFPException = true in {
   foreach a = F8Encodes in
     foreach b = F8Encodes in
       def SF_MM_#!toupper(a.Name)#_#!toupper(b.Name)
-          : RVInstMatmulF8<a.Bit, b.Bit,
+          : RVInstMatmulF8<a.Encoding, b.Encoding,
                            (outs), (ins TRM4:$rd, VR:$vs2, VR:$vs1),
                            "sf.mm."#a.Name#"."#b.Name, "$rd, $vs2, $vs1">;
 }
 } // Predicates = [HasVendorXSfmm32a8f]
 
-let Predicates = [HasVendorXSfmm32a4i], DecoderNamespace = "XSfmm32a4i" in {
-let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
+let Predicates = [HasVendorXSfmm32a4i] in {
   foreach a = I8Encodes in
     foreach b = I8Encodes in
       def SF_P2MM_#!toupper(a.Name)#_#!toupper(b.Name)
-          : RVInstMatmulI8<1, a.Bit, b.Bit,
+          : RVInstMatmulI8<1, a.Encoding, b.Encoding,
                            (outs), (ins TRM4:$rd, VR:$vs2, VR:$vs1),
                            "sf.p2mm."#a.Name#"."#b.Name, "$rd, $vs2, $vs1">;
-}
 } // Predicates = [HasVendorXSfmm32a4i]
+
+} // DecoderNamespace = "XSfmm"
 
 //===----------------------------------------------------------------------===//
 // Xsfvfbfa instructions
@@ -1475,7 +1414,7 @@ let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
 //       add much complexity for refactoring.
 
 let Predicates = [HasVendorXSfvfbfa] in {
-let AltfmtType = IS_ALTFMT in {
+let AltFmtType = IS_ALTFMT in {
 //===----------------------------------------------------------------------===//
 // 13.2. Vector Single-Width Floating-Point Add/Subtract Instructions
 //===----------------------------------------------------------------------===//
@@ -1871,24 +1810,24 @@ let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
 let Defs = [VTYPE, VL] in {
   def PseudoSF_VSETTNT
       : Pseudo<(outs GPR:$rd),
-               (ins GPRNoX0:$rs1, MammothVTypeOp:$vtypei), []>,
+               (ins GPRNoX0:$rs1, XSfmmVTypeOp:$vtypei), []>,
         PseudoInstExpansion<(VSETVLI GPR:$rd, GPR:$rs1, VTypeIOp11:$vtypei)>, 
         Sched<[WriteVSETVLI, ReadVSETVLI]>;
   def PseudoSF_VSETTNTX0
       : Pseudo<(outs GPR:$rd),
-               (ins GPRX0:$rs1, MammothVTypeOp:$vtypei), []>,
+               (ins GPRX0:$rs1, XSfmmVTypeOp:$vtypei), []>,
         PseudoInstExpansion<(VSETVLI GPR:$rd, GPR:$rs1, VTypeIOp11:$vtypei)>, 
         Sched<[WriteVSETVLI, ReadVSETVLI]>;
 }
 
 let Defs = [VTYPE], Uses = [VTYPE] in {
   def PseudoSF_VSETTM
-      : Pseudo<(outs GPR:$rd), (ins GPR:$rs1, MammothVTypeOp:$vtypei), []>,
-        PseudoInstExpansion<(SF_VSETTM GPR:$rd, GPR:$rs1)>, 
+      : Pseudo<(outs GPR:$rd), (ins GPR:$rs1, XSfmmVTypeOp:$vtypei), []>,
+        PseudoInstExpansion<(SF_VSETTM GPR:$rd, GPR:$rs1)>,
         Sched<[WriteVSETVLI, ReadVSETVLI]>;
   def PseudoSF_VSETTK
-      : Pseudo<(outs GPR:$rd), (ins GPR:$rs1, MammothVTypeOp:$vtypei), []>,
-        PseudoInstExpansion<(SF_VSETTK GPR:$rd, GPR:$rs1)>, 
+      : Pseudo<(outs GPR:$rd), (ins GPR:$rs1, XSfmmVTypeOp:$vtypei), []>,
+        PseudoInstExpansion<(SF_VSETTK GPR:$rd, GPR:$rs1)>,
         Sched<[WriteVSETVLI, ReadVSETVLI]>;
 }
 }
@@ -1910,9 +1849,9 @@ foreach a = I8Encodes in {
   }
 }
 
-let AltfmtType = IS_NOT_ALTFMT in
+let AltFmtType = IS_NOT_ALTFMT in
   def PseudoSF_MM_F_F : VPseudoSF_MatMul_FRM<TRM2>;
-let AltfmtType = IS_ALTFMT in
+let AltFmtType = IS_ALTFMT in
   def PseudoSF_MM_F_F_ALT : VPseudoSF_MatMul_FRM<TRM2>;
 
 foreach e1 = [5, 4] in

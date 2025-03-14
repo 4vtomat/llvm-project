@@ -145,13 +145,13 @@ enum {
   // 0 -> Don't care about altfmt bit in VTYPE.
   // 1 -> Is not altfmt.
   // 2 -> Is altfmt(BF16).
-  AltfmtTypeShift = DestEEWShift + 2,
-  AltfmtTypeMask = 3ULL << AltfmtTypeShift,
+  AltFmtTypeShift = DestEEWShift + 2,
+  AltFmtTypeMask = 3ULL << AltFmtTypeShift,
 
-  IsWidenShift = AltfmtTypeShift + 2,
+  IsWidenShift = AltFmtTypeShift + 2,
   IsWidenMask = 1ULL << IsWidenShift,
 
-  // Mammoth
+  // XSfmmbase
   HasTWidenOpShift = IsWidenShift + 1,
   HasTWidenOpMask = 1ULL << HasTWidenOpShift,
 
@@ -212,9 +212,9 @@ static inline bool hasRoundModeOp(uint64_t TSFlags) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-enum class AltfmtType { DontCare, IsNotAltfmt, IsAltfmt };
-static inline AltfmtType getAltfmtType(uint64_t TSFlags) {
-  return static_cast<AltfmtType>((TSFlags & AltfmtTypeMask) >> AltfmtTypeShift);
+enum class AltFmtType { DontCare, NotAltFmt, AltFmt };
+static inline AltFmtType getAltFmtType(uint64_t TSFlags) {
+  return static_cast<AltFmtType>((TSFlags & AltFmtTypeMask) >> AltFmtTypeShift);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -234,7 +234,7 @@ static inline bool elementsDependOnMask(uint64_t TSFlags) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-// Mammoth
+// XSfmmbase
 static inline bool hasTWidenOp(uint64_t TSFlags) {
   return TSFlags & HasTWidenOpMask;
 }
@@ -274,7 +274,7 @@ static inline unsigned getVLOpNum(const MCInstrDesc &Desc) {
   // instructions with VL also have SEW.
   assert(hasSEWOp(TSFlags) && hasVLOp(TSFlags));
 #if SIFIVE_CUSTOMIZATION
-  // In Mammoth, TN is alias to VL, so here we use the same TSFlags bit.
+  // In Xsfmmbase, TN is alias for VL, so here we use the same TSFlags bit.
   if (hasTWidenOp(TSFlags))
     return getTNOpNum(Desc);
 #endif // SIFIVE_CUSTOMIZATION
@@ -457,7 +457,7 @@ enum OperandType : unsigned {
   OPERAND_RVKRNUM_1_10,
   OPERAND_RVKRNUM_2_14,
 #if SIFIVE_CUSTOMIZATION
-  OPERAND_MAMMOTHVTYPE,
+  OPERAND_XSFMM_VTYPE,
 #endif // SIFIVE_CUSTOMIZATION
   OPERAND_SPIMM,
   // Operand is a 3-bit rounding mode, '111' indicates FRM register.

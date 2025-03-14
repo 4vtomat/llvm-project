@@ -166,7 +166,7 @@ BitVector RISCVRegisterInfo::getReservedRegs(const MachineFunction &MF) const {
   markSuperRegs(Reserved, RISCV::SSP);
 
 #if SIFIVE_CUSTOMIZATION
-  // Mammoth
+  // XSfmmbase
   for (MCPhysReg Reg = RISCV::T0; Reg <= RISCV::T15; Reg++)
     markSuperRegs(Reserved, Reg);
 #endif // SIFIVE_CUSTOMIZATION

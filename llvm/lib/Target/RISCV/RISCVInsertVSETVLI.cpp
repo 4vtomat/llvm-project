@@ -256,14 +256,14 @@ struct DemandedFields {
   bool VILL = false;
 #ifdef SIFIVE_CUSTOMIZATION
   bool UseTWiden = false;
-  bool UseAltfmt = false;
+  bool UseAltFmt = false;
 #endif // SIFIVE_CUSTOMIZATION
 
   // Return true if any part of VTYPE was used
   bool usedVTYPE() const {
 #ifdef SIFIVE_CUSTOMIZATION
     return SEW || LMUL || SEWLMULRatio || TailPolicy || MaskPolicy || VILL ||
-           UseTWiden || UseAltfmt;
+           UseTWiden || UseAltFmt;
 #endif // SIFIVE_CUSTOMIZATION
   }
 
@@ -282,7 +282,7 @@ struct DemandedFields {
     VILL = true;
 #ifdef SIFIVE_CUSTOMIZATION
     UseTWiden = true;
-    UseAltfmt = true;
+    UseAltFmt = true;
 #endif // SIFIVE_CUSTOMIZATION
   }
 
@@ -310,7 +310,7 @@ struct DemandedFields {
     MaskPolicy |= B.MaskPolicy;
     VILL |= B.VILL;
 #ifdef SIFIVE_CUSTOMIZATION
-    UseAltfmt |= B.UseAltfmt;
+    UseAltFmt |= B.UseAltFmt;
     UseTWiden |= B.UseTWiden;
 #endif // SIFIVE_CUSTOMIZATION
   }
@@ -362,7 +362,7 @@ struct DemandedFields {
     OS << "VILL=" << VILL;
 #ifdef SIFIVE_CUSTOMIZATION
     OS << "MaskPolicy=" << MaskPolicy << ", ";
-    OS << "UseAltfmt=" << UseAltfmt << ", ";
+    OS << "UseAltFmt=" << UseAltFmt << ", ";
     OS << "UseTWiden=" << UseTWiden;
 #endif // SIFIVE_CUSTOMIZATION
     OS << "}";
@@ -438,14 +438,14 @@ static bool areCompatibleVTYPEs(uint64_t CurVType, uint64_t NewVType,
   // TODO: Since normal RVV instructions don't care about twiden, so we might be
   // able to reuse it if the previous twiden is same as we need for this
   // instruction.
-  if (Used.UseTWiden && (RISCVVType::hasMammothWiden(CurVType) !=
-                             RISCVVType::hasMammothWiden(NewVType) ||
-                         (RISCVVType::hasMammothWiden(CurVType) &&
-                          RISCVVType::getMammothWiden(CurVType) !=
-                              RISCVVType::getMammothWiden(NewVType))))
+  if (Used.UseTWiden && (RISCVVType::hasXSfmmWiden(CurVType) !=
+                             RISCVVType::hasXSfmmWiden(NewVType) ||
+                         (RISCVVType::hasXSfmmWiden(CurVType) &&
+                          RISCVVType::getXSfmmWiden(CurVType) !=
+                              RISCVVType::getXSfmmWiden(NewVType))))
     return false;
-  if (Used.UseAltfmt == true &&
-      RISCVVType::isAltfmt(CurVType) != RISCVVType::isAltfmt(NewVType))
+  if (Used.UseAltFmt == true &&
+      RISCVVType::isAltFmt(CurVType) != RISCVVType::isAltFmt(NewVType))
     return false;
 #endif // SIFIVE_CUSTOMIZATION
   return true;
@@ -589,8 +589,8 @@ DemandedFields getDemanded(const MachineInstr &MI, const RISCVSubtarget *ST) {
   }
 
 #ifdef SIFIVE_CUSTOMIZATION
-  Res.UseAltfmt = RISCVII::getAltfmtType(MI.getDesc().TSFlags) !=
-                  RISCVII::AltfmtType::DontCare;
+  Res.UseAltFmt = RISCVII::getAltFmtType(MI.getDesc().TSFlags) !=
+                  RISCVII::AltFmtType::DontCare;
   Res.UseTWiden = RISCVII::hasTWidenOp(MI.getDesc().TSFlags) ||
                   isMammothVectorConfigInstr(MI);
 #endif // SIFIVE_CUSTOMIZATION
@@ -627,7 +627,7 @@ class VSETVLIInfo {
   uint8_t MaskAgnostic : 1;
   uint8_t SEWLMULRatioOnly : 1;
 #ifdef SIFIVE_CUSTOMIZATION
-  uint8_t IsAltfmt : 1;
+  uint8_t AltFmt : 1;
   AVLDef ATMRegDef = {nullptr, RISCV::NoRegister};
   AVLDef ATKRegDef = {nullptr, RISCV::NoRegister};
   uint8_t TWiden = 0;
@@ -721,7 +721,7 @@ public:
   bool getTailAgnostic() const { return TailAgnostic; }
   bool getMaskAgnostic() const { return MaskAgnostic; }
 #ifdef SIFIVE_CUSTOMIZATION
-  bool getIsAltfmt() const { return IsAltfmt; }
+  bool getAltFmt() const { return AltFmt; }
   unsigned getTWiden() const { return TWiden; }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -786,14 +786,13 @@ public:
     TailAgnostic = RISCVVType::isTailAgnostic(VType);
     MaskAgnostic = RISCVVType::isMaskAgnostic(VType);
 #if SIFIVE_CUSTOMIZATION
-    IsAltfmt = RISCVVType::isAltfmt(VType);
-    TWiden = RISCVVType::hasMammothWiden(VType)
-                 ? RISCVVType::getMammothWiden(VType)
-                 : 0;
+    AltFmt = RISCVVType::isAltFmt(VType);
+    TWiden =
+        RISCVVType::hasXSfmmWiden(VType) ? RISCVVType::getXSfmmWiden(VType) : 0;
 #endif // SIFIVE_CUSTOMIZATION
   }
 #if SIFIVE_CUSTOMIZATION
-  void setVTYPE(RISCVII::VLMUL L, unsigned S, bool TA, bool MA, bool Altfmt,
+  void setVTYPE(RISCVII::VLMUL L, unsigned S, bool TA, bool MA, bool AF,
                 unsigned W) {
     assert((IsMammoth || (isValid() && !isUnknown())) &&
            "Can't set VTYPE for uninitialized or unknown");
@@ -803,7 +802,7 @@ public:
     TailAgnostic = TA;
     MaskAgnostic = MA;
 #if SIFIVE_CUSTOMIZATION
-    IsAltfmt = Altfmt;
+    AltFmt = AF;
     TWiden = W;
 #endif // SIFIVE_CUSTOMIZATION
   }
@@ -812,7 +811,7 @@ public:
   bool isMammoth() const { return IsMammoth; }
   void setIsMammoth(bool M) { IsMammoth = M; }
 
-  void setIsAltfmt(bool Altfmt) { IsAltfmt = Altfmt; }
+  void setAltFmt(bool AF) { AltFmt = AF; }
   void setATMRegDef(const VNInfo *VNInfo, Register ATMReg) {
     assert(ATMReg.isVirtual());
     ATMRegDef.ValNo = VNInfo;
@@ -851,9 +850,9 @@ public:
            "Can't encode VTYPE for uninitialized or unknown");
 #if SIFIVE_CUSTOMIZATION
     if (TWiden != 0)
-      return RISCVVType::encodeMammothVType(SEW, TWiden, IsAltfmt);
+      return RISCVVType::encodeXSfmmVType(SEW, TWiden, AltFmt);
     return RISCVVType::encodeVTYPE(VLMul, SEW, TailAgnostic, MaskAgnostic,
-                                   IsAltfmt);
+                                   AltFmt);
 #endif // SIFIVE_CUSTOMIZATION
   }
 
@@ -867,9 +866,9 @@ public:
     assert(!SEWLMULRatioOnly && !Other.SEWLMULRatioOnly &&
            "Can't compare when only LMUL/SEW ratio is valid.");
 #if SIFIVE_CUSTOMIZATION
-    return std::tie(VLMul, SEW, TailAgnostic, MaskAgnostic, IsAltfmt, TWiden) ==
+    return std::tie(VLMul, SEW, TailAgnostic, MaskAgnostic, AltFmt, TWiden) ==
            std::tie(Other.VLMul, Other.SEW, Other.TailAgnostic,
-                    Other.MaskAgnostic, Other.IsAltfmt, Other.TWiden);
+                    Other.MaskAgnostic, Other.AltFmt, Other.TWiden);
 #endif // SIFIVE_CUSTOMIZATION
   }
 
@@ -1059,7 +1058,7 @@ public:
         OS << "ATK=" << llvm::printReg(getATKReg()) << ", ";
       OS << "SEW=" << (unsigned)SEW << ", ";
       OS << "TWiden=" << (bool)TWiden << ", ";
-      OS << "IsAltfmt=" << (bool)IsAltfmt << "}";
+      OS << "AltFmt=" << (bool)AltFmt << "}";
     }
 #endif // SIFIVE_CUSTOMIZATION
   }
@@ -1262,18 +1261,16 @@ RISCVInsertVSETVLI::computeInfoForInstr(const MachineInstr &MI) const {
   RISCVII::VLMUL VLMul = RISCVII::getLMul(TSFlags);
 
 #if SIFIVE_CUSTOMIZATION
-  bool IsAltfmt =
-      RISCVII::getAltfmtType(TSFlags) == RISCVII::AltfmtType::IsAltfmt;
+  bool AltFmt = RISCVII::getAltFmtType(TSFlags) == RISCVII::AltFmtType::AltFmt;
 
   // Mammoth
-  InstrInfo.setIsAltfmt(IsAltfmt);
+  InstrInfo.setAltFmt(AltFmt);
   if (isMammothVectorConfigInstr(MI)) {
     unsigned VTYPE = MI.getOperand(2).getImm();
     InstrInfo.setIsMammoth(true);
     InstrInfo.setVTYPE(InstrInfo.getVLMUL(), RISCVVType::getSEW(VTYPE),
                        InstrInfo.getTailAgnostic(), InstrInfo.getMaskAgnostic(),
-                       InstrInfo.getIsAltfmt(),
-                       RISCVVType::getMammothWiden(VTYPE));
+                       InstrInfo.getAltFmt(), RISCVVType::getXSfmmWiden(VTYPE));
 
     Register ATReg = MI.getOperand(1).getReg();
     switch (MI.getOpcode()) {
@@ -1312,7 +1309,7 @@ RISCVInsertVSETVLI::computeInfoForInstr(const MachineInstr &MI) const {
 
     // Set sew and twiden
     InstrInfo.setVTYPE(InstrInfo.getVLMUL(), SEW, InstrInfo.getTailAgnostic(),
-                       InstrInfo.getMaskAgnostic(), InstrInfo.getIsAltfmt(),
+                       InstrInfo.getMaskAgnostic(), InstrInfo.getAltFmt(),
                        TWiden);
 
     // Set atn
@@ -1377,7 +1374,7 @@ RISCVInsertVSETVLI::computeInfoForInstr(const MachineInstr &MI) const {
 #endif
 #if SIFIVE_CUSTOMIZATION
   // TODO: Propagate the twiden from previous vtype for potential reuse.
-  InstrInfo.setVTYPE(VLMul, SEW, TailAgnostic, MaskAgnostic, IsAltfmt,
+  InstrInfo.setVTYPE(VLMul, SEW, TailAgnostic, MaskAgnostic, AltFmt,
                      /*TWiden*/ 0);
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -1592,7 +1589,7 @@ void RISCVInsertVSETVLI::transferBefore(VSETVLIInfo &Info,
     NewInfo.setAVLImm(1);
 #if SIFIVE_CUSTOMIZATION
     NewInfo.setVTYPE(RISCVII::VLMUL::LMUL_1, /*sew*/ 8, /*ta*/ true,
-                     /*ma*/ true, /*Altfmt*/ false, /*W*/ 0);
+                     /*ma*/ true, /*AltFmt*/ false, /*W*/ 0);
 #endif // SIFIVE_CUSTOMIZATION
     Info = NewInfo;
     return;
@@ -1640,7 +1637,7 @@ void RISCVInsertVSETVLI::transferBefore(VSETVLIInfo &Info,
       (Demanded.MaskPolicy ? IncomingInfo : Info).getMaskAgnostic() ||
 #if SIFIVE_CUSTOMIZATION
           IncomingInfo.getMaskAgnostic(),
-      Demanded.UseAltfmt ? IncomingInfo.getIsAltfmt() : 0,
+      Demanded.UseAltFmt ? IncomingInfo.getAltFmt() : 0,
       Demanded.UseTWiden ? IncomingInfo.getTWiden() : 0);
 
   if (NewInfo.hasATMReg())

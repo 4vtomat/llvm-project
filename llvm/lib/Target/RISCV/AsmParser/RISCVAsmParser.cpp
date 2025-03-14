@@ -78,10 +78,10 @@ class RISCVAsmParser : public MCTargetAsmParser {
   };
 
 #if SIFIVE_CUSTOMIZATION
-  enum WWEEState{
-      WWEEState_Widen,
-      WWEEState_SEW,
-      WWEEState_Done,
+  enum WWEEState {
+    WWEEState_Widen,
+    WWEEState_SEW,
+    WWEEState_Done,
   };
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -131,14 +131,14 @@ class RISCVAsmParser : public MCTargetAsmParser {
   bool parseVTypeToken(const AsmToken &Tok, VTypeState &State, unsigned &Sew,
                        unsigned &Lmul, bool &Fractional, bool &TailAgnostic,
 #if SIFIVE_CUSTOMIZATION
-                       bool &MaskAgnostic, bool &IsAltfmt);
+                       bool &MaskAgnostic, bool &AltFmt);
 #endif // SIFIVE_CUSTOMIZATION
   bool generateVTypeError(SMLoc ErrorLoc);
 
 #if SIFIVE_CUSTOMIZATION
-  bool parseMammothVTypeToken(const AsmToken &Tok, WWEEState &State,
-                              unsigned &WW, unsigned &EE, bool &Altfmt);
-  bool generateMammothVTypeError(SMLoc ErrorLoc);
+  bool parseXSfmmVTypeToken(const AsmToken &Tok, WWEEState &State, unsigned &WW,
+                            unsigned &EE, bool &AltFmt);
+  bool generateXSfmmVTypeError(SMLoc ErrorLoc);
 #endif // SIFIVE_CUSTOMIZATION
 
   // Helper to actually emit an instruction to the MCStreamer. Also, when
@@ -247,7 +247,7 @@ class RISCVAsmParser : public MCTargetAsmParser {
   ParseStatus parseReglist(OperandVector &Operands);
   ParseStatus parseRegReg(OperandVector &Operands);
 #if SIFIVE_CUSTOMIZATION
-  ParseStatus parseMammothVType(OperandVector &Operands);
+  ParseStatus parseXSfmmVType(OperandVector &Operands);
 #endif // SIFIVE_CUSTOMIZATION
   ParseStatus parseRetval(OperandVector &Operands);
   ParseStatus parseZcmpStackAdj(OperandVector &Operands,
@@ -653,8 +653,8 @@ public:
   }
 
 #if SIFIVE_CUSTOMIZATION
-  bool isMammothVType() const {
-    return Kind == KindTy::VType && RISCVVType::isValidMammothVType(VType.Val);
+  bool isXSfmmVType() const {
+    return Kind == KindTy::VType && RISCVVType::isValidXSfmmVType(VType.Val);
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -1743,9 +1743,9 @@ bool RISCVAsmParser::matchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
                            "%tprel_add, %gprel, %got_gprel, %tls_ie_gprel "
                            "and %tls_gd_gprel modifier");
   }
-  case Match_InvalidMammothVType: {
+  case Match_InvalidXSfmmVType: {
     SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
-    return generateMammothVTypeError(ErrorLoc);
+    return generateXSfmmVTypeError(ErrorLoc);
   }
 #endif // SIFIVE_CUSTOMIZATION
   case Match_InvalidTLSDESCCallSymbol: {
@@ -2339,7 +2339,7 @@ bool RISCVAsmParser::parseVTypeToken(const AsmToken &Tok, VTypeState &State,
                                      unsigned &Sew, unsigned &Lmul,
                                      bool &Fractional, bool &TailAgnostic,
 #if SIFIVE_CUSTOMIZATION
-                                     bool &MaskAgnostic, bool &IsAltfmt) {
+                                     bool &MaskAgnostic, bool &AltFmt) {
 #endif // SIFIVE_CUSTOMIZATION
   if (Tok.isNot(AsmToken::Identifier))
     return true;
@@ -2353,10 +2353,10 @@ bool RISCVAsmParser::parseVTypeToken(const AsmToken &Tok, VTypeState &State,
 #if SIFIVE_CUSTOMIZATION
     if (Identifier == "16alt") {
       Sew = 16;
-      IsAltfmt = true;
+      AltFmt = true;
     } else if (Identifier == "8alt") {
       Sew = 8;
-      IsAltfmt = true;
+      AltFmt = true;
     } else
 #endif // SIFIVE_CUSTOMIZATION
     if (Identifier.getAsInteger(10, Sew))
@@ -2421,7 +2421,7 @@ ParseStatus RISCVAsmParser::parseVTypeI(OperandVector &Operands) {
   bool TailAgnostic = false;
   bool MaskAgnostic = false;
 #if SIFIVE_CUSTOMIZATION
-  bool IsAltfmt = false;
+  bool AltFmt = false;
 #endif // SIFIVE_CUSTOMIZATION
 
   VTypeState State = VTypeState_SEW;
@@ -2429,7 +2429,7 @@ ParseStatus RISCVAsmParser::parseVTypeI(OperandVector &Operands) {
 
   if (parseVTypeToken(getTok(), State, Sew, Lmul, Fractional, TailAgnostic,
 #if SIFIVE_CUSTOMIZATION
-                      MaskAgnostic, IsAltfmt))
+                      MaskAgnostic, AltFmt))
 #endif // SIFIVE_CUSTOMIZATION
     return ParseStatus::NoMatch;
 
@@ -2438,7 +2438,7 @@ ParseStatus RISCVAsmParser::parseVTypeI(OperandVector &Operands) {
   while (parseOptionalToken(AsmToken::Comma)) {
     if (parseVTypeToken(getTok(), State, Sew, Lmul, Fractional, TailAgnostic,
 #if SIFIVE_CUSTOMIZATION
-                        MaskAgnostic, IsAltfmt))
+                        MaskAgnostic, AltFmt))
 #endif // SIFIVE_CUSTOMIZATION
       break;
 
@@ -2463,8 +2463,7 @@ ParseStatus RISCVAsmParser::parseVTypeI(OperandVector &Operands) {
 
     unsigned VTypeI =
 #if SIFIVE_CUSTOMIZATION
-        RISCVVType::encodeVTYPE(VLMUL, Sew, TailAgnostic, MaskAgnostic,
-                                IsAltfmt);
+        RISCVVType::encodeVTYPE(VLMUL, Sew, TailAgnostic, MaskAgnostic, AltFmt);
 #endif // SIFIVE_CUSTOMIZATION
     Operands.push_back(RISCVOperand::createVType(VTypeI, S));
     return ParseStatus::Success;
@@ -2483,9 +2482,9 @@ bool RISCVAsmParser::generateVTypeError(SMLoc ErrorLoc) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-bool RISCVAsmParser::parseMammothVTypeToken(const AsmToken &Tok,
-                                            WWEEState &State, unsigned &WW,
-                                            unsigned &EE, bool &Altfmt) {
+bool RISCVAsmParser::parseXSfmmVTypeToken(const AsmToken &Tok, WWEEState &State,
+                                          unsigned &WW, unsigned &EE,
+                                          bool &AltFmt) {
   if (getLexer().isNot(AsmToken::Identifier))
     return true;
 
@@ -2499,7 +2498,7 @@ bool RISCVAsmParser::parseMammothVTypeToken(const AsmToken &Tok,
       if (Identifier != "16alt")
         break;
 
-      Altfmt = true;
+      AltFmt = true;
       EE = 16;
     }
     if (!RISCVVType::isValidSEW(EE) || EE > 64)
@@ -2523,38 +2522,38 @@ bool RISCVAsmParser::parseMammothVTypeToken(const AsmToken &Tok,
   return true;
 }
 
-ParseStatus RISCVAsmParser::parseMammothVType(OperandVector &Operands) {
+ParseStatus RISCVAsmParser::parseXSfmmVType(OperandVector &Operands) {
   SMLoc S = getLoc();
 
   unsigned Widen = 0;
   unsigned SEW = 0;
-  bool Altfmt = false;
+  bool AltFmt = false;
 
   WWEEState State = WWEEState_SEW;
 
-  if (parseMammothVTypeToken(getTok(), State, Widen, SEW, Altfmt))
-    return generateMammothVTypeError(S);
+  if (parseXSfmmVTypeToken(getTok(), State, Widen, SEW, AltFmt))
+    return generateXSfmmVTypeError(S);
 
   getLexer().Lex();
 
   if (!parseOptionalToken(AsmToken::Comma))
-    return generateMammothVTypeError(S);
+    return generateXSfmmVTypeError(S);
 
-  if (parseMammothVTypeToken(getTok(), State, Widen, SEW, Altfmt))
-    return generateMammothVTypeError(S);
+  if (parseXSfmmVTypeToken(getTok(), State, Widen, SEW, AltFmt))
+    return generateXSfmmVTypeError(S);
 
   getLexer().Lex();
 
   if (getLexer().is(AsmToken::EndOfStatement) && State == WWEEState_Done) {
     Operands.push_back(RISCVOperand::createVType(
-        RISCVVType::encodeMammothVType(SEW, Widen, Altfmt), S));
+        RISCVVType::encodeXSfmmVType(SEW, Widen, AltFmt), S));
     return ParseStatus::Success;
   }
 
-  return generateMammothVTypeError(S);
+  return generateXSfmmVTypeError(S);
 }
 
-bool RISCVAsmParser::generateMammothVTypeError(SMLoc ErrorLoc) {
+bool RISCVAsmParser::generateXSfmmVTypeError(SMLoc ErrorLoc) {
   return Error(ErrorLoc, "operand must be e[8|16|16alt|32|64],w[1|2|4]");
 }
 #endif // SIFIVE_CUSTOMIZATION

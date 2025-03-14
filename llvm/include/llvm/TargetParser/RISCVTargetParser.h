@@ -97,13 +97,13 @@ inline static bool isValidLMUL(unsigned LMUL, bool Fractional) {
 
 unsigned encodeVTYPE(RISCVII::VLMUL VLMUL, unsigned SEW, bool TailAgnostic,
 #if SIFIVE_CUSTOMIZATION
-                     bool MaskAgnostic, bool IsAltfmt);
+                     bool MaskAgnostic, bool AltFmt);
 #else
                      bool MaskAgnostic);
 #endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
-unsigned encodeMammothVType(unsigned SEW, unsigned Widen, bool Altfmt);
+unsigned encodeXSfmmVType(unsigned SEW, unsigned Widen, bool AltFmt);
 #endif // SIFIVE_CUSTOMIZATION
 
 inline static RISCVII::VLMUL getVLMUL(unsigned VType) {
@@ -142,24 +142,22 @@ inline static unsigned decodeTWiden(unsigned TWiden) {
   return 1 << (TWiden - 1);
 }
 
-inline static bool hasMammothWiden(unsigned VType) {
+inline static bool hasXSfmmWiden(unsigned VType) {
   unsigned TWiden = (VType >> 9) & 0x3;
   return TWiden != 0;
 }
 
-inline static unsigned getMammothWiden(unsigned VType) {
+inline static unsigned getXSfmmWiden(unsigned VType) {
   unsigned TWiden = (VType >> 9) & 0x3;
   assert(TWiden != 0 && "Invalid widen value");
   return 1 << (TWiden - 1);
 }
 
-inline static bool getMammothAltfmt(unsigned VType) {
-  return (VType >> 8) & 1;
-}
+inline static bool getXSfmmAltFmt(unsigned VType) { return (VType >> 8) & 1; }
 
-static inline bool isValidMammothVType(unsigned VTypeI) {
-  return (VTypeI & ~0x738) == 0 && RISCVVType::hasMammothWiden(VTypeI) &&
-         RISCVVType::getSEW(VTypeI) * RISCVVType::getMammothWiden(VTypeI) <= 64;
+static inline bool isValidXSfmmVType(unsigned VTypeI) {
+  return (VTypeI & ~0x738) == 0 && RISCVVType::hasXSfmmWiden(VTypeI) &&
+         RISCVVType::getSEW(VTypeI) * RISCVVType::getXSfmmWiden(VTypeI) <= 64;
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -168,7 +166,7 @@ inline static bool isTailAgnostic(unsigned VType) { return VType & 0x40; }
 inline static bool isMaskAgnostic(unsigned VType) { return VType & 0x80; }
 
 #if SIFIVE_CUSTOMIZATION
-inline static bool isAltfmt(unsigned VType) { return VType & 0x100; }
+inline static bool isAltFmt(unsigned VType) { return VType & 0x100; }
 #endif // SIFIVE_CUSTOMIZATION
 
 void printVType(unsigned VType, raw_ostream &OS);

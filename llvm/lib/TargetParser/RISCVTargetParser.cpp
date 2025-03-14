@@ -167,7 +167,7 @@ namespace RISCVVType {
 // 2:0  | vlmul[2:0] | Vector register group multiplier (LMUL) setting
 unsigned encodeVTYPE(RISCVII::VLMUL VLMUL, unsigned SEW, bool TailAgnostic,
 #if SIFIVE_CUSTOMIZATION
-                     bool MaskAgnostic, bool IsAltfmt) {
+                     bool MaskAgnostic, bool AltFmt) {
 #endif // SIFIVE_CUSTOMIZATION
   assert(isValidSEW(SEW) && "Invalid SEW");
   unsigned VLMULBits = static_cast<unsigned>(VLMUL);
@@ -178,7 +178,7 @@ unsigned encodeVTYPE(RISCVII::VLMUL VLMUL, unsigned SEW, bool TailAgnostic,
   if (MaskAgnostic)
     VTypeI |= 0x80;
 #if SIFIVE_CUSTOMIZATION
-  if (IsAltfmt)
+  if (AltFmt)
     VTypeI |= 0x100;
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -186,12 +186,12 @@ unsigned encodeVTYPE(RISCVII::VLMUL VLMUL, unsigned SEW, bool TailAgnostic,
 }
 
 #if SIFIVE_CUSTOMIZATION
-unsigned encodeMammothVType(unsigned SEW, unsigned Widen, bool Altfmt) {
+unsigned encodeXSfmmVType(unsigned SEW, unsigned Widen, bool AltFmt) {
   assert(isValidSEW(SEW) && "Invalid SEW");
   assert((Widen == 1 || Widen == 2 || Widen == 4) && "Invalid Widen");
   unsigned VSEWBits = encodeSEW(SEW);
   unsigned TWiden = Log2_32(Widen) + 1;
-  unsigned VTypeI = (VSEWBits << 3) | Altfmt << 8 | TWiden << 9;
+  unsigned VTypeI = (VSEWBits << 3) | AltFmt << 8 | TWiden << 9;
   return VTypeI;
 }
 #endif // SIFIVE_CUSTOMIZATION
@@ -217,7 +217,7 @@ void printVType(unsigned VType, raw_ostream &OS) {
   OS << "e" << Sew;
 
 #if SIFIVE_CUSTOMIZATION
-  if (isAltfmt(VType))
+  if (isAltFmt(VType))
     OS << "alt";
 #endif // SIFIVE_CUSTOMIZATION
 
