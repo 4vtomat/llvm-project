@@ -37,8 +37,11 @@ define i64 @x86_Convert(ptr %data, i64 %size, i32 %ip, ptr %state, i32 %encoding
 ; CHECK-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP8]] to i64
 ; CHECK-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 16 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
 ; CHECK-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP8]] to i64
-; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 16 x i8> @llvm.vp.and.nxv16i8(<vscale x 16 x i8> [[TMP10]], <vscale x 16 x i8> splat (i8 -2), <vscale x 16 x i1> splat (i1 true), i32 [[TMP8]])
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i8(<vscale x 16 x i8> [[VP_OP]], <vscale x 16 x i8> splat (i8 -24), metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP8]])
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 16 x i8> [[TMP10]], i32 0
+; CHECK-NEXT:    [[TMP18:%.*]] = and i8 [[TMP17]], -2
+; CHECK-NEXT:    [[TMP19:%.*]] = icmp eq i8 [[TMP18]], -24
+; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 16 x i1> poison, i1 [[TMP19]], i64 0
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = shufflevector <vscale x 16 x i1> [[BROADCAST_SPLATINSERT]], <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer
 ; CHECK-NEXT:    [[TMP12:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP8]])
 ; CHECK-NEXT:    [[TMP13:%.*]] = icmp sge i32 [[TMP12]], 0
 ; CHECK-NEXT:    br i1 [[TMP13]], label %[[VECTOR_EARLY_EXIT:.*]], label %[[FOR_INC1]]

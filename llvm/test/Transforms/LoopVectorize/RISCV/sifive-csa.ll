@@ -3702,8 +3702,9 @@ define dso_local i64 @idx_scalar_dec(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-NEXT:    [[CSA_DATA_PHI:%.*]] = phi <vscale x 1 x i64> [ poison, [[VECTOR_PH]] ], [ [[TMP26:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP6:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP7]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP6]], i32 1, i1 true)
-; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> [[VEC_IND]], <vscale x 1 x i64> splat (i64 -1), <vscale x 1 x i1> splat (i1 true), i32 [[TMP7]])
-; CHECK-NEXT:    [[TMP8:%.*]] = extractelement <vscale x 1 x i64> [[VP_OP]], i32 0
+; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP22:%.*]] = add i64 [[OFFSET_IDX]], 0
+; CHECK-NEXT:    [[TMP8:%.*]] = add i64 [[TMP22]], -1
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i64, ptr [[A:%.*]], i64 [[TMP8]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = zext i32 [[TMP7]] to i64
 ; CHECK-NEXT:    [[TMP11:%.*]] = mul i64 0, [[TMP10]]
@@ -3792,8 +3793,9 @@ define dso_local i64 @idx_scalar_dec(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; DISABLE-RISCV-CSA-NEXT:    [[CSA_DATA_PHI:%.*]] = phi <vscale x 1 x i64> [ poison, [[VECTOR_PH]] ], [ [[CSA_DATA_SEL:%.*]], [[VECTOR_BODY]] ]
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP6:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP7]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP6]], i32 1, i1 true)
-; DISABLE-RISCV-CSA-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> [[VEC_IND]], <vscale x 1 x i64> splat (i64 -1), <vscale x 1 x i1> splat (i1 true), i32 [[TMP7]])
-; DISABLE-RISCV-CSA-NEXT:    [[TMP8:%.*]] = extractelement <vscale x 1 x i64> [[VP_OP]], i32 0
+; DISABLE-RISCV-CSA-NEXT:    [[OFFSET_IDX:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
+; DISABLE-RISCV-CSA-NEXT:    [[TMP30:%.*]] = add i64 [[OFFSET_IDX]], 0
+; DISABLE-RISCV-CSA-NEXT:    [[TMP8:%.*]] = add i64 [[TMP30]], -1
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i64, ptr [[A:%.*]], i64 [[TMP8]]
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP10:%.*]] = zext i32 [[TMP7]] to i64
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP11:%.*]] = mul i64 0, [[TMP10]]
@@ -3880,8 +3882,9 @@ define dso_local i64 @idx_scalar_dec(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-RV32-NEXT:    [[CSA_DATA_PHI:%.*]] = phi <vscale x 1 x i64> [ poison, [[VECTOR_PH]] ], [ [[TMP23:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-RV32-NEXT:    [[AVL:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; CHECK-RV32-NEXT:    [[TMP6]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 1, i1 true)
-; CHECK-RV32-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> [[VEC_IND]], <vscale x 1 x i64> splat (i64 -1), <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]])
-; CHECK-RV32-NEXT:    [[TMP7:%.*]] = extractelement <vscale x 1 x i64> [[VP_OP]], i32 0
+; CHECK-RV32-NEXT:    [[OFFSET_IDX:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
+; CHECK-RV32-NEXT:    [[TMP19:%.*]] = add i64 [[OFFSET_IDX]], 0
+; CHECK-RV32-NEXT:    [[TMP7:%.*]] = add i64 [[TMP19]], -1
 ; CHECK-RV32-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i64, ptr [[A:%.*]], i64 [[TMP7]]
 ; CHECK-RV32-NEXT:    [[TMP9:%.*]] = mul i32 0, [[TMP6]]
 ; CHECK-RV32-NEXT:    [[TMP10:%.*]] = sub i32 1, [[TMP6]]
