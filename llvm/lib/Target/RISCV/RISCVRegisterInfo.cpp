@@ -1169,13 +1169,19 @@ bool RISCVRegisterInfo::needUpdateECSlot(const LiveRange &LR,
   return Changed;
 }
 
+static bool isRVVPressureSetIdx(unsigned Idx) {
+  const static std::vector<unsigned> RVVPressureSetIndices = {
+      RISCV::RegisterPressureSets::VRM8NoV0, RISCV::RegisterPressureSets::VM};
+
+  return llvm::find(RVVPressureSetIndices, Idx) != RVVPressureSetIndices.end();
+}
+
 bool RISCVRegisterInfo::needReleasePendingQueue(
     MachineFunction &MF, ArrayRef<unsigned> MaxSetPressure) const {
   for (unsigned Idx = 0; Idx < MaxSetPressure.size(); Idx++) {
     // Consider only the RVV Register, as RVV spilling/reloading has higher
     // potential costs than hazards.
-    if (!StringRef(getRegPressureSetName(Idx)).starts_with("VM") &&
-        !StringRef(getRegPressureSetName(Idx)).starts_with("VRM8NoV0"))
+    if (!isRVVPressureSetIdx(Idx))
       continue;
     const unsigned RVVRegPressureThreshold = 7;
     if (MaxSetPressure[Idx] + RVVRegPressureThreshold >
@@ -1193,8 +1199,7 @@ bool RISCVRegisterInfo::needReleaseSUFromPendingQueue(
   for (unsigned Idx = 0; Idx < PSetID.size(); Idx++) {
     // Consider only the RVV Register, as RVV spilling/reloading has higher
     // potential costs than hazards.
-    if (!StringRef(getRegPressureSetName(PSetID[Idx])).starts_with("VM") &&
-        !StringRef(getRegPressureSetName(Idx)).starts_with("VRM8NoV0"))
+    if (!isRVVPressureSetIdx(PSetID[Idx]))
       continue;
 
     if (UnitInc[Idx] < UnitIncRVVRegPressureThreshold)
