@@ -27,16 +27,8 @@ bb:
 define void @test_scalable_variable_pointer(ptr %arg, <vscale x 4 x double> %arg1, i32 zeroext %arg2) {
 ; CHECK-LABEL: test_scalable_variable_pointer:
 ; CHECK:       # %bb.0: # %bb
-; CHECK-NEXT:    li a3, 1
-; CHECK-NEXT:    mv a2, a1
-; CHECK-NEXT:    bltu a1, a3, .LBB1_2
-; CHECK-NEXT:  # %bb.1: # %bb
-; CHECK-NEXT:    li a2, 1
-; CHECK-NEXT:  .LBB1_2: # %bb
-; CHECK-NEXT:    addi a1, a1, -1
-; CHECK-NEXT:    vsetvli zero, a2, e64, m4, ta, ma
-; CHECK-NEXT:    vslidedown.vx v8, v8, a1
-; CHECK-NEXT:    vse64.v v8, (a0)
+; CHECK-NEXT:    vsetvli zero, a1, e64, m4, ta, ma
+; CHECK-NEXT:    vsse64.v v8, (a0), zero
 ; CHECK-NEXT:    ret
 bb:
   %tmp = insertelement <vscale x 4 x ptr> poison, ptr %arg, i32 0
@@ -72,16 +64,8 @@ bb:
 define void @test_fixed_variable_pointer(ptr %arg, <4 x double> %arg1, i32 zeroext %arg2) {
 ; CHECK-LABEL: test_fixed_variable_pointer:
 ; CHECK:       # %bb.0: # %bb
-; CHECK-NEXT:    li a3, 1
-; CHECK-NEXT:    mv a2, a1
-; CHECK-NEXT:    bltu a1, a3, .LBB3_2
-; CHECK-NEXT:  # %bb.1: # %bb
-; CHECK-NEXT:    li a2, 1
-; CHECK-NEXT:  .LBB3_2: # %bb
-; CHECK-NEXT:    addi a1, a1, -1
-; CHECK-NEXT:    vsetvli zero, a2, e64, m2, ta, ma
-; CHECK-NEXT:    vslidedown.vx v8, v8, a1
-; CHECK-NEXT:    vse64.v v8, (a0)
+; CHECK-NEXT:    vsetvli zero, a1, e64, m2, ta, ma
+; CHECK-NEXT:    vsse64.v v8, (a0), zero
 ; CHECK-NEXT:    ret
 bb:
   %tmp = insertelement <4 x ptr> poison, ptr %arg, i32 0

@@ -616,8 +616,25 @@ entry:
 define void @aligned_memcpy31(ptr nocapture %dest, ptr %src) nounwind {
 ; RV32-LABEL: aligned_memcpy31:
 ; RV32:       # %bb.0: # %entry
-; RV32-NEXT:    li a2, 31
-; RV32-NEXT:    tail memcpy
+; RV32-NEXT:    lbu a2, 30(a1)
+; RV32-NEXT:    sb a2, 30(a0)
+; RV32-NEXT:    lh a2, 28(a1)
+; RV32-NEXT:    sh a2, 28(a0)
+; RV32-NEXT:    lw a2, 24(a1)
+; RV32-NEXT:    sw a2, 24(a0)
+; RV32-NEXT:    lw a2, 20(a1)
+; RV32-NEXT:    sw a2, 20(a0)
+; RV32-NEXT:    lw a2, 16(a1)
+; RV32-NEXT:    sw a2, 16(a0)
+; RV32-NEXT:    lw a2, 12(a1)
+; RV32-NEXT:    sw a2, 12(a0)
+; RV32-NEXT:    lw a2, 8(a1)
+; RV32-NEXT:    sw a2, 8(a0)
+; RV32-NEXT:    lw a2, 4(a1)
+; RV32-NEXT:    sw a2, 4(a0)
+; RV32-NEXT:    lw a1, 0(a1)
+; RV32-NEXT:    sw a1, 0(a0)
+; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: aligned_memcpy31:
 ; RV64:       # %bb.0: # %entry

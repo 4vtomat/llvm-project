@@ -190,12 +190,11 @@ define void @masked_load(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    br i1 [[TMP19]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP20:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP3]])
-; CHECK-NEXT:    [[TMP21:%.*]] = add i32 0, [[TMP20]]
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
-; CHECK-NEXT:    [[RED_1_LCSSA:%.*]] = phi i32 [ [[RED_1:%.*]], [[FOR_INC:%.*]] ], [ [[TMP21]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[RED_1_LCSSA:%.*]] = phi i32 [ [[RED_1:%.*]], [[FOR_INC:%.*]] ], [ [[TMP20]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP]]
 ; CHECK:       for.cond.cleanup:
 ; CHECK-NEXT:    [[RED_0_LCSSA:%.*]] = phi i32 [ 0, [[ENTRY:%.*]] ], [ [[RED_1_LCSSA]], [[FOR_COND_CLEANUP_LOOPEXIT]] ]
@@ -208,14 +207,14 @@ define void @masked_load(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TOBOOL_NOT:%.*]] = icmp eq i64 [[AND19]], 0
 ; CHECK-NEXT:    br i1 [[TOBOOL_NOT]], label [[FOR_INC]], label [[IF_THEN:%.*]]
 ; CHECK:       if.then:
-; CHECK-NEXT:    [[TMP22:%.*]] = shl nuw nsw i64 [[INDVARS_IV]], 1
-; CHECK-NEXT:    [[TMP23:%.*]] = or disjoint i64 [[TMP22]], 1
-; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP23]]
-; CHECK-NEXT:    [[TMP24:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
-; CHECK-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP22]]
-; CHECK-NEXT:    [[TMP25:%.*]] = load i32, ptr [[ARRAYIDX3]], align 4
-; CHECK-NEXT:    [[ADD4:%.*]] = add i32 [[TMP24]], [[RED_014]]
-; CHECK-NEXT:    [[ADD5:%.*]] = add i32 [[ADD4]], [[TMP25]]
+; CHECK-NEXT:    [[TMP21:%.*]] = shl nuw nsw i64 [[INDVARS_IV]], 1
+; CHECK-NEXT:    [[TMP22:%.*]] = or disjoint i64 [[TMP21]], 1
+; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP22]]
+; CHECK-NEXT:    [[TMP23:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
+; CHECK-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP21]]
+; CHECK-NEXT:    [[TMP24:%.*]] = load i32, ptr [[ARRAYIDX3]], align 4
+; CHECK-NEXT:    [[ADD4:%.*]] = add i32 [[TMP23]], [[RED_014]]
+; CHECK-NEXT:    [[ADD5:%.*]] = add i32 [[ADD4]], [[TMP24]]
 ; CHECK-NEXT:    br label [[FOR_INC]]
 ; CHECK:       for.inc:
 ; CHECK-NEXT:    [[RED_1]] = phi i32 [ [[ADD5]], [[IF_THEN]] ], [ [[RED_014]], [[FOR_BODY]] ]

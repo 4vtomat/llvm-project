@@ -37,7 +37,6 @@ define i32 @load_factor_3(i64 %n, ptr %a) {
 ; CHECK-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP15:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
-; CHECK-NEXT:    [[TMP16:%.*]] = add i32 0, [[TMP15]]
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
@@ -60,7 +59,7 @@ define i32 @load_factor_3(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       exit:
-; CHECK-NEXT:    [[ADD11_LCSSA:%.*]] = phi i32 [ [[ADD11]], [[FOR_BODY]] ], [ [[TMP16]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[ADD11_LCSSA:%.*]] = phi i32 [ [[ADD11]], [[FOR_BODY]] ], [ [[TMP15]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret i32 [[ADD11_LCSSA]]
 ;
 entry:

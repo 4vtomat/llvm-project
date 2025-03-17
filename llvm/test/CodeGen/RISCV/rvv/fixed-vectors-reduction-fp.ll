@@ -7,12 +7,8 @@ declare half @llvm.vector.reduce.fadd.v1f16(half, <1 x half>)
 define half @vreduce_fadd_v1f16(<1 x half> %v, half %s) {
 ; CHECK-LABEL: vreduce_fadd_v1f16:
 ; CHECK:       # %bb.0:
-<<<<<<< HEAD
-; CHECK-NEXT:    flh fa5, 0(a0)
-=======
 ; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; CHECK-NEXT:    vfmv.f.s fa5, v8
->>>>>>> f09db6a
 ; CHECK-NEXT:    fadd.h fa0, fa0, fa5
 ; CHECK-NEXT:    ret
   %red = call reassoc half @llvm.vector.reduce.fadd.v1f16(half %s, <1 x half> %v)
@@ -274,12 +270,8 @@ declare float @llvm.vector.reduce.fadd.v1f32(float, <1 x float>)
 define float @vreduce_fadd_v1f32(<1 x float> %v, float %s) {
 ; CHECK-LABEL: vreduce_fadd_v1f32:
 ; CHECK:       # %bb.0:
-<<<<<<< HEAD
-; CHECK-NEXT:    flw fa5, 0(a0)
-=======
 ; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; CHECK-NEXT:    vfmv.f.s fa5, v8
->>>>>>> f09db6a
 ; CHECK-NEXT:    fadd.s fa0, fa0, fa5
 ; CHECK-NEXT:    ret
   %red = call reassoc float @llvm.vector.reduce.fadd.v1f32(float %s, <1 x float> %v)
@@ -814,12 +806,8 @@ declare double @llvm.vector.reduce.fadd.v1f64(double, <1 x double>)
 define double @vreduce_fadd_v1f64(<1 x double> %v, double %s) {
 ; CHECK-LABEL: vreduce_fadd_v1f64:
 ; CHECK:       # %bb.0:
-<<<<<<< HEAD
-; CHECK-NEXT:    fld fa5, 0(a0)
-=======
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vfmv.f.s fa5, v8
->>>>>>> f09db6a
 ; CHECK-NEXT:    fadd.d fa0, fa0, fa5
 ; CHECK-NEXT:    ret
   %red = call reassoc double @llvm.vector.reduce.fadd.v1f64(double %s, <1 x double> %v)

@@ -19,23 +19,13 @@ define <2 x half> @vfdiv_vv_v2f16(<2 x half> %va, <2 x half> %b, <2 x i1> %m, i3
 ;
 ; ZVFHMIN-LABEL: vfdiv_vv_v2f16:
 ; ZVFHMIN:       # %bb.0:
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v9
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v8, v9, v10, v0.t
-; ZVFHMIN-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
-=======
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v9, v0.t
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8, v0.t
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v9, v9, v10, v0.t
+; ZVFHMIN-NEXT:    vfdiv.vv v8, v9, v10, v0.t
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v9, v0.t
->>>>>>> f09db6a
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8, v0.t
 ; ZVFHMIN-NEXT:    ret
   %v = call <2 x half> @llvm.vp.fdiv.v2f16(<2 x half> %va, <2 x half> %b, <2 x i1> %m, i32 %evl)
   ret <2 x half> %v
@@ -53,17 +43,10 @@ define <2 x half> @vfdiv_vv_v2f16_unmasked(<2 x half> %va, <2 x half> %b, i32 ze
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v9
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v8, v9, v10
-; ZVFHMIN-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
-=======
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v9, v9, v10
+; ZVFHMIN-NEXT:    vfdiv.vv v8, v9, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v9
->>>>>>> f09db6a
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
   %v = call <2 x half> @llvm.vp.fdiv.v2f16(<2 x half> %va, <2 x half> %b, <2 x i1> splat (i1 true), i32 %evl)
   ret <2 x half> %v
@@ -81,22 +64,13 @@ define <2 x half> @vfdiv_vf_v2f16(<2 x half> %va, half %b, <2 x i1> %m, i32 zero
 ; ZVFHMIN-NEXT:    fmv.x.h a1, fa0
 ; ZVFHMIN-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
 ; ZVFHMIN-NEXT:    vmv.v.x v9, a1
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
-; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v8, v10, v8, v0.t
-; ZVFHMIN-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
-=======
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8, v0.t
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9, v0.t
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v9, v10, v8, v0.t
+; ZVFHMIN-NEXT:    vfdiv.vv v8, v10, v8, v0.t
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v9, v0.t
->>>>>>> f09db6a
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8, v0.t
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <2 x half> poison, half %b, i32 0
   %vb = shufflevector <2 x half> %elt.head, <2 x half> poison, <2 x i32> zeroinitializer
@@ -119,17 +93,10 @@ define <2 x half> @vfdiv_vf_v2f16_unmasked(<2 x half> %va, half %b, i32 zeroext 
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v8, v10, v8
-; ZVFHMIN-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
-=======
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v9, v10, v8
+; ZVFHMIN-NEXT:    vfdiv.vv v8, v10, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v9
->>>>>>> f09db6a
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <2 x half> poison, half %b, i32 0
   %vb = shufflevector <2 x half> %elt.head, <2 x half> poison, <2 x i32> zeroinitializer
@@ -148,23 +115,13 @@ define <3 x half> @vfdiv_vv_v3f16(<3 x half> %va, <3 x half> %b, <3 x i1> %m, i3
 ;
 ; ZVFHMIN-LABEL: vfdiv_vv_v3f16:
 ; ZVFHMIN:       # %bb.0:
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v9
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v8, v9, v10, v0.t
-; ZVFHMIN-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
-=======
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v9, v0.t
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8, v0.t
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v9, v9, v10, v0.t
+; ZVFHMIN-NEXT:    vfdiv.vv v8, v9, v10, v0.t
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v9, v0.t
->>>>>>> f09db6a
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8, v0.t
 ; ZVFHMIN-NEXT:    ret
   %v = call <3 x half> @llvm.vp.fdiv.v3f16(<3 x half> %va, <3 x half> %b, <3 x i1> %m, i32 %evl)
   ret <3 x half> %v
@@ -181,23 +138,13 @@ define <4 x half> @vfdiv_vv_v4f16(<4 x half> %va, <4 x half> %b, <4 x i1> %m, i3
 ;
 ; ZVFHMIN-LABEL: vfdiv_vv_v4f16:
 ; ZVFHMIN:       # %bb.0:
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v9
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v8, v9, v10, v0.t
-; ZVFHMIN-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
-=======
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v9, v0.t
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8, v0.t
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v9, v9, v10, v0.t
+; ZVFHMIN-NEXT:    vfdiv.vv v8, v9, v10, v0.t
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v9, v0.t
->>>>>>> f09db6a
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8, v0.t
 ; ZVFHMIN-NEXT:    ret
   %v = call <4 x half> @llvm.vp.fdiv.v4f16(<4 x half> %va, <4 x half> %b, <4 x i1> %m, i32 %evl)
   ret <4 x half> %v
@@ -215,17 +162,10 @@ define <4 x half> @vfdiv_vv_v4f16_unmasked(<4 x half> %va, <4 x half> %b, i32 ze
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v9
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v8, v9, v10
-; ZVFHMIN-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
-=======
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v9, v9, v10
+; ZVFHMIN-NEXT:    vfdiv.vv v8, v9, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v9
->>>>>>> f09db6a
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
   %v = call <4 x half> @llvm.vp.fdiv.v4f16(<4 x half> %va, <4 x half> %b, <4 x i1> splat (i1 true), i32 %evl)
   ret <4 x half> %v
@@ -243,22 +183,13 @@ define <4 x half> @vfdiv_vf_v4f16(<4 x half> %va, half %b, <4 x i1> %m, i32 zero
 ; ZVFHMIN-NEXT:    fmv.x.h a1, fa0
 ; ZVFHMIN-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; ZVFHMIN-NEXT:    vmv.v.x v9, a1
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
-; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v8, v10, v8, v0.t
-; ZVFHMIN-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
-=======
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8, v0.t
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9, v0.t
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v9, v10, v8, v0.t
+; ZVFHMIN-NEXT:    vfdiv.vv v8, v10, v8, v0.t
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v9, v0.t
->>>>>>> f09db6a
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8, v0.t
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <4 x half> poison, half %b, i32 0
   %vb = shufflevector <4 x half> %elt.head, <4 x half> poison, <4 x i32> zeroinitializer
@@ -281,17 +212,10 @@ define <4 x half> @vfdiv_vf_v4f16_unmasked(<4 x half> %va, half %b, i32 zeroext 
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v8, v10, v8
-; ZVFHMIN-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
-=======
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v9, v10, v8
+; ZVFHMIN-NEXT:    vfdiv.vv v8, v10, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v9
->>>>>>> f09db6a
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <4 x half> poison, half %b, i32 0
   %vb = shufflevector <4 x half> %elt.head, <4 x half> poison, <4 x i32> zeroinitializer
@@ -310,23 +234,13 @@ define <8 x half> @vfdiv_vv_v8f16(<8 x half> %va, <8 x half> %b, <8 x i1> %m, i3
 ;
 ; ZVFHMIN-LABEL: vfdiv_vv_v8f16:
 ; ZVFHMIN:       # %bb.0:
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v9
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
-; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v8, v12, v10, v0.t
-; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
-=======
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v9, v0.t
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8, v0.t
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v10, v12, v10, v0.t
+; ZVFHMIN-NEXT:    vfdiv.vv v8, v12, v10, v0.t
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v10, v0.t
->>>>>>> f09db6a
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8, v0.t
 ; ZVFHMIN-NEXT:    ret
   %v = call <8 x half> @llvm.vp.fdiv.v8f16(<8 x half> %va, <8 x half> %b, <8 x i1> %m, i32 %evl)
   ret <8 x half> %v
@@ -344,17 +258,10 @@ define <8 x half> @vfdiv_vv_v8f16_unmasked(<8 x half> %va, <8 x half> %b, i32 ze
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v9
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v8, v12, v10
-; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
-=======
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v10, v12, v10
+; ZVFHMIN-NEXT:    vfdiv.vv v8, v12, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v10
->>>>>>> f09db6a
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
   %v = call <8 x half> @llvm.vp.fdiv.v8f16(<8 x half> %va, <8 x half> %b, <8 x i1> splat (i1 true), i32 %evl)
   ret <8 x half> %v
@@ -372,22 +279,13 @@ define <8 x half> @vfdiv_vf_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i32 zero
 ; ZVFHMIN-NEXT:    fmv.x.h a1, fa0
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vmv.v.x v9, a1
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
-; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v8, v10, v8, v0.t
-; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
-=======
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8, v0.t
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9, v0.t
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9, v0.t
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v10, v10, v12, v0.t
+; ZVFHMIN-NEXT:    vfdiv.vv v8, v10, v8, v0.t
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v10, v0.t
->>>>>>> f09db6a
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8, v0.t
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
   %vb = shufflevector <8 x half> %elt.head, <8 x half> poison, <8 x i32> zeroinitializer
@@ -409,19 +307,11 @@ define <8 x half> @vfdiv_vf_v8f16_unmasked(<8 x half> %va, half %b, i32 zeroext 
 ; ZVFHMIN-NEXT:    vmv.v.x v9, a1
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-<<<<<<< HEAD
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
-; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v8, v10, v8
-; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
-=======
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v10, v10, v12
+; ZVFHMIN-NEXT:    vfdiv.vv v8, v10, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v10
->>>>>>> f09db6a
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
   %vb = shufflevector <8 x half> %elt.head, <8 x half> poison, <8 x i32> zeroinitializer
@@ -440,23 +330,13 @@ define <16 x half> @vfdiv_vv_v16f16(<16 x half> %va, <16 x half> %b, <16 x i1> %
 ;
 ; ZVFHMIN-LABEL: vfdiv_vv_v16f16:
 ; ZVFHMIN:       # %bb.0:
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v10
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v16, v8
-; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v8, v16, v12, v0.t
-; ZVFHMIN-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
-=======
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v10, v0.t
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v16, v8, v0.t
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v12, v16, v12, v0.t
+; ZVFHMIN-NEXT:    vfdiv.vv v8, v16, v12, v0.t
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v12, v0.t
->>>>>>> f09db6a
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8, v0.t
 ; ZVFHMIN-NEXT:    ret
   %v = call <16 x half> @llvm.vp.fdiv.v16f16(<16 x half> %va, <16 x half> %b, <16 x i1> %m, i32 %evl)
   ret <16 x half> %v
@@ -474,17 +354,10 @@ define <16 x half> @vfdiv_vv_v16f16_unmasked(<16 x half> %va, <16 x half> %b, i3
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v10
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v16, v8
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v8, v16, v12
-; ZVFHMIN-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
-=======
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v12, v16, v12
+; ZVFHMIN-NEXT:    vfdiv.vv v8, v16, v12
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v12
->>>>>>> f09db6a
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
   %v = call <16 x half> @llvm.vp.fdiv.v16f16(<16 x half> %va, <16 x half> %b, <16 x i1> splat (i1 true), i32 %evl)
   ret <16 x half> %v
@@ -502,22 +375,13 @@ define <16 x half> @vfdiv_vf_v16f16(<16 x half> %va, half %b, <16 x i1> %m, i32 
 ; ZVFHMIN-NEXT:    fmv.x.h a1, fa0
 ; ZVFHMIN-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
 ; ZVFHMIN-NEXT:    vmv.v.x v10, a1
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
-; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v8, v12, v8, v0.t
-; ZVFHMIN-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
-=======
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8, v0.t
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v16, v10, v0.t
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10, v0.t
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v12, v12, v16, v0.t
+; ZVFHMIN-NEXT:    vfdiv.vv v8, v12, v8, v0.t
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v12, v0.t
->>>>>>> f09db6a
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8, v0.t
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <16 x half> poison, half %b, i32 0
   %vb = shufflevector <16 x half> %elt.head, <16 x half> poison, <16 x i32> zeroinitializer
@@ -539,19 +403,11 @@ define <16 x half> @vfdiv_vf_v16f16_unmasked(<16 x half> %va, half %b, i32 zeroe
 ; ZVFHMIN-NEXT:    vmv.v.x v10, a1
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
-<<<<<<< HEAD
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
-; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v8, v12, v8
-; ZVFHMIN-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
-=======
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v16, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v12, v12, v16
+; ZVFHMIN-NEXT:    vfdiv.vv v8, v12, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v12
->>>>>>> f09db6a
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <16 x half> poison, half %b, i32 0
   %vb = shufflevector <16 x half> %elt.head, <16 x half> poison, <16 x i32> zeroinitializer
