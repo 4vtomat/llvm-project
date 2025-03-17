@@ -10999,22 +10999,12 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
           Legal->getReductionVars().find(Phi)->second;
       assert(RdxDesc.getRecurrenceStartValue() ==
              Phi->getIncomingValueForBlock(OrigLoop->getLoopPreheader()));
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       PhiRecipe = new VPReductionPHIRecipe(
           Phi, RdxDesc, *StartV, CM.isInLoopReduction(Phi),
           CM.useOrderedReductions(RdxDesc),
           CM.postFixStartValue(RdxDesc, Phi));
 #else
-      PhiRecipe = new VPReductionPHIRecipe(Phi, RdxDesc, *StartV,
-                                           CM.isInLoopReduction(Phi),
-                                           CM.useOrderedReductions(RdxDesc));
-#endif // SIFIVE_CUSTOMIZATION
-#if SIFIVE_CUSTOMIZATION
-    } else if (Legal->isFixedOrderRecurrence(Phi)) {
-#else
-=======
-
       // If the PHI is used by a partial reduction, set the scale factor.
       std::optional<std::pair<PartialReductionChain, unsigned>> Pair =
           getScaledReductionForInstr(RdxDesc.getLoopExitInstr());
@@ -11022,7 +11012,10 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
       PhiRecipe = new VPReductionPHIRecipe(
           Phi, RdxDesc, *StartV, CM.isInLoopReduction(Phi),
           CM.useOrderedReductions(RdxDesc), ScaleFactor);
->>>>>>> f09db6a
+#endif // SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
+    } else if (Legal->isFixedOrderRecurrence(Phi)) {
+#else
     } else {
 #endif // SIFIVE_CUSTOMIZATION
       // TODO: Currently fixed-order recurrences are modeled as chains of
