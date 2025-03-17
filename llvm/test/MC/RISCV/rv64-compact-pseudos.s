@@ -1,7 +1,9 @@
-# RUN: llvm-mc %s -triple=riscv64 -mattr=+d,+zfhmin \
+# RUN: llvm-mc %s -triple=riscv64 -mattr=+d,+zfhmin 2>&1 \
 # RUN:     | FileCheck %s --check-prefixes=CHECK
 
 # Set pseudo gp to gp if it isn't set.
+
+# CHECK: warning: compact code model pseudoinstructions are deprecated
 
 # CHECK: lui a0, %gprel_hi(foo)
 # CHECK: add a0, gp, a0, %gprel(foo)
