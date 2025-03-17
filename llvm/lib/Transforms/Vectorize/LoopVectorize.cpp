@@ -10999,18 +10999,16 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
           Legal->getReductionVars().find(Phi)->second;
       assert(RdxDesc.getRecurrenceStartValue() ==
              Phi->getIncomingValueForBlock(OrigLoop->getLoopPreheader()));
-#if SIFIVE_CUSTOMIZATION
-      PhiRecipe = new VPReductionPHIRecipe(
-          Phi, RdxDesc, *StartV, CM.isInLoopReduction(Phi),
-          CM.useOrderedReductions(RdxDesc),
-          CM.postFixStartValue(RdxDesc, Phi));
-#else
       // If the PHI is used by a partial reduction, set the scale factor.
       std::optional<std::pair<PartialReductionChain, unsigned>> Pair =
           getScaledReductionForInstr(RdxDesc.getLoopExitInstr());
       unsigned ScaleFactor = Pair ? Pair->second : 1;
       PhiRecipe = new VPReductionPHIRecipe(
           Phi, RdxDesc, *StartV, CM.isInLoopReduction(Phi),
+#if SIFIVE_CUSTOMIZATION
+          CM.useOrderedReductions(RdxDesc), ScaleFactor,
+          CM.postFixStartValue(RdxDesc, Phi));
+#else
           CM.useOrderedReductions(RdxDesc), ScaleFactor);
 #endif // SIFIVE_CUSTOMIZATION
 #if SIFIVE_CUSTOMIZATION
