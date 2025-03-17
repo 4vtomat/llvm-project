@@ -4883,16 +4883,12 @@ void VPReductionPHIRecipe::execute(VPTransformState &State) {
         // Create start and identity vector values for the reduction in the
         // preheader.
         // TODO: Introduce recipes in VPlan preheader to create initial values.
-<<<<<<< HEAD
-        Iden = Builder.CreateVectorSplat(State.VF, Iden);
+        Iden = Builder.CreateVectorSplat(VF, Iden);
 #if SIFIVE_CUSTOMIZATION
         if (PostSV) {
         StartV = Iden;
         } else {
 #endif // SIFIVE_CUSTOMIZATION
-=======
-        Iden = Builder.CreateVectorSplat(VF, Iden);
->>>>>>> f09db6a
         IRBuilderBase::InsertPointGuard IPBuilder(Builder);
         Builder.SetInsertPoint(VectorPH->getTerminator());
         Constant *Zero = Builder.getInt32(0);
