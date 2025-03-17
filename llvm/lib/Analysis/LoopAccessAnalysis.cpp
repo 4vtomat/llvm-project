@@ -1956,6 +1956,7 @@ MemoryDepChecker::getDependenceDistanceStrideAndSize(
   if (StrideAPtr && *StrideAPtr < 0) {
     std::swap(Src, Sink);
     std::swap(AInst, BInst);
+    std::swap(ATy, BTy);
     std::swap(StrideAPtr, StrideBPtr);
   }
 

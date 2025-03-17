@@ -252,10 +252,10 @@ Type *VPTypeAnalysis::inferScalarType(const VPValue *V) {
                 VPCSADataUpdateRecipe, VPCSAExtractScalarRecipe,
 #endif // SIFIVE_CUSTOMIZATION
                 VPScalarIVStepsRecipe, VPWidenGEPRecipe, VPVectorPointerRecipe,
-                VPReverseVectorPointerRecipe, VPWidenCanonicalIVRecipe>(
-              [this](const VPRecipeBase *R) {
-                return inferScalarType(R->getOperand(0));
-              })
+                VPReverseVectorPointerRecipe, VPWidenCanonicalIVRecipe,
+                VPPartialReductionRecipe>([this](const VPRecipeBase *R) {
+            return inferScalarType(R->getOperand(0));
+          })
           .Case<VPBlendRecipe, VPInstruction, VPWidenRecipe, VPWidenEVLRecipe,
                 VPReplicateRecipe, VPWidenCallRecipe, VPWidenMemoryRecipe,
                 VPWidenSelectRecipe>(

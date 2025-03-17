@@ -2929,7 +2929,7 @@ void ARMFrameLowering::determineCalleeSaves(MachineFunction &MF,
         unsigned Size = TRI->getSpillSize(RC);
         Align Alignment = TRI->getSpillAlign(RC);
         RS->addScavengingFrameIndex(
-            MFI.CreateStackObject(Size, Alignment, false));
+            MFI.CreateSpillStackObject(Size, Alignment));
         --RegsNeeded;
       }
     }
