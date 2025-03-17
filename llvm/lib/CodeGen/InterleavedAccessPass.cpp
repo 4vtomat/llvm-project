@@ -563,8 +563,7 @@ bool InterleavedAccessImpl::lowerInterleavedStore(
 }
 
 bool InterleavedAccessImpl::lowerDeinterleaveIntrinsic(
-<<<<<<< HEAD
-    IntrinsicInst *DI, SmallVectorImpl<Instruction *> &DeadInsts) {
+    IntrinsicInst *DI, SmallSetVector<Instruction *, 32> &DeadInsts) {
 #if SIFIVE_CUSTOMIZATION
   unsigned Factor = getFactorFromVectorDeInterleaveIntrinsic(DI);
   if (Factor == 0) {
@@ -589,8 +588,8 @@ bool InterleavedAccessImpl::lowerDeinterleaveIntrinsic(
     if (!TLI->lowerInterleavedScalableLoad(VPLoad, *Mask, DI, Factor))
       return false;
 
-    DeadInsts.push_back(DI);
-    DeadInsts.push_back(VPLoad);
+    DeadInsts.insert(DI);
+    DeadInsts.insert(VPLoad);
     return true;
   }
 
@@ -632,18 +631,15 @@ bool InterleavedAccessImpl::lowerDeinterleaveIntrinsic(
                                                         Factor))
         return false;
 
-      DeadInsts.push_back(DI);
+      DeadInsts.insert(DI);
       if (IntToPtrCast)
-        DeadInsts.push_back(IntToPtrCast);
-      DeadInsts.push_back(BitCast);
-      DeadInsts.push_back(VPStridedLoad);
+        DeadInsts.insert(IntToPtrCast);
+      DeadInsts.insert(BitCast);
+      DeadInsts.insert(VPStridedLoad);
       return true;
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    IntrinsicInst *DI, SmallSetVector<Instruction *, 32> &DeadInsts) {
->>>>>>> f09db6a
   LoadInst *LI = dyn_cast<LoadInst>(DI->getOperand(0));
 
   if (!LI || !LI->hasOneUse() || !LI->isSimple())
@@ -691,8 +687,8 @@ bool InterleavedAccessImpl::lowerInterleaveIntrinsic(
     if (!TLI->lowerInterleavedScalableStore(VPStore, *Mask, II, Factor))
       return false;
 
-    DeadInsts.push_back(VPStore);
-    DeadInsts.push_back(II);
+    DeadInsts.insert(VPStore);
+    DeadInsts.insert(II);
     return true;
   }
 #endif
