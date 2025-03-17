@@ -11111,7 +11111,6 @@ ScalarEvolution::evaluatePredicateAt(CmpPredicate Pred, const SCEV *LHS,
   return std::nullopt;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 std::optional<bool>
 ScalarEvolution::evaluateAsLikeLatch(ICmpInst::Predicate Pred, const Value *LHS,
@@ -11170,10 +11169,10 @@ ScalarEvolution::evaluateAsLikeLatch(ICmpInst::Predicate Pred, const Value *LHS,
           Value *X, *Y;
           if (match(LatchRHS, m_ZExt(m_Value(X)))) {
             if (match(RHS, m_SExt(m_Value(Y))) && (X == Y))
-              if (ICmpInst::isImpliedTrueByMatchingCmp(Pred, Pred2))
+              if (ICmpInst::isImpliedByMatchingCmp(Pred, Pred2))
                 return true;
           } else if (match(LatchRHS, m_Sub(m_Value(X), m_One())) && X == RHS) {
-            if (ICmpInst::isImpliedTrueByMatchingCmp(Pred, Pred2))
+            if (ICmpInst::isImpliedByMatchingCmp(Pred, Pred2))
               return true;
           }
         }
@@ -11184,10 +11183,7 @@ ScalarEvolution::evaluateAsLikeLatch(ICmpInst::Predicate Pred, const Value *LHS,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-bool ScalarEvolution::isKnownOnEveryIteration(ICmpInst::Predicate Pred,
-=======
 bool ScalarEvolution::isKnownOnEveryIteration(CmpPredicate Pred,
->>>>>>> f09db6a
                                               const SCEVAddRecExpr *LHS,
                                               const SCEV *RHS) {
   const Loop *L = LHS->getLoop();
