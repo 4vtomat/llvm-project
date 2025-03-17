@@ -178,7 +178,6 @@
 // CHECK-NEXT:     xsfmm32a4i           0.6       'XSfmm32a4i' ((TEW=32-bit accumulation) operands - int: 4b (packed))
 // CHECK-NEXT:     xsfmm32a8f           0.6       'XSfmm32a8f' ((TEW=32-bit accumulation) operands - float: fp8)
 // CHECK-NEXT:     xsfmm32a8i           0.6       'XSfmm32a8i' ((TEW=32-bit accumulation) operands - int: 8b)
-// CHECK-NEXT:     xsfmm32ea            0.6       'XSfmm32ea' ((TEW=32-bit accumulation) instructions: sf.vset*, sf.vtmv*, sf.mm.f.f (SEW=32), sf.vtzero)
 // CHECK-NEXT:     xsfmm32t             0.6       'XSfmm32t' (TE=32 configuration)
 // CHECK-NEXT:     xsfmm64a64f          0.6       'XSfmm64a64f' ((TEW=64-bit accumulation) operands - float: fp64)
 // CHECK-NEXT:     xsfmm64t             0.6       'XSfmm64t' (TE=64 configuration)

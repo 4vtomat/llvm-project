@@ -1328,13 +1328,13 @@ class RVInstVtDiscard<string opcodestr>
   let Inst{6-0} = OPC_OP_V.Value;
 }
 
-let Predicates = [HasVendorXSfmm32eaOrXSfmmbase] in
+let Predicates = [HasVendorXSfmmbase] in
 def : InstAlias<"sf.vsettnt $rd, $rs1, $vtypei",
                 (VSETVLI GPR:$rd, GPR:$rs1, XSfmmVTypeOp:$vtypei)>;
 
 let DecoderNamespace = "XSfmm" in {
 
-let Predicates = [HasVendorXSfmm32eaOrXSfmmbase] in {
+let Predicates = [HasVendorXSfmmbase] in {
   def SF_VSETTN : RVInstSetSingle<(outs GPR:$rd), (ins GPR:$rs1), 0b00000,
                                   "sf.vsettn", "$rd, $rs1">;
   def SF_VSETTM : RVInstSetSingle<(outs GPR:$rd), (ins GPR:$rs1), 0b00001,
@@ -1353,7 +1353,7 @@ let Predicates = [HasVendorXSfmm32eaOrXSfmmbase] in {
   }
 
   def SF_VTZERO_T : RVInstSetZero<(outs), (ins TR:$rd), "sf.vtzero.t", "$rd">;
-} // Predicates = [HasVendorXSfmm32eaOrXSfmmbase]
+} // Predicates = [HasVendorXSfmmbase]
 
 let Predicates = [HasVendorXSfmmbase] in {
   def SF_VLTE8  : RVInstTileLoad<0b000, "sf.vlte8">;
@@ -1367,11 +1367,11 @@ let Predicates = [HasVendorXSfmmbase] in {
   def SF_VSTE64 : RVInstTileStore<0b011, "sf.vste64">;
 } // Predicates = [HasVendorXSfmmbase]
 
-let Predicates = [HasVendorXSfmm32eaOrXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f] in {
+let Predicates = [HasVendorXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f] in {
   let Uses = [FRM], mayRaiseFPException = true in
   def SF_MM_F_F   : RVInstMatmulF<(outs), (ins TRM2:$rd, VR:$vs2, VR:$vs1),
                                   "sf.mm.f.f", "$rd, $vs2, $vs1">;
-} // Predicates = [HasVendorXSfmm32eaOrXSfmm32a16fOrXSfmm64a32fOrXSfmm64a64f]
+} // Predicates = [HasVendorXSfmm32a16fOrXSfmm64a32fOrXSfmm64a64f]
 
 let Predicates = [HasVendorXSfmm32a8i] in {
   foreach a = I8Encodes in
