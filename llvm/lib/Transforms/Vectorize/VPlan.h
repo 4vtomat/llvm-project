@@ -1056,15 +1056,12 @@ public:
     case VPRecipeBase::VPWidenPointerInductionSC:
     case VPRecipeBase::VPReductionPHISC:
     case VPRecipeBase::VPScalarCastSC:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     case VPRecipeBase::VPCSADataUpdateSC:
     case VPRecipeBase::VPCSAExtractScalarSC:
     case VPRecipeBase::VPMonotonicUpdateSC:
 #endif
-=======
     case VPRecipeBase::VPPartialReductionSC:
->>>>>>> f09db6a
       return true;
     case VPRecipeBase::VPBranchOnMaskSC:
 #if SIFIVE_CUSTOMIZATION
@@ -2750,41 +2747,36 @@ class VPReductionPHIRecipe : public VPHeaderPHIRecipe,
   /// The phi is part of an ordered reduction. Requires IsInLoop to be true.
   bool IsOrdered;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// Postpone the operation of start value into postexit. Require IsInLoop
   /// and IsOrdered to be false.
   bool PostFixStartValue;
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   /// When expanding the reduction PHI, the plan's VF element count is divided
   /// by this factor to form the reduction phi's VF.
   unsigned VFScaleFactor = 1;
->>>>>>> f09db6a
 
 public:
   /// Create a new VPReductionPHIRecipe for the reduction \p Phi described by \p
   /// RdxDesc.
   VPReductionPHIRecipe(PHINode *Phi, const RecurrenceDescriptor &RdxDesc,
                        VPValue &Start, bool IsInLoop = false,
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
                        bool IsOrdered = false,
+                       unsigned VFScaleFactor = 1,
                        bool PostFixStartValue = false)
       : VPHeaderPHIRecipe(VPReductionPHISC, Phi, &Start), RdxDesc(RdxDesc),
         IsInLoop(IsInLoop), IsOrdered(IsOrdered),
-        PostFixStartValue(PostFixStartValue) {
+        PostFixStartValue(PostFixStartValue),
+        VFScaleFactor(VFScaleFactor) {
 #else
-                       bool IsOrdered = false)
-      : VPHeaderPHIRecipe(VPDef::VPReductionPHISC, Phi, &Start),
-        RdxDesc(RdxDesc), IsInLoop(IsInLoop), IsOrdered(IsOrdered) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
-                       bool IsOrdered = false, unsigned VFScaleFactor = 1)
+                       bool IsOrdered = false,
+                       unsigned VFScaleFactor = 1)
       : VPHeaderPHIRecipe(VPDef::VPReductionPHISC, Phi, &Start),
         RdxDesc(RdxDesc), IsInLoop(IsInLoop), IsOrdered(IsOrdered),
         VFScaleFactor(VFScaleFactor) {
->>>>>>> f09db6a
+#endif // SIFIVE_CUSTOMIZATION
     assert((!IsOrdered || IsInLoop) && "IsOrdered requires IsInLoop");
 #if SIFIVE_CUSTOMIZATION
     assert((!PostFixStartValue || !IsOrdered || !IsInLoop) &&
