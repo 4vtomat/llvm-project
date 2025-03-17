@@ -39,11 +39,12 @@ define i32 @foo(i32 %n, ptr %a) {
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    br i1 [[TMP9]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-HAS-PROF-RTCHECK:       middle.block:
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP10:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP11:%.*]] = add i32 0, [[TMP10]]
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK-HAS-PROF-RTCHECK:       scalar.ph:
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-HAS-PROF-RTCHECK:       for.cond.cleanup.loopexit:
-; CHECK-HAS-PROF-RTCHECK-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[ADD:%.*]], [[FOR_BODY]] ], [ [[TMP10]], [[MIDDLE_BLOCK]] ]
+; CHECK-HAS-PROF-RTCHECK-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[ADD:%.*]], [[FOR_BODY]] ], [ [[TMP11]], [[MIDDLE_BLOCK]] ]
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    br label [[FOR_COND_CLEANUP]]
 ; CHECK-HAS-PROF-RTCHECK:       for.cond.cleanup:
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[SUM_0_LCSSA:%.*]] = phi i32 [ 0, [[ENTRY:%.*]] ], [ [[ADD_LCSSA]], [[FOR_COND_CLEANUP_LOOPEXIT]] ]
@@ -88,11 +89,12 @@ define i32 @foo(i32 %n, ptr %a) {
 ; CHECK-NO-PROF-RTCHECK-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-NO-PROF-RTCHECK:       middle.block:
 ; CHECK-NO-PROF-RTCHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
+; CHECK-NO-PROF-RTCHECK-NEXT:    [[TMP10:%.*]] = add i32 0, [[TMP9]]
 ; CHECK-NO-PROF-RTCHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK-NO-PROF-RTCHECK:       scalar.ph:
 ; CHECK-NO-PROF-RTCHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-NO-PROF-RTCHECK:       for.cond.cleanup.loopexit:
-; CHECK-NO-PROF-RTCHECK-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[ADD:%.*]], [[FOR_BODY]] ], [ [[TMP9]], [[MIDDLE_BLOCK]] ]
+; CHECK-NO-PROF-RTCHECK-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[ADD:%.*]], [[FOR_BODY]] ], [ [[TMP10]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NO-PROF-RTCHECK-NEXT:    br label [[FOR_COND_CLEANUP]]
 ; CHECK-NO-PROF-RTCHECK:       for.cond.cleanup:
 ; CHECK-NO-PROF-RTCHECK-NEXT:    [[SUM_0_LCSSA:%.*]] = phi i32 [ 0, [[ENTRY:%.*]] ], [ [[ADD_LCSSA]], [[FOR_COND_CLEANUP_LOOPEXIT]] ]

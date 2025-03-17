@@ -63,6 +63,7 @@ define i32 @non_const_strided_masked_1(i64 %n, ptr %a, ptr %cond, i64 %stride) {
 ; CHECK-NEXT:    br i1 [[TMP19]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP20:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
+; CHECK-NEXT:    [[TMP21:%.*]] = add i32 0, [[TMP20]]
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ false, [[VECTOR_SCEVCHECK]] ]
@@ -107,6 +108,7 @@ define i32 @non_const_strided_masked_1(i64 %n, ptr %a, ptr %cond, i64 %stride) {
 ; CHECK-NEXT:    br i1 [[TMP40]], label [[MIDDLE_BLOCK9:%.*]], label [[VECTOR_BODY13]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       middle.block9:
 ; CHECK-NEXT:    [[TMP38:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE26]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP22]])
+; CHECK-NEXT:    [[TMP41:%.*]] = add i32 0, [[TMP38]]
 ; CHECK-NEXT:    br label [[EXIT]]
 ; CHECK:       scalar.ph10:
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
@@ -141,7 +143,7 @@ define i32 @non_const_strided_masked_1(i64 %n, ptr %a, ptr %cond, i64 %stride) {
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       exit:
-; CHECK-NEXT:    [[RED_1_LCSSA:%.*]] = phi i32 [ [[RED_1]], [[FOR_INC]] ], [ [[TMP20]], [[MIDDLE_BLOCK]] ], [ [[TMP38]], [[MIDDLE_BLOCK9]] ]
+; CHECK-NEXT:    [[RED_1_LCSSA:%.*]] = phi i32 [ [[RED_1]], [[FOR_INC]] ], [ [[TMP21]], [[MIDDLE_BLOCK]] ], [ [[TMP41]], [[MIDDLE_BLOCK9]] ]
 ; CHECK-NEXT:    ret i32 [[RED_1_LCSSA]]
 ;
 
@@ -242,6 +244,7 @@ define i32 @non_const_strided_masked_2(i64 %n, ptr %a, ptr %cond, i64 %stride) {
 ; CHECK-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP17:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
+; CHECK-NEXT:    [[TMP18:%.*]] = add i32 0, [[TMP17]]
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ false, [[VECTOR_SCEVCHECK]] ]
@@ -286,6 +289,7 @@ define i32 @non_const_strided_masked_2(i64 %n, ptr %a, ptr %cond, i64 %stride) {
 ; CHECK-NEXT:    br i1 [[TMP37]], label [[MIDDLE_BLOCK7:%.*]], label [[VECTOR_BODY11]], !llvm.loop [[LOOP6:![0-9]+]]
 ; CHECK:       middle.block7:
 ; CHECK-NEXT:    [[TMP35:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE23]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP19]])
+; CHECK-NEXT:    [[TMP38:%.*]] = add i32 0, [[TMP35]]
 ; CHECK-NEXT:    br label [[EXIT]]
 ; CHECK:       scalar.ph8:
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
@@ -317,7 +321,7 @@ define i32 @non_const_strided_masked_2(i64 %n, ptr %a, ptr %cond, i64 %stride) {
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
 ; CHECK:       exit:
-; CHECK-NEXT:    [[ADD13_LCSSA:%.*]] = phi i32 [ [[ADD13]], [[IF_END]] ], [ [[TMP17]], [[MIDDLE_BLOCK]] ], [ [[TMP35]], [[MIDDLE_BLOCK7]] ]
+; CHECK-NEXT:    [[ADD13_LCSSA:%.*]] = phi i32 [ [[ADD13]], [[IF_END]] ], [ [[TMP18]], [[MIDDLE_BLOCK]] ], [ [[TMP38]], [[MIDDLE_BLOCK7]] ]
 ; CHECK-NEXT:    ret i32 [[ADD13_LCSSA]]
 ;
 
@@ -420,6 +424,7 @@ define i32 @non_const_strided_masked_2_non_power_of_two(i64 %n, ptr %a, ptr %con
 ; CHECK-NEXT:    br i1 [[TMP19]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP20:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
+; CHECK-NEXT:    [[TMP21:%.*]] = add i32 0, [[TMP20]]
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ false, [[VECTOR_SCEVCHECK]] ]
@@ -466,6 +471,7 @@ define i32 @non_const_strided_masked_2_non_power_of_two(i64 %n, ptr %a, ptr %con
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[MIDDLE_BLOCK9:%.*]], label [[VECTOR_BODY13]], !llvm.loop [[LOOP9:![0-9]+]]
 ; CHECK:       middle.block9:
 ; CHECK-NEXT:    [[TMP39:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE26]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP22]])
+; CHECK-NEXT:    [[TMP42:%.*]] = add i32 0, [[TMP39]]
 ; CHECK-NEXT:    br label [[EXIT]]
 ; CHECK:       scalar.ph10:
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
@@ -501,7 +507,7 @@ define i32 @non_const_strided_masked_2_non_power_of_two(i64 %n, ptr %a, ptr %con
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
 ; CHECK:       exit:
-; CHECK-NEXT:    [[ADD18_LCSSA:%.*]] = phi i32 [ [[ADD18]], [[IF_END]] ], [ [[TMP20]], [[MIDDLE_BLOCK]] ], [ [[TMP39]], [[MIDDLE_BLOCK9]] ]
+; CHECK-NEXT:    [[ADD18_LCSSA:%.*]] = phi i32 [ [[ADD18]], [[IF_END]] ], [ [[TMP21]], [[MIDDLE_BLOCK]] ], [ [[TMP42]], [[MIDDLE_BLOCK9]] ]
 ; CHECK-NEXT:    ret i32 [[ADD18_LCSSA]]
 ;
 
@@ -612,6 +618,7 @@ define i32 @non_const_strided_masked_3(i64 %n, ptr %a, ptr %cond1, ptr %cond2, i
 ; CHECK-NEXT:    br i1 [[TMP18]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP11:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP19:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
+; CHECK-NEXT:    [[TMP20:%.*]] = add i32 0, [[TMP19]]
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ false, [[VECTOR_SCEVCHECK]] ]
@@ -665,6 +672,7 @@ define i32 @non_const_strided_masked_3(i64 %n, ptr %a, ptr %cond1, ptr %cond2, i
 ; CHECK-NEXT:    br i1 [[TMP54]], label [[MIDDLE_BLOCK12:%.*]], label [[VECTOR_BODY17]], !llvm.loop [[LOOP12:![0-9]+]]
 ; CHECK:       middle.block12:
 ; CHECK-NEXT:    [[TMP40:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE36]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP21]])
+; CHECK-NEXT:    [[TMP42:%.*]] = add i32 0, [[TMP40]]
 ; CHECK-NEXT:    br label [[EXIT]]
 ; CHECK:       scalar.ph13:
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
@@ -704,7 +712,7 @@ define i32 @non_const_strided_masked_3(i64 %n, ptr %a, ptr %cond1, ptr %cond2, i
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP13:![0-9]+]]
 ; CHECK:       exit:
-; CHECK-NEXT:    [[RED_2_LCSSA:%.*]] = phi i32 [ [[RED_2]], [[FOR_INC]] ], [ [[TMP19]], [[MIDDLE_BLOCK]] ], [ [[TMP40]], [[MIDDLE_BLOCK12]] ]
+; CHECK-NEXT:    [[RED_2_LCSSA:%.*]] = phi i32 [ [[RED_2]], [[FOR_INC]] ], [ [[TMP20]], [[MIDDLE_BLOCK]] ], [ [[TMP42]], [[MIDDLE_BLOCK12]] ]
 ; CHECK-NEXT:    ret i32 [[RED_2_LCSSA]]
 ;
 
@@ -827,6 +835,7 @@ define i32 @non_const_strided_masked_3_non_power_of_two(i64 %n, ptr %a, ptr %con
 ; CHECK-NEXT:    br i1 [[TMP21]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP22:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
+; CHECK-NEXT:    [[TMP23:%.*]] = add i32 0, [[TMP22]]
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ false, [[VECTOR_SCEVCHECK]] ]
@@ -882,6 +891,7 @@ define i32 @non_const_strided_masked_3_non_power_of_two(i64 %n, ptr %a, ptr %con
 ; CHECK-NEXT:    br i1 [[TMP60]], label [[MIDDLE_BLOCK14:%.*]], label [[VECTOR_BODY19]], !llvm.loop [[LOOP15:![0-9]+]]
 ; CHECK:       middle.block14:
 ; CHECK-NEXT:    [[TMP44:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE39]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP24]])
+; CHECK-NEXT:    [[TMP46:%.*]] = add i32 0, [[TMP44]]
 ; CHECK-NEXT:    br label [[EXIT]]
 ; CHECK:       scalar.ph15:
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
@@ -925,7 +935,7 @@ define i32 @non_const_strided_masked_3_non_power_of_two(i64 %n, ptr %a, ptr %con
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
 ; CHECK:       exit:
-; CHECK-NEXT:    [[RED_2_LCSSA:%.*]] = phi i32 [ [[RED_2]], [[FOR_INC]] ], [ [[TMP22]], [[MIDDLE_BLOCK]] ], [ [[TMP44]], [[MIDDLE_BLOCK14]] ]
+; CHECK-NEXT:    [[RED_2_LCSSA:%.*]] = phi i32 [ [[RED_2]], [[FOR_INC]] ], [ [[TMP23]], [[MIDDLE_BLOCK]] ], [ [[TMP46]], [[MIDDLE_BLOCK14]] ]
 ; CHECK-NEXT:    ret i32 [[RED_2_LCSSA]]
 ;
 
