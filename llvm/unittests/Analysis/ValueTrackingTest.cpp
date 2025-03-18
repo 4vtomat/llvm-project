@@ -2761,7 +2761,7 @@ const std::pair<const char *, const char *> IsBytewiseValueTests[] = {
         "ptr inttoptr (i96 -1 to ptr)",
     },
     {
-        "i8 undef",
+        "i8 poison",
         "[0 x i8] zeroinitializer",
     },
     {
@@ -2769,7 +2769,7 @@ const std::pair<const char *, const char *> IsBytewiseValueTests[] = {
         "[0 x i8] undef",
     },
     {
-        "i8 undef",
+        "i8 poison",
         "[5 x [0 x i8]] zeroinitializer",
     },
     {
@@ -2851,7 +2851,7 @@ const std::pair<const char *, const char *> IsBytewiseValueTests[] = {
         "[2 x i16] [i16 -21836, i16 -21846]]",
     },
     {
-        "i8 undef",
+        "i8 poison",
         "{ } zeroinitializer",
     },
     {
@@ -2859,7 +2859,7 @@ const std::pair<const char *, const char *> IsBytewiseValueTests[] = {
         "{ } undef",
     },
     {
-        "i8 undef",
+        "i8 poison",
         "{ {}, {} } zeroinitializer",
     },
     {

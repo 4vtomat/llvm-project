@@ -29,6 +29,7 @@ using namespace llvm;
 namespace {
 class VPlanVerifier {
   const VPDominatorTree &VPDT;
+  VPTypeAnalysis &TypeInfo;
 
   SmallPtrSet<BasicBlock *, 8> WrappedIRBBs;
 
@@ -61,7 +62,8 @@ class VPlanVerifier {
   bool verifyRegionRec(const VPRegionBlock *Region);
 
 public:
-  VPlanVerifier(VPDominatorTree &VPDT) : VPDT(VPDT) {}
+  VPlanVerifier(VPDominatorTree &VPDT, VPTypeAnalysis &TypeInfo)
+      : VPDT(VPDT), TypeInfo(TypeInfo) {}
 
   bool verify(const VPlan &Plan);
 };
@@ -237,6 +239,14 @@ bool VPlanVerifier::verifyVPBasicBlock(const VPBasicBlock *VPBB) {
       return false;
     }
     for (const VPValue *V : R.definedValues()) {
+      // Verify that we can infer a scalar type for each defined value. With
+      // assertions enabled, inferScalarType will perform some consistency
+      // checks during type inference.
+      if (!TypeInfo.inferScalarType(V)) {
+        errs() << "Failed to infer scalar type!\n";
+        return false;
+      }
+
       for (const VPUser *U : V->users()) {
         auto *UI = dyn_cast<VPRecipeBase>(U);
         // TODO: check dominance of incoming values for phis properly.
@@ -465,6 +475,8 @@ bool VPlanVerifier::verify(const VPlan &Plan) {
 bool llvm::verifyVPlanIsValid(const VPlan &Plan) {
   VPDominatorTree VPDT;
   VPDT.recalculate(const_cast<VPlan &>(Plan));
-  VPlanVerifier Verifier(VPDT);
+  VPTypeAnalysis TypeInfo(
+      const_cast<VPlan &>(Plan).getCanonicalIV()->getScalarType());
+  VPlanVerifier Verifier(VPDT, TypeInfo);
   return Verifier.verify(Plan);
 }

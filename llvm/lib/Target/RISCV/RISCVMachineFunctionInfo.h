@@ -82,6 +82,9 @@ private:
 
   int64_t StackProbeSize = 0;
 
+  /// Does it probe the stack for a dynamic allocation?
+  bool HasDynamicAllocation = false;
+
 public:
   RISCVMachineFunctionInfo(const Function &F, const RISCVSubtarget *STI);
 
@@ -166,6 +169,9 @@ public:
 
   bool isVectorCall() const { return IsVectorCall; }
   void setIsVectorCall() { IsVectorCall = true; }
+
+  bool hasDynamicAllocation() const { return HasDynamicAllocation; }
+  void setDynamicAllocation() { HasDynamicAllocation = true; }
 };
 
 } // end namespace llvm
