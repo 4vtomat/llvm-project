@@ -4430,7 +4430,6 @@ class VPRegionBlock : public VPBlockBase {
   /// instances of output IR corresponding to its VPBlockBases.
   bool IsReplicator;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 protected:
   VPRegionBlock(unsigned RegionOpc, VPBlockBase *Entry, VPBlockBase *Exiting,
@@ -4444,9 +4443,7 @@ protected:
   }
 #endif // SIFIVE_CUSTOMIZATION
 public:
-=======
   /// Use VPlan::createVPRegionBlock to create VPRegionBlocks.
->>>>>>> refs/rewritten/7a77f14
   VPRegionBlock(VPBlockBase *Entry, VPBlockBase *Exiting,
                 const std::string &Name = "", bool IsReplicator = false)
       : VPBlockBase(VPRegionBlockSC, Name), Entry(Entry), Exiting(Exiting),
