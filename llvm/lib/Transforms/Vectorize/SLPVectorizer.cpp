@@ -14042,7 +14042,6 @@ Value *BoUpSLP::gather(
     Instruction *InsElt;
     if (auto *VecTy = dyn_cast<FixedVectorType>(Scalar->getType())) {
       assert(SLPReVec && "FixedVectorType is not expected.");
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       // This is an optimization which should be done by
       // IRBuilderBase::CreateInsertVector.
@@ -14068,14 +14067,9 @@ Value *BoUpSLP::gather(
         return cast<Value>(ConstantVector::get(Result));
       }
 #endif // SIFIVE_CUSTOMIZATION
-      Vec = InsElt = cast<Instruction>(createInsertVector(
-          Builder, Vec, Scalar, Pos * getNumElements(VecTy)));
-      auto *II = dyn_cast<IntrinsicInst>(InsElt);
-=======
       Vec =
           createInsertVector(Builder, Vec, Scalar, Pos * getNumElements(VecTy));
       auto *II = dyn_cast<IntrinsicInst>(Vec);
->>>>>>> refs/rewritten/7a77f14
       if (!II || II->getIntrinsicID() != Intrinsic::vector_insert)
         return Vec;
       InsElt = II;
