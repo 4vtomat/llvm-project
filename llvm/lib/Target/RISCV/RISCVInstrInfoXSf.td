@@ -1807,7 +1807,7 @@ class VPseudoSF_MatMul_FRM<RegisterClass mtd_class>
 }
 
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
-let Defs = [VTYPE, VL] in {
+let Defs = [VL, VTYPE] in {
   def PseudoSF_VSETTNT
       : Pseudo<(outs GPR:$rd),
                (ins GPRNoX0:$rs1, XSfmmVTypeOp:$vtypei), []>,
