@@ -189,8 +189,8 @@ define i32 @cond_add_pred(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[ARRAYIDX]], i32 0
 ; IF-EVL-OUTLOOP-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0(ptr align 4 [[TMP5]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; IF-EVL-OUTLOOP-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i32(<vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i32> splat (i32 3), metadata !"sgt", <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; IF-EVL-OUTLOOP-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 2 x i1> @llvm.vp.xor.nxv2i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> splat (i1 true), <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; IF-EVL-OUTLOOP-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[VEC_PHI]], <vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; IF-EVL-OUTLOOP-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 2 x i1> @llvm.vp.xor.nxv2i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> splat (i1 true), <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; IF-EVL-OUTLOOP-NEXT:    [[PREDPHI:%.*]] = call <vscale x 2 x i32> @llvm.vp.select.nxv2i32(<vscale x 2 x i1> [[PRED_NOT]], <vscale x 2 x i32> [[VEC_PHI]], <vscale x 2 x i32> [[VP_OP]], i32 [[TMP2]])
 ; IF-EVL-OUTLOOP-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i32> [[PREDPHI]], <vscale x 2 x i32> [[VEC_PHI]], i32 [[TMP2]])
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP2]] to i64
@@ -550,8 +550,8 @@ define i32 @step_cond_add_pred(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[TMP9]], i32 0
 ; IF-EVL-OUTLOOP-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0(ptr align 4 [[TMP10]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; IF-EVL-OUTLOOP-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i32(<vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i32> [[VEC_IND]], metadata !"sgt", <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
-; IF-EVL-OUTLOOP-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 2 x i1> @llvm.vp.xor.nxv2i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> splat (i1 true), <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; IF-EVL-OUTLOOP-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[VEC_PHI]], <vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
+; IF-EVL-OUTLOOP-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 2 x i1> @llvm.vp.xor.nxv2i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> splat (i1 true), <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; IF-EVL-OUTLOOP-NEXT:    [[PREDPHI:%.*]] = call <vscale x 2 x i32> @llvm.vp.select.nxv2i32(<vscale x 2 x i1> [[PRED_NOT]], <vscale x 2 x i32> [[VEC_PHI]], <vscale x 2 x i32> [[VP_OP]], i32 [[TMP7]])
 ; IF-EVL-OUTLOOP-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i32> [[PREDPHI]], <vscale x 2 x i32> [[VEC_PHI]], i32 [[TMP7]])
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP7]] to i64

@@ -10290,13 +10290,6 @@ VPValue *VPRecipeBuilder::createEdgeMask(BasicBlock *Src, BasicBlock *Dst) {
   VPValue *EdgeMask = getVPValueOrAddLiveIn(BI->getCondition());
   assert(EdgeMask && "No Edge Mask found for condition");
 
-#if SIFIVE_CUSTOMIZATION
-  VPBuilder::InsertPointGuard Guard(Builder);
-  VPBasicBlock *SrcVPBB = Builder.BB2VPBB[Src];
-  assert(SrcVPBB && "Cannot find corresponding VPBB for the BB");
-  Builder.setInsertPoint(SrcVPBB, SrcVPBB->end());
-#endif // SIFIVE_CUSTOMIZATION
-
   if (BI->getSuccessor(0) != Dst)
     EdgeMask = Builder.createNot(EdgeMask, BI->getDebugLoc());
 
@@ -10372,13 +10365,6 @@ void VPRecipeBuilder::createBlockInMask(BasicBlock *BB) {
   // All-one mask is modelled as no-mask following the convention for masked
   // load/store/gather/scatter. Initialize BlockMask to no-mask.
   VPValue *BlockMask = nullptr;
-
-#if SIFIVE_CUSTOMIZATION
-    VPBuilder::InsertPointGuard Guard(Builder);
-    VPBasicBlock *VPBB = Builder.BB2VPBB[BB];
-    assert(VPBB && "Cannot find corresponding VPBB for the BB");
-    Builder.setInsertPoint(VPBB, VPBB->end());
-#endif // SIFIVE_CUSTOMIZATION
 
   // This is the block mask. We OR all unique incoming edges.
   for (auto *Predecessor :

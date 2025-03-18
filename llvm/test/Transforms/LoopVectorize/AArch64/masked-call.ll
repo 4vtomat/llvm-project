@@ -157,8 +157,8 @@ define void @test_if_then(ptr noalias %a, ptr readnone %b) #4 {
 ; TFNONE-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i64, ptr [[A:%.*]], i64 [[INDEX]]
 ; TFNONE-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 2 x i64>, ptr [[TMP6]], align 8
 ; TFNONE-NEXT:    [[TMP7:%.*]] = icmp ugt <vscale x 2 x i64> [[WIDE_LOAD]], splat (i64 50)
-; TFNONE-NEXT:    [[TMP8:%.*]] = xor <vscale x 2 x i1> [[TMP7]], splat (i1 true)
 ; TFNONE-NEXT:    [[TMP9:%.*]] = call <vscale x 2 x i64> @foo_vector(<vscale x 2 x i64> [[WIDE_LOAD]], <vscale x 2 x i1> [[TMP7]])
+; TFNONE-NEXT:    [[TMP8:%.*]] = xor <vscale x 2 x i1> [[TMP7]], splat (i1 true)
 ; TFNONE-NEXT:    [[PREDPHI:%.*]] = select <vscale x 2 x i1> [[TMP8]], <vscale x 2 x i64> zeroinitializer, <vscale x 2 x i64> [[TMP9]]
 ; TFNONE-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i64, ptr [[B:%.*]], i64 [[INDEX]]
 ; TFNONE-NEXT:    store <vscale x 2 x i64> [[PREDPHI]], ptr [[TMP10]], align 8
@@ -374,8 +374,8 @@ define void @test_widen_if_then_else(ptr noalias %a, ptr readnone %b) #4 {
 ; TFCOMMON-NEXT:    [[TMP6:%.*]] = icmp ugt <vscale x 2 x i64> [[WIDE_MASKED_LOAD]], splat (i64 50)
 ; TFCOMMON-NEXT:    [[TMP7:%.*]] = xor <vscale x 2 x i1> [[TMP6]], splat (i1 true)
 ; TFCOMMON-NEXT:    [[TMP8:%.*]] = select <vscale x 2 x i1> [[ACTIVE_LANE_MASK]], <vscale x 2 x i1> [[TMP7]], <vscale x 2 x i1> zeroinitializer
-; TFCOMMON-NEXT:    [[TMP9:%.*]] = select <vscale x 2 x i1> [[ACTIVE_LANE_MASK]], <vscale x 2 x i1> [[TMP6]], <vscale x 2 x i1> zeroinitializer
 ; TFCOMMON-NEXT:    [[TMP10:%.*]] = call <vscale x 2 x i64> @foo_vector(<vscale x 2 x i64> zeroinitializer, <vscale x 2 x i1> [[TMP8]])
+; TFCOMMON-NEXT:    [[TMP9:%.*]] = select <vscale x 2 x i1> [[ACTIVE_LANE_MASK]], <vscale x 2 x i1> [[TMP6]], <vscale x 2 x i1> zeroinitializer
 ; TFCOMMON-NEXT:    [[TMP11:%.*]] = call <vscale x 2 x i64> @foo_vector(<vscale x 2 x i64> [[WIDE_MASKED_LOAD]], <vscale x 2 x i1> [[TMP9]])
 ; TFCOMMON-NEXT:    [[PREDPHI:%.*]] = select <vscale x 2 x i1> [[TMP8]], <vscale x 2 x i64> [[TMP10]], <vscale x 2 x i64> [[TMP11]]
 ; TFCOMMON-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i64, ptr [[B:%.*]], i64 [[INDEX]]
@@ -419,10 +419,10 @@ define void @test_widen_if_then_else(ptr noalias %a, ptr readnone %b) #4 {
 ; TFA_INTERLEAVE-NEXT:    [[TMP14:%.*]] = xor <vscale x 2 x i1> [[TMP12]], splat (i1 true)
 ; TFA_INTERLEAVE-NEXT:    [[TMP15:%.*]] = select <vscale x 2 x i1> [[ACTIVE_LANE_MASK]], <vscale x 2 x i1> [[TMP13]], <vscale x 2 x i1> zeroinitializer
 ; TFA_INTERLEAVE-NEXT:    [[TMP16:%.*]] = select <vscale x 2 x i1> [[ACTIVE_LANE_MASK2]], <vscale x 2 x i1> [[TMP14]], <vscale x 2 x i1> zeroinitializer
-; TFA_INTERLEAVE-NEXT:    [[TMP17:%.*]] = select <vscale x 2 x i1> [[ACTIVE_LANE_MASK]], <vscale x 2 x i1> [[TMP11]], <vscale x 2 x i1> zeroinitializer
-; TFA_INTERLEAVE-NEXT:    [[TMP18:%.*]] = select <vscale x 2 x i1> [[ACTIVE_LANE_MASK2]], <vscale x 2 x i1> [[TMP12]], <vscale x 2 x i1> zeroinitializer
 ; TFA_INTERLEAVE-NEXT:    [[TMP19:%.*]] = call <vscale x 2 x i64> @foo_vector(<vscale x 2 x i64> zeroinitializer, <vscale x 2 x i1> [[TMP15]])
 ; TFA_INTERLEAVE-NEXT:    [[TMP20:%.*]] = call <vscale x 2 x i64> @foo_vector(<vscale x 2 x i64> zeroinitializer, <vscale x 2 x i1> [[TMP16]])
+; TFA_INTERLEAVE-NEXT:    [[TMP17:%.*]] = select <vscale x 2 x i1> [[ACTIVE_LANE_MASK]], <vscale x 2 x i1> [[TMP11]], <vscale x 2 x i1> zeroinitializer
+; TFA_INTERLEAVE-NEXT:    [[TMP18:%.*]] = select <vscale x 2 x i1> [[ACTIVE_LANE_MASK2]], <vscale x 2 x i1> [[TMP12]], <vscale x 2 x i1> zeroinitializer
 ; TFA_INTERLEAVE-NEXT:    [[TMP21:%.*]] = call <vscale x 2 x i64> @foo_vector(<vscale x 2 x i64> [[WIDE_MASKED_LOAD]], <vscale x 2 x i1> [[TMP17]])
 ; TFA_INTERLEAVE-NEXT:    [[TMP22:%.*]] = call <vscale x 2 x i64> @foo_vector(<vscale x 2 x i64> [[WIDE_MASKED_LOAD3]], <vscale x 2 x i1> [[TMP18]])
 ; TFA_INTERLEAVE-NEXT:    [[PREDPHI:%.*]] = select <vscale x 2 x i1> [[TMP15]], <vscale x 2 x i64> [[TMP19]], <vscale x 2 x i64> [[TMP21]]

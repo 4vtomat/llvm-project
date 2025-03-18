@@ -26,8 +26,8 @@ define void @test_blend_feeding_replicated_store_1(i64 %N, ptr noalias %src, ptr
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[TMP4]], i32 0
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <16 x i32>, ptr [[TMP5]], align 4
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp slt <16 x i32> [[WIDE_LOAD]], zeroinitializer
-; CHECK-NEXT:    [[TMP8:%.*]] = xor <16 x i1> [[TMP6]], splat (i1 true)
 ; CHECK-NEXT:    [[TMP7:%.*]] = select <16 x i1> [[TMP6]], <16 x i1> zeroinitializer, <16 x i1> zeroinitializer
+; CHECK-NEXT:    [[TMP8:%.*]] = xor <16 x i1> [[TMP6]], splat (i1 true)
 ; CHECK-NEXT:    [[TMP9:%.*]] = or <16 x i1> [[TMP7]], [[TMP8]]
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <16 x i1> [[TMP7]], <16 x ptr> [[BROADCAST_SPLAT]], <16 x ptr> zeroinitializer
 ; CHECK-NEXT:    [[TMP10:%.*]] = extractelement <16 x i1> [[TMP9]], i32 0

@@ -34,14 +34,14 @@ define void @pr87378_vpinstruction_or_drop_poison_generating_flags(ptr %arg, i64
 ; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP6]], i32 4, i1 true)
 ; CHECK-NEXT:    [[TMP12:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i64(<vscale x 4 x i64> [[VEC_IND]], <vscale x 4 x i64> [[BROADCAST_SPLAT]], metadata !"ule", <vscale x 4 x i1> splat (i1 true), i32 [[TMP7]])
-; CHECK-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 4 x i1> @llvm.vp.xor.nxv4i1(<vscale x 4 x i1> [[VP_OP_ICMP]], <vscale x 4 x i1> splat (i1 true), <vscale x 4 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[VP_OP_ICMP5:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i64(<vscale x 4 x i64> [[VEC_IND]], <vscale x 4 x i64> [[BROADCAST_SPLAT4]], metadata !"ule", <vscale x 4 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP9:%.*]] = call <vscale x 4 x i1> @llvm.vp.select.nxv4i1(<vscale x 4 x i1> [[VP_OP_ICMP]], <vscale x 4 x i1> [[VP_OP_ICMP5]], <vscale x 4 x i1> zeroinitializer, i32 [[TMP7]])
-; CHECK-NEXT:    [[PRED_NOT6:%.*]] = call <vscale x 4 x i1> @llvm.vp.xor.nxv4i1(<vscale x 4 x i1> [[VP_OP_ICMP5]], <vscale x 4 x i1> splat (i1 true), <vscale x 4 x i1> splat (i1 true), i32 [[TMP7]])
-; CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 4 x i1> @llvm.vp.select.nxv4i1(<vscale x 4 x i1> [[VP_OP_ICMP]], <vscale x 4 x i1> [[PRED_NOT6]], <vscale x 4 x i1> zeroinitializer, i32 [[TMP7]])
+; CHECK-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 4 x i1> @llvm.vp.xor.nxv4i1(<vscale x 4 x i1> [[VP_OP_ICMP]], <vscale x 4 x i1> splat (i1 true), <vscale x 4 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i1> @llvm.vp.or.nxv4i1(<vscale x 4 x i1> [[TMP9]], <vscale x 4 x i1> [[PRED_NOT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[VP_OP_ICMP9:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i64(<vscale x 4 x i64> [[VEC_IND]], <vscale x 4 x i64> [[BROADCAST_SPLAT8]], metadata !"ule", <vscale x 4 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 4 x i1> @llvm.vp.select.nxv4i1(<vscale x 4 x i1> [[VP_OP]], <vscale x 4 x i1> [[VP_OP_ICMP9]], <vscale x 4 x i1> zeroinitializer, i32 [[TMP7]])
+; CHECK-NEXT:    [[PRED_NOT9:%.*]] = call <vscale x 4 x i1> @llvm.vp.xor.nxv4i1(<vscale x 4 x i1> [[VP_OP_ICMP5]], <vscale x 4 x i1> splat (i1 true), <vscale x 4 x i1> splat (i1 true), i32 [[TMP7]])
+; CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 4 x i1> @llvm.vp.select.nxv4i1(<vscale x 4 x i1> [[VP_OP_ICMP]], <vscale x 4 x i1> [[PRED_NOT9]], <vscale x 4 x i1> zeroinitializer, i32 [[TMP7]])
 ; CHECK-NEXT:    [[VP_OP10:%.*]] = call <vscale x 4 x i1> @llvm.vp.or.nxv4i1(<vscale x 4 x i1> [[TMP13]], <vscale x 4 x i1> [[TMP10]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[EXT:%.*]] = extractelement <vscale x 4 x i1> [[TMP13]], i32 0
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select i1 [[EXT]], i64 [[TMP12]], i64 poison

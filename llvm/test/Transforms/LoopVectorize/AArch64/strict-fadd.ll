@@ -397,11 +397,11 @@ define float @fadd_conditional(ptr noalias nocapture readonly %a, ptr noalias no
 ; CHECK-ORDERED: %[[PHI:.*]] = phi float [ 1.000000e+00, %vector.ph ], [ %[[RDX:.*]], %pred.load.continue6 ]
 ; CHECK-ORDERED: %[[LOAD1:.*]] = load <4 x float>, ptr
 ; CHECK-ORDERED: %[[FCMP1:.*]] = fcmp une <4 x float> %[[LOAD1]], zeroinitializer
-; CHECK-ORDERED: %[[XOR:.*]] =  xor <4 x i1> %[[FCMP1]], splat (i1 true)
 ; CHECK-ORDERED: %[[EXTRACT:.*]] = extractelement <4 x i1> %[[FCMP1]], i32 0
 ; CHECK-ORDERED: br i1 %[[EXTRACT]], label %pred.load.if, label %pred.load.continue
 ; CHECK-ORDERED: pred.load.continue6
 ; CHECK-ORDERED: %[[PHI1:.*]] = phi <4 x float> [ %[[PHI0:.*]], %pred.load.continue4 ], [ %[[INS_ELT:.*]], %pred.load.if5 ]
+; CHECK-ORDERED: %[[XOR:.*]] =  xor <4 x i1> %[[FCMP1]], splat (i1 true)
 ; CHECK-ORDERED: %[[PRED:.*]] = select <4 x i1> %[[XOR]], <4 x float> splat (float 3.000000e+00), <4 x float> %[[PHI1]]
 ; CHECK-ORDERED: %[[RDX]] = call float @llvm.vector.reduce.fadd.v4f32(float %[[PHI]], <4 x float> %[[PRED]])
 ; CHECK-ORDERED: for.body
@@ -424,10 +424,10 @@ define float @fadd_conditional(ptr noalias nocapture readonly %a, ptr noalias no
 ; CHECK-UNORDERED: %[[PHI:.*]] = phi <4 x float> [ <float 1.000000e+00, float -0.000000e+00, float -0.000000e+00, float -0.000000e+00>, %vector.ph ], [ %[[VEC_FADD:.*]], %pred.load.continue6 ]
 ; CHECK-UNORDERED: %[[LOAD1:.*]] = load <4 x float>, ptr
 ; CHECK-UNORDERED: %[[FCMP1:.*]] = fcmp une <4 x float> %[[LOAD1]], zeroinitializer
-; CHECK-UNORDERED: %[[XOR:.*]] =  xor <4 x i1> %[[FCMP1]], splat (i1 true)
 ; CHECK-UNORDERED: %[[EXTRACT:.*]] = extractelement <4 x i1> %[[FCMP1]], i32 0
 ; CHECK-UNORDERED: br i1 %[[EXTRACT]], label %pred.load.if, label %pred.load.continue
 ; CHECK-UNORDERED: pred.load.continue6
+; CHECK-UNORDERED: %[[XOR:.*]] =  xor <4 x i1> %[[FCMP1]], splat (i1 true)
 ; CHECK-UNORDERED: %[[PRED:.*]] = select <4 x i1> %[[XOR]], <4 x float> splat (float 3.000000e+00), <4 x float> %[[PRED_PHI:.*]]
 ; CHECK-UNORDERED: %[[VEC_FADD]] = fadd <4 x float> %[[PHI]], %[[PRED]]
 ; CHECK-UNORDERED-NOT: call float @llvm.vector.reduce.fadd

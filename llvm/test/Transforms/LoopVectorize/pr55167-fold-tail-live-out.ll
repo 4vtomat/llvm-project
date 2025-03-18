@@ -13,10 +13,10 @@ define i32 @test(i32 %a, i1 %c.1, i1 %c.2 ) #0 {
 ; CHECK-NEXT:    [[BROADCAST_SPLAT4:%.*]] = shufflevector <2 x i1> [[BROADCAST_SPLATINSERT3]], <2 x i1> poison, <2 x i32> zeroinitializer
 ; CHECK-NEXT:    [[TMP6:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT4]], splat (i1 true)
 ; CHECK-NEXT:    [[TMP7:%.*]] = select <2 x i1> [[TMP4]], <2 x i1> [[TMP6]], <2 x i1> zeroinitializer
-; CHECK-NEXT:    [[TMP5:%.*]] = select <2 x i1> [[TMP4]], <2 x i1> [[BROADCAST_SPLAT4]], <2 x i1> zeroinitializer
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT4:%.*]] = insertelement <2 x i32> poison, i32 [[A:%.*]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT5:%.*]] = shufflevector <2 x i32> [[BROADCAST_SPLATINSERT4]], <2 x i32> poison, <2 x i32> zeroinitializer
 ; CHECK-NEXT:    [[TMP2:%.*]] = xor <2 x i32> [[BROADCAST_SPLAT5]], splat (i32 1)
+; CHECK-NEXT:    [[TMP5:%.*]] = select <2 x i1> [[TMP4]], <2 x i1> [[BROADCAST_SPLAT4]], <2 x i1> zeroinitializer
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]

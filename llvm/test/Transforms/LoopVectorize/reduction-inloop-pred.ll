@@ -1352,13 +1352,13 @@ define float @reduction_conditional(ptr %A, ptr %B, ptr %C, float %S) {
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds float, ptr [[B:%.*]], i64 [[INDEX]]
 ; CHECK-NEXT:    [[WIDE_LOAD1:%.*]] = load <4 x float>, ptr [[TMP2]], align 4
 ; CHECK-NEXT:    [[TMP3:%.*]] = fcmp ogt <4 x float> [[WIDE_LOAD]], [[WIDE_LOAD1]]
-; CHECK-NEXT:    [[TMP4:%.*]] = xor <4 x i1> [[TMP3]], splat (i1 true)
 ; CHECK-NEXT:    [[TMP5:%.*]] = fcmp ule <4 x float> [[WIDE_LOAD1]], splat (float 1.000000e+00)
 ; CHECK-NEXT:    [[TMP6:%.*]] = and <4 x i1> [[TMP3]], [[TMP5]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = fcmp ogt <4 x float> [[WIDE_LOAD]], splat (float 2.000000e+00)
 ; CHECK-NEXT:    [[TMP8:%.*]] = and <4 x i1> [[TMP6]], [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = xor <4 x i1> [[TMP7]], splat (i1 true)
 ; CHECK-NEXT:    [[TMP10:%.*]] = and <4 x i1> [[TMP6]], [[TMP9]]
+; CHECK-NEXT:    [[TMP4:%.*]] = xor <4 x i1> [[TMP3]], splat (i1 true)
 ; CHECK-NEXT:    [[PREDPHI_V:%.*]] = select <4 x i1> [[TMP8]], <4 x float> [[WIDE_LOAD1]], <4 x float> [[WIDE_LOAD]]
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = fadd fast <4 x float> [[VEC_PHI]], [[PREDPHI_V]]
 ; CHECK-NEXT:    [[TMP11:%.*]] = select <4 x i1> [[TMP4]], <4 x i1> splat (i1 true), <4 x i1> [[TMP10]]

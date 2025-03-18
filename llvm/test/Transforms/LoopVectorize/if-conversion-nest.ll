@@ -143,10 +143,10 @@ define i32 @multi_variable_if_nest(ptr nocapture %A, ptr nocapture %B, i32 %n) {
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp sgt <4 x i32> [[WIDE_LOAD]], splat (i32 19)
 ; CHECK-NEXT:    [[TMP9:%.*]] = xor <4 x i1> [[TMP8]], splat (i1 true)
 ; CHECK-NEXT:    [[TMP10:%.*]] = and <4 x i1> [[TMP7]], [[TMP9]]
-; CHECK-NEXT:    [[TMP11:%.*]] = and <4 x i1> [[TMP7]], [[TMP8]]
 ; CHECK-NEXT:    [[TMP12:%.*]] = icmp slt <4 x i32> [[WIDE_LOAD2]], splat (i32 4)
 ; CHECK-NEXT:    [[TMP13:%.*]] = select <4 x i1> [[TMP12]], <4 x i32> splat (i32 4), <4 x i32> splat (i32 5)
 ; CHECK-NEXT:    [[TMP14:%.*]] = select <4 x i1> [[TMP12]], <4 x i32> splat (i32 6), <4 x i32> splat (i32 11)
+; CHECK-NEXT:    [[TMP11:%.*]] = and <4 x i1> [[TMP7]], [[TMP8]]
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP11]], <4 x i32> splat (i32 3), <4 x i32> splat (i32 9)
 ; CHECK-NEXT:    [[PREDPHI3:%.*]] = select <4 x i1> [[TMP10]], <4 x i32> [[TMP13]], <4 x i32> [[PREDPHI]]
 ; CHECK-NEXT:    [[PREDPHI4:%.*]] = select <4 x i1> [[TMP11]], <4 x i32> splat (i32 7), <4 x i32> splat (i32 18)
