@@ -25,7 +25,7 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; VPLANS-NEXT:     EMIT vp<[[EVL:%.+]]> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; VPLANS-NEXT:     vp<[[VEC_PTR:%.+]]> = vector-pointer ir<%first.addr.07>
 ; VPLANS-NEXT:     WIDEN-SPECULATIVE-INSTRUCTION ir<[[DATA:%.+]]>, vp<[[EVL2:%.+]]> = vp.load vp<[[VEC_PTR]]>, vp<[[EVL]]>	unit-strided
-; VPLANS-NEXT:     CLONE ir<%cmp1> = icmp eq ir<[[DATA]]>, ir<%0>
+; VPLANS-NEXT:     WIDEN ir<%cmp1> = icmp eq ir<[[DATA]]>, ir<%0>
 ; VPLANS-NEXT:     EMIT vp<[[CMP:%.+]]> = exiting-cond ir<%cmp1>
 ; VPLANS-NEXT:     EMIT branch-on-cond vp<[[CMP]]>
 ; VPLANS-NEXT:   Successor(s): vector.early.exit, for.inc

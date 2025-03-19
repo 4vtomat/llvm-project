@@ -1276,6 +1276,10 @@ bool VPInstruction::onlyFirstLaneUsed(const VPValue *Op) const {
     return vputils::onlyFirstLaneUsed(this);
 
   switch (getOpcode()) {
+#if SIFIVE_CUSTOMIZATION
+  case VPInstruction::ExitingCond:
+  case VPInstruction::CSAAnyActive:
+#endif // SIFIVE_CUSTOMIZATION
   default:
     return false;
   case Instruction::ICmp:
@@ -1290,11 +1294,9 @@ bool VPInstruction::onlyFirstLaneUsed(const VPValue *Op) const {
   case VPInstruction::CanonicalIVIncrementForPart:
   case VPInstruction::BranchOnCount:
 #if SIFIVE_CUSTOMIZATION
-  case VPInstruction::ExitingCond:
   case VPInstruction::CSAVLPhi:
   case VPInstruction::CSAVLSel:
-  case VPInstruction::CSAAnyActive:
-#endif
+#endif // SIFIVE_CUSTOMIZATION
   case VPInstruction::BranchOnCond:
   case VPInstruction::ResumePhi:
     return true;

@@ -44,6 +44,8 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 2 x i64> [[DOTSPLATINSERT]], <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer
 ; CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i64> @llvm.stepvector.nxv2i64()
 ; CHECK-NEXT:    [[TMP15:%.*]] = add <vscale x 2 x i64> [[DOTSPLAT]], [[TMP14]]
+; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 2 x i32> poison, i32 [[TMP0]], i64 0
+; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 2 x i32> [[BROADCAST_SPLATINSERT]], <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[FIRST]], [[VECTOR_PH]] ], [ [[PTR_IND:%.*]], [[FOR_INC5:%.*]] ]
@@ -61,10 +63,7 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; CHECK-NEXT:    [[TMP22:%.*]] = zext i32 [[TMP21]] to i64
 ; CHECK-NEXT:    [[TMP23:%.*]] = extractvalue { <vscale x 2 x i32>, i32 } [[VP_OP_LOAD_FF]], 0
 ; CHECK-NEXT:    [[TMP24:%.*]] = zext i32 [[TMP21]] to i64
-; CHECK-NEXT:    [[TMP34:%.*]] = extractelement <vscale x 2 x i32> [[TMP23]], i32 0
-; CHECK-NEXT:    [[TMP35:%.*]] = icmp eq i32 [[TMP34]], [[TMP0]]
-; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 2 x i1> poison, i1 [[TMP35]], i64 0
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = shufflevector <vscale x 2 x i1> [[BROADCAST_SPLATINSERT]], <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i32(<vscale x 2 x i32> [[TMP23]], <vscale x 2 x i32> [[BROADCAST_SPLAT]], metadata !"eq", <vscale x 2 x i1> splat (i1 true), i32 [[TMP21]])
 ; CHECK-NEXT:    [[TMP25:%.*]] = call i32 @llvm.vp.first.nxv2i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP21]])
 ; CHECK-NEXT:    [[TMP26:%.*]] = icmp sge i32 [[TMP25]], 0
 ; CHECK-NEXT:    br i1 [[TMP26]], label [[VECTOR_EARLY_EXIT:%.*]], label [[FOR_INC5]]
@@ -133,6 +132,8 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; P470-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 8 x i64> [[DOTSPLATINSERT]], <vscale x 8 x i64> poison, <vscale x 8 x i32> zeroinitializer
 ; P470-NEXT:    [[TMP14:%.*]] = call <vscale x 8 x i64> @llvm.stepvector.nxv8i64()
 ; P470-NEXT:    [[TMP15:%.*]] = add <vscale x 8 x i64> [[DOTSPLAT]], [[TMP14]]
+; P470-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x i32> poison, i32 [[TMP0]], i64 0
+; P470-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 8 x i32> [[BROADCAST_SPLATINSERT]], <vscale x 8 x i32> poison, <vscale x 8 x i32> zeroinitializer
 ; P470-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; P470:       vector.body:
 ; P470-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[FIRST]], [[VECTOR_PH]] ], [ [[PTR_IND:%.*]], [[FOR_INC5:%.*]] ]
@@ -150,10 +151,7 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; P470-NEXT:    [[TMP22:%.*]] = zext i32 [[TMP21]] to i64
 ; P470-NEXT:    [[TMP23:%.*]] = extractvalue { <vscale x 8 x i32>, i32 } [[VP_OP_LOAD_FF]], 0
 ; P470-NEXT:    [[TMP24:%.*]] = zext i32 [[TMP21]] to i64
-; P470-NEXT:    [[TMP34:%.*]] = extractelement <vscale x 8 x i32> [[TMP23]], i32 0
-; P470-NEXT:    [[TMP35:%.*]] = icmp eq i32 [[TMP34]], [[TMP0]]
-; P470-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x i1> poison, i1 [[TMP35]], i64 0
-; P470-NEXT:    [[VP_OP_ICMP:%.*]] = shufflevector <vscale x 8 x i1> [[BROADCAST_SPLATINSERT]], <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer
+; P470-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i32(<vscale x 8 x i32> [[TMP23]], <vscale x 8 x i32> [[BROADCAST_SPLAT]], metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP21]])
 ; P470-NEXT:    [[TMP25:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP21]])
 ; P470-NEXT:    [[TMP26:%.*]] = icmp sge i32 [[TMP25]], 0
 ; P470-NEXT:    br i1 [[TMP26]], label [[VECTOR_EARLY_EXIT:%.*]], label [[FOR_INC5]]
@@ -388,11 +386,8 @@ define i64 @ham(ptr %arg, i64 %arg1, i32 %arg2, ptr %arg3, i32 %arg4) {
 ; CHECK-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP13]] to i64
 ; CHECK-NEXT:    [[TMP15:%.*]] = extractvalue { <vscale x 8 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
 ; CHECK-NEXT:    [[TMP16:%.*]] = zext i32 [[TMP13]] to i64
-; CHECK-NEXT:    [[TMP22:%.*]] = extractelement <vscale x 8 x i8> [[TMP15]], i32 0
-; CHECK-NEXT:    [[TMP23:%.*]] = and i8 [[TMP22]], -2
-; CHECK-NEXT:    [[TMP24:%.*]] = icmp eq i8 [[TMP23]], -24
-; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x i1> poison, i1 [[TMP24]], i64 0
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = shufflevector <vscale x 8 x i1> [[BROADCAST_SPLATINSERT]], <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer
+; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i8> @llvm.vp.and.nxv8i8(<vscale x 8 x i8> [[TMP15]], <vscale x 8 x i8> splat (i8 -2), <vscale x 8 x i1> splat (i1 true), i32 [[TMP13]])
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP]], <vscale x 8 x i8> splat (i8 -24), metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP13]])
 ; CHECK-NEXT:    [[TMP17:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP13]])
 ; CHECK-NEXT:    [[TMP18:%.*]] = icmp sge i32 [[TMP17]], 0
 ; CHECK-NEXT:    br i1 [[TMP18]], label [[VECTOR_EARLY_EXIT:%.*]], label [[BB182]]
@@ -461,11 +456,8 @@ define i64 @ham(ptr %arg, i64 %arg1, i32 %arg2, ptr %arg3, i32 %arg4) {
 ; P470-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP13]] to i64
 ; P470-NEXT:    [[TMP15:%.*]] = extractvalue { <vscale x 16 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
 ; P470-NEXT:    [[TMP16:%.*]] = zext i32 [[TMP13]] to i64
-; P470-NEXT:    [[TMP22:%.*]] = extractelement <vscale x 16 x i8> [[TMP15]], i32 0
-; P470-NEXT:    [[TMP23:%.*]] = and i8 [[TMP22]], -2
-; P470-NEXT:    [[TMP24:%.*]] = icmp eq i8 [[TMP23]], -24
-; P470-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 16 x i1> poison, i1 [[TMP24]], i64 0
-; P470-NEXT:    [[VP_OP_ICMP:%.*]] = shufflevector <vscale x 16 x i1> [[BROADCAST_SPLATINSERT]], <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer
+; P470-NEXT:    [[VP_OP:%.*]] = call <vscale x 16 x i8> @llvm.vp.and.nxv16i8(<vscale x 16 x i8> [[TMP15]], <vscale x 16 x i8> splat (i8 -2), <vscale x 16 x i1> splat (i1 true), i32 [[TMP13]])
+; P470-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i8(<vscale x 16 x i8> [[VP_OP]], <vscale x 16 x i8> splat (i8 -24), metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP13]])
 ; P470-NEXT:    [[TMP17:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP13]])
 ; P470-NEXT:    [[TMP18:%.*]] = icmp sge i32 [[TMP17]], 0
 ; P470-NEXT:    br i1 [[TMP18]], label [[VECTOR_EARLY_EXIT:%.*]], label [[BB182]]

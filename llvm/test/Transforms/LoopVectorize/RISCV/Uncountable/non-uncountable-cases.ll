@@ -27,11 +27,7 @@ define void @foo() {
 ; CHECK-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP7]] to i64
 ; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i8(<vscale x 4 x i8> [[TMP5]], <vscale x 4 x i8> [[TMP8]], metadata !"ne", <vscale x 4 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[VP_OP_ICMP2:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i8(<vscale x 4 x i8> [[TMP5]], <vscale x 4 x i8> zeroinitializer, metadata !"eq", <vscale x 4 x i1> splat (i1 true), i32 [[TMP7]])
-; CHECK-NEXT:    [[TMP13:%.*]] = extractelement <vscale x 4 x i1> [[VP_OP_ICMP2]], i32 0
-; CHECK-NEXT:    [[TMP14:%.*]] = extractelement <vscale x 4 x i1> [[VP_OP_ICMP]], i32 0
-; CHECK-NEXT:    [[TMP12:%.*]] = or i1 [[TMP13]], [[TMP14]]
-; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 4 x i1> poison, i1 [[TMP12]], i64 0
-; CHECK-NEXT:    [[VP_OP:%.*]] = shufflevector <vscale x 4 x i1> [[BROADCAST_SPLATINSERT]], <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer
+; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i1> @llvm.vp.or.nxv4i1(<vscale x 4 x i1> [[VP_OP_ICMP2]], <vscale x 4 x i1> [[VP_OP_ICMP]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP10:%.*]] = call i32 @llvm.vp.first.nxv4i1(<vscale x 4 x i1> [[VP_OP]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP11:%.*]] = icmp sge i32 [[TMP10]], 0
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP9]], [[EVL_BASED_IV]]

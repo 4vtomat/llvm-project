@@ -17,10 +17,7 @@ define void @strlen(ptr %s) {
 ; CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 8 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
 ; CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 8 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
 ; CHECK-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP3]] to i64
-; CHECK-NEXT:    [[TMP9:%.*]] = extractelement <vscale x 8 x i8> [[TMP4]], i32 0
-; CHECK-NEXT:    [[TMP10:%.*]] = icmp eq i8 [[TMP9]], 0
-; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x i1> poison, i1 [[TMP10]], i64 0
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = shufflevector <vscale x 8 x i1> [[BROADCAST_SPLATINSERT]], <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP4]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]])
 ; CHECK-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]])
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
