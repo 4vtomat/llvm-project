@@ -3659,7 +3659,7 @@ struct VPWidenLoadRecipe final : public VPWidenMemoryRecipe, public VPValue {
         VPValue(this, &Load) {
 #if SIFIVE_CUSTOMIZATION
     if (Speculative)
-      new VPValue(this); // newVL
+      new VPValue(nullptr, this); // newVL
 #endif // SIFIVE_CUSTOMIZATION
     setMask(Mask);
   }
@@ -3715,7 +3715,7 @@ struct VPWidenLoadEVLRecipe final : public VPWidenMemoryRecipe, public VPValue {
         VPValue(this, &getIngredient()) {
 #if SIFIVE_CUSTOMIZATION
     if (Speculative)
-      new VPValue(this); // newVL
+      new VPValue(nullptr, this); // newVL
 #endif // SIFIVE_CUSTOMIZATION
     setMask(Mask);
   }

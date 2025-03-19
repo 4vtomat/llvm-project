@@ -38,6 +38,10 @@ class VPSlotTracker;
 class VPUser;
 class VPRecipeBase;
 class VPInterleaveRecipe;
+#if SIFIVE_CUSTOMIZATION
+struct VPWidenLoadRecipe;
+struct VPWidenLoadEVLRecipe;
+#endif // SIFIVE_CUSTOMIZATION
 
 // This is the base class of the VPlan Def/Use graph, used for modeling the data
 // flow into, within and out of the VPlan. VPValues can stand for live-ins

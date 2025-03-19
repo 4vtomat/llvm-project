@@ -677,26 +677,6 @@ public:
 protected:
   friend class LoopVectorizationPlanner;
 
-<<<<<<< HEAD
-  /// Set up the values of the IVs correctly when exiting the vector loop.
-  virtual void fixupIVUsers(PHINode *OrigPhi, const InductionDescriptor &II,
-                            Value *VectorTripCount, BasicBlock *MiddleBlock,
-                            VPTransformState &State);
-
-#if SIFIVE_CUSTOMIZATION
-  /// Generate a reduction loop in the loop vectorizer for when the backend
-  /// prefers not to lower the call to reduction intrinsic.
-  Value *generateReductionLoop(Value *ReducedPartRdx, Value *Identity,
-                               unsigned Op, FastMathFlags FMF);
-  /// Cherry-pick from #88385
-  void fixupEarlyExitIVUsers(PHINode *OrigPhi, const InductionDescriptor &II,
-                             BasicBlock *VectorEarlyExitBB, VPlan &Plan,
-                             VPTransformState &State);
-
-#endif // SIFIVE_CUSTOMIZATION
-
-=======
->>>>>>> refs/rewritten/7a77f14
   /// Iteratively sink the scalarized operands of a predicated instruction into
   /// the block that was created for it.
   void sinkScalarOperands(Instruction *PredInst);
@@ -869,11 +849,6 @@ public:
   }
 
   ~UncountableInnerLoopVectorizer() = default;
-
-  /// Set up the values of the IVs correctly when exiting the vector loop.
-  void fixupIVUsers(PHINode *OrigPhi, const InductionDescriptor &II,
-                    Value *VectorTripCount, BasicBlock *MiddleBlock,
-                    VPTransformState &State) override;
 };
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -1686,20 +1661,17 @@ public:
     // Override forced styles if needed.
     // FIXME: use actual opcode/data type for analysis here.
     // FIXME: Investigate opportunity for fixed vector factor.
-<<<<<<< HEAD
-    bool EVLIsLegal = UserIC <= 1 &&
-#if SIFIVE_CUSTOMIZATION
-                      IsScalableVF &&
-#endif // SIFIVE_CUSTOMIZATION
-                      TTI.hasActiveVectorLength(0, nullptr, Align()) &&
-                      !EnableVPlanNativePath;
-=======
     // FIXME: support fixed-order recurrences by fixing splice of non VFxUF
     // penultimate EVL.
     bool EVLIsLegal =
+#if SIFIVE_CUSTOMIZATION
+        IsScalableVF &&
+        UserIC <= 1 && TTI.hasActiveVectorLength(0, nullptr, Align()) &&
+        !EnableVPlanNativePath;
+#else
         UserIC <= 1 && TTI.hasActiveVectorLength(0, nullptr, Align()) &&
         !EnableVPlanNativePath && Legal->getFixedOrderRecurrences().empty();
->>>>>>> refs/rewritten/7a77f14
+#endif // SIFIVE_CUSTOMIZATION
     if (!EVLIsLegal) {
       // If for some reason EVL mode is unsupported, fallback to
       // DataWithoutLaneMask to try to vectorize the loop with folded tail
@@ -2081,15 +2053,13 @@ public:
   /// All element types found in the loop.
   SmallPtrSet<Type *, 16> ElementTypesInLoop;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   Type *SmallestType = nullptr;
   Type *WidestType = nullptr;
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   /// The kind of cost that we are calculating
   TTI::TargetCostKind CostKind;
->>>>>>> refs/rewritten/7a77f14
 };
 } // end namespace llvm
 
@@ -3230,247 +3200,6 @@ BasicBlock *InnerLoopVectorizer::createVectorizedLoopSkeleton(
   return LoopVectorPreHeader;
 }
 
-<<<<<<< HEAD
-// Fix up external users of the induction variable. At this point, we are
-// in LCSSA form, with all external PHIs that use the IV having one input value,
-// coming from the remainder loop. We need those PHIs to also have a correct
-// value for the IV when arriving directly from the middle block.
-void InnerLoopVectorizer::fixupIVUsers(PHINode *OrigPhi,
-                                       const InductionDescriptor &II,
-                                       Value *VectorTripCount,
-                                       BasicBlock *MiddleBlock,
-                                       VPTransformState &State) {
-  // There are two kinds of external IV usages - those that use the value
-  // computed in the last iteration (the PHI) and those that use the penultimate
-  // value (the value that feeds into the phi from the loop latch).
-  // We allow both, but they, obviously, have different values.
-
-  DenseMap<Value *, Value *> MissingVals;
-
-#if SIFIVE_CUSTOMIZATION
-  Value *ResumeValue =
-      OrigPhi->getIncomingValueForBlock(OrigLoop->getLoopPreheader());
-  // SiFive: ResumeValue can be a live-in value for uncountable loop
-  // do not have to handle it because collectUsersInExitBlocks does.
-  if (!dyn_cast<PHINode>(ResumeValue))
-    return;
-#endif // SIFIVE_CUSTOMIZATION
-  Value *EndValue = cast<PHINode>(OrigPhi->getIncomingValueForBlock(
-                                      OrigLoop->getLoopPreheader()))
-                        ->getIncomingValueForBlock(MiddleBlock);
-
-#if SIFIVE_CUSTOMIZATION
-  /// Cherry-pick from #88385
-  BasicBlock *OrigLoopLatch = OrigLoop->getLoopLatch();
-  auto IsUseFromUncountableExit = [&](Value *V, Instruction *UI) -> bool {
-    auto *PHI = cast<PHINode>(UI);
-    if (!Legal->hasUncountableEarlyExit())
-      return false;
-
-    // If this loop has an uncountable early exit then there could be a
-    // user of OrigPhi with either:
-    //   1. Multiple uses, because each exiting block (countable or
-    //      uncountable) jumps to the same exit block, or ..
-    //   2. A single use with an incoming value from an uncountable exit
-    //      block.
-    // In both cases there is no guarantee this came from a normal, countable
-    // exit. Currently if a loop has an uncountable early exit then it must
-    // have a latch with a countable exit.
-    int Index = PHI->getBasicBlockIndex(OrigLoopLatch);
-    return (Index == -1 || PHI->getIncomingValue(Index) != V);
-  };
-#endif // SIFIVE_CUSTOMIZATION
-
-  // An external user of the last iteration's value should see the value that
-  // the remainder loop uses to initialize its own IV.
-#if SIFIVE_CUSTOMIZATION
-  /// Cherry-pick from #88385
-  Value *PostInc = OrigPhi->getIncomingValueForBlock(OrigLoopLatch);
-#else
-  Value *PostInc = OrigPhi->getIncomingValueForBlock(OrigLoop->getLoopLatch());
-#endif // SIFIVE_CUSTOMIZATION
-  for (User *U : PostInc->users()) {
-    Instruction *UI = cast<Instruction>(U);
-    if (!OrigLoop->contains(UI)) {
-#if SIFIVE_CUSTOMIZATION
-      /// Cherry-pick from #88385
-      if (!IsUseFromUncountableExit(PostInc, UI))
-        MissingVals[cast<PHINode>(UI)] = EndValue;
-#else
-      assert(isa<PHINode>(UI) && "Expected LCSSA form");
-      MissingVals[UI] = EndValue;
-#endif // SIFIVE_CUSTOMIZATION
-    }
-  }
-
-  // An external user of the penultimate value need to see EndValue - Step.
-  // The simplest way to get this is to recompute it from the constituent SCEVs,
-  // that is Start + (Step * (CRD - 1)).
-  for (User *U : OrigPhi->users()) {
-    auto *UI = cast<Instruction>(U);
-    if (!OrigLoop->contains(UI)) {
-#if SIFIVE_CUSTOMIZATION
-      /// Cherry-pick from #88385
-      if (IsUseFromUncountableExit(OrigPhi, UI))
-        continue;
-#else
-      assert(isa<PHINode>(UI) && "Expected LCSSA form");
-#endif // SIFIVE_CUSTOMIZATION
-      IRBuilder<> B(MiddleBlock->getTerminator());
-
-      // Fast-math-flags propagate from the original induction instruction.
-      if (isa_and_nonnull<FPMathOperator>(II.getInductionBinOp()))
-        B.setFastMathFlags(II.getInductionBinOp()->getFastMathFlags());
-
-      VPValue *StepVPV = Plan.getSCEVExpansion(II.getStep());
-      assert(StepVPV && "step must have been expanded during VPlan execution");
-      Value *Step = StepVPV->isLiveIn() ? StepVPV->getLiveInIRValue()
-                                        : State.get(StepVPV, VPLane(0));
-      Value *Escape = nullptr;
-      if (EndValue->getType()->isIntegerTy())
-        Escape = B.CreateSub(EndValue, Step);
-      else if (EndValue->getType()->isPointerTy())
-        Escape = B.CreatePtrAdd(EndValue, B.CreateNeg(Step));
-      else {
-        assert(EndValue->getType()->isFloatingPointTy() &&
-               "Unexpected induction type");
-        Escape = B.CreateBinOp(II.getInductionBinOp()->getOpcode() ==
-                                       Instruction::FAdd
-                                   ? Instruction::FSub
-                                   : Instruction::FAdd,
-                               EndValue, Step);
-      }
-      Escape->setName("ind.escape");
-      MissingVals[UI] = Escape;
-    }
-  }
-
-#if SIFIVE_CUSTOMIZATION
-  // For early-exit loops, both exiting blocks can share the same exit block,
-  // Predecessors of Phi in below check can be middle block or early-exit block.
-  // So we skip the check for early-exit loops.
-  if (!isRevectorizeWithoutStrideChecks(*OrigLoop) &&
-      !Legal->hasUncountableEarlyExit())
-#endif // SIFIVE_CUSTOMIZATION
-  assert((MissingVals.empty() ||
-          all_of(MissingVals,
-                 [MiddleBlock, this](const std::pair<Value *, Value *> &P) {
-                   return all_of(
-                       predecessors(cast<Instruction>(P.first)->getParent()),
-                       [MiddleBlock, this](BasicBlock *Pred) {
-                         return Pred == MiddleBlock ||
-                                Pred == OrigLoop->getLoopLatch();
-                       });
-                 })) &&
-         "Expected escaping values from latch/middle.block only");
-
-  for (auto &I : MissingVals) {
-    PHINode *PHI = cast<PHINode>(I.first);
-    // One corner case we have to handle is two IVs "chasing" each-other,
-    // that is %IV2 = phi [...], [ %IV1, %latch ]
-    // In this case, if IV1 has an external use, we need to avoid adding both
-    // "last value of IV1" and "penultimate value of IV2". So, verify that we
-    // don't already have an incoming value for the middle block.
-    if (PHI->getBasicBlockIndex(MiddleBlock) == -1)
-      PHI->addIncoming(I.second, MiddleBlock);
-  }
-}
-
-#if SIFIVE_CUSTOMIZATION
-/// Cherry-pick from #88385
-void InnerLoopVectorizer::fixupEarlyExitIVUsers(PHINode *OrigPhi,
-                                                const InductionDescriptor &II,
-                                                BasicBlock *VectorEarlyExitBB,
-                                                VPlan &Plan,
-                                                VPTransformState &State) {
-  // There are two kinds of external IV usages - those that use the value
-  // computed in the last iteration (the PHI) and those that use the penultimate
-  // value (the value that feeds into the phi from the loop latch).
-  // We allow both, but they, obviously, have different values.
-  DenseMap<Value *, Value *> MissingVals;
-  BasicBlock *OrigEarlyExitingBlock = Legal->getCouldNotComputeExitingBlock();
-  BasicBlock *OrigLoopLatch = OrigLoop->getLoopLatch();
-  Value *PostInc = OrigPhi->getIncomingValueForBlock(OrigLoopLatch);
-
-  VPBasicBlock *EntryVPBB = Plan.getVectorLoopRegion()->getEntryBasicBlock();
-  auto *CanonicalIV = cast<VPScalarPHIRecipe>(&*EntryVPBB->begin());
-
-  auto FixUpPhi = [&](Instruction *UI, bool PostInc) -> Value * {
-    IRBuilder<> B(VectorEarlyExitBB->getTerminator());
-    assert(isa<PHINode>(UI) && "Expected LCSSA form");
-
-    // Fast-math-flags propagate from the original induction instruction.
-    if (II.getInductionBinOp() && isa<FPMathOperator>(II.getInductionBinOp()))
-      B.setFastMathFlags(II.getInductionBinOp()->getFastMathFlags());
-
-    // We need to discover the mask that led us into the early exit block.
-    Value *VFirst = State.getVFirst();
-    Type *CtzType = CanonicalIV->getStartValue()->getLiveInIRValue()->getType();
-    Value *Ctz;
-    if (VFirst)
-      Ctz = VFirst;
-    else
-      Ctz = ConstantInt::get(CtzType, 0);
-    if (Ctz->getType() != CtzType)
-      Ctz = B.CreateZExtOrTrunc(Ctz, CtzType);
-    Ctz = B.CreateAdd(Ctz,
-                      cast<PHINode>(State.get(CanonicalIV->getVPSingleValue(),
-                                              /*IsScalar=*/true)));
-    if (PostInc)
-      Ctz = B.CreateAdd(Ctz, ConstantInt::get(CtzType, 1));
-
-    Value *Escape = nullptr;
-    VPValue *StepVPV = Plan.getSCEVExpansion(II.getStep());
-    assert(StepVPV && "step must have been expanded during VPlan execution");
-    Value *Step = StepVPV->isLiveIn() ? StepVPV->getLiveInIRValue()
-                                      : State.get(StepVPV, /*IsScalar=*/true);
-    Escape = emitTransformedIndex(B, Ctz, II.getStartValue(), Step,
-                                  II.getKind(), II.getInductionBinOp());
-    Escape->setName("ind.early.escape");
-
-    return Escape;
-  };
-
-  for (User *U : PostInc->users()) {
-    // This assumes if it's not in the loop then it must be the normal
-    // exit block. However, it could be a user in an early exit block different
-    // to the latch's exit block.
-    auto *UI = cast<Instruction>(U);
-    if (!OrigLoop->contains(UI)) {
-      PHINode *PHI = dyn_cast<PHINode>(UI);
-      assert(PHI && "Expected LCSSA form");
-      int Index = PHI->getBasicBlockIndex(OrigEarlyExitingBlock);
-      if (Index != -1 && PHI->getIncomingValue(Index) == PostInc)
-        MissingVals[UI] = FixUpPhi(UI, true);
-    }
-  }
-
-  for (User *U : OrigPhi->users()) {
-    auto *UI = cast<Instruction>(U);
-    if (!OrigLoop->contains(UI)) {
-      auto *PHI = cast<PHINode>(UI);
-      int Index = PHI->getBasicBlockIndex(OrigEarlyExitingBlock);
-      if (Index != -1 && PHI->getIncomingValue(Index) == OrigPhi)
-        MissingVals[UI] = FixUpPhi(UI, false);
-    }
-  }
-
-  for (auto &I : MissingVals) {
-    auto *PHI = cast<PHINode>(I.first);
-    // One corner case we have to handle is two IVs "chasing" each-other,
-    // that is %IV2 = phi [...], [ %IV1, %latch ]
-    // In this case, if IV1 has an external use, we need to avoid adding both
-    // "last value of IV1" and "penultimate value of IV2". So, verify that we
-    // don't already have an incoming value for the middle block.
-    if (PHI->getBasicBlockIndex(VectorEarlyExitBB) == -1) {
-      PHI->addIncoming(I.second, VectorEarlyExitBB);
-    }
-  }
-}
-#endif // SIFIVE_CUSTOMIZATION
-
-=======
->>>>>>> refs/rewritten/7a77f14
 namespace {
 
 struct CSEDenseMapInfo {
@@ -3656,7 +3385,6 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State) {
     for (PHINode &PN : Exit->phis())
       PSE.getSE()->forgetLcssaPhiWithNewPredecessor(OrigLoop, &PN);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// Cherry-pick from #88385
 
@@ -3667,9 +3395,6 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State) {
   if (VectorEarlyExitVPBB) {
     // Fix-up external users of the induction variables.
     BasicBlock *VectorEarlyExitBB = State.CFG.VPBB2IRBB[VectorEarlyExitVPBB];
-    for (const auto &Entry : Legal->getInductionVars())
-      fixupEarlyExitIVUsers(Entry.first, Entry.second, VectorEarlyExitBB, Plan,
-                            State);
 
     // TODO: model this in the plan when VPIRInstruction PHI supports more than
     // one operand
@@ -3680,31 +3405,11 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State) {
     if (Loop *EEL = LI->getLoopFor(OrigEarlyExitBB))
       EEL->addBasicBlockToLoop(VectorEarlyExitBB, *LI);
   }
-#endif // SIFIVE_CUSTOMIZATION
 
-  if (Cost->requiresScalarEpilogue(VF.isVector())) {
-    // No edge from the middle block to the unique exit block has been inserted
-    // and there is nothing to fix from vector loop; phis should have incoming
-    // from scalar loop only.
-  } else {
-    // TODO: Check in VPlan to see if IV users need fixing instead of checking
-    // the cost model.
-
-    // If we inserted an edge from the middle block to the unique exit block,
-    // update uses outside the loop (phis) to account for the newly inserted
-    // edge.
-
-    // Fix-up external users of the induction variables.
-    for (const auto &Entry : Legal->getInductionVars())
-      fixupIVUsers(Entry.first, Entry.second,
-                   getOrCreateVectorTripCount(nullptr), LoopMiddleBlock, State);
-#if SIFIVE_CUSTOMIZATION
+  if (!Cost->requiresScalarEpilogue(VF.isVector()))
     fixCSALiveOuts(State, Plan);
 #endif // SIFIVE_CUSTOMIZATION
-  }
 
-=======
->>>>>>> refs/rewritten/7a77f14
   // Don't apply optimizations below when no vector region remains, as they all
   // require a vector loop at the moment.
   if (!State.Plan->getVectorLoopRegion())
@@ -3832,107 +3537,6 @@ void InnerLoopVectorizer::fixNonInductionPHIs(VPTransformState &State) {
     }
   }
 }
-
-#if SIFIVE_CUSTOMIZATION
-
-//===--------------------------------------------------------------------===//
-// UncountableInnerLoopVectorizer
-//===--------------------------------------------------------------------===//
-
-/// Set up the values of IVs when exiting the vector loop.
-void UncountableInnerLoopVectorizer::fixupIVUsers(
-    PHINode *OrigPhi, const InductionDescriptor &II, 
-    Value *VectorTripCount, BasicBlock *MiddleBlock,
-    VPTransformState &State) {
-  // The latch block is a computable exiting block if the uncountable loop
-  // has a max trip count. And last lane would be IV + last RVL.
-  // Otherwise it is a data-dependent exiting block, and the last lane
-  // would be IV + VFirst.
-  if (VectorTripCount) {
-    InnerLoopVectorizer::fixupIVUsers(OrigPhi, II, VectorTripCount,
-                                      MiddleBlock, State);
-    return;
-  }
-
-  assert(Legal->isVectorizableUncountable() && "Not an uncountable loop");
-  assert(!VectorTripCount && "VectorTripCount not null for uncountable loop");
-
-  // Compute trip count as (CanonicalIVPHI + VFirst)
-  // FIXME: This only works on strlen(). When loop exits normally (not early),
-  // the vfirst is -1 and cannot be used.
-  VPBasicBlock *EntryVPBB = Plan.getVectorLoopRegion()->getEntryBasicBlock();
-  VPValue *CanonicalV = EntryVPBB->begin()->getVPSingleValue();
-  Value *CanonicalIVPHI = State.get(CanonicalV, /*NeedsScalar=*/true);
-
-  // ATM, all IVs in uncountable loops have their exiting values routed to the
-  // penultimate value (the value that feeds into the phi from the loop latch).
-  // This makes their exit values to penultimate value + last iteration's VL.
-  // The assumption that their increments happens before exiting the loop holds
-  // for single-block uncountable loops.
-  assert(OrigLoop->getUniqueExitBlock() && "Expected a single exit block");
-  DenseMap<Value *, Value *> MissingVals;
-
-  auto FixupIVUser = [&](Instruction *UI, bool AddOne) {
-    if (OrigLoop->contains(UI))
-      return;
-
-    assert(isa<PHINode>(UI) && "Expected LCSSA form");
-    IRBuilder<> B(MiddleBlock->getTerminator());
-
-    // Fast-math-flags propagate from the original induction instruction.
-    if (isa_and_present<FPMathOperator>(II.getInductionBinOp()))
-      B.setFastMathFlags(II.getInductionBinOp()->getFastMathFlags());
-
-    LLVM_DEBUG(dbgs() << "Uncountable Loop: MiddleBlock before fixupIVUsers\n";
-               MiddleBlock->dump(););
-
-    // Fix liveout values of IVs in the middle block i.e. vector loop IV
-    // PHI+VFirst+1. This is because VFirst starts from 0.
-    Value *VFirst = State.getVFirst();
-    assert(VFirst && "VFirst is null for uncountable loops");
-    Value *LastValidVL =
-        AddOne ? B.CreateAdd(VFirst, ConstantInt::get(VFirst->getType(), 1))
-               : VFirst;
-    VPValue *StepVPV = Plan.getSCEVExpansion(II.getStep());
-    Value *Step = StepVPV->isLiveIn() ? StepVPV->getLiveInIRValue()
-                                      : State.get(StepVPV, VPLane(0));
-    if (LastValidVL->getType() != CanonicalIVPHI->getType())
-      LastValidVL = B.CreateZExtOrTrunc(LastValidVL, CanonicalIVPHI->getType());
-    Value *Count = B.CreateAdd(CanonicalIVPHI, LastValidVL);
-    Value *Escape = emitTransformedIndex(B, Count, II.getStartValue(), Step,
-                                         II.getKind(), II.getInductionBinOp());
-    Escape->setName("ind.escape");
-    MissingVals[UI] = Escape;
-  };
-
-  // An external user of the last iteration's value should see the value that
-  // the remainder loop uses to initialize its own IV.
-  Value *PostInc = OrigPhi->getIncomingValueForBlock(OrigLoop->getLoopLatch());
-  for (User *U : PostInc->users()) {
-    auto *UI = cast<Instruction>(U);
-    FixupIVUser(UI, true);
-  }
-
-  // An external user of the penultimate value need to see the value from the
-  // phi.
-  for (User *U : OrigPhi->users()) {
-    auto *UI = cast<Instruction>(U);
-    FixupIVUser(UI, false);
-  }
-
-  for (auto &I : MissingVals) {
-    auto *PHI = cast<PHINode>(I.first);
-    // One corner case we have to handle is two IVs "chasing" each-other,
-    // that is %IV2 = phi [...], [ %IV1, %latch ]
-    // In this case, if IV1 has an external use, we need to avoid adding both
-    // "last value of IV1" and "penultimate value of IV2". So, verify that we
-    // don't already have an incoming value for the middle block.
-    if (PHI->getBasicBlockIndex(MiddleBlock) == -1) {
-      PHI->addIncoming(I.second, MiddleBlock);
-    }
-  }
-}
-#endif // SIFIVE_CUSTOMIZATION
 
 void LoopVectorizationCostModel::collectLoopScalars(ElementCount VF) {
   // We should not collect Scalars more than once per VF. Right now, this
@@ -4304,20 +3908,13 @@ bool LoopVectorizationCostModel::interleavedAccessCanBeWidened(
   if (hasIrregularType(ScalarTy, DL))
     return false;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (!Legal->useVLAVectorizer())
 #endif
-  // We currently only know how to emit interleave/deinterleave with
-  // Factor=2 for scalable vectors. This is purely an implementation
-  // limit.
-  if (VF.isScalable() && InterleaveFactor != 2)
-=======
   // For scalable vectors, the only interleave factor currently supported
   // must be power of 2 since we require the (de)interleave2 intrinsics
   // instead of shufflevectors.
   if (VF.isScalable() && !isPowerOf2_32(InterleaveFactor))
->>>>>>> refs/rewritten/7a77f14
     return false;
 
   // If the group involves a non-integral pointer, we may not be able to
@@ -6025,7 +5622,7 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
                             << " yields an invalid cost. Skipping\n");
           continue;
         }
-        VPCostContext CostCtx(TTI, *TLI, Legal->getWidestInductionType(), CM);
+        VPCostContext CostCtx(TTI, *TLI, Legal->getWidestInductionType(), CM, CM.CostKind);
         if (!VectorizerDisableReduceOverheadEstimation && VF.isVector())
           Overhead = getPlanFor(VF).overhead(VF, CostCtx);
       } else {
@@ -9529,7 +9126,7 @@ VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
         continue;
       }
 
-      VPCostContext CostCtx(TTI, *TLI, Legal->getWidestInductionType(), CM);
+      VPCostContext CostCtx(TTI, *TLI, Legal->getWidestInductionType(), CM, CM.CostKind);
       InstructionCost Overhead = 0;
       if (Legal->useVLAVectorizer() &&
           !VectorizerDisableReduceOverheadEstimation && VF.isVector())
@@ -11556,10 +11153,6 @@ collectUsersInExitBlocks(Loop *OrigLoop, VPRecipeBuilder &Builder,
         }
         Value *IncomingValue = ExitPhi->getIncomingValueForBlock(ExitingBB);
         VPValue *V = Builder.getVPValueOrAddLiveIn(IncomingValue);
-<<<<<<< HEAD
-        // Exit values for inductions are computed and updated outside of VPlan
-        // and independent of induction recipes.
-        // TODO: Compute induction exit values in VPlan.
 #if SIFIVE_CUSTOMIZATION
       // TODO: Compute CSA exit values in VPlan, use VPLiveOuts to update
       // live-outs.
@@ -11570,24 +11163,7 @@ collectUsersInExitBlocks(Loop *OrigLoop, VPRecipeBuilder &Builder,
                return P && CSAs.contains(P);
              })))
           continue;
-        bool IsIVUse = isa<Instruction>(IncomingValue) &&
-                       OrigLoop->contains(cast<Instruction>(IncomingValue)) &&
-                       any_of(IncomingValue->users(), [&Inductions](User *U) {
-                         auto *P = dyn_cast<PHINode>(U);
-                         return P && Inductions.contains(P);
-                       });
-        // Uncountable loop optimizes IV liveout as well
-        if ((IsIVUse || isOptimizableIVOrUse(V)) &&
-            (Plan.isUncountable() ||
-             ExitVPBB->getSinglePredecessor() == MiddleVPBB))
-          continue;
-#else
-        if (isOptimizableIVOrUse(V) &&
-            ExitVPBB->getSinglePredecessor() == MiddleVPBB)
-          continue;
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> refs/rewritten/7a77f14
         ExitUsersToFix.insert(ExitIRI);
         ExitIRI->addOperand(V);
       }
@@ -11806,7 +11382,7 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     DataDepExitCond = BI->getCondition();
     if (Legal->hasUncountableEarlyExit()) {
       EarlyExitingBB = CouldNotComputeExitingBB;
-      EarlyExitVPBB = new VPBasicBlock("vector.early.exit");
+      EarlyExitVPBB = Plan->createVPBasicBlock("vector.early.exit");
       Plan->getVectorLoopRegion()->setEarlyExit(EarlyExitVPBB);
     }
   }
@@ -11868,19 +11444,13 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
                      CM.getWideningDecision(IG->getInsertPos(), VF) ==
                          LoopVectorizationCostModel::CM_Interleave);
       // For scalable vectors, the only interleave factor currently supported
-<<<<<<< HEAD
-      // is 2 since we require the (de)interleave2 intrinsics instead of
-      // shufflevectors.
 #if SIFIVE_CUSTOMIZATION
       assert((!Result || !VF.isScalable() || IG->getFactor() <= 8) &&
              "Unsupported interleave factor for scalable vectors");
 #else
-      assert((!Result || !VF.isScalable() || IG->getFactor() == 2) &&
-=======
       // must be power of 2 since we require the (de)interleave2 intrinsics
       // instead of shufflevectors.
       assert((!Result || !VF.isScalable() || isPowerOf2_32(IG->getFactor())) &&
->>>>>>> refs/rewritten/7a77f14
              "Unsupported interleave factor for scalable vectors");
 #endif // SIFIVE_CUSTOMIZATION
       return Result;
@@ -12061,23 +11631,18 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     VPlanTransforms::handleUncountableEarlyExit(
         *Plan, *PSE.getSE(), OrigLoop, UncountableExitingBlock, RecipeBuilder);
   }
-<<<<<<< HEAD
+  DenseMap<VPValue *, VPValue *> IVEndValues;
 #if SIFIVE_CUSTOMIZATION
   // addScalarResumePhis requires TripCount to produce end-value
   // skip this for uncountable loop without trip count. e.g. strlen()
   if (!Plan->isUncountable() || Legal->hasUncountableEarlyExit())
-#endif // SIFIVE_CUSTOMIZATION
-  addScalarResumePhis(RecipeBuilder, *Plan);
-#if SIFIVE_CUSTOMIZATION
+    addScalarResumePhis(RecipeBuilder, *Plan, IVEndValues);
   SetVector<VPIRInstruction *> ExitUsersToFix =
       collectUsersInExitBlocks(OrigLoop, RecipeBuilder, *Plan,
                                Legal->getInductionVars(), Legal->getCSAs());
   addExitUsersForFirstOrderRecurrences(*Plan, ExitUsersToFix, *Legal, CM);
 #else
-=======
-  DenseMap<VPValue *, VPValue *> IVEndValues;
   addScalarResumePhis(RecipeBuilder, *Plan, IVEndValues);
->>>>>>> refs/rewritten/7a77f14
   SetVector<VPIRInstruction *> ExitUsersToFix =
       collectUsersInExitBlocks(OrigLoop, RecipeBuilder, *Plan);
   addExitUsersForFirstOrderRecurrences(*Plan, ExitUsersToFix);
