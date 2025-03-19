@@ -55,6 +55,10 @@ class VPValue {
   friend class VPSlotTracker;
   friend class VPRecipeBase;
   friend class VPlan;
+#if SIFIVE_CUSTOMIZATION
+  friend struct VPWidenLoadRecipe;
+  friend struct VPWidenLoadEVLRecipe;
+#endif // SIFIVE_CUSTOMIZATION
 
   const unsigned char SubclassID; ///< Subclass identifier (for isa/dyn_cast).
 
