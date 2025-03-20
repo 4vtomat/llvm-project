@@ -1010,6 +1010,10 @@ void VPlanTransforms::optimizeInductionExitUsers(
       break;
 
     VPValue *Incoming;
+#if SIFIVE_CUSTOMIZATION
+    if (!ExitIRI->getNumOperands())
+      continue;
+#endif // SIFIVE_CUSTOMIZATION
     if (!match(ExitIRI->getOperand(0),
                m_VPInstruction<VPInstruction::ExtractFromEnd>(
                    m_VPValue(Incoming), m_SpecificInt(1))))
