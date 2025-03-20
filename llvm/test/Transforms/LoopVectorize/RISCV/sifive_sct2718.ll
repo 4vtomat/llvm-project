@@ -19,7 +19,7 @@ do.body:
   %or7 = tail call i32 @llvm.bswap.i32(i32 %f.0)
   %add.ptr104 = getelementptr i8, ptr %s.addr.0, i64 20
   %dec = add i64 %iters.0, 1
-  %cmp106.not = icmp eq i64 %iters.0, 0
+  %cmp106.not = icmp eq i64 %iters.0, 1024
   br i1 %cmp106.not, label %do.end107, label %do.body
 
 do.end107:

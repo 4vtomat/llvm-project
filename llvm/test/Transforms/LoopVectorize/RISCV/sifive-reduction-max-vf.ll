@@ -5,30 +5,73 @@
 define void @test() {
 ; CHECK-LABEL: @test(
 ; CHECK-NEXT:  for.body264.preheader:
+; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK:       vector.ph:
+; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 1024, i32 8, i1 true)
+; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
+; CHECK:       vector.body:
+; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP0]], [[VECTOR_PH]] ], [ [[TMP2:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 8 x double> [ splat (double -0.000000e+00), [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[TMP1:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP2]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP1]], i32 8, i1 true)
+; CHECK-NEXT:    [[VP_OP:%.*]] = call reassoc <vscale x 8 x double> @llvm.vp.fmuladd.nxv8f64(<vscale x 8 x double> zeroinitializer, <vscale x 8 x double> zeroinitializer, <vscale x 8 x double> [[VEC_PHI]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP_MERGE]] = call <vscale x 8 x double> @llvm.vp.merge.nxv8f64(<vscale x 8 x i1> splat (i1 true), <vscale x 8 x double> [[VP_OP]], <vscale x 8 x double> [[VEC_PHI]], i32 [[TMP2]])
+; CHECK-NEXT:    [[TMP3:%.*]] = zext i32 [[TMP2]] to i64
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP3]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP4:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 1024
+; CHECK-NEXT:    br i1 [[TMP4]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK:       middle.block:
+; CHECK-NEXT:    [[TMP5:%.*]] = call reassoc double @llvm.vp.reduce.fadd.nxv8f64(double -0.000000e+00, <vscale x 8 x double> [[VP_OP_MERGE]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
+; CHECK-NEXT:    [[TMP6:%.*]] = fadd reassoc double 0.000000e+00, [[TMP5]]
+; CHECK-NEXT:    br label [[FOR_END277_LOOPEXIT:%.*]]
+; CHECK:       scalar.ph:
 ; CHECK-NEXT:    br label [[FOR_BODY264:%.*]]
 ; CHECK:       for.body264:
-; CHECK-NEXT:    [[INDVARS_IV914:%.*]] = phi i64 [ [[INDVARS_IV_NEXT915:%.*]], [[FOR_BODY264]] ], [ 0, [[SCALAR_PH:%.*]] ]
+; CHECK-NEXT:    [[INDVARS_IV914:%.*]] = phi i64 [ [[INDVARS_IV_NEXT915:%.*]], [[FOR_BODY264]] ], [ 0, [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[YE_0849:%.*]] = phi double [ [[TMP7:%.*]], [[FOR_BODY264]] ], [ 0.000000e+00, [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[TMP7]] = tail call reassoc double @llvm.fmuladd.f64(double 0.000000e+00, double 0.000000e+00, double [[YE_0849]])
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT915]] = add nuw nsw i64 [[INDVARS_IV914]], 1
-; CHECK-NEXT:    [[EXITCOND918_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT915]], 0
-; CHECK-NEXT:    br i1 [[EXITCOND918_NOT]], label [[FOR_END277_LOOPEXIT:%.*]], label [[FOR_BODY264]]
+; CHECK-NEXT:    [[EXITCOND918_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT915]], 1024
+; CHECK-NEXT:    br i1 [[EXITCOND918_NOT]], label [[FOR_END277_LOOPEXIT]], label [[FOR_BODY264]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       for.end277.loopexit:
-; CHECK-NEXT:    [[DOTLCSSA:%.*]] = phi double [ [[TMP7]], [[FOR_BODY264]] ]
+; CHECK-NEXT:    [[DOTLCSSA:%.*]] = phi double [ [[TMP7]], [[FOR_BODY264]] ], [ [[TMP6]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret void
 ;
 ; CHECK-NO-POSTSV-LABEL: @test(
 ; CHECK-NO-POSTSV-NEXT:  for.body264.preheader:
+; CHECK-NO-POSTSV-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK-NO-POSTSV:       vector.ph:
+; CHECK-NO-POSTSV-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 1024, i32 8, i1 true)
+; CHECK-NO-POSTSV-NEXT:    br label [[VECTOR_BODY:%.*]]
+; CHECK-NO-POSTSV:       vector.body:
+; CHECK-NO-POSTSV-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NO-POSTSV-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
+; CHECK-NO-POSTSV-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP0]], [[VECTOR_PH]] ], [ [[TMP2:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NO-POSTSV-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 8 x double> [ insertelement (<vscale x 8 x double> splat (double -0.000000e+00), double 0.000000e+00, i32 0), [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NO-POSTSV-NEXT:    [[TMP1:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
+; CHECK-NO-POSTSV-NEXT:    [[TMP2]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP1]], i32 8, i1 true)
+; CHECK-NO-POSTSV-NEXT:    [[VP_OP:%.*]] = call reassoc <vscale x 8 x double> @llvm.vp.fmuladd.nxv8f64(<vscale x 8 x double> zeroinitializer, <vscale x 8 x double> zeroinitializer, <vscale x 8 x double> [[VEC_PHI]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NO-POSTSV-NEXT:    [[VP_OP_MERGE]] = call <vscale x 8 x double> @llvm.vp.merge.nxv8f64(<vscale x 8 x i1> splat (i1 true), <vscale x 8 x double> [[VP_OP]], <vscale x 8 x double> [[VEC_PHI]], i32 [[TMP2]])
+; CHECK-NO-POSTSV-NEXT:    [[TMP3:%.*]] = zext i32 [[TMP2]] to i64
+; CHECK-NO-POSTSV-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP3]], [[EVL_BASED_IV]]
+; CHECK-NO-POSTSV-NEXT:    [[TMP4:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 1024
+; CHECK-NO-POSTSV-NEXT:    br i1 [[TMP4]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NO-POSTSV:       middle.block:
+; CHECK-NO-POSTSV-NEXT:    [[TMP5:%.*]] = call reassoc double @llvm.vp.reduce.fadd.nxv8f64(double -0.000000e+00, <vscale x 8 x double> [[VP_OP_MERGE]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
+; CHECK-NO-POSTSV-NEXT:    br label [[FOR_END277_LOOPEXIT:%.*]]
+; CHECK-NO-POSTSV:       scalar.ph:
 ; CHECK-NO-POSTSV-NEXT:    br label [[FOR_BODY264:%.*]]
 ; CHECK-NO-POSTSV:       for.body264:
-; CHECK-NO-POSTSV-NEXT:    [[INDVARS_IV914:%.*]] = phi i64 [ [[INDVARS_IV_NEXT915:%.*]], [[FOR_BODY264]] ], [ 0, [[SCALAR_PH:%.*]] ]
+; CHECK-NO-POSTSV-NEXT:    [[INDVARS_IV914:%.*]] = phi i64 [ [[INDVARS_IV_NEXT915:%.*]], [[FOR_BODY264]] ], [ 0, [[SCALAR_PH]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[YE_0849:%.*]] = phi double [ [[TMP6:%.*]], [[FOR_BODY264]] ], [ 0.000000e+00, [[SCALAR_PH]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[TMP6]] = tail call reassoc double @llvm.fmuladd.f64(double 0.000000e+00, double 0.000000e+00, double [[YE_0849]])
 ; CHECK-NO-POSTSV-NEXT:    [[INDVARS_IV_NEXT915]] = add nuw nsw i64 [[INDVARS_IV914]], 1
-; CHECK-NO-POSTSV-NEXT:    [[EXITCOND918_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT915]], 0
-; CHECK-NO-POSTSV-NEXT:    br i1 [[EXITCOND918_NOT]], label [[FOR_END277_LOOPEXIT:%.*]], label [[FOR_BODY264]]
+; CHECK-NO-POSTSV-NEXT:    [[EXITCOND918_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT915]], 1024
+; CHECK-NO-POSTSV-NEXT:    br i1 [[EXITCOND918_NOT]], label [[FOR_END277_LOOPEXIT]], label [[FOR_BODY264]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK-NO-POSTSV:       for.end277.loopexit:
-; CHECK-NO-POSTSV-NEXT:    [[DOTLCSSA:%.*]] = phi double [ [[TMP6]], [[FOR_BODY264]] ]
+; CHECK-NO-POSTSV-NEXT:    [[DOTLCSSA:%.*]] = phi double [ [[TMP6]], [[FOR_BODY264]] ], [ [[TMP5]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NO-POSTSV-NEXT:    ret void
 ;
 
@@ -40,7 +83,7 @@ for.body264:
   %ye.0849 = phi double [ %0, %for.body264 ], [ 0.000000e+00, %for.body264.preheader ]
   %0 = tail call reassoc double @llvm.fmuladd.f64(double 0.000000e+00, double 0.000000e+00, double %ye.0849)
   %indvars.iv.next915 = add nuw nsw i64 %indvars.iv914, 1
-  %exitcond918.not = icmp eq i64 %indvars.iv.next915, 0
+  %exitcond918.not = icmp eq i64 %indvars.iv.next915, 1024
   br i1 %exitcond918.not, label %for.end277.loopexit, label %for.body264
 
 for.end277.loopexit:
