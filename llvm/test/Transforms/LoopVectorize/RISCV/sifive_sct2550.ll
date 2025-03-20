@@ -5,30 +5,9 @@ define i32 @test() {
 ; CHECK-LABEL: define i32 @test
 ; CHECK-SAME: () #[[ATTR0:[0-9]+]] {
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
-; CHECK:       vector.ph:
-; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
-; CHECK:       vector.body:
-; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[AVL:%.*]] = sub i64 0, [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 4, i1 true)
-; CHECK-NEXT:    [[TMP1:%.*]] = add i64 [[EVL_BASED_IV]], 0
-; CHECK-NEXT:    [[TMP2:%.*]] = add i64 1, [[TMP1]]
-; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr double, ptr null, i64 [[TMP2]]
-; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr double, ptr [[TMP3]], i32 0
-; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x double> @llvm.vp.load.nxv4f64.p0(ptr align 8 [[TMP4]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
-; CHECK-NEXT:    call void @llvm.vp.scatter.nxv4f64.nxv4p0(<vscale x 4 x double> [[VP_OP_LOAD]], <vscale x 4 x ptr> align 8 zeroinitializer, <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
-; CHECK-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP0]] to i64
-; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP6:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 0
-; CHECK-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
-; CHECK:       middle.block:
-; CHECK-NEXT:    br label [[FOR_EXIT:%.*]]
-; CHECK:       scalar.ph:
 ; CHECK-NEXT:    br label [[FOR_PH:%.*]]
 ; CHECK:       for.ph:
-; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_COND:%.*]] ]
+; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[IV_NEXT:%.*]], [[FOR_COND:%.*]] ]
 ; CHECK-NEXT:    br i1 false, label [[FOR_COND_LCSSA:%.*]], label [[FOR_BODY:%.*]]
 ; CHECK:       for.exit:
 ; CHECK-NEXT:    ret i32 0
@@ -36,15 +15,15 @@ define i32 @test() {
 ; CHECK-NEXT:    [[INDVARS_IV_I201_UNR_I:%.*]] = phi i64 [ 1, [[FOR_BODY]] ], [ 0, [[FOR_PH]] ]
 ; CHECK-NEXT:    br i1 false, label [[FOR_COND]], label [[FOR_EPILOGUE:%.*]]
 ; CHECK:       for.epilogue:
-; CHECK-NEXT:    [[TMP7:%.*]] = add i64 [[INDVARS_IV_I201_UNR_I]], [[IV]]
-; CHECK-NEXT:    [[ARRAYIDX_I61_I203_EPIL_I:%.*]] = getelementptr double, ptr null, i64 [[TMP7]]
-; CHECK-NEXT:    [[TMP8:%.*]] = load double, ptr [[ARRAYIDX_I61_I203_EPIL_I]], align 8
-; CHECK-NEXT:    store double [[TMP8]], ptr null, align 8
+; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[INDVARS_IV_I201_UNR_I]], [[IV]]
+; CHECK-NEXT:    [[ARRAYIDX_I61_I203_EPIL_I:%.*]] = getelementptr double, ptr null, i64 [[TMP0]]
+; CHECK-NEXT:    [[TMP1:%.*]] = load double, ptr [[ARRAYIDX_I61_I203_EPIL_I]], align 8
+; CHECK-NEXT:    store double [[TMP1]], ptr null, align 8
 ; CHECK-NEXT:    br label [[FOR_COND]]
 ; CHECK:       for.cond:
 ; CHECK-NEXT:    [[IV_NEXT]] = add i64 [[IV]], 1
 ; CHECK-NEXT:    [[EXITCOND83_NOT_I199_I:%.*]] = icmp eq i64 [[IV_NEXT]], 0
-; CHECK-NEXT:    br i1 [[EXITCOND83_NOT_I199_I]], label [[FOR_EXIT]], label [[FOR_PH]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND83_NOT_I199_I]], label [[FOR_EXIT:%.*]], label [[FOR_PH]]
 ; CHECK:       for.body:
 ; CHECK-NEXT:    br label [[FOR_COND_LCSSA]]
 ;

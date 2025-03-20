@@ -7,31 +7,14 @@ define void @buf2img() {
 ; CHECK-LABEL: define void @buf2img(
 ; CHECK-SAME: ) #[[ATTR0:[0-9]+]] {
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
-; CHECK:       vector.ph:
-; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 32 x i16> @llvm.bswap.nxv32i16(<vscale x 32 x i16> zeroinitializer)
-; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
-; CHECK:       vector.body:
-; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[TMP0:%.*]] = sub i64 0, [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 32, i1 true)
-; CHECK-NEXT:    call void @llvm.vp.scatter.nxv32i16.nxv32p0(<vscale x 32 x i16> [[VP_OP]], <vscale x 32 x ptr> align 2 zeroinitializer, <vscale x 32 x i1> splat (i1 true), i32 [[TMP1]])
-; CHECK-NEXT:    [[TMP3:%.*]] = zext i32 [[TMP1]] to i64
-; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP3]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP4:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 0
-; CHECK-NEXT:    br i1 [[TMP4]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
-; CHECK:       middle.block:
-; CHECK-NEXT:    br label [[FOR_COND:%.*]]
-; CHECK:       scalar.ph:
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[IV114:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV115:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[IV114:%.*]] = phi i64 [ 0, [[SCALAR_PH:%.*]] ], [ [[IV115:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[REV69:%.*]] = tail call i16 @llvm.bswap.i16(i16 0)
 ; CHECK-NEXT:    store i16 [[REV69]], ptr null, align 2
 ; CHECK-NEXT:    [[IV115]] = add i64 [[IV114]], 1
 ; CHECK-NEXT:    [[EXITCOND:%.*]] = icmp eq i64 [[IV115]], 0
-; CHECK-NEXT:    br i1 [[EXITCOND]], label [[FOR_COND]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND]], label [[FOR_COND:%.*]], label [[FOR_BODY]]
 ; CHECK:       for.cond:
 ; CHECK-NEXT:    ret void
 ;
