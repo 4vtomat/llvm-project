@@ -84,6 +84,10 @@ Type *VPTypeAnalysis::inferScalarTypeForRecipe(const VPInstruction *R) {
     auto *OrigPhi = cast<PHINode>(PhiR->getUnderlyingValue());
     return OrigPhi->getType();
   }
+#if SIFIVE_CUSTOMIZATION
+  case VPInstruction::CSAVLPhi:
+  case VPInstruction::CSAVLSel:
+#endif // SIFIVE_CUSTOMIZATION
   case VPInstruction::ExplicitVectorLength:
     return Type::getIntNTy(Ctx, 32);
   case VPInstruction::FirstOrderRecurrenceSplice:
