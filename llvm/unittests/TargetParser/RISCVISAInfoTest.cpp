@@ -293,7 +293,9 @@ TEST(ParseArchString, AcceptsSupportedBaseISAsAndSetsXLenAndFLen) {
   ASSERT_THAT_EXPECTED(MaybeRV64GCV, Succeeded());
   RISCVISAInfo &InfoRV64GCV = **MaybeRV64GCV;
   const auto &ExtsRV64GCV = InfoRV64GCV.getExtensions();
-  EXPECT_EQ(ExtsRV64GCV.size(), 20UL);
+#ifdef SIFIVE_CUSTOMIZATION
+  EXPECT_EQ(ExtsRV64GCV.size(), 22UL);
+#endif // SIFIVE_CUSTOMIZATION
   EXPECT_TRUE(ExtsRV64GCV.at("i") == (RISCVISAUtils::ExtensionVersion{2, 1}));
   EXPECT_TRUE(ExtsRV64GCV.at("m") == (RISCVISAUtils::ExtensionVersion{2, 0}));
   EXPECT_TRUE(ExtsRV64GCV.at("a") == (RISCVISAUtils::ExtensionVersion{2, 1}));
@@ -303,10 +305,14 @@ TEST(ParseArchString, AcceptsSupportedBaseISAsAndSetsXLenAndFLen) {
   EXPECT_TRUE(ExtsRV64GCV.at("zicsr") == (RISCVISAUtils::ExtensionVersion{2, 0}));
   EXPECT_TRUE(ExtsRV64GCV.at("zifencei") ==
               (RISCVISAUtils::ExtensionVersion{2, 0}));
-  EXPECT_TRUE(ExtsRV64G.at("zmmul") == (RISCVISAUtils::ExtensionVersion{1, 0}));
-  EXPECT_TRUE(ExtsRV64G.at("zaamo") == (RISCVISAUtils::ExtensionVersion{1, 0}));
-  EXPECT_TRUE(ExtsRV64G.at("zalrsc") ==
+#ifdef SIFIVE_CUSTOMIZATION
+  EXPECT_TRUE(ExtsRV64GCV.at("zmmul") == (RISCVISAUtils::ExtensionVersion{1, 0}));
+  EXPECT_TRUE(ExtsRV64GCV.at("zaamo") == (RISCVISAUtils::ExtensionVersion{1, 0}));
+  EXPECT_TRUE(ExtsRV64GCV.at("zalrsc") ==
               (RISCVISAUtils::ExtensionVersion{1, 0}));
+  EXPECT_TRUE(ExtsRV64GCV.at("zca") == (RISCVISAUtils::ExtensionVersion{1, 0}));
+  EXPECT_TRUE(ExtsRV64GCV.at("zcd") == (RISCVISAUtils::ExtensionVersion{1, 0}));
+#endif // SIFIVE_CUSTOMIZATION
   EXPECT_TRUE(ExtsRV64GCV.at("v") == (RISCVISAUtils::ExtensionVersion{1, 0}));
   EXPECT_TRUE(ExtsRV64GCV.at("zve32x") == (RISCVISAUtils::ExtensionVersion{1, 0}));
   EXPECT_TRUE(ExtsRV64GCV.at("zve32f") == (RISCVISAUtils::ExtensionVersion{1, 0}));
@@ -388,7 +394,9 @@ TEST(ParseArchString, AcceptsUnderscoreSplittingExtensions) {
     auto MaybeISAInfo = RISCVISAInfo::parseArchString(Input, true);
     ASSERT_THAT_EXPECTED(MaybeISAInfo, Succeeded());
     const auto &Exts = (*MaybeISAInfo)->getExtensions();
-    EXPECT_EQ(Exts.size(), 11UL);
+#ifdef SIFIVE_CUSTOMIZATION
+    EXPECT_EQ(Exts.size(), 14UL);
+#endif // SIFIVE_CUSTOMIZATION
     EXPECT_EQ(Exts.count("i"), 1U);
     EXPECT_EQ(Exts.count("m"), 1U);
     EXPECT_EQ(Exts.count("a"), 1U);
@@ -400,6 +408,11 @@ TEST(ParseArchString, AcceptsUnderscoreSplittingExtensions) {
     EXPECT_EQ(Exts.count("zmmul"), 1U);
     EXPECT_EQ(Exts.count("zaamo"), 1U);
     EXPECT_EQ(Exts.count("zalrsc"), 1U);
+#ifdef SIFIVE_CUSTOMIZATION
+    EXPECT_EQ(Exts.count("zca"), 1U);
+    EXPECT_EQ(Exts.count("zcf"), 1U);
+    EXPECT_EQ(Exts.count("zcd"), 1U);
+#endif // SIFIVE_CUSTOMIZATION
   }
 }
 
@@ -707,7 +720,9 @@ TEST(ParseArchString, AcceptsBareProfileNames) {
   auto MaybeRVA20U64 = RISCVISAInfo::parseArchString("rva20u64", true);
   ASSERT_THAT_EXPECTED(MaybeRVA20U64, Succeeded());
   const auto &Exts = (*MaybeRVA20U64)->getExtensions();
-  EXPECT_EQ(Exts.size(), 16UL);
+#ifdef SIFIVE_CUSTOMIZATION
+  EXPECT_EQ(Exts.size(), 18UL);
+#endif // SIFIVE_CUSTOMIZATION
   EXPECT_EQ(Exts.count("i"), 1U);
   EXPECT_EQ(Exts.count("m"), 1U);
   EXPECT_EQ(Exts.count("f"), 1U);
@@ -724,6 +739,10 @@ TEST(ParseArchString, AcceptsBareProfileNames) {
   EXPECT_EQ(Exts.count("zmmul"), 1U);
   EXPECT_EQ(Exts.count("zaamo"), 1U);
   EXPECT_EQ(Exts.count("zalrsc"), 1U);
+#ifdef SIFIVE_CUSTOMIZATION
+  EXPECT_EQ(Exts.count("zca"), 1U);
+  EXPECT_EQ(Exts.count("zcd"), 1U);
+#endif // SIFIVE_CUSTOMIZATION
 
   auto MaybeRVA23U64 = RISCVISAInfo::parseArchString("rva23u64", true);
   ASSERT_THAT_EXPECTED(MaybeRVA23U64, Succeeded());

@@ -3,7 +3,7 @@
 
 // RV32: "target-features"="+32bit,+a,+c,+m,+relax,
 // SIFIVE_CUSTOMIZATION
-// RV64: "target-features"="+64bit,+a,+c,+d,+f,+m,+relax,+zaamo,+zalrsc,+zicsr
+// RV64: "target-features"="+64bit,+a,+c,+d,+f,+m,+relax,+zaamo,+zalrsc,+zca,+zcd,+zicsr
 // end of SIFIVE_CUSTOMIZATION
 
 // Dummy function
