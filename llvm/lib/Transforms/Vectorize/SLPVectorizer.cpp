@@ -12150,18 +12150,23 @@ bool BoUpSLP::isTreeTinyAndNotFullyVectorizable(bool ForReduction) const {
   // gathered.
   if (!ForReduction && SLPCostThreshold.getNumOccurrences() &&
       VectorizableTree.size() <= Limit &&
-      all_of(VectorizableTree, [&](const std::unique_ptr<TreeEntry> &TE) {
-        return (TE->isGather() &&
-                TE->getOpcode() != Instruction::ExtractElement &&
-                count_if(TE->Scalars, IsaPred<ExtractElementInst>) <= Limit) ||
-               TE->getOpcode() == Instruction::InsertElement ||
-               (TE->getOpcode() == Instruction::PHI &&
-                all_of(TE->Scalars, [&](Value *V) {
-                  return isa<PoisonValue>(V) || MustGather.contains(V);
-                }));
-      }) &&
+      all_of(VectorizableTree,
+             [&](const std::unique_ptr<TreeEntry> &TE) {
+               return (TE->isGather() &&
+                       (!TE->hasState() ||
+                        TE->getOpcode() != Instruction::ExtractElement) &&
+                       count_if(TE->Scalars, IsaPred<ExtractElementInst>) <=
+                           Limit) ||
+                      (TE->hasState() &&
+                       TE->getOpcode() == Instruction::InsertElement) ||
+                      ((TE->hasState() &&
+                        TE->getOpcode() == Instruction::PHI) &&
+                       all_of(TE->Scalars, [&](Value *V) {
+                         return isa<PoisonValue>(V) || MustGather.contains(V);
+                       }));
+             }) &&
       any_of(VectorizableTree, [&](const std::unique_ptr<TreeEntry> &TE) {
-        return TE->State == TreeEntry::Vectorize &&
+        return TE->State == TreeEntry::Vectorize && TE->hasState() &&
                TE->getOpcode() == Instruction::PHI;
       }))
     return true;
