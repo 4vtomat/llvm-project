@@ -526,31 +526,8 @@ public:
 
   /// Returns true if the loop has exactly one uncountable early exit, i.e. an
   /// uncountable exit that isn't the latch block.
-<<<<<<< HEAD
-  bool hasUncountableEarlyExit() const { return HasUncountableEarlyExit; }
-
-  /// Returns the uncountable early exiting block.
-  BasicBlock *getUncountableEarlyExitingBlock() const {
-
-#if SIFIVE_CUSTOMIZATION
-    // FIXME: Assertions are triggered because upsream call this without
-    // checking hasUncountableEarlyExit
-    if (getUncountableExitingBlocks().empty())
-      return nullptr;
-#else
-    if (!HasUncountableEarlyExit) {
-      assert(getUncountableExitingBlocks().empty() &&
-             "Expected no uncountable exiting blocks");
-      return nullptr;
-    }
-#endif // SIFIVE_CUSTOMIZATION
-    assert(getUncountableExitingBlocks().size() == 1 &&
-           "Expected only a single uncountable exiting block");
-    return getUncountableExitingBlocks()[0];
-=======
   bool hasUncountableEarlyExit() const {
     return getUncountableEdge().has_value();
->>>>>>> refs/rewritten/1a8f49f
   }
 
   /// Returns the uncountable early exiting block, if there is exactly one.

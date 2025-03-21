@@ -2183,8 +2183,6 @@ bool LoopVectorizationLegality::canVectorize(bool UseVPlanNativePath) {
       return false;
   }
 
-<<<<<<< HEAD
-
 #if SIFIVE_CUSTOMIZATION
   // Countable vs uncountable loops
   const SCEV *ExitCount = PSE.getBackedgeTakenCount();
@@ -2217,10 +2215,6 @@ bool LoopVectorizationLegality::canVectorize(bool UseVPlanNativePath) {
   // Skip the countable loop one.
 #endif // SIFIVE_CUSTOMIZATION
 
-  HasUncountableEarlyExit = false;
-
-=======
->>>>>>> refs/rewritten/1a8f49f
   if (isa<SCEVCouldNotCompute>(PSE.getBackedgeTakenCount())) {
     if (TheLoop->getExitingBlock()) {
       reportVectorizationFailure("Cannot vectorize uncountable loop",
@@ -2574,6 +2568,7 @@ bool LoopVectorizationLegality::canVectorizeUncountableLoop(
   TheLoop->getExitingBlocks(ExitingBlocks);
 
   SmallVector<const SCEVPredicate *, 4> Predicates;
+  std::optional<std::pair<BasicBlock *, BasicBlock *>> SingleUncountableEdge;
   for (BasicBlock *ExitingBB : ExitingBlocks) {
     auto *BI = dyn_cast<BranchInst>(ExitingBB->getTerminator());
     if (!BI || !BI->isConditional() || isa<ConstantInt>(BI->getCondition())) {
@@ -2594,22 +2589,37 @@ bool LoopVectorizationLegality::canVectorizeUncountableLoop(
     const SCEV *EC =
         PSE.getSE()->getPredicatedExitCount(TheLoop, ExitingBB, &Predicates);
     if (isa<SCEVCouldNotCompute>(EC)) {
-      CouldNotComputeExitingBlock = ExitingBB;
-      UncountableExitingBlocks.push_back(ExitingBB);
+      SmallVector<BasicBlock *, 2> Succs(successors(ExitingBB));
+      if (Succs.size() != 2) {
+        reportVectorizationFailure(
+            "Early exiting block does not have exactly two successors",
+            "Incorrect number of successors from early exiting block",
+            "EarlyExitTooManySuccessors", ORE, TheLoop);
+        return false;
+      }
+
+      BasicBlock *ExitBlock;
+      if (!TheLoop->contains(Succs[0]))
+        ExitBlock = Succs[0];
+      else {
+        assert(!TheLoop->contains(Succs[1]));
+        ExitBlock = Succs[1];
+      }
+
+      if (SingleUncountableEdge) {
+        reportVectorizationFailure(
+            "Loop has too many uncountable exits",
+            "Cannot vectorize early exit loop with more than one early exit",
+            "TooManyUncountableEarlyExits", ORE, TheLoop);
+        return false;
+      }
+
+      SingleUncountableEdge = {ExitingBB, ExitBlock};
     } else
       CountableExitingBlocks.push_back(ExitingBB);
   }
 
-  // We only support one uncountable early exit.
-  if (getUncountableExitingBlocks().size() != 1) {
-    reportVectorizationFailure(
-        "Loop has too many uncountable exits",
-        "Cannot vectorize early exit loop with more than one early exit",
-        "TooManyUncountableEarlyExits", ORE, TheLoop);
-    return false;
-  }
-
-  if (!CouldNotComputeExitingBlock) {
+  if (!SingleUncountableEdge) {
     LLVM_DEBUG(
         dbgs() << "\nUncountable Loop: Does not have a speculative exit\n");
     return false;
@@ -2624,13 +2634,6 @@ bool LoopVectorizationLegality::canVectorizeUncountableLoop(
                            "countable when there is an early exiting\n");
       return false;
     }
-    for (BasicBlock *BB : successors(CouldNotComputeExitingBlock))
-      if (BB != LatchBB) {
-        UncountableExitBlocks.push_back(BB);
-        break;
-      }
-
-    HasUncountableEarlyExit = true;
   }
 
   // Exclude integer induction variables first.
@@ -2769,8 +2772,11 @@ bool LoopVectorizationLegality::canVectorizeUncountableLoop(
   );
   // clang-format on
 
-  return !(UncountableLoopVectorizationOption ==
-           UncountableLoopVectorization::Option::AnalysisOnly);
+  if (UncountableLoopVectorizationOption ==
+           UncountableLoopVectorization::Option::AnalysisOnly)
+    return false;
+  UncountableEdge = SingleUncountableEdge;
+  return true;
 }
 
 class SCEVMonotonicStrideExpr final
