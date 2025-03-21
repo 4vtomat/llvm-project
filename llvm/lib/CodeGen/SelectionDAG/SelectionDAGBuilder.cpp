@@ -8510,7 +8510,7 @@ void SelectionDAGBuilder::visitVPLoadFF(
   if (!Alignment)
     Alignment = DAG.getEVTAlign(VT);
   MemoryLocation ML = MemoryLocation::getAfter(PtrOperand, AAInfo);
-  AddToChain = !AA || !AA->pointsToConstantMemory(ML);
+  AddToChain = !BatchAA || !BatchAA->pointsToConstantMemory(ML);
   SDValue InChain = AddToChain ? DAG.getRoot() : DAG.getEntryNode();
   MachineMemOperand *MMO = DAG.getMachineFunction().getMachineMemOperand(
       MachinePointerInfo(PtrOperand), MachineMemOperand::MOLoad,
