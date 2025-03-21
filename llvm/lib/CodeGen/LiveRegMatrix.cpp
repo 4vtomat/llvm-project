@@ -274,8 +274,7 @@ LiveRegMatrix::checkInterference(const LiveInterval &VirtReg,
 
   // Check the matrix for virtual register interference.
   bool Interference = foreachUnit(TRI, VirtReg, PhysReg,
-<<<<<<< HEAD
-                                  [&](MCRegister Unit, const LiveRange &LR) {
+                                  [&](MCRegUnit Unit, const LiveRange &LR) {
 #if SIFIVE_CUSTOMIZATION
                                     LiveRange NewLR;
                                     if (TRI->enableTargetInterference() &&
@@ -289,9 +288,6 @@ LiveRegMatrix::checkInterference(const LiveInterval &VirtReg,
                                           .checkInterference();
                                     } 
 #endif // SIFIVE_CUSTOMIZATION
-=======
-                                  [&](MCRegUnit Unit, const LiveRange &LR) {
->>>>>>> refs/rewritten/1a8f49f
                                     return query(LR, Unit).checkInterference();
                                   });
   if (Interference)
