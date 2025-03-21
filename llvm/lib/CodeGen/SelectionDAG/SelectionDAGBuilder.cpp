@@ -1082,10 +1082,10 @@ RegsForValue::getRegsAndSizes() const {
   return OutVec;
 }
 
-void SelectionDAGBuilder::init(GCFunctionInfo *gfi, AliasAnalysis *aa,
+void SelectionDAGBuilder::init(GCFunctionInfo *gfi, BatchAAResults *aa,
                                AssumptionCache *ac,
                                const TargetLibraryInfo *li) {
-  AA = aa;
+  BatchAA = aa;
   AC = ac;
   GFI = gfi;
   LibInfo = li;
@@ -4589,8 +4589,8 @@ void SelectionDAGBuilder::visitLoad(const LoadInst &I) {
     Root = getRoot();
   else if (NumValues > MaxParallelChains)
     Root = getMemoryRoot();
-  else if (AA &&
-           AA->pointsToConstantMemory(MemoryLocation(
+  else if (BatchAA &&
+           BatchAA->pointsToConstantMemory(MemoryLocation(
                SV,
                LocationSize::precise(DAG.getDataLayout().getTypeStoreSize(Ty)),
                AAInfo))) {
@@ -4692,8 +4692,8 @@ void SelectionDAGBuilder::visitLoadFromSwiftError(const LoadInst &I) {
   const Value *SV = I.getOperand(0);
   Type *Ty = I.getType();
   assert(
-      (!AA ||
-       !AA->pointsToConstantMemory(MemoryLocation(
+      (!BatchAA ||
+       !BatchAA->pointsToConstantMemory(MemoryLocation(
            SV, LocationSize::precise(DAG.getDataLayout().getTypeStoreSize(Ty)),
            I.getAAMetadata()))) &&
       "load_from_swift_error should not be constant memory");
@@ -5002,7 +5002,7 @@ void SelectionDAGBuilder::visitMaskedLoad(const CallInst &I, bool IsExpanding) {
 
   // Do not serialize masked loads of constant memory with anything.
   MemoryLocation ML = MemoryLocation::getAfter(PtrOperand, AAInfo);
-  bool AddToChain = !AA || !AA->pointsToConstantMemory(ML);
+  bool AddToChain = !BatchAA || !BatchAA->pointsToConstantMemory(ML);
 
   SDValue InChain = AddToChain ? DAG.getRoot() : DAG.getEntryNode();
 
@@ -6431,42 +6431,25 @@ void SelectionDAGBuilder::visitVectorExtractLastActive(const CallInst &I,
   assert(Intrinsic == Intrinsic::experimental_vector_extract_last_active &&
          "Tried lowering invalid vector extract last");
   SDLoc sdl = getCurSDLoc();
+  const DataLayout &Layout = DAG.getDataLayout();
   SDValue Data = getValue(I.getOperand(0));
   SDValue Mask = getValue(I.getOperand(1));
-  SDValue PassThru = getValue(I.getOperand(2));
 
-  EVT DataVT = Data.getValueType();
-  EVT ScalarVT = PassThru.getValueType();
-  EVT BoolVT = Mask.getValueType().getScalarType();
-
-  // Find a suitable type for a stepvector.
-  ConstantRange VScaleRange(1, /*isFullSet=*/true); // Dummy value.
-  if (DataVT.isScalableVector())
-    VScaleRange = getVScaleRange(I.getCaller(), 64);
   const TargetLowering &TLI = DAG.getTargetLoweringInfo();
-  unsigned EltWidth = TLI.getBitWidthForCttzElements(
-      I.getType(), DataVT.getVectorElementCount(), /*ZeroIsPoison=*/true,
-      &VScaleRange);
-  MVT StepVT = MVT::getIntegerVT(EltWidth);
-  EVT StepVecVT = DataVT.changeVectorElementType(StepVT);
+  EVT ResVT = TLI.getValueType(Layout, I.getType());
 
-  // Zero out lanes with inactive elements, then find the highest remaining
-  // value from the stepvector.
-  SDValue Zeroes = DAG.getConstant(0, sdl, StepVecVT);
-  SDValue StepVec = DAG.getStepVector(sdl, StepVecVT);
-  SDValue ActiveElts = DAG.getSelect(sdl, StepVecVT, Mask, StepVec, Zeroes);
-  SDValue HighestIdx =
-      DAG.getNode(ISD::VECREDUCE_UMAX, sdl, StepVT, ActiveElts);
+  EVT ExtVT = TLI.getVectorIdxTy(Layout);
+  SDValue Idx = DAG.getNode(ISD::VECTOR_FIND_LAST_ACTIVE, sdl, ExtVT, Mask);
+  SDValue Result = DAG.getNode(ISD::EXTRACT_VECTOR_ELT, sdl, ResVT, Data, Idx);
 
-  // Extract the corresponding lane from the data vector
-  EVT ExtVT = TLI.getVectorIdxTy(DAG.getDataLayout());
-  SDValue Idx = DAG.getZExtOrTrunc(HighestIdx, sdl, ExtVT);
-  SDValue Extract =
-      DAG.getNode(ISD::EXTRACT_VECTOR_ELT, sdl, ScalarVT, Data, Idx);
+  Value *Default = I.getOperand(2);
+  if (!isa<PoisonValue>(Default) && !isa<UndefValue>(Default)) {
+    SDValue PassThru = getValue(Default);
+    EVT BoolVT = Mask.getValueType().getScalarType();
+    SDValue AnyActive = DAG.getNode(ISD::VECREDUCE_OR, sdl, BoolVT, Mask);
+    Result = DAG.getSelect(sdl, ResVT, AnyActive, Result, PassThru);
+  }
 
-  // If all mask lanes were inactive, choose the passthru value instead.
-  SDValue AnyActive = DAG.getNode(ISD::VECREDUCE_OR, sdl, BoolVT, Mask);
-  SDValue Result = DAG.getSelect(sdl, ScalarVT, AnyActive, Extract, PassThru);
   setValue(&I, Result);
 }
 
@@ -6555,7 +6538,7 @@ void SelectionDAGBuilder::visitIntrinsicCall(const CallInst &I,
                                /* AlwaysInline */ false, &I, std::nullopt,
                                MachinePointerInfo(I.getArgOperand(0)),
                                MachinePointerInfo(I.getArgOperand(1)),
-                               I.getAAMetadata(), AA);
+                               I.getAAMetadata(), BatchAA);
     updateDAGForMaybeTailCall(MC);
     return;
   }
@@ -6576,7 +6559,7 @@ void SelectionDAGBuilder::visitIntrinsicCall(const CallInst &I,
                                /* AlwaysInline */ true, &I, std::nullopt,
                                MachinePointerInfo(I.getArgOperand(0)),
                                MachinePointerInfo(I.getArgOperand(1)),
-                               I.getAAMetadata(), AA);
+                               I.getAAMetadata(), BatchAA);
     updateDAGForMaybeTailCall(MC);
     return;
   }
@@ -6629,7 +6612,7 @@ void SelectionDAGBuilder::visitIntrinsicCall(const CallInst &I,
                                 /* OverrideTailCall */ std::nullopt,
                                 MachinePointerInfo(I.getArgOperand(0)),
                                 MachinePointerInfo(I.getArgOperand(1)),
-                                I.getAAMetadata(), AA);
+                                I.getAAMetadata(), BatchAA);
     updateDAGForMaybeTailCall(MM);
     return;
   }
@@ -8498,7 +8481,7 @@ void SelectionDAGBuilder::visitVPLoad(
   if (!Alignment)
     Alignment = DAG.getEVTAlign(VT);
   MemoryLocation ML = MemoryLocation::getAfter(PtrOperand, AAInfo);
-  bool AddToChain = !AA || !AA->pointsToConstantMemory(ML);
+  bool AddToChain = !BatchAA || !BatchAA->pointsToConstantMemory(ML);
   SDValue InChain = AddToChain ? DAG.getRoot() : DAG.getEntryNode();
   MachineMemOperand *MMO = DAG.getMachineFunction().getMachineMemOperand(
       MachinePointerInfo(PtrOperand), MachineMemOperand::MOLoad,
@@ -8658,7 +8641,7 @@ void SelectionDAGBuilder::visitVPStridedLoad(
   AAMDNodes AAInfo = VPIntrin.getAAMetadata();
   const MDNode *Ranges = getRangeMetadata(VPIntrin);
   MemoryLocation ML = MemoryLocation::getAfter(PtrOperand, AAInfo);
-  bool AddToChain = !AA || !AA->pointsToConstantMemory(ML);
+  bool AddToChain = !BatchAA || !BatchAA->pointsToConstantMemory(ML);
   SDValue InChain = AddToChain ? DAG.getRoot() : DAG.getEntryNode();
   unsigned AS = PtrOperand->getType()->getPointerAddressSpace();
   MachineMemOperand *MMO = DAG.getMachineFunction().getMachineMemOperand(
@@ -9113,10 +9096,6 @@ static SDValue getMemCmpLoad(const Value *PtrVal, MVT LoadVT,
         Type::getIntNTy(PtrVal->getContext(), LoadVT.getScalarSizeInBits());
     if (LoadVT.isVector())
       LoadTy = FixedVectorType::get(LoadTy, LoadVT.getVectorNumElements());
-
-    LoadInput = ConstantExpr::getBitCast(const_cast<Constant *>(LoadInput),
-                                         PointerType::getUnqual(LoadTy));
-
     if (const Constant *LoadCst =
             ConstantFoldLoadFromConstPtr(const_cast<Constant *>(LoadInput),
                                          LoadTy, Builder.DAG.getDataLayout()))
@@ -9129,7 +9108,7 @@ static SDValue getMemCmpLoad(const Value *PtrVal, MVT LoadVT,
   bool ConstantMemory = false;
 
   // Do not serialize (non-volatile) loads of constant memory with anything.
-  if (Builder.AA && Builder.AA->pointsToConstantMemory(PtrVal)) {
+  if (Builder.BatchAA && Builder.BatchAA->pointsToConstantMemory(PtrVal)) {
     Root = Builder.DAG.getEntryNode();
     ConstantMemory = true;
   } else {
@@ -11101,7 +11080,7 @@ TargetLowering::LowerCallTo(TargetLowering::CallLoweringInfo &CLI) const {
 
   bool CanLowerReturn =
       this->CanLowerReturn(CLI.CallConv, CLI.DAG.getMachineFunction(),
-                           CLI.IsVarArg, Outs, CLI.RetTy->getContext());
+                           CLI.IsVarArg, Outs, CLI.RetTy->getContext(), CLI.RetTy);
 
   SDValue DemoteStackSlot;
   int DemoteStackIdx = -100;
@@ -11114,8 +11093,8 @@ TargetLowering::LowerCallTo(TargetLowering::CallLoweringInfo &CLI) const {
     MachineFunction &MF = CLI.DAG.getMachineFunction();
     DemoteStackIdx =
         MF.getFrameInfo().CreateStackObject(TySize, Alignment, false);
-    Type *StackSlotPtrType = PointerType::get(CLI.RetTy,
-                                              DL.getAllocaAddrSpace());
+    Type *StackSlotPtrType =
+        PointerType::get(CLI.RetTy->getContext(), DL.getAllocaAddrSpace());
 
     DemoteStackSlot = CLI.DAG.getFrameIndex(DemoteStackIdx, getFrameIndexTy(DL));
     ArgListEntry Entry;

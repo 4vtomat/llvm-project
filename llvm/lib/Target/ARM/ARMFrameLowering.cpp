@@ -1921,8 +1921,8 @@ static void emitAlignedDPRCS2Spills(MachineBasicBlock &MBB,
   // 16-byte aligned vst1.64 with 4 d-regs and address writeback.
   // The writeback is only needed when emitting two vst1.64 instructions.
   if (NumAlignedDPRCS2Regs >= 6) {
-    unsigned SupReg = TRI->getMatchingSuperReg(NextReg, ARM::dsub_0,
-                                               &ARM::QQPRRegClass);
+    MCRegister SupReg =
+        TRI->getMatchingSuperReg(NextReg, ARM::dsub_0, &ARM::QQPRRegClass);
     MBB.addLiveIn(SupReg);
     BuildMI(MBB, MI, DL, TII.get(ARM::VST1d64Qwb_fixed), ARM::R4)
         .addReg(ARM::R4, RegState::Kill)
@@ -1940,8 +1940,8 @@ static void emitAlignedDPRCS2Spills(MachineBasicBlock &MBB,
 
   // 16-byte aligned vst1.64 with 4 d-regs, no writeback.
   if (NumAlignedDPRCS2Regs >= 4) {
-    unsigned SupReg = TRI->getMatchingSuperReg(NextReg, ARM::dsub_0,
-                                               &ARM::QQPRRegClass);
+    MCRegister SupReg =
+        TRI->getMatchingSuperReg(NextReg, ARM::dsub_0, &ARM::QQPRRegClass);
     MBB.addLiveIn(SupReg);
     BuildMI(MBB, MI, DL, TII.get(ARM::VST1d64Q))
         .addReg(ARM::R4)
@@ -1955,8 +1955,8 @@ static void emitAlignedDPRCS2Spills(MachineBasicBlock &MBB,
 
   // 16-byte aligned vst1.64 with 2 d-regs.
   if (NumAlignedDPRCS2Regs >= 2) {
-    unsigned SupReg = TRI->getMatchingSuperReg(NextReg, ARM::dsub_0,
-                                               &ARM::QPRRegClass);
+    MCRegister SupReg =
+        TRI->getMatchingSuperReg(NextReg, ARM::dsub_0, &ARM::QPRRegClass);
     MBB.addLiveIn(SupReg);
     BuildMI(MBB, MI, DL, TII.get(ARM::VST1q64))
         .addReg(ARM::R4)
@@ -2053,8 +2053,8 @@ static void emitAlignedDPRCS2Restores(MachineBasicBlock &MBB,
 
   // 16-byte aligned vld1.64 with 4 d-regs and writeback.
   if (NumAlignedDPRCS2Regs >= 6) {
-    unsigned SupReg = TRI->getMatchingSuperReg(NextReg, ARM::dsub_0,
-                                               &ARM::QQPRRegClass);
+    MCRegister SupReg =
+        TRI->getMatchingSuperReg(NextReg, ARM::dsub_0, &ARM::QQPRRegClass);
     BuildMI(MBB, MI, DL, TII.get(ARM::VLD1d64Qwb_fixed), NextReg)
         .addReg(ARM::R4, RegState::Define)
         .addReg(ARM::R4, RegState::Kill)
@@ -2071,8 +2071,8 @@ static void emitAlignedDPRCS2Restores(MachineBasicBlock &MBB,
 
   // 16-byte aligned vld1.64 with 4 d-regs, no writeback.
   if (NumAlignedDPRCS2Regs >= 4) {
-    unsigned SupReg = TRI->getMatchingSuperReg(NextReg, ARM::dsub_0,
-                                               &ARM::QQPRRegClass);
+    MCRegister SupReg =
+        TRI->getMatchingSuperReg(NextReg, ARM::dsub_0, &ARM::QQPRRegClass);
     BuildMI(MBB, MI, DL, TII.get(ARM::VLD1d64Q), NextReg)
         .addReg(ARM::R4)
         .addImm(16)
@@ -2084,8 +2084,8 @@ static void emitAlignedDPRCS2Restores(MachineBasicBlock &MBB,
 
   // 16-byte aligned vld1.64 with 2 d-regs.
   if (NumAlignedDPRCS2Regs >= 2) {
-    unsigned SupReg = TRI->getMatchingSuperReg(NextReg, ARM::dsub_0,
-                                               &ARM::QPRRegClass);
+    MCRegister SupReg =
+        TRI->getMatchingSuperReg(NextReg, ARM::dsub_0, &ARM::QPRRegClass);
     BuildMI(MBB, MI, DL, TII.get(ARM::VLD1q64), SupReg)
         .addReg(ARM::R4)
         .addImm(16)

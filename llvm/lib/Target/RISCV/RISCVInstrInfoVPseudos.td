@@ -1952,6 +1952,7 @@ multiclass VPseudoUSStore {
         def "E" # eew # "_V_" # LInfo : VPseudoUSStoreNoMask<vreg, eew>,
                                         VSESched<LInfo>;
         def "E" # eew # "_V_" # LInfo # "_MASK" : VPseudoUSStoreMask<vreg, eew>,
+                                                  RISCVMaskedPseudo<MaskIdx=2>,
                                                   VSESched<LInfo>;
       }
     }
@@ -1978,6 +1979,7 @@ multiclass VPseudoSStore {
         def "E" # eew # "_V_" # LInfo : VPseudoSStoreNoMask<vreg, eew>,
                                         VSSSched<eew, LInfo>;
         def "E" # eew # "_V_" # LInfo # "_MASK" : VPseudoSStoreMask<vreg, eew>,
+                                                  RISCVMaskedPseudo<MaskIdx=3>,
                                                   VSSSched<eew, LInfo>;
       }
     }
@@ -2004,6 +2006,7 @@ multiclass VPseudoIStore<bit Ordered> {
               VSXSched<dataEEW, Ordered, DataLInfo, IdxLInfo>;
             def "EI" # idxEEW # "_V_" # IdxLInfo # "_" # DataLInfo # "_MASK" :
               VPseudoIStoreMask<Vreg, IdxVreg, idxEEW, idxEMUL.value, Ordered>,
+              RISCVMaskedPseudo<MaskIdx=3>,
               VSXSched<dataEEW, Ordered, DataLInfo, IdxLInfo>;
           }
         }
@@ -3833,7 +3836,8 @@ multiclass VPseudoUSSegLoad {
           def nf # "E" # eew # "_V_" # LInfo :
             VPseudoUSSegLoadNoMask<vreg, eew, nf>, VLSEGSched<nf, eew, LInfo>;
           def nf # "E" # eew # "_V_" # LInfo # "_MASK" :
-            VPseudoUSSegLoadMask<vreg, eew, nf>, VLSEGSched<nf, eew, LInfo>;
+            VPseudoUSSegLoadMask<vreg, eew, nf>, RISCVMaskedPseudo<MaskIdx=2>,
+            VLSEGSched<nf, eew, LInfo>;
         }
       }
     }
@@ -3850,7 +3854,8 @@ multiclass VPseudoUSSegLoadFF {
           def nf # "E" # eew # "FF_V_" # LInfo :
             VPseudoUSSegLoadFFNoMask<vreg, eew, nf>, VLSEGFFSched<nf, eew, LInfo>;
           def nf # "E" # eew # "FF_V_" # LInfo # "_MASK" :
-            VPseudoUSSegLoadFFMask<vreg, eew, nf>, VLSEGFFSched<nf, eew, LInfo>;
+            VPseudoUSSegLoadFFMask<vreg, eew, nf>, RISCVMaskedPseudo<MaskIdx=2>,
+            VLSEGFFSched<nf, eew, LInfo>;
         }
       }
     }
@@ -3867,6 +3872,7 @@ multiclass VPseudoSSegLoad {
           def nf # "E" # eew # "_V_" # LInfo : VPseudoSSegLoadNoMask<vreg, eew, nf>,
                                                VLSSEGSched<nf, eew, LInfo>;
           def nf # "E" # eew # "_V_" # LInfo # "_MASK" : VPseudoSSegLoadMask<vreg, eew, nf>,
+                                                         RISCVMaskedPseudo<MaskIdx=3>,
                                                          VLSSEGSched<nf, eew, LInfo>;
         }
       }
@@ -3897,6 +3903,7 @@ multiclass VPseudoISegLoad<bit Ordered> {
               def nf # "EI" # idxEEW # "_V_" # IdxLInfo # "_" # DataLInfo # "_MASK" :
                 VPseudoISegLoadMask<Vreg, IdxVreg, idxEEW, idxEMUL.value,
                                     nf, Ordered>,
+                RISCVMaskedPseudo<MaskIdx=3>,
                 VLXSEGSched<nf, dataEEW, Ordered, DataLInfo>;
             }
           }
@@ -3916,6 +3923,7 @@ multiclass VPseudoUSSegStore {
           def nf # "E" # eew # "_V_" # LInfo : VPseudoUSSegStoreNoMask<vreg, eew, nf>,
                                                VSSEGSched<nf, eew, LInfo>;
           def nf # "E" # eew # "_V_" # LInfo # "_MASK" : VPseudoUSSegStoreMask<vreg, eew, nf>,
+                                                         RISCVMaskedPseudo<MaskIdx=2>,
                                                          VSSEGSched<nf, eew, LInfo>;
         }
       }
@@ -3933,6 +3941,7 @@ multiclass VPseudoSSegStore {
           def nf # "E" # eew # "_V_" # LInfo : VPseudoSSegStoreNoMask<vreg, eew, nf>,
                                                VSSSEGSched<nf, eew, LInfo>;
           def nf # "E" # eew # "_V_" # LInfo # "_MASK" : VPseudoSSegStoreMask<vreg, eew, nf>,
+                                                         RISCVMaskedPseudo<MaskIdx=3>,
                                                          VSSSEGSched<nf, eew, LInfo>;
         }
       }
@@ -3963,6 +3972,7 @@ multiclass VPseudoISegStore<bit Ordered> {
               def nf # "EI" # idxEEW # "_V_" # IdxLInfo # "_" # DataLInfo # "_MASK" :
                 VPseudoISegStoreMask<Vreg, IdxVreg, idxEEW, idxEMUL.value,
                                      nf, Ordered>,
+                RISCVMaskedPseudo<MaskIdx=3>,
                 VSXSEGSched<nf, idxEEW, Ordered, DataLInfo>;
             }
           }
