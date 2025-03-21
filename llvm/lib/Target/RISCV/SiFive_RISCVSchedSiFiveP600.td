@@ -581,8 +581,8 @@ foreach mx = SchedMxList in {
 
     // Mask load and store always have EMUL=1.
     let ReleaseAtCycles = [SiFiveP600GetLMulCycles<"M1">.c] in {
-      defm "" : LMULWriteResMX<"WriteVLDM",  [SiFiveP600VLD], mx, IsWorstCase=true>;
-      defm "" : LMULWriteResMX<"WriteVSTM",  [SiFiveP600VST], mx, IsWorstCase=true>;
+      defm "" : LMULWriteResMX<"WriteVLDM",  [SiFiveP600VLD], mx, IsWorstCase=!eq(mx, "M1")>;
+      defm "" : LMULWriteResMX<"WriteVSTM",  [SiFiveP600VST], mx, IsWorstCase=!eq(mx, "M1")>;
     }
   }
   foreach eew = [8, 16, 32, 64] in {
