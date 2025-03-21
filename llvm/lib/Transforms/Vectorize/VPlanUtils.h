@@ -45,22 +45,15 @@ inline bool isUniformAfterVectorization(const VPValue *VPV) {
     return true;
   if (auto *Rep = dyn_cast<VPReplicateRecipe>(VPV))
     return Rep->isUniform();
-<<<<<<< HEAD
-  if (auto *GEP = dyn_cast<VPWidenGEPRecipe>(Def))
-    return all_of(GEP->operands(), isUniformAfterVectorization);
 #if SIFIVE_CUSTOMIZATION
+  const VPRecipeBase *Def = VPV->getDefiningRecipe();
   if (isa<VPMonotonicUpdateInstruction, VPMonotonicHeaderPHIRecipe>(Def))
     return true;
 #endif // SIFIVE_CUSTOMIZATION
-  if (isa<VPWidenGEPRecipe, VPDerivedIVRecipe>(Def))
-    return all_of(Def->operands(), isUniformAfterVectorization);
-  if (auto *VPI = dyn_cast<VPInstruction>(Def))
-=======
   if (isa<VPWidenGEPRecipe, VPDerivedIVRecipe>(VPV))
     return all_of(VPV->getDefiningRecipe()->operands(),
                   isUniformAfterVectorization);
   if (auto *VPI = dyn_cast<VPInstruction>(VPV))
->>>>>>> refs/rewritten/1a8f49f
     return VPI->isSingleScalar() || VPI->isVectorToScalar() ||
            ((Instruction::isBinaryOp(VPI->getOpcode()) ||
              VPI->getOpcode() == VPInstruction::PtrAdd) &&
