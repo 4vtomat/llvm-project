@@ -4266,20 +4266,13 @@ bool LoopVectorizationCostModel::interleavedAccessCanBeWidened(
   if (hasIrregularType(ScalarTy, DL))
     return false;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (!Legal->useVLAVectorizer())
 #endif
-  // For scalable vectors, the only interleave factor currently supported
-  // must be power of 2 since we require the (de)interleave2 intrinsics
-  // instead of shufflevectors.
-  if (VF.isScalable() && !isPowerOf2_32(InterleaveFactor))
-=======
   // We currently only know how to emit interleave/deinterleave with
   // Factor=2 for scalable vectors. This is purely an implementation
   // limit.
   if (VF.isScalable() && InterleaveFactor != 2)
->>>>>>> refs/rewritten/1a8f49f
     return false;
 
   // If the group involves a non-integral pointer, we may not be able to
@@ -11543,23 +11536,15 @@ static bool isOptimizableIVOrUse(VPValue *VPV) {
 #endif // SIFIVE_CUSTOMIZATION
 
 // Collect VPIRInstructions for phis in the exit blocks that are modeled
-<<<<<<< HEAD
-// in VPlan and add the exiting VPValue as operand. Some exiting values are not
-// modeled explicitly yet and won't be included. Those are un-truncated
-// VPWidenIntOrFpInductionRecipe, VPWidenPointerInductionRecipe and induction
-// increments.
+// in VPlan and add the exiting VPValue as operand.
 #if SIFIVE_CUSTOMIZATION
 static SetVector<VPIRInstruction *> collectUsersInExitBlocks(
     Loop *OrigLoop, VPRecipeBuilder &Builder, VPlan &Plan,
     const MapVector<PHINode *, InductionDescriptor> &Inductions,
     const MapVector<PHINode *, CSADescriptor> &CSAs) {
 #else
-=======
-// in VPlan and add the exiting VPValue as operand.
->>>>>>> refs/rewritten/1a8f49f
-static SetVector<VPIRInstruction *>
-collectUsersInExitBlocks(Loop *OrigLoop, VPRecipeBuilder &Builder,
-                         VPlan &Plan) {
+  static SetVector<VPIRInstruction *> collectUsersInExitBlocks(
+      Loop * OrigLoop, VPRecipeBuilder & Builder, VPlan & Plan) {
 #endif // SIFIVE_CUSTOMIZATION
   auto *MiddleVPBB = Plan.getMiddleBlock();
   SetVector<VPIRInstruction *> ExitUsersToFix;
@@ -11884,19 +11869,13 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
                      CM.getWideningDecision(IG->getInsertPos(), VF) ==
                          LoopVectorizationCostModel::CM_Interleave);
       // For scalable vectors, the only interleave factor currently supported
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       assert((!Result || !VF.isScalable() || IG->getFactor() <= 8) &&
              "Unsupported interleave factor for scalable vectors");
 #else
-      // must be power of 2 since we require the (de)interleave2 intrinsics
-      // instead of shufflevectors.
-      assert((!Result || !VF.isScalable() || isPowerOf2_32(IG->getFactor())) &&
-=======
       // is 2 since we require the (de)interleave2 intrinsics instead of
       // shufflevectors.
       assert((!Result || !VF.isScalable() || IG->getFactor() == 2) &&
->>>>>>> refs/rewritten/1a8f49f
              "Unsupported interleave factor for scalable vectors");
 #endif // SIFIVE_CUSTOMIZATION
       return Result;
