@@ -4,7 +4,7 @@
 
 ; Make sure that given vectorize_width is ignored by the VPlan
 ;
-; CHECK: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2,vscale x 4},UF={1}' {
+; CHECK: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2,vscale x 4,vscale x 8},UF={1}' {
 
 define void @_Z69benchForTruncOrZextVecWithAddInLoopWithVW16From_uint32_t_To_uint64_t_RN9benchmark5StateE(ptr %0) personality ptr null {
 entry:

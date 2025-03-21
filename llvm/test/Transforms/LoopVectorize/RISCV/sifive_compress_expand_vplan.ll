@@ -3,7 +3,7 @@
 ; RUN: opt -passes=loop-vectorize -mcpu=sifive-x280 -disable-output -debug-only=loop-vectorize %s -mtriple riscv64 2>&1 | FileCheck %s
 
 ; CHECK-LABEL: LV: Checking a loop in 'compress_store'
-; CHECK: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2,vscale x 4,vscale x 8},UF={1}' {
+; CHECK: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2,vscale x 4,vscale x 8,vscale x 16},UF={1}' {
 ; CHECK-NEXT: Live-in vp<%0> = vector-trip-count
 ; CHECK-NEXT: vp<%1> = original trip-count
 ; CHECK-EMPTY:
@@ -69,7 +69,7 @@ for.inc:
 }
 
 ; CHECK-LABEL: LV: Checking a loop in 'expand_load'
-; CHECK: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2,vscale x 4,vscale x 8},UF={1}' {
+; CHECK: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2,vscale x 4,vscale x 8,vscale x 16},UF={1}' {
 ; CHECK-NEXT: Live-in vp<%0> = vector-trip-count
 ; CHECK-NEXT: vp<%1> = original trip-count
 ; CHECK-EMPTY:

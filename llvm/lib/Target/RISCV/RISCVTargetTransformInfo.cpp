@@ -872,7 +872,12 @@ RISCVTTIImpl::getFeasibleMaxVFRange(TargetTransformInfo::RegisterKind K,
   unsigned LMULMin = 1 << std::min<unsigned>(VectorPrimaryLMULMinExp, 3);
 
   unsigned LMULMax;
-  if (!VectorPrimaryLMULMaxExp.getNumOccurrences() && ST->isSiFiveCPU())
+
+  // Enable lmul8 on x280/x390 by default.
+  if (!VectorPrimaryLMULMaxExp.getNumOccurrences() &&
+      ST->getProcFamily() == RISCVSubtarget::SiFive7)
+    LMULMax = 8;
+  else if (!VectorPrimaryLMULMaxExp.getNumOccurrences() && ST->isSiFiveCPU())
     LMULMax = 4;
   else
     LMULMax = 1 << std::min<unsigned>(VectorPrimaryLMULMaxExp, 3);
