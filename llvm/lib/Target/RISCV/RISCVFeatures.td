@@ -396,14 +396,6 @@ def HasStdExtZhinx : Predicate<"Subtarget->hasStdExtZhinx()">,
 def NoStdExtZhinx : Predicate<"!Subtarget->hasStdExtZhinx()">;
 
 // Compressed Extensions
-
-def FeatureStdExtC
-    : RISCVExtension<2, 0, "Compressed Instructions">,
-      RISCVExtensionBitmask<0, 2>;
-def HasStdExtC : Predicate<"Subtarget->hasStdExtC()">,
-                 AssemblerPredicate<(all_of FeatureStdExtC),
-                                    "'C' (Compressed Instructions)">;
-
 def FeatureNoRVCHints
     : SubtargetFeature<"no-rvc-hints", "EnableRVCHintInstrs", "false",
                        "Disable RVC Hint Instructions.">;
@@ -415,6 +407,15 @@ def FeatureStdExtZca
     : RISCVExtension<1, 0,
                      "part of the C extension, excluding compressed "
                      "floating point loads/stores">;
+
+#ifdef SIFIVE_CUSTOMIZATION
+def FeatureStdExtC
+    : RISCVExtension<2, 0, "Compressed Instructions", [FeatureStdExtZca]>,
+      RISCVExtensionBitmask<0, 2>;
+def HasStdExtC : Predicate<"Subtarget->hasStdExtC()">,
+                 AssemblerPredicate<(all_of FeatureStdExtC),
+                                    "'C' (Compressed Instructions)">;
+#endif // SIFIVE_CUSTOMIZATION
 
 def HasStdExtCOrZca
     : Predicate<"Subtarget->hasStdExtCOrZca()">,
@@ -1297,11 +1298,6 @@ def HasVendorXSfvfbfa
       AssemblerPredicate<(all_of FeatureVendorXSfvfbfa),
                          "'XSfvfbfa' (SiFive custom additional BF16 vector compute support)">;
 
-def FeatureVendorXSfmm32ea
-    : RISCVExtension<0, 6,
-                     "(TEW=32-bit accumulation) instructions: sf.vset*, sf.vtmv*, sf.mm.f.f (SEW=32), sf.vtzero",
-                     [FeatureStdExtV]>;
-
 def FeatureVendorXSfmmbase
     : RISCVExtension<0, 6,
                      "All non arithmetic instructions for all TEWs and sf.vtzero",
@@ -1309,10 +1305,6 @@ def FeatureVendorXSfmmbase
 def HasVendorXSfmmbase : Predicate<"Subtarget->hasVendorXSfmmbase()">,
                          AssemblerPredicate<(all_of FeatureVendorXSfmmbase),
                              "'XSfmmbase' All non arithmetic instructions for all TEWs and sf.vtzero">;
-def HasVendorXSfmm32eaOrXSfmmbase
-    : Predicate<"Subtarget->hasVendorXSfmm32eaOrXSfmmbase()">,
-                AssemblerPredicate<(any_of FeatureVendorXSfmm32ea, FeatureVendorXSfmmbase),
-                    "XSfmm32ea/XSfmmbase">;
 
 def FeatureVendorXSfmm32a8f
     : RISCVExtension<0, 6,
@@ -1357,13 +1349,12 @@ def FeatureVendorXSfmm64a64f
     : RISCVExtension<0, 6,
                      "(TEW=64-bit accumulation) operands - float: fp64",
                      [FeatureVendorXSfmmbase]>;
-def HasVendorXSfmm32eaOrXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f
-    : Predicate<"Subtarget->hasVendorXSfmm32eaOrXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f()">,
-                AssemblerPredicate<(any_of FeatureVendorXSfmm32ea,
-                                           FeatureVendorXSfmm32a16f,
+def HasVendorXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f
+    : Predicate<"Subtarget->hasVendorXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f()">,
+                AssemblerPredicate<(any_of FeatureVendorXSfmm32a16f,
                                            FeatureVendorXSfmm32a32f,
                                            FeatureVendorXSfmm64a64f),
-                    "XSfmm32ea/XSfmm32a16f/XSfmm32a32f/XSfmm64a64f">;
+                    "XSfmm32a16f/XSfmm32a32f/XSfmm64a64f">;
 
 def FeatureVendorXSfmm16t
     : RISCVExtension<0, 6,

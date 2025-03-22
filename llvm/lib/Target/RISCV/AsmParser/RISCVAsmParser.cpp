@@ -2210,6 +2210,27 @@ ParseStatus RISCVAsmParser::parseOperandWithModifier(OperandVector &Operands) {
   if (VK == RISCVMCExpr::VK_RISCV_Invalid)
     return Error(getLoc(), "unrecognized operand modifier");
 
+#if SIFIVE_CUSTOMIZATION
+  switch (VK) {
+  default:
+    break;
+  case RISCVMCExpr::VK_RISCV_GPREL_LO:
+  case RISCVMCExpr::VK_RISCV_GPREL_HI:
+  case RISCVMCExpr::VK_RISCV_GPREL_ADD:
+  case RISCVMCExpr::VK_RISCV_GOT_GPREL_LO:
+  case RISCVMCExpr::VK_RISCV_GOT_GPREL_HI:
+  case RISCVMCExpr::VK_RISCV_GOT_GPREL_ADD:
+  case RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_LO:
+  case RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_HI:
+  case RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_ADD:
+  case RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_LO:
+  case RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_HI:
+  case RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_ADD:
+    Warning(getLoc(), "compact code model operand modifiers are deprecated");
+    break;
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   getParser().Lex(); // Eat the identifier
   if (parseToken(AsmToken::LParen, "expected '('"))
     return ParseStatus::Failure;
@@ -4099,6 +4120,35 @@ bool RISCVAsmParser::validateInstruction(MCInst &Inst,
 bool RISCVAsmParser::processInstruction(MCInst &Inst, SMLoc IDLoc,
                                         OperandVector &Operands,
                                         MCStreamer &Out) {
+#if SIFIVE_CUSTOMIZATION
+  switch (Inst.getOpcode()) {
+  default:
+    break;
+  case RISCV::PseudoLLA_GPREL:
+  case RISCV::PseudoLA_GOT_GPREL:
+  case RISCV::PseudoLA_TLS_IE_GPREL:
+  case RISCV::PseudoLA_TLS_GD_GPREL:
+  case RISCV::PseudoLB_GPREL:
+  case RISCV::PseudoLBU_GPREL:
+  case RISCV::PseudoLH_GPREL:
+  case RISCV::PseudoLHU_GPREL:
+  case RISCV::PseudoLW_GPREL:
+  case RISCV::PseudoLWU_GPREL:
+  case RISCV::PseudoLD_GPREL:
+  case RISCV::PseudoFLH_GPREL:
+  case RISCV::PseudoFLW_GPREL:
+  case RISCV::PseudoFLD_GPREL:
+  case RISCV::PseudoSB_GPREL:
+  case RISCV::PseudoSH_GPREL:
+  case RISCV::PseudoSW_GPREL:
+  case RISCV::PseudoSD_GPREL:
+  case RISCV::PseudoFSH_GPREL:
+  case RISCV::PseudoFSW_GPREL:
+  case RISCV::PseudoFSD_GPREL:
+    Warning(IDLoc, "compact code model pseudoinstructions are deprecated");
+    break;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   Inst.setLoc(IDLoc);
 
   switch (Inst.getOpcode()) {

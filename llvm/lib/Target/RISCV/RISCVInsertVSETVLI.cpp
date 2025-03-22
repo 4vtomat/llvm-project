@@ -77,15 +77,27 @@ static unsigned getSEWOpNum(const MachineInstr &MI) {
   return RISCVII::getSEWOpNum(MI.getDesc());
 }
 
+#if SIFIVE_CUSTOMIZATION
+// Returns true if the instruction is a Mammoth instruction that is also an
+// alias of VSETVLI instruction, i.e. SF_VSETTNT, SF_VSETTNTX0
+static bool isAliasMammothVectorConfigInstr(const MachineInstr &MI) {
+  return MI.getOpcode() == RISCV::PseudoSF_VSETTNT ||
+         MI.getOpcode() == RISCV::PseudoSF_VSETTNTX0;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 static bool isVectorConfigInstr(const MachineInstr &MI) {
   return MI.getOpcode() == RISCV::PseudoVSETVLI ||
          MI.getOpcode() == RISCV::PseudoVSETVLIX0 ||
-         MI.getOpcode() == RISCV::PseudoVSETIVLI;
+         MI.getOpcode() == RISCV::PseudoVSETIVLI
+#if SIFIVE_CUSTOMIZATION
+         || isAliasMammothVectorConfigInstr(MI);
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 #if SIFIVE_CUSTOMIZATION
 static bool isMammothVectorConfigInstr(const MachineInstr &MI) {
-  return MI.getOpcode() == RISCV::PseudoSF_VSETTNT ||
+  return isAliasMammothVectorConfigInstr(MI) ||
          MI.getOpcode() == RISCV::PseudoSF_VSETTM ||
          MI.getOpcode() == RISCV::PseudoSF_VSETTK;
 }
@@ -1186,8 +1198,14 @@ RISCVInsertVSETVLI::getInfoForVSETVLI(const MachineInstr &MI) const {
   if (MI.getOpcode() == RISCV::PseudoVSETIVLI) {
     NewInfo.setAVLImm(MI.getOperand(1).getImm());
   } else {
+#if SIFIVE_CUSTOMIZATION
+    assert(MI.getOpcode() == RISCV::PseudoVSETVLI ||
+           MI.getOpcode() == RISCV::PseudoVSETVLIX0 ||
+           isAliasMammothVectorConfigInstr(MI));
+#else
     assert(MI.getOpcode() == RISCV::PseudoVSETVLI ||
            MI.getOpcode() == RISCV::PseudoVSETVLIX0);
+#endif // SIFIVE_CUSTOMIZATION
     Register AVLReg = MI.getOperand(1).getReg();
     assert((AVLReg != RISCV::X0 || MI.getOperand(0).getReg() != RISCV::X0) &&
            "Can't handle X0, X0 vsetvli yet");
@@ -1202,6 +1220,11 @@ RISCVInsertVSETVLI::getInfoForVSETVLI(const MachineInstr &MI) const {
     }
   }
   NewInfo.setVTYPE(MI.getOperand(2).getImm());
+
+#if SIFIVE_CUSTOMIZATION
+  if (isAliasMammothVectorConfigInstr(MI))
+    NewInfo.setIsMammoth(true);
+#endif // SIFIVE_CUSTOMIZATION
 
   forwardVSETVLIAVL(NewInfo);
 
@@ -1395,7 +1418,7 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
     // so it's possible that vector config instructions enter this function, to
     // prevent duplicate emission, we need to skip the duplicated VSETTNT.
     // TODO: Duplicate it for now and delete in coalesceVSETVLIs function.
-    if (InsertPt->getOpcode() != RISCV::PseudoSF_VSETTNT) {
+    if (!isAliasMammothVectorConfigInstr(*InsertPt)) {
       if (Info.hasAVLVLMAX()) {
         Register DestReg = MRI->createVirtualRegister(&RISCV::GPRRegClass);
         auto MI =

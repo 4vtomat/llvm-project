@@ -21,25 +21,25 @@ define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr
 ; X280-NEXT:    [[TMP1:%.*]] = or i64 [[SHL]], [[TMP0]]
 ; X280-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; X280:       [[VECTOR_PH]]:
-; X280-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 4 x i64> poison, i64 [[TMP1]], i64 0
-; X280-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 4 x i64> [[BROADCAST_SPLATINSERT]], <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer
-; X280-NEXT:    [[BROADCAST_SPLATINSERT1:%.*]] = insertelement <vscale x 4 x i64> poison, i64 [[SHL11]], i64 0
-; X280-NEXT:    [[BROADCAST_SPLAT2:%.*]] = shufflevector <vscale x 4 x i64> [[BROADCAST_SPLATINSERT1]], <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer
+; X280-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x i64> poison, i64 [[TMP1]], i64 0
+; X280-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 8 x i64> [[BROADCAST_SPLATINSERT]], <vscale x 8 x i64> poison, <vscale x 8 x i32> zeroinitializer
+; X280-NEXT:    [[BROADCAST_SPLATINSERT1:%.*]] = insertelement <vscale x 8 x i64> poison, i64 [[SHL11]], i64 0
+; X280-NEXT:    [[BROADCAST_SPLAT2:%.*]] = shufflevector <vscale x 8 x i64> [[BROADCAST_SPLATINSERT1]], <vscale x 8 x i64> poison, <vscale x 8 x i32> zeroinitializer
 ; X280-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; X280:       [[VECTOR_BODY]]:
 ; X280-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; X280-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
 ; X280-NEXT:    [[TMP2:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV]]
-; X280-NEXT:    [[TMP3:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP2]], i32 4, i1 true)
+; X280-NEXT:    [[TMP3:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP2]], i32 8, i1 true)
 ; X280-NEXT:    [[TMP4:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; X280-NEXT:    [[TMP5:%.*]] = getelementptr i64, ptr [[REG_24_VAL]], i64 [[TMP4]]
 ; X280-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i64, ptr [[TMP5]], i32 0
-; X280-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[TMP6]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
-; X280-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i64> @llvm.vp.and.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i64> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
-; X280-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i64(<vscale x 4 x i64> [[VP_OP]], <vscale x 4 x i64> [[BROADCAST_SPLAT]], metadata !"eq", <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
-; X280-NEXT:    [[VP_OP3:%.*]] = call <vscale x 4 x i64> @llvm.vp.xor.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i64> [[BROADCAST_SPLAT2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
+; X280-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i64> @llvm.vp.load.nxv8i64.p0(ptr align 8 [[TMP6]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]])
+; X280-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i64> @llvm.vp.and.nxv8i64(<vscale x 8 x i64> [[VP_OP_LOAD]], <vscale x 8 x i64> [[BROADCAST_SPLAT]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]])
+; X280-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i64(<vscale x 8 x i64> [[VP_OP]], <vscale x 8 x i64> [[BROADCAST_SPLAT]], metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]])
+; X280-NEXT:    [[VP_OP3:%.*]] = call <vscale x 8 x i64> @llvm.vp.xor.nxv8i64(<vscale x 8 x i64> [[VP_OP_LOAD]], <vscale x 8 x i64> [[BROADCAST_SPLAT2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]])
 ; X280-NEXT:    [[TMP7:%.*]] = getelementptr i64, ptr [[TMP5]], i32 0
-; X280-NEXT:    call void @llvm.vp.store.nxv4i64.p0(<vscale x 4 x i64> [[VP_OP3]], ptr align 8 [[TMP7]], <vscale x 4 x i1> [[VP_OP_ICMP]], i32 [[TMP3]])
+; X280-NEXT:    call void @llvm.vp.store.nxv8i64.p0(<vscale x 8 x i64> [[VP_OP3]], ptr align 8 [[TMP7]], <vscale x 8 x i1> [[VP_OP_ICMP]], i32 [[TMP3]])
 ; X280-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP3]] to i64
 ; X280-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP9]], [[EVL_BASED_IV]]
 ; X280-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]

@@ -2096,6 +2096,12 @@ bool CompilerInvocation::ParseCodeGenArgs(CodeGenOptions &Opts, ArgList &Args,
       Diags.Report(diag::err_drv_invalid_value) << A->getAsString(Args) << Name;
   }
 
+#if SIFIVE_CUSTOMIZATION
+  if (Args.getLastArgValue(options::OPT_mcmodel_EQ)
+          .equals_insensitive("compact") &&
+      T.isRISCV())
+    Diags.Report(diag::warn_deprecated_code_model) << "compact";
+#endif // SIFIVE_CUSTOMIZATION
   if (Opts.CFProtectionBranch && T.isRISCV()) {
     if (const Arg *A = Args.getLastArg(OPT_mcf_branch_label_scheme_EQ)) {
       const auto Scheme =

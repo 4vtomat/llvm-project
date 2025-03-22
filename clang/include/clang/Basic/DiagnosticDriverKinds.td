@@ -573,6 +573,10 @@ def err_drv_extract_api_wrong_kind : Error<
   "in api extraction; use '-x %2' to override">;
 
 #ifdef SIFIVE_CUSTOMIZATION
+def warn_deprecated_code_model: Warning<
+  "'%0 code model' (-mcmodel=%0) is deprecated, please use 'large code model' "
+  "(-mcmodel=large) instead">,
+  InGroup<Deprecated>;
 def warn_drv_multilib_fallback : Warning<
   "%0 option unrecognized in multi-lib configuration when parsing config "
   "from GCC, falling back to built-in multi-lib configuration">,

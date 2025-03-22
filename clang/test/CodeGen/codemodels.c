@@ -3,7 +3,7 @@
 // RUN: %clang_cc1 -emit-llvm -mcmodel=small %s -o - | FileCheck %s -check-prefix=CHECK-SMALL
 // RUN: %clang_cc1 -triple x86_64-unknown-linux-gnu -emit-llvm -mcmodel=kernel %s -o - | FileCheck %s -check-prefix=CHECK-KERNEL
 // RUN: %clang_cc1 -triple x86_64-unknown-linux-gnu -emit-llvm -mcmodel=medium %s -o - | FileCheck %s -check-prefix=CHECK-MEDIUM
-// RUN: %clang_cc1 -emit-llvm -mcmodel=compact %s -o - | FileCheck %s -check-prefix=CHECK-COMPACT
+// RUN: %clang_cc1 -triple riscv64 -emit-llvm -mcmodel=compact %s -o - 2>&1 | FileCheck %s -check-prefix=CHECK-COMPACT
 // RUN: %clang_cc1 -emit-llvm -mcmodel=large %s -o - | FileCheck %s -check-prefix=CHECK-LARGE
 
 // CHECK-TINY: !llvm.module.flags = !{{{.*}}}
@@ -14,6 +14,7 @@
 // CHECK-KERNEL: !{{[0-9]+}} = !{i32 1, !"Code Model", i32 2}
 // CHECK-MEDIUM: !llvm.module.flags = !{{{.*}}}
 // CHECK-MEDIUM: !{{[0-9]+}} = !{i32 1, !"Code Model", i32 3}
+// CHECK-COMPACT: warning: 'compact code model' (-mcmodel=compact) is deprecated, please use 'large code model' (-mcmodel=large) instead
 // CHECK-COMPACT: !llvm.module.flags = !{{{.*}}}
 // CHECK-COMPACT: !{{[0-9]+}} = !{i32 1, !"Code Model", i32 5}
 // CHECK-LARGE: !llvm.module.flags = !{{{.*}}}

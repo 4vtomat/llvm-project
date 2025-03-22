@@ -2,10 +2,12 @@
 # RUN:     | llvm-readobj -r - | FileCheck -check-prefix=RELAX-RELOC %s
 # RUN: llvm-mc -filetype=obj -triple riscv64 -mattr=+d,-relax < %s \
 # RUN:     | llvm-readobj -r - | FileCheck -check-prefix=NORELAX-RELOC %s
-# RUN: llvm-mc -triple riscv64 -mattr=+d,+relax < %s -show-encoding \
+# RUN: llvm-mc -triple riscv64 -mattr=+d,+relax < %s -show-encoding 2>&1 \
 # RUN:     | FileCheck -check-prefix=RELAX-FIXUP %s
 
 # GPREL LLA
+
+# RELAX-FIXUP: warning: compact code model operand modifiers are deprecated
 
 lui a0, %gprel_hi(foo)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GPREL_HI20 foo 0x0
