@@ -1597,7 +1597,7 @@ public:
     // last iteration, since these exits are handled specially. However, since
     // we could have both countable and uncountable exits we must search all
     // the exits.
-    if (Legal->hasUncountableEarlyExit()) {
+    if (!Legal->getCountableExitingBlocks().empty()) {
       const SmallVector<BasicBlock *, 4> &CountableExitingBlocks =
           Legal->getCountableExitingBlocks();
       unsigned NumBlocks = CountableExitingBlocks.size();
@@ -2726,7 +2726,7 @@ InnerLoopVectorizer::getOrCreateVectorTripCount(BasicBlock *InsertBlock) {
     return VectorTripCount;
 
 #if SIFIVE_CUSTOMIZATION
-  if (Legal->isVectorizableUncountable() && !Legal->hasUncountableEarlyExit()) {
+  if (Legal->isVectorizableUncountable() && Legal->getCountableExitingBlocks().empty()) {
     // The trip count is unknown for uncountable loop without early exit
     return nullptr;
   }
@@ -3156,7 +3156,7 @@ BasicBlock *InnerLoopVectorizer::createVectorizedLoopSkeleton(
     createVectorLoopSkeleton("vec.uncountable.");
     // Countable loop with early exits has trip count
     // which can be used to create IVEndValue for IV users
-    if (Legal->hasUncountableEarlyExit()) {
+    if (!Legal->getCountableExitingBlocks().empty()) {
       emitIterationCountCheck(LoopScalarPreHeader);
       emitSCEVChecks(LoopScalarPreHeader);
       emitMemRuntimeChecks(LoopScalarPreHeader);
@@ -3250,7 +3250,7 @@ void InnerLoopVectorizer::fixupIVUsers(PHINode *OrigPhi,
   BasicBlock *OrigLoopLatch = OrigLoop->getLoopLatch();
   auto IsUseFromUncountableExit = [&](Value *V, Instruction *UI) -> bool {
     auto *PHI = cast<PHINode>(UI);
-    if (!Legal->hasUncountableEarlyExit())
+    if (Legal->getCountableExitingBlocks().empty())
       return false;
 
     // If this loop has an uncountable early exit then there could be a
@@ -3336,7 +3336,7 @@ void InnerLoopVectorizer::fixupIVUsers(PHINode *OrigPhi,
   // Predecessors of Phi in below check can be middle block or early-exit block.
   // So we skip the check for early-exit loops.
   if (!isRevectorizeWithoutStrideChecks(*OrigLoop) &&
-      !Legal->hasUncountableEarlyExit())
+      Legal->getCountableExitingBlocks().empty())
 #endif // SIFIVE_CUSTOMIZATION
   assert((MissingVals.empty() ||
           all_of(MissingVals,
@@ -3373,7 +3373,7 @@ void InnerLoopVectorizer::fixupEarlyExitIVUsers(PHINode *OrigPhi,
   // value (the value that feeds into the phi from the loop latch).
   // We allow both, but they, obviously, have different values.
   DenseMap<Value *, Value *> MissingVals;
-  BasicBlock *OrigEarlyExitingBlock = Legal->getCouldNotComputeExitingBlock();
+  BasicBlock *OrigEarlyExitingBlock = Legal->getUncountableEarlyExitingBlock();
   BasicBlock *OrigLoopLatch = OrigLoop->getLoopLatch();
   Value *PostInc = OrigPhi->getIncomingValueForBlock(OrigLoopLatch);
 
@@ -3657,7 +3657,7 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State) {
     // one operand
     AddMissingUsersInEarlyExitBlock(
         OrigLoop, Legal->getUncountableEarlyExitBlock(), VectorEarlyExitBB,
-        Legal->getCouldNotComputeExitingBlock());
+        Legal->getUncountableEarlyExitingBlock());
     BasicBlock *OrigEarlyExitBB = Legal->getUncountableEarlyExitBlock();
     if (Loop *EEL = LI->getLoopFor(OrigEarlyExitBB))
       EEL->addBasicBlockToLoop(VectorEarlyExitBB, *LI);
@@ -9696,7 +9696,7 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
 
 #if SIFIVE_CUSTOMIZATION
   // cherry-pick from #88385
-  if (Legal->hasUncountableEarlyExit())
+  if (!Legal->getCountableExitingBlocks().empty())
     State.CFG.EarlyExitBB = Legal->getUncountableEarlyExitBlock();
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -11795,17 +11795,17 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
 #endif
 
 #if SIFIVE_CUSTOMIZATION
-  BasicBlock *CouldNotComputeExitingBB =
-      Legal->getCouldNotComputeExitingBlock();
+  BasicBlock *CouldNotComputeExitingBB = nullptr;
   VPRecipeBase *VPDataDepExitCond = nullptr;
   Value *DataDepExitCond = nullptr;
   VPBasicBlock *EarlyExitVPBB = nullptr;
   BasicBlock *EarlyExitingBB = nullptr;
-  if (CouldNotComputeExitingBB) {
+  if (IsUncountable) {
+    CouldNotComputeExitingBB = Legal->getUncountableEarlyExitingBlock();
     BranchInst *BI =
         cast<BranchInst>(CouldNotComputeExitingBB->getTerminator());
     DataDepExitCond = BI->getCondition();
-    if (Legal->hasUncountableEarlyExit()) {
+    if (!Legal->getCountableExitingBlocks().empty()) {
       EarlyExitingBB = CouldNotComputeExitingBB;
       EarlyExitVPBB = Plan->createVPBasicBlock("vector.early.exit");
       Plan->getVectorLoopRegion()->setEarlyExit(EarlyExitVPBB);
@@ -12060,7 +12060,7 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
 #if SIFIVE_CUSTOMIZATION
   // addScalarResumePhis requires TripCount to produce end-value
   // skip this for uncountable loop without trip count. e.g. strlen()
-  if (!Plan->isUncountable() || Legal->hasUncountableEarlyExit())
+  if (!Plan->isUncountable() || !Legal->getCountableExitingBlocks().empty())
     addScalarResumePhis(RecipeBuilder, *Plan, IVEndValues);
   SetVector<VPIRInstruction *> ExitUsersToFix =
       collectUsersInExitBlocks(OrigLoop, RecipeBuilder, *Plan,

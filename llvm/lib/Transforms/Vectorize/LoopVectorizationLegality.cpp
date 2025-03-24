@@ -2629,7 +2629,7 @@ bool LoopVectorizationLegality::canVectorizeUncountableLoop(
   if (!getCountableExitingBlocks().empty()) {
     BasicBlock *LatchBB = TheLoop->getLoopLatch();
     // make sure the early exit is not the latch
-    if (CouldNotComputeExitingBlock == LatchBB) {
+    if (SingleUncountableEdge->first == LatchBB) {
       LLVM_DEBUG(dbgs() << "\nUncountable Loop: Expect the latch to be "
                            "countable when there is an early exiting\n");
       return false;

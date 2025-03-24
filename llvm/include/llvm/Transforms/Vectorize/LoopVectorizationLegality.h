@@ -576,10 +576,6 @@ public:
   /// Returns true if TTI says useVLAVectorizer() is enabled for the target.
   bool useVLAVectorizer() const;
 
-  BasicBlock *getCouldNotComputeExitingBlock() const {
-    return CouldNotComputeExitingBlock;
-  }
-
   /// Returns true if an uncountable loop is safe for speculation
   bool isSpeculationSafe(PredicatedScalarEvolution &PSE);
 
@@ -819,7 +815,6 @@ private:
 
 #if SIFIVE_CUSTOMIZATION
   bool IsVectorizableUncountable = false;
-  BasicBlock *CouldNotComputeExitingBlock = nullptr;
 
   /// Hold all loads and stores that need to be speculative.
   SmallPtrSet<Instruction *, 4> SpeculativeLoads;
