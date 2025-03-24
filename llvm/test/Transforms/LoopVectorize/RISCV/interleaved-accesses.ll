@@ -740,17 +740,6 @@ exit:
 define void @load_store_factor8(ptr %p) {
 ; CHECK-LABEL: @load_store_factor8(
 ; CHECK-NEXT:  entry:
-<<<<<<< HEAD
-; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[ENTRY:%.*]]
-; CHECK:       vector.ph:
-; CHECK-NEXT:    br label [[LOOP:%.*]]
-; CHECK:       vector.body:
-; CHECK-NEXT:    [[I:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[NEXTI:%.*]], [[LOOP]] ]
-; CHECK-NEXT:    [[TMP3:%.*]] = add i64 [[I]], 0
-; CHECK-NEXT:    [[OFFSET0:%.*]] = shl i64 [[TMP3]], 3
-; CHECK-NEXT:    [[Q0:%.*]] = getelementptr i64, ptr [[P:%.*]], i64 [[OFFSET0]]
-; CHECK-NEXT:    [[WIDE_VEC:%.*]] = load <16 x i64>, ptr [[Q0]], align 8
-=======
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
@@ -760,7 +749,6 @@ define void @load_store_factor8(ptr %p) {
 ; CHECK-NEXT:    [[TMP1:%.*]] = shl i64 [[TMP0]], 3
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr i64, ptr [[P:%.*]], i64 [[TMP1]]
 ; CHECK-NEXT:    [[WIDE_VEC:%.*]] = load <16 x i64>, ptr [[TMP2]], align 8
->>>>>>> refs/rewritten/1a8f49f
 ; CHECK-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <16 x i64> [[WIDE_VEC]], <16 x i64> poison, <2 x i32> <i32 0, i32 8>
 ; CHECK-NEXT:    [[STRIDED_VEC1:%.*]] = shufflevector <16 x i64> [[WIDE_VEC]], <16 x i64> poison, <2 x i32> <i32 1, i32 9>
 ; CHECK-NEXT:    [[STRIDED_VEC2:%.*]] = shufflevector <16 x i64> [[WIDE_VEC]], <16 x i64> poison, <2 x i32> <i32 2, i32 10>
@@ -769,8 +757,7 @@ define void @load_store_factor8(ptr %p) {
 ; CHECK-NEXT:    [[STRIDED_VEC5:%.*]] = shufflevector <16 x i64> [[WIDE_VEC]], <16 x i64> poison, <2 x i32> <i32 5, i32 13>
 ; CHECK-NEXT:    [[STRIDED_VEC6:%.*]] = shufflevector <16 x i64> [[WIDE_VEC]], <16 x i64> poison, <2 x i32> <i32 6, i32 14>
 ; CHECK-NEXT:    [[STRIDED_VEC7:%.*]] = shufflevector <16 x i64> [[WIDE_VEC]], <16 x i64> poison, <2 x i32> <i32 7, i32 15>
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP19:%.*]] = add <2 x i64> [[STRIDED_VEC]], splat (i64 1)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <2 x i64> [[STRIDED_VEC]], splat (i64 1)
 ; CHECK-NEXT:    [[TMP4:%.*]] = add <2 x i64> [[STRIDED_VEC1]], splat (i64 2)
 ; CHECK-NEXT:    [[TMP5:%.*]] = add <2 x i64> [[STRIDED_VEC2]], splat (i64 3)
 ; CHECK-NEXT:    [[TMP6:%.*]] = add <2 x i64> [[STRIDED_VEC3]], splat (i64 4)
@@ -778,7 +765,7 @@ define void @load_store_factor8(ptr %p) {
 ; CHECK-NEXT:    [[TMP8:%.*]] = add <2 x i64> [[STRIDED_VEC5]], splat (i64 6)
 ; CHECK-NEXT:    [[TMP9:%.*]] = add <2 x i64> [[STRIDED_VEC6]], splat (i64 7)
 ; CHECK-NEXT:    [[TMP10:%.*]] = add <2 x i64> [[STRIDED_VEC7]], splat (i64 8)
-; CHECK-NEXT:    [[TMP11:%.*]] = shufflevector <2 x i64> [[TMP19]], <2 x i64> [[TMP4]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
+; CHECK-NEXT:    [[TMP11:%.*]] = shufflevector <2 x i64> [[TMP3]], <2 x i64> [[TMP4]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
 ; CHECK-NEXT:    [[TMP12:%.*]] = shufflevector <2 x i64> [[TMP5]], <2 x i64> [[TMP6]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
 ; CHECK-NEXT:    [[TMP13:%.*]] = shufflevector <2 x i64> [[TMP7]], <2 x i64> [[TMP8]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
 ; CHECK-NEXT:    [[TMP14:%.*]] = shufflevector <2 x i64> [[TMP9]], <2 x i64> [[TMP10]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
@@ -786,42 +773,15 @@ define void @load_store_factor8(ptr %p) {
 ; CHECK-NEXT:    [[TMP16:%.*]] = shufflevector <4 x i64> [[TMP13]], <4 x i64> [[TMP14]], <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7>
 ; CHECK-NEXT:    [[TMP17:%.*]] = shufflevector <8 x i64> [[TMP15]], <8 x i64> [[TMP16]], <16 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7, i32 8, i32 9, i32 10, i32 11, i32 12, i32 13, i32 14, i32 15>
 ; CHECK-NEXT:    [[INTERLEAVED_VEC:%.*]] = shufflevector <16 x i64> [[TMP17]], <16 x i64> poison, <16 x i32> <i32 0, i32 2, i32 4, i32 6, i32 8, i32 10, i32 12, i32 14, i32 1, i32 3, i32 5, i32 7, i32 9, i32 11, i32 13, i32 15>
-; CHECK-NEXT:    store <16 x i64> [[INTERLEAVED_VEC]], ptr [[Q0]], align 8
-; CHECK-NEXT:    [[NEXTI]] = add nuw i64 [[I]], 2
-; CHECK-NEXT:    [[TMP18:%.*]] = icmp eq i64 [[NEXTI]], 1024
-; CHECK-NEXT:    br i1 [[TMP18]], label [[MIDDLE_BLOCK:%.*]], label [[LOOP]], !llvm.loop [[LOOP10:![0-9]+]]
-; CHECK:       middle.block:
-; CHECK-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
-; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1024, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY1:%.*]] ]
-; CHECK-NEXT:    br label [[LOOP1:%.*]]
-=======
-; CHECK-NEXT:    [[TMP4:%.*]] = add <2 x i64> [[STRIDED_VEC]], splat (i64 1)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <2 x i64> [[STRIDED_VEC1]], splat (i64 2)
-; CHECK-NEXT:    [[TMP8:%.*]] = add <2 x i64> [[STRIDED_VEC2]], splat (i64 3)
-; CHECK-NEXT:    [[TMP10:%.*]] = add <2 x i64> [[STRIDED_VEC3]], splat (i64 4)
-; CHECK-NEXT:    [[TMP12:%.*]] = add <2 x i64> [[STRIDED_VEC4]], splat (i64 5)
-; CHECK-NEXT:    [[TMP14:%.*]] = add <2 x i64> [[STRIDED_VEC5]], splat (i64 6)
-; CHECK-NEXT:    [[TMP16:%.*]] = add <2 x i64> [[STRIDED_VEC6]], splat (i64 7)
-; CHECK-NEXT:    [[TMP19:%.*]] = add <2 x i64> [[STRIDED_VEC7]], splat (i64 8)
-; CHECK-NEXT:    [[TMP21:%.*]] = shufflevector <2 x i64> [[TMP4]], <2 x i64> [[TMP6]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
-; CHECK-NEXT:    [[TMP22:%.*]] = shufflevector <2 x i64> [[TMP8]], <2 x i64> [[TMP10]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
-; CHECK-NEXT:    [[TMP23:%.*]] = shufflevector <2 x i64> [[TMP12]], <2 x i64> [[TMP14]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
-; CHECK-NEXT:    [[TMP24:%.*]] = shufflevector <2 x i64> [[TMP16]], <2 x i64> [[TMP19]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
-; CHECK-NEXT:    [[TMP25:%.*]] = shufflevector <4 x i64> [[TMP21]], <4 x i64> [[TMP22]], <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7>
-; CHECK-NEXT:    [[TMP26:%.*]] = shufflevector <4 x i64> [[TMP23]], <4 x i64> [[TMP24]], <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7>
-; CHECK-NEXT:    [[TMP27:%.*]] = shufflevector <8 x i64> [[TMP25]], <8 x i64> [[TMP26]], <16 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7, i32 8, i32 9, i32 10, i32 11, i32 12, i32 13, i32 14, i32 15>
-; CHECK-NEXT:    [[INTERLEAVED_VEC:%.*]] = shufflevector <16 x i64> [[TMP27]], <16 x i64> poison, <16 x i32> <i32 0, i32 2, i32 4, i32 6, i32 8, i32 10, i32 12, i32 14, i32 1, i32 3, i32 5, i32 7, i32 9, i32 11, i32 13, i32 15>
 ; CHECK-NEXT:    store <16 x i64> [[INTERLEAVED_VEC]], ptr [[TMP2]], align 8
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 2
-; CHECK-NEXT:    [[TMP28:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
-; CHECK-NEXT:    br i1 [[TMP28]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
+; CHECK-NEXT:    [[TMP18:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
+; CHECK-NEXT:    br i1 [[TMP18]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1024, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; CHECK-NEXT:    br label [[LOOP:%.*]]
->>>>>>> refs/rewritten/1a8f49f
 ; CHECK:       loop:
 ; CHECK-NEXT:    [[I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[NEXTI:%.*]], [[LOOP]] ]
 ; CHECK-NEXT:    [[OFFSET0:%.*]] = shl i64 [[I]], 3
@@ -964,17 +924,6 @@ define void @load_store_factor8(ptr %p) {
 ;
 ; SCALABLE-LABEL: @load_store_factor8(
 ; SCALABLE-NEXT:  entry:
-<<<<<<< HEAD
-; SCALABLE-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[ENTRY:%.*]]
-; SCALABLE:       vector.ph:
-; SCALABLE-NEXT:    br label [[LOOP:%.*]]
-; SCALABLE:       vector.body:
-; SCALABLE-NEXT:    [[I:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[NEXTI:%.*]], [[LOOP]] ]
-; SCALABLE-NEXT:    [[TMP3:%.*]] = add i64 [[I]], 0
-; SCALABLE-NEXT:    [[OFFSET0:%.*]] = shl i64 [[TMP3]], 3
-; SCALABLE-NEXT:    [[Q0:%.*]] = getelementptr i64, ptr [[P:%.*]], i64 [[OFFSET0]]
-; SCALABLE-NEXT:    [[WIDE_VEC:%.*]] = load <16 x i64>, ptr [[Q0]], align 8
-=======
 ; SCALABLE-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; SCALABLE:       vector.ph:
 ; SCALABLE-NEXT:    br label [[VECTOR_BODY:%.*]]
@@ -984,7 +933,6 @@ define void @load_store_factor8(ptr %p) {
 ; SCALABLE-NEXT:    [[TMP1:%.*]] = shl i64 [[TMP0]], 3
 ; SCALABLE-NEXT:    [[TMP2:%.*]] = getelementptr i64, ptr [[P:%.*]], i64 [[TMP1]]
 ; SCALABLE-NEXT:    [[WIDE_VEC:%.*]] = load <16 x i64>, ptr [[TMP2]], align 8
->>>>>>> refs/rewritten/1a8f49f
 ; SCALABLE-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <16 x i64> [[WIDE_VEC]], <16 x i64> poison, <2 x i32> <i32 0, i32 8>
 ; SCALABLE-NEXT:    [[STRIDED_VEC1:%.*]] = shufflevector <16 x i64> [[WIDE_VEC]], <16 x i64> poison, <2 x i32> <i32 1, i32 9>
 ; SCALABLE-NEXT:    [[STRIDED_VEC2:%.*]] = shufflevector <16 x i64> [[WIDE_VEC]], <16 x i64> poison, <2 x i32> <i32 2, i32 10>
@@ -993,8 +941,7 @@ define void @load_store_factor8(ptr %p) {
 ; SCALABLE-NEXT:    [[STRIDED_VEC5:%.*]] = shufflevector <16 x i64> [[WIDE_VEC]], <16 x i64> poison, <2 x i32> <i32 5, i32 13>
 ; SCALABLE-NEXT:    [[STRIDED_VEC6:%.*]] = shufflevector <16 x i64> [[WIDE_VEC]], <16 x i64> poison, <2 x i32> <i32 6, i32 14>
 ; SCALABLE-NEXT:    [[STRIDED_VEC7:%.*]] = shufflevector <16 x i64> [[WIDE_VEC]], <16 x i64> poison, <2 x i32> <i32 7, i32 15>
-<<<<<<< HEAD
-; SCALABLE-NEXT:    [[TMP19:%.*]] = add <2 x i64> [[STRIDED_VEC]], splat (i64 1)
+; SCALABLE-NEXT:    [[TMP3:%.*]] = add <2 x i64> [[STRIDED_VEC]], splat (i64 1)
 ; SCALABLE-NEXT:    [[TMP4:%.*]] = add <2 x i64> [[STRIDED_VEC1]], splat (i64 2)
 ; SCALABLE-NEXT:    [[TMP5:%.*]] = add <2 x i64> [[STRIDED_VEC2]], splat (i64 3)
 ; SCALABLE-NEXT:    [[TMP6:%.*]] = add <2 x i64> [[STRIDED_VEC3]], splat (i64 4)
@@ -1002,7 +949,7 @@ define void @load_store_factor8(ptr %p) {
 ; SCALABLE-NEXT:    [[TMP8:%.*]] = add <2 x i64> [[STRIDED_VEC5]], splat (i64 6)
 ; SCALABLE-NEXT:    [[TMP9:%.*]] = add <2 x i64> [[STRIDED_VEC6]], splat (i64 7)
 ; SCALABLE-NEXT:    [[TMP10:%.*]] = add <2 x i64> [[STRIDED_VEC7]], splat (i64 8)
-; SCALABLE-NEXT:    [[TMP11:%.*]] = shufflevector <2 x i64> [[TMP19]], <2 x i64> [[TMP4]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
+; SCALABLE-NEXT:    [[TMP11:%.*]] = shufflevector <2 x i64> [[TMP3]], <2 x i64> [[TMP4]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
 ; SCALABLE-NEXT:    [[TMP12:%.*]] = shufflevector <2 x i64> [[TMP5]], <2 x i64> [[TMP6]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
 ; SCALABLE-NEXT:    [[TMP13:%.*]] = shufflevector <2 x i64> [[TMP7]], <2 x i64> [[TMP8]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
 ; SCALABLE-NEXT:    [[TMP14:%.*]] = shufflevector <2 x i64> [[TMP9]], <2 x i64> [[TMP10]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
@@ -1010,42 +957,15 @@ define void @load_store_factor8(ptr %p) {
 ; SCALABLE-NEXT:    [[TMP16:%.*]] = shufflevector <4 x i64> [[TMP13]], <4 x i64> [[TMP14]], <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7>
 ; SCALABLE-NEXT:    [[TMP17:%.*]] = shufflevector <8 x i64> [[TMP15]], <8 x i64> [[TMP16]], <16 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7, i32 8, i32 9, i32 10, i32 11, i32 12, i32 13, i32 14, i32 15>
 ; SCALABLE-NEXT:    [[INTERLEAVED_VEC:%.*]] = shufflevector <16 x i64> [[TMP17]], <16 x i64> poison, <16 x i32> <i32 0, i32 2, i32 4, i32 6, i32 8, i32 10, i32 12, i32 14, i32 1, i32 3, i32 5, i32 7, i32 9, i32 11, i32 13, i32 15>
-; SCALABLE-NEXT:    store <16 x i64> [[INTERLEAVED_VEC]], ptr [[Q0]], align 8
-; SCALABLE-NEXT:    [[NEXTI]] = add nuw i64 [[I]], 2
-; SCALABLE-NEXT:    [[TMP18:%.*]] = icmp eq i64 [[NEXTI]], 1024
-; SCALABLE-NEXT:    br i1 [[TMP18]], label [[MIDDLE_BLOCK:%.*]], label [[LOOP]], !llvm.loop [[LOOP10:![0-9]+]]
-; SCALABLE:       middle.block:
-; SCALABLE-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
-; SCALABLE:       scalar.ph:
-; SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1024, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY1:%.*]] ]
-; SCALABLE-NEXT:    br label [[LOOP1:%.*]]
-=======
-; SCALABLE-NEXT:    [[TMP4:%.*]] = add <2 x i64> [[STRIDED_VEC]], splat (i64 1)
-; SCALABLE-NEXT:    [[TMP6:%.*]] = add <2 x i64> [[STRIDED_VEC1]], splat (i64 2)
-; SCALABLE-NEXT:    [[TMP8:%.*]] = add <2 x i64> [[STRIDED_VEC2]], splat (i64 3)
-; SCALABLE-NEXT:    [[TMP10:%.*]] = add <2 x i64> [[STRIDED_VEC3]], splat (i64 4)
-; SCALABLE-NEXT:    [[TMP12:%.*]] = add <2 x i64> [[STRIDED_VEC4]], splat (i64 5)
-; SCALABLE-NEXT:    [[TMP14:%.*]] = add <2 x i64> [[STRIDED_VEC5]], splat (i64 6)
-; SCALABLE-NEXT:    [[TMP16:%.*]] = add <2 x i64> [[STRIDED_VEC6]], splat (i64 7)
-; SCALABLE-NEXT:    [[TMP19:%.*]] = add <2 x i64> [[STRIDED_VEC7]], splat (i64 8)
-; SCALABLE-NEXT:    [[TMP21:%.*]] = shufflevector <2 x i64> [[TMP4]], <2 x i64> [[TMP6]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
-; SCALABLE-NEXT:    [[TMP22:%.*]] = shufflevector <2 x i64> [[TMP8]], <2 x i64> [[TMP10]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
-; SCALABLE-NEXT:    [[TMP23:%.*]] = shufflevector <2 x i64> [[TMP12]], <2 x i64> [[TMP14]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
-; SCALABLE-NEXT:    [[TMP24:%.*]] = shufflevector <2 x i64> [[TMP16]], <2 x i64> [[TMP19]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
-; SCALABLE-NEXT:    [[TMP25:%.*]] = shufflevector <4 x i64> [[TMP21]], <4 x i64> [[TMP22]], <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7>
-; SCALABLE-NEXT:    [[TMP26:%.*]] = shufflevector <4 x i64> [[TMP23]], <4 x i64> [[TMP24]], <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7>
-; SCALABLE-NEXT:    [[TMP27:%.*]] = shufflevector <8 x i64> [[TMP25]], <8 x i64> [[TMP26]], <16 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7, i32 8, i32 9, i32 10, i32 11, i32 12, i32 13, i32 14, i32 15>
-; SCALABLE-NEXT:    [[INTERLEAVED_VEC:%.*]] = shufflevector <16 x i64> [[TMP27]], <16 x i64> poison, <16 x i32> <i32 0, i32 2, i32 4, i32 6, i32 8, i32 10, i32 12, i32 14, i32 1, i32 3, i32 5, i32 7, i32 9, i32 11, i32 13, i32 15>
 ; SCALABLE-NEXT:    store <16 x i64> [[INTERLEAVED_VEC]], ptr [[TMP2]], align 8
 ; SCALABLE-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 2
-; SCALABLE-NEXT:    [[TMP28:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
-; SCALABLE-NEXT:    br i1 [[TMP28]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
+; SCALABLE-NEXT:    [[TMP18:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
+; SCALABLE-NEXT:    br i1 [[TMP18]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
 ; SCALABLE:       middle.block:
 ; SCALABLE-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; SCALABLE:       scalar.ph:
 ; SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1024, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; SCALABLE-NEXT:    br label [[LOOP:%.*]]
->>>>>>> refs/rewritten/1a8f49f
 ; SCALABLE:       loop:
 ; SCALABLE-NEXT:    [[I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[NEXTI:%.*]], [[LOOP]] ]
 ; SCALABLE-NEXT:    [[OFFSET0:%.*]] = shl i64 [[I]], 3
