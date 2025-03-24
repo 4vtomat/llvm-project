@@ -8306,10 +8306,15 @@ static bool isPermittedNeonBaseType(QualType &Ty, VectorKind VecKind, Sema &S) {
          BTy->getKind() == BuiltinType::ULongLong ||
          BTy->getKind() == BuiltinType::Float ||
          BTy->getKind() == BuiltinType::Half ||
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
          BTy->getKind() == BuiltinType::Float16 ||
 #endif
          BTy->getKind() == BuiltinType::BFloat16;
+=======
+         BTy->getKind() == BuiltinType::BFloat16 ||
+         BTy->getKind() == BuiltinType::MFloat8;
+>>>>>>> refs/rewritten/aa34a6a
 }
 
 static bool verifyValidIntegerConstantExpr(Sema &S, const ParsedAttr &Attr,

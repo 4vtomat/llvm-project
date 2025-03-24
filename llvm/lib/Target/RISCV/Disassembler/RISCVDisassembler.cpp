@@ -297,6 +297,7 @@ static DecodeStatus DecodeVRM8RegisterClass(MCInst &Inst, uint32_t RegNo,
   return MCDisassembler::Success;
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static DecodeStatus DecodeTRRegisterClass(MCInst &Inst, uint32_t RegNo,
                                           uint64_t Address,
@@ -332,6 +333,18 @@ static DecodeStatus DecodeTRM4RegisterClass(MCInst &Inst, uint32_t RegNo,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+static DecodeStatus DecodeVMV0RegisterClass(MCInst &Inst, uint32_t RegNo,
+                                            uint64_t Address,
+                                            const MCDisassembler *Decoder) {
+  if (RegNo)
+    return MCDisassembler::Fail;
+
+  Inst.addOperand(MCOperand::createReg(RISCV::V0));
+  return MCDisassembler::Success;
+}
+
+>>>>>>> refs/rewritten/aa34a6a
 static DecodeStatus decodeVMaskReg(MCInst &Inst, uint32_t RegNo,
                                    uint64_t Address,
                                    const MCDisassembler *Decoder) {

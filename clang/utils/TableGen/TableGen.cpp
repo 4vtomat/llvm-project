@@ -69,6 +69,7 @@ enum ActionType {
   GenClangOpenCLBuiltins,
   GenClangOpenCLBuiltinHeader,
   GenClangOpenCLBuiltinTests,
+  GenCXX11AttributeInfo,
   GenArmNeon,
 #if SIFIVE_CUSTOMIZATION
   GenRecodeNeon,
@@ -234,6 +235,8 @@ cl::opt<ActionType> Action(
                    "Generate OpenCL builtin header"),
         clEnumValN(GenClangOpenCLBuiltinTests, "gen-clang-opencl-builtin-tests",
                    "Generate OpenCL builtin declaration tests"),
+        clEnumValN(GenCXX11AttributeInfo, "gen-cxx11-attribute-info",
+                   "Generate CXX11 attributes info"),
         clEnumValN(GenArmNeon, "gen-arm-neon", "Generate arm_neon.h for clang"),
 #if SIFIVE_CUSTOMIZATION
         clEnumValN(GenRecodeNeon, "gen-recode-neon",
@@ -349,6 +352,9 @@ bool ClangTableGenMain(raw_ostream &OS, const RecordKeeper &Records) {
     break;
   case GenClangAttrSubjectMatchRulesParserStringSwitches:
     EmitClangAttrSubjectMatchRulesParserStringSwitches(Records, OS);
+    break;
+  case GenCXX11AttributeInfo:
+    EmitCXX11AttributeInfo(Records, OS);
     break;
   case GenClangAttrImpl:
     EmitClangAttrImpl(Records, OS);

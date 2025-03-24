@@ -8273,7 +8273,7 @@ static bool programUndefinedIfUndefOrPoison(const Value *V,
     if (!BB || !Visited.insert(BB).second)
       break;
 
-    Begin = BB->getFirstNonPHI()->getIterator();
+    Begin = BB->getFirstNonPHIIt();
     End = BB->end();
   }
   return false;
@@ -9521,7 +9521,7 @@ isImpliedCondICmps(const ICmpInst *LHS, CmpPredicate RPred, const Value *R0,
        SignedLPred == ICmpInst::ICMP_SGE) &&
       match(R0, m_NSWSub(m_Specific(L0), m_Specific(L1)))) {
     if (match(R1, m_NonPositive()) &&
-        ICmpInst::isImpliedByMatchingCmp(LPred, RPred) == false)
+        ICmpInst::isImpliedByMatchingCmp(SignedLPred, RPred) == false)
       return false;
   }
 
@@ -9531,7 +9531,7 @@ isImpliedCondICmps(const ICmpInst *LHS, CmpPredicate RPred, const Value *R0,
        SignedLPred == ICmpInst::ICMP_SLE) &&
       match(R0, m_NSWSub(m_Specific(L0), m_Specific(L1)))) {
     if (match(R1, m_NonNegative()) &&
-        ICmpInst::isImpliedByMatchingCmp(LPred, RPred) == true)
+        ICmpInst::isImpliedByMatchingCmp(SignedLPred, RPred) == true)
       return true;
   }
 
