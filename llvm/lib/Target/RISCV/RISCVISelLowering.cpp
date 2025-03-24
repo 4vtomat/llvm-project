@@ -19625,7 +19625,6 @@ static SDValue performCONCAT_VECTORSCombine(SDNode *N, SelectionDAG &DAG,
   return DAG.getBitcast(VT.getSimpleVT(), StridedLoad);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static SDValue performSPLAT_VECTORCombine(SDNode *N, SelectionDAG &DAG,
                                           const RISCVSubtarget &Subtarget,
@@ -19748,12 +19747,6 @@ static SDValue combineVZEXT_VL(SDNode *N, SelectionDAG &DAG) {
   return DAG.getNode(RISCVISD::VZEXT_VL, DL, VT, Sub, Mask, EVL);
 }
 #endif // SIFIVE_CUSTOMIZATION
-/// Custom legalize <N x i128> or <N x i256> to <M x ELEN>.  This runs
-/// during the combine phase before type legalization, and relies on
-/// DAGCombine not undoing the transform if isShuffleMaskLegal returns false
-/// for the source mask.
-=======
->>>>>>> refs/rewritten/aa34a6a
 static SDValue performVECTOR_SHUFFLECombine(SDNode *N, SelectionDAG &DAG,
                                             const RISCVSubtarget &Subtarget,
                                             const RISCVTargetLowering &TLI) {
