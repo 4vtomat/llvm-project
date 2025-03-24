@@ -66,6 +66,6 @@ void test2(struct bucket2 *foo) {
 // CHECK: [[META4]] = !{!"int", [[META5:![0-9]+]], i64 0}
 // CHECK: [[META5]] = !{!"omnipotent char", [[META6:![0-9]+]], i64 0}
 // CHECK: [[META6]] = !{!"Simple C/C++ TBAA"}
-// CHECK: [[META7]] = !{!"p1 _ZTS8variable", [[META8:![0-9]+]], i64 0}
+// CHECK: [[META7]] = !{!"p1 struct variable", [[META8:![0-9]+]], i64 0}
 // CHECK: [[META8]] = !{!"any pointer", [[META5]], i64 0}
 //.
