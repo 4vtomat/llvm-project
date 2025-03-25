@@ -1936,8 +1936,13 @@ void Intrinsic::generateImpl(bool ReverseArguments,
         RequiredExtensions.emplace("__riscv_v");
         if (T.isHalf())
           RequiredExtensions.emplace("__riscv_zvfh");
-      } else if (T.isScalar() && T.isHalf()) {
-        RequiredExtensions.emplace("__riscv_zfh");
+        else if (T.isBFloat16())
+          RequiredExtensions.emplace("__riscv_zvfbfmin");
+      } else if (T.isScalar()) {
+        if (T.isHalf())
+          RequiredExtensions.emplace("__riscv_zfh");
+        else if (T.isBFloat16())
+          RequiredExtensions.emplace("__riscv_zfbfmin");
       }
     }
     if (!RequiredExtensions.empty()) {
@@ -2534,7 +2539,8 @@ static void printRecodeNEONBegin(raw_ostream &OS) {
   OS << "#else\n\n";
 
   OS << "#include <stdint.h>\n";
-  OS << "#include <arm_fp16.h>\n\n";
+  OS << "#include <arm_fp16.h>\n";
+  OS << "#include <arm_bf16.h>\n\n";
 
   // Emit NEON-specific scalar typedefs.
   OS << "#if 32 <= __riscv_flen\n";
@@ -2712,6 +2718,21 @@ static void printFP16Begin(raw_ostream &OS) {
         "__nodebug__))\n\n";
 }
 
+static void printBF16Begin(raw_ostream &OS) {
+  OS << "/*===---- arm_bf16.h - ARM BF16 intrinsics "
+        "-----------------------------------===\n"
+        " *\n"
+        " *\n"
+        " * Part of the LLVM Project, under the Apache License v2.0 with LLVM "
+        "Exceptions.\n"
+        " * See https://llvm.org/LICENSE.txt for license information.\n"
+        " * SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception\n"
+        " *\n"
+        " *===-----------------------------------------------------------------"
+        "------===\n"
+        " */\n\n";
+}
+
 static void printRecodeFP16Begin(raw_ostream &OS) {
   OS << "/*===---- arm_fp16.h - SiFive Recode for FP16 intrinsics "
         "----------------"
@@ -2739,6 +2760,17 @@ static void printRecodeFP16Begin(raw_ostream &OS) {
 
   OS << "#define __ai static __inline__ __attribute__((__always_inline__, "
         "__nodebug__))\n\n";
+}
+
+static void printRecodeBF16Begin(raw_ostream &OS) {
+  OS << "/*===---- arm_bf16.h - SiFive Recode for BF16 intrinsics "
+        "----------------"
+        "---===\n"
+        " *\n"
+        " *===-----------------------------------------------------------------"
+        "---"
+        "---===\n"
+        " */\n\n";
 }
 #endif
 
@@ -2903,18 +2935,12 @@ __arm_set_fpm_lscale2(fpm_t __fpm, uint64_t __scale) {
 }
 
 void NeonEmitter::runBF16(raw_ostream &OS) {
-  OS << "/*===---- arm_bf16.h - ARM BF16 intrinsics "
-        "-----------------------------------===\n"
-        " *\n"
-        " *\n"
-        " * Part of the LLVM Project, under the Apache License v2.0 with LLVM "
-        "Exceptions.\n"
-        " * See https://llvm.org/LICENSE.txt for license information.\n"
-        " * SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception\n"
-        " *\n"
-        " *===-----------------------------------------------------------------"
-        "------===\n"
-        " */\n\n";
+#if SIFIVE_CUSTOMIZATION
+  if (RecodeMode)
+    printRecodeBF16Begin(OS);
+  else
+    printBF16Begin(OS);
+#endif
 
   OS << "#ifndef __ARM_BF16_H\n";
   OS << "#define __ARM_BF16_H\n\n";
@@ -2990,6 +3016,10 @@ void clang::EmitRecodeNeon(const RecordKeeper &Records, raw_ostream &OS) {
 
 void clang::EmitRecodeFP16(const RecordKeeper &Records, raw_ostream &OS) {
   NeonEmitter(Records, true).runFP16(OS);
+}
+
+void clang::EmitRecodeBF16(const RecordKeeper &Records, raw_ostream &OS) {
+  NeonEmitter(Records, true).runBF16(OS);
 }
 #endif
 

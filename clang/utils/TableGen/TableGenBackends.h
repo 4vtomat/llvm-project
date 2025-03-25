@@ -123,6 +123,7 @@ void EmitNeon(const llvm::RecordKeeper &Records, llvm::raw_ostream &OS);
 #if SIFIVE_CUSTOMIZATION
 void EmitRecodeNeon(const llvm::RecordKeeper &Records, llvm::raw_ostream &OS);
 void EmitRecodeFP16(const llvm::RecordKeeper &Records, llvm::raw_ostream &OS);
+void EmitRecodeBF16(const llvm::RecordKeeper &Records, llvm::raw_ostream &OS);
 #endif
 void EmitFP16(const llvm::RecordKeeper &Records, llvm::raw_ostream &OS);
 void EmitBF16(const llvm::RecordKeeper &Records, llvm::raw_ostream &OS);
