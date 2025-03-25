@@ -11,9 +11,8 @@
 
 define void @f(%union.31.33* %agg.result) {
 ; CHECK-LABEL: LDist: Checking a loop
-; CHECK: LDist: Populated partitions:
-; CHECK: LDist: Partition 0: (cycle)
-; CHECK: LDist: Partition 1:
+; CHECK: LDist: Skipping; memory operations are safe for vectorization
+; CHECK: LDist: Skipping; memory operations are safe for vectorization
 
 entry:
   %0 = bitcast %union.31.33* %agg.result to i32*
