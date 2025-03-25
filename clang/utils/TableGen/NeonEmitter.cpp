@@ -2123,6 +2123,7 @@ void NeonEmitter::createIntrinsic(const Record *R,
                        (TargetGuard.find("aes") != std::string::npos ||
                         TargetGuard.find("bf16") != std::string::npos ||
                         TargetGuard.find("fp16fml") != std::string::npos ||
+                        TargetGuard.find("fp8") != std::string::npos ||
                         TargetGuard.find("i8mm") != std::string::npos ||
                         TargetGuard.find("sha2") != std::string::npos ||
                         TargetGuard.find("sha3") != std::string::npos ||
@@ -2370,8 +2371,8 @@ static void emitNeonTypeDefs(const std::string &types, raw_ostream &OS,
     Type T(TS, ".");
 
 #if SIFIVE_CUSTOMIZATION
-    // We don't support any poly type for Recode.
-    if (RecodeMode && T.isPoly())
+    // We don't support poly and FP8 type for Recode.
+    if (RecodeMode && (T.isPoly() || T.isMFloat8()))
       continue;
 #endif
 
@@ -2410,8 +2411,8 @@ static void emitNeonTypeDefs(const std::string &types, raw_ostream &OS,
       Type T(TS, ".");
 
 #if SIFIVE_CUSTOMIZATION
-      // We don't support any poly type for Recode.
-      if (RecodeMode && T.isPoly())
+      // We don't support poly and FP8 type for Recode.
+      if (RecodeMode && (T.isPoly() || T.isMFloat8()))
         continue;
 #endif
 
@@ -2950,9 +2951,9 @@ __arm_set_fpm_lscale2(fpm_t __fpm, uint64_t __scale) {
 
 )";
 
-  emitNeonTypeDefs("cQcsQsiQilQlUcQUcUsQUsUiQUiUlQUlmQmhQhfQfdQd", OS);
+  emitNeonTypeDefs("cQcsQsiQilQlUcQUcUsQUsUiQUiUlQUlmQmhQhfQfdQd", OS, RecodeMode);
 
-  emitNeonTypeDefs("bQb", OS);
+  emitNeonTypeDefs("bQb", OS, RecodeMode);
 #if SIFIVE_CUSTOMIZATION
   if (RecodeMode)
     OS << "#pragma pop_macro(\"__aarch64__\")\n\n";
