@@ -11539,22 +11539,16 @@ static bool isOptimizableIVOrUse(VPValue *VPV) {
 
 // Collect VPIRInstructions for phis in the exit blocks that are modeled
 // in VPlan and add the exiting VPValue as operand.
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static SetVector<VPIRInstruction *> collectUsersInExitBlocks(
     Loop *OrigLoop, VPRecipeBuilder &Builder, VPlan &Plan,
     const MapVector<PHINode *, InductionDescriptor> &Inductions,
     const MapVector<PHINode *, CSADescriptor> &CSAs) {
 #else
-  static SetVector<VPIRInstruction *> collectUsersInExitBlocks(
-      Loop * OrigLoop, VPRecipeBuilder & Builder, VPlan & Plan) {
-#endif // SIFIVE_CUSTOMIZATION
-  auto *MiddleVPBB = Plan.getMiddleBlock();
-=======
 static SetVector<VPIRInstruction *>
 collectUsersInExitBlocks(Loop *OrigLoop, VPRecipeBuilder &Builder,
                          VPlan &Plan) {
->>>>>>> refs/rewritten/aa34a6a
+#endif // SIFIVE_CUSTOMIZATION
   SetVector<VPIRInstruction *> ExitUsersToFix;
   for (VPIRBasicBlock *ExitVPBB : Plan.getExitBlocks()) {
     for (VPRecipeBase &R : *ExitVPBB) {
@@ -11564,53 +11558,34 @@ collectUsersInExitBlocks(Loop *OrigLoop, VPRecipeBuilder &Builder,
       auto *ExitPhi = dyn_cast<PHINode>(&ExitIRI->getInstruction());
       if (!ExitPhi)
         break;
-<<<<<<< HEAD
-      for (VPBlockBase *PredVPBB : ExitVPBB->getPredecessors()) {
-        BasicBlock *ExitingBB = OrigLoop->getLoopLatch();
-        if (PredVPBB != MiddleVPBB) {
-          SmallVector<BasicBlock *> ExitingBlocks;
-          OrigLoop->getExitingBlocks(ExitingBlocks);
-          assert(ExitingBlocks.size() == 2 && "only support 2 exiting blocks");
-          ExitingBB = ExitingBB == ExitingBlocks[0] ? ExitingBlocks[1]
-                                                    : ExitingBlocks[0];
-        }
-        Value *IncomingValue = ExitPhi->getIncomingValueForBlock(ExitingBB);
-        VPValue *V = Builder.getVPValueOrAddLiveIn(IncomingValue);
-#if SIFIVE_CUSTOMIZATION
-      // TODO: Compute CSA exit values in VPlan, use VPLiveOuts to update
-      // live-outs.
-        if (isa<VPCSADataUpdateRecipe>(V) &&
-            (isa<Instruction>(IncomingValue) &&
-             any_of(IncomingValue->users(), [&CSAs](User *U) {
-               auto *P = dyn_cast<PHINode>(U);
-               return P && CSAs.contains(P);
-             })))
-          continue;
-        bool IsIVUse = isa<Instruction>(IncomingValue) &&
-                       OrigLoop->contains(cast<Instruction>(IncomingValue)) &&
-                       any_of(IncomingValue->users(), [&Inductions](User *U) {
-                         auto *P = dyn_cast<PHINode>(U);
-                         return P && Inductions.contains(P);
-                       });
-        // Uncountable loop optimizes IV liveout as well
-        if ((IsIVUse || isOptimizableIVOrUse(V)) &&
-            (Plan.isUncountable() ||
-             ExitVPBB->getSinglePredecessor() == MiddleVPBB))
-          continue;
-#endif // SIFIVE_CUSTOMIZATION
-        ExitUsersToFix.insert(ExitIRI);
-        ExitIRI->addOperand(V);
-=======
       if (ExitVPBB->getSinglePredecessor() != Plan.getMiddleBlock()) {
         assert(ExitIRI->getNumOperands() ==
                    ExitVPBB->getPredecessors().size() &&
                "early-exit must update exit values on construction");
         continue;
->>>>>>> refs/rewritten/aa34a6a
       }
       BasicBlock *ExitingBB = OrigLoop->getLoopLatch();
       Value *IncomingValue = ExitPhi->getIncomingValueForBlock(ExitingBB);
       VPValue *V = Builder.getVPValueOrAddLiveIn(IncomingValue);
+#if SIFIVE_CUSTOMIZATION
+      // TODO: Compute CSA exit values in VPlan, use VPLiveOuts to update
+      // live-outs.
+      if (isa<VPCSADataUpdateRecipe>(V) &&
+          (isa<Instruction>(IncomingValue) &&
+           any_of(IncomingValue->users(), [&CSAs](User *U) {
+             auto *P = dyn_cast<PHINode>(U);
+             return P && CSAs.contains(P);
+           })))
+        continue;
+      bool IsIVUse = isa<Instruction>(IncomingValue) &&
+                     OrigLoop->contains(cast<Instruction>(IncomingValue)) &&
+                     any_of(IncomingValue->users(), [&Inductions](User *U) {
+                       auto *P = dyn_cast<PHINode>(U);
+                       return P && Inductions.contains(P);
+                     });
+      if (IsIVUse || isOptimizableIVOrUse(V))
+        continue;
+#endif // SIFIVE_CUSTOMIZATION
       ExitIRI->addOperand(V);
       if (V->isLiveIn())
         continue;
@@ -12062,8 +12037,16 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     R->setOperand(1, WideIV->getStepValue());
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // SiFive uncountable loop exits early in the loop
+  // do not need this transform.
+  BasicBlock *UncountableExitingBlock;
+  if (!Plan->isUncountable() && (UncountableExitingBlock =
+          Legal->getUncountableEarlyExitingBlock())) {
+#else
   if (auto *UncountableExitingBlock =
           Legal->getUncountableEarlyExitingBlock()) {
+#endif // SIFIVE_CUSTOMIZATION
     if (!VPlanTransforms::handleUncountableEarlyExit(
             *Plan, *PSE.getSE(), OrigLoop, UncountableExitingBlock,
             RecipeBuilder)) {
@@ -12088,17 +12071,8 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   SetVector<VPIRInstruction *> ExitUsersToFix =
       collectUsersInExitBlocks(OrigLoop, RecipeBuilder, *Plan);
   addExitUsersForFirstOrderRecurrences(*Plan, ExitUsersToFix);
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-  if (!addUsersInExitBlocks(*Plan, ExitUsersToFix)) {
-    reportVectorizationFailure(
-        "Some exit values in loop with uncountable exit not supported yet",
-        "UncountableEarlyExitLoopsUnsupportedExitValue", ORE, OrigLoop);
-    return nullptr;
-  }
-=======
   addUsersInExitBlocks(*Plan, ExitUsersToFix);
->>>>>>> refs/rewritten/aa34a6a
 
   // ---------------------------------------------------------------------------
   // Transform initial VPlan: Apply previously taken decisions, in order, to
