@@ -2579,13 +2579,6 @@ void VPlanTransforms::convertToConcreteRecipes(VPlan &Plan) {
 bool VPlanTransforms::handleUncountableEarlyExit(
     VPlan &Plan, ScalarEvolution &SE, Loop *OrigLoop,
     BasicBlock *UncountableExitingBlock, VPRecipeBuilder &RecipeBuilder) {
-#if SIFIVE_CUSTOMIZATION
-  // SiFive: Bail out if it is SiFive uncountable loop
-  //         because SiFive uncountable loop exits early in the loop
-  //         do not need this transform.
-  if (Plan.isUncountable())
-    return;
-#endif // SIFIVE_CUSTOMIZATION
   VPRegionBlock *LoopRegion = Plan.getVectorLoopRegion();
   auto *LatchVPBB = cast<VPBasicBlock>(LoopRegion->getExiting());
   VPBuilder Builder(LatchVPBB->getTerminator());
