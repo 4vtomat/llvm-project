@@ -1170,10 +1170,11 @@ bool RISCVRegisterInfo::needUpdateECSlot(const LiveRange &LR,
 }
 
 static bool isRVVPressureSetIdx(unsigned Idx) {
-  const static std::vector<unsigned> RVVPressureSetIndices = {
+  const static unsigned RVVPressureSetIndices[] = {
       RISCV::RegisterPressureSets::VRM8NoV0, RISCV::RegisterPressureSets::VM};
 
-  return llvm::find(RVVPressureSetIndices, Idx) != RVVPressureSetIndices.end();
+  return llvm::find(RVVPressureSetIndices, Idx) !=
+         std::end(RVVPressureSetIndices);
 }
 
 bool RISCVRegisterInfo::needReleasePendingQueue(
