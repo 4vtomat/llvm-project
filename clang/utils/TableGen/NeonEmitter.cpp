@@ -2534,10 +2534,6 @@ static void printRecodeNEONBegin(raw_ostream &OS) {
   OS << "#ifndef __ARM_RECODE_NEON_H\n";
   OS << "#define __ARM_RECODE_NEON_H\n\n";
 
-  OS << "#if !defined(__sifive_recode_neon)\n";
-  OS << "#error \"Recode support not enabled\"\n";
-  OS << "#else\n\n";
-
   OS << "#include <stdint.h>\n\n";
 
   OS << "#include <arm_fp16.h>\n";
@@ -2586,7 +2582,6 @@ static void printRecodeNEONEnd(raw_ostream &OS) {
   OS << "#pragma pop_macro(\"__ARM_FP\")\n";
   OS << "#undef __ai\n";
   OS << "#pragma pop_macro(\"__aarch64__\")\n\n";
-  OS << "#endif /* if !defined(__sifive_recode_neon) */\n";
   OS << "#endif /* __ARM_RECODE_NEON_H */\n";
 }
 #endif
@@ -2766,10 +2761,6 @@ static void printRecodeFP16Begin(raw_ostream &OS) {
   OS << "#ifndef __ARM_RECODE_FP16_H\n";
   OS << "#define __ARM_RECODE_FP16_H\n\n";
 
-  OS << "#if !defined(__sifive_recode_neon)\n";
-  OS << "#error \"Recode support not enabled\"\n";
-  OS << "#else\n\n";
-
   OS << "#include <stdint.h>\n\n";
 
   OS << "typedef _Float16 float16_t;\n\n";
@@ -2889,7 +2880,6 @@ void NeonEmitter::runFP16(raw_ostream &OS) {
   if (RecodeMode) {
     OS << "#undef __ai\n";
     OS << "#pragma pop_macro(\"__aarch64__\")\n\n";
-    OS << "#endif /* if !defined(__sifive_recode_neon) */\n";
     OS << "#endif /* __ARM_RECODE_FP16_H */\n";
   } else {
     OS << "#undef __ai\n\n";
