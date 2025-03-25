@@ -2538,25 +2538,17 @@ static void printRecodeNEONBegin(raw_ostream &OS) {
   OS << "#error \"Recode support not enabled\"\n";
   OS << "#else\n\n";
 
-  OS << "#include <stdint.h>\n";
+  OS << "#include <stdint.h>\n\n";
+
   OS << "#include <arm_fp16.h>\n";
-  OS << "#include <arm_bf16.h>\n\n";
 
-  // Emit NEON-specific scalar typedefs.
-  OS << "#if 32 <= __riscv_flen\n";
-  OS << "typedef float float32_t;\n";
-  OS << "#endif\n\n";
+  OS << "#include <arm_bf16.h>\n";
 
-  OS << "#if 64 <= __riscv_flen\n";
-  OS << "typedef double float64_t;\n";
-  OS << "#endif\n\n";
+  OS << "#include <arm_vector_types.h>\n\n";
 
   OS << "#pragma push_macro(\"__aarch64__\")\n";
   OS << "#undef __aarch64__\n";
   OS << "#define __aarch64__\n\n";
-
-  emitNeonTypeDefs("cQcsQsiQilQlUcQUcUsQUsUiQUiUlQUlhQhfQfdQdPcQPcPsQPsPlQPl",
-                   OS, true);
 
   OS << "#define __ai static __inline__ __attribute__((__always_inline__, "
         "__nodebug__))\n\n";
