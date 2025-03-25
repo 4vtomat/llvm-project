@@ -2733,6 +2733,34 @@ static void printBF16Begin(raw_ostream &OS) {
         " */\n\n";
 }
 
+static void printVectorTypesBegin(raw_ostream &OS) {
+  OS << "/*===---- arm_vector_types - ARM vector type "
+        "------===\n"
+        " *\n"
+        " *\n"
+        " * Part of the LLVM Project, under the Apache License v2.0 with LLVM "
+        "Exceptions.\n"
+        " * See https://llvm.org/LICENSE.txt for license information.\n"
+        " * SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception\n"
+        " *\n"
+        " *===-----------------------------------------------------------------"
+        "------===\n"
+        " */\n\n";
+  OS << "#if !defined(__ARM_NEON_H) && !defined(__ARM_SVE_H)\n";
+  OS << "#error \"This file should not be used standalone. Please include"
+        " arm_neon.h or arm_sve.h instead\"\n\n";
+  OS << "#endif\n";
+  OS << "#ifndef __ARM_NEON_TYPES_H\n";
+  OS << "#define __ARM_NEON_TYPES_H\n";
+  OS << "typedef float float32_t;\n";
+  OS << "typedef __fp16 float16_t;\n";
+
+  OS << "#if defined(__aarch64__) || defined(__arm64ec__)\n";
+  OS << "typedef __mfp8 mfloat8_t;\n";
+  OS << "typedef double float64_t;\n";
+  OS << "#endif\n\n";
+}
+
 static void printRecodeFP16Begin(raw_ostream &OS) {
   OS << "/*===---- arm_fp16.h - SiFive Recode for FP16 intrinsics "
         "----------------"
@@ -2771,6 +2799,37 @@ static void printRecodeBF16Begin(raw_ostream &OS) {
         "---"
         "---===\n"
         " */\n\n";
+}
+
+static void printRecodeVectorTypesBegin(raw_ostream &OS) {
+  OS << "/*===---- arm_vector_types - SiFive Recode vector type "
+        "----------------"
+        "---===\n"
+        " *\n"
+        " *===-----------------------------------------------------------------"
+        "---"
+        "---===\n"
+        " */\n\n";
+  OS << "#ifndef __ARM_RECODE_NEON_H\n";
+  OS << "#error \"This file should not be used standalone. Please include"
+        " arm_neon.h instead\"\n\n";
+  OS << "#endif\n";
+  OS << "#ifndef __ARM_NEON_TYPES_H\n";
+  OS << "#define __ARM_NEON_TYPES_H\n";
+  OS << "#if 32 <= __riscv_flen\n";
+  OS << "typedef float float32_t;\n";
+  OS << "#endif\n";
+  OS << "#ifdef __riscv_zfh\n";
+  OS << "typedef _Float16 float16_t;\n";
+  OS << "#endif\n";
+
+  OS << "#if 64 <= __riscv_flen\n";
+  OS << "typedef double float64_t;\n";
+  OS << "#endif\n\n";
+
+  OS << "#pragma push_macro(\"__aarch64__\")\n";
+  OS << "#undef __aarch64__\n";
+  OS << "#define __aarch64__\n\n";
 }
 #endif
 
@@ -2848,31 +2907,12 @@ void NeonEmitter::runFP16(raw_ostream &OS) {
 }
 
 void NeonEmitter::runVectorTypes(raw_ostream &OS) {
-  OS << "/*===---- arm_vector_types - ARM vector type "
-        "------===\n"
-        " *\n"
-        " *\n"
-        " * Part of the LLVM Project, under the Apache License v2.0 with LLVM "
-        "Exceptions.\n"
-        " * See https://llvm.org/LICENSE.txt for license information.\n"
-        " * SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception\n"
-        " *\n"
-        " *===-----------------------------------------------------------------"
-        "------===\n"
-        " */\n\n";
-  OS << "#if !defined(__ARM_NEON_H) && !defined(__ARM_SVE_H)\n";
-  OS << "#error \"This file should not be used standalone. Please include"
-        " arm_neon.h or arm_sve.h instead\"\n\n";
-  OS << "#endif\n";
-  OS << "#ifndef __ARM_NEON_TYPES_H\n";
-  OS << "#define __ARM_NEON_TYPES_H\n";
-  OS << "typedef float float32_t;\n";
-  OS << "typedef __fp16 float16_t;\n";
-
-  OS << "#if defined(__aarch64__) || defined(__arm64ec__)\n";
-  OS << "typedef __mfp8 mfloat8_t;\n";
-  OS << "typedef double float64_t;\n";
-  OS << "#endif\n\n";
+#if SIFIVE_CUSTOMIZATION
+  if (RecodeMode)
+    printRecodeVectorTypesBegin(OS);
+  else
+    printVectorTypesBegin(OS);
+#endif
 
   OS << R"(
 typedef uint64_t fpm_t;
@@ -2931,6 +2971,10 @@ __arm_set_fpm_lscale2(fpm_t __fpm, uint64_t __scale) {
   emitNeonTypeDefs("cQcsQsiQilQlUcQUcUsQUsUiQUiUlQUlmQmhQhfQfdQd", OS);
 
   emitNeonTypeDefs("bQb", OS);
+#if SIFIVE_CUSTOMIZATION
+  if (RecodeMode)
+    OS << "#pragma pop_macro(\"__aarch64__\")\n\n";
+#endif
   OS << "#endif // __ARM_NEON_TYPES_H\n";
 }
 
@@ -3020,6 +3064,11 @@ void clang::EmitRecodeFP16(const RecordKeeper &Records, raw_ostream &OS) {
 
 void clang::EmitRecodeBF16(const RecordKeeper &Records, raw_ostream &OS) {
   NeonEmitter(Records, true).runBF16(OS);
+}
+
+void clang::EmitRecodeVectorTypes(const RecordKeeper &Records,
+                                  raw_ostream &OS) {
+  NeonEmitter(Records, true).runVectorTypes(OS);
 }
 #endif
 

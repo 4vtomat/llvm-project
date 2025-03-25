@@ -83,6 +83,9 @@ enum ActionType {
   GenRecodeBF16,
 #endif
   GenArmVectorType,
+#if SIFIVE_CUSTOMIZATION
+  GenRecodeVectorType,
+#endif
   GenArmNeonSema,
   GenArmNeonTest,
   GenArmImmCheckTypes,
@@ -257,6 +260,10 @@ cl::opt<ActionType> Action(
 #endif
         clEnumValN(GenArmVectorType, "gen-arm-vector-type",
                    "Generate arm_vector_types.h for clang"),
+#if SIFIVE_CUSTOMIZATION
+        clEnumValN(GenRecodeVectorType, "gen-recode-vector-type",
+                   "Generate arm_vector_types.h for clang"),
+#endif
         clEnumValN(GenArmNeonSema, "gen-arm-neon-sema",
                    "Generate ARM NEON sema support for clang"),
         clEnumValN(GenArmNeonTest, "gen-arm-neon-test",
@@ -507,6 +514,11 @@ bool ClangTableGenMain(raw_ostream &OS, const RecordKeeper &Records) {
   case GenArmVectorType:
     EmitVectorTypes(Records, OS);
     break;
+#if SIFIVE_CUSTOMIZATION
+  case GenRecodeVectorType:
+    EmitRecodeVectorTypes(Records, OS);
+    break;
+#endif
   case GenArmBF16:
     EmitBF16(Records, OS);
     break;
