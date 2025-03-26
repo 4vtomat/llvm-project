@@ -62,32 +62,6 @@ private:
   DenseMap<const MachineInstr *, std::optional<MachineOperand>> DemandedVLs;
 };
 
-<<<<<<< HEAD
-} // end anonymous namespace
-
-char RISCVVLOptimizer::ID = 0;
-INITIALIZE_PASS_BEGIN(RISCVVLOptimizer, DEBUG_TYPE, PASS_NAME, false, false)
-INITIALIZE_PASS_DEPENDENCY(MachineDominatorTreeWrapperPass)
-INITIALIZE_PASS_END(RISCVVLOptimizer, DEBUG_TYPE, PASS_NAME, false, false)
-
-FunctionPass *llvm::createRISCVVLOptimizerPass() {
-  return new RISCVVLOptimizer();
-}
-
-/// Return true if R is a physical or virtual vector register, false otherwise.
-static bool isVectorRegClass(Register R, const MachineRegisterInfo *MRI) {
-  if (R.isPhysical())
-    return RISCV::VRRegClass.contains(R);
-  const TargetRegisterClass *RC = MRI->getRegClass(R);
-  return RISCVRI::isVRegClass(RC->TSFlags);
-}
-
-#if SIFIVE_CUSTOMIZATION
-namespace {
-#endif
-
-=======
->>>>>>> c06d0ff
 /// Represents the EMUL and EEW of a MachineOperand.
 struct OperandInfo {
   // Represent as 1,2,4,8, ... and fractional indicator. This is because
@@ -128,11 +102,6 @@ struct OperandInfo {
   }
 };
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-} // end anonymous namespace
-#endif
-=======
 } // end anonymous namespace
 
 char RISCVVLOptimizer::ID = 0;
@@ -151,7 +120,6 @@ static bool isVectorRegClass(Register R, const MachineRegisterInfo *MRI) {
   const TargetRegisterClass *RC = MRI->getRegClass(R);
   return RISCVRI::isVRegClass(RC->TSFlags);
 }
->>>>>>> c06d0ff
 
 LLVM_ATTRIBUTE_UNUSED
 static raw_ostream &operator<<(raw_ostream &OS, const OperandInfo &OI) {
