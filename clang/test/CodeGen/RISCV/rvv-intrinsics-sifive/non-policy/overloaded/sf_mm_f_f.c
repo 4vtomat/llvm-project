@@ -2,7 +2,8 @@
 // REQUIRES: riscv-registered-target
 // RUN: %clang_cc1 -triple riscv64 -target-feature +xsfmm32a16f \
 // RUN: -target-feature +xsfmm32a32f -target-feature +xsfmm64a64f \
-// RUN: -target-feature +zvfhmin -disable-O0-optnone -emit-llvm %s -o - | \
+// RUN: -target-feature +zvfhmin -target-feature +zve64d -disable-O0-optnone \
+// RUN: -emit-llvm %s -o - | \
 // RUN:   opt -S -passes=mem2reg | FileCheck --check-prefix=CHECK-RV64 %s
 
 #include <sifive_vector.h>

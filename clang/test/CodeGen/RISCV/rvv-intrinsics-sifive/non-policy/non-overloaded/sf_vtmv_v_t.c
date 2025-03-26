@@ -2,6 +2,7 @@
 // REQUIRES: riscv-registered-target
 // RUN: %clang_cc1 -triple riscv64 -target-feature +xsfmmbase \
 // RUN:   -target-feature +zvfhmin -target-feature +zvfbfmin \
+// RUN:   -target-feature +zve64d \
 // RUN:   -disable-O0-optnone -emit-llvm %s -o - | \
 // RUN:   opt -S -passes=mem2reg | FileCheck --check-prefix=CHECK-RV64 %s
 
