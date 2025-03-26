@@ -48,16 +48,10 @@ include "RISCVMacroFusion.td"
 
 include "RISCVSchedMIPSP8700.td"
 include "RISCVSchedRocket.td"
-<<<<<<< HEAD
 //include "RISCVSchedSiFive7.td" // SIFIVE
 //include "RISCVSchedSiFiveP400.td" // SIFIVE
+//include "RISCVSchedSiFiveP500.td" // SIFIVE
 //include "RISCVSchedSiFiveP600.td" // SIFIVE
-=======
-include "RISCVSchedSiFive7.td"
-include "RISCVSchedSiFiveP400.td"
-include "RISCVSchedSiFiveP500.td"
-include "RISCVSchedSiFiveP600.td"
->>>>>>> c06d0ff
 include "RISCVSchedSyntacoreSCR1.td"
 include "RISCVSchedSyntacoreSCR345.td"
 include "RISCVSchedSyntacoreSCR7.td"
