@@ -1956,7 +1956,6 @@ public:
 
   /// @}
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// \returns true if the loop vectorizer should vectorize uncountable
   /// loop vectorization for the target.
@@ -1981,12 +1980,10 @@ public:
   /// \returns true if vectorization of monotonics is supported by the target.
   bool enableMonotonicsVectorization() const;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   /// Collect kernel launch bounds for \p F into \p LB.
   void collectKernelLaunchBounds(
       const Function &F,
       SmallVectorImpl<std::pair<StringRef, int64_t>> &LB) const;
->>>>>>> c06d0ff
 
 private:
   /// The abstract base class used to type erase specific TTI
