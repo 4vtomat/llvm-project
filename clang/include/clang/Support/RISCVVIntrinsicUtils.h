@@ -434,6 +434,9 @@ private:
   std::vector<int64_t> IntrinsicTypes;
   unsigned NF = 1;
   Policy PolicyAttrs;
+#if SIFIVE_CUSTOMIZATION
+  unsigned TWiden = 0;
+#endif // SIFIVE_CUSTOMIZATION
 
 public:
   RVVIntrinsic(llvm::StringRef Name, llvm::StringRef Suffix,
@@ -443,7 +446,10 @@ public:
                bool HasBuiltinAlias, llvm::StringRef ManualCodegen,
                const RVVTypes &Types,
                const std::vector<int64_t> &IntrinsicTypes,
-               unsigned NF, Policy PolicyAttrs, bool HasFRMRoundModeOp);
+#if SIFIVE_CUSTOMIZATION
+               unsigned NF, Policy PolicyAttrs, bool HasFRMRoundModeOp,
+               unsigned TWiden);
+#endif // SIFIVE_CUSTOMIZATION
   ~RVVIntrinsic() = default;
 
   RVVTypePtr getOutputType() const { return OutputType; }
@@ -467,6 +473,9 @@ public:
   llvm::StringRef getManualCodegen() const { return ManualCodegen; }
   PolicyScheme getPolicyScheme() const { return Scheme; }
   unsigned getNF() const { return NF; }
+#if SIFIVE_CUSTOMIZATION
+  unsigned getTWiden() const { return TWiden; }
+#endif // SIFIVE_CUSTOMIZATION
   const std::vector<int64_t> &getIntrinsicTypes() const {
     return IntrinsicTypes;
   }
@@ -521,7 +530,9 @@ public:
 
 // RVVRequire should be sync'ed with target features, but only
 // required features used in riscv_vector.td.
-enum RVVRequire : uint32_t {
+#if SIFIVE_CUSTOMIZATION
+enum RVVRequire : uint64_t {
+#endif // SIFIVE_CUSTOMIZATION
   RVV_REQ_None = 0,
   RVV_REQ_RV64 = 1 << 0,
   RVV_REQ_Zvfhmin = 1 << 1,
@@ -554,7 +565,15 @@ enum RVVRequire : uint32_t {
   RVV_REQ_Xsfvfhbfmin = 1 << 27,
   RVV_REQ_Xsfvqdotq = 1 << 28,
   RVV_REQ_Zvfbfmin_Xsfvfbfa = 1 << 29,
-  LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_Zvfbfmin_Xsfvfbfa)
+  RVV_REQ_Xsfmmbase = 1 << 30,
+  RVV_REQ_Xsfmm32a = 1ULL << 31,
+  RVV_REQ_Xsfmm32a8f = 1ULL << 32,
+  RVV_REQ_Xsfmm32a16f = 1ULL << 33,
+  RVV_REQ_Xsfmm32a32f = 1ULL << 34,
+  RVV_REQ_Xsfmm64a64f = 1ULL << 35,
+  RVV_REQ_Xsfmm32a4i = 1ULL << 36,
+  RVV_REQ_Xsfmm32a8i = 1ULL << 37,
+  LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_Xsfmm32a8i)
 #else
   LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_Experimental)
 #endif // SIFIVE_CUSTOMIZATION
@@ -589,7 +608,9 @@ struct RVVIntrinsicRecord {
   uint8_t OverloadedSuffixSize;
 
   // Required target features for this intrinsic.
-  uint32_t RequiredExtensions;
+#if SIFIVE_CUSTOMIZATION
+  uint64_t RequiredExtensions;
+#endif // SIFIVE_CUSTOMIZATION
 
   // Supported type, mask of BasicType.
   uint8_t TypeRangeMask;

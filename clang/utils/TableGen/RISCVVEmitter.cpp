@@ -43,7 +43,9 @@ struct SemaRecord {
   unsigned Log2LMULMask;
 
   // Required extensions for this intrinsic.
-  uint32_t RequiredExtensions;
+#if SIFIVE_CUSTOMIZATION
+  uint64_t RequiredExtensions;
+#endif // SIFIVE_CUSTOMIZATION
 
   // Prototype for this intrinsic.
   SmallVector<PrototypeDescriptor> Prototype;
@@ -249,6 +251,10 @@ static unsigned getSegInstLog2SEW(StringRef InstName) {
 void emitCodeGenSwitchBody(const RVVIntrinsic *RVVI, raw_ostream &OS) {
   if (!RVVI->getIRName().empty())
     OS << "  ID = Intrinsic::riscv_" + RVVI->getIRName() + ";\n";
+#if SIFIVE_CUSTOMIZATION
+  if (RVVI->getTWiden() > 0)
+    OS << "  TWiden = " << RVVI->getTWiden() << ";\n";
+#endif // SIFIVE_CUSTOMIZATION
 
   OS << "  PolicyAttrs = " << RVVI->getPolicyAttrsBits() << ";\n";
   OS << "  SegInstSEW = " << getSegInstLog2SEW(RVVI->getOverloadedName())
@@ -326,6 +332,11 @@ void emitCodeGenSwitchBody(const RVVIntrinsic *RVVI, raw_ostream &OS) {
     else if (RVVI->hasPassthruOperand() && RVVI->getPolicyAttrs().isTAPolicy())
       OS << "  Ops.insert(Ops.begin(), llvm::PoisonValue::get(ResultType));\n";
   }
+
+#if SIFIVE_CUSTOMIZATION
+  if (RVVI->getTWiden() > 0)
+    OS << "  Ops.push_back(ConstantInt::get(Ops.back()->getType(), TWiden));\n";
+#endif // SIFIVE_CUSTOMIZATION
 
   OS << "  IntrinsicTypes = {";
   ListSeparator LS;
@@ -603,7 +614,10 @@ void RVVEmitter::createCodeGen(raw_ostream &OS) {
         (Def->getManualCodegen() != PrevDef->getManualCodegen()) ||
         (Def->getPolicyAttrs() != PrevDef->getPolicyAttrs()) ||
         (getSegInstLog2SEW(Def->getOverloadedName()) !=
-         getSegInstLog2SEW(PrevDef->getOverloadedName()))) {
+         getSegInstLog2SEW(PrevDef->getOverloadedName()))
+#if SIFIVE_CUSTOMIZATION
+        || (Def->getTWiden() != PrevDef->getTWiden())) {
+#endif // SIFIVE_CUSTOMIZATION
       emitCodeGenSwitchBody(PrevDef, OS);
     }
     PrevDef = Def.get();
@@ -669,6 +683,9 @@ void RVVEmitter::createRVVIntrinsics(
     StringRef IRName = R->getValueAsString("IRName");
     StringRef MaskedIRName = R->getValueAsString("MaskedIRName");
     unsigned NF = R->getValueAsInt("NF");
+#ifdef SIFIVE_CUSTOMIZATION
+    unsigned TWiden = R->getValueAsInt("TWiden");
+#endif // SIFIVE_CUSTOMIZATION
     bool IsTuple = R->getValueAsBit("IsTuple");
     bool HasFRMRoundModeOp = R->getValueAsBit("HasFRMRoundModeOp");
 
@@ -745,15 +762,15 @@ void RVVEmitter::createRVVIntrinsics(
             /*IsMasked=*/false, /*HasMaskedOffOperand=*/false, HasVL,
             UnMaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
             ManualCodegen, *Types, IntrinsicTypes, NF, DefaultPolicy,
-            HasFRMRoundModeOp));
 #if SIFIVE_CUSTOMIZATION
+            HasFRMRoundModeOp, TWiden));
         if (HasNontemporalOperand)
           Out.push_back(std::make_unique<RVVIntrinsic>(
               Name, SuffixStr, OverloadedName, OverloadedSuffixStr, IRName,
               /*IsMasked=*/false, /*HasMaskedOffOperand=*/false, HasVL,
               UnMaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
               ManualCodegen, *NTLTypes, IntrinsicTypes, NF,
-              NonTemporalDefaultPolicy, HasFRMRoundModeOp));
+              NonTemporalDefaultPolicy, HasFRMRoundModeOp, TWiden));
 #endif // SIFIVE_CUSTOMIZATION
         if (UnMaskedPolicyScheme != PolicyScheme::SchemeNone)
           for (auto P : SupportedUnMaskedPolicies) {
@@ -769,7 +786,9 @@ void RVVEmitter::createRVVIntrinsics(
                 /*IsMask=*/false, /*HasMaskedOffOperand=*/false, HasVL,
                 UnMaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
                 ManualCodegen, *PolicyTypes, IntrinsicTypes, NF, P,
-                HasFRMRoundModeOp));
+#if SIFIVE_CUSTOMIZATION
+                HasFRMRoundModeOp, TWiden));
+#endif // SIFIVE_CUSTOMIZATION
           }
         if (!HasMasked)
           continue;
@@ -780,7 +799,9 @@ void RVVEmitter::createRVVIntrinsics(
             Name, SuffixStr, OverloadedName, OverloadedSuffixStr, MaskedIRName,
             /*IsMasked=*/true, HasMaskedOffOperand, HasVL, MaskedPolicyScheme,
             SupportOverloading, HasBuiltinAlias, ManualCodegen, *MaskTypes,
-            IntrinsicTypes, NF, DefaultPolicy, HasFRMRoundModeOp));
+#if SIFIVE_CUSTOMIZATION
+            IntrinsicTypes, NF, DefaultPolicy, HasFRMRoundModeOp, TWiden));
+#endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
         std::optional<RVVTypes> NTLMaskTypes =
@@ -791,7 +812,8 @@ void RVVEmitter::createRVVIntrinsics(
               MaskedIRName,
               /*IsMasked=*/true, HasMaskedOffOperand, HasVL, MaskedPolicyScheme,
               SupportOverloading, HasBuiltinAlias, ManualCodegen, *NTLMaskTypes,
-              IntrinsicTypes, NF, NonTemporalDefaultPolicy, HasFRMRoundModeOp));
+              IntrinsicTypes, NF, NonTemporalDefaultPolicy,
+              HasFRMRoundModeOp, TWiden));
 #endif // SIFIVE_CUSTOMIZATION
 
         if (MaskedPolicyScheme == PolicyScheme::SchemeNone)
@@ -807,8 +829,10 @@ void RVVEmitter::createRVVIntrinsics(
               Name, SuffixStr, OverloadedName, OverloadedSuffixStr,
               MaskedIRName, /*IsMasked=*/true, HasMaskedOffOperand, HasVL,
               MaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
-              ManualCodegen, *PolicyTypes, IntrinsicTypes, NF, P,
-              HasFRMRoundModeOp));
+              ManualCodegen, *PolicyTypes, IntrinsicTypes, NF,
+#if SIFIVE_CUSTOMIZATION
+              P, HasFRMRoundModeOp, TWiden));
+#endif // SIFIVE_CUSTOMIZATION
         }
       } // End for Log2LMULList
     }   // End for TypeRange
@@ -873,6 +897,14 @@ void RVVEmitter::createRVVIntrinsics(
               .Case("Xsfvfhbfmin", RVV_REQ_Xsfvfhbfmin)
               .Case("Xsfvqdotq", RVV_REQ_Xsfvqdotq)
               .Case("Zvfbfmin_Xsfvfbfa", RVV_REQ_Zvfbfmin_Xsfvfbfa)
+              .Case("Xsfmmbase", RVV_REQ_Xsfmmbase)
+              .Case("Xsfmm32a", RVV_REQ_Xsfmm32a)
+              .Case("Xsfmm32a8f", RVV_REQ_Xsfmm32a8f)
+              .Case("Xsfmm32a16f", RVV_REQ_Xsfmm32a16f)
+              .Case("Xsfmm32a32f", RVV_REQ_Xsfmm32a32f)
+              .Case("Xsfmm64a64f", RVV_REQ_Xsfmm64a64f)
+              .Case("Xsfmm32a4i", RVV_REQ_Xsfmm32a4i)
+              .Case("Xsfmm32a8i", RVV_REQ_Xsfmm32a8i)
 #endif // SIFIVE_CUSTOMIZATION
               .Default(RVV_REQ_None);
       assert(RequireExt != RVV_REQ_None && "Unrecognized required feature?");
