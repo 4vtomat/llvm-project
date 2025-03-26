@@ -1039,11 +1039,17 @@ RVVIntrinsic::RVVIntrinsic(
     bool HasMaskedOffOperand, bool HasVL, PolicyScheme Scheme,
     bool SupportOverloading, bool HasBuiltinAlias, StringRef ManualCodegen,
     const RVVTypes &OutInTypes, const std::vector<int64_t> &NewIntrinsicTypes,
-    unsigned NF, Policy NewPolicyAttrs, bool HasFRMRoundModeOp)
+    unsigned NF,
+#if SIFIVE_CUSTOMIZATION
+    Policy NewPolicyAttrs, bool HasFRMRoundModeOp, unsigned TWiden)
+#endif // SIFIVE_CUSTOMIZATION
     : IRName(IRName), IsMasked(IsMasked),
       HasMaskedOffOperand(HasMaskedOffOperand), HasVL(HasVL), Scheme(Scheme),
       SupportOverloading(SupportOverloading), HasBuiltinAlias(HasBuiltinAlias),
-      ManualCodegen(ManualCodegen.str()), NF(NF), PolicyAttrs(NewPolicyAttrs) {
+#if SIFIVE_CUSTOMIZATION
+      ManualCodegen(ManualCodegen.str()), NF(NF), PolicyAttrs(NewPolicyAttrs),
+      TWiden(TWiden) {
+#endif // SIFIVE_CUSTOMIZATION
 
   // Init BuiltinName, Name and OverloadedName
   BuiltinName = NewName.str();

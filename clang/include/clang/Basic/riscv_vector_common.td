@@ -254,6 +254,11 @@ class RVVBuiltin<string suffix, string prototype, string type_range,
   // Set to true if the builtin has a parameter that models floating-point
   // rounding mode control
   bit HasFRMRoundModeOp = false;
+
+#ifdef SIFIVE_CUSTOMIZATION
+  // TWiden for Mammoth.
+  int TWiden = 0;
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 // This is the code emitted in the header.
