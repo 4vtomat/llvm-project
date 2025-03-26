@@ -2185,18 +2185,13 @@ void RISCVInsertVSETVLI::coalesceVSETVLIs(MachineBasicBlock &MBB) const {
       ToDelete.push_back(VLOpDef);
   };
 
-<<<<<<< HEAD
-  for (MachineInstr &MI :
-       make_early_inc_range(make_range(MBB.rbegin(), MBB.rend()))) {
+  for (MachineInstr &MI : make_early_inc_range(reverse(MBB))) {
 #if SIFIVE_CUSTOMIZATION
     // TODO: Support Mammoth.
     if (RISCVII::hasTWidenOp(MI.getDesc().TSFlags) ||
         isMammothVectorConfigInstr(MI))
       continue;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  for (MachineInstr &MI : make_early_inc_range(reverse(MBB))) {
->>>>>>> c06d0ff
 
     if (!isVectorConfigInstr(MI)) {
       Used.doUnion(getDemanded(MI, ST));
