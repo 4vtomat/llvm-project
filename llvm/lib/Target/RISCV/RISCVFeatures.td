@@ -1301,7 +1301,7 @@ def HasVendorXSfvfbfa
 def FeatureVendorXSfmmbase
     : RISCVExtension<0, 6,
                      "All non arithmetic instructions for all TEWs and sf.vtzero",
-                     [FeatureStdExtV]>;
+                     [FeatureStdExtZve32x]>;
 def HasVendorXSfmmbase : Predicate<"Subtarget->hasVendorXSfmmbase()">,
                          AssemblerPredicate<(all_of FeatureVendorXSfmmbase),
                              "'XSfmmbase' All non arithmetic instructions for all TEWs and sf.vtzero">;
@@ -1309,7 +1309,7 @@ def HasVendorXSfmmbase : Predicate<"Subtarget->hasVendorXSfmmbase()">,
 def FeatureVendorXSfmm32a8f
     : RISCVExtension<0, 6,
                      "(TEW=32-bit accumulation) operands - float: fp8",
-                     [FeatureVendorXSfmmbase]>;
+                     [FeatureVendorXSfmmbase, FeatureStdExtZve32f]>;
 def HasVendorXSfmm32a8f : Predicate<"Subtarget->hasVendorXSfmm32a8f()">,
                           AssemblerPredicate<(all_of FeatureVendorXSfmm32a8f),
                               "'XSfmm32a8f' (TEW=32-bit accumulation) operands - float: fp8">;
@@ -1317,12 +1317,12 @@ def HasVendorXSfmm32a8f : Predicate<"Subtarget->hasVendorXSfmm32a8f()">,
 def FeatureVendorXSfmm32a16f
     : RISCVExtension<0, 6,
                      "(TEW=32-bit accumulation) operands - float: 16b, widen=2 (IEEE, BF)",
-                     [FeatureVendorXSfmmbase]>;
+                     [FeatureVendorXSfmmbase, FeatureStdExtZve32f]>;
 
 def FeatureVendorXSfmm32a32f
     : RISCVExtension<0, 6,
                      "(TEW=32-bit accumulation) operands - float: 32b",
-                     [FeatureVendorXSfmmbase]>;
+                     [FeatureVendorXSfmmbase, FeatureStdExtZve32f]>;
 
 def FeatureVendorXSfmm32a4i
     : RISCVExtension<0, 6,
@@ -1348,7 +1348,7 @@ def FeatureVendorXSfmm32a
 def FeatureVendorXSfmm64a64f
     : RISCVExtension<0, 6,
                      "(TEW=64-bit accumulation) operands - float: fp64",
-                     [FeatureVendorXSfmmbase]>;
+                     [FeatureVendorXSfmmbase, FeatureStdExtZve64f]>;
 def HasVendorXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f
     : Predicate<"Subtarget->hasVendorXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f()">,
                 AssemblerPredicate<(any_of FeatureVendorXSfmm32a16f,
@@ -1359,22 +1359,22 @@ def HasVendorXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f
 def FeatureVendorXSfmm16t
     : RISCVExtension<0, 6,
                      "TE=16 configuration",
-                     [FeatureVendorXSfmmbase], "XSfmmTE", "16">;
+                     [FeatureVendorXSfmmbase, FeatureStdExtZvl64b], "XSfmmTE", "16">;
 
 def FeatureVendorXSfmm32t
     : RISCVExtension<0, 6,
                      "TE=32 configuration",
-                     [FeatureVendorXSfmmbase], "XSfmmTE", "32">;
+                     [FeatureVendorXSfmmbase, FeatureStdExtZvl128b], "XSfmmTE", "32">;
 
 def FeatureVendorXSfmm64t
     : RISCVExtension<0, 6,
                      "TE=64 configuration",
-                     [FeatureVendorXSfmmbase], "XSfmmTE", "64">;
+                     [FeatureVendorXSfmmbase, FeatureStdExtZvl256b], "XSfmmTE", "64">;
 
 def FeatureVendorXSfmm128t
     : RISCVExtension<0, 6,
                      "TE=128 configuration",
-                     [FeatureVendorXSfmmbase], "XSfmmTE", "128">;
+                     [FeatureVendorXSfmmbase, FeatureStdExtZvl512b], "XSfmmTE", "128">;
 #endif // SIFIVE_CUSTOMIZATION
 
 let AdditionalVersions = [[0, 1]]  in // SIFIVE
