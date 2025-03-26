@@ -1,5 +1,5 @@
 ; REQUIRES: asserts
-; RUN: opt -passes=loop-vectorize -debug-only=loop-vectorize \
+; RUN: opt -passes=loop-vectorize -debug-only=loop-vectorize --disable-output \
 ; RUN: -force-tail-folding-style=data-with-evl \
 ; RUN: -prefer-predicate-over-epilogue=predicate-dont-vectorize \
 ; RUN: -mtriple=riscv64 -mattr=+v -S --riscv-use-vla-vectorizer=false < %s 2>&1 | FileCheck %s

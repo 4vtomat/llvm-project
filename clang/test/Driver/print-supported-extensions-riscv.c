@@ -168,7 +168,12 @@
 // CHECK-NEXT:     xcvmac               1.0       'XCVmac' (CORE-V Multiply-Accumulate)
 // CHECK-NEXT:     xcvmem               1.0       'XCVmem' (CORE-V Post-incrementing Load & Store)
 // CHECK-NEXT:     xcvsimd              1.0       'XCVsimd' (CORE-V SIMD ALU)
+<<<<<<< HEAD
 // CHECK-NEXT:     xsfcease             0.1       'XSfcease' (SiFive sf.cease Instruction)
+=======
+// CHECK-NEXT:     xmipscmove           1.0       'XMIPSCMove' (MIPS conditional move instruction(s) (ccmov))
+// CHECK-NEXT:     xmipslsp             1.0       'XMIPSLSP' (MIPS optimization for hardware load-store bonding)
+>>>>>>> c06d0ff
 // CHECK-NEXT:     xsfcease             1.0       'XSfcease' (SiFive sf.cease Instruction)
 // CHECK-NEXT:     xsfmm128t            0.6       'XSfmm128t' (TE=128 configuration)
 // CHECK-NEXT:     xsfmm16t             0.6       'XSfmm16t' (TE=16 configuration)
@@ -234,7 +239,7 @@
 // CHECK-NEXT:     sswg                 0.3       'Sswg' (The Sswg extension adds the [H]S-mode read-write slwid CSR, which sets the WID used for modes lower than [H]S-mode.)
 // CHECK-NEXT:     svukte               0.4       'Svukte' (Address-Independent Latency of User-Mode Faults to Supervisor Addresses)
 // CHECK-NEXT:     xqcia                0.2       'Xqcia' (Qualcomm uC Arithmetic Extension)
-// CHECK-NEXT:     xqciac               0.2       'Xqciac' (Qualcomm uC Load-Store Address Calculation Extension)
+// CHECK-NEXT:     xqciac               0.3       'Xqciac' (Qualcomm uC Load-Store Address Calculation Extension)
 // CHECK-NEXT:     xqcicli              0.2       'Xqcicli' (Qualcomm uC Conditional Load Immediate Extension)
 // CHECK-NEXT:     xqcicm               0.2       'Xqcicm' (Qualcomm uC Conditional Move Extension)
 // CHECK-NEXT:     xqcics               0.2       'Xqcics' (Qualcomm uC Conditional Select Extension)

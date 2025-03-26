@@ -667,7 +667,7 @@ TEST(ParseArchString, RejectsConflictingExtensions) {
   }
 
   for (StringRef Input :
-       {"rv64i_xqcisls0p2", "rv64i_xqcia0p2", "rv64i_xqciac0p2",
+       {"rv64i_xqcisls0p2", "rv64i_xqcia0p2", "rv64i_xqciac0p3",
         "rv64i_xqcicsr0p2", "rv64i_xqcilsm0p2", "rv64i_xqcicm0p2",
         "rv64i_xqcics0p2", "rv64i_xqcicli0p2", "rv64i_xqciint0p2",
         "rv64i_xqcilo0p2"}) {
@@ -1113,7 +1113,12 @@ R"(All available -march extensions for RISC-V
     xcvmac               1.0
     xcvmem               1.0
     xcvsimd              1.0
+<<<<<<< HEAD
     xsfcease             0.1
+=======
+    xmipscmove           1.0
+    xmipslsp             1.0
+>>>>>>> c06d0ff
     xsfcease             1.0
     xsfmm128t            0.6
     xsfmm16t             0.6
@@ -1179,7 +1184,7 @@ Experimental extensions
     sswg                 0.3
     svukte               0.4
     xqcia                0.2
-    xqciac               0.2
+    xqciac               0.3
     xqcicli              0.2
     xqcicm               0.2
     xqcics               0.2

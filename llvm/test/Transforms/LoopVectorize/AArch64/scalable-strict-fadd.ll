@@ -14,7 +14,7 @@
 
 define float @fadd_strict(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-NOT-VECTORIZED-LABEL: define float @fadd_strict
-; CHECK-NOT-VECTORIZED-SAME: (ptr noalias nocapture readonly [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
+; CHECK-NOT-VECTORIZED-SAME: (ptr noalias readonly captures(none) [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
 ; CHECK-NOT-VECTORIZED-NEXT:  entry:
 ; CHECK-NOT-VECTORIZED-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-NOT-VECTORIZED:       for.body:
@@ -31,7 +31,7 @@ define float @fadd_strict(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-NOT-VECTORIZED-NEXT:    ret float [[ADD_LCSSA]]
 ;
 ; CHECK-UNORDERED-LABEL: define float @fadd_strict
-; CHECK-UNORDERED-SAME: (ptr noalias nocapture readonly [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
+; CHECK-UNORDERED-SAME: (ptr noalias readonly captures(none) [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
 ; CHECK-UNORDERED-NEXT:  entry:
 ; CHECK-UNORDERED-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-UNORDERED-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 8
@@ -78,7 +78,7 @@ define float @fadd_strict(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-UNORDERED-NEXT:    ret float [[ADD_LCSSA]]
 ;
 ; CHECK-ORDERED-LABEL: define float @fadd_strict
-; CHECK-ORDERED-SAME: (ptr noalias nocapture readonly [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
+; CHECK-ORDERED-SAME: (ptr noalias readonly captures(none) [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
 ; CHECK-ORDERED-NEXT:  entry:
 ; CHECK-ORDERED-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-ORDERED-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 8
@@ -124,7 +124,7 @@ define float @fadd_strict(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-ORDERED-NEXT:    ret float [[ADD_LCSSA]]
 ;
 ; CHECK-ORDERED-TF-LABEL: define float @fadd_strict
-; CHECK-ORDERED-TF-SAME: (ptr noalias nocapture readonly [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
+; CHECK-ORDERED-TF-SAME: (ptr noalias readonly captures(none) [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
 ; CHECK-ORDERED-TF-NEXT:  entry:
 ; CHECK-ORDERED-TF-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-ORDERED-TF:       vector.ph:
@@ -200,7 +200,7 @@ for.end:
 
 define float @fadd_strict_unroll(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-NOT-VECTORIZED-LABEL: define float @fadd_strict_unroll
-; CHECK-NOT-VECTORIZED-SAME: (ptr noalias nocapture readonly [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-NOT-VECTORIZED-SAME: (ptr noalias readonly captures(none) [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-NOT-VECTORIZED-NEXT:  entry:
 ; CHECK-NOT-VECTORIZED-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-NOT-VECTORIZED:       for.body:
@@ -217,7 +217,7 @@ define float @fadd_strict_unroll(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-NOT-VECTORIZED-NEXT:    ret float [[ADD_LCSSA]]
 ;
 ; CHECK-UNORDERED-LABEL: define float @fadd_strict_unroll
-; CHECK-UNORDERED-SAME: (ptr noalias nocapture readonly [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-UNORDERED-SAME: (ptr noalias readonly captures(none) [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-UNORDERED-NEXT:  entry:
 ; CHECK-UNORDERED-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-UNORDERED-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 32
@@ -285,7 +285,7 @@ define float @fadd_strict_unroll(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-UNORDERED-NEXT:    ret float [[ADD_LCSSA]]
 ;
 ; CHECK-ORDERED-LABEL: define float @fadd_strict_unroll
-; CHECK-ORDERED-SAME: (ptr noalias nocapture readonly [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-ORDERED-SAME: (ptr noalias readonly captures(none) [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-ORDERED-NEXT:  entry:
 ; CHECK-ORDERED-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-ORDERED-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 32
@@ -346,7 +346,7 @@ define float @fadd_strict_unroll(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-ORDERED-NEXT:    ret float [[ADD_LCSSA]]
 ;
 ; CHECK-ORDERED-TF-LABEL: define float @fadd_strict_unroll
-; CHECK-ORDERED-TF-SAME: (ptr noalias nocapture readonly [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-ORDERED-TF-SAME: (ptr noalias readonly captures(none) [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-ORDERED-TF-NEXT:  entry:
 ; CHECK-ORDERED-TF-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-ORDERED-TF:       vector.ph:
@@ -467,7 +467,7 @@ for.end:
 
 define void @fadd_strict_interleave(ptr noalias nocapture readonly %a, ptr noalias nocapture readonly %b, i64 %n) #0 {
 ; CHECK-NOT-VECTORIZED-LABEL: define void @fadd_strict_interleave
-; CHECK-NOT-VECTORIZED-SAME: (ptr noalias nocapture readonly [[A:%.*]], ptr noalias nocapture readonly [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-NOT-VECTORIZED-SAME: (ptr noalias readonly captures(none) [[A:%.*]], ptr noalias readonly captures(none) [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-NOT-VECTORIZED-NEXT:  entry:
 ; CHECK-NOT-VECTORIZED-NEXT:    [[ARRAYIDXA:%.*]] = getelementptr inbounds float, ptr [[A]], i64 1
 ; CHECK-NOT-VECTORIZED-NEXT:    [[A1:%.*]] = load float, ptr [[A]], align 4
@@ -495,7 +495,7 @@ define void @fadd_strict_interleave(ptr noalias nocapture readonly %a, ptr noali
 ; CHECK-NOT-VECTORIZED-NEXT:    ret void
 ;
 ; CHECK-UNORDERED-LABEL: define void @fadd_strict_interleave
-; CHECK-UNORDERED-SAME: (ptr noalias nocapture readonly [[A:%.*]], ptr noalias nocapture readonly [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-UNORDERED-SAME: (ptr noalias readonly captures(none) [[A:%.*]], ptr noalias readonly captures(none) [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-UNORDERED-NEXT:  entry:
 ; CHECK-UNORDERED-NEXT:    [[ARRAYIDXA:%.*]] = getelementptr inbounds float, ptr [[A]], i64 1
 ; CHECK-UNORDERED-NEXT:    [[A1:%.*]] = load float, ptr [[A]], align 4
@@ -566,7 +566,7 @@ define void @fadd_strict_interleave(ptr noalias nocapture readonly %a, ptr noali
 ; CHECK-UNORDERED-NEXT:    ret void
 ;
 ; CHECK-ORDERED-LABEL: define void @fadd_strict_interleave
-; CHECK-ORDERED-SAME: (ptr noalias nocapture readonly [[A:%.*]], ptr noalias nocapture readonly [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-ORDERED-SAME: (ptr noalias readonly captures(none) [[A:%.*]], ptr noalias readonly captures(none) [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-ORDERED-NEXT:  entry:
 ; CHECK-ORDERED-NEXT:    [[ARRAYIDXA:%.*]] = getelementptr inbounds float, ptr [[A]], i64 1
 ; CHECK-ORDERED-NEXT:    [[A1:%.*]] = load float, ptr [[A]], align 4
@@ -633,7 +633,7 @@ define void @fadd_strict_interleave(ptr noalias nocapture readonly %a, ptr noali
 ; CHECK-ORDERED-NEXT:    ret void
 ;
 ; CHECK-ORDERED-TF-LABEL: define void @fadd_strict_interleave
-; CHECK-ORDERED-TF-SAME: (ptr noalias nocapture readonly [[A:%.*]], ptr noalias nocapture readonly [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-ORDERED-TF-SAME: (ptr noalias readonly captures(none) [[A:%.*]], ptr noalias readonly captures(none) [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-ORDERED-TF-NEXT:  entry:
 ; CHECK-ORDERED-TF-NEXT:    [[ARRAYIDXA:%.*]] = getelementptr inbounds float, ptr [[A]], i64 1
 ; CHECK-ORDERED-TF-NEXT:    [[A1:%.*]] = load float, ptr [[A]], align 4
@@ -742,7 +742,7 @@ for.end:
 
 define float @fadd_of_sum(ptr noalias nocapture readonly %a, ptr noalias nocapture readonly %b, i64 %n) #0 {
 ; CHECK-NOT-VECTORIZED-LABEL: define float @fadd_of_sum
-; CHECK-NOT-VECTORIZED-SAME: (ptr noalias nocapture readonly [[A:%.*]], ptr noalias nocapture readonly [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-NOT-VECTORIZED-SAME: (ptr noalias readonly captures(none) [[A:%.*]], ptr noalias readonly captures(none) [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-NOT-VECTORIZED-NEXT:  entry:
 ; CHECK-NOT-VECTORIZED-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 1
 ; CHECK-NOT-VECTORIZED-NEXT:    [[TMP0:%.*]] = load float, ptr [[ARRAYIDX]], align 4
@@ -770,7 +770,7 @@ define float @fadd_of_sum(ptr noalias nocapture readonly %a, ptr noalias nocaptu
 ; CHECK-NOT-VECTORIZED-NEXT:    ret float [[RES]]
 ;
 ; CHECK-UNORDERED-LABEL: define float @fadd_of_sum
-; CHECK-UNORDERED-SAME: (ptr noalias nocapture readonly [[A:%.*]], ptr noalias nocapture readonly [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-UNORDERED-SAME: (ptr noalias readonly captures(none) [[A:%.*]], ptr noalias readonly captures(none) [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-UNORDERED-NEXT:  entry:
 ; CHECK-UNORDERED-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 1
 ; CHECK-UNORDERED-NEXT:    [[TMP0:%.*]] = load float, ptr [[ARRAYIDX]], align 4
@@ -832,7 +832,7 @@ define float @fadd_of_sum(ptr noalias nocapture readonly %a, ptr noalias nocaptu
 ; CHECK-UNORDERED-NEXT:    ret float [[RES]]
 ;
 ; CHECK-ORDERED-LABEL: define float @fadd_of_sum
-; CHECK-ORDERED-SAME: (ptr noalias nocapture readonly [[A:%.*]], ptr noalias nocapture readonly [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-ORDERED-SAME: (ptr noalias readonly captures(none) [[A:%.*]], ptr noalias readonly captures(none) [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-ORDERED-NEXT:  entry:
 ; CHECK-ORDERED-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 1
 ; CHECK-ORDERED-NEXT:    [[TMP0:%.*]] = load float, ptr [[ARRAYIDX]], align 4
@@ -893,7 +893,7 @@ define float @fadd_of_sum(ptr noalias nocapture readonly %a, ptr noalias nocaptu
 ; CHECK-ORDERED-NEXT:    ret float [[RES]]
 ;
 ; CHECK-ORDERED-TF-LABEL: define float @fadd_of_sum
-; CHECK-ORDERED-TF-SAME: (ptr noalias nocapture readonly [[A:%.*]], ptr noalias nocapture readonly [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-ORDERED-TF-SAME: (ptr noalias readonly captures(none) [[A:%.*]], ptr noalias readonly captures(none) [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-ORDERED-TF-NEXT:  entry:
 ; CHECK-ORDERED-TF-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 1
 ; CHECK-ORDERED-TF-NEXT:    [[TMP0:%.*]] = load float, ptr [[ARRAYIDX]], align 4
@@ -991,7 +991,7 @@ for.end:                                 ; preds = %for.body, %entry
 
 define float @fadd_conditional(ptr noalias nocapture readonly %a, ptr noalias nocapture readonly %b, i64 %n) #0 {
 ; CHECK-NOT-VECTORIZED-LABEL: define float @fadd_conditional
-; CHECK-NOT-VECTORIZED-SAME: (ptr noalias nocapture readonly [[A:%.*]], ptr noalias nocapture readonly [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-NOT-VECTORIZED-SAME: (ptr noalias readonly captures(none) [[A:%.*]], ptr noalias readonly captures(none) [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-NOT-VECTORIZED-NEXT:  entry:
 ; CHECK-NOT-VECTORIZED-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-NOT-VECTORIZED:       for.body:
@@ -1016,7 +1016,7 @@ define float @fadd_conditional(ptr noalias nocapture readonly %a, ptr noalias no
 ; CHECK-NOT-VECTORIZED-NEXT:    ret float [[RDX]]
 ;
 ; CHECK-UNORDERED-LABEL: define float @fadd_conditional
-; CHECK-UNORDERED-SAME: (ptr noalias nocapture readonly [[A:%.*]], ptr noalias nocapture readonly [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-UNORDERED-SAME: (ptr noalias readonly captures(none) [[A:%.*]], ptr noalias readonly captures(none) [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-UNORDERED-NEXT:  entry:
 ; CHECK-UNORDERED-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-UNORDERED-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
@@ -1077,7 +1077,7 @@ define float @fadd_conditional(ptr noalias nocapture readonly %a, ptr noalias no
 ; CHECK-UNORDERED-NEXT:    ret float [[RDX]]
 ;
 ; CHECK-ORDERED-LABEL: define float @fadd_conditional
-; CHECK-ORDERED-SAME: (ptr noalias nocapture readonly [[A:%.*]], ptr noalias nocapture readonly [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-ORDERED-SAME: (ptr noalias readonly captures(none) [[A:%.*]], ptr noalias readonly captures(none) [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-ORDERED-NEXT:  entry:
 ; CHECK-ORDERED-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-ORDERED-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
@@ -1137,7 +1137,7 @@ define float @fadd_conditional(ptr noalias nocapture readonly %a, ptr noalias no
 ; CHECK-ORDERED-NEXT:    ret float [[RDX]]
 ;
 ; CHECK-ORDERED-TF-LABEL: define float @fadd_conditional
-; CHECK-ORDERED-TF-SAME: (ptr noalias nocapture readonly [[A:%.*]], ptr noalias nocapture readonly [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-ORDERED-TF-SAME: (ptr noalias readonly captures(none) [[A:%.*]], ptr noalias readonly captures(none) [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-ORDERED-TF-NEXT:  entry:
 ; CHECK-ORDERED-TF-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-ORDERED-TF:       vector.ph:
@@ -1239,7 +1239,7 @@ for.end:
 ; Negative test - loop contains multiple fadds which we cannot safely reorder
 define float @fadd_multiple(ptr noalias nocapture %a, ptr noalias nocapture %b, i64 %n) #0 {
 ; CHECK-NOT-VECTORIZED-LABEL: define float @fadd_multiple
-; CHECK-NOT-VECTORIZED-SAME: (ptr noalias nocapture [[A:%.*]], ptr noalias nocapture [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-NOT-VECTORIZED-SAME: (ptr noalias captures(none) [[A:%.*]], ptr noalias captures(none) [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-NOT-VECTORIZED-NEXT:  entry:
 ; CHECK-NOT-VECTORIZED-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-NOT-VECTORIZED:       for.body:
@@ -1259,7 +1259,7 @@ define float @fadd_multiple(ptr noalias nocapture %a, ptr noalias nocapture %b, 
 ; CHECK-NOT-VECTORIZED-NEXT:    ret float [[RDX]]
 ;
 ; CHECK-UNORDERED-LABEL: define float @fadd_multiple
-; CHECK-UNORDERED-SAME: (ptr noalias nocapture [[A:%.*]], ptr noalias nocapture [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-UNORDERED-SAME: (ptr noalias captures(none) [[A:%.*]], ptr noalias captures(none) [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-UNORDERED-NEXT:  entry:
 ; CHECK-UNORDERED-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-UNORDERED-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 8
@@ -1313,7 +1313,7 @@ define float @fadd_multiple(ptr noalias nocapture %a, ptr noalias nocapture %b, 
 ; CHECK-UNORDERED-NEXT:    ret float [[RDX]]
 ;
 ; CHECK-ORDERED-LABEL: define float @fadd_multiple
-; CHECK-ORDERED-SAME: (ptr noalias nocapture [[A:%.*]], ptr noalias nocapture [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-ORDERED-SAME: (ptr noalias captures(none) [[A:%.*]], ptr noalias captures(none) [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-ORDERED-NEXT:  entry:
 ; CHECK-ORDERED-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-ORDERED:       for.body:
@@ -1333,7 +1333,7 @@ define float @fadd_multiple(ptr noalias nocapture %a, ptr noalias nocapture %b, 
 ; CHECK-ORDERED-NEXT:    ret float [[RDX]]
 ;
 ; CHECK-ORDERED-TF-LABEL: define float @fadd_multiple
-; CHECK-ORDERED-TF-SAME: (ptr noalias nocapture [[A:%.*]], ptr noalias nocapture [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-ORDERED-TF-SAME: (ptr noalias captures(none) [[A:%.*]], ptr noalias captures(none) [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-ORDERED-TF-NEXT:  entry:
 ; CHECK-ORDERED-TF-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-ORDERED-TF:       for.body:

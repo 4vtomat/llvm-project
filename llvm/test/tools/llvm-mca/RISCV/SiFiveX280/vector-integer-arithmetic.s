@@ -775,7 +775,11 @@ vmv.v.v v4, v12
 
 # CHECK:      Iterations:        1
 # CHECK-NEXT: Instructions:      727
+<<<<<<< HEAD
 # CHECK-NEXT: Total Cycles:      10980
+=======
+# CHECK-NEXT: Total Cycles:      12174
+>>>>>>> c06d0ff
 # CHECK-NEXT: Total uOps:        727
 
 # CHECK:      Dispatch Width:    2

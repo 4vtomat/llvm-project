@@ -15,9 +15,14 @@
 
 #include "LoopVectorizationPlanner.h"
 #include "VPlan.h"
+#include "VPlanVerifier.h"
 #include "llvm/ADT/STLFunctionalExtras.h"
+<<<<<<< HEAD
 #include "llvm/Analysis/TargetTransformInfo.h"
 #include "llvm/Transforms/Vectorize/LoopVectorizationLegality.h"
+=======
+#include "llvm/Support/CommandLine.h"
+>>>>>>> c06d0ff
 
 namespace llvm {
 
@@ -30,7 +35,29 @@ class TargetLibraryInfo;
 class VPBuilder;
 class VPRecipeBuilder;
 
+extern cl::opt<bool> VerifyEachVPlan;
+
 struct VPlanTransforms {
+  /// Helper to run a VPlan transform \p Transform on \p VPlan, forwarding extra
+  /// arguments to the transform. Returns the boolean returned by the transform.
+  template <typename... ArgsTy>
+  static bool runPass(bool (*Transform)(VPlan &, ArgsTy...), VPlan &Plan,
+                      typename std::remove_reference<ArgsTy>::type &...Args) {
+    bool Res = Transform(Plan, Args...);
+    if (VerifyEachVPlan)
+      verifyVPlanIsValid(Plan);
+    return Res;
+  }
+  /// Helper to run a VPlan transform \p Transform on \p VPlan, forwarding extra
+  /// arguments to the transform.
+  template <typename... ArgsTy>
+  static void runPass(void (*Fn)(VPlan &, ArgsTy...), VPlan &Plan,
+                      typename std::remove_reference<ArgsTy>::type &...Args) {
+    Fn(Plan, Args...);
+    if (VerifyEachVPlan)
+      verifyVPlanIsValid(Plan);
+  }
+
   /// Replaces the VPInstructions in \p Plan with corresponding
   /// widen recipes.
   static void
@@ -126,7 +153,8 @@ struct VPlanTransforms {
   /// TODO: Replace BlockNeedsPredication callback with retrieving info from
   ///       VPlan directly.
   static void dropPoisonGeneratingRecipes(
-      VPlan &Plan, function_ref<bool(BasicBlock *)> BlockNeedsPredication);
+      VPlan &Plan,
+      const std::function<bool(BasicBlock *)> &BlockNeedsPredication);
 
   /// Add a VPEVLBasedIVPHIRecipe and related recipes to \p Plan and
   /// replaces all uses except the canonical IV increment of
@@ -155,7 +183,7 @@ struct VPlanTransforms {
       VPlan &Plan,
       const SmallPtrSetImpl<const InterleaveGroup<Instruction> *>
           &InterleaveGroups,
-      VPRecipeBuilder &RecipeBuilder, bool ScalarEpilogueAllowed);
+      VPRecipeBuilder &RecipeBuilder, const bool &ScalarEpilogueAllowed);
 
   /// Remove dead recipes from \p Plan.
   static void removeDeadRecipes(VPlan &Plan);
@@ -166,7 +194,7 @@ struct VPlanTransforms {
   ///    exit conditions
   ///  * splitting the original middle block to branch to the early exit block
   ///    if taken.
-  static bool handleUncountableEarlyExit(VPlan &Plan, ScalarEvolution &SE,
+  static void handleUncountableEarlyExit(VPlan &Plan, ScalarEvolution &SE,
                                          Loop *OrigLoop,
                                          BasicBlock *UncountableExitingBlock,
                                          VPRecipeBuilder &RecipeBuilder);

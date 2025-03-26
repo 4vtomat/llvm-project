@@ -5,7 +5,15 @@
 ; RUN: -mtriple=riscv64 -mattr=+v -riscv-v-vector-bits-max=128 -disable-output < %s 2>&1 | FileCheck --check-prefix=IF-EVL %s
 
 define void @vp_sext(ptr %a, ptr %b, i64 %N) {
+<<<<<<< HEAD
 ; IF-EVL: VPlan 'Initial VPlan for VF={vscale x 1},UF={1}' {
+=======
+; IF-EVL: VPlan 'Initial VPlan for VF={1},UF={1}'
+; IF-EVL: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI
+;
+; IF-EVL: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2},UF={1}' {
+; IF-EVL-NEXT: Live-in vp<[[VFUF:%[0-9]+]]> = VF * UF
+>>>>>>> c06d0ff
 ; IF-EVL-NEXT: Live-in vp<[[VTC:%[0-9]+]]> = vector-trip-count
 ; IF-EVL-NEXT: Live-in ir<%N> = original trip-count
 
@@ -53,7 +61,15 @@ exit:
 }
 
 define void @vp_zext(ptr %a, ptr %b, i64 %N) {
+<<<<<<< HEAD
 ; IF-EVL: VPlan 'Initial VPlan for VF={vscale x 1},UF={1}' {
+=======
+; IF-EVL: VPlan 'Initial VPlan for VF={1},UF={1}'
+; IF-EVL: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI
+;
+; IF-EVL: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2},UF={1}' {
+; IF-EVL-NEXT: Live-in vp<[[VFUF:%[0-9]+]]> = VF * UF
+>>>>>>> c06d0ff
 ; IF-EVL-NEXT: Live-in vp<[[VTC:%[0-9]+]]> = vector-trip-count
 ; IF-EVL-NEXT: Live-in ir<%N> = original trip-count
 
@@ -99,7 +115,15 @@ exit:
 }
 
 define void @vp_trunc(ptr %a, ptr %b, i64 %N) {
+<<<<<<< HEAD
 ; IF-EVL: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2},UF={1}' {
+=======
+; IF-EVL: VPlan 'Initial VPlan for VF={1},UF={1}'
+; IF-EVL: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI
+;
+; IF-EVL: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2,vscale x 4},UF={1}' {
+; IF-EVL-NEXT: Live-in vp<[[VFUF:%[0-9]+]]> = VF * UF
+>>>>>>> c06d0ff
 ; IF-EVL-NEXT: Live-in vp<[[VTC:%[0-9]+]]> = vector-trip-count
 ; IF-EVL-NEXT: Live-in ir<%N> = original trip-count
 
@@ -145,7 +169,15 @@ exit:
 }
 
 define void @vp_fpext(ptr %a, ptr %b, i64 %N) {
+<<<<<<< HEAD
 ; IF-EVL: VPlan 'Initial VPlan for VF={vscale x 1},UF={1}' {
+=======
+; IF-EVL: VPlan 'Initial VPlan for VF={1},UF={1}'
+; IF-EVL: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI
+;
+; IF-EVL: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2},UF={1}' {
+; IF-EVL-NEXT: Live-in vp<[[VFUF:%[0-9]+]]> = VF * UF
+>>>>>>> c06d0ff
 ; IF-EVL-NEXT: Live-in vp<[[VTC:%[0-9]+]]> = vector-trip-count
 ; IF-EVL-NEXT: Live-in ir<%N> = original trip-count
 
@@ -191,7 +223,15 @@ exit:
 }
 
 define void @vp_fptrunc(ptr %a, ptr %b, i64 %N) {
+<<<<<<< HEAD
 ; IF-EVL: VPlan 'Initial VPlan for VF={vscale x 1},UF={1}' {
+=======
+; IF-EVL: VPlan 'Initial VPlan for VF={1},UF={1}'
+; IF-EVL: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI
+;
+; IF-EVL: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2},UF={1}' {
+; IF-EVL-NEXT: Live-in vp<[[VFUF:%[0-9]+]]> = VF * UF
+>>>>>>> c06d0ff
 ; IF-EVL-NEXT: Live-in vp<[[VTC:%[0-9]+]]> = vector-trip-count
 ; IF-EVL-NEXT: Live-in ir<%N> = original trip-count
 
@@ -237,7 +277,15 @@ exit:
 }
 
 define void @vp_sitofp(ptr %a, ptr %b, i64 %N) {
+<<<<<<< HEAD
 ; IF-EVL: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2},UF={1}' {
+=======
+; IF-EVL: VPlan 'Initial VPlan for VF={1},UF={1}'
+; IF-EVL: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI
+;
+; IF-EVL: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2,vscale x 4},UF={1}' {
+; IF-EVL-NEXT: Live-in vp<[[VFUF:%[0-9]+]]> = VF * UF
+>>>>>>> c06d0ff
 ; IF-EVL-NEXT: Live-in vp<[[VTC:%[0-9]+]]> = vector-trip-count
 ; IF-EVL-NEXT: Live-in ir<%N> = original trip-count
 
@@ -283,7 +331,15 @@ exit:
 }
 
 define void @vp_uitofp(ptr %a, ptr %b, i64 %N) {
+<<<<<<< HEAD
 ; IF-EVL: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2},UF={1}' {
+=======
+; IF-EVL: VPlan 'Initial VPlan for VF={1},UF={1}'
+; IF-EVL: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI
+;
+; IF-EVL: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2,vscale x 4},UF={1}' {
+; IF-EVL-NEXT: Live-in vp<[[VFUF:%[0-9]+]]> = VF * UF
+>>>>>>> c06d0ff
 ; IF-EVL-NEXT: Live-in vp<[[VTC:%[0-9]+]]> = vector-trip-count
 ; IF-EVL-NEXT: Live-in ir<%N> = original trip-count
 
@@ -329,7 +385,15 @@ exit:
 }
 
 define void @vp_fptosi(ptr %a, ptr %b, i64 %N) {
+<<<<<<< HEAD
 ; IF-EVL: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2},UF={1}' {
+=======
+; IF-EVL: VPlan 'Initial VPlan for VF={1},UF={1}'
+; IF-EVL: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI
+;
+; IF-EVL: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2,vscale x 4},UF={1}' {
+; IF-EVL-NEXT: Live-in vp<[[VFUF:%[0-9]+]]> = VF * UF
+>>>>>>> c06d0ff
 ; IF-EVL-NEXT: Live-in vp<[[VTC:%[0-9]+]]> = vector-trip-count
 ; IF-EVL-NEXT: Live-in ir<%N> = original trip-count
 
@@ -375,7 +439,15 @@ exit:
 }
 
 define void @vp_fptoui(ptr %a, ptr %b, i64 %N) {
+<<<<<<< HEAD
 ; IF-EVL: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2},UF={1}' {
+=======
+; IF-EVL: VPlan 'Initial VPlan for VF={1},UF={1}'
+; IF-EVL: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI
+;
+; IF-EVL: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2,vscale x 4},UF={1}' {
+; IF-EVL-NEXT: Live-in vp<[[VFUF:%[0-9]+]]> = VF * UF
+>>>>>>> c06d0ff
 ; IF-EVL-NEXT: Live-in vp<[[VTC:%[0-9]+]]> = vector-trip-count
 ; IF-EVL-NEXT: Live-in ir<%N> = original trip-count
 
@@ -421,7 +493,15 @@ exit:
 }
 
 define void @vp_inttoptr(ptr %a, ptr %b, i64 %N) {
+<<<<<<< HEAD
 ; IF-EVL: VPlan 'Initial VPlan for VF={vscale x 1},UF={1}' {
+=======
+; IF-EVL: VPlan 'Initial VPlan for VF={1},UF={1}'
+; IF-EVL: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI
+;
+; IF-EVL: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2},UF={1}' {
+; IF-EVL-NEXT: Live-in vp<[[VFUF:%[0-9]+]]> = VF * UF
+>>>>>>> c06d0ff
 ; IF-EVL-NEXT: Live-in vp<[[VTC:%[0-9]+]]> = vector-trip-count
 ; IF-EVL-NEXT: Live-in ir<%N> = original trip-count
 

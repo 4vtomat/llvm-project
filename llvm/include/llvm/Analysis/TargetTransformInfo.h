@@ -623,6 +623,11 @@ public:
     /// Don't allow runtime unrolling if expanding the trip count takes more
     /// than SCEVExpansionBudget.
     unsigned SCEVExpansionBudget;
+    /// Allow runtime unrolling multi-exit loops. Should only be set if the
+    /// target determined that multi-exit unrolling is profitable for the loop.
+    /// Fall back to the generic logic to determine whether multi-exit unrolling
+    /// is profitable if set to false.
+    bool RuntimeUnrollMultiExit;
   };
 
   /// Get target-customized preferences for the generic loop unrolling
@@ -1951,6 +1956,7 @@ public:
 
   /// @}
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// \returns true if the loop vectorizer should vectorize uncountable
   /// loop vectorization for the target.
@@ -1975,6 +1981,12 @@ public:
   /// \returns true if vectorization of monotonics is supported by the target.
   bool enableMonotonicsVectorization() const;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  /// Collect kernel launch bounds for \p F into \p LB.
+  void collectKernelLaunchBounds(
+      const Function &F,
+      SmallVectorImpl<std::pair<StringRef, int64_t>> &LB) const;
+>>>>>>> c06d0ff
 
 private:
   /// The abstract base class used to type erase specific TTI
@@ -2458,6 +2470,9 @@ public:
 #endif // SIFIVE_CUSTOMIZATION
   virtual unsigned getNumBytesToPadGlobalArray(unsigned Size,
                                                Type *ArrayType) const = 0;
+  virtual void collectKernelLaunchBounds(
+      const Function &F,
+      SmallVectorImpl<std::pair<StringRef, int64_t>> &LB) const = 0;
 };
 
 template <typename T>
@@ -3394,6 +3409,12 @@ public:
   unsigned getNumBytesToPadGlobalArray(unsigned Size,
                                        Type *ArrayType) const override {
     return Impl.getNumBytesToPadGlobalArray(Size, ArrayType);
+  }
+
+  void collectKernelLaunchBounds(
+      const Function &F,
+      SmallVectorImpl<std::pair<StringRef, int64_t>> &LB) const override {
+    Impl.collectKernelLaunchBounds(F, LB);
   }
 };
 

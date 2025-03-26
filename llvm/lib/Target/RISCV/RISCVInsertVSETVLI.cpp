@@ -2185,6 +2185,7 @@ void RISCVInsertVSETVLI::coalesceVSETVLIs(MachineBasicBlock &MBB) const {
       ToDelete.push_back(VLOpDef);
   };
 
+<<<<<<< HEAD
   for (MachineInstr &MI :
        make_early_inc_range(make_range(MBB.rbegin(), MBB.rend()))) {
 #if SIFIVE_CUSTOMIZATION
@@ -2193,6 +2194,9 @@ void RISCVInsertVSETVLI::coalesceVSETVLIs(MachineBasicBlock &MBB) const {
         isMammothVectorConfigInstr(MI))
       continue;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  for (MachineInstr &MI : make_early_inc_range(reverse(MBB))) {
+>>>>>>> c06d0ff
 
     if (!isVectorConfigInstr(MI)) {
       Used.doUnion(getDemanded(MI, ST));

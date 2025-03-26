@@ -742,7 +742,7 @@ for.end:
 
 define float @fp_postinc_use_fadd(float %init, ptr noalias nocapture %A, i64 %N, float %fpinc) {
 ; VEC-LABEL: define float @fp_postinc_use_fadd(
-; VEC-SAME: float [[INIT:%.*]], ptr noalias nocapture [[A:%.*]], i64 [[N:%.*]], float [[FPINC:%.*]]) {
+; VEC-SAME: float [[INIT:%.*]], ptr noalias captures(none) [[A:%.*]], i64 [[N:%.*]], float [[FPINC:%.*]]) {
 ; VEC-NEXT:  [[ENTRY:.*]]:
 ; VEC-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 2
 ; VEC-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
@@ -794,7 +794,7 @@ define float @fp_postinc_use_fadd(float %init, ptr noalias nocapture %A, i64 %N,
 ; VEC-NEXT:    ret float [[ADD_LCSSA]]
 ;
 ; INTERLEAVE-LABEL: define float @fp_postinc_use_fadd(
-; INTERLEAVE-SAME: float [[INIT:%.*]], ptr noalias nocapture [[A:%.*]], i64 [[N:%.*]], float [[FPINC:%.*]]) {
+; INTERLEAVE-SAME: float [[INIT:%.*]], ptr noalias captures(none) [[A:%.*]], i64 [[N:%.*]], float [[FPINC:%.*]]) {
 ; INTERLEAVE-NEXT:  [[ENTRY:.*]]:
 ; INTERLEAVE-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 2
 ; INTERLEAVE-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
@@ -862,7 +862,7 @@ exit:
 
 define float @fp_postinc_use_fadd_ops_swapped(float %init, ptr noalias nocapture %A, i64 %N, float %fpinc) {
 ; VEC-LABEL: define float @fp_postinc_use_fadd_ops_swapped(
-; VEC-SAME: float [[INIT:%.*]], ptr noalias nocapture [[A:%.*]], i64 [[N:%.*]], float [[FPINC:%.*]]) {
+; VEC-SAME: float [[INIT:%.*]], ptr noalias captures(none) [[A:%.*]], i64 [[N:%.*]], float [[FPINC:%.*]]) {
 ; VEC-NEXT:  [[ENTRY:.*]]:
 ; VEC-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 2
 ; VEC-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
@@ -914,7 +914,7 @@ define float @fp_postinc_use_fadd_ops_swapped(float %init, ptr noalias nocapture
 ; VEC-NEXT:    ret float [[ADD_LCSSA]]
 ;
 ; INTERLEAVE-LABEL: define float @fp_postinc_use_fadd_ops_swapped(
-; INTERLEAVE-SAME: float [[INIT:%.*]], ptr noalias nocapture [[A:%.*]], i64 [[N:%.*]], float [[FPINC:%.*]]) {
+; INTERLEAVE-SAME: float [[INIT:%.*]], ptr noalias captures(none) [[A:%.*]], i64 [[N:%.*]], float [[FPINC:%.*]]) {
 ; INTERLEAVE-NEXT:  [[ENTRY:.*]]:
 ; INTERLEAVE-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 2
 ; INTERLEAVE-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
@@ -982,7 +982,7 @@ exit:
 
 define float @fp_postinc_use_fsub(float %init, ptr noalias nocapture %A, i64 %N, float %fpinc) {
 ; VEC-LABEL: define float @fp_postinc_use_fsub(
-; VEC-SAME: float [[INIT:%.*]], ptr noalias nocapture [[A:%.*]], i64 [[N:%.*]], float [[FPINC:%.*]]) {
+; VEC-SAME: float [[INIT:%.*]], ptr noalias captures(none) [[A:%.*]], i64 [[N:%.*]], float [[FPINC:%.*]]) {
 ; VEC-NEXT:  [[ENTRY:.*]]:
 ; VEC-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 2
 ; VEC-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
@@ -1034,7 +1034,7 @@ define float @fp_postinc_use_fsub(float %init, ptr noalias nocapture %A, i64 %N,
 ; VEC-NEXT:    ret float [[ADD_LCSSA]]
 ;
 ; INTERLEAVE-LABEL: define float @fp_postinc_use_fsub(
-; INTERLEAVE-SAME: float [[INIT:%.*]], ptr noalias nocapture [[A:%.*]], i64 [[N:%.*]], float [[FPINC:%.*]]) {
+; INTERLEAVE-SAME: float [[INIT:%.*]], ptr noalias captures(none) [[A:%.*]], i64 [[N:%.*]], float [[FPINC:%.*]]) {
 ; INTERLEAVE-NEXT:  [[ENTRY:.*]]:
 ; INTERLEAVE-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 2
 ; INTERLEAVE-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
