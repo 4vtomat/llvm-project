@@ -237,7 +237,6 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
   // Currently we support the v1.0 RISC-V V intrinsics.
   Builder.defineMacro("__riscv_v_intrinsic", Twine(getVersionValue(1, 0)));
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (ISAInfo->hasExtension("xsfvfhbfmin"))
     Builder.defineMacro("__riscv_xsfvfhbfmin", "1000");
@@ -247,10 +246,7 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
     Builder.defineMacro("__sifive_recode_neon");
 #endif // SIFIVE_CUSTOMIZATION
 
-  auto VScale = getVScaleRange(Opts);
-=======
   auto VScale = getVScaleRange(Opts, false);
->>>>>>> c06d0ff
   if (VScale && VScale->first && VScale->first == VScale->second)
     Builder.defineMacro("__riscv_v_fixed_vlen",
                         Twine(VScale->first * llvm::RISCV::RVVBitsPerBlock));
