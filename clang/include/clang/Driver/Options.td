@@ -4220,6 +4220,9 @@ def fwrapv_pointer : Flag<["-"], "fwrapv-pointer">, Group<f_Group>,
   HelpText<"Treat pointer overflow as two's complement">;
 def fno_wrapv_pointer : Flag<["-"], "fno-wrapv-pointer">, Group<f_Group>,
   Visibility<[ClangOption, CLOption, FlangOption]>;
+#ifdef SIFIVE_CUSTOMIZATION
+def : Flag<["-"], "fno-strict-pointer-overflow">, Alias<fwrapv_pointer>;
+#endif // SIFIVE_CUSTOMIZATION
 def fwritable_strings : Flag<["-"], "fwritable-strings">, Group<f_Group>,
   Visibility<[ClangOption, CC1Option]>,
   HelpText<"Store string literals as writable data">,
