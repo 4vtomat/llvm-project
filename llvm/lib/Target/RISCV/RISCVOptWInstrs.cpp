@@ -545,11 +545,7 @@ static bool isSignExtendedW(Register SrcReg, const RISCVSubtarget &ST,
     case RISCV::MIN:
     case RISCV::MINU:
     case RISCV::PseudoCCMOVGPR:
-<<<<<<< HEAD
-    case RISCV::PseudoCCMOVGPRNoX0: // SIFIVE
-=======
     case RISCV::PseudoCCMOVGPRNoX0:
->>>>>>> c06d0ff
     case RISCV::PseudoCCAND:
     case RISCV::PseudoCCOR:
     case RISCV::PseudoCCXOR:
@@ -568,11 +564,7 @@ static bool isSignExtendedW(Register SrcReg, const RISCVSubtarget &ST,
         D = 2;
         break;
       case RISCV::PseudoCCMOVGPR:
-<<<<<<< HEAD
-      case RISCV::PseudoCCMOVGPRNoX0: // SIFIVE
-=======
       case RISCV::PseudoCCMOVGPRNoX0:
->>>>>>> c06d0ff
         B = 4;
         E = 6;
         break;
