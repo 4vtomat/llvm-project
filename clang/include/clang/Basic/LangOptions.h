@@ -667,12 +667,6 @@ public:
     return getSignedOverflowBehavior() == SOB_Defined;
   }
 
-#if SIFIVE_CUSTOMIZATION
-  bool isPointerSignedOverflowDefined() const {
-    return IsPointerSignedOverflowDefined || isSignedOverflowDefined();
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
   bool isSubscriptPointerArithmetic() const {
     return ObjCRuntime.isSubscriptPointerArithmetic() &&
            !ObjCSubscriptingLegacyRuntime;

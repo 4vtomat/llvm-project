@@ -4096,11 +4096,7 @@ static Value *emitPointerArithmetic(CodeGenFunction &CGF,
   else
     elemTy = CGF.ConvertTypeForMem(elementType);
 
-#if SIFIVE_CUSTOMIZATION
-  if (CGF.getLangOpts().isPointerSignedOverflowDefined())
-#else
   if (CGF.getLangOpts().PointerOverflowDefined)
-#endif // SIFIVE_CUSTOMIZATION
     return CGF.Builder.CreateGEP(elemTy, pointer, index, "add.ptr");
 
   return CGF.EmitCheckedInBoundsGEP(

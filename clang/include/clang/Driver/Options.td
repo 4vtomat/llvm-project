@@ -3432,19 +3432,6 @@ defm init_global_zero : BoolOptionWithoutMarshalling<"f", "init-global-zero",
   NegFlag<SetFalse, [], [FlangOption, FC1Option],
           "Do not zero initialize globals without default initialization">>;
 def fno_pointer_tbaa : Flag<["-"], "fno-pointer-tbaa">, Group<f_Group>;
-#ifdef SIFIVE_CUSTOMIZATION
-// This is a workaround for a miscompilation happened in a performance metric we
-// track caused by a poorly-written pointer arithmetic. In that case we don't
-// want to use -fno-strict-overflow since it disables ALL optimizations w.r.t
-// signed overflow.
-// Note that we will probably not upstream this because in the aforementioned
-// case compiler was actually correct, but at the same time we have to live with
-// the benchmark.
-def fno_strict_pointer_overflow : Flag<["-"], "fno-strict-pointer-overflow">, Group<f_Group>,
-  Visibility<[ClangOption, CC1Option]>,
-  MarshallingInfoFlag<LangOpts<"IsPointerSignedOverflowDefined">>,
-  HelpText<"Disable optimizations that assume pointer arithmetic never overflows.">;
-#endif
 def fno_temp_file : Flag<["-"], "fno-temp-file">, Group<f_Group>,
   Visibility<[ClangOption, CC1Option, CLOption, DXCOption]>, HelpText<
   "Directly create compilation output files. This may lead to incorrect incremental builds if the compiler crashes">,
