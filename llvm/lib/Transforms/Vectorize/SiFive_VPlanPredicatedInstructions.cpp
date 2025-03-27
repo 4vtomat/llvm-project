@@ -13,8 +13,9 @@
 
 #include "SiFive_VPlanPredicatedInstructions.h"
 #include "VPlan.h"
-#include "VPlanValue.h"
+#include "VPlanHelpers.h"
 #include "VPlanUtils.h"
+#include "VPlanValue.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Intrinsics.h"
