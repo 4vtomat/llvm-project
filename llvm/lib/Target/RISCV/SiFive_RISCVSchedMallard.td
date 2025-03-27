@@ -359,8 +359,8 @@ multiclass TGVBaseWriteRes<TGVProcResources VecProcRes> {
 
       // Mask load and store always have EMUL=1.
       let ReleaseAtCycles = [TGVGetLMulCycles<"M1">.c] in {
-        defm  : LMULWriteResMX<"WriteVLDM",  [VecProcRes.Load], mx, IsWorstCase=true>;
-        defm  : LMULWriteResMX<"WriteVSTM",  [VecProcRes.Store], mx, IsWorstCase=true>;
+        defm  : LMULWriteResMX<"WriteVLDM",  [VecProcRes.Load], mx, IsWorstCase=!eq(mx, "M1")>;
+        defm  : LMULWriteResMX<"WriteVSTM",  [VecProcRes.Store], mx, IsWorstCase=!eq(mx, "M1")>;
       }
     }
     foreach eew = [8, 16, 32, 64] in {
