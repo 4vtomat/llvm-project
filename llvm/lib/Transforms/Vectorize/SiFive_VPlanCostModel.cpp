@@ -25,6 +25,7 @@
 #include "SiFive_VPlanCostModel.h"
 #include "VPlan.h"
 #include "VPlanCFG.h"
+#include "VPlanHelpers.h"
 #include "VPlanUtils.h"
 #include "VPlanValue.h"
 
