@@ -1192,13 +1192,10 @@ Value *VPInstruction::generate(VPTransformState &State) {
 
 bool VPInstruction::isVectorToScalar() const {
   return getOpcode() == VPInstruction::ExtractFromEnd ||
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
          getOpcode() == VPInstruction::ComputeReductionResultWithMask ||
 #endif // SIFIVE_CUSTOMIZATION
-=======
          getOpcode() == VPInstruction::ExtractFirstActive ||
->>>>>>> c06d0ff
          getOpcode() == VPInstruction::ComputeReductionResult ||
          getOpcode() == VPInstruction::AnyOf;
 }
@@ -3340,31 +3337,13 @@ VPMonotonicHeaderPHIRecipe::computeCost(ElementCount VF,
 void VPBranchOnMaskRecipe::execute(VPTransformState &State) {
 #if !SIFIVE_CUSTOMIZATION
   assert(State.Lane && "Branch on Mask works only on single instance.");
-
-<<<<<<< HEAD
-  unsigned Lane = State.Lane->getKnownLane();
 #endif // SIFIVE_CUSTOMIZATION
-
-  Value *ConditionBit = nullptr;
-  VPValue *BlockInMask = getMask();
-  if (BlockInMask) {
-#if SIFIVE_CUSTOMIZATION
-    assert(State.Lane && "Branch on Mask works only on single instance.");
-    unsigned Lane = State.Lane->getKnownLane();
-#endif // SIFIVE_CUSTOMIZATION
-    ConditionBit = State.get(BlockInMask);
-    if (ConditionBit->getType()->isVectorTy())
-      ConditionBit = State.Builder.CreateExtractElement(
-          ConditionBit, State.Builder.getInt32(Lane));
-  } else // Block in mask is all-one.
-=======
 
   Value *ConditionBit = nullptr;
   VPValue *BlockInMask = getMask();
   if (BlockInMask)
     ConditionBit = State.get(BlockInMask, *State.Lane);
   else // Block in mask is all-one.
->>>>>>> c06d0ff
     ConditionBit = State.Builder.getTrue();
 
   // Replace the temporary unreachable terminator with a new conditional branch,
