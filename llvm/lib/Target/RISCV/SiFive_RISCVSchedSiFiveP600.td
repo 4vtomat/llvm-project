@@ -334,79 +334,8 @@ defm : TGVBaseWriteRes<SiFiveP600VecProcResources>;
 
 // Vector Integer Arithmetic Instructions
 foreach mx = SchedMxList in {
-<<<<<<< HEAD
-  defvar LMulLat = SiFiveP600GetLMulCycles<mx>.c;
-  defvar IsWorstCase = SiFiveP600IsWorstCaseMX<mx, SchedMxList>.c;
-  // The occupancy of unit-strided load / store is equal to LMUL.
-  let Latency = 8 in {
-    let ReleaseAtCycles = [LMulLat] in {
-      defm "" : LMULWriteResMX<"WriteVLDE",  [SiFiveP600VLD], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVLDFF", [SiFiveP600VLD], mx, IsWorstCase>;
-
-      defm "" : LMULWriteResMX<"WriteVSTE",  [SiFiveP600VST], mx, IsWorstCase>;
-    }
-
-    // Mask load and store always have EMUL=1.
-    let ReleaseAtCycles = [SiFiveP600GetLMulCycles<"M1">.c] in {
-      defm "" : LMULWriteResMX<"WriteVLDM",  [SiFiveP600VLD], mx, IsWorstCase=!eq(mx, "M1")>;
-      defm "" : LMULWriteResMX<"WriteVSTM",  [SiFiveP600VST], mx, IsWorstCase=!eq(mx, "M1")>;
-    }
-  }
-  foreach eew = [8, 16, 32, 64] in {
-    // The occupancy of non-segmented strided and index load/store is equal to VL.
-    let Latency = 13, ReleaseAtCycles = [SiFiveP600GetVLMAX<mx, eew>.val] in {
-      defm "" : LMULWriteResMX<"WriteVLDS"  # eew, [SiFiveP600VLD], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVLDUX" # eew, [SiFiveP600VLD], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVLDOX" # eew, [SiFiveP600VLD], mx, IsWorstCase>;
-
-      defm "" : LMULWriteResMX<"WriteVSTS"  # eew, [SiFiveP600VST], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVSTUX" # eew, [SiFiveP600VST], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVSTOX" # eew, [SiFiveP600VST], mx, IsWorstCase>;
-    }
-  }
-}
-
-foreach mx = SchedMxList in {
-  foreach nf=2-8 in {
-    foreach eew = [8, 16, 32, 64] in {
-      defvar LMulLat = SiFiveP600SegmentedLdStCycles<mx, eew, nf>.c;
-      defvar IsWorstCase = SiFiveP600IsWorstCaseMX<mx, SchedMxList>.c;
-      let Latency = !add(12, LMulLat), ReleaseAtCycles = [!add(12, LMulLat)] in {
-        defm "" : LMULWriteResMX<"WriteVLSEG" # nf # "e" # eew,   [SiFiveP600VLD], mx, IsWorstCase>;
-        defm "" : LMULWriteResMX<"WriteVLSEGFF" # nf # "e" # eew, [SiFiveP600VLD], mx, IsWorstCase>;
-        defm "" : LMULWriteResMX<"WriteVLSSEG" # nf # "e" # eew,  [SiFiveP600VLD], mx, IsWorstCase>;
-        defm "" : LMULWriteResMX<"WriteVLUXSEG" # nf # "e" # eew, [SiFiveP600VLD], mx, IsWorstCase>;
-        defm "" : LMULWriteResMX<"WriteVLOXSEG" # nf # "e" # eew, [SiFiveP600VLD], mx, IsWorstCase>;
-      }
-      let Latency = !add(1, LMulLat), ReleaseAtCycles = [!add(12, LMulLat)] in {
-        defm "" : LMULWriteResMX<"WriteVSSEG" # nf # "e" # eew,   [SiFiveP600VST], mx, IsWorstCase>;
-        defm "" : LMULWriteResMX<"WriteVSSSEG" # nf # "e" # eew,  [SiFiveP600VST], mx, IsWorstCase>;
-        defm "" : LMULWriteResMX<"WriteVSUXSEG" # nf # "e" # eew, [SiFiveP600VST], mx, IsWorstCase>;
-        defm "" : LMULWriteResMX<"WriteVSOXSEG" # nf # "e" # eew, [SiFiveP600VST], mx, IsWorstCase>;
-      }
-    }
-  }
-}
-
-// Whole register move/load/store
-foreach LMul = [1, 2, 4, 8] in {
-  let Latency = 8, ReleaseAtCycles = [LMul] in {
-    def : WriteRes<!cast<SchedWrite>("WriteVLD" # LMul # "R"), [SiFiveP600VLD]>;
-    def : WriteRes<!cast<SchedWrite>("WriteVST" # LMul # "R"), [SiFiveP600VST]>;
-  }
-  let Latency = 2, ReleaseAtCycles = [LMul] in {
-    def : WriteRes<!cast<SchedWrite>("WriteVMov" # LMul # "V"), [SiFiveP600VectorArith]>;
-  }
-}
-
-// 11. Vector Integer Arithmetic Instructions
-foreach mx = SchedMxList in {
-  defvar LMulLat = SiFiveP600GetLMulCycles<mx>.c;
-  defvar IsWorstCase = SiFiveP600IsWorstCaseMX<mx, SchedMxList>.c;
-=======
   defvar LMulLat = TGVGetLMulCycles<mx>.c;
   defvar IsWorstCase = TGVIsWorstCaseMX<mx, SchedMxList>.c;
->>>>>>> origin/sifive-dev
   let Latency = 2, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVExtV",    [SiFiveP600VectorArith], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVICmpV",   [SiFiveP600VectorMask],  mx, IsWorstCase>;
