@@ -1724,19 +1724,13 @@ void VPlanTransforms::optimize(VPlan &Plan) {
   runPass(simplifyRecipes, Plan, *Plan.getCanonicalIV()->getScalarType());
   runPass(removeDeadRecipes, Plan);
 
-<<<<<<< HEAD
-  createAndOptimizeReplicateRegions(Plan);
+  runPass(createAndOptimizeReplicateRegions, Plan);
 #if SIFIVE_CUSTOMIZATION
   // After CFG is flattened, remove all unnecessary blends of monotonics
-  simplifyMonotonics(Plan);
+  runPass(simplifyMonotonics, Plan);
 #endif // SIFIVE_CUSTOMIZATION
-  mergeBlocksIntoPredecessors(Plan);
-  licm(Plan);
-=======
-  runPass(createAndOptimizeReplicateRegions, Plan);
   runPass(mergeBlocksIntoPredecessors, Plan);
   runPass(licm, Plan);
->>>>>>> c06d0ff
 }
 
 #if SIFIVE_CUSTOMIZATION
