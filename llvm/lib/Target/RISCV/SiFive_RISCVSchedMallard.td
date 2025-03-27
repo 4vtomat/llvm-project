@@ -283,15 +283,9 @@ multiclass MallardBaseWriteRes<MallardIntProcResources IntProcRes,
   def : WriteRes<WriteFLI64, [IntProcRes.MulI2F]>;
   }
 
-  // Configuration-Setting Instructions
-  def : WriteRes<WriteVSETVLI, [IntProcRes.SYS]>;
-  def : WriteRes<WriteVSETIVLI, [IntProcRes.SYS]>;
-  def : WriteRes<WriteVSETVL, [IntProcRes.SYS]>;
-
   // Others
   def : WriteRes<WriteCSR, [IntProcRes.SYS]>;
   def : WriteRes<WriteNop, []>;
-  def : WriteRes<WriteRdVLENB, [IntProcRes.SYS]>;
 
   // FIXME: This could be better modeled by looking at the regclasses of the operands.
   def : InstRW<[WriteIALU, ReadIALU], (instrs COPY)>;
@@ -340,7 +334,16 @@ class TGVSegmentedLdStCycles<string mx, int sew, int nf> {
 }
 
 // All the shared WriteRes entries
-multiclass TGVBaseWriteRes<TGVProcResources VecProcRes> {
+multiclass TGVBaseWriteRes<MallardIntProcResources IntProcRes,
+                           TGVProcResources VecProcRes> {
+  // Vector Byte Length vlenb
+  def : WriteRes<WriteRdVLENB, [IntProcRes.SYS]>;
+
+  // Configuration-Setting Instructions
+  def : WriteRes<WriteVSETVLI, [IntProcRes.SYS]>;
+  def : WriteRes<WriteVSETIVLI, [IntProcRes.SYS]>;
+  def : WriteRes<WriteVSETVL, [IntProcRes.SYS]>;
+
   // Vector Loads and Stores
 
   // Note that the latency of vector loads are measured by consuming the loaded
@@ -623,13 +626,13 @@ multiclass MallardBaseReadAdvances {
   def : ReadAdvance<ReadSHXADD32, 0>;
   def : ReadAdvance<ReadSingleBit, 0>;
   def : ReadAdvance<ReadSingleBitImm, 0>;
-
-  // 6. Configuration-Setting Instructions
-  def : ReadAdvance<ReadVSETVLI, 0>;
-  def : ReadAdvance<ReadVSETVL, 0>;
 }
 
 multiclass TGVBaseReadAdvances {
+  // 6. Configuration-Setting Instructions
+  def : ReadAdvance<ReadVSETVLI, 0>;
+  def : ReadAdvance<ReadVSETVL, 0>;
+
   // 7. Vector Loads and Stores
   def : ReadAdvance<ReadVLDX, 0>;
   def : ReadAdvance<ReadVSTX, 0>;

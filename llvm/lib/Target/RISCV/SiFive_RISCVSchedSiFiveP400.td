@@ -165,7 +165,7 @@ def : WriteRes<WriteFDiv64, [SiFiveP400FEXQ0, SiFiveP400FloatDiv]> {
   let ReleaseAtCycles = [1, 32];
 }
 
-defm : TGVBaseWriteRes<SiFiveP400VecProcResources>;
+defm : TGVBaseWriteRes<SiFiveP400IntProcResources, SiFiveP400VecProcResources>;
 
 // Vector Integer Arithmetic Instructions
 foreach mx = SchedMxList in {
