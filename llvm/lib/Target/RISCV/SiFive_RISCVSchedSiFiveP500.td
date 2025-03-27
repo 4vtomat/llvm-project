@@ -91,11 +91,9 @@ defm : MallardBaseReadAdvances;
 defm : UnsupportedSchedV;
 defm : UnsupportedSchedZabha;
 defm : UnsupportedSchedZbc;
-defm : UnsupportedSchedZbs;
 defm : UnsupportedSchedZbkb;
 defm : UnsupportedSchedZbkx;
 defm : UnsupportedSchedSFB;
-defm : UnsupportedSchedZfa;
 defm : UnsupportedSchedZvk;
 defm : UnsupportedSchedXsfvcp;
 defm : UnsupportedSchedXSfsci; // SIFIVE
