@@ -11189,11 +11189,11 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
       if (!Plan->hasVF(ElementCount::getFixed(1)) && !Plan->isUncountable())
 #else
       if (!Plan->hasVF(ElementCount::getFixed(1)))
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-        VPlanTransforms::truncateToMinimalBitwidths(*Plan,
-                                                    CM.getMinimalBitwidths());
+        VPlanTransforms::runPass(VPlanTransforms::truncateToMinimalBitwidths,
+                                 *Plan, CM.getMinimalBitwidths());
 #if SIFIVE_CUSTOMIZATION
+      bool EnableEVLFuzzing = Legal->useVLAVectorizer();
       if (Legal->useVLAVectorizer()) {
         if (Plan->isUncountable()) {
           VPlanTransforms::optimizeUncountable(*Plan, *PSE.getSE());
@@ -11213,11 +11213,16 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
               *Plan, *Legal, TTI, *TLI);
         }
       } else {
-#endif // SIFIVE_CUSTOMIZATION
-=======
-        VPlanTransforms::runPass(VPlanTransforms::truncateToMinimalBitwidths,
-                                 *Plan, CM.getMinimalBitwidths());
->>>>>>> c06d0ff
+        VPlanTransforms::optimize(*Plan);
+        // TODO: try to put it close to addActiveLaneMask().
+        // Discard the plan if it is not EVL-compatible
+        if (CM.foldTailWithEVL() &&
+            !VPlanTransforms::runPass(
+                VPlanTransforms::tryAddExplicitVectorLength, *Plan,
+                CM.getMaxSafeElements(), EnableEVLFuzzing))
+          break;
+      }
+#else
       VPlanTransforms::optimize(*Plan);
       // TODO: try to put it close to addActiveLaneMask().
       // Discard the plan if it is not EVL-compatible
@@ -11225,8 +11230,6 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
           !VPlanTransforms::runPass(VPlanTransforms::tryAddExplicitVectorLength,
                                     *Plan, CM.getMaxSafeElements()))
         break;
-#if SIFIVE_CUSTOMIZATION
-      }
 #endif // SIFIVE_CUSTOMIZATION
       assert(verifyVPlanIsValid(*Plan) && "VPlan is invalid");
       VPlans.push_back(std::move(Plan));
@@ -12097,21 +12100,10 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
 #else
   if (auto *UncountableExitingBlock =
           Legal->getUncountableEarlyExitingBlock()) {
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-    if (!VPlanTransforms::handleUncountableEarlyExit(
-            *Plan, *PSE.getSE(), OrigLoop, UncountableExitingBlock,
-            RecipeBuilder)) {
-      reportVectorizationFailure(
-          "Some exit values in loop with uncountable exit not supported yet",
-          "UncountableEarlyExitLoopsUnsupportedExitValue", ORE, OrigLoop);
-      return nullptr;
-    }
-=======
     VPlanTransforms::runPass(VPlanTransforms::handleUncountableEarlyExit, *Plan,
                              *PSE.getSE(), OrigLoop, UncountableExitingBlock,
                              RecipeBuilder);
->>>>>>> c06d0ff
   }
   DenseMap<VPValue *, VPValue *> IVEndValues;
 #if SIFIVE_CUSTOMIZATION
@@ -12194,20 +12186,16 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
 
   // Sink users of fixed-order recurrence past the recipe defining the previous
   // value and introduce FirstOrderRecurrenceSplice VPInstructions.
-<<<<<<< HEAD
-  if (!VPlanTransforms::adjustFixedOrderRecurrences(*Plan, Builder))
+  if (!VPlanTransforms::runPass(VPlanTransforms::adjustFixedOrderRecurrences,
+                                *Plan, Builder))
 #if SIFIVE_CUSTOMIZATION
   {
     LLVM_DEBUG(dbgs() << "LV: Cannot adjust ordered recurrences. Constructed "
                          "VPlan is rejected\n");
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  if (!VPlanTransforms::runPass(VPlanTransforms::adjustFixedOrderRecurrences,
-                                *Plan, Builder))
->>>>>>> c06d0ff
     return nullptr;
-#if SIFIVE_CUSTOMIZATION
   }
+#else
+    return nullptr;
 #endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
@@ -13457,13 +13445,9 @@ bool LoopVectorizePass::processLoop(Loop *L) {
     bool ForceVectorization =
         Hints.getForce() == LoopVectorizeHints::FK_Enabled;
     if (!ForceVectorization &&
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-        !areRuntimeChecksProfitable(Checks, VF, L, *TTI, PSE, SEL)) {
-=======
         !areRuntimeChecksProfitable(Checks, VF, L, PSE, SEL,
                                     CM.getVScaleForTuning())) {
->>>>>>> c06d0ff
       ORE->emit([&]() {
         return OptimizationRemarkAnalysisAliasing(
                    DEBUG_TYPE, "CantReorderMemOps", L->getStartLoc(),
