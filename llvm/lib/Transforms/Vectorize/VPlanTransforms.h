@@ -17,12 +17,7 @@
 #include "VPlan.h"
 #include "VPlanVerifier.h"
 #include "llvm/ADT/STLFunctionalExtras.h"
-<<<<<<< HEAD
-#include "llvm/Analysis/TargetTransformInfo.h"
-#include "llvm/Transforms/Vectorize/LoopVectorizationLegality.h"
-=======
 #include "llvm/Support/CommandLine.h"
->>>>>>> c06d0ff
 
 namespace llvm {
 
