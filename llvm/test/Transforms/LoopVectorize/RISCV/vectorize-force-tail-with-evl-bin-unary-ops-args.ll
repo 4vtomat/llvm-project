@@ -12,13 +12,8 @@
 
 define void @test_and(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL-LABEL: define void @test_and(
-<<<<<<< HEAD
-; IF-EVL-SAME: ptr nocapture [[A:%.*]], ptr nocapture readonly [[B:%.*]]) #[[ATTR0:[0-9]+]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
-=======
 ; IF-EVL-SAME: ptr captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]]) #[[ATTR0:[0-9]+]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*]]:
->>>>>>> c06d0ff
+; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
 ; IF-EVL-NEXT:    [[A2:%.*]] = ptrtoint ptr [[A]] to i64
 ; IF-EVL-NEXT:    [[B1:%.*]] = ptrtoint ptr [[B]] to i64
 ; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
@@ -101,13 +96,8 @@ finish.loopexit:
 
 define void @test_or(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL-LABEL: define void @test_or(
-<<<<<<< HEAD
-; IF-EVL-SAME: ptr nocapture [[A:%.*]], ptr nocapture readonly [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
-=======
 ; IF-EVL-SAME: ptr captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*]]:
->>>>>>> c06d0ff
+; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
 ; IF-EVL-NEXT:    [[A2:%.*]] = ptrtoint ptr [[A]] to i64
 ; IF-EVL-NEXT:    [[B1:%.*]] = ptrtoint ptr [[B]] to i64
 ; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
@@ -190,13 +180,8 @@ finish.loopexit:
 
 define void @test_xor(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL-LABEL: define void @test_xor(
-<<<<<<< HEAD
-; IF-EVL-SAME: ptr nocapture [[A:%.*]], ptr nocapture readonly [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
-=======
 ; IF-EVL-SAME: ptr captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*]]:
->>>>>>> c06d0ff
+; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
 ; IF-EVL-NEXT:    [[A2:%.*]] = ptrtoint ptr [[A]] to i64
 ; IF-EVL-NEXT:    [[B1:%.*]] = ptrtoint ptr [[B]] to i64
 ; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
@@ -279,13 +264,8 @@ finish.loopexit:
 
 define void @test_shl(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL-LABEL: define void @test_shl(
-<<<<<<< HEAD
-; IF-EVL-SAME: ptr nocapture [[A:%.*]], ptr nocapture readonly [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
-=======
 ; IF-EVL-SAME: ptr captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*]]:
->>>>>>> c06d0ff
+; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
 ; IF-EVL-NEXT:    [[A2:%.*]] = ptrtoint ptr [[A]] to i64
 ; IF-EVL-NEXT:    [[B1:%.*]] = ptrtoint ptr [[B]] to i64
 ; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
@@ -368,13 +348,8 @@ finish.loopexit:
 
 define void @test_lshr(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL-LABEL: define void @test_lshr(
-<<<<<<< HEAD
-; IF-EVL-SAME: ptr nocapture [[A:%.*]], ptr nocapture readonly [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
-=======
 ; IF-EVL-SAME: ptr captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*]]:
->>>>>>> c06d0ff
+; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
 ; IF-EVL-NEXT:    [[A2:%.*]] = ptrtoint ptr [[A]] to i64
 ; IF-EVL-NEXT:    [[B1:%.*]] = ptrtoint ptr [[B]] to i64
 ; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
@@ -457,13 +432,8 @@ finish.loopexit:
 
 define void @test_ashr(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL-LABEL: define void @test_ashr(
-<<<<<<< HEAD
-; IF-EVL-SAME: ptr nocapture [[A:%.*]], ptr nocapture readonly [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
-=======
 ; IF-EVL-SAME: ptr captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*]]:
->>>>>>> c06d0ff
+; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
 ; IF-EVL-NEXT:    [[A2:%.*]] = ptrtoint ptr [[A]] to i64
 ; IF-EVL-NEXT:    [[B1:%.*]] = ptrtoint ptr [[B]] to i64
 ; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
@@ -546,13 +516,8 @@ finish.loopexit:
 
 define void @test_add(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL-LABEL: define void @test_add(
-<<<<<<< HEAD
-; IF-EVL-SAME: ptr nocapture [[A:%.*]], ptr nocapture readonly [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
-=======
 ; IF-EVL-SAME: ptr captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*]]:
->>>>>>> c06d0ff
+; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
 ; IF-EVL-NEXT:    [[A2:%.*]] = ptrtoint ptr [[A]] to i64
 ; IF-EVL-NEXT:    [[B1:%.*]] = ptrtoint ptr [[B]] to i64
 ; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
@@ -635,13 +600,8 @@ finish.loopexit:
 
 define void @test_sub(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL-LABEL: define void @test_sub(
-<<<<<<< HEAD
-; IF-EVL-SAME: ptr nocapture [[A:%.*]], ptr nocapture readonly [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
-=======
 ; IF-EVL-SAME: ptr captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*]]:
->>>>>>> c06d0ff
+; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
 ; IF-EVL-NEXT:    [[A2:%.*]] = ptrtoint ptr [[A]] to i64
 ; IF-EVL-NEXT:    [[B1:%.*]] = ptrtoint ptr [[B]] to i64
 ; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
@@ -724,13 +684,8 @@ finish.loopexit:
 
 define void @test_mul(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL-LABEL: define void @test_mul(
-<<<<<<< HEAD
-; IF-EVL-SAME: ptr nocapture [[A:%.*]], ptr nocapture readonly [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
-=======
 ; IF-EVL-SAME: ptr captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*]]:
->>>>>>> c06d0ff
+; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
 ; IF-EVL-NEXT:    [[A2:%.*]] = ptrtoint ptr [[A]] to i64
 ; IF-EVL-NEXT:    [[B1:%.*]] = ptrtoint ptr [[B]] to i64
 ; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
@@ -813,13 +768,8 @@ finish.loopexit:
 
 define void @test_sdiv(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL-LABEL: define void @test_sdiv(
-<<<<<<< HEAD
-; IF-EVL-SAME: ptr nocapture [[A:%.*]], ptr nocapture readonly [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
-=======
 ; IF-EVL-SAME: ptr captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*]]:
->>>>>>> c06d0ff
+; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
 ; IF-EVL-NEXT:    [[A2:%.*]] = ptrtoint ptr [[A]] to i64
 ; IF-EVL-NEXT:    [[B1:%.*]] = ptrtoint ptr [[B]] to i64
 ; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
@@ -902,13 +852,8 @@ finish.loopexit:
 
 define void @test_udiv(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL-LABEL: define void @test_udiv(
-<<<<<<< HEAD
-; IF-EVL-SAME: ptr nocapture [[A:%.*]], ptr nocapture readonly [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
-=======
 ; IF-EVL-SAME: ptr captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*]]:
->>>>>>> c06d0ff
+; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
 ; IF-EVL-NEXT:    [[A2:%.*]] = ptrtoint ptr [[A]] to i64
 ; IF-EVL-NEXT:    [[B1:%.*]] = ptrtoint ptr [[B]] to i64
 ; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
@@ -991,13 +936,8 @@ finish.loopexit:
 
 define void @test_srem(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL-LABEL: define void @test_srem(
-<<<<<<< HEAD
-; IF-EVL-SAME: ptr nocapture [[A:%.*]], ptr nocapture readonly [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
-=======
 ; IF-EVL-SAME: ptr captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*]]:
->>>>>>> c06d0ff
+; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
 ; IF-EVL-NEXT:    [[A2:%.*]] = ptrtoint ptr [[A]] to i64
 ; IF-EVL-NEXT:    [[B1:%.*]] = ptrtoint ptr [[B]] to i64
 ; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
@@ -1080,13 +1020,8 @@ finish.loopexit:
 
 define void @test_urem(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL-LABEL: define void @test_urem(
-<<<<<<< HEAD
-; IF-EVL-SAME: ptr nocapture [[A:%.*]], ptr nocapture readonly [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
-=======
 ; IF-EVL-SAME: ptr captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*]]:
->>>>>>> c06d0ff
+; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
 ; IF-EVL-NEXT:    [[A2:%.*]] = ptrtoint ptr [[A]] to i64
 ; IF-EVL-NEXT:    [[B1:%.*]] = ptrtoint ptr [[B]] to i64
 ; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
@@ -1171,13 +1106,8 @@ finish.loopexit:
 
 define void @test_fadd(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL-LABEL: define void @test_fadd(
-<<<<<<< HEAD
-; IF-EVL-SAME: ptr nocapture [[A:%.*]], ptr nocapture readonly [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
-=======
 ; IF-EVL-SAME: ptr captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*]]:
->>>>>>> c06d0ff
+; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
 ; IF-EVL-NEXT:    [[A2:%.*]] = ptrtoint ptr [[A]] to i64
 ; IF-EVL-NEXT:    [[B1:%.*]] = ptrtoint ptr [[B]] to i64
 ; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
@@ -1261,13 +1191,8 @@ finish.loopexit:
 
 define void @test_fsub(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL-LABEL: define void @test_fsub(
-<<<<<<< HEAD
-; IF-EVL-SAME: ptr nocapture [[A:%.*]], ptr nocapture readonly [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
-=======
 ; IF-EVL-SAME: ptr captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*]]:
->>>>>>> c06d0ff
+; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
 ; IF-EVL-NEXT:    [[A2:%.*]] = ptrtoint ptr [[A]] to i64
 ; IF-EVL-NEXT:    [[B1:%.*]] = ptrtoint ptr [[B]] to i64
 ; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
@@ -1351,13 +1276,8 @@ finish.loopexit:
 
 define void @test_fmul(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL-LABEL: define void @test_fmul(
-<<<<<<< HEAD
-; IF-EVL-SAME: ptr nocapture [[A:%.*]], ptr nocapture readonly [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
-=======
 ; IF-EVL-SAME: ptr captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*]]:
->>>>>>> c06d0ff
+; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
 ; IF-EVL-NEXT:    [[A2:%.*]] = ptrtoint ptr [[A]] to i64
 ; IF-EVL-NEXT:    [[B1:%.*]] = ptrtoint ptr [[B]] to i64
 ; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
@@ -1441,13 +1361,8 @@ finish.loopexit:
 
 define void @test_fdiv(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL-LABEL: define void @test_fdiv(
-<<<<<<< HEAD
-; IF-EVL-SAME: ptr nocapture [[A:%.*]], ptr nocapture readonly [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
-=======
 ; IF-EVL-SAME: ptr captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*]]:
->>>>>>> c06d0ff
+; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
 ; IF-EVL-NEXT:    [[A2:%.*]] = ptrtoint ptr [[A]] to i64
 ; IF-EVL-NEXT:    [[B1:%.*]] = ptrtoint ptr [[B]] to i64
 ; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
@@ -1584,13 +1499,8 @@ finish.loopexit:
 
 define void @test_fneg(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL-LABEL: define void @test_fneg(
-<<<<<<< HEAD
-; IF-EVL-SAME: ptr nocapture [[A:%.*]], ptr nocapture readonly [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
-=======
 ; IF-EVL-SAME: ptr captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]]) #[[ATTR0]] {
-; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*]]:
->>>>>>> c06d0ff
+; IF-EVL-NEXT:  [[LOOP_PREHEADER:.*:]]
 ; IF-EVL-NEXT:    [[A2:%.*]] = ptrtoint ptr [[A]] to i64
 ; IF-EVL-NEXT:    [[B1:%.*]] = ptrtoint ptr [[B]] to i64
 ; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]

@@ -9,7 +9,7 @@
 define i32 @recurrence_1(ptr nocapture readonly %a, ptr nocapture %b, i32 %n) {
 ;
 ; CHECK-LABEL: define i32 @recurrence_1(
-; CHECK-SAME: ptr nocapture readonly [[A:%.*]], ptr nocapture [[B:%.*]], i32 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
+; CHECK-SAME: ptr readonly captures(none) [[A:%.*]], ptr captures(none) [[B:%.*]], i32 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
 ; CHECK-NEXT:  [[ENTRY:.*:]]
 ; CHECK-NEXT:    [[A2:%.*]] = ptrtoint ptr [[A]] to i64
 ; CHECK-NEXT:    [[B1:%.*]] = ptrtoint ptr [[B]] to i64
@@ -112,7 +112,7 @@ for.exit:
 define i32 @recurrence_2(ptr nocapture readonly %a, i32 %n) {
 ;
 ; CHECK-LABEL: define i32 @recurrence_2(
-; CHECK-SAME: ptr nocapture readonly [[A:%.*]], i32 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-SAME: ptr readonly captures(none) [[A:%.*]], i32 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-NEXT:  [[ENTRY:.*]]:
 ; CHECK-NEXT:    [[CMP27:%.*]] = icmp sgt i32 [[N]], 0
 ; CHECK-NEXT:    br i1 [[CMP27]], label %[[FOR_PREHEADER:.*]], label %[[FOR_COND_CLEANUP:.*]]
@@ -218,7 +218,7 @@ define void @recurrence_3(ptr nocapture readonly %a, ptr nocapture %b, i32 %n, f
 ; Check also that the casts were not moved needlessly.
 ;
 ; CHECK-LABEL: define void @recurrence_3(
-; CHECK-SAME: ptr nocapture readonly [[A:%.*]], ptr nocapture [[B:%.*]], i32 [[N:%.*]], float [[F:%.*]], i16 [[P:%.*]]) #[[ATTR0]] {
+; CHECK-SAME: ptr readonly captures(none) [[A:%.*]], ptr captures(none) [[B:%.*]], i32 [[N:%.*]], float [[F:%.*]], i16 [[P:%.*]]) #[[ATTR0]] {
 ; CHECK-NEXT:  [[ENTRY:.*:]]
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i16, ptr [[A]], align 2
 ; CHECK-NEXT:    [[CONV:%.*]] = sitofp i16 [[TMP0]] to double

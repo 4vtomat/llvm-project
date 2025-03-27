@@ -16,7 +16,7 @@ target triple = "riscv64-unknown-linux-gnu"
 ; Function Attrs: mustprogress nofree norecurse nosync nounwind memory(argmem: readwrite) uwtable vscale_range(2,1024)
 define dso_local void @_Z17BZ2_hbAssignCodesPiPhiii(ptr nocapture noundef writeonly %code, ptr nocapture noundef readonly %length, i32 noundef signext %minLen, i32 noundef signext %maxLen, i32 noundef signext %alphaSize) local_unnamed_addr #0 {
 ; P670-LABEL: define dso_local void @_Z17BZ2_hbAssignCodesPiPhiii(
-; P670-SAME: ptr nocapture noundef writeonly [[CODE:%.*]], ptr nocapture noundef readonly [[LENGTH:%.*]], i32 noundef signext [[MINLEN:%.*]], i32 noundef signext [[MAXLEN:%.*]], i32 noundef signext [[ALPHASIZE:%.*]]) local_unnamed_addr #[[ATTR0:[0-9]+]] {
+; P670-SAME: ptr noundef writeonly captures(none) [[CODE:%.*]], ptr noundef readonly captures(none) [[LENGTH:%.*]], i32 noundef signext [[MINLEN:%.*]], i32 noundef signext [[MAXLEN:%.*]], i32 noundef signext [[ALPHASIZE:%.*]]) local_unnamed_addr #[[ATTR0:[0-9]+]] {
 ; P670-NEXT:  [[ENTRY:.*:]]
 ; P670-NEXT:    [[CMP_NOT21:%.*]] = icmp sle i32 [[MINLEN]], [[MAXLEN]]
 ; P670-NEXT:    [[CMP218:%.*]] = icmp sgt i32 [[ALPHASIZE]], 0
@@ -59,7 +59,7 @@ define dso_local void @_Z17BZ2_hbAssignCodesPiPhiii(ptr nocapture noundef writeo
 ; P670-NEXT:    ret void
 ;
 ; P470-LABEL: define dso_local void @_Z17BZ2_hbAssignCodesPiPhiii(
-; P470-SAME: ptr nocapture noundef writeonly [[CODE:%.*]], ptr nocapture noundef readonly [[LENGTH:%.*]], i32 noundef signext [[MINLEN:%.*]], i32 noundef signext [[MAXLEN:%.*]], i32 noundef signext [[ALPHASIZE:%.*]]) local_unnamed_addr #[[ATTR0:[0-9]+]] {
+; P470-SAME: ptr noundef writeonly captures(none) [[CODE:%.*]], ptr noundef readonly captures(none) [[LENGTH:%.*]], i32 noundef signext [[MINLEN:%.*]], i32 noundef signext [[MAXLEN:%.*]], i32 noundef signext [[ALPHASIZE:%.*]]) local_unnamed_addr #[[ATTR0:[0-9]+]] {
 ; P470-NEXT:  [[ENTRY:.*:]]
 ; P470-NEXT:    [[CMP_NOT21:%.*]] = icmp sle i32 [[MINLEN]], [[MAXLEN]]
 ; P470-NEXT:    [[CMP218:%.*]] = icmp sgt i32 [[ALPHASIZE]], 0
@@ -102,7 +102,7 @@ define dso_local void @_Z17BZ2_hbAssignCodesPiPhiii(ptr nocapture noundef writeo
 ; P470-NEXT:    ret void
 ;
 ; X280-LABEL: define dso_local void @_Z17BZ2_hbAssignCodesPiPhiii(
-; X280-SAME: ptr nocapture noundef writeonly [[CODE:%.*]], ptr nocapture noundef readonly [[LENGTH:%.*]], i32 noundef signext [[MINLEN:%.*]], i32 noundef signext [[MAXLEN:%.*]], i32 noundef signext [[ALPHASIZE:%.*]]) local_unnamed_addr #[[ATTR0:[0-9]+]] {
+; X280-SAME: ptr noundef writeonly captures(none) [[CODE:%.*]], ptr noundef readonly captures(none) [[LENGTH:%.*]], i32 noundef signext [[MINLEN:%.*]], i32 noundef signext [[MAXLEN:%.*]], i32 noundef signext [[ALPHASIZE:%.*]]) local_unnamed_addr #[[ATTR0:[0-9]+]] {
 ; X280-NEXT:  [[ENTRY:.*:]]
 ; X280-NEXT:    [[CMP_NOT21:%.*]] = icmp sle i32 [[MINLEN]], [[MAXLEN]]
 ; X280-NEXT:    [[CMP218:%.*]] = icmp sgt i32 [[ALPHASIZE]], 0

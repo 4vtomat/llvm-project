@@ -6,7 +6,7 @@ target triple = "riscv64"
 
 define i64 @select_icmp_const_1(ptr nocapture readonly %a, i64 %n) #0 {
 ; SCALABLE-LABEL: define i64 @select_icmp_const_1
-; SCALABLE-SAME: (ptr nocapture readonly [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
+; SCALABLE-SAME: (ptr readonly captures(none) [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
 ; SCALABLE-NEXT:  entry:
 ; SCALABLE-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; SCALABLE-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
@@ -65,7 +65,7 @@ define i64 @select_icmp_const_1(ptr nocapture readonly %a, i64 %n) #0 {
 ; SCALABLE-NEXT:    ret i64 [[COND_LCSSA]]
 ;
 ; VP-SCALABLE-LABEL: define i64 @select_icmp_const_1
-; VP-SCALABLE-SAME: (ptr nocapture readonly [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
+; VP-SCALABLE-SAME: (ptr readonly captures(none) [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
 ; VP-SCALABLE-NEXT:  entry:
 ; VP-SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP-SCALABLE-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
@@ -147,7 +147,7 @@ exit:                                             ; preds = %for.body
 
 define i64 @select_icmp_const_2(ptr nocapture readonly %a, i64 %n) #0 {
 ; SCALABLE-LABEL: define i64 @select_icmp_const_2
-; SCALABLE-SAME: (ptr nocapture readonly [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; SCALABLE-SAME: (ptr readonly captures(none) [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; SCALABLE-NEXT:  entry:
 ; SCALABLE-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; SCALABLE-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
@@ -206,7 +206,7 @@ define i64 @select_icmp_const_2(ptr nocapture readonly %a, i64 %n) #0 {
 ; SCALABLE-NEXT:    ret i64 [[COND_LCSSA]]
 ;
 ; VP-SCALABLE-LABEL: define i64 @select_icmp_const_2
-; VP-SCALABLE-SAME: (ptr nocapture readonly [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; VP-SCALABLE-SAME: (ptr readonly captures(none) [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; VP-SCALABLE-NEXT:  entry:
 ; VP-SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP-SCALABLE-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
@@ -288,7 +288,7 @@ exit:                                             ; preds = %for.body
 
 define i64 @select_icmp_const_3(ptr nocapture readonly %a, i64 %ii, i64 %n) #0 {
 ; SCALABLE-LABEL: define i64 @select_icmp_const_3
-; SCALABLE-SAME: (ptr nocapture readonly [[A:%.*]], i64 [[II:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; SCALABLE-SAME: (ptr readonly captures(none) [[A:%.*]], i64 [[II:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; SCALABLE-NEXT:  entry:
 ; SCALABLE-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; SCALABLE-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
@@ -347,7 +347,7 @@ define i64 @select_icmp_const_3(ptr nocapture readonly %a, i64 %ii, i64 %n) #0 {
 ; SCALABLE-NEXT:    ret i64 [[COND_LCSSA]]
 ;
 ; VP-SCALABLE-LABEL: define i64 @select_icmp_const_3
-; VP-SCALABLE-SAME: (ptr nocapture readonly [[A:%.*]], i64 [[II:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; VP-SCALABLE-SAME: (ptr readonly captures(none) [[A:%.*]], i64 [[II:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; VP-SCALABLE-NEXT:  entry:
 ; VP-SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP-SCALABLE-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
@@ -429,7 +429,7 @@ exit:                                             ; preds = %for.body
 
 define i64 @select_fcmp_const_fast(ptr nocapture readonly %a, i64 %n) #0 {
 ; SCALABLE-LABEL: define i64 @select_fcmp_const_fast
-; SCALABLE-SAME: (ptr nocapture readonly [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; SCALABLE-SAME: (ptr readonly captures(none) [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; SCALABLE-NEXT:  entry:
 ; SCALABLE-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; SCALABLE-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
@@ -488,7 +488,7 @@ define i64 @select_fcmp_const_fast(ptr nocapture readonly %a, i64 %n) #0 {
 ; SCALABLE-NEXT:    ret i64 [[COND_LCSSA]]
 ;
 ; VP-SCALABLE-LABEL: define i64 @select_fcmp_const_fast
-; VP-SCALABLE-SAME: (ptr nocapture readonly [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; VP-SCALABLE-SAME: (ptr readonly captures(none) [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; VP-SCALABLE-NEXT:  entry:
 ; VP-SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP-SCALABLE-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
@@ -570,7 +570,7 @@ exit:                                             ; preds = %for.body
 
 define i64 @select_fcmp_const(ptr nocapture readonly %a, i64 %n) #0 {
 ; SCALABLE-LABEL: define i64 @select_fcmp_const
-; SCALABLE-SAME: (ptr nocapture readonly [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; SCALABLE-SAME: (ptr readonly captures(none) [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; SCALABLE-NEXT:  entry:
 ; SCALABLE-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; SCALABLE-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
@@ -629,7 +629,7 @@ define i64 @select_fcmp_const(ptr nocapture readonly %a, i64 %n) #0 {
 ; SCALABLE-NEXT:    ret i64 [[COND_LCSSA]]
 ;
 ; VP-SCALABLE-LABEL: define i64 @select_fcmp_const
-; VP-SCALABLE-SAME: (ptr nocapture readonly [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; VP-SCALABLE-SAME: (ptr readonly captures(none) [[A:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; VP-SCALABLE-NEXT:  entry:
 ; VP-SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP-SCALABLE-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
@@ -711,7 +711,7 @@ exit:                                             ; preds = %for.body
 
 define i64 @select_icmp(ptr nocapture readonly %a, ptr nocapture readonly %b, i64 %ii, i64 %n) #0 {
 ; SCALABLE-LABEL: define i64 @select_icmp
-; SCALABLE-SAME: (ptr nocapture readonly [[A:%.*]], ptr nocapture readonly [[B:%.*]], i64 [[II:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; SCALABLE-SAME: (ptr readonly captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]], i64 [[II:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; SCALABLE-NEXT:  entry:
 ; SCALABLE-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; SCALABLE-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
@@ -775,7 +775,7 @@ define i64 @select_icmp(ptr nocapture readonly %a, ptr nocapture readonly %b, i6
 ; SCALABLE-NEXT:    ret i64 [[COND_LCSSA]]
 ;
 ; VP-SCALABLE-LABEL: define i64 @select_icmp
-; VP-SCALABLE-SAME: (ptr nocapture readonly [[A:%.*]], ptr nocapture readonly [[B:%.*]], i64 [[II:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; VP-SCALABLE-SAME: (ptr readonly captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]], i64 [[II:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; VP-SCALABLE-NEXT:  entry:
 ; VP-SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP-SCALABLE-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
@@ -864,7 +864,7 @@ exit:                                             ; preds = %for.body
 
 define i64 @select_fcmp(ptr nocapture readonly %a, ptr nocapture readonly %b, i64 %ii, i64 %n) #0 {
 ; SCALABLE-LABEL: define i64 @select_fcmp
-; SCALABLE-SAME: (ptr nocapture readonly [[A:%.*]], ptr nocapture readonly [[B:%.*]], i64 [[II:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; SCALABLE-SAME: (ptr readonly captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]], i64 [[II:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; SCALABLE-NEXT:  entry:
 ; SCALABLE-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; SCALABLE-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
@@ -928,7 +928,7 @@ define i64 @select_fcmp(ptr nocapture readonly %a, ptr nocapture readonly %b, i6
 ; SCALABLE-NEXT:    ret i64 [[COND_LCSSA]]
 ;
 ; VP-SCALABLE-LABEL: define i64 @select_fcmp
-; VP-SCALABLE-SAME: (ptr nocapture readonly [[A:%.*]], ptr nocapture readonly [[B:%.*]], i64 [[II:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; VP-SCALABLE-SAME: (ptr readonly captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]], i64 [[II:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; VP-SCALABLE-NEXT:  entry:
 ; VP-SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP-SCALABLE-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
@@ -1016,7 +1016,7 @@ exit:                                             ; preds = %for.body
 
 define i64 @select_icmp_min_iv_start_value(ptr nocapture readonly %a, ptr nocapture readonly %b, i64 %ii, i64 %n) #0 {
 ; SCALABLE-LABEL: define i64 @select_icmp_min_iv_start_value
-; SCALABLE-SAME: (ptr nocapture readonly [[A:%.*]], ptr nocapture readonly [[B:%.*]], i64 [[II:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; SCALABLE-SAME: (ptr readonly captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]], i64 [[II:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; SCALABLE-NEXT:  entry:
 ; SCALABLE-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; SCALABLE-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
@@ -1084,7 +1084,7 @@ define i64 @select_icmp_min_iv_start_value(ptr nocapture readonly %a, ptr nocapt
 ; SCALABLE-NEXT:    ret i64 [[COND_LCSSA]]
 ;
 ; VP-SCALABLE-LABEL: define i64 @select_icmp_min_iv_start_value
-; VP-SCALABLE-SAME: (ptr nocapture readonly [[A:%.*]], ptr nocapture readonly [[B:%.*]], i64 [[II:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; VP-SCALABLE-SAME: (ptr readonly captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]], i64 [[II:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; VP-SCALABLE-NEXT:  entry:
 ; VP-SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP-SCALABLE-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]

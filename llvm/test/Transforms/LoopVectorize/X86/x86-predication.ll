@@ -227,14 +227,8 @@ define i32 @scalarize_and_sink_gather(ptr %a, i1 %c, i32 %x, i64 %n) {
 ; CHECK-NEXT:    [[TMP6:%.*]] = insertelement <2 x i32> poison, i32 [[TMP5]], i32 0
 ; CHECK-NEXT:    br label [[PRED_UDIV_CONTINUE]]
 ; CHECK:       pred.udiv.continue:
-<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP7:%.*]] = phi <2 x i32> [ poison, [[VECTOR_BODY]] ], [ [[TMP6]], [[PRED_UDIV_IF]] ]
-; CHECK-NEXT:    [[TMP8:%.*]] = extractelement <2 x i1> [[BROADCAST_SPLAT]], i32 1
-; CHECK-NEXT:    br i1 [[TMP8]], label [[PRED_UDIV_IF1:%.*]], label [[PRED_UDIV_CONTINUE2]]
-=======
-; CHECK-NEXT:    [[TMP8:%.*]] = phi <2 x i32> [ poison, [[VECTOR_BODY]] ], [ [[TMP6]], [[PRED_UDIV_IF]] ]
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[PRED_UDIV_IF1:%.*]], label [[PRED_UDIV_CONTINUE2]]
->>>>>>> c06d0ff
 ; CHECK:       pred.udiv.if1:
 ; CHECK-NEXT:    [[TMP9:%.*]] = extractelement <2 x i64> [[TMP0]], i32 1
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP9]]
@@ -305,14 +299,8 @@ define i32 @scalarize_and_sink_gather(ptr %a, i1 %c, i32 %x, i64 %n) {
 ; SINK-GATHER-NEXT:    [[TMP6:%.*]] = insertelement <8 x i32> poison, i32 [[TMP5]], i32 0
 ; SINK-GATHER-NEXT:    br label [[PRED_UDIV_CONTINUE]]
 ; SINK-GATHER:       pred.udiv.continue:
-<<<<<<< HEAD
 ; SINK-GATHER-NEXT:    [[TMP7:%.*]] = phi <8 x i32> [ poison, [[VECTOR_BODY]] ], [ [[TMP6]], [[PRED_UDIV_IF]] ]
-; SINK-GATHER-NEXT:    [[TMP8:%.*]] = extractelement <8 x i1> [[BROADCAST_SPLAT]], i32 1
-; SINK-GATHER-NEXT:    br i1 [[TMP8]], label [[PRED_UDIV_IF1:%.*]], label [[PRED_UDIV_CONTINUE2:%.*]]
-=======
-; SINK-GATHER-NEXT:    [[TMP8:%.*]] = phi <8 x i32> [ poison, [[VECTOR_BODY]] ], [ [[TMP6]], [[PRED_UDIV_IF]] ]
 ; SINK-GATHER-NEXT:    br i1 [[TMP1]], label [[PRED_UDIV_IF1:%.*]], label [[PRED_UDIV_CONTINUE2:%.*]]
->>>>>>> c06d0ff
 ; SINK-GATHER:       pred.udiv.if1:
 ; SINK-GATHER-NEXT:    [[TMP9:%.*]] = extractelement <8 x i64> [[TMP0]], i32 1
 ; SINK-GATHER-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP9]]
@@ -321,14 +309,8 @@ define i32 @scalarize_and_sink_gather(ptr %a, i1 %c, i32 %x, i64 %n) {
 ; SINK-GATHER-NEXT:    [[TMP13:%.*]] = insertelement <8 x i32> [[TMP7]], i32 [[TMP12]], i32 1
 ; SINK-GATHER-NEXT:    br label [[PRED_UDIV_CONTINUE2]]
 ; SINK-GATHER:       pred.udiv.continue2:
-<<<<<<< HEAD
 ; SINK-GATHER-NEXT:    [[TMP14:%.*]] = phi <8 x i32> [ [[TMP7]], [[PRED_UDIV_CONTINUE]] ], [ [[TMP13]], [[PRED_UDIV_IF1]] ]
-; SINK-GATHER-NEXT:    [[TMP15:%.*]] = extractelement <8 x i1> [[BROADCAST_SPLAT]], i32 2
-; SINK-GATHER-NEXT:    br i1 [[TMP15]], label [[PRED_UDIV_IF3:%.*]], label [[PRED_UDIV_CONTINUE4:%.*]]
-=======
-; SINK-GATHER-NEXT:    [[TMP16:%.*]] = phi <8 x i32> [ [[TMP8]], [[PRED_UDIV_CONTINUE]] ], [ [[TMP14]], [[PRED_UDIV_IF1]] ]
 ; SINK-GATHER-NEXT:    br i1 [[TMP1]], label [[PRED_UDIV_IF3:%.*]], label [[PRED_UDIV_CONTINUE4:%.*]]
->>>>>>> c06d0ff
 ; SINK-GATHER:       pred.udiv.if3:
 ; SINK-GATHER-NEXT:    [[TMP16:%.*]] = extractelement <8 x i64> [[TMP0]], i32 2
 ; SINK-GATHER-NEXT:    [[TMP17:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP16]]
@@ -337,14 +319,8 @@ define i32 @scalarize_and_sink_gather(ptr %a, i1 %c, i32 %x, i64 %n) {
 ; SINK-GATHER-NEXT:    [[TMP20:%.*]] = insertelement <8 x i32> [[TMP14]], i32 [[TMP19]], i32 2
 ; SINK-GATHER-NEXT:    br label [[PRED_UDIV_CONTINUE4]]
 ; SINK-GATHER:       pred.udiv.continue4:
-<<<<<<< HEAD
 ; SINK-GATHER-NEXT:    [[TMP21:%.*]] = phi <8 x i32> [ [[TMP14]], [[PRED_UDIV_CONTINUE2]] ], [ [[TMP20]], [[PRED_UDIV_IF3]] ]
-; SINK-GATHER-NEXT:    [[TMP22:%.*]] = extractelement <8 x i1> [[BROADCAST_SPLAT]], i32 3
-; SINK-GATHER-NEXT:    br i1 [[TMP22]], label [[PRED_UDIV_IF5:%.*]], label [[PRED_UDIV_CONTINUE6:%.*]]
-=======
-; SINK-GATHER-NEXT:    [[TMP24:%.*]] = phi <8 x i32> [ [[TMP16]], [[PRED_UDIV_CONTINUE2]] ], [ [[TMP22]], [[PRED_UDIV_IF3]] ]
 ; SINK-GATHER-NEXT:    br i1 [[TMP1]], label [[PRED_UDIV_IF5:%.*]], label [[PRED_UDIV_CONTINUE6:%.*]]
->>>>>>> c06d0ff
 ; SINK-GATHER:       pred.udiv.if5:
 ; SINK-GATHER-NEXT:    [[TMP23:%.*]] = extractelement <8 x i64> [[TMP0]], i32 3
 ; SINK-GATHER-NEXT:    [[TMP24:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP23]]
@@ -353,14 +329,8 @@ define i32 @scalarize_and_sink_gather(ptr %a, i1 %c, i32 %x, i64 %n) {
 ; SINK-GATHER-NEXT:    [[TMP27:%.*]] = insertelement <8 x i32> [[TMP21]], i32 [[TMP26]], i32 3
 ; SINK-GATHER-NEXT:    br label [[PRED_UDIV_CONTINUE6]]
 ; SINK-GATHER:       pred.udiv.continue6:
-<<<<<<< HEAD
 ; SINK-GATHER-NEXT:    [[TMP28:%.*]] = phi <8 x i32> [ [[TMP21]], [[PRED_UDIV_CONTINUE4]] ], [ [[TMP27]], [[PRED_UDIV_IF5]] ]
-; SINK-GATHER-NEXT:    [[TMP29:%.*]] = extractelement <8 x i1> [[BROADCAST_SPLAT]], i32 4
-; SINK-GATHER-NEXT:    br i1 [[TMP29]], label [[PRED_UDIV_IF7:%.*]], label [[PRED_UDIV_CONTINUE8:%.*]]
-=======
-; SINK-GATHER-NEXT:    [[TMP32:%.*]] = phi <8 x i32> [ [[TMP24]], [[PRED_UDIV_CONTINUE4]] ], [ [[TMP30]], [[PRED_UDIV_IF5]] ]
 ; SINK-GATHER-NEXT:    br i1 [[TMP1]], label [[PRED_UDIV_IF7:%.*]], label [[PRED_UDIV_CONTINUE8:%.*]]
->>>>>>> c06d0ff
 ; SINK-GATHER:       pred.udiv.if7:
 ; SINK-GATHER-NEXT:    [[TMP30:%.*]] = extractelement <8 x i64> [[TMP0]], i32 4
 ; SINK-GATHER-NEXT:    [[TMP31:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP30]]
@@ -369,14 +339,8 @@ define i32 @scalarize_and_sink_gather(ptr %a, i1 %c, i32 %x, i64 %n) {
 ; SINK-GATHER-NEXT:    [[TMP34:%.*]] = insertelement <8 x i32> [[TMP28]], i32 [[TMP33]], i32 4
 ; SINK-GATHER-NEXT:    br label [[PRED_UDIV_CONTINUE8]]
 ; SINK-GATHER:       pred.udiv.continue8:
-<<<<<<< HEAD
 ; SINK-GATHER-NEXT:    [[TMP35:%.*]] = phi <8 x i32> [ [[TMP28]], [[PRED_UDIV_CONTINUE6]] ], [ [[TMP34]], [[PRED_UDIV_IF7]] ]
-; SINK-GATHER-NEXT:    [[TMP36:%.*]] = extractelement <8 x i1> [[BROADCAST_SPLAT]], i32 5
-; SINK-GATHER-NEXT:    br i1 [[TMP36]], label [[PRED_UDIV_IF9:%.*]], label [[PRED_UDIV_CONTINUE10:%.*]]
-=======
-; SINK-GATHER-NEXT:    [[TMP40:%.*]] = phi <8 x i32> [ [[TMP32]], [[PRED_UDIV_CONTINUE6]] ], [ [[TMP38]], [[PRED_UDIV_IF7]] ]
 ; SINK-GATHER-NEXT:    br i1 [[TMP1]], label [[PRED_UDIV_IF9:%.*]], label [[PRED_UDIV_CONTINUE10:%.*]]
->>>>>>> c06d0ff
 ; SINK-GATHER:       pred.udiv.if9:
 ; SINK-GATHER-NEXT:    [[TMP37:%.*]] = extractelement <8 x i64> [[TMP0]], i32 5
 ; SINK-GATHER-NEXT:    [[TMP38:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP37]]
@@ -385,14 +349,8 @@ define i32 @scalarize_and_sink_gather(ptr %a, i1 %c, i32 %x, i64 %n) {
 ; SINK-GATHER-NEXT:    [[TMP41:%.*]] = insertelement <8 x i32> [[TMP35]], i32 [[TMP40]], i32 5
 ; SINK-GATHER-NEXT:    br label [[PRED_UDIV_CONTINUE10]]
 ; SINK-GATHER:       pred.udiv.continue10:
-<<<<<<< HEAD
 ; SINK-GATHER-NEXT:    [[TMP42:%.*]] = phi <8 x i32> [ [[TMP35]], [[PRED_UDIV_CONTINUE8]] ], [ [[TMP41]], [[PRED_UDIV_IF9]] ]
-; SINK-GATHER-NEXT:    [[TMP43:%.*]] = extractelement <8 x i1> [[BROADCAST_SPLAT]], i32 6
-; SINK-GATHER-NEXT:    br i1 [[TMP43]], label [[PRED_UDIV_IF11:%.*]], label [[PRED_UDIV_CONTINUE12:%.*]]
-=======
-; SINK-GATHER-NEXT:    [[TMP48:%.*]] = phi <8 x i32> [ [[TMP40]], [[PRED_UDIV_CONTINUE8]] ], [ [[TMP46]], [[PRED_UDIV_IF9]] ]
 ; SINK-GATHER-NEXT:    br i1 [[TMP1]], label [[PRED_UDIV_IF11:%.*]], label [[PRED_UDIV_CONTINUE12:%.*]]
->>>>>>> c06d0ff
 ; SINK-GATHER:       pred.udiv.if11:
 ; SINK-GATHER-NEXT:    [[TMP44:%.*]] = extractelement <8 x i64> [[TMP0]], i32 6
 ; SINK-GATHER-NEXT:    [[TMP45:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP44]]
@@ -401,14 +359,8 @@ define i32 @scalarize_and_sink_gather(ptr %a, i1 %c, i32 %x, i64 %n) {
 ; SINK-GATHER-NEXT:    [[TMP48:%.*]] = insertelement <8 x i32> [[TMP42]], i32 [[TMP47]], i32 6
 ; SINK-GATHER-NEXT:    br label [[PRED_UDIV_CONTINUE12]]
 ; SINK-GATHER:       pred.udiv.continue12:
-<<<<<<< HEAD
 ; SINK-GATHER-NEXT:    [[TMP49:%.*]] = phi <8 x i32> [ [[TMP42]], [[PRED_UDIV_CONTINUE10]] ], [ [[TMP48]], [[PRED_UDIV_IF11]] ]
-; SINK-GATHER-NEXT:    [[TMP50:%.*]] = extractelement <8 x i1> [[BROADCAST_SPLAT]], i32 7
-; SINK-GATHER-NEXT:    br i1 [[TMP50]], label [[PRED_UDIV_IF13:%.*]], label [[PRED_UDIV_CONTINUE14]]
-=======
-; SINK-GATHER-NEXT:    [[TMP56:%.*]] = phi <8 x i32> [ [[TMP48]], [[PRED_UDIV_CONTINUE10]] ], [ [[TMP54]], [[PRED_UDIV_IF11]] ]
 ; SINK-GATHER-NEXT:    br i1 [[TMP1]], label [[PRED_UDIV_IF13:%.*]], label [[PRED_UDIV_CONTINUE14]]
->>>>>>> c06d0ff
 ; SINK-GATHER:       pred.udiv.if13:
 ; SINK-GATHER-NEXT:    [[TMP51:%.*]] = extractelement <8 x i64> [[TMP0]], i32 7
 ; SINK-GATHER-NEXT:    [[TMP52:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP51]]

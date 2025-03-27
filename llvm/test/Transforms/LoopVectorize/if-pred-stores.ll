@@ -332,33 +332,15 @@ define void @bug18724(i1 %cond, ptr %ptr, i1 %cond.2, i64 %v.1, i32 %v.2) {
 ; VEC-NEXT:    [[TMP7:%.*]] = getelementptr inbounds [768 x i32], ptr [[PTR:%.*]], i64 0, i64 [[TMP6]]
 ; VEC-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i32, ptr [[TMP7]], i32 0
 ; VEC-NEXT:    [[WIDE_LOAD:%.*]] = load <2 x i32>, ptr [[TMP8]], align 4
-<<<<<<< HEAD
-; VEC-NEXT:    [[TMP10:%.*]] = extractelement <2 x i1> [[BROADCAST_SPLAT]], i32 0
-; VEC-NEXT:    br i1 [[TMP10]], label [[PRED_STORE_IF:%.*]], label [[PRED_STORE_CONTINUE:%.*]]
+; VEC-NEXT:    br i1 [[COND_2]], label [[PRED_STORE_IF:%.*]], label [[PRED_STORE_CONTINUE2]]
 ; VEC:       pred.store.if:
 ; VEC-NEXT:    [[TMP11:%.*]] = getelementptr inbounds [768 x i32], ptr [[PTR]], i64 0, i64 [[TMP6]]
 ; VEC-NEXT:    [[TMP12:%.*]] = extractelement <2 x i32> [[WIDE_LOAD]], i32 0
 ; VEC-NEXT:    store i32 [[TMP12]], ptr [[TMP11]], align 4
-; VEC-NEXT:    br label [[PRED_STORE_CONTINUE]]
-; VEC:       pred.store.continue:
-; VEC-NEXT:    [[TMP13:%.*]] = extractelement <2 x i1> [[BROADCAST_SPLAT]], i32 1
-; VEC-NEXT:    br i1 [[TMP13]], label [[PRED_STORE_IF1:%.*]], label [[PRED_STORE_CONTINUE2]]
-; VEC:       pred.store.if1:
-; VEC-NEXT:    [[TMP14:%.*]] = add i64 [[OFFSET_IDX]], 1
-; VEC-NEXT:    [[TMP15:%.*]] = getelementptr inbounds [768 x i32], ptr [[PTR]], i64 0, i64 [[TMP14]]
-; VEC-NEXT:    [[TMP16:%.*]] = extractelement <2 x i32> [[WIDE_LOAD]], i32 1
-; VEC-NEXT:    store i32 [[TMP16]], ptr [[TMP15]], align 4
-=======
-; VEC-NEXT:    br i1 [[COND_2]], label [[PRED_STORE_IF:%.*]], label [[PRED_STORE_CONTINUE2]]
-; VEC:       pred.store.if:
-; VEC-NEXT:    [[TMP10:%.*]] = getelementptr inbounds [768 x i32], ptr [[PTR]], i64 0, i64 [[TMP6]]
-; VEC-NEXT:    [[TMP11:%.*]] = extractelement <2 x i32> [[WIDE_LOAD]], i32 0
-; VEC-NEXT:    store i32 [[TMP11]], ptr [[TMP10]], align 4
 ; VEC-NEXT:    [[TMP13:%.*]] = add i64 [[OFFSET_IDX]], 1
 ; VEC-NEXT:    [[TMP14:%.*]] = getelementptr inbounds [768 x i32], ptr [[PTR]], i64 0, i64 [[TMP13]]
 ; VEC-NEXT:    [[TMP15:%.*]] = extractelement <2 x i32> [[WIDE_LOAD]], i32 1
 ; VEC-NEXT:    store i32 [[TMP15]], ptr [[TMP14]], align 4
->>>>>>> c06d0ff
 ; VEC-NEXT:    br label [[PRED_STORE_CONTINUE2]]
 ; VEC:       pred.store.continue2:
 ; VEC-NEXT:    [[TMP21:%.*]] = add <2 x i32> [[VEC_PHI]], splat (i32 1)

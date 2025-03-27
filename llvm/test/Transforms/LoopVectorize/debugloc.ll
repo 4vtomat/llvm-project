@@ -8,7 +8,7 @@ target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f3
 
 define i32 @f(ptr nocapture %a, ptr %b, i32 %size) !dbg !4 {
 ; CHECK-LABEL: define i32 @f(
-; CHECK-SAME: ptr nocapture [[A:%.*]], ptr [[B:%.*]], i32 [[SIZE:%.*]]) !dbg [[DBG5:![0-9]+]] {
+; CHECK-SAME: ptr captures(none) [[A:%.*]], ptr [[B:%.*]], i32 [[SIZE:%.*]]) !dbg [[DBG5:![0-9]+]] {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:      #dbg_value(ptr [[A]], [[META13:![0-9]+]], !DIExpression(), [[META18:![0-9]+]])
 ; CHECK-NEXT:      #dbg_value(i32 [[SIZE]], [[META14:![0-9]+]], !DIExpression(), [[META18]])
@@ -265,7 +265,7 @@ exit:
 
 define void @test_misc(ptr nocapture %a, ptr noalias %b, i64 %size) !dbg !35 {
 ; CHECK-LABEL: define void @test_misc(
-; CHECK-SAME: ptr nocapture [[A:%.*]], ptr noalias [[B:%.*]], i64 [[SIZE:%.*]]) !dbg [[DBG38:![0-9]+]] {
+; CHECK-SAME: ptr captures(none) [[A:%.*]], ptr noalias [[B:%.*]], i64 [[SIZE:%.*]]) !dbg [[DBG38:![0-9]+]] {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[SIZE]], 2
 ; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]

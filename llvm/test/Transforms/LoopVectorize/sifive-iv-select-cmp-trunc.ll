@@ -5,7 +5,7 @@
 
 define i32 @select_trunc_iv_icmp_signed_guard(ptr nocapture readonly %a, ptr nocapture readonly %b, i32 %ii, i32 %n) {
 ; CHECK-VF4IC1-LABEL: define i32 @select_trunc_iv_icmp_signed_guard
-; CHECK-VF4IC1-SAME: (ptr nocapture readonly [[A:%.*]], ptr nocapture readonly [[B:%.*]], i32 [[II:%.*]], i32 [[N:%.*]]) {
+; CHECK-VF4IC1-SAME: (ptr readonly captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]], i32 [[II:%.*]], i32 [[N:%.*]]) {
 ; CHECK-VF4IC1-NEXT:  entry:
 ; CHECK-VF4IC1-NEXT:    [[CMP9:%.*]] = icmp sgt i32 [[N]], 0
 ; CHECK-VF4IC1-NEXT:    br i1 [[CMP9]], label [[FOR_BODY_PREHEADER:%.*]], label [[FOR_COND_CLEANUP:%.*]]
@@ -65,7 +65,7 @@ define i32 @select_trunc_iv_icmp_signed_guard(ptr nocapture readonly %a, ptr noc
 ; CHECK-VF4IC1-NEXT:    ret i32 [[IDX_0_LCSSA]]
 ;
 ; CHECK-VF4IC4-LABEL: define i32 @select_trunc_iv_icmp_signed_guard
-; CHECK-VF4IC4-SAME: (ptr nocapture readonly [[A:%.*]], ptr nocapture readonly [[B:%.*]], i32 [[II:%.*]], i32 [[N:%.*]]) {
+; CHECK-VF4IC4-SAME: (ptr readonly captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]], i32 [[II:%.*]], i32 [[N:%.*]]) {
 ; CHECK-VF4IC4-NEXT:  entry:
 ; CHECK-VF4IC4-NEXT:    [[CMP9:%.*]] = icmp sgt i32 [[N]], 0
 ; CHECK-VF4IC4-NEXT:    br i1 [[CMP9]], label [[FOR_BODY_PREHEADER:%.*]], label [[FOR_COND_CLEANUP:%.*]]
@@ -152,7 +152,7 @@ define i32 @select_trunc_iv_icmp_signed_guard(ptr nocapture readonly %a, ptr noc
 ; CHECK-VF4IC4-NEXT:    ret i32 [[IDX_0_LCSSA]]
 ;
 ; CHECK-VF1IC4-LABEL: define i32 @select_trunc_iv_icmp_signed_guard
-; CHECK-VF1IC4-SAME: (ptr nocapture readonly [[A:%.*]], ptr nocapture readonly [[B:%.*]], i32 [[II:%.*]], i32 [[N:%.*]]) {
+; CHECK-VF1IC4-SAME: (ptr readonly captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]], i32 [[II:%.*]], i32 [[N:%.*]]) {
 ; CHECK-VF1IC4-NEXT:  entry:
 ; CHECK-VF1IC4-NEXT:    [[CMP9:%.*]] = icmp sgt i32 [[N]], 0
 ; CHECK-VF1IC4-NEXT:    br i1 [[CMP9]], label [[FOR_BODY_PREHEADER:%.*]], label [[FOR_COND_CLEANUP:%.*]]
@@ -1056,7 +1056,7 @@ for.cond.cleanup:                                 ; preds = %for.body, %entry
 ;
 define i32 @select_trunc_fcmp_const_tripcount(ptr nocapture readonly %a) {
 ; CHECK-VF4IC1-LABEL: define i32 @select_trunc_fcmp_const_tripcount
-; CHECK-VF4IC1-SAME: (ptr nocapture readonly [[A:%.*]]) {
+; CHECK-VF4IC1-SAME: (ptr readonly captures(none) [[A:%.*]]) {
 ; CHECK-VF4IC1-NEXT:  entry:
 ; CHECK-VF4IC1-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-VF4IC1:       vector.ph:
@@ -1100,7 +1100,7 @@ define i32 @select_trunc_fcmp_const_tripcount(ptr nocapture readonly %a) {
 ; CHECK-VF4IC1-NEXT:    ret i32 [[J_2_LCSSA]]
 ;
 ; CHECK-VF4IC4-LABEL: define i32 @select_trunc_fcmp_const_tripcount
-; CHECK-VF4IC4-SAME: (ptr nocapture readonly [[A:%.*]]) {
+; CHECK-VF4IC4-SAME: (ptr readonly captures(none) [[A:%.*]]) {
 ; CHECK-VF4IC4-NEXT:  entry:
 ; CHECK-VF4IC4-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-VF4IC4:       vector.ph:
@@ -1165,7 +1165,7 @@ define i32 @select_trunc_fcmp_const_tripcount(ptr nocapture readonly %a) {
 ; CHECK-VF4IC4-NEXT:    ret i32 [[J_2_LCSSA]]
 ;
 ; CHECK-VF1IC4-LABEL: define i32 @select_trunc_fcmp_const_tripcount
-; CHECK-VF1IC4-SAME: (ptr nocapture readonly [[A:%.*]]) {
+; CHECK-VF1IC4-SAME: (ptr readonly captures(none) [[A:%.*]]) {
 ; CHECK-VF1IC4-NEXT:  entry:
 ; CHECK-VF1IC4-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-VF1IC4:       vector.ph:
@@ -1251,7 +1251,7 @@ exit:                                            ; preds = %for.body
 
 define i32 @select_trunc_fcmp_max_valid_const_ub(ptr nocapture readonly %a) {
 ; CHECK-VF4IC1-LABEL: define i32 @select_trunc_fcmp_max_valid_const_ub
-; CHECK-VF4IC1-SAME: (ptr nocapture readonly [[A:%.*]]) {
+; CHECK-VF4IC1-SAME: (ptr readonly captures(none) [[A:%.*]]) {
 ; CHECK-VF4IC1-NEXT:  entry:
 ; CHECK-VF4IC1-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-VF4IC1:       vector.ph:
@@ -1295,7 +1295,7 @@ define i32 @select_trunc_fcmp_max_valid_const_ub(ptr nocapture readonly %a) {
 ; CHECK-VF4IC1-NEXT:    ret i32 [[J_2_LCSSA]]
 ;
 ; CHECK-VF4IC4-LABEL: define i32 @select_trunc_fcmp_max_valid_const_ub
-; CHECK-VF4IC4-SAME: (ptr nocapture readonly [[A:%.*]]) {
+; CHECK-VF4IC4-SAME: (ptr readonly captures(none) [[A:%.*]]) {
 ; CHECK-VF4IC4-NEXT:  entry:
 ; CHECK-VF4IC4-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-VF4IC4:       vector.ph:
@@ -1360,7 +1360,7 @@ define i32 @select_trunc_fcmp_max_valid_const_ub(ptr nocapture readonly %a) {
 ; CHECK-VF4IC4-NEXT:    ret i32 [[J_2_LCSSA]]
 ;
 ; CHECK-VF1IC4-LABEL: define i32 @select_trunc_fcmp_max_valid_const_ub
-; CHECK-VF1IC4-SAME: (ptr nocapture readonly [[A:%.*]]) {
+; CHECK-VF1IC4-SAME: (ptr readonly captures(none) [[A:%.*]]) {
 ; CHECK-VF1IC4-NEXT:  entry:
 ; CHECK-VF1IC4-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-VF1IC4:       vector.ph:
@@ -1448,7 +1448,7 @@ exit:                                            ; preds = %for.body
 
 define i32 @select_trunc_iv_icmp_unsigned_guard(ptr nocapture readonly %a, ptr nocapture readonly %b, i32 %ii, i32 %n) {
 ; CHECK-VF4IC1-LABEL: define i32 @select_trunc_iv_icmp_unsigned_guard
-; CHECK-VF4IC1-SAME: (ptr nocapture readonly [[A:%.*]], ptr nocapture readonly [[B:%.*]], i32 [[II:%.*]], i32 [[N:%.*]]) {
+; CHECK-VF4IC1-SAME: (ptr readonly captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]], i32 [[II:%.*]], i32 [[N:%.*]]) {
 ; CHECK-VF4IC1-NEXT:  entry:
 ; CHECK-VF4IC1-NEXT:    [[CMP9_NOT:%.*]] = icmp eq i32 [[N]], 0
 ; CHECK-VF4IC1-NEXT:    br i1 [[CMP9_NOT]], label [[FOR_COND_CLEANUP:%.*]], label [[FOR_BODY_PREHEADER:%.*]]
@@ -1476,7 +1476,7 @@ define i32 @select_trunc_iv_icmp_unsigned_guard(ptr nocapture readonly %a, ptr n
 ; CHECK-VF4IC1-NEXT:    ret i32 [[IDX_0_LCSSA]]
 ;
 ; CHECK-VF4IC4-LABEL: define i32 @select_trunc_iv_icmp_unsigned_guard
-; CHECK-VF4IC4-SAME: (ptr nocapture readonly [[A:%.*]], ptr nocapture readonly [[B:%.*]], i32 [[II:%.*]], i32 [[N:%.*]]) {
+; CHECK-VF4IC4-SAME: (ptr readonly captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]], i32 [[II:%.*]], i32 [[N:%.*]]) {
 ; CHECK-VF4IC4-NEXT:  entry:
 ; CHECK-VF4IC4-NEXT:    [[CMP9_NOT:%.*]] = icmp eq i32 [[N]], 0
 ; CHECK-VF4IC4-NEXT:    br i1 [[CMP9_NOT]], label [[FOR_COND_CLEANUP:%.*]], label [[FOR_BODY_PREHEADER:%.*]]
@@ -1504,7 +1504,7 @@ define i32 @select_trunc_iv_icmp_unsigned_guard(ptr nocapture readonly %a, ptr n
 ; CHECK-VF4IC4-NEXT:    ret i32 [[IDX_0_LCSSA]]
 ;
 ; CHECK-VF1IC4-LABEL: define i32 @select_trunc_iv_icmp_unsigned_guard
-; CHECK-VF1IC4-SAME: (ptr nocapture readonly [[A:%.*]], ptr nocapture readonly [[B:%.*]], i32 [[II:%.*]], i32 [[N:%.*]]) {
+; CHECK-VF1IC4-SAME: (ptr readonly captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]], i32 [[II:%.*]], i32 [[N:%.*]]) {
 ; CHECK-VF1IC4-NEXT:  entry:
 ; CHECK-VF1IC4-NEXT:    [[CMP9_NOT:%.*]] = icmp eq i32 [[N]], 0
 ; CHECK-VF1IC4-NEXT:    br i1 [[CMP9_NOT]], label [[FOR_COND_CLEANUP:%.*]], label [[FOR_BODY_PREHEADER:%.*]]
@@ -1561,7 +1561,7 @@ for.cond.cleanup:                                 ; preds = %for.body, %entry
 
 define i32 @select_trunc_iv_icmp_no_guard(ptr nocapture readonly %a, ptr nocapture readonly %b, i32 %ii, i32 %n) {
 ; CHECK-VF4IC1-LABEL: define i32 @select_trunc_iv_icmp_no_guard
-; CHECK-VF4IC1-SAME: (ptr nocapture readonly [[A:%.*]], ptr nocapture readonly [[B:%.*]], i32 [[II:%.*]], i32 [[N:%.*]]) {
+; CHECK-VF4IC1-SAME: (ptr readonly captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]], i32 [[II:%.*]], i32 [[N:%.*]]) {
 ; CHECK-VF4IC1-NEXT:  entry:
 ; CHECK-VF4IC1-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
 ; CHECK-VF4IC1-NEXT:    br label [[FOR_BODY:%.*]]
@@ -1583,7 +1583,7 @@ define i32 @select_trunc_iv_icmp_no_guard(ptr nocapture readonly %a, ptr nocaptu
 ; CHECK-VF4IC1-NEXT:    ret i32 [[COND_LCSSA]]
 ;
 ; CHECK-VF4IC4-LABEL: define i32 @select_trunc_iv_icmp_no_guard
-; CHECK-VF4IC4-SAME: (ptr nocapture readonly [[A:%.*]], ptr nocapture readonly [[B:%.*]], i32 [[II:%.*]], i32 [[N:%.*]]) {
+; CHECK-VF4IC4-SAME: (ptr readonly captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]], i32 [[II:%.*]], i32 [[N:%.*]]) {
 ; CHECK-VF4IC4-NEXT:  entry:
 ; CHECK-VF4IC4-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
 ; CHECK-VF4IC4-NEXT:    br label [[FOR_BODY:%.*]]
@@ -1605,7 +1605,7 @@ define i32 @select_trunc_iv_icmp_no_guard(ptr nocapture readonly %a, ptr nocaptu
 ; CHECK-VF4IC4-NEXT:    ret i32 [[COND_LCSSA]]
 ;
 ; CHECK-VF1IC4-LABEL: define i32 @select_trunc_iv_icmp_no_guard
-; CHECK-VF1IC4-SAME: (ptr nocapture readonly [[A:%.*]], ptr nocapture readonly [[B:%.*]], i32 [[II:%.*]], i32 [[N:%.*]]) {
+; CHECK-VF1IC4-SAME: (ptr readonly captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]], i32 [[II:%.*]], i32 [[N:%.*]]) {
 ; CHECK-VF1IC4-NEXT:  entry:
 ; CHECK-VF1IC4-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
 ; CHECK-VF1IC4-NEXT:    br label [[FOR_BODY:%.*]]
@@ -1650,7 +1650,7 @@ exit:                                             ; preds = %for.body
 
 define i32 @select_trunc_fcmp_invalid_const_ub(ptr nocapture readonly %a) {
 ; CHECK-VF4IC1-LABEL: define i32 @select_trunc_fcmp_invalid_const_ub
-; CHECK-VF4IC1-SAME: (ptr nocapture readonly [[A:%.*]]) {
+; CHECK-VF4IC1-SAME: (ptr readonly captures(none) [[A:%.*]]) {
 ; CHECK-VF4IC1-NEXT:  entry:
 ; CHECK-VF4IC1-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-VF4IC1:       for.body:
@@ -1669,7 +1669,7 @@ define i32 @select_trunc_fcmp_invalid_const_ub(ptr nocapture readonly %a) {
 ; CHECK-VF4IC1-NEXT:    ret i32 [[J_2_LCSSA]]
 ;
 ; CHECK-VF4IC4-LABEL: define i32 @select_trunc_fcmp_invalid_const_ub
-; CHECK-VF4IC4-SAME: (ptr nocapture readonly [[A:%.*]]) {
+; CHECK-VF4IC4-SAME: (ptr readonly captures(none) [[A:%.*]]) {
 ; CHECK-VF4IC4-NEXT:  entry:
 ; CHECK-VF4IC4-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-VF4IC4:       for.body:
@@ -1688,7 +1688,7 @@ define i32 @select_trunc_fcmp_invalid_const_ub(ptr nocapture readonly %a) {
 ; CHECK-VF4IC4-NEXT:    ret i32 [[J_2_LCSSA]]
 ;
 ; CHECK-VF1IC4-LABEL: define i32 @select_trunc_fcmp_invalid_const_ub
-; CHECK-VF1IC4-SAME: (ptr nocapture readonly [[A:%.*]]) {
+; CHECK-VF1IC4-SAME: (ptr readonly captures(none) [[A:%.*]]) {
 ; CHECK-VF1IC4-NEXT:  entry:
 ; CHECK-VF1IC4-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-VF1IC4:       for.body:
@@ -1727,7 +1727,7 @@ exit:                                            ; preds = %for.body
 
 define i16 @select_trunc_iv_icmp_overflow_unwidened_tripcount(ptr nocapture readonly %a, ptr nocapture readonly %b, i16 %ii, i32 %n) {
 ; CHECK-VF4IC1-LABEL: define i16 @select_trunc_iv_icmp_overflow_unwidened_tripcount
-; CHECK-VF4IC1-SAME: (ptr nocapture readonly [[A:%.*]], ptr nocapture readonly [[B:%.*]], i16 [[II:%.*]], i32 [[N:%.*]]) {
+; CHECK-VF4IC1-SAME: (ptr readonly captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]], i16 [[II:%.*]], i32 [[N:%.*]]) {
 ; CHECK-VF4IC1-NEXT:  entry:
 ; CHECK-VF4IC1-NEXT:    [[CMP9:%.*]] = icmp sgt i32 [[N]], 0
 ; CHECK-VF4IC1-NEXT:    br i1 [[CMP9]], label [[FOR_BODY_PREHEADER:%.*]], label [[FOR_COND_CLEANUP:%.*]]
@@ -1755,7 +1755,7 @@ define i16 @select_trunc_iv_icmp_overflow_unwidened_tripcount(ptr nocapture read
 ; CHECK-VF4IC1-NEXT:    ret i16 [[IDX_0_LCSSA]]
 ;
 ; CHECK-VF4IC4-LABEL: define i16 @select_trunc_iv_icmp_overflow_unwidened_tripcount
-; CHECK-VF4IC4-SAME: (ptr nocapture readonly [[A:%.*]], ptr nocapture readonly [[B:%.*]], i16 [[II:%.*]], i32 [[N:%.*]]) {
+; CHECK-VF4IC4-SAME: (ptr readonly captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]], i16 [[II:%.*]], i32 [[N:%.*]]) {
 ; CHECK-VF4IC4-NEXT:  entry:
 ; CHECK-VF4IC4-NEXT:    [[CMP9:%.*]] = icmp sgt i32 [[N]], 0
 ; CHECK-VF4IC4-NEXT:    br i1 [[CMP9]], label [[FOR_BODY_PREHEADER:%.*]], label [[FOR_COND_CLEANUP:%.*]]
@@ -1783,7 +1783,7 @@ define i16 @select_trunc_iv_icmp_overflow_unwidened_tripcount(ptr nocapture read
 ; CHECK-VF4IC4-NEXT:    ret i16 [[IDX_0_LCSSA]]
 ;
 ; CHECK-VF1IC4-LABEL: define i16 @select_trunc_iv_icmp_overflow_unwidened_tripcount
-; CHECK-VF1IC4-SAME: (ptr nocapture readonly [[A:%.*]], ptr nocapture readonly [[B:%.*]], i16 [[II:%.*]], i32 [[N:%.*]]) {
+; CHECK-VF1IC4-SAME: (ptr readonly captures(none) [[A:%.*]], ptr readonly captures(none) [[B:%.*]], i16 [[II:%.*]], i32 [[N:%.*]]) {
 ; CHECK-VF1IC4-NEXT:  entry:
 ; CHECK-VF1IC4-NEXT:    [[CMP9:%.*]] = icmp sgt i32 [[N]], 0
 ; CHECK-VF1IC4-NEXT:    br i1 [[CMP9]], label [[FOR_BODY_PREHEADER:%.*]], label [[FOR_COND_CLEANUP:%.*]]

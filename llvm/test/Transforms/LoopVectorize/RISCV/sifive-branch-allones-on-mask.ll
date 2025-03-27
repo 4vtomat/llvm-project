@@ -12,7 +12,7 @@
 
 define void @vector_srem(ptr noalias nocapture %a, i64 %v, i64 %n) {
 ; CHECK-LABEL: define void @vector_srem(
-; CHECK-SAME: ptr noalias nocapture [[A:%.*]], i64 [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
+; CHECK-SAME: ptr noalias captures(none) [[A:%.*]], i64 [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
 ; CHECK-NEXT:  [[ENTRY:.*:]]
 ; CHECK-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:

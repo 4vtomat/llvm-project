@@ -10,7 +10,7 @@ target triple = "riscv64"
 
 define i32 @select_icmp(i32 %x, i32 %y, ptr nocapture readonly %c, i64 %n) #0 {
 ; CHECK-LABEL: define i32 @select_icmp(
-; CHECK-SAME: i32 [[X:%.*]], i32 [[Y:%.*]], ptr nocapture readonly [[C:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
+; CHECK-SAME: i32 [[X:%.*]], i32 [[Y:%.*]], ptr readonly captures(none) [[C:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
 ; CHECK-NEXT:  [[ENTRY:.*]]:
 ; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 4
 ; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
@@ -58,7 +58,7 @@ define i32 @select_icmp(i32 %x, i32 %y, ptr nocapture readonly %c, i64 %n) #0 {
 ; CHECK-NEXT:    ret i32 [[COND_LCSSA]]
 ;
 ; SCALABLE-LABEL: define i32 @select_icmp(
-; SCALABLE-SAME: i32 [[X:%.*]], i32 [[Y:%.*]], ptr nocapture readonly [[C:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
+; SCALABLE-SAME: i32 [[X:%.*]], i32 [[Y:%.*]], ptr readonly captures(none) [[C:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
 ; SCALABLE-NEXT:  [[ENTRY:.*]]:
 ; SCALABLE-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; SCALABLE-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
@@ -112,7 +112,7 @@ define i32 @select_icmp(i32 %x, i32 %y, ptr nocapture readonly %c, i64 %n) #0 {
 ; SCALABLE-NEXT:    ret i32 [[COND_LCSSA]]
 ;
 ; VP_SCALABLE-LABEL: define i32 @select_icmp(
-; VP_SCALABLE-SAME: i32 [[X:%.*]], i32 [[Y:%.*]], ptr nocapture readonly [[C:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
+; VP_SCALABLE-SAME: i32 [[X:%.*]], i32 [[Y:%.*]], ptr readonly captures(none) [[C:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
 ; VP_SCALABLE-NEXT:  [[ENTRY:.*:]]
 ; VP_SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP_SCALABLE-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
@@ -182,7 +182,7 @@ for.end:
 
 define i32 @select_fcmp(float %x, i32 %y, ptr nocapture readonly %c, i64 %n) #0 {
 ; CHECK-LABEL: define i32 @select_fcmp(
-; CHECK-SAME: float [[X:%.*]], i32 [[Y:%.*]], ptr nocapture readonly [[C:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-SAME: float [[X:%.*]], i32 [[Y:%.*]], ptr readonly captures(none) [[C:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-NEXT:  [[ENTRY:.*]]:
 ; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 4
 ; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
@@ -230,7 +230,7 @@ define i32 @select_fcmp(float %x, i32 %y, ptr nocapture readonly %c, i64 %n) #0 
 ; CHECK-NEXT:    ret i32 [[COND_LCSSA]]
 ;
 ; SCALABLE-LABEL: define i32 @select_fcmp(
-; SCALABLE-SAME: float [[X:%.*]], i32 [[Y:%.*]], ptr nocapture readonly [[C:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; SCALABLE-SAME: float [[X:%.*]], i32 [[Y:%.*]], ptr readonly captures(none) [[C:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; SCALABLE-NEXT:  [[ENTRY:.*]]:
 ; SCALABLE-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; SCALABLE-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
@@ -284,7 +284,7 @@ define i32 @select_fcmp(float %x, i32 %y, ptr nocapture readonly %c, i64 %n) #0 
 ; SCALABLE-NEXT:    ret i32 [[COND_LCSSA]]
 ;
 ; VP_SCALABLE-LABEL: define i32 @select_fcmp(
-; VP_SCALABLE-SAME: float [[X:%.*]], i32 [[Y:%.*]], ptr nocapture readonly [[C:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; VP_SCALABLE-SAME: float [[X:%.*]], i32 [[Y:%.*]], ptr readonly captures(none) [[C:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; VP_SCALABLE-NEXT:  [[ENTRY:.*:]]
 ; VP_SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP_SCALABLE-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
@@ -354,7 +354,7 @@ for.end:
 
 define i32 @select_const_i32_from_icmp(ptr nocapture readonly %v, i64 %n) #0 {
 ; CHECK-LABEL: define i32 @select_const_i32_from_icmp(
-; CHECK-SAME: ptr nocapture readonly [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-SAME: ptr readonly captures(none) [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-NEXT:  [[ENTRY:.*]]:
 ; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 4
 ; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
@@ -400,7 +400,7 @@ define i32 @select_const_i32_from_icmp(ptr nocapture readonly %v, i64 %n) #0 {
 ; CHECK-NEXT:    ret i32 [[DOTLCSSA]]
 ;
 ; SCALABLE-LABEL: define i32 @select_const_i32_from_icmp(
-; SCALABLE-SAME: ptr nocapture readonly [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; SCALABLE-SAME: ptr readonly captures(none) [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; SCALABLE-NEXT:  [[ENTRY:.*]]:
 ; SCALABLE-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; SCALABLE-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
@@ -452,7 +452,7 @@ define i32 @select_const_i32_from_icmp(ptr nocapture readonly %v, i64 %n) #0 {
 ; SCALABLE-NEXT:    ret i32 [[DOTLCSSA]]
 ;
 ; VP_SCALABLE-LABEL: define i32 @select_const_i32_from_icmp(
-; VP_SCALABLE-SAME: ptr nocapture readonly [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; VP_SCALABLE-SAME: ptr readonly captures(none) [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; VP_SCALABLE-NEXT:  [[ENTRY:.*:]]
 ; VP_SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP_SCALABLE-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
@@ -520,7 +520,7 @@ exit:                                     ; preds = %for.body
 
 define i32 @select_i32_from_icmp(ptr nocapture readonly %v, i32 %a, i32 %b, i64 %n) #0 {
 ; CHECK-LABEL: define i32 @select_i32_from_icmp(
-; CHECK-SAME: ptr nocapture readonly [[V:%.*]], i32 [[A:%.*]], i32 [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-SAME: ptr readonly captures(none) [[V:%.*]], i32 [[A:%.*]], i32 [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-NEXT:  [[ENTRY:.*]]:
 ; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 4
 ; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
@@ -566,7 +566,7 @@ define i32 @select_i32_from_icmp(ptr nocapture readonly %v, i32 %a, i32 %b, i64 
 ; CHECK-NEXT:    ret i32 [[DOTLCSSA]]
 ;
 ; SCALABLE-LABEL: define i32 @select_i32_from_icmp(
-; SCALABLE-SAME: ptr nocapture readonly [[V:%.*]], i32 [[A:%.*]], i32 [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; SCALABLE-SAME: ptr readonly captures(none) [[V:%.*]], i32 [[A:%.*]], i32 [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; SCALABLE-NEXT:  [[ENTRY:.*]]:
 ; SCALABLE-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; SCALABLE-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
@@ -618,7 +618,7 @@ define i32 @select_i32_from_icmp(ptr nocapture readonly %v, i32 %a, i32 %b, i64 
 ; SCALABLE-NEXT:    ret i32 [[DOTLCSSA]]
 ;
 ; VP_SCALABLE-LABEL: define i32 @select_i32_from_icmp(
-; VP_SCALABLE-SAME: ptr nocapture readonly [[V:%.*]], i32 [[A:%.*]], i32 [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; VP_SCALABLE-SAME: ptr readonly captures(none) [[V:%.*]], i32 [[A:%.*]], i32 [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; VP_SCALABLE-NEXT:  [[ENTRY:.*:]]
 ; VP_SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP_SCALABLE-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
@@ -686,7 +686,7 @@ exit:                                     ; preds = %for.body
 
 define i32 @select_const_i32_from_fcmp(ptr nocapture readonly %v, i64 %n) #0 {
 ; CHECK-LABEL: define i32 @select_const_i32_from_fcmp(
-; CHECK-SAME: ptr nocapture readonly [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-SAME: ptr readonly captures(none) [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-NEXT:  [[ENTRY:.*]]:
 ; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 4
 ; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
@@ -732,7 +732,7 @@ define i32 @select_const_i32_from_fcmp(ptr nocapture readonly %v, i64 %n) #0 {
 ; CHECK-NEXT:    ret i32 [[DOTLCSSA]]
 ;
 ; SCALABLE-LABEL: define i32 @select_const_i32_from_fcmp(
-; SCALABLE-SAME: ptr nocapture readonly [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; SCALABLE-SAME: ptr readonly captures(none) [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; SCALABLE-NEXT:  [[ENTRY:.*]]:
 ; SCALABLE-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; SCALABLE-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
@@ -784,7 +784,7 @@ define i32 @select_const_i32_from_fcmp(ptr nocapture readonly %v, i64 %n) #0 {
 ; SCALABLE-NEXT:    ret i32 [[DOTLCSSA]]
 ;
 ; VP_SCALABLE-LABEL: define i32 @select_const_i32_from_fcmp(
-; VP_SCALABLE-SAME: ptr nocapture readonly [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; VP_SCALABLE-SAME: ptr readonly captures(none) [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; VP_SCALABLE-NEXT:  [[ENTRY:.*:]]
 ; VP_SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP_SCALABLE-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
@@ -852,7 +852,7 @@ exit:                                     ; preds = %for.body
 
 define float @select_const_f32_from_icmp(ptr nocapture readonly %v, i64 %n) #0 {
 ; CHECK-LABEL: define float @select_const_f32_from_icmp(
-; CHECK-SAME: ptr nocapture readonly [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-SAME: ptr readonly captures(none) [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-NEXT:  [[ENTRY:.*]]:
 ; CHECK-NEXT:    br label %[[FOR_BODY:.*]]
 ; CHECK:       [[FOR_BODY]]:
@@ -870,7 +870,7 @@ define float @select_const_f32_from_icmp(ptr nocapture readonly %v, i64 %n) #0 {
 ; CHECK-NEXT:    ret float [[DOTLCSSA]]
 ;
 ; SCALABLE-LABEL: define float @select_const_f32_from_icmp(
-; SCALABLE-SAME: ptr nocapture readonly [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; SCALABLE-SAME: ptr readonly captures(none) [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; SCALABLE-NEXT:  [[ENTRY:.*]]:
 ; SCALABLE-NEXT:    br label %[[FOR_BODY:.*]]
 ; SCALABLE:       [[FOR_BODY]]:
@@ -888,7 +888,7 @@ define float @select_const_f32_from_icmp(ptr nocapture readonly %v, i64 %n) #0 {
 ; SCALABLE-NEXT:    ret float [[DOTLCSSA]]
 ;
 ; VP_SCALABLE-LABEL: define float @select_const_f32_from_icmp(
-; VP_SCALABLE-SAME: ptr nocapture readonly [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; VP_SCALABLE-SAME: ptr readonly captures(none) [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; VP_SCALABLE-NEXT:  [[ENTRY:.*]]:
 ; VP_SCALABLE-NEXT:    br label %[[FOR_BODY:.*]]
 ; VP_SCALABLE:       [[FOR_BODY]]:
@@ -925,7 +925,7 @@ exit:                                     ; preds = %for.body
 
 define i32 @pred_select_const_i32_from_icmp(ptr noalias nocapture readonly %src1, ptr noalias nocapture readonly %src2, i64 %n) #0 {
 ; CHECK-LABEL: define i32 @pred_select_const_i32_from_icmp(
-; CHECK-SAME: ptr noalias nocapture readonly [[SRC1:%.*]], ptr noalias nocapture readonly [[SRC2:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; CHECK-SAME: ptr noalias readonly captures(none) [[SRC1:%.*]], ptr noalias readonly captures(none) [[SRC2:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; CHECK-NEXT:  [[ENTRY:.*]]:
 ; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 4
 ; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
@@ -983,7 +983,7 @@ define i32 @pred_select_const_i32_from_icmp(ptr noalias nocapture readonly %src1
 ; CHECK-NEXT:    ret i32 [[R_1_LCSSA]]
 ;
 ; SCALABLE-LABEL: define i32 @pred_select_const_i32_from_icmp(
-; SCALABLE-SAME: ptr noalias nocapture readonly [[SRC1:%.*]], ptr noalias nocapture readonly [[SRC2:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; SCALABLE-SAME: ptr noalias readonly captures(none) [[SRC1:%.*]], ptr noalias readonly captures(none) [[SRC2:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; SCALABLE-NEXT:  [[ENTRY:.*]]:
 ; SCALABLE-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; SCALABLE-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
@@ -1047,7 +1047,7 @@ define i32 @pred_select_const_i32_from_icmp(ptr noalias nocapture readonly %src1
 ; SCALABLE-NEXT:    ret i32 [[R_1_LCSSA]]
 ;
 ; VP_SCALABLE-LABEL: define i32 @pred_select_const_i32_from_icmp(
-; VP_SCALABLE-SAME: ptr noalias nocapture readonly [[SRC1:%.*]], ptr noalias nocapture readonly [[SRC2:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
+; VP_SCALABLE-SAME: ptr noalias readonly captures(none) [[SRC1:%.*]], ptr noalias readonly captures(none) [[SRC2:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; VP_SCALABLE-NEXT:  [[ENTRY:.*:]]
 ; VP_SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N]], 12
 ; VP_SCALABLE-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
