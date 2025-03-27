@@ -168,7 +168,12 @@ public:
 
   /// Returns an expression describing the lane index that can be used at
   /// runtime.
+#if SIFIVE_CUSTOMIZATION
+  Value *getAsRuntimeExpr(IRBuilderBase &Builder, const ElementCount &VF,
+                          Value *EVL = nullptr) const;
+#else
   Value *getAsRuntimeExpr(IRBuilderBase &Builder, const ElementCount &VF) const;
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Returns the Kind of lane offset.
   Kind getKind() const { return LaneKind; }
@@ -194,15 +199,43 @@ public:
 /// VPTransformState holds information passed down when "executing" a VPlan,
 /// needed for generating the output IR.
 struct VPTransformState {
+#if SIFIVE_CUSTOMIZATION
+  VPTransformState(const TargetTransformInfo *TTI, ElementCount VF, unsigned UF,
+                   LoopInfo *LI, DominatorTree *DT, IRBuilderBase &Builder,
+                   InnerLoopVectorizer *ILV, VPlan *Plan,
+                   Loop *CurrentParentLoop, Type *CanonicalIVTy,
+                   bool EnableRISCVCSA);
+#else
   VPTransformState(const TargetTransformInfo *TTI, ElementCount VF, unsigned UF,
                    LoopInfo *LI, DominatorTree *DT, IRBuilderBase &Builder,
                    InnerLoopVectorizer *ILV, VPlan *Plan,
                    Loop *CurrentParentLoop, Type *CanonicalIVTy);
+#endif // SIFIVE_CUSTOMIZATION
   /// Target Transform Info.
   const TargetTransformInfo *TTI;
 
   /// The chosen Vectorization Factor of the loop being vectorized.
   ElementCount VF;
+
+#if SIFIVE_CUSTOMIZATION
+  unsigned SEW = 0;
+
+  unsigned LMULExp = 0;
+
+  /// Some execute functions are done before EVL is computed. This value is used
+  /// as a placeholder in such functions and replaced with EVL at postprocess.
+  /// TODO: Remove when not needed.
+  Value *EVLPlaceholder = nullptr;
+
+  /// If EVL (Explicit Vector Length) is not nullptr, then EVL must be a valid
+  /// value set during plan transformation, possibly a default value = whole
+  /// vector register length. EVL is created only if TTI prefers predicated
+  /// vectorization, thus if EVL is not nullptr it also implies preference for
+  /// predicated vectorization.
+  /// TODO: this is a temporarily solution, the EVL must be explicitly used by
+  /// the recipes and must be removed here.
+  VPValue *EVL = nullptr;
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Hold the index to generate specific scalar instructions. Null indicates
   /// that all instances are to be generated, using either scalar or vector
@@ -258,6 +291,11 @@ struct VPTransformState {
     unsigned CacheIdx = Lane.mapToCacheIndex(VF);
     if (Scalars.size() <= CacheIdx)
       Scalars.resize(CacheIdx + 1);
+#if SIFIVE_CUSTOMIZATION
+    // For now it's legal for Uncountable loop vectorization to  overwrite
+    // existing value of EVL
+    if (this->EVL != Def)
+#endif // SIFIVE_CUSTOMIZATION
     assert(!Scalars[CacheIdx] && "should overwrite existing value");
     Scalars[CacheIdx] = V;
   }
@@ -307,6 +345,14 @@ struct VPTransformState {
     /// vector loop.
     BasicBlock *ExitBB = nullptr;
 
+#if SIFIVE_CUSTOMIZATION
+    // cherry-pick from #88385
+    /// We need to keep track of the early exit block from the original scalar
+    /// loop in order to update the dominator tree correctly, since the vector
+    /// early exit will also jump to the original.
+    BasicBlock *EarlyExitBB = nullptr;
+#endif // SIFIVE_CUSTOMIZATION
+
     /// A mapping of each VPBasicBlock to the corresponding BasicBlock. In case
     /// of replication, maps the BasicBlock of the last replica created.
     SmallDenseMap<VPBasicBlock *, BasicBlock *> VPBB2IRBB;
@@ -327,6 +373,29 @@ struct VPTransformState {
 
   /// Hold a reference to the IRBuilder used to generate output IR code.
   IRBuilderBase &Builder;
+
+#if SIFIVE_CUSTOMIZATION
+  /// Hold a pointer to ScalarEvolution which will be used during the IR
+  /// generation.
+  ScalarEvolution *SE = nullptr;
+
+  static const uint64_t UnknownNumSafeElems = UINT64_C(-1);
+
+  /// The maximum number of elements we can vectorize without a dependency.
+  /// UnknownNumSafeElems if the dependence distance is unknown, or there is no
+  /// dependency.
+  uint64_t MaxSafeNumElems = UnknownNumSafeElems;
+
+  // TODO: Use a VPValue to hold the mapping to VFirst for consistency.
+  /// Keep the vfirst instruction
+  Value *VFirst = nullptr;
+
+  /// Set vfirst
+  void setVFirst(Value *VFirst) { this->VFirst = VFirst; }
+
+  /// Get vfirst
+  Value *getVFirst() const { return VFirst; }
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Hold a pointer to InnerLoopVectorizer to reuse its IR generation methods.
   InnerLoopVectorizer *ILV;
@@ -350,6 +419,12 @@ struct VPTransformState {
 
   /// VPlan-based type analysis.
   VPTypeAnalysis TypeAnalysis;
+
+#if SIFIVE_CUSTOMIZATION
+  /// True if the RISCV specific implementation of CSA vectorization is
+  /// enabled.
+  bool EnableRISCVCSA;
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 /// Struct to hold various analysis needed for cost computations.
