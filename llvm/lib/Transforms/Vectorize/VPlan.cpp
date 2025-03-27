@@ -676,16 +676,6 @@ void VPBasicBlock::execute(VPTransformState *State) {
     UnreachableInst *Terminator = State->Builder.CreateUnreachable();
     // Register NewBB in its loop. In innermost loops its the same for all
     // BB's.
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    // cherry-pick from #88385
-    VPRegionBlock *Region = getPlan()->getVectorLoopRegion();
-    if (State->CurrentParentLoop && (!Region || this != Region->getEarlyExit()))
-#else
-    if (State->CurrentParentLoop)
-#endif // SIFIVE_CUSTOMIZATION
-      State->CurrentParentLoop->addBasicBlockToLoop(NewBB, *State->LI);
-=======
     Loop *ParentLoop = State->CurrentParentLoop;
     // If this block has a sole successor that is an exit block then it needs
     // adding to the same parent loop as the exit block.
@@ -695,7 +685,6 @@ void VPBasicBlock::execute(VPTransformState *State) {
           cast<VPIRBasicBlock>(SuccVPBB)->getIRBasicBlock());
     if (ParentLoop)
       ParentLoop->addBasicBlockToLoop(NewBB, *State->LI);
->>>>>>> c06d0ff
     State->Builder.SetInsertPoint(Terminator);
 
     State->CFG.PrevBB = NewBB;
@@ -1323,7 +1312,6 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
 #endif // SIFIVE_CUSTOMIZATION
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 void VPlan::initializeMasks(VPTransformState &State) {
   if (AllTrueMask && AllTrueMask->getNumUsers()) {
@@ -1336,11 +1324,10 @@ void VPlan::initializeMasks(VPTransformState &State) {
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 bool VPlan::isExitBlock(VPBlockBase *VPBB) {
   return isa<VPIRBasicBlock>(VPBB) && VPBB->getNumSuccessors() == 0;
 }
->>>>>>> c06d0ff
 
 /// Generate the code inside the preheader and body of the vectorized loop.
 /// Assumes a single pre-header basic-block was created for this. Introduce
