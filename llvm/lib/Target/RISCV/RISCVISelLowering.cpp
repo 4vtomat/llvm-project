@@ -20550,8 +20550,12 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     if (SDValue V = combineTruncOfSraSext(N, DAG))
       return V;
     return combineTruncToVnclip(N, DAG, Subtarget);
+#if SIFIVE_CUSTOMIZATION
   case ISD::VP_TRUNCATE:
-    return performVP_TRUNCATECombine(N, DAG, Subtarget);
+    if (SDValue V = performVP_TRUNCATECombine(N, DAG, Subtarget))
+      return V;
+    return combineVPTruncSelectToSMaxUSat(N, DAG);
+#endif // SIFIVE_CUSTOMIZATION
   case ISD::TRUNCATE:
     return performTRUNCATECombine(N, DAG, Subtarget);
   case ISD::SELECT:
