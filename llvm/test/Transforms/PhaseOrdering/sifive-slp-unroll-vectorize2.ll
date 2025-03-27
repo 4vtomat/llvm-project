@@ -17,7 +17,7 @@
 
 define internal fastcc float @foo(ptr nocapture noundef nonnull readonly align 8 dereferenceable(32) %input, ptr noundef nonnull align 8 dereferenceable(56) %inpaint_domain_mask, i32 noundef signext %inpaint_iterations, i32 noundef signext %patchmatch_iterations, ptr nocapture noundef %output) {
 ; CHECK-LABEL: define internal fastcc float @foo(
-; CHECK-SAME: ptr nocapture noundef nonnull readonly align 8 dereferenceable(32) [[INPUT:%.*]], ptr noundef nonnull align 8 dereferenceable(56) [[INPAINT_DOMAIN_MASK:%.*]], i32 noundef signext [[INPAINT_ITERATIONS:%.*]], i32 noundef signext [[PATCHMATCH_ITERATIONS:%.*]], ptr nocapture noundef [[OUTPUT:%.*]]) #[[ATTR0:[0-9]+]] {
+; CHECK-SAME: ptr noundef nonnull readonly align 8 captures(none) dereferenceable(32) [[INPUT:%.*]], ptr noundef nonnull align 8 dereferenceable(56) [[INPAINT_DOMAIN_MASK:%.*]], i32 noundef signext [[INPAINT_ITERATIONS:%.*]], i32 noundef signext [[PATCHMATCH_ITERATIONS:%.*]], ptr noundef captures(none) [[OUTPUT:%.*]]) #[[ATTR0:[0-9]+]] {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[GENERATOR_I_I:%.*]] = alloca %"class.std::mersenne_twister_engine", align 8
 ; CHECK-NEXT:    [[SRC_MASK:%.*]] = alloca [[CLASS_IMAGEMASK:%.*]], align 8

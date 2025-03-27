@@ -10,9 +10,17 @@ define <vscale x 4 x i8> @test_nxv4i16_nxv4i8(<vscale x 4 x i16> %x, <vscale x 4
 ; CHECK-LABEL: test_nxv4i16_nxv4i8:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
-; CHECK-NEXT:    vmax.vx v8, v8, zero, v0.t
+; CHECK-NEXT:    vmv1r.v v9, v0
+; CHECK-NEXT:    vmsgt.vi v0, v8, 0, v0.t
+; CHECK-NEXT:    vmv.v.i v10, 0
+; CHECK-NEXT:    li a0, 256
+; CHECK-NEXT:    vmerge.vim v10, v10, -1, v0
+; CHECK-NEXT:    vmv1r.v v0, v9
+; CHECK-NEXT:    vmsltu.vx v0, v8, a0, v0.t
+; CHECK-NEXT:    vmerge.vvm v8, v10, v8, v0
+; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
-; CHECK-NEXT:    vnclipu.wi v8, v8, 0, v0.t
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; CHECK-NEXT:    ret
   %a = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i16(<vscale x 4 x i16> %x, <vscale x 4 x i16> zeroinitializer, metadata !"sgt", <vscale x 4 x i1> %m, i32 %evl)
   %b = call <vscale x 4 x i16> @llvm.vp.sext.nxv4i16.nxv4i1(<vscale x 4 x i1> %a, <vscale x 4 x i1> %m, i32 %evl)
@@ -31,11 +39,19 @@ define <vscale x 4 x i8> @test_nxv4i32_nxv4i8(<vscale x 4 x i32> %x, <vscale x 4
 ; CHECK-LABEL: test_nxv4i32_nxv4i8:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; CHECK-NEXT:    vmax.vx v8, v8, zero, v0.t
+; CHECK-NEXT:    vmv1r.v v10, v0
+; CHECK-NEXT:    vmsgt.vi v0, v8, 0, v0.t
+; CHECK-NEXT:    vmv.v.i v12, 0
+; CHECK-NEXT:    li a0, 256
+; CHECK-NEXT:    vmerge.vim v12, v12, -1, v0
+; CHECK-NEXT:    vmv1r.v v0, v10
+; CHECK-NEXT:    vmsltu.vx v0, v8, a0, v0.t
+; CHECK-NEXT:    vmerge.vvm v8, v12, v8, v0
+; CHECK-NEXT:    vmv1r.v v0, v10
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vnclipu.wi v8, v8, 0, v0.t
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
-; CHECK-NEXT:    vnclipu.wi v8, v8, 0, v0.t
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; CHECK-NEXT:    ret
   %a = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i32(<vscale x 4 x i32> %x, <vscale x 4 x i32> zeroinitializer, metadata !"sgt", <vscale x 4 x i1> %m, i32 %evl)
   %b = call <vscale x 4 x i32> @llvm.vp.sext.nxv4i32.nxv4i1(<vscale x 4 x i1> %a, <vscale x 4 x i1> %m, i32 %evl)
@@ -54,13 +70,21 @@ define <vscale x 4 x i8> @test_nxv4i64_nxv4i8(<vscale x 4 x i64> %x, <vscale x 4
 ; CHECK-LABEL: test_nxv4i64_nxv4i8:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
-; CHECK-NEXT:    vmax.vx v8, v8, zero, v0.t
+; CHECK-NEXT:    vmv1r.v v12, v0
+; CHECK-NEXT:    vmsgt.vi v0, v8, 0, v0.t
+; CHECK-NEXT:    vmv.v.i v16, 0
+; CHECK-NEXT:    li a0, 256
+; CHECK-NEXT:    vmerge.vim v16, v16, -1, v0
+; CHECK-NEXT:    vmv1r.v v0, v12
+; CHECK-NEXT:    vmsltu.vx v0, v8, a0, v0.t
+; CHECK-NEXT:    vmerge.vvm v8, v16, v8, v0
+; CHECK-NEXT:    vmv1r.v v0, v12
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vnclipu.wi v8, v8, 0, v0.t
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vnclipu.wi v8, v8, 0, v0.t
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
-; CHECK-NEXT:    vnclipu.wi v8, v8, 0, v0.t
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; CHECK-NEXT:    ret
   %a = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i64(<vscale x 4 x i64> %x, <vscale x 4 x i64> zeroinitializer, metadata !"sgt", <vscale x 4 x i1> %m, i32 %evl)
   %b = call <vscale x 4 x i64> @llvm.vp.sext.nxv4i64.nxv4i1(<vscale x 4 x i1> %a, <vscale x 4 x i1> %m, i32 %evl)
@@ -76,9 +100,17 @@ define <vscale x 4 x i16> @test_nxv4i32_nxv4i16(<vscale x 4 x i32> %x, <vscale x
 ; CHECK-LABEL: test_nxv4i32_nxv4i16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; CHECK-NEXT:    vmax.vx v8, v8, zero, v0.t
+; CHECK-NEXT:    vmv1r.v v10, v0
+; CHECK-NEXT:    vmsgt.vi v0, v8, 0, v0.t
+; CHECK-NEXT:    vmv.v.i v12, 0
+; CHECK-NEXT:    lui a0, 16
+; CHECK-NEXT:    vmerge.vim v12, v12, -1, v0
+; CHECK-NEXT:    vmv1r.v v0, v10
+; CHECK-NEXT:    vmsltu.vx v0, v8, a0, v0.t
+; CHECK-NEXT:    vmerge.vvm v8, v12, v8, v0
+; CHECK-NEXT:    vmv1r.v v0, v10
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vnclipu.wi v8, v8, 0, v0.t
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; CHECK-NEXT:    ret
   %a = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i32(<vscale x 4 x i32> %x, <vscale x 4 x i32> zeroinitializer, metadata !"sgt", <vscale x 4 x i1> %m, i32 %evl)
   %b = call <vscale x 4 x i32> @llvm.vp.sext.nxv4i32.nxv4i1(<vscale x 4 x i1> %a, <vscale x 4 x i1> %m, i32 %evl)
@@ -94,11 +126,19 @@ define <vscale x 4 x i16> @test_nxv4i64_nxv4i16(<vscale x 4 x i64> %x, <vscale x
 ; CHECK-LABEL: test_nxv4i64_nxv4i16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
-; CHECK-NEXT:    vmax.vx v8, v8, zero, v0.t
+; CHECK-NEXT:    vmv1r.v v12, v0
+; CHECK-NEXT:    vmsgt.vi v0, v8, 0, v0.t
+; CHECK-NEXT:    vmv.v.i v16, 0
+; CHECK-NEXT:    lui a0, 16
+; CHECK-NEXT:    vmerge.vim v16, v16, -1, v0
+; CHECK-NEXT:    vmv1r.v v0, v12
+; CHECK-NEXT:    vmsltu.vx v0, v8, a0, v0.t
+; CHECK-NEXT:    vmerge.vvm v8, v16, v8, v0
+; CHECK-NEXT:    vmv1r.v v0, v12
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vnclipu.wi v8, v8, 0, v0.t
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vnclipu.wi v8, v8, 0, v0.t
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; CHECK-NEXT:    ret
   %a = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i64(<vscale x 4 x i64> %x, <vscale x 4 x i64> zeroinitializer, metadata !"sgt", <vscale x 4 x i1> %m, i32 %evl)
   %b = call <vscale x 4 x i64> @llvm.vp.sext.nxv4i64.nxv4i1(<vscale x 4 x i1> %a, <vscale x 4 x i1> %m, i32 %evl)
@@ -114,9 +154,18 @@ define <vscale x 4 x i32> @test_nxv4i64_nxv4i32(<vscale x 4 x i64> %x, <vscale x
 ; CHECK-LABEL: test_nxv4i64_nxv4i32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
-; CHECK-NEXT:    vmax.vx v8, v8, zero, v0.t
+; CHECK-NEXT:    vmv1r.v v12, v0
+; CHECK-NEXT:    vmsgt.vi v0, v8, 0, v0.t
+; CHECK-NEXT:    vmv.v.i v16, 0
+; CHECK-NEXT:    li a0, 1
+; CHECK-NEXT:    vmerge.vim v16, v16, -1, v0
+; CHECK-NEXT:    slli a0, a0, 32
+; CHECK-NEXT:    vmv1r.v v0, v12
+; CHECK-NEXT:    vmsltu.vx v0, v8, a0, v0.t
+; CHECK-NEXT:    vmerge.vvm v8, v16, v8, v0
+; CHECK-NEXT:    vmv1r.v v0, v12
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vnclipu.wi v8, v8, 0, v0.t
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; CHECK-NEXT:    ret
   %a = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i64(<vscale x 4 x i64> %x, <vscale x 4 x i64> zeroinitializer, metadata !"sgt", <vscale x 4 x i1> %m, i32 %evl)
   %b = call <vscale x 4 x i64> @llvm.vp.sext.nxv4i64.nxv4i1(<vscale x 4 x i1> %a, <vscale x 4 x i1> %m, i32 %evl)
@@ -136,9 +185,15 @@ define <4 x i8> @test_v4i16_v4i8(<4 x i16> %x, <4 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: test_v4i16_v4i8:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
-; CHECK-NEXT:    vmax.vx v8, v8, zero, v0.t
-; CHECK-NEXT:    li a0, 255
-; CHECK-NEXT:    vmin.vx v8, v8, a0, v0.t
+; CHECK-NEXT:    vmv1r.v v9, v0
+; CHECK-NEXT:    vmsgt.vi v0, v8, 0, v0.t
+; CHECK-NEXT:    vmv.v.i v10, 0
+; CHECK-NEXT:    li a0, 256
+; CHECK-NEXT:    vmerge.vim v10, v10, -1, v0
+; CHECK-NEXT:    vmv1r.v v0, v9
+; CHECK-NEXT:    vmsltu.vx v0, v8, a0, v0.t
+; CHECK-NEXT:    vmerge.vvm v8, v10, v8, v0
+; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; CHECK-NEXT:    ret
@@ -159,9 +214,15 @@ define <4 x i8> @test_v4i32_v4i8(<4 x i32> %x, <4 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: test_v4i32_v4i8:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; CHECK-NEXT:    vmax.vx v8, v8, zero, v0.t
-; CHECK-NEXT:    li a0, 255
-; CHECK-NEXT:    vmin.vx v8, v8, a0, v0.t
+; CHECK-NEXT:    vmv1r.v v9, v0
+; CHECK-NEXT:    vmsgt.vi v0, v8, 0, v0.t
+; CHECK-NEXT:    vmv.v.i v10, 0
+; CHECK-NEXT:    li a0, 256
+; CHECK-NEXT:    vmerge.vim v10, v10, -1, v0
+; CHECK-NEXT:    vmv1r.v v0, v9
+; CHECK-NEXT:    vmsltu.vx v0, v8, a0, v0.t
+; CHECK-NEXT:    vmerge.vvm v8, v10, v8, v0
+; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
@@ -184,9 +245,15 @@ define <4 x i8> @test_v4i64_v4i8(<4 x i64> %x, <4 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: test_v4i64_v4i8:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
-; CHECK-NEXT:    vmax.vx v8, v8, zero, v0.t
-; CHECK-NEXT:    li a0, 255
-; CHECK-NEXT:    vmin.vx v8, v8, a0, v0.t
+; CHECK-NEXT:    vmv1r.v v10, v0
+; CHECK-NEXT:    vmsgt.vi v0, v8, 0, v0.t
+; CHECK-NEXT:    vmv.v.i v12, 0
+; CHECK-NEXT:    li a0, 256
+; CHECK-NEXT:    vmerge.vim v12, v12, -1, v0
+; CHECK-NEXT:    vmv1r.v v0, v10
+; CHECK-NEXT:    vmsltu.vx v0, v8, a0, v0.t
+; CHECK-NEXT:    vmerge.vvm v8, v12, v8, v0
+; CHECK-NEXT:    vmv1r.v v0, v10
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
@@ -208,10 +275,15 @@ define <4 x i16> @test_v4i32_v4i16(<4 x i32> %x, <4 x i1> %m, i32 zeroext %evl) 
 ; CHECK-LABEL: test_v4i32_v4i16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; CHECK-NEXT:    vmax.vx v8, v8, zero, v0.t
+; CHECK-NEXT:    vmv1r.v v9, v0
+; CHECK-NEXT:    vmsgt.vi v0, v8, 0, v0.t
+; CHECK-NEXT:    vmv.v.i v10, 0
 ; CHECK-NEXT:    lui a0, 16
-; CHECK-NEXT:    addi a0, a0, -1
-; CHECK-NEXT:    vmin.vx v8, v8, a0, v0.t
+; CHECK-NEXT:    vmerge.vim v10, v10, -1, v0
+; CHECK-NEXT:    vmv1r.v v0, v9
+; CHECK-NEXT:    vmsltu.vx v0, v8, a0, v0.t
+; CHECK-NEXT:    vmerge.vvm v8, v10, v8, v0
+; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; CHECK-NEXT:    ret
@@ -229,10 +301,15 @@ define <4 x i16> @test_v4i64_v4i16(<4 x i64> %x, <4 x i1> %m, i32 zeroext %evl) 
 ; CHECK-LABEL: test_v4i64_v4i16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
-; CHECK-NEXT:    vmax.vx v8, v8, zero, v0.t
+; CHECK-NEXT:    vmv1r.v v10, v0
+; CHECK-NEXT:    vmsgt.vi v0, v8, 0, v0.t
+; CHECK-NEXT:    vmv.v.i v12, 0
 ; CHECK-NEXT:    lui a0, 16
-; CHECK-NEXT:    addiw a0, a0, -1
-; CHECK-NEXT:    vmin.vx v8, v8, a0, v0.t
+; CHECK-NEXT:    vmerge.vim v12, v12, -1, v0
+; CHECK-NEXT:    vmv1r.v v0, v10
+; CHECK-NEXT:    vmsltu.vx v0, v8, a0, v0.t
+; CHECK-NEXT:    vmerge.vvm v8, v12, v8, v0
+; CHECK-NEXT:    vmv1r.v v0, v10
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
@@ -252,10 +329,16 @@ define <4 x i32> @test_v4i64_v4i32(<4 x i64> %x, <4 x i1> %m, i32 zeroext %evl) 
 ; CHECK-LABEL: test_v4i64_v4i32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
-; CHECK-NEXT:    vmax.vx v8, v8, zero, v0.t
-; CHECK-NEXT:    li a0, -1
-; CHECK-NEXT:    srli a0, a0, 32
-; CHECK-NEXT:    vmin.vx v8, v8, a0, v0.t
+; CHECK-NEXT:    vmv1r.v v10, v0
+; CHECK-NEXT:    vmsgt.vi v0, v8, 0, v0.t
+; CHECK-NEXT:    vmv.v.i v12, 0
+; CHECK-NEXT:    li a0, 1
+; CHECK-NEXT:    vmerge.vim v12, v12, -1, v0
+; CHECK-NEXT:    slli a0, a0, 32
+; CHECK-NEXT:    vmv1r.v v0, v10
+; CHECK-NEXT:    vmsltu.vx v0, v8, a0, v0.t
+; CHECK-NEXT:    vmerge.vvm v8, v12, v8, v0
+; CHECK-NEXT:    vmv1r.v v0, v10
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; CHECK-NEXT:    ret

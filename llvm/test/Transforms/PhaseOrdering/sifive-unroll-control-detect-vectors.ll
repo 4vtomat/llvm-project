@@ -10,7 +10,7 @@ target triple = "riscv64-unknown-unknown"
 
 define i32 @test(ptr nocapture %a, i32 %n) nounwind uwtable readonly {
 ; NODETECT-LABEL: define i32 @test(
-; NODETECT-SAME: ptr nocapture [[A:%.*]], i32 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
+; NODETECT-SAME: ptr captures(none) [[A:%.*]], i32 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
 ; NODETECT-NEXT:  entry:
 ; NODETECT-NEXT:    [[CMP1:%.*]] = icmp eq i32 [[N]], 0
 ; NODETECT-NEXT:    br i1 [[CMP1]], label [[FOR_END:%.*]], label [[FOR_BODY_PREHEADER:%.*]]
@@ -98,7 +98,7 @@ define i32 @test(ptr nocapture %a, i32 %n) nounwind uwtable readonly {
 ; NODETECT-NEXT:    ret i32 [[SUM_0_LCSSA]]
 ;
 ; DETECT-LABEL: define i32 @test(
-; DETECT-SAME: ptr nocapture [[A:%.*]], i32 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
+; DETECT-SAME: ptr captures(none) [[A:%.*]], i32 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
 ; DETECT-NEXT:  entry:
 ; DETECT-NEXT:    [[CMP1:%.*]] = icmp eq i32 [[N]], 0
 ; DETECT-NEXT:    br i1 [[CMP1]], label [[FOR_END:%.*]], label [[FOR_BODY_PREHEADER:%.*]]

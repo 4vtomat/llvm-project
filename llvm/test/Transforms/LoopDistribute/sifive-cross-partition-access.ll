@@ -7,7 +7,7 @@
 
 define dso_local void @_Z13distribution3PiS_S_S_i(ptr nocapture noundef %a, ptr nocapture noundef readonly %b, ptr nocapture noundef %c, ptr nocapture noundef writeonly %d, i32 noundef signext %len) {
 ; CHECK-LABEL: define dso_local void @_Z13distribution3PiS_S_S_i(
-; CHECK-SAME: ptr nocapture noundef [[A:%.*]], ptr nocapture noundef readonly [[B:%.*]], ptr nocapture noundef [[C:%.*]], ptr nocapture noundef writeonly [[D:%.*]], i32 noundef signext [[LEN:%.*]]) {
+; CHECK-SAME: ptr noundef captures(none) [[A:%.*]], ptr noundef readonly captures(none) [[B:%.*]], ptr noundef captures(none) [[C:%.*]], ptr noundef writeonly captures(none) [[D:%.*]], i32 noundef signext [[LEN:%.*]]) {
 ; CHECK-NEXT:  [[ENTRY:.*:]]
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[LEN]], 0
 ; CHECK-NEXT:    br i1 [[CMP]], label %[[IF_THEN:.*]], label %[[IF_END:.*]]

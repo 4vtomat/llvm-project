@@ -1113,12 +1113,9 @@ R"(All available -march extensions for RISC-V
     xcvmac               1.0
     xcvmem               1.0
     xcvsimd              1.0
-<<<<<<< HEAD
-    xsfcease             0.1
-=======
     xmipscmove           1.0
     xmipslsp             1.0
->>>>>>> c06d0ff
+    xsfcease             0.1
     xsfcease             1.0
     xsfmm128t            0.6
     xsfmm16t             0.6

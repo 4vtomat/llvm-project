@@ -12,9 +12,9 @@ define void @main() {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 0, e64, m4, ta, ma
 ; CHECK-NEXT:    vmacc.vv v20, v8, v8
-; CHECK-NEXT:    vsetvli a0, zero, e64, m4, ta, ma
 ; CHECK-NEXT:    vmv.v.i v16, 0
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_0)
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmclr.m v0
 ; CHECK-NEXT:    li a1, 108
 ; CHECK-NEXT:    ld a0, %lo(.LCPI0_0)(a0)
@@ -50,9 +50,9 @@ define void @main() {
 ; SUBREG_LIVENESS:       # %bb.0: # %entry
 ; SUBREG_LIVENESS-NEXT:    vsetivli zero, 0, e64, m4, ta, ma
 ; SUBREG_LIVENESS-NEXT:    vmacc.vv v16, v8, v8
-; SUBREG_LIVENESS-NEXT:    vsetvli a0, zero, e64, m4, ta, ma
 ; SUBREG_LIVENESS-NEXT:    vmv.v.i v12, 0
 ; SUBREG_LIVENESS-NEXT:    lui a0, %hi(.LCPI0_0)
+; SUBREG_LIVENESS-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
 ; SUBREG_LIVENESS-NEXT:    vmclr.m v0
 ; SUBREG_LIVENESS-NEXT:    li a1, 108
 ; SUBREG_LIVENESS-NEXT:    ld a0, %lo(.LCPI0_0)(a0)

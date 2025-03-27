@@ -6,7 +6,8 @@
 define void @interleave2_const_splat_nxv16i32(ptr %dst) {
 ; CHECK-LABEL: define void @interleave2_const_splat_nxv16i32(
 ; CHECK-SAME: ptr [[DST:%.*]]) #[[ATTR0:[0-9]+]] {
-; CHECK-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> bitcast (<vscale x 8 x i64> splat (i64 3337189589658) to <vscale x 16 x i32>), ptr [[DST]], <vscale x 16 x i1> splat (i1 true), i32 88)
+; CHECK-NEXT:    [[INTERLEAVE2:%.*]] = call <vscale x 16 x i32> @llvm.vector.interleave2.nxv16i32(<vscale x 8 x i32> splat (i32 666), <vscale x 8 x i32> splat (i32 777))
+; CHECK-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[INTERLEAVE2]], ptr [[DST]], <vscale x 16 x i1> splat (i1 true), i32 88)
 ; CHECK-NEXT:    ret void
 ;
 ; ZVE32X-LABEL: define void @interleave2_const_splat_nxv16i32(

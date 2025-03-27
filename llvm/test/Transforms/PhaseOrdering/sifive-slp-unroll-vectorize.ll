@@ -6,7 +6,7 @@
 
 define dso_local nofpclass(nan inf) float @s352(ptr nocapture noundef %func_args, ptr %a, ptr %b) {
 ; CHECK-LABEL: define dso_local nofpclass(nan inf) float @s352(
-; CHECK-SAME: ptr nocapture noundef [[FUNC_ARGS:%.*]], ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0:[0-9]+]] {
+; CHECK-SAME: ptr noundef captures(none) [[FUNC_ARGS:%.*]], ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0:[0-9]+]] {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    br label [[FOR_COND2_PREHEADER:%.*]]
 ; CHECK:       for.cond2.preheader:

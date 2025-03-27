@@ -30,7 +30,7 @@ $_ZTS7b2Shape = comdat any
 
 define hidden void @_ZN14b2PolygonShape3SetEPK6b2Vec2i(ptr nocapture noundef nonnull align 8 dereferenceable(156) %this, ptr nocapture noundef readonly %vertices, i32 noundef signext %count) align 2 {
 ; CHECK-LABEL: define hidden void @_ZN14b2PolygonShape3SetEPK6b2Vec2i(
-; CHECK-SAME: ptr nocapture noundef nonnull align 8 dereferenceable(156) [[THIS:%.*]], ptr nocapture noundef readonly [[VERTICES:%.*]], i32 noundef signext [[COUNT:%.*]]) align 2 {
+; CHECK-SAME: ptr noundef nonnull align 8 captures(none) dereferenceable(156) [[THIS:%.*]], ptr noundef readonly captures(none) [[VERTICES:%.*]], i32 noundef signext [[COUNT:%.*]]) align 2 {
 ; CHECK-NEXT:  [[ENTRY:.*:]]
 ; CHECK-NEXT:    [[PS:%.*]] = alloca [8 x %struct.b2Vec2], align 8
 ; CHECK-NEXT:    [[HULL:%.*]] = alloca [8 x i32], align 8

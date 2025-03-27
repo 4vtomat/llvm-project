@@ -92,7 +92,7 @@ declare dso_local i64 @strtol(ptr noundef readonly, ptr nocapture noundef, i32 n
 
 define dso_local signext range(i32 0, 4) i32 @main(i32 noundef signext %arg, ptr nocapture noundef readonly %arg1) align 8 {
 ; ARGPROMOTION-LABEL: define dso_local signext range(i32 0, 4) i32 @main(
-; ARGPROMOTION-SAME: i32 noundef signext [[ARG:%.*]], ptr nocapture noundef readonly [[ARG1:%.*]]) align 8 {
+; ARGPROMOTION-SAME: i32 noundef signext [[ARG:%.*]], ptr noundef readonly captures(none) [[ARG1:%.*]]) align 8 {
 ; ARGPROMOTION-NEXT:  [[BB:.*:]]
 ; ARGPROMOTION-NEXT:    [[I:%.*]] = alloca [[STRUCT_REG_STRUCT:%.*]], align 8
 ; ARGPROMOTION-NEXT:    [[I2:%.*]] = alloca i32, align 4
@@ -110,7 +110,7 @@ define dso_local signext range(i32 0, 4) i32 @main(i32 noundef signext %arg, ptr
 ; ARGPROMOTION:       [[BB8]]:
 ; ARGPROMOTION-NEXT:    [[I9:%.*]] = getelementptr inbounds ptr, ptr [[ARG1]], i64 1
 ; ARGPROMOTION-NEXT:    [[I10:%.*]] = load ptr, ptr [[I9]], align 8, !tbaa [[TBAA0:![0-9]+]]
-; ARGPROMOTION-NEXT:    [[I11:%.*]] = tail call i64 @strtol(ptr nocapture noundef nonnull [[I10]], ptr noundef null, i32 noundef signext 10)
+; ARGPROMOTION-NEXT:    [[I11:%.*]] = tail call i64 @strtol(ptr noundef nonnull captures(none) [[I10]], ptr noundef null, i32 noundef signext 10)
 ; ARGPROMOTION-NEXT:    [[I12:%.*]] = trunc i64 [[I11]] to i32
 ; ARGPROMOTION-NEXT:    [[I13:%.*]] = icmp slt i32 [[I12]], 15
 ; ARGPROMOTION-NEXT:    br i1 [[I13]], label %[[BB14:.*]], label %[[BB16:.*]]
@@ -130,7 +130,7 @@ define dso_local signext range(i32 0, 4) i32 @main(i32 noundef signext %arg, ptr
 ; ARGPROMOTION:       [[BB25]]:
 ; ARGPROMOTION-NEXT:    [[I26:%.*]] = getelementptr inbounds ptr, ptr [[ARG1]], i64 2
 ; ARGPROMOTION-NEXT:    [[I27:%.*]] = load ptr, ptr [[I26]], align 8, !tbaa [[TBAA0]]
-; ARGPROMOTION-NEXT:    [[I28:%.*]] = tail call i64 @strtol(ptr nocapture noundef nonnull [[I27]], ptr noundef null, i32 noundef signext 10)
+; ARGPROMOTION-NEXT:    [[I28:%.*]] = tail call i64 @strtol(ptr noundef nonnull captures(none) [[I27]], ptr noundef null, i32 noundef signext 10)
 ; ARGPROMOTION-NEXT:    [[I29:%.*]] = trunc i64 [[I28]] to i32
 ; ARGPROMOTION-NEXT:    br label %[[BB30]]
 ; ARGPROMOTION:       [[BB30]]:
@@ -315,7 +315,7 @@ define dso_local signext range(i32 0, 4) i32 @main(i32 noundef signext %arg, ptr
 ; ARGPROMOTION-NEXT:    ret i32 [[I125]]
 ;
 ; NOARGPROMOTION-LABEL: define dso_local signext range(i32 0, 4) i32 @main(
-; NOARGPROMOTION-SAME: i32 noundef signext [[ARG:%.*]], ptr nocapture noundef readonly [[ARG1:%.*]]) align 8 {
+; NOARGPROMOTION-SAME: i32 noundef signext [[ARG:%.*]], ptr noundef readonly captures(none) [[ARG1:%.*]]) align 8 {
 ; NOARGPROMOTION-NEXT:  [[BB:.*:]]
 ; NOARGPROMOTION-NEXT:    [[I:%.*]] = alloca [[STRUCT_REG_STRUCT:%.*]], align 8
 ; NOARGPROMOTION-NEXT:    [[I2:%.*]] = alloca i32, align 4
@@ -333,7 +333,7 @@ define dso_local signext range(i32 0, 4) i32 @main(i32 noundef signext %arg, ptr
 ; NOARGPROMOTION:       [[BB8]]:
 ; NOARGPROMOTION-NEXT:    [[I9:%.*]] = getelementptr inbounds ptr, ptr [[ARG1]], i64 1
 ; NOARGPROMOTION-NEXT:    [[I10:%.*]] = load ptr, ptr [[I9]], align 8, !tbaa [[TBAA0:![0-9]+]]
-; NOARGPROMOTION-NEXT:    [[I11:%.*]] = tail call i64 @strtol(ptr nocapture noundef nonnull [[I10]], ptr noundef null, i32 noundef signext 10)
+; NOARGPROMOTION-NEXT:    [[I11:%.*]] = tail call i64 @strtol(ptr noundef nonnull captures(none) [[I10]], ptr noundef null, i32 noundef signext 10)
 ; NOARGPROMOTION-NEXT:    [[I12:%.*]] = trunc i64 [[I11]] to i32
 ; NOARGPROMOTION-NEXT:    [[I13:%.*]] = icmp slt i32 [[I12]], 15
 ; NOARGPROMOTION-NEXT:    br i1 [[I13]], label %[[BB14:.*]], label %[[BB16:.*]]
@@ -353,7 +353,7 @@ define dso_local signext range(i32 0, 4) i32 @main(i32 noundef signext %arg, ptr
 ; NOARGPROMOTION:       [[BB25]]:
 ; NOARGPROMOTION-NEXT:    [[I26:%.*]] = getelementptr inbounds ptr, ptr [[ARG1]], i64 2
 ; NOARGPROMOTION-NEXT:    [[I27:%.*]] = load ptr, ptr [[I26]], align 8, !tbaa [[TBAA0]]
-; NOARGPROMOTION-NEXT:    [[I28:%.*]] = tail call i64 @strtol(ptr nocapture noundef nonnull [[I27]], ptr noundef null, i32 noundef signext 10)
+; NOARGPROMOTION-NEXT:    [[I28:%.*]] = tail call i64 @strtol(ptr noundef nonnull captures(none) [[I27]], ptr noundef null, i32 noundef signext 10)
 ; NOARGPROMOTION-NEXT:    [[I29:%.*]] = trunc i64 [[I28]] to i32
 ; NOARGPROMOTION-NEXT:    br label %[[BB30]]
 ; NOARGPROMOTION:       [[BB30]]:

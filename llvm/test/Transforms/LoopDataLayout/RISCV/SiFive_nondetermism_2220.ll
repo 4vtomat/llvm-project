@@ -29,7 +29,7 @@ declare dso_local void @free(ptr allocptr nocapture noundef)
 ; Function Attrs: nounwind uwtable vscale_range(8,1024)
 define internal fastcc void @quantum_hadamard(i32 noundef signext %arg, ptr nocapture noundef %arg1, i32 %arg2) align 8 {
 ; CHECK-LABEL: define internal fastcc void @quantum_hadamard
-; CHECK-SAME: (i32 noundef signext [[ARG:%.*]], ptr nocapture noundef [[ARG1:%.*]], i32 [[ARG2:%.*]]) align 8 {
+; CHECK-SAME: (i32 noundef signext [[ARG:%.*]], ptr noundef captures(none) [[ARG1:%.*]], i32 [[ARG2:%.*]]) align 8 {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[I:%.*]] = alloca [[STRUCT_QUANTUM_MATRIX_STRUCT:%.*]], align 8
 ; CHECK-NEXT:    call void @llvm.lifetime.start.p0(i64 16, ptr nonnull [[I]])
@@ -977,7 +977,7 @@ define internal fastcc void @quantum_hadamard(i32 noundef signext %arg, ptr noca
 ; CHECK:       bb725:
 ; CHECK-NEXT:    store i64 [[I722]], ptr @quantum_memman.max, align 8
 ; CHECK-NEXT:    br label [[BB726]]
-; CHECK:       bb726
+; CHECK:       bb726:
 ; CHECK-NEXT:    [[I727:%.*]] = load i32, ptr @quantum_gate_counter.counter, align 4
 ; CHECK-NEXT:    [[I728:%.*]] = add nsw i32 [[I727]], 1
 ; CHECK-NEXT:    store i32 [[I728]], ptr @quantum_gate_counter.counter, align 4

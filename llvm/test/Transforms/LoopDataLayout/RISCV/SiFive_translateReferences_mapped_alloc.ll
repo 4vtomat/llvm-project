@@ -38,7 +38,7 @@ declare dso_local signext range(i32 0, 2) i32 @quantum_objcode_put(i8 noundef ze
 ; Function Attrs: nounwind uwtable vscale_range(2,2)
 define internal fastcc signext range(i32 0, 2) i32 @bmeasure(i32 noundef signext %arg, ptr nocapture noundef nonnull %arg1) align 8 {
 ; CHECK-LABEL: define internal fastcc signext range(i32 0, 2) i32 @bmeasure(
-; CHECK-SAME: i32 noundef signext [[ARG:%.*]], ptr nocapture noundef nonnull [[ARG1:%.*]]) align 8 {
+; CHECK-SAME: i32 noundef signext [[ARG:%.*]], ptr noundef nonnull captures(none) [[ARG1:%.*]]) align 8 {
 ; CHECK-NEXT:  [[BB:.*]]:
 ; CHECK-NEXT:    [[I:%.*]] = alloca [[STRUCT_QUANTUM_REG_NODE_STRUCT_SOA:%.*]], align 8
 ; CHECK-NEXT:    [[I2:%.*]] = alloca [[STRUCT_QUANTUM_REG_NODE_STRUCT_SOA]], align 8

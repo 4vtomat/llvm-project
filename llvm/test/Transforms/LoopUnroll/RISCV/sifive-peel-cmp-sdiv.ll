@@ -7,7 +7,7 @@
 ; Function Attrs: mustprogress nounwind uwtable
 define dso_local void @_Z4s276PiS_S_S_i(ptr nocapture noundef %a, ptr nocapture noundef readonly %b, ptr nocapture noundef readonly %c, ptr nocapture noundef readonly %d, i32 noundef signext %len) {
 ; CHECK-LABEL: define dso_local void @_Z4s276PiS_S_S_i(
-; CHECK-SAME: ptr nocapture noundef [[A:%.*]], ptr nocapture noundef readonly [[B:%.*]], ptr nocapture noundef readonly [[C:%.*]], ptr nocapture noundef readonly [[D:%.*]], i32 noundef signext [[LEN:%.*]]) {
+; CHECK-SAME: ptr noundef captures(none) [[A:%.*]], ptr noundef readonly captures(none) [[B:%.*]], ptr noundef readonly captures(none) [[C:%.*]], ptr noundef readonly captures(none) [[D:%.*]], i32 noundef signext [[LEN:%.*]]) {
 ; CHECK-NEXT:  [[ENTRY:.*]]:
 ; CHECK-NEXT:    [[DIV:%.*]] = sdiv i32 [[LEN]], 2
 ; CHECK-NEXT:    [[EXT:%.*]] = zext i32 [[DIV]] to i64

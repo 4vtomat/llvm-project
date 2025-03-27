@@ -4,7 +4,7 @@
 ; Function Attrs: nounwind uwtable vscale_range(2,2)
 define dso_local signext i32 @x264_pixel_satd_8x8(ptr nocapture noundef readonly %pix1, i32 noundef signext %i_pix1, ptr nocapture noundef readonly %pix2, i32 noundef signext %i_pix2) {
 ; CHECK-LABEL: define dso_local signext i32 @x264_pixel_satd_8x8(
-; CHECK-SAME: ptr nocapture noundef readonly [[PIX1:%.*]], i32 noundef signext [[I_PIX1:%.*]], ptr nocapture noundef readonly [[PIX2:%.*]], i32 noundef signext [[I_PIX2:%.*]]) {
+; CHECK-SAME: ptr noundef readonly captures(none) [[PIX1:%.*]], i32 noundef signext [[I_PIX1:%.*]], ptr noundef readonly captures(none) [[PIX2:%.*]], i32 noundef signext [[I_PIX2:%.*]]) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP:%.*]] = alloca [8 x [4 x i32]], align 8
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
@@ -16,64 +16,64 @@ define dso_local signext i32 @x264_pixel_satd_8x8(ptr nocapture noundef readonly
 ; CHECK-NEXT:    [[PIX1_ADDR_03:%.*]] = phi ptr [ [[PIX1]], [[ENTRY:%.*]] ], [ [[ADD_PTR]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[PIX2_ADDR_02:%.*]] = phi ptr [ [[PIX2]], [[ENTRY]] ], [ [[ADD_PTR64]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[I_01:%.*]] = phi i32 [ 0, [[ENTRY]] ], [ [[INC:%.*]], [[FOR_BODY]] ]
-; CHECK-NEXT:    [[I:%.*]] = load i8, ptr [[PIX1_ADDR_03]], align 1, !tbaa [[TBAA11:![0-9]+]]
+; CHECK-NEXT:    [[I:%.*]] = load i8, ptr [[PIX1_ADDR_03]], align 1, !tbaa [[TBAA0:![0-9]+]]
 ; CHECK-NEXT:    [[CONV:%.*]] = zext i8 [[I]] to i32
-; CHECK-NEXT:    [[I1:%.*]] = load i8, ptr [[PIX2_ADDR_02]], align 1, !tbaa [[TBAA11]]
+; CHECK-NEXT:    [[I1:%.*]] = load i8, ptr [[PIX2_ADDR_02]], align 1, !tbaa [[TBAA0]]
 ; CHECK-NEXT:    [[CONV2:%.*]] = zext i8 [[I1]] to i32
 ; CHECK-NEXT:    [[SUB:%.*]] = sub nsw i32 [[CONV]], [[CONV2]]
 ; CHECK-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds i8, ptr [[PIX1_ADDR_03]], i64 4
-; CHECK-NEXT:    [[I2:%.*]] = load i8, ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA11]]
+; CHECK-NEXT:    [[I2:%.*]] = load i8, ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA0]]
 ; CHECK-NEXT:    [[CONV4:%.*]] = zext i8 [[I2]] to i32
 ; CHECK-NEXT:    [[ARRAYIDX5:%.*]] = getelementptr inbounds i8, ptr [[PIX2_ADDR_02]], i64 4
-; CHECK-NEXT:    [[I3:%.*]] = load i8, ptr [[ARRAYIDX5]], align 1, !tbaa [[TBAA11]]
+; CHECK-NEXT:    [[I3:%.*]] = load i8, ptr [[ARRAYIDX5]], align 1, !tbaa [[TBAA0]]
 ; CHECK-NEXT:    [[CONV6:%.*]] = zext i8 [[I3]] to i32
 ; CHECK-NEXT:    [[SUB7:%.*]] = sub nsw i32 [[CONV4]], [[CONV6]]
 ; CHECK-NEXT:    [[SHL:%.*]] = shl nsw i32 [[SUB7]], 16
 ; CHECK-NEXT:    [[ADD:%.*]] = add nsw i32 [[SHL]], [[SUB]]
 ; CHECK-NEXT:    [[ARRAYIDX8:%.*]] = getelementptr inbounds i8, ptr [[PIX1_ADDR_03]], i64 1
-; CHECK-NEXT:    [[I4:%.*]] = load i8, ptr [[ARRAYIDX8]], align 1, !tbaa [[TBAA11]]
+; CHECK-NEXT:    [[I4:%.*]] = load i8, ptr [[ARRAYIDX8]], align 1, !tbaa [[TBAA0]]
 ; CHECK-NEXT:    [[CONV9:%.*]] = zext i8 [[I4]] to i32
 ; CHECK-NEXT:    [[ARRAYIDX10:%.*]] = getelementptr inbounds i8, ptr [[PIX2_ADDR_02]], i64 1
-; CHECK-NEXT:    [[I5:%.*]] = load i8, ptr [[ARRAYIDX10]], align 1, !tbaa [[TBAA11]]
+; CHECK-NEXT:    [[I5:%.*]] = load i8, ptr [[ARRAYIDX10]], align 1, !tbaa [[TBAA0]]
 ; CHECK-NEXT:    [[CONV11:%.*]] = zext i8 [[I5]] to i32
 ; CHECK-NEXT:    [[SUB12:%.*]] = sub nsw i32 [[CONV9]], [[CONV11]]
 ; CHECK-NEXT:    [[ARRAYIDX13:%.*]] = getelementptr inbounds i8, ptr [[PIX1_ADDR_03]], i64 5
-; CHECK-NEXT:    [[I6:%.*]] = load i8, ptr [[ARRAYIDX13]], align 1, !tbaa [[TBAA11]]
+; CHECK-NEXT:    [[I6:%.*]] = load i8, ptr [[ARRAYIDX13]], align 1, !tbaa [[TBAA0]]
 ; CHECK-NEXT:    [[CONV14:%.*]] = zext i8 [[I6]] to i32
 ; CHECK-NEXT:    [[ARRAYIDX15:%.*]] = getelementptr inbounds i8, ptr [[PIX2_ADDR_02]], i64 5
-; CHECK-NEXT:    [[I7:%.*]] = load i8, ptr [[ARRAYIDX15]], align 1, !tbaa [[TBAA11]]
+; CHECK-NEXT:    [[I7:%.*]] = load i8, ptr [[ARRAYIDX15]], align 1, !tbaa [[TBAA0]]
 ; CHECK-NEXT:    [[CONV16:%.*]] = zext i8 [[I7]] to i32
 ; CHECK-NEXT:    [[SUB17:%.*]] = sub nsw i32 [[CONV14]], [[CONV16]]
 ; CHECK-NEXT:    [[SHL18:%.*]] = shl nsw i32 [[SUB17]], 16
 ; CHECK-NEXT:    [[ADD19:%.*]] = add nsw i32 [[SHL18]], [[SUB12]]
 ; CHECK-NEXT:    [[ARRAYIDX20:%.*]] = getelementptr inbounds i8, ptr [[PIX1_ADDR_03]], i64 2
-; CHECK-NEXT:    [[I8:%.*]] = load i8, ptr [[ARRAYIDX20]], align 1, !tbaa [[TBAA11]]
+; CHECK-NEXT:    [[I8:%.*]] = load i8, ptr [[ARRAYIDX20]], align 1, !tbaa [[TBAA0]]
 ; CHECK-NEXT:    [[CONV21:%.*]] = zext i8 [[I8]] to i32
 ; CHECK-NEXT:    [[ARRAYIDX22:%.*]] = getelementptr inbounds i8, ptr [[PIX2_ADDR_02]], i64 2
-; CHECK-NEXT:    [[I9:%.*]] = load i8, ptr [[ARRAYIDX22]], align 1, !tbaa [[TBAA11]]
+; CHECK-NEXT:    [[I9:%.*]] = load i8, ptr [[ARRAYIDX22]], align 1, !tbaa [[TBAA0]]
 ; CHECK-NEXT:    [[CONV23:%.*]] = zext i8 [[I9]] to i32
 ; CHECK-NEXT:    [[SUB24:%.*]] = sub nsw i32 [[CONV21]], [[CONV23]]
 ; CHECK-NEXT:    [[ARRAYIDX25:%.*]] = getelementptr inbounds i8, ptr [[PIX1_ADDR_03]], i64 6
-; CHECK-NEXT:    [[I10:%.*]] = load i8, ptr [[ARRAYIDX25]], align 1, !tbaa [[TBAA11]]
+; CHECK-NEXT:    [[I10:%.*]] = load i8, ptr [[ARRAYIDX25]], align 1, !tbaa [[TBAA0]]
 ; CHECK-NEXT:    [[CONV26:%.*]] = zext i8 [[I10]] to i32
 ; CHECK-NEXT:    [[ARRAYIDX27:%.*]] = getelementptr inbounds i8, ptr [[PIX2_ADDR_02]], i64 6
-; CHECK-NEXT:    [[I11:%.*]] = load i8, ptr [[ARRAYIDX27]], align 1, !tbaa [[TBAA11]]
+; CHECK-NEXT:    [[I11:%.*]] = load i8, ptr [[ARRAYIDX27]], align 1, !tbaa [[TBAA0]]
 ; CHECK-NEXT:    [[CONV28:%.*]] = zext i8 [[I11]] to i32
 ; CHECK-NEXT:    [[SUB29:%.*]] = sub nsw i32 [[CONV26]], [[CONV28]]
 ; CHECK-NEXT:    [[SHL30:%.*]] = shl nsw i32 [[SUB29]], 16
 ; CHECK-NEXT:    [[ADD31:%.*]] = add nsw i32 [[SHL30]], [[SUB24]]
 ; CHECK-NEXT:    [[ARRAYIDX32:%.*]] = getelementptr inbounds i8, ptr [[PIX1_ADDR_03]], i64 3
-; CHECK-NEXT:    [[I12:%.*]] = load i8, ptr [[ARRAYIDX32]], align 1, !tbaa [[TBAA11]]
+; CHECK-NEXT:    [[I12:%.*]] = load i8, ptr [[ARRAYIDX32]], align 1, !tbaa [[TBAA0]]
 ; CHECK-NEXT:    [[CONV33:%.*]] = zext i8 [[I12]] to i32
 ; CHECK-NEXT:    [[ARRAYIDX34:%.*]] = getelementptr inbounds i8, ptr [[PIX2_ADDR_02]], i64 3
-; CHECK-NEXT:    [[I13:%.*]] = load i8, ptr [[ARRAYIDX34]], align 1, !tbaa [[TBAA11]]
+; CHECK-NEXT:    [[I13:%.*]] = load i8, ptr [[ARRAYIDX34]], align 1, !tbaa [[TBAA0]]
 ; CHECK-NEXT:    [[CONV35:%.*]] = zext i8 [[I13]] to i32
 ; CHECK-NEXT:    [[SUB36:%.*]] = sub nsw i32 [[CONV33]], [[CONV35]]
 ; CHECK-NEXT:    [[ARRAYIDX37:%.*]] = getelementptr inbounds i8, ptr [[PIX1_ADDR_03]], i64 7
-; CHECK-NEXT:    [[I14:%.*]] = load i8, ptr [[ARRAYIDX37]], align 1, !tbaa [[TBAA11]]
+; CHECK-NEXT:    [[I14:%.*]] = load i8, ptr [[ARRAYIDX37]], align 1, !tbaa [[TBAA0]]
 ; CHECK-NEXT:    [[CONV38:%.*]] = zext i8 [[I14]] to i32
 ; CHECK-NEXT:    [[ARRAYIDX39:%.*]] = getelementptr inbounds i8, ptr [[PIX2_ADDR_02]], i64 7
-; CHECK-NEXT:    [[I15:%.*]] = load i8, ptr [[ARRAYIDX39]], align 1, !tbaa [[TBAA11]]
+; CHECK-NEXT:    [[I15:%.*]] = load i8, ptr [[ARRAYIDX39]], align 1, !tbaa [[TBAA0]]
 ; CHECK-NEXT:    [[CONV40:%.*]] = zext i8 [[I15]] to i32
 ; CHECK-NEXT:    [[SUB41:%.*]] = sub nsw i32 [[CONV38]], [[CONV40]]
 ; CHECK-NEXT:    [[SHL42:%.*]] = shl nsw i32 [[SUB41]], 16
@@ -85,23 +85,23 @@ define dso_local signext i32 @x264_pixel_satd_8x8(ptr nocapture noundef readonly
 ; CHECK-NEXT:    [[ADD48:%.*]] = add nsw i32 [[ADD46]], [[ADD44]]
 ; CHECK-NEXT:    [[IDXPROM:%.*]] = zext nneg i32 [[I_01]] to i64
 ; CHECK-NEXT:    [[ARRAYIDX49:%.*]] = getelementptr inbounds [8 x [4 x i32]], ptr [[TMP]], i64 0, i64 [[IDXPROM]]
-; CHECK-NEXT:    store i32 [[ADD48]], ptr [[ARRAYIDX49]], align 8, !tbaa [[TBAA14:![0-9]+]]
+; CHECK-NEXT:    store i32 [[ADD48]], ptr [[ARRAYIDX49]], align 8, !tbaa [[TBAA3:![0-9]+]]
 ; CHECK-NEXT:    [[SUB51:%.*]] = sub nsw i32 [[ADD44]], [[ADD46]]
 ; CHECK-NEXT:    [[ARRAYIDX54:%.*]] = getelementptr inbounds i8, ptr [[ARRAYIDX49]], i64 8
-; CHECK-NEXT:    store i32 [[SUB51]], ptr [[ARRAYIDX54]], align 8, !tbaa [[TBAA14]]
+; CHECK-NEXT:    store i32 [[SUB51]], ptr [[ARRAYIDX54]], align 8, !tbaa [[TBAA3]]
 ; CHECK-NEXT:    [[ADD55:%.*]] = add nsw i32 [[SUB47]], [[SUB45]]
 ; CHECK-NEXT:    [[ARRAYIDX58:%.*]] = getelementptr inbounds i8, ptr [[ARRAYIDX49]], i64 4
-; CHECK-NEXT:    store i32 [[ADD55]], ptr [[ARRAYIDX58]], align 4, !tbaa [[TBAA14]]
+; CHECK-NEXT:    store i32 [[ADD55]], ptr [[ARRAYIDX58]], align 4, !tbaa [[TBAA3]]
 ; CHECK-NEXT:    [[SUB59:%.*]] = sub nsw i32 [[SUB45]], [[SUB47]]
 ; CHECK-NEXT:    [[ARRAYIDX62:%.*]] = getelementptr inbounds i8, ptr [[ARRAYIDX49]], i64 12
-; CHECK-NEXT:    store i32 [[SUB59]], ptr [[ARRAYIDX62]], align 4, !tbaa [[TBAA14]]
+; CHECK-NEXT:    store i32 [[SUB59]], ptr [[ARRAYIDX62]], align 4, !tbaa [[TBAA3]]
 ; CHECK-NEXT:    [[INC]] = add nuw nsw i32 [[I_01]], 1
 ; CHECK-NEXT:    [[IDX_EXT:%.*]] = sext i32 [[I_PIX1]] to i64
 ; CHECK-NEXT:    [[ADD_PTR]] = getelementptr inbounds i8, ptr [[PIX1_ADDR_03]], i64 [[IDX_EXT]]
 ; CHECK-NEXT:    [[IDX_EXT63:%.*]] = sext i32 [[I_PIX2]] to i64
 ; CHECK-NEXT:    [[ADD_PTR64]] = getelementptr inbounds i8, ptr [[PIX2_ADDR_02]], i64 [[IDX_EXT63]]
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp ult i32 [[INC]], 8
-; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_COND66_PREHEADER:%.*]], !llvm.loop [[LOOP16:![0-9]+]]
+; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_COND66_PREHEADER:%.*]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       for.cond122.preheader:
 ; CHECK-NEXT:    br label [[FOR_COND207_PREHEADER:%.*]]
 ; CHECK:       for.body70:
@@ -109,18 +109,18 @@ define dso_local signext i32 @x264_pixel_satd_8x8(ptr nocapture noundef readonly
 ; CHECK-NEXT:    [[I65_04:%.*]] = phi i32 [ 0, [[FOR_COND66_PREHEADER]] ], [ [[INC115:%.*]], [[FOR_BODY70]] ]
 ; CHECK-NEXT:    [[IDXPROM73:%.*]] = zext nneg i32 [[I65_04]] to i64
 ; CHECK-NEXT:    [[ARRAYIDX74:%.*]] = getelementptr inbounds [4 x i32], ptr [[TMP]], i64 0, i64 [[IDXPROM73]]
-; CHECK-NEXT:    [[I16:%.*]] = load i32, ptr [[ARRAYIDX74]], align 4, !tbaa [[TBAA14]]
+; CHECK-NEXT:    [[I16:%.*]] = load i32, ptr [[ARRAYIDX74]], align 4, !tbaa [[TBAA3]]
 ; CHECK-NEXT:    [[ARRAYIDX75:%.*]] = getelementptr inbounds i8, ptr [[TMP]], i64 16
 ; CHECK-NEXT:    [[ARRAYIDX77:%.*]] = getelementptr inbounds [4 x i32], ptr [[ARRAYIDX75]], i64 0, i64 [[IDXPROM73]]
-; CHECK-NEXT:    [[I17:%.*]] = load i32, ptr [[ARRAYIDX77]], align 4, !tbaa [[TBAA14]]
+; CHECK-NEXT:    [[I17:%.*]] = load i32, ptr [[ARRAYIDX77]], align 4, !tbaa [[TBAA3]]
 ; CHECK-NEXT:    [[ADD78:%.*]] = add i32 [[I17]], [[I16]]
 ; CHECK-NEXT:    [[SUB86:%.*]] = sub i32 [[I16]], [[I17]]
 ; CHECK-NEXT:    [[ARRAYIDX88:%.*]] = getelementptr inbounds i8, ptr [[TMP]], i64 32
 ; CHECK-NEXT:    [[ARRAYIDX90:%.*]] = getelementptr inbounds [4 x i32], ptr [[ARRAYIDX88]], i64 0, i64 [[IDXPROM73]]
-; CHECK-NEXT:    [[I18:%.*]] = load i32, ptr [[ARRAYIDX90]], align 4, !tbaa [[TBAA14]]
+; CHECK-NEXT:    [[I18:%.*]] = load i32, ptr [[ARRAYIDX90]], align 4, !tbaa [[TBAA3]]
 ; CHECK-NEXT:    [[ARRAYIDX91:%.*]] = getelementptr inbounds i8, ptr [[TMP]], i64 48
 ; CHECK-NEXT:    [[ARRAYIDX93:%.*]] = getelementptr inbounds [4 x i32], ptr [[ARRAYIDX91]], i64 0, i64 [[IDXPROM73]]
-; CHECK-NEXT:    [[I19:%.*]] = load i32, ptr [[ARRAYIDX93]], align 4, !tbaa [[TBAA14]]
+; CHECK-NEXT:    [[I19:%.*]] = load i32, ptr [[ARRAYIDX93]], align 4, !tbaa [[TBAA3]]
 ; CHECK-NEXT:    [[ADD94:%.*]] = add i32 [[I19]], [[I18]]
 ; CHECK-NEXT:    [[SUB102:%.*]] = sub i32 [[I18]], [[I19]]
 ; CHECK-NEXT:    [[ADD103:%.*]] = add nsw i32 [[ADD94]], [[ADD78]]
@@ -153,7 +153,7 @@ define dso_local signext i32 @x264_pixel_satd_8x8(ptr nocapture noundef readonly
 ; CHECK-NEXT:    [[ADD113]] = add i32 [[ADD112]], [[XOR_I121]]
 ; CHECK-NEXT:    [[INC115]] = add nuw nsw i32 [[I65_04]], 1
 ; CHECK-NEXT:    [[CMP67:%.*]] = icmp ult i32 [[INC115]], 4
-; CHECK-NEXT:    br i1 [[CMP67]], label [[FOR_BODY70]], label [[FOR_COND122_PREHEADER:%.*]], !llvm.loop [[LOOP18:![0-9]+]]
+; CHECK-NEXT:    br i1 [[CMP67]], label [[FOR_BODY70]], label [[FOR_COND122_PREHEADER:%.*]], !llvm.loop [[LOOP7:![0-9]+]]
 ; CHECK:       for.cond207.preheader:
 ; CHECK-NEXT:    [[SUM0_0_LCSSA:%.*]] = phi i32 [ [[ADD113]], [[FOR_COND122_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY211:%.*]]
@@ -176,18 +176,18 @@ define dso_local signext i32 @x264_pixel_satd_8x8(ptr nocapture noundef readonly
 ; CHECK-NEXT:    [[ARRAYIDX213:%.*]] = getelementptr inbounds i8, ptr [[TMP]], i64 64
 ; CHECK-NEXT:    [[IDXPROM214:%.*]] = zext nneg i32 [[I206_010]] to i64
 ; CHECK-NEXT:    [[ARRAYIDX215:%.*]] = getelementptr inbounds [4 x i32], ptr [[ARRAYIDX213]], i64 0, i64 [[IDXPROM214]]
-; CHECK-NEXT:    [[I36:%.*]] = load i32, ptr [[ARRAYIDX215]], align 4, !tbaa [[TBAA14]]
+; CHECK-NEXT:    [[I36:%.*]] = load i32, ptr [[ARRAYIDX215]], align 4, !tbaa [[TBAA3]]
 ; CHECK-NEXT:    [[ARRAYIDX216:%.*]] = getelementptr inbounds i8, ptr [[TMP]], i64 80
 ; CHECK-NEXT:    [[ARRAYIDX218:%.*]] = getelementptr inbounds [4 x i32], ptr [[ARRAYIDX216]], i64 0, i64 [[IDXPROM214]]
-; CHECK-NEXT:    [[I37:%.*]] = load i32, ptr [[ARRAYIDX218]], align 4, !tbaa [[TBAA14]]
+; CHECK-NEXT:    [[I37:%.*]] = load i32, ptr [[ARRAYIDX218]], align 4, !tbaa [[TBAA3]]
 ; CHECK-NEXT:    [[ADD219:%.*]] = add i32 [[I37]], [[I36]]
 ; CHECK-NEXT:    [[SUB227:%.*]] = sub i32 [[I36]], [[I37]]
 ; CHECK-NEXT:    [[ARRAYIDX229:%.*]] = getelementptr inbounds i8, ptr [[TMP]], i64 96
 ; CHECK-NEXT:    [[ARRAYIDX231:%.*]] = getelementptr inbounds [4 x i32], ptr [[ARRAYIDX229]], i64 0, i64 [[IDXPROM214]]
-; CHECK-NEXT:    [[I38:%.*]] = load i32, ptr [[ARRAYIDX231]], align 4, !tbaa [[TBAA14]]
+; CHECK-NEXT:    [[I38:%.*]] = load i32, ptr [[ARRAYIDX231]], align 4, !tbaa [[TBAA3]]
 ; CHECK-NEXT:    [[ARRAYIDX232:%.*]] = getelementptr inbounds i8, ptr [[TMP]], i64 112
 ; CHECK-NEXT:    [[ARRAYIDX234:%.*]] = getelementptr inbounds [4 x i32], ptr [[ARRAYIDX232]], i64 0, i64 [[IDXPROM214]]
-; CHECK-NEXT:    [[I39:%.*]] = load i32, ptr [[ARRAYIDX234]], align 4, !tbaa [[TBAA14]]
+; CHECK-NEXT:    [[I39:%.*]] = load i32, ptr [[ARRAYIDX234]], align 4, !tbaa [[TBAA3]]
 ; CHECK-NEXT:    [[ADD235:%.*]] = add i32 [[I39]], [[I38]]
 ; CHECK-NEXT:    [[SUB243:%.*]] = sub i32 [[I38]], [[I39]]
 ; CHECK-NEXT:    [[ADD244:%.*]] = add nsw i32 [[ADD235]], [[ADD219]]
@@ -220,7 +220,7 @@ define dso_local signext i32 @x264_pixel_satd_8x8(ptr nocapture noundef readonly
 ; CHECK-NEXT:    [[ADD255]] = add i32 [[ADD254]], [[XOR_I141]]
 ; CHECK-NEXT:    [[INC257]] = add nuw nsw i32 [[I206_010]], 1
 ; CHECK-NEXT:    [[CMP208:%.*]] = icmp ult i32 [[INC257]], 4
-; CHECK-NEXT:    br i1 [[CMP208]], label [[FOR_BODY211]], label [[FOR_COND_CLEANUP210:%.*]], !llvm.loop [[LOOP19:![0-9]+]]
+; CHECK-NEXT:    br i1 [[CMP208]], label [[FOR_BODY211]], label [[FOR_COND_CLEANUP210:%.*]], !llvm.loop [[LOOP8:![0-9]+]]
 ;
 entry:
   %tmp = alloca [8 x [4 x i32]], align 8
@@ -557,13 +557,13 @@ for.body211:                                      ; preds = %for.cond207
 !19 = distinct !{!19, !17}
 !20 = distinct !{!20, !17}
 ;.
-; CHECK: [[TBAA11]] = !{[[META12:![0-9]+]], [[META12]], i64 0}
-; CHECK: [[META12]] = !{!"omnipotent char", [[META13:![0-9]+]], i64 0}
-; CHECK: [[META13]] = !{!"Simple C/C++ TBAA"}
-; CHECK: [[TBAA14]] = !{[[META15:![0-9]+]], [[META15]], i64 0}
-; CHECK: [[META15]] = !{!"int", [[META12]], i64 0}
-; CHECK: [[LOOP16]] = distinct !{[[LOOP16]], [[META17:![0-9]+]]}
-; CHECK: [[META17]] = !{!"llvm.loop.mustprogress"}
-; CHECK: [[LOOP18]] = distinct !{[[LOOP18]], [[META17]]}
-; CHECK: [[LOOP19]] = distinct !{[[LOOP19]], [[META17]]}
+; CHECK: [[TBAA0]] = !{[[META1:![0-9]+]], [[META1]], i64 0}
+; CHECK: [[META1]] = !{!"omnipotent char", [[META2:![0-9]+]], i64 0}
+; CHECK: [[META2]] = !{!"Simple C/C++ TBAA"}
+; CHECK: [[TBAA3]] = !{[[META4:![0-9]+]], [[META4]], i64 0}
+; CHECK: [[META4]] = !{!"int", [[META1]], i64 0}
+; CHECK: [[LOOP5]] = distinct !{[[LOOP5]], [[META6:![0-9]+]]}
+; CHECK: [[META6]] = !{!"llvm.loop.mustprogress"}
+; CHECK: [[LOOP7]] = distinct !{[[LOOP7]], [[META6]]}
+; CHECK: [[LOOP8]] = distinct !{[[LOOP8]], [[META6]]}
 ;.

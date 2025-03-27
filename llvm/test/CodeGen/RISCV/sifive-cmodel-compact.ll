@@ -400,9 +400,9 @@ define void @lower_jumptable(i32 %in, i32* %out) nounwind {
 ; PIC-NEXT:    add a2, a3, a2, %got_gprel(.LJTI11_0)
 ; PIC-NEXT:    ld a2, %got_gprel_lo(.LJTI11_0)(a2)
 ; PIC-NEXT:    slli a0, a0, 2
-; PIC-NEXT:    add a0, a0, a2
+; PIC-NEXT:    add a0, a2, a0
 ; PIC-NEXT:    lw a0, 0(a0)
-; PIC-NEXT:    add a0, a0, a2
+; PIC-NEXT:    add a0, a2, a0
 ; PIC-NEXT:    jr a0
 ; PIC-NEXT:  .LBB11_2: # %bb1
 ; PIC-NEXT:    li a0, 4
@@ -437,7 +437,7 @@ define void @lower_jumptable(i32 %in, i32* %out) nounwind {
 ; NoPIC-NEXT:    add a2, a2, gp, %got_gprel(.LJTI11_0)
 ; NoPIC-NEXT:    ld a2, %got_gprel_lo(.LJTI11_0)(a2)
 ; NoPIC-NEXT:    slli a0, a0, 3
-; NoPIC-NEXT:    add a0, a0, a2
+; NoPIC-NEXT:    add a0, a2, a0
 ; NoPIC-NEXT:    ld a0, 0(a0)
 ; NoPIC-NEXT:    jr a0
 ; NoPIC-NEXT:  .LBB11_2: # %bb1

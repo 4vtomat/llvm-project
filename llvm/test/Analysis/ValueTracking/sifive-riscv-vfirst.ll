@@ -3,7 +3,7 @@
 
 define i64 @vfirst(ptr nocapture noundef readonly %x, i32 noundef signext %vl) {
 ; CHECK-LABEL: define i64 @vfirst(
-; CHECK-SAME: ptr nocapture noundef readonly [[X:%.*]], i32 noundef signext [[VL:%.*]]) {
+; CHECK-SAME: ptr noundef readonly captures(none) [[X:%.*]], i32 noundef signext [[VL:%.*]]) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[CONV:%.*]] = sext i32 [[VL]] to i64
 ; CHECK-NEXT:    [[TMP0:%.*]] = tail call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.i64(<vscale x 2 x i32> poison, ptr [[X]], i64 [[CONV]])

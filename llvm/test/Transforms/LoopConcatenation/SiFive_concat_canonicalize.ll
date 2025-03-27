@@ -4,7 +4,7 @@
 ; Function Attrs: nounwind uwtable vscale_range(2,2)
 define dso_local signext range(i32 0, 98304) i32 @x264_pixel_satd_8x8(ptr nocapture noundef readonly %pix1, i32 noundef signext %i_pix1, ptr nocapture noundef readonly %pix2, i32 noundef signext %i_pix2) {
 ; CHECK-LABEL: define dso_local signext range(i32 0, 98304) i32 @x264_pixel_satd_8x8(
-; CHECK-SAME: ptr nocapture noundef readonly [[PIX1:%.*]], i32 noundef signext [[I_PIX1:%.*]], ptr nocapture noundef readonly [[PIX2:%.*]], i32 noundef signext [[I_PIX2:%.*]]) {
+; CHECK-SAME: ptr noundef readonly captures(none) [[PIX1:%.*]], i32 noundef signext [[I_PIX1:%.*]], ptr noundef readonly captures(none) [[PIX2:%.*]], i32 noundef signext [[I_PIX2:%.*]]) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMPA:%.*]] = alloca [8 x [4 x i32]], align 8
 ; CHECK-NEXT:    [[TMP0:%.*]] = getelementptr inbounds i8, ptr [[TMPA]], i64 64
