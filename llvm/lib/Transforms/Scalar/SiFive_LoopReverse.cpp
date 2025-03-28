@@ -413,7 +413,7 @@ static bool updateBinOp(BinaryOperator *IVBinOp, bool IsLowerBoundInclusive,
       NewInitIndInst->insertAfter(InsertPt);
     } else {
       BasicBlock *InitValBlock = IV->getIncomingBlock(InitIdx);
-      IRBuilder<> IRB(InitValBlock->getFirstNonPHI());
+      IRBuilder<> IRB(&*InitValBlock->getFirstNonPHIIt());
       NewInitIndVal = IRB.CreateAdd(NewInitIndVal, StepBy);
     }
     return NewInitIndVal;

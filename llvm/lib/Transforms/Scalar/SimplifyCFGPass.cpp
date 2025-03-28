@@ -393,7 +393,7 @@ static bool performIfConditionPHI(Function &F, BasicBlock *BB,
   // If Cond2 is defined in Pred2, insert it into Pred1.
   auto *IC2 = cast<Instruction>(Cond2);
   if (IC2->getParent() == Pred2)
-    IC2->moveBefore(Br1);
+    IC2->moveBefore(Br1->getIterator());
 
   if (Br2->getSuccessor(0) != BB)
     Cond2 = IB.CreateNot(Cond2);

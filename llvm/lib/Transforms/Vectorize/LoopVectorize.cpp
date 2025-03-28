@@ -2869,7 +2869,7 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
   if (isRevectorizeWithoutStrideChecks(*OrigLoop)) {
     auto *NewPHI = PHINode::Create(
         Builder.getInt1Ty(), pred_size(TCCheckBlock), "no.scev.check",
-        TCCheckBlock->getFirstNonPHI()->getIterator());
+        TCCheckBlock->getFirstNonPHIIt());
     for (BasicBlock *BB : predecessors(TCCheckBlock))
       NewPHI->addIncoming(BB == PrevSCEVCheckBlock ? Builder.getFalse()
                                                    : Builder.getTrue(),

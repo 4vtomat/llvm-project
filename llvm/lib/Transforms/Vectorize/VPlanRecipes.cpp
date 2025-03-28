@@ -737,7 +737,7 @@ Value *VPInstruction::generate(VPTransformState &State) {
   }
   case VPInstruction::CSAMaskPhi: {
     IRBuilder<>::InsertPointGuard Guard(State.Builder);
-    State.Builder.SetInsertPoint(State.CFG.PrevBB->getFirstNonPHI());
+    State.Builder.SetInsertPoint(State.CFG.PrevBB->getFirstNonPHIIt());
     BasicBlock *PreheaderBB = State.CFG.getPreheaderBBFor(this);
     Value *InitMask = State.get(getOperand(0));
     PHINode *MaskPhi =
@@ -812,7 +812,7 @@ Value *VPInstruction::generate(VPTransformState &State) {
   }
   case VPInstruction::CSAVLPhi: {
     IRBuilder<>::InsertPointGuard Guard(State.Builder);
-    State.Builder.SetInsertPoint(State.CFG.PrevBB->getFirstNonPHI());
+    State.Builder.SetInsertPoint(State.CFG.PrevBB->getFirstNonPHIIt());
     BasicBlock *PreheaderBB = State.CFG.getPreheaderBBFor(this);
 
     // InitVL can be anything since it won't be used if no mask was active
@@ -3165,7 +3165,7 @@ void VPCSAHeaderPHIRecipe::print(raw_ostream &O, const Twine &Indent,
 void VPCSAHeaderPHIRecipe::execute(VPTransformState &State) {
   // PrevBB is this BB
   IRBuilder<>::InsertPointGuard Guard(State.Builder);
-  State.Builder.SetInsertPoint(State.CFG.PrevBB->getFirstNonPHI());
+  State.Builder.SetInsertPoint(State.CFG.PrevBB->getFirstNonPHIIt());
 
   Value *InitData = State.get(getVPInitData(), 0);
   PHINode *DataPhi =
@@ -3289,7 +3289,7 @@ void VPCSAExtractScalarRecipe::print(raw_ostream &O, const Twine &Indent,
 
 void VPCSAExtractScalarRecipe::execute(VPTransformState &State) {
   IRBuilder<>::InsertPointGuard Guard(State.Builder);
-  State.Builder.SetInsertPoint(State.CFG.ExitBB->getFirstNonPHI());
+  State.Builder.SetInsertPoint(State.CFG.ExitBB->getFirstNonPHIIt());
 
   Value *MaskSel = State.get(getVPMaskSel());
   Value *DataSel = State.get(getVPDataSel());

@@ -25851,7 +25851,7 @@ static Value *foldInterleaved2OfConstSplats(IntrinsicInst *InterleaveIntrin,
   // InterleavedAccessPass will remove VPStore after this but we still want to
   // preserve it, hence clone another one here.
   auto *ClonedVPStore = VPStore->clone();
-  ClonedVPStore->insertBefore(VPStore);
+  ClonedVPStore->insertBefore(VPStore->getIterator());
   IRBuilder<> Builder(ClonedVPStore);
 
   Type *ETy = VTy->getElementType();

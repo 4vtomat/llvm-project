@@ -251,7 +251,7 @@ void IRPromoter::TruncateSinks() {
         Value *Arg = Call->getArgOperand(i);
         Type *Ty = TruncTysMap[Call][i];
         if (Instruction *Trunc = InsertTrunc(Arg, Ty)) {
-          Trunc->moveBefore(Call);
+          Trunc->moveBefore(Call->getIterator());
           Call->setArgOperand(i, Trunc);
         }
       }
@@ -262,7 +262,7 @@ void IRPromoter::TruncateSinks() {
     for (unsigned i = 0; i < I->getNumOperands(); ++i) {
       Type *Ty = TruncTysMap[I][i];
       if (Instruction *Trunc = InsertTrunc(I->getOperand(i), Ty)) {
-        Trunc->moveBefore(I);
+        Trunc->moveBefore(I->getIterator());
         I->setOperand(i, Trunc);
       }
     }

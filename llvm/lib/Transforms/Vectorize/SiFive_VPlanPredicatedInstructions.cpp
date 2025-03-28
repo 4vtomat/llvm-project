@@ -311,7 +311,7 @@ void VPMonotonicUpdateInstruction::execute(VPTransformState &State) {
 ///   %monotonic = phi [%monotonic.update, %vector.latch]
 void VPMonotonicHeaderPHIRecipe::execute(VPTransformState &State) {
   IRBuilder<>::InsertPointGuard Guard(State.Builder);
-  State.Builder.SetInsertPoint(State.CFG.PrevBB->getFirstNonPHI());
+  State.Builder.SetInsertPoint(State.CFG.PrevBB->getFirstNonPHIIt());
 
   Value *StartV = State.get(getStartValue(), /*NeedsScalar=*/true);
   auto *Phi = State.Builder.CreatePHI(StartV->getType(), 2, "monotonic.phi");

@@ -168,7 +168,7 @@ static void moveStepComputationsToIVUpdate(VPTransformState *State,
   InstructionsToMove.push_back(I);
 
   for (Instruction *I : llvm::reverse(InstructionsToMove))
-    I->moveBefore(Inc);
+    I->moveBefore(Inc->getIterator());
 }
 #endif  // SIFIVE_CUSTOMIZATION
 
@@ -1471,7 +1471,7 @@ void VPlan::execute(VPTransformState *State) {
     BasicBlock *VectorEarlyExitBB = State->CFG.VPBB2IRBB[EarlyExitVPBB];
     BasicBlock *OrigEarlyExitBB = State->CFG.EarlyExitBB;
     BranchInst *BI = BranchInst::Create(OrigEarlyExitBB);
-    BI->insertBefore(VectorEarlyExitBB->getTerminator());
+    BI->insertBefore(VectorEarlyExitBB->getTerminator()->getIterator());
     VectorEarlyExitBB->getTerminator()->eraseFromParent();
     State->CFG.DTU.applyUpdates(
         {{DominatorTree::Insert, VectorEarlyExitBB, OrigEarlyExitBB}});

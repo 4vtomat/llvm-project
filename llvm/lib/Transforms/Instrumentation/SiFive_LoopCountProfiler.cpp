@@ -362,7 +362,7 @@ void InsertCounterOnLoop::run() {
     insertExitCounter(e);
   }
   // Insert the trip count counter in the header block
-  insertLocalCounter(L->getHeader()->getFirstNonPHI());
+  insertLocalCounter(&*L->getHeader()->getFirstNonPHIIt());
 }
 
 void InsertCounterOnLoop::insertLocalCounter(Instruction *e) {
@@ -402,7 +402,7 @@ void InsertCounterOnLoop::collectInsertBlocks() {
   for (BasicBlock *e : Exits) {
     if (e->isLandingPad() || e->isEHPad())
       continue;
-    ExitsFirstInsts.push_back(e->getFirstNonPHI());
+    ExitsFirstInsts.push_back(&*e->getFirstNonPHIIt());
   }
 }
 
@@ -458,7 +458,7 @@ bool InsertCounter::runOnModule(
     collectSubLoops(Cur, Loops);
 
     // Insert alloca in the funciton entry as loacl counters
-    IRBuilder<> InsertAlloca(F.getEntryBlock().getFirstNonPHI());
+    IRBuilder<> InsertAlloca(&*F.getEntryBlock().getFirstNonPHIIt());
 
     for (Loop *L : Loops) {
 
