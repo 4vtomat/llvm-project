@@ -460,6 +460,10 @@ public:
   bool hasPolyType() const {
     return llvm::any_of(Types, [](const Type &T) { return T.isPoly(); });
   }
+  /// Return true if the intrinsic has mfloat8 type.
+  bool hasMFloat8Type() const {
+    return llvm::any_of(Types, [](const Type &T) { return T.isMFloat8(); });
+  }
 #endif
 
   // Return if the supplied argument is an immediate
@@ -2118,19 +2122,20 @@ void NeonEmitter::createIntrinsic(const Record *R,
     // enable RecodeMode. As a result, arm_neon.h only includes intrinsics that
     // can be supported by Recode. But arm_neon.inc still includes all
     // intrinsics.
-    if (RecodeMode && (Entry.back().hasPolyType() ||
-                       // Recode cannot support the following target features.
-                       (TargetGuard.find("aes") != std::string::npos ||
-                        TargetGuard.find("bf16") != std::string::npos ||
-                        TargetGuard.find("fp16fml") != std::string::npos ||
-                        TargetGuard.find("fp8") != std::string::npos ||
-                        TargetGuard.find("i8mm") != std::string::npos ||
-                        TargetGuard.find("sha2") != std::string::npos ||
-                        TargetGuard.find("sha3") != std::string::npos ||
-                        TargetGuard.find("sm4") != std::string::npos ||
-                        TargetGuard.find("v8.1a") != std::string::npos ||
-                        TargetGuard.find("v8.3a") != std::string::npos ||
-                        TargetGuard.find("v8.5a") != std::string::npos)))
+    if (RecodeMode &&
+        (Entry.back().hasPolyType() || Entry.back().hasMFloat8Type() ||
+         // Recode cannot support the following target features.
+         (TargetGuard.find("aes") != std::string::npos ||
+          TargetGuard.find("bf16") != std::string::npos ||
+          TargetGuard.find("fp16fml") != std::string::npos ||
+          TargetGuard.find("fp8") != std::string::npos ||
+          TargetGuard.find("i8mm") != std::string::npos ||
+          TargetGuard.find("sha2") != std::string::npos ||
+          TargetGuard.find("sha3") != std::string::npos ||
+          TargetGuard.find("sm4") != std::string::npos ||
+          TargetGuard.find("v8.1a") != std::string::npos ||
+          TargetGuard.find("v8.3a") != std::string::npos ||
+          TargetGuard.find("v8.5a") != std::string::npos)))
       continue;
 #endif
     Out.push_back(&Entry.back());
