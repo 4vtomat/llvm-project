@@ -1278,6 +1278,16 @@ PreservedAnalyses AddressSanitizerPass::run(Module &M,
   const StackSafetyGlobalInfo *const SSGI =
       ClUseStackSafety ? &MAM.getResult<StackSafetyGlobalAnalysis>(M) : nullptr;
   for (Function &F : M) {
+    if (F.empty())
+      continue;
+    if (F.getLinkage() == GlobalValue::AvailableExternallyLinkage)
+      continue;
+    if (!ClDebugFunc.empty() && ClDebugFunc == F.getName())
+      continue;
+    if (F.getName().starts_with("__asan_"))
+      continue;
+    if (F.isPresplitCoroutine())
+      continue;
     AddressSanitizer FunctionSanitizer(
         M, SSGI, Options.InstrumentationWithCallsThreshold,
         Options.MaxInlinePoisoningSize, Options.CompileKernel, Options.Recover,
@@ -2974,7 +2984,6 @@ bool AddressSanitizer::instrumentFunction(Function &F,
 #if SIFIVE_CUSTOMIZATION
                                           const TargetLibraryInfo *TLI,
                                           const TargetTransformInfo *TTI) {
-#endif // SIFIVE_CUSTOMIZATION
   if (F.empty())
     return false;
   if (F.getLinkage() == GlobalValue::AvailableExternallyLinkage) return false;
@@ -2983,6 +2992,9 @@ bool AddressSanitizer::instrumentFunction(Function &F,
   if (F.isPresplitCoroutine())
     return false;
 
+#else
+                                          const TargetLibraryInfo *TLI) {
+#endif // SIFIVE_CUSTOMIZATION
   bool FunctionModified = false;
 
   // Do not apply any instrumentation for naked functions.
