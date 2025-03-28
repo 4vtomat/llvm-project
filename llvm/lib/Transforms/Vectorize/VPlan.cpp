@@ -683,6 +683,13 @@ void VPBasicBlock::execute(VPTransformState *State) {
     if (SuccVPBB && State->Plan->isExitBlock(SuccVPBB))
       ParentLoop = State->LI->getLoopFor(
           cast<VPIRBasicBlock>(SuccVPBB)->getIRBasicBlock());
+#if SIFIVE_CUSTOMIZATION
+    // Skip adding this to the parent loop since we don't have IR early exit
+    // block now.
+    VPRegionBlock *Region = getPlan()->getVectorLoopRegion();
+    if (Region && this == Region->getEarlyExit())
+      ParentLoop = nullptr;
+#endif // SIFIVE_CUSTOMIZATION
     if (ParentLoop)
       ParentLoop->addBasicBlockToLoop(NewBB, *State->LI);
     State->Builder.SetInsertPoint(Terminator);
