@@ -129,7 +129,7 @@ multiclass RVVVQDOTQBuiltinSet<list<list<string>> suffixes_prototypes> {
       HasMaskedOffOperand = false,
       OverloadedName = NAME,
       Log2LMUL = [-1, 0, 1, 2, 3] in {
-    defm NAME : RVVOutOp2BuiltinSet<NAME, "i", suffixes_prototypes>;
+    defm NAME : RVVOutOp1Op2BuiltinSet<NAME, "i", suffixes_prototypes>;
   }
 }
 
@@ -228,13 +228,13 @@ let ManualCodegen = [{
 // Only SEW=32 is defined for Xsfvqdotq so far, and since inputs are in fact
 // four 8-bit integer bundles, we use unsigned type to represent all of them
 let RequiredFeatures = ["Xsfvqdotq"] in {
-  defm sf_vqdot : RVVVQDOTQBuiltinSet<[["vv", "v", "vvUvUv"],
-                                       ["vx", "v", "vvUvUe"]]>;
-  defm sf_vqdotu : RVVVQDOTQBuiltinSet<[["vv", "Uv", "UvUvUvUv"],
-                                        ["vx", "Uv", "UvUvUvUe"]]>;
-  defm sf_vqdotsu : RVVVQDOTQBuiltinSet<[["vv", "v", "vvUvUv"],
-                                         ["vx", "v", "vvUvUe"]]>;
-  defm sf_vqdotus : RVVVQDOTQBuiltinSet<[["vx", "v", "vvUvUe"]]>;
+  defm sf_vqdot : RVVVQDOTQBuiltinSet<[["vv", "v", "vv(FixedSEW:8)v(FixedSEW:8)v"],
+                                       ["vx", "v", "vv(FixedSEW:8)ve"]]>;
+  defm sf_vqdotu : RVVVQDOTQBuiltinSet<[["vv", "Uv", "UvUv(FixedSEW:8)Uv(FixedSEW:8)Uv"],
+                                        ["vx", "Uv", "UvUv(FixedSEW:8)UvUe"]]>;
+  defm sf_vqdotsu : RVVVQDOTQBuiltinSet<[["vv", "v", "vv(FixedSEW:8)v(FixedSEW:8)Uv"],
+                                         ["vx", "v", "vv(FixedSEW:8)ve"]]>;
+  defm sf_vqdotus : RVVVQDOTQBuiltinSet<[["vx", "v", "vv(FixedSEW:8)UvUe"]]>;
 }
 
 let RequiredFeatures = ["Xsfvfbfexp16e"] in {

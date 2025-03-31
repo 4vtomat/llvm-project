@@ -34,27 +34,53 @@ def : InstAlias<"sf.vfncvt.bf16.f.w $vd, $vs2",
                 (VFNCVTBF16_F_F_W VR:$vd, VR:$vs2, zero_reg)>;
 }
 
-defvar VQDOTLMuls = [VI32MF2, VI32M1, VI32M2, VI32M4, VI32M8];
+defset list<VTypeInfoToWide> VQDOTInfoPairs = {
+  def : VTypeInfoToWide<VI8MF2, VI32MF2>;
+  def : VTypeInfoToWide<VI8M1, VI32M1>;
+  def : VTypeInfoToWide<VI8M2, VI32M2>;
+  def : VTypeInfoToWide<VI8M4, VI32M4>;
+  def : VTypeInfoToWide<VI8M8, VI32M8>;
+}
 
 // These VPat definitions are for vqdot because they have a different operand
 // order with other ternary instructions (i.e. vop.vx vd, vs2, rs1)
 multiclass VPatTernaryV_VX_AAXASwapped<string intrinsic, string instruction,
-                                       list<VTypeInfo> vtilist> {
-  foreach vti = vtilist in
-    let Predicates = GetVTypePredicates<vti>.Predicates in
+                                       list<VTypeInfoToWide> info_pairs> {
+  foreach pair = info_pairs in {
+    defvar VdInfo = pair.Wti;
+    defvar Vs2Info = pair.Vti;
+    let Predicates = GetVTypePredicates<VdInfo>.Predicates in
     // we have op1 and op2 swapped here
     defm : VPatTernaryWithPolicy<intrinsic, instruction,
-                                 "V"#vti.ScalarSuffix,
-                                 vti.Vector, vti.Vector, vti.Scalar, vti.Mask,
-                                 vti.Log2SEW, vti.LMul, vti.RegClass,
-                                 vti.RegClass, vti.ScalarRegClass>;
+                                 "V"#VdInfo.ScalarSuffix,
+                                 VdInfo.Vector, Vs2Info.Vector, Vs2Info.Scalar,
+                                 VdInfo.Mask, VdInfo.Log2SEW, VdInfo.LMul,
+                                 VdInfo.RegClass, Vs2Info.RegClass,
+                                 Vs2Info.ScalarRegClass>;
+  }
+}
+
+multiclass VPatTernaryV_VV_AAXASwapped<string intrinsic, string instruction,
+                                       list<VTypeInfoToWide> info_pairs> {
+  foreach pair = info_pairs in {
+    defvar VdInfo = pair.Wti;
+    defvar Vs2Info = pair.Vti;
+    let Predicates = GetVTypePredicates<VdInfo>.Predicates in
+    // we have op1 and op2 swapped here
+    defm : VPatTernaryWithPolicy<intrinsic, instruction,
+                                 "VV",
+                                 VdInfo.Vector, Vs2Info.Vector, Vs2Info.Vector,
+                                 VdInfo.Mask, VdInfo.Log2SEW, VdInfo.LMul,
+                                 VdInfo.RegClass, Vs2Info.RegClass,
+                                 Vs2Info.RegClass>;
+  }
 }
 
 multiclass VPatTernaryV_VV_VX_AAXASwapped<string intrinsic, string instruction,
-                              list<VTypeInfo> vtilist>
+                                          list<VTypeInfoToWide> info_pairs>
     // keep the original VV because the order doesn't matter
-    : VPatTernaryV_VV_AAXA<intrinsic, instruction, vtilist>,
-      VPatTernaryV_VX_AAXASwapped<intrinsic, instruction, vtilist>;
+    : VPatTernaryV_VV_AAXASwapped<intrinsic, instruction, info_pairs>,
+      VPatTernaryV_VX_AAXASwapped<intrinsic, instruction, info_pairs>;
 #endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
@@ -927,10 +953,10 @@ let Predicates = [HasVendorXSfvqdotq] in {
 }
 
 let Predicates = [HasVendorXSfvqdotq] in {
-  defm : VPatTernaryV_VV_VX_AAXASwapped<"int_riscv_sf_vqdot", "PseudoVQDOT", VQDOTLMuls>;
-  defm : VPatTernaryV_VV_VX_AAXASwapped<"int_riscv_sf_vqdotu", "PseudoVQDOTU", VQDOTLMuls>;
-  defm : VPatTernaryV_VV_VX_AAXASwapped<"int_riscv_sf_vqdotsu", "PseudoVQDOTSU", VQDOTLMuls>;
-  defm : VPatTernaryV_VX_AAXASwapped<"int_riscv_sf_vqdotus", "PseudoVQDOTUS", VQDOTLMuls>;
+  defm : VPatTernaryV_VV_VX_AAXASwapped<"int_riscv_sf_vqdot", "PseudoVQDOT", VQDOTInfoPairs>;
+  defm : VPatTernaryV_VV_VX_AAXASwapped<"int_riscv_sf_vqdotu", "PseudoVQDOTU", VQDOTInfoPairs>;
+  defm : VPatTernaryV_VV_VX_AAXASwapped<"int_riscv_sf_vqdotsu", "PseudoVQDOTSU", VQDOTInfoPairs>;
+  defm : VPatTernaryV_VX_AAXASwapped<"int_riscv_sf_vqdotus", "PseudoVQDOTUS", VQDOTInfoPairs>;
 }
 
 def : Pat<(XLenVT (int_riscv_vgetvxrm)), (ReadVXRM)>;
