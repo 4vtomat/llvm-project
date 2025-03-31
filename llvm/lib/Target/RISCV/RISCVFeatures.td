@@ -722,6 +722,20 @@ def HasStdExtZfhOrZvfh
                          "'Zfh' (Half-Precision Floating-Point) or "
                          "'Zvfh' (Vector Half-Precision Floating-Point)">;
 
+#ifdef SIFIVE_CUSTOMIZATION
+def FeatureStdExtZvfofp8min
+    : RISCVExperimentalExtension<0, 2, "OFP8 conversion extension Zvfofp8min",
+                                 [FeatureStdExtZve32f]>;
+def HasStdExtZvfofp8min
+    : Predicate<"Subtarget->hasStdExtZvfofp8min()">,
+      AssemblerPredicate<(all_of FeatureStdExtZvfofp8min),
+                          "'Zvfofp8min' (OFP8 conversion extension Zvfofp8min)">;
+def HasStdExtZvfbfminOrZvfofp8min
+    : Predicate<"Subtarget->hasStdExtZvfbfmin() || Subtarget->hasStdExtZvfofp8min()">,
+      AssemblerPredicate<(any_of FeatureStdExtZvfbfmin, FeatureStdExtZvfofp8min),
+                         "'Zvfbfmin' or 'Zvfofp8min'">;
+#endif // SIFIVE_CUSTOMIZATION
+
 // Vector Cryptography and Bitmanip Extensions
 
 let AdditionalVersions = [[0, 1]]  in // SIFIVE

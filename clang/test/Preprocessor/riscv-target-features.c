@@ -1654,6 +1654,14 @@
 // RUN: -march=rv64iv_xsfmm16t -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-MIN-XSFMM-TE-16 %s
 // CHECK-MIN-XSFMM-TE-16: __riscv_min_xsfmm_te  16{{$}}
+
+// RUN: %clang --target=riscv32 -menable-experimental-extensions \
+// RUN:   -march=rv32i_zvfofp8min0p2 -E -dM %s \
+// RUN:   -o - | FileCheck --check-prefix=CHECK-ZVFOFP8MIN-EXT %s
+// RUN: %clang --target=riscv64 -menable-experimental-extensions \
+// RUN:   -march=rv64i_zvfofp8min0p2 -E -dM %s \
+// RUN:   -o - | FileCheck --check-prefix=CHECK-ZVFOFP8MIN-EXT %s
+// CHECK-ZVFOFP8MIN-EXT: __riscv_zvfofp8min 2000{{$}}
 // end SIFIVE_CUSTOMIZATION
 
 // RUN: %clang --target=riscv32-unknown-linux-gnu \
