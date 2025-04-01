@@ -2572,7 +2572,7 @@ TEST_F(ComputeKnownBitsTest, ComputeKnownBitsAbsoluteSymbol) {
 }
 
 TEST_F(ComputeKnownBitsTest, ComputeKnownBitsGEPExtendBeforeMul) {
-  // FIXME: The index should be extended before multiplying with the scale.
+  // The index should be extended before multiplying with the scale.
   parseAssembly(R"(
     target datalayout = "p:16:16:16"
 
@@ -2584,12 +2584,12 @@ TEST_F(ComputeKnownBitsTest, ComputeKnownBitsGEPExtendBeforeMul) {
     }
     )");
   KnownBits Known = computeKnownBits(A, M->getDataLayout());
-  EXPECT_EQ(~64 & 0x7fff, Known.Zero);
-  EXPECT_EQ(64, Known.One);
+  EXPECT_EQ(~320 & 0x7fff, Known.Zero);
+  EXPECT_EQ(320, Known.One);
 }
 
 TEST_F(ComputeKnownBitsTest, ComputeKnownBitsGEPOnlyIndexBits) {
-  // FIXME: GEP should only affect the index width.
+  // GEP should only affect the index width.
   parseAssembly(R"(
     target datalayout = "p:16:16:16:8"
 
@@ -2602,8 +2602,8 @@ TEST_F(ComputeKnownBitsTest, ComputeKnownBitsGEPOnlyIndexBits) {
     }
     )");
   KnownBits Known = computeKnownBits(A, M->getDataLayout());
-  EXPECT_EQ(0x7eff, Known.Zero);
-  EXPECT_EQ(0x100, Known.One);
+  EXPECT_EQ(0x7fff, Known.Zero);
+  EXPECT_EQ(0, Known.One);
 }
 
 TEST_F(ValueTrackingTest, HaveNoCommonBitsSet) {
