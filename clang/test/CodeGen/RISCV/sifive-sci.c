@@ -37,6 +37,87 @@ void test__riscv_sf_sci_xx_se_32(uint32_t x, uint32_t y) {
   __riscv_sf_sci_xx_se_32(0, 127, x, y);
 }
 
+// RV32-LABEL: @test__riscv_sf_sci_0_r_x_xx_32(
+// RV32-NEXT:  entry:
+// RV32-NEXT:    [[TMP0:%.*]] = call i32 @llvm.riscv.sf.sci.0.r.x.xx.i32(i32 7, i32 0, i32 [[X:%.*]], i32 [[Y:%.*]])
+// RV32-NEXT:    ret i32 [[TMP0]]
+//
+uint32_t test__riscv_sf_sci_0_r_x_xx_32(uint32_t x, uint32_t y) {
+  return __riscv_sf_sci_0_r_x_xx_32(7, 0, x, y);
+}
+
+// RV32-LABEL: @test__riscv_sf_sci_0_r_x_xx_se_32(
+// RV32-NEXT:  entry:
+// RV32-NEXT:    [[TMP0:%.*]] = call i32 @llvm.riscv.sf.sci.0.r.x.xx.se.i32(i32 6, i32 127, i32 [[X:%.*]], i32 [[Y:%.*]])
+// RV32-NEXT:    ret i32 [[TMP0]]
+//
+uint32_t test__riscv_sf_sci_0_r_x_xx_se_32(uint32_t x, uint32_t y) {
+  return __riscv_sf_sci_0_r_x_xx_se_32(6, 127, x, y);
+}
+
+// RV32-LABEL: @test__riscv_sf_sci_0_r_xx_se_32(
+// RV32-NEXT:  entry:
+// RV32-NEXT:    call void @llvm.riscv.sf.sci.0.r.xx.se.i32(i32 5, i32 127, i32 [[X:%.*]], i32 [[Y:%.*]])
+// RV32-NEXT:    ret void
+//
+void test__riscv_sf_sci_0_r_xx_se_32(uint32_t x, uint32_t y) {
+  __riscv_sf_sci_0_r_xx_se_32(5, 127, x, y);
+}
+
+// RV32-LABEL: @test__riscv_sf_sci_1_r_x_xx_32(
+// RV32-NEXT:  entry:
+// RV32-NEXT:    [[TMP0:%.*]] = call i32 @llvm.riscv.sf.sci.1.r.x.xx.i32(i32 4, i32 127, i32 [[X:%.*]], i32 [[Y:%.*]])
+// RV32-NEXT:    ret i32 [[TMP0]]
+//
+uint32_t test__riscv_sf_sci_1_r_x_xx_32(uint32_t x, uint32_t y) {
+  return __riscv_sf_sci_1_r_x_xx_32(4, 127, x, y);
+}
+
+// RV32-LABEL: @test__riscv_sf_sci_1_r_x_xx_se_32(
+// RV32-NEXT:  entry:
+// RV32-NEXT:    [[TMP0:%.*]] = call i32 @llvm.riscv.sf.sci.1.r.x.xx.se.i32(i32 3, i32 127, i32 [[X:%.*]], i32 [[Y:%.*]])
+// RV32-NEXT:    ret i32 [[TMP0]]
+//
+uint32_t test__riscv_sf_sci_1_r_x_xx_se_32(uint32_t x, uint32_t y) {
+  return __riscv_sf_sci_1_r_x_xx_se_32(3, 127, x, y);
+}
+
+// RV32-LABEL: @test__riscv_sf_sci_1_r_xx_se_32(
+// RV32-NEXT:  entry:
+// RV32-NEXT:    call void @llvm.riscv.sf.sci.1.r.xx.se.i32(i32 1, i32 127, i32 [[X:%.*]], i32 [[Y:%.*]])
+// RV32-NEXT:    ret void
+//
+void test__riscv_sf_sci_1_r_xx_se_32(uint32_t x, uint32_t y) {
+  __riscv_sf_sci_1_r_xx_se_32(1, 127, x, y);
+}
+
+// RV32-LABEL: @test__riscv_sf_sci_2_r_x_xx_32(
+// RV32-NEXT:  entry:
+// RV32-NEXT:    [[TMP0:%.*]] = call i32 @llvm.riscv.sf.sci.2.r.x.xx.i32(i32 0, i32 127, i32 [[X:%.*]], i32 [[Y:%.*]])
+// RV32-NEXT:    ret i32 [[TMP0]]
+//
+uint32_t test__riscv_sf_sci_2_r_x_xx_32(uint32_t x, uint32_t y) {
+  return __riscv_sf_sci_2_r_x_xx_32(0, 127, x, y);
+}
+
+// RV32-LABEL: @test__riscv_sf_sci_2_r_x_xx_se_32(
+// RV32-NEXT:  entry:
+// RV32-NEXT:    [[TMP0:%.*]] = call i32 @llvm.riscv.sf.sci.2.r.x.xx.se.i32(i32 0, i32 127, i32 [[X:%.*]], i32 [[Y:%.*]])
+// RV32-NEXT:    ret i32 [[TMP0]]
+//
+uint32_t test__riscv_sf_sci_2_r_x_xx_se_32(uint32_t x, uint32_t y) {
+  return __riscv_sf_sci_2_r_x_xx_se_32(0, 127, x, y);
+}
+
+// RV32-LABEL: @test__riscv_sf_sci_2_r_xx_se_32(
+// RV32-NEXT:  entry:
+// RV32-NEXT:    call void @llvm.riscv.sf.sci.2.r.xx.se.i32(i32 0, i32 127, i32 [[X:%.*]], i32 [[Y:%.*]])
+// RV32-NEXT:    ret void
+//
+void test__riscv_sf_sci_2_r_xx_se_32(uint32_t x, uint32_t y) {
+  __riscv_sf_sci_2_r_xx_se_32(0, 127, x, y);
+}
+
 // RV32-LABEL: @test__riscv_sf_sci_3_r_x_xx_32(
 // RV32-NEXT:  entry:
 // RV32-NEXT:    [[TMP0:%.*]] = call i32 @llvm.riscv.sf.sci.3.r.x.xx.i32(i32 0, i32 127, i32 [[X:%.*]], i32 [[Y:%.*]])
@@ -91,6 +172,87 @@ uint64_t test__riscv_sf_sci_x_xx_se_64(uint64_t x, uint64_t y) {
 //
 void test__riscv_sf_sci_xx_se_64(uint64_t x, uint64_t y) {
   __riscv_sf_sci_xx_se_64(0, 127, x, y);
+}
+
+// RV64-LABEL: @test__riscv_sf_sci_0_r_x_xx_64(
+// RV64-NEXT:  entry:
+// RV64-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.sf.sci.0.r.x.xx.i64(i32 7, i32 0, i64 [[X:%.*]], i64 [[Y:%.*]])
+// RV64-NEXT:    ret i64 [[TMP0]]
+//
+uint64_t test__riscv_sf_sci_0_r_x_xx_64(uint64_t x, uint64_t y) {
+  return __riscv_sf_sci_0_r_x_xx_64(7, 0, x, y);
+}
+
+// RV64-LABEL: @test__riscv_sf_sci_0_r_x_xx_se_64(
+// RV64-NEXT:  entry:
+// RV64-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.sf.sci.0.r.x.xx.se.i64(i32 6, i32 127, i64 [[X:%.*]], i64 [[Y:%.*]])
+// RV64-NEXT:    ret i64 [[TMP0]]
+//
+uint64_t test__riscv_sf_sci_0_r_x_xx_se_64(uint64_t x, uint64_t y) {
+  return __riscv_sf_sci_0_r_x_xx_se_64(6, 127, x, y);
+}
+
+// RV64-LABEL: @test__riscv_sf_sci_0_r_xx_se_64(
+// RV64-NEXT:  entry:
+// RV64-NEXT:    call void @llvm.riscv.sf.sci.0.r.xx.se.i64(i32 5, i32 127, i64 [[X:%.*]], i64 [[Y:%.*]])
+// RV64-NEXT:    ret void
+//
+void test__riscv_sf_sci_0_r_xx_se_64(uint64_t x, uint64_t y) {
+  __riscv_sf_sci_0_r_xx_se_64(5, 127, x, y);
+}
+
+// RV64-LABEL: @test__riscv_sf_sci_1_r_x_xx_64(
+// RV64-NEXT:  entry:
+// RV64-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.sf.sci.1.r.x.xx.i64(i32 4, i32 127, i64 [[X:%.*]], i64 [[Y:%.*]])
+// RV64-NEXT:    ret i64 [[TMP0]]
+//
+uint64_t test__riscv_sf_sci_1_r_x_xx_64(uint64_t x, uint64_t y) {
+  return __riscv_sf_sci_1_r_x_xx_64(4, 127, x, y);
+}
+
+// RV64-LABEL: @test__riscv_sf_sci_1_r_x_xx_se_64(
+// RV64-NEXT:  entry:
+// RV64-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.sf.sci.1.r.x.xx.se.i64(i32 3, i32 127, i64 [[X:%.*]], i64 [[Y:%.*]])
+// RV64-NEXT:    ret i64 [[TMP0]]
+//
+uint64_t test__riscv_sf_sci_1_r_x_xx_se_64(uint64_t x, uint64_t y) {
+  return __riscv_sf_sci_1_r_x_xx_se_64(3, 127, x, y);
+}
+
+// RV64-LABEL: @test__riscv_sf_sci_1_r_xx_se_64(
+// RV64-NEXT:  entry:
+// RV64-NEXT:    call void @llvm.riscv.sf.sci.1.r.xx.se.i64(i32 2, i32 127, i64 [[X:%.*]], i64 [[Y:%.*]])
+// RV64-NEXT:    ret void
+//
+void test__riscv_sf_sci_1_r_xx_se_64(uint64_t x, uint64_t y) {
+  __riscv_sf_sci_1_r_xx_se_64(2, 127, x, y);
+}
+
+// RV64-LABEL: @test__riscv_sf_sci_2_r_x_xx_64(
+// RV64-NEXT:  entry:
+// RV64-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.sf.sci.2.r.x.xx.i64(i32 1, i32 127, i64 [[X:%.*]], i64 [[Y:%.*]])
+// RV64-NEXT:    ret i64 [[TMP0]]
+//
+uint64_t test__riscv_sf_sci_2_r_x_xx_64(uint64_t x, uint64_t y) {
+  return __riscv_sf_sci_2_r_x_xx_64(1, 127, x, y);
+}
+
+// RV64-LABEL: @test__riscv_sf_sci_2_r_x_xx_se_64(
+// RV64-NEXT:  entry:
+// RV64-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.sf.sci.2.r.x.xx.se.i64(i32 0, i32 127, i64 [[X:%.*]], i64 [[Y:%.*]])
+// RV64-NEXT:    ret i64 [[TMP0]]
+//
+uint64_t test__riscv_sf_sci_2_r_x_xx_se_64(uint64_t x, uint64_t y) {
+  return __riscv_sf_sci_2_r_x_xx_se_64(0, 127, x, y);
+}
+
+// RV64-LABEL: @test__riscv_sf_sci_2_r_xx_se_64(
+// RV64-NEXT:  entry:
+// RV64-NEXT:    call void @llvm.riscv.sf.sci.2.r.xx.se.i64(i32 0, i32 127, i64 [[X:%.*]], i64 [[Y:%.*]])
+// RV64-NEXT:    ret void
+//
+void test__riscv_sf_sci_2_r_xx_se_64(uint64_t x, uint64_t y) {
+  __riscv_sf_sci_2_r_xx_se_64(0, 127, x, y);
 }
 
 // RV64-LABEL: @test__riscv_sf_sci_3_r_x_xx_64(

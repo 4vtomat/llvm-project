@@ -23658,6 +23658,51 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     break;
 
 #if SIFIVE_CUSTOMIZATION
+  case RISCV::BI__builtin_riscv_sf_sci_0_r_x_xx_32:
+  case RISCV::BI__builtin_riscv_sf_sci_0_r_x_xx_64:
+    ID = Intrinsic::riscv_sf_sci_0_r_x_xx;
+    IntrinsicTypes = {ResultType};
+    break;
+  case RISCV::BI__builtin_riscv_sf_sci_0_r_x_xx_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_0_r_x_xx_se_64:
+    ID = Intrinsic::riscv_sf_sci_0_r_x_xx_se;
+    IntrinsicTypes = {ResultType};
+    break;
+  case RISCV::BI__builtin_riscv_sf_sci_0_r_xx_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_0_r_xx_se_64:
+    ID = Intrinsic::riscv_sf_sci_0_r_xx_se;
+    IntrinsicTypes = {Ops[2]->getType()};
+    break;
+  case RISCV::BI__builtin_riscv_sf_sci_1_r_x_xx_32:
+  case RISCV::BI__builtin_riscv_sf_sci_1_r_x_xx_64:
+    ID = Intrinsic::riscv_sf_sci_1_r_x_xx;
+    IntrinsicTypes = {ResultType};
+    break;
+  case RISCV::BI__builtin_riscv_sf_sci_1_r_x_xx_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_1_r_x_xx_se_64:
+    ID = Intrinsic::riscv_sf_sci_1_r_x_xx_se;
+    IntrinsicTypes = {ResultType};
+    break;
+  case RISCV::BI__builtin_riscv_sf_sci_1_r_xx_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_1_r_xx_se_64:
+    ID = Intrinsic::riscv_sf_sci_1_r_xx_se;
+    IntrinsicTypes = {Ops[2]->getType()};
+    break;
+  case RISCV::BI__builtin_riscv_sf_sci_2_r_x_xx_32:
+  case RISCV::BI__builtin_riscv_sf_sci_2_r_x_xx_64:
+    ID = Intrinsic::riscv_sf_sci_2_r_x_xx;
+    IntrinsicTypes = {ResultType};
+    break;
+  case RISCV::BI__builtin_riscv_sf_sci_2_r_x_xx_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_2_r_x_xx_se_64:
+    ID = Intrinsic::riscv_sf_sci_2_r_x_xx_se;
+    IntrinsicTypes = {ResultType};
+    break;
+  case RISCV::BI__builtin_riscv_sf_sci_2_r_xx_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_2_r_xx_se_64:
+    ID = Intrinsic::riscv_sf_sci_2_r_xx_se;
+    IntrinsicTypes = {Ops[2]->getType()};
+    break;
   case RISCV::BI__builtin_riscv_sf_sci_3_r_x_xx_32:
   case RISCV::BI__builtin_riscv_sf_sci_3_r_x_xx_64:
     ID = Intrinsic::riscv_sf_sci_3_r_x_xx;

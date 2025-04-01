@@ -958,6 +958,24 @@ bool SemaRISCV::CheckBuiltinFunctionCall(const TargetInfo &TI,
     // bit_26, vs2, fs1
     return SemaRef.BuiltinConstantArgRange(TheCall, 0, 0, 1);
 #if SIFIVE_CUSTOMIZATION
+  case RISCV::BI__builtin_riscv_sf_sci_0_r_x_xx_32:
+  case RISCV::BI__builtin_riscv_sf_sci_0_r_x_xx_64:
+  case RISCV::BI__builtin_riscv_sf_sci_0_r_x_xx_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_0_r_x_xx_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_0_r_xx_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_0_r_xx_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_1_r_x_xx_32:
+  case RISCV::BI__builtin_riscv_sf_sci_1_r_x_xx_64:
+  case RISCV::BI__builtin_riscv_sf_sci_1_r_x_xx_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_1_r_x_xx_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_1_r_xx_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_1_r_xx_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_2_r_x_xx_32:
+  case RISCV::BI__builtin_riscv_sf_sci_2_r_x_xx_64:
+  case RISCV::BI__builtin_riscv_sf_sci_2_r_x_xx_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_2_r_x_xx_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_2_r_xx_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_2_r_xx_se_64:
   case RISCV::BI__builtin_riscv_sf_sci_3_r_x_xx_32:
   case RISCV::BI__builtin_riscv_sf_sci_3_r_x_xx_64:
   case RISCV::BI__builtin_riscv_sf_sci_3_r_x_xx_se_32:
@@ -966,21 +984,7 @@ bool SemaRISCV::CheckBuiltinFunctionCall(const TargetInfo &TI,
   case RISCV::BI__builtin_riscv_sf_sci_3_r_xx_se_64: {
     if (SemaRef.BuiltinConstantArgRange(TheCall, 1, 0, 127))
       return true;
-
-    Expr *Arg = TheCall->getArg(0);
-    if (Arg->isTypeDependent() || Arg->isValueDependent())
-      return false;
-
-    // Check constant-ness first.
-    llvm::APSInt Result;
-    if (SemaRef.BuiltinConstantArg(TheCall, 0, Result))
-      return true;
-
-    if (Result == 0 || Result == 2 || Result == 4 || Result == 6)
-      return false;
-
-    return Diag(TheCall->getBeginLoc(), diag::err_riscv_builin_invalid_funct3)
-           << Arg->getSourceRange();
+    return SemaRef.BuiltinConstantArgRange(TheCall, 0, 0, 7);
   }
 #endif
   // Check if byteselect is in [0, 3]

@@ -23,6 +23,34 @@
 #define __riscv_sf_sci_xx_se_32(funct3, funct7, x, y) \
   __builtin_riscv_sf_sci_3_r_xx_se_32((funct3), (funct7), (x), (y));
 
+// R-type
+#define __riscv_sf_sci_0_r_x_xx_32(funct3, funct7, x, y) \
+  __builtin_riscv_sf_sci_0_r_x_xx_32((funct3), (funct7), (x), (y));
+
+#define __riscv_sf_sci_0_r_x_xx_se_32(funct3, funct7, x, y) \
+  __builtin_riscv_sf_sci_0_r_x_xx_se_32((funct3), (funct7), (x), (y));
+
+#define __riscv_sf_sci_0_r_xx_se_32(funct3, funct7, x, y) \
+  __builtin_riscv_sf_sci_0_r_xx_se_32((funct3), (funct7), (x), (y));
+
+#define __riscv_sf_sci_1_r_x_xx_32(funct3, funct7, x, y) \
+  __builtin_riscv_sf_sci_1_r_x_xx_32((funct3), (funct7), (x), (y));
+
+#define __riscv_sf_sci_1_r_x_xx_se_32(funct3, funct7, x, y) \
+  __builtin_riscv_sf_sci_1_r_x_xx_se_32((funct3), (funct7), (x), (y));
+
+#define __riscv_sf_sci_1_r_xx_se_32(funct3, funct7, x, y) \
+  __builtin_riscv_sf_sci_1_r_xx_se_32((funct3), (funct7), (x), (y));
+
+#define __riscv_sf_sci_2_r_x_xx_32(funct3, funct7, x, y) \
+  __builtin_riscv_sf_sci_2_r_x_xx_32((funct3), (funct7), (x), (y));
+
+#define __riscv_sf_sci_2_r_x_xx_se_32(funct3, funct7, x, y) \
+  __builtin_riscv_sf_sci_2_r_x_xx_se_32((funct3), (funct7), (x), (y));
+
+#define __riscv_sf_sci_2_r_xx_se_32(funct3, funct7, x, y) \
+  __builtin_riscv_sf_sci_2_r_xx_se_32((funct3), (funct7), (x), (y));
+
 #define __riscv_sf_sci_3_r_x_xx_32(funct3, funct7, x, y) \
   __builtin_riscv_sf_sci_3_r_x_xx_32((funct3), (funct7), (x), (y));
 
@@ -43,6 +71,34 @@
 
 #define __riscv_sf_sci_xx_se_64(funct3, funct7, x, y) \
   __builtin_riscv_sf_sci_3_r_xx_se_64((funct3), (funct7), (x), (y));
+
+// R-type
+#define __riscv_sf_sci_0_r_x_xx_64(funct3, funct7, x, y) \
+  __builtin_riscv_sf_sci_0_r_x_xx_64((funct3), (funct7), (x), (y));
+
+#define __riscv_sf_sci_0_r_x_xx_se_64(funct3, funct7, x, y) \
+  __builtin_riscv_sf_sci_0_r_x_xx_se_64((funct3), (funct7), (x), (y));
+
+#define __riscv_sf_sci_0_r_xx_se_64(funct3, funct7, x, y) \
+  __builtin_riscv_sf_sci_0_r_xx_se_64((funct3), (funct7), (x), (y));
+
+#define __riscv_sf_sci_1_r_x_xx_64(funct3, funct7, x, y) \
+  __builtin_riscv_sf_sci_1_r_x_xx_64((funct3), (funct7), (x), (y));
+
+#define __riscv_sf_sci_1_r_x_xx_se_64(funct3, funct7, x, y) \
+  __builtin_riscv_sf_sci_1_r_x_xx_se_64((funct3), (funct7), (x), (y));
+
+#define __riscv_sf_sci_1_r_xx_se_64(funct3, funct7, x, y) \
+  __builtin_riscv_sf_sci_1_r_xx_se_64((funct3), (funct7), (x), (y));
+
+#define __riscv_sf_sci_2_r_x_xx_64(funct3, funct7, x, y) \
+  __builtin_riscv_sf_sci_2_r_x_xx_64((funct3), (funct7), (x), (y));
+
+#define __riscv_sf_sci_2_r_x_xx_se_64(funct3, funct7, x, y) \
+  __builtin_riscv_sf_sci_2_r_x_xx_se_64((funct3), (funct7), (x), (y));
+
+#define __riscv_sf_sci_2_r_xx_se_64(funct3, funct7, x, y) \
+  __builtin_riscv_sf_sci_2_r_xx_se_64((funct3), (funct7), (x), (y));
 
 #define __riscv_sf_sci_3_r_x_xx_64(funct3, funct7, x, y) \
   __builtin_riscv_sf_sci_3_r_x_xx_64((funct3), (funct7), (x), (y));

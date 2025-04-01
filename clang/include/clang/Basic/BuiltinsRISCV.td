@@ -158,12 +158,36 @@ include "clang/Basic/BuiltinsRISCVXCV.td"
 //===----------------------------------------------------------------------===//
 
 let Features = "xsfsci,32bit" in {
+def sf_sci_0_r_x_xx_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int, _Constant unsigned int, unsigned int, unsigned int)">;
+def sf_sci_0_r_x_xx_se_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int, _Constant unsigned int, unsigned int, unsigned int)">;
+def sf_sci_0_r_xx_se_32 : RISCVBuiltin<"void(_Constant unsigned int, _Constant unsigned int, unsigned int, unsigned int)">;
+
+def sf_sci_1_r_x_xx_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int, _Constant unsigned int, unsigned int, unsigned int)">;
+def sf_sci_1_r_x_xx_se_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int, _Constant unsigned int, unsigned int, unsigned int)">;
+def sf_sci_1_r_xx_se_32 : RISCVBuiltin<"void(_Constant unsigned int, _Constant unsigned int, unsigned int, unsigned int)">;
+
+def sf_sci_2_r_x_xx_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int, _Constant unsigned int, unsigned int, unsigned int)">;
+def sf_sci_2_r_x_xx_se_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int, _Constant unsigned int, unsigned int, unsigned int)">;
+def sf_sci_2_r_xx_se_32 : RISCVBuiltin<"void(_Constant unsigned int, _Constant unsigned int, unsigned int, unsigned int)">;
+
 def sf_sci_3_r_x_xx_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int, _Constant unsigned int, unsigned int, unsigned int)">;
 def sf_sci_3_r_x_xx_se_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int, _Constant unsigned int, unsigned int, unsigned int)">;
 def sf_sci_3_r_xx_se_32 : RISCVBuiltin<"void(_Constant unsigned int, _Constant unsigned int, unsigned int, unsigned int)">;
 }
 
 let Features = "xsfsci,64bit" in {
+def sf_sci_0_r_x_xx_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int, _Constant unsigned int, uint64_t, uint64_t)">;
+def sf_sci_0_r_x_xx_se_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int, _Constant unsigned int, uint64_t, uint64_t)">;
+def sf_sci_0_r_xx_se_64 : RISCVBuiltin<"void(_Constant unsigned int, _Constant unsigned int, uint64_t, uint64_t)">;
+
+def sf_sci_1_r_x_xx_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int, _Constant unsigned int, uint64_t, uint64_t)">;
+def sf_sci_1_r_x_xx_se_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int, _Constant unsigned int, uint64_t, uint64_t)">;
+def sf_sci_1_r_xx_se_64 : RISCVBuiltin<"void(_Constant unsigned int, _Constant unsigned int, uint64_t, uint64_t)">;
+
+def sf_sci_2_r_x_xx_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int, _Constant unsigned int, uint64_t, uint64_t)">;
+def sf_sci_2_r_x_xx_se_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int, _Constant unsigned int, uint64_t, uint64_t)">;
+def sf_sci_2_r_xx_se_64 : RISCVBuiltin<"void(_Constant unsigned int, _Constant unsigned int, uint64_t, uint64_t)">;
+
 def sf_sci_3_r_x_xx_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int, _Constant unsigned int, uint64_t, uint64_t)">;
 def sf_sci_3_r_x_xx_se_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int, _Constant unsigned int, uint64_t, uint64_t)">;
 def sf_sci_3_r_xx_se_64 : RISCVBuiltin<"void(_Constant unsigned int, _Constant unsigned int, uint64_t, uint64_t)">;
