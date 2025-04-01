@@ -161,12 +161,11 @@ entry:
 define void @vqshlq_u16(ptr nocapture noundef readonly %src, ptr nocapture noundef writeonly %des) {
 ; CHECK-LABEL: vqshlq_u16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vzext.vf2 v10, v8
-; CHECK-NEXT:    vsll.vi v8, v10, 15
-; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vnclipu.wi v8, v8, 0
+; CHECK-NEXT:    lui a0, 8
+; CHECK-NEXT:    vwmulu.vx v10, v8, a0
+; CHECK-NEXT:    vnclipu.wi v8, v10, 0
 ; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
