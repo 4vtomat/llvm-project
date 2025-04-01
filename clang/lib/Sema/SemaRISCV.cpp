@@ -958,12 +958,12 @@ bool SemaRISCV::CheckBuiltinFunctionCall(const TargetInfo &TI,
     // bit_26, vs2, fs1
     return SemaRef.BuiltinConstantArgRange(TheCall, 0, 0, 1);
 #if SIFIVE_CUSTOMIZATION
-  case RISCV::BI__builtin_riscv_sf_sci_x_xx_32:
-  case RISCV::BI__builtin_riscv_sf_sci_x_xx_64:
-  case RISCV::BI__builtin_riscv_sf_sci_x_xx_se_32:
-  case RISCV::BI__builtin_riscv_sf_sci_x_xx_se_64:
-  case RISCV::BI__builtin_riscv_sf_sci_xx_se_32:
-  case RISCV::BI__builtin_riscv_sf_sci_xx_se_64: {
+  case RISCV::BI__builtin_riscv_sf_sci_3_r_x_xx_32:
+  case RISCV::BI__builtin_riscv_sf_sci_3_r_x_xx_64:
+  case RISCV::BI__builtin_riscv_sf_sci_3_r_x_xx_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_3_r_x_xx_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_3_r_xx_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_3_r_xx_se_64: {
     if (SemaRef.BuiltinConstantArgRange(TheCall, 1, 0, 127))
       return true;
 

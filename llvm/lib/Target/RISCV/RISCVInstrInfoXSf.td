@@ -1962,11 +1962,11 @@ def uimm7_timm : RISCVOp<i32>,
 
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0,
     Predicates = [HasVendorXSfsci], DecoderNamespace = "XSfsci" in
-def SF_SCI : RVInst<(outs GPR:$rd),
-                    (ins uimm3_lsb0:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2),
-                    "sf.sci", "$funct3, $funct7, $rd, $rs1, $rs2", [],
-                    InstFormatR>,
-                    Sched<[WriteSCI, ReadSCI, ReadSCI]> {
+def SF_SCI_3_R : RVInst<(outs GPR:$rd),
+                        (ins uimm3_lsb0:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2),
+                        "sf.sci.3.r", "$funct3, $funct7, $rd, $rs1, $rs2", [],
+                        InstFormatR>,
+                        Sched<[WriteSCI, ReadSCI, ReadSCI]> {
   bits<7> funct7;
   bits<3> funct3;
 
@@ -1983,35 +1983,39 @@ def SF_SCI : RVInst<(outs GPR:$rd),
   let Inst{6-0} = OPC_CUSTOM_3.Value;
 }
 
+// FIXME: Make sf.sci the alias once binutils supports it and Federation has
+// migrated to sf.sci.3.r.
+def : MnemonicAlias<"sf.sci", "sf.sci.3.r">;
+
 // Pseudo instructions with side effects. Will be converted to the generic
 // version when we convert MachineInstr to MCInst.
 let hasSideEffects = 1, mayLoad = 0, mayStore = 0 in {
-  def SF_SCI_X_XX_SE
+  def SF_SCI_3_R_X_XX_SE
     : Pseudo<(outs GPR:$rd ), (ins uimm3_lsb0:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2),
              []>,
-             PseudoInstExpansion<(SF_SCI GPR:$rd, uimm3_lsb0:$funct3,
-                                         uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2)>,
+             PseudoInstExpansion<(SF_SCI_3_R GPR:$rd, uimm3_lsb0:$funct3,
+                                             uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2)>,
              Sched<[WriteSCI, ReadSCI, ReadSCI]>;
-  def SF_SCI_XX_SE
+  def SF_SCI_3_R_XX_SE
     : Pseudo<(outs), (ins uimm3_lsb0:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2),
              []>,
-             PseudoInstExpansion<(SF_SCI X0, uimm3_lsb0:$funct3, uimm7_timm:$funct7,
-                                         GPR:$rs1, GPR:$rs2)>,
+             PseudoInstExpansion<(SF_SCI_3_R X0, uimm3_lsb0:$funct3, uimm7_timm:$funct7,
+                                             GPR:$rs1, GPR:$rs2)>,
              Sched<[WriteSCI, ReadSCI, ReadSCI]>;
 }
 
-def : Pat<(XLenVT (int_riscv_sf_sci_x_xx uimm3_lsb0:$funct3, uimm7_timm:$funct7,
+def : Pat<(XLenVT (int_riscv_sf_sci_3_r_x_xx uimm3_lsb0:$funct3, uimm7_timm:$funct7,
                                          (XLenVT GPR:$rs1), (XLenVT GPR:$rs2))),
-          (SF_SCI uimm3_lsb0:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2)>;
+          (SF_SCI_3_R uimm3_lsb0:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2)>;
 
-def : Pat<(XLenVT (int_riscv_sf_sci_x_xx_se uimm3_lsb0:$funct3,
-                                            uimm7_timm:$funct7,
-                                            (XLenVT GPR:$rs1),
-                                            (XLenVT GPR:$rs2))),
-          (SF_SCI_X_XX_SE uimm3_lsb0:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2)>;
-def : Pat<(int_riscv_sf_sci_xx_se uimm3_lsb0:$funct3,
-                                  uimm7_timm:$funct7,
-                                  (XLenVT GPR:$rs1),
-                                  (XLenVT GPR:$rs2)),
-          (SF_SCI_XX_SE uimm3_lsb0:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2)>;
+def : Pat<(XLenVT (int_riscv_sf_sci_3_r_x_xx_se uimm3_lsb0:$funct3,
+                                                uimm7_timm:$funct7,
+                                                (XLenVT GPR:$rs1),
+                                                (XLenVT GPR:$rs2))),
+          (SF_SCI_3_R_X_XX_SE uimm3_lsb0:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2)>;
+def : Pat<(int_riscv_sf_sci_3_r_xx_se uimm3_lsb0:$funct3,
+                                      uimm7_timm:$funct7,
+                                      (XLenVT GPR:$rs1),
+                                      (XLenVT GPR:$rs2)),
+          (SF_SCI_3_R_XX_SE uimm3_lsb0:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2)>;
 #endif // SIFIVE_CUSTOMIZATION

@@ -2,29 +2,29 @@
 ; RUN: sed 's/iXLen/i32/g' %s | llc -mtriple=riscv32 -mattr=+xsfsci | FileCheck %s
 ; RUN: sed 's/iXLen/i64/g' %s | llc -mtriple=riscv64 -mattr=+xsfsci | FileCheck %s
 
-define iXLen @sf.sci.x.xx(iXLen %x, iXLen %y) {
-; CHECK-LABEL: sf.sci.x.xx:
+define iXLen @sf.sci.3.r.x.xx(iXLen %x, iXLen %y) {
+; CHECK-LABEL: sf.sci.3.r.x.xx:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    sf.sci 0, 127, a0, a0, a1
+; CHECK-NEXT:    sf.sci.3.r 0, 127, a0, a0, a1
 ; CHECK-NEXT:    ret
-  %a = call iXLen @llvm.riscv.sf.sci.x.xx.iXLen(i32 0, i32 127, iXLen %x, iXLen %y)
+  %a = call iXLen @llvm.riscv.sf.sci.3.r.x.xx.iXLen(i32 0, i32 127, iXLen %x, iXLen %y)
   ret iXLen %a
 }
 
-define iXLen @sf.sci.x.xx.se(iXLen %x, iXLen %y) {
-; CHECK-LABEL: sf.sci.x.xx.se:
+define iXLen @sf.sci.3.r.x.xx.se(iXLen %x, iXLen %y) {
+; CHECK-LABEL: sf.sci.3.r.x.xx.se:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    sf.sci 6, 0, a0, a0, a1
+; CHECK-NEXT:    sf.sci.3.r 6, 0, a0, a0, a1
 ; CHECK-NEXT:    ret
-  %a = call iXLen @llvm.riscv.sf.sci.x.xx.se.iXLen(i32 6, i32 0, iXLen %x, iXLen %y)
+  %a = call iXLen @llvm.riscv.sf.sci.3.r.x.xx.se.iXLen(i32 6, i32 0, iXLen %x, iXLen %y)
   ret iXLen %a
 }
 
-define void @sf.sci.xx.se(iXLen %x, iXLen %y) {
-; CHECK-LABEL: sf.sci.xx.se:
+define void @sf.sci.3.r.xx.se(iXLen %x, iXLen %y) {
+; CHECK-LABEL: sf.sci.3.r.xx.se:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    sf.sci 4, 17, zero, a0, a1
+; CHECK-NEXT:    sf.sci.3.r 4, 17, zero, a0, a1
 ; CHECK-NEXT:    ret
-  call void @llvm.riscv.sf.sci.xx.se.iXLen(i32 4, i32 17, iXLen %x, iXLen %y)
+  call void @llvm.riscv.sf.sci.3.r.xx.se.iXLen(i32 4, i32 17, iXLen %x, iXLen %y)
   ret void
 }
