@@ -17,13 +17,25 @@
 // Instructions
 //===----------------------------------------------------------------------===//
 
-let Predicates = [HasStdExtZvfbfmin], Constraints = "@earlyclobber $vd",
+#ifdef SIFIVE_CUSTOMIZATION
+let Predicates = [HasStdExtZvfbfminOrZvfofp8min], Constraints = "@earlyclobber $vd",
+#endif //SIFIVE_CUSTOMIZATION
     mayRaiseFPException = true in {
 let RVVConstraint = WidenCvt, DestEEW = EEWSEWx2 in
 defm VFWCVTBF16_F_F_V : VWCVTF_FV_VS2<"vfwcvtbf16.f.f.v", 0b010010, 0b01101>;
 let Uses = [FRM] in
 defm VFNCVTBF16_F_F_W : VNCVTF_FV_VS2<"vfncvtbf16.f.f.w", 0b010010, 0b11101>;
 }
+
+#ifdef SIFIVE_CUSTOMIZATION
+let Predicates = [HasStdExtZvfofp8min],
+    Constraints = "@earlyclobber $vd",
+    Uses = [FRM] in {
+  defm VFNCVTBF16_SAT_F_F_W : VNCVTF_FV_VS2<"vfncvtbf16.sat.f.f.w", 0b010010, 0b11111>;
+  defm VFNCVT_F_F_Q : VNCVTF_FV_VS2<"vfncvt.f.f.q", 0b010010, 0b11001>;
+  defm VFNCVT_SAT_F_F_Q : VNCVTF_FV_VS2<"vfncvt.sat.f.f.q", 0b010010, 0b11011>;
+}
+#endif //SIFIVE_CUSTOMIZATION
 
 let Predicates = [HasStdExtZvfbfwma],
     Constraints = "@earlyclobber $vd_wb, $vd = $vd_wb",

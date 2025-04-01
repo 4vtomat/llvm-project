@@ -208,7 +208,7 @@ public:
 void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
     ArrayRef<RVVIntrinsicRecord> Recs, IntrinsicKind K) {
   const TargetInfo &TI = Context.getTargetInfo();
-  static const std::pair<const char *, RVVRequire> FeatureCheckList[] = {
+  static const std::pair<const char *, unsigned> FeatureCheckList[] = {
       {"64bit", RVV_REQ_RV64},
       {"xsfvcp", RVV_REQ_Xsfvcp},
       {"xsfvfnrclipxfqf", RVV_REQ_Xsfvfnrclipxfqf},
@@ -237,7 +237,15 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
       {"xsfvfexpa64e", RVV_REQ_Xsfvfexpa64e},
       {"xsfvfhbfmin", RVV_REQ_Xsfvfhbfmin},
       {"xsfvqdotq", RVV_REQ_Xsfvqdotq},
-      {"", RVV_REQ_Zvfbfmin_Xsfvfbfa}};
+      {"", RVV_REQ_Zvfbfmin_Xsfvfbfa},
+      {"xsfmmbase", RVV_REQ_Xsfmmbase},
+      {"xsfmm32a", RVV_REQ_Xsfmm32a},
+      {"xsfmm32a8f", RVV_REQ_Xsfmm32a8f},
+      {"xsfmm32a16f", RVV_REQ_Xsfmm32a16f},
+      {"xsfmm32a32f", RVV_REQ_Xsfmm32a32f},
+      {"xsfmm64a64f", RVV_REQ_Xsfmm64a64f},
+      {"xsfmm32a4i", RVV_REQ_Xsfmm32a4i},
+      {"xsfmm32a8i", RVV_REQ_Xsfmm32a8i}};
 #else
       {"experimental", RVV_REQ_Experimental}};
 #endif // SIFIVE_CUSTOMIZATION
@@ -256,10 +264,11 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
     if (llvm::any_of(FeatureCheckList, [&](const auto &Item) {
 #if SIFIVE_CUSTOMIZATION
           if (Item.second == RVV_REQ_Zvfbfmin_Xsfvfbfa)
-            return (Record.RequiredExtensions & Item.second) == Item.second &&
+            return ((Record.RequiredExtensions[Item.second / 32] & (1U << (Item.second % 32))) != 0) &&
                    (!TI.hasFeature("zvfbfmin") && !TI.hasFeature("xsfvfbfa"));
 #endif // SIFIVE_CUSTOMIZATION
-          return (Record.RequiredExtensions & Item.second) == Item.second &&
+          return ((Record.RequiredExtensions[Item.second / 32] &
+                   (1U << (Item.second % 32))) != 0) &&
                  !TI.hasFeature(Item.first);
         }))
       continue;
@@ -713,6 +722,56 @@ bool SemaRISCV::CheckBuiltinFunctionCall(const TargetInfo &TI,
   case RISCVVector::BI__builtin_rvv_vsetvlimax:
     return SemaRef.BuiltinConstantArgRange(TheCall, 0, 0, 3) ||
            CheckLMUL(TheCall, 1);
+#ifdef SIFIVE_CUSTOMIZATION
+  case RISCVVector::BI__builtin_rvv_sf_vsettnt:
+  case RISCVVector::BI__builtin_rvv_sf_vsettm:
+  case RISCVVector::BI__builtin_rvv_sf_vsettn:
+  case RISCVVector::BI__builtin_rvv_sf_vsettk:
+    return SemaRef.BuiltinConstantArgRange(TheCall, 1, 0, 3) ||
+           SemaRef.BuiltinConstantArgRange(TheCall, 2, 1, 3);
+  case RISCVVector::BI__builtin_rvv_sf_mm_f_f_w1:
+  case RISCVVector::BI__builtin_rvv_sf_mm_f_f_w2:
+  case RISCVVector::BI__builtin_rvv_sf_mm_e5m2_e4m3_w4:
+  case RISCVVector::BI__builtin_rvv_sf_mm_e5m2_e5m2_w4:
+  case RISCVVector::BI__builtin_rvv_sf_mm_e4m3_e4m3_w4:
+  case RISCVVector::BI__builtin_rvv_sf_mm_e4m3_e5m2_w4:
+  case RISCVVector::BI__builtin_rvv_sf_mm_u_u_w4:
+  case RISCVVector::BI__builtin_rvv_sf_mm_u_s_w4:
+  case RISCVVector::BI__builtin_rvv_sf_mm_s_u_w4:
+  case RISCVVector::BI__builtin_rvv_sf_mm_s_s_w4:
+  case RISCVVector::BI__builtin_rvv_sf_p2mm_u_u_w4:
+  case RISCVVector::BI__builtin_rvv_sf_p2mm_u_s_w4:
+  case RISCVVector::BI__builtin_rvv_sf_p2mm_s_u_w4:
+  case RISCVVector::BI__builtin_rvv_sf_p2mm_s_s_w4: {
+    QualType Arg1Type = TheCall->getArg(1)->getType();
+    ASTContext::BuiltinVectorTypeInfo Info =
+        SemaRef.Context.getBuiltinVectorTypeInfo(
+            Arg1Type->castAs<BuiltinType>());
+    unsigned EltSize = SemaRef.Context.getTypeSize(Info.ElementType);
+    llvm::APSInt Result;
+
+    // We can't check the value of a dependent argument.
+    Expr *Arg = TheCall->getArg(0);
+    if (Arg->isTypeDependent() || Arg->isValueDependent())
+      return false;
+
+    // Check constant-ness first.
+    if (SemaRef.BuiltinConstantArg(TheCall, 0, Result))
+      return true;
+
+    // For TEW = 32, mtd can only be 0, 4, 8, 12.
+    // For TEW = 64, mtd can only be 0, 2, 4, 6, 8, 10, 12, 14.
+    // Only `sf_mm_f_f_w1` and `sf_mm_f_f_w2` might have TEW = 64.
+    if ((BuiltinID == RISCVVector::BI__builtin_rvv_sf_mm_f_f_w1 &&
+         EltSize == 64) ||
+        (BuiltinID == RISCVVector::BI__builtin_rvv_sf_mm_f_f_w2 &&
+         EltSize == 32))
+      return SemaRef.BuiltinConstantArgRange(TheCall, 0, 0, 15) ||
+           SemaRef.BuiltinConstantArgMultiple(TheCall, 0, 2);
+    return SemaRef.BuiltinConstantArgRange(TheCall, 0, 0, 15) ||
+           SemaRef.BuiltinConstantArgMultiple(TheCall, 0, 4);
+  }
+#endif // SIFIVE_CUSTOMIZATION
   case RISCVVector::BI__builtin_rvv_vget_v: {
     ASTContext::BuiltinVectorTypeInfo ResVecInfo =
         Context.getBuiltinVectorTypeInfo(cast<BuiltinType>(
