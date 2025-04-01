@@ -208,7 +208,7 @@ public:
 void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
     ArrayRef<RVVIntrinsicRecord> Recs, IntrinsicKind K) {
   const TargetInfo &TI = Context.getTargetInfo();
-  static const std::pair<const char *, RVVRequire> FeatureCheckList[] = {
+  static const std::pair<const char *, unsigned> FeatureCheckList[] = {
       {"64bit", RVV_REQ_RV64},
       {"xsfvcp", RVV_REQ_Xsfvcp},
       {"xsfvfnrclipxfqf", RVV_REQ_Xsfvfnrclipxfqf},
@@ -264,10 +264,11 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
     if (llvm::any_of(FeatureCheckList, [&](const auto &Item) {
 #if SIFIVE_CUSTOMIZATION
           if (Item.second == RVV_REQ_Zvfbfmin_Xsfvfbfa)
-            return (Record.RequiredExtensions & Item.second) == Item.second &&
+            return ((Record.RequiredExtensions[Item.second / 32] & (1U << (Item.second % 32))) != 0) &&
                    (!TI.hasFeature("zvfbfmin") && !TI.hasFeature("xsfvfbfa"));
 #endif // SIFIVE_CUSTOMIZATION
-          return (Record.RequiredExtensions & Item.second) == Item.second &&
+          return ((Record.RequiredExtensions[Item.second / 32] &
+                   (1U << (Item.second % 32))) != 0) &&
                  !TI.hasFeature(Item.first);
         }))
       continue;

@@ -530,53 +530,48 @@ public:
 
 // RVVRequire should be sync'ed with target features, but only
 // required features used in riscv_vector.td.
+enum RVVRequire {
+  RVV_REQ_RV64,
+  RVV_REQ_Zvfhmin,
+  RVV_REQ_Xsfvcp,
+  RVV_REQ_Xsfvfnrclipxfqf,
+  RVV_REQ_Xsfvfwmaccqqq,
+  RVV_REQ_Xsfvqmaccdod,
+  RVV_REQ_Xsfvqmaccqoq,
+  RVV_REQ_Zvbb,
+  RVV_REQ_Zvbc,
+  RVV_REQ_Zvkb,
+  RVV_REQ_Zvkg,
+  RVV_REQ_Zvkned,
+  RVV_REQ_Zvknha,
+  RVV_REQ_Zvknhb,
+  RVV_REQ_Zvksed,
+  RVV_REQ_Zvksh,
+  RVV_REQ_Zvfbfwma,
+  RVV_REQ_Zvfbfmin,
+  RVV_REQ_Zvfh,
+  RVV_REQ_Experimental,
 #if SIFIVE_CUSTOMIZATION
-enum RVVRequire : uint64_t {
+  RVV_REQ_HasBfloat16,
+  RVV_REQ_Xsfvfbfa,
+  RVV_REQ_Xsfvfbfexp16e,
+  RVV_REQ_Xsfvfexp16e,
+  RVV_REQ_Xsfvfexp32e,
+  RVV_REQ_Xsfvfexpa,
+  RVV_REQ_Xsfvfexpa64e,
+  RVV_REQ_Xsfvfhbfmin,
+  RVV_REQ_Xsfvqdotq,
+  RVV_REQ_Zvfbfmin_Xsfvfbfa,
+  RVV_REQ_Xsfmmbase,
+  RVV_REQ_Xsfmm32a,
+  RVV_REQ_Xsfmm32a8f,
+  RVV_REQ_Xsfmm32a16f,
+  RVV_REQ_Xsfmm32a32f,
+  RVV_REQ_Xsfmm64a64f,
+  RVV_REQ_Xsfmm32a4i,
+  RVV_REQ_Xsfmm32a8i,
 #endif // SIFIVE_CUSTOMIZATION
-  RVV_REQ_None = 0,
-  RVV_REQ_RV64 = 1 << 0,
-  RVV_REQ_Zvfhmin = 1 << 1,
-  RVV_REQ_Xsfvcp = 1 << 2,
-  RVV_REQ_Xsfvfnrclipxfqf = 1 << 3,
-  RVV_REQ_Xsfvfwmaccqqq = 1 << 4,
-  RVV_REQ_Xsfvqmaccdod = 1 << 5,
-  RVV_REQ_Xsfvqmaccqoq = 1 << 6,
-  RVV_REQ_Zvbb = 1 << 7,
-  RVV_REQ_Zvbc = 1 << 8,
-  RVV_REQ_Zvkb = 1 << 9,
-  RVV_REQ_Zvkg = 1 << 10,
-  RVV_REQ_Zvkned = 1 << 11,
-  RVV_REQ_Zvknha = 1 << 12,
-  RVV_REQ_Zvknhb = 1 << 13,
-  RVV_REQ_Zvksed = 1 << 14,
-  RVV_REQ_Zvksh = 1 << 15,
-  RVV_REQ_Zvfbfwma = 1 << 16,
-  RVV_REQ_Zvfbfmin = 1 << 17,
-  RVV_REQ_Zvfh = 1 << 18,
-  RVV_REQ_Experimental = 1 << 19,
-#if SIFIVE_CUSTOMIZATION
-  RVV_REQ_HasBfloat16 = 1 << 20,
-  RVV_REQ_Xsfvfbfa = 1 << 21,
-  RVV_REQ_Xsfvfbfexp16e = 1 << 22,
-  RVV_REQ_Xsfvfexp16e = 1 << 23,
-  RVV_REQ_Xsfvfexp32e = 1 << 24,
-  RVV_REQ_Xsfvfexpa = 1 << 25,
-  RVV_REQ_Xsfvfexpa64e = 1 << 26,
-  RVV_REQ_Xsfvfhbfmin = 1 << 27,
-  RVV_REQ_Xsfvqdotq = 1 << 28,
-  RVV_REQ_Zvfbfmin_Xsfvfbfa = 1 << 29,
-  RVV_REQ_Xsfmmbase = 1 << 30,
-  RVV_REQ_Xsfmm32a = 1ULL << 31,
-  RVV_REQ_Xsfmm32a8f = 1ULL << 32,
-  RVV_REQ_Xsfmm32a16f = 1ULL << 33,
-  RVV_REQ_Xsfmm32a32f = 1ULL << 34,
-  RVV_REQ_Xsfmm64a64f = 1ULL << 35,
-  RVV_REQ_Xsfmm32a4i = 1ULL << 36,
-  RVV_REQ_Xsfmm32a8i = 1ULL << 37,
-  LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_Xsfmm32a8i)
-#else
-  LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_Experimental)
-#endif // SIFIVE_CUSTOMIZATION
+  RVV_REQ_NUM,
 };
 
 // Raw RVV intrinsic info, used to expand later.
@@ -588,6 +583,9 @@ struct RVVIntrinsicRecord {
   // Overloaded intrinsic name, could be empty if it can be computed from Name.
   // e.g. vadd
   const char *OverloadedName;
+
+  // Required target features for this intrinsic.
+  uint32_t RequiredExtensions[(RVV_REQ_NUM + 31) / 32];
 
   // Prototype for this intrinsic, index of RVVSignatureTable.
   uint16_t PrototypeIndex;
@@ -606,11 +604,6 @@ struct RVVIntrinsicRecord {
 
   // Length of overloaded intrinsic suffix.
   uint8_t OverloadedSuffixSize;
-
-  // Required target features for this intrinsic.
-#if SIFIVE_CUSTOMIZATION
-  uint64_t RequiredExtensions;
-#endif // SIFIVE_CUSTOMIZATION
 
   // Supported type, mask of BasicType.
   uint8_t TypeRangeMask;
