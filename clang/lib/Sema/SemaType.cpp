@@ -9426,8 +9426,7 @@ bool Sema::RequireCompleteTypeImpl(SourceLocation Loc, QualType T,
         runWithSufficientStackSpace(Loc, [&] {
           Diagnosed = InstantiateClassTemplateSpecialization(
               Loc, ClassTemplateSpec, TSK_ImplicitInstantiation,
-              /*Complain=*/Diagnoser,
-              ClassTemplateSpec->hasMatchedPackOnParmToNonPackOnArg());
+              /*Complain=*/Diagnoser);
         });
         Instantiated = true;
       }

@@ -294,6 +294,7 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
 #endif // SIFIVE_CUSTOMIZATION
 }
 
+<<<<<<< HEAD
 static constexpr Builtin::Info BuiltinInfo[] = {
 #if SIFIVE_CUSTOMIZATION
 #define BUILTIN(ID, TYPE, ATTRS)                                               \
@@ -313,10 +314,46 @@ static constexpr Builtin::Info BuiltinInfo[] = {
   {#ID, TYPE, ATTRS, FEATURE, HeaderDesc::NO_HEADER, ALL_LANGUAGES},
 #include "clang/Basic/BuiltinsRISCV.inc"
 };
+=======
+static constexpr int NumRVVBuiltins =
+    clang::RISCVVector::FirstTSBuiltin - Builtin::FirstTSBuiltin;
+static constexpr int NumRISCVBuiltins =
+    clang::RISCV::LastTSBuiltin - RISCVVector::FirstTSBuiltin;
+static constexpr int NumBuiltins =
+    clang::RISCV::LastTSBuiltin - Builtin::FirstTSBuiltin;
+static_assert(NumBuiltins == (NumRVVBuiltins + NumRISCVBuiltins));
+>>>>>>> cd269fee05a0f78fb53b65f701b4e06e9ddab424
 
-ArrayRef<Builtin::Info> RISCVTargetInfo::getTargetBuiltins() const {
-  return llvm::ArrayRef(BuiltinInfo,
-                        clang::RISCV::LastTSBuiltin - Builtin::FirstTSBuiltin);
+static constexpr llvm::StringTable BuiltinRVVStrings =
+    CLANG_BUILTIN_STR_TABLE_START
+#define BUILTIN CLANG_BUILTIN_STR_TABLE
+#define TARGET_BUILTIN CLANG_TARGET_BUILTIN_STR_TABLE
+#include "clang/Basic/BuiltinsRISCVVector.def"
+    ;
+static constexpr llvm::StringTable BuiltinRISCVStrings =
+    CLANG_BUILTIN_STR_TABLE_START
+#define BUILTIN CLANG_BUILTIN_STR_TABLE
+#define TARGET_BUILTIN CLANG_TARGET_BUILTIN_STR_TABLE
+#include "clang/Basic/BuiltinsRISCV.inc"
+    ;
+
+static constexpr auto BuiltinRVVInfos = Builtin::MakeInfos<NumRVVBuiltins>({
+#define BUILTIN CLANG_BUILTIN_ENTRY
+#define TARGET_BUILTIN CLANG_TARGET_BUILTIN_ENTRY
+#include "clang/Basic/BuiltinsRISCVVector.def"
+});
+static constexpr auto BuiltinRISCVInfos = Builtin::MakeInfos<NumRISCVBuiltins>({
+#define BUILTIN CLANG_BUILTIN_ENTRY
+#define TARGET_BUILTIN CLANG_TARGET_BUILTIN_ENTRY
+#include "clang/Basic/BuiltinsRISCV.inc"
+});
+
+llvm::SmallVector<Builtin::InfosShard>
+RISCVTargetInfo::getTargetBuiltins() const {
+  return {
+      {&BuiltinRVVStrings, BuiltinRVVInfos},
+      {&BuiltinRISCVStrings, BuiltinRISCVInfos},
+  };
 }
 
 bool RISCVTargetInfo::initFeatureMap(
