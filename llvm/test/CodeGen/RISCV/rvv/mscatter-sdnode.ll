@@ -1984,31 +1984,13 @@ define void @mscatter_baseidx_nxv16i16_nxv16f64(<vscale x 8 x double> %val0, <vs
 ; RV32-NEXT:    srli a1, a1, 3
 ; RV32-NEXT:    vsetvli a2, zero, e8, mf4, ta, ma
 ; RV32-NEXT:    vslidedown.vx v7, v0, a1
-<<<<<<< HEAD
-; RV32-NEXT:    vsetvli a1, zero, e32, m8, ta, ma
-; RV32-NEXT:    vsext.vf2 v24, v28
-; RV32-NEXT:    vsll.vi v24, v24, 3
+; RV32-NEXT:    li a1, 8
+; RV32-NEXT:    vsetvli a2, zero, e16, m4, ta, ma
+; RV32-NEXT:    vwmulsu.vx v24, v28, a1
 ; RV32-NEXT:    vsetvli a1, zero, e64, m8, ta, ma
 ; RV32-NEXT:    vsoxei32.v v8, (a0), v24, v0.t
 ; RV32-NEXT:    vmv1r.v v0, v7
 ; RV32-NEXT:    vsoxei32.v v16, (a0), v28, v0.t
-=======
-; RV32-NEXT:    li a1, 8
-; RV32-NEXT:    vsetvli a2, zero, e16, m4, ta, ma
-; RV32-NEXT:    vwmulsu.vx v24, v8, a1
-; RV32-NEXT:    vsetvli a1, zero, e64, m8, ta, ma
-; RV32-NEXT:    vsoxei32.v v16, (a0), v24, v0.t
-; RV32-NEXT:    vmv1r.v v0, v7
-; RV32-NEXT:    addi a1, sp, 16
-; RV32-NEXT:    vl8r.v v8, (a1) # Unknown-size Folded Reload
-; RV32-NEXT:    vsoxei32.v v8, (a0), v28, v0.t
-; RV32-NEXT:    csrr a0, vlenb
-; RV32-NEXT:    slli a0, a0, 3
-; RV32-NEXT:    add sp, sp, a0
-; RV32-NEXT:    .cfi_def_cfa sp, 16
-; RV32-NEXT:    addi sp, sp, 16
-; RV32-NEXT:    .cfi_def_cfa_offset 0
->>>>>>> f7aad60cd1a538fb1eb5ab861f8c29ddba5283a4
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: mscatter_baseidx_nxv16i16_nxv16f64:
