@@ -949,21 +949,6 @@ public:
   bool lowerInterleaveIntrinsicToStore(
       StoreInst *SI, ArrayRef<Value *> InterleaveValues) const override;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  bool lowerInterleavedScalableLoad(VPIntrinsic *Load, Value *Mask,
-                                    IntrinsicInst *DeinterleaveIntrin,
-                                    unsigned Factor) const override;
-
-  bool lowerInterleavedScalableStore(VPIntrinsic *Store, Value *Mask,
-                                     IntrinsicInst *InterleaveIntrin,
-                                     unsigned Factor) const override;
-
-  bool lowerDeinterleaveIntrinsicToStridedLoad(VPIntrinsic *StridedLoad,
-                                               IntrinsicInst *DI,
-                                               unsigned Factor) const override;
-#endif // SIFIVE_CUSTOMIZATION
-=======
   bool lowerDeinterleavedIntrinsicToVPLoad(
       VPIntrinsic *Load, Value *Mask,
       ArrayRef<Value *> DeinterleaveRes) const override;
@@ -971,7 +956,12 @@ public:
   bool lowerInterleavedIntrinsicToVPStore(
       VPIntrinsic *Store, Value *Mask,
       ArrayRef<Value *> InterleaveOps) const override;
->>>>>>> 005b23bb3bf0b943db3a6d12b01b2c01789341b8
+
+#if SIFIVE_CUSTOMIZATION
+  bool lowerDeinterleaveIntrinsicToStridedLoad(VPIntrinsic *StridedLoad,
+                                               IntrinsicInst *DI,
+                                               unsigned Factor) const override;
+#endif // SIFIVE_CUSTOMIZATION
 
   bool supportKCFIBundles() const override { return true; }
 

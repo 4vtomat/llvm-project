@@ -253,43 +253,6 @@ static bool isReInterleaveMask(ShuffleVectorInst *SVI, unsigned &Factor,
 }
 
 #if SIFIVE_CUSTOMIZATION
-/// Check the interleaved mask
-///
-/// - if a value within the optional is non-nullptr, the value corresponds to
-///   deinterleaved mask
-/// - if a value within the option is nullptr, the value corresponds to all-true
-///   mask
-/// - return nullopt if mask cannot be deinterleaved
-static std::optional<Value *> getMask(Value *WideMask, unsigned Factor) {
-  using namespace llvm::PatternMatch;
-  if (auto *IMI = dyn_cast<IntrinsicInst>(WideMask)) {
-    switch (IMI->getIntrinsicID()) {
-    default:
-      return std::nullopt;
-#define TRY_DEINTERLEAVE_MASK(N, PREFIX)                                       \
-  case Intrinsic::PREFIX##vector_interleave##N:                                \
-    assert(Factor == N && "Interleave factor of a data and mask don't match"); \
-    for (unsigned I = 0; I < N; ++I)                                           \
-      if (IMI->getOperand(0) != IMI->getOperand(I))                            \
-        return std::nullopt;                                                   \
-                                                                               \
-    return IMI->getOperand(0);
-
-      TRY_DEINTERLEAVE_MASK(2,);
-      TRY_DEINTERLEAVE_MASK(3, experimental_);
-      TRY_DEINTERLEAVE_MASK(4, experimental_);
-      TRY_DEINTERLEAVE_MASK(5, experimental_);
-      TRY_DEINTERLEAVE_MASK(6, experimental_);
-      TRY_DEINTERLEAVE_MASK(7, experimental_);
-      TRY_DEINTERLEAVE_MASK(8, experimental_);
-#undef TRY_DEINTERLEAVE_MASK
-    }
-  }
-  if (match(WideMask, m_AllOnes()))
-    return nullptr;
-  return std::nullopt;
-}
-
 static unsigned getFactorFromVectorInterleaveIntrinsic(IntrinsicInst *II) {
     switch (II->getIntrinsicID()) {
     case Intrinsic::vector_interleave2:
@@ -743,45 +706,31 @@ static Value *getMask(Value *WideMask, unsigned Factor,
 
 bool InterleavedAccessImpl::lowerDeinterleaveIntrinsic(
     IntrinsicInst *DI, SmallSetVector<Instruction *, 32> &DeadInsts) {
-<<<<<<< HEAD
+  Value *LoadedVal = DI->getOperand(0);
 #if SIFIVE_CUSTOMIZATION
-  unsigned Factor = getFactorFromVectorDeInterleaveIntrinsic(DI);
-  if (Factor == 0) {
-    assert(0 && "Unsupported vector.deinterleave intrinsic");
+  if (!LoadedVal->hasOneUse() ||
+      !isa<LoadInst, VPIntrinsic, BitCastInst, IntToPtrInst>(LoadedVal))
+#else
+  if (!LoadedVal->hasOneUse() || !isa<LoadInst, VPIntrinsic>(LoadedVal))
+#endif
     return false;
-  }
 
-  if (auto *VPLoad = dyn_cast<VPIntrinsic>(DI->getOperand(0))) {
-    if (VPLoad->getIntrinsicID() != Intrinsic::vp_load || !VPLoad->hasOneUse())
-      return false;
+  SmallVector<Value *, 8> DeinterleaveValues;
+  SmallVector<Instruction *, 8> DeinterleaveDeadInsts;
+  if (!getVectorDeinterleaveFactor(DI, DeinterleaveValues,
+                                   DeinterleaveDeadInsts))
+    return false;
 
-    // Check mask operand. Handle both all-true and interleaved mask.
-    Value *WideMask = VPLoad->getOperand(1);
-    std::optional<Value *> Mask = getMask(WideMask, Factor);
-    if (!Mask)
-      return false;
+  const unsigned Factor = DeinterleaveValues.size();
 
-    LLVM_DEBUG(dbgs() << "IA: Found a deinterleave intrinsic: " << *DI << "\n");
-
-    // Since lowerInterleaveLoad expects Shuffles and LoadInst, use special
-    // TLI function to emit target-specific interleaved instruction.
-    if (!TLI->lowerInterleavedScalableLoad(VPLoad, *Mask, DI, Factor))
-      return false;
-
-    DeadInsts.insert(DI);
-    DeadInsts.insert(VPLoad);
-    return true;
-  }
-
+#if SIFIVE_CUSTOMIZATION
   // Match
   //   %x = vp.strided.load  ;; VPStridedLoad
   //   %y = bitcast %x       ;; BitCast
   //   %y' = inttoptr %y
   //   %z = deinterleave %y  ;; DI
-  if (isa<BitCastInst, IntToPtrInst>(DI->getOperand(0))) {
-    auto *BitCast = cast<Instruction>(DI->getOperand(0));
-    if (!BitCast->hasOneUse())
-      return false;
+  if (isa<BitCastInst, IntToPtrInst>(LoadedVal)) {
+    auto *BitCast = cast<Instruction>(LoadedVal);
 
     Instruction *IntToPtrCast = nullptr;
     if (auto *BC = dyn_cast<BitCastInst>(BitCast->getOperand(0))) {
@@ -820,22 +769,6 @@ bool InterleavedAccessImpl::lowerDeinterleaveIntrinsic(
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
-  LoadInst *LI = dyn_cast<LoadInst>(DI->getOperand(0));
-
-  if (!LI || !LI->hasOneUse() || !LI->isSimple())
-=======
-  Value *LoadedVal = DI->getOperand(0);
-  if (!LoadedVal->hasOneUse() || !isa<LoadInst, VPIntrinsic>(LoadedVal))
->>>>>>> 005b23bb3bf0b943db3a6d12b01b2c01789341b8
-    return false;
-
-  SmallVector<Value *, 8> DeinterleaveValues;
-  SmallVector<Instruction *, 8> DeinterleaveDeadInsts;
-  if (!getVectorDeinterleaveFactor(DI, DeinterleaveValues,
-                                   DeinterleaveDeadInsts))
-    return false;
-
-  const unsigned Factor = DeinterleaveValues.size();
 
   if (auto *VPLoad = dyn_cast<VPIntrinsic>(LoadedVal)) {
     if (VPLoad->getIntrinsicID() != Intrinsic::vp_load)
@@ -879,44 +812,8 @@ bool InterleavedAccessImpl::lowerInterleaveIntrinsic(
     IntrinsicInst *II, SmallSetVector<Instruction *, 32> &DeadInsts) {
   if (!II->hasOneUse())
     return false;
-<<<<<<< HEAD
-
-#if SIFIVE_CUSTOMIZATION
-  if (auto *VPStore = dyn_cast<VPIntrinsic>(*(II->users().begin()))) {
-    if (VPStore->getIntrinsicID() != Intrinsic::vp_store)
-      return false;
-
-    unsigned Factor = getFactorFromVectorInterleaveIntrinsic(II);
-    if (Factor == 0) {
-      assert(0 && "Unsupported vector.interleave intrinsic");
-      return false;
-    }
-
-    Value *WideMask = VPStore->getOperand(2);
-    std::optional<Value *> Mask = getMask(WideMask, Factor);
-    if (!Mask)
-      return false;
-
-    LLVM_DEBUG(dbgs() << "IA: Found an interleave intrinsic: " << *II << "\n");
-
-    // Since lowerInterleavedStore expects Shuffle and StoreInst, use special
-    // TLI function to emit target-specific interleaved instruction.
-    if (!TLI->lowerInterleavedScalableStore(VPStore, *Mask, II, Factor))
-      return false;
-
-    DeadInsts.insert(VPStore);
-    DeadInsts.insert(II);
-    return true;
-  }
-#endif
-
-  StoreInst *SI = dyn_cast<StoreInst>(*(II->users().begin()));
-
-  if (!SI || !SI->isSimple())
-=======
   Value *StoredBy = II->user_back();
   if (!isa<StoreInst, VPIntrinsic>(StoredBy))
->>>>>>> 005b23bb3bf0b943db3a6d12b01b2c01789341b8
     return false;
 
   SmallVector<Value *, 8> InterleaveValues;
