@@ -301,11 +301,18 @@ static constexpr int NumRVVBuiltins =
     clang::RISCVVector::FirstTSBuiltin - NEON::FirstTSBuiltin;
 #else
 static constexpr int NumRVVBuiltins =
+<<<<<<< HEAD
     clang::RISCVVector::FirstTSBuiltin - Builtin::FirstTSBuiltin;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    RISCVVector::FirstSiFiveBuiltin - Builtin::FirstTSBuiltin;
+static constexpr int NumRVVSiFiveBuiltins =
+    RISCVVector::FirstTSBuiltin - RISCVVector::FirstSiFiveBuiltin;
+>>>>>>> 64ea3f5a4720105d166b034d5a34d92475579e64
 static constexpr int NumRISCVBuiltins =
-    clang::RISCV::LastTSBuiltin - RISCVVector::FirstTSBuiltin;
+    RISCV::LastTSBuiltin - RISCVVector::FirstTSBuiltin;
 static constexpr int NumBuiltins =
+<<<<<<< HEAD
     clang::RISCV::LastTSBuiltin - Builtin::FirstTSBuiltin;
 #if SIFIVE_CUSTOMIZATION
 static_assert(NumBuiltins ==
@@ -322,20 +329,46 @@ static constexpr llvm::StringTable BuiltinNEONStrings =
 #include "clang/Basic/BuiltinsNEON.def"
     ;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    RISCV::LastTSBuiltin - Builtin::FirstTSBuiltin;
+static_assert(NumBuiltins ==
+              (NumRVVBuiltins + NumRVVSiFiveBuiltins + NumRISCVBuiltins));
+>>>>>>> 64ea3f5a4720105d166b034d5a34d92475579e64
 
-static constexpr llvm::StringTable BuiltinRVVStrings =
-    CLANG_BUILTIN_STR_TABLE_START
-#define BUILTIN CLANG_BUILTIN_STR_TABLE
-#define TARGET_BUILTIN CLANG_TARGET_BUILTIN_STR_TABLE
-#include "clang/Basic/BuiltinsRISCVVector.def"
-    ;
-static constexpr llvm::StringTable BuiltinRISCVStrings =
+namespace RVV {
+#define GET_RISCVV_BUILTIN_STR_TABLE
+#include "clang/Basic/riscv_vector_builtins.inc"
+#undef GET_RISCVV_BUILTIN_STR_TABLE
+static_assert(BuiltinStrings.size() < 100'000);
+
+static constexpr std::array<Builtin::Info, NumRVVBuiltins> BuiltinInfos = {
+#define GET_RISCVV_BUILTIN_INFOS
+#include "clang/Basic/riscv_vector_builtins.inc"
+#undef GET_RISCVV_BUILTIN_INFOS
+};
+} // namespace RVV
+
+namespace RVVSiFive {
+#define GET_RISCVV_BUILTIN_STR_TABLE
+#include "clang/Basic/riscv_sifive_vector_builtins.inc"
+#undef GET_RISCVV_BUILTIN_STR_TABLE
+
+static constexpr std::array<Builtin::Info, NumRVVSiFiveBuiltins> BuiltinInfos =
+    {
+#define GET_RISCVV_BUILTIN_INFOS
+#include "clang/Basic/riscv_sifive_vector_builtins.inc"
+#undef GET_RISCVV_BUILTIN_INFOS
+};
+} // namespace RVVSiFive
+
+static constexpr llvm::StringTable BuiltinStrings =
     CLANG_BUILTIN_STR_TABLE_START
 #define BUILTIN CLANG_BUILTIN_STR_TABLE
 #define TARGET_BUILTIN CLANG_TARGET_BUILTIN_STR_TABLE
 #include "clang/Basic/BuiltinsRISCV.inc"
     ;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static constexpr auto BuiltinNEONInfos = Builtin::MakeInfos<NumNEONBuiltins>({
 #define BUILTIN CLANG_BUILTIN_ENTRY
@@ -349,6 +382,9 @@ static constexpr auto BuiltinRVVInfos = Builtin::MakeInfos<NumRVVBuiltins>({
 #include "clang/Basic/BuiltinsRISCVVector.def"
 });
 static constexpr auto BuiltinRISCVInfos = Builtin::MakeInfos<NumRISCVBuiltins>({
+=======
+static constexpr auto BuiltinInfos = Builtin::MakeInfos<NumRISCVBuiltins>({
+>>>>>>> 64ea3f5a4720105d166b034d5a34d92475579e64
 #define BUILTIN CLANG_BUILTIN_ENTRY
 #define TARGET_BUILTIN CLANG_TARGET_BUILTIN_ENTRY
 #include "clang/Basic/BuiltinsRISCV.inc"
@@ -357,11 +393,17 @@ static constexpr auto BuiltinRISCVInfos = Builtin::MakeInfos<NumRISCVBuiltins>({
 llvm::SmallVector<Builtin::InfosShard>
 RISCVTargetInfo::getTargetBuiltins() const {
   return {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       {&BuiltinNEONStrings, BuiltinNEONInfos},
 #endif // SIFIVE_CUSTOMIZATION
       {&BuiltinRVVStrings, BuiltinRVVInfos},
       {&BuiltinRISCVStrings, BuiltinRISCVInfos},
+=======
+      {&RVV::BuiltinStrings, RVV::BuiltinInfos, "__builtin_rvv_"},
+      {&RVVSiFive::BuiltinStrings, RVVSiFive::BuiltinInfos, "__builtin_rvv_"},
+      {&BuiltinStrings, BuiltinInfos},
+>>>>>>> 64ea3f5a4720105d166b034d5a34d92475579e64
   };
 }
 
