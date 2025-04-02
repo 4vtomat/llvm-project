@@ -109,3 +109,255 @@ define void @sf.sci.3.r.xx.se(iXLen %x, iXLen %y) {
   call void @llvm.riscv.sf.sci.3.r.xx.se.iXLen(i32 4, i32 17, iXLen %x, iXLen %y)
   ret void
 }
+
+define iXLen @sf.sci.0.i.x.xi(iXLen %x) {
+; CHECK-LABEL: sf.sci.0.i.x.xi:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.0.i 0, a0, a0, 0
+; CHECK-NEXT:    ret
+  %a = call iXLen @llvm.riscv.sf.sci.0.i.x.xi.iXLen(i32 0, iXLen %x, i32 0)
+  ret iXLen %a
+}
+
+define iXLen @sf.sci.0.i.x.xi.se(iXLen %x) {
+; CHECK-LABEL: sf.sci.0.i.x.xi.se:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.0.i 6, a0, a0, 4095
+; CHECK-NEXT:    ret
+  %a = call iXLen @llvm.riscv.sf.sci.0.i.x.xi.se.iXLen(i32 6, iXLen %x, i32 4095)
+  ret iXLen %a
+}
+
+define void @sf.sci.0.i.xi.se(iXLen %x) {
+; CHECK-LABEL: sf.sci.0.i.xi.se:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.0.i 4, zero, a0, 17
+; CHECK-NEXT:    ret
+  call void @llvm.riscv.sf.sci.0.i.xi.se.iXLen(i32 4, iXLen %x, i32 17)
+  ret void
+}
+
+define iXLen @sf.sci.1.i.x.xi(iXLen %x) {
+; CHECK-LABEL: sf.sci.1.i.x.xi:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.1.i 0, a0, a0, 0
+; CHECK-NEXT:    ret
+  %a = call iXLen @llvm.riscv.sf.sci.1.i.x.xi.iXLen(i32 0, iXLen %x, i32 0)
+  ret iXLen %a
+}
+
+define iXLen @sf.sci.1.i.x.xi.se(iXLen %x) {
+; CHECK-LABEL: sf.sci.1.i.x.xi.se:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.1.i 6, a0, a0, 4095
+; CHECK-NEXT:    ret
+  %a = call iXLen @llvm.riscv.sf.sci.1.i.x.xi.se.iXLen(i32 6, iXLen %x, i32 4095)
+  ret iXLen %a
+}
+
+define void @sf.sci.1.i.xi.se(iXLen %x) {
+; CHECK-LABEL: sf.sci.1.i.xi.se:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.1.i 4, zero, a0, 17
+; CHECK-NEXT:    ret
+  call void @llvm.riscv.sf.sci.1.i.xi.se.iXLen(i32 4, iXLen %x, i32 17)
+  ret void
+}
+
+define iXLen @sf.sci.2.i.x.xi(iXLen %x) {
+; CHECK-LABEL: sf.sci.2.i.x.xi:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.2.i 0, a0, a0, 0
+; CHECK-NEXT:    ret
+  %a = call iXLen @llvm.riscv.sf.sci.2.i.x.xi.iXLen(i32 0, iXLen %x, i32 0)
+  ret iXLen %a
+}
+
+define iXLen @sf.sci.2.i.x.xi.se(iXLen %x) {
+; CHECK-LABEL: sf.sci.2.i.x.xi.se:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.2.i 6, a0, a0, 4095
+; CHECK-NEXT:    ret
+  %a = call iXLen @llvm.riscv.sf.sci.2.i.x.xi.se.iXLen(i32 6, iXLen %x, i32 4095)
+  ret iXLen %a
+}
+
+define void @sf.sci.2.i.xi.se(iXLen %x) {
+; CHECK-LABEL: sf.sci.2.i.xi.se:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.2.i 4, zero, a0, 17
+; CHECK-NEXT:    ret
+  call void @llvm.riscv.sf.sci.2.i.xi.se.iXLen(i32 4, iXLen %x, i32 17)
+  ret void
+}
+
+define iXLen @sf.sci.3.i.x.xi(iXLen %x) {
+; CHECK-LABEL: sf.sci.3.i.x.xi:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.3.i 0, a0, a0, 0
+; CHECK-NEXT:    ret
+  %a = call iXLen @llvm.riscv.sf.sci.3.i.x.xi.iXLen(i32 0, iXLen %x, i32 0)
+  ret iXLen %a
+}
+
+define iXLen @sf.sci.3.i.x.xi.se(iXLen %x) {
+; CHECK-LABEL: sf.sci.3.i.x.xi.se:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.3.i 6, a0, a0, 4095
+; CHECK-NEXT:    ret
+  %a = call iXLen @llvm.riscv.sf.sci.3.i.x.xi.se.iXLen(i32 6, iXLen %x, i32 4095)
+  ret iXLen %a
+}
+
+define void @sf.sci.3.i.xi.se(iXLen %x) {
+; CHECK-LABEL: sf.sci.3.i.xi.se:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.3.i 4, zero, a0, 17
+; CHECK-NEXT:    ret
+  call void @llvm.riscv.sf.sci.3.i.xi.se.iXLen(i32 4, iXLen %x, i32 17)
+  ret void
+}
+
+define iXLen @sf.sci.0.u.x.i() {
+; CHECK-LABEL: sf.sci.0.u.x.i:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.0.u a0, 0
+; CHECK-NEXT:    ret
+  %a = call iXLen @llvm.riscv.sf.sci.0.u.x.i.iXLen(i32 0)
+  ret iXLen %a
+}
+
+define iXLen @sf.sci.0.u.x.i.se() {
+; CHECK-LABEL: sf.sci.0.u.x.i.se:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.0.u a0, 4095
+; CHECK-NEXT:    ret
+  %a = call iXLen @llvm.riscv.sf.sci.0.u.x.i.se.iXLen(i32 4095)
+  ret iXLen %a
+}
+
+define void @sf.sci.0.u.i.se() {
+; CHECK-LABEL: sf.sci.0.u.i.se:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.0.u zero, 1048575
+; CHECK-NEXT:    ret
+  call void @llvm.riscv.sf.sci.0.u.i.se(i32 1048575)
+  ret void
+}
+
+define iXLen @sf.sci.1.u.x.i() {
+; CHECK-LABEL: sf.sci.1.u.x.i:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.1.u a0, 0
+; CHECK-NEXT:    ret
+  %a = call iXLen @llvm.riscv.sf.sci.1.u.x.i.iXLen(i32 0)
+  ret iXLen %a
+}
+
+define iXLen @sf.sci.1.u.x.i.se() {
+; CHECK-LABEL: sf.sci.1.u.x.i.se:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.1.u a0, 4095
+; CHECK-NEXT:    ret
+  %a = call iXLen @llvm.riscv.sf.sci.1.u.x.i.se.iXLen(i32 4095)
+  ret iXLen %a
+}
+
+define void @sf.sci.1.u.i.se() {
+; CHECK-LABEL: sf.sci.1.u.i.se:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.1.u zero, 1048575
+; CHECK-NEXT:    ret
+  call void @llvm.riscv.sf.sci.1.u.i.se(i32 1048575)
+  ret void
+}
+
+define iXLen @sf.sci.2.u.x.i() {
+; CHECK-LABEL: sf.sci.2.u.x.i:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.2.u a0, 0
+; CHECK-NEXT:    ret
+  %a = call iXLen @llvm.riscv.sf.sci.2.u.x.i.iXLen(i32 0)
+  ret iXLen %a
+}
+
+define iXLen @sf.sci.2.u.x.i.se() {
+; CHECK-LABEL: sf.sci.2.u.x.i.se:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.2.u a0, 4095
+; CHECK-NEXT:    ret
+  %a = call iXLen @llvm.riscv.sf.sci.2.u.x.i.se.iXLen(i32 4095)
+  ret iXLen %a
+}
+
+define void @sf.sci.2.u.i.se() {
+; CHECK-LABEL: sf.sci.2.u.i.se:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.2.u zero, 1048575
+; CHECK-NEXT:    ret
+  call void @llvm.riscv.sf.sci.2.u.i.se(i32 1048575)
+  ret void
+}
+
+define iXLen @sf.sci.3.u.x.i() {
+; CHECK-LABEL: sf.sci.3.u.x.i:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.3.u a0, 0
+; CHECK-NEXT:    ret
+  %a = call iXLen @llvm.riscv.sf.sci.3.u.x.i.iXLen(i32 0)
+  ret iXLen %a
+}
+
+define iXLen @sf.sci.3.u.x.i.se() {
+; CHECK-LABEL: sf.sci.3.u.x.i.se:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.3.u a0, 4095
+; CHECK-NEXT:    ret
+  %a = call iXLen @llvm.riscv.sf.sci.3.u.x.i.se(i32 4095)
+  ret iXLen %a
+}
+
+define void @sf.sci.3.u.i.se() {
+; CHECK-LABEL: sf.sci.3.u.i.se:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.3.u zero, 1048575
+; CHECK-NEXT:    ret
+  call void @llvm.riscv.sf.sci.3.u.i.se(i32 1048575)
+  ret void
+}
+
+define void @sf.sci.0.x.i.se() {
+; CHECK-LABEL: sf.sci.0.x.i.se:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.0.x 0
+; CHECK-NEXT:    ret
+  call void @llvm.riscv.sf.sci.0.x.i.se(i32 0)
+  ret void
+}
+
+define void @sf.sci.1.x.i.se() {
+; CHECK-LABEL: sf.sci.1.x.i.se:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.1.x 12345678
+; CHECK-NEXT:    ret
+  call void @llvm.riscv.sf.sci.1.x.i.se(i32 12345678)
+  ret void
+}
+
+define void @sf.sci.2.x.i.se() {
+; CHECK-LABEL: sf.sci.2.x.i.se:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.2.x 9101112
+; CHECK-NEXT:    ret
+  call void @llvm.riscv.sf.sci.2.x.i.se(i32 9101112)
+  ret void
+}
+
+define void @sf.sci.3.x.i.se() {
+; CHECK-LABEL: sf.sci.3.x.i.se:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    sf.sci.3.x 33554431
+; CHECK-NEXT:    ret
+  call void @llvm.riscv.sf.sci.3.x.i.se(i32 33554431)
+  ret void
+}

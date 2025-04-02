@@ -771,6 +771,10 @@ public:
   bool isUImm32() const { return IsUImm<32>(); }
   bool isUImm48() const { return IsUImm<48>(); }
   bool isUImm64() const { return IsUImm<64>(); }
+#if SIFIVE_CUSTOMIZATION
+  bool isUImm12() const { return IsUImm<12>(); }
+  bool isUImm25() const { return IsUImm<25>(); }
+#endif // SIFIVE_CUSTOMIZATION
 
   bool isUImm5NonZero() const {
     if (!isImm())
@@ -1632,6 +1636,10 @@ bool RISCVAsmParser::matchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
     return generateImmOutOfRangeError(Operands, ErrorInfo, 0, (1 << 8) - 1);
   case Match_InvalidUImm8GE32:
     return generateImmOutOfRangeError(Operands, ErrorInfo, 32, (1 << 8) - 1);
+#if SIFIVE_CUSTOMIZATION
+  case Match_InvalidUImm12:
+    return generateImmOutOfRangeError(Operands, ErrorInfo, 0, (1 << 12) - 1);
+#endif // SIFIVE_CUSTOMIZATION
   case Match_InvalidSImm5:
     return generateImmOutOfRangeError(Operands, ErrorInfo, -(1 << 4),
                                       (1 << 4) - 1);

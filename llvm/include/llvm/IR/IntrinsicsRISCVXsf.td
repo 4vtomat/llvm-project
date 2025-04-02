@@ -339,6 +339,59 @@ let TargetPrefix = "riscv" in {
   defm int_riscv_sf_sci_1 : sci_r;
   defm int_riscv_sf_sci_2 : sci_r;
   defm int_riscv_sf_sci_3 : sci_r;
+
+  multiclass sci_i {
+    def _i_x_xi
+        : DefaultAttrsIntrinsic<[llvm_anyint_ty],
+                                [llvm_i32_ty, LLVMMatchType<0>, llvm_i32_ty],
+                                [IntrNoMem, ImmArg<ArgIndex<0>>, ImmArg<ArgIndex<2>>]>;
+    def _i_x_xi_se
+        : DefaultAttrsIntrinsic<[llvm_anyint_ty],
+                                [llvm_i32_ty, LLVMMatchType<0>, llvm_i32_ty],
+                                [IntrNoMem, IntrHasSideEffects,
+                                 ImmArg<ArgIndex<0>>, ImmArg<ArgIndex<2>>]>;
+    def _i_xi_se
+        : DefaultAttrsIntrinsic<[],
+                                [llvm_i32_ty, llvm_anyint_ty, llvm_i32_ty],
+                                [IntrNoMem, IntrHasSideEffects,
+                                 ImmArg<ArgIndex<0>>, ImmArg<ArgIndex<2>>]>;
+  }
+
+  defm int_riscv_sf_sci_0 : sci_i;
+  defm int_riscv_sf_sci_1 : sci_i;
+  defm int_riscv_sf_sci_2 : sci_i;
+  defm int_riscv_sf_sci_3 : sci_i;
+
+  multiclass sci_u {
+    def _u_x_i
+        : DefaultAttrsIntrinsic<[llvm_anyint_ty], [llvm_i32_ty],
+                                [IntrNoMem, ImmArg<ArgIndex<0>>]>;
+    def _u_x_i_se
+        : DefaultAttrsIntrinsic<[llvm_anyint_ty], [llvm_i32_ty],
+                                [IntrNoMem, IntrHasSideEffects,
+                                 ImmArg<ArgIndex<0>>]>;
+    def _u_i_se
+        : DefaultAttrsIntrinsic<[], [llvm_i32_ty],
+                                [IntrNoMem, IntrHasSideEffects,
+                                 ImmArg<ArgIndex<0>>]>;
+  }
+
+  defm int_riscv_sf_sci_0 : sci_u;
+  defm int_riscv_sf_sci_1 : sci_u;
+  defm int_riscv_sf_sci_2 : sci_u;
+  defm int_riscv_sf_sci_3 : sci_u;
+
+  multiclass sci_x {
+    def _x_i_se
+        : DefaultAttrsIntrinsic<[], [llvm_i32_ty],
+                                [IntrNoMem, IntrHasSideEffects,
+                                 ImmArg<ArgIndex<0>>]>;
+  }
+
+  defm int_riscv_sf_sci_0 : sci_x;
+  defm int_riscv_sf_sci_1 : sci_x;
+  defm int_riscv_sf_sci_2 : sci_x;
+  defm int_riscv_sf_sci_3 : sci_x;
 #endif // SIFIVE_CUSTOMIZATION
 
 } // TargetPrefix = "riscv"

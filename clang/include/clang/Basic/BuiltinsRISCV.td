@@ -173,6 +173,43 @@ def sf_sci_2_r_xx_se_32 : RISCVBuiltin<"void(_Constant unsigned int, _Constant u
 def sf_sci_3_r_x_xx_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int, _Constant unsigned int, unsigned int, unsigned int)">;
 def sf_sci_3_r_x_xx_se_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int, _Constant unsigned int, unsigned int, unsigned int)">;
 def sf_sci_3_r_xx_se_32 : RISCVBuiltin<"void(_Constant unsigned int, _Constant unsigned int, unsigned int, unsigned int)">;
+
+def sf_sci_0_i_x_xi_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int, unsigned int, _Constant unsigned int)">;
+def sf_sci_0_i_x_xi_se_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int, unsigned int, _Constant unsigned int)">;
+def sf_sci_0_i_xi_se_32 : RISCVBuiltin<"void(_Constant unsigned int, unsigned int, _Constant unsigned int)">;
+
+def sf_sci_1_i_x_xi_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int, unsigned int, _Constant unsigned int)">;
+def sf_sci_1_i_x_xi_se_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int, unsigned int, _Constant unsigned int)">;
+def sf_sci_1_i_xi_se_32 : RISCVBuiltin<"void(_Constant unsigned int, unsigned int, _Constant unsigned int)">;
+
+def sf_sci_2_i_x_xi_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int, unsigned int, _Constant unsigned int)">;
+def sf_sci_2_i_x_xi_se_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int, unsigned int, _Constant unsigned int)">;
+def sf_sci_2_i_xi_se_32 : RISCVBuiltin<"void(_Constant unsigned int, unsigned int, _Constant unsigned int)">;
+
+def sf_sci_3_i_x_xi_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int, unsigned int, _Constant unsigned int)">;
+def sf_sci_3_i_x_xi_se_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int, unsigned int, _Constant unsigned int)">;
+def sf_sci_3_i_xi_se_32 : RISCVBuiltin<"void(_Constant unsigned int, unsigned int, _Constant unsigned int)">;
+
+def sf_sci_0_u_x_i_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int)">;
+def sf_sci_0_u_x_i_se_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int)">;
+def sf_sci_0_u_i_se_32 : RISCVBuiltin<"void(_Constant unsigned int)">;
+
+def sf_sci_1_u_x_i_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int)">;
+def sf_sci_1_u_x_i_se_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int)">;
+def sf_sci_1_u_i_se_32 : RISCVBuiltin<"void(_Constant unsigned int)">;
+
+def sf_sci_2_u_x_i_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int)">;
+def sf_sci_2_u_x_i_se_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int)">;
+def sf_sci_2_u_i_se_32 : RISCVBuiltin<"void(_Constant unsigned int)">;
+
+def sf_sci_3_u_x_i_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int)">;
+def sf_sci_3_u_x_i_se_32 : RISCVBuiltin<"unsigned int(_Constant unsigned int)">;
+def sf_sci_3_u_i_se_32 : RISCVBuiltin<"void(_Constant unsigned int)">;
+
+def sf_sci_0_x_i_se_32 : RISCVBuiltin<"void(_Constant unsigned int)">;
+def sf_sci_1_x_i_se_32 : RISCVBuiltin<"void(_Constant unsigned int)">;
+def sf_sci_2_x_i_se_32 : RISCVBuiltin<"void(_Constant unsigned int)">;
+def sf_sci_3_x_i_se_32 : RISCVBuiltin<"void(_Constant unsigned int)">;
 }
 
 let Features = "xsfsci,64bit" in {
@@ -191,6 +228,43 @@ def sf_sci_2_r_xx_se_64 : RISCVBuiltin<"void(_Constant unsigned int, _Constant u
 def sf_sci_3_r_x_xx_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int, _Constant unsigned int, uint64_t, uint64_t)">;
 def sf_sci_3_r_x_xx_se_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int, _Constant unsigned int, uint64_t, uint64_t)">;
 def sf_sci_3_r_xx_se_64 : RISCVBuiltin<"void(_Constant unsigned int, _Constant unsigned int, uint64_t, uint64_t)">;
+
+def sf_sci_0_i_x_xi_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int, uint64_t, _Constant unsigned int)">;
+def sf_sci_0_i_x_xi_se_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int, uint64_t, _Constant unsigned int)">;
+def sf_sci_0_i_xi_se_64 : RISCVBuiltin<"void(_Constant unsigned int, uint64_t, _Constant unsigned int)">;
+
+def sf_sci_1_i_x_xi_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int, uint64_t, _Constant unsigned int)">;
+def sf_sci_1_i_x_xi_se_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int, uint64_t, _Constant unsigned int)">;
+def sf_sci_1_i_xi_se_64 : RISCVBuiltin<"void(_Constant unsigned int, uint64_t, _Constant unsigned int)">;
+
+def sf_sci_2_i_x_xi_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int, uint64_t, _Constant unsigned int)">;
+def sf_sci_2_i_x_xi_se_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int, uint64_t, _Constant unsigned int)">;
+def sf_sci_2_i_xi_se_64 : RISCVBuiltin<"void(_Constant unsigned int, uint64_t, _Constant unsigned int)">;
+
+def sf_sci_3_i_x_xi_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int, uint64_t, _Constant unsigned int)">;
+def sf_sci_3_i_x_xi_se_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int, uint64_t, _Constant unsigned int)">;
+def sf_sci_3_i_xi_se_64 : RISCVBuiltin<"void(_Constant unsigned int, uint64_t, _Constant unsigned int)">;
+
+def sf_sci_0_u_x_i_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int)">;
+def sf_sci_0_u_x_i_se_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int)">;
+def sf_sci_0_u_i_se_64 : RISCVBuiltin<"void(_Constant unsigned int)">;
+
+def sf_sci_1_u_x_i_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int)">;
+def sf_sci_1_u_x_i_se_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int)">;
+def sf_sci_1_u_i_se_64 : RISCVBuiltin<"void(_Constant unsigned int)">;
+
+def sf_sci_2_u_x_i_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int)">;
+def sf_sci_2_u_x_i_se_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int)">;
+def sf_sci_2_u_i_se_64 : RISCVBuiltin<"void(_Constant unsigned int)">;
+
+def sf_sci_3_u_x_i_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int)">;
+def sf_sci_3_u_x_i_se_64 : RISCVBuiltin<"uint64_t(_Constant unsigned int)">;
+def sf_sci_3_u_i_se_64 : RISCVBuiltin<"void(_Constant unsigned int)">;
+
+def sf_sci_0_x_i_se_64 : RISCVBuiltin<"void(_Constant unsigned int)">;
+def sf_sci_1_x_i_se_64 : RISCVBuiltin<"void(_Constant unsigned int)">;
+def sf_sci_2_x_i_se_64 : RISCVBuiltin<"void(_Constant unsigned int)">;
+def sf_sci_3_x_i_se_64 : RISCVBuiltin<"void(_Constant unsigned int)">;
 }
 
 #endif
