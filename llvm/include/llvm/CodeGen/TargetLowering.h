@@ -94,9 +94,13 @@ class TargetRegisterClass;
 class TargetRegisterInfo;
 class TargetTransformInfo;
 class Value;
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 class VPIntrinsic;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+class VPIntrinsic;
+>>>>>>> 005b23bb3bf0b943db3a6d12b01b2c01789341b8
 
 namespace Sched {
 
@@ -3159,17 +3163,27 @@ public:
     return false;
   }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> 005b23bb3bf0b943db3a6d12b01b2c01789341b8
   /// Lower an interleaved load to target specific intrinsics. Return
   /// true on success.
   ///
   /// \p Load is a vp.load instruction.
   /// \p Mask is a mask value
+<<<<<<< HEAD
   /// \p ExtractValues is a list of ExtractValueInst from a deinterleave
   /// \p Factor is the interleave factor.
   virtual bool lowerInterleavedScalableLoad(VPIntrinsic *Load, Value *Mask,
                                             IntrinsicInst *DeinterleaveIntrin,
                                             unsigned Factor) const {
+=======
+  /// \p DeinterleaveRes is a list of deinterleaved results.
+  virtual bool
+  lowerDeinterleavedIntrinsicToVPLoad(VPIntrinsic *Load, Value *Mask,
+                                      ArrayRef<Value *> DeinterleaveRes) const {
+>>>>>>> 005b23bb3bf0b943db3a6d12b01b2c01789341b8
     return false;
   }
 
@@ -3178,6 +3192,7 @@ public:
   ///
   /// \p Store is the vp.store instruction.
   /// \p Mask is a mask value
+<<<<<<< HEAD
   /// \p InterleaveIntrin is vector.interleave intrinsic
   /// \p Factor is the interleave factor.
   virtual bool lowerInterleavedScalableStore(VPIntrinsic *Store, Value *Mask,
@@ -3199,6 +3214,15 @@ public:
   }
 
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  /// \p InterleaveOps is a list of values being interleaved.
+  virtual bool
+  lowerInterleavedIntrinsicToVPStore(VPIntrinsic *Store, Value *Mask,
+                                     ArrayRef<Value *> InterleaveOps) const {
+    return false;
+  }
+
+>>>>>>> 005b23bb3bf0b943db3a6d12b01b2c01789341b8
   /// Lower a deinterleave intrinsic to a target specific load intrinsic.
   /// Return true on success. Currently only supports
   /// llvm.vector.deinterleave2
