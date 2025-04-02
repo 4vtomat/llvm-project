@@ -175,21 +175,17 @@ namespace clang {
 
   namespace RISCVVector {
   enum {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     LastTIBuiltin = NEON::FirstTSBuiltin - 1,
-#endif
-#define BUILTIN(ID, TYPE, ATTRS) BI##ID,
-#include "clang/Basic/BuiltinsRISCVVector.def"
-=======
+#else
     LastTIBuiltin = clang::Builtin::FirstTSBuiltin - 1,
+#endif
 #define GET_RISCVV_BUILTIN_ENUMERATORS
 #include "clang/Basic/riscv_vector_builtins.inc"
     FirstSiFiveBuiltin,
     LastRVVBuiltin = FirstSiFiveBuiltin - 1,
 #include "clang/Basic/riscv_sifive_vector_builtins.inc"
 #undef GET_RISCVV_BUILTIN_ENUMERATORS
->>>>>>> 64ea3f5a4720105d166b034d5a34d92475579e64
     FirstTSBuiltin,
   };
   }

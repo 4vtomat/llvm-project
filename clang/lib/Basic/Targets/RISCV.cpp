@@ -295,45 +295,58 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
 }
 
 #if SIFIVE_CUSTOMIZATION
-static constexpr int NumNEONBuiltins =
-    NEON::FirstTSBuiltin - Builtin::FirstTSBuiltin;
+static constexpr int NumNeonBuiltins =
+    NEON::FirstFp16Builtin - Builtin::FirstTSBuiltin;
+static constexpr int NumFp16Builtins =
+    NEON::FirstTSBuiltin - NEON::FirstFp16Builtin;
 static constexpr int NumRVVBuiltins =
-    clang::RISCVVector::FirstTSBuiltin - NEON::FirstTSBuiltin;
+    RISCVVector::FirstSiFiveBuiltin - NEON::FirstTSBuiltin;
 #else
 static constexpr int NumRVVBuiltins =
-<<<<<<< HEAD
-    clang::RISCVVector::FirstTSBuiltin - Builtin::FirstTSBuiltin;
-#endif // SIFIVE_CUSTOMIZATION
-=======
     RISCVVector::FirstSiFiveBuiltin - Builtin::FirstTSBuiltin;
+#endif // SIFIVE_CUSTOMIZATION
 static constexpr int NumRVVSiFiveBuiltins =
     RISCVVector::FirstTSBuiltin - RISCVVector::FirstSiFiveBuiltin;
->>>>>>> 64ea3f5a4720105d166b034d5a34d92475579e64
 static constexpr int NumRISCVBuiltins =
     RISCV::LastTSBuiltin - RISCVVector::FirstTSBuiltin;
 static constexpr int NumBuiltins =
-<<<<<<< HEAD
-    clang::RISCV::LastTSBuiltin - Builtin::FirstTSBuiltin;
+    RISCV::LastTSBuiltin - Builtin::FirstTSBuiltin;
 #if SIFIVE_CUSTOMIZATION
 static_assert(NumBuiltins ==
-              (NumNEONBuiltins + NumRVVBuiltins + NumRISCVBuiltins));
+              (NumNeonBuiltins + NumFp16Builtins + NumRVVBuiltins +
+               NumRVVSiFiveBuiltins + NumRISCVBuiltins));
 #else
-static_assert(NumBuiltins == (NumRVVBuiltins + NumRISCVBuiltins));
+static_assert(NumBuiltins ==
+              (NumRVVBuiltins + NumRVVSiFiveBuiltins + NumRISCVBuiltins));
 #endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
-static constexpr llvm::StringTable BuiltinNEONStrings =
-    CLANG_BUILTIN_STR_TABLE_START
-#define BUILTIN CLANG_BUILTIN_STR_TABLE
-#define TARGET_BUILTIN CLANG_TARGET_BUILTIN_STR_TABLE
-#include "clang/Basic/BuiltinsNEON.def"
-    ;
+namespace clang {
+namespace NEON {
+#define GET_NEON_BUILTIN_STR_TABLE
+#include "clang/Basic/arm_neon.inc"
+#undef GET_NEON_BUILTIN_STR_TABLE
+
+static constexpr std::array<Builtin::Info, NumNeonBuiltins> BuiltinInfos = {
+#define GET_NEON_BUILTIN_INFOS
+#include "clang/Basic/arm_neon.inc"
+#undef GET_NEON_BUILTIN_INFOS
+};
+
+namespace FP16 {
+#define GET_NEON_BUILTIN_STR_TABLE
+#include "clang/Basic/arm_fp16.inc"
+#undef GET_NEON_BUILTIN_STR_TABLE
+
+static constexpr std::array<Builtin::Info, NumFp16Builtins> BuiltinInfos = {
+#define GET_NEON_BUILTIN_INFOS
+#include "clang/Basic/arm_fp16.inc"
+#undef GET_NEON_BUILTIN_INFOS
+};
+} // namespace FP16
+} // namespace NEON
+} // namespace clang
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    RISCV::LastTSBuiltin - Builtin::FirstTSBuiltin;
-static_assert(NumBuiltins ==
-              (NumRVVBuiltins + NumRVVSiFiveBuiltins + NumRISCVBuiltins));
->>>>>>> 64ea3f5a4720105d166b034d5a34d92475579e64
 
 namespace RVV {
 #define GET_RISCVV_BUILTIN_STR_TABLE
@@ -368,23 +381,7 @@ static constexpr llvm::StringTable BuiltinStrings =
 #include "clang/Basic/BuiltinsRISCV.inc"
     ;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-static constexpr auto BuiltinNEONInfos = Builtin::MakeInfos<NumNEONBuiltins>({
-#define BUILTIN CLANG_BUILTIN_ENTRY
-#define TARGET_BUILTIN CLANG_TARGET_BUILTIN_ENTRY
-#include "clang/Basic/BuiltinsNEON.def"
-});
-#endif // SIFIVE_CUSTOMIZATION
-static constexpr auto BuiltinRVVInfos = Builtin::MakeInfos<NumRVVBuiltins>({
-#define BUILTIN CLANG_BUILTIN_ENTRY
-#define TARGET_BUILTIN CLANG_TARGET_BUILTIN_ENTRY
-#include "clang/Basic/BuiltinsRISCVVector.def"
-});
-static constexpr auto BuiltinRISCVInfos = Builtin::MakeInfos<NumRISCVBuiltins>({
-=======
 static constexpr auto BuiltinInfos = Builtin::MakeInfos<NumRISCVBuiltins>({
->>>>>>> 64ea3f5a4720105d166b034d5a34d92475579e64
 #define BUILTIN CLANG_BUILTIN_ENTRY
 #define TARGET_BUILTIN CLANG_TARGET_BUILTIN_ENTRY
 #include "clang/Basic/BuiltinsRISCV.inc"
@@ -393,17 +390,14 @@ static constexpr auto BuiltinInfos = Builtin::MakeInfos<NumRISCVBuiltins>({
 llvm::SmallVector<Builtin::InfosShard>
 RISCVTargetInfo::getTargetBuiltins() const {
   return {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-      {&BuiltinNEONStrings, BuiltinNEONInfos},
+      {&NEON::BuiltinStrings, NEON::BuiltinInfos, "__builtin_neon_"},
+      {&NEON::FP16::BuiltinStrings, NEON::FP16::BuiltinInfos,
+       "__builtin_neon_"},
 #endif // SIFIVE_CUSTOMIZATION
-      {&BuiltinRVVStrings, BuiltinRVVInfos},
-      {&BuiltinRISCVStrings, BuiltinRISCVInfos},
-=======
       {&RVV::BuiltinStrings, RVV::BuiltinInfos, "__builtin_rvv_"},
       {&RVVSiFive::BuiltinStrings, RVVSiFive::BuiltinInfos, "__builtin_rvv_"},
       {&BuiltinStrings, BuiltinInfos},
->>>>>>> 64ea3f5a4720105d166b034d5a34d92475579e64
   };
 }
 
