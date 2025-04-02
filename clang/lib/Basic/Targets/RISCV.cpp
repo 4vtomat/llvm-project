@@ -238,9 +238,6 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
   Builder.defineMacro("__riscv_v_intrinsic", Twine(getVersionValue(1, 0)));
 
 #if SIFIVE_CUSTOMIZATION
-  if (ISAInfo->hasExtension("xsfvfhbfmin"))
-    Builder.defineMacro("__riscv_xsfvfhbfmin", "1000");
-
   StringRef SiFiveRecodeTarget = getTargetOpts().SiFiveRecode;
   if (SiFiveRecodeTarget == "neon")
     Builder.defineMacro("__sifive_recode_neon");

@@ -191,6 +191,7 @@
 // CHECK-NOT: __riscv_xsfpgflushdlone
 // CHECK-NOT: __riscv_xsfpmpmt
 // CHECK-NOT: __riscv_xsfvfbfexp16e
+// CHECK-NOT: __riscv_xsfvfhbfmin
 // CHECK-NOT: __riscv_xsfvfexp16e
 // CHECK-NOT: __riscv_xsfvfexp32e
 // CHECK-NOT: __riscv_xsfvfexpa
@@ -1465,6 +1466,14 @@
 // RUN: -march=rv64izvfbfmin1p0_xsfvfbfexp16e0p1 -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-XSFVFBFEXP16E %s
 // CHECK-XSFVFBFEXP16E: __riscv_xsfvfbfexp16e  1000{{$}}
+
+// RUN: %clang --target=riscv32 -menable-experimental-extensions \
+// RUN: -march=rv32ixsfvfhbfmin0p1 -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-XSFVFHBFMIN %s
+// RUN: %clang --target=riscv64 -menable-experimental-extensions \
+// RUN: -march=rv64i_xsfvfhbfmin0p1 -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-XSFVFHBFMIN %s
+// CHECK-XSFVFHBFMIN: __riscv_xsfvfhbfmin  1000{{$}}
 
 // RUN: %clang --target=riscv32 -menable-experimental-extensions \
 // RUN: -march=rv32ixsfvfexp16e0p1 -x c -E -dM %s \
