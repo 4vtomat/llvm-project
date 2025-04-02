@@ -18673,6 +18673,11 @@ static SDValue performVP_STORECombine(SDNode *N, SelectionDAG &DAG,
 //   %6 = trunc <N x i32> %5 to <N x i8>
 static SDValue performVP_TRUNCATECombine(SDNode *N, SelectionDAG &DAG,
                                          const RISCVSubtarget &Subtarget) {
+#if SIFIVE_CUSTOMIZATION
+  if (!Subtarget.useFixedPoint())
+    return SDValue();
+#endif
+
   EVT VT = N->getValueType(0);
 
   // Ignore fixed vectors.
