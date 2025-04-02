@@ -159,6 +159,7 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   initializeRISCVWidenReductionPHIPass(*PR);
   initializeRISCVLateCodeGenPreparePass(*PR);
   initializeRISCVTypePromotionPass(*PR);
+  initializeRISCVBulletNopInserterPass(*PR);
 #endif // SIFIVE_CUSTOMIZATION
   initializeRISCVPostRAExpandPseudoPass(*PR);
   initializeRISCVMergeBaseOffsetOptPass(*PR);
@@ -639,6 +640,7 @@ void RISCVPassConfig::addPreEmitPass() {
 #if SIFIVE_CUSTOMIZATION
   if (getOptLevel() != CodeGenOptLevel::None)
     addPass(createRISCVMachineConstPropagationPass());
+  addPass(createRISCVBulletNopInserterPass());
 #endif // SIFIVE_CUSTOMIZATION
 
   // TODO: It would potentially be better to schedule copy propagation after
