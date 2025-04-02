@@ -278,7 +278,7 @@ llvm::MDNode *CodeGenTBAA::getTypeInfoHelper(const Type *Ty) {
     do {
       PtrDepth++;
       Ty = Ty->getPointeeType()->getBaseElementTypeUnsafe();
-    } while (Ty->isPointerType() || Ty->isReferenceType());
+    } while (Ty->isPointerType() || Ty->isReferenceType()); // SIFIVE
 
     // While there are no special rules in the standards regarding void pointers
     // and strict aliasing, emitting distinct tags for void pointers break some

@@ -23,9 +23,13 @@ define <vscale x 2 x i8> @vaaddu_1(<vscale x 2 x i8> %x, <vscale x 2 x i8> %y, <
 ;
 ; NO_FIXED-LABEL: vaaddu_1:
 ; NO_FIXED:       # %bb.0:
-; NO_FIXED-NEXT:    csrwi vxrm, 0
 ; NO_FIXED-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
-; NO_FIXED-NEXT:    vaaddu.vv v8, v8, v9, v0.t
+; NO_FIXED-NEXT:    vwaddu.vv v10, v8, v9, v0.t
+; NO_FIXED-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
+; NO_FIXED-NEXT:    vadd.vi v8, v10, 1, v0.t
+; NO_FIXED-NEXT:    vsrl.vi v8, v8, 1, v0.t
+; NO_FIXED-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
+; NO_FIXED-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; NO_FIXED-NEXT:    ret
   %xz = call <vscale x 2 x i16> @llvm.vp.zext.nxv2i16.nxv2i8(<vscale x 2 x i8> %x, <vscale x 2 x i1> %m, i32 %vl)
   %yz = call <vscale x 2 x i16> @llvm.vp.zext.nxv2i16.nxv2i8(<vscale x 2 x i8> %y, <vscale x 2 x i1> %m, i32 %vl)
@@ -46,9 +50,13 @@ define <vscale x 2 x i8> @vaaddu_2(<vscale x 2 x i8> %x, <vscale x 2 x i8> %y, <
 ;
 ; NO_FIXED-LABEL: vaaddu_2:
 ; NO_FIXED:       # %bb.0:
-; NO_FIXED-NEXT:    csrwi vxrm, 0
 ; NO_FIXED-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
-; NO_FIXED-NEXT:    vaaddu.vv v8, v8, v9, v0.t
+; NO_FIXED-NEXT:    vwaddu.vv v10, v8, v9, v0.t
+; NO_FIXED-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
+; NO_FIXED-NEXT:    vadd.vi v8, v10, 1, v0.t
+; NO_FIXED-NEXT:    vsrl.vi v8, v8, 1, v0.t
+; NO_FIXED-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
+; NO_FIXED-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; NO_FIXED-NEXT:    ret
   %xz = call <vscale x 2 x i16> @llvm.vp.zext.nxv2i16.nxv2i8(<vscale x 2 x i8> %x, <vscale x 2 x i1> %m, i32 %vl)
   %yz = call <vscale x 2 x i16> @llvm.vp.zext.nxv2i16.nxv2i8(<vscale x 2 x i8> %y, <vscale x 2 x i1> %m, i32 %vl)
@@ -69,9 +77,13 @@ define <vscale x 2 x i8> @vaaddu_3(<vscale x 2 x i8> %x, <vscale x 2 x i8> %y, <
 ;
 ; NO_FIXED-LABEL: vaaddu_3:
 ; NO_FIXED:       # %bb.0:
-; NO_FIXED-NEXT:    csrwi vxrm, 0
 ; NO_FIXED-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
-; NO_FIXED-NEXT:    vaaddu.vv v8, v9, v8, v0.t
+; NO_FIXED-NEXT:    vwaddu.vv v10, v9, v8, v0.t
+; NO_FIXED-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
+; NO_FIXED-NEXT:    vadd.vi v8, v10, 1, v0.t
+; NO_FIXED-NEXT:    vsrl.vi v8, v8, 1, v0.t
+; NO_FIXED-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
+; NO_FIXED-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; NO_FIXED-NEXT:    ret
   %xz = call <vscale x 2 x i16> @llvm.vp.zext.nxv2i16.nxv2i8(<vscale x 2 x i8> %x, <vscale x 2 x i1> %m, i32 %vl)
   %yz = call <vscale x 2 x i16> @llvm.vp.zext.nxv2i16.nxv2i8(<vscale x 2 x i8> %y, <vscale x 2 x i1> %m, i32 %vl)
@@ -92,9 +104,13 @@ define <vscale x 2 x i8> @vaaddu_4(<vscale x 2 x i8> %x, <vscale x 2 x i8> %y, <
 ;
 ; NO_FIXED-LABEL: vaaddu_4:
 ; NO_FIXED:       # %bb.0:
-; NO_FIXED-NEXT:    csrwi vxrm, 0
 ; NO_FIXED-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
-; NO_FIXED-NEXT:    vaaddu.vv v8, v9, v8, v0.t
+; NO_FIXED-NEXT:    vwaddu.vv v10, v9, v8, v0.t
+; NO_FIXED-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
+; NO_FIXED-NEXT:    vadd.vi v8, v10, 1, v0.t
+; NO_FIXED-NEXT:    vsrl.vi v8, v8, 1, v0.t
+; NO_FIXED-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
+; NO_FIXED-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; NO_FIXED-NEXT:    ret
   %xz = call <vscale x 2 x i16> @llvm.vp.zext.nxv2i16.nxv2i8(<vscale x 2 x i8> %x, <vscale x 2 x i1> %m, i32 %vl)
   %yz = call <vscale x 2 x i16> @llvm.vp.zext.nxv2i16.nxv2i8(<vscale x 2 x i8> %y, <vscale x 2 x i1> %m, i32 %vl)
@@ -115,9 +131,13 @@ define <vscale x 2 x i8> @vaaddu_5(<vscale x 2 x i8> %x, <vscale x 2 x i8> %y, <
 ;
 ; NO_FIXED-LABEL: vaaddu_5:
 ; NO_FIXED:       # %bb.0:
-; NO_FIXED-NEXT:    csrwi vxrm, 0
 ; NO_FIXED-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
-; NO_FIXED-NEXT:    vaaddu.vv v8, v9, v8, v0.t
+; NO_FIXED-NEXT:    vwaddu.vv v10, v9, v8, v0.t
+; NO_FIXED-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
+; NO_FIXED-NEXT:    vadd.vi v8, v10, 1, v0.t
+; NO_FIXED-NEXT:    vsrl.vi v8, v8, 1, v0.t
+; NO_FIXED-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
+; NO_FIXED-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; NO_FIXED-NEXT:    ret
   %xz = call <vscale x 2 x i16> @llvm.vp.zext.nxv2i16.nxv2i8(<vscale x 2 x i8> %x, <vscale x 2 x i1> %m, i32 %vl)
   %yz = call <vscale x 2 x i16> @llvm.vp.zext.nxv2i16.nxv2i8(<vscale x 2 x i8> %y, <vscale x 2 x i1> %m, i32 %vl)
@@ -138,9 +158,13 @@ define <vscale x 2 x i8> @vaaddu_6(<vscale x 2 x i8> %x, <vscale x 2 x i8> %y, <
 ;
 ; NO_FIXED-LABEL: vaaddu_6:
 ; NO_FIXED:       # %bb.0:
-; NO_FIXED-NEXT:    csrwi vxrm, 0
 ; NO_FIXED-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
-; NO_FIXED-NEXT:    vaaddu.vv v8, v9, v8, v0.t
+; NO_FIXED-NEXT:    vwaddu.vv v10, v9, v8, v0.t
+; NO_FIXED-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
+; NO_FIXED-NEXT:    vadd.vi v8, v10, 1, v0.t
+; NO_FIXED-NEXT:    vsrl.vi v8, v8, 1, v0.t
+; NO_FIXED-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
+; NO_FIXED-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; NO_FIXED-NEXT:    ret
   %xz = call <vscale x 2 x i16> @llvm.vp.zext.nxv2i16.nxv2i8(<vscale x 2 x i8> %x, <vscale x 2 x i1> %m, i32 %vl)
   %yz = call <vscale x 2 x i16> @llvm.vp.zext.nxv2i16.nxv2i8(<vscale x 2 x i8> %y, <vscale x 2 x i1> %m, i32 %vl)
@@ -162,9 +186,17 @@ define <vscale x 2 x i8> @vaaddu_7(<vscale x 2 x i8> %x, <vscale x 2 x i8> %y, <
 ;
 ; NO_FIXED-LABEL: vaaddu_7:
 ; NO_FIXED:       # %bb.0:
-; NO_FIXED-NEXT:    csrwi vxrm, 0
-; NO_FIXED-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
-; NO_FIXED-NEXT:    vaaddu.vv v8, v8, v9, v0.t
+; NO_FIXED-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
+; NO_FIXED-NEXT:    vzext.vf2 v10, v8, v0.t
+; NO_FIXED-NEXT:    vzext.vf2 v8, v9, v0.t
+; NO_FIXED-NEXT:    vwaddu.vv v9, v10, v8, v0.t
+; NO_FIXED-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
+; NO_FIXED-NEXT:    vadd.vi v8, v9, 1, v0.t
+; NO_FIXED-NEXT:    vsrl.vi v8, v8, 1, v0.t
+; NO_FIXED-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
+; NO_FIXED-NEXT:    vnsrl.wi v8, v8, 0, v0.t
+; NO_FIXED-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
+; NO_FIXED-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; NO_FIXED-NEXT:    ret
   %xz = call <vscale x 2 x i32> @llvm.vp.zext.nxv2i32.nxv2i8(<vscale x 2 x i8> %x, <vscale x 2 x i1> %m, i32 %vl)
   %yz = call <vscale x 2 x i32> @llvm.vp.zext.nxv2i32.nxv2i8(<vscale x 2 x i8> %y, <vscale x 2 x i1> %m, i32 %vl)
@@ -190,9 +222,13 @@ define <vscale x 2 x i16> @vaaddu_8(<vscale x 2 x i8> %x, <vscale x 2 x i8> %y, 
 ; NO_FIXED:       # %bb.0:
 ; NO_FIXED-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; NO_FIXED-NEXT:    vzext.vf2 v10, v8, v0.t
-; NO_FIXED-NEXT:    csrwi vxrm, 0
 ; NO_FIXED-NEXT:    vzext.vf2 v8, v9, v0.t
-; NO_FIXED-NEXT:    vaaddu.vv v8, v10, v8, v0.t
+; NO_FIXED-NEXT:    vwaddu.vv v9, v10, v8, v0.t
+; NO_FIXED-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
+; NO_FIXED-NEXT:    vadd.vi v8, v9, 1, v0.t
+; NO_FIXED-NEXT:    vsrl.vi v8, v8, 1, v0.t
+; NO_FIXED-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
+; NO_FIXED-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; NO_FIXED-NEXT:    ret
   %xz = call <vscale x 2 x i32> @llvm.vp.zext.nxv2i32.nxv2i8(<vscale x 2 x i8> %x, <vscale x 2 x i1> %m, i32 %vl)
   %yz = call <vscale x 2 x i32> @llvm.vp.zext.nxv2i32.nxv2i8(<vscale x 2 x i8> %y, <vscale x 2 x i1> %m, i32 %vl)
