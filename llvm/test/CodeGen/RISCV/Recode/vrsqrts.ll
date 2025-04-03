@@ -36,7 +36,7 @@ entry:
 define void @vrsqrts_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vrsqrts_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vle32.v v9, (a1)
 ; CHECK-NEXT:    li a0, 144
@@ -48,9 +48,7 @@ define void @vrsqrts_f32(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    vmsne.vx v0, v10, a0
 ; CHECK-NEXT:    lui a0, 258048
-; CHECK-NEXT:    vsetvli a3, zero, e32, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.x v10, a1
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
 ; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
 ; CHECK-NEXT:    fmv.w.x fa5, a0
 ; CHECK-NEXT:    vfmul.vf v8, v10, fa5
@@ -131,7 +129,7 @@ entry:
 define void @vrsqrtsq_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vrsqrtsq_f32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vle32.v v9, (a1)
 ; CHECK-NEXT:    li a0, 144
@@ -143,9 +141,7 @@ define void @vrsqrtsq_f32(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    vmsne.vx v0, v10, a0
 ; CHECK-NEXT:    lui a0, 258048
-; CHECK-NEXT:    vsetvli a3, zero, e32, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.x v10, a1
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
 ; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
 ; CHECK-NEXT:    fmv.w.x fa5, a0
 ; CHECK-NEXT:    vfmul.vf v8, v10, fa5
