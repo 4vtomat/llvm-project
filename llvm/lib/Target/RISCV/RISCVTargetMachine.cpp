@@ -324,6 +324,39 @@ bool RISCVTargetMachine::isNoopAddrSpaceCast(unsigned SrcAS,
   return true;
 }
 
+ScheduleDAGInstrs *
+RISCVTargetMachine::createMachineScheduler(MachineSchedContext *C) const {
+  ScheduleDAGMILive *DAG = nullptr;
+  if (EnableMISchedLoadStoreClustering) {
+    DAG = createGenericSchedLive(C);
+    DAG->addMutation(createLoadClusterDAGMutation(
+        DAG->TII, DAG->TRI, /*ReorderWhileClustering=*/true));
+    DAG->addMutation(createStoreClusterDAGMutation(
+        DAG->TII, DAG->TRI, /*ReorderWhileClustering=*/true));
+  }
+
+  const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
+  if (!DisableVectorMaskMutation && ST.hasVInstructions()) {
+    DAG = DAG ? DAG : createGenericSchedLive(C);
+    DAG->addMutation(createRISCVVectorMaskDAGMutation(DAG->TRI));
+  }
+  return DAG;
+}
+
+ScheduleDAGInstrs *
+RISCVTargetMachine::createPostMachineScheduler(MachineSchedContext *C) const {
+  ScheduleDAGMI *DAG = nullptr;
+  if (EnablePostMISchedLoadStoreClustering) {
+    DAG = createGenericSchedPostRA(C);
+    DAG->addMutation(createLoadClusterDAGMutation(
+        DAG->TII, DAG->TRI, /*ReorderWhileClustering=*/true));
+    DAG->addMutation(createStoreClusterDAGMutation(
+        DAG->TII, DAG->TRI, /*ReorderWhileClustering=*/true));
+  }
+
+  return DAG;
+}
+
 namespace {
 
 class RVVRegisterRegAlloc : public RegisterRegAllocBase<RVVRegisterRegAlloc> {
@@ -397,6 +430,7 @@ public:
     return getTM<RISCVTargetMachine>();
   }
 
+<<<<<<< HEAD
   ScheduleDAGInstrs *
   createMachineScheduler(MachineSchedContext *C) const override {
     ScheduleDAGMILive *DAG = nullptr;
@@ -451,6 +485,8 @@ public:
     return DAG;
   }
 
+=======
+>>>>>>> a47c35a699ae29e63cfdffd3679639125219d175
   void addIRPasses() override;
   bool addPreISel() override;
   void addCodeGenPrepare() override;

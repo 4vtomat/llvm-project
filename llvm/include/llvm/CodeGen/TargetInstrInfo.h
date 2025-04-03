@@ -1566,7 +1566,7 @@ public:
   ///   DAG->addMutation(createLoadClusterDAGMutation(DAG->TII, DAG->TRI));
   /// or
   ///   DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
-  /// to TargetPassConfig::createMachineScheduler() to have an effect.
+  /// to TargetMachine::createMachineScheduler() to have an effect.
   ///
   /// \p SU1 and \p SU2 are the scheduling units of two memory operations.
   /// \p BaseOps1 and \p BaseOps2 are memory operands of two memory operations.
