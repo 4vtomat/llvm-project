@@ -11181,12 +11181,17 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
   for (ElementCount VF = MinVF; ElementCount::isKnownLT(VF, MaxVFTimes2);) {
     VFRange SubRange = {VF, MaxVFTimes2};
     if (auto Plan = tryToBuildVPlanWithVPRecipes(SubRange)) {
+      bool HasScalarVF = Plan->hasVF(ElementCount::getFixed(1));
       // Now optimize the initial VPlan.
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       if (!Plan->hasVF(ElementCount::getFixed(1)) && !Plan->isUncountable())
 #else
       if (!Plan->hasVF(ElementCount::getFixed(1)))
 #endif // SIFIVE_CUSTOMIZATION
+=======
+      if (!HasScalarVF)
+>>>>>>> 8d037b9256298ceaccbfcc1a2ed42a81ba4ee073
         VPlanTransforms::runPass(VPlanTransforms::truncateToMinimalBitwidths,
                                  *Plan, CM.getMinimalBitwidths());
 #if SIFIVE_CUSTOMIZATION
@@ -11223,7 +11228,7 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
       VPlanTransforms::optimize(*Plan);
       // TODO: try to put it close to addActiveLaneMask().
       // Discard the plan if it is not EVL-compatible
-      if (CM.foldTailWithEVL() &&
+      if (CM.foldTailWithEVL() && !HasScalarVF &&
           !VPlanTransforms::runPass(VPlanTransforms::tryAddExplicitVectorLength,
                                     *Plan, CM.getMaxSafeElements()))
         break;
