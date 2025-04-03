@@ -11991,15 +11991,11 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
       }
 
       VPRecipeBase *Recipe =
-<<<<<<< HEAD
-          RecipeBuilder.tryToCreateWidenRecipe(Instr, Operands, Range, VPBB);
+          RecipeBuilder.tryToCreateWidenRecipe(Instr, Operands, Range);
 #if SIFIVE_CUSTOMIZATION
       if (&I == DataDepExitCond)
         VPDataDepExitCond = Recipe;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-          RecipeBuilder.tryToCreateWidenRecipe(Instr, Operands, Range);
->>>>>>> 704389591117e8e7e044cf2319be901e138266bb
       if (!Recipe)
         Recipe = RecipeBuilder.handleReplication(Instr, Operands, Range);
 
