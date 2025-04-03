@@ -2055,7 +2055,6 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
   VP_INTRINSIC(vp_maxnum, 1)                                                   \
   VP_INTRINSIC(vp_fmuladd, 1)                                                  \
   VP_INTRINSIC(vp_abs, 2)                                                      \
-  VP_INTRINSIC(experimental_vp_splice, 1)                                      \
   VP_INTRINSIC(experimental_vp_reverse, 1)
 #define VP_INTRINSIC(name, cost)                                               \
   case Intrinsic::name:                                                        \
