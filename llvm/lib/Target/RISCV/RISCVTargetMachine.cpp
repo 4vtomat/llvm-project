@@ -327,6 +327,18 @@ bool RISCVTargetMachine::isNoopAddrSpaceCast(unsigned SrcAS,
 ScheduleDAGInstrs *
 RISCVTargetMachine::createMachineScheduler(MachineSchedContext *C) const {
   ScheduleDAGMILive *DAG = nullptr;
+#if SIFIVE_CUSTOMIZATION
+  {
+    const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
+    // FIXME integrate this with upstream code?
+    if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
+      DAG = createGenericSchedLive(C);
+      DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
+      DAG->addMutation(createRISCVMaskInstDAGMutation());
+      return DAG;
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
   if (EnableMISchedLoadStoreClustering) {
     DAG = createGenericSchedLive(C);
     DAG->addMutation(createLoadClusterDAGMutation(
@@ -346,6 +358,15 @@ RISCVTargetMachine::createMachineScheduler(MachineSchedContext *C) const {
 ScheduleDAGInstrs *
 RISCVTargetMachine::createPostMachineScheduler(MachineSchedContext *C) const {
   ScheduleDAGMI *DAG = nullptr;
+#if SIFIVE_CUSTOMIZATION
+  // FIXME integrate this with below?
+  const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
+  if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
+    DAG = createGenericSchedPostRA(C);
+    DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
+    return DAG;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   if (EnablePostMISchedLoadStoreClustering) {
     DAG = createGenericSchedPostRA(C);
     DAG->addMutation(createLoadClusterDAGMutation(
@@ -430,63 +451,6 @@ public:
     return getTM<RISCVTargetMachine>();
   }
 
-<<<<<<< HEAD
-  ScheduleDAGInstrs *
-  createMachineScheduler(MachineSchedContext *C) const override {
-    ScheduleDAGMILive *DAG = nullptr;
-#if SIFIVE_CUSTOMIZATION
-    {
-      const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
-      // FIXME integrate this with upstream code?
-      if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
-        DAG = createGenericSchedLive(C);
-        DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
-        DAG->addMutation(createRISCVMaskInstDAGMutation());
-        return DAG;
-      }
-    }
-#endif // SIFIVE_CUSTOMIZATION
-    if (EnableMISchedLoadStoreClustering) {
-      DAG = createGenericSchedLive(C);
-      DAG->addMutation(createLoadClusterDAGMutation(
-          DAG->TII, DAG->TRI, /*ReorderWhileClustering=*/true));
-      DAG->addMutation(createStoreClusterDAGMutation(
-          DAG->TII, DAG->TRI, /*ReorderWhileClustering=*/true));
-    }
-
-    const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
-    if (!DisableVectorMaskMutation && ST.hasVInstructions()) {
-      DAG = DAG ? DAG : createGenericSchedLive(C);
-      DAG->addMutation(createRISCVVectorMaskDAGMutation(DAG->TRI));
-    }
-    return DAG;
-  }
-
-  ScheduleDAGInstrs *
-  createPostMachineScheduler(MachineSchedContext *C) const override {
-    ScheduleDAGMI *DAG = nullptr;
-#if SIFIVE_CUSTOMIZATION
-    // FIXME integrate this with below?
-    const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
-    if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
-      DAG = createGenericSchedPostRA(C);
-      DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
-      return DAG;
-    }
-#endif // SIFIVE_CUSTOMIZATION
-    if (EnablePostMISchedLoadStoreClustering) {
-      DAG = createGenericSchedPostRA(C);
-      DAG->addMutation(createLoadClusterDAGMutation(
-          DAG->TII, DAG->TRI, /*ReorderWhileClustering=*/true));
-      DAG->addMutation(createStoreClusterDAGMutation(
-          DAG->TII, DAG->TRI, /*ReorderWhileClustering=*/true));
-    }
-
-    return DAG;
-  }
-
-=======
->>>>>>> a47c35a699ae29e63cfdffd3679639125219d175
   void addIRPasses() override;
   bool addPreISel() override;
   void addCodeGenPrepare() override;
