@@ -11183,15 +11183,11 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
     if (auto Plan = tryToBuildVPlanWithVPRecipes(SubRange)) {
       bool HasScalarVF = Plan->hasVF(ElementCount::getFixed(1));
       // Now optimize the initial VPlan.
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-      if (!Plan->hasVF(ElementCount::getFixed(1)) && !Plan->isUncountable())
+      if (!HasScalarVF && !Plan->isUncountable())
 #else
-      if (!Plan->hasVF(ElementCount::getFixed(1)))
-#endif // SIFIVE_CUSTOMIZATION
-=======
       if (!HasScalarVF)
->>>>>>> 8d037b9256298ceaccbfcc1a2ed42a81ba4ee073
+#endif // SIFIVE_CUSTOMIZATION
         VPlanTransforms::runPass(VPlanTransforms::truncateToMinimalBitwidths,
                                  *Plan, CM.getMinimalBitwidths());
 #if SIFIVE_CUSTOMIZATION
