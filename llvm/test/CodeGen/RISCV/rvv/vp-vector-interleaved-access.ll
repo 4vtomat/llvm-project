@@ -515,10 +515,10 @@ define {<vscale x 4 x i32>, <vscale x 2 x i32>, <vscale x 1 x i32>, <vscale x 1 
 ; RV32-NEXT:    li a0, 32
 ; RV32-NEXT:    vsetvli a1, zero, e32, m2, ta, ma
 ; RV32-NEXT:    vnsrl.wx v8, v12, a0
-; RV32-NEXT:    vnsrl.wi v16, v12, 0
+; RV32-NEXT:    vnsrl.wi v12, v12, 0
 ; RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
-; RV32-NEXT:    vnsrl.wi v10, v16, 0
-; RV32-NEXT:    vnsrl.wx v11, v16, a0
+; RV32-NEXT:    vnsrl.wi v10, v12, 0
+; RV32-NEXT:    vnsrl.wx v11, v12, a0
 ; RV32-NEXT:    vsetvli a1, zero, e32, mf2, ta, ma
 ; RV32-NEXT:    vnsrl.wx v12, v11, a0
 ; RV32-NEXT:    vnsrl.wi v11, v11, 0
@@ -533,10 +533,10 @@ define {<vscale x 4 x i32>, <vscale x 2 x i32>, <vscale x 1 x i32>, <vscale x 1 
 ; RV64-NEXT:    li a0, 32
 ; RV64-NEXT:    vsetvli a1, zero, e32, m2, ta, ma
 ; RV64-NEXT:    vnsrl.wx v8, v12, a0
-; RV64-NEXT:    vnsrl.wi v16, v12, 0
+; RV64-NEXT:    vnsrl.wi v12, v12, 0
 ; RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
-; RV64-NEXT:    vnsrl.wi v10, v16, 0
-; RV64-NEXT:    vnsrl.wx v11, v16, a0
+; RV64-NEXT:    vnsrl.wi v10, v12, 0
+; RV64-NEXT:    vnsrl.wx v11, v12, a0
 ; RV64-NEXT:    vsetvli a1, zero, e32, mf2, ta, ma
 ; RV64-NEXT:    vnsrl.wx v12, v11, a0
 ; RV64-NEXT:    vnsrl.wi v11, v11, 0
@@ -579,10 +579,10 @@ define void @not_balanced_store_tree(<vscale x 1 x i32> %v0, <vscale x 2 x i32> 
 ; RV32-NEXT:    vwaddu.vv v14, v12, v9
 ; RV32-NEXT:    vwmaccu.vx v14, a2, v9
 ; RV32-NEXT:    vsetvli a3, zero, e32, m2, ta, ma
-; RV32-NEXT:    vwaddu.vv v16, v14, v10
-; RV32-NEXT:    vwmaccu.vx v16, a2, v10
+; RV32-NEXT:    vwaddu.vv v12, v14, v10
+; RV32-NEXT:    vwmaccu.vx v12, a2, v10
 ; RV32-NEXT:    vsetvli zero, a1, e32, m4, ta, ma
-; RV32-NEXT:    vse32.v v16, (a0)
+; RV32-NEXT:    vse32.v v12, (a0)
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: not_balanced_store_tree:
@@ -603,11 +603,11 @@ define void @not_balanced_store_tree(<vscale x 1 x i32> %v0, <vscale x 2 x i32> 
 ; RV64-NEXT:    vwaddu.vv v14, v12, v9
 ; RV64-NEXT:    vwmaccu.vx v14, a2, v9
 ; RV64-NEXT:    vsetvli a3, zero, e32, m2, ta, ma
-; RV64-NEXT:    vwaddu.vv v16, v14, v10
-; RV64-NEXT:    vwmaccu.vx v16, a2, v10
+; RV64-NEXT:    vwaddu.vv v12, v14, v10
+; RV64-NEXT:    vwmaccu.vx v12, a2, v10
 ; RV64-NEXT:    srli a1, a1, 32
 ; RV64-NEXT:    vsetvli zero, a1, e32, m4, ta, ma
-; RV64-NEXT:    vse32.v v16, (a0)
+; RV64-NEXT:    vse32.v v12, (a0)
 ; RV64-NEXT:    ret
   %rvl = mul i32 %evl, 4
   %interleaved.vec0 = call <vscale x 2 x i32> @llvm.vector.interleave2.nxv2i32(<vscale x 1 x i32> %v0, <vscale x 1 x i32> %v0)
@@ -627,10 +627,10 @@ define {<2 x i32>, <2 x i32>, <2 x i32>, <2 x i32>} @not_scalable_vectors(ptr %p
 ; RV32-NEXT:    li a0, 32
 ; RV32-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; RV32-NEXT:    vnsrl.wx v12, v8, a0
-; RV32-NEXT:    vnsrl.wi v11, v8, 0
+; RV32-NEXT:    vnsrl.wi v8, v8, 0
 ; RV32-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; RV32-NEXT:    vnsrl.wx v10, v11, a0
-; RV32-NEXT:    vnsrl.wi v8, v11, 0
+; RV32-NEXT:    vnsrl.wx v10, v8, a0
+; RV32-NEXT:    vnsrl.wi v8, v8, 0
 ; RV32-NEXT:    vnsrl.wx v11, v12, a0
 ; RV32-NEXT:    vnsrl.wi v9, v12, 0
 ; RV32-NEXT:    ret
@@ -644,10 +644,10 @@ define {<2 x i32>, <2 x i32>, <2 x i32>, <2 x i32>} @not_scalable_vectors(ptr %p
 ; RV64-NEXT:    li a0, 32
 ; RV64-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; RV64-NEXT:    vnsrl.wx v12, v8, a0
-; RV64-NEXT:    vnsrl.wi v11, v8, 0
+; RV64-NEXT:    vnsrl.wi v8, v8, 0
 ; RV64-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; RV64-NEXT:    vnsrl.wx v10, v11, a0
-; RV64-NEXT:    vnsrl.wi v8, v11, 0
+; RV64-NEXT:    vnsrl.wx v10, v8, a0
+; RV64-NEXT:    vnsrl.wi v8, v8, 0
 ; RV64-NEXT:    vnsrl.wx v11, v12, a0
 ; RV64-NEXT:    vnsrl.wi v9, v12, 0
 ; RV64-NEXT:    ret
@@ -768,10 +768,10 @@ define {<vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 
 ; RV32-NEXT:    li a0, 32
 ; RV32-NEXT:    vsetvli a1, zero, e32, m2, ta, ma
 ; RV32-NEXT:    vnsrl.wx v12, v8, a0
-; RV32-NEXT:    vnsrl.wi v14, v8, 0
+; RV32-NEXT:    vnsrl.wi v8, v8, 0
 ; RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
-; RV32-NEXT:    vnsrl.wx v10, v14, a0
-; RV32-NEXT:    vnsrl.wi v8, v14, 0
+; RV32-NEXT:    vnsrl.wx v10, v8, a0
+; RV32-NEXT:    vnsrl.wi v8, v8, 0
 ; RV32-NEXT:    vnsrl.wx v11, v12, a0
 ; RV32-NEXT:    vnsrl.wi v9, v12, 0
 ; RV32-NEXT:    ret
@@ -786,10 +786,10 @@ define {<vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 
 ; RV64-NEXT:    li a0, 32
 ; RV64-NEXT:    vsetvli a1, zero, e32, m2, ta, ma
 ; RV64-NEXT:    vnsrl.wx v12, v8, a0
-; RV64-NEXT:    vnsrl.wi v14, v8, 0
+; RV64-NEXT:    vnsrl.wi v8, v8, 0
 ; RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
-; RV64-NEXT:    vnsrl.wx v10, v14, a0
-; RV64-NEXT:    vnsrl.wi v8, v14, 0
+; RV64-NEXT:    vnsrl.wx v10, v8, a0
+; RV64-NEXT:    vnsrl.wi v8, v8, 0
 ; RV64-NEXT:    vnsrl.wx v11, v12, a0
 ; RV64-NEXT:    vnsrl.wi v9, v12, 0
 ; RV64-NEXT:    ret

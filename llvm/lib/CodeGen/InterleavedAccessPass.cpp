@@ -563,6 +563,16 @@ static void interleaveLeafValues(MutableArrayRef<Value *> SubLeaves) {
 static bool
 getVectorInterleaveFactor(IntrinsicInst *II, SmallVectorImpl<Value *> &Operands,
                           SmallVectorImpl<Instruction *> &DeadInsts) {
+#if SIFIVE_CUSTOMIZATION
+  if (unsigned Factor = getFactorFromVectorInterleaveIntrinsic(II);
+      Factor > 2) {
+    DeadInsts.insert(DeadInsts.begin(), II);
+    Operands.assign(II->arg_begin(), II->arg_end());
+    assert(Operands.size() == Factor &&
+           "unexpected number of interleave operands");
+    return true;
+  }
+#endif
   assert(II->getIntrinsicID() == Intrinsic::vector_interleave2);
 
   // Visit with BFS
@@ -606,6 +616,34 @@ static bool
 getVectorDeinterleaveFactor(IntrinsicInst *II,
                             SmallVectorImpl<Value *> &Results,
                             SmallVectorImpl<Instruction *> &DeadInsts) {
+#if SIFIVE_CUSTOMIZATION
+  if (unsigned Factor = getFactorFromVectorDeInterleaveIntrinsic(II);
+      Factor > 2) {
+    if (!II->hasNUses(Factor))
+      return false;
+
+    // The intrinsic will be deleted from the bottom-up.
+    DeadInsts.insert(DeadInsts.begin(), II);
+
+    Results.assign(Factor, nullptr);
+    for (User *Usr : II->users()) {
+      if (!isa<ExtractValueInst>(Usr))
+        return false;
+      auto *EV = cast<ExtractValueInst>(Usr);
+      // Intermediate ExtractValue instructions will also be deleted.
+      DeadInsts.insert(DeadInsts.begin(), EV);
+      ArrayRef<unsigned> Indices = EV->getIndices();
+      if (Indices.size() != 1 ||
+          // If it's not null (vacent), it means we have duplicate indices.
+          Results[Indices[0]])
+        return false;
+
+      Results[Indices[0]] = EV;
+    }
+
+    return true;
+  }
+#endif
   assert(II->getIntrinsicID() == Intrinsic::vector_deinterleave2);
   using namespace PatternMatch;
   if (!II->hasNUses(2))
