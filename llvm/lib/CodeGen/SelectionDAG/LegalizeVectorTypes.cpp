@@ -1693,10 +1693,6 @@ void DAGTypeLegalizer::SplitVecRes_INSERT_SUBVECTOR(SDNode *N, SDValue &Lo,
     return;
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 5a1e16f6de26c21cdfae1de05bd075d57029a3e1
   if (getTypeAction(SubVecVT) == TargetLowering::TypeWidenVector &&
       Vec.isUndef() && SubVecVT.getVectorElementType() == MVT::i1) {
     SDValue WideSubVec = GetWidenedVector(SubVec);
@@ -1705,10 +1701,6 @@ void DAGTypeLegalizer::SplitVecRes_INSERT_SUBVECTOR(SDNode *N, SDValue &Lo,
       return;
     }
   }
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 5a1e16f6de26c21cdfae1de05bd075d57029a3e1
 
   // Spill the vector to the stack.
   // In cases where the vector is illegal it will be broken down into parts
@@ -3224,7 +3216,6 @@ void DAGTypeLegalizer::SplitVecRes_VP_REVERSE(SDNode *N, SDValue &Lo,
   std::tie(Lo, Hi) = DAG.SplitVector(Load, DL);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 void DAGTypeLegalizer::SplitVecRes_VP_SPLICE(SDNode *N, SDValue &Lo,
                                              SDValue &Hi) {
@@ -3326,34 +3317,6 @@ void DAGTypeLegalizer::SplitVecRes_VP_SET_BEFORE_FIRST(SDNode *N, SDValue &Lo,
 #endif
 
 void DAGTypeLegalizer::SplitVecRes_VECTOR_DEINTERLEAVE(SDNode *N) {
-#if SIFIVE_CUSTOMIZATION
-  unsigned Factor = N->getNumOperands();
-
-  SmallVector<SDValue, 8> Ops(Factor * 2);
-  for (unsigned i = 0; i != Factor; ++i) {
-    SDValue OpLo, OpHi;
-    GetSplitVector(N->getOperand(i), OpLo, OpHi);
-    Ops[i * 2] = OpLo;
-    Ops[i * 2 + 1] = OpHi;
-  }
-
-  SmallVector<EVT, 8> VTs(Factor, Ops[0].getValueType());
-
-  SDLoc DL(N);
-  SDValue ResLo = DAG.getNode(ISD::VECTOR_DEINTERLEAVE, DL, VTs,
-                              ArrayRef(Ops).slice(0, Factor));
-  SDValue ResHi = DAG.getNode(ISD::VECTOR_DEINTERLEAVE, DL, VTs,
-                              ArrayRef(Ops).slice(Factor, Factor));
-
-  for (unsigned i = 0; i != Factor; ++i)
-    SetSplitVector(SDValue(N, i), ResLo.getValue(i), ResHi.getValue(i));
-#endif
-}
-
-void DAGTypeLegalizer::SplitVecRes_VECTOR_INTERLEAVE(SDNode *N) {
-#if SIFIVE_CUSTOMIZATION
-=======
-void DAGTypeLegalizer::SplitVecRes_VECTOR_DEINTERLEAVE(SDNode *N) {
   unsigned Factor = N->getNumOperands();
 
   SmallVector<SDValue, 8> Ops(Factor * 2);
@@ -3377,7 +3340,6 @@ void DAGTypeLegalizer::SplitVecRes_VECTOR_DEINTERLEAVE(SDNode *N) {
 }
 
 void DAGTypeLegalizer::SplitVecRes_VECTOR_INTERLEAVE(SDNode *N) {
->>>>>>> 5a1e16f6de26c21cdfae1de05bd075d57029a3e1
   unsigned Factor = N->getNumOperands();
 
   SmallVector<SDValue, 8> Ops(Factor * 2);
@@ -3402,10 +3364,6 @@ void DAGTypeLegalizer::SplitVecRes_VECTOR_INTERLEAVE(SDNode *N) {
     SetSplitVector(SDValue(N, i), Res[IdxLo / Factor].getValue(IdxLo % Factor),
                    Res[IdxHi / Factor].getValue(IdxHi % Factor));
   }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 5a1e16f6de26c21cdfae1de05bd075d57029a3e1
 }
 
 //===----------------------------------------------------------------------===//

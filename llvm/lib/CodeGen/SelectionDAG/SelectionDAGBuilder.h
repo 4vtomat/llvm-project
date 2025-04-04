@@ -663,13 +663,8 @@ private:
   void visitVectorReduce(const CallInst &I, unsigned Intrinsic);
   void visitVectorReverse(const CallInst &I);
   void visitVectorSplice(const CallInst &I);
-<<<<<<< HEAD
-  void visitVectorInterleave(const CallInst &I, unsigned Factor);   // SIFIVE
-  void visitVectorDeinterleave(const CallInst &I, unsigned Factor); // SIFIVE
-=======
   void visitVectorInterleave(const CallInst &I, unsigned Factor);
   void visitVectorDeinterleave(const CallInst &I, unsigned Factor);
->>>>>>> 5a1e16f6de26c21cdfae1de05bd075d57029a3e1
   void visitStepVector(const CallInst &I);
 
   void visitUserOp1(const Instruction &I) {

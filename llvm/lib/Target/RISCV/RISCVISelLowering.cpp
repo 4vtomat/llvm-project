@@ -12054,40 +12054,10 @@ SDValue RISCVTargetLowering::lowerVECTOR_DEINTERLEAVE(SDValue Op,
   const unsigned Factor = Op->getNumValues();
   assert(Factor <= 8);
 
-#if SIFIVE_CUSTOMIZATION
-  unsigned Factor = Op.getNumOperands();
-
   // 1 bit element vectors need to be widened to e8
   if (VecVT.getVectorElementType() == MVT::i1)
     return widenVectorOpsToi8(Op, DL, DAG);
 
-<<<<<<< HEAD
-  // If concatenating would exceed LMUL=8, we need to split.
-  if ((VecVT.getSizeInBits().getKnownMinValue() * Factor) >
-      (8 * RISCV::RVVBitsPerBlock)) {
-    SmallVector<SDValue, 8> Ops(Factor * 2);
-    for (unsigned i = 0; i != Factor; ++i) {
-      auto [OpLo, OpHi] = DAG.SplitVectorOperand(Op.getNode(), i);
-      Ops[i * 2] = OpLo;
-      Ops[i * 2 + 1] = OpHi;
-    }
-
-    SmallVector<EVT, 8> VTs(Factor, Ops[0].getValueType());
-
-    SDValue Lo = DAG.getNode(ISD::VECTOR_DEINTERLEAVE, DL, VTs,
-                             ArrayRef(Ops).slice(0, Factor));
-    SDValue Hi = DAG.getNode(ISD::VECTOR_DEINTERLEAVE, DL, VTs,
-                             ArrayRef(Ops).slice(Factor, Factor));
-
-    SmallVector<SDValue, 8> Res(Factor);
-    for (unsigned i = 0; i != Factor; ++i)
-      Res[i] = DAG.getNode(ISD::CONCAT_VECTORS, DL, VecVT, Lo.getValue(i),
-                           Hi.getValue(i));
-
-    return DAG.getMergeValues(Res, DL);
-  }
-
-=======
   // Convert to scalable vectors first.
   if (VecVT.isFixedLengthVector()) {
     MVT ContainerVT = getContainerForFixedLengthVector(VecVT);
@@ -12132,7 +12102,6 @@ SDValue RISCVTargetLowering::lowerVECTOR_DEINTERLEAVE(SDValue Op,
     return DAG.getMergeValues(Res, DL);
   }
 
->>>>>>> 5a1e16f6de26c21cdfae1de05bd075d57029a3e1
   SmallVector<SDValue, 8> Ops(Op->op_values());
 
   // Concatenate the vectors as one vector to deinterleave
@@ -12144,50 +12113,6 @@ SDValue RISCVTargetLowering::lowerVECTOR_DEINTERLEAVE(SDValue Op,
     Ops.append(PowerOf2Ceil(Factor) - Factor, DAG.getUNDEF(VecVT));
   SDValue Concat = DAG.getNode(ISD::CONCAT_VECTORS, DL, ConcatVT, Ops);
 
-<<<<<<< HEAD
-  // We want to operate on all lanes, so get the mask and VL and mask for it
-  auto [Mask, VL] = getDefaultScalableVLOps(ConcatVT, DL, DAG, Subtarget);
-  SDValue Passthru = DAG.getUNDEF(ConcatVT);
-
-  // We can deinterleave through vnsrl.wi if the element type is smaller than
-#if SIFIVE_CUSTOMIZATION
-  // ELEN and the factor is 2.
-  // TODO this also works for factor 4 and 8 if sufficient widening is
-  // available.
-  if (Factor == 2 && VecVT.getScalarSizeInBits() < Subtarget.getELen()) {
-#else
-  // ELEN
-  if (VecVT.getScalarSizeInBits() < Subtarget.getELen()) {
-#endif // SIFIVE_CUSTOMIZATION
-    SDValue Even = getDeinterleaveShiftAndTrunc(DL, VecVT, Concat, 2, 0, DAG);
-    SDValue Odd = getDeinterleaveShiftAndTrunc(DL, VecVT, Concat, 2, 1, DAG);
-    return DAG.getMergeValues({Even, Odd}, DL);
-  }
-
-  // For the indices, use the same SEW to avoid an extra vsetvli
-  MVT IdxVT = ConcatVT.changeVectorElementTypeToInteger();
-  // Create a vector of indices {0, 1*Factor, 2*Factor, 3*Factor, ...}
-  SDValue Idx =
-      DAG.getStepVector(DL, IdxVT, APInt(IdxVT.getScalarSizeInBits(), Factor));
-
-  SmallVector<SDValue, 8> Res(Factor);
-
-  // Gather the elements into Factor separate vectors
-  for (unsigned i = 0; i != Factor; ++i) {
-    // Add i to the index vector to create {i, i+1*Factor, i+2*Factor, ...}
-    if (i != 0)
-      Idx =
-          DAG.getNode(ISD::ADD, DL, IdxVT, Idx, DAG.getConstant(1, DL, IdxVT));
-    Res[i] = DAG.getNode(RISCVISD::VRGATHER_VV_VL, DL, ConcatVT, Concat, Idx,
-                         Passthru, Mask, VL);
-    // Extract the lower portion.
-    Res[i] = DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, VecVT, Res[i],
-                         DAG.getVectorIdxConstant(0, DL));
-  }
-
-  return DAG.getMergeValues(Res, DL);
-#endif // SIFIVE_CUSTOMIZATION
-=======
   if (Factor == 2) {
     // We can deinterleave through vnsrl.wi if the element type is smaller than
     // ELEN
@@ -12281,7 +12206,6 @@ SDValue RISCVTargetLowering::lowerVECTOR_DEINTERLEAVE(SDValue Op,
                          DAG.getVectorIdxConstant(i, DL));
 
   return DAG.getMergeValues(Res, DL);
->>>>>>> 5a1e16f6de26c21cdfae1de05bd075d57029a3e1
 }
 
 SDValue RISCVTargetLowering::lowerVECTOR_INTERLEAVE(SDValue Op,
@@ -12291,9 +12215,6 @@ SDValue RISCVTargetLowering::lowerVECTOR_INTERLEAVE(SDValue Op,
 
   const unsigned Factor = Op.getNumOperands();
   assert(Factor <= 8);
-
-#if SIFIVE_CUSTOMIZATION
-  unsigned Factor = Op.getNumOperands();
 
   // i1 vectors need to be widened to i8
   if (VecVT.getVectorElementType() == MVT::i1)
@@ -12320,11 +12241,7 @@ SDValue RISCVTargetLowering::lowerVECTOR_INTERLEAVE(SDValue Op,
   MVT XLenVT = Subtarget.getXLenVT();
   SDValue VL = DAG.getRegister(RISCV::X0, XLenVT);
 
-<<<<<<< HEAD
-  // If the VT is LMUL=8, we need to split and reassemble.
-=======
   // If the VT is larger than LMUL=8, we need to split and reassemble.
->>>>>>> 5a1e16f6de26c21cdfae1de05bd075d57029a3e1
   if ((VecVT.getSizeInBits().getKnownMinValue() * Factor) >
       (8 * RISCV::RVVBitsPerBlock)) {
     SmallVector<SDValue, 8> Ops(Factor * 2);
@@ -12337,15 +12254,9 @@ SDValue RISCVTargetLowering::lowerVECTOR_INTERLEAVE(SDValue Op,
     SmallVector<EVT, 8> VTs(Factor, Ops[0].getValueType());
 
     SDValue Res[] = {DAG.getNode(ISD::VECTOR_INTERLEAVE, DL, VTs,
-<<<<<<< HEAD
-                                 ArrayRef(Ops).slice(0, Factor)),
-                     DAG.getNode(ISD::VECTOR_INTERLEAVE, DL, VTs,
-                                 ArrayRef(Ops).slice(Factor, Factor))};
-=======
                                  ArrayRef(Ops).take_front(Factor)),
                      DAG.getNode(ISD::VECTOR_INTERLEAVE, DL, VTs,
                                  ArrayRef(Ops).drop_front(Factor))};
->>>>>>> 5a1e16f6de26c21cdfae1de05bd075d57029a3e1
 
     SmallVector<SDValue, 8> Concats(Factor);
     for (unsigned i = 0; i != Factor; ++i) {
@@ -12383,13 +12294,8 @@ SDValue RISCVTargetLowering::lowerVECTOR_INTERLEAVE(SDValue Op,
         Intrinsic::riscv_vsseg8,
     };
 
-<<<<<<< HEAD
-    unsigned Sz = Factor * VecVT.getVectorMinNumElements() *
-                  VecVT.getScalarSizeInBits();
-=======
     unsigned Sz =
         Factor * VecVT.getVectorMinNumElements() * VecVT.getScalarSizeInBits();
->>>>>>> 5a1e16f6de26c21cdfae1de05bd075d57029a3e1
     EVT VecTupTy = MVT::getRISCVVectorTupleVT(Sz, Factor);
 
     SDValue StoredVal = DAG.getUNDEF(VecTupTy);
@@ -12397,15 +12303,6 @@ SDValue RISCVTargetLowering::lowerVECTOR_INTERLEAVE(SDValue Op,
       StoredVal = DAG.getNode(RISCVISD::TUPLE_INSERT, DL, VecTupTy, StoredVal,
                               Op.getOperand(i), DAG.getConstant(i, DL, XLenVT));
 
-<<<<<<< HEAD
-    SDValue Ops[] = {
-      DAG.getEntryNode(),
-      DAG.getTargetConstant(IntrIds[Factor - 2], DL, XLenVT),
-      StoredVal,
-      StackPtr,
-      VL,
-      DAG.getTargetConstant(Log2_64(VecVT.getScalarSizeInBits()), DL, XLenVT)};
-=======
     SDValue Ops[] = {DAG.getEntryNode(),
                      DAG.getTargetConstant(IntrIds[Factor - 2], DL, XLenVT),
                      StoredVal,
@@ -12413,7 +12310,6 @@ SDValue RISCVTargetLowering::lowerVECTOR_INTERLEAVE(SDValue Op,
                      VL,
                      DAG.getTargetConstant(Log2_64(VecVT.getScalarSizeInBits()),
                                            DL, XLenVT)};
->>>>>>> 5a1e16f6de26c21cdfae1de05bd075d57029a3e1
 
     SDValue Chain = DAG.getMemIntrinsicNode(
         ISD::INTRINSIC_VOID, DL, DAG.getVTList(MVT::Other), Ops,
@@ -12435,10 +12331,6 @@ SDValue RISCVTargetLowering::lowerVECTOR_INTERLEAVE(SDValue Op,
 
     return DAG.getMergeValues(Loads, DL);
   }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 5a1e16f6de26c21cdfae1de05bd075d57029a3e1
 
   // If the element type is smaller than ELEN, then we can interleave with
   // vwaddu.vv and vwmaccu.vx

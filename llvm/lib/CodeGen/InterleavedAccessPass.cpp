@@ -257,15 +257,15 @@ static unsigned getFactorFromVectorInterleaveIntrinsic(IntrinsicInst *II) {
     switch (II->getIntrinsicID()) {
     case Intrinsic::vector_interleave2:
       return 2;
-    case Intrinsic::experimental_vector_interleave3:
+    case Intrinsic::vector_interleave3:
       return 3;
     case Intrinsic::experimental_vector_interleave4:
       return 4;
-    case Intrinsic::experimental_vector_interleave5:
+    case Intrinsic::vector_interleave5:
       return 5;
     case Intrinsic::experimental_vector_interleave6:
       return 6;
-    case Intrinsic::experimental_vector_interleave7:
+    case Intrinsic::vector_interleave7:
       return 7;
     case Intrinsic::experimental_vector_interleave8:
       return 8;
@@ -278,15 +278,15 @@ static unsigned getFactorFromVectorDeInterleaveIntrinsic(IntrinsicInst *DI) {
     switch (DI->getIntrinsicID()) {
     case Intrinsic::vector_deinterleave2:
       return 2;
-    case Intrinsic::experimental_vector_deinterleave3:
+    case Intrinsic::vector_deinterleave3:
       return 3;
     case Intrinsic::experimental_vector_deinterleave4:
       return 4;
-    case Intrinsic::experimental_vector_deinterleave5:
+    case Intrinsic::vector_deinterleave5:
       return 5;
     case Intrinsic::experimental_vector_deinterleave6:
       return 6;
-    case Intrinsic::experimental_vector_deinterleave7:
+    case Intrinsic::vector_deinterleave7:
       return 7;
     case Intrinsic::experimental_vector_deinterleave8:
       return 8;

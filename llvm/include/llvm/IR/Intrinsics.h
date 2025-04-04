@@ -161,11 +161,8 @@ namespace Intrinsic {
       PPCQuad,
       AArch64Svcount,
 #if SIFIVE_CUSTOMIZATION
-      OneThirdVecArgument,
       OneFourthVecArgument,
-      OneFifthVecArgument,
       OneSixthVecArgument,
-      OneSeventhVecArgument,
       OneEighthVecArgument,
 #endif // SIFIVE_CUSTOMIZATION
     } Kind;
@@ -192,24 +189,15 @@ namespace Intrinsic {
     unsigned getArgumentNumber() const {
       assert(Kind == Argument || Kind == ExtendArgument ||
              Kind == TruncArgument || Kind == HalfVecArgument ||
-<<<<<<< HEAD
 // SIFIVE_CUSTOMIZATION
-             Kind == OneThirdVecArgument ||
              Kind == OneFourthVecArgument ||
-             Kind == OneFifthVecArgument ||
              Kind == OneSixthVecArgument ||
-             Kind == OneSeventhVecArgument ||
              Kind == OneEighthVecArgument ||
 // SIFIVE_CUSTOMIZATION
-             Kind == SameVecWidthArgument || Kind == VecElementArgument ||
-             Kind == Subdivide2Argument || Kind == Subdivide4Argument ||
-             Kind == VecOfBitcastsToInt);
-=======
              Kind == OneThirdVecArgument || Kind == OneFifthVecArgument ||
              Kind == OneSeventhVecArgument || Kind == SameVecWidthArgument ||
              Kind == VecElementArgument || Kind == Subdivide2Argument ||
              Kind == Subdivide4Argument || Kind == VecOfBitcastsToInt);
->>>>>>> 5a1e16f6de26c21cdfae1de05bd075d57029a3e1
       return Argument_Info >> 3;
     }
     ArgKind getArgumentKind() const {
@@ -219,11 +207,8 @@ namespace Intrinsic {
              Kind == OneSeventhVecArgument || Kind == SameVecWidthArgument ||
              Kind == VecElementArgument || Kind == Subdivide2Argument ||
 // SIFIVE_CUSTOMIZATION
-             Kind == OneThirdVecArgument ||
              Kind == OneFourthVecArgument ||
-             Kind == OneFifthVecArgument ||
              Kind == OneSixthVecArgument ||
-             Kind == OneSeventhVecArgument ||
              Kind == OneEighthVecArgument ||
 // SIFIVE_CUSTOMIZATION
              Kind == Subdivide4Argument || Kind == VecOfBitcastsToInt);

@@ -8254,32 +8254,9 @@ void SelectionDAGBuilder::visitIntrinsicCall(const CallInst &I,
   case Intrinsic::callbr_landingpad:
     visitCallBrLandingPad(I);
     return;
-#if SIFIVE_CUSTOMIZATION
   case Intrinsic::vector_interleave2:
     visitVectorInterleave(I, 2);
     return;
-<<<<<<< HEAD
-  case Intrinsic::experimental_vector_interleave3:
-    visitVectorInterleave(I, 3);
-    return;
-  case Intrinsic::experimental_vector_interleave4:
-    visitVectorInterleave(I, 4);
-    return;
-  case Intrinsic::experimental_vector_interleave5:
-    visitVectorInterleave(I, 5);
-    return;
-  case Intrinsic::experimental_vector_interleave6:
-    visitVectorInterleave(I, 6);
-    return;
-  case Intrinsic::experimental_vector_interleave7:
-    visitVectorInterleave(I, 7);
-    return;
-  case Intrinsic::experimental_vector_interleave8:
-    visitVectorInterleave(I, 8);
-    return;
-  case Intrinsic::vector_deinterleave2:
-    visitVectorDeinterleave(I, 2);
-=======
   case Intrinsic::vector_interleave3:
     visitVectorInterleave(I, 3);
     return;
@@ -8300,22 +8277,22 @@ void SelectionDAGBuilder::visitIntrinsicCall(const CallInst &I,
     return;
   case Intrinsic::vector_deinterleave7:
     visitVectorDeinterleave(I, 7);
->>>>>>> 5a1e16f6de26c21cdfae1de05bd075d57029a3e1
     return;
-  case Intrinsic::experimental_vector_deinterleave3:
-    visitVectorDeinterleave(I, 3);
+#if SIFIVE_CUSTOMIZATION
+  case Intrinsic::experimental_vector_interleave4:
+    visitVectorInterleave(I, 4);
+    return;
+  case Intrinsic::experimental_vector_interleave6:
+    visitVectorInterleave(I, 6);
+    return;
+  case Intrinsic::experimental_vector_interleave8:
+    visitVectorInterleave(I, 8);
     return;
   case Intrinsic::experimental_vector_deinterleave4:
     visitVectorDeinterleave(I, 4);
     return;
-  case Intrinsic::experimental_vector_deinterleave5:
-    visitVectorDeinterleave(I, 5);
-    return;
   case Intrinsic::experimental_vector_deinterleave6:
     visitVectorDeinterleave(I, 6);
-    return;
-  case Intrinsic::experimental_vector_deinterleave7:
-    visitVectorDeinterleave(I, 7);
     return;
   case Intrinsic::experimental_vector_deinterleave8:
     visitVectorDeinterleave(I, 8);
@@ -12681,10 +12658,6 @@ void SelectionDAGBuilder::visitVectorReverse(const CallInst &I) {
   setValue(&I, DAG.getVectorShuffle(VT, DL, V, DAG.getUNDEF(VT), Mask));
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 5a1e16f6de26c21cdfae1de05bd075d57029a3e1
 void SelectionDAGBuilder::visitVectorDeinterleave(const CallInst &I,
                                                   unsigned Factor) {
   auto DL = getCurSDLoc();
@@ -12704,13 +12677,8 @@ void SelectionDAGBuilder::visitVectorDeinterleave(const CallInst &I,
                              DAG.getVectorIdxConstant(OutNumElts * i, DL));
   }
 
-<<<<<<< HEAD
-  // Use VECTOR_SHUFFLE for fixed-length vectors to benefit from existing
-  // legalisation and combines.
-=======
   // Use VECTOR_SHUFFLE for fixed-length vectors with factor of 2 to benefit
   // from existing legalisation and combines.
->>>>>>> 5a1e16f6de26c21cdfae1de05bd075d57029a3e1
   if (OutVT.isFixedLengthVector() && Factor == 2) {
     SDValue Even = DAG.getVectorShuffle(OutVT, DL, SubVecs[0], SubVecs[1],
                                         createStrideMask(0, 2, OutNumElts));
@@ -12729,27 +12697,10 @@ void SelectionDAGBuilder::visitVectorDeinterleave(const CallInst &I,
 void SelectionDAGBuilder::visitVectorInterleave(const CallInst &I,
                                                 unsigned Factor) {
   auto DL = getCurSDLoc();
-<<<<<<< HEAD
-
-  SmallVector<SDValue, 4> InVecs(Factor);
-  for (unsigned i = 0; i != Factor; ++i) {
-    InVecs[i] = getValue(I.getOperand(i));
-    assert(InVecs[i].getValueType() == InVecs[0].getValueType() &&
-           "Expected VTs to be the same");
-  }
-
-  EVT InVT = InVecs[0].getValueType();
-
-=======
->>>>>>> 5a1e16f6de26c21cdfae1de05bd075d57029a3e1
   const TargetLowering &TLI = DAG.getTargetLoweringInfo();
   EVT InVT = getValue(I.getOperand(0)).getValueType();
   EVT OutVT = TLI.getValueType(DAG.getDataLayout(), I.getType());
 
-<<<<<<< HEAD
-  // Use VECTOR_SHUFFLE for fixed-length vectors to benefit from existing
-  // legalisation and combines.
-=======
   SmallVector<SDValue, 8> InVecs(Factor);
   for (unsigned i = 0; i < Factor; ++i) {
     InVecs[i] = getValue(I.getOperand(i));
@@ -12759,7 +12710,6 @@ void SelectionDAGBuilder::visitVectorInterleave(const CallInst &I,
 
   // Use VECTOR_SHUFFLE for fixed-length vectors with factor of 2 to benefit
   // from existing legalisation and combines.
->>>>>>> 5a1e16f6de26c21cdfae1de05bd075d57029a3e1
   if (OutVT.isFixedLengthVector() && Factor == 2) {
     unsigned NumElts = InVT.getVectorMinNumElements();
     SDValue V = DAG.getNode(ISD::CONCAT_VECTORS, DL, OutVT, InVecs);
@@ -12768,27 +12718,17 @@ void SelectionDAGBuilder::visitVectorInterleave(const CallInst &I,
     return;
   }
 
-<<<<<<< HEAD
-  SmallVector<EVT, 4> ValueVTs(Factor, InVT);
-  SDValue Res =
-      DAG.getNode(ISD::VECTOR_INTERLEAVE, DL, DAG.getVTList(ValueVTs), InVecs);
-
-  SmallVector<SDValue, 4> Results(Factor);
-  for (unsigned i = 0; i != Factor; ++i)
-=======
   SmallVector<EVT, 8> ValueVTs(Factor, InVT);
   SDValue Res =
       DAG.getNode(ISD::VECTOR_INTERLEAVE, DL, DAG.getVTList(ValueVTs), InVecs);
 
   SmallVector<SDValue, 8> Results(Factor);
   for (unsigned i = 0; i < Factor; ++i)
->>>>>>> 5a1e16f6de26c21cdfae1de05bd075d57029a3e1
     Results[i] = Res.getValue(i);
 
   Res = DAG.getNode(ISD::CONCAT_VECTORS, DL, OutVT, Results);
   setValue(&I, Res);
 }
-#endif // SIFIVE_CUSTOMIZATION
 
 void SelectionDAGBuilder::visitFreeze(const FreezeInst &I) {
   SmallVector<EVT, 4> ValueVTs;

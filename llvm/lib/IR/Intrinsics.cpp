@@ -455,34 +455,16 @@ DecodeIITType(unsigned &NextElt, ArrayRef<unsigned char> Infos,
     return;
   }
 #if SIFIVE_CUSTOMIZATION
-  case IIT_ONE_THIRD_VEC_TYPE_ARG: {
-    unsigned ArgInfo = (NextElt == Infos.size() ? 0 : Infos[NextElt++]);
-    OutputTable.push_back(
-        IITDescriptor::get(IITDescriptor::OneThirdVecArgument, ArgInfo));
-    return;
-  }
   case IIT_ONE_FOURTH_VEC_TYPE_ARG: {
     unsigned ArgInfo = (NextElt == Infos.size() ? 0 : Infos[NextElt++]);
     OutputTable.push_back(
         IITDescriptor::get(IITDescriptor::OneFourthVecArgument, ArgInfo));
     return;
   }
-  case IIT_ONE_FIFTH_VEC_TYPE_ARG: {
-    unsigned ArgInfo = (NextElt == Infos.size() ? 0 : Infos[NextElt++]);
-    OutputTable.push_back(
-        IITDescriptor::get(IITDescriptor::OneFifthVecArgument, ArgInfo));
-    return;
-  }
   case IIT_ONE_SIXTH_VEC_TYPE_ARG: {
     unsigned ArgInfo = (NextElt == Infos.size() ? 0 : Infos[NextElt++]);
     OutputTable.push_back(
         IITDescriptor::get(IITDescriptor::OneSixthVecArgument, ArgInfo));
-    return;
-  }
-  case IIT_ONE_SEVENTH_VEC_TYPE_ARG: {
-    unsigned ArgInfo = (NextElt == Infos.size() ? 0 : Infos[NextElt++]);
-    OutputTable.push_back(
-        IITDescriptor::get(IITDescriptor::OneSeventhVecArgument, ArgInfo));
     return;
   }
   case IIT_ONE_EIGHTH_VEC_TYPE_ARG: {
@@ -641,21 +623,12 @@ static Type *DecodeFixedType(ArrayRef<Intrinsic::IITDescriptor> &Infos,
     // Return the overloaded type (which determines the pointers address space)
     return Tys[D.getOverloadArgNumber()];
 #if SIFIVE_CUSTOMIZATION
-  case IITDescriptor::OneThirdVecArgument:
-    return VectorType::getOneNthElementsVectorType(
-        cast<VectorType>(Tys[D.getArgumentNumber()]), 3);
   case IITDescriptor::OneFourthVecArgument:
     return VectorType::getOneNthElementsVectorType(
         cast<VectorType>(Tys[D.getArgumentNumber()]), 4);
-  case IITDescriptor::OneFifthVecArgument:
-    return VectorType::getOneNthElementsVectorType(
-        cast<VectorType>(Tys[D.getArgumentNumber()]), 5);
   case IITDescriptor::OneSixthVecArgument:
     return VectorType::getOneNthElementsVectorType(
         cast<VectorType>(Tys[D.getArgumentNumber()]), 6);
-  case IITDescriptor::OneSeventhVecArgument:
-    return VectorType::getOneNthElementsVectorType(
-        cast<VectorType>(Tys[D.getArgumentNumber()]), 7);
   case IITDescriptor::OneEighthVecArgument:
     return VectorType::getOneNthElementsVectorType(
         cast<VectorType>(Tys[D.getArgumentNumber()]), 8);
@@ -1101,48 +1074,27 @@ matchIntrinsicType(Type *Ty, ArrayRef<Intrinsic::IITDescriptor> &Infos,
     return ThisArgVecTy != VectorType::getInteger(ReferenceType);
   }
 #if SIFIVE_CUSTOMIZATION
-    case IITDescriptor::OneThirdVecArgument:
-      // If this is a forward reference, defer the check for later.
-      if (D.getArgumentNumber() >= ArgTys.size())
-        return IsDeferredCheck || DeferCheck(Ty);
-      return !isa<VectorType>(ArgTys[D.getArgumentNumber()]) ||
-             VectorType::getOneNthElementsVectorType(
-                 cast<VectorType>(ArgTys[D.getArgumentNumber()]), 3) != Ty;
-    case IITDescriptor::OneFourthVecArgument:
-      // If this is a forward reference, defer the check for later.
-      if (D.getArgumentNumber() >= ArgTys.size())
-        return IsDeferredCheck || DeferCheck(Ty);
-      return !isa<VectorType>(ArgTys[D.getArgumentNumber()]) ||
-             VectorType::getOneNthElementsVectorType(
-                 cast<VectorType>(ArgTys[D.getArgumentNumber()]), 4) != Ty;
-    case IITDescriptor::OneFifthVecArgument:
-      // If this is a forward reference, defer the check for later.
-      if (D.getArgumentNumber() >= ArgTys.size())
-        return IsDeferredCheck || DeferCheck(Ty);
-      return !isa<VectorType>(ArgTys[D.getArgumentNumber()]) ||
-             VectorType::getOneNthElementsVectorType(
-                 cast<VectorType>(ArgTys[D.getArgumentNumber()]), 5) != Ty;
-    case IITDescriptor::OneSixthVecArgument:
-      // If this is a forward reference, defer the check for later.
-      if (D.getArgumentNumber() >= ArgTys.size())
-        return IsDeferredCheck || DeferCheck(Ty);
-      return !isa<VectorType>(ArgTys[D.getArgumentNumber()]) ||
-             VectorType::getOneNthElementsVectorType(
-                 cast<VectorType>(ArgTys[D.getArgumentNumber()]), 6) != Ty;
-    case IITDescriptor::OneSeventhVecArgument:
-      // If this is a forward reference, defer the check for later.
-      if (D.getArgumentNumber() >= ArgTys.size())
-        return IsDeferredCheck || DeferCheck(Ty);
-      return !isa<VectorType>(ArgTys[D.getArgumentNumber()]) ||
-             VectorType::getOneNthElementsVectorType(
-                 cast<VectorType>(ArgTys[D.getArgumentNumber()]), 7) != Ty;
-    case IITDescriptor::OneEighthVecArgument:
-      // If this is a forward reference, defer the check for later.
-      if (D.getArgumentNumber() >= ArgTys.size())
-        return IsDeferredCheck || DeferCheck(Ty);
-      return !isa<VectorType>(ArgTys[D.getArgumentNumber()]) ||
-             VectorType::getOneNthElementsVectorType(
-                 cast<VectorType>(ArgTys[D.getArgumentNumber()]), 8) != Ty;
+  case IITDescriptor::OneFourthVecArgument:
+    // If this is a forward reference, defer the check for later.
+    if (D.getArgumentNumber() >= ArgTys.size())
+      return IsDeferredCheck || DeferCheck(Ty);
+    return !isa<VectorType>(ArgTys[D.getArgumentNumber()]) ||
+           VectorType::getOneNthElementsVectorType(
+               cast<VectorType>(ArgTys[D.getArgumentNumber()]), 4) != Ty;
+  case IITDescriptor::OneSixthVecArgument:
+    // If this is a forward reference, defer the check for later.
+    if (D.getArgumentNumber() >= ArgTys.size())
+      return IsDeferredCheck || DeferCheck(Ty);
+    return !isa<VectorType>(ArgTys[D.getArgumentNumber()]) ||
+           VectorType::getOneNthElementsVectorType(
+               cast<VectorType>(ArgTys[D.getArgumentNumber()]), 6) != Ty;
+  case IITDescriptor::OneEighthVecArgument:
+    // If this is a forward reference, defer the check for later.
+    if (D.getArgumentNumber() >= ArgTys.size())
+      return IsDeferredCheck || DeferCheck(Ty);
+    return !isa<VectorType>(ArgTys[D.getArgumentNumber()]) ||
+           VectorType::getOneNthElementsVectorType(
+               cast<VectorType>(ArgTys[D.getArgumentNumber()]), 8) != Ty;
 #endif // SIFIVE_CUSTOMIZATION
   }
   llvm_unreachable("unhandled");

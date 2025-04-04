@@ -536,10 +536,6 @@ public:
                            EltCnt.divideCoefficientBy(2));
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 5a1e16f6de26c21cdfae1de05bd075d57029a3e1
   static VectorType *getOneNthElementsVectorType(VectorType *VTy,
                                                  unsigned Denominator) {
     auto EltCnt = VTy->getElementCount();
@@ -548,10 +544,6 @@ public:
     return VectorType::get(VTy->getScalarType(),
                            EltCnt.divideCoefficientBy(Denominator));
   }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 5a1e16f6de26c21cdfae1de05bd075d57029a3e1
 
   /// This static method returns a VectorType with twice as many elements as the
   /// input type and the same element type.
