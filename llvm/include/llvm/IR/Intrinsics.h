@@ -148,6 +148,9 @@ namespace Intrinsic {
       ExtendArgument,
       TruncArgument,
       HalfVecArgument,
+      OneThirdVecArgument,
+      OneFifthVecArgument,
+      OneSeventhVecArgument,
       SameVecWidthArgument,
       VecOfAnyPtrsToElt,
       VecElementArgument,
@@ -167,6 +170,9 @@ namespace Intrinsic {
 #endif // SIFIVE_CUSTOMIZATION
     } Kind;
 
+    // These three have to be contiguous.
+    static_assert(OneFifthVecArgument == OneThirdVecArgument + 1 &&
+                  OneSeventhVecArgument == OneFifthVecArgument + 1);
     union {
       unsigned Integer_Width;
       unsigned Float_Width;
@@ -186,6 +192,7 @@ namespace Intrinsic {
     unsigned getArgumentNumber() const {
       assert(Kind == Argument || Kind == ExtendArgument ||
              Kind == TruncArgument || Kind == HalfVecArgument ||
+<<<<<<< HEAD
 // SIFIVE_CUSTOMIZATION
              Kind == OneThirdVecArgument ||
              Kind == OneFourthVecArgument ||
@@ -197,12 +204,19 @@ namespace Intrinsic {
              Kind == SameVecWidthArgument || Kind == VecElementArgument ||
              Kind == Subdivide2Argument || Kind == Subdivide4Argument ||
              Kind == VecOfBitcastsToInt);
+=======
+             Kind == OneThirdVecArgument || Kind == OneFifthVecArgument ||
+             Kind == OneSeventhVecArgument || Kind == SameVecWidthArgument ||
+             Kind == VecElementArgument || Kind == Subdivide2Argument ||
+             Kind == Subdivide4Argument || Kind == VecOfBitcastsToInt);
+>>>>>>> 5a1e16f6de26c21cdfae1de05bd075d57029a3e1
       return Argument_Info >> 3;
     }
     ArgKind getArgumentKind() const {
       assert(Kind == Argument || Kind == ExtendArgument ||
              Kind == TruncArgument || Kind == HalfVecArgument ||
-             Kind == SameVecWidthArgument ||
+             Kind == OneThirdVecArgument || Kind == OneFifthVecArgument ||
+             Kind == OneSeventhVecArgument || Kind == SameVecWidthArgument ||
              Kind == VecElementArgument || Kind == Subdivide2Argument ||
 // SIFIVE_CUSTOMIZATION
              Kind == OneThirdVecArgument ||

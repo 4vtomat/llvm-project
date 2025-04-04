@@ -5887,8 +5887,12 @@ SDValue DAGTypeLegalizer::PromoteIntRes_VECTOR_SPLICE(SDNode *N) {
 }
 
 SDValue DAGTypeLegalizer::PromoteIntRes_VECTOR_INTERLEAVE_DEINTERLEAVE(SDNode *N) {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   SDLoc dl(N);
+=======
+  SDLoc DL(N);
+>>>>>>> 5a1e16f6de26c21cdfae1de05bd075d57029a3e1
   unsigned Factor = N->getNumOperands();
 
   SmallVector<SDValue, 8> Ops(Factor);
@@ -5896,8 +5900,12 @@ SDValue DAGTypeLegalizer::PromoteIntRes_VECTOR_INTERLEAVE_DEINTERLEAVE(SDNode *N
     Ops[i] = GetPromotedInteger(N->getOperand(i));
 
   SmallVector<EVT, 8> ResVTs(Factor, Ops[0].getValueType());
+<<<<<<< HEAD
   SDValue Res =
       DAG.getNode(N->getOpcode(), dl, DAG.getVTList(ResVTs), Ops);
+=======
+  SDValue Res = DAG.getNode(N->getOpcode(), DL, DAG.getVTList(ResVTs), Ops);
+>>>>>>> 5a1e16f6de26c21cdfae1de05bd075d57029a3e1
 
   for (unsigned i = 0; i != Factor; i++)
     SetPromotedInteger(SDValue(N, i), Res.getValue(i));
