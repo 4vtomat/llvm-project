@@ -1192,6 +1192,15 @@ Value *VPInstruction::generate(VPTransformState &State) {
 
 InstructionCost VPInstruction::computeCost(ElementCount VF,
                                            VPCostContext &Ctx) const {
+#if SIFIVE_CUSTOMIZATION
+  if (getOpcode() == VPInstruction::MonotonicUpdate && VF.isVector() &&
+      !all_of(users(), [](VPUser *R) {
+        return cast<VPRecipeBase>(R)->getVPDefID() ==
+               VPRecipeBase::VPIRInstructionSC;
+      }))
+    return InstructionCost::getInvalid();
+#endif // SIFIVE_CUSTOMIZATION
+
   switch (getOpcode()) {
   case VPInstruction::AnyOf: {
     auto *VecTy = toVectorTy(Ctx.Types.inferScalarType(this), VF);
