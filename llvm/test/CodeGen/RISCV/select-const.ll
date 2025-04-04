@@ -63,45 +63,24 @@ define signext i32 @select_const_int_pow2_zero(i1 zeroext %a) nounwind {
 }
 
 define signext i32 @select_const_int_harder(i1 zeroext %a) nounwind {
-<<<<<<< HEAD
-; RV32-LABEL: select_const_int_harder:
-; RV32:       # %bb.0:
-; RV32-NEXT:    mv a1, a0
-; RV32-NEXT:    li a0, 6
-; RV32-NEXT:    bnez a1, .LBB3_2
-; RV32-NEXT:  # %bb.1:
-; RV32-NEXT:    li a0, 38
-; RV32-NEXT:  .LBB3_2:
-; RV32-NEXT:    ret
-;
-; RV64-LABEL: select_const_int_harder:
-; RV64:       # %bb.0:
-; RV64-NEXT:    mv a1, a0
-; RV64-NEXT:    li a0, 6
-; RV64-NEXT:    bnez a1, .LBB3_2
-; RV64-NEXT:  # %bb.1:
-; RV64-NEXT:    li a0, 38
-; RV64-NEXT:  .LBB3_2:
-; RV64-NEXT:    ret
-=======
 ; RV32I-LABEL: select_const_int_harder:
 ; RV32I:       # %bb.0:
-; RV32I-NEXT:    bnez a0, .LBB3_2
+; RV32I-NEXT:    mv a1, a0
+; RV32I-NEXT:    li a0, 6
+; RV32I-NEXT:    bnez a1, .LBB3_2
 ; RV32I-NEXT:  # %bb.1:
 ; RV32I-NEXT:    li a0, 38
-; RV32I-NEXT:    ret
 ; RV32I-NEXT:  .LBB3_2:
-; RV32I-NEXT:    li a0, 6
 ; RV32I-NEXT:    ret
 ;
 ; RV32IF-LABEL: select_const_int_harder:
 ; RV32IF:       # %bb.0:
-; RV32IF-NEXT:    bnez a0, .LBB3_2
+; RV32IF-NEXT:    mv a1, a0
+; RV32IF-NEXT:    li a0, 6
+; RV32IF-NEXT:    bnez a1, .LBB3_2
 ; RV32IF-NEXT:  # %bb.1:
 ; RV32IF-NEXT:    li a0, 38
-; RV32IF-NEXT:    ret
 ; RV32IF-NEXT:  .LBB3_2:
-; RV32IF-NEXT:    li a0, 6
 ; RV32IF-NEXT:    ret
 ;
 ; RV32ZICOND-LABEL: select_const_int_harder:
@@ -113,22 +92,22 @@ define signext i32 @select_const_int_harder(i1 zeroext %a) nounwind {
 ;
 ; RV64I-LABEL: select_const_int_harder:
 ; RV64I:       # %bb.0:
-; RV64I-NEXT:    bnez a0, .LBB3_2
+; RV64I-NEXT:    mv a1, a0
+; RV64I-NEXT:    li a0, 6
+; RV64I-NEXT:    bnez a1, .LBB3_2
 ; RV64I-NEXT:  # %bb.1:
 ; RV64I-NEXT:    li a0, 38
-; RV64I-NEXT:    ret
 ; RV64I-NEXT:  .LBB3_2:
-; RV64I-NEXT:    li a0, 6
 ; RV64I-NEXT:    ret
 ;
 ; RV64IFD-LABEL: select_const_int_harder:
 ; RV64IFD:       # %bb.0:
-; RV64IFD-NEXT:    bnez a0, .LBB3_2
+; RV64IFD-NEXT:    mv a1, a0
+; RV64IFD-NEXT:    li a0, 6
+; RV64IFD-NEXT:    bnez a1, .LBB3_2
 ; RV64IFD-NEXT:  # %bb.1:
 ; RV64IFD-NEXT:    li a0, 38
-; RV64IFD-NEXT:    ret
 ; RV64IFD-NEXT:  .LBB3_2:
-; RV64IFD-NEXT:    li a0, 6
 ; RV64IFD-NEXT:    ret
 ;
 ; RV64ZICOND-LABEL: select_const_int_harder:
@@ -137,7 +116,6 @@ define signext i32 @select_const_int_harder(i1 zeroext %a) nounwind {
 ; RV64ZICOND-NEXT:    czero.nez a0, a1, a0
 ; RV64ZICOND-NEXT:    addi a0, a0, 6
 ; RV64ZICOND-NEXT:    ret
->>>>>>> dd04dc6b29827f170d791edfcc265df9e7455848
   %1 = select i1 %a, i32 6, i32 38
   ret i32 %1
 }
