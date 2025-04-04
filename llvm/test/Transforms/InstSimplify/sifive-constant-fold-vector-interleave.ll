@@ -22,7 +22,7 @@ define <vscale x 10 x i32> @interleave5() {
 ; CHECK-LABEL: define <vscale x 10 x i32> @interleave5() {
 ; CHECK-NEXT:    ret <vscale x 10 x i32> splat (i32 87)
 ;
-  %r = call <vscale x 10 x i32> @llvm.experimental.vector.interleave5.nxv10i32(
+  %r = call <vscale x 10 x i32> @llvm.vector.interleave5.nxv10i32(
   <vscale x 2 x i32> shufflevector (<vscale x 2 x i32> insertelement (<vscale x 2 x i32> poison, i32 87, i64 0), <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer),
   <vscale x 2 x i32> shufflevector (<vscale x 2 x i32> insertelement (<vscale x 2 x i32> poison, i32 87, i64 0), <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer),
   <vscale x 2 x i32> shufflevector (<vscale x 2 x i32> insertelement (<vscale x 2 x i32> poison, i32 87, i64 0), <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer),
@@ -55,6 +55,6 @@ define <4 x i32> @interleave2_fixed() {
 }
 
 declare <vscale x 16 x i32> @llvm.experimental.vector.interleave8.nxv16i32(<vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>)
-declare <vscale x 10 x i32> @llvm.experimental.vector.interleave5.nxv10i32(<vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>)
+declare <vscale x 10 x i32> @llvm.vector.interleave5.nxv10i32(<vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>)
 declare <vscale x 4 x i32> @llvm.experimental.vector.interleave2.nxv4i32(<vscale x 2 x i32>, <vscale x 2 x i32>)
 declare <4 x i32> @llvm.experimental.vector.interleave2.v4i32(<2 x i32>, <2 x i32>)
