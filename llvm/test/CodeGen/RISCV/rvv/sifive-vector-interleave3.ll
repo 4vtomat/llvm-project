@@ -47,11 +47,11 @@ define <vscale x 48 x i1> @vector_interleave_nxv48i1_nxv16i1(<vscale x 16 x i1> 
 ; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
-  %res = call <vscale x 48 x i1> @llvm.experimental.vector.interleave3.nxv48i1(<vscale x 16 x i1> %a, <vscale x 16 x i1> %b, <vscale x 16 x i1> %c)
+  %res = call <vscale x 48 x i1> @llvm.vector.interleave3.nxv48i1(<vscale x 16 x i1> %a, <vscale x 16 x i1> %b, <vscale x 16 x i1> %c)
   ret <vscale x 48 x i1> %res
 }
 
-declare <vscale x 48 x i1> @llvm.experimental.vector.interleave3.nxv48i1(<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>)
+declare <vscale x 48 x i1> @llvm.vector.interleave3.nxv48i1(<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>)
 
 define <vscale x 48 x i8> @vector_interleave_nxv48i8_nxv16i8(<vscale x 16 x i8> %a, <vscale x 16 x i8> %b, <vscale x 16 x i8> %c) nounwind {
 ; CHECK-LABEL: vector_interleave_nxv48i8_nxv16i8:
@@ -77,11 +77,11 @@ define <vscale x 48 x i8> @vector_interleave_nxv48i8_nxv16i8(<vscale x 16 x i8> 
 ; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
-  %res = call <vscale x 48 x i8> @llvm.experimental.vector.interleave3.nxv48i8(<vscale x 16 x i8> %a, <vscale x 16 x i8> %b, <vscale x 16 x i8> %c)
+  %res = call <vscale x 48 x i8> @llvm.vector.interleave3.nxv48i8(<vscale x 16 x i8> %a, <vscale x 16 x i8> %b, <vscale x 16 x i8> %c)
   ret <vscale x 48 x i8> %res
 }
 
-declare <vscale x 48 x i8> @llvm.experimental.vector.interleave3.nxv48i8(<vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>)
+declare <vscale x 48 x i8> @llvm.vector.interleave3.nxv48i8(<vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>)
 
 define <vscale x 24 x i16> @vector_interleave_nxv24i16_nxv8i16(<vscale x 8 x i16> %a, <vscale x 8 x i16> %b, <vscale x 8 x i16> %c) nounwind {
 ; CHECK-LABEL: vector_interleave_nxv24i16_nxv8i16:
@@ -107,11 +107,11 @@ define <vscale x 24 x i16> @vector_interleave_nxv24i16_nxv8i16(<vscale x 8 x i16
 ; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
-  %res = call <vscale x 24 x i16> @llvm.experimental.vector.interleave3.nxv24i16(<vscale x 8 x i16> %a, <vscale x 8 x i16> %b, <vscale x 8 x i16> %c)
+  %res = call <vscale x 24 x i16> @llvm.vector.interleave3.nxv24i16(<vscale x 8 x i16> %a, <vscale x 8 x i16> %b, <vscale x 8 x i16> %c)
   ret <vscale x 24 x i16> %res
 }
 
-declare <vscale x 24 x i16> @llvm.experimental.vector.interleave3.nxv24i16(<vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>)
+declare <vscale x 24 x i16> @llvm.vector.interleave3.nxv24i16(<vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>)
 
 define <vscale x 12 x i32> @vector_interleave_nxv12i32_nxv4i32(<vscale x 4 x i32> %a, <vscale x 4 x i32> %b, <vscale x 4 x i32> %c) nounwind {
 ; CHECK-LABEL: vector_interleave_nxv12i32_nxv4i32:
@@ -137,11 +137,11 @@ define <vscale x 12 x i32> @vector_interleave_nxv12i32_nxv4i32(<vscale x 4 x i32
 ; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
-  %res = call <vscale x 12 x i32> @llvm.experimental.vector.interleave3.nxv12i32(<vscale x 4 x i32> %a, <vscale x 4 x i32> %b, <vscale x 4 x i32> %c)
+  %res = call <vscale x 12 x i32> @llvm.vector.interleave3.nxv12i32(<vscale x 4 x i32> %a, <vscale x 4 x i32> %b, <vscale x 4 x i32> %c)
   ret <vscale x 12 x i32> %res
 }
 
-declare <vscale x 12 x i32> @llvm.experimental.vector.interleave3.nxv12i32(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>)
+declare <vscale x 12 x i32> @llvm.vector.interleave3.nxv12i32(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>)
 
 define <vscale x 6 x i64> @vector_interleave_nxv6i64_nxv2i64(<vscale x 2 x i64> %a, <vscale x 2 x i64> %b, <vscale x 2 x i64> %c) nounwind {
 ; CHECK-LABEL: vector_interleave_nxv6i64_nxv2i64:
@@ -167,8 +167,8 @@ define <vscale x 6 x i64> @vector_interleave_nxv6i64_nxv2i64(<vscale x 2 x i64> 
 ; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
-  %res = call <vscale x 6 x i64> @llvm.experimental.vector.interleave3.nxv6i64(<vscale x 2 x i64> %a, <vscale x 2 x i64> %b, <vscale x 2 x i64> %c)
+  %res = call <vscale x 6 x i64> @llvm.vector.interleave3.nxv6i64(<vscale x 2 x i64> %a, <vscale x 2 x i64> %b, <vscale x 2 x i64> %c)
   ret <vscale x 6 x i64> %res
 }
 
-declare <vscale x 6 x i64> @llvm.experimental.vector.interleave3.nxv6i64(<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>)
+declare <vscale x 6 x i64> @llvm.vector.interleave3.nxv6i64(<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>)

@@ -9,54 +9,40 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>} @vector_dein
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    sub sp, sp, a0
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v10, 0
 ; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    vsetvli a1, zero, e8, m8, ta, ma
-; CHECK-NEXT:    vid.v v24
-; CHECK-NEXT:    li a1, 3
-; CHECK-NEXT:    vsetvli a2, zero, e8, m2, ta, ma
-; CHECK-NEXT:    vmerge.vim v16, v10, 1, v0
-; CHECK-NEXT:    vsetvli a2, zero, e8, m8, ta, ma
-; CHECK-NEXT:    vmul.vx v24, v24, a1
 ; CHECK-NEXT:    srli a1, a0, 2
-; CHECK-NEXT:    srli a0, a0, 1
 ; CHECK-NEXT:    vsetvli a2, zero, e8, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v8, v0, a1
+; CHECK-NEXT:    addi a1, sp, 16
+; CHECK-NEXT:    vsetvli a2, zero, e8, m2, ta, ma
+; CHECK-NEXT:    vmerge.vim v16, v10, 1, v0
+; CHECK-NEXT:    srli a0, a0, 1
+; CHECK-NEXT:    vsetvli a2, zero, e8, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v9, v0, a0
-; CHECK-NEXT:    vmv.v.v v0, v8
+; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmerge.vim v18, v10, 1, v0
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vmerge.vim v20, v10, 1, v0
-; CHECK-NEXT:    vsetvli a0, zero, e8, m8, ta, ma
-; CHECK-NEXT:    vrgather.vv v8, v16, v24
-; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
-; CHECK-NEXT:    vmsne.vi v8, v8, 0
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vsetvli a0, zero, e8, m8, ta, ma
-; CHECK-NEXT:    vadd.vi v0, v24, 1
-; CHECK-NEXT:    vadd.vi v24, v24, 2
-; CHECK-NEXT:    vrgather.vv v8, v16, v0
-; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
-; CHECK-NEXT:    vmsne.vi v8, v8, 0
-; CHECK-NEXT:    vsetvli a0, zero, e8, m8, ta, ma
-; CHECK-NEXT:    vrgather.vv v0, v16, v24
-; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
-; CHECK-NEXT:    vmsne.vi v9, v0, 0
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vl1r.v v0, (a0) # Unknown-size Folded Reload
+; CHECK-NEXT:    vs8r.v v16, (a1)
+; CHECK-NEXT:    vlseg3e8.v v8, (a1)
+; CHECK-NEXT:    vmsne.vi v0, v8, 0
+; CHECK-NEXT:    vmsne.vi v8, v10, 0
+; CHECK-NEXT:    vmsne.vi v9, v12, 0
 ; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
-  %retval = call {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>} @llvm.experimental.vector.deinterleave3.nxv48i1(<vscale x 48 x i1> %vec)
+  %retval = call {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>} @llvm.vector.deinterleave3.nxv48i1(<vscale x 48 x i1> %vec)
   ret {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>} %retval
 }
 
-declare {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>} @llvm.experimental.vector.deinterleave3.nxv48i1(<vscale x 48 x i1>)
+declare {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>} @llvm.vector.deinterleave3.nxv48i1(<vscale x 48 x i1>)
 
 define {<vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>} @vector_deinterleave_nxv16i8_nxv48i8(<vscale x 48 x i8> %vec) nounwind {
 ; CHECK-LABEL: vector_deinterleave_nxv16i8_nxv48i8:
@@ -65,30 +51,20 @@ define {<vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>} @vector_dein
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    sub sp, sp, a0
-; CHECK-NEXT:    vsetvli a0, zero, e8, m8, ta, ma
-; CHECK-NEXT:    vid.v v16
-; CHECK-NEXT:    li a0, 3
-; CHECK-NEXT:    vmul.vx v24, v16, a0
-; CHECK-NEXT:    vrgather.vv v16, v8, v24
 ; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vadd.vi v0, v24, 1
-; CHECK-NEXT:    vadd.vi v24, v24, 2
-; CHECK-NEXT:    vrgather.vv v16, v8, v0
-; CHECK-NEXT:    vrgather.vv v0, v8, v24
-; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmv2r.v v10, v16
-; CHECK-NEXT:    vmv2r.v v12, v0
+; CHECK-NEXT:    vs8r.v v8, (a0)
+; CHECK-NEXT:    vsetvli a1, zero, e8, m2, ta, ma
+; CHECK-NEXT:    vlseg3e8.v v8, (a0)
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
-  %retval = call {<vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>} @llvm.experimental.vector.deinterleave3.nxv48i8(<vscale x 48 x i8> %vec)
+  %retval = call {<vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>} @llvm.vector.deinterleave3.nxv48i8(<vscale x 48 x i8> %vec)
   ret {<vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>} %retval
 }
 
-declare {<vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>} @llvm.experimental.vector.deinterleave3.nxv48i8(<vscale x 48 x i8>)
+declare {<vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>} @llvm.vector.deinterleave3.nxv48i8(<vscale x 48 x i8>)
 
 define {<vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>} @vector_deinterleave_nxv8i16_nxv24i16(<vscale x 24 x i16> %vec) nounwind {
 ; CHECK-LABEL: vector_deinterleave_nxv8i16_nxv24i16:
@@ -97,30 +73,20 @@ define {<vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>} @vector_dein
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    sub sp, sp, a0
-; CHECK-NEXT:    vsetvli a0, zero, e16, m8, ta, ma
-; CHECK-NEXT:    vid.v v16
-; CHECK-NEXT:    li a0, 3
-; CHECK-NEXT:    vmul.vx v24, v16, a0
-; CHECK-NEXT:    vrgather.vv v16, v8, v24
 ; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vadd.vi v0, v24, 1
-; CHECK-NEXT:    vadd.vi v24, v24, 2
-; CHECK-NEXT:    vrgather.vv v16, v8, v0
-; CHECK-NEXT:    vrgather.vv v0, v8, v24
-; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmv2r.v v10, v16
-; CHECK-NEXT:    vmv2r.v v12, v0
+; CHECK-NEXT:    vs8r.v v8, (a0)
+; CHECK-NEXT:    vsetvli a1, zero, e16, m2, ta, ma
+; CHECK-NEXT:    vlseg3e16.v v8, (a0)
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
-  %retval = call {<vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>} @llvm.experimental.vector.deinterleave3.nxv24i16(<vscale x 24 x i16> %vec)
+  %retval = call {<vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>} @llvm.vector.deinterleave3.nxv24i16(<vscale x 24 x i16> %vec)
   ret {<vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>} %retval
 }
 
-declare {<vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>} @llvm.experimental.vector.deinterleave3.nxv24i16(<vscale x 24 x i16>)
+declare {<vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>} @llvm.vector.deinterleave3.nxv24i16(<vscale x 24 x i16>)
 
 define {<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>} @vector_deinterleave_nxv4i32_nxv12i32(<vscale x 12 x i32> %vec) nounwind {
 ; CHECK-LABEL: vector_deinterleave_nxv4i32_nxv12i32:
@@ -129,85 +95,42 @@ define {<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>} @vector_dein
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    sub sp, sp, a0
-; CHECK-NEXT:    vsetvli a0, zero, e32, m8, ta, ma
-; CHECK-NEXT:    vid.v v16
-; CHECK-NEXT:    li a0, 3
-; CHECK-NEXT:    vmul.vx v24, v16, a0
-; CHECK-NEXT:    vrgather.vv v16, v8, v24
 ; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vadd.vi v0, v24, 1
-; CHECK-NEXT:    vadd.vi v24, v24, 2
-; CHECK-NEXT:    vrgather.vv v16, v8, v0
-; CHECK-NEXT:    vrgather.vv v0, v8, v24
-; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmv2r.v v10, v16
-; CHECK-NEXT:    vmv2r.v v12, v0
+; CHECK-NEXT:    vs8r.v v8, (a0)
+; CHECK-NEXT:    vsetvli a1, zero, e32, m2, ta, ma
+; CHECK-NEXT:    vlseg3e32.v v8, (a0)
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
-  %retval = call {<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>} @llvm.experimental.vector.deinterleave3.nxv12i32(<vscale x 12 x i32> %vec)
+  %retval = call {<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>} @llvm.vector.deinterleave3.nxv12i32(<vscale x 12 x i32> %vec)
   ret {<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>} %retval
 }
 
-declare {<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>} @llvm.experimental.vector.deinterleave3.nxv12i32(<vscale x 12 x i32>)
+declare {<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>} @llvm.vector.deinterleave3.nxv12i32(<vscale x 12 x i32>)
 
 define {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>} @vector_deinterleave_nxv2i64_nxv6i64(<vscale x 6 x i64> %vec) nounwind {
-; RV32-LABEL: vector_deinterleave_nxv2i64_nxv6i64:
-; RV32:       # %bb.0:
-; RV32-NEXT:    addi sp, sp, -16
-; RV32-NEXT:    csrr a0, vlenb
-; RV32-NEXT:    slli a0, a0, 3
-; RV32-NEXT:    sub sp, sp, a0
-; RV32-NEXT:    vsetvli a0, zero, e64, m8, ta, ma
-; RV32-NEXT:    vid.v v16
-; RV32-NEXT:    li a0, 3
-; RV32-NEXT:    vmul.vx v24, v16, a0
-; RV32-NEXT:    vrgather.vv v16, v8, v24
-; RV32-NEXT:    addi a0, sp, 16
-; RV32-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
-; RV32-NEXT:    vadd.vi v0, v24, 1
-; RV32-NEXT:    vrgather.vv v24, v8, v0
-; RV32-NEXT:    vadd.vi v0, v0, 1
-; RV32-NEXT:    vrgather.vv v16, v8, v0
-; RV32-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; RV32-NEXT:    vmv2r.v v10, v24
-; RV32-NEXT:    vmv2r.v v12, v16
-; RV32-NEXT:    csrr a0, vlenb
-; RV32-NEXT:    slli a0, a0, 3
-; RV32-NEXT:    add sp, sp, a0
-; RV32-NEXT:    addi sp, sp, 16
-; RV32-NEXT:    ret
-;
-; RV64-LABEL: vector_deinterleave_nxv2i64_nxv6i64:
-; RV64:       # %bb.0:
-; RV64-NEXT:    addi sp, sp, -16
-; RV64-NEXT:    csrr a0, vlenb
-; RV64-NEXT:    slli a0, a0, 3
-; RV64-NEXT:    sub sp, sp, a0
-; RV64-NEXT:    vsetvli a0, zero, e64, m8, ta, ma
-; RV64-NEXT:    vid.v v16
-; RV64-NEXT:    li a0, 3
-; RV64-NEXT:    vmul.vx v24, v16, a0
-; RV64-NEXT:    vrgather.vv v16, v8, v24
-; RV64-NEXT:    addi a0, sp, 16
-; RV64-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
-; RV64-NEXT:    vadd.vi v0, v24, 1
-; RV64-NEXT:    vadd.vi v24, v24, 2
-; RV64-NEXT:    vrgather.vv v16, v8, v0
-; RV64-NEXT:    vrgather.vv v0, v8, v24
-; RV64-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; RV64-NEXT:    vmv2r.v v10, v16
-; RV64-NEXT:    vmv2r.v v12, v0
-; RV64-NEXT:    csrr a0, vlenb
-; RV64-NEXT:    slli a0, a0, 3
-; RV64-NEXT:    add sp, sp, a0
-; RV64-NEXT:    addi sp, sp, 16
-; RV64-NEXT:    ret
-  %retval = call {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>} @llvm.experimental.vector.deinterleave3.nxv6i64(<vscale x 6 x i64> %vec)
+; CHECK-LABEL: vector_deinterleave_nxv2i64_nxv6i64:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    addi sp, sp, -16
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    slli a0, a0, 3
+; CHECK-NEXT:    sub sp, sp, a0
+; CHECK-NEXT:    addi a0, sp, 16
+; CHECK-NEXT:    vs8r.v v8, (a0)
+; CHECK-NEXT:    vsetvli a1, zero, e64, m2, ta, ma
+; CHECK-NEXT:    vlseg3e64.v v8, (a0)
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    slli a0, a0, 3
+; CHECK-NEXT:    add sp, sp, a0
+; CHECK-NEXT:    addi sp, sp, 16
+; CHECK-NEXT:    ret
+  %retval = call {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>} @llvm.vector.deinterleave3.nxv6i64(<vscale x 6 x i64> %vec)
   ret {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>} %retval
 }
 
-declare {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>} @llvm.experimental.vector.deinterleave3.nxv6i64(<vscale x 6 x i64>)
+declare {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>} @llvm.vector.deinterleave3.nxv6i64(<vscale x 6 x i64>)
+;; NOTE: These prefixes are unused and the list is autogenerated. Do not add tests below this line:
+; RV32: {{.*}}
+; RV64: {{.*}}

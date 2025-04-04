@@ -21,7 +21,7 @@ define {<vscale x 2 x i32>, <vscale x 2 x i32>} @strided_load_factor2_v2(ptr %pt
 }
 
 declare <vscale x 2 x i96> @llvm.experimental.vp.strided.load.nxv2i96.p0.i32(ptr nocapture, i32, <vscale x 2 x i1>, i32)
-declare { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.experimental.vector.deinterleave3.nxv6i32(<vscale x 6 x i32>)
+declare { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.vector.deinterleave3.nxv6i32(<vscale x 6 x i32>)
 
 define {<vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>} @strided_load_factor3_v2(ptr %ptr, i32 %stride, i32 %rvl) {
 ; CHECK-LABEL: strided_load_factor3_v2:
@@ -31,7 +31,7 @@ define {<vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>} @strided_loa
 ; CHECK-NEXT:    ret
   %wide.strided.load = call <vscale x 2 x i96> @llvm.experimental.vp.strided.load.nxv2i96.p0.i32(ptr align 4 %ptr, i32 %stride, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 %rvl)
   %wide.strided.load.cast = bitcast <vscale x 2 x i96> %wide.strided.load to <vscale x 6 x i32>
-  %deinterleaved.results = call { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.experimental.vector.deinterleave3.nxv6i32(<vscale x 6 x i32> %wide.strided.load.cast)
+  %deinterleaved.results = call { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.vector.deinterleave3.nxv6i32(<vscale x 6 x i32> %wide.strided.load.cast)
   %t0 = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } %deinterleaved.results, 0
   %t1 = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } %deinterleaved.results, 1
   %t2 = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } %deinterleaved.results, 2
@@ -65,7 +65,7 @@ define {<vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 
 }
 
 declare <vscale x 2 x i160> @llvm.experimental.vp.strided.load.nxv2i160.p0.i32(ptr nocapture, i32, <vscale x 2 x i1>, i32)
-declare { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.experimental.vector.deinterleave5.nxv10i32(<vscale x 10 x i32>)
+declare { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.vector.deinterleave5.nxv10i32(<vscale x 10 x i32>)
 
 define {<vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>} @strided_load_factor5_v2(ptr %ptr, i32 %stride, i32 %rvl) {
 ; CHECK-LABEL: strided_load_factor5_v2:
@@ -75,7 +75,7 @@ define {<vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 
 ; CHECK-NEXT:    ret
   %wide.strided.load = call <vscale x 2 x i160> @llvm.experimental.vp.strided.load.nxv2i160.p0.i32(ptr align 4 %ptr, i32 %stride, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 %rvl)
   %wide.strided.load.cast = bitcast <vscale x 2 x i160> %wide.strided.load to <vscale x 10 x i32>
-  %deinterleaved.results = call { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.experimental.vector.deinterleave5.nxv10i32(<vscale x 10 x i32> %wide.strided.load.cast)
+  %deinterleaved.results = call { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.vector.deinterleave5.nxv10i32(<vscale x 10 x i32> %wide.strided.load.cast)
   %t0 = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } %deinterleaved.results, 0
   %t1 = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } %deinterleaved.results, 1
   %t2 = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } %deinterleaved.results, 2
@@ -117,7 +117,7 @@ define {<vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 
 }
 
 declare <vscale x 2 x i224> @llvm.experimental.vp.strided.load.nxv2i224.p0.i32(ptr nocapture, i32, <vscale x 2 x i1>, i32)
-declare { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.experimental.vector.deinterleave7.nxv14i32(<vscale x 14 x i32>)
+declare { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.vector.deinterleave7.nxv14i32(<vscale x 14 x i32>)
 
 define {<vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @strided_load_factor7_v2(ptr %ptr, i32 %stride, i32 %rvl) {
 ; CHECK-LABEL: strided_load_factor7_v2:
@@ -127,7 +127,7 @@ define {<vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 
 ; CHECK-NEXT:    ret
   %wide.strided.load = call <vscale x 2 x i224> @llvm.experimental.vp.strided.load.nxv2i224.p0.i32(ptr align 4 %ptr, i32 %stride, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 %rvl)
   %wide.strided.load.cast = bitcast <vscale x 2 x i224> %wide.strided.load to <vscale x 14 x i32>
-  %deinterleaved.results = call { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.experimental.vector.deinterleave7.nxv14i32(<vscale x 14 x i32> %wide.strided.load.cast)
+  %deinterleaved.results = call { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.vector.deinterleave7.nxv14i32(<vscale x 14 x i32> %wide.strided.load.cast)
   %t0 = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } %deinterleaved.results, 0
   %t1 = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } %deinterleaved.results, 1
   %t2 = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } %deinterleaved.results, 2
@@ -220,21 +220,24 @@ declare <vscale x 4 x i64> @llvm.experimental.vp.strided.load.nxv4i64.p0.i32(ptr
 define {<vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>} @not_vlsseg_factor4_v2(ptr %ptr, i32 %stride, i32 %rvl) {
 ; CHECK-LABEL: not_vlsseg_factor4_v2:
 ; CHECK:       # %bb.0:
+; CHECK-NEXT:    addi sp, sp, -16
+; CHECK-NEXT:    .cfi_def_cfa_offset 16
+; CHECK-NEXT:    csrr a3, vlenb
+; CHECK-NEXT:    slli a3, a3, 2
+; CHECK-NEXT:    sub sp, sp, a3
+; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x04, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 4 * vlenb
 ; CHECK-NEXT:    vsetvli zero, a2, e64, m4, ta, ma
-; CHECK-NEXT:    vlse64.v v12, (a0), a1
-; CHECK-NEXT:    vsetvli a0, zero, e32, m4, ta, ma
-; CHECK-NEXT:    vid.v v8
-; CHECK-NEXT:    vsll.vi v16, v8, 2
-; CHECK-NEXT:    vadd.vi v20, v16, 1
-; CHECK-NEXT:    vadd.vi v24, v16, 2
-; CHECK-NEXT:    vadd.vi v28, v16, 3
-; CHECK-NEXT:    vrgather.vv v8, v12, v16
-; CHECK-NEXT:    vrgather.vv v16, v12, v20
-; CHECK-NEXT:    vrgather.vv v20, v12, v24
-; CHECK-NEXT:    vrgather.vv v24, v12, v28
-; CHECK-NEXT:    vmv1r.v v9, v16
-; CHECK-NEXT:    vmv1r.v v10, v20
-; CHECK-NEXT:    vmv1r.v v11, v24
+; CHECK-NEXT:    vlse64.v v8, (a0), a1
+; CHECK-NEXT:    addi a0, sp, 16
+; CHECK-NEXT:    vs4r.v v8, (a0)
+; CHECK-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
+; CHECK-NEXT:    vlseg4e32.v v8, (a0)
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    slli a0, a0, 2
+; CHECK-NEXT:    add sp, sp, a0
+; CHECK-NEXT:    .cfi_def_cfa sp, 16
+; CHECK-NEXT:    addi sp, sp, 16
+; CHECK-NEXT:    .cfi_def_cfa_offset 0
 ; CHECK-NEXT:    ret
   %wide.strided.load = call <vscale x 4 x i64> @llvm.experimental.vp.strided.load.nxv4i64.p0.i32(ptr align 4 %ptr, i32 %stride, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 %rvl)
   %wide.strided.load.cast = bitcast <vscale x 4 x i64> %wide.strided.load to <vscale x 8 x i32>
