@@ -1095,6 +1095,7 @@ public:
 
   /// Return the cost of this VPInstruction.
   InstructionCost computeCost(ElementCount VF,
+<<<<<<< HEAD
                               VPCostContext &Ctx) const override {
 #if SIFIVE_CUSTOMIZATION
     if (getOpcode() == VPInstruction::MonotonicUpdate && VF.isVector() &&
@@ -1108,6 +1109,9 @@ public:
     // TODO: Compute accurate cost after retiring the legacy cost model.
     return 0;
   }
+=======
+                              VPCostContext &Ctx) const override;
+>>>>>>> cf9806eb4da23b42702aa88784969520702dae00
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print the VPInstruction to \p O.

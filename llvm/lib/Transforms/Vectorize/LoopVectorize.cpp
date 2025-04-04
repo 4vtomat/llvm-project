@@ -9552,10 +9552,21 @@ VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
   VPCostContext CostCtx(CM.TTI, *CM.TLI, Legal->getWidestInductionType(), CM,
                         CM.CostKind);
   precomputeCosts(BestPlan, BestFactor.Width, CostCtx);
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (!Legal->useVLAVectorizer())
 #endif // !SIFIVE_CUSTOMIZATION
   assert((BestFactor.Width == LegacyVF.Width ||
+=======
+  // Set PlanForEarlyExitLoop to true if the BestPlan has been built from a
+  // loop with an uncountable early exit. The legacy cost model doesn't
+  // properly model costs for such loops.
+  bool PlanForEarlyExitLoop =
+      BestPlan.getVectorLoopRegion() &&
+      BestPlan.getVectorLoopRegion()->getSingleSuccessor() !=
+          BestPlan.getMiddleBlock();
+  assert((BestFactor.Width == LegacyVF.Width || PlanForEarlyExitLoop ||
+>>>>>>> cf9806eb4da23b42702aa88784969520702dae00
           planContainsAdditionalSimplifications(getPlanFor(BestFactor.Width),
                                                 CostCtx, OrigLoop) ||
           planContainsAdditionalSimplifications(getPlanFor(LegacyVF.Width),
