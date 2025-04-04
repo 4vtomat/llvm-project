@@ -8,11 +8,7 @@
 ; YAML: Function:        test1
 ; YAML: Args:
 ; YAML:   - String:          'Stores SLP vectorized with cost '
-<<<<<<< HEAD
-; YAML:   - Cost:            '3'
-=======
-; YAML:   - Cost:            '5'
->>>>>>> e78be316394509a665796a325603fe773346fbba
+; YAML:   - Cost:            '4'
 ; YAML:   - String:          ' and with tree size '
 ; YAML:   - TreeSize:        '5'
 
@@ -50,11 +46,7 @@ declare <4 x float> @llvm.fmuladd.v4f32(<4 x float>, <4 x float>, <4 x float>)
 ; YAML: Function:        test2
 ; YAML: Args:
 ; YAML:   - String:          'Stores SLP vectorized with cost '
-<<<<<<< HEAD
-; YAML:   - Cost:            '11'
-=======
-; YAML:   - Cost:            '14'
->>>>>>> e78be316394509a665796a325603fe773346fbba
+; YAML:   - Cost:            '13'
 ; YAML:   - String:          ' and with tree size '
 ; YAML:   - TreeSize:        '5'
 
