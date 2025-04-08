@@ -1195,8 +1195,18 @@ InstructionCost VPInstruction::computeCost(ElementCount VF,
 #if SIFIVE_CUSTOMIZATION
   if (getOpcode() == VPInstruction::MonotonicUpdate && VF.isVector() &&
       !all_of(users(), [](VPUser *R) {
-        return cast<VPRecipeBase>(R)->getVPDefID() ==
-               VPRecipeBase::VPIRInstructionSC;
+        switch (cast<VPRecipeBase>(R)->getVPDefID()) {
+        default:
+          return false;
+        case VPRecipeBase::VPIRInstructionSC:
+        case VPRecipeBase::VPMonotonicHeaderPHISC:
+        case VPRecipeBase::VPMonotonicUpdateSC:
+        case VPRecipeBase::VPReplicateSC:
+          return true;
+        case VPRecipeBase::VPInstructionSC:
+          return cast<VPInstruction>(R)->getOpcode() ==
+                 VPInstruction::ResumePhi;
+        }
       }))
     return InstructionCost::getInvalid();
 #endif // SIFIVE_CUSTOMIZATION
