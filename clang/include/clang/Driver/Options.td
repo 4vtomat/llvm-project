@@ -4221,8 +4221,21 @@ def fwrapv_pointer : Flag<["-"], "fwrapv-pointer">, Group<f_Group>,
 def fno_wrapv_pointer : Flag<["-"], "fno-wrapv-pointer">, Group<f_Group>,
   Visibility<[ClangOption, CLOption, FlangOption]>;
 #ifdef SIFIVE_CUSTOMIZATION
-def : Flag<["-"], "fno-strict-pointer-overflow">, Alias<fwrapv_pointer>;
-#endif // SIFIVE_CUSTOMIZATION
+// This is a workaround for a miscompilation happened in a performance metric we
+// track caused by a poorly-written pointer arithmetic. In that case we don't
+// want to use -fno-strict-overflow or -fwrapv-pointer since they are too strong.
+// (disable either ALL signed or pointer overflow optimizations).
+// Note that we will probably not upstream this because in the aforementioned
+// case compiler was actually correct, but at the same time we have to live with
+// the benchmark.
+def fwrapv_pointer_arithmetic : Flag<["-"], "fwrapv-pointer-arithmetic">, Group<f_Group>,
+  Visibility<[ClangOption, CC1Option]>,
+  MarshallingInfoFlag<LangOpts<"IsPointerArithmeticOverflowDefined">>,
+  HelpText<"Disable optimizations that assume pointer arithmetic never overflows.">;
+
+// A backward compatible name.
+def : Flag<["-"], "fno-strict-pointer-overflow">, Alias<fwrapv_pointer_arithmetic>;
+#endif
 def fwritable_strings : Flag<["-"], "fwritable-strings">, Group<f_Group>,
   Visibility<[ClangOption, CC1Option]>,
   HelpText<"Store string literals as writable data">,
