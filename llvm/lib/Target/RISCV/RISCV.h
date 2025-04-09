@@ -89,6 +89,9 @@ extern char &RISCVInsertVSETVLIID;
 #if SIFIVE_CUSTOMIZATION
 FunctionPass *createRISCVSpillRewritePass();
 void initializeRISCVSpillRewritePass(PassRegistry &);
+
+FunctionPass *createRISCVBulletNopInserterPass();
+void initializeRISCVBulletNopInserterPass(PassRegistry &);
 #endif // SIFIVE_CUSTOMIZATION
 
 FunctionPass *createRISCVPostRAExpandPseudoPass();

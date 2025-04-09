@@ -7,11 +7,11 @@
 ; RUN: opt -passes=loop-vectorize -mcpu=sifive-p470 -S %s -mtriple riscv64 -sifive-loop-vectorizer-use-vplan-based-cost-model=false| FileCheck %s --check-prefixes=P470
 ; RUN: opt -passes=loop-vectorize -mcpu=sifive-x280 -S %s -mtriple riscv64 -sifive-loop-vectorizer-use-vplan-based-cost-model=false| FileCheck %s --check-prefixes=X280
 
-; This test is extract from 401.bzip2:huffman.c:202. SCT-4260
-; We shouldn't vectorize this loop.
-
 target datalayout = "e-m:e-p:64:64-i64:64-i128:128-n32:64-S128"
 target triple = "riscv64-unknown-linux-gnu"
+
+; This test is extract from 401.bzip2:huffman.c:202. SCT-4260
+; We shouldn't vectorize this loop.
 
 ; Function Attrs: mustprogress nofree norecurse nosync nounwind memory(argmem: readwrite) uwtable vscale_range(2,1024)
 define dso_local void @_Z17BZ2_hbAssignCodesPiPhiii(ptr nocapture noundef writeonly %code, ptr nocapture noundef readonly %length, i32 noundef signext %minLen, i32 noundef signext %maxLen, i32 noundef signext %alphaSize) local_unnamed_addr #0 {
@@ -193,3 +193,352 @@ for.end10.loopexit:                               ; preds = %for.cond1.for.end_c
 for.end10:                                        ; preds = %for.end10.loopexit, %entry
   ret void
 }
+
+; Test extracted from spec2k6 445.gobmk engine/dragon.c:1729.
+; This loop can be vectorized.
+define i32 @dragon_escape(ptr %goal, ptr %board) #0 {
+; P670-LABEL: define i32 @dragon_escape(
+; P670-SAME: ptr [[GOAL:%.*]], ptr [[BOARD:%.*]]) #[[ATTR0]] {
+; P670-NEXT:  [[ENTRY:.*:]]
+; P670-NEXT:    [[QUEUE:%.*]] = alloca [361 x i32], align 8
+; P670-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
+; P670:       [[VECTOR_PH]]:
+; P670-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; P670-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 8
+; P670-NEXT:    [[TMP2:%.*]] = call <vscale x 8 x i32> @llvm.stepvector.nxv8i32()
+; P670-NEXT:    [[TMP3:%.*]] = mul <vscale x 8 x i32> [[TMP2]], splat (i32 1)
+; P670-NEXT:    [[INDUCTION:%.*]] = add <vscale x 8 x i32> zeroinitializer, [[TMP3]]
+; P670-NEXT:    [[TMP4:%.*]] = trunc i64 [[TMP1]] to i32
+; P670-NEXT:    [[TMP5:%.*]] = mul i32 1, [[TMP4]]
+; P670-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 8 x i32> poison, i32 [[TMP5]], i64 0
+; P670-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 8 x i32> [[DOTSPLATINSERT]], <vscale x 8 x i32> poison, <vscale x 8 x i32> zeroinitializer
+; P670-NEXT:    br label %[[VECTOR_BODY:.*]]
+; P670:       [[VECTOR_BODY]]:
+; P670-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
+; P670-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
+; P670-NEXT:    [[MONOTONIC_PHI:%.*]] = phi i32 [ 0, %[[VECTOR_PH]] ], [ [[MONOTONIC_UPDATE:%.*]], %[[VECTOR_BODY]] ]
+; P670-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 8 x i32> [ [[INDUCTION]], %[[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], %[[VECTOR_BODY]] ]
+; P670-NEXT:    [[AVL:%.*]] = sub i64 401, [[EVL_BASED_IV]]
+; P670-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 8, i1 true)
+; P670-NEXT:    [[TMP7:%.*]] = add i64 [[EVL_BASED_IV]], 0
+; P670-NEXT:    [[TMP8:%.*]] = getelementptr [421 x i8], ptr [[BOARD]], i64 0, i64 [[TMP7]]
+; P670-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[TMP8]], i32 0
+; P670-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP9]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; P670-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; P670-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 8 x i1> @llvm.vp.xor.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> splat (i1 true), <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; P670-NEXT:    [[TMP10:%.*]] = getelementptr i8, ptr [[GOAL]], i64 [[TMP7]]
+; P670-NEXT:    [[TMP11:%.*]] = getelementptr i8, ptr [[TMP10]], i32 0
+; P670-NEXT:    [[VP_OP_LOAD3:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP11]], <vscale x 8 x i1> [[PRED_NOT]], i32 [[TMP6]])
+; P670-NEXT:    [[VP_OP_ICMP4:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD3]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; P670-NEXT:    [[PRED_NOT5:%.*]] = call <vscale x 8 x i1> @llvm.vp.xor.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP4]], <vscale x 8 x i1> splat (i1 true), <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; P670-NEXT:    [[TMP12:%.*]] = call <vscale x 8 x i1> @llvm.vp.select.nxv8i1(<vscale x 8 x i1> [[PRED_NOT]], <vscale x 8 x i1> [[PRED_NOT5]], <vscale x 8 x i1> zeroinitializer, i32 [[TMP6]])
+; P670-NEXT:    [[TMP13:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> [[TMP12]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; P670-NEXT:    [[TMP14:%.*]] = mul i32 [[TMP13]], 1
+; P670-NEXT:    [[MONOTONIC_UPDATE]] = add i32 [[MONOTONIC_PHI]], [[TMP14]]
+; P670-NEXT:    [[TMP15:%.*]] = sext i32 [[MONOTONIC_PHI]] to i64
+; P670-NEXT:    [[TMP16:%.*]] = getelementptr [361 x i32], ptr [[QUEUE]], i64 0, i64 [[TMP15]]
+; P670-NEXT:    [[TMP17:%.*]] = getelementptr i32, ptr [[TMP16]], i32 0
+; P670-NEXT:    [[TMP18:%.*]] = call <vscale x 8 x i32> @llvm.experimental.vp.compress.nxv8i32(<vscale x 8 x i32> [[VEC_IND]], <vscale x 8 x i1> [[TMP12]], i32 [[TMP6]])
+; P670-NEXT:    [[TMP19:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> [[TMP12]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; P670-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[TMP18]], ptr align 4 [[TMP17]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP19]])
+; P670-NEXT:    [[TMP20:%.*]] = getelementptr [400 x i32], ptr null, i64 0, i64 [[TMP7]]
+; P670-NEXT:    [[TMP21:%.*]] = getelementptr i32, ptr [[TMP20]], i32 0
+; P670-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> zeroinitializer, ptr align 4 [[TMP21]], <vscale x 8 x i1> [[TMP12]], i32 [[TMP6]])
+; P670-NEXT:    [[TMP22:%.*]] = zext i32 [[TMP6]] to i64
+; P670-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP22]], [[EVL_BASED_IV]]
+; P670-NEXT:    [[TMP23:%.*]] = mul i32 1, [[TMP6]]
+; P670-NEXT:    [[DOTSPLATINSERT1:%.*]] = insertelement <vscale x 8 x i32> poison, i32 [[TMP23]], i64 0
+; P670-NEXT:    [[DOTSPLAT2:%.*]] = shufflevector <vscale x 8 x i32> [[DOTSPLATINSERT1]], <vscale x 8 x i32> poison, <vscale x 8 x i32> zeroinitializer
+; P670-NEXT:    [[STEP_ADD]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VEC_IND]], <vscale x 8 x i32> [[DOTSPLAT2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; P670-NEXT:    [[TMP24:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 401
+; P670-NEXT:    br i1 [[TMP24]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; P670:       [[MIDDLE_BLOCK]]:
+; P670-NEXT:    br label %[[WHILE_COND_PREHEADER:.*]]
+; P670:       [[SCALAR_PH]]:
+; P670-NEXT:    br label %[[FOR_BODY:.*]]
+; P670:       [[FOR_BODY]]:
+; P670-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_INC:.*]] ]
+; P670-NEXT:    [[QUEUE_END_0194:%.*]] = phi i32 [ 0, %[[SCALAR_PH]] ], [ [[QUEUE_END_1:%.*]], %[[FOR_INC]] ]
+; P670-NEXT:    [[ARRAYIDX:%.*]] = getelementptr [421 x i8], ptr [[BOARD]], i64 0, i64 [[INDVARS_IV]]
+; P670-NEXT:    [[TMP25:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
+; P670-NEXT:    [[CMP5_NOT:%.*]] = icmp eq i8 [[TMP25]], 0
+; P670-NEXT:    br i1 [[CMP5_NOT]], label %[[FOR_INC]], label %[[LAND_LHS_TRUE:.*]]
+; P670:       [[LAND_LHS_TRUE]]:
+; P670-NEXT:    [[ARRAYIDX8:%.*]] = getelementptr i8, ptr [[GOAL]], i64 [[INDVARS_IV]]
+; P670-NEXT:    [[TMP26:%.*]] = load i8, ptr [[ARRAYIDX8]], align 1
+; P670-NEXT:    [[TOBOOL10_NOT:%.*]] = icmp eq i8 [[TMP26]], 0
+; P670-NEXT:    br i1 [[TOBOOL10_NOT]], label %[[FOR_INC]], label %[[IF_THEN11:.*]]
+; P670:       [[IF_THEN11]]:
+; P670-NEXT:    [[INC:%.*]] = add nsw i32 [[QUEUE_END_0194]], 1
+; P670-NEXT:    [[IDXPROM12:%.*]] = sext i32 [[QUEUE_END_0194]] to i64
+; P670-NEXT:    [[ARRAYIDX13:%.*]] = getelementptr [361 x i32], ptr [[QUEUE]], i64 0, i64 [[IDXPROM12]]
+; P670-NEXT:    [[TMP27:%.*]] = trunc i64 [[INDVARS_IV]] to i32
+; P670-NEXT:    store i32 [[TMP27]], ptr [[ARRAYIDX13]], align 4
+; P670-NEXT:    [[ARRAYIDX15:%.*]] = getelementptr [400 x i32], ptr null, i64 0, i64 [[INDVARS_IV]]
+; P670-NEXT:    store i32 0, ptr [[ARRAYIDX15]], align 4
+; P670-NEXT:    br label %[[FOR_INC]]
+; P670:       [[FOR_INC]]:
+; P670-NEXT:    [[QUEUE_END_1]] = phi i32 [ [[INC]], %[[IF_THEN11]] ], [ [[QUEUE_END_0194]], %[[LAND_LHS_TRUE]] ], [ [[QUEUE_END_0194]], %[[FOR_BODY]] ]
+; P670-NEXT:    [[INDVARS_IV_NEXT]] = add i64 [[INDVARS_IV]], 1
+; P670-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV]], 400
+; P670-NEXT:    br i1 [[EXITCOND_NOT]], label %[[WHILE_COND_PREHEADER]], label %[[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; P670:       [[WHILE_COND_PREHEADER]]:
+; P670-NEXT:    [[TMP28:%.*]] = load i32, ptr [[QUEUE]], align 4
+; P670-NEXT:    [[IDXPROM728:%.*]] = sext i32 [[TMP28]] to i64
+; P670-NEXT:    [[ARRAYIDX729:%.*]] = getelementptr [400 x i32], ptr null, i64 0, i64 [[IDXPROM728]]
+; P670-NEXT:    store i32 0, ptr [[ARRAYIDX729]], align 4
+; P670-NEXT:    ret i32 0
+;
+; P470-LABEL: define i32 @dragon_escape(
+; P470-SAME: ptr [[GOAL:%.*]], ptr [[BOARD:%.*]]) #[[ATTR0]] {
+; P470-NEXT:  [[ENTRY:.*:]]
+; P470-NEXT:    [[QUEUE:%.*]] = alloca [361 x i32], align 8
+; P470-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
+; P470:       [[VECTOR_PH]]:
+; P470-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; P470-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 8
+; P470-NEXT:    [[TMP2:%.*]] = call <vscale x 8 x i32> @llvm.stepvector.nxv8i32()
+; P470-NEXT:    [[TMP3:%.*]] = mul <vscale x 8 x i32> [[TMP2]], splat (i32 1)
+; P470-NEXT:    [[INDUCTION:%.*]] = add <vscale x 8 x i32> zeroinitializer, [[TMP3]]
+; P470-NEXT:    [[TMP4:%.*]] = trunc i64 [[TMP1]] to i32
+; P470-NEXT:    [[TMP5:%.*]] = mul i32 1, [[TMP4]]
+; P470-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 8 x i32> poison, i32 [[TMP5]], i64 0
+; P470-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 8 x i32> [[DOTSPLATINSERT]], <vscale x 8 x i32> poison, <vscale x 8 x i32> zeroinitializer
+; P470-NEXT:    br label %[[VECTOR_BODY:.*]]
+; P470:       [[VECTOR_BODY]]:
+; P470-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY_SPLIT7:.*]] ]
+; P470-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY_SPLIT7]] ]
+; P470-NEXT:    [[MONOTONIC_PHI:%.*]] = phi i32 [ 0, %[[VECTOR_PH]] ], [ [[MONOTONIC_UPDATE:%.*]], %[[VECTOR_BODY_SPLIT7]] ]
+; P470-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 8 x i32> [ [[INDUCTION]], %[[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], %[[VECTOR_BODY_SPLIT7]] ]
+; P470-NEXT:    [[AVL:%.*]] = sub i64 401, [[EVL_BASED_IV]]
+; P470-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 8, i1 true)
+; P470-NEXT:    [[TMP7:%.*]] = add i64 [[EVL_BASED_IV]], 0
+; P470-NEXT:    [[TMP8:%.*]] = getelementptr [421 x i8], ptr [[BOARD]], i64 0, i64 [[TMP7]]
+; P470-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[TMP8]], i32 0
+; P470-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP9]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; P470-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; P470-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 8 x i1> @llvm.vp.xor.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> splat (i1 true), <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; P470-NEXT:    [[TMP10:%.*]] = getelementptr i8, ptr [[GOAL]], i64 [[TMP7]]
+; P470-NEXT:    [[TMP11:%.*]] = getelementptr i8, ptr [[TMP10]], i32 0
+; P470-NEXT:    [[VP_OP_LOAD3:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP11]], <vscale x 8 x i1> [[PRED_NOT]], i32 [[TMP6]])
+; P470-NEXT:    [[VP_OP_ICMP4:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD3]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; P470-NEXT:    [[PRED_NOT5:%.*]] = call <vscale x 8 x i1> @llvm.vp.xor.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP4]], <vscale x 8 x i1> splat (i1 true), <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; P470-NEXT:    [[TMP12:%.*]] = call <vscale x 8 x i1> @llvm.vp.select.nxv8i1(<vscale x 8 x i1> [[PRED_NOT]], <vscale x 8 x i1> [[PRED_NOT5]], <vscale x 8 x i1> zeroinitializer, i32 [[TMP6]])
+; P470-NEXT:    [[TMP13:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> [[TMP12]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; P470-NEXT:    [[TMP14:%.*]] = mul i32 [[TMP13]], 1
+; P470-NEXT:    [[MONOTONIC_UPDATE]] = add i32 [[MONOTONIC_PHI]], [[TMP14]]
+; P470-NEXT:    [[TMP15:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[TMP12]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; P470-NEXT:    [[TMP16:%.*]] = icmp ne i32 [[TMP15]], -1
+; P470-NEXT:    br i1 [[TMP16]], label %[[VECTOR_IF_BB:.*]], label %[[VECTOR_BODY_SPLIT:.*]]
+; P470:       [[VECTOR_IF_BB]]:
+; P470-NEXT:    [[TMP17:%.*]] = sext i32 [[MONOTONIC_PHI]] to i64
+; P470-NEXT:    [[TMP18:%.*]] = getelementptr [361 x i32], ptr [[QUEUE]], i64 0, i64 [[TMP17]]
+; P470-NEXT:    [[TMP19:%.*]] = getelementptr i32, ptr [[TMP18]], i32 0
+; P470-NEXT:    [[TMP20:%.*]] = call <vscale x 8 x i32> @llvm.experimental.vp.compress.nxv8i32(<vscale x 8 x i32> [[VEC_IND]], <vscale x 8 x i1> [[TMP12]], i32 [[TMP6]])
+; P470-NEXT:    [[TMP21:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> [[TMP12]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; P470-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[TMP20]], ptr align 4 [[TMP19]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP21]])
+; P470-NEXT:    br label %[[VECTOR_BODY_SPLIT]]
+; P470:       [[VECTOR_BODY_SPLIT]]:
+; P470-NEXT:    [[TMP22:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[TMP12]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; P470-NEXT:    [[TMP23:%.*]] = icmp ne i32 [[TMP22]], -1
+; P470-NEXT:    br i1 [[TMP23]], label %[[VECTOR_IF_BB6:.*]], label %[[VECTOR_BODY_SPLIT7]]
+; P470:       [[VECTOR_IF_BB6]]:
+; P470-NEXT:    [[TMP24:%.*]] = getelementptr [400 x i32], ptr null, i64 0, i64 [[TMP7]]
+; P470-NEXT:    [[TMP25:%.*]] = getelementptr i32, ptr [[TMP24]], i32 0
+; P470-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> zeroinitializer, ptr align 4 [[TMP25]], <vscale x 8 x i1> [[TMP12]], i32 [[TMP6]])
+; P470-NEXT:    br label %[[VECTOR_BODY_SPLIT7]]
+; P470:       [[VECTOR_BODY_SPLIT7]]:
+; P470-NEXT:    [[TMP26:%.*]] = zext i32 [[TMP6]] to i64
+; P470-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP26]], [[EVL_BASED_IV]]
+; P470-NEXT:    [[TMP27:%.*]] = mul i32 1, [[TMP6]]
+; P470-NEXT:    [[DOTSPLATINSERT1:%.*]] = insertelement <vscale x 8 x i32> poison, i32 [[TMP27]], i64 0
+; P470-NEXT:    [[DOTSPLAT2:%.*]] = shufflevector <vscale x 8 x i32> [[DOTSPLATINSERT1]], <vscale x 8 x i32> poison, <vscale x 8 x i32> zeroinitializer
+; P470-NEXT:    [[STEP_ADD]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VEC_IND]], <vscale x 8 x i32> [[DOTSPLAT2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; P470-NEXT:    [[TMP28:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 401
+; P470-NEXT:    br i1 [[TMP28]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; P470:       [[MIDDLE_BLOCK]]:
+; P470-NEXT:    br label %[[WHILE_COND_PREHEADER:.*]]
+; P470:       [[SCALAR_PH]]:
+; P470-NEXT:    br label %[[FOR_BODY:.*]]
+; P470:       [[FOR_BODY]]:
+; P470-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_INC:.*]] ]
+; P470-NEXT:    [[QUEUE_END_0194:%.*]] = phi i32 [ 0, %[[SCALAR_PH]] ], [ [[QUEUE_END_1:%.*]], %[[FOR_INC]] ]
+; P470-NEXT:    [[ARRAYIDX:%.*]] = getelementptr [421 x i8], ptr [[BOARD]], i64 0, i64 [[INDVARS_IV]]
+; P470-NEXT:    [[TMP29:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
+; P470-NEXT:    [[CMP5_NOT:%.*]] = icmp eq i8 [[TMP29]], 0
+; P470-NEXT:    br i1 [[CMP5_NOT]], label %[[FOR_INC]], label %[[LAND_LHS_TRUE:.*]]
+; P470:       [[LAND_LHS_TRUE]]:
+; P470-NEXT:    [[ARRAYIDX8:%.*]] = getelementptr i8, ptr [[GOAL]], i64 [[INDVARS_IV]]
+; P470-NEXT:    [[TMP30:%.*]] = load i8, ptr [[ARRAYIDX8]], align 1
+; P470-NEXT:    [[TOBOOL10_NOT:%.*]] = icmp eq i8 [[TMP30]], 0
+; P470-NEXT:    br i1 [[TOBOOL10_NOT]], label %[[FOR_INC]], label %[[IF_THEN11:.*]]
+; P470:       [[IF_THEN11]]:
+; P470-NEXT:    [[INC:%.*]] = add nsw i32 [[QUEUE_END_0194]], 1
+; P470-NEXT:    [[IDXPROM12:%.*]] = sext i32 [[QUEUE_END_0194]] to i64
+; P470-NEXT:    [[ARRAYIDX13:%.*]] = getelementptr [361 x i32], ptr [[QUEUE]], i64 0, i64 [[IDXPROM12]]
+; P470-NEXT:    [[TMP31:%.*]] = trunc i64 [[INDVARS_IV]] to i32
+; P470-NEXT:    store i32 [[TMP31]], ptr [[ARRAYIDX13]], align 4
+; P470-NEXT:    [[ARRAYIDX15:%.*]] = getelementptr [400 x i32], ptr null, i64 0, i64 [[INDVARS_IV]]
+; P470-NEXT:    store i32 0, ptr [[ARRAYIDX15]], align 4
+; P470-NEXT:    br label %[[FOR_INC]]
+; P470:       [[FOR_INC]]:
+; P470-NEXT:    [[QUEUE_END_1]] = phi i32 [ [[INC]], %[[IF_THEN11]] ], [ [[QUEUE_END_0194]], %[[LAND_LHS_TRUE]] ], [ [[QUEUE_END_0194]], %[[FOR_BODY]] ]
+; P470-NEXT:    [[INDVARS_IV_NEXT]] = add i64 [[INDVARS_IV]], 1
+; P470-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV]], 400
+; P470-NEXT:    br i1 [[EXITCOND_NOT]], label %[[WHILE_COND_PREHEADER]], label %[[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; P470:       [[WHILE_COND_PREHEADER]]:
+; P470-NEXT:    [[TMP32:%.*]] = load i32, ptr [[QUEUE]], align 4
+; P470-NEXT:    [[IDXPROM728:%.*]] = sext i32 [[TMP32]] to i64
+; P470-NEXT:    [[ARRAYIDX729:%.*]] = getelementptr [400 x i32], ptr null, i64 0, i64 [[IDXPROM728]]
+; P470-NEXT:    store i32 0, ptr [[ARRAYIDX729]], align 4
+; P470-NEXT:    ret i32 0
+;
+; X280-LABEL: define i32 @dragon_escape(
+; X280-SAME: ptr [[GOAL:%.*]], ptr [[BOARD:%.*]]) #[[ATTR0]] {
+; X280-NEXT:  [[ENTRY:.*:]]
+; X280-NEXT:    [[QUEUE:%.*]] = alloca [361 x i32], align 8
+; X280-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
+; X280:       [[VECTOR_PH]]:
+; X280-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; X280-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 8
+; X280-NEXT:    [[TMP2:%.*]] = call <vscale x 8 x i32> @llvm.stepvector.nxv8i32()
+; X280-NEXT:    [[TMP3:%.*]] = mul <vscale x 8 x i32> [[TMP2]], splat (i32 1)
+; X280-NEXT:    [[INDUCTION:%.*]] = add <vscale x 8 x i32> zeroinitializer, [[TMP3]]
+; X280-NEXT:    [[TMP4:%.*]] = trunc i64 [[TMP1]] to i32
+; X280-NEXT:    [[TMP5:%.*]] = mul i32 1, [[TMP4]]
+; X280-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 8 x i32> poison, i32 [[TMP5]], i64 0
+; X280-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 8 x i32> [[DOTSPLATINSERT]], <vscale x 8 x i32> poison, <vscale x 8 x i32> zeroinitializer
+; X280-NEXT:    br label %[[VECTOR_BODY:.*]]
+; X280:       [[VECTOR_BODY]]:
+; X280-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
+; X280-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
+; X280-NEXT:    [[MONOTONIC_PHI:%.*]] = phi i32 [ 0, %[[VECTOR_PH]] ], [ [[MONOTONIC_UPDATE:%.*]], %[[VECTOR_BODY]] ]
+; X280-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 8 x i32> [ [[INDUCTION]], %[[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], %[[VECTOR_BODY]] ]
+; X280-NEXT:    [[AVL:%.*]] = sub i64 401, [[EVL_BASED_IV]]
+; X280-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 8, i1 true)
+; X280-NEXT:    [[TMP7:%.*]] = add i64 [[EVL_BASED_IV]], 0
+; X280-NEXT:    [[TMP8:%.*]] = getelementptr [421 x i8], ptr [[BOARD]], i64 0, i64 [[TMP7]]
+; X280-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[TMP8]], i32 0
+; X280-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP9]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; X280-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; X280-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 8 x i1> @llvm.vp.xor.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> splat (i1 true), <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; X280-NEXT:    [[TMP10:%.*]] = getelementptr i8, ptr [[GOAL]], i64 [[TMP7]]
+; X280-NEXT:    [[TMP11:%.*]] = getelementptr i8, ptr [[TMP10]], i32 0
+; X280-NEXT:    [[VP_OP_LOAD3:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP11]], <vscale x 8 x i1> [[PRED_NOT]], i32 [[TMP6]])
+; X280-NEXT:    [[VP_OP_ICMP4:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD3]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; X280-NEXT:    [[PRED_NOT5:%.*]] = call <vscale x 8 x i1> @llvm.vp.xor.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP4]], <vscale x 8 x i1> splat (i1 true), <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; X280-NEXT:    [[TMP12:%.*]] = call <vscale x 8 x i1> @llvm.vp.select.nxv8i1(<vscale x 8 x i1> [[PRED_NOT]], <vscale x 8 x i1> [[PRED_NOT5]], <vscale x 8 x i1> zeroinitializer, i32 [[TMP6]])
+; X280-NEXT:    [[TMP13:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> [[TMP12]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; X280-NEXT:    [[TMP14:%.*]] = mul i32 [[TMP13]], 1
+; X280-NEXT:    [[MONOTONIC_UPDATE]] = add i32 [[MONOTONIC_PHI]], [[TMP14]]
+; X280-NEXT:    [[TMP15:%.*]] = sext i32 [[MONOTONIC_PHI]] to i64
+; X280-NEXT:    [[TMP16:%.*]] = getelementptr [361 x i32], ptr [[QUEUE]], i64 0, i64 [[TMP15]]
+; X280-NEXT:    [[TMP17:%.*]] = getelementptr i32, ptr [[TMP16]], i32 0
+; X280-NEXT:    [[TMP18:%.*]] = call <vscale x 8 x i32> @llvm.experimental.vp.compress.nxv8i32(<vscale x 8 x i32> [[VEC_IND]], <vscale x 8 x i1> [[TMP12]], i32 [[TMP6]])
+; X280-NEXT:    [[TMP19:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> [[TMP12]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; X280-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[TMP18]], ptr align 4 [[TMP17]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP19]])
+; X280-NEXT:    [[TMP20:%.*]] = getelementptr [400 x i32], ptr null, i64 0, i64 [[TMP7]]
+; X280-NEXT:    [[TMP21:%.*]] = getelementptr i32, ptr [[TMP20]], i32 0
+; X280-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> zeroinitializer, ptr align 4 [[TMP21]], <vscale x 8 x i1> [[TMP12]], i32 [[TMP6]])
+; X280-NEXT:    [[TMP22:%.*]] = zext i32 [[TMP6]] to i64
+; X280-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP22]], [[EVL_BASED_IV]]
+; X280-NEXT:    [[TMP23:%.*]] = mul i32 1, [[TMP6]]
+; X280-NEXT:    [[DOTSPLATINSERT1:%.*]] = insertelement <vscale x 8 x i32> poison, i32 [[TMP23]], i64 0
+; X280-NEXT:    [[DOTSPLAT2:%.*]] = shufflevector <vscale x 8 x i32> [[DOTSPLATINSERT1]], <vscale x 8 x i32> poison, <vscale x 8 x i32> zeroinitializer
+; X280-NEXT:    [[STEP_ADD]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VEC_IND]], <vscale x 8 x i32> [[DOTSPLAT2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
+; X280-NEXT:    [[TMP24:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 401
+; X280-NEXT:    br i1 [[TMP24]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; X280:       [[MIDDLE_BLOCK]]:
+; X280-NEXT:    br label %[[WHILE_COND_PREHEADER:.*]]
+; X280:       [[SCALAR_PH]]:
+; X280-NEXT:    br label %[[FOR_BODY:.*]]
+; X280:       [[FOR_BODY]]:
+; X280-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_INC:.*]] ]
+; X280-NEXT:    [[QUEUE_END_0194:%.*]] = phi i32 [ 0, %[[SCALAR_PH]] ], [ [[QUEUE_END_1:%.*]], %[[FOR_INC]] ]
+; X280-NEXT:    [[ARRAYIDX:%.*]] = getelementptr [421 x i8], ptr [[BOARD]], i64 0, i64 [[INDVARS_IV]]
+; X280-NEXT:    [[TMP25:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
+; X280-NEXT:    [[CMP5_NOT:%.*]] = icmp eq i8 [[TMP25]], 0
+; X280-NEXT:    br i1 [[CMP5_NOT]], label %[[FOR_INC]], label %[[LAND_LHS_TRUE:.*]]
+; X280:       [[LAND_LHS_TRUE]]:
+; X280-NEXT:    [[ARRAYIDX8:%.*]] = getelementptr i8, ptr [[GOAL]], i64 [[INDVARS_IV]]
+; X280-NEXT:    [[TMP26:%.*]] = load i8, ptr [[ARRAYIDX8]], align 1
+; X280-NEXT:    [[TOBOOL10_NOT:%.*]] = icmp eq i8 [[TMP26]], 0
+; X280-NEXT:    br i1 [[TOBOOL10_NOT]], label %[[FOR_INC]], label %[[IF_THEN11:.*]]
+; X280:       [[IF_THEN11]]:
+; X280-NEXT:    [[INC:%.*]] = add nsw i32 [[QUEUE_END_0194]], 1
+; X280-NEXT:    [[IDXPROM12:%.*]] = sext i32 [[QUEUE_END_0194]] to i64
+; X280-NEXT:    [[ARRAYIDX13:%.*]] = getelementptr [361 x i32], ptr [[QUEUE]], i64 0, i64 [[IDXPROM12]]
+; X280-NEXT:    [[TMP27:%.*]] = trunc i64 [[INDVARS_IV]] to i32
+; X280-NEXT:    store i32 [[TMP27]], ptr [[ARRAYIDX13]], align 4
+; X280-NEXT:    [[ARRAYIDX15:%.*]] = getelementptr [400 x i32], ptr null, i64 0, i64 [[INDVARS_IV]]
+; X280-NEXT:    store i32 0, ptr [[ARRAYIDX15]], align 4
+; X280-NEXT:    br label %[[FOR_INC]]
+; X280:       [[FOR_INC]]:
+; X280-NEXT:    [[QUEUE_END_1]] = phi i32 [ [[INC]], %[[IF_THEN11]] ], [ [[QUEUE_END_0194]], %[[LAND_LHS_TRUE]] ], [ [[QUEUE_END_0194]], %[[FOR_BODY]] ]
+; X280-NEXT:    [[INDVARS_IV_NEXT]] = add i64 [[INDVARS_IV]], 1
+; X280-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV]], 400
+; X280-NEXT:    br i1 [[EXITCOND_NOT]], label %[[WHILE_COND_PREHEADER]], label %[[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; X280:       [[WHILE_COND_PREHEADER]]:
+; X280-NEXT:    [[TMP28:%.*]] = load i32, ptr [[QUEUE]], align 4
+; X280-NEXT:    [[IDXPROM728:%.*]] = sext i32 [[TMP28]] to i64
+; X280-NEXT:    [[ARRAYIDX729:%.*]] = getelementptr [400 x i32], ptr null, i64 0, i64 [[IDXPROM728]]
+; X280-NEXT:    store i32 0, ptr [[ARRAYIDX729]], align 4
+; X280-NEXT:    ret i32 0
+;
+entry:
+  %queue = alloca [361 x i32], align 8
+  br label %for.body
+
+for.body:
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc ]
+  %queue_end.0194 = phi i32 [ 0, %entry ], [ %queue_end.1, %for.inc ]
+  %arrayidx = getelementptr [421 x i8], ptr %board, i64 0, i64 %indvars.iv
+  %0 = load i8, ptr %arrayidx, align 1
+  %cmp5.not = icmp eq i8 %0, 0
+  br i1 %cmp5.not, label %for.inc, label %land.lhs.true
+
+land.lhs.true:
+  %arrayidx8 = getelementptr i8, ptr %goal, i64 %indvars.iv
+  %1 = load i8, ptr %arrayidx8, align 1
+  %tobool10.not = icmp eq i8 %1, 0
+  br i1 %tobool10.not, label %for.inc, label %if.then11
+
+if.then11:
+  %inc = add nsw i32 %queue_end.0194, 1
+  %idxprom12 = sext i32 %queue_end.0194 to i64
+  %arrayidx13 = getelementptr [361 x i32], ptr %queue, i64 0, i64 %idxprom12
+  %2 = trunc i64 %indvars.iv to i32
+  store i32 %2, ptr %arrayidx13, align 4
+  %arrayidx15 = getelementptr [400 x i32], ptr null, i64 0, i64 %indvars.iv
+  store i32 0, ptr %arrayidx15, align 4
+  br label %for.inc
+
+for.inc:
+  %queue_end.1 = phi i32 [ %inc, %if.then11 ], [ %queue_end.0194, %land.lhs.true ], [ %queue_end.0194, %for.body ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %exitcond.not = icmp eq i64 %indvars.iv, 400
+  br i1 %exitcond.not, label %while.cond.preheader, label %for.body
+
+while.cond.preheader:
+  %3 = load i32, ptr %queue, align 4
+  %idxprom728 = sext i32 %3 to i64
+  %arrayidx729 = getelementptr [400 x i32], ptr null, i64 0, i64 %idxprom728
+  store i32 0, ptr %arrayidx729, align 4
+  ret i32 0
+}
+;.
+; P670: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; P670: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
+; P670: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
+; P670: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+;.
+; P470: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; P470: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
+; P470: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
+; P470: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+;.
+; X280: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; X280: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
+; X280: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
+; X280: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+;.

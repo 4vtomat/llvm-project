@@ -3351,7 +3351,9 @@ VPMonotonicHeaderPHIRecipe::computeCost(ElementCount VF,
                                         VPCostContext &Ctx) const {
   // Align to our custom cost model.
   // Any use of monotonic update in the vector region is not allowed.
-  if (VF.isVector() && !all_of(users(), IsaPred<VPIRInstruction>))
+  if (VF.isVector() &&
+      !all_of(users(), IsaPred<VPIRInstruction, VPMonotonicUpdateInstruction,
+                               VPReplicateRecipe, VPMonotonicHeaderPHIRecipe>))
     return InstructionCost::getInvalid();
   return 0;
 }
