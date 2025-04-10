@@ -117,7 +117,6 @@ private:
   RISCVProcFamilyEnum RISCVProcFamily = Others;
   RISCVVRGatherCostModelEnum RISCVVRGatherCostModel = Quadratic;
 
-  unsigned DLen = 0; // SIFIVE
 #define GET_SUBTARGETINFO_MACRO(ATTRIBUTE, DEFAULT, GETTER) \
   bool ATTRIBUTE = DEFAULT;
 #include "RISCVGenSubtargetInfo.inc"
@@ -249,10 +248,10 @@ public:
   }
   bool hasStdExtZvl() const { return ZvlLen != 0; }
 #if SIFIVE_CUSTOMIZATION
-  bool hasKnownDLen() const { return DLen != 0; }
+  bool hasKnownDLen() const { return hasStdExtZvl(); }
   unsigned getDLen() const {
     assert(hasKnownDLen() && "The Datapath length not set");
-    return DLen;
+    return ZvlLen / getDLenFactor();
   }
 #endif // SIFIVE_CUSTOMIZATION
   bool hasStdExtFOrZfinx() const { return HasStdExtF || HasStdExtZfinx; }

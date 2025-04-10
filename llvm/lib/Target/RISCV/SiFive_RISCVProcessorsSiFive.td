@@ -418,7 +418,7 @@ def SIFIVE_P270 :
                        FeatureStdExtZba,
                        FeatureStdExtZbb],
                       !listconcat(SiFive7TuneFeatures,
-                                  [TuneDLenFactor2, TuneDLen128b,
+                                  [TuneDLenFactor2,
                                    TuneOptimizedZeroStrideLoad])>;
 
 def SIFIVE_P270N :
@@ -438,7 +438,7 @@ def SIFIVE_P270N :
                        FeatureStdExtZba,
                        FeatureStdExtZbb],
                       !listconcat(SiFive7TuneFeatures,
-                                  [TuneDLenFactor2, TuneDLen128b,
+                                  [TuneDLenFactor2,
                                    TuneOptimizedZeroStrideLoad,
                                    TunePseudoLIsimm32])>;
 
@@ -482,7 +482,6 @@ def SIFIVE_X160 : RISCVProcessorModel<"sifive-x160", SiFive7NVLEN128Model,
                                       ],
                                       !listconcat(SiFive7TuneFeatures,
                                       [TuneDLenFactor2,
-                                       TuneDLen64b,
                                        TuneOptimizedZeroStrideLoad])>;
 
 def SIFIVE_X180 : RISCVProcessorModel<"sifive-x180", SiFive7NVLEN128Model,
@@ -537,7 +536,6 @@ def SIFIVE_X180 : RISCVProcessorModel<"sifive-x180", SiFive7NVLEN128Model,
                                       ],
                                       !listconcat(SiFive7TuneFeatures,
                                       [TuneDLenFactor2,
-                                       TuneDLen128b,
                                        TuneOptimizedZeroStrideLoad])>;
 
 def SIFIVE_X280 : RISCVProcessorModel<"sifive-x280", SiFive7VLEN512Model,
@@ -559,7 +557,7 @@ def SIFIVE_X280 : RISCVProcessorModel<"sifive-x280", SiFive7VLEN512Model,
                                        FeatureVendorXSfvqmaccqoq,
                                        FeatureVendorXSfvfhbfmin],
                       !listconcat(SiFive7TuneFeatures,
-                                  [TuneDLenFactor2, TuneDLen256b,
+                                  [TuneDLenFactor2,
                                    TuneOptimizedZeroStrideLoad])>;
 
 def SIFIVE_X280N :
@@ -584,7 +582,7 @@ def SIFIVE_X280N :
                        FeatureVendorXSfvfnrclipxfqf,
                        FeatureVendorXSfvfwmaccqqq],
                       !listconcat(SiFive7TuneFeatures,
-                                  [TuneDLenFactor2, TuneDLen256b,
+                                  [TuneDLenFactor2,
                                    TuneOptimizedZeroStrideLoad,
                                    TunePseudoLIsimm32])>;
 
@@ -612,7 +610,7 @@ def SIFIVE_X280O :
                        FeatureVendorXSfvfwmaccqqq],
                       !listconcat(SiFive7TuneFeatures,
                                   [TuneFastGather, TuneDLenFactor2,
-                                   TuneDLen256b, TuneOptimizedZeroStrideLoad,
+                                   TuneOptimizedZeroStrideLoad,
                                    TunePseudoLIsimm32])>;
 
 defvar SIFIVE_X390_Features = [
@@ -672,7 +670,7 @@ defvar SIFIVE_X390_Features = [
 ];
 defvar SIFIVE_X390_TuneFeatures = !listconcat(SiFive7TuneFeatures,
                                   [TuneFastLargeGather, TuneDLenFactor2,
-                                   TuneDLen512b, TuneOptimizedZeroStrideLoad]);
+                                   TuneOptimizedZeroStrideLoad]);
 
 def SIFIVE_X390_SLOW_FP64
     : RISCVProcessorModel<"sifive-x390",
@@ -752,8 +750,7 @@ def SIFIVE_P470 : RISCVProcessorModel<"sifive-p470", SiFiveP400Model,
                                        FeatureUnalignedScalarMem,
                                        FeatureUnalignedVectorMem],
                                       !listconcat(SiFiveP400TuneFeatures,
-                                                  [TuneDLen128b,
-                                                   TuneNoSinkSplatOperands])>;
+                                                  [TuneNoSinkSplatOperands])>;
 
 def SIFIVE_LEOPARD : RISCVProcessorModel<"sifive-leopard", SiFiveP400Model,
                                          [Feature64Bit,
@@ -807,8 +804,7 @@ def SIFIVE_LEOPARD : RISCVProcessorModel<"sifive-leopard", SiFiveP400Model,
                                           FeatureUnalignedVectorMem],
                                          !listconcat([TuneSiFiveLeopard],
                                                      SiFiveMallardTuneFeatures,
-                                                     [TuneDLen128b,
-                                                      TuneNoSinkSplatOperands])>;
+                                                     [TuneNoSinkSplatOperands])>;
 
 def SIFIVE_P550 : RISCVProcessorModel<"sifive-p550", SiFiveP500Model,
                                       [Feature64Bit,
@@ -891,8 +887,7 @@ def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", SiFiveP600Model,
                                        FeatureUnalignedScalarMem,
                                        FeatureUnalignedVectorMem],
                                       !listconcat(SiFiveP600TuneFeatures,
-                                                  [TuneDLen128b,
-                                                   TuneNoSinkSplatOperands])>;
+                                                  [TuneNoSinkSplatOperands])>;
 
 def SIFIVE_LION : RISCVProcessorModel<"sifive-lion", SiFiveP600Model,
                                       [Feature64Bit,
@@ -949,8 +944,7 @@ def SIFIVE_LION : RISCVProcessorModel<"sifive-lion", SiFiveP600Model,
                                        FeatureUnalignedVectorMem],
                                       !listconcat([TuneSiFiveLion],
                                                   SiFiveMallardTuneFeatures,
-                                                  [TuneDLen128b,
-                                                   TuneNoSinkSplatOperands])>;
+                                                  [TuneNoSinkSplatOperands])>;
 
 def SIFIVE_CHEETAH : RISCVProcessorModel<"sifive-cheetah", SiFiveP800SModel,
                                          [Feature64Bit,
@@ -1007,5 +1001,4 @@ def SIFIVE_CHEETAH : RISCVProcessorModel<"sifive-cheetah", SiFiveP800SModel,
                                           FeatureUnalignedVectorMem],
                                          !listconcat([TuneSiFiveCheetah],
                                                      SiFiveMallardTuneFeatures,
-                                                     [TuneDLen128b,
-                                                      TuneNoSinkSplatOperands])>;
+                                                     [TuneNoSinkSplatOperands])>;
