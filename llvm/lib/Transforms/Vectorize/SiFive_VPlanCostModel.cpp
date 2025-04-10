@@ -44,7 +44,7 @@ static cl::opt<bool> SiFiveEstimateLiveInRegisterPressure(
     cl::desc("Control whether cost model should estimate register pressure "
              "from livein values or not"));
 
-static cl::opt<unsigned> SiFiveVectorConditionFrequency(
+cl::opt<unsigned> SiFiveVectorConditionFrequency(
     "sifive-vplan-cost-model-vector-condition-frequency", cl::init(2),
     cl::Hidden,
     cl::desc("Control heuristic of how frequent vector condition of "

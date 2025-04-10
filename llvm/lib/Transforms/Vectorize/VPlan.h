@@ -4172,6 +4172,8 @@ public:
     return 0;
   };
 
+  InstructionCost cost(ElementCount VF, VPCostContext &Ctx) override;
+
   /// Method to support type inquiry through isa, cast, and dyn_cast.
   static inline bool classof(const VPBlockBase *V) {
     return V->getVPBlockID() == VPBlockBase::VPConditionalRegionBlockSC;

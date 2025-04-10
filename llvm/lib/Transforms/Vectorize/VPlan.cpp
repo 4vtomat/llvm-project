@@ -73,6 +73,7 @@ extern cl::opt<unsigned> ForceTargetInstructionCost;
 
 #if SIFIVE_CUSTOMIZATION
 extern cl::opt<uint64_t> LoopVectorizerVLUpperBound;
+extern cl::opt<unsigned> SiFiveVectorConditionFrequency;
 #endif
 
 static cl::opt<bool> PrintVPlansInDotFormat(
@@ -996,6 +997,33 @@ InstructionCost VPRegionBlock::cost(ElementCount VF, VPCostContext &Ctx) {
 }
 
 #if SIFIVE_CUSTOMIZATION
+InstructionCost VPConditionalRegionBlock::cost(ElementCount VF,
+                                               VPCostContext &Ctx) {
+  InstructionCost Cost = 0;
+  for (VPBlockBase *Block : vp_depth_first_shallow(getEntry()))
+    Cost += Block->cost(VF, Ctx);
+
+  // Denominator represents number of vector iterations when condition is
+  // true, therefore requires execution of the nested vector code.
+  LLVM_DEBUG(dbgs() << "Adjust cost of the VPConditionalRegionBlock from "
+                    << Cost);
+  Cost /= std::max(SiFiveVectorConditionFrequency.getValue(), 1U);
+  LLVM_DEBUG(dbgs() << " to " << Cost << '\n');
+
+  Type *CondTy = Ctx.Types.inferScalarType(getCondition());
+  auto *VectorTy = cast<VectorType>(toVectorTy(CondTy, VF));
+  Type *RetTy = Type::getInt32Ty(VectorTy->getContext());
+  Type *VLTy = RetTy;
+  IntrinsicCostAttributes ICA(Intrinsic::vp_first, RetTy, {VectorTy, VLTy});
+  InstructionCost CondCost = Ctx.TTI.getIntrinsicInstrCost(ICA, Ctx.CostKind);
+
+  // Only show the cost of icmp here since vplan-based cost model will show
+  // the cost of each recipes when collecting the cost of block.
+  LLVM_DEBUG(dbgs() << "Cost of " << CondCost << " for VF " << VF
+                    << ": VPConditionalRegionBlock\n");
+  return Cost + CondCost;
+}
+
 void VPConditionalRegionBlock::execute(VPTransformState *State) {
   VPValue *VPCond = getCondition();
   if (VPCond->hasDefiningRecipe())
