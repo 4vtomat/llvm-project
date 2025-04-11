@@ -16,6 +16,9 @@
 #define LLVM_TRANSFORMS_VECTORIZE_VPLANHELPERS_H
 
 #include "VPlanAnalysis.h"
+#if SIFIVE_CUSTOMIZATION
+#include "VPlanDominatorTree.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/SmallPtrSet.h"
 #include "llvm/ADT/SmallVector.h"
@@ -421,6 +424,9 @@ struct VPTransformState {
   VPTypeAnalysis TypeAnalysis;
 
 #if SIFIVE_CUSTOMIZATION
+  /// VPlan-based dominator tree.
+  VPDominatorTree VPDT;
+
   /// True if the RISCV specific implementation of CSA vectorization is
   /// enabled.
   bool EnableRISCVCSA;

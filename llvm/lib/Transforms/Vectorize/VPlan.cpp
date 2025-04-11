@@ -20,6 +20,9 @@
 #include "LoopVectorizationPlanner.h"
 #include "VPlanAnalysis.h"
 #include "VPlanCFG.h"
+#if SIFIVE_CUSTOMIZATION
+#include "VPlanDominatorTree.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "VPlanHelpers.h"
 #include "VPlanPatternMatch.h"
 #include "VPlanTransforms.h"
@@ -345,7 +348,7 @@ VPTransformState::VPTransformState(const TargetTransformInfo *TTI,
     : TTI(TTI), VF(VF), CFG(DT), LI(LI), Builder(Builder), ILV(ILV), Plan(Plan),
       CurrentParentLoop(CurrentParentLoop), LVer(nullptr),
 #if SIFIVE_CUSTOMIZATION
-      TypeAnalysis(CanonicalIVTy), EnableRISCVCSA(EnableRISCVCSA) {}
+      TypeAnalysis(CanonicalIVTy), VPDT(*Plan), EnableRISCVCSA(EnableRISCVCSA) {}
 #else
       TypeAnalysis(CanonicalIVTy) {}
 #endif // SIFIVE_CUSTOMIZATION
@@ -403,7 +406,15 @@ Value *VPTransformState::get(VPValue *Def, bool NeedsScalar) {
     return Data.VPV2Vector[Def];
 
   auto GetBroadcastInstrs = [this, Def](Value *V) {
+#if SIFIVE_CUSTOMIZATION
+    bool SafeToHoist =
+        !Def->hasDefiningRecipe() ||
+        VPDT.properlyDominates(Def->getDefiningRecipe()->getParent(),
+                               Plan->getVectorPreheader());
+#else
     bool SafeToHoist = Def->isDefinedOutsideLoopRegions();
+#endif // SIFIVE_CUSTOMIZATION
+
     if (VF.isScalar())
       return V;
     // Place the code for broadcasting invariant variables in the new preheader.
@@ -1371,6 +1382,12 @@ void VPlan::execute(VPTransformState *State) {
   // Initialize CFG state.
   State->CFG.PrevVPBB = nullptr;
   State->CFG.ExitBB = State->CFG.PrevBB->getSingleSuccessor();
+
+#if SIFIVE_CUSTOMIZATION
+  // Update VPDominatorTree since VPBasicBlock may be removed after State was
+  // constructed.
+  State->VPDT.recalculate(*this);
+#endif // SIFIVE_CUSTOMIZATION
 
   // Disconnect VectorPreHeader from ExitBB in both the CFG and DT.
   BasicBlock *VectorPreHeader = State->CFG.PrevBB;
