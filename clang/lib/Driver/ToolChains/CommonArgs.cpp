@@ -3153,9 +3153,6 @@ void tools::renderCommonIntegerOverflowOptions(const ArgList &Args,
     CmdArgs.push_back("-fwrapv");
   if (use_fwrapv_pointer)
     CmdArgs.push_back("-fwrapv-pointer");
-<<<<<<< HEAD
-  }
-
 #if SIFIVE_CUSTOMIZATION
   // We don't need to add `-fwrapv-pointer-arithmetic` if pointer overflow
   // is already defined.
@@ -3164,6 +3161,4 @@ void tools::renderCommonIntegerOverflowOptions(const ArgList &Args,
   else
     Args.ClaimAllArgs(options::OPT_fwrapv_pointer_arithmetic);
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
 }
