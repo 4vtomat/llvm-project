@@ -3685,7 +3685,6 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State) {
     for (PHINode &PN : Exit->phis())
       PSE.getSE()->forgetLcssaPhiWithNewPredecessor(OrigLoop, &PN);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// Cherry-pick from #88385
 
@@ -3717,11 +3716,9 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State) {
     fixCSALiveOuts(State, Plan);
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   // Forget the original basic block.
   PSE.getSE()->forgetLoop(OrigLoop);
   PSE.getSE()->forgetBlockAndLoopDispositions();
->>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
 
   // Don't apply optimizations below when no vector region remains, as they all
   // require a vector loop at the moment.
@@ -4318,20 +4315,13 @@ bool LoopVectorizationCostModel::interleavedAccessCanBeWidened(
   if (hasIrregularType(ScalarTy, DL))
     return false;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (!Legal->useVLAVectorizer())
 #endif
   // We currently only know how to emit interleave/deinterleave with
   // Factor=2 for scalable vectors. This is purely an implementation
   // limit.
-  if (VF.isScalable() && InterleaveFactor != 2)
-=======
-  // For scalable vectors, the only interleave factor currently supported
-  // must be power of 2 since we require the (de)interleave2 intrinsics
-  // instead of shufflevectors.
   if (VF.isScalable() && !isPowerOf2_32(InterleaveFactor))
->>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
     return false;
 
   // If the group involves a non-integral pointer, we may not be able to
@@ -5955,7 +5945,6 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
   InstructionCost ExpectedCost = CM.expectedCost(ElementCount::getFixed(1));
   LLVM_DEBUG(dbgs() << "LV: Scalar loop costs: " << ExpectedCost << ".\n");
   assert(ExpectedCost.isValid() && "Unexpected invalid cost for scalar loop");
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // For EVL-vectorization in downstream compiler we don't expect scalar VPlan
   // to be available.
@@ -5963,17 +5952,10 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
   // recipes
   if (!Legal->useVLAVectorizer())
 #endif // SIFIVE_CUSTOMIZATION
-  assert(any_of(VPlans,
-                [](std::unique_ptr<VPlan> &P) {
-                  return P->hasVF(ElementCount::getFixed(1));
-                }) &&
-         "Expected Scalar VF to be a candidate");
-=======
   assert(
       any_of(VPlans,
              [](std::unique_ptr<VPlan> &P) { return P->hasScalarVFOnly(); }) &&
       "Expected Scalar VF to be a candidate");
->>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
 
   const VectorizationFactor ScalarCost(ElementCount::getFixed(1), ExpectedCost,
                                        ExpectedCost);
@@ -11958,19 +11940,13 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
                      CM.getWideningDecision(IG->getInsertPos(), VF) ==
                          LoopVectorizationCostModel::CM_Interleave);
       // For scalable vectors, the only interleave factor currently supported
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       assert((!Result || !VF.isScalable() || IG->getFactor() <= 8) &&
              "Unsupported interleave factor for scalable vectors");
 #else
-      // is 2 since we require the (de)interleave2 intrinsics instead of
-      // shufflevectors.
-      assert((!Result || !VF.isScalable() || IG->getFactor() == 2) &&
-=======
       // must be power of 2 since we require the (de)interleave2 intrinsics
       // instead of shufflevectors.
       assert((!Result || !VF.isScalable() || isPowerOf2_32(IG->getFactor())) &&
->>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
              "Unsupported interleave factor for scalable vectors");
 #endif // SIFIVE_CUSTOMIZATION
       return Result;
