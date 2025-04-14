@@ -370,12 +370,12 @@ def pseudo_jump_symbol : Operand<XLenVT> {
 def RegRelAddSymbol : AsmOperandClass {
   let Name = "RegRelAddSymbol";
   let RenderMethod = "addImmOperands";
-<<<<<<< HEAD
+#ifdef SIFIVE_CUSTOMIZATION
   let DiagnosticType = "InvalidRegRelAddSymbol";
-=======
+#else
   let DiagnosticType = "InvalidTPRelAddSymbol";
+#endif // SIFIVE_CUSTOMIZATION
   let DiagnosticString = "operand must be a symbol with %tprel_add modifier";
->>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
   let ParserMethod = "parseOperandWithModifier";
 }
 
