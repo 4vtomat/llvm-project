@@ -9,7 +9,7 @@
 # GNU: Displaying notes found in: .note.gnu.property
 # GNU-NEXT:   Owner                 Data size 	Description
 # GNU-NEXT:   GNU                   0x{{([0-9a-z]{8})}}	NT_GNU_PROPERTY_TYPE_0 (property note)
-# GNU-NEXT:     Properties:    RISC-V feature: ZICFILP-unlabeled, ZICFISS, ZICFILP-func-sig
+# GNU-NEXT:     Properties:    RISC-V feature: ZICFILP, ZICFISS, <unknown flags: 0x4>
 
 # LLVM:      NoteSections [
 # LLVM-NEXT:   NoteSection {
@@ -22,7 +22,7 @@
 # LLVM-NEXT:         Data size:
 # LLVM-NEXT:         Type: NT_GNU_PROPERTY_TYPE_0 (property note)
 # LLVM-NEXT:         Property [
-# LLVM-NEXT:           RISC-V feature: ZICFILP-unlabeled, ZICFISS, ZICFILP-func-sig
+# LLVM-NEXT:           RISC-V feature: ZICFILP, ZICFISS, <unknown flags: 0x4>
 # LLVM-NEXT:         ]
 # LLVM-NEXT:       }
 # LLVM-NEXT:     ]
