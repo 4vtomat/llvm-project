@@ -1281,7 +1281,12 @@ define void @many_args(i32, i32, i32, i32, i32, i32, i32, i32, i32) {
 ; RV32IZCMP-LABEL: many_args:
 ; RV32IZCMP:       # %bb.0: # %entry
 ; RV32IZCMP-NEXT:    cm.push {ra, s0-s4}, -32
-<<<<<<< HEAD
+; RV32IZCMP-NEXT:    .cfi_def_cfa_offset 32
+; RV32IZCMP-NEXT:    .cfi_offset s0, -20
+; RV32IZCMP-NEXT:    .cfi_offset s1, -16
+; RV32IZCMP-NEXT:    .cfi_offset s2, -12
+; RV32IZCMP-NEXT:    .cfi_offset s3, -8
+; RV32IZCMP-NEXT:    .cfi_offset s4, -4
 ; RV32IZCMP-NEXT:    lui a6, %hi(var0)
 ; RV32IZCMP-NEXT:    lui a1, %hi(var0)
 ; RV32IZCMP-NEXT:    addi a1, a1, %lo(var0)
@@ -1321,58 +1326,17 @@ define void @many_args(i32, i32, i32, i32, i32, i32, i32, i32, i32) {
 ; RV32IZCMP-NEXT:    sw t1, 8(a1)
 ; RV32IZCMP-NEXT:    sw t0, 4(a1)
 ; RV32IZCMP-NEXT:    sw a7, %lo(var0)(a6)
-=======
-; RV32IZCMP-NEXT:    .cfi_def_cfa_offset 32
-; RV32IZCMP-NEXT:    .cfi_offset s0, -20
-; RV32IZCMP-NEXT:    .cfi_offset s1, -16
-; RV32IZCMP-NEXT:    .cfi_offset s2, -12
-; RV32IZCMP-NEXT:    .cfi_offset s3, -8
-; RV32IZCMP-NEXT:    .cfi_offset s4, -4
-; RV32IZCMP-NEXT:    lui a0, %hi(var0)
-; RV32IZCMP-NEXT:    lw a6, %lo(var0)(a0)
-; RV32IZCMP-NEXT:    lw a7, %lo(var0+4)(a0)
-; RV32IZCMP-NEXT:    lw t0, %lo(var0+8)(a0)
-; RV32IZCMP-NEXT:    lw t1, %lo(var0+12)(a0)
-; RV32IZCMP-NEXT:    addi a5, a0, %lo(var0)
-; RV32IZCMP-NEXT:    lw t2, 16(a5)
-; RV32IZCMP-NEXT:    lw t3, 20(a5)
-; RV32IZCMP-NEXT:    lw t4, 24(a5)
-; RV32IZCMP-NEXT:    lw t5, 28(a5)
-; RV32IZCMP-NEXT:    lw t6, 48(a5)
-; RV32IZCMP-NEXT:    lw s2, 52(a5)
-; RV32IZCMP-NEXT:    lw a3, 56(a5)
-; RV32IZCMP-NEXT:    lw a4, 60(a5)
-; RV32IZCMP-NEXT:    lw a1, 64(a5)
-; RV32IZCMP-NEXT:    lw s0, 68(a5)
-; RV32IZCMP-NEXT:    lw s3, 32(a5)
-; RV32IZCMP-NEXT:    lw s4, 36(a5)
-; RV32IZCMP-NEXT:    lw s1, 40(a5)
-; RV32IZCMP-NEXT:    lw a2, 44(a5)
-; RV32IZCMP-NEXT:    sw s0, 68(a5)
-; RV32IZCMP-NEXT:    sw a1, 64(a5)
-; RV32IZCMP-NEXT:    sw a4, 60(a5)
-; RV32IZCMP-NEXT:    sw a3, 56(a5)
-; RV32IZCMP-NEXT:    sw s2, 52(a5)
-; RV32IZCMP-NEXT:    sw t6, 48(a5)
-; RV32IZCMP-NEXT:    sw a2, 44(a5)
-; RV32IZCMP-NEXT:    sw s1, 40(a5)
-; RV32IZCMP-NEXT:    sw s4, 36(a5)
-; RV32IZCMP-NEXT:    sw s3, 32(a5)
-; RV32IZCMP-NEXT:    sw t5, 28(a5)
-; RV32IZCMP-NEXT:    sw t4, 24(a5)
-; RV32IZCMP-NEXT:    sw t3, 20(a5)
-; RV32IZCMP-NEXT:    sw t2, 16(a5)
-; RV32IZCMP-NEXT:    sw t1, %lo(var0+12)(a0)
-; RV32IZCMP-NEXT:    sw t0, %lo(var0+8)(a0)
-; RV32IZCMP-NEXT:    sw a7, %lo(var0+4)(a0)
-; RV32IZCMP-NEXT:    sw a6, %lo(var0)(a0)
->>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
 ; RV32IZCMP-NEXT:    cm.popret {ra, s0-s4}, 32
 ;
 ; RV64IZCMP-LABEL: many_args:
 ; RV64IZCMP:       # %bb.0: # %entry
 ; RV64IZCMP-NEXT:    cm.push {ra, s0-s4}, -48
-<<<<<<< HEAD
+; RV64IZCMP-NEXT:    .cfi_def_cfa_offset 48
+; RV64IZCMP-NEXT:    .cfi_offset s0, -40
+; RV64IZCMP-NEXT:    .cfi_offset s1, -32
+; RV64IZCMP-NEXT:    .cfi_offset s2, -24
+; RV64IZCMP-NEXT:    .cfi_offset s3, -16
+; RV64IZCMP-NEXT:    .cfi_offset s4, -8
 ; RV64IZCMP-NEXT:    lui a6, %hi(var0)
 ; RV64IZCMP-NEXT:    lui a1, %hi(var0)
 ; RV64IZCMP-NEXT:    addi a1, a1, %lo(var0)
@@ -1412,58 +1376,17 @@ define void @many_args(i32, i32, i32, i32, i32, i32, i32, i32, i32) {
 ; RV64IZCMP-NEXT:    sw t1, 8(a1)
 ; RV64IZCMP-NEXT:    sw t0, 4(a1)
 ; RV64IZCMP-NEXT:    sw a7, %lo(var0)(a6)
-=======
-; RV64IZCMP-NEXT:    .cfi_def_cfa_offset 48
-; RV64IZCMP-NEXT:    .cfi_offset s0, -40
-; RV64IZCMP-NEXT:    .cfi_offset s1, -32
-; RV64IZCMP-NEXT:    .cfi_offset s2, -24
-; RV64IZCMP-NEXT:    .cfi_offset s3, -16
-; RV64IZCMP-NEXT:    .cfi_offset s4, -8
-; RV64IZCMP-NEXT:    lui a0, %hi(var0)
-; RV64IZCMP-NEXT:    lw a6, %lo(var0)(a0)
-; RV64IZCMP-NEXT:    lw a7, %lo(var0+4)(a0)
-; RV64IZCMP-NEXT:    lw t0, %lo(var0+8)(a0)
-; RV64IZCMP-NEXT:    lw t1, %lo(var0+12)(a0)
-; RV64IZCMP-NEXT:    addi a5, a0, %lo(var0)
-; RV64IZCMP-NEXT:    lw t2, 16(a5)
-; RV64IZCMP-NEXT:    lw t3, 20(a5)
-; RV64IZCMP-NEXT:    lw t4, 24(a5)
-; RV64IZCMP-NEXT:    lw t5, 28(a5)
-; RV64IZCMP-NEXT:    lw t6, 48(a5)
-; RV64IZCMP-NEXT:    lw s2, 52(a5)
-; RV64IZCMP-NEXT:    lw a3, 56(a5)
-; RV64IZCMP-NEXT:    lw a4, 60(a5)
-; RV64IZCMP-NEXT:    lw a1, 64(a5)
-; RV64IZCMP-NEXT:    lw s0, 68(a5)
-; RV64IZCMP-NEXT:    lw s3, 32(a5)
-; RV64IZCMP-NEXT:    lw s4, 36(a5)
-; RV64IZCMP-NEXT:    lw s1, 40(a5)
-; RV64IZCMP-NEXT:    lw a2, 44(a5)
-; RV64IZCMP-NEXT:    sw s0, 68(a5)
-; RV64IZCMP-NEXT:    sw a1, 64(a5)
-; RV64IZCMP-NEXT:    sw a4, 60(a5)
-; RV64IZCMP-NEXT:    sw a3, 56(a5)
-; RV64IZCMP-NEXT:    sw s2, 52(a5)
-; RV64IZCMP-NEXT:    sw t6, 48(a5)
-; RV64IZCMP-NEXT:    sw a2, 44(a5)
-; RV64IZCMP-NEXT:    sw s1, 40(a5)
-; RV64IZCMP-NEXT:    sw s4, 36(a5)
-; RV64IZCMP-NEXT:    sw s3, 32(a5)
-; RV64IZCMP-NEXT:    sw t5, 28(a5)
-; RV64IZCMP-NEXT:    sw t4, 24(a5)
-; RV64IZCMP-NEXT:    sw t3, 20(a5)
-; RV64IZCMP-NEXT:    sw t2, 16(a5)
-; RV64IZCMP-NEXT:    sw t1, %lo(var0+12)(a0)
-; RV64IZCMP-NEXT:    sw t0, %lo(var0+8)(a0)
-; RV64IZCMP-NEXT:    sw a7, %lo(var0+4)(a0)
-; RV64IZCMP-NEXT:    sw a6, %lo(var0)(a0)
->>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
 ; RV64IZCMP-NEXT:    cm.popret {ra, s0-s4}, 48
 ;
 ; RV32IZCMP-SR-LABEL: many_args:
 ; RV32IZCMP-SR:       # %bb.0: # %entry
 ; RV32IZCMP-SR-NEXT:    cm.push {ra, s0-s4}, -32
-<<<<<<< HEAD
+; RV32IZCMP-SR-NEXT:    .cfi_def_cfa_offset 32
+; RV32IZCMP-SR-NEXT:    .cfi_offset s0, -20
+; RV32IZCMP-SR-NEXT:    .cfi_offset s1, -16
+; RV32IZCMP-SR-NEXT:    .cfi_offset s2, -12
+; RV32IZCMP-SR-NEXT:    .cfi_offset s3, -8
+; RV32IZCMP-SR-NEXT:    .cfi_offset s4, -4
 ; RV32IZCMP-SR-NEXT:    lui a6, %hi(var0)
 ; RV32IZCMP-SR-NEXT:    lui a1, %hi(var0)
 ; RV32IZCMP-SR-NEXT:    addi a1, a1, %lo(var0)
@@ -1503,58 +1426,17 @@ define void @many_args(i32, i32, i32, i32, i32, i32, i32, i32, i32) {
 ; RV32IZCMP-SR-NEXT:    sw t1, 8(a1)
 ; RV32IZCMP-SR-NEXT:    sw t0, 4(a1)
 ; RV32IZCMP-SR-NEXT:    sw a7, %lo(var0)(a6)
-=======
-; RV32IZCMP-SR-NEXT:    .cfi_def_cfa_offset 32
-; RV32IZCMP-SR-NEXT:    .cfi_offset s0, -20
-; RV32IZCMP-SR-NEXT:    .cfi_offset s1, -16
-; RV32IZCMP-SR-NEXT:    .cfi_offset s2, -12
-; RV32IZCMP-SR-NEXT:    .cfi_offset s3, -8
-; RV32IZCMP-SR-NEXT:    .cfi_offset s4, -4
-; RV32IZCMP-SR-NEXT:    lui a0, %hi(var0)
-; RV32IZCMP-SR-NEXT:    lw a6, %lo(var0)(a0)
-; RV32IZCMP-SR-NEXT:    lw a7, %lo(var0+4)(a0)
-; RV32IZCMP-SR-NEXT:    lw t0, %lo(var0+8)(a0)
-; RV32IZCMP-SR-NEXT:    lw t1, %lo(var0+12)(a0)
-; RV32IZCMP-SR-NEXT:    addi a5, a0, %lo(var0)
-; RV32IZCMP-SR-NEXT:    lw t2, 16(a5)
-; RV32IZCMP-SR-NEXT:    lw t3, 20(a5)
-; RV32IZCMP-SR-NEXT:    lw t4, 24(a5)
-; RV32IZCMP-SR-NEXT:    lw t5, 28(a5)
-; RV32IZCMP-SR-NEXT:    lw t6, 48(a5)
-; RV32IZCMP-SR-NEXT:    lw s2, 52(a5)
-; RV32IZCMP-SR-NEXT:    lw a3, 56(a5)
-; RV32IZCMP-SR-NEXT:    lw a4, 60(a5)
-; RV32IZCMP-SR-NEXT:    lw a1, 64(a5)
-; RV32IZCMP-SR-NEXT:    lw s0, 68(a5)
-; RV32IZCMP-SR-NEXT:    lw s3, 32(a5)
-; RV32IZCMP-SR-NEXT:    lw s4, 36(a5)
-; RV32IZCMP-SR-NEXT:    lw s1, 40(a5)
-; RV32IZCMP-SR-NEXT:    lw a2, 44(a5)
-; RV32IZCMP-SR-NEXT:    sw s0, 68(a5)
-; RV32IZCMP-SR-NEXT:    sw a1, 64(a5)
-; RV32IZCMP-SR-NEXT:    sw a4, 60(a5)
-; RV32IZCMP-SR-NEXT:    sw a3, 56(a5)
-; RV32IZCMP-SR-NEXT:    sw s2, 52(a5)
-; RV32IZCMP-SR-NEXT:    sw t6, 48(a5)
-; RV32IZCMP-SR-NEXT:    sw a2, 44(a5)
-; RV32IZCMP-SR-NEXT:    sw s1, 40(a5)
-; RV32IZCMP-SR-NEXT:    sw s4, 36(a5)
-; RV32IZCMP-SR-NEXT:    sw s3, 32(a5)
-; RV32IZCMP-SR-NEXT:    sw t5, 28(a5)
-; RV32IZCMP-SR-NEXT:    sw t4, 24(a5)
-; RV32IZCMP-SR-NEXT:    sw t3, 20(a5)
-; RV32IZCMP-SR-NEXT:    sw t2, 16(a5)
-; RV32IZCMP-SR-NEXT:    sw t1, %lo(var0+12)(a0)
-; RV32IZCMP-SR-NEXT:    sw t0, %lo(var0+8)(a0)
-; RV32IZCMP-SR-NEXT:    sw a7, %lo(var0+4)(a0)
-; RV32IZCMP-SR-NEXT:    sw a6, %lo(var0)(a0)
->>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
 ; RV32IZCMP-SR-NEXT:    cm.popret {ra, s0-s4}, 32
 ;
 ; RV64IZCMP-SR-LABEL: many_args:
 ; RV64IZCMP-SR:       # %bb.0: # %entry
 ; RV64IZCMP-SR-NEXT:    cm.push {ra, s0-s4}, -48
-<<<<<<< HEAD
+; RV64IZCMP-SR-NEXT:    .cfi_def_cfa_offset 48
+; RV64IZCMP-SR-NEXT:    .cfi_offset s0, -40
+; RV64IZCMP-SR-NEXT:    .cfi_offset s1, -32
+; RV64IZCMP-SR-NEXT:    .cfi_offset s2, -24
+; RV64IZCMP-SR-NEXT:    .cfi_offset s3, -16
+; RV64IZCMP-SR-NEXT:    .cfi_offset s4, -8
 ; RV64IZCMP-SR-NEXT:    lui a6, %hi(var0)
 ; RV64IZCMP-SR-NEXT:    lui a1, %hi(var0)
 ; RV64IZCMP-SR-NEXT:    addi a1, a1, %lo(var0)
@@ -1594,52 +1476,6 @@ define void @many_args(i32, i32, i32, i32, i32, i32, i32, i32, i32) {
 ; RV64IZCMP-SR-NEXT:    sw t1, 8(a1)
 ; RV64IZCMP-SR-NEXT:    sw t0, 4(a1)
 ; RV64IZCMP-SR-NEXT:    sw a7, %lo(var0)(a6)
-=======
-; RV64IZCMP-SR-NEXT:    .cfi_def_cfa_offset 48
-; RV64IZCMP-SR-NEXT:    .cfi_offset s0, -40
-; RV64IZCMP-SR-NEXT:    .cfi_offset s1, -32
-; RV64IZCMP-SR-NEXT:    .cfi_offset s2, -24
-; RV64IZCMP-SR-NEXT:    .cfi_offset s3, -16
-; RV64IZCMP-SR-NEXT:    .cfi_offset s4, -8
-; RV64IZCMP-SR-NEXT:    lui a0, %hi(var0)
-; RV64IZCMP-SR-NEXT:    lw a6, %lo(var0)(a0)
-; RV64IZCMP-SR-NEXT:    lw a7, %lo(var0+4)(a0)
-; RV64IZCMP-SR-NEXT:    lw t0, %lo(var0+8)(a0)
-; RV64IZCMP-SR-NEXT:    lw t1, %lo(var0+12)(a0)
-; RV64IZCMP-SR-NEXT:    addi a5, a0, %lo(var0)
-; RV64IZCMP-SR-NEXT:    lw t2, 16(a5)
-; RV64IZCMP-SR-NEXT:    lw t3, 20(a5)
-; RV64IZCMP-SR-NEXT:    lw t4, 24(a5)
-; RV64IZCMP-SR-NEXT:    lw t5, 28(a5)
-; RV64IZCMP-SR-NEXT:    lw t6, 48(a5)
-; RV64IZCMP-SR-NEXT:    lw s2, 52(a5)
-; RV64IZCMP-SR-NEXT:    lw a3, 56(a5)
-; RV64IZCMP-SR-NEXT:    lw a4, 60(a5)
-; RV64IZCMP-SR-NEXT:    lw a1, 64(a5)
-; RV64IZCMP-SR-NEXT:    lw s0, 68(a5)
-; RV64IZCMP-SR-NEXT:    lw s3, 32(a5)
-; RV64IZCMP-SR-NEXT:    lw s4, 36(a5)
-; RV64IZCMP-SR-NEXT:    lw s1, 40(a5)
-; RV64IZCMP-SR-NEXT:    lw a2, 44(a5)
-; RV64IZCMP-SR-NEXT:    sw s0, 68(a5)
-; RV64IZCMP-SR-NEXT:    sw a1, 64(a5)
-; RV64IZCMP-SR-NEXT:    sw a4, 60(a5)
-; RV64IZCMP-SR-NEXT:    sw a3, 56(a5)
-; RV64IZCMP-SR-NEXT:    sw s2, 52(a5)
-; RV64IZCMP-SR-NEXT:    sw t6, 48(a5)
-; RV64IZCMP-SR-NEXT:    sw a2, 44(a5)
-; RV64IZCMP-SR-NEXT:    sw s1, 40(a5)
-; RV64IZCMP-SR-NEXT:    sw s4, 36(a5)
-; RV64IZCMP-SR-NEXT:    sw s3, 32(a5)
-; RV64IZCMP-SR-NEXT:    sw t5, 28(a5)
-; RV64IZCMP-SR-NEXT:    sw t4, 24(a5)
-; RV64IZCMP-SR-NEXT:    sw t3, 20(a5)
-; RV64IZCMP-SR-NEXT:    sw t2, 16(a5)
-; RV64IZCMP-SR-NEXT:    sw t1, %lo(var0+12)(a0)
-; RV64IZCMP-SR-NEXT:    sw t0, %lo(var0+8)(a0)
-; RV64IZCMP-SR-NEXT:    sw a7, %lo(var0+4)(a0)
-; RV64IZCMP-SR-NEXT:    sw a6, %lo(var0)(a0)
->>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
 ; RV64IZCMP-SR-NEXT:    cm.popret {ra, s0-s4}, 48
 ;
 ; RV32I-LABEL: many_args:
@@ -2453,36 +2289,65 @@ define void @callee_with_irq() "interrupt"="user" {
 ; RV32IZCMP-LABEL: callee_with_irq:
 ; RV32IZCMP:       # %bb.0:
 ; RV32IZCMP-NEXT:    cm.push {ra, s0-s11}, -112
-<<<<<<< HEAD
+; RV32IZCMP-NEXT:    .cfi_def_cfa_offset 112
+; RV32IZCMP-NEXT:    .cfi_offset ra, -52
+; RV32IZCMP-NEXT:    .cfi_offset s0, -48
+; RV32IZCMP-NEXT:    .cfi_offset s1, -44
+; RV32IZCMP-NEXT:    .cfi_offset s2, -40
+; RV32IZCMP-NEXT:    .cfi_offset s3, -36
+; RV32IZCMP-NEXT:    .cfi_offset s4, -32
+; RV32IZCMP-NEXT:    .cfi_offset s5, -28
+; RV32IZCMP-NEXT:    .cfi_offset s6, -24
+; RV32IZCMP-NEXT:    .cfi_offset s7, -20
+; RV32IZCMP-NEXT:    .cfi_offset s8, -16
+; RV32IZCMP-NEXT:    .cfi_offset s9, -12
+; RV32IZCMP-NEXT:    .cfi_offset s10, -8
+; RV32IZCMP-NEXT:    .cfi_offset s11, -4
 ; RV32IZCMP-NEXT:    addi sp, sp, -32
-; RV32IZCMP-NEXT:    sw t0, 76(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw t1, 72(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw t2, 68(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw a0, 64(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw a1, 60(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw a2, 56(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw a3, 52(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw a4, 48(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw a5, 44(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw a6, 40(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw a7, 36(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw t3, 32(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw t4, 28(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw t5, 24(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw t6, 20(sp) # 4-byte Folded Spill
+; RV32IZCMP-NEXT:    .cfi_def_cfa_offset 144
+; RV32IZCMP-NEXT:    sw t0, 88(sp) # 4-byte Folded Spill
+; RV32IZCMP-NEXT:    sw t1, 84(sp) # 4-byte Folded Spill
+; RV32IZCMP-NEXT:    sw t2, 80(sp) # 4-byte Folded Spill
+; RV32IZCMP-NEXT:    sw a0, 76(sp) # 4-byte Folded Spill
+; RV32IZCMP-NEXT:    sw a1, 72(sp) # 4-byte Folded Spill
+; RV32IZCMP-NEXT:    sw a2, 68(sp) # 4-byte Folded Spill
+; RV32IZCMP-NEXT:    sw a3, 64(sp) # 4-byte Folded Spill
+; RV32IZCMP-NEXT:    sw a4, 60(sp) # 4-byte Folded Spill
+; RV32IZCMP-NEXT:    sw a5, 56(sp) # 4-byte Folded Spill
+; RV32IZCMP-NEXT:    sw a6, 52(sp) # 4-byte Folded Spill
+; RV32IZCMP-NEXT:    sw a7, 48(sp) # 4-byte Folded Spill
+; RV32IZCMP-NEXT:    sw t3, 44(sp) # 4-byte Folded Spill
+; RV32IZCMP-NEXT:    sw t4, 40(sp) # 4-byte Folded Spill
+; RV32IZCMP-NEXT:    sw t5, 36(sp) # 4-byte Folded Spill
+; RV32IZCMP-NEXT:    sw t6, 32(sp) # 4-byte Folded Spill
+; RV32IZCMP-NEXT:    .cfi_offset t0, -56
+; RV32IZCMP-NEXT:    .cfi_offset t1, -60
+; RV32IZCMP-NEXT:    .cfi_offset t2, -64
+; RV32IZCMP-NEXT:    .cfi_offset a0, -68
+; RV32IZCMP-NEXT:    .cfi_offset a1, -72
+; RV32IZCMP-NEXT:    .cfi_offset a2, -76
+; RV32IZCMP-NEXT:    .cfi_offset a3, -80
+; RV32IZCMP-NEXT:    .cfi_offset a4, -84
+; RV32IZCMP-NEXT:    .cfi_offset a5, -88
+; RV32IZCMP-NEXT:    .cfi_offset a6, -92
+; RV32IZCMP-NEXT:    .cfi_offset a7, -96
+; RV32IZCMP-NEXT:    .cfi_offset t3, -100
+; RV32IZCMP-NEXT:    .cfi_offset t4, -104
+; RV32IZCMP-NEXT:    .cfi_offset t5, -108
+; RV32IZCMP-NEXT:    .cfi_offset t6, -112
 ; RV32IZCMP-NEXT:    lui a0, %hi(var_test_irq)
 ; RV32IZCMP-NEXT:    lui a2, %hi(var_test_irq)
 ; RV32IZCMP-NEXT:    addi a2, a2, %lo(var_test_irq)
 ; RV32IZCMP-NEXT:    lw a0, %lo(var_test_irq)(a0)
-; RV32IZCMP-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
+; RV32IZCMP-NEXT:    sw a0, 28(sp) # 4-byte Folded Spill
 ; RV32IZCMP-NEXT:    lw a0, 4(a2)
-; RV32IZCMP-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
+; RV32IZCMP-NEXT:    sw a0, 24(sp) # 4-byte Folded Spill
 ; RV32IZCMP-NEXT:    lw a0, 8(a2)
-; RV32IZCMP-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
+; RV32IZCMP-NEXT:    sw a0, 20(sp) # 4-byte Folded Spill
 ; RV32IZCMP-NEXT:    lw a0, 12(a2)
-; RV32IZCMP-NEXT:    sw a0, 4(sp) # 4-byte Folded Spill
+; RV32IZCMP-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
 ; RV32IZCMP-NEXT:    lw a0, 16(a2)
-; RV32IZCMP-NEXT:    sw a0, 0(sp) # 4-byte Folded Spill
+; RV32IZCMP-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
 ; RV32IZCMP-NEXT:    lw t4, 20(a2)
 ; RV32IZCMP-NEXT:    lw t5, 24(a2)
 ; RV32IZCMP-NEXT:    lw t6, 28(a2)
@@ -2537,158 +2402,17 @@ define void @callee_with_irq() "interrupt"="user" {
 ; RV32IZCMP-NEXT:    sw t6, 28(a2)
 ; RV32IZCMP-NEXT:    sw t5, 24(a2)
 ; RV32IZCMP-NEXT:    sw t4, 20(a2)
-; RV32IZCMP-NEXT:    lw a0, 0(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    sw a0, 16(a2)
-; RV32IZCMP-NEXT:    lw a0, 4(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    sw a0, 12(a2)
-; RV32IZCMP-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    sw a0, 8(a2)
 ; RV32IZCMP-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    sw a0, 4(a2)
+; RV32IZCMP-NEXT:    sw a0, 16(a2)
 ; RV32IZCMP-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
+; RV32IZCMP-NEXT:    sw a0, 12(a2)
+; RV32IZCMP-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
+; RV32IZCMP-NEXT:    sw a0, 8(a2)
+; RV32IZCMP-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
+; RV32IZCMP-NEXT:    sw a0, 4(a2)
+; RV32IZCMP-NEXT:    lw a0, 28(sp) # 4-byte Folded Reload
 ; RV32IZCMP-NEXT:    lui a1, %hi(var_test_irq)
 ; RV32IZCMP-NEXT:    sw a0, %lo(var_test_irq)(a1)
-; RV32IZCMP-NEXT:    lw t0, 76(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    lw t1, 72(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    lw t2, 68(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    lw a0, 64(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    lw a1, 60(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    lw a2, 56(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    lw a3, 52(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    lw a4, 48(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    lw a5, 44(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    lw a6, 40(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    lw a7, 36(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    lw t3, 32(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    lw t4, 28(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    lw t5, 24(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    lw t6, 20(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    addi sp, sp, 32
-=======
-; RV32IZCMP-NEXT:    .cfi_def_cfa_offset 112
-; RV32IZCMP-NEXT:    .cfi_offset ra, -52
-; RV32IZCMP-NEXT:    .cfi_offset s0, -48
-; RV32IZCMP-NEXT:    .cfi_offset s1, -44
-; RV32IZCMP-NEXT:    .cfi_offset s2, -40
-; RV32IZCMP-NEXT:    .cfi_offset s3, -36
-; RV32IZCMP-NEXT:    .cfi_offset s4, -32
-; RV32IZCMP-NEXT:    .cfi_offset s5, -28
-; RV32IZCMP-NEXT:    .cfi_offset s6, -24
-; RV32IZCMP-NEXT:    .cfi_offset s7, -20
-; RV32IZCMP-NEXT:    .cfi_offset s8, -16
-; RV32IZCMP-NEXT:    .cfi_offset s9, -12
-; RV32IZCMP-NEXT:    .cfi_offset s10, -8
-; RV32IZCMP-NEXT:    .cfi_offset s11, -4
-; RV32IZCMP-NEXT:    addi sp, sp, -32
-; RV32IZCMP-NEXT:    .cfi_def_cfa_offset 144
-; RV32IZCMP-NEXT:    sw t0, 88(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw t1, 84(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw t2, 80(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw a0, 76(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw a1, 72(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw a2, 68(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw a3, 64(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw a4, 60(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw a5, 56(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw a6, 52(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw a7, 48(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw t3, 44(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw t4, 40(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw t5, 36(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    sw t6, 32(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    .cfi_offset t0, -56
-; RV32IZCMP-NEXT:    .cfi_offset t1, -60
-; RV32IZCMP-NEXT:    .cfi_offset t2, -64
-; RV32IZCMP-NEXT:    .cfi_offset a0, -68
-; RV32IZCMP-NEXT:    .cfi_offset a1, -72
-; RV32IZCMP-NEXT:    .cfi_offset a2, -76
-; RV32IZCMP-NEXT:    .cfi_offset a3, -80
-; RV32IZCMP-NEXT:    .cfi_offset a4, -84
-; RV32IZCMP-NEXT:    .cfi_offset a5, -88
-; RV32IZCMP-NEXT:    .cfi_offset a6, -92
-; RV32IZCMP-NEXT:    .cfi_offset a7, -96
-; RV32IZCMP-NEXT:    .cfi_offset t3, -100
-; RV32IZCMP-NEXT:    .cfi_offset t4, -104
-; RV32IZCMP-NEXT:    .cfi_offset t5, -108
-; RV32IZCMP-NEXT:    .cfi_offset t6, -112
-; RV32IZCMP-NEXT:    lui t0, %hi(var_test_irq)
-; RV32IZCMP-NEXT:    lw a0, %lo(var_test_irq)(t0)
-; RV32IZCMP-NEXT:    sw a0, 28(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    lw a0, %lo(var_test_irq+4)(t0)
-; RV32IZCMP-NEXT:    sw a0, 24(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    lw a0, %lo(var_test_irq+8)(t0)
-; RV32IZCMP-NEXT:    sw a0, 20(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    lw a0, %lo(var_test_irq+12)(t0)
-; RV32IZCMP-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    addi a5, t0, %lo(var_test_irq)
-; RV32IZCMP-NEXT:    lw a0, 16(a5)
-; RV32IZCMP-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    lw a0, 20(a5)
-; RV32IZCMP-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    lw t4, 24(a5)
-; RV32IZCMP-NEXT:    lw t5, 28(a5)
-; RV32IZCMP-NEXT:    lw t6, 32(a5)
-; RV32IZCMP-NEXT:    lw s2, 36(a5)
-; RV32IZCMP-NEXT:    lw s3, 40(a5)
-; RV32IZCMP-NEXT:    lw s4, 44(a5)
-; RV32IZCMP-NEXT:    lw s5, 48(a5)
-; RV32IZCMP-NEXT:    lw s6, 52(a5)
-; RV32IZCMP-NEXT:    lw s7, 56(a5)
-; RV32IZCMP-NEXT:    lw s8, 60(a5)
-; RV32IZCMP-NEXT:    lw s9, 64(a5)
-; RV32IZCMP-NEXT:    lw s10, 68(a5)
-; RV32IZCMP-NEXT:    lw s11, 72(a5)
-; RV32IZCMP-NEXT:    lw ra, 76(a5)
-; RV32IZCMP-NEXT:    lw s1, 80(a5)
-; RV32IZCMP-NEXT:    lw t3, 84(a5)
-; RV32IZCMP-NEXT:    lw t2, 88(a5)
-; RV32IZCMP-NEXT:    lw t1, 92(a5)
-; RV32IZCMP-NEXT:    lw a7, 112(a5)
-; RV32IZCMP-NEXT:    lw s0, 116(a5)
-; RV32IZCMP-NEXT:    lw a3, 120(a5)
-; RV32IZCMP-NEXT:    lw a0, 124(a5)
-; RV32IZCMP-NEXT:    lw a6, 96(a5)
-; RV32IZCMP-NEXT:    lw a4, 100(a5)
-; RV32IZCMP-NEXT:    lw a2, 104(a5)
-; RV32IZCMP-NEXT:    lw a1, 108(a5)
-; RV32IZCMP-NEXT:    sw a0, 124(a5)
-; RV32IZCMP-NEXT:    sw a3, 120(a5)
-; RV32IZCMP-NEXT:    sw s0, 116(a5)
-; RV32IZCMP-NEXT:    sw a7, 112(a5)
-; RV32IZCMP-NEXT:    sw a1, 108(a5)
-; RV32IZCMP-NEXT:    sw a2, 104(a5)
-; RV32IZCMP-NEXT:    sw a4, 100(a5)
-; RV32IZCMP-NEXT:    sw a6, 96(a5)
-; RV32IZCMP-NEXT:    sw t1, 92(a5)
-; RV32IZCMP-NEXT:    sw t2, 88(a5)
-; RV32IZCMP-NEXT:    sw t3, 84(a5)
-; RV32IZCMP-NEXT:    sw s1, 80(a5)
-; RV32IZCMP-NEXT:    sw ra, 76(a5)
-; RV32IZCMP-NEXT:    sw s11, 72(a5)
-; RV32IZCMP-NEXT:    sw s10, 68(a5)
-; RV32IZCMP-NEXT:    sw s9, 64(a5)
-; RV32IZCMP-NEXT:    sw s8, 60(a5)
-; RV32IZCMP-NEXT:    sw s7, 56(a5)
-; RV32IZCMP-NEXT:    sw s6, 52(a5)
-; RV32IZCMP-NEXT:    sw s5, 48(a5)
-; RV32IZCMP-NEXT:    sw s4, 44(a5)
-; RV32IZCMP-NEXT:    sw s3, 40(a5)
-; RV32IZCMP-NEXT:    sw s2, 36(a5)
-; RV32IZCMP-NEXT:    sw t6, 32(a5)
-; RV32IZCMP-NEXT:    sw t5, 28(a5)
-; RV32IZCMP-NEXT:    sw t4, 24(a5)
-; RV32IZCMP-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    sw a0, 20(a5)
-; RV32IZCMP-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    sw a0, 16(a5)
-; RV32IZCMP-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    sw a0, %lo(var_test_irq+12)(t0)
-; RV32IZCMP-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    sw a0, %lo(var_test_irq+8)(t0)
-; RV32IZCMP-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    sw a0, %lo(var_test_irq+4)(t0)
-; RV32IZCMP-NEXT:    lw a0, 28(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    sw a0, %lo(var_test_irq)(t0)
 ; RV32IZCMP-NEXT:    lw t0, 88(sp) # 4-byte Folded Reload
 ; RV32IZCMP-NEXT:    lw t1, 84(sp) # 4-byte Folded Reload
 ; RV32IZCMP-NEXT:    lw t2, 80(sp) # 4-byte Folded Reload
@@ -2721,7 +2445,6 @@ define void @callee_with_irq() "interrupt"="user" {
 ; RV32IZCMP-NEXT:    .cfi_restore t6
 ; RV32IZCMP-NEXT:    addi sp, sp, 32
 ; RV32IZCMP-NEXT:    .cfi_def_cfa_offset 112
->>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
 ; RV32IZCMP-NEXT:    cm.pop {ra, s0-s11}, 112
 ; RV32IZCMP-NEXT:    .cfi_restore ra
 ; RV32IZCMP-NEXT:    .cfi_restore s0
@@ -2742,36 +2465,65 @@ define void @callee_with_irq() "interrupt"="user" {
 ; RV64IZCMP-LABEL: callee_with_irq:
 ; RV64IZCMP:       # %bb.0:
 ; RV64IZCMP-NEXT:    cm.push {ra, s0-s11}, -160
-<<<<<<< HEAD
+; RV64IZCMP-NEXT:    .cfi_def_cfa_offset 160
+; RV64IZCMP-NEXT:    .cfi_offset ra, -104
+; RV64IZCMP-NEXT:    .cfi_offset s0, -96
+; RV64IZCMP-NEXT:    .cfi_offset s1, -88
+; RV64IZCMP-NEXT:    .cfi_offset s2, -80
+; RV64IZCMP-NEXT:    .cfi_offset s3, -72
+; RV64IZCMP-NEXT:    .cfi_offset s4, -64
+; RV64IZCMP-NEXT:    .cfi_offset s5, -56
+; RV64IZCMP-NEXT:    .cfi_offset s6, -48
+; RV64IZCMP-NEXT:    .cfi_offset s7, -40
+; RV64IZCMP-NEXT:    .cfi_offset s8, -32
+; RV64IZCMP-NEXT:    .cfi_offset s9, -24
+; RV64IZCMP-NEXT:    .cfi_offset s10, -16
+; RV64IZCMP-NEXT:    .cfi_offset s11, -8
 ; RV64IZCMP-NEXT:    addi sp, sp, -112
-; RV64IZCMP-NEXT:    sd t0, 152(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd t1, 144(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd t2, 136(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd a0, 128(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd a1, 120(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd a2, 112(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd a3, 104(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd a4, 96(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd a5, 88(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd a6, 80(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd a7, 72(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd t3, 64(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd t4, 56(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd t5, 48(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd t6, 40(sp) # 8-byte Folded Spill
+; RV64IZCMP-NEXT:    .cfi_def_cfa_offset 272
+; RV64IZCMP-NEXT:    sd t0, 160(sp) # 8-byte Folded Spill
+; RV64IZCMP-NEXT:    sd t1, 152(sp) # 8-byte Folded Spill
+; RV64IZCMP-NEXT:    sd t2, 144(sp) # 8-byte Folded Spill
+; RV64IZCMP-NEXT:    sd a0, 136(sp) # 8-byte Folded Spill
+; RV64IZCMP-NEXT:    sd a1, 128(sp) # 8-byte Folded Spill
+; RV64IZCMP-NEXT:    sd a2, 120(sp) # 8-byte Folded Spill
+; RV64IZCMP-NEXT:    sd a3, 112(sp) # 8-byte Folded Spill
+; RV64IZCMP-NEXT:    sd a4, 104(sp) # 8-byte Folded Spill
+; RV64IZCMP-NEXT:    sd a5, 96(sp) # 8-byte Folded Spill
+; RV64IZCMP-NEXT:    sd a6, 88(sp) # 8-byte Folded Spill
+; RV64IZCMP-NEXT:    sd a7, 80(sp) # 8-byte Folded Spill
+; RV64IZCMP-NEXT:    sd t3, 72(sp) # 8-byte Folded Spill
+; RV64IZCMP-NEXT:    sd t4, 64(sp) # 8-byte Folded Spill
+; RV64IZCMP-NEXT:    sd t5, 56(sp) # 8-byte Folded Spill
+; RV64IZCMP-NEXT:    sd t6, 48(sp) # 8-byte Folded Spill
+; RV64IZCMP-NEXT:    .cfi_offset t0, -112
+; RV64IZCMP-NEXT:    .cfi_offset t1, -120
+; RV64IZCMP-NEXT:    .cfi_offset t2, -128
+; RV64IZCMP-NEXT:    .cfi_offset a0, -136
+; RV64IZCMP-NEXT:    .cfi_offset a1, -144
+; RV64IZCMP-NEXT:    .cfi_offset a2, -152
+; RV64IZCMP-NEXT:    .cfi_offset a3, -160
+; RV64IZCMP-NEXT:    .cfi_offset a4, -168
+; RV64IZCMP-NEXT:    .cfi_offset a5, -176
+; RV64IZCMP-NEXT:    .cfi_offset a6, -184
+; RV64IZCMP-NEXT:    .cfi_offset a7, -192
+; RV64IZCMP-NEXT:    .cfi_offset t3, -200
+; RV64IZCMP-NEXT:    .cfi_offset t4, -208
+; RV64IZCMP-NEXT:    .cfi_offset t5, -216
+; RV64IZCMP-NEXT:    .cfi_offset t6, -224
 ; RV64IZCMP-NEXT:    lui a0, %hi(var_test_irq)
 ; RV64IZCMP-NEXT:    lui a2, %hi(var_test_irq)
 ; RV64IZCMP-NEXT:    addi a2, a2, %lo(var_test_irq)
 ; RV64IZCMP-NEXT:    lw a0, %lo(var_test_irq)(a0)
-; RV64IZCMP-NEXT:    sd a0, 32(sp) # 8-byte Folded Spill
+; RV64IZCMP-NEXT:    sd a0, 40(sp) # 8-byte Folded Spill
 ; RV64IZCMP-NEXT:    lw a0, 4(a2)
-; RV64IZCMP-NEXT:    sd a0, 24(sp) # 8-byte Folded Spill
+; RV64IZCMP-NEXT:    sd a0, 32(sp) # 8-byte Folded Spill
 ; RV64IZCMP-NEXT:    lw a0, 8(a2)
-; RV64IZCMP-NEXT:    sd a0, 16(sp) # 8-byte Folded Spill
+; RV64IZCMP-NEXT:    sd a0, 24(sp) # 8-byte Folded Spill
 ; RV64IZCMP-NEXT:    lw a0, 12(a2)
-; RV64IZCMP-NEXT:    sd a0, 8(sp) # 8-byte Folded Spill
+; RV64IZCMP-NEXT:    sd a0, 16(sp) # 8-byte Folded Spill
 ; RV64IZCMP-NEXT:    lw a0, 16(a2)
-; RV64IZCMP-NEXT:    sd a0, 0(sp) # 8-byte Folded Spill
+; RV64IZCMP-NEXT:    sd a0, 8(sp) # 8-byte Folded Spill
 ; RV64IZCMP-NEXT:    lw t4, 20(a2)
 ; RV64IZCMP-NEXT:    lw t5, 24(a2)
 ; RV64IZCMP-NEXT:    lw t6, 28(a2)
@@ -2826,158 +2578,17 @@ define void @callee_with_irq() "interrupt"="user" {
 ; RV64IZCMP-NEXT:    sw t6, 28(a2)
 ; RV64IZCMP-NEXT:    sw t5, 24(a2)
 ; RV64IZCMP-NEXT:    sw t4, 20(a2)
-; RV64IZCMP-NEXT:    ld a0, 0(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    sw a0, 16(a2)
 ; RV64IZCMP-NEXT:    ld a0, 8(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    sw a0, 12(a2)
+; RV64IZCMP-NEXT:    sw a0, 16(a2)
 ; RV64IZCMP-NEXT:    ld a0, 16(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    sw a0, 8(a2)
+; RV64IZCMP-NEXT:    sw a0, 12(a2)
 ; RV64IZCMP-NEXT:    ld a0, 24(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    sw a0, 4(a2)
+; RV64IZCMP-NEXT:    sw a0, 8(a2)
 ; RV64IZCMP-NEXT:    ld a0, 32(sp) # 8-byte Folded Reload
+; RV64IZCMP-NEXT:    sw a0, 4(a2)
+; RV64IZCMP-NEXT:    ld a0, 40(sp) # 8-byte Folded Reload
 ; RV64IZCMP-NEXT:    lui a1, %hi(var_test_irq)
 ; RV64IZCMP-NEXT:    sw a0, %lo(var_test_irq)(a1)
-; RV64IZCMP-NEXT:    ld t0, 152(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    ld t1, 144(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    ld t2, 136(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    ld a0, 128(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    ld a1, 120(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    ld a2, 112(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    ld a3, 104(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    ld a4, 96(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    ld a5, 88(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    ld a6, 80(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    ld a7, 72(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    ld t3, 64(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    ld t4, 56(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    ld t5, 48(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    ld t6, 40(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    addi sp, sp, 112
-=======
-; RV64IZCMP-NEXT:    .cfi_def_cfa_offset 160
-; RV64IZCMP-NEXT:    .cfi_offset ra, -104
-; RV64IZCMP-NEXT:    .cfi_offset s0, -96
-; RV64IZCMP-NEXT:    .cfi_offset s1, -88
-; RV64IZCMP-NEXT:    .cfi_offset s2, -80
-; RV64IZCMP-NEXT:    .cfi_offset s3, -72
-; RV64IZCMP-NEXT:    .cfi_offset s4, -64
-; RV64IZCMP-NEXT:    .cfi_offset s5, -56
-; RV64IZCMP-NEXT:    .cfi_offset s6, -48
-; RV64IZCMP-NEXT:    .cfi_offset s7, -40
-; RV64IZCMP-NEXT:    .cfi_offset s8, -32
-; RV64IZCMP-NEXT:    .cfi_offset s9, -24
-; RV64IZCMP-NEXT:    .cfi_offset s10, -16
-; RV64IZCMP-NEXT:    .cfi_offset s11, -8
-; RV64IZCMP-NEXT:    addi sp, sp, -112
-; RV64IZCMP-NEXT:    .cfi_def_cfa_offset 272
-; RV64IZCMP-NEXT:    sd t0, 160(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd t1, 152(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd t2, 144(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd a0, 136(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd a1, 128(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd a2, 120(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd a3, 112(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd a4, 104(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd a5, 96(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd a6, 88(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd a7, 80(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd t3, 72(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd t4, 64(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd t5, 56(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    sd t6, 48(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    .cfi_offset t0, -112
-; RV64IZCMP-NEXT:    .cfi_offset t1, -120
-; RV64IZCMP-NEXT:    .cfi_offset t2, -128
-; RV64IZCMP-NEXT:    .cfi_offset a0, -136
-; RV64IZCMP-NEXT:    .cfi_offset a1, -144
-; RV64IZCMP-NEXT:    .cfi_offset a2, -152
-; RV64IZCMP-NEXT:    .cfi_offset a3, -160
-; RV64IZCMP-NEXT:    .cfi_offset a4, -168
-; RV64IZCMP-NEXT:    .cfi_offset a5, -176
-; RV64IZCMP-NEXT:    .cfi_offset a6, -184
-; RV64IZCMP-NEXT:    .cfi_offset a7, -192
-; RV64IZCMP-NEXT:    .cfi_offset t3, -200
-; RV64IZCMP-NEXT:    .cfi_offset t4, -208
-; RV64IZCMP-NEXT:    .cfi_offset t5, -216
-; RV64IZCMP-NEXT:    .cfi_offset t6, -224
-; RV64IZCMP-NEXT:    lui t0, %hi(var_test_irq)
-; RV64IZCMP-NEXT:    lw a0, %lo(var_test_irq)(t0)
-; RV64IZCMP-NEXT:    sd a0, 40(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    lw a0, %lo(var_test_irq+4)(t0)
-; RV64IZCMP-NEXT:    sd a0, 32(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    lw a0, %lo(var_test_irq+8)(t0)
-; RV64IZCMP-NEXT:    sd a0, 24(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    lw a0, %lo(var_test_irq+12)(t0)
-; RV64IZCMP-NEXT:    sd a0, 16(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    addi a5, t0, %lo(var_test_irq)
-; RV64IZCMP-NEXT:    lw a0, 16(a5)
-; RV64IZCMP-NEXT:    sd a0, 8(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    lw a0, 20(a5)
-; RV64IZCMP-NEXT:    sd a0, 0(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    lw t4, 24(a5)
-; RV64IZCMP-NEXT:    lw t5, 28(a5)
-; RV64IZCMP-NEXT:    lw t6, 32(a5)
-; RV64IZCMP-NEXT:    lw s2, 36(a5)
-; RV64IZCMP-NEXT:    lw s3, 40(a5)
-; RV64IZCMP-NEXT:    lw s4, 44(a5)
-; RV64IZCMP-NEXT:    lw s5, 48(a5)
-; RV64IZCMP-NEXT:    lw s6, 52(a5)
-; RV64IZCMP-NEXT:    lw s7, 56(a5)
-; RV64IZCMP-NEXT:    lw s8, 60(a5)
-; RV64IZCMP-NEXT:    lw s9, 64(a5)
-; RV64IZCMP-NEXT:    lw s10, 68(a5)
-; RV64IZCMP-NEXT:    lw s11, 72(a5)
-; RV64IZCMP-NEXT:    lw ra, 76(a5)
-; RV64IZCMP-NEXT:    lw s1, 80(a5)
-; RV64IZCMP-NEXT:    lw t3, 84(a5)
-; RV64IZCMP-NEXT:    lw t2, 88(a5)
-; RV64IZCMP-NEXT:    lw t1, 92(a5)
-; RV64IZCMP-NEXT:    lw a7, 112(a5)
-; RV64IZCMP-NEXT:    lw s0, 116(a5)
-; RV64IZCMP-NEXT:    lw a3, 120(a5)
-; RV64IZCMP-NEXT:    lw a0, 124(a5)
-; RV64IZCMP-NEXT:    lw a6, 96(a5)
-; RV64IZCMP-NEXT:    lw a4, 100(a5)
-; RV64IZCMP-NEXT:    lw a2, 104(a5)
-; RV64IZCMP-NEXT:    lw a1, 108(a5)
-; RV64IZCMP-NEXT:    sw a0, 124(a5)
-; RV64IZCMP-NEXT:    sw a3, 120(a5)
-; RV64IZCMP-NEXT:    sw s0, 116(a5)
-; RV64IZCMP-NEXT:    sw a7, 112(a5)
-; RV64IZCMP-NEXT:    sw a1, 108(a5)
-; RV64IZCMP-NEXT:    sw a2, 104(a5)
-; RV64IZCMP-NEXT:    sw a4, 100(a5)
-; RV64IZCMP-NEXT:    sw a6, 96(a5)
-; RV64IZCMP-NEXT:    sw t1, 92(a5)
-; RV64IZCMP-NEXT:    sw t2, 88(a5)
-; RV64IZCMP-NEXT:    sw t3, 84(a5)
-; RV64IZCMP-NEXT:    sw s1, 80(a5)
-; RV64IZCMP-NEXT:    sw ra, 76(a5)
-; RV64IZCMP-NEXT:    sw s11, 72(a5)
-; RV64IZCMP-NEXT:    sw s10, 68(a5)
-; RV64IZCMP-NEXT:    sw s9, 64(a5)
-; RV64IZCMP-NEXT:    sw s8, 60(a5)
-; RV64IZCMP-NEXT:    sw s7, 56(a5)
-; RV64IZCMP-NEXT:    sw s6, 52(a5)
-; RV64IZCMP-NEXT:    sw s5, 48(a5)
-; RV64IZCMP-NEXT:    sw s4, 44(a5)
-; RV64IZCMP-NEXT:    sw s3, 40(a5)
-; RV64IZCMP-NEXT:    sw s2, 36(a5)
-; RV64IZCMP-NEXT:    sw t6, 32(a5)
-; RV64IZCMP-NEXT:    sw t5, 28(a5)
-; RV64IZCMP-NEXT:    sw t4, 24(a5)
-; RV64IZCMP-NEXT:    ld a0, 0(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    sw a0, 20(a5)
-; RV64IZCMP-NEXT:    ld a0, 8(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    sw a0, 16(a5)
-; RV64IZCMP-NEXT:    ld a0, 16(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    sw a0, %lo(var_test_irq+12)(t0)
-; RV64IZCMP-NEXT:    ld a0, 24(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    sw a0, %lo(var_test_irq+8)(t0)
-; RV64IZCMP-NEXT:    ld a0, 32(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    sw a0, %lo(var_test_irq+4)(t0)
-; RV64IZCMP-NEXT:    ld a0, 40(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    sw a0, %lo(var_test_irq)(t0)
 ; RV64IZCMP-NEXT:    ld t0, 160(sp) # 8-byte Folded Reload
 ; RV64IZCMP-NEXT:    ld t1, 152(sp) # 8-byte Folded Reload
 ; RV64IZCMP-NEXT:    ld t2, 144(sp) # 8-byte Folded Reload
@@ -3010,7 +2621,6 @@ define void @callee_with_irq() "interrupt"="user" {
 ; RV64IZCMP-NEXT:    .cfi_restore t6
 ; RV64IZCMP-NEXT:    addi sp, sp, 112
 ; RV64IZCMP-NEXT:    .cfi_def_cfa_offset 160
->>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
 ; RV64IZCMP-NEXT:    cm.pop {ra, s0-s11}, 160
 ; RV64IZCMP-NEXT:    .cfi_restore ra
 ; RV64IZCMP-NEXT:    .cfi_restore s0
@@ -3031,36 +2641,65 @@ define void @callee_with_irq() "interrupt"="user" {
 ; RV32IZCMP-SR-LABEL: callee_with_irq:
 ; RV32IZCMP-SR:       # %bb.0:
 ; RV32IZCMP-SR-NEXT:    cm.push {ra, s0-s11}, -112
-<<<<<<< HEAD
+; RV32IZCMP-SR-NEXT:    .cfi_def_cfa_offset 112
+; RV32IZCMP-SR-NEXT:    .cfi_offset ra, -52
+; RV32IZCMP-SR-NEXT:    .cfi_offset s0, -48
+; RV32IZCMP-SR-NEXT:    .cfi_offset s1, -44
+; RV32IZCMP-SR-NEXT:    .cfi_offset s2, -40
+; RV32IZCMP-SR-NEXT:    .cfi_offset s3, -36
+; RV32IZCMP-SR-NEXT:    .cfi_offset s4, -32
+; RV32IZCMP-SR-NEXT:    .cfi_offset s5, -28
+; RV32IZCMP-SR-NEXT:    .cfi_offset s6, -24
+; RV32IZCMP-SR-NEXT:    .cfi_offset s7, -20
+; RV32IZCMP-SR-NEXT:    .cfi_offset s8, -16
+; RV32IZCMP-SR-NEXT:    .cfi_offset s9, -12
+; RV32IZCMP-SR-NEXT:    .cfi_offset s10, -8
+; RV32IZCMP-SR-NEXT:    .cfi_offset s11, -4
 ; RV32IZCMP-SR-NEXT:    addi sp, sp, -32
-; RV32IZCMP-SR-NEXT:    sw t0, 76(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw t1, 72(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw t2, 68(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw a0, 64(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw a1, 60(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw a2, 56(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw a3, 52(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw a4, 48(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw a5, 44(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw a6, 40(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw a7, 36(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw t3, 32(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw t4, 28(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw t5, 24(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw t6, 20(sp) # 4-byte Folded Spill
+; RV32IZCMP-SR-NEXT:    .cfi_def_cfa_offset 144
+; RV32IZCMP-SR-NEXT:    sw t0, 88(sp) # 4-byte Folded Spill
+; RV32IZCMP-SR-NEXT:    sw t1, 84(sp) # 4-byte Folded Spill
+; RV32IZCMP-SR-NEXT:    sw t2, 80(sp) # 4-byte Folded Spill
+; RV32IZCMP-SR-NEXT:    sw a0, 76(sp) # 4-byte Folded Spill
+; RV32IZCMP-SR-NEXT:    sw a1, 72(sp) # 4-byte Folded Spill
+; RV32IZCMP-SR-NEXT:    sw a2, 68(sp) # 4-byte Folded Spill
+; RV32IZCMP-SR-NEXT:    sw a3, 64(sp) # 4-byte Folded Spill
+; RV32IZCMP-SR-NEXT:    sw a4, 60(sp) # 4-byte Folded Spill
+; RV32IZCMP-SR-NEXT:    sw a5, 56(sp) # 4-byte Folded Spill
+; RV32IZCMP-SR-NEXT:    sw a6, 52(sp) # 4-byte Folded Spill
+; RV32IZCMP-SR-NEXT:    sw a7, 48(sp) # 4-byte Folded Spill
+; RV32IZCMP-SR-NEXT:    sw t3, 44(sp) # 4-byte Folded Spill
+; RV32IZCMP-SR-NEXT:    sw t4, 40(sp) # 4-byte Folded Spill
+; RV32IZCMP-SR-NEXT:    sw t5, 36(sp) # 4-byte Folded Spill
+; RV32IZCMP-SR-NEXT:    sw t6, 32(sp) # 4-byte Folded Spill
+; RV32IZCMP-SR-NEXT:    .cfi_offset t0, -56
+; RV32IZCMP-SR-NEXT:    .cfi_offset t1, -60
+; RV32IZCMP-SR-NEXT:    .cfi_offset t2, -64
+; RV32IZCMP-SR-NEXT:    .cfi_offset a0, -68
+; RV32IZCMP-SR-NEXT:    .cfi_offset a1, -72
+; RV32IZCMP-SR-NEXT:    .cfi_offset a2, -76
+; RV32IZCMP-SR-NEXT:    .cfi_offset a3, -80
+; RV32IZCMP-SR-NEXT:    .cfi_offset a4, -84
+; RV32IZCMP-SR-NEXT:    .cfi_offset a5, -88
+; RV32IZCMP-SR-NEXT:    .cfi_offset a6, -92
+; RV32IZCMP-SR-NEXT:    .cfi_offset a7, -96
+; RV32IZCMP-SR-NEXT:    .cfi_offset t3, -100
+; RV32IZCMP-SR-NEXT:    .cfi_offset t4, -104
+; RV32IZCMP-SR-NEXT:    .cfi_offset t5, -108
+; RV32IZCMP-SR-NEXT:    .cfi_offset t6, -112
 ; RV32IZCMP-SR-NEXT:    lui a0, %hi(var_test_irq)
 ; RV32IZCMP-SR-NEXT:    lui a2, %hi(var_test_irq)
 ; RV32IZCMP-SR-NEXT:    addi a2, a2, %lo(var_test_irq)
 ; RV32IZCMP-SR-NEXT:    lw a0, %lo(var_test_irq)(a0)
-; RV32IZCMP-SR-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
+; RV32IZCMP-SR-NEXT:    sw a0, 28(sp) # 4-byte Folded Spill
 ; RV32IZCMP-SR-NEXT:    lw a0, 4(a2)
-; RV32IZCMP-SR-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
+; RV32IZCMP-SR-NEXT:    sw a0, 24(sp) # 4-byte Folded Spill
 ; RV32IZCMP-SR-NEXT:    lw a0, 8(a2)
-; RV32IZCMP-SR-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
+; RV32IZCMP-SR-NEXT:    sw a0, 20(sp) # 4-byte Folded Spill
 ; RV32IZCMP-SR-NEXT:    lw a0, 12(a2)
-; RV32IZCMP-SR-NEXT:    sw a0, 4(sp) # 4-byte Folded Spill
+; RV32IZCMP-SR-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
 ; RV32IZCMP-SR-NEXT:    lw a0, 16(a2)
-; RV32IZCMP-SR-NEXT:    sw a0, 0(sp) # 4-byte Folded Spill
+; RV32IZCMP-SR-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
 ; RV32IZCMP-SR-NEXT:    lw t4, 20(a2)
 ; RV32IZCMP-SR-NEXT:    lw t5, 24(a2)
 ; RV32IZCMP-SR-NEXT:    lw t6, 28(a2)
@@ -3115,158 +2754,17 @@ define void @callee_with_irq() "interrupt"="user" {
 ; RV32IZCMP-SR-NEXT:    sw t6, 28(a2)
 ; RV32IZCMP-SR-NEXT:    sw t5, 24(a2)
 ; RV32IZCMP-SR-NEXT:    sw t4, 20(a2)
-; RV32IZCMP-SR-NEXT:    lw a0, 0(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    sw a0, 16(a2)
-; RV32IZCMP-SR-NEXT:    lw a0, 4(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    sw a0, 12(a2)
-; RV32IZCMP-SR-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    sw a0, 8(a2)
 ; RV32IZCMP-SR-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    sw a0, 4(a2)
+; RV32IZCMP-SR-NEXT:    sw a0, 16(a2)
 ; RV32IZCMP-SR-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
+; RV32IZCMP-SR-NEXT:    sw a0, 12(a2)
+; RV32IZCMP-SR-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
+; RV32IZCMP-SR-NEXT:    sw a0, 8(a2)
+; RV32IZCMP-SR-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
+; RV32IZCMP-SR-NEXT:    sw a0, 4(a2)
+; RV32IZCMP-SR-NEXT:    lw a0, 28(sp) # 4-byte Folded Reload
 ; RV32IZCMP-SR-NEXT:    lui a1, %hi(var_test_irq)
 ; RV32IZCMP-SR-NEXT:    sw a0, %lo(var_test_irq)(a1)
-; RV32IZCMP-SR-NEXT:    lw t0, 76(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    lw t1, 72(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    lw t2, 68(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    lw a0, 64(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    lw a1, 60(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    lw a2, 56(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    lw a3, 52(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    lw a4, 48(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    lw a5, 44(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    lw a6, 40(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    lw a7, 36(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    lw t3, 32(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    lw t4, 28(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    lw t5, 24(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    lw t6, 20(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    addi sp, sp, 32
-=======
-; RV32IZCMP-SR-NEXT:    .cfi_def_cfa_offset 112
-; RV32IZCMP-SR-NEXT:    .cfi_offset ra, -52
-; RV32IZCMP-SR-NEXT:    .cfi_offset s0, -48
-; RV32IZCMP-SR-NEXT:    .cfi_offset s1, -44
-; RV32IZCMP-SR-NEXT:    .cfi_offset s2, -40
-; RV32IZCMP-SR-NEXT:    .cfi_offset s3, -36
-; RV32IZCMP-SR-NEXT:    .cfi_offset s4, -32
-; RV32IZCMP-SR-NEXT:    .cfi_offset s5, -28
-; RV32IZCMP-SR-NEXT:    .cfi_offset s6, -24
-; RV32IZCMP-SR-NEXT:    .cfi_offset s7, -20
-; RV32IZCMP-SR-NEXT:    .cfi_offset s8, -16
-; RV32IZCMP-SR-NEXT:    .cfi_offset s9, -12
-; RV32IZCMP-SR-NEXT:    .cfi_offset s10, -8
-; RV32IZCMP-SR-NEXT:    .cfi_offset s11, -4
-; RV32IZCMP-SR-NEXT:    addi sp, sp, -32
-; RV32IZCMP-SR-NEXT:    .cfi_def_cfa_offset 144
-; RV32IZCMP-SR-NEXT:    sw t0, 88(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw t1, 84(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw t2, 80(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw a0, 76(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw a1, 72(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw a2, 68(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw a3, 64(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw a4, 60(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw a5, 56(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw a6, 52(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw a7, 48(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw t3, 44(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw t4, 40(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw t5, 36(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    sw t6, 32(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    .cfi_offset t0, -56
-; RV32IZCMP-SR-NEXT:    .cfi_offset t1, -60
-; RV32IZCMP-SR-NEXT:    .cfi_offset t2, -64
-; RV32IZCMP-SR-NEXT:    .cfi_offset a0, -68
-; RV32IZCMP-SR-NEXT:    .cfi_offset a1, -72
-; RV32IZCMP-SR-NEXT:    .cfi_offset a2, -76
-; RV32IZCMP-SR-NEXT:    .cfi_offset a3, -80
-; RV32IZCMP-SR-NEXT:    .cfi_offset a4, -84
-; RV32IZCMP-SR-NEXT:    .cfi_offset a5, -88
-; RV32IZCMP-SR-NEXT:    .cfi_offset a6, -92
-; RV32IZCMP-SR-NEXT:    .cfi_offset a7, -96
-; RV32IZCMP-SR-NEXT:    .cfi_offset t3, -100
-; RV32IZCMP-SR-NEXT:    .cfi_offset t4, -104
-; RV32IZCMP-SR-NEXT:    .cfi_offset t5, -108
-; RV32IZCMP-SR-NEXT:    .cfi_offset t6, -112
-; RV32IZCMP-SR-NEXT:    lui t0, %hi(var_test_irq)
-; RV32IZCMP-SR-NEXT:    lw a0, %lo(var_test_irq)(t0)
-; RV32IZCMP-SR-NEXT:    sw a0, 28(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    lw a0, %lo(var_test_irq+4)(t0)
-; RV32IZCMP-SR-NEXT:    sw a0, 24(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    lw a0, %lo(var_test_irq+8)(t0)
-; RV32IZCMP-SR-NEXT:    sw a0, 20(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    lw a0, %lo(var_test_irq+12)(t0)
-; RV32IZCMP-SR-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    addi a5, t0, %lo(var_test_irq)
-; RV32IZCMP-SR-NEXT:    lw a0, 16(a5)
-; RV32IZCMP-SR-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    lw a0, 20(a5)
-; RV32IZCMP-SR-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    lw t4, 24(a5)
-; RV32IZCMP-SR-NEXT:    lw t5, 28(a5)
-; RV32IZCMP-SR-NEXT:    lw t6, 32(a5)
-; RV32IZCMP-SR-NEXT:    lw s2, 36(a5)
-; RV32IZCMP-SR-NEXT:    lw s3, 40(a5)
-; RV32IZCMP-SR-NEXT:    lw s4, 44(a5)
-; RV32IZCMP-SR-NEXT:    lw s5, 48(a5)
-; RV32IZCMP-SR-NEXT:    lw s6, 52(a5)
-; RV32IZCMP-SR-NEXT:    lw s7, 56(a5)
-; RV32IZCMP-SR-NEXT:    lw s8, 60(a5)
-; RV32IZCMP-SR-NEXT:    lw s9, 64(a5)
-; RV32IZCMP-SR-NEXT:    lw s10, 68(a5)
-; RV32IZCMP-SR-NEXT:    lw s11, 72(a5)
-; RV32IZCMP-SR-NEXT:    lw ra, 76(a5)
-; RV32IZCMP-SR-NEXT:    lw s1, 80(a5)
-; RV32IZCMP-SR-NEXT:    lw t3, 84(a5)
-; RV32IZCMP-SR-NEXT:    lw t2, 88(a5)
-; RV32IZCMP-SR-NEXT:    lw t1, 92(a5)
-; RV32IZCMP-SR-NEXT:    lw a7, 112(a5)
-; RV32IZCMP-SR-NEXT:    lw s0, 116(a5)
-; RV32IZCMP-SR-NEXT:    lw a3, 120(a5)
-; RV32IZCMP-SR-NEXT:    lw a0, 124(a5)
-; RV32IZCMP-SR-NEXT:    lw a6, 96(a5)
-; RV32IZCMP-SR-NEXT:    lw a4, 100(a5)
-; RV32IZCMP-SR-NEXT:    lw a2, 104(a5)
-; RV32IZCMP-SR-NEXT:    lw a1, 108(a5)
-; RV32IZCMP-SR-NEXT:    sw a0, 124(a5)
-; RV32IZCMP-SR-NEXT:    sw a3, 120(a5)
-; RV32IZCMP-SR-NEXT:    sw s0, 116(a5)
-; RV32IZCMP-SR-NEXT:    sw a7, 112(a5)
-; RV32IZCMP-SR-NEXT:    sw a1, 108(a5)
-; RV32IZCMP-SR-NEXT:    sw a2, 104(a5)
-; RV32IZCMP-SR-NEXT:    sw a4, 100(a5)
-; RV32IZCMP-SR-NEXT:    sw a6, 96(a5)
-; RV32IZCMP-SR-NEXT:    sw t1, 92(a5)
-; RV32IZCMP-SR-NEXT:    sw t2, 88(a5)
-; RV32IZCMP-SR-NEXT:    sw t3, 84(a5)
-; RV32IZCMP-SR-NEXT:    sw s1, 80(a5)
-; RV32IZCMP-SR-NEXT:    sw ra, 76(a5)
-; RV32IZCMP-SR-NEXT:    sw s11, 72(a5)
-; RV32IZCMP-SR-NEXT:    sw s10, 68(a5)
-; RV32IZCMP-SR-NEXT:    sw s9, 64(a5)
-; RV32IZCMP-SR-NEXT:    sw s8, 60(a5)
-; RV32IZCMP-SR-NEXT:    sw s7, 56(a5)
-; RV32IZCMP-SR-NEXT:    sw s6, 52(a5)
-; RV32IZCMP-SR-NEXT:    sw s5, 48(a5)
-; RV32IZCMP-SR-NEXT:    sw s4, 44(a5)
-; RV32IZCMP-SR-NEXT:    sw s3, 40(a5)
-; RV32IZCMP-SR-NEXT:    sw s2, 36(a5)
-; RV32IZCMP-SR-NEXT:    sw t6, 32(a5)
-; RV32IZCMP-SR-NEXT:    sw t5, 28(a5)
-; RV32IZCMP-SR-NEXT:    sw t4, 24(a5)
-; RV32IZCMP-SR-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    sw a0, 20(a5)
-; RV32IZCMP-SR-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    sw a0, 16(a5)
-; RV32IZCMP-SR-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    sw a0, %lo(var_test_irq+12)(t0)
-; RV32IZCMP-SR-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    sw a0, %lo(var_test_irq+8)(t0)
-; RV32IZCMP-SR-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    sw a0, %lo(var_test_irq+4)(t0)
-; RV32IZCMP-SR-NEXT:    lw a0, 28(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    sw a0, %lo(var_test_irq)(t0)
 ; RV32IZCMP-SR-NEXT:    lw t0, 88(sp) # 4-byte Folded Reload
 ; RV32IZCMP-SR-NEXT:    lw t1, 84(sp) # 4-byte Folded Reload
 ; RV32IZCMP-SR-NEXT:    lw t2, 80(sp) # 4-byte Folded Reload
@@ -3299,7 +2797,6 @@ define void @callee_with_irq() "interrupt"="user" {
 ; RV32IZCMP-SR-NEXT:    .cfi_restore t6
 ; RV32IZCMP-SR-NEXT:    addi sp, sp, 32
 ; RV32IZCMP-SR-NEXT:    .cfi_def_cfa_offset 112
->>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
 ; RV32IZCMP-SR-NEXT:    cm.pop {ra, s0-s11}, 112
 ; RV32IZCMP-SR-NEXT:    .cfi_restore ra
 ; RV32IZCMP-SR-NEXT:    .cfi_restore s0
@@ -3320,36 +2817,65 @@ define void @callee_with_irq() "interrupt"="user" {
 ; RV64IZCMP-SR-LABEL: callee_with_irq:
 ; RV64IZCMP-SR:       # %bb.0:
 ; RV64IZCMP-SR-NEXT:    cm.push {ra, s0-s11}, -160
-<<<<<<< HEAD
+; RV64IZCMP-SR-NEXT:    .cfi_def_cfa_offset 160
+; RV64IZCMP-SR-NEXT:    .cfi_offset ra, -104
+; RV64IZCMP-SR-NEXT:    .cfi_offset s0, -96
+; RV64IZCMP-SR-NEXT:    .cfi_offset s1, -88
+; RV64IZCMP-SR-NEXT:    .cfi_offset s2, -80
+; RV64IZCMP-SR-NEXT:    .cfi_offset s3, -72
+; RV64IZCMP-SR-NEXT:    .cfi_offset s4, -64
+; RV64IZCMP-SR-NEXT:    .cfi_offset s5, -56
+; RV64IZCMP-SR-NEXT:    .cfi_offset s6, -48
+; RV64IZCMP-SR-NEXT:    .cfi_offset s7, -40
+; RV64IZCMP-SR-NEXT:    .cfi_offset s8, -32
+; RV64IZCMP-SR-NEXT:    .cfi_offset s9, -24
+; RV64IZCMP-SR-NEXT:    .cfi_offset s10, -16
+; RV64IZCMP-SR-NEXT:    .cfi_offset s11, -8
 ; RV64IZCMP-SR-NEXT:    addi sp, sp, -112
-; RV64IZCMP-SR-NEXT:    sd t0, 152(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd t1, 144(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd t2, 136(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd a0, 128(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd a1, 120(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd a2, 112(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd a3, 104(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd a4, 96(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd a5, 88(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd a6, 80(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd a7, 72(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd t3, 64(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd t4, 56(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd t5, 48(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd t6, 40(sp) # 8-byte Folded Spill
+; RV64IZCMP-SR-NEXT:    .cfi_def_cfa_offset 272
+; RV64IZCMP-SR-NEXT:    sd t0, 160(sp) # 8-byte Folded Spill
+; RV64IZCMP-SR-NEXT:    sd t1, 152(sp) # 8-byte Folded Spill
+; RV64IZCMP-SR-NEXT:    sd t2, 144(sp) # 8-byte Folded Spill
+; RV64IZCMP-SR-NEXT:    sd a0, 136(sp) # 8-byte Folded Spill
+; RV64IZCMP-SR-NEXT:    sd a1, 128(sp) # 8-byte Folded Spill
+; RV64IZCMP-SR-NEXT:    sd a2, 120(sp) # 8-byte Folded Spill
+; RV64IZCMP-SR-NEXT:    sd a3, 112(sp) # 8-byte Folded Spill
+; RV64IZCMP-SR-NEXT:    sd a4, 104(sp) # 8-byte Folded Spill
+; RV64IZCMP-SR-NEXT:    sd a5, 96(sp) # 8-byte Folded Spill
+; RV64IZCMP-SR-NEXT:    sd a6, 88(sp) # 8-byte Folded Spill
+; RV64IZCMP-SR-NEXT:    sd a7, 80(sp) # 8-byte Folded Spill
+; RV64IZCMP-SR-NEXT:    sd t3, 72(sp) # 8-byte Folded Spill
+; RV64IZCMP-SR-NEXT:    sd t4, 64(sp) # 8-byte Folded Spill
+; RV64IZCMP-SR-NEXT:    sd t5, 56(sp) # 8-byte Folded Spill
+; RV64IZCMP-SR-NEXT:    sd t6, 48(sp) # 8-byte Folded Spill
+; RV64IZCMP-SR-NEXT:    .cfi_offset t0, -112
+; RV64IZCMP-SR-NEXT:    .cfi_offset t1, -120
+; RV64IZCMP-SR-NEXT:    .cfi_offset t2, -128
+; RV64IZCMP-SR-NEXT:    .cfi_offset a0, -136
+; RV64IZCMP-SR-NEXT:    .cfi_offset a1, -144
+; RV64IZCMP-SR-NEXT:    .cfi_offset a2, -152
+; RV64IZCMP-SR-NEXT:    .cfi_offset a3, -160
+; RV64IZCMP-SR-NEXT:    .cfi_offset a4, -168
+; RV64IZCMP-SR-NEXT:    .cfi_offset a5, -176
+; RV64IZCMP-SR-NEXT:    .cfi_offset a6, -184
+; RV64IZCMP-SR-NEXT:    .cfi_offset a7, -192
+; RV64IZCMP-SR-NEXT:    .cfi_offset t3, -200
+; RV64IZCMP-SR-NEXT:    .cfi_offset t4, -208
+; RV64IZCMP-SR-NEXT:    .cfi_offset t5, -216
+; RV64IZCMP-SR-NEXT:    .cfi_offset t6, -224
 ; RV64IZCMP-SR-NEXT:    lui a0, %hi(var_test_irq)
 ; RV64IZCMP-SR-NEXT:    lui a2, %hi(var_test_irq)
 ; RV64IZCMP-SR-NEXT:    addi a2, a2, %lo(var_test_irq)
 ; RV64IZCMP-SR-NEXT:    lw a0, %lo(var_test_irq)(a0)
-; RV64IZCMP-SR-NEXT:    sd a0, 32(sp) # 8-byte Folded Spill
+; RV64IZCMP-SR-NEXT:    sd a0, 40(sp) # 8-byte Folded Spill
 ; RV64IZCMP-SR-NEXT:    lw a0, 4(a2)
-; RV64IZCMP-SR-NEXT:    sd a0, 24(sp) # 8-byte Folded Spill
+; RV64IZCMP-SR-NEXT:    sd a0, 32(sp) # 8-byte Folded Spill
 ; RV64IZCMP-SR-NEXT:    lw a0, 8(a2)
-; RV64IZCMP-SR-NEXT:    sd a0, 16(sp) # 8-byte Folded Spill
+; RV64IZCMP-SR-NEXT:    sd a0, 24(sp) # 8-byte Folded Spill
 ; RV64IZCMP-SR-NEXT:    lw a0, 12(a2)
-; RV64IZCMP-SR-NEXT:    sd a0, 8(sp) # 8-byte Folded Spill
+; RV64IZCMP-SR-NEXT:    sd a0, 16(sp) # 8-byte Folded Spill
 ; RV64IZCMP-SR-NEXT:    lw a0, 16(a2)
-; RV64IZCMP-SR-NEXT:    sd a0, 0(sp) # 8-byte Folded Spill
+; RV64IZCMP-SR-NEXT:    sd a0, 8(sp) # 8-byte Folded Spill
 ; RV64IZCMP-SR-NEXT:    lw t4, 20(a2)
 ; RV64IZCMP-SR-NEXT:    lw t5, 24(a2)
 ; RV64IZCMP-SR-NEXT:    lw t6, 28(a2)
@@ -3404,158 +2930,17 @@ define void @callee_with_irq() "interrupt"="user" {
 ; RV64IZCMP-SR-NEXT:    sw t6, 28(a2)
 ; RV64IZCMP-SR-NEXT:    sw t5, 24(a2)
 ; RV64IZCMP-SR-NEXT:    sw t4, 20(a2)
-; RV64IZCMP-SR-NEXT:    ld a0, 0(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    sw a0, 16(a2)
 ; RV64IZCMP-SR-NEXT:    ld a0, 8(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    sw a0, 12(a2)
+; RV64IZCMP-SR-NEXT:    sw a0, 16(a2)
 ; RV64IZCMP-SR-NEXT:    ld a0, 16(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    sw a0, 8(a2)
+; RV64IZCMP-SR-NEXT:    sw a0, 12(a2)
 ; RV64IZCMP-SR-NEXT:    ld a0, 24(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    sw a0, 4(a2)
+; RV64IZCMP-SR-NEXT:    sw a0, 8(a2)
 ; RV64IZCMP-SR-NEXT:    ld a0, 32(sp) # 8-byte Folded Reload
+; RV64IZCMP-SR-NEXT:    sw a0, 4(a2)
+; RV64IZCMP-SR-NEXT:    ld a0, 40(sp) # 8-byte Folded Reload
 ; RV64IZCMP-SR-NEXT:    lui a1, %hi(var_test_irq)
 ; RV64IZCMP-SR-NEXT:    sw a0, %lo(var_test_irq)(a1)
-; RV64IZCMP-SR-NEXT:    ld t0, 152(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    ld t1, 144(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    ld t2, 136(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    ld a0, 128(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    ld a1, 120(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    ld a2, 112(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    ld a3, 104(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    ld a4, 96(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    ld a5, 88(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    ld a6, 80(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    ld a7, 72(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    ld t3, 64(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    ld t4, 56(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    ld t5, 48(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    ld t6, 40(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    addi sp, sp, 112
-=======
-; RV64IZCMP-SR-NEXT:    .cfi_def_cfa_offset 160
-; RV64IZCMP-SR-NEXT:    .cfi_offset ra, -104
-; RV64IZCMP-SR-NEXT:    .cfi_offset s0, -96
-; RV64IZCMP-SR-NEXT:    .cfi_offset s1, -88
-; RV64IZCMP-SR-NEXT:    .cfi_offset s2, -80
-; RV64IZCMP-SR-NEXT:    .cfi_offset s3, -72
-; RV64IZCMP-SR-NEXT:    .cfi_offset s4, -64
-; RV64IZCMP-SR-NEXT:    .cfi_offset s5, -56
-; RV64IZCMP-SR-NEXT:    .cfi_offset s6, -48
-; RV64IZCMP-SR-NEXT:    .cfi_offset s7, -40
-; RV64IZCMP-SR-NEXT:    .cfi_offset s8, -32
-; RV64IZCMP-SR-NEXT:    .cfi_offset s9, -24
-; RV64IZCMP-SR-NEXT:    .cfi_offset s10, -16
-; RV64IZCMP-SR-NEXT:    .cfi_offset s11, -8
-; RV64IZCMP-SR-NEXT:    addi sp, sp, -112
-; RV64IZCMP-SR-NEXT:    .cfi_def_cfa_offset 272
-; RV64IZCMP-SR-NEXT:    sd t0, 160(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd t1, 152(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd t2, 144(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd a0, 136(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd a1, 128(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd a2, 120(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd a3, 112(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd a4, 104(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd a5, 96(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd a6, 88(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd a7, 80(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd t3, 72(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd t4, 64(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd t5, 56(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    sd t6, 48(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    .cfi_offset t0, -112
-; RV64IZCMP-SR-NEXT:    .cfi_offset t1, -120
-; RV64IZCMP-SR-NEXT:    .cfi_offset t2, -128
-; RV64IZCMP-SR-NEXT:    .cfi_offset a0, -136
-; RV64IZCMP-SR-NEXT:    .cfi_offset a1, -144
-; RV64IZCMP-SR-NEXT:    .cfi_offset a2, -152
-; RV64IZCMP-SR-NEXT:    .cfi_offset a3, -160
-; RV64IZCMP-SR-NEXT:    .cfi_offset a4, -168
-; RV64IZCMP-SR-NEXT:    .cfi_offset a5, -176
-; RV64IZCMP-SR-NEXT:    .cfi_offset a6, -184
-; RV64IZCMP-SR-NEXT:    .cfi_offset a7, -192
-; RV64IZCMP-SR-NEXT:    .cfi_offset t3, -200
-; RV64IZCMP-SR-NEXT:    .cfi_offset t4, -208
-; RV64IZCMP-SR-NEXT:    .cfi_offset t5, -216
-; RV64IZCMP-SR-NEXT:    .cfi_offset t6, -224
-; RV64IZCMP-SR-NEXT:    lui t0, %hi(var_test_irq)
-; RV64IZCMP-SR-NEXT:    lw a0, %lo(var_test_irq)(t0)
-; RV64IZCMP-SR-NEXT:    sd a0, 40(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    lw a0, %lo(var_test_irq+4)(t0)
-; RV64IZCMP-SR-NEXT:    sd a0, 32(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    lw a0, %lo(var_test_irq+8)(t0)
-; RV64IZCMP-SR-NEXT:    sd a0, 24(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    lw a0, %lo(var_test_irq+12)(t0)
-; RV64IZCMP-SR-NEXT:    sd a0, 16(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    addi a5, t0, %lo(var_test_irq)
-; RV64IZCMP-SR-NEXT:    lw a0, 16(a5)
-; RV64IZCMP-SR-NEXT:    sd a0, 8(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    lw a0, 20(a5)
-; RV64IZCMP-SR-NEXT:    sd a0, 0(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    lw t4, 24(a5)
-; RV64IZCMP-SR-NEXT:    lw t5, 28(a5)
-; RV64IZCMP-SR-NEXT:    lw t6, 32(a5)
-; RV64IZCMP-SR-NEXT:    lw s2, 36(a5)
-; RV64IZCMP-SR-NEXT:    lw s3, 40(a5)
-; RV64IZCMP-SR-NEXT:    lw s4, 44(a5)
-; RV64IZCMP-SR-NEXT:    lw s5, 48(a5)
-; RV64IZCMP-SR-NEXT:    lw s6, 52(a5)
-; RV64IZCMP-SR-NEXT:    lw s7, 56(a5)
-; RV64IZCMP-SR-NEXT:    lw s8, 60(a5)
-; RV64IZCMP-SR-NEXT:    lw s9, 64(a5)
-; RV64IZCMP-SR-NEXT:    lw s10, 68(a5)
-; RV64IZCMP-SR-NEXT:    lw s11, 72(a5)
-; RV64IZCMP-SR-NEXT:    lw ra, 76(a5)
-; RV64IZCMP-SR-NEXT:    lw s1, 80(a5)
-; RV64IZCMP-SR-NEXT:    lw t3, 84(a5)
-; RV64IZCMP-SR-NEXT:    lw t2, 88(a5)
-; RV64IZCMP-SR-NEXT:    lw t1, 92(a5)
-; RV64IZCMP-SR-NEXT:    lw a7, 112(a5)
-; RV64IZCMP-SR-NEXT:    lw s0, 116(a5)
-; RV64IZCMP-SR-NEXT:    lw a3, 120(a5)
-; RV64IZCMP-SR-NEXT:    lw a0, 124(a5)
-; RV64IZCMP-SR-NEXT:    lw a6, 96(a5)
-; RV64IZCMP-SR-NEXT:    lw a4, 100(a5)
-; RV64IZCMP-SR-NEXT:    lw a2, 104(a5)
-; RV64IZCMP-SR-NEXT:    lw a1, 108(a5)
-; RV64IZCMP-SR-NEXT:    sw a0, 124(a5)
-; RV64IZCMP-SR-NEXT:    sw a3, 120(a5)
-; RV64IZCMP-SR-NEXT:    sw s0, 116(a5)
-; RV64IZCMP-SR-NEXT:    sw a7, 112(a5)
-; RV64IZCMP-SR-NEXT:    sw a1, 108(a5)
-; RV64IZCMP-SR-NEXT:    sw a2, 104(a5)
-; RV64IZCMP-SR-NEXT:    sw a4, 100(a5)
-; RV64IZCMP-SR-NEXT:    sw a6, 96(a5)
-; RV64IZCMP-SR-NEXT:    sw t1, 92(a5)
-; RV64IZCMP-SR-NEXT:    sw t2, 88(a5)
-; RV64IZCMP-SR-NEXT:    sw t3, 84(a5)
-; RV64IZCMP-SR-NEXT:    sw s1, 80(a5)
-; RV64IZCMP-SR-NEXT:    sw ra, 76(a5)
-; RV64IZCMP-SR-NEXT:    sw s11, 72(a5)
-; RV64IZCMP-SR-NEXT:    sw s10, 68(a5)
-; RV64IZCMP-SR-NEXT:    sw s9, 64(a5)
-; RV64IZCMP-SR-NEXT:    sw s8, 60(a5)
-; RV64IZCMP-SR-NEXT:    sw s7, 56(a5)
-; RV64IZCMP-SR-NEXT:    sw s6, 52(a5)
-; RV64IZCMP-SR-NEXT:    sw s5, 48(a5)
-; RV64IZCMP-SR-NEXT:    sw s4, 44(a5)
-; RV64IZCMP-SR-NEXT:    sw s3, 40(a5)
-; RV64IZCMP-SR-NEXT:    sw s2, 36(a5)
-; RV64IZCMP-SR-NEXT:    sw t6, 32(a5)
-; RV64IZCMP-SR-NEXT:    sw t5, 28(a5)
-; RV64IZCMP-SR-NEXT:    sw t4, 24(a5)
-; RV64IZCMP-SR-NEXT:    ld a0, 0(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    sw a0, 20(a5)
-; RV64IZCMP-SR-NEXT:    ld a0, 8(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    sw a0, 16(a5)
-; RV64IZCMP-SR-NEXT:    ld a0, 16(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    sw a0, %lo(var_test_irq+12)(t0)
-; RV64IZCMP-SR-NEXT:    ld a0, 24(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    sw a0, %lo(var_test_irq+8)(t0)
-; RV64IZCMP-SR-NEXT:    ld a0, 32(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    sw a0, %lo(var_test_irq+4)(t0)
-; RV64IZCMP-SR-NEXT:    ld a0, 40(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    sw a0, %lo(var_test_irq)(t0)
 ; RV64IZCMP-SR-NEXT:    ld t0, 160(sp) # 8-byte Folded Reload
 ; RV64IZCMP-SR-NEXT:    ld t1, 152(sp) # 8-byte Folded Reload
 ; RV64IZCMP-SR-NEXT:    ld t2, 144(sp) # 8-byte Folded Reload
@@ -3588,7 +2973,6 @@ define void @callee_with_irq() "interrupt"="user" {
 ; RV64IZCMP-SR-NEXT:    .cfi_restore t6
 ; RV64IZCMP-SR-NEXT:    addi sp, sp, 112
 ; RV64IZCMP-SR-NEXT:    .cfi_def_cfa_offset 160
->>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
 ; RV64IZCMP-SR-NEXT:    cm.pop {ra, s0-s11}, 160
 ; RV64IZCMP-SR-NEXT:    .cfi_restore ra
 ; RV64IZCMP-SR-NEXT:    .cfi_restore s0
@@ -3638,12 +3022,6 @@ define void @callee_with_irq() "interrupt"="user" {
 ; RV32I-NEXT:    sw t4, 40(sp) # 4-byte Folded Spill
 ; RV32I-NEXT:    sw t5, 36(sp) # 4-byte Folded Spill
 ; RV32I-NEXT:    sw t6, 32(sp) # 4-byte Folded Spill
-<<<<<<< HEAD
-; RV32I-NEXT:    lui a0, %hi(var_test_irq)
-; RV32I-NEXT:    lui a2, %hi(var_test_irq)
-; RV32I-NEXT:    addi a2, a2, %lo(var_test_irq)
-; RV32I-NEXT:    lw a0, %lo(var_test_irq)(a0)
-=======
 ; RV32I-NEXT:    .cfi_offset ra, -4
 ; RV32I-NEXT:    .cfi_offset t0, -8
 ; RV32I-NEXT:    .cfi_offset t1, -12
@@ -3672,9 +3050,10 @@ define void @callee_with_irq() "interrupt"="user" {
 ; RV32I-NEXT:    .cfi_offset t4, -104
 ; RV32I-NEXT:    .cfi_offset t5, -108
 ; RV32I-NEXT:    .cfi_offset t6, -112
-; RV32I-NEXT:    lui a7, %hi(var_test_irq)
-; RV32I-NEXT:    lw a0, %lo(var_test_irq)(a7)
->>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
+; RV32I-NEXT:    lui a0, %hi(var_test_irq)
+; RV32I-NEXT:    lui a2, %hi(var_test_irq)
+; RV32I-NEXT:    addi a2, a2, %lo(var_test_irq)
+; RV32I-NEXT:    lw a0, %lo(var_test_irq)(a0)
 ; RV32I-NEXT:    sw a0, 28(sp) # 4-byte Folded Spill
 ; RV32I-NEXT:    lw a0, 4(a2)
 ; RV32I-NEXT:    sw a0, 24(sp) # 4-byte Folded Spill
@@ -3841,12 +3220,6 @@ define void @callee_with_irq() "interrupt"="user" {
 ; RV64I-NEXT:    sd t4, 64(sp) # 8-byte Folded Spill
 ; RV64I-NEXT:    sd t5, 56(sp) # 8-byte Folded Spill
 ; RV64I-NEXT:    sd t6, 48(sp) # 8-byte Folded Spill
-<<<<<<< HEAD
-; RV64I-NEXT:    lui a0, %hi(var_test_irq)
-; RV64I-NEXT:    lui a2, %hi(var_test_irq)
-; RV64I-NEXT:    addi a2, a2, %lo(var_test_irq)
-; RV64I-NEXT:    lw a0, %lo(var_test_irq)(a0)
-=======
 ; RV64I-NEXT:    .cfi_offset ra, -8
 ; RV64I-NEXT:    .cfi_offset t0, -16
 ; RV64I-NEXT:    .cfi_offset t1, -24
@@ -3875,9 +3248,10 @@ define void @callee_with_irq() "interrupt"="user" {
 ; RV64I-NEXT:    .cfi_offset t4, -208
 ; RV64I-NEXT:    .cfi_offset t5, -216
 ; RV64I-NEXT:    .cfi_offset t6, -224
-; RV64I-NEXT:    lui a7, %hi(var_test_irq)
-; RV64I-NEXT:    lw a0, %lo(var_test_irq)(a7)
->>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
+; RV64I-NEXT:    lui a0, %hi(var_test_irq)
+; RV64I-NEXT:    lui a2, %hi(var_test_irq)
+; RV64I-NEXT:    addi a2, a2, %lo(var_test_irq)
+; RV64I-NEXT:    lw a0, %lo(var_test_irq)(a0)
 ; RV64I-NEXT:    sd a0, 40(sp) # 8-byte Folded Spill
 ; RV64I-NEXT:    lw a0, 4(a2)
 ; RV64I-NEXT:    sd a0, 32(sp) # 8-byte Folded Spill
@@ -4019,21 +3393,34 @@ define void @callee_with_irq() "interrupt"="user" {
 define void @callee_no_irq() {
 ; RV32IZCMP-LABEL: callee_no_irq:
 ; RV32IZCMP:       # %bb.0:
-<<<<<<< HEAD
-; RV32IZCMP-NEXT:    cm.push {ra, s0-s11}, -96
+; RV32IZCMP-NEXT:    cm.push {ra, s0-s11}, -80
+; RV32IZCMP-NEXT:    .cfi_def_cfa_offset 80
+; RV32IZCMP-NEXT:    .cfi_offset ra, -52
+; RV32IZCMP-NEXT:    .cfi_offset s0, -48
+; RV32IZCMP-NEXT:    .cfi_offset s1, -44
+; RV32IZCMP-NEXT:    .cfi_offset s2, -40
+; RV32IZCMP-NEXT:    .cfi_offset s3, -36
+; RV32IZCMP-NEXT:    .cfi_offset s4, -32
+; RV32IZCMP-NEXT:    .cfi_offset s5, -28
+; RV32IZCMP-NEXT:    .cfi_offset s6, -24
+; RV32IZCMP-NEXT:    .cfi_offset s7, -20
+; RV32IZCMP-NEXT:    .cfi_offset s8, -16
+; RV32IZCMP-NEXT:    .cfi_offset s9, -12
+; RV32IZCMP-NEXT:    .cfi_offset s10, -8
+; RV32IZCMP-NEXT:    .cfi_offset s11, -4
 ; RV32IZCMP-NEXT:    lui a0, %hi(var_test_irq)
 ; RV32IZCMP-NEXT:    lui a2, %hi(var_test_irq)
 ; RV32IZCMP-NEXT:    addi a2, a2, %lo(var_test_irq)
 ; RV32IZCMP-NEXT:    lw a0, %lo(var_test_irq)(a0)
-; RV32IZCMP-NEXT:    sw a0, 28(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    lw a0, 4(a2)
 ; RV32IZCMP-NEXT:    sw a0, 24(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    lw a0, 8(a2)
+; RV32IZCMP-NEXT:    lw a0, 4(a2)
 ; RV32IZCMP-NEXT:    sw a0, 20(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    lw a0, 12(a2)
+; RV32IZCMP-NEXT:    lw a0, 8(a2)
 ; RV32IZCMP-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    lw a0, 16(a2)
+; RV32IZCMP-NEXT:    lw a0, 12(a2)
 ; RV32IZCMP-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
+; RV32IZCMP-NEXT:    lw a0, 16(a2)
+; RV32IZCMP-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
 ; RV32IZCMP-NEXT:    lw t4, 20(a2)
 ; RV32IZCMP-NEXT:    lw t5, 24(a2)
 ; RV32IZCMP-NEXT:    lw t6, 28(a2)
@@ -4088,132 +3475,49 @@ define void @callee_no_irq() {
 ; RV32IZCMP-NEXT:    sw t6, 28(a2)
 ; RV32IZCMP-NEXT:    sw t5, 24(a2)
 ; RV32IZCMP-NEXT:    sw t4, 20(a2)
-; RV32IZCMP-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
+; RV32IZCMP-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
 ; RV32IZCMP-NEXT:    sw a0, 16(a2)
-; RV32IZCMP-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
+; RV32IZCMP-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
 ; RV32IZCMP-NEXT:    sw a0, 12(a2)
-; RV32IZCMP-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
+; RV32IZCMP-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
 ; RV32IZCMP-NEXT:    sw a0, 8(a2)
-; RV32IZCMP-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
+; RV32IZCMP-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
 ; RV32IZCMP-NEXT:    sw a0, 4(a2)
-; RV32IZCMP-NEXT:    lw a0, 28(sp) # 4-byte Folded Reload
+; RV32IZCMP-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
 ; RV32IZCMP-NEXT:    lui a1, %hi(var_test_irq)
 ; RV32IZCMP-NEXT:    sw a0, %lo(var_test_irq)(a1)
-; RV32IZCMP-NEXT:    cm.popret {ra, s0-s11}, 96
-=======
-; RV32IZCMP-NEXT:    cm.push {ra, s0-s11}, -80
-; RV32IZCMP-NEXT:    .cfi_def_cfa_offset 80
-; RV32IZCMP-NEXT:    .cfi_offset ra, -52
-; RV32IZCMP-NEXT:    .cfi_offset s0, -48
-; RV32IZCMP-NEXT:    .cfi_offset s1, -44
-; RV32IZCMP-NEXT:    .cfi_offset s2, -40
-; RV32IZCMP-NEXT:    .cfi_offset s3, -36
-; RV32IZCMP-NEXT:    .cfi_offset s4, -32
-; RV32IZCMP-NEXT:    .cfi_offset s5, -28
-; RV32IZCMP-NEXT:    .cfi_offset s6, -24
-; RV32IZCMP-NEXT:    .cfi_offset s7, -20
-; RV32IZCMP-NEXT:    .cfi_offset s8, -16
-; RV32IZCMP-NEXT:    .cfi_offset s9, -12
-; RV32IZCMP-NEXT:    .cfi_offset s10, -8
-; RV32IZCMP-NEXT:    .cfi_offset s11, -4
-; RV32IZCMP-NEXT:    lui t0, %hi(var_test_irq)
-; RV32IZCMP-NEXT:    lw a0, %lo(var_test_irq)(t0)
-; RV32IZCMP-NEXT:    sw a0, 24(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    lw a0, %lo(var_test_irq+4)(t0)
-; RV32IZCMP-NEXT:    sw a0, 20(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    lw a0, %lo(var_test_irq+8)(t0)
-; RV32IZCMP-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    lw a0, %lo(var_test_irq+12)(t0)
-; RV32IZCMP-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    addi a5, t0, %lo(var_test_irq)
-; RV32IZCMP-NEXT:    lw a0, 16(a5)
-; RV32IZCMP-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    lw a0, 20(a5)
-; RV32IZCMP-NEXT:    sw a0, 4(sp) # 4-byte Folded Spill
-; RV32IZCMP-NEXT:    lw t4, 24(a5)
-; RV32IZCMP-NEXT:    lw t5, 28(a5)
-; RV32IZCMP-NEXT:    lw t6, 32(a5)
-; RV32IZCMP-NEXT:    lw s2, 36(a5)
-; RV32IZCMP-NEXT:    lw s3, 40(a5)
-; RV32IZCMP-NEXT:    lw s4, 44(a5)
-; RV32IZCMP-NEXT:    lw s5, 48(a5)
-; RV32IZCMP-NEXT:    lw s6, 52(a5)
-; RV32IZCMP-NEXT:    lw s7, 56(a5)
-; RV32IZCMP-NEXT:    lw s8, 60(a5)
-; RV32IZCMP-NEXT:    lw s9, 64(a5)
-; RV32IZCMP-NEXT:    lw s10, 68(a5)
-; RV32IZCMP-NEXT:    lw s11, 72(a5)
-; RV32IZCMP-NEXT:    lw ra, 76(a5)
-; RV32IZCMP-NEXT:    lw s1, 80(a5)
-; RV32IZCMP-NEXT:    lw t3, 84(a5)
-; RV32IZCMP-NEXT:    lw t2, 88(a5)
-; RV32IZCMP-NEXT:    lw t1, 92(a5)
-; RV32IZCMP-NEXT:    lw a7, 112(a5)
-; RV32IZCMP-NEXT:    lw s0, 116(a5)
-; RV32IZCMP-NEXT:    lw a3, 120(a5)
-; RV32IZCMP-NEXT:    lw a0, 124(a5)
-; RV32IZCMP-NEXT:    lw a6, 96(a5)
-; RV32IZCMP-NEXT:    lw a4, 100(a5)
-; RV32IZCMP-NEXT:    lw a2, 104(a5)
-; RV32IZCMP-NEXT:    lw a1, 108(a5)
-; RV32IZCMP-NEXT:    sw a0, 124(a5)
-; RV32IZCMP-NEXT:    sw a3, 120(a5)
-; RV32IZCMP-NEXT:    sw s0, 116(a5)
-; RV32IZCMP-NEXT:    sw a7, 112(a5)
-; RV32IZCMP-NEXT:    sw a1, 108(a5)
-; RV32IZCMP-NEXT:    sw a2, 104(a5)
-; RV32IZCMP-NEXT:    sw a4, 100(a5)
-; RV32IZCMP-NEXT:    sw a6, 96(a5)
-; RV32IZCMP-NEXT:    sw t1, 92(a5)
-; RV32IZCMP-NEXT:    sw t2, 88(a5)
-; RV32IZCMP-NEXT:    sw t3, 84(a5)
-; RV32IZCMP-NEXT:    sw s1, 80(a5)
-; RV32IZCMP-NEXT:    sw ra, 76(a5)
-; RV32IZCMP-NEXT:    sw s11, 72(a5)
-; RV32IZCMP-NEXT:    sw s10, 68(a5)
-; RV32IZCMP-NEXT:    sw s9, 64(a5)
-; RV32IZCMP-NEXT:    sw s8, 60(a5)
-; RV32IZCMP-NEXT:    sw s7, 56(a5)
-; RV32IZCMP-NEXT:    sw s6, 52(a5)
-; RV32IZCMP-NEXT:    sw s5, 48(a5)
-; RV32IZCMP-NEXT:    sw s4, 44(a5)
-; RV32IZCMP-NEXT:    sw s3, 40(a5)
-; RV32IZCMP-NEXT:    sw s2, 36(a5)
-; RV32IZCMP-NEXT:    sw t6, 32(a5)
-; RV32IZCMP-NEXT:    sw t5, 28(a5)
-; RV32IZCMP-NEXT:    sw t4, 24(a5)
-; RV32IZCMP-NEXT:    lw a0, 4(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    sw a0, 20(a5)
-; RV32IZCMP-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    sw a0, 16(a5)
-; RV32IZCMP-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    sw a0, %lo(var_test_irq+12)(t0)
-; RV32IZCMP-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    sw a0, %lo(var_test_irq+8)(t0)
-; RV32IZCMP-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    sw a0, %lo(var_test_irq+4)(t0)
-; RV32IZCMP-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
-; RV32IZCMP-NEXT:    sw a0, %lo(var_test_irq)(t0)
 ; RV32IZCMP-NEXT:    cm.popret {ra, s0-s11}, 80
->>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
 ;
 ; RV64IZCMP-LABEL: callee_no_irq:
 ; RV64IZCMP:       # %bb.0:
-; RV64IZCMP-NEXT:    cm.push {ra, s0-s11}, -160
-<<<<<<< HEAD
+; RV64IZCMP-NEXT:    cm.push {ra, s0-s11}, -144
+; RV64IZCMP-NEXT:    .cfi_def_cfa_offset 144
+; RV64IZCMP-NEXT:    .cfi_offset ra, -104
+; RV64IZCMP-NEXT:    .cfi_offset s0, -96
+; RV64IZCMP-NEXT:    .cfi_offset s1, -88
+; RV64IZCMP-NEXT:    .cfi_offset s2, -80
+; RV64IZCMP-NEXT:    .cfi_offset s3, -72
+; RV64IZCMP-NEXT:    .cfi_offset s4, -64
+; RV64IZCMP-NEXT:    .cfi_offset s5, -56
+; RV64IZCMP-NEXT:    .cfi_offset s6, -48
+; RV64IZCMP-NEXT:    .cfi_offset s7, -40
+; RV64IZCMP-NEXT:    .cfi_offset s8, -32
+; RV64IZCMP-NEXT:    .cfi_offset s9, -24
+; RV64IZCMP-NEXT:    .cfi_offset s10, -16
+; RV64IZCMP-NEXT:    .cfi_offset s11, -8
 ; RV64IZCMP-NEXT:    lui a0, %hi(var_test_irq)
 ; RV64IZCMP-NEXT:    lui a2, %hi(var_test_irq)
 ; RV64IZCMP-NEXT:    addi a2, a2, %lo(var_test_irq)
 ; RV64IZCMP-NEXT:    lw a0, %lo(var_test_irq)(a0)
-; RV64IZCMP-NEXT:    sd a0, 40(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    lw a0, 4(a2)
 ; RV64IZCMP-NEXT:    sd a0, 32(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    lw a0, 8(a2)
+; RV64IZCMP-NEXT:    lw a0, 4(a2)
 ; RV64IZCMP-NEXT:    sd a0, 24(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    lw a0, 12(a2)
+; RV64IZCMP-NEXT:    lw a0, 8(a2)
 ; RV64IZCMP-NEXT:    sd a0, 16(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    lw a0, 16(a2)
+; RV64IZCMP-NEXT:    lw a0, 12(a2)
 ; RV64IZCMP-NEXT:    sd a0, 8(sp) # 8-byte Folded Spill
+; RV64IZCMP-NEXT:    lw a0, 16(a2)
+; RV64IZCMP-NEXT:    sd a0, 0(sp) # 8-byte Folded Spill
 ; RV64IZCMP-NEXT:    lw t4, 20(a2)
 ; RV64IZCMP-NEXT:    lw t5, 24(a2)
 ; RV64IZCMP-NEXT:    lw t6, 28(a2)
@@ -4268,130 +3572,49 @@ define void @callee_no_irq() {
 ; RV64IZCMP-NEXT:    sw t6, 28(a2)
 ; RV64IZCMP-NEXT:    sw t5, 24(a2)
 ; RV64IZCMP-NEXT:    sw t4, 20(a2)
-; RV64IZCMP-NEXT:    ld a0, 8(sp) # 8-byte Folded Reload
+; RV64IZCMP-NEXT:    ld a0, 0(sp) # 8-byte Folded Reload
 ; RV64IZCMP-NEXT:    sw a0, 16(a2)
-; RV64IZCMP-NEXT:    ld a0, 16(sp) # 8-byte Folded Reload
+; RV64IZCMP-NEXT:    ld a0, 8(sp) # 8-byte Folded Reload
 ; RV64IZCMP-NEXT:    sw a0, 12(a2)
-; RV64IZCMP-NEXT:    ld a0, 24(sp) # 8-byte Folded Reload
+; RV64IZCMP-NEXT:    ld a0, 16(sp) # 8-byte Folded Reload
 ; RV64IZCMP-NEXT:    sw a0, 8(a2)
-; RV64IZCMP-NEXT:    ld a0, 32(sp) # 8-byte Folded Reload
+; RV64IZCMP-NEXT:    ld a0, 24(sp) # 8-byte Folded Reload
 ; RV64IZCMP-NEXT:    sw a0, 4(a2)
-; RV64IZCMP-NEXT:    ld a0, 40(sp) # 8-byte Folded Reload
+; RV64IZCMP-NEXT:    ld a0, 32(sp) # 8-byte Folded Reload
 ; RV64IZCMP-NEXT:    lui a1, %hi(var_test_irq)
 ; RV64IZCMP-NEXT:    sw a0, %lo(var_test_irq)(a1)
-=======
-; RV64IZCMP-NEXT:    .cfi_def_cfa_offset 160
-; RV64IZCMP-NEXT:    .cfi_offset ra, -104
-; RV64IZCMP-NEXT:    .cfi_offset s0, -96
-; RV64IZCMP-NEXT:    .cfi_offset s1, -88
-; RV64IZCMP-NEXT:    .cfi_offset s2, -80
-; RV64IZCMP-NEXT:    .cfi_offset s3, -72
-; RV64IZCMP-NEXT:    .cfi_offset s4, -64
-; RV64IZCMP-NEXT:    .cfi_offset s5, -56
-; RV64IZCMP-NEXT:    .cfi_offset s6, -48
-; RV64IZCMP-NEXT:    .cfi_offset s7, -40
-; RV64IZCMP-NEXT:    .cfi_offset s8, -32
-; RV64IZCMP-NEXT:    .cfi_offset s9, -24
-; RV64IZCMP-NEXT:    .cfi_offset s10, -16
-; RV64IZCMP-NEXT:    .cfi_offset s11, -8
-; RV64IZCMP-NEXT:    lui t0, %hi(var_test_irq)
-; RV64IZCMP-NEXT:    lw a0, %lo(var_test_irq)(t0)
-; RV64IZCMP-NEXT:    sd a0, 48(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    lw a0, %lo(var_test_irq+4)(t0)
-; RV64IZCMP-NEXT:    sd a0, 40(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    lw a0, %lo(var_test_irq+8)(t0)
-; RV64IZCMP-NEXT:    sd a0, 32(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    lw a0, %lo(var_test_irq+12)(t0)
-; RV64IZCMP-NEXT:    sd a0, 24(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    addi a5, t0, %lo(var_test_irq)
-; RV64IZCMP-NEXT:    lw a0, 16(a5)
-; RV64IZCMP-NEXT:    sd a0, 16(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    lw a0, 20(a5)
-; RV64IZCMP-NEXT:    sd a0, 8(sp) # 8-byte Folded Spill
-; RV64IZCMP-NEXT:    lw t4, 24(a5)
-; RV64IZCMP-NEXT:    lw t5, 28(a5)
-; RV64IZCMP-NEXT:    lw t6, 32(a5)
-; RV64IZCMP-NEXT:    lw s2, 36(a5)
-; RV64IZCMP-NEXT:    lw s3, 40(a5)
-; RV64IZCMP-NEXT:    lw s4, 44(a5)
-; RV64IZCMP-NEXT:    lw s5, 48(a5)
-; RV64IZCMP-NEXT:    lw s6, 52(a5)
-; RV64IZCMP-NEXT:    lw s7, 56(a5)
-; RV64IZCMP-NEXT:    lw s8, 60(a5)
-; RV64IZCMP-NEXT:    lw s9, 64(a5)
-; RV64IZCMP-NEXT:    lw s10, 68(a5)
-; RV64IZCMP-NEXT:    lw s11, 72(a5)
-; RV64IZCMP-NEXT:    lw ra, 76(a5)
-; RV64IZCMP-NEXT:    lw s1, 80(a5)
-; RV64IZCMP-NEXT:    lw t3, 84(a5)
-; RV64IZCMP-NEXT:    lw t2, 88(a5)
-; RV64IZCMP-NEXT:    lw t1, 92(a5)
-; RV64IZCMP-NEXT:    lw a7, 112(a5)
-; RV64IZCMP-NEXT:    lw s0, 116(a5)
-; RV64IZCMP-NEXT:    lw a3, 120(a5)
-; RV64IZCMP-NEXT:    lw a0, 124(a5)
-; RV64IZCMP-NEXT:    lw a6, 96(a5)
-; RV64IZCMP-NEXT:    lw a4, 100(a5)
-; RV64IZCMP-NEXT:    lw a2, 104(a5)
-; RV64IZCMP-NEXT:    lw a1, 108(a5)
-; RV64IZCMP-NEXT:    sw a0, 124(a5)
-; RV64IZCMP-NEXT:    sw a3, 120(a5)
-; RV64IZCMP-NEXT:    sw s0, 116(a5)
-; RV64IZCMP-NEXT:    sw a7, 112(a5)
-; RV64IZCMP-NEXT:    sw a1, 108(a5)
-; RV64IZCMP-NEXT:    sw a2, 104(a5)
-; RV64IZCMP-NEXT:    sw a4, 100(a5)
-; RV64IZCMP-NEXT:    sw a6, 96(a5)
-; RV64IZCMP-NEXT:    sw t1, 92(a5)
-; RV64IZCMP-NEXT:    sw t2, 88(a5)
-; RV64IZCMP-NEXT:    sw t3, 84(a5)
-; RV64IZCMP-NEXT:    sw s1, 80(a5)
-; RV64IZCMP-NEXT:    sw ra, 76(a5)
-; RV64IZCMP-NEXT:    sw s11, 72(a5)
-; RV64IZCMP-NEXT:    sw s10, 68(a5)
-; RV64IZCMP-NEXT:    sw s9, 64(a5)
-; RV64IZCMP-NEXT:    sw s8, 60(a5)
-; RV64IZCMP-NEXT:    sw s7, 56(a5)
-; RV64IZCMP-NEXT:    sw s6, 52(a5)
-; RV64IZCMP-NEXT:    sw s5, 48(a5)
-; RV64IZCMP-NEXT:    sw s4, 44(a5)
-; RV64IZCMP-NEXT:    sw s3, 40(a5)
-; RV64IZCMP-NEXT:    sw s2, 36(a5)
-; RV64IZCMP-NEXT:    sw t6, 32(a5)
-; RV64IZCMP-NEXT:    sw t5, 28(a5)
-; RV64IZCMP-NEXT:    sw t4, 24(a5)
-; RV64IZCMP-NEXT:    ld a0, 8(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    sw a0, 20(a5)
-; RV64IZCMP-NEXT:    ld a0, 16(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    sw a0, 16(a5)
-; RV64IZCMP-NEXT:    ld a0, 24(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    sw a0, %lo(var_test_irq+12)(t0)
-; RV64IZCMP-NEXT:    ld a0, 32(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    sw a0, %lo(var_test_irq+8)(t0)
-; RV64IZCMP-NEXT:    ld a0, 40(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    sw a0, %lo(var_test_irq+4)(t0)
-; RV64IZCMP-NEXT:    ld a0, 48(sp) # 8-byte Folded Reload
-; RV64IZCMP-NEXT:    sw a0, %lo(var_test_irq)(t0)
->>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
-; RV64IZCMP-NEXT:    cm.popret {ra, s0-s11}, 160
+; RV64IZCMP-NEXT:    cm.popret {ra, s0-s11}, 144
 ;
 ; RV32IZCMP-SR-LABEL: callee_no_irq:
 ; RV32IZCMP-SR:       # %bb.0:
-<<<<<<< HEAD
-; RV32IZCMP-SR-NEXT:    cm.push {ra, s0-s11}, -96
+; RV32IZCMP-SR-NEXT:    cm.push {ra, s0-s11}, -80
+; RV32IZCMP-SR-NEXT:    .cfi_def_cfa_offset 80
+; RV32IZCMP-SR-NEXT:    .cfi_offset ra, -52
+; RV32IZCMP-SR-NEXT:    .cfi_offset s0, -48
+; RV32IZCMP-SR-NEXT:    .cfi_offset s1, -44
+; RV32IZCMP-SR-NEXT:    .cfi_offset s2, -40
+; RV32IZCMP-SR-NEXT:    .cfi_offset s3, -36
+; RV32IZCMP-SR-NEXT:    .cfi_offset s4, -32
+; RV32IZCMP-SR-NEXT:    .cfi_offset s5, -28
+; RV32IZCMP-SR-NEXT:    .cfi_offset s6, -24
+; RV32IZCMP-SR-NEXT:    .cfi_offset s7, -20
+; RV32IZCMP-SR-NEXT:    .cfi_offset s8, -16
+; RV32IZCMP-SR-NEXT:    .cfi_offset s9, -12
+; RV32IZCMP-SR-NEXT:    .cfi_offset s10, -8
+; RV32IZCMP-SR-NEXT:    .cfi_offset s11, -4
 ; RV32IZCMP-SR-NEXT:    lui a0, %hi(var_test_irq)
 ; RV32IZCMP-SR-NEXT:    lui a2, %hi(var_test_irq)
 ; RV32IZCMP-SR-NEXT:    addi a2, a2, %lo(var_test_irq)
 ; RV32IZCMP-SR-NEXT:    lw a0, %lo(var_test_irq)(a0)
-; RV32IZCMP-SR-NEXT:    sw a0, 28(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    lw a0, 4(a2)
 ; RV32IZCMP-SR-NEXT:    sw a0, 24(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    lw a0, 8(a2)
+; RV32IZCMP-SR-NEXT:    lw a0, 4(a2)
 ; RV32IZCMP-SR-NEXT:    sw a0, 20(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    lw a0, 12(a2)
+; RV32IZCMP-SR-NEXT:    lw a0, 8(a2)
 ; RV32IZCMP-SR-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    lw a0, 16(a2)
+; RV32IZCMP-SR-NEXT:    lw a0, 12(a2)
 ; RV32IZCMP-SR-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
+; RV32IZCMP-SR-NEXT:    lw a0, 16(a2)
+; RV32IZCMP-SR-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
 ; RV32IZCMP-SR-NEXT:    lw t4, 20(a2)
 ; RV32IZCMP-SR-NEXT:    lw t5, 24(a2)
 ; RV32IZCMP-SR-NEXT:    lw t6, 28(a2)
@@ -4446,132 +3669,49 @@ define void @callee_no_irq() {
 ; RV32IZCMP-SR-NEXT:    sw t6, 28(a2)
 ; RV32IZCMP-SR-NEXT:    sw t5, 24(a2)
 ; RV32IZCMP-SR-NEXT:    sw t4, 20(a2)
-; RV32IZCMP-SR-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
+; RV32IZCMP-SR-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
 ; RV32IZCMP-SR-NEXT:    sw a0, 16(a2)
-; RV32IZCMP-SR-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
+; RV32IZCMP-SR-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
 ; RV32IZCMP-SR-NEXT:    sw a0, 12(a2)
-; RV32IZCMP-SR-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
+; RV32IZCMP-SR-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
 ; RV32IZCMP-SR-NEXT:    sw a0, 8(a2)
-; RV32IZCMP-SR-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
+; RV32IZCMP-SR-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
 ; RV32IZCMP-SR-NEXT:    sw a0, 4(a2)
-; RV32IZCMP-SR-NEXT:    lw a0, 28(sp) # 4-byte Folded Reload
+; RV32IZCMP-SR-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
 ; RV32IZCMP-SR-NEXT:    lui a1, %hi(var_test_irq)
 ; RV32IZCMP-SR-NEXT:    sw a0, %lo(var_test_irq)(a1)
-; RV32IZCMP-SR-NEXT:    cm.popret {ra, s0-s11}, 96
-=======
-; RV32IZCMP-SR-NEXT:    cm.push {ra, s0-s11}, -80
-; RV32IZCMP-SR-NEXT:    .cfi_def_cfa_offset 80
-; RV32IZCMP-SR-NEXT:    .cfi_offset ra, -52
-; RV32IZCMP-SR-NEXT:    .cfi_offset s0, -48
-; RV32IZCMP-SR-NEXT:    .cfi_offset s1, -44
-; RV32IZCMP-SR-NEXT:    .cfi_offset s2, -40
-; RV32IZCMP-SR-NEXT:    .cfi_offset s3, -36
-; RV32IZCMP-SR-NEXT:    .cfi_offset s4, -32
-; RV32IZCMP-SR-NEXT:    .cfi_offset s5, -28
-; RV32IZCMP-SR-NEXT:    .cfi_offset s6, -24
-; RV32IZCMP-SR-NEXT:    .cfi_offset s7, -20
-; RV32IZCMP-SR-NEXT:    .cfi_offset s8, -16
-; RV32IZCMP-SR-NEXT:    .cfi_offset s9, -12
-; RV32IZCMP-SR-NEXT:    .cfi_offset s10, -8
-; RV32IZCMP-SR-NEXT:    .cfi_offset s11, -4
-; RV32IZCMP-SR-NEXT:    lui t0, %hi(var_test_irq)
-; RV32IZCMP-SR-NEXT:    lw a0, %lo(var_test_irq)(t0)
-; RV32IZCMP-SR-NEXT:    sw a0, 24(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    lw a0, %lo(var_test_irq+4)(t0)
-; RV32IZCMP-SR-NEXT:    sw a0, 20(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    lw a0, %lo(var_test_irq+8)(t0)
-; RV32IZCMP-SR-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    lw a0, %lo(var_test_irq+12)(t0)
-; RV32IZCMP-SR-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    addi a5, t0, %lo(var_test_irq)
-; RV32IZCMP-SR-NEXT:    lw a0, 16(a5)
-; RV32IZCMP-SR-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    lw a0, 20(a5)
-; RV32IZCMP-SR-NEXT:    sw a0, 4(sp) # 4-byte Folded Spill
-; RV32IZCMP-SR-NEXT:    lw t4, 24(a5)
-; RV32IZCMP-SR-NEXT:    lw t5, 28(a5)
-; RV32IZCMP-SR-NEXT:    lw t6, 32(a5)
-; RV32IZCMP-SR-NEXT:    lw s2, 36(a5)
-; RV32IZCMP-SR-NEXT:    lw s3, 40(a5)
-; RV32IZCMP-SR-NEXT:    lw s4, 44(a5)
-; RV32IZCMP-SR-NEXT:    lw s5, 48(a5)
-; RV32IZCMP-SR-NEXT:    lw s6, 52(a5)
-; RV32IZCMP-SR-NEXT:    lw s7, 56(a5)
-; RV32IZCMP-SR-NEXT:    lw s8, 60(a5)
-; RV32IZCMP-SR-NEXT:    lw s9, 64(a5)
-; RV32IZCMP-SR-NEXT:    lw s10, 68(a5)
-; RV32IZCMP-SR-NEXT:    lw s11, 72(a5)
-; RV32IZCMP-SR-NEXT:    lw ra, 76(a5)
-; RV32IZCMP-SR-NEXT:    lw s1, 80(a5)
-; RV32IZCMP-SR-NEXT:    lw t3, 84(a5)
-; RV32IZCMP-SR-NEXT:    lw t2, 88(a5)
-; RV32IZCMP-SR-NEXT:    lw t1, 92(a5)
-; RV32IZCMP-SR-NEXT:    lw a7, 112(a5)
-; RV32IZCMP-SR-NEXT:    lw s0, 116(a5)
-; RV32IZCMP-SR-NEXT:    lw a3, 120(a5)
-; RV32IZCMP-SR-NEXT:    lw a0, 124(a5)
-; RV32IZCMP-SR-NEXT:    lw a6, 96(a5)
-; RV32IZCMP-SR-NEXT:    lw a4, 100(a5)
-; RV32IZCMP-SR-NEXT:    lw a2, 104(a5)
-; RV32IZCMP-SR-NEXT:    lw a1, 108(a5)
-; RV32IZCMP-SR-NEXT:    sw a0, 124(a5)
-; RV32IZCMP-SR-NEXT:    sw a3, 120(a5)
-; RV32IZCMP-SR-NEXT:    sw s0, 116(a5)
-; RV32IZCMP-SR-NEXT:    sw a7, 112(a5)
-; RV32IZCMP-SR-NEXT:    sw a1, 108(a5)
-; RV32IZCMP-SR-NEXT:    sw a2, 104(a5)
-; RV32IZCMP-SR-NEXT:    sw a4, 100(a5)
-; RV32IZCMP-SR-NEXT:    sw a6, 96(a5)
-; RV32IZCMP-SR-NEXT:    sw t1, 92(a5)
-; RV32IZCMP-SR-NEXT:    sw t2, 88(a5)
-; RV32IZCMP-SR-NEXT:    sw t3, 84(a5)
-; RV32IZCMP-SR-NEXT:    sw s1, 80(a5)
-; RV32IZCMP-SR-NEXT:    sw ra, 76(a5)
-; RV32IZCMP-SR-NEXT:    sw s11, 72(a5)
-; RV32IZCMP-SR-NEXT:    sw s10, 68(a5)
-; RV32IZCMP-SR-NEXT:    sw s9, 64(a5)
-; RV32IZCMP-SR-NEXT:    sw s8, 60(a5)
-; RV32IZCMP-SR-NEXT:    sw s7, 56(a5)
-; RV32IZCMP-SR-NEXT:    sw s6, 52(a5)
-; RV32IZCMP-SR-NEXT:    sw s5, 48(a5)
-; RV32IZCMP-SR-NEXT:    sw s4, 44(a5)
-; RV32IZCMP-SR-NEXT:    sw s3, 40(a5)
-; RV32IZCMP-SR-NEXT:    sw s2, 36(a5)
-; RV32IZCMP-SR-NEXT:    sw t6, 32(a5)
-; RV32IZCMP-SR-NEXT:    sw t5, 28(a5)
-; RV32IZCMP-SR-NEXT:    sw t4, 24(a5)
-; RV32IZCMP-SR-NEXT:    lw a0, 4(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    sw a0, 20(a5)
-; RV32IZCMP-SR-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    sw a0, 16(a5)
-; RV32IZCMP-SR-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    sw a0, %lo(var_test_irq+12)(t0)
-; RV32IZCMP-SR-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    sw a0, %lo(var_test_irq+8)(t0)
-; RV32IZCMP-SR-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    sw a0, %lo(var_test_irq+4)(t0)
-; RV32IZCMP-SR-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
-; RV32IZCMP-SR-NEXT:    sw a0, %lo(var_test_irq)(t0)
 ; RV32IZCMP-SR-NEXT:    cm.popret {ra, s0-s11}, 80
->>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
 ;
 ; RV64IZCMP-SR-LABEL: callee_no_irq:
 ; RV64IZCMP-SR:       # %bb.0:
-; RV64IZCMP-SR-NEXT:    cm.push {ra, s0-s11}, -160
-<<<<<<< HEAD
+; RV64IZCMP-SR-NEXT:    cm.push {ra, s0-s11}, -144
+; RV64IZCMP-SR-NEXT:    .cfi_def_cfa_offset 144
+; RV64IZCMP-SR-NEXT:    .cfi_offset ra, -104
+; RV64IZCMP-SR-NEXT:    .cfi_offset s0, -96
+; RV64IZCMP-SR-NEXT:    .cfi_offset s1, -88
+; RV64IZCMP-SR-NEXT:    .cfi_offset s2, -80
+; RV64IZCMP-SR-NEXT:    .cfi_offset s3, -72
+; RV64IZCMP-SR-NEXT:    .cfi_offset s4, -64
+; RV64IZCMP-SR-NEXT:    .cfi_offset s5, -56
+; RV64IZCMP-SR-NEXT:    .cfi_offset s6, -48
+; RV64IZCMP-SR-NEXT:    .cfi_offset s7, -40
+; RV64IZCMP-SR-NEXT:    .cfi_offset s8, -32
+; RV64IZCMP-SR-NEXT:    .cfi_offset s9, -24
+; RV64IZCMP-SR-NEXT:    .cfi_offset s10, -16
+; RV64IZCMP-SR-NEXT:    .cfi_offset s11, -8
 ; RV64IZCMP-SR-NEXT:    lui a0, %hi(var_test_irq)
 ; RV64IZCMP-SR-NEXT:    lui a2, %hi(var_test_irq)
 ; RV64IZCMP-SR-NEXT:    addi a2, a2, %lo(var_test_irq)
 ; RV64IZCMP-SR-NEXT:    lw a0, %lo(var_test_irq)(a0)
-; RV64IZCMP-SR-NEXT:    sd a0, 40(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    lw a0, 4(a2)
 ; RV64IZCMP-SR-NEXT:    sd a0, 32(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    lw a0, 8(a2)
+; RV64IZCMP-SR-NEXT:    lw a0, 4(a2)
 ; RV64IZCMP-SR-NEXT:    sd a0, 24(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    lw a0, 12(a2)
+; RV64IZCMP-SR-NEXT:    lw a0, 8(a2)
 ; RV64IZCMP-SR-NEXT:    sd a0, 16(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    lw a0, 16(a2)
+; RV64IZCMP-SR-NEXT:    lw a0, 12(a2)
 ; RV64IZCMP-SR-NEXT:    sd a0, 8(sp) # 8-byte Folded Spill
+; RV64IZCMP-SR-NEXT:    lw a0, 16(a2)
+; RV64IZCMP-SR-NEXT:    sd a0, 0(sp) # 8-byte Folded Spill
 ; RV64IZCMP-SR-NEXT:    lw t4, 20(a2)
 ; RV64IZCMP-SR-NEXT:    lw t5, 24(a2)
 ; RV64IZCMP-SR-NEXT:    lw t6, 28(a2)
@@ -4626,112 +3766,18 @@ define void @callee_no_irq() {
 ; RV64IZCMP-SR-NEXT:    sw t6, 28(a2)
 ; RV64IZCMP-SR-NEXT:    sw t5, 24(a2)
 ; RV64IZCMP-SR-NEXT:    sw t4, 20(a2)
-; RV64IZCMP-SR-NEXT:    ld a0, 8(sp) # 8-byte Folded Reload
+; RV64IZCMP-SR-NEXT:    ld a0, 0(sp) # 8-byte Folded Reload
 ; RV64IZCMP-SR-NEXT:    sw a0, 16(a2)
-; RV64IZCMP-SR-NEXT:    ld a0, 16(sp) # 8-byte Folded Reload
+; RV64IZCMP-SR-NEXT:    ld a0, 8(sp) # 8-byte Folded Reload
 ; RV64IZCMP-SR-NEXT:    sw a0, 12(a2)
-; RV64IZCMP-SR-NEXT:    ld a0, 24(sp) # 8-byte Folded Reload
+; RV64IZCMP-SR-NEXT:    ld a0, 16(sp) # 8-byte Folded Reload
 ; RV64IZCMP-SR-NEXT:    sw a0, 8(a2)
-; RV64IZCMP-SR-NEXT:    ld a0, 32(sp) # 8-byte Folded Reload
+; RV64IZCMP-SR-NEXT:    ld a0, 24(sp) # 8-byte Folded Reload
 ; RV64IZCMP-SR-NEXT:    sw a0, 4(a2)
-; RV64IZCMP-SR-NEXT:    ld a0, 40(sp) # 8-byte Folded Reload
+; RV64IZCMP-SR-NEXT:    ld a0, 32(sp) # 8-byte Folded Reload
 ; RV64IZCMP-SR-NEXT:    lui a1, %hi(var_test_irq)
 ; RV64IZCMP-SR-NEXT:    sw a0, %lo(var_test_irq)(a1)
-=======
-; RV64IZCMP-SR-NEXT:    .cfi_def_cfa_offset 160
-; RV64IZCMP-SR-NEXT:    .cfi_offset ra, -104
-; RV64IZCMP-SR-NEXT:    .cfi_offset s0, -96
-; RV64IZCMP-SR-NEXT:    .cfi_offset s1, -88
-; RV64IZCMP-SR-NEXT:    .cfi_offset s2, -80
-; RV64IZCMP-SR-NEXT:    .cfi_offset s3, -72
-; RV64IZCMP-SR-NEXT:    .cfi_offset s4, -64
-; RV64IZCMP-SR-NEXT:    .cfi_offset s5, -56
-; RV64IZCMP-SR-NEXT:    .cfi_offset s6, -48
-; RV64IZCMP-SR-NEXT:    .cfi_offset s7, -40
-; RV64IZCMP-SR-NEXT:    .cfi_offset s8, -32
-; RV64IZCMP-SR-NEXT:    .cfi_offset s9, -24
-; RV64IZCMP-SR-NEXT:    .cfi_offset s10, -16
-; RV64IZCMP-SR-NEXT:    .cfi_offset s11, -8
-; RV64IZCMP-SR-NEXT:    lui t0, %hi(var_test_irq)
-; RV64IZCMP-SR-NEXT:    lw a0, %lo(var_test_irq)(t0)
-; RV64IZCMP-SR-NEXT:    sd a0, 48(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    lw a0, %lo(var_test_irq+4)(t0)
-; RV64IZCMP-SR-NEXT:    sd a0, 40(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    lw a0, %lo(var_test_irq+8)(t0)
-; RV64IZCMP-SR-NEXT:    sd a0, 32(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    lw a0, %lo(var_test_irq+12)(t0)
-; RV64IZCMP-SR-NEXT:    sd a0, 24(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    addi a5, t0, %lo(var_test_irq)
-; RV64IZCMP-SR-NEXT:    lw a0, 16(a5)
-; RV64IZCMP-SR-NEXT:    sd a0, 16(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    lw a0, 20(a5)
-; RV64IZCMP-SR-NEXT:    sd a0, 8(sp) # 8-byte Folded Spill
-; RV64IZCMP-SR-NEXT:    lw t4, 24(a5)
-; RV64IZCMP-SR-NEXT:    lw t5, 28(a5)
-; RV64IZCMP-SR-NEXT:    lw t6, 32(a5)
-; RV64IZCMP-SR-NEXT:    lw s2, 36(a5)
-; RV64IZCMP-SR-NEXT:    lw s3, 40(a5)
-; RV64IZCMP-SR-NEXT:    lw s4, 44(a5)
-; RV64IZCMP-SR-NEXT:    lw s5, 48(a5)
-; RV64IZCMP-SR-NEXT:    lw s6, 52(a5)
-; RV64IZCMP-SR-NEXT:    lw s7, 56(a5)
-; RV64IZCMP-SR-NEXT:    lw s8, 60(a5)
-; RV64IZCMP-SR-NEXT:    lw s9, 64(a5)
-; RV64IZCMP-SR-NEXT:    lw s10, 68(a5)
-; RV64IZCMP-SR-NEXT:    lw s11, 72(a5)
-; RV64IZCMP-SR-NEXT:    lw ra, 76(a5)
-; RV64IZCMP-SR-NEXT:    lw s1, 80(a5)
-; RV64IZCMP-SR-NEXT:    lw t3, 84(a5)
-; RV64IZCMP-SR-NEXT:    lw t2, 88(a5)
-; RV64IZCMP-SR-NEXT:    lw t1, 92(a5)
-; RV64IZCMP-SR-NEXT:    lw a7, 112(a5)
-; RV64IZCMP-SR-NEXT:    lw s0, 116(a5)
-; RV64IZCMP-SR-NEXT:    lw a3, 120(a5)
-; RV64IZCMP-SR-NEXT:    lw a0, 124(a5)
-; RV64IZCMP-SR-NEXT:    lw a6, 96(a5)
-; RV64IZCMP-SR-NEXT:    lw a4, 100(a5)
-; RV64IZCMP-SR-NEXT:    lw a2, 104(a5)
-; RV64IZCMP-SR-NEXT:    lw a1, 108(a5)
-; RV64IZCMP-SR-NEXT:    sw a0, 124(a5)
-; RV64IZCMP-SR-NEXT:    sw a3, 120(a5)
-; RV64IZCMP-SR-NEXT:    sw s0, 116(a5)
-; RV64IZCMP-SR-NEXT:    sw a7, 112(a5)
-; RV64IZCMP-SR-NEXT:    sw a1, 108(a5)
-; RV64IZCMP-SR-NEXT:    sw a2, 104(a5)
-; RV64IZCMP-SR-NEXT:    sw a4, 100(a5)
-; RV64IZCMP-SR-NEXT:    sw a6, 96(a5)
-; RV64IZCMP-SR-NEXT:    sw t1, 92(a5)
-; RV64IZCMP-SR-NEXT:    sw t2, 88(a5)
-; RV64IZCMP-SR-NEXT:    sw t3, 84(a5)
-; RV64IZCMP-SR-NEXT:    sw s1, 80(a5)
-; RV64IZCMP-SR-NEXT:    sw ra, 76(a5)
-; RV64IZCMP-SR-NEXT:    sw s11, 72(a5)
-; RV64IZCMP-SR-NEXT:    sw s10, 68(a5)
-; RV64IZCMP-SR-NEXT:    sw s9, 64(a5)
-; RV64IZCMP-SR-NEXT:    sw s8, 60(a5)
-; RV64IZCMP-SR-NEXT:    sw s7, 56(a5)
-; RV64IZCMP-SR-NEXT:    sw s6, 52(a5)
-; RV64IZCMP-SR-NEXT:    sw s5, 48(a5)
-; RV64IZCMP-SR-NEXT:    sw s4, 44(a5)
-; RV64IZCMP-SR-NEXT:    sw s3, 40(a5)
-; RV64IZCMP-SR-NEXT:    sw s2, 36(a5)
-; RV64IZCMP-SR-NEXT:    sw t6, 32(a5)
-; RV64IZCMP-SR-NEXT:    sw t5, 28(a5)
-; RV64IZCMP-SR-NEXT:    sw t4, 24(a5)
-; RV64IZCMP-SR-NEXT:    ld a0, 8(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    sw a0, 20(a5)
-; RV64IZCMP-SR-NEXT:    ld a0, 16(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    sw a0, 16(a5)
-; RV64IZCMP-SR-NEXT:    ld a0, 24(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    sw a0, %lo(var_test_irq+12)(t0)
-; RV64IZCMP-SR-NEXT:    ld a0, 32(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    sw a0, %lo(var_test_irq+8)(t0)
-; RV64IZCMP-SR-NEXT:    ld a0, 40(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    sw a0, %lo(var_test_irq+4)(t0)
-; RV64IZCMP-SR-NEXT:    ld a0, 48(sp) # 8-byte Folded Reload
-; RV64IZCMP-SR-NEXT:    sw a0, %lo(var_test_irq)(t0)
->>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
-; RV64IZCMP-SR-NEXT:    cm.popret {ra, s0-s11}, 160
+; RV64IZCMP-SR-NEXT:    cm.popret {ra, s0-s11}, 144
 ;
 ; RV32I-LABEL: callee_no_irq:
 ; RV32I:       # %bb.0:
@@ -4750,12 +3796,6 @@ define void @callee_no_irq() {
 ; RV32I-NEXT:    sw s9, 36(sp) # 4-byte Folded Spill
 ; RV32I-NEXT:    sw s10, 32(sp) # 4-byte Folded Spill
 ; RV32I-NEXT:    sw s11, 28(sp) # 4-byte Folded Spill
-<<<<<<< HEAD
-; RV32I-NEXT:    lui a0, %hi(var_test_irq)
-; RV32I-NEXT:    lui a2, %hi(var_test_irq)
-; RV32I-NEXT:    addi a2, a2, %lo(var_test_irq)
-; RV32I-NEXT:    lw a0, %lo(var_test_irq)(a0)
-=======
 ; RV32I-NEXT:    .cfi_offset ra, -4
 ; RV32I-NEXT:    .cfi_offset s0, -8
 ; RV32I-NEXT:    .cfi_offset s1, -12
@@ -4769,9 +3809,10 @@ define void @callee_no_irq() {
 ; RV32I-NEXT:    .cfi_offset s9, -44
 ; RV32I-NEXT:    .cfi_offset s10, -48
 ; RV32I-NEXT:    .cfi_offset s11, -52
-; RV32I-NEXT:    lui a7, %hi(var_test_irq)
-; RV32I-NEXT:    lw a0, %lo(var_test_irq)(a7)
->>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
+; RV32I-NEXT:    lui a0, %hi(var_test_irq)
+; RV32I-NEXT:    lui a2, %hi(var_test_irq)
+; RV32I-NEXT:    addi a2, a2, %lo(var_test_irq)
+; RV32I-NEXT:    lw a0, %lo(var_test_irq)(a0)
 ; RV32I-NEXT:    sw a0, 24(sp) # 4-byte Folded Spill
 ; RV32I-NEXT:    lw a0, 4(a2)
 ; RV32I-NEXT:    sw a0, 20(sp) # 4-byte Folded Spill
@@ -4878,8 +3919,8 @@ define void @callee_no_irq() {
 ;
 ; RV64I-LABEL: callee_no_irq:
 ; RV64I:       # %bb.0:
-<<<<<<< HEAD
 ; RV64I-NEXT:    addi sp, sp, -144
+; RV64I-NEXT:    .cfi_def_cfa_offset 144
 ; RV64I-NEXT:    sd ra, 136(sp) # 8-byte Folded Spill
 ; RV64I-NEXT:    sd s0, 128(sp) # 8-byte Folded Spill
 ; RV64I-NEXT:    sd s1, 120(sp) # 8-byte Folded Spill
@@ -4893,26 +3934,6 @@ define void @callee_no_irq() {
 ; RV64I-NEXT:    sd s9, 56(sp) # 8-byte Folded Spill
 ; RV64I-NEXT:    sd s10, 48(sp) # 8-byte Folded Spill
 ; RV64I-NEXT:    sd s11, 40(sp) # 8-byte Folded Spill
-; RV64I-NEXT:    lui a0, %hi(var_test_irq)
-; RV64I-NEXT:    lui a2, %hi(var_test_irq)
-; RV64I-NEXT:    addi a2, a2, %lo(var_test_irq)
-; RV64I-NEXT:    lw a0, %lo(var_test_irq)(a0)
-=======
-; RV64I-NEXT:    addi sp, sp, -160
-; RV64I-NEXT:    .cfi_def_cfa_offset 160
-; RV64I-NEXT:    sd ra, 152(sp) # 8-byte Folded Spill
-; RV64I-NEXT:    sd s0, 144(sp) # 8-byte Folded Spill
-; RV64I-NEXT:    sd s1, 136(sp) # 8-byte Folded Spill
-; RV64I-NEXT:    sd s2, 128(sp) # 8-byte Folded Spill
-; RV64I-NEXT:    sd s3, 120(sp) # 8-byte Folded Spill
-; RV64I-NEXT:    sd s4, 112(sp) # 8-byte Folded Spill
-; RV64I-NEXT:    sd s5, 104(sp) # 8-byte Folded Spill
-; RV64I-NEXT:    sd s6, 96(sp) # 8-byte Folded Spill
-; RV64I-NEXT:    sd s7, 88(sp) # 8-byte Folded Spill
-; RV64I-NEXT:    sd s8, 80(sp) # 8-byte Folded Spill
-; RV64I-NEXT:    sd s9, 72(sp) # 8-byte Folded Spill
-; RV64I-NEXT:    sd s10, 64(sp) # 8-byte Folded Spill
-; RV64I-NEXT:    sd s11, 56(sp) # 8-byte Folded Spill
 ; RV64I-NEXT:    .cfi_offset ra, -8
 ; RV64I-NEXT:    .cfi_offset s0, -16
 ; RV64I-NEXT:    .cfi_offset s1, -24
@@ -4926,13 +3947,10 @@ define void @callee_no_irq() {
 ; RV64I-NEXT:    .cfi_offset s9, -88
 ; RV64I-NEXT:    .cfi_offset s10, -96
 ; RV64I-NEXT:    .cfi_offset s11, -104
-; RV64I-NEXT:    lui a7, %hi(var_test_irq)
-; RV64I-NEXT:    lw a0, %lo(var_test_irq)(a7)
-; RV64I-NEXT:    sd a0, 48(sp) # 8-byte Folded Spill
-; RV64I-NEXT:    lw a0, %lo(var_test_irq+4)(a7)
-; RV64I-NEXT:    sd a0, 40(sp) # 8-byte Folded Spill
-; RV64I-NEXT:    lw a0, %lo(var_test_irq+8)(a7)
->>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
+; RV64I-NEXT:    lui a0, %hi(var_test_irq)
+; RV64I-NEXT:    lui a2, %hi(var_test_irq)
+; RV64I-NEXT:    addi a2, a2, %lo(var_test_irq)
+; RV64I-NEXT:    lw a0, %lo(var_test_irq)(a0)
 ; RV64I-NEXT:    sd a0, 32(sp) # 8-byte Folded Spill
 ; RV64I-NEXT:    lw a0, 4(a2)
 ; RV64I-NEXT:    sd a0, 24(sp) # 8-byte Folded Spill
@@ -5005,7 +4023,6 @@ define void @callee_no_irq() {
 ; RV64I-NEXT:    ld a0, 24(sp) # 8-byte Folded Reload
 ; RV64I-NEXT:    sw a0, 4(a2)
 ; RV64I-NEXT:    ld a0, 32(sp) # 8-byte Folded Reload
-<<<<<<< HEAD
 ; RV64I-NEXT:    lui a1, %hi(var_test_irq)
 ; RV64I-NEXT:    sw a0, %lo(var_test_irq)(a1)
 ; RV64I-NEXT:    ld ra, 136(sp) # 8-byte Folded Reload
@@ -5021,26 +4038,6 @@ define void @callee_no_irq() {
 ; RV64I-NEXT:    ld s9, 56(sp) # 8-byte Folded Reload
 ; RV64I-NEXT:    ld s10, 48(sp) # 8-byte Folded Reload
 ; RV64I-NEXT:    ld s11, 40(sp) # 8-byte Folded Reload
-; RV64I-NEXT:    addi sp, sp, 144
-=======
-; RV64I-NEXT:    sw a0, %lo(var_test_irq+8)(a7)
-; RV64I-NEXT:    ld a0, 40(sp) # 8-byte Folded Reload
-; RV64I-NEXT:    sw a0, %lo(var_test_irq+4)(a7)
-; RV64I-NEXT:    ld a0, 48(sp) # 8-byte Folded Reload
-; RV64I-NEXT:    sw a0, %lo(var_test_irq)(a7)
-; RV64I-NEXT:    ld ra, 152(sp) # 8-byte Folded Reload
-; RV64I-NEXT:    ld s0, 144(sp) # 8-byte Folded Reload
-; RV64I-NEXT:    ld s1, 136(sp) # 8-byte Folded Reload
-; RV64I-NEXT:    ld s2, 128(sp) # 8-byte Folded Reload
-; RV64I-NEXT:    ld s3, 120(sp) # 8-byte Folded Reload
-; RV64I-NEXT:    ld s4, 112(sp) # 8-byte Folded Reload
-; RV64I-NEXT:    ld s5, 104(sp) # 8-byte Folded Reload
-; RV64I-NEXT:    ld s6, 96(sp) # 8-byte Folded Reload
-; RV64I-NEXT:    ld s7, 88(sp) # 8-byte Folded Reload
-; RV64I-NEXT:    ld s8, 80(sp) # 8-byte Folded Reload
-; RV64I-NEXT:    ld s9, 72(sp) # 8-byte Folded Reload
-; RV64I-NEXT:    ld s10, 64(sp) # 8-byte Folded Reload
-; RV64I-NEXT:    ld s11, 56(sp) # 8-byte Folded Reload
 ; RV64I-NEXT:    .cfi_restore ra
 ; RV64I-NEXT:    .cfi_restore s0
 ; RV64I-NEXT:    .cfi_restore s1
@@ -5054,9 +4051,8 @@ define void @callee_no_irq() {
 ; RV64I-NEXT:    .cfi_restore s9
 ; RV64I-NEXT:    .cfi_restore s10
 ; RV64I-NEXT:    .cfi_restore s11
-; RV64I-NEXT:    addi sp, sp, 160
+; RV64I-NEXT:    addi sp, sp, 144
 ; RV64I-NEXT:    .cfi_def_cfa_offset 0
->>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
 ; RV64I-NEXT:    ret
   %val = load [32 x i32], ptr @var_test_irq
   store volatile [32 x i32] %val, ptr @var_test_irq
