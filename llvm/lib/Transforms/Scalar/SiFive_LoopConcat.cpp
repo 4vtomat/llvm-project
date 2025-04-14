@@ -1078,7 +1078,7 @@ ReplaySet:
 
     LLVM_DEBUG(dbgs() << "Checking if this mem inst can be hoisted.\n");
     for (Instruction *NotHoistedInst : NotHoisting) {
-      if (auto D = DI.depends(&I, NotHoistedInst, true)) {
+      if (auto D = DI.depends(&I, NotHoistedInst)) {
         // Dependency is not read-before-write, write-before-read or
         // write-before-write
         if (D->isFlow() || D->isAnti() || D->isOutput()) {
@@ -1090,7 +1090,7 @@ ReplaySet:
     }
 
     for (Instruction *ReadInst : CC0.MemReads) {
-      if (auto D = DI.depends(ReadInst, &I, true)) {
+      if (auto D = DI.depends(ReadInst, &I)) {
         // Dependency is not read-before-write
         if (D->isAnti()) {
           LLVM_DEBUG(dbgs() << "Inst depends on a read instruction in CC0.\n");
@@ -1100,7 +1100,7 @@ ReplaySet:
     }
 
     for (Instruction *WriteInst : CC0.MemWrites) {
-      if (auto D = DI.depends(WriteInst, &I, true)) {
+      if (auto D = DI.depends(WriteInst, &I)) {
         // Dependency is not write-before-read or write-before-write
         if (D->isFlow() || D->isOutput()) {
           LLVM_DEBUG(dbgs() << "Inst depends on a write instruction in CC0.\n");
@@ -1147,7 +1147,7 @@ ReplaySet:
       return true;
 
     for (Instruction *ReadInst : CC1.MemReads) {
-      if (auto D = DI.depends(&I, ReadInst, true)) {
+      if (auto D = DI.depends(&I, ReadInst)) {
         // Dependency is not write-before-read
         if (D->isFlow()) {
           LLVM_DEBUG(dbgs() << "Inst depends on a read instruction in CC1.\n");
@@ -1157,7 +1157,7 @@ ReplaySet:
     }
 
     for (Instruction *WriteInst : CC1.MemWrites) {
-      if (auto D = DI.depends(&I, WriteInst, true)) {
+      if (auto D = DI.depends(&I, WriteInst)) {
         // Dependency is not write-before-write or read-before-write
         if (D->isOutput() || D->isAnti()) {
           LLVM_DEBUG(dbgs() << "Inst depends on a write instruction in CC1.\n");
@@ -1328,7 +1328,7 @@ ReplaySet:
     case CONCAT_DEPENDENCE_ANALYSIS_SCEV:
       return accessDiffIsPositive(*CC0.L, *CC1.L, I0, I1, AnyDep);
     case CONCAT_DEPENDENCE_ANALYSIS_DA: {
-      auto DepResult = DI.depends(&I0, &I1, true);
+      auto DepResult = DI.depends(&I0, &I1);
       if (!DepResult)
         return true;
 #ifndef NDEBUG
@@ -1434,7 +1434,7 @@ ReplaySet:
         }
 
         for (Instruction *WriteL0 : CC0.MemWrites) {
-          auto DepResult = DI.depends(WriteL0, MemFenceInstr, true);
+          auto DepResult = DI.depends(WriteL0, MemFenceInstr);
           if (DepResult) {
             InvalidDependencies++;
             return false;
@@ -1442,7 +1442,7 @@ ReplaySet:
         }
 
         for (Instruction *WriteL1 : CC1.MemWrites) {
-          auto DepResult = DI.depends(MemFenceInstr, WriteL1, true);
+          auto DepResult = DI.depends(MemFenceInstr, WriteL1);
           if (DepResult) {
             InvalidDependencies++;
             return false;
@@ -1450,7 +1450,7 @@ ReplaySet:
         }
 
         for (Instruction *ReadL1 : CC1.MemReads) {
-          auto DepResult = DI.depends(MemFenceInstr, ReadL1, true);
+          auto DepResult = DI.depends(MemFenceInstr, ReadL1);
           if (DepResult) {
             InvalidDependencies++;
             return false;

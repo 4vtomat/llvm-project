@@ -273,7 +273,7 @@ isInstTransformLegal(Loop *L, BasicBlock *BB, ScalarEvolution *SE,
 
   if (I.mayReadOrWriteMemory()) {
     for (Instruction *MemI : MemoryInstructions) {
-      if (auto D = DI.depends(&I, MemI, true)) {
+      if (auto D = DI.depends(&I, MemI)) {
         if (D->isFlow() || D->isAnti() || D->isOutput()) {
           LLVM_DEBUG(dbgs() << "LR: unsupported dependence detected\n");
           return false;
