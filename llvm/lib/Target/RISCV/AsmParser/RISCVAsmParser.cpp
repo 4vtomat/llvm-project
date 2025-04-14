@@ -1742,23 +1742,6 @@ bool RISCVAsmParser::matchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
                                       "operand must be a valid system register "
                                       "name or an integer in the range");
   }
-<<<<<<< HEAD
-  case Match_InvalidLoadFPImm: {
-    SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
-    return Error(ErrorLoc, "operand must be a valid floating-point constant");
-  }
-  case Match_InvalidBareSymbol: {
-    SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
-    return Error(ErrorLoc, "operand must be a bare symbol name");
-  }
-  case Match_InvalidPseudoJumpSymbol: {
-    SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
-    return Error(ErrorLoc, "operand must be a valid jump target");
-  }
-  case Match_InvalidCallSymbol: {
-    SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
-    return Error(ErrorLoc, "operand must be a bare symbol name");
-  }
 #if SIFIVE_CUSTOMIZATION
   case Match_InvalidRegRelAddSymbol: {
     SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
@@ -1771,17 +1754,6 @@ bool RISCVAsmParser::matchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
     return generateXSfmmVTypeError(ErrorLoc);
   }
 #endif // SIFIVE_CUSTOMIZATION
-  case Match_InvalidTLSDESCCallSymbol: {
-    SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
-    return Error(ErrorLoc,
-                 "operand must be a symbol with %tlsdesc_call modifier");
-  }
-  case Match_InvalidRTZArg: {
-    SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
-    return Error(ErrorLoc, "operand must be 'rtz' floating-point rounding mode");
-  }
-=======
->>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
   case Match_InvalidVTypeI: {
     SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
     return generateVTypeError(ErrorLoc);
