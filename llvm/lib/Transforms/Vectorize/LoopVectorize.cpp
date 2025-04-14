@@ -1693,7 +1693,6 @@ public:
     // FIXME: Investigate opportunity for fixed vector factor.
     // FIXME: support fixed-order recurrences by fixing splice of non VFxUF
     // penultimate EVL.
-<<<<<<< HEAD
     bool EVLIsLegal =
 #if SIFIVE_CUSTOMIZATION
         IsScalableVF &&
@@ -1703,12 +1702,6 @@ public:
         UserIC <= 1 && TTI.hasActiveVectorLength(0, nullptr, Align()) &&
         !EnableVPlanNativePath && Legal->getFixedOrderRecurrences().empty();
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    bool EVLIsLegal = UserIC <= 1 && IsScalableVF &&
-                      TTI.hasActiveVectorLength(0, nullptr, Align()) &&
-                      !EnableVPlanNativePath &&
-                      Legal->getFixedOrderRecurrences().empty();
->>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
     if (!EVLIsLegal) {
       // If for some reason EVL mode is unsupported, fallback to
       // DataWithoutLaneMask to try to vectorize the loop with folded tail
