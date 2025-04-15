@@ -76,8 +76,8 @@ static Attr *handleSuppressAttr(Sema &S, Stmt *St, const ParsedAttr &A,
 #if SIFIVE_CUSTOMIZATION
 static Attr *handleRvvHintAttr(Sema &S, Stmt *St, const ParsedAttr &A,
                                SourceRange) {
-  IdentifierLoc *PragmaNameLoc = A.getArgAsIdent(0);
-  IdentifierLoc *OptionLoc = A.getArgAsIdent(1);
+  [[maybe_unused]] IdentifierLoc *PragmaNameLoc = A.getArgAsIdent(0);
+  [[maybe_unused]] IdentifierLoc *OptionLoc = A.getArgAsIdent(1);
 
   assert(PragmaNameLoc->Ident->getName() == "rvv" &&
          "Pragma name should only be 'rvv'");

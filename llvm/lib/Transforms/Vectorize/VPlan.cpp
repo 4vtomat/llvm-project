@@ -20,6 +20,9 @@
 #include "LoopVectorizationPlanner.h"
 #include "VPlanAnalysis.h"
 #include "VPlanCFG.h"
+#if SIFIVE_CUSTOMIZATION
+#include "VPlanDominatorTree.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "VPlanHelpers.h"
 #include "VPlanPatternMatch.h"
 #include "VPlanTransforms.h"
@@ -73,6 +76,7 @@ extern cl::opt<unsigned> ForceTargetInstructionCost;
 
 #if SIFIVE_CUSTOMIZATION
 extern cl::opt<uint64_t> LoopVectorizerVLUpperBound;
+extern cl::opt<unsigned> SiFiveVectorConditionFrequency;
 #endif
 
 static cl::opt<bool> PrintVPlansInDotFormat(
@@ -344,7 +348,7 @@ VPTransformState::VPTransformState(const TargetTransformInfo *TTI,
     : TTI(TTI), VF(VF), CFG(DT), LI(LI), Builder(Builder), ILV(ILV), Plan(Plan),
       CurrentParentLoop(CurrentParentLoop), LVer(nullptr),
 #if SIFIVE_CUSTOMIZATION
-      TypeAnalysis(CanonicalIVTy), EnableRISCVCSA(EnableRISCVCSA) {}
+      TypeAnalysis(CanonicalIVTy), VPDT(*Plan), EnableRISCVCSA(EnableRISCVCSA) {}
 #else
       TypeAnalysis(CanonicalIVTy) {}
 #endif // SIFIVE_CUSTOMIZATION
@@ -402,7 +406,15 @@ Value *VPTransformState::get(VPValue *Def, bool NeedsScalar) {
     return Data.VPV2Vector[Def];
 
   auto GetBroadcastInstrs = [this, Def](Value *V) {
+#if SIFIVE_CUSTOMIZATION
+    bool SafeToHoist =
+        !Def->hasDefiningRecipe() ||
+        VPDT.properlyDominates(Def->getDefiningRecipe()->getParent(),
+                               Plan->getVectorPreheader());
+#else
     bool SafeToHoist = Def->isDefinedOutsideLoopRegions();
+#endif // SIFIVE_CUSTOMIZATION
+
     if (VF.isScalar())
       return V;
     // Place the code for broadcasting invariant variables in the new preheader.
@@ -996,6 +1008,33 @@ InstructionCost VPRegionBlock::cost(ElementCount VF, VPCostContext &Ctx) {
 }
 
 #if SIFIVE_CUSTOMIZATION
+InstructionCost VPConditionalRegionBlock::cost(ElementCount VF,
+                                               VPCostContext &Ctx) {
+  InstructionCost Cost = 0;
+  for (VPBlockBase *Block : vp_depth_first_shallow(getEntry()))
+    Cost += Block->cost(VF, Ctx);
+
+  // Denominator represents number of vector iterations when condition is
+  // true, therefore requires execution of the nested vector code.
+  LLVM_DEBUG(dbgs() << "Adjust cost of the VPConditionalRegionBlock from "
+                    << Cost);
+  Cost /= std::max(SiFiveVectorConditionFrequency.getValue(), 1U);
+  LLVM_DEBUG(dbgs() << " to " << Cost << '\n');
+
+  Type *CondTy = Ctx.Types.inferScalarType(getCondition());
+  auto *VectorTy = cast<VectorType>(toVectorTy(CondTy, VF));
+  Type *RetTy = Type::getInt32Ty(VectorTy->getContext());
+  Type *VLTy = RetTy;
+  IntrinsicCostAttributes ICA(Intrinsic::vp_first, RetTy, {VectorTy, VLTy});
+  InstructionCost CondCost = Ctx.TTI.getIntrinsicInstrCost(ICA, Ctx.CostKind);
+
+  // Only show the cost of icmp here since vplan-based cost model will show
+  // the cost of each recipes when collecting the cost of block.
+  LLVM_DEBUG(dbgs() << "Cost of " << CondCost << " for VF " << VF
+                    << ": VPConditionalRegionBlock\n");
+  return Cost + CondCost;
+}
+
 void VPConditionalRegionBlock::execute(VPTransformState *State) {
   VPValue *VPCond = getCondition();
   if (VPCond->hasDefiningRecipe())
@@ -1343,6 +1382,12 @@ void VPlan::execute(VPTransformState *State) {
   // Initialize CFG state.
   State->CFG.PrevVPBB = nullptr;
   State->CFG.ExitBB = State->CFG.PrevBB->getSingleSuccessor();
+
+#if SIFIVE_CUSTOMIZATION
+  // Update VPDominatorTree since VPBasicBlock may be removed after State was
+  // constructed.
+  State->VPDT.recalculate(*this);
+#endif // SIFIVE_CUSTOMIZATION
 
   // Disconnect VectorPreHeader from ExitBB in both the CFG and DT.
   BasicBlock *VectorPreHeader = State->CFG.PrevBB;

@@ -1093,9 +1093,21 @@ public:
   /// provided.
   void execute(VPTransformState &State) override;
 
+#if SIFIVE_CUSTOMIZATION
   /// Return the cost of this VPInstruction.
   InstructionCost computeCost(ElementCount VF,
                               VPCostContext &Ctx) const override;
+<<<<<<< HEAD
+=======
+#else
+  InstructionCost computeCost(ElementCount VF,
+                              VPCostContext &Ctx) const override {
+
+    // TODO: Compute accurate cost after retiring the legacy cost model.
+    return 0;
+  }
+#endif // SIFIVE_CUSTOMIZATION
+>>>>>>> origin/sifive-dev
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print the VPInstruction to \p O.
@@ -4149,6 +4161,8 @@ public:
   InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const override {
     return 0;
   };
+
+  InstructionCost cost(ElementCount VF, VPCostContext &Ctx) override;
 
   /// Method to support type inquiry through isa, cast, and dyn_cast.
   static inline bool classof(const VPBlockBase *V) {

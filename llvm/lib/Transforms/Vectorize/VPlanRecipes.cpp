@@ -1190,6 +1190,7 @@ Value *VPInstruction::generate(VPTransformState &State) {
   }
 }
 
+<<<<<<< HEAD
 InstructionCost VPInstruction::computeCost(ElementCount VF,
                                            VPCostContext &Ctx) const {
 #if SIFIVE_CUSTOMIZATION
@@ -1211,17 +1212,48 @@ InstructionCost VPInstruction::computeCost(ElementCount VF,
     return InstructionCost::getInvalid();
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+#if SIFIVE_CUSTOMIZATION
+InstructionCost VPInstruction::computeCost(ElementCount VF,
+                                           VPCostContext &Ctx) const {
+>>>>>>> origin/sifive-dev
   switch (getOpcode()) {
   case VPInstruction::AnyOf: {
     auto *VecTy = toVectorTy(Ctx.Types.inferScalarType(this), VF);
     return Ctx.TTI.getArithmeticReductionCost(
         Instruction::Or, cast<VectorType>(VecTy), std::nullopt, Ctx.CostKind);
   }
+<<<<<<< HEAD
+=======
+  case VPInstruction::MonotonicUpdate: {
+    if (VF.isVector() &&
+        !all_of(users(), [](VPUser *R) {
+          switch (cast<VPRecipeBase>(R)->getVPDefID()) {
+          default:
+            return false;
+          case VPRecipeBase::VPIRInstructionSC:
+          case VPRecipeBase::VPMonotonicHeaderPHISC:
+          case VPRecipeBase::VPMonotonicUpdateSC:
+          case VPRecipeBase::VPReplicateSC:
+            return true;
+          case VPRecipeBase::VPInstructionSC:
+            return cast<VPInstruction>(R)->getOpcode() ==
+                   VPInstruction::ResumePhi;
+          }
+        }))
+      return InstructionCost::getInvalid();
+    return 0;
+  }
+>>>>>>> origin/sifive-dev
   default:
     // TODO: Fill out other opcodes!
     return 0;
   }
 }
+<<<<<<< HEAD
+=======
+#endif // SIFIVE_CUSTOMIZATION
+>>>>>>> origin/sifive-dev
 
 bool VPInstruction::isVectorToScalar() const {
   return getOpcode() == VPInstruction::ExtractFromEnd ||
