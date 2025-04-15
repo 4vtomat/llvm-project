@@ -1190,6 +1190,41 @@ Value *VPInstruction::generate(VPTransformState &State) {
   }
 }
 
+#if SIFIVE_CUSTOMIZATION
+InstructionCost VPInstruction::computeCost(ElementCount VF,
+                                           VPCostContext &Ctx) const {
+  switch (getOpcode()) {
+  case VPInstruction::AnyOf: {
+    auto *VecTy = toVectorTy(Ctx.Types.inferScalarType(this), VF);
+    return Ctx.TTI.getArithmeticReductionCost(
+        Instruction::Or, cast<VectorType>(VecTy), std::nullopt, Ctx.CostKind);
+  }
+  case VPInstruction::MonotonicUpdate: {
+    if (VF.isVector() &&
+        !all_of(users(), [](VPUser *R) {
+          switch (cast<VPRecipeBase>(R)->getVPDefID()) {
+          default:
+            return false;
+          case VPRecipeBase::VPIRInstructionSC:
+          case VPRecipeBase::VPMonotonicHeaderPHISC:
+          case VPRecipeBase::VPMonotonicUpdateSC:
+          case VPRecipeBase::VPReplicateSC:
+            return true;
+          case VPRecipeBase::VPInstructionSC:
+            return cast<VPInstruction>(R)->getOpcode() ==
+                   VPInstruction::ResumePhi;
+          }
+        }))
+      return InstructionCost::getInvalid();
+    return 0;
+  }
+  default:
+    // TODO: Fill out other opcodes!
+    return 0;
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 bool VPInstruction::isVectorToScalar() const {
   return getOpcode() == VPInstruction::ExtractFromEnd ||
 #if SIFIVE_CUSTOMIZATION

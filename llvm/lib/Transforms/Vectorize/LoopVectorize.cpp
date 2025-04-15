@@ -9553,14 +9553,28 @@ VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
                         CM.CostKind);
   precomputeCosts(BestPlan, BestFactor.Width, CostCtx);
 #if SIFIVE_CUSTOMIZATION
+  // Set PlanForEarlyExitLoop to true if the BestPlan has been built from a
+  // loop with an uncountable early exit. The legacy cost model doesn't
+  // properly model costs for such loops.
+  bool PlanForEarlyExitLoop =
+      BestPlan.getVectorLoopRegion() &&
+      BestPlan.getVectorLoopRegion()->getSingleSuccessor() !=
+          BestPlan.getMiddleBlock();
   if (!Legal->useVLAVectorizer())
-#endif // !SIFIVE_CUSTOMIZATION
+    assert((BestFactor.Width == LegacyVF.Width || PlanForEarlyExitLoop ||
+            planContainsAdditionalSimplifications(getPlanFor(BestFactor.Width),
+                                                  CostCtx, OrigLoop) ||
+            planContainsAdditionalSimplifications(getPlanFor(LegacyVF.Width),
+                                                  CostCtx, OrigLoop)) &&
+           " VPlan cost model and legacy cost model disagreed");
+#else // SIFIVE_CUSTOMIZATION
   assert((BestFactor.Width == LegacyVF.Width ||
-          planContainsAdditionalSimplifications(getPlanFor(BestFactor.Width),
-                                                CostCtx, OrigLoop) ||
-          planContainsAdditionalSimplifications(getPlanFor(LegacyVF.Width),
-                                                CostCtx, OrigLoop)) &&
-         " VPlan cost model and legacy cost model disagreed");
+            planContainsAdditionalSimplifications(getPlanFor(BestFactor.Width),
+                                                  CostCtx, OrigLoop) ||
+            planContainsAdditionalSimplifications(getPlanFor(LegacyVF.Width),
+                                                  CostCtx, OrigLoop)) &&
+           " VPlan cost model and legacy cost model disagreed");
+#endif // !SIFIVE_CUSTOMIZATION
   assert((BestFactor.Width.isScalar() || BestFactor.ScalarCost > 0) &&
          "when vectorizing, the scalar cost must be computed.");
 #endif

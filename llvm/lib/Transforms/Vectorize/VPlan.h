@@ -1093,31 +1093,18 @@ public:
   /// provided.
   void execute(VPTransformState &State) override;
 
+#if SIFIVE_CUSTOMIZATION
   /// Return the cost of this VPInstruction.
   InstructionCost computeCost(ElementCount VF,
+                              VPCostContext &Ctx) const override;
+#else
+  InstructionCost computeCost(ElementCount VF,
                               VPCostContext &Ctx) const override {
-#if SIFIVE_CUSTOMIZATION
-    if (getOpcode() == VPInstruction::MonotonicUpdate && VF.isVector() &&
-        !all_of(users(), [](VPUser *R) {
-          switch (cast<VPRecipeBase>(R)->getVPDefID()) {
-          default:
-            return false;
-          case VPRecipeBase::VPIRInstructionSC:
-          case VPRecipeBase::VPMonotonicHeaderPHISC:
-          case VPRecipeBase::VPMonotonicUpdateSC:
-          case VPRecipeBase::VPReplicateSC:
-            return true;
-          case VPRecipeBase::VPInstructionSC:
-            return cast<VPInstruction>(R)->getOpcode() ==
-                   VPInstruction::ResumePhi;
-          }
-        }))
-      return InstructionCost::getInvalid();
-#endif // SIFIVE_CUSTOMIZATION
 
     // TODO: Compute accurate cost after retiring the legacy cost model.
     return 0;
   }
+#endif // SIFIVE_CUSTOMIZATION
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print the VPInstruction to \p O.
