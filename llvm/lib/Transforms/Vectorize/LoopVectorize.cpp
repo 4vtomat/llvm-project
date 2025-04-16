@@ -1693,6 +1693,7 @@ public:
     // FIXME: Investigate opportunity for fixed vector factor.
     // FIXME: support fixed-order recurrences by fixing splice of non VFxUF
     // penultimate EVL.
+<<<<<<< HEAD
     bool EVLIsLegal =
 #if SIFIVE_CUSTOMIZATION
         IsScalableVF &&
@@ -1702,6 +1703,12 @@ public:
         UserIC <= 1 && TTI.hasActiveVectorLength(0, nullptr, Align()) &&
         !EnableVPlanNativePath && Legal->getFixedOrderRecurrences().empty();
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    bool EVLIsLegal = UserIC <= 1 && IsScalableVF &&
+                      TTI.hasActiveVectorLength(0, nullptr, Align()) &&
+                      !EnableVPlanNativePath &&
+                      Legal->getFixedOrderRecurrences().empty();
+>>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
     if (!EVLIsLegal) {
       // If for some reason EVL mode is unsupported, fallback to
       // DataWithoutLaneMask to try to vectorize the loop with folded tail
@@ -5392,7 +5399,8 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
   // found modulo the vectorization factor is not zero, try to fold the tail
   // by masking.
   // FIXME: look for a smaller MaxVF that does divide TC rather than masking.
-  setTailFoldingStyles(MaxFactors.ScalableVF.isScalable(), UserIC);
+  bool ContainsScalableVF = MaxFactors.ScalableVF.isNonZero();
+  setTailFoldingStyles(ContainsScalableVF, UserIC);
   if (foldTailByMasking()) {
     if (getTailFoldingStyle() == TailFoldingStyle::DataWithEVL) {
       LLVM_DEBUG(
@@ -5403,8 +5411,7 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
       // Tail folded loop using VP intrinsics restricts the VF to be scalable
       // for now.
       // TODO: extend it for fixed vectors, if required.
-      assert(MaxFactors.ScalableVF.isScalable() &&
-             "Expected scalable vector factor.");
+      assert(ContainsScalableVF && "Expected scalable vector factor.");
 
       MaxFactors.FixedVF = ElementCount::getFixed(1);
     }

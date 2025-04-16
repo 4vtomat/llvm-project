@@ -5333,9 +5333,14 @@ static bool printAArch64PAuthABICoreInfo(raw_ostream &OS, uint32_t DataSize,
 
 template <typename ELFT>
 static std::string getGNUProperty(uint32_t Type, uint32_t DataSize,
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
                                   ArrayRef<uint8_t> Data, uint16_t EMachine) {
 #endif // SIFIVE_CUSTOMIZATION
+=======
+                                  ArrayRef<uint8_t> Data,
+                                  typename ELFT::Half EMachine) {
+>>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
   std::string str;
   raw_string_ostream OS(str);
   uint32_t PrData;
@@ -5368,6 +5373,7 @@ static std::string getGNUProperty(uint32_t Type, uint32_t DataSize,
     return str;
   case GNU_PROPERTY_AARCH64_FEATURE_1_AND:
   case GNU_PROPERTY_X86_FEATURE_1_AND:
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     // Currently GNU_PROPERTY_RISCV_FEATURE_1_AND uses same value as
     // GNU_PROPERTY_AARCH64_FEATURE_1_AND.
@@ -5380,6 +5386,26 @@ static std::string getGNUProperty(uint32_t Type, uint32_t DataSize,
       OS << "x86 feature: ";
     }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    static_assert(GNU_PROPERTY_AARCH64_FEATURE_1_AND ==
+                      GNU_PROPERTY_RISCV_FEATURE_1_AND,
+                  "GNU_PROPERTY_RISCV_FEATURE_1_AND should equal "
+                  "GNU_PROPERTY_AARCH64_FEATURE_1_AND, otherwise "
+                  "GNU_PROPERTY_RISCV_FEATURE_1_AND would be skipped!");
+
+    if (EMachine == EM_AARCH64 && Type == GNU_PROPERTY_AARCH64_FEATURE_1_AND) {
+      OS << "aarch64 feature: ";
+    } else if (EMachine == EM_RISCV &&
+               Type == GNU_PROPERTY_RISCV_FEATURE_1_AND) {
+      OS << "RISC-V feature: ";
+    } else if ((EMachine == EM_386 || EMachine == EM_X86_64) &&
+               Type == GNU_PROPERTY_X86_FEATURE_1_AND) {
+      OS << "x86 feature: ";
+    } else {
+      OS << format("<application-specific type 0x%x>", Type);
+      return str;
+    }
+>>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
 
     if (DataSize != 4) {
       OS << format("<corrupt length: 0x%x>", DataSize);
@@ -5391,6 +5417,7 @@ static std::string getGNUProperty(uint32_t Type, uint32_t DataSize,
       return str;
     }
 
+<<<<<<< HEAD
     if (Type == GNU_PROPERTY_AARCH64_FEATURE_1_AND) {
 #if SIFIVE_CUSTOMIZATION
       if (EMachine == ELF::EM_RISCV) {
@@ -5402,6 +5429,17 @@ static std::string getGNUProperty(uint32_t Type, uint32_t DataSize,
         DumpBit(GNU_PROPERTY_AARCH64_FEATURE_1_GCS, "GCS");
       }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    if (EMachine == EM_AARCH64) {
+      DumpBit(GNU_PROPERTY_AARCH64_FEATURE_1_BTI, "BTI");
+      DumpBit(GNU_PROPERTY_AARCH64_FEATURE_1_PAC, "PAC");
+      DumpBit(GNU_PROPERTY_AARCH64_FEATURE_1_GCS, "GCS");
+    } else if (EMachine == EM_RISCV) {
+      DumpBit(GNU_PROPERTY_RISCV_FEATURE_1_CFI_LP_UNLABELED,
+              "ZICFILP-unlabeled");
+      DumpBit(GNU_PROPERTY_RISCV_FEATURE_1_CFI_SS, "ZICFISS");
+      DumpBit(GNU_PROPERTY_RISCV_FEATURE_1_CFI_LP_FUNC_SIG, "ZICFILP-func-sig");
+>>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
     } else {
       DumpBit(GNU_PROPERTY_X86_FEATURE_1_IBT, "IBT");
       DumpBit(GNU_PROPERTY_X86_FEATURE_1_SHSTK, "SHSTK");
@@ -5462,10 +5500,15 @@ static std::string getGNUProperty(uint32_t Type, uint32_t DataSize,
 }
 
 template <typename ELFT>
+<<<<<<< HEAD
 static SmallVector<std::string, 4> getGNUPropertyList(ArrayRef<uint8_t> Arr,
 #if SIFIVE_CUSTOMIZATION
                                                       uint16_t EMachine) {
 #endif // SIFIVE_CUSTOMIZATION
+=======
+static SmallVector<std::string, 4>
+getGNUPropertyList(ArrayRef<uint8_t> Arr, typename ELFT::Half EMachine) {
+>>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
   using Elf_Word = typename ELFT::Word;
 
   SmallVector<std::string, 4> Properties;
@@ -5483,10 +5526,15 @@ static SmallVector<std::string, 4> getGNUPropertyList(ArrayRef<uint8_t> Arr,
       Properties.push_back(str);
       break;
     }
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     Properties.push_back(getGNUProperty<ELFT>(
         Type, DataSize, Arr.take_front(PaddedSize), EMachine));
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    Properties.push_back(getGNUProperty<ELFT>(
+        Type, DataSize, Arr.take_front(PaddedSize), EMachine));
+>>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
     Arr = Arr.drop_front(PaddedSize);
   }
 
@@ -5538,9 +5586,13 @@ static StringRef getDescAsStringRef(ArrayRef<uint8_t> Desc) {
 
 template <typename ELFT>
 static bool printGNUNote(raw_ostream &OS, uint32_t NoteType,
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
                          ArrayRef<uint8_t> Desc, uint16_t EMachine) {
 #endif // SIFIVE_CUSTOMIZATION
+=======
+                         ArrayRef<uint8_t> Desc, typename ELFT::Half EMachine) {
+>>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
   // Return true if we were able to pretty-print the note, false otherwise.
   switch (NoteType) {
   default:
@@ -5562,9 +5614,13 @@ static bool printGNUNote(raw_ostream &OS, uint32_t NoteType,
     break;
   case ELF::NT_GNU_PROPERTY_TYPE_0:
     OS << "    Properties:";
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     for (const std::string &Property : getGNUPropertyList<ELFT>(Desc, EMachine))
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    for (const std::string &Property : getGNUPropertyList<ELFT>(Desc, EMachine))
+>>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
       OS << "    " << Property << "\n";
     break;
   }
@@ -6253,13 +6309,19 @@ template <class ELFT> void GNUELFDumper<ELFT>::printNotes() {
     else
       OS << "Unknown note type: (" << format_hex(Type, 10) << ")\n";
 
+    const typename ELFT::Half EMachine = this->Obj.getHeader().e_machine;
+
     // Print the description, or fallback to printing raw bytes for unknown
     // owners/if we fail to pretty-print the contents.
     if (Name == "GNU") {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       uint16_t EMachine = this->Obj.getHeader().e_machine;
       if (printGNUNote<ELFT>(OS, Type, Descriptor, EMachine))
 #endif // SIFIVE_CUSTOMIZATION
+=======
+      if (printGNUNote<ELFT>(OS, Type, Descriptor, EMachine))
+>>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
         return Error::success();
     } else if (Name == "FreeBSD") {
       if (std::optional<FreeBSDNote> N =
@@ -7946,9 +8008,14 @@ template <class ELFT> void LLVMELFDumper<ELFT>::printAddrsig() {
 
 template <typename ELFT>
 static bool printGNUNoteLLVMStyle(uint32_t NoteType, ArrayRef<uint8_t> Desc,
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
                                   ScopedPrinter &W, uint16_t EMachine) {
 #endif // SIFIVE_CUSTOMIZATION
+=======
+                                  ScopedPrinter &W,
+                                  typename ELFT::Half EMachine) {
+>>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
   // Return true if we were able to pretty-print the note, false otherwise.
   switch (NoteType) {
   default:
@@ -8092,13 +8159,18 @@ template <class ELFT> void LLVMELFDumper<ELFT>::printNotes() {
       W.printString("Type",
                     "Unknown (" + to_string(format_hex(Type, 10)) + ")");
 
+    const typename ELFT::Half EMachine = this->Obj.getHeader().e_machine;
     // Print the description, or fallback to printing raw bytes for unknown
     // owners/if we fail to pretty-print the contents.
     if (Name == "GNU") {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       uint16_t EMachine = this->Obj.getHeader().e_machine;
       if (printGNUNoteLLVMStyle<ELFT>(Type, Descriptor, W, EMachine))
 #endif // SIFIVE_CUSTOMIZATION
+=======
+      if (printGNUNoteLLVMStyle<ELFT>(Type, Descriptor, W, EMachine))
+>>>>>>> a1984ec5eab09f9b49c232eb00827c3718f5940f
         return Error::success();
     } else if (Name == "FreeBSD") {
       if (std::optional<FreeBSDNote> N =
