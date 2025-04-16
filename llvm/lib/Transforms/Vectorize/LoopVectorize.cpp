@@ -6300,6 +6300,12 @@ LoopVectorizationCostModel::getSmallestAndWidestTypes() {
         WidestType = RdxDesc.getRecurrenceType();
         MaxWidth = WidestType->getScalarSizeInBits();
       }
+
+      // Set the MinWidth here, otherwise minWidth will be -1U.
+      MinWidth = std::min<unsigned>(
+          MinWidth, std::min<unsigned>(
+                        RdxDesc.getMinWidthCastToRecurrenceTypeInBits(),
+                        RdxDesc.getRecurrenceType()->getScalarSizeInBits()));
 #else
       MaxWidth = std::min<unsigned>(
           MaxWidth, std::min<unsigned>(
