@@ -1660,7 +1660,7 @@ void RISCVInsertVSETVLI::transferBefore(VSETVLIInfo &Info,
       (Demanded.MaskPolicy ? IncomingInfo : Info).getMaskAgnostic() ||
 #if SIFIVE_CUSTOMIZATION
           IncomingInfo.getMaskAgnostic(),
-      Demanded.UseAltFmt ? IncomingInfo.getAltFmt() : 0,
+      (Demanded.UseAltFmt ? IncomingInfo : Info).getAltFmt(),
       Demanded.UseTWiden ? IncomingInfo.getTWiden() : 0);
 
   if (NewInfo.hasATMReg())
