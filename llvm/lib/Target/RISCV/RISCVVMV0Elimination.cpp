@@ -126,6 +126,16 @@ bool RISCVVMV0Elimination::runOnMachineFunction(MachineFunction &MF) {
         if (isVMV0(MCOI)) {
           MachineOperand &MO = MI.getOperand(OpNo);
           Register Src = MO.getReg();
+#ifdef SIFIVE_CUSTOMIZATION
+          // Skip the vmv0 operand if it is a physical register.
+          // llvm.experimental.vp.set.before.first will generate
+          // PseudoVMSBF_M_B64_MASK undef %4:vrnov0(tied-def 0), %0:vr, $v0, %2:gprnox0, 0, 3
+          // Before RegAlloc
+          // Perhaps a better approach would be lowering the instruction as
+          // PseudoVMSBF_M_B64_MASK undef %4:vrnov0(tied-def 0), %0:vr, %VMVO, %2:gprnox0, 0, 3
+          if (Src.isPhysical())
+            continue;
+#endif // SIFIVE_CUSTOMIZATION
           assert(MO.isUse() && MO.getSubReg() == RISCV::NoSubRegister &&
                  Src.isVirtual() && "vmv0 use in unexpected form");
 
