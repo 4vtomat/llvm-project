@@ -229,11 +229,11 @@ let ManualCodegen = [{
 // four 8-bit integer bundles, we use unsigned type to represent all of them
 let RequiredFeatures = ["Xsfvqdotq"] in {
   defm sf_vqdot : RVVVQDOTQBuiltinSet<[["vv", "v", "vv(FixedSEW:8)v(FixedSEW:8)v"],
-                                       ["vx", "v", "vv(FixedSEW:8)ve"]]>;
+                                       ["vx", "v", "vv(FixedSEW:8)vUe"]]>;
   defm sf_vqdotu : RVVVQDOTQBuiltinSet<[["vv", "Uv", "UvUv(FixedSEW:8)Uv(FixedSEW:8)Uv"],
                                         ["vx", "Uv", "UvUv(FixedSEW:8)UvUe"]]>;
   defm sf_vqdotsu : RVVVQDOTQBuiltinSet<[["vv", "v", "vv(FixedSEW:8)v(FixedSEW:8)Uv"],
-                                         ["vx", "v", "vv(FixedSEW:8)ve"]]>;
+                                         ["vx", "v", "vv(FixedSEW:8)vUe"]]>;
   defm sf_vqdotus : RVVVQDOTQBuiltinSet<[["vx", "v", "vv(FixedSEW:8)UvUe"]]>;
 }
 
