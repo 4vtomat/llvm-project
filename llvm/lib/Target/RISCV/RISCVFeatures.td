@@ -1127,7 +1127,6 @@ def HasStdExtSmctrOrSsctr : Predicate<"Subtarget->hasStdExtSmctrOrSsctr()">,
                                "'Smctr' (Control Transfer Records Machine Level) or "
                                "'Ssctr' (Control Transfer Records Supervisor Level)">;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def FeatureStdExtZjid
     : RISCVExperimentalExtension<0, 0,
@@ -1137,7 +1136,6 @@ def HasStdExtZjid : Predicate<"Subtarget->hasStdExtZjid()">,
                     AssemblerPredicate<(all_of FeatureStdExtZjid),
                                         "'Zjid' (Instruction/Data Cache Synchronization)">;
 #endif // SIFIVE_CUSTOMIZATION
-=======
 // Packed SIMD Extensions
 def FeatureStdExtP
     : RISCVExperimentalExtension<0, 14,
@@ -1171,7 +1169,6 @@ def HasStdExtZbbOrZbkbOrP
                          "'Zbkb' (Bitmanip instructions for Cryptography) or "
                          "'Base P' (Packed-SIMD)">;
 
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 //===----------------------------------------------------------------------===//
 // Vendor extensions
 //===----------------------------------------------------------------------===//
