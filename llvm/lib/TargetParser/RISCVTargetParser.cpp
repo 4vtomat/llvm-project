@@ -165,15 +165,10 @@ namespace RISCVVType {
 // 6    | vta        | Vector tail agnostic
 // 5:3  | vsew[2:0]  | Standard element width (SEW) setting
 // 2:0  | vlmul[2:0] | Vector register group multiplier (LMUL) setting
-<<<<<<< HEAD
-unsigned encodeVTYPE(RISCVII::VLMUL VLMUL, unsigned SEW, bool TailAgnostic,
+unsigned encodeVTYPE(VLMUL VLMul, unsigned SEW, bool TailAgnostic,
 #if SIFIVE_CUSTOMIZATION
                      bool MaskAgnostic, bool AltFmt) {
 #endif // SIFIVE_CUSTOMIZATION
-=======
-unsigned encodeVTYPE(VLMUL VLMul, unsigned SEW, bool TailAgnostic,
-                     bool MaskAgnostic) {
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
   assert(isValidSEW(SEW) && "Invalid SEW");
   unsigned VLMulBits = static_cast<unsigned>(VLMul);
   unsigned VSEWBits = encodeSEW(SEW);
@@ -190,7 +185,6 @@ unsigned encodeVTYPE(VLMUL VLMul, unsigned SEW, bool TailAgnostic,
   return VTypeI;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 unsigned encodeXSfmmVType(unsigned SEW, unsigned Widen, bool AltFmt) {
   assert(isValidSEW(SEW) && "Invalid SEW");
@@ -202,12 +196,8 @@ unsigned encodeXSfmmVType(unsigned SEW, unsigned Widen, bool AltFmt) {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-std::pair<unsigned, bool> decodeVLMUL(RISCVII::VLMUL VLMUL) {
-  switch (VLMUL) {
-=======
 std::pair<unsigned, bool> decodeVLMUL(VLMUL VLMul) {
   switch (VLMul) {
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
   default:
     llvm_unreachable("Unexpected LMUL value!");
   case LMUL_1:
