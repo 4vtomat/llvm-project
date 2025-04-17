@@ -2434,16 +2434,11 @@ ParseStatus RISCVAsmParser::parseVTypeI(OperandVector &Operands) {
     getLexer().Lex();
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (getLexer().is(AsmToken::EndOfStatement) &&
       (State == VTypeState_TailPolicy || State == VTypeState_Done)) {
 #endif // SIFIVE_CUSTOMIZATION
-    RISCVII::VLMUL VLMUL = RISCVVType::encodeLMUL(Lmul, Fractional);
-=======
-  if (getLexer().is(AsmToken::EndOfStatement) && State == VTypeState_Done) {
     RISCVVType::VLMUL VLMUL = RISCVVType::encodeLMUL(Lmul, Fractional);
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
     if (Fractional) {
       unsigned ELEN = STI->hasFeature(RISCV::FeatureStdExtZve64x) ? 64 : 32;
       unsigned MaxSEW = ELEN / Lmul;
