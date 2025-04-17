@@ -93,14 +93,10 @@ inline static bool isValidLMUL(unsigned LMUL, bool Fractional) {
   return isPowerOf2_32(LMUL) && LMUL <= 8 && (!Fractional || LMUL != 1);
 }
 
-<<<<<<< HEAD
-unsigned encodeVTYPE(RISCVII::VLMUL VLMUL, unsigned SEW, bool TailAgnostic,
+unsigned encodeVTYPE(VLMUL VLMUL, unsigned SEW, bool TailAgnostic,
 #if SIFIVE_CUSTOMIZATION
                      bool MaskAgnostic, bool AltFmt);
 #else
-=======
-unsigned encodeVTYPE(VLMUL VLMUL, unsigned SEW, bool TailAgnostic,
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
                      bool MaskAgnostic);
 #endif // SIFIVE_CUSTOMIZATION
 
