@@ -307,12 +307,8 @@ unsigned RISCVInstrumentManager::getSchedClassID(
   } else if (opcodeHasEEWAndEMULInfo(Opcode)) {
 #else
   if (opcodeHasEEWAndEMULInfo(Opcode)) {
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-    RISCVII::VLMUL VLMUL = static_cast<RISCVII::VLMUL>(LMUL);
-=======
     RISCVVType::VLMUL VLMUL = static_cast<RISCVVType::VLMUL>(LMUL);
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
     auto [EEW, EMUL] = getEEWAndEMUL(Opcode, VLMUL, SEW);
 #if SIFIVE_CUSTOMIZATION
     if (const auto *RVV =
