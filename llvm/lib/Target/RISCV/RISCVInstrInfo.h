@@ -317,15 +317,12 @@ public:
   std::unique_ptr<TargetInstrInfo::PipelinerLoopInfo>
   analyzeLoopForPipelining(MachineBasicBlock *LoopBB) const override;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   ScheduleHazardRecognizer *
   CreateTargetMIHazardRecognizer(const InstrItineraryData *II,
                                  const ScheduleDAGMI *DAG) const override;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   bool isHighLatencyDef(int Opc) const override;
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 
 protected:
   const RISCVSubtarget &STI;
