@@ -2123,7 +2123,6 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
       return Cost * LT.first;
     break;
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case Intrinsic::vp_first: {
     Type *MaskTy = ICA.getArgTypes()[0];
@@ -2506,8 +2505,6 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
     return getArithmeticInstrCost(*FOp, ICA.getReturnType(), CostKind);
     break;
   }
-=======
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
   case Intrinsic::vp_select: {
     Intrinsic::ID IID = ICA.getID();
     std::optional<unsigned> FOp = VPIntrinsic::getFunctionalOpcodeForVP(IID);
