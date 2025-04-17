@@ -12178,10 +12178,6 @@ bool BoUpSLP::isTreeTinyAndNotFullyVectorizable(bool ForReduction) const {
       }))
     return true;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
   // Do not vectorize small tree of phis only, if all vector phis are also
   // gathered.
   if (!ForReduction && SLPCostThreshold.getNumOccurrences() &&
@@ -12194,21 +12190,6 @@ bool BoUpSLP::isTreeTinyAndNotFullyVectorizable(bool ForReduction) const {
                        count_if(TE->Scalars, IsaPred<ExtractElementInst>) <=
                            Limit) ||
                       (TE->hasState() &&
-<<<<<<< HEAD
-                       TE->getOpcode() == Instruction::InsertElement) ||
-                      ((TE->hasState() &&
-                        TE->getOpcode() == Instruction::PHI) &&
-                       all_of(TE->Scalars, [&](Value *V) {
-                         return isa<PoisonValue>(V) || MustGather.contains(V);
-                       }));
-             }) &&
-      any_of(VectorizableTree, [&](const std::unique_ptr<TreeEntry> &TE) {
-        return TE->State == TreeEntry::Vectorize && TE->hasState() &&
-               TE->getOpcode() == Instruction::PHI;
-      }))
-    return true;
-#endif // SIFIVE_CUSTOMIZATION
-=======
                        (TE->getOpcode() == Instruction::InsertElement ||
                         (TE->getOpcode() == Instruction::PHI &&
                          all_of(TE->Scalars, [&](Value *V) {
@@ -12216,11 +12197,14 @@ bool BoUpSLP::isTreeTinyAndNotFullyVectorizable(bool ForReduction) const {
                          }))));
              }) &&
       any_of(VectorizableTree, [&](const std::unique_ptr<TreeEntry> &TE) {
+#ifdef SIFIVE_CUSTOMIZATION
+        return TE->State == TreeEntry::Vectorize && TE->hasState() &&
+#else
         return TE->State == TreeEntry::Vectorize &&
+#endif // SIFIVE_CUSTOMIZATION
                TE->getOpcode() == Instruction::PHI;
       }))
     return true;
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 
   // We can vectorize the tree if its size is greater than or equal to the
   // minimum size specified by the MinTreeSize command line option.
