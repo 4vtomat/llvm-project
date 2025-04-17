@@ -248,8 +248,7 @@ class RVInstCommon<dag outs, dag ins, string opcodestr, string argstr,
 
   // Indicates the EEW of a vector instruction's destination operand.
   EEW DestEEW = EEWSEWx1;
-<<<<<<< HEAD
-  let TSFlags{26-25} = DestEEW.Value;
+  let TSFlags{25-24} = DestEEW.Value;
 #ifdef SIFIVE_CUSTOMIZATION
   // 0 -> Don't care about altfmt bit in VTYPE.
   // 1 -> Is not altfmt.
@@ -270,9 +269,6 @@ class RVInstCommon<dag outs, dag ins, string opcodestr, string argstr,
   bit HasTkOp = 0;
   let TSFlags{32} = HasTkOp;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  let TSFlags{25-24} = DestEEW.Value;
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 }
 
 class RVInst<dag outs, dag ins, string opcodestr, string argstr,
