@@ -3242,7 +3242,6 @@ void DAGTypeLegalizer::SplitVecRes_VP_REVERSE(SDNode *N, SDValue &Lo,
   std::tie(Lo, Hi) = DAG.SplitVector(Load, DL);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 void DAGTypeLegalizer::SplitVecRes_VP_SPLICE(SDNode *N, SDValue &Lo,
                                              SDValue &Hi) {
@@ -3343,7 +3342,6 @@ void DAGTypeLegalizer::SplitVecRes_VP_SET_BEFORE_FIRST(SDNode *N, SDValue &Lo,
 }
 #endif
 
-=======
 void DAGTypeLegalizer::SplitVecRes_PARTIAL_REDUCE_MLA(SDNode *N, SDValue &Lo,
                                                       SDValue &Hi) {
   SDLoc DL(N);
@@ -3351,7 +3349,6 @@ void DAGTypeLegalizer::SplitVecRes_PARTIAL_REDUCE_MLA(SDNode *N, SDValue &Lo,
   std::tie(Lo, Hi) = DAG.SplitVector(Expanded, DL);
 }
 
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 void DAGTypeLegalizer::SplitVecRes_VECTOR_DEINTERLEAVE(SDNode *N) {
   unsigned Factor = N->getNumOperands();
 
