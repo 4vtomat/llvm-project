@@ -496,4 +496,5 @@ defm : UnsupportedSchedV;
 defm : UnsupportedSchedZvk;
 defm : UnsupportedSchedSFB;
 defm : UnsupportedSchedXsfvcp;
+defm : UnsupportedSchedXSfsci; // SIFIVE
 }
