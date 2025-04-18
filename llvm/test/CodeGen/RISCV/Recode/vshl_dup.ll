@@ -275,12 +275,12 @@ define void @vqrshl_u64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1,
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
+; CHECK-NEXT:    li a3, 63
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a4, 256
 ; CHECK-NEXT:    sub a4, a4, a0
-; CHECK-NEXT:    li a3, 64
-; CHECK-NEXT:    li a1, 63
-; CHECK-NEXT:    beq a4, a3, .LBB6_2
+; CHECK-NEXT:    li a1, 64
+; CHECK-NEXT:    beq a4, a1, .LBB6_2
 ; CHECK-NEXT:  # %bb.1: # %entry
 ; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vssrl.vx v9, v8, a4
@@ -288,18 +288,18 @@ define void @vqrshl_u64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1,
 ; CHECK-NEXT:    bgeu a4, a5, .LBB6_3
 ; CHECK-NEXT:    j .LBB6_4
 ; CHECK-NEXT:  .LBB6_2:
-; CHECK-NEXT:    vsrl.vx v9, v8, a1
+; CHECK-NEXT:    vsrl.vx v9, v8, a3
 ; CHECK-NEXT:    li a5, 65
 ; CHECK-NEXT:    bltu a4, a5, .LBB6_4
 ; CHECK-NEXT:  .LBB6_3:
 ; CHECK-NEXT:    vmv.s.x v9, zero
 ; CHECK-NEXT:  .LBB6_4: # %entry
-; CHECK-NEXT:    minu a3, a0, a3
-; CHECK-NEXT:    vmv.s.x v10, a1
+; CHECK-NEXT:    minu a1, a0, a1
+; CHECK-NEXT:    vmv.s.x v10, a3
 ; CHECK-NEXT:    vmsne.vi v11, v8, 0
-; CHECK-NEXT:    vmv.s.x v12, a3
-; CHECK-NEXT:    vmsltu.vx v10, v10, a3
-; CHECK-NEXT:    vminu.vx v12, v12, a1
+; CHECK-NEXT:    vmv.s.x v12, a1
+; CHECK-NEXT:    vmsltu.vx v10, v10, a1
+; CHECK-NEXT:    vminu.vx v12, v12, a3
 ; CHECK-NEXT:    vmand.mm v10, v11, v10
 ; CHECK-NEXT:    vsll.vv v11, v8, v12
 ; CHECK-NEXT:    vsrl.vv v12, v11, v12
@@ -642,12 +642,12 @@ define void @vqrshlq_u64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
+; CHECK-NEXT:    li a3, 63
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a4, 256
 ; CHECK-NEXT:    sub a4, a4, a0
-; CHECK-NEXT:    li a3, 64
-; CHECK-NEXT:    li a1, 63
-; CHECK-NEXT:    beq a4, a3, .LBB14_2
+; CHECK-NEXT:    li a1, 64
+; CHECK-NEXT:    beq a4, a1, .LBB14_2
 ; CHECK-NEXT:  # %bb.1: # %entry
 ; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vssrl.vx v9, v8, a4
@@ -655,18 +655,18 @@ define void @vqrshlq_u64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1
 ; CHECK-NEXT:    bgeu a4, a5, .LBB14_3
 ; CHECK-NEXT:    j .LBB14_4
 ; CHECK-NEXT:  .LBB14_2:
-; CHECK-NEXT:    vsrl.vx v9, v8, a1
+; CHECK-NEXT:    vsrl.vx v9, v8, a3
 ; CHECK-NEXT:    li a5, 65
 ; CHECK-NEXT:    bltu a4, a5, .LBB14_4
 ; CHECK-NEXT:  .LBB14_3:
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:  .LBB14_4: # %entry
-; CHECK-NEXT:    minu a3, a0, a3
-; CHECK-NEXT:    vmv.v.x v10, a1
+; CHECK-NEXT:    minu a1, a0, a1
+; CHECK-NEXT:    vmv.v.x v10, a3
 ; CHECK-NEXT:    vmsne.vi v11, v8, 0
-; CHECK-NEXT:    vmv.v.x v12, a3
-; CHECK-NEXT:    vmsltu.vx v10, v10, a3
-; CHECK-NEXT:    vminu.vx v12, v12, a1
+; CHECK-NEXT:    vmv.v.x v12, a1
+; CHECK-NEXT:    vmsltu.vx v10, v10, a1
+; CHECK-NEXT:    vminu.vx v12, v12, a3
 ; CHECK-NEXT:    vmand.mm v10, v11, v10
 ; CHECK-NEXT:    vsll.vv v11, v8, v12
 ; CHECK-NEXT:    vsrl.vv v12, v11, v12

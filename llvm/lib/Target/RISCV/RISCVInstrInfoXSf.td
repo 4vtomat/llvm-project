@@ -1003,14 +1003,14 @@ class XPatUnaryMask<string intrinsic_name,
   Pat<(result_type (!cast<Intrinsic>(intrinsic_name#"_mask")
                    (result_type result_reg_class:$merge),
                    (op2_type op2_reg_class:$rs2),
-                   (mask_type V0),
+                   (mask_type VMV0:$vm),
                    VLOpFrag, (XLenVT timm:$policy))),
                    (!cast<Instruction>(!if(isSEWAware,
                                            inst#"_"#kind#"_"#vlmul.MX#"_E"#!shl(1, log2sew)#"_MASK",
                                            inst#"_"#kind#"_"#vlmul.MX#"_MASK"))
                    (result_type result_reg_class:$merge),
                    (op2_type op2_reg_class:$rs2),
-                   (mask_type V0), FRM_DYN, GPR:$vl, log2sew, (XLenVT timm:$policy))>;
+                   (mask_type VMV0:$vm), FRM_DYN, GPR:$vl, log2sew, (XLenVT timm:$policy))>;
 
 multiclass XPatConversionTA<string intrinsic,
                             string inst,

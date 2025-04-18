@@ -714,14 +714,14 @@ multiclass VPatBinaryRM_VL_V<SDNode vop,
                          (op1_type op1_reg_class:$rs1),
                          (op2_type op2_reg_class:$rs2),
                          (result_type result_reg_class:$merge),
-                         (mask_type V0),
+                         (mask_type VMV0:$vm),
                          (XLenVT timm:$roundmode),
                          VLOpFrag)),
         (!cast<Instruction>(instruction_name#"_"#suffix#"_"# vlmul.MX#"_MASK")
                      result_reg_class:$merge,
                      op1_reg_class:$rs1,
                      op2_reg_class:$rs2,
-                     (mask_type V0),
+                     (mask_type VMV0:$vm),
                      (XLenVT timm:$roundmode),
                      GPR:$vl, sew, TAIL_AGNOSTIC)>;
 }
@@ -905,14 +905,14 @@ multiclass VPatBinaryRM_VL_XI<SDNode vop,
                      (vop1_type vop_reg_class:$rs1),
                      (vop2_type (SplatPatKind (XLenVT xop_kind:$rs2))),
                      (result_type result_reg_class:$merge),
-                     (mask_type V0),
+                     (mask_type VMV0:$vm),
                      (XLenVT timm:$roundmode),
                      VLOpFrag)),
         (!cast<Instruction>(instruction_name#_#suffix#_# vlmul.MX#"_MASK")
                      result_reg_class:$merge,
                      vop_reg_class:$rs1,
                      xop_kind:$rs2,
-                     (mask_type V0),
+                     (mask_type VMV0:$vm),
                      (XLenVT timm:$roundmode),
                      GPR:$vl, sew, TAIL_AGNOSTIC)>;
 }
@@ -2147,16 +2147,16 @@ multiclass VPatAVGSUBVL_VV_VX_RM<SDNode vop, int vxrm, string suffix = ""> {
     let Predicates = GetVTypePredicates<vti>.Predicates in {
       def : Pat<(vop (vti.Vector vti.RegClass:$rs1),
                      (vti.Vector vti.RegClass:$rs2),
-                     vti.RegClass:$merge, (vti.Mask V0), VLOpFrag),
+                     vti.RegClass:$merge, (vti.Mask VMV0:$vm), VLOpFrag),
                 (!cast<Instruction>("PseudoVASUB"#suffix#"_VV_"#vti.LMul.MX#"_MASK")
                   vti.RegClass:$merge, vti.RegClass:$rs1, vti.RegClass:$rs2,
-                  (vti.Mask V0), vxrm, GPR:$vl, vti.Log2SEW, TAIL_AGNOSTIC)>;
+                  (vti.Mask VMV0:$vm), vxrm, GPR:$vl, vti.Log2SEW, TAIL_AGNOSTIC)>;
       def : Pat<(vop (vti.Vector vti.RegClass:$rs1),
                      (vti.Vector (SplatPat (XLenVT GPR:$rs2))),
-                     vti.RegClass:$merge, (vti.Mask V0), VLOpFrag),
+                     vti.RegClass:$merge, (vti.Mask VMV0:$vm), VLOpFrag),
                 (!cast<Instruction>("PseudoVASUB"#suffix#"_VX_"#vti.LMul.MX#"_MASK")
                   vti.RegClass:$merge, vti.RegClass:$rs1, GPR:$rs2,
-                  (vti.Mask V0), vxrm, GPR:$vl, vti.Log2SEW, TAIL_AGNOSTIC)>;
+                  (vti.Mask VMV0:$vm), vxrm, GPR:$vl, vti.Log2SEW, TAIL_AGNOSTIC)>;
     }
   }
 }
@@ -2518,11 +2518,11 @@ defm : VPatFPMulAccVL_VV_VF_RM<riscv_vfnmsub_vl_oneuse, "PseudoVFNMSAC">;
 foreach vti = AllFloatVectors in {
   defvar suffix = vti.LMul.MX # "_E" # vti.SEW;
   def : Pat<(vti.Vector (riscv_vfnmsac_vl vti.RegClass:$rd, vti.RegClass:$rs1,
-                                          vti.RegClass:$rs2, (vti.Mask V0),
+                                          vti.RegClass:$rs2, (vti.Mask VMV0:$vm),
                                           VLOpFrag)),
             (!cast<Instruction>("PseudoVFNMSAC_VV_"# suffix #"_MASK")
                  vti.RegClass:$rd, vti.RegClass:$rs1, vti.RegClass:$rs2,
-                 (vti.Mask V0),
+                 (vti.Mask VMV0:$vm),
                  // Value to indicate no rounding mode change in
                  // RISCVInsertReadWriteCSR
                  FRM_DYN,
@@ -2949,10 +2949,10 @@ foreach mti = AllMasks in {
                                         VLOpFrag)),
               (!cast<Instruction>("PseudoVMSBF_M_" # mti.BX)
                    VR:$rs2, GPR:$vl, mti.Log2SEW)>;
-    def : Pat<(mti.Mask (riscv_vmsbf_vl (mti.Mask VR:$rs2), (mti.Mask V0),
+    def : Pat<(mti.Mask (riscv_vmsbf_vl (mti.Mask VR:$rs2), (mti.Mask VMV0:$vm),
                                         VLOpFrag)),
               (!cast<Instruction>("PseudoVMSBF_M_" # mti.BX # "_MASK")
-                   (mti.Mask (IMPLICIT_DEF)), VR:$rs2, (mti.Mask V0), GPR:$vl,
+                   (mti.Mask (IMPLICIT_DEF)), VR:$rs2, (mti.Mask VMV0:$vm), GPR:$vl,
                    mti.Log2SEW, TA_MA)>;
 #endif
 
