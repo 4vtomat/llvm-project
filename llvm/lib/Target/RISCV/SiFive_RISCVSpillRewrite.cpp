@@ -74,8 +74,8 @@ static inline bool hasSpillSlotObject(const MachineFrameInfo *MFI,
   return MFI->isSpillSlotObjectIndex(FI);
 }
 
-static inline RISCVII::VLMUL maxLMUL(RISCVII::VLMUL LMUL1,
-                                     RISCVII::VLMUL LMUL2) {
+static inline RISCVVType::VLMUL maxLMUL(RISCVVType::VLMUL LMUL1,
+                                        RISCVVType::VLMUL LMUL2) {
   int LMUL1Val = std::numeric_limits<int>::min();
   int LMUL2Val = std::numeric_limits<int>::min();
 
@@ -91,7 +91,7 @@ static inline RISCVII::VLMUL maxLMUL(RISCVII::VLMUL LMUL1,
   return LMUL1Val > LMUL2Val ? LMUL1 : LMUL2;
 }
 
-static inline RISCVII::VLMUL getWidenedFracLMUL(RISCVII::VLMUL LMUL) {
+static inline RISCVVType::VLMUL getWidenedFracLMUL(RISCVVType::VLMUL LMUL) {
   if (LMUL == RISCVII::LMUL_F8)
     return RISCVII::LMUL_F4;
   if (LMUL == RISCVII::LMUL_F4)
@@ -127,16 +127,15 @@ private:
   // BegI represents the starting instruction in the beginning, this is used to
   // determine whether it encounters a loop, if so then the defining instruction
   // doesn't exist in this MBB.
-  RISCVII::VLMUL
+  RISCVVType::VLMUL
   findDefiningInstUnionLMUL(MachineBasicBlock &MBB, Register Reg,
                             DenseMap<MachineInstr *, bool> &Visited,
                             MachineBasicBlock::reverse_iterator BegI = nullptr);
-  bool
-  tryToRewriteSpill(MachineBasicBlock &MBB, MachineBasicBlock::iterator I,
-                    std::map<int, RISCVII::VLMUL> &SpillLMUL);
-  bool tryToRewriteReload(
-      MachineBasicBlock &MBB, MachineBasicBlock::iterator I, int FI,
-      const std::map<int, RISCVII::VLMUL> &SpillLMUL);
+  bool tryToRewriteSpill(MachineBasicBlock &MBB, MachineBasicBlock::iterator I,
+                         std::map<int, RISCVVType::VLMUL> &SpillLMUL);
+  bool tryToRewriteReload(MachineBasicBlock &MBB, MachineBasicBlock::iterator I,
+                          int FI,
+                          const std::map<int, RISCVVType::VLMUL> &SpillLMUL);
 };
 
 } // end anonymous namespace
@@ -159,7 +158,7 @@ void RISCVSpillRewrite::getAnalysisUsage(AnalysisUsage &AU) const {
   MachineFunctionPass::getAnalysisUsage(AU);
 }
 
-RISCVII::VLMUL RISCVSpillRewrite::findDefiningInstUnionLMUL(
+RISCVVType::VLMUL RISCVSpillRewrite::findDefiningInstUnionLMUL(
     MachineBasicBlock &MBB, Register Reg,
     DenseMap<MachineInstr *, bool> &Visited,
     MachineBasicBlock::reverse_iterator BegI) {
@@ -194,18 +193,18 @@ RISCVII::VLMUL RISCVSpillRewrite::findDefiningInstUnionLMUL(
         const MachineOperand &PolicyOp =
             I->getOperand(I->getNumExplicitOperands() - 1);
         if ((PolicyOp.getImm() & RISCVII::TAIL_AGNOSTIC) == 0)
-          return RISCVII::VLMUL::LMUL_1;
+          return RISCVVType::VLMUL::LMUL_1;
       }
 
-      RISCVII::VLMUL LMUL = RISCVII::getLMul(TSFlags);
+      RISCVVType::VLMUL LMUL = RISCVII::getLMul(TSFlags);
       if (RISCVII::isRVVWideningReduction(TSFlags)) {
         // Widening reduction produces only single element result, so we just
         // need to calculate LMUL for single element.
         int Log2SEW =
             I->getOperand(RISCVII::getSEWOpNum(I->getDesc())).getImm();
         int Log2LMUL = Log2SEW - Log2_64(ST->getELen());
-        LMUL = static_cast<RISCVII::VLMUL>(Log2LMUL < 0 ? Log2LMUL + 8
-                                                        : Log2LMUL);
+        LMUL = static_cast<RISCVVType::VLMUL>(Log2LMUL < 0 ? Log2LMUL + 8
+                                                           : Log2LMUL);
       }
       if (RISCVII::isWiden(TSFlags))
         LMUL = getWidenedFracLMUL(LMUL);
@@ -218,9 +217,9 @@ RISCVII::VLMUL RISCVSpillRewrite::findDefiningInstUnionLMUL(
 
   // If Reg's defining inst is not found in this BB, find it in it's
   // predecessors.
-  RISCVII::VLMUL LMUL = RISCVII::LMUL_RESERVED;
+  RISCVVType::VLMUL LMUL = RISCVII::LMUL_RESERVED;
   for (MachineBasicBlock *P : MBB.predecessors()) {
-    RISCVII::VLMUL PredLMUL = findDefiningInstUnionLMUL(*P, Reg, Visited);
+    RISCVVType::VLMUL PredLMUL = findDefiningInstUnionLMUL(*P, Reg, Visited);
     if (PredLMUL == RISCVII::LMUL_RESERVED)
       continue;
 
@@ -237,12 +236,12 @@ RISCVII::VLMUL RISCVSpillRewrite::findDefiningInstUnionLMUL(
 
 bool RISCVSpillRewrite::tryToRewriteSpill(
     MachineBasicBlock &MBB, MachineBasicBlock::iterator I,
-    std::map<int, RISCVII::VLMUL> &SpillLMUL) {
+    std::map<int, RISCVVType::VLMUL> &SpillLMUL) {
   Register SrcReg = I->getOperand(0).getReg();
   unsigned Opcode = 0;
   DenseMap<MachineInstr *, bool> Visited;
   // Find the nearest inst defines this spilled reg.
-  RISCVII::VLMUL LMUL = findDefiningInstUnionLMUL(MBB, SrcReg, Visited, *I);
+  RISCVVType::VLMUL LMUL = findDefiningInstUnionLMUL(MBB, SrcReg, Visited, *I);
   // If the register's defined inst just defines partial of register, we only
   // need to store partial register.
   switch (LMUL) {
@@ -264,7 +263,7 @@ bool RISCVSpillRewrite::tryToRewriteSpill(
     return false;
 
   int FI = I->getOperand(1).getIndex();
-  auto updateLMUL = [&](RISCVII::VLMUL LMUL) {
+  auto updateLMUL = [&](RISCVVType::VLMUL LMUL) {
     assert(!SpillLMUL.count(FI) &&
            "Each frame index should only be used once.");
     SpillLMUL[FI] = LMUL;
@@ -289,7 +288,7 @@ bool RISCVSpillRewrite::tryToRewriteSpill(
 
 bool RISCVSpillRewrite::tryToRewriteReload(
     MachineBasicBlock &MBB, MachineBasicBlock::iterator I, int FI,
-    const std::map<int, RISCVII::VLMUL> &SpillLMUL) {
+    const std::map<int, RISCVVType::VLMUL> &SpillLMUL) {
   // Partial reload case
   // If this frame doesn't have corresponding reload op, just skip it.
   if (!SpillLMUL.count(FI))
@@ -351,7 +350,7 @@ bool RISCVSpillRewrite::runOnMachineFunction(MachineFunction &MF) {
   // need to consider stack slot reuse.
   bool Changed = false;
   bool TempChanged = false;
-  std::map<int, RISCVII::VLMUL> SpillLMUL;
+  std::map<int, RISCVVType::VLMUL> SpillLMUL;
   do {
     TempChanged = false;
     for (MachineBasicBlock &MBB : MF) {

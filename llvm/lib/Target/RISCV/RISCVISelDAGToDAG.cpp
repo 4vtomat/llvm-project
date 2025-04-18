@@ -958,7 +958,7 @@ bool RISCVDAGToDAGISel::tryReplaceConstantSplatWithStridedLoad(SDNode *Node) {
   SDValue PolicyOp = CurDAG->getTargetConstant(Policy, DL, XLenVT);
   Operands.append({VL, SEW, PolicyOp, CurDAG->getEntryNode()});
 
-  RISCVII::VLMUL LMUL = RISCVTargetLowering::getLMUL(VT);
+  RISCVVType::VLMUL LMUL = RISCVTargetLowering::getLMUL(VT);
   const RISCV::VLEPseudo *P = RISCV::getVLEPseudo(
       /*IsMasked=*/false, IsStrided, /*FF=*/false, Log2SEW,
       static_cast<unsigned>(LMUL));
