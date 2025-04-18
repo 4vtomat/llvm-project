@@ -7773,19 +7773,12 @@ LoopVectorizationCostModel::getScalarizationOverhead(Instruction *I,
   InstructionCost Cost = 0;
   Type *RetTy = toVectorizedTy(I->getType(), VF);
   if (!RetTy->isVoidTy() &&
-<<<<<<< HEAD
-      (!isa<LoadInst>(I) || !TTI.supportsEfficientVectorElementLoadStore()))
+      (!isa<LoadInst>(I) || !TTI.supportsEfficientVectorElementLoadStore())) {
 #if SIFIVE_CUSTOMIZATION
     // FIXME: For scalable vectors DemandedElts for computing scalarization
     // overhead currently models ElementCount.Min number of elements. This would
     // be changed in the future.
 #endif // SIFIVE_CUSTOMIZATION
-    Cost += TTI.getScalarizationOverhead(
-        cast<VectorType>(RetTy), APInt::getAllOnes(VF.getKnownMinValue()),
-        /*Insert*/ true,
-        /*Extract*/ false, CostKind);
-=======
-      (!isa<LoadInst>(I) || !TTI.supportsEfficientVectorElementLoadStore())) {
 
     for (Type *VectorTy : getContainedTypes(RetTy)) {
       Cost += TTI.getScalarizationOverhead(
@@ -7794,7 +7787,6 @@ LoopVectorizationCostModel::getScalarizationOverhead(Instruction *I,
           /*Extract=*/false, CostKind);
     }
   }
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 
   // Some targets keep addresses scalar.
   if (isa<LoadInst>(I) && !TTI.prefersVectorizedAddressing())
@@ -11910,8 +11902,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   VPlanPtr Plan = VPlan::createInitialVPlan(Legal->getWidestInductionType(),
                                             PSE, RequiresScalarEpilogueCheck,
                                             CM.foldTailByMasking(), OrigLoop);
-
-<<<<<<< HEAD
 #endif
 
 #if SIFIVE_CUSTOMIZATION
@@ -11932,12 +11922,10 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   // Build hierarchical CFG.
   VPlanHCFGBuilder HCFGBuilder(OrigLoop, LI, *Plan);
   HCFGBuilder.buildHierarchicalCFG();
 
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
   // Don't use getDecisionAndClampRange here, because we don't know the UF
   // so this function is better to be conservative, rather than to split
   // it up into different VPlans.
@@ -12045,18 +12033,11 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
       break;
     }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    Builder.BB2VPBB[BB] = VPBB;
-#endif // SIFIVE_CUSTOMIZATION
-    if (VPBB == HeaderVPBB)
-=======
     // Create mask based on the IR BB corresponding to VPBB.
     // TODO: Predicate directly based on VPlan.
     Builder.setInsertPoint(VPBB, VPBB->begin());
     if (VPBB == HeaderVPBB) {
       Builder.setInsertPoint(VPBB, VPBB->getFirstNonPhi());
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
       RecipeBuilder.createHeaderMask();
     } else if (NeedsMasks) {
       // FIXME: At the moment, masks need to be placed at the beginning of the
@@ -12126,7 +12107,7 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
       VPRecipeBase *Recipe =
           RecipeBuilder.tryToCreateWidenRecipe(Instr, Operands, Range);
 #if SIFIVE_CUSTOMIZATION
-      if (&I == DataDepExitCond)
+      if (Instr == DataDepExitCond)
         VPDataDepExitCond = Recipe;
 #endif // SIFIVE_CUSTOMIZATION
       if (!Recipe)
@@ -12148,9 +12129,8 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
       R.eraseFromParent();
     }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-    if (BB == CouldNotComputeExitingBB) {
+    if (HCFGBuilder.getIRBBForVPB(VPBB) == CouldNotComputeExitingBB) {
       // TODO: Handle loop-invariant condition
       auto *BI = cast<BranchInst>(CouldNotComputeExitingBB->getTerminator());
       bool NeedsInvert = OrigLoop->contains(BI->getSuccessor(0));
@@ -12165,42 +12145,17 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
           new VPInstruction(VPInstruction::BranchOnCond, {ScalarExitCond});
       // The branch recipe belongs to latch block if there is no early exiting.
       if (EarlyExitingBB) {
-        RecipeBuilder.setRecipe(cast<BranchInst>(BB->getTerminator()), NewBR);
+        RecipeBuilder.setRecipe(cast<BranchInst>(CouldNotComputeExitingBB->getTerminator()), NewBR);
         VPBB->appendRecipe(NewBR);
-        VPBasicBlock *InLoopVPBB = Plan->createVPBasicBlock("");
 
-        // Surely there should only be one succesor?!
-        VPBlockBase *Successor = VPBB->getSingleSuccessor();
-        VPBlockUtils::disconnectBlocks(VPBB, Successor);
-        VPBlockUtils::insertTwoBlocksAfter(EarlyExitVPBB, InLoopVPBB, VPBB);
-        VPBlockUtils::connectBlocks(InLoopVPBB, Successor);
-
-        VPBB = InLoopVPBB;
+        // FIXME: Add EarlyExitVPBB later
       } else {
         VPBasicBlock *EB = Plan->getVectorLoopRegion()->getExitingBasicBlock();
         EB->appendRecipe(NewBR);
-        VPBlockUtils::insertBlockAfter(Plan->createVPBasicBlock(""), VPBB);
-        VPBB = cast<VPBasicBlock>(VPBB->getSingleSuccessor());
       }
-    } else {
-      VPBlockUtils::insertBlockAfter(Plan->createVPBasicBlock(""), VPBB);
-      VPBB = cast<VPBasicBlock>(VPBB->getSingleSuccessor());
     }
-#else
-    VPBlockUtils::insertBlockAfter(Plan->createVPBasicBlock(""), VPBB);
-    VPBB = cast<VPBasicBlock>(VPBB->getSingleSuccessor());
-#endif // SIFIVE_CUSTOMIZATION
-  }
-
-#if SIFIVE_CUSTOMIZATION
-  addCSAPostprocessRecipes(RecipeBuilder, Legal->getCSAs(), MiddleVPBB, DL,
-                           Range, *Plan);
 #endif // SIFIVE_CUSTOMIZATION
 
-  // After here, VPBB should not be used.
-  VPBB = nullptr;
-
-=======
     // Flatten the CFG in the loop. Masks for blocks have already been generated
     // and added to recipes as needed. To do so, first disconnect VPBB from its
     // successors. Then connect VPBB to the previously visited VPBB.
@@ -12211,7 +12166,10 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     PrevVPBB = VPBB;
   }
 
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
+#if SIFIVE_CUSTOMIZATION
+  addCSAPostprocessRecipes(RecipeBuilder, Legal->getCSAs(), MiddleVPBB, DL,
+                           Range, *Plan);
+#endif // SIFIVE_CUSTOMIZATION
   assert(isa<VPRegionBlock>(Plan->getVectorLoopRegion()) &&
          !Plan->getVectorLoopRegion()->getEntryBasicBlock()->empty() &&
          "entry block must be set to a VPRegionBlock having a non-empty entry "
