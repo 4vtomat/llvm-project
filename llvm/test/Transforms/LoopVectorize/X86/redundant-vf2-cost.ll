@@ -8,7 +8,7 @@
 ; CHECK: Cost of {{.*}} for VF 2: WIDEN store
 ; CHECK-NOT: Cost of {{.*}} for VF 2: WIDEN {{.*}} = load
 ; CHECK-NOT: Cost of {{.*}} for VF 2: WIDEN store
-; CHECK: Cost for VF 2: 5 (Estimated cost per lane: 2.
+; CHECK: Cost for VF 2: 6 (Estimated cost per lane: 3.
 
 define i32 @foo(ptr %A, i32 %n) {
 entry:

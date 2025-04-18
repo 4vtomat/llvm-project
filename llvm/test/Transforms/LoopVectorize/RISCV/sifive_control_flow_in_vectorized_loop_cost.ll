@@ -182,3 +182,110 @@ for.inc:                                          ; preds = %if.else76, %if.else
 for.end:                                          ; preds = %for.inc
   ret void
 }
+
+; Extracted from engine/aftermath.c:124. Should not be vectorize.
+define i32 @aftermath_genmove(i32 %color, ptr %board, ptr %distance) {
+; P470-LABEL: define i32 @aftermath_genmove(
+; P470-SAME: i32 [[COLOR:%.*]], ptr [[BOARD:%.*]], ptr [[DISTANCE:%.*]]) #[[ATTR0]] {
+; P470-NEXT:  [[ENTRY:.*]]:
+; P470-NEXT:    br label %[[FOR_BODY:.*]]
+; P470:       [[FOR_BODY]]:
+; P470-NEXT:    [[INDVARS_IV3:%.*]] = phi i64 [ 0, %[[ENTRY]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_INC:.*]] ]
+; P470-NEXT:    [[ARRAYIDX:%.*]] = getelementptr [421 x i8], ptr [[BOARD]], i64 0, i64 [[INDVARS_IV3]]
+; P470-NEXT:    [[TMP0:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
+; P470-NEXT:    [[CMP2_NOT:%.*]] = icmp eq i8 [[TMP0]], 0
+; P470-NEXT:    br i1 [[CMP2_NOT]], label %[[FOR_INC]], label %[[IF_ELSE:.*]]
+; P470:       [[IF_ELSE]]:
+; P470-NEXT:    [[CONV:%.*]] = zext i8 [[TMP0]] to i32
+; P470-NEXT:    [[CMP7:%.*]] = icmp eq i32 [[COLOR]], [[CONV]]
+; P470-NEXT:    br i1 [[CMP7]], label %[[LAND_LHS_TRUE:.*]], label %[[IF_ELSE14:.*]]
+; P470:       [[LAND_LHS_TRUE]]:
+; P470-NEXT:    [[TMP1:%.*]] = load i32, ptr [[BOARD]], align 4
+; P470-NEXT:    [[TOBOOL_NOT:%.*]] = icmp eq i32 [[TMP1]], 0
+; P470-NEXT:    br i1 [[TOBOOL_NOT]], label %[[IF_ELSE14]], label %[[FOR_INC_SINK_SPLIT:.*]]
+; P470:       [[IF_ELSE14]]:
+; P470-NEXT:    br i1 true, label %[[LAND_LHS_TRUE16:.*]], label %[[IF_ELSE41:.*]]
+; P470:       [[LAND_LHS_TRUE16]]:
+; P470-NEXT:    [[CMP20:%.*]] = icmp eq i32 [[COLOR]], [[CONV]]
+; P470-NEXT:    br i1 [[CMP20]], label %[[LAND_LHS_TRUE22:.*]], label %[[LOR_LHS_FALSE:.*]]
+; P470:       [[LAND_LHS_TRUE22]]:
+; P470-NEXT:    [[TMP2:%.*]] = load i32, ptr [[BOARD]], align 4
+; P470-NEXT:    [[CMP25:%.*]] = icmp eq i32 [[TMP2]], 0
+; P470-NEXT:    br i1 [[CMP25]], label %[[FOR_INC_SINK_SPLIT]], label %[[LOR_LHS_FALSE]]
+; P470:       [[LOR_LHS_FALSE]]:
+; P470-NEXT:    br i1 [[CMP7]], label %[[LAND_LHS_TRUE32:.*]], label %[[IF_ELSE41]]
+; P470:       [[LAND_LHS_TRUE32]]:
+; P470-NEXT:    [[TMP3:%.*]] = load i32, ptr [[BOARD]], align 4
+; P470-NEXT:    [[CMP36:%.*]] = icmp eq i32 [[TMP3]], 0
+; P470-NEXT:    br i1 [[CMP36]], label %[[FOR_INC_SINK_SPLIT]], label %[[IF_ELSE41]]
+; P470:       [[IF_ELSE41]]:
+; P470-NEXT:    br label %[[FOR_INC_SINK_SPLIT]]
+; P470:       [[FOR_INC_SINK_SPLIT]]:
+; P470-NEXT:    [[DOTSINK:%.*]] = phi i32 [ 1, %[[IF_ELSE41]] ], [ 0, %[[LAND_LHS_TRUE]] ], [ 0, %[[LAND_LHS_TRUE32]] ], [ 0, %[[LAND_LHS_TRUE22]] ]
+; P470-NEXT:    [[ARRAYIDX40:%.*]] = getelementptr [400 x i32], ptr [[DISTANCE]], i64 0, i64 [[INDVARS_IV3]]
+; P470-NEXT:    store i32 [[DOTSINK]], ptr [[ARRAYIDX40]], align 4
+; P470-NEXT:    br label %[[FOR_INC]]
+; P470:       [[FOR_INC]]:
+; P470-NEXT:    [[INDVARS_IV_NEXT]] = add i64 [[INDVARS_IV3]], 1
+; P470-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV3]], 400
+; P470-NEXT:    br i1 [[EXITCOND_NOT]], label %[[DO_BODY_PREHEADER:.*]], label %[[FOR_BODY]]
+; P470:       [[DO_BODY_PREHEADER]]:
+; P470-NEXT:    ret i32 0
+;
+entry:
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc, %entry
+  %indvars.iv3 = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc ]
+  %arrayidx = getelementptr [421 x i8], ptr %board, i64 0, i64 %indvars.iv3
+  %0 = load i8, ptr %arrayidx, align 1
+  %cmp2.not = icmp eq i8 %0, 0
+  br i1 %cmp2.not, label %for.inc, label %if.else
+
+if.else:                                          ; preds = %for.body
+  %conv = zext i8 %0 to i32
+  %cmp7 = icmp eq i32 %color, %conv
+  br i1 %cmp7, label %land.lhs.true, label %if.else14
+
+land.lhs.true:                                    ; preds = %if.else
+  %1 = load i32, ptr %board, align 4
+  %tobool.not = icmp eq i32 %1, 0
+  br i1 %tobool.not, label %if.else14, label %for.inc.sink.split
+
+if.else14:                                        ; preds = %land.lhs.true, %if.else
+  br i1 true, label %land.lhs.true16, label %if.else41
+
+land.lhs.true16:                                  ; preds = %if.else14
+  %cmp20 = icmp eq i32 %color, %conv
+  br i1 %cmp20, label %land.lhs.true22, label %lor.lhs.false
+
+land.lhs.true22:                                  ; preds = %land.lhs.true16
+  %2 = load i32, ptr %board, align 4
+  %cmp25 = icmp eq i32 %2, 0
+  br i1 %cmp25, label %for.inc.sink.split, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %land.lhs.true22, %land.lhs.true16
+  br i1 %cmp7, label %land.lhs.true32, label %if.else41
+
+land.lhs.true32:                                  ; preds = %lor.lhs.false
+  %3 = load i32, ptr %board, align 4
+  %cmp36 = icmp eq i32 %3, 0
+  br i1 %cmp36, label %for.inc.sink.split, label %if.else41
+
+if.else41:                                        ; preds = %land.lhs.true32, %lor.lhs.false, %if.else14
+  br label %for.inc.sink.split
+
+for.inc.sink.split:                               ; preds = %if.else41, %land.lhs.true32, %land.lhs.true22, %land.lhs.true
+  %.sink = phi i32 [ 1, %if.else41 ], [ 0, %land.lhs.true ], [ 0, %land.lhs.true32 ], [ 0, %land.lhs.true22 ]
+  %arrayidx40 = getelementptr [400 x i32], ptr %distance, i64 0, i64 %indvars.iv3
+  store i32 %.sink, ptr %arrayidx40, align 4
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.inc.sink.split, %for.body
+  %indvars.iv.next = add i64 %indvars.iv3, 1
+  %exitcond.not = icmp eq i64 %indvars.iv3, 400
+  br i1 %exitcond.not, label %do.body.preheader, label %for.body
+
+do.body.preheader:                                ; preds = %for.inc
+  ret i32 0
+}
