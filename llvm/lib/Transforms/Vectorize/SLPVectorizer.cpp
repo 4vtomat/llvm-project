@@ -12197,11 +12197,7 @@ bool BoUpSLP::isTreeTinyAndNotFullyVectorizable(bool ForReduction) const {
                          }))));
              }) &&
       any_of(VectorizableTree, [&](const std::unique_ptr<TreeEntry> &TE) {
-#ifdef SIFIVE_CUSTOMIZATION
-        return TE->State == TreeEntry::Vectorize && TE->hasState() &&
-#else
         return TE->State == TreeEntry::Vectorize &&
-#endif // SIFIVE_CUSTOMIZATION
                TE->getOpcode() == Instruction::PHI;
       }))
     return true;
