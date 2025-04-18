@@ -954,7 +954,7 @@ bool RISCVDAGToDAGISel::tryReplaceConstantSplatWithStridedLoad(SDNode *Node) {
       Addr};
   if (IsStrided)
     Operands.push_back(CurDAG->getRegister(RISCV::X0, XLenVT));
-  uint64_t Policy = RISCVII::MASK_AGNOSTIC | RISCVII::TAIL_AGNOSTIC;
+  uint64_t Policy = RISCVVType::MASK_AGNOSTIC | RISCVVType::TAIL_AGNOSTIC;
   SDValue PolicyOp = CurDAG->getTargetConstant(Policy, DL, XLenVT);
   Operands.append({VL, SEW, PolicyOp, CurDAG->getEntryNode()});
 

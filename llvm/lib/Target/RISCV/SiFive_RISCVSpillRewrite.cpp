@@ -79,11 +79,11 @@ static inline RISCVVType::VLMUL maxLMUL(RISCVVType::VLMUL LMUL1,
   int LMUL1Val = std::numeric_limits<int>::min();
   int LMUL2Val = std::numeric_limits<int>::min();
 
-  if (LMUL1 != RISCVII::LMUL_RESERVED) {
+  if (LMUL1 != RISCVVType::LMUL_RESERVED) {
     auto DecodedLMUL1 = RISCVVType::decodeVLMUL(LMUL1);
     LMUL1Val = DecodedLMUL1.second ? -DecodedLMUL1.first : DecodedLMUL1.first;
   }
-  if (LMUL2 != RISCVII::LMUL_RESERVED) {
+  if (LMUL2 != RISCVVType::LMUL_RESERVED) {
     auto DecodedLMUL2 = RISCVVType::decodeVLMUL(LMUL2);
     LMUL2Val = DecodedLMUL2.second ? -DecodedLMUL2.first : DecodedLMUL2.first;
   }
@@ -92,12 +92,12 @@ static inline RISCVVType::VLMUL maxLMUL(RISCVVType::VLMUL LMUL1,
 }
 
 static inline RISCVVType::VLMUL getWidenedFracLMUL(RISCVVType::VLMUL LMUL) {
-  if (LMUL == RISCVII::LMUL_F8)
-    return RISCVII::LMUL_F4;
-  if (LMUL == RISCVII::LMUL_F4)
-    return RISCVII::LMUL_F2;
-  if (LMUL == RISCVII::LMUL_F2)
-    return RISCVII::LMUL_1;
+  if (LMUL == RISCVVType::LMUL_F8)
+    return RISCVVType::LMUL_F4;
+  if (LMUL == RISCVVType::LMUL_F4)
+    return RISCVVType::LMUL_F2;
+  if (LMUL == RISCVVType::LMUL_F2)
+    return RISCVVType::LMUL_1;
 
   llvm_unreachable("The LMUL is supposed to be fractional.");
 }
@@ -170,15 +170,15 @@ RISCVVType::VLMUL RISCVSpillRewrite::findDefiningInstUnionLMUL(
     // instruction that is already visited, it means the LMUL in this MBB is
     // dont-care.
     if (Visited.contains(&*I))
-      return RISCVII::LMUL_F8;
+      return RISCVVType::LMUL_F8;
 
     Visited[&*I];
     if (I->definesRegister(Reg, nullptr)) {
       if (I->registerDefIsDead(Reg, nullptr))
-        return RISCVII::LMUL_RESERVED;
+        return RISCVVType::LMUL_RESERVED;
 
       if (isReloadInst(*I))
-        return RISCVII::LMUL_1;
+        return RISCVVType::LMUL_1;
 
       if (auto DstSrcPair = TII->isCopyInstr(*I))
         return findDefiningInstUnionLMUL(MBB, DstSrcPair->Source->getReg(),
@@ -192,7 +192,7 @@ RISCVVType::VLMUL RISCVSpillRewrite::findDefiningInstUnionLMUL(
       if (RISCVII::hasVecPolicyOp(TSFlags)) {
         const MachineOperand &PolicyOp =
             I->getOperand(I->getNumExplicitOperands() - 1);
-        if ((PolicyOp.getImm() & RISCVII::TAIL_AGNOSTIC) == 0)
+        if ((PolicyOp.getImm() & RISCVVType::TAIL_AGNOSTIC) == 0)
           return RISCVVType::VLMUL::LMUL_1;
       }
 
@@ -217,13 +217,13 @@ RISCVVType::VLMUL RISCVSpillRewrite::findDefiningInstUnionLMUL(
 
   // If Reg's defining inst is not found in this BB, find it in it's
   // predecessors.
-  RISCVVType::VLMUL LMUL = RISCVII::LMUL_RESERVED;
+  RISCVVType::VLMUL LMUL = RISCVVType::LMUL_RESERVED;
   for (MachineBasicBlock *P : MBB.predecessors()) {
     RISCVVType::VLMUL PredLMUL = findDefiningInstUnionLMUL(*P, Reg, Visited);
-    if (PredLMUL == RISCVII::LMUL_RESERVED)
+    if (PredLMUL == RISCVVType::LMUL_RESERVED)
       continue;
 
-    if (LMUL == RISCVII::LMUL_RESERVED) {
+    if (LMUL == RISCVVType::LMUL_RESERVED) {
       LMUL = PredLMUL;
       continue;
     }
@@ -245,13 +245,13 @@ bool RISCVSpillRewrite::tryToRewriteSpill(
   // If the register's defined inst just defines partial of register, we only
   // need to store partial register.
   switch (LMUL) {
-  case RISCVII::LMUL_F2:
+  case RISCVVType::LMUL_F2:
     Opcode = RISCV::PseudoVSE8_V_MF2;
     break;
-  case RISCVII::LMUL_F4:
+  case RISCVVType::LMUL_F4:
     Opcode = RISCV::PseudoVSE8_V_MF4;
     break;
-  case RISCVII::LMUL_F8:
+  case RISCVVType::LMUL_F8:
     Opcode = RISCV::PseudoVSE8_V_MF8;
     break;
   default:
@@ -270,11 +270,11 @@ bool RISCVSpillRewrite::tryToRewriteSpill(
   };
 
   if (Opcode == RISCV::PseudoVSE8_V_MF2)
-    updateLMUL(RISCVII::LMUL_F2);
+    updateLMUL(RISCVVType::LMUL_F2);
   else if (Opcode == RISCV::PseudoVSE8_V_MF4)
-    updateLMUL(RISCVII::LMUL_F4);
+    updateLMUL(RISCVVType::LMUL_F4);
   else if (Opcode == RISCV::PseudoVSE8_V_MF8)
-    updateLMUL(RISCVII::LMUL_F8);
+    updateLMUL(RISCVVType::LMUL_F8);
 
   MachineInstr *Vse = BuildMI(MBB, I, DebugLoc(), TII->get(Opcode))
                           .add(I->getOperand(0))
@@ -296,13 +296,13 @@ bool RISCVSpillRewrite::tryToRewriteReload(
 
   unsigned Opcode = 0;
   switch (SpillLMUL.at(FI)) {
-  case RISCVII::LMUL_F2:
+  case RISCVVType::LMUL_F2:
     Opcode = RISCV::PseudoVLE8_V_MF2;
     break;
-  case RISCVII::LMUL_F4:
+  case RISCVVType::LMUL_F4:
     Opcode = RISCV::PseudoVLE8_V_MF4;
     break;
-  case RISCVII::LMUL_F8:
+  case RISCVVType::LMUL_F8:
     Opcode = RISCV::PseudoVLE8_V_MF8;
     break;
   default:

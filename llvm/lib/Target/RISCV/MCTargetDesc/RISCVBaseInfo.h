@@ -295,19 +295,19 @@ static inline unsigned getSEWOpNum(const MCInstrDesc &Desc) {
 
 #if SIFIVE_CUSTOMIZATION
 /// \returns the number of V registers grouped by LMUL.
-static inline unsigned getLMULGroups(VLMUL LMul) {
+static inline unsigned getLMULGroups(RISCVVType::VLMUL LMul) {
   switch (LMul) {
   default:
     // Return zero for LMUL_RESERVED, but it's not expected to be used.
     return 0;
-  case LMUL_F8:
-  case LMUL_F4:
-  case LMUL_F2:
-  case LMUL_1:
+  case RISCVVType::LMUL_F8:
+  case RISCVVType::LMUL_F4:
+  case RISCVVType::LMUL_F2:
+  case RISCVVType::LMUL_1:
     return 1;
-  case LMUL_2:
-  case LMUL_4:
-  case LMUL_8:
+  case RISCVVType::LMUL_2:
+  case RISCVVType::LMUL_4:
+  case RISCVVType::LMUL_8:
     return 1 << static_cast<unsigned>(LMul);
   }
 }
