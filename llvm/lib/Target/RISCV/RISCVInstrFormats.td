@@ -254,20 +254,20 @@ class RVInstCommon<dag outs, dag ins, string opcodestr, string argstr,
   // 1 -> Is not altfmt.
   // 2 -> Is altfmt(BF16).
   bits<2> AltFmtType = 0;
-  let TSFlags{28-27} = AltFmtType;
+  let TSFlags{27-26} = AltFmtType;
 
   bit IsWiden = 0;
-  let TSFlags{29} = IsWiden;
+  let TSFlags{28} = IsWiden;
 
   // XSfmmbase
   bit HasTWidenOp = 0;
-  let TSFlags{30} = HasTWidenOp;
+  let TSFlags{29} = HasTWidenOp;
 
   bit HasTmOp = 0;
-  let TSFlags{31} = HasTmOp;
+  let TSFlags{30} = HasTmOp;
 
   bit HasTkOp = 0;
-  let TSFlags{32} = HasTkOp;
+  let TSFlags{31} = HasTkOp;
 #endif // SIFIVE_CUSTOMIZATION
 }
 
