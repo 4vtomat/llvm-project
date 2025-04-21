@@ -1519,18 +1519,18 @@ define i64 @vwreduce_add_v64i64(ptr %x) {
 ; RV32-NEXT:    addi a1, a0, 128
 ; RV32-NEXT:    li a2, 32
 ; RV32-NEXT:    vsetvli zero, a2, e32, m8, ta, ma
-; RV32-NEXT:    vle32.v v16, (a0)
-; RV32-NEXT:    vle32.v v8, (a1)
+; RV32-NEXT:    vle32.v v16, (a1)
+; RV32-NEXT:    vle32.v v24, (a0)
 ; RV32-NEXT:    vsetivli zero, 16, e32, m8, ta, ma
-; RV32-NEXT:    vslidedown.vi v0, v16, 16
+; RV32-NEXT:    vslidedown.vi v0, v24, 16
 ; RV32-NEXT:    vsetivli zero, 16, e32, m4, ta, ma
-; RV32-NEXT:    vwadd.vv v24, v16, v8
+; RV32-NEXT:    vwadd.vv v8, v24, v16
 ; RV32-NEXT:    vsetivli zero, 16, e32, m8, ta, ma
-; RV32-NEXT:    vslidedown.vi v8, v8, 16
+; RV32-NEXT:    vslidedown.vi v16, v16, 16
 ; RV32-NEXT:    vsetivli zero, 16, e32, m4, ta, ma
-; RV32-NEXT:    vwadd.vv v16, v0, v8
+; RV32-NEXT:    vwadd.vv v24, v0, v16
 ; RV32-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; RV32-NEXT:    vadd.vv v8, v24, v16
+; RV32-NEXT:    vadd.vv v8, v8, v24
 ; RV32-NEXT:    vmv.s.x v16, zero
 ; RV32-NEXT:    vredsum.vs v8, v8, v16
 ; RV32-NEXT:    vmv.x.s a0, v8
@@ -1585,18 +1585,18 @@ define i64 @vwreduce_uadd_v64i64(ptr %x) {
 ; RV32-NEXT:    addi a1, a0, 128
 ; RV32-NEXT:    li a2, 32
 ; RV32-NEXT:    vsetvli zero, a2, e32, m8, ta, ma
-; RV32-NEXT:    vle32.v v16, (a0)
-; RV32-NEXT:    vle32.v v8, (a1)
+; RV32-NEXT:    vle32.v v16, (a1)
+; RV32-NEXT:    vle32.v v24, (a0)
 ; RV32-NEXT:    vsetivli zero, 16, e32, m8, ta, ma
-; RV32-NEXT:    vslidedown.vi v0, v16, 16
+; RV32-NEXT:    vslidedown.vi v0, v24, 16
 ; RV32-NEXT:    vsetivli zero, 16, e32, m4, ta, ma
-; RV32-NEXT:    vwaddu.vv v24, v16, v8
+; RV32-NEXT:    vwaddu.vv v8, v24, v16
 ; RV32-NEXT:    vsetivli zero, 16, e32, m8, ta, ma
-; RV32-NEXT:    vslidedown.vi v8, v8, 16
+; RV32-NEXT:    vslidedown.vi v16, v16, 16
 ; RV32-NEXT:    vsetivli zero, 16, e32, m4, ta, ma
-; RV32-NEXT:    vwaddu.vv v16, v0, v8
+; RV32-NEXT:    vwaddu.vv v24, v0, v16
 ; RV32-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; RV32-NEXT:    vadd.vv v8, v24, v16
+; RV32-NEXT:    vadd.vv v8, v8, v24
 ; RV32-NEXT:    vmv.s.x v16, zero
 ; RV32-NEXT:    vredsum.vs v8, v8, v16
 ; RV32-NEXT:    vmv.x.s a0, v8
@@ -2206,8 +2206,12 @@ define i64 @vreduce_and_v64i64(ptr %x) nounwind {
 ; RV32-NEXT:    addi a1, a0, 384
 ; RV32-NEXT:    addi a0, a0, 128
 ; RV32-NEXT:    vle64.v v24, (a1)
-; RV32-NEXT:    li a1, 32
 ; RV32-NEXT:    vle64.v v0, (a0)
+; RV32-NEXT:    li a1, 32
+<<<<<<< HEAD
+; RV32-NEXT:    vle64.v v0, (a0)
+=======
+>>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
 ; RV32-NEXT:    vand.vv v24, v0, v24
 ; RV32-NEXT:    vand.vv v8, v8, v16
 ; RV32-NEXT:    vand.vv v8, v8, v24
@@ -2798,8 +2802,12 @@ define i64 @vreduce_or_v64i64(ptr %x) nounwind {
 ; RV32-NEXT:    addi a1, a0, 384
 ; RV32-NEXT:    addi a0, a0, 128
 ; RV32-NEXT:    vle64.v v24, (a1)
-; RV32-NEXT:    li a1, 32
 ; RV32-NEXT:    vle64.v v0, (a0)
+; RV32-NEXT:    li a1, 32
+<<<<<<< HEAD
+; RV32-NEXT:    vle64.v v0, (a0)
+=======
+>>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
 ; RV32-NEXT:    vor.vv v24, v0, v24
 ; RV32-NEXT:    vor.vv v8, v8, v16
 ; RV32-NEXT:    vor.vv v8, v8, v24
@@ -4016,8 +4024,12 @@ define i64 @vreduce_smin_v64i64(ptr %x) nounwind {
 ; RV32-NEXT:    addi a1, a0, 384
 ; RV32-NEXT:    addi a0, a0, 128
 ; RV32-NEXT:    vle64.v v24, (a1)
-; RV32-NEXT:    li a1, 32
 ; RV32-NEXT:    vle64.v v0, (a0)
+; RV32-NEXT:    li a1, 32
+<<<<<<< HEAD
+; RV32-NEXT:    vle64.v v0, (a0)
+=======
+>>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
 ; RV32-NEXT:    vmin.vv v24, v0, v24
 ; RV32-NEXT:    vmin.vv v8, v8, v16
 ; RV32-NEXT:    vmin.vv v8, v8, v24
@@ -4609,8 +4621,12 @@ define i64 @vreduce_smax_v64i64(ptr %x) nounwind {
 ; RV32-NEXT:    addi a1, a0, 384
 ; RV32-NEXT:    addi a0, a0, 128
 ; RV32-NEXT:    vle64.v v24, (a1)
-; RV32-NEXT:    li a1, 32
 ; RV32-NEXT:    vle64.v v0, (a0)
+; RV32-NEXT:    li a1, 32
+<<<<<<< HEAD
+; RV32-NEXT:    vle64.v v0, (a0)
+=======
+>>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
 ; RV32-NEXT:    vmax.vv v24, v0, v24
 ; RV32-NEXT:    vmax.vv v8, v8, v16
 ; RV32-NEXT:    vmax.vv v8, v8, v24
@@ -5202,8 +5218,12 @@ define i64 @vreduce_umin_v64i64(ptr %x) nounwind {
 ; RV32-NEXT:    addi a1, a0, 384
 ; RV32-NEXT:    addi a0, a0, 128
 ; RV32-NEXT:    vle64.v v24, (a1)
-; RV32-NEXT:    li a1, 32
 ; RV32-NEXT:    vle64.v v0, (a0)
+; RV32-NEXT:    li a1, 32
+<<<<<<< HEAD
+; RV32-NEXT:    vle64.v v0, (a0)
+=======
+>>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
 ; RV32-NEXT:    vminu.vv v24, v0, v24
 ; RV32-NEXT:    vminu.vv v8, v8, v16
 ; RV32-NEXT:    vminu.vv v8, v8, v24
@@ -5794,8 +5814,12 @@ define i64 @vreduce_umax_v64i64(ptr %x) nounwind {
 ; RV32-NEXT:    addi a1, a0, 384
 ; RV32-NEXT:    addi a0, a0, 128
 ; RV32-NEXT:    vle64.v v24, (a1)
-; RV32-NEXT:    li a1, 32
 ; RV32-NEXT:    vle64.v v0, (a0)
+; RV32-NEXT:    li a1, 32
+<<<<<<< HEAD
+; RV32-NEXT:    vle64.v v0, (a0)
+=======
+>>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
 ; RV32-NEXT:    vmaxu.vv v24, v0, v24
 ; RV32-NEXT:    vmaxu.vv v8, v8, v16
 ; RV32-NEXT:    vmaxu.vv v8, v8, v24

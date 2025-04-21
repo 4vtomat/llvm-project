@@ -141,6 +141,7 @@ define <32 x i32> @select_addsub_v32i32(<32 x i1> %cc, <32 x i32> %a, <32 x i32>
 define <64 x i32> @select_addsub_v64i32(<64 x i1> %cc, <64 x i32> %a, <64 x i32> %b) {
 ; CHECK-LABEL: select_addsub_v64i32:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    csrr a1, vlenb
@@ -171,6 +172,20 @@ define <64 x i32> @select_addsub_v64i32(<64 x i1> %cc, <64 x i32> %a, <64 x i32>
 ; CHECK-NEXT:    .cfi_def_cfa sp, 16
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 0
+=======
+; CHECK-NEXT:    li a1, 32
+; CHECK-NEXT:    vsetvli zero, a1, e32, m8, ta, mu
+; CHECK-NEXT:    vle32.v v24, (a0)
+; CHECK-NEXT:    vrsub.vi v24, v24, 0, v0.t
+; CHECK-NEXT:    addi a0, a0, 128
+; CHECK-NEXT:    vadd.vv v8, v8, v24
+; CHECK-NEXT:    vle32.v v24, (a0)
+; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, ta, ma
+; CHECK-NEXT:    vslidedown.vi v0, v0, 4
+; CHECK-NEXT:    vsetvli zero, a1, e32, m8, ta, mu
+; CHECK-NEXT:    vrsub.vi v24, v24, 0, v0.t
+; CHECK-NEXT:    vadd.vv v16, v16, v24
+>>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
 ; CHECK-NEXT:    ret
   %sub = sub <64 x i32> %a, %b
   %add = add <64 x i32> %a, %b

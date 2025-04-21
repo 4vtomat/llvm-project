@@ -397,8 +397,8 @@ define <vscale x 1 x i8> @ceil_nxv1f32_to_si8(<vscale x 1 x float> %x) {
 ; RV32-NEXT:    vfabs.v v9, v8
 ; RV32-NEXT:    lui a0, 307200
 ; RV32-NEXT:    fmv.w.x fa5, a0
-; RV32-NEXT:    vmflt.vf v0, v9, fa5
 ; RV32-NEXT:    fsrmi a0, 3
+; RV32-NEXT:    vmflt.vf v0, v9, fa5
 ; RV32-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; RV32-NEXT:    fsrm a0
 ; RV32-NEXT:    vfcvt.f.x.v v9, v9, v0.t
@@ -416,8 +416,8 @@ define <vscale x 1 x i8> @ceil_nxv1f32_to_si8(<vscale x 1 x float> %x) {
 ; RV64-NEXT:    vfabs.v v9, v8
 ; RV64-NEXT:    lui a0, 307200
 ; RV64-NEXT:    fmv.w.x fa5, a0
-; RV64-NEXT:    vmflt.vf v0, v9, fa5
 ; RV64-NEXT:    fsrmi a0, 3
+; RV64-NEXT:    vmflt.vf v0, v9, fa5
 ; RV64-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; RV64-NEXT:    fsrm a0
 ; RV64-NEXT:    vfcvt.f.x.v v9, v9, v0.t
@@ -440,8 +440,8 @@ define <vscale x 1 x i8> @ceil_nxv1f32_to_ui8(<vscale x 1 x float> %x) {
 ; RV32-NEXT:    vfabs.v v9, v8
 ; RV32-NEXT:    lui a0, 307200
 ; RV32-NEXT:    fmv.w.x fa5, a0
-; RV32-NEXT:    vmflt.vf v0, v9, fa5
 ; RV32-NEXT:    fsrmi a0, 3
+; RV32-NEXT:    vmflt.vf v0, v9, fa5
 ; RV32-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; RV32-NEXT:    fsrm a0
 ; RV32-NEXT:    vfcvt.f.x.v v9, v9, v0.t
@@ -459,8 +459,8 @@ define <vscale x 1 x i8> @ceil_nxv1f32_to_ui8(<vscale x 1 x float> %x) {
 ; RV64-NEXT:    vfabs.v v9, v8
 ; RV64-NEXT:    lui a0, 307200
 ; RV64-NEXT:    fmv.w.x fa5, a0
-; RV64-NEXT:    vmflt.vf v0, v9, fa5
 ; RV64-NEXT:    fsrmi a0, 3
+; RV64-NEXT:    vmflt.vf v0, v9, fa5
 ; RV64-NEXT:    vfcvt.x.f.v v9, v8, v0.t
 ; RV64-NEXT:    fsrm a0
 ; RV64-NEXT:    vfcvt.f.x.v v9, v9, v0.t
@@ -619,8 +619,8 @@ define <vscale x 4 x i8> @ceil_nxv4f32_to_si8(<vscale x 4 x float> %x) {
 ; RV32-NEXT:    vfabs.v v10, v8
 ; RV32-NEXT:    lui a0, 307200
 ; RV32-NEXT:    fmv.w.x fa5, a0
-; RV32-NEXT:    vmflt.vf v0, v10, fa5
 ; RV32-NEXT:    fsrmi a0, 3
+; RV32-NEXT:    vmflt.vf v0, v10, fa5
 ; RV32-NEXT:    vfcvt.x.f.v v10, v8, v0.t
 ; RV32-NEXT:    fsrm a0
 ; RV32-NEXT:    vfcvt.f.x.v v10, v10, v0.t
@@ -638,8 +638,8 @@ define <vscale x 4 x i8> @ceil_nxv4f32_to_si8(<vscale x 4 x float> %x) {
 ; RV64-NEXT:    vfabs.v v10, v8
 ; RV64-NEXT:    lui a0, 307200
 ; RV64-NEXT:    fmv.w.x fa5, a0
-; RV64-NEXT:    vmflt.vf v0, v10, fa5
 ; RV64-NEXT:    fsrmi a0, 3
+; RV64-NEXT:    vmflt.vf v0, v10, fa5
 ; RV64-NEXT:    vfcvt.x.f.v v10, v8, v0.t
 ; RV64-NEXT:    fsrm a0
 ; RV64-NEXT:    vfcvt.f.x.v v10, v10, v0.t
@@ -662,8 +662,8 @@ define <vscale x 4 x i8> @ceil_nxv4f32_to_ui8(<vscale x 4 x float> %x) {
 ; RV32-NEXT:    vfabs.v v10, v8
 ; RV32-NEXT:    lui a0, 307200
 ; RV32-NEXT:    fmv.w.x fa5, a0
-; RV32-NEXT:    vmflt.vf v0, v10, fa5
 ; RV32-NEXT:    fsrmi a0, 3
+; RV32-NEXT:    vmflt.vf v0, v10, fa5
 ; RV32-NEXT:    vfcvt.x.f.v v10, v8, v0.t
 ; RV32-NEXT:    fsrm a0
 ; RV32-NEXT:    vfcvt.f.x.v v10, v10, v0.t
@@ -681,8 +681,8 @@ define <vscale x 4 x i8> @ceil_nxv4f32_to_ui8(<vscale x 4 x float> %x) {
 ; RV64-NEXT:    vfabs.v v10, v8
 ; RV64-NEXT:    lui a0, 307200
 ; RV64-NEXT:    fmv.w.x fa5, a0
-; RV64-NEXT:    vmflt.vf v0, v10, fa5
 ; RV64-NEXT:    fsrmi a0, 3
+; RV64-NEXT:    vmflt.vf v0, v10, fa5
 ; RV64-NEXT:    vfcvt.x.f.v v10, v8, v0.t
 ; RV64-NEXT:    fsrm a0
 ; RV64-NEXT:    vfcvt.f.x.v v10, v10, v0.t

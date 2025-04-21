@@ -430,10 +430,17 @@ define <4 x i64> @vwmulu_v4i64_v4i32_v4i8(ptr %x, ptr %y) {
 ; CHECK-LABEL: vwmulu_v4i64_v4i32_v4i8:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
+<<<<<<< HEAD
 ; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vle32.v v9, (a0)
 ; CHECK-NEXT:    vzext.vf4 v10, v8
 ; CHECK-NEXT:    vwmulu.vv v8, v9, v10
+=======
+; CHECK-NEXT:    vle32.v v10, (a0)
+; CHECK-NEXT:    vle8.v v8, (a1)
+; CHECK-NEXT:    vzext.vf4 v11, v8
+; CHECK-NEXT:    vwmulu.vv v8, v10, v11
+>>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
 ; CHECK-NEXT:    ret
   %a = load <4 x i32>, ptr %x
   %b = load <4 x i8>, ptr %y

@@ -501,6 +501,7 @@ public:
     Pointers.clear();
     Checks.clear();
     DiffChecks.clear();
+    CheckingGroups.clear();
   }
 
   /// Insert a pointer and calculate the start and end SCEVs.

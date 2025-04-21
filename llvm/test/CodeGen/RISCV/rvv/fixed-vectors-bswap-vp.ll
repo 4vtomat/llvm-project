@@ -370,31 +370,31 @@ define <2 x i64> @vp_bswap_v2i64_unmasked(<2 x i64> %va, i32 zeroext %evl) {
 ; RV32-NEXT:    addi a6, sp, 8
 ; RV32-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; RV32-NEXT:    vsrl.vi v9, v8, 24
+; RV32-NEXT:    vsrl.vi v10, v8, 8
 ; RV32-NEXT:    sw a1, 8(sp)
 ; RV32-NEXT:    sw zero, 12(sp)
-; RV32-NEXT:    vsll.vx v10, v8, a2
+; RV32-NEXT:    vsll.vx v11, v8, a2
 ; RV32-NEXT:    addi a1, a3, -256
-; RV32-NEXT:    vsrl.vx v11, v8, a2
-; RV32-NEXT:    vsrl.vx v12, v8, a4
-; RV32-NEXT:    vand.vx v13, v8, a1
-; RV32-NEXT:    vand.vx v12, v12, a1
-; RV32-NEXT:    vor.vv v11, v12, v11
-; RV32-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; RV32-NEXT:    vlse64.v v12, (a6), zero
-; RV32-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
-; RV32-NEXT:    vsll.vx v13, v13, a4
-; RV32-NEXT:    vor.vv v10, v10, v13
-; RV32-NEXT:    vsrl.vi v13, v8, 8
+; RV32-NEXT:    vsrl.vx v12, v8, a2
+; RV32-NEXT:    vsrl.vx v13, v8, a4
 ; RV32-NEXT:    vand.vx v9, v9, a5
-; RV32-NEXT:    vand.vv v13, v13, v12
-; RV32-NEXT:    vor.vv v9, v13, v9
-; RV32-NEXT:    vand.vv v12, v8, v12
+; RV32-NEXT:    vand.vx v13, v13, a1
+; RV32-NEXT:    vor.vv v12, v13, v12
+; RV32-NEXT:    vand.vx v13, v8, a1
+; RV32-NEXT:    vsll.vx v13, v13, a4
+; RV32-NEXT:    vor.vv v11, v11, v13
+; RV32-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
+; RV32-NEXT:    vlse64.v v13, (a6), zero
+; RV32-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
+; RV32-NEXT:    vand.vv v10, v10, v13
+; RV32-NEXT:    vor.vv v9, v10, v9
+; RV32-NEXT:    vand.vv v10, v8, v13
 ; RV32-NEXT:    vand.vx v8, v8, a5
 ; RV32-NEXT:    vsll.vi v8, v8, 24
-; RV32-NEXT:    vsll.vi v12, v12, 8
-; RV32-NEXT:    vor.vv v8, v8, v12
-; RV32-NEXT:    vor.vv v8, v10, v8
-; RV32-NEXT:    vor.vv v9, v9, v11
+; RV32-NEXT:    vsll.vi v10, v10, 8
+; RV32-NEXT:    vor.vv v8, v8, v10
+; RV32-NEXT:    vor.vv v8, v11, v8
+; RV32-NEXT:    vor.vv v9, v9, v12
 ; RV32-NEXT:    vor.vv v8, v8, v9
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    .cfi_def_cfa_offset 0
@@ -530,31 +530,31 @@ define <4 x i64> @vp_bswap_v4i64_unmasked(<4 x i64> %va, i32 zeroext %evl) {
 ; RV32-NEXT:    addi a6, sp, 8
 ; RV32-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; RV32-NEXT:    vsrl.vi v10, v8, 24
+; RV32-NEXT:    vsrl.vi v12, v8, 8
 ; RV32-NEXT:    sw a1, 8(sp)
 ; RV32-NEXT:    sw zero, 12(sp)
-; RV32-NEXT:    vsll.vx v12, v8, a2
+; RV32-NEXT:    vsll.vx v14, v8, a2
 ; RV32-NEXT:    addi a1, a3, -256
-; RV32-NEXT:    vsrl.vx v14, v8, a2
-; RV32-NEXT:    vsrl.vx v16, v8, a4
-; RV32-NEXT:    vand.vx v18, v8, a1
-; RV32-NEXT:    vand.vx v16, v16, a1
-; RV32-NEXT:    vor.vv v14, v16, v14
-; RV32-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
-; RV32-NEXT:    vlse64.v v16, (a6), zero
-; RV32-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
-; RV32-NEXT:    vsll.vx v18, v18, a4
-; RV32-NEXT:    vor.vv v12, v12, v18
-; RV32-NEXT:    vsrl.vi v18, v8, 8
+; RV32-NEXT:    vsrl.vx v16, v8, a2
+; RV32-NEXT:    vsrl.vx v18, v8, a4
 ; RV32-NEXT:    vand.vx v10, v10, a5
-; RV32-NEXT:    vand.vv v18, v18, v16
-; RV32-NEXT:    vor.vv v10, v18, v10
-; RV32-NEXT:    vand.vv v16, v8, v16
+; RV32-NEXT:    vand.vx v18, v18, a1
+; RV32-NEXT:    vor.vv v16, v18, v16
+; RV32-NEXT:    vand.vx v18, v8, a1
+; RV32-NEXT:    vsll.vx v18, v18, a4
+; RV32-NEXT:    vor.vv v14, v14, v18
+; RV32-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
+; RV32-NEXT:    vlse64.v v18, (a6), zero
+; RV32-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
+; RV32-NEXT:    vand.vv v12, v12, v18
+; RV32-NEXT:    vor.vv v10, v12, v10
+; RV32-NEXT:    vand.vv v12, v8, v18
 ; RV32-NEXT:    vand.vx v8, v8, a5
 ; RV32-NEXT:    vsll.vi v8, v8, 24
-; RV32-NEXT:    vsll.vi v16, v16, 8
-; RV32-NEXT:    vor.vv v8, v8, v16
-; RV32-NEXT:    vor.vv v8, v12, v8
-; RV32-NEXT:    vor.vv v10, v10, v14
+; RV32-NEXT:    vsll.vi v12, v12, 8
+; RV32-NEXT:    vor.vv v8, v8, v12
+; RV32-NEXT:    vor.vv v8, v14, v8
+; RV32-NEXT:    vor.vv v10, v10, v16
 ; RV32-NEXT:    vor.vv v8, v8, v10
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    .cfi_def_cfa_offset 0
@@ -690,31 +690,31 @@ define <8 x i64> @vp_bswap_v8i64_unmasked(<8 x i64> %va, i32 zeroext %evl) {
 ; RV32-NEXT:    addi a6, sp, 8
 ; RV32-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; RV32-NEXT:    vsrl.vi v12, v8, 24
+; RV32-NEXT:    vsrl.vi v16, v8, 8
 ; RV32-NEXT:    sw a1, 8(sp)
 ; RV32-NEXT:    sw zero, 12(sp)
-; RV32-NEXT:    vsll.vx v16, v8, a2
+; RV32-NEXT:    vsll.vx v20, v8, a2
 ; RV32-NEXT:    addi a1, a3, -256
-; RV32-NEXT:    vsrl.vx v20, v8, a2
-; RV32-NEXT:    vsrl.vx v24, v8, a4
-; RV32-NEXT:    vand.vx v28, v8, a1
-; RV32-NEXT:    vand.vx v24, v24, a1
-; RV32-NEXT:    vor.vv v20, v24, v20
-; RV32-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
-; RV32-NEXT:    vlse64.v v24, (a6), zero
-; RV32-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
-; RV32-NEXT:    vsll.vx v28, v28, a4
-; RV32-NEXT:    vor.vv v16, v16, v28
-; RV32-NEXT:    vsrl.vi v28, v8, 8
+; RV32-NEXT:    vsrl.vx v24, v8, a2
+; RV32-NEXT:    vsrl.vx v28, v8, a4
 ; RV32-NEXT:    vand.vx v12, v12, a5
-; RV32-NEXT:    vand.vv v28, v28, v24
-; RV32-NEXT:    vor.vv v12, v28, v12
-; RV32-NEXT:    vand.vv v24, v8, v24
+; RV32-NEXT:    vand.vx v28, v28, a1
+; RV32-NEXT:    vor.vv v24, v28, v24
+; RV32-NEXT:    vand.vx v28, v8, a1
+; RV32-NEXT:    vsll.vx v28, v28, a4
+; RV32-NEXT:    vor.vv v20, v20, v28
+; RV32-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
+; RV32-NEXT:    vlse64.v v28, (a6), zero
+; RV32-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
+; RV32-NEXT:    vand.vv v16, v16, v28
+; RV32-NEXT:    vor.vv v12, v16, v12
+; RV32-NEXT:    vand.vv v16, v8, v28
 ; RV32-NEXT:    vand.vx v8, v8, a5
 ; RV32-NEXT:    vsll.vi v8, v8, 24
-; RV32-NEXT:    vsll.vi v24, v24, 8
-; RV32-NEXT:    vor.vv v8, v8, v24
-; RV32-NEXT:    vor.vv v8, v16, v8
-; RV32-NEXT:    vor.vv v12, v12, v20
+; RV32-NEXT:    vsll.vi v16, v16, 8
+; RV32-NEXT:    vor.vv v8, v8, v16
+; RV32-NEXT:    vor.vv v8, v20, v8
+; RV32-NEXT:    vor.vv v12, v12, v24
 ; RV32-NEXT:    vor.vv v8, v8, v12
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    .cfi_def_cfa_offset 0
@@ -1302,9 +1302,9 @@ define <128 x i16> @vp_bswap_v128i16(<128 x i16> %va, <128 x i1> %m, i32 zeroext
 ; CHECK-NEXT:    add a1, sp, a1
 ; CHECK-NEXT:    addi a1, a1, 16
 ; CHECK-NEXT:    vs8r.v v16, (a1) # Unknown-size Folded Spill
-; CHECK-NEXT:    li a2, 64
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v24, v0, 8
+; CHECK-NEXT:    li a2, 64
 ; CHECK-NEXT:    mv a1, a0
 ; CHECK-NEXT:    bltu a0, a2, .LBB26_2
 ; CHECK-NEXT:  # %bb.1:
