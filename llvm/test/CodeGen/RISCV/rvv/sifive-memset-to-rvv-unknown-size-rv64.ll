@@ -17,8 +17,8 @@ define void @UnKnownSize(ptr nocapture readonly %dst, i8 %val, i64 signext %n) {
 ; NOALIGN-NEXT:    # =>This Inner Loop Header: Depth=1
 ; NOALIGN-NEXT:    vsetvli a1, a2, e8, m8, ta, ma
 ; NOALIGN-NEXT:    vse8.v v8, (a0)
-; NOALIGN-NEXT:    sub a2, a2, a1
 ; NOALIGN-NEXT:    add a0, a0, a1
+; NOALIGN-NEXT:    sub a2, a2, a1
 ; NOALIGN-NEXT:    bnez a2, .LBB0_1
 ; NOALIGN-NEXT:  # %bb.2: # %memset-post-loop
 ; NOALIGN-NEXT:    ret

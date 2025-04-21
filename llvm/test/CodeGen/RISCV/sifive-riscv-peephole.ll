@@ -9,8 +9,8 @@ define void @sh1add(ptr %x, i64 %y, i64 %n) {
 ; CHECK-NEXT:  .LBB0_1: # %loop
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    add a5, a0, a3
-; CHECK-NEXT:    sh1add a3, a1, a3
 ; CHECK-NEXT:    sb a4, 0(a5)
+; CHECK-NEXT:    sh1add a3, a1, a3
 ; CHECK-NEXT:    bne a3, a2, .LBB0_1
 ; CHECK-NEXT:  # %bb.2: # %exit
 ; CHECK-NEXT:    ret
@@ -38,8 +38,8 @@ define void @sh2add(ptr %x, i64 %y, i64 %n) {
 ; CHECK-NEXT:  .LBB1_1: # %loop
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    add a5, a0, a3
-; CHECK-NEXT:    sh2add a3, a1, a3
 ; CHECK-NEXT:    sb a4, 0(a5)
+; CHECK-NEXT:    sh2add a3, a1, a3
 ; CHECK-NEXT:    bne a3, a2, .LBB1_1
 ; CHECK-NEXT:  # %bb.2: # %exit
 ; CHECK-NEXT:    ret
@@ -67,8 +67,8 @@ define void @sh3add(ptr %x, i64 %y, i64 %n) {
 ; CHECK-NEXT:  .LBB2_1: # %loop
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    add a5, a0, a3
-; CHECK-NEXT:    sh3add a3, a1, a3
 ; CHECK-NEXT:    sb a4, 0(a5)
+; CHECK-NEXT:    sh3add a3, a1, a3
 ; CHECK-NEXT:    bne a3, a2, .LBB2_1
 ; CHECK-NEXT:  # %bb.2: # %exit
 ; CHECK-NEXT:    ret
@@ -96,8 +96,8 @@ define void @sh1add_uw(ptr %x, i32 %y, i64 %n) {
 ; CHECK-NEXT:  .LBB3_1: # %loop
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    add a5, a0, a3
-; CHECK-NEXT:    sh1add.uw a3, a1, a3
 ; CHECK-NEXT:    sb a4, 0(a5)
+; CHECK-NEXT:    sh1add.uw a3, a1, a3
 ; CHECK-NEXT:    bne a3, a2, .LBB3_1
 ; CHECK-NEXT:  # %bb.2: # %exit
 ; CHECK-NEXT:    ret
@@ -126,8 +126,8 @@ define void @sh2add_uw(ptr %x, i32 %y, i64 %n) {
 ; CHECK-NEXT:  .LBB4_1: # %loop
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    add a5, a0, a3
-; CHECK-NEXT:    sh2add.uw a3, a1, a3
 ; CHECK-NEXT:    sb a4, 0(a5)
+; CHECK-NEXT:    sh2add.uw a3, a1, a3
 ; CHECK-NEXT:    bne a3, a2, .LBB4_1
 ; CHECK-NEXT:  # %bb.2: # %exit
 ; CHECK-NEXT:    ret
@@ -156,8 +156,8 @@ define void @sh3add_uw(ptr %x, i32 %y, i64 %n) {
 ; CHECK-NEXT:  .LBB5_1: # %loop
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    add a5, a0, a3
-; CHECK-NEXT:    sh3add.uw a3, a1, a3
 ; CHECK-NEXT:    sb a4, 0(a5)
+; CHECK-NEXT:    sh3add.uw a3, a1, a3
 ; CHECK-NEXT:    bne a3, a2, .LBB5_1
 ; CHECK-NEXT:  # %bb.2: # %exit
 ; CHECK-NEXT:    ret
@@ -189,8 +189,8 @@ define void @negative_sh4add(ptr %x, i64 %y, i64 %n) {
 ; CHECK-NEXT:  .LBB6_1: # %loop
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    add a5, a0, a3
-; CHECK-NEXT:    add a3, a3, a1
 ; CHECK-NEXT:    sb a4, 0(a5)
+; CHECK-NEXT:    add a3, a3, a1
 ; CHECK-NEXT:    bne a3, a2, .LBB6_1
 ; CHECK-NEXT:  # %bb.2: # %exit
 ; CHECK-NEXT:    ret
@@ -219,8 +219,8 @@ define void @negative_sh4add_uw(ptr %x, i32 %y, i64 %n) {
 ; CHECK-NEXT:  .LBB7_1: # %loop
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    add a5, a0, a3
-; CHECK-NEXT:    add a3, a3, a1
 ; CHECK-NEXT:    sb a4, 0(a5)
+; CHECK-NEXT:    add a3, a3, a1
 ; CHECK-NEXT:    bne a3, a2, .LBB7_1
 ; CHECK-NEXT:  # %bb.2: # %exit
 ; CHECK-NEXT:    ret

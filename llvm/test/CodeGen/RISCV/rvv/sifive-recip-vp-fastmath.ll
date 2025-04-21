@@ -6,10 +6,10 @@ declare <vscale x 2 x half> @llvm.vp.fdiv.nxv2f16(<vscale x 2 x half>, <vscale x
 define <vscale x 2 x half> @recip_nxv2f16(<vscale x 2 x half> %a, <vscale x 2 x i1> %m, i32 zeroext %evl) #0 {
 ; CHECK-LABEL: recip_nxv2f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI0_0)
-; CHECK-NEXT:    flh fa5, %lo(.LCPI0_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    vfrec7.v v10, v8
+; CHECK-NEXT:    lui a1, %hi(.LCPI0_0)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI0_0)(a1)
 ; CHECK-NEXT:    vsetvli a1, zero, e16, mf2, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v11, fa5
 ; CHECK-NEXT:    vmv1r.v v9, v10
@@ -28,10 +28,10 @@ declare <vscale x 4 x half> @llvm.vp.fdiv.nxv4f16(<vscale x 4 x half>, <vscale x
 define <vscale x 4 x half> @recip_nxv4f16(<vscale x 4 x half> %a, <vscale x 4 x i1> %m, i32 zeroext %evl) #0 {
 ; CHECK-LABEL: recip_nxv4f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI1_0)
-; CHECK-NEXT:    flh fa5, %lo(.LCPI1_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    vfrec7.v v10, v8
+; CHECK-NEXT:    lui a1, %hi(.LCPI1_0)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI1_0)(a1)
 ; CHECK-NEXT:    vsetvli a1, zero, e16, m1, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v11, fa5
 ; CHECK-NEXT:    vmv1r.v v9, v10
@@ -50,10 +50,10 @@ declare <vscale x 8 x half> @llvm.vp.fdiv.nxv8f16(<vscale x 8 x half>, <vscale x
 define <vscale x 8 x half> @recip_nxv8f16(<vscale x 8 x half> %a, <vscale x 8 x i1> %m, i32 zeroext %evl) #0 {
 ; CHECK-LABEL: recip_nxv8f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI2_0)
-; CHECK-NEXT:    flh fa5, %lo(.LCPI2_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; CHECK-NEXT:    vfrec7.v v12, v8
+; CHECK-NEXT:    lui a1, %hi(.LCPI2_0)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI2_0)(a1)
 ; CHECK-NEXT:    vsetvli a1, zero, e16, m2, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v14, fa5
 ; CHECK-NEXT:    vmv2r.v v10, v12
@@ -72,10 +72,10 @@ declare <vscale x 2 x double> @llvm.vp.fdiv.nxv2f64(<vscale x 2 x double>, <vsca
 define <vscale x 2 x double> @recip_nxv2f64(<vscale x 2 x double> %a, <vscale x 2 x i1> %m, i32 zeroext %evl) #0 {
 ; CHECK-LABEL: recip_nxv2f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI3_0)
-; CHECK-NEXT:    fld fa5, %lo(.LCPI3_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    vfrec7.v v10, v8
+; CHECK-NEXT:    lui a1, %hi(.LCPI3_0)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI3_0)(a1)
 ; CHECK-NEXT:    vsetvli a1, zero, e64, m2, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v12, fa5
 ; CHECK-NEXT:    vmv2r.v v14, v10
@@ -100,10 +100,10 @@ declare <vscale x 4 x double> @llvm.vp.fdiv.nxv4f64(<vscale x 4 x double>, <vsca
 define <vscale x 4 x double> @recip_nxv4f64(<vscale x 4 x double> %a, <vscale x 4 x i1> %m, i32 zeroext %evl) #0 {
 ; CHECK-LABEL: recip_nxv4f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI4_0)
-; CHECK-NEXT:    fld fa5, %lo(.LCPI4_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    vfrec7.v v12, v8
+; CHECK-NEXT:    lui a1, %hi(.LCPI4_0)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI4_0)(a1)
 ; CHECK-NEXT:    vsetvli a1, zero, e64, m4, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v16, fa5
 ; CHECK-NEXT:    vmv4r.v v20, v12
@@ -139,8 +139,6 @@ define <vscale x 8 x double> @recip_nxv8f64(<vscale x 8 x double> %a, <vscale x 
 ; CHECK-NEXT:    add a1, sp, a1
 ; CHECK-NEXT:    addi a1, a1, 16
 ; CHECK-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
-; CHECK-NEXT:    lui a1, %hi(.LCPI5_0)
-; CHECK-NEXT:    fld fa5, %lo(.LCPI5_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vfrec7.v v24, v8
 ; CHECK-NEXT:    csrr a1, vlenb
@@ -148,6 +146,8 @@ define <vscale x 8 x double> @recip_nxv8f64(<vscale x 8 x double> %a, <vscale x 
 ; CHECK-NEXT:    add a1, sp, a1
 ; CHECK-NEXT:    addi a1, a1, 16
 ; CHECK-NEXT:    vs8r.v v24, (a1) # Unknown-size Folded Spill
+; CHECK-NEXT:    lui a1, %hi(.LCPI5_0)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI5_0)(a1)
 ; CHECK-NEXT:    vsetvli a1, zero, e64, m8, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v16, fa5
 ; CHECK-NEXT:    csrr a1, vlenb

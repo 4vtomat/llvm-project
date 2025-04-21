@@ -67,8 +67,8 @@ define i32 @fcvt_wu_s(float %a) nounwind {
 define i32 @fcvt_wu_s_multiple_use(float %x, ptr %y) nounwind {
 ; CHECKIF-LABEL: fcvt_wu_s_multiple_use:
 ; CHECKIF:       # %bb.0:
-; CHECKIF-NEXT:    fcvt.wu.s a1, fa0, rtz
 ; CHECKIF-NEXT:    li a0, 1
+; CHECKIF-NEXT:    fcvt.wu.s a1, fa0, rtz
 ; CHECKIF-NEXT:    beqz a1, .LBB2_2
 ; CHECKIF-NEXT:  # %bb.1:
 ; CHECKIF-NEXT:    mv a0, a1

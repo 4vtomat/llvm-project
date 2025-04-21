@@ -204,13 +204,8 @@ define void @implied_wrap_predicate(ptr %A, ptr %B, ptr %C) {
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[TMP4]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[CMP_N]], label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i16 [ [[TMP15]], [[MIDDLE_BLOCK]] ], [ 1, [[VECTOR_MEMCHECK]] ], [ 1, [[VECTOR_SCEVCHECK]] ], [ 1, [[ENTRY:%.*]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL5:%.*]] = phi i64 [ [[TMP16]], [[MIDDLE_BLOCK]] ], [ 1, [[VECTOR_MEMCHECK]] ], [ 1, [[VECTOR_SCEVCHECK]] ], [ 1, [[ENTRY]] ]
-=======
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i16 [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ 1, [[ENTRY:%.*]] ], [ 1, [[VECTOR_SCEVCHECK]] ], [ 1, [[VECTOR_MEMCHECK]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL6:%.*]] = phi i64 [ [[IND_END5]], [[MIDDLE_BLOCK]] ], [ 1, [[ENTRY]] ], [ 1, [[VECTOR_SCEVCHECK]] ], [ 1, [[VECTOR_MEMCHECK]] ]
->>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i16 [ [[TMP15]], [[MIDDLE_BLOCK]] ], [ 1, [[ENTRY:%.*]] ], [ 1, [[VECTOR_SCEVCHECK]] ], [ 1, [[VECTOR_MEMCHECK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL5:%.*]] = phi i64 [ [[TMP16]], [[MIDDLE_BLOCK]] ], [ 1, [[ENTRY]] ], [ 1, [[VECTOR_SCEVCHECK]] ], [ 1, [[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    br label [[LOOP:%.*]]
 ; CHECK:       loop:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i16 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[LOOP]] ]

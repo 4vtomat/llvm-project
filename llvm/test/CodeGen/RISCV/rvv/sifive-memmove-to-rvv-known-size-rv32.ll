@@ -11,28 +11,28 @@ define void @KnownSize(ptr nocapture readonly %src, ptr nocapture %dst) {
 ; MIN-512-NEXT:    li a3, 2040
 ; MIN-512-NEXT:    bgeu a2, a3, .LBB0_2
 ; MIN-512-NEXT:  # %bb.1: # %backward-pre-loop
-; MIN-512-NEXT:    addi a2, a0, 2040
-; MIN-512-NEXT:    addi a0, a1, 2040
-; MIN-512-NEXT:    li a1, 512
-; MIN-512-NEXT:    vsetvli a1, a1, e8, m8, ta, ma
-; MIN-512-NEXT:    sub a2, a2, a1
-; MIN-512-NEXT:    vle8.v v8, (a2)
-; MIN-512-NEXT:    sub a0, a0, a1
-; MIN-512-NEXT:    sub a2, a2, a1
-; MIN-512-NEXT:    vse8.v v8, (a0)
-; MIN-512-NEXT:    vle8.v v8, (a2)
-; MIN-512-NEXT:    sub a0, a0, a1
-; MIN-512-NEXT:    sub a2, a2, a1
-; MIN-512-NEXT:    vse8.v v8, (a0)
-; MIN-512-NEXT:    vle8.v v8, (a2)
-; MIN-512-NEXT:    sub a0, a0, a1
-; MIN-512-NEXT:    vse8.v v8, (a0)
-; MIN-512-NEXT:    li a1, 504
-; MIN-512-NEXT:    vsetvli a1, a1, e8, m8, ta, ma
-; MIN-512-NEXT:    sub a2, a2, a1
-; MIN-512-NEXT:    vle8.v v8, (a2)
-; MIN-512-NEXT:    sub a0, a0, a1
-; MIN-512-NEXT:    vse8.v v8, (a0)
+; MIN-512-NEXT:    addi a0, a0, 2040
+; MIN-512-NEXT:    addi a1, a1, 2040
+; MIN-512-NEXT:    li a2, 512
+; MIN-512-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
+; MIN-512-NEXT:    sub a0, a0, a2
+; MIN-512-NEXT:    sub a1, a1, a2
+; MIN-512-NEXT:    vle8.v v8, (a0)
+; MIN-512-NEXT:    sub a0, a0, a2
+; MIN-512-NEXT:    vse8.v v8, (a1)
+; MIN-512-NEXT:    sub a1, a1, a2
+; MIN-512-NEXT:    vle8.v v8, (a0)
+; MIN-512-NEXT:    sub a0, a0, a2
+; MIN-512-NEXT:    vse8.v v8, (a1)
+; MIN-512-NEXT:    sub a1, a1, a2
+; MIN-512-NEXT:    vle8.v v8, (a0)
+; MIN-512-NEXT:    vse8.v v8, (a1)
+; MIN-512-NEXT:    li a2, 504
+; MIN-512-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
+; MIN-512-NEXT:    sub a0, a0, a2
+; MIN-512-NEXT:    sub a1, a1, a2
+; MIN-512-NEXT:    vle8.v v8, (a0)
+; MIN-512-NEXT:    vse8.v v8, (a1)
 ; MIN-512-NEXT:    ret
 ; MIN-512-NEXT:  .LBB0_2: # %memmove-forward-loop
 ; MIN-512-NEXT:    li a2, 512
@@ -40,18 +40,18 @@ define void @KnownSize(ptr nocapture readonly %src, ptr nocapture %dst) {
 ; MIN-512-NEXT:    vle8.v v8, (a0)
 ; MIN-512-NEXT:    add a0, a0, a2
 ; MIN-512-NEXT:    vse8.v v8, (a1)
-; MIN-512-NEXT:    vle8.v v8, (a0)
 ; MIN-512-NEXT:    add a1, a1, a2
+; MIN-512-NEXT:    vle8.v v8, (a0)
 ; MIN-512-NEXT:    add a0, a0, a2
 ; MIN-512-NEXT:    vse8.v v8, (a1)
-; MIN-512-NEXT:    vle8.v v8, (a0)
-; MIN-512-NEXT:    li a3, 504
 ; MIN-512-NEXT:    add a1, a1, a2
+; MIN-512-NEXT:    vle8.v v8, (a0)
 ; MIN-512-NEXT:    add a0, a0, a2
 ; MIN-512-NEXT:    vse8.v v8, (a1)
-; MIN-512-NEXT:    vsetvli zero, a3, e8, m8, ta, ma
-; MIN-512-NEXT:    vle8.v v8, (a0)
 ; MIN-512-NEXT:    add a1, a1, a2
+; MIN-512-NEXT:    li a2, 504
+; MIN-512-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
+; MIN-512-NEXT:    vle8.v v8, (a0)
 ; MIN-512-NEXT:    vse8.v v8, (a1)
 ; MIN-512-NEXT:    ret
 ;
@@ -61,44 +61,44 @@ define void @KnownSize(ptr nocapture readonly %src, ptr nocapture %dst) {
 ; MIN-256-NEXT:    li a3, 2040
 ; MIN-256-NEXT:    bgeu a2, a3, .LBB0_2
 ; MIN-256-NEXT:  # %bb.1: # %backward-pre-loop
-; MIN-256-NEXT:    addi a2, a0, 2040
-; MIN-256-NEXT:    addi a0, a1, 2040
-; MIN-256-NEXT:    li a1, 256
-; MIN-256-NEXT:    vsetvli a1, a1, e8, m8, ta, ma
-; MIN-256-NEXT:    sub a2, a2, a1
-; MIN-256-NEXT:    vle8.v v8, (a2)
-; MIN-256-NEXT:    sub a0, a0, a1
-; MIN-256-NEXT:    sub a2, a2, a1
-; MIN-256-NEXT:    vse8.v v8, (a0)
-; MIN-256-NEXT:    vle8.v v8, (a2)
-; MIN-256-NEXT:    sub a0, a0, a1
-; MIN-256-NEXT:    sub a2, a2, a1
-; MIN-256-NEXT:    vse8.v v8, (a0)
-; MIN-256-NEXT:    vle8.v v8, (a2)
-; MIN-256-NEXT:    sub a0, a0, a1
-; MIN-256-NEXT:    sub a2, a2, a1
-; MIN-256-NEXT:    vse8.v v8, (a0)
-; MIN-256-NEXT:    vle8.v v8, (a2)
-; MIN-256-NEXT:    sub a0, a0, a1
-; MIN-256-NEXT:    sub a2, a2, a1
-; MIN-256-NEXT:    vse8.v v8, (a0)
-; MIN-256-NEXT:    vle8.v v8, (a2)
-; MIN-256-NEXT:    sub a0, a0, a1
-; MIN-256-NEXT:    sub a2, a2, a1
-; MIN-256-NEXT:    vse8.v v8, (a0)
-; MIN-256-NEXT:    vle8.v v8, (a2)
-; MIN-256-NEXT:    sub a0, a0, a1
-; MIN-256-NEXT:    sub a2, a2, a1
-; MIN-256-NEXT:    vse8.v v8, (a0)
-; MIN-256-NEXT:    vle8.v v8, (a2)
-; MIN-256-NEXT:    sub a0, a0, a1
-; MIN-256-NEXT:    vse8.v v8, (a0)
-; MIN-256-NEXT:    li a1, 248
-; MIN-256-NEXT:    vsetvli a1, a1, e8, m8, ta, ma
-; MIN-256-NEXT:    sub a2, a2, a1
-; MIN-256-NEXT:    vle8.v v8, (a2)
-; MIN-256-NEXT:    sub a0, a0, a1
-; MIN-256-NEXT:    vse8.v v8, (a0)
+; MIN-256-NEXT:    addi a0, a0, 2040
+; MIN-256-NEXT:    addi a1, a1, 2040
+; MIN-256-NEXT:    li a2, 256
+; MIN-256-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
+; MIN-256-NEXT:    sub a0, a0, a2
+; MIN-256-NEXT:    sub a1, a1, a2
+; MIN-256-NEXT:    vle8.v v8, (a0)
+; MIN-256-NEXT:    sub a0, a0, a2
+; MIN-256-NEXT:    vse8.v v8, (a1)
+; MIN-256-NEXT:    sub a1, a1, a2
+; MIN-256-NEXT:    vle8.v v8, (a0)
+; MIN-256-NEXT:    sub a0, a0, a2
+; MIN-256-NEXT:    vse8.v v8, (a1)
+; MIN-256-NEXT:    sub a1, a1, a2
+; MIN-256-NEXT:    vle8.v v8, (a0)
+; MIN-256-NEXT:    sub a0, a0, a2
+; MIN-256-NEXT:    vse8.v v8, (a1)
+; MIN-256-NEXT:    sub a1, a1, a2
+; MIN-256-NEXT:    vle8.v v8, (a0)
+; MIN-256-NEXT:    sub a0, a0, a2
+; MIN-256-NEXT:    vse8.v v8, (a1)
+; MIN-256-NEXT:    sub a1, a1, a2
+; MIN-256-NEXT:    vle8.v v8, (a0)
+; MIN-256-NEXT:    sub a0, a0, a2
+; MIN-256-NEXT:    vse8.v v8, (a1)
+; MIN-256-NEXT:    sub a1, a1, a2
+; MIN-256-NEXT:    vle8.v v8, (a0)
+; MIN-256-NEXT:    sub a0, a0, a2
+; MIN-256-NEXT:    vse8.v v8, (a1)
+; MIN-256-NEXT:    sub a1, a1, a2
+; MIN-256-NEXT:    vle8.v v8, (a0)
+; MIN-256-NEXT:    vse8.v v8, (a1)
+; MIN-256-NEXT:    li a2, 248
+; MIN-256-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
+; MIN-256-NEXT:    sub a0, a0, a2
+; MIN-256-NEXT:    sub a1, a1, a2
+; MIN-256-NEXT:    vle8.v v8, (a0)
+; MIN-256-NEXT:    vse8.v v8, (a1)
 ; MIN-256-NEXT:    ret
 ; MIN-256-NEXT:  .LBB0_2: # %memmove-forward-loop
 ; MIN-256-NEXT:    li a2, 256
@@ -106,34 +106,34 @@ define void @KnownSize(ptr nocapture readonly %src, ptr nocapture %dst) {
 ; MIN-256-NEXT:    vle8.v v8, (a0)
 ; MIN-256-NEXT:    add a0, a0, a2
 ; MIN-256-NEXT:    vse8.v v8, (a1)
-; MIN-256-NEXT:    vle8.v v8, (a0)
 ; MIN-256-NEXT:    add a1, a1, a2
+; MIN-256-NEXT:    vle8.v v8, (a0)
 ; MIN-256-NEXT:    add a0, a0, a2
 ; MIN-256-NEXT:    vse8.v v8, (a1)
-; MIN-256-NEXT:    vle8.v v8, (a0)
 ; MIN-256-NEXT:    add a1, a1, a2
+; MIN-256-NEXT:    vle8.v v8, (a0)
 ; MIN-256-NEXT:    add a0, a0, a2
 ; MIN-256-NEXT:    vse8.v v8, (a1)
-; MIN-256-NEXT:    vle8.v v8, (a0)
 ; MIN-256-NEXT:    add a1, a1, a2
+; MIN-256-NEXT:    vle8.v v8, (a0)
 ; MIN-256-NEXT:    add a0, a0, a2
 ; MIN-256-NEXT:    vse8.v v8, (a1)
-; MIN-256-NEXT:    vle8.v v8, (a0)
 ; MIN-256-NEXT:    add a1, a1, a2
+; MIN-256-NEXT:    vle8.v v8, (a0)
 ; MIN-256-NEXT:    add a0, a0, a2
 ; MIN-256-NEXT:    vse8.v v8, (a1)
-; MIN-256-NEXT:    vle8.v v8, (a0)
 ; MIN-256-NEXT:    add a1, a1, a2
+; MIN-256-NEXT:    vle8.v v8, (a0)
 ; MIN-256-NEXT:    add a0, a0, a2
 ; MIN-256-NEXT:    vse8.v v8, (a1)
-; MIN-256-NEXT:    vle8.v v8, (a0)
-; MIN-256-NEXT:    li a3, 248
 ; MIN-256-NEXT:    add a1, a1, a2
+; MIN-256-NEXT:    vle8.v v8, (a0)
 ; MIN-256-NEXT:    add a0, a0, a2
 ; MIN-256-NEXT:    vse8.v v8, (a1)
-; MIN-256-NEXT:    vsetvli zero, a3, e8, m8, ta, ma
-; MIN-256-NEXT:    vle8.v v8, (a0)
 ; MIN-256-NEXT:    add a1, a1, a2
+; MIN-256-NEXT:    li a2, 248
+; MIN-256-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
+; MIN-256-NEXT:    vle8.v v8, (a0)
 ; MIN-256-NEXT:    vse8.v v8, (a1)
 ; MIN-256-NEXT:    ret
 entry:
@@ -156,31 +156,31 @@ define void @KnownSize2(ptr nocapture readonly %src, ptr nocapture %dst) {
 ; MIN-256-NEXT:    li a3, 384
 ; MIN-256-NEXT:    bgeu a2, a3, .LBB1_2
 ; MIN-256-NEXT:  # %bb.1: # %backward-pre-loop
-; MIN-256-NEXT:    addi a2, a0, 384
-; MIN-256-NEXT:    addi a0, a1, 384
-; MIN-256-NEXT:    li a1, 256
-; MIN-256-NEXT:    vsetvli a1, a1, e8, m8, ta, ma
-; MIN-256-NEXT:    sub a2, a2, a1
-; MIN-256-NEXT:    vle8.v v8, (a2)
-; MIN-256-NEXT:    sub a0, a0, a1
-; MIN-256-NEXT:    vse8.v v8, (a0)
-; MIN-256-NEXT:    li a1, 128
-; MIN-256-NEXT:    vsetvli a1, a1, e8, m8, ta, ma
-; MIN-256-NEXT:    sub a2, a2, a1
-; MIN-256-NEXT:    vle8.v v8, (a2)
-; MIN-256-NEXT:    sub a0, a0, a1
-; MIN-256-NEXT:    vse8.v v8, (a0)
+; MIN-256-NEXT:    addi a0, a0, 384
+; MIN-256-NEXT:    addi a1, a1, 384
+; MIN-256-NEXT:    li a2, 256
+; MIN-256-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
+; MIN-256-NEXT:    sub a0, a0, a2
+; MIN-256-NEXT:    sub a1, a1, a2
+; MIN-256-NEXT:    vle8.v v8, (a0)
+; MIN-256-NEXT:    vse8.v v8, (a1)
+; MIN-256-NEXT:    li a2, 128
+; MIN-256-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
+; MIN-256-NEXT:    sub a0, a0, a2
+; MIN-256-NEXT:    sub a1, a1, a2
+; MIN-256-NEXT:    vle8.v v8, (a0)
+; MIN-256-NEXT:    vse8.v v8, (a1)
 ; MIN-256-NEXT:    ret
 ; MIN-256-NEXT:  .LBB1_2: # %memmove-forward-loop
 ; MIN-256-NEXT:    li a2, 256
 ; MIN-256-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
 ; MIN-256-NEXT:    vle8.v v8, (a0)
-; MIN-256-NEXT:    li a3, 128
 ; MIN-256-NEXT:    add a0, a0, a2
 ; MIN-256-NEXT:    vse8.v v8, (a1)
-; MIN-256-NEXT:    vsetvli zero, a3, e8, m8, ta, ma
-; MIN-256-NEXT:    vle8.v v8, (a0)
 ; MIN-256-NEXT:    add a1, a1, a2
+; MIN-256-NEXT:    li a2, 128
+; MIN-256-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
+; MIN-256-NEXT:    vle8.v v8, (a0)
 ; MIN-256-NEXT:    vse8.v v8, (a1)
 ; MIN-256-NEXT:    ret
 entry:
@@ -202,20 +202,20 @@ define void @KnownSize3(ptr nocapture readonly %src, ptr nocapture %dst) {
 ; MIN-512-NEXT:    sub a2, a2, a1
 ; MIN-512-NEXT:    vle8.v v8, (a2)
 ; MIN-512-NEXT:    sub a0, a0, a1
-; MIN-512-NEXT:    vse8.v v8, (a0)
 ; MIN-512-NEXT:    sub a2, a2, a1
-; MIN-512-NEXT:    vle8.v v8, (a2)
+; MIN-512-NEXT:    vse8.v v8, (a0)
 ; MIN-512-NEXT:    sub a0, a0, a1
+; MIN-512-NEXT:    vle8.v v8, (a2)
 ; MIN-512-NEXT:    vse8.v v8, (a0)
 ; MIN-512-NEXT:    ret
 ; MIN-512-NEXT:  .LBB2_2: # %memmove-forward-loop
 ; MIN-512-NEXT:    li a2, 512
 ; MIN-512-NEXT:    vsetvli a2, a2, e8, m8, ta, ma
 ; MIN-512-NEXT:    vle8.v v8, (a0)
-; MIN-512-NEXT:    vse8.v v8, (a1)
 ; MIN-512-NEXT:    add a0, a0, a2
-; MIN-512-NEXT:    vle8.v v8, (a0)
+; MIN-512-NEXT:    vse8.v v8, (a1)
 ; MIN-512-NEXT:    add a1, a1, a2
+; MIN-512-NEXT:    vle8.v v8, (a0)
 ; MIN-512-NEXT:    vse8.v v8, (a1)
 ; MIN-512-NEXT:    ret
 ;
@@ -240,10 +240,10 @@ define void @KnownSize3(ptr nocapture readonly %src, ptr nocapture %dst) {
 ; MIN-256-NEXT:    vse8.v v8, (a0)
 ; MIN-256-NEXT:    vle8.v v8, (a2)
 ; MIN-256-NEXT:    sub a0, a0, a1
-; MIN-256-NEXT:    vse8.v v8, (a0)
 ; MIN-256-NEXT:    sub a2, a2, a1
-; MIN-256-NEXT:    vle8.v v8, (a2)
+; MIN-256-NEXT:    vse8.v v8, (a0)
 ; MIN-256-NEXT:    sub a0, a0, a1
+; MIN-256-NEXT:    vle8.v v8, (a2)
 ; MIN-256-NEXT:    vse8.v v8, (a0)
 ; MIN-256-NEXT:    ret
 ; MIN-256-NEXT:  .LBB2_2: # %memmove-forward-loop
@@ -258,10 +258,10 @@ define void @KnownSize3(ptr nocapture readonly %src, ptr nocapture %dst) {
 ; MIN-256-NEXT:    vse8.v v8, (a1)
 ; MIN-256-NEXT:    vle8.v v8, (a0)
 ; MIN-256-NEXT:    add a1, a1, a2
-; MIN-256-NEXT:    vse8.v v8, (a1)
 ; MIN-256-NEXT:    add a0, a0, a2
-; MIN-256-NEXT:    vle8.v v8, (a0)
+; MIN-256-NEXT:    vse8.v v8, (a1)
 ; MIN-256-NEXT:    add a1, a1, a2
+; MIN-256-NEXT:    vle8.v v8, (a0)
 ; MIN-256-NEXT:    vse8.v v8, (a1)
 ; MIN-256-NEXT:    ret
 entry:

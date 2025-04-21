@@ -409,105 +409,105 @@ define void @lower_global_rmw(i32 %a) nounwind {
 define i32 @lower_global_rmw_multiple_blocks(i32 %a, i1 %c) nounwind {
 ; RV32I-SMALL-LABEL: lower_global_rmw_multiple_blocks:
 ; RV32I-SMALL:       # %bb.0:
-; RV32I-SMALL-NEXT:    lui a2, %hi(G)
-; RV32I-SMALL-NEXT:    lw a3, %lo(G)(a2)
-; RV32I-SMALL-NEXT:    andi a1, a1, 1
+; RV32I-SMALL-NEXT:    andi a2, a1, 1
+; RV32I-SMALL-NEXT:    lui a1, %hi(G)
+; RV32I-SMALL-NEXT:    lw a3, %lo(G)(a1)
 ; RV32I-SMALL-NEXT:    or a0, a3, a0
-; RV32I-SMALL-NEXT:    beqz a1, .LBB5_2
+; RV32I-SMALL-NEXT:    beqz a2, .LBB5_2
 ; RV32I-SMALL-NEXT:  # %bb.1: # %cond.store
-; RV32I-SMALL-NEXT:    sw a0, %lo(G)(a2)
+; RV32I-SMALL-NEXT:    sw a0, %lo(G)(a1)
 ; RV32I-SMALL-NEXT:  .LBB5_2: # %merge
 ; RV32I-SMALL-NEXT:    ret
 ;
 ; RV32F-MEDIUM-LABEL: lower_global_rmw_multiple_blocks:
 ; RV32F-MEDIUM:       # %bb.0:
+; RV32F-MEDIUM-NEXT:    andi a2, a1, 1
 ; RV32F-MEDIUM-NEXT:  .Lpcrel_hi5:
-; RV32F-MEDIUM-NEXT:    auipc a2, %pcrel_hi(G)
-; RV32F-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi5)(a2)
-; RV32F-MEDIUM-NEXT:    andi a1, a1, 1
+; RV32F-MEDIUM-NEXT:    auipc a1, %pcrel_hi(G)
+; RV32F-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi5)(a1)
 ; RV32F-MEDIUM-NEXT:    or a0, a3, a0
-; RV32F-MEDIUM-NEXT:    beqz a1, .LBB5_2
+; RV32F-MEDIUM-NEXT:    beqz a2, .LBB5_2
 ; RV32F-MEDIUM-NEXT:  # %bb.1: # %cond.store
-; RV32F-MEDIUM-NEXT:    sw a0, %pcrel_lo(.Lpcrel_hi5)(a2)
+; RV32F-MEDIUM-NEXT:    sw a0, %pcrel_lo(.Lpcrel_hi5)(a1)
 ; RV32F-MEDIUM-NEXT:  .LBB5_2: # %merge
 ; RV32F-MEDIUM-NEXT:    ret
 ;
 ; RV64I-SMALL-LABEL: lower_global_rmw_multiple_blocks:
 ; RV64I-SMALL:       # %bb.0:
-; RV64I-SMALL-NEXT:    lui a2, %hi(G)
-; RV64I-SMALL-NEXT:    lw a3, %lo(G)(a2)
-; RV64I-SMALL-NEXT:    andi a1, a1, 1
+; RV64I-SMALL-NEXT:    andi a2, a1, 1
+; RV64I-SMALL-NEXT:    lui a1, %hi(G)
+; RV64I-SMALL-NEXT:    lw a3, %lo(G)(a1)
 ; RV64I-SMALL-NEXT:    or a0, a3, a0
-; RV64I-SMALL-NEXT:    beqz a1, .LBB5_2
+; RV64I-SMALL-NEXT:    beqz a2, .LBB5_2
 ; RV64I-SMALL-NEXT:  # %bb.1: # %cond.store
-; RV64I-SMALL-NEXT:    sw a0, %lo(G)(a2)
+; RV64I-SMALL-NEXT:    sw a0, %lo(G)(a1)
 ; RV64I-SMALL-NEXT:  .LBB5_2: # %merge
 ; RV64I-SMALL-NEXT:    ret
 ;
 ; RV64F-MEDIUM-LABEL: lower_global_rmw_multiple_blocks:
 ; RV64F-MEDIUM:       # %bb.0:
+; RV64F-MEDIUM-NEXT:    andi a2, a1, 1
 ; RV64F-MEDIUM-NEXT:  .Lpcrel_hi5:
-; RV64F-MEDIUM-NEXT:    auipc a2, %pcrel_hi(G)
-; RV64F-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi5)(a2)
-; RV64F-MEDIUM-NEXT:    andi a1, a1, 1
+; RV64F-MEDIUM-NEXT:    auipc a1, %pcrel_hi(G)
+; RV64F-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi5)(a1)
 ; RV64F-MEDIUM-NEXT:    or a0, a3, a0
-; RV64F-MEDIUM-NEXT:    beqz a1, .LBB5_2
+; RV64F-MEDIUM-NEXT:    beqz a2, .LBB5_2
 ; RV64F-MEDIUM-NEXT:  # %bb.1: # %cond.store
-; RV64F-MEDIUM-NEXT:    sw a0, %pcrel_lo(.Lpcrel_hi5)(a2)
+; RV64F-MEDIUM-NEXT:    sw a0, %pcrel_lo(.Lpcrel_hi5)(a1)
 ; RV64F-MEDIUM-NEXT:  .LBB5_2: # %merge
 ; RV64F-MEDIUM-NEXT:    ret
 ;
 ; RV64F-LARGE-LABEL: lower_global_rmw_multiple_blocks:
 ; RV64F-LARGE:       # %bb.0:
+; RV64F-LARGE-NEXT:    andi a2, a1, 1
 ; RV64F-LARGE-NEXT:  .Lpcrel_hi5:
-; RV64F-LARGE-NEXT:    auipc a2, %pcrel_hi(.LCPI5_0)
-; RV64F-LARGE-NEXT:    ld a2, %pcrel_lo(.Lpcrel_hi5)(a2)
-; RV64F-LARGE-NEXT:    lw a3, 0(a2)
-; RV64F-LARGE-NEXT:    andi a1, a1, 1
+; RV64F-LARGE-NEXT:    auipc a1, %pcrel_hi(.LCPI5_0)
+; RV64F-LARGE-NEXT:    ld a1, %pcrel_lo(.Lpcrel_hi5)(a1)
+; RV64F-LARGE-NEXT:    lw a3, 0(a1)
 ; RV64F-LARGE-NEXT:    or a0, a3, a0
-; RV64F-LARGE-NEXT:    beqz a1, .LBB5_2
+; RV64F-LARGE-NEXT:    beqz a2, .LBB5_2
 ; RV64F-LARGE-NEXT:  # %bb.1: # %cond.store
-; RV64F-LARGE-NEXT:    sw a0, 0(a2)
+; RV64F-LARGE-NEXT:    sw a0, 0(a1)
 ; RV64F-LARGE-NEXT:  .LBB5_2: # %merge
 ; RV64F-LARGE-NEXT:    ret
 ;
 ; RV32FINX-MEDIUM-LABEL: lower_global_rmw_multiple_blocks:
 ; RV32FINX-MEDIUM:       # %bb.0:
+; RV32FINX-MEDIUM-NEXT:    andi a2, a1, 1
 ; RV32FINX-MEDIUM-NEXT:  .Lpcrel_hi4:
-; RV32FINX-MEDIUM-NEXT:    auipc a2, %pcrel_hi(G)
-; RV32FINX-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi4)(a2)
-; RV32FINX-MEDIUM-NEXT:    andi a1, a1, 1
+; RV32FINX-MEDIUM-NEXT:    auipc a1, %pcrel_hi(G)
+; RV32FINX-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi4)(a1)
 ; RV32FINX-MEDIUM-NEXT:    or a0, a3, a0
-; RV32FINX-MEDIUM-NEXT:    beqz a1, .LBB5_2
+; RV32FINX-MEDIUM-NEXT:    beqz a2, .LBB5_2
 ; RV32FINX-MEDIUM-NEXT:  # %bb.1: # %cond.store
-; RV32FINX-MEDIUM-NEXT:    sw a0, %pcrel_lo(.Lpcrel_hi4)(a2)
+; RV32FINX-MEDIUM-NEXT:    sw a0, %pcrel_lo(.Lpcrel_hi4)(a1)
 ; RV32FINX-MEDIUM-NEXT:  .LBB5_2: # %merge
 ; RV32FINX-MEDIUM-NEXT:    ret
 ;
 ; RV64FINX-MEDIUM-LABEL: lower_global_rmw_multiple_blocks:
 ; RV64FINX-MEDIUM:       # %bb.0:
+; RV64FINX-MEDIUM-NEXT:    andi a2, a1, 1
 ; RV64FINX-MEDIUM-NEXT:  .Lpcrel_hi4:
-; RV64FINX-MEDIUM-NEXT:    auipc a2, %pcrel_hi(G)
-; RV64FINX-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi4)(a2)
-; RV64FINX-MEDIUM-NEXT:    andi a1, a1, 1
+; RV64FINX-MEDIUM-NEXT:    auipc a1, %pcrel_hi(G)
+; RV64FINX-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi4)(a1)
 ; RV64FINX-MEDIUM-NEXT:    or a0, a3, a0
-; RV64FINX-MEDIUM-NEXT:    beqz a1, .LBB5_2
+; RV64FINX-MEDIUM-NEXT:    beqz a2, .LBB5_2
 ; RV64FINX-MEDIUM-NEXT:  # %bb.1: # %cond.store
-; RV64FINX-MEDIUM-NEXT:    sw a0, %pcrel_lo(.Lpcrel_hi4)(a2)
+; RV64FINX-MEDIUM-NEXT:    sw a0, %pcrel_lo(.Lpcrel_hi4)(a1)
 ; RV64FINX-MEDIUM-NEXT:  .LBB5_2: # %merge
 ; RV64FINX-MEDIUM-NEXT:    ret
 ;
 ; RV64FINX-LARGE-LABEL: lower_global_rmw_multiple_blocks:
 ; RV64FINX-LARGE:       # %bb.0:
+; RV64FINX-LARGE-NEXT:    andi a2, a1, 1
 ; RV64FINX-LARGE-NEXT:  .Lpcrel_hi4:
-; RV64FINX-LARGE-NEXT:    auipc a2, %pcrel_hi(.LCPI5_0)
-; RV64FINX-LARGE-NEXT:    ld a2, %pcrel_lo(.Lpcrel_hi4)(a2)
-; RV64FINX-LARGE-NEXT:    lw a3, 0(a2)
-; RV64FINX-LARGE-NEXT:    andi a1, a1, 1
+; RV64FINX-LARGE-NEXT:    auipc a1, %pcrel_hi(.LCPI5_0)
+; RV64FINX-LARGE-NEXT:    ld a1, %pcrel_lo(.Lpcrel_hi4)(a1)
+; RV64FINX-LARGE-NEXT:    lw a3, 0(a1)
 ; RV64FINX-LARGE-NEXT:    or a0, a3, a0
-; RV64FINX-LARGE-NEXT:    beqz a1, .LBB5_2
+; RV64FINX-LARGE-NEXT:    beqz a2, .LBB5_2
 ; RV64FINX-LARGE-NEXT:  # %bb.1: # %cond.store
-; RV64FINX-LARGE-NEXT:    sw a0, 0(a2)
+; RV64FINX-LARGE-NEXT:    sw a0, 0(a1)
 ; RV64FINX-LARGE-NEXT:  .LBB5_2: # %merge
 ; RV64FINX-LARGE-NEXT:    ret
   %1 = load volatile i32, i32* @G
@@ -730,18 +730,18 @@ define void @lower_global_loop(i32* %a) {
 ;
 ; RV64F-LARGE-LABEL: lower_global_loop:
 ; RV64F-LARGE:       # %bb.0: # %entry
+; RV64F-LARGE-NEXT:    addi a1, a0, 40
 ; RV64F-LARGE-NEXT:  .Lpcrel_hi8:
-; RV64F-LARGE-NEXT:    auipc a1, %pcrel_hi(.LCPI7_0)
-; RV64F-LARGE-NEXT:    ld a1, %pcrel_lo(.Lpcrel_hi8)(a1)
-; RV64F-LARGE-NEXT:    addi a2, a0, 40
+; RV64F-LARGE-NEXT:    auipc a2, %pcrel_hi(.LCPI7_0)
+; RV64F-LARGE-NEXT:    ld a2, %pcrel_lo(.Lpcrel_hi8)(a2)
 ; RV64F-LARGE-NEXT:  .LBB7_1: # %for.body
 ; RV64F-LARGE-NEXT:    # =>This Inner Loop Header: Depth=1
-; RV64F-LARGE-NEXT:    lw a3, 0(a1)
+; RV64F-LARGE-NEXT:    lw a3, 0(a2)
 ; RV64F-LARGE-NEXT:    lw a4, 0(a0)
 ; RV64F-LARGE-NEXT:    or a3, a4, a3
 ; RV64F-LARGE-NEXT:    sw a3, 0(a0)
 ; RV64F-LARGE-NEXT:    addi a0, a0, 4
-; RV64F-LARGE-NEXT:    bne a0, a2, .LBB7_1
+; RV64F-LARGE-NEXT:    bne a0, a1, .LBB7_1
 ; RV64F-LARGE-NEXT:  # %bb.2: # %for.cond.cleanup
 ; RV64F-LARGE-NEXT:    ret
 ;
@@ -779,18 +779,18 @@ define void @lower_global_loop(i32* %a) {
 ;
 ; RV64FINX-LARGE-LABEL: lower_global_loop:
 ; RV64FINX-LARGE:       # %bb.0: # %entry
+; RV64FINX-LARGE-NEXT:    addi a1, a0, 40
 ; RV64FINX-LARGE-NEXT:  .Lpcrel_hi7:
-; RV64FINX-LARGE-NEXT:    auipc a1, %pcrel_hi(.LCPI7_0)
-; RV64FINX-LARGE-NEXT:    ld a1, %pcrel_lo(.Lpcrel_hi7)(a1)
-; RV64FINX-LARGE-NEXT:    addi a2, a0, 40
+; RV64FINX-LARGE-NEXT:    auipc a2, %pcrel_hi(.LCPI7_0)
+; RV64FINX-LARGE-NEXT:    ld a2, %pcrel_lo(.Lpcrel_hi7)(a2)
 ; RV64FINX-LARGE-NEXT:  .LBB7_1: # %for.body
 ; RV64FINX-LARGE-NEXT:    # =>This Inner Loop Header: Depth=1
-; RV64FINX-LARGE-NEXT:    lw a3, 0(a1)
+; RV64FINX-LARGE-NEXT:    lw a3, 0(a2)
 ; RV64FINX-LARGE-NEXT:    lw a4, 0(a0)
 ; RV64FINX-LARGE-NEXT:    or a3, a4, a3
 ; RV64FINX-LARGE-NEXT:    sw a3, 0(a0)
 ; RV64FINX-LARGE-NEXT:    addi a0, a0, 4
-; RV64FINX-LARGE-NEXT:    bne a0, a2, .LBB7_1
+; RV64FINX-LARGE-NEXT:    bne a0, a1, .LBB7_1
 ; RV64FINX-LARGE-NEXT:  # %bb.2: # %for.cond.cleanup
 ; RV64FINX-LARGE-NEXT:    ret
 entry:

@@ -426,9 +426,8 @@ define void @vst3_lane_f16(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vlseg3e16.v v8, (a1)
 ; CHECK-NEXT:    vmv.v.i v0, 2
 ; CHECK-NEXT:    vrgather.vi v11, v8, 3
-; CHECK-NEXT:    vmv.v.i v8, 4
 ; CHECK-NEXT:    vrgather.vi v11, v9, 3, v0.t
-; CHECK-NEXT:    vmv1r.v v0, v8
+; CHECK-NEXT:    vmv.v.i v0, 4
 ; CHECK-NEXT:    vrgather.vi v11, v10, 3, v0.t
 ; CHECK-NEXT:    vsetivli zero, 6, e8, mf2, ta, ma
 ; CHECK-NEXT:    vse8.v v11, (a0)
@@ -1000,9 +999,8 @@ define void @vst4_lane_s16(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vlseg4e16.v v8, (a1)
 ; CHECK-NEXT:    vmv.v.i v0, 2
 ; CHECK-NEXT:    vrgather.vi v12, v8, 3
-; CHECK-NEXT:    vmv.v.i v8, 4
 ; CHECK-NEXT:    vrgather.vi v12, v9, 3, v0.t
-; CHECK-NEXT:    vmv1r.v v0, v8
+; CHECK-NEXT:    vmv.v.i v0, 4
 ; CHECK-NEXT:    vsetivli zero, 3, e16, mf2, ta, mu
 ; CHECK-NEXT:    vrgather.vi v12, v10, 3, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, tu, ma
@@ -1226,9 +1224,8 @@ define void @vst4q_lane_f32(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vlseg4e32.v v8, (a1)
 ; CHECK-NEXT:    vmv.v.i v0, 2
 ; CHECK-NEXT:    vrgather.vi v12, v8, 3
-; CHECK-NEXT:    vmv.v.i v8, 4
 ; CHECK-NEXT:    vrgather.vi v12, v9, 3, v0.t
-; CHECK-NEXT:    vmv.v.v v0, v8
+; CHECK-NEXT:    vmv.v.i v0, 4
 ; CHECK-NEXT:    vsetivli zero, 3, e32, m1, ta, mu
 ; CHECK-NEXT:    vrgather.vi v12, v10, 3, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, tu, ma
@@ -1304,9 +1301,8 @@ define void @vst4q_lane_s32(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vlseg4e32.v v8, (a1)
 ; CHECK-NEXT:    vmv.v.i v0, 2
 ; CHECK-NEXT:    vrgather.vi v12, v8, 3
-; CHECK-NEXT:    vmv.v.i v8, 4
 ; CHECK-NEXT:    vrgather.vi v12, v9, 3, v0.t
-; CHECK-NEXT:    vmv.v.v v0, v8
+; CHECK-NEXT:    vmv.v.i v0, 4
 ; CHECK-NEXT:    vsetivli zero, 3, e32, m1, ta, mu
 ; CHECK-NEXT:    vrgather.vi v12, v10, 3, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, tu, ma

@@ -5,10 +5,6 @@ define <vscale x 16 x i32> @bar(i32 %0, i32 %1, i32 %2, i32 %3, i32 %4, i32 %5, 
 ; CHECK-LABEL: bar:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    ld a0, 8(sp)
-<<<<<<< HEAD
-; CHECK-NEXT:    ld a1, 0(sp)
-=======
->>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
 ; CHECK-NEXT:    vl8re32.v v24, (a0)
 ; CHECK-NEXT:    ld a0, 0(sp)
 ; CHECK-NEXT:    vl8re32.v v0, (a0)

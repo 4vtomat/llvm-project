@@ -7,11 +7,7 @@
 define i32 @test(i32 %size, ptr %add.ptr, i64 %const) {
 ; RV32-LABEL: test:
 ; RV32:       # %bb.0: # %entry
-<<<<<<< HEAD
 ; RV32-NEXT:    lbu a3, -1(a1)
-=======
-; RV32-NEXT:    th.lbib a3, (a1), -1, 0
->>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
 ; RV32-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; RV32-NEXT:    vmv.v.x v8, a3
 ; RV32-NEXT:    addi a3, a2, 1
@@ -38,11 +34,7 @@ define i32 @test(i32 %size, ptr %add.ptr, i64 %const) {
 ;
 ; RV64-LABEL: test:
 ; RV64:       # %bb.0: # %entry
-<<<<<<< HEAD
 ; RV64-NEXT:    lbu a3, -1(a1)
-=======
-; RV64-NEXT:    th.lbib a3, (a1), -1, 0
->>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
 ; RV64-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; RV64-NEXT:    vmv.v.x v8, a3
 ; RV64-NEXT:    addi a3, a2, 1

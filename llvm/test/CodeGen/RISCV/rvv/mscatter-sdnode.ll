@@ -1910,18 +1910,6 @@ define void @mscatter_nxv16f64(<vscale x 8 x double> %val0, <vscale x 8 x double
 ; RV64-NEXT:    addi a2, sp, 16
 ; RV64-NEXT:    vs8r.v v16, (a2) # Unknown-size Folded Spill
 ; RV64-NEXT:    vl8re64.v v16, (a1)
-<<<<<<< HEAD
-; RV64-NEXT:    csrr a1, vlenb
-; RV64-NEXT:    srli a1, a1, 3
-; RV64-NEXT:    vsetvli a2, zero, e8, mf4, ta, ma
-; RV64-NEXT:    vslidedown.vx v7, v0, a1
-; RV64-NEXT:    vl8re64.v v24, (a0)
-; RV64-NEXT:    vsetvli a0, zero, e64, m8, ta, ma
-; RV64-NEXT:    vsoxei64.v v8, (zero), v24, v0.t
-; RV64-NEXT:    vmv1r.v v0, v7
-; RV64-NEXT:    addi a0, sp, 16
-; RV64-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-=======
 ; RV64-NEXT:    vl8re64.v v24, (a0)
 ; RV64-NEXT:    vsetvli a0, zero, e64, m8, ta, ma
 ; RV64-NEXT:    vsoxei64.v v8, (zero), v24, v0.t
@@ -1932,7 +1920,6 @@ define void @mscatter_nxv16f64(<vscale x 8 x double> %val0, <vscale x 8 x double
 ; RV64-NEXT:    addi a0, sp, 16
 ; RV64-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
 ; RV64-NEXT:    vsetvli a0, zero, e64, m8, ta, ma
->>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
 ; RV64-NEXT:    vsoxei64.v v8, (zero), v16, v0.t
 ; RV64-NEXT:    csrr a0, vlenb
 ; RV64-NEXT:    slli a0, a0, 3

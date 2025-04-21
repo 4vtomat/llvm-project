@@ -24,8 +24,8 @@ define float @sum(i32 %n, ptr %arr, float %s) {
 ; CHECK-NEXT:    vsetvli a3, a3, e32, m4, ta, ma
 ; CHECK-NEXT:    add a4, a1, a4
 ; CHECK-NEXT:    vle32.v v12, (a4)
-; CHECK-NEXT:    add a2, a2, a3
 ; CHECK-NEXT:    vfredosum.vs v8, v12, v8
+; CHECK-NEXT:    add a2, a2, a3
 ; CHECK-NEXT:    bne a2, a0, .LBB0_2
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    vfmv.f.s fa0, v8
@@ -74,8 +74,8 @@ define float @sum2(i32 %n, ptr %arr) {
 ; CHECK-NEXT:    vsetvli a3, a3, e32, m4, ta, ma
 ; CHECK-NEXT:    add a4, a1, a4
 ; CHECK-NEXT:    vle32.v v12, (a4)
-; CHECK-NEXT:    add a2, a2, a3
 ; CHECK-NEXT:    vfredosum.vs v8, v12, v8
+; CHECK-NEXT:    add a2, a2, a3
 ; CHECK-NEXT:    bne a2, a0, .LBB1_2
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    vfmv.f.s fa0, v8

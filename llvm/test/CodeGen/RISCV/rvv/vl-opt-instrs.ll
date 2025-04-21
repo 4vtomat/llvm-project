@@ -2892,17 +2892,17 @@ define <vscale x 4 x i32> @vnclipu_vv(<vscale x 4 x i64> %a, <vscale x 4 x i32> 
 ; NOVLOPT:       # %bb.0:
 ; NOVLOPT-NEXT:    csrwi vxrm, 0
 ; NOVLOPT-NEXT:    vsetvli a1, zero, e32, m2, ta, ma
-; NOVLOPT-NEXT:    vnclipu.wv v14, v8, v12
+; NOVLOPT-NEXT:    vnclipu.wv v8, v8, v12
 ; NOVLOPT-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; NOVLOPT-NEXT:    vadd.vv v8, v14, v14
+; NOVLOPT-NEXT:    vadd.vv v8, v8, v8
 ; NOVLOPT-NEXT:    ret
 ;
 ; VLOPT-LABEL: vnclipu_vv:
 ; VLOPT:       # %bb.0:
 ; VLOPT-NEXT:    csrwi vxrm, 0
 ; VLOPT-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; VLOPT-NEXT:    vnclipu.wv v14, v8, v12
-; VLOPT-NEXT:    vadd.vv v8, v14, v14
+; VLOPT-NEXT:    vnclipu.wv v8, v8, v12
+; VLOPT-NEXT:    vadd.vv v8, v8, v8
 ; VLOPT-NEXT:    ret
   %1 = call <vscale x 4 x i32> @llvm.riscv.vnclipu(<vscale x 4 x i32> poison, <vscale x 4 x i64> %a, <vscale x 4 x i32> %b, iXLen 0, iXLen -1)
   %2 = call <vscale x 4 x i32> @llvm.riscv.vadd(<vscale x 4 x i32> poison, <vscale x 4 x i32> %1, <vscale x 4 x i32> %1, iXLen %vl)
@@ -2914,17 +2914,17 @@ define <vscale x 4 x i32> @vnclipu_vx(<vscale x 4 x i64> %a, iXLen %b, iXLen %vl
 ; NOVLOPT:       # %bb.0:
 ; NOVLOPT-NEXT:    csrwi vxrm, 0
 ; NOVLOPT-NEXT:    vsetvli a2, zero, e32, m2, ta, ma
-; NOVLOPT-NEXT:    vnclipu.wx v12, v8, a0
+; NOVLOPT-NEXT:    vnclipu.wx v8, v8, a0
 ; NOVLOPT-NEXT:    vsetvli zero, a1, e32, m2, ta, ma
-; NOVLOPT-NEXT:    vadd.vv v8, v12, v12
+; NOVLOPT-NEXT:    vadd.vv v8, v8, v8
 ; NOVLOPT-NEXT:    ret
 ;
 ; VLOPT-LABEL: vnclipu_vx:
 ; VLOPT:       # %bb.0:
 ; VLOPT-NEXT:    csrwi vxrm, 0
 ; VLOPT-NEXT:    vsetvli zero, a1, e32, m2, ta, ma
-; VLOPT-NEXT:    vnclipu.wx v12, v8, a0
-; VLOPT-NEXT:    vadd.vv v8, v12, v12
+; VLOPT-NEXT:    vnclipu.wx v8, v8, a0
+; VLOPT-NEXT:    vadd.vv v8, v8, v8
 ; VLOPT-NEXT:    ret
   %1 = call <vscale x 4 x i32> @llvm.riscv.vnclipu(<vscale x 4 x i32> poison, <vscale x 4 x i64> %a, iXLen %b, iXLen 0, iXLen -1)
   %2 = call <vscale x 4 x i32> @llvm.riscv.vadd(<vscale x 4 x i32> poison, <vscale x 4 x i32> %1, <vscale x 4 x i32> %1, iXLen %vl)
@@ -2936,17 +2936,17 @@ define <vscale x 4 x i32> @vnclipu_vi(<vscale x 4 x i64> %a, iXLen %vl) {
 ; NOVLOPT:       # %bb.0:
 ; NOVLOPT-NEXT:    csrwi vxrm, 0
 ; NOVLOPT-NEXT:    vsetvli a1, zero, e32, m2, ta, ma
-; NOVLOPT-NEXT:    vnclipu.wi v12, v8, 5
+; NOVLOPT-NEXT:    vnclipu.wi v8, v8, 5
 ; NOVLOPT-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; NOVLOPT-NEXT:    vadd.vv v8, v12, v12
+; NOVLOPT-NEXT:    vadd.vv v8, v8, v8
 ; NOVLOPT-NEXT:    ret
 ;
 ; VLOPT-LABEL: vnclipu_vi:
 ; VLOPT:       # %bb.0:
 ; VLOPT-NEXT:    csrwi vxrm, 0
 ; VLOPT-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; VLOPT-NEXT:    vnclipu.wi v12, v8, 5
-; VLOPT-NEXT:    vadd.vv v8, v12, v12
+; VLOPT-NEXT:    vnclipu.wi v8, v8, 5
+; VLOPT-NEXT:    vadd.vv v8, v8, v8
 ; VLOPT-NEXT:    ret
   %1 = call <vscale x 4 x i32> @llvm.riscv.vnclipu(<vscale x 4 x i32> poison, <vscale x 4 x i64> %a, iXLen 5, iXLen 0, iXLen -1)
   %2 = call <vscale x 4 x i32> @llvm.riscv.vadd(<vscale x 4 x i32> poison, <vscale x 4 x i32> %1, <vscale x 4 x i32> %1, iXLen %vl)
@@ -2958,17 +2958,17 @@ define <vscale x 4 x i32> @vnclip_vv(<vscale x 4 x i64> %a, <vscale x 4 x i32> %
 ; NOVLOPT:       # %bb.0:
 ; NOVLOPT-NEXT:    csrwi vxrm, 0
 ; NOVLOPT-NEXT:    vsetvli a1, zero, e32, m2, ta, ma
-; NOVLOPT-NEXT:    vnclip.wv v14, v8, v12
+; NOVLOPT-NEXT:    vnclip.wv v8, v8, v12
 ; NOVLOPT-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; NOVLOPT-NEXT:    vadd.vv v8, v14, v14
+; NOVLOPT-NEXT:    vadd.vv v8, v8, v8
 ; NOVLOPT-NEXT:    ret
 ;
 ; VLOPT-LABEL: vnclip_vv:
 ; VLOPT:       # %bb.0:
 ; VLOPT-NEXT:    csrwi vxrm, 0
 ; VLOPT-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; VLOPT-NEXT:    vnclip.wv v14, v8, v12
-; VLOPT-NEXT:    vadd.vv v8, v14, v14
+; VLOPT-NEXT:    vnclip.wv v8, v8, v12
+; VLOPT-NEXT:    vadd.vv v8, v8, v8
 ; VLOPT-NEXT:    ret
   %1 = call <vscale x 4 x i32> @llvm.riscv.vnclip(<vscale x 4 x i32> poison, <vscale x 4 x i64> %a, <vscale x 4 x i32> %b, iXLen 0, iXLen -1)
   %2 = call <vscale x 4 x i32> @llvm.riscv.vadd(<vscale x 4 x i32> poison, <vscale x 4 x i32> %1, <vscale x 4 x i32> %1, iXLen %vl)
@@ -2980,17 +2980,17 @@ define <vscale x 4 x i32> @vnclip_vx(<vscale x 4 x i64> %a, iXLen %b, iXLen %vl)
 ; NOVLOPT:       # %bb.0:
 ; NOVLOPT-NEXT:    csrwi vxrm, 0
 ; NOVLOPT-NEXT:    vsetvli a2, zero, e32, m2, ta, ma
-; NOVLOPT-NEXT:    vnclip.wx v12, v8, a0
+; NOVLOPT-NEXT:    vnclip.wx v8, v8, a0
 ; NOVLOPT-NEXT:    vsetvli zero, a1, e32, m2, ta, ma
-; NOVLOPT-NEXT:    vadd.vv v8, v12, v12
+; NOVLOPT-NEXT:    vadd.vv v8, v8, v8
 ; NOVLOPT-NEXT:    ret
 ;
 ; VLOPT-LABEL: vnclip_vx:
 ; VLOPT:       # %bb.0:
 ; VLOPT-NEXT:    csrwi vxrm, 0
 ; VLOPT-NEXT:    vsetvli zero, a1, e32, m2, ta, ma
-; VLOPT-NEXT:    vnclip.wx v12, v8, a0
-; VLOPT-NEXT:    vadd.vv v8, v12, v12
+; VLOPT-NEXT:    vnclip.wx v8, v8, a0
+; VLOPT-NEXT:    vadd.vv v8, v8, v8
 ; VLOPT-NEXT:    ret
   %1 = call <vscale x 4 x i32> @llvm.riscv.vnclip(<vscale x 4 x i32> poison, <vscale x 4 x i64> %a, iXLen %b, iXLen 0, iXLen -1)
   %2 = call <vscale x 4 x i32> @llvm.riscv.vadd(<vscale x 4 x i32> poison, <vscale x 4 x i32> %1, <vscale x 4 x i32> %1, iXLen %vl)
@@ -3002,17 +3002,17 @@ define <vscale x 4 x i32> @vnclip_vi(<vscale x 4 x i64> %a, iXLen %vl) {
 ; NOVLOPT:       # %bb.0:
 ; NOVLOPT-NEXT:    csrwi vxrm, 0
 ; NOVLOPT-NEXT:    vsetvli a1, zero, e32, m2, ta, ma
-; NOVLOPT-NEXT:    vnclip.wi v12, v8, 5
+; NOVLOPT-NEXT:    vnclip.wi v8, v8, 5
 ; NOVLOPT-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; NOVLOPT-NEXT:    vadd.vv v8, v12, v12
+; NOVLOPT-NEXT:    vadd.vv v8, v8, v8
 ; NOVLOPT-NEXT:    ret
 ;
 ; VLOPT-LABEL: vnclip_vi:
 ; VLOPT:       # %bb.0:
 ; VLOPT-NEXT:    csrwi vxrm, 0
 ; VLOPT-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; VLOPT-NEXT:    vnclip.wi v12, v8, 5
-; VLOPT-NEXT:    vadd.vv v8, v12, v12
+; VLOPT-NEXT:    vnclip.wi v8, v8, 5
+; VLOPT-NEXT:    vadd.vv v8, v8, v8
 ; VLOPT-NEXT:    ret
   %1 = call <vscale x 4 x i32> @llvm.riscv.vnclip(<vscale x 4 x i32> poison, <vscale x 4 x i64> %a, iXLen 5, iXLen 0, iXLen -1)
   %2 = call <vscale x 4 x i32> @llvm.riscv.vadd(<vscale x 4 x i32> poison, <vscale x 4 x i32> %1, <vscale x 4 x i32> %1, iXLen %vl)

@@ -5,12 +5,12 @@ define void @vsri_n_s16(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-LABEL: vsri_n_s16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a1)
-; CHECK-NEXT:    vle16.v v9, (a0)
+; CHECK-NEXT:    vle16.v v8, (a0)
+; CHECK-NEXT:    vle16.v v9, (a1)
 ; CHECK-NEXT:    lui a0, 1048568
-; CHECK-NEXT:    vsrl.vi v8, v8, 1
-; CHECK-NEXT:    vand.vx v9, v9, a0
-; CHECK-NEXT:    vor.vv v8, v9, v8
+; CHECK-NEXT:    vsrl.vi v9, v9, 1
+; CHECK-NEXT:    vand.vx v8, v8, a0
+; CHECK-NEXT:    vor.vv v8, v8, v9
 ; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -40,13 +40,13 @@ define void @vsri_n_s64(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-LABEL: vsri_n_s64:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-; CHECK-NEXT:    vle64.v v8, (a1)
-; CHECK-NEXT:    vle64.v v9, (a0)
+; CHECK-NEXT:    vle64.v v8, (a0)
+; CHECK-NEXT:    vle64.v v9, (a1)
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    slli a0, a0, 63
-; CHECK-NEXT:    vsrl.vi v8, v8, 1
-; CHECK-NEXT:    vand.vx v9, v9, a0
-; CHECK-NEXT:    vor.vv v8, v9, v8
+; CHECK-NEXT:    vsrl.vi v9, v9, 1
+; CHECK-NEXT:    vand.vx v8, v8, a0
+; CHECK-NEXT:    vor.vv v8, v8, v9
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -61,12 +61,12 @@ define void @vsri_n_s8(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-LABEL: vsri_n_s8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a1)
-; CHECK-NEXT:    vle8.v v9, (a0)
+; CHECK-NEXT:    vle8.v v8, (a0)
+; CHECK-NEXT:    vle8.v v9, (a1)
 ; CHECK-NEXT:    li a0, -128
-; CHECK-NEXT:    vsrl.vi v8, v8, 1
-; CHECK-NEXT:    vand.vx v9, v9, a0
-; CHECK-NEXT:    vor.vv v8, v9, v8
+; CHECK-NEXT:    vsrl.vi v9, v9, 1
+; CHECK-NEXT:    vand.vx v8, v8, a0
+; CHECK-NEXT:    vor.vv v8, v8, v9
 ; CHECK-NEXT:    vse8.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -96,12 +96,12 @@ define void @vsri_n_u32(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-LABEL: vsri_n_u32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a1)
-; CHECK-NEXT:    vle32.v v9, (a0)
+; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    vle32.v v9, (a1)
 ; CHECK-NEXT:    lui a0, 524288
-; CHECK-NEXT:    vsrl.vi v8, v8, 1
-; CHECK-NEXT:    vand.vx v9, v9, a0
-; CHECK-NEXT:    vor.vv v8, v9, v8
+; CHECK-NEXT:    vsrl.vi v9, v9, 1
+; CHECK-NEXT:    vand.vx v8, v8, a0
+; CHECK-NEXT:    vor.vv v8, v8, v9
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -130,12 +130,12 @@ define void @vsri_n_u8(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-LABEL: vsri_n_u8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a1)
-; CHECK-NEXT:    vle8.v v9, (a0)
+; CHECK-NEXT:    vle8.v v8, (a0)
+; CHECK-NEXT:    vle8.v v9, (a1)
 ; CHECK-NEXT:    li a0, -128
-; CHECK-NEXT:    vsrl.vi v8, v8, 1
-; CHECK-NEXT:    vand.vx v9, v9, a0
-; CHECK-NEXT:    vor.vv v8, v9, v8
+; CHECK-NEXT:    vsrl.vi v9, v9, 1
+; CHECK-NEXT:    vand.vx v8, v8, a0
+; CHECK-NEXT:    vor.vv v8, v8, v9
 ; CHECK-NEXT:    vse8.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -150,11 +150,11 @@ define void @vsriq_n_s16(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-LABEL: vsriq_n_s16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a1)
-; CHECK-NEXT:    vle16.v v9, (a0)
-; CHECK-NEXT:    vsrl.vi v8, v8, 15
-; CHECK-NEXT:    vand.vi v9, v9, -2
-; CHECK-NEXT:    vor.vv v8, v9, v8
+; CHECK-NEXT:    vle16.v v8, (a0)
+; CHECK-NEXT:    vle16.v v9, (a1)
+; CHECK-NEXT:    vsrl.vi v9, v9, 15
+; CHECK-NEXT:    vand.vi v8, v8, -2
+; CHECK-NEXT:    vor.vv v8, v8, v9
 ; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -244,13 +244,13 @@ define void @vsriq_n_u64(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-LABEL: vsriq_n_u64:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; CHECK-NEXT:    vle64.v v8, (a1)
-; CHECK-NEXT:    vle64.v v9, (a0)
+; CHECK-NEXT:    vle64.v v8, (a0)
+; CHECK-NEXT:    vle64.v v9, (a1)
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    slli a0, a0, 63
-; CHECK-NEXT:    vsrl.vi v8, v8, 1
-; CHECK-NEXT:    vand.vx v9, v9, a0
-; CHECK-NEXT:    vor.vv v8, v9, v8
+; CHECK-NEXT:    vsrl.vi v9, v9, 1
+; CHECK-NEXT:    vand.vx v8, v8, a0
+; CHECK-NEXT:    vor.vv v8, v8, v9
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:

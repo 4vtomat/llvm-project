@@ -15,13 +15,13 @@ define dso_local void @test(i64 %channel, ptr nocapture readonly %output_shift, 
 ; CHECK-NEXT:    vsetvli zero, a5, e32, m4, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    sub a0, a0, a5
-; CHECK-NEXT:    add a7, a1, a6
-; CHECK-NEXT:    vle32.v v12, (a7)
 ; CHECK-NEXT:    add a4, a5, a4
+; CHECK-NEXT:    add a5, a1, a6
+; CHECK-NEXT:    vle32.v v12, (a5)
 ; CHECK-NEXT:    add a5, a2, a6
+; CHECK-NEXT:    add a6, a3, a6
 ; CHECK-NEXT:    vle32.v v16, (a5)
 ; CHECK-NEXT:    vmslt.vx v0, v12, zero
-; CHECK-NEXT:    add a6, a3, a6
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m4, tu, mu
 ; CHECK-NEXT:    vrsub.vi v8, v12, 0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m4, ta, ma

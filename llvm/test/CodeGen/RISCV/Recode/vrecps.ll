@@ -14,10 +14,10 @@ define void @vrecps_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vfclass.v v10, v10
 ; CHECK-NEXT:    vfclass.v v11, v11
 ; CHECK-NEXT:    vor.vv v10, v10, v11
+; CHECK-NEXT:    vmv.v.x v11, a1
 ; CHECK-NEXT:    vmsne.vx v0, v10, a0
-; CHECK-NEXT:    vmv.v.x v10, a1
-; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
-; CHECK-NEXT:    vse16.v v10, (a2)
+; CHECK-NEXT:    vfnmsac.vv v11, v8, v9, v0.t
+; CHECK-NEXT:    vse16.v v11, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x half>, ptr %in_0, align 2
@@ -40,10 +40,10 @@ define void @vrecps_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vfclass.v v10, v10
 ; CHECK-NEXT:    vfclass.v v11, v11
 ; CHECK-NEXT:    vor.vv v10, v10, v11
+; CHECK-NEXT:    vmv.v.x v11, a1
 ; CHECK-NEXT:    vmsne.vx v0, v10, a0
-; CHECK-NEXT:    vmv.v.x v10, a1
-; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
-; CHECK-NEXT:    vse32.v v10, (a2)
+; CHECK-NEXT:    vfnmsac.vv v11, v8, v9, v0.t
+; CHECK-NEXT:    vse32.v v11, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <2 x float>, ptr %in_0, align 4
@@ -67,12 +67,12 @@ define void @vrecps_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vfclass.v v10, v10
 ; CHECK-NEXT:    vfclass.v v11, v11
 ; CHECK-NEXT:    vor.vv v10, v10, v11
-; CHECK-NEXT:    vmsne.vx v0, v10, a0
-; CHECK-NEXT:    vsetvli a0, zero, e64, m1, ta, ma
-; CHECK-NEXT:    vfmv.v.f v10, fa5
+; CHECK-NEXT:    vsetvli a1, zero, e64, m1, ta, ma
+; CHECK-NEXT:    vfmv.v.f v11, fa5
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
-; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
-; CHECK-NEXT:    vse64.v v10, (a2)
+; CHECK-NEXT:    vmsne.vx v0, v10, a0
+; CHECK-NEXT:    vfnmsac.vv v11, v8, v9, v0.t
+; CHECK-NEXT:    vse64.v v11, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <1 x double>, ptr %in_0, align 8
@@ -95,10 +95,10 @@ define void @vrecpsq_f16(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vfclass.v v10, v10
 ; CHECK-NEXT:    vfclass.v v11, v11
 ; CHECK-NEXT:    vor.vv v10, v10, v11
+; CHECK-NEXT:    vmv.v.x v11, a1
 ; CHECK-NEXT:    vmsne.vx v0, v10, a0
-; CHECK-NEXT:    vmv.v.x v10, a1
-; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
-; CHECK-NEXT:    vse16.v v10, (a2)
+; CHECK-NEXT:    vfnmsac.vv v11, v8, v9, v0.t
+; CHECK-NEXT:    vse16.v v11, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x half>, ptr %in_0, align 2
@@ -121,10 +121,10 @@ define void @vrecpsq_f32(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vfclass.v v10, v10
 ; CHECK-NEXT:    vfclass.v v11, v11
 ; CHECK-NEXT:    vor.vv v10, v10, v11
+; CHECK-NEXT:    vmv.v.x v11, a1
 ; CHECK-NEXT:    vmsne.vx v0, v10, a0
-; CHECK-NEXT:    vmv.v.x v10, a1
-; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
-; CHECK-NEXT:    vse32.v v10, (a2)
+; CHECK-NEXT:    vfnmsac.vv v11, v8, v9, v0.t
+; CHECK-NEXT:    vse32.v v11, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x float>, ptr %in_0, align 4
@@ -148,12 +148,12 @@ define void @vrecpsq_f64(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vfclass.v v10, v10
 ; CHECK-NEXT:    vfclass.v v11, v11
 ; CHECK-NEXT:    vor.vv v10, v10, v11
-; CHECK-NEXT:    vmsne.vx v0, v10, a0
-; CHECK-NEXT:    vsetvli a0, zero, e64, m1, ta, ma
-; CHECK-NEXT:    vfmv.v.f v10, fa5
+; CHECK-NEXT:    vsetvli a1, zero, e64, m1, ta, ma
+; CHECK-NEXT:    vfmv.v.f v11, fa5
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
-; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
-; CHECK-NEXT:    vse64.v v10, (a2)
+; CHECK-NEXT:    vmsne.vx v0, v10, a0
+; CHECK-NEXT:    vfnmsac.vv v11, v8, v9, v0.t
+; CHECK-NEXT:    vse64.v v11, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <2 x double>, ptr %in_0, align 8

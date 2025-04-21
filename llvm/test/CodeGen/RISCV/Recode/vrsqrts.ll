@@ -11,18 +11,18 @@ define void @vrsqrts_f16(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    lui a1, %hi(.LCPI0_0)
 ; CHECK-NEXT:    flh fa5, %lo(.LCPI0_0)(a1)
 ; CHECK-NEXT:    lui a1, %hi(.LCPI0_1)
-; CHECK-NEXT:    flh fa4, %lo(.LCPI0_1)(a1)
 ; CHECK-NEXT:    vfabs.v v10, v8
 ; CHECK-NEXT:    vfabs.v v11, v9
 ; CHECK-NEXT:    vfclass.v v10, v10
 ; CHECK-NEXT:    vfclass.v v11, v11
 ; CHECK-NEXT:    vor.vv v10, v10, v11
-; CHECK-NEXT:    vmsne.vx v0, v10, a0
-; CHECK-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vfmv.v.f v10, fa5
+; CHECK-NEXT:    vsetvli a3, zero, e16, mf2, ta, ma
+; CHECK-NEXT:    vfmv.v.f v11, fa5
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
-; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
-; CHECK-NEXT:    vfmul.vf v8, v10, fa4
+; CHECK-NEXT:    vmsne.vx v0, v10, a0
+; CHECK-NEXT:    vfnmsac.vv v11, v8, v9, v0.t
+; CHECK-NEXT:    flh fa5, %lo(.LCPI0_1)(a1)
+; CHECK-NEXT:    vfmul.vf v8, v11, fa5
 ; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -46,12 +46,12 @@ define void @vrsqrts_f32(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vfclass.v v10, v10
 ; CHECK-NEXT:    vfclass.v v11, v11
 ; CHECK-NEXT:    vor.vv v10, v10, v11
+; CHECK-NEXT:    vmv.v.x v11, a1
+; CHECK-NEXT:    lui a1, 258048
 ; CHECK-NEXT:    vmsne.vx v0, v10, a0
-; CHECK-NEXT:    lui a0, 258048
-; CHECK-NEXT:    vmv.v.x v10, a1
-; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
-; CHECK-NEXT:    fmv.w.x fa5, a0
-; CHECK-NEXT:    vfmul.vf v8, v10, fa5
+; CHECK-NEXT:    vfnmsac.vv v11, v8, v9, v0.t
+; CHECK-NEXT:    fmv.w.x fa5, a1
+; CHECK-NEXT:    vfmul.vf v8, v11, fa5
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -72,18 +72,18 @@ define void @vrsqrts_f64(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    lui a1, %hi(.LCPI2_0)
 ; CHECK-NEXT:    fld fa5, %lo(.LCPI2_0)(a1)
 ; CHECK-NEXT:    lui a1, %hi(.LCPI2_1)
-; CHECK-NEXT:    fld fa4, %lo(.LCPI2_1)(a1)
 ; CHECK-NEXT:    vfabs.v v10, v8
 ; CHECK-NEXT:    vfabs.v v11, v9
 ; CHECK-NEXT:    vfclass.v v10, v10
 ; CHECK-NEXT:    vfclass.v v11, v11
 ; CHECK-NEXT:    vor.vv v10, v10, v11
-; CHECK-NEXT:    vmsne.vx v0, v10, a0
-; CHECK-NEXT:    vsetvli a0, zero, e64, m1, ta, ma
-; CHECK-NEXT:    vfmv.v.f v10, fa5
+; CHECK-NEXT:    vsetvli a3, zero, e64, m1, ta, ma
+; CHECK-NEXT:    vfmv.v.f v11, fa5
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
-; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
-; CHECK-NEXT:    vfmul.vf v8, v10, fa4
+; CHECK-NEXT:    vmsne.vx v0, v10, a0
+; CHECK-NEXT:    vfnmsac.vv v11, v8, v9, v0.t
+; CHECK-NEXT:    fld fa5, %lo(.LCPI2_1)(a1)
+; CHECK-NEXT:    vfmul.vf v8, v11, fa5
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -104,18 +104,18 @@ define void @vrsqrtsq_f16(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK-NEXT:    lui a1, %hi(.LCPI3_0)
 ; CHECK-NEXT:    flh fa5, %lo(.LCPI3_0)(a1)
 ; CHECK-NEXT:    lui a1, %hi(.LCPI3_1)
-; CHECK-NEXT:    flh fa4, %lo(.LCPI3_1)(a1)
 ; CHECK-NEXT:    vfabs.v v10, v8
 ; CHECK-NEXT:    vfabs.v v11, v9
 ; CHECK-NEXT:    vfclass.v v10, v10
 ; CHECK-NEXT:    vfclass.v v11, v11
 ; CHECK-NEXT:    vor.vv v10, v10, v11
-; CHECK-NEXT:    vmsne.vx v0, v10, a0
-; CHECK-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vfmv.v.f v10, fa5
+; CHECK-NEXT:    vsetvli a3, zero, e16, m1, ta, ma
+; CHECK-NEXT:    vfmv.v.f v11, fa5
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
-; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
-; CHECK-NEXT:    vfmul.vf v8, v10, fa4
+; CHECK-NEXT:    vmsne.vx v0, v10, a0
+; CHECK-NEXT:    vfnmsac.vv v11, v8, v9, v0.t
+; CHECK-NEXT:    flh fa5, %lo(.LCPI3_1)(a1)
+; CHECK-NEXT:    vfmul.vf v8, v11, fa5
 ; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -139,12 +139,12 @@ define void @vrsqrtsq_f32(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK-NEXT:    vfclass.v v10, v10
 ; CHECK-NEXT:    vfclass.v v11, v11
 ; CHECK-NEXT:    vor.vv v10, v10, v11
+; CHECK-NEXT:    vmv.v.x v11, a1
+; CHECK-NEXT:    lui a1, 258048
 ; CHECK-NEXT:    vmsne.vx v0, v10, a0
-; CHECK-NEXT:    lui a0, 258048
-; CHECK-NEXT:    vmv.v.x v10, a1
-; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
-; CHECK-NEXT:    fmv.w.x fa5, a0
-; CHECK-NEXT:    vfmul.vf v8, v10, fa5
+; CHECK-NEXT:    vfnmsac.vv v11, v8, v9, v0.t
+; CHECK-NEXT:    fmv.w.x fa5, a1
+; CHECK-NEXT:    vfmul.vf v8, v11, fa5
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -165,18 +165,18 @@ define void @vrsqrtsq_f64(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK-NEXT:    lui a1, %hi(.LCPI5_0)
 ; CHECK-NEXT:    fld fa5, %lo(.LCPI5_0)(a1)
 ; CHECK-NEXT:    lui a1, %hi(.LCPI5_1)
-; CHECK-NEXT:    fld fa4, %lo(.LCPI5_1)(a1)
 ; CHECK-NEXT:    vfabs.v v10, v8
 ; CHECK-NEXT:    vfabs.v v11, v9
 ; CHECK-NEXT:    vfclass.v v10, v10
 ; CHECK-NEXT:    vfclass.v v11, v11
 ; CHECK-NEXT:    vor.vv v10, v10, v11
-; CHECK-NEXT:    vmsne.vx v0, v10, a0
-; CHECK-NEXT:    vsetvli a0, zero, e64, m1, ta, ma
-; CHECK-NEXT:    vfmv.v.f v10, fa5
+; CHECK-NEXT:    vsetvli a3, zero, e64, m1, ta, ma
+; CHECK-NEXT:    vfmv.v.f v11, fa5
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
-; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
-; CHECK-NEXT:    vfmul.vf v8, v10, fa4
+; CHECK-NEXT:    vmsne.vx v0, v10, a0
+; CHECK-NEXT:    vfnmsac.vv v11, v8, v9, v0.t
+; CHECK-NEXT:    fld fa5, %lo(.LCPI5_1)(a1)
+; CHECK-NEXT:    vfmul.vf v8, v11, fa5
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:

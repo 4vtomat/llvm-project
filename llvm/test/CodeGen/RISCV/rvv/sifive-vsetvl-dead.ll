@@ -20,10 +20,10 @@ define float @blas_dot(i64 %0, ptr nocapture readonly %1, i64 %2, ptr nocapture 
 ; CHECK-NEXT:    mul a7, a5, a4
 ; CHECK-NEXT:    sub a6, a6, a5
 ; CHECK-NEXT:    slli a7, a7, 2
+; CHECK-NEXT:    add a3, a3, a7
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m8, tu, ma
 ; CHECK-NEXT:    vfmacc.vv v8, v16, v24
 ; CHECK-NEXT:    vsetvli a5, a6, e32, m8, ta, ma
-; CHECK-NEXT:    add a3, a3, a7
 ; CHECK-NEXT:    bnez a5, .LBB0_2
 ; CHECK-NEXT:  .LBB0_3:
 ; CHECK-NEXT:    vsetvli a1, a0, e32, m8, ta, ma

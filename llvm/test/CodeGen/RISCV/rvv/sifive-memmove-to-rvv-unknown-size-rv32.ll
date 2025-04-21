@@ -18,8 +18,8 @@ define void @UnKnownSize(ptr nocapture readonly %src, ptr nocapture %dst, i32 si
 ; NOALIGN-NEXT:    sub a0, a0, a3
 ; NOALIGN-NEXT:    vle8.v v8, (a0)
 ; NOALIGN-NEXT:    sub a1, a1, a3
-; NOALIGN-NEXT:    sub a2, a2, a3
 ; NOALIGN-NEXT:    vse8.v v8, (a1)
+; NOALIGN-NEXT:    sub a2, a2, a3
 ; NOALIGN-NEXT:    bnez a2, .LBB0_2
 ; NOALIGN-NEXT:    j .LBB0_4
 ; NOALIGN-NEXT:  .LBB0_3: # %memmove-forward-loop
@@ -58,8 +58,8 @@ define void @UnKnownSize(ptr nocapture readonly %src, ptr nocapture %dst, i32 si
 ; ALIGN-NEXT:    sub a0, a0, a3
 ; ALIGN-NEXT:    vle8.v v8, (a0)
 ; ALIGN-NEXT:    sub a1, a1, a3
-; ALIGN-NEXT:    sub a2, a2, a3
 ; ALIGN-NEXT:    vse8.v v8, (a1)
+; ALIGN-NEXT:    sub a2, a2, a3
 ; ALIGN-NEXT:    bnez a2, .LBB0_4
 ; ALIGN-NEXT:    j .LBB0_10
 ; ALIGN-NEXT:  .LBB0_5: # %memmove-forward-pre-loop
@@ -71,8 +71,8 @@ define void @UnKnownSize(ptr nocapture readonly %src, ptr nocapture %dst, i32 si
 ; ALIGN-NEXT:    mv a3, a2
 ; ALIGN-NEXT:  .LBB0_7: # %memmove-forward-pre-loop
 ; ALIGN-NEXT:    vsetvli a3, a3, e8, m8, ta, ma
-; ALIGN-NEXT:    vle8.v v8, (a0)
 ; ALIGN-NEXT:    sub a2, a2, a3
+; ALIGN-NEXT:    vle8.v v8, (a0)
 ; ALIGN-NEXT:    vse8.v v8, (a1)
 ; ALIGN-NEXT:    beqz a2, .LBB0_10
 ; ALIGN-NEXT:  # %bb.8:

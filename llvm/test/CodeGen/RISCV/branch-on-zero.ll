@@ -92,7 +92,6 @@ define i32 @test_lshr(i32 %v) {
 ; RV64-NEXT:    li a2, 1
 ; RV64-NEXT:  .LBB2_2: # %for.body
 ; RV64-NEXT:    # =>This Inner Loop Header: Depth=1
-<<<<<<< HEAD
 ; RV64-NEXT:    mv a3, a1
 ; RV64-NEXT:    andi a1, a1, 1
 ; RV64-NEXT:    addw a0, a0, a1
@@ -102,14 +101,6 @@ define i32 @test_lshr(i32 %v) {
 ; RV64-NEXT:    ret
 ; RV64-NEXT:  .LBB2_4:
 ; RV64-NEXT:    li a0, 0
-=======
-; RV64-NEXT:    andi a2, a0, 1
-; RV64-NEXT:    addw a1, a1, a2
-; RV64-NEXT:    srliw a0, a0, 1
-; RV64-NEXT:    bnez a0, .LBB2_2
-; RV64-NEXT:  .LBB2_3: # %for.end
-; RV64-NEXT:    mv a0, a1
->>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
 ; RV64-NEXT:    ret
 entry:
   %tobool.not4 = icmp eq i32 %v, 0

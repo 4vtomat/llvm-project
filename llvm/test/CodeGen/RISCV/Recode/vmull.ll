@@ -535,11 +535,11 @@ define void @vmlsl_n_s16(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-LABEL: vmlsl_n_s16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a1)
-; CHECK-NEXT:    vle32.v v9, (a0)
-; CHECK-NEXT:    vwmul.vx v10, v8, a2
+; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    vle16.v v9, (a1)
+; CHECK-NEXT:    vwmul.vx v10, v9, a2
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vsub.vv v8, v9, v10
+; CHECK-NEXT:    vsub.vv v8, v8, v10
 ; CHECK-NEXT:    vse32.v v8, (a3)
 ; CHECK-NEXT:    ret
 entry:
@@ -557,11 +557,11 @@ define void @vmlsl_n_s32(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-LABEL: vmlsl_n_s32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a1)
-; CHECK-NEXT:    vle64.v v9, (a0)
-; CHECK-NEXT:    vwmul.vx v10, v8, a2
+; CHECK-NEXT:    vle64.v v8, (a0)
+; CHECK-NEXT:    vle32.v v9, (a1)
+; CHECK-NEXT:    vwmul.vx v10, v9, a2
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
-; CHECK-NEXT:    vsub.vv v8, v9, v10
+; CHECK-NEXT:    vsub.vv v8, v8, v10
 ; CHECK-NEXT:    vse64.v v8, (a3)
 ; CHECK-NEXT:    ret
 entry:
@@ -579,11 +579,11 @@ define void @vmlsl_n_u16(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-LABEL: vmlsl_n_u16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a1)
-; CHECK-NEXT:    vle32.v v9, (a0)
-; CHECK-NEXT:    vwmulu.vx v10, v8, a2
+; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    vle16.v v9, (a1)
+; CHECK-NEXT:    vwmulu.vx v10, v9, a2
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vsub.vv v8, v9, v10
+; CHECK-NEXT:    vsub.vv v8, v8, v10
 ; CHECK-NEXT:    vse32.v v8, (a3)
 ; CHECK-NEXT:    ret
 entry:
@@ -601,11 +601,11 @@ define void @vmlsl_n_u32(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-LABEL: vmlsl_n_u32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a1)
-; CHECK-NEXT:    vle64.v v9, (a0)
-; CHECK-NEXT:    vwmulu.vx v10, v8, a2
+; CHECK-NEXT:    vle64.v v8, (a0)
+; CHECK-NEXT:    vle32.v v9, (a1)
+; CHECK-NEXT:    vwmulu.vx v10, v9, a2
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
-; CHECK-NEXT:    vsub.vv v8, v9, v10
+; CHECK-NEXT:    vsub.vv v8, v8, v10
 ; CHECK-NEXT:    vse64.v v8, (a3)
 ; CHECK-NEXT:    ret
 entry:
@@ -623,12 +623,12 @@ define void @vmlsl_s16(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-LABEL: vmlsl_s16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a1)
-; CHECK-NEXT:    vle16.v v9, (a2)
-; CHECK-NEXT:    vle32.v v10, (a0)
-; CHECK-NEXT:    vwmul.vv v11, v8, v9
+; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    vle16.v v9, (a1)
+; CHECK-NEXT:    vle16.v v10, (a2)
+; CHECK-NEXT:    vwmul.vv v11, v9, v10
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vsub.vv v8, v10, v11
+; CHECK-NEXT:    vsub.vv v8, v8, v11
 ; CHECK-NEXT:    vse32.v v8, (a3)
 ; CHECK-NEXT:    ret
 entry:
@@ -645,12 +645,12 @@ define void @vmlsl_s32(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-LABEL: vmlsl_s32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a1)
-; CHECK-NEXT:    vle32.v v9, (a2)
-; CHECK-NEXT:    vle64.v v10, (a0)
-; CHECK-NEXT:    vwmul.vv v11, v8, v9
+; CHECK-NEXT:    vle64.v v8, (a0)
+; CHECK-NEXT:    vle32.v v9, (a1)
+; CHECK-NEXT:    vle32.v v10, (a2)
+; CHECK-NEXT:    vwmul.vv v11, v9, v10
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
-; CHECK-NEXT:    vsub.vv v8, v10, v11
+; CHECK-NEXT:    vsub.vv v8, v8, v11
 ; CHECK-NEXT:    vse64.v v8, (a3)
 ; CHECK-NEXT:    ret
 entry:
@@ -667,12 +667,12 @@ define void @vmlsl_s8(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-LABEL: vmlsl_s8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a1)
-; CHECK-NEXT:    vle8.v v9, (a2)
-; CHECK-NEXT:    vle16.v v10, (a0)
-; CHECK-NEXT:    vwmul.vv v11, v8, v9
+; CHECK-NEXT:    vle16.v v8, (a0)
+; CHECK-NEXT:    vle8.v v9, (a1)
+; CHECK-NEXT:    vle8.v v10, (a2)
+; CHECK-NEXT:    vwmul.vv v11, v9, v10
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vsub.vv v8, v10, v11
+; CHECK-NEXT:    vsub.vv v8, v8, v11
 ; CHECK-NEXT:    vse16.v v8, (a3)
 ; CHECK-NEXT:    ret
 entry:
@@ -689,12 +689,12 @@ define void @vmlsl_u16(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-LABEL: vmlsl_u16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a1)
-; CHECK-NEXT:    vle16.v v9, (a2)
-; CHECK-NEXT:    vle32.v v10, (a0)
-; CHECK-NEXT:    vwmulu.vv v11, v8, v9
+; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    vle16.v v9, (a1)
+; CHECK-NEXT:    vle16.v v10, (a2)
+; CHECK-NEXT:    vwmulu.vv v11, v9, v10
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vsub.vv v8, v10, v11
+; CHECK-NEXT:    vsub.vv v8, v8, v11
 ; CHECK-NEXT:    vse32.v v8, (a3)
 ; CHECK-NEXT:    ret
 entry:
@@ -711,12 +711,12 @@ define void @vmlsl_u32(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-LABEL: vmlsl_u32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a1)
-; CHECK-NEXT:    vle32.v v9, (a2)
-; CHECK-NEXT:    vle64.v v10, (a0)
-; CHECK-NEXT:    vwmulu.vv v11, v8, v9
+; CHECK-NEXT:    vle64.v v8, (a0)
+; CHECK-NEXT:    vle32.v v9, (a1)
+; CHECK-NEXT:    vle32.v v10, (a2)
+; CHECK-NEXT:    vwmulu.vv v11, v9, v10
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
-; CHECK-NEXT:    vsub.vv v8, v10, v11
+; CHECK-NEXT:    vsub.vv v8, v8, v11
 ; CHECK-NEXT:    vse64.v v8, (a3)
 ; CHECK-NEXT:    ret
 entry:
@@ -733,12 +733,12 @@ define void @vmlsl_u8(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-LABEL: vmlsl_u8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a1)
-; CHECK-NEXT:    vle8.v v9, (a2)
-; CHECK-NEXT:    vle16.v v10, (a0)
-; CHECK-NEXT:    vwmulu.vv v11, v8, v9
+; CHECK-NEXT:    vle16.v v8, (a0)
+; CHECK-NEXT:    vle8.v v9, (a1)
+; CHECK-NEXT:    vle8.v v10, (a2)
+; CHECK-NEXT:    vwmulu.vv v11, v9, v10
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vsub.vv v8, v10, v11
+; CHECK-NEXT:    vsub.vv v8, v8, v11
 ; CHECK-NEXT:    vse16.v v8, (a3)
 ; CHECK-NEXT:    ret
 entry:

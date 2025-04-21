@@ -152,29 +152,6 @@ define <vscale x 32 x float> @vfptrunc_nxv32f32_nxv32f64(<vscale x 32 x double> 
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
 ; CHECK-NEXT:    csrr a1, vlenb
-<<<<<<< HEAD
-; CHECK-NEXT:    srli a3, a1, 3
-; CHECK-NEXT:    srli a5, a1, 2
-; CHECK-NEXT:    slli a6, a1, 3
-; CHECK-NEXT:    slli a4, a1, 1
-; CHECK-NEXT:    vslidedown.vx v16, v0, a5
-; CHECK-NEXT:    add a6, a0, a6
-; CHECK-NEXT:    sub a5, a2, a4
-; CHECK-NEXT:    vl8re64.v v24, (a6)
-; CHECK-NEXT:    vsetvli a6, zero, e8, mf4, ta, ma
-; CHECK-NEXT:    vslidedown.vx v0, v16, a3
-; CHECK-NEXT:    sltu a6, a2, a5
-; CHECK-NEXT:    addi a6, a6, -1
-; CHECK-NEXT:    and a5, a6, a5
-; CHECK-NEXT:    sub a6, a5, a1
-; CHECK-NEXT:    sltu a7, a5, a6
-; CHECK-NEXT:    addi a7, a7, -1
-; CHECK-NEXT:    and a6, a7, a6
-; CHECK-NEXT:    vsetvli zero, a6, e32, m4, ta, ma
-; CHECK-NEXT:    vfncvt.f.f.w v20, v24, v0.t
-; CHECK-NEXT:    vl8re64.v v24, (a0)
-; CHECK-NEXT:    bltu a5, a1, .LBB8_2
-=======
 ; CHECK-NEXT:    srli a4, a1, 2
 ; CHECK-NEXT:    slli a5, a1, 3
 ; CHECK-NEXT:    slli a3, a1, 1
@@ -196,23 +173,15 @@ define <vscale x 32 x float> @vfptrunc_nxv32f32_nxv32f64(<vscale x 32 x double> 
 ; CHECK-NEXT:    vfncvt.f.f.w v20, v24, v0.t
 ; CHECK-NEXT:    vl8re64.v v24, (a0)
 ; CHECK-NEXT:    bltu a4, a1, .LBB8_2
->>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    mv a4, a1
 ; CHECK-NEXT:  .LBB8_2:
 ; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vslidedown.vx v6, v7, a3
-; CHECK-NEXT:    vsetvli zero, a5, e32, m4, ta, ma
-; CHECK-NEXT:    vfncvt.f.f.w v16, v24, v0.t
-; CHECK-NEXT:    bltu a2, a4, .LBB8_4
-=======
 ; CHECK-NEXT:    vslidedown.vx v6, v7, a5
 ; CHECK-NEXT:    vsetvli zero, a4, e32, m4, ta, ma
 ; CHECK-NEXT:    vfncvt.f.f.w v16, v24, v0.t
 ; CHECK-NEXT:    bltu a2, a3, .LBB8_4
->>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    mv a2, a3
 ; CHECK-NEXT:  .LBB8_4:

@@ -11,8 +11,8 @@ define i32 @ne_small_pos(i32 %in0) minsize {
 ; RV32IFDC-LABEL: ne_small_pos:
 ; RV32IFDC:       # %bb.0:
 ; RV32IFDC-NEXT:    c.mv a1, a0
-; RV32IFDC-NEXT:    c.li a2, 20
 ; RV32IFDC-NEXT:    addi a0, zero, -99
+; RV32IFDC-NEXT:    c.li a2, 20
 ; RV32IFDC-NEXT:    bne a1, a2, .LBB0_2
 ; RV32IFDC-NEXT:  # %bb.1:
 ; RV32IFDC-NEXT:    addi a0, zero, 42
@@ -22,8 +22,8 @@ define i32 @ne_small_pos(i32 %in0) minsize {
 ; RV32IFD-LABEL: ne_small_pos:
 ; RV32IFD:       # %bb.0:
 ; RV32IFD-NEXT:    addi a1, a0, 0
-; RV32IFD-NEXT:    addi a2, zero, 20
 ; RV32IFD-NEXT:    addi a0, zero, -99
+; RV32IFD-NEXT:    addi a2, zero, 20
 ; RV32IFD-NEXT:    bne a1, a2, .LBB0_2
 ; RV32IFD-NEXT:  # %bb.1:
 ; RV32IFD-NEXT:    addi a0, zero, 42
@@ -39,8 +39,8 @@ define i32 @ne_small_neg(i32 %in0) minsize {
 ; RV32IFDC-LABEL: ne_small_neg:
 ; RV32IFDC:       # %bb.0:
 ; RV32IFDC-NEXT:    c.mv a1, a0
-; RV32IFDC-NEXT:    c.li a2, -20
 ; RV32IFDC-NEXT:    addi a0, zero, -99
+; RV32IFDC-NEXT:    c.li a2, -20
 ; RV32IFDC-NEXT:    bne a1, a2, .LBB1_2
 ; RV32IFDC-NEXT:  # %bb.1:
 ; RV32IFDC-NEXT:    addi a0, zero, 42
@@ -50,8 +50,8 @@ define i32 @ne_small_neg(i32 %in0) minsize {
 ; RV32IFD-LABEL: ne_small_neg:
 ; RV32IFD:       # %bb.0:
 ; RV32IFD-NEXT:    addi a1, a0, 0
-; RV32IFD-NEXT:    addi a2, zero, -20
 ; RV32IFD-NEXT:    addi a0, zero, -99
+; RV32IFD-NEXT:    addi a2, zero, -20
 ; RV32IFD-NEXT:    bne a1, a2, .LBB1_2
 ; RV32IFD-NEXT:  # %bb.1:
 ; RV32IFD-NEXT:    addi a0, zero, 42
@@ -67,8 +67,8 @@ define i32 @ne_small_edge_pos(i32 %in0) minsize {
 ; RV32IFDC-LABEL: ne_small_edge_pos:
 ; RV32IFDC:       # %bb.0:
 ; RV32IFDC-NEXT:    c.mv a1, a0
-; RV32IFDC-NEXT:    c.li a2, 31
 ; RV32IFDC-NEXT:    addi a0, zero, -99
+; RV32IFDC-NEXT:    c.li a2, 31
 ; RV32IFDC-NEXT:    bne a1, a2, .LBB2_2
 ; RV32IFDC-NEXT:  # %bb.1:
 ; RV32IFDC-NEXT:    addi a0, zero, 42
@@ -78,8 +78,8 @@ define i32 @ne_small_edge_pos(i32 %in0) minsize {
 ; RV32IFD-LABEL: ne_small_edge_pos:
 ; RV32IFD:       # %bb.0:
 ; RV32IFD-NEXT:    addi a1, a0, 0
-; RV32IFD-NEXT:    addi a2, zero, 31
 ; RV32IFD-NEXT:    addi a0, zero, -99
+; RV32IFD-NEXT:    addi a2, zero, 31
 ; RV32IFD-NEXT:    bne a1, a2, .LBB2_2
 ; RV32IFD-NEXT:  # %bb.1:
 ; RV32IFD-NEXT:    addi a0, zero, 42
@@ -95,8 +95,8 @@ define i32 @ne_small_edge_neg(i32 %in0) minsize {
 ; RV32IFDC-LABEL: ne_small_edge_neg:
 ; RV32IFDC:       # %bb.0:
 ; RV32IFDC-NEXT:    c.mv a1, a0
-; RV32IFDC-NEXT:    c.li a2, -32
 ; RV32IFDC-NEXT:    addi a0, zero, -99
+; RV32IFDC-NEXT:    c.li a2, -32
 ; RV32IFDC-NEXT:    bne a1, a2, .LBB3_2
 ; RV32IFDC-NEXT:  # %bb.1:
 ; RV32IFDC-NEXT:    addi a0, zero, 42
@@ -106,8 +106,8 @@ define i32 @ne_small_edge_neg(i32 %in0) minsize {
 ; RV32IFD-LABEL: ne_small_edge_neg:
 ; RV32IFD:       # %bb.0:
 ; RV32IFD-NEXT:    addi a1, a0, 0
-; RV32IFD-NEXT:    addi a2, zero, -32
 ; RV32IFD-NEXT:    addi a0, zero, -99
+; RV32IFD-NEXT:    addi a2, zero, -32
 ; RV32IFD-NEXT:    bne a1, a2, .LBB3_2
 ; RV32IFD-NEXT:  # %bb.1:
 ; RV32IFD-NEXT:    addi a0, zero, 42
@@ -134,8 +134,8 @@ define i32 @ne_medium_ledge_pos(i32 %in0) minsize {
 ; RV32IFD-LABEL: ne_medium_ledge_pos:
 ; RV32IFD:       # %bb.0:
 ; RV32IFD-NEXT:    addi a1, a0, 0
-; RV32IFD-NEXT:    addi a2, zero, 33
 ; RV32IFD-NEXT:    addi a0, zero, -99
+; RV32IFD-NEXT:    addi a2, zero, 33
 ; RV32IFD-NEXT:    bne a1, a2, .LBB4_2
 ; RV32IFD-NEXT:  # %bb.1:
 ; RV32IFD-NEXT:    addi a0, zero, 42
@@ -162,8 +162,8 @@ define i32 @ne_medium_ledge_neg(i32 %in0) minsize {
 ; RV32IFD-LABEL: ne_medium_ledge_neg:
 ; RV32IFD:       # %bb.0:
 ; RV32IFD-NEXT:    addi a1, a0, 0
-; RV32IFD-NEXT:    addi a2, zero, -33
 ; RV32IFD-NEXT:    addi a0, zero, -99
+; RV32IFD-NEXT:    addi a2, zero, -33
 ; RV32IFD-NEXT:    bne a1, a2, .LBB5_2
 ; RV32IFD-NEXT:  # %bb.1:
 ; RV32IFD-NEXT:    addi a0, zero, 42
@@ -190,8 +190,8 @@ define i32 @ne_medium_pos(i32 %in0) minsize {
 ; RV32IFD-LABEL: ne_medium_pos:
 ; RV32IFD:       # %bb.0:
 ; RV32IFD-NEXT:    addi a1, a0, 0
-; RV32IFD-NEXT:    addi a2, zero, 63
 ; RV32IFD-NEXT:    addi a0, zero, -99
+; RV32IFD-NEXT:    addi a2, zero, 63
 ; RV32IFD-NEXT:    bne a1, a2, .LBB6_2
 ; RV32IFD-NEXT:  # %bb.1:
 ; RV32IFD-NEXT:    addi a0, zero, 42
@@ -218,8 +218,8 @@ define i32 @ne_medium_neg(i32 %in0) minsize {
 ; RV32IFD-LABEL: ne_medium_neg:
 ; RV32IFD:       # %bb.0:
 ; RV32IFD-NEXT:    addi a1, a0, 0
-; RV32IFD-NEXT:    addi a2, zero, -63
 ; RV32IFD-NEXT:    addi a0, zero, -99
+; RV32IFD-NEXT:    addi a2, zero, -63
 ; RV32IFD-NEXT:    bne a1, a2, .LBB7_2
 ; RV32IFD-NEXT:  # %bb.1:
 ; RV32IFD-NEXT:    addi a0, zero, 42
@@ -246,8 +246,8 @@ define i32 @ne_medium_bedge_pos(i32 %in0) minsize {
 ; RV32IFD-LABEL: ne_medium_bedge_pos:
 ; RV32IFD:       # %bb.0:
 ; RV32IFD-NEXT:    addi a1, a0, 0
-; RV32IFD-NEXT:    addi a2, zero, 2047
 ; RV32IFD-NEXT:    addi a0, zero, -99
+; RV32IFD-NEXT:    addi a2, zero, 2047
 ; RV32IFD-NEXT:    bne a1, a2, .LBB8_2
 ; RV32IFD-NEXT:  # %bb.1:
 ; RV32IFD-NEXT:    addi a0, zero, 42
@@ -274,8 +274,8 @@ define i32 @ne_medium_bedge_neg(i32 %in0) minsize {
 ; RV32IFD-LABEL: ne_medium_bedge_neg:
 ; RV32IFD:       # %bb.0:
 ; RV32IFD-NEXT:    addi a1, a0, 0
-; RV32IFD-NEXT:    addi a2, zero, -2047
 ; RV32IFD-NEXT:    addi a0, zero, -99
+; RV32IFD-NEXT:    addi a2, zero, -2047
 ; RV32IFD-NEXT:    bne a1, a2, .LBB9_2
 ; RV32IFD-NEXT:  # %bb.1:
 ; RV32IFD-NEXT:    addi a0, zero, 42
@@ -321,8 +321,8 @@ define i32 @ne_big_ledge_neg(i32 %in0) minsize {
 ; RV32IFDC-LABEL: ne_big_ledge_neg:
 ; RV32IFDC:       # %bb.0:
 ; RV32IFDC-NEXT:    c.mv a1, a0
-; RV32IFDC-NEXT:    addi a2, zero, -2048
 ; RV32IFDC-NEXT:    addi a0, zero, -99
+; RV32IFDC-NEXT:    addi a2, zero, -2048
 ; RV32IFDC-NEXT:    bne a1, a2, .LBB11_2
 ; RV32IFDC-NEXT:  # %bb.1:
 ; RV32IFDC-NEXT:    addi a0, zero, 42
@@ -332,8 +332,8 @@ define i32 @ne_big_ledge_neg(i32 %in0) minsize {
 ; RV32IFD-LABEL: ne_big_ledge_neg:
 ; RV32IFD:       # %bb.0:
 ; RV32IFD-NEXT:    addi a1, a0, 0
-; RV32IFD-NEXT:    addi a2, zero, -2048
 ; RV32IFD-NEXT:    addi a0, zero, -99
+; RV32IFD-NEXT:    addi a2, zero, -2048
 ; RV32IFD-NEXT:    bne a1, a2, .LBB11_2
 ; RV32IFD-NEXT:  # %bb.1:
 ; RV32IFD-NEXT:    addi a0, zero, 42
@@ -352,8 +352,8 @@ define i32 @eq_small_pos(i32 %in0) minsize {
 ; RV32IFDC-LABEL: eq_small_pos:
 ; RV32IFDC:       # %bb.0:
 ; RV32IFDC-NEXT:    c.mv a1, a0
-; RV32IFDC-NEXT:    c.li a2, 20
 ; RV32IFDC-NEXT:    addi a0, zero, -99
+; RV32IFDC-NEXT:    c.li a2, 20
 ; RV32IFDC-NEXT:    beq a1, a2, .LBB12_2
 ; RV32IFDC-NEXT:  # %bb.1:
 ; RV32IFDC-NEXT:    addi a0, zero, 42
@@ -363,8 +363,8 @@ define i32 @eq_small_pos(i32 %in0) minsize {
 ; RV32IFD-LABEL: eq_small_pos:
 ; RV32IFD:       # %bb.0:
 ; RV32IFD-NEXT:    addi a1, a0, 0
-; RV32IFD-NEXT:    addi a2, zero, 20
 ; RV32IFD-NEXT:    addi a0, zero, -99
+; RV32IFD-NEXT:    addi a2, zero, 20
 ; RV32IFD-NEXT:    beq a1, a2, .LBB12_2
 ; RV32IFD-NEXT:  # %bb.1:
 ; RV32IFD-NEXT:    addi a0, zero, 42
@@ -380,8 +380,8 @@ define i32 @eq_small_neg(i32 %in0) minsize {
 ; RV32IFDC-LABEL: eq_small_neg:
 ; RV32IFDC:       # %bb.0:
 ; RV32IFDC-NEXT:    c.mv a1, a0
-; RV32IFDC-NEXT:    c.li a2, -20
 ; RV32IFDC-NEXT:    addi a0, zero, -99
+; RV32IFDC-NEXT:    c.li a2, -20
 ; RV32IFDC-NEXT:    beq a1, a2, .LBB13_2
 ; RV32IFDC-NEXT:  # %bb.1:
 ; RV32IFDC-NEXT:    addi a0, zero, 42
@@ -391,8 +391,8 @@ define i32 @eq_small_neg(i32 %in0) minsize {
 ; RV32IFD-LABEL: eq_small_neg:
 ; RV32IFD:       # %bb.0:
 ; RV32IFD-NEXT:    addi a1, a0, 0
-; RV32IFD-NEXT:    addi a2, zero, -20
 ; RV32IFD-NEXT:    addi a0, zero, -99
+; RV32IFD-NEXT:    addi a2, zero, -20
 ; RV32IFD-NEXT:    beq a1, a2, .LBB13_2
 ; RV32IFD-NEXT:  # %bb.1:
 ; RV32IFD-NEXT:    addi a0, zero, 42
@@ -408,8 +408,8 @@ define i32 @eq_small_edge_pos(i32 %in0) minsize {
 ; RV32IFDC-LABEL: eq_small_edge_pos:
 ; RV32IFDC:       # %bb.0:
 ; RV32IFDC-NEXT:    c.mv a1, a0
-; RV32IFDC-NEXT:    c.li a2, 31
 ; RV32IFDC-NEXT:    addi a0, zero, -99
+; RV32IFDC-NEXT:    c.li a2, 31
 ; RV32IFDC-NEXT:    beq a1, a2, .LBB14_2
 ; RV32IFDC-NEXT:  # %bb.1:
 ; RV32IFDC-NEXT:    addi a0, zero, 42
@@ -419,8 +419,8 @@ define i32 @eq_small_edge_pos(i32 %in0) minsize {
 ; RV32IFD-LABEL: eq_small_edge_pos:
 ; RV32IFD:       # %bb.0:
 ; RV32IFD-NEXT:    addi a1, a0, 0
-; RV32IFD-NEXT:    addi a2, zero, 31
 ; RV32IFD-NEXT:    addi a0, zero, -99
+; RV32IFD-NEXT:    addi a2, zero, 31
 ; RV32IFD-NEXT:    beq a1, a2, .LBB14_2
 ; RV32IFD-NEXT:  # %bb.1:
 ; RV32IFD-NEXT:    addi a0, zero, 42
@@ -436,8 +436,8 @@ define i32 @eq_small_edge_neg(i32 %in0) minsize {
 ; RV32IFDC-LABEL: eq_small_edge_neg:
 ; RV32IFDC:       # %bb.0:
 ; RV32IFDC-NEXT:    c.mv a1, a0
-; RV32IFDC-NEXT:    c.li a2, -32
 ; RV32IFDC-NEXT:    addi a0, zero, -99
+; RV32IFDC-NEXT:    c.li a2, -32
 ; RV32IFDC-NEXT:    beq a1, a2, .LBB15_2
 ; RV32IFDC-NEXT:  # %bb.1:
 ; RV32IFDC-NEXT:    addi a0, zero, 42
@@ -447,8 +447,8 @@ define i32 @eq_small_edge_neg(i32 %in0) minsize {
 ; RV32IFD-LABEL: eq_small_edge_neg:
 ; RV32IFD:       # %bb.0:
 ; RV32IFD-NEXT:    addi a1, a0, 0
-; RV32IFD-NEXT:    addi a2, zero, -32
 ; RV32IFD-NEXT:    addi a0, zero, -99
+; RV32IFD-NEXT:    addi a2, zero, -32
 ; RV32IFD-NEXT:    beq a1, a2, .LBB15_2
 ; RV32IFD-NEXT:  # %bb.1:
 ; RV32IFD-NEXT:    addi a0, zero, 42
@@ -475,8 +475,8 @@ define i32 @eq_medium_ledge_pos(i32 %in0) minsize {
 ; RV32IFD-LABEL: eq_medium_ledge_pos:
 ; RV32IFD:       # %bb.0:
 ; RV32IFD-NEXT:    addi a1, a0, 0
-; RV32IFD-NEXT:    addi a2, zero, 33
 ; RV32IFD-NEXT:    addi a0, zero, -99
+; RV32IFD-NEXT:    addi a2, zero, 33
 ; RV32IFD-NEXT:    beq a1, a2, .LBB16_2
 ; RV32IFD-NEXT:  # %bb.1:
 ; RV32IFD-NEXT:    addi a0, zero, 42
@@ -503,8 +503,8 @@ define i32 @eq_medium_ledge_neg(i32 %in0) minsize {
 ; RV32IFD-LABEL: eq_medium_ledge_neg:
 ; RV32IFD:       # %bb.0:
 ; RV32IFD-NEXT:    addi a1, a0, 0
-; RV32IFD-NEXT:    addi a2, zero, -33
 ; RV32IFD-NEXT:    addi a0, zero, -99
+; RV32IFD-NEXT:    addi a2, zero, -33
 ; RV32IFD-NEXT:    beq a1, a2, .LBB17_2
 ; RV32IFD-NEXT:  # %bb.1:
 ; RV32IFD-NEXT:    addi a0, zero, 42
@@ -531,8 +531,8 @@ define i32 @eq_medium_pos(i32 %in0) minsize {
 ; RV32IFD-LABEL: eq_medium_pos:
 ; RV32IFD:       # %bb.0:
 ; RV32IFD-NEXT:    addi a1, a0, 0
-; RV32IFD-NEXT:    addi a2, zero, 63
 ; RV32IFD-NEXT:    addi a0, zero, -99
+; RV32IFD-NEXT:    addi a2, zero, 63
 ; RV32IFD-NEXT:    beq a1, a2, .LBB18_2
 ; RV32IFD-NEXT:  # %bb.1:
 ; RV32IFD-NEXT:    addi a0, zero, 42
@@ -559,8 +559,8 @@ define i32 @eq_medium_neg(i32 %in0) minsize {
 ; RV32IFD-LABEL: eq_medium_neg:
 ; RV32IFD:       # %bb.0:
 ; RV32IFD-NEXT:    addi a1, a0, 0
-; RV32IFD-NEXT:    addi a2, zero, -63
 ; RV32IFD-NEXT:    addi a0, zero, -99
+; RV32IFD-NEXT:    addi a2, zero, -63
 ; RV32IFD-NEXT:    beq a1, a2, .LBB19_2
 ; RV32IFD-NEXT:  # %bb.1:
 ; RV32IFD-NEXT:    addi a0, zero, 42
@@ -587,8 +587,8 @@ define i32 @eq_medium_bedge_pos(i32 %in0) minsize {
 ; RV32IFD-LABEL: eq_medium_bedge_pos:
 ; RV32IFD:       # %bb.0:
 ; RV32IFD-NEXT:    addi a1, a0, 0
-; RV32IFD-NEXT:    addi a2, zero, 2047
 ; RV32IFD-NEXT:    addi a0, zero, -99
+; RV32IFD-NEXT:    addi a2, zero, 2047
 ; RV32IFD-NEXT:    beq a1, a2, .LBB20_2
 ; RV32IFD-NEXT:  # %bb.1:
 ; RV32IFD-NEXT:    addi a0, zero, 42
@@ -615,8 +615,8 @@ define i32 @eq_medium_bedge_neg(i32 %in0) minsize {
 ; RV32IFD-LABEL: eq_medium_bedge_neg:
 ; RV32IFD:       # %bb.0:
 ; RV32IFD-NEXT:    addi a1, a0, 0
-; RV32IFD-NEXT:    addi a2, zero, -2047
 ; RV32IFD-NEXT:    addi a0, zero, -99
+; RV32IFD-NEXT:    addi a2, zero, -2047
 ; RV32IFD-NEXT:    beq a1, a2, .LBB21_2
 ; RV32IFD-NEXT:  # %bb.1:
 ; RV32IFD-NEXT:    addi a0, zero, 42
@@ -662,8 +662,8 @@ define i32 @eq_big_ledge_neg(i32 %in0) minsize {
 ; RV32IFDC-LABEL: eq_big_ledge_neg:
 ; RV32IFDC:       # %bb.0:
 ; RV32IFDC-NEXT:    c.mv a1, a0
-; RV32IFDC-NEXT:    addi a2, zero, -2048
 ; RV32IFDC-NEXT:    addi a0, zero, -99
+; RV32IFDC-NEXT:    addi a2, zero, -2048
 ; RV32IFDC-NEXT:    beq a1, a2, .LBB23_2
 ; RV32IFDC-NEXT:  # %bb.1:
 ; RV32IFDC-NEXT:    addi a0, zero, 42
@@ -673,8 +673,8 @@ define i32 @eq_big_ledge_neg(i32 %in0) minsize {
 ; RV32IFD-LABEL: eq_big_ledge_neg:
 ; RV32IFD:       # %bb.0:
 ; RV32IFD-NEXT:    addi a1, a0, 0
-; RV32IFD-NEXT:    addi a2, zero, -2048
 ; RV32IFD-NEXT:    addi a0, zero, -99
+; RV32IFD-NEXT:    addi a2, zero, -2048
 ; RV32IFD-NEXT:    beq a1, a2, .LBB23_2
 ; RV32IFD-NEXT:  # %bb.1:
 ; RV32IFD-NEXT:    addi a0, zero, 42

@@ -53,14 +53,14 @@ define void @value_defined_in_loop1_used_for_trip_counts(i32 %start, i1 %c, ptr 
 ; CHECK-NEXT:    [[GEP_DST:%.*]] = getelementptr i8, ptr [[DST]], i64 [[ZEXT8]]
 ; CHECK-NEXT:    store i16 0, ptr [[GEP_DST]], align 2
 ; CHECK-NEXT:    [[EC_2:%.*]] = icmp ult i64 [[IV_2]], [[IV_1_LCSSA]]
-; CHECK-NEXT:    br i1 [[EC_2]], label %[[LOOP_2]], label %[[EXIT_1_LOOPEXIT:.*]]
+; CHECK-NEXT:    br i1 [[EC_2]], label %[[LOOP_2]], label %[[EXIT_1_LOOPEXIT:.*]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       [[LOOP_3]]:
 ; CHECK-NEXT:    [[IV_4:%.*]] = phi i64 [ [[IV_4_NEXT:%.*]], %[[LOOP_3]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[GEP_DST_2:%.*]] = getelementptr i8, ptr [[DST]], i64 [[IV_4]]
 ; CHECK-NEXT:    store i8 0, ptr [[GEP_DST_2]], align 1
 ; CHECK-NEXT:    [[IV_4_NEXT]] = add i64 [[IV_4]], 1
 ; CHECK-NEXT:    [[EC_3:%.*]] = icmp ult i64 [[IV_4_NEXT]], [[IV_1_LCSSA]]
-; CHECK-NEXT:    br i1 [[EC_3]], label %[[LOOP_3]], label %[[EXIT_1_LOOPEXIT1]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EC_3]], label %[[LOOP_3]], label %[[EXIT_1_LOOPEXIT1]], !llvm.loop [[LOOP1:![0-9]+]]
 ; CHECK:       [[EXIT_1_LOOPEXIT]]:
 ; CHECK-NEXT:    br label %[[EXIT_1:.*]]
 ; CHECK:       [[EXIT_1_LOOPEXIT1]]:
@@ -104,7 +104,8 @@ exit.1:
   ret void
 }
 ;.
-; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
-; CHECK: [[META1]] = !{!"llvm.loop.unroll.runtime.disable"}
-; CHECK: [[META2]] = !{!"llvm.loop.isvectorized", i32 1}
+; CHECK: [[LOOP0]] = distinct !{[[LOOP0]]}
+; CHECK: [[LOOP1]] = distinct !{[[LOOP1]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
+; CHECK: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK: [[META3]] = !{!"llvm.loop.isvectorized", i32 1}
 ;.

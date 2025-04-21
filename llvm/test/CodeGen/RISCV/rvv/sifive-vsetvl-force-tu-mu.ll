@@ -36,9 +36,16 @@ declare void @llvm.riscv.vse.nxv1f64.i64(
 define void @test_vsetvl_avl(<vscale x 1 x double> %value, ptr %v, <vscale x 1 x i1> %mask, i64 signext %avl) nounwind {
 ; CHECK-O0-LABEL: test_vsetvl_avl:
 ; CHECK-O0:       # %bb.0:
+; CHECK-O0-NEXT:    addi sp, sp, -16
+; CHECK-O0-NEXT:    csrr a2, vlenb
+; CHECK-O0-NEXT:    sub sp, sp, a2
+; CHECK-O0-NEXT:    addi a2, sp, 16
+; CHECK-O0-NEXT:    vs1r.v v0, (a2) # Unknown-size Folded Spill
 ; CHECK-O0-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-O0-NEXT:    vmv1r.v v9, v8
 ; CHECK-O0-NEXT:    vsetvli a1, a1, e64, m1, ta, ma
+; CHECK-O0-NEXT:    addi a2, sp, 16
+; CHECK-O0-NEXT:    vl1r.v v0, (a2) # Unknown-size Folded Reload
 ; CHECK-O0-NEXT:    vsetvli zero, a1, e64, m1, tu, mu
 ; CHECK-O0-NEXT:    vle64.v v9, (a0), v0.t
 ; CHECK-O0-NEXT:    # implicit-def: $v8
@@ -48,6 +55,9 @@ define void @test_vsetvl_avl(<vscale x 1 x double> %value, ptr %v, <vscale x 1 x
 ; CHECK-O0-NEXT:    addi a0, a0, %lo(scratch)
 ; CHECK-O0-NEXT:    vsetvli zero, a1, e64, m1, ta, ma
 ; CHECK-O0-NEXT:    vse64.v v8, (a0)
+; CHECK-O0-NEXT:    csrr a0, vlenb
+; CHECK-O0-NEXT:    add sp, sp, a0
+; CHECK-O0-NEXT:    addi sp, sp, 16
 ; CHECK-O0-NEXT:    ret
 ;
 ; CHECK-O2-LABEL: test_vsetvl_avl:

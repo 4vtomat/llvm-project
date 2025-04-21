@@ -17,22 +17,22 @@ define <vscale x 4 x i1> @test_vp_xor_icmp_combine(<vscale x 4 x i64> %x, <vscal
 define <vscale x 4 x i1> @test_vp_xor_icmp_combine_not_allones(<vscale x 4 x i64> %x, <vscale x 4 x i64> %y, <vscale x 4 x i1> %mask, i32 zeroext %evl) {
 ; CHECK-LABEL: test_vp_xor_icmp_combine_not_allones:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
-; CHECK-NEXT:    vmv1r.v v16, v0
-; CHECK-NEXT:    vmv.v.i v17, 0
 ; CHECK-NEXT:    vsetivli zero, 3, e8, mf2, ta, ma
-; CHECK-NEXT:    vmv.v.i v18, 1
-; CHECK-NEXT:    vmv1r.v v19, v17
+; CHECK-NEXT:    vmv1r.v v16, v0
+; CHECK-NEXT:    vmv.v.i v17, 1
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
+; CHECK-NEXT:    vmv.v.i v18, 0
+; CHECK-NEXT:    vmv1r.v v19, v18
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
-; CHECK-NEXT:    vslideup.vi v19, v18, 1
+; CHECK-NEXT:    vslideup.vi v19, v17, 1
 ; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vand.vi v19, v19, 1
 ; CHECK-NEXT:    vmsne.vi v0, v19, 0
-; CHECK-NEXT:    vmerge.vim v17, v17, 1, v0
+; CHECK-NEXT:    vmerge.vim v18, v18, 1, v0
 ; CHECK-NEXT:    vsetivli zero, 3, e8, mf2, tu, ma
-; CHECK-NEXT:    vslideup.vi v17, v18, 2
+; CHECK-NEXT:    vslideup.vi v18, v17, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, ma
-; CHECK-NEXT:    vand.vi v17, v17, 1
+; CHECK-NEXT:    vand.vi v17, v18, 1
 ; CHECK-NEXT:    vmsne.vi v17, v17, 0
 ; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
@@ -76,22 +76,22 @@ define <vscale x 4 x i1> @test_vp_xor_fcmp_combine(<vscale x 4 x double> %x, <vs
 define <vscale x 4 x i1> @test_vp_xor_fcmp_combine_not_allones(<vscale x 4 x double> %x, <vscale x 4 x double> %y, <vscale x 4 x i1> %mask, i32 zeroext %evl) {
 ; CHECK-LABEL: test_vp_xor_fcmp_combine_not_allones:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
-; CHECK-NEXT:    vmv1r.v v16, v0
-; CHECK-NEXT:    vmv.v.i v17, 0
 ; CHECK-NEXT:    vsetivli zero, 3, e8, mf2, ta, ma
-; CHECK-NEXT:    vmv.v.i v18, 1
-; CHECK-NEXT:    vmv1r.v v19, v17
+; CHECK-NEXT:    vmv1r.v v16, v0
+; CHECK-NEXT:    vmv.v.i v17, 1
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
+; CHECK-NEXT:    vmv.v.i v18, 0
+; CHECK-NEXT:    vmv1r.v v19, v18
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
-; CHECK-NEXT:    vslideup.vi v19, v18, 1
+; CHECK-NEXT:    vslideup.vi v19, v17, 1
 ; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vand.vi v19, v19, 1
 ; CHECK-NEXT:    vmsne.vi v0, v19, 0
-; CHECK-NEXT:    vmerge.vim v17, v17, 1, v0
+; CHECK-NEXT:    vmerge.vim v18, v18, 1, v0
 ; CHECK-NEXT:    vsetivli zero, 3, e8, mf2, tu, ma
-; CHECK-NEXT:    vslideup.vi v17, v18, 2
+; CHECK-NEXT:    vslideup.vi v18, v17, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, ma
-; CHECK-NEXT:    vand.vi v17, v17, 1
+; CHECK-NEXT:    vand.vi v17, v18, 1
 ; CHECK-NEXT:    vmsne.vi v17, v17, 0
 ; CHECK-NEXT:    vmv1r.v v0, v16
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, ma

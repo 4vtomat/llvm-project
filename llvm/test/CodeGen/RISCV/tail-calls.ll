@@ -37,11 +37,7 @@ define void @caller_extern(ptr %src) optsize {
 ;
 ; CHECK-LARGE-ZICFILP-LABEL: caller_extern:
 ; CHECK-LARGE-ZICFILP:       # %bb.0: # %entry
-<<<<<<< HEAD
-=======
-; CHECK-LARGE-ZICFILP-NEXT:    lpad 0
 ; CHECK-LARGE-ZICFILP-NEXT:    mv a1, a0
->>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
 ; CHECK-LARGE-ZICFILP-NEXT:  .Lpcrel_hi1:
 ; CHECK-LARGE-ZICFILP-NEXT:    auipc a0, %pcrel_hi(.LCPI1_0)
 ; CHECK-LARGE-ZICFILP-NEXT:  .Lpcrel_hi2:
@@ -68,11 +64,7 @@ define void @caller_extern_pgso(ptr %src) !prof !14 {
 ;
 ; CHECK-LARGE-ZICFILP-LABEL: caller_extern_pgso:
 ; CHECK-LARGE-ZICFILP:       # %bb.0: # %entry
-<<<<<<< HEAD
-=======
-; CHECK-LARGE-ZICFILP-NEXT:    lpad 0
 ; CHECK-LARGE-ZICFILP-NEXT:    mv a1, a0
->>>>>>> 3e223e3a202c046b6553aac91d79b6abd089ee8d
 ; CHECK-LARGE-ZICFILP-NEXT:  .Lpcrel_hi3:
 ; CHECK-LARGE-ZICFILP-NEXT:    auipc a0, %pcrel_hi(.LCPI2_0)
 ; CHECK-LARGE-ZICFILP-NEXT:  .Lpcrel_hi4:

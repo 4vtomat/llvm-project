@@ -6,10 +6,10 @@ declare <2 x half> @llvm.vp.fdiv.v2f16(<2 x half>, <2 x half>, <2 x i1>, i32)
 define <2 x half> @recip_v2f16(<2 x half> %a, <2 x i1> %m, i32 zeroext %evl) #0 {
 ; CHECK-LABEL: recip_v2f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI0_0)
-; CHECK-NEXT:    flh fa5, %lo(.LCPI0_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
 ; CHECK-NEXT:    vfrec7.v v10, v8
+; CHECK-NEXT:    lui a1, %hi(.LCPI0_0)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI0_0)(a1)
 ; CHECK-NEXT:    vfmul.vf v11, v10, fa5, v0.t
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v12, fa5
@@ -29,10 +29,10 @@ declare <4 x half> @llvm.vp.fdiv.v4f16(<4 x half>, <4 x half>, <4 x i1>, i32)
 define <4 x half> @recip_v4f16(<4 x half> %a, <4 x i1> %m, i32 zeroext %evl) #0 {
 ; CHECK-LABEL: recip_v4f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI1_0)
-; CHECK-NEXT:    flh fa5, %lo(.LCPI1_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    vfrec7.v v10, v8
+; CHECK-NEXT:    lui a1, %hi(.LCPI1_0)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI1_0)(a1)
 ; CHECK-NEXT:    vfmul.vf v11, v10, fa5, v0.t
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v12, fa5
@@ -52,10 +52,10 @@ declare <8 x half> @llvm.vp.fdiv.v8f16(<8 x half>, <8 x half>, <8 x i1>, i32)
 define <8 x half> @recip_v8f16(<8 x half> %a, <8 x i1> %m, i32 zeroext %evl) #0 {
 ; CHECK-LABEL: recip_v8f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI2_0)
-; CHECK-NEXT:    flh fa5, %lo(.LCPI2_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    vfrec7.v v10, v8
+; CHECK-NEXT:    lui a1, %hi(.LCPI2_0)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI2_0)(a1)
 ; CHECK-NEXT:    vfmul.vf v11, v10, fa5, v0.t
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v12, fa5
@@ -75,10 +75,10 @@ declare <2 x double> @llvm.vp.fdiv.v2f64(<2 x double>, <2 x double>, <2 x i1>, i
 define <2 x double> @recip_v2f64(<2 x double> %a, <2 x i1> %m, i32 zeroext %evl) #0 {
 ; CHECK-LABEL: recip_v2f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI3_0)
-; CHECK-NEXT:    fld fa5, %lo(.LCPI3_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vfrec7.v v9, v8
+; CHECK-NEXT:    lui a1, %hi(.LCPI3_0)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI3_0)(a1)
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v10, fa5
 ; CHECK-NEXT:    vmv1r.v v11, v9
@@ -104,10 +104,10 @@ declare <4 x double> @llvm.vp.fdiv.v4f64(<4 x double>, <4 x double>, <4 x i1>, i
 define <4 x double> @recip_v4f64(<4 x double> %a, <4 x i1> %m, i32 zeroext %evl) #0 {
 ; CHECK-LABEL: recip_v4f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI4_0)
-; CHECK-NEXT:    fld fa5, %lo(.LCPI4_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    vfrec7.v v10, v8
+; CHECK-NEXT:    lui a1, %hi(.LCPI4_0)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI4_0)(a1)
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v12, fa5
 ; CHECK-NEXT:    vmv2r.v v14, v10
@@ -133,10 +133,10 @@ declare <8 x double> @llvm.vp.fdiv.v8f64(<8 x double>, <8 x double>, <8 x i1>, i
 define <8 x double> @recip_v8f64(<8 x double> %a, <8 x i1> %m, i32 zeroext %evl) #0 {
 ; CHECK-LABEL: recip_v8f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI5_0)
-; CHECK-NEXT:    fld fa5, %lo(.LCPI5_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    vfrec7.v v12, v8
+; CHECK-NEXT:    lui a1, %hi(.LCPI5_0)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI5_0)(a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v16, fa5
 ; CHECK-NEXT:    vmv4r.v v20, v12
@@ -161,10 +161,10 @@ define <8 x double> @recip_v8f64(<8 x double> %a, <8 x i1> %m, i32 zeroext %evl)
 define <2 x half> @recip_zero_steps_v2f16(<2 x half> %a, <2 x i1> %m, i32 zeroext %evl) #1 {
 ; CHECK-LABEL: recip_zero_steps_v2f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI6_0)
-; CHECK-NEXT:    flh fa5, %lo(.LCPI6_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
+; CHECK-NEXT:    lui a0, %hi(.LCPI6_0)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI6_0)(a0)
 ; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <2 x half> poison, half 1.000000e+00, i32 0
@@ -176,10 +176,10 @@ define <2 x half> @recip_zero_steps_v2f16(<2 x half> %a, <2 x i1> %m, i32 zeroex
 define <4 x half> @recip_zero_steps_v4f16(<4 x half> %a, <4 x i1> %m, i32 zeroext %evl) #1 {
 ; CHECK-LABEL: recip_zero_steps_v4f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI7_0)
-; CHECK-NEXT:    flh fa5, %lo(.LCPI7_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
+; CHECK-NEXT:    lui a0, %hi(.LCPI7_0)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI7_0)(a0)
 ; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <4 x half> poison, half 1.000000e+00, i32 0
@@ -191,10 +191,10 @@ define <4 x half> @recip_zero_steps_v4f16(<4 x half> %a, <4 x i1> %m, i32 zeroex
 define <8 x half> @recip_zero_steps_v8f16(<8 x half> %a, <8 x i1> %m, i32 zeroext %evl) #1 {
 ; CHECK-LABEL: recip_zero_steps_v8f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI8_0)
-; CHECK-NEXT:    flh fa5, %lo(.LCPI8_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
+; CHECK-NEXT:    lui a0, %hi(.LCPI8_0)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI8_0)(a0)
 ; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <8 x half> poison, half 1.000000e+00, i32 0
@@ -206,10 +206,10 @@ define <8 x half> @recip_zero_steps_v8f16(<8 x half> %a, <8 x i1> %m, i32 zeroex
 define <2 x double> @recip_zero_steps_v2f64(<2 x double> %a, <2 x i1> %m, i32 zeroext %evl) #1 {
 ; CHECK-LABEL: recip_zero_steps_v2f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI9_0)
-; CHECK-NEXT:    fld fa5, %lo(.LCPI9_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
+; CHECK-NEXT:    lui a0, %hi(.LCPI9_0)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI9_0)(a0)
 ; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <2 x double> poison, double 1.000000e+00, i32 0
@@ -221,10 +221,10 @@ define <2 x double> @recip_zero_steps_v2f64(<2 x double> %a, <2 x i1> %m, i32 ze
 define <4 x double> @recip_zero_steps_v4f64(<4 x double> %a, <4 x i1> %m, i32 zeroext %evl) #1 {
 ; CHECK-LABEL: recip_zero_steps_v4f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI10_0)
-; CHECK-NEXT:    fld fa5, %lo(.LCPI10_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
+; CHECK-NEXT:    lui a0, %hi(.LCPI10_0)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI10_0)(a0)
 ; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <4 x double> poison, double 1.000000e+00, i32 0
@@ -236,10 +236,10 @@ define <4 x double> @recip_zero_steps_v4f64(<4 x double> %a, <4 x i1> %m, i32 ze
 define <8 x double> @recip_zero_steps_v8f64(<8 x double> %a, <8 x i1> %m, i32 zeroext %evl) #1 {
 ; CHECK-LABEL: recip_zero_steps_v8f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI11_0)
-; CHECK-NEXT:    fld fa5, %lo(.LCPI11_0)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    vfrec7.v v8, v8
+; CHECK-NEXT:    lui a0, %hi(.LCPI11_0)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI11_0)(a0)
 ; CHECK-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <8 x double> poison, double 1.000000e+00, i32 0

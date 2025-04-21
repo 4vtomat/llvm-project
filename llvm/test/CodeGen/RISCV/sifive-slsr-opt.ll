@@ -37,10 +37,10 @@ define void @_Z8rvv_slsrPKammPammm(i8* nocapture  readonly %A, i64  %M, i64  %K,
 ; CHECK-NEXT:    vle8.v v8, (t1), v0.t
 ; CHECK-NEXT:    vle8.v v10, (t2), v0.t
 ; CHECK-NEXT:    vle8.v v12, (t3), v0.t
-; CHECK-NEXT:    addi t5, t5, -1
 ; CHECK-NEXT:    vmv2r.v v14, v12
 ; CHECK-NEXT:    vsetvli zero, a5, e64, m2, ta, ma
 ; CHECK-NEXT:    vsseg4e64.v v8, (t4)
+; CHECK-NEXT:    addi t5, t5, -1
 ; CHECK-NEXT:    bnez t5, .LBB0_5
 ; CHECK-NEXT:  # %bb.6: # %for.cond2.for.cond.cleanup4_crit_edge.split.us69
 ; CHECK-NEXT:    # in Loop: Header=BB0_4 Depth=1

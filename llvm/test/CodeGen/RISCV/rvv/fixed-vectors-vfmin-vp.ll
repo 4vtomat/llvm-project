@@ -434,8 +434,8 @@ define <32 x double> @vfmin_vv_v32f64_unmasked(<32 x double> %va, <32 x double> 
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi a1, a0, 128
 ; CHECK-NEXT:    vsetivli zero, 16, e64, m8, ta, ma
-; CHECK-NEXT:    vle64.v v0, (a0)
 ; CHECK-NEXT:    vle64.v v24, (a1)
+; CHECK-NEXT:    vle64.v v0, (a0)
 ; CHECK-NEXT:    li a1, 16
 ; CHECK-NEXT:    mv a0, a2
 ; CHECK-NEXT:    bltu a2, a1, .LBB27_2

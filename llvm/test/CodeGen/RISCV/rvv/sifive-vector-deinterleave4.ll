@@ -28,10 +28,11 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16
 ; CHECK-NEXT:    slli a1, a1, 1
 ; CHECK-NEXT:    sub a0, a0, a1
 ; CHECK-NEXT:    addi a1, sp, 16
-; CHECK-NEXT:    vslidedown.vx v8, v8, a0
-; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
+; CHECK-NEXT:    vsetvli a2, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmerge.vim v20, v10, 1, v0
-; CHECK-NEXT:    vmv1r.v v0, v8
+; CHECK-NEXT:    vsetvli a2, zero, e8, m1, ta, ma
+; CHECK-NEXT:    vslidedown.vx v0, v8, a0
+; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmerge.vim v22, v10, 1, v0
 ; CHECK-NEXT:    vs8r.v v16, (a1)
 ; CHECK-NEXT:    vlseg4e8.v v8, (a1)

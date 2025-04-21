@@ -59,8 +59,8 @@ define void @KnownSize2(ptr nocapture %dst, i8 %val) {
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    vsetvli a1, a2, e8, m4, ta, ma
 ; CHECK-NEXT:    vse8.v v8, (a0)
-; CHECK-NEXT:    sub a2, a2, a1
 ; CHECK-NEXT:    add a0, a0, a1
+; CHECK-NEXT:    sub a2, a2, a1
 ; CHECK-NEXT:    bnez a2, .LBB2_1
 ; CHECK-NEXT:  # %bb.2: # %memset-post-loop
 ; CHECK-NEXT:    ret
