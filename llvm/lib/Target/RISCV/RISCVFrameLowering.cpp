@@ -1848,12 +1848,17 @@ bool RISCVFrameLowering::assignCalleeSavedSpillSlots(
   }
 
   if (RVFI->isPushable(MF)) {
+#ifdef SIFIVE_CUSTOMIZATION
+    if (int64_t PushSize = RVFI->getRVPushStackSize())
+      MFI.CreateFixedSpillStackObject(PushSize, -PushSize);
+#else
     // Allocate a fixed object that covers all the registers that are pushed.
     if (unsigned PushedRegs = RVFI->getRVPushRegs()) {
       int64_t PushedRegsBytes =
           static_cast<int64_t>(PushedRegs) * (STI.getXLen() / 8);
       MFI.CreateFixedSpillStackObject(PushedRegsBytes, -PushedRegsBytes);
     }
+#endif // SIFIVE_CUSTOMIZATION
   } else if (int LibCallRegs = getLibCallID(MF, CSI) + 1) {
     // Allocate a fixed object that covers all of the stack allocated by the
     // libcall.
