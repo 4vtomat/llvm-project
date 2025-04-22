@@ -3629,6 +3629,7 @@ LoopVectorizationCostModel::getVectorIntrinsicCost(CallInst *CI,
 
 #if SIFIVE_CUSTOMIZATION
 void InnerLoopVectorizer::fixCSALiveOuts(VPTransformState &State, VPlan &Plan) {
+  BasicBlock *MiddleBlock = State.CFG.VPBB2IRBB[Plan.getMiddleBlock()];
   for (const auto &CSA: Plan.getCSAStates()) {
     VPCSADataUpdateRecipe *VPDataUpdate = CSA.second->getDataUpdate();
     assert(VPDataUpdate &&
@@ -3643,7 +3644,7 @@ void InnerLoopVectorizer::fixCSALiveOuts(VPTransformState &State, VPlan &Plan) {
           Phi && Phi->getParent() == OrigLoop->getUniqueLatchExitBlock())
         ToFix.insert(Phi);
     for (PHINode *Phi : ToFix)
-      Phi->addIncoming(ExtractedScalar, LoopMiddleBlock);
+      Phi->addIncoming(ExtractedScalar, MiddleBlock);
   }
 }
 
@@ -3710,10 +3711,11 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State) {
       EEL->addBasicBlockToLoop(VectorEarlyExitBB, *LI);
   }
 
+  BasicBlock *MiddleBlock = State.CFG.VPBB2IRBB[State.Plan->getMiddleBlock()];
   if (!Cost->requiresScalarEpilogue(VF.isVector())) {
     for (const auto &Entry : Legal->getInductionVars())
       fixupIVUsers(Entry.first, Entry.second,
-                   getOrCreateVectorTripCount(nullptr), LoopMiddleBlock, State);
+                   getOrCreateVectorTripCount(nullptr), MiddleBlock, State);
     fixCSALiveOuts(State, Plan);
   }
 #endif // SIFIVE_CUSTOMIZATION
