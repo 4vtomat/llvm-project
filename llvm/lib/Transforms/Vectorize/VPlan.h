@@ -3226,10 +3226,6 @@ struct VPWidenLoadRecipe final : public VPWidenMemoryRecipe, public VPValue {
                             Reverse, DL),
 #endif // SIFIVE_CUSTOMIZATION
         VPValue(this, &Load) {
-#if SIFIVE_CUSTOMIZATION
-    if (Speculative)
-      new VPValue(nullptr, this); // newVL
-#endif // SIFIVE_CUSTOMIZATION
     setMask(Mask);
   }
 

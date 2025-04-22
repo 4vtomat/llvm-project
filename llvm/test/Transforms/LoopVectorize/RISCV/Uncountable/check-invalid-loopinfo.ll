@@ -47,10 +47,10 @@ define i64 @x86_Convert(ptr %data, i64 %size, i32 %ip, ptr %state, i32 %encoding
 ; CHECK-NEXT:    [[DOTREASS:%.*]] = mul i64 [[TMP9]], 1
 ; CHECK-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[DOTREASS]]
 ; CHECK-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], -4
-; CHECK-NEXT:    br i1 [[TMP14]], label %[[VEC_UNCOUNTABLE_MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP14]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       [[VECTOR_EARLY_EXIT]]:
 ; CHECK-NEXT:    br label %[[FOR_BODY_LR_PH_LOOPEXIT]]
-; CHECK:       [[VEC_UNCOUNTABLE_MIDDLE_BLOCK]]:
+; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br label %[[FOR_END128:.*]]
 ; CHECK:       [[VEC_UNCOUNTABLE_SCALAR_PH]]:
 ; CHECK-NEXT:    br label %[[FOR_BODY:.*]]

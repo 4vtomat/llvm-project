@@ -80,7 +80,7 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; CHECK-NEXT:    [[TMP32:%.*]] = mul i64 [[TMP31]], 4
 ; CHECK-NEXT:    [[IND_EARLY_ESCAPE:%.*]] = getelementptr i8, ptr [[FIRST]], i64 [[TMP32]]
 ; CHECK-NEXT:    br label [[RETURN_LOOPEXIT:%.*]]
-; CHECK:       vec.uncountable.middle.block:
+; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[RETURN_LOOPEXIT]]
 ; CHECK:       vec.uncountable.scalar.ph:
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
@@ -168,7 +168,7 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; P470-NEXT:    [[TMP32:%.*]] = mul i64 [[TMP31]], 4
 ; P470-NEXT:    [[IND_EARLY_ESCAPE:%.*]] = getelementptr i8, ptr [[FIRST]], i64 [[TMP32]]
 ; P470-NEXT:    br label [[RETURN_LOOPEXIT:%.*]]
-; P470:       vec.uncountable.middle.block:
+; P470:       middle.block:
 ; P470-NEXT:    br label [[RETURN_LOOPEXIT]]
 ; P470:       vec.uncountable.scalar.ph:
 ; P470-NEXT:    br label [[FOR_BODY:%.*]]
@@ -397,10 +397,10 @@ define i64 @ham(ptr %arg, i64 %arg1, i32 %arg2, ptr %arg3, i32 %arg4) {
 ; CHECK-NEXT:    [[TMP20:%.*]] = mul i64 1, [[TMP19]]
 ; CHECK-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP20]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP1]]
-; CHECK-NEXT:    br i1 [[TMP21]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP21]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; CHECK:       vector.early.exit:
 ; CHECK-NEXT:    br label [[BB10_LOOPEXIT]]
-; CHECK:       vec.uncountable.middle.block:
+; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[BB109:%.*]]
 ; CHECK:       vec.uncountable.scalar.ph:
 ; CHECK-NEXT:    br label [[BB13:%.*]]
@@ -467,10 +467,10 @@ define i64 @ham(ptr %arg, i64 %arg1, i32 %arg2, ptr %arg3, i32 %arg4) {
 ; P470-NEXT:    [[TMP20:%.*]] = mul i64 1, [[TMP19]]
 ; P470-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP20]]
 ; P470-NEXT:    [[TMP21:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP1]]
-; P470-NEXT:    br i1 [[TMP21]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
+; P470-NEXT:    br i1 [[TMP21]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; P470:       vector.early.exit:
 ; P470-NEXT:    br label [[BB10_LOOPEXIT]]
-; P470:       vec.uncountable.middle.block:
+; P470:       middle.block:
 ; P470-NEXT:    br label [[BB109:%.*]]
 ; P470:       vec.uncountable.scalar.ph:
 ; P470-NEXT:    br label [[BB13:%.*]]

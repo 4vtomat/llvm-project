@@ -50,7 +50,7 @@ define void @foo(ptr %arg1, i64 %arg2) {
 ; CHECK-NEXT:    [[DOTREASS:%.*]] = mul i64 [[TMP16]], 1
 ; CHECK-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[DOTREASS]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP2]]
-; CHECK-NEXT:    br i1 [[TMP21]], label %[[VEC_UNCOUNTABLE_MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP21]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       [[VECTOR_EARLY_EXIT]]:
 ; CHECK-NEXT:    [[INDEX_LCSSA:%.*]] = phi i64 [ [[INDEX]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[DOTLCSSA:%.*]] = phi i32 [ [[TMP19]], %[[VECTOR_BODY]] ]
@@ -58,7 +58,7 @@ define void @foo(ptr %arg1, i64 %arg2) {
 ; CHECK-NEXT:    [[TMP23:%.*]] = add i64 [[TMP22]], [[INDEX_LCSSA]]
 ; CHECK-NEXT:    [[IND_EARLY_ESCAPE:%.*]] = getelementptr i8, ptr [[ARG1]], i64 [[TMP23]]
 ; CHECK-NEXT:    br label %[[EXIT:.*]]
-; CHECK:       [[VEC_UNCOUNTABLE_MIDDLE_BLOCK]]:
+; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br label %[[EXIT]]
 ; CHECK:       [[VEC_UNCOUNTABLE_SCALAR_PH]]:
 ; CHECK-NEXT:    br label %[[LOOP:.*]]
@@ -75,7 +75,7 @@ define void @foo(ptr %arg1, i64 %arg2) {
 ; CHECK-NEXT:    [[PHI2_PH:%.*]] = phi ptr [ [[PHI1]], %[[LOOP]] ], [ [[GEP2]], %[[LOOP_NEXT]] ]
 ; CHECK-NEXT:    br label %[[EXIT]]
 ; CHECK:       [[EXIT]]:
-; CHECK-NEXT:    [[PHI2:%.*]] = phi ptr [ [[IND_EARLY_ESCAPE]], %[[VECTOR_EARLY_EXIT]] ], [ [[TMP4]], %[[VEC_UNCOUNTABLE_MIDDLE_BLOCK]] ], [ [[PHI2_PH]], %[[EXIT_LOOPEXIT]] ]
+; CHECK-NEXT:    [[PHI2:%.*]] = phi ptr [ [[IND_EARLY_ESCAPE]], %[[VECTOR_EARLY_EXIT]] ], [ [[TMP4]], %[[MIDDLE_BLOCK]] ], [ [[PHI2_PH]], %[[EXIT_LOOPEXIT]] ]
 ; CHECK-NEXT:    ret void
 ;
 entry:

@@ -42,7 +42,7 @@ define i64 @strlen_i8(ptr %start) {
 ; DEFAULT-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; DEFAULT-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
-; DEFAULT:       vec.uncountable.middle.block:
+; DEFAULT:       middle.block:
 ; DEFAULT-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; DEFAULT-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; DEFAULT-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
@@ -81,7 +81,7 @@ define i64 @strlen_i8(ptr %start) {
 ; ON-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; ON-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
-; ON:       vec.uncountable.middle.block:
+; ON:       middle.block:
 ; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; ON-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; ON-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
@@ -152,7 +152,7 @@ define i64 @strlen_i8(ptr %start) {
 ; stress-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; stress-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
-; stress:       vec.uncountable.middle.block:
+; stress:       middle.block:
 ; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; stress-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; stress-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
@@ -207,7 +207,7 @@ define i64 @strlen_i8(ptr %start) {
 ; IF0-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; IF0-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
-; IF0:       vec.uncountable.middle.block:
+; IF0:       middle.block:
 ; IF0-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; IF0-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; IF0-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
@@ -246,7 +246,7 @@ define i64 @strlen_i8(ptr %start) {
 ; IF1-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; IF1-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
-; IF1:       vec.uncountable.middle.block:
+; IF1:       middle.block:
 ; IF1-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; IF1-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; IF1-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
@@ -285,7 +285,7 @@ define i64 @strlen_i8(ptr %start) {
 ; IF2-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; IF2-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
-; IF2:       vec.uncountable.middle.block:
+; IF2:       middle.block:
 ; IF2-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; IF2-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; IF2-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
@@ -344,7 +344,7 @@ define i64 @strlen_i16(ptr %start) {
 ; DEFAULT-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; DEFAULT-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
-; DEFAULT:       vec.uncountable.middle.block:
+; DEFAULT:       middle.block:
 ; DEFAULT-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; DEFAULT-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; DEFAULT-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 2
@@ -386,7 +386,7 @@ define i64 @strlen_i16(ptr %start) {
 ; ON-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; ON-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
-; ON:       vec.uncountable.middle.block:
+; ON:       middle.block:
 ; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; ON-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; ON-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 2
@@ -462,7 +462,7 @@ define i64 @strlen_i16(ptr %start) {
 ; stress-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; stress-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
-; stress:       vec.uncountable.middle.block:
+; stress:       middle.block:
 ; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; stress-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; stress-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 2
@@ -521,7 +521,7 @@ define i64 @strlen_i16(ptr %start) {
 ; IF0-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; IF0-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
-; IF0:       vec.uncountable.middle.block:
+; IF0:       middle.block:
 ; IF0-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; IF0-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; IF0-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 2
@@ -563,7 +563,7 @@ define i64 @strlen_i16(ptr %start) {
 ; IF1-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; IF1-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
-; IF1:       vec.uncountable.middle.block:
+; IF1:       middle.block:
 ; IF1-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; IF1-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; IF1-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 2
@@ -605,7 +605,7 @@ define i64 @strlen_i16(ptr %start) {
 ; IF2-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; IF2-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
-; IF2:       vec.uncountable.middle.block:
+; IF2:       middle.block:
 ; IF2-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; IF2-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; IF2-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 2
@@ -667,7 +667,7 @@ define i64 @strlen_i32(ptr %start) {
 ; DEFAULT-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; DEFAULT-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
-; DEFAULT:       vec.uncountable.middle.block:
+; DEFAULT:       middle.block:
 ; DEFAULT-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; DEFAULT-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; DEFAULT-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 4
@@ -709,7 +709,7 @@ define i64 @strlen_i32(ptr %start) {
 ; ON-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; ON-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
-; ON:       vec.uncountable.middle.block:
+; ON:       middle.block:
 ; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; ON-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; ON-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 4
@@ -785,7 +785,7 @@ define i64 @strlen_i32(ptr %start) {
 ; stress-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; stress-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
-; stress:       vec.uncountable.middle.block:
+; stress:       middle.block:
 ; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; stress-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; stress-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 4
@@ -844,7 +844,7 @@ define i64 @strlen_i32(ptr %start) {
 ; IF0-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; IF0-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
-; IF0:       vec.uncountable.middle.block:
+; IF0:       middle.block:
 ; IF0-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; IF0-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; IF0-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 4
@@ -886,7 +886,7 @@ define i64 @strlen_i32(ptr %start) {
 ; IF1-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; IF1-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
-; IF1:       vec.uncountable.middle.block:
+; IF1:       middle.block:
 ; IF1-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; IF1-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; IF1-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 4
@@ -928,7 +928,7 @@ define i64 @strlen_i32(ptr %start) {
 ; IF2-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; IF2-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
-; IF2:       vec.uncountable.middle.block:
+; IF2:       middle.block:
 ; IF2-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; IF2-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; IF2-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 4
@@ -1164,7 +1164,7 @@ define i64 @SingleBlock0(ptr %start) {
 ; DEFAULT-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; DEFAULT-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
-; DEFAULT:       vec.uncountable.middle.block:
+; DEFAULT:       middle.block:
 ; DEFAULT-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; DEFAULT-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; DEFAULT-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
@@ -1205,7 +1205,7 @@ define i64 @SingleBlock0(ptr %start) {
 ; ON-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; ON-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
-; ON:       vec.uncountable.middle.block:
+; ON:       middle.block:
 ; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; ON-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; ON-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
@@ -1280,7 +1280,7 @@ define i64 @SingleBlock0(ptr %start) {
 ; stress-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; stress-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
-; stress:       vec.uncountable.middle.block:
+; stress:       middle.block:
 ; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; stress-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; stress-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
@@ -1338,7 +1338,7 @@ define i64 @SingleBlock0(ptr %start) {
 ; IF0-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; IF0-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
-; IF0:       vec.uncountable.middle.block:
+; IF0:       middle.block:
 ; IF0-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; IF0-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; IF0-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
@@ -1379,7 +1379,7 @@ define i64 @SingleBlock0(ptr %start) {
 ; IF1-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; IF1-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
-; IF1:       vec.uncountable.middle.block:
+; IF1:       middle.block:
 ; IF1-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; IF1-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; IF1-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
@@ -1420,7 +1420,7 @@ define i64 @SingleBlock0(ptr %start) {
 ; IF2-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; IF2-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
-; IF2:       vec.uncountable.middle.block:
+; IF2:       middle.block:
 ; IF2-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; IF2-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; IF2-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
@@ -2016,7 +2016,7 @@ define i64 @SingleBlock4(ptr %start) {
 ; DEFAULT-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP18]]
 ; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP12]], [[EVL_BASED_IV]]
 ; DEFAULT-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
-; DEFAULT:       vec.uncountable.middle.block:
+; DEFAULT:       middle.block:
 ; DEFAULT-NEXT:    [[TMP8:%.*]] = add i32 [[TMP6]], 1
 ; DEFAULT-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP8]] to i64
 ; DEFAULT-NEXT:    [[TMP10:%.*]] = add i64 [[INDEX]], [[TMP9]]
@@ -2069,7 +2069,7 @@ define i64 @SingleBlock4(ptr %start) {
 ; ON-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP18]]
 ; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP12]], [[EVL_BASED_IV]]
 ; ON-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
-; ON:       vec.uncountable.middle.block:
+; ON:       middle.block:
 ; ON-NEXT:    [[TMP8:%.*]] = add i32 [[TMP6]], 1
 ; ON-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP8]] to i64
 ; ON-NEXT:    [[TMP10:%.*]] = add i64 [[INDEX]], [[TMP9]]
@@ -2154,7 +2154,7 @@ define i64 @SingleBlock4(ptr %start) {
 ; stress-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP18]]
 ; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP12]], [[EVL_BASED_IV]]
 ; stress-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
-; stress:       vec.uncountable.middle.block:
+; stress:       middle.block:
 ; stress-NEXT:    [[TMP8:%.*]] = add i32 [[TMP6]], 1
 ; stress-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP8]] to i64
 ; stress-NEXT:    [[TMP10:%.*]] = add i64 [[INDEX]], [[TMP9]]
@@ -2223,7 +2223,7 @@ define i64 @SingleBlock4(ptr %start) {
 ; IF0-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP18]]
 ; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP12]], [[EVL_BASED_IV]]
 ; IF0-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
-; IF0:       vec.uncountable.middle.block:
+; IF0:       middle.block:
 ; IF0-NEXT:    [[TMP8:%.*]] = add i32 [[TMP6]], 1
 ; IF0-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP8]] to i64
 ; IF0-NEXT:    [[TMP10:%.*]] = add i64 [[INDEX]], [[TMP9]]
@@ -2276,7 +2276,7 @@ define i64 @SingleBlock4(ptr %start) {
 ; IF1-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP18]]
 ; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP12]], [[EVL_BASED_IV]]
 ; IF1-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
-; IF1:       vec.uncountable.middle.block:
+; IF1:       middle.block:
 ; IF1-NEXT:    [[TMP8:%.*]] = add i32 [[TMP6]], 1
 ; IF1-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP8]] to i64
 ; IF1-NEXT:    [[TMP10:%.*]] = add i64 [[INDEX]], [[TMP9]]
@@ -2329,7 +2329,7 @@ define i64 @SingleBlock4(ptr %start) {
 ; IF2-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP18]]
 ; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP12]], [[EVL_BASED_IV]]
 ; IF2-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
-; IF2:       vec.uncountable.middle.block:
+; IF2:       middle.block:
 ; IF2-NEXT:    [[TMP8:%.*]] = add i32 [[TMP6]], 1
 ; IF2-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP8]] to i64
 ; IF2-NEXT:    [[TMP10:%.*]] = add i64 [[INDEX]], [[TMP9]]
@@ -2389,7 +2389,7 @@ define i64 @SingleBlock5(ptr %start) {
 ; DEFAULT-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; DEFAULT-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
-; DEFAULT:       vec.uncountable.middle.block:
+; DEFAULT:       middle.block:
 ; DEFAULT-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; DEFAULT-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; DEFAULT-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
@@ -2428,7 +2428,7 @@ define i64 @SingleBlock5(ptr %start) {
 ; ON-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; ON-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
-; ON:       vec.uncountable.middle.block:
+; ON:       middle.block:
 ; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; ON-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; ON-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
@@ -2499,7 +2499,7 @@ define i64 @SingleBlock5(ptr %start) {
 ; stress-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; stress-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
-; stress:       vec.uncountable.middle.block:
+; stress:       middle.block:
 ; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; stress-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; stress-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
@@ -2554,7 +2554,7 @@ define i64 @SingleBlock5(ptr %start) {
 ; IF0-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; IF0-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
-; IF0:       vec.uncountable.middle.block:
+; IF0:       middle.block:
 ; IF0-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; IF0-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; IF0-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
@@ -2593,7 +2593,7 @@ define i64 @SingleBlock5(ptr %start) {
 ; IF1-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; IF1-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
-; IF1:       vec.uncountable.middle.block:
+; IF1:       middle.block:
 ; IF1-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; IF1-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; IF1-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
@@ -2632,7 +2632,7 @@ define i64 @SingleBlock5(ptr %start) {
 ; IF2-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; IF2-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
-; IF2:       vec.uncountable.middle.block:
+; IF2:       middle.block:
 ; IF2-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; IF2-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; IF2-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
@@ -3154,7 +3154,7 @@ define i64 @SingleBlock9(ptr %start) {
 ; DEFAULT-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; DEFAULT-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
-; DEFAULT:       vec.uncountable.middle.block:
+; DEFAULT:       middle.block:
 ; DEFAULT-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; DEFAULT-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; DEFAULT-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
@@ -3195,7 +3195,7 @@ define i64 @SingleBlock9(ptr %start) {
 ; ON-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; ON-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
-; ON:       vec.uncountable.middle.block:
+; ON:       middle.block:
 ; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; ON-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; ON-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
@@ -3270,7 +3270,7 @@ define i64 @SingleBlock9(ptr %start) {
 ; stress-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; stress-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
-; stress:       vec.uncountable.middle.block:
+; stress:       middle.block:
 ; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; stress-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; stress-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
@@ -3328,7 +3328,7 @@ define i64 @SingleBlock9(ptr %start) {
 ; IF0-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; IF0-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
-; IF0:       vec.uncountable.middle.block:
+; IF0:       middle.block:
 ; IF0-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; IF0-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; IF0-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
@@ -3369,7 +3369,7 @@ define i64 @SingleBlock9(ptr %start) {
 ; IF1-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; IF1-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
-; IF1:       vec.uncountable.middle.block:
+; IF1:       middle.block:
 ; IF1-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; IF1-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; IF1-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
@@ -3410,7 +3410,7 @@ define i64 @SingleBlock9(ptr %start) {
 ; IF2-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; IF2-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
-; IF2:       vec.uncountable.middle.block:
+; IF2:       middle.block:
 ; IF2-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; IF2-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; IF2-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
@@ -3607,7 +3607,7 @@ define ptr @SingleBlock11(ptr %s) {
 ; DEFAULT-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; DEFAULT-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
-; DEFAULT:       vec.uncountable.middle.block:
+; DEFAULT:       middle.block:
 ; DEFAULT-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; DEFAULT-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; DEFAULT-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[S]], i64 [[TMP9]]
@@ -3644,7 +3644,7 @@ define ptr @SingleBlock11(ptr %s) {
 ; ON-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; ON-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
-; ON:       vec.uncountable.middle.block:
+; ON:       middle.block:
 ; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; ON-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; ON-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[S]], i64 [[TMP9]]
@@ -3707,7 +3707,7 @@ define ptr @SingleBlock11(ptr %s) {
 ; stress-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; stress-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
-; stress:       vec.uncountable.middle.block:
+; stress:       middle.block:
 ; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; stress-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; stress-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[S]], i64 [[TMP9]]
@@ -3757,7 +3757,7 @@ define ptr @SingleBlock11(ptr %s) {
 ; IF0-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; IF0-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
-; IF0:       vec.uncountable.middle.block:
+; IF0:       middle.block:
 ; IF0-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; IF0-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; IF0-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[S]], i64 [[TMP9]]
@@ -3794,7 +3794,7 @@ define ptr @SingleBlock11(ptr %s) {
 ; IF1-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; IF1-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
-; IF1:       vec.uncountable.middle.block:
+; IF1:       middle.block:
 ; IF1-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; IF1-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; IF1-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[S]], i64 [[TMP9]]
@@ -3831,7 +3831,7 @@ define ptr @SingleBlock11(ptr %s) {
 ; IF2-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; IF2-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
-; IF2:       vec.uncountable.middle.block:
+; IF2:       middle.block:
 ; IF2-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; IF2-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; IF2-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[S]], i64 [[TMP9]]
@@ -5079,7 +5079,7 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; DEFAULT-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; DEFAULT-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
-; DEFAULT:       vec.uncountable.middle.block:
+; DEFAULT:       middle.block:
 ; DEFAULT-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; DEFAULT-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; DEFAULT-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[SRC]], i64 [[TMP9]]
@@ -5122,7 +5122,7 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; ON-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; ON-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
-; ON:       vec.uncountable.middle.block:
+; ON:       middle.block:
 ; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; ON-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; ON-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[SRC]], i64 [[TMP9]]
@@ -5195,7 +5195,7 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; stress-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; stress-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
-; stress:       vec.uncountable.middle.block:
+; stress:       middle.block:
 ; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; stress-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; stress-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[SRC]], i64 [[TMP9]]
@@ -5253,7 +5253,7 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; IF0-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; IF0-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
-; IF0:       vec.uncountable.middle.block:
+; IF0:       middle.block:
 ; IF0-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; IF0-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; IF0-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[SRC]], i64 [[TMP9]]
@@ -5296,7 +5296,7 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; IF1-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; IF1-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
-; IF1:       vec.uncountable.middle.block:
+; IF1:       middle.block:
 ; IF1-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; IF1-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; IF1-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[SRC]], i64 [[TMP9]]
@@ -5339,7 +5339,7 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; IF2-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; IF2-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
-; IF2:       vec.uncountable.middle.block:
+; IF2:       middle.block:
 ; IF2-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
 ; IF2-NEXT:    [[TMP9:%.*]] = add i64 [[INDEX]], [[TMP8]]
 ; IF2-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[SRC]], i64 [[TMP9]]

@@ -12131,33 +12131,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
       R.eraseFromParent();
     }
 
-#if SIFIVE_CUSTOMIZATION
-    if (HCFGBuilder.getIRBBForVPB(VPBB) == CouldNotComputeExitingBB) {
-      // TODO: Handle loop-invariant condition
-      auto *BI = cast<BranchInst>(CouldNotComputeExitingBB->getTerminator());
-      bool NeedsInvert = OrigLoop->contains(BI->getSuccessor(0));
-      VPValue *ExitMask = VPDataDepExitCond->getVPSingleValue();
-      if (NeedsInvert)
-        ExitMask = Builder.createNot(ExitMask);
-      auto *VPCond = new VPInstruction(VPInstruction::ExitingCond, {ExitMask},
-                                       BI->getDebugLoc(), "exitcond");
-      VPBB->appendRecipe(cast<VPInstruction>(VPCond));
-      VPValue *ScalarExitCond = VPCond;
-      auto *NewBR =
-          new VPInstruction(VPInstruction::BranchOnCond, {ScalarExitCond});
-      // The branch recipe belongs to latch block if there is no early exiting.
-      if (EarlyExitingBB) {
-        RecipeBuilder.setRecipe(cast<BranchInst>(CouldNotComputeExitingBB->getTerminator()), NewBR);
-        VPBB->appendRecipe(NewBR);
-
-        // FIXME: Add EarlyExitVPBB later
-      } else {
-        VPBasicBlock *EB = Plan->getVectorLoopRegion()->getExitingBasicBlock();
-        EB->appendRecipe(NewBR);
-      }
-    }
-#endif // SIFIVE_CUSTOMIZATION
-
     // Flatten the CFG in the loop. Masks for blocks have already been generated
     // and added to recipes as needed. To do so, first disconnect VPBB from its
     // successors. Then connect VPBB to the previously visited VPBB.
@@ -12166,6 +12139,34 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     if (PrevVPBB)
       VPBlockUtils::connectBlocks(PrevVPBB, VPBB);
     PrevVPBB = VPBB;
+
+#if SIFIVE_CUSTOMIZATION
+    if (HCFGBuilder.getIRBBForVPB(VPBB) == CouldNotComputeExitingBB) {
+      // TODO: Handle loop-invariant condition
+      auto *BI = cast<BranchInst>(CouldNotComputeExitingBB->getTerminator());
+      bool NeedsInvert = OrigLoop->contains(BI->getSuccessor(0));
+      VPValue *ExitMask = VPDataDepExitCond->getVPSingleValue();
+      if (NeedsInvert) {
+        ExitMask = new VPInstruction(VPInstruction::Not, {ExitMask});
+        VPBB->appendRecipe(cast<VPInstruction>(ExitMask));
+      }
+      auto *VPCond = new VPInstruction(VPInstruction::ExitingCond, {ExitMask},
+                                       BI->getDebugLoc(), "exitcond");
+      VPBB->appendRecipe(cast<VPInstruction>(VPCond));
+      VPValue *ScalarExitCond = VPCond;
+      auto *NewBR =
+          new VPInstruction(VPInstruction::BranchOnCond, {ScalarExitCond});
+      // The branch recipe belongs to latch block if there is no early exiting.
+      if (EarlyExitingBB) {
+        RecipeBuilder.setRecipe(BI, NewBR);
+        VPBB->appendRecipe(NewBR);
+        VPBlockUtils::connectBlocks(VPBB, EarlyExitVPBB);
+      } else {
+        VPBasicBlock *EB = Plan->getVectorLoopRegion()->getExitingBasicBlock();
+        EB->appendRecipe(NewBR);
+      }
+    }
+#endif // SIFIVE_CUSTOMIZATION
   }
 
 #if SIFIVE_CUSTOMIZATION

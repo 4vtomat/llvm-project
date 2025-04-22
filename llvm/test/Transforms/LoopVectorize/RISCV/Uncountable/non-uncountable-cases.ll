@@ -31,8 +31,8 @@ define void @foo() {
 ; CHECK-NEXT:    [[TMP10:%.*]] = call i32 @llvm.vp.first.nxv4i1(<vscale x 4 x i1> [[VP_OP]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP11:%.*]] = icmp sge i32 [[TMP10]], 0
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP9]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    br i1 [[TMP11]], label %[[VEC_UNCOUNTABLE_MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
-; CHECK:       [[VEC_UNCOUNTABLE_MIDDLE_BLOCK]]:
+; CHECK-NEXT:    br i1 [[TMP11]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br i1 true, label %[[EXIT:.*]], label %[[VEC_UNCOUNTABLE_SCALAR_PH:.*]]
 ; CHECK:       [[VEC_UNCOUNTABLE_SCALAR_PH]]:
 ; CHECK-NEXT:    br label %[[LOOP:.*]]
