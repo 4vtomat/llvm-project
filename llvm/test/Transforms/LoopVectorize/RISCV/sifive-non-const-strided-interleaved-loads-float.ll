@@ -40,21 +40,21 @@ define float @load_factor_2(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ false, [[VECTOR_SCEVCHECK]] ]
-; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label [[SCALAR_PH5:%.*]], label [[VECTOR_PH6:%.*]]
-; CHECK:       vector.ph6:
+; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label [[SCALAR_PH4:%.*]], label [[VECTOR_PH5:%.*]]
+; CHECK:       vector.ph5:
 ; CHECK-NEXT:    [[TMP12:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP13:%.*]] = shl i64 [[STRIDE]], 2
 ; CHECK-NEXT:    [[TMP14:%.*]] = lshr i64 [[TMP13]], 2
 ; CHECK-NEXT:    [[TMP15:%.*]] = shl nuw i64 [[TMP14]], 2
-; CHECK-NEXT:    br label [[VECTOR_BODY7:%.*]]
-; CHECK:       vector.body7:
-; CHECK-NEXT:    [[INDEX8:%.*]] = phi i64 [ 0, [[VECTOR_PH6]] ], [ [[INDEX_EVL_NEXT16:%.*]], [[VECTOR_BODY7]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV9:%.*]] = phi i64 [ 0, [[VECTOR_PH6]] ], [ [[INDEX_EVL_NEXT16]], [[VECTOR_BODY7]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV10:%.*]] = phi i32 [ [[TMP12]], [[VECTOR_PH6]] ], [ [[TMP16:%.*]], [[VECTOR_BODY7]] ]
-; CHECK-NEXT:    [[VEC_PHI11:%.*]] = phi <vscale x 2 x float> [ zeroinitializer, [[VECTOR_PH6]] ], [ [[VP_OP_MERGE15:%.*]], [[VECTOR_BODY7]] ]
-; CHECK-NEXT:    [[AVL12:%.*]] = sub i64 [[N]], [[EVL_BASED_IV9]]
-; CHECK-NEXT:    [[TMP16]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL12]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP17:%.*]] = add i64 [[EVL_BASED_IV9]], 0
+; CHECK-NEXT:    br label [[VECTOR_BODY6:%.*]]
+; CHECK:       vector.body6:
+; CHECK-NEXT:    [[INDEX7:%.*]] = phi i64 [ 0, [[VECTOR_PH5]] ], [ [[INDEX_EVL_NEXT15:%.*]], [[VECTOR_BODY6]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV8:%.*]] = phi i64 [ 0, [[VECTOR_PH5]] ], [ [[INDEX_EVL_NEXT15]], [[VECTOR_BODY6]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV9:%.*]] = phi i32 [ [[TMP12]], [[VECTOR_PH5]] ], [ [[TMP16:%.*]], [[VECTOR_BODY6]] ]
+; CHECK-NEXT:    [[VEC_PHI10:%.*]] = phi <vscale x 2 x float> [ zeroinitializer, [[VECTOR_PH5]] ], [ [[VP_OP_MERGE14:%.*]], [[VECTOR_BODY6]] ]
+; CHECK-NEXT:    [[AVL11:%.*]] = sub i64 [[N]], [[EVL_BASED_IV8]]
+; CHECK-NEXT:    [[TMP16]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL11]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP17:%.*]] = add i64 [[EVL_BASED_IV8]], 0
 ; CHECK-NEXT:    [[TMP18:%.*]] = mul nsw i64 [[TMP17]], [[STRIDE]]
 ; CHECK-NEXT:    [[TMP19:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP18]]
 ; CHECK-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 2 x i64> @llvm.experimental.vp.strided.load.nxv2i64.p0.i64(ptr align 4 [[TMP19]], i64 [[TMP15]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP16]])
@@ -62,22 +62,22 @@ define float @load_factor_2(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 2 x float>, <vscale x 2 x float> } @llvm.vector.deinterleave2.nxv4f32(<vscale x 4 x float> [[WIDE_STRIDED_LOAD_CAST]])
 ; CHECK-NEXT:    [[TMP20:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float> } [[DEINTERLEAVED_RESULTS]], 0
 ; CHECK-NEXT:    [[TMP21:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float> } [[DEINTERLEAVED_RESULTS]], 1
-; CHECK-NEXT:    [[VP_OP13:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[TMP20]], <vscale x 2 x float> [[VEC_PHI11]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP16]])
-; CHECK-NEXT:    [[VP_OP14:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP13]], <vscale x 2 x float> [[TMP21]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP16]])
-; CHECK-NEXT:    [[VP_OP_MERGE15]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x float> [[VP_OP14]], <vscale x 2 x float> [[VEC_PHI11]], i32 [[TMP16]])
+; CHECK-NEXT:    [[VP_OP12:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[TMP20]], <vscale x 2 x float> [[VEC_PHI10]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP16]])
+; CHECK-NEXT:    [[VP_OP13:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP12]], <vscale x 2 x float> [[TMP21]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP16]])
+; CHECK-NEXT:    [[VP_OP_MERGE14]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x float> [[VP_OP13]], <vscale x 2 x float> [[VEC_PHI10]], i32 [[TMP16]])
 ; CHECK-NEXT:    [[TMP22:%.*]] = zext i32 [[TMP16]] to i64
-; CHECK-NEXT:    [[INDEX_EVL_NEXT16]] = add nuw i64 [[TMP22]], [[EVL_BASED_IV9]]
-; CHECK-NEXT:    [[TMP23:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT16]], [[N]]
-; CHECK-NEXT:    br i1 [[TMP23]], label [[MIDDLE_BLOCK4:%.*]], label [[VECTOR_BODY7]], !llvm.loop [[LOOP3:![0-9]+]]
-; CHECK:       middle.block4:
-; CHECK-NEXT:    [[TMP24:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE15]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP12]])
+; CHECK-NEXT:    [[INDEX_EVL_NEXT15]] = add nuw i64 [[TMP22]], [[EVL_BASED_IV8]]
+; CHECK-NEXT:    [[TMP23:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT15]], [[N]]
+; CHECK-NEXT:    br i1 [[TMP23]], label [[MIDDLE_BLOCK16:%.*]], label [[VECTOR_BODY6]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK:       middle.block16:
+; CHECK-NEXT:    [[TMP24:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE14]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP12]])
 ; CHECK-NEXT:    [[TMP25:%.*]] = fadd fast float 0.000000e+00, [[TMP24]]
 ; CHECK-NEXT:    br label [[EXIT]]
-; CHECK:       scalar.ph5:
+; CHECK:       scalar.ph4:
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH5]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
-; CHECK-NEXT:    [[RED_069:%.*]] = phi float [ 0.000000e+00, [[SCALAR_PH5]] ], [ [[ADD6:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH4]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[RED_069:%.*]] = phi float [ 0.000000e+00, [[SCALAR_PH4]] ], [ [[ADD6:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP26:%.*]] = mul nsw i64 [[INDVARS_IV]], [[STRIDE]]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP26]]
 ; CHECK-NEXT:    [[TMP27:%.*]] = load float, ptr [[ARRAYIDX]], align 4
@@ -90,7 +90,7 @@ define float @load_factor_2(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       exit:
-; CHECK-NEXT:    [[ADD6_LCSSA:%.*]] = phi float [ [[ADD6]], [[FOR_BODY]] ], [ [[TMP11]], [[MIDDLE_BLOCK]] ], [ [[TMP25]], [[MIDDLE_BLOCK4]] ]
+; CHECK-NEXT:    [[ADD6_LCSSA:%.*]] = phi float [ [[ADD6]], [[FOR_BODY]] ], [ [[TMP11]], [[MIDDLE_BLOCK]] ], [ [[TMP25]], [[MIDDLE_BLOCK16]] ]
 ; CHECK-NEXT:    ret float [[ADD6_LCSSA]]
 ;
 
@@ -160,21 +160,21 @@ define float @load_factor_3(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ false, [[VECTOR_SCEVCHECK]] ]
-; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label [[SCALAR_PH7:%.*]], label [[VECTOR_PH8:%.*]]
-; CHECK:       vector.ph8:
+; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label [[SCALAR_PH6:%.*]], label [[VECTOR_PH7:%.*]]
+; CHECK:       vector.ph7:
 ; CHECK-NEXT:    [[TMP15:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP16:%.*]] = shl i64 [[STRIDE]], 2
 ; CHECK-NEXT:    [[TMP17:%.*]] = lshr i64 [[TMP16]], 2
 ; CHECK-NEXT:    [[TMP18:%.*]] = shl nuw i64 [[TMP17]], 2
-; CHECK-NEXT:    br label [[VECTOR_BODY9:%.*]]
-; CHECK:       vector.body9:
-; CHECK-NEXT:    [[INDEX10:%.*]] = phi i64 [ 0, [[VECTOR_PH8]] ], [ [[INDEX_EVL_NEXT19:%.*]], [[VECTOR_BODY9]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV11:%.*]] = phi i64 [ 0, [[VECTOR_PH8]] ], [ [[INDEX_EVL_NEXT19]], [[VECTOR_BODY9]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV12:%.*]] = phi i32 [ [[TMP15]], [[VECTOR_PH8]] ], [ [[TMP19:%.*]], [[VECTOR_BODY9]] ]
-; CHECK-NEXT:    [[VEC_PHI13:%.*]] = phi <vscale x 2 x float> [ zeroinitializer, [[VECTOR_PH8]] ], [ [[VP_OP_MERGE18:%.*]], [[VECTOR_BODY9]] ]
-; CHECK-NEXT:    [[AVL14:%.*]] = sub i64 [[N]], [[EVL_BASED_IV11]]
-; CHECK-NEXT:    [[TMP19]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL14]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP20:%.*]] = add i64 [[EVL_BASED_IV11]], 0
+; CHECK-NEXT:    br label [[VECTOR_BODY8:%.*]]
+; CHECK:       vector.body8:
+; CHECK-NEXT:    [[INDEX9:%.*]] = phi i64 [ 0, [[VECTOR_PH7]] ], [ [[INDEX_EVL_NEXT18:%.*]], [[VECTOR_BODY8]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV10:%.*]] = phi i64 [ 0, [[VECTOR_PH7]] ], [ [[INDEX_EVL_NEXT18]], [[VECTOR_BODY8]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV11:%.*]] = phi i32 [ [[TMP15]], [[VECTOR_PH7]] ], [ [[TMP19:%.*]], [[VECTOR_BODY8]] ]
+; CHECK-NEXT:    [[VEC_PHI12:%.*]] = phi <vscale x 2 x float> [ zeroinitializer, [[VECTOR_PH7]] ], [ [[VP_OP_MERGE17:%.*]], [[VECTOR_BODY8]] ]
+; CHECK-NEXT:    [[AVL13:%.*]] = sub i64 [[N]], [[EVL_BASED_IV10]]
+; CHECK-NEXT:    [[TMP19]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL13]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP20:%.*]] = add i64 [[EVL_BASED_IV10]], 0
 ; CHECK-NEXT:    [[TMP21:%.*]] = mul nsw i64 [[TMP20]], [[STRIDE]]
 ; CHECK-NEXT:    [[TMP22:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP21]]
 ; CHECK-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 2 x i96> @llvm.experimental.vp.strided.load.nxv2i96.p0.i64(ptr align 4 [[TMP22]], i64 [[TMP18]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP19]])
@@ -183,23 +183,23 @@ define float @load_factor_3(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[TMP23:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } [[DEINTERLEAVED_RESULTS]], 0
 ; CHECK-NEXT:    [[TMP24:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } [[DEINTERLEAVED_RESULTS]], 1
 ; CHECK-NEXT:    [[TMP25:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } [[DEINTERLEAVED_RESULTS]], 2
-; CHECK-NEXT:    [[VP_OP15:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[TMP23]], <vscale x 2 x float> [[VEC_PHI13]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP19]])
-; CHECK-NEXT:    [[VP_OP16:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP15]], <vscale x 2 x float> [[TMP24]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP19]])
-; CHECK-NEXT:    [[VP_OP17:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP16]], <vscale x 2 x float> [[TMP25]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP19]])
-; CHECK-NEXT:    [[VP_OP_MERGE18]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x float> [[VP_OP17]], <vscale x 2 x float> [[VEC_PHI13]], i32 [[TMP19]])
+; CHECK-NEXT:    [[VP_OP14:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[TMP23]], <vscale x 2 x float> [[VEC_PHI12]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP19]])
+; CHECK-NEXT:    [[VP_OP15:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP14]], <vscale x 2 x float> [[TMP24]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP19]])
+; CHECK-NEXT:    [[VP_OP16:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP15]], <vscale x 2 x float> [[TMP25]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP19]])
+; CHECK-NEXT:    [[VP_OP_MERGE17]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x float> [[VP_OP16]], <vscale x 2 x float> [[VEC_PHI12]], i32 [[TMP19]])
 ; CHECK-NEXT:    [[TMP26:%.*]] = zext i32 [[TMP19]] to i64
-; CHECK-NEXT:    [[INDEX_EVL_NEXT19]] = add nuw i64 [[TMP26]], [[EVL_BASED_IV11]]
-; CHECK-NEXT:    [[TMP27:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT19]], [[N]]
-; CHECK-NEXT:    br i1 [[TMP27]], label [[MIDDLE_BLOCK6:%.*]], label [[VECTOR_BODY9]], !llvm.loop [[LOOP6:![0-9]+]]
-; CHECK:       middle.block6:
-; CHECK-NEXT:    [[TMP28:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE18]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP15]])
+; CHECK-NEXT:    [[INDEX_EVL_NEXT18]] = add nuw i64 [[TMP26]], [[EVL_BASED_IV10]]
+; CHECK-NEXT:    [[TMP27:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT18]], [[N]]
+; CHECK-NEXT:    br i1 [[TMP27]], label [[MIDDLE_BLOCK19:%.*]], label [[VECTOR_BODY8]], !llvm.loop [[LOOP6:![0-9]+]]
+; CHECK:       middle.block19:
+; CHECK-NEXT:    [[TMP28:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE17]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP15]])
 ; CHECK-NEXT:    [[TMP29:%.*]] = fadd fast float 0.000000e+00, [[TMP28]]
 ; CHECK-NEXT:    br label [[EXIT]]
-; CHECK:       scalar.ph7:
+; CHECK:       scalar.ph6:
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH7]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
-; CHECK-NEXT:    [[RED_069:%.*]] = phi float [ 0.000000e+00, [[SCALAR_PH7]] ], [ [[ADD11:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH6]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[RED_069:%.*]] = phi float [ 0.000000e+00, [[SCALAR_PH6]] ], [ [[ADD11:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP30:%.*]] = mul nsw i64 [[INDVARS_IV]], [[STRIDE]]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP30]]
 ; CHECK-NEXT:    [[TMP31:%.*]] = load float, ptr [[ARRAYIDX]], align 4
@@ -216,7 +216,7 @@ define float @load_factor_3(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
 ; CHECK:       exit:
-; CHECK-NEXT:    [[ADD11_LCSSA:%.*]] = phi float [ [[ADD11]], [[FOR_BODY]] ], [ [[TMP14]], [[MIDDLE_BLOCK]] ], [ [[TMP29]], [[MIDDLE_BLOCK6]] ]
+; CHECK-NEXT:    [[ADD11_LCSSA:%.*]] = phi float [ [[ADD11]], [[FOR_BODY]] ], [ [[TMP14]], [[MIDDLE_BLOCK]] ], [ [[TMP29]], [[MIDDLE_BLOCK19]] ]
 ; CHECK-NEXT:    ret float [[ADD11_LCSSA]]
 ;
 
@@ -295,21 +295,21 @@ define float @load_factor_4(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ false, [[VECTOR_SCEVCHECK]] ]
-; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label [[SCALAR_PH9:%.*]], label [[VECTOR_PH10:%.*]]
-; CHECK:       vector.ph10:
+; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label [[SCALAR_PH8:%.*]], label [[VECTOR_PH9:%.*]]
+; CHECK:       vector.ph9:
 ; CHECK-NEXT:    [[TMP18:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP19:%.*]] = shl i64 [[STRIDE]], 2
 ; CHECK-NEXT:    [[TMP20:%.*]] = lshr i64 [[TMP19]], 2
 ; CHECK-NEXT:    [[TMP21:%.*]] = shl nuw i64 [[TMP20]], 2
-; CHECK-NEXT:    br label [[VECTOR_BODY11:%.*]]
-; CHECK:       vector.body11:
-; CHECK-NEXT:    [[INDEX12:%.*]] = phi i64 [ 0, [[VECTOR_PH10]] ], [ [[INDEX_EVL_NEXT22:%.*]], [[VECTOR_BODY11]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV13:%.*]] = phi i64 [ 0, [[VECTOR_PH10]] ], [ [[INDEX_EVL_NEXT22]], [[VECTOR_BODY11]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV14:%.*]] = phi i32 [ [[TMP18]], [[VECTOR_PH10]] ], [ [[TMP22:%.*]], [[VECTOR_BODY11]] ]
-; CHECK-NEXT:    [[VEC_PHI15:%.*]] = phi <vscale x 2 x float> [ zeroinitializer, [[VECTOR_PH10]] ], [ [[VP_OP_MERGE21:%.*]], [[VECTOR_BODY11]] ]
-; CHECK-NEXT:    [[AVL16:%.*]] = sub i64 [[N]], [[EVL_BASED_IV13]]
-; CHECK-NEXT:    [[TMP22]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL16]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP23:%.*]] = add i64 [[EVL_BASED_IV13]], 0
+; CHECK-NEXT:    br label [[VECTOR_BODY10:%.*]]
+; CHECK:       vector.body10:
+; CHECK-NEXT:    [[INDEX11:%.*]] = phi i64 [ 0, [[VECTOR_PH9]] ], [ [[INDEX_EVL_NEXT21:%.*]], [[VECTOR_BODY10]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV12:%.*]] = phi i64 [ 0, [[VECTOR_PH9]] ], [ [[INDEX_EVL_NEXT21]], [[VECTOR_BODY10]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV13:%.*]] = phi i32 [ [[TMP18]], [[VECTOR_PH9]] ], [ [[TMP22:%.*]], [[VECTOR_BODY10]] ]
+; CHECK-NEXT:    [[VEC_PHI14:%.*]] = phi <vscale x 2 x float> [ zeroinitializer, [[VECTOR_PH9]] ], [ [[VP_OP_MERGE20:%.*]], [[VECTOR_BODY10]] ]
+; CHECK-NEXT:    [[AVL15:%.*]] = sub i64 [[N]], [[EVL_BASED_IV12]]
+; CHECK-NEXT:    [[TMP22]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL15]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP23:%.*]] = add i64 [[EVL_BASED_IV12]], 0
 ; CHECK-NEXT:    [[TMP24:%.*]] = mul nsw i64 [[TMP23]], [[STRIDE]]
 ; CHECK-NEXT:    [[TMP25:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP24]]
 ; CHECK-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 2 x i128> @llvm.experimental.vp.strided.load.nxv2i128.p0.i64(ptr align 4 [[TMP25]], i64 [[TMP21]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP22]])
@@ -319,24 +319,24 @@ define float @load_factor_4(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[TMP27:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } [[DEINTERLEAVED_RESULTS]], 1
 ; CHECK-NEXT:    [[TMP28:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } [[DEINTERLEAVED_RESULTS]], 2
 ; CHECK-NEXT:    [[TMP29:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } [[DEINTERLEAVED_RESULTS]], 3
-; CHECK-NEXT:    [[VP_OP17:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[TMP26]], <vscale x 2 x float> [[VEC_PHI15]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP22]])
-; CHECK-NEXT:    [[VP_OP18:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP17]], <vscale x 2 x float> [[TMP27]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP22]])
-; CHECK-NEXT:    [[VP_OP19:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP18]], <vscale x 2 x float> [[TMP28]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP22]])
-; CHECK-NEXT:    [[VP_OP20:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP19]], <vscale x 2 x float> [[TMP29]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP22]])
-; CHECK-NEXT:    [[VP_OP_MERGE21]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x float> [[VP_OP20]], <vscale x 2 x float> [[VEC_PHI15]], i32 [[TMP22]])
+; CHECK-NEXT:    [[VP_OP16:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[TMP26]], <vscale x 2 x float> [[VEC_PHI14]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP22]])
+; CHECK-NEXT:    [[VP_OP17:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP16]], <vscale x 2 x float> [[TMP27]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP22]])
+; CHECK-NEXT:    [[VP_OP18:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP17]], <vscale x 2 x float> [[TMP28]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP22]])
+; CHECK-NEXT:    [[VP_OP19:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP18]], <vscale x 2 x float> [[TMP29]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP22]])
+; CHECK-NEXT:    [[VP_OP_MERGE20]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x float> [[VP_OP19]], <vscale x 2 x float> [[VEC_PHI14]], i32 [[TMP22]])
 ; CHECK-NEXT:    [[TMP30:%.*]] = zext i32 [[TMP22]] to i64
-; CHECK-NEXT:    [[INDEX_EVL_NEXT22]] = add nuw i64 [[TMP30]], [[EVL_BASED_IV13]]
-; CHECK-NEXT:    [[TMP31:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT22]], [[N]]
-; CHECK-NEXT:    br i1 [[TMP31]], label [[MIDDLE_BLOCK8:%.*]], label [[VECTOR_BODY11]], !llvm.loop [[LOOP9:![0-9]+]]
-; CHECK:       middle.block8:
-; CHECK-NEXT:    [[TMP32:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE21]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP18]])
+; CHECK-NEXT:    [[INDEX_EVL_NEXT21]] = add nuw i64 [[TMP30]], [[EVL_BASED_IV12]]
+; CHECK-NEXT:    [[TMP31:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT21]], [[N]]
+; CHECK-NEXT:    br i1 [[TMP31]], label [[MIDDLE_BLOCK22:%.*]], label [[VECTOR_BODY10]], !llvm.loop [[LOOP9:![0-9]+]]
+; CHECK:       middle.block22:
+; CHECK-NEXT:    [[TMP32:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE20]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP18]])
 ; CHECK-NEXT:    [[TMP33:%.*]] = fadd fast float 0.000000e+00, [[TMP32]]
 ; CHECK-NEXT:    br label [[EXIT]]
-; CHECK:       scalar.ph9:
+; CHECK:       scalar.ph8:
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH9]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
-; CHECK-NEXT:    [[RED_069:%.*]] = phi float [ 0.000000e+00, [[SCALAR_PH9]] ], [ [[ADD16:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH8]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[RED_069:%.*]] = phi float [ 0.000000e+00, [[SCALAR_PH8]] ], [ [[ADD16:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP34:%.*]] = mul nsw i64 [[INDVARS_IV]], [[STRIDE]]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP34]]
 ; CHECK-NEXT:    [[TMP35:%.*]] = load float, ptr [[ARRAYIDX]], align 4
@@ -357,7 +357,7 @@ define float @load_factor_4(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
 ; CHECK:       exit:
-; CHECK-NEXT:    [[ADD16_LCSSA:%.*]] = phi float [ [[ADD16]], [[FOR_BODY]] ], [ [[TMP17]], [[MIDDLE_BLOCK]] ], [ [[TMP33]], [[MIDDLE_BLOCK8]] ]
+; CHECK-NEXT:    [[ADD16_LCSSA:%.*]] = phi float [ [[ADD16]], [[FOR_BODY]] ], [ [[TMP17]], [[MIDDLE_BLOCK]] ], [ [[TMP33]], [[MIDDLE_BLOCK22]] ]
 ; CHECK-NEXT:    ret float [[ADD16_LCSSA]]
 ;
 
@@ -445,21 +445,21 @@ define float @load_factor_5(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ false, [[VECTOR_SCEVCHECK]] ]
-; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label [[SCALAR_PH11:%.*]], label [[VECTOR_PH12:%.*]]
-; CHECK:       vector.ph12:
+; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label [[SCALAR_PH10:%.*]], label [[VECTOR_PH11:%.*]]
+; CHECK:       vector.ph11:
 ; CHECK-NEXT:    [[TMP21:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP22:%.*]] = shl i64 [[STRIDE]], 2
 ; CHECK-NEXT:    [[TMP23:%.*]] = lshr i64 [[TMP22]], 2
 ; CHECK-NEXT:    [[TMP24:%.*]] = shl nuw i64 [[TMP23]], 2
-; CHECK-NEXT:    br label [[VECTOR_BODY13:%.*]]
-; CHECK:       vector.body13:
-; CHECK-NEXT:    [[INDEX14:%.*]] = phi i64 [ 0, [[VECTOR_PH12]] ], [ [[INDEX_EVL_NEXT25:%.*]], [[VECTOR_BODY13]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV15:%.*]] = phi i64 [ 0, [[VECTOR_PH12]] ], [ [[INDEX_EVL_NEXT25]], [[VECTOR_BODY13]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV16:%.*]] = phi i32 [ [[TMP21]], [[VECTOR_PH12]] ], [ [[TMP25:%.*]], [[VECTOR_BODY13]] ]
-; CHECK-NEXT:    [[VEC_PHI17:%.*]] = phi <vscale x 2 x float> [ zeroinitializer, [[VECTOR_PH12]] ], [ [[VP_OP_MERGE24:%.*]], [[VECTOR_BODY13]] ]
-; CHECK-NEXT:    [[AVL18:%.*]] = sub i64 [[N]], [[EVL_BASED_IV15]]
-; CHECK-NEXT:    [[TMP25]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL18]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP26:%.*]] = add i64 [[EVL_BASED_IV15]], 0
+; CHECK-NEXT:    br label [[VECTOR_BODY12:%.*]]
+; CHECK:       vector.body12:
+; CHECK-NEXT:    [[INDEX13:%.*]] = phi i64 [ 0, [[VECTOR_PH11]] ], [ [[INDEX_EVL_NEXT24:%.*]], [[VECTOR_BODY12]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV14:%.*]] = phi i64 [ 0, [[VECTOR_PH11]] ], [ [[INDEX_EVL_NEXT24]], [[VECTOR_BODY12]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV15:%.*]] = phi i32 [ [[TMP21]], [[VECTOR_PH11]] ], [ [[TMP25:%.*]], [[VECTOR_BODY12]] ]
+; CHECK-NEXT:    [[VEC_PHI16:%.*]] = phi <vscale x 2 x float> [ zeroinitializer, [[VECTOR_PH11]] ], [ [[VP_OP_MERGE23:%.*]], [[VECTOR_BODY12]] ]
+; CHECK-NEXT:    [[AVL17:%.*]] = sub i64 [[N]], [[EVL_BASED_IV14]]
+; CHECK-NEXT:    [[TMP25]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL17]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP26:%.*]] = add i64 [[EVL_BASED_IV14]], 0
 ; CHECK-NEXT:    [[TMP27:%.*]] = mul nsw i64 [[TMP26]], [[STRIDE]]
 ; CHECK-NEXT:    [[TMP28:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP27]]
 ; CHECK-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 2 x i160> @llvm.experimental.vp.strided.load.nxv2i160.p0.i64(ptr align 4 [[TMP28]], i64 [[TMP24]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP25]])
@@ -470,25 +470,25 @@ define float @load_factor_5(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[TMP31:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } [[DEINTERLEAVED_RESULTS]], 2
 ; CHECK-NEXT:    [[TMP32:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } [[DEINTERLEAVED_RESULTS]], 3
 ; CHECK-NEXT:    [[TMP33:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } [[DEINTERLEAVED_RESULTS]], 4
-; CHECK-NEXT:    [[VP_OP19:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[TMP29]], <vscale x 2 x float> [[VEC_PHI17]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP25]])
-; CHECK-NEXT:    [[VP_OP20:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP19]], <vscale x 2 x float> [[TMP30]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP25]])
-; CHECK-NEXT:    [[VP_OP21:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP20]], <vscale x 2 x float> [[TMP31]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP25]])
-; CHECK-NEXT:    [[VP_OP22:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP21]], <vscale x 2 x float> [[TMP32]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP25]])
-; CHECK-NEXT:    [[VP_OP23:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP22]], <vscale x 2 x float> [[TMP33]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP25]])
-; CHECK-NEXT:    [[VP_OP_MERGE24]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x float> [[VP_OP23]], <vscale x 2 x float> [[VEC_PHI17]], i32 [[TMP25]])
+; CHECK-NEXT:    [[VP_OP18:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[TMP29]], <vscale x 2 x float> [[VEC_PHI16]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP25]])
+; CHECK-NEXT:    [[VP_OP19:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP18]], <vscale x 2 x float> [[TMP30]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP25]])
+; CHECK-NEXT:    [[VP_OP20:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP19]], <vscale x 2 x float> [[TMP31]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP25]])
+; CHECK-NEXT:    [[VP_OP21:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP20]], <vscale x 2 x float> [[TMP32]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP25]])
+; CHECK-NEXT:    [[VP_OP22:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP21]], <vscale x 2 x float> [[TMP33]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP25]])
+; CHECK-NEXT:    [[VP_OP_MERGE23]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x float> [[VP_OP22]], <vscale x 2 x float> [[VEC_PHI16]], i32 [[TMP25]])
 ; CHECK-NEXT:    [[TMP34:%.*]] = zext i32 [[TMP25]] to i64
-; CHECK-NEXT:    [[INDEX_EVL_NEXT25]] = add nuw i64 [[TMP34]], [[EVL_BASED_IV15]]
-; CHECK-NEXT:    [[TMP35:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT25]], [[N]]
-; CHECK-NEXT:    br i1 [[TMP35]], label [[MIDDLE_BLOCK10:%.*]], label [[VECTOR_BODY13]], !llvm.loop [[LOOP12:![0-9]+]]
-; CHECK:       middle.block10:
-; CHECK-NEXT:    [[TMP36:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE24]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP21]])
+; CHECK-NEXT:    [[INDEX_EVL_NEXT24]] = add nuw i64 [[TMP34]], [[EVL_BASED_IV14]]
+; CHECK-NEXT:    [[TMP35:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT24]], [[N]]
+; CHECK-NEXT:    br i1 [[TMP35]], label [[MIDDLE_BLOCK25:%.*]], label [[VECTOR_BODY12]], !llvm.loop [[LOOP12:![0-9]+]]
+; CHECK:       middle.block25:
+; CHECK-NEXT:    [[TMP36:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE23]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP21]])
 ; CHECK-NEXT:    [[TMP37:%.*]] = fadd fast float 0.000000e+00, [[TMP36]]
 ; CHECK-NEXT:    br label [[EXIT]]
-; CHECK:       scalar.ph11:
+; CHECK:       scalar.ph10:
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH11]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
-; CHECK-NEXT:    [[RED_069:%.*]] = phi float [ 0.000000e+00, [[SCALAR_PH11]] ], [ [[ADD21:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH10]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[RED_069:%.*]] = phi float [ 0.000000e+00, [[SCALAR_PH10]] ], [ [[ADD21:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP38:%.*]] = mul nsw i64 [[INDVARS_IV]], [[STRIDE]]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP38]]
 ; CHECK-NEXT:    [[TMP39:%.*]] = load float, ptr [[ARRAYIDX]], align 4
@@ -513,7 +513,7 @@ define float @load_factor_5(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP13:![0-9]+]]
 ; CHECK:       exit:
-; CHECK-NEXT:    [[ADD21_LCSSA:%.*]] = phi float [ [[ADD21]], [[FOR_BODY]] ], [ [[TMP20]], [[MIDDLE_BLOCK]] ], [ [[TMP37]], [[MIDDLE_BLOCK10]] ]
+; CHECK-NEXT:    [[ADD21_LCSSA:%.*]] = phi float [ [[ADD21]], [[FOR_BODY]] ], [ [[TMP20]], [[MIDDLE_BLOCK]] ], [ [[TMP37]], [[MIDDLE_BLOCK25]] ]
 ; CHECK-NEXT:    ret float [[ADD21_LCSSA]]
 ;
 
@@ -610,21 +610,21 @@ define float @load_factor_6(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ false, [[VECTOR_SCEVCHECK]] ]
-; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label [[SCALAR_PH13:%.*]], label [[VECTOR_PH14:%.*]]
-; CHECK:       vector.ph14:
+; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label [[SCALAR_PH12:%.*]], label [[VECTOR_PH13:%.*]]
+; CHECK:       vector.ph13:
 ; CHECK-NEXT:    [[TMP24:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP25:%.*]] = shl i64 [[STRIDE]], 2
 ; CHECK-NEXT:    [[TMP26:%.*]] = lshr i64 [[TMP25]], 2
 ; CHECK-NEXT:    [[TMP27:%.*]] = shl nuw i64 [[TMP26]], 2
-; CHECK-NEXT:    br label [[VECTOR_BODY15:%.*]]
-; CHECK:       vector.body15:
-; CHECK-NEXT:    [[INDEX16:%.*]] = phi i64 [ 0, [[VECTOR_PH14]] ], [ [[INDEX_EVL_NEXT28:%.*]], [[VECTOR_BODY15]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV17:%.*]] = phi i64 [ 0, [[VECTOR_PH14]] ], [ [[INDEX_EVL_NEXT28]], [[VECTOR_BODY15]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV18:%.*]] = phi i32 [ [[TMP24]], [[VECTOR_PH14]] ], [ [[TMP28:%.*]], [[VECTOR_BODY15]] ]
-; CHECK-NEXT:    [[VEC_PHI19:%.*]] = phi <vscale x 2 x float> [ zeroinitializer, [[VECTOR_PH14]] ], [ [[VP_OP_MERGE27:%.*]], [[VECTOR_BODY15]] ]
-; CHECK-NEXT:    [[AVL20:%.*]] = sub i64 [[N]], [[EVL_BASED_IV17]]
-; CHECK-NEXT:    [[TMP28]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL20]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP29:%.*]] = add i64 [[EVL_BASED_IV17]], 0
+; CHECK-NEXT:    br label [[VECTOR_BODY14:%.*]]
+; CHECK:       vector.body14:
+; CHECK-NEXT:    [[INDEX15:%.*]] = phi i64 [ 0, [[VECTOR_PH13]] ], [ [[INDEX_EVL_NEXT27:%.*]], [[VECTOR_BODY14]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV16:%.*]] = phi i64 [ 0, [[VECTOR_PH13]] ], [ [[INDEX_EVL_NEXT27]], [[VECTOR_BODY14]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV17:%.*]] = phi i32 [ [[TMP24]], [[VECTOR_PH13]] ], [ [[TMP28:%.*]], [[VECTOR_BODY14]] ]
+; CHECK-NEXT:    [[VEC_PHI18:%.*]] = phi <vscale x 2 x float> [ zeroinitializer, [[VECTOR_PH13]] ], [ [[VP_OP_MERGE26:%.*]], [[VECTOR_BODY14]] ]
+; CHECK-NEXT:    [[AVL19:%.*]] = sub i64 [[N]], [[EVL_BASED_IV16]]
+; CHECK-NEXT:    [[TMP28]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL19]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP29:%.*]] = add i64 [[EVL_BASED_IV16]], 0
 ; CHECK-NEXT:    [[TMP30:%.*]] = mul nsw i64 [[TMP29]], [[STRIDE]]
 ; CHECK-NEXT:    [[TMP31:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP30]]
 ; CHECK-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 2 x i192> @llvm.experimental.vp.strided.load.nxv2i192.p0.i64(ptr align 4 [[TMP31]], i64 [[TMP27]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP28]])
@@ -636,26 +636,26 @@ define float @load_factor_6(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[TMP35:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } [[DEINTERLEAVED_RESULTS]], 3
 ; CHECK-NEXT:    [[TMP36:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } [[DEINTERLEAVED_RESULTS]], 4
 ; CHECK-NEXT:    [[TMP37:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } [[DEINTERLEAVED_RESULTS]], 5
-; CHECK-NEXT:    [[VP_OP21:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[TMP32]], <vscale x 2 x float> [[VEC_PHI19]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP28]])
-; CHECK-NEXT:    [[VP_OP22:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP21]], <vscale x 2 x float> [[TMP33]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP28]])
-; CHECK-NEXT:    [[VP_OP23:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP22]], <vscale x 2 x float> [[TMP34]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP28]])
-; CHECK-NEXT:    [[VP_OP24:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP23]], <vscale x 2 x float> [[TMP35]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP28]])
-; CHECK-NEXT:    [[VP_OP25:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP24]], <vscale x 2 x float> [[TMP36]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP28]])
-; CHECK-NEXT:    [[VP_OP26:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP25]], <vscale x 2 x float> [[TMP37]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP28]])
-; CHECK-NEXT:    [[VP_OP_MERGE27]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x float> [[VP_OP26]], <vscale x 2 x float> [[VEC_PHI19]], i32 [[TMP28]])
+; CHECK-NEXT:    [[VP_OP20:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[TMP32]], <vscale x 2 x float> [[VEC_PHI18]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP28]])
+; CHECK-NEXT:    [[VP_OP21:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP20]], <vscale x 2 x float> [[TMP33]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP28]])
+; CHECK-NEXT:    [[VP_OP22:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP21]], <vscale x 2 x float> [[TMP34]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP28]])
+; CHECK-NEXT:    [[VP_OP23:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP22]], <vscale x 2 x float> [[TMP35]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP28]])
+; CHECK-NEXT:    [[VP_OP24:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP23]], <vscale x 2 x float> [[TMP36]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP28]])
+; CHECK-NEXT:    [[VP_OP25:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP24]], <vscale x 2 x float> [[TMP37]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP28]])
+; CHECK-NEXT:    [[VP_OP_MERGE26]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x float> [[VP_OP25]], <vscale x 2 x float> [[VEC_PHI18]], i32 [[TMP28]])
 ; CHECK-NEXT:    [[TMP38:%.*]] = zext i32 [[TMP28]] to i64
-; CHECK-NEXT:    [[INDEX_EVL_NEXT28]] = add nuw i64 [[TMP38]], [[EVL_BASED_IV17]]
-; CHECK-NEXT:    [[TMP39:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT28]], [[N]]
-; CHECK-NEXT:    br i1 [[TMP39]], label [[MIDDLE_BLOCK12:%.*]], label [[VECTOR_BODY15]], !llvm.loop [[LOOP15:![0-9]+]]
-; CHECK:       middle.block12:
-; CHECK-NEXT:    [[TMP40:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE27]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP24]])
+; CHECK-NEXT:    [[INDEX_EVL_NEXT27]] = add nuw i64 [[TMP38]], [[EVL_BASED_IV16]]
+; CHECK-NEXT:    [[TMP39:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT27]], [[N]]
+; CHECK-NEXT:    br i1 [[TMP39]], label [[MIDDLE_BLOCK28:%.*]], label [[VECTOR_BODY14]], !llvm.loop [[LOOP15:![0-9]+]]
+; CHECK:       middle.block28:
+; CHECK-NEXT:    [[TMP40:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE26]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP24]])
 ; CHECK-NEXT:    [[TMP41:%.*]] = fadd fast float 0.000000e+00, [[TMP40]]
 ; CHECK-NEXT:    br label [[EXIT]]
-; CHECK:       scalar.ph13:
+; CHECK:       scalar.ph12:
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH13]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
-; CHECK-NEXT:    [[RED_069:%.*]] = phi float [ 0.000000e+00, [[SCALAR_PH13]] ], [ [[ADD26:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH12]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[RED_069:%.*]] = phi float [ 0.000000e+00, [[SCALAR_PH12]] ], [ [[ADD26:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP42:%.*]] = mul nsw i64 [[INDVARS_IV]], [[STRIDE]]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP42]]
 ; CHECK-NEXT:    [[TMP43:%.*]] = load float, ptr [[ARRAYIDX]], align 4
@@ -684,7 +684,7 @@ define float @load_factor_6(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
 ; CHECK:       exit:
-; CHECK-NEXT:    [[ADD26_LCSSA:%.*]] = phi float [ [[ADD26]], [[FOR_BODY]] ], [ [[TMP23]], [[MIDDLE_BLOCK]] ], [ [[TMP41]], [[MIDDLE_BLOCK12]] ]
+; CHECK-NEXT:    [[ADD26_LCSSA:%.*]] = phi float [ [[ADD26]], [[FOR_BODY]] ], [ [[TMP23]], [[MIDDLE_BLOCK]] ], [ [[TMP41]], [[MIDDLE_BLOCK28]] ]
 ; CHECK-NEXT:    ret float [[ADD26_LCSSA]]
 ;
 
@@ -790,21 +790,21 @@ define float @load_factor_7(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ false, [[VECTOR_SCEVCHECK]] ]
-; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label [[SCALAR_PH15:%.*]], label [[VECTOR_PH16:%.*]]
-; CHECK:       vector.ph16:
+; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label [[SCALAR_PH14:%.*]], label [[VECTOR_PH15:%.*]]
+; CHECK:       vector.ph15:
 ; CHECK-NEXT:    [[TMP27:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP28:%.*]] = shl i64 [[STRIDE]], 2
 ; CHECK-NEXT:    [[TMP29:%.*]] = lshr i64 [[TMP28]], 2
 ; CHECK-NEXT:    [[TMP30:%.*]] = shl nuw i64 [[TMP29]], 2
-; CHECK-NEXT:    br label [[VECTOR_BODY17:%.*]]
-; CHECK:       vector.body17:
-; CHECK-NEXT:    [[INDEX18:%.*]] = phi i64 [ 0, [[VECTOR_PH16]] ], [ [[INDEX_EVL_NEXT31:%.*]], [[VECTOR_BODY17]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV19:%.*]] = phi i64 [ 0, [[VECTOR_PH16]] ], [ [[INDEX_EVL_NEXT31]], [[VECTOR_BODY17]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV20:%.*]] = phi i32 [ [[TMP27]], [[VECTOR_PH16]] ], [ [[TMP31:%.*]], [[VECTOR_BODY17]] ]
-; CHECK-NEXT:    [[VEC_PHI21:%.*]] = phi <vscale x 2 x float> [ zeroinitializer, [[VECTOR_PH16]] ], [ [[VP_OP_MERGE30:%.*]], [[VECTOR_BODY17]] ]
-; CHECK-NEXT:    [[AVL22:%.*]] = sub i64 [[N]], [[EVL_BASED_IV19]]
-; CHECK-NEXT:    [[TMP31]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL22]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP32:%.*]] = add i64 [[EVL_BASED_IV19]], 0
+; CHECK-NEXT:    br label [[VECTOR_BODY16:%.*]]
+; CHECK:       vector.body16:
+; CHECK-NEXT:    [[INDEX17:%.*]] = phi i64 [ 0, [[VECTOR_PH15]] ], [ [[INDEX_EVL_NEXT30:%.*]], [[VECTOR_BODY16]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV18:%.*]] = phi i64 [ 0, [[VECTOR_PH15]] ], [ [[INDEX_EVL_NEXT30]], [[VECTOR_BODY16]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV19:%.*]] = phi i32 [ [[TMP27]], [[VECTOR_PH15]] ], [ [[TMP31:%.*]], [[VECTOR_BODY16]] ]
+; CHECK-NEXT:    [[VEC_PHI20:%.*]] = phi <vscale x 2 x float> [ zeroinitializer, [[VECTOR_PH15]] ], [ [[VP_OP_MERGE29:%.*]], [[VECTOR_BODY16]] ]
+; CHECK-NEXT:    [[AVL21:%.*]] = sub i64 [[N]], [[EVL_BASED_IV18]]
+; CHECK-NEXT:    [[TMP31]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL21]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP32:%.*]] = add i64 [[EVL_BASED_IV18]], 0
 ; CHECK-NEXT:    [[TMP33:%.*]] = mul nsw i64 [[TMP32]], [[STRIDE]]
 ; CHECK-NEXT:    [[TMP34:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP33]]
 ; CHECK-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 2 x i224> @llvm.experimental.vp.strided.load.nxv2i224.p0.i64(ptr align 4 [[TMP34]], i64 [[TMP30]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP31]])
@@ -817,27 +817,27 @@ define float @load_factor_7(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[TMP39:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } [[DEINTERLEAVED_RESULTS]], 4
 ; CHECK-NEXT:    [[TMP40:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } [[DEINTERLEAVED_RESULTS]], 5
 ; CHECK-NEXT:    [[TMP41:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } [[DEINTERLEAVED_RESULTS]], 6
-; CHECK-NEXT:    [[VP_OP23:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[TMP35]], <vscale x 2 x float> [[VEC_PHI21]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP31]])
-; CHECK-NEXT:    [[VP_OP24:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP23]], <vscale x 2 x float> [[TMP36]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP31]])
-; CHECK-NEXT:    [[VP_OP25:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP24]], <vscale x 2 x float> [[TMP37]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP31]])
-; CHECK-NEXT:    [[VP_OP26:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP25]], <vscale x 2 x float> [[TMP38]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP31]])
-; CHECK-NEXT:    [[VP_OP27:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP26]], <vscale x 2 x float> [[TMP39]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP31]])
-; CHECK-NEXT:    [[VP_OP28:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP27]], <vscale x 2 x float> [[TMP40]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP31]])
-; CHECK-NEXT:    [[VP_OP29:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP28]], <vscale x 2 x float> [[TMP41]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP31]])
-; CHECK-NEXT:    [[VP_OP_MERGE30]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x float> [[VP_OP29]], <vscale x 2 x float> [[VEC_PHI21]], i32 [[TMP31]])
+; CHECK-NEXT:    [[VP_OP22:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[TMP35]], <vscale x 2 x float> [[VEC_PHI20]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP31]])
+; CHECK-NEXT:    [[VP_OP23:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP22]], <vscale x 2 x float> [[TMP36]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP31]])
+; CHECK-NEXT:    [[VP_OP24:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP23]], <vscale x 2 x float> [[TMP37]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP31]])
+; CHECK-NEXT:    [[VP_OP25:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP24]], <vscale x 2 x float> [[TMP38]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP31]])
+; CHECK-NEXT:    [[VP_OP26:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP25]], <vscale x 2 x float> [[TMP39]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP31]])
+; CHECK-NEXT:    [[VP_OP27:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP26]], <vscale x 2 x float> [[TMP40]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP31]])
+; CHECK-NEXT:    [[VP_OP28:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP27]], <vscale x 2 x float> [[TMP41]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP31]])
+; CHECK-NEXT:    [[VP_OP_MERGE29]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x float> [[VP_OP28]], <vscale x 2 x float> [[VEC_PHI20]], i32 [[TMP31]])
 ; CHECK-NEXT:    [[TMP42:%.*]] = zext i32 [[TMP31]] to i64
-; CHECK-NEXT:    [[INDEX_EVL_NEXT31]] = add nuw i64 [[TMP42]], [[EVL_BASED_IV19]]
-; CHECK-NEXT:    [[TMP43:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT31]], [[N]]
-; CHECK-NEXT:    br i1 [[TMP43]], label [[MIDDLE_BLOCK14:%.*]], label [[VECTOR_BODY17]], !llvm.loop [[LOOP18:![0-9]+]]
-; CHECK:       middle.block14:
-; CHECK-NEXT:    [[TMP44:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE30]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP27]])
+; CHECK-NEXT:    [[INDEX_EVL_NEXT30]] = add nuw i64 [[TMP42]], [[EVL_BASED_IV18]]
+; CHECK-NEXT:    [[TMP43:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT30]], [[N]]
+; CHECK-NEXT:    br i1 [[TMP43]], label [[MIDDLE_BLOCK31:%.*]], label [[VECTOR_BODY16]], !llvm.loop [[LOOP18:![0-9]+]]
+; CHECK:       middle.block31:
+; CHECK-NEXT:    [[TMP44:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE29]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP27]])
 ; CHECK-NEXT:    [[TMP45:%.*]] = fadd fast float 0.000000e+00, [[TMP44]]
 ; CHECK-NEXT:    br label [[EXIT]]
-; CHECK:       scalar.ph15:
+; CHECK:       scalar.ph14:
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH15]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
-; CHECK-NEXT:    [[RED_069:%.*]] = phi float [ 0.000000e+00, [[SCALAR_PH15]] ], [ [[ADD31:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH14]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[RED_069:%.*]] = phi float [ 0.000000e+00, [[SCALAR_PH14]] ], [ [[ADD31:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP46:%.*]] = mul nsw i64 [[INDVARS_IV]], [[STRIDE]]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP46]]
 ; CHECK-NEXT:    [[TMP47:%.*]] = load float, ptr [[ARRAYIDX]], align 4
@@ -870,7 +870,7 @@ define float @load_factor_7(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP19:![0-9]+]]
 ; CHECK:       exit:
-; CHECK-NEXT:    [[ADD31_LCSSA:%.*]] = phi float [ [[ADD31]], [[FOR_BODY]] ], [ [[TMP26]], [[MIDDLE_BLOCK]] ], [ [[TMP45]], [[MIDDLE_BLOCK14]] ]
+; CHECK-NEXT:    [[ADD31_LCSSA:%.*]] = phi float [ [[ADD31]], [[FOR_BODY]] ], [ [[TMP26]], [[MIDDLE_BLOCK]] ], [ [[TMP45]], [[MIDDLE_BLOCK31]] ]
 ; CHECK-NEXT:    ret float [[ADD31_LCSSA]]
 ;
 
@@ -985,21 +985,21 @@ define float @load_factor_8(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ false, [[VECTOR_SCEVCHECK]] ]
-; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label [[SCALAR_PH17:%.*]], label [[VECTOR_PH18:%.*]]
-; CHECK:       vector.ph18:
+; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label [[SCALAR_PH16:%.*]], label [[VECTOR_PH17:%.*]]
+; CHECK:       vector.ph17:
 ; CHECK-NEXT:    [[TMP30:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP31:%.*]] = shl i64 [[STRIDE]], 2
 ; CHECK-NEXT:    [[TMP32:%.*]] = lshr i64 [[TMP31]], 2
 ; CHECK-NEXT:    [[TMP33:%.*]] = shl nuw i64 [[TMP32]], 2
-; CHECK-NEXT:    br label [[VECTOR_BODY19:%.*]]
-; CHECK:       vector.body19:
-; CHECK-NEXT:    [[INDEX20:%.*]] = phi i64 [ 0, [[VECTOR_PH18]] ], [ [[INDEX_EVL_NEXT34:%.*]], [[VECTOR_BODY19]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV21:%.*]] = phi i64 [ 0, [[VECTOR_PH18]] ], [ [[INDEX_EVL_NEXT34]], [[VECTOR_BODY19]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV22:%.*]] = phi i32 [ [[TMP30]], [[VECTOR_PH18]] ], [ [[TMP34:%.*]], [[VECTOR_BODY19]] ]
-; CHECK-NEXT:    [[VEC_PHI23:%.*]] = phi <vscale x 2 x float> [ zeroinitializer, [[VECTOR_PH18]] ], [ [[VP_OP_MERGE33:%.*]], [[VECTOR_BODY19]] ]
-; CHECK-NEXT:    [[AVL24:%.*]] = sub i64 [[N]], [[EVL_BASED_IV21]]
-; CHECK-NEXT:    [[TMP34]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL24]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP35:%.*]] = add i64 [[EVL_BASED_IV21]], 0
+; CHECK-NEXT:    br label [[VECTOR_BODY18:%.*]]
+; CHECK:       vector.body18:
+; CHECK-NEXT:    [[INDEX19:%.*]] = phi i64 [ 0, [[VECTOR_PH17]] ], [ [[INDEX_EVL_NEXT33:%.*]], [[VECTOR_BODY18]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV20:%.*]] = phi i64 [ 0, [[VECTOR_PH17]] ], [ [[INDEX_EVL_NEXT33]], [[VECTOR_BODY18]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV21:%.*]] = phi i32 [ [[TMP30]], [[VECTOR_PH17]] ], [ [[TMP34:%.*]], [[VECTOR_BODY18]] ]
+; CHECK-NEXT:    [[VEC_PHI22:%.*]] = phi <vscale x 2 x float> [ zeroinitializer, [[VECTOR_PH17]] ], [ [[VP_OP_MERGE32:%.*]], [[VECTOR_BODY18]] ]
+; CHECK-NEXT:    [[AVL23:%.*]] = sub i64 [[N]], [[EVL_BASED_IV20]]
+; CHECK-NEXT:    [[TMP34]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL23]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP35:%.*]] = add i64 [[EVL_BASED_IV20]], 0
 ; CHECK-NEXT:    [[TMP36:%.*]] = mul nsw i64 [[TMP35]], [[STRIDE]]
 ; CHECK-NEXT:    [[TMP37:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP36]]
 ; CHECK-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 2 x i256> @llvm.experimental.vp.strided.load.nxv2i256.p0.i64(ptr align 4 [[TMP37]], i64 [[TMP33]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP34]])
@@ -1013,28 +1013,28 @@ define float @load_factor_8(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[TMP43:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } [[DEINTERLEAVED_RESULTS]], 5
 ; CHECK-NEXT:    [[TMP44:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } [[DEINTERLEAVED_RESULTS]], 6
 ; CHECK-NEXT:    [[TMP45:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } [[DEINTERLEAVED_RESULTS]], 7
-; CHECK-NEXT:    [[VP_OP25:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[TMP38]], <vscale x 2 x float> [[VEC_PHI23]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP34]])
-; CHECK-NEXT:    [[VP_OP26:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP25]], <vscale x 2 x float> [[TMP39]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP34]])
-; CHECK-NEXT:    [[VP_OP27:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP26]], <vscale x 2 x float> [[TMP40]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP34]])
-; CHECK-NEXT:    [[VP_OP28:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP27]], <vscale x 2 x float> [[TMP41]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP34]])
-; CHECK-NEXT:    [[VP_OP29:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP28]], <vscale x 2 x float> [[TMP42]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP34]])
-; CHECK-NEXT:    [[VP_OP30:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP29]], <vscale x 2 x float> [[TMP43]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP34]])
-; CHECK-NEXT:    [[VP_OP31:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP30]], <vscale x 2 x float> [[TMP44]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP34]])
-; CHECK-NEXT:    [[VP_OP32:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP31]], <vscale x 2 x float> [[TMP45]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP34]])
-; CHECK-NEXT:    [[VP_OP_MERGE33]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x float> [[VP_OP32]], <vscale x 2 x float> [[VEC_PHI23]], i32 [[TMP34]])
+; CHECK-NEXT:    [[VP_OP24:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[TMP38]], <vscale x 2 x float> [[VEC_PHI22]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP34]])
+; CHECK-NEXT:    [[VP_OP25:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP24]], <vscale x 2 x float> [[TMP39]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP34]])
+; CHECK-NEXT:    [[VP_OP26:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP25]], <vscale x 2 x float> [[TMP40]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP34]])
+; CHECK-NEXT:    [[VP_OP27:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP26]], <vscale x 2 x float> [[TMP41]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP34]])
+; CHECK-NEXT:    [[VP_OP28:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP27]], <vscale x 2 x float> [[TMP42]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP34]])
+; CHECK-NEXT:    [[VP_OP29:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP28]], <vscale x 2 x float> [[TMP43]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP34]])
+; CHECK-NEXT:    [[VP_OP30:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP29]], <vscale x 2 x float> [[TMP44]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP34]])
+; CHECK-NEXT:    [[VP_OP31:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP30]], <vscale x 2 x float> [[TMP45]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP34]])
+; CHECK-NEXT:    [[VP_OP_MERGE32]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x float> [[VP_OP31]], <vscale x 2 x float> [[VEC_PHI22]], i32 [[TMP34]])
 ; CHECK-NEXT:    [[TMP46:%.*]] = zext i32 [[TMP34]] to i64
-; CHECK-NEXT:    [[INDEX_EVL_NEXT34]] = add nuw i64 [[TMP46]], [[EVL_BASED_IV21]]
-; CHECK-NEXT:    [[TMP47:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT34]], [[N]]
-; CHECK-NEXT:    br i1 [[TMP47]], label [[MIDDLE_BLOCK16:%.*]], label [[VECTOR_BODY19]], !llvm.loop [[LOOP21:![0-9]+]]
-; CHECK:       middle.block16:
-; CHECK-NEXT:    [[TMP48:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE33]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP30]])
+; CHECK-NEXT:    [[INDEX_EVL_NEXT33]] = add nuw i64 [[TMP46]], [[EVL_BASED_IV20]]
+; CHECK-NEXT:    [[TMP47:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT33]], [[N]]
+; CHECK-NEXT:    br i1 [[TMP47]], label [[MIDDLE_BLOCK34:%.*]], label [[VECTOR_BODY18]], !llvm.loop [[LOOP21:![0-9]+]]
+; CHECK:       middle.block34:
+; CHECK-NEXT:    [[TMP48:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE32]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP30]])
 ; CHECK-NEXT:    [[TMP49:%.*]] = fadd fast float 0.000000e+00, [[TMP48]]
 ; CHECK-NEXT:    br label [[EXIT]]
-; CHECK:       scalar.ph17:
+; CHECK:       scalar.ph16:
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH17]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
-; CHECK-NEXT:    [[RED_069:%.*]] = phi float [ 0.000000e+00, [[SCALAR_PH17]] ], [ [[ADD36:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH16]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[RED_069:%.*]] = phi float [ 0.000000e+00, [[SCALAR_PH16]] ], [ [[ADD36:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP50:%.*]] = mul nsw i64 [[INDVARS_IV]], [[STRIDE]]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP50]]
 ; CHECK-NEXT:    [[TMP51:%.*]] = load float, ptr [[ARRAYIDX]], align 4
@@ -1071,7 +1071,7 @@ define float @load_factor_8(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP22:![0-9]+]]
 ; CHECK:       exit:
-; CHECK-NEXT:    [[ADD36_LCSSA:%.*]] = phi float [ [[ADD36]], [[FOR_BODY]] ], [ [[TMP29]], [[MIDDLE_BLOCK]] ], [ [[TMP49]], [[MIDDLE_BLOCK16]] ]
+; CHECK-NEXT:    [[ADD36_LCSSA:%.*]] = phi float [ [[ADD36]], [[FOR_BODY]] ], [ [[TMP29]], [[MIDDLE_BLOCK]] ], [ [[TMP49]], [[MIDDLE_BLOCK34]] ]
 ; CHECK-NEXT:    ret float [[ADD36_LCSSA]]
 ;
 
@@ -1172,49 +1172,49 @@ define float @load_factor_5_with_gap(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ false, [[VECTOR_SCEVCHECK]] ]
-; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label [[SCALAR_PH9:%.*]], label [[VECTOR_PH10:%.*]]
-; CHECK:       vector.ph10:
+; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label [[SCALAR_PH8:%.*]], label [[VECTOR_PH9:%.*]]
+; CHECK:       vector.ph9:
 ; CHECK-NEXT:    [[TMP18:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP19:%.*]] = shl i64 [[STRIDE]], 2
-; CHECK-NEXT:    br label [[VECTOR_BODY11:%.*]]
-; CHECK:       vector.body11:
-; CHECK-NEXT:    [[INDEX12:%.*]] = phi i64 [ 0, [[VECTOR_PH10]] ], [ [[INDEX_EVL_NEXT25:%.*]], [[VECTOR_BODY11]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV13:%.*]] = phi i64 [ 0, [[VECTOR_PH10]] ], [ [[INDEX_EVL_NEXT25]], [[VECTOR_BODY11]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV14:%.*]] = phi i32 [ [[TMP18]], [[VECTOR_PH10]] ], [ [[TMP20:%.*]], [[VECTOR_BODY11]] ]
-; CHECK-NEXT:    [[VEC_PHI15:%.*]] = phi <vscale x 2 x float> [ zeroinitializer, [[VECTOR_PH10]] ], [ [[VP_OP_MERGE24:%.*]], [[VECTOR_BODY11]] ]
-; CHECK-NEXT:    [[AVL16:%.*]] = sub i64 [[N]], [[EVL_BASED_IV13]]
-; CHECK-NEXT:    [[TMP20]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL16]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP21:%.*]] = add i64 [[EVL_BASED_IV13]], 0
+; CHECK-NEXT:    br label [[VECTOR_BODY10:%.*]]
+; CHECK:       vector.body10:
+; CHECK-NEXT:    [[INDEX11:%.*]] = phi i64 [ 0, [[VECTOR_PH9]] ], [ [[INDEX_EVL_NEXT24:%.*]], [[VECTOR_BODY10]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV12:%.*]] = phi i64 [ 0, [[VECTOR_PH9]] ], [ [[INDEX_EVL_NEXT24]], [[VECTOR_BODY10]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV13:%.*]] = phi i32 [ [[TMP18]], [[VECTOR_PH9]] ], [ [[TMP20:%.*]], [[VECTOR_BODY10]] ]
+; CHECK-NEXT:    [[VEC_PHI14:%.*]] = phi <vscale x 2 x float> [ zeroinitializer, [[VECTOR_PH9]] ], [ [[VP_OP_MERGE23:%.*]], [[VECTOR_BODY10]] ]
+; CHECK-NEXT:    [[AVL15:%.*]] = sub i64 [[N]], [[EVL_BASED_IV12]]
+; CHECK-NEXT:    [[TMP20]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL15]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP21:%.*]] = add i64 [[EVL_BASED_IV12]], 0
 ; CHECK-NEXT:    [[TMP22:%.*]] = mul nsw i64 [[TMP21]], [[STRIDE]]
 ; CHECK-NEXT:    [[TMP23:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP22]]
 ; CHECK-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 2 x float> @llvm.experimental.vp.strided.load.nxv2f32.p0.i64(ptr align 4 [[TMP23]], i64 [[TMP19]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP20]])
-; CHECK-NEXT:    [[VP_OP17:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_STRIDED_LOAD]], <vscale x 2 x float> [[VEC_PHI15]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP20]])
+; CHECK-NEXT:    [[VP_OP16:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_STRIDED_LOAD]], <vscale x 2 x float> [[VEC_PHI14]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP20]])
 ; CHECK-NEXT:    [[TMP24:%.*]] = add nsw i64 [[TMP22]], 1
 ; CHECK-NEXT:    [[TMP25:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP24]]
-; CHECK-NEXT:    [[VP_STRIDED_LOAD18:%.*]] = call <vscale x 2 x float> @llvm.experimental.vp.strided.load.nxv2f32.p0.i64(ptr align 4 [[TMP25]], i64 [[TMP19]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP20]])
-; CHECK-NEXT:    [[VP_OP19:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP17]], <vscale x 2 x float> [[VP_STRIDED_LOAD18]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP20]])
+; CHECK-NEXT:    [[VP_STRIDED_LOAD17:%.*]] = call <vscale x 2 x float> @llvm.experimental.vp.strided.load.nxv2f32.p0.i64(ptr align 4 [[TMP25]], i64 [[TMP19]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP20]])
+; CHECK-NEXT:    [[VP_OP18:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP16]], <vscale x 2 x float> [[VP_STRIDED_LOAD17]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP20]])
 ; CHECK-NEXT:    [[TMP26:%.*]] = add nsw i64 [[TMP22]], 2
 ; CHECK-NEXT:    [[TMP27:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP26]]
-; CHECK-NEXT:    [[VP_STRIDED_LOAD20:%.*]] = call <vscale x 2 x float> @llvm.experimental.vp.strided.load.nxv2f32.p0.i64(ptr align 4 [[TMP27]], i64 [[TMP19]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP20]])
-; CHECK-NEXT:    [[VP_OP21:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP19]], <vscale x 2 x float> [[VP_STRIDED_LOAD20]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP20]])
+; CHECK-NEXT:    [[VP_STRIDED_LOAD19:%.*]] = call <vscale x 2 x float> @llvm.experimental.vp.strided.load.nxv2f32.p0.i64(ptr align 4 [[TMP27]], i64 [[TMP19]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP20]])
+; CHECK-NEXT:    [[VP_OP20:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP18]], <vscale x 2 x float> [[VP_STRIDED_LOAD19]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP20]])
 ; CHECK-NEXT:    [[TMP28:%.*]] = add nsw i64 [[TMP22]], 4
 ; CHECK-NEXT:    [[TMP29:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP28]]
-; CHECK-NEXT:    [[VP_STRIDED_LOAD22:%.*]] = call <vscale x 2 x float> @llvm.experimental.vp.strided.load.nxv2f32.p0.i64(ptr align 4 [[TMP29]], i64 [[TMP19]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP20]])
-; CHECK-NEXT:    [[VP_OP23:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP21]], <vscale x 2 x float> [[VP_STRIDED_LOAD22]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP20]])
-; CHECK-NEXT:    [[VP_OP_MERGE24]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x float> [[VP_OP23]], <vscale x 2 x float> [[VEC_PHI15]], i32 [[TMP20]])
+; CHECK-NEXT:    [[VP_STRIDED_LOAD21:%.*]] = call <vscale x 2 x float> @llvm.experimental.vp.strided.load.nxv2f32.p0.i64(ptr align 4 [[TMP29]], i64 [[TMP19]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP20]])
+; CHECK-NEXT:    [[VP_OP22:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP20]], <vscale x 2 x float> [[VP_STRIDED_LOAD21]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP20]])
+; CHECK-NEXT:    [[VP_OP_MERGE23]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x float> [[VP_OP22]], <vscale x 2 x float> [[VEC_PHI14]], i32 [[TMP20]])
 ; CHECK-NEXT:    [[TMP30:%.*]] = zext i32 [[TMP20]] to i64
-; CHECK-NEXT:    [[INDEX_EVL_NEXT25]] = add nuw i64 [[TMP30]], [[EVL_BASED_IV13]]
-; CHECK-NEXT:    [[TMP31:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT25]], [[N]]
-; CHECK-NEXT:    br i1 [[TMP31]], label [[MIDDLE_BLOCK8:%.*]], label [[VECTOR_BODY11]], !llvm.loop [[LOOP24:![0-9]+]]
-; CHECK:       middle.block8:
-; CHECK-NEXT:    [[TMP32:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE24]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP18]])
+; CHECK-NEXT:    [[INDEX_EVL_NEXT24]] = add nuw i64 [[TMP30]], [[EVL_BASED_IV12]]
+; CHECK-NEXT:    [[TMP31:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT24]], [[N]]
+; CHECK-NEXT:    br i1 [[TMP31]], label [[MIDDLE_BLOCK25:%.*]], label [[VECTOR_BODY10]], !llvm.loop [[LOOP24:![0-9]+]]
+; CHECK:       middle.block25:
+; CHECK-NEXT:    [[TMP32:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE23]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP18]])
 ; CHECK-NEXT:    [[TMP33:%.*]] = fadd fast float 0.000000e+00, [[TMP32]]
 ; CHECK-NEXT:    br label [[EXIT]]
-; CHECK:       scalar.ph9:
+; CHECK:       scalar.ph8:
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH9]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
-; CHECK-NEXT:    [[RED_069:%.*]] = phi float [ 0.000000e+00, [[SCALAR_PH9]] ], [ [[ADD21:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH8]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[RED_069:%.*]] = phi float [ 0.000000e+00, [[SCALAR_PH8]] ], [ [[ADD21:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP34:%.*]] = mul nsw i64 [[INDVARS_IV]], [[STRIDE]]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP34]]
 ; CHECK-NEXT:    [[TMP35:%.*]] = load float, ptr [[ARRAYIDX]], align 4
@@ -1235,7 +1235,7 @@ define float @load_factor_5_with_gap(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP25:![0-9]+]]
 ; CHECK:       exit:
-; CHECK-NEXT:    [[ADD21_LCSSA:%.*]] = phi float [ [[ADD21]], [[FOR_BODY]] ], [ [[TMP17]], [[MIDDLE_BLOCK]] ], [ [[TMP33]], [[MIDDLE_BLOCK8]] ]
+; CHECK-NEXT:    [[ADD21_LCSSA:%.*]] = phi float [ [[ADD21]], [[FOR_BODY]] ], [ [[TMP17]], [[MIDDLE_BLOCK]] ], [ [[TMP33]], [[MIDDLE_BLOCK25]] ]
 ; CHECK-NEXT:    ret float [[ADD21_LCSSA]]
 ;
 

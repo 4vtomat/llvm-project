@@ -53,9 +53,9 @@
 ; VPLAN-NEXT:      EMIT branch-on-count vp<%index.evl.next>, ir<%wide.trip.count>
 ; VPLAN-NEXT:    No successors
 ; VPLAN-NEXT:  }
-; VPLAN-NEXT:  Successor(s): ir-bb<middle.block>
+; VPLAN-NEXT:  Successor(s): middle.block
 ; VPLAN-EMPTY:
-; VPLAN-NEXT:  ir-bb<middle.block>:
+; VPLAN-NEXT:  middle.block:
 ; VPLAN-NEXT:    EMIT branch-on-cond ir<true>
 ; VPLAN-NEXT:  Successor(s): ir-bb<for.end.loopexit>, ir-bb<scalar.ph>
 ; VPLAN-EMPTY:

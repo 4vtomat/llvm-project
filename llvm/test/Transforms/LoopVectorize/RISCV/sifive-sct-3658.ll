@@ -82,14 +82,14 @@ define void @_Z3fn1v(i32 %n, ptr %k, i32 %l) {
 ; CHECK-NEXT:    [[BOUND18:%.*]] = icmp ult ptr [[UMIN]], getelementptr inbounds nuw (i8, ptr @m, i64 4)
 ; CHECK-NEXT:    [[FOUND_CONFLICT9:%.*]] = and i1 [[BOUND07]], [[BOUND18]]
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT9]], label [[SCALAR_PH11]], label [[VECTOR_PH12:%.*]]
-; CHECK:       vector.ph11:
+; CHECK:       vector.ph10:
 ; CHECK-NEXT:    [[TMP33:%.*]] = mul i64 [[TMP23]], [[TMP0]]
 ; CHECK-NEXT:    [[IND_END13:%.*]] = add i64 [[BC_RESUME_VAL]], [[TMP33]]
 ; CHECK-NEXT:    [[DOTCAST15:%.*]] = trunc i64 [[TMP23]] to i32
 ; CHECK-NEXT:    [[IND_END16:%.*]] = add i32 [[BC_RESUME_VAL2]], [[DOTCAST15]]
 ; CHECK-NEXT:    [[TMP34:%.*]] = shl nsw i64 [[TMP0]], 3
 ; CHECK-NEXT:    br label [[VECTOR_BODY18:%.*]]
-; CHECK:       vector.body13:
+; CHECK:       vector.body12:
 ; CHECK-NEXT:    [[INDEX19:%.*]] = phi i64 [ 0, [[VECTOR_PH12]] ], [ [[INDEX_EVL_NEXT22:%.*]], [[VECTOR_BODY18]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV20:%.*]] = phi i64 [ 0, [[VECTOR_PH12]] ], [ [[INDEX_EVL_NEXT22]], [[VECTOR_BODY18]] ]
 ; CHECK-NEXT:    [[TMP38:%.*]] = sub i64 [[TMP23]], [[EVL_BASED_IV20]]
@@ -104,10 +104,10 @@ define void @_Z3fn1v(i32 %n, ptr %k, i32 %l) {
 ; CHECK-NEXT:    [[TMP42:%.*]] = zext i32 [[TMP39]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT22]] = add nuw i64 [[TMP42]], [[EVL_BASED_IV20]]
 ; CHECK-NEXT:    [[TMP43:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT22]], [[TMP23]]
-; CHECK-NEXT:    br i1 [[TMP43]], label [[MIDDLE_BLOCK9:%.*]], label [[VECTOR_BODY18]], !llvm.loop [[LOOP13:![0-9]+]]
-; CHECK:       middle.block9:
+; CHECK-NEXT:    br i1 [[TMP43]], label [[MIDDLE_BLOCK18:%.*]], label [[VECTOR_BODY18]], !llvm.loop [[LOOP13:![0-9]+]]
+; CHECK:       middle.block18:
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
-; CHECK:       scalar.ph10:
+; CHECK:       scalar.ph9:
 ; CHECK-NEXT:    br label [[FOR_BODY_I:%.*]]
 ; CHECK:       for.body.i:
 ; CHECK-NEXT:    [[INDVARS_IV_I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH11]] ], [ [[INDVARS_IV_NEXT_I:%.*]], [[FOR_BODY_I]] ]
