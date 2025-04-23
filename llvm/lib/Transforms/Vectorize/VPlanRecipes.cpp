@@ -3380,7 +3380,6 @@ void VPCSAExtractScalarRecipe::print(raw_ostream &O, const Twine &Indent,
 
 void VPCSAExtractScalarRecipe::execute(VPTransformState &State) {
   IRBuilder<>::InsertPointGuard Guard(State.Builder);
-  State.Builder.SetInsertPoint(State.CFG.ExitBB->getFirstNonPHIIt());
 
   Value *MaskSel = State.get(getVPMaskSel());
   Value *DataSel = State.get(getVPDataSel());

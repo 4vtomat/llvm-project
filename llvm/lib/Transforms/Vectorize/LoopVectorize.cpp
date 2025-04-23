@@ -11403,12 +11403,12 @@ addCSAPreprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
     if (!EnableRISCVCSA) {
       VPVLPhi =
           new VPInstruction(VPInstruction::CSAVLPhi, {}, DL, "csa.vl.phi");
-      HeaderVPBB->appendRecipe(VPVLPhi);
+      VPVLPhi->insertBefore(*HeaderVPBB, HeaderVPBB->getFirstNonPhi());
     }
 
     auto *VPMaskPhi = new VPInstruction(VPInstruction::CSAMaskPhi, {VPInitMask},
                                         DL, "csa.mask.phi");
-    HeaderVPBB->appendRecipe(VPMaskPhi);
+    VPMaskPhi->insertBefore(*HeaderVPBB, HeaderVPBB->getFirstNonPhi());
 
     auto *S = new VPCSAState(VPInitScalar, VPInitMask, VPInitData, VPVLPhi,
                              VPMaskPhi);
