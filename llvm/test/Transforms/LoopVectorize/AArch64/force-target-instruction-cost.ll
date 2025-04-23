@@ -67,7 +67,7 @@ define void @test_iv_cost(ptr %ptr.start, i8 %a, i64 %b) {
 ; CHECK-NEXT:    [[C:%.*]] = icmp eq i64 [[START]], 0
 ; CHECK-NEXT:    br i1 [[C]], label %[[EXIT:.*]], label %[[ITER_CHECK:.*]]
 ; CHECK:       [[ITER_CHECK]]:
-; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[START]], 4
+; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[START]], 8
 ; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[VEC_EPILOG_SCALAR_PH:.*]], label %[[VECTOR_MAIN_LOOP_ITER_CHECK:.*]]
 ; CHECK:       [[VECTOR_MAIN_LOOP_ITER_CHECK]]:
 ; CHECK-NEXT:    [[MIN_ITERS_CHECK1:%.*]] = icmp ult i64 [[START]], 32
@@ -94,11 +94,11 @@ define void @test_iv_cost(ptr %ptr.start, i8 %a, i64 %b) {
 ; CHECK-NEXT:    [[IND_END:%.*]] = sub i64 [[START]], [[N_VEC]]
 ; CHECK-NEXT:    [[IND_END2:%.*]] = getelementptr i8, ptr [[PTR_START]], i64 [[N_VEC]]
 ; CHECK-NEXT:    [[N_VEC_REMAINING:%.*]] = sub i64 [[START]], [[N_VEC]]
-; CHECK-NEXT:    [[MIN_EPILOG_ITERS_CHECK:%.*]] = icmp ult i64 [[N_VEC_REMAINING]], 4
+; CHECK-NEXT:    [[MIN_EPILOG_ITERS_CHECK:%.*]] = icmp ult i64 [[N_VEC_REMAINING]], 8
 ; CHECK-NEXT:    br i1 [[MIN_EPILOG_ITERS_CHECK]], label %[[VEC_EPILOG_SCALAR_PH]], label %[[VEC_EPILOG_PH]]
 ; CHECK:       [[VEC_EPILOG_PH]]:
 ; CHECK-NEXT:    [[VEC_EPILOG_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], %[[VEC_EPILOG_ITER_CHECK]] ], [ 0, %[[VECTOR_MAIN_LOOP_ITER_CHECK]] ]
-; CHECK-NEXT:    [[N_MOD_VF2:%.*]] = urem i64 [[START]], 4
+; CHECK-NEXT:    [[N_MOD_VF2:%.*]] = urem i64 [[START]], 8
 ; CHECK-NEXT:    [[N_VEC3:%.*]] = sub i64 [[START]], [[N_MOD_VF2]]
 ; CHECK-NEXT:    [[IND_END1:%.*]] = sub i64 [[START]], [[N_VEC3]]
 ; CHECK-NEXT:    [[IND_END5:%.*]] = getelementptr i8, ptr [[PTR_START]], i64 [[N_VEC3]]
@@ -108,8 +108,8 @@ define void @test_iv_cost(ptr %ptr.start, i8 %a, i64 %b) {
 ; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[PTR_START]], i64 [[TMP0]]
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
-; CHECK-NEXT:    store <4 x i8> zeroinitializer, ptr [[TMP2]], align 1
-; CHECK-NEXT:    [[INDEX_NEXT10]] = add nuw i64 [[INDEX]], 4
+; CHECK-NEXT:    store <8 x i8> zeroinitializer, ptr [[TMP2]], align 1
+; CHECK-NEXT:    [[INDEX_NEXT10]] = add nuw i64 [[INDEX]], 8
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_NEXT10]], [[N_VEC3]]
 ; CHECK-NEXT:    br i1 [[TMP7]], label %[[VEC_EPILOG_MIDDLE_BLOCK:.*]], label %[[VEC_EPILOG_VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       [[VEC_EPILOG_MIDDLE_BLOCK]]:
@@ -155,6 +155,7 @@ define void @test_exit_branch_cost(ptr %dst, ptr noalias %x.ptr, ptr noalias %y.
 ; CHECK-LABEL: define void @test_exit_branch_cost(
 ; CHECK-SAME: ptr [[DST:%.*]], ptr noalias [[X_PTR:%.*]], ptr noalias [[Y_PTR:%.*]], ptr [[DST_1:%.*]], i1 [[C_4:%.*]], ptr [[SRC:%.*]], ptr [[DST_3:%.*]], i1 [[C_3:%.*]], ptr [[DST_2:%.*]]) {
 ; CHECK-NEXT:  [[ENTRY:.*]]:
+<<<<<<< HEAD
 ; CHECK-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_MEMCHECK:.*]]
 ; CHECK:       [[VECTOR_MEMCHECK]]:
 ; CHECK-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[DST_1]], i64 8
@@ -285,9 +286,11 @@ define void @test_exit_branch_cost(ptr %dst, ptr noalias %x.ptr, ptr noalias %y.
 ; CHECK-NEXT:    br i1 false, label %[[EXIT:.*]], label %[[SCALAR_PH]]
 ; CHECK:       [[SCALAR_PH]]:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 64, %[[MIDDLE_BLOCK]] ], [ 0, %[[ENTRY]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+=======
+>>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    br label %[[LOOP_HEADER:.*]]
 ; CHECK:       [[LOOP_HEADER]]:
-; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ [[IV_NEXT:%.*]], %[[LOOP_LATCH:.*]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
+; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ [[IV_NEXT:%.*]], %[[LOOP_LATCH:.*]] ], [ 0, %[[ENTRY]] ]
 ; CHECK-NEXT:    [[X_GEP:%.*]] = getelementptr i64, ptr [[X_PTR]], i64 [[IV]]
 ; CHECK-NEXT:    [[X:%.*]] = load i64, ptr [[X_GEP]], align 8
 ; CHECK-NEXT:    [[Y_GEP:%.*]] = getelementptr i32, ptr [[Y_PTR]], i64 [[IV]]
@@ -321,7 +324,7 @@ define void @test_exit_branch_cost(ptr %dst, ptr noalias %x.ptr, ptr noalias %y.
 ; CHECK:       [[LOOP_LATCH]]:
 ; CHECK-NEXT:    [[IV_NEXT]] = add i64 [[IV]], 1
 ; CHECK-NEXT:    [[EC:%.*]] = icmp eq i64 [[IV]], 64
-; CHECK-NEXT:    br i1 [[EC]], label %[[EXIT]], label %[[LOOP_HEADER]], !llvm.loop [[LOOP22:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EC]], label %[[EXIT:.*]], label %[[LOOP_HEADER]]
 ; CHECK:       [[EXIT]]:
 ; CHECK-NEXT:    ret void
 ;
@@ -387,20 +390,4 @@ declare i64 @llvm.umin.i64(i64, i64)
 ; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META1]], [[META2]]}
 ; CHECK: [[LOOP5]] = distinct !{[[LOOP5]], [[META1]], [[META2]]}
 ; CHECK: [[LOOP6]] = distinct !{[[LOOP6]], [[META2]], [[META1]]}
-; CHECK: [[META7]] = !{[[META8:![0-9]+]]}
-; CHECK: [[META8]] = distinct !{[[META8]], [[META9:![0-9]+]]}
-; CHECK: [[META9]] = distinct !{[[META9]], !"LVerDomain"}
-; CHECK: [[META10]] = !{[[META11:![0-9]+]], [[META12:![0-9]+]], [[META13:![0-9]+]], [[META14:![0-9]+]]}
-; CHECK: [[META11]] = distinct !{[[META11]], [[META9]]}
-; CHECK: [[META12]] = distinct !{[[META12]], [[META9]]}
-; CHECK: [[META13]] = distinct !{[[META13]], [[META9]]}
-; CHECK: [[META14]] = distinct !{[[META14]], [[META9]]}
-; CHECK: [[META15]] = !{[[META11]]}
-; CHECK: [[META16]] = !{[[META12]], [[META13]], [[META14]]}
-; CHECK: [[META17]] = !{[[META12]]}
-; CHECK: [[META18]] = !{[[META13]], [[META14]]}
-; CHECK: [[META19]] = !{[[META14]]}
-; CHECK: [[META20]] = !{[[META13]]}
-; CHECK: [[LOOP21]] = distinct !{[[LOOP21]], [[META1]], [[META2]]}
-; CHECK: [[LOOP22]] = distinct !{[[LOOP22]], [[META1]]}
 ;.

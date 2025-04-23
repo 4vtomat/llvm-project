@@ -22,7 +22,7 @@ define void @wide_or_replaced_with_add_vpinstruction(ptr %src, ptr noalias %dst)
 ; CHECK:  Cost of 0 for VF 2: CLONE ir<%g.dst> = getelementptr ir<%dst>, ir<%or>
 ; CHECK:  Cost of 0 for VF 2: vp<%6> = vector-pointer ir<%g.dst>
 ; CHECK:  Cost of 1 for VF 2: WIDEN store vp<%6>, ir<%iv.4>, ir<%c>
-; CHECK:  Cost of 0 for VF 2: EMIT vp<%index.next> = add nuw vp<%3>, vp<%1>
+; CHECK:  Cost of 1 for VF 2: EMIT vp<%index.next> = add nuw vp<%3>, vp<%1>
 ; CHECK:  Cost of 0 for VF 2: EMIT branch-on-count vp<%index.next>, vp<%2>
 ; CHECK:  Cost of 0 for VF 2: vector loop backedge
 ; CHECK:  Cost of 1 for VF 4: induction instruction %iv.next = add nuw nsw i64 %iv, 1
@@ -40,7 +40,7 @@ define void @wide_or_replaced_with_add_vpinstruction(ptr %src, ptr noalias %dst)
 ; CHECK:  Cost of 0 for VF 4: CLONE ir<%g.dst> = getelementptr ir<%dst>, ir<%or>
 ; CHECK:  Cost of 0 for VF 4: vp<%6> = vector-pointer ir<%g.dst>
 ; CHECK:  Cost of 1 for VF 4: WIDEN store vp<%6>, ir<%iv.4>, ir<%c>
-; CHECK:  Cost of 0 for VF 4: EMIT vp<%index.next> = add nuw vp<%3>, vp<%1>
+; CHECK:  Cost of 1 for VF 4: EMIT vp<%index.next> = add nuw vp<%3>, vp<%1>
 ; CHECK:  Cost of 0 for VF 4: EMIT branch-on-count vp<%index.next>, vp<%2>
 ; CHECK:  Cost of 0 for VF 4: vector loop backedge
 ; CHECK:  Cost of 1 for VF 4: induction instruction %iv.next = add nuw nsw i64 %iv, 1

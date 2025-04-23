@@ -10,6 +10,7 @@ define i32 @dotp(ptr %a, ptr %b) #0 {
 ; CHECK-INTERLEAVE1-LABEL: define i32 @dotp(
 ; CHECK-INTERLEAVE1-SAME: ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0:[0-9]+]] {
 ; CHECK-INTERLEAVE1-NEXT:  entry:
+<<<<<<< HEAD
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
 ; CHECK-INTERLEAVE1-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
@@ -24,13 +25,22 @@ define i32 @dotp(ptr %a, ptr %b) #0 {
 ; CHECK-INTERLEAVE1:       vector.body:
 ; CHECK-INTERLEAVE1-NEXT:    [[INDEX1:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT1:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-INTERLEAVE1-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 4 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP14:%.*]], [[VECTOR_BODY]] ]
+=======
+; CHECK-INTERLEAVE1-NEXT:    br i1 false, label [[VEC_EPILOG_PH:%.*]], label [[VECTOR_PH1:%.*]]
+; CHECK-INTERLEAVE1:       vector.ph:
+; CHECK-INTERLEAVE1-NEXT:    br label [[VECTOR_BODY1:%.*]]
+; CHECK-INTERLEAVE1:       vector.body:
+; CHECK-INTERLEAVE1-NEXT:    [[INDEX1:%.*]] = phi i64 [ 0, [[VECTOR_PH1]] ], [ [[INDEX_NEXT1:%.*]], [[VECTOR_BODY1]] ]
+; CHECK-INTERLEAVE1-NEXT:    [[VEC_PHI:%.*]] = phi <16 x i32> [ zeroinitializer, [[VECTOR_PH1]] ], [ [[TMP8:%.*]], [[VECTOR_BODY1]] ]
+>>>>>>> origin/sifive-dev
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP12:%.*]] = add i64 [[INDEX1]], 0
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP16:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP12]]
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP17:%.*]] = getelementptr i8, ptr [[TMP16]], i32 0
-; CHECK-INTERLEAVE1-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 4 x i8>, ptr [[TMP17]], align 1
-; CHECK-INTERLEAVE1-NEXT:    [[TMP9:%.*]] = zext <vscale x 4 x i8> [[WIDE_LOAD]] to <vscale x 4 x i32>
+; CHECK-INTERLEAVE1-NEXT:    [[WIDE_LOAD:%.*]] = load <16 x i8>, ptr [[TMP17]], align 1
+; CHECK-INTERLEAVE1-NEXT:    [[TMP3:%.*]] = zext <16 x i8> [[WIDE_LOAD]] to <16 x i32>
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP12]]
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP21:%.*]] = getelementptr i8, ptr [[TMP20]], i32 0
+<<<<<<< HEAD
 ; CHECK-INTERLEAVE1-NEXT:    [[WIDE_LOAD1:%.*]] = load <vscale x 4 x i8>, ptr [[TMP21]], align 1
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP18:%.*]] = zext <vscale x 4 x i8> [[WIDE_LOAD1]] to <vscale x 4 x i32>
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP13:%.*]] = mul <vscale x 4 x i32> [[TMP18]], [[TMP9]]
@@ -46,6 +56,22 @@ define i32 @dotp(ptr %a, ptr %b) #0 {
 ; CHECK-INTERLEAVE1-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; CHECK-INTERLEAVE1-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[TMP27]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY]] ]
 ; CHECK-INTERLEAVE1-NEXT:    br label [[FOR_BODY:%.*]]
+=======
+; CHECK-INTERLEAVE1-NEXT:    [[WIDE_LOAD1:%.*]] = load <16 x i8>, ptr [[TMP21]], align 1
+; CHECK-INTERLEAVE1-NEXT:    [[TMP6:%.*]] = zext <16 x i8> [[WIDE_LOAD1]] to <16 x i32>
+; CHECK-INTERLEAVE1-NEXT:    [[TMP7:%.*]] = mul <16 x i32> [[TMP6]], [[TMP3]]
+; CHECK-INTERLEAVE1-NEXT:    [[TMP8]] = add <16 x i32> [[TMP7]], [[VEC_PHI]]
+; CHECK-INTERLEAVE1-NEXT:    [[INDEX_NEXT1]] = add nuw i64 [[INDEX1]], 16
+; CHECK-INTERLEAVE1-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_NEXT1]], 1024
+; CHECK-INTERLEAVE1-NEXT:    br i1 [[TMP9]], label [[VEC_EPILOG_ITER_CHECK:%.*]], label [[VECTOR_BODY1]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-INTERLEAVE1:       middle.block:
+; CHECK-INTERLEAVE1-NEXT:    [[TMP27:%.*]] = call i32 @llvm.vector.reduce.add.v16i32(<16 x i32> [[TMP8]])
+; CHECK-INTERLEAVE1-NEXT:    br i1 true, label [[FOR_EXIT:%.*]], label [[VEC_EPILOG_PH]]
+; CHECK-INTERLEAVE1:       scalar.ph:
+; CHECK-INTERLEAVE1-NEXT:    [[VEC_EPILOG_RESUME_VAL:%.*]] = phi i64 [ 1024, [[VEC_EPILOG_ITER_CHECK]] ], [ 0, [[VECTOR_PH:%.*]] ]
+; CHECK-INTERLEAVE1-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[TMP27]], [[VEC_EPILOG_ITER_CHECK]] ], [ 0, [[VECTOR_PH]] ]
+; CHECK-INTERLEAVE1-NEXT:    br label [[VECTOR_BODY:%.*]]
+>>>>>>> origin/sifive-dev
 ; CHECK-INTERLEAVE1:       for.body:
 ; CHECK-INTERLEAVE1-NEXT:    [[INDEX:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDEX_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-INTERLEAVE1-NEXT:    [[ACCUM:%.*]] = phi i32 [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
@@ -67,6 +93,7 @@ define i32 @dotp(ptr %a, ptr %b) #0 {
 ; CHECK-INTERLEAVED-LABEL: define i32 @dotp(
 ; CHECK-INTERLEAVED-SAME: ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0:[0-9]+]] {
 ; CHECK-INTERLEAVED-NEXT:  entry:
+<<<<<<< HEAD
 ; CHECK-INTERLEAVED-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-INTERLEAVED-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 8
 ; CHECK-INTERLEAVED-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
@@ -82,18 +109,26 @@ define i32 @dotp(ptr %a, ptr %b) #0 {
 ; CHECK-INTERLEAVED-NEXT:    [[INDEX1:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT1:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-INTERLEAVED-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 4 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP23:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-INTERLEAVED-NEXT:    [[VEC_PHI1:%.*]] = phi <vscale x 4 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP24:%.*]], [[VECTOR_BODY]] ]
+=======
+; CHECK-INTERLEAVED-NEXT:    br i1 false, label [[VEC_EPILOG_PH:%.*]], label [[VECTOR_PH1:%.*]]
+; CHECK-INTERLEAVED:       vector.ph:
+; CHECK-INTERLEAVED-NEXT:    br label [[VECTOR_BODY1:%.*]]
+; CHECK-INTERLEAVED:       vector.body:
+; CHECK-INTERLEAVED-NEXT:    [[INDEX1:%.*]] = phi i64 [ 0, [[VECTOR_PH1]] ], [ [[INDEX_NEXT1:%.*]], [[VECTOR_BODY1]] ]
+; CHECK-INTERLEAVED-NEXT:    [[VEC_PHI:%.*]] = phi <16 x i32> [ zeroinitializer, [[VECTOR_PH1]] ], [ [[TMP13:%.*]], [[VECTOR_BODY1]] ]
+; CHECK-INTERLEAVED-NEXT:    [[VEC_PHI1:%.*]] = phi <16 x i32> [ zeroinitializer, [[VECTOR_PH1]] ], [ [[TMP14:%.*]], [[VECTOR_BODY1]] ]
+>>>>>>> origin/sifive-dev
 ; CHECK-INTERLEAVED-NEXT:    [[TMP17:%.*]] = add i64 [[INDEX1]], 0
 ; CHECK-INTERLEAVED-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP17]]
 ; CHECK-INTERLEAVED-NEXT:    [[TMP21:%.*]] = getelementptr i8, ptr [[TMP20]], i32 0
-; CHECK-INTERLEAVED-NEXT:    [[TMP14:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-INTERLEAVED-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP14]], 4
-; CHECK-INTERLEAVED-NEXT:    [[TMP11:%.*]] = getelementptr i8, ptr [[TMP20]], i64 [[TMP10]]
-; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 4 x i8>, ptr [[TMP21]], align 1
-; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD2:%.*]] = load <vscale x 4 x i8>, ptr [[TMP11]], align 1
-; CHECK-INTERLEAVED-NEXT:    [[TMP12:%.*]] = zext <vscale x 4 x i8> [[WIDE_LOAD]] to <vscale x 4 x i32>
-; CHECK-INTERLEAVED-NEXT:    [[TMP13:%.*]] = zext <vscale x 4 x i8> [[WIDE_LOAD2]] to <vscale x 4 x i32>
+; CHECK-INTERLEAVED-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[TMP20]], i32 16
+; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD:%.*]] = load <16 x i8>, ptr [[TMP21]], align 1
+; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD2:%.*]] = load <16 x i8>, ptr [[TMP3]], align 1
+; CHECK-INTERLEAVED-NEXT:    [[TMP4:%.*]] = zext <16 x i8> [[WIDE_LOAD]] to <16 x i32>
+; CHECK-INTERLEAVED-NEXT:    [[TMP5:%.*]] = zext <16 x i8> [[WIDE_LOAD2]] to <16 x i32>
 ; CHECK-INTERLEAVED-NEXT:    [[TMP28:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP17]]
 ; CHECK-INTERLEAVED-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[TMP28]], i32 0
+<<<<<<< HEAD
 ; CHECK-INTERLEAVED-NEXT:    [[TMP26:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-INTERLEAVED-NEXT:    [[TMP27:%.*]] = mul i64 [[TMP26]], 4
 ; CHECK-INTERLEAVED-NEXT:    [[TMP18:%.*]] = getelementptr i8, ptr [[TMP28]], i64 [[TMP27]]
@@ -117,6 +152,28 @@ define i32 @dotp(ptr %a, ptr %b) #0 {
 ; CHECK-INTERLEAVED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; CHECK-INTERLEAVED-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[TMP16]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY]] ]
 ; CHECK-INTERLEAVED-NEXT:    br label [[FOR_BODY:%.*]]
+=======
+; CHECK-INTERLEAVED-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[TMP28]], i32 16
+; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD3:%.*]] = load <16 x i8>, ptr [[TMP9]], align 1
+; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD4:%.*]] = load <16 x i8>, ptr [[TMP8]], align 1
+; CHECK-INTERLEAVED-NEXT:    [[TMP18:%.*]] = zext <16 x i8> [[WIDE_LOAD3]] to <16 x i32>
+; CHECK-INTERLEAVED-NEXT:    [[TMP10:%.*]] = zext <16 x i8> [[WIDE_LOAD4]] to <16 x i32>
+; CHECK-INTERLEAVED-NEXT:    [[TMP11:%.*]] = mul <16 x i32> [[TMP18]], [[TMP4]]
+; CHECK-INTERLEAVED-NEXT:    [[TMP12:%.*]] = mul <16 x i32> [[TMP10]], [[TMP5]]
+; CHECK-INTERLEAVED-NEXT:    [[TMP13]] = add <16 x i32> [[TMP11]], [[VEC_PHI]]
+; CHECK-INTERLEAVED-NEXT:    [[TMP14]] = add <16 x i32> [[TMP12]], [[VEC_PHI1]]
+; CHECK-INTERLEAVED-NEXT:    [[INDEX_NEXT1]] = add nuw i64 [[INDEX1]], 32
+; CHECK-INTERLEAVED-NEXT:    [[TMP15:%.*]] = icmp eq i64 [[INDEX_NEXT1]], 1024
+; CHECK-INTERLEAVED-NEXT:    br i1 [[TMP15]], label [[VEC_EPILOG_ITER_CHECK:%.*]], label [[VECTOR_BODY1]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-INTERLEAVED:       middle.block:
+; CHECK-INTERLEAVED-NEXT:    [[BIN_RDX:%.*]] = add <16 x i32> [[TMP14]], [[TMP13]]
+; CHECK-INTERLEAVED-NEXT:    [[TMP16:%.*]] = call i32 @llvm.vector.reduce.add.v16i32(<16 x i32> [[BIN_RDX]])
+; CHECK-INTERLEAVED-NEXT:    br i1 true, label [[FOR_EXIT:%.*]], label [[VEC_EPILOG_PH]]
+; CHECK-INTERLEAVED:       scalar.ph:
+; CHECK-INTERLEAVED-NEXT:    [[VEC_EPILOG_RESUME_VAL:%.*]] = phi i64 [ 1024, [[VEC_EPILOG_ITER_CHECK]] ], [ 0, [[VECTOR_PH:%.*]] ]
+; CHECK-INTERLEAVED-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[TMP16]], [[VEC_EPILOG_ITER_CHECK]] ], [ 0, [[VECTOR_PH]] ]
+; CHECK-INTERLEAVED-NEXT:    br label [[VECTOR_BODY:%.*]]
+>>>>>>> origin/sifive-dev
 ; CHECK-INTERLEAVED:       for.body:
 ; CHECK-INTERLEAVED-NEXT:    [[INDEX:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDEX_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-INTERLEAVED-NEXT:    [[ACCUM:%.*]] = phi i32 [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
@@ -2103,6 +2160,7 @@ define i32 @dotp_predicated(i64 %N, ptr %a, ptr %b) #0 {
 ; CHECK-INTERLEAVE1-LABEL: define i32 @dotp_predicated(
 ; CHECK-INTERLEAVE1-SAME: i64 [[N:%.*]], ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0]] {
 ; CHECK-INTERLEAVE1-NEXT:  entry:
+<<<<<<< HEAD
 ; CHECK-INTERLEAVE1-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-INTERLEAVE1:       vector.ph:
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
@@ -2144,6 +2202,35 @@ define i32 @dotp_predicated(i64 %N, ptr %a, ptr %b) #0 {
 ; CHECK-INTERLEAVE1:       middle.block:
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP22:%.*]] = call i32 @llvm.vector.reduce.add.nxv4i32(<vscale x 4 x i32> [[TMP19]])
 ; CHECK-INTERLEAVE1-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+=======
+; CHECK-INTERLEAVE1-NEXT:    [[MIN_ITERS_CHECK1:%.*]] = icmp ult i64 [[N]], 16
+; CHECK-INTERLEAVE1-NEXT:    br i1 [[MIN_ITERS_CHECK1]], label [[VEC_EPILOG_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK-INTERLEAVE1:       vector.ph:
+; CHECK-INTERLEAVE1-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N]], 16
+; CHECK-INTERLEAVE1-NEXT:    [[N_VEC:%.*]] = sub i64 [[N]], [[N_MOD_VF]]
+; CHECK-INTERLEAVE1-NEXT:    br label [[VECTOR_BODY:%.*]]
+; CHECK-INTERLEAVE1:       vector.body:
+; CHECK-INTERLEAVE1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-INTERLEAVE1-NEXT:    [[VEC_PHI:%.*]] = phi <16 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP9:%.*]], [[VECTOR_BODY]] ]
+; CHECK-INTERLEAVE1-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
+; CHECK-INTERLEAVE1-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[TMP0]]
+; CHECK-INTERLEAVE1-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i8, ptr [[TMP1]], i32 0
+; CHECK-INTERLEAVE1-NEXT:    [[WIDE_LOAD:%.*]] = load <16 x i8>, ptr [[TMP2]], align 1
+; CHECK-INTERLEAVE1-NEXT:    [[TMP3:%.*]] = sext <16 x i8> [[WIDE_LOAD]] to <16 x i32>
+; CHECK-INTERLEAVE1-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 [[TMP0]]
+; CHECK-INTERLEAVE1-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i8, ptr [[TMP4]], i32 0
+; CHECK-INTERLEAVE1-NEXT:    [[WIDE_LOAD1:%.*]] = load <16 x i8>, ptr [[TMP5]], align 1
+; CHECK-INTERLEAVE1-NEXT:    [[TMP6:%.*]] = sext <16 x i8> [[WIDE_LOAD1]] to <16 x i32>
+; CHECK-INTERLEAVE1-NEXT:    [[TMP7:%.*]] = mul nsw <16 x i32> [[TMP6]], [[TMP3]]
+; CHECK-INTERLEAVE1-NEXT:    [[TMP9]] = add <16 x i32> [[TMP7]], [[VEC_PHI]]
+; CHECK-INTERLEAVE1-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
+; CHECK-INTERLEAVE1-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
+; CHECK-INTERLEAVE1-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
+; CHECK-INTERLEAVE1:       middle.block:
+; CHECK-INTERLEAVE1-NEXT:    [[TMP16:%.*]] = call i32 @llvm.vector.reduce.add.v16i32(<16 x i32> [[TMP9]])
+; CHECK-INTERLEAVE1-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N]], [[N_VEC]]
+; CHECK-INTERLEAVE1-NEXT:    br i1 [[CMP_N]], label [[EXIT:%.*]], label [[VEC_EPILOG_PH]]
+>>>>>>> origin/sifive-dev
 ; CHECK-INTERLEAVE1:       scalar.ph:
 ; CHECK-INTERLEAVE1-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; CHECK-INTERLEAVE1-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[TMP22]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY]] ]
@@ -2169,6 +2256,7 @@ define i32 @dotp_predicated(i64 %N, ptr %a, ptr %b) #0 {
 ; CHECK-INTERLEAVED-LABEL: define i32 @dotp_predicated(
 ; CHECK-INTERLEAVED-SAME: i64 [[N:%.*]], ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0]] {
 ; CHECK-INTERLEAVED-NEXT:  entry:
+<<<<<<< HEAD
 ; CHECK-INTERLEAVED-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-INTERLEAVED:       vector.ph:
 ; CHECK-INTERLEAVED-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
@@ -2210,6 +2298,45 @@ define i32 @dotp_predicated(i64 %N, ptr %a, ptr %b) #0 {
 ; CHECK-INTERLEAVED:       middle.block:
 ; CHECK-INTERLEAVED-NEXT:    [[TMP22:%.*]] = call i32 @llvm.vector.reduce.add.nxv4i32(<vscale x 4 x i32> [[TMP19]])
 ; CHECK-INTERLEAVED-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+=======
+; CHECK-INTERLEAVED-NEXT:    [[MIN_ITERS_CHECK1:%.*]] = icmp ult i64 [[N]], 32
+; CHECK-INTERLEAVED-NEXT:    br i1 [[MIN_ITERS_CHECK1]], label [[VEC_EPILOG_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK-INTERLEAVED:       vector.ph:
+; CHECK-INTERLEAVED-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N]], 32
+; CHECK-INTERLEAVED-NEXT:    [[N_VEC:%.*]] = sub i64 [[N]], [[N_MOD_VF]]
+; CHECK-INTERLEAVED-NEXT:    br label [[VECTOR_BODY:%.*]]
+; CHECK-INTERLEAVED:       vector.body:
+; CHECK-INTERLEAVED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-INTERLEAVED-NEXT:    [[VEC_PHI:%.*]] = phi <16 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP15:%.*]], [[VECTOR_BODY]] ]
+; CHECK-INTERLEAVED-NEXT:    [[VEC_PHI1:%.*]] = phi <16 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP14:%.*]], [[VECTOR_BODY]] ]
+; CHECK-INTERLEAVED-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
+; CHECK-INTERLEAVED-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[TMP0]]
+; CHECK-INTERLEAVED-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i8, ptr [[TMP1]], i32 0
+; CHECK-INTERLEAVED-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i8, ptr [[TMP1]], i32 16
+; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD:%.*]] = load <16 x i8>, ptr [[TMP2]], align 1
+; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD2:%.*]] = load <16 x i8>, ptr [[TMP3]], align 1
+; CHECK-INTERLEAVED-NEXT:    [[TMP4:%.*]] = sext <16 x i8> [[WIDE_LOAD]] to <16 x i32>
+; CHECK-INTERLEAVED-NEXT:    [[TMP5:%.*]] = sext <16 x i8> [[WIDE_LOAD2]] to <16 x i32>
+; CHECK-INTERLEAVED-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 [[TMP0]]
+; CHECK-INTERLEAVED-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i8, ptr [[TMP6]], i32 0
+; CHECK-INTERLEAVED-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i8, ptr [[TMP6]], i32 16
+; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD3:%.*]] = load <16 x i8>, ptr [[TMP7]], align 1
+; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD4:%.*]] = load <16 x i8>, ptr [[TMP8]], align 1
+; CHECK-INTERLEAVED-NEXT:    [[TMP9:%.*]] = sext <16 x i8> [[WIDE_LOAD3]] to <16 x i32>
+; CHECK-INTERLEAVED-NEXT:    [[TMP10:%.*]] = sext <16 x i8> [[WIDE_LOAD4]] to <16 x i32>
+; CHECK-INTERLEAVED-NEXT:    [[TMP11:%.*]] = mul nsw <16 x i32> [[TMP9]], [[TMP4]]
+; CHECK-INTERLEAVED-NEXT:    [[TMP12:%.*]] = mul nsw <16 x i32> [[TMP10]], [[TMP5]]
+; CHECK-INTERLEAVED-NEXT:    [[TMP15]] = add <16 x i32> [[TMP11]], [[VEC_PHI]]
+; CHECK-INTERLEAVED-NEXT:    [[TMP14]] = add <16 x i32> [[TMP12]], [[VEC_PHI1]]
+; CHECK-INTERLEAVED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 32
+; CHECK-INTERLEAVED-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
+; CHECK-INTERLEAVED-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
+; CHECK-INTERLEAVED:       middle.block:
+; CHECK-INTERLEAVED-NEXT:    [[BIN_RDX:%.*]] = add <16 x i32> [[TMP14]], [[TMP15]]
+; CHECK-INTERLEAVED-NEXT:    [[TMP26:%.*]] = call i32 @llvm.vector.reduce.add.v16i32(<16 x i32> [[BIN_RDX]])
+; CHECK-INTERLEAVED-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N]], [[N_VEC]]
+; CHECK-INTERLEAVED-NEXT:    br i1 [[CMP_N]], label [[EXIT:%.*]], label [[VEC_EPILOG_PH]]
+>>>>>>> origin/sifive-dev
 ; CHECK-INTERLEAVED:       scalar.ph:
 ; CHECK-INTERLEAVED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; CHECK-INTERLEAVED-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[TMP22]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY]] ]
@@ -2314,6 +2441,230 @@ for.body:                                         ; preds = %entry, %for.body
   %add = add nsw i32 %mul, %accum
   %iv.next = add nuw nsw i64 %iv, 1
   %exitcond.not = icmp eq i64 %iv.next, %N
+<<<<<<< HEAD
+=======
+  br i1 %exitcond.not, label %exit, label %for.body
+
+exit:                        ; preds = %for.body
+  ret i32 %add
+}
+
+define i32 @not_dotp_predicated_pragma(i64 %N, ptr %a, ptr %b) #0 {
+; CHECK-INTERLEAVE1-LABEL: define i32 @not_dotp_predicated_pragma(
+; CHECK-INTERLEAVE1-SAME: i64 [[N:%.*]], ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0]] {
+; CHECK-INTERLEAVE1-NEXT:  entry:
+; CHECK-INTERLEAVE1-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK-INTERLEAVE1:       vector.ph:
+; CHECK-INTERLEAVE1-NEXT:    [[TMP9:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-INTERLEAVE1-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 4
+; CHECK-INTERLEAVE1-NEXT:    [[TMP11:%.*]] = sub i64 [[TMP10]], 1
+; CHECK-INTERLEAVE1-NEXT:    [[N_RND_UP:%.*]] = add i64 [[N]], [[TMP11]]
+; CHECK-INTERLEAVE1-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N_RND_UP]], [[TMP10]]
+; CHECK-INTERLEAVE1-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
+; CHECK-INTERLEAVE1-NEXT:    [[TMP12:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-INTERLEAVE1-NEXT:    [[TMP14:%.*]] = mul i64 [[TMP12]], 4
+; CHECK-INTERLEAVE1-NEXT:    [[TMP15:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-INTERLEAVE1-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP15]], 4
+; CHECK-INTERLEAVE1-NEXT:    [[TMP0:%.*]] = sub i64 [[N]], [[TMP6]]
+; CHECK-INTERLEAVE1-NEXT:    [[TMP1:%.*]] = icmp ugt i64 [[N]], [[TMP6]]
+; CHECK-INTERLEAVE1-NEXT:    [[TMP2:%.*]] = select i1 [[TMP1]], i64 [[TMP0]], i64 0
+; CHECK-INTERLEAVE1-NEXT:    [[ACTIVE_LANE_MASK_ENTRY:%.*]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 0, i64 [[N]])
+; CHECK-INTERLEAVE1-NEXT:    br label [[VECTOR_BODY:%.*]]
+; CHECK-INTERLEAVE1:       vector.body:
+; CHECK-INTERLEAVE1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-INTERLEAVE1-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = phi <vscale x 4 x i1> [ [[ACTIVE_LANE_MASK_ENTRY]], [[VECTOR_PH]] ], [ [[ACTIVE_LANE_MASK_NEXT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-INTERLEAVE1-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 4 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP19:%.*]], [[VECTOR_BODY]] ]
+; CHECK-INTERLEAVE1-NEXT:    [[TMP3:%.*]] = add i64 [[INDEX]], 0
+; CHECK-INTERLEAVE1-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 [[TMP3]]
+; CHECK-INTERLEAVE1-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i8, ptr [[TMP4]], i32 0
+; CHECK-INTERLEAVE1-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 4 x i8> @llvm.masked.load.nxv4i8.p0(ptr [[TMP5]], i32 1, <vscale x 4 x i1> [[ACTIVE_LANE_MASK]], <vscale x 4 x i8> poison)
+; CHECK-INTERLEAVE1-NEXT:    [[TMP13:%.*]] = sext <vscale x 4 x i8> [[WIDE_MASKED_LOAD]] to <vscale x 4 x i32>
+; CHECK-INTERLEAVE1-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[TMP3]]
+; CHECK-INTERLEAVE1-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i8, ptr [[TMP7]], i32 0
+; CHECK-INTERLEAVE1-NEXT:    [[WIDE_MASKED_LOAD1:%.*]] = call <vscale x 4 x i8> @llvm.masked.load.nxv4i8.p0(ptr [[TMP8]], i32 1, <vscale x 4 x i1> [[ACTIVE_LANE_MASK]], <vscale x 4 x i8> poison)
+; CHECK-INTERLEAVE1-NEXT:    [[TMP16:%.*]] = sext <vscale x 4 x i8> [[WIDE_MASKED_LOAD1]] to <vscale x 4 x i32>
+; CHECK-INTERLEAVE1-NEXT:    [[TMP17:%.*]] = mul nsw <vscale x 4 x i32> [[TMP16]], [[TMP13]]
+; CHECK-INTERLEAVE1-NEXT:    [[TMP18:%.*]] = add <vscale x 4 x i32> [[TMP17]], [[VEC_PHI]]
+; CHECK-INTERLEAVE1-NEXT:    [[TMP19]] = select <vscale x 4 x i1> [[ACTIVE_LANE_MASK]], <vscale x 4 x i32> [[TMP18]], <vscale x 4 x i32> [[VEC_PHI]]
+; CHECK-INTERLEAVE1-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP14]]
+; CHECK-INTERLEAVE1-NEXT:    [[ACTIVE_LANE_MASK_NEXT]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[INDEX]], i64 [[TMP2]])
+; CHECK-INTERLEAVE1-NEXT:    [[TMP20:%.*]] = xor <vscale x 4 x i1> [[ACTIVE_LANE_MASK_NEXT]], splat (i1 true)
+; CHECK-INTERLEAVE1-NEXT:    [[TMP21:%.*]] = extractelement <vscale x 4 x i1> [[TMP20]], i32 0
+; CHECK-INTERLEAVE1-NEXT:    br i1 [[TMP21]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
+; CHECK-INTERLEAVE1:       middle.block:
+; CHECK-INTERLEAVE1-NEXT:    [[TMP22:%.*]] = call i32 @llvm.vector.reduce.add.nxv4i32(<vscale x 4 x i32> [[TMP19]])
+; CHECK-INTERLEAVE1-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-INTERLEAVE1:       scalar.ph:
+; CHECK-INTERLEAVE1-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; CHECK-INTERLEAVE1-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[TMP22]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY]] ]
+; CHECK-INTERLEAVE1-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK-INTERLEAVE1:       for.body:
+; CHECK-INTERLEAVE1-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-INTERLEAVE1-NEXT:    [[ACCUM:%.*]] = phi i32 [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
+; CHECK-INTERLEAVE1-NEXT:    [[GEP_A:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 [[IV]]
+; CHECK-INTERLEAVE1-NEXT:    [[LOAD_A:%.*]] = load i8, ptr [[GEP_A]], align 1
+; CHECK-INTERLEAVE1-NEXT:    [[EXT_A:%.*]] = sext i8 [[LOAD_A]] to i32
+; CHECK-INTERLEAVE1-NEXT:    [[GEP_A2:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[IV]]
+; CHECK-INTERLEAVE1-NEXT:    [[LOAD_B:%.*]] = load i8, ptr [[GEP_A2]], align 1
+; CHECK-INTERLEAVE1-NEXT:    [[EXT_B:%.*]] = sext i8 [[LOAD_B]] to i32
+; CHECK-INTERLEAVE1-NEXT:    [[MUL:%.*]] = mul nsw i32 [[EXT_B]], [[EXT_A]]
+; CHECK-INTERLEAVE1-NEXT:    [[ADD]] = add nsw i32 [[MUL]], [[ACCUM]]
+; CHECK-INTERLEAVE1-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
+; CHECK-INTERLEAVE1-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], [[N]]
+; CHECK-INTERLEAVE1-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
+; CHECK-INTERLEAVE1:       exit:
+; CHECK-INTERLEAVE1-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[ADD]], [[FOR_BODY]] ], [ [[TMP22]], [[MIDDLE_BLOCK]] ]
+; CHECK-INTERLEAVE1-NEXT:    ret i32 [[ADD_LCSSA]]
+;
+; CHECK-INTERLEAVED-LABEL: define i32 @not_dotp_predicated_pragma(
+; CHECK-INTERLEAVED-SAME: i64 [[N:%.*]], ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0]] {
+; CHECK-INTERLEAVED-NEXT:  entry:
+; CHECK-INTERLEAVED-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK-INTERLEAVED:       vector.ph:
+; CHECK-INTERLEAVED-NEXT:    [[TMP9:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-INTERLEAVED-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 4
+; CHECK-INTERLEAVED-NEXT:    [[TMP11:%.*]] = sub i64 [[TMP10]], 1
+; CHECK-INTERLEAVED-NEXT:    [[N_RND_UP:%.*]] = add i64 [[N]], [[TMP11]]
+; CHECK-INTERLEAVED-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N_RND_UP]], [[TMP10]]
+; CHECK-INTERLEAVED-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
+; CHECK-INTERLEAVED-NEXT:    [[TMP12:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-INTERLEAVED-NEXT:    [[TMP14:%.*]] = mul i64 [[TMP12]], 4
+; CHECK-INTERLEAVED-NEXT:    [[TMP15:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-INTERLEAVED-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP15]], 4
+; CHECK-INTERLEAVED-NEXT:    [[TMP0:%.*]] = sub i64 [[N]], [[TMP6]]
+; CHECK-INTERLEAVED-NEXT:    [[TMP1:%.*]] = icmp ugt i64 [[N]], [[TMP6]]
+; CHECK-INTERLEAVED-NEXT:    [[TMP2:%.*]] = select i1 [[TMP1]], i64 [[TMP0]], i64 0
+; CHECK-INTERLEAVED-NEXT:    [[ACTIVE_LANE_MASK_ENTRY:%.*]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 0, i64 [[N]])
+; CHECK-INTERLEAVED-NEXT:    br label [[VECTOR_BODY:%.*]]
+; CHECK-INTERLEAVED:       vector.body:
+; CHECK-INTERLEAVED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-INTERLEAVED-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = phi <vscale x 4 x i1> [ [[ACTIVE_LANE_MASK_ENTRY]], [[VECTOR_PH]] ], [ [[ACTIVE_LANE_MASK_NEXT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-INTERLEAVED-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 4 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP19:%.*]], [[VECTOR_BODY]] ]
+; CHECK-INTERLEAVED-NEXT:    [[TMP3:%.*]] = add i64 [[INDEX]], 0
+; CHECK-INTERLEAVED-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 [[TMP3]]
+; CHECK-INTERLEAVED-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i8, ptr [[TMP4]], i32 0
+; CHECK-INTERLEAVED-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 4 x i8> @llvm.masked.load.nxv4i8.p0(ptr [[TMP5]], i32 1, <vscale x 4 x i1> [[ACTIVE_LANE_MASK]], <vscale x 4 x i8> poison)
+; CHECK-INTERLEAVED-NEXT:    [[TMP13:%.*]] = sext <vscale x 4 x i8> [[WIDE_MASKED_LOAD]] to <vscale x 4 x i32>
+; CHECK-INTERLEAVED-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[TMP3]]
+; CHECK-INTERLEAVED-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i8, ptr [[TMP7]], i32 0
+; CHECK-INTERLEAVED-NEXT:    [[WIDE_MASKED_LOAD1:%.*]] = call <vscale x 4 x i8> @llvm.masked.load.nxv4i8.p0(ptr [[TMP8]], i32 1, <vscale x 4 x i1> [[ACTIVE_LANE_MASK]], <vscale x 4 x i8> poison)
+; CHECK-INTERLEAVED-NEXT:    [[TMP16:%.*]] = sext <vscale x 4 x i8> [[WIDE_MASKED_LOAD1]] to <vscale x 4 x i32>
+; CHECK-INTERLEAVED-NEXT:    [[TMP17:%.*]] = mul nsw <vscale x 4 x i32> [[TMP16]], [[TMP13]]
+; CHECK-INTERLEAVED-NEXT:    [[TMP18:%.*]] = add <vscale x 4 x i32> [[TMP17]], [[VEC_PHI]]
+; CHECK-INTERLEAVED-NEXT:    [[TMP19]] = select <vscale x 4 x i1> [[ACTIVE_LANE_MASK]], <vscale x 4 x i32> [[TMP18]], <vscale x 4 x i32> [[VEC_PHI]]
+; CHECK-INTERLEAVED-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP14]]
+; CHECK-INTERLEAVED-NEXT:    [[ACTIVE_LANE_MASK_NEXT]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[INDEX]], i64 [[TMP2]])
+; CHECK-INTERLEAVED-NEXT:    [[TMP20:%.*]] = xor <vscale x 4 x i1> [[ACTIVE_LANE_MASK_NEXT]], splat (i1 true)
+; CHECK-INTERLEAVED-NEXT:    [[TMP21:%.*]] = extractelement <vscale x 4 x i1> [[TMP20]], i32 0
+; CHECK-INTERLEAVED-NEXT:    br i1 [[TMP21]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
+; CHECK-INTERLEAVED:       middle.block:
+; CHECK-INTERLEAVED-NEXT:    [[TMP22:%.*]] = call i32 @llvm.vector.reduce.add.nxv4i32(<vscale x 4 x i32> [[TMP19]])
+; CHECK-INTERLEAVED-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-INTERLEAVED:       scalar.ph:
+; CHECK-INTERLEAVED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; CHECK-INTERLEAVED-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[TMP22]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY]] ]
+; CHECK-INTERLEAVED-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK-INTERLEAVED:       for.body:
+; CHECK-INTERLEAVED-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-INTERLEAVED-NEXT:    [[ACCUM:%.*]] = phi i32 [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
+; CHECK-INTERLEAVED-NEXT:    [[GEP_A:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 [[IV]]
+; CHECK-INTERLEAVED-NEXT:    [[LOAD_A:%.*]] = load i8, ptr [[GEP_A]], align 1
+; CHECK-INTERLEAVED-NEXT:    [[EXT_A:%.*]] = sext i8 [[LOAD_A]] to i32
+; CHECK-INTERLEAVED-NEXT:    [[GEP_A2:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[IV]]
+; CHECK-INTERLEAVED-NEXT:    [[LOAD_B:%.*]] = load i8, ptr [[GEP_A2]], align 1
+; CHECK-INTERLEAVED-NEXT:    [[EXT_B:%.*]] = sext i8 [[LOAD_B]] to i32
+; CHECK-INTERLEAVED-NEXT:    [[MUL:%.*]] = mul nsw i32 [[EXT_B]], [[EXT_A]]
+; CHECK-INTERLEAVED-NEXT:    [[ADD]] = add nsw i32 [[MUL]], [[ACCUM]]
+; CHECK-INTERLEAVED-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
+; CHECK-INTERLEAVED-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], [[N]]
+; CHECK-INTERLEAVED-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
+; CHECK-INTERLEAVED:       exit:
+; CHECK-INTERLEAVED-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[ADD]], [[FOR_BODY]] ], [ [[TMP22]], [[MIDDLE_BLOCK]] ]
+; CHECK-INTERLEAVED-NEXT:    ret i32 [[ADD_LCSSA]]
+;
+; CHECK-MAXBW-LABEL: define i32 @not_dotp_predicated_pragma(
+; CHECK-MAXBW-SAME: i64 [[N:%.*]], ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0]] {
+; CHECK-MAXBW-NEXT:  entry:
+; CHECK-MAXBW-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK-MAXBW:       vector.ph:
+; CHECK-MAXBW-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-MAXBW-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; CHECK-MAXBW-NEXT:    [[TMP2:%.*]] = sub i64 [[TMP1]], 1
+; CHECK-MAXBW-NEXT:    [[N_RND_UP:%.*]] = add i64 [[N]], [[TMP2]]
+; CHECK-MAXBW-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N_RND_UP]], [[TMP1]]
+; CHECK-MAXBW-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
+; CHECK-MAXBW-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-MAXBW-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 16
+; CHECK-MAXBW-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-MAXBW-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 16
+; CHECK-MAXBW-NEXT:    [[TMP7:%.*]] = sub i64 [[N]], [[TMP6]]
+; CHECK-MAXBW-NEXT:    [[TMP8:%.*]] = icmp ugt i64 [[N]], [[TMP6]]
+; CHECK-MAXBW-NEXT:    [[TMP9:%.*]] = select i1 [[TMP8]], i64 [[TMP7]], i64 0
+; CHECK-MAXBW-NEXT:    [[ACTIVE_LANE_MASK_ENTRY:%.*]] = call <vscale x 16 x i1> @llvm.get.active.lane.mask.nxv16i1.i64(i64 0, i64 [[N]])
+; CHECK-MAXBW-NEXT:    br label [[VECTOR_BODY:%.*]]
+; CHECK-MAXBW:       vector.body:
+; CHECK-MAXBW-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-MAXBW-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = phi <vscale x 16 x i1> [ [[ACTIVE_LANE_MASK_ENTRY]], [[VECTOR_PH]] ], [ [[ACTIVE_LANE_MASK_NEXT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-MAXBW-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 16 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP19:%.*]], [[VECTOR_BODY]] ]
+; CHECK-MAXBW-NEXT:    [[TMP10:%.*]] = add i64 [[INDEX]], 0
+; CHECK-MAXBW-NEXT:    [[TMP11:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 [[TMP10]]
+; CHECK-MAXBW-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i8, ptr [[TMP11]], i32 0
+; CHECK-MAXBW-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 16 x i8> @llvm.masked.load.nxv16i8.p0(ptr [[TMP12]], i32 1, <vscale x 16 x i1> [[ACTIVE_LANE_MASK]], <vscale x 16 x i8> poison)
+; CHECK-MAXBW-NEXT:    [[TMP13:%.*]] = sext <vscale x 16 x i8> [[WIDE_MASKED_LOAD]] to <vscale x 16 x i32>
+; CHECK-MAXBW-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[TMP10]]
+; CHECK-MAXBW-NEXT:    [[TMP15:%.*]] = getelementptr inbounds i8, ptr [[TMP14]], i32 0
+; CHECK-MAXBW-NEXT:    [[WIDE_MASKED_LOAD1:%.*]] = call <vscale x 16 x i8> @llvm.masked.load.nxv16i8.p0(ptr [[TMP15]], i32 1, <vscale x 16 x i1> [[ACTIVE_LANE_MASK]], <vscale x 16 x i8> poison)
+; CHECK-MAXBW-NEXT:    [[TMP16:%.*]] = sext <vscale x 16 x i8> [[WIDE_MASKED_LOAD1]] to <vscale x 16 x i32>
+; CHECK-MAXBW-NEXT:    [[TMP17:%.*]] = mul nsw <vscale x 16 x i32> [[TMP16]], [[TMP13]]
+; CHECK-MAXBW-NEXT:    [[TMP18:%.*]] = add <vscale x 16 x i32> [[TMP17]], [[VEC_PHI]]
+; CHECK-MAXBW-NEXT:    [[TMP19]] = select <vscale x 16 x i1> [[ACTIVE_LANE_MASK]], <vscale x 16 x i32> [[TMP18]], <vscale x 16 x i32> [[VEC_PHI]]
+; CHECK-MAXBW-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP4]]
+; CHECK-MAXBW-NEXT:    [[ACTIVE_LANE_MASK_NEXT]] = call <vscale x 16 x i1> @llvm.get.active.lane.mask.nxv16i1.i64(i64 [[INDEX]], i64 [[TMP9]])
+; CHECK-MAXBW-NEXT:    [[TMP20:%.*]] = xor <vscale x 16 x i1> [[ACTIVE_LANE_MASK_NEXT]], splat (i1 true)
+; CHECK-MAXBW-NEXT:    [[TMP21:%.*]] = extractelement <vscale x 16 x i1> [[TMP20]], i32 0
+; CHECK-MAXBW-NEXT:    br i1 [[TMP21]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
+; CHECK-MAXBW:       middle.block:
+; CHECK-MAXBW-NEXT:    [[TMP22:%.*]] = call i32 @llvm.vector.reduce.add.nxv16i32(<vscale x 16 x i32> [[TMP19]])
+; CHECK-MAXBW-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-MAXBW:       scalar.ph:
+; CHECK-MAXBW-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; CHECK-MAXBW-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[TMP22]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY]] ]
+; CHECK-MAXBW-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK-MAXBW:       for.body:
+; CHECK-MAXBW-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-MAXBW-NEXT:    [[ACCUM:%.*]] = phi i32 [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
+; CHECK-MAXBW-NEXT:    [[GEP_A:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 [[IV]]
+; CHECK-MAXBW-NEXT:    [[LOAD_A:%.*]] = load i8, ptr [[GEP_A]], align 1
+; CHECK-MAXBW-NEXT:    [[EXT_A:%.*]] = sext i8 [[LOAD_A]] to i32
+; CHECK-MAXBW-NEXT:    [[GEP_A2:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[IV]]
+; CHECK-MAXBW-NEXT:    [[LOAD_B:%.*]] = load i8, ptr [[GEP_A2]], align 1
+; CHECK-MAXBW-NEXT:    [[EXT_B:%.*]] = sext i8 [[LOAD_B]] to i32
+; CHECK-MAXBW-NEXT:    [[MUL:%.*]] = mul nsw i32 [[EXT_B]], [[EXT_A]]
+; CHECK-MAXBW-NEXT:    [[ADD]] = add nsw i32 [[MUL]], [[ACCUM]]
+; CHECK-MAXBW-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
+; CHECK-MAXBW-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], [[N]]
+; CHECK-MAXBW-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
+; CHECK-MAXBW:       exit:
+; CHECK-MAXBW-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[ADD]], [[FOR_BODY]] ], [ [[TMP22]], [[MIDDLE_BLOCK]] ]
+; CHECK-MAXBW-NEXT:    ret i32 [[ADD_LCSSA]]
+;
+entry:
+  br label %for.body
+
+for.body:                                         ; preds = %entry, %for.body
+  %iv = phi i64 [ 0, %entry ], [ %iv.next, %for.body ]
+  %accum = phi i32 [ 0, %entry ], [ %add, %for.body ]
+  %gep.a = getelementptr inbounds i8, ptr %b, i64 %iv
+  %load.a = load i8, ptr %gep.a, align 1
+  %ext.a = sext i8 %load.a to i32
+  %gep.a2 = getelementptr inbounds i8, ptr %a, i64 %iv
+  %load.b = load i8, ptr %gep.a2, align 1
+  %ext.b = sext i8 %load.b to i32
+  %mul = mul nsw i32 %ext.b, %ext.a
+  %add = add nsw i32 %mul, %accum
+  %iv.next = add nuw nsw i64 %iv, 1
+  %exitcond.not = icmp eq i64 %iv.next, %N
+>>>>>>> origin/sifive-dev
   br i1 %exitcond.not, label %exit, label %for.body, !llvm.loop !7
 
 exit:                        ; preds = %for.body
@@ -2324,27 +2675,20 @@ define i32 @not_dotp_extend_user(ptr %a, ptr %b) #0 {
 ; CHECK-INTERLEAVE1-LABEL: define i32 @not_dotp_extend_user(
 ; CHECK-INTERLEAVE1-SAME: ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0]] {
 ; CHECK-INTERLEAVE1-NEXT:  entry:
-; CHECK-INTERLEAVE1-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-INTERLEAVE1-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
 ; CHECK-INTERLEAVE1-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-INTERLEAVE1:       vector.ph:
-; CHECK-INTERLEAVE1-NEXT:    [[TMP8:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-INTERLEAVE1-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP8]], 4
-; CHECK-INTERLEAVE1-NEXT:    [[N_MOD_VF:%.*]] = urem i64 1024, [[TMP10]]
-; CHECK-INTERLEAVE1-NEXT:    [[N_VEC:%.*]] = sub i64 1024, [[N_MOD_VF]]
-; CHECK-INTERLEAVE1-NEXT:    [[TMP11:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-INTERLEAVE1-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP11]], 4
 ; CHECK-INTERLEAVE1-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-INTERLEAVE1:       vector.body:
 ; CHECK-INTERLEAVE1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-INTERLEAVE1-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 4 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP14:%.*]], [[VECTOR_BODY]] ]
+; CHECK-INTERLEAVE1-NEXT:    [[VEC_PHI:%.*]] = phi <16 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP8:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP2:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP2]]
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[TMP3]], i32 0
-; CHECK-INTERLEAVE1-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 4 x i8>, ptr [[TMP4]], align 1
-; CHECK-INTERLEAVE1-NEXT:    [[TMP9:%.*]] = zext <vscale x 4 x i8> [[WIDE_LOAD]] to <vscale x 4 x i32>
+; CHECK-INTERLEAVE1-NEXT:    [[WIDE_LOAD:%.*]] = load <16 x i8>, ptr [[TMP4]], align 1
+; CHECK-INTERLEAVE1-NEXT:    [[TMP5:%.*]] = zext <16 x i8> [[WIDE_LOAD]] to <16 x i32>
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP2]]
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[TMP6]], i32 0
+<<<<<<< HEAD
 ; CHECK-INTERLEAVE1-NEXT:    [[WIDE_LOAD1:%.*]] = load <vscale x 4 x i8>, ptr [[TMP7]], align 1
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP12:%.*]] = zext <vscale x 4 x i8> [[WIDE_LOAD1]] to <vscale x 4 x i32>
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP13:%.*]] = mul <vscale x 4 x i32> [[TMP12]], [[TMP9]]
@@ -2352,16 +2696,21 @@ define i32 @not_dotp_extend_user(ptr %a, ptr %b) #0 {
 ; CHECK-INTERLEAVE1-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP15:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-INTERLEAVE1-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP19:![0-9]+]]
+=======
+; CHECK-INTERLEAVE1-NEXT:    [[WIDE_LOAD1:%.*]] = load <16 x i8>, ptr [[TMP7]], align 1
+; CHECK-INTERLEAVE1-NEXT:    [[TMP10:%.*]] = zext <16 x i8> [[WIDE_LOAD1]] to <16 x i32>
+; CHECK-INTERLEAVE1-NEXT:    [[TMP11:%.*]] = mul <16 x i32> [[TMP10]], [[TMP5]]
+; CHECK-INTERLEAVE1-NEXT:    [[TMP8]] = add <16 x i32> [[TMP11]], [[VEC_PHI]]
+; CHECK-INTERLEAVE1-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
+; CHECK-INTERLEAVE1-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
+; CHECK-INTERLEAVE1-NEXT:    br i1 [[TMP9]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP17:![0-9]+]]
+>>>>>>> origin/sifive-dev
 ; CHECK-INTERLEAVE1:       middle.block:
-; CHECK-INTERLEAVE1-NEXT:    [[TMP16:%.*]] = call i32 @llvm.vector.reduce.add.nxv4i32(<vscale x 4 x i32> [[TMP14]])
-; CHECK-INTERLEAVE1-NEXT:    [[TMP17:%.*]] = call i32 @llvm.vscale.i32()
-; CHECK-INTERLEAVE1-NEXT:    [[TMP18:%.*]] = mul i32 [[TMP17]], 4
-; CHECK-INTERLEAVE1-NEXT:    [[TMP19:%.*]] = sub i32 [[TMP18]], 1
-; CHECK-INTERLEAVE1-NEXT:    [[TMP20:%.*]] = extractelement <vscale x 4 x i32> [[TMP12]], i32 [[TMP19]]
-; CHECK-INTERLEAVE1-NEXT:    [[CMP_N:%.*]] = icmp eq i64 1024, [[N_VEC]]
-; CHECK-INTERLEAVE1-NEXT:    br i1 [[CMP_N]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-INTERLEAVE1-NEXT:    [[TMP16:%.*]] = call i32 @llvm.vector.reduce.add.v16i32(<16 x i32> [[TMP8]])
+; CHECK-INTERLEAVE1-NEXT:    [[TMP20:%.*]] = extractelement <16 x i32> [[TMP10]], i32 15
+; CHECK-INTERLEAVE1-NEXT:    br i1 true, label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-INTERLEAVE1:       scalar.ph:
-; CHECK-INTERLEAVE1-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; CHECK-INTERLEAVE1-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1024, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; CHECK-INTERLEAVE1-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[TMP16]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY]] ]
 ; CHECK-INTERLEAVE1-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-INTERLEAVE1:       for.body:
@@ -2387,33 +2736,24 @@ define i32 @not_dotp_extend_user(ptr %a, ptr %b) #0 {
 ; CHECK-INTERLEAVED-LABEL: define i32 @not_dotp_extend_user(
 ; CHECK-INTERLEAVED-SAME: ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0]] {
 ; CHECK-INTERLEAVED-NEXT:  entry:
-; CHECK-INTERLEAVED-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-INTERLEAVED-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 8
 ; CHECK-INTERLEAVED-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-INTERLEAVED:       vector.ph:
-; CHECK-INTERLEAVED-NEXT:    [[TMP6:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-INTERLEAVED-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP6]], 8
-; CHECK-INTERLEAVED-NEXT:    [[N_MOD_VF:%.*]] = urem i64 1024, [[TMP7]]
-; CHECK-INTERLEAVED-NEXT:    [[N_VEC:%.*]] = sub i64 1024, [[N_MOD_VF]]
-; CHECK-INTERLEAVED-NEXT:    [[TMP14:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-INTERLEAVED-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP14]], 8
 ; CHECK-INTERLEAVED-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-INTERLEAVED:       vector.body:
 ; CHECK-INTERLEAVED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-INTERLEAVED-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 4 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP23:%.*]], [[VECTOR_BODY]] ]
-; CHECK-INTERLEAVED-NEXT:    [[VEC_PHI1:%.*]] = phi <vscale x 4 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP24:%.*]], [[VECTOR_BODY]] ]
+; CHECK-INTERLEAVED-NEXT:    [[VEC_PHI:%.*]] = phi <16 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP13:%.*]], [[VECTOR_BODY]] ]
+; CHECK-INTERLEAVED-NEXT:    [[VEC_PHI1:%.*]] = phi <16 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP14:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-INTERLEAVED-NEXT:    [[TMP2:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-INTERLEAVED-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP2]]
 ; CHECK-INTERLEAVED-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[TMP3]], i32 0
-; CHECK-INTERLEAVED-NEXT:    [[TMP15:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-INTERLEAVED-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP15]], 4
-; CHECK-INTERLEAVED-NEXT:    [[TMP11:%.*]] = getelementptr i8, ptr [[TMP3]], i64 [[TMP10]]
-; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 4 x i8>, ptr [[TMP4]], align 1
-; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD2:%.*]] = load <vscale x 4 x i8>, ptr [[TMP11]], align 1
-; CHECK-INTERLEAVED-NEXT:    [[TMP12:%.*]] = zext <vscale x 4 x i8> [[WIDE_LOAD]] to <vscale x 4 x i32>
-; CHECK-INTERLEAVED-NEXT:    [[TMP13:%.*]] = zext <vscale x 4 x i8> [[WIDE_LOAD2]] to <vscale x 4 x i32>
+; CHECK-INTERLEAVED-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[TMP3]], i32 16
+; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD:%.*]] = load <16 x i8>, ptr [[TMP4]], align 1
+; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD2:%.*]] = load <16 x i8>, ptr [[TMP6]], align 1
+; CHECK-INTERLEAVED-NEXT:    [[TMP7:%.*]] = zext <16 x i8> [[WIDE_LOAD]] to <16 x i32>
+; CHECK-INTERLEAVED-NEXT:    [[TMP5:%.*]] = zext <16 x i8> [[WIDE_LOAD2]] to <16 x i32>
 ; CHECK-INTERLEAVED-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP2]]
 ; CHECK-INTERLEAVED-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[TMP8]], i32 0
+<<<<<<< HEAD
 ; CHECK-INTERLEAVED-NEXT:    [[TMP16:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-INTERLEAVED-NEXT:    [[TMP17:%.*]] = mul i64 [[TMP16]], 4
 ; CHECK-INTERLEAVED-NEXT:    [[TMP18:%.*]] = getelementptr i8, ptr [[TMP8]], i64 [[TMP17]]
@@ -2428,17 +2768,27 @@ define i32 @not_dotp_extend_user(ptr %a, ptr %b) #0 {
 ; CHECK-INTERLEAVED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; CHECK-INTERLEAVED-NEXT:    [[TMP25:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-INTERLEAVED-NEXT:    br i1 [[TMP25]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP19:![0-9]+]]
+=======
+; CHECK-INTERLEAVED-NEXT:    [[TMP16:%.*]] = getelementptr i8, ptr [[TMP8]], i32 16
+; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD3:%.*]] = load <16 x i8>, ptr [[TMP9]], align 1
+; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD4:%.*]] = load <16 x i8>, ptr [[TMP16]], align 1
+; CHECK-INTERLEAVED-NEXT:    [[TMP17:%.*]] = zext <16 x i8> [[WIDE_LOAD3]] to <16 x i32>
+; CHECK-INTERLEAVED-NEXT:    [[TMP10:%.*]] = zext <16 x i8> [[WIDE_LOAD4]] to <16 x i32>
+; CHECK-INTERLEAVED-NEXT:    [[TMP11:%.*]] = mul <16 x i32> [[TMP17]], [[TMP7]]
+; CHECK-INTERLEAVED-NEXT:    [[TMP12:%.*]] = mul <16 x i32> [[TMP10]], [[TMP5]]
+; CHECK-INTERLEAVED-NEXT:    [[TMP13]] = add <16 x i32> [[TMP11]], [[VEC_PHI]]
+; CHECK-INTERLEAVED-NEXT:    [[TMP14]] = add <16 x i32> [[TMP12]], [[VEC_PHI1]]
+; CHECK-INTERLEAVED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 32
+; CHECK-INTERLEAVED-NEXT:    [[TMP15:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
+; CHECK-INTERLEAVED-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP17:![0-9]+]]
+>>>>>>> origin/sifive-dev
 ; CHECK-INTERLEAVED:       middle.block:
-; CHECK-INTERLEAVED-NEXT:    [[BIN_RDX:%.*]] = add <vscale x 4 x i32> [[TMP24]], [[TMP23]]
-; CHECK-INTERLEAVED-NEXT:    [[TMP26:%.*]] = call i32 @llvm.vector.reduce.add.nxv4i32(<vscale x 4 x i32> [[BIN_RDX]])
-; CHECK-INTERLEAVED-NEXT:    [[TMP27:%.*]] = call i32 @llvm.vscale.i32()
-; CHECK-INTERLEAVED-NEXT:    [[TMP28:%.*]] = mul i32 [[TMP27]], 4
-; CHECK-INTERLEAVED-NEXT:    [[TMP29:%.*]] = sub i32 [[TMP28]], 1
-; CHECK-INTERLEAVED-NEXT:    [[TMP30:%.*]] = extractelement <vscale x 4 x i32> [[TMP20]], i32 [[TMP29]]
-; CHECK-INTERLEAVED-NEXT:    [[CMP_N:%.*]] = icmp eq i64 1024, [[N_VEC]]
-; CHECK-INTERLEAVED-NEXT:    br i1 [[CMP_N]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-INTERLEAVED-NEXT:    [[BIN_RDX:%.*]] = add <16 x i32> [[TMP14]], [[TMP13]]
+; CHECK-INTERLEAVED-NEXT:    [[TMP26:%.*]] = call i32 @llvm.vector.reduce.add.v16i32(<16 x i32> [[BIN_RDX]])
+; CHECK-INTERLEAVED-NEXT:    [[TMP30:%.*]] = extractelement <16 x i32> [[TMP10]], i32 15
+; CHECK-INTERLEAVED-NEXT:    br i1 true, label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-INTERLEAVED:       scalar.ph:
-; CHECK-INTERLEAVED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; CHECK-INTERLEAVED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1024, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; CHECK-INTERLEAVED-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[TMP26]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY]] ]
 ; CHECK-INTERLEAVED-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-INTERLEAVED:       for.body:
@@ -2551,29 +2901,21 @@ define i64 @dotp_cost_disagreement(ptr %a, ptr %b) #0 {
 ; CHECK-INTERLEAVE1-LABEL: define i64 @dotp_cost_disagreement(
 ; CHECK-INTERLEAVE1-SAME: ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0]] {
 ; CHECK-INTERLEAVE1-NEXT:  entry:
-; CHECK-INTERLEAVE1-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-INTERLEAVE1-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 2
-; CHECK-INTERLEAVE1-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 16, [[TMP1]]
-; CHECK-INTERLEAVE1-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK-INTERLEAVE1-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-INTERLEAVE1:       vector.ph:
-; CHECK-INTERLEAVE1-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-INTERLEAVE1-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 2
-; CHECK-INTERLEAVE1-NEXT:    [[N_MOD_VF:%.*]] = urem i64 16, [[TMP3]]
-; CHECK-INTERLEAVE1-NEXT:    [[N_VEC:%.*]] = sub i64 16, [[N_MOD_VF]]
-; CHECK-INTERLEAVE1-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-INTERLEAVE1-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP4]], 2
 ; CHECK-INTERLEAVE1-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-INTERLEAVE1:       vector.body:
 ; CHECK-INTERLEAVE1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-INTERLEAVE1-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i64> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP15:%.*]], [[VECTOR_BODY]] ]
+; CHECK-INTERLEAVE1-NEXT:    [[VEC_PHI:%.*]] = phi <16 x i64> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP9:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP6:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP7:%.*]] = getelementptr inbounds nuw i8, ptr [[A]], i64 [[TMP6]]
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP8:%.*]] = getelementptr inbounds nuw i8, ptr [[TMP7]], i32 0
-; CHECK-INTERLEAVE1-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 2 x i8>, ptr [[TMP8]], align 1
-; CHECK-INTERLEAVE1-NEXT:    [[TMP9:%.*]] = zext <vscale x 2 x i8> [[WIDE_LOAD]] to <vscale x 2 x i64>
+; CHECK-INTERLEAVE1-NEXT:    [[WIDE_LOAD:%.*]] = load <16 x i8>, ptr [[TMP8]], align 1
+; CHECK-INTERLEAVE1-NEXT:    [[TMP3:%.*]] = zext <16 x i8> [[WIDE_LOAD]] to <16 x i64>
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP10:%.*]] = add nuw nsw i64 [[TMP6]], 1
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP11:%.*]] = getelementptr inbounds nuw i8, ptr [[B]], i64 [[TMP10]]
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP12:%.*]] = getelementptr inbounds nuw i8, ptr [[TMP11]], i32 0
+<<<<<<< HEAD
 ; CHECK-INTERLEAVE1-NEXT:    [[WIDE_LOAD1:%.*]] = load <vscale x 2 x i8>, ptr [[TMP12]], align 1
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP13:%.*]] = zext <vscale x 2 x i8> [[WIDE_LOAD1]] to <vscale x 2 x i64>
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP14:%.*]] = mul nuw nsw <vscale x 2 x i64> [[TMP13]], [[TMP9]]
@@ -2581,12 +2923,19 @@ define i64 @dotp_cost_disagreement(ptr %a, ptr %b) #0 {
 ; CHECK-INTERLEAVE1-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP16:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-INTERLEAVE1-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP21:![0-9]+]]
+=======
+; CHECK-INTERLEAVE1-NEXT:    [[WIDE_LOAD1:%.*]] = load <16 x i8>, ptr [[TMP12]], align 1
+; CHECK-INTERLEAVE1-NEXT:    [[TMP13:%.*]] = zext <16 x i8> [[WIDE_LOAD1]] to <16 x i64>
+; CHECK-INTERLEAVE1-NEXT:    [[TMP14:%.*]] = mul nuw nsw <16 x i64> [[TMP13]], [[TMP3]]
+; CHECK-INTERLEAVE1-NEXT:    [[TMP9]] = add <16 x i64> [[VEC_PHI]], [[TMP14]]
+; CHECK-INTERLEAVE1-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
+; CHECK-INTERLEAVE1-NEXT:    br i1 true, label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP19:![0-9]+]]
+>>>>>>> origin/sifive-dev
 ; CHECK-INTERLEAVE1:       middle.block:
-; CHECK-INTERLEAVE1-NEXT:    [[TMP17:%.*]] = call i64 @llvm.vector.reduce.add.nxv2i64(<vscale x 2 x i64> [[TMP15]])
-; CHECK-INTERLEAVE1-NEXT:    [[CMP_N:%.*]] = icmp eq i64 16, [[N_VEC]]
-; CHECK-INTERLEAVE1-NEXT:    br i1 [[CMP_N]], label [[EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-INTERLEAVE1-NEXT:    [[TMP17:%.*]] = call i64 @llvm.vector.reduce.add.v16i64(<16 x i64> [[TMP9]])
+; CHECK-INTERLEAVE1-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-INTERLEAVE1:       scalar.ph:
-; CHECK-INTERLEAVE1-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; CHECK-INTERLEAVE1-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 16, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; CHECK-INTERLEAVE1-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[TMP17]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY]] ]
 ; CHECK-INTERLEAVE1-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-INTERLEAVE1:       for.body:
@@ -2610,35 +2959,21 @@ define i64 @dotp_cost_disagreement(ptr %a, ptr %b) #0 {
 ; CHECK-INTERLEAVED-LABEL: define i64 @dotp_cost_disagreement(
 ; CHECK-INTERLEAVED-SAME: ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0]] {
 ; CHECK-INTERLEAVED-NEXT:  entry:
-; CHECK-INTERLEAVED-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-INTERLEAVED-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
-; CHECK-INTERLEAVED-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 16, [[TMP1]]
-; CHECK-INTERLEAVED-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK-INTERLEAVED-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-INTERLEAVED:       vector.ph:
-; CHECK-INTERLEAVED-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-INTERLEAVED-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 4
-; CHECK-INTERLEAVED-NEXT:    [[N_MOD_VF:%.*]] = urem i64 16, [[TMP3]]
-; CHECK-INTERLEAVED-NEXT:    [[N_VEC:%.*]] = sub i64 16, [[N_MOD_VF]]
-; CHECK-INTERLEAVED-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-INTERLEAVED-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP4]], 4
 ; CHECK-INTERLEAVED-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-INTERLEAVED:       vector.body:
 ; CHECK-INTERLEAVED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-INTERLEAVED-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i64> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP24:%.*]], [[VECTOR_BODY]] ]
-; CHECK-INTERLEAVED-NEXT:    [[VEC_PHI1:%.*]] = phi <vscale x 2 x i64> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP25:%.*]], [[VECTOR_BODY]] ]
+; CHECK-INTERLEAVED-NEXT:    [[VEC_PHI:%.*]] = phi <16 x i64> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP9:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-INTERLEAVED-NEXT:    [[TMP6:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-INTERLEAVED-NEXT:    [[TMP7:%.*]] = getelementptr inbounds nuw i8, ptr [[A]], i64 [[TMP6]]
 ; CHECK-INTERLEAVED-NEXT:    [[TMP8:%.*]] = getelementptr inbounds nuw i8, ptr [[TMP7]], i32 0
-; CHECK-INTERLEAVED-NEXT:    [[TMP9:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-INTERLEAVED-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 2
-; CHECK-INTERLEAVED-NEXT:    [[TMP11:%.*]] = getelementptr inbounds nuw i8, ptr [[TMP7]], i64 [[TMP10]]
-; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 2 x i8>, ptr [[TMP8]], align 1
-; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD2:%.*]] = load <vscale x 2 x i8>, ptr [[TMP11]], align 1
-; CHECK-INTERLEAVED-NEXT:    [[TMP12:%.*]] = zext <vscale x 2 x i8> [[WIDE_LOAD]] to <vscale x 2 x i64>
-; CHECK-INTERLEAVED-NEXT:    [[TMP13:%.*]] = zext <vscale x 2 x i8> [[WIDE_LOAD2]] to <vscale x 2 x i64>
+; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD:%.*]] = load <16 x i8>, ptr [[TMP8]], align 1
+; CHECK-INTERLEAVED-NEXT:    [[TMP3:%.*]] = zext <16 x i8> [[WIDE_LOAD]] to <16 x i64>
 ; CHECK-INTERLEAVED-NEXT:    [[TMP14:%.*]] = add nuw nsw i64 [[TMP6]], 1
 ; CHECK-INTERLEAVED-NEXT:    [[TMP15:%.*]] = getelementptr inbounds nuw i8, ptr [[B]], i64 [[TMP14]]
 ; CHECK-INTERLEAVED-NEXT:    [[TMP16:%.*]] = getelementptr inbounds nuw i8, ptr [[TMP15]], i32 0
+<<<<<<< HEAD
 ; CHECK-INTERLEAVED-NEXT:    [[TMP17:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-INTERLEAVED-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP17]], 2
 ; CHECK-INTERLEAVED-NEXT:    [[TMP19:%.*]] = getelementptr inbounds nuw i8, ptr [[TMP15]], i64 [[TMP18]]
@@ -2653,13 +2988,19 @@ define i64 @dotp_cost_disagreement(ptr %a, ptr %b) #0 {
 ; CHECK-INTERLEAVED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; CHECK-INTERLEAVED-NEXT:    [[TMP26:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-INTERLEAVED-NEXT:    br i1 [[TMP26]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP21:![0-9]+]]
+=======
+; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD1:%.*]] = load <16 x i8>, ptr [[TMP16]], align 1
+; CHECK-INTERLEAVED-NEXT:    [[TMP10:%.*]] = zext <16 x i8> [[WIDE_LOAD1]] to <16 x i64>
+; CHECK-INTERLEAVED-NEXT:    [[TMP11:%.*]] = mul nuw nsw <16 x i64> [[TMP10]], [[TMP3]]
+; CHECK-INTERLEAVED-NEXT:    [[TMP9]] = add <16 x i64> [[VEC_PHI]], [[TMP11]]
+; CHECK-INTERLEAVED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
+; CHECK-INTERLEAVED-NEXT:    br i1 true, label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP19:![0-9]+]]
+>>>>>>> origin/sifive-dev
 ; CHECK-INTERLEAVED:       middle.block:
-; CHECK-INTERLEAVED-NEXT:    [[BIN_RDX:%.*]] = add <vscale x 2 x i64> [[TMP25]], [[TMP24]]
-; CHECK-INTERLEAVED-NEXT:    [[TMP27:%.*]] = call i64 @llvm.vector.reduce.add.nxv2i64(<vscale x 2 x i64> [[BIN_RDX]])
-; CHECK-INTERLEAVED-NEXT:    [[CMP_N:%.*]] = icmp eq i64 16, [[N_VEC]]
-; CHECK-INTERLEAVED-NEXT:    br i1 [[CMP_N]], label [[EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-INTERLEAVED-NEXT:    [[TMP27:%.*]] = call i64 @llvm.vector.reduce.add.v16i64(<16 x i64> [[TMP9]])
+; CHECK-INTERLEAVED-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-INTERLEAVED:       scalar.ph:
-; CHECK-INTERLEAVED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; CHECK-INTERLEAVED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 16, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; CHECK-INTERLEAVED-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[TMP27]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY]] ]
 ; CHECK-INTERLEAVED-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-INTERLEAVED:       for.body:
@@ -3377,47 +3718,45 @@ define dso_local i32 @not_dotp_vscale1(ptr %a, ptr %b, i32 %n, i64 %cost) #0 {
 ; CHECK-INTERLEAVE1-NEXT:    br i1 [[CMP]], label [[FOR_BODY_PREHEADER:%.*]], label [[EXIT:%.*]]
 ; CHECK-INTERLEAVE1:       for.body.preheader:
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP0:%.*]] = zext i32 [[N]] to i64
-; CHECK-INTERLEAVE1-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-INTERLEAVE1-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 2
-; CHECK-INTERLEAVE1-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[TMP0]], [[TMP2]]
+; CHECK-INTERLEAVE1-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[TMP0]], 16
 ; CHECK-INTERLEAVE1-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-INTERLEAVE1:       vector.ph:
-; CHECK-INTERLEAVE1-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-INTERLEAVE1-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 2
-; CHECK-INTERLEAVE1-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[TMP0]], [[TMP4]]
+; CHECK-INTERLEAVE1-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[TMP0]], 16
 ; CHECK-INTERLEAVE1-NEXT:    [[N_VEC:%.*]] = sub i64 [[TMP0]], [[N_MOD_VF]]
-; CHECK-INTERLEAVE1-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-INTERLEAVE1-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 2
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP7:%.*]] = trunc i64 [[N_VEC]] to i32
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[A]], i64 [[N_VEC]]
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[B]], i64 [[N_VEC]]
-; CHECK-INTERLEAVE1-NEXT:    [[TMP10:%.*]] = insertelement <vscale x 2 x i64> zeroinitializer, i64 [[COST]], i32 0
+; CHECK-INTERLEAVE1-NEXT:    [[TMP4:%.*]] = insertelement <16 x i64> zeroinitializer, i64 [[COST]], i32 0
 ; CHECK-INTERLEAVE1-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-INTERLEAVE1:       vector.body:
 ; CHECK-INTERLEAVE1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-INTERLEAVE1-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i64> [ [[TMP10]], [[VECTOR_PH]] ], [ [[TMP18:%.*]], [[VECTOR_BODY]] ]
+; CHECK-INTERLEAVE1-NEXT:    [[VEC_PHI:%.*]] = phi <16 x i64> [ [[TMP4]], [[VECTOR_PH]] ], [ [[TMP16:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP11:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-INTERLEAVE1-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP11]]
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP12:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-INTERLEAVE1-NEXT:    [[NEXT_GEP1:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP12]]
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP13:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
-; CHECK-INTERLEAVE1-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 2 x i8>, ptr [[TMP13]], align 1
-; CHECK-INTERLEAVE1-NEXT:    [[TMP14:%.*]] = zext <vscale x 2 x i8> [[WIDE_LOAD]] to <vscale x 2 x i64>
+; CHECK-INTERLEAVE1-NEXT:    [[WIDE_LOAD:%.*]] = load <16 x i8>, ptr [[TMP13]], align 1
+; CHECK-INTERLEAVE1-NEXT:    [[TMP17:%.*]] = zext <16 x i8> [[WIDE_LOAD]] to <16 x i64>
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP15:%.*]] = getelementptr i8, ptr [[NEXT_GEP1]], i32 0
-; CHECK-INTERLEAVE1-NEXT:    [[WIDE_LOAD2:%.*]] = load <vscale x 2 x i8>, ptr [[TMP15]], align 1
-; CHECK-INTERLEAVE1-NEXT:    [[TMP16:%.*]] = zext <vscale x 2 x i8> [[WIDE_LOAD2]] to <vscale x 2 x i64>
-; CHECK-INTERLEAVE1-NEXT:    [[TMP17:%.*]] = mul nuw nsw <vscale x 2 x i64> [[TMP16]], [[TMP14]]
-; CHECK-INTERLEAVE1-NEXT:    [[TMP18]] = add <vscale x 2 x i64> [[TMP17]], [[VEC_PHI]]
-; CHECK-INTERLEAVE1-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP6]]
+; CHECK-INTERLEAVE1-NEXT:    [[WIDE_LOAD2:%.*]] = load <16 x i8>, ptr [[TMP15]], align 1
+; CHECK-INTERLEAVE1-NEXT:    [[TMP10:%.*]] = zext <16 x i8> [[WIDE_LOAD2]] to <16 x i64>
+; CHECK-INTERLEAVE1-NEXT:    [[TMP18:%.*]] = mul nuw nsw <16 x i64> [[TMP10]], [[TMP17]]
+; CHECK-INTERLEAVE1-NEXT:    [[TMP16]] = add <16 x i64> [[TMP18]], [[VEC_PHI]]
+; CHECK-INTERLEAVE1-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP19:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-INTERLEAVE1-NEXT:    br i1 [[TMP19]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP27:![0-9]+]]
 ; CHECK-INTERLEAVE1:       middle.block:
-; CHECK-INTERLEAVE1-NEXT:    [[TMP20:%.*]] = call i64 @llvm.vector.reduce.add.nxv2i64(<vscale x 2 x i64> [[TMP18]])
+; CHECK-INTERLEAVE1-NEXT:    [[TMP14:%.*]] = call i64 @llvm.vector.reduce.add.v16i64(<16 x i64> [[TMP16]])
 ; CHECK-INTERLEAVE1-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[TMP0]], [[N_VEC]]
 ; CHECK-INTERLEAVE1-NEXT:    br i1 [[CMP_N]], label [[EXIT_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-INTERLEAVE1:       scalar.ph:
 ; CHECK-INTERLEAVE1-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ [[TMP7]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
+<<<<<<< HEAD
 ; CHECK-INTERLEAVE1-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[TMP20]], [[MIDDLE_BLOCK]] ], [ [[COST]], [[FOR_BODY_PREHEADER]] ]
+=======
+; CHECK-INTERLEAVE1-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[TMP14]], [[MIDDLE_BLOCK]] ], [ [[COST]], [[FOR_BODY_PREHEADER]] ]
+>>>>>>> origin/sifive-dev
 ; CHECK-INTERLEAVE1-NEXT:    [[BC_RESUME_VAL3:%.*]] = phi ptr [ [[TMP8]], [[MIDDLE_BLOCK]] ], [ [[A]], [[FOR_BODY_PREHEADER]] ]
 ; CHECK-INTERLEAVE1-NEXT:    [[BC_RESUME_VAL4:%.*]] = phi ptr [ [[TMP9]], [[MIDDLE_BLOCK]] ], [ [[B]], [[FOR_BODY_PREHEADER]] ]
 ; CHECK-INTERLEAVE1-NEXT:    br label [[FOR_BODY:%.*]]
@@ -3436,9 +3775,15 @@ define dso_local i32 @not_dotp_vscale1(ptr %a, ptr %b, i32 %n, i64 %cost) #0 {
 ; CHECK-INTERLEAVE1-NEXT:    [[B_GEP]] = getelementptr inbounds nuw i8, ptr [[B_PTR]], i64 1
 ; CHECK-INTERLEAVE1-NEXT:    [[IV_NEXT]] = add nuw nsw i32 [[IV]], 1
 ; CHECK-INTERLEAVE1-NEXT:    [[CMP_2:%.*]] = icmp eq i32 [[IV_NEXT]], [[N]]
+<<<<<<< HEAD
 ; CHECK-INTERLEAVE1-NEXT:    br i1 [[CMP_2]], label [[EXIT_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP28:![0-9]+]]
 ; CHECK-INTERLEAVE1:       exit.loopexit:
 ; CHECK-INTERLEAVE1-NEXT:    [[ADD_LCSSA:%.*]] = phi i64 [ [[ADD]], [[FOR_BODY]] ], [ [[TMP20]], [[MIDDLE_BLOCK]] ]
+=======
+; CHECK-INTERLEAVE1-NEXT:    br i1 [[CMP_2]], label [[EXIT_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP26:![0-9]+]]
+; CHECK-INTERLEAVE1:       exit.loopexit:
+; CHECK-INTERLEAVE1-NEXT:    [[ADD_LCSSA:%.*]] = phi i64 [ [[ADD]], [[FOR_BODY]] ], [ [[TMP14]], [[MIDDLE_BLOCK]] ]
+>>>>>>> origin/sifive-dev
 ; CHECK-INTERLEAVE1-NEXT:    br label [[EXIT]]
 ; CHECK-INTERLEAVE1:       exit:
 ; CHECK-INTERLEAVE1-NEXT:    [[COST_RESULT:%.*]] = phi i64 [ [[COST]], [[ENTRY:%.*]] ], [ [[ADD_LCSSA]], [[EXIT_LOOPEXIT]] ]
@@ -3452,69 +3797,60 @@ define dso_local i32 @not_dotp_vscale1(ptr %a, ptr %b, i32 %n, i64 %cost) #0 {
 ; CHECK-INTERLEAVED-NEXT:    br i1 [[CMP]], label [[FOR_BODY_PREHEADER:%.*]], label [[EXIT:%.*]]
 ; CHECK-INTERLEAVED:       for.body.preheader:
 ; CHECK-INTERLEAVED-NEXT:    [[TMP0:%.*]] = zext i32 [[N]] to i64
-; CHECK-INTERLEAVED-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-INTERLEAVED-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 4
-; CHECK-INTERLEAVED-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[TMP0]], [[TMP2]]
+; CHECK-INTERLEAVED-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[TMP0]], 16
 ; CHECK-INTERLEAVED-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-INTERLEAVED:       vector.ph:
-; CHECK-INTERLEAVED-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-INTERLEAVED-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 4
-; CHECK-INTERLEAVED-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[TMP0]], [[TMP4]]
+; CHECK-INTERLEAVED-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[TMP0]], 16
 ; CHECK-INTERLEAVED-NEXT:    [[N_VEC:%.*]] = sub i64 [[TMP0]], [[N_MOD_VF]]
-; CHECK-INTERLEAVED-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-INTERLEAVED-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 4
 ; CHECK-INTERLEAVED-NEXT:    [[TMP7:%.*]] = trunc i64 [[N_VEC]] to i32
 ; CHECK-INTERLEAVED-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[A]], i64 [[N_VEC]]
 ; CHECK-INTERLEAVED-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[B]], i64 [[N_VEC]]
-; CHECK-INTERLEAVED-NEXT:    [[TMP10:%.*]] = insertelement <vscale x 2 x i64> zeroinitializer, i64 [[COST]], i32 0
+; CHECK-INTERLEAVED-NEXT:    [[TMP4:%.*]] = insertelement <16 x i64> zeroinitializer, i64 [[COST]], i32 0
 ; CHECK-INTERLEAVED-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-INTERLEAVED:       vector.body:
 ; CHECK-INTERLEAVED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-INTERLEAVED-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i64> [ [[TMP10]], [[VECTOR_PH]] ], [ [[TMP27:%.*]], [[VECTOR_BODY]] ]
-; CHECK-INTERLEAVED-NEXT:    [[VEC_PHI1:%.*]] = phi <vscale x 2 x i64> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP28:%.*]], [[VECTOR_BODY]] ]
+; CHECK-INTERLEAVED-NEXT:    [[VEC_PHI:%.*]] = phi <16 x i64> [ [[TMP4]], [[VECTOR_PH]] ], [ [[TMP15:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-INTERLEAVED-NEXT:    [[TMP11:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-INTERLEAVED-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP11]]
 ; CHECK-INTERLEAVED-NEXT:    [[TMP12:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-INTERLEAVED-NEXT:    [[NEXT_GEP2:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP12]]
 ; CHECK-INTERLEAVED-NEXT:    [[TMP13:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
-; CHECK-INTERLEAVED-NEXT:    [[TMP14:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-INTERLEAVED-NEXT:    [[TMP15:%.*]] = mul i64 [[TMP14]], 2
-; CHECK-INTERLEAVED-NEXT:    [[TMP16:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i64 [[TMP15]]
-; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 2 x i8>, ptr [[TMP13]], align 1
-; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD3:%.*]] = load <vscale x 2 x i8>, ptr [[TMP16]], align 1
-; CHECK-INTERLEAVED-NEXT:    [[TMP17:%.*]] = zext <vscale x 2 x i8> [[WIDE_LOAD]] to <vscale x 2 x i64>
-; CHECK-INTERLEAVED-NEXT:    [[TMP18:%.*]] = zext <vscale x 2 x i8> [[WIDE_LOAD3]] to <vscale x 2 x i64>
+; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD:%.*]] = load <16 x i8>, ptr [[TMP13]], align 1
+; CHECK-INTERLEAVED-NEXT:    [[TMP16:%.*]] = zext <16 x i8> [[WIDE_LOAD]] to <16 x i64>
 ; CHECK-INTERLEAVED-NEXT:    [[TMP19:%.*]] = getelementptr i8, ptr [[NEXT_GEP2]], i32 0
-; CHECK-INTERLEAVED-NEXT:    [[TMP20:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-INTERLEAVED-NEXT:    [[TMP21:%.*]] = mul i64 [[TMP20]], 2
-; CHECK-INTERLEAVED-NEXT:    [[TMP22:%.*]] = getelementptr i8, ptr [[NEXT_GEP2]], i64 [[TMP21]]
-; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD4:%.*]] = load <vscale x 2 x i8>, ptr [[TMP19]], align 1
-; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD5:%.*]] = load <vscale x 2 x i8>, ptr [[TMP22]], align 1
-; CHECK-INTERLEAVED-NEXT:    [[TMP23:%.*]] = zext <vscale x 2 x i8> [[WIDE_LOAD4]] to <vscale x 2 x i64>
-; CHECK-INTERLEAVED-NEXT:    [[TMP24:%.*]] = zext <vscale x 2 x i8> [[WIDE_LOAD5]] to <vscale x 2 x i64>
-; CHECK-INTERLEAVED-NEXT:    [[TMP25:%.*]] = mul nuw nsw <vscale x 2 x i64> [[TMP23]], [[TMP17]]
-; CHECK-INTERLEAVED-NEXT:    [[TMP26:%.*]] = mul nuw nsw <vscale x 2 x i64> [[TMP24]], [[TMP18]]
-; CHECK-INTERLEAVED-NEXT:    [[TMP27]] = add <vscale x 2 x i64> [[TMP25]], [[VEC_PHI]]
-; CHECK-INTERLEAVED-NEXT:    [[TMP28]] = add <vscale x 2 x i64> [[TMP26]], [[VEC_PHI1]]
-; CHECK-INTERLEAVED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP6]]
+; CHECK-INTERLEAVED-NEXT:    [[WIDE_LOAD2:%.*]] = load <16 x i8>, ptr [[TMP19]], align 1
+; CHECK-INTERLEAVED-NEXT:    [[TMP10:%.*]] = zext <16 x i8> [[WIDE_LOAD2]] to <16 x i64>
+; CHECK-INTERLEAVED-NEXT:    [[TMP17:%.*]] = mul nuw nsw <16 x i64> [[TMP10]], [[TMP16]]
+; CHECK-INTERLEAVED-NEXT:    [[TMP15]] = add <16 x i64> [[TMP17]], [[VEC_PHI]]
+; CHECK-INTERLEAVED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
 ; CHECK-INTERLEAVED-NEXT:    [[TMP29:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-INTERLEAVED-NEXT:    br i1 [[TMP29]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP29:![0-9]+]]
 ; CHECK-INTERLEAVED:       middle.block:
-; CHECK-INTERLEAVED-NEXT:    [[BIN_RDX:%.*]] = add <vscale x 2 x i64> [[TMP28]], [[TMP27]]
-; CHECK-INTERLEAVED-NEXT:    [[TMP30:%.*]] = call i64 @llvm.vector.reduce.add.nxv2i64(<vscale x 2 x i64> [[BIN_RDX]])
+; CHECK-INTERLEAVED-NEXT:    [[TMP14:%.*]] = call i64 @llvm.vector.reduce.add.v16i64(<16 x i64> [[TMP15]])
 ; CHECK-INTERLEAVED-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[TMP0]], [[N_VEC]]
 ; CHECK-INTERLEAVED-NEXT:    br i1 [[CMP_N]], label [[EXIT_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-INTERLEAVED:       scalar.ph:
 ; CHECK-INTERLEAVED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ [[TMP7]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
+<<<<<<< HEAD
 ; CHECK-INTERLEAVED-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[TMP30]], [[MIDDLE_BLOCK]] ], [ [[COST]], [[FOR_BODY_PREHEADER]] ]
 ; CHECK-INTERLEAVED-NEXT:    [[BC_RESUME_VAL6:%.*]] = phi ptr [ [[TMP8]], [[MIDDLE_BLOCK]] ], [ [[A]], [[FOR_BODY_PREHEADER]] ]
 ; CHECK-INTERLEAVED-NEXT:    [[BC_RESUME_VAL7:%.*]] = phi ptr [ [[TMP9]], [[MIDDLE_BLOCK]] ], [ [[B]], [[FOR_BODY_PREHEADER]] ]
+=======
+; CHECK-INTERLEAVED-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[TMP14]], [[MIDDLE_BLOCK]] ], [ [[COST]], [[FOR_BODY_PREHEADER]] ]
+; CHECK-INTERLEAVED-NEXT:    [[BC_RESUME_VAL3:%.*]] = phi ptr [ [[TMP8]], [[MIDDLE_BLOCK]] ], [ [[A]], [[FOR_BODY_PREHEADER]] ]
+; CHECK-INTERLEAVED-NEXT:    [[BC_RESUME_VAL4:%.*]] = phi ptr [ [[TMP9]], [[MIDDLE_BLOCK]] ], [ [[B]], [[FOR_BODY_PREHEADER]] ]
+>>>>>>> origin/sifive-dev
 ; CHECK-INTERLEAVED-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-INTERLEAVED:       for.body:
 ; CHECK-INTERLEAVED-NEXT:    [[IV:%.*]] = phi i32 [ [[IV_NEXT:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
 ; CHECK-INTERLEAVED-NEXT:    [[ACCUM:%.*]] = phi i64 [ [[ADD:%.*]], [[FOR_BODY]] ], [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ]
+<<<<<<< HEAD
 ; CHECK-INTERLEAVED-NEXT:    [[A_PTR:%.*]] = phi ptr [ [[A_GEP:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL6]], [[SCALAR_PH]] ]
 ; CHECK-INTERLEAVED-NEXT:    [[B_PTR:%.*]] = phi ptr [ [[B_GEP:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL7]], [[SCALAR_PH]] ]
+=======
+; CHECK-INTERLEAVED-NEXT:    [[A_PTR:%.*]] = phi ptr [ [[A_GEP:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL3]], [[SCALAR_PH]] ]
+; CHECK-INTERLEAVED-NEXT:    [[B_PTR:%.*]] = phi ptr [ [[B_GEP:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL4]], [[SCALAR_PH]] ]
+>>>>>>> origin/sifive-dev
 ; CHECK-INTERLEAVED-NEXT:    [[A_LOAD:%.*]] = load i8, ptr [[A_PTR]], align 1
 ; CHECK-INTERLEAVED-NEXT:    [[A_EXT:%.*]] = zext i8 [[A_LOAD]] to i64
 ; CHECK-INTERLEAVED-NEXT:    [[B_LOAD:%.*]] = load i8, ptr [[B_PTR]], align 1
@@ -3525,9 +3861,15 @@ define dso_local i32 @not_dotp_vscale1(ptr %a, ptr %b, i32 %n, i64 %cost) #0 {
 ; CHECK-INTERLEAVED-NEXT:    [[B_GEP]] = getelementptr inbounds nuw i8, ptr [[B_PTR]], i64 1
 ; CHECK-INTERLEAVED-NEXT:    [[IV_NEXT]] = add nuw nsw i32 [[IV]], 1
 ; CHECK-INTERLEAVED-NEXT:    [[CMP_2:%.*]] = icmp eq i32 [[IV_NEXT]], [[N]]
+<<<<<<< HEAD
 ; CHECK-INTERLEAVED-NEXT:    br i1 [[CMP_2]], label [[EXIT_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP30:![0-9]+]]
 ; CHECK-INTERLEAVED:       exit.loopexit:
 ; CHECK-INTERLEAVED-NEXT:    [[ADD_LCSSA:%.*]] = phi i64 [ [[ADD]], [[FOR_BODY]] ], [ [[TMP30]], [[MIDDLE_BLOCK]] ]
+=======
+; CHECK-INTERLEAVED-NEXT:    br i1 [[CMP_2]], label [[EXIT_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP28:![0-9]+]]
+; CHECK-INTERLEAVED:       exit.loopexit:
+; CHECK-INTERLEAVED-NEXT:    [[ADD_LCSSA:%.*]] = phi i64 [ [[ADD]], [[FOR_BODY]] ], [ [[TMP14]], [[MIDDLE_BLOCK]] ]
+>>>>>>> origin/sifive-dev
 ; CHECK-INTERLEAVED-NEXT:    br label [[EXIT]]
 ; CHECK-INTERLEAVED:       exit:
 ; CHECK-INTERLEAVED-NEXT:    [[COST_RESULT:%.*]] = phi i64 [ [[COST]], [[ENTRY:%.*]] ], [ [[ADD_LCSSA]], [[EXIT_LOOPEXIT]] ]
@@ -3600,7 +3942,11 @@ define dso_local i32 @not_dotp_vscale1(ptr %a, ptr %b, i32 %n, i64 %cost) #0 {
 ; CHECK-MAXBW-NEXT:    [[B_GEP]] = getelementptr inbounds nuw i8, ptr [[B_PTR]], i64 1
 ; CHECK-MAXBW-NEXT:    [[IV_NEXT]] = add nuw nsw i32 [[IV]], 1
 ; CHECK-MAXBW-NEXT:    [[CMP_2:%.*]] = icmp eq i32 [[IV_NEXT]], [[N]]
+<<<<<<< HEAD
 ; CHECK-MAXBW-NEXT:    br i1 [[CMP_2]], label [[EXIT_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP28:![0-9]+]]
+=======
+; CHECK-MAXBW-NEXT:    br i1 [[CMP_2]], label [[EXIT_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP26:![0-9]+]]
+>>>>>>> origin/sifive-dev
 ; CHECK-MAXBW:       exit.loopexit:
 ; CHECK-MAXBW-NEXT:    [[ADD_LCSSA:%.*]] = phi i64 [ [[ADD]], [[FOR_BODY]] ], [ [[TMP19]], [[MIDDLE_BLOCK]] ]
 ; CHECK-MAXBW-NEXT:    br label [[EXIT]]
@@ -4404,4 +4750,94 @@ for.exit:                        ; preds = %for.body
 !9 = !{!"llvm.loop.vectorize.predicate.enable", i1 true}
 !10 = !{!"llvm.loop.vectorize.enable", i1 true}
 attributes #0 = { vscale_range(1,16) "target-features"="+sve" }
+<<<<<<< HEAD
 attributes #1 = { vscale_range(1,16) "target-features"="+neon,+dotprod,+sve" "cpu"="neoverse-v2" }
+=======
+;.
+; CHECK-INTERLEAVE1: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; CHECK-INTERLEAVE1: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
+; CHECK-INTERLEAVE1: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK-INTERLEAVE1: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+; CHECK-INTERLEAVE1: [[LOOP4]] = distinct !{[[LOOP4]], [[META1]], [[META2]]}
+; CHECK-INTERLEAVE1: [[LOOP5]] = distinct !{[[LOOP5]], [[META2]], [[META1]]}
+; CHECK-INTERLEAVE1: [[LOOP6]] = distinct !{[[LOOP6]], [[META1]], [[META2]]}
+; CHECK-INTERLEAVE1: [[LOOP7]] = distinct !{[[LOOP7]], [[META2]], [[META1]]}
+; CHECK-INTERLEAVE1: [[LOOP8]] = distinct !{[[LOOP8]], [[META1]], [[META2]]}
+; CHECK-INTERLEAVE1: [[LOOP9]] = distinct !{[[LOOP9]], [[META2]], [[META1]]}
+; CHECK-INTERLEAVE1: [[LOOP10]] = distinct !{[[LOOP10]], [[META1]], [[META2]]}
+; CHECK-INTERLEAVE1: [[LOOP11]] = distinct !{[[LOOP11]], [[META2]], [[META1]]}
+; CHECK-INTERLEAVE1: [[LOOP12]] = distinct !{[[LOOP12]], [[META1]], [[META2]]}
+; CHECK-INTERLEAVE1: [[LOOP13]] = distinct !{[[LOOP13]], [[META2]], [[META1]]}
+; CHECK-INTERLEAVE1: [[LOOP14]] = distinct !{[[LOOP14]], [[META15:![0-9]+]], [[META1]], [[META2]]}
+; CHECK-INTERLEAVE1: [[META15]] = !{!"llvm.loop.mustprogress"}
+; CHECK-INTERLEAVE1: [[LOOP16]] = distinct !{[[LOOP16]], [[META15]], [[META2]], [[META1]]}
+; CHECK-INTERLEAVE1: [[LOOP17]] = distinct !{[[LOOP17]], [[META1]], [[META2]]}
+; CHECK-INTERLEAVE1: [[LOOP18]] = distinct !{[[LOOP18]], [[META2]], [[META1]]}
+; CHECK-INTERLEAVE1: [[LOOP19]] = distinct !{[[LOOP19]], [[META1]], [[META2]]}
+; CHECK-INTERLEAVE1: [[LOOP20]] = distinct !{[[LOOP20]], [[META2]], [[META1]]}
+; CHECK-INTERLEAVE1: [[LOOP21]] = distinct !{[[LOOP21]], [[META1]], [[META2]]}
+; CHECK-INTERLEAVE1: [[LOOP22]] = distinct !{[[LOOP22]], [[META2]], [[META1]]}
+; CHECK-INTERLEAVE1: [[LOOP23]] = distinct !{[[LOOP23]], [[META1]], [[META2]]}
+; CHECK-INTERLEAVE1: [[LOOP24]] = distinct !{[[LOOP24]], [[META2]], [[META1]]}
+; CHECK-INTERLEAVE1: [[LOOP25]] = distinct !{[[LOOP25]], [[META1]], [[META2]]}
+; CHECK-INTERLEAVE1: [[LOOP26]] = distinct !{[[LOOP26]], [[META2]], [[META1]]}
+;.
+; CHECK-INTERLEAVED: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; CHECK-INTERLEAVED: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
+; CHECK-INTERLEAVED: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK-INTERLEAVED: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+; CHECK-INTERLEAVED: [[LOOP4]] = distinct !{[[LOOP4]], [[META1]], [[META2]]}
+; CHECK-INTERLEAVED: [[LOOP5]] = distinct !{[[LOOP5]], [[META2]], [[META1]]}
+; CHECK-INTERLEAVED: [[LOOP6]] = distinct !{[[LOOP6]], [[META1]], [[META2]]}
+; CHECK-INTERLEAVED: [[LOOP7]] = distinct !{[[LOOP7]], [[META2]], [[META1]]}
+; CHECK-INTERLEAVED: [[LOOP8]] = distinct !{[[LOOP8]], [[META1]], [[META2]]}
+; CHECK-INTERLEAVED: [[LOOP9]] = distinct !{[[LOOP9]], [[META2]], [[META1]]}
+; CHECK-INTERLEAVED: [[LOOP10]] = distinct !{[[LOOP10]], [[META1]], [[META2]]}
+; CHECK-INTERLEAVED: [[LOOP11]] = distinct !{[[LOOP11]], [[META2]], [[META1]]}
+; CHECK-INTERLEAVED: [[LOOP12]] = distinct !{[[LOOP12]], [[META1]], [[META2]]}
+; CHECK-INTERLEAVED: [[LOOP13]] = distinct !{[[LOOP13]], [[META2]], [[META1]]}
+; CHECK-INTERLEAVED: [[LOOP14]] = distinct !{[[LOOP14]], [[META15:![0-9]+]], [[META1]], [[META2]]}
+; CHECK-INTERLEAVED: [[META15]] = !{!"llvm.loop.mustprogress"}
+; CHECK-INTERLEAVED: [[LOOP16]] = distinct !{[[LOOP16]], [[META15]], [[META2]], [[META1]]}
+; CHECK-INTERLEAVED: [[LOOP17]] = distinct !{[[LOOP17]], [[META1]], [[META2]]}
+; CHECK-INTERLEAVED: [[LOOP18]] = distinct !{[[LOOP18]], [[META2]], [[META1]]}
+; CHECK-INTERLEAVED: [[LOOP19]] = distinct !{[[LOOP19]], [[META1]], [[META2]]}
+; CHECK-INTERLEAVED: [[LOOP20]] = distinct !{[[LOOP20]], [[META2]], [[META1]]}
+; CHECK-INTERLEAVED: [[LOOP21]] = distinct !{[[LOOP21]], [[META1]], [[META2]]}
+; CHECK-INTERLEAVED: [[LOOP22]] = distinct !{[[LOOP22]], [[META1]]}
+; CHECK-INTERLEAVED: [[LOOP23]] = distinct !{[[LOOP23]], [[META1]], [[META2]]}
+; CHECK-INTERLEAVED: [[LOOP24]] = distinct !{[[LOOP24]], [[META2]], [[META1]]}
+; CHECK-INTERLEAVED: [[LOOP25]] = distinct !{[[LOOP25]], [[META1]], [[META2]]}
+; CHECK-INTERLEAVED: [[LOOP26]] = distinct !{[[LOOP26]], [[META2]], [[META1]]}
+; CHECK-INTERLEAVED: [[LOOP27]] = distinct !{[[LOOP27]], [[META1]], [[META2]]}
+; CHECK-INTERLEAVED: [[LOOP28]] = distinct !{[[LOOP28]], [[META2]], [[META1]]}
+;.
+; CHECK-MAXBW: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; CHECK-MAXBW: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
+; CHECK-MAXBW: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK-MAXBW: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+; CHECK-MAXBW: [[LOOP4]] = distinct !{[[LOOP4]], [[META1]], [[META2]]}
+; CHECK-MAXBW: [[LOOP5]] = distinct !{[[LOOP5]], [[META2]], [[META1]]}
+; CHECK-MAXBW: [[LOOP6]] = distinct !{[[LOOP6]], [[META1]], [[META2]]}
+; CHECK-MAXBW: [[LOOP7]] = distinct !{[[LOOP7]], [[META2]], [[META1]]}
+; CHECK-MAXBW: [[LOOP8]] = distinct !{[[LOOP8]], [[META1]], [[META2]]}
+; CHECK-MAXBW: [[LOOP9]] = distinct !{[[LOOP9]], [[META2]], [[META1]]}
+; CHECK-MAXBW: [[LOOP10]] = distinct !{[[LOOP10]], [[META1]], [[META2]]}
+; CHECK-MAXBW: [[LOOP11]] = distinct !{[[LOOP11]], [[META2]], [[META1]]}
+; CHECK-MAXBW: [[LOOP12]] = distinct !{[[LOOP12]], [[META1]], [[META2]]}
+; CHECK-MAXBW: [[LOOP13]] = distinct !{[[LOOP13]], [[META2]], [[META1]]}
+; CHECK-MAXBW: [[LOOP14]] = distinct !{[[LOOP14]], [[META15:![0-9]+]], [[META1]], [[META2]]}
+; CHECK-MAXBW: [[META15]] = !{!"llvm.loop.mustprogress"}
+; CHECK-MAXBW: [[LOOP16]] = distinct !{[[LOOP16]], [[META15]], [[META2]], [[META1]]}
+; CHECK-MAXBW: [[LOOP17]] = distinct !{[[LOOP17]], [[META1]], [[META2]]}
+; CHECK-MAXBW: [[LOOP18]] = distinct !{[[LOOP18]], [[META2]], [[META1]]}
+; CHECK-MAXBW: [[LOOP19]] = distinct !{[[LOOP19]], [[META1]], [[META2]]}
+; CHECK-MAXBW: [[LOOP20]] = distinct !{[[LOOP20]], [[META2]], [[META1]]}
+; CHECK-MAXBW: [[LOOP21]] = distinct !{[[LOOP21]], [[META1]], [[META2]]}
+; CHECK-MAXBW: [[LOOP22]] = distinct !{[[LOOP22]], [[META2]], [[META1]]}
+; CHECK-MAXBW: [[LOOP23]] = distinct !{[[LOOP23]], [[META1]], [[META2]]}
+; CHECK-MAXBW: [[LOOP24]] = distinct !{[[LOOP24]], [[META2]], [[META1]]}
+; CHECK-MAXBW: [[LOOP25]] = distinct !{[[LOOP25]], [[META1]], [[META2]]}
+; CHECK-MAXBW: [[LOOP26]] = distinct !{[[LOOP26]], [[META2]], [[META1]]}
+;.
+>>>>>>> origin/sifive-dev

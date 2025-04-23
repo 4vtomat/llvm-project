@@ -1193,11 +1193,15 @@ Value *VPInstruction::generate(VPTransformState &State) {
 InstructionCost VPInstruction::computeCost(ElementCount VF,
                                            VPCostContext &Ctx) const {
   if (Instruction::isBinaryOp(getOpcode())) {
+#if SIFIVE_CUSTOMIZATION
+    // Most of the VPInstruction doesn't have underlying value.
+#else  // SIFIV_CUSTOMIZATION
     if (!getUnderlyingValue()) {
       // TODO: Compute cost for VPInstructions without underlying values once
       // the legacy cost model has been retired.
       return 0;
     }
+#endif // SIFIVE_CUSTOMIZATION
 
     assert(!doesGeneratePerAllLanes() &&
            "Should only generate a vector value or single scalar, not scalars "
@@ -1216,6 +1220,20 @@ InstructionCost VPInstruction::computeCost(ElementCount VF,
         Instruction::Or, cast<VectorType>(VecTy), std::nullopt, Ctx.CostKind);
   }
 #if SIFIVE_CUSTOMIZATION
+  case VPInstruction::LogicalAnd: {
+    Type *ResTy = Ctx.Types.inferScalarType(this);
+    if (!vputils::onlyFirstLaneUsed(this))
+      ResTy = toVectorTy(ResTy, VF);
+    return Ctx.TTI.getArithmeticInstrCost(Instruction::And, ResTy,
+                                          Ctx.CostKind);
+  }
+  case VPInstruction::Not: {
+    Type *ResTy = Ctx.Types.inferScalarType(this);
+    if (!vputils::onlyFirstLaneUsed(this))
+      ResTy = toVectorTy(ResTy, VF);
+    return Ctx.TTI.getArithmeticInstrCost(Instruction::Xor, ResTy,
+                                          Ctx.CostKind);
+  }
   case VPInstruction::MonotonicUpdate: {
     if (VF.isVector() &&
         !all_of(users(), [](VPUser *R) {

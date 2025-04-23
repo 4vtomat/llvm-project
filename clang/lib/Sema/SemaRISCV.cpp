@@ -958,30 +958,93 @@ bool SemaRISCV::CheckBuiltinFunctionCall(const TargetInfo &TI,
     // bit_26, vs2, fs1
     return SemaRef.BuiltinConstantArgRange(TheCall, 0, 0, 1);
 #if SIFIVE_CUSTOMIZATION
-  case RISCV::BI__builtin_riscv_sf_sci_x_xx_32:
-  case RISCV::BI__builtin_riscv_sf_sci_x_xx_64:
-  case RISCV::BI__builtin_riscv_sf_sci_x_xx_se_32:
-  case RISCV::BI__builtin_riscv_sf_sci_x_xx_se_64:
-  case RISCV::BI__builtin_riscv_sf_sci_xx_se_32:
-  case RISCV::BI__builtin_riscv_sf_sci_xx_se_64: {
-    if (SemaRef.BuiltinConstantArgRange(TheCall, 1, 0, 127))
-      return true;
-
-    Expr *Arg = TheCall->getArg(0);
-    if (Arg->isTypeDependent() || Arg->isValueDependent())
-      return false;
-
-    // Check constant-ness first.
-    llvm::APSInt Result;
-    if (SemaRef.BuiltinConstantArg(TheCall, 0, Result))
-      return true;
-
-    if (Result == 0 || Result == 2 || Result == 4 || Result == 6)
-      return false;
-
-    return Diag(TheCall->getBeginLoc(), diag::err_riscv_builin_invalid_funct3)
-           << Arg->getSourceRange();
+  case RISCV::BI__builtin_riscv_sf_sci_0_r_x_xx_32:
+  case RISCV::BI__builtin_riscv_sf_sci_0_r_x_xx_64:
+  case RISCV::BI__builtin_riscv_sf_sci_0_r_x_xx_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_0_r_x_xx_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_0_r_xx_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_0_r_xx_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_1_r_x_xx_32:
+  case RISCV::BI__builtin_riscv_sf_sci_1_r_x_xx_64:
+  case RISCV::BI__builtin_riscv_sf_sci_1_r_x_xx_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_1_r_x_xx_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_1_r_xx_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_1_r_xx_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_2_r_x_xx_32:
+  case RISCV::BI__builtin_riscv_sf_sci_2_r_x_xx_64:
+  case RISCV::BI__builtin_riscv_sf_sci_2_r_x_xx_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_2_r_x_xx_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_2_r_xx_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_2_r_xx_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_3_r_x_xx_32:
+  case RISCV::BI__builtin_riscv_sf_sci_3_r_x_xx_64:
+  case RISCV::BI__builtin_riscv_sf_sci_3_r_x_xx_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_3_r_x_xx_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_3_r_xx_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_3_r_xx_se_64: {
+    return SemaRef.BuiltinConstantArgRange(TheCall, 1, 0, 127) ||
+           SemaRef.BuiltinConstantArgRange(TheCall, 0, 0, 7);
   }
+  case RISCV::BI__builtin_riscv_sf_sci_0_i_x_xi_32:
+  case RISCV::BI__builtin_riscv_sf_sci_0_i_x_xi_64:
+  case RISCV::BI__builtin_riscv_sf_sci_0_i_x_xi_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_0_i_x_xi_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_0_i_xi_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_0_i_xi_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_1_i_x_xi_32:
+  case RISCV::BI__builtin_riscv_sf_sci_1_i_x_xi_64:
+  case RISCV::BI__builtin_riscv_sf_sci_1_i_x_xi_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_1_i_x_xi_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_1_i_xi_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_1_i_xi_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_2_i_x_xi_32:
+  case RISCV::BI__builtin_riscv_sf_sci_2_i_x_xi_64:
+  case RISCV::BI__builtin_riscv_sf_sci_2_i_x_xi_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_2_i_x_xi_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_2_i_xi_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_2_i_xi_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_3_i_x_xi_32:
+  case RISCV::BI__builtin_riscv_sf_sci_3_i_x_xi_64:
+  case RISCV::BI__builtin_riscv_sf_sci_3_i_x_xi_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_3_i_x_xi_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_3_i_xi_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_3_i_xi_se_64:
+    return SemaRef.BuiltinConstantArgRange(TheCall, 2, 0, 4095) ||
+           SemaRef.BuiltinConstantArgRange(TheCall, 0, 0, 7);
+  case RISCV::BI__builtin_riscv_sf_sci_0_u_x_i_32:
+  case RISCV::BI__builtin_riscv_sf_sci_0_u_x_i_64:
+  case RISCV::BI__builtin_riscv_sf_sci_0_u_x_i_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_0_u_x_i_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_0_u_i_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_0_u_i_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_1_u_x_i_32:
+  case RISCV::BI__builtin_riscv_sf_sci_1_u_x_i_64:
+  case RISCV::BI__builtin_riscv_sf_sci_1_u_x_i_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_1_u_x_i_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_1_u_i_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_1_u_i_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_2_u_x_i_32:
+  case RISCV::BI__builtin_riscv_sf_sci_2_u_x_i_64:
+  case RISCV::BI__builtin_riscv_sf_sci_2_u_x_i_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_2_u_x_i_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_2_u_i_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_2_u_i_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_3_u_x_i_32:
+  case RISCV::BI__builtin_riscv_sf_sci_3_u_x_i_64:
+  case RISCV::BI__builtin_riscv_sf_sci_3_u_x_i_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_3_u_x_i_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_3_u_i_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_3_u_i_se_64:
+    return SemaRef.BuiltinConstantArgRange(TheCall, 0, 0, 1048575);
+  case RISCV::BI__builtin_riscv_sf_sci_0_x_i_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_0_x_i_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_1_x_i_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_1_x_i_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_2_x_i_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_2_x_i_se_64:
+  case RISCV::BI__builtin_riscv_sf_sci_3_x_i_se_32:
+  case RISCV::BI__builtin_riscv_sf_sci_3_x_i_se_64:
+    return SemaRef.BuiltinConstantArgRange(TheCall, 0, 0, 33554431);
 #endif
   // Check if byteselect is in [0, 3]
   case RISCV::BI__builtin_riscv_aes32dsi:

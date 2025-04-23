@@ -10,7 +10,7 @@ define i32 @foo() {
 
 ; CHECK-PWR8: Executing best plan with VF=16, UF=4
 
-; CHECK-PWR9: Executing best plan with VF=8, UF=8
+; CHECK-PWR9: Executing best plan with VF=16, UF=4
 
 
 entry:
@@ -79,7 +79,9 @@ for.body:                                         ; preds = %for.body, %entry
 define i64 @bar(ptr nocapture %a) {
 ; CHECK-LABEL: bar
 
-; CHECK: Executing best plan with VF=2, UF=8
+; CHECK-PWR8: Executing best plan with VF=2, UF=8
+
+; CHECK-PWR9: Executing best plan with VF=1, UF=8
 
 entry:
   br label %for.body

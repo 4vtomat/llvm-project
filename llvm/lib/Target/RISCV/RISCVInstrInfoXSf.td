@@ -1947,11 +1947,11 @@ def : VPatMammothVTDiscard<"int_riscv_sf_vtdiscard", "PseudoSF_VTDISCARD">;
 
 // SSCI
 
-def uimm3_lsb0 : RISCVOp<i32>,
-                 TImmLeaf<i32, [{return isShiftedUInt<2, 1>(Imm);}]> {
-  let ParserMatchClass = UImmAsmOperand<3, "Lsb0">;
+def uimm3_timm : RISCVOp<i32>,
+                 TImmLeaf<i32, [{return isUInt<3>(Imm);}]> {
+  let ParserMatchClass = UImmAsmOperand<3>;
   let DecoderMethod = "decodeUImmOperand<3>";
-  let OperandType = "OPERAND_UIMM3_LSB0";
+  let OperandType = "OPERAND_UIMM3";
 }
 def uimm7_timm : RISCVOp<i32>,
                  TImmLeaf<i32, [{return isUInt<7>(Imm);}]> {
@@ -1959,14 +1959,32 @@ def uimm7_timm : RISCVOp<i32>,
   let DecoderMethod = "decodeUImmOperand<7>";
   let OperandType = "OPERAND_UIMM7";
 }
+def uimm12_timm : RISCVOp<i32>,
+                  TImmLeaf<i32, [{return isUInt<12>(Imm);}]> {
+  let ParserMatchClass = UImmAsmOperand<12>;
+  let DecoderMethod = "decodeUImmOperand<12>";
+  let OperandType = "OPERAND_UIMM12";
+}
+def uimm20_timm : RISCVOp<i32>,
+                  TImmLeaf<i32, [{return isUInt<20>(Imm);}]> {
+  let ParserMatchClass = UImmAsmOperand<20>;
+  let DecoderMethod = "decodeUImmOperand<20>";
+  let OperandType = "OPERAND_UIMM20";
+}
+def uimm25_timm : RISCVOp<i32>,
+                  TImmLeaf<i32, [{return isUInt<25>(Imm);}]> {
+  let ParserMatchClass = UImmAsmOperand<25>;
+  let DecoderMethod = "decodeUImmOperand<25>";
+  let OperandType = "OPERAND_UIMM25";
+}
 
-let hasSideEffects = 0, mayLoad = 0, mayStore = 0,
-    Predicates = [HasVendorXSfsci], DecoderNamespace = "XSfsci" in
-def SF_SCI : RVInst<(outs GPR:$rd),
-                    (ins uimm3_lsb0:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2),
-                    "sf.sci", "$funct3, $funct7, $rd, $rs1, $rs2", [],
-                    InstFormatR>,
-                    Sched<[WriteSCI, ReadSCI, ReadSCI]> {
+let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in
+class SiFiveSCI_R<RISCVOpcode opcode, string opcodestr>
+    : RVInst<(outs GPR:$rd),
+             (ins uimm3_timm:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2),
+             opcodestr, "$funct3, $funct7, $rd, $rs1, $rs2", [],
+             InstFormatR>,
+             Sched<[WriteSCI, ReadSCI, ReadSCI]> {
   bits<7> funct7;
   bits<3> funct3;
 
@@ -1977,41 +1995,237 @@ def SF_SCI : RVInst<(outs GPR:$rd),
   let Inst{31-25} = funct7;
   let Inst{24-20} = rs2;
   let Inst{19-15} = rs1;
-  let Inst{14-13} = funct3{2-1};
-  let Inst{12} = 0b0;
+  let Inst{14-12} = funct3;
   let Inst{11-7} = rd;
-  let Inst{6-0} = OPC_CUSTOM_3.Value;
+  let Inst{6-0} = opcode.Value;
+}
+
+let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in
+class SiFiveSCI_I<RISCVOpcode opcode, string opcodestr>
+    : RVInst<(outs GPR:$rd),
+             (ins uimm3_timm:$funct3, GPR:$rs1, uimm12_timm:$imm12),
+             opcodestr, "$funct3, $rd, $rs1, $imm12", [],
+             InstFormatI>,
+             Sched<[WriteSCI, ReadSCI, ReadSCI]> {
+  bits<3> funct3;
+
+  bits<12> imm12;
+  bits<5> rs1;
+  bits<5> rd;
+
+  let Inst{31-20} = imm12;
+  let Inst{19-15} = rs1;
+  let Inst{14-12} = funct3;
+  let Inst{11-7} = rd;
+  let Inst{6-0} = opcode.Value;
+}
+
+let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in
+class SiFiveSCI_U<RISCVOpcode opcode, string opcodestr>
+    : RVInst<(outs GPR:$rd), (ins uimm20_timm:$imm20),
+             opcodestr, "$rd, $imm20", [],
+             InstFormatU>,
+             Sched<[WriteSCI, ReadSCI, ReadSCI]> {
+  bits<20> imm20;
+  bits<5> rd;
+
+  let Inst{31-12} = imm20;
+  let Inst{11-7} = rd;
+  let Inst{6-0} = opcode.Value;
+}
+
+let hasSideEffects = 1, mayLoad = 0, mayStore = 0 in
+class SiFiveSCI_X<RISCVOpcode opcode, string opcodestr>
+    : RVInst<(outs), (ins uimm25_timm:$imm25),
+             opcodestr, "$imm25", [],
+             InstFormatOther>,
+             Sched<[WriteSCI, ReadSCI, ReadSCI]> {
+  bits<25> imm25;
+
+  let Inst{31-7} = imm25;
+  let Inst{6-0} = opcode.Value;
+}
+
+let Predicates = [HasVendorXSfsci], DecoderNamespace = "XSfsci" in {
+def SF_SCI_0_R : SiFiveSCI_R<OPC_CUSTOM_0, "sf.sci.0.r">;
+def SF_SCI_1_R : SiFiveSCI_R<OPC_CUSTOM_1, "sf.sci.1.r">;
+def SF_SCI_2_R : SiFiveSCI_R<OPC_CUSTOM_2, "sf.sci.2.r">;
+def SF_SCI_3_R : SiFiveSCI_R<OPC_CUSTOM_3, "sf.sci.3.r">;
+}
+
+// FIXME: This is the old name. We should remove once everyone is migrated.
+def : MnemonicAlias<"sf.sci", "sf.sci.3.r">;
+
+let Predicates = [HasVendorXSfsci], DecoderNamespace = "XSfsciI" in {
+def SF_SCI_0_I : SiFiveSCI_I<OPC_CUSTOM_0, "sf.sci.0.i">;
+def SF_SCI_1_I : SiFiveSCI_I<OPC_CUSTOM_1, "sf.sci.1.i">;
+def SF_SCI_2_I : SiFiveSCI_I<OPC_CUSTOM_2, "sf.sci.2.i">;
+def SF_SCI_3_I : SiFiveSCI_I<OPC_CUSTOM_3, "sf.sci.3.i">;
+}
+
+let Predicates = [HasVendorXSfsci], DecoderNamespace = "XSfsciU" in {
+def SF_SCI_0_U : SiFiveSCI_U<OPC_CUSTOM_0, "sf.sci.0.u">;
+def SF_SCI_1_U : SiFiveSCI_U<OPC_CUSTOM_1, "sf.sci.1.u">;
+def SF_SCI_2_U : SiFiveSCI_U<OPC_CUSTOM_2, "sf.sci.2.u">;
+def SF_SCI_3_U : SiFiveSCI_U<OPC_CUSTOM_3, "sf.sci.3.u">;
+}
+
+let Predicates = [HasVendorXSfsci], DecoderNamespace = "XSfsciX" in {
+def SF_SCI_0_X : SiFiveSCI_X<OPC_CUSTOM_0, "sf.sci.0.x">;
+def SF_SCI_1_X : SiFiveSCI_X<OPC_CUSTOM_1, "sf.sci.1.x">;
+def SF_SCI_2_X : SiFiveSCI_X<OPC_CUSTOM_2, "sf.sci.2.x">;
+def SF_SCI_3_X : SiFiveSCI_X<OPC_CUSTOM_3, "sf.sci.3.x">;
 }
 
 // Pseudo instructions with side effects. Will be converted to the generic
 // version when we convert MachineInstr to MCInst.
-let hasSideEffects = 1, mayLoad = 0, mayStore = 0 in {
-  def SF_SCI_X_XX_SE
-    : Pseudo<(outs GPR:$rd ), (ins uimm3_lsb0:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2),
-             []>,
-             PseudoInstExpansion<(SF_SCI GPR:$rd, uimm3_lsb0:$funct3,
-                                         uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2)>,
+let hasSideEffects = 1, mayLoad = 0, mayStore = 0 in
+multiclass SiFiveSCI_R_Pseudos<Instruction Instr> {
+  def _R_X_XX_SE
+    : Pseudo<(outs GPR:$rd),
+             (ins uimm3_timm:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2), []>,
+             PseudoInstExpansion<(Instr GPR:$rd, uimm3_timm:$funct3,
+                                        uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2)>,
              Sched<[WriteSCI, ReadSCI, ReadSCI]>;
-  def SF_SCI_XX_SE
-    : Pseudo<(outs), (ins uimm3_lsb0:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2),
-             []>,
-             PseudoInstExpansion<(SF_SCI X0, uimm3_lsb0:$funct3, uimm7_timm:$funct7,
-                                         GPR:$rs1, GPR:$rs2)>,
+  def _R_XX_SE
+    : Pseudo<(outs), (ins uimm3_timm:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2), []>,
+             PseudoInstExpansion<(Instr X0, uimm3_timm:$funct3, uimm7_timm:$funct7,
+                                        GPR:$rs1, GPR:$rs2)>,
              Sched<[WriteSCI, ReadSCI, ReadSCI]>;
 }
 
-def : Pat<(XLenVT (int_riscv_sf_sci_x_xx uimm3_lsb0:$funct3, uimm7_timm:$funct7,
-                                         (XLenVT GPR:$rs1), (XLenVT GPR:$rs2))),
-          (SF_SCI uimm3_lsb0:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2)>;
+let hasSideEffects = 1, mayLoad = 0, mayStore = 0 in
+multiclass SiFiveSCI_I_Pseudos<Instruction Instr> {
+  def _I_X_XI_SE
+    : Pseudo<(outs GPR:$rd),
+             (ins uimm3_timm:$funct3, GPR:$rs1, uimm12_timm:$imm12), []>,
+             PseudoInstExpansion<(Instr GPR:$rd, uimm3_timm:$funct3,
+                                        GPR:$rs1, uimm12_timm:$imm12)>,
+             Sched<[WriteSCI, ReadSCI, ReadSCI]>;
+  def _I_XI_SE
+    : Pseudo<(outs), (ins uimm3_timm:$funct3, GPR:$rs1, uimm12_timm:$imm12), []>,
+             PseudoInstExpansion<(Instr X0, uimm3_timm:$funct3,
+                                        GPR:$rs1, uimm12_timm:$imm12)>,
+             Sched<[WriteSCI, ReadSCI, ReadSCI]>;
+}
 
-def : Pat<(XLenVT (int_riscv_sf_sci_x_xx_se uimm3_lsb0:$funct3,
-                                            uimm7_timm:$funct7,
-                                            (XLenVT GPR:$rs1),
-                                            (XLenVT GPR:$rs2))),
-          (SF_SCI_X_XX_SE uimm3_lsb0:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2)>;
-def : Pat<(int_riscv_sf_sci_xx_se uimm3_lsb0:$funct3,
-                                  uimm7_timm:$funct7,
-                                  (XLenVT GPR:$rs1),
-                                  (XLenVT GPR:$rs2)),
-          (SF_SCI_XX_SE uimm3_lsb0:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2)>;
+let hasSideEffects = 1, mayLoad = 0, mayStore = 0 in
+multiclass SiFiveSCI_U_Pseudos<Instruction Instr> {
+  def _U_X_I_SE
+    : Pseudo<(outs GPR:$rd), (ins uimm20_timm:$imm20), []>,
+             PseudoInstExpansion<(Instr GPR:$rd, uimm20_timm:$imm20)>,
+             Sched<[WriteSCI, ReadSCI, ReadSCI]>;
+  def _U_I_SE
+    : Pseudo<(outs), (ins uimm20_timm:$imm20), []>,
+             PseudoInstExpansion<(Instr X0, uimm20_timm:$imm20)>,
+             Sched<[WriteSCI, ReadSCI, ReadSCI]>;
+}
+
+defm SF_SCI_0 : SiFiveSCI_R_Pseudos<SF_SCI_0_R>;
+defm SF_SCI_1 : SiFiveSCI_R_Pseudos<SF_SCI_1_R>;
+defm SF_SCI_2 : SiFiveSCI_R_Pseudos<SF_SCI_2_R>;
+defm SF_SCI_3 : SiFiveSCI_R_Pseudos<SF_SCI_3_R>;
+
+defm SF_SCI_0 : SiFiveSCI_I_Pseudos<SF_SCI_0_I>;
+defm SF_SCI_1 : SiFiveSCI_I_Pseudos<SF_SCI_1_I>;
+defm SF_SCI_2 : SiFiveSCI_I_Pseudos<SF_SCI_2_I>;
+defm SF_SCI_3 : SiFiveSCI_I_Pseudos<SF_SCI_3_I>;
+
+defm SF_SCI_0 : SiFiveSCI_U_Pseudos<SF_SCI_0_U>;
+defm SF_SCI_1 : SiFiveSCI_U_Pseudos<SF_SCI_1_U>;
+defm SF_SCI_2 : SiFiveSCI_U_Pseudos<SF_SCI_2_U>;
+defm SF_SCI_3 : SiFiveSCI_U_Pseudos<SF_SCI_3_U>;
+
+multiclass SiFiveSCI_R_Pats<Intrinsic int_x_xx, Instruction X_XX,
+                            Intrinsic int_x_xx_se, Instruction X_XX_SE,
+                            Intrinsic int_xx_se, Instruction XX_SE> {
+  def : Pat<(XLenVT (int_x_xx uimm3_timm:$funct3, uimm7_timm:$funct7,
+                              (XLenVT GPR:$rs1), (XLenVT GPR:$rs2))),
+            (X_XX uimm3_timm:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2)>;
+
+  def : Pat<(XLenVT (int_x_xx_se uimm3_timm:$funct3, uimm7_timm:$funct7,
+                                 (XLenVT GPR:$rs1), (XLenVT GPR:$rs2))),
+            (X_XX_SE uimm3_timm:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2)>;
+
+  def : Pat<(int_xx_se uimm3_timm:$funct3, uimm7_timm:$funct7,
+                       (XLenVT GPR:$rs1), (XLenVT GPR:$rs2)),
+            (XX_SE uimm3_timm:$funct3, uimm7_timm:$funct7, GPR:$rs1, GPR:$rs2)>;
+}
+
+multiclass SiFiveSCI_I_Pats<Intrinsic int_x_xi, Instruction X_XI,
+                            Intrinsic int_x_xi_se, Instruction X_XI_SE,
+                            Intrinsic int_xi_se, Instruction XI_SE> {
+  def : Pat<(XLenVT (int_x_xi uimm3_timm:$funct3, (XLenVT GPR:$rs1),
+                              uimm12_timm:$imm12)),
+            (X_XI uimm3_timm:$funct3, GPR:$rs1, uimm12_timm:$imm12)>;
+
+  def : Pat<(XLenVT (int_x_xi_se uimm3_timm:$funct3, (XLenVT GPR:$rs1),
+                                 uimm12_timm:$imm12)),
+            (X_XI_SE uimm3_timm:$funct3, GPR:$rs1, uimm12_timm:$imm12)>;
+
+  def : Pat<(int_xi_se uimm3_timm:$funct3, (XLenVT GPR:$rs1), uimm12_timm:$imm12),
+            (XI_SE uimm3_timm:$funct3, GPR:$rs1, uimm12_timm:$imm12)>;
+}
+
+multiclass SiFiveSCI_U_Pats<Intrinsic int_x_i, Instruction X_I,
+                            Intrinsic int_x_i_se, Instruction X_I_SE,
+                            Intrinsic int_i_se, Instruction I_SE> {
+  def : Pat<(XLenVT (int_x_i uimm20_timm:$imm20)),
+            (X_I uimm20_timm:$imm20)>;
+
+  def : Pat<(XLenVT (int_x_i_se uimm20_timm:$imm20)),
+            (X_I_SE uimm20_timm:$imm20)>;
+
+  def : Pat<(int_i_se uimm20_timm:$imm20),
+            (I_SE uimm20_timm:$imm20)>;
+}
+
+multiclass SiFiveSCI_X_Pats<Intrinsic int_i_se, Instruction I> {
+  def : Pat<(int_i_se uimm25_timm:$imm25),
+            (I uimm25_timm:$imm25)>;
+}
+
+defm SF_SCI_0 : SiFiveSCI_R_Pats<int_riscv_sf_sci_0_r_x_xx, SF_SCI_0_R,
+                                 int_riscv_sf_sci_0_r_x_xx_se, SF_SCI_0_R_X_XX_SE,
+                                 int_riscv_sf_sci_0_r_xx_se, SF_SCI_0_R_XX_SE>;
+defm SF_SCI_1 : SiFiveSCI_R_Pats<int_riscv_sf_sci_1_r_x_xx, SF_SCI_1_R,
+                                 int_riscv_sf_sci_1_r_x_xx_se, SF_SCI_1_R_X_XX_SE,
+                                 int_riscv_sf_sci_1_r_xx_se, SF_SCI_1_R_XX_SE>;
+defm SF_SCI_2 : SiFiveSCI_R_Pats<int_riscv_sf_sci_2_r_x_xx, SF_SCI_2_R,
+                                 int_riscv_sf_sci_2_r_x_xx_se, SF_SCI_2_R_X_XX_SE,
+                                 int_riscv_sf_sci_2_r_xx_se, SF_SCI_2_R_XX_SE>;
+defm SF_SCI_3 : SiFiveSCI_R_Pats<int_riscv_sf_sci_3_r_x_xx, SF_SCI_3_R,
+                                 int_riscv_sf_sci_3_r_x_xx_se, SF_SCI_3_R_X_XX_SE,
+                                 int_riscv_sf_sci_3_r_xx_se, SF_SCI_3_R_XX_SE>;
+
+defm SF_SCI_0 : SiFiveSCI_I_Pats<int_riscv_sf_sci_0_i_x_xi, SF_SCI_0_I,
+                                 int_riscv_sf_sci_0_i_x_xi_se, SF_SCI_0_I_X_XI_SE,
+                                 int_riscv_sf_sci_0_i_xi_se, SF_SCI_0_I_XI_SE>;
+defm SF_SCI_1 : SiFiveSCI_I_Pats<int_riscv_sf_sci_1_i_x_xi, SF_SCI_1_I,
+                                 int_riscv_sf_sci_1_i_x_xi_se, SF_SCI_1_I_X_XI_SE,
+                                 int_riscv_sf_sci_1_i_xi_se, SF_SCI_1_I_XI_SE>;
+defm SF_SCI_2 : SiFiveSCI_I_Pats<int_riscv_sf_sci_2_i_x_xi, SF_SCI_2_I,
+                                 int_riscv_sf_sci_2_i_x_xi_se, SF_SCI_2_I_X_XI_SE,
+                                 int_riscv_sf_sci_2_i_xi_se, SF_SCI_2_I_XI_SE>;
+defm SF_SCI_3 : SiFiveSCI_I_Pats<int_riscv_sf_sci_3_i_x_xi, SF_SCI_3_I,
+                                 int_riscv_sf_sci_3_i_x_xi_se, SF_SCI_3_I_X_XI_SE,
+                                 int_riscv_sf_sci_3_i_xi_se, SF_SCI_3_I_XI_SE>;
+
+defm SF_SCI_0 : SiFiveSCI_U_Pats<int_riscv_sf_sci_0_u_x_i, SF_SCI_0_U,
+                                 int_riscv_sf_sci_0_u_x_i_se, SF_SCI_0_U_X_I_SE,
+                                 int_riscv_sf_sci_0_u_i_se, SF_SCI_0_U_I_SE>;
+defm SF_SCI_1 : SiFiveSCI_U_Pats<int_riscv_sf_sci_1_u_x_i, SF_SCI_1_U,
+                                 int_riscv_sf_sci_1_u_x_i_se, SF_SCI_1_U_X_I_SE,
+                                 int_riscv_sf_sci_1_u_i_se, SF_SCI_1_U_I_SE>;
+defm SF_SCI_2 : SiFiveSCI_U_Pats<int_riscv_sf_sci_2_u_x_i, SF_SCI_2_U,
+                                 int_riscv_sf_sci_2_u_x_i_se, SF_SCI_2_U_X_I_SE,
+                                 int_riscv_sf_sci_2_u_i_se, SF_SCI_2_U_I_SE>;
+defm SF_SCI_3 : SiFiveSCI_U_Pats<int_riscv_sf_sci_3_u_x_i, SF_SCI_3_U,
+                                 int_riscv_sf_sci_3_u_x_i_se, SF_SCI_3_U_X_I_SE,
+                                 int_riscv_sf_sci_3_u_i_se, SF_SCI_3_U_I_SE>;
+
+defm SF_SCI_0 : SiFiveSCI_X_Pats<int_riscv_sf_sci_0_x_i_se, SF_SCI_0_X>;
+defm SF_SCI_1 : SiFiveSCI_X_Pats<int_riscv_sf_sci_1_x_i_se, SF_SCI_1_X>;
+defm SF_SCI_2 : SiFiveSCI_X_Pats<int_riscv_sf_sci_2_x_i_se, SF_SCI_2_X>;
+defm SF_SCI_3 : SiFiveSCI_X_Pats<int_riscv_sf_sci_3_x_i_se, SF_SCI_3_X>;
 #endif // SIFIVE_CUSTOMIZATION

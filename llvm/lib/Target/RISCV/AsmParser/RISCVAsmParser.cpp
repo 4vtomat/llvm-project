@@ -771,6 +771,10 @@ public:
   bool isUImm32() const { return IsUImm<32>(); }
   bool isUImm48() const { return IsUImm<48>(); }
   bool isUImm64() const { return IsUImm<64>(); }
+#if SIFIVE_CUSTOMIZATION
+  bool isUImm12() const { return IsUImm<12>(); }
+  bool isUImm25() const { return IsUImm<25>(); }
+#endif // SIFIVE_CUSTOMIZATION
 
   bool isUImm5NonZero() const {
     if (!isImm())
@@ -893,18 +897,6 @@ public:
     return IsConstantImm && isShiftedUInt<1, 1>(Imm) &&
            VK == RISCVMCExpr::VK_RISCV_None;
   }
-
-#if SIFIVE_CUSTOMIZATION
-  bool isUImm3Lsb0() const {
-    if (!isImm())
-      return false;
-    int64_t Imm;
-    RISCVMCExpr::VariantKind VK = RISCVMCExpr::VK_RISCV_None;
-    bool IsConstantImm = evaluateConstantImm(getImm(), Imm, VK);
-    return IsConstantImm && isShiftedUInt<2, 1>(Imm) &&
-           VK == RISCVMCExpr::VK_RISCV_None;
-  }
-#endif
 
   bool isUImm5Lsb0() const {
     if (!isImm())
@@ -1643,6 +1635,10 @@ bool RISCVAsmParser::matchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
     return generateImmOutOfRangeError(Operands, ErrorInfo, 0, (1 << 8) - 1);
   case Match_InvalidUImm8GE32:
     return generateImmOutOfRangeError(Operands, ErrorInfo, 32, (1 << 8) - 1);
+#if SIFIVE_CUSTOMIZATION
+  case Match_InvalidUImm12:
+    return generateImmOutOfRangeError(Operands, ErrorInfo, 0, (1 << 12) - 1);
+#endif // SIFIVE_CUSTOMIZATION
   case Match_InvalidSImm5:
     return generateImmOutOfRangeError(Operands, ErrorInfo, -(1 << 4),
                                       (1 << 4) - 1);
@@ -1657,12 +1653,6 @@ bool RISCVAsmParser::matchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
     return generateImmOutOfRangeError(
         Operands, ErrorInfo, 1, (1 << 5) - 1,
         "immediate must be in [0xfffe0, 0xfffff] or");
-#if SIFIVE_CUSTOMIZATION
-  case Match_InvalidUImm3Lsb0:
-    return generateImmOutOfRangeError(
-        Operands, ErrorInfo, 0, (1 << 3) - 2,
-        "immediate must be a multiple of 2 bytes in the range");
-#endif
   case Match_InvalidUImm5Lsb0:
     return generateImmOutOfRangeError(
         Operands, ErrorInfo, 0, (1 << 5) - 2,

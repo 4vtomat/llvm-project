@@ -129,7 +129,7 @@ define <vscale x 1 x bfloat> @test_bf16_half_bf16(<vscale x 1 x bfloat> %0, <vsc
 ; CHECK-NEXT:    vsetvli zero, zero, e16alt, mf4, ta, ma
 ; CHECK-NEXT:    vfadd.vv v8, v8, v9
 ; CHECK-NEXT:    fsrm a2
-; CHECK-NEXT:    vsetvli a0, zero, e16, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a0, zero, e16alt, mf4, ta, ma
 ; CHECK-NEXT:    vse16.v v10, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -164,7 +164,7 @@ define <vscale x 1 x bfloat> @test_bf16_i16(<vscale x 1 x bfloat> %0, <vscale x 
 ; CHECK-NEXT:    vfadd.vv v8, v8, v9
 ; CHECK-NEXT:    vadd.vv v9, v10, v11
 ; CHECK-NEXT:    fsrm a2
-; CHECK-NEXT:    vsetvli a0, zero, e16, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a0, zero, e16alt, mf4, ta, ma
 ; CHECK-NEXT:    vse16.v v9, (a1)
 ; CHECK-NEXT:    ret
 entry:

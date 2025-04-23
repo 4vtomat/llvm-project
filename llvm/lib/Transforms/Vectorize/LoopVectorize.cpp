@@ -9361,7 +9361,11 @@ InstructionCost LoopVectorizationPlanner::cost(VPlan &Plan,
 /// not have corresponding recipes in \p Plan and are not marked to be ignored
 /// in \p CostCtx. This means the VPlan contains simplification that the legacy
 /// cost-model did not account for.
+#if SIFIVE_CUSTOMIZATION
+[[maybe_unused]] static bool planContainsAdditionalSimplifications(VPlan &Plan,
+#else
 static bool planContainsAdditionalSimplifications(VPlan &Plan,
+#endif // SIFIVE_CUSTOMIZATION
                                                   VPCostContext &CostCtx,
                                                   Loop *TheLoop) {
   // First collect all instructions for the recipes in Plan.
@@ -9553,7 +9557,11 @@ VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
   // This is now only used to verify the decisions by the new VPlan-based
   // cost-model and will be retired once the VPlan-based cost-model is
   // stabilized.
+#if SIFIVE_CUSTOMIZATION
+  [[maybe_unused]] VectorizationFactor LegacyVF = selectVectorizationFactor();
+#else
   VectorizationFactor LegacyVF = selectVectorizationFactor();
+#endif // SIFIVE_CUSTOMIZATION
   VPlan &BestPlan = getPlanFor(BestFactor.Width);
 
   // Pre-compute the cost and use it to check if BestPlan contains any
@@ -9563,7 +9571,7 @@ VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
   VPCostContext CostCtx(CM.TTI, *CM.TLI, Legal->getWidestInductionType(), CM,
                         CM.CostKind);
   precomputeCosts(BestPlan, BestFactor.Width, CostCtx);
-#if SIFIVE_CUSTOMIZATION
+#ifndef SIFIVE_CUSTOMIZATION
   // Set PlanForEarlyExitLoop to true if the BestPlan has been built from a
   // loop with an uncountable early exit. The legacy cost model doesn't
   // properly model costs for such loops.
@@ -9571,20 +9579,12 @@ VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
       BestPlan.getVectorLoopRegion() &&
       BestPlan.getVectorLoopRegion()->getSingleSuccessor() !=
           BestPlan.getMiddleBlock();
-  if (!Legal->useVLAVectorizer())
-    assert((BestFactor.Width == LegacyVF.Width || PlanForEarlyExitLoop ||
-            planContainsAdditionalSimplifications(getPlanFor(BestFactor.Width),
-                                                  CostCtx, OrigLoop) ||
-            planContainsAdditionalSimplifications(getPlanFor(LegacyVF.Width),
-                                                  CostCtx, OrigLoop)) &&
-           " VPlan cost model and legacy cost model disagreed");
-#else // SIFIVE_CUSTOMIZATION
-  assert((BestFactor.Width == LegacyVF.Width ||
-            planContainsAdditionalSimplifications(getPlanFor(BestFactor.Width),
-                                                  CostCtx, OrigLoop) ||
-            planContainsAdditionalSimplifications(getPlanFor(LegacyVF.Width),
-                                                  CostCtx, OrigLoop)) &&
-           " VPlan cost model and legacy cost model disagreed");
+  assert((BestFactor.Width == LegacyVF.Width || PlanForEarlyExitLoop ||
+          planContainsAdditionalSimplifications(getPlanFor(BestFactor.Width),
+                                                CostCtx, OrigLoop) ||
+          planContainsAdditionalSimplifications(getPlanFor(LegacyVF.Width),
+                                                CostCtx, OrigLoop)) &&
+         " VPlan cost model and legacy cost model disagreed");
 #endif // !SIFIVE_CUSTOMIZATION
   assert((BestFactor.Width.isScalar() || BestFactor.ScalarCost > 0) &&
          "when vectorizing, the scalar cost must be computed.");
