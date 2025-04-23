@@ -483,8 +483,8 @@ define i16 @reduce_udiv(ptr %src, i16 %x, i64 %N) #0 {
 ; VSCALEFORTUNING2-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[TMP0]], [[N_VEC5]]
 ; VSCALEFORTUNING2-NEXT:    br i1 [[CMP_N]], label [[EXIT]], label [[SCALAR_PH]]
 ; VSCALEFORTUNING2:       vec.epilog.scalar.ph:
-; VSCALEFORTUNING2-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC5]], [[VEC_EPILOG_MIDDLE_BLOCK]] ], [ 0, [[ITER_CHECK:%.*]] ], [ [[N_VEC]], [[VEC_EPILOG_ITER_CHECK]] ]
-; VSCALEFORTUNING2-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i16 [ [[TMP34]], [[VEC_EPILOG_MIDDLE_BLOCK]] ], [ 0, [[ITER_CHECK]] ], [ [[TMP20]], [[VEC_EPILOG_ITER_CHECK]] ]
+; VSCALEFORTUNING2-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC5]], [[VEC_EPILOG_MIDDLE_BLOCK]] ], [ [[N_VEC]], [[VEC_EPILOG_ITER_CHECK]] ], [ 0, [[ITER_CHECK:%.*]] ]
+; VSCALEFORTUNING2-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i16 [ [[TMP34]], [[VEC_EPILOG_MIDDLE_BLOCK]] ], [ [[TMP20]], [[VEC_EPILOG_ITER_CHECK]] ], [ 0, [[ITER_CHECK]] ]
 ; VSCALEFORTUNING2-NEXT:    br label [[LOOP:%.*]]
 ; VSCALEFORTUNING2:       loop:
 ; VSCALEFORTUNING2-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[LOOP]] ]

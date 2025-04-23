@@ -40,26 +40,6 @@ define i1 @select_exit_cond(ptr %start, ptr %end, i64 %N) {
 ; CHECK-NEXT:    [[NEXT_GEP6:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
 ; CHECK-NEXT:    [[TMP56:%.*]] = getelementptr i8, ptr [[START]], i64 [[N_VEC25]]
 ; CHECK-NEXT:    [[NEXT_GEP30:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP59]]
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP60:%.*]] = getelementptr i8, ptr [[NEXT_GEP30]], i32 0
-; CHECK-NEXT:    [[WIDE_LOAD32:%.*]] = load <2 x i8>, ptr [[TMP60]], align 1
-; CHECK-NEXT:    [[TMP61:%.*]] = zext <2 x i8> [[WIDE_LOAD32]] to <2 x i64>
-; CHECK-NEXT:    [[TMP62:%.*]] = shl <2 x i64> [[VEC_IND27]], splat (i64 1)
-; CHECK-NEXT:    [[TMP63:%.*]] = shl <2 x i64> [[TMP61]], [[TMP62]]
-; CHECK-NEXT:    [[TMP58]] = or <2 x i64> [[TMP63]], [[VEC_PHI29]]
-; CHECK-NEXT:    [[INDEX_NEXT32]] = add nuw i64 [[INDEX26]], 2
-; CHECK-NEXT:    [[VEC_IND_NEXT28]] = add <2 x i64> [[VEC_IND27]], splat (i64 2)
-; CHECK-NEXT:    [[TMP54:%.*]] = icmp eq i64 [[INDEX_NEXT32]], [[N_VEC25]]
-; CHECK-NEXT:    br i1 [[TMP54]], label %[[VEC_EPILOG_MIDDLE_BLOCK:.*]], label %[[VEC_EPILOG_VECTOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
-; CHECK:       [[VEC_EPILOG_MIDDLE_BLOCK]]:
-; CHECK-NEXT:    [[TMP55:%.*]] = call i64 @llvm.vector.reduce.or.v2i64(<2 x i64> [[TMP58]])
-; CHECK-NEXT:    [[CMP_N33:%.*]] = icmp eq i64 [[TMP2]], [[N_VEC25]]
-; CHECK-NEXT:    br i1 [[CMP_N33]], label %[[EXIT]], label %[[VEC_EPILOG_SCALAR_PH]]
-; CHECK:       [[VEC_EPILOG_SCALAR_PH]]:
-; CHECK-NEXT:    [[BC_RESUME_VAL34:%.*]] = phi i64 [ [[N_VEC25]], %[[VEC_EPILOG_MIDDLE_BLOCK]] ], [ [[N_VEC]], %[[VEC_EPILOG_ITER_CHECK]] ], [ 0, %[[ITER_CHECK]] ]
-; CHECK-NEXT:    [[BC_MERGE_RDX35:%.*]] = phi i64 [ [[TMP55]], %[[VEC_EPILOG_MIDDLE_BLOCK]] ], [ [[TMP52]], %[[VEC_EPILOG_ITER_CHECK]] ], [ 0, %[[ITER_CHECK]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL36:%.*]] = phi ptr [ [[TMP56]], %[[VEC_EPILOG_MIDDLE_BLOCK]] ], [ [[IND_END]], %[[VEC_EPILOG_ITER_CHECK]] ], [ [[START]], %[[ITER_CHECK]] ]
-=======
 ; CHECK-NEXT:    [[TMP12:%.*]] = load i8, ptr [[NEXT_GEP]], align 1
 ; CHECK-NEXT:    [[TMP13:%.*]] = load i8, ptr [[NEXT_GEP6]], align 1
 ; CHECK-NEXT:    [[TMP14:%.*]] = load i8, ptr [[TMP56]], align 1
@@ -93,7 +73,6 @@ define i1 @select_exit_cond(ptr %start, ptr %end, i64 %N) {
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], %[[MIDDLE_BLOCK]] ], [ 0, %[[ENTRY]] ]
 ; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[BIN_RDX10]], %[[MIDDLE_BLOCK]] ], [ 0, %[[ENTRY]] ]
 ; CHECK-NEXT:    [[BC_RESUME_VAL11:%.*]] = phi ptr [ [[TMP4]], %[[MIDDLE_BLOCK]] ], [ [[START]], %[[ENTRY]] ]
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    br label %[[LOOP:.*]]
 ; CHECK:       [[LOOP]]:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[LOOP]] ]
