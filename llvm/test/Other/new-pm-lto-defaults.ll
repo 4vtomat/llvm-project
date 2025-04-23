@@ -87,16 +87,10 @@
 ; CHECK-O23SZ-NEXT: Running pass: GlobalOptPass
 ; CHECK-O23SZ-NEXT: Running pass: OpenMPOptPass
 ; CHECK-O23SZ-NEXT: Running pass: GlobalDCEPass
-<<<<<<< HEAD
-; CHECK-O23SZ-NEXT: Running pass: ArgumentPromotionPass
-; SIFIVE_CUSTOMIZATION
-; CHECK-O23SZ-NEXT: Running pass: ReassociatePass
-; SIFIVE_CUSTOMIZATION
-=======
 ; CHECK-O23SZ-NEXT: Running pass: ArgumentPromotionPass on (foo)
 ; CHECK-O23SZ-NEXT: CoroSplitPass on (foo)
 ; CHECK-O23SZ-NEXT: CoroAnnotationElidePass on (foo)
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
+; CHECK-O23SZ-NEXT: Running pass: ReassociatePass
 ; CHECK-O23SZ-NEXT: Running pass: InstCombinePass
 ; CHECK-EP-PEEPHOLE-NEXT: Running pass: NoOpFunctionPass
 ; CHECK-O23SZ-NEXT: Running pass: ConstraintEliminationPass

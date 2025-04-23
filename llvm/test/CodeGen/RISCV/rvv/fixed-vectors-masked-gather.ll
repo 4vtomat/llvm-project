@@ -14281,12 +14281,8 @@ define <4 x i32> @mgather_narrow_edge_case(ptr %base) {
 ; RV64V-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
 ; RV64V-NEXT:    vmv.v.i v0, 5
 ; RV64V-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
-<<<<<<< HEAD
-; RV64V-NEXT:    vmerge.vim v8, v8, 0, v0
-=======
 ; RV64V-NEXT:    vmv.v.x v8, a1
-; RV64V-NEXT:    vmerge.vim v10, v8, 0, v0
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
+; RV64V-NEXT:    vmerge.vim v8, v8, 0, v0
 ; RV64V-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; RV64V-NEXT:    vluxei64.v v8, (a0), v8
 ; RV64V-NEXT:    ret

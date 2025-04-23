@@ -131,11 +131,11 @@ define void @vcalt_f16(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-LABEL: vcalt_f16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vle16.v v9, (a1)
-; CHECK-NEXT:    vfabs.v v9, v9
+; CHECK-NEXT:    vle16.v v8, (a1)
+; CHECK-NEXT:    vle16.v v9, (a0)
 ; CHECK-NEXT:    vfabs.v v8, v8
-; CHECK-NEXT:    vmflt.vv v0, v8, v9
+; CHECK-NEXT:    vfabs.v v9, v9
+; CHECK-NEXT:    vmflt.vv v0, v9, v8
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vmerge.vim v8, v8, -1, v0
 ; CHECK-NEXT:    vse16.v v8, (a2)
@@ -152,11 +152,11 @@ define void @vcalt_f32(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-LABEL: vcalt_f32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    vle32.v v9, (a1)
-; CHECK-NEXT:    vfabs.v v9, v9
+; CHECK-NEXT:    vle32.v v8, (a1)
+; CHECK-NEXT:    vle32.v v9, (a0)
 ; CHECK-NEXT:    vfabs.v v8, v8
-; CHECK-NEXT:    vmflt.vv v0, v8, v9
+; CHECK-NEXT:    vfabs.v v9, v9
+; CHECK-NEXT:    vmflt.vv v0, v9, v8
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vmerge.vim v8, v8, -1, v0
 ; CHECK-NEXT:    vse32.v v8, (a2)
@@ -173,11 +173,11 @@ define void @vcalt_f64(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-LABEL: vcalt_f64:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vle64.v v9, (a1)
-; CHECK-NEXT:    vfabs.v v9, v9
+; CHECK-NEXT:    vle64.v v8, (a1)
+; CHECK-NEXT:    vle64.v v9, (a0)
 ; CHECK-NEXT:    vfabs.v v8, v8
-; CHECK-NEXT:    vmflt.vv v0, v8, v9
+; CHECK-NEXT:    vfabs.v v9, v9
+; CHECK-NEXT:    vmflt.vv v0, v9, v8
 ; CHECK-NEXT:    vmv.s.x v8, zero
 ; CHECK-NEXT:    vmerge.vim v8, v8, -1, v0
 ; CHECK-NEXT:    vse64.v v8, (a2)
@@ -194,11 +194,11 @@ define void @vcaltq_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-LABEL: vcaltq_f16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vle16.v v9, (a1)
-; CHECK-NEXT:    vfabs.v v9, v9
+; CHECK-NEXT:    vle16.v v8, (a1)
+; CHECK-NEXT:    vle16.v v9, (a0)
 ; CHECK-NEXT:    vfabs.v v8, v8
-; CHECK-NEXT:    vmflt.vv v0, v8, v9
+; CHECK-NEXT:    vfabs.v v9, v9
+; CHECK-NEXT:    vmflt.vv v0, v9, v8
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vmerge.vim v8, v8, -1, v0
 ; CHECK-NEXT:    vse16.v v8, (a2)
@@ -215,11 +215,11 @@ define void @vcaltq_f32(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-LABEL: vcaltq_f32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    vle32.v v9, (a1)
-; CHECK-NEXT:    vfabs.v v9, v9
+; CHECK-NEXT:    vle32.v v8, (a1)
+; CHECK-NEXT:    vle32.v v9, (a0)
 ; CHECK-NEXT:    vfabs.v v8, v8
-; CHECK-NEXT:    vmflt.vv v0, v8, v9
+; CHECK-NEXT:    vfabs.v v9, v9
+; CHECK-NEXT:    vmflt.vv v0, v9, v8
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vmerge.vim v8, v8, -1, v0
 ; CHECK-NEXT:    vse32.v v8, (a2)
@@ -236,11 +236,11 @@ define void @vcaltq_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-LABEL: vcaltq_f64:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vle64.v v9, (a1)
-; CHECK-NEXT:    vfabs.v v9, v9
+; CHECK-NEXT:    vle64.v v8, (a1)
+; CHECK-NEXT:    vle64.v v9, (a0)
 ; CHECK-NEXT:    vfabs.v v8, v8
-; CHECK-NEXT:    vmflt.vv v0, v8, v9
+; CHECK-NEXT:    vfabs.v v9, v9
+; CHECK-NEXT:    vmflt.vv v0, v9, v8
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vmerge.vim v8, v8, -1, v0
 ; CHECK-NEXT:    vse64.v v8, (a2)

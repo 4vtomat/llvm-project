@@ -790,8 +790,8 @@ define signext i32 @test14(i32 signext %0, i32 signext %1) {
 define signext i32 @test14b(i32 %0, i32 signext %1) {
 ; CHECK-LABEL: test14b:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    sext.w a0, a0
 ; CHECK-NEXT:    li a2, 2
+; CHECK-NEXT:    sext.w a0, a0
 ; CHECK-NEXT:    blt a1, a2, .LBB14_4
 ; CHECK-NEXT:  # %bb.1: # %.preheader
 ; CHECK-NEXT:    li a2, 1
@@ -810,8 +810,8 @@ define signext i32 @test14b(i32 %0, i32 signext %1) {
 ;
 ; NOREMOVAL-LABEL: test14b:
 ; NOREMOVAL:       # %bb.0:
-; NOREMOVAL-NEXT:    sext.w a0, a0
 ; NOREMOVAL-NEXT:    li a2, 2
+; NOREMOVAL-NEXT:    sext.w a0, a0
 ; NOREMOVAL-NEXT:    blt a1, a2, .LBB14_4
 ; NOREMOVAL-NEXT:  # %bb.1: # %.preheader
 ; NOREMOVAL-NEXT:    li a2, 1
@@ -852,8 +852,8 @@ define signext i32 @test14b(i32 %0, i32 signext %1) {
 define signext i32 @test14c(i32 zeroext %0, i32 signext %1) {
 ; CHECK-LABEL: test14c:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    sext.w a0, a0
 ; CHECK-NEXT:    li a2, 2
+; CHECK-NEXT:    sext.w a0, a0
 ; CHECK-NEXT:    blt a1, a2, .LBB15_4
 ; CHECK-NEXT:  # %bb.1: # %.preheader
 ; CHECK-NEXT:    li a2, 1
@@ -872,8 +872,8 @@ define signext i32 @test14c(i32 zeroext %0, i32 signext %1) {
 ;
 ; NOREMOVAL-LABEL: test14c:
 ; NOREMOVAL:       # %bb.0:
-; NOREMOVAL-NEXT:    sext.w a0, a0
 ; NOREMOVAL-NEXT:    li a2, 2
+; NOREMOVAL-NEXT:    sext.w a0, a0
 ; NOREMOVAL-NEXT:    blt a1, a2, .LBB15_4
 ; NOREMOVAL-NEXT:  # %bb.1: # %.preheader
 ; NOREMOVAL-NEXT:    li a2, 1

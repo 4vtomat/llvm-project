@@ -10,26 +10,26 @@ define void @KnownSize(ptr nocapture readonly %src, ptr nocapture %dst) {
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    add a0, a0, a2
 ; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    vle8.v v8, (a0)
+; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    add a0, a0, a2
 ; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    vle8.v v8, (a0)
+; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    add a0, a0, a2
 ; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    vle8.v v8, (a0)
+; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    add a0, a0, a2
 ; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    vle8.v v8, (a0)
+; CHECK-NEXT:    li a3, 57
+; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    add a0, a0, a2
 ; CHECK-NEXT:    vse8.v v8, (a1)
-; CHECK-NEXT:    add a1, a1, a2
-; CHECK-NEXT:    li a2, 57
-; CHECK-NEXT:    vsetvli zero, a2, e8, m4, ta, ma
+; CHECK-NEXT:    vsetvli zero, a3, e8, m4, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
+; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:

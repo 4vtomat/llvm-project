@@ -503,13 +503,8 @@ declare <32 x double> @llvm.vp.rint.v32f64(<32 x double>, <32 x i1>, i32)
 define <32 x double> @vp_rint_v32f64(<32 x double> %va, <32 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vp_rint_v32f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vslidedown.vi v7, v0, 2
-=======
-; CHECK-NEXT:    vmv1r.v v6, v0
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 ; CHECK-NEXT:    li a2, 16
+; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v7, v0, 2
 ; CHECK-NEXT:    mv a1, a0
 ; CHECK-NEXT:    bltu a0, a2, .LBB26_2
@@ -534,13 +529,8 @@ define <32 x double> @vp_rint_v32f64(<32 x double> %va, <32 x i1> %m, i32 zeroex
 ; CHECK-NEXT:    addi a2, sp, 16
 ; CHECK-NEXT:    vl8r.v v24, (a2) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, mu
-<<<<<<< HEAD
 ; CHECK-NEXT:    vmflt.vf v0, v24, fa5, v0.t
-=======
-; CHECK-NEXT:    vmflt.vf v6, v24, fa5, v0.t
 ; CHECK-NEXT:    and a0, a0, a1
-; CHECK-NEXT:    vmv1r.v v0, v6
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
 ; CHECK-NEXT:    vfcvt.x.f.v v24, v8, v0.t
 ; CHECK-NEXT:    vfcvt.f.x.v v24, v24, v0.t

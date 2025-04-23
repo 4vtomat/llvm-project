@@ -21,19 +21,9 @@ define i64 @bitmask_16xi8(ptr nocapture noundef readonly %src) {
 ; SSE-NEXT:    [[TOBOOL_NOT:%.*]] = icmp ne i8 [[TMP0]], 0
 ; SSE-NEXT:    [[OR:%.*]] = zext i1 [[TOBOOL_NOT]] to i64
 ; SSE-NEXT:    [[ARRAYIDX_1:%.*]] = getelementptr inbounds i8, ptr [[SRC]], i64 1
-<<<<<<< HEAD
 ; SSE-NEXT:    [[TMP1:%.*]] = load <12 x i8>, ptr [[ARRAYIDX_1]], align 1
 ; SSE-NEXT:    [[TMP2:%.*]] = icmp eq <12 x i8> [[TMP1]], zeroinitializer
 ; SSE-NEXT:    [[TMP3:%.*]] = select <12 x i1> [[TMP2]], <12 x i64> zeroinitializer, <12 x i64> <i64 2, i64 4, i64 8, i64 16, i64 32, i64 64, i64 128, i64 256, i64 512, i64 1024, i64 2048, i64 4096>
-=======
-; SSE-NEXT:    [[TMP1:%.*]] = load <8 x i8>, ptr [[ARRAYIDX_1]], align 1
-; SSE-NEXT:    [[TMP2:%.*]] = icmp eq <8 x i8> [[TMP1]], zeroinitializer
-; SSE-NEXT:    [[TMP3:%.*]] = select <8 x i1> [[TMP2]], <8 x i64> zeroinitializer, <8 x i64> <i64 2, i64 4, i64 8, i64 16, i64 32, i64 64, i64 128, i64 256>
-; SSE-NEXT:    [[ARRAYIDX_9:%.*]] = getelementptr inbounds i8, ptr [[SRC]], i64 9
-; SSE-NEXT:    [[TMP4:%.*]] = load <4 x i8>, ptr [[ARRAYIDX_9]], align 1
-; SSE-NEXT:    [[TMP5:%.*]] = icmp eq <4 x i8> [[TMP4]], zeroinitializer
-; SSE-NEXT:    [[TMP6:%.*]] = select <4 x i1> [[TMP5]], <4 x i64> zeroinitializer, <4 x i64> <i64 512, i64 1024, i64 2048, i64 4096>
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 ; SSE-NEXT:    [[ARRAYIDX_13:%.*]] = getelementptr inbounds i8, ptr [[SRC]], i64 13
 ; SSE-NEXT:    [[TMP7:%.*]] = load i8, ptr [[ARRAYIDX_13]], align 1
 ; SSE-NEXT:    [[TOBOOL_NOT_13:%.*]] = icmp eq i8 [[TMP7]], 0
@@ -46,24 +36,12 @@ define i64 @bitmask_16xi8(ptr nocapture noundef readonly %src) {
 ; SSE-NEXT:    [[TMP9:%.*]] = load i8, ptr [[ARRAYIDX_15]], align 1
 ; SSE-NEXT:    [[TOBOOL_NOT_15:%.*]] = icmp eq i8 [[TMP9]], 0
 ; SSE-NEXT:    [[OR_15:%.*]] = select i1 [[TOBOOL_NOT_15]], i64 0, i64 32768
-<<<<<<< HEAD
-; SSE-NEXT:    [[OP_RDX:%.*]] = call i64 @llvm.vector.reduce.or.v12i64(<12 x i64> [[TMP3]])
-; SSE-NEXT:    [[OP_RDX1:%.*]] = or i64 [[OP_RDX]], [[OR_13]]
-; SSE-NEXT:    [[OP_RDX2:%.*]] = or i64 [[OR_14]], [[OR_15]]
-; SSE-NEXT:    [[OP_RDX3:%.*]] = or i64 [[OP_RDX1]], [[OP_RDX2]]
-; SSE-NEXT:    [[OP_RDX4:%.*]] = or i64 [[OP_RDX3]], [[OR]]
-; SSE-NEXT:    ret i64 [[OP_RDX4]]
-=======
-; SSE-NEXT:    [[TMP10:%.*]] = call <4 x i64> @llvm.vector.extract.v4i64.v8i64(<8 x i64> [[TMP3]], i64 0)
-; SSE-NEXT:    [[RDX_OP:%.*]] = or <4 x i64> [[TMP10]], [[TMP6]]
-; SSE-NEXT:    [[TMP11:%.*]] = call <8 x i64> @llvm.vector.insert.v8i64.v4i64(<8 x i64> [[TMP3]], <4 x i64> [[RDX_OP]], i64 0)
-; SSE-NEXT:    [[TMP16:%.*]] = call i64 @llvm.vector.reduce.or.v8i64(<8 x i64> [[TMP11]])
+; SSE-NEXT:    [[TMP16:%.*]] = call i64 @llvm.vector.reduce.or.v12i64(<12 x i64> [[TMP3]])
 ; SSE-NEXT:    [[OP_RDX:%.*]] = or i64 [[TMP16]], [[OR_13]]
 ; SSE-NEXT:    [[OP_RDX5:%.*]] = or i64 [[OR_14]], [[OR_15]]
 ; SSE-NEXT:    [[OP_RDX6:%.*]] = or i64 [[OP_RDX]], [[OP_RDX5]]
 ; SSE-NEXT:    [[OP_RDX7:%.*]] = or i64 [[OP_RDX6]], [[OR]]
 ; SSE-NEXT:    ret i64 [[OP_RDX7]]
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 ;
 ; AVX-LABEL: @bitmask_16xi8(
 ; AVX-NEXT:  entry:
@@ -90,14 +68,6 @@ define i64 @bitmask_16xi8(ptr nocapture noundef readonly %src) {
 ; AVX-NEXT:    [[TMP9:%.*]] = load i8, ptr [[ARRAYIDX_15]], align 1
 ; AVX-NEXT:    [[TOBOOL_NOT_15:%.*]] = icmp eq i8 [[TMP9]], 0
 ; AVX-NEXT:    [[OR_15:%.*]] = select i1 [[TOBOOL_NOT_15]], i64 0, i64 32768
-<<<<<<< HEAD
-; AVX-NEXT:    [[TMP10:%.*]] = call i64 @llvm.vector.reduce.or.v8i64(<8 x i64> [[TMP3]])
-; AVX-NEXT:    [[TMP11:%.*]] = call i64 @llvm.vector.reduce.or.v4i64(<4 x i64> [[TMP6]])
-; AVX-NEXT:    [[OP_RDX:%.*]] = or i64 [[TMP10]], [[TMP11]]
-; AVX-NEXT:    [[OP_RDX1:%.*]] = or i64 [[OP_RDX]], [[OR_13]]
-; AVX-NEXT:    [[OP_RDX2:%.*]] = or i64 [[OR_14]], [[OR_15]]
-; AVX-NEXT:    [[OP_RDX3:%.*]] = or i64 [[OP_RDX1]], [[OP_RDX2]]
-=======
 ; AVX-NEXT:    [[TMP10:%.*]] = call <4 x i64> @llvm.vector.extract.v4i64.v8i64(<8 x i64> [[TMP3]], i64 0)
 ; AVX-NEXT:    [[RDX_OP:%.*]] = or <4 x i64> [[TMP10]], [[TMP6]]
 ; AVX-NEXT:    [[TMP11:%.*]] = call <8 x i64> @llvm.vector.insert.v8i64.v4i64(<8 x i64> [[TMP3]], <4 x i64> [[RDX_OP]], i64 0)
@@ -105,7 +75,6 @@ define i64 @bitmask_16xi8(ptr nocapture noundef readonly %src) {
 ; AVX-NEXT:    [[OP_RDX:%.*]] = or i64 [[TMP12]], [[OR_13]]
 ; AVX-NEXT:    [[OP_RDX2:%.*]] = or i64 [[OR_14]], [[OR_15]]
 ; AVX-NEXT:    [[OP_RDX3:%.*]] = or i64 [[OP_RDX]], [[OP_RDX2]]
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 ; AVX-NEXT:    [[OP_RDX4:%.*]] = or i64 [[OP_RDX3]], [[OR]]
 ; AVX-NEXT:    ret i64 [[OP_RDX4]]
 ;
@@ -115,43 +84,12 @@ define i64 @bitmask_16xi8(ptr nocapture noundef readonly %src) {
 ; AVX512-NEXT:    [[TOBOOL_NOT:%.*]] = icmp ne i8 [[TMP0]], 0
 ; AVX512-NEXT:    [[OR:%.*]] = zext i1 [[TOBOOL_NOT]] to i64
 ; AVX512-NEXT:    [[ARRAYIDX_1:%.*]] = getelementptr inbounds i8, ptr [[SRC]], i64 1
-<<<<<<< HEAD
 ; AVX512-NEXT:    [[TMP1:%.*]] = load <15 x i8>, ptr [[ARRAYIDX_1]], align 1
 ; AVX512-NEXT:    [[TMP2:%.*]] = icmp eq <15 x i8> [[TMP1]], zeroinitializer
 ; AVX512-NEXT:    [[TMP3:%.*]] = select <15 x i1> [[TMP2]], <15 x i64> zeroinitializer, <15 x i64> <i64 2, i64 4, i64 8, i64 16, i64 32, i64 64, i64 128, i64 256, i64 512, i64 1024, i64 2048, i64 4096, i64 8192, i64 16384, i64 32768>
-; AVX512-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vector.reduce.or.v15i64(<15 x i64> [[TMP3]])
-; AVX512-NEXT:    [[OP_RDX:%.*]] = or i64 [[TMP4]], [[OR]]
-; AVX512-NEXT:    ret i64 [[OP_RDX]]
-=======
-; AVX512-NEXT:    [[TMP1:%.*]] = load <8 x i8>, ptr [[ARRAYIDX_1]], align 1
-; AVX512-NEXT:    [[TMP2:%.*]] = icmp eq <8 x i8> [[TMP1]], zeroinitializer
-; AVX512-NEXT:    [[TMP3:%.*]] = select <8 x i1> [[TMP2]], <8 x i64> zeroinitializer, <8 x i64> <i64 2, i64 4, i64 8, i64 16, i64 32, i64 64, i64 128, i64 256>
-; AVX512-NEXT:    [[ARRAYIDX_9:%.*]] = getelementptr inbounds i8, ptr [[SRC]], i64 9
-; AVX512-NEXT:    [[TMP4:%.*]] = load <4 x i8>, ptr [[ARRAYIDX_9]], align 1
-; AVX512-NEXT:    [[TMP5:%.*]] = icmp eq <4 x i8> [[TMP4]], zeroinitializer
-; AVX512-NEXT:    [[TMP6:%.*]] = select <4 x i1> [[TMP5]], <4 x i64> zeroinitializer, <4 x i64> <i64 512, i64 1024, i64 2048, i64 4096>
-; AVX512-NEXT:    [[ARRAYIDX_13:%.*]] = getelementptr inbounds i8, ptr [[SRC]], i64 13
-; AVX512-NEXT:    [[TMP7:%.*]] = load i8, ptr [[ARRAYIDX_13]], align 1
-; AVX512-NEXT:    [[TOBOOL_NOT_13:%.*]] = icmp eq i8 [[TMP7]], 0
-; AVX512-NEXT:    [[OR_13:%.*]] = select i1 [[TOBOOL_NOT_13]], i64 0, i64 8192
-; AVX512-NEXT:    [[ARRAYIDX_14:%.*]] = getelementptr inbounds i8, ptr [[SRC]], i64 14
-; AVX512-NEXT:    [[TMP8:%.*]] = load i8, ptr [[ARRAYIDX_14]], align 1
-; AVX512-NEXT:    [[TOBOOL_NOT_14:%.*]] = icmp eq i8 [[TMP8]], 0
-; AVX512-NEXT:    [[OR_14:%.*]] = select i1 [[TOBOOL_NOT_14]], i64 0, i64 16384
-; AVX512-NEXT:    [[ARRAYIDX_15:%.*]] = getelementptr inbounds i8, ptr [[SRC]], i64 15
-; AVX512-NEXT:    [[TMP9:%.*]] = load i8, ptr [[ARRAYIDX_15]], align 1
-; AVX512-NEXT:    [[TOBOOL_NOT_15:%.*]] = icmp eq i8 [[TMP9]], 0
-; AVX512-NEXT:    [[OR_15:%.*]] = select i1 [[TOBOOL_NOT_15]], i64 0, i64 32768
-; AVX512-NEXT:    [[TMP10:%.*]] = call <4 x i64> @llvm.vector.extract.v4i64.v8i64(<8 x i64> [[TMP3]], i64 0)
-; AVX512-NEXT:    [[RDX_OP:%.*]] = or <4 x i64> [[TMP10]], [[TMP6]]
-; AVX512-NEXT:    [[TMP11:%.*]] = call <8 x i64> @llvm.vector.insert.v8i64.v4i64(<8 x i64> [[TMP3]], <4 x i64> [[RDX_OP]], i64 0)
-; AVX512-NEXT:    [[TMP12:%.*]] = call i64 @llvm.vector.reduce.or.v8i64(<8 x i64> [[TMP11]])
-; AVX512-NEXT:    [[OP_RDX:%.*]] = or i64 [[TMP12]], [[OR_13]]
-; AVX512-NEXT:    [[OP_RDX2:%.*]] = or i64 [[OR_14]], [[OR_15]]
-; AVX512-NEXT:    [[OP_RDX3:%.*]] = or i64 [[OP_RDX]], [[OP_RDX2]]
+; AVX512-NEXT:    [[OP_RDX3:%.*]] = call i64 @llvm.vector.reduce.or.v15i64(<15 x i64> [[TMP3]])
 ; AVX512-NEXT:    [[OP_RDX4:%.*]] = or i64 [[OP_RDX3]], [[OR]]
 ; AVX512-NEXT:    ret i64 [[OP_RDX4]]
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 ;
 entry:
   %0 = load i8, ptr %src, align 1
@@ -567,5 +505,3 @@ entry:
   %mask.1.7 = or i64 %or.7, %mask.1.6
   ret i64 %mask.1.7
 }
-;; NOTE: These prefixes are unused and the list is autogenerated. Do not add tests below this line:
-; CHECK: {{.*}}

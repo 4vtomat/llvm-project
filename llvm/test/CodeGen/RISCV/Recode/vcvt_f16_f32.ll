@@ -20,12 +20,12 @@ define void @vcvt_high_f16_f32(ptr nocapture noundef readonly %in_0, ptr nocaptu
 ; CHECK-LABEL: vcvt_high_f16_f32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vle32.v v9, (a1)
-; CHECK-NEXT:    vfncvt.f.f.w v9, v9
+; CHECK-NEXT:    vle32.v v8, (a1)
+; CHECK-NEXT:    vle16.v v9, (a0)
+; CHECK-NEXT:    vfncvt.f.f.w v8, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vslideup.vi v8, v9, 4
-; CHECK-NEXT:    vse16.v v8, (a2)
+; CHECK-NEXT:    vslideup.vi v9, v8, 4
+; CHECK-NEXT:    vse16.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x half>, ptr %in_0, align 2

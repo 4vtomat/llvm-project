@@ -119,8 +119,8 @@ define i32 @fcvt_wu_d(double %a) nounwind {
 define i32 @fcvt_wu_d_multiple_use(double %x, ptr %y) nounwind {
 ; CHECKIFD-LABEL: fcvt_wu_d_multiple_use:
 ; CHECKIFD:       # %bb.0:
-; CHECKIFD-NEXT:    li a0, 1
 ; CHECKIFD-NEXT:    fcvt.wu.d a1, fa0, rtz
+; CHECKIFD-NEXT:    li a0, 1
 ; CHECKIFD-NEXT:    beqz a1, .LBB4_2
 ; CHECKIFD-NEXT:  # %bb.1:
 ; CHECKIFD-NEXT:    mv a0, a1

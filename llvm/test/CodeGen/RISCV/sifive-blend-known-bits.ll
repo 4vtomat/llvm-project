@@ -20,13 +20,13 @@ define void @spam(ptr %arg, ptr %arg1, i32 signext %arg2, i32 signext %arg3, ptr
 ; CHECK-NEXT:  .LBB0_2: # %bb16
 ; CHECK-NEXT:    # in Loop: Header=BB0_3 Depth=1
 ; CHECK-NEXT:    xori a7, a6, 255
-; CHECK-NEXT:    lbu t0, -1(a5)
-; CHECK-NEXT:    lbu t1, -2(a0)
+; CHECK-NEXT:    lbu t0, -2(a0)
+; CHECK-NEXT:    lbu t1, -1(a5)
 ; CHECK-NEXT:    lbu t2, -1(a0)
 ; CHECK-NEXT:    lbu t3, 0(a0)
-; CHECK-NEXT:    mul t1, a7, t1
-; CHECK-NEXT:    mul t0, t0, a6
-; CHECK-NEXT:    add t0, t0, t1
+; CHECK-NEXT:    mul t0, a7, t0
+; CHECK-NEXT:    mul t1, t1, a6
+; CHECK-NEXT:    add t0, t1, t0
 ; CHECK-NEXT:    mul t0, t0, a2
 ; CHECK-NEXT:    srli t0, t0, 23
 ; CHECK-NEXT:    sb t0, -2(a0)

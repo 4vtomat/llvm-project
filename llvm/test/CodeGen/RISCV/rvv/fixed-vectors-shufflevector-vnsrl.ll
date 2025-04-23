@@ -524,14 +524,9 @@ define void @vnsrl_0_i32_single_src_m8(ptr %in, ptr %out) {
 ; V-NEXT:    li a2, 64
 ; V-NEXT:    vsetvli zero, a2, e32, m8, ta, ma
 ; V-NEXT:    vle32.v v8, (a0)
-<<<<<<< HEAD
-; V-NEXT:    vsetivli zero, 16, e32, m2, ta, ma
-; V-NEXT:    vnsrl.wi v8, v8, 0
-=======
 ; V-NEXT:    li a0, 32
 ; V-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
-; V-NEXT:    vnsrl.wi v16, v8, 0
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
+; V-NEXT:    vnsrl.wi v8, v8, 0
 ; V-NEXT:    vsetvli zero, a2, e32, m8, ta, ma
 ; V-NEXT:    vse32.v v8, (a1)
 ; V-NEXT:    ret
@@ -565,9 +560,9 @@ define void @vnsrl_0_i32_single_src_m8_2(ptr %in, ptr %out) {
 ; V-NEXT:    vle32.v v8, (a0)
 ; V-NEXT:    li a0, 32
 ; V-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
-; V-NEXT:    vnsrl.wi v16, v8, 0
+; V-NEXT:    vnsrl.wi v8, v8, 0
 ; V-NEXT:    vsetvli zero, a2, e32, m8, ta, ma
-; V-NEXT:    vse32.v v16, (a1)
+; V-NEXT:    vse32.v v8, (a1)
 ; V-NEXT:    ret
 ;
 ; ZVE32F-LABEL: vnsrl_0_i32_single_src_m8_2:

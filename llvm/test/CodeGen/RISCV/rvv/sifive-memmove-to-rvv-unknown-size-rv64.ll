@@ -18,8 +18,8 @@ define void @UnKnownSize(ptr nocapture readonly %src, ptr nocapture %dst, i64 si
 ; NOALIGN-NEXT:    sub a0, a0, a3
 ; NOALIGN-NEXT:    vle8.v v8, (a0)
 ; NOALIGN-NEXT:    sub a1, a1, a3
-; NOALIGN-NEXT:    vse8.v v8, (a1)
 ; NOALIGN-NEXT:    sub a2, a2, a3
+; NOALIGN-NEXT:    vse8.v v8, (a1)
 ; NOALIGN-NEXT:    bnez a2, .LBB0_2
 ; NOALIGN-NEXT:    j .LBB0_4
 ; NOALIGN-NEXT:  .LBB0_3: # %memmove-forward-loop

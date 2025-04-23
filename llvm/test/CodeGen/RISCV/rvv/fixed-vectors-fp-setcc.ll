@@ -20,9 +20,9 @@ define void @fcmp_oeq_vv_v8f16(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMIN-NEXT:    vle16.v v8, (a1)
 ; ZVFHMIN-NEXT:    vle16.v v9, (a0)
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmfeq.vv v8, v12, v10
+; ZVFHMIN-NEXT:    vmfeq.vv v8, v8, v10
 ; ZVFHMIN-NEXT:    vsm.v v8, (a2)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
@@ -48,9 +48,9 @@ define void @fcmp_oeq_vv_v8f16_nonans(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMIN-NEXT:    vle16.v v8, (a1)
 ; ZVFHMIN-NEXT:    vle16.v v9, (a0)
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmfeq.vv v8, v12, v10
+; ZVFHMIN-NEXT:    vmfeq.vv v8, v8, v10
 ; ZVFHMIN-NEXT:    vsm.v v8, (a2)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
@@ -176,9 +176,9 @@ define void @fcmp_olt_vv_v16f16(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMIN-NEXT:    vle16.v v8, (a1)
 ; ZVFHMIN-NEXT:    vle16.v v10, (a0)
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v16, v10
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
-; ZVFHMIN-NEXT:    vmflt.vv v8, v16, v12
+; ZVFHMIN-NEXT:    vmflt.vv v8, v8, v12
 ; ZVFHMIN-NEXT:    vsm.v v8, (a2)
 ; ZVFHMIN-NEXT:    ret
   %a = load <16 x half>, ptr %x
@@ -204,9 +204,9 @@ define void @fcmp_olt_vv_v16f16_nonans(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMIN-NEXT:    vle16.v v8, (a1)
 ; ZVFHMIN-NEXT:    vle16.v v10, (a0)
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v16, v10
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
-; ZVFHMIN-NEXT:    vmflt.vv v8, v16, v12
+; ZVFHMIN-NEXT:    vmflt.vv v8, v8, v12
 ; ZVFHMIN-NEXT:    vsm.v v8, (a2)
 ; ZVFHMIN-NEXT:    ret
   %a = load <16 x half>, ptr %x
@@ -348,9 +348,9 @@ define void @fcmp_ule_vv_v32f16_nonans(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMIN-NEXT:    vle16.v v8, (a1)
 ; ZVFHMIN-NEXT:    vle16.v v12, (a0)
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v16, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v24, v12
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v12
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m8, ta, ma
-; ZVFHMIN-NEXT:    vmfle.vv v8, v24, v16
+; ZVFHMIN-NEXT:    vmfle.vv v8, v8, v16
 ; ZVFHMIN-NEXT:    vsm.v v8, (a2)
 ; ZVFHMIN-NEXT:    ret
   %a = load <32 x half>, ptr %x

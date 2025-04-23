@@ -791,25 +791,14 @@ define void @scatter_of_pointers(ptr noalias nocapture %arg, ptr noalias nocaptu
 ; ZVE32F-NEXT:    ld t2, 16(a1)
 ; ZVE32F-NEXT:    ld t3, 24(a1)
 ; ZVE32F-NEXT:    addi a2, a2, 4
-<<<<<<< HEAD
-; ZVE32F-NEXT:    addi a3, a3, 4
+; ZVE32F-NEXT:    addi a1, a1, 32
 ; ZVE32F-NEXT:    add a6, a0, a6
 ; ZVE32F-NEXT:    add a7, a0, a7
 ; ZVE32F-NEXT:    sd t0, 0(a7)
 ; ZVE32F-NEXT:    sd t1, 0(a6)
 ; ZVE32F-NEXT:    sd t2, 80(a7)
 ; ZVE32F-NEXT:    sd t3, 80(a6)
-; ZVE32F-NEXT:    addi a1, a1, 32
-=======
-; ZVE32F-NEXT:    addi a1, a1, 32
-; ZVE32F-NEXT:    add t2, a0, t2
-; ZVE32F-NEXT:    add t3, a0, t3
-; ZVE32F-NEXT:    sd a6, 0(t3)
-; ZVE32F-NEXT:    sd a7, 0(t2)
-; ZVE32F-NEXT:    sd t0, 80(t3)
-; ZVE32F-NEXT:    sd t1, 80(t2)
 ; ZVE32F-NEXT:    addi a3, a3, 4
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 ; ZVE32F-NEXT:    bne a1, a4, .LBB13_1
 ; ZVE32F-NEXT:  # %bb.2: # %bb18
 ; ZVE32F-NEXT:    ret
@@ -850,25 +839,14 @@ define void @scatter_of_pointers(ptr noalias nocapture %arg, ptr noalias nocaptu
 ; OPTV-NEXT:    ld t2, 16(a1)
 ; OPTV-NEXT:    ld t3, 24(a1)
 ; OPTV-NEXT:    addi a2, a2, 4
-<<<<<<< HEAD
-; OPTV-NEXT:    addi a3, a3, 4
+; OPTV-NEXT:    addi a1, a1, 32
 ; OPTV-NEXT:    add a6, a0, a6
 ; OPTV-NEXT:    add a7, a0, a7
 ; OPTV-NEXT:    sd t0, 0(a7)
 ; OPTV-NEXT:    sd t1, 0(a6)
 ; OPTV-NEXT:    sd t2, 80(a7)
 ; OPTV-NEXT:    sd t3, 80(a6)
-; OPTV-NEXT:    addi a1, a1, 32
-=======
-; OPTV-NEXT:    addi a1, a1, 32
-; OPTV-NEXT:    add t2, a0, t2
-; OPTV-NEXT:    add t3, a0, t3
-; OPTV-NEXT:    sd a6, 0(t3)
-; OPTV-NEXT:    sd a7, 0(t2)
-; OPTV-NEXT:    sd t0, 80(t3)
-; OPTV-NEXT:    sd t1, 80(t2)
 ; OPTV-NEXT:    addi a3, a3, 4
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 ; OPTV-NEXT:    bne a1, a4, .LBB13_1
 ; OPTV-NEXT:  # %bb.2: # %bb18
 ; OPTV-NEXT:    ret

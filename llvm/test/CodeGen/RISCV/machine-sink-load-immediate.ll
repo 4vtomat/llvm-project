@@ -184,13 +184,13 @@ declare i32 @toupper()
 define signext i32 @overlap_live_ranges(ptr %arg, i32 signext %arg1) {
 ; CHECK-LABEL: overlap_live_ranges:
 ; CHECK:       # %bb.0: # %bb
-; CHECK-NEXT:    mv a2, a0
-; CHECK-NEXT:    li a0, 13
 ; CHECK-NEXT:    li a3, 1
+; CHECK-NEXT:    li a2, 13
 ; CHECK-NEXT:    bne a1, a3, .LBB1_2
 ; CHECK-NEXT:  # %bb.1: # %bb2
-; CHECK-NEXT:    lw a0, 4(a2)
+; CHECK-NEXT:    lw a2, 4(a0)
 ; CHECK-NEXT:  .LBB1_2: # %bb5
+; CHECK-NEXT:    mv a0, a2
 ; CHECK-NEXT:    ret
 bb:
   %i = icmp eq i32 %arg1, 1
@@ -309,30 +309,26 @@ define signext i32 @branch_dispatch(i8 %a) {
 ; CHECK-NEXT:    .cfi_offset ra, -8
 ; CHECK-NEXT:    .cfi_offset s0, -16
 ; CHECK-NEXT:    andi a0, a0, 255
-; CHECK-NEXT:    li s0, 13
 ; CHECK-NEXT:    li a1, 32
+; CHECK-NEXT:    li s0, 13
 ; CHECK-NEXT:    beq a0, a1, .LBB3_8
 ; CHECK-NEXT:  # %bb.1: # %case.1
-; CHECK-NEXT:    li s0, 53
 ; CHECK-NEXT:    li a1, 12
+; CHECK-NEXT:    li s0, 53
 ; CHECK-NEXT:    beq a0, a1, .LBB3_8
 ; CHECK-NEXT:  # %bb.2: # %case.2
-; CHECK-NEXT:    li s0, 33
 ; CHECK-NEXT:    li a1, 70
+; CHECK-NEXT:    li s0, 33
 ; CHECK-NEXT:    beq a0, a1, .LBB3_8
 ; CHECK-NEXT:  # %bb.3: # %case.3
 ; CHECK-NEXT:    li a1, 234
-<<<<<<< HEAD
-; CHECK-NEXT:    beq a0, a1, .LBB3_8
-=======
 ; CHECK-NEXT:    li s0, 23
-; CHECK-NEXT:    beq a0, a1, .LBB3_10
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
+; CHECK-NEXT:    beq a0, a1, .LBB3_8
 ; CHECK-NEXT:  # %bb.4: # %case.4
 ; CHECK-NEXT:    beqz a0, .LBB3_7
 ; CHECK-NEXT:  # %bb.5: # %case.5
-; CHECK-NEXT:    li s0, 54
 ; CHECK-NEXT:    li a1, 5
+; CHECK-NEXT:    li s0, 54
 ; CHECK-NEXT:    beq a0, a1, .LBB3_8
 ; CHECK-NEXT:  # %bb.6: # %case.default
 ; CHECK-NEXT:    li s0, 23

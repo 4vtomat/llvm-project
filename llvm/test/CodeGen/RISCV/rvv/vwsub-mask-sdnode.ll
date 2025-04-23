@@ -42,15 +42,9 @@ define <vscale x 8 x i64> @vwsubu_vv_mask_v8i32(<vscale x 8 x i32> %x, <vscale x
 ; CHECK-NEXT:    li a0, 42
 ; CHECK-NEXT:    vsetvli a1, zero, e32, m4, ta, ma
 ; CHECK-NEXT:    vmslt.vx v0, v8, a0
-<<<<<<< HEAD
+; CHECK-NEXT:    vmv.v.i v16, 0
 ; CHECK-NEXT:    vmerge.vvm v16, v16, v8, v0
 ; CHECK-NEXT:    vwsubu.vv v8, v12, v16
-=======
-; CHECK-NEXT:    vmv.v.i v16, 0
-; CHECK-NEXT:    vmerge.vvm v8, v16, v8, v0
-; CHECK-NEXT:    vwsubu.vv v16, v12, v8
-; CHECK-NEXT:    vmv8r.v v8, v16
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 ; CHECK-NEXT:    ret
     %mask = icmp slt <vscale x 8 x i32> %x, splat (i32 42)
     %a = select <vscale x 8 x i1> %mask, <vscale x 8 x i32> %x, <vscale x 8 x i32> zeroinitializer
@@ -66,14 +60,9 @@ define <vscale x 8 x i64> @vwsub_wv_mask_v8i32_nonzero(<vscale x 8 x i32> %x, <v
 ; CHECK-NEXT:    li a0, 42
 ; CHECK-NEXT:    vsetvli a1, zero, e32, m4, ta, ma
 ; CHECK-NEXT:    vmslt.vx v0, v8, a0
-<<<<<<< HEAD
+; CHECK-NEXT:    vmv.v.i v12, 1
 ; CHECK-NEXT:    vmerge.vvm v12, v12, v8, v0
 ; CHECK-NEXT:    vwsub.wv v8, v16, v12
-=======
-; CHECK-NEXT:    vmv.v.i v12, 1
-; CHECK-NEXT:    vmerge.vvm v24, v12, v8, v0
-; CHECK-NEXT:    vwsub.wv v8, v16, v24
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 ; CHECK-NEXT:    ret
     %mask = icmp slt <vscale x 8 x i32> %x, splat (i32 42)
     %a = select <vscale x 8 x i1> %mask, <vscale x 8 x i32> %x, <vscale x 8 x i32> splat (i32 1)

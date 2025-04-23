@@ -219,8 +219,8 @@ define void @KnownSize6(ptr nocapture %dst, i8 %val) {
 ; MIN-512-NEXT:    # =>This Inner Loop Header: Depth=1
 ; MIN-512-NEXT:    vsetvli a1, a2, e8, m8, ta, ma
 ; MIN-512-NEXT:    vse8.v v8, (a0)
-; MIN-512-NEXT:    add a0, a0, a1
 ; MIN-512-NEXT:    sub a2, a2, a1
+; MIN-512-NEXT:    add a0, a0, a1
 ; MIN-512-NEXT:    bnez a2, .LBB6_1
 ; MIN-512-NEXT:  # %bb.2: # %memset-post-loop
 ; MIN-512-NEXT:    ret
@@ -234,8 +234,8 @@ define void @KnownSize6(ptr nocapture %dst, i8 %val) {
 ; MIN-256-NEXT:    # =>This Inner Loop Header: Depth=1
 ; MIN-256-NEXT:    vsetvli a1, a2, e8, m8, ta, ma
 ; MIN-256-NEXT:    vse8.v v8, (a0)
-; MIN-256-NEXT:    add a0, a0, a1
 ; MIN-256-NEXT:    sub a2, a2, a1
+; MIN-256-NEXT:    add a0, a0, a1
 ; MIN-256-NEXT:    bnez a2, .LBB6_1
 ; MIN-256-NEXT:  # %bb.2: # %memset-post-loop
 ; MIN-256-NEXT:    ret

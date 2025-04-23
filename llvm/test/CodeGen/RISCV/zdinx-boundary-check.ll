@@ -226,19 +226,11 @@ define void @foo7(ptr nocapture %p) nounwind {
 ; RV32ZDINX:       # %bb.0: # %entry
 ; RV32ZDINX-NEXT:    addi sp, sp, -16
 ; RV32ZDINX-NEXT:    lui a1, %hi(d)
-<<<<<<< HEAD
 ; RV32ZDINX-NEXT:    addi a1, a1, %lo(d)
 ; RV32ZDINX-NEXT:    lw a2, 8(a1)
 ; RV32ZDINX-NEXT:    sw a2, 12(sp)
 ; RV32ZDINX-NEXT:    lw a1, 4(a1)
 ; RV32ZDINX-NEXT:    sw a1, 8(sp)
-=======
-; RV32ZDINX-NEXT:    lw a2, %lo(d+4)(a1)
-; RV32ZDINX-NEXT:    addi a1, a1, %lo(d)
-; RV32ZDINX-NEXT:    sw a2, 8(sp)
-; RV32ZDINX-NEXT:    lw a1, 8(a1)
-; RV32ZDINX-NEXT:    sw a1, 12(sp)
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 ; RV32ZDINX-NEXT:    lw a2, 8(sp)
 ; RV32ZDINX-NEXT:    lw a3, 12(sp)
 ; RV32ZDINX-NEXT:    addi a0, a0, 2047
@@ -261,19 +253,11 @@ define void @foo7(ptr nocapture %p) nounwind {
 ; RV64ZDINX-LABEL: foo7:
 ; RV64ZDINX:       # %bb.0: # %entry
 ; RV64ZDINX-NEXT:    lui a1, %hi(d)
-<<<<<<< HEAD
 ; RV64ZDINX-NEXT:    addi a1, a1, %lo(d)
-; RV64ZDINX-NEXT:    lwu a2, 4(a1)
-; RV64ZDINX-NEXT:    lwu a1, 8(a1)
-; RV64ZDINX-NEXT:    slli a1, a1, 32
-; RV64ZDINX-NEXT:    or a1, a1, a2
-=======
-; RV64ZDINX-NEXT:    addi a2, a1, %lo(d)
-; RV64ZDINX-NEXT:    lwu a2, 8(a2)
-; RV64ZDINX-NEXT:    lwu a1, %lo(d+4)(a1)
+; RV64ZDINX-NEXT:    lwu a2, 8(a1)
+; RV64ZDINX-NEXT:    lwu a1, 4(a1)
 ; RV64ZDINX-NEXT:    slli a2, a2, 32
 ; RV64ZDINX-NEXT:    or a1, a2, a1
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 ; RV64ZDINX-NEXT:    sd a1, 2044(a0)
 ; RV64ZDINX-NEXT:    ret
 entry:
@@ -292,28 +276,14 @@ define void @foo8(ptr %p) nounwind {
 ; RV32ZDINX-NEXT:    lw a2, -3(a1)
 ; RV32ZDINX-NEXT:    lw a3, 1(a1)
 ; RV32ZDINX-NEXT:    sw a0, 8(sp)
-<<<<<<< HEAD
-; RV32ZDINX-NEXT:    addi a0, a0, 2047
-; RV32ZDINX-NEXT:    lw a1, 1(a0)
-; RV32ZDINX-NEXT:    lw a0, -3(a0)
-; RV32ZDINX-NEXT:    lui a2, %hi(d)
-; RV32ZDINX-NEXT:    addi a2, a2, %lo(d)
-; RV32ZDINX-NEXT:    sw a0, 0(sp)
-; RV32ZDINX-NEXT:    sw a1, 4(sp)
-; RV32ZDINX-NEXT:    lw a0, 4(sp)
-; RV32ZDINX-NEXT:    sw a0, 8(a2)
-; RV32ZDINX-NEXT:    lw a0, 0(sp)
-; RV32ZDINX-NEXT:    sw a0, 4(a2)
-=======
 ; RV32ZDINX-NEXT:    sw a2, 0(sp)
 ; RV32ZDINX-NEXT:    sw a3, 4(sp)
 ; RV32ZDINX-NEXT:    lw a0, 4(sp)
 ; RV32ZDINX-NEXT:    lui a1, %hi(d)
-; RV32ZDINX-NEXT:    addi a2, a1, %lo(d)
-; RV32ZDINX-NEXT:    sw a0, 8(a2)
+; RV32ZDINX-NEXT:    addi a1, a1, %lo(d)
+; RV32ZDINX-NEXT:    sw a0, 8(a1)
 ; RV32ZDINX-NEXT:    lw a0, 0(sp)
-; RV32ZDINX-NEXT:    sw a0, %lo(d+4)(a1)
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
+; RV32ZDINX-NEXT:    sw a0, 4(a1)
 ; RV32ZDINX-NEXT:    addi sp, sp, 16
 ; RV32ZDINX-NEXT:    ret
 ;
@@ -337,17 +307,10 @@ define void @foo8(ptr %p) nounwind {
 ; RV64ZDINX-NEXT:    ld a1, 2044(a0)
 ; RV64ZDINX-NEXT:    sd a0, 8(sp)
 ; RV64ZDINX-NEXT:    lui a0, %hi(d)
-<<<<<<< HEAD
 ; RV64ZDINX-NEXT:    addi a0, a0, %lo(d)
 ; RV64ZDINX-NEXT:    srli a2, a1, 32
 ; RV64ZDINX-NEXT:    sw a1, 4(a0)
 ; RV64ZDINX-NEXT:    sw a2, 8(a0)
-=======
-; RV64ZDINX-NEXT:    addi a2, a0, %lo(d)
-; RV64ZDINX-NEXT:    sw a1, %lo(d+4)(a0)
-; RV64ZDINX-NEXT:    srli a1, a1, 32
-; RV64ZDINX-NEXT:    sw a1, 8(a2)
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 ; RV64ZDINX-NEXT:    addi sp, sp, 16
 ; RV64ZDINX-NEXT:    ret
 entry:
@@ -394,19 +357,11 @@ define void @foo9(ptr nocapture %p) nounwind {
 ; RV64ZDINX-LABEL: foo9:
 ; RV64ZDINX:       # %bb.0: # %entry
 ; RV64ZDINX-NEXT:    lui a1, %hi(e)
-<<<<<<< HEAD
 ; RV64ZDINX-NEXT:    addi a1, a1, %lo(e)
-; RV64ZDINX-NEXT:    lwu a2, 0(a1)
-; RV64ZDINX-NEXT:    lwu a1, 4(a1)
-; RV64ZDINX-NEXT:    slli a1, a1, 32
-; RV64ZDINX-NEXT:    or a1, a1, a2
-=======
-; RV64ZDINX-NEXT:    addi a2, a1, %lo(e)
-; RV64ZDINX-NEXT:    lwu a2, 4(a2)
-; RV64ZDINX-NEXT:    lwu a1, %lo(e)(a1)
+; RV64ZDINX-NEXT:    lwu a2, 4(a1)
+; RV64ZDINX-NEXT:    lwu a1, 0(a1)
 ; RV64ZDINX-NEXT:    slli a2, a2, 32
 ; RV64ZDINX-NEXT:    or a1, a2, a1
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 ; RV64ZDINX-NEXT:    sd a1, 2044(a0)
 ; RV64ZDINX-NEXT:    ret
 entry:
@@ -420,29 +375,18 @@ define void @foo10(ptr %p) nounwind {
 ; RV32ZDINX-LABEL: foo10:
 ; RV32ZDINX:       # %bb.0: # %entry
 ; RV32ZDINX-NEXT:    addi sp, sp, -16
+; RV32ZDINX-NEXT:    addi a1, a0, 2047
+; RV32ZDINX-NEXT:    lw a2, -3(a1)
+; RV32ZDINX-NEXT:    lw a3, 1(a1)
 ; RV32ZDINX-NEXT:    sw a0, 8(sp)
-<<<<<<< HEAD
-; RV32ZDINX-NEXT:    addi a0, a0, 2047
-; RV32ZDINX-NEXT:    lw a1, 1(a0)
-; RV32ZDINX-NEXT:    lw a0, -3(a0)
-; RV32ZDINX-NEXT:    sw a0, 0(sp)
-; RV32ZDINX-NEXT:    sw a1, 4(sp)
-; RV32ZDINX-NEXT:    lui a0, %hi(e)
-; RV32ZDINX-NEXT:    addi a0, a0, %lo(e)
-; RV32ZDINX-NEXT:    lw a1, 4(sp)
-; RV32ZDINX-NEXT:    sw a1, 4(a0)
-; RV32ZDINX-NEXT:    lw a1, 0(sp)
-; RV32ZDINX-NEXT:    sw a1, 0(a0)
-=======
 ; RV32ZDINX-NEXT:    sw a2, 0(sp)
 ; RV32ZDINX-NEXT:    sw a3, 4(sp)
 ; RV32ZDINX-NEXT:    lw a0, 4(sp)
 ; RV32ZDINX-NEXT:    lui a1, %hi(e)
-; RV32ZDINX-NEXT:    addi a2, a1, %lo(e)
-; RV32ZDINX-NEXT:    sw a0, 4(a2)
+; RV32ZDINX-NEXT:    addi a1, a1, %lo(e)
+; RV32ZDINX-NEXT:    sw a0, 4(a1)
 ; RV32ZDINX-NEXT:    lw a0, 0(sp)
-; RV32ZDINX-NEXT:    sw a0, %lo(e)(a1)
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
+; RV32ZDINX-NEXT:    sw a0, 0(a1)
 ; RV32ZDINX-NEXT:    addi sp, sp, 16
 ; RV32ZDINX-NEXT:    ret
 ;
@@ -453,19 +397,9 @@ define void @foo10(ptr %p) nounwind {
 ; RV32ZDINXUALIGNED-NEXT:    lw a2, -3(a1)
 ; RV32ZDINXUALIGNED-NEXT:    lw a3, 1(a1)
 ; RV32ZDINXUALIGNED-NEXT:    sw a0, 8(sp)
-<<<<<<< HEAD
-; RV32ZDINXUALIGNED-NEXT:    addi a0, a0, 2047
-; RV32ZDINXUALIGNED-NEXT:    lw a1, 1(a0)
-; RV32ZDINXUALIGNED-NEXT:    lw a0, -3(a0)
-; RV32ZDINXUALIGNED-NEXT:    lui a2, %hi(e)
-; RV32ZDINXUALIGNED-NEXT:    sw a0, %lo(e)(a2)
-; RV32ZDINXUALIGNED-NEXT:    sw a1, %lo(e+4)(a2)
-=======
 ; RV32ZDINXUALIGNED-NEXT:    lui a0, %hi(e)
-; RV32ZDINXUALIGNED-NEXT:    addi a0, a0, %lo(e)
-; RV32ZDINXUALIGNED-NEXT:    sw a2, 0(a0)
-; RV32ZDINXUALIGNED-NEXT:    sw a3, 4(a0)
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
+; RV32ZDINXUALIGNED-NEXT:    sw a2, %lo(e)(a0)
+; RV32ZDINXUALIGNED-NEXT:    sw a3, %lo(e+4)(a0)
 ; RV32ZDINXUALIGNED-NEXT:    addi sp, sp, 16
 ; RV32ZDINXUALIGNED-NEXT:    ret
 ;
@@ -475,17 +409,10 @@ define void @foo10(ptr %p) nounwind {
 ; RV64ZDINX-NEXT:    ld a1, 2044(a0)
 ; RV64ZDINX-NEXT:    sd a0, 8(sp)
 ; RV64ZDINX-NEXT:    lui a0, %hi(e)
-<<<<<<< HEAD
 ; RV64ZDINX-NEXT:    addi a0, a0, %lo(e)
 ; RV64ZDINX-NEXT:    srli a2, a1, 32
 ; RV64ZDINX-NEXT:    sw a1, 0(a0)
 ; RV64ZDINX-NEXT:    sw a2, 4(a0)
-=======
-; RV64ZDINX-NEXT:    sw a1, %lo(e)(a0)
-; RV64ZDINX-NEXT:    addi a0, a0, %lo(e)
-; RV64ZDINX-NEXT:    srli a1, a1, 32
-; RV64ZDINX-NEXT:    sw a1, 4(a0)
->>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 ; RV64ZDINX-NEXT:    addi sp, sp, 16
 ; RV64ZDINX-NEXT:    ret
 entry:

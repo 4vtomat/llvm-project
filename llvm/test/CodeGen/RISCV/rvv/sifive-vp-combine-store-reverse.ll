@@ -33,8 +33,8 @@ define void @test_store_mask_is_vp_reverse(<vscale x 2 x float> %val, <vscale x 
 ; CHECK-NEXT:    li a2, -4
 ; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vand.vi v9, v9, 1
-; CHECK-NEXT:    addi a0, a0, -4
 ; CHECK-NEXT:    vmsne.vi v0, v9, 0
+; CHECK-NEXT:    addi a0, a0, -4
 ; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, ma
 ; CHECK-NEXT:    vsse32.v v8, (a0), a2, v0.t
 ; CHECK-NEXT:    ret
@@ -78,23 +78,25 @@ define void @test_different_evl(<vscale x 2 x float> %val, <vscale x 2 x float>*
 ; CHECK-NEXT:    vsetvli a4, zero, e8, mf4, tu, ma
 ; CHECK-NEXT:    vmv.s.x v9, a3
 ; CHECK-NEXT:    addi a3, a1, -1
-; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, ma
-; CHECK-NEXT:    vid.v v11
-; CHECK-NEXT:    vrsub.vx v11, v11, a3
-; CHECK-NEXT:    vrgather.vv v12, v8, v11
 ; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
-; CHECK-NEXT:    vmv.v.i v8, 0
-; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vrsub.vx v10, v10, a3
-; CHECK-NEXT:    vsetvli a3, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vand.vi v9, v9, 1
 ; CHECK-NEXT:    vmsne.vi v0, v9, 0
 ; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
-; CHECK-NEXT:    vmerge.vim v8, v8, 1, v0
-; CHECK-NEXT:    vrgatherei16.vv v9, v8, v10
-; CHECK-NEXT:    vmsne.vi v0, v9, 0
+; CHECK-NEXT:    vmv.v.i v9, 0
+; CHECK-NEXT:    vmerge.vim v9, v9, 1, v0
+; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
+; CHECK-NEXT:    vid.v v11
+; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
+; CHECK-NEXT:    vrsub.vx v10, v10, a3
+; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
+; CHECK-NEXT:    vrsub.vx v11, v11, a3
+; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
+; CHECK-NEXT:    vrgatherei16.vv v12, v9, v10
+; CHECK-NEXT:    vmsne.vi v0, v12, 0
+; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
+; CHECK-NEXT:    vrgather.vv v9, v8, v11
 ; CHECK-NEXT:    vsetvli zero, a2, e32, m1, ta, ma
-; CHECK-NEXT:    vse32.v v12, (a0), v0.t
+; CHECK-NEXT:    vse32.v v9, (a0), v0.t
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 2 x i1> undef, i1 1, i32 0
   %allones = shufflevector <vscale x 2 x i1> %head, <vscale x 2 x i1> undef, <vscale x 2 x i32> zeroinitializer
