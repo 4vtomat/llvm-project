@@ -3684,6 +3684,10 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State) {
     for (PHINode &PN : Exit->phis())
       PSE.getSE()->forgetLcssaPhiWithNewPredecessor(OrigLoop, &PN);
 
+  // Forget the original basic block.
+  PSE.getSE()->forgetLoop(OrigLoop);
+  PSE.getSE()->forgetBlockAndLoopDispositions();
+
 #if SIFIVE_CUSTOMIZATION
   /// Cherry-pick from #88385
 
@@ -3715,9 +3719,6 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State) {
     fixCSALiveOuts(State, Plan);
   }
 #endif // SIFIVE_CUSTOMIZATION
-  // Forget the original basic block.
-  PSE.getSE()->forgetLoop(OrigLoop);
-  PSE.getSE()->forgetBlockAndLoopDispositions();
 
   // Don't apply optimizations below when no vector region remains, as they all
   // require a vector loop at the moment.
