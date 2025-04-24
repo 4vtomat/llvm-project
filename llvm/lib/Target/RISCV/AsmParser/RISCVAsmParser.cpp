@@ -1733,12 +1733,6 @@ bool RISCVAsmParser::matchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
                                       "name or an integer in the range");
   }
 #if SIFIVE_CUSTOMIZATION
-  case Match_InvalidRegRelAddSymbol: {
-    SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
-    return Error(ErrorLoc, "operand must be a symbol with any of "
-                           "%tprel_add, %gprel, %got_gprel, %tls_ie_gprel "
-                           "and %tls_gd_gprel modifier");
-  }
   case Match_InvalidXSfmmVType: {
     SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
     return generateXSfmmVTypeError(ErrorLoc);

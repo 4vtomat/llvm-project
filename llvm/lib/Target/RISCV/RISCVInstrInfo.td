@@ -372,10 +372,13 @@ def RegRelAddSymbol : AsmOperandClass {
   let RenderMethod = "addImmOperands";
 #ifdef SIFIVE_CUSTOMIZATION
   let DiagnosticType = "InvalidRegRelAddSymbol";
+  let DiagnosticString = "operand must be a symbol with any of %tprel_add, "
+                         "%gprel, %got_gprel, %tls_ie_gprel, or %tls_gd_gprel "
+                         "modifier";
 #else
   let DiagnosticType = "InvalidTPRelAddSymbol";
-#endif // SIFIVE_CUSTOMIZATION
   let DiagnosticString = "operand must be a symbol with %tprel_add modifier";
+#endif // SIFIVE_CUSTOMIZATION
   let ParserMethod = "parseOperandWithModifier";
 }
 
