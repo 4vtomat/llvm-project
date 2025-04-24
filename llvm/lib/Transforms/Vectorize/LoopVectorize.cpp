@@ -1693,14 +1693,13 @@ public:
     // FIXME: Investigate opportunity for fixed vector factor.
     // FIXME: support fixed-order recurrences by fixing splice of non VFxUF
     // penultimate EVL.
-    bool EVLIsLegal =
+    bool EVLIsLegal = UserIC <= 1 && IsScalableVF &&
+                      TTI.hasActiveVectorLength(0, nullptr, Align()) &&
 #if SIFIVE_CUSTOMIZATION
-        IsScalableVF &&
-        UserIC <= 1 && TTI.hasActiveVectorLength(0, nullptr, Align()) &&
-        !EnableVPlanNativePath;
+                      !EnableVPlanNativePath;
 #else
-        UserIC <= 1 && TTI.hasActiveVectorLength(0, nullptr, Align()) &&
-        !EnableVPlanNativePath && Legal->getFixedOrderRecurrences().empty();
+                      !EnableVPlanNativePath &&
+                      Legal->getFixedOrderRecurrences().empty();
 #endif // SIFIVE_CUSTOMIZATION
     if (!EVLIsLegal) {
       // If for some reason EVL mode is unsupported, fallback to
@@ -4318,9 +4317,9 @@ bool LoopVectorizationCostModel::interleavedAccessCanBeWidened(
 #if SIFIVE_CUSTOMIZATION
   if (!Legal->useVLAVectorizer())
 #endif
-  // We currently only know how to emit interleave/deinterleave with
-  // Factor=2 for scalable vectors. This is purely an implementation
-  // limit.
+  // For scalable vectors, the only interleave factor currently supported
+  // must be power of 2 since we require the (de)interleave2 intrinsics
+  // instead of shufflevectors.
   if (VF.isScalable() && !isPowerOf2_32(InterleaveFactor))
     return false;
 
@@ -10428,7 +10427,6 @@ void VPRecipeBuilder::createBlockInMask(BasicBlock *BB) {
   // All-one mask is modelled as no-mask following the convention for masked
   // load/store/gather/scatter. Initialize BlockMask to no-mask.
   VPValue *BlockMask = nullptr;
-
   // This is the block mask. We OR all unique incoming edges.
   for (auto *Predecessor :
        SetVector<BasicBlock *>(pred_begin(BB), pred_end(BB))) {
