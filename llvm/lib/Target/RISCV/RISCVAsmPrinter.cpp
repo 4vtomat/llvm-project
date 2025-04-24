@@ -623,10 +623,10 @@ void RISCVAsmPrinter::emitEndOfAsmFile(Module &M) {
 
   unsigned GNUNoteFlags = 0;
   if (RTS.hasZicfilp() && M.getModuleFlag("cf-protection-branch"))
-    GNUNoteFlags |= ELF::GNU_PROPERTY_RISCV_FEATURE_1_ZICFILP;
+    GNUNoteFlags |= ELF::GNU_PROPERTY_RISCV_FEATURE_1_CFI_LP_UNLABELED;
 
   if (RTS.hasZicfiss() && M.getModuleFlag("cf-protection-return"))
-    GNUNoteFlags |= ELF::GNU_PROPERTY_RISCV_FEATURE_1_ZICFISS;
+    GNUNoteFlags |= ELF::GNU_PROPERTY_RISCV_FEATURE_1_CFI_SS;
   emitNoteSection(GNUNoteFlags);
 #endif // SIFIVE_CUSTOMIZATION
 
