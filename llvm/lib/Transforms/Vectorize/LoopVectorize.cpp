@@ -10243,20 +10243,6 @@ void EpilogueVectorizerEpilogueLoop::printDebugTracesAtEnd() {
 iterator_range<mapped_iterator<Use *, std::function<VPValue *(Value *)>>>
 VPRecipeBuilder::mapToVPValues(User::op_range Operands) {
   std::function<VPValue *(Value *)> Fn = [this](Value *Op) {
-    if (auto *I = dyn_cast<Instruction>(Op)) {
-      if (auto *R = Ingredient2Recipe.lookup(I))
-#if SIFIVE_CUSTOMIZATION
-      {
-        if (auto *VPSL = dyn_cast<VPWidenMemoryRecipe>(R)) {
-          if (VPSL->isSpeculative())
-            return VPSL->getVPValue(0);
-        }
-        return R->getVPSingleValue();
-      }
-#else
-        return R->getVPSingleValue();
-#endif // SIFIVE_CUSTOMIZATION
-    }
     return getVPValueOrAddLiveIn(Op);
   };
   return map_range(Operands, Fn);
