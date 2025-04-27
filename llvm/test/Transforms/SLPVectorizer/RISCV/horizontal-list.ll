@@ -18,7 +18,11 @@
 ; YAML-NEXT: Function:        test
 ; YAML-NEXT: Args:
 ; YAML-NEXT:   - String:          'Vectorized horizontal reduction with cost '
+<<<<<<< HEAD
 ; YAML-NEXT:   - Cost:            '-1'
+=======
+; YAML-NEXT:   - Cost:            '-15'
+>>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 ; YAML-NEXT:   - String:          ' and with tree size '
 ; YAML-NEXT:   - TreeSize:        '1'
 ; YAML-NEXT: ...
@@ -27,11 +31,18 @@
 ; YAML-NEXT: Name:            HorSLPNotBeneficial
 ; YAML-NEXT: Function:        test
 ; YAML-NEXT: Args:
+<<<<<<< HEAD
 ; YAML-NEXT:   - String:          'Vectorizing horizontal reduction is possible '
 ; YAML-NEXT:   - String:          'but not beneficial with cost '
 ; YAML-NEXT:   - Cost:            '9'
 ; YAML-NEXT:   - String:          ' and threshold '
 ; YAML-NEXT:   - Threshold:       '0'
+=======
+; YAML-NEXT:   - String:          'Vectorized horizontal reduction with cost '
+; YAML-NEXT:   - Cost:            '-6'
+; YAML-NEXT:   - String:          ' and with tree size '
+; YAML-NEXT:   - TreeSize:        '1'
+>>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 ; YAML-NEXT:...
 define float @test(ptr %x) {
 ; CHECK-LABEL: @test(
@@ -52,6 +63,7 @@ define float @test(ptr %x) {
 ; CHECK-NEXT:    [[TMP3:%.*]] = load float, ptr [[ARRAYIDX_28]], align 4
 ; CHECK-NEXT:    [[ARRAYIDX_29:%.*]] = getelementptr inbounds float, ptr [[X]], i64 30
 ; CHECK-NEXT:    [[TMP4:%.*]] = load float, ptr [[ARRAYIDX_29]], align 4
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP5:%.*]] = call fast float @llvm.vector.reduce.fadd.v16f32(float 0.000000e+00, <16 x float> [[TMP0]])
 ; CHECK-NEXT:    [[TMP6:%.*]] = call fast float @llvm.vector.reduce.fadd.v8f32(float 0.000000e+00, <8 x float> [[TMP1]])
 ; CHECK-NEXT:    [[OP_RDX:%.*]] = fadd fast float [[TMP5]], [[TMP6]]
@@ -61,6 +73,17 @@ define float @test(ptr %x) {
 ; CHECK-NEXT:    [[OP_RDX4:%.*]] = fadd fast float [[OP_RDX1]], [[OP_RDX2]]
 ; CHECK-NEXT:    [[OP_RDX5:%.*]] = fadd fast float [[OP_RDX6]], [[TMP4]]
 ; CHECK-NEXT:    [[OP_RDX3:%.*]] = fadd fast float [[OP_RDX4]], [[OP_RDX5]]
+=======
+; CHECK-NEXT:    [[TMP5:%.*]] = call fast <8 x float> @llvm.vector.extract.v8f32.v16f32(<16 x float> [[TMP0]], i64 0)
+; CHECK-NEXT:    [[RDX_OP:%.*]] = fadd fast <8 x float> [[TMP5]], [[TMP1]]
+; CHECK-NEXT:    [[TMP6:%.*]] = call fast <16 x float> @llvm.vector.insert.v16f32.v8f32(<16 x float> [[TMP0]], <8 x float> [[RDX_OP]], i64 0)
+; CHECK-NEXT:    [[RDX_OP4:%.*]] = call fast <4 x float> @llvm.vector.extract.v4f32.v16f32(<16 x float> [[TMP6]], i64 0)
+; CHECK-NEXT:    [[RDX_OP5:%.*]] = fadd fast <4 x float> [[RDX_OP4]], [[TMP2]]
+; CHECK-NEXT:    [[TMP8:%.*]] = call fast <16 x float> @llvm.vector.insert.v16f32.v4f32(<16 x float> [[TMP6]], <4 x float> [[RDX_OP5]], i64 0)
+; CHECK-NEXT:    [[OP_RDX1:%.*]] = call fast float @llvm.vector.reduce.fadd.v16f32(float 0.000000e+00, <16 x float> [[TMP8]])
+; CHECK-NEXT:    [[OP_RDX2:%.*]] = fadd fast float [[OP_RDX1]], [[TMP3]]
+; CHECK-NEXT:    [[OP_RDX3:%.*]] = fadd fast float [[OP_RDX2]], [[TMP4]]
+>>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 ; CHECK-NEXT:    ret float [[OP_RDX3]]
 ;
   entry:

@@ -130,32 +130,32 @@ RISCVInstrumentManager::createInstruments(const MCInst &Inst) {
     LLVM_DEBUG(dbgs() << "RVCB: Found VSETVLI and creating instrument for it: "
                       << Inst << "\n");
     unsigned VTypeI = Inst.getOperand(2).getImm();
-    RISCVII::VLMUL VLMUL = RISCVVType::getVLMUL(VTypeI);
+    RISCVVType::VLMUL VLMUL = RISCVVType::getVLMUL(VTypeI);
 
     StringRef LMUL;
     switch (VLMUL) {
-    case RISCVII::LMUL_1:
+    case RISCVVType::LMUL_1:
       LMUL = "M1";
       break;
-    case RISCVII::LMUL_2:
+    case RISCVVType::LMUL_2:
       LMUL = "M2";
       break;
-    case RISCVII::LMUL_4:
+    case RISCVVType::LMUL_4:
       LMUL = "M4";
       break;
-    case RISCVII::LMUL_8:
+    case RISCVVType::LMUL_8:
       LMUL = "M8";
       break;
-    case RISCVII::LMUL_F2:
+    case RISCVVType::LMUL_F2:
       LMUL = "MF2";
       break;
-    case RISCVII::LMUL_F4:
+    case RISCVVType::LMUL_F4:
       LMUL = "MF4";
       break;
-    case RISCVII::LMUL_F8:
+    case RISCVVType::LMUL_F8:
       LMUL = "MF8";
       break;
-    case RISCVII::LMUL_RESERVED:
+    case RISCVVType::LMUL_RESERVED:
       llvm_unreachable("Cannot create instrument for LMUL_RESERVED");
     }
     SmallVector<UniqueInstrument> Instruments;
@@ -189,7 +189,7 @@ RISCVInstrumentManager::createInstruments(const MCInst &Inst) {
 }
 
 static std::pair<uint8_t, uint8_t>
-getEEWAndEMUL(unsigned Opcode, RISCVII::VLMUL LMUL, uint8_t SEW) {
+getEEWAndEMUL(unsigned Opcode, RISCVVType::VLMUL LMUL, uint8_t SEW) {
   uint8_t EEW;
   switch (Opcode) {
   case RISCV::VLM_V:
@@ -307,8 +307,12 @@ unsigned RISCVInstrumentManager::getSchedClassID(
   } else if (opcodeHasEEWAndEMULInfo(Opcode)) {
 #else
   if (opcodeHasEEWAndEMULInfo(Opcode)) {
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
     RISCVII::VLMUL VLMUL = static_cast<RISCVII::VLMUL>(LMUL);
+=======
+    RISCVVType::VLMUL VLMUL = static_cast<RISCVVType::VLMUL>(LMUL);
+>>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
     auto [EEW, EMUL] = getEEWAndEMUL(Opcode, VLMUL, SEW);
 #if SIFIVE_CUSTOMIZATION
     if (const auto *RVV =

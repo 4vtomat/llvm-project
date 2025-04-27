@@ -265,6 +265,7 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
       Builder.defineMacro("__riscv_32e");
   }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // cherry-picked from upstream #109600
   if (Opts.CFProtectionBranch) {
@@ -289,6 +290,10 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  if (Opts.CFProtectionReturn && ISAInfo->hasExtension("zicfiss"))
+    Builder.defineMacro("__riscv_shadow_stack");
+>>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 }
 
 #if SIFIVE_CUSTOMIZATION

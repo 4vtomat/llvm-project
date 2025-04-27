@@ -210,11 +210,16 @@ void RISCVInstPrinter::printVTypeI(const MCInst *MI, unsigned OpNo,
   unsigned Imm = MI->getOperand(OpNo).getImm();
   // Print the raw immediate for reserved values: vlmul[2:0]=4, vsew[2:0]=0b1xx,
   // or non-zero in bits 8 and above.
+<<<<<<< HEAD
   if (RISCVVType::getVLMUL(Imm) == RISCVII::VLMUL::LMUL_RESERVED ||
 #if SIFIVE_CUSTOMIZATION
       RISCVVType::getSEW(Imm) > 64 || (Imm >> 9) != 0 ||
       ((Imm >> 8) == 1 && RISCVVType::getSEW(Imm) > 16)) {
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  if (RISCVVType::getVLMUL(Imm) == RISCVVType::VLMUL::LMUL_RESERVED ||
+      RISCVVType::getSEW(Imm) > 64 || (Imm >> 8) != 0) {
+>>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
     O << formatImm(Imm);
     return;
   }

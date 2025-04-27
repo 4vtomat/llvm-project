@@ -13,9 +13,15 @@ define void @baz() nounwind {
 ; CHECK-LABEL: baz:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    lui a0, %hi(foo)
+<<<<<<< HEAD
 ; CHECK-NEXT:    addi a0, a0, %lo(foo)
 ; CHECK-NEXT:    lw a1, 0(a0)
 ; CHECK-NEXT:    lw a0, 4(a0)
+=======
+; CHECK-NEXT:    addi a1, a0, %lo(foo)
+; CHECK-NEXT:    lw a1, 4(a1)
+; CHECK-NEXT:    lw a0, %lo(foo)(a0)
+>>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 ; CHECK-NEXT:    lui a2, %hi(bar)
 ; CHECK-NEXT:    addi a2, a2, %lo(bar)
 ; CHECK-NEXT:    sw a0, 0(a2)

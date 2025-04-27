@@ -390,7 +390,7 @@ inline raw_ostream &operator<<(raw_ostream &OS, const DemandedFields &DF) {
 }
 #endif
 
-static bool isLMUL1OrSmaller(RISCVII::VLMUL LMUL) {
+static bool isLMUL1OrSmaller(RISCVVType::VLMUL LMUL) {
   auto [LMul, Fractional] = RISCVVType::decodeVLMUL(LMUL);
   return Fractional || LMul == 1;
 }
@@ -633,7 +633,7 @@ class VSETVLIInfo {
   } State = Uninitialized;
 
   // Fields from VTYPE.
-  RISCVII::VLMUL VLMul = RISCVII::LMUL_1;
+  RISCVVType::VLMUL VLMul = RISCVVType::LMUL_1;
   uint8_t SEW = 0;
   uint8_t TailAgnostic : 1;
   uint8_t MaskAgnostic : 1;
@@ -729,7 +729,7 @@ public:
 #endif // SIFIVE_CUSTOMIZATION
 
   unsigned getSEW() const { return SEW; }
-  RISCVII::VLMUL getVLMUL() const { return VLMul; }
+  RISCVVType::VLMUL getVLMUL() const { return VLMul; }
   bool getTailAgnostic() const { return TailAgnostic; }
   bool getMaskAgnostic() const { return MaskAgnostic; }
 #ifdef SIFIVE_CUSTOMIZATION
@@ -803,10 +803,15 @@ public:
         RISCVVType::hasXSfmmWiden(VType) ? RISCVVType::getXSfmmWiden(VType) : 0;
 #endif // SIFIVE_CUSTOMIZATION
   }
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   void setVTYPE(RISCVII::VLMUL L, unsigned S, bool TA, bool MA, bool AF,
                 unsigned W) {
     assert((IsMammoth || (isValid() && !isUnknown())) &&
+=======
+  void setVTYPE(RISCVVType::VLMUL L, unsigned S, bool TA, bool MA) {
+    assert(isValid() && !isUnknown() &&
+>>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
            "Can't set VTYPE for uninitialized or unknown");
 #endif // SIFIVE_CUSTOMIZATION
     VLMul = L;
@@ -819,6 +824,7 @@ public:
 #endif // SIFIVE_CUSTOMIZATION
   }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool isMammoth() const { return IsMammoth; }
   void setIsMammoth(bool M) { IsMammoth = M; }
@@ -856,6 +862,9 @@ public:
 #endif // SIFIVE_CUSTOMIZATION
 
   void setVLMul(RISCVII::VLMUL VLMul) { this->VLMul = VLMul; }
+=======
+  void setVLMul(RISCVVType::VLMUL VLMul) { this->VLMul = VLMul; }
+>>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 
   unsigned encodeVTYPE() const {
     assert(isValid() && !isUnknown() && !SEWLMULRatioOnly &&
@@ -1232,7 +1241,7 @@ RISCVInsertVSETVLI::getInfoForVSETVLI(const MachineInstr &MI) const {
 }
 
 static unsigned computeVLMAX(unsigned VLEN, unsigned SEW,
-                             RISCVII::VLMUL VLMul) {
+                             RISCVVType::VLMUL VLMul) {
   auto [LMul, Fractional] = RISCVVType::decodeVLMUL(VLMul);
   if (Fractional)
     VLEN = VLEN / LMul;
@@ -1257,21 +1266,18 @@ RISCVInsertVSETVLI::computeInfoForInstr(const MachineInstr &MI) const {
     if (RISCVII::hasVecPolicyOp(TSFlags)) {
       const MachineOperand &Op = MI.getOperand(MI.getNumExplicitOperands() - 1);
       uint64_t Policy = Op.getImm();
-      assert(Policy <= (RISCVII::TAIL_AGNOSTIC | RISCVII::MASK_AGNOSTIC) &&
+      assert(Policy <=
+                 (RISCVVType::TAIL_AGNOSTIC | RISCVVType::MASK_AGNOSTIC) &&
              "Invalid Policy Value");
-      TailAgnostic = Policy & RISCVII::TAIL_AGNOSTIC;
-      MaskAgnostic = Policy & RISCVII::MASK_AGNOSTIC;
+      TailAgnostic = Policy & RISCVVType::TAIL_AGNOSTIC;
+      MaskAgnostic = Policy & RISCVVType::MASK_AGNOSTIC;
     }
-
-    // Some pseudo instructions force a tail agnostic policy despite having a
-    // tied def.
-    if (RISCVII::doesForceTailAgnostic(TSFlags))
-      TailAgnostic = true;
 
     if (!RISCVII::usesMaskPolicy(TSFlags))
       MaskAgnostic = true;
   }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Override to always use tail undisturbed. Useful to reduce vsetvli on
   // CPUs that treat them the same.
@@ -1282,6 +1288,9 @@ RISCVInsertVSETVLI::computeInfoForInstr(const MachineInstr &MI) const {
 #endif // SIFIVE_CUSTOMIZATION
 
   RISCVII::VLMUL VLMul = RISCVII::getLMul(TSFlags);
+=======
+  RISCVVType::VLMUL VLMul = RISCVII::getLMul(TSFlags);
+>>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
 
 #if SIFIVE_CUSTOMIZATION
   bool AltFmt = RISCVII::getAltFmtType(TSFlags) == RISCVII::AltFmtType::AltFmt;
@@ -1610,10 +1619,14 @@ void RISCVInsertVSETVLI::transferBefore(VSETVLIInfo &Info,
     // be coalesced into another vsetvli since we won't demand any fields.
     VSETVLIInfo NewInfo; // Need a new VSETVLIInfo to clear SEWLMULRatioOnly
     NewInfo.setAVLImm(1);
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     NewInfo.setVTYPE(RISCVII::VLMUL::LMUL_1, /*sew*/ 8, /*ta*/ true,
                      /*ma*/ true, /*AltFmt*/ false, /*W*/ 0);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    NewInfo.setVTYPE(RISCVVType::LMUL_1, /*sew*/ 8, /*ta*/ true, /*ma*/ true);
+>>>>>>> 3e61c1ab7f5d9666db88069d49c8916c40fae5ea
     Info = NewInfo;
     return;
   }
