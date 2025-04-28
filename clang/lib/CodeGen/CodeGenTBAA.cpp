@@ -286,19 +286,13 @@ llvm::MDNode *CodeGenTBAA::getTypeInfoHelper(const Type *Ty) {
   // they involve a significant representation difference.  We don't
   // currently do so, however.
   if (Ty->isPointerType() || Ty->isReferenceType()) {
-<<<<<<< HEAD
-    llvm::MDNode *AnyPtr = createScalarTypeNode("any pointer", getChar(), Size);
 #if SIFIVE_CUSTOMIZATION
     if (!CodeGenOpts.PointerTBAA && !CodeGenOpts.NewStructPathTBAA)
-      return AnyPtr;
+      return getAnyPtr();
 #else
     if (!CodeGenOpts.PointerTBAA)
-      return AnyPtr;
-#endif
-=======
-    if (!CodeGenOpts.PointerTBAA)
       return getAnyPtr();
->>>>>>> f89a986153a5907468f8f1f1e7f9f9bccfa4bb93
+#endif
     // C++ [basic.lval]p11 permits objects to accessed through an l-value of
     // similar type. Two types are similar under C++ [conv.qual]p2 if the
     // decomposition of the types into pointers, member pointers, and arrays has
@@ -343,7 +337,7 @@ llvm::MDNode *CodeGenTBAA::getTypeInfoHelper(const Type *Ty) {
       // default functionality as these commonly alias.
       if (CodeGenOpts.NewStructPathTBAA)
         if (Ty->isVoidType() || Ty->isCharType())
-          return AnyPtr;
+          return getAnyPtr();
 
 #endif //SIFIVE_CUSTOMIZATION
       llvm::MDNode *ScalarMD = getTypeInfoHelper(Ty);
@@ -378,7 +372,7 @@ llvm::MDNode *CodeGenTBAA::getTypeInfoHelper(const Type *Ty) {
       if (CodeGenOpts.NewStructPathTBAA) {
         bool IsClass;
         if (isMayAliasType(RT, IsClass, Context, PtrDepth))
-          return AnyPtr;
+          return getAnyPtr(PtrDepth);
         SmallString<256> OutName("p");
         OutName += std::to_string(PtrDepth);
         OutName += " ";
@@ -393,7 +387,7 @@ llvm::MDNode *CodeGenTBAA::getTypeInfoHelper(const Type *Ty) {
         } else {
           OutName += QualType(Ty, 0).getAsString(Context.getPrintingPolicy());
         }
-        return createScalarTypeNode(OutName, AnyPtr, Size);
+        return createScalarTypeNode(OutName, getAnyPtr(PtrDepth), Size);
       }
       if (Features.CPlusPlus) {
 #endif //SIFIVE_CUSTOMIZATION

@@ -97,12 +97,14 @@ void p2struct(struct S1 **ptr) {
 }
 
 // CHECK: [[P2INT_0]] = !{[[P2INT:!.+]], [[P2INT]], i64 0, i64 8}
-// CHECK: [[P2INT]] = !{[[ANY_POINTER:!.+]], i64 8, !"p2 int"}
+// CHECK: [[P2INT]] = !{[[ANY_P2_POINTER:!.+]], i64 8, !"p2 int"}
+// CHECK: [[ANY_P2_POINTER]] = !{[[ANY_POINTER:!.+]], i64 8, !"any p2 pointer"}
 // CHECK: [[ANY_POINTER]] = !{[[CHAR:!.+]], i64 8, !"any pointer"}
 // CHECK: [[CHAR]] = !{[[TBAA_ROOT:!.+]], i64 1, !"omnipotent char"}
 // CHECK: [[TBAA_ROOT]] = !{!"Simple C/C++ TBAA"}
 // CHECK: [[P1INT_0]] = !{[[P1INT:!.+]], [[P1INT]], i64 0, i64 8}
 // CHECK: [[P1INT]] = !{[[ANY_POINTER]], i64 8, !"p1 int"}
 // CHECK: [[P3INT_0]] = !{[[P3INT:!.+]], [[P3INT]], i64 0, i64 8}
-// CHECK: [[P3INT]] = !{[[ANY_POINTER]], i64 8, !"p3 int"}
+// CHECK: [[P3INT]] = !{[[ANY_P3_POINTER:!.+]], i64 8, !"p3 int"}
+// CHECK: [[ANY_P3_POINTER]] = !{[[ANY_P2_POINTER]], i64 8, !"any p3 pointer"}
 // CHECK: [[P0CHAR_0]] = !{[[ANY_POINTER]], [[ANY_POINTER]], i64 0, i64 8}

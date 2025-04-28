@@ -261,10 +261,6 @@ int void_ptrs(void **ptr) {
 // DEFAULT: [[P1CHAR_0]] = !{[[P1CHAR:!.+]], [[P1CHAR]], i64 0}
 // DEFAULT: [[P1CHAR]] = !{!"p1 omnipotent char", [[ANY_POINTER]], i64 0}
 // DEFAULT: [[P2S1_TAG]] = !{[[P2S1:!.+]], [[P2S1]], i64 0}
-<<<<<<< HEAD
-=======
-// DEFAULT: [[P2S1]] = !{!"p2 _ZTS2S1", [[ANY_P2_POINTER]], i64 0}
->>>>>>> f89a986153a5907468f8f1f1e7f9f9bccfa4bb93
 // DEFAULT: [[P1S1_TAG:!.+]] = !{[[P1S1:!.+]], [[P1S1]], i64 0}
 // DEFAULT: [[P1S2_TAG]] = !{[[P1S2:!.+]], [[P1S2]], i64 0}
 
