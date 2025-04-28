@@ -2180,10 +2180,6 @@ bool VPlanTransforms::tryAddExplicitVectorLength(
             NewRecipe = new VPWidenStoreEVLRecipe(*S, *VPEVL, NewMask);
           else
             llvm_unreachable("unsupported recipe");
-        } else if (auto *W = dyn_cast<VPWidenRecipe>(CurRecipe)) {
-          unsigned Opcode = W->getOpcode();
-          if (Instruction::isBinaryOp(Opcode) || Instruction::isUnaryOp(Opcode))
-            NewRecipe = new VPWidenEVLRecipe(*W, *VPEVL);
         } else if (auto *RedR = dyn_cast<VPReductionRecipe>(CurRecipe)) {
           NewRecipe = new VPReductionEVLRecipe(*RedR, *VPEVL,
                                                GetNewMask(RedR->getCondOp()));
