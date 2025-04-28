@@ -15373,15 +15373,7 @@ ResTy BoUpSLP::processBuildVector(const TreeEntry *E, Type *ScalarTy,
         for (unsigned I = 0, Sz = ExtractMask.size(); I < Sz; ++I) {
           if (ExtractMask[I] == PoisonMaskElem)
             continue;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
           if (isa<UndefValue>(StoredGS[I]))
-#else
-          if (isa<UndefValue>(E->Scalars[I]))
-#endif // SIFIVE_CUSTOMIZATION
-=======
-          if (isa<UndefValue>(StoredGS[I]))
->>>>>>> f89a986153a5907468f8f1f1e7f9f9bccfa4bb93
             continue;
           auto *EI = cast<ExtractElementInst>(StoredGS[I]);
           Value *VecOp = EI->getVectorOperand();
