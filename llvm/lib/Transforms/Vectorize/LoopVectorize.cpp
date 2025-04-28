@@ -11096,19 +11096,15 @@ VPRecipeBase *VPRecipeBuilder::tryToCreateWidenRecipe(
       llvm_unreachable(
       "can only widen reductions and fixed-order recurrences here");
     }
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
 
+    // Add backedge value.
 #if SIFIVE_CUSTOMIZATION
     if (!Legal->isCSAPhi(Phi))
-      PhisToFix.push_back(PhiRecipe);
+      PhiRecipe->addOperand(Operands[1]);
 #else
-    PhisToFix.push_back(PhiRecipe);
-#endif // SIFIVE_CUSTOMIZATION
-=======
-    // Add backedge value.
     PhiRecipe->addOperand(Operands[1]);
->>>>>>> f89a986153a5907468f8f1f1e7f9f9bccfa4bb93
+#endif // SIFIVE_CUSTOMIZATION
     return PhiRecipe;
   }
 
