@@ -1490,29 +1490,15 @@ define <vscale x 16 x double> @vp_nearbyint_nxv16f64(<vscale x 16 x double> %va,
 ; CHECK-NEXT:    srli a3, a1, 3
 ; CHECK-NEXT:    fld fa5, %lo(.LCPI44_0)(a2)
 ; CHECK-NEXT:    sub a2, a0, a1
-<<<<<<< HEAD
 ; CHECK-NEXT:    vslidedown.vx v0, v0, a3
 ; CHECK-NEXT:    sltu a3, a0, a2
 ; CHECK-NEXT:    addi a3, a3, -1
 ; CHECK-NEXT:    and a2, a3, a2
-=======
-; CHECK-NEXT:    vslidedown.vx v25, v0, a3
-; CHECK-NEXT:    sltu a3, a0, a2
-; CHECK-NEXT:    addi a3, a3, -1
-; CHECK-NEXT:    and a2, a3, a2
-; CHECK-NEXT:    vmv1r.v v0, v25
->>>>>>> f89a986153a5907468f8f1f1e7f9f9bccfa4bb93
 ; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; CHECK-NEXT:    vfabs.v v8, v16, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, mu
-<<<<<<< HEAD
-; CHECK-NEXT:    vmflt.vf v0, v24, fa5, v0.t
+; CHECK-NEXT:    vmflt.vf v0, v8, fa5, v0.t
 ; CHECK-NEXT:    frflags a2
-=======
-; CHECK-NEXT:    vmflt.vf v25, v8, fa5, v0.t
-; CHECK-NEXT:    frflags a2
-; CHECK-NEXT:    vmv1r.v v0, v25
->>>>>>> f89a986153a5907468f8f1f1e7f9f9bccfa4bb93
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
 ; CHECK-NEXT:    vfcvt.x.f.v v8, v16, v0.t
 ; CHECK-NEXT:    vfcvt.f.x.v v8, v8, v0.t

@@ -348,15 +348,9 @@ define float @vreduce_fminimum_nxv4f32(float %start, <vscale x 4 x float> %val, 
 ; CHECK-LABEL: vreduce_fminimum_nxv4f32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vfredmin.vs v10, v8, v10, v0.t
-; CHECK-NEXT:    vmfne.vv v8, v8, v8, v0.t
-; CHECK-NEXT:    vcpop.m a0, v8, v0.t
-=======
 ; CHECK-NEXT:    vmfne.vv v10, v8, v8, v0.t
 ; CHECK-NEXT:    feq.s a1, fa0, fa0
 ; CHECK-NEXT:    vcpop.m a2, v10, v0.t
->>>>>>> f89a986153a5907468f8f1f1e7f9f9bccfa4bb93
 ; CHECK-NEXT:    xori a1, a1, 1
 ; CHECK-NEXT:    or a1, a2, a1
 ; CHECK-NEXT:    beqz a1, .LBB22_2
@@ -379,15 +373,9 @@ define float @vreduce_fmaximum_nxv4f32(float %start, <vscale x 4 x float> %val, 
 ; CHECK-LABEL: vreduce_fmaximum_nxv4f32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vfredmax.vs v10, v8, v10, v0.t
-; CHECK-NEXT:    vmfne.vv v8, v8, v8, v0.t
-; CHECK-NEXT:    vcpop.m a0, v8, v0.t
-=======
 ; CHECK-NEXT:    vmfne.vv v10, v8, v8, v0.t
 ; CHECK-NEXT:    feq.s a1, fa0, fa0
 ; CHECK-NEXT:    vcpop.m a2, v10, v0.t
->>>>>>> f89a986153a5907468f8f1f1e7f9f9bccfa4bb93
 ; CHECK-NEXT:    xori a1, a1, 1
 ; CHECK-NEXT:    or a1, a2, a1
 ; CHECK-NEXT:    beqz a1, .LBB23_2
