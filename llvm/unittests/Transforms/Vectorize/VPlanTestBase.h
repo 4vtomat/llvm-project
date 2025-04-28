@@ -78,26 +78,6 @@ protected:
     HCFGBuilder.buildHierarchicalCFG();
     return Plan;
   }
-<<<<<<< HEAD
-
-  /// Build the VPlan plain CFG for the loop starting from \p LoopHeader.
-  VPlanPtr buildPlainCFG(BasicBlock *LoopHeader) {
-    Function &F = *LoopHeader->getParent();
-    assert(!verifyFunction(F) && "input function must be valid");
-    doAnalysis(F);
-
-    Loop *L = LI->getLoopFor(LoopHeader);
-    PredicatedScalarEvolution PSE(*SE, *L);
-    auto Plan = VPlan::createInitialVPlan(IntegerType::get(*Ctx, 64), PSE, true,
-                                          false,
-                                          /*IsUncountable=*/false, // SIFIVE
-                                          L);
-    VPlanHCFGBuilder HCFGBuilder(L, LI.get(), *Plan);
-    HCFGBuilder.buildPlainCFG();
-    return Plan;
-  }
-=======
->>>>>>> f89a986153a5907468f8f1f1e7f9f9bccfa4bb93
 };
 
 class VPlanTestBase : public testing::Test {
