@@ -35,7 +35,7 @@ define void @vpadd_f32(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vmv1r.v v10, v8
 ; CHECK-NEXT:    vslideup.vi v10, v9, 1
-; CHECK-NEXT:    vrgather.vi v9, v8, 1, v0.t
+; CHECK-NEXT:    vslidedown.vi v9, v8, 1, v0.t
 ; CHECK-NEXT:    vfadd.vv v8, v10, v9
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
@@ -81,7 +81,7 @@ define void @vpadd_s32(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vmv1r.v v10, v8
 ; CHECK-NEXT:    vslideup.vi v10, v9, 1
-; CHECK-NEXT:    vrgather.vi v9, v8, 1, v0.t
+; CHECK-NEXT:    vslidedown.vi v9, v8, 1, v0.t
 ; CHECK-NEXT:    vadd.vv v8, v10, v9
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
@@ -152,7 +152,7 @@ define void @vpadd_u32(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vmv1r.v v10, v8
 ; CHECK-NEXT:    vslideup.vi v10, v9, 1
-; CHECK-NEXT:    vrgather.vi v9, v8, 1, v0.t
+; CHECK-NEXT:    vslidedown.vi v9, v8, 1, v0.t
 ; CHECK-NEXT:    vadd.vv v8, v10, v9
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
@@ -249,7 +249,7 @@ define void @vpaddq_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vmv.v.v v10, v8
 ; CHECK-NEXT:    vslideup.vi v10, v9, 1
-; CHECK-NEXT:    vrgather.vi v9, v8, 1, v0.t
+; CHECK-NEXT:    vslidedown.vi v9, v8, 1, v0.t
 ; CHECK-NEXT:    vfadd.vv v8, v10, v9
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
@@ -321,7 +321,7 @@ define void @vpaddq_s64(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vmv.v.v v10, v8
 ; CHECK-NEXT:    vslideup.vi v10, v9, 1
-; CHECK-NEXT:    vrgather.vi v9, v8, 1, v0.t
+; CHECK-NEXT:    vslidedown.vi v9, v8, 1, v0.t
 ; CHECK-NEXT:    vadd.vv v8, v10, v9
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
@@ -418,7 +418,7 @@ define void @vpaddq_u64(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vmv.v.v v10, v8
 ; CHECK-NEXT:    vslideup.vi v10, v9, 1
-; CHECK-NEXT:    vrgather.vi v9, v8, 1, v0.t
+; CHECK-NEXT:    vslidedown.vi v9, v8, 1, v0.t
 ; CHECK-NEXT:    vadd.vv v8, v10, v9
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret

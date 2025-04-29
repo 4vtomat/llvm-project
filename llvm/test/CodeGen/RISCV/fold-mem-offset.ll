@@ -178,21 +178,21 @@ entry:
 define zeroext i8 @test_add(ptr %p, iXLen %x, iXLen %y) {
 ; CHECK-LABEL: test_add:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    add a1, a0, a1
-; CHECK-NEXT:    add a0, a2, a0
-; CHECK-NEXT:    lbu a1, 1800(a1)
-; CHECK-NEXT:    lbu a0, 1810(a0)
+; CHECK-NEXT:    add a2, a0, a2
 ; CHECK-NEXT:    add a0, a0, a1
+; CHECK-NEXT:    lbu a1, 1810(a2)
+; CHECK-NEXT:    lbu a0, 1800(a0)
+; CHECK-NEXT:    add a0, a1, a0
 ; CHECK-NEXT:    andi a0, a0, 255
 ; CHECK-NEXT:    ret
 ;
 ; ZBA-LABEL: test_add:
 ; ZBA:       # %bb.0: # %entry
-; ZBA-NEXT:    add a1, a0, a1
-; ZBA-NEXT:    add a0, a2, a0
-; ZBA-NEXT:    lbu a1, 1800(a1)
-; ZBA-NEXT:    lbu a0, 1810(a0)
+; ZBA-NEXT:    add a2, a0, a2
 ; ZBA-NEXT:    add a0, a0, a1
+; ZBA-NEXT:    lbu a1, 1810(a2)
+; ZBA-NEXT:    lbu a0, 1800(a0)
+; ZBA-NEXT:    add a0, a1, a0
 ; ZBA-NEXT:    andi a0, a0, 255
 ; ZBA-NEXT:    ret
 entry:
@@ -669,23 +669,21 @@ entry:
 define zeroext i8 @test_optsize(ptr %p, iXLen %x, iXLen %y) optsize {
 ; CHECK-LABEL: test_optsize:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi a0, a0, 1800
-; CHECK-NEXT:    add a1, a0, a1
-; CHECK-NEXT:    add a0, a2, a0
-; CHECK-NEXT:    lbu a1, 0(a1)
-; CHECK-NEXT:    lbu a0, 10(a0)
+; CHECK-NEXT:    add a2, a0, a2
 ; CHECK-NEXT:    add a0, a0, a1
+; CHECK-NEXT:    lbu a1, 1810(a2)
+; CHECK-NEXT:    lbu a0, 1800(a0)
+; CHECK-NEXT:    add a0, a1, a0
 ; CHECK-NEXT:    andi a0, a0, 255
 ; CHECK-NEXT:    ret
 ;
 ; ZBA-LABEL: test_optsize:
 ; ZBA:       # %bb.0: # %entry
-; ZBA-NEXT:    addi a0, a0, 1800
-; ZBA-NEXT:    add a1, a0, a1
-; ZBA-NEXT:    add a0, a2, a0
-; ZBA-NEXT:    lbu a1, 0(a1)
-; ZBA-NEXT:    lbu a0, 10(a0)
+; ZBA-NEXT:    add a2, a0, a2
 ; ZBA-NEXT:    add a0, a0, a1
+; ZBA-NEXT:    lbu a1, 1810(a2)
+; ZBA-NEXT:    lbu a0, 1800(a0)
+; ZBA-NEXT:    add a0, a1, a0
 ; ZBA-NEXT:    andi a0, a0, 255
 ; ZBA-NEXT:    ret
 entry:
@@ -702,23 +700,21 @@ entry:
 define zeroext i8 @test_minsize(ptr %p, iXLen %x, iXLen %y) minsize {
 ; CHECK-LABEL: test_minsize:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi a0, a0, 1800
-; CHECK-NEXT:    add a1, a0, a1
-; CHECK-NEXT:    add a0, a2, a0
-; CHECK-NEXT:    lbu a1, 0(a1)
-; CHECK-NEXT:    lbu a0, 10(a0)
+; CHECK-NEXT:    add a2, a0, a2
 ; CHECK-NEXT:    add a0, a0, a1
+; CHECK-NEXT:    lbu a1, 1810(a2)
+; CHECK-NEXT:    lbu a0, 1800(a0)
+; CHECK-NEXT:    add a0, a1, a0
 ; CHECK-NEXT:    andi a0, a0, 255
 ; CHECK-NEXT:    ret
 ;
 ; ZBA-LABEL: test_minsize:
 ; ZBA:       # %bb.0: # %entry
-; ZBA-NEXT:    addi a0, a0, 1800
-; ZBA-NEXT:    add a1, a0, a1
-; ZBA-NEXT:    add a0, a2, a0
-; ZBA-NEXT:    lbu a1, 0(a1)
-; ZBA-NEXT:    lbu a0, 10(a0)
+; ZBA-NEXT:    add a2, a0, a2
 ; ZBA-NEXT:    add a0, a0, a1
+; ZBA-NEXT:    lbu a1, 1810(a2)
+; ZBA-NEXT:    lbu a0, 1800(a0)
+; ZBA-NEXT:    add a0, a1, a0
 ; ZBA-NEXT:    andi a0, a0, 255
 ; ZBA-NEXT:    ret
 entry:

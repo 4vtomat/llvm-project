@@ -108,19 +108,21 @@ define <vscale x 128 x i1> @vp_set_before_first_nxv128i1(<vscale x 128 x i1> %va
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
 ; CHECK-NEXT:    vmsbf.m v12, v11, v0.t
-; CHECK-NEXT:    sub a1, a0, a1
 ; CHECK-NEXT:    vfirst.m a2, v12, v0.t
+; CHECK-NEXT:    bltz a2, .LBB7_4
+; CHECK-NEXT:  # %bb.3:
+; CHECK-NEXT:    vsetvli a0, zero, e8, m8, ta, ma
+; CHECK-NEXT:    vmclr.m v9
+; CHECK-NEXT:    j .LBB7_5
+; CHECK-NEXT:  .LBB7_4:
+; CHECK-NEXT:    sub a1, a0, a1
 ; CHECK-NEXT:    sltu a0, a0, a1
 ; CHECK-NEXT:    addi a0, a0, -1
 ; CHECK-NEXT:    and a0, a0, a1
 ; CHECK-NEXT:    vmv1r.v v0, v10
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
 ; CHECK-NEXT:    vmsbf.m v9, v8, v0.t
-; CHECK-NEXT:    bltz a2, .LBB7_4
-; CHECK-NEXT:  # %bb.3:
-; CHECK-NEXT:    vsetvli a0, zero, e8, m8, ta, ma
-; CHECK-NEXT:    vmclr.m v9
-; CHECK-NEXT:  .LBB7_4:
+; CHECK-NEXT:  .LBB7_5:
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv1r.v v0, v12
 ; CHECK-NEXT:    vmv1r.v v8, v9
@@ -247,19 +249,21 @@ define <256 x i1> @vp_set_before_first_v256i1(<256 x i1> %val, <256 x i1> %mask,
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
 ; CHECK-NEXT:    vmsbf.m v12, v11, v0.t
-; CHECK-NEXT:    addi a2, a0, -128
-; CHECK-NEXT:    vfirst.m a3, v12, v0.t
-; CHECK-NEXT:    sltu a0, a0, a2
-; CHECK-NEXT:    addi a0, a0, -1
-; CHECK-NEXT:    and a0, a0, a2
-; CHECK-NEXT:    vmv1r.v v0, v10
-; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
-; CHECK-NEXT:    vmsbf.m v9, v8, v0.t
-; CHECK-NEXT:    bltz a3, .LBB16_4
+; CHECK-NEXT:    vfirst.m a2, v12, v0.t
+; CHECK-NEXT:    bltz a2, .LBB16_4
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m8, ta, ma
 ; CHECK-NEXT:    vmclr.m v9
+; CHECK-NEXT:    j .LBB16_5
 ; CHECK-NEXT:  .LBB16_4:
+; CHECK-NEXT:    addi a1, a0, -128
+; CHECK-NEXT:    sltu a0, a0, a1
+; CHECK-NEXT:    addi a0, a0, -1
+; CHECK-NEXT:    and a0, a0, a1
+; CHECK-NEXT:    vmv1r.v v0, v10
+; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
+; CHECK-NEXT:    vmsbf.m v9, v8, v0.t
+; CHECK-NEXT:  .LBB16_5:
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv1r.v v0, v12
 ; CHECK-NEXT:    vmv1r.v v8, v9

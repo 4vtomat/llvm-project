@@ -105,9 +105,9 @@ define <4 x i32> @v4i32_v16i32(<16 x i32>) {
 ; CHECK-NEXT:    vslidedown.vi v12, v12, 3, v0.t
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v0, 10
-; CHECK-NEXT:    vnsrl.wx v10, v8, a0
+; CHECK-NEXT:    vnsrl.wx v8, v8, a0
 ; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
-; CHECK-NEXT:    vmerge.vvm v8, v10, v12, v0
+; CHECK-NEXT:    vmerge.vvm v8, v8, v12, v0
 ; CHECK-NEXT:    ret
   %2 = shufflevector <16 x i32> %0, <16 x i32> poison, <4 x i32> <i32 1, i32 9, i32 5, i32 14>
   ret <4 x i32> %2

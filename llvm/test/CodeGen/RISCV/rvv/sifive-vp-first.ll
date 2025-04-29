@@ -208,29 +208,26 @@ declare i32 @llvm.vp.first.nxv128i1(<vscale x 128 x i1>, <vscale x 128 x i1>, i3
 define i32 @vp_first_nxv128i1(<vscale x 128 x i1> %m, <vscale x 128 x i1> %op, i32 zeroext %evl) {
 ; RV32-LABEL: vp_first_nxv128i1:
 ; RV32:       # %bb.0: # %entry
-; RV32-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
-; RV32-NEXT:    vmv1r.v v11, v8
-; RV32-NEXT:    vmv1r.v v8, v0
-; RV32-NEXT:    csrr a1, vlenb
-; RV32-NEXT:    slli a1, a1, 3
-; RV32-NEXT:    sub a2, a0, a1
-; RV32-NEXT:    sltu a3, a0, a2
-; RV32-NEXT:    addi a3, a3, -1
-; RV32-NEXT:    and a2, a3, a2
-; RV32-NEXT:    vmv1r.v v0, v11
-; RV32-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
-; RV32-NEXT:    vfirst.m a2, v10, v0.t
-; RV32-NEXT:    bltu a0, a1, .LBB16_2
+; RV32-NEXT:    csrr a3, vlenb
+; RV32-NEXT:    slli a3, a3, 3
+; RV32-NEXT:    mv a2, a0
+; RV32-NEXT:    bltu a0, a3, .LBB16_2
 ; RV32-NEXT:  # %bb.1: # %entry
-; RV32-NEXT:    mv a0, a1
+; RV32-NEXT:    mv a2, a3
 ; RV32-NEXT:  .LBB16_2: # %entry
-; RV32-NEXT:    vmv1r.v v0, v8
-; RV32-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
+; RV32-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
 ; RV32-NEXT:    vfirst.m a1, v9, v0.t
 ; RV32-NEXT:    bgez a1, .LBB16_4
 ; RV32-NEXT:  # %bb.3:
-; RV32-NEXT:    srai a1, a2, 31
-; RV32-NEXT:    add a0, a0, a2
+; RV32-NEXT:    sub a1, a0, a3
+; RV32-NEXT:    sltu a0, a0, a1
+; RV32-NEXT:    addi a0, a0, -1
+; RV32-NEXT:    and a0, a0, a1
+; RV32-NEXT:    vmv1r.v v0, v8
+; RV32-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
+; RV32-NEXT:    vfirst.m a0, v10, v0.t
+; RV32-NEXT:    srai a1, a0, 31
+; RV32-NEXT:    add a0, a2, a0
 ; RV32-NEXT:    or a1, a1, a0
 ; RV32-NEXT:  .LBB16_4: # %entry
 ; RV32-NEXT:    mv a0, a1
@@ -238,29 +235,26 @@ define i32 @vp_first_nxv128i1(<vscale x 128 x i1> %m, <vscale x 128 x i1> %op, i
 ;
 ; RV64-LABEL: vp_first_nxv128i1:
 ; RV64:       # %bb.0: # %entry
-; RV64-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
-; RV64-NEXT:    vmv1r.v v11, v8
-; RV64-NEXT:    vmv1r.v v8, v0
-; RV64-NEXT:    csrr a1, vlenb
-; RV64-NEXT:    slli a1, a1, 3
-; RV64-NEXT:    sub a2, a0, a1
-; RV64-NEXT:    sltu a3, a0, a2
-; RV64-NEXT:    addi a3, a3, -1
-; RV64-NEXT:    and a2, a3, a2
-; RV64-NEXT:    vmv1r.v v0, v11
-; RV64-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
-; RV64-NEXT:    vfirst.m a2, v10, v0.t
-; RV64-NEXT:    bltu a0, a1, .LBB16_2
+; RV64-NEXT:    csrr a3, vlenb
+; RV64-NEXT:    slli a3, a3, 3
+; RV64-NEXT:    mv a2, a0
+; RV64-NEXT:    bltu a0, a3, .LBB16_2
 ; RV64-NEXT:  # %bb.1: # %entry
-; RV64-NEXT:    mv a0, a1
+; RV64-NEXT:    mv a2, a3
 ; RV64-NEXT:  .LBB16_2: # %entry
-; RV64-NEXT:    vmv1r.v v0, v8
-; RV64-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
+; RV64-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
 ; RV64-NEXT:    vfirst.m a1, v9, v0.t
 ; RV64-NEXT:    bgez a1, .LBB16_4
 ; RV64-NEXT:  # %bb.3:
-; RV64-NEXT:    srai a1, a2, 63
-; RV64-NEXT:    add a0, a0, a2
+; RV64-NEXT:    sub a1, a0, a3
+; RV64-NEXT:    sltu a0, a0, a1
+; RV64-NEXT:    addi a0, a0, -1
+; RV64-NEXT:    and a0, a0, a1
+; RV64-NEXT:    vmv1r.v v0, v8
+; RV64-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
+; RV64-NEXT:    vfirst.m a0, v10, v0.t
+; RV64-NEXT:    srai a1, a0, 63
+; RV64-NEXT:    add a0, a2, a0
 ; RV64-NEXT:    or a1, a1, a0
 ; RV64-NEXT:  .LBB16_4: # %entry
 ; RV64-NEXT:    mv a0, a1

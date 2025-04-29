@@ -108,9 +108,8 @@ define <vscale x 4 x i1> @test_vp_xor_fcmp_combine_not_allones(<vscale x 4 x dou
 define <vscale x 4 x i1> @test_vp_xor_fcmp_combine_different_mask(<vscale x 4 x double> %x, <vscale x 4 x double> %y, <vscale x 4 x i1> %mask1, <vscale x 4 x i1> %mask2, i32 zeroext %evl) {
 ; CHECK-LABEL: test_vp_xor_fcmp_combine_different_mask:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
-; CHECK-NEXT:    vmset.m v16
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
+; CHECK-NEXT:    vmset.m v16
 ; CHECK-NEXT:    vmflt.vv v8, v8, v12, v0.t
 ; CHECK-NEXT:    vmxnor.mm v0, v8, v16
 ; CHECK-NEXT:    ret

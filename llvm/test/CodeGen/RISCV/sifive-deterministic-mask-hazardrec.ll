@@ -27,43 +27,43 @@ define void @baz(ptr %arg) {
 ; CHECK-NEXT:    vsll.vi v8, v8, 3
 ; CHECK-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
 ; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    minu a4, a1, a6
+; CHECK-NEXT:    minu a5, a1, a6
 ; CHECK-NEXT:    slli a2, a1, 3
-; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
-; CHECK-NEXT:    maxu a3, a1, a6
-; CHECK-NEXT:    sub a3, a3, a1
+; CHECK-NEXT:    vsetvli zero, a5, e64, m8, ta, ma
+; CHECK-NEXT:    maxu a4, a1, a6
+; CHECK-NEXT:    sub a4, a4, a1
 ; CHECK-NEXT:    srli a1, a1, 3
 ; CHECK-NEXT:    vadd.vx v16, v8, a7
 ; CHECK-NEXT:    vmsltu.vx v0, v16, t0
-; CHECK-NEXT:    vsetvli a5, zero, e64, m8, ta, ma
-; CHECK-NEXT:    csrr a5, vlenb
-; CHECK-NEXT:    sh3add a5, a5, sp
-; CHECK-NEXT:    addi a5, a5, 16
-; CHECK-NEXT:    vl8r.v v16, (a5) # Unknown-size Folded Reload
-; CHECK-NEXT:    csrr a5, vlenb
-; CHECK-NEXT:    sh3add a5, a5, sp
-; CHECK-NEXT:    addi a5, a5, 16
+; CHECK-NEXT:    vsetvli a3, zero, e64, m8, ta, ma
+; CHECK-NEXT:    csrr a3, vlenb
+; CHECK-NEXT:    sh3add a3, a3, sp
+; CHECK-NEXT:    addi a3, a3, 16
+; CHECK-NEXT:    vl8r.v v16, (a3) # Unknown-size Folded Reload
+; CHECK-NEXT:    csrr a3, vlenb
+; CHECK-NEXT:    sh3add a3, a3, sp
+; CHECK-NEXT:    addi a3, a3, 16
 ; CHECK-NEXT:    vadd.vx v8, v8, a2
 ; CHECK-NEXT:    addi a2, sp, 16
-; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
 ; CHECK-NEXT:    vs8r.v v8, (a2) # Unknown-size Folded Spill
 ; CHECK-NEXT:    li a2, -64
 ; CHECK-NEXT:    vadd.vx v24, v8, a7
 ; CHECK-NEXT:    vmsltu.vx v7, v24, t0
-; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
+; CHECK-NEXT:    vsetvli zero, a5, e64, m8, ta, ma
 ; CHECK-NEXT:    vadd.vx v24, v16, a2
 ; CHECK-NEXT:    vmsltu.vx v24, v24, t0
-; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
+; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
 ; CHECK-NEXT:    vadd.vx v16, v8, a2
 ; CHECK-NEXT:    li a2, -63
-; CHECK-NEXT:    vl8r.v v8, (a5) # Unknown-size Folded Reload
+; CHECK-NEXT:    vl8r.v v8, (a3) # Unknown-size Folded Reload
+; CHECK-NEXT:    addi a3, sp, 16
 ; CHECK-NEXT:    vmsltu.vx v16, v16, t0
-; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
-; CHECK-NEXT:    addi a4, sp, 16
+; CHECK-NEXT:    vsetvli zero, a5, e64, m8, ta, ma
 ; CHECK-NEXT:    vadd.vx v8, v8, a2
 ; CHECK-NEXT:    vmsltu.vx v17, v8, t0
-; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
-; CHECK-NEXT:    vl8r.v v8, (a4) # Unknown-size Folded Reload
+; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
+; CHECK-NEXT:    vl8r.v v8, (a3) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vadd.vx v8, v8, a2
 ; CHECK-NEXT:    add a2, a1, a1
 ; CHECK-NEXT:    vmsltu.vx v18, v8, t0

@@ -49,7 +49,7 @@ define void @s172(i32 noundef %xa, i32 noundef %xb, ptr noundef %a, ptr noundef 
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[TMP19:%.*]] = mul nuw i64 [[INDEX]], [[TMP1]]
+; CHECK-NEXT:    [[TMP19:%.*]] = mul nuw nsw i64 [[INDEX]], [[TMP1]]
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = add i64 [[TMP19]], [[TMP0]]
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[OFFSET_IDX]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = getelementptr inbounds nuw i8, ptr [[TMP20]], i64 16

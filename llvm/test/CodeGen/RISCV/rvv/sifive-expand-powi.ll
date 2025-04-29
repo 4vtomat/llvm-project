@@ -8,16 +8,17 @@ declare <vscale x 1 x float> @llvm.vp.powi.nxv1f32.i32(<vscale x 1 x float>, i32
 define <vscale x 1 x float> @foo(<vscale x 1 x float> %a, i32 %b, <vscale x 1 x i1> %m, i32 %evl) {
 ; RV32-LABEL: foo:
 ; RV32:       # %bb.0: # %entry
+; RV32-NEXT:    vsetvli a2, zero, e32, mf2, ta, ma
+; RV32-NEXT:    vmv1r.v v9, v8
 ; RV32-NEXT:    lui a2, 260096
-; RV32-NEXT:    vsetvli a3, zero, e32, mf2, ta, ma
-; RV32-NEXT:    vmv.v.x v9, a2
+; RV32-NEXT:    vmv.v.x v8, a2
 ; RV32-NEXT:    mv a2, a0
 ; RV32-NEXT:    j .LBB0_2
 ; RV32-NEXT:  .LBB0_1: # %powi-expansion-loop
 ; RV32-NEXT:    # in Loop: Header=BB0_2 Depth=1
 ; RV32-NEXT:    srli a2, a2, 1
 ; RV32-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
-; RV32-NEXT:    vfmul.vv v8, v8, v8
+; RV32-NEXT:    vfmul.vv v9, v9, v9
 ; RV32-NEXT:    beqz a2, .LBB0_4
 ; RV32-NEXT:  .LBB0_2: # %powi-expansion-loop
 ; RV32-NEXT:    # =>This Inner Loop Header: Depth=1
@@ -25,25 +26,25 @@ define <vscale x 1 x float> @foo(<vscale x 1 x float> %a, i32 %b, <vscale x 1 x 
 ; RV32-NEXT:    beqz a3, .LBB0_1
 ; RV32-NEXT:  # %bb.3: # in Loop: Header=BB0_2 Depth=1
 ; RV32-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
-; RV32-NEXT:    vfmul.vv v9, v9, v8
+; RV32-NEXT:    vfmul.vv v8, v8, v9
 ; RV32-NEXT:    j .LBB0_1
 ; RV32-NEXT:  .LBB0_4: # %powi-post-loop
-; RV32-NEXT:    lui a1, 260096
-; RV32-NEXT:    fmv.w.x fa5, a1
-; RV32-NEXT:    vfrdiv.vf v8, v9, fa5, v0.t
-; RV32-NEXT:    bltz a0, .LBB0_6
-; RV32-NEXT:  # %bb.5: # %powi-post-loop
-; RV32-NEXT:    vmv1r.v v8, v9
+; RV32-NEXT:    bgez a0, .LBB0_6
+; RV32-NEXT:  # %bb.5:
+; RV32-NEXT:    lui a0, 260096
+; RV32-NEXT:    fmv.w.x fa5, a0
+; RV32-NEXT:    vfrdiv.vf v8, v8, fa5, v0.t
 ; RV32-NEXT:  .LBB0_6: # %powi-post-loop
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: foo:
 ; RV64:       # %bb.0: # %entry
+; RV64-NEXT:    vsetvli a2, zero, e32, mf2, ta, ma
+; RV64-NEXT:    vmv1r.v v9, v8
 ; RV64-NEXT:    lui a2, 260096
 ; RV64-NEXT:    sext.w a0, a0
 ; RV64-NEXT:    slli a1, a1, 32
-; RV64-NEXT:    vsetvli a3, zero, e32, mf2, ta, ma
-; RV64-NEXT:    vmv.v.x v9, a2
+; RV64-NEXT:    vmv.v.x v8, a2
 ; RV64-NEXT:    srli a1, a1, 32
 ; RV64-NEXT:    mv a2, a0
 ; RV64-NEXT:    j .LBB0_2
@@ -51,7 +52,7 @@ define <vscale x 1 x float> @foo(<vscale x 1 x float> %a, i32 %b, <vscale x 1 x 
 ; RV64-NEXT:    # in Loop: Header=BB0_2 Depth=1
 ; RV64-NEXT:    srliw a2, a2, 1
 ; RV64-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
-; RV64-NEXT:    vfmul.vv v8, v8, v8
+; RV64-NEXT:    vfmul.vv v9, v9, v9
 ; RV64-NEXT:    beqz a2, .LBB0_4
 ; RV64-NEXT:  .LBB0_2: # %powi-expansion-loop
 ; RV64-NEXT:    # =>This Inner Loop Header: Depth=1
@@ -59,15 +60,14 @@ define <vscale x 1 x float> @foo(<vscale x 1 x float> %a, i32 %b, <vscale x 1 x 
 ; RV64-NEXT:    beqz a3, .LBB0_1
 ; RV64-NEXT:  # %bb.3: # in Loop: Header=BB0_2 Depth=1
 ; RV64-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
-; RV64-NEXT:    vfmul.vv v9, v9, v8
+; RV64-NEXT:    vfmul.vv v8, v8, v9
 ; RV64-NEXT:    j .LBB0_1
 ; RV64-NEXT:  .LBB0_4: # %powi-post-loop
-; RV64-NEXT:    lui a1, 260096
-; RV64-NEXT:    fmv.w.x fa5, a1
-; RV64-NEXT:    vfrdiv.vf v8, v9, fa5, v0.t
-; RV64-NEXT:    bltz a0, .LBB0_6
-; RV64-NEXT:  # %bb.5: # %powi-post-loop
-; RV64-NEXT:    vmv1r.v v8, v9
+; RV64-NEXT:    bgez a0, .LBB0_6
+; RV64-NEXT:  # %bb.5:
+; RV64-NEXT:    lui a0, 260096
+; RV64-NEXT:    fmv.w.x fa5, a0
+; RV64-NEXT:    vfrdiv.vf v8, v8, fa5, v0.t
 ; RV64-NEXT:  .LBB0_6: # %powi-post-loop
 ; RV64-NEXT:    ret
 entry:

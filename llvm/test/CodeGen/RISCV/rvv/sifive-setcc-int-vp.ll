@@ -885,11 +885,11 @@ define <vscale x 16 x i1> @icmp_uge_vx_nxv16i64(<vscale x 16 x i64> %va, i64 %b,
 ; RV64-NEXT:    slli a2, a2, 3
 ; RV64-NEXT:    add a2, sp, a2
 ; RV64-NEXT:    addi a2, a2, 16
-; RV64-NEXT:    vl8r.v v24, (a2) # Unknown-size Folded Reload
-; RV64-NEXT:    addi a2, sp, 16
 ; RV64-NEXT:    vl8r.v v8, (a2) # Unknown-size Folded Reload
+; RV64-NEXT:    addi a2, sp, 16
+; RV64-NEXT:    vl8r.v v24, (a2) # Unknown-size Folded Reload
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
-; RV64-NEXT:    vmsleu.vv v0, v24, v8, v0.t
+; RV64-NEXT:    vmsleu.vv v0, v8, v24, v0.t
 ; RV64-NEXT:    add a1, a0, a0
 ; RV64-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
 ; RV64-NEXT:    vslideup.vx v0, v16, a0
@@ -1662,11 +1662,11 @@ define <vscale x 16 x i1> @icmp_sge_vx_nxv16i64(<vscale x 16 x i64> %va, i64 %b,
 ; RV64-NEXT:    slli a2, a2, 3
 ; RV64-NEXT:    add a2, sp, a2
 ; RV64-NEXT:    addi a2, a2, 16
-; RV64-NEXT:    vl8r.v v24, (a2) # Unknown-size Folded Reload
-; RV64-NEXT:    addi a2, sp, 16
 ; RV64-NEXT:    vl8r.v v8, (a2) # Unknown-size Folded Reload
+; RV64-NEXT:    addi a2, sp, 16
+; RV64-NEXT:    vl8r.v v24, (a2) # Unknown-size Folded Reload
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
-; RV64-NEXT:    vmsle.vv v0, v24, v8, v0.t
+; RV64-NEXT:    vmsle.vv v0, v8, v24, v0.t
 ; RV64-NEXT:    add a1, a0, a0
 ; RV64-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
 ; RV64-NEXT:    vslideup.vx v0, v16, a0
@@ -2254,11 +2254,11 @@ define <vscale x 16 x i1> @icmp_sle_vx_swap_nxv16i64(<vscale x 16 x i64> %va, i6
 ; RV64-NEXT:    slli a2, a2, 3
 ; RV64-NEXT:    add a2, sp, a2
 ; RV64-NEXT:    addi a2, a2, 16
-; RV64-NEXT:    vl8r.v v24, (a2) # Unknown-size Folded Reload
-; RV64-NEXT:    addi a2, sp, 16
 ; RV64-NEXT:    vl8r.v v8, (a2) # Unknown-size Folded Reload
+; RV64-NEXT:    addi a2, sp, 16
+; RV64-NEXT:    vl8r.v v24, (a2) # Unknown-size Folded Reload
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
-; RV64-NEXT:    vmsle.vv v0, v24, v8, v0.t
+; RV64-NEXT:    vmsle.vv v0, v8, v24, v0.t
 ; RV64-NEXT:    add a1, a0, a0
 ; RV64-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
 ; RV64-NEXT:    vslideup.vx v0, v16, a0

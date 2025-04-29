@@ -2145,7 +2145,7 @@ define void @vtrn_f32(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-NEXT:    vmv1r.v v9, v8
 ; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vslideup.vi v9, v10, 1
-; CHECK-NEXT:    vrgather.vi v10, v8, 1, v0.t
+; CHECK-NEXT:    vslidedown.vi v10, v8, 1, v0.t
 ; CHECK-NEXT:    vsseg2e32.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -2189,7 +2189,7 @@ define void @vtrn_s32(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-NEXT:    vmv1r.v v9, v8
 ; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vslideup.vi v9, v10, 1
-; CHECK-NEXT:    vrgather.vi v10, v8, 1, v0.t
+; CHECK-NEXT:    vslidedown.vi v10, v8, 1, v0.t
 ; CHECK-NEXT:    vsseg2e32.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -2258,7 +2258,7 @@ define void @vtrn_u32(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-NEXT:    vmv1r.v v9, v8
 ; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vslideup.vi v9, v10, 1
-; CHECK-NEXT:    vrgather.vi v10, v8, 1, v0.t
+; CHECK-NEXT:    vslidedown.vi v10, v8, 1, v0.t
 ; CHECK-NEXT:    vsseg2e32.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -2531,7 +2531,7 @@ define void @vuzp_f32(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-NEXT:    vmv1r.v v9, v8
 ; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vslideup.vi v9, v10, 1
-; CHECK-NEXT:    vrgather.vi v10, v8, 1, v0.t
+; CHECK-NEXT:    vslidedown.vi v10, v8, 1, v0.t
 ; CHECK-NEXT:    vsseg2e32.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -2579,7 +2579,7 @@ define void @vuzp_s32(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-NEXT:    vmv1r.v v9, v8
 ; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vslideup.vi v9, v10, 1
-; CHECK-NEXT:    vrgather.vi v10, v8, 1, v0.t
+; CHECK-NEXT:    vslidedown.vi v10, v8, 1, v0.t
 ; CHECK-NEXT:    vsseg2e32.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -2654,7 +2654,7 @@ define void @vuzp_u32(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-NEXT:    vmv1r.v v9, v8
 ; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vslideup.vi v9, v10, 1
-; CHECK-NEXT:    vrgather.vi v10, v8, 1, v0.t
+; CHECK-NEXT:    vslidedown.vi v10, v8, 1, v0.t
 ; CHECK-NEXT:    vsseg2e32.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -2954,7 +2954,7 @@ define void @vzip_f32(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-NEXT:    vmv1r.v v9, v8
 ; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vslideup.vi v9, v10, 1
-; CHECK-NEXT:    vrgather.vi v10, v8, 1, v0.t
+; CHECK-NEXT:    vslidedown.vi v10, v8, 1, v0.t
 ; CHECK-NEXT:    vsseg2e32.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -3008,7 +3008,7 @@ define void @vzip_s32(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-NEXT:    vmv1r.v v9, v8
 ; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vslideup.vi v9, v10, 1
-; CHECK-NEXT:    vrgather.vi v10, v8, 1, v0.t
+; CHECK-NEXT:    vslidedown.vi v10, v8, 1, v0.t
 ; CHECK-NEXT:    vsseg2e32.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -3096,7 +3096,7 @@ define void @vzip_u32(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-NEXT:    vmv1r.v v9, v8
 ; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vslideup.vi v9, v10, 1
-; CHECK-NEXT:    vrgather.vi v10, v8, 1, v0.t
+; CHECK-NEXT:    vslidedown.vi v10, v8, 1, v0.t
 ; CHECK-NEXT:    vsseg2e32.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:

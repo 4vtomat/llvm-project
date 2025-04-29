@@ -35,7 +35,7 @@ define void @vpmax_s32(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vmv1r.v v10, v8
 ; CHECK-NEXT:    vslideup.vi v10, v9, 1
-; CHECK-NEXT:    vrgather.vi v9, v8, 1, v0.t
+; CHECK-NEXT:    vslidedown.vi v9, v8, 1, v0.t
 ; CHECK-NEXT:    vmax.vv v8, v10, v9
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
@@ -106,7 +106,7 @@ define void @vpmax_u32(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vmv1r.v v10, v8
 ; CHECK-NEXT:    vslideup.vi v10, v9, 1
-; CHECK-NEXT:    vrgather.vi v9, v8, 1, v0.t
+; CHECK-NEXT:    vslidedown.vi v9, v8, 1, v0.t
 ; CHECK-NEXT:    vmaxu.vv v8, v10, v9
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
@@ -329,7 +329,7 @@ define void @vpmin_s32(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vmv1r.v v10, v8
 ; CHECK-NEXT:    vslideup.vi v10, v9, 1
-; CHECK-NEXT:    vrgather.vi v9, v8, 1, v0.t
+; CHECK-NEXT:    vslidedown.vi v9, v8, 1, v0.t
 ; CHECK-NEXT:    vmin.vv v8, v10, v9
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
@@ -400,7 +400,7 @@ define void @vpmin_u32(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vmv1r.v v10, v8
 ; CHECK-NEXT:    vslideup.vi v10, v9, 1
-; CHECK-NEXT:    vrgather.vi v9, v8, 1, v0.t
+; CHECK-NEXT:    vslidedown.vi v9, v8, 1, v0.t
 ; CHECK-NEXT:    vminu.vv v8, v10, v9
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret

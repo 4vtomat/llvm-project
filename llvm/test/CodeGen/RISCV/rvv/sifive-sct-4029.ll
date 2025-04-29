@@ -4,8 +4,9 @@
 define i32 @main() {
 ; CHECK-LABEL: main:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli a0, zero, e32, m4, ta, ma
+; CHECK-NEXT:    vsetivli zero, 0, e8, m1, ta, ma
 ; CHECK-NEXT:    vmclr.m v0
+; CHECK-NEXT:    vsetvli a0, zero, e32, m4, ta, ma
 ; CHECK-NEXT:    vmv.v.i v12, 0
 ; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v16, 1
