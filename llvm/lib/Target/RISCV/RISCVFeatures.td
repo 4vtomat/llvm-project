@@ -1369,7 +1369,7 @@ def FeatureVendorXSfmm32a
 def FeatureVendorXSfmm64a64f
     : RISCVExtension<0, 6,
                      "(TEW=64-bit accumulation) operands - float: fp64",
-                     [FeatureVendorXSfmmbase, FeatureStdExtZve64f]>;
+                     [FeatureVendorXSfmmbase, FeatureStdExtZve64d]>;
 def HasVendorXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f
     : Predicate<"Subtarget->hasVendorXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f()">,
                 AssemblerPredicate<(any_of FeatureVendorXSfmm32a16f,
