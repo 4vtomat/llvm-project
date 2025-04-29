@@ -1173,6 +1173,7 @@ Experimental extensions
     zalasr               0.1
     zjid                 0.0
     zvbc32e              0.7
+    zvfofp4min           0.1
     zvfofp8min           0.2
     zvkgs                0.7
     smctr                1.0

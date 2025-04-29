@@ -1665,6 +1665,14 @@
 // CHECK-MIN-XSFMM-TE-16: __riscv_min_xsfmm_te  16{{$}}
 
 // RUN: %clang --target=riscv32 -menable-experimental-extensions \
+// RUN:   -march=rv32i_zvfofp4min0p1 -E -dM %s \
+// RUN:   -o - | FileCheck --check-prefix=CHECK-ZVFOFP4MIN-EXT %s
+// RUN: %clang --target=riscv64 -menable-experimental-extensions \
+// RUN:   -march=rv64i_zvfofp4min0p1 -E -dM %s \
+// RUN:   -o - | FileCheck --check-prefix=CHECK-ZVFOFP4MIN-EXT %s
+// CHECK-ZVFOFP4MIN-EXT: __riscv_zvfofp4min 1000{{$}}
+
+// RUN: %clang --target=riscv32 -menable-experimental-extensions \
 // RUN:   -march=rv32i_zvfofp8min0p2 -E -dM %s \
 // RUN:   -o - | FileCheck --check-prefix=CHECK-ZVFOFP8MIN-EXT %s
 // RUN: %clang --target=riscv64 -menable-experimental-extensions \

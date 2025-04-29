@@ -734,6 +734,14 @@ def HasStdExtZvfbfminOrZvfofp8min
     : Predicate<"Subtarget->hasStdExtZvfbfmin() || Subtarget->hasStdExtZvfofp8min()">,
       AssemblerPredicate<(any_of FeatureStdExtZvfbfmin, FeatureStdExtZvfofp8min),
                          "'Zvfbfmin' or 'Zvfofp8min'">;
+
+def FeatureStdExtZvfofp4min
+    : RISCVExperimentalExtension<0, 1, "OFP4 conversion extension Zvfofp4min",
+                                 [FeatureStdExtZve32f]>;
+def HasStdExtZvfofp4min
+    : Predicate<"Subtarget->hasStdExtZvfofp4min()">,
+      AssemblerPredicate<(all_of FeatureStdExtZvfofp4min),
+                          "'Zvfofp4min' (OFP4 conversion extension Zvfofp4min)">;
 #endif // SIFIVE_CUSTOMIZATION
 
 // Vector Cryptography and Bitmanip Extensions
