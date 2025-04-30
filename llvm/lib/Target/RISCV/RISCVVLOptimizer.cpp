@@ -1372,6 +1372,13 @@ RISCVVLOptimizer::checkUsers(const MachineInstr &MI) const {
     // If the operand is used as a scalar operand, then the EEW must be
     // compatible. Otherwise, the EMUL *and* EEW must be compatible.
     bool IsVectorOpUsedAsScalarOp = isVectorOpUsedAsScalarOp(UserOp);
+
+#ifdef SIFIVE_CUSTOMIZATION
+    if (!IsVectorOpUsedAsScalarOp &&
+        (!ConsumerInfo->EMUL || !ProducerInfo->EMUL))
+      return std::nullopt;
+#endif // SIFIVE_CUSTOMIZATION
+
     if ((IsVectorOpUsedAsScalarOp &&
          !OperandInfo::EEWAreEqual(*ConsumerInfo, *ProducerInfo)) ||
         (!IsVectorOpUsedAsScalarOp &&
