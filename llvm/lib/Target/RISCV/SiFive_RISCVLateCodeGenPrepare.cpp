@@ -134,6 +134,7 @@ public:
   bool visitZExtInst(ZExtInst &I);
   bool optimizeZExtWUses(ZExtInst &I);
   bool visitAnd(BinaryOperator &BO);
+  bool visitMul(BinaryOperator &BO);
   bool visitXor(BinaryOperator &BO);
   bool optimizeAndUses(BinaryOperator &BO);
   bool visitICmp(ICmpInst &ICmp);
@@ -1310,6 +1311,77 @@ bool RISCVLateCodeGenPrepare::expandMemIntrinsic(MemIntrinsic *MI) {
   return true;
 }
 
+// Look for (mul (zext X), (splat Y)) where zext is doubling the
+// element size and Y is known to be zero extended. Replace with
+// (mul (zext X), (zext (splat (trunc Y)))) to encourage the use of
+// widening multiply. Only do this if the splat isn't already in the same
+// basic block as the mul. We put the zext with the mul and the new
+// splat and trunc in basic block with the original splat.
+bool RISCVLateCodeGenPrepare::visitMul(BinaryOperator &BO) {
+  if (!ST->hasVInstructions() || ST->sinkSplatOperands())
+    return false;
+
+  Value *LHS = BO.getOperand(0);
+  Value *RHS = BO.getOperand(1);
+
+  // Canonicalize zext to the LHS.
+  if (isa<ZExtInst>(RHS))
+    std::swap(LHS, RHS);
+
+  // LHS should be a zext.
+  Value *ZExtSrc;
+  if (!match(LHS, m_ZExt(m_Value(ZExtSrc))))
+    return false;
+
+  // zext should be in the same basic block as the mul.
+  if (cast<Instruction>(LHS)->getParent() != BO.getParent())
+    return false;
+
+  // The extend should be doubling.
+  unsigned Size = BO.getType()->getScalarSizeInBits();
+  unsigned SrcSize = ZExtSrc->getType()->getScalarSizeInBits();
+  if (Size != SrcSize * 2)
+    return false;
+
+  // Types should be legal.
+  if (Size != 64 && Size != 32 && Size != 16)
+    return false;
+  if (Size == 64 && !ST->hasVInstructionsI64())
+    return false;
+
+  // RHS should be a splat shuffle.
+  Value *SplatVal;
+  if (!match(RHS, m_OneUse(m_Shuffle(
+                      m_InsertElt(m_Undef(), m_Value(SplatVal), m_ZeroInt()),
+                      m_Undef(), m_ZeroMask()))))
+    return false;
+
+  auto *RHSI = cast<Instruction>(RHS);
+
+  // Splat should be in another basic block.
+  if (RHSI->getParent() == BO.getParent())
+    return false;
+
+  // Make sure we can freely truncate the value.
+  KnownBits Known = computeKnownBits(SplatVal, *DL);
+  if (Known.countMaxActiveBits() > SrcSize)
+    return false;
+
+  VectorType *VecTy = cast<VectorType>(ZExtSrc->getType());
+  Type *ScalarTy = VecTy->getElementType();
+  IRBuilder<> Builder(RHSI);
+  Value *Splat = Builder.CreateVectorSplat(
+      VecTy->getElementCount(), Builder.CreateTrunc(SplatVal, ScalarTy));
+
+  Builder.SetInsertPoint(&BO);
+  Value *NewZExt = Builder.CreateZExt(Splat, BO.getType());
+
+  RHSI->replaceAllUsesWith(NewZExt);
+  RHSI->eraseFromParent();
+
+  return true;
+}
+
 // Look for (vp_mul (vp_zext X), (splat Y)) where vp_zext is doubling the
 // element size and Y is known to be zero extended. Replace with
 // (vp_mul (vp_zext X), (vp_zext (splat (trunc Y)))) to encourage the use of
@@ -1317,7 +1389,7 @@ bool RISCVLateCodeGenPrepare::expandMemIntrinsic(MemIntrinsic *MI) {
 // basic block as the vp_mul. We put the vp_zext with the vp_mul and the new
 // splat and trunc in basic block with the original splat.
 bool RISCVLateCodeGenPrepare::visitIntrinsicInst(IntrinsicInst &I) {
-  if (!ST->hasVInstructions())
+  if (!ST->hasVInstructions() || ST->sinkSplatOperands())
     return false;
 
   if (I.getIntrinsicID() != Intrinsic::vp_mul)
