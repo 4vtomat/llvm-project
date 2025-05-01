@@ -573,6 +573,11 @@ void RISCVAsmPrinter::emitStartOfAsmFile(Module &M) {
 
     RTS.setFlagsFromFeatures(SubtargetInfo);
   }
+#if SIFIVE_CUSTOMIZATION
+  // We need this be correct set when emit the gnu property note.
+  else
+    RTS.setFlagsFromFeatures(SubtargetInfo);
+#endif // SIFIVE_CUSTOMIZATION
 
   if (TM.getTargetTriple().isOSBinFormatELF())
     emitAttributes(SubtargetInfo);
@@ -622,8 +627,23 @@ void RISCVAsmPrinter::emitEndOfAsmFile(Module &M) {
     emitCompactStub();
 
   unsigned GNUNoteFlags = 0;
-  if (RTS.hasZicfilp() && M.getModuleFlag("cf-protection-branch"))
-    GNUNoteFlags |= ELF::GNU_PROPERTY_RISCV_FEATURE_1_CFI_LP_UNLABELED;
+  if (RTS.hasZicfilp() && M.getModuleFlag("cf-protection-branch")) {
+
+    const MDString *LabelScheme =
+        dyn_cast_or_null<MDString>(M.getModuleFlag("cf-branch-label-scheme"));
+    if (!LabelScheme)
+      report_fatal_error("cf-branch-label-scheme is not specified but "
+                         "cf-protection-branch is enabled");
+
+    if (LabelScheme->getString() == "unlabeled")
+      GNUNoteFlags |= ELF::GNU_PROPERTY_RISCV_FEATURE_1_CFI_LP_UNLABELED;
+    else if (LabelScheme->getString() == "fixed-one")
+      GNUNoteFlags |= ELF::GNU_PROPERTY_RISCV_FEATURE_1_CFI_LP_FUNC_SIG;
+    else if (LabelScheme->getString() == "func-sig")
+      GNUNoteFlags |= ELF::GNU_PROPERTY_RISCV_FEATURE_1_CFI_LP_FUNC_SIG;
+    else
+      report_fatal_error("Unknown value for cf-branch-label-scheme");
+  }
 
   if (RTS.hasZicfiss() && M.getModuleFlag("cf-protection-return"))
     GNUNoteFlags |= ELF::GNU_PROPERTY_RISCV_FEATURE_1_CFI_SS;

@@ -734,6 +734,14 @@ def HasStdExtZvfbfminOrZvfofp8min
     : Predicate<"Subtarget->hasStdExtZvfbfmin() || Subtarget->hasStdExtZvfofp8min()">,
       AssemblerPredicate<(any_of FeatureStdExtZvfbfmin, FeatureStdExtZvfofp8min),
                          "'Zvfbfmin' or 'Zvfofp8min'">;
+
+def FeatureStdExtZvfofp4min
+    : RISCVExperimentalExtension<0, 1, "OFP4 conversion extension Zvfofp4min",
+                                 [FeatureStdExtZve32f]>;
+def HasStdExtZvfofp4min
+    : Predicate<"Subtarget->hasStdExtZvfofp4min()">,
+      AssemblerPredicate<(all_of FeatureStdExtZvfofp4min),
+                          "'Zvfofp4min' (OFP4 conversion extension Zvfofp4min)">;
 #endif // SIFIVE_CUSTOMIZATION
 
 // Vector Cryptography and Bitmanip Extensions
@@ -1394,7 +1402,7 @@ def FeatureVendorXSfmm32a
 def FeatureVendorXSfmm64a64f
     : RISCVExtension<0, 6,
                      "(TEW=64-bit accumulation) operands - float: fp64",
-                     [FeatureVendorXSfmmbase, FeatureStdExtZve64f]>;
+                     [FeatureVendorXSfmmbase, FeatureStdExtZve64d]>;
 def HasVendorXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f
     : Predicate<"Subtarget->hasVendorXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f()">,
                 AssemblerPredicate<(any_of FeatureVendorXSfmm32a16f,

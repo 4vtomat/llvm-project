@@ -1352,8 +1352,28 @@ AliasResult BasicAAResult::aliasGEP(
         isKnownNonEqual(Var0.Val.V, Var1.Val.V,
                         SimplifyQuery(DL, DT, &AC, /*CxtI=*/Var0.CxtI
                                                        ? Var0.CxtI
-                                                       : Var1.CxtI)))
-      MinAbsVarIndex = Var0.Scale.abs();
+#if SIFIVE_CUSTOMIZATION
+                                                       : Var1.CxtI))) {
+      // Check if abs(V*Scale) >= abs(Scale) holds in the presence of
+      // potentially wrapping math.
+      auto MultiplyByScaleNoWrap = [](const VariableGEPIndex &Var) {
+        if (Var.IsNSW)
+          return true;
+
+        int ValOrigBW = Var.Val.V->getType()->getPrimitiveSizeInBits();
+        // If Scale is small enough so that abs(V*Scale) >= abs(Scale) holds.
+        // The max value of abs(V) is 2^ValOrigBW - 1. Multiplying with a
+        // constant smaller than 2^(bitwidth(Val) - ValOrigBW) won't wrap.
+        int MaxScaleValueBW = Var.Val.getBitWidth() - ValOrigBW;
+        if (MaxScaleValueBW <= 0)
+          return false;
+        return Var.Scale.ule(
+            APInt::getMaxValue(MaxScaleValueBW).zext(Var.Scale.getBitWidth()));
+      };
+      if (MultiplyByScaleNoWrap(Var0) && MultiplyByScaleNoWrap(Var1))
+        MinAbsVarIndex = Var0.Scale.abs();
+    }
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   if (MinAbsVarIndex) {

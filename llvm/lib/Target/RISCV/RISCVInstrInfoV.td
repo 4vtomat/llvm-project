@@ -1847,5 +1847,10 @@ let Predicates = [HasVInstructionsI64, IsRV64] in {
   }
 } // Predicates = [HasVInstructionsI64, IsRV64]
 
+#ifdef SIFIVE_CUSTOMIZATION
+let Predicates = [HasStdExtZvfofp4min] in
+  defm VFEXT_VF2 : VALU_MV_VS2<"vfext.vf2", 0b010010, 0b10110>;
+#endif // SIFIVE_CUSTOMIZATION
+
 include "RISCVInstrInfoZvfbf.td"
 include "RISCVInstrInfoVPseudos.td"
