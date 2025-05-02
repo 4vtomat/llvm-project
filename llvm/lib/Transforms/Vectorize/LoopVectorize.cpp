@@ -9733,6 +9733,10 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
   // cost model is complete for better cost estimates.
   VPlanTransforms::runPass(VPlanTransforms::unrollByUF, BestVPlan, BestUF,
                            OrigLoop->getHeader()->getContext());
+#if SIFIVE_CUSTOMIZATION
+  if (!BestVPlan.useVLAVectorizer() || !Legal->getLAI() ||
+      Legal->isSafeForAnyVectorWidth())
+#endif // SIFIVE_CUSTOMIZATION
   VPlanTransforms::optimizeForVFAndUF(BestVPlan, BestVF, BestUF, PSE);
   VPlanTransforms::simplifyRecipes(BestVPlan, *Legal->getWidestInductionType());
   VPlanTransforms::removeDeadRecipes(BestVPlan);
