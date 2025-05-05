@@ -593,6 +593,13 @@ bool RISCVVectorPeephole::foldUndefPassthruVMV_V_V(MachineInstr &MI) {
 
   MRI->replaceRegWith(MI.getOperand(0).getReg(), MI.getOperand(2).getReg());
   MI.eraseFromParent();
+  
+#ifdef SIFIVE_CUSTOMIZATION
+  // FIXME: Track the real liveness
+  for (MachineOperand &Use : MRI->use_operands(MI.getOperand(2).getReg()))
+    Use.setIsKill(false);
+#endif // SIFIVE_CUSTOMIZATION
+
   return true;
 }
 
@@ -670,6 +677,12 @@ bool RISCVVectorPeephole::foldVMV_V_V(MachineInstr &MI) {
 
   MRI->replaceRegWith(MI.getOperand(0).getReg(), Src->getOperand(0).getReg());
   MI.eraseFromParent();
+
+#ifdef SIFIVE_CUSTOMIZATION
+  // FIXME: Track the real liveness
+  for (MachineOperand &Use : MRI->use_operands(Src->getOperand(0).getReg()))
+    Use.setIsKill(false);
+#endif // SIFIVE_CUSTOMIZATION
 
   return true;
 }
