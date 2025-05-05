@@ -565,6 +565,14 @@ bool RISCVVectorPeephole::foldUndefPassthruVMV_V_V(MachineInstr &MI) {
   if (MI.getOperand(1).getReg() != RISCV::NoRegister)
     return false;
 
+#ifdef SIFIVE_CUSTOMIZATION
+  // TODO: I think upstream has same problem
+  const TargetRegisterClass *RC1 = MRI->getRegClass(MI.getOperand(0).getReg());
+  const TargetRegisterClass *RC2 = MRI->getRegClass(MI.getOperand(2).getReg());
+  if (!RC1->hasSubClassEq(RC2))
+    return false;
+#endif // SIFIVE_CUSTOMIZATION
+
   // If the input was a pseudo with a policy operand, we can give it a tail
   // agnostic policy if MI's undef tail subsumes the input's.
   MachineInstr *Src = MRI->getVRegDef(MI.getOperand(2).getReg());
@@ -606,6 +614,14 @@ bool RISCVVectorPeephole::foldVMV_V_V(MachineInstr &MI) {
 
   if (!MRI->hasOneUse(MI.getOperand(2).getReg()))
     return false;
+
+  #ifdef SIFIVE_CUSTOMIZATION
+    // TODO: I think upstream has same problem
+    const TargetRegisterClass *RC1 = MRI->getRegClass(MI.getOperand(0).getReg());
+    const TargetRegisterClass *RC2 = MRI->getRegClass(MI.getOperand(2).getReg());
+    if (!RC1->hasSubClassEq(RC2))
+      return false;
+  #endif // SIFIVE_CUSTOMIZATION
 
   MachineInstr *Src = MRI->getVRegDef(MI.getOperand(2).getReg());
   if (!Src || Src->hasUnmodeledSideEffects() ||
