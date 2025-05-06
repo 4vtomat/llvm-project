@@ -721,7 +721,6 @@ DecodeStatus RISCVDisassembler::getInstruction32(MCInst &MI, uint64_t &Size,
                         DecoderTableXTHeadSync32, "XTHeadSync");
   TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXTHeadVdot,
                         DecoderTableXTHeadVdot32, "XTHeadVdot");
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   TRY_TO_DECODE_FEATURE(RISCV::FeatureStdExtZjid, DecoderTableRVZjid32,
                         "Zjid (I/D Cache Synchronization)");
@@ -743,32 +742,10 @@ DecodeStatus RISCVDisassembler::getInstruction32(MCInst &MI, uint64_t &Size,
   TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfsci, DecoderTableXSfsci32,
                         "SiFive SCI");
 #endif // SIFIVE_CUSTOMIZATION
-  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfvcp, DecoderTableXSfvcp32,
-                        "SiFive VCIX");
-  TRY_TO_DECODE_FEATURE(
-      RISCV::FeatureVendorXSfvqmaccdod, DecoderTableXSfvqmaccdod32,
-      "SiFive Matrix Multiplication (2x8 and 8x2) Instruction");
-  TRY_TO_DECODE_FEATURE(
-      RISCV::FeatureVendorXSfvqmaccqoq, DecoderTableXSfvqmaccqoq32,
-      "SiFive Matrix Multiplication (4x8 and 8x4) Instruction");
-  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfvfwmaccqqq,
-                        DecoderTableXSfvfwmaccqqq32,
-                        "SiFive Matrix Multiplication Instruction");
-  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfvfnrclipxfqf,
-                        DecoderTableXSfvfnrclipxfqf32,
-                        "SiFive FP32-to-int8 Ranged Clip Instructions");
-  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSiFivecdiscarddlone,
-                        DecoderTableXSiFivecdiscarddlone32,
-                        "SiFive sf.cdiscard.d.l1");
-  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSiFivecflushdlone,
-                        DecoderTableXSiFivecflushdlone32,
-                        "SiFive sf.cflush.d.l1");
-=======
   TRY_TO_DECODE_FEATURE_ANY(XSfVectorGroup, DecoderTableXSfvector32,
                             "SiFive vector extensions");
   TRY_TO_DECODE_FEATURE_ANY(XSfSystemGroup, DecoderTableXSfsystem32,
                             "SiFive system extensions");
->>>>>>> 6c2e170d043d3a7d7b32635e887cfd255ef5c2ce
   TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfcease, DecoderTableXSfcease32,
                         "SiFive sf.cease");
   TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXMIPSLSP, DecoderTableXmipslsp32,

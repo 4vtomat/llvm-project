@@ -274,7 +274,6 @@ let Predicates = [HasVendorXSfvcp], mayLoad = 0, mayStore = 0,
   defm FVW : CustomSiFiveVCIX<"fvw", VCIX_XVW, VR,    VR,    FPR32>, Sched<[]>;
 }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 let Predicates = [HasVendorXSfvfexpAny], DecoderNamespace = "XSfvfexp" in {
   def VFEXP_V : VALUVs2<0b010011, 0b00111, OPFVV, "sf.vfexp.v">;
@@ -285,10 +284,7 @@ let Predicates = [HasVendorXSfvfexpa], DecoderNamespace = "XSfvfexpa" in {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-let Predicates = [HasVendorXSfvqmaccdod], DecoderNamespace = "XSfvqmaccdod",
-=======
 let Predicates = [HasVendorXSfvqmaccdod], DecoderNamespace = "XSfvector",
->>>>>>> 6c2e170d043d3a7d7b32635e887cfd255ef5c2ce
     DestEEW = EEWSEWx4, RVVConstraint=VS2Constraint in {
   def VQMACCU_2x8x2  : CustomSiFiveVMACC<0b101100, OPMVV, "sf.vqmaccu.2x8x2">;
   def VQMACC_2x8x2   : CustomSiFiveVMACC<0b101101, OPMVV, "sf.vqmacc.2x8x2">;
