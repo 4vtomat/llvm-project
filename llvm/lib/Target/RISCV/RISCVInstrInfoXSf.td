@@ -1119,7 +1119,8 @@ let Predicates = [HasVendorXSfcease] in {
       DecoderNamespace = "XSfcease" in
   def SF_CEASE : Priv<"sf.cease", 0b0011000>, Sched<[]> {
     let rd = 0b00000;
-<<<<<<< HEAD
+    let rs1 = 0b00000;
+    let rs2 = 0b00101;
   }
 }
 
@@ -1462,10 +1463,6 @@ defm PseudoVFWADD_ALT : VPseudoVFWALU_VV_VF_RM<IsBF16=1>;
 defm PseudoVFWSUB_ALT : VPseudoVFWALU_VV_VF_RM<IsBF16=1>;
 defm PseudoVFWADD_ALT : VPseudoVFWALU_WV_WF_RM<IsBF16=1>;
 defm PseudoVFWSUB_ALT : VPseudoVFWALU_WV_WF_RM<IsBF16=1>;
-=======
-    let rs1 = 0b00000;
-    let rs2 = 0b00101;
->>>>>>> 6c2e170d043d3a7d7b32635e887cfd255ef5c2ce
 }
 }
 
