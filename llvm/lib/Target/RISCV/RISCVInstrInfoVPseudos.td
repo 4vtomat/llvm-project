@@ -1290,12 +1290,8 @@ class VPseudoBinaryMaskPolicyRoundingMode<VReg RetClass,
   let UsesMaskPolicy = 1;
   let HasRoundModeOp = 1;
   let UsesVXRM = UsesVXRM_;
-<<<<<<< HEAD
   let hasPostISelHook = 1; // SIFIVE
-=======
-  let hasPostISelHook = !not(UsesVXRM_);
   let IncludeInInversePseudoTable = 0;
->>>>>>> 6c2e170d043d3a7d7b32635e887cfd255ef5c2ce
 }
 
 // Special version of VPseudoBinaryNoMask where we pretend the first source is
