@@ -62,7 +62,8 @@ protected:
     SE.reset(new ScalarEvolution(F, TLI, *AC, *DT, *LI));
   }
 
-  VPlanPtr buildHCFG(BasicBlock *LoopHeader) {
+  /// Build the VPlan for the loop starting from \p LoopHeader.
+  VPlanPtr buildVPlan(BasicBlock *LoopHeader) {
     Function &F = *LoopHeader->getParent();
     assert(!verifyFunction(F) && "input function must be valid");
     doAnalysis(F);
@@ -77,6 +78,7 @@ protected:
     HCFGBuilder.buildHierarchicalCFG();
     return Plan;
   }
+<<<<<<< HEAD
 
   /// Build the VPlan plain CFG for the loop starting from \p LoopHeader.
   VPlanPtr buildPlainCFG(BasicBlock *LoopHeader) {
@@ -94,6 +96,8 @@ protected:
     HCFGBuilder.buildPlainCFG();
     return Plan;
   }
+=======
+>>>>>>> f89a986153a5907468f8f1f1e7f9f9bccfa4bb93
 };
 
 class VPlanTestBase : public testing::Test {

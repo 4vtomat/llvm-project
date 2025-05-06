@@ -36,7 +36,7 @@ enum class VectorLibrary {
   AMDLIBM             // AMD vector math library.
 };
 
-TargetLibraryInfoImpl *createTLII(llvm::Triple &TargetTriple,
+TargetLibraryInfoImpl *createTLII(const llvm::Triple &TargetTriple,
                                   VectorLibrary Veclib);
 
 } // end namespace llvm::driver
