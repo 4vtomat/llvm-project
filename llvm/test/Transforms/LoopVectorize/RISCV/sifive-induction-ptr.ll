@@ -47,6 +47,8 @@ define dso_local noundef signext i32 @f(ptr noundef writeonly %c, ptr noundef re
 ; VEC-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[C]], i64 [[TMP11]]
 ; VEC-NEXT:    [[TMP12:%.*]] = mul i64 [[TMP6]], 4
 ; VEC-NEXT:    [[IND_END5:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP12]]
+; VEC-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 2 x ptr> poison, ptr [[ADD_PTR2]], i64 0
+; VEC-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 2 x ptr> [[BROADCAST_SPLATINSERT]], <vscale x 2 x ptr> poison, <vscale x 2 x i32> zeroinitializer
 ; VEC-NEXT:    [[TMP31:%.*]] = call i64 @llvm.vscale.i64()
 ; VEC-NEXT:    [[TMP32:%.*]] = mul i64 [[TMP31]], 2
 ; VEC-NEXT:    [[TMP15:%.*]] = mul i64 [[TMP32]], 0
@@ -54,8 +56,6 @@ define dso_local noundef signext i32 @f(ptr noundef writeonly %c, ptr noundef re
 ; VEC-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 2 x i64> [[DOTSPLATINSERT]], <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer
 ; VEC-NEXT:    [[TMP16:%.*]] = call <vscale x 2 x i64> @llvm.stepvector.nxv2i64()
 ; VEC-NEXT:    [[TMP17:%.*]] = add <vscale x 2 x i64> [[DOTSPLAT]], [[TMP16]]
-; VEC-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 2 x ptr> poison, ptr [[ADD_PTR2]], i64 0
-; VEC-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 2 x ptr> [[BROADCAST_SPLATINSERT]], <vscale x 2 x ptr> poison, <vscale x 2 x i32> zeroinitializer
 ; VEC-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; VEC:       vector.body:
 ; VEC-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[A]], [[VECTOR_PH]] ], [ [[PTR_IND:%.*]], [[VECTOR_BODY]] ]

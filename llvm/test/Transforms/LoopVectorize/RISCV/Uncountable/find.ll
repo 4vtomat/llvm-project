@@ -37,6 +37,8 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP9:%.*]] = mul i64 [[TMP4]], 4
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr i8, ptr [[FIRST]], i64 [[TMP9]]
+; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 2 x i32> poison, i32 [[TMP0]], i64 0
+; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 2 x i32> [[BROADCAST_SPLATINSERT]], <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer
 ; CHECK-NEXT:    [[TMP11:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP12:%.*]] = mul i64 [[TMP11]], 2
 ; CHECK-NEXT:    [[TMP13:%.*]] = mul i64 [[TMP12]], 0
@@ -44,8 +46,6 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 2 x i64> [[DOTSPLATINSERT]], <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer
 ; CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i64> @llvm.stepvector.nxv2i64()
 ; CHECK-NEXT:    [[TMP15:%.*]] = add <vscale x 2 x i64> [[DOTSPLAT]], [[TMP14]]
-; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 2 x i32> poison, i32 [[TMP0]], i64 0
-; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 2 x i32> [[BROADCAST_SPLATINSERT]], <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[FIRST]], [[VECTOR_PH]] ], [ [[PTR_IND:%.*]], [[FOR_INC5:%.*]] ]
@@ -125,6 +125,8 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; P470:       vector.ph:
 ; P470-NEXT:    [[TMP9:%.*]] = mul i64 [[TMP4]], 4
 ; P470-NEXT:    [[TMP10:%.*]] = getelementptr i8, ptr [[FIRST]], i64 [[TMP9]]
+; P470-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x i32> poison, i32 [[TMP0]], i64 0
+; P470-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 8 x i32> [[BROADCAST_SPLATINSERT]], <vscale x 8 x i32> poison, <vscale x 8 x i32> zeroinitializer
 ; P470-NEXT:    [[TMP11:%.*]] = call i64 @llvm.vscale.i64()
 ; P470-NEXT:    [[TMP12:%.*]] = mul i64 [[TMP11]], 8
 ; P470-NEXT:    [[TMP13:%.*]] = mul i64 [[TMP12]], 0
@@ -132,8 +134,6 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; P470-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 8 x i64> [[DOTSPLATINSERT]], <vscale x 8 x i64> poison, <vscale x 8 x i32> zeroinitializer
 ; P470-NEXT:    [[TMP14:%.*]] = call <vscale x 8 x i64> @llvm.stepvector.nxv8i64()
 ; P470-NEXT:    [[TMP15:%.*]] = add <vscale x 8 x i64> [[DOTSPLAT]], [[TMP14]]
-; P470-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x i32> poison, i32 [[TMP0]], i64 0
-; P470-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 8 x i32> [[BROADCAST_SPLATINSERT]], <vscale x 8 x i32> poison, <vscale x 8 x i32> zeroinitializer
 ; P470-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; P470:       vector.body:
 ; P470-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[FIRST]], [[VECTOR_PH]] ], [ [[PTR_IND:%.*]], [[FOR_INC5:%.*]] ]

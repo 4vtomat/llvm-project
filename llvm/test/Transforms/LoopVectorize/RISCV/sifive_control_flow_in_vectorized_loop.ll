@@ -21,9 +21,9 @@ define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr
 ; X280-NEXT:    [[TMP1:%.*]] = or i64 [[SHL]], [[TMP0]]
 ; X280-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; X280:       [[VECTOR_PH]]:
-; X280-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x i64> poison, i64 [[TMP1]], i64 0
+; X280-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x i64> poison, i64 [[SHL11]], i64 0
 ; X280-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 8 x i64> [[BROADCAST_SPLATINSERT]], <vscale x 8 x i64> poison, <vscale x 8 x i32> zeroinitializer
-; X280-NEXT:    [[BROADCAST_SPLATINSERT1:%.*]] = insertelement <vscale x 8 x i64> poison, i64 [[SHL11]], i64 0
+; X280-NEXT:    [[BROADCAST_SPLATINSERT1:%.*]] = insertelement <vscale x 8 x i64> poison, i64 [[TMP1]], i64 0
 ; X280-NEXT:    [[BROADCAST_SPLAT2:%.*]] = shufflevector <vscale x 8 x i64> [[BROADCAST_SPLATINSERT1]], <vscale x 8 x i64> poison, <vscale x 8 x i32> zeroinitializer
 ; X280-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; X280:       [[VECTOR_BODY]]:
@@ -35,9 +35,9 @@ define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr
 ; X280-NEXT:    [[TMP5:%.*]] = getelementptr i64, ptr [[REG_24_VAL]], i64 [[TMP4]]
 ; X280-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i64, ptr [[TMP5]], i32 0
 ; X280-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i64> @llvm.vp.load.nxv8i64.p0(ptr align 8 [[TMP6]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]])
-; X280-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i64> @llvm.vp.and.nxv8i64(<vscale x 8 x i64> [[VP_OP_LOAD]], <vscale x 8 x i64> [[BROADCAST_SPLAT]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]])
-; X280-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i64(<vscale x 8 x i64> [[VP_OP]], <vscale x 8 x i64> [[BROADCAST_SPLAT]], metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]])
-; X280-NEXT:    [[VP_OP3:%.*]] = call <vscale x 8 x i64> @llvm.vp.xor.nxv8i64(<vscale x 8 x i64> [[VP_OP_LOAD]], <vscale x 8 x i64> [[BROADCAST_SPLAT2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]])
+; X280-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i64> @llvm.vp.and.nxv8i64(<vscale x 8 x i64> [[VP_OP_LOAD]], <vscale x 8 x i64> [[BROADCAST_SPLAT2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]])
+; X280-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i64(<vscale x 8 x i64> [[VP_OP]], <vscale x 8 x i64> [[BROADCAST_SPLAT2]], metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]])
+; X280-NEXT:    [[VP_OP3:%.*]] = call <vscale x 8 x i64> @llvm.vp.xor.nxv8i64(<vscale x 8 x i64> [[VP_OP_LOAD]], <vscale x 8 x i64> [[BROADCAST_SPLAT]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]])
 ; X280-NEXT:    [[TMP7:%.*]] = getelementptr i64, ptr [[TMP5]], i32 0
 ; X280-NEXT:    call void @llvm.vp.store.nxv8i64.p0(<vscale x 8 x i64> [[VP_OP3]], ptr align 8 [[TMP7]], <vscale x 8 x i1> [[VP_OP_ICMP]], i32 [[TMP3]])
 ; X280-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP3]] to i64
@@ -85,9 +85,9 @@ define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr
 ; P470-NEXT:    [[TMP1:%.*]] = or i64 [[SHL]], [[TMP0]]
 ; P470-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; P470:       [[VECTOR_PH]]:
-; P470-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 4 x i64> poison, i64 [[TMP1]], i64 0
+; P470-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 4 x i64> poison, i64 [[SHL11]], i64 0
 ; P470-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 4 x i64> [[BROADCAST_SPLATINSERT]], <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer
-; P470-NEXT:    [[BROADCAST_SPLATINSERT1:%.*]] = insertelement <vscale x 4 x i64> poison, i64 [[SHL11]], i64 0
+; P470-NEXT:    [[BROADCAST_SPLATINSERT1:%.*]] = insertelement <vscale x 4 x i64> poison, i64 [[TMP1]], i64 0
 ; P470-NEXT:    [[BROADCAST_SPLAT2:%.*]] = shufflevector <vscale x 4 x i64> [[BROADCAST_SPLATINSERT1]], <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer
 ; P470-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; P470:       [[VECTOR_BODY]]:
@@ -99,13 +99,13 @@ define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr
 ; P470-NEXT:    [[TMP5:%.*]] = getelementptr i64, ptr [[REG_24_VAL]], i64 [[TMP4]]
 ; P470-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i64, ptr [[TMP5]], i32 0
 ; P470-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[TMP6]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
-; P470-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i64> @llvm.vp.and.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i64> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
-; P470-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i64(<vscale x 4 x i64> [[VP_OP]], <vscale x 4 x i64> [[BROADCAST_SPLAT]], metadata !"eq", <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
+; P470-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i64> @llvm.vp.and.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i64> [[BROADCAST_SPLAT2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
+; P470-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i64(<vscale x 4 x i64> [[VP_OP]], <vscale x 4 x i64> [[BROADCAST_SPLAT2]], metadata !"eq", <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
 ; P470-NEXT:    [[TMP7:%.*]] = call i32 @llvm.vp.first.nxv4i1(<vscale x 4 x i1> [[VP_OP_ICMP]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
 ; P470-NEXT:    [[TMP8:%.*]] = icmp ne i32 [[TMP7]], -1
 ; P470-NEXT:    br i1 [[TMP8]], label %[[VECTOR_IF_BB:.*]], label %[[VECTOR_BODY_SPLIT]]
 ; P470:       [[VECTOR_IF_BB]]:
-; P470-NEXT:    [[VP_OP3:%.*]] = call <vscale x 4 x i64> @llvm.vp.xor.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i64> [[BROADCAST_SPLAT2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
+; P470-NEXT:    [[VP_OP3:%.*]] = call <vscale x 4 x i64> @llvm.vp.xor.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i64> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
 ; P470-NEXT:    [[TMP9:%.*]] = getelementptr i64, ptr [[TMP5]], i32 0
 ; P470-NEXT:    call void @llvm.vp.store.nxv4i64.p0(<vscale x 4 x i64> [[VP_OP3]], ptr align 8 [[TMP9]], <vscale x 4 x i1> [[VP_OP_ICMP]], i32 [[TMP3]])
 ; P470-NEXT:    br label %[[VECTOR_BODY_SPLIT]]
@@ -155,9 +155,9 @@ define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr
 ; P670-NEXT:    [[TMP1:%.*]] = or i64 [[SHL]], [[TMP0]]
 ; P670-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; P670:       [[VECTOR_PH]]:
-; P670-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 4 x i64> poison, i64 [[TMP1]], i64 0
+; P670-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 4 x i64> poison, i64 [[SHL11]], i64 0
 ; P670-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 4 x i64> [[BROADCAST_SPLATINSERT]], <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer
-; P670-NEXT:    [[BROADCAST_SPLATINSERT1:%.*]] = insertelement <vscale x 4 x i64> poison, i64 [[SHL11]], i64 0
+; P670-NEXT:    [[BROADCAST_SPLATINSERT1:%.*]] = insertelement <vscale x 4 x i64> poison, i64 [[TMP1]], i64 0
 ; P670-NEXT:    [[BROADCAST_SPLAT2:%.*]] = shufflevector <vscale x 4 x i64> [[BROADCAST_SPLATINSERT1]], <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer
 ; P670-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; P670:       [[VECTOR_BODY]]:
@@ -169,9 +169,9 @@ define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr
 ; P670-NEXT:    [[TMP5:%.*]] = getelementptr i64, ptr [[REG_24_VAL]], i64 [[TMP4]]
 ; P670-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i64, ptr [[TMP5]], i32 0
 ; P670-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[TMP6]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
-; P670-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i64> @llvm.vp.and.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i64> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
-; P670-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i64(<vscale x 4 x i64> [[VP_OP]], <vscale x 4 x i64> [[BROADCAST_SPLAT]], metadata !"eq", <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
-; P670-NEXT:    [[VP_OP3:%.*]] = call <vscale x 4 x i64> @llvm.vp.xor.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i64> [[BROADCAST_SPLAT2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
+; P670-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i64> @llvm.vp.and.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i64> [[BROADCAST_SPLAT2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
+; P670-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i64(<vscale x 4 x i64> [[VP_OP]], <vscale x 4 x i64> [[BROADCAST_SPLAT2]], metadata !"eq", <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
+; P670-NEXT:    [[VP_OP3:%.*]] = call <vscale x 4 x i64> @llvm.vp.xor.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i64> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
 ; P670-NEXT:    [[TMP7:%.*]] = getelementptr i64, ptr [[TMP5]], i32 0
 ; P670-NEXT:    call void @llvm.vp.store.nxv4i64.p0(<vscale x 4 x i64> [[VP_OP3]], ptr align 8 [[TMP7]], <vscale x 4 x i1> [[VP_OP_ICMP]], i32 [[TMP3]])
 ; P670-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP3]] to i64
