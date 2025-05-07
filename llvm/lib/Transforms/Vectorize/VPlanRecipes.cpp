@@ -733,7 +733,6 @@ Value *VPInstruction::generate(VPTransformState &State) {
     Builder.GetInsertBlock()->getTerminator()->eraseFromParent();
     return CondBr;
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case VPInstruction::CSAInitMask: {
     Value *InitMask = State.get(getOperand(0));
@@ -872,12 +871,10 @@ Value *VPInstruction::generate(VPTransformState &State) {
   case Instruction::Call:
     llvm_unreachable("This opcode is handled by the VPCallInstruction recipe");
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case VPInstruction::Broadcast: {
     return Builder.CreateVectorSplat(
         State.VF, State.get(getOperand(0), /*IsScalar*/ true), "broadcast");
   }
->>>>>>> 6c2e170d043d3a7d7b32635e887cfd255ef5c2ce
   case VPInstruction::ComputeReductionResult: {
     // FIXME: The cross-recipe dependency on VPReductionPHIRecipe is temporary
     // and will be removed by breaking up the recipe further.

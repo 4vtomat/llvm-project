@@ -9723,15 +9723,13 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
       ((VectorizingEpilogue && ExpandedSCEVs) ||
        (!VectorizingEpilogue && !ExpandedSCEVs)) &&
       "expanded SCEVs to reuse can only be used during epilogue vectorization");
-<<<<<<< HEAD
+
+  VPlanTransforms::materializeLiveInBroadcasts(BestVPlan);
 
 #if SIFIVE_CUSTOMIZATION
   if (!BestVPlan.isUncountable())
 #endif
 
-=======
-  VPlanTransforms::materializeLiveInBroadcasts(BestVPlan);
->>>>>>> 6c2e170d043d3a7d7b32635e887cfd255ef5c2ce
   // TODO: Move to VPlan transform stage once the transition to the VPlan-based
   // cost model is complete for better cost estimates.
   VPlanTransforms::runPass(VPlanTransforms::unrollByUF, BestVPlan, BestUF,

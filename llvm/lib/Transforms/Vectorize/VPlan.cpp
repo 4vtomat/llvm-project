@@ -1382,7 +1382,6 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
 #endif // SIFIVE_CUSTOMIZATION
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 void VPlan::initializeMasks(VPTransformState &State) {
   if (AllTrueMask && AllTrueMask->getNumUsers()) {
@@ -1395,7 +1394,7 @@ void VPlan::initializeMasks(VPTransformState &State) {
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 VPIRBasicBlock *VPlan::getExitBlock(BasicBlock *IRBB) const {
   auto Iter = find_if(getExitBlocks(), [IRBB](const VPIRBasicBlock *VPIRBB) {
     return VPIRBB->getIRBasicBlock() == IRBB;
@@ -1403,7 +1402,6 @@ VPIRBasicBlock *VPlan::getExitBlock(BasicBlock *IRBB) const {
   assert(Iter != getExitBlocks().end() && "no exit block found");
   return *Iter;
 }
->>>>>>> 6c2e170d043d3a7d7b32635e887cfd255ef5c2ce
 
 bool VPlan::isExitBlock(VPBlockBase *VPBB) {
   return isa<VPIRBasicBlock>(VPBB) && VPBB->getNumSuccessors() == 0;

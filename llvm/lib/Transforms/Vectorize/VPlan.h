@@ -2155,14 +2155,6 @@ public:
   }
 
 #if SIFIVE_CUSTOMIZATION
-  /// Returns true if only scalar values will be generated.
-  bool onlyFirstLaneUsed(const VPValue *Op) const override {
-    assert(is_contained(operands(), Op) &&
-           "Op must be an operand of the recipe");
-    return all_of(users(),
-                  [this](VPUser *U) { return U->onlyFirstLaneUsed(this); });
-  }
-
   /// Returns whether the pointer iv is an uniform
   bool isUniform() const {
     ConstantInt *Step = getInductionDescriptor().getConstIntStepValue();
@@ -4536,13 +4528,6 @@ public:
   /// Return the live-in VPValue for \p V, if there is one or nullptr otherwise.
   VPValue *getLiveIn(Value *V) const { return Value2VPValue.lookup(V); }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  const ArrayRef<VPValue *> getLiveIns() const {
-    return ArrayRef(VPLiveInsToFree);
-  }
-#endif // SIFIVE_CUSTOMIZATION
-=======
   /// Return the list of live-in VPValues available in the VPlan.
   ArrayRef<VPValue *> getLiveIns() const {
     assert(all_of(Value2VPValue,
@@ -4552,7 +4537,6 @@ public:
            "all VPValues in Value2VPValue must also be in VPLiveIns");
     return VPLiveIns;
   }
->>>>>>> 6c2e170d043d3a7d7b32635e887cfd255ef5c2ce
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print the live-ins of this VPlan to \p O.
