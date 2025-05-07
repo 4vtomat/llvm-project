@@ -1800,7 +1800,9 @@ define void @f(i1 %c, ptr %p, ptr %q, ptr %r) {
 ;
 ; DEFAULT-LABEL: define void @f
 ; DEFAULT-SAME: (i1 [[C:%.*]], ptr [[P:%.*]], ptr [[Q:%.*]], ptr [[R:%.*]]) #[[ATTR1]] {
-; DEFAULT-NEXT:    [[TMP1:%.*]] = load <2 x i64>, ptr [[P]], align 8
+; DEFAULT-NEXT:    [[X0:%.*]] = load i64, ptr [[P]], align 8
+; DEFAULT-NEXT:    [[P1:%.*]] = getelementptr i64, ptr [[P]], i64 1
+; DEFAULT-NEXT:    [[X1:%.*]] = load i64, ptr [[P1]], align 8
 ; DEFAULT-NEXT:    br i1 [[C]], label [[FOO:%.*]], label [[BAR:%.*]]
 ; DEFAULT:       foo:
 ; DEFAULT-NEXT:    [[Y0:%.*]] = load float, ptr [[R]], align 4
@@ -1811,7 +1813,9 @@ define void @f(i1 %c, ptr %p, ptr %q, ptr %r) {
 ; DEFAULT-NEXT:    [[Z1:%.*]] = call float @fabsf(float [[Z0]])
 ; DEFAULT-NEXT:    br label [[BAZ]]
 ; DEFAULT:       baz:
-; DEFAULT-NEXT:    store <2 x i64> [[TMP1]], ptr [[Q]], align 8
+; DEFAULT-NEXT:    store i64 [[X0]], ptr [[Q]], align 8
+; DEFAULT-NEXT:    [[Q1:%.*]] = getelementptr i64, ptr [[Q]], i64 1
+; DEFAULT-NEXT:    store i64 [[X1]], ptr [[Q1]], align 8
 ; DEFAULT-NEXT:    ret void
 ;
   %x0 = load i64, ptr %p
