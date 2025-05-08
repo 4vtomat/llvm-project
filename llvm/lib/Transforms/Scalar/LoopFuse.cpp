@@ -185,6 +185,12 @@ struct FusionCandidate {
   bool AbleToPeel;
   /// Has this loop been Peeled
   bool Peeled;
+#if SIFIVE_CUSTOMIZATION
+  /// Recorded fuse IV
+  PHINode *IV;
+  /// Recorded fuse reduction IV
+  PHINode *RIV;
+#endif
 
   /// Dominator and PostDominator trees are needed for the
   /// FusionCandidateCompare function, required by FusionCandidateSet to
@@ -195,6 +201,16 @@ struct FusionCandidate {
 
   OptimizationRemarkEmitter &ORE;
 
+#if SIFIVE_CUSTOMIZATION
+  FusionCandidate(Loop *L, DominatorTree &DT, const PostDominatorTree *PDT,
+                  OptimizationRemarkEmitter &ORE, TTI::PeelingPreferences PP,
+                  PHINode *IV = nullptr, PHINode *RIV = nullptr)
+      : Preheader(L->getLoopPreheader()), Header(L->getHeader()),
+        ExitingBlock(L->getExitingBlock()), ExitBlock(L->getExitBlock()),
+        Latch(L->getLoopLatch()), L(L), Valid(true),
+        GuardBranch(L->getLoopGuardBranch()), PP(PP), AbleToPeel(canPeel(L)),
+        Peeled(false), IV(IV), RIV(RIV), DT(DT), PDT(PDT), ORE(ORE) {
+#else
   FusionCandidate(Loop *L, DominatorTree &DT, const PostDominatorTree *PDT,
                   OptimizationRemarkEmitter &ORE, TTI::PeelingPreferences PP)
       : Preheader(L->getLoopPreheader()), Header(L->getHeader()),
@@ -202,6 +218,7 @@ struct FusionCandidate {
         Latch(L->getLoopLatch()), L(L), Valid(true),
         GuardBranch(L->getLoopGuardBranch()), PP(PP), AbleToPeel(canPeel(L)),
         Peeled(false), DT(DT), PDT(PDT), ORE(ORE) {
+#endif
 
     // Walk over all blocks in the loop and check for conditions that may
     // prevent fusion. For each block, walk over all instructions and collect
@@ -427,6 +444,9 @@ struct FusionCandidateCompare {
       // Candidates ordered
       return LHS.PDT->dominates(RHSEntryBlock, LHSEntryBlock);
     }
+
+    if (!isControlFlowEquivalent(*LHSEntryBlock, *RHSEntryBlock, *DT, *LHS.PDT))
+      return false;
 #else
     if (DT->dominates(RHSEntryBlock, LHSEntryBlock)) {
       // RHS dominates LHS
@@ -706,6 +726,10 @@ private:
 
       for (auto &CurrCandSet : FusionCandidates) {
         if (isControlFlowEquivalent(*CurrCandSet.begin(), CurrCand)) {
+#if SIFIVE_CUSTOMIZATION
+          CurrCand.IV = L->getInductionVariable(SE);
+          CurrCand.RIV = findReductions(CurrCand);
+#endif
           CurrCandSet.insert(CurrCand);
           FoundSet = true;
 #ifndef NDEBUG
@@ -737,6 +761,29 @@ private:
   /// time, to add heuristics for profitability of fusion.
   bool isBeneficialFusion(const FusionCandidate &FC0,
                           const FusionCandidate &FC1) {
+#if SIFIVE_CUSTOMIZATION
+    if (LoopConcatCanonicalize) {
+      // It is not benefitial under LoopConcatenation to fuse guarded loops.
+      if (FC0.GuardBranch || FC1.GuardBranch)
+        return false;
+
+      for (int i = 0; i < 2; ++i) {
+        auto *BB = (i == 0) ? FC0.Latch : FC1.Latch;
+        auto *L = (i == 0) ? FC0.L : FC1.L;
+
+        // For now only process non adjacent tight loops.
+        if (!isAdjacent(FC0, FC1))
+          if (BB != L->getHeader())
+            return false;
+      }
+
+      // Check to see if adjacent loops contain the same amount of flow
+      if (isAdjacent(FC0, FC1))
+        if (FC0.L->getNumBlocks() != FC1.L->getNumBlocks())
+          return false;
+    }
+#endif
+
     return true;
   }
 
@@ -936,12 +983,21 @@ private:
             continue;
           }
 
+#if SIFIVE_CUSTOMIZATION
+          if (!LoopConcatCanonicalize && !isAdjacent(*FC0, *FC1)) {
+            LLVM_DEBUG(dbgs()
+                       << "Fusion candidates are not adjacent. Not fusing.\n");
+            reportLoopFusion<OptimizationRemarkMissed>(*FC0, *FC1, NonAdjacent);
+            continue;
+          }
+#else
           if (!isAdjacent(*FC0, *FC1)) {
             LLVM_DEBUG(dbgs()
                        << "Fusion candidates are not adjacent. Not fusing.\n");
             reportLoopFusion<OptimizationRemarkMissed>(*FC0, *FC1, NonAdjacent);
             continue;
           }
+#endif
 
           if ((!FC0->GuardBranch && FC1->GuardBranch) ||
               (FC0->GuardBranch && !FC1->GuardBranch)) {
@@ -1039,13 +1095,24 @@ private:
           // Execute the hoist/sink operations on preheader instructions
           movePreheaderInsts(*FC0, *FC1, SafeToHoist, SafeToSink);
 
+#if SIFIVE_CUSTOMIZATION
+          LLVM_DEBUG(dbgs() << "\tFusion is performed: " << *FC0 << " and "
+                     << *FC1 << " adjacent: " << isAdjacent(*FC0, *FC1)
+                     << "\n");
+#else
           LLVM_DEBUG(dbgs() << "\tFusion is performed: " << *FC0 << " and "
                             << *FC1 << "\n");
+#endif
 
           FusionCandidate FC0Copy = *FC0;
           // Peel the loop after determining that fusion is legal. The Loops
           // will still be safe to fuse after the peeling is performed.
+#if SIFIVE_CUSTOMIZATION
+          bool Peel =
+              !LoopConcatCanonicalize && TCDifference && *TCDifference > 0;
+#else
           bool Peel = TCDifference && *TCDifference > 0;
+#endif
           if (Peel)
             peelFusionCandidate(FC0Copy, *FC1, *TCDifference);
 
@@ -1056,6 +1123,55 @@ private:
           reportLoopFusion<OptimizationRemark>((Peel ? FC0Copy : *FC0), *FC1,
                                                FuseCounter);
 
+#if SIFIVE_CUSTOMIZATION
+          if (isAdjacent(*FC0, *FC1)) {
+            FusionCandidate FusedCand(
+                performFusion((Peel ? FC0Copy : *FC0), *FC1), DT, &PDT, ORE,
+                FC0Copy.PP, FC0Copy.IV, FC0Copy.RIV);
+            FusedCand.verify();
+            assert(FusedCand.isEligibleForFusion(SE) &&
+                   "Fused candidate should be eligible for fusion!");
+
+            // Notify the loop-depth-tree that these loops are not valid objects
+            LDT.removeLoop(FC1->L);
+
+            CandidateSet.erase(FC0);
+            CandidateSet.erase(FC1);
+
+            auto InsertPos = CandidateSet.insert(FusedCand);
+
+            assert(InsertPos.second &&
+                   "Unable to insert TargetCandidate in CandidateSet!");
+
+            // Reset FC0 and FC1 the new (fused) candidate. Subsequent
+            // iterations of the FC1 loop will attempt to fuse the new (fused)
+            // loop with the remaining candidates in the current candidate set.
+            FC0 = FC1 = InsertPos.first;
+          } else if (LoopConcatCanonicalize) {
+            FusionCandidate FusedCand(performNonAdjacentFusion(*FC0, *FC1), DT,
+                                      &PDT, ORE, FC0Copy.PP, FC0Copy.IV,
+                                      FC0Copy.RIV);
+            FusedCand.verify();
+            assert(FusedCand.isEligibleForFusion(SE) &&
+                   "Fused candidate should be eligible for fusion!");
+
+            // Notify the loop-depth-tree that these loops are not valid objects
+            LDT.removeLoop(FC1->L);
+
+            CandidateSet.erase(FC0);
+            CandidateSet.erase(FC1);
+
+            auto InsertPos = CandidateSet.insert(FusedCand);
+
+            assert(InsertPos.second &&
+                   "Unable to insert TargetCandidate in CandidateSet!");
+
+            // Reset FC0 and FC1 the new (fused) candidate. Subsequent
+            // iterations of the FC1 loop will attempt to fuse the new (fused)
+            // loop with the remaining candidates in the current candidate set.
+            FC0 = FC1 = InsertPos.first;
+          }
+#else
           FusionCandidate FusedCand(
               performFusion((Peel ? FC0Copy : *FC0), *FC1), DT, &PDT, ORE,
               FC0Copy.PP);
@@ -1078,9 +1194,10 @@ private:
           // of the FC1 loop will attempt to fuse the new (fused) loop with the
           // remaining candidates in the current candidate set.
           FC0 = FC1 = InsertPos.first;
+#endif
 
 #if SIFIVE_CUSTOMIZATION
-          Loop *L = FC0->L;
+          auto *L = FC0->L;
           // Mark reducing fused loops as already unrolled.
           // We do this so that the vectorizer receives these
           // loops in their current state.
@@ -1189,6 +1306,23 @@ private:
         }
       }
     }
+
+#if SIFIVE_CUSTOMIZATION
+    if (I.isLifetimeStartOrEnd()) {
+      if (auto *II = dyn_cast<IntrinsicInst>(&I)) {
+        Intrinsic::ID ID = II->getIntrinsicID();
+        // Check if this lifetime end is AllocaInst
+        // related, all the related Allocas have
+        // been managed during canonicalization.
+        if (LoopConcatCanonicalize)
+          if (ID == Intrinsic::lifetime_end) {
+            auto *Def = II->getArgOperand(1);
+            if (isa<AllocaInst>(Def))
+              return true;
+          }
+      }
+    }
+#endif
 
     // If this isn't a memory inst, sinking is safe
     if (!I.mayReadOrWriteMemory())
@@ -1324,6 +1458,12 @@ private:
                         << *SCEVPtr1 << "\n");
 #endif
     AddRecLoopReplacer Rewriter(SE, L0, L1);
+#if SIFIVE_CUSTOMIZATION
+    // First validate the operands of SCEVPtr0
+    for (const SCEV *Op : SCEVPtr0->operands())
+      if(!SE.isAvailableAtLoopEntry(Op, &L1))
+        return false;
+#endif
     SCEVPtr0 = Rewriter.visit(SCEVPtr0);
 #ifndef NDEBUG
     if (VerboseFusionDebugging)
@@ -1409,13 +1549,40 @@ private:
     llvm_unreachable("Unknown fusion dependence analysis choice!");
   }
 
+#if SIFIVE_CUSTOMIZATION
+  bool isFlowRelated(BasicBlock *BB, const FusionCandidate &FC0,
+                     const FusionCandidate &FC1) {
+    if (DT.dominates(FC0.ExitBlock, BB)) {
+      if (DT.dominates(BB, FC1.Preheader))
+        return true;
+
+      BasicBlock *IDomBB = DT.getNode(BB)->getIDom()->getBlock();
+      if (DT.dominates(IDomBB, FC1.Preheader))
+        return true;
+    }
+    return false;
+  }
+
+  /// Return true if @p I is a LCSSA phi node.
+  bool isLcssaPhi(Instruction *I) {
+    return isa<PHINode>(I) && I->getNumOperands() == 1;
+  }
+#endif
+
   /// Perform a dependence check and return if @p FC0 and @p FC1 can be fused.
   bool dependencesAllowFusion(const FusionCandidate &FC0,
                               const FusionCandidate &FC1) {
     LLVM_DEBUG(dbgs() << "Check if " << FC0 << " can be fused with " << FC1
                       << "\n");
     assert(FC0.L->getLoopDepth() == FC1.L->getLoopDepth());
+#if SIFIVE_CUSTOMIZATION
+    if (!DT.dominates(FC0.getEntryBlock(), FC1.getEntryBlock())) {
+      LLVM_DEBUG(dbgs() << "FC0 does not dominate FC1\n");
+      return false;
+    }
+#else
     assert(DT.dominates(FC0.getEntryBlock(), FC1.getEntryBlock()));
+#endif
 
     for (Instruction *WriteL0 : FC0.MemWrites) {
       for (Instruction *WriteL1 : FC1.MemWrites)
@@ -1456,11 +1623,106 @@ private:
     for (BasicBlock *BB : FC1.L->blocks())
       for (Instruction &I : *BB)
         for (auto &Op : I.operands())
+#if SIFIVE_CUSTOMIZATION
+          if (auto *Def = dyn_cast<Instruction>(Op)) {
+            auto *DefBB = Def->getParent();
+            if (FC0.L->contains(DefBB)) {
+              InvalidDependencies++;
+              return false;
+            }
+
+            if (LoopConcatCanonicalize) {
+              if (FC1.L->contains(DefBB))
+                continue;
+
+              // We will handle all of FC1.Preheader as evaluated
+              // as movable.
+              if (DefBB == FC1.Preheader)
+                continue;
+
+              if (isFlowRelated(DefBB, FC0, FC1)) {
+                InvalidDependencies++;
+                return false;
+              }
+
+              // Check Ptr uses in flow.
+              if (Def->getType()->isPointerTy()) {
+                for (auto *U : Def->users()) {
+                  auto *CurUser = cast<Instruction>(U);
+                  auto *CurUserBB = CurUser->getParent();
+                  // already evaluated in FusionDependenceAnalysis
+                  if (FC0.L->contains(CurUserBB) || FC1.L->contains(CurUserBB))
+                    continue;
+
+                  // Defer this to preheader processing.
+                  if (CurUserBB == FC1.Preheader)
+                    continue;
+
+                  // Ignore lifetime intrinsics.
+                  if (CurUser->isLifetimeStartOrEnd())
+                    continue;
+
+                  // Check for dominating memops.
+                  if (CurUser->mayReadOrWriteMemory())
+                    if (isFlowRelated(CurUserBB, FC0, FC1)) {
+                      InvalidDependencies++;
+                      return false;
+                    }
+                }
+              }
+            }
+          }
+
+#else
           if (Instruction *Def = dyn_cast<Instruction>(Op))
             if (FC0.L->contains(Def->getParent())) {
               InvalidDependencies++;
               return false;
             }
+#endif
+
+#if SIFIVE_CUSTOMIZATION
+    // Walk though all the defs in FC0. For each use, determine if there is a
+    // use that exists between FC0.L and FC1.L.
+    if (LoopConcatCanonicalize)
+      for (auto *BB : FC0.L->blocks())
+        for (auto &I : *BB)
+          for (auto *U : I.users()) {
+            auto *CurUser = cast<Instruction>(U);
+            auto *CurUserBB = CurUser->getParent();
+            if (FC0.L->contains(CurUserBB))
+              continue;
+
+            // We can fixup lcssa phi uses as loop carried
+            // dependences in the fused loop.
+            if (CurUserBB == FC1.Preheader && isLcssaPhi(CurUser))
+              continue;
+
+            // We can fixup lcssa phi uses in FC0's ExitBlock
+            // by merging them into FC1's ExitBlock after
+            // determining that FC1's loop does not consume the value
+            if (CurUserBB == FC0.ExitBlock && isLcssaPhi(CurUser)) {
+              for (auto *InteriorU : CurUser->users()) {
+                auto *InteriorUser = cast<Instruction>(InteriorU);
+                auto *InteriorUserBB = InteriorUser->getParent();
+                if (FC1.L->contains(InteriorUserBB)) {
+                  InvalidDependencies++;
+                  return false;
+                }
+                if (isFlowRelated(InteriorUserBB, FC0, FC1)) {
+                  InvalidDependencies++;
+                  return false;
+                }
+              }
+              continue;
+            }
+
+            if (isFlowRelated(CurUserBB, FC0, FC1)) {
+              InvalidDependencies++;
+              return false;
+            }
+          }
+#endif
 
     return true;
   }
@@ -1581,6 +1843,231 @@ private:
     }
   }
 
+#if SIFIVE_CUSTOMIZATION
+  /// Determine if two fusion candidates have identical bounds
+  bool loopsHaveIdenticalBounds(const FusionCandidate &FC0,
+                                const FusionCandidate &FC1) {
+    if (FC0.IV && FC1.IV) {
+      if (FC0.IV->getNumIncomingValues() != FC1.IV->getNumIncomingValues())
+       return false;
+
+      auto FC0_LB = Loop::LoopBounds::getBounds(*FC0.L, *FC0.IV, SE);
+      if (!FC0_LB.has_value())
+        return false;
+
+      auto FC1_LB = Loop::LoopBounds::getBounds(*FC1.L, *FC1.IV, SE);
+      if (!FC1_LB.has_value())
+        return false;
+
+      // Only qualify loops that are upcounting with the same step.
+      Loop::LoopBounds::Direction D = FC0_LB->getDirection();
+      if ((D == FC1_LB->getDirection()) &&
+          (D == Loop::LoopBounds::Direction::Increasing) &&
+          (FC0_LB->getStepValue() == FC1_LB->getStepValue())) {
+
+        Value *FC0InitIvVal = &FC0_LB->getInitialIVValue();
+        Value *FC0FinalIvVal = &FC0_LB->getFinalIVValue();
+        Value *FC1InitIvVal = &FC1_LB->getInitialIVValue();
+        Value *FC1FinalIvVal = &FC1_LB->getFinalIVValue();
+
+        if ((FC0InitIvVal == FC1InitIvVal) && (FC0FinalIvVal == FC1FinalIvVal))
+          return true;
+      }
+    }
+    return false;
+  }
+
+  /// For loops with identical bounds/trip, we can coalese the IV
+  /// info and share it in the new loop, provided the trips are
+  /// arithmetically modified and equavalent.
+  void replaceInductionVarAndStep(PHINode *FC0_IV, PHINode *FC1_IV,
+                                  Value *FC0StepVal, Value *FC1StepVal) {
+    if (FC0StepVal && FC1StepVal &&
+        isa<BinaryOperator>(FC0StepVal) && isa<BinaryOperator>(FC1StepVal)) {
+      FC1_IV->replaceAllUsesWith(FC0_IV);
+      FC1StepVal->replaceAllUsesWith(FC0StepVal);
+      auto *FC1StepInst = cast<Instruction>(FC1StepVal);
+      FC1StepInst->eraseFromParent();
+      FC1_IV->eraseFromParent();
+    }
+  }
+
+  /// Discover any reduction phis for a given Fusion Candidate
+  PHINode *findReductions(const FusionCandidate &FC) {
+    PHINode *FC_RIV = nullptr;
+    unsigned NumRPHI = 0;
+    for (auto &Phi : FC.L->getHeader()->phis()) {
+      if (Phi.getNumIncomingValues() == 1)
+        continue;
+
+      // We cannot safely reform floating point reduction expressions.
+      if (Phi.getType()->isFloatingPointTy())
+        continue;
+
+      if (&Phi == FC.IV)
+        continue;
+
+      RecurrenceDescriptor Rdx;
+      if (RecurrenceDescriptor::isReductionPHI(&Phi, FC.L, Rdx)) {
+        FC_RIV = &Phi;
+        NumRPHI++;
+
+        // Skip loops with more than one reduction phi
+        if (NumRPHI > 1)
+          FC_RIV = nullptr;
+      }
+    }
+    return FC_RIV;
+  }
+
+  /// Find the LCSSA phi for a given reduction phi
+  PHINode *findLoopOutput(const FusionCandidate &FC) {
+    PHINode *LcssaPhi = nullptr;
+    if (!FC.RIV)
+      return LcssaPhi;
+
+    Value *BackEdgeVal = FC.RIV->getIncomingValueForBlock(FC.Latch);
+    for (auto *U : BackEdgeVal->users()) {
+      if (FC.L->contains(cast<Instruction>(U)))
+        continue;
+
+      // We check convergence through lcssa PHIs
+      if (auto *PN = dyn_cast<PHINode>(U))
+        if (PN->getNumIncomingValues() == 1)
+          LcssaPhi = PN;
+    }
+    return LcssaPhi;
+  }
+
+  /// Collect the uses of an instruction
+  void collectUses(Instruction *I, SmallVectorImpl<Instruction *> &Uses) const {
+    for (auto *U : I->users())
+      Uses.push_back(cast<Instruction>(U));
+  }
+
+  /// Find the convergence point between two sets of instructions
+  Instruction *findConvergence(const SmallVectorImpl<Instruction *> &FC0_Uses,
+                               const SmallVectorImpl<Instruction *> &FC1_Uses,
+                               unsigned Depth, Instruction *&LastFC1RelatedI) {
+    Instruction *ConvergenceI = nullptr;
+    for (auto [NumFC0Use, FC0_Use] : enumerate(FC0_Uses)) {
+      // Do not evalute convergence in the presence of calls
+      if (isa<CallInst>(FC0_Use))
+        break;
+
+      for (auto [NumFC1Use, FC1_Use] : enumerate(FC1_Uses)) {
+        // Do not evalute convergence in the presence of calls
+        if (isa<CallInst>(FC1_Use))
+          break;
+
+        if (NumFC0Use != NumFC1Use)
+          continue;
+
+        if (FC0_Use->getOpcode() != FC1_Use->getOpcode())
+          continue;
+
+        // Check for convergence point
+        if (FC0_Use == FC1_Use)
+          return FC0_Use;
+
+        SmallVector<Instruction *> FC0_NextUses;
+        SmallVector<Instruction *> FC1_NextUses;
+        collectUses(FC0_Use, FC0_NextUses);
+        collectUses(FC1_Use, FC1_NextUses);
+
+        if (Depth < 5) {
+          LastFC1RelatedI = FC1_Use;
+          ConvergenceI =
+              findConvergence(FC0_NextUses, FC1_NextUses, Depth + 1, LastFC1RelatedI);
+        }
+
+        if (ConvergenceI)
+          break;
+      }
+
+      if (ConvergenceI)
+        break;
+    }
+    return ConvergenceI;
+  }
+
+  /// Determine if two reduction values converge
+  Instruction *reductionValuesConverge(const FusionCandidate &FC0,
+                                       const FusionCandidate &FC1,
+                                       Instruction *&LastFC1RelatedI,
+                                       PHINode *FC0_LcssaPhi,
+                                       PHINode *FC1_LcssaPhi) {
+    Instruction *ConvergenceI = nullptr;
+    if (!FC0.RIV || !FC1.RIV)
+      return ConvergenceI;
+
+    // If the two PHIs converge, the connecting expression must
+    // be of the same form.  We only look at most 5 levels of depth.
+    if (FC0_LcssaPhi && FC1_LcssaPhi) {
+      if (FC1_LcssaPhi->getNumUses() == FC1_LcssaPhi->getNumUses()) {
+        SmallVector<Instruction *> FC0_Lvl1Uses;
+        SmallVector<Instruction *> FC1_Lvl1Uses;
+        collectUses(FC0_LcssaPhi, FC0_Lvl1Uses);
+        collectUses(FC1_LcssaPhi, FC1_Lvl1Uses);
+        ConvergenceI =
+            findConvergence(FC0_Lvl1Uses, FC1_Lvl1Uses, 0, LastFC1RelatedI);
+      }
+    }
+
+    if (ConvergenceI) {
+      auto *BackEdgeFC0Inst =
+          cast<Instruction>(FC0.RIV->getIncomingValueForBlock(FC0.Latch));
+      auto *BackEdgeFC1Inst =
+          cast<Instruction>(FC1.RIV->getIncomingValueForBlock(FC1.Latch));
+      // The two candidate reduction expressions must be of the same form.
+      if (BackEdgeFC0Inst->getOpcode() != BackEdgeFC1Inst->getOpcode())
+        return nullptr;
+      // The convergence point must be of the same form as the reduction
+      // expressions.
+      if (ConvergenceI->getOpcode() != BackEdgeFC0Inst->getOpcode())
+        return nullptr;
+
+      LLVM_DEBUG(dbgs() << "Found convergence point: " << *ConvergenceI
+                        << "\n");
+    }
+
+    return ConvergenceI;
+  }
+
+  /// Unify two reduction values
+  void unifyReductions(const FusionCandidate &FC0, const FusionCandidate &FC1,
+                       PHINode *FC0_LcssaPhi, PHINode *FC1_LcssaPhi) {
+    assert(FC0.RIV && FC1.RIV && "Expecting valid reduction PHIs");
+    assert(FC0_LcssaPhi && FC1_LcssaPhi && "Expecting valid LCSSA PHIs");
+    SmallVector<Instruction *> FC1_RIVUses;
+    collectUses(FC1.RIV, FC1_RIVUses);
+    assert(FC1_RIVUses.size() == 1 && "Expecting single use of FC1.RIV");
+    for (auto *FC1_Use : FC1_RIVUses) {
+      // Replace FC1_Use with the FC0.RIV's latch value.
+      Value *ConnectingValue = FC0_LcssaPhi->getIncomingValue(0);
+      FC1_Use->replaceUsesOfWith(FC1.RIV, ConnectingValue);
+
+      // Now update FC0.RIV with FC1.RIV's latch value
+      FC0.RIV->setIncomingValueForBlock(
+          FC0.Latch, FC1.RIV->getIncomingValueForBlock(FC0.Latch));
+      FC1.RIV->eraseFromParent();
+      break;
+    }
+  }
+
+  /// Replace the use of the convergence value with a stack collected
+  /// value that is input from FC1_LcssaPhi's expression output.
+  void updateConvergence(PHINode *FC0_LcssaPhi, PHINode *FC1_LcssaPhi,
+                         Instruction *ConvergenceI, Instruction *LastFC1RelatedI) {
+    assert(FC0_LcssaPhi && FC1_LcssaPhi && "Expecting valid LCSSA PHIs");
+    assert(ConvergenceI && "Expecting valid convergence instruction");
+    assert(LastFC1RelatedI && "Expecting valid last FC1 related instruction");
+
+    ConvergenceI->replaceAllUsesWith(LastFC1RelatedI);
+    ConvergenceI->eraseFromParent();
+  }
+#endif
+
   /// Fuse two fusion candidates, creating a new fused loop.
   ///
   /// This method contains the mechanics of fusing two loops, represented by \p
@@ -1629,6 +2116,7 @@ private:
 
     assert(FC1.Preheader ==
            (FC0.Peeled ? FC0.ExitBlock->getUniqueSuccessor() : FC0.ExitBlock));
+
     assert(FC1.Preheader->size() == 1 &&
            FC1.Preheader->getSingleSuccessor() == FC1.Header);
 
@@ -1645,6 +2133,32 @@ private:
     if (FC0.ExitingBlock != FC0.Latch)
       for (PHINode &PHI : FC0.Header->phis())
         OriginalFC0PHIs.push_back(&PHI);
+
+#if SIFIVE_CUSTOMIZATION
+    PHINode *FC0_LcssaPhi = nullptr;
+    PHINode *FC1_LcssaPhi = nullptr;
+    Value *FC0StepVal = nullptr;
+    Value *FC1StepVal = nullptr;
+
+    // We are going to replace all uses of FC1's step with FC0's step, as the
+    // bounds are the same, then remove FC1's IV.  As a result, FC0's
+    // compare will become orphaned, we do this for simple loops only.
+    if (OriginalFC0PHIs.empty() && LoopConcatCanonicalize &&
+        loopsHaveIdenticalBounds(FC0, FC1)) {
+      FC0StepVal = FC0.IV->getIncomingValueForBlock(FC0.Latch);
+      FC1StepVal = FC1.IV->getIncomingValueForBlock(FC1.Latch);
+    }
+
+    // Now check and see if FC0.RIV and FC1.RIV converge.
+    Instruction *ConvergenceI = nullptr;
+    Instruction *LastFC1RelatedI = nullptr;
+    if (LoopConcatCanonicalize && FC0.RIV && FC1.RIV) {
+      FC0_LcssaPhi = findLoopOutput(FC0);
+      FC1_LcssaPhi = findLoopOutput(FC1);
+      ConvergenceI = reductionValuesConverge(FC0, FC1, LastFC1RelatedI,
+                                             FC0_LcssaPhi, FC1_LcssaPhi);
+    }
+#endif
 
     // Replace incoming blocks for header PHIs first.
     FC1.Preheader->replaceSuccessorsPhiUsesWith(FC0.Preheader);
@@ -1757,6 +2271,7 @@ private:
 
     LI.removeBlock(FC1.Preheader);
     DTU.deleteBB(FC1.Preheader);
+
     if (FC0.Peeled) {
       LI.removeBlock(FC0.ExitBlock);
       DTU.deleteBB(FC0.ExitBlock);
@@ -1794,6 +2309,28 @@ private:
       FC0.L->addChildLoop(ChildLoop);
     }
 
+#if SIFIVE_CUSTOMIZATION
+    replaceInductionVarAndStep(FC0.IV, FC1.IV, FC0StepVal, FC1StepVal);
+
+    // Now check and see if FC0.RIV and FC1.RIV converge, if so unify.
+    // Specification:
+    //   Update FC0.RIV with FC1.RIV's latch value after using
+    //   FC0.RIV's latch value as input to FC1.RIV's reduction expression.
+    //   We keep the output value of FC1.RIV to escape the loop to
+    //   FC1_LcssaPhi.
+    //   Then we replace the use of the convergence value with a stack collected
+    //   value that is input from FC1_LcssaPhi's expression output.
+    //   The net result will still be applied to the fused output via
+    //   FC1_LcssaPhi's expression output.  Last of all we remove
+    //   FC1.RIV as it too is dead.  Subsequently, we will manage
+    //   the RIV value in FC0.  DCE will cleanup any residual dead code.
+    if (ConvergenceI) {
+      unifyReductions(FC0, FC1, FC0_LcssaPhi, FC1_LcssaPhi);
+      updateConvergence(FC0_LcssaPhi, FC1_LcssaPhi, ConvergenceI,
+                        LastFC1RelatedI);
+    }
+#endif
+
     // Delete the now empty loop L1.
     LI.erase(FC1.L);
 
@@ -1809,6 +2346,285 @@ private:
 
     return FC0.L;
   }
+
+#if SIFIVE_CUSTOMIZATION
+  /// Fuse two fusion candidates, creating a new fused loop.
+  ///
+  /// This method contains the mechanics of fusing two loops, represented by \p
+  /// FC0 and \p FC1. It is assumed that \p FC0 dominates \p FC1 and \p FC1
+  /// postdominates \p FC0 (making them control flow equivalent). It also
+  /// assumes that the other conditions for fusion have been met: non adjacent,
+  /// identical trip counts, and no negative distance dependencies exist that
+  /// would prevent fusion. Thus, there is no checking for these conditions in
+  /// this method.  We will require that there are no intervening uses of values
+  /// created in FC0 between FC0's exit and FC1.
+  ///
+  /// Fusion is performed by rewiring the CFG to update successor blocks of the
+  /// components of tho loop. Specifically, the following changes are done:
+  ///
+  ///   1. The preheader of \p FC0 is emptied and left for cfg simplify to
+  ///      remove based on analysis.
+  ///   2. The pred of the preheader of \p FC0 is rewired to successor of
+  ///      FC0's exit block.
+  ///   3. The latch of \p FC0 is modified to jump to the header of \p FC1.
+  ///   4. The latch of \p FC1 i modified to jump to the header of \p FC0.
+  ///      as its back edge.
+  ///   5. All blocks from \p FC1 are removed from FC1 and added to FC0,
+  ///      subsequently \p FC1 is discarded and its loop information
+  ///      forgotten.
+  ///
+  /// All of these modifications are done with dominator tree updates, thus
+  /// keeping the dominator (and post dominator) information up-to-date.
+  ///
+  /// This can be improved in the future by actually merging blocks during
+  /// fusion. For example, the preheader of \p FC0 can be merged with the
+  /// preheader of \p FC1. This would allow loops with more than a single
+  /// statement in the preheader to be fused. Similarly, the latch blocks of the
+  /// two loops could also be fused into a single block. This will require
+  /// analysis to prove it is safe to move the contents of the block past
+  /// existing code, which currently has not been implemented.
+  ///
+  /// For now each candiate \p FC0 that produces escaping values, must not have
+  /// uses that either dominate the preheader of \p FC1 or are
+  /// dominated by the exit block of \p FC0 or have no uses until \p FC1.
+  Loop *performNonAdjacentFusion(
+      const FusionCandidate &FC0, const FusionCandidate &FC1) {
+    assert(FC0.isValid() && FC1.isValid() &&
+           "Expecting valid fusion candidates");
+
+    LLVM_DEBUG(dbgs() << "Fusion Candidate 0: \n"; FC0.dump();
+               dbgs() << "Fusion Candidate 1: \n"; FC1.dump(););
+
+    // Move instructions from the preheader of FC0 to the beginning of the preheader
+    // of FC1.
+    moveInstructionsToTheBeginning(*FC0.Preheader, *FC1.Preheader, DT, PDT, DI);
+
+    // Find all lcssa phi nodes in FC0.ExitBlock.
+    SmallVector<PHINode *, 8> OriginalFC0ExitPHIs;
+    for (PHINode &PHI : FC0.ExitBlock->phis()) {
+      if (PHI.getNumIncomingValues() != 1)
+        continue;
+      if (PHI.getBasicBlockIndex(FC0.Latch) >= 0)
+      OriginalFC0ExitPHIs.push_back(&PHI);
+    }
+
+    // Remember the phi nodes originally in the header of FC0 in order to rewire
+    // them later. However, this is only necessary if the new loop carried
+    // values might not dominate the exiting branch. While we do not generally
+    // test if this is the case but simply insert intermediate phi nodes, we
+    // need to make sure these intermediate phi nodes have different
+    // predecessors. To this end, we filter the special case where the exiting
+    // block is the latch block of the first loop. Nothing needs to be done
+    // anyways as all loop carried values dominate the latch and thereby also the
+    // exiting branch.
+    SmallVector<PHINode *, 8> OriginalFC0PHIs;
+    if (FC0.ExitingBlock != FC0.Latch)
+      for (PHINode &PHI : FC0.Header->phis())
+        OriginalFC0PHIs.push_back(&PHI);
+
+    PHINode *FC0_LcssaPhi = nullptr;
+    PHINode *FC1_LcssaPhi = nullptr;
+    Value *FC0StepVal = nullptr;
+    Value *FC1StepVal = nullptr;
+
+    // We are going to replace all uses of FC1's step with FC0's step, as the
+    // bounds/step are the same, then remove FC1's IV.  As a result, FC0's
+    // compare will become orphaned, we do this for simple loops only.
+    if (OriginalFC0PHIs.empty() && LoopConcatCanonicalize &&
+        loopsHaveIdenticalBounds(FC0, FC1)) {
+      FC0StepVal = FC0.IV->getIncomingValueForBlock(FC0.Latch);
+      FC1StepVal = FC1.IV->getIncomingValueForBlock(FC1.Latch);
+    }
+
+    // Now check and see if FC0.RIV and FC1.RIV converge.
+    Instruction *ConvergenceI = nullptr;
+    Instruction *LastFC1RelatedI = nullptr;
+    if (LoopConcatCanonicalize && FC0.RIV && FC1.RIV) {
+      FC0_LcssaPhi = findLoopOutput(FC0);
+      FC1_LcssaPhi = findLoopOutput(FC1);
+      ConvergenceI = reductionValuesConverge(FC0, FC1, LastFC1RelatedI,
+                                             FC0_LcssaPhi, FC1_LcssaPhi);
+    }
+
+    // Replace incoming blocks for header PHIs first.
+    FC0.Preheader->replaceSuccessorsPhiUsesWith(FC1.Preheader);
+    FC0.Latch->replaceSuccessorsPhiUsesWith(FC1.Latch);
+
+    // Move phi nodes from FC0.ExitBlock to FC1.ExitBlock after updates.
+    for (auto *PHI : OriginalFC0ExitPHIs)
+        PHI->moveBefore(FC1.ExitBlock->getFirstInsertionPt());
+
+    // Then modify the control flow and update DT and PDT.
+    SmallVector<DominatorTree::UpdateType, 8> TreeUpdates;
+
+    // The old exiting block of the first loop (FC0) has to jump to the header
+    // of the second as we need to execute the code in the second header block
+    // regardless of the trip count. That is, if the trip count is 0, so the
+    // back edge is never taken, we still have to execute both loop headers,
+    // especially (but not only!) if the second is a do-while style loop.
+    // However, doing so might invalidate the phi nodes of the first loop as
+    // the new values do only need to dominate their latch and not the exiting
+    // predicate. To remedy this potential problem we always introduce phi
+    // nodes in the header of the second loop later that select the loop carried
+    // value, if the second header was reached through an old latch of the
+    // first, or undef otherwise. This is sound as exiting the first implies the
+    // second will exit too, __without__ taking the back-edge. [Their
+    // trip-counts are equal after all.
+    // KB: Would this sequence be simpler to just make FC0.ExitingBlock go
+    // to FC1.Header? I think this is basically what the three sequences are
+    // trying to accomplish; however, doing this directly in the CFG may mean
+    // the DT/PDT becomes invalid
+    if (!FC0.Peeled) {
+      FC0.ExitingBlock->getTerminator()->replaceUsesOfWith(FC0.ExitBlock,
+                                                           FC1.Header);
+      TreeUpdates.emplace_back(DominatorTree::UpdateType(
+          DominatorTree::Insert, FC0.ExitingBlock, FC1.Header));
+      TreeUpdates.emplace_back(DominatorTree::UpdateType(
+          DominatorTree::Delete, FC0.ExitingBlock, FC0.ExitBlock));
+    } else {
+      assert(0 && "Currently Peeled solutions are not supported here");
+    }
+
+    // Retarget FC0.Preheader to FC0.ExitBlock.
+    FC0.Preheader->getTerminator()->replaceUsesOfWith(FC0.Header, FC0.ExitBlock);
+    TreeUpdates.emplace_back(DominatorTree::UpdateType(
+        DominatorTree::Insert, FC0.Preheader, FC0.ExitBlock));
+    TreeUpdates.emplace_back(DominatorTree::UpdateType(
+        DominatorTree::Delete, FC0.Preheader, FC0.Header));
+
+    // Retarget FC1.Preheader to FC0.Header
+    FC1.Preheader->getTerminator()->replaceUsesOfWith(FC1.Header, FC0.Header);
+    TreeUpdates.emplace_back(DominatorTree::UpdateType(
+        DominatorTree::Insert, FC1.Preheader, FC0.Header));
+    TreeUpdates.emplace_back(DominatorTree::UpdateType(
+        DominatorTree::Delete, FC1.Preheader, FC1.Header));
+
+    // Moves the phi nodes from the second to the first loops header block.
+    while (PHINode *PHI = dyn_cast<PHINode>(&FC1.Header->front())) {
+      if (SE.isSCEVable(PHI->getType()))
+        SE.forgetValue(PHI);
+      if (PHI->hasNUsesOrMore(1))
+        PHI->moveBefore(FC0.Header->getFirstInsertionPt());
+      else
+        PHI->eraseFromParent();
+    }
+
+    // Introduce new phi nodes in the second loop header to ensure
+    // exiting the first and jumping to the header of the second does not break
+    // the SSA property of the phis originally in the first loop. See also the
+    // comment above.
+    BasicBlock::iterator L1HeaderIP = FC1.Header->begin();
+    for (PHINode *LCPHI : OriginalFC0PHIs) {
+      int L1LatchBBIdx = LCPHI->getBasicBlockIndex(FC1.Latch);
+      assert(L1LatchBBIdx >= 0 &&
+             "Expected loop carried value to be rewired at this point!");
+
+      Value *LCV = LCPHI->getIncomingValue(L1LatchBBIdx);
+
+      PHINode *L1HeaderPHI =
+          PHINode::Create(LCV->getType(), 2, LCPHI->getName() + ".afterFC0");
+      L1HeaderPHI->insertBefore(L1HeaderIP);
+      L1HeaderPHI->addIncoming(LCV, FC0.Latch);
+      L1HeaderPHI->addIncoming(PoisonValue::get(LCV->getType()),
+                               FC0.ExitingBlock);
+
+      LCPHI->setIncomingValue(L1LatchBBIdx, L1HeaderPHI);
+    }
+
+    // Replace latch terminator destinations.
+    FC0.Latch->getTerminator()->replaceUsesOfWith(FC0.Header, FC1.Header);
+    if (FC0.Latch != FC0.ExitingBlock)
+      FC0.Latch->getTerminator()->replaceUsesOfWith(FC0.ExitBlock, FC1.Header);
+    FC1.Latch->getTerminator()->replaceUsesOfWith(FC1.Header, FC0.Header);
+
+    // Modify the latch branch of FC0 to be unconditional as both successors of
+    // the branch are the same.
+    simplifyLatchBranch(FC0);
+
+    // If FC0.Latch and FC0.ExitingBlock are the same then we have already
+    // performed the updates above.
+    if (FC0.Latch != FC0.ExitingBlock)
+      TreeUpdates.emplace_back(DominatorTree::UpdateType(
+          DominatorTree::Insert, FC0.Latch, FC1.Header));
+
+    TreeUpdates.emplace_back(DominatorTree::UpdateType(DominatorTree::Delete,
+                                                       FC0.Latch, FC0.Header));
+    TreeUpdates.emplace_back(DominatorTree::UpdateType(DominatorTree::Insert,
+                                                       FC1.Latch, FC0.Header));
+    TreeUpdates.emplace_back(DominatorTree::UpdateType(DominatorTree::Delete,
+                                                       FC1.Latch, FC1.Header));
+
+    // Update DT/PDT
+    DTU.applyUpdates(TreeUpdates);
+    LI.removeBlock(FC0.Preheader);
+
+    // Is there a way to keep SE up-to-date so we don't need to forget the loops
+    // and rebuild the information in subsequent passes of fusion?
+    // Note: Need to forget the loops before merging the loop latches, as
+    // mergeLatch may remove the only block in FC1.
+    SE.forgetLoop(FC1.L);
+    SE.forgetLoop(FC0.L);
+    // Forget block dispositions as well, so that there are no dangling
+    // pointers to erased/free'ed blocks.
+    SE.forgetBlockAndLoopDispositions();
+
+    // Move instructions from FC0.Latch to FC1.Latch.
+    // Note: mergeLatch requires an updated DT.
+    mergeLatch(FC0, FC1);
+
+    // Merge the loops.
+    SmallVector<BasicBlock *, 8> Blocks(FC1.L->blocks());
+    for (BasicBlock *BB : Blocks) {
+      FC0.L->addBlockEntry(BB);
+      FC1.L->removeBlockFromLoop(BB);
+      if (LI.getLoopFor(BB) != FC1.L)
+        continue;
+      LI.changeLoopFor(BB, FC0.L);
+    }
+    while (!FC1.L->isInnermost()) {
+      const auto &ChildLoopIt = FC1.L->begin();
+      Loop *ChildLoop = *ChildLoopIt;
+      FC1.L->removeChildLoop(ChildLoopIt);
+      FC0.L->addChildLoop(ChildLoop);
+    }
+
+    replaceInductionVarAndStep(FC0.IV, FC1.IV, FC0StepVal, FC1StepVal);
+
+    // Now check and see if FC0.RIV and FC1.RIV converge, if so unify.
+    // Specification:
+    //   Update FC0.RIV with FC1.RIV's latch value after using
+    //   FC0.RIV's latch value as input to FC1.RIV's reduction expression.
+    //   We keep the output value of FC1.RIV to escape the loop to
+    //   FC1_LcssaPhi.
+    //   Then we replace the use of the convergence value with a stack collected
+    //   value that is input from FC1_LcssaPhi's expression output.
+    //   The net result will still be applied to the fused output via
+    //   FC1_LcssaPhi's expression output.  Last of all we remove
+    //   FC1.RIV as it too is dead.  Subsequently, we will manage
+    //   the RIV value in FC0.  DCE will cleanup any residual dead code.
+    if (ConvergenceI) {
+      unifyReductions(FC0, FC1, FC0_LcssaPhi, FC1_LcssaPhi);
+      updateConvergence(FC0_LcssaPhi, FC1_LcssaPhi, ConvergenceI,
+                        LastFC1RelatedI);
+    }
+
+    // Delete the now empty loop L1.
+    LI.erase(FC1.L);
+    DTU.flush();
+
+#ifndef NDEBUG
+    assert(!verifyFunction(*FC0.Header->getParent(), &errs()));
+    assert(DT.verify(DominatorTree::VerificationLevel::Fast));
+    assert(PDT.verify());
+    LI.verify(DT);
+    SE.verify();
+#endif
+
+    LLVM_DEBUG(dbgs() << "Fusion done:\n");
+
+    return FC0.L;
+  }
+#endif
 
   /// Report details on loop fusion opportunities.
   ///
