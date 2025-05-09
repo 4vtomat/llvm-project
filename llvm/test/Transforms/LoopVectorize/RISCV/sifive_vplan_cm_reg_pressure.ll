@@ -13,7 +13,7 @@
 ; CHECK-P470-NEXT:   ir<%37> = load from index 1
 ; CHECK-P470-NEXT:   ir<%38> = load from index 2
 ; CHECK-P470-NEXT:   ir<%39> = load from index 3
-; CHECK-P470-NEXT: VPlanCM: Current registers usage:	RISCV::VRRC = 30
+; CHECK-P470-NEXT: VPlanCM: Current registers usage:	RISCV::VRRC = 29
 ; CHECK-P470: VPlanCM: (mf2, float) vec_iter_cost = 173
 ; ...
 ; CHECK-p470: VPlanCM: Live-In ir<%dweight> will use 2 RISCV::VRRC registers
@@ -22,7 +22,7 @@
 ; CHECK-P470-NEXT:   ir<%37> = load from index 1
 ; CHECK-P470-NEXT:   ir<%38> = load from index 2
 ; CHECK-P470-NEXT:   ir<%39> = load from index 3
-; CHECK-P470-NEXT: VPlanCM: Current registers usage:	RISCV::VRRC = 31
+; CHECK-P470-NEXT: VPlanCM: Current registers usage:	RISCV::VRRC = 29
 ; CHECK-P470: VPlanCM: (m1, float) vec_iter_cost = 213
 
 ; CHECK-p670: VPlanCM: Live-In ir<%dweight> will use 1 RISCV::VRRC registers
@@ -31,7 +31,7 @@
 ; CHECK-P670-NEXT:   ir<%37> = load from index 1
 ; CHECK-P670-NEXT:   ir<%38> = load from index 2
 ; CHECK-P670-NEXT:   ir<%39> = load from index 3
-; CHECK-P670-NEXT: VPlanCM: Current registers usage:	RISCV::VRRC = 30
+; CHECK-P670-NEXT: VPlanCM: Current registers usage:	RISCV::VRRC = 29
 ; CHECK-P670: VPlanCM: (mf2, float) vec_iter_cost = 203
 ; ...
 ; CHECK-p670: VPlanCM: Live-In ir<%dweight> will use 2 RISCV::VRRC registers
@@ -40,7 +40,7 @@
 ; CHECK-P670-NEXT:   ir<%37> = load from index 1
 ; CHECK-P670-NEXT:   ir<%38> = load from index 2
 ; CHECK-P670-NEXT:   ir<%39> = load from index 3
-; CHECK-P670-NEXT: VPlanCM: Current registers usage:	RISCV::VRRC = 31
+; CHECK-P670-NEXT: VPlanCM: Current registers usage:	RISCV::VRRC = 29
 ; CHECK-P670: VPlanCM: (m1, float) vec_iter_cost = 233
 
 ; CHECK-X280-NOT: VPlanCM: Live-In ir<%dweight> will use 1 RISCV::VRRC registers
