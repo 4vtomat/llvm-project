@@ -3990,6 +3990,15 @@ void RISCVTTIImpl::getUnrollingPreferences(Loop *L, ScalarEvolution &SE,
   // taken cost of the backedge.
   if (Cost < 12)
     UP.Force = true;
+
+#if SIFIVE_CUSTOMIZATION
+  // Without runtime unroll on multi-exit loops, the unrolled unit might
+  // contain an extra boundary check (w.r.t the induction variable). This
+  // might have a higher performance impact on in-order cores compared to
+  // out-of-order cores.
+  if (!ST->getSchedModel().isOutOfOrder())
+    UP.RuntimeUnrollMultiExit = true;
+#endif
 }
 
 void RISCVTTIImpl::getPeelingPreferences(Loop *L, ScalarEvolution &SE,
