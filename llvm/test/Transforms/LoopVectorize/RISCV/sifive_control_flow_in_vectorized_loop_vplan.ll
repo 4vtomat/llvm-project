@@ -21,35 +21,37 @@
 ; VPLAN-NEXT:  Successor(s): ir-bb<scalar.ph>, ir-bb<vector.ph>
 ; VPLAN-EMPTY:
 ; VPLAN-NEXT:  ir-bb<vector.ph>:
+; VPLAN-NEXT:    EMIT vp<%1> = broadcast ir<%shl11>
+; VPLAN-NEXT:    EMIT vp<%2> = broadcast ir<%1>
 ; VPLAN-NEXT:  Successor(s): vector loop
 ; VPLAN-EMPTY:
 ; VPLAN-NEXT:  <x1> vector loop: {
 ; VPLAN-NEXT:    vector.body:
-; VPLAN-NEXT:      SCALAR-PHI vp<%1> = phi ir<0>, vp<%index.evl.next>
-; VPLAN-NEXT:      SCALAR-PHI vp<%2> = phi ir<0>, vp<%index.evl.next>
-; VPLAN-NEXT:      EMIT vp<%avl> = sub ir<%wide.trip.count>, vp<%2>
-; VPLAN-NEXT:      EMIT vp<%3> = EXPLICIT-VECTOR-LENGTH vp<%avl>
-; VPLAN-NEXT:      vp<%4> = SCALAR-STEPS vp<%2>, ir<1>
-; VPLAN-NEXT:      CLONE ir<%arrayidx> = getelementptr ir<%reg.24.val>, vp<%4>
-; VPLAN-NEXT:      vp<%5> = vector-pointer ir<%arrayidx>
-; VPLAN-NEXT:      WIDEN ir<%2> = vp.load vp<%5>, vp<%3>       unit-strided
-; VPLAN-NEXT:      WIDEN ir<%3> = and ir<%2>, ir<%1>
-; VPLAN-NEXT:      WIDEN ir<%or.cond.not> = icmp eq ir<%3>, ir<%1>
+; VPLAN-NEXT:      SCALAR-PHI vp<%3> = phi ir<0>, vp<%index.evl.next>
+; VPLAN-NEXT:      SCALAR-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; VPLAN-NEXT:      EMIT vp<%avl> = sub ir<%wide.trip.count>, vp<%4>
+; VPLAN-NEXT:      EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; VPLAN-NEXT:      vp<%6> = SCALAR-STEPS vp<%4>, ir<1>
+; VPLAN-NEXT:      CLONE ir<%arrayidx> = getelementptr ir<%reg.24.val>, vp<%6>
+; VPLAN-NEXT:      vp<%7> = vector-pointer ir<%arrayidx>
+; VPLAN-NEXT:      WIDEN ir<%2> = vp.load vp<%7>, vp<%5>       unit-strided
+; VPLAN-NEXT:      WIDEN ir<%3> = and ir<%2>, vp<%2>
+; VPLAN-NEXT:      WIDEN ir<%or.cond.not> = icmp eq ir<%3>, vp<%2>
 ; VPLAN-NEXT:    Successor(s):
 ; VPLAN-EMPTY:
 ; VPLAN-NEXT:    if (ir<%or.cond.not> != 0) {
 ; VPLAN-NEXT:      vector.if.bb:
-; VPLAN-NEXT:        WIDEN ir<%xor> = xor ir<%2>, ir<%shl11>
-; VPLAN-NEXT:        vp<%6> = vector-pointer ir<%arrayidx>
-; VPLAN-NEXT:        WIDEN vp.store vp<%6>, ir<%xor>, vp<%3>, ir<%or.cond.not> unit-strided
+; VPLAN-NEXT:        WIDEN ir<%xor> = xor ir<%2>, vp<%1>
+; VPLAN-NEXT:        vp<%8> = vector-pointer ir<%arrayidx>
+; VPLAN-NEXT:        WIDEN vp.store vp<%8>, ir<%xor>, vp<%5>, ir<%or.cond.not> unit-strided
 ; VPLAN-NEXT:        BRANCH-ON-MASK  All-One, vector.body.split
 ; VPLAN-NEXT:      No successors
 ; VPLAN-NEXT:    }
 ; VPLAN-NEXT:    Successor(s): vector.body.split
 ; VPLAN-EMPTY:
 ; VPLAN-NEXT:    vector.body.split:
-; VPLAN-NEXT:      SCALAR-CAST vp<%7> = zext vp<%3> to i64
-; VPLAN-NEXT:      EMIT vp<%index.evl.next> = add nuw vp<%7>, vp<%2>
+; VPLAN-NEXT:      SCALAR-CAST vp<%9> = zext vp<%5> to i64
+; VPLAN-NEXT:      EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
 ; VPLAN-NEXT:      EMIT branch-on-count vp<%index.evl.next>, ir<%wide.trip.count>
 ; VPLAN-NEXT:    No successors
 ; VPLAN-NEXT:  }
