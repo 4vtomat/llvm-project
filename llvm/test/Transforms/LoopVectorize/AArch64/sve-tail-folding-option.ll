@@ -350,31 +350,26 @@ define void @reverse(ptr noalias %dst, ptr noalias %src) #0 {
 ; CHECK-NOTF:       vector.body:
 ; CHECK-NOTF-NOT:     %{{.*}} = phi <vscale x 4 x i1>
 ; CHECK-NOTF:         %[[LOAD:.*]] = load <vscale x 2 x double>, ptr
-; CHECK-NOTF:         %{{.*}} = call <vscale x 2 x double> @llvm.vector.reverse.nxv2f64(<vscale x 2 x double> %[[LOAD]])
 
 ; CHECK-TF-NOREV-LABEL: @reverse(
 ; CHECK-TF-NOREV:       vector.body:
 ; CHECK-TF-NOREV-NOT:     %{{.*}} = phi <vscale x 4 x i1>
 ; CHECK-TF-NOREV:         %[[LOAD:.*]] = load <vscale x 2 x double>, ptr
-; CHECK-TF-NOREV:         %{{.*}} = call <vscale x 2 x double> @llvm.vector.reverse.nxv2f64(<vscale x 2 x double> %[[LOAD]])
 
 ; CHECK-TF-LABEL: @reverse(
 ; CHECK-TF:       vector.body:
 ; CHECK-TF:         %[[ACTIVE_LANE_MASK:.*]] = phi <vscale x 2 x i1>
-; CHECK-TF:         %[[REVERSE_MASK:.*]] = call <vscale x 2 x i1> @llvm.vector.reverse.nxv2i1(<vscale x 2 x i1> %[[ACTIVE_LANE_MASK]])
-; CHECK-TF:         %[[MASKED_LOAD:.*]] = call <vscale x 2 x double> @llvm.masked.load.nxv2f64.p0({{.*}} <vscale x 2 x i1> %reverse
+; CHECK-TF:         %[[MASKED_LOAD:.*]] = call <vscale x 2 x double> @llvm.masked.load.nxv2f64.p0({{.*}} <vscale x 2 x i1> %[[ACTIVE_LANE_MASK]]
 
 ; CHECK-TF-NORED-LABEL: @reverse(
 ; CHECK-TF-NORED:       vector.body:
 ; CHECK-TF-NORED:         %[[ACTIVE_LANE_MASK:.*]] = phi <vscale x 2 x i1>
-; CHECK-TF-NORED:         %[[REVERSE_MASK:.*]] = call <vscale x 2 x i1> @llvm.vector.reverse.nxv2i1(<vscale x 2 x i1> %[[ACTIVE_LANE_MASK]])
-; CHECK-TF-NORED:         %[[MASKED_LOAD:.*]] = call <vscale x 2 x double> @llvm.masked.load.nxv2f64.p0({{.*}} <vscale x 2 x i1> %reverse
+; CHECK-TF-NORED:         %[[MASKED_LOAD:.*]] = call <vscale x 2 x double> @llvm.masked.load.nxv2f64.p0({{.*}} <vscale x 2 x i1> %[[ACTIVE_LANE_MASK]]
 
 ; CHECK-TF-NOREC-LABEL: @reverse(
 ; CHECK-TF-NOREC:       vector.body:
 ; CHECK-TF-NOREC:         %[[ACTIVE_LANE_MASK:.*]] = phi <vscale x 2 x i1>
-; CHECK-TF-NOREC:         %[[REVERSE_MASK:.*]] = call <vscale x 2 x i1> @llvm.vector.reverse.nxv2i1(<vscale x 2 x i1> %[[ACTIVE_LANE_MASK]])
-; CHECK-TF-NOREC:         %[[MASKED_LOAD:.*]] = call <vscale x 2 x double> @llvm.masked.load.nxv2f64.p0({{.*}} <vscale x 2 x i1> %reverse
+; CHECK-TF-NOREC:         %[[MASKED_LOAD:.*]] = call <vscale x 2 x double> @llvm.masked.load.nxv2f64.p0({{.*}} <vscale x 2 x i1> %[[ACTIVE_LANE_MASK]]
 
 entry:
   br label %for.body

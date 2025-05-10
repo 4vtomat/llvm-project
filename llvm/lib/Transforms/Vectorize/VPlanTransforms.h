@@ -98,6 +98,10 @@ struct VPlanTransforms {
   static void createAndOptimizeReplicateRegions(VPlan &Plan);
 
 #if SIFIVE_CUSTOMIZATION
+  /// Cancel reverse operations in matching load/store pairs.
+  ///   reverse-store ( op ( op ( reverse-load (…) ) ) )
+  static void optimizeReversedLoadStore(VPlan &Plan);
+
   /// If any user of a WidenGEPRecipe is uniform, provide them a Replicate of
   /// underlying valueunderlying value to reduce the needs of vector extracts.
   static void optimizeGEPs(VPlan &Plan);

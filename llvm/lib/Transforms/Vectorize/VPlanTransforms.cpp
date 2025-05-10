@@ -542,6 +542,62 @@ void VPlanTransforms::removeDeadRecipes(VPlan &Plan) {
 }
 
 #if SIFIVE_CUSTOMIZATION
+void VPlanTransforms::optimizeReversedLoadStore(VPlan &Plan) {
+  for (VPBasicBlock *VPBB : VPBlockUtils::blocksOnly<VPBasicBlock>(
+           vp_depth_first_deep(Plan.getEntry()))) {
+    for (VPRecipeBase &R : make_early_inc_range(*VPBB)) {
+      // Look for reversed load
+      auto *LoadR = dyn_cast<VPWidenLoadRecipe>(&R);
+      if (!LoadR || !LoadR->isReverse())
+        continue;
+      VPWidenStoreRecipe *StoreR = nullptr;
+      VPValue *V = LoadR;
+      // Check if the reverse-load has a single use chain.
+      while (V->getNumUsers() == 1) {
+        VPUser *U = *V->user_begin();
+
+        // It is safe if the user is a widen binary op and the other operand is
+        // uniform
+        auto *BinaryR = dyn_cast<VPWidenRecipe>(U);
+        if (BinaryR && Instruction::isBinaryOp(BinaryR->getOpcode())) {
+          VPValue *Op0 = BinaryR->getOperand(0);
+          VPValue *Other = (Op0 == V) ? BinaryR->getOperand(1) : Op0;
+          if (!Other->isLiveIn())
+            break;
+          V = BinaryR;
+          continue;
+        }
+        if (auto *Candidate = dyn_cast<VPWidenStoreRecipe>(U);
+            Candidate && Candidate->isReverse() &&
+            V == Candidate->getStoredValue())
+          StoreR = Candidate;
+        break;
+      }
+      if (!StoreR)
+        continue;
+
+      // Create a Load/Store pair without reverse.
+      auto *LI = cast<LoadInst>(&LoadR->getIngredient());
+      auto *SI = cast<StoreInst>(&StoreR->getIngredient());
+      auto *ForwardLoad = new VPWidenLoadRecipe(
+          *LI, LoadR->getAddr(), LoadR->getMask(), LoadR->isConsecutive(),
+          /*Reverse*/ false, LoadR->getDebugLoc(),
+          LoadR->isStrided() ? LoadR->getStrideInBytes() : nullptr,
+          LoadR->isSpeculative(), LoadR->isMonotonic());
+      ForwardLoad->insertBefore(LoadR);
+      auto *ForwardStore = new VPWidenStoreRecipe(
+          *SI, StoreR->getAddr(), StoreR->getStoredValue(), StoreR->getMask(),
+          StoreR->isConsecutive(), /*Reverse*/ false, StoreR->getDebugLoc(),
+          StoreR->isStrided() ? StoreR->getStrideInBytes() : nullptr,
+          StoreR->isMonotonic());
+      ForwardStore->insertBefore(StoreR);
+      StoreR->eraseFromParent();
+      LoadR->replaceAllUsesWith(ForwardLoad);
+      LoadR->eraseFromParent();
+    }
+  }
+}
+
 void VPlanTransforms::optimizeGEPs(VPlan &Plan) {
   ReversePostOrderTraversal<VPBlockDeepTraversalWrapper<VPBlockBase *>> RPOT(
       Plan.getEntry());
@@ -1714,6 +1770,9 @@ void VPlanTransforms::optimize(VPlan &Plan) {
   runPass(removeRedundantCanonicalIVs, Plan);
   runPass(removeRedundantInductionCasts, Plan);
 
+#if SIFIVE_CUSTOMIZATION
+  runPass(optimizeReversedLoadStore, Plan);
+#endif // SIFIVE_CUSTOMIZATION
   runPass(simplifyRecipes, Plan, *Plan.getCanonicalIV()->getScalarType());
   runPass(removeDeadRecipes, Plan);
   runPass(legalizeAndOptimizeInductions, Plan);
