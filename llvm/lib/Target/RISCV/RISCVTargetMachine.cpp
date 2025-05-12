@@ -330,18 +330,6 @@ bool RISCVTargetMachine::isNoopAddrSpaceCast(unsigned SrcAS,
 ScheduleDAGInstrs *
 RISCVTargetMachine::createMachineScheduler(MachineSchedContext *C) const {
   ScheduleDAGMILive *DAG = nullptr;
-#if SIFIVE_CUSTOMIZATION
-  {
-    const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
-    // FIXME integrate this with upstream code?
-    if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
-      DAG = createGenericSchedLive(C);
-      DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
-      DAG->addMutation(createRISCVMaskInstDAGMutation());
-      return DAG;
-    }
-  }
-#endif // SIFIVE_CUSTOMIZATION
   if (EnableMISchedLoadStoreClustering) {
     DAG = createGenericSchedLive(C);
     DAG->addMutation(createLoadClusterDAGMutation(
@@ -351,6 +339,12 @@ RISCVTargetMachine::createMachineScheduler(MachineSchedContext *C) const {
   }
 
   const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
+#if SIFIVE_CUSTOMIZATION
+  if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
+    DAG = DAG ? DAG : createGenericSchedLive(C);
+    DAG->addMutation(createRISCVMaskInstDAGMutation());
+  }
+#endif // SIFIVE_CUSTOMIZATION
   if (!DisableVectorMaskMutation && ST.hasVInstructions()) {
     DAG = DAG ? DAG : createGenericSchedLive(C);
     DAG->addMutation(createRISCVVectorMaskDAGMutation(DAG->TRI));

@@ -3038,8 +3038,9 @@ bool RISCVInstrInfo::shouldClusterMemOps(
     bool IsLoad // SIFIVE
 ) const {
 #if SIFIVE_CUSTOMIZATION
-  if (STI.getProcFamily() == RISCVSubtarget::SiFive7)
-    return shouldClusterMemOpsSiFive7(BaseOps1, BaseOps2);
+  if (STI.getProcFamily() == RISCVSubtarget::SiFive7 &&
+      shouldClusterMemOpsSiFive7(BaseOps1, BaseOps2))
+    return true;
 
   // We want to limit the number of clusters on P400 cores, which have smaller
   // number of scalar pipes (especially FEX), to prevent a single EX pipe from
