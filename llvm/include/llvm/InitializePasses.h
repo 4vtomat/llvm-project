@@ -108,15 +108,12 @@ void initializeEHContGuardCatchretPass(PassRegistry &);
 void initializeExpandLargeFpConvertLegacyPassPass(PassRegistry &);
 void initializeExpandLargeDivRemLegacyPassPass(PassRegistry &);
 void initializeExpandMemCmpLegacyPassPass(PassRegistry &);
-<<<<<<< HEAD
 void initializeExpandPostRAPass(PassRegistry &);
 #if SIFIVE_CUSTOMIZATION
 void initializeExpandPowiLegacyPassPass(PassRegistry &);
 void initializeExpandVPReductionLegacyPassPass(PassRegistry &);
 #endif // SIFIVE_CUSTOMIZATION
-=======
 void initializeExpandPostRALegacyPass(PassRegistry &);
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
 void initializeExpandReductionsPass(PassRegistry &);
 void initializeExpandVariadicsPass(PassRegistry &);
 void initializeExternalAAWrapperPassPass(PassRegistry &);
