@@ -1571,10 +1571,28 @@ define <vscale x 16 x double> @vfmin_vv_nxv16f64(<vscale x 16 x double> %va, <vs
 ; CHECK-NEXT:    vmfeq.vv v0, v8, v8, v0.t
 ; CHECK-NEXT:    vmerge.vvm v24, v8, v16, v0
 ; CHECK-NEXT:    vl8re64.v v16, (a0)
+<<<<<<< HEAD
 ; CHECK-NEXT:    vmv1r.v v0, v6
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vfmin.vv v8, v24, v8, v0.t
+=======
+; CHECK-NEXT:    vmv1r.v v0, v26
+; CHECK-NEXT:    addi a0, sp, 16
+; CHECK-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
+; CHECK-NEXT:    vmerge.vvm v24, v8, v24, v0
+; CHECK-NEXT:    vmv1r.v v0, v6
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    slli a0, a0, 3
+; CHECK-NEXT:    add a0, sp, a0
+; CHECK-NEXT:    addi a0, a0, 16
+; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
+; CHECK-NEXT:    vfmin.vv v8, v24, v8, v0.t
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    slli a0, a0, 3
+; CHECK-NEXT:    add a0, sp, a0
+; CHECK-NEXT:    addi a0, a0, 16
+>>>>>>> 6c2e170d043d3a7d7b32635e887cfd255ef5c2ce
 ; CHECK-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
 ; CHECK-NEXT:    bltu a2, a1, .LBB40_2
 ; CHECK-NEXT:  # %bb.1:

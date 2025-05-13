@@ -225,7 +225,7 @@ public:
 
   TypeSize getRegisterBitWidth(TargetTransformInfo::RegisterKind K) const;
 
-  unsigned getRegUsageForType(Type *Ty);
+  unsigned getRegUsageForType(Type *Ty) const;
 
   unsigned getMaximumVF(unsigned ElemWidth, unsigned Opcode) const;
 

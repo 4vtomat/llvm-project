@@ -733,6 +733,7 @@ Value *VPInstruction::generate(VPTransformState &State) {
     Builder.GetInsertBlock()->getTerminator()->eraseFromParent();
     return CondBr;
   }
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case VPInstruction::CSAInitMask: {
     Value *InitMask = State.get(getOperand(0));
@@ -871,6 +872,12 @@ Value *VPInstruction::generate(VPTransformState &State) {
   case Instruction::Call:
     llvm_unreachable("This opcode is handled by the VPCallInstruction recipe");
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  case VPInstruction::Broadcast: {
+    return Builder.CreateVectorSplat(
+        State.VF, State.get(getOperand(0), /*IsScalar*/ true), "broadcast");
+  }
+>>>>>>> 6c2e170d043d3a7d7b32635e887cfd255ef5c2ce
   case VPInstruction::ComputeReductionResult: {
     // FIXME: The cross-recipe dependency on VPReductionPHIRecipe is temporary
     // and will be removed by breaking up the recipe further.
@@ -1372,7 +1379,6 @@ bool VPInstruction::onlyFirstLaneUsed(const VPValue *Op) const {
   case Instruction::ICmp:
   case Instruction::Select:
   case Instruction::Or:
-  case VPInstruction::PtrAdd:
     // TODO: Cover additional opcodes.
     return vputils::onlyFirstLaneUsed(this);
   case VPInstruction::ActiveLaneMask:
@@ -1387,6 +1393,8 @@ bool VPInstruction::onlyFirstLaneUsed(const VPValue *Op) const {
   case VPInstruction::BranchOnCond:
   case VPInstruction::ResumePhi:
     return true;
+  case VPInstruction::PtrAdd:
+    return Op == getOperand(0) || vputils::onlyFirstLaneUsed(this);
   };
   llvm_unreachable("switch should return");
 }
@@ -1459,6 +1467,10 @@ void VPInstruction::print(raw_ostream &O, const Twine &Indent,
   case VPInstruction::BranchOnCount:
     O << "branch-on-count";
     break;
+  case VPInstruction::Broadcast:
+    O << "broadcast";
+    break;
+
   case VPInstruction::ExtractFromEnd:
     O << "extract-from-end";
     break;

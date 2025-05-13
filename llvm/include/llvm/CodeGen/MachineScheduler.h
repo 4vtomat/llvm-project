@@ -1109,7 +1109,8 @@ public:
     BotPathReduce,
     TopDepthReduce,
     TopPathReduce,
-    NodeOrder
+    NodeOrder,
+    FirstValid
   };
 
 #ifndef NDEBUG

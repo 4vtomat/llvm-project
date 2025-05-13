@@ -1080,7 +1080,8 @@ void TemporalProfTraceTy::createBPFunctionNodes(
     // BalancedPartitioning more effective.
     for (auto &[Id, UNs] : IdToUNs)
       llvm::erase_if(UNs, [&](auto &UN) {
-        return UNFrequency[UN] <= 1 || 2 * UNFrequency[UN] > IdToUNs.size();
+        unsigned Freq = UNFrequency[UN];
+        return Freq <= 1 || 2 * Freq > IdToUNs.size();
       });
   }
 

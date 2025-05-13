@@ -4992,8 +4992,8 @@ void AArch64InstrInfo::copyGPRRegTuple(MachineBasicBlock &MBB,
 
 void AArch64InstrInfo::copyPhysReg(MachineBasicBlock &MBB,
                                    MachineBasicBlock::iterator I,
-                                   const DebugLoc &DL, MCRegister DestReg,
-                                   MCRegister SrcReg, bool KillSrc,
+                                   const DebugLoc &DL, Register DestReg,
+                                   Register SrcReg, bool KillSrc,
                                    bool RenamableDest,
                                    bool RenamableSrc) const {
   if (AArch64::GPR32spRegClass.contains(DestReg) &&
@@ -5072,8 +5072,8 @@ void AArch64InstrInfo::copyPhysReg(MachineBasicBlock &MBB,
     auto ToPPR = [](MCRegister R) -> MCRegister {
       return (R - AArch64::PN0) + AArch64::P0;
     };
-    MCRegister PPRSrcReg = SrcIsPNR ? ToPPR(SrcReg) : SrcReg;
-    MCRegister PPRDestReg = DestIsPNR ? ToPPR(DestReg) : DestReg;
+    MCRegister PPRSrcReg = SrcIsPNR ? ToPPR(SrcReg) : SrcReg.asMCReg();
+    MCRegister PPRDestReg = DestIsPNR ? ToPPR(DestReg) : DestReg.asMCReg();
 
     if (PPRSrcReg != PPRDestReg) {
       auto NewMI = BuildMI(MBB, I, DL, get(AArch64::ORR_PPzPP), PPRDestReg)

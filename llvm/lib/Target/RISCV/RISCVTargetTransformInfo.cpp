@@ -1236,7 +1236,6 @@ InstructionCost RISCVTTIImpl::getShuffleCost(TTI::ShuffleKind Kind,
       case TTI::SK_PermuteSingleSrc:
       case TTI::SK_Transpose:
       case TTI::SK_PermuteTwoSrc:
-      case TTI::SK_Select:
         return true;
       }
     };
@@ -4018,7 +4017,7 @@ void RISCVTTIImpl::getPeelingPreferences(Loop *L, ScalarEvolution &SE,
 #endif // SIFIVE_CUSTOMIZATION
 }
 
-unsigned RISCVTTIImpl::getRegUsageForType(Type *Ty) {
+unsigned RISCVTTIImpl::getRegUsageForType(Type *Ty) const {
   if (Ty->isVectorTy()) {
     // f16 with only zvfhmin and bf16 will be promoted to f32
     Type *EltTy = cast<VectorType>(Ty)->getElementType();

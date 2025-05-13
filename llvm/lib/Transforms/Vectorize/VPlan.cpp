@@ -769,8 +769,7 @@ template <typename T> static T *getEnclosingLoopRegionForRegion(T *P) {
     P = P->getParent();
     // Multiple loop regions can be nested, but replicate regions can only be
     // nested inside a loop region or must be outside any other region.
-    assert((!P || !cast<VPRegionBlock>(P)->isReplicator()) &&
-           "unexpected nested replicate regions");
+    assert((!P || !P->isReplicator()) && "unexpected nested replicate regions");
   }
   return P;
 }
@@ -1165,6 +1164,11 @@ InstructionCost VPBasicBlock::overhead(ElementCount VF,
 VPlan::VPlan(Loop *L) {
   setEntry(createVPIRBasicBlock(L->getLoopPreheader()));
   ScalarHeader = createVPIRBasicBlock(L->getHeader());
+
+  SmallVector<BasicBlock *> IRExitBlocks;
+  L->getExitBlocks(IRExitBlocks);
+  for (BasicBlock *EB : IRExitBlocks)
+    ExitBlocks.push_back(createVPIRBasicBlock(EB));
 }
 
 VPlan::~VPlan() {
@@ -1184,7 +1188,7 @@ VPlan::~VPlan() {
     }
     delete VPB;
   }
-  for (VPValue *VPV : VPLiveInsToFree)
+  for (VPValue *VPV : getLiveIns())
     delete VPV;
   if (BackedgeTakenCount)
     delete BackedgeTakenCount;
@@ -1281,7 +1285,7 @@ VPlanPtr VPlan::createInitialVPlan(Type *InductionTy,
   //    we unconditionally branch to the scalar preheader.  Do nothing.
   // 3) Otherwise, construct a runtime check.
   BasicBlock *IRExitBlock = TheLoop->getUniqueLatchExitBlock();
-  auto *VPExitBlock = Plan->createVPIRBasicBlock(IRExitBlock);
+  VPIRBasicBlock *VPExitBlock = Plan->getExitBlock(IRExitBlock);
   // The connection order corresponds to the operands of the conditional branch.
   VPBlockUtils::insertBlockAfter(VPExitBlock, MiddleVPBB);
   VPBlockUtils::connectBlocks(MiddleVPBB, ScalarPH);
@@ -1378,6 +1382,7 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
 #endif // SIFIVE_CUSTOMIZATION
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 void VPlan::initializeMasks(VPTransformState &State) {
   if (AllTrueMask && AllTrueMask->getNumUsers()) {
@@ -1390,6 +1395,15 @@ void VPlan::initializeMasks(VPTransformState &State) {
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+VPIRBasicBlock *VPlan::getExitBlock(BasicBlock *IRBB) const {
+  auto Iter = find_if(getExitBlocks(), [IRBB](const VPIRBasicBlock *VPIRBB) {
+    return VPIRBB->getIRBasicBlock() == IRBB;
+  });
+  assert(Iter != getExitBlocks().end() && "no exit block found");
+  return *Iter;
+}
+>>>>>>> 6c2e170d043d3a7d7b32635e887cfd255ef5c2ce
 
 bool VPlan::isExitBlock(VPBlockBase *VPBB) {
   return isa<VPIRBasicBlock>(VPBB) && VPBB->getNumSuccessors() == 0;
@@ -1702,7 +1716,7 @@ VPlan *VPlan::duplicate() {
   // Create VPlan, clone live-ins and remap operands in the cloned blocks.
   auto *NewPlan = new VPlan(cast<VPBasicBlock>(NewEntry), NewScalarHeader);
   DenseMap<VPValue *, VPValue *> Old2NewVPValues;
-  for (VPValue *OldLiveIn : VPLiveInsToFree) {
+  for (VPValue *OldLiveIn : getLiveIns()) {
     Old2NewVPValues[OldLiveIn] =
         NewPlan->getOrAddLiveIn(OldLiveIn->getLiveInIRValue());
   }
@@ -2028,7 +2042,7 @@ void VPSlotTracker::assignNames(const VPlan &Plan) {
   assignName(&Plan.VectorTripCount);
   if (Plan.BackedgeTakenCount)
     assignName(Plan.BackedgeTakenCount);
-  for (VPValue *LI : Plan.VPLiveInsToFree)
+  for (VPValue *LI : Plan.getLiveIns())
     assignName(LI);
 
 #if SIFIVE_CUSTOMIZATION

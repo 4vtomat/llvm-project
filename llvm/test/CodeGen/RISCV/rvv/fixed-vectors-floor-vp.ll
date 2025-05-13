@@ -747,7 +747,10 @@ define <32 x double> @vp_floor_v32f64(<32 x double> %va, <32 x i1> %m, i32 zeroe
 ; CHECK-NEXT:    addi a1, a1, 16
 ; CHECK-NEXT:    vs8r.v v16, (a1) # Unknown-size Folded Spill
 ; CHECK-NEXT:    li a2, 16
+<<<<<<< HEAD
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
+=======
+>>>>>>> 6c2e170d043d3a7d7b32635e887cfd255ef5c2ce
 ; CHECK-NEXT:    vslidedown.vi v7, v0, 2
 ; CHECK-NEXT:    mv a1, a0
 ; CHECK-NEXT:    bltu a0, a2, .LBB26_2

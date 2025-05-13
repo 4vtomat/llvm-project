@@ -3286,6 +3286,7 @@ const char *GenericSchedulerBase::getReasonStr(
   case BotHeightReduce:return "BOT-HEIGHT";
   case BotPathReduce:  return "BOT-PATH  ";
   case NodeOrder:      return "ORDER     ";
+  case FirstValid:     return "FIRST     ";
   };
   // clang-format on
   llvm_unreachable("Unknown reason!");
@@ -3707,7 +3708,7 @@ bool GenericScheduler::tryCandidate(SchedCandidate &Cand,
                                     SchedBoundary *Zone) const {
   // Initialize the candidate if needed.
   if (!Cand.isValid()) {
-    TryCand.Reason = NodeOrder;
+    TryCand.Reason = FirstValid;
     return true;
   }
 
@@ -4171,7 +4172,7 @@ bool PostGenericScheduler::tryCandidate(SchedCandidate &Cand,
                                         SchedCandidate &TryCand) {
   // Initialize the candidate if needed.
   if (!Cand.isValid()) {
-    TryCand.Reason = NodeOrder;
+    TryCand.Reason = FirstValid;
     return true;
   }
 
