@@ -1440,14 +1440,12 @@ parseBoundsCheckingOptions(StringRef Params) {
   return Options;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 Expected<bool> parseReassociatePassOptions(StringRef Params) {
   return PassBuilder::parseSinglePassOption(Params, "two-phase-reassoc",
                                             "Reassociate");
 }
 #endif
-=======
 Expected<RAGreedyPass::Options>
 parseRegAllocGreedyFilterFunc(PassBuilder &PB, StringRef Params) {
   if (Params.empty() || Params == "all")
@@ -1467,7 +1465,6 @@ Expected<bool> parseMachineSinkingPassOptions(StringRef Params) {
                                             "MachineSinkingPass");
 }
 
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
 } // namespace
 
 /// Tests whether a pass name starts with a valid prefix for a default pipeline
