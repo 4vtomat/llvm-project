@@ -316,10 +316,6 @@ class VSXSEGSched<int nf, int eew, bit isOrdered, string emul,
 class VSXSEGSchedMC<int nf, int eew, bit isOrdered>:
   VSXSEGSched<nf, eew, isOrdered, "WorstCase", forceMasked=1>;
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
 class RISCVVXMemOpMC<bits<3> E, bit Ordered, bit Store, bits<4> N = 0> {
   bits<3> Log2EEW = E;
   bits<1> IsOrdered = Ordered;
@@ -335,10 +331,6 @@ def RISCVBaseVXMemOpTable : GenericTable {
   let PrimaryKey = ["BaseInstr"];
   let PrimaryKeyName = "getVXMemOpInfo";
 }
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
 
 //===----------------------------------------------------------------------===//
 // Instruction class templates
@@ -584,36 +576,20 @@ multiclass VIndexLoadStore<int eew> {
 
   def VLUXEI # eew # _V :
     VIndexedLoad<MOPLDIndexedUnord, w, "vluxei" # eew # ".v">,
-<<<<<<< HEAD
-    RISCVVXMemOpMC<!logtwo(eew), Ordered=false, Store=false>, // SIFIVE
-    VLXSchedMC<eew, isOrdered=0>;
-  def VLOXEI # eew # _V :
-    VIndexedLoad<MOPLDIndexedOrder, w, "vloxei" # eew # ".v">,
-    RISCVVXMemOpMC<!logtwo(eew), Ordered=true, Store=false>, // SIFIVE
-=======
     RISCVVXMemOpMC<!logtwo(eew), Ordered=false, Store=false>,
     VLXSchedMC<eew, isOrdered=0>;
   def VLOXEI # eew # _V :
     VIndexedLoad<MOPLDIndexedOrder, w, "vloxei" # eew # ".v">,
     RISCVVXMemOpMC<!logtwo(eew), Ordered=true, Store=false>,
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
     VLXSchedMC<eew, isOrdered=1>;
 
   def VSUXEI # eew # _V :
     VIndexedStore<MOPSTIndexedUnord, w, "vsuxei" # eew # ".v">,
-<<<<<<< HEAD
-    RISCVVXMemOpMC<!logtwo(eew), Ordered=false, Store=true>, // SIFIVE
-    VSXSchedMC<eew, isOrdered=0>;
-  def VSOXEI # eew # _V :
-    VIndexedStore<MOPSTIndexedOrder, w, "vsoxei" # eew # ".v">,
-    RISCVVXMemOpMC<!logtwo(eew), Ordered=true, Store=true>, // SIFIVE
-=======
     RISCVVXMemOpMC<!logtwo(eew), Ordered=false, Store=true>,
     VSXSchedMC<eew, isOrdered=0>;
   def VSOXEI # eew # _V :
     VIndexedStore<MOPSTIndexedOrder, w, "vsoxei" # eew # ".v">,
     RISCVVXMemOpMC<!logtwo(eew), Ordered=true, Store=true>,
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
     VSXSchedMC<eew, isOrdered=1>;
 }
 
@@ -1804,38 +1780,22 @@ let Predicates = [HasVInstructions] in {
       def VLUXSEG#nf#EI#eew#_V :
         VIndexedSegmentLoad<!add(nf, -1), MOPLDIndexedUnord, w,
                             "vluxseg"#nf#"ei"#eew#".v">,
-<<<<<<< HEAD
-        RISCVVXMemOpMC<!logtwo(eew), Ordered=false, Store=false, N=nf>, // SIFIVE
-=======
         RISCVVXMemOpMC<!logtwo(eew), Ordered=false, Store=false, N=nf>,
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
         VLXSEGSchedMC<nf, eew, isOrdered=0>;
       def VLOXSEG#nf#EI#eew#_V :
         VIndexedSegmentLoad<!add(nf, -1), MOPLDIndexedOrder, w,
                             "vloxseg"#nf#"ei"#eew#".v">,
-<<<<<<< HEAD
-        RISCVVXMemOpMC<!logtwo(eew), Ordered=true, Store=false, N=nf>, // SIFIVE
-=======
         RISCVVXMemOpMC<!logtwo(eew), Ordered=true, Store=false, N=nf>,
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
         VLXSEGSchedMC<nf, eew, isOrdered=1>;
       def VSUXSEG#nf#EI#eew#_V :
         VIndexedSegmentStore<!add(nf, -1), MOPSTIndexedUnord, w,
                              "vsuxseg"#nf#"ei"#eew#".v">,
-<<<<<<< HEAD
-        RISCVVXMemOpMC<!logtwo(eew), Ordered=false, Store=true, N=nf>, // SIFIVE
-=======
         RISCVVXMemOpMC<!logtwo(eew), Ordered=false, Store=true, N=nf>,
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
         VSXSEGSchedMC<nf, eew, isOrdered=0>;
       def VSOXSEG#nf#EI#eew#_V :
         VIndexedSegmentStore<!add(nf, -1), MOPSTIndexedOrder, w,
                              "vsoxseg"#nf#"ei"#eew#".v">,
-<<<<<<< HEAD
-        RISCVVXMemOpMC<!logtwo(eew), Ordered=true, Store=true, N=nf>, // SIFIVE
-=======
         RISCVVXMemOpMC<!logtwo(eew), Ordered=true, Store=true, N=nf>,
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
         VSXSEGSchedMC<nf, eew, isOrdered=1>;
     }
   }
