@@ -1751,7 +1751,7 @@ foreach vti = AllBFloatVectors in {
 } // Predicates = [HasVendorXSfvfbfa]
 
 class VPseudoSF_VTileLoad
-    : Pseudo<(outs), (ins GPR:$rs2, GPR:$rs1, AVL:$atn, ixlenimm:$sew,
+    : Pseudo<(outs), (ins GPR:$rs2, GPR:$rs1, GPRNoX0:$atn, ixlenimm:$sew,
                           ixlenimm:$twiden), []>,
       RISCVVPseudo {
   let mayLoad = 1;
@@ -1763,7 +1763,7 @@ class VPseudoSF_VTileLoad
 }
 
 class VPseudoSF_VTileStore
-    : Pseudo<(outs), (ins GPR:$rs2, GPR:$rs1, AVL:$atn, ixlenimm:$sew,
+    : Pseudo<(outs), (ins GPR:$rs2, GPR:$rs1, GPRNoX0:$atn, ixlenimm:$sew,
                           ixlenimm:$twiden), []>,
       RISCVVPseudo {
   let mayLoad = 0;
@@ -1775,7 +1775,7 @@ class VPseudoSF_VTileStore
 }
 
 class VPseudoSF_VTileMove_V_T
-    : Pseudo<(outs VRM8:$vd), (ins GPR:$rs1, AVL:$atn, ixlenimm:$sew,
+    : Pseudo<(outs VRM8:$vd), (ins GPR:$rs1, GPRNoX0:$atn, ixlenimm:$sew,
                                    ixlenimm:$twiden), []>,
       RISCVVPseudo {
   let mayLoad = 0;
@@ -1787,7 +1787,7 @@ class VPseudoSF_VTileMove_V_T
 }
 
 class VPseudoSF_VTileMove_T_V
-    : Pseudo<(outs), (ins GPR:$rs1, VRM8:$vs2, AVL:$atn, ixlenimm:$sew,
+    : Pseudo<(outs), (ins GPR:$rs1, VRM8:$vs2, GPRNoX0:$atn, ixlenimm:$sew,
                           ixlenimm:$twiden), []>,
       RISCVVPseudo {
   let mayLoad = 0;
@@ -1800,8 +1800,8 @@ class VPseudoSF_VTileMove_T_V
 
 class VPseudoSF_MatMul<RegisterClass mtd_class>
     : Pseudo<(outs),
-             (ins mtd_class:$rd, VRM8:$vs2, VRM8:$vs1, AVL:$atm, AVL:$atn,
-                  AVL:$atk, ixlenimm:$sew, ixlenimm:$twiden), []>,
+             (ins mtd_class:$rd, VRM8:$vs2, VRM8:$vs1, GPRNoX0:$atm, GPRNoX0:$atn,
+                  GPRNoX0:$atk, ixlenimm:$sew, ixlenimm:$twiden), []>,
       RISCVVPseudo {
   let mayLoad = 0;
   let mayStore = 0;
@@ -1816,7 +1816,7 @@ class VPseudoSF_MatMul<RegisterClass mtd_class>
 class VPseudoSF_MatMul_FRM<RegisterClass mtd_class>
     : Pseudo<(outs),
              (ins mtd_class:$rd, VRM8:$vs2, VRM8:$vs1, ixlenimm:$frm,
-                  AVL:$atm, AVL:$atn, AVL:$atk, ixlenimm:$sew,
+                  GPRNoX0:$atm, GPRNoX0:$atn, GPRNoX0:$atk, ixlenimm:$sew,
                   ixlenimm:$twiden), []>,
       RISCVVPseudo {
   let mayLoad = 0;
@@ -1888,7 +1888,7 @@ foreach e1 = [5, 4] in
 let hasSideEffects = 1, mayLoad = 0, mayStore = 0 in {
   let HasVLOp = 1, HasTmOp = 1, HasTWidenOp = 1, HasSEWOp = 1 in
     def PseudoSF_VTZERO_T
-        : Pseudo<(outs), (ins TR:$rd, AVL:$atm, AVL:$atn, ixlenimm:$sew, ixlenimm:$twiden), []>, RISCVVPseudo;
+        : Pseudo<(outs), (ins TR:$rd, GPRNoX0:$atm, GPRNoX0:$atn, ixlenimm:$sew, ixlenimm:$twiden), []>, RISCVVPseudo;
   def PseudoSF_VTDISCARD : Pseudo<(outs), (ins), []>, RISCVVPseudo;
 }
 
@@ -1898,7 +1898,7 @@ class VPatMammothTileLoadStore<string intrinsic_name,
   Pat<(!cast<Intrinsic>(intrinsic_name)
        (XLenVT GPR:$rs2),
        (XLenVT GPR:$rs1),
-       (XLenVT AVL:$tn)),
+       (XLenVT GPRNoX0:$tn)),
       (!cast<Instruction>(inst_name)
        (XLenVT GPR:$rs2),
        (XLenVT GPR:$rs1),
@@ -1911,7 +1911,7 @@ class VPatMammothTileMove_T_V<string intrinsic_name,
   Pat<(!cast<Intrinsic>(intrinsic_name)
                     (XLenVT GPR:$rs1),
                     (reg_type VRM8:$vs2),
-                    (XLenVT AVL:$atn)),
+                    (XLenVT GPRNoX0:$atn)),
       (!cast<Instruction>(inst_name)
        (XLenVT GPR:$rs1),
        (reg_type VRM8:$vs2),
@@ -1923,7 +1923,7 @@ class VPatMammothTileMove_V_T<string intrinsic_name,
                               int log2sew> :
   Pat<(result_type (!cast<Intrinsic>(intrinsic_name)
                     (XLenVT GPR:$rs1),
-                    (XLenVT AVL:$atn))),
+                    (XLenVT GPRNoX0:$atn))),
       (!cast<Instruction>(inst_name)
        (XLenVT GPR:$rs1),
        GPR:$atn, log2sew, 1)>;
