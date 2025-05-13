@@ -631,15 +631,12 @@ public:
     case VPRecipeBase::VPWidenPointerInductionSC:
     case VPRecipeBase::VPReductionPHISC:
     case VPRecipeBase::VPScalarCastSC:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     case VPRecipeBase::VPCSADataUpdateSC:
     case VPRecipeBase::VPCSAExtractScalarSC:
     case VPRecipeBase::VPMonotonicUpdateSC:
 #endif
-=======
     case VPRecipeBase::VPScalarPHISC:
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
     case VPRecipeBase::VPPartialReductionSC:
       return true;
     case VPRecipeBase::VPBranchOnMaskSC:
@@ -2796,12 +2793,8 @@ class VPBranchOnMaskRecipe : public VPRecipeBase {
   VPBlockBase *FalseBB = nullptr;
 #endif // SIFIVE_CUSTOMIZATION
 public:
-<<<<<<< HEAD
-  VPBranchOnMaskRecipe(VPValue *BlockInMask)
-      : VPRecipeBase(VPDef::VPBranchOnMaskSC, {}) {
-    if (BlockInMask) // nullptr means all-one mask.
-      addOperand(BlockInMask);
-  }
+  VPBranchOnMaskRecipe(VPValue *BlockInMask, DebugLoc DL)
+      : VPRecipeBase(VPDef::VPBranchOnMaskSC, {BlockInMask}, DL) {}
 #if SIFIVE_CUSTOMIZATION
   VPBranchOnMaskRecipe(VPValue *Cond, VPBlockBase *TrueBB,
                        VPBlockBase *FalseBB = nullptr)
@@ -2816,10 +2809,6 @@ public:
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  VPBranchOnMaskRecipe(VPValue *BlockInMask, DebugLoc DL)
-      : VPRecipeBase(VPDef::VPBranchOnMaskSC, {BlockInMask}, DL) {}
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
 
   VPBranchOnMaskRecipe *clone() override {
     return new VPBranchOnMaskRecipe(getOperand(0), getDebugLoc());
@@ -2840,20 +2829,13 @@ public:
   void print(raw_ostream &O, const Twine &Indent,
              VPSlotTracker &SlotTracker) const override {
     O << Indent << "BRANCH-ON-MASK ";
-<<<<<<< HEAD
-    if (VPValue *Mask = getMask())
-      Mask->printAsOperand(O, SlotTracker);
-    else
-      O << " All-One";
+    printOperands(O, SlotTracker);
 #if SIFIVE_CUSTOMIZATION
     if (TrueBB)
       O << ", " << TrueBB->getName();
     if (FalseBB)
       O << ", " << FalseBB->getName();
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    printOperands(O, SlotTracker);
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
   }
 #endif
 
