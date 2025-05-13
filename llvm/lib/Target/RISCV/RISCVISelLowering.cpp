@@ -3011,7 +3011,6 @@ InstructionCost RISCVTargetLowering::getLMULCost(MVT VT) const {
 /// be by default.  VRGatherCostModel reflects available options.  Note that
 /// operand (index and possibly mask) are handled separately.
 InstructionCost RISCVTargetLowering::getVRGatherVVCost(MVT VT) const {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (Subtarget.getProcFamily() == RISCVSubtarget::SiFive7) {
     unsigned SEW = VT.getScalarSizeInBits();
@@ -3042,8 +3041,6 @@ InstructionCost RISCVTargetLowering::getVRGatherVVCost(MVT VT) const {
     return VL;
   }
 #endif // SIFIVE_CUSTOMIZATION
-  return getLMULCost(VT) * getLMULCost(VT);
-=======
   auto LMULCost = getLMULCost(VT);
   bool Log2CostModel =
       Subtarget.getVRGatherCostModel() == llvm::RISCVSubtarget::NLog2N;
@@ -3053,7 +3050,6 @@ InstructionCost RISCVTargetLowering::getVRGatherVVCost(MVT VT) const {
       return LMULCost * Log;
   }
   return LMULCost * LMULCost;
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
 }
 
 /// Return the cost of a vrgather.vi (or vx) instruction for the type VT.
