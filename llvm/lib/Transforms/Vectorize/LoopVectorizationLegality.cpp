@@ -108,19 +108,14 @@ AllowStridedPointerIVs("lv-strided-pointer-ivs", cl::init(false), cl::Hidden,
                        cl::desc("Enable recognition of non-constant strided "
                                 "pointer induction variables."));
 
-<<<<<<< HEAD
-namespace llvm {
 #if SIFIVE_CUSTOMIZATION
 // Don't allow fp reordering even if vectorization was enforced or width was
 // specified. User need to use `#pragma clang fp reassociate(on)` within the
 // loop body to allow reassociation
-cl::opt<bool>
+static cl::opt<bool>
     HintsAllowReordering("hints-allow-reordering", cl::init(false), cl::Hidden,
 #else
-cl::opt<bool>
-=======
 static cl::opt<bool>
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
     HintsAllowReordering("hints-allow-reordering", cl::init(true), cl::Hidden,
 #endif // SIFIVE_CUSTOMIZATION
                          cl::desc("Allow enabling loop hints to reorder "
@@ -185,8 +180,6 @@ static cl::opt<bool> EnableHistogramVectorization(
 
 /// Maximum vectorization interleave count.
 static const unsigned MaxInterleaveFactor = 16;
-
-namespace llvm {
 
 bool LoopVectorizeHints::Hint::validate(unsigned Val) {
   switch (Kind) {
@@ -3051,5 +3044,3 @@ void LoopVectorizationLegality::prepareToFoldTailByMasking() {
     assert(R && "Must be able to predicate block when tail-folding.");
   }
 }
-
-} // namespace llvm
