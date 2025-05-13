@@ -2798,15 +2798,9 @@ public:
 #if SIFIVE_CUSTOMIZATION
   VPBranchOnMaskRecipe(VPValue *Cond, VPBlockBase *TrueBB,
                        VPBlockBase *FalseBB = nullptr)
-      : VPRecipeBase(VPDef::VPBranchOnMaskSC, {}), TrueBB(TrueBB),
+      : VPRecipeBase(VPDef::VPBranchOnMaskSC, {Cond}), TrueBB(TrueBB),
         FalseBB(FalseBB) {
-    if (Cond) {
-      assert(TrueBB && FalseBB && "Both successors BBs should be provided");
-      addOperand(Cond);
-    } else {
-      assert(TrueBB && !FalseBB &&
-             "Only first successor BB should be provided");
-    }
+    assert(TrueBB && FalseBB && "Both successors BBs should be provided");
   }
 #endif // SIFIVE_CUSTOMIZATION
 

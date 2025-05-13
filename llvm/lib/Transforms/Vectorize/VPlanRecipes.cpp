@@ -3390,10 +3390,24 @@ VPMonotonicHeaderPHIRecipe::computeCost(ElementCount VF,
 
 void VPBranchOnMaskRecipe::execute(VPTransformState &State) {
   State.setDebugLocFrom(getDebugLoc());
+#ifndef SIFIVE_CUSTOMIZATION
   assert(State.Lane && "Branch on Mask works only on single instance.");
+#endif // !SIFIVE_CUSTOMIZATION
 
   VPValue *BlockInMask = getOperand(0);
+#if SIFIVE_CUSTOMIZATION
+  Value *ConditionBit;
+  // For the entry of conditional region block, this block always branch to
+  // the successor of the region unconditionally. So the mask must be a live-in
+  // all-true.
+  if (TrueBB == FalseBB &&
+      isa<VPConditionalRegionBlock>(getParent()->getParent()))
+    ConditionBit = State.get(BlockInMask, true);
+  else
+    ConditionBit = State.get(BlockInMask, *State.Lane);
+#else
   Value *ConditionBit = State.get(BlockInMask, *State.Lane);
+#endif // SIFIVE_CUSTOMIZATION
 
   // Replace the temporary unreachable terminator with a new conditional branch,
   // whose two destinations will be set later when they are created.
@@ -3402,10 +3416,16 @@ void VPBranchOnMaskRecipe::execute(VPTransformState &State) {
          "Expected to replace unreachable terminator with conditional branch.");
 #if SIFIVE_CUSTOMIZATION
   BranchInst *CondBr;
-  if (TrueBB && !FalseBB)
-    CondBr = BranchInst::Create(State.CFG.PrevBB);
+  // Currently, there is only one block in the VPConditionalRegionBlock.
+  // This block is the entry of the region so it sould terminate with condition
+  // branch. Since we only have one BB in the region, we can directly branch to
+  // the successor of the region block unconditionally.
+  if (TrueBB == FalseBB &&
+      isa<VPConditionalRegionBlock>(getParent()->getParent()))
+    CondBr = State.Builder.CreateBr(State.CFG.PrevBB);
   else
-    CondBr = BranchInst::Create(State.CFG.PrevBB, nullptr, ConditionBit);
+    CondBr =
+        State.Builder.CreateCondBr(ConditionBit, State.CFG.PrevBB, nullptr);
 #else
   auto CondBr =
       State.Builder.CreateCondBr(ConditionBit, State.CFG.PrevBB, nullptr);

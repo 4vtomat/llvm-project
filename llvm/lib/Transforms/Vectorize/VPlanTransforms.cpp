@@ -838,7 +838,11 @@ void VPlanTransforms::optimizeConditionalRecipes(
       R->moveBefore(*IfBB, IfBB->end());
 
     // 4. Add unconditional branch to IfBB
-    auto *Br = new VPBranchOnMaskRecipe(nullptr, ContBB);
+    LLVMContext &Ctx = Plan.getCanonicalIV()->getScalarType()->getContext();
+    VPValue *True = Plan.getOrAddLiveIn(ConstantInt::getTrue(Ctx));
+    // Set true and false block to the same block which can be optimized to
+    // unconditional branch.
+    auto *Br = new VPBranchOnMaskRecipe(True, ContBB, ContBB);
     Br->insertBefore(*IfBB, IfBB->end());
   }
 }
