@@ -3203,7 +3203,6 @@ void VPScalarCastRecipe ::print(raw_ostream &O, const Twine &Indent,
 }
 #endif
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 void VPCSAHeaderPHIRecipe::print(raw_ostream &O, const Twine &Indent,
@@ -3390,31 +3389,17 @@ VPMonotonicHeaderPHIRecipe::computeCost(ElementCount VF,
 #endif // SIFIVE_CUSTOMIZATION
 
 void VPBranchOnMaskRecipe::execute(VPTransformState &State) {
-#if !SIFIVE_CUSTOMIZATION
-  assert(State.Lane && "Branch on Mask works only on single instance.");
-#endif // SIFIVE_CUSTOMIZATION
-
-  Value *ConditionBit = nullptr;
-  VPValue *BlockInMask = getMask();
-  if (BlockInMask)
-    ConditionBit = State.get(BlockInMask, *State.Lane);
-  else // Block in mask is all-one.
-    ConditionBit = State.Builder.getTrue();
-=======
-void VPBranchOnMaskRecipe::execute(VPTransformState &State) {
   State.setDebugLocFrom(getDebugLoc());
   assert(State.Lane && "Branch on Mask works only on single instance.");
 
   VPValue *BlockInMask = getOperand(0);
   Value *ConditionBit = State.get(BlockInMask, *State.Lane);
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
 
   // Replace the temporary unreachable terminator with a new conditional branch,
   // whose two destinations will be set later when they are created.
   auto *CurrentTerminator = State.CFG.PrevBB->getTerminator();
   assert(isa<UnreachableInst>(CurrentTerminator) &&
          "Expected to replace unreachable terminator with conditional branch.");
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   BranchInst *CondBr;
   if (TrueBB && !FalseBB)
@@ -3422,12 +3407,9 @@ void VPBranchOnMaskRecipe::execute(VPTransformState &State) {
   else
     CondBr = BranchInst::Create(State.CFG.PrevBB, nullptr, ConditionBit);
 #else
-  auto *CondBr = BranchInst::Create(State.CFG.PrevBB, nullptr, ConditionBit);
-#endif // SIFIVE_CUSTOMIZATION
-=======
   auto CondBr =
       State.Builder.CreateCondBr(ConditionBit, State.CFG.PrevBB, nullptr);
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
+#endif // SIFIVE_CUSTOMIZATION
   CondBr->setSuccessor(0, nullptr);
   CurrentTerminator->eraseFromParent();
 }
