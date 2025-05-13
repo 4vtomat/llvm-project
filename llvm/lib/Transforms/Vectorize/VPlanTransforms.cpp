@@ -204,11 +204,7 @@ VPValue *getPredicatedMask(VPRegionBlock *R) {
       !isa<VPBranchOnMaskRecipe>(EntryBB->begin()))
     return nullptr;
 
-#if SIFIVE_CUSTOMIZATION
-  return cast<VPBranchOnMaskRecipe>(&*EntryBB->begin())->getMask();
-#else
   return cast<VPBranchOnMaskRecipe>(&*EntryBB->begin())->getOperand(0);
-#endif // SIFIVE_CUSTOMIZATION
 }
 
 /// If \p R is a triangle region, return the 'then' block of the triangle.
