@@ -511,20 +511,18 @@ public:
     case RecurKind::FMax:
       return true;
     case RecurKind::FAnyOf:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     case RecurKind::IFindLastIV:
     case RecurKind::FFindLastIV:
     case RecurKind::Mul:
+      return true;
 #endif // SIFIVE_CUSTOMIZATION
-=======
     case RecurKind::FAdd:
     case RecurKind::FMulAdd:
       // We can't promote f16/bf16 fadd reductions and scalable vectors can't be
       // expanded.
       if (Ty->isBFloatTy() || (Ty->isHalfTy() && !ST->hasVInstructionsF16()))
         return false;
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
       return true;
     default:
       return false;
