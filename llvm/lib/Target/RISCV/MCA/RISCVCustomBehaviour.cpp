@@ -14,19 +14,13 @@
 #include "RISCVCustomBehaviour.h"
 #include "MCTargetDesc/RISCVMCTargetDesc.h"
 #include "RISCV.h"
-#include "RISCVISelDAGToDAG.h" // SIFIVE
 #include "TargetInfo/RISCVTargetInfo.h"
 #include "llvm/MC/TargetRegistry.h"
 #include "llvm/Support/Debug.h"
 
 #define DEBUG_TYPE "llvm-mca-riscv-custombehaviour"
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-namespace llvm::RISCV::mca {
-=======
 namespace llvm::RISCV {
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
 struct VXMemOpInfo {
   unsigned Log2IdxEEW : 3;
   unsigned IsOrdered : 1;
@@ -35,23 +29,9 @@ struct VXMemOpInfo {
   unsigned BaseInstr;
 };
 
-<<<<<<< HEAD
-#define GET_RISCVBaseVXMemOpTable_DECL
-#define GET_RISCVBaseVXMemOpTable_IMPL
-// We need to include the implementation code here because RISCVCustomBehavior
-// is not linked against RISCVCodeGen.
-#define GET_RISCVVLXSEGTable_IMPL
-#define GET_RISCVVSXSEGTable_IMPL
-#define GET_RISCVVLXTable_IMPL
-#define GET_RISCVVSXTable_IMPL
-#include "RISCVGenSearchableTables.inc"
-} // namespace llvm::RISCV::mca
-#endif // SIFIVE_CUSTOMIZATION
-=======
 #define GET_RISCVBaseVXMemOpTable_IMPL
 #include "RISCVGenSearchableTables.inc"
 } // namespace llvm::RISCV
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
 
 namespace llvm {
 namespace mca {
@@ -280,14 +260,8 @@ unsigned RISCVInstrumentManager::getSchedClassID(
   // and SEW, or (Opcode, LMUL, 0) if does not depend on SEW.
   uint8_t SEW = SI ? SI->getSEW() : 0;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  std::optional<unsigned> VPOpcode;
-  if (const auto *VXMO = RISCV::mca::getVXMemOpInfo(Opcode)) {
-=======
   std::optional<unsigned> VPOpcode;
   if (const auto *VXMO = RISCV::getVXMemOpInfo(Opcode)) {
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
     // Calculate the expected index EMUL. For indexed operations,
     // the DataEEW and DataEMUL are equal to SEW and LMUL, respectively.
     unsigned IndexEMUL = ((1 << VXMO->Log2IdxEEW) * LMUL) / SEW;
@@ -295,20 +269,12 @@ unsigned RISCVInstrumentManager::getSchedClassID(
     if (!VXMO->NF) {
       // Indexed Load / Store.
       if (VXMO->IsStore) {
-<<<<<<< HEAD
-        if (const auto *VXP = RISCV::mca::getVSXPseudo(
-=======
         if (const auto *VXP = RISCV::getVSXPseudo(
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
                 /*Masked=*/0, VXMO->IsOrdered, VXMO->Log2IdxEEW, LMUL,
                 IndexEMUL))
           VPOpcode = VXP->Pseudo;
       } else {
-<<<<<<< HEAD
-        if (const auto *VXP = RISCV::mca::getVLXPseudo(
-=======
         if (const auto *VXP = RISCV::getVLXPseudo(
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
                 /*Masked=*/0, VXMO->IsOrdered, VXMO->Log2IdxEEW, LMUL,
                 IndexEMUL))
           VPOpcode = VXP->Pseudo;
@@ -316,16 +282,6 @@ unsigned RISCVInstrumentManager::getSchedClassID(
     } else {
       // Segmented Indexed Load / Store.
       if (VXMO->IsStore) {
-<<<<<<< HEAD
-        if (const auto *VXP = RISCV::mca::getVSXSEGPseudo(
-                VXMO->NF, /*Masked=*/0, VXMO->IsOrdered, VXMO->Log2IdxEEW, LMUL,
-                IndexEMUL))
-          VPOpcode = VXP->Pseudo;
-      } else {
-        if (const auto *VXP = RISCV::mca::getVLXSEGPseudo(
-                VXMO->NF, /*Masked=*/0, VXMO->IsOrdered, VXMO->Log2IdxEEW, LMUL,
-                IndexEMUL))
-=======
         if (const auto *VXP =
                 RISCV::getVSXSEGPseudo(VXMO->NF, /*Masked=*/0, VXMO->IsOrdered,
                                        VXMO->Log2IdxEEW, LMUL, IndexEMUL))
@@ -334,29 +290,10 @@ unsigned RISCVInstrumentManager::getSchedClassID(
         if (const auto *VXP =
                 RISCV::getVLXSEGPseudo(VXMO->NF, /*Masked=*/0, VXMO->IsOrdered,
                                        VXMO->Log2IdxEEW, LMUL, IndexEMUL))
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
           VPOpcode = VXP->Pseudo;
       }
     }
   } else if (opcodeHasEEWAndEMULInfo(Opcode)) {
-<<<<<<< HEAD
-#else
-  if (opcodeHasEEWAndEMULInfo(Opcode)) {
-#endif // SIFIVE_CUSTOMIZATION
-    RISCVVType::VLMUL VLMUL = static_cast<RISCVVType::VLMUL>(LMUL);
-    auto [EEW, EMUL] = getEEWAndEMUL(Opcode, VLMUL, SEW);
-#if SIFIVE_CUSTOMIZATION
-    if (const auto *RVV =
-            RISCVVInversePseudosTable::getBaseInfo(Opcode, EMUL, EEW))
-      VPOpcode = RVV->Pseudo;
-#else
-    RVV = RISCVVInversePseudosTable::getBaseInfo(Opcode, EMUL, EEW);
-#endif // SIFIVE_CUSTOMIZATION
-  } else {
-    // Check if it depends on LMUL and SEW
-    const auto *RVV =
-        RISCVVInversePseudosTable::getBaseInfo(Opcode, LMUL, SEW); // SIFIVE
-=======
     RISCVVType::VLMUL VLMUL = static_cast<RISCVVType::VLMUL>(LMUL);
     auto [EEW, EMUL] = getEEWAndEMUL(Opcode, VLMUL, SEW);
     if (const auto *RVV =
@@ -365,28 +302,16 @@ unsigned RISCVInstrumentManager::getSchedClassID(
   } else {
     // Check if it depends on LMUL and SEW
     const auto *RVV = RISCVVInversePseudosTable::getBaseInfo(Opcode, LMUL, SEW);
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
     // Check if it depends only on LMUL
     if (!RVV)
       RVV = RISCVVInversePseudosTable::getBaseInfo(Opcode, LMUL, 0);
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    if (RVV)
-      VPOpcode = RVV->Pseudo;
-#endif // SIFIVE_CUSTOMIZATION
-  }
-
-  // Not a RVV instr
-  if (!VPOpcode) { // SIFIVE
-=======
     if (RVV)
       VPOpcode = RVV->Pseudo;
   }
 
   // Not a RVV instr
   if (!VPOpcode) {
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
     LLVM_DEBUG(
         dbgs() << "RVCB: Could not find PseudoInstruction for Opcode "
                << MCII.getName(Opcode)
@@ -402,13 +327,8 @@ unsigned RISCVInstrumentManager::getSchedClassID(
                     << MCII.getName(Opcode) << ", LMUL=" << LI->getData()
                     << ", SEW=" << (SI ? SI->getData() : "Unspecified")
                     << ". Overriding original SchedClassID=" << SchedClassID
-<<<<<<< HEAD
-                    << " with " << MCII.getName(*VPOpcode) << '\n'); // SIFIVE
-  return MCII.get(*VPOpcode).getSchedClass();                        // SIFIVE
-=======
                     << " with " << MCII.getName(*VPOpcode) << '\n');
   return MCII.get(*VPOpcode).getSchedClass();
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
 }
 
 } // namespace mca
