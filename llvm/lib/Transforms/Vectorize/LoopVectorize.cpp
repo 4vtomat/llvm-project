@@ -1697,16 +1697,7 @@ public:
     // FIXME: Investigate opportunity for fixed vector factor.
     bool EVLIsLegal = UserIC <= 1 && IsScalableVF &&
                       TTI.hasActiveVectorLength(0, nullptr, Align()) &&
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
                       !EnableVPlanNativePath;
-#else
-                      !EnableVPlanNativePath &&
-                      Legal->getFixedOrderRecurrences().empty();
-#endif // SIFIVE_CUSTOMIZATION
-=======
-                      !EnableVPlanNativePath;
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
     if (!EVLIsLegal) {
       // If for some reason EVL mode is unsupported, fallback to
       // DataWithoutLaneMask to try to vectorize the loop with folded tail
@@ -5604,7 +5595,6 @@ bool LoopVectorizationPlanner::isMoreProfitable(
       EstimatedWidthB *= *VScale;
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Taking into account overhead in preheader or postexit requries computing
   // cost not per-lane, but of entire loop.
@@ -5626,14 +5616,12 @@ bool LoopVectorizationPlanner::isMoreProfitable(
     return RTCostA < RTCostB;
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   // When optimizing for size choose whichever is smallest, which will be the
   // one with the smallest cost for the whole loop. On a tie pick the larger
   // vector width, on the assumption that throughput will be greater.
   if (CM.CostKind == TTI::TCK_CodeSize)
     return CostA < CostB ||
            (CostA == CostB && EstimatedWidthA > EstimatedWidthB);
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
 
   // Assume vscale may be larger than 1 (or the value being tuned for),
   // so that scalable vectorization is slightly favorable over fixed-width
@@ -7334,15 +7322,11 @@ InstructionCost LoopVectorizationCostModel::expectedCost(ElementCount VF) {
     // but the final iteration, so we must account for its cost per iteration.
     if (VF.isScalar() && Legal->blockNeedsPredication(BB) &&
         ((LatchBB != BB) || !Legal->useVLAVectorizer()))
-      BlockCost /= getReciprocalPredBlockProb();
+      BlockCost /= getPredBlockCostDivisor(CostKind);
 #else
     if (VF.isScalar() && Legal->blockNeedsPredication(BB))
-<<<<<<< HEAD
-      BlockCost /= getReciprocalPredBlockProb();
-#endif // SIFIVE_CUSTOMIZATION
-=======
       BlockCost /= getPredBlockCostDivisor(CostKind);
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
+#endif // SIFIVE_CUSTOMIZATION
 
     Cost += BlockCost;
   }
