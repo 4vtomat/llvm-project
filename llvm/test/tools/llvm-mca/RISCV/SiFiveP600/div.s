@@ -267,15 +267,9 @@ vsetvli zero, zero, e64, m8, tu, mu
 vfsqrt.v v8, v16
 
 # CHECK:      Iterations:        1
-<<<<<<< HEAD
-# CHECK-NEXT: Instructions:      320
-# CHECK-NEXT: Total Cycles:      14397
-# CHECK-NEXT: Total uOps:        320
-=======
 # CHECK-NEXT: Instructions:      260
 # CHECK-NEXT: Total Cycles:      10243
 # CHECK-NEXT: Total uOps:        260
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
 
 # CHECK:      Dispatch Width:    4
 # CHECK-NEXT: uOps Per Cycle:    0.03

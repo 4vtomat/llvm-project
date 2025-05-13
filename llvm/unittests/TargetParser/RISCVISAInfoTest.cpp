@@ -1185,13 +1185,9 @@ Experimental extensions
     smwg                 0.3
     smwgd                0.3
     ssctr                1.0
-<<<<<<< HEAD
     sswg                 0.3
     svukte               0.4
-=======
-    svukte               0.3
     xqccmp               0.1
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
     xqcia                0.4
     xqciac               0.3
     xqcicli              0.2

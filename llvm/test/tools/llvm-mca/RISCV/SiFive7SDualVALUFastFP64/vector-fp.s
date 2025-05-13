@@ -1514,7 +1514,7 @@ vfncvt.rod.f.f.w v8, v16
 
 # CHECK:      Iterations:        1
 # CHECK-NEXT: Instructions:      1476
-# CHECK-NEXT: Total Cycles:      51755
+# CHECK-NEXT: Total Cycles:      51804
 # CHECK-NEXT: Total uOps:        1476
 
 # CHECK:      Dispatch Width:    2
@@ -3021,7 +3021,7 @@ vfncvt.rod.f.f.w v8, v16
 
 # CHECK:      Resource pressure per iteration:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]
-# CHECK-NEXT:  -      -     26.00   -     50194.00 2436.00 1450.00  -   -
+# CHECK-NEXT:  -      -     26.00   -     50203.00 2427.00 1450.00  -   -
 
 # CHECK:      Resource pressure by instruction:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:
@@ -3397,8 +3397,8 @@ vfncvt.rod.f.f.w v8, v16
 # CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfsub.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfsub.vf	v8, v16, fs0
 # CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfrsub.vf	v8, v16, fs0
-# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfmul.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfmul.vf	v8, v16, fs0
+# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfmul.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfmul.vf	v8, v16, fs0
 # CHECK-NEXT:  -      -      -      -     113.00  -     1.00    -      -     vfdiv.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -     113.00  -     1.00    -      -     vfdiv.vf	v8, v16, fs0
 # CHECK-NEXT:  -      -      -      -     113.00  -     1.00    -      -     vfrdiv.vf	v8, v16, fs0
@@ -3700,10 +3700,10 @@ vfncvt.rod.f.f.w v8, v16
 # CHECK-NEXT:  -      -      -      -      -     3.00   1.00    -      -     vfadd.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     3.00   1.00    -      -     vfadd.vf	v8, v16, fs0
 # CHECK-NEXT:  -      -      -      -      -     3.00   1.00    -      -     vfsub.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     3.00   1.00    -      -     vfsub.vf	v8, v16, fs0
-# CHECK-NEXT:  -      -      -      -     3.00    -     1.00    -      -     vfrsub.vf	v8, v16, fs0
-# CHECK-NEXT:  -      -      -      -      -     3.00   1.00    -      -     vfmul.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     3.00    -     1.00    -      -     vfmul.vf	v8, v16, fs0
+# CHECK-NEXT:  -      -      -      -     3.00    -     1.00    -      -     vfsub.vf	v8, v16, fs0
+# CHECK-NEXT:  -      -      -      -      -     3.00   1.00    -      -     vfrsub.vf	v8, v16, fs0
+# CHECK-NEXT:  -      -      -      -     3.00    -     1.00    -      -     vfmul.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -      -     3.00   1.00    -      -     vfmul.vf	v8, v16, fs0
 # CHECK-NEXT:  -      -      -      -     229.00  -     1.00    -      -     vfdiv.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -     229.00  -     1.00    -      -     vfdiv.vf	v8, v16, fs0
 # CHECK-NEXT:  -      -      -      -     229.00  -     1.00    -      -     vfrdiv.vf	v8, v16, fs0
@@ -3760,11 +3760,11 @@ vfncvt.rod.f.f.w v8, v16
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e64, m2, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     5.00   1.00    -      -     vfadd.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     5.00   1.00    -      -     vfadd.vf	v8, v16, fs0
-# CHECK-NEXT:  -      -      -      -      -     5.00   1.00    -      -     vfsub.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     5.00    -     1.00    -      -     vfsub.vf	v8, v16, fs0
-# CHECK-NEXT:  -      -      -      -      -     5.00   1.00    -      -     vfrsub.vf	v8, v16, fs0
-# CHECK-NEXT:  -      -      -      -     5.00    -     1.00    -      -     vfmul.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     5.00   1.00    -      -     vfmul.vf	v8, v16, fs0
+# CHECK-NEXT:  -      -      -      -     5.00    -     1.00    -      -     vfsub.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -      -     5.00   1.00    -      -     vfsub.vf	v8, v16, fs0
+# CHECK-NEXT:  -      -      -      -     5.00    -     1.00    -      -     vfrsub.vf	v8, v16, fs0
+# CHECK-NEXT:  -      -      -      -      -     5.00   1.00    -      -     vfmul.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     5.00    -     1.00    -      -     vfmul.vf	v8, v16, fs0
 # CHECK-NEXT:  -      -      -      -     457.00  -     1.00    -      -     vfdiv.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -     457.00  -     1.00    -      -     vfdiv.vf	v8, v16, fs0
 # CHECK-NEXT:  -      -      -      -     457.00  -     1.00    -      -     vfrdiv.vf	v8, v16, fs0
@@ -3946,19 +3946,19 @@ vfncvt.rod.f.f.w v8, v16
 # CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwsub.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwsub.vf	v8, v16, fs0
 # CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwadd.wv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwadd.wf	v8, v16, fs0
-# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwsub.wv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwsub.wf	v8, v16, fs0
-# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwmul.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwmul.vf	v8, v16, fs0
-# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwmacc.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwmacc.vf	v8, fs0, v24
-# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwnmacc.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwnmacc.vf	v8, fs0, v24
-# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwmsac.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwmsac.vf	v8, fs0, v24
-# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwnmsac.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwnmsac.vf	v8, fs0, v24
+# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwadd.wf	v8, v16, fs0
+# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwsub.wv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwsub.wf	v8, v16, fs0
+# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwmul.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwmul.vf	v8, v16, fs0
+# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwmacc.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwmacc.vf	v8, fs0, v24
+# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwnmacc.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwnmacc.vf	v8, fs0, v24
+# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwmsac.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwmsac.vf	v8, fs0, v24
+# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwnmsac.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwnmsac.vf	v8, fs0, v24
 # CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfrec7.v	v8, v24
 # CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfmin.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfmin.vf	v8, v16, fs0
@@ -4252,19 +4252,19 @@ vfncvt.rod.f.f.w v8, v16
 # CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwsub.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwsub.vf	v8, v16, fs0
 # CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwadd.wv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwadd.wf	v8, v16, fs0
-# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwsub.wv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwsub.wf	v8, v16, fs0
-# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwmul.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwmul.vf	v8, v16, fs0
-# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwmacc.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwmacc.vf	v8, fs0, v24
-# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwnmacc.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwnmacc.vf	v8, fs0, v24
-# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwmsac.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwmsac.vf	v8, fs0, v24
-# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwnmsac.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwnmsac.vf	v8, fs0, v24
+# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwadd.wf	v8, v16, fs0
+# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwsub.wv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwsub.wf	v8, v16, fs0
+# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwmul.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwmul.vf	v8, v16, fs0
+# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwmacc.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwmacc.vf	v8, fs0, v24
+# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwnmacc.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwnmacc.vf	v8, fs0, v24
+# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwmsac.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwmsac.vf	v8, fs0, v24
+# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vfwnmsac.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfwnmsac.vf	v8, fs0, v24
 # CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfrec7.v	v8, v24
 # CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfmin.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -     2.00    -     1.00    -      -     vfmin.vf	v8, v16, fs0
