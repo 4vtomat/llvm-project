@@ -554,13 +554,10 @@ enum RoundingMode {
   RNE = 1,
   RDN = 2,
   ROD = 3,
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   DYN = 7, // Align with RISCVFPRndMode::DYN
 #endif // SIFIVE_CUSTOMIZATION
-=======
   Invalid
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
 };
 
 inline static StringRef roundingModeToString(RoundingMode RndMode) {
