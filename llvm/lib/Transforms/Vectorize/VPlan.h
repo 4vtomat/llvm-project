@@ -2799,9 +2799,7 @@ public:
   VPBranchOnMaskRecipe(VPValue *Cond, VPBlockBase *TrueBB,
                        VPBlockBase *FalseBB = nullptr)
       : VPRecipeBase(VPDef::VPBranchOnMaskSC, {Cond}), TrueBB(TrueBB),
-        FalseBB(FalseBB) {
-    assert(TrueBB && FalseBB && "Both successors BBs should be provided");
-  }
+        FalseBB(FalseBB) {}
 #endif // SIFIVE_CUSTOMIZATION
 
   VPBranchOnMaskRecipe *clone() override {
