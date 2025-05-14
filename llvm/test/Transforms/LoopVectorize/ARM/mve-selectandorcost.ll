@@ -15,51 +15,7 @@ define float @test(ptr nocapture readonly %pA, ptr nocapture readonly %pB, i32 %
 ; CHECK-LABEL: @test(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[CMP_NOT16:%.*]] = icmp eq i32 [[BLOCKSIZE:%.*]], 0
-; CHECK-NEXT:    br i1 [[CMP_NOT16]], label [[WHILE_END:%.*]], label [[WHILE_BODY_PREHEADER:%.*]]
-; CHECK:       while.body.preheader:
-; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i32 [[BLOCKSIZE]], 4
-; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
-; CHECK:       vector.ph:
-; CHECK-NEXT:    [[N_VEC:%.*]] = and i32 [[BLOCKSIZE]], -4
-; CHECK-NEXT:    [[TMP0:%.*]] = shl i32 [[N_VEC]], 2
-; CHECK-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[PA:%.*]], i32 [[TMP0]]
-; CHECK-NEXT:    [[TMP1:%.*]] = shl i32 [[N_VEC]], 2
-; CHECK-NEXT:    [[IND_END1:%.*]] = getelementptr i8, ptr [[PB:%.*]], i32 [[TMP1]]
-; CHECK-NEXT:    [[IND_END3:%.*]] = and i32 [[BLOCKSIZE]], 3
-; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
-; CHECK:       vector.body:
-; CHECK-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <4 x float> [ zeroinitializer, [[VECTOR_PH]] ], [ [[PREDPHI:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = shl i32 [[INDEX]], 2
-; CHECK-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[PA]], i32 [[OFFSET_IDX]]
-; CHECK-NEXT:    [[OFFSET_IDX5:%.*]] = shl i32 [[INDEX]], 2
-; CHECK-NEXT:    [[NEXT_GEP6:%.*]] = getelementptr i8, ptr [[PB]], i32 [[OFFSET_IDX5]]
-; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x float>, ptr [[NEXT_GEP]], align 4
-; CHECK-NEXT:    [[WIDE_LOAD7:%.*]] = load <4 x float>, ptr [[NEXT_GEP6]], align 4
-; CHECK-NEXT:    [[TMP18:%.*]] = fcmp fast une <4 x float> [[WIDE_LOAD]], zeroinitializer
-; CHECK-NEXT:    [[TMP19:%.*]] = fcmp fast une <4 x float> [[WIDE_LOAD7]], zeroinitializer
-; CHECK-NEXT:    [[TMP20:%.*]] = select <4 x i1> [[TMP18]], <4 x i1> splat (i1 true), <4 x i1> [[TMP19]]
-; CHECK-NEXT:    [[TMP4:%.*]] = call fast <4 x float> @llvm.fabs.v4f32(<4 x float> [[WIDE_LOAD]])
-; CHECK-NEXT:    [[TMP5:%.*]] = call fast <4 x float> @llvm.fabs.v4f32(<4 x float> [[WIDE_LOAD7]])
-; CHECK-NEXT:    [[TMP6:%.*]] = fadd fast <4 x float> [[TMP5]], [[TMP4]]
-; CHECK-NEXT:    [[TMP7:%.*]] = fsub fast <4 x float> [[WIDE_LOAD]], [[WIDE_LOAD7]]
-; CHECK-NEXT:    [[TMP8:%.*]] = call fast <4 x float> @llvm.fabs.v4f32(<4 x float> [[TMP7]])
-; CHECK-NEXT:    [[TMP9:%.*]] = fdiv fast <4 x float> [[TMP8]], [[TMP6]]
-; CHECK-NEXT:    [[TMP10:%.*]] = select <4 x i1> [[TMP20]], <4 x float> [[TMP9]], <4 x float> splat (float -0.000000e+00)
-; CHECK-NEXT:    [[PREDPHI]] = fadd reassoc arcp contract afn <4 x float> [[VEC_PHI]], [[TMP10]]
-; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i32 [[INDEX]], 4
-; CHECK-NEXT:    [[TMP11:%.*]] = icmp eq i32 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP11]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
-; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP12:%.*]] = call fast float @llvm.vector.reduce.fadd.v4f32(float 0.000000e+00, <4 x float> [[PREDPHI]])
-; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i32 [[BLOCKSIZE]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[CMP_N]], label [[WHILE_END]], label [[SCALAR_PH]]
-; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ [[PA]], [[WHILE_BODY_PREHEADER]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL2:%.*]] = phi ptr [ [[IND_END1]], [[MIDDLE_BLOCK]] ], [ [[PB]], [[WHILE_BODY_PREHEADER]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL4:%.*]] = phi i32 [ [[IND_END3]], [[MIDDLE_BLOCK]] ], [ [[BLOCKSIZE]], [[WHILE_BODY_PREHEADER]] ]
-; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi float [ [[TMP12]], [[MIDDLE_BLOCK]] ], [ 0.000000e+00, [[WHILE_BODY_PREHEADER]] ]
-; CHECK-NEXT:    br label [[WHILE_BODY:%.*]]
+; CHECK-NEXT:    br i1 [[CMP_NOT16]], label [[WHILE_END:%.*]], label [[WHILE_BODY:%.*]]
 ; CHECK:       while.body:
 ; CHECK-NEXT:    [[PA_ADDR_020:%.*]] = phi ptr [ [[INCDEC_PTR:%.*]], [[IF_END:%.*]] ], [ [[BC_RESUME_VAL:%.*]], [[SCALAR_PH:%.*]] ]
 ; CHECK-NEXT:    [[PB_ADDR_019:%.*]] = phi ptr [ [[INCDEC_PTR1:%.*]], [[IF_END]] ], [ [[BC_RESUME_VAL2:%.*]], [[SCALAR_PH]] ]

@@ -44,7 +44,7 @@
 ; VPLAN-NEXT:        WIDEN ir<%xor> = xor ir<%2>, vp<%1>
 ; VPLAN-NEXT:        vp<%8> = vector-pointer ir<%arrayidx>
 ; VPLAN-NEXT:        WIDEN vp.store vp<%8>, ir<%xor>, vp<%5>, ir<%or.cond.not> unit-strided
-; VPLAN-NEXT:        BRANCH-ON-MASK  All-One, vector.body.split
+; VPLAN-NEXT:        BRANCH-ON-MASK ir<true>, vector.body.split, vector.body.split
 ; VPLAN-NEXT:      No successors
 ; VPLAN-NEXT:    }
 ; VPLAN-NEXT:    Successor(s): vector.body.split

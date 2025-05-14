@@ -73,8 +73,7 @@ define dso_local noundef signext i32 @f(ptr noundef writeonly %c, ptr noundef re
 ; VEC-NEXT:    [[TMP23:%.*]] = extractelement <vscale x 2 x ptr> [[TMP18]], i32 0
 ; VEC-NEXT:    [[TMP24:%.*]] = getelementptr i32, ptr [[TMP23]], i32 0
 ; VEC-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0(ptr align 4 [[TMP24]], <vscale x 2 x i1> [[VP_OP_ICMP]], i32 [[TMP20]])
-; VEC-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 2 x i1> @llvm.vp.xor.nxv2i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> splat (i1 true), <vscale x 2 x i1> splat (i1 true), i32 [[TMP20]])
-; VEC-NEXT:    [[PREDPHI:%.*]] = call <vscale x 2 x i32> @llvm.vp.select.nxv2i32(<vscale x 2 x i1> [[PRED_NOT]], <vscale x 2 x i32> zeroinitializer, <vscale x 2 x i32> [[VP_OP_LOAD]], i32 [[TMP20]])
+; VEC-NEXT:    [[PREDPHI:%.*]] = call <vscale x 2 x i32> @llvm.vp.select.nxv2i32(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i32> zeroinitializer, i32 [[TMP20]])
 ; VEC-NEXT:    [[TMP25:%.*]] = getelementptr i32, ptr [[NEXT_GEP]], i32 0
 ; VEC-NEXT:    call void @llvm.vp.store.nxv2i32.p0(<vscale x 2 x i32> [[PREDPHI]], ptr align 4 [[TMP25]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP20]])
 ; VEC-NEXT:    [[TMP26:%.*]] = zext i32 [[TMP20]] to i64
