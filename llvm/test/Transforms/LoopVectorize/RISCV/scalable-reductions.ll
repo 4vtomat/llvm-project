@@ -442,11 +442,6 @@ for.end:
   ret float %.sroa.speculated
 }
 
-<<<<<<< HEAD
-; SIFIVE CUSTOMIZATION
-; Integer mul reduction for scalable vector can be expanded by ExpandVPReductionPass
-; SIFIVE CUSTOMIZATION
-=======
 ; CHECK-REMARK: vectorized loop (vectorization width: vscale x 8, interleaved count: 2)
 define half @fmax_fast_half_zvfhmin(ptr noalias nocapture readonly %a, i64 %n) #1 {
 ; CHECK-LABEL: @fmax_fast
@@ -511,8 +506,9 @@ for.end:
   ret bfloat %.sroa.speculated
 }
 
-; Reduction cannot be vectorized
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
+; SIFIVE CUSTOMIZATION
+; Integer mul reduction for scalable vector can be expanded by ExpandVPReductionPass
+; SIFIVE CUSTOMIZATION
 
 ; MUL
 

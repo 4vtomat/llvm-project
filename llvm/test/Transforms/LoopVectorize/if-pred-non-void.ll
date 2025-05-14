@@ -104,26 +104,14 @@ define void @test(ptr nocapture %asd, ptr nocapture %aud,
 ; CHECK-NEXT:    [[TMP52:%.*]] = insertelement <2 x i32> [[TMP35]], i32 [[TMP51]], i32 1
 ; CHECK-NEXT:    br label [[PRED_UREM_CONTINUE27]]
 ; CHECK:       pred.urem.continue27:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP53:%.*]] = phi <2 x i32> [ [[TMP32]], [[PRED_UREM_CONTINUE]] ], [ [[TMP40]], [[PRED_UREM_IF26]] ]
-; CHECK-NEXT:    [[TMP54:%.*]] = phi <2 x i32> [ [[TMP33]], [[PRED_UREM_CONTINUE]] ], [ [[TMP44]], [[PRED_UREM_IF26]] ]
-; CHECK-NEXT:    [[TMP55:%.*]] = phi <2 x i32> [ [[TMP34]], [[PRED_UREM_CONTINUE]] ], [ [[TMP48]], [[PRED_UREM_IF26]] ]
-; CHECK-NEXT:    [[TMP56:%.*]] = phi <2 x i32> [ [[TMP35]], [[PRED_UREM_CONTINUE]] ], [ [[TMP52]], [[PRED_UREM_IF26]] ]
-; CHECK-NEXT:    [[TMP14:%.*]] = xor <2 x i1> [[TMP13]], splat (i1 true)
-; CHECK-NEXT:    [[PREDPHI:%.*]] = select <2 x i1> [[TMP14]], <2 x i32> [[TMP9]], <2 x i32> [[TMP53]]
-; CHECK-NEXT:    [[PREDPHI28:%.*]] = select <2 x i1> [[TMP14]], <2 x i32> [[TMP10]], <2 x i32> [[TMP54]]
-; CHECK-NEXT:    [[PREDPHI29:%.*]] = select <2 x i1> [[TMP14]], <2 x i32> [[TMP11]], <2 x i32> [[TMP55]]
-; CHECK-NEXT:    [[PREDPHI30:%.*]] = select <2 x i1> [[TMP14]], <2 x i32> [[TMP12]], <2 x i32> [[TMP56]]
-=======
-; CHECK-NEXT:    [[TMP52:%.*]] = phi <2 x i32> [ [[TMP31]], [[PRED_UREM_CONTINUE]] ], [ [[TMP39]], [[PRED_UREM_IF26]] ]
-; CHECK-NEXT:    [[TMP53:%.*]] = phi <2 x i32> [ [[TMP32]], [[PRED_UREM_CONTINUE]] ], [ [[TMP43]], [[PRED_UREM_IF26]] ]
-; CHECK-NEXT:    [[TMP54:%.*]] = phi <2 x i32> [ [[TMP33]], [[PRED_UREM_CONTINUE]] ], [ [[TMP47]], [[PRED_UREM_IF26]] ]
-; CHECK-NEXT:    [[TMP55:%.*]] = phi <2 x i32> [ [[TMP34]], [[PRED_UREM_CONTINUE]] ], [ [[TMP51]], [[PRED_UREM_IF26]] ]
-; CHECK-NEXT:    [[PREDPHI:%.*]] = select <2 x i1> [[TMP13]], <2 x i32> [[TMP52]], <2 x i32> [[TMP9]]
+; CHECK-NEXT:    [[TMP56:%.*]] = phi <2 x i32> [ [[TMP32]], [[PRED_UREM_CONTINUE]] ], [ [[TMP40]], [[PRED_UREM_IF26]] ]
+; CHECK-NEXT:    [[TMP53:%.*]] = phi <2 x i32> [ [[TMP33]], [[PRED_UREM_CONTINUE]] ], [ [[TMP44]], [[PRED_UREM_IF26]] ]
+; CHECK-NEXT:    [[TMP54:%.*]] = phi <2 x i32> [ [[TMP34]], [[PRED_UREM_CONTINUE]] ], [ [[TMP48]], [[PRED_UREM_IF26]] ]
+; CHECK-NEXT:    [[TMP55:%.*]] = phi <2 x i32> [ [[TMP35]], [[PRED_UREM_CONTINUE]] ], [ [[TMP52]], [[PRED_UREM_IF26]] ]
+; CHECK-NEXT:    [[PREDPHI:%.*]] = select <2 x i1> [[TMP13]], <2 x i32> [[TMP56]], <2 x i32> [[TMP9]]
 ; CHECK-NEXT:    [[PREDPHI28:%.*]] = select <2 x i1> [[TMP13]], <2 x i32> [[TMP53]], <2 x i32> [[TMP10]]
 ; CHECK-NEXT:    [[PREDPHI29:%.*]] = select <2 x i1> [[TMP13]], <2 x i32> [[TMP54]], <2 x i32> [[TMP11]]
 ; CHECK-NEXT:    [[PREDPHI30:%.*]] = select <2 x i1> [[TMP13]], <2 x i32> [[TMP55]], <2 x i32> [[TMP12]]
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
 ; CHECK-NEXT:    [[TMP57:%.*]] = getelementptr inbounds i32, ptr [[TMP1]], i32 0
 ; CHECK-NEXT:    store <2 x i32> [[PREDPHI]], ptr [[TMP57]], align 4, !alias.scope [[META5]], !noalias [[META8]]
 ; CHECK-NEXT:    [[TMP58:%.*]] = getelementptr inbounds i32, ptr [[TMP2]], i32 0
@@ -258,29 +246,16 @@ define void @test(ptr nocapture %asd, ptr nocapture %aud,
 ; UNROLL-NO-VF:       pred.urem.continue24:
 ; UNROLL-NO-VF-NEXT:    [[TMP42:%.*]] = phi i32 [ poison, [[PRED_UREM_CONTINUE]] ], [ [[TMP38]], [[PRED_UREM_IF23]] ]
 ; UNROLL-NO-VF-NEXT:    [[TMP43:%.*]] = phi i32 [ poison, [[PRED_UREM_CONTINUE]] ], [ [[TMP39]], [[PRED_UREM_IF23]] ]
-<<<<<<< HEAD
 ; UNROLL-NO-VF-NEXT:    [[TMP44:%.*]] = phi i32 [ poison, [[PRED_UREM_CONTINUE]] ], [ [[TMP40]], [[PRED_UREM_IF23]] ]
 ; UNROLL-NO-VF-NEXT:    [[TMP45:%.*]] = phi i32 [ poison, [[PRED_UREM_CONTINUE]] ], [ [[TMP41]], [[PRED_UREM_IF23]] ]
-; UNROLL-NO-VF-NEXT:    [[TMP28:%.*]] = xor i1 [[TMP26]], true
-; UNROLL-NO-VF-NEXT:    [[TMP29:%.*]] = xor i1 [[TMP27]], true
-; UNROLL-NO-VF-NEXT:    [[PREDPHI:%.*]] = select i1 [[TMP28]], i32 [[TMP18]], i32 [[TMP34]]
-; UNROLL-NO-VF-NEXT:    [[PREDPHI25:%.*]] = select i1 [[TMP29]], i32 [[TMP19]], i32 [[TMP42]]
-; UNROLL-NO-VF-NEXT:    [[PREDPHI26:%.*]] = select i1 [[TMP28]], i32 [[TMP20]], i32 [[TMP35]]
-; UNROLL-NO-VF-NEXT:    [[PREDPHI27:%.*]] = select i1 [[TMP29]], i32 [[TMP21]], i32 [[TMP43]]
-; UNROLL-NO-VF-NEXT:    [[PREDPHI28:%.*]] = select i1 [[TMP28]], i32 [[TMP22]], i32 [[TMP36]]
-; UNROLL-NO-VF-NEXT:    [[PREDPHI29:%.*]] = select i1 [[TMP29]], i32 [[TMP23]], i32 [[TMP44]]
-; UNROLL-NO-VF-NEXT:    [[PREDPHI30:%.*]] = select i1 [[TMP28]], i32 [[TMP24]], i32 [[TMP37]]
-; UNROLL-NO-VF-NEXT:    [[PREDPHI31:%.*]] = select i1 [[TMP29]], i32 [[TMP25]], i32 [[TMP45]]
-=======
-; UNROLL-NO-VF-NEXT:    [[PREDPHI:%.*]] = select i1 [[TMP26]], i32 [[TMP32]], i32 [[TMP18]]
-; UNROLL-NO-VF-NEXT:    [[PREDPHI25:%.*]] = select i1 [[TMP27]], i32 [[TMP40]], i32 [[TMP19]]
-; UNROLL-NO-VF-NEXT:    [[PREDPHI26:%.*]] = select i1 [[TMP26]], i32 [[TMP33]], i32 [[TMP20]]
-; UNROLL-NO-VF-NEXT:    [[PREDPHI27:%.*]] = select i1 [[TMP27]], i32 [[TMP41]], i32 [[TMP21]]
-; UNROLL-NO-VF-NEXT:    [[PREDPHI28:%.*]] = select i1 [[TMP26]], i32 [[TMP34]], i32 [[TMP22]]
-; UNROLL-NO-VF-NEXT:    [[PREDPHI29:%.*]] = select i1 [[TMP27]], i32 [[TMP42]], i32 [[TMP23]]
-; UNROLL-NO-VF-NEXT:    [[PREDPHI30:%.*]] = select i1 [[TMP26]], i32 [[TMP35]], i32 [[TMP24]]
-; UNROLL-NO-VF-NEXT:    [[PREDPHI31:%.*]] = select i1 [[TMP27]], i32 [[TMP43]], i32 [[TMP25]]
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
+; UNROLL-NO-VF-NEXT:    [[PREDPHI:%.*]] = select i1 [[TMP26]], i32 [[TMP34]], i32 [[TMP18]]
+; UNROLL-NO-VF-NEXT:    [[PREDPHI25:%.*]] = select i1 [[TMP27]], i32 [[TMP42]], i32 [[TMP19]]
+; UNROLL-NO-VF-NEXT:    [[PREDPHI26:%.*]] = select i1 [[TMP26]], i32 [[TMP35]], i32 [[TMP20]]
+; UNROLL-NO-VF-NEXT:    [[PREDPHI27:%.*]] = select i1 [[TMP27]], i32 [[TMP43]], i32 [[TMP21]]
+; UNROLL-NO-VF-NEXT:    [[PREDPHI28:%.*]] = select i1 [[TMP26]], i32 [[TMP36]], i32 [[TMP22]]
+; UNROLL-NO-VF-NEXT:    [[PREDPHI29:%.*]] = select i1 [[TMP27]], i32 [[TMP44]], i32 [[TMP23]]
+; UNROLL-NO-VF-NEXT:    [[PREDPHI30:%.*]] = select i1 [[TMP26]], i32 [[TMP37]], i32 [[TMP24]]
+; UNROLL-NO-VF-NEXT:    [[PREDPHI31:%.*]] = select i1 [[TMP27]], i32 [[TMP45]], i32 [[TMP25]]
 ; UNROLL-NO-VF-NEXT:    store i32 [[PREDPHI]], ptr [[TMP2]], align 4, !alias.scope [[META5]], !noalias [[META8]]
 ; UNROLL-NO-VF-NEXT:    store i32 [[PREDPHI25]], ptr [[TMP3]], align 4, !alias.scope [[META5]], !noalias [[META8]]
 ; UNROLL-NO-VF-NEXT:    store i32 [[PREDPHI26]], ptr [[TMP4]], align 4, !alias.scope [[META12]], !noalias [[META13]]
@@ -422,18 +397,10 @@ define void @test_scalar2scalar(ptr nocapture %asd, ptr nocapture %bsd) {
 ; CHECK-NEXT:    [[TMP22:%.*]] = insertelement <2 x i32> [[TMP15]], i32 [[TMP21]], i32 1
 ; CHECK-NEXT:    br label [[PRED_SDIV_CONTINUE4]]
 ; CHECK:       pred.sdiv.continue4:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP23:%.*]] = phi <2 x i32> [ [[TMP15]], [[PRED_SDIV_CONTINUE]] ], [ [[TMP22]], [[PRED_SDIV_IF3]] ]
-; CHECK-NEXT:    [[TMP7:%.*]] = xor <2 x i1> [[TMP6]], splat (i1 true)
-; CHECK-NEXT:    [[PREDPHI:%.*]] = select <2 x i1> [[TMP7]], <2 x i32> [[TMP5]], <2 x i32> [[TMP23]]
-; CHECK-NEXT:    [[TMP24:%.*]] = getelementptr inbounds i32, ptr [[TMP1]], i32 0
-; CHECK-NEXT:    store <2 x i32> [[PREDPHI]], ptr [[TMP24]], align 4, !alias.scope [[META20]], !noalias [[META23]]
-=======
 ; CHECK-NEXT:    [[TMP24:%.*]] = phi <2 x i32> [ [[TMP15]], [[PRED_SDIV_CONTINUE]] ], [ [[TMP22]], [[PRED_SDIV_IF3]] ]
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <2 x i1> [[TMP6]], <2 x i32> [[TMP24]], <2 x i32> [[TMP5]]
 ; CHECK-NEXT:    [[TMP26:%.*]] = getelementptr inbounds i32, ptr [[TMP1]], i32 0
 ; CHECK-NEXT:    store <2 x i32> [[PREDPHI]], ptr [[TMP26]], align 4, !alias.scope [[META20]], !noalias [[META23]]
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 2
 ; CHECK-NEXT:    [[TMP25:%.*]] = icmp eq i64 [[INDEX_NEXT]], 128
 ; CHECK-NEXT:    br i1 [[TMP25]], label [[FOR_COND_CLEANUP:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP25:![0-9]+]]
@@ -500,17 +467,9 @@ define void @test_scalar2scalar(ptr nocapture %asd, ptr nocapture %bsd) {
 ; UNROLL-NO-VF-NEXT:    [[TMP20:%.*]] = sdiv i32 [[TMP9]], [[TMP19]]
 ; UNROLL-NO-VF-NEXT:    br label [[PRED_SDIV_CONTINUE3]]
 ; UNROLL-NO-VF:       pred.sdiv.continue3:
-<<<<<<< HEAD
 ; UNROLL-NO-VF-NEXT:    [[TMP21:%.*]] = phi i32 [ poison, [[PRED_SDIV_CONTINUE]] ], [ [[TMP20]], [[PRED_SDIV_IF2]] ]
-; UNROLL-NO-VF-NEXT:    [[TMP14:%.*]] = xor i1 [[TMP12]], true
-; UNROLL-NO-VF-NEXT:    [[TMP15:%.*]] = xor i1 [[TMP13]], true
-; UNROLL-NO-VF-NEXT:    [[PREDPHI:%.*]] = select i1 [[TMP14]], i32 [[TMP10]], i32 [[TMP18]]
-; UNROLL-NO-VF-NEXT:    [[PREDPHI4:%.*]] = select i1 [[TMP15]], i32 [[TMP11]], i32 [[TMP21]]
-=======
-; UNROLL-NO-VF-NEXT:    [[TMP21:%.*]] = phi i32 [ poison, [[PRED_SDIV_CONTINUE]] ], [ [[TMP19]], [[PRED_SDIV_IF2]] ]
-; UNROLL-NO-VF-NEXT:    [[PREDPHI:%.*]] = select i1 [[TMP12]], i32 [[TMP17]], i32 [[TMP10]]
+; UNROLL-NO-VF-NEXT:    [[PREDPHI:%.*]] = select i1 [[TMP12]], i32 [[TMP18]], i32 [[TMP10]]
 ; UNROLL-NO-VF-NEXT:    [[PREDPHI4:%.*]] = select i1 [[TMP13]], i32 [[TMP21]], i32 [[TMP11]]
->>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
 ; UNROLL-NO-VF-NEXT:    store i32 [[PREDPHI]], ptr [[TMP2]], align 4, !alias.scope [[META20]], !noalias [[META23]]
 ; UNROLL-NO-VF-NEXT:    store i32 [[PREDPHI4]], ptr [[TMP3]], align 4, !alias.scope [[META20]], !noalias [[META23]]
 ; UNROLL-NO-VF-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 2
