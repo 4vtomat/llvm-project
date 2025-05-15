@@ -27,17 +27,17 @@ define signext i32 @main() {
 ; CHECK-NEXT:    sh a2, 68(sp)
 ; CHECK-NEXT:    sb zero, 70(sp)
 ; CHECK-NEXT:    ld a1, %lo(.LCPI0_1)(a1)
+; CHECK-NEXT:    sd a0, 40(sp)
 ; CHECK-NEXT:    sd a1, 48(sp)
 ; CHECK-NEXT:    ld a4, %lo(.LCPI0_3)(a4)
 ; CHECK-NEXT:    sd a0, 8(sp)
+; CHECK-NEXT:    addi a0, sp, 40
 ; CHECK-NEXT:    sd a1, 16(sp)
 ; CHECK-NEXT:    addi a1, sp, 8
 ; CHECK-NEXT:    sd a4, 24(sp)
 ; CHECK-NEXT:    sw a3, 32(sp)
 ; CHECK-NEXT:    sh a2, 36(sp)
 ; CHECK-NEXT:    sb zero, 38(sp)
-; CHECK-NEXT:    sd a0, 40(sp)
-; CHECK-NEXT:    addi a0, sp, 40
 ; CHECK-NEXT:    call foo
 ; CHECK-NEXT:    ld ra, 72(sp) # 8-byte Folded Reload
 ; CHECK-NEXT:    .cfi_restore ra
