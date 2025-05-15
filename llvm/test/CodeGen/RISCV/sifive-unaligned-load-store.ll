@@ -53,10 +53,10 @@ define i16 @load_i16(ptr %p) {
 define i24 @load_i24(ptr %p) {
 ; X280-LABEL: load_i24:
 ; X280:       # %bb.0:
-; X280-NEXT:    lbu a2, 1(a0)
 ; X280-NEXT:    lbu a1, 0(a0)
-; X280-NEXT:    slli a2, a2, 8
+; X280-NEXT:    lbu a2, 1(a0)
 ; X280-NEXT:    lbu a0, 2(a0)
+; X280-NEXT:    slli a2, a2, 8
 ; X280-NEXT:    or a1, a1, a2
 ; X280-NEXT:    slli a0, a0, 16
 ; X280-NEXT:    or a0, a0, a1
@@ -110,16 +110,15 @@ define i32 @load_i32(ptr %p) {
 define i64 @load_i64(ptr %p) {
 ; X280-LABEL: load_i64:
 ; X280:       # %bb.0:
-; X280-NEXT:    lbu a2, 1(a0)
 ; X280-NEXT:    lbu a1, 0(a0)
-; X280-NEXT:    slli a2, a2, 8
+; X280-NEXT:    lbu a2, 1(a0)
 ; X280-NEXT:    lbu a6, 2(a0)
-; X280-NEXT:    or a1, a1, a2
 ; X280-NEXT:    lbu a4, 3(a0)
-; X280-NEXT:    slli a6, a6, 16
+; X280-NEXT:    slli a2, a2, 8
 ; X280-NEXT:    lbu a5, 4(a0)
-; X280-NEXT:    slli a4, a4, 24
+; X280-NEXT:    or a1, a1, a2
 ; X280-NEXT:    lbu a3, 5(a0)
+; X280-NEXT:    slli a6, a6, 16
 ; X280-NEXT:    lbu a2, 6(a0)
 ; X280-NEXT:    slli a3, a3, 8
 ; X280-NEXT:    lbu a0, 7(a0)
@@ -127,6 +126,7 @@ define i64 @load_i64(ptr %p) {
 ; X280-NEXT:    slli a0, a0, 24
 ; X280-NEXT:    or a3, a3, a5
 ; X280-NEXT:    or a0, a0, a2
+; X280-NEXT:    slli a4, a4, 24
 ; X280-NEXT:    or a2, a4, a6
 ; X280-NEXT:    or a0, a0, a3
 ; X280-NEXT:    or a1, a1, a2

@@ -355,15 +355,6 @@ RISCVTargetMachine::createMachineScheduler(MachineSchedContext *C) const {
 ScheduleDAGInstrs *
 RISCVTargetMachine::createPostMachineScheduler(MachineSchedContext *C) const {
   ScheduleDAGMI *DAG = nullptr;
-#if SIFIVE_CUSTOMIZATION
-  // FIXME integrate this with below?
-  const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
-  if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
-    DAG = createGenericSchedPostRA(C);
-    DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
-    return DAG;
-  }
-#endif // SIFIVE_CUSTOMIZATION
   if (EnablePostMISchedLoadStoreClustering) {
     DAG = createGenericSchedPostRA(C);
     DAG->addMutation(createLoadClusterDAGMutation(
