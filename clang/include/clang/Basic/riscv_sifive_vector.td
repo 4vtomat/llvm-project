@@ -427,8 +427,6 @@ let RequiredFeatures = ["Xsfmm32a4i"] in {
   defm sf_p2mm_s_s : RVVSFMatMulBuiltinSet<"0Kzvvzzz", "vv", "c", [4]>;
 }
 
-let RequiredFeatures = ["Xsfmm64a64f"] in {
-  defm : RVVSFMatMulFloatBuiltinSet<"sf_mm_f_f", "0Kzvvzzz", "v", ["f"], 2>;
+let RequiredFeatures = ["Xsfmm64a64f"] in
   defm : RVVSFMatMulFloatBuiltinSet<"sf_mm_f_f", "0Kzvvzzz", "v", ["d"], 1>;
-}
 #endif // SIFIVE_CUSTOMIZATION

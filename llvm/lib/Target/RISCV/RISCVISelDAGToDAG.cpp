@@ -2720,6 +2720,11 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
       SDValue TWidenOp = Node->getOperand(8);
       SDValue Chain = Node->getOperand(0);
 
+      // sf.mm.f.f with sew=32, twiden=2 is invalid
+      if (IntNo == Intrinsic::riscv_sf_mm_f_f && Log2SEW == 5 &&
+          TWidenOp->getAsZExtVal() == 2)
+        report_fatal_error("sf.mm.f.f doesn't support (sew=32, twiden=2)");
+
       SmallVector<SDValue, 10> Operands(
           {CurDAG->getRegister(getTileReg(TileNum), XLenVT), Op1, Op2});
       if (HasFRM)
