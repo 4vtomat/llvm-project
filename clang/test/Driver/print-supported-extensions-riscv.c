@@ -177,7 +177,6 @@
 // CHECK-NEXT:     xsfmm32a             0.6       'XSfmm32a' ((TEW=32-bit accumulation) operands - int: 8b; float: fp16, bf16, fp32)
 // CHECK-NEXT:     xsfmm32a16f          0.6       'XSfmm32a16f' ((TEW=32-bit accumulation) operands - float: 16b, widen=2 (IEEE, BF))
 // CHECK-NEXT:     xsfmm32a32f          0.6       'XSfmm32a32f' ((TEW=32-bit accumulation) operands - float: 32b)
-// CHECK-NEXT:     xsfmm32a4i           0.6       'XSfmm32a4i' ((TEW=32-bit accumulation) operands - int: 4b (packed))
 // CHECK-NEXT:     xsfmm32a8f           0.6       'XSfmm32a8f' ((TEW=32-bit accumulation) operands - float: fp8)
 // CHECK-NEXT:     xsfmm32a8i           0.6       'XSfmm32a8i' ((TEW=32-bit accumulation) operands - int: 8b)
 // CHECK-NEXT:     xsfmm32t             0.6       'XSfmm32t' (TE=32 configuration)

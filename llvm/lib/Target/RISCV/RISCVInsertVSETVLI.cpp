@@ -80,26 +80,29 @@ static unsigned getSEWOpNum(const MachineInstr &MI) {
 #if SIFIVE_CUSTOMIZATION
 // Returns true if the instruction is a Mammoth instruction that is also an
 // alias of VSETVLI instruction, i.e. SF_VSETTNT, SF_VSETTNTX0
-static bool isAliasMammothVectorConfigInstr(const MachineInstr &MI) {
+static bool isMammothVectorTNConfigInstr(const MachineInstr &MI) {
   return MI.getOpcode() == RISCV::PseudoSF_VSETTNT ||
          MI.getOpcode() == RISCV::PseudoSF_VSETTNTX0;
+}
+
+static bool isMammothVectorConfigTMTKInstr(const MachineInstr &MI) {
+  return MI.getOpcode() == RISCV::PseudoSF_VSETTM ||
+         MI.getOpcode() == RISCV::PseudoSF_VSETTK;
 }
 #endif // SIFIVE_CUSTOMIZATION
 
 static bool isVectorConfigInstr(const MachineInstr &MI) {
   return MI.getOpcode() == RISCV::PseudoVSETVLI ||
          MI.getOpcode() == RISCV::PseudoVSETVLIX0 ||
-         MI.getOpcode() == RISCV::PseudoVSETIVLI
 #if SIFIVE_CUSTOMIZATION
-         || isAliasMammothVectorConfigInstr(MI);
+         MI.getOpcode() == RISCV::PseudoVSETIVLI ||
+         isMammothVectorTNConfigInstr(MI);
 #endif // SIFIVE_CUSTOMIZATION
 }
 
 #if SIFIVE_CUSTOMIZATION
 static bool isMammothVectorConfigInstr(const MachineInstr &MI) {
-  return isAliasMammothVectorConfigInstr(MI) ||
-         MI.getOpcode() == RISCV::PseudoSF_VSETTM ||
-         MI.getOpcode() == RISCV::PseudoSF_VSETTK;
+  return isMammothVectorTNConfigInstr(MI) || isMammothVectorConfigTMTKInstr(MI);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -640,10 +643,7 @@ class VSETVLIInfo {
   uint8_t SEWLMULRatioOnly : 1;
 #ifdef SIFIVE_CUSTOMIZATION
   uint8_t AltFmt : 1;
-  AVLDef ATMRegDef = {nullptr, RISCV::NoRegister};
-  AVLDef ATKRegDef = {nullptr, RISCV::NoRegister};
   uint8_t TWiden = 0;
-  bool IsMammoth = false;
 #endif // SIFIVE_CUSTOMIZATION
 
 public:
@@ -716,17 +716,6 @@ public:
       setAVLImm(Info.getAVLImm());
     }
   }
-
-#ifdef SIFIVE_CUSTOMIZATION
-  void setATM(VSETVLIInfo Info) {
-    assert(Info.isValid());
-    setATMRegDef(Info.getATMVNInfo(), Info.getATMReg());
-  }
-  void setATK(VSETVLIInfo Info) {
-    assert(Info.isValid());
-    setATKRegDef(Info.getATKVNInfo(), Info.getATKReg());
-  }
-#endif // SIFIVE_CUSTOMIZATION
 
   unsigned getSEW() const { return SEW; }
   RISCVVType::VLMUL getVLMUL() const { return VLMul; }
@@ -806,7 +795,7 @@ public:
 #if SIFIVE_CUSTOMIZATION
   void setVTYPE(RISCVVType::VLMUL L, unsigned S, bool TA, bool MA, bool AF,
                 unsigned W) {
-    assert((IsMammoth || (isValid() && !isUnknown())) &&
+    assert((isValid() && !isUnknown()) &&
            "Can't set VTYPE for uninitialized or unknown");
 #endif // SIFIVE_CUSTOMIZATION
     VLMul = L;
@@ -820,39 +809,7 @@ public:
   }
 
 #if SIFIVE_CUSTOMIZATION
-  bool isMammoth() const { return IsMammoth; }
-  void setIsMammoth(bool M) { IsMammoth = M; }
-
   void setAltFmt(bool AF) { AltFmt = AF; }
-  void setATMRegDef(const VNInfo *VNInfo, Register ATMReg) {
-    assert(ATMReg.isVirtual());
-    ATMRegDef.ValNo = VNInfo;
-    ATMRegDef.DefReg = ATMReg;
-  }
-  bool hasATMReg() const { return ATMRegDef.DefReg != RISCV::NoRegister; }
-  Register getATMReg() const {
-    assert(hasATMReg());
-    return ATMRegDef.DefReg;
-  }
-  const VNInfo *getATMVNInfo() const {
-    assert(hasATMReg());
-    return ATMRegDef.ValNo;
-  }
-
-  void setATKRegDef(const VNInfo *VNInfo, Register ATKReg) {
-    assert(ATKReg.isVirtual());
-    ATKRegDef.ValNo = VNInfo;
-    ATKRegDef.DefReg = ATKReg;
-  }
-  bool hasATKReg() const { return ATKRegDef.DefReg != RISCV::NoRegister; }
-  Register getATKReg() const {
-    assert(hasATKReg());
-    return ATKRegDef.DefReg;
-  }
-  const VNInfo *getATKVNInfo() const {
-    assert(hasATKReg());
-    return ATKRegDef.ValNo;
-  }
 #endif // SIFIVE_CUSTOMIZATION
 
   void setVLMul(RISCVVType::VLMUL VLMul) { this->VLMul = VLMul; }
@@ -907,24 +864,6 @@ public:
     return areCompatibleVTYPEs(Require.encodeVTYPE(), encodeVTYPE(), Used);
   }
 
-#if SIFIVE_CUSTOMIZATION
-  bool isCompatibleMammoth(const VSETVLIInfo &Require) const {
-    if (isMammoth()) {
-      if (!Require.isMammoth())
-        return false;
-
-      if (Require.hasATMReg() &&
-          (!hasATMReg() || Require.getATMVNInfo()->id != getATMVNInfo()->id))
-        return false;
-
-      if (Require.hasATKReg() &&
-          (!hasATKReg() || Require.getATKVNInfo()->id != getATKVNInfo()->id))
-        return false;
-    }
-    return true;
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
   // Determine whether the vector instructions requirements represented by
   // Require are compatible with the previous vsetvli instruction represented
   // by this.  MI is the instruction whose requirements we're considering.
@@ -935,11 +874,6 @@ public:
     // Nothing is compatible with Unknown.
     if (isUnknown() || Require.isUnknown())
       return false;
-
-#if SIFIVE_CUSTOMIZATION
-    if (!isCompatibleMammoth(Require))
-      return false;
-#endif // SIFIVE_CUSTOMIZATION
 
     // If only our VLMAX ratio is valid, then this isn't compatible.
     if (SEWLMULRatioOnly || Require.SEWLMULRatioOnly)
@@ -955,19 +889,6 @@ public:
   }
 
   bool operator==(const VSETVLIInfo &Other) const {
-#if SIFIVE_CUSTOMIZATION
-    if (isMammoth() != Other.isMammoth())
-      return false;
-    if (isMammoth()) {
-      if (hasATMReg() != Other.hasATMReg() ||
-          (hasATMReg() && getATMVNInfo()->id != Other.getATMVNInfo()->id))
-        return false;
-
-      if (hasATKReg() != Other.hasATKReg() ||
-          (hasATKReg() && getATKVNInfo()->id != Other.getATKVNInfo()->id))
-        return false;
-    }
-#endif // SIFIVE_CUSTOMIZATION
     // Uninitialized is only equal to another Uninitialized.
     if (!isValid())
       return !Other.isValid();
@@ -1058,20 +979,8 @@ public:
        << "MaskAgnostic=" << (bool)MaskAgnostic << ", "
        << "SEWLMULRatioOnly=" << (bool)SEWLMULRatioOnly << "}";
 #if SIFIVE_CUSTOMIZATION
-    if (isMammoth()) {
-      OS << "\n";
-      OS << "{";
-      OS << "IsMammoth" << ", ";
-      if (hasAVLReg())
-        OS << "ATN=" << llvm::printReg(getAVLReg()) << ", ";
-      if (hasATMReg())
-        OS << "ATM=" << llvm::printReg(getATMReg()) << ", ";
-      if (hasATKReg())
-        OS << "ATK=" << llvm::printReg(getATKReg()) << ", ";
-      OS << "SEW=" << (unsigned)SEW << ", ";
-      OS << "TWiden=" << (bool)TWiden << ", ";
-      OS << "AltFmt=" << (bool)AltFmt << "}";
-    }
+    OS << "TWiden=" << (bool)TWiden << ", ";
+    OS << "AltFmt=" << (bool)AltFmt << "}";
 #endif // SIFIVE_CUSTOMIZATION
   }
 #endif
@@ -1099,6 +1008,13 @@ struct BlockData {
 
   BlockData() = default;
 };
+
+#ifdef SIFIVE_CUSTOMIZATION
+enum TKTMMode {
+  VSETTK = 0,
+  VSETTM = 1,
+};
+#endif // SIFIVE_CUSTOMIZATION
 
 class RISCVInsertVSETVLI : public MachineFunctionPass {
   const RISCVSubtarget *ST;
@@ -1138,11 +1054,6 @@ private:
   void insertVSETVLI(MachineBasicBlock &MBB,
                      MachineBasicBlock::iterator InsertPt, DebugLoc DL,
                      const VSETVLIInfo &Info, const VSETVLIInfo &PrevInfo);
-#if SIFIVE_CUSTOMIZATION
-  void insertVSETTNandVSETTK(MachineBasicBlock &MBB,
-                             MachineBasicBlock::iterator InsertPt, DebugLoc DL,
-                             const VSETVLIInfo &Info, uint64_t TSFlags);
-#endif // SIFIVE_CUSTOMIZATION
 
   void transferBefore(VSETVLIInfo &Info, const MachineInstr &MI) const;
   void transferAfter(VSETVLIInfo &Info, const MachineInstr &MI) const;
@@ -1160,6 +1071,9 @@ private:
   VSETVLIInfo getInfoForVSETVLI(const MachineInstr &MI) const;
   VSETVLIInfo computeInfoForInstr(const MachineInstr &MI) const;
   void forwardVSETVLIAVL(VSETVLIInfo &Info) const;
+#ifdef SIFIVE_CUSTOMIZATION
+  bool insertVSETMTK(MachineBasicBlock &MBB, TKTMMode Mode) const;
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 } // end anonymous namespace
@@ -1197,15 +1111,21 @@ RISCVInsertVSETVLI::getInfoForVSETVLI(const MachineInstr &MI) const {
   VSETVLIInfo NewInfo;
   if (MI.getOpcode() == RISCV::PseudoVSETIVLI) {
     NewInfo.setAVLImm(MI.getOperand(1).getImm());
+#ifdef SIFIVE_CUSTOMIZATION
+  } else if (isMammothVectorTNConfigInstr(MI)) {
+    Register ATReg = MI.getOperand(1).getReg();
+    switch (MI.getOpcode()) {
+    case RISCV::PseudoSF_VSETTNTX0:
+      NewInfo.setAVLVLMAX();
+      break;
+    case RISCV::PseudoSF_VSETTNT:
+      NewInfo.setAVLRegDef(getVNInfoFromReg(ATReg, MI, LIS), ATReg);
+      break;
+    }
+#endif // SIFIVE_CUSTOMIZATION
   } else {
-#if SIFIVE_CUSTOMIZATION
-    assert(MI.getOpcode() == RISCV::PseudoVSETVLI ||
-           MI.getOpcode() == RISCV::PseudoVSETVLIX0 ||
-           isAliasMammothVectorConfigInstr(MI));
-#else
     assert(MI.getOpcode() == RISCV::PseudoVSETVLI ||
            MI.getOpcode() == RISCV::PseudoVSETVLIX0);
-#endif // SIFIVE_CUSTOMIZATION
     Register AVLReg = MI.getOperand(1).getReg();
     assert((AVLReg != RISCV::X0 || MI.getOperand(0).getReg() != RISCV::X0) &&
            "Can't handle X0, X0 vsetvli yet");
@@ -1220,11 +1140,6 @@ RISCVInsertVSETVLI::getInfoForVSETVLI(const MachineInstr &MI) const {
     }
   }
   NewInfo.setVTYPE(MI.getOperand(2).getImm());
-
-#if SIFIVE_CUSTOMIZATION
-  if (isAliasMammothVectorConfigInstr(MI))
-    NewInfo.setIsMammoth(true);
-#endif // SIFIVE_CUSTOMIZATION
 
   forwardVSETVLIAVL(NewInfo);
 
@@ -1281,36 +1196,22 @@ RISCVInsertVSETVLI::computeInfoForInstr(const MachineInstr &MI) const {
 
 #if SIFIVE_CUSTOMIZATION
   bool AltFmt = RISCVII::getAltFmtType(TSFlags) == RISCVII::AltFmtType::AltFmt;
-
-  // Mammoth
   InstrInfo.setAltFmt(AltFmt);
-  if (isMammothVectorConfigInstr(MI)) {
-    unsigned VTYPE = MI.getOperand(2).getImm();
-    InstrInfo.setIsMammoth(true);
-    InstrInfo.setVTYPE(InstrInfo.getVLMUL(), RISCVVType::getSEW(VTYPE),
-                       InstrInfo.getTailAgnostic(), InstrInfo.getMaskAgnostic(),
-                       InstrInfo.getAltFmt(), RISCVVType::getXSfmmWiden(VTYPE));
 
-    Register ATReg = MI.getOperand(1).getReg();
-    switch (MI.getOpcode()) {
-    case RISCV::PseudoSF_VSETTNTX0:
-      InstrInfo.setAVLVLMAX();
-      break;
-    case RISCV::PseudoSF_VSETTNT:
-      InstrInfo.setAVLRegDef(getVNInfoFromReg(ATReg, MI, LIS), ATReg);
-      break;
-    case RISCV::PseudoSF_VSETTM:
-      InstrInfo.setAVLVLMAX();
-      InstrInfo.setATMRegDef(getVNInfoFromReg(ATReg, MI, LIS), ATReg);
-      break;
-    case RISCV::PseudoSF_VSETTK:
-      InstrInfo.setAVLVLMAX();
-      InstrInfo.setATKRegDef(getVNInfoFromReg(ATReg, MI, LIS), ATReg);
-      break;
-    }
+  // FIXME: Use the normal RVV instruction flow.
+  // encoding the SEW and other vtype thing inside pseudo instructions.
+  // This statement aim to handle
+  // PseudoSF_VSETTM and PseudoSF_VSETTK
+  if (isMammothVectorConfigTMTKInstr(MI)) {
+    InstrInfo.setAVLVLMAX();
+    unsigned VTYPE = MI.getOperand(2).getImm();
+    InstrInfo.setVTYPE(InstrInfo.getVLMUL(), RISCVVType::getSEW(VTYPE),
+                       TailAgnostic, MaskAgnostic, AltFmt,
+                       RISCVVType::getXSfmmWiden(VTYPE));
 
     return InstrInfo;
   }
+
 #endif // SIFIVE_CUSTOMIZATION
   unsigned Log2SEW = MI.getOperand(getSEWOpNum(MI)).getImm();
   // A Log2SEW of 0 is an operation on mask registers only.
@@ -1321,37 +1222,20 @@ RISCVInsertVSETVLI::computeInfoForInstr(const MachineInstr &MI) const {
   if (RISCVII::hasTWidenOp(TSFlags)) {
     assert(RISCVVType::isValidSEW(SEW) && "Unexpected SEW");
 
-    InstrInfo.setIsMammoth(true);
     const MachineOperand &TWidenOp =
         MI.getOperand(MI.getNumExplicitOperands() - 1);
     unsigned TWiden = TWidenOp.getImm();
 
-    // Set sew and twiden
-    InstrInfo.setVTYPE(InstrInfo.getVLMUL(), SEW, InstrInfo.getTailAgnostic(),
-                       InstrInfo.getMaskAgnostic(), InstrInfo.getAltFmt(),
-                       TWiden);
-
-    // Set atn
     const MachineOperand &TnOp =
         MI.getOperand(RISCVII::getTNOpNum(MI.getDesc()));
-    InstrInfo.setAVLRegDef(getVNInfoFromReg(TnOp.getReg(), MI, LIS),
-                           TnOp.getReg());
 
-    // Set atm
-    if (RISCVII::hasTMOp(TSFlags)) {
-      const MachineOperand &TmOp =
-          MI.getOperand(RISCVII::getTMOpNum(MI.getDesc()));
-      InstrInfo.setATMRegDef(getVNInfoFromReg(TmOp.getReg(), MI, LIS),
-                             TmOp.getReg());
-    }
+    if (TnOp.getReg().isVirtual())
+      InstrInfo.setAVLRegDef(getVNInfoFromReg(TnOp.getReg(), MI, LIS),
+                             TnOp.getReg());
+    else
+      InstrInfo.setAVLVLMAX();
 
-    // Set atk
-    if (RISCVII::hasTKOp(TSFlags)) {
-      const MachineOperand &TkOp =
-          MI.getOperand(RISCVII::getTKOpNum(MI.getDesc()));
-      InstrInfo.setATKRegDef(getVNInfoFromReg(TkOp.getReg(), MI, LIS),
-                             TkOp.getReg());
-    }
+    InstrInfo.setVTYPE(VLMul, SEW, TailAgnostic, MaskAgnostic, AltFmt, TWiden);
 
     return InstrInfo;
   }
@@ -1403,37 +1287,30 @@ RISCVInsertVSETVLI::computeInfoForInstr(const MachineInstr &MI) const {
 }
 
 void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
-                     MachineBasicBlock::iterator InsertPt, DebugLoc DL,
-                     const VSETVLIInfo &Info, const VSETVLIInfo &PrevInfo) {
-
+                                       MachineBasicBlock::iterator InsertPt,
+                                       DebugLoc DL, const VSETVLIInfo &Info,
+                                       const VSETVLIInfo &PrevInfo) {
   ++NumInsertedVSETVL;
 
 #if SIFIVE_CUSTOMIZATION
-  if (Info.isMammoth()) {
-    // For Mammoth, `vsettm` and `vsettk` also need `vsettnt` to work correctly,
-    // so it's possible that vector config instructions enter this function, to
-    // prevent duplicate emission, we need to skip the duplicated VSETTNT.
-    // TODO: Duplicate it for now and delete in coalesceVSETVLIs function.
-    if (!isAliasMammothVectorConfigInstr(*InsertPt)) {
-      if (Info.hasAVLVLMAX()) {
-        Register DestReg = MRI->createVirtualRegister(&RISCV::GPRRegClass);
-        auto MI =
-            BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoSF_VSETTNTX0))
-                .addReg(DestReg, RegState::Define | RegState::Dead)
-                .addReg(RISCV::X0, RegState::Kill)
-                .addImm(Info.encodeVTYPE());
-        if (LIS) {
-          LIS->InsertMachineInstrInMaps(*MI);
-          LIS->createAndComputeVirtRegInterval(DestReg);
-        }
-      } else {
-        auto MI = BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoSF_VSETTNT))
-                      .addReg(RISCV::X0, RegState::Define | RegState::Dead)
-                      .addReg(Info.getAVLReg())
-                      .addImm(Info.encodeVTYPE());
-        if (LIS)
-          LIS->InsertMachineInstrInMaps(*MI);
+  if (Info.getTWiden()) {
+    if (Info.hasAVLVLMAX()) {
+      Register DestReg = MRI->createVirtualRegister(&RISCV::GPRRegClass);
+      auto MI = BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoSF_VSETTNTX0))
+                    .addReg(DestReg, RegState::Define | RegState::Dead)
+                    .addReg(RISCV::X0, RegState::Kill)
+                    .addImm(Info.encodeVTYPE());
+      if (LIS) {
+        LIS->InsertMachineInstrInMaps(*MI);
+        LIS->createAndComputeVirtRegInterval(DestReg);
       }
+    } else {
+      auto MI = BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoSF_VSETTNT))
+                    .addReg(RISCV::X0, RegState::Define | RegState::Dead)
+                    .addReg(Info.getAVLReg())
+                    .addImm(Info.encodeVTYPE());
+      if (LIS)
+        LIS->InsertMachineInstrInMaps(*MI);
     }
     return;
   }
@@ -1534,34 +1411,6 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
   }
 }
 
-#if SIFIVE_CUSTOMIZATION
-void RISCVInsertVSETVLI::insertVSETTNandVSETTK(
-    MachineBasicBlock &MBB, MachineBasicBlock::iterator InsertPt, DebugLoc DL,
-    const VSETVLIInfo &Info, uint64_t TSFlags) {
-  assert(Info.isMammoth());
-  if (Info.hasATMReg() && RISCVII::hasTMOp(TSFlags) &&
-      InsertPt->getOpcode() != RISCV::PseudoSF_VSETTM) {
-    ++NumInsertedVSETVL;
-    auto MI = BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoSF_VSETTM))
-                  .addReg(RISCV::X0, RegState::Define | RegState::Dead)
-                  .addReg(Info.getATMReg())
-                  .addImm(Info.encodeVTYPE());
-    if (LIS)
-      LIS->InsertMachineInstrInMaps(*MI);
-  }
-  if (Info.hasATKReg() && RISCVII::hasTKOp(TSFlags) &&
-      InsertPt->getOpcode() != RISCV::PseudoSF_VSETTK) {
-    ++NumInsertedVSETVL;
-    auto MI = BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoSF_VSETTK))
-                  .addReg(RISCV::X0, RegState::Define | RegState::Dead)
-                  .addReg(Info.getATKReg())
-                  .addImm(Info.encodeVTYPE());
-    if (LIS)
-      LIS->InsertMachineInstrInMaps(*MI);
-  }
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 /// Return true if a VSETVLI is required to transition from CurInfo to Require
 /// given a set of DemandedFields \p Used.
 bool RISCVInsertVSETVLI::needVSETVLI(const DemandedFields &Used,
@@ -1614,11 +1463,12 @@ void RISCVInsertVSETVLI::transferBefore(VSETVLIInfo &Info,
     return;
   }
 
-#if SIFIVE_CUSTOMIZATION
+#ifdef SIFIVE_CUSTOMIZATION
+  // FIXME: SETTM|TK use the SEW but not has SEWOp.
   if (!RISCVII::hasSEWOp(MI.getDesc().TSFlags) &&
-      !isMammothVectorConfigInstr(MI))
-#endif // SIFIVE_CUSTOMIZATION
+      !isMammothVectorConfigTMTKInstr(MI))
     return;
+#endif // SIFIVE_CUSTOMIZATION
 
   DemandedFields Demanded = getDemanded(MI, ST);
 
@@ -1658,14 +1508,6 @@ void RISCVInsertVSETVLI::transferBefore(VSETVLIInfo &Info,
           IncomingInfo.getMaskAgnostic(),
       (Demanded.UseAltFmt ? IncomingInfo : Info).getAltFmt(),
       Demanded.UseTWiden ? IncomingInfo.getTWiden() : 0);
-
-  if (NewInfo.hasATMReg())
-    Info.setATM(NewInfo);
-  if (NewInfo.hasATKReg())
-    Info.setATK(NewInfo);
-  // TODO: Check the compatibility of RVV and Mammoth.
-  if (Info.isMammoth() != NewInfo.isMammoth())
-    Info.setIsMammoth(NewInfo.isMammoth());
 #endif // SIFIVE_CUSTOMIZATION
 
   // If we only knew the sew/lmul ratio previously, replace the VTYPE but keep
@@ -1789,13 +1631,6 @@ void RISCVInsertVSETVLI::computeIncomingVLVTYPE(const MachineBasicBlock &MBB) {
 // outputs from the last VSETVLI in their respective basic blocks.
 bool RISCVInsertVSETVLI::needVSETVLIPHI(const VSETVLIInfo &Require,
                                         const MachineBasicBlock &MBB) const {
-#if SIFIVE_CUSTOMIZATION
-  // Always emit vset* for Mammoth.
-  // TODO: Support Mammoth.
-  if (Require.isMammoth())
-    return true;
-#endif // SIFIVE_CUSTOMIZATION
-
   if (!Require.hasAVLReg())
     return true;
 
@@ -1868,17 +1703,12 @@ void RISCVInsertVSETVLI::emitVSETVLIs(MachineBasicBlock &MBB) {
                                               /*isImp*/ true));
     }
 
-#if SIFIVE_CUSTOMIZATION
-    if (isMammothVectorConfigInstr(MI)) {
-      MI.getOperand(3).setIsDead(false);
-      PrefixTransparent = false;
-    }
-#endif // SIFIVE_CUSTOMIZATION
-
     uint64_t TSFlags = MI.getDesc().TSFlags;
-#if SIFIVE_CUSTOMIZATION
-    if (RISCVII::hasSEWOp(TSFlags) || RISCVII::hasTWidenOp(TSFlags) ||
-        isMammothVectorConfigInstr(MI)) {
+#ifdef SIFIVE_CUSTOMIZATION
+    // FIXME: isMammothVectorConfigTMTKInstr should be dropped.
+    // If it need to set the SEW for TM/TK, it should set the SEWOp of
+    // something.
+    if (RISCVII::hasSEWOp(TSFlags) || isMammothVectorConfigTMTKInstr(MI)) {
 #endif // SIFIVE_CUSTOMIZATION
       if (!PrevInfo.isCompatible(DemandedFields::all(), CurInfo, LIS)) {
         // If this is the first implicit state change, and the state change
@@ -1888,20 +1718,12 @@ void RISCVInsertVSETVLI::emitVSETVLIs(MachineBasicBlock &MBB) {
         // wouldn't be used and VL/VTYPE registers are correct.  Note that
         // we *do* need to model the state as if it changed as while the
         // register contents are unchanged, the abstract model can change.
-#if SIFIVE_CUSTOMIZATION
-        if (!PrefixTransparent || needVSETVLIPHI(CurInfo, MBB)) {
+        if (!PrefixTransparent || needVSETVLIPHI(CurInfo, MBB))
           insertVSETVLI(MBB, MI, MI.getDebugLoc(), CurInfo, PrevInfo);
-          if (CurInfo.isMammoth())
-            insertVSETTNandVSETTK(MBB, MachineBasicBlock::iterator(&MI),
-                                  MI.getDebugLoc(), CurInfo, TSFlags);
-        }
-#endif // SIFIVE_CUSTOMIZATION
         PrefixTransparent = false;
       }
 
-#if SIFIVE_CUSTOMIZATION
-      if (RISCVII::hasVLOp(TSFlags) && !RISCVII::hasTWidenOp(TSFlags)) {
-#endif // SIFIVE_CUSTOMIZATION
+      if (RISCVII::hasVLOp(TSFlags)) {
         MachineOperand &VLOp = MI.getOperand(getVLOpNum(MI));
         if (VLOp.isReg()) {
           Register Reg = VLOp.getReg();
@@ -1933,39 +1755,6 @@ void RISCVInsertVSETVLI::emitVSETVLIs(MachineBasicBlock &MBB) {
         MI.addOperand(MachineOperand::CreateReg(RISCV::VL, /*isDef*/ false,
                                                 /*isImp*/ true));
       }
-#if SIFIVE_CUSTOMIZATION
-      auto shrinkIntervalAndRemoveDeadMI = [&](MachineOperand &MO) {
-        if (!LIS)
-          return;
-
-        Register Reg = MO.getReg();
-        LiveInterval &LI = LIS->getInterval(Reg);
-
-        // Erase the AVL operand from the instruction.
-        MO.setReg(RISCV::NoRegister);
-        MO.setIsKill(false);
-        SmallVector<MachineInstr *> DeadMIs;
-        LIS->shrinkToUses(&LI, &DeadMIs);
-        // TODO: Enable this once needVSETVLIPHI is supported.
-        // SmallVector<LiveInterval *> SplitLIs;
-        // LIS->splitSeparateComponents(LI, SplitLIs);
-
-        for (MachineInstr *DeadMI : DeadMIs) {
-          LIS->RemoveMachineInstrFromMaps(*DeadMI);
-          DeadMI->eraseFromParent();
-        }
-      };
-      const MCInstrDesc &Desc = MI.getDesc();
-      if (!isMammothVectorConfigInstr(MI) && RISCVII::hasTWidenOp(TSFlags)) {
-        shrinkIntervalAndRemoveDeadMI(MI.getOperand(RISCVII::getTNOpNum(Desc)));
-        MI.addOperand(MachineOperand::CreateReg(RISCV::VL, /*isDef*/ false,
-                                                /*isImp*/ true));
-      }
-      if (RISCVII::hasTMOp(TSFlags))
-        shrinkIntervalAndRemoveDeadMI(MI.getOperand(RISCVII::getTMOpNum(Desc)));
-      if (RISCVII::hasTKOp(TSFlags))
-        shrinkIntervalAndRemoveDeadMI(MI.getOperand(RISCVII::getTKOpNum(Desc)));
-#endif // SIFIVE_CUSTOMIZATION
       MI.addOperand(MachineOperand::CreateReg(RISCV::VTYPE, /*isDef*/ false,
                                               /*isImp*/ true));
     }
@@ -2028,34 +1817,6 @@ void RISCVInsertVSETVLI::doPRE(MachineBasicBlock &MBB) {
   // Critical edge - TODO: consider splitting?
   if (UnavailablePred->succ_size() != 1)
     return;
-
-#if SIFIVE_CUSTOMIZATION
-  // We need to prove the ATM, ATN, ATK register is available at the point we're
-  // going to insert the vset* at, note that currently we only support PRE if
-  // all of ATM, ATN and ATK are the same.
-  // TODO: Support PRE for individual ATM, ATN or ATK.
-  if (AvailableInfo.isMammoth()) {
-    auto checkAvailable = [&](MachineInstr *DefMI) {
-      if (DefMI->getParent() != UnavailablePred)
-        return false;
-      for (auto &TermMI : UnavailablePred->terminators())
-        if (&TermMI == DefMI)
-          return false;
-      return true;
-    };
-
-    MachineInstr *ATNDefMI = MRI->getVRegDef(AvailableInfo.getAVLReg());
-    if (!checkAvailable(ATNDefMI))
-      return;
-    if (AvailableInfo.hasATMReg()) {
-      assert(AvailableInfo.hasATKReg());
-      MachineInstr *ATMDefMI = MRI->getVRegDef(AvailableInfo.getATMReg());
-      MachineInstr *ATKDefMI = MRI->getVRegDef(AvailableInfo.getATKReg());
-      if (!checkAvailable(ATMDefMI) || !checkAvailable(ATKDefMI))
-        return;
-    }
-  }
-#endif // SIFIVE_CUSTOMIZATION
 
   // If the AVL value is a register (other than our VLMAX sentinel),
   // we need to prove the value is available at the point we're going
@@ -2295,6 +2056,81 @@ void RISCVInsertVSETVLI::insertReadVL(MachineBasicBlock &MBB) {
   }
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+static void shrinkIntervalAndRemoveDeadMI(MachineOperand &MO,
+                                          LiveIntervals *LIS) {
+  Register Reg = MO.getReg();
+  MO.setReg(RISCV::NoRegister);
+  MO.setIsKill(false);
+
+  if (!LIS)
+    return;
+
+  LiveInterval &LI = LIS->getInterval(Reg);
+
+  // Erase the AVL operand from the instruction.
+  SmallVector<MachineInstr *> DeadMIs;
+  LIS->shrinkToUses(&LI, &DeadMIs);
+  // TODO: Enable this once needVSETVLIPHI is supported.
+  // SmallVector<LiveInterval *> SplitLIs;
+  // LIS->splitSeparateComponents(LI, SplitLIs);
+
+  for (MachineInstr *DeadMI : DeadMIs) {
+    LIS->RemoveMachineInstrFromMaps(*DeadMI);
+    DeadMI->eraseFromParent();
+  }
+}
+
+bool RISCVInsertVSETVLI::insertVSETMTK(MachineBasicBlock &MBB,
+                                       TKTMMode Mode) const {
+
+  bool Changed = false;
+  for (auto &MI : MBB) {
+    uint64_t TSFlags = MI.getDesc().TSFlags;
+    if (isMammothVectorConfigTMTKInstr(MI) || !RISCVII::hasSEWOp(TSFlags) ||
+        !RISCVII::hasTWidenOp(TSFlags))
+      continue;
+
+    VSETVLIInfo CurrInfo = computeInfoForInstr(MI);
+
+    if (Mode == VSETTK && !RISCVII::hasTKOp(TSFlags))
+      continue;
+
+    if (Mode == VSETTM && !RISCVII::hasTMOp(TSFlags))
+      continue;
+
+    unsigned OpNum = 0;
+    unsigned Opcode = 0;
+    switch (Mode) {
+    case VSETTK:
+      OpNum = RISCVII::getTKOpNum(MI.getDesc());
+      Opcode = RISCV::PseudoSF_VSETTK;
+      break;
+    case VSETTM:
+      OpNum = RISCVII::getTMOpNum(MI.getDesc());
+      Opcode = RISCV::PseudoSF_VSETTM;
+      break;
+    }
+
+    assert(OpNum && Opcode && "Invalid OpNum or Opcode");
+
+    const MachineOperand &Op = MI.getOperand(OpNum);
+
+    auto TmpMI = BuildMI(MBB, MI, MI.getDebugLoc(), TII->get(Opcode))
+                     .addReg(RISCV::X0, RegState::Define | RegState::Dead)
+                     .addReg(Op.getReg())
+                     .addImm(CurrInfo.encodeVTYPE());
+
+    Changed = true;
+    if (LIS)
+      LIS->InsertMachineInstrInMaps(*TmpMI);
+
+    shrinkIntervalAndRemoveDeadMI(MI.getOperand(OpNum), LIS);
+  }
+  return Changed;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 bool RISCVInsertVSETVLI::runOnMachineFunction(MachineFunction &MF) {
   // Skip if the vector extension is not enabled.
   ST = &MF.getSubtarget<RISCVSubtarget>();
@@ -2368,6 +2204,12 @@ bool RISCVInsertVSETVLI::runOnMachineFunction(MachineFunction &MF) {
   // of VLEFF/VLSEGFF.
   for (MachineBasicBlock &MBB : MF)
     insertReadVL(MBB);
+
+  for (MachineBasicBlock &MBB : MF)
+    insertVSETMTK(MBB, VSETTM);
+
+  for (MachineBasicBlock &MBB : MF)
+    insertVSETMTK(MBB, VSETTK);
 
   BlockInfo.clear();
   return HaveVectorOp;

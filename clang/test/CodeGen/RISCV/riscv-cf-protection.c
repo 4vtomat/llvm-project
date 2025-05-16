@@ -243,15 +243,15 @@
 // RUN: --check-prefixes=NO-FLAG,FUNC-SIG-SCHEME-UNUSED %s
 
 #if SIFIVE_CUSTOMIZATION
-// Default -mcf-branch-label-scheme is fixed-one
+// Default -mcf-branch-label-scheme is unlabeled
 // RUN: %clang --target=riscv32 -menable-experimental-extensions \
 // RUN: -march=rv32i_zicfilp1p0 -fcf-protection=branch -S -emit-llvm %s -o - \
-// RUN: | FileCheck --check-prefixes=BRANCH-PROT-FLAG,FIXED-ONE-FLAG %s
+// RUN: | FileCheck --check-prefixes=BRANCH-PROT-FLAG,UNLABELED-FLAG %s
 
-// Default -mcf-branch-label-scheme is fixed-one
+// Default -mcf-branch-label-scheme is unlabeled
 // RUN: %clang --target=riscv64 -menable-experimental-extensions \
 // RUN: -march=rv64i_zicfilp1p0 -fcf-protection=branch -S -emit-llvm %s -o - \
-// RUN: | FileCheck --check-prefixes=BRANCH-PROT-FLAG,FIXED-ONE-FLAG %s
+// RUN: | FileCheck --check-prefixes=BRANCH-PROT-FLAG,UNLABELED-FLAG %s
 #endif // SIFIVE_CUSTOMIZATION
 
 // UNLABELED-SCHEME-UNUSED: warning: argument unused during compilation:

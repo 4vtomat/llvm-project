@@ -568,7 +568,6 @@ enum RVVRequire {
   RVV_REQ_Xsfmm32a16f,
   RVV_REQ_Xsfmm32a32f,
   RVV_REQ_Xsfmm64a64f,
-  RVV_REQ_Xsfmm32a4i,
   RVV_REQ_Xsfmm32a8i,
 #endif // SIFIVE_CUSTOMIZATION
   RVV_REQ_NUM,
