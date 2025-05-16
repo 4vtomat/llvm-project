@@ -125,6 +125,8 @@ body:             |
     ; CHECK-NEXT: dead $x0 = PseudoSF_VSETTM [[COPY2]], 1032, implicit-def $vtype, implicit $vtype
     ; CHECK-NEXT: dead $x0 = PseudoSF_VSETTK [[COPY]], 1032, implicit-def $vtype, implicit $vtype
     ; CHECK-NEXT: PseudoSF_MM_F_F $t2, [[COPY4]], [[COPY3]], 7, $noreg, $noreg, $noreg, 4, 2, implicit $frm, implicit $vl, implicit $vtype
+    ; CHECK-NEXT: dead $x0 = PseudoSF_VSETTM [[COPY2]], 1032, implicit-def $vtype, implicit $vtype
+    ; CHECK-NEXT: dead $x0 = PseudoSF_VSETTK [[COPY]], 1032, implicit-def $vtype, implicit $vtype
     ; CHECK-NEXT: PseudoSF_MM_F_F $t2, [[COPY4]], [[COPY3]], 7, $noreg, $noreg, $noreg, 4, 2, implicit $frm, implicit $vl, implicit $vtype
     ; CHECK-NEXT: PseudoRET
     %4:gprnox0 = COPY $x12
@@ -398,8 +400,7 @@ body:             |
     ; CHECK-NEXT: [[COPY:%[0-9]+]]:gprnox0 = COPY $x10
     ; CHECK-NEXT: dead [[PseudoSF_VSETTNTX0_:%[0-9]+]]:gpr = PseudoSF_VSETTNTX0 killed $x0, 520, implicit-def $vl, implicit-def $vtype
     ; CHECK-NEXT: dead [[PseudoSF_VSETTK:%[0-9]+]]:gprnox0 = PseudoSF_VSETTK [[COPY]], 520, implicit-def $vtype, implicit $vtype, implicit $vtype
-    ; CHECK-NEXT: dead [[PseudoSF_VSETTNTX0_1:%[0-9]+]]:gprnox0 = PseudoSF_VSETTNTX0 $x0, 520, implicit-def $vl, implicit-def $vtype, implicit $vtype, implicit $vtype
-    ; CHECK-NEXT: dead [[PseudoSF_VSETTNTX0_2:%[0-9]+]]:gpr = PseudoSF_VSETTNTX0 killed $x0, 520, implicit-def $vl, implicit-def $vtype
+    ; CHECK-NEXT: dead [[PseudoSF_VSETTNTX0_1:%[0-9]+]]:gprnox0 = PseudoSF_VSETTNTX0 $x0, 520, implicit-def $vl, implicit-def $vtype, implicit $vtype
     ; CHECK-NEXT: [[PseudoSF_VSETTM:%[0-9]+]]:gprnox0 = PseudoSF_VSETTM [[COPY]], 520, implicit-def $vtype, implicit $vtype, implicit $vtype
     ; CHECK-NEXT: $x10 = COPY [[PseudoSF_VSETTM]]
     ; CHECK-NEXT: PseudoRET implicit $x10
@@ -455,7 +456,7 @@ body:             |
     ; CHECK: liveins: $x10
     ; CHECK-NEXT: {{  $}}
     ; CHECK-NEXT: [[COPY:%[0-9]+]]:gprnox0 = COPY $x10
-    ; CHECK-NEXT: [[PseudoSF_VSETTNT:%[0-9]+]]:gprnox0 = PseudoSF_VSETTNT [[COPY]], 520, implicit-def $vl, implicit-def $vtype, implicit $vtype, implicit $vtype
+    ; CHECK-NEXT: [[PseudoSF_VSETTNT:%[0-9]+]]:gprnox0 = PseudoSF_VSETTNT [[COPY]], 520, implicit-def $vl, implicit-def $vtype, implicit $vtype
     ; CHECK-NEXT: $x10 = COPY [[PseudoSF_VSETTNT]]
     ; CHECK-NEXT: PseudoRET implicit $x10
     %0:gprnox0 = COPY $x10
