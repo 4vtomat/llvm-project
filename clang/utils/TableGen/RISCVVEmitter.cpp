@@ -939,7 +939,6 @@ void RVVEmitter::createRVVIntrinsics(
               .Case("Xsfmm32a16f", RVV_REQ_Xsfmm32a16f)
               .Case("Xsfmm32a32f", RVV_REQ_Xsfmm32a32f)
               .Case("Xsfmm64a64f", RVV_REQ_Xsfmm64a64f)
-              .Case("Xsfmm32a4i", RVV_REQ_Xsfmm32a4i)
               .Case("Xsfmm32a8i", RVV_REQ_Xsfmm32a8i)
 #endif // SIFIVE_CUSTOMIZATION
               .Case("Experimental", RVV_REQ_Experimental);

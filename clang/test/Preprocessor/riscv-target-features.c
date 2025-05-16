@@ -1553,14 +1553,6 @@
 // CHECK-XSFMM32A: __riscv_xsfmm32a  6000{{$}}
 
 // RUN: %clang --target=riscv32 \
-// RUN: -march=rv32i_zve32x_xsfmm32a4i -x c -E -dM %s \
-// RUN: -o - | FileCheck --check-prefix=CHECK-XSFMM32A4I %s
-// RUN: %clang --target=riscv64 \
-// RUN: -march=rv64i_zve32x_xsfmm32a4i -x c -E -dM %s \
-// RUN: -o - | FileCheck --check-prefix=CHECK-XSFMM32A4I %s
-// CHECK-XSFMM32A4I: __riscv_xsfmm32a4i  6000{{$}}
-
-// RUN: %clang --target=riscv32 \
 // RUN: -march=rv32i_zve32x_xsfmm32a8i -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-XSFMM32a8I %s
 // RUN: %clang --target=riscv64 \

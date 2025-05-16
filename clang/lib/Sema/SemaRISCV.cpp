@@ -244,7 +244,6 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
       {"xsfmm32a16f", RVV_REQ_Xsfmm32a16f},
       {"xsfmm32a32f", RVV_REQ_Xsfmm32a32f},
       {"xsfmm64a64f", RVV_REQ_Xsfmm64a64f},
-      {"xsfmm32a4i", RVV_REQ_Xsfmm32a4i},
       {"xsfmm32a8i", RVV_REQ_Xsfmm32a8i}};
 #else
       {"experimental", RVV_REQ_Experimental}};
@@ -738,11 +737,7 @@ bool SemaRISCV::CheckBuiltinFunctionCall(const TargetInfo &TI,
   case RISCVVector::BI__builtin_rvv_sf_mm_u_u_w4:
   case RISCVVector::BI__builtin_rvv_sf_mm_u_s_w4:
   case RISCVVector::BI__builtin_rvv_sf_mm_s_u_w4:
-  case RISCVVector::BI__builtin_rvv_sf_mm_s_s_w4:
-  case RISCVVector::BI__builtin_rvv_sf_p2mm_u_u_w4:
-  case RISCVVector::BI__builtin_rvv_sf_p2mm_u_s_w4:
-  case RISCVVector::BI__builtin_rvv_sf_p2mm_s_u_w4:
-  case RISCVVector::BI__builtin_rvv_sf_p2mm_s_s_w4: {
+  case RISCVVector::BI__builtin_rvv_sf_mm_s_s_w4: {
     QualType Arg1Type = TheCall->getArg(1)->getType();
     ASTContext::BuiltinVectorTypeInfo Info =
         SemaRef.Context.getBuiltinVectorTypeInfo(

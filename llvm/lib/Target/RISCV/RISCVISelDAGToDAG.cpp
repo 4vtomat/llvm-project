@@ -2645,10 +2645,6 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
       selectSF_VC_X_SE(Node);
       return;
 #ifdef SIFIVE_CUSTOMIZATION
-    case Intrinsic::riscv_sf_p2mm_s_s:
-    case Intrinsic::riscv_sf_p2mm_s_u:
-    case Intrinsic::riscv_sf_p2mm_u_s:
-    case Intrinsic::riscv_sf_p2mm_u_u:
     case Intrinsic::riscv_sf_mm_s_s:
     case Intrinsic::riscv_sf_mm_s_u:
     case Intrinsic::riscv_sf_mm_u_s:
@@ -2661,18 +2657,6 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
       bool HasFRM = false;
       unsigned PseudoInst;
       switch (IntNo) {
-      case Intrinsic::riscv_sf_p2mm_s_s:
-        PseudoInst = RISCV::PseudoSF_P2MM_S_S;
-        break;
-      case Intrinsic::riscv_sf_p2mm_s_u:
-        PseudoInst = RISCV::PseudoSF_P2MM_S_U;
-        break;
-      case Intrinsic::riscv_sf_p2mm_u_s:
-        PseudoInst = RISCV::PseudoSF_P2MM_U_U;
-        break;
-      case Intrinsic::riscv_sf_p2mm_u_u:
-        PseudoInst = RISCV::PseudoSF_P2MM_S_S;
-        break;
       case Intrinsic::riscv_sf_mm_s_s:
         PseudoInst = RISCV::PseudoSF_MM_S_S;
         break;

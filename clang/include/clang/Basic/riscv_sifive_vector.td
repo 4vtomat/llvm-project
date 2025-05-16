@@ -420,13 +420,6 @@ let RequiredFeatures = ["Xsfmm32a8f"] in
             "sf_mm_e" # e1 # "m" # !sub(7, e1) # "_e" # e2 # "m" # !sub(7, e2),
             "0KzUvUvzzz", "UvUv", ["c"], 4>;
 
-let RequiredFeatures = ["Xsfmm32a4i"] in {
-  defm sf_p2mm_u_u : RVVSFMatMulBuiltinSet<"0KzUvUvzzz", "UvUv", "c", [4]>;
-  defm sf_p2mm_s_u : RVVSFMatMulBuiltinSet<"0KzvUvzzz", "vUv", "c", [4]>;
-  defm sf_p2mm_u_s : RVVSFMatMulBuiltinSet<"0KzUvvzzz", "Uvv", "c", [4]>;
-  defm sf_p2mm_s_s : RVVSFMatMulBuiltinSet<"0Kzvvzzz", "vv", "c", [4]>;
-}
-
 let RequiredFeatures = ["Xsfmm64a64f"] in
   defm : RVVSFMatMulFloatBuiltinSet<"sf_mm_f_f", "0Kzvvzzz", "v", ["d"], 1>;
 #endif // SIFIVE_CUSTOMIZATION

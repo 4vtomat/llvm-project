@@ -1122,7 +1122,6 @@ R"(All available -march extensions for RISC-V
     xsfmm32a             0.6
     xsfmm32a16f          0.6
     xsfmm32a32f          0.6
-    xsfmm32a4i           0.6
     xsfmm32a8f           0.6
     xsfmm32a8i           0.6
     xsfmm32t             0.6

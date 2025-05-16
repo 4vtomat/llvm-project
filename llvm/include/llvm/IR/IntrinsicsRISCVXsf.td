@@ -288,7 +288,6 @@ let TargetPrefix = "riscv" in {
   foreach a = ["u", "s"] in {
     foreach b = ["u", "s"] in {
       def int_riscv_sf_mm_ # a # _ # b   : RISCVSFCustomMatMul;
-      def int_riscv_sf_p2mm_ # a # _ # b : RISCVSFCustomMatMul;
     }
   }
   def int_riscv_sf_mm_f_f : RISCVSFCustomMatMul<true>;
