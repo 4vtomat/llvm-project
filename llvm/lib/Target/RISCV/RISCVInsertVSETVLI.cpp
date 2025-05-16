@@ -959,13 +959,24 @@ public:
     if (isMammoth() != Other.isMammoth())
       return false;
     if (isMammoth()) {
-      if (hasATMReg() != Other.hasATMReg() ||
-          (hasATMReg() && getATMVNInfo()->id != Other.getATMVNInfo()->id))
-        return false;
 
-      if (hasATKReg() != Other.hasATKReg() ||
-          (hasATKReg() && getATKVNInfo()->id != Other.getATKVNInfo()->id))
-        return false;
+      if (hasATMReg() && Other.hasATMReg()) {
+        if (!getATMVNInfo() || !Other.getATMVNInfo()) {
+          if (getATMReg() != Other.getATMReg())
+            return false;
+        } else if (getATMVNInfo()->id != Other.getATMVNInfo()->id ||
+                   getATMReg() != Other.getATMReg())
+          return false;
+      }
+
+      if (hasATKReg() && Other.hasATKReg()) {
+        if (!getATKVNInfo() || !Other.getATKVNInfo()) {
+          if (getATKReg() != Other.getATKReg())
+            return false;
+        } else if (getATKVNInfo()->id != Other.getATKVNInfo()->id ||
+                   getATKReg() != Other.getATKReg())
+          return false;
+      }
     }
 #endif // SIFIVE_CUSTOMIZATION
     // Uninitialized is only equal to another Uninitialized.
@@ -1935,15 +1946,16 @@ void RISCVInsertVSETVLI::emitVSETVLIs(MachineBasicBlock &MBB) {
       }
 #if SIFIVE_CUSTOMIZATION
       auto shrinkIntervalAndRemoveDeadMI = [&](MachineOperand &MO) {
+        // Erase the AVL operand from the instruction.
+        Register Reg = MO.getReg();
+        MO.setReg(RISCV::NoRegister);
+        MO.setIsKill(false);
+
         if (!LIS)
           return;
 
-        Register Reg = MO.getReg();
         LiveInterval &LI = LIS->getInterval(Reg);
 
-        // Erase the AVL operand from the instruction.
-        MO.setReg(RISCV::NoRegister);
-        MO.setIsKill(false);
         SmallVector<MachineInstr *> DeadMIs;
         LIS->shrinkToUses(&LI, &DeadMIs);
         // TODO: Enable this once needVSETVLIPHI is supported.
