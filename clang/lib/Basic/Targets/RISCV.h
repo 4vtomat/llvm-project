@@ -180,7 +180,7 @@ public:
 
   CFBranchLabelSchemeKind getDefaultCFBranchLabelScheme() const override {
 #ifdef SIFIVE_CUSTOMIZATION
-    return CFBranchLabelSchemeKind::FixedOne;
+    return CFBranchLabelSchemeKind::Unlabeled;
 #else
     return CFBranchLabelSchemeKind::FuncSig;
 #endif
