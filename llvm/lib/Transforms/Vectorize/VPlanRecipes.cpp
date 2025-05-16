@@ -5071,6 +5071,10 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
                                     CmpInst::BAD_ICMP_PREDICATE, CostKind);
     return O;
   }
+  case RecurKind::MinMaxFirstIdx:
+  case RecurKind::MinMaxLastIdx:
+    // FIXME: Implement cost of MinMaxFirstIdx and MinMaxLastIdx after the IR
+    // generation of min/max with index is supported.
   case RecurKind::None:
     llvm_unreachable("Unexpected reduction kind.");
   }

@@ -20997,6 +20997,10 @@ private:
         case RecurKind::FAnyOf:
         case RecurKind::IFindLastIV:
         case RecurKind::FFindLastIV:
+#if SIFIVE_CUSTOMIZATION
+        case RecurKind::MinMaxFirstIdx:
+        case RecurKind::MinMaxLastIdx:
+#endif // SIFIVE_CUSTOMIZATION
         case RecurKind::None:
           llvm_unreachable("Unexpected reduction kind for repeated scalar.");
         }
@@ -21131,6 +21135,10 @@ private:
     case RecurKind::FAnyOf:
     case RecurKind::IFindLastIV:
     case RecurKind::FFindLastIV:
+#if SIFIVE_CUSTOMIZATION
+    case RecurKind::MinMaxFirstIdx:
+    case RecurKind::MinMaxLastIdx:
+#endif // SIFIVE_CUSTOMIZATION
     case RecurKind::None:
       llvm_unreachable("Unexpected reduction kind for repeated scalar.");
     }
@@ -21230,6 +21238,10 @@ private:
     case RecurKind::FAnyOf:
     case RecurKind::IFindLastIV:
     case RecurKind::FFindLastIV:
+#if SIFIVE_CUSTOMIZATION
+    case RecurKind::MinMaxFirstIdx:
+    case RecurKind::MinMaxLastIdx:
+#endif // SIFIVE_CUSTOMIZATION
     case RecurKind::None:
       llvm_unreachable("Unexpected reduction kind for reused scalars.");
     }

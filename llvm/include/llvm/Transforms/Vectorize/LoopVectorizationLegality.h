@@ -402,6 +402,15 @@ public:
   /// Returns True if V is a Phi node of an induction variable in this loop.
   bool isInductionPhi(const Value *V) const;
 #if SIFIVE_CUSTOMIZATION
+  /// Returns the min/max recurrences found in the loop.
+  const ReductionList &getMinMaxRecurrences() const {
+    return MinMaxRecurrences;
+  }
+  /// Returns True if \p Phi is a min/max recurrence in this loop.
+  bool isMinMaxRecurrence(PHINode *Phi) const {
+    return MinMaxRecurrences.contains(Phi);
+  }
+
   /// Returns the CSAs found in the loop.
   const CSAList& getCSAs() const { return CSAs; }
 
@@ -675,6 +684,16 @@ private:
   /// specific checks for outer loop vectorization.
   bool canVectorizeOuterLoop();
 
+#if SIFIVE_CUSTOMIZATION
+  // Min/max recurrences can only be vectorized when involved in a min/max with
+  // index reduction pattern. This function checks whether the \p Phi, which
+  // represents the min/max recurrence, can be vectorized based on the given \p
+  // Chain, which is the recurrence chain for the min/max recurrence. Returns
+  // true if the min/max recurrence can be vectorized.
+  bool canVectorizeMinMaxRecurrence(PHINode *Phi,
+                                    ArrayRef<Instruction *> Chain);
+#endif // SIFIVE_CUSTOMIZATION
+
   /// Returns true if this is an early exit loop that can be vectorized.
   /// Currently, a loop with an uncountable early exit is considered
   /// vectorizable if:
@@ -758,6 +777,9 @@ private:
   /// variables can be pointers.
   InductionList Inductions;
 #if SIFIVE_CUSTOMIZATION
+  /// Holds the min/max recurrences variables
+  ReductionList MinMaxRecurrences;
+
   /// Holds the conditional scalar assignments
   CSAList CSAs;
 
