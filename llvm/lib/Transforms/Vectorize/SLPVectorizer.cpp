@@ -1393,9 +1393,10 @@ public:
   /// Vectorize the tree but with the list of externally used values \p
   /// ExternallyUsedValues. Values in this MapVector can be replaced but the
   /// generated extractvalue instructions.
-  Value *
-  vectorizeTree(const ExtraValueToDebugLocsMap &ExternallyUsedValues,
-                Instruction *ReductionRoot = nullptr);
+  Value *vectorizeTree(
+      const ExtraValueToDebugLocsMap &ExternallyUsedValues,
+      Instruction *ReductionRoot = nullptr,
+      ArrayRef<std::tuple<Value *, unsigned, bool>> VectorValuesAndScales = {});
 
   /// \returns the cost incurred by unwanted spills and fills, caused by
   /// holding live values over call sites.
@@ -2853,11 +2854,13 @@ public:
   /// Remove instructions from the parent function and clear the operands of \p
   /// DeadVals instructions, marking for deletion trivially dead operands.
   template <typename T>
-  void removeInstructionsAndOperands(ArrayRef<T *> DeadVals) {
+  void removeInstructionsAndOperands(
+      ArrayRef<T *> DeadVals,
+      ArrayRef<std::tuple<Value *, unsigned, bool>> VectorValuesAndScales) {
     SmallVector<WeakTrackingVH> DeadInsts;
     for (T *V : DeadVals) {
       auto *I = cast<Instruction>(V);
-      DeletedInstructions.insert(I);
+      eraseInstruction(I);
     }
     DenseSet<Value *> Processed;
     for (T *V : DeadVals) {
@@ -2919,12 +2922,17 @@ public:
         // loop iteration.
         if (auto *OpI = dyn_cast<Instruction>(OpV))
           if (!DeletedInstructions.contains(OpI) &&
+              (!OpI->getType()->isVectorTy() ||
+               none_of(VectorValuesAndScales,
+                       [&](const std::tuple<Value *, unsigned, bool> &V) {
+                         return std::get<0>(V) == OpI;
+                       })) &&
               isInstructionTriviallyDead(OpI, TLI))
             DeadInsts.push_back(OpI);
       }
 
       VI->removeFromParent();
-      DeletedInstructions.insert(VI);
+      eraseInstruction(VI);
       SE->forgetValue(VI);
     }
   }
@@ -11443,11 +11451,14 @@ BoUpSLP::getEntryCost(const TreeEntry *E, ArrayRef<Value *> VectorizedVals,
             E->Idx != 0 &&
             (E->getOpcode() != Instruction::Load || E->UserTreeIndex)) {
           const EdgeInfo &EI = E->UserTreeIndex;
-          if (EI.UserTE->getOpcode() != Instruction::Select ||
+          if (!EI.UserTE->hasState() ||
+              EI.UserTE->getOpcode() != Instruction::Select ||
               EI.EdgeIdx != 0) {
             auto UserBWIt = MinBWs.find(EI.UserTE);
             Type *UserScalarTy =
-                EI.UserTE->getOperand(EI.EdgeIdx).front()->getType();
+                EI.UserTE->isGather()
+                    ? EI.UserTE->Scalars.front()->getType()
+                    : EI.UserTE->getOperand(EI.EdgeIdx).front()->getType();
             if (UserBWIt != MinBWs.end())
               UserScalarTy = IntegerType::get(ScalarTy->getContext(),
                                               UserBWIt->second.first);
@@ -13393,6 +13404,14 @@ BoUpSLP::isGatherShuffledSingleRegisterEntry(
       return EdgeInfo(const_cast<TreeEntry *>(TE), 0);
     return TE->UserTreeIndex;
   };
+  auto HasGatherUser = [&](const TreeEntry *TE) {
+    while (TE->Idx != 0 && TE->UserTreeIndex) {
+      if (TE->UserTreeIndex.EdgeIdx == UINT_MAX)
+        return true;
+      TE = TE->UserTreeIndex.UserTE;
+    }
+    return false;
+  };
   const EdgeInfo TEUseEI = GetUserEntry(TE);
   if (!TEUseEI)
     return std::nullopt;
@@ -13493,7 +13512,8 @@ BoUpSLP::isGatherShuffledSingleRegisterEntry(
         // If the user instruction is used for some reason in different
         // vectorized nodes - make it depend on index.
         if (TEUseEI.UserTE != UseEI.UserTE &&
-            TEUseEI.UserTE->Idx < UseEI.UserTE->Idx)
+            (TEUseEI.UserTE->Idx < UseEI.UserTE->Idx ||
+             HasGatherUser(TEUseEI.UserTE)))
           continue;
       }
 
@@ -16522,9 +16542,10 @@ Value *BoUpSLP::vectorizeTree() {
   return vectorizeTree(ExternallyUsedValues);
 }
 
-Value *
-BoUpSLP::vectorizeTree(const ExtraValueToDebugLocsMap &ExternallyUsedValues,
-                       Instruction *ReductionRoot) {
+Value *BoUpSLP::vectorizeTree(
+    const ExtraValueToDebugLocsMap &ExternallyUsedValues,
+    Instruction *ReductionRoot,
+    ArrayRef<std::tuple<Value *, unsigned, bool>> VectorValuesAndScales) {
   // All blocks must be scheduled before any instructions are inserted.
   for (auto &BSIter : BlocksSchedules) {
     scheduleBlock(BSIter.second.get());
@@ -17131,7 +17152,7 @@ BoUpSLP::vectorizeTree(const ExtraValueToDebugLocsMap &ExternallyUsedValues,
   // cache correctness.
   // NOTE: removeInstructionAndOperands only marks the instruction for deletion
   // - instructions are not deleted until later.
-  removeInstructionsAndOperands(ArrayRef(RemovedInsts));
+  removeInstructionsAndOperands(ArrayRef(RemovedInsts), VectorValuesAndScales);
 
   Builder.ClearInsertionPoint();
   InstrElementSize.clear();
@@ -18118,6 +18139,12 @@ bool BoUpSLP::collectValuesToDemote(
           (void)for_each(E.Scalars, std::bind(IsPotentiallyTruncated, _1,
                                               std::ref(BitWidth)));
         } else {
+          // Several vectorized uses? Check if we can truncate it, otherwise -
+          // exit.
+          if (any_of(E.Scalars, [&](Value *V) {
+                return !V->hasOneUse() && !IsPotentiallyTruncated(V, BitWidth);
+              }))
+            return false;
           bool NeedToExit = false;
           if (Checker && !AttemptCheckBitwidth(Checker, NeedToExit))
             return false;
@@ -18463,6 +18490,14 @@ void BoUpSLP::computeMinimumValueSizes() {
       KnownBits Known = computeKnownBits(R, *DL);
       return Known.isNonNegative();
     });
+
+    if (!IsKnownPositive && !IsTopRoot && E.UserTreeIndex &&
+        E.UserTreeIndex.UserTE->hasState() &&
+        E.UserTreeIndex.UserTE->getOpcode() == Instruction::UIToFP)
+      MaxBitWidth =
+          std::min(DL->getTypeSizeInBits(
+                       E.UserTreeIndex.UserTE->Scalars.front()->getType()),
+                   DL->getTypeSizeInBits(ScalarTy));
 
     // We first check if all the bits of the roots are demanded. If they're not,
     // we can truncate the roots to this narrower type.
@@ -20511,8 +20546,8 @@ public:
           InsertPt = GetCmpForMinMaxReduction(RdxRootInst);
 
         // Vectorize a tree.
-        Value *VectorizedRoot =
-            V.vectorizeTree(LocalExternallyUsedValues, InsertPt);
+        Value *VectorizedRoot = V.vectorizeTree(
+            LocalExternallyUsedValues, InsertPt, VectorValuesAndScales);
         // Update TrackedToOrig mapping, since the tracked values might be
         // updated.
         for (Value *RdxVal : Candidates) {
@@ -20740,7 +20775,7 @@ public:
             Ignore->replaceAllUsesWith(P);
           }
         }
-        V.removeInstructionsAndOperands(RdxOps);
+        V.removeInstructionsAndOperands(RdxOps, VectorValuesAndScales);
       }
     } else if (!CheckForReusedReductionOps) {
       for (ReductionOpsType &RdxOps : ReductionOps)

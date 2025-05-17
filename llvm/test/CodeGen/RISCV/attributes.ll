@@ -83,6 +83,7 @@
 ; RUN: llc -mtriple=riscv32 -mattr=+xtheadmempair %s -o - | FileCheck --check-prefix=RV32XTHEADMEMPAIR %s
 ; RUN: llc -mtriple=riscv32 -mattr=+xtheadsync %s -o - | FileCheck --check-prefix=RV32XTHEADSYNC %s
 ; RUN: llc -mtriple=riscv32 -mattr=+xwchc %s -o - | FileCheck --check-prefix=RV32XWCHC %s
+; RUN: llc -mtriple=riscv32 -mattr=+experimental-xqccmp %s -o - | FileCheck --check-prefix=RV32XQCCMP %s
 ; RUN: llc -mtriple=riscv32 -mattr=+experimental-xqcia %s -o - | FileCheck --check-prefix=RV32XQCIA %s
 ; RUN: llc -mtriple=riscv32 -mattr=+experimental-xqciac %s -o - | FileCheck --check-prefix=RV32XQCIAC %s
 ; RUN: llc -mtriple=riscv32 -mattr=+experimental-xqcicli %s -o - | FileCheck --check-prefix=RV32XQCICLI %s
@@ -161,6 +162,7 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+m,+zmmul %s -o - | FileCheck --check-prefixes=CHECK,RV64MZMMUL %s
 ; RUN: llc -mtriple=riscv64 -mattr=+a,no-trailing-seq-cst-fence --riscv-abi-attributes %s -o - | FileCheck --check-prefixes=CHECK,RV64A,A6C %s
 ; RUN: llc -mtriple=riscv64 -mattr=+a --riscv-abi-attributes %s -o - | FileCheck --check-prefixes=CHECK,RV64A,A6S %s
+; RUN: llc -mtriple=riscv64 -mattr=+a,experimental-zalasr --riscv-abi-attributes %s -o - | FileCheck --check-prefixes=CHECK,RV64ZALASRA,A7 %s
 ; RUN: llc -mtriple=riscv64 -mattr=+b %s -o - | FileCheck --check-prefixes=CHECK,RV64B %s
 ; RUN: llc -mtriple=riscv64 -mattr=+f %s -o - | FileCheck --check-prefixes=CHECK,RV64F %s
 ; RUN: llc -mtriple=riscv64 -mattr=+d %s -o - | FileCheck --check-prefixes=CHECK,RV64D %s
@@ -304,6 +306,13 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+supm %s -o - | FileCheck --check-prefix=RV64SUPM %s
 ; RUN: llc -mtriple=riscv64 -mattr=+experimental-smctr  %s -o - | FileCheck --check-prefix=RV64SMCTR %s
 ; RUN: llc -mtriple=riscv64 -mattr=+experimental-ssctr  %s -o - | FileCheck --check-prefix=RV64SSCTR %s
+<<<<<<< HEAD
+=======
+; RUN: llc -mtriple=riscv64 -mattr=+experimental-sdext  %s -o - | FileCheck --check-prefix=RV64SDEXT %s
+; RUN: llc -mtriple=riscv64 -mattr=+experimental-sdtrig  %s -o - | FileCheck --check-prefix=RV64SDTRIG %s
+; RUN: llc -mtriple=riscv64 -mattr=+experimental-xqccmp %s -o - | FileCheck --check-prefix=RV64XQCCMP %s
+
+>>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
 
 ; Tests for profile features.
 ; RUN: llc -mtriple=riscv32 -mattr=+rvi20u32 %s -o - | FileCheck --check-prefix=RVI20U32 %s
@@ -402,6 +411,7 @@
 ; RV32XTHEADMEMPAIR: .attribute 5, "rv32i2p1_xtheadmempair1p0"
 ; RV32XTHEADSYNC: .attribute 5, "rv32i2p1_xtheadsync1p0"
 ; RV32XWCHC: .attribute 5, "rv32i2p1_xwchc2p2"
+; RV32XQCCMP: .attribute 5, "rv32i2p1_zca1p0_xqccmp0p1"
 ; RV32XQCIA: .attribute 5, "rv32i2p1_xqcia0p4"
 ; RV32XQCIAC: .attribute 5, "rv32i2p1_zca1p0_xqciac0p3"
 ; RV32XQCICLI: .attribute 5, "rv32i2p1_xqcicli0p2"
@@ -610,6 +620,7 @@
 ; RV64ZVFBFWMA: .attribute 5, "rv64i2p1_f2p2_zicsr2p0_zfbfmin1p0_zve32f1p0_zve32x1p0_zvfbfmin1p0_zvfbfwma1p0_zvl32b1p0"
 ; RV64ZACAS: .attribute 5, "rv64i2p1_zaamo1p0_zacas1p0"
 ; RV64ZALASR: .attribute 5, "rv64i2p1_zalasr0p1"
+; RV64ZALASRA: .attribute 5, "rv64i2p1_a2p1_zaamo1p0_zalasr0p1_zalrsc1p0"
 ; RV64ZICFILP: .attribute 5, "rv64i2p1_zicfilp1p0_zicsr2p0"
 ; RV64ZABHA: .attribute 5, "rv64i2p1_zaamo1p0_zabha1p0"
 ; RV64ZVBC32E: .attribute 5, "rv64i2p1_zicsr2p0_zvbc32e0p7_zve32x1p0_zvl32b1p0"
@@ -621,6 +632,12 @@
 ; RV64SUPM: .attribute 5, "rv64i2p1_supm1p0"
 ; RV64SMCTR: .attribute 5, "rv64i2p1_smctr1p0_sscsrind1p0"
 ; RV64SSCTR: .attribute 5, "rv64i2p1_sscsrind1p0_ssctr1p0"
+<<<<<<< HEAD
+=======
+; RV64SDEXT: .attribute 5, "rv64i2p1_sdext1p0"
+; RV64SDTRIG: .attribute 5, "rv64i2p1_sdtrig1p0"
+; RV64XQCCMP: .attribute 5, "rv64i2p1_zca1p0_xqccmp0p1"
+>>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
 
 ; RVI20U32: .attribute 5, "rv32i2p1"
 ; RVI20U64: .attribute 5, "rv64i2p1"
@@ -644,4 +661,5 @@ define i8 @atomic_load_i8_seq_cst(ptr %a) nounwind {
   ret i8 %1
 ; A6S: .attribute 14, 2
 ; A6C: .attribute 14, 1
+; A7: .attribute 14, 3
 }

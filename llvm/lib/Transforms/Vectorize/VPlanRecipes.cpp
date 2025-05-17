@@ -1775,7 +1775,8 @@ InstructionCost VPWidenIntrinsicRecipe::computeCost(ElementCount VF,
   FastMathFlags FMF = hasFastMathFlags() ? getFastMathFlags() : FastMathFlags();
   IntrinsicCostAttributes CostAttrs(
       VectorIntrinsicID, RetTy, Arguments, ParamTys, FMF,
-      dyn_cast_or_null<IntrinsicInst>(getUnderlyingValue()));
+      dyn_cast_or_null<IntrinsicInst>(getUnderlyingValue()),
+      InstructionCost::getInvalid(), &Ctx.TLI);
   return Ctx.TTI.getIntrinsicInstrCost(CostAttrs, Ctx.CostKind);
 }
 
@@ -3202,6 +3203,7 @@ void VPScalarCastRecipe ::print(raw_ostream &O, const Twine &Indent,
 }
 #endif
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 void VPCSAHeaderPHIRecipe::print(raw_ostream &O, const Twine &Indent,
@@ -3398,12 +3400,21 @@ void VPBranchOnMaskRecipe::execute(VPTransformState &State) {
     ConditionBit = State.get(BlockInMask, *State.Lane);
   else // Block in mask is all-one.
     ConditionBit = State.Builder.getTrue();
+=======
+void VPBranchOnMaskRecipe::execute(VPTransformState &State) {
+  State.setDebugLocFrom(getDebugLoc());
+  assert(State.Lane && "Branch on Mask works only on single instance.");
+
+  VPValue *BlockInMask = getOperand(0);
+  Value *ConditionBit = State.get(BlockInMask, *State.Lane);
+>>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
 
   // Replace the temporary unreachable terminator with a new conditional branch,
   // whose two destinations will be set later when they are created.
   auto *CurrentTerminator = State.CFG.PrevBB->getTerminator();
   assert(isa<UnreachableInst>(CurrentTerminator) &&
          "Expected to replace unreachable terminator with conditional branch.");
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   BranchInst *CondBr;
   if (TrueBB && !FalseBB)
@@ -3413,8 +3424,12 @@ void VPBranchOnMaskRecipe::execute(VPTransformState &State) {
 #else
   auto *CondBr = BranchInst::Create(State.CFG.PrevBB, nullptr, ConditionBit);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  auto CondBr =
+      State.Builder.CreateCondBr(ConditionBit, State.CFG.PrevBB, nullptr);
+>>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
   CondBr->setSuccessor(0, nullptr);
-  ReplaceInstWithInst(CurrentTerminator, CondBr);
+  CurrentTerminator->eraseFromParent();
 }
 
 InstructionCost VPBranchOnMaskRecipe::computeCost(ElementCount VF,
@@ -5132,7 +5147,7 @@ void VPWidenPHIRecipe::execute(VPTransformState &State) {
   State.setDebugLocFrom(getDebugLoc());
   Value *Op0 = State.get(getOperand(0));
   Type *VecTy = Op0->getType();
-  Value *VecPhi = State.Builder.CreatePHI(VecTy, 2, "vec.phi");
+  Value *VecPhi = State.Builder.CreatePHI(VecTy, 2, Name);
   State.set(this, VecPhi);
 }
 

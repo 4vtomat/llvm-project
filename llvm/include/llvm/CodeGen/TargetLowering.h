@@ -4537,7 +4537,7 @@ public:
   virtual bool checkForPhysRegDependency(SDNode *Def, SDNode *User, unsigned Op,
                                          const TargetRegisterInfo *TRI,
                                          const TargetInstrInfo *TII,
-                                         unsigned &PhysReg, int &Cost) const {
+                                         MCRegister &PhysReg, int &Cost) const {
     return false;
   }
 

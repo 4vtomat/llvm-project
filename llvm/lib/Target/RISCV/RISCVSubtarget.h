@@ -106,11 +106,16 @@ public:
     VentanaVeyron,
     MIPSP8700,
   };
+  enum RISCVVRGatherCostModelEnum : uint8_t {
+    Quadratic,
+    NLog2N,
+  };
   // clang-format on
 private:
   virtual void anchor();
 
   RISCVProcFamilyEnum RISCVProcFamily = Others;
+  RISCVVRGatherCostModelEnum RISCVVRGatherCostModel = Quadratic;
 
   unsigned DLen = 0; // SIFIVE
 #define GET_SUBTARGETINFO_MACRO(ATTRIBUTE, DEFAULT, GETTER) \
@@ -230,6 +235,8 @@ public:
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
+
+  RISCVVRGatherCostModelEnum getVRGatherCostModel() const { return RISCVVRGatherCostModel; }
 
 #define GET_SUBTARGETINFO_MACRO(ATTRIBUTE, DEFAULT, GETTER) \
   bool GETTER() const { return ATTRIBUTE; }

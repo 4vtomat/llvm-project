@@ -78,7 +78,6 @@ private:
   /// Size of stack frame for Zcmp PUSH/POP
   unsigned RVPushStackSize = 0;
   unsigned RVPushRegs = 0;
-  int RVPushRlist = llvm::RISCVZC::RLISTENCODE::INVALID_RLIST;
 
   int64_t StackProbeSize = 0;
 
@@ -152,9 +151,6 @@ public:
            !MF.getTarget().Options.DisableFramePointerElim(MF) &&
            VarArgsSaveSize == 0;
   }
-
-  int getRVPushRlist() const { return RVPushRlist; }
-  void setRVPushRlist(int Rlist) { RVPushRlist = Rlist; }
 
   unsigned getRVPushRegs() const { return RVPushRegs; }
   void setRVPushRegs(unsigned Regs) { RVPushRegs = Regs; }

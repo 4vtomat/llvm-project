@@ -107,6 +107,7 @@ for.end:                                          ; preds = %entry, %for.cond.fo
 
 define i32 @test_debug_loc_on_branch_in_loop(ptr noalias %src, ptr noalias %dst) {
 ; CHECK-LABEL: define i32 @test_debug_loc_on_branch_in_loop(
+<<<<<<< HEAD
 ; CHECK-SAME: ptr noalias [[SRC:%.*]], ptr noalias [[DST:%.*]]) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
@@ -159,6 +160,20 @@ define i32 @test_debug_loc_on_branch_in_loop(ptr noalias %src, ptr noalias %dst)
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[LOOP_HEADER]], !llvm.loop [[LOOP31:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    ret i32 0
+=======
+; CHECK-LABEL: vector.body:
+; CHECK:        [[LOAD:%.+]] = load <2 x i32>, ptr {{.+}}, align 4
+; CHECK-NEXT:   [[CMP:%.+]] = icmp eq <2 x i32> [[LOAD]], splat (i32 10)
+; CHECK-NEXT:   [[XOR:%.+]] = xor <2 x i1> [[CMP:%.+]], splat (i1 true), !dbg [[LOC3:!.+]]
+; CHECK-NEXT:   [[EXT:%.+]] = extractelement <2 x i1> [[XOR]], i32 0, !dbg [[LOC3]]
+; CHECK-NEXT:   br i1 [[EXT]], label %pred.store.if, label %pred.store.continue, !dbg [[LOC3]]
+; CHECK-EMPTY:
+; CHECK-NEXT: pred.store.if:
+; CHECK-NEXT:   [[GEP:%.+]] = getelementptr inbounds i32, ptr %dst, i64 {{.+}}, !dbg [[LOC3]]
+; CHECK-NEXT:   store i32 0, ptr [[GEP]], align 4, !dbg [[LOC3]]
+; CHECK-NEXT:   br label %pred.store.continue, !dbg [[LOC3]]
+; CHECK-EMPTY:
+>>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
 ;
 entry:
   br label %loop.header
@@ -186,6 +201,7 @@ exit:
 
 define i32 @test_different_debug_loc_on_replicate_recipe(ptr noalias %src, ptr noalias %dst) {
 ; CHECK-LABEL: define i32 @test_different_debug_loc_on_replicate_recipe(
+<<<<<<< HEAD
 ; CHECK-SAME: ptr noalias [[SRC:%.*]], ptr noalias [[DST:%.*]]) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
@@ -238,6 +254,20 @@ define i32 @test_different_debug_loc_on_replicate_recipe(ptr noalias %src, ptr n
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[LOOP_HEADER]], !llvm.loop [[LOOP37:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    ret i32 0
+=======
+; CHECK-LABEL: vector.body:
+; CHECK:        [[LOAD:%.+]] = load <2 x i32>, ptr {{.+}}, align 4
+; CHECK-NEXT:   [[CMP:%.+]] = icmp eq <2 x i32> [[LOAD]], splat (i32 10)
+; CHECK-NEXT:   [[XOR:%.+]] = xor <2 x i1> [[CMP:%.+]], splat (i1 true), !dbg [[LOC4:!.+]]
+; CHECK-NEXT:   [[EXT:%.+]] = extractelement <2 x i1> [[XOR]], i32 0, !dbg [[LOC4]]
+; CHECK-NEXT:   br i1 [[EXT]], label %pred.store.if, label %pred.store.continue, !dbg [[LOC4]]
+; CHECK-EMPTY:
+; CHECK-NEXT: pred.store.if:
+; CHECK-NEXT:   [[GEP:%.+]] = getelementptr inbounds i32, ptr %dst, i64 {{.+}}, !dbg [[LOC5:!.+]]
+; CHECK-NEXT:   store i32 0, ptr [[GEP]], align 4, !dbg [[LOC5]]
+; CHECK-NEXT:   br label %pred.store.continue, !dbg [[LOC4]]
+; CHECK-EMPTY:
+>>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
 ;
 entry:
   br label %loop.header

@@ -353,7 +353,7 @@ VPTransformState::VPTransformState(const TargetTransformInfo *TTI,
       TypeAnalysis(CanonicalIVTy) {}
 #endif // SIFIVE_CUSTOMIZATION
 
-Value *VPTransformState::get(VPValue *Def, const VPLane &Lane) {
+Value *VPTransformState::get(const VPValue *Def, const VPLane &Lane) {
   if (Def->isLiveIn())
 #if SIFIVE_CUSTOMIZATION
     if (Def->getUnderlyingValue())
@@ -390,7 +390,7 @@ Value *VPTransformState::get(VPValue *Def, const VPLane &Lane) {
   return Extract;
 }
 
-Value *VPTransformState::get(VPValue *Def, bool NeedsScalar) {
+Value *VPTransformState::get(const VPValue *Def, bool NeedsScalar) {
   if (NeedsScalar) {
     assert((VF.isScalar() || Def->isLiveIn() || hasVectorValue(Def) ||
             !vputils::onlyFirstLaneUsed(Def) ||
@@ -542,7 +542,7 @@ void VPTransformState::setDebugLocFrom(DebugLoc DL) {
     Builder.SetCurrentDebugLocation(DIL);
 }
 
-void VPTransformState::packScalarIntoVectorizedValue(VPValue *Def,
+void VPTransformState::packScalarIntoVectorizedValue(const VPValue *Def,
                                                      const VPLane &Lane) {
   Value *ScalarInst = get(Def, Lane);
   Value *WideValue = get(Def);
@@ -1021,7 +1021,7 @@ InstructionCost VPRegionBlock::cost(ElementCount VF, VPCostContext &Ctx) {
   // For the scalar case, we may not always execute the original predicated
   // block, Thus, scale the block's cost by the probability of executing it.
   if (VF.isScalar())
-    return ThenCost / getReciprocalPredBlockProb();
+    return ThenCost / getPredBlockCostDivisor(Ctx.CostKind);
 
   return ThenCost;
 }

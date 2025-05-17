@@ -70,10 +70,10 @@ public:
   void emitNoteSection(unsigned Flags); // SIFIVE.
 };
 
-MCELFStreamer *createRISCVELFStreamer(MCContext &C,
-                                      std::unique_ptr<MCAsmBackend> MAB,
-                                      std::unique_ptr<MCObjectWriter> MOW,
-                                      std::unique_ptr<MCCodeEmitter> MCE);
+MCStreamer *createRISCVELFStreamer(const Triple &, MCContext &C,
+                                   std::unique_ptr<MCAsmBackend> &&MAB,
+                                   std::unique_ptr<MCObjectWriter> &&MOW,
+                                   std::unique_ptr<MCCodeEmitter> &&MCE);
 } // namespace llvm
 
 #endif // LLVM_LIB_TARGET_RISCV_MCTARGETDESC_RISCVELFSTREAMER_H

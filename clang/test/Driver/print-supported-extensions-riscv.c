@@ -235,8 +235,13 @@
 // CHECK-NEXT:     smwg                 0.3       'Smwg' (The Smwg extension adds the mlwid CSR, which is an M-mode read-write CSR, whose least-significant bits set the WID to be used by lower-privilege modes.)
 // CHECK-NEXT:     smwgd                0.3       'Smwgd' (The Smwgd extension adds the mwiddeleg M-mode read-write CSR. The mwiddeleg register represents a set of WIDs as a bit vector with WID i represented by bit i of the register.)
 // CHECK-NEXT:     ssctr                1.0       'Ssctr' (Control Transfer Records Supervisor Level)
+<<<<<<< HEAD
 // CHECK-NEXT:     sswg                 0.3       'Sswg' (The Sswg extension adds the [H]S-mode read-write slwid CSR, which sets the WID used for modes lower than [H]S-mode.)
 // CHECK-NEXT:     svukte               0.4       'Svukte' (Address-Independent Latency of User-Mode Faults to Supervisor Addresses)
+=======
+// CHECK-NEXT:     svukte               0.3       'Svukte' (Address-Independent Latency of User-Mode Faults to Supervisor Addresses)
+// CHECK-NEXT:     xqccmp               0.1       'Xqccmp' (Qualcomm 16-bit Push/Pop and Double Moves)
+>>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
 // CHECK-NEXT:     xqcia                0.4       'Xqcia' (Qualcomm uC Arithmetic Extension)
 // CHECK-NEXT:     xqciac               0.3       'Xqciac' (Qualcomm uC Load-Store Address Calculation Extension)
 // CHECK-NEXT:     xqcicli              0.2       'Xqcicli' (Qualcomm uC Conditional Load Immediate Extension)
@@ -248,6 +253,7 @@
 // CHECK-NEXT:     xqcilo               0.2       'Xqcilo' (Qualcomm uC Large Offset Load Store Extension)
 // CHECK-NEXT:     xqcilsm              0.2       'Xqcilsm' (Qualcomm uC Load Store Multiple Extension)
 // CHECK-NEXT:     xqcisls              0.2       'Xqcisls' (Qualcomm uC Scaled Load Store Extension)
+// CHECK-NEXT:     xrivosvisni          0.1       'XRivosVisni' (Rivos Vector Integer Small New)
 // CHECK-NEXT:     xrivosvizip          0.1       'XRivosVizip' (Rivos Vector Register Zips)
 // CHECK-EMPTY:
 // CHECK-NEXT: Supported Profiles

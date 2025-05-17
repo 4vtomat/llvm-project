@@ -301,6 +301,9 @@ protected:
   // in function attributes in IR.
   llvm::StringSet<> ReadOnlyFeatures;
 
+  // Default atomic options
+  AtomicOptions AtomicOpts;
+
 public:
   /// Construct a target for the given options.
   ///
@@ -1068,10 +1071,6 @@ public:
   /// available on this target.
   bool hasRISCVVTypes() const { return HasRISCVVTypes; }
 
-  /// Returns whether or not the AMDGPU unsafe floating point atomics are
-  /// allowed.
-  bool allowAMDGPUUnsafeFPAtomics() const { return AllowAMDGPUUnsafeFPAtomics; }
-
   /// For ARM targets returns a mask defining which coprocessors are configured
   /// as Custom Datapath.
   uint32_t getARMCDECoprocMask() const { return ARMCDECoprocMask; }
@@ -1706,6 +1705,9 @@ public:
     // an explicit calling convention.
     return CC_C;
   }
+
+  /// Get the default atomic options.
+  AtomicOptions getAtomicOpts() const { return AtomicOpts; }
 
   enum CallingConvCheckResult {
     CCCR_OK,

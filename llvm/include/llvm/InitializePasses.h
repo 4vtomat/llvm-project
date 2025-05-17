@@ -108,11 +108,15 @@ void initializeEHContGuardCatchretPass(PassRegistry &);
 void initializeExpandLargeFpConvertLegacyPassPass(PassRegistry &);
 void initializeExpandLargeDivRemLegacyPassPass(PassRegistry &);
 void initializeExpandMemCmpLegacyPassPass(PassRegistry &);
+<<<<<<< HEAD
 void initializeExpandPostRAPass(PassRegistry &);
 #if SIFIVE_CUSTOMIZATION
 void initializeExpandPowiLegacyPassPass(PassRegistry &);
 void initializeExpandVPReductionLegacyPassPass(PassRegistry &);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+void initializeExpandPostRALegacyPass(PassRegistry &);
+>>>>>>> 4c4fd6b03149348cf11af245ad2603d24144a9d5
 void initializeExpandReductionsPass(PassRegistry &);
 void initializeExpandVariadicsPass(PassRegistry &);
 void initializeExternalAAWrapperPassPass(PassRegistry &);
@@ -120,7 +124,7 @@ void initializeFEntryInserterPass(PassRegistry &);
 void initializeFinalizeISelPass(PassRegistry &);
 void initializeFinalizeMachineBundlesPass(PassRegistry &);
 void initializeFixIrreduciblePass(PassRegistry &);
-void initializeFixupStatepointCallerSavedPass(PassRegistry &);
+void initializeFixupStatepointCallerSavedLegacyPass(PassRegistry &);
 void initializeFlattenCFGLegacyPassPass(PassRegistry &);
 void initializeFuncletLayoutPass(PassRegistry &);
 void initializeGCEmptyBasicBlocksPass(PassRegistry &);
@@ -198,7 +202,7 @@ void initializeMachineCFGPrinterPass(PassRegistry &);
 void initializeMachineCSELegacyPass(PassRegistry &);
 void initializeMachineCombinerPass(PassRegistry &);
 void initializeMachineCopyPropagationLegacyPass(PassRegistry &);
-void initializeMachineCycleInfoPrinterPassPass(PassRegistry &);
+void initializeMachineCycleInfoPrinterLegacyPass(PassRegistry &);
 void initializeMachineCycleInfoWrapperPassPass(PassRegistry &);
 void initializeMachineDominanceFrontierPass(PassRegistry &);
 void initializeMachineDominatorTreeWrapperPassPass(PassRegistry &);
@@ -215,7 +219,7 @@ void initializeMachinePostDominatorTreeWrapperPassPass(PassRegistry &);
 void initializeMachineRegionInfoPassPass(PassRegistry &);
 void initializeMachineSanitizerBinaryMetadataPass(PassRegistry &);
 void initializeMachineSchedulerLegacyPass(PassRegistry &);
-void initializeMachineSinkingPass(PassRegistry &);
+void initializeMachineSinkingLegacyPass(PassRegistry &);
 void initializeMachineTraceMetricsWrapperPassPass(PassRegistry &);
 void initializeMachineUniformityInfoPrinterPassPass(PassRegistry &);
 void initializeMachineUniformityAnalysisPassPass(PassRegistry &);
@@ -273,7 +277,7 @@ void initializeRegionPrinterPass(PassRegistry &);
 void initializeRegionViewerPass(PassRegistry &);
 void initializeRegisterCoalescerLegacyPass(PassRegistry &);
 void initializeRemoveLoadsIntoFakeUsesPass(PassRegistry &);
-void initializeRemoveRedundantDebugValuesPass(PassRegistry &);
+void initializeRemoveRedundantDebugValuesLegacyPass(PassRegistry &);
 void initializeRenameIndependentSubregsLegacyPass(PassRegistry &);
 void initializeReplaceWithVeclibLegacyPass(PassRegistry &);
 void initializeResetMachineFunctionPass(PassRegistry &);
