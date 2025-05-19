@@ -609,32 +609,23 @@ bool CallBase::hasReadingOperandBundles() const {
   // Implementation note: this is a conservative implementation of operand
   // bundle semantics, where *any* non-assume operand bundle (other than
   // ptrauth) forces a callsite to be at least readonly.
-<<<<<<< HEAD
-  return hasOperandBundlesOtherThan(
-#if SIFIVE_CUSTOMIZATION
-             {LLVMContext::OB_ptrauth, LLVMContext::OB_kcfi,
-              LLVMContext::OB_riscv_cfi}) &&
-#endif // SIFIVE_CUSTOMIZATION
-=======
   return hasOperandBundlesOtherThan({LLVMContext::OB_ptrauth,
                                      LLVMContext::OB_kcfi,
+#if SIFIVE_CUSTOMIZATION
+                                     LLVMContext::OB_riscv_cfi,
+#endif // SIFIVE_CUSTOMIZATION
                                      LLVMContext::OB_convergencectrl}) &&
->>>>>>> 967ab7e08e62a35cc65f34e21fbeb00abf3eb83f
          getIntrinsicID() != Intrinsic::assume;
 }
 
 bool CallBase::hasClobberingOperandBundles() const {
   return hasOperandBundlesOtherThan(
              {LLVMContext::OB_deopt, LLVMContext::OB_funclet,
-<<<<<<< HEAD
+              LLVMContext::OB_ptrauth, LLVMContext::OB_kcfi,
 #if SIFIVE_CUSTOMIZATION
-              LLVMContext::OB_ptrauth, LLVMContext::OB_kcfi,
-              LLVMContext::OB_riscv_cfi}) &&
+              LLVMContext::OB_riscv_cfi,
 #endif // SIFIVE_CUSTOMIZATION
-=======
-              LLVMContext::OB_ptrauth, LLVMContext::OB_kcfi,
               LLVMContext::OB_convergencectrl}) &&
->>>>>>> 967ab7e08e62a35cc65f34e21fbeb00abf3eb83f
          getIntrinsicID() != Intrinsic::assume;
 }
 
