@@ -11871,20 +11871,25 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
             return !CM.requiresScalarEpilogue(VF.isVector());
           },
           Range);
-<<<<<<< HEAD
+  auto Plan = std::make_unique<VPlan>(OrigLoop);
+  // Build hierarchical CFG.
+  // Convert to VPlan-transform and consoliate all transforms for VPlan
+  // creation.
+  VPlanHCFGBuilder HCFGBuilder(OrigLoop, LI, *Plan);
+  HCFGBuilder.buildHierarchicalCFG();
+
 #if SIFIVE_CUSTOMIZATION
   const bool IsUncountable = Legal->isVectorizableUncountable();
-  VPlanPtr Plan = VPlan::createInitialVPlan(Legal->getWidestInductionType(),
-                                            PSE, RequiresScalarEpilogueCheck,
-                                            CM.foldTailByMasking(),
-                                            IsUncountable, OrigLoop);
+  VPlanTransforms::introduceTopLevelVectorLoopRegion(
+      *Plan, Legal->getWidestInductionType(), PSE, IsUncountable, RequiresScalarEpilogueCheck,
+      CM.foldTailByMasking(), OrigLoop);
   if (IsUncountable) {
     Plan->createInitEVL();
   }
 #else
-  VPlanPtr Plan = VPlan::createInitialVPlan(Legal->getWidestInductionType(),
-                                            PSE, RequiresScalarEpilogueCheck,
-                                            CM.foldTailByMasking(), OrigLoop);
+  VPlanTransforms::introduceTopLevelVectorLoopRegion(
+      *Plan, Legal->getWidestInductionType(), PSE, RequiresScalarEpilogueCheck,
+      CM.foldTailByMasking(), OrigLoop);
 #endif
 
 #if SIFIVE_CUSTOMIZATION
@@ -11905,18 +11910,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  auto Plan = std::make_unique<VPlan>(OrigLoop);
->>>>>>> 967ab7e08e62a35cc65f34e21fbeb00abf3eb83f
-  // Build hierarchical CFG.
-  // Convert to VPlan-transform and consoliate all transforms for VPlan
-  // creation.
-  VPlanHCFGBuilder HCFGBuilder(OrigLoop, LI, *Plan);
-  HCFGBuilder.buildHierarchicalCFG();
-
-  VPlanTransforms::introduceTopLevelVectorLoopRegion(
-      *Plan, Legal->getWidestInductionType(), PSE, RequiresScalarEpilogueCheck,
-      CM.foldTailByMasking(), OrigLoop);
 
   // Don't use getDecisionAndClampRange here, because we don't know the UF
   // so this function is better to be conservative, rather than to split
@@ -12307,25 +12300,19 @@ VPlanPtr LoopVectorizationPlanner::buildVPlan(VFRange &Range) {
   assert(EnableVPlanNativePath && "VPlan-native path is not enabled.");
 
   // Create new empty VPlan
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  const bool IsUncountable = Legal->isVectorizableUncountable();
-  auto Plan = VPlan::createInitialVPlan(Legal->getWidestInductionType(), PSE,
-                                        true, false, IsUncountable, OrigLoop);
-#else
-  auto Plan = VPlan::createInitialVPlan(Legal->getWidestInductionType(), PSE,
-                                        true, false, OrigLoop);
-#endif // SIFIVE_CUSTOMIZATION
-
-=======
   auto Plan = std::make_unique<VPlan>(OrigLoop);
->>>>>>> 967ab7e08e62a35cc65f34e21fbeb00abf3eb83f
   // Build hierarchical CFG
   VPlanHCFGBuilder HCFGBuilder(OrigLoop, LI, *Plan);
   HCFGBuilder.buildHierarchicalCFG();
 
+#if SIFIVE_CUSTOMIZATION
+  const bool IsUncountable = Legal->isVectorizableUncountable();
+  VPlanTransforms::introduceTopLevelVectorLoopRegion(
+      *Plan, Legal->getWidestInductionType(), PSE, IsUncountable, true, false, OrigLoop);
+#else
   VPlanTransforms::introduceTopLevelVectorLoopRegion(
       *Plan, Legal->getWidestInductionType(), PSE, true, false, OrigLoop);
+#endif // SIFIVE_CUSTOMIZATION
 
   for (ElementCount VF : Range)
     Plan->addVF(VF);
