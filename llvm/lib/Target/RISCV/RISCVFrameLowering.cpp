@@ -1935,20 +1935,16 @@ bool RISCVFrameLowering::assignCalleeSavedSpillSlots(
       MFI.setStackID(FrameIdx, TargetStackID::ScalableVector);
   }
 
-<<<<<<< HEAD
-  if (RVFI->isPushable(MF)) {
-#ifdef SIFIVE_CUSTOMIZATION
-    if (int64_t PushSize = RVFI->getRVPushStackSize())
-      MFI.CreateFixedSpillStackObject(PushSize, -PushSize);
-#else
-=======
   if (RVFI->useQCIInterrupt(MF)) {
     // Allocate a fixed object that covers the entire QCI stack allocation,
     // because there are gaps which are reserved for future use.
     MFI.CreateFixedSpillStackObject(
         QCIInterruptPushAmount, -static_cast<int64_t>(QCIInterruptPushAmount));
   } else if (RVFI->isPushable(MF)) {
->>>>>>> 967ab7e08e62a35cc65f34e21fbeb00abf3eb83f
+#ifdef SIFIVE_CUSTOMIZATION
+    if (int64_t PushSize = RVFI->getRVPushStackSize())
+      MFI.CreateFixedSpillStackObject(PushSize, -PushSize);
+#else
     // Allocate a fixed object that covers all the registers that are pushed.
     if (unsigned PushedRegs = RVFI->getRVPushRegs()) {
       int64_t PushedRegsBytes =
