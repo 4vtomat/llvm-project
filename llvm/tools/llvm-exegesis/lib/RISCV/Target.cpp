@@ -97,6 +97,7 @@ template <class BaseT> class RISCVSnippetGenerator : public BaseT {
     using namespace RISCV_MC;
     if (isOpcodeAvailableIn(Opcode, {Feature_HasStdExtZvkgBit,
                                      Feature_HasStdExtZvknedBit,
+                                     Feature_HasStdExtZvknsOrZvknedBit, // SIFIVE
                                      Feature_HasStdExtZvksedBit}))
       return 128U;
     if (isOpcodeAvailableIn(Opcode, {Feature_HasStdExtZvkshBit}))
@@ -397,6 +398,7 @@ void RISCVSnippetGenerator<BaseT>::annotateWithVType(
         using namespace RISCV_MC;
         if (isOpcodeAvailableIn(BaseOpcode, {Feature_HasStdExtZvkgBit,
                                              Feature_HasStdExtZvknedBit,
+                                             Feature_HasStdExtZvknsOrZvknedBit, // SIFIVE
                                              Feature_HasStdExtZvknhaOrZvknhbBit,
                                              Feature_HasStdExtZvksedBit,
                                              Feature_HasStdExtZvkshBit})) {
