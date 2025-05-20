@@ -38,11 +38,7 @@ define void @constant_fold_barrier_i128(ptr %p) {
 ; RV32-NEXT:    seqz a7, a6
 ; RV32-NEXT:    and a1, a7, a1
 ; RV32-NEXT:    add a7, a4, zero
-<<<<<<< HEAD
-; RV32-NEXT:    sltu a4, a7, a4
-=======
 ; RV32-NEXT:    sltu a4, a4, a4
->>>>>>> 967ab7e08e62a35cc65f34e21fbeb00abf3eb83f
 ; RV32-NEXT:    or a1, a3, a1
 ; RV32-NEXT:    add a7, a7, a1
 ; RV32-NEXT:    seqz a3, a7

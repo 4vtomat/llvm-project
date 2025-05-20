@@ -322,30 +322,12 @@ entry:
 define void @deinterleave7_0_i32_subvec(ptr %in, ptr %out) {
 ; CHECK-LABEL: deinterleave7_0_i32_subvec:
 ; CHECK:       # %bb.0: # %entry
-<<<<<<< HEAD
 ; CHECK-NEXT:    lw a2, 0(a0)
 ; CHECK-NEXT:    lw a3, 28(a0)
 ; CHECK-NEXT:    lw a0, 56(a0)
 ; CHECK-NEXT:    sw a2, 0(a1)
 ; CHECK-NEXT:    sw a3, 4(a1)
 ; CHECK-NEXT:    sw a0, 8(a1)
-=======
-; CHECK-NEXT:    vsetivli zero, 16, e32, m4, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
-; CHECK-NEXT:    vmv.v.i v0, 2
-; CHECK-NEXT:    vmv2r.v v12, v8
-; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, mu
-; CHECK-NEXT:    vslidedown.vi v12, v8, 6, v0.t
-; CHECK-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
-; CHECK-NEXT:    vmv.v.i v0, 4
-; CHECK-NEXT:    vsetivli zero, 8, e32, m4, ta, ma
-; CHECK-NEXT:    vslidedown.vi v8, v8, 8
-; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, mu
-; CHECK-NEXT:    vrgather.vi v12, v8, 6, v0.t
-; CHECK-NEXT:    vsetivli zero, 3, e32, m1, ta, ma
-; CHECK-NEXT:    vse32.v v12, (a1)
->>>>>>> 967ab7e08e62a35cc65f34e21fbeb00abf3eb83f
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i32>, ptr %in
