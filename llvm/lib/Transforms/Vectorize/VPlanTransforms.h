@@ -66,6 +66,9 @@ struct VPlanTransforms {
   /// trip count expression.
   static void introduceTopLevelVectorLoopRegion(
       VPlan &Plan, Type *InductionTy, PredicatedScalarEvolution &PSE,
+#if SIFIVE_CUSTOMIZATION
+      bool IsUncountable,
+#endif // SIFIVE_CUSTOMIZATION
       bool RequiresScalarEpilogueCheck, bool TailFolded, Loop *TheLoop);
 
   /// Replaces the VPInstructions in \p Plan with corresponding
