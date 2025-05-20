@@ -22,6 +22,9 @@ using namespace llvm;
 
 void VPlanTransforms::introduceTopLevelVectorLoopRegion(
     VPlan &Plan, Type *InductionTy, PredicatedScalarEvolution &PSE,
+#if SIFIVE_CUSTOMIZATION
+    bool IsUncountable,
+#endif // SIFIVE_CUSTOMIZATION
     bool RequiresScalarEpilogueCheck, bool TailFolded, Loop *TheLoop) {
   // TODO: Generalize to introduce all loop regions.
   auto *HeaderVPBB = cast<VPBasicBlock>(Plan.getEntry()->getSingleSuccessor());
@@ -34,18 +37,37 @@ void VPlanTransforms::introduceTopLevelVectorLoopRegion(
   VPBlockUtils::connectBlocks(Plan.getEntry(), VecPreheader);
   assert(OriginalLatch->getNumSuccessors() == 0 &&
          "Plan should end at top level latch");
+#if SIFIVE_CUSTOMIZATION
+  if (IsUncountable)
+    Plan.setUncountable();
+#endif // SIFIVE_CUSTOMIZATION
 
   // Create SCEV and VPValue for the trip count.
   // We use the symbolic max backedge-taken-count, which works also when
   // vectorizing loops with uncountable early exits.
   const SCEV *BackedgeTakenCountSCEV = PSE.getSymbolicMaxBackedgeTakenCount();
-  assert(!isa<SCEVCouldNotCompute>(BackedgeTakenCountSCEV) &&
-         "Invalid loop count");
+#if SIFIVE_CUSTOMIZATION
+  if (!IsUncountable)
+#endif
+    assert(!isa<SCEVCouldNotCompute>(BackedgeTakenCountSCEV) &&
+           "Invalid loop count");
   ScalarEvolution &SE = *PSE.getSE();
+#if SIFIVE_CUSTOMIZATION
+  const SCEV *TripCount =
+      isa<SCEVCouldNotCompute>(BackedgeTakenCountSCEV)
+          ? nullptr
+          : SE.getTripCountFromExitCount(BackedgeTakenCountSCEV, InductionTy,
+                                         TheLoop);
+
+  if (!IsUncountable || TripCount)
+    Plan.setTripCount(
+        vputils::getOrCreateVPValueForSCEVExpr(Plan, TripCount, SE));
+#else
   const SCEV *TripCount = SE.getTripCountFromExitCount(BackedgeTakenCountSCEV,
                                                        InductionTy, TheLoop);
   Plan.setTripCount(
       vputils::getOrCreateVPValueForSCEVExpr(Plan, TripCount, SE));
+#endif // SIFIVE_CUSTOMIZATION
 
   // Create VPRegionBlock, with existing header and new empty latch block, to be
   // filled.
@@ -89,6 +111,17 @@ void VPlanTransforms::introduceTopLevelVectorLoopRegion(
   // different line numbers and we want to avoid awkward line stepping while
   // debugging. Eg. if the compare has got a line number inside the loop.
   VPBuilder Builder(MiddleVPBB);
+#if SIFIVE_CUSTOMIZATION
+  LLVMContext &Ctx =
+      IsUncountable ? SE.getContext() : TripCount->getType()->getContext();
+  VPValue *Cmp =
+      IsUncountable || TailFolded
+          ? Plan.getOrAddLiveIn(
+                ConstantInt::getTrue(IntegerType::getInt1Ty(Ctx)))
+          : Builder.createICmp(CmpInst::ICMP_EQ, Plan.getTripCount(),
+                               &Plan.getVectorTripCount(),
+                               ScalarLatchTerm->getDebugLoc(), "cmp.n");
+#else
   VPValue *Cmp =
       TailFolded
           ? Plan.getOrAddLiveIn(ConstantInt::getTrue(
@@ -96,6 +129,7 @@ void VPlanTransforms::introduceTopLevelVectorLoopRegion(
           : Builder.createICmp(CmpInst::ICMP_EQ, Plan.getTripCount(),
                                &Plan.getVectorTripCount(),
                                ScalarLatchTerm->getDebugLoc(), "cmp.n");
+#endif // SIFIVE_CUSTOMIZATION
   Builder.createNaryOp(VPInstruction::BranchOnCond, {Cmp},
                        ScalarLatchTerm->getDebugLoc());
 }
