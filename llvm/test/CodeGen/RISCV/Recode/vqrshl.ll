@@ -257,20 +257,20 @@ define void @vqrshl_u64(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vrsub.vx v10, v8, a1
 ; CHECK-NEXT:    li a1, 63
-; CHECK-NEXT:    vminu.vx v11, v8, a0
+; CHECK-NEXT:    vmsne.vi v11, v9, 0
+; CHECK-NEXT:    vminu.vx v12, v8, a0
 ; CHECK-NEXT:    vmseq.vx v0, v10, a0
-; CHECK-NEXT:    vssrl.vv v12, v9, v10
-; CHECK-NEXT:    vsrl.vx v12, v9, a1, v0.t
+; CHECK-NEXT:    vssrl.vv v13, v9, v10
+; CHECK-NEXT:    vsrl.vx v13, v9, a1, v0.t
+; CHECK-NEXT:    vmsgtu.vx v14, v12, a1
+; CHECK-NEXT:    vmand.mm v11, v11, v14
 ; CHECK-NEXT:    vmsgtu.vx v0, v10, a0
-; CHECK-NEXT:    vminu.vx v10, v11, a1
-; CHECK-NEXT:    vmerge.vim v12, v12, 0, v0
+; CHECK-NEXT:    vminu.vx v10, v12, a1
+; CHECK-NEXT:    vmerge.vim v12, v13, 0, v0
 ; CHECK-NEXT:    vsll.vv v13, v9, v10
 ; CHECK-NEXT:    vsrl.vv v10, v13, v10
-; CHECK-NEXT:    vmsgtu.vx v11, v11, a1
-; CHECK-NEXT:    vmsne.vv v10, v9, v10
-; CHECK-NEXT:    vmsne.vi v9, v9, 0
-; CHECK-NEXT:    vmand.mm v9, v9, v11
-; CHECK-NEXT:    vmor.mm v0, v10, v9
+; CHECK-NEXT:    vmsne.vv v9, v9, v10
+; CHECK-NEXT:    vmor.mm v0, v9, v11
 ; CHECK-NEXT:    li a0, 127
 ; CHECK-NEXT:    vmerge.vim v9, v13, -1, v0
 ; CHECK-NEXT:    vmsgtu.vx v0, v8, a0
@@ -572,20 +572,20 @@ define void @vqrshlq_u64(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vrsub.vx v10, v8, a1
 ; CHECK-NEXT:    li a1, 63
-; CHECK-NEXT:    vminu.vx v11, v8, a0
+; CHECK-NEXT:    vmsne.vi v11, v9, 0
+; CHECK-NEXT:    vminu.vx v12, v8, a0
 ; CHECK-NEXT:    vmseq.vx v0, v10, a0
-; CHECK-NEXT:    vssrl.vv v12, v9, v10
-; CHECK-NEXT:    vsrl.vx v12, v9, a1, v0.t
+; CHECK-NEXT:    vssrl.vv v13, v9, v10
+; CHECK-NEXT:    vsrl.vx v13, v9, a1, v0.t
+; CHECK-NEXT:    vmsgtu.vx v14, v12, a1
+; CHECK-NEXT:    vmand.mm v11, v11, v14
 ; CHECK-NEXT:    vmsgtu.vx v0, v10, a0
-; CHECK-NEXT:    vminu.vx v10, v11, a1
-; CHECK-NEXT:    vmerge.vim v12, v12, 0, v0
+; CHECK-NEXT:    vminu.vx v10, v12, a1
+; CHECK-NEXT:    vmerge.vim v12, v13, 0, v0
 ; CHECK-NEXT:    vsll.vv v13, v9, v10
 ; CHECK-NEXT:    vsrl.vv v10, v13, v10
-; CHECK-NEXT:    vmsgtu.vx v11, v11, a1
-; CHECK-NEXT:    vmsne.vv v10, v9, v10
-; CHECK-NEXT:    vmsne.vi v9, v9, 0
-; CHECK-NEXT:    vmand.mm v9, v9, v11
-; CHECK-NEXT:    vmor.mm v0, v10, v9
+; CHECK-NEXT:    vmsne.vv v9, v9, v10
+; CHECK-NEXT:    vmor.mm v0, v9, v11
 ; CHECK-NEXT:    li a0, 127
 ; CHECK-NEXT:    vmerge.vim v9, v13, -1, v0
 ; CHECK-NEXT:    vmsgtu.vx v0, v8, a0

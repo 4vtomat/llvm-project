@@ -825,21 +825,21 @@ define void @vqshl_s64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1, 
 ; CHECK-NEXT:    li a3, -1
 ; CHECK-NEXT:    li a4, 64
 ; CHECK-NEXT:    vmv.s.x v9, a0
+; CHECK-NEXT:    vmsne.vi v10, v8, 0
 ; CHECK-NEXT:    minu a1, a1, a4
 ; CHECK-NEXT:    srli a4, a3, 1
 ; CHECK-NEXT:    slli a3, a3, 63
-; CHECK-NEXT:    vmv.s.x v10, a4
-; CHECK-NEXT:    vmv.s.x v11, a1
-; CHECK-NEXT:    vmerge.vxm v10, v10, a3, v0
-; CHECK-NEXT:    vminu.vx v11, v11, a0
+; CHECK-NEXT:    vmv.s.x v11, a4
+; CHECK-NEXT:    vmerge.vxm v11, v11, a3, v0
+; CHECK-NEXT:    vmv.s.x v12, a1
 ; CHECK-NEXT:    vmsltu.vx v9, v9, a1
-; CHECK-NEXT:    vmsne.vi v12, v8, 0
-; CHECK-NEXT:    vmand.mm v9, v12, v9
-; CHECK-NEXT:    vsll.vv v12, v8, v11
-; CHECK-NEXT:    vsra.vv v11, v12, v11
-; CHECK-NEXT:    vmsne.vv v8, v8, v11
+; CHECK-NEXT:    vminu.vx v12, v12, a0
+; CHECK-NEXT:    vmand.mm v9, v10, v9
+; CHECK-NEXT:    vsll.vv v10, v8, v12
+; CHECK-NEXT:    vsra.vv v12, v10, v12
+; CHECK-NEXT:    vmsne.vv v8, v8, v12
 ; CHECK-NEXT:    vmor.mm v0, v8, v9
-; CHECK-NEXT:    vmerge.vvm v8, v12, v10, v0
+; CHECK-NEXT:    vmerge.vvm v8, v10, v11, v0
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
 ; CHECK-NEXT:  .LBB18_2:
@@ -1142,21 +1142,21 @@ define void @vqshlq_s64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1,
 ; CHECK-NEXT:    li a3, -1
 ; CHECK-NEXT:    li a4, 64
 ; CHECK-NEXT:    vmv.v.x v9, a0
+; CHECK-NEXT:    vmsne.vi v10, v8, 0
 ; CHECK-NEXT:    minu a1, a1, a4
 ; CHECK-NEXT:    srli a4, a3, 1
 ; CHECK-NEXT:    slli a3, a3, 63
-; CHECK-NEXT:    vmv.v.x v10, a4
-; CHECK-NEXT:    vmv.v.x v11, a1
-; CHECK-NEXT:    vmerge.vxm v10, v10, a3, v0
-; CHECK-NEXT:    vminu.vx v11, v11, a0
+; CHECK-NEXT:    vmv.v.x v11, a4
+; CHECK-NEXT:    vmerge.vxm v11, v11, a3, v0
+; CHECK-NEXT:    vmv.v.x v12, a1
 ; CHECK-NEXT:    vmsltu.vx v9, v9, a1
-; CHECK-NEXT:    vmsne.vi v12, v8, 0
-; CHECK-NEXT:    vmand.mm v9, v12, v9
-; CHECK-NEXT:    vsll.vv v12, v8, v11
-; CHECK-NEXT:    vsra.vv v11, v12, v11
-; CHECK-NEXT:    vmsne.vv v8, v8, v11
+; CHECK-NEXT:    vminu.vx v12, v12, a0
+; CHECK-NEXT:    vmand.mm v9, v10, v9
+; CHECK-NEXT:    vsll.vv v10, v8, v12
+; CHECK-NEXT:    vsra.vv v12, v10, v12
+; CHECK-NEXT:    vmsne.vv v8, v8, v12
 ; CHECK-NEXT:    vmor.mm v0, v8, v9
-; CHECK-NEXT:    vmerge.vvm v8, v12, v10, v0
+; CHECK-NEXT:    vmerge.vvm v8, v10, v11, v0
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
 ; CHECK-NEXT:  .LBB26_2:
