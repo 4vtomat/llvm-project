@@ -8911,7 +8911,11 @@ void BoUpSLP::buildTree_rec(ArrayRef<Value *> VL, unsigned Depth,
           TTI.getArithmeticInstrCost(Opcode1, Op2VecTy, Kind);
       InstructionCost NewCost =
           NewVecOpsCost + InsertCost +
+#if SIFIVE_CUSTOMIZATION
+          (!VectorizableTree.empty() && VectorizableTree.front()->hasState() &&
+#else
           (VectorizableTree.front()->hasState() &&
+#endif // SIFIVE_CUSTOMIZATION
                    VectorizableTree.front()->getOpcode() == Instruction::Store
                ? NewShuffleCost
                : 0);
