@@ -1204,125 +1204,6 @@ VPlan::~VPlan() {
 #endif // SIFIVE_CUSTOMIZATION
 }
 
-<<<<<<< HEAD
-VPlanPtr VPlan::createInitialVPlan(Type *InductionTy,
-                                   PredicatedScalarEvolution &PSE,
-                                   bool RequiresScalarEpilogueCheck,
-#if SIFIVE_CUSTOMIZATION
-                                   bool TailFolded,
-                                   bool IsUncountable,
-                                   Loop *TheLoop) {
-#else
-                                   bool TailFolded, Loop *TheLoop) {
-#endif // SIFIVE_CUSTOMIZATION
-  auto Plan = std::make_unique<VPlan>(TheLoop);
-#if SIFIVE_CUSTOMIZATION
-  if (IsUncountable)
-    Plan->setUncountable();
-#endif // SIFIVE_CUSTOMIZATION
-  VPBlockBase *ScalarHeader = Plan->getScalarHeader();
-
-  // Connect entry only to vector preheader initially. Entry will also be
-  // connected to the scalar preheader later, during skeleton creation when
-  // runtime guards are added as needed. Note that when executing the VPlan for
-  // an epilogue vector loop, the original entry block here will be replaced by
-  // a new VPIRBasicBlock wrapping the entry to the epilogue vector loop after
-  // generating code for the main vector loop.
-  VPBasicBlock *VecPreheader = Plan->createVPBasicBlock("vector.ph");
-  VPBlockUtils::connectBlocks(Plan->getEntry(), VecPreheader);
-
-  // Create SCEV and VPValue for the trip count.
-  // We use the symbolic max backedge-taken-count, which works also when
-  // vectorizing loops with uncountable early exits.
-  const SCEV *BackedgeTakenCountSCEV = PSE.getSymbolicMaxBackedgeTakenCount();
-#if SIFIVE_CUSTOMIZATION
-  if (!IsUncountable)
-#endif
-  assert(!isa<SCEVCouldNotCompute>(BackedgeTakenCountSCEV) &&
-         "Invalid loop count");
-  ScalarEvolution &SE = *PSE.getSE();
-#if SIFIVE_CUSTOMIZATION
-  const SCEV *TripCount =
-      isa<SCEVCouldNotCompute>(BackedgeTakenCountSCEV)
-          ? nullptr
-          : SE.getTripCountFromExitCount(BackedgeTakenCountSCEV, InductionTy,
-                                         TheLoop);
-
-  if (!IsUncountable || TripCount)
-    Plan->TripCount =
-        vputils::getOrCreateVPValueForSCEVExpr(*Plan, TripCount, SE);
-#else
-  const SCEV *TripCount = SE.getTripCountFromExitCount(BackedgeTakenCountSCEV,
-                                                       InductionTy, TheLoop);
-
-  Plan->TripCount =
-      vputils::getOrCreateVPValueForSCEVExpr(*Plan, TripCount, SE);
-#endif // SIFIVE_CUSTOMIZATION
-  // Create VPRegionBlock, with empty header and latch blocks, to be filled
-  // during processing later.
-  VPBasicBlock *HeaderVPBB = Plan->createVPBasicBlock("vector.body");
-  VPBasicBlock *LatchVPBB = Plan->createVPBasicBlock("vector.latch");
-  VPBlockUtils::insertBlockAfter(LatchVPBB, HeaderVPBB);
-  auto *TopRegion = Plan->createVPRegionBlock(
-      HeaderVPBB, LatchVPBB, "vector loop", false /*isReplicator*/);
-
-  VPBlockUtils::insertBlockAfter(TopRegion, VecPreheader);
-  VPBasicBlock *MiddleVPBB = Plan->createVPBasicBlock("middle.block");
-  VPBlockUtils::insertBlockAfter(MiddleVPBB, TopRegion);
-
-  VPBasicBlock *ScalarPH = Plan->createVPBasicBlock("scalar.ph");
-  VPBlockUtils::connectBlocks(ScalarPH, ScalarHeader);
-  if (!RequiresScalarEpilogueCheck) {
-    VPBlockUtils::connectBlocks(MiddleVPBB, ScalarPH);
-    return Plan;
-  }
-
-  // If needed, add a check in the middle block to see if we have completed
-  // all of the iterations in the first vector loop.  Three cases:
-  // 1) If (N - N%VF) == N, then we *don't* need to run the remainder.
-  //    Thus if tail is to be folded, we know we don't need to run the
-  //    remainder and we can set the condition to true.
-  // 2) If we require a scalar epilogue, there is no conditional branch as
-  //    we unconditionally branch to the scalar preheader.  Do nothing.
-  // 3) Otherwise, construct a runtime check.
-  BasicBlock *IRExitBlock = TheLoop->getUniqueLatchExitBlock();
-  VPIRBasicBlock *VPExitBlock = Plan->getExitBlock(IRExitBlock);
-  // The connection order corresponds to the operands of the conditional branch.
-  VPBlockUtils::insertBlockAfter(VPExitBlock, MiddleVPBB);
-  VPBlockUtils::connectBlocks(MiddleVPBB, ScalarPH);
-
-  auto *ScalarLatchTerm = TheLoop->getLoopLatch()->getTerminator();
-  // Here we use the same DebugLoc as the scalar loop latch terminator instead
-  // of the corresponding compare because they may have ended up with
-  // different line numbers and we want to avoid awkward line stepping while
-  // debugging. Eg. if the compare has got a line number inside the loop.
-  VPBuilder Builder(MiddleVPBB);
-#if SIFIVE_CUSTOMIZATION
-  LLVMContext &Ctx =
-      IsUncountable ? SE.getContext() : TripCount->getType()->getContext();
-  VPValue *Cmp =
-      IsUncountable || TailFolded
-          ? Plan->getOrAddLiveIn(
-                ConstantInt::getTrue(IntegerType::getInt1Ty(Ctx)))
-          : Builder.createICmp(CmpInst::ICMP_EQ, Plan->getTripCount(),
-                               &Plan->getVectorTripCount(),
-                               ScalarLatchTerm->getDebugLoc(), "cmp.n");
-#else
-  VPValue *Cmp =
-      TailFolded
-          ? Plan->getOrAddLiveIn(ConstantInt::getTrue(
-                IntegerType::getInt1Ty(TripCount->getType()->getContext())))
-          : Builder.createICmp(CmpInst::ICMP_EQ, Plan->getTripCount(),
-                               &Plan->getVectorTripCount(),
-                               ScalarLatchTerm->getDebugLoc(), "cmp.n");
-#endif // SIFIVE_CUSTOMIZATION
-  Builder.createNaryOp(VPInstruction::BranchOnCond, {Cmp},
-                       ScalarLatchTerm->getDebugLoc());
-  return Plan;
-}
-
-=======
->>>>>>> 967ab7e08e62a35cc65f34e21fbeb00abf3eb83f
 void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
                              VPTransformState &State) {
 #if SIFIVE_CUSTOMIZATION
@@ -1601,19 +1482,6 @@ void VPlan::printLiveIns(raw_ostream &O) const {
   }
 
   O << "\n";
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  if (TripCount) {
-#endif // SIFIVE_CUSTOMIZATION
-  if (TripCount->isLiveIn())
-    O << "Live-in ";
-  TripCount->printAsOperand(O, SlotTracker);
-  O << " = original trip-count";
-  O << "\n";
-#if SIFIVE_CUSTOMIZATION
-  }
-#endif // SIFIVE_CUSTOMIZATION
-=======
   if (TripCount) {
     if (TripCount->isLiveIn())
       O << "Live-in ";
@@ -1621,7 +1489,6 @@ void VPlan::printLiveIns(raw_ostream &O) const {
     O << " = original trip-count";
     O << "\n";
   }
->>>>>>> 967ab7e08e62a35cc65f34e21fbeb00abf3eb83f
 }
 
 LLVM_DUMP_METHOD
