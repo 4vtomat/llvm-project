@@ -71,18 +71,16 @@ protected:
 
     Loop *L = LI->getLoopFor(LoopHeader);
     PredicatedScalarEvolution PSE(*SE, *L);
-<<<<<<< HEAD
-    auto Plan = VPlan::createInitialVPlan(IntegerType::get(*Ctx, 64), PSE, true,
-                                          false,
-                                          /*IsUncountable=*/false, // SIFIVE
-                                          L);
-=======
     auto Plan = std::make_unique<VPlan>(L);
->>>>>>> 967ab7e08e62a35cc65f34e21fbeb00abf3eb83f
     VPlanHCFGBuilder HCFGBuilder(L, LI.get(), *Plan);
     HCFGBuilder.buildHierarchicalCFG();
+#if SIFIVE_CUSTOMIZATION
+    VPlanTransforms::introduceTopLevelVectorLoopRegion(
+        *Plan, IntegerType::get(*Ctx, 64), PSE, false, true, false, L);
+#else
     VPlanTransforms::introduceTopLevelVectorLoopRegion(
         *Plan, IntegerType::get(*Ctx, 64), PSE, true, false, L);
+#endif // SIFIVE_CUSTOMIZATION
     return Plan;
   }
 };
