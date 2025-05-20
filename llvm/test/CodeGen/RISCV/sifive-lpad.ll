@@ -162,7 +162,7 @@ define internal void @internal2() {
 }
 
 ; Check interrupt function does not need landing pad.
-define void @interrupt() "interrupt"="user" {
+define void @interrupt() "interrupt"="machine" {
 ; CHECK-LABEL: interrupt:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    mret
@@ -361,7 +361,7 @@ define internal void @internal2() {
 }
 
 ; Check interrupt function does not need landing pad.
-define void @interrupt() "interrupt"="user" {
+define void @interrupt() "interrupt"="machine" {
 ; UNLABELED-LABEL: interrupt:
 ; UNLABELED:       # %bb.0:
 ; UNLABELED-NEXT:    mret
@@ -546,7 +546,7 @@ define internal void @internal2() {
 }
 
 ; Check interrupt function does not need landing pad.
-define void @interrupt() "interrupt"="user" {
+define void @interrupt() "interrupt"="machine" {
 ; DISABLED-LABEL: interrupt:
 ; DISABLED:       # %bb.0:
 ; DISABLED-NEXT:    mret
