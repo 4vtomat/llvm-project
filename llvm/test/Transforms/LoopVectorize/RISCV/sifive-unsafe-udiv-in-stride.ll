@@ -17,9 +17,6 @@ define void @test(i64 %0, i32 %1, i32 %2) {
 ; CHECK-NEXT:    [[TMP7:%.*]] = call <vscale x 16 x i64> @llvm.stepvector.nxv16i64()
 ; CHECK-NEXT:    [[TMP8:%.*]] = mul <vscale x 16 x i64> [[TMP7]], splat (i64 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 16 x i64> zeroinitializer, [[TMP8]]
-; CHECK-NEXT:    [[TMP10:%.*]] = mul i64 1, [[TMP6]]
-; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP10]], i64 0
-; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[BROADCAST_SPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]

@@ -2497,6 +2497,30 @@ void VPWidenIntOrFpInductionRecipe::execute(VPTransformState &State) {
   }
 
   Value *SplatVF;
+#if SIFIVE_CUSTOMIZATION
+  if (State.Plan->useVLAVectorizer()) {
+    // FIXME: Remove this code with a proper representation of pointer induction
+    // in a VPlan.
+    assert(!State.EVL &&
+           "Runtime VL is available, but code was not updated to use it.");
+    Value *EVLPart = nullptr;
+    Value *EVLPartCast = nullptr;
+    Type *StepType = Step->getType();
+    if (!State.EVLPlaceholder) {
+      Type *I32Ty = Builder.getInt32Ty();
+      State.EVLPlaceholder = EVLPart = State.Builder.CreateLoad(
+          I32Ty, PoisonValue::get(PointerType::get(I32Ty->getContext(),
+                                                  /*AddressSpace=*/0)));
+    } else {
+      EVLPart = State.EVLPlaceholder;
+    }
+    EVLPartCast = StepType->isIntegerTy()
+                      ? Builder.CreateSExtOrTrunc(EVLPart, StepType)
+                      : Builder.CreateUIToFP(EVLPart, StepType);
+    Value *Mul = Builder.CreateBinOp(MulOp, Step, EVLPartCast);
+    SplatVF = Builder.CreateVectorSplat(State.VF, Mul);
+  } else
+#endif // SIFIVE_CUSTOMIZATION
   if (VPValue *SplatVFOperand = getSplatVFValue()) {
     // The recipe has been unrolled. In that case, fetch the splat value for the
     // induction increment.
@@ -2528,26 +2552,6 @@ void VPWidenIntOrFpInductionRecipe::execute(VPTransformState &State) {
 #if SIFIVE_CUSTOMIZATION
   Instruction *LastInduction = VecInd;
   if (State.Plan->useVLAVectorizer()) {
-    // FIXME: Remove this code with a proper representation of pointer induction
-    // in a VPlan.
-    assert(!State.EVL &&
-           "Runtime VL is available, but code was not updated to use it.");
-    Value *EVLPart = nullptr;
-    Value *EVLPartCast = nullptr;
-    Type *StepType = Step->getType();
-    if (!State.EVLPlaceholder) {
-      Type *I32Ty = Builder.getInt32Ty();
-      State.EVLPlaceholder = EVLPart = State.Builder.CreateLoad(
-          I32Ty, PoisonValue::get(PointerType::get(I32Ty->getContext(),
-                                                  /*AddressSpace=*/0)));
-    } else {
-      EVLPart = State.EVLPlaceholder;
-    }
-    EVLPartCast = StepType->isIntegerTy()
-                      ? Builder.CreateSExtOrTrunc(EVLPart, StepType)
-                      : Builder.CreateUIToFP(EVLPart, StepType);
-    Value *Mul = Builder.CreateBinOp(MulOp, Step, EVLPartCast);
-    SplatVF = Builder.CreateVectorSplat(State.VF, Mul);
     LastInduction = widenPredicatedArithmeticOp(
         State, AddOp, {LastInduction, SplatVF},
         /*Mask=*/nullptr, "step.add");

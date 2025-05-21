@@ -20,10 +20,6 @@ define void @test(i32 %input, ptr %0) {
 ; CHECK-NEXT:    [[TMP4:%.*]] = uitofp <vscale x 4 x i64> [[TMP3]] to <vscale x 4 x double>
 ; CHECK-NEXT:    [[TMP6:%.*]] = fmul reassoc <vscale x 4 x double> [[TMP4]], splat (double 1.000000e+00)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = fadd reassoc <vscale x 4 x double> zeroinitializer, [[TMP6]]
-; CHECK-NEXT:    [[TMP9:%.*]] = uitofp i32 [[TMP8]] to double
-; CHECK-NEXT:    [[TMP10:%.*]] = fmul reassoc double 1.000000e+00, [[TMP9]]
-; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 4 x double> poison, double [[TMP10]], i64 0
-; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 4 x double> [[DOTSPLATINSERT]], <vscale x 4 x double> poison, <vscale x 4 x i32> zeroinitializer
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT1:%.*]], [[VECTOR_BODY]] ]

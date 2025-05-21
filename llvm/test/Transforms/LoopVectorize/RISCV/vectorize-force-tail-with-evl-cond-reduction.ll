@@ -350,10 +350,6 @@ define i32 @step_cond_add(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP3:%.*]] = call <vscale x 2 x i32> @llvm.stepvector.nxv2i32()
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP4:%.*]] = mul <vscale x 2 x i32> [[TMP3]], splat (i32 1)
 ; IF-EVL-OUTLOOP-NEXT:    [[INDUCTION:%.*]] = add <vscale x 2 x i32> zeroinitializer, [[TMP4]]
-; IF-EVL-OUTLOOP-NEXT:    [[TMP5:%.*]] = trunc i64 [[TMP1]] to i32
-; IF-EVL-OUTLOOP-NEXT:    [[TMP6:%.*]] = mul i32 1, [[TMP5]]
-; IF-EVL-OUTLOOP-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 2 x i32> poison, i32 [[TMP6]], i64 0
-; IF-EVL-OUTLOOP-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 2 x i32> [[DOTSPLATINSERT]], <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer
 ; IF-EVL-OUTLOOP-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL-OUTLOOP:       vector.body:
 ; IF-EVL-OUTLOOP-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_BODY]] ]
@@ -411,10 +407,6 @@ define i32 @step_cond_add(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-INLOOP-NEXT:    [[TMP2:%.*]] = call <vscale x 2 x i32> @llvm.stepvector.nxv2i32()
 ; IF-EVL-INLOOP-NEXT:    [[TMP3:%.*]] = mul <vscale x 2 x i32> [[TMP2]], splat (i32 1)
 ; IF-EVL-INLOOP-NEXT:    [[INDUCTION:%.*]] = add <vscale x 2 x i32> zeroinitializer, [[TMP3]]
-; IF-EVL-INLOOP-NEXT:    [[TMP4:%.*]] = trunc i64 [[TMP1]] to i32
-; IF-EVL-INLOOP-NEXT:    [[TMP5:%.*]] = mul i32 1, [[TMP4]]
-; IF-EVL-INLOOP-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 2 x i32> poison, i32 [[TMP5]], i64 0
-; IF-EVL-INLOOP-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 2 x i32> [[DOTSPLATINSERT]], <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer
 ; IF-EVL-INLOOP-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL-INLOOP:       vector.body:
 ; IF-EVL-INLOOP-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_BODY]] ]
@@ -531,10 +523,6 @@ define i32 @step_cond_add_pred(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP3:%.*]] = call <vscale x 2 x i32> @llvm.stepvector.nxv2i32()
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP4:%.*]] = mul <vscale x 2 x i32> [[TMP3]], splat (i32 1)
 ; IF-EVL-OUTLOOP-NEXT:    [[INDUCTION:%.*]] = add <vscale x 2 x i32> zeroinitializer, [[TMP4]]
-; IF-EVL-OUTLOOP-NEXT:    [[TMP5:%.*]] = trunc i64 [[TMP1]] to i32
-; IF-EVL-OUTLOOP-NEXT:    [[TMP6:%.*]] = mul i32 1, [[TMP5]]
-; IF-EVL-OUTLOOP-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 2 x i32> poison, i32 [[TMP6]], i64 0
-; IF-EVL-OUTLOOP-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 2 x i32> [[DOTSPLATINSERT]], <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer
 ; IF-EVL-OUTLOOP-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL-OUTLOOP:       vector.body:
 ; IF-EVL-OUTLOOP-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_BODY]] ]
@@ -596,10 +584,6 @@ define i32 @step_cond_add_pred(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-INLOOP-NEXT:    [[TMP2:%.*]] = call <vscale x 2 x i32> @llvm.stepvector.nxv2i32()
 ; IF-EVL-INLOOP-NEXT:    [[TMP3:%.*]] = mul <vscale x 2 x i32> [[TMP2]], splat (i32 1)
 ; IF-EVL-INLOOP-NEXT:    [[INDUCTION:%.*]] = add <vscale x 2 x i32> zeroinitializer, [[TMP3]]
-; IF-EVL-INLOOP-NEXT:    [[TMP4:%.*]] = trunc i64 [[TMP1]] to i32
-; IF-EVL-INLOOP-NEXT:    [[TMP5:%.*]] = mul i32 1, [[TMP4]]
-; IF-EVL-INLOOP-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 2 x i32> poison, i32 [[TMP5]], i64 0
-; IF-EVL-INLOOP-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 2 x i32> [[DOTSPLATINSERT]], <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer
 ; IF-EVL-INLOOP-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL-INLOOP:       vector.body:
 ; IF-EVL-INLOOP-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_BODY]] ]
