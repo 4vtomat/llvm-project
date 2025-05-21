@@ -1214,12 +1214,12 @@ define void @mgather_nxv16i64(<vscale x 8 x ptr> %ptrs0, <vscale x 8 x ptr> %ptr
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vl8re64.v v24, (a0)
 ; RV32-NEXT:    csrr a0, vlenb
-; RV32-NEXT:    srli a2, a0, 3
-; RV32-NEXT:    vsetvli a3, zero, e8, mf4, ta, ma
-; RV32-NEXT:    vslidedown.vx v7, v0, a2
 ; RV32-NEXT:    vsetvli a2, zero, e64, m8, ta, mu
 ; RV32-NEXT:    vluxei32.v v16, (zero), v8, v0.t
-; RV32-NEXT:    vmv1r.v v0, v7
+; RV32-NEXT:    srli a2, a0, 3
+; RV32-NEXT:    vsetvli a3, zero, e8, mf4, ta, ma
+; RV32-NEXT:    vslidedown.vx v0, v0, a2
+; RV32-NEXT:    vsetvli a2, zero, e64, m8, ta, mu
 ; RV32-NEXT:    vluxei32.v v24, (zero), v12, v0.t
 ; RV32-NEXT:    slli a0, a0, 3
 ; RV32-NEXT:    add a0, a1, a0
@@ -1229,6 +1229,7 @@ define void @mgather_nxv16i64(<vscale x 8 x ptr> %ptrs0, <vscale x 8 x ptr> %ptr
 ;
 ; RV64-LABEL: mgather_nxv16i64:
 ; RV64:       # %bb.0:
+<<<<<<< HEAD
 ; RV64-NEXT:    addi sp, sp, -16
 ; RV64-NEXT:    .cfi_def_cfa_offset 16
 ; RV64-NEXT:    csrr a3, vlenb
@@ -1260,6 +1261,22 @@ define void @mgather_nxv16i64(<vscale x 8 x ptr> %ptrs0, <vscale x 8 x ptr> %ptr
 ; RV64-NEXT:    .cfi_def_cfa sp, 16
 ; RV64-NEXT:    addi sp, sp, 16
 ; RV64-NEXT:    .cfi_def_cfa_offset 0
+=======
+; RV64-NEXT:    vl8re64.v v24, (a0)
+; RV64-NEXT:    vsetvli a0, zero, e64, m8, ta, mu
+; RV64-NEXT:    vluxei64.v v24, (zero), v8, v0.t
+; RV64-NEXT:    vl8re64.v v8, (a1)
+; RV64-NEXT:    csrr a0, vlenb
+; RV64-NEXT:    srli a1, a0, 3
+; RV64-NEXT:    vsetvli a3, zero, e8, mf4, ta, ma
+; RV64-NEXT:    vslidedown.vx v0, v0, a1
+; RV64-NEXT:    vsetvli a1, zero, e64, m8, ta, mu
+; RV64-NEXT:    vluxei64.v v8, (zero), v16, v0.t
+; RV64-NEXT:    slli a0, a0, 3
+; RV64-NEXT:    add a0, a2, a0
+; RV64-NEXT:    vs8r.v v8, (a0)
+; RV64-NEXT:    vs8r.v v24, (a2)
+>>>>>>> 967ab7e08e62a35cc65f34e21fbeb00abf3eb83f
 ; RV64-NEXT:    ret
   %p0 = call <vscale x 16 x ptr> @llvm.vector.insert.nxv8p0.nxv16p0(<vscale x 16 x ptr> undef, <vscale x 8 x ptr> %ptrs0, i64 0)
   %p1 = call <vscale x 16 x ptr> @llvm.vector.insert.nxv8p0.nxv16p0(<vscale x 16 x ptr> %p0, <vscale x 8 x ptr> %ptrs1, i64 8)

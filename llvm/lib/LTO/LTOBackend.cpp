@@ -202,9 +202,9 @@ static void RegisterPassPlugins(ArrayRef<std::string> PassPlugins,
 
 static std::unique_ptr<TargetMachine>
 createTargetMachine(const Config &Conf, const Target *TheTarget, Module &M) {
-  StringRef TheTriple = M.getTargetTriple();
+  const Triple &TheTriple = M.getTargetTriple();
   SubtargetFeatures Features;
-  Features.getDefaultSubtargetFeatures(Triple(TheTriple));
+  Features.getDefaultSubtargetFeatures(TheTriple);
   for (const std::string &A : Conf.MAttrs)
     Features.AddFeature(A);
 
@@ -281,7 +281,7 @@ static void runNewPMPasses(const Config &Conf, Module &Mod, TargetMachine *TM,
   RegisterPassPlugins(Conf.PassPlugins, PB);
 
   std::unique_ptr<TargetLibraryInfoImpl> TLII(
-      new TargetLibraryInfoImpl(Triple(TM->getTargetTriple())));
+      new TargetLibraryInfoImpl(TM->getTargetTriple()));
   if (Conf.Freestanding)
     TLII->disableAllFunctions();
   FAM.registerPass([&] { return TargetLibraryAnalysis(*TLII); });
@@ -440,7 +440,7 @@ static void codegen(const Config &Conf, TargetMachine *TM,
   TM->Options.ObjectFilenameForDebug = Stream->ObjectPathName;
 
   legacy::PassManager CodeGenPasses;
-  TargetLibraryInfoImpl TLII(Triple(Mod.getTargetTriple()));
+  TargetLibraryInfoImpl TLII(Mod.getTargetTriple());
   CodeGenPasses.add(new TargetLibraryInfoWrapperPass(TLII));
   // No need to make index available if the module is empty.
   // In theory these passes should not use the index for an empty
@@ -520,9 +520,9 @@ static void splitCodeGen(const Config &C, TargetMachine *TM,
 static Expected<const Target *> initAndLookupTarget(const Config &C,
                                                     Module &Mod) {
   if (!C.OverrideTriple.empty())
-    Mod.setTargetTriple(C.OverrideTriple);
+    Mod.setTargetTriple(Triple(C.OverrideTriple));
   else if (Mod.getTargetTriple().empty())
-    Mod.setTargetTriple(C.DefaultTriple);
+    Mod.setTargetTriple(Triple(C.DefaultTriple));
 
   std::string Msg;
   const Target *T = TargetRegistry::lookupTarget(Mod.getTargetTriple(), Msg);

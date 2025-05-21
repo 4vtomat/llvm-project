@@ -179,6 +179,25 @@ define <4 x i64> @m2_splat_into_slide_two_source(<4 x i64> %v1, <4 x i64> %v2) v
 }
 
 define void @shuffle1(ptr %explicit_0, ptr %explicit_1) vscale_range(2,2) {
+<<<<<<< HEAD
+=======
+; CHECK-LABEL: shuffle1:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    addi a0, a0, 252
+; CHECK-NEXT:    vsetivli zero, 3, e32, m1, ta, ma
+; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    vmv.v.i v0, 1
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vslidedown.vi v8, v8, 1, v0.t
+; CHECK-NEXT:    vmv.v.i v0, 5
+; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
+; CHECK-NEXT:    vmv.v.i v10, 0
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
+; CHECK-NEXT:    vmerge.vvm v11, v11, v8, v0
+; CHECK-NEXT:    addi a0, a1, 672
+; CHECK-NEXT:    vs2r.v v10, (a0)
+; CHECK-NEXT:    ret
+>>>>>>> 967ab7e08e62a35cc65f34e21fbeb00abf3eb83f
   %1 = getelementptr i32, ptr %explicit_0, i64 63
   %2 = load <3 x i32>, ptr %1, align 1
   %3 = shufflevector <3 x i32> %2, <3 x i32> undef, <2 x i32> <i32 1, i32 2>

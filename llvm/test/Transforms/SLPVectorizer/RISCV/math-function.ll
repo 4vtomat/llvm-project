@@ -1784,7 +1784,9 @@ entry:
 define void @f(i1 %c, ptr %p, ptr %q, ptr %r) {
 ; CHECK-LABEL: define void @f
 ; CHECK-SAME: (i1 [[C:%.*]], ptr [[P:%.*]], ptr [[Q:%.*]], ptr [[R:%.*]]) #[[ATTR1]] {
-; CHECK-NEXT:    [[TMP1:%.*]] = load <2 x i64>, ptr [[P]], align 8
+; CHECK-NEXT:    [[X0:%.*]] = load i64, ptr [[P]], align 8
+; CHECK-NEXT:    [[P1:%.*]] = getelementptr i64, ptr [[P]], i64 1
+; CHECK-NEXT:    [[X1:%.*]] = load i64, ptr [[P1]], align 8
 ; CHECK-NEXT:    br i1 [[C]], label [[FOO:%.*]], label [[BAR:%.*]]
 ; CHECK:       foo:
 ; CHECK-NEXT:    [[Y0:%.*]] = load float, ptr [[R]], align 4
@@ -1795,7 +1797,9 @@ define void @f(i1 %c, ptr %p, ptr %q, ptr %r) {
 ; CHECK-NEXT:    [[Z1:%.*]] = call float @fabsf(float [[Z0]])
 ; CHECK-NEXT:    br label [[BAZ]]
 ; CHECK:       baz:
-; CHECK-NEXT:    store <2 x i64> [[TMP1]], ptr [[Q]], align 8
+; CHECK-NEXT:    store i64 [[X0]], ptr [[Q]], align 8
+; CHECK-NEXT:    [[Q1:%.*]] = getelementptr i64, ptr [[Q]], i64 1
+; CHECK-NEXT:    store i64 [[X1]], ptr [[Q1]], align 8
 ; CHECK-NEXT:    ret void
 ;
 ; DEFAULT-LABEL: define void @f

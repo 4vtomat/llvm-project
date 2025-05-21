@@ -1204,6 +1204,7 @@ VPlan::~VPlan() {
 #endif // SIFIVE_CUSTOMIZATION
 }
 
+<<<<<<< HEAD
 VPlanPtr VPlan::createInitialVPlan(Type *InductionTy,
                                    PredicatedScalarEvolution &PSE,
                                    bool RequiresScalarEpilogueCheck,
@@ -1320,6 +1321,8 @@ VPlanPtr VPlan::createInitialVPlan(Type *InductionTy,
   return Plan;
 }
 
+=======
+>>>>>>> 967ab7e08e62a35cc65f34e21fbeb00abf3eb83f
 void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
                              VPTransformState &State) {
 #if SIFIVE_CUSTOMIZATION
@@ -1598,6 +1601,7 @@ void VPlan::printLiveIns(raw_ostream &O) const {
   }
 
   O << "\n";
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (TripCount) {
 #endif // SIFIVE_CUSTOMIZATION
@@ -1609,6 +1613,15 @@ void VPlan::printLiveIns(raw_ostream &O) const {
 #if SIFIVE_CUSTOMIZATION
   }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  if (TripCount) {
+    if (TripCount->isLiveIn())
+      O << "Live-in ";
+    TripCount->printAsOperand(O, SlotTracker);
+    O << " = original trip-count";
+    O << "\n";
+  }
+>>>>>>> 967ab7e08e62a35cc65f34e21fbeb00abf3eb83f
 }
 
 LLVM_DUMP_METHOD

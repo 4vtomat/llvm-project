@@ -59,7 +59,7 @@ class LiveRegMatrix {
 
   // Cached register mask interference info.
   unsigned RegMaskTag = 0;
-  unsigned RegMaskVirtReg = 0;
+  Register RegMaskVirtReg;
   BitVector RegMaskUsable;
 
   LiveRegMatrix()

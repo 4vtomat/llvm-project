@@ -100,6 +100,7 @@ define void @test2(ptr %p1, ptr %p2) {
 ; CHECK-NEXT:    [[TMP8:%.*]] = fmul fast <2 x double> [[TMP7]], <double 3.000000e+00, double 3.100000e+00>
 ; CHECK-NEXT:    br label [[BB1:%.*]]
 ; CHECK:       bb1:
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP14:%.*]] = fadd fast <2 x double> <double 4.000000e+00, double 4.100000e+00>, [[TMP8]]
 ; CHECK-NEXT:    [[TMP15:%.*]] = fadd fast <2 x double> [[TMP14]], <double 2.000000e+00, double 2.100000e+00>
 ; CHECK-NEXT:    [[OP_RDX:%.*]] = fadd fast <2 x double> [[TMP15]], <double 3.000000e+00, double 3.100000e+00>
@@ -107,6 +108,15 @@ define void @test2(ptr %p1, ptr %p2) {
 ; CHECK:       bb2:
 ; CHECK-NEXT:    [[TMP9:%.*]] = phi <2 x double> [ [[OP_RDX]], [[BB1]] ], [ [[TMP13:%.*]], [[BB6:%.*]] ]
 ; CHECK-NEXT:    [[TMP10:%.*]] = shufflevector <2 x double> [[TMP9]], <2 x double> poison, <2 x i32> <i32 1, i32 0>
+=======
+; CHECK-NEXT:    [[TMP9:%.*]] = fadd fast <2 x double> <double 4.000000e+00, double 4.100000e+00>, [[TMP8]]
+; CHECK-NEXT:    [[TMP10:%.*]] = fadd fast <2 x double> [[TMP9]], <double 2.000000e+00, double 2.100000e+00>
+; CHECK-NEXT:    [[TMP11:%.*]] = fadd fast <2 x double> [[TMP10]], <double 3.000000e+00, double 3.100000e+00>
+; CHECK-NEXT:    [[TMP12:%.*]] = shufflevector <2 x double> [[TMP11]], <2 x double> poison, <2 x i32> <i32 1, i32 0>
+; CHECK-NEXT:    br label [[BB2:%.*]]
+; CHECK:       bb2:
+; CHECK-NEXT:    [[TMP13:%.*]] = phi <2 x double> [ [[TMP12]], [[BB1]] ], [ [[TMP15:%.*]], [[BB6:%.*]] ]
+>>>>>>> 967ab7e08e62a35cc65f34e21fbeb00abf3eb83f
 ; CHECK-NEXT:    [[X0:%.*]] = getelementptr inbounds double, ptr [[P2:%.*]], i32 0
 ; CHECK-NEXT:    [[TMP11:%.*]] = load <2 x double>, ptr [[X0]], align 8
 ; CHECK-NEXT:    br i1 poison, label [[BB3:%.*]], label [[BB6]]
@@ -117,8 +127,12 @@ define void @test2(ptr %p1, ptr %p2) {
 ; CHECK:       bb5:
 ; CHECK-NEXT:    br label [[BB6]]
 ; CHECK:       bb6:
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP12:%.*]] = phi <2 x double> [ [[TMP10]], [[BB2]] ], [ [[TMP11]], [[BB4]] ], [ [[TMP11]], [[BB5]] ]
 ; CHECK-NEXT:    [[TMP13]] = shufflevector <2 x double> [[TMP12]], <2 x double> poison, <2 x i32> <i32 1, i32 0>
+=======
+; CHECK-NEXT:    [[TMP15]] = phi <2 x double> [ [[TMP13]], [[BB2]] ], [ [[TMP14]], [[BB4]] ], [ [[TMP14]], [[BB5]] ]
+>>>>>>> 967ab7e08e62a35cc65f34e21fbeb00abf3eb83f
 ; CHECK-NEXT:    br label [[BB2]]
 ;
 entry:
