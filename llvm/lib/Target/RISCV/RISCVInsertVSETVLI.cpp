@@ -1198,20 +1198,6 @@ RISCVInsertVSETVLI::computeInfoForInstr(const MachineInstr &MI) const {
   bool AltFmt = RISCVII::getAltFmtType(TSFlags) == RISCVII::AltFmtType::AltFmt;
   InstrInfo.setAltFmt(AltFmt);
 
-  // FIXME: Use the normal RVV instruction flow.
-  // encoding the SEW and other vtype thing inside pseudo instructions.
-  // This statement aim to handle
-  // PseudoSF_VSETTM and PseudoSF_VSETTK
-  if (isMammothVectorConfigTMTKInstr(MI)) {
-    InstrInfo.setAVLVLMAX();
-    unsigned VTYPE = MI.getOperand(2).getImm();
-    InstrInfo.setVTYPE(InstrInfo.getVLMUL(), RISCVVType::getSEW(VTYPE),
-                       TailAgnostic, MaskAgnostic, AltFmt,
-                       RISCVVType::getXSfmmWiden(VTYPE));
-
-    return InstrInfo;
-  }
-
 #endif // SIFIVE_CUSTOMIZATION
   unsigned Log2SEW = MI.getOperand(getSEWOpNum(MI)).getImm();
   // A Log2SEW of 0 is an operation on mask registers only.
@@ -1226,14 +1212,15 @@ RISCVInsertVSETVLI::computeInfoForInstr(const MachineInstr &MI) const {
         MI.getOperand(MI.getNumExplicitOperands() - 1);
     unsigned TWiden = TWidenOp.getImm();
 
-    const MachineOperand &TnOp =
-        MI.getOperand(RISCVII::getTNOpNum(MI.getDesc()));
+    InstrInfo.setAVLVLMAX();
+    if (RISCVII::hasVLOp(TSFlags)) {
+      const MachineOperand &TnOp =
+          MI.getOperand(RISCVII::getTNOpNum(MI.getDesc()));
 
-    if (TnOp.getReg().isVirtual())
-      InstrInfo.setAVLRegDef(getVNInfoFromReg(TnOp.getReg(), MI, LIS),
-                             TnOp.getReg());
-    else
-      InstrInfo.setAVLVLMAX();
+      if (TnOp.getReg().isVirtual())
+        InstrInfo.setAVLRegDef(getVNInfoFromReg(TnOp.getReg(), MI, LIS),
+                               TnOp.getReg());
+    }
 
     InstrInfo.setVTYPE(VLMul, SEW, TailAgnostic, MaskAgnostic, AltFmt, TWiden);
 
@@ -1463,12 +1450,8 @@ void RISCVInsertVSETVLI::transferBefore(VSETVLIInfo &Info,
     return;
   }
 
-#ifdef SIFIVE_CUSTOMIZATION
-  // FIXME: SETTM|TK use the SEW but not has SEWOp.
-  if (!RISCVII::hasSEWOp(MI.getDesc().TSFlags) &&
-      !isMammothVectorConfigTMTKInstr(MI))
+  if (!RISCVII::hasSEWOp(MI.getDesc().TSFlags))
     return;
-#endif // SIFIVE_CUSTOMIZATION
 
   DemandedFields Demanded = getDemanded(MI, ST);
 
@@ -1704,12 +1687,7 @@ void RISCVInsertVSETVLI::emitVSETVLIs(MachineBasicBlock &MBB) {
     }
 
     uint64_t TSFlags = MI.getDesc().TSFlags;
-#ifdef SIFIVE_CUSTOMIZATION
-    // FIXME: isMammothVectorConfigTMTKInstr should be dropped.
-    // If it need to set the SEW for TM/TK, it should set the SEWOp of
-    // something.
-    if (RISCVII::hasSEWOp(TSFlags) || isMammothVectorConfigTMTKInstr(MI)) {
-#endif // SIFIVE_CUSTOMIZATION
+    if (RISCVII::hasSEWOp(TSFlags)) {
       if (!PrevInfo.isCompatible(DemandedFields::all(), CurInfo, LIS)) {
         // If this is the first implicit state change, and the state change
         // requested can be proven to produce the same register contents, we
@@ -2119,7 +2097,8 @@ bool RISCVInsertVSETVLI::insertVSETMTK(MachineBasicBlock &MBB,
     auto TmpMI = BuildMI(MBB, MI, MI.getDebugLoc(), TII->get(Opcode))
                      .addReg(RISCV::X0, RegState::Define | RegState::Dead)
                      .addReg(Op.getReg())
-                     .addImm(CurrInfo.encodeVTYPE());
+                     .addImm(Log2_32(CurrInfo.getSEW()))
+                     .addImm((CurrInfo.getTWiden() >> 1) + 1);
 
     Changed = true;
     if (LIS)

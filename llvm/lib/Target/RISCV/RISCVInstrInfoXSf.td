@@ -1837,13 +1837,13 @@ let Defs = [VL, VTYPE] in {
         Sched<[WriteVSETVLI, ReadVSETVLI]>;
 }
 
-let Defs = [VTYPE], Uses = [VTYPE] in {
+let Defs = [VTYPE], Uses = [VTYPE], HasTWidenOp = 1, HasSEWOp = 1 in {
   def PseudoSF_VSETTM
-      : Pseudo<(outs GPR:$rd), (ins GPR:$rs1, XSfmmVTypeOp:$vtypei), []>,
+      : Pseudo<(outs GPR:$rd), (ins GPR:$rs1, ixlenimm:$log2sew, ixlenimm:$twiden), []>,
         PseudoInstExpansion<(SF_VSETTM GPR:$rd, GPR:$rs1)>,
         Sched<[WriteVSETVLI, ReadVSETVLI]>;
   def PseudoSF_VSETTK
-      : Pseudo<(outs GPR:$rd), (ins GPR:$rs1, XSfmmVTypeOp:$vtypei), []>,
+      : Pseudo<(outs GPR:$rd), (ins GPR:$rs1, ixlenimm:$logwsew, ixlenimm:$twiden), []>,
         PseudoInstExpansion<(SF_VSETTK GPR:$rd, GPR:$rs1)>,
         Sched<[WriteVSETVLI, ReadVSETVLI]>;
 }
