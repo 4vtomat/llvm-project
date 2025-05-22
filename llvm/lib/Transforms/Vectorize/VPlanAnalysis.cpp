@@ -277,6 +277,14 @@ Type *VPTypeAnalysis::inferScalarType(const VPValue *V) {
                 VPPartialReductionRecipe>([this](const VPRecipeBase *R) {
             return inferScalarType(R->getOperand(0));
           })
+#if SIFIVE_CUSTOMIZATION
+          .Case<VPWidenLoadEVLRecipe>([this, V](const VPWidenLoadEVLRecipe *R) {
+            Type *ResTy = (R->isSpeculative() && (V == R->getVPValue(1)))
+                              ? Type::getIntNTy(Ctx, 32)
+                              : cast<LoadInst>(&R->getIngredient())->getType();
+            return ResTy;
+          })
+#endif // SIFIVE_CUSTOMIZATION
           .Case<VPBlendRecipe, VPInstruction, VPWidenRecipe, VPReplicateRecipe,
                 VPWidenCallRecipe, VPWidenMemoryRecipe, VPWidenSelectRecipe>(
               [this](const auto *R) { return inferScalarTypeForRecipe(R); })
