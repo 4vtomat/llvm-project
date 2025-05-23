@@ -12857,6 +12857,27 @@ bool BoUpSLP::isTreeTinyAndNotFullyVectorizable(bool ForReduction) const {
                !TE->isAltShuffle();
       }))
     return true;
+  if (SLPCostThreshold.getNumOccurrences() && TargetTriple.isRISCV() &&
+      !UserIgnoreList &&
+      VectorizableTree.front()->State == TreeEntry::SplitVectorize &&
+      all_of(VectorizableTree, [&](const std::unique_ptr<TreeEntry> &TE) {
+        return TE->isGather() || TE->State == TreeEntry::SplitVectorize ||
+               all_of(TE->Scalars, [&](Value *V) {
+                 auto *I = dyn_cast<Instruction>(V);
+                 if (!I)
+                   return true;
+                 const TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput;
+                 return (!areAllUsersVectorized(I, UserIgnoreList) ||
+                         is_contained(VectorizableTree.front()->Scalars, I)) &&
+                        TTI->getInstructionCost(I, CostKind) <=
+                            TTI->getVectorInstrCost(
+                                Instruction::ExtractElement,
+                                getWidenedType(I->getType(),
+                                               TE->Scalars.size()),
+                                CostKind);
+               });
+      }))
+    return true;
 #endif // SIFIVE_CUSTOMIZATION
 
   if (!DebugCounter::shouldExecute(VectorizedGraphs))
