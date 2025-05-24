@@ -3951,10 +3951,23 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
   }
   case Intrinsic::vp_merge: {
     Value *TrueV = II->getArgOperand(1);
+    Value *FalseV = II->getArgOperand(2);
     Value *EVL = II->getArgOperand(3);
 
     if (Value *V = simplifyUsingEVL(TrueV, EVL, Builder))
       return replaceOperand(*II, 1, V);
+
+    // If this is vp.merge where TrueV is an Or that also uses FalseV, hoist
+    // the vp.merge above the Or by selecting between the other operand of the
+    // Or and Zeroinitializer. This is similar to a combine done on or+select.
+    Value *X;
+    if (match(TrueV, m_c_Or(m_Specific(FalseV), m_Value(X)))) {
+      Value *Merge =
+          Builder.CreateIntrinsic(Intrinsic::vp_merge, {II->getType()},
+                                  {II->getArgOperand(0), X,
+                                   Constant::getNullValue(II->getType()), EVL});
+      return BinaryOperator::CreateOr(FalseV, Merge);
+    }
 
     // If this vp.merge has an all ones mask, then FalseV is only used for
     // elements past EVL. If the TrueV is a vp.select with the same FalseV
@@ -3962,7 +3975,6 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
     // mask and TrueV from the vp.select.
     auto *ConstMask = dyn_cast<Constant>(II->getArgOperand(0));
     if (ConstMask && ConstMask->isAllOnesValue()) {
-      Value *FalseV = II->getArgOperand(2);
       Value *OtherMask, *OtherTrueV, *OtherFalseV;
       if (match(TrueV, m_Intrinsic<Intrinsic::vp_select>(
                            m_Value(OtherMask), m_Value(OtherTrueV),
@@ -3985,6 +3997,31 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
           Instruction *Not = Builder.CreateIntrinsic(
               Intrinsic::vp_xor, {OtherMask->getType()},
               {OtherMask, AllOnesMask, AllOnesMask, EVL});
+          Instruction *Call =
+              Builder.CreateIntrinsic(Intrinsic::vp_merge, {II->getType()},
+                                      {Not, OtherFalseV, FalseV, EVL});
+          return replaceInstUsesWith(CI, Call);
+        }
+      }
+
+      // Similar to the above, combine vp.merge and select.
+      if (match(TrueV, m_Select(m_Value(OtherMask), m_Value(OtherTrueV),
+                                m_Value(OtherFalseV)))) {
+        Instruction *TrueI = cast<Instruction>(TrueV);
+        if (FalseV == OtherFalseV) {
+          Builder.SetInsertPoint(TrueI);
+          Instruction *Call =
+              Builder.CreateIntrinsic(Intrinsic::vp_merge, {II->getType()},
+                                      {OtherMask, OtherTrueV, FalseV, EVL});
+          replaceInstUsesWith(*TrueI, Call);
+          eraseInstFromFunction(*TrueI);
+          return replaceInstUsesWith(CI, Call);
+        }
+        // If we have a select with the operands swapped, invert the condition
+        // and fold into the merge.
+        // FIXME: Handle TrueI having another user like we do above?
+        if (FalseV == OtherTrueV && TrueI->hasOneUse()) {
+          Value *Not = Builder.CreateNot(OtherMask);
           Instruction *Call =
               Builder.CreateIntrinsic(Intrinsic::vp_merge, {II->getType()},
                                       {Not, OtherFalseV, FalseV, EVL});

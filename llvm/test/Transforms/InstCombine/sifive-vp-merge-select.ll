@@ -77,3 +77,26 @@ define <vscale x 8 x i32> @redundant_vp_merge_multiple_use(<vscale x 8 x i1> %m,
   %b = call <vscale x 8 x i32> @llvm.vp.merge.nxv8i32(<vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i32> %a, <vscale x 8 x i32> %f, i32 %evl)
   ret <vscale x 8 x i32> %b
 }
+
+define <vscale x 8 x i32> @redundant_vp_merge_selectinst(<vscale x 8 x i1> %m, <vscale x 8 x i32> %t, <vscale x 8 x i32> %f, i32 %evl) {
+; CHECK-LABEL: define <vscale x 8 x i32> @redundant_vp_merge_selectinst(
+; CHECK-SAME: <vscale x 8 x i1> [[M:%.*]], <vscale x 8 x i32> [[T:%.*]], <vscale x 8 x i32> [[F:%.*]], i32 [[EVL:%.*]]) {
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 8 x i32> @llvm.vp.merge.nxv8i32(<vscale x 8 x i1> [[M]], <vscale x 8 x i32> [[T]], <vscale x 8 x i32> [[F]], i32 [[EVL]])
+; CHECK-NEXT:    ret <vscale x 8 x i32> [[A]]
+;
+  %a = select <vscale x 8 x i1> %m, <vscale x 8 x i32> %t, <vscale x 8 x i32> %f
+  %b = call <vscale x 8 x i32> @llvm.vp.merge.nxv8i32(<vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i32> %a, <vscale x 8 x i32> %f, i32 %evl)
+  ret <vscale x 8 x i32> %b
+}
+
+define <vscale x 8 x i32> @redundant_vp_merge_selectinst_2(<vscale x 8 x i1> %m, <vscale x 8 x i32> %t, <vscale x 8 x i32> %f, i32 %evl) {
+; CHECK-LABEL: define <vscale x 8 x i32> @redundant_vp_merge_selectinst_2(
+; CHECK-SAME: <vscale x 8 x i1> [[M:%.*]], <vscale x 8 x i32> [[T:%.*]], <vscale x 8 x i32> [[F:%.*]], i32 [[EVL:%.*]]) {
+; CHECK-NEXT:    [[TMP1:%.*]] = xor <vscale x 8 x i1> [[M]], splat (i1 true)
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 8 x i32> @llvm.vp.merge.nxv8i32(<vscale x 8 x i1> [[TMP1]], <vscale x 8 x i32> [[T]], <vscale x 8 x i32> [[F]], i32 [[EVL]])
+; CHECK-NEXT:    ret <vscale x 8 x i32> [[B]]
+;
+  %a = select <vscale x 8 x i1> %m, <vscale x 8 x i32> %f, <vscale x 8 x i32> %t
+  %b = call <vscale x 8 x i32> @llvm.vp.merge.nxv8i32(<vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i32> %a, <vscale x 8 x i32> %f, i32 %evl)
+  ret <vscale x 8 x i32> %b
+}
