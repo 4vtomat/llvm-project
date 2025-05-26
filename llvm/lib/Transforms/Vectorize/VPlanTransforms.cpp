@@ -2350,58 +2350,35 @@ void VPlanTransforms::addExplicitVectorLengthUncountable(VPlan &Plan) {
   EVLPhi->insertAfter(CanonicalIVPHI);
 
   // Create VSetVLIMax recipe
-  VPInstruction *VPEVL;
   VPBuilder Builder(Header, Header->getFirstNonPhi());
   if (Plan.getTripCount()) {
     // Compute vector TC - IV as the AVL (application vector length).
     VPValue *AVL = Builder.createNaryOp(
         Instruction::Sub, {Plan.getTripCount(), EVLPhi}, DebugLoc(), "avl");
-    VPEVL = Builder.createNaryOp(VPInstruction::ExplicitVectorLength, AVL,
+    Builder.createNaryOp(VPInstruction::ExplicitVectorLength, AVL,
                                  DebugLoc());
   } else {
-    VPEVL = Builder.createNaryOp(VPInstruction::ExplicitVectorLength, {},
+    Builder.createNaryOp(VPInstruction::ExplicitVectorLength, {},
                                  DebugLoc());
   }
 
   // Create EVLIncrement recipe
   auto *CanonicalIVIncrement =
       cast<VPInstruction>(CanonicalIVPHI->getBackedgeValue());
-  VPSingleDefRecipe *OpVPEVL = VPEVL;
-  if (unsigned IVSize = CanonicalIVPHI->getScalarType()->getScalarSizeInBits();
-      IVSize != 32) {
-    OpVPEVL = new VPScalarCastRecipe(IVSize < 32 ? Instruction::Trunc
-                                                 : Instruction::ZExt,
-                                     OpVPEVL, CanonicalIVPHI->getScalarType(),
-                                     CanonicalIVIncrement->getDebugLoc());
-    OpVPEVL->insertBefore(CanonicalIVIncrement);
-  }
-  auto *NextEVLIV =
-      new VPInstruction(Instruction::Add, {OpVPEVL, EVLPhi},
-                        {CanonicalIVIncrement->hasNoUnsignedWrap(),
-                         CanonicalIVIncrement->hasNoSignedWrap()},
-                        CanonicalIVIncrement->getDebugLoc(), "index.evl.next");
-  NextEVLIV->insertBefore(CanonicalIVIncrement);
-  EVLPhi->addOperand(NextEVLIV);
 
   // Replace all uses of VPCanonicalIVPHIRecipe with
   // VPEVLBasedIVPHIRecipe
   CanonicalIVPHI->replaceAllUsesWith(EVLPhi);
-  CanonicalIVIncrement->replaceAllUsesWith(NextEVLIV);
-  Plan.getVFxUF().replaceAllUsesWith(VPEVL);
   Plan.setUseVLAVectorizer(true);
 
-  // Traverse the use of EVL and update them with the latest EVL
-  SmallSet<VPRecipeBase *, 2> EVLUsers;
-  for (VPUser *U : VPEVL->users())
-    if (auto *R = dyn_cast<VPRecipeBase>(U))
-      EVLUsers.insert(R);
-
+  // Traverse the EVL update and record the last EVL per basic block
   SmallDenseMap<VPBlockBase *, VPValue *> BlockLastEVL;
 
   std::queue<VPBasicBlock *> WorkList;
   SmallPtrSet<VPBlockBase *, 4> VisitedBlocks;
   WorkList.push(Plan.getEntry());
   VisitedBlocks.insert(Plan.getEntry());
+  VPBasicBlock *LastVPBB = nullptr;
   while (!WorkList.empty()) {
     VPBasicBlock *VPBB = WorkList.front();
     WorkList.pop();
@@ -2412,45 +2389,66 @@ void VPlanTransforms::addExplicitVectorLengthUncountable(VPlan &Plan) {
       WorkList.push(Entry);
       VisitedBlocks.insert(Entry);
     }
-    VPValue *LastEVL = nullptr;
-    if (VPBB->getNumPredecessors() > 0) {
-      // TODO: Create a phi to join LastEVL from predecessors
-      assert(VPBB->getSinglePredecessor() &&
-             "Uncountable loop doesn't support blocks having multiple "
-             "predecessors");
-      LastEVL = BlockLastEVL[VPBB->getSinglePredecessor()];
-    }
+    // TODO: Create a phi to join LastEVL from predecessors
+    assert((VPBB->getNumPredecessors() == 0) ||
+           VPBB->getSinglePredecessor() &&
+               "Uncountable loop doesn't support blocks having multiple "
+               "predecessors");
+    VPValue *LastEVL = (VPBB->getNumPredecessors() == 0)
+                           ? nullptr
+                           : BlockLastEVL[VPBB->getSinglePredecessor()];
     for (VPRecipeBase &Recipe : make_early_inc_range(*VPBB)) {
       // Check if the recipe updates EVL
       if (auto *R = dyn_cast<VPWidenLoadRecipe>(&Recipe)) {
-        auto *N = new VPWidenLoadEVLRecipe(*R, *VPEVL, R->getMask());
+        auto *N = new VPWidenLoadEVLRecipe(*R, *LastEVL, R->getMask());
         N->insertBefore(R);
         R->replaceAllUsesWith(N);
         R->eraseFromParent();
-        if (N->isSpeculative()) {
+        if (N->isSpeculative())
           LastEVL = N->getVPValue(1);
-          continue;
-        }
       }
       auto *VPI = dyn_cast<VPInstruction>(&Recipe);
       if (VPI && (VPI->getOpcode() == VPInstruction::ExplicitVectorLength)) {
+        assert((LastEVL == nullptr) && "EVL should be set only once");
         LastEVL = VPI;
-        continue;
-      }
-
-      // if VPEVL is not udpated, we can skip this early
-      if (LastEVL == VPEVL)
-        continue;
-
-      if (EVLUsers.count(&Recipe)) {
-        for (unsigned I = 0; I < Recipe.getNumOperands(); I++)
-          if (Recipe.getOperand(I) == VPEVL)
-            Recipe.setOperand(I, LastEVL);
-        EVLUsers.erase(&Recipe);
       }
     }
     BlockLastEVL[VPBB] = LastEVL;
+    LastVPBB = VPBB;
   }
+  auto CastVPEVL = [](VPValue *EVL, Type *Ty,
+                      VPRecipeBase *InsertPos) -> VPValue * {
+    unsigned TySize = Ty->getScalarSizeInBits();
+    if (TySize == 32)
+      return EVL;
+    auto *NewEVL = new VPScalarCastRecipe(TySize < 32 ? Instruction::Trunc
+                                                      : Instruction::ZExt,
+                                          EVL, Ty, InsertPos->getDebugLoc());
+    NewEVL->insertBefore(InsertPos);
+    return NewEVL;
+  };
+
+  VPValue *LastEVL = BlockLastEVL[LastVPBB];
+  VPValue *OpVPEVL =
+      CastVPEVL(LastEVL, CanonicalIVPHI->getScalarType(),
+                CanonicalIVIncrement);
+  auto *NextEVLIV =
+      new VPInstruction(Instruction::Add, {OpVPEVL, EVLPhi},
+                        {CanonicalIVIncrement->hasNoUnsignedWrap(),
+                         CanonicalIVIncrement->hasNoSignedWrap()},
+                        CanonicalIVIncrement->getDebugLoc(), "index.evl.next");
+  NextEVLIV->insertBefore(CanonicalIVIncrement);
+  EVLPhi->addOperand(NextEVLIV);
+
+  for (VPUser *U : to_vector(Plan.getVF().users())) {
+    // VPWidenIntOrFpInductionRecipe will use EVLPlaceholder
+    // because exeuction of phi is ahead of all the others
+    auto *R = dyn_cast<VPWidenIntOrFpInductionRecipe>(U);
+    assert(R && "User of VF is not VPWidenIntOrFPInduction");
+    R->setOperand(2, LastEVL);
+  }
+  Plan.getVFxUF().replaceAllUsesWith(LastEVL);
+  CanonicalIVIncrement->replaceAllUsesWith(NextEVLIV);
   CanonicalIVIncrement->setOperand(0, CanonicalIVPHI);
   // TODO: support unroll factor > 1.
   Plan.setUF(1);

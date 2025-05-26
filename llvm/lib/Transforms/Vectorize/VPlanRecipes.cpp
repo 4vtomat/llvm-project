@@ -3687,10 +3687,6 @@ void VPWidenLoadEVLRecipe::execute(VPTransformState &State) {
     State.set(State.EVL, VL, /*IsScalar=*/true);
     Res = cast<Instruction>(Builder.CreateExtractValue(Res, 0));
     State.set(getVPValue(0), Res);
-    // NewVL is going to replace EVL which is i64 type,
-    // Here needs an unsigned extend
-    // TODO: Create a VPScalarCastRecipe for this
-    VL = Builder.CreateZExt(VL, Builder.getInt64Ty());
     State.set(getVPValue(1), VL, /*NeedsScalar=*/true);
     return;
   }

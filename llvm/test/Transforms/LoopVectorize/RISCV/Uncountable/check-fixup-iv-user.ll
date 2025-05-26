@@ -40,12 +40,12 @@ define void @foo(ptr %arg1, i64 %arg2) {
 ; CHECK-NEXT:    [[TMP15:%.*]] = extractvalue { <vscale x 16 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
 ; CHECK-NEXT:    [[TMP16:%.*]] = zext i32 [[TMP15]] to i64
 ; CHECK-NEXT:    [[TMP17:%.*]] = extractvalue { <vscale x 16 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
-; CHECK-NEXT:    [[TMP18:%.*]] = zext i32 [[TMP15]] to i64
 ; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i8(<vscale x 16 x i8> [[TMP17]], <vscale x 16 x i8> splat (i8 37), metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP15]])
 ; CHECK-NEXT:    [[TMP19:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP15]])
 ; CHECK-NEXT:    [[TMP20:%.*]] = icmp sge i32 [[TMP19]], 0
 ; CHECK-NEXT:    br i1 [[TMP20]], label %[[VECTOR_EARLY_EXIT:.*]], label %[[LOOP_NEXT2]]
 ; CHECK:       [[LOOP_NEXT2]]:
+; CHECK-NEXT:    [[TMP18:%.*]] = zext i32 [[TMP15]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP18]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[DOTREASS:%.*]] = mul i64 [[TMP16]], 1
 ; CHECK-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[DOTREASS]]

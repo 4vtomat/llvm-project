@@ -57,12 +57,6 @@ STATISTIC(NumOfUncountableLoopsSpeculationUnsafe,
           "Number of uncountable loops unsafe for speculation");
 STATISTIC(NumOfUncountableLoopsNotEndingWithConditionalBranch,
           "Number of uncountable loops not ending with conditional branch");
-STATISTIC(NumOfUncountableLoopsWithUnsupportedPHI,
-          "Number of uncountable loops with unsupported phi");
-STATISTIC(NumOfUncountableLoopsWithoutHeaderPHI,
-          "Number of uncountable loops without a PHI in header");
-STATISTIC(NumOfUncountableLoopsWithNonPtrIVs,
-          "Number of uncountable loops with non-ptr induction variables");
 STATISTIC(NumOfUncountableLoopsWithNonIVLiveOutValues,
           "Number of uncountable loops with non-IV live out values");
 STATISTIC(NumberOfMonotonics, "Number of monotonics");
@@ -2708,6 +2702,27 @@ bool LoopVectorizationLegality::canVectorizeUncountableLoop(
     return false;
   }
 
+  // Since overflow checks depend on the trip count, we avoid vectorizing loops
+  // with non-pointer induction variables unless an upper bound can be
+  // established.
+  if (getCountableExitingBlocks().empty()) {
+    for (const std::pair<PHINode *, InductionDescriptor> &InductionEntry :
+         getInductionVars()) {
+      if (!InductionEntry.first->getType()->isPointerTy()) {
+        ORE->emit([&]() {
+          return OptimizationRemarkAnalysis(
+                     Hints->vectorizeAnalysisPassName(),
+                     "loop not vectorized: ", TheLoop->getStartLoc(),
+                     TheLoop->getHeader())
+                 << "loop has non-ptr iv without a known tripcount";
+        });
+        LLVM_DEBUG(dbgs() << "\nUncountable Loop: Loop has non-ptr iv without "
+                             "a known trip count\n");
+        return false;
+      }
+    }
+  }
+
   // Handle countable loops with early exits
   if (!getCountableExitingBlocks().empty()) {
     BasicBlock *LatchBB = TheLoop->getLoopLatch();
@@ -2717,67 +2732,6 @@ bool LoopVectorizationLegality::canVectorizeUncountableLoop(
                            "countable when there is an early exiting\n");
       return false;
     }
-  }
-
-  // Exclude integer induction variables first.
-  // TODO: Support signed and unsigned induction variables.
-  for (const std::pair<PHINode *, InductionDescriptor> &InductionEntry :
-       getInductionVars()) {
-    if (!InductionEntry.first->getType()->isPointerTy()) {
-      ORE->emit([&]() {
-        return OptimizationRemarkAnalysis(
-                   Hints->vectorizeAnalysisPassName(),
-                   "loop not vectorized: ", TheLoop->getStartLoc(),
-                   TheLoop->getHeader())
-               << "Uncountable loop has non-ptr induction variables";
-      });
-      LLVM_DEBUG(
-          dbgs()
-          << "\nUncountable Loop: Loop has non-ptr induction variables\n");
-      NumOfUncountableLoopsWithNonPtrIVs++;
-      return false;
-    }
-  }
-
-  // 1) Up to one PHI
-  // 2) All PHIs are IV
-  size_t NumOfHeaderPhis = 0;
-  for (PHINode &PN : TheLoop->getHeader()->phis()) {
-    ++NumOfHeaderPhis;
-
-    // TODO: Cover int and fp inductions and runtime constant steps.
-    InductionDescriptor IndDesc;
-    if (!InductionDescriptor::isInductionPHI(&PN, TheLoop, PSE, IndDesc) ||
-        IndDesc.getKind() != InductionDescriptor::IK_PtrInduction ||
-        !IndDesc.getConstIntStepValue()) {
-      ORE->emit([&]() {
-        return OptimizationRemarkAnalysis(
-                   Hints->vectorizeAnalysisPassName(),
-                   "loop not vectorized: ", TheLoop->getStartLoc(),
-                   TheLoop->getHeader())
-               << "Uncountable loop's ptr IV has non constant step";
-      });
-      LLVM_DEBUG(
-          dbgs() << "\nUncountable Loop: Ptr IV with non constant step\n");
-      NumOfUncountableLoopsWithUnsupportedPHI++;
-      return false;
-    }
-  }
-
-  // TODO: Remove this restriction
-  if (NumOfHeaderPhis != 1) {
-    ORE->emit([&]() {
-      return OptimizationRemarkAnalysis(
-                 Hints->vectorizeAnalysisPassName(),
-                 "loop not vectorized: ", TheLoop->getStartLoc(),
-                 TheLoop->getHeader())
-             << "Uncountable loop's header does not have a single PHI";
-    });
-    LLVM_DEBUG(
-        dbgs()
-        << "\nUncountable Loop: Loop header does not have a single PHI\n");
-    NumOfUncountableLoopsWithoutHeaderPHI++;
-    return false;
   }
 
   if (!isSpeculationSafe(PSE)) {
