@@ -2063,13 +2063,18 @@ bool RISCVInsertVSETVLI::insertVSETMTK(MachineBasicBlock &MBB,
                                        TKTMMode Mode) const {
 
   bool Changed = false;
+  VSETVLIInfo PreInfo = VSETVLIInfo::getUnknown();
   for (auto &MI : MBB) {
+
+    if (isVectorConfigInstr(MI)) {
+      PreInfo = VSETVLIInfo::getUnknown();
+      continue;
+    }
+
     uint64_t TSFlags = MI.getDesc().TSFlags;
     if (isMammothVectorConfigTMTKInstr(MI) || !RISCVII::hasSEWOp(TSFlags) ||
         !RISCVII::hasTWidenOp(TSFlags))
       continue;
-
-    VSETVLIInfo CurrInfo = computeInfoForInstr(MI);
 
     if (Mode == VSETTK && !RISCVII::hasTKOp(TSFlags))
       continue;
@@ -2094,17 +2099,25 @@ bool RISCVInsertVSETVLI::insertVSETMTK(MachineBasicBlock &MBB,
 
     const MachineOperand &Op = MI.getOperand(OpNum);
 
-    auto TmpMI = BuildMI(MBB, MI, MI.getDebugLoc(), TII->get(Opcode))
-                     .addReg(RISCV::X0, RegState::Define | RegState::Dead)
-                     .addReg(Op.getReg())
-                     .addImm(Log2_32(CurrInfo.getSEW()))
-                     .addImm((CurrInfo.getTWiden() >> 1) + 1);
+    VSETVLIInfo CurrInfo = computeInfoForInstr(MI);
 
-    Changed = true;
-    if (LIS)
-      LIS->InsertMachineInstrInMaps(*TmpMI);
+    CurrInfo.setAVLRegDef(getVNInfoFromReg(Op.getReg(), MI, LIS), Op.getReg());
+
+    if (!PreInfo.isCompatible(DemandedFields::all(), CurrInfo, LIS)) {
+      auto TmpMI = BuildMI(MBB, MI, MI.getDebugLoc(), TII->get(Opcode))
+                       .addReg(RISCV::X0, RegState::Define | RegState::Dead)
+                       .addReg(Op.getReg())
+                       .addImm(Log2_32(CurrInfo.getSEW()))
+                       .addImm((CurrInfo.getTWiden() >> 1) + 1);
+
+      Changed = true;
+      if (LIS)
+        LIS->InsertMachineInstrInMaps(*TmpMI);
+    }
 
     shrinkIntervalAndRemoveDeadMI(MI.getOperand(OpNum), LIS);
+
+    PreInfo = CurrInfo;
   }
   return Changed;
 }
