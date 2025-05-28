@@ -105,9 +105,9 @@ cl::opt<bool> LoopConcatCanonicalize(
     "loop-concat-canonicalize", cl::Hidden, cl::init(false),
     cl::desc("Bypass Full Unrolling for strided loops and LC Canonicalize"));
 
-static cl::opt<int> GPRValuePressureThreshold(
-    "gpr-value-pressure-threshold", cl::Hidden, cl::init(10),
-    cl::desc("Added Threshold for int/GPR Value Pressure analysis"));
+static cl::opt<int> SpillCost(
+    "value-pressure-spill-cost", cl::Hidden, cl::init(10),
+    cl::desc("Added Cost for spilling registers in Value Pressure analysis"));
 
 extern cl::opt<uint32_t> EnableValuePressureAnalysis;
 #endif // SIFIVE_CUSTOMIZATION
@@ -500,7 +500,8 @@ protected:
                             SmallPtrSetImpl<const Value *> &EphValues);
 
 #if SIFIVE_CUSTOMIZATION
-  bool maySpillForCandidate(CallBase &Call, Function *Callee);
+  bool maySpillForCandidate(CallBase &Call, Function *Callee, int &NumGprs,
+                            int &NumFprs, int &NumVprs);
 #endif
 
   // Disable several entry points to the visitor so we don't accidentally use
@@ -1126,13 +1127,30 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
     //makes inlining beneficial and turn it off for amdgpu target.
     Module *M = Caller->getParent();
     Triple T(M->getTargetTriple());
+    LLVMContext &C = Caller->getContext();
+    unsigned IntRC = TTI.getRegisterClassForType(false, Type::getInt32Ty(C));
+    unsigned FpRC = TTI.getRegisterClassForType(false, Type::getFloatTy(C));
+    unsigned VecRC = TTI.getRegisterClassForType(true);
+    int NumGprs = TTI.getNumberOfRegisters(IntRC);
+    int NumFprs = TTI.getNumberOfRegisters(FpRC);
+    int NumVprs = TTI.getNumberOfRegisters(VecRC);
     if (InlineParamSize &&
     	!T.isAMDGCN() &&
     	(NumParams >= 6) &&
     	(FuncSize <= 500) &&
       (Cost - Threshold <= 150)) {
-        if (maySpillForCandidate(CandidateCall, &F))
-          return InlineResult::failure("high value pressure cost");
+        if (maySpillForCandidate(CandidateCall, &F, NumGprs,
+                                 NumFprs, NumVprs)) {
+          if (Cost > 0) {
+            Cost += SpillCost * NumGprs;
+            Cost += SpillCost * NumFprs;
+            Cost += SpillCost * NumVprs;
+            if (Cost - Threshold > 150)
+              return InlineResult::failure("high value pressure cost");
+          } else {
+            return InlineResult::failure("high value pressure cost");
+          }
+        }
 
         return InlineResult::success();
       }
@@ -1142,10 +1160,25 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
       return InlineResult::success();
 
 #if SIFIVE_CUSTOMIZATION
-    // For all succeeding inline candidates, check value pressure.
-    if (Cost < std::max(1, Threshold))
-      if (maySpillForCandidate(CandidateCall, &F))
-        return InlineResult::failure("high value pressure cost");
+    if (Cost < std::max(1, Threshold)) {
+      // For all positive cost inline candidates, check value pressure and
+      // augment cost, else if we have excessive value pressure we will
+      // reject the candidate.
+      if (maySpillForCandidate(CandidateCall, &F, NumGprs,
+                               NumFprs, NumVprs)) {
+        if (Cost > 0) {
+          Cost += SpillCost * NumGprs;
+          Cost += SpillCost * NumFprs;
+          Cost += SpillCost * NumVprs;
+          DecidedByCostThreshold = true;
+          return Cost < std::max(1, Threshold)
+                     ? InlineResult::success()
+                     : InlineResult::failure("high value pressure cost");
+        } else {
+          return InlineResult::failure("high value pressure cost");
+        }
+      }
+    }
 #endif
 
     DecidedByCostThreshold = true;
@@ -2015,7 +2048,10 @@ bool InlineCostCallAnalyzer::isLeafFunction(Function &Callee) {
 }
 
 bool CallAnalyzer::maySpillForCandidate(CallBase &Call,
-                                        Function *Callee) {
+                                        Function *Callee,
+                                        int &NumGprs,
+                                        int &NumFprs,
+                                        int &NumVprs) {
   // Can we examine this callee?
   if (Callee->empty())
     return false;
@@ -2028,33 +2064,26 @@ bool CallAnalyzer::maySpillForCandidate(CallBase &Call,
     LvCallee.setOptLevel(LVUsageDescr::Baseline);
     LvCallee.doDataFlowAnalysis(*Callee);
   }
-  LLVMContext &C = Callee->getContext();
-  unsigned IntRC = TTI.getRegisterClassForType(false, Type::getInt32Ty(C));
-  unsigned FpRC = TTI.getRegisterClassForType(false, Type::getFloatTy(C));
-  unsigned VecRC = TTI.getRegisterClassForType(true);
-  // The usage of model of this evaluation was data mined to the current default
-  // value of GPRValuePressureThreshold, which is subject to change pending
-  // broader application.
-  int NumIntRC = TTI.getNumberOfRegisters(IntRC) + GPRValuePressureThreshold;
-  int NumFpRC = TTI.getNumberOfRegisters(FpRC);
-  int NumVecRC = TTI.getNumberOfRegisters(VecRC);
-  int NumIntUsed = 0;
-  int NumFpUsed = 0;
-  int NumVecUsed = 0;
+  int NumIntInput = NumGprs;
+  int NumFpInput = NumFprs;
+  int NumVecInput = NumVprs;
   // If the callee already has to large of register pressure, we are done.
   if (LvCallee.haveLiveValueAnalysis()) {
     // All the reg class allocations are passed by reference, where
     // we will modify these to hold what we actually used for
     // analysis at the call site.
-    NumIntUsed = NumIntRC;
-    NumFpUsed = NumFpRC;
-    NumVecUsed = NumVecRC;
-    if (LvCallee.exceedValuePressureForFunction(NumIntUsed, NumFpUsed,
-                                                NumVecUsed, Callee)) {
+    if (LvCallee.exceedValuePressureForFunction(NumGprs, NumFprs,
+                                                NumVprs, Callee)) {
       LvCallee.clearDataFlowAnalysis();
-      LLVM_DEBUG(llvm::dbgs() << "InlineCost: Callee Excessive Value Pressure at edge: "
+      LLVM_DEBUG(llvm::dbgs()
+                 << "InlineCost: Callee Excessive Value Pressure at edge: "
                  << Caller->getName() << " <==> "
-                 << Callee->getName() << " not inlined\n");
+                 << Callee->getName() << "\n");
+
+      NumGprs = (NumGprs > NumIntInput) ? (NumGprs - NumIntInput) : 0;
+      NumFprs = (NumFprs > NumFpInput) ? (NumFprs - NumFpInput) : 0;
+      NumVprs = (NumVprs > NumVecInput) ? (NumVprs - NumVecInput) : 0;
+
       return true;
     }
   }
@@ -2080,15 +2109,25 @@ bool CallAnalyzer::maySpillForCandidate(CallBase &Call,
     // to reduce the amount we count in the caller, this is an approximation
     // to inlining this call edge.  We only care about the register pressure
     // in TargetBB.
+    NumGprs = NumIntInput - NumGprs;
+    NumFprs = NumFpInput - NumFprs;
+    NumVprs = NumVecInput - NumVprs;
+    NumIntInput = NumGprs;
+    NumFpInput = NumFprs;
+    NumVecInput = NumVprs;
     if (LvCaller.exceedValuePressureForBlocks(
-        Worklist, AddValues, IgnoreValues, &DT, EndBlock, NumIntRC - NumIntUsed,
-        NumFpRC - NumFpUsed, NumVecRC - NumVecUsed, &Call,
-        /* IsHoistContext */ false)) {
+        Worklist, AddValues, IgnoreValues, &DT, EndBlock, NumGprs,
+        NumFprs, NumVprs, &Call, /* IsHoistContext */ false)) {
       LvCallee.clearDataFlowAnalysis();
       LvCaller.clearDataFlowAnalysis();
       LLVM_DEBUG(llvm::dbgs() << "InlineCost: Caller Excessive Value Pressure at edge: "
                  << Caller->getName() << " <==> "
-                 << Callee->getName() << " not inlined\n");
+                 << Callee->getName() << "\n");
+
+      NumGprs = (NumGprs > NumIntInput) ? (NumGprs - NumIntInput) : 0;
+      NumFprs = (NumFprs > NumFpInput) ? (NumFprs - NumFpInput) : 0;
+      NumVprs = (NumVprs > NumVecInput) ? (NumVprs - NumVecInput) : 0;
+
       return true;
     }
     LLVM_DEBUG(llvm::dbgs() << "InlineCost: Value Pressure Analysis at edge: "

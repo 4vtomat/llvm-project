@@ -7,7 +7,7 @@ target triple = "riscv64"
 
 @data = common global ptr null, align 8
 
-; CHECK_VLP_FAIL: InlineCost: Callee Excessive Value Pressure at edge: fct4 <==> fct3 not inlined
+; CHECK_VLP_FAIL: InlineCost: Callee Excessive Value Pressure at edge: fct4 <==> fct3
 ; CHECK_VLP_SUCCESS: InlineCost: Value Pressure Analysis at edge: fct4 <==> fct3 unconstrained
 
 define i32 @fct1(i32 %a) nounwind uwtable ssp {

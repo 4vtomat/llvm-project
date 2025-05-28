@@ -779,19 +779,20 @@ Instruction *LiveValues::processBlock(
 }
 
 bool LiveValues::exceedValuePressureForFunction(
-    int &NumGprs, int &NumFprs, int &NumVrs, Function *F) {
+    int &NumGprs, int &NumFprs, int &NumVprs, Function *F) {
   SmallVector<PressureTracker, ValueDescr::Types_End> InsnPT;
   SmallVector<PressureTracker, ValueDescr::Types_End> MachinePT;
   SmallVector<PressureTracker, ValueDescr::Types_End> UsedPT;
   DenseMap<const BasicBlock *,
           SmallVector<PressureTracker, ValueDescr::Types_End>> PressureMap;
+  bool ExceedsPressure = false;
 
   // Do initializations of collection PressureTrackers
   MachinePT.resize(ValueDescr::Types_End);
 
   MachinePT[ValueDescr::Types_Integer].LocalMaxima = NumGprs;
   MachinePT[ValueDescr::Types_Float].LocalMaxima = NumFprs;
-  MachinePT[ValueDescr::Types_Vector].LocalMaxima = NumVrs;
+  MachinePT[ValueDescr::Types_Vector].LocalMaxima = NumVprs;
 
   UsedPT.resize(ValueDescr::Types_End);
 
@@ -829,27 +830,33 @@ bool LiveValues::exceedValuePressureForFunction(
 
     for (unsigned Idx = ValueDescr::Types_Integer;
          Idx < ValueDescr::Types_End; ++Idx) {
-      if (PT[Idx].LocalMaxima > MachinePT[Idx].LocalMaxima)
-        return true;
-
       if (PT[Idx].LocalMaxima > UsedPT[Idx].LocalMaxima)
         UsedPT[Idx].LocalMaxima = PT[Idx].LocalMaxima;
+
+      if (PT[Idx].LocalMaxima > MachinePT[Idx].LocalMaxima) {
+        ExceedsPressure = true;
+        break;
+      }
     }
+
+    // Stop analysis if we are over our physical reg limit.
+    if (ExceedsPressure)
+      break;
   }
 
   // Save what we used
   NumGprs = UsedPT[ValueDescr::Types_Integer].LocalMaxima;
   NumFprs = UsedPT[ValueDescr::Types_Float].LocalMaxima;
-  NumVrs = UsedPT[ValueDescr::Types_Vector].LocalMaxima;
+  NumVprs = UsedPT[ValueDescr::Types_Vector].LocalMaxima;
 
-  return false;
+  return ExceedsPressure;
 }
 
 bool LiveValues::exceedValuePressureForBlocks(
     SmallVectorImpl<BasicBlock *> &Worklist,
     SmallVectorImpl<Use *> &AddValues,
     SmallPtrSetImpl<const Value *> &IgnoreValues, DominatorTree *DT,
-    BasicBlock *EndBlock, int NumGprs, int NumFprs, int NumVrs,
+    BasicBlock *EndBlock, int &NumGprs, int &NumFprs, int &NumVprs,
     Instruction *TargetI, bool IsHoistContext) {
   BasicBlock *TargetBB = TargetI->getParent();
   Function *F = TargetBB->getParent();
@@ -857,6 +864,7 @@ bool LiveValues::exceedValuePressureForBlocks(
   SmallVector<PressureTracker, ValueDescr::Types_End> MachinePT;
   DenseMap<const BasicBlock *,
           SmallVector<PressureTracker, ValueDescr::Types_End>> PressureMap;
+  bool ExceedsPressure = false;
 
   // Do initializations of collection PressureTrackers
   InsnPT.resize(ValueDescr::Types_End);
@@ -864,7 +872,7 @@ bool LiveValues::exceedValuePressureForBlocks(
 
   MachinePT[ValueDescr::Types_Integer].LocalMaxima = NumGprs;
   MachinePT[ValueDescr::Types_Float].LocalMaxima = NumFprs;
-  MachinePT[ValueDescr::Types_Vector].LocalMaxima = NumVrs;
+  MachinePT[ValueDescr::Types_Vector].LocalMaxima = NumVprs;
 
   unsigned SumInstructions;
   unsigned NumCalls;
@@ -882,12 +890,18 @@ bool LiveValues::exceedValuePressureForBlocks(
       // Now remove TargetI from the Index list since it will be optimized.
       Indices[TargetI].setIndex(EMPTY_INDEX);
 
-      return false;
+      return ExceedsPressure;
     }
 
     // Allow more GPR usage, distance to RA and optimization will be the delta.
     MachinePT[ValueDescr::Types_Integer].LocalMaxima += NumGprs;
   }
+
+  // Now init all reg numbers to zero so that we collect
+  // the local maxima for the requested analsysis.
+  NumGprs = 0;
+  NumFprs = 0;
+  NumVprs = 0;
 
   // Simulate running out of GP registers if bypass enabled.
   if (OptLevel == 1 && EnableValuePressureBypass) {
@@ -911,22 +925,27 @@ bool LiveValues::exceedValuePressureForBlocks(
     SmallVector<PressureTracker, ValueDescr::Types_End> &SummaryPT =
         PressureMap[BB];
     for (unsigned Idx = ValueDescr::Types_Integer; Idx < ValueDescr::Types_End;
-         ++Idx)
+         ++Idx) {
       if (SummaryPT[Idx].LocalMaxima > MachinePT[Idx].LocalMaxima &&
           ((!IsHoistContext) ||
            (IsHoistContext && InsnPT[Idx].FinalPressure > 0))) {
         if (BB == TargetBB) {
           if (IsHoistContext) {
             // Check if TargetI is after a local machine maxima.
-            if (FirstMaxPointI && DT->dominates(FirstMaxPointI, TargetI))
-              return true;
+            if (FirstMaxPointI && DT->dominates(FirstMaxPointI, TargetI)) {
+              ExceedsPressure = true;
+              break;
+            }
 
             // Do we run out ValueDescr registers right at TargetI?
-            if (InsnPT[Idx].CurPressure > MachinePT[Idx].LocalMaxima)
-              return true;
+            if (InsnPT[Idx].CurPressure > MachinePT[Idx].LocalMaxima) {
+              ExceedsPressure = true;
+              break;
+            }
           } else {
             // For the general case we are out ValueDescr registers.
-            return true;
+            ExceedsPressure = true;
+            break;
           }
 
           continue;
@@ -937,8 +956,10 @@ bool LiveValues::exceedValuePressureForBlocks(
           continue;
 
         // If BB dominates TargetI, guard.
-        if (DT->dominates(BB, TargetBB))
-          return true;
+        if (DT->dominates(BB, TargetBB)) {
+          ExceedsPressure = true;
+          break;
+        }
 
         // BB's VP is not in context.
         if (DT->dominates(TargetBB, BB))
@@ -951,20 +972,38 @@ bool LiveValues::exceedValuePressureForBlocks(
         if (DT->dominates(IDomBB, TargetBB)) {
           SmallVector<PressureTracker, ValueDescr::Types_End> &IDomPT =
               PressureMap[IDomBB];
-          if (!IDomPT.empty())
-            return true;
+          if (!IDomPT.empty()) {
+            ExceedsPressure = true;
+            break;
+          }
         }
 
-        if (isFlowRelated(TargetBB, BB))
-          return true;
+        if (isFlowRelated(TargetBB, BB)) {
+          ExceedsPressure = true;
+          break;
+        }
       }
+    }
+
+    // Save what we used
+    if (SummaryPT[ValueDescr::Types_Integer].LocalMaxima > NumGprs)
+      NumGprs = SummaryPT[ValueDescr::Types_Integer].LocalMaxima;
+
+    if (SummaryPT[ValueDescr::Types_Float].LocalMaxima > NumFprs)
+      NumFprs = SummaryPT[ValueDescr::Types_Float].LocalMaxima;
+
+    if (SummaryPT[ValueDescr::Types_Vector].LocalMaxima > NumVprs)
+      NumVprs = SummaryPT[ValueDescr::Types_Vector].LocalMaxima;
+
+    if (ExceedsPressure)
+      break;
   }
 
   // Now remove TargetI from the Index list since it will be optimized.
-  if (IsHoistContext)
+  if (IsHoistContext && !ExceedsPressure)
     Indices[TargetI].setIndex(EMPTY_INDEX);
 
-  return false;
+  return ExceedsPressure;
 }
 
 void LiveValues::doDataFlowAnalysis(Function &F) {

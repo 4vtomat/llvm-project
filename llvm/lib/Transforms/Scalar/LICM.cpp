@@ -1990,11 +1990,12 @@ static bool maySpillForCandidate(
     unsigned IntRC = TTI->getRegisterClassForType(false, Type::getInt32Ty(C));
     unsigned FpRC = TTI->getRegisterClassForType(false, Type::getFloatTy(C));
     unsigned VecRC = TTI->getRegisterClassForType(true);
+    int NumIntUsed = TTI->getNumberOfRegisters(IntRC);
+    int NumFpUsed = TTI->getNumberOfRegisters(FpRC);
+    int NumVecUsed = TTI->getNumberOfRegisters(VecRC);
     return LV->exceedValuePressureForBlocks(
         Worklist, AddValues, IgnoreValues, DT, EndBlock,
-        TTI->getNumberOfRegisters(IntRC),
-        TTI->getNumberOfRegisters(FpRC),
-        TTI->getNumberOfRegisters(VecRC), Inst,
+        NumIntUsed, NumFpUsed, NumVecUsed, Inst,
         /* IsHoistContext */ true);
   }
 

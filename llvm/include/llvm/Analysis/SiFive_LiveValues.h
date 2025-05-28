@@ -227,7 +227,7 @@ public:
       SmallVectorImpl<BasicBlock *> &Worklist,
       SmallVectorImpl<Use *> &AddValues,
       SmallPtrSetImpl<const Value *> &IgnoreValues, DominatorTree *DT,
-      BasicBlock *EndBlock, int NumGprs, int NumFprs, int NumVrs,
+      BasicBlock *EndBlock, int &NumGprs, int &NumFprs, int &NumVrs,
       Instruction *TargetI, bool IsHoistContext);
 
   /// Function level data flow analysis.
