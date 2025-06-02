@@ -1028,27 +1028,13 @@ bool llvm::computeUnrollCount(
     }
   }
 
-  // 5th priority is loop prolog peeling. - SIFIVE
+  // 5th priority is loop peeling.
   computePeelCount(L, LoopSize, PP, TripCount, DT, SE, AC, UP.Threshold);
   if (PP.PeelCount) {
     UP.Runtime = false;
     UP.Count = 1;
     return ExplicitUnroll;
   }
-
-  // SIFIVE
-  // 6th priority is loop epilog peeling (if enabled).
-  if (PP.AllowEpilogPeeling) {
-    PP.PeelProlog = false;
-    PP.PeelEpilog = PP.AllowEpilogPeeling;
-    computePeelCount(L, LoopSize, PP, MaxTripCount, DT, SE, AC, UP.Threshold);
-    if (PP.PeelCount) {
-      UP.Runtime = false;
-      UP.Count = 1;
-      return ExplicitUnroll;
-    }
-  }
-  // end SIFIVE
 
   // Before starting partial unrolling, set up.partial to true,
   // if user explicitly asked  for unrolling
@@ -1331,7 +1317,6 @@ tryToUnrollLoop(Loop *L, DominatorTree &DT, LoopInfo *LI, ScalarEvolution &SE,
 
   UP.Runtime &= UCE.ConvergenceAllowsRuntime;
 
-#if SIFIVE_CUSTOMIZATION
   if (PP.PeelCount) {
     assert(UP.Count == 1 && "Cannot perform peel and unroll in the same step");
     LLVM_DEBUG(dbgs() << "PEELING loop %" << L->getHeader()->getName()
@@ -1343,16 +1328,8 @@ tryToUnrollLoop(Loop *L, DominatorTree &DT, LoopInfo *LI, ScalarEvolution &SE,
              << " iterations";
     });
 
-    bool PeeledLoop = false;
-    if (PP.PeelProlog) {
-      ValueToValueMapTy VMap;
-      PeeledLoop =
-          peelLoop(L, PP.PeelCount, LI, &SE, DT, &AC, PreserveLCSSA, VMap);
-    } else if (PP.PeelEpilog)
-      PeeledLoop =
-          peelLoopEpilog(L, PP.PeelCount, LI, &SE, DT, &AC, PreserveLCSSA);
-
-    if (PeeledLoop) {
+    ValueToValueMapTy VMap;
+    if (peelLoop(L, PP.PeelCount, LI, &SE, DT, &AC, PreserveLCSSA, VMap)) {
       simplifyLoopAfterUnroll(L, true, LI, &SE, &DT, &AC, &TTI, nullptr);
       // If the loop was peeled, we already "used up" the profile information
       // we had, so we don't want to unroll or peel again.
@@ -1362,7 +1339,6 @@ tryToUnrollLoop(Loop *L, DominatorTree &DT, LoopInfo *LI, ScalarEvolution &SE,
     }
     return LoopUnrollResult::Unmodified;
   }
-#endif // SIFIVE_CUSTOMIZATION
 
   // Do not attempt partial/runtime unrolling in FullLoopUnrolling
   if (OnlyFullUnroll && (UP.Count < TripCount || UP.Count < MaxTripCount)) {

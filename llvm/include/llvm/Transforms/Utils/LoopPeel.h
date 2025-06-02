@@ -20,21 +20,12 @@
 namespace llvm {
 
 bool canPeel(const Loop *L);
-#if SIFIVE_CUSTOMIZATION
-bool canPeelEpilog(const Loop * L);
-#endif
 
 /// VMap is the value-map that maps instructions from the original loop to
 /// instructions in the last peeled-off iteration.
 bool peelLoop(Loop *L, unsigned PeelCount, LoopInfo *LI, ScalarEvolution *SE,
               DominatorTree &DT, AssumptionCache *AC, bool PreserveLCSSA,
               ValueToValueMapTy &VMap);
-
-#if SIFIVE_CUSTOMIZATION
-bool peelLoopEpilog(Loop *L, unsigned PeelCount, LoopInfo *LI,
-                    ScalarEvolution *SE, DominatorTree &DT, AssumptionCache *AC,
-                    bool PreserveLCSSA);
-#endif // SIFIVE_CUSTOMIZATION
 
 TargetTransformInfo::PeelingPreferences
 gatherPeelingPreferences(Loop *L, ScalarEvolution &SE,

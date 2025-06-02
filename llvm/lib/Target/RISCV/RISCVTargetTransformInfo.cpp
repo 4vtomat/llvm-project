@@ -4058,9 +4058,6 @@ void RISCVTTIImpl::getUnrollingPreferences(Loop *L, ScalarEvolution &SE,
 void RISCVTTIImpl::getPeelingPreferences(Loop *L, ScalarEvolution &SE,
                                          TTI::PeelingPreferences &PP) {
   BaseT::getPeelingPreferences(L, SE, PP);
-#if SIFIVE_CUSTOMIZATION
-  PP.AllowEpilogPeeling = true;
-#endif // SIFIVE_CUSTOMIZATION
 }
 
 unsigned RISCVTTIImpl::getRegUsageForType(Type *Ty) const {
