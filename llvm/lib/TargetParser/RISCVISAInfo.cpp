@@ -940,7 +940,6 @@ Error RISCVISAInfo::checkDependency() {
   if (HasZvl && !HasVector)
     return getExtensionRequiresError("zvl*b", "v' or 'zve*");
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (Exts.count("zvkns") && !HasVector)
     return createStringError(
@@ -964,14 +963,14 @@ Error RISCVISAInfo::checkDependency() {
                     "' extension is incompatible with '" +
                     (HasC ? "c" : "zcd") +
                     "' extension when 'd' extension is enabled");
-=======
+
   if (HasD && (HasC || Exts.count("zcd")))
     for (auto Ext : ZcdOverlaps)
       if (Exts.count(Ext.str()))
         return getError(
             Twine("'") + Ext + "' extension is incompatible with '" +
             (HasC ? "c" : "zcd") + "' extension when 'd' extension is enabled");
->>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
+
 
   if (XLen != 32 && Exts.count("zcf"))
     return getError("'zcf' is only supported for 'rv32'");
