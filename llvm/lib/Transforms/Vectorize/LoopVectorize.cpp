@@ -3411,7 +3411,7 @@ void InnerLoopVectorizer::fixupEarlyExitIVUsers(PHINode *OrigPhi,
   Value *PostInc = OrigPhi->getIncomingValueForBlock(OrigLoopLatch);
 
   VPBasicBlock *EntryVPBB = Plan.getVectorLoopRegion()->getEntryBasicBlock();
-  auto *CanonicalIV = cast<VPScalarPHIRecipe>(&*EntryVPBB->begin());
+  auto *CanonicalIV = cast<VPInstruction>(&*EntryVPBB->begin());
 
   auto FixUpPhi = [&](Instruction *UI, bool PostInc) -> Value * {
     IRBuilder<> B(VectorEarlyExitBB->getTerminator());
@@ -3423,7 +3423,7 @@ void InnerLoopVectorizer::fixupEarlyExitIVUsers(PHINode *OrigPhi,
 
     // We need to discover the mask that led us into the early exit block.
     Value *VFirst = State.getVFirst();
-    Type *CtzType = CanonicalIV->getStartValue()->getLiveInIRValue()->getType();
+    Type *CtzType = CanonicalIV->getOperand(0)->getLiveInIRValue()->getType();
     Value *Ctz;
     if (VFirst)
       Ctz = VFirst;
@@ -9712,28 +9712,19 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
       ((VectorizingEpilogue && ExpandedSCEVs) ||
        (!VectorizingEpilogue && !ExpandedSCEVs)) &&
       "expanded SCEVs to reuse can only be used during epilogue vectorization");
-<<<<<<< HEAD
-
-  VPlanTransforms::materializeLiveInBroadcasts(BestVPlan);
 
 #if SIFIVE_CUSTOMIZATION
   if (!BestVPlan.isUncountable())
 #endif
-
-=======
->>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
   // TODO: Move to VPlan transform stage once the transition to the VPlan-based
   // cost model is complete for better cost estimates.
   VPlanTransforms::runPass(VPlanTransforms::unrollByUF, BestVPlan, BestUF,
                            OrigLoop->getHeader()->getContext());
-<<<<<<< HEAD
+  VPlanTransforms::materializeBroadcasts(BestVPlan);
 #if SIFIVE_CUSTOMIZATION
   if (!BestVPlan.useVLAVectorizer() || !Legal->getLAI() ||
       Legal->isSafeForAnyVectorWidth())
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  VPlanTransforms::materializeBroadcasts(BestVPlan);
->>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
   VPlanTransforms::optimizeForVFAndUF(BestVPlan, BestVF, BestUF, PSE);
   VPlanTransforms::simplifyRecipes(BestVPlan, *Legal->getWidestInductionType());
   VPlanTransforms::removeDeadRecipes(BestVPlan);
@@ -13546,6 +13537,8 @@ bool LoopVectorizePass::processLoop(Loop *L) {
       Checks.create(L, *LVL.getLAI(), PSE.getPredicate(), VF.Width, SelectedIC,
                     ForceVectorization);
 
+    VPCostContext CostCtx(CM.TTI, *CM.TLI, CM.Legal->getWidestInductionType(),
+                          CM, CM.CostKind);
     if ((!LVL.useVLAVectorizer() || !LVL.isVectorizableUncountable()) &&
         !ForceVectorization &&
 #else
@@ -13558,15 +13551,10 @@ bool LoopVectorizePass::processLoop(Loop *L) {
     VPCostContext CostCtx(CM.TTI, *CM.TLI, CM.Legal->getWidestInductionType(),
                           CM, CM.CostKind);
     if (!ForceVectorization &&
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-        !areRuntimeChecksProfitable(Checks, VF, L, PSE, SEL,
-                                    CM.getVScaleForTuning())) {
-=======
         !isOutsideLoopWorkProfitable(Checks, VF, L, PSE, CostCtx,
                                      LVP.getPlanFor(VF.Width), SEL,
                                      CM.getVScaleForTuning())) {
->>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
       ORE->emit([&]() {
         return OptimizationRemarkAnalysisAliasing(
                    DEBUG_TYPE, "CantReorderMemOps", L->getStartLoc(),
