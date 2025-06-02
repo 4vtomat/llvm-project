@@ -20,6 +20,8 @@
 namespace llvm {
 
 bool canPeel(const Loop *L);
+#if SIFIVE_CUSTOMIZATION
+bool canPeelEpilog(const Loop * L);
 
 /// Returns true if the last iteration of \p L can be peeled off. It makes sure
 /// the loop exit condition can be adjusted when peeling and that the loop
@@ -33,6 +35,13 @@ bool canPeelLastIteration(const Loop &L, ScalarEvolution &SE);
 bool peelLoop(Loop *L, unsigned PeelCount, bool PeelLast, LoopInfo *LI,
               ScalarEvolution *SE, DominatorTree &DT, AssumptionCache *AC,
               bool PreserveLCSSA, ValueToValueMapTy &VMap);
+#else
+/// VMap is the value-map that maps instructions from the original loop to
+/// instructions in the last peeled-off iteration.
+bool peelLoop(Loop *L, unsigned PeelCount, LoopInfo *LI, ScalarEvolution *SE,
+              DominatorTree &DT, AssumptionCache *AC, bool PreserveLCSSA,
+              ValueToValueMapTy &VMap);
+#endif
 
 TargetTransformInfo::PeelingPreferences
 gatherPeelingPreferences(Loop *L, ScalarEvolution &SE,

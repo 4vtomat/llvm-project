@@ -756,6 +756,12 @@ public:
     PP.AllowPeeling = true;
     PP.AllowLoopNestsPeeling = false;
     PP.PeelProfiledIterations = true;
+#if SIFIVE_CUSTOMIZATION
+    PP.PeelLast = false;
+    PP.PeelProlog = true;
+    PP.PeelEpilog = false;
+    PP.AllowEpilogPeeling = false;
+#endif
   }
 
   bool isHardwareLoopProfitable(Loop *L, ScalarEvolution &SE,

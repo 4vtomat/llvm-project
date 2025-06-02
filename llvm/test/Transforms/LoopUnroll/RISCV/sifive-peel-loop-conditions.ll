@@ -61,8 +61,8 @@ define void @test2_epilog_peeling(i32 %k) {
 ; CHECK-NEXT:    [[INC]] = add nuw nsw i32 [[I_05]], 1
 ; CHECK-NEXT:    [[PEELCOUNTXSTEP_EXIT:%.*]] = sub i32 [[K:%.*]], 1
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp ne i32 [[INC]], [[PEELCOUNTXSTEP_EXIT]]
-; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_BODY_PEEL_BEGIN:%.*]], !llvm.loop [[LOOP0:![0-9]+]]
-; CHECK:       for.body.peel.begin:
+; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END_PEEL_BEGIN:%.*]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK:       for.end.peel.begin:
 ; CHECK-NEXT:    [[LABEL:%.*]] = phi i32 [ [[INC]], [[FOR_INC]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY_PEEL:%.*]]
 ; CHECK:       for.body.peel:
@@ -74,6 +74,8 @@ define void @test2_epilog_peeling(i32 %k) {
 ; CHECK:       for.inc.peel:
 ; CHECK-NEXT:    [[INC_PEEL:%.*]] = add nsw i32 [[LABEL]], 1
 ; CHECK-NEXT:    [[CMP_PEEL:%.*]] = icmp ne i32 [[INC_PEEL]], [[K]]
+; CHECK-NEXT:    br i1 [[CMP_PEEL]], label [[FOR_END_PEEL_NEXT:%.*]], label [[FOR_END_PEEL_NEXT]]
+; CHECK:       for.end.peel.next:
 ; CHECK-NEXT:    br label [[FOR_BODY_PEEL_NEXT:%.*]]
 ; CHECK:       for.body.peel.next:
 ; CHECK-NEXT:    br label [[FOR_END:%.*]]
@@ -212,8 +214,8 @@ define void @test5_epilog_peeling(i32 noundef signext %L, ptr noundef %hmm, ptr 
 ; CHECK-NEXT:    [[IV_INNER_NEXT]] = add nuw nsw i64 [[IV_INNER]], 1
 ; CHECK-NEXT:    [[TMP0:%.*]] = zext i32 [[BOUNDS]] to i64
 ; CHECK-NEXT:    [[EXITCOND:%.*]] = icmp ne i64 [[IV_INNER_NEXT]], [[TMP0]]
-; CHECK-NEXT:    br i1 [[EXITCOND]], label [[FOR_INNER]], label [[FOR_INNER_PEEL_BEGIN:%.*]], !llvm.loop [[LOOP2:![0-9]+]]
-; CHECK:       for.inner.peel.begin:
+; CHECK-NEXT:    br i1 [[EXITCOND]], label [[FOR_INNER]], label [[FOR_INNER_LOOPEXIT_PEEL_BEGIN:%.*]], !llvm.loop [[LOOP2:![0-9]+]]
+; CHECK:       for.inner.loopexit.peel.begin:
 ; CHECK-NEXT:    [[LABEL:%.*]] = phi i64 [ [[IV_INNER_NEXT]], [[FOR_INC_INNER]] ]
 ; CHECK-NEXT:    br label [[FOR_INNER_PEEL:%.*]]
 ; CHECK:       for.inner.peel:
@@ -226,6 +228,8 @@ define void @test5_epilog_peeling(i32 noundef signext %L, ptr noundef %hmm, ptr 
 ; CHECK:       for.inc.inner.peel:
 ; CHECK-NEXT:    [[IV_INNER_NEXT_PEEL:%.*]] = add nuw nsw i64 [[LABEL]], 1
 ; CHECK-NEXT:    [[EXITCOND_PEEL:%.*]] = icmp ne i64 [[IV_INNER_NEXT_PEEL]], [[WIDE_TRIP_COUNT]]
+; CHECK-NEXT:    br i1 [[EXITCOND_PEEL]], label [[FOR_INNER_LOOPEXIT_PEEL_NEXT:%.*]], label [[FOR_INNER_LOOPEXIT_PEEL_NEXT]]
+; CHECK:       for.inner.loopexit.peel.next:
 ; CHECK-NEXT:    br label [[FOR_INNER_PEEL_NEXT:%.*]]
 ; CHECK:       for.inner.peel.next:
 ; CHECK-NEXT:    br label [[FOR_INNER_LOOPEXIT:%.*]]
@@ -285,35 +289,18 @@ exit.outer:
 define void @SetCoeffAndReconstruction8x8(i64 %indvars.iv383) !prof !0 {
 ; CHECK-LABEL: @SetCoeffAndReconstruction8x8(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    br label [[FOR_COND394_PREHEADER:%.*]]
-; CHECK:       for.body405.peel.begin:
-; CHECK-NEXT:    [[LABEL:%.*]] = phi i64 [ [[INDVARS_IV_NEXT384:%.*]], [[FOR_BODY405:%.*]] ]
-; CHECK-NEXT:    br label [[FOR_BODY405_PEEL:%.*]]
-; CHECK:       for.body405.peel:
-; CHECK-NEXT:    [[ARRAYIDX413_PEEL:%.*]] = getelementptr i32, ptr null, i64 [[INDVARS_IV383:%.*]]
-; CHECK-NEXT:    [[TMP0:%.*]] = load i32, ptr null, align 4
-; CHECK-NEXT:    [[INDVARS_IV_NEXT384_PEEL:%.*]] = add i64 [[LABEL]], 1
-; CHECK-NEXT:    [[EXITCOND386_NOT_PEEL:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT384_PEEL]], 65
-; CHECK-NEXT:    br label [[FOR_BODY405_PEEL_NEXT:%.*]]
-; CHECK:       for.body405.peel.next:
-; CHECK-NEXT:    br label [[FOR_BODY405_PEEL2:%.*]]
-; CHECK:       for.body405.peel2:
-; CHECK-NEXT:    [[ARRAYIDX413_PEEL3:%.*]] = getelementptr i32, ptr null, i64 [[INDVARS_IV383]]
-; CHECK-NEXT:    [[TMP1:%.*]] = load i32, ptr null, align 4
-; CHECK-NEXT:    [[INDVARS_IV_NEXT384_PEEL4:%.*]] = add i64 [[INDVARS_IV_NEXT384_PEEL]], 1
-; CHECK-NEXT:    [[EXITCOND386_NOT_PEEL5:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT384_PEEL4]], 65
-; CHECK-NEXT:    br label [[FOR_BODY405_PEEL_NEXT1:%.*]]
-; CHECK:       for.body405.peel.next1:
-; CHECK-NEXT:    br label [[FOR_COND394_PREHEADER_LOOPEXIT:%.*]]
+; CHECK-NEXT:    br label [[FOR_COND394_PREHEADER_LOOPEXIT1:%.*]]
 ; CHECK:       for.cond394.preheader.loopexit:
-; CHECK-NEXT:    br label [[FOR_COND394_PREHEADER]]
+; CHECK-NEXT:    br label [[FOR_COND394_PREHEADER_LOOPEXIT1]]
 ; CHECK:       for.cond394.preheader:
-; CHECK-NEXT:    br label [[FOR_BODY405]]
+; CHECK-NEXT:    br label [[FOR_BODY405_PEEL2:%.*]]
 ; CHECK:       for.body405:
-; CHECK-NEXT:    [[INDVARS_IV3831:%.*]] = phi i64 [ [[INDVARS_IV_NEXT384]], [[FOR_BODY405]] ], [ 0, [[FOR_COND394_PREHEADER]] ]
-; CHECK-NEXT:    [[INDVARS_IV_NEXT384]] = add nuw nsw i64 [[INDVARS_IV3831]], 1
-; CHECK-NEXT:    [[EXITCOND386_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT384]], 63
-; CHECK-NEXT:    br i1 [[EXITCOND386_NOT]], label [[FOR_BODY405_PEEL_BEGIN:%.*]], label [[FOR_BODY405]], !prof [[PROF4:![0-9]+]], !llvm.loop [[LOOP5:![0-9]+]]
+; CHECK-NEXT:    [[INDVARS_IV_NEXT384_PEEL:%.*]] = phi i64 [ [[INDVARS_IV_NEXT384_PEEL4:%.*]], [[FOR_BODY405_PEEL2]] ], [ 0, [[FOR_COND394_PREHEADER_LOOPEXIT1]] ]
+; CHECK-NEXT:    [[ARRAYIDX413_PEEL3:%.*]] = getelementptr i32, ptr null, i64 [[INDVARS_IV383:%.*]]
+; CHECK-NEXT:    [[TMP1:%.*]] = load i32, ptr null, align 4
+; CHECK-NEXT:    [[INDVARS_IV_NEXT384_PEEL4]] = add i64 [[INDVARS_IV_NEXT384_PEEL]], 1
+; CHECK-NEXT:    [[EXITCOND386_NOT_PEEL5:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT384_PEEL4]], 65
+; CHECK-NEXT:    br i1 [[EXITCOND386_NOT_PEEL5]], label [[FOR_COND394_PREHEADER_LOOPEXIT:%.*]], label [[FOR_BODY405_PEEL2]], !prof [[PROF4:![0-9]+]]
 ;
 entry:
   br label %for.cond394.preheader

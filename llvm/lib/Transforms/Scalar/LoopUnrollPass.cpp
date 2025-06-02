@@ -1028,13 +1028,28 @@ bool llvm::computeUnrollCount(
     }
   }
 
-  // 5th priority is loop peeling.
+  // 5th priority is loop prolog peeling. - SIFIVE
   computePeelCount(L, LoopSize, PP, TripCount, DT, SE, AC, UP.Threshold);
   if (PP.PeelCount) {
     UP.Runtime = false;
     UP.Count = 1;
     return ExplicitUnroll;
   }
+
+#if SIFIVE_CUSTOMIZATION
+  // 6th priority is loop epilog peeling (if enabled).
+  if (PP.AllowEpilogPeeling) {
+    PP.PeelProlog = false;
+    PP.PeelEpilog = PP.AllowEpilogPeeling;
+    unsigned CurTripCount = (TripCount) ? TripCount : MaxTripCount;
+    computePeelCount(L, LoopSize, PP, CurTripCount, DT, SE, AC, UP.Threshold);
+    if (PP.PeelCount) {
+      UP.Runtime = false;
+      UP.Count = 1;
+      return ExplicitUnroll;
+    }
+  }
+#endif
 
   // Before starting partial unrolling, set up.partial to true,
   // if user explicitly asked  for unrolling
@@ -1329,8 +1344,12 @@ tryToUnrollLoop(Loop *L, DominatorTree &DT, LoopInfo *LI, ScalarEvolution &SE,
     });
 
     ValueToValueMapTy VMap;
+#if SIFIVE_CUSTOMIZATION
     if (peelLoop(L, PP.PeelCount, PP.PeelLast, LI, &SE, DT, &AC, PreserveLCSSA,
                  VMap)) {
+#else
+    if (peelLoop(L, PP.PeelCount, LI, &SE, DT, &AC, PreserveLCSSA, VMap)) {
+#endif
       simplifyLoopAfterUnroll(L, true, LI, &SE, &DT, &AC, &TTI, nullptr);
       // If the loop was peeled, we already "used up" the profile information
       // we had, so we don't want to unroll or peel again.
