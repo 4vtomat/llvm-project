@@ -988,7 +988,6 @@ public:
     // Returns a scalar boolean value, which is true if any lane of its (only
     // boolean) vector operand is true.
     AnyOf,
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     ComputeReductionResultWithMask,
     ExitingCond,
@@ -1001,13 +1000,8 @@ public:
     CSAAnyActive,
     MonotonicUpdate,
 #endif // SIFIVE_CUSTOMIZATION
-    // Extracts the first active lane of a vector, where the first operand is
-    // the predicate, and the second operand is the vector to extract.
-    ExtractFirstActive,
-=======
     // Calculates the first active lane index of the vector predicate operand.
     FirstActiveLane,
->>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
   };
 
 private:
