@@ -14078,17 +14078,8 @@ BoUpSLP::isGatherShuffledSingleRegisterEntry(
   const BasicBlock *TEInsertBlock = nullptr;
   // Main node of PHI entries keeps the correct order of operands/incoming
   // blocks.
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   if (auto *PHI = dyn_cast<PHINode>(TEUseEI.UserTE->getMainOp());
       PHI && TEUseEI.UserTE->State != TreeEntry::SplitVectorize) {
-#else
-  if (auto *PHI = dyn_cast<PHINode>(TEUseEI.UserTE->getMainOp())) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  if (auto *PHI = dyn_cast<PHINode>(TEUseEI.UserTE->getMainOp());
-      PHI && TEUseEI.UserTE->State != TreeEntry::SplitVectorize) {
->>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
     TEInsertBlock = PHI->getIncomingBlock(TEUseEI.EdgeIdx);
     TEInsertPt = TEInsertBlock->getTerminator();
   } else {
@@ -14168,19 +14159,9 @@ BoUpSLP::isGatherShuffledSingleRegisterEntry(
              "Expected only single user of a gather node.");
       const EdgeInfo &UseEI = TEPtr->UserTreeIndex;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
       PHINode *UserPHI = UseEI.UserTE->State != TreeEntry::SplitVectorize
                              ? dyn_cast<PHINode>(UseEI.UserTE->getMainOp())
                              : nullptr;
-#else
-      PHINode *UserPHI = dyn_cast<PHINode>(UseEI.UserTE->getMainOp());
-#endif // SIFIVE_CUSTOMIZATION
-=======
-      PHINode *UserPHI = UseEI.UserTE->State != TreeEntry::SplitVectorize
-                             ? dyn_cast<PHINode>(UseEI.UserTE->getMainOp())
-                             : nullptr;
->>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
       const Instruction *InsertPt =
           UserPHI ? UserPHI->getIncomingBlock(UseEI.EdgeIdx)->getTerminator()
                   : &getLastInstructionInBundle(UseEI.UserTE);
