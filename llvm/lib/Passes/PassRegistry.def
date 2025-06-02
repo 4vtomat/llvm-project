@@ -88,13 +88,9 @@ MODULE_PASS("inliner-wrapper", ModuleInlinerWrapperPass())
 MODULE_PASS("inliner-wrapper-no-mandatory-first",
             ModuleInlinerWrapperPass(getInlineParams(), false))
 MODULE_PASS("insert-gcov-profiling", GCOVProfilerPass())
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 MODULE_PASS("insert-loop-count-profiling", LoopCountProfilerPass())
 #endif
-MODULE_PASS("instrorderfile", InstrOrderFilePass())
-=======
->>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
 MODULE_PASS("instrprof", InstrProfilingLoweringPass())
 MODULE_PASS("ctx-instr-lower", PGOCtxProfLoweringPass())
 MODULE_PASS("print<ctx-prof-analysis>", CtxProfAnalysisPrinterPass(errs()))
