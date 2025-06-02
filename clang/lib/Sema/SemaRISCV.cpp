@@ -742,9 +742,7 @@ bool SemaRISCV::CheckBuiltinFunctionCall(const TargetInfo &TI,
   case RISCVVector::BI__builtin_rvv_vsetvli:
     return CheckVSetVL(1, 2);
   case RISCVVector::BI__builtin_rvv_vsetvlimax:
-<<<<<<< HEAD
-    return SemaRef.BuiltinConstantArgRange(TheCall, 0, 0, 3) ||
-           CheckLMUL(TheCall, 1);
+    return CheckVSetVL(0, 1);
 #ifdef SIFIVE_CUSTOMIZATION
   case RISCVVector::BI__builtin_rvv_sf_vsettnt:
   case RISCVVector::BI__builtin_rvv_sf_vsettm:
@@ -791,9 +789,6 @@ bool SemaRISCV::CheckBuiltinFunctionCall(const TargetInfo &TI,
            SemaRef.BuiltinConstantArgMultiple(TheCall, 0, 4);
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    return CheckVSetVL(0, 1);
->>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
   case RISCVVector::BI__builtin_rvv_vget_v: {
     ASTContext::BuiltinVectorTypeInfo ResVecInfo =
         Context.getBuiltinVectorTypeInfo(cast<BuiltinType>(
