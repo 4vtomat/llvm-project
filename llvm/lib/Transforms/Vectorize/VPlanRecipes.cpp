@@ -1253,7 +1253,6 @@ InstructionCost VPInstruction::computeCost(ElementCount VF,
     return Ctx.TTI.getArithmeticReductionCost(
         Instruction::Or, cast<VectorType>(VecTy), std::nullopt, Ctx.CostKind);
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case VPInstruction::LogicalAnd: {
     Type *ResTy = Ctx.Types.inferScalarType(this);
@@ -1289,7 +1288,6 @@ InstructionCost VPInstruction::computeCost(ElementCount VF,
     return 0;
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case VPInstruction::FirstActiveLane: {
     // Calculate the cost of determining the lane index.
     auto *PredTy = toVectorTy(Ctx.Types.inferScalarType(getOperand(0)), VF);
@@ -1308,7 +1306,6 @@ InstructionCost VPInstruction::computeCost(ElementCount VF,
                                   cast<VectorType>(VectorTy), Mask,
                                   Ctx.CostKind, VF.getKnownMinValue() - 1);
   }
->>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
   default:
     // TODO: Compute cost other VPInstructions once the legacy cost model has
     // been retired.
