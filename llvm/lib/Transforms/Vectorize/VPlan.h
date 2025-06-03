@@ -2902,6 +2902,13 @@ public:
   VPValue *getVPMaskSel() const { return getOperand(1); }
   VPValue *getVPDataSel() const { return getOperand(2); }
   VPValue *getVPCSAVLSel() const { return getOperand(3); }
+
+  bool usesScalars(const VPValue *Op) const override {
+    assert(is_contained(operands(), Op) &&
+           "Op must be an operand of the recipe");
+    return true;
+  }
+
   /// Return the cost.
   InstructionCost computeCost(ElementCount VF,
                               VPCostContext &Ctx) const override {

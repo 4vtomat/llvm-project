@@ -596,7 +596,25 @@ Value *VPInstruction::generate(VPTransformState &State) {
            "VPInstructions with PHI opcodes must be used for header phis only "
            "at the moment");
     BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
+#if SIFIVE_CUSTOMIZATION
+    // FIXME: Initial VL must be explicitly represented in VPlan, but as a
+    // temporary solution emit initial computation of VL here
+    Value *Start = nullptr;
+    if (getOperand(0) == State.Plan->getInitEVL()) {
+      IRBuilder<>::InsertPointGuard Guard(State.Builder);
+      BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
+      State.Builder.SetInsertPoint(VectorPH->getTerminator());
+      Start = GetSetVL(State,
+                       State.get(&State.Plan->getVectorTripCount(),
+                                 /*IsScalar=*/true),
+                       State.Plan->isUncountable());
+      State.set(State.Plan->getInitEVL(), Start, /*IsScalar=*/true);
+    } else {
+      Start = State.get(getOperand(0), VPLane(0));
+    }
+#else
     Value *Start = State.get(getOperand(0), VPLane(0));
+#endif // SIFIVE_CUSTOMIZATION
     PHINode *Phi = State.Builder.CreatePHI(Start->getType(), 2, Name);
     Phi->addIncoming(Start, VectorPH);
     return Phi;
@@ -1438,6 +1456,7 @@ bool VPInstruction::onlyFirstLaneUsed(const VPValue *Op) const {
 #if SIFIVE_CUSTOMIZATION
   case VPInstruction::CSAVLPhi:
   case VPInstruction::CSAVLSel:
+  case VPInstruction::CSAInitData:
 #endif // SIFIVE_CUSTOMIZATION
   case VPInstruction::BranchOnCond:
   case VPInstruction::ResumePhi:
