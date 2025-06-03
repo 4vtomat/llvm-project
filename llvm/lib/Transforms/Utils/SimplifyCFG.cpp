@@ -2257,6 +2257,19 @@ static bool canSinkInstructions(
         return false;
 
 #if SIFIVE_CUSTOMIZATION
+      if (isa<ExtractValueInst>(I0) && OI == 0 && isa<IntrinsicInst>(Op)) {
+        switch (cast<IntrinsicInst>(Op)->getIntrinsicID()) {
+        case Intrinsic::vector_deinterleave2:
+        case Intrinsic::vector_deinterleave3:
+        case Intrinsic::experimental_vector_deinterleave4:
+        case Intrinsic::vector_deinterleave5:
+        case Intrinsic::experimental_vector_deinterleave6:
+        case Intrinsic::vector_deinterleave7:
+        case Intrinsic::experimental_vector_deinterleave8:
+          return false;
+        }
+      }
+
       // Return true if I is load/store instruction and OpIdx is pointer index
       // of I.
       auto IsLoadStorePointerIndex = [](const Instruction *I, unsigned OpIdx) {
