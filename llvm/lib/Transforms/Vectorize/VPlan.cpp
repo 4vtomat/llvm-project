@@ -346,7 +346,7 @@ VPTransformState::VPTransformState(const TargetTransformInfo *TTI,
     : TTI(TTI), VF(VF), CFG(DT), LI(LI), Builder(Builder), ILV(ILV), Plan(Plan),
       CurrentParentLoop(CurrentParentLoop), LVer(nullptr),
 #if SIFIVE_CUSTOMIZATION
-      TypeAnalysis(CanonicalIVTy), VPDT(*Plan), EnableRISCVCSA(EnableRISCVCSA) {}
+      TypeAnalysis(CanonicalIVTy), EnableRISCVCSA(EnableRISCVCSA), VPDT(*Plan) {}
 #else
       TypeAnalysis(CanonicalIVTy), VPDT(*Plan) {}
 #endif // SIFIVE_CUSTOMIZATION
@@ -1373,8 +1373,8 @@ void VPlan::execute(VPTransformState *State) {
       continue;
     }
 
-    auto *PhiR = cast<VPHeaderPHIRecipe>(&R);
-    bool NeedsScalar = isa<VPScalarPHIRecipe>(PhiR) ||
+    auto *PhiR = cast<VPSingleDefRecipe>(&R);
+    bool NeedsScalar = isa<VPInstruction>(PhiR) ||
 #if SIFIVE_CUSTOMIZATION
                        isa<VPEVLBasedIVPHIRecipe>(PhiR) ||
                        isa<VPMonotonicHeaderPHIRecipe>(PhiR) ||
