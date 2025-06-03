@@ -84,17 +84,13 @@ bool VPlanVerifier::verifyPhiRecipes(const VPBasicBlock *VPBB) {
     if (isa<VPActiveLaneMaskPHIRecipe>(RecipeI))
       NumActiveLaneMaskPhiRecipes++;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (!IsHeaderVPBB && vputils::isHeaderPhi(*RecipeI)) {
 #else
-    if (IsHeaderVPBB && !isa<VPHeaderPHIRecipe, VPWidenPHIRecipe>(*RecipeI)) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
     if (IsHeaderVPBB && !isa<VPHeaderPHIRecipe, VPWidenPHIRecipe>(*RecipeI) &&
         !isa<VPInstruction>(*RecipeI) &&
         cast<VPInstruction>(RecipeI)->getOpcode() == Instruction::PHI) {
->>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
+#endif // SIFIVE_CUSTOMIZATION
       errs() << "Found non-header PHI recipe in header VPBB";
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
       errs() << ": ";
