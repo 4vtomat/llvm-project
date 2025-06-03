@@ -12971,6 +12971,12 @@ static void checkMixedPrecision(Loop *L, OptimizationRemarkEmitter *ORE) {
 static InstructionCost calculateEarlyExitCost(VPCostContext &CostCtx,
                                               VPlan &Plan, ElementCount VF) {
   InstructionCost Cost = 0;
+#if SIFIVE_CUSTOMIZATION
+  // VPlan-based cost model is designed for calaulating vector cost.
+  // Calculate the scalar cost will cause unexpect errors.
+  if (VF.isScalar())
+    return Cost;
+#endif // SIFIVE_CUSTOMIZATION
   for (auto *ExitVPBB : Plan.getExitBlocks()) {
     for (auto *PredVPBB : ExitVPBB->getPredecessors()) {
       // If the predecessor is not the middle.block, then it must be the
