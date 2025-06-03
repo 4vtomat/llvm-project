@@ -1114,36 +1114,17 @@ void VPlanTransforms::optimizeInductionExitUsers(
       if (!isa<PHINode>(ExitIRI->getInstruction()))
         break;
 
-<<<<<<< HEAD
-    VPValue *Incoming;
 #if SIFIVE_CUSTOMIZATION
     if (!ExitIRI->getNumOperands())
       continue;
 #endif // SIFIVE_CUSTOMIZATION
-    if (!match(ExitIRI->getOperand(0),
-               m_VPInstruction<VPInstruction::ExtractFromEnd>(
-                   m_VPValue(Incoming), m_SpecificInt(1))))
-      continue;
-
-    auto *WideIV = getOptimizableIVOf(Incoming);
-    if (!WideIV)
-      continue;
-    VPValue *EndValue = EndValues.lookup(WideIV);
-    assert(EndValue && "end value must have been pre-computed");
-
-    if (Incoming != WideIV) {
-      ExitIRI->setOperand(0, EndValue);
-      continue;
-=======
-      for (auto [Idx, PredVPBB] : enumerate(ExitVPBB->getPredecessors())) {
-        if (PredVPBB == MiddleVPBB)
-          if (VPValue *Escape = optimizeLatchExitInductionUser(
-                  Plan, TypeInfo, PredVPBB, ExitIRI->getOperand(Idx),
-                  EndValues))
-            ExitIRI->setOperand(Idx, Escape);
-        // TODO: Optimize early exit induction users in follow-on patch.
-      }
->>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
+    for (auto [Idx, PredVPBB] : enumerate(ExitVPBB->getPredecessors())) {
+      if (PredVPBB == MiddleVPBB)
+        if (VPValue *Escape = optimizeLatchExitInductionUser(
+                Plan, TypeInfo, PredVPBB, ExitIRI->getOperand(Idx), EndValues))
+          ExitIRI->setOperand(Idx, Escape);
+      // TODO: Optimize early exit induction users in follow-on patch.
+    }
     }
   }
 }
