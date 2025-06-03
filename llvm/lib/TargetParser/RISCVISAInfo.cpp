@@ -958,12 +958,6 @@ Error RISCVISAInfo::checkDependency() {
                              "'xsfvfbfa' extension to also be specified");
 #endif // SIFIVE_CUSTOMIZATION
 
-  if ((HasZcmt || Exts.count("zcmp")) && HasD && (HasC || Exts.count("zcd")))
-    return getError(Twine("'") + (HasZcmt ? "zcmt" : "zcmp") +
-                    "' extension is incompatible with '" +
-                    (HasC ? "c" : "zcd") +
-                    "' extension when 'd' extension is enabled");
-
   if (HasD && (HasC || Exts.count("zcd")))
     for (auto Ext : ZcdOverlaps)
       if (Exts.count(Ext.str()))
