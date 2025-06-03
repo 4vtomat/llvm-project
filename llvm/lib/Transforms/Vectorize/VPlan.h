@@ -633,6 +633,7 @@ public:
     case VPRecipeBase::VPCSADataUpdateSC:
     case VPRecipeBase::VPCSAExtractScalarSC:
     case VPRecipeBase::VPMonotonicUpdateSC:
+    case VPRecipeBase::VPMonotonicHeaderPHISC:
 #endif
     case VPRecipeBase::VPScalarPHISC:
     case VPRecipeBase::VPPartialReductionSC:
@@ -640,7 +641,6 @@ public:
     case VPRecipeBase::VPBranchOnMaskSC:
 #if SIFIVE_CUSTOMIZATION
     case VPRecipeBase::VPCSAHeaderPHISC:
-    case VPRecipeBase::VPMonotonicHeaderPHISC:
 #endif
     case VPRecipeBase::VPInterleaveSC:
     case VPRecipeBase::VPIRInstructionSC:
