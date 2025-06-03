@@ -1317,15 +1317,11 @@ InstructionCost VPInstruction::computeCost(ElementCount VF,
 
 bool VPInstruction::isVectorToScalar() const {
   return getOpcode() == VPInstruction::ExtractFromEnd ||
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
          getOpcode() == VPInstruction::ComputeReductionResultWithMask ||
 #endif // SIFIVE_CUSTOMIZATION
-         getOpcode() == VPInstruction::ExtractFirstActive ||
-=======
          getOpcode() == Instruction::ExtractElement ||
          getOpcode() == VPInstruction::FirstActiveLane ||
->>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
          getOpcode() == VPInstruction::ComputeReductionResult ||
          getOpcode() == VPInstruction::AnyOf;
 }
@@ -5244,43 +5240,3 @@ void VPEVLBasedIVPHIRecipe::print(raw_ostream &O, const Twine &Indent,
   printOperands(O, SlotTracker);
 }
 #endif
-<<<<<<< HEAD
-
-void VPScalarPHIRecipe::execute(VPTransformState &State) {
-  BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
-#if SIFIVE_CUSTOMIZATION
-  // FIXME: Initial VL must be explicitly represented in VPlan, but as a
-  // temporary solution emit initial computation of VL here
-  Value *Start = nullptr;
-  if (getOperand(0) == State.Plan->getInitEVL()) {
-    IRBuilder<>::InsertPointGuard Guard(State.Builder);
-    BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
-    State.Builder.SetInsertPoint(VectorPH->getTerminator());
-    Start = GetSetVL(State,
-                     State.get(&State.Plan->getVectorTripCount(),
-                               /*IsScalar=*/true),
-                     State.Plan->isUncountable());
-    State.set(State.Plan->getInitEVL(), Start, /*IsScalar=*/true);
-  } else {
-    Start = State.get(getStartValue(), VPLane(0));
-  }
-#else
-  Value *Start = State.get(getStartValue(), VPLane(0));
-#endif // SIFIVE_CUSTOMIZATION
-  PHINode *Phi = State.Builder.CreatePHI(Start->getType(), 2, Name);
-  Phi->addIncoming(Start, VectorPH);
-  Phi->setDebugLoc(getDebugLoc());
-  State.set(this, Phi, /*IsScalar=*/true);
-}
-
-#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
-void VPScalarPHIRecipe::print(raw_ostream &O, const Twine &Indent,
-                              VPSlotTracker &SlotTracker) const {
-  O << Indent << "SCALAR-PHI ";
-  printAsOperand(O, SlotTracker);
-  O << " = phi ";
-  printOperands(O, SlotTracker);
-}
-#endif
-=======
->>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
