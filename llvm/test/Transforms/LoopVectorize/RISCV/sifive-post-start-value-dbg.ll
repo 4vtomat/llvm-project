@@ -36,7 +36,7 @@ define dso_local signext i16 @foo(i16* nocapture readonly %ptr, i32 signext %sta
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ], !dbg [[DBG11:![0-9]+]]
 ; CHECK-NEXT:    [[VEC_PHI1:%.*]] = phi <8 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP16:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI2:%.*]] = phi <8 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP21:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[TMP1:%.*]] = add i64 [[INDEX]], 0, !dbg [[DBG10]]
+; CHECK-NEXT:    [[TMP1:%.*]] = add i64 [[INDEX]], 0, !dbg [[DBG11]]
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i16, ptr [[PTR:%.*]], i64 [[TMP1]], !dbg [[DBG12:![0-9]+]]
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i16, ptr [[TMP2]], i32 0, !dbg [[DBG12]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i16, ptr [[TMP2]], i32 8, !dbg [[DBG12]]
