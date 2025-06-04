@@ -478,23 +478,6 @@ Value *createFindLastIVReduction(IRBuilderBase &B, Value *Src,
                                  Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
 
-<<<<<<< HEAD
-/// Create a generic target reduction using a recurrence descriptor \p Desc
-/// The target is queried to determine if intrinsics or shuffle sequences are
-/// required to implement the reduction.
-/// Fast-math-flags are propagated using the RecurrenceDescriptor.
-#if SIFIVE_CUSTOMIZATION
-Value *createReduction(IRBuilderBase &B, const RecurrenceDescriptor &Desc,
-                       Value *Src, Value *EVL, PHINode *OrigPhi = nullptr,
-                       Value *Mask = nullptr);
-#endif // SIFIVE_CUSTOMIZATION
-/// Create a generic reduction using a recurrence descriptor \p Desc
-/// Fast-math-flags are propagated using the RecurrenceDescriptor.
-Value *createReduction(IRBuilderBase &B, const RecurrenceDescriptor &Desc,
-                       Value *Src, PHINode *OrigPhi = nullptr);
-
-=======
->>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
 /// Create an ordered reduction intrinsic using the given recurrence
 /// kind \p RdxKind.
 Value *createOrderedReduction(IRBuilderBase &B, RecurKind RdxKind, Value *Src,

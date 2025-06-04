@@ -974,20 +974,40 @@ Value *VPInstruction::generate(VPTransformState &State) {
          RecurrenceDescriptor::isAnyOfRecurrenceKind(RK) ||
          RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK)) &&
         !PhiR->isInLoop()) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+      Value *InitEVL = nullptr;
       if (State.Plan->useVLAVectorizer()) {
-        Value *InitEVL =
-            State.get(State.Plan->getInitEVL(), /*NeedsScalar=*/true);
+        InitEVL = State.get(State.Plan->getInitEVL(), /*NeedsScalar=*/true);
         assert(InitEVL &&
                "InitEVL must be initialized in emitIterationCountCheck when "
                "using VP intrinsic to generate unordered reduction");
-        ReducedPartRdx =
-            createReduction(Builder, RdxDesc, ReducedPartRdx, InitEVL, OrigPhi);
-      } else {
-        ReducedPartRdx =
-            createReduction(Builder, RdxDesc, ReducedPartRdx, OrigPhi);
       }
+#endif // SIFIVE_CUSTOMIZATION
+      // TODO: Support in-order reductions based on the recurrence descriptor.
+      // All ops in the reduction inherit fast-math-flags from the recurrence
+      // descriptor.
+      IRBuilderBase::FastMathFlagGuard FMFG(Builder);
+      Builder.setFastMathFlags(RdxDesc.getFastMathFlags());
+
+#if SIFIVE_CUSTOMIZATION
+      if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RK))
+        ReducedPartRdx = InitEVL
+                             ? createAnyOfReduction(Builder, ReducedPartRdx,
+                                                    RdxDesc, OrigPhi, InitEVL)
+                             : createAnyOfReduction(Builder, ReducedPartRdx,
+                                                    RdxDesc, OrigPhi);
+      else if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
+        ReducedPartRdx =
+            InitEVL
+                ? createFindLastIVReduction(Builder, ReducedPartRdx, RdxDesc,
+                                            InitEVL)
+                : createFindLastIVReduction(Builder, ReducedPartRdx, RdxDesc);
+      else
+        ReducedPartRdx =
+            InitEVL
+                ? createSimpleReduction(Builder, ReducedPartRdx, RK, InitEVL)
+                : createSimpleReduction(Builder, ReducedPartRdx, RK);
+
       // Adjust the final scalar result after the loop if the target prefers
       // that.
       // FIXME: Handle situation that the start value and identity are equal.
@@ -1002,16 +1022,6 @@ Value *VPInstruction::generate(VPTransformState &State) {
                                              ReducedPartRdx);
       }
 #else
-      ReducedPartRdx =
-          createReduction(Builder, RdxDesc, ReducedPartRdx, OrigPhi);
-#endif // SIFIVE_CUSTOMIZATION
-=======
-      // TODO: Support in-order reductions based on the recurrence descriptor.
-      // All ops in the reduction inherit fast-math-flags from the recurrence
-      // descriptor.
-      IRBuilderBase::FastMathFlagGuard FMFG(Builder);
-      Builder.setFastMathFlags(RdxDesc.getFastMathFlags());
-
       if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RK))
         ReducedPartRdx =
             createAnyOfReduction(Builder, ReducedPartRdx, RdxDesc, OrigPhi);
@@ -1020,8 +1030,8 @@ Value *VPInstruction::generate(VPTransformState &State) {
             createFindLastIVReduction(Builder, ReducedPartRdx, RdxDesc);
       else
         ReducedPartRdx = createSimpleReduction(Builder, ReducedPartRdx, RK);
-
->>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
+    }
+#endif // SIFIVE_CUSTOMIZATION
       // If the reduction can be performed in a smaller type, we need to extend
       // the reduction to the wider type before we branch to the original loop.
       if (PhiTy != RdxDesc.getRecurrenceType())

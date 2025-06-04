@@ -1466,52 +1466,7 @@ Value *llvm::createSimpleReduction(VectorBuilder &VBuilder, Value *Src,
   return VBuilder.createSimpleReduction(Id, SrcTy, Ops);
 }
 
-<<<<<<< HEAD
-Value *llvm::createReduction(IRBuilderBase &B,
-                             const RecurrenceDescriptor &Desc, Value *Src,
-                             PHINode *OrigPhi) {
-  // TODO: Support in-order reductions based on the recurrence descriptor.
-  // All ops in the reduction inherit fast-math-flags from the recurrence
-  // descriptor.
-  IRBuilderBase::FastMathFlagGuard FMFGuard(B);
-  B.setFastMathFlags(Desc.getFastMathFlags());
-
-  RecurKind RK = Desc.getRecurrenceKind();
-  if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RK))
-    return createAnyOfReduction(B, Src, Desc, OrigPhi);
-  if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
-    return createFindLastIVReduction(B, Src, Desc);
-
-  return createSimpleReduction(B, Src, RK);
-}
-
-#if SIFIVE_CUSTOMIZATION
-Value *llvm::createReduction(IRBuilderBase &B, const RecurrenceDescriptor &Desc,
-                             Value *Src, Value *EVL, PHINode *OrigPhi,
-                             Value *Mask) {
-  // TODO: Support in-order reductions based on the recurrence descriptor.
-  // All ops in the reduction inherit fast-math-flags from the recurrence
-  // descriptor.
-  IRBuilderBase::FastMathFlagGuard FMFGuard(B);
-  B.setFastMathFlags(Desc.getFastMathFlags());
-
-  RecurKind RK = Desc.getRecurrenceKind();
-  if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RK)) {
-    assert(!Mask && "Masked AnyOf recurrence is not supported");
-    return createAnyOfReduction(B, Src, Desc, OrigPhi, EVL);
-  }
-  if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
-    return createFindLastIVReduction(B, Src, Desc, EVL, Mask);
-
-  return createSimpleReduction(B, Src, RK, EVL, Mask);
-}
-#endif // SIFIVE_CUSTOMIZATION
-
-Value *llvm::createOrderedReduction(IRBuilderBase &B,
-                                    const RecurrenceDescriptor &Desc,
-=======
 Value *llvm::createOrderedReduction(IRBuilderBase &B, RecurKind Kind,
->>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
                                     Value *Src, Value *Start) {
   assert((Kind == RecurKind::FAdd || Kind == RecurKind::FMulAdd) &&
          "Unexpected reduction kind");
