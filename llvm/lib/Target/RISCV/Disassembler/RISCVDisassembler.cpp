@@ -745,9 +745,6 @@ static constexpr DecoderListEntry DecoderList32[]{
     {DecoderTable32, {}, "standard 32-bit instructions"},
     {DecoderTableRV32Only32, {}, "RV32-only standard 32-bit instructions"},
     {DecoderTableZfinx32, {}, "Zfinx (Float in Integer)"},
-    {DecoderTableZdinxRV32GPRPair32,
-     {},
-     "ZdinxRV32GPRPair (rv32 and Double in Integer)"},
     {DecoderTableZdinxRV32Only32, {}, "RV32-only Zdinx (Double in Integer)"},
 #if SIFIVE_CUSTOMIZATION
     {DecoderTableRVZjid32, {RISCV::FeatureStdExtZjid}, "Zjid (I/D Cache Synchronization)"},
