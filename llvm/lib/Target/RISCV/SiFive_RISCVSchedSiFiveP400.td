@@ -73,6 +73,20 @@ class AdvancedVIReduceCycles<int sew, string mx> {
                       true: 1);
 }
 
+class SiFiveP400ComplexVRGather<string mx, int sew> {
+  int c = !cond(!eq(mx, "M2"): 14,
+                !eq(mx, "M4"): !if(!eq(sew, 64), 20, 28),
+                !eq(mx, "M8"): !cond(!eq(sew, 32): 48,
+                                     !eq(sew, 64): 32,
+                                     true: 80));
+}
+
+class SiFiveP400ComplexVCompress<string mx> {
+  int c = !cond(!eq(mx, "M2"): 13,
+                !eq(mx, "M4"): 17,
+                !eq(mx, "M8"): 25);
+}
+
 class SiFiveP400VSM3CCycles<string mx> {
   // c = ceil(LMUL / 2)
   int c = !cond(!eq(mx, "M2") : 1,
@@ -430,24 +444,26 @@ foreach mx = ["MF8", "MF4", "MF2", "M1"] in {
   }
 }
 
-// Complex Gather and Compress
+// Complex Gather and Compress.
+// All of these are not pipelined.
 foreach mx = ["M2", "M4", "M8"] in {
-  defvar LMulLat = TGVGetLMulCycles<mx>.c;
   defvar IsWorstCase = TGVIsWorstCaseMX<mx, SchedMxList>.c;
-  let Latency = 6, ReleaseAtCycles = [LMulLat] in {
-    defm "" : LMULWriteResMX<"WriteVRGatherVX", [SiFiveP400VEXQ0], mx, IsWorstCase>;
-  }
-}
+  defvar LMulLat = TGVGetLMulCycles<mx>.c;
 
-foreach mx = ["M2", "M4", "M8"] in {
+  let Latency = LMulLat, ReleaseAtCycles = [LMulLat] in
+  defm "" : LMULWriteResMX<"WriteVRGatherVX", [SiFiveP400VEXQ0], mx, IsWorstCase>;
+
   foreach sew = SchedSEWSet<mx>.val in {
-    defvar LMulLat = TGVGetLMulCycles<mx>.c;
     defvar IsWorstCase = TGVIsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
-    let Latency = 6, ReleaseAtCycles = [!add(!mul(LMulLat, 2), 8)] in {
+    defvar GatherLat = SiFiveP400ComplexVRGather<mx, sew>.c;
+    defvar CompressLat = SiFiveP400ComplexVCompress<mx>.c;
+    let Latency = GatherLat, ReleaseAtCycles = [GatherLat] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVRGatherVV", [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
       defm "" : LMULSEWWriteResMXSEW<"WriteVRGatherEI16VV", [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
-      defm "" : LMULSEWWriteResMXSEW<"WriteVCompressV", [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
     }
+
+    let Latency = CompressLat, ReleaseAtCycles = [CompressLat] in
+    defm "" : LMULSEWWriteResMXSEW<"WriteVCompressV", [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
   }
 }
 
