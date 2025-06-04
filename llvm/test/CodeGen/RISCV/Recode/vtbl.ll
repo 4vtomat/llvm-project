@@ -528,15 +528,15 @@ define void @vtbl3_s8(ptr noundef %in_0, ptr nocapture noundef readonly %in_1, p
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v10, (a1)
-; CHECK-NEXT:    vmv.v.i v12, 0
+; CHECK-NEXT:    vmv.v.i v14, 0
 ; CHECK-NEXT:    li a0, 32
 ; CHECK-NEXT:    li a1, 31
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m2, ta, ma
-; CHECK-NEXT:    vslidedown.vi v14, v8, 16
+; CHECK-NEXT:    vslidedown.vi v12, v8, 16
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vslideup.vi v14, v12, 8
+; CHECK-NEXT:    vslideup.vi v12, v14, 8
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, ma
-; CHECK-NEXT:    vslideup.vi v8, v14, 16
+; CHECK-NEXT:    vslideup.vi v8, v12, 16
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsgtu.vx v0, v10, a1
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m2, ta, ma
@@ -565,15 +565,15 @@ define void @vtbl3_u8(ptr noundef %in_0, ptr nocapture noundef readonly %in_1, p
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v10, (a1)
-; CHECK-NEXT:    vmv.v.i v12, 0
+; CHECK-NEXT:    vmv.v.i v14, 0
 ; CHECK-NEXT:    li a0, 32
 ; CHECK-NEXT:    li a1, 31
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m2, ta, ma
-; CHECK-NEXT:    vslidedown.vi v14, v8, 16
+; CHECK-NEXT:    vslidedown.vi v12, v8, 16
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vslideup.vi v14, v12, 8
+; CHECK-NEXT:    vslideup.vi v12, v14, 8
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, ma
-; CHECK-NEXT:    vslideup.vi v8, v14, 16
+; CHECK-NEXT:    vslideup.vi v8, v12, 16
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsgtu.vx v0, v10, a1
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m2, ta, ma
@@ -720,15 +720,15 @@ define void @vtbx3_s8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, p
 ; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v10, (a2)
-; CHECK-NEXT:    vmv.v.i v12, 0
+; CHECK-NEXT:    vmv.v.i v14, 0
 ; CHECK-NEXT:    li a1, 32
 ; CHECK-NEXT:    li a2, 23
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m2, ta, ma
-; CHECK-NEXT:    vslidedown.vi v14, v8, 16
+; CHECK-NEXT:    vslidedown.vi v12, v8, 16
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vslideup.vi v14, v12, 8
+; CHECK-NEXT:    vslideup.vi v12, v14, 8
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m2, ta, ma
-; CHECK-NEXT:    vslideup.vi v8, v14, 16
+; CHECK-NEXT:    vslideup.vi v8, v12, 16
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsgtu.vx v0, v10, a2
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m2, ta, ma
@@ -760,15 +760,15 @@ define void @vtbx3_u8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, p
 ; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v10, (a2)
-; CHECK-NEXT:    vmv.v.i v12, 0
+; CHECK-NEXT:    vmv.v.i v14, 0
 ; CHECK-NEXT:    li a1, 32
 ; CHECK-NEXT:    li a2, 23
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m2, ta, ma
-; CHECK-NEXT:    vslidedown.vi v14, v8, 16
+; CHECK-NEXT:    vslidedown.vi v12, v8, 16
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vslideup.vi v14, v12, 8
+; CHECK-NEXT:    vslideup.vi v12, v14, 8
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m2, ta, ma
-; CHECK-NEXT:    vslideup.vi v8, v14, 16
+; CHECK-NEXT:    vslideup.vi v8, v12, 16
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsgtu.vx v0, v10, a2
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m2, ta, ma

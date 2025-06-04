@@ -296,57 +296,33 @@ define <vscale x 32 x i32> @vtrunc_nxv32i64_nxv32i32(<vscale x 32 x i64> %a, <vs
 ; CHECK-NEXT:    addi a1, a1, 16
 ; CHECK-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
 ; CHECK-NEXT:    csrr a1, vlenb
-<<<<<<< HEAD
-; CHECK-NEXT:    vl8re64.v v8, (a0)
+; CHECK-NEXT:    vl8re64.v v16, (a0)
 ; CHECK-NEXT:    srli a4, a1, 2
 ; CHECK-NEXT:    slli a5, a1, 3
-=======
-; CHECK-NEXT:    vl8re64.v v16, (a0)
-; CHECK-NEXT:    srli a5, a1, 3
-; CHECK-NEXT:    slli a4, a1, 3
->>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
 ; CHECK-NEXT:    slli a3, a1, 1
-; CHECK-NEXT:    vslidedown.vx v16, v0, a4
+; CHECK-NEXT:    vslidedown.vx v24, v0, a4
 ; CHECK-NEXT:    add a6, a0, a5
 ; CHECK-NEXT:    sub a0, a2, a3
 ; CHECK-NEXT:    sltu a4, a2, a0
 ; CHECK-NEXT:    addi a4, a4, -1
 ; CHECK-NEXT:    and a0, a4, a0
 ; CHECK-NEXT:    sub a4, a0, a1
-<<<<<<< HEAD
 ; CHECK-NEXT:    sltu a5, a0, a4
 ; CHECK-NEXT:    addi a5, a5, -1
 ; CHECK-NEXT:    and a5, a5, a4
 ; CHECK-NEXT:    srli a4, a1, 3
 ; CHECK-NEXT:    vsetvli a7, zero, e8, mf4, ta, ma
-; CHECK-NEXT:    vslidedown.vx v0, v16, a4
-; CHECK-NEXT:    vl8re64.v v24, (a6)
-=======
-; CHECK-NEXT:    sltu a7, a0, a4
-; CHECK-NEXT:    addi a7, a7, -1
-; CHECK-NEXT:    and a4, a7, a4
-; CHECK-NEXT:    srli a7, a1, 2
+; CHECK-NEXT:    vslidedown.vx v0, v24, a4
 ; CHECK-NEXT:    vl8re64.v v8, (a6)
-; CHECK-NEXT:    vslidedown.vx v24, v0, a7
-; CHECK-NEXT:    vsetvli a6, zero, e8, mf4, ta, ma
-; CHECK-NEXT:    vslidedown.vx v6, v0, a5
-; CHECK-NEXT:    vslidedown.vx v0, v24, a5
->>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
 ; CHECK-NEXT:    bltu a0, a1, .LBB17_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    mv a0, a1
 ; CHECK-NEXT:  .LBB17_2:
-<<<<<<< HEAD
 ; CHECK-NEXT:    vsetvli zero, a5, e32, m4, ta, ma
-; CHECK-NEXT:    vnsrl.wi v20, v24, 0, v0.t
+; CHECK-NEXT:    vnsrl.wi v28, v8, 0, v0.t
 ; CHECK-NEXT:    vsetvli a5, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v6, v7, a4
-; CHECK-NEXT:    vmv1r.v v0, v16
-=======
-; CHECK-NEXT:    vsetvli zero, a4, e32, m4, ta, ma
-; CHECK-NEXT:    vnsrl.wi v28, v8, 0, v0.t
 ; CHECK-NEXT:    vmv1r.v v0, v24
->>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
 ; CHECK-NEXT:    vnsrl.wi v24, v16, 0, v0.t
 ; CHECK-NEXT:    bltu a2, a3, .LBB17_4

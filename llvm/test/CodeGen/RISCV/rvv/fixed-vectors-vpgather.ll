@@ -851,8 +851,8 @@ define <4 x i64> @vpgather_v4i64(<4 x ptr> %ptrs, <4 x i1> %m, i32 zeroext %evl)
 ; RV32-LABEL: vpgather_v4i64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
-; RV32-NEXT:    vmv1r.v v10, v8
-; RV32-NEXT:    vluxei32.v v8, (zero), v10, v0.t
+; RV32-NEXT:    vmv1r.v v9, v8
+; RV32-NEXT:    vluxei32.v v8, (zero), v9, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: vpgather_v4i64:
@@ -868,8 +868,8 @@ define <4 x i64> @vpgather_truemask_v4i64(<4 x ptr> %ptrs, i32 zeroext %evl) {
 ; RV32-LABEL: vpgather_truemask_v4i64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
-; RV32-NEXT:    vmv1r.v v10, v8
-; RV32-NEXT:    vluxei32.v v8, (zero), v10
+; RV32-NEXT:    vmv1r.v v9, v8
+; RV32-NEXT:    vluxei32.v v8, (zero), v9
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: vpgather_truemask_v4i64:
@@ -887,8 +887,8 @@ define <8 x i64> @vpgather_v8i64(<8 x ptr> %ptrs, <8 x i1> %m, i32 zeroext %evl)
 ; RV32-LABEL: vpgather_v8i64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
-; RV32-NEXT:    vmv2r.v v12, v8
-; RV32-NEXT:    vluxei32.v v8, (zero), v12, v0.t
+; RV32-NEXT:    vmv2r.v v10, v8
+; RV32-NEXT:    vluxei32.v v8, (zero), v10, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: vpgather_v8i64:
@@ -1713,8 +1713,8 @@ define <4 x double> @vpgather_v4f64(<4 x ptr> %ptrs, <4 x i1> %m, i32 zeroext %e
 ; RV32-LABEL: vpgather_v4f64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
-; RV32-NEXT:    vmv1r.v v10, v8
-; RV32-NEXT:    vluxei32.v v8, (zero), v10, v0.t
+; RV32-NEXT:    vmv1r.v v9, v8
+; RV32-NEXT:    vluxei32.v v8, (zero), v9, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: vpgather_v4f64:
@@ -1730,8 +1730,8 @@ define <4 x double> @vpgather_truemask_v4f64(<4 x ptr> %ptrs, i32 zeroext %evl) 
 ; RV32-LABEL: vpgather_truemask_v4f64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
-; RV32-NEXT:    vmv1r.v v10, v8
-; RV32-NEXT:    vluxei32.v v8, (zero), v10
+; RV32-NEXT:    vmv1r.v v9, v8
+; RV32-NEXT:    vluxei32.v v8, (zero), v9
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: vpgather_truemask_v4f64:
@@ -1749,8 +1749,8 @@ define <8 x double> @vpgather_v8f64(<8 x ptr> %ptrs, <8 x i1> %m, i32 zeroext %e
 ; RV32-LABEL: vpgather_v8f64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
-; RV32-NEXT:    vmv2r.v v12, v8
-; RV32-NEXT:    vluxei32.v v8, (zero), v12, v0.t
+; RV32-NEXT:    vmv2r.v v10, v8
+; RV32-NEXT:    vluxei32.v v8, (zero), v10, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: vpgather_v8f64:

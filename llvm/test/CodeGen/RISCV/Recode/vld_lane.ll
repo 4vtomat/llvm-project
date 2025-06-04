@@ -636,13 +636,13 @@ define void @vld3_lane_f64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vsetivli zero, 24, e8, m2, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vi v10, v8, 1
-; CHECK-NEXT:    vmv2r.v v12, v8
-; CHECK-NEXT:    vmv.v.v v13, v10
+; CHECK-NEXT:    vslidedown.vi v13, v8, 1
+; CHECK-NEXT:    vmv2r.v v10, v8
+; CHECK-NEXT:    vmv.v.v v11, v13
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m2, ta, ma
-; CHECK-NEXT:    vslidedown.vi v14, v8, 2
+; CHECK-NEXT:    vslidedown.vi v12, v8, 2
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-; CHECK-NEXT:    vsseg3e64.v v12, (a2)
+; CHECK-NEXT:    vsseg3e64.v v10, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %vld3 = tail call { <1 x double>, <1 x double>, <1 x double> } @llvm.aarch64.neon.ld3.v1f64.p0(ptr %in_1)
@@ -748,13 +748,13 @@ define void @vld3_lane_s64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vsetivli zero, 24, e8, m2, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vi v10, v8, 1
-; CHECK-NEXT:    vmv2r.v v12, v8
-; CHECK-NEXT:    vmv.v.v v13, v10
+; CHECK-NEXT:    vslidedown.vi v13, v8, 1
+; CHECK-NEXT:    vmv2r.v v10, v8
+; CHECK-NEXT:    vmv.v.v v11, v13
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m2, ta, ma
-; CHECK-NEXT:    vslidedown.vi v14, v8, 2
+; CHECK-NEXT:    vslidedown.vi v12, v8, 2
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-; CHECK-NEXT:    vsseg3e64.v v12, (a2)
+; CHECK-NEXT:    vsseg3e64.v v10, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %vld3 = tail call { <1 x i64>, <1 x i64>, <1 x i64> } @llvm.aarch64.neon.ld3.v1i64.p0(ptr %in_1)
@@ -889,13 +889,13 @@ define void @vld3_lane_u64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vsetivli zero, 24, e8, m2, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vi v10, v8, 1
-; CHECK-NEXT:    vmv2r.v v12, v8
-; CHECK-NEXT:    vmv.v.v v13, v10
+; CHECK-NEXT:    vslidedown.vi v13, v8, 1
+; CHECK-NEXT:    vmv2r.v v10, v8
+; CHECK-NEXT:    vmv.v.v v11, v13
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m2, ta, ma
-; CHECK-NEXT:    vslidedown.vi v14, v8, 2
+; CHECK-NEXT:    vslidedown.vi v12, v8, 2
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-; CHECK-NEXT:    vsseg3e64.v v12, (a2)
+; CHECK-NEXT:    vsseg3e64.v v10, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %vld3 = tail call { <1 x i64>, <1 x i64>, <1 x i64> } @llvm.aarch64.neon.ld3.v1i64.p0(ptr %in_1)

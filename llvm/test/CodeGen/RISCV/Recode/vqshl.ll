@@ -427,9 +427,9 @@ define void @vqshlq_n_s16(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK-LABEL: vqshlq_n_s16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vwadd.vv v10, v8, v8
-; CHECK-NEXT:    vnclip.wi v8, v10, 0
+; CHECK-NEXT:    vle16.v v9, (a0)
+; CHECK-NEXT:    vwadd.vv v8, v9, v9
+; CHECK-NEXT:    vnclip.wi v8, v8, 0
 ; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -482,10 +482,10 @@ define void @vqshlq_n_s8(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-LABEL: vqshlq_n_s8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a0)
+; CHECK-NEXT:    vle8.v v9, (a0)
 ; CHECK-NEXT:    li a0, 128
-; CHECK-NEXT:    vwmulsu.vx v10, v8, a0
-; CHECK-NEXT:    vnclip.wi v8, v10, 0
+; CHECK-NEXT:    vwmulsu.vx v8, v9, a0
+; CHECK-NEXT:    vnclip.wi v8, v8, 0
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -499,10 +499,10 @@ define void @vqshlq_n_u16(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK-LABEL: vqshlq_n_u16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a0)
+; CHECK-NEXT:    vle16.v v9, (a0)
 ; CHECK-NEXT:    lui a0, 8
-; CHECK-NEXT:    vwmulu.vx v10, v8, a0
-; CHECK-NEXT:    vnclipu.wi v8, v10, 0
+; CHECK-NEXT:    vwmulu.vx v8, v9, a0
+; CHECK-NEXT:    vnclipu.wi v8, v8, 0
 ; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -516,9 +516,9 @@ define void @vqshlq_n_u32(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK-LABEL: vqshlq_n_u32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    vwaddu.vv v10, v8, v8
-; CHECK-NEXT:    vnclipu.wi v8, v10, 0
+; CHECK-NEXT:    vle32.v v9, (a0)
+; CHECK-NEXT:    vwaddu.vv v8, v9, v9
+; CHECK-NEXT:    vnclipu.wi v8, v8, 0
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -565,24 +565,24 @@ define void @vqshlq_s16(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a1)
-; CHECK-NEXT:    vle16.v v9, (a0)
+; CHECK-NEXT:    vle16.v v12, (a0)
 ; CHECK-NEXT:    li a0, 255
 ; CHECK-NEXT:    li a1, 127
 ; CHECK-NEXT:    vand.vx v8, v8, a0
 ; CHECK-NEXT:    li a0, 256
 ; CHECK-NEXT:    vmsgtu.vx v0, v8, a1
 ; CHECK-NEXT:    li a1, 15
-; CHECK-NEXT:    vrsub.vx v10, v8, a0
+; CHECK-NEXT:    vrsub.vx v9, v8, a0
 ; CHECK-NEXT:    li a0, 16
-; CHECK-NEXT:    vminu.vx v8, v8, a0
-; CHECK-NEXT:    vminu.vx v10, v10, a1
+; CHECK-NEXT:    vminu.vx v10, v8, a0
+; CHECK-NEXT:    vminu.vx v13, v9, a1
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vzext.vf2 v12, v8
-; CHECK-NEXT:    vsext.vf2 v14, v9
-; CHECK-NEXT:    vsll.vv v12, v14, v12
+; CHECK-NEXT:    vzext.vf2 v8, v10
+; CHECK-NEXT:    vsext.vf2 v10, v12
+; CHECK-NEXT:    vsll.vv v8, v10, v8
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, mu
-; CHECK-NEXT:    vnclip.wi v8, v12, 0
-; CHECK-NEXT:    vsra.vv v8, v9, v10, v0.t
+; CHECK-NEXT:    vnclip.wi v8, v8, 0
+; CHECK-NEXT:    vsra.vv v8, v12, v13, v0.t
 ; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -598,24 +598,24 @@ define void @vqshlq_s32(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a1)
-; CHECK-NEXT:    vle32.v v9, (a0)
+; CHECK-NEXT:    vle32.v v12, (a0)
 ; CHECK-NEXT:    li a0, 255
 ; CHECK-NEXT:    li a1, 127
 ; CHECK-NEXT:    vand.vx v8, v8, a0
 ; CHECK-NEXT:    li a0, 256
 ; CHECK-NEXT:    vmsgtu.vx v0, v8, a1
 ; CHECK-NEXT:    li a1, 31
-; CHECK-NEXT:    vrsub.vx v10, v8, a0
+; CHECK-NEXT:    vrsub.vx v9, v8, a0
 ; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vminu.vx v8, v8, a0
-; CHECK-NEXT:    vminu.vx v10, v10, a1
+; CHECK-NEXT:    vminu.vx v10, v8, a0
+; CHECK-NEXT:    vminu.vx v13, v9, a1
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
-; CHECK-NEXT:    vzext.vf2 v12, v8
-; CHECK-NEXT:    vsext.vf2 v14, v9
-; CHECK-NEXT:    vsll.vv v12, v14, v12
+; CHECK-NEXT:    vzext.vf2 v8, v10
+; CHECK-NEXT:    vsext.vf2 v10, v12
+; CHECK-NEXT:    vsll.vv v8, v10, v8
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, mu
-; CHECK-NEXT:    vnclip.wi v8, v12, 0
-; CHECK-NEXT:    vsra.vv v8, v9, v10, v0.t
+; CHECK-NEXT:    vnclip.wi v8, v8, 0
+; CHECK-NEXT:    vsra.vv v8, v12, v13, v0.t
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -673,21 +673,21 @@ define void @vqshlq_s8(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a1)
-; CHECK-NEXT:    vle8.v v9, (a0)
+; CHECK-NEXT:    vle8.v v12, (a0)
 ; CHECK-NEXT:    li a0, 127
 ; CHECK-NEXT:    li a1, 7
 ; CHECK-NEXT:    vmsgtu.vx v0, v8, a0
 ; CHECK-NEXT:    li a0, 8
-; CHECK-NEXT:    vrsub.vi v10, v8, 0
-; CHECK-NEXT:    vminu.vx v8, v8, a0
-; CHECK-NEXT:    vminu.vx v10, v10, a1
+; CHECK-NEXT:    vrsub.vi v9, v8, 0
+; CHECK-NEXT:    vminu.vx v10, v8, a0
+; CHECK-NEXT:    vminu.vx v13, v9, a1
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
-; CHECK-NEXT:    vzext.vf2 v12, v8
-; CHECK-NEXT:    vsext.vf2 v14, v9
-; CHECK-NEXT:    vsll.vv v12, v14, v12
+; CHECK-NEXT:    vzext.vf2 v8, v10
+; CHECK-NEXT:    vsext.vf2 v10, v12
+; CHECK-NEXT:    vsll.vv v8, v10, v8
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
-; CHECK-NEXT:    vnclip.wi v8, v12, 0
-; CHECK-NEXT:    vsra.vv v8, v9, v10, v0.t
+; CHECK-NEXT:    vnclip.wi v8, v8, 0
+; CHECK-NEXT:    vsra.vv v8, v12, v13, v0.t
 ; CHECK-NEXT:    vse8.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -703,29 +703,29 @@ define void @vqshlq_u16(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a1)
-; CHECK-NEXT:    vle16.v v9, (a0)
+; CHECK-NEXT:    vle16.v v10, (a0)
 ; CHECK-NEXT:    li a0, 255
 ; CHECK-NEXT:    li a1, 256
-; CHECK-NEXT:    vand.vx v8, v8, a0
+; CHECK-NEXT:    vand.vx v12, v8, a0
 ; CHECK-NEXT:    li a0, 127
-; CHECK-NEXT:    vrsub.vx v10, v8, a1
+; CHECK-NEXT:    vrsub.vx v11, v12, a1
 ; CHECK-NEXT:    li a1, 16
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vzext.vf2 v12, v9
+; CHECK-NEXT:    vzext.vf2 v8, v10
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vsrl.vv v9, v9, v10
-; CHECK-NEXT:    vmsgtu.vi v0, v10, 15
-; CHECK-NEXT:    vminu.vx v10, v8, a1
-; CHECK-NEXT:    vmerge.vim v9, v9, 0, v0
+; CHECK-NEXT:    vsrl.vv v10, v10, v11
+; CHECK-NEXT:    vmsgtu.vi v0, v11, 15
+; CHECK-NEXT:    vminu.vx v11, v12, a1
+; CHECK-NEXT:    vmerge.vim v13, v10, 0, v0
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vzext.vf2 v14, v10
+; CHECK-NEXT:    vzext.vf2 v10, v11
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vmsgtu.vx v0, v8, a0
+; CHECK-NEXT:    vmsgtu.vx v0, v12, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vsll.vv v10, v12, v14
+; CHECK-NEXT:    vsll.vv v8, v8, v10
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vnclipu.wi v8, v10, 0
-; CHECK-NEXT:    vmerge.vvm v8, v8, v9, v0
+; CHECK-NEXT:    vnclipu.wi v8, v8, 0
+; CHECK-NEXT:    vmerge.vvm v8, v8, v13, v0
 ; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -741,30 +741,30 @@ define void @vqshlq_u32(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a1)
-; CHECK-NEXT:    vle32.v v9, (a0)
+; CHECK-NEXT:    vle32.v v10, (a0)
 ; CHECK-NEXT:    li a0, 255
 ; CHECK-NEXT:    li a1, 256
-; CHECK-NEXT:    vand.vx v8, v8, a0
+; CHECK-NEXT:    vand.vx v12, v8, a0
 ; CHECK-NEXT:    li a0, 31
-; CHECK-NEXT:    vrsub.vx v10, v8, a1
+; CHECK-NEXT:    vrsub.vx v11, v12, a1
 ; CHECK-NEXT:    li a1, 127
-; CHECK-NEXT:    vmsgtu.vx v0, v10, a0
+; CHECK-NEXT:    vmsgtu.vx v0, v11, a0
 ; CHECK-NEXT:    li a0, 32
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
-; CHECK-NEXT:    vzext.vf2 v12, v9
+; CHECK-NEXT:    vzext.vf2 v8, v10
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vsrl.vv v9, v9, v10
-; CHECK-NEXT:    vminu.vx v10, v8, a0
-; CHECK-NEXT:    vmerge.vim v9, v9, 0, v0
+; CHECK-NEXT:    vsrl.vv v10, v10, v11
+; CHECK-NEXT:    vminu.vx v11, v12, a0
+; CHECK-NEXT:    vmerge.vim v13, v10, 0, v0
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
-; CHECK-NEXT:    vzext.vf2 v14, v10
+; CHECK-NEXT:    vzext.vf2 v10, v11
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vmsgtu.vx v0, v8, a1
+; CHECK-NEXT:    vmsgtu.vx v0, v12, a1
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
-; CHECK-NEXT:    vsll.vv v10, v12, v14
+; CHECK-NEXT:    vsll.vv v8, v8, v10
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vnclipu.wi v8, v10, 0
-; CHECK-NEXT:    vmerge.vvm v8, v8, v9, v0
+; CHECK-NEXT:    vnclipu.wi v8, v8, 0
+; CHECK-NEXT:    vmerge.vvm v8, v8, v13, v0
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -818,25 +818,25 @@ define void @vqshlq_u8(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v9, (a1)
-; CHECK-NEXT:    vle8.v v10, (a0)
+; CHECK-NEXT:    vle8.v v11, (a0)
 ; CHECK-NEXT:    li a0, 127
 ; CHECK-NEXT:    li a1, 8
 ; CHECK-NEXT:    vmsgtu.vx v8, v9, a0
-; CHECK-NEXT:    vrsub.vi v11, v9, 0
+; CHECK-NEXT:    vrsub.vi v10, v9, 0
 ; CHECK-NEXT:    vminu.vx v9, v9, a1
-; CHECK-NEXT:    vsrl.vv v12, v10, v11
-; CHECK-NEXT:    vmsgtu.vi v0, v11, 7
+; CHECK-NEXT:    vsrl.vv v12, v11, v10
+; CHECK-NEXT:    vmsgtu.vi v0, v10, 7
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
-; CHECK-NEXT:    vzext.vf2 v14, v10
+; CHECK-NEXT:    vzext.vf2 v10, v11
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vmerge.vim v10, v12, 0, v0
+; CHECK-NEXT:    vmerge.vim v14, v12, 0, v0
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
 ; CHECK-NEXT:    vzext.vf2 v12, v9
-; CHECK-NEXT:    vsll.vv v12, v14, v12
+; CHECK-NEXT:    vsll.vv v10, v10, v12
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vnclipu.wi v9, v12, 0
+; CHECK-NEXT:    vnclipu.wi v9, v10, 0
 ; CHECK-NEXT:    vmv.v.v v0, v8
-; CHECK-NEXT:    vmerge.vvm v8, v9, v10, v0
+; CHECK-NEXT:    vmerge.vvm v8, v9, v14, v0
 ; CHECK-NEXT:    vse8.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:

@@ -1904,13 +1904,9 @@ define <vscale x 8 x double> @vfcopysign_exttrunc_vv_nxv8f64_nxv8f16(<vscale x 8
 ; CHECK-LABEL: vfcopysign_exttrunc_vv_nxv8f64_nxv8f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e16, m2, ta, ma
-; CHECK-NEXT:    vfwcvt.f.f.v v24, v16
+; CHECK-NEXT:    vfwcvt.f.f.v v20, v16
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
-<<<<<<< HEAD
 ; CHECK-NEXT:    vfwcvt.f.f.v v16, v20
-=======
-; CHECK-NEXT:    vfwcvt.f.f.v v16, v24
->>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
 ; CHECK-NEXT:    vfsgnj.vv v8, v8, v16
 ; CHECK-NEXT:    ret
@@ -1937,13 +1933,9 @@ define <vscale x 8 x double> @vfcopynsign_exttrunc_vv_nxv8f64_nxv8f16(<vscale x 
 ; CHECK-LABEL: vfcopynsign_exttrunc_vv_nxv8f64_nxv8f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e16, m2, ta, ma
-; CHECK-NEXT:    vfwcvt.f.f.v v24, v16
+; CHECK-NEXT:    vfwcvt.f.f.v v20, v16
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
-<<<<<<< HEAD
 ; CHECK-NEXT:    vfwcvt.f.f.v v16, v20
-=======
-; CHECK-NEXT:    vfwcvt.f.f.v v16, v24
->>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
 ; CHECK-NEXT:    vfsgnjn.vv v8, v8, v16
 ; CHECK-NEXT:    ret

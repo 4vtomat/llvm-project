@@ -5,11 +5,12 @@
 define <vscale x 4 x float> @sf_vfwmacc_4x4x4(<vscale x 4 x i16> %a, <vscale x 4 x i16> %b) nounwind {
 ; CHECK-LABEL: sf_vfwmacc_4x4x4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    #APP
-; CHECK-NEXT:    sf.vfwmacc.4x4x4 v10, v8, v9
-; CHECK-NEXT:    #NO_APP
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
-; CHECK-NEXT:    vmv2r.v v8, v10
+; CHECK-NEXT:    vmv1r.v v10, v9
+; CHECK-NEXT:    vmv1r.v v11, v8
+; CHECK-NEXT:    #APP
+; CHECK-NEXT:    sf.vfwmacc.4x4x4 v8, v11, v10
+; CHECK-NEXT:    #NO_APP
 ; CHECK-NEXT:    ret
 entry:
   %0 = tail call <vscale x 4 x float> asm sideeffect "sf.vfwmacc.4x4x4 $0, $1, $2", "=&^vr,^vr,^vr"(<vscale x 4 x i16> %a, <vscale x 4 x i16> %b)

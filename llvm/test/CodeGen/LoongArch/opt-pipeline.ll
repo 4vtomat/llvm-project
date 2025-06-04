@@ -31,15 +31,11 @@
 ; LAXX-NEXT:     Pre-ISel Intrinsic Lowering
 ; LAXX-NEXT:     FunctionPass Manager
 ; LAXX-NEXT:       Expand large div/rem
-<<<<<<< HEAD
-; LAXX-NEXT:       Expand large fp convert
+; LAXX-NEXT:       Expand fp
 ; begin SIFIVE_CUSTOMIZATION
 ; LAXX-NEXT:       Expand powi functions
 ; LAXX-NEXT:       Expand vp.reduce functions
 ; end SIFIVE_CUSTOMIZATION
-=======
-; LAXX-NEXT:       Expand fp
->>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
 ; LAXX-NEXT:       Expand Atomic instructions
 ; LAXX-NEXT:       Module Verifier
 ; LAXX-NEXT:       Dominator Tree Construction

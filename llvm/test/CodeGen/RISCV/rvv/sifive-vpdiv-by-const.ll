@@ -612,9 +612,9 @@ define <vscale x 16 x i32> @vpsdiv_pow2_nxv16i32(<vscale x 16 x i32> %va, <vscal
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
 ; CHECK-NEXT:    vmv1r.v v7, v0
 ; CHECK-NEXT:    vmv.v.i v24, 4
-; CHECK-NEXT:    vmseq.vi v17, v24, -1, v0.t
-; CHECK-NEXT:    vmseq.vi v18, v24, 1, v0.t
-; CHECK-NEXT:    vmor.mm v17, v18, v17
+; CHECK-NEXT:    vmseq.vi v16, v24, -1, v0.t
+; CHECK-NEXT:    vmseq.vi v17, v24, 1, v0.t
+; CHECK-NEXT:    vmor.mm v17, v17, v16
 ; CHECK-NEXT:    vsra.vi v24, v8, 31, v0.t
 ; CHECK-NEXT:    vsrl.vi v24, v24, 30, v0.t
 ; CHECK-NEXT:    vadd.vv v24, v8, v24, v0.t

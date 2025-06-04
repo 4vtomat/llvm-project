@@ -72,10 +72,10 @@ define void @vqshluq_n_s16(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vmax.vx v8, v8, zero
+; CHECK-NEXT:    vmax.vx v9, v8, zero
 ; CHECK-NEXT:    lui a0, 8
-; CHECK-NEXT:    vwmulu.vx v10, v8, a0
-; CHECK-NEXT:    vnclipu.wi v8, v10, 0
+; CHECK-NEXT:    vwmulu.vx v8, v9, a0
+; CHECK-NEXT:    vnclipu.wi v8, v8, 0
 ; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
@@ -121,10 +121,10 @@ define void @vqshluq_n_s8(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vmax.vx v8, v8, zero
+; CHECK-NEXT:    vmax.vx v9, v8, zero
 ; CHECK-NEXT:    li a0, 128
-; CHECK-NEXT:    vwmulu.vx v10, v8, a0
-; CHECK-NEXT:    vnclipu.wi v8, v10, 0
+; CHECK-NEXT:    vwmulu.vx v8, v9, a0
+; CHECK-NEXT:    vnclipu.wi v8, v8, 0
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:

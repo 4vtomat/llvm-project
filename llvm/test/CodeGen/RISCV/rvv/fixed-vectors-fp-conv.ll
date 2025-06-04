@@ -36,8 +36,8 @@ define void @fpext_v8f16_v8f32(ptr %x, ptr %y) {
 ; CHECK-LABEL: fpext_v8f16_v8f32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vle16.v v10, (a0)
-; CHECK-NEXT:    vfwcvt.f.f.v v8, v10
+; CHECK-NEXT:    vle16.v v9, (a0)
+; CHECK-NEXT:    vfwcvt.f.f.v v8, v9
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
   %a = load <8 x half>, ptr %x
@@ -51,13 +51,9 @@ define void @fpext_v8f16_v8f64(ptr %x, ptr %y) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vfwcvt.f.f.v v12, v8
+; CHECK-NEXT:    vfwcvt.f.f.v v10, v8
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-<<<<<<< HEAD
 ; CHECK-NEXT:    vfwcvt.f.f.v v8, v10
-=======
-; CHECK-NEXT:    vfwcvt.f.f.v v8, v12
->>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
   %a = load <8 x half>, ptr %x

@@ -24,21 +24,21 @@ define void @wombat(ptr %arg, ptr %arg1, ptr %arg2, i64 %arg3, i32 %arg4, i32 %a
 ; CHECK-NEXT:    addi t3, a6, 1
 ; CHECK-NEXT:    vsetvli t2, t2, e8, m1, ta, ma
 ; CHECK-NEXT:    add t4, a1, t3
-; CHECK-NEXT:    vle8.v v8, (t4)
-; CHECK-NEXT:    add t4, a0, a6
 ; CHECK-NEXT:    vle8.v v9, (t4)
+; CHECK-NEXT:    add t4, a0, a6
+; CHECK-NEXT:    vle8.v v12, (t4)
 ; CHECK-NEXT:    add t4, a1, a6
 ; CHECK-NEXT:    add t3, a0, t3
-; CHECK-NEXT:    vle8.v v10, (t3)
+; CHECK-NEXT:    vle8.v v11, (t3)
 ; CHECK-NEXT:    add t3, a2, a6
-; CHECK-NEXT:    vle8.v v11, (t4)
-; CHECK-NEXT:    vwmulu.vx v12, v8, t0
-; CHECK-NEXT:    vwmulu.vx v14, v10, a4
-; CHECK-NEXT:    vwmaccu.vx v14, a5, v9
-; CHECK-NEXT:    vwmaccu.vx v12, a7, v11
+; CHECK-NEXT:    vle8.v v13, (t4)
+; CHECK-NEXT:    vwmulu.vx v8, v9, t0
+; CHECK-NEXT:    vwmulu.vx v10, v11, a4
+; CHECK-NEXT:    vwmaccu.vx v10, a5, v12
+; CHECK-NEXT:    vwmaccu.vx v8, a7, v13
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
-; CHECK-NEXT:    vadd.vx v8, v12, t1
-; CHECK-NEXT:    vadd.vv v8, v8, v14
+; CHECK-NEXT:    vadd.vx v8, v8, t1
+; CHECK-NEXT:    vadd.vv v8, v8, v10
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, ma
 ; CHECK-NEXT:    vnsrl.wi v8, v8, 6
 ; CHECK-NEXT:    add a6, a6, t2
@@ -71,21 +71,21 @@ define void @wombat(ptr %arg, ptr %arg1, ptr %arg2, i64 %arg3, i32 %arg4, i32 %a
 ; NOSINK-NEXT:    addi a7, a6, 1
 ; NOSINK-NEXT:    vsetvli a5, a5, e8, m1, ta, ma
 ; NOSINK-NEXT:    add t0, a1, a7
-; NOSINK-NEXT:    vle8.v v12, (t0)
-; NOSINK-NEXT:    add t0, a0, a6
 ; NOSINK-NEXT:    vle8.v v13, (t0)
+; NOSINK-NEXT:    add t0, a0, a6
+; NOSINK-NEXT:    vle8.v v16, (t0)
 ; NOSINK-NEXT:    add t0, a1, a6
 ; NOSINK-NEXT:    add a7, a0, a7
-; NOSINK-NEXT:    vle8.v v14, (a7)
+; NOSINK-NEXT:    vle8.v v15, (a7)
 ; NOSINK-NEXT:    add a7, a2, a6
-; NOSINK-NEXT:    vle8.v v15, (t0)
-; NOSINK-NEXT:    vwmulu.vv v16, v10, v12
-; NOSINK-NEXT:    vwmulu.vv v18, v8, v14
-; NOSINK-NEXT:    vwmaccu.vv v18, v11, v13
-; NOSINK-NEXT:    vwmaccu.vv v16, v9, v15
+; NOSINK-NEXT:    vle8.v v17, (t0)
+; NOSINK-NEXT:    vwmulu.vv v12, v10, v13
+; NOSINK-NEXT:    vwmulu.vv v14, v8, v15
+; NOSINK-NEXT:    vwmaccu.vv v14, v11, v16
+; NOSINK-NEXT:    vwmaccu.vv v12, v9, v17
 ; NOSINK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
-; NOSINK-NEXT:    vadd.vx v12, v16, a4
-; NOSINK-NEXT:    vadd.vv v12, v12, v18
+; NOSINK-NEXT:    vadd.vx v12, v12, a4
+; NOSINK-NEXT:    vadd.vv v12, v12, v14
 ; NOSINK-NEXT:    vsetvli zero, zero, e8, m1, ta, ma
 ; NOSINK-NEXT:    vnsrl.wi v12, v12, 6
 ; NOSINK-NEXT:    add a6, a6, a5
@@ -183,20 +183,20 @@ define void @spam(ptr %arg, ptr %arg1, ptr %arg2, i64 %arg3, i32 %arg4, i32 %arg
 ; CHECK-NEXT:    add t3, a1, a6
 ; CHECK-NEXT:    addi t4, a6, 1
 ; CHECK-NEXT:    vsetvli t2, t2, e8, m1, ta, ma
-; CHECK-NEXT:    vle8.v v8, (t3)
-; CHECK-NEXT:    add t3, a0, a6
 ; CHECK-NEXT:    vle8.v v9, (t3)
+; CHECK-NEXT:    add t3, a0, a6
+; CHECK-NEXT:    vle8.v v11, (t3)
 ; CHECK-NEXT:    add t3, a0, t4
-; CHECK-NEXT:    vle8.v v10, (t3)
+; CHECK-NEXT:    vle8.v v12, (t3)
 ; CHECK-NEXT:    add t3, a2, a6
 ; CHECK-NEXT:    add t4, a1, t4
-; CHECK-NEXT:    vle8.v v11, (t4)
-; CHECK-NEXT:    vwmulu.vx v12, v8, a7
-; CHECK-NEXT:    vwmulu.vx v8, v9, a5
-; CHECK-NEXT:    vwmaccu.vx v8, a4, v10
-; CHECK-NEXT:    vwmaccu.vx v12, t0, v11
+; CHECK-NEXT:    vle8.v v13, (t4)
+; CHECK-NEXT:    vwmulu.vx v8, v9, a7
+; CHECK-NEXT:    vwmulu.vx v10, v11, a5
+; CHECK-NEXT:    vwmaccu.vx v10, a4, v12
+; CHECK-NEXT:    vwmaccu.vx v8, t0, v13
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
-; CHECK-NEXT:    vadd.vv v8, v12, v8
+; CHECK-NEXT:    vadd.vv v8, v8, v10
 ; CHECK-NEXT:    vadd.vx v8, v8, t1
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, ma
 ; CHECK-NEXT:    vnsrl.wi v8, v8, 6
@@ -230,20 +230,20 @@ define void @spam(ptr %arg, ptr %arg1, ptr %arg2, i64 %arg3, i32 %arg4, i32 %arg
 ; NOSINK-NEXT:    add a7, a1, a6
 ; NOSINK-NEXT:    addi t0, a6, 1
 ; NOSINK-NEXT:    vsetvli a5, a5, e8, m1, ta, ma
-; NOSINK-NEXT:    vle8.v v12, (a7)
-; NOSINK-NEXT:    add a7, a0, a6
 ; NOSINK-NEXT:    vle8.v v13, (a7)
+; NOSINK-NEXT:    add a7, a0, a6
+; NOSINK-NEXT:    vle8.v v15, (a7)
 ; NOSINK-NEXT:    add a7, a0, t0
-; NOSINK-NEXT:    vle8.v v14, (a7)
+; NOSINK-NEXT:    vle8.v v16, (a7)
 ; NOSINK-NEXT:    add a7, a2, a6
 ; NOSINK-NEXT:    add t0, a1, t0
-; NOSINK-NEXT:    vle8.v v15, (t0)
-; NOSINK-NEXT:    vwmulu.vv v16, v9, v12
-; NOSINK-NEXT:    vwmulu.vv v12, v11, v13
-; NOSINK-NEXT:    vwmaccu.vv v12, v8, v14
-; NOSINK-NEXT:    vwmaccu.vv v16, v10, v15
+; NOSINK-NEXT:    vle8.v v17, (t0)
+; NOSINK-NEXT:    vwmulu.vv v12, v9, v13
+; NOSINK-NEXT:    vwmulu.vv v14, v11, v15
+; NOSINK-NEXT:    vwmaccu.vv v14, v8, v16
+; NOSINK-NEXT:    vwmaccu.vv v12, v10, v17
 ; NOSINK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
-; NOSINK-NEXT:    vadd.vv v12, v16, v12
+; NOSINK-NEXT:    vadd.vv v12, v12, v14
 ; NOSINK-NEXT:    vadd.vx v12, v12, a4
 ; NOSINK-NEXT:    vsetvli zero, zero, e8, m1, ta, ma
 ; NOSINK-NEXT:    vnsrl.wi v12, v12, 6

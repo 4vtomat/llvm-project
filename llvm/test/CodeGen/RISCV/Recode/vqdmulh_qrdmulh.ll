@@ -81,10 +81,10 @@ define void @vqdmulhq_n_s16(ptr nocapture noundef readonly %in_0, i16 noundef si
 ; CHECK-LABEL: vqdmulhq_n_s16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a0)
+; CHECK-NEXT:    vle16.v v9, (a0)
 ; CHECK-NEXT:    csrwi vxrm, 2
-; CHECK-NEXT:    vwmul.vx v10, v8, a1
-; CHECK-NEXT:    vnclip.wi v8, v10, 15
+; CHECK-NEXT:    vwmul.vx v8, v9, a1
+; CHECK-NEXT:    vnclip.wi v8, v8, 15
 ; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -100,10 +100,10 @@ define void @vqdmulhq_n_s32(ptr nocapture noundef readonly %in_0, i32 noundef si
 ; CHECK-LABEL: vqdmulhq_n_s32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    vle32.v v9, (a0)
 ; CHECK-NEXT:    csrwi vxrm, 2
-; CHECK-NEXT:    vwmul.vx v10, v8, a1
-; CHECK-NEXT:    vnclip.wi v8, v10, 31
+; CHECK-NEXT:    vwmul.vx v8, v9, a1
+; CHECK-NEXT:    vnclip.wi v8, v8, 31
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -119,11 +119,11 @@ define void @vqdmulhq_s16(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK-LABEL: vqdmulhq_s16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vle16.v v9, (a1)
-; CHECK-NEXT:    vwmul.vv v10, v8, v9
+; CHECK-NEXT:    vle16.v v9, (a0)
+; CHECK-NEXT:    vle16.v v10, (a1)
+; CHECK-NEXT:    vwmul.vv v8, v9, v10
 ; CHECK-NEXT:    csrwi vxrm, 2
-; CHECK-NEXT:    vnclip.wi v8, v10, 15
+; CHECK-NEXT:    vnclip.wi v8, v8, 15
 ; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -138,11 +138,11 @@ define void @vqdmulhq_s32(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK-LABEL: vqdmulhq_s32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    vle32.v v9, (a1)
-; CHECK-NEXT:    vwmul.vv v10, v8, v9
+; CHECK-NEXT:    vle32.v v9, (a0)
+; CHECK-NEXT:    vle32.v v10, (a1)
+; CHECK-NEXT:    vwmul.vv v8, v9, v10
 ; CHECK-NEXT:    csrwi vxrm, 2
-; CHECK-NEXT:    vnclip.wi v8, v10, 31
+; CHECK-NEXT:    vnclip.wi v8, v8, 31
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -233,10 +233,10 @@ define void @vqrdmulhq_n_s16(ptr nocapture noundef readonly %in_0, i16 noundef s
 ; CHECK-LABEL: vqrdmulhq_n_s16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a0)
+; CHECK-NEXT:    vle16.v v9, (a0)
 ; CHECK-NEXT:    csrwi vxrm, 0
-; CHECK-NEXT:    vwmul.vx v10, v8, a1
-; CHECK-NEXT:    vnclip.wi v8, v10, 15
+; CHECK-NEXT:    vwmul.vx v8, v9, a1
+; CHECK-NEXT:    vnclip.wi v8, v8, 15
 ; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -252,10 +252,10 @@ define void @vqrdmulhq_n_s32(ptr nocapture noundef readonly %in_0, i32 noundef s
 ; CHECK-LABEL: vqrdmulhq_n_s32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a0)
+; CHECK-NEXT:    vle32.v v9, (a0)
 ; CHECK-NEXT:    csrwi vxrm, 0
-; CHECK-NEXT:    vwmul.vx v10, v8, a1
-; CHECK-NEXT:    vnclip.wi v8, v10, 31
+; CHECK-NEXT:    vwmul.vx v8, v9, a1
+; CHECK-NEXT:    vnclip.wi v8, v8, 31
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -271,11 +271,11 @@ define void @vqrdmulhq_s16(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-LABEL: vqrdmulhq_s16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vle16.v v9, (a1)
-; CHECK-NEXT:    vwmul.vv v10, v8, v9
+; CHECK-NEXT:    vle16.v v9, (a0)
+; CHECK-NEXT:    vle16.v v10, (a1)
+; CHECK-NEXT:    vwmul.vv v8, v9, v10
 ; CHECK-NEXT:    csrwi vxrm, 0
-; CHECK-NEXT:    vnclip.wi v8, v10, 15
+; CHECK-NEXT:    vnclip.wi v8, v8, 15
 ; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -290,11 +290,11 @@ define void @vqrdmulhq_s32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-LABEL: vqrdmulhq_s32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    vle32.v v9, (a1)
-; CHECK-NEXT:    vwmul.vv v10, v8, v9
+; CHECK-NEXT:    vle32.v v9, (a0)
+; CHECK-NEXT:    vle32.v v10, (a1)
+; CHECK-NEXT:    vwmul.vv v8, v9, v10
 ; CHECK-NEXT:    csrwi vxrm, 0
-; CHECK-NEXT:    vnclip.wi v8, v10, 31
+; CHECK-NEXT:    vnclip.wi v8, v8, 31
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:

@@ -737,13 +737,12 @@ define void @double_stride_ptr_iv(ptr %p, ptr %p2, i64 %stride) {
 ; NOSTRIDED-NEXT:    [[TMP28:%.*]] = getelementptr i8, ptr [[P2]], i64 [[N_VEC]]
 ; NOSTRIDED-NEXT:    br label [[LOOP:%.*]]
 ; NOSTRIDED:       vector.body:
+; NOSTRIDED-NEXT:    [[I:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[NEXTI:%.*]], [[LOOP]] ]
 ; NOSTRIDED-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[P]], [[ENTRY]] ], [ [[PTR_IND:%.*]], [[LOOP]] ]
 ; NOSTRIDED-NEXT:    [[POINTER_PHI5:%.*]] = phi ptr [ [[P2]], [[ENTRY]] ], [ [[PTR_IND6:%.*]], [[LOOP]] ]
-; NOSTRIDED-NEXT:    [[I:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[NEXTI:%.*]], [[LOOP]] ]
 ; NOSTRIDED-NEXT:    [[TMP9:%.*]] = call i64 @llvm.vscale.i64()
 ; NOSTRIDED-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 4
-; NOSTRIDED-NEXT:    [[TMP11:%.*]] = mul i64 [[TMP10]], 1
-; NOSTRIDED-NEXT:    [[TMP12:%.*]] = mul i64 1, [[TMP11]]
+; NOSTRIDED-NEXT:    [[TMP12:%.*]] = mul i64 1, [[TMP8]]
 ; NOSTRIDED-NEXT:    [[TMP13:%.*]] = mul i64 [[TMP10]], 0
 ; NOSTRIDED-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 4 x i64> poison, i64 [[TMP13]], i64 0
 ; NOSTRIDED-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 4 x i64> [[DOTSPLATINSERT]], <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer
@@ -753,8 +752,7 @@ define void @double_stride_ptr_iv(ptr %p, ptr %p2, i64 %stride) {
 ; NOSTRIDED-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 4 x i64> [[TMP16]]
 ; NOSTRIDED-NEXT:    [[TMP17:%.*]] = call i64 @llvm.vscale.i64()
 ; NOSTRIDED-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP17]], 4
-; NOSTRIDED-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP18]], 1
-; NOSTRIDED-NEXT:    [[TMP20:%.*]] = mul i64 1, [[TMP19]]
+; NOSTRIDED-NEXT:    [[TMP20:%.*]] = mul i64 1, [[TMP8]]
 ; NOSTRIDED-NEXT:    [[TMP21:%.*]] = mul i64 [[TMP18]], 0
 ; NOSTRIDED-NEXT:    [[DOTSPLATINSERT7:%.*]] = insertelement <vscale x 4 x i64> poison, i64 [[TMP21]], i64 0
 ; NOSTRIDED-NEXT:    [[DOTSPLAT8:%.*]] = shufflevector <vscale x 4 x i64> [[DOTSPLATINSERT7]], <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer

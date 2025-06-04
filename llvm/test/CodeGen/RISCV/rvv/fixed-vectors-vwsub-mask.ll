@@ -41,19 +41,12 @@ define <8 x i64> @vwsubu_wv_mask_v8i32(<8 x i32> %x, <8 x i64> %y) {
 define <8 x i64> @vwsubu_vv_mask_v8i32(<8 x i32> %x, <8 x i32> %y) {
 ; CHECK-LABEL: vwsubu_vv_mask_v8i32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
-; CHECK-NEXT:    vmv2r.v v12, v10
 ; CHECK-NEXT:    li a0, 42
+; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
 ; CHECK-NEXT:    vmslt.vx v0, v8, a0
-<<<<<<< HEAD
 ; CHECK-NEXT:    vmv.v.i v12, 0
 ; CHECK-NEXT:    vmerge.vvm v12, v12, v8, v0
 ; CHECK-NEXT:    vwsubu.vv v8, v10, v12
-=======
-; CHECK-NEXT:    vmv.v.i v10, 0
-; CHECK-NEXT:    vmerge.vvm v14, v10, v8, v0
-; CHECK-NEXT:    vwsubu.vv v8, v12, v14
->>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
 ; CHECK-NEXT:    ret
     %mask = icmp slt <8 x i32> %x, <i32 42, i32 42, i32 42, i32 42, i32 42, i32 42, i32 42, i32 42>
     %a = select <8 x i1> %mask, <8 x i32> %x, <8 x i32> zeroinitializer

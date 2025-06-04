@@ -21,9 +21,9 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>} @vector_deinterleave_load_nxv16i
 ; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    vmerge.vim v8, v12, 1, v0
 ; CHECK-NEXT:    vnsrl.wi v12, v8, 0
-; CHECK-NEXT:    vnsrl.wi v14, v8, 8
+; CHECK-NEXT:    vnsrl.wi v8, v8, 8
 ; CHECK-NEXT:    vmsne.vi v0, v12, 0
-; CHECK-NEXT:    vmsne.vi v8, v14, 0
+; CHECK-NEXT:    vmsne.vi v8, v8, 0
 ; CHECK-NEXT:    ret
   %vec = load <vscale x 32 x i1>, ptr %p
   %deinterleaved.results = call {<vscale x 16 x i1>, <vscale x 16 x i1>} @llvm.vector.deinterleave2.nxv32i1(<vscale x 32 x i1> %vec)
@@ -143,24 +143,24 @@ define {<vscale x 8 x i64>, <vscale x 8 x i64>} @vector_deinterleave_load_nxv8i6
 ; CHECK-NEXT:    li a1, 170
 ; CHECK-NEXT:    vmv.v.x v17, a1
 ; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    vl8re64.v v0, (a0)
+; CHECK-NEXT:    vl8re64.v v24, (a0)
 ; CHECK-NEXT:    slli a1, a1, 3
 ; CHECK-NEXT:    add a0, a0, a1
-; CHECK-NEXT:    vl8re64.v v24, (a0)
+; CHECK-NEXT:    vl8re64.v v0, (a0)
 ; CHECK-NEXT:    vsetvli a0, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vcompress.vm v8, v0, v16
+; CHECK-NEXT:    vcompress.vm v8, v24, v16
 ; CHECK-NEXT:    vmv1r.v v12, v16
 ; CHECK-NEXT:    vmv1r.v v13, v17
-; CHECK-NEXT:    vcompress.vm v16, v0, v13
-; CHECK-NEXT:    vcompress.vm v0, v24, v12
+; CHECK-NEXT:    vcompress.vm v16, v24, v13
+; CHECK-NEXT:    vcompress.vm v24, v0, v12
 ; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vs8r.v v0, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vcompress.vm v0, v24, v13
+; CHECK-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
+; CHECK-NEXT:    vcompress.vm v24, v0, v13
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vs8r.v v0, (a0) # Unknown-size Folded Spill
+; CHECK-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vmv4r.v v12, v24

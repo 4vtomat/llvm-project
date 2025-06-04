@@ -5,65 +5,6 @@
 target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
 target triple = "arm64-apple-macosx"
 
-<<<<<<< HEAD
-define void @test_complex_add_float(ptr %res, ptr noalias %A, ptr noalias %B, i64 %N) {
-; CHECK-LABEL: define void @test_complex_add_float(
-; CHECK-SAME: ptr [[RES:%.*]], ptr noalias [[A:%.*]], ptr noalias [[B:%.*]], i64 [[N:%.*]]) {
-; CHECK-NEXT:  [[ENTRY:.*]]:
-; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 4
-; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
-; CHECK:       [[VECTOR_PH]]:
-; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N]], 4
-; CHECK-NEXT:    [[N_VEC:%.*]] = sub i64 [[N]], [[N_MOD_VF]]
-; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
-; CHECK:       [[VECTOR_BODY]]:
-; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[IV:%.*]] = add i64 [[INDEX]], 0
-; CHECK-NEXT:    [[GEP_B_0:%.*]] = getelementptr inbounds nuw { float, float }, ptr [[A]], i64 [[IV]]
-; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw { float, float }, ptr [[B]], i64 [[IV]]
-; CHECK-NEXT:    [[WIDE_VEC5:%.*]] = load <8 x float>, ptr [[GEP_B_0]], align 4
-; CHECK-NEXT:    [[STRIDED_VEC6:%.*]] = shufflevector <8 x float> [[WIDE_VEC5]], <8 x float> poison, <4 x i32> <i32 0, i32 2, i32 4, i32 6>
-; CHECK-NEXT:    [[STRIDED_VEC7:%.*]] = shufflevector <8 x float> [[WIDE_VEC5]], <8 x float> poison, <4 x i32> <i32 1, i32 3, i32 5, i32 7>
-; CHECK-NEXT:    [[WIDE_VEC8:%.*]] = load <8 x float>, ptr [[TMP5]], align 4
-; CHECK-NEXT:    [[STRIDED_VEC9:%.*]] = shufflevector <8 x float> [[WIDE_VEC8]], <8 x float> poison, <4 x i32> <i32 0, i32 2, i32 4, i32 6>
-; CHECK-NEXT:    [[STRIDED_VEC10:%.*]] = shufflevector <8 x float> [[WIDE_VEC8]], <8 x float> poison, <4 x i32> <i32 1, i32 3, i32 5, i32 7>
-; CHECK-NEXT:    [[TMP7:%.*]] = fadd <4 x float> [[STRIDED_VEC6]], [[STRIDED_VEC9]]
-; CHECK-NEXT:    [[TMP9:%.*]] = fadd <4 x float> [[STRIDED_VEC7]], [[STRIDED_VEC10]]
-; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds nuw { float, float }, ptr [[RES]], i64 [[IV]]
-; CHECK-NEXT:    [[TMP13:%.*]] = shufflevector <4 x float> [[TMP7]], <4 x float> [[TMP9]], <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7>
-; CHECK-NEXT:    [[INTERLEAVED_VEC11:%.*]] = shufflevector <8 x float> [[TMP13]], <8 x float> poison, <8 x i32> <i32 0, i32 4, i32 1, i32 5, i32 2, i32 6, i32 3, i32 7>
-; CHECK-NEXT:    store <8 x float> [[INTERLEAVED_VEC11]], ptr [[TMP11]], align 4
-; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
-; CHECK-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP14]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
-; CHECK:       [[MIDDLE_BLOCK]]:
-; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[CMP_N]], label %[[EXIT:.*]], label %[[SCALAR_PH]]
-; CHECK:       [[SCALAR_PH]]:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], %[[MIDDLE_BLOCK]] ], [ 0, %[[ENTRY]] ]
-; CHECK-NEXT:    br label %[[LOOP:.*]]
-; CHECK:       [[LOOP]]:
-; CHECK-NEXT:    [[IV1:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[LOOP]] ]
-; CHECK-NEXT:    [[GEP_A_2:%.*]] = getelementptr inbounds nuw { float, float }, ptr [[A]], i64 [[IV1]]
-; CHECK-NEXT:    [[GEP_B_2:%.*]] = getelementptr inbounds nuw { float, float }, ptr [[B]], i64 [[IV1]]
-; CHECK-NEXT:    [[L_A_0:%.*]] = load float, ptr [[GEP_A_2]], align 4
-; CHECK-NEXT:    [[GEP_A_1:%.*]] = getelementptr inbounds nuw i8, ptr [[GEP_A_2]], i64 4
-; CHECK-NEXT:    [[L_A_1:%.*]] = load float, ptr [[GEP_A_1]], align 4
-; CHECK-NEXT:    [[L_B_0:%.*]] = load float, ptr [[GEP_B_2]], align 4
-; CHECK-NEXT:    [[ADD_0:%.*]] = fadd float [[L_A_0]], [[L_B_0]]
-; CHECK-NEXT:    [[GEP_B_1:%.*]] = getelementptr inbounds nuw i8, ptr [[GEP_B_2]], i64 4
-; CHECK-NEXT:    [[L_B_1:%.*]] = load float, ptr [[GEP_B_1]], align 4
-; CHECK-NEXT:    [[ADD_1:%.*]] = fadd float [[L_A_1]], [[L_B_1]]
-; CHECK-NEXT:    [[GEP_RES_0:%.*]] = getelementptr inbounds nuw { float, float }, ptr [[RES]], i64 [[IV1]]
-; CHECK-NEXT:    store float [[ADD_0]], ptr [[GEP_RES_0]], align 4
-; CHECK-NEXT:    [[GEP_RES_1:%.*]] = getelementptr inbounds nuw i8, ptr [[GEP_RES_0]], i64 4
-; CHECK-NEXT:    store float [[ADD_1]], ptr [[GEP_RES_1]], align 4
-; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV1]], 1
-; CHECK-NEXT:    [[EC:%.*]] = icmp eq i64 [[IV_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[EC]], label %[[EXIT]], label %[[LOOP]], !llvm.loop [[LOOP3:![0-9]+]]
-; CHECK:       [[EXIT]]:
-; CHECK-NEXT:    ret void
-=======
 define void @load_store_interleave_group(ptr noalias %data) {
 ; VF2-LABEL: define void @load_store_interleave_group(
 ; VF2-SAME: ptr noalias [[DATA:%.*]]) {
@@ -155,7 +96,6 @@ define void @load_store_interleave_group(ptr noalias %data) {
 ; VF4-NEXT:    br i1 [[EC]], label %[[EXIT]], label %[[LOOP]], !llvm.loop [[LOOP3:![0-9]+]]
 ; VF4:       [[EXIT]]:
 ; VF4-NEXT:    ret void
->>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
 ;
 entry:
   br label %loop
@@ -178,65 +118,6 @@ exit:
   ret void
 }
 
-<<<<<<< HEAD
-define void @test_complex_add_double(ptr %res, ptr noalias %A, ptr noalias %B, i64 %N) {
-; CHECK-LABEL: define void @test_complex_add_double(
-; CHECK-SAME: ptr [[RES:%.*]], ptr noalias [[A:%.*]], ptr noalias [[B:%.*]], i64 [[N:%.*]]) {
-; CHECK-NEXT:  [[ENTRY:.*]]:
-; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 2
-; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
-; CHECK:       [[VECTOR_PH]]:
-; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N]], 2
-; CHECK-NEXT:    [[N_VEC:%.*]] = sub i64 [[N]], [[N_MOD_VF]]
-; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
-; CHECK:       [[VECTOR_BODY]]:
-; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
-; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds nuw { double, double }, ptr [[A]], i64 [[TMP0]]
-; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw { double, double }, ptr [[B]], i64 [[TMP0]]
-; CHECK-NEXT:    [[WIDE_VEC5:%.*]] = load <4 x double>, ptr [[TMP4]], align 4
-; CHECK-NEXT:    [[STRIDED_VEC6:%.*]] = shufflevector <4 x double> [[WIDE_VEC5]], <4 x double> poison, <2 x i32> <i32 0, i32 2>
-; CHECK-NEXT:    [[STRIDED_VEC7:%.*]] = shufflevector <4 x double> [[WIDE_VEC5]], <4 x double> poison, <2 x i32> <i32 1, i32 3>
-; CHECK-NEXT:    [[WIDE_VEC8:%.*]] = load <4 x double>, ptr [[TMP5]], align 4
-; CHECK-NEXT:    [[STRIDED_VEC9:%.*]] = shufflevector <4 x double> [[WIDE_VEC8]], <4 x double> poison, <2 x i32> <i32 0, i32 2>
-; CHECK-NEXT:    [[STRIDED_VEC10:%.*]] = shufflevector <4 x double> [[WIDE_VEC8]], <4 x double> poison, <2 x i32> <i32 1, i32 3>
-; CHECK-NEXT:    [[TMP7:%.*]] = fadd <2 x double> [[STRIDED_VEC6]], [[STRIDED_VEC9]]
-; CHECK-NEXT:    [[TMP9:%.*]] = fadd <2 x double> [[STRIDED_VEC7]], [[STRIDED_VEC10]]
-; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds nuw { double, double }, ptr [[RES]], i64 [[TMP0]]
-; CHECK-NEXT:    [[TMP13:%.*]] = shufflevector <2 x double> [[TMP7]], <2 x double> [[TMP9]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
-; CHECK-NEXT:    [[INTERLEAVED_VEC11:%.*]] = shufflevector <4 x double> [[TMP13]], <4 x double> poison, <4 x i32> <i32 0, i32 2, i32 1, i32 3>
-; CHECK-NEXT:    store <4 x double> [[INTERLEAVED_VEC11]], ptr [[TMP11]], align 4
-; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 2
-; CHECK-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP14]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
-; CHECK:       [[MIDDLE_BLOCK]]:
-; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[CMP_N]], label %[[EXIT:.*]], label %[[SCALAR_PH]]
-; CHECK:       [[SCALAR_PH]]:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], %[[MIDDLE_BLOCK]] ], [ 0, %[[ENTRY]] ]
-; CHECK-NEXT:    br label %[[LOOP:.*]]
-; CHECK:       [[LOOP]]:
-; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[LOOP]] ]
-; CHECK-NEXT:    [[GEP_A_0:%.*]] = getelementptr inbounds nuw { double, double }, ptr [[A]], i64 [[IV]]
-; CHECK-NEXT:    [[GEP_B_0:%.*]] = getelementptr inbounds nuw { double, double }, ptr [[B]], i64 [[IV]]
-; CHECK-NEXT:    [[L_A_0:%.*]] = load double, ptr [[GEP_A_0]], align 4
-; CHECK-NEXT:    [[GEP_A_1:%.*]] = getelementptr inbounds nuw i8, ptr [[GEP_A_0]], i64 8
-; CHECK-NEXT:    [[L_A_1:%.*]] = load double, ptr [[GEP_A_1]], align 4
-; CHECK-NEXT:    [[L_B_0:%.*]] = load double, ptr [[GEP_B_0]], align 4
-; CHECK-NEXT:    [[ADD_0:%.*]] = fadd double [[L_A_0]], [[L_B_0]]
-; CHECK-NEXT:    [[GEP_B_1:%.*]] = getelementptr inbounds nuw i8, ptr [[GEP_B_0]], i64 8
-; CHECK-NEXT:    [[L_B_1:%.*]] = load double, ptr [[GEP_B_1]], align 4
-; CHECK-NEXT:    [[ADD_1:%.*]] = fadd double [[L_A_1]], [[L_B_1]]
-; CHECK-NEXT:    [[GEP_RES_0:%.*]] = getelementptr inbounds nuw { double, double }, ptr [[RES]], i64 [[IV]]
-; CHECK-NEXT:    store double [[ADD_0]], ptr [[GEP_RES_0]], align 4
-; CHECK-NEXT:    [[GEP_RES_1:%.*]] = getelementptr inbounds nuw i8, ptr [[GEP_RES_0]], i64 8
-; CHECK-NEXT:    store double [[ADD_1]], ptr [[GEP_RES_1]], align 4
-; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
-; CHECK-NEXT:    [[EC:%.*]] = icmp eq i64 [[IV_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[EC]], label %[[EXIT]], label %[[LOOP]], !llvm.loop [[LOOP5:![0-9]+]]
-; CHECK:       [[EXIT]]:
-; CHECK-NEXT:    ret void
-=======
 define void @load_store_interleave_group_different_objecs(ptr noalias %src, ptr noalias %dst) {
 ; VF2-LABEL: define void @load_store_interleave_group_different_objecs(
 ; VF2-SAME: ptr noalias [[SRC:%.*]], ptr noalias [[DST:%.*]]) {
@@ -335,7 +216,6 @@ define void @load_store_interleave_group_different_objecs(ptr noalias %src, ptr 
 ; VF4-NEXT:    br i1 [[EC]], label %[[EXIT]], label %[[LOOP]], !llvm.loop [[LOOP5:![0-9]+]]
 ; VF4:       [[EXIT]]:
 ; VF4-NEXT:    ret void
->>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
 ;
 entry:
   br label %loop

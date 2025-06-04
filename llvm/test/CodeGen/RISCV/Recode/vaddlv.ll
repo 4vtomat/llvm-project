@@ -41,10 +41,10 @@ define void @vaddlv_s8(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-LABEL: vaddlv_s8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vsext.vf4 v10, v8
-; CHECK-NEXT:    vmv.s.x v8, zero
-; CHECK-NEXT:    vredsum.vs v8, v10, v8
+; CHECK-NEXT:    vle8.v v10, (a0)
+; CHECK-NEXT:    vsext.vf4 v8, v10
+; CHECK-NEXT:    vmv.s.x v10, zero
+; CHECK-NEXT:    vredsum.vs v8, v8, v10
 ; CHECK-NEXT:    vmv.x.s a0, v8
 ; CHECK-NEXT:    sh a0, 0(a1)
 ; CHECK-NEXT:    ret
@@ -96,10 +96,10 @@ define void @vaddlv_u8(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-LABEL: vaddlv_u8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vzext.vf4 v10, v8
-; CHECK-NEXT:    vmv.s.x v8, zero
-; CHECK-NEXT:    vredsum.vs v8, v10, v8
+; CHECK-NEXT:    vle8.v v10, (a0)
+; CHECK-NEXT:    vzext.vf4 v8, v10
+; CHECK-NEXT:    vmv.s.x v10, zero
+; CHECK-NEXT:    vredsum.vs v8, v8, v10
 ; CHECK-NEXT:    vmv.x.s a0, v8
 ; CHECK-NEXT:    sh a0, 0(a1)
 ; CHECK-NEXT:    ret
@@ -151,10 +151,10 @@ define void @vaddlvq_s8(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-LABEL: vaddlvq_s8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 16, e32, m4, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vsext.vf4 v12, v8
-; CHECK-NEXT:    vmv.s.x v8, zero
-; CHECK-NEXT:    vredsum.vs v8, v12, v8
+; CHECK-NEXT:    vle8.v v11, (a0)
+; CHECK-NEXT:    vsext.vf4 v8, v11
+; CHECK-NEXT:    vmv.s.x v12, zero
+; CHECK-NEXT:    vredsum.vs v8, v8, v12
 ; CHECK-NEXT:    vmv.x.s a0, v8
 ; CHECK-NEXT:    sh a0, 0(a1)
 ; CHECK-NEXT:    ret
@@ -206,10 +206,10 @@ define void @vaddlvq_u8(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-LABEL: vaddlvq_u8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 16, e32, m4, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vzext.vf4 v12, v8
-; CHECK-NEXT:    vmv.s.x v8, zero
-; CHECK-NEXT:    vredsum.vs v8, v12, v8
+; CHECK-NEXT:    vle8.v v11, (a0)
+; CHECK-NEXT:    vzext.vf4 v8, v11
+; CHECK-NEXT:    vmv.s.x v12, zero
+; CHECK-NEXT:    vredsum.vs v8, v8, v12
 ; CHECK-NEXT:    vmv.x.s a0, v8
 ; CHECK-NEXT:    sh a0, 0(a1)
 ; CHECK-NEXT:    ret

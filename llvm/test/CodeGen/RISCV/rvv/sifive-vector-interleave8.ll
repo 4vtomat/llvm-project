@@ -75,30 +75,30 @@ define <vscale x 128 x i1> @vector_interleave_nxv128i1_nxv16i1(<vscale x 16 x i1
 ; CHECK-NEXT:    vl1r.v v15, (a3)
 ; CHECK-NEXT:    vsetvli a3, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v16, v16, 0
-; CHECK-NEXT:    vmsne.vi v10, v10, 0
-; CHECK-NEXT:    vl1r.v v20, (a6)
-; CHECK-NEXT:    vmsne.vi v11, v12, 0
+; CHECK-NEXT:    vmsne.vi v17, v10, 0
+; CHECK-NEXT:    vl1r.v v10, (a6)
+; CHECK-NEXT:    vmsne.vi v20, v12, 0
 ; CHECK-NEXT:    vmsne.vi v0, v14, 0
 ; CHECK-NEXT:    vl1r.v v12, (a1)
 ; CHECK-NEXT:    vl1r.v v9, (a2)
 ; CHECK-NEXT:    vl1r.v v19, (t1)
-; CHECK-NEXT:    vl1r.v v21, (t0)
+; CHECK-NEXT:    vl1r.v v11, (t0)
 ; CHECK-NEXT:    vl1r.v v13, (a4)
 ; CHECK-NEXT:    vmsne.vi v14, v8, 0
 ; CHECK-NEXT:    vmsne.vi v9, v18, 0
-; CHECK-NEXT:    vmsne.vi v15, v20, 0
+; CHECK-NEXT:    vmsne.vi v10, v10, 0
 ; CHECK-NEXT:    vmsne.vi v8, v12, 0
 ; CHECK-NEXT:    srli a1, a0, 2
 ; CHECK-NEXT:    add a2, a1, a1
 ; CHECK-NEXT:    vsetvli zero, a2, e8, mf2, ta, ma
-; CHECK-NEXT:    vslideup.vx v10, v16, a1
-; CHECK-NEXT:    vslideup.vx v0, v11, a1
+; CHECK-NEXT:    vslideup.vx v17, v16, a1
+; CHECK-NEXT:    vslideup.vx v0, v20, a1
 ; CHECK-NEXT:    vslideup.vx v9, v14, a1
-; CHECK-NEXT:    vslideup.vx v8, v15, a1
+; CHECK-NEXT:    vslideup.vx v8, v10, a1
 ; CHECK-NEXT:    srli a0, a0, 1
 ; CHECK-NEXT:    add a1, a0, a0
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m1, ta, ma
-; CHECK-NEXT:    vslideup.vx v0, v10, a0
+; CHECK-NEXT:    vslideup.vx v0, v17, a0
 ; CHECK-NEXT:    vslideup.vx v8, v9, a0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 4

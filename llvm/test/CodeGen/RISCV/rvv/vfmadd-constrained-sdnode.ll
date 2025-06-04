@@ -150,13 +150,13 @@ define <vscale x 8 x bfloat> @vfmadd_vf_nxv8bf16(<vscale x 8 x bfloat> %va, <vsc
 ; CHECK-NEXT:    fmv.x.h a0, fa0
 ; CHECK-NEXT:    vsetvli a1, zero, e16, m2, ta, ma
 ; CHECK-NEXT:    vfwcvtbf16.f.f.v v12, v8
-; CHECK-NEXT:    vmv.v.x v8, a0
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v16, v10
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v20, v8
+; CHECK-NEXT:    vmv.v.x v18, a0
+; CHECK-NEXT:    vfwcvtbf16.f.f.v v8, v10
+; CHECK-NEXT:    vfwcvtbf16.f.f.v v16, v18
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
-; CHECK-NEXT:    vfmadd.vv v20, v16, v12
+; CHECK-NEXT:    vfmadd.vv v16, v8, v12
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
-; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v20
+; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v16
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 8 x bfloat> poison, bfloat %c, i32 0
   %splat = shufflevector <vscale x 8 x bfloat> %head, <vscale x 8 x bfloat> poison, <vscale x 8 x i32> zeroinitializer
@@ -550,13 +550,13 @@ define <vscale x 8 x half> @vfmadd_vf_nxv8f16(<vscale x 8 x half> %va, <vscale x
 ; ZVFHMIN-NEXT:    fmv.x.h a0, fa0
 ; ZVFHMIN-NEXT:    vsetvli a1, zero, e16, m2, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
-; ZVFHMIN-NEXT:    vmv.v.x v8, a0
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v16, v10
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v20, v8
+; ZVFHMIN-NEXT:    vmv.v.x v18, a0
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v16, v18
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
-; ZVFHMIN-NEXT:    vfmadd.vv v20, v16, v12
+; ZVFHMIN-NEXT:    vfmadd.vv v16, v8, v12
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v20
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v16
 ; ZVFHMIN-NEXT:    ret
   %head = insertelement <vscale x 8 x half> poison, half %c, i32 0
   %splat = shufflevector <vscale x 8 x half> %head, <vscale x 8 x half> poison, <vscale x 8 x i32> zeroinitializer

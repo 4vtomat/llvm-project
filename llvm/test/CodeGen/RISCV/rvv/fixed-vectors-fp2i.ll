@@ -398,8 +398,8 @@ define void @fp2si_v8f32_v8i64(ptr %x, ptr %y) {
 ; CHECK-LABEL: fp2si_v8f32_v8i64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
-; CHECK-NEXT:    vle32.v v12, (a0)
-; CHECK-NEXT:    vfwcvt.rtz.x.f.v v8, v12
+; CHECK-NEXT:    vle32.v v10, (a0)
+; CHECK-NEXT:    vfwcvt.rtz.x.f.v v8, v10
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
   %a = load <8 x float>, ptr %x
@@ -412,8 +412,8 @@ define void @fp2ui_v8f32_v8i64(ptr %x, ptr %y) {
 ; CHECK-LABEL: fp2ui_v8f32_v8i64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
-; CHECK-NEXT:    vle32.v v12, (a0)
-; CHECK-NEXT:    vfwcvt.rtz.xu.f.v v8, v12
+; CHECK-NEXT:    vle32.v v10, (a0)
+; CHECK-NEXT:    vfwcvt.rtz.xu.f.v v8, v10
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
   %a = load <8 x float>, ptr %x
