@@ -121,24 +121,10 @@ define <vscale x 16 x bfloat> @vfmin_nxv16bf16_vv(<vscale x 16 x bfloat> %a, <vs
 ; CHECK-NEXT:    vmfeq.vv v7, v16, v16
 ; CHECK-NEXT:    vmerge.vvm v8, v24, v16, v0
 ; CHECK-NEXT:    vmv1r.v v0, v7
-<<<<<<< HEAD
-; CHECK-NEXT:    vmerge.vvm v8, v16, v24, v0
-; CHECK-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vfmin.vv v8, v8, v16
+; CHECK-NEXT:    vmerge.vvm v16, v16, v24, v0
+; CHECK-NEXT:    vfmin.vv v8, v16, v8
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m4, ta, ma
 ; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v8
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add sp, sp, a0
-; CHECK-NEXT:    .cfi_def_cfa sp, 16
-; CHECK-NEXT:    addi sp, sp, 16
-; CHECK-NEXT:    .cfi_def_cfa_offset 0
-=======
-; CHECK-NEXT:    vmerge.vvm v16, v16, v24, v0
-; CHECK-NEXT:    vfmin.vv v16, v16, v8
-; CHECK-NEXT:    vsetvli zero, zero, e16, m4, ta, ma
-; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v16
->>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
 ; CHECK-NEXT:    ret
   %v = call <vscale x 16 x bfloat> @llvm.minimum.nxv16bf16(<vscale x 16 x bfloat> %a, <vscale x 16 x bfloat> %b)
   ret <vscale x 16 x bfloat> %v
@@ -366,24 +352,10 @@ define <vscale x 16 x half> @vfmin_nxv16f16_vv(<vscale x 16 x half> %a, <vscale 
 ; ZVFHMIN-NEXT:    vmfeq.vv v7, v16, v16
 ; ZVFHMIN-NEXT:    vmerge.vvm v8, v24, v16, v0
 ; ZVFHMIN-NEXT:    vmv1r.v v0, v7
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vmerge.vvm v8, v16, v24, v0
-; ZVFHMIN-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
-; ZVFHMIN-NEXT:    vfmin.vv v8, v8, v16
+; ZVFHMIN-NEXT:    vmerge.vvm v16, v16, v24, v0
+; ZVFHMIN-NEXT:    vfmin.vv v8, v16, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m4, ta, ma
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
-; ZVFHMIN-NEXT:    csrr a0, vlenb
-; ZVFHMIN-NEXT:    slli a0, a0, 3
-; ZVFHMIN-NEXT:    add sp, sp, a0
-; ZVFHMIN-NEXT:    .cfi_def_cfa sp, 16
-; ZVFHMIN-NEXT:    addi sp, sp, 16
-; ZVFHMIN-NEXT:    .cfi_def_cfa_offset 0
-=======
-; ZVFHMIN-NEXT:    vmerge.vvm v16, v16, v24, v0
-; ZVFHMIN-NEXT:    vfmin.vv v16, v16, v8
-; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m4, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v16
->>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
 ; ZVFHMIN-NEXT:    ret
   %v = call <vscale x 16 x half> @llvm.minimum.nxv16f16(<vscale x 16 x half> %a, <vscale x 16 x half> %b)
   ret <vscale x 16 x half> %v

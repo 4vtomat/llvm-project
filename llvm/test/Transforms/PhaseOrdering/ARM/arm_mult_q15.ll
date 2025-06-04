@@ -37,7 +37,7 @@ define void @arm_mult_q15(ptr %pSrcA, ptr %pSrcB, ptr noalias %pDst, i32 %blockS
 ; CHECK-NEXT:    [[TMP3:%.*]] = mul nsw <8 x i32> [[TMP2]], [[TMP1]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = ashr <8 x i32> [[TMP3]], splat (i32 15)
 ; CHECK-NEXT:    [[TMP5:%.*]] = tail call <8 x i32> @llvm.smin.v8i32(<8 x i32> [[TMP4]], <8 x i32> splat (i32 32767))
-; CHECK-NEXT:    [[TMP6:%.*]] = trunc <8 x i32> [[TMP5]] to <8 x i16>
+; CHECK-NEXT:    [[TMP6:%.*]] = trunc nsw <8 x i32> [[TMP5]] to <8 x i16>
 ; CHECK-NEXT:    store <8 x i16> [[TMP6]], ptr [[NEXT_GEP14]], align 2
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i32 [[INDEX]], 8
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i32 [[INDEX_NEXT]], [[N_VEC]]

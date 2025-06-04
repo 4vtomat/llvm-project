@@ -784,20 +784,20 @@ define void @scatter_of_pointers(ptr noalias nocapture %arg, ptr noalias nocaptu
 ; ZVE32F-NEXT:    li a5, 40
 ; ZVE32F-NEXT:  .LBB13_1: # %bb2
 ; ZVE32F-NEXT:    # =>This Inner Loop Header: Depth=1
-; ZVE32F-NEXT:    mul a6, a3, a5
-; ZVE32F-NEXT:    mul a7, a2, a5
-; ZVE32F-NEXT:    ld t0, 0(a1)
-; ZVE32F-NEXT:    ld t1, 8(a1)
-; ZVE32F-NEXT:    ld t2, 16(a1)
-; ZVE32F-NEXT:    ld t3, 24(a1)
-; ZVE32F-NEXT:    addi a2, a2, 4
-; ZVE32F-NEXT:    addi a1, a1, 32
+; ZVE32F-NEXT:    mul a6, a2, a5
+; ZVE32F-NEXT:    ld a7, 0(a1)
+; ZVE32F-NEXT:    ld t0, 8(a1)
+; ZVE32F-NEXT:    ld t1, 16(a1)
+; ZVE32F-NEXT:    ld t2, 24(a1)
 ; ZVE32F-NEXT:    add a6, a0, a6
+; ZVE32F-NEXT:    sd a7, 0(a6)
+; ZVE32F-NEXT:    mul a7, a3, a5
 ; ZVE32F-NEXT:    add a7, a0, a7
 ; ZVE32F-NEXT:    sd t0, 0(a7)
-; ZVE32F-NEXT:    sd t1, 0(a6)
+; ZVE32F-NEXT:    sd t1, 80(a6)
+; ZVE32F-NEXT:    addi a2, a2, 4
+; ZVE32F-NEXT:    addi a1, a1, 32
 ; ZVE32F-NEXT:    sd t2, 80(a7)
-; ZVE32F-NEXT:    sd t3, 80(a6)
 ; ZVE32F-NEXT:    addi a3, a3, 4
 ; ZVE32F-NEXT:    bne a1, a4, .LBB13_1
 ; ZVE32F-NEXT:  # %bb.2: # %bb18
@@ -832,20 +832,20 @@ define void @scatter_of_pointers(ptr noalias nocapture %arg, ptr noalias nocaptu
 ; OPTV-NEXT:    li a5, 40
 ; OPTV-NEXT:  .LBB13_1: # %bb2
 ; OPTV-NEXT:    # =>This Inner Loop Header: Depth=1
-; OPTV-NEXT:    mul a6, a3, a5
-; OPTV-NEXT:    mul a7, a2, a5
-; OPTV-NEXT:    ld t0, 0(a1)
-; OPTV-NEXT:    ld t1, 8(a1)
-; OPTV-NEXT:    ld t2, 16(a1)
-; OPTV-NEXT:    ld t3, 24(a1)
-; OPTV-NEXT:    addi a2, a2, 4
-; OPTV-NEXT:    addi a1, a1, 32
+; OPTV-NEXT:    mul a6, a2, a5
+; OPTV-NEXT:    ld a7, 0(a1)
+; OPTV-NEXT:    ld t0, 8(a1)
+; OPTV-NEXT:    ld t1, 16(a1)
+; OPTV-NEXT:    ld t2, 24(a1)
 ; OPTV-NEXT:    add a6, a0, a6
+; OPTV-NEXT:    sd a7, 0(a6)
+; OPTV-NEXT:    mul a7, a3, a5
 ; OPTV-NEXT:    add a7, a0, a7
 ; OPTV-NEXT:    sd t0, 0(a7)
-; OPTV-NEXT:    sd t1, 0(a6)
+; OPTV-NEXT:    sd t1, 80(a6)
+; OPTV-NEXT:    addi a2, a2, 4
+; OPTV-NEXT:    addi a1, a1, 32
 ; OPTV-NEXT:    sd t2, 80(a7)
-; OPTV-NEXT:    sd t3, 80(a6)
 ; OPTV-NEXT:    addi a3, a3, 4
 ; OPTV-NEXT:    bne a1, a4, .LBB13_1
 ; OPTV-NEXT:  # %bb.2: # %bb18

@@ -206,66 +206,31 @@ define <256 x i8> @select_evl_v256i8(<256 x i1> %a, <256 x i8> %b, <256 x i8> %c
 ; CHECK-NEXT:    addi sp, sp, -16
 ; CHECK-NEXT:    .cfi_def_cfa_offset 16
 ; CHECK-NEXT:    csrr a2, vlenb
-<<<<<<< HEAD
-; CHECK-NEXT:    slli a2, a2, 4
-; CHECK-NEXT:    sub sp, sp, a2
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * vlenb
-; CHECK-NEXT:    csrr a2, vlenb
-; CHECK-NEXT:    slli a2, a2, 3
-; CHECK-NEXT:    add a2, sp, a2
-; CHECK-NEXT:    addi a2, a2, 16
-; CHECK-NEXT:    vs8r.v v16, (a2) # Unknown-size Folded Spill
-; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
-; CHECK-NEXT:    vmv1r.v v9, v0
-; CHECK-NEXT:    li a2, 128
-; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
-; CHECK-NEXT:    vle8.v v16, (a1)
-; CHECK-NEXT:    addi a3, sp, 16
-; CHECK-NEXT:    vs8r.v v16, (a3) # Unknown-size Folded Spill
-; CHECK-NEXT:    addi a1, a1, 128
-=======
 ; CHECK-NEXT:    slli a2, a2, 3
 ; CHECK-NEXT:    sub sp, sp, a2
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * vlenb
 ; CHECK-NEXT:    addi a2, sp, 16
 ; CHECK-NEXT:    vs8r.v v16, (a2) # Unknown-size Folded Spill
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
-; CHECK-NEXT:    vmv1r.v v7, v8
+; CHECK-NEXT:    vmv1r.v v6, v8
+; CHECK-NEXT:    vmv1r.v v7, v0
 ; CHECK-NEXT:    li a2, 128
 ; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
->>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
-; CHECK-NEXT:    vle8.v v24, (a0)
-; CHECK-NEXT:    addi a0, a1, 128
-; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    vle8.v v16, (a1)
-<<<<<<< HEAD
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vsetivli zero, 1, e8, m8, ta, ma
-; CHECK-NEXT:    vmerge.vvm v24, v16, v24, v0
-; CHECK-NEXT:    vmv1r.v v0, v9
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add a0, sp, a0
-; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-=======
-; CHECK-NEXT:    vmv1r.v v6, v0
-; CHECK-NEXT:    vmv1r.v v0, v7
+; CHECK-NEXT:    addi a1, a1, 128
+; CHECK-NEXT:    vle8.v v24, (a0)
+; CHECK-NEXT:    vle8.v v8, (a1)
+; CHECK-NEXT:    vmv1r.v v0, v6
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m8, ta, ma
 ; CHECK-NEXT:    vmerge.vvm v24, v8, v24, v0
-; CHECK-NEXT:    vmv1r.v v0, v6
->>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
+; CHECK-NEXT:    vmv1r.v v0, v7
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
 ; CHECK-NEXT:    vmerge.vvm v8, v16, v8, v0
 ; CHECK-NEXT:    vmv8r.v v16, v24
 ; CHECK-NEXT:    csrr a0, vlenb
-<<<<<<< HEAD
-; CHECK-NEXT:    slli a0, a0, 4
-=======
 ; CHECK-NEXT:    slli a0, a0, 3
->>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
 ; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    .cfi_def_cfa sp, 16
 ; CHECK-NEXT:    addi sp, sp, 16

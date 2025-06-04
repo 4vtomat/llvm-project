@@ -610,7 +610,7 @@ define <vscale x 16 x i32> @vpsdiv_pow2_nxv16i32(<vscale x 16 x i32> %va, <vscal
 ; CHECK-LABEL: vpsdiv_pow2_nxv16i32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
-; CHECK-NEXT:    vmv1r.v v16, v0
+; CHECK-NEXT:    vmv1r.v v7, v0
 ; CHECK-NEXT:    vmv.v.i v24, 4
 ; CHECK-NEXT:    vmseq.vi v17, v24, -1, v0.t
 ; CHECK-NEXT:    vmseq.vi v18, v24, 1, v0.t
@@ -621,11 +621,11 @@ define <vscale x 16 x i32> @vpsdiv_pow2_nxv16i32(<vscale x 16 x i32> %va, <vscal
 ; CHECK-NEXT:    vsra.vi v24, v24, 2, v0.t
 ; CHECK-NEXT:    vmv1r.v v0, v17
 ; CHECK-NEXT:    vmerge.vvm v8, v24, v8, v0
-; CHECK-NEXT:    vmv1r.v v0, v16
-; CHECK-NEXT:    vrsub.vi v24, v8, 0, v0.t
-; CHECK-NEXT:    vmv.v.i v16, 0
-; CHECK-NEXT:    vmsgt.vi v0, v16, 4, v0.t
-; CHECK-NEXT:    vmerge.vvm v8, v8, v24, v0
+; CHECK-NEXT:    vmv.v.i v24, 0
+; CHECK-NEXT:    vmv1r.v v0, v7
+; CHECK-NEXT:    vrsub.vi v16, v8, 0, v0.t
+; CHECK-NEXT:    vmsgt.vi v0, v24, 4, v0.t
+; CHECK-NEXT:    vmerge.vvm v8, v8, v16, v0
 ; CHECK-NEXT:    ret
   %vec = insertelement <vscale x 16 x i32> undef, i32 4, i32 0
   %splat = shufflevector <vscale x 16 x i32> %vec, <vscale x 16 x i32> poison, <vscale x 16 x i32> zeroinitializer
