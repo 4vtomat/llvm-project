@@ -438,36 +438,24 @@ std::string riscv::getRISCVArch(const llvm::opt::ArgList &Args,
   if (Triple.isRISCV32()) {
     if (Triple.getOS() == llvm::Triple::UnknownOS)
       return "rv32imac";
-<<<<<<< HEAD
-    else
-      return "rv32imafdc";
-  } else {
-    if (Triple.getOS() == llvm::Triple::UnknownOS)
-#if SIFIVE_CUSTOMIZATION
-      return SIFIVE_DEFAULT_MARCH;
-#else
-      return "rv64imac";
-#endif // SIFIVE_CUSTOMIZATION
-    else if (Triple.isAndroid())
-      return "rv64imafdcv_zba_zbb_zbs";
-    else
-#if SIFIVE_CUSTOMIZATION
-      return SIFIVE_DEFAULT_MARCH;
-#else
-      return "rv64imafdc";
-#endif // SIFIVE_CUSTOMIZATION
-=======
     return "rv32imafdc";
->>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
   }
 
   if (Triple.getOS() == llvm::Triple::UnknownOS)
+#if SIFIVE_CUSTOMIZATION
+    return SIFIVE_DEFAULT_MARCH;
+#else
     return "rv64imac";
+#endif // SIFIVE_CUSTOMIZATION
   if (Triple.isAndroid())
     return "rv64imafdcv_zba_zbb_zbs";
   if (Triple.isOSFuchsia())
     return "rva22u64_v";
+#if SIFIVE_CUSTOMIZATION
+  return SIFIVE_DEFAULT_MARCH;
+#else
   return "rv64imafdc";
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 #if SIFIVE_CUSTOMIZATION
