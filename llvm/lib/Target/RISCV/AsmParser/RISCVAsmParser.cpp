@@ -621,15 +621,11 @@ public:
     if (!isImm() || evaluateConstantImm(getImm(), Imm, VK))
       return false;
     return RISCVAsmParser::classifySymbolRef(getImm(), VK) &&
-<<<<<<< HEAD
-           (VK == RISCVMCExpr::VK_RISCV_TPREL_ADD ||
-            VK == RISCVMCExpr::VK_RISCV_GPREL_ADD ||
-            VK == RISCVMCExpr::VK_RISCV_GOT_GPREL_ADD ||
-            VK == RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_ADD ||
-            VK == RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_ADD);
-=======
-           VK == RISCVMCExpr::VK_TPREL_ADD;
->>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
+           (VK == RISCVMCExpr::VK_TPREL_ADD ||
+            VK == RISCVMCExpr::VK_GPREL_ADD ||
+            VK == RISCVMCExpr::VK_GOT_GPREL_ADD ||
+            VK == RISCVMCExpr::VK_TLS_GOT_GPREL_ADD ||
+            VK == RISCVMCExpr::VK_TLS_GD_GPREL_ADD);
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -1051,29 +1047,20 @@ public:
       IsValid = RISCVAsmParser::classifySymbolRef(getImm(), VK);
     else
       IsValid = isInt<12>(fixImmediateForRV32(Imm, isRV64Imm()));
-<<<<<<< HEAD
-    return IsValid && ((IsConstantImm && VK == RISCVMCExpr::VK_RISCV_None) ||
-                       VK == RISCVMCExpr::VK_RISCV_LO ||
-                       VK == RISCVMCExpr::VK_RISCV_PCREL_LO ||
-                       VK == RISCVMCExpr::VK_RISCV_TPREL_LO ||
-                       VK == RISCVMCExpr::VK_RISCV_TLSDESC_LOAD_LO ||
-#if SIFIVE_CUSTOMIZATION
-                       VK == RISCVMCExpr::VK_RISCV_TLSDESC_ADD_LO ||
-                       VK == RISCVMCExpr::VK_RISCV_GPREL_LO ||
-                       VK == RISCVMCExpr::VK_RISCV_GOT_GPREL_LO ||
-                       VK == RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_LO ||
-                       VK == RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_LO);
-#else
-                       VK == RISCVMCExpr::VK_RISCV_TLSDESC_ADD_LO);
-#endif // SIFIVE_CUSTOMIZATION
-=======
     return IsValid &&
            ((IsConstantImm && VK == RISCVMCExpr::VK_None) ||
             VK == RISCVMCExpr::VK_LO || VK == RISCVMCExpr::VK_PCREL_LO ||
             VK == RISCVMCExpr::VK_TPREL_LO ||
             VK == RISCVMCExpr::VK_TLSDESC_LOAD_LO ||
+#if SIFIVE_CUSTOMIZATION
+            VK == RISCVMCExpr::VK_TLSDESC_ADD_LO ||
+            VK == RISCVMCExpr::VK_GPREL_LO ||
+            VK == RISCVMCExpr::VK_GOT_GPREL_LO ||
+            VK == RISCVMCExpr::VK_TLS_GOT_GPREL_LO ||
+            VK == RISCVMCExpr::VK_TLS_GD_GPREL_LO);
+#else
             VK == RISCVMCExpr::VK_TLSDESC_ADD_LO);
->>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   bool isSImm12Lsb0() const { return isBareSimmNLsb0<12>(); }
@@ -1132,37 +1119,31 @@ public:
     bool IsConstantImm = evaluateConstantImm(getImm(), Imm, VK);
     if (!IsConstantImm) {
       IsValid = RISCVAsmParser::classifySymbolRef(getImm(), VK);
-<<<<<<< HEAD
-      return IsValid && (VK == RISCVMCExpr::VK_RISCV_HI ||
-#if SIFIVE_CUSTOMIZATION
-                         VK == RISCVMCExpr::VK_RISCV_TPREL_HI ||
-                         VK == RISCVMCExpr::VK_RISCV_GPREL_HI ||
-                         VK == RISCVMCExpr::VK_RISCV_GOT_GPREL_HI ||
-                         VK == RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_HI ||
-                         VK == RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_HI);
-#else
-                         VK == RISCVMCExpr::VK_RISCV_TPREL_HI);
-#endif // SIFIVE_CUSTOMIZATION
-    } else {
-      return isUInt<20>(Imm) && (VK == RISCVMCExpr::VK_RISCV_None ||
-                                 VK == RISCVMCExpr::VK_RISCV_HI ||
-#if SIFIVE_CUSTOMIZATION
-                                 VK == RISCVMCExpr::VK_RISCV_TPREL_HI ||
-                                 VK == RISCVMCExpr::VK_RISCV_GPREL_HI ||
-                                 VK == RISCVMCExpr::VK_RISCV_GOT_GPREL_HI ||
-                                 VK == RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_HI ||
-                                 VK == RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_HI);
-#else
-                                 VK == RISCVMCExpr::VK_RISCV_TPREL_HI);
-#endif // SIFIVE_CUSTOMIZATION
-=======
       return IsValid &&
+#if SIFIVE_CUSTOMIZATION
+             (VK == RISCVMCExpr::VK_HI ||
+              VK == RISCVMCExpr::VK_TPREL_HI ||
+              VK == RISCVMCExpr::VK_GPREL_HI ||
+              VK == RISCVMCExpr::VK_GOT_GPREL_HI ||
+              VK == RISCVMCExpr::VK_TLS_GOT_GPREL_HI ||
+              VK == RISCVMCExpr::VK_TLS_GD_GPREL_HI);
+#else
              (VK == RISCVMCExpr::VK_HI || VK == RISCVMCExpr::VK_TPREL_HI);
+#endif // SIFIVE_CUSTOMIZATION
     } else {
       return isUInt<20>(Imm) &&
+#if SIFIVE_CUSTOMIZATION
+             (VK == RISCVMCExpr::VK_None ||
+              VK == RISCVMCExpr::VK_HI ||
+              VK == RISCVMCExpr::VK_TPREL_HI ||
+              VK == RISCVMCExpr::VK_GPREL_HI ||
+              VK == RISCVMCExpr::VK_GOT_GPREL_HI ||
+              VK == RISCVMCExpr::VK_TLS_GOT_GPREL_HI ||
+              VK == RISCVMCExpr::VK_TLS_GD_GPREL_HI);  
+#else
              (VK == RISCVMCExpr::VK_None || VK == RISCVMCExpr::VK_HI ||
               VK == RISCVMCExpr::VK_TPREL_HI);
->>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
+#endif // SIFIVE_CUSTOMIZATION
     }
   }
 
@@ -2319,18 +2300,18 @@ ParseStatus RISCVAsmParser::parseOperandWithModifier(OperandVector &Operands) {
   switch (VK) {
   default:
     break;
-  case RISCVMCExpr::VK_RISCV_GPREL_LO:
-  case RISCVMCExpr::VK_RISCV_GPREL_HI:
-  case RISCVMCExpr::VK_RISCV_GPREL_ADD:
-  case RISCVMCExpr::VK_RISCV_GOT_GPREL_LO:
-  case RISCVMCExpr::VK_RISCV_GOT_GPREL_HI:
-  case RISCVMCExpr::VK_RISCV_GOT_GPREL_ADD:
-  case RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_LO:
-  case RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_HI:
-  case RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_ADD:
-  case RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_LO:
-  case RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_HI:
-  case RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_ADD:
+  case RISCVMCExpr::VK_GPREL_LO:
+  case RISCVMCExpr::VK_GPREL_HI:
+  case RISCVMCExpr::VK_GPREL_ADD:
+  case RISCVMCExpr::VK_GOT_GPREL_LO:
+  case RISCVMCExpr::VK_GOT_GPREL_HI:
+  case RISCVMCExpr::VK_GOT_GPREL_ADD:
+  case RISCVMCExpr::VK_TLS_GOT_GPREL_LO:
+  case RISCVMCExpr::VK_TLS_GOT_GPREL_HI:
+  case RISCVMCExpr::VK_TLS_GOT_GPREL_ADD:
+  case RISCVMCExpr::VK_TLS_GD_GPREL_LO:
+  case RISCVMCExpr::VK_TLS_GD_GPREL_HI:
+  case RISCVMCExpr::VK_TLS_GD_GPREL_ADD:
     Warning(getLoc(), "compact code model operand modifiers are deprecated");
     break;
   }
@@ -3827,9 +3808,9 @@ bool RISCVAsmParser::emitCompactLoadAddress(MCInst &Inst, unsigned Opcode,
     //   LUI  rdest, %gprel_hi(symbol)
     //   ADD  rdest, rpseudogp, rdest, %gprel(symbol)
     //   ADDI rdest, %gprel_lo(symbol)(rdest)
-    VKHi = RISCVMCExpr::VK_RISCV_GPREL_HI;
-    VKLow = RISCVMCExpr::VK_RISCV_GPREL_LO;
-    VKAdd = RISCVMCExpr::VK_RISCV_GPREL_ADD;
+    VKHi = RISCVMCExpr::VK_GPREL_HI;
+    VKLow = RISCVMCExpr::VK_GPREL_LO;
+    VKAdd = RISCVMCExpr::VK_GPREL_ADD;
     LowOpcode = RISCV::ADDI;
     break;
   case RISCV::PseudoLA_GOT_GPREL:
@@ -3840,9 +3821,9 @@ bool RISCVAsmParser::emitCompactLoadAddress(MCInst &Inst, unsigned Opcode,
     //   LUI  rdest, %got_gprel_hi(symbol)
     //   ADD  rdest, rpseudogp, rdest, %got_gprel(symbol)
     //   LX   rdest, %got_gprel_lo(symbol)(rdest)
-    VKHi = RISCVMCExpr::VK_RISCV_GOT_GPREL_HI;
-    VKLow = RISCVMCExpr::VK_RISCV_GOT_GPREL_LO;
-    VKAdd = RISCVMCExpr::VK_RISCV_GOT_GPREL_ADD;
+    VKHi = RISCVMCExpr::VK_GOT_GPREL_HI;
+    VKLow = RISCVMCExpr::VK_GOT_GPREL_LO;
+    VKAdd = RISCVMCExpr::VK_GOT_GPREL_ADD;
     LowOpcode = isRV64() ? RISCV::LD : RISCV::LW;
     break;
   case RISCV::PseudoLA_TLS_IE_GPREL:
@@ -3854,9 +3835,9 @@ bool RISCVAsmParser::emitCompactLoadAddress(MCInst &Inst, unsigned Opcode,
     //   LUI  rdest, %tls_ie_gprel_hi(symbol)
     //   ADD  rdest, rpseudogp, rdest, %tls_ie_gprel_add(symbol)
     //   LX   rdest, %tls_ie_gprel_lo(symbol)(rdest)
-    VKHi = RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_HI;
-    VKLow = RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_LO;
-    VKAdd = RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_ADD;
+    VKHi = RISCVMCExpr::VK_TLS_GOT_GPREL_HI;
+    VKLow = RISCVMCExpr::VK_TLS_GOT_GPREL_LO;
+    VKAdd = RISCVMCExpr::VK_TLS_GOT_GPREL_ADD;
     LowOpcode = isRV64() ? RISCV::LD : RISCV::LW;
     break;
   case RISCV::PseudoLA_TLS_GD_GPREL:
@@ -3868,9 +3849,9 @@ bool RISCVAsmParser::emitCompactLoadAddress(MCInst &Inst, unsigned Opcode,
     //   LUI  rdest, %tls_gd_gprel_hi(symbol)
     //   ADD  rdest, rpseudogp, rdest, %tls_gd_gprel_add(symbol)
     //   ADDI rdest, %tls_gd_gprel_lo(symbol)(rdest)
-    VKHi = RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_HI;
-    VKLow = RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_LO;
-    VKAdd = RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_ADD;
+    VKHi = RISCVMCExpr::VK_TLS_GD_GPREL_HI;
+    VKLow = RISCVMCExpr::VK_TLS_GD_GPREL_LO;
+    VKAdd = RISCVMCExpr::VK_TLS_GD_GPREL_ADD;
     LowOpcode = RISCV::ADDI;
     break;
   }
@@ -3912,11 +3893,11 @@ void RISCVAsmParser::emitCompactLoadStoreSymbol(MCInst &Inst, unsigned Opcode,
   MCOperand TmpReg = Inst.getOperand(TmpRegOpIdx);
   const MCExpr *Symbol = Inst.getOperand(SymbolOpIdx).getExpr();
   const RISCVMCExpr *SymbolHi =
-    RISCVMCExpr::create(Symbol, RISCVMCExpr::VK_RISCV_GPREL_HI, Ctx);
+    RISCVMCExpr::create(Symbol, RISCVMCExpr::VK_GPREL_HI, Ctx);
   const RISCVMCExpr *SymbolAdd =
-    RISCVMCExpr::create(Symbol, RISCVMCExpr::VK_RISCV_GPREL_ADD, Ctx);
+    RISCVMCExpr::create(Symbol, RISCVMCExpr::VK_GPREL_ADD, Ctx);
   const RISCVMCExpr *SymbolLow =
-    RISCVMCExpr::create(Symbol, RISCVMCExpr::VK_RISCV_GPREL_LO, Ctx);
+    RISCVMCExpr::create(Symbol, RISCVMCExpr::VK_GPREL_LO, Ctx);
   emitToStreamer(Out, MCInstBuilder(RISCV::LUI)
                           .addOperand(TmpReg)
                           .addExpr(SymbolHi));
@@ -4068,17 +4049,17 @@ bool RISCVAsmParser::checkPseudoAddRegRel(MCInst &Inst,
     SMLoc ErrorLoc = ((RISCVOperand &)*Operands[4]).getStartLoc();
     return Error(ErrorLoc, "unknown third operand modifier for TP/GP-relative ADD");
   }
-  case llvm::RISCVMCExpr::VK_RISCV_TPREL_ADD:
+  case llvm::RISCVMCExpr::VK_TPREL_ADD:
     if (Op2.getReg() != RISCV::X4) {
       SMLoc ErrorLoc = ((RISCVOperand &)*Operands[3]).getStartLoc();
       return Error(ErrorLoc, "the second input operand must be tp/x4 when using "
                              "%tprel_add modifier");
     }
   break;
-  case llvm::RISCVMCExpr::VK_RISCV_GPREL_ADD:
-  case llvm::RISCVMCExpr::VK_RISCV_GOT_GPREL_ADD:
-  case llvm::RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_ADD:
-  case llvm::RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_ADD:
+  case llvm::RISCVMCExpr::VK_GPREL_ADD:
+  case llvm::RISCVMCExpr::VK_GOT_GPREL_ADD:
+  case llvm::RISCVMCExpr::VK_TLS_GOT_GPREL_ADD:
+  case llvm::RISCVMCExpr::VK_TLS_GD_GPREL_ADD:
     break;
   }
 
