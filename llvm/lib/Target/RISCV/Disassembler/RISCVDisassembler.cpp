@@ -745,10 +745,10 @@ static constexpr DecoderListEntry DecoderList32[]{
     {DecoderTable32, {}, "standard 32-bit instructions"},
     {DecoderTableRV32Only32, {}, "RV32-only standard 32-bit instructions"},
     {DecoderTableZfinx32, {}, "Zfinx (Float in Integer)"},
-<<<<<<< HEAD
     {DecoderTableZdinxRV32GPRPair32,
      {},
      "ZdinxRV32GPRPair (rv32 and Double in Integer)"},
+    {DecoderTableZdinxRV32Only32, {}, "RV32-only Zdinx (Double in Integer)"},
 #if SIFIVE_CUSTOMIZATION
     {DecoderTableRVZjid32, {RISCV::FeatureStdExtZjid}, "Zjid (I/D Cache Synchronization)"},
     {DecoderTableZvk0p132, {RISCV::FeatureStdExtZvkb0p1, RISCV::FeatureStdExtZvkg0p1}, "zvk0p1"},
@@ -760,9 +760,6 @@ static constexpr DecoderListEntry DecoderList32[]{
     {DecoderTableXSfmm32, {RISCV::FeatureVendorXSfmmbase}, "SiFive XSfmm32"},
     {DecoderTableXSfsci32, {RISCV::FeatureVendorXSfsci}, "SiFive SCI"},
 #endif
-=======
-    {DecoderTableZdinxRV32Only32, {}, "RV32-only Zdinx (Double in Integer)"},
->>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
 };
 
 DecodeStatus RISCVDisassembler::getInstruction32(MCInst &MI, uint64_t &Size,
@@ -781,12 +778,7 @@ DecodeStatus RISCVDisassembler::getInstruction32(MCInst &MI, uint64_t &Size,
     if (!Entry.haveContainedFeatures(STI.getFeatureBits()))
       continue;
 
-<<<<<<< HEAD
-
-    LLVM_DEBUG(dbgs() << "Trying " << Entry.Desc << "table:\n");
-=======
     LLVM_DEBUG(dbgs() << "Trying " << Entry.Desc << " table:\n");
->>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
     DecodeStatus Result =
         decodeInstruction(Entry.Table, MI, Insn, Address, this, STI);
     if (Result == MCDisassembler::Fail)
