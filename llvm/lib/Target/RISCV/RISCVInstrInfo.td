@@ -2231,17 +2231,14 @@ include "RISCVInstrInfoZicbo.td"
 include "RISCVInstrInfoCompactPseudos.td" // SIFIVE
 include "RISCVInstrInfoZicond.td"
 include "RISCVInstrInfoZicfiss.td"
-<<<<<<< HEAD
-include "SiFive_RISCVInstrInfoZjid.td" // SIFIVE
-=======
 include "RISCVInstrInfoZilsd.td"
+include "SiFive_RISCVInstrInfoZjid.td" // SIFIVE
 
 // Compressed
 include "RISCVInstrInfoC.td"
 include "RISCVInstrInfoZc.td"
 include "RISCVInstrInfoZcmop.td"
 include "RISCVInstrInfoZclsd.td"
->>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
 
 //===----------------------------------------------------------------------===//
 // Vendor extensions
