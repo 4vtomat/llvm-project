@@ -84,11 +84,17 @@ bool VPlanVerifier::verifyPhiRecipes(const VPBasicBlock *VPBB) {
     if (isa<VPActiveLaneMaskPHIRecipe>(RecipeI))
       NumActiveLaneMaskPhiRecipes++;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (!IsHeaderVPBB && vputils::isHeaderPhi(*RecipeI)) {
 #else
     if (IsHeaderVPBB && !isa<VPHeaderPHIRecipe, VPWidenPHIRecipe>(*RecipeI)) {
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    if (IsHeaderVPBB && !isa<VPHeaderPHIRecipe, VPWidenPHIRecipe>(*RecipeI) &&
+        !isa<VPInstruction>(*RecipeI) &&
+        cast<VPInstruction>(RecipeI)->getOpcode() == Instruction::PHI) {
+>>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
       errs() << "Found non-header PHI recipe in header VPBB";
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
       errs() << ": ";
@@ -165,12 +171,13 @@ bool VPlanVerifier::verifyEVLRecipe(const VPInstruction &EVL) const {
         })
         .Case<VPWidenStoreEVLRecipe, VPReductionEVLRecipe>(
             [&](const VPRecipeBase *S) { return VerifyEVLUse(*S, 2); })
-        .Case<VPWidenLoadEVLRecipe, VPReverseVectorPointerRecipe,
-              VPScalarPHIRecipe>(
+        .Case<VPWidenLoadEVLRecipe, VPReverseVectorPointerRecipe>(
             [&](const VPRecipeBase *R) { return VerifyEVLUse(*R, 1); })
         .Case<VPScalarCastRecipe>(
             [&](const VPScalarCastRecipe *S) { return VerifyEVLUse(*S, 0); })
         .Case<VPInstruction>([&](const VPInstruction *I) {
+          if (I->getOpcode() == Instruction::PHI)
+            return VerifyEVLUse(*I, 1);
           if (I->getOpcode() != Instruction::Add) {
             errs() << "EVL is used as an operand in non-VPInstruction::Add\n";
             return false;
@@ -253,7 +260,9 @@ bool VPlanVerifier::verifyVPBasicBlock(const VPBasicBlock *VPBB) {
         if (!UI ||
             isa<VPHeaderPHIRecipe, VPWidenPHIRecipe, VPPredInstPHIRecipe>(UI) ||
             (isa<VPIRInstruction>(UI) &&
-             isa<PHINode>(cast<VPIRInstruction>(UI)->getInstruction())))
+             isa<PHINode>(cast<VPIRInstruction>(UI)->getInstruction())) ||
+            (isa<VPInstruction>(UI) &&
+             cast<VPInstruction>(UI)->getOpcode() == Instruction::PHI))
           continue;
 
         // If the user is in the same block, check it comes after R in the

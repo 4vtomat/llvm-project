@@ -20,9 +20,13 @@
 #include "LoopVectorizationPlanner.h"
 #include "VPlanAnalysis.h"
 #include "VPlanCFG.h"
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 #include "VPlanDominatorTree.h"
 #endif // SIFIVE_CUSTOMIZATION
+=======
+#include "VPlanDominatorTree.h"
+>>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
 #include "VPlanHelpers.h"
 #include "VPlanPatternMatch.h"
 #include "VPlanTransforms.h"
@@ -347,11 +351,15 @@ VPTransformState::VPTransformState(const TargetTransformInfo *TTI,
 #endif // SIFIVE_CUSTOMIZATION
     : TTI(TTI), VF(VF), CFG(DT), LI(LI), Builder(Builder), ILV(ILV), Plan(Plan),
       CurrentParentLoop(CurrentParentLoop), LVer(nullptr),
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       TypeAnalysis(CanonicalIVTy), VPDT(*Plan), EnableRISCVCSA(EnableRISCVCSA) {}
 #else
       TypeAnalysis(CanonicalIVTy) {}
 #endif // SIFIVE_CUSTOMIZATION
+=======
+      TypeAnalysis(CanonicalIVTy), VPDT(*Plan) {}
+>>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
 
 Value *VPTransformState::get(const VPValue *Def, const VPLane &Lane) {
   if (Def->isLiveIn())
@@ -406,14 +414,20 @@ Value *VPTransformState::get(const VPValue *Def, bool NeedsScalar) {
     return Data.VPV2Vector[Def];
 
   auto GetBroadcastInstrs = [this, Def](Value *V) {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
     bool SafeToHoist =
         !Def->hasDefiningRecipe() ||
         VPDT.properlyDominates(Def->getDefiningRecipe()->getParent(),
                                Plan->getVectorPreheader());
+<<<<<<< HEAD
 #else
     bool SafeToHoist = Def->isDefinedOutsideLoopRegions();
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
 
     if (VF.isScalar())
       return V;
@@ -1299,11 +1313,17 @@ void VPlan::execute(VPTransformState *State) {
   State->CFG.PrevVPBB = nullptr;
   State->CFG.ExitBB = State->CFG.PrevBB->getSingleSuccessor();
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Update VPDominatorTree since VPBasicBlock may be removed after State was
   // constructed.
   State->VPDT.recalculate(*this);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  // Update VPDominatorTree since VPBasicBlock may be removed after State was
+  // constructed.
+  State->VPDT.recalculate(*this);
+>>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
 
   // Disconnect VectorPreHeader from ExitBB in both the CFG and DT.
   BasicBlock *VectorPreHeader = State->CFG.PrevBB;
@@ -1380,6 +1400,7 @@ void VPlan::execute(VPTransformState *State) {
       continue;
     }
 
+<<<<<<< HEAD
     auto *PhiR = cast<VPHeaderPHIRecipe>(&R);
     bool NeedsScalar = isa<VPScalarPHIRecipe>(PhiR) ||
 #if SIFIVE_CUSTOMIZATION
@@ -1398,6 +1419,16 @@ void VPlan::execute(VPTransformState *State) {
       Val = State->Builder.CreateZExtOrTrunc(Val, Phi->getType());
     }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    auto *PhiR = cast<VPSingleDefRecipe>(&R);
+    // VPInstructions currently model scalar Phis only.
+    bool NeedsScalar = isa<VPInstruction>(PhiR) ||
+                       (isa<VPReductionPHIRecipe>(PhiR) &&
+                        cast<VPReductionPHIRecipe>(PhiR)->isInLoop());
+    Value *Phi = State->get(PhiR, NeedsScalar);
+    // VPHeaderPHIRecipe supports getBackedgeValue() but VPInstruction does not.
+    Value *Val = State->get(PhiR->getOperand(1), NeedsScalar);
+>>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
     cast<PHINode>(Phi)->addIncoming(Val, VectorLatchBB);
   }
 

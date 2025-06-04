@@ -3168,6 +3168,13 @@ public:
 
   DeclGroupPtrTy ConvertDeclToDeclGroup(Decl *Ptr, Decl *OwnedType = nullptr);
 
+  enum class DiagCtorKind { None, Implicit, Typename };
+  /// Returns the TypeDeclType for the given type declaration,
+  /// as ASTContext::getTypeDeclType would, but
+  /// performs the required semantic checks for name lookup of said entity.
+  QualType getTypeDeclType(DeclContext *LookupCtx, DiagCtorKind DCK,
+                           TypeDecl *TD, SourceLocation NameLoc);
+
   /// If the identifier refers to a type name within this scope,
   /// return the declaration of that type.
   ///
@@ -5444,7 +5451,8 @@ public:
   /// destructor is referenced.
   void MarkVirtualBaseDestructorsReferenced(
       SourceLocation Location, CXXRecordDecl *ClassDecl,
-      llvm::SmallPtrSetImpl<const RecordType *> *DirectVirtualBases = nullptr);
+      llvm::SmallPtrSetImpl<const CXXRecordDecl *> *DirectVirtualBases =
+          nullptr);
 
   /// Do semantic checks to allow the complete destructor variant to be emitted
   /// when the destructor is defined in another translation unit. In the Itanium

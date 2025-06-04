@@ -16,9 +16,13 @@
 #define LLVM_TRANSFORMS_VECTORIZE_VPLANHELPERS_H
 
 #include "VPlanAnalysis.h"
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 #include "VPlanDominatorTree.h"
 #endif // SIFIVE_CUSTOMIZATION
+=======
+#include "VPlanDominatorTree.h"
+>>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/SmallPtrSet.h"
 #include "llvm/ADT/SmallVector.h"
@@ -433,6 +437,7 @@ struct VPTransformState {
   /// VPlan-based type analysis.
   VPTypeAnalysis TypeAnalysis;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// VPlan-based dominator tree.
   VPDominatorTree VPDT;
@@ -441,6 +446,10 @@ struct VPTransformState {
   /// enabled.
   bool EnableRISCVCSA;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  /// VPlan-based dominator tree.
+  VPDominatorTree VPDT;
+>>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
 };
 
 /// Struct to hold various analysis needed for cost computations.

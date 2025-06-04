@@ -13,7 +13,6 @@ add_llvm_component_library(LLVMInstrumentation
   MemorySanitizer.cpp
   NumericalStabilitySanitizer.cpp
   IndirectCallPromotion.cpp
-  InstrOrderFile.cpp
   InstrProfiling.cpp
   KCFI.cpp
   LowerAllowCheckPass.cpp

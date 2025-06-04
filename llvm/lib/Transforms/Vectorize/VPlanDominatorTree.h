@@ -39,6 +39,7 @@ class VPDominatorTree : public DominatorTreeBase<VPBlockBase, false> {
 
 public:
   VPDominatorTree() = default;
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   explicit VPDominatorTree(VPlan &Plan) { recalculate(Plan); }
 #endif // SIFIVE_CUSTOMIZATION
@@ -47,6 +48,12 @@ public:
 #if SIFIVE_CUSTOMIZATION
   using Base::properlyDominates;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  explicit VPDominatorTree(VPlan &Plan) { recalculate(Plan); }
+
+  /// Returns true if \p A properly dominates \p B.
+  using Base::properlyDominates;
+>>>>>>> e45090e5f0bf7743fe0b00d510a903a659354ce1
   bool properlyDominates(const VPRecipeBase *A, const VPRecipeBase *B);
 };
 
