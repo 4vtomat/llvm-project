@@ -752,6 +752,7 @@
 // MCPU-SIFIVE-X160-SAME: "-target-feature" "+zcb"
 // MCPU-SIFIVE-X160-SAME: "-target-feature" "+zce"
 // MCPU-SIFIVE-X160-SAME: "-target-feature" "+zcf"
+// MCPU-SIFIVE-X160-SAME: "-target-feature" "+zcmop"
 // MCPU-SIFIVE-X160-SAME: "-target-feature" "+zcmp"
 // MCPU-SIFIVE-X160-SAME: "-target-feature" "+zcmt"
 // MCPU-SIFIVE-X160-SAME: "-target-feature" "+zba"
