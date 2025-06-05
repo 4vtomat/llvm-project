@@ -5,7 +5,7 @@
 
 ; VPLAN:  VPlan 'Final VPlan for VF={vscale x 1,vscale x 2,vscale x 4},UF={1}' {
 ; VPLAN-NEXT:  Live-in ir<%wide.trip.count> = vector-trip-count
-; VPLAN-NEXT:  vp<%0> = original trip-count
+; VPLAN-NEXT:  vp<[[TC:.*]]> = original trip-count
 ; VPLAN-EMPTY:
 ; VPLAN-NEXT:  ir-bb<for.body.lr.ph>:
 ; VPLAN-NEXT:    IR
@@ -17,42 +17,42 @@
 ; VPLAN-NEXT:    IR
 ; VPLAN-NEXT:    IR
 ; VPLAN-NEXT:    IR
-; VPLAN-NEXT:    EMIT vp<%0> = EXPAND SCEV (zext i32 %reg.4.val to i64)
+; VPLAN-NEXT:    EMIT vp<[[TC]]> = EXPAND SCEV (zext i32 %reg.4.val to i64)
 ; VPLAN-NEXT:  Successor(s): ir-bb<scalar.ph>, ir-bb<vector.ph>
 ; VPLAN-EMPTY:
 ; VPLAN-NEXT:  ir-bb<vector.ph>:
-; VPLAN-NEXT:    EMIT vp<%1> = broadcast ir<%shl11>
-; VPLAN-NEXT:    EMIT vp<%2> = broadcast ir<%1>
+; VPLAN-NEXT:    EMIT vp<[[V1:.*]]> = broadcast ir<%shl11>
+; VPLAN-NEXT:    EMIT vp<[[V2:.*]]> = broadcast ir<%1>
 ; VPLAN-NEXT:  Successor(s): vector loop
 ; VPLAN-EMPTY:
 ; VPLAN-NEXT:  <x1> vector loop: {
 ; VPLAN-NEXT:    vector.body:
-; VPLAN-NEXT:      EMIT vp<%index> = phi ir<0>, vp<%index.evl.next>
-; VPLAN-NEXT:      EMIT vp<%evl.based.iv> = phi ir<0>, vp<%index.evl.next>
-; VPLAN-NEXT:      EMIT vp<%avl> = sub ir<%wide.trip.count>, vp<%evl.based.iv>
-; VPLAN-NEXT:      EMIT vp<%3> = EXPLICIT-VECTOR-LENGTH vp<%avl>
-; VPLAN-NEXT:      vp<%4> = SCALAR-STEPS vp<%evl.based.iv>, ir<1>
-; VPLAN-NEXT:      CLONE ir<%arrayidx> = getelementptr ir<%reg.24.val>, vp<%4>
-; VPLAN-NEXT:      vp<%5> = vector-pointer ir<%arrayidx>
-; VPLAN-NEXT:      WIDEN ir<%2> = vp.load vp<%5>, vp<%3>       unit-strided
-; VPLAN-NEXT:      WIDEN ir<%3> = and ir<%2>, vp<%2>
-; VPLAN-NEXT:      WIDEN ir<%or.cond.not> = icmp eq ir<%3>, vp<%2>
+; VPLAN-NEXT:      EMIT vp<[[IDX:.*]]> = phi ir<0>, vp<[[IDX_NEXT:.*]]>
+; VPLAN-NEXT:      EMIT vp<[[EVL_IV:.*]]> = phi ir<0>, vp<[[IDX_NEXT]]>
+; VPLAN-NEXT:      EMIT vp<[[AVL:.*]]> = sub ir<%wide.trip.count>, vp<[[EVL_IV]]>
+; VPLAN-NEXT:      EMIT vp<[[VL:.*]]> = EXPLICIT-VECTOR-LENGTH vp<[[AVL]]>
+; VPLAN-NEXT:      vp<[[STEP:.*]]> = SCALAR-STEPS vp<[[EVL_IV]]>, ir<1>
+; VPLAN-NEXT:      CLONE ir<%arrayidx> = getelementptr ir<%reg.24.val>, vp<[[STEP]]>
+; VPLAN-NEXT:      vp<[[VPTR:.*]]> = vector-pointer ir<%arrayidx>
+; VPLAN-NEXT:      WIDEN ir<%2> = vp.load vp<[[VPTR]]>, vp<[[VL]]>       unit-strided
+; VPLAN-NEXT:      WIDEN ir<%3> = and ir<%2>, vp<[[V2]]>
+; VPLAN-NEXT:      WIDEN ir<%or.cond.not> = icmp eq ir<%3>, vp<[[V2]]>
 ; VPLAN-NEXT:    Successor(s):
 ; VPLAN-EMPTY:
 ; VPLAN-NEXT:    if (ir<%or.cond.not> != 0) {
 ; VPLAN-NEXT:      vector.if.bb:
-; VPLAN-NEXT:        WIDEN ir<%xor> = xor ir<%2>, vp<%1>
-; VPLAN-NEXT:        vp<%6> = vector-pointer ir<%arrayidx>
-; VPLAN-NEXT:        WIDEN vp.store vp<%6>, ir<%xor>, vp<%3>, ir<%or.cond.not> unit-strided
+; VPLAN-NEXT:        WIDEN ir<%xor> = xor ir<%2>, vp<[[V1]]>
+; VPLAN-NEXT:        vp<[[VPTR2:.*]]> = vector-pointer ir<%arrayidx>
+; VPLAN-NEXT:        WIDEN vp.store vp<[[VPTR2]]>, ir<%xor>, vp<[[VL]]>, ir<%or.cond.not> unit-strided
 ; VPLAN-NEXT:        BRANCH-ON-MASK ir<true>, vector.body.split, vector.body.split
 ; VPLAN-NEXT:      No successors
 ; VPLAN-NEXT:    }
 ; VPLAN-NEXT:    Successor(s): vector.body.split
 ; VPLAN-EMPTY:
 ; VPLAN-NEXT:    vector.body.split:
-; VPLAN-NEXT:      SCALAR-CAST vp<%7> = zext vp<%3> to i64
-; VPLAN-NEXT:      EMIT vp<%index.evl.next> = add nuw vp<%7>, vp<%evl.based.iv>
-; VPLAN-NEXT:      EMIT branch-on-count vp<%index.evl.next>, ir<%wide.trip.count>
+; VPLAN-NEXT:      SCALAR-CAST vp<[[CAST:.*]]> = zext vp<[[VL]]> to i64
+; VPLAN-NEXT:      EMIT vp<[[IDX_NEXT]]> = add nuw vp<[[CAST]]>, vp<[[EVL_IV]]>
+; VPLAN-NEXT:      EMIT branch-on-count vp<[[IDX_NEXT]]>, ir<%wide.trip.count>
 ; VPLAN-NEXT:    No successors
 ; VPLAN-NEXT:  }
 ; VPLAN-NEXT:  Successor(s): middle.block
