@@ -4828,8 +4828,17 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
   if (CurrentPart == 0) {
     // The recipe represents the first part of the pointer induction. Create the
     // GEP to increment the phi across all unrolled parts.
+#if SIFIVE_CUSTOMIZATION
+    Value *NumUnrolledElems =
+        State.Plan->useVLAVectorizer()
+            ? State.Builder.CreateMul(
+                  RuntimeVF,
+                  ConstantInt::get(PhiType, getParent()->getPlan()->getUF()))
+            : State.get(&getParent()->getPlan()->getVFxUF(), true);
+#else
     Value *NumUnrolledElems =
         State.get(&getParent()->getPlan()->getVFxUF(), true);
+#endif // SIFIVE_CUSTOMIZATION
 
     Value *InductionGEP = GetElementPtrInst::Create(
         State.Builder.getInt8Ty(), NewPointerPhi,
