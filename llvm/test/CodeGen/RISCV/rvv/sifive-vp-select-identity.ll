@@ -14,7 +14,7 @@ define <vscale x 1 x i64> @test_add(<vscale x 1 x i64> %a, <vscale x 1 x i64> %b
 ; CHECK-LABEL: test_add:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, tu, mu
-; CHECK-NEXT:    vadd.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vadd.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x i64> poison, i64 0, i32 0
   %ident = shufflevector <vscale x 1 x i64> %splat, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
@@ -41,7 +41,7 @@ define <vscale x 1 x i64> @test_mul(<vscale x 1 x i64> %a, <vscale x 1 x i64> %b
 ; CHECK-LABEL: test_mul:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, tu, mu
-; CHECK-NEXT:    vmul.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vmul.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x i64> poison, i64 1, i32 0
   %ident = shufflevector <vscale x 1 x i64> %splat, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
@@ -68,7 +68,7 @@ define <vscale x 1 x i64> @test_or(<vscale x 1 x i64> %a, <vscale x 1 x i64> %b,
 ; CHECK-LABEL: test_or:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, tu, mu
-; CHECK-NEXT:    vor.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vor.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x i64> poison, i64 0, i32 0
   %ident = shufflevector <vscale x 1 x i64> %splat, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
@@ -95,7 +95,7 @@ define <vscale x 1 x i64> @test_xor(<vscale x 1 x i64> %a, <vscale x 1 x i64> %b
 ; CHECK-LABEL: test_xor:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, tu, mu
-; CHECK-NEXT:    vxor.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vxor.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x i64> poison, i64 0, i32 0
   %ident = shufflevector <vscale x 1 x i64> %splat, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
@@ -122,7 +122,7 @@ define <vscale x 1 x i64> @test_and(<vscale x 1 x i64> %a, <vscale x 1 x i64> %b
 ; CHECK-LABEL: test_and:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, tu, mu
-; CHECK-NEXT:    vand.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vand.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x i64> poison, i64 -1, i32 0
   %ident = shufflevector <vscale x 1 x i64> %splat, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
@@ -149,7 +149,7 @@ define <vscale x 1 x i64> @test_umax(<vscale x 1 x i64> %a, <vscale x 1 x i64> %
 ; CHECK-LABEL: test_umax:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, tu, mu
-; CHECK-NEXT:    vmaxu.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vmaxu.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x i64> poison, i64 0, i32 0
   %ident = shufflevector <vscale x 1 x i64> %splat, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
@@ -176,7 +176,7 @@ define <vscale x 1 x i64> @test_umin(<vscale x 1 x i64> %a, <vscale x 1 x i64> %
 ; CHECK-LABEL: test_umin:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, tu, mu
-; CHECK-NEXT:    vminu.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vminu.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x i64> poison, i64 -1, i32 0
   %ident = shufflevector <vscale x 1 x i64> %splat, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
@@ -203,7 +203,7 @@ define <vscale x 1 x i64> @test_smax(<vscale x 1 x i64> %a, <vscale x 1 x i64> %
 ; CHECK-LABEL: test_smax:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, tu, mu
-; CHECK-NEXT:    vmax.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vmax.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x i64> poison, i64 -9223372036854775808, i32 0
   %ident = shufflevector <vscale x 1 x i64> %splat, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
@@ -230,7 +230,7 @@ define <vscale x 1 x i64> @test_smin(<vscale x 1 x i64> %a, <vscale x 1 x i64> %
 ; CHECK-LABEL: test_smin:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, tu, mu
-; CHECK-NEXT:    vmin.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vmin.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x i64> poison, i64 9223372036854775807, i32 0
   %ident = shufflevector <vscale x 1 x i64> %splat, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
@@ -313,7 +313,7 @@ define <vscale x 1 x double> @test_fadd(<vscale x 1 x double> %a, <vscale x 1 x 
 ; CHECK-LABEL: test_fadd:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, tu, mu
-; CHECK-NEXT:    vfadd.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vfadd.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x double> poison, double -0.0, i32 0
   %ident = shufflevector <vscale x 1 x double> %splat, <vscale x 1 x double> poison, <vscale x 1 x i32> zeroinitializer
@@ -340,7 +340,7 @@ define <vscale x 1 x double> @test_fmul(<vscale x 1 x double> %a, <vscale x 1 x 
 ; CHECK-LABEL: test_fmul:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, tu, mu
-; CHECK-NEXT:    vfmul.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vfmul.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x double> poison, double 1.0, i32 0
   %ident = shufflevector <vscale x 1 x double> %splat, <vscale x 1 x double> poison, <vscale x 1 x i32> zeroinitializer
@@ -367,7 +367,7 @@ define <vscale x 1 x double> @test_minnum(<vscale x 1 x double> %a, <vscale x 1 
 ; CHECK-LABEL: test_minnum:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, tu, mu
-; CHECK-NEXT:    vfmin.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vfmin.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x double> poison, double 0x7FF8000000000000, i32 0
   %ident = shufflevector <vscale x 1 x double> %splat, <vscale x 1 x double> poison, <vscale x 1 x i32> zeroinitializer
@@ -394,7 +394,7 @@ define <vscale x 1 x double> @test_maxnum(<vscale x 1 x double> %a, <vscale x 1 
 ; CHECK-LABEL: test_maxnum:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, tu, mu
-; CHECK-NEXT:    vfmax.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vfmax.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x double> poison, double 0xFFF8000000000000, i32 0
   %ident = shufflevector <vscale x 1 x double> %splat, <vscale x 1 x double> poison, <vscale x 1 x i32> zeroinitializer
@@ -434,7 +434,7 @@ define <vscale x 1 x i64> @test_select_add(<vscale x 1 x i64> %a, <vscale x 1 x 
 ; CHECK-LABEL: test_select_add:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
-; CHECK-NEXT:    vadd.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vadd.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x i64> poison, i64 0, i32 0
   %ident = shufflevector <vscale x 1 x i64> %splat, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
@@ -460,7 +460,7 @@ define <vscale x 1 x i64> @test_select_mul(<vscale x 1 x i64> %a, <vscale x 1 x 
 ; CHECK-LABEL: test_select_mul:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
-; CHECK-NEXT:    vmul.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vmul.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x i64> poison, i64 1, i32 0
   %ident = shufflevector <vscale x 1 x i64> %splat, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
@@ -486,7 +486,7 @@ define <vscale x 1 x i64> @test_select_or(<vscale x 1 x i64> %a, <vscale x 1 x i
 ; CHECK-LABEL: test_select_or:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
-; CHECK-NEXT:    vor.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vor.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x i64> poison, i64 0, i32 0
   %ident = shufflevector <vscale x 1 x i64> %splat, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
@@ -512,7 +512,7 @@ define <vscale x 1 x i64> @test_select_xor(<vscale x 1 x i64> %a, <vscale x 1 x 
 ; CHECK-LABEL: test_select_xor:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
-; CHECK-NEXT:    vxor.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vxor.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x i64> poison, i64 0, i32 0
   %ident = shufflevector <vscale x 1 x i64> %splat, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
@@ -538,7 +538,7 @@ define <vscale x 1 x i64> @test_select_and(<vscale x 1 x i64> %a, <vscale x 1 x 
 ; CHECK-LABEL: test_select_and:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
-; CHECK-NEXT:    vand.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vand.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x i64> poison, i64 -1, i32 0
   %ident = shufflevector <vscale x 1 x i64> %splat, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
@@ -564,7 +564,7 @@ define <vscale x 1 x i64> @test_select_umax(<vscale x 1 x i64> %a, <vscale x 1 x
 ; CHECK-LABEL: test_select_umax:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
-; CHECK-NEXT:    vmaxu.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vmaxu.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x i64> poison, i64 0, i32 0
   %ident = shufflevector <vscale x 1 x i64> %splat, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
@@ -590,7 +590,7 @@ define <vscale x 1 x i64> @test_select_umin(<vscale x 1 x i64> %a, <vscale x 1 x
 ; CHECK-LABEL: test_select_umin:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
-; CHECK-NEXT:    vminu.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vminu.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x i64> poison, i64 -1, i32 0
   %ident = shufflevector <vscale x 1 x i64> %splat, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
@@ -616,7 +616,7 @@ define <vscale x 1 x i64> @test_select_smax(<vscale x 1 x i64> %a, <vscale x 1 x
 ; CHECK-LABEL: test_select_smax:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
-; CHECK-NEXT:    vmax.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vmax.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x i64> poison, i64 -9223372036854775808, i32 0
   %ident = shufflevector <vscale x 1 x i64> %splat, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
@@ -642,7 +642,7 @@ define <vscale x 1 x i64> @test_select_smin(<vscale x 1 x i64> %a, <vscale x 1 x
 ; CHECK-LABEL: test_select_smin:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
-; CHECK-NEXT:    vmin.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vmin.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x i64> poison, i64 9223372036854775807, i32 0
   %ident = shufflevector <vscale x 1 x i64> %splat, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
@@ -720,7 +720,7 @@ define <vscale x 1 x double> @test_select_fadd(<vscale x 1 x double> %a, <vscale
 ; CHECK-LABEL: test_select_fadd:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
-; CHECK-NEXT:    vfadd.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vfadd.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x double> poison, double -0.0, i32 0
   %ident = shufflevector <vscale x 1 x double> %splat, <vscale x 1 x double> poison, <vscale x 1 x i32> zeroinitializer
@@ -746,7 +746,7 @@ define <vscale x 1 x double> @test_select_fmul(<vscale x 1 x double> %a, <vscale
 ; CHECK-LABEL: test_select_fmul:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
-; CHECK-NEXT:    vfmul.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vfmul.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x double> poison, double 1.0, i32 0
   %ident = shufflevector <vscale x 1 x double> %splat, <vscale x 1 x double> poison, <vscale x 1 x i32> zeroinitializer
@@ -772,7 +772,7 @@ define <vscale x 1 x double> @test_select_minnum(<vscale x 1 x double> %a, <vsca
 ; CHECK-LABEL: test_select_minnum:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
-; CHECK-NEXT:    vfmin.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vfmin.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x double> poison, double 0x7FF8000000000000, i32 0
   %ident = shufflevector <vscale x 1 x double> %splat, <vscale x 1 x double> poison, <vscale x 1 x i32> zeroinitializer
@@ -798,7 +798,7 @@ define <vscale x 1 x double> @test_select_maxnum(<vscale x 1 x double> %a, <vsca
 ; CHECK-LABEL: test_select_maxnum:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
-; CHECK-NEXT:    vfmax.vv v8, v9, v8, v0.t
+; CHECK-NEXT:    vfmax.vv v8, v8, v9, v0.t
 ; CHECK-NEXT:    ret
   %splat = insertelement <vscale x 1 x double> poison, double 0xFFF8000000000000, i32 0
   %ident = shufflevector <vscale x 1 x double> %splat, <vscale x 1 x double> poison, <vscale x 1 x i32> zeroinitializer

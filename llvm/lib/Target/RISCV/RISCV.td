@@ -13,6 +13,9 @@ include "llvm/Target/Target.td"
 //===----------------------------------------------------------------------===//
 
 include "RISCVFeatures.td"
+#ifdef SIFIVE_CUSTOMIZATION
+include "SiFive_RISCVFeatures.td"
+#endif
 
 //===----------------------------------------------------------------------===//
 // RISC-V profiles supported.
