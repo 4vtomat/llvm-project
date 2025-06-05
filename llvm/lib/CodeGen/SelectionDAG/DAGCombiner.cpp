@@ -27603,8 +27603,6 @@ static SDValue foldVPSelectWithIdentityConstant(SDNode *N, SelectionDAG &DAG,
     // mask as the vp.select node.
     SDValue Ops1[] = {
         F0, TVal, DAG.getAllOnesConstant(SDLoc(N), Mask.getValueType()), VL};
-    if (SelectIndex == 0)
-      std::swap(Ops1[0], Ops1[1]);
     SDValue NewBO = DAG.getNode(Opcode, SDLoc(N), VT, Ops1, N->getFlags());
     SDValue Ops2[] = {Mask, NewBO, F0, VL};
     return DAG.getNode(N1->getOpcode(), SDLoc(N), VT, Ops2);
