@@ -1995,9 +1995,9 @@ define i64 @SingleBlock4(ptr %start) {
 ; DEFAULT-NEXT:    [[TMP4:%.*]] = add <vscale x 16 x i64> [[DOTSPLAT]], [[TMP16]]
 ; DEFAULT-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; DEFAULT:       vector.body:
-; DEFAULT-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[PTR_IND:%.*]], [[VECTOR_BODY]] ]
-; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; DEFAULT-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
+; DEFAULT-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY]] ], [ [[PTR_IND:%.*]], [[VECTOR_BODY]] ]
 ; DEFAULT-NEXT:    [[TMP19:%.*]] = mul <vscale x 16 x i64> [[TMP4]], splat (i64 1)
 ; DEFAULT-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 16 x i64> [[TMP19]]
 ; DEFAULT-NEXT:    [[TMP20:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
@@ -2048,9 +2048,9 @@ define i64 @SingleBlock4(ptr %start) {
 ; ON-NEXT:    [[TMP4:%.*]] = add <vscale x 16 x i64> [[DOTSPLAT]], [[TMP16]]
 ; ON-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; ON:       vector.body:
-; ON-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[PTR_IND:%.*]], [[VECTOR_BODY]] ]
-; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; ON-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
+; ON-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY]] ], [ [[PTR_IND:%.*]], [[VECTOR_BODY]] ]
 ; ON-NEXT:    [[TMP19:%.*]] = mul <vscale x 16 x i64> [[TMP4]], splat (i64 1)
 ; ON-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 16 x i64> [[TMP19]]
 ; ON-NEXT:    [[TMP20:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
@@ -2133,9 +2133,9 @@ define i64 @SingleBlock4(ptr %start) {
 ; stress-NEXT:    [[TMP4:%.*]] = add <vscale x 16 x i64> [[DOTSPLAT]], [[TMP16]]
 ; stress-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; stress:       vector.body:
-; stress-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[PTR_IND:%.*]], [[VECTOR_BODY]] ]
-; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; stress-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
+; stress-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY]] ], [ [[PTR_IND:%.*]], [[VECTOR_BODY]] ]
 ; stress-NEXT:    [[TMP19:%.*]] = mul <vscale x 16 x i64> [[TMP4]], splat (i64 1)
 ; stress-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 16 x i64> [[TMP19]]
 ; stress-NEXT:    [[TMP20:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
@@ -2202,9 +2202,9 @@ define i64 @SingleBlock4(ptr %start) {
 ; IF0-NEXT:    [[TMP4:%.*]] = add <vscale x 16 x i64> [[DOTSPLAT]], [[TMP16]]
 ; IF0-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF0:       vector.body:
-; IF0-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[PTR_IND:%.*]], [[VECTOR_BODY]] ]
-; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF0-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
+; IF0-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY]] ], [ [[PTR_IND:%.*]], [[VECTOR_BODY]] ]
 ; IF0-NEXT:    [[TMP19:%.*]] = mul <vscale x 16 x i64> [[TMP4]], splat (i64 1)
 ; IF0-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 16 x i64> [[TMP19]]
 ; IF0-NEXT:    [[TMP20:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
@@ -2255,9 +2255,9 @@ define i64 @SingleBlock4(ptr %start) {
 ; IF1-NEXT:    [[TMP4:%.*]] = add <vscale x 16 x i64> [[DOTSPLAT]], [[TMP16]]
 ; IF1-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF1:       vector.body:
-; IF1-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[PTR_IND:%.*]], [[VECTOR_BODY]] ]
-; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
+; IF1-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY]] ], [ [[PTR_IND:%.*]], [[VECTOR_BODY]] ]
 ; IF1-NEXT:    [[TMP19:%.*]] = mul <vscale x 16 x i64> [[TMP4]], splat (i64 1)
 ; IF1-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 16 x i64> [[TMP19]]
 ; IF1-NEXT:    [[TMP20:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
@@ -2308,9 +2308,9 @@ define i64 @SingleBlock4(ptr %start) {
 ; IF2-NEXT:    [[TMP4:%.*]] = add <vscale x 16 x i64> [[DOTSPLAT]], [[TMP16]]
 ; IF2-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF2:       vector.body:
-; IF2-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[PTR_IND:%.*]], [[VECTOR_BODY]] ]
-; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF2-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
+; IF2-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY]] ], [ [[PTR_IND:%.*]], [[VECTOR_BODY]] ]
 ; IF2-NEXT:    [[TMP19:%.*]] = mul <vscale x 16 x i64> [[TMP4]], splat (i64 1)
 ; IF2-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 16 x i64> [[TMP19]]
 ; IF2-NEXT:    [[TMP20:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)

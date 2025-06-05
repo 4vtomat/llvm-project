@@ -24,8 +24,8 @@ define i64 @x86_Convert(ptr %data, i64 %size, i32 %ip, ptr %state, i32 %encoding
 ; CHECK-NEXT:    [[TMP3:%.*]] = mul <vscale x 16 x i64> [[TMP2]], splat (i64 1)
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
-; CHECK-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ null, %[[VECTOR_PH]] ], [ [[PTR_IND:%.*]], %[[FOR_INC1:.*]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[FOR_INC1]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[FOR_INC1:.*]] ]
+; CHECK-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ null, %[[VECTOR_PH]] ], [ [[PTR_IND:%.*]], %[[FOR_INC1]] ]
 ; CHECK-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 16 x i64> [[TMP3]]
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 -4, [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = call i64 @llvm.umin.i64(i64 [[AVL]], i64 16)

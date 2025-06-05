@@ -27,9 +27,9 @@ define void @foo(ptr %arg1, i64 %arg2) {
 ; CHECK-NEXT:    [[TMP10:%.*]] = mul <vscale x 16 x i64> [[TMP9]], splat (i64 1)
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
-; CHECK-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[ARG1]], %[[VECTOR_PH]] ], [ [[PTR_IND:%.*]], %[[LOOP_NEXT2:.*]] ]
-; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[LOOP_NEXT2]] ]
+; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[LOOP_NEXT2:.*]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[LOOP_NEXT2]] ]
+; CHECK-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[ARG1]], %[[VECTOR_PH]] ], [ [[PTR_IND:%.*]], %[[LOOP_NEXT2]] ]
 ; CHECK-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 16 x i64> [[TMP10]]
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[TMP2]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP11:%.*]] = call i64 @llvm.umin.i64(i64 [[AVL]], i64 16)

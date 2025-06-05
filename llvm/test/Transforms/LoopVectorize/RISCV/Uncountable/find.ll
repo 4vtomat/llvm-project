@@ -48,9 +48,9 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; CHECK-NEXT:    [[TMP15:%.*]] = add <vscale x 2 x i64> [[DOTSPLAT]], [[TMP14]]
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
-; CHECK-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[FIRST]], [[VECTOR_PH]] ], [ [[PTR_IND:%.*]], [[FOR_INC5:%.*]] ]
-; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_INC5]] ]
+; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_INC5:%.*]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[FOR_INC5]] ]
+; CHECK-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[FIRST]], [[VECTOR_PH]] ], [ [[PTR_IND:%.*]], [[FOR_INC5]] ]
 ; CHECK-NEXT:    [[TMP16:%.*]] = mul <vscale x 2 x i64> [[TMP15]], splat (i64 4)
 ; CHECK-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 2 x i64> [[TMP16]]
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[TMP4]], [[EVL_BASED_IV]]
@@ -136,9 +136,9 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; P470-NEXT:    [[TMP15:%.*]] = add <vscale x 8 x i64> [[DOTSPLAT]], [[TMP14]]
 ; P470-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; P470:       vector.body:
-; P470-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[FIRST]], [[VECTOR_PH]] ], [ [[PTR_IND:%.*]], [[FOR_INC5:%.*]] ]
-; P470-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_INC5]] ]
+; P470-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_INC5:%.*]] ]
 ; P470-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[FOR_INC5]] ]
+; P470-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[FIRST]], [[VECTOR_PH]] ], [ [[PTR_IND:%.*]], [[FOR_INC5]] ]
 ; P470-NEXT:    [[TMP16:%.*]] = mul <vscale x 8 x i64> [[TMP15]], splat (i64 4)
 ; P470-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 8 x i64> [[TMP16]]
 ; P470-NEXT:    [[AVL:%.*]] = sub i64 [[TMP4]], [[EVL_BASED_IV]]
@@ -371,9 +371,9 @@ define i64 @ham(ptr %arg, i64 %arg1, i32 %arg2, ptr %arg3, i32 %arg4) {
 ; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 8 x i64> [[DOTSPLAT]], [[TMP6]]
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
-; CHECK-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[PHI]], [[VECTOR_PH]] ], [ [[PTR_IND:%.*]], [[BB182:%.*]] ]
-; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[BB182]] ]
+; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[BB182:%.*]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[BB182]] ]
+; CHECK-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[PHI]], [[VECTOR_PH]] ], [ [[PTR_IND:%.*]], [[BB182]] ]
 ; CHECK-NEXT:    [[TMP8:%.*]] = mul <vscale x 8 x i64> [[TMP7]], splat (i64 1)
 ; CHECK-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 8 x i64> [[TMP8]]
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[TMP1]], [[EVL_BASED_IV]]
@@ -441,9 +441,9 @@ define i64 @ham(ptr %arg, i64 %arg1, i32 %arg2, ptr %arg3, i32 %arg4) {
 ; P470-NEXT:    [[TMP7:%.*]] = add <vscale x 16 x i64> [[DOTSPLAT]], [[TMP6]]
 ; P470-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; P470:       vector.body:
-; P470-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[PHI]], [[VECTOR_PH]] ], [ [[PTR_IND:%.*]], [[BB182:%.*]] ]
-; P470-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[BB182]] ]
+; P470-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[BB182:%.*]] ]
 ; P470-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[BB182]] ]
+; P470-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[PHI]], [[VECTOR_PH]] ], [ [[PTR_IND:%.*]], [[BB182]] ]
 ; P470-NEXT:    [[TMP8:%.*]] = mul <vscale x 16 x i64> [[TMP7]], splat (i64 1)
 ; P470-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 16 x i64> [[TMP8]]
 ; P470-NEXT:    [[AVL:%.*]] = sub i64 [[TMP1]], [[EVL_BASED_IV]]
