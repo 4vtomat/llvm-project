@@ -2761,6 +2761,9 @@ void VPlanTransforms::materializeBroadcasts(VPlan &Plan) {
 #endif
 
   SmallVector<VPValue *> VPValues;
+#if SIFIVE_CUSTOMIZATION
+  if (!Plan.isUncountable())
+#endif // SIFIVE_CUSTOMIZATION
   if (Plan.getOrCreateBackedgeTakenCount()->getNumUsers() > 0)
     VPValues.push_back(Plan.getOrCreateBackedgeTakenCount());
   append_range(VPValues, Plan.getLiveIns());
