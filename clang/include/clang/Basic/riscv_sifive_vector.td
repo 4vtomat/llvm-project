@@ -258,7 +258,8 @@ let RequiredFeatures = ["Xsfvfexpa64e"] in {
 }
 
 multiclass RVVSFTileLoadStoreBuiltinSet<list<string> types,
-                                        list<string> RequiredFeatures = []> {
+                                        list<string> RequiredFeatures = [],
+                                        bit is_store = 0> {
   let OverloadedName = NAME,
       Name = NAME,
       IRName = NAME,
@@ -270,9 +271,9 @@ multiclass RVVSFTileLoadStoreBuiltinSet<list<string> types,
                                          !cond(!eq(type, "x"): ["Zvfhmin"],
                                                !eq(type, "y"): ["Zvfbfmin"],
                                                true:           []<string>)) in {
-        def : RVVBuiltin<"e", "0zPCe", type>;
+        def : RVVBuiltin<"e", "0zP" # !if(is_store, "", "C") # "e", type>;
         if !not(IsFloat<type>.val) then
-          def : RVVBuiltin<"Ue", "0zPCUe", type>;
+          def : RVVBuiltin<"Ue", "0zP" # !if(is_store, "", "C") # "Ue", type>;
       }
     }
 }
@@ -393,10 +394,10 @@ defm sf_vlte16 : RVVSFTileLoadStoreBuiltinSet<["s", "x", "y"], ["Xsfmmbase"]>;
 defm sf_vlte32 : RVVSFTileLoadStoreBuiltinSet<["i", "f"], ["Xsfmmbase"]>;
 defm sf_vlte64 : RVVSFTileLoadStoreBuiltinSet<["l", "d"], ["Xsfmmbase"]>;
 
-defm sf_vste8  : RVVSFTileLoadStoreBuiltinSet<["c"], ["Xsfmmbase"]>;
-defm sf_vste16 : RVVSFTileLoadStoreBuiltinSet<["s", "x", "y"], ["Xsfmmbase"]>;
-defm sf_vste32 : RVVSFTileLoadStoreBuiltinSet<["i", "f"], ["Xsfmmbase"]>;
-defm sf_vste64 : RVVSFTileLoadStoreBuiltinSet<["l", "d"], ["Xsfmmbase"]>;
+defm sf_vste8  : RVVSFTileLoadStoreBuiltinSet<["c"], ["Xsfmmbase"], /*is_store*/ 1>;
+defm sf_vste16 : RVVSFTileLoadStoreBuiltinSet<["s", "x", "y"], ["Xsfmmbase"], /*is_store*/ 1>;
+defm sf_vste32 : RVVSFTileLoadStoreBuiltinSet<["i", "f"], ["Xsfmmbase"], /*is_store*/ 1 >;
+defm sf_vste64 : RVVSFTileLoadStoreBuiltinSet<["l", "d"], ["Xsfmmbase"], /*is_store*/ 1>;
 
 let RequiredFeatures = ["Xsfmm32a8i"] in {
   defm sf_mm_u_u   : RVVSFMatMulBuiltinSet<"0KzUvUvzzz", "UvUv", "c", [4]>;
