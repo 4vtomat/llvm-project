@@ -208,6 +208,35 @@ static cl::opt<bool> DisableGEPConstOperand(
     "disable-gep-const-evaluation", cl::Hidden, cl::init(false),
     cl::desc("Disables evaluation of GetElementPtr with constant operands"));
 
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<bool>
+    EnableLoopBonus("enable-loop-inline-bonus", cl::Hidden,
+                    cl::desc("Add bonus to either callee with loops or "
+                             "call sites enclosed in a loop."),
+                    cl::init(true));
+
+static cl::opt<unsigned> CalleeNestedLoopBonus(
+    "callee-nested-loop-inline-bonus", cl::Hidden,
+    cl::desc("The amount of cost reduction on a callee instruction for every "
+             "layer of nested loop."),
+    cl::init(30));
+static cl::opt<bool> InverseCalleeNestedLoopBonus(
+    "inverse-callee-nested-loop-inline-bonus", cl::Hidden,
+    cl::desc("The more layers the loop in callee, the less bonus it gets."),
+    cl::init(true));
+
+static cl::opt<unsigned>
+    CallerNestedLoopBonus("caller-nested-loop-inline-bonus", cl::Hidden,
+                          cl::desc("The amount of caller threshold increase "
+                                   "for every layer of nested loop."),
+                          cl::init(20));
+static cl::opt<bool> InverseCallerNestedLoopBonus(
+    "inverse-caller-nested-loop-inline-bonus", cl::Hidden,
+    cl::desc(
+        "The more layers the loop enclosing callsite, the less bonus it gets."),
+    cl::init(false));
+#endif
+
 namespace llvm {
 std::optional<int> getStringFnAttrAsInt(const Attribute &Attr) {
   if (Attr.isValid()) {
@@ -379,7 +408,11 @@ protected:
 
   /// Called to account for any other instruction not specifically accounted
   /// for.
+#if SIFIVE_CUSTOMIZATION
+  virtual void onMissedSimplification(Instruction *I) {}
+#else
   virtual void onMissedSimplification() {}
+#endif
 
   /// Start accounting potential benefits due to SROA for the given alloca.
   virtual void onInitializeSROAArg(AllocaInst *Arg) {}
@@ -611,6 +644,12 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
   int VectorBonus = 0;
   /// Bonus to be applied when the callee has only one reachable basic block.
   int SingleBBBonus = 0;
+#if SIFIVE_CUSTOMIZATION
+  /// Bonus for cases where either the callsite is in a loop, or the callee
+  /// contains loops. The idea is that inlining these cases can increase the
+  /// loop optimization surface.
+  int LoopBonus = 0;
+#endif
 
   /// Tunable parameters that control the analysis.
   const InlineParams &Params;
@@ -669,6 +708,10 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
   /// we have to disable SROA for one of the allocas, this tells us how much
   /// cost must be added.
   DenseMap<AllocaInst *, int> SROAArgCosts;
+
+#if SIFIVE_CUSTOMIZATION
+  LoopInfo CalleeLI;
+#endif
 
   /// Return true if \p Call is a cold callsite.
   bool isColdCallSite(CallBase &Call, BlockFrequencyInfo *CallerBFI);
@@ -797,7 +840,26 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
 
     addCost(SwitchCost);
   }
+#if SIFIVE_CUSTOMIZATION
+  void onMissedSimplification(Instruction *I) override {
+    int64_t Cost = InstrCost;
+    Function *Caller = CandidateCall.getFunction();
+    if (EnableLoopBonus && !Caller->hasMinSize()) {
+      BasicBlock *BB = I->getParent();
+      if (unsigned Depth = CalleeLI.getLoopDepth(BB)) {
+        unsigned DiscountPercent = 0;
+        if (InverseCalleeNestedLoopBonus)
+          DiscountPercent = CalleeNestedLoopBonus / Depth;
+        else
+          DiscountPercent = CalleeNestedLoopBonus * Depth;
+        Cost = std::max(Cost * (100 - DiscountPercent) / 100, 1L);
+      }
+    }
+    addCost(Cost);
+  }
+#else
   void onMissedSimplification() override { addCost(InstrCost); }
+#endif // SIFIVE_CUSTOMIZATION
 
   void onInitializeSROAArg(AllocaInst *Arg) override {
     assert(Arg != nullptr &&
@@ -1081,10 +1143,12 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
 #endif // SIFIVE_CUSTOMIZATION
 
     if (Caller->hasMinSize()) {
+#if !SIFIVE_CUSTOMIZATION
       DominatorTree DT(F);
       LoopInfo LI(DT);
+#endif
       int NumLoops = 0;
-      for (Loop *L : LI) {
+      for (Loop *L : CalleeLI) { // SIFIVE
         // Ignore loops that will not be executed
         if (DeadBlocks.count(L->getHeader()))
           continue;
@@ -1229,7 +1293,11 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
     // Speculatively apply all possible bonuses to Threshold. If cost exceeds
     // this Threshold any time, and cost cannot decrease, we can stop processing
     // the rest of the function body.
+#if SIFIVE_CUSTOMIZATION
+    Threshold += (SingleBBBonus + VectorBonus + LoopBonus);
+#else
     Threshold += (SingleBBBonus + VectorBonus);
+#endif
 
     // Give out bonuses for the callsite, as the instructions setting them up
     // will be gone after inlining.
@@ -1269,6 +1337,12 @@ public:
         CostBenefitAnalysisEnabled(isCostBenefitAnalysisEnabled()),
         Writer(this) {
     AllowRecursiveCall = *Params.AllowRecursiveCall;
+#if SIFIVE_CUSTOMIZATION
+    // DominatorTree calculation will fail if the function
+    // is empty (e.g. declaration).
+    if (!Callee.empty())
+      CalleeLI = LoopInfo(DominatorTree(Callee));
+#endif
   }
 
   /// Annotation Writer for instruction details
@@ -1418,7 +1492,11 @@ private:
     increment(InlineCostFeatureIndex::switch_penalty, SwitchCost);
   }
 
+#if SIFIVE_CUSTOMIZATION
+  void onMissedSimplification(Instruction *I) override {
+#else
   void onMissedSimplification() override {
+#endif
     increment(InlineCostFeatureIndex::unsimplified_common_instructions,
               InstrCost);
   }
@@ -2205,12 +2283,18 @@ void InlineCostCallAnalyzer::updateThreshold(CallBase &Call, Function &Callee) {
   int SingleBBBonusPercent = 50;
   int VectorBonusPercent = TTI.getInlinerVectorBonusPercent();
   int LastCallToStaticBonus = TTI.getInliningLastCallToStaticBonus();
+#if SIFIVE_CUSTOMIZATION
+  int LoopBonusPercent = 0;
+#endif
 
   // Lambda to set all the above bonus and bonus percentages to 0.
   auto DisallowAllBonuses = [&]() {
     SingleBBBonusPercent = 0;
     VectorBonusPercent = 0;
     LastCallToStaticBonus = 0;
+#if SIFIVE_CUSTOMIZATION
+    LoopBonusPercent = 0;
+#endif
   };
 
   // Use the OptMinSizeThreshold or OptSizeThreshold knob if they are available
@@ -2231,6 +2315,21 @@ void InlineCostCallAnalyzer::updateThreshold(CallBase &Call, Function &Callee) {
   if (!Caller->hasMinSize()) {
     if (Callee.hasFnAttribute(Attribute::InlineHint))
       Threshold = MaxIfValid(Threshold, Params.HintThreshold);
+
+#if SIFIVE_CUSTOMIZATION
+    // Adjust the inline threshold according to the enclosing loop.
+    if (EnableLoopBonus) {
+      BasicBlock *CallsiteBB = Call.getParent();
+      DominatorTree CallerDT(*Caller);
+      LoopInfo CallerLI(CallerDT);
+      if (unsigned Depth = CallerLI.getLoopDepth(CallsiteBB)) {
+        if (InverseCallerNestedLoopBonus)
+          LoopBonusPercent = CallerNestedLoopBonus / Depth;
+        else
+          LoopBonusPercent = CallerNestedLoopBonus * Depth;
+      }
+    }
+#endif
 
     // FIXME: After switching to the new passmanager, simplify the logic below
     // by checking only the callsite hotness/coldness as we will reliably
@@ -2296,6 +2395,9 @@ void InlineCostCallAnalyzer::updateThreshold(CallBase &Call, Function &Callee) {
 
   SingleBBBonus = Threshold * SingleBBBonusPercent / 100;
   VectorBonus = Threshold * VectorBonusPercent / 100;
+#if SIFIVE_CUSTOMIZATION
+  LoopBonus = Threshold * LoopBonusPercent / 100;
+#endif
 
   // If there is only one call of the function, and it has internal linkage,
   // the cost of inlining it drops dramatically. It may seem odd to update
@@ -2857,7 +2959,11 @@ CallAnalyzer::analyzeBlock(BasicBlock *BB,
     if (Base::visit(&I))
       ++NumInstructionsSimplified;
     else
+#if SIFIVE_CUSTOMIZATION
+      onMissedSimplification(&I);
+#else
       onMissedSimplification();
+#endif
 
     onInstructionAnalysisFinish(&I);
     using namespace ore;

@@ -22,7 +22,7 @@
 
 ; We are expecting foo() to be inlined in main() (almost all the cycles are
 ; spent inside foo).
-; CHECK: remark: remarks.cc:13:21: '_Z3foov' inlined into 'main' to match profiling context with (cost=130, threshold=3000) at callsite main:0:21;
+; CHECK: remark: remarks.cc:13:21: '_Z3foov' inlined into 'main' to match profiling context with (cost=86, threshold=3000) at callsite main:0:21;
 ; CHECK: remark: remarks.cc:9:19: 'rand' inlined into 'main' to match profiling context with (cost=always): always inline attribute at callsite _Z3foov:6:19 @ main:0:21;
 
 ; The back edge for the loop is the hottest edge in the loop subgraph.
@@ -49,7 +49,7 @@
 ;YAML-NEXT:    - String:          ' to match profiling context'
 ;YAML-NEXT:    - String:          ' with '
 ;YAML-NEXT:    - String:          '(cost='
-;YAML-NEXT:    - Cost:            '130'
+;YAML-NEXT:    - Cost:            '86'
 ;YAML-NEXT:    - String:          ', threshold='
 ;YAML-NEXT:    - Threshold:       '3000'
 ;YAML-NEXT:    - String:          ')'

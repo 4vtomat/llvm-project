@@ -96,7 +96,7 @@ if.end:
 ;YAML-NEXT:    - String:          ' to match profiling context'
 ;YAML-NEXT:    - String:          ' with '
 ;YAML-NEXT:    - String:          '(cost='
-;YAML-NEXT:    - Cost:            '15'
+;YAML-NEXT:    - Cost:            '-1'
 ;YAML-NEXT:    - String:          ', threshold='
 ;YAML-NEXT:    - Threshold:       '3000'
 ;YAML-NEXT:    - String:          ')'
