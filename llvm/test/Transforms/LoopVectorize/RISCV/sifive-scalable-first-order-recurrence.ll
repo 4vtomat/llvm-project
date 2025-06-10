@@ -133,7 +133,7 @@ define i32 @recurrence_2(ptr nocapture readonly %a, i32 %n) {
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP2]], %[[VECTOR_PH]] ], [ [[TMP5:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VECTOR_RECUR:%.*]] = phi <vscale x 2 x i32> [ [[VECTOR_RECUR_INIT]], %[[VECTOR_PH]] ], [ [[VP_OP_LOAD:%.*]], %[[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ shufflevector (<vscale x 2 x i32> insertelement (<vscale x 2 x i32> poison, i32 undef, i64 0), <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer), %[[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], %[[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ undef, %[[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP4:%.*]] = sub i64 [[TMP0]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP5]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP4]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[EVL_BASED_IV]], 0

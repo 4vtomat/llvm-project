@@ -465,6 +465,14 @@ Constant *llvm::ConstantFoldShuffleVectorInstruction(Constant *V1, Constant *V2,
     if (Elt->isNullValue()) {
       auto *VTy = VectorType::get(EltTy, MaskEltCount);
       return ConstantAggregateZero::get(VTy);
+#if SIFIVE_CUSTOMIZATION
+    } else if (isa<PoisonValue>(Elt)) {
+      auto *VTy = VectorType::get(EltTy, MaskEltCount);
+      return PoisonValue::get(VTy);
+    } else if (isa<UndefValue>(Elt)) {
+      auto *VTy = VectorType::get(EltTy, MaskEltCount);
+      return UndefValue::get(VTy);
+#endif // SIFIVE_CUSTOMIZATION
     } else if (!MaskEltCount.isScalable())
       return ConstantVector::getSplat(MaskEltCount, Elt);
   }
