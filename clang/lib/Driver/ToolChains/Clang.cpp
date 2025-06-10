@@ -6533,19 +6533,11 @@ void Clang::ConstructJob(Compilation &C, const JobAction &JA,
   Args.AddLastArg(CmdArgs, options::OPT_fconvergent_functions,
                   options::OPT_fno_convergent_functions);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (Args.hasArg(options::OPT_fsifive_loop_count_profile_generate))
     addLoopCountProfileFlags(Args, CmdArgs);
 #endif // SIFIVE_CUSTOMIZATION
-  // NVPTX/AMDGCN doesn't support PGO or coverage. There's no runtime support
-  // for sampling, overhead of call arc collection is way too high and there's
-  // no way to collect the output.
-  if (!Triple.isNVPTX() && !Triple.isAMDGCN())
-    addPGOAndCoverageFlags(TC, C, JA, Output, Args, SanitizeArgs, CmdArgs);
-=======
   addPGOAndCoverageFlags(TC, C, JA, Output, Args, SanitizeArgs, CmdArgs);
->>>>>>> 94783a8199c5e589d8efd6d4530482d72bf98f4d
 
   Args.AddLastArg(CmdArgs, options::OPT_fclang_abi_compat_EQ);
 
