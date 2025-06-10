@@ -140,7 +140,12 @@ Value *CodeGenFunction::EmitRISCVCpuIs(StringRef CPUStr) {
 Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
                                              const CallExpr *E,
                                              ReturnValueSlot ReturnValue) {
-
+#if SIFIVE_CUSTOMIZATION
+  if (BuiltinID >= NEON::LastTIBuiltin && BuiltinID < NEON::FirstTSBuiltin) {
+    return EmitAArch64BuiltinExpr(BuiltinID, E, llvm::Triple::aarch64);
+  }
+#endif // SIFIVE_CUSTOMIZATION
+                                            
   if (BuiltinID == Builtin::BI__builtin_cpu_supports)
     return EmitRISCVCpuSupports(E);
   if (BuiltinID == Builtin::BI__builtin_cpu_init)
@@ -192,6 +197,35 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
   bool IsMasked = false;
   // This is used by segment load/store to determine it's llvm type.
   unsigned SegInstSEW = 8;
+#if SIFIVE_CUSTOMIZATION
+  bool IsNontemporal = false;
+  unsigned NF = 1;
+  unsigned TWiden = 0;
+
+  auto createNTLNode = [&Ops, this]() {
+    // Create NTL node from args
+    ConstantInt *NTLDomain =
+        llvm::dyn_cast<llvm::ConstantInt>(Ops[Ops.size() - 1]);
+    assert(NTLDomain != nullptr &&
+           "Domain value must to a constant in compilation-time.");
+    llvm::MDNode *NTLNode = llvm::MDNode::get(
+        getLLVMContext(), llvm::ConstantAsMetadata::get(
+                              Builder.getInt32(NTLDomain->getZExtValue())));
+    Ops.erase(&Ops[Ops.size() - 1]);
+    return NTLNode;
+  };
+
+  auto createNTLCall = [this](SmallVectorImpl<llvm::Value *> &Ops,
+                              Intrinsic::ID ID,
+                              llvm::SmallVector<llvm::Type *, 2> IntrinsicTypes,
+                              llvm::MDNode *NTLNode) {
+    // Set metadata with NTL node
+    llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
+    CallInst *NTLCall = Builder.CreateCall(F, Ops, "");
+    NTLCall->setMetadata(CGM.getModule().getMDKindID("nontemporal"), NTLNode);
+    return NTLCall;
+  };
+#endif // SIFIVE_CUSTOMIZATION
 
   // Required for overloaded intrinsics.
   llvm::SmallVector<llvm::Type *, 2> IntrinsicTypes;
@@ -410,6 +444,209 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
   case RISCV::BI__builtin_riscv_cv_alu_subuRN:
     ID = Intrinsic::riscv_cv_alu_subuRN;
     break;
+
+#if SIFIVE_CUSTOMIZATION
+ case RISCV::BI__builtin_riscv_sf_sci_0_r_x_xx_32:
+ case RISCV::BI__builtin_riscv_sf_sci_0_r_x_xx_64:
+   ID = Intrinsic::riscv_sf_sci_0_r_x_xx;
+   IntrinsicTypes = {ResultType};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_0_r_x_xx_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_0_r_x_xx_se_64:
+   ID = Intrinsic::riscv_sf_sci_0_r_x_xx_se;
+   IntrinsicTypes = {ResultType};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_0_r_xx_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_0_r_xx_se_64:
+   ID = Intrinsic::riscv_sf_sci_0_r_xx_se;
+   IntrinsicTypes = {Ops[2]->getType()};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_1_r_x_xx_32:
+ case RISCV::BI__builtin_riscv_sf_sci_1_r_x_xx_64:
+   ID = Intrinsic::riscv_sf_sci_1_r_x_xx;
+   IntrinsicTypes = {ResultType};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_1_r_x_xx_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_1_r_x_xx_se_64:
+   ID = Intrinsic::riscv_sf_sci_1_r_x_xx_se;
+   IntrinsicTypes = {ResultType};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_1_r_xx_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_1_r_xx_se_64:
+   ID = Intrinsic::riscv_sf_sci_1_r_xx_se;
+   IntrinsicTypes = {Ops[2]->getType()};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_2_r_x_xx_32:
+ case RISCV::BI__builtin_riscv_sf_sci_2_r_x_xx_64:
+   ID = Intrinsic::riscv_sf_sci_2_r_x_xx;
+   IntrinsicTypes = {ResultType};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_2_r_x_xx_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_2_r_x_xx_se_64:
+   ID = Intrinsic::riscv_sf_sci_2_r_x_xx_se;
+   IntrinsicTypes = {ResultType};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_2_r_xx_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_2_r_xx_se_64:
+   ID = Intrinsic::riscv_sf_sci_2_r_xx_se;
+   IntrinsicTypes = {Ops[2]->getType()};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_3_r_x_xx_32:
+ case RISCV::BI__builtin_riscv_sf_sci_3_r_x_xx_64:
+   ID = Intrinsic::riscv_sf_sci_3_r_x_xx;
+   IntrinsicTypes = {ResultType};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_3_r_x_xx_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_3_r_x_xx_se_64:
+   ID = Intrinsic::riscv_sf_sci_3_r_x_xx_se;
+   IntrinsicTypes = {ResultType};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_3_r_xx_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_3_r_xx_se_64:
+   ID = Intrinsic::riscv_sf_sci_3_r_xx_se;
+   IntrinsicTypes = {Ops[2]->getType()};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_0_i_x_xi_32:
+ case RISCV::BI__builtin_riscv_sf_sci_0_i_x_xi_64:
+   ID = Intrinsic::riscv_sf_sci_0_i_x_xi;
+   IntrinsicTypes = {ResultType};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_0_i_x_xi_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_0_i_x_xi_se_64:
+   ID = Intrinsic::riscv_sf_sci_0_i_x_xi_se;
+   IntrinsicTypes = {ResultType};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_0_i_xi_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_0_i_xi_se_64:
+   ID = Intrinsic::riscv_sf_sci_0_i_xi_se;
+   IntrinsicTypes = {Ops[1]->getType()};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_1_i_x_xi_32:
+ case RISCV::BI__builtin_riscv_sf_sci_1_i_x_xi_64:
+   ID = Intrinsic::riscv_sf_sci_1_i_x_xi;
+   IntrinsicTypes = {ResultType};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_1_i_x_xi_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_1_i_x_xi_se_64:
+   ID = Intrinsic::riscv_sf_sci_1_i_x_xi_se;
+   IntrinsicTypes = {ResultType};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_1_i_xi_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_1_i_xi_se_64:
+   ID = Intrinsic::riscv_sf_sci_1_i_xi_se;
+   IntrinsicTypes = {Ops[1]->getType()};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_2_i_x_xi_32:
+ case RISCV::BI__builtin_riscv_sf_sci_2_i_x_xi_64:
+   ID = Intrinsic::riscv_sf_sci_2_i_x_xi;
+   IntrinsicTypes = {ResultType};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_2_i_x_xi_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_2_i_x_xi_se_64:
+   ID = Intrinsic::riscv_sf_sci_2_i_x_xi_se;
+   IntrinsicTypes = {ResultType};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_2_i_xi_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_2_i_xi_se_64:
+   ID = Intrinsic::riscv_sf_sci_2_i_xi_se;
+   IntrinsicTypes = {Ops[1]->getType()};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_3_i_x_xi_32:
+ case RISCV::BI__builtin_riscv_sf_sci_3_i_x_xi_64:
+   ID = Intrinsic::riscv_sf_sci_3_i_x_xi;
+   IntrinsicTypes = {ResultType};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_3_i_x_xi_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_3_i_x_xi_se_64:
+   ID = Intrinsic::riscv_sf_sci_3_i_x_xi_se;
+   IntrinsicTypes = {ResultType};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_3_i_xi_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_3_i_xi_se_64:
+   ID = Intrinsic::riscv_sf_sci_3_i_xi_se;
+   IntrinsicTypes = {Ops[1]->getType()};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_0_u_x_i_32:
+ case RISCV::BI__builtin_riscv_sf_sci_0_u_x_i_64:
+   ID = Intrinsic::riscv_sf_sci_0_u_x_i;
+   IntrinsicTypes = {ResultType};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_0_u_x_i_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_0_u_x_i_se_64:
+   ID = Intrinsic::riscv_sf_sci_0_u_x_i_se;
+   IntrinsicTypes = {ResultType};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_0_u_i_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_0_u_i_se_64:
+   ID = Intrinsic::riscv_sf_sci_0_u_i_se;
+   IntrinsicTypes = {};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_1_u_x_i_32:
+ case RISCV::BI__builtin_riscv_sf_sci_1_u_x_i_64:
+   ID = Intrinsic::riscv_sf_sci_1_u_x_i;
+   IntrinsicTypes = {ResultType};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_1_u_x_i_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_1_u_x_i_se_64:
+   ID = Intrinsic::riscv_sf_sci_1_u_x_i_se;
+   IntrinsicTypes = {ResultType};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_1_u_i_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_1_u_i_se_64:
+   ID = Intrinsic::riscv_sf_sci_1_u_i_se;
+   IntrinsicTypes = {};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_2_u_x_i_32:
+ case RISCV::BI__builtin_riscv_sf_sci_2_u_x_i_64:
+   ID = Intrinsic::riscv_sf_sci_2_u_x_i;
+   IntrinsicTypes = {ResultType};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_2_u_x_i_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_2_u_x_i_se_64:
+   ID = Intrinsic::riscv_sf_sci_2_u_x_i_se;
+   IntrinsicTypes = {ResultType};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_2_u_i_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_2_u_i_se_64:
+   ID = Intrinsic::riscv_sf_sci_2_u_i_se;
+   IntrinsicTypes = {};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_3_u_x_i_32:
+ case RISCV::BI__builtin_riscv_sf_sci_3_u_x_i_64:
+   ID = Intrinsic::riscv_sf_sci_3_u_x_i;
+   IntrinsicTypes = {ResultType};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_3_u_x_i_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_3_u_x_i_se_64:
+   ID = Intrinsic::riscv_sf_sci_3_u_x_i_se;
+   IntrinsicTypes = {ResultType};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_3_u_i_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_3_u_i_se_64:
+   ID = Intrinsic::riscv_sf_sci_3_u_i_se;
+   IntrinsicTypes = {};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_0_x_i_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_0_x_i_se_64:
+   ID = Intrinsic::riscv_sf_sci_0_x_i_se;
+   IntrinsicTypes = {};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_1_x_i_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_1_x_i_se_64:
+   ID = Intrinsic::riscv_sf_sci_1_x_i_se;
+   IntrinsicTypes = {};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_2_x_i_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_2_x_i_se_64:
+   ID = Intrinsic::riscv_sf_sci_2_x_i_se;
+   IntrinsicTypes = {};
+   break;
+ case RISCV::BI__builtin_riscv_sf_sci_3_x_i_se_32:
+ case RISCV::BI__builtin_riscv_sf_sci_3_x_i_se_64:
+   ID = Intrinsic::riscv_sf_sci_3_x_i_se;
+   IntrinsicTypes = {};
+   break;
+#endif
 
     // Vector builtins are handled from here.
 #include "clang/Basic/riscv_vector_builtin_cg.inc"
