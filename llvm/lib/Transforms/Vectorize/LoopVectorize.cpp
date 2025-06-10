@@ -5961,14 +5961,9 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
       } else {
         C = CM.expectedCost(VF);
       }
-      VectorizationFactor Candidate(VF, C, ScalarCost.ScalarCost, Overhead);
 #else
       InstructionCost C = CM.expectedCost(VF);
-<<<<<<< HEAD
-      VectorizationFactor Candidate(VF, C, ScalarCost.ScalarCost);
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 94783a8199c5e589d8efd6d4530482d72bf98f4d
 
       // Add on other costs that are modelled in VPlan, but not in the legacy
       // cost model.
@@ -5992,8 +5987,11 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
           }
         }
       }
-
+#ifdef SIFIVE_CUSTOMIZATION
+      VectorizationFactor Candidate(VF, C, ScalarCost.ScalarCost, Overhead);
+#else
       VectorizationFactor Candidate(VF, C, ScalarCost.ScalarCost);
+#endif // SIFIVE_CUSTOMIZATION
       unsigned Width =
           getEstimatedRuntimeVF(Candidate.Width, CM.getVScaleForTuning());
       LLVM_DEBUG(dbgs() << "LV: Vector loop of width " << VF
@@ -9685,33 +9683,20 @@ static void fixReductionScalarResumeWhenVectorizingEpilog(
 
 DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
     ElementCount BestVF, unsigned BestUF, VPlan &BestVPlan,
-<<<<<<< HEAD
-    InnerLoopVectorizer &ILV, DominatorTree *DT, bool VectorizingEpilogue,
-    const DenseMap<const SCEV *, Value *> *ExpandedSCEVs) {
+    InnerLoopVectorizer &ILV, DominatorTree *DT, bool VectorizingEpilogue) {
 #if SIFIVE_CUSTOMIZATION
   assert((!Legal->isVectorizableUncountable() ||
           (BestVPlan.isUncountable() && BestVPlan.getInitEVL() &&
            Legal->useVLAVectorizer())) &&
          "Uncountable loop is not set up correctly for executing VPlan");
 #endif
-=======
-    InnerLoopVectorizer &ILV, DominatorTree *DT, bool VectorizingEpilogue) {
->>>>>>> 94783a8199c5e589d8efd6d4530482d72bf98f4d
   assert(BestVPlan.hasVF(BestVF) &&
          "Trying to execute plan with unsupported VF");
   assert(BestVPlan.hasUF(BestUF) &&
          "Trying to execute plan with unsupported UF");
-<<<<<<< HEAD
-  assert(
-      ((VectorizingEpilogue && ExpandedSCEVs) ||
-       (!VectorizingEpilogue && !ExpandedSCEVs)) &&
-      "expanded SCEVs to reuse can only be used during epilogue vectorization");
-
 #if SIFIVE_CUSTOMIZATION
   if (!BestVPlan.isUncountable())
 #endif
-=======
->>>>>>> 94783a8199c5e589d8efd6d4530482d72bf98f4d
   // TODO: Move to VPlan transform stage once the transition to the VPlan-based
   // cost model is complete for better cost estimates.
   VPlanTransforms::runPass(VPlanTransforms::unrollByUF, BestVPlan, BestUF,
@@ -12602,11 +12587,7 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
     OrigExitingVPV->replaceUsesWithIf(
         FinalReductionResult, [FinalReductionResult](VPUser &User, unsigned) {
           auto *Parent = cast<VPRecipeBase>(&User)->getParent();
-<<<<<<< HEAD
-         return Parent && !Parent->getParent();
-=======
           return FinalReductionResult != &User && !Parent->getParent();
->>>>>>> 94783a8199c5e589d8efd6d4530482d72bf98f4d
         });
 
 #if SIFIVE_CUSTOMIZATION
