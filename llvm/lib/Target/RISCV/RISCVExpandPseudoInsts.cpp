@@ -187,23 +187,20 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
   case RISCV::PseudoVMSET_M_B64:
     // vmset.m vd => vmxnor.mm vd, vd, vd
     return expandVMSET_VMCLR(MBB, MBBI, RISCV::VMXNOR_MM);
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  case RISCV::PseudoVMV_V_V_MF8:
-  case RISCV::PseudoVMV_V_V_MF4:
-  case RISCV::PseudoVMV_V_V_MF2:
-  case RISCV::PseudoVMV_V_V_M1:
-  case RISCV::PseudoVMV_V_V_M2:
-  case RISCV::PseudoVMV_V_V_M4:
-  case RISCV::PseudoVMV_V_V_M8:
-    if (MBB.getParent()->getTarget().getOptLevel() != CodeGenOptLevel::None) {
-      return removeRedundantVMV(MBB, MBBI);
-    }
-#endif // SIFIVE_CUSTOMIZATION
-=======
   case RISCV::PseudoReadVLENBViaVSETVLIX0:
     return expandPseudoReadVLENBViaVSETVLIX0(MBB, MBBI);
->>>>>>> 94783a8199c5e589d8efd6d4530482d72bf98f4d
+#if SIFIVE_CUSTOMIZATION
+    case RISCV::PseudoVMV_V_V_MF8:
+    case RISCV::PseudoVMV_V_V_MF4:
+    case RISCV::PseudoVMV_V_V_MF2:
+    case RISCV::PseudoVMV_V_V_M1:
+    case RISCV::PseudoVMV_V_V_M2:
+    case RISCV::PseudoVMV_V_V_M4:
+    case RISCV::PseudoVMV_V_V_M8:
+      if (MBB.getParent()->getTarget().getOptLevel() != CodeGenOptLevel::None)
+        return removeRedundantVMV(MBB, MBBI);
+      break;
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   return false;
@@ -516,7 +513,7 @@ bool RISCVExpandPseudo::expandPseudoReadVLENBViaVSETVLIX0(
   unsigned Mul = MBBI->getOperand(1).getImm();
   RISCVVType::VLMUL VLMUL = RISCVVType::encodeLMUL(Mul, /*Fractional=*/false);
   unsigned VTypeImm = RISCVVType::encodeVTYPE(
-      VLMUL, /*SEW=*/8, /*TailAgnostic=*/true, /*MaskAgnostic=*/true);
+      VLMUL, /*SEW=*/8, /*TailAgnostic=*/true, /*MaskAgnostic=*/true, /*AltFmt*/false);
 
   BuildMI(MBB, MBBI, DL, TII->get(RISCV::PseudoVSETVLIX0))
       .addReg(Dst, RegState::Define)
