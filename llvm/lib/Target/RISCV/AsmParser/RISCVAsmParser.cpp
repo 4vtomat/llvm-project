@@ -4064,7 +4064,6 @@ void RISCVAsmParser::emitVMSGE(MCInst &Inst, unsigned Opcode, SMLoc IDLoc,
   }
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 bool RISCVAsmParser::checkPseudoAddRegRel(MCInst &Inst,
                                           OperandVector &Operands) {
@@ -4094,7 +4093,12 @@ bool RISCVAsmParser::checkPseudoAddRegRel(MCInst &Inst,
   case llvm::RISCVMCExpr::VK_TLS_GOT_GPREL_ADD:
   case llvm::RISCVMCExpr::VK_TLS_GD_GPREL_ADD:
     break;
-=======
+  }
+
+  return false;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 bool RISCVAsmParser::checkPseudoAddTPRel(MCInst &Inst,
                                          OperandVector &Operands) {
   assert(Inst.getOpcode() == RISCV::PseudoAddTPRel && "Invalid instruction");
@@ -4103,12 +4107,10 @@ bool RISCVAsmParser::checkPseudoAddTPRel(MCInst &Inst,
     SMLoc ErrorLoc = ((RISCVOperand &)*Operands[3]).getStartLoc();
     return Error(ErrorLoc, "the second input operand must be tp/x4 when using "
                            "%tprel_add specifier");
->>>>>>> 94783a8199c5e589d8efd6d4530482d72bf98f4d
   }
 
   return false;
 }
-#endif // SIFIVE_CUSTOMIZATION
 
 bool RISCVAsmParser::checkPseudoTLSDESCCall(MCInst &Inst,
                                             OperandVector &Operands) {
