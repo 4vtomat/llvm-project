@@ -346,12 +346,12 @@ define <vscale x 32 x bfloat> @vfmin_vv_nxv32bf16_unmasked(<vscale x 32 x bfloat
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * vlenb
 ; CHECK-NEXT:    csrr a2, vlenb
 ; CHECK-NEXT:    vsetvli a1, zero, e8, m4, ta, ma
-; CHECK-NEXT:    vmset.m v24
+; CHECK-NEXT:    vmset.m v16
 ; CHECK-NEXT:    slli a1, a2, 1
 ; CHECK-NEXT:    srli a2, a2, 2
 ; CHECK-NEXT:    sub a3, a0, a1
 ; CHECK-NEXT:    vsetvli a4, zero, e8, mf2, ta, ma
-; CHECK-NEXT:    vslidedown.vx v7, v24, a2
+; CHECK-NEXT:    vslidedown.vx v7, v16, a2
 ; CHECK-NEXT:    sltu a2, a0, a3
 ; CHECK-NEXT:    addi a2, a2, -1
 ; CHECK-NEXT:    and a2, a2, a3
@@ -904,12 +904,12 @@ define <vscale x 32 x half> @vfmin_vv_nxv32f16_unmasked(<vscale x 32 x half> %va
 ; ZVFHMIN-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * vlenb
 ; ZVFHMIN-NEXT:    csrr a2, vlenb
 ; ZVFHMIN-NEXT:    vsetvli a1, zero, e8, m4, ta, ma
-; ZVFHMIN-NEXT:    vmset.m v24
+; ZVFHMIN-NEXT:    vmset.m v16
 ; ZVFHMIN-NEXT:    slli a1, a2, 1
 ; ZVFHMIN-NEXT:    srli a2, a2, 2
 ; ZVFHMIN-NEXT:    sub a3, a0, a1
 ; ZVFHMIN-NEXT:    vsetvli a4, zero, e8, mf2, ta, ma
-; ZVFHMIN-NEXT:    vslidedown.vx v7, v24, a2
+; ZVFHMIN-NEXT:    vslidedown.vx v7, v16, a2
 ; ZVFHMIN-NEXT:    sltu a2, a0, a3
 ; ZVFHMIN-NEXT:    addi a2, a2, -1
 ; ZVFHMIN-NEXT:    and a2, a2, a3

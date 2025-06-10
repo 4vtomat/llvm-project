@@ -70,17 +70,17 @@ define <8 x i32> @m2_pair_swap_vl8(<8 x i32> %v1) vscale_range(2,2) {
 ; RV32-LABEL: m2_pair_swap_vl8:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; RV32-NEXT:    vmv.v.i v10, 0
+; RV32-NEXT:    vmv.v.i v12, 0
 ; RV32-NEXT:    li a0, 32
 ; RV32-NEXT:    li a1, 63
-; RV32-NEXT:    vwsubu.vx v12, v10, a0
+; RV32-NEXT:    vwsubu.vx v10, v12, a0
 ; RV32-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
-; RV32-NEXT:    vmv.v.x v10, a0
-; RV32-NEXT:    vand.vx v12, v12, a1
+; RV32-NEXT:    vmv.v.x v12, a0
 ; RV32-NEXT:    vand.vx v10, v10, a1
-; RV32-NEXT:    vsrl.vv v12, v8, v12
-; RV32-NEXT:    vsll.vv v8, v8, v10
-; RV32-NEXT:    vor.vv v8, v8, v12
+; RV32-NEXT:    vand.vx v12, v12, a1
+; RV32-NEXT:    vsrl.vv v10, v8, v10
+; RV32-NEXT:    vsll.vv v8, v8, v12
+; RV32-NEXT:    vor.vv v8, v8, v10
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: m2_pair_swap_vl8:
@@ -179,6 +179,7 @@ define <4 x i64> @m2_splat_into_slide_two_source(<4 x i64> %v1, <4 x i64> %v2) v
 }
 
 define void @shuffle1(ptr %explicit_0, ptr %explicit_1) vscale_range(2,2) {
+<<<<<<< HEAD
 ; RV32-LABEL: shuffle1:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    lbu a2, 261(a0)
@@ -244,6 +245,24 @@ define void @shuffle1(ptr %explicit_0, ptr %explicit_1) vscale_range(2,2) {
 ; RV64-NEXT:    addi a0, a1, 672
 ; RV64-NEXT:    vs2r.v v8, (a0)
 ; RV64-NEXT:    ret
+=======
+; CHECK-LABEL: shuffle1:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    addi a0, a0, 252
+; CHECK-NEXT:    vsetivli zero, 3, e32, m1, ta, ma
+; CHECK-NEXT:    vle32.v v10, (a0)
+; CHECK-NEXT:    vmv.v.i v0, 1
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vslidedown.vi v10, v10, 1, v0.t
+; CHECK-NEXT:    vmv.v.i v0, 5
+; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
+; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
+; CHECK-NEXT:    vmerge.vvm v9, v9, v10, v0
+; CHECK-NEXT:    addi a0, a1, 672
+; CHECK-NEXT:    vs2r.v v8, (a0)
+; CHECK-NEXT:    ret
+>>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
   %1 = getelementptr i32, ptr %explicit_0, i64 63
   %2 = load <3 x i32>, ptr %1, align 1
   %3 = shufflevector <3 x i32> %2, <3 x i32> undef, <2 x i32> <i32 1, i32 2>
@@ -387,20 +406,20 @@ define i64 @multi_chunks_shuffle(<32 x i32> %0) vscale_range(8,8) {
 ; RV32-LABEL: multi_chunks_shuffle:
 ; RV32:       # %bb.0: # %entry
 ; RV32-NEXT:    vsetivli zero, 16, e32, m1, ta, ma
-; RV32-NEXT:    vmv.v.i v10, 0
+; RV32-NEXT:    vmv.v.i v12, 0
 ; RV32-NEXT:    li a0, 32
 ; RV32-NEXT:    li a1, 63
-; RV32-NEXT:    vwsubu.vx v12, v10, a0
+; RV32-NEXT:    vwsubu.vx v10, v12, a0
 ; RV32-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
-; RV32-NEXT:    vmv.v.x v10, a0
+; RV32-NEXT:    vmv.v.x v12, a0
 ; RV32-NEXT:    lui a0, 61681
 ; RV32-NEXT:    addi a0, a0, -241
-; RV32-NEXT:    vand.vx v12, v12, a1
 ; RV32-NEXT:    vand.vx v10, v10, a1
-; RV32-NEXT:    vsrl.vv v12, v8, v12
-; RV32-NEXT:    vsll.vv v8, v8, v10
+; RV32-NEXT:    vand.vx v12, v12, a1
+; RV32-NEXT:    vsrl.vv v10, v8, v10
+; RV32-NEXT:    vsll.vv v8, v8, v12
 ; RV32-NEXT:    vmv.s.x v0, a0
-; RV32-NEXT:    vor.vv v8, v8, v12
+; RV32-NEXT:    vor.vv v8, v8, v10
 ; RV32-NEXT:    vsetvli a0, zero, e32, m2, ta, ma
 ; RV32-NEXT:    vmv.v.i v10, 0
 ; RV32-NEXT:    vmerge.vvm v8, v10, v8, v0

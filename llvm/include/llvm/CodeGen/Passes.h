@@ -529,7 +529,7 @@ namespace llvm {
   FunctionPass *createExpandLargeDivRemPass();
 
   // Expands large div/rem instructions.
-  FunctionPass *createExpandLargeFpConvertPass();
+  FunctionPass *createExpandFpPass();
 
 #if SIFIVE_CUSTOMIZATION
   // Expands powi instructions.

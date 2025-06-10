@@ -17,9 +17,13 @@
 ; CHECK-NEXT:     Pre-ISel Intrinsic Lowering
 ; CHECK-NEXT:     FunctionPass Manager
 ; CHECK-NEXT:       Expand large div/rem
+<<<<<<< HEAD
 ; CHECK-NEXT:       Expand large fp convert
 ; CHECK-NEXT:       Expand powi functions
 ; CHECK-NEXT:       Expand vp.reduce functions
+=======
+; CHECK-NEXT:       Expand fp
+>>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
 ; CHECK-NEXT:       Expand Atomic instructions
 ; CHECK-NEXT:     PPC Lower MASS Entries
 ; CHECK-NEXT:     FunctionPass Manager

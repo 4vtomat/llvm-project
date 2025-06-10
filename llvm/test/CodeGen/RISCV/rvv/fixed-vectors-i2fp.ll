@@ -369,8 +369,13 @@ define void @si2fp_v8i16_v8f64(ptr %x, ptr %y) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
+<<<<<<< HEAD
 ; CHECK-NEXT:    vsext.vf2 v10, v8
 ; CHECK-NEXT:    vfwcvt.f.x.v v8, v10
+=======
+; CHECK-NEXT:    vsext.vf2 v12, v8
+; CHECK-NEXT:    vfwcvt.f.x.v v8, v12
+>>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
   %a = load <8 x i16>, ptr %x
@@ -384,8 +389,13 @@ define void @ui2fp_v8i16_v8f64(ptr %x, ptr %y) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
+<<<<<<< HEAD
 ; CHECK-NEXT:    vzext.vf2 v10, v8
 ; CHECK-NEXT:    vfwcvt.f.xu.v v8, v10
+=======
+; CHECK-NEXT:    vzext.vf2 v12, v8
+; CHECK-NEXT:    vfwcvt.f.xu.v v8, v12
+>>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
   %a = load <8 x i16>, ptr %x

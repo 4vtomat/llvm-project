@@ -140,10 +140,10 @@ define <vscale x 2 x i64> @mgather_nxv2i8_sextload_nxv2i64(<vscale x 2 x ptr> %p
 ; RV32-LABEL: mgather_nxv2i8_sextload_nxv2i64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli a0, zero, e8, mf4, ta, mu
-; RV32-NEXT:    vluxei32.v v9, (zero), v8, v0.t
+; RV32-NEXT:    vmv1r.v v10, v9
+; RV32-NEXT:    vluxei32.v v10, (zero), v8, v0.t
 ; RV32-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
-; RV32-NEXT:    vsext.vf8 v10, v9
-; RV32-NEXT:    vmv.v.v v8, v10
+; RV32-NEXT:    vsext.vf8 v8, v10
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: mgather_nxv2i8_sextload_nxv2i64:
@@ -162,10 +162,10 @@ define <vscale x 2 x i64> @mgather_nxv2i8_zextload_nxv2i64(<vscale x 2 x ptr> %p
 ; RV32-LABEL: mgather_nxv2i8_zextload_nxv2i64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli a0, zero, e8, mf4, ta, mu
-; RV32-NEXT:    vluxei32.v v9, (zero), v8, v0.t
+; RV32-NEXT:    vmv1r.v v10, v9
+; RV32-NEXT:    vluxei32.v v10, (zero), v8, v0.t
 ; RV32-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
-; RV32-NEXT:    vzext.vf8 v10, v9
-; RV32-NEXT:    vmv.v.v v8, v10
+; RV32-NEXT:    vzext.vf8 v8, v10
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: mgather_nxv2i8_zextload_nxv2i64:
@@ -361,10 +361,10 @@ define <vscale x 2 x i64> @mgather_nxv2i16_sextload_nxv2i64(<vscale x 2 x ptr> %
 ; RV32-LABEL: mgather_nxv2i16_sextload_nxv2i64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli a0, zero, e16, mf2, ta, mu
-; RV32-NEXT:    vluxei32.v v9, (zero), v8, v0.t
+; RV32-NEXT:    vmv1r.v v10, v9
+; RV32-NEXT:    vluxei32.v v10, (zero), v8, v0.t
 ; RV32-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
-; RV32-NEXT:    vsext.vf4 v10, v9
-; RV32-NEXT:    vmv.v.v v8, v10
+; RV32-NEXT:    vsext.vf4 v8, v10
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: mgather_nxv2i16_sextload_nxv2i64:
@@ -383,10 +383,10 @@ define <vscale x 2 x i64> @mgather_nxv2i16_zextload_nxv2i64(<vscale x 2 x ptr> %
 ; RV32-LABEL: mgather_nxv2i16_zextload_nxv2i64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli a0, zero, e16, mf2, ta, mu
-; RV32-NEXT:    vluxei32.v v9, (zero), v8, v0.t
+; RV32-NEXT:    vmv1r.v v10, v9
+; RV32-NEXT:    vluxei32.v v10, (zero), v8, v0.t
 ; RV32-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
-; RV32-NEXT:    vzext.vf4 v10, v9
-; RV32-NEXT:    vmv.v.v v8, v10
+; RV32-NEXT:    vzext.vf4 v8, v10
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: mgather_nxv2i16_zextload_nxv2i64:
@@ -606,9 +606,14 @@ define <vscale x 2 x i64> @mgather_nxv2i32_sextload_nxv2i64(<vscale x 2 x ptr> %
 ; RV32-LABEL: mgather_nxv2i32_sextload_nxv2i64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli a0, zero, e32, m1, ta, mu
-; RV32-NEXT:    vluxei32.v v9, (zero), v8, v0.t
+; RV32-NEXT:    vmv1r.v v10, v9
+; RV32-NEXT:    vluxei32.v v10, (zero), v8, v0.t
 ; RV32-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
+<<<<<<< HEAD
 ; RV32-NEXT:    vsext.vf2 v8, v9
+=======
+; RV32-NEXT:    vsext.vf2 v8, v10
+>>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: mgather_nxv2i32_sextload_nxv2i64:
@@ -627,9 +632,14 @@ define <vscale x 2 x i64> @mgather_nxv2i32_zextload_nxv2i64(<vscale x 2 x ptr> %
 ; RV32-LABEL: mgather_nxv2i32_zextload_nxv2i64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli a0, zero, e32, m1, ta, mu
-; RV32-NEXT:    vluxei32.v v9, (zero), v8, v0.t
+; RV32-NEXT:    vmv1r.v v10, v9
+; RV32-NEXT:    vluxei32.v v10, (zero), v8, v0.t
 ; RV32-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
+<<<<<<< HEAD
 ; RV32-NEXT:    vzext.vf2 v8, v9
+=======
+; RV32-NEXT:    vzext.vf2 v8, v10
+>>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: mgather_nxv2i32_zextload_nxv2i64:
@@ -934,8 +944,8 @@ define <vscale x 4 x i64> @mgather_truemask_nxv4i64(<vscale x 4 x ptr> %ptrs, <v
 ; RV32-LABEL: mgather_truemask_nxv4i64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli a0, zero, e64, m4, ta, ma
-; RV32-NEXT:    vluxei32.v v12, (zero), v8
-; RV32-NEXT:    vmv.v.v v8, v12
+; RV32-NEXT:    vmv2r.v v12, v8
+; RV32-NEXT:    vluxei32.v v8, (zero), v12
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: mgather_truemask_nxv4i64:
@@ -1987,8 +1997,8 @@ define <vscale x 4 x double> @mgather_truemask_nxv4f64(<vscale x 4 x ptr> %ptrs,
 ; RV32-LABEL: mgather_truemask_nxv4f64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli a0, zero, e64, m4, ta, ma
-; RV32-NEXT:    vluxei32.v v12, (zero), v8
-; RV32-NEXT:    vmv.v.v v8, v12
+; RV32-NEXT:    vmv2r.v v12, v8
+; RV32-NEXT:    vluxei32.v v8, (zero), v12
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: mgather_truemask_nxv4f64:

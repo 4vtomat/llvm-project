@@ -477,8 +477,8 @@ define <8 x i32> @vfptosi_v8f16_v8i32(<8 x half> %va) strictfp {
 ; CHECK-LABEL: vfptosi_v8f16_v8i32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vfwcvt.rtz.x.f.v v10, v8
-; CHECK-NEXT:    vmv2r.v v8, v10
+; CHECK-NEXT:    vmv1r.v v10, v8
+; CHECK-NEXT:    vfwcvt.rtz.x.f.v v8, v10
 ; CHECK-NEXT:    ret
   %evec = call <8 x i32> @llvm.experimental.constrained.fptosi.v8i32.v8f16(<8 x half> %va, metadata !"fpexcept.strict")
   ret <8 x i32> %evec
@@ -489,8 +489,8 @@ define <8 x i32> @vfptoui_v8f16_v8i32(<8 x half> %va) strictfp {
 ; CHECK-LABEL: vfptoui_v8f16_v8i32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vfwcvt.rtz.xu.f.v v10, v8
-; CHECK-NEXT:    vmv2r.v v8, v10
+; CHECK-NEXT:    vmv1r.v v10, v8
+; CHECK-NEXT:    vfwcvt.rtz.xu.f.v v8, v10
 ; CHECK-NEXT:    ret
   %evec = call <8 x i32> @llvm.experimental.constrained.fptoui.v8i32.v8f16(<8 x half> %va, metadata !"fpexcept.strict")
   ret <8 x i32> %evec
@@ -597,8 +597,8 @@ define <16 x i32> @vfptosi_v16f16_v16i32(<16 x half> %va) strictfp {
 ; CHECK-LABEL: vfptosi_v16f16_v16i32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
-; CHECK-NEXT:    vfwcvt.rtz.x.f.v v12, v8
-; CHECK-NEXT:    vmv4r.v v8, v12
+; CHECK-NEXT:    vmv2r.v v12, v8
+; CHECK-NEXT:    vfwcvt.rtz.x.f.v v8, v12
 ; CHECK-NEXT:    ret
   %evec = call <16 x i32> @llvm.experimental.constrained.fptosi.v16i32.v16f16(<16 x half> %va, metadata !"fpexcept.strict")
   ret <16 x i32> %evec
@@ -609,8 +609,8 @@ define <16 x i32> @vfptoui_v16f16_v16i32(<16 x half> %va) strictfp {
 ; CHECK-LABEL: vfptoui_v16f16_v16i32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
-; CHECK-NEXT:    vfwcvt.rtz.xu.f.v v12, v8
-; CHECK-NEXT:    vmv4r.v v8, v12
+; CHECK-NEXT:    vmv2r.v v12, v8
+; CHECK-NEXT:    vfwcvt.rtz.xu.f.v v8, v12
 ; CHECK-NEXT:    ret
   %evec = call <16 x i32> @llvm.experimental.constrained.fptoui.v16i32.v16f16(<16 x half> %va, metadata !"fpexcept.strict")
   ret <16 x i32> %evec
@@ -1033,8 +1033,8 @@ define <4 x i64> @vfptosi_v4f32_v4i64(<4 x float> %va) strictfp {
 ; CHECK-LABEL: vfptosi_v4f32_v4i64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vfwcvt.rtz.x.f.v v10, v8
-; CHECK-NEXT:    vmv2r.v v8, v10
+; CHECK-NEXT:    vmv1r.v v10, v8
+; CHECK-NEXT:    vfwcvt.rtz.x.f.v v8, v10
 ; CHECK-NEXT:    ret
   %evec = call <4 x i64> @llvm.experimental.constrained.fptosi.v4i64.v4f32(<4 x float> %va, metadata !"fpexcept.strict")
   ret <4 x i64> %evec
@@ -1045,8 +1045,8 @@ define <4 x i64> @vfptoui_v4f32_v4i64(<4 x float> %va) strictfp {
 ; CHECK-LABEL: vfptoui_v4f32_v4i64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vfwcvt.rtz.xu.f.v v10, v8
-; CHECK-NEXT:    vmv2r.v v8, v10
+; CHECK-NEXT:    vmv1r.v v10, v8
+; CHECK-NEXT:    vfwcvt.rtz.xu.f.v v8, v10
 ; CHECK-NEXT:    ret
   %evec = call <4 x i64> @llvm.experimental.constrained.fptoui.v4i64.v4f32(<4 x float> %va, metadata !"fpexcept.strict")
   ret <4 x i64> %evec
@@ -1153,8 +1153,8 @@ define <8 x i64> @vfptosi_v8f32_v8i64(<8 x float> %va) strictfp {
 ; CHECK-LABEL: vfptosi_v8f32_v8i64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
-; CHECK-NEXT:    vfwcvt.rtz.x.f.v v12, v8
-; CHECK-NEXT:    vmv4r.v v8, v12
+; CHECK-NEXT:    vmv2r.v v12, v8
+; CHECK-NEXT:    vfwcvt.rtz.x.f.v v8, v12
 ; CHECK-NEXT:    ret
   %evec = call <8 x i64> @llvm.experimental.constrained.fptosi.v8i64.v8f32(<8 x float> %va, metadata !"fpexcept.strict")
   ret <8 x i64> %evec
@@ -1165,8 +1165,8 @@ define <8 x i64> @vfptoui_v8f32_v8i64(<8 x float> %va) strictfp {
 ; CHECK-LABEL: vfptoui_v8f32_v8i64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
-; CHECK-NEXT:    vfwcvt.rtz.xu.f.v v12, v8
-; CHECK-NEXT:    vmv4r.v v8, v12
+; CHECK-NEXT:    vmv2r.v v12, v8
+; CHECK-NEXT:    vfwcvt.rtz.xu.f.v v8, v12
 ; CHECK-NEXT:    ret
   %evec = call <8 x i64> @llvm.experimental.constrained.fptoui.v8i64.v8f32(<8 x float> %va, metadata !"fpexcept.strict")
   ret <8 x i64> %evec

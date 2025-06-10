@@ -1070,11 +1070,15 @@ bool TargetPassConfig::addISelPasses() {
   PM->add(createTargetTransformInfoWrapperPass(TM->getTargetIRAnalysis()));
   addPass(createPreISelIntrinsicLoweringPass());
   addPass(createExpandLargeDivRemPass());
+<<<<<<< HEAD
   addPass(createExpandLargeFpConvertPass());
 #if SIFIVE_CUSTOMIZATION
   addPass(createExpandPowiPass());
   addPass(createExpandVPReductionPass());
 #endif
+=======
+  addPass(createExpandFpPass());
+>>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
   addIRPasses();
   addCodeGenPrepare();
   addPassesToHandleExceptions();

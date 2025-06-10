@@ -611,7 +611,7 @@ public:
     case VPRecipeBase::VPReplicateSC:
     case VPRecipeBase::VPScalarIVStepsSC:
     case VPRecipeBase::VPVectorPointerSC:
-    case VPRecipeBase::VPReverseVectorPointerSC:
+    case VPRecipeBase::VPVectorEndPointerSC:
     case VPRecipeBase::VPWidenCallSC:
     case VPRecipeBase::VPWidenCanonicalIVSC:
     case VPRecipeBase::VPWidenCastSC:
@@ -822,8 +822,10 @@ public:
            R->getVPDefID() == VPRecipeBase::VPWidenGEPSC ||
            R->getVPDefID() == VPRecipeBase::VPWidenCastSC ||
            R->getVPDefID() == VPRecipeBase::VPWidenIntrinsicSC ||
+           R->getVPDefID() == VPRecipeBase::VPReductionSC ||
+           R->getVPDefID() == VPRecipeBase::VPReductionEVLSC ||
            R->getVPDefID() == VPRecipeBase::VPReplicateSC ||
-           R->getVPDefID() == VPRecipeBase::VPReverseVectorPointerSC ||
+           R->getVPDefID() == VPRecipeBase::VPVectorEndPointerSC ||
            R->getVPDefID() == VPRecipeBase::VPVectorPointerSC;
   }
 
@@ -1770,20 +1772,21 @@ public:
   }
 };
 
-/// A recipe to compute the pointers for widened memory accesses of IndexTy
-/// in reverse order.
-class VPReverseVectorPointerRecipe : public VPRecipeWithIRFlags,
-                                     public VPUnrollPartAccessor<2> {
+/// A recipe to compute a pointer to the last element of each part of a widened
+/// memory access for widened memory accesses of IndexedTy. Used for
+/// VPWidenMemoryRecipes that are reversed.
+class VPVectorEndPointerRecipe : public VPRecipeWithIRFlags,
+                                 public VPUnrollPartAccessor<2> {
   Type *IndexedTy;
 
 public:
-  VPReverseVectorPointerRecipe(VPValue *Ptr, VPValue *VF, Type *IndexedTy,
-                               GEPNoWrapFlags GEPFlags, DebugLoc DL)
-      : VPRecipeWithIRFlags(VPDef::VPReverseVectorPointerSC,
+  VPVectorEndPointerRecipe(VPValue *Ptr, VPValue *VF, Type *IndexedTy,
+                           GEPNoWrapFlags GEPFlags, DebugLoc DL)
+      : VPRecipeWithIRFlags(VPDef::VPVectorEndPointerSC,
                             ArrayRef<VPValue *>({Ptr, VF}), GEPFlags, DL),
         IndexedTy(IndexedTy) {}
 
-  VP_CLASSOF_IMPL(VPDef::VPReverseVectorPointerSC)
+  VP_CLASSOF_IMPL(VPDef::VPVectorEndPointerSC)
 
   VPValue *getVFValue() { return getOperand(1); }
   const VPValue *getVFValue() const { return getOperand(1); }
@@ -1811,10 +1814,9 @@ public:
     return true;
   }
 
-  VPReverseVectorPointerRecipe *clone() override {
-    return new VPReverseVectorPointerRecipe(getOperand(0), getVFValue(),
-                                            IndexedTy, getGEPNoWrapFlags(),
-                                            getDebugLoc());
+  VPVectorEndPointerRecipe *clone() override {
+    return new VPVectorEndPointerRecipe(getOperand(0), getVFValue(), IndexedTy,
+                                        getGEPNoWrapFlags(), getDebugLoc());
   }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
@@ -2539,7 +2541,7 @@ public:
 /// A recipe to represent inloop reduction operations, performing a reduction on
 /// a vector operand into a scalar value, and adding the result to a chain.
 /// The Operands are {ChainOp, VecOp, [Condition]}.
-class VPReductionRecipe : public VPSingleDefRecipe {
+class VPReductionRecipe : public VPRecipeWithIRFlags {
   /// The recurrence decriptor for the reduction in question.
   const RecurrenceDescriptor &RdxDesc;
   bool IsOrdered;
@@ -2550,12 +2552,17 @@ protected:
   VPReductionRecipe(const unsigned char SC, const RecurrenceDescriptor &R,
                     Instruction *I, ArrayRef<VPValue *> Operands,
                     VPValue *CondOp, bool IsOrdered, DebugLoc DL)
-      : VPSingleDefRecipe(SC, Operands, I, DL), RdxDesc(R),
-        IsOrdered(IsOrdered) {
+      : VPRecipeWithIRFlags(SC, Operands,
+                            isa_and_nonnull<FPMathOperator>(I)
+                                ? R.getFastMathFlags()
+                                : FastMathFlags(),
+                            DL),
+        RdxDesc(R), IsOrdered(IsOrdered) {
     if (CondOp) {
       IsConditional = true;
       addOperand(CondOp);
     }
+    setUnderlyingValue(I);
   }
 
 public:
@@ -2621,12 +2628,13 @@ public:
 /// The Operands are {ChainOp, VecOp, EVL, [Condition]}.
 class VPReductionEVLRecipe : public VPReductionRecipe {
 public:
-  VPReductionEVLRecipe(VPReductionRecipe &R, VPValue &EVL, VPValue *CondOp)
+  VPReductionEVLRecipe(VPReductionRecipe &R, VPValue &EVL, VPValue *CondOp,
+                       DebugLoc DL = {})
       : VPReductionRecipe(
             VPDef::VPReductionEVLSC, R.getRecurrenceDescriptor(),
             cast_or_null<Instruction>(R.getUnderlyingValue()),
             ArrayRef<VPValue *>({R.getChainOp(), R.getVecOp(), &EVL}), CondOp,
-            R.isOrdered(), R.getDebugLoc()) {}
+            R.isOrdered(), DL) {}
 
   ~VPReductionEVLRecipe() override = default;
 
@@ -4533,19 +4541,6 @@ public:
 };
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
-struct VPlanIngredient {
-  const Value *V;
-
-  VPlanIngredient(const Value *V) : V(V) {}
-
-  void print(raw_ostream &O) const;
-};
-
-inline raw_ostream &operator<<(raw_ostream &OS, const VPlanIngredient &I) {
-  I.print(OS);
-  return OS;
-}
-
 inline raw_ostream &operator<<(raw_ostream &OS, const VPlan &Plan) {
   Plan.print(OS);
   return OS;

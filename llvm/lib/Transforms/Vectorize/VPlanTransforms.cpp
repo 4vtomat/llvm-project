@@ -2115,7 +2115,7 @@ static void transformRecipestoEVLRecipes(VPlan &Plan, VPValue &EVL) {
   }
 
   for (VPUser *U : to_vector(Plan.getVF().users())) {
-    if (auto *R = dyn_cast<VPReverseVectorPointerRecipe>(U))
+    if (auto *R = dyn_cast<VPVectorEndPointerRecipe>(U))
       R->setOperand(1, &EVL);
   }
 
@@ -2761,6 +2761,8 @@ void VPlanTransforms::materializeBroadcasts(VPlan &Plan) {
 #endif
 
   SmallVector<VPValue *> VPValues;
+  if (Plan.getOrCreateBackedgeTakenCount()->getNumUsers() > 0)
+    VPValues.push_back(Plan.getOrCreateBackedgeTakenCount());
   append_range(VPValues, Plan.getLiveIns());
   for (VPRecipeBase &R : *Plan.getEntry())
     append_range(VPValues, R.definedValues());
@@ -2769,8 +2771,8 @@ void VPlanTransforms::materializeBroadcasts(VPlan &Plan) {
   for (VPValue *VPV : VPValues) {
     if (all_of(VPV->users(),
                [VPV](VPUser *U) { return U->usesScalars(VPV); }) ||
-        (VPV->isLiveIn() &&
-         (!VPV->getLiveInIRValue() || isa<Constant>(VPV->getLiveInIRValue()))))
+        (VPV->isLiveIn() && VPV->getLiveInIRValue() &&
+         isa<Constant>(VPV->getLiveInIRValue())))
       continue;
 
     // Add explicit broadcast at the insert point that dominates all users.

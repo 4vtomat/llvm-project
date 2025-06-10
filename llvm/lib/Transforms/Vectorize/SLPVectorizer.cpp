@@ -799,7 +799,7 @@ isFixedVectorShuffle(ArrayRef<Value *> VL, SmallVectorImpl<int> &Mask,
 }
 
 /// \returns True if Extract{Value,Element} instruction extracts element Idx.
-static std::optional<unsigned> getExtractIndex(Instruction *E) {
+static std::optional<unsigned> getExtractIndex(const Instruction *E) {
   unsigned Opcode = E->getOpcode();
   assert((Opcode == Instruction::ExtractElement ||
           Opcode == Instruction::ExtractValue) &&
@@ -3088,6 +3088,10 @@ private:
 
   /// \returns the graph entry for the \p Idx operand of the \p E entry.
   const TreeEntry *getOperandEntry(const TreeEntry *E, unsigned Idx) const;
+  TreeEntry *getOperandEntry(TreeEntry *E, unsigned Idx) {
+    return const_cast<TreeEntry *>(
+        getOperandEntry(const_cast<const TreeEntry *>(E), Idx));
+  }
 
   /// Gets the root instruction for the given node. If the node is a strided
   /// load/store node with the reverse order, the root instruction is the last
@@ -6678,6 +6682,8 @@ void BoUpSLP::reorderBottomToTop(bool IgnoreReorder) {
           // Clear ordering of the operand.
           if (!OpTE.ReorderIndices.empty()) {
             OpTE.ReorderIndices.clear();
+          } else if (!OpTE.ReuseShuffleIndices.empty()) {
+            reorderReuses(OpTE.ReuseShuffleIndices, Mask);
           } else {
             assert(OpTE.isGather() && "Expected only gather/buildvector node.");
             reorderScalars(OpTE.Scalars, Mask);
@@ -8911,11 +8917,15 @@ void BoUpSLP::buildTree_rec(ArrayRef<Value *> VL, unsigned Depth,
           TTI.getArithmeticInstrCost(Opcode1, Op2VecTy, Kind);
       InstructionCost NewCost =
           NewVecOpsCost + InsertCost +
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
           (!VectorizableTree.empty() && VectorizableTree.front()->hasState() &&
 #else
           (VectorizableTree.front()->hasState() &&
 #endif // SIFIVE_CUSTOMIZATION
+=======
+          (!VectorizableTree.empty() && VectorizableTree.front()->hasState() &&
+>>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
                    VectorizableTree.front()->getOpcode() == Instruction::Store
                ? NewShuffleCost
                : 0);
@@ -10791,7 +10801,7 @@ void BoUpSLP::transformNodes() {
         break;
       // This node is a minmax node.
       E.CombinedOp = TreeEntry::MinMax;
-      TreeEntry *CondEntry = const_cast<TreeEntry *>(getOperandEntry(&E, 0));
+      TreeEntry *CondEntry = getOperandEntry(&E, 0);
       if (SelectOnly && CondEntry->UserTreeIndex &&
           CondEntry->State == TreeEntry::Vectorize) {
         // The condition node is part of the combined minmax node.
@@ -14144,6 +14154,24 @@ BoUpSLP::isGatherShuffledSingleRegisterEntry(
     }
     return true;
   };
+  auto CheckParentNodes = [&](const TreeEntry *User1, const TreeEntry *User2,
+                              unsigned EdgeIdx) {
+    const TreeEntry *Ptr1 = User1;
+    const TreeEntry *Ptr2 = User2;
+    SmallDenseMap<const TreeEntry *, unsigned> PtrToIdx;
+    while (Ptr2) {
+      PtrToIdx.try_emplace(Ptr2, EdgeIdx);
+      EdgeIdx = Ptr2->UserTreeIndex.EdgeIdx;
+      Ptr2 = Ptr2->UserTreeIndex.UserTE;
+    }
+    while (Ptr1) {
+      unsigned Idx = Ptr1->UserTreeIndex.EdgeIdx;
+      Ptr1 = Ptr1->UserTreeIndex.UserTE;
+      if (auto It = PtrToIdx.find(Ptr1); It != PtrToIdx.end())
+        return Idx < It->second;
+    }
+    return false;
+  };
   for (Value *V : VL) {
     if (isConstant(V) || !VisitedValue.insert(V).second)
       continue;
@@ -14183,6 +14211,9 @@ BoUpSLP::isGatherShuffledSingleRegisterEntry(
         if (TEUseEI.UserTE != UseEI.UserTE &&
             (TEUseEI.UserTE->Idx < UseEI.UserTE->Idx ||
              HasGatherUser(TEUseEI.UserTE)))
+          continue;
+        // If the user node is the operand of the other user node - skip.
+        if (CheckParentNodes(TEUseEI.UserTE, UseEI.UserTE, UseEI.EdgeIdx))
           continue;
       }
 
@@ -14941,7 +14972,9 @@ void BoUpSLP::setInsertPointAfterBundle(const TreeEntry *E) {
   bool IsPHI = isa<PHINode>(LastInst);
   if (IsPHI)
     LastInstIt = LastInst->getParent()->getFirstNonPHIIt();
-  if (IsPHI || (!E->isGather() && doesNotNeedToSchedule(E->Scalars)) ||
+  if (IsPHI ||
+      (!E->isGather() && E->State != TreeEntry::SplitVectorize &&
+       doesNotNeedToSchedule(E->Scalars)) ||
       (GatheredLoadsEntriesFirst.has_value() &&
        E->Idx >= *GatheredLoadsEntriesFirst && !E->isGather() &&
        E->getOpcode() == Instruction::Load)) {
@@ -16466,7 +16499,7 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
       // visit every block once.
       SmallPtrSet<BasicBlock *, 4> VisitedBBs;
 
-      for (unsigned I : seq<unsigned>(0, PH->getNumIncomingValues())) {
+      for (unsigned I : seq<unsigned>(PH->getNumIncomingValues())) {
         ValueList Operands;
         BasicBlock *IBB = PH->getIncomingBlock(I);
 
@@ -16477,7 +16510,10 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
         }
 
         if (!VisitedBBs.insert(IBB).second) {
-          NewPhi->addIncoming(NewPhi->getIncomingValueForBlock(IBB), IBB);
+          Value *VecOp = NewPhi->getIncomingValueForBlock(IBB);
+          NewPhi->addIncoming(VecOp, IBB);
+          TreeEntry *OpTE = getOperandEntry(E, I);
+          OpTE->VectorizedValue = VecOp;
           continue;
         }
 
@@ -19055,7 +19091,7 @@ bool BoUpSLP::collectValuesToDemote(
     const unsigned NumOps = E.getNumOperands();
     SmallVector<const TreeEntry *> Ops(NumOps);
     transform(seq<unsigned>(0, NumOps), Ops.begin(),
-              std::bind(&BoUpSLP::getOperandEntry, this, &E, _1));
+              [&](unsigned Idx) { return getOperandEntry(&E, Idx); });
 
     return TryProcessInstruction(BitWidth, Ops);
   }
@@ -22804,8 +22840,38 @@ bool SLPVectorizerPass::vectorizeChainsInBlock(BasicBlock *BB, BoUpSLP &R) {
           if (NodeI1 != NodeI2)
             return NodeI1->getDFSNumIn() < NodeI2->getDFSNumIn();
           InstructionsState S = getSameOpcode({I1, I2}, *TLI);
-          if (S && !S.isAltShuffle())
+          if (S && !S.isAltShuffle()) {
+            const auto *E1 = dyn_cast<ExtractElementInst>(I1);
+            const auto *E2 = dyn_cast<ExtractElementInst>(I2);
+            if (!E1 || !E2)
+              continue;
+
+            // Sort on ExtractElementInsts primarily by vector operands. Prefer
+            // program order of the vector operands.
+            const auto *V1 = dyn_cast<Instruction>(E1->getVectorOperand());
+            const auto *V2 = dyn_cast<Instruction>(E2->getVectorOperand());
+            if (V1 != V2) {
+              if (!V1 || !V2)
+                continue;
+              if (V1->getParent() != V2->getParent())
+                continue;
+              return V1->comesBefore(V2);
+            }
+            // If we have the same vector operand, try to sort by constant
+            // index.
+            std::optional<unsigned> Id1 = getExtractIndex(E1);
+            std::optional<unsigned> Id2 = getExtractIndex(E2);
+            // Bring constants to the top
+            if (Id1 && !Id2)
+              return true;
+            if (!Id1 && Id2)
+              return false;
+            // First elements come first.
+            if (Id1 && Id2)
+              return *Id1 < *Id2;
+
             continue;
+          }
           return I1->getOpcode() < I2->getOpcode();
         }
         if (I1)

@@ -417,14 +417,15 @@ std::string riscv::getRISCVArch(const llvm::opt::ArgList &Args,
 
     if (MABI.equals_insensitive("ilp32e"))
       return "rv32e";
-    else if (MABI.equals_insensitive("lp64e"))
+    if (MABI.equals_insensitive("lp64e"))
       return "rv64e";
-    else if (MABI.starts_with_insensitive("ilp32"))
+    if (MABI.starts_with_insensitive("ilp32"))
       return "rv32imafdc";
-    else if (MABI.starts_with_insensitive("lp64")) {
+    if (MABI.starts_with_insensitive("lp64")) {
       if (Triple.isAndroid())
         return "rv64imafdcv_zba_zbb_zbs";
-
+      if (Triple.isOSFuchsia())
+        return "rva22u64_v";
       return "rv64imafdc";
     }
   }
@@ -437,6 +438,7 @@ std::string riscv::getRISCVArch(const llvm::opt::ArgList &Args,
   if (Triple.isRISCV32()) {
     if (Triple.getOS() == llvm::Triple::UnknownOS)
       return "rv32imac";
+<<<<<<< HEAD
     else
       return "rv32imafdc";
   } else {
@@ -454,7 +456,18 @@ std::string riscv::getRISCVArch(const llvm::opt::ArgList &Args,
 #else
       return "rv64imafdc";
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    return "rv32imafdc";
+>>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
   }
+
+  if (Triple.getOS() == llvm::Triple::UnknownOS)
+    return "rv64imac";
+  if (Triple.isAndroid())
+    return "rv64imafdcv_zba_zbb_zbs";
+  if (Triple.isOSFuchsia())
+    return "rva22u64_v";
+  return "rv64imafdc";
 }
 
 #if SIFIVE_CUSTOMIZATION

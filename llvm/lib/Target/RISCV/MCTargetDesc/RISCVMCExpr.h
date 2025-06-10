@@ -23,6 +23,7 @@ class StringRef;
 class RISCVMCExpr : public MCTargetExpr {
 public:
   enum VariantKind {
+<<<<<<< HEAD
     VK_RISCV_None,
     VK_RISCV_LO,
     VK_RISCV_HI,
@@ -56,6 +57,27 @@ public:
     VK_RISCV_TLS_GD_GPREL_ADD,
 #endif // SIFIVE_CUSTOMIZATION
     VK_RISCV_Invalid // Must be the last item
+=======
+    VK_None,
+    VK_LO,
+    VK_HI,
+    VK_PCREL_LO,
+    VK_PCREL_HI,
+    VK_GOT_HI,
+    VK_TPREL_LO,
+    VK_TPREL_HI,
+    VK_TPREL_ADD,
+    VK_TLS_GOT_HI,
+    VK_TLS_GD_HI,
+    VK_CALL,
+    VK_CALL_PLT,
+    VK_32_PCREL,
+    VK_TLSDESC_HI,
+    VK_TLSDESC_LOAD_LO,
+    VK_TLSDESC_ADD_LO,
+    VK_TLSDESC_CALL,
+    VK_Invalid // Must be the last item
+>>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
   };
 
 private:
@@ -75,22 +97,20 @@ public:
 
   const MCExpr *getSubExpr() const { return Expr; }
 
-  /// Get the corresponding PC-relative HI fixup that a VK_RISCV_PCREL_LO
+  /// Get the corresponding PC-relative HI fixup that a VK_PCREL_LO
   /// points to, and optionally the fragment containing it.
   ///
-  /// \returns nullptr if this isn't a VK_RISCV_PCREL_LO pointing to a
+  /// \returns nullptr if this isn't a VK_PCREL_LO pointing to a
   /// known PC-relative HI fixup.
   const MCFixup *getPCRelHiFixup(const MCFragment **DFOut) const;
 
   void printImpl(raw_ostream &OS, const MCAsmInfo *MAI) const override;
-  bool evaluateAsRelocatableImpl(MCValue &Res, const MCAssembler *Asm,
-                                 const MCFixup *Fixup) const override;
+  bool evaluateAsRelocatableImpl(MCValue &Res,
+                                 const MCAssembler *Asm) const override;
   void visitUsedExpr(MCStreamer &Streamer) const override;
   MCFragment *findAssociatedFragment() const override {
     return getSubExpr()->findAssociatedFragment();
   }
-
-  void fixELFSymbolsInTLSFixups(MCAssembler &Asm) const override;
 
   bool evaluateAsConstant(int64_t &Res) const;
 

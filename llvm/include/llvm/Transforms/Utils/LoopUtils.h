@@ -438,8 +438,8 @@ Value *createSimpleReduction(IRBuilderBase &B, Value *Src,
                              RecurKind RdxKind);
 /// Overloaded function to generate vector-predication intrinsics for
 /// reduction.
-Value *createSimpleReduction(VectorBuilder &VB, Value *Src,
-                             const RecurrenceDescriptor &Desc);
+Value *createSimpleReduction(VectorBuilder &VB, Value *Src, RecurKind RdxKind,
+                             FastMathFlags FMFs);
 
 #if SIFIVE_CUSTOMIZATION
 /// Create a target reduction of the given vector. The reduction operation
@@ -478,6 +478,7 @@ Value *createFindLastIVReduction(IRBuilderBase &B, Value *Src,
                                  Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
 
+<<<<<<< HEAD
 /// Create a generic target reduction using a recurrence descriptor \p Desc
 /// The target is queried to determine if intrinsics or shuffle sequences are
 /// required to implement the reduction.
@@ -492,15 +493,15 @@ Value *createReduction(IRBuilderBase &B, const RecurrenceDescriptor &Desc,
 Value *createReduction(IRBuilderBase &B, const RecurrenceDescriptor &Desc,
                        Value *Src, PHINode *OrigPhi = nullptr);
 
+=======
+>>>>>>> 7af0bfe62fff676c66a5394995b03030cf5baef4
 /// Create an ordered reduction intrinsic using the given recurrence
-/// descriptor \p Desc.
-Value *createOrderedReduction(IRBuilderBase &B,
-                              const RecurrenceDescriptor &Desc, Value *Src,
+/// kind \p RdxKind.
+Value *createOrderedReduction(IRBuilderBase &B, RecurKind RdxKind, Value *Src,
                               Value *Start);
 /// Overloaded function to generate vector-predication intrinsics for ordered
 /// reduction.
-Value *createOrderedReduction(VectorBuilder &VB,
-                              const RecurrenceDescriptor &Desc, Value *Src,
+Value *createOrderedReduction(VectorBuilder &VB, RecurKind RdxKind, Value *Src,
                               Value *Start);
 
 /// Get the intersection (logical and) of all of the potential IR flags
