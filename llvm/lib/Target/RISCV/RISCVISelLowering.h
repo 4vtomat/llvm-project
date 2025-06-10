@@ -1152,16 +1152,13 @@ private:
     return false;
   }
 
-<<<<<<< HEAD
   bool isExtFreeImpl(const Instruction *Ext) const override; // SIFIVE
-=======
   /// Disables storing and loading vectors by default when there are function
   /// calls between the load and store, since these are more expensive than just
   /// using scalars
   bool shouldMergeStoreOfLoadsOverCall(EVT SrcVT, EVT MergedVT) const override {
     return !MergedVT.isVector() || SrcVT.isVector();
   }
->>>>>>> 94783a8199c5e589d8efd6d4530482d72bf98f4d
 
   /// For available scheduling models FDIV + two independent FMULs are much
   /// faster than two FDIVs.
