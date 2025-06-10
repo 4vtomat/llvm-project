@@ -1221,7 +1221,6 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
 
   IRBuilder<> Builder(State.CFG.PrevBB->getTerminator());
   // FIXME: Model VF * UF computation completely in VPlan.
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   assert(
       (useVLAVectorizer() || !getVectorLoopRegion() || VFxUF.getNumUsers()) &&
@@ -1230,8 +1229,6 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
   assert((!getVectorLoopRegion() || VFxUF.getNumUsers()) &&
          "VFxUF expected to always have users");
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 94783a8199c5e589d8efd6d4530482d72bf98f4d
   unsigned UF = getUF();
 #if SIFIVE_CUSTOMIZATION
   Value *RuntimeVF = nullptr;
