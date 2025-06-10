@@ -14,13 +14,13 @@
 // FIXME: might need to put more constraint
 let RVVConstraint = VMConstraint, Predicates = [HasVendorXSfvqdotq],
     DecoderNamespace = "XSfvqdotq" in {
-  def VQDOT_VV   : VALUVV<0b101100, OPMVV, "sf.vqdot.vv">;
-  def VQDOT_VX   : VALUVX<0b101100, OPMVX, "sf.vqdot.vx">;
-  def VQDOTU_VV  : VALUVV<0b101000, OPMVV, "sf.vqdotu.vv">;
-  def VQDOTU_VX  : VALUVX<0b101000, OPMVX, "sf.vqdotu.vx">;
-  def VQDOTSU_VV : VALUVV<0b101010, OPMVV, "sf.vqdotsu.vv">;
-  def VQDOTSU_VX : VALUVX<0b101010, OPMVX, "sf.vqdotsu.vx">;
-  def VQDOTUS_VX : VALUVX<0b101110, OPMVX, "sf.vqdotus.vx">;
+  def SF_VQDOT_VV   : VALUVV<0b101100, OPMVV, "sf.vqdot.vv">;
+  def SF_VQDOT_VX   : VALUVX<0b101100, OPMVX, "sf.vqdot.vx">;
+  def SF_VQDOTU_VV  : VALUVV<0b101000, OPMVV, "sf.vqdotu.vv">;
+  def SF_VQDOTU_VX  : VALUVX<0b101000, OPMVX, "sf.vqdotu.vx">;
+  def SF_VQDOTSU_VV : VALUVV<0b101010, OPMVV, "sf.vqdotsu.vv">;
+  def SF_VQDOTSU_VX : VALUVX<0b101010, OPMVX, "sf.vqdotsu.vx">;
+  def SF_VQDOTUS_VX : VALUVX<0b101110, OPMVX, "sf.vqdotus.vx">;
 } // Predicates = [HasVendorXSfvqdotq]
 
 let Predicates = [HasVendorXSfvfhbfmin] in {
@@ -942,21 +942,21 @@ multiclass VPseudoSiFiveVQDOT<string Constraint = ""> {
 }
 
 let Predicates = [HasVendorXSfvqdotq] in {
-  defm VQDOT  : VPseudoSiFiveVQDOT;
-  defm VQDOTU : VPseudoSiFiveVQDOT;
-  defm VQDOTSU: VPseudoSiFiveVQDOT;
+  defm SF_VQDOT  : VPseudoSiFiveVQDOT;
+  defm SF_VQDOTU : VPseudoSiFiveVQDOT;
+  defm SF_VQDOTSU: VPseudoSiFiveVQDOT;
 
   // VQDOTUS does not have a VV variant
   foreach m = MxListVF4 in {
-    defm "PseudoVQDOTUS_VX" : VPseudoTernaryWithPolicy<m.vrclass, m.vrclass, GPR, m>;
+    defm "PseudoSF_VQDOTUS_VX" : VPseudoTernaryWithPolicy<m.vrclass, m.vrclass, GPR, m>;
   }
 }
 
 let Predicates = [HasVendorXSfvqdotq] in {
-  defm : VPatTernaryV_VV_VX_AAXASwapped<"int_riscv_sf_vqdot", "PseudoVQDOT", VQDOTInfoPairs>;
-  defm : VPatTernaryV_VV_VX_AAXASwapped<"int_riscv_sf_vqdotu", "PseudoVQDOTU", VQDOTInfoPairs>;
-  defm : VPatTernaryV_VV_VX_AAXASwapped<"int_riscv_sf_vqdotsu", "PseudoVQDOTSU", VQDOTInfoPairs>;
-  defm : VPatTernaryV_VX_AAXASwapped<"int_riscv_sf_vqdotus", "PseudoVQDOTUS", VQDOTInfoPairs>;
+  defm : VPatTernaryV_VV_VX_AAXASwapped<"int_riscv_sf_vqdot", "PseudoSF_VQDOT", VQDOTInfoPairs>;
+  defm : VPatTernaryV_VV_VX_AAXASwapped<"int_riscv_sf_vqdotu", "PseudoSF_VQDOTU", VQDOTInfoPairs>;
+  defm : VPatTernaryV_VV_VX_AAXASwapped<"int_riscv_sf_vqdotsu", "PseudoSF_VQDOTSU", VQDOTInfoPairs>;
+  defm : VPatTernaryV_VX_AAXASwapped<"int_riscv_sf_vqdotus", "PseudoSF_VQDOTUS", VQDOTInfoPairs>;
 }
 
 def : Pat<(XLenVT (int_riscv_vgetvxrm)), (ReadVXRM)>;
