@@ -1251,7 +1251,6 @@ public:
     return false;
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   virtual bool enableTargetInterference() const { return false; }
 
@@ -1266,13 +1265,11 @@ public:
     return false;
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   /// Some targets delay assigning the frame until late and use a placeholder
   /// to represent it earlier. This method can be used to identify the frame
   /// register placeholder.
   virtual bool isVirtualFrameRegister(MCRegister Reg) const { return false; }
 
->>>>>>> 94783a8199c5e589d8efd6d4530482d72bf98f4d
   virtual std::optional<uint8_t> getVRegFlagValue(StringRef Name) const {
     return {};
   }
