@@ -43,7 +43,6 @@ public:
     VK_TLSDESC_LOAD_LO,
     VK_TLSDESC_ADD_LO,
     VK_TLSDESC_CALL,
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     VK_GPREL_LO,
     VK_GPREL_HI,
@@ -58,9 +57,6 @@ public:
     VK_TLS_GD_GPREL_HI,
     VK_TLS_GD_GPREL_ADD,
 #endif // SIFIVE_CUSTOMIZATION
-    VK_Invalid // Must be the last item
-=======
->>>>>>> 94783a8199c5e589d8efd6d4530482d72bf98f4d
   };
 
 private:
