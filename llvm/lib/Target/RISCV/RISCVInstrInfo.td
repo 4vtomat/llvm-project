@@ -379,14 +379,9 @@ def RegRelAddSymbol : AsmOperandClass {
                          "modifier";
 #else
   let DiagnosticType = "InvalidTPRelAddSymbol";
-<<<<<<< HEAD
   let DiagnosticString = "operand must be a symbol with %tprel_add modifier";
 #endif // SIFIVE_CUSTOMIZATION
-  let ParserMethod = "parseOperandWithModifier";
-=======
-  let DiagnosticString = "operand must be a symbol with %tprel_add specifier";
   let ParserMethod = "parseOperandWithSpecifier";
->>>>>>> 94783a8199c5e589d8efd6d4530482d72bf98f4d
 }
 
 // A bare symbol attached to the Add for linker relaxation.
