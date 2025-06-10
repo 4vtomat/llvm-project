@@ -902,10 +902,10 @@ VPlanCostModel::getInterleavedMemoryOpCost(const VPInterleaveRecipe *VPI,
 
 InstructionCost VPlanCostModel::getReductionCost(const VPReductionRecipe *VPR,
                                                  const RVVPair &RVL) const {
-  const RecurrenceDescriptor &RdxDesc = VPR->getRecurrenceDescriptor();
-
-  RecurKind RdxKind = RdxDesc.getRecurrenceKind();
-  Type *ElementTy = RdxDesc.getRecurrenceType();
+  const RecurKind RdxKind = VPR->getRecurrenceKind();
+  unsigned Opcode = RecurrenceDescriptor::getOpcode(RdxKind);
+  FastMathFlags FMFs = VPR->getFastMathFlags();
+  Type *ElementTy = TypeInfo.inferScalarType(VPR);
   if (!RVVPair::isValidType(ElementTy, RVL))
     return InstructionCost::getInvalid();
   auto *VectorTy = cast<VectorType>(getVectorType(ElementTy, RVL));
@@ -918,8 +918,7 @@ InstructionCost VPlanCostModel::getReductionCost(const VPReductionRecipe *VPR,
   case RecurKind::FAdd:
   case RecurKind::FMul:
   case RecurKind::FMulAdd:
-    return TTI.getArithmeticReductionCost(
-        RdxDesc.getOpcode(), VectorTy, RdxDesc.getFastMathFlags(), CostKind);
+    return TTI.getArithmeticReductionCost(Opcode, VectorTy, FMFs, CostKind);
   case RecurKind::SMin:
   case RecurKind::SMax:
   case RecurKind::UMin:
@@ -929,8 +928,7 @@ InstructionCost VPlanCostModel::getReductionCost(const VPReductionRecipe *VPR,
   case RecurKind::FMinimum:
   case RecurKind::FMaximum: {
     Intrinsic::ID Id = getMinMaxReductionIntrinsicOp(RdxKind);
-    return TTI.getMinMaxReductionCost(Id, VectorTy, RdxDesc.getFastMathFlags(),
-                                      CostKind);
+    return TTI.getMinMaxReductionCost(Id, VectorTy, FMFs, CostKind);
   }
   default:
     assert(0 && "Expected arithmetic or min/max reduction");
