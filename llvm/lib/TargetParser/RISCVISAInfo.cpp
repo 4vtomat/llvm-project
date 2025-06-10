@@ -1057,10 +1057,6 @@ void RISCVISAInfo::updateImplication() {
                   });
   }
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 94783a8199c5e589d8efd6d4530482d72bf98f4d
   // Add Zcd if C and D are enabled.
   if (Exts.count("c") && Exts.count("d") && !Exts.count("zcd")) {
     auto Version = findDefaultVersion("zcd");
@@ -1072,10 +1068,6 @@ void RISCVISAInfo::updateImplication() {
     auto Version = findDefaultVersion("zcf");
     Exts["zcf"] = *Version;
   }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 94783a8199c5e589d8efd6d4530482d72bf98f4d
 
   // Add Zcf if Zce and F are enabled on RV32.
   if (XLen == 32 && Exts.count("zce") && Exts.count("f") &&
