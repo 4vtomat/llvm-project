@@ -513,13 +513,19 @@ static bool shouldPeelLastIteration(Loop &L, CmpPredicate Pred,
                                     const SCEVAddRecExpr *LeftAR,
                                     const SCEV *RightSCEV,
                                     const SCEV *Step,
-                                    ScalarEvolution &SE) {
+                                    ScalarEvolution &SE
+                                    const TargetTransformInfo &TTI) {
   if (!canPeelLastIteration(L, SE))
     return false;
 
   const SCEV *BTC = SE.getBackedgeTakenCount(&L);
   const SCEV *ValAtLastIter = LeftAR->evaluateAtIteration(BTC, SE);
   const SCEV *NewBECount = BTC;
+  SCEVExpander Expander(SE, L.getHeader()->getDataLayout(), "loop-peel");
+  if (!SE.isKnownNonZero(BTC) && Expander.isHighCostExpansion(BTC, &L, SCEVCheapExpansionBudget, &TTI,
+                                   L.getLoopPredecessor()->getTerminator()))
+    return false;
+
   if (SE.getTypeSizeInBits(Step->getType()) >
       SE.getTypeSizeInBits(BTC->getType()))
     NewBECount = SE.getCastExpr(
@@ -542,12 +548,17 @@ static bool shouldPeelLastIteration(Loop &L, CmpPredicate Pred,
 #else
 static bool shouldPeelLastIteration(Loop &L, CmpPredicate Pred,
                                     const SCEVAddRecExpr *LeftAR,
-                                    const SCEV *RightSCEV,
-                                    ScalarEvolution &SE) {
+                                    const SCEV *RightSCEV, ScalarEvolution &SE,
+                                    const TargetTransformInfo &TTI) {
   if (!canPeelLastIteration(L, SE))
     return false;
 
   const SCEV *BTC = SE.getBackedgeTakenCount(&L);
+  SCEVExpander Expander(SE, L.getHeader()->getDataLayout(), "loop-peel");
+  if (!SE.isKnownNonZero(BTC) && Expander.isHighCostExpansion(BTC, &L, SCEVCheapExpansionBudget, &TTI,
+                                   L.getLoopPredecessor()->getTerminator()))
+    return false;
+
   const SCEV *ValAtLastIter = LeftAR->evaluateAtIteration(BTC, SE);
   const SCEV *ValAtSecondToLastIter = LeftAR->evaluateAtIteration(
       SE.getMinusSCEV(BTC, SE.getOne(BTC->getType())), SE);
@@ -573,8 +584,9 @@ static bool shouldPeelLastIteration(Loop &L, CmpPredicate Pred,
 //   }
 #if SIFIVE_CUSTOMIZATION
 static std::pair<unsigned, unsigned>
-countToEliminateCompares(Loop &L, unsigned MaxPeelCount, unsigned TripCount,
-                         ScalarEvolution &SE, bool PeelProlog) {
+countToEliminateCompares(Loop &L, unsigned MaxPeelCount, ScalarEvolution &SE,
+                         const TargetTransformInfo &TTI,
+                         bool PeelProlog, unsigned TripCount) {
 #else
 static unsigned
 countToEliminateCompares(Loop &L, unsigned MaxPeelCount, ScalarEvolution &SE) {
@@ -706,11 +718,11 @@ countToEliminateCompares(Loop &L, unsigned MaxPeelCount, ScalarEvolution &SE) {
       if (!PeelProlog) {
         if (NewPeelCount < MaxPeelCount)
           DesiredPeelCountLast = NewPeelCount;
-        else if (shouldPeelLastIteration(L, Pred, LeftAR, RightSCEV, Step, SE))
+        else if (shouldPeelLastIteration(L, Pred, LeftAR, RightSCEV, Step, SE, TTI))
           DesiredPeelCountLast = 1;
       }
 #else
-      if (shouldPeelLastIteration(L, Pred, LeftAR, RightSCEV, SE))
+      if (shouldPeelLastIteration(L, Pred, LeftAR, RightSCEV, SE, TTI))
         DesiredPeelCountLast = 1;
 #endif
 #endif
@@ -846,8 +858,8 @@ static bool violatesLegacyMultiExitLoopCheck(Loop *L) {
 void llvm::computePeelCount(Loop *L, unsigned LoopSize,
                             TargetTransformInfo::PeelingPreferences &PP,
                             unsigned TripCount, DominatorTree &DT,
-                            ScalarEvolution &SE, AssumptionCache *AC,
-                            unsigned Threshold) {
+                            ScalarEvolution &SE, const TargetTransformInfo &TTI,
+                            AssumptionCache *AC, unsigned Threshold) {
   assert(LoopSize > 0 && "Zero loop size is not allowed!");
   // Save the PP.PeelCount value set by the target in
   // TTI.getPeelingPreferences or by the flag -unroll-peel-count.
@@ -933,7 +945,8 @@ void llvm::computePeelCount(Loop *L, unsigned LoopSize,
 
 #if SIFIVE_CUSTOMIZATION
   const auto &[CountToEliminateCmps, CountToEliminateCmpsLast] =
-      countToEliminateCompares(*L, MaxPeelCount, TripCount, SE, PP.PeelProlog);
+      countToEliminateCompares(*L, MaxPeelCount, SE, TTI,
+                               PP.PeelProlog, TripCount);
   DesiredPeelCount = std::max(DesiredPeelCount, CountToEliminateCmps);
 #else
   DesiredPeelCount = std::max(DesiredPeelCount,
@@ -1288,7 +1301,8 @@ static void cloneLoopBlocks(
 /// \param LVMap A value-map that maps instructions from the original loop to
 /// instructions in the last peeled-off iteration.
 static void cloneLoopBlocks(
-    Loop *L, unsigned IterNumber, BasicBlock *InsertTop, BasicBlock *InsertBot,
+    Loop *L, unsigned IterNumber, BasicBlock *InsertTop, 
+    BasicBlock *InsertBot, BasicBlock *OrigPreHeader,
     SmallVectorImpl<std::pair<BasicBlock *, BasicBlock *>> &ExitEdges,
     SmallVectorImpl<BasicBlock *> &NewBlocks, LoopBlocksDFS &LoopBlocks,
     ValueToValueMapTy &VMap, ValueToValueMapTy &LVMap, DominatorTree *DT,

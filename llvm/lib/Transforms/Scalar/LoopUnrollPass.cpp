@@ -1029,7 +1029,7 @@ bool llvm::computeUnrollCount(
   }
 
   // 5th priority is loop prolog peeling. - SIFIVE
-  computePeelCount(L, LoopSize, PP, TripCount, DT, SE, AC, UP.Threshold);
+  computePeelCount(L, LoopSize, PP, TripCount, DT, SE, TTI, AC, UP.Threshold);
   if (PP.PeelCount) {
     UP.Runtime = false;
     UP.Count = 1;
@@ -1042,7 +1042,7 @@ bool llvm::computeUnrollCount(
     PP.PeelProlog = false;
     PP.PeelEpilog = PP.AllowEpilogPeeling;
     unsigned CurTripCount = (TripCount) ? TripCount : MaxTripCount;
-    computePeelCount(L, LoopSize, PP, CurTripCount, DT, SE, AC, UP.Threshold);
+    computePeelCount(L, LoopSize, PP, CurTripCount, DT, SE, TTI, AC, UP.Threshold);
     if (PP.PeelCount) {
       UP.Runtime = false;
       UP.Count = 1;
