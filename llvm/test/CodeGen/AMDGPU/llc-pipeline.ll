@@ -180,6 +180,8 @@
 ; GCN-O1-NEXT:    FunctionPass Manager
 ; GCN-O1-NEXT:      Expand large div/rem
 ; GCN-O1-NEXT:      Expand fp
+; GCN-O1-NEXT:      Expand powi functions
+; GCN-O1-NEXT:      Expand vp.reduce functions
 ; GCN-O1-NEXT:    AMDGPU Remove Incompatible Functions
 ; GCN-O1-NEXT:    AMDGPU Printf lowering
 ; GCN-O1-NEXT:    Lower ctors and dtors for AMDGPU
@@ -465,6 +467,8 @@
 ; GCN-O1-OPTS-NEXT:    FunctionPass Manager
 ; GCN-O1-OPTS-NEXT:      Expand large div/rem
 ; GCN-O1-OPTS-NEXT:      Expand fp
+; GCN-O1-OPTS-NEXT:      Expand powi functions
+; GCN-O1-OPTS-NEXT:      Expand vp.reduce functions
 ; GCN-O1-OPTS-NEXT:    AMDGPU Remove Incompatible Functions
 ; GCN-O1-OPTS-NEXT:    AMDGPU Printf lowering
 ; GCN-O1-OPTS-NEXT:    Lower ctors and dtors for AMDGPU
@@ -778,6 +782,8 @@
 ; GCN-O2-NEXT:    FunctionPass Manager
 ; GCN-O2-NEXT:      Expand large div/rem
 ; GCN-O2-NEXT:      Expand fp
+; GCN-O2-NEXT:      Expand powi functions
+; GCN-O2-NEXT:      Expand vp.reduce functions
 ; GCN-O2-NEXT:    AMDGPU Remove Incompatible Functions
 ; GCN-O2-NEXT:    AMDGPU Printf lowering
 ; GCN-O2-NEXT:    Lower ctors and dtors for AMDGPU
@@ -1097,6 +1103,8 @@
 ; GCN-O3-NEXT:    FunctionPass Manager
 ; GCN-O3-NEXT:      Expand large div/rem
 ; GCN-O3-NEXT:      Expand fp
+; GCN-O3-NEXT:      Expand powi functions
+; GCN-O3-NEXT:      Expand vp.reduce functions
 ; GCN-O3-NEXT:    AMDGPU Remove Incompatible Functions
 ; GCN-O3-NEXT:    AMDGPU Printf lowering
 ; GCN-O3-NEXT:    Lower ctors and dtors for AMDGPU
