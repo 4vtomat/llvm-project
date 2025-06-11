@@ -208,7 +208,7 @@ void RISCVMCCodeEmitter::expandAddRegRel(const MCInst &MI,
          "Expected expression as third input to TP/GP-relative ADD");
 
   const RISCVMCExpr *Expr = cast<RISCVMCExpr>(SrcSymbol.getExpr());
-  switch (Expr->getKind()) {
+  switch (Expr->getSpecifier()) {
   default:
     llvm_unreachable("Unknown relocation attached to TP/GP-relative ADD");
   case RISCVMCExpr::VK_TPREL_ADD:

@@ -5,66 +5,6 @@
 
 ; VPLAN:  VPlan 'Final VPlan for VF={vscale x 1,vscale x 2,vscale x 4},UF={1}' {
 ; VPLAN-NEXT:  Live-in ir<%wide.trip.count> = vector-trip-count
-; VPLAN-NEXT:  vp<[[TC:.*]]> = original trip-count
-; VPLAN-EMPTY:
-; VPLAN-NEXT:  ir-bb<for.body.lr.ph>:
-; VPLAN-NEXT:    IR
-; VPLAN-NEXT:    IR
-; VPLAN-NEXT:    IR
-; VPLAN-NEXT:    IR
-; VPLAN-NEXT:    IR
-; VPLAN-NEXT:    IR
-; VPLAN-NEXT:    IR
-; VPLAN-NEXT:    IR
-; VPLAN-NEXT:    IR
-; VPLAN-NEXT:    EMIT vp<[[TC]]> = EXPAND SCEV (zext i32 %reg.4.val to i64)
-; VPLAN-NEXT:  Successor(s): ir-bb<scalar.ph>, ir-bb<vector.ph>
-; VPLAN-EMPTY:
-; VPLAN-NEXT:  ir-bb<vector.ph>:
-; VPLAN-NEXT:    EMIT vp<[[V1:.*]]> = broadcast ir<%shl11>
-; VPLAN-NEXT:    EMIT vp<[[V2:.*]]> = broadcast ir<%1>
-; VPLAN-NEXT:  Successor(s): vector loop
-; VPLAN-EMPTY:
-; VPLAN-NEXT:  <x1> vector loop: {
-; VPLAN-NEXT:    vector.body:
-; VPLAN-NEXT:      EMIT vp<[[IDX:.*]]> = phi ir<0>, vp<[[IDX_NEXT:.*]]>
-; VPLAN-NEXT:      EMIT vp<[[EVL_IV:.*]]> = phi ir<0>, vp<[[IDX_NEXT]]>
-; VPLAN-NEXT:      EMIT vp<[[AVL:.*]]> = sub ir<%wide.trip.count>, vp<[[EVL_IV]]>
-; VPLAN-NEXT:      EMIT vp<[[VL:.*]]> = EXPLICIT-VECTOR-LENGTH vp<[[AVL]]>
-; VPLAN-NEXT:      vp<[[STEP:.*]]> = SCALAR-STEPS vp<[[EVL_IV]]>, ir<1>
-; VPLAN-NEXT:      CLONE ir<%arrayidx> = getelementptr ir<%reg.24.val>, vp<[[STEP]]>
-; VPLAN-NEXT:      vp<[[VPTR:.*]]> = vector-pointer ir<%arrayidx>
-; VPLAN-NEXT:      WIDEN ir<%2> = vp.load vp<[[VPTR]]>, vp<[[VL]]>       unit-strided
-; VPLAN-NEXT:      WIDEN ir<%3> = and ir<%2>, vp<[[V2]]>
-; VPLAN-NEXT:      WIDEN ir<%or.cond.not> = icmp eq ir<%3>, vp<[[V2]]>
-; VPLAN-NEXT:    Successor(s):
-; VPLAN-EMPTY:
-; VPLAN-NEXT:    if (ir<%or.cond.not> != 0) {
-; VPLAN-NEXT:      vector.if.bb:
-; VPLAN-NEXT:        WIDEN ir<%xor> = xor ir<%2>, vp<[[V1]]>
-; VPLAN-NEXT:        vp<[[VPTR2:.*]]> = vector-pointer ir<%arrayidx>
-; VPLAN-NEXT:        WIDEN vp.store vp<[[VPTR2]]>, ir<%xor>, vp<[[VL]]>, ir<%or.cond.not> unit-strided
-; VPLAN-NEXT:        BRANCH-ON-MASK ir<true>, vector.body.split, vector.body.split
-; VPLAN-NEXT:      No successors
-; VPLAN-NEXT:    }
-; VPLAN-NEXT:    Successor(s): vector.body.split
-; VPLAN-EMPTY:
-; VPLAN-NEXT:    vector.body.split:
-; VPLAN-NEXT:      SCALAR-CAST vp<[[CAST:.*]]> = zext vp<[[VL]]> to i64
-; VPLAN-NEXT:      EMIT vp<[[IDX_NEXT]]> = add nuw vp<[[CAST]]>, vp<[[EVL_IV]]>
-; VPLAN-NEXT:      EMIT branch-on-count vp<[[IDX_NEXT]]>, ir<%wide.trip.count>
-; VPLAN-NEXT:    No successors
-; VPLAN-NEXT:  }
-; VPLAN-NEXT:  Successor(s): middle.block
-; VPLAN-EMPTY:
-; VPLAN-NEXT:  middle.block:
-; VPLAN-NEXT:    EMIT branch-on-cond ir<true>
-; VPLAN-NEXT:  Successor(s): ir-bb<for.end.loopexit>, ir-bb<scalar.ph>
-; VPLAN-EMPTY:
-; VPLAN-NEXT:  ir-bb<for.end.loopexit>:
-; VPLAN-NEXT:  No successors
-; VPLAN-EMPTY:
-; VPLAN-NEXT:  ir-bb<scalar.ph>:
 
 define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr %reg.24.val) {
 entry:

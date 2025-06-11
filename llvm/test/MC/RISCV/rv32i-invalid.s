@@ -144,15 +144,9 @@ auipc a0, %hi(foo) # CHECK: :[[@LINE]]:11: error: operand must be a symbol with 
 auipc a0, %pcrel_lo(foo) # CHECK: :[[@LINE]]:11: error: operand must be a symbol with a %pcrel_hi/%got_pcrel_hi/%tls_ie_pcrel_hi/%tls_gd_pcrel_hi specifier or an integer in the range [0, 1048575]
 
 # TP-relative symbol names require a %tprel_add modifier.
-<<<<<<< HEAD
-add a0, a0, tp, zero # CHECK: :[[@LINE]]:17: error: expected '%' for operand modifier
+add a0, a0, tp, zero # CHECK: :[[@LINE]]:17: error: expected '%' relocation specifier
 add a0, a0, tp, %hi(foo) # CHECK: :[[@LINE]]:17: error: operand must be a symbol with any of %tprel_add, %gprel, %got_gprel, %tls_ie_gprel, or %tls_gd_gprel modifier
 add a0, tp, a0, %tprel_add(foo) # CHECK: :[[@LINE]]:13: error: the second input operand must be tp/x4 when using %tprel_add modifier
-=======
-add a0, a0, tp, zero # CHECK: :[[@LINE]]:17: error: expected '%' relocation specifier
-add a0, a0, tp, %hi(foo) # CHECK: :[[@LINE]]:17: error: operand must be a symbol with %tprel_add specifier
-add a0, tp, a0, %tprel_add(foo) # CHECK: :[[@LINE]]:13: error: the second input operand must be tp/x4 when using %tprel_add specifier
->>>>>>> 94783a8199c5e589d8efd6d4530482d72bf98f4d
 
 # Unrecognized operand modifier
 addi t0, sp, %modifer(255) # CHECK: :[[@LINE]]:15: error: invalid relocation specifier

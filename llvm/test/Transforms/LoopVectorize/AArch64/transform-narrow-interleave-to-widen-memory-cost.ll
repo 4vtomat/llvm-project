@@ -7,13 +7,8 @@ target triple = "arm64-apple-macosx"
 define void @test_complex_add_float(ptr %res, ptr noalias %A, ptr noalias %B, i64 %N) {
 ; CHECK-LABEL: define void @test_complex_add_float(
 ; CHECK-SAME: ptr [[RES:%.*]], ptr noalias [[A:%.*]], ptr noalias [[B:%.*]], i64 [[N:%.*]]) {
-<<<<<<< HEAD
-; CHECK-NEXT:  [[ENTRY:.*]]:
-; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 4
-=======
 ; CHECK-NEXT:  [[ENTRY:.*:]]
-; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 8
->>>>>>> 94783a8199c5e589d8efd6d4530482d72bf98f4d
+; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 4
 ; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
 ; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N]], 4
@@ -74,13 +69,8 @@ exit:
 define void @test_complex_add_double(ptr %res, ptr noalias %A, ptr noalias %B, i64 %N) {
 ; CHECK-LABEL: define void @test_complex_add_double(
 ; CHECK-SAME: ptr [[RES:%.*]], ptr noalias [[A:%.*]], ptr noalias [[B:%.*]], i64 [[N:%.*]]) {
-<<<<<<< HEAD
-; CHECK-NEXT:  [[ENTRY:.*]]:
-; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 2
-=======
 ; CHECK-NEXT:  [[ENTRY:.*:]]
-; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 4
->>>>>>> 94783a8199c5e589d8efd6d4530482d72bf98f4d
+; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 2
 ; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
 ; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N]], 2
@@ -110,32 +100,6 @@ define void @test_complex_add_double(ptr %res, ptr noalias %A, ptr noalias %B, i
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[CMP_N]], [[EXIT:label %.*]], label %[[SCALAR_PH]]
 ; CHECK:       [[SCALAR_PH]]:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], %[[MIDDLE_BLOCK]] ], [ 0, %[[ENTRY]] ]
-; CHECK-NEXT:    br label %[[LOOP:.*]]
-; CHECK:       [[LOOP]]:
-; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[LOOP]] ]
-; CHECK-NEXT:    [[GEP_A_0:%.*]] = getelementptr inbounds nuw { double, double }, ptr [[A]], i64 [[IV]]
-; CHECK-NEXT:    [[GEP_B_0:%.*]] = getelementptr inbounds nuw { double, double }, ptr [[B]], i64 [[IV]]
-; CHECK-NEXT:    [[L_A_0:%.*]] = load double, ptr [[GEP_A_0]], align 4
-; CHECK-NEXT:    [[GEP_A_1:%.*]] = getelementptr inbounds nuw i8, ptr [[GEP_A_0]], i64 8
-; CHECK-NEXT:    [[L_A_1:%.*]] = load double, ptr [[GEP_A_1]], align 4
-; CHECK-NEXT:    [[L_B_0:%.*]] = load double, ptr [[GEP_B_0]], align 4
-; CHECK-NEXT:    [[ADD_0:%.*]] = fadd double [[L_A_0]], [[L_B_0]]
-; CHECK-NEXT:    [[GEP_B_1:%.*]] = getelementptr inbounds nuw i8, ptr [[GEP_B_0]], i64 8
-; CHECK-NEXT:    [[L_B_1:%.*]] = load double, ptr [[GEP_B_1]], align 4
-; CHECK-NEXT:    [[ADD_1:%.*]] = fadd double [[L_A_1]], [[L_B_1]]
-; CHECK-NEXT:    [[GEP_RES_0:%.*]] = getelementptr inbounds nuw { double, double }, ptr [[RES]], i64 [[IV]]
-; CHECK-NEXT:    store double [[ADD_0]], ptr [[GEP_RES_0]], align 4
-; CHECK-NEXT:    [[GEP_RES_1:%.*]] = getelementptr inbounds nuw i8, ptr [[GEP_RES_0]], i64 8
-; CHECK-NEXT:    store double [[ADD_1]], ptr [[GEP_RES_1]], align 4
-; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
-; CHECK-NEXT:    [[EC:%.*]] = icmp eq i64 [[IV_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[EC]], label %[[EXIT]], label %[[LOOP]], !llvm.loop [[LOOP5:![0-9]+]]
-; CHECK:       [[EXIT]]:
-; CHECK-NEXT:    ret void
-=======
->>>>>>> 94783a8199c5e589d8efd6d4530482d72bf98f4d
 ;
 entry:
   br label %loop

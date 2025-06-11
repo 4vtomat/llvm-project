@@ -326,27 +326,57 @@ exit:
   ret void
 }
 
-<<<<<<< HEAD
-=======
 define void @test_scalar_steps(ptr nocapture %a, ptr noalias %b, i64 %size) !dbg !39 {
 ; CHECK-LABEL: define void @test_scalar_steps(
+; CHECK-SAME: ptr captures(none) [[A:%.*]], ptr noalias [[B:%.*]], i64 [[SIZE:%.*]]) !dbg [[DBG44:![0-9]+]] {
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[SIZE]], -2
+; CHECK-NEXT:    [[TMP1:%.*]] = lshr i64 [[TMP0]], 1
+; CHECK-NEXT:    [[TMP2:%.*]] = add nuw i64 [[TMP1]], 1
+; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[TMP2]], 2
+; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_SCEVCHECK:%.*]]
+; CHECK:       vector.scevcheck:
+; CHECK-NEXT:    [[TMP3:%.*]] = trunc i64 [[SIZE]] to i1
+; CHECK-NEXT:    [[TMP4:%.*]] = zext i1 [[TMP3]] to i64
+; CHECK-NEXT:    br i1 [[TMP3]], label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]
+; CHECK:       vector.ph:
+; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[TMP2]], 2
+; CHECK-NEXT:    [[N_VEC:%.*]] = sub i64 [[TMP2]], [[N_MOD_VF]]
+; CHECK-NEXT:    [[TMP5:%.*]] = mul i64 [[N_VEC]], 2
+; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
-; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %vector.ph ], [ [[INDEX_NEXT:%.*]], %vector.body ]
+; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[INDEX]], 2
 ; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[OFFSET_IDX]], 0
-; CHECK-NOT:     !dbg
 ; CHECK-NEXT:    [[TMP7:%.*]] = add i64 [[OFFSET_IDX]], 2
-; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[TMP6]]
+; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP6]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP7]]
-; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[B:%.*]], i64 [[TMP6]]
+; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP6]]
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP12:%.*]] = load i32, ptr [[TMP8]], align 4
 ; CHECK-NEXT:    [[TMP13:%.*]] = load i32, ptr [[TMP9]], align 4
 ; CHECK-NEXT:    store i32 [[TMP12]], ptr [[TMP10]], align 4
 ; CHECK-NEXT:    store i32 [[TMP13]], ptr [[TMP11]], align 4
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 2
-; CHECK-NEXT:    [[TMP20:%.*]] = icmp eq i64 [[INDEX_NEXT]], %n.vec
-; CHECK-NEXT:    br i1 [[TMP20]], label %middle.block, label %vector.body
+; CHECK-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
+; CHECK-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP45:![0-9]+]]
+; CHECK:       middle.block:
+; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[TMP2]], [[N_VEC]]
+; CHECK-NEXT:    br i1 [[CMP_N]], label [[EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK:       scalar.ph:
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[TMP5]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ], [ 0, [[VECTOR_SCEVCHECK]] ], !dbg [[DBG46:![0-9]+]]
+; CHECK-NEXT:    br label [[LOOP:%.*]]
+; CHECK:       loop:
+; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[LOOP]] ], !dbg [[DBG46]]
+; CHECK-NEXT:    [[ARRAYIDX_1:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV]]
+; CHECK-NEXT:    [[ARRAYIDX_2:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[IV]]
+; CHECK-NEXT:    [[L_1:%.*]] = load i32, ptr [[ARRAYIDX_1]], align 4
+; CHECK-NEXT:    store i32 [[L_1]], ptr [[ARRAYIDX_2]], align 4
+; CHECK-NEXT:    [[IV_NEXT]] = add i64 [[IV]], 2
+; CHECK-NEXT:    [[EXITCOND:%.*]] = icmp ne i64 [[IV_NEXT]], [[SIZE]]
+; CHECK-NEXT:    br i1 [[EXITCOND]], label [[LOOP]], label [[EXIT]], !llvm.loop [[LOOP48:![0-9]+]]
+; CHECK:       exit:
+; CHECK-NEXT:    ret void
 ;
 entry:
   br label %loop
@@ -365,15 +395,6 @@ exit:
   ret void
 }
 
-; CHECK: ![[LOC2]] = !DILocation(line: 3
-; CHECK: ![[BR_LOC]] = !DILocation(line: 5,
-; CHECK: ![[LOC1]] = !DILocation(line: 6
-; CHECK: [[LOC3]] = !DILocation(line: 137
-; CHECK: [[LOC4]] = !DILocation(line: 210
-; CHECK: [[LOC5]] = !DILocation(line: 320
-; CHECK: [[LOC6]] = !DILocation(line: 430
-; CHECK: [[LOC7]] = !DILocation(line: 540
->>>>>>> 94783a8199c5e589d8efd6d4530482d72bf98f4d
 
 
 declare void @llvm.dbg.declare(metadata, metadata, metadata)
@@ -418,7 +439,9 @@ declare void @llvm.dbg.value(metadata, metadata, metadata)
 !36 = distinct !DILexicalBlock(scope: !35, file: !5, line: 137, column: 2)
 !37 = !DILocation(line: 430, column: 44, scope: !36)
 !38 = !DILocation(line: 540, column: 44, scope: !36)
-<<<<<<< HEAD
+!39 = distinct !DISubprogram(name: "test_scalar_Steps", line: 3, isLocal: false, isDefinition: true, virtualIndex: 6, flags: DIFlagPrototyped, isOptimized: true, unit: !0, scopeLine: 3, file: !5, scope: !6, type: !7, retainedNodes: !12)
+!40 = distinct !DILexicalBlock(scope: !39, file: !5, line: 137, column: 2)
+!41 = !DILocation(line: 650, column: 44, scope: !40)
 ;.
 ; CHECK: [[META0:![0-9]+]] = distinct !DICompileUnit(language: DW_LANG_C99, file: [[META1:![0-9]+]], producer: "{{.*}}clang version {{.*}} (llvm/trunk 185097)", isOptimized: true, runtimeVersion: 0, emissionKind: FullDebug, enums: [[META2]], retainedTypes: [[META2]], globals: [[META2]], imports: [[META2]])
 ; CHECK: [[META1]] = !DIFile(filename: "-", directory: {{.*}})
@@ -462,9 +485,9 @@ declare void @llvm.dbg.value(metadata, metadata, metadata)
 ; CHECK: [[DBG41]] = !DILocation(line: 540, column: 44, scope: [[META40]])
 ; CHECK: [[LOOP42]] = distinct !{[[LOOP42]], [[META23]], [[META24]]}
 ; CHECK: [[LOOP43]] = distinct !{[[LOOP43]], [[META24]], [[META23]]}
+; CHECK: [[DBG44]] = distinct !DISubprogram(name: "test_scalar_Steps", scope: [[META6]], file: [[META6]], line: 3, type: [[META7]], scopeLine: 3, virtualIndex: 6, flags: DIFlagPrototyped, spFlags: DISPFlagDefinition | DISPFlagOptimized, unit: [[META0]], retainedNodes: [[META12]])
+; CHECK: [[LOOP45]] = distinct !{[[LOOP45]], [[META23]], [[META24]]}
+; CHECK: [[DBG46]] = !DILocation(line: 650, column: 44, scope: [[META47:![0-9]+]])
+; CHECK: [[META47]] = distinct !DILexicalBlock(scope: [[DBG44]], file: [[META6]], line: 137, column: 2)
+; CHECK: [[LOOP48]] = distinct !{[[LOOP48]], [[META23]]}
 ;.
-=======
-!39 = distinct !DISubprogram(name: "test_scalar_Steps", line: 3, isLocal: false, isDefinition: true, virtualIndex: 6, flags: DIFlagPrototyped, isOptimized: true, unit: !0, scopeLine: 3, file: !5, scope: !6, type: !7, retainedNodes: !12)
-!40 = distinct !DILexicalBlock(scope: !39, file: !5, line: 137, column: 2)
-!41 = !DILocation(line: 650, column: 44, scope: !40)
->>>>>>> 94783a8199c5e589d8efd6d4530482d72bf98f4d
