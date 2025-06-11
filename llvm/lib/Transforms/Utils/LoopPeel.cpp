@@ -69,7 +69,7 @@ static cl::opt<bool>
 
 #if SIFIVE_CUSTOMIZATION
 static cl::opt<bool> AllowEpilogPeeling(
-    "allow-epilog-peeling", cl::init(true), cl::Hidden,
+    "allow-epilog-peeling", cl::init(false), cl::Hidden,
     cl::desc("Allows peeling from final iterations of loops."));
 
 static cl::opt<bool> PeelingSwitches(

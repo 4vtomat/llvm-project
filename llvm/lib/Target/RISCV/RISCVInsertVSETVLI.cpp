@@ -856,7 +856,15 @@ public:
            "Can't compare invalid VSETVLIInfos");
     assert(!isUnknown() && !Other.isUnknown() &&
            "Can't compare VTYPE in unknown state");
+#ifdef SIFIVE_CUSTOMIZATION
+    if (getTWiden() != Other.getTWiden())
+      return false;
+    if (getTWiden() == 0)
+      return getSEWLMULRatio() == Other.getSEWLMULRatio();
+    return getSEW() == Other.getSEW();
+#else
     return getSEWLMULRatio() == Other.getSEWLMULRatio();
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   bool hasCompatibleVTYPE(const DemandedFields &Used,
@@ -1208,6 +1216,11 @@ RISCVInsertVSETVLI::computeInfoForInstr(const MachineInstr &MI) const {
   if (RISCVII::hasTWidenOp(TSFlags)) {
     assert(RISCVVType::isValidSEW(SEW) && "Unexpected SEW");
 
+    // FIXME: When TWiden is enable, VLMul is a run-time variable.
+    // The VLMul should be unknown. And it could only be compare between
+    // TWiden status.
+    VLMul = RISCVVType::LMUL_1;
+
     const MachineOperand &TWidenOp =
         MI.getOperand(MI.getNumExplicitOperands() - 1);
     unsigned TWiden = TWidenOp.getImm();
@@ -1279,35 +1292,17 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
                                        const VSETVLIInfo &PrevInfo) {
   ++NumInsertedVSETVL;
 
-#if SIFIVE_CUSTOMIZATION
-  if (Info.getTWiden()) {
-    if (Info.hasAVLVLMAX()) {
-      Register DestReg = MRI->createVirtualRegister(&RISCV::GPRRegClass);
-      auto MI = BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoSF_VSETTNTX0))
-                    .addReg(DestReg, RegState::Define | RegState::Dead)
-                    .addReg(RISCV::X0, RegState::Kill)
-                    .addImm(Info.encodeVTYPE());
-      if (LIS) {
-        LIS->InsertMachineInstrInMaps(*MI);
-        LIS->createAndComputeVirtRegInterval(DestReg);
-      }
-    } else {
-      auto MI = BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoSF_VSETTNT))
-                    .addReg(RISCV::X0, RegState::Define | RegState::Dead)
-                    .addReg(Info.getAVLReg())
-                    .addImm(Info.encodeVTYPE());
-      if (LIS)
-        LIS->InsertMachineInstrInMaps(*MI);
-    }
-    return;
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
   if (PrevInfo.isValid() && !PrevInfo.isUnknown()) {
     // Use X0, X0 form if the AVL is the same and the SEW+LMUL gives the same
     // VLMAX.
     if (Info.hasSameAVL(PrevInfo) && Info.hasSameVLMAX(PrevInfo)) {
+#ifdef SIFIVE_CUSTOMIZATION
+      auto MI = BuildMI(MBB, InsertPt, DL,
+                        TII->get(Info.getTWiden() ? RISCV::PseudoSF_VSETTNTX0
+                                                  : RISCV::PseudoVSETVLIX0))
+#else
       auto MI = BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoVSETVLIX0))
+#endif // SIFIVE_CUSTOMIZATION
                     .addReg(RISCV::X0, RegState::Define | RegState::Dead)
                     .addReg(RISCV::X0, RegState::Kill)
                     .addImm(Info.encodeVTYPE())
@@ -1325,11 +1320,22 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
           DefMI && isVectorConfigInstr(*DefMI)) {
         VSETVLIInfo DefInfo = getInfoForVSETVLI(*DefMI);
         if (DefInfo.hasSameAVL(PrevInfo) && DefInfo.hasSameVLMAX(PrevInfo)) {
+#ifdef SIFIVE_CUSTOMIZATION
+          auto MI =
+              BuildMI(MBB, InsertPt, DL,
+                      TII->get(Info.getTWiden() ? RISCV::PseudoSF_VSETTNTX0
+                                                : RISCV::PseudoVSETVLIX0))
+                  .addReg(RISCV::X0, RegState::Define | RegState::Dead)
+                  .addReg(RISCV::X0, RegState::Kill)
+                  .addImm(Info.encodeVTYPE())
+                  .addReg(RISCV::VL, RegState::Implicit);
+#else
           auto MI = BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoVSETVLIX0))
                         .addReg(RISCV::X0, RegState::Define | RegState::Dead)
                         .addReg(RISCV::X0, RegState::Kill)
                         .addImm(Info.encodeVTYPE())
                         .addReg(RISCV::VL, RegState::Implicit);
+#endif // SIFIVE_CUSTOMIZATION
           if (LIS)
             LIS->InsertMachineInstrInMaps(*MI);
           return;
@@ -1350,7 +1356,13 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
 
   if (Info.hasAVLVLMAX()) {
     Register DestReg = MRI->createVirtualRegister(&RISCV::GPRRegClass);
+#ifdef SIFIVE_CUSTOMIZATION
+    auto MI = BuildMI(MBB, InsertPt, DL,
+                      TII->get(Info.getTWiden() ? RISCV::PseudoSF_VSETTNTX0
+                                                : RISCV::PseudoVSETVLIX0))
+#else
     auto MI = BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoVSETVLIX0))
+#endif // SIFIVE_CUSTOMIZATION
                   .addReg(DestReg, RegState::Define | RegState::Dead)
                   .addReg(RISCV::X0, RegState::Kill)
                   .addImm(Info.encodeVTYPE());
@@ -1363,7 +1375,13 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
 
   Register AVLReg = Info.getAVLReg();
   MRI->constrainRegClass(AVLReg, &RISCV::GPRNoX0RegClass);
+#ifdef SIFIVE_CUSTOMIZATION
+  auto MI = BuildMI(MBB, InsertPt, DL,
+                    TII->get(Info.getTWiden() ? RISCV::PseudoSF_VSETTNT
+                                              : RISCV::PseudoVSETVLI))
+#else
   auto MI = BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoVSETVLI))
+#endif // SIFIVE_CUSTOMIZATION
                 .addReg(RISCV::X0, RegState::Define | RegState::Dead)
                 .addReg(AVLReg)
                 .addImm(Info.encodeVTYPE());
@@ -1422,9 +1440,16 @@ static VSETVLIInfo adjustIncoming(const VSETVLIInfo &PrevInfo,
 
   if (!Demanded.LMUL && !Demanded.SEWLMULRatio && PrevInfo.isValid() &&
       !PrevInfo.isUnknown()) {
+#ifdef SIFIVE_CUSTOMIZATION
+    if (PrevInfo.getTWiden() == NewInfo.getTWiden() && PrevInfo.getTWiden() == 0)
+      if (auto NewVLMul = RISCVVType::getSameRatioLMUL(
+              PrevInfo.getSEW(), PrevInfo.getVLMUL(), Info.getSEW()))
+        Info.setVLMul(*NewVLMul);
+#else
     if (auto NewVLMul = RISCVVType::getSameRatioLMUL(
             PrevInfo.getSEW(), PrevInfo.getVLMUL(), Info.getSEW()))
       Info.setVLMul(*NewVLMul);
+#endif // SIFIVE_CUSTOMIZATION
     Demanded.LMUL = DemandedFields::LMULEqual;
   }
 
