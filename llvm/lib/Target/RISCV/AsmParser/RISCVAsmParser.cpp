@@ -2330,7 +2330,7 @@ ParseStatus RISCVAsmParser::parseOperandWithSpecifier(OperandVector &Operands) {
     return Error(getLoc(), "invalid relocation specifier");
 
 #if SIFIVE_CUSTOMIZATION
-  switch (VK) {
+  switch (*Spec) {
   default:
     break;
   case RISCVMCExpr::VK_GPREL_LO:
@@ -3825,9 +3825,9 @@ bool RISCVAsmParser::emitCompactLoadAddress(MCInst &Inst, unsigned Opcode,
   MCOperand DestReg = Inst.getOperand(0);
   MCOperand PseudoGpReg = Inst.getOperand(2);
   const MCExpr *Symbol = Inst.getOperand(1).getExpr();
-  RISCVMCExpr::VariantKind VKHi;
-  RISCVMCExpr::VariantKind VKAdd;
-  RISCVMCExpr::VariantKind VKLow;
+  RISCVMCExpr::Specifier VKHi;
+  RISCVMCExpr::Specifier VKAdd;
+  RISCVMCExpr::Specifier VKLow;
   unsigned LowOpcode;
   switch (Opcode) {
   default:
@@ -4075,8 +4075,7 @@ bool RISCVAsmParser::checkPseudoAddRegRel(MCInst &Inst,
   assert(Op3.isExpr() && "Unexpected third operand kind");
 
   auto *RE = cast<RISCVMCExpr>(Op3.getExpr());
-  RISCVMCExpr::VariantKind VK = RE->getKind();
-  switch (VK) {
+  switch (RE->getSpecifier()) {
   default: {
     SMLoc ErrorLoc = ((RISCVOperand &)*Operands[4]).getStartLoc();
     return Error(ErrorLoc, "unknown third operand modifier for TP/GP-relative ADD");
@@ -4098,19 +4097,6 @@ bool RISCVAsmParser::checkPseudoAddRegRel(MCInst &Inst,
   return false;
 }
 #endif // SIFIVE_CUSTOMIZATION
-
-bool RISCVAsmParser::checkPseudoAddTPRel(MCInst &Inst,
-                                         OperandVector &Operands) {
-  assert(Inst.getOpcode() == RISCV::PseudoAddTPRel && "Invalid instruction");
-  assert(Inst.getOperand(2).isReg() && "Unexpected second operand kind");
-  if (Inst.getOperand(2).getReg() != RISCV::X4) {
-    SMLoc ErrorLoc = ((RISCVOperand &)*Operands[3]).getStartLoc();
-    return Error(ErrorLoc, "the second input operand must be tp/x4 when using "
-                           "%tprel_add specifier");
-  }
-
-  return false;
-}
 
 bool RISCVAsmParser::checkPseudoTLSDESCCall(MCInst &Inst,
                                             OperandVector &Operands) {
