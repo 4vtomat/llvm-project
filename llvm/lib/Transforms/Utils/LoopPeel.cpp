@@ -37,6 +37,7 @@
 #include "llvm/Transforms/Utils/Cloning.h"
 #include "llvm/Transforms/Utils/LoopSimplify.h"
 #include "llvm/Transforms/Utils/LoopUtils.h"
+#include "llvm/Transforms/Utils/ScalarEvolutionExpander.h"
 #include "llvm/Transforms/Utils/ValueMapper.h"
 #include <algorithm>
 #include <cassert>
@@ -1125,7 +1126,7 @@ static void initBranchWeights(DenseMap<Instruction *, WeightInfo> &WeightInfos,
 /// instructions in the last peeled-off iteration.
 static void cloneLoopBlocks(
     Loop *L, unsigned IterNumber, bool PeelLast, BasicBlock *InsertTop,
-    BasicBlock *InsertBot,
+    BasicBlock *InsertBot, BasicBlock *OrigPreHeader,
     SmallVectorImpl<std::pair<BasicBlock *, BasicBlock *>> &ExitEdges,
     SmallVectorImpl<BasicBlock *> &NewBlocks, LoopBlocksDFS &LoopBlocks,
     ValueToValueMapTy &VMap, ValueToValueMapTy &LVMap, DominatorTree *DT,
@@ -1221,10 +1222,19 @@ static void cloneLoopBlocks(
   if (PeelLast) {
     // For the last iteration, we use the value from the latch of the original
     // loop directly.
+    //
+    IRBuilder<> B(InsertTop->getTerminator());
     for (BasicBlock::iterator I = Header->begin(); isa<PHINode>(I); ++I) {
       PHINode *NewPHI = cast<PHINode>(VMap[&*I]);
-      VMap[&*I] = NewPHI->getIncomingValueForBlock(Latch);
+      PHINode *PN = B.CreatePHI(NewPHI->getType(), 2);
       NewPHI->eraseFromParent();
+      if (OrigPreHeader)
+        PN->addIncoming(cast<PHINode>(&*I)->getIncomingValueForBlock(PreHeader),
+                        OrigPreHeader);
+
+      PN->addIncoming(cast<PHINode>(&*I)->getIncomingValueForBlock(Latch),
+                      Latch);
+      VMap[&*I] = PN;
     }
   } else {
     // For the first iteration, we use the value from the preheader directly.
@@ -1642,7 +1652,7 @@ bool llvm::peelLoop(Loop *L, unsigned PeelCount, bool PeelLast, LoopInfo *LI,
   // Set up all the necessary basic blocks.
   BasicBlock *InsertTop;
   BasicBlock *InsertBot;
-  BasicBlock *NewPreHeader;
+  BasicBlock *NewPreHeader = nullptr;
   DenseMap<Instruction *, Value *> ExitValues;
   if (PeelLast) {
     // It is convenient to split the single exit block from the latch the
@@ -1673,11 +1683,40 @@ bool llvm::peelLoop(Loop *L, unsigned PeelCount, bool PeelLast, LoopInfo *LI,
     for (PHINode &P : Exit->phis())
       ExitValues[&P] = P.getIncomingValueForBlock(Latch);
 
+    const SCEV *BTC = SE->getBackedgeTakenCount(L);
+
     InsertTop = SplitEdge(Latch, Exit, &DT, LI);
     InsertBot = SplitBlock(InsertTop, InsertTop->getTerminator(), &DT, LI);
 
     InsertTop->setName(Exit->getName() + ".peel.begin");
     InsertBot->setName(Exit->getName() + ".peel.next");
+    NewPreHeader = nullptr;
+
+    // If the original loop may only execute a single iteration we need to
+    // insert a trip count check and skip the peeled loop if necessary.
+    if (!SE->isKnownPredicate(CmpInst::ICMP_UGT, BTC,
+                              SE->getZero(BTC->getType()))) {
+      NewPreHeader = SplitEdge(PreHeader, Header, &DT, LI);
+      SCEVExpander Expander(*SE, Latch->getDataLayout(), "loop-peel");
+
+      BranchInst *PreHeaderBR = cast<BranchInst>(PreHeader->getTerminator());
+      Value *BTCValue =
+          Expander.expandCodeFor(BTC, BTC->getType(), PreHeaderBR);
+      IRBuilder<> B(PreHeaderBR);
+      Value *Cond =
+          B.CreateICmpNE(BTCValue, ConstantInt::get(BTCValue->getType(), 0));
+      B.CreateCondBr(Cond, NewPreHeader, InsertTop);
+      PreHeaderBR->eraseFromParent();
+
+      // PreHeader now dominates InsertTop.
+      DT.changeImmediateDominator(InsertTop, PreHeader);
+
+      // If we branch from PreHeader to InsertTop, we are guaranteed to execute
+      // the peeled iteration, so the exit values from the original loop are
+      // dead. Use poison for them.
+      for (auto &PN : InsertTop->phis())
+        PN.addIncoming(PoisonValue::get(PN.getType()), PreHeader);
+    }
   } else {
     // It is convenient to split the preheader into 3 parts - two blocks to
     // anchor the peeled copy of the loop body, and a new preheader for the
@@ -1751,8 +1790,9 @@ bool llvm::peelLoop(Loop *L, unsigned PeelCount, bool PeelLast, LoopInfo *LI,
   for (unsigned Iter = 0; Iter < PeelCount; ++Iter) {
     SmallVector<BasicBlock *, 8> NewBlocks;
 
-    cloneLoopBlocks(L, Iter, PeelLast, InsertTop, InsertBot, ExitEdges,
-                    NewBlocks, LoopBlocks, VMap, LVMap, &DT, LI,
+    cloneLoopBlocks(L, Iter, PeelLast, InsertTop, InsertBot,
+                    NewPreHeader ? PreHeader : nullptr, ExitEdges, NewBlocks,
+                    LoopBlocks, VMap, LVMap, &DT, LI,
                     LoopLocalNoAliasDeclScopes, *SE);
 
     // Remap to use values from the current iteration instead of the
