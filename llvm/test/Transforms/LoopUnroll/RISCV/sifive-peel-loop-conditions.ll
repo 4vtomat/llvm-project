@@ -45,40 +45,26 @@ for.end:
   ret void
 }
 
-; Test epilog peeling for a condition that will simplify the loop by
+; Test epilog peeling for a condition that does not resolve in SE
+; for determining if the predicate is known, this is a false positive until
+; another method is found to reconcile the backedge taken count against
+; the right hand scev as a known predicate.
 ; peeling iterations within MaxPeelCount iterations of the exit condition.
 define void @test2_epilog_peeling(i32 %k) {
 ; CHECK-LABEL: @test2_epilog_peeling(
 ; CHECK-NEXT:  for.body.lr.ph:
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[I_05:%.*]] = phi i32 [ 0, [[FOR_BODY_LR_PH:%.*]] ], [ [[INC:%.*]], [[FOR_INC:%.*]] ]
-; CHECK-NEXT:    br i1 true, label [[IF_THEN:%.*]], label [[FOR_INC]]
+; CHECK-NEXT:    [[TMP3:%.*]] = phi i32 [ 0, [[FOR_BODY_LR_PH:%.*]] ], [ [[DOTPH:%.*]], [[FOR_END_PEEL_BEGIN_LOOPEXIT1:%.*]] ]
+; CHECK-NEXT:    [[CMP1_PEEL:%.*]] = icmp ult i32 [[TMP3]], [[K1:%.*]]
+; CHECK-NEXT:    br i1 [[CMP1_PEEL]], label [[IF_THEN:%.*]], label [[FOR_END_PEEL_BEGIN_LOOPEXIT1]]
 ; CHECK:       if.then:
 ; CHECK-NEXT:    call void @f1()
-; CHECK-NEXT:    br label [[FOR_INC]]
+; CHECK-NEXT:    br label [[FOR_END_PEEL_BEGIN_LOOPEXIT1]]
 ; CHECK:       for.inc:
-; CHECK-NEXT:    [[INC]] = add nuw nsw i32 [[I_05]], 1
-; CHECK-NEXT:    [[PEELCOUNTXSTEP_EXIT:%.*]] = sub i32 [[K:%.*]], 1
-; CHECK-NEXT:    [[CMP:%.*]] = icmp ne i32 [[INC]], [[PEELCOUNTXSTEP_EXIT]]
-; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END_PEEL_BEGIN:%.*]], !llvm.loop [[LOOP0:![0-9]+]]
-; CHECK:       for.end.peel.begin:
-; CHECK-NEXT:    [[LABEL:%.*]] = phi i32 [ [[INC]], [[FOR_INC]] ]
-; CHECK-NEXT:    br label [[FOR_BODY_PEEL:%.*]]
-; CHECK:       for.body.peel:
-; CHECK-NEXT:    [[CMP1_PEEL:%.*]] = icmp ult i32 [[LABEL]], [[K]]
-; CHECK-NEXT:    br i1 [[CMP1_PEEL]], label [[IF_THEN_PEEL:%.*]], label [[FOR_INC_PEEL:%.*]]
-; CHECK:       if.then.peel:
-; CHECK-NEXT:    call void @f1()
-; CHECK-NEXT:    br label [[FOR_INC_PEEL]]
-; CHECK:       for.inc.peel:
-; CHECK-NEXT:    [[INC_PEEL:%.*]] = add nsw i32 [[LABEL]], 1
-; CHECK-NEXT:    [[CMP_PEEL:%.*]] = icmp ne i32 [[INC_PEEL]], [[K]]
-; CHECK-NEXT:    br i1 [[CMP_PEEL]], label [[FOR_END_PEEL_NEXT:%.*]], label [[FOR_END_PEEL_NEXT]]
-; CHECK:       for.end.peel.next:
-; CHECK-NEXT:    br label [[FOR_BODY_PEEL_NEXT:%.*]]
-; CHECK:       for.body.peel.next:
-; CHECK-NEXT:    br label [[FOR_END:%.*]]
+; CHECK-NEXT:    [[DOTPH]] = add nsw i32 [[TMP3]], 1
+; CHECK-NEXT:    [[CMP:%.*]] = icmp ne i32 [[DOTPH]], [[K1]]
+; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END:%.*]]
 ; CHECK:       for.end:
 ; CHECK-NEXT:    ret void
 ;
@@ -193,6 +179,9 @@ define void @test5_epilog_peeling(i32 noundef signext %L, ptr noundef %hmm, ptr 
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[BOUNDS:%.*]] = load i32, ptr [[M:%.*]], align 8
 ; CHECK-NEXT:    [[I24:%.*]] = load ptr, ptr [[TSC:%.*]], align 8
+; CHECK-NEXT:    [[TMP4:%.*]] = add i32 [[BOUNDS]], 1
+; CHECK-NEXT:    [[TMP1:%.*]] = zext i32 [[TMP4]] to i64
+; CHECK-NEXT:    [[TMP2:%.*]] = add nsw i64 [[TMP1]], -2
 ; CHECK-NEXT:    br label [[FOR_OUTER:%.*]]
 ; CHECK:       for.outer:
 ; CHECK-NEXT:    [[IV_OUTER:%.*]] = phi i32 [ 1, [[ENTRY:%.*]] ], [ [[IV_OUTER_NEXT:%.*]], [[FOR_INC_OUTER:%.*]] ]
@@ -202,9 +191,12 @@ define void @test5_epilog_peeling(i32 noundef signext %L, ptr noundef %hmm, ptr 
 ; CHECK-NEXT:    br i1 [[CMP1]], label [[FOR_INC_OUTER]], label [[FOR_INNER_PREHEADER:%.*]]
 ; CHECK:       for.inner.preheader:
 ; CHECK-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[BOUNDS_INC]] to i64
+; CHECK-NEXT:    [[TMP3:%.*]] = icmp ne i64 [[TMP2]], 0
+; CHECK-NEXT:    br i1 [[TMP3]], label [[FOR_INNER_PREHEADER_SPLIT:%.*]], label [[FOR_INNER_PEEL:%.*]]
+; CHECK:       for.inner.preheader.split:
 ; CHECK-NEXT:    br label [[FOR_INNER:%.*]]
 ; CHECK:       for.inner:
-; CHECK-NEXT:    [[IV_INNER:%.*]] = phi i64 [ 1, [[FOR_INNER_PREHEADER]] ], [ [[IV_INNER_NEXT:%.*]], [[FOR_INC_INNER:%.*]] ]
+; CHECK-NEXT:    [[IV_INNER:%.*]] = phi i64 [ 1, [[FOR_INNER_PREHEADER_SPLIT]] ], [ [[IV_INNER_NEXT:%.*]], [[FOR_INC_INNER:%.*]] ]
 ; CHECK-NEXT:    br i1 true, label [[IF_THEN:%.*]], label [[FOR_INC_INNER]]
 ; CHECK:       if.then:
 ; CHECK-NEXT:    [[ARRAYIDX174:%.*]] = getelementptr inbounds i32, ptr [[I24]], i64 [[IV_INNER]]
@@ -214,19 +206,22 @@ define void @test5_epilog_peeling(i32 noundef signext %L, ptr noundef %hmm, ptr 
 ; CHECK-NEXT:    [[IV_INNER_NEXT]] = add nuw nsw i64 [[IV_INNER]], 1
 ; CHECK-NEXT:    [[TMP0:%.*]] = zext i32 [[BOUNDS]] to i64
 ; CHECK-NEXT:    [[EXITCOND:%.*]] = icmp ne i64 [[IV_INNER_NEXT]], [[TMP0]]
-; CHECK-NEXT:    br i1 [[EXITCOND]], label [[FOR_INNER]], label [[FOR_INNER_LOOPEXIT_PEEL_BEGIN:%.*]], !llvm.loop [[LOOP2:![0-9]+]]
-; CHECK:       for.inner.loopexit.peel.begin:
+; CHECK-NEXT:    br i1 [[EXITCOND]], label [[FOR_INNER]], label [[FOR_INNER_LOOPEXIT_PEEL_BEGIN_LOOPEXIT:%.*]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK:       for.inner.loopexit.peel.begin.loopexit:
 ; CHECK-NEXT:    [[LABEL:%.*]] = phi i64 [ [[IV_INNER_NEXT]], [[FOR_INC_INNER]] ]
-; CHECK-NEXT:    br label [[FOR_INNER_PEEL:%.*]]
+; CHECK-NEXT:    br label [[FOR_INNER_PEEL]]
+; CHECK:       for.inner.loopexit.peel.begin:
+; CHECK-NEXT:    [[TMP5:%.*]] = phi i64 [ 1, [[FOR_INNER_PREHEADER]] ], [ [[LABEL]], [[FOR_INNER_LOOPEXIT_PEEL_BEGIN_LOOPEXIT]] ]
+; CHECK-NEXT:    br label [[FOR_INNER_PEEL1:%.*]]
 ; CHECK:       for.inner.peel:
-; CHECK-NEXT:    [[CMP2_PEEL:%.*]] = icmp slt i64 [[LABEL]], [[SEXT]]
+; CHECK-NEXT:    [[CMP2_PEEL:%.*]] = icmp slt i64 [[TMP5]], [[SEXT]]
 ; CHECK-NEXT:    br i1 [[CMP2_PEEL]], label [[IF_THEN_PEEL:%.*]], label [[FOR_INC_INNER_PEEL:%.*]]
 ; CHECK:       if.then.peel:
-; CHECK-NEXT:    [[ARRAYIDX174_PEEL:%.*]] = getelementptr inbounds i32, ptr [[I24]], i64 [[LABEL]]
+; CHECK-NEXT:    [[ARRAYIDX174_PEEL:%.*]] = getelementptr inbounds i32, ptr [[I24]], i64 [[TMP5]]
 ; CHECK-NEXT:    store i32 1, ptr [[ARRAYIDX174_PEEL]], align 4
 ; CHECK-NEXT:    br label [[FOR_INC_INNER_PEEL]]
 ; CHECK:       for.inc.inner.peel:
-; CHECK-NEXT:    [[IV_INNER_NEXT_PEEL:%.*]] = add nuw nsw i64 [[LABEL]], 1
+; CHECK-NEXT:    [[IV_INNER_NEXT_PEEL:%.*]] = add nuw nsw i64 [[TMP5]], 1
 ; CHECK-NEXT:    [[EXITCOND_PEEL:%.*]] = icmp ne i64 [[IV_INNER_NEXT_PEEL]], [[WIDE_TRIP_COUNT]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_PEEL]], label [[FOR_INNER_LOOPEXIT_PEEL_NEXT:%.*]], label [[FOR_INNER_LOOPEXIT_PEEL_NEXT]]
 ; CHECK:       for.inner.loopexit.peel.next:
@@ -300,7 +295,7 @@ define void @SetCoeffAndReconstruction8x8(i64 %indvars.iv383) !prof !0 {
 ; CHECK-NEXT:    [[TMP1:%.*]] = load i32, ptr null, align 4
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT384_PEEL4]] = add i64 [[INDVARS_IV_NEXT384_PEEL]], 1
 ; CHECK-NEXT:    [[EXITCOND386_NOT_PEEL5:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT384_PEEL4]], 65
-; CHECK-NEXT:    br i1 [[EXITCOND386_NOT_PEEL5]], label [[FOR_COND394_PREHEADER_LOOPEXIT:%.*]], label [[FOR_BODY405_PEEL2]], !prof [[PROF4:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND386_NOT_PEEL5]], label [[FOR_COND394_PREHEADER_LOOPEXIT:%.*]], label [[FOR_BODY405_PEEL2]], !prof [[PROF3:![0-9]+]]
 ;
 entry:
   br label %for.cond394.preheader
