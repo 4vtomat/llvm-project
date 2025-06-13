@@ -109,7 +109,12 @@ static bool isMammothVectorConfigInstr(const MachineInstr &MI) {
 /// Return true if this is 'vsetvli x0, x0, vtype' which preserves
 /// VL and only sets VTYPE.
 static bool isVLPreservingConfig(const MachineInstr &MI) {
+#ifdef SIFIVE_CUSTOMIZATION
+  if (MI.getOpcode() != RISCV::PseudoVSETVLIX0 &&
+      MI.getOpcode() != RISCV::PseudoSF_VSETTNTX0)
+#else
   if (MI.getOpcode() != RISCV::PseudoVSETVLIX0)
+#endif // SIFIVE_CUSTOMIZATION
     return false;
   assert(RISCV::X0 == MI.getOperand(1).getReg());
   return RISCV::X0 == MI.getOperand(0).getReg();
@@ -1953,12 +1958,6 @@ void RISCVInsertVSETVLI::coalesceVSETVLIs(MachineBasicBlock &MBB) const {
   };
 
   for (MachineInstr &MI : make_early_inc_range(reverse(MBB))) {
-#if SIFIVE_CUSTOMIZATION
-    // TODO: Support Mammoth.
-    if (RISCVII::hasTWidenOp(MI.getDesc().TSFlags) ||
-        isMammothVectorConfigInstr(MI))
-      continue;
-#endif // SIFIVE_CUSTOMIZATION
 
     if (!isVectorConfigInstr(MI)) {
       Used.doUnion(getDemanded(MI, ST));

@@ -77,7 +77,6 @@ define void @matmulf16(i64 noundef %ATM, i64 noundef %ATN, i64 noundef %ATK, ptr
 ; CHECK-NEXT:    sub a2, s3, a1
 ; CHECK-NEXT:    slli a3, a1, 1
 ; CHECK-NEXT:    sf.vsettnt a2, a2, e16, w2
-; CHECK-NEXT:    sf.vsettnt zero, zero, e16, w2
 ; CHECK-NEXT:    sf.vsettm zero, s5
 ; CHECK-NEXT:    sf.vtzero.t mt0
 ; CHECK-NEXT:    add a4, s1, a3
@@ -325,7 +324,6 @@ define void @matmul32(i64 noundef %ATM, i64 noundef %ATN, i64 noundef %ATK, ptr 
 ; CHECK-NEXT:    # Child Loop BB1_11 Depth 3
 ; CHECK-NEXT:    sub a2, s4, a1
 ; CHECK-NEXT:    sf.vsettnt a2, a2, e32, w1
-; CHECK-NEXT:    sf.vsettnt zero, zero, e32, w1
 ; CHECK-NEXT:    sf.vsettm zero, s11
 ; CHECK-NEXT:    sf.vtzero.t mt0
 ; CHECK-NEXT:    slli a3, a1, 2
