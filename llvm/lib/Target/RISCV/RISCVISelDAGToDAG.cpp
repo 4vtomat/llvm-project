@@ -4703,60 +4703,6 @@ static SDValue getGlobalBaseReg(SelectionDAG &DAG,
 // FIXME: This is copied from RISCVTargetLowering and modified to use
 // MachineOpodes
 template <class NodeTy>
-SDValue RISCVDAGToDAGISel::getCompactAddr(NodeTy *N, SelectionDAG &DAG,
-                                          unsigned FlagsHi) const {
-  SDLoc DL(N);
-  EVT Ty = TLI->getPointerTy(DAG.getDataLayout());
-  unsigned FlagsAdd;
-  unsigned FlagsLo;
-
-  switch (FlagsHi) {
-  default:
-    report_fatal_error("Don't support this relaxation type");
-  case RISCVII::MO_GOT_GPREL_HI:
-    FlagsAdd = RISCVII::MO_GOT_GPREL_ADD;
-    FlagsLo = RISCVII::MO_GOT_GPREL_LO;
-    break;
-  case RISCVII::MO_TLS_GOT_GPREL_HI:
-    FlagsAdd = RISCVII::MO_TLS_GOT_GPREL_ADD;
-    FlagsLo = RISCVII::MO_TLS_GOT_GPREL_LO;
-    break;
-  case RISCVII::MO_TLS_GD_GPREL_HI:
-    FlagsAdd = RISCVII::MO_TLS_GD_GPREL_ADD;
-    FlagsLo = RISCVII::MO_TLS_GD_GPREL_LO;
-    break;
-  }
-
-  SDValue AddrHi = getTargetNode(N, DL, Ty, DAG, FlagsHi);
-  SDValue AddrAdd = getTargetNode(N, DL, Ty, DAG, FlagsAdd);
-  SDValue AddrLo = getTargetNode(N, DL, Ty, DAG, FlagsLo);
-  SDValue GPReg = getGlobalBaseReg(DAG, *Subtarget);
-
-  SDValue MNHi = SDValue(DAG.getMachineNode(RISCV::LUI, DL, Ty, AddrHi), 0);
-  SDValue MNAdd = SDValue(
-      DAG.getMachineNode(RISCV::PseudoAddRegRel, DL, Ty, MNHi, GPReg, AddrAdd),
-      0);
-  SDValue MNAddLo =
-      SDValue(DAG.getMachineNode(RISCV::ADDI, DL, Ty, MNAdd, AddrLo), 0);
-
-  if (FlagsHi == RISCVII::MO_TLS_GD_GPREL_HI)
-    return MNAddLo;
-
-  SDValue Load =
-      SDValue(DAG.getMachineNode(RISCV::LD, DL, Ty, MNAdd, AddrLo), 0);
-  MachineFunction &MF = DAG.getMachineFunction();
-  MachineMemOperand *MemOp = MF.getMachineMemOperand(
-      MachinePointerInfo::getGOT(MF),
-      MachineMemOperand::MOLoad | MachineMemOperand::MODereferenceable |
-          MachineMemOperand::MOInvariant,
-      LLT(Ty.getSimpleVT()), Align(Ty.getFixedSizeInBits() / 8));
-  DAG.setNodeMemRefs(cast<MachineSDNode>(Load.getNode()), {MemOp});
-  return Load;
-}
-
-// FIXME: This is copied from RISCVTargetLowering and modified to use
-// MachineOpodes
-template <class NodeTy>
 SDValue RISCVDAGToDAGISel::getAddr(NodeTy *N, SelectionDAG &DAG, bool IsLocal,
                                    bool IsExternWeak) const {
   SDLoc DL(N);
@@ -4830,7 +4776,19 @@ SDValue RISCVDAGToDAGISel::getAddr(NodeTy *N, SelectionDAG &DAG, bool IsLocal,
     // with the appropriate adjustment for the global pointer offset.
     // The generates the pattern of global symbol:
     // (ld (add_gprel (lui %gprel_hi(sym)) gp %gprel(sym)) %gprel_lo(sym))
-    return getCompactAddr(N, DAG, RISCVII::MO_GOT_GPREL_HI);
+    SDValue Addr = getTargetNode(N, DL, Ty, DAG, 0);
+    SDValue Load =
+        SDValue(DAG.getMachineNode(RISCV::PseudoLA_GOT_GPREL, DL, Ty, Addr,
+                                   getGlobalBaseReg(DAG, *Subtarget)),
+                0);
+    MachineFunction &MF = DAG.getMachineFunction();
+    MachineMemOperand *MemOp = MF.getMachineMemOperand(
+        MachinePointerInfo::getGOT(MF),
+        MachineMemOperand::MOLoad | MachineMemOperand::MODereferenceable |
+            MachineMemOperand::MOInvariant,
+        LLT(Ty.getSimpleVT()), Align(Ty.getFixedSizeInBits() / 8));
+    DAG.setNodeMemRefs(cast<MachineSDNode>(Load.getNode()), {MemOp});
+    return Load;
   }
   case CodeModel::Large: {
     // Using pc-relative mode for other node type.

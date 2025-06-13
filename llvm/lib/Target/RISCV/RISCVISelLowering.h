@@ -993,10 +993,6 @@ private:
   template <class NodeTy>
   SDValue getAddr(NodeTy *N, SelectionDAG &DAG, bool IsLocal = true,
                   bool IsExternWeak = false) const;
-#if SIFIVE_CUSTOMIZATION
-  template <class NodeTy>
-  SDValue getCompactAddr(NodeTy *N, SelectionDAG &DAG, unsigned RelaxHi) const;
-#endif // SIFIVE_CUSTOMIZATION
   SDValue getStaticTLSAddr(GlobalAddressSDNode *N, SelectionDAG &DAG,
                            bool UseGOT) const;
   SDValue getDynamicTLSAddr(GlobalAddressSDNode *N, SelectionDAG &DAG) const;

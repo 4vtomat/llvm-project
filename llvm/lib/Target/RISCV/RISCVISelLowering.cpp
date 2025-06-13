@@ -8576,53 +8576,6 @@ static SDValue getGlobalBaseReg(SelectionDAG &DAG,
   Register GlobalBaseReg = Subtarget.getInstrInfo()->getGlobalBaseReg(&MF);
   return DAG.getRegister(GlobalBaseReg, TLI.getPointerTy(DAG.getDataLayout()));
 }
-
-template <class NodeTy>
-SDValue RISCVTargetLowering::getCompactAddr(NodeTy *N, SelectionDAG &DAG,
-                                            unsigned FlagsHi) const {
-  SDLoc DL(N);
-  EVT Ty = getPointerTy(DAG.getDataLayout());
-  unsigned FlagsAdd;
-  unsigned FlagsLo;
-
-  switch (FlagsHi) {
-  default:
-    report_fatal_error("Don't support this relaxation type");
-  case RISCVII::MO_GOT_GPREL_HI:
-    FlagsAdd = RISCVII::MO_GOT_GPREL_ADD;
-    FlagsLo = RISCVII::MO_GOT_GPREL_LO;
-    break;
-  case RISCVII::MO_TLS_GOT_GPREL_HI:
-    FlagsAdd = RISCVII::MO_TLS_GOT_GPREL_ADD;
-    FlagsLo = RISCVII::MO_TLS_GOT_GPREL_LO;
-    break;
-  case RISCVII::MO_TLS_GD_GPREL_HI:
-    FlagsAdd = RISCVII::MO_TLS_GD_GPREL_ADD;
-    FlagsLo = RISCVII::MO_TLS_GD_GPREL_LO;
-    break;
-  }
-
-  SDValue AddrHi = getTargetNode(N, DL, Ty, DAG, FlagsHi);
-  SDValue AddrAdd = getTargetNode(N, DL, Ty, DAG, FlagsAdd);
-  SDValue AddrLo = getTargetNode(N, DL, Ty, DAG, FlagsLo);
-  SDValue GPReg = getGlobalBaseReg(DAG, Subtarget);
-
-  SDValue MNHi = DAG.getNode(RISCVISD::HI, DL, Ty, AddrHi);
-  SDValue MNAdd = DAG.getNode(RISCVISD::ADD_REGREL, DL, Ty, MNHi, GPReg,
-                              AddrAdd);
-  SDValue MNAddLo = DAG.getNode(RISCVISD::ADD_LO, DL, Ty, MNAdd, AddrLo);
-
-  if (FlagsHi == RISCVII::MO_TLS_GD_GPREL_HI)
-    return MNAddLo;
-
-  MachineFunction &MF = DAG.getMachineFunction();
-  MachineMemOperand *MemOp = MF.getMachineMemOperand(
-      MachinePointerInfo::getGOT(MF),
-      MachineMemOperand::MOLoad | MachineMemOperand::MODereferenceable |
-          MachineMemOperand::MOInvariant,
-      LLT(Ty.getSimpleVT()), Align(Ty.getFixedSizeInBits() / 8));
-  return DAG.getLoad(Ty, DL, DAG.getEntryNode(), MNAddLo, MemOp);
-}
 #endif // SIFIVE_CUSTOMIZATION
 
 static SDValue getLargeGlobalAddress(GlobalAddressSDNode *N, const SDLoc &DL,
@@ -8723,7 +8676,19 @@ SDValue RISCVTargetLowering::getAddr(NodeTy *N, SelectionDAG &DAG,
     // with the appropriate adjustment for the global pointer offset.
     // The generates the pattern of global symbol:
     // (ld (add_gprel (lui %gprel_hi(sym)) gp %gprel(sym)) %gprel_lo(sym))
-    return getCompactAddr(N, DAG, RISCVII::MO_GOT_GPREL_HI);
+    SDValue Addr = getTargetNode(N, DL, Ty, DAG, 0);
+    SDValue Load =
+        SDValue(DAG.getMachineNode(RISCV::PseudoLA_GOT_GPREL, DL, Ty, Addr,
+                                   getGlobalBaseReg(DAG, Subtarget)),
+                0);
+    MachineFunction &MF = DAG.getMachineFunction();
+    MachineMemOperand *MemOp = MF.getMachineMemOperand(
+        MachinePointerInfo::getGOT(MF),
+        MachineMemOperand::MOLoad | MachineMemOperand::MODereferenceable |
+            MachineMemOperand::MOInvariant,
+        LLT(Ty.getSimpleVT()), Align(Ty.getFixedSizeInBits() / 8));
+    DAG.setNodeMemRefs(cast<MachineSDNode>(Load.getNode()), {MemOp});
+    return Load;
   }
 #endif // SIFIVE_CUSTOMIZATION
   case CodeModel::Large: {
@@ -8775,20 +8740,21 @@ SDValue RISCVTargetLowering::getStaticTLSAddr(GlobalAddressSDNode *N,
   MVT XLenVT = Subtarget.getXLenVT();
 
   if (UseGOT) {
-#if SIFIVE_CUSTOMIZATION
-    if (getTargetMachine().getCodeModel() == CodeModel::Compact) {
-      SDValue Load = getCompactAddr(N, DAG, RISCVII::MO_TLS_GOT_GPREL_HI);
-      SDValue TPReg = DAG.getRegister(RISCV::X4, XLenVT);
-      return SDValue(DAG.getMachineNode(RISCV::ADD, DL, Ty, Load, TPReg), 0);
-    } else {
-#endif // SIFIVE_CUSTOMIZATION
     // Use PC-relative addressing to access the GOT for this TLS symbol, then
     // load the address from the GOT and add the thread pointer. This generates
     // the pattern (PseudoLA_TLS_IE sym), which expands to
     // (ld (auipc %tls_ie_pcrel_hi(sym)) %pcrel_lo(auipc)).
     SDValue Addr = DAG.getTargetGlobalAddress(GV, DL, Ty, 0, 0);
-    SDValue Load =
-        SDValue(DAG.getMachineNode(RISCV::PseudoLA_TLS_IE, DL, Ty, Addr), 0);
+#if SIFIVE_CUSTOMIZATION
+    SDValue Load;
+    if (getTargetMachine().getCodeModel() == CodeModel::Compact)
+      Load = SDValue(DAG.getMachineNode(RISCV::PseudoLA_TLS_IE_GPREL, DL, Ty,
+                                        Addr, getGlobalBaseReg(DAG, Subtarget)),
+                     0);
+    else
+      Load =
+          SDValue(DAG.getMachineNode(RISCV::PseudoLA_TLS_IE, DL, Ty, Addr), 0);
+#endif
     MachineFunction &MF = DAG.getMachineFunction();
     MachineMemOperand *MemOp = MF.getMachineMemOperand(
         MachinePointerInfo::getGOT(MF),
@@ -8797,12 +8763,9 @@ SDValue RISCVTargetLowering::getStaticTLSAddr(GlobalAddressSDNode *N,
         LLT(Ty.getSimpleVT()), Align(Ty.getFixedSizeInBits() / 8));
     DAG.setNodeMemRefs(cast<MachineSDNode>(Load.getNode()), {MemOp});
 
-      // Add the thread pointer.
-      SDValue TPReg = DAG.getRegister(RISCV::X4, XLenVT);
-      return DAG.getNode(ISD::ADD, DL, Ty, Load, TPReg);
-#if SIFIVE_CUSTOMIZATION
-    }
-#endif // SIFIVE_CUSTOMIZATION
+    // Add the thread pointer.
+    SDValue TPReg = DAG.getRegister(RISCV::X4, XLenVT);
+    return DAG.getNode(ISD::ADD, DL, Ty, Load, TPReg);
   }
 
   // Generate a sequence for accessing the address relative to the thread
@@ -8842,7 +8805,9 @@ SDValue RISCVTargetLowering::getDynamicTLSAddr(GlobalAddressSDNode *N,
   SDValue Load;
 
   if (getTargetMachine().getCodeModel() == CodeModel::Compact) {
-    Load = getCompactAddr(N, DAG, RISCVII::MO_TLS_GD_GPREL_HI);
+    Load = SDValue(DAG.getMachineNode(RISCV::PseudoLA_TLS_GD_GPREL, DL, Ty,
+                                      Addr, getGlobalBaseReg(DAG, Subtarget)),
+                   0);
   } else {
     Load =
         SDValue(DAG.getMachineNode(RISCV::PseudoLA_TLS_GD, DL, Ty, Addr), 0);
@@ -24096,28 +24061,18 @@ SDValue RISCVTargetLowering::LowerCall(CallLoweringInfo &CLI,
       Callee = getLargeExternalSymbol(S, DL, PtrVT, DAG);
       CalleeIsLargeExternalSymbol = true;
     }
-  } else if (GlobalAddressSDNode *S = dyn_cast<GlobalAddressSDNode>(Callee)) {
 #if SIFIVE_CUSTOMIZATION
-    if (getTargetMachine().getCodeModel() == CodeModel::Compact) {
+  } else if (getTargetMachine().getCodeModel() == CodeModel::Compact) {
+    if (auto *S = dyn_cast<GlobalAddressSDNode>(Callee))
       Callee = lowerGlobalAddress(Callee, DAG);
-    } else {
-      const GlobalValue *GV = S->getGlobal();
-      Callee = DAG.getTargetGlobalAddress(GV, DL, PtrVT, 0, RISCVII::MO_CALL);
-    }
-#else
+    else if (auto *S = dyn_cast<ExternalSymbolSDNode>(Callee))
+      Callee = getAddr(S, DAG);
+#endif
+  } else if (GlobalAddressSDNode *S = dyn_cast<GlobalAddressSDNode>(Callee)) {
     const GlobalValue *GV = S->getGlobal();
     Callee = DAG.getTargetGlobalAddress(GV, DL, PtrVT, 0, RISCVII::MO_CALL);
-#endif // SIFIVE_CUSTOMIZATION
   } else if (ExternalSymbolSDNode *S = dyn_cast<ExternalSymbolSDNode>(Callee)) {
-#if SIFIVE_CUSTOMIZATION
-    if (getTargetMachine().getCodeModel() == CodeModel::Compact) {
-      Callee = getCompactAddr(S, DAG, RISCVII::MO_GOT_GPREL_HI);
-    } else {
-      Callee = DAG.getTargetExternalSymbol(S->getSymbol(), PtrVT, RISCVII::MO_CALL);
-    }
-#else
     Callee = DAG.getTargetExternalSymbol(S->getSymbol(), PtrVT, RISCVII::MO_CALL);
-#endif // SIFIVE_CUSTOMIZATION
   }
 
   // The first call operand is the chain and the second is the target address.
