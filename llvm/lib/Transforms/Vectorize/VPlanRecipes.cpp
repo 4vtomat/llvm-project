@@ -1360,7 +1360,15 @@ InstructionCost VPInstruction::computeCost(ElementCount VF,
     return Ctx.TTI.getIntrinsicInstrCost(Attrs, Ctx.CostKind);
   }
   case VPInstruction::ExplicitVectorLength: {
+#if SIFIVE_CUSTOMIZATION
+    // For uncountable, AVL (operand(0)) might not exists.
+    // EVL type need to align with `GetSetVL()`.
+    Type *Arg0Ty = getNumOperands() == 0
+                       ? Type::getInt64Ty(Ctx.LLVMCtx)
+                       : Ctx.Types.inferScalarType(getOperand(0));
+#else
     Type *Arg0Ty = Ctx.Types.inferScalarType(getOperand(0));
+#endif // SIFIVE_CUSTOMIZATION
     Type *I32Ty = Type::getInt32Ty(Ctx.LLVMCtx);
     Type *I1Ty = Type::getInt1Ty(Ctx.LLVMCtx);
     IntrinsicCostAttributes Attrs(Intrinsic::experimental_get_vector_length,
