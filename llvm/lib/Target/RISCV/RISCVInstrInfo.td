@@ -2229,7 +2229,7 @@ include "RISCVInstrInfoZcmop.td"
 // Integer
 include "RISCVInstrInfoZimop.td"
 include "RISCVInstrInfoZicbo.td"
-include "RISCVInstrInfoCompactPseudos.td" // SIFIVE
+include "SiFive_RISCVInstrInfoCompactPseudos.td" // SIFIVE
 include "RISCVInstrInfoZicond.td"
 include "RISCVInstrInfoZicfiss.td"
 include "SiFive_RISCVInstrInfoZjid.td" // SIFIVE
