@@ -1541,6 +1541,13 @@ void RISCVInsertVSETVLI::transferAfter(VSETVLIInfo &Info,
     Info = getInfoForVSETVLI(MI);
     return;
   }
+#ifdef SIFIVE_CUSTOMIZATION
+  // SETTM/TK will modify VTYPE, but it only affects the TM/TK bits.
+  // It is safe for other RVV operations.
+  // The TM/TK value will be maintained in insertVSETMTK.
+  if (isMammothVectorConfigTMTKInstr(MI))
+    return;
+#endif // SIFIVE_CUSTOMIZATION
 
   if (RISCV::isFaultFirstLoad(MI)) {
     // Update AVL to vl-output of the fault first load.
