@@ -153,6 +153,9 @@ add_llvm_component_library(LLVMAnalysis
   ${LLVM_MAIN_INCLUDE_DIR}/llvm/Analysis
 
   DEPENDS
+#if SIFIVE_CUSTOMIZATION
+  vt_gen
+#endif SIFIVE_CUSTOMIZATION
   intrinsics_gen
   ${MLDeps}
 

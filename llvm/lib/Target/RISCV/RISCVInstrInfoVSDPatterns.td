@@ -24,6 +24,16 @@
 def rvv_vnot : PatFrag<(ops node:$in),
                        (xor node:$in, (riscv_vmset_vl (XLenVT srcvalue)))>;
 
+#ifdef SIFIVE_CUSTOMIZATION
+def fneg_oneuse : PatFrag<(ops node:$A), (fneg node:$A), [{
+  return N->hasOneUse();
+}]>;
+def any_fma_oneuse : PatFrag<(ops node:$A, node:$B, node:$C),
+                             (any_fma node:$A, node:$B, node:$C), [{
+  return N->hasOneUse();
+}]>;
+#endif // SIFIVE_CUSTOMIZATION
+
 multiclass VPatUSLoadStoreSDNode<ValueType type,
                                  RegisterClass regclass,
                                  int log2sew,
@@ -1286,6 +1296,43 @@ defm : VPatWidenFPMulAccSDNode_VV_VF_RM<"PseudoVFWMACCBF16",
 defm : VPatWidenFPNegMulAccSDNode_VV_VF_RM<"PseudoVFWNMACC">;
 defm : VPatWidenFPMulSacSDNode_VV_VF_RM<"PseudoVFWMSAC">;
 defm : VPatWidenFPNegMulSacSDNode_VV_VF_RM<"PseudoVFWNMSAC">;
+
+#ifdef SIFIVE_CUSTOMIZATION
+foreach vti = AllFloatVectors in {
+  defvar suffix = vti.LMul.MX # "_E" # vti.SEW;
+  let Predicates = GetVTypePredicates<vti>.Predicates in {
+  def : Pat<(riscv_vmerge_vl (vti.Mask VMV0:$vm),
+                         (vti.Vector (any_fma_oneuse vti.RegClass:$rs1, vti.RegClass:$rs2,
+                          vti.RegClass:$rd)),
+                          vti.RegClass:$rd, vti.RegClass:$rd, VLOpFrag),
+            (!cast<Instruction>("PseudoVFMACC_VV_" # suffix # "_MASK")
+                 vti.RegClass:$rd, vti.RegClass:$rs1, vti.RegClass:$rs2,
+                 (vti.Mask VMV0:$vm), FRM_DYN, GPR:$vl, vti.Log2SEW, TU_MU)>;
+  def : Pat<(riscv_vmerge_vl (vti.Mask VMV0:$vm),
+                         (vti.Vector (any_fma_oneuse (SplatFPOp vti.ScalarRegClass:$rs1), vti.RegClass:$rs2,
+                          vti.RegClass:$rd)),
+                          vti.RegClass:$rd, vti.RegClass:$rd, VLOpFrag),
+            (!cast<Instruction>("PseudoVFMACC_V" # vti.ScalarSuffix # "_" # suffix # "_MASK")
+                 vti.RegClass:$rd, vti.ScalarRegClass:$rs1, vti.RegClass:$rs2,
+                 (vti.Mask VMV0:$vm), FRM_DYN, GPR:$vl, vti.Log2SEW, TU_MU)>;
+
+  def : Pat<(riscv_vmerge_vl (vti.Mask VMV0:$vm),
+                         (vti.Vector (any_fma_oneuse vti.RegClass:$rs1, (fneg_oneuse vti.RegClass:$rs2),
+                          vti.RegClass:$rd)),
+                          vti.RegClass:$rd, vti.RegClass:$rd, VLOpFrag),
+            (!cast<Instruction>("PseudoVFNMSAC_VV_" # suffix # "_MASK")
+                 vti.RegClass:$rd, vti.RegClass:$rs1, vti.RegClass:$rs2,
+                 (vti.Mask VMV0:$vm), FRM_DYN, GPR:$vl, vti.Log2SEW, TU_MU)>;
+  def : Pat<(riscv_vmerge_vl (vti.Mask VMV0:$vm),
+                         (vti.Vector (any_fma_oneuse (SplatFPOp vti.ScalarRegClass:$rs1), (fneg_oneuse vti.RegClass:$rs2),
+                          vti.RegClass:$rd)),
+                          vti.RegClass:$rd, vti.RegClass:$rd, VLOpFrag),
+            (!cast<Instruction>("PseudoVFNMSAC_V" # vti.ScalarSuffix # "_" # suffix # "_MASK")
+                 vti.RegClass:$rd, vti.ScalarRegClass:$rs1, vti.RegClass:$rs2,
+                 (vti.Mask VMV0:$vm), FRM_DYN, GPR:$vl, vti.Log2SEW, TU_MU)>;
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 foreach vti = AllFloatVectors in {
   let Predicates = GetVTypePredicates<vti>.Predicates in {

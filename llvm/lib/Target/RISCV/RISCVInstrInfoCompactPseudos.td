@@ -36,16 +36,18 @@ def pseudo_gp : RegisterOperand<GPR> {
 /// Compact Load Address Pseudos.
 
 let hasSideEffects = 0, mayLoad = 0,
-    mayStore = 0, isCodeGenOnly = 0, isAsmParserOnly = 1 in {
+    mayStore = 0, isCodeGenOnly = 0, isAsmParserOnly = 1, Size = 12 in {
 def PseudoLLA_GPREL : Pseudo<(outs GPR:$rd),
                              (ins bare_symbol:$symbol, pseudo_gp:$optional), [],
                              "lla.gprel", "$rd, $symbol, $optional">;
+let mayLoad = 1 in
 def PseudoLA_GOT_GPREL : Pseudo<(outs GPR:$rd),
                                 (ins bare_symbol:$symbol, pseudo_gp:$optional), [],
                                 "la.got.gprel", "$rd, $symbol, $optional">;
 def PseudoLA_TLS_GD_GPREL : Pseudo<(outs GPR:$rd),
                                    (ins bare_symbol:$symbol, pseudo_gp:$optional), [],
                                    "la.tls.gd.gprel", "$rd, $symbol, $optional">;
+let mayLoad = 1 in
 def PseudoLA_TLS_IE_GPREL : Pseudo<(outs GPR:$rd),
                                    (ins bare_symbol:$symbol, pseudo_gp:$optional), [],
                                    "la.tls.ie.gprel", "$rd, $symbol, $optional">;
@@ -80,7 +82,7 @@ def PseudoLD_GPREL : Pseudo<(outs GPR:$rd),
                             (ins bare_symbol:$symbol, pseudo_gp:$optional), [],
                             "ld.gprel", "$rd, $symbol, $optional">;
 
-let Predicates = [HasStdExtZfhmin] in
+let Predicates = [HasHalfFPLoadStoreMove] in
 def PseudoFLH_GPREL : Pseudo<(outs FPR16:$rs, GPR:$tmp),
                              (ins bare_symbol:$symbol, pseudo_gp:$optional), [],
                              "flh.gprel", "$rs, $symbol, $tmp, $optional">;
@@ -115,7 +117,7 @@ def PseudoSD_GPREL : Pseudo<(outs GPR:$rs, GPR:$tmp),
                             (ins bare_symbol:$symbol, pseudo_gp:$optional), [],
                             "sd.gprel", "$rs, $symbol, $tmp, $optional">;
 
-let Predicates = [HasStdExtZfhmin] in
+let Predicates = [HasHalfFPLoadStoreMove] in
 def PseudoFSH_GPREL : Pseudo<(outs FPR16:$rs, GPR:$tmp),
                              (ins bare_symbol:$symbol, pseudo_gp:$optional), [],
                              "fsh.gprel", "$rs, $symbol, $tmp, $optional">;

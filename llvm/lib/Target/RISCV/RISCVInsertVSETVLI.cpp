@@ -109,7 +109,12 @@ static bool isMammothVectorConfigInstr(const MachineInstr &MI) {
 /// Return true if this is 'vsetvli x0, x0, vtype' which preserves
 /// VL and only sets VTYPE.
 static bool isVLPreservingConfig(const MachineInstr &MI) {
+#ifdef SIFIVE_CUSTOMIZATION
+  if (MI.getOpcode() != RISCV::PseudoVSETVLIX0 &&
+      MI.getOpcode() != RISCV::PseudoSF_VSETTNTX0)
+#else
   if (MI.getOpcode() != RISCV::PseudoVSETVLIX0)
+#endif // SIFIVE_CUSTOMIZATION
     return false;
   assert(RISCV::X0 == MI.getOperand(1).getReg());
   return RISCV::X0 == MI.getOperand(0).getReg();
@@ -1536,6 +1541,13 @@ void RISCVInsertVSETVLI::transferAfter(VSETVLIInfo &Info,
     Info = getInfoForVSETVLI(MI);
     return;
   }
+#ifdef SIFIVE_CUSTOMIZATION
+  // SETTM/TK will modify VTYPE, but it only affects the TM/TK bits.
+  // It is safe for other RVV operations.
+  // The TM/TK value will be maintained in insertVSETMTK.
+  if (isMammothVectorConfigTMTKInstr(MI))
+    return;
+#endif // SIFIVE_CUSTOMIZATION
 
   if (RISCV::isFaultFirstLoad(MI)) {
     // Update AVL to vl-output of the fault first load.
@@ -1953,12 +1965,6 @@ void RISCVInsertVSETVLI::coalesceVSETVLIs(MachineBasicBlock &MBB) const {
   };
 
   for (MachineInstr &MI : make_early_inc_range(reverse(MBB))) {
-#if SIFIVE_CUSTOMIZATION
-    // TODO: Support Mammoth.
-    if (RISCVII::hasTWidenOp(MI.getDesc().TSFlags) ||
-        isMammothVectorConfigInstr(MI))
-      continue;
-#endif // SIFIVE_CUSTOMIZATION
 
     if (!isVectorConfigInstr(MI)) {
       Used.doUnion(getDemanded(MI, ST));
@@ -1990,13 +1996,30 @@ void RISCVInsertVSETVLI::coalesceVSETVLIs(MachineBasicBlock &MBB) const {
           MI.getOperand(0).setReg(DefReg);
           MI.getOperand(0).setIsDead(false);
 
+#ifdef SIFIVE_CUSTOMIZATION
+          // Cherry-pick a029ece
+          // Move the AVL from NextMI to MI
+          dropAVLUse(MI.getOperand(1));
+          if (NextMI->getOperand(1).isImm())
+            MI.getOperand(1).ChangeToImmediate(NextMI->getOperand(1).getImm());
+          else
+            MI.getOperand(1).ChangeToRegister(NextMI->getOperand(1).getReg(),
+                                              false);
+          dropAVLUse(NextMI->getOperand(1));
+#endif // SIFIVE_CUSTOMIZATION
+
           // The def of DefReg moved to MI, so extend the LiveInterval up to
           // it.
           if (DefReg.isVirtual() && LIS) {
             LiveInterval &DefLI = LIS->getInterval(DefReg);
             SlotIndex MISlot = LIS->getInstructionIndex(MI).getRegSlot();
-            VNInfo *DefVNI = DefLI.getVNInfoAt(DefLI.beginIndex());
-            LiveInterval::Segment S(MISlot, DefLI.beginIndex(), DefVNI);
+#ifdef SIFIVE_CUSTOMIZATION
+            // Cherry-pick a029ece
+            SlotIndex NextMISlot =
+                LIS->getInstructionIndex(*NextMI).getRegSlot();
+            VNInfo *DefVNI = DefLI.getVNInfoAt(NextMISlot);
+            LiveInterval::Segment S(MISlot, NextMISlot, DefVNI);
+#endif // SIFIVE_CUSTOMIZATION
             DefLI.addSegment(S);
             DefVNI->def = MISlot;
             // Mark DefLI as spillable if it was previously unspillable
@@ -2006,13 +2029,6 @@ void RISCVInsertVSETVLI::coalesceVSETVLIs(MachineBasicBlock &MBB) const {
             // the LiveInterval up to MI.
             LIS->shrinkToUses(&DefLI);
           }
-
-          dropAVLUse(MI.getOperand(1));
-          if (NextMI->getOperand(1).isImm())
-            MI.getOperand(1).ChangeToImmediate(NextMI->getOperand(1).getImm());
-          else
-            MI.getOperand(1).ChangeToRegister(NextMI->getOperand(1).getReg(),
-                                              false);
 
           MI.setDesc(NextMI->getDesc());
         }

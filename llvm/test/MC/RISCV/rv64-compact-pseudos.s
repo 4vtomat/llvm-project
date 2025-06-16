@@ -1,5 +1,7 @@
 # RUN: llvm-mc %s -triple=riscv64 -mattr=+d,+zfhmin 2>&1 \
 # RUN:     | FileCheck %s --check-prefixes=CHECK
+# RUN: llvm-mc %s -triple=riscv64 -mattr=+d,+zfbfmin 2>&1 \
+# RUN:     | FileCheck %s --check-prefixes=CHECK
 
 # Set pseudo gp to gp if it isn't set.
 
