@@ -504,3 +504,50 @@ entry:
   ret <vscale x 16 x bfloat> %a
 }
 
+define <vscale x 1 x bfloat>  @intrinsic_vfmacc_vv_nxv1bf16_nxv1bf16_nxv1bf16_commute(<vscale x 1 x bfloat> %0, <vscale x 1 x bfloat> %1, <vscale x 1 x bfloat> %2, iXLen %3) nounwind {
+; CHECK-LABEL: intrinsic_vfmacc_vv_nxv1bf16_nxv1bf16_nxv1bf16_commute:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetvli zero, a0, e16alt, mf4, ta, ma
+; CHECK-NEXT:    vfmadd.vv v8, v10, v9
+; CHECK-NEXT:    ret
+entry:
+  %a = call <vscale x 1 x bfloat> @llvm.riscv.vfmacc.nxv1bf16.nxv1bf16(
+    <vscale x 1 x bfloat> %1,
+    <vscale x 1 x bfloat> %0,
+    <vscale x 1 x bfloat> %2,
+    iXLen 7, iXLen %3, iXLen 3)
+
+  ret <vscale x 1 x bfloat> %a
+}
+
+define <vscale x 1 x bfloat>  @intrinsic_vfmacc_vv_nxv1bf16_nxv1bf16_nxv1bf16_commute2(<vscale x 1 x bfloat> %0, <vscale x 1 x bfloat> %1, <vscale x 1 x bfloat> %2, iXLen %3) nounwind {
+; CHECK-LABEL: intrinsic_vfmacc_vv_nxv1bf16_nxv1bf16_nxv1bf16_commute2:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetvli zero, a0, e16alt, mf4, ta, ma
+; CHECK-NEXT:    vfmadd.vv v8, v10, v9
+; CHECK-NEXT:    ret
+entry:
+  %a = call <vscale x 1 x bfloat> @llvm.riscv.vfmacc.nxv1bf16.nxv1bf16(
+    <vscale x 1 x bfloat> %1,
+    <vscale x 1 x bfloat> %2,
+    <vscale x 1 x bfloat> %0,
+    iXLen 7, iXLen %3, iXLen 3)
+
+  ret <vscale x 1 x bfloat> %a
+}
+
+define <vscale x 1 x bfloat>  @intrinsic_vfmacc_vf_nxv1bf16_bf16_nxv1bf16_commute(<vscale x 1 x bfloat> %0, bfloat %1, <vscale x 1 x bfloat> %2, iXLen %3) nounwind {
+; CHECK-LABEL: intrinsic_vfmacc_vf_nxv1bf16_bf16_nxv1bf16_commute:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetvli zero, a0, e16alt, mf4, ta, ma
+; CHECK-NEXT:    vfmadd.vf v8, fa0, v9
+; CHECK-NEXT:    ret
+entry:
+  %a = call <vscale x 1 x bfloat> @llvm.riscv.vfmacc.nxv1bf16.bf16(
+    <vscale x 1 x bfloat> %2,
+    bfloat %1,
+    <vscale x 1 x bfloat> %0,
+    iXLen 7, iXLen %3, iXLen 3)
+
+  ret <vscale x 1 x bfloat> %a
+}
