@@ -3287,10 +3287,15 @@ void InnerLoopVectorizer::fixupIVUsers(PHINode *OrigPhi,
       if (isa_and_nonnull<FPMathOperator>(II.getInductionBinOp()))
         B.setFastMathFlags(II.getInductionBinOp()->getFastMathFlags());
 
-      VPValue *StepVPV = Plan.getSCEVExpansion(II.getStep());
-      assert(StepVPV && "step must have been expanded during VPlan execution");
-      Value *Step = StepVPV->isLiveIn() ? StepVPV->getLiveInIRValue()
-                                        : State.get(StepVPV, VPLane(0));
+      // The SCEVs in the loop-entry (preheader) will be execute before. All
+      // value of executed SCEVs will be cached in `getExpandedSCEVs()`. For
+      // non-executed SCEVs, must be a live-in value, just directly get the
+      // value from it.
+      Value *Step =
+          Plan.getExpandedSCEVs().contains(II.getStep())
+              ? Plan.getExpandedSCEVs()[II.getStep()]
+              : Plan.getSCEVExpansion(II.getStep())->getLiveInIRValue();
+      assert(Step && "Step must be non-null");
       Value *Escape = nullptr;
       if (EndValue->getType()->isIntegerTy())
         Escape = B.CreateSub(EndValue, Step);
@@ -9749,6 +9754,9 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
   }
 
 #if SIFIVE_CUSTOMIZATION
+  // Copy ExpandSCEV to Plan for following useage.
+  // FIXME: This is just workaround for pull-down, need to fix.
+  BestVPlan.getExpandedSCEVs().copyFrom(ExpandedSCEVs);
   // cherry-pick from #88385
   if (!Legal->getCountableExitingBlocks().empty())
     State.CFG.EarlyExitBB = Legal->getUncountableEarlyExitBlock();

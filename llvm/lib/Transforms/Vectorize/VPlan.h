@@ -4106,6 +4106,9 @@ class VPlan {
   VPValue *BackedgeTakenCount = nullptr;
 
 #if SIFIVE_CUSTOMIZATION
+  // FIXME: Temporary storage the generate values after SCEVs execution.
+  DenseMap<const SCEV *, Value *> ExpandedSCEVs;
+
   // EVL on the previous iteration. Represented as a PHI.
   VPValue *PrevEVL = nullptr;
 
@@ -4296,6 +4299,7 @@ public:
   }
 
 #if SIFIVE_CUSTOMIZATION
+  DenseMap<const SCEV *, Value *> &getExpandedSCEVs() { return ExpandedSCEVs; }
   /// Return whether the vPlan is uncountable
   bool isUncountable() const { return IsUncountable; }
   void setUncountable() { IsUncountable = true; }
