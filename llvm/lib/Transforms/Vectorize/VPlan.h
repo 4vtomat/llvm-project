@@ -629,16 +629,12 @@ public:
     case VPRecipeBase::VPWidenPointerInductionSC:
     case VPRecipeBase::VPReductionPHISC:
     case VPRecipeBase::VPScalarCastSC:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     case VPRecipeBase::VPCSADataUpdateSC:
     case VPRecipeBase::VPCSAExtractScalarSC:
     case VPRecipeBase::VPMonotonicUpdateSC:
     case VPRecipeBase::VPMonotonicHeaderPHISC:
 #endif
-    case VPRecipeBase::VPScalarPHISC:
-=======
->>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
     case VPRecipeBase::VPPartialReductionSC:
       return true;
     case VPRecipeBase::VPBranchOnMaskSC:
