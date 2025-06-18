@@ -1181,19 +1181,10 @@ void VPlanTransforms::optimizeInductionExitUsers(
       if (!isa<PHINode>(ExitIRI->getInstruction()))
         break;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-    if (!ExitIRI->getNumOperands())
-      continue;
+      if (!ExitIRI->getNumOperands())
+        continue;
 #endif // SIFIVE_CUSTOMIZATION
-    for (auto [Idx, PredVPBB] : enumerate(ExitVPBB->getPredecessors())) {
-      if (PredVPBB == MiddleVPBB)
-        if (VPValue *Escape = optimizeLatchExitInductionUser(
-                Plan, TypeInfo, PredVPBB, ExitIRI->getOperand(Idx), EndValues))
-          ExitIRI->setOperand(Idx, Escape);
-      // TODO: Optimize early exit induction users in follow-on patch.
-    }
-=======
       for (auto [Idx, PredVPBB] : enumerate(ExitVPBB->getPredecessors())) {
         VPValue *Escape = nullptr;
         if (PredVPBB == MiddleVPBB)
@@ -1205,7 +1196,6 @@ void VPlanTransforms::optimizeInductionExitUsers(
         if (Escape)
           ExitIRI->setOperand(Idx, Escape);
       }
->>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
     }
   }
 }
