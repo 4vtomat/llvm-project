@@ -89,12 +89,6 @@ def HasStdExtZjid : Predicate<"Subtarget->hasStdExtZjid()">,
 
 // Supervisor extensions
 
-def FeatureStdExtSdext
-    : RISCVExtension<1, 0, "External Debugging Extension">;
-
-def FeatureStdExtSdtrig
-    : RISCVExtension<1, 0, "Debugging Triggers">;
-
 let AdditionalVersions = [[1, 12]] in
 def FeatureStdExtSs
     : RISCVExtension<1, 13,
