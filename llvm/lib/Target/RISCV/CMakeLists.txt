@@ -41,13 +41,9 @@ add_llvm_target(RISCVCodeGen
   RISCVFrameLowering.cpp
   RISCVGatherScatterLowering.cpp
   RISCVIndirectBranchTracking.cpp
-<<<<<<< HEAD
-  RISCVInsertVSETVLI.cpp
 #if SIFIVE_CUSTOMIZATION
   SiFive_RISCVSpillRewrite.cpp
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
   RISCVInsertReadWriteCSR.cpp
   RISCVInsertVSETVLI.cpp
   RISCVInsertWriteVXRM.cpp
@@ -61,11 +57,8 @@ add_llvm_target(RISCVCodeGen
   RISCVLandingPadSetup.cpp
   RISCVLoadStoreOptimizer.cpp
   RISCVMachineFunctionInfo.cpp
-<<<<<<< HEAD
   SiFive_RISCVMaskInstDAGMutation.cpp
-=======
   RISCVMakeCompressible.cpp
->>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
   RISCVMergeBaseOffset.cpp
   RISCVMoveMerger.cpp
   RISCVOptWInstrs.cpp
