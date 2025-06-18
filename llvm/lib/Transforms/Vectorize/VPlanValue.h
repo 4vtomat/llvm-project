@@ -391,14 +391,10 @@ public:
     VPFirstOrderRecurrencePHISC,
     VPWidenIntOrFpInductionSC,
     VPWidenPointerInductionSC,
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     VPCSAHeaderPHISC,
     VPMonotonicHeaderPHISC,
 #endif // SIFIVE_CUSTOMIZATION
-    VPScalarPHISC,
-=======
->>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
     VPReductionPHISC,
     // END: SubclassID for recipes that inherit VPHeaderPHIRecipe
     // END: Phi-like recipes
