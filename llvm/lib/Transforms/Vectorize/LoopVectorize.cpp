@@ -9655,13 +9655,9 @@ static void fixReductionScalarResumeWhenVectorizingEpilog(
        EpiRedResult->getOpcode() != VPInstruction::ComputeReductionResultWithMask))
 #else
   if (!EpiRedResult ||
-<<<<<<< HEAD
-      EpiRedResult->getOpcode() != VPInstruction::ComputeReductionResult)
-#endif // SIFIVE_CUSTOMIZATION
-=======
       (EpiRedResult->getOpcode() != VPInstruction::ComputeReductionResult &&
        EpiRedResult->getOpcode() != VPInstruction::ComputeFindLastIVResult))
->>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
+#endif // SIFIVE_CUSTOMIZATION
     return;
 
   auto *EpiRedHeaderPhi =
@@ -12563,22 +12559,17 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
           Builder.createSelect(Cond, OrigExitingVPV, PhiR, {}, "", FMFs);
       OrigExitingVPV->replaceUsesWithIf(NewExitingVPV, [](VPUser &U, unsigned) {
         return isa<VPInstruction>(&U) &&
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
                (cast<VPInstruction>(&U)->getOpcode() ==
                     VPInstruction::ComputeReductionResult ||
                 cast<VPInstruction>(&U)->getOpcode() ==
                     VPInstruction::ComputeReductionResultWithMask);
 #else
-               cast<VPInstruction>(&U)->getOpcode() ==
-                   VPInstruction::ComputeReductionResult;
-#endif // SIFIVE_CUSTOMIZATION
-=======
                (cast<VPInstruction>(&U)->getOpcode() ==
                     VPInstruction::ComputeReductionResult ||
                 cast<VPInstruction>(&U)->getOpcode() ==
                     VPInstruction::ComputeFindLastIVResult);
->>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
+#endif // SIFIVE_CUSTOMIZATION
       });
       if (CM.usePredicatedReductionSelect(
               PhiR->getRecurrenceDescriptor().getOpcode(), PhiTy))
@@ -13482,36 +13473,6 @@ bool LoopVectorizePass::processLoop(Loop *L) {
     if (Hints.getForce() == LoopVectorizeHints::FK_Enabled)
       LLVM_DEBUG(dbgs() << " But vectorizing was explicitly forced.\n");
     else {
-<<<<<<< HEAD
-      if (*ExpectedTC > TTI->getMinTripCountTailFoldingThreshold()) {
-        LLVM_DEBUG(dbgs() << "\n");
-        // Predicate tail-folded loops are efficient even when the loop
-        // iteration count is low. However, setting the epilogue policy to
-        // `CM_ScalarEpilogueNotAllowedLowTripLoop` prevents vectorizing loops
-        // with runtime checks. It's more effective to let
-        // `isOutsideLoopWorkProfitable` determine if vectorization is
-        // beneficial for the loop.
-        if (SEL != CM_ScalarEpilogueNotNeededUsePredicate)
-#if SIFIVE_CUSTOMIZATION
-          // Loops that are optimized for size due to Os/Oz or PGO for cold
-          // loops will lead to ICE if loops require runtime checks.
-          // FIXME: getScalarEpilogueLowering, runtimeChecksRequired and
-          // emitSCEVChecks should be intact with each other when optimizing for
-          // size and runtime checks are required.
-          if (SEL != CM_ScalarEpilogueNotAllowedOptSize)
-#endif // SIFIVE_CUSTOMIZATION
-          SEL = CM_ScalarEpilogueNotAllowedLowTripLoop;
-      } else {
-        LLVM_DEBUG(dbgs() << " But the target considers the trip count too "
-                             "small to consider vectorizing.\n");
-        reportVectorizationFailure(
-            "The trip count is below the minial threshold value.",
-            "loop trip count is too low, avoiding vectorization",
-            "LowTripCount", ORE, L);
-        Hints.emitRemarkWithHints();
-        return false;
-      }
-=======
       LLVM_DEBUG(dbgs() << "\n");
       // Predicate tail-folded loops are efficient even when the loop
       // iteration count is low. However, setting the epilogue policy to
@@ -13520,8 +13481,15 @@ bool LoopVectorizePass::processLoop(Loop *L) {
       // `isOutsideLoopWorkProfitable` determine if vectorization is
       // beneficial for the loop.
       if (SEL != CM_ScalarEpilogueNotNeededUsePredicate)
-        SEL = CM_ScalarEpilogueNotAllowedLowTripLoop;
->>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
+#if SIFIVE_CUSTOMIZATION
+        // Loops that are optimized for size due to Os/Oz or PGO for cold
+        // loops will lead to ICE if loops require runtime checks.
+        // FIXME: getScalarEpilogueLowering, runtimeChecksRequired and
+        // emitSCEVChecks should be intact with each other when optimizing for
+        // size and runtime checks are required.
+        if (SEL != CM_ScalarEpilogueNotAllowedOptSize)
+#endif // SIFIVE_CUSTOMIZATION
+          SEL = CM_ScalarEpilogueNotAllowedLowTripLoop;
     }
   }
 
