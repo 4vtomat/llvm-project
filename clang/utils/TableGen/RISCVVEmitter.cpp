@@ -922,7 +922,6 @@ void RVVEmitter::createRVVIntrinsics(
               .Case("Zvfbfwma", RVV_REQ_Zvfbfwma)
               .Case("Zvfbfmin", RVV_REQ_Zvfbfmin)
               .Case("Zvfh", RVV_REQ_Zvfh)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
               .Case("HasBfloat16", RVV_REQ_HasBfloat16)
               .Case("Xsfvfbfa", RVV_REQ_Xsfvfbfa)
@@ -942,8 +941,6 @@ void RVVEmitter::createRVVIntrinsics(
               .Case("Xsfmm64a64f", RVV_REQ_Xsfmm64a64f)
               .Case("Xsfmm32a8i", RVV_REQ_Xsfmm32a8i)
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
               .Case("Experimental", RVV_REQ_Experimental);
       SR.RequiredExtensions[RequireExt / 32] |= 1U << (RequireExt % 32);
     }
