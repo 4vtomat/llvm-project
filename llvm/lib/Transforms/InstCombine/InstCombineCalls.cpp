@@ -438,6 +438,9 @@ Instruction *InstCombinerImpl::simplifyVLALoad(IntrinsicInst &Load,
     return nullptr;
   }
 
+  if (!Store)
+    return nullptr;
+
   // If store does not dominate load, it's not a good candidate for folding
   if (!DT.dominates(Store, &Load))
     return nullptr;
