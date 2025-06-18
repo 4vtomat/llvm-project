@@ -551,7 +551,6 @@ enum RVVRequire {
   RVV_REQ_Zvfbfmin,
   RVV_REQ_Zvfh,
   RVV_REQ_Experimental,
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   RVV_REQ_HasBfloat16,
   RVV_REQ_Xsfvfbfa,
@@ -571,8 +570,6 @@ enum RVVRequire {
   RVV_REQ_Xsfmm64a64f,
   RVV_REQ_Xsfmm32a8i,
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
   RVV_REQ_NUM,
 };
 
