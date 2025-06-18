@@ -438,8 +438,7 @@ Value *createSimpleReduction(IRBuilderBase &B, Value *Src,
                              RecurKind RdxKind);
 /// Overloaded function to generate vector-predication intrinsics for
 /// reduction.
-Value *createSimpleReduction(VectorBuilder &VB, Value *Src, RecurKind RdxKind,
-                             FastMathFlags FMFs);
+Value *createSimpleReduction(VectorBuilder &VB, Value *Src, RecurKind RdxKind);
 
 #if SIFIVE_CUSTOMIZATION
 /// Create a target reduction of the given vector. The reduction operation

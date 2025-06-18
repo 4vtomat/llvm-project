@@ -69,6 +69,8 @@ private:
                             MachineBasicBlock::iterator MBBI);
   bool expandRV32ZdinxLoad(MachineBasicBlock &MBB,
                            MachineBasicBlock::iterator MBBI);
+  bool expandPseudoReadVLENBViaVSETVLIX0(MachineBasicBlock &MBB,
+                                         MachineBasicBlock::iterator MBBI);
 #ifndef NDEBUG
   unsigned getInstSizeInBytes(const MachineFunction &MF) const {
     unsigned Size = 0;
@@ -185,6 +187,7 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
   case RISCV::PseudoVMSET_M_B64:
     // vmset.m vd => vmxnor.mm vd, vd, vd
     return expandVMSET_VMCLR(MBB, MBBI, RISCV::VMXNOR_MM);
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case RISCV::PseudoVMV_V_V_MF8:
   case RISCV::PseudoVMV_V_V_MF4:
@@ -197,6 +200,10 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
       return removeRedundantVMV(MBB, MBBI);
     }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  case RISCV::PseudoReadVLENBViaVSETVLIX0:
+    return expandPseudoReadVLENBViaVSETVLIX0(MBB, MBBI);
+>>>>>>> 94783a8199c5e589d8efd6d4530482d72bf98f4d
   }
 
   return false;
@@ -497,6 +504,24 @@ bool RISCVExpandPseudo::expandRV32ZdinxLoad(MachineBasicBlock &MBB,
   }
   MIBLo.setMemRefs(NewLoMMOs);
   MIBHi.setMemRefs(NewHiMMOs);
+
+  MBBI->eraseFromParent();
+  return true;
+}
+
+bool RISCVExpandPseudo::expandPseudoReadVLENBViaVSETVLIX0(
+    MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI) {
+  DebugLoc DL = MBBI->getDebugLoc();
+  Register Dst = MBBI->getOperand(0).getReg();
+  unsigned Mul = MBBI->getOperand(1).getImm();
+  RISCVVType::VLMUL VLMUL = RISCVVType::encodeLMUL(Mul, /*Fractional=*/false);
+  unsigned VTypeImm = RISCVVType::encodeVTYPE(
+      VLMUL, /*SEW=*/8, /*TailAgnostic=*/true, /*MaskAgnostic=*/true);
+
+  BuildMI(MBB, MBBI, DL, TII->get(RISCV::PseudoVSETVLIX0))
+      .addReg(Dst, RegState::Define)
+      .addReg(RISCV::X0, RegState::Kill)
+      .addImm(VTypeImm);
 
   MBBI->eraseFromParent();
   return true;

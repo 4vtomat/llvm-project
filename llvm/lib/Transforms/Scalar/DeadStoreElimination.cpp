@@ -1864,8 +1864,7 @@ struct DSEState {
         if (!DT.isReachableFromEntry(Current))
           continue;
 
-        for (BasicBlock *Pred : predecessors(Current))
-          WorkList.insert(Pred);
+        WorkList.insert_range(predecessors(Current));
 
         if (WorkList.size() >= MemorySSAPathCheckLimit)
           return std::nullopt;

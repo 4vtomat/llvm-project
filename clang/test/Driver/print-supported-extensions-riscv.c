@@ -233,6 +233,12 @@
 // CHECK-NEXT:     zvfofp4min           0.1       'Zvfofp4min' (OFP4 conversion extension Zvfofp4min)
 // CHECK-NEXT:     zvfofp8min           0.2       'Zvfofp8min' (OFP8 conversion extension Zvfofp8min)
 // CHECK-NEXT:     zvkgs                0.7       'Zvkgs' (Vector-Scalar GCM instructions for Cryptography)
+<<<<<<< HEAD
+=======
+// CHECK-NEXT:     zvqdotq              0.0       'Zvqdotq' (Vector quad widening 4D Dot Product)
+// CHECK-NEXT:     sdext                1.0       'Sdext' (External debugger)
+// CHECK-NEXT:     sdtrig               1.0       'Sdtrig' (Debugger triggers)
+>>>>>>> 94783a8199c5e589d8efd6d4530482d72bf98f4d
 // CHECK-NEXT:     smctr                1.0       'Smctr' (Control Transfer Records Machine Level)
 // CHECK-NEXT:     smwg                 0.3       'Smwg' (The Smwg extension adds the mlwid CSR, which is an M-mode read-write CSR, whose least-significant bits set the WID to be used by lower-privilege modes.)
 // CHECK-NEXT:     smwgd                0.3       'Smwgd' (The Smwgd extension adds the mwiddeleg M-mode read-write CSR. The mwiddeleg register represents a set of WIDs as a bit vector with WID i represented by bit i of the register.)
@@ -249,12 +255,14 @@
 // CHECK-NEXT:     xqcics               0.2       'Xqcics' (Qualcomm uC Conditional Select Extension)
 // CHECK-NEXT:     xqcicsr              0.2       'Xqcicsr' (Qualcomm uC CSR Extension)
 // CHECK-NEXT:     xqciint              0.4       'Xqciint' (Qualcomm uC Interrupts Extension)
+// CHECK-NEXT:     xqcilb               0.2       'Xqcilb' (Qualcomm uC Long Branch Extension)
 // CHECK-NEXT:     xqcili               0.2       'Xqcili' (Qualcomm uC Load Large Immediate Extension)
 // CHECK-NEXT:     xqcilia              0.2       'Xqcilia' (Qualcomm uC Large Immediate Arithmetic Extension)
 // CHECK-NEXT:     xqcilo               0.2       'Xqcilo' (Qualcomm uC Large Offset Load Store Extension)
 // CHECK-NEXT:     xqcilsm              0.2       'Xqcilsm' (Qualcomm uC Load Store Multiple Extension)
 // CHECK-NEXT:     xqcisim              0.2       'Xqcisim' (Qualcomm uC Simulation Hint Extension)
 // CHECK-NEXT:     xqcisls              0.2       'Xqcisls' (Qualcomm uC Scaled Load Store Extension)
+// CHECK-NEXT:     xqcisync             0.2       'Xqcisync' (Qualcomm uC Sync Delay Extension)
 // CHECK-NEXT:     xrivosvisni          0.1       'XRivosVisni' (Rivos Vector Integer Small New)
 // CHECK-NEXT:     xrivosvizip          0.1       'XRivosVizip' (Rivos Vector Register Zips)
 // CHECK-EMPTY:

@@ -379,9 +379,14 @@ def RegRelAddSymbol : AsmOperandClass {
                          "modifier";
 #else
   let DiagnosticType = "InvalidTPRelAddSymbol";
+<<<<<<< HEAD
   let DiagnosticString = "operand must be a symbol with %tprel_add modifier";
 #endif // SIFIVE_CUSTOMIZATION
   let ParserMethod = "parseOperandWithModifier";
+=======
+  let DiagnosticString = "operand must be a symbol with %tprel_add specifier";
+  let ParserMethod = "parseOperandWithSpecifier";
+>>>>>>> 94783a8199c5e589d8efd6d4530482d72bf98f4d
 }
 
 // A bare symbol attached to the Add for linker relaxation.
@@ -1846,8 +1851,8 @@ def TLSDESCCallSymbol : AsmOperandClass {
   let Name = "TLSDESCCallSymbol";
   let RenderMethod = "addImmOperands";
   let DiagnosticType = "InvalidTLSDESCCallSymbol";
-  let DiagnosticString = "operand must be a symbol with %tlsdesc_call modifier";
-  let ParserMethod = "parseOperandWithModifier";
+  let DiagnosticString = "operand must be a symbol with %tlsdesc_call specifier";
+  let ParserMethod = "parseOperandWithSpecifier";
 }
 
 // A bare symbol with the %tlsdesc_call variant.
@@ -2224,6 +2229,7 @@ include "RISCVInstrInfoZk.td"
 // Vector
 include "RISCVInstrInfoV.td"
 include "RISCVInstrInfoZvk.td"
+include "RISCVInstrInfoZvqdotq.td"
 
 // Integer
 include "RISCVInstrInfoZimop.td"

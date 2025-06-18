@@ -396,7 +396,7 @@ bool InterleavedAccessImpl::lowerInterleavedLoad(
     return !Extracts.empty() || BinOpShuffleChanged;
   }
 
-  DeadInsts.insert(Shuffles.begin(), Shuffles.end());
+  DeadInsts.insert_range(Shuffles);
 
   DeadInsts.insert(LI);
   return true;
@@ -840,7 +840,7 @@ bool InterleavedAccessImpl::lowerDeinterleaveIntrinsic(
       return false;
   }
 
-  DeadInsts.insert(DeinterleaveDeadInsts.begin(), DeinterleaveDeadInsts.end());
+  DeadInsts.insert_range(DeinterleaveDeadInsts);
   // We now have a target-specific load, so delete the old one.
   DeadInsts.insert(cast<Instruction>(LoadedVal));
   return true;
@@ -894,7 +894,7 @@ bool InterleavedAccessImpl::lowerInterleaveIntrinsic(
 
   // We now have a target-specific store, so delete the old one.
   DeadInsts.insert(cast<Instruction>(StoredBy));
-  DeadInsts.insert(InterleaveDeadInsts.begin(), InterleaveDeadInsts.end());
+  DeadInsts.insert_range(InterleaveDeadInsts);
   return true;
 }
 
