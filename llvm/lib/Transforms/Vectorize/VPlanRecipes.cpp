@@ -1019,10 +1019,11 @@ Value *VPInstruction::generate(VPTransformState &State) {
                                                     RdxDesc, OrigPhi);
       else if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
         ReducedPartRdx =
-            InitEVL
-                ? createFindLastIVReduction(Builder, ReducedPartRdx, RdxDesc,
-                                            InitEVL)
-                : createFindLastIVReduction(Builder, ReducedPartRdx, RdxDesc);
+            InitEVL ? createFindLastIVReduction(Builder, ReducedPartRdx,
+                                                RdxDesc, InitEVL)
+                    : createFindLastIVReduction(Builder, ReducedPartRdx,
+                                                State.get(getOperand(1), true),
+                                                RdxDesc);
       else
         ReducedPartRdx =
             InitEVL
