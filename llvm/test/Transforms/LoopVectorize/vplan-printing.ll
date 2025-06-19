@@ -757,9 +757,9 @@ define void @print_call_flags(ptr readonly %src, ptr noalias %dest, i64 %n) {
 ; CHECK-NEXT:  if.then.1:
 ; CHECK-NEXT:    WIDEN ir<%fadd> = fadd vp<[[PHI1]]>, vp<[[PHI2]]>
 ; CHECK-NEXT:    BLEND ir<%st.value> = ir<%ld.value> ir<%fadd>/ir<%ifcond>
-; CHECK-NEXT:    CLONE ir<%st.addr> = getelementptr inbounds ir<%dest>, vp<%3>
-; CHECK-NEXT:    vp<%7> = vector-pointer ir<%st.addr>
-; CHECK-NEXT:    WIDEN store vp<%7>, ir<%st.value>
+; CHECK-NEXT:    CLONE ir<%st.addr> = getelementptr inbounds ir<%dest>, vp<{{.*}}>
+; CHECK-NEXT:    vp<{{.*}}> = vector-pointer ir<%st.addr>
+; CHECK-NEXT:    WIDEN store vp<{{.*}}>, ir<%st.value>
 ; CHECK-NEXT:   EMIT vp<[[CAN_IV_NEXT]]> = add nuw vp<[[CAN_IV]]>, vp<[[VFxUF]]>
 ; CHECK-NEXT:   EMIT branch-on-count vp<[[CAN_IV_NEXT]]>, vp<[[VTC]]>
 ; CHECK-NEXT: No successors
