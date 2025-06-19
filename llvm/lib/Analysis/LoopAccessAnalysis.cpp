@@ -1778,17 +1778,18 @@ bool MemoryDepChecker::couldPreventStoreLoadForward(uint64_t Distance,
 
 #if SIFIVE_CUSTOMIZATION
   if (PSE.getSE()->getTTI() && PSE.getSE()->getTTI()->useVLAVectorizer()) {
-    MaxVFWithoutSLForwardIssues =
+    MaxVFWithoutSLForwardIssuesPowerOf2 =
         std::min(RISCV::RVVBitsPerBlock * TypeByteSize, MinDepDistBytes);
     // RISCV VLA supports non-power-2 vector factor. So, we iterate in a
     // backward order to find largest VF, which allows aligned stores-loads or
     // the number of iterations between conflicting memory addresses is not less
     // than 8 (NumItersForStoreLoadThroughMemory).
-    for (uint64_t VF = MaxVFWithoutSLForwardIssues, E = 2 * TypeByteSize;
+    for (uint64_t VF = MaxVFWithoutSLForwardIssuesPowerOf2,
+                  E = 2 * TypeByteSize;
          VF >= E; VF -= TypeByteSize) {
       if (Distance % VF == 0 ||
           Distance / VF >= NumItersForStoreLoadThroughMemory) {
-        MaxVFWithoutSLForwardIssues = VF;
+        MaxVFWithoutSLForwardIssuesPowerOf2 = VF;
         break;
       }
     }
