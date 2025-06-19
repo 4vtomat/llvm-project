@@ -31,7 +31,11 @@ vdiv.vv v8, v8, v12
 
 # CHECK:      [1]    [2]    [3]    [4]    [5]    [6]    Instructions:
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, a0, e64, m1, tu, mu
+<<<<<<< HEAD
 # CHECK-NEXT:  1      128   129.00                      vdiv.vv	v8, v8, v12
+=======
+# CHECK-NEXT:  1      114   114.00                      vdiv.vv	v8, v8, v12
+>>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
 
 # CHECK:      Resources:
 # CHECK-NEXT: [0]   - VLEN512SiFive7FDiv

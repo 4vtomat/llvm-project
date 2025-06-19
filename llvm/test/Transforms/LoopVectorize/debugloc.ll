@@ -274,10 +274,16 @@ define void @test_misc(ptr nocapture %a, ptr noalias %b, i64 %size) !dbg !35 {
 ; CHECK-NEXT:    [[N_VEC:%.*]] = sub i64 [[SIZE]], [[N_MOD_VF]]
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP0]]
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP0]]
+=======
+; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %vector.ph ], [ [[INDEX_NEXT:%.*]], %vector.body ]
+; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr %a, i64 [[INDEX]]
+; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr %b, i64 [[INDEX]]
+>>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[TMP1]], i32 0
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <2 x i32>, ptr [[TMP3]], align 4
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp uge <2 x i32> [[WIDE_LOAD]], splat (i32 10)

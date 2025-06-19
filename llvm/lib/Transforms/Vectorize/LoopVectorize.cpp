@@ -341,7 +341,7 @@ static cl::opt<unsigned> ForceTargetMaxVectorInterleaveFactor(
     cl::desc("A flag that overrides the target's max interleave factor for "
              "vectorized loops."));
 
-cl::opt<unsigned> ForceTargetInstructionCost(
+cl::opt<unsigned> llvm::ForceTargetInstructionCost(
     "force-target-instruction-cost", cl::init(0), cl::Hidden,
     cl::desc("A flag that overrides the target's expected cost for "
              "an instruction to a single constant value. Mostly "
@@ -404,22 +404,20 @@ static cl::opt<bool> PreferPredicatedReductionSelect(
     cl::desc(
         "Prefer predicating a reduction operation over an after loop select."));
 
-namespace llvm {
-cl::opt<bool> EnableVPlanNativePath(
+cl::opt<bool> llvm::EnableVPlanNativePath(
     "enable-vplan-native-path", cl::Hidden,
     cl::desc("Enable VPlan-native vectorization path with "
              "support for outer loop vectorization."));
 
 cl::opt<bool>
-    VerifyEachVPlan("vplan-verify-each",
+    llvm::VerifyEachVPlan("vplan-verify-each",
 #ifdef EXPENSIVE_CHECKS
-                    cl::init(true),
+                          cl::init(true),
 #else
-                    cl::init(false),
+                          cl::init(false),
 #endif
-                    cl::Hidden,
-                    cl::desc("Verfiy VPlans after VPlan transforms."));
-} // namespace llvm
+                          cl::Hidden,
+                          cl::desc("Verfiy VPlans after VPlan transforms."));
 
 // This flag enables the stress testing of the VPlan H-CFG construction in the
 // VPlan-native vectorization path. It must be used in conjuction with
@@ -5311,11 +5309,8 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
     MaxPowerOf2RuntimeVF = std::nullopt;
 #endif // SIFIVE_CUSTOMIZATION
 
-  if (MaxPowerOf2RuntimeVF && *MaxPowerOf2RuntimeVF > 0) {
-    assert((UserVF.isNonZero() || isPowerOf2_32(*MaxPowerOf2RuntimeVF)) &&
-           "MaxFixedVF must be a power of 2");
-    unsigned MaxVFtimesIC =
-        UserIC ? *MaxPowerOf2RuntimeVF * UserIC : *MaxPowerOf2RuntimeVF;
+  auto NoScalarEpilogueNeeded = [this, &UserIC](unsigned MaxVF) {
+    unsigned MaxVFtimesIC = UserIC ? MaxVF * UserIC : MaxVF;
     ScalarEvolution *SE = PSE.getSE();
     // Currently only loops with countable exits are vectorized, but calling
     // getSymbolicMaxBackedgeTakenCount allows enablement work for loops with
@@ -5329,11 +5324,39 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
     const SCEV *Rem = SE->getURemExpr(
         SE->applyLoopGuards(ExitCount, TheLoop),
         SE->getConstant(BackedgeTakenCount->getType(), MaxVFtimesIC));
-    if (Rem->isZero()) {
+    return Rem->isZero();
+  };
+
+  if (MaxPowerOf2RuntimeVF > 0u) {
+    assert((UserVF.isNonZero() || isPowerOf2_32(*MaxPowerOf2RuntimeVF)) &&
+           "MaxFixedVF must be a power of 2");
+    if (NoScalarEpilogueNeeded(*MaxPowerOf2RuntimeVF)) {
       // Accept MaxFixedVF if we do not have a tail.
       LLVM_DEBUG(dbgs() << "LV: No tail will remain for any chosen VF.\n");
       return MaxFactors;
     }
+  }
+
+  auto ExpectedTC = getSmallBestKnownTC(PSE, TheLoop);
+  if (ExpectedTC && ExpectedTC <= TTI.getMinTripCountTailFoldingThreshold()) {
+    if (MaxPowerOf2RuntimeVF > 0u) {
+      // If we have a low-trip-count, and the fixed-width VF is known to divide
+      // the trip count but the scalable factor does not, use the fixed-width
+      // factor in preference to allow the generation of a non-predicated loop.
+      if (ScalarEpilogueStatus == CM_ScalarEpilogueNotAllowedLowTripLoop &&
+          NoScalarEpilogueNeeded(MaxFactors.FixedVF.getFixedValue())) {
+        LLVM_DEBUG(dbgs() << "LV: Picking a fixed-width so that no tail will "
+                             "remain for any chosen VF.\n");
+        MaxFactors.ScalableVF = ElementCount::getScalable(0);
+        return MaxFactors;
+      }
+    }
+
+    reportVectorizationFailure(
+        "The trip count is below the minial threshold value.",
+        "loop trip count is too low, avoiding vectorization", "LowTripCount",
+        ORE, TheLoop);
+    return FixedScalableVFPair::getNone();
   }
 
   // If we don't know the precise trip count, or if the trip count that we
@@ -6913,12 +6936,12 @@ void LoopVectorizationCostModel::collectInstsToScalarize(ElementCount VF) {
           ScalarCostsVF.insert(ScalarCosts.begin(), ScalarCosts.end());
           // Check if we decided to scalarize a call. If so, update the widening
           // decision of the call to CM_Scalarize with the computed scalar cost.
-          for (const auto &[I, _] : ScalarCosts) {
+          for (const auto &[I, Cost] : ScalarCosts) {
             auto *CI = dyn_cast<CallInst>(I);
             if (!CI || !CallWideningDecisions.contains({CI, VF}))
               continue;
             CallWideningDecisions[{CI, VF}].Kind = CM_Scalarize;
-            CallWideningDecisions[{CI, VF}].Cost = ScalarCosts[CI];
+            CallWideningDecisions[{CI, VF}].Cost = Cost;
           }
         }
         // Remember that BB will remain after vectorization.
@@ -7550,12 +7573,12 @@ LoopVectorizationCostModel::getReductionPatternCost(Instruction *I,
 
   // Test if the found instruction is a reduction, and if not return an invalid
   // cost specifying the parent to use the original cost modelling.
-  if (!InLoopReductionImmediateChains.count(RetI))
+  Instruction *LastChain = InLoopReductionImmediateChains.lookup(RetI);
+  if (!LastChain)
     return std::nullopt;
 
   // Find the reduction this chain is a part of and calculate the basic cost of
   // the reduction on its own.
-  Instruction *LastChain = InLoopReductionImmediateChains.at(RetI);
   Instruction *ReductionPhi = LastChain;
   while (!isa<PHINode>(ReductionPhi))
     ReductionPhi = InLoopReductionImmediateChains.at(ReductionPhi);
@@ -9228,8 +9251,7 @@ LoopVectorizationPlanner::precomputeCosts(VPlan &Plan, ElementCount VF,
       continue;
 
     const auto &ChainOps = RdxDesc.getReductionOpChain(RedPhi, OrigLoop);
-    SetVector<Instruction *> ChainOpsAndOperands(ChainOps.begin(),
-                                                 ChainOps.end());
+    SetVector<Instruction *> ChainOpsAndOperands(llvm::from_range, ChainOps);
     auto IsZExtOrSExt = [](const unsigned Opcode) -> bool {
       return Opcode == Instruction::ZExt || Opcode == Instruction::SExt;
     };
@@ -9633,8 +9655,13 @@ static void fixReductionScalarResumeWhenVectorizingEpilog(
        EpiRedResult->getOpcode() != VPInstruction::ComputeReductionResultWithMask))
 #else
   if (!EpiRedResult ||
+<<<<<<< HEAD
       EpiRedResult->getOpcode() != VPInstruction::ComputeReductionResult)
 #endif // SIFIVE_CUSTOMIZATION
+=======
+      (EpiRedResult->getOpcode() != VPInstruction::ComputeReductionResult &&
+       EpiRedResult->getOpcode() != VPInstruction::ComputeFindLastIVResult))
+>>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
     return;
 
   auto *EpiRedHeaderPhi =
@@ -12536,6 +12563,7 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
           Builder.createSelect(Cond, OrigExitingVPV, PhiR, {}, "", FMFs);
       OrigExitingVPV->replaceUsesWithIf(NewExitingVPV, [](VPUser &U, unsigned) {
         return isa<VPInstruction>(&U) &&
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
                (cast<VPInstruction>(&U)->getOpcode() ==
                     VPInstruction::ComputeReductionResult ||
@@ -12545,6 +12573,12 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
                cast<VPInstruction>(&U)->getOpcode() ==
                    VPInstruction::ComputeReductionResult;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+               (cast<VPInstruction>(&U)->getOpcode() ==
+                    VPInstruction::ComputeReductionResult ||
+                cast<VPInstruction>(&U)->getOpcode() ==
+                    VPInstruction::ComputeFindLastIVResult);
+>>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
       });
       if (CM.usePredicatedReductionSelect(
               PhiR->getRecurrenceDescriptor().getOpcode(), PhiTy))
@@ -12587,10 +12621,19 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
     // bc.merge.rdx phi nodes, hence it needs to be created unconditionally here
     // even for in-loop reductions, until the reduction resume value handling is
     // also modeled in VPlan.
+    VPInstruction *FinalReductionResult;
     VPBuilder::InsertPointGuard Guard(Builder);
     Builder.setInsertPoint(MiddleVPBB, IP);
-    auto *FinalReductionResult = Builder.createNaryOp(
-        VPInstruction::ComputeReductionResult, {PhiR, NewExitingVPV}, ExitDL);
+    if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(
+            RdxDesc.getRecurrenceKind())) {
+      VPValue *Start = PhiR->getStartValue();
+      FinalReductionResult =
+          Builder.createNaryOp(VPInstruction::ComputeFindLastIVResult,
+                               {PhiR, Start, NewExitingVPV}, ExitDL);
+    } else {
+      FinalReductionResult = Builder.createNaryOp(
+          VPInstruction::ComputeReductionResult, {PhiR, NewExitingVPV}, ExitDL);
+    }
     // Update all users outside the vector region.
     OrigExitingVPV->replaceUsesWithIf(
         FinalReductionResult, [FinalReductionResult](VPUser &User, unsigned) {
@@ -13439,6 +13482,7 @@ bool LoopVectorizePass::processLoop(Loop *L) {
     if (Hints.getForce() == LoopVectorizeHints::FK_Enabled)
       LLVM_DEBUG(dbgs() << " But vectorizing was explicitly forced.\n");
     else {
+<<<<<<< HEAD
       if (*ExpectedTC > TTI->getMinTripCountTailFoldingThreshold()) {
         LLVM_DEBUG(dbgs() << "\n");
         // Predicate tail-folded loops are efficient even when the loop
@@ -13467,6 +13511,17 @@ bool LoopVectorizePass::processLoop(Loop *L) {
         Hints.emitRemarkWithHints();
         return false;
       }
+=======
+      LLVM_DEBUG(dbgs() << "\n");
+      // Predicate tail-folded loops are efficient even when the loop
+      // iteration count is low. However, setting the epilogue policy to
+      // `CM_ScalarEpilogueNotAllowedLowTripLoop` prevents vectorizing loops
+      // with runtime checks. It's more effective to let
+      // `isOutsideLoopWorkProfitable` determine if vectorization is
+      // beneficial for the loop.
+      if (SEL != CM_ScalarEpilogueNotNeededUsePredicate)
+        SEL = CM_ScalarEpilogueNotAllowedLowTripLoop;
+>>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
     }
   }
 

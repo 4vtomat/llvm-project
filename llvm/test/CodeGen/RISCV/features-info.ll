@@ -19,6 +19,7 @@
 ; CHECK-NEXT:   dlen64b                          - 'DLen' (SiFive datapath length) 64.
 ; CHECK-NEXT:   dotprod                          - dotprod (A corresponding feature for NEON dotprod.).
 ; CHECK-NEXT:   e                                - 'E' (Embedded Instruction Set with 16 GPRs).
+; CHECK-NEXT:   exact-asm                        - Enable Exact Assembly (Disables Compression and Relaxation).
 ; CHECK-NEXT:   experimental                     - Experimental intrinsics.
 ; CHECK-NEXT:   experimental-p                   - 'P' ('Base P' (Packed SIMD)).
 ; CHECK-NEXT:   experimental-rvm23u32            - RISC-V experimental-rvm23u32 profile.
@@ -134,6 +135,7 @@
 ; CHECK-NEXT:   rvi20u32                         - RISC-V rvi20u32 profile.
 ; CHECK-NEXT:   rvi20u64                         - RISC-V rvi20u64 profile.
 ; CHECK-NEXT:   save-restore                     - Enable save/restore..
+<<<<<<< HEAD
 ; CHECK-NEXT:   sdext                            - 'Sdext' (External Debugging Extension).
 ; CHECK-NEXT:   sdtrig                           - 'Sdtrig' (Debugging Triggers).
 ; CHECK-NEXT:   sfa23                            - RISC-V sfa23 profile.
@@ -142,6 +144,10 @@
 ; CHECK-NEXT:   sfp23                            - RISC-V sfp23 profile.
 ; CHECK-NEXT:   sfs23                            - RISC-V sfs23 profile.
 ; CHECK-NEXT:   sfx23                            - RISC-V sfx23 profile.
+=======
+; CHECK-NEXT:   sdext                            - 'Sdext' (External debugger).
+; CHECK-NEXT:   sdtrig                           - 'Sdtrig' (Debugger triggers).
+>>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
 ; CHECK-NEXT:   sha                              - 'Sha' (Augmented Hypervisor).
 ; CHECK-NEXT:   shcounterenw                     - 'Shcounterenw' (Support writeable hcounteren enable bit for any hpmcounter that is not read-only zero).
 ; CHECK-NEXT:   shgatpa                          - 'Shgatpa' (SvNNx4 mode supported for all modes supported by satp, as well as Bare).

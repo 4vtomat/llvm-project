@@ -629,6 +629,7 @@ public:
     case VPRecipeBase::VPWidenPointerInductionSC:
     case VPRecipeBase::VPReductionPHISC:
     case VPRecipeBase::VPScalarCastSC:
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     case VPRecipeBase::VPCSADataUpdateSC:
     case VPRecipeBase::VPCSAExtractScalarSC:
@@ -636,6 +637,8 @@ public:
     case VPRecipeBase::VPMonotonicHeaderPHISC:
 #endif
     case VPRecipeBase::VPScalarPHISC:
+=======
+>>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
     case VPRecipeBase::VPPartialReductionSC:
       return true;
     case VPRecipeBase::VPBranchOnMaskSC:
@@ -977,6 +980,7 @@ public:
     BranchOnCount,
     BranchOnCond,
     Broadcast,
+    ComputeFindLastIVResult,
     ComputeReductionResult,
     // Takes the VPValue to extract from as first operand and the lane or part
     // to extract as second operand, counting from the end starting with 1 for
@@ -3424,8 +3428,8 @@ public:
   VP_CLASSOF_IMPL(VPDef::VPCanonicalIVPHISC)
 
   void execute(VPTransformState &State) override {
-    llvm_unreachable(
-        "cannot execute this recipe, should be replaced by VPScalarPHIRecipe");
+    llvm_unreachable("cannot execute this recipe, should be replaced by a "
+                     "scalar phi recipe");
   }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
@@ -3510,8 +3514,8 @@ public:
   VP_CLASSOF_IMPL(VPDef::VPEVLBasedIVPHISC)
 
   void execute(VPTransformState &State) override {
-    llvm_unreachable(
-        "cannot execute this recipe, should be replaced by VPScalarPHIRecipe");
+    llvm_unreachable("cannot execute this recipe, should be replaced by a "
+                     "scalar phi recipe");
   }
 
   /// Return the cost of this VPEVLBasedIVPHIRecipe.
@@ -3667,6 +3671,10 @@ public:
         getOperand(0), getOperand(1), InductionOpcode,
         hasFastMathFlags() ? getFastMathFlags() : FastMathFlags());
   }
+
+  /// Return true if this VPScalarIVStepsRecipe corresponds to part 0. Note that
+  /// this is only accurate after the VPlan has been unrolled.
+  bool isPart0() { return getUnrollPart(*this) == 0; }
 
   VP_CLASSOF_IMPL(VPDef::VPScalarIVStepsSC)
 
@@ -4415,6 +4423,10 @@ public:
     UFs.clear();
     UFs.insert(UF);
   }
+
+  /// Returns true if the VPlan already has been unrolled, i.e. it has a single
+  /// concrete UF.
+  bool isUnrolled() const { return UFs.size() == 1; }
 
   /// Return a string with the name of the plan and the applicable VFs and UFs.
   std::string getName() const;

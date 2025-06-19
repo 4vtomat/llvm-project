@@ -879,6 +879,13 @@ def HasStdExtH : Predicate<"Subtarget->hasStdExtH()">,
 
 // Supervisor extensions
 
+<<<<<<< HEAD
+=======
+def FeatureStdExtSdext : RISCVExtension<1, 0, "External debugger">;
+
+def FeatureStdExtSdtrig : RISCVExtension<1, 0, "Debugger triggers">;
+
+>>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
 def FeatureStdExtShgatpa
     : RISCVExtension<1, 0,
                      "SvNNx4 mode supported for all modes supported by satp, as well as Bare">;
@@ -1528,6 +1535,10 @@ def RV64           : HwMode<"+64bit", [IsRV64]>;
 def FeatureRelax
     : SubtargetFeature<"relax", "EnableLinkerRelax", "true",
                        "Enable Linker relaxation.">;
+
+def FeatureExactAssembly
+    : SubtargetFeature<"exact-asm", "EnableExactAssembly", "true",
+                       "Enable Exact Assembly (Disables Compression and Relaxation)">;
 
 foreach i = {1-31} in
   def FeatureReserveX#i :

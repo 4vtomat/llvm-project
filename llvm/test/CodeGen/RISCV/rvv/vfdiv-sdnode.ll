@@ -190,8 +190,20 @@ define <vscale x 32 x bfloat> @vfdiv_vv_nxv32bf16(<vscale x 32 x bfloat> %va, <v
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e16, m4, ta, ma
 ; CHECK-NEXT:    vfwcvtbf16.f.f.v v24, v16
+<<<<<<< HEAD
 ; CHECK-NEXT:    vfwcvtbf16.f.f.v v0, v8
 ; CHECK-NEXT:    vfwcvtbf16.f.f.v v16, v20
+=======
+; CHECK-NEXT:    addi a0, sp, 16
+; CHECK-NEXT:    vs8r.v v24, (a0) # vscale x 64-byte Folded Spill
+; CHECK-NEXT:    vfwcvtbf16.f.f.v v0, v8
+; CHECK-NEXT:    vfwcvtbf16.f.f.v v24, v20
+; CHECK-NEXT:    vl8r.v v16, (a0) # vscale x 64-byte Folded Reload
+; CHECK-NEXT:    vsetvli zero, zero, e32, m8, ta, ma
+; CHECK-NEXT:    vfdiv.vv v16, v0, v16
+; CHECK-NEXT:    vsetvli zero, zero, e16, m4, ta, ma
+; CHECK-NEXT:    vfwcvtbf16.f.f.v v0, v12
+>>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m8, ta, ma
 ; CHECK-NEXT:    vfdiv.vv v24, v0, v24
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m4, ta, ma
@@ -487,8 +499,20 @@ define <vscale x 32 x half> @vfdiv_vv_nxv32f16(<vscale x 32 x half> %va, <vscale
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e16, m4, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v24, v16
+<<<<<<< HEAD
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v0, v8
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v16, v20
+=======
+; ZVFHMIN-NEXT:    addi a0, sp, 16
+; ZVFHMIN-NEXT:    vs8r.v v24, (a0) # vscale x 64-byte Folded Spill
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v0, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v24, v20
+; ZVFHMIN-NEXT:    vl8r.v v16, (a0) # vscale x 64-byte Folded Reload
+; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m8, ta, ma
+; ZVFHMIN-NEXT:    vfdiv.vv v16, v0, v16
+; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m4, ta, ma
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v0, v12
+>>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m8, ta, ma
 ; ZVFHMIN-NEXT:    vfdiv.vv v24, v0, v24
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m4, ta, ma

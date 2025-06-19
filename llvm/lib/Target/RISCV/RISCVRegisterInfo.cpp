@@ -421,6 +421,10 @@ void RISCVRegisterInfo::lowerVSPILL(MachineBasicBlock::iterator II) const {
   Register Base = II->getOperand(1).getReg();
   bool IsBaseKill = II->getOperand(1).isKill();
   Register NewBase = MRI.createVirtualRegister(&RISCV::GPRRegClass);
+
+  auto *OldMMO = *(II->memoperands_begin());
+  auto *NewMMO = MF.getMachineMemOperand(OldMMO, OldMMO->getOffset(),
+                                         LocationSize::beforeOrAfterPointer());
   for (unsigned I = 0; I < NF; ++I) {
     // Adding implicit-use of super register to describe we are using part of
     // super register, that prevents machine verifier complaining when part of
@@ -429,7 +433,7 @@ void RISCVRegisterInfo::lowerVSPILL(MachineBasicBlock::iterator II) const {
     BuildMI(MBB, II, DL, TII->get(Opcode))
         .addReg(TRI->getSubReg(SrcReg, SubRegIdx + I))
         .addReg(Base, getKillRegState(I == NF - 1))
-        .addMemOperand(*(II->memoperands_begin()))
+        .addMemOperand(NewMMO)
         .addReg(SrcReg, RegState::Implicit);
     if (I != NF - 1)
       BuildMI(MBB, II, DL, TII->get(RISCV::ADD), NewBase)
@@ -498,11 +502,14 @@ void RISCVRegisterInfo::lowerVRELOAD(MachineBasicBlock::iterator II) const {
   Register Base = II->getOperand(1).getReg();
   bool IsBaseKill = II->getOperand(1).isKill();
   Register NewBase = MRI.createVirtualRegister(&RISCV::GPRRegClass);
+  auto *OldMMO = *(II->memoperands_begin());
+  auto *NewMMO = MF.getMachineMemOperand(OldMMO, OldMMO->getOffset(),
+                                         LocationSize::beforeOrAfterPointer());
   for (unsigned I = 0; I < NF; ++I) {
     BuildMI(MBB, II, DL, TII->get(Opcode),
             TRI->getSubReg(DestReg, SubRegIdx + I))
         .addReg(Base, getKillRegState(I == NF - 1))
-        .addMemOperand(*(II->memoperands_begin()));
+        .addMemOperand(NewMMO);
     if (I != NF - 1)
       BuildMI(MBB, II, DL, TII->get(RISCV::ADD), NewBase)
           .addReg(Base, getKillRegState(I != 0 || IsBaseKill))

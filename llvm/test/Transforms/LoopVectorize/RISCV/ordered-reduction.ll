@@ -16,6 +16,7 @@ define float @fadd(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-ORDERED:       vector.ph:
 ; CHECK-ORDERED-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-ORDERED:       vector.body:
+<<<<<<< HEAD
 ; CHECK-ORDERED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-ORDERED-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; CHECK-ORDERED-NEXT:    [[VEC_PHI:%.*]] = phi float [ 0.000000e+00, [[VECTOR_PH]] ], [ [[TMP6:%.*]], [[VECTOR_BODY]] ]
@@ -30,6 +31,17 @@ define float @fadd(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-ORDERED-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP7]], [[EVL_BASED_IV]]
 ; CHECK-ORDERED-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; CHECK-ORDERED-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+=======
+; CHECK-ORDERED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-ORDERED-NEXT:    [[VEC_PHI:%.*]] = phi float [ 0.000000e+00, [[VECTOR_PH]] ], [ [[TMP3:%.*]], [[VECTOR_BODY]] ]
+; CHECK-ORDERED-NEXT:    [[TMP1:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[INDEX]]
+; CHECK-ORDERED-NEXT:    [[TMP2:%.*]] = getelementptr inbounds float, ptr [[TMP1]], i32 0
+; CHECK-ORDERED-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x float>, ptr [[TMP2]], align 4
+; CHECK-ORDERED-NEXT:    [[TMP3]] = call float @llvm.vector.reduce.fadd.v4f32(float [[VEC_PHI]], <4 x float> [[WIDE_LOAD]])
+; CHECK-ORDERED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
+; CHECK-ORDERED-NEXT:    [[TMP4:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
+; CHECK-ORDERED-NEXT:    br i1 [[TMP4]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+>>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
 ; CHECK-ORDERED:       middle.block:
 ; CHECK-ORDERED-NEXT:    br label [[FOR_END:%.*]]
 ; CHECK-ORDERED:       scalar.ph:
@@ -74,8 +86,7 @@ define float @fadd(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-UNORDERED:       vector.body:
 ; CHECK-UNORDERED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-UNORDERED-NEXT:    [[VEC_PHI:%.*]] = phi <4 x float> [ <float 0.000000e+00, float -0.000000e+00, float -0.000000e+00, float -0.000000e+00>, [[VECTOR_PH]] ], [ [[TMP3:%.*]], [[VECTOR_BODY]] ]
-; CHECK-UNORDERED-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
-; CHECK-UNORDERED-NEXT:    [[TMP1:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[TMP0]]
+; CHECK-UNORDERED-NEXT:    [[TMP1:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[INDEX]]
 ; CHECK-UNORDERED-NEXT:    [[TMP2:%.*]] = getelementptr inbounds float, ptr [[TMP1]], i32 0
 ; CHECK-UNORDERED-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x float>, ptr [[TMP2]], align 4
 ; CHECK-UNORDERED-NEXT:    [[TMP3]] = fadd <4 x float> [[WIDE_LOAD]], [[VEC_PHI]]

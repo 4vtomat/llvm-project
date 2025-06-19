@@ -66,6 +66,7 @@ add_llvm_component_library(LLVMipo
   FrontendOpenMP
   InstCombine
   IRReader
+  Demangle
   Linker
   Object
   ProfileData

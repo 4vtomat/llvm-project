@@ -467,7 +467,7 @@ Value *createAnyOfReduction(IRBuilderBase &B, Value *Src,
 /// Create a reduction of the given vector \p Src for a reduction of the
 /// kind RecurKind::IFindLastIV or RecurKind::FFindLastIV. The reduction
 /// operation is described by \p Desc.
-Value *createFindLastIVReduction(IRBuilderBase &B, Value *Src,
+Value *createFindLastIVReduction(IRBuilderBase &B, Value *Src, Value *Start,
                                  const RecurrenceDescriptor &Desc);
 #if SIFIVE_CUSTOMIZATION
 /// Allow \p Mask when folding by \p EVL. The mask is all-true if \p Mask is

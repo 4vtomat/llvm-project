@@ -1078,11 +1078,16 @@ void RISCVISAInfo::updateImplication() {
 }
 
 static constexpr StringLiteral CombineIntoExts[] = {
+<<<<<<< HEAD
     {"zk"},    {"zkn"},  {"zks"},   {"zvkn"},  {"zvknc"},
     {"zvkng"}, {"zvks"}, {"zvksc"}, {"zvksg"},
 #if SIFIVE_CUSTOMIZATION
     {"xsfmm32a"},
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    {"b"},     {"zk"},    {"zkn"},  {"zks"},   {"zvkn"},
+    {"zvknc"}, {"zvkng"}, {"zvks"}, {"zvksc"}, {"zvksg"},
+>>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
 };
 
 void RISCVISAInfo::updateCombination() {

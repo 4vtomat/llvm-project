@@ -360,10 +360,16 @@ define i16 @reduce_udiv(ptr %src, i16 %x, i64 %N) #0 {
 ; DEFAULT-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; DEFAULT:       [[VECTOR_BODY]]:
 ; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
+<<<<<<< HEAD
 ; DEFAULT-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 8 x i16> [ zeroinitializer, %[[VECTOR_PH]] ], [ [[TMP19:%.*]], %[[VECTOR_BODY]] ]
 ; DEFAULT-NEXT:    [[VEC_PHI1:%.*]] = phi <vscale x 8 x i16> [ zeroinitializer, %[[VECTOR_PH]] ], [ [[TMP20:%.*]], %[[VECTOR_BODY]] ]
 ; DEFAULT-NEXT:    [[TMP7:%.*]] = add i64 [[INDEX]], 0
 ; DEFAULT-NEXT:    [[TMP13:%.*]] = getelementptr i16, ptr [[SRC]], i64 [[TMP7]]
+=======
+; DEFAULT-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 4 x i16> [ zeroinitializer, %[[VECTOR_PH]] ], [ [[TMP21:%.*]], %[[VECTOR_BODY]] ]
+; DEFAULT-NEXT:    [[VEC_PHI1:%.*]] = phi <vscale x 4 x i16> [ zeroinitializer, %[[VECTOR_PH]] ], [ [[TMP22:%.*]], %[[VECTOR_BODY]] ]
+; DEFAULT-NEXT:    [[TMP13:%.*]] = getelementptr i16, ptr [[SRC]], i64 [[INDEX]]
+>>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
 ; DEFAULT-NEXT:    [[TMP15:%.*]] = getelementptr i16, ptr [[TMP13]], i32 0
 ; DEFAULT-NEXT:    [[TMP16:%.*]] = call i64 @llvm.vscale.i64()
 ; DEFAULT-NEXT:    [[TMP17:%.*]] = mul i64 [[TMP16]], 8
@@ -425,10 +431,16 @@ define i16 @reduce_udiv(ptr %src, i16 %x, i64 %N) #0 {
 ; VSCALEFORTUNING2-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; VSCALEFORTUNING2:       [[VECTOR_BODY]]:
 ; VSCALEFORTUNING2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
+<<<<<<< HEAD
 ; VSCALEFORTUNING2-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 8 x i16> [ zeroinitializer, %[[VECTOR_PH]] ], [ [[TMP17:%.*]], %[[VECTOR_BODY]] ]
 ; VSCALEFORTUNING2-NEXT:    [[VEC_PHI2:%.*]] = phi <vscale x 8 x i16> [ zeroinitializer, %[[VECTOR_PH]] ], [ [[TMP18:%.*]], %[[VECTOR_BODY]] ]
 ; VSCALEFORTUNING2-NEXT:    [[TMP7:%.*]] = add i64 [[INDEX]], 0
 ; VSCALEFORTUNING2-NEXT:    [[TMP8:%.*]] = getelementptr i16, ptr [[SRC]], i64 [[TMP7]]
+=======
+; VSCALEFORTUNING2-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 4 x i16> [ zeroinitializer, %[[VECTOR_PH]] ], [ [[TMP15:%.*]], %[[VECTOR_BODY]] ]
+; VSCALEFORTUNING2-NEXT:    [[VEC_PHI1:%.*]] = phi <vscale x 4 x i16> [ zeroinitializer, %[[VECTOR_PH]] ], [ [[TMP16:%.*]], %[[VECTOR_BODY]] ]
+; VSCALEFORTUNING2-NEXT:    [[TMP8:%.*]] = getelementptr i16, ptr [[SRC]], i64 [[INDEX]]
+>>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
 ; VSCALEFORTUNING2-NEXT:    [[TMP9:%.*]] = getelementptr i16, ptr [[TMP8]], i32 0
 ; VSCALEFORTUNING2-NEXT:    [[TMP10:%.*]] = call i64 @llvm.vscale.i64()
 ; VSCALEFORTUNING2-NEXT:    [[TMP11:%.*]] = mul i64 [[TMP10]], 8
@@ -527,8 +539,7 @@ define i16 @reduce_udiv(ptr %src, i16 %x, i64 %N) #0 {
 ; PRED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; PRED-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = phi <vscale x 8 x i1> [ [[ACTIVE_LANE_MASK_ENTRY]], %[[VECTOR_PH]] ], [ [[ACTIVE_LANE_MASK_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; PRED-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 8 x i16> [ zeroinitializer, %[[VECTOR_PH]] ], [ [[TMP16:%.*]], %[[VECTOR_BODY]] ]
-; PRED-NEXT:    [[TMP13:%.*]] = add i64 [[INDEX]], 0
-; PRED-NEXT:    [[TMP14:%.*]] = getelementptr i16, ptr [[SRC]], i64 [[TMP13]]
+; PRED-NEXT:    [[TMP14:%.*]] = getelementptr i16, ptr [[SRC]], i64 [[INDEX]]
 ; PRED-NEXT:    [[TMP15:%.*]] = getelementptr i16, ptr [[TMP14]], i32 0
 ; PRED-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 8 x i16> @llvm.masked.load.nxv8i16.p0(ptr [[TMP15]], i32 2, <vscale x 8 x i1> [[ACTIVE_LANE_MASK]], <vscale x 8 x i16> poison)
 ; PRED-NEXT:    [[TMP20:%.*]] = udiv <vscale x 8 x i16> [[WIDE_MASKED_LOAD]], [[BROADCAST_SPLAT]]
