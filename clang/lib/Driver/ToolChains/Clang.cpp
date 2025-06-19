@@ -6531,17 +6531,13 @@ void Clang::ConstructJob(Compilation &C, const JobAction &JA,
   Args.AddLastArg(CmdArgs, options::OPT_fconvergent_functions,
                   options::OPT_fno_convergent_functions);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (Args.hasArg(options::OPT_fsifive_loop_count_profile_generate))
     addLoopCountProfileFlags(Args, CmdArgs);
 #endif // SIFIVE_CUSTOMIZATION
-  addPGOAndCoverageFlags(TC, C, JA, Output, Args, SanitizeArgs, CmdArgs);
-=======
   // NVPTX doesn't support PGO or coverage
   if (!Triple.isNVPTX())
     addPGOAndCoverageFlags(TC, C, JA, Output, Args, SanitizeArgs, CmdArgs);
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
 
   Args.AddLastArg(CmdArgs, options::OPT_fclang_abi_compat_EQ);
 
