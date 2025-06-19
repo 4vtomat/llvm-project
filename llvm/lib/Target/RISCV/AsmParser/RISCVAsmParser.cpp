@@ -756,36 +756,6 @@ public:
     return isUImm<4>();
   }
 
-<<<<<<< HEAD
-  template <unsigned N> bool IsUImm() const {
-    int64_t Imm;
-    RISCVMCExpr::Specifier VK = RISCVMCExpr::VK_None;
-    if (!isImm())
-      return false;
-    bool IsConstantImm = evaluateConstantImm(getImm(), Imm, VK);
-    return IsConstantImm && isUInt<N>(Imm) && VK == RISCVMCExpr::VK_None;
-  }
-
-  bool isUImm1() const { return IsUImm<1>(); }
-  bool isUImm2() const { return IsUImm<2>(); }
-  bool isUImm3() const { return IsUImm<3>(); }
-  bool isUImm4() const { return IsUImm<4>(); }
-  bool isUImm5() const { return IsUImm<5>(); }
-  bool isUImm6() const { return IsUImm<6>(); }
-  bool isUImm7() const { return IsUImm<7>(); }
-  bool isUImm8() const { return IsUImm<8>(); }
-  bool isUImm10() const { return IsUImm<10>(); }
-  bool isUImm11() const { return IsUImm<11>(); }
-  bool isUImm16() const { return IsUImm<16>(); }
-  bool isUImm20() const { return IsUImm<20>(); }
-  bool isUImm32() const { return IsUImm<32>(); }
-  bool isUImm48() const { return IsUImm<48>(); }
-  bool isUImm64() const { return IsUImm<64>(); }
-#if SIFIVE_CUSTOMIZATION
-  bool isUImm12() const { return IsUImm<12>(); }
-  bool isUImm25() const { return IsUImm<25>(); }
-#endif // SIFIVE_CUSTOMIZATION
-=======
   bool isUImm1() const { return isUImm<1>(); }
   bool isUImm2() const { return isUImm<2>(); }
   bool isUImm3() const { return isUImm<3>(); }
@@ -801,7 +771,10 @@ public:
   bool isUImm32() const { return isUImm<32>(); }
   bool isUImm48() const { return isUImm<48>(); }
   bool isUImm64() const { return isUImm<64>(); }
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
+#if SIFIVE_CUSTOMIZATION
+  bool isUImm12() const { return isUImm<12>(); }
+  bool isUImm25() const { return isUImm<25>(); }
+#endif // SIFIVE_CUSTOMIZATION
 
   bool isUImm5NonZero() const {
     return isUImmPred([](int64_t Imm) { return Imm != 0 && isUInt<5>(Imm); });
@@ -964,46 +937,40 @@ public:
   bool isUImm20LUI() const {
     if (!isImm())
       return false;
-<<<<<<< HEAD
-    bool IsConstantImm = evaluateConstantImm(getImm(), Imm, VK);
-    if (!IsConstantImm) {
-      IsValid = RISCVAsmParser::classifySymbolRef(getImm(), VK);
-      return IsValid &&
-#if SIFIVE_CUSTOMIZATION
-             (VK == RISCVMCExpr::VK_HI ||
+
+#ifdef SIFIVE_CUSTOMIZATION
+    RISCVMCExpr::Specifier VK = RISCVMCExpr::VK_None;
+    RISCVAsmParser::classifySymbolRef(getImm(), VK);
+#endif // SIFIVE_CUSTOMIZATION
+
+    int64_t Imm;
+    if (evaluateConstantImm(getImm(), Imm))
+#ifdef SIFIVE_CUSTOMIZATION
+      return isUInt<20>(Imm) &&
+             (VK == RISCVMCExpr::VK_None || VK == RISCVMCExpr::VK_HI ||
               VK == RISCVMCExpr::VK_TPREL_HI ||
               VK == RISCVMCExpr::VK_GPREL_HI ||
               VK == RISCVMCExpr::VK_GOT_GPREL_HI ||
               VK == RISCVMCExpr::VK_TLS_GOT_GPREL_HI ||
               VK == RISCVMCExpr::VK_TLS_GD_GPREL_HI);
+    ;
 #else
-             (VK == RISCVMCExpr::VK_HI || VK == RISCVMCExpr::VK_TPREL_HI);
-#endif // SIFIVE_CUSTOMIZATION
-    } else {
-      return isUInt<20>(Imm) &&
-#if SIFIVE_CUSTOMIZATION
-             (VK == RISCVMCExpr::VK_None ||
-              VK == RISCVMCExpr::VK_HI ||
-              VK == RISCVMCExpr::VK_TPREL_HI ||
-              VK == RISCVMCExpr::VK_GPREL_HI ||
-              VK == RISCVMCExpr::VK_GOT_GPREL_HI ||
-              VK == RISCVMCExpr::VK_TLS_GOT_GPREL_HI ||
-              VK == RISCVMCExpr::VK_TLS_GD_GPREL_HI);  
-#else
-             (VK == RISCVMCExpr::VK_None || VK == RISCVMCExpr::VK_HI ||
-              VK == RISCVMCExpr::VK_TPREL_HI);
-#endif // SIFIVE_CUSTOMIZATION
-    }
-=======
-
-    int64_t Imm;
-    if (evaluateConstantImm(getImm(), Imm))
       return isUInt<20>(Imm);
+#endif // SIFIVE_CUSTOMIZATION
 
+#ifndef SIFIVE_CUSTOMIZATION
     RISCVMCExpr::Specifier VK = RISCVMCExpr::VK_None;
+#endif // SIFIVE_CUSTOMIZATION
     return RISCVAsmParser::classifySymbolRef(getImm(), VK) &&
+#ifdef SIFIVE_CUSTOMIZATION
+           (VK == RISCVMCExpr::VK_HI || VK == RISCVMCExpr::VK_TPREL_HI ||
+            VK == RISCVMCExpr::VK_GPREL_HI ||
+            VK == RISCVMCExpr::VK_GOT_GPREL_HI ||
+            VK == RISCVMCExpr::VK_TLS_GOT_GPREL_HI ||
+            VK == RISCVMCExpr::VK_TLS_GD_GPREL_HI);
+#else
            (VK == RISCVMCExpr::VK_HI || VK == RISCVMCExpr::VK_TPREL_HI);
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   bool isUImm20AUIPC() const {
