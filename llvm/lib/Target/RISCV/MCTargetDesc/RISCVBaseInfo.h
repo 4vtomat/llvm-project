@@ -463,14 +463,11 @@ enum OperandType : unsigned {
   OPERAND_RVKRNUM_0_7,
   OPERAND_RVKRNUM_1_10,
   OPERAND_RVKRNUM_2_14,
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   OPERAND_XSFMM_VTYPE,
 #endif // SIFIVE_CUSTOMIZATION
-=======
   OPERAND_RLIST,
   OPERAND_RLIST_S0,
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
   OPERAND_SPIMM,
   // Operand is a 3-bit rounding mode, '111' indicates FRM register.
   // Represents 'frm' argument passing to floating-point operations.
