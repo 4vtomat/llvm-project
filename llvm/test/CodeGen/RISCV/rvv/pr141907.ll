@@ -8,14 +8,13 @@ define void @pr141907(ptr %0) nounwind {
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    slli a1, a1, 2
 ; CHECK-NEXT:    sub sp, sp, a1
-; CHECK-NEXT:    vsetvli a2, zero, e32, m1, ta, ma
+; CHECK-NEXT:    vsetivli zero, 0, e32, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
-; CHECK-NEXT:    li a1, 0
-; CHECK-NEXT:    addi a2, sp, 16
-; CHECK-NEXT:    vsetivli zero, 0, e8, mf4, ta, ma
 ; CHECK-NEXT:    vmclr.m v0
+; CHECK-NEXT:    li a1, 0
 ; CHECK-NEXT:    vsetvli a3, zero, e16, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v12, 0
+; CHECK-NEXT:    addi a2, sp, 16
 ; CHECK-NEXT:  .LBB0_1: # %vector.body
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    vs4r.v v8, (a2)

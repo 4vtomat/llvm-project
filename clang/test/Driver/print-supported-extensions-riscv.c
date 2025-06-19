@@ -119,13 +119,8 @@
 // CHECK-NEXT:     zvl8192b             1.0       'Zvl8192b' (Minimum Vector Length 8192)
 // CHECK-NEXT:     zhinx                1.0       'Zhinx' (Half Float in Integer)
 // CHECK-NEXT:     zhinxmin             1.0       'Zhinxmin' (Half Float in Integer Minimal)
-<<<<<<< HEAD
-// CHECK-NEXT:     sdext                1.0       'Sdext' (External Debugging Extension)
-// CHECK-NEXT:     sdtrig               1.0       'Sdtrig' (Debugging Triggers)
-=======
 // CHECK-NEXT:     sdext                1.0       'Sdext' (External debugger)
 // CHECK-NEXT:     sdtrig               1.0       'Sdtrig' (Debugger triggers)
->>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
 // CHECK-NEXT:     sha                  1.0       'Sha' (Augmented Hypervisor)
 // CHECK-NEXT:     shcounterenw         1.0       'Shcounterenw' (Support writeable hcounteren enable bit for any hpmcounter that is not read-only zero)
 // CHECK-NEXT:     shgatpa              1.0       'Shgatpa' (SvNNx4 mode supported for all modes supported by satp, as well as Bare)

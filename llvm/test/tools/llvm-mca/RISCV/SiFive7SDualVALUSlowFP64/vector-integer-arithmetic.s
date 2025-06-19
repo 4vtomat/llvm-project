@@ -779,43 +779,43 @@ vmv.v.v v4, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf2, tu, mu
 # CHECK-NEXT:  1      4     1.00                        vadd.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m1, tu, mu
-# CHECK-NEXT:  1      4     1.50                        vsub.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     1.00                        vsub.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m2, tu, mu
-# CHECK-NEXT:  1      4     2.50                        vsub.vx	v4, v8, a0
+# CHECK-NEXT:  1      4     2.00                        vsub.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m4, tu, mu
-# CHECK-NEXT:  1      4     4.50                        vrsub.vx	v4, v8, a0
+# CHECK-NEXT:  1      4     4.00                        vrsub.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m8, tu, mu
-# CHECK-NEXT:  1      4     8.50                        vrsub.vi	v4, v8, 0
+# CHECK-NEXT:  1      4     8.00                        vrsub.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf4, tu, mu
 # CHECK-NEXT:  1      4     1.00                        vadd.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf2, tu, mu
 # CHECK-NEXT:  1      4     1.00                        vadd.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m1, tu, mu
-# CHECK-NEXT:  1      4     1.50                        vadd.vi	v4, v8, 0
+# CHECK-NEXT:  1      4     1.00                        vadd.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m2, tu, mu
-# CHECK-NEXT:  1      4     2.50                        vsub.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     2.00                        vsub.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m4, tu, mu
-# CHECK-NEXT:  1      4     4.50                        vsub.vx	v4, v8, a0
+# CHECK-NEXT:  1      4     4.00                        vsub.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m8, tu, mu
-# CHECK-NEXT:  1      4     8.50                        vrsub.vx	v4, v8, a0
+# CHECK-NEXT:  1      4     8.00                        vrsub.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, mf2, tu, mu
 # CHECK-NEXT:  1      4     1.00                        vrsub.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu
-# CHECK-NEXT:  1      4     1.50                        vadd.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     1.00                        vadd.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m2, tu, mu
-# CHECK-NEXT:  1      4     2.50                        vadd.vx	v4, v8, a0
+# CHECK-NEXT:  1      4     2.00                        vadd.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m4, tu, mu
-# CHECK-NEXT:  1      4     4.50                        vadd.vi	v4, v8, 0
+# CHECK-NEXT:  1      4     4.00                        vadd.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m8, tu, mu
-# CHECK-NEXT:  1      4     8.50                        vsub.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     8.00                        vsub.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m1, tu, mu
-# CHECK-NEXT:  1      4     1.50                        vsub.vx	v4, v8, a0
+# CHECK-NEXT:  1      4     1.00                        vsub.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m2, tu, mu
-# CHECK-NEXT:  1      4     2.50                        vrsub.vx	v4, v8, a0
+# CHECK-NEXT:  1      4     2.00                        vrsub.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m4, tu, mu
-# CHECK-NEXT:  1      4     4.50                        vrsub.vi	v4, v8, 0
+# CHECK-NEXT:  1      4     4.00                        vrsub.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m8, tu, mu
-# CHECK-NEXT:  1      4     8.50                        vadd.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     8.00                        vadd.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf8, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vwaddu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf4, tu, mu
@@ -823,150 +823,150 @@ vmv.v.v v4, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf2, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vwsubu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m1, tu, mu
-# CHECK-NEXT:  1      8     1.50                        vwsubu.vx	v4, v8, a0
+# CHECK-NEXT:  1      8     1.00                        vwsubu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m2, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vwadd.vv	v4, v8, v12
+# CHECK-NEXT:  1      8     2.00                        vwadd.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m4, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vwadd.vx	v4, v8, a0
+# CHECK-NEXT:  1      8     4.00                        vwadd.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m8, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vwsub.vv	v4, v8, v12
+# CHECK-NEXT:  1      8     4.00                        vwsub.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf4, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vwsub.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf2, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vwaddu.wv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m1, tu, mu
-# CHECK-NEXT:  1      8     1.50                        vwaddu.wx	v4, v8, a0
+# CHECK-NEXT:  1      8     1.00                        vwaddu.wx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m2, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vwsubu.wv	v4, v8, v12
+# CHECK-NEXT:  1      8     2.00                        vwsubu.wv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m4, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vwsubu.wx	v4, v8, a0
+# CHECK-NEXT:  1      8     4.00                        vwsubu.wx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m8, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vwadd.wv	v4, v8, v12
+# CHECK-NEXT:  1      8     4.00                        vwadd.wv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, mf2, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vwadd.wx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu
-# CHECK-NEXT:  1      8     1.50                        vwsub.wv	v4, v8, v12
+# CHECK-NEXT:  1      8     1.00                        vwsub.wv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m2, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vwsub.wx	v4, v8, a0
+# CHECK-NEXT:  1      8     2.00                        vwsub.wx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m4, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vwaddu.vv	v4, v8, v12
+# CHECK-NEXT:  1      8     4.00                        vwaddu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m8, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vwaddu.vx	v4, v8, a0
+# CHECK-NEXT:  1      8     4.00                        vwaddu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf4, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vzext.vf2	v4, v8
-# CHECK-NEXT:  1      4     2.00                        vsext.vf2	v4, v8
+# CHECK-NEXT:  1      4     1.00                        vzext.vf2	v4, v8
+# CHECK-NEXT:  1      4     1.00                        vsext.vf2	v4, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf2, tu, mu
+# CHECK-NEXT:  1      4     1.00                        vzext.vf2	v4, v8
+# CHECK-NEXT:  1      4     1.00                        vsext.vf2	v4, v8
+# CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m1, tu, mu
 # CHECK-NEXT:  1      4     2.00                        vzext.vf2	v4, v8
 # CHECK-NEXT:  1      4     2.00                        vsext.vf2	v4, v8
-# CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m1, tu, mu
-# CHECK-NEXT:  1      4     3.00                        vzext.vf2	v4, v8
-# CHECK-NEXT:  1      4     3.00                        vsext.vf2	v4, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m2, tu, mu
-# CHECK-NEXT:  1      4     5.00                        vzext.vf2	v4, v8
-# CHECK-NEXT:  1      4     5.00                        vsext.vf2	v4, v8
+# CHECK-NEXT:  1      4     4.00                        vzext.vf2	v4, v8
+# CHECK-NEXT:  1      4     4.00                        vsext.vf2	v4, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m4, tu, mu
-# CHECK-NEXT:  1      4     9.00                        vzext.vf2	v4, v8
-# CHECK-NEXT:  1      4     9.00                        vsext.vf2	v4, v8
+# CHECK-NEXT:  1      4     8.00                        vzext.vf2	v4, v8
+# CHECK-NEXT:  1      4     8.00                        vsext.vf2	v4, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m8, tu, mu
-# CHECK-NEXT:  1      4     17.00                       vzext.vf2	v4, v8
-# CHECK-NEXT:  1      4     17.00                       vsext.vf2	v4, v8
+# CHECK-NEXT:  1      4     16.00                       vzext.vf2	v4, v8
+# CHECK-NEXT:  1      4     16.00                       vsext.vf2	v4, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, mf2, tu, mu
+# CHECK-NEXT:  1      4     1.00                        vzext.vf2	v4, v8
+# CHECK-NEXT:  1      4     1.00                        vsext.vf2	v4, v8
+# CHECK-NEXT:  1      4     1.00                        vzext.vf4	v4, v8
+# CHECK-NEXT:  1      4     1.00                        vsext.vf4	v4, v8
+# CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu
 # CHECK-NEXT:  1      4     2.00                        vzext.vf2	v4, v8
 # CHECK-NEXT:  1      4     2.00                        vsext.vf2	v4, v8
 # CHECK-NEXT:  1      4     2.00                        vzext.vf4	v4, v8
 # CHECK-NEXT:  1      4     2.00                        vsext.vf4	v4, v8
-# CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu
-# CHECK-NEXT:  1      4     3.00                        vzext.vf2	v4, v8
-# CHECK-NEXT:  1      4     3.00                        vsext.vf2	v4, v8
-# CHECK-NEXT:  1      4     3.00                        vzext.vf4	v4, v8
-# CHECK-NEXT:  1      4     3.00                        vsext.vf4	v4, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m2, tu, mu
-# CHECK-NEXT:  1      4     5.00                        vzext.vf2	v4, v8
-# CHECK-NEXT:  1      4     5.00                        vsext.vf2	v4, v8
-# CHECK-NEXT:  1      4     5.00                        vzext.vf4	v4, v8
-# CHECK-NEXT:  1      4     5.00                        vsext.vf4	v4, v8
+# CHECK-NEXT:  1      4     4.00                        vzext.vf2	v4, v8
+# CHECK-NEXT:  1      4     4.00                        vsext.vf2	v4, v8
+# CHECK-NEXT:  1      4     4.00                        vzext.vf4	v4, v8
+# CHECK-NEXT:  1      4     4.00                        vsext.vf4	v4, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m4, tu, mu
-# CHECK-NEXT:  1      4     9.00                        vzext.vf2	v4, v8
-# CHECK-NEXT:  1      4     9.00                        vsext.vf2	v4, v8
-# CHECK-NEXT:  1      4     9.00                        vzext.vf4	v4, v8
-# CHECK-NEXT:  1      4     9.00                        vsext.vf4	v4, v8
+# CHECK-NEXT:  1      4     8.00                        vzext.vf2	v4, v8
+# CHECK-NEXT:  1      4     8.00                        vsext.vf2	v4, v8
+# CHECK-NEXT:  1      4     8.00                        vzext.vf4	v4, v8
+# CHECK-NEXT:  1      4     8.00                        vsext.vf4	v4, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m8, tu, mu
-# CHECK-NEXT:  1      4     17.00                       vzext.vf2	v4, v8
-# CHECK-NEXT:  1      4     17.00                       vsext.vf2	v4, v8
-# CHECK-NEXT:  1      4     17.00                       vzext.vf4	v4, v8
-# CHECK-NEXT:  1      4     17.00                       vsext.vf4	v4, v8
+# CHECK-NEXT:  1      4     16.00                       vzext.vf2	v4, v8
+# CHECK-NEXT:  1      4     16.00                       vsext.vf2	v4, v8
+# CHECK-NEXT:  1      4     16.00                       vzext.vf4	v4, v8
+# CHECK-NEXT:  1      4     16.00                       vsext.vf4	v4, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m1, tu, mu
-# CHECK-NEXT:  1      4     3.00                        vzext.vf2	v4, v8
-# CHECK-NEXT:  1      4     3.00                        vsext.vf2	v4, v8
-# CHECK-NEXT:  1      4     3.00                        vzext.vf4	v4, v8
-# CHECK-NEXT:  1      4     3.00                        vsext.vf4	v4, v8
-# CHECK-NEXT:  1      4     3.00                        vzext.vf8	v4, v8
-# CHECK-NEXT:  1      4     3.00                        vsext.vf8	v4, v8
+# CHECK-NEXT:  1      4     2.00                        vzext.vf2	v4, v8
+# CHECK-NEXT:  1      4     2.00                        vsext.vf2	v4, v8
+# CHECK-NEXT:  1      4     2.00                        vzext.vf4	v4, v8
+# CHECK-NEXT:  1      4     2.00                        vsext.vf4	v4, v8
+# CHECK-NEXT:  1      4     2.00                        vzext.vf8	v4, v8
+# CHECK-NEXT:  1      4     2.00                        vsext.vf8	v4, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m2, tu, mu
-# CHECK-NEXT:  1      4     5.00                        vzext.vf2	v4, v8
-# CHECK-NEXT:  1      4     5.00                        vsext.vf2	v4, v8
-# CHECK-NEXT:  1      4     5.00                        vzext.vf4	v4, v8
-# CHECK-NEXT:  1      4     5.00                        vsext.vf4	v4, v8
-# CHECK-NEXT:  1      4     5.00                        vzext.vf8	v4, v8
-# CHECK-NEXT:  1      4     5.00                        vsext.vf8	v4, v8
+# CHECK-NEXT:  1      4     4.00                        vzext.vf2	v4, v8
+# CHECK-NEXT:  1      4     4.00                        vsext.vf2	v4, v8
+# CHECK-NEXT:  1      4     4.00                        vzext.vf4	v4, v8
+# CHECK-NEXT:  1      4     4.00                        vsext.vf4	v4, v8
+# CHECK-NEXT:  1      4     4.00                        vzext.vf8	v4, v8
+# CHECK-NEXT:  1      4     4.00                        vsext.vf8	v4, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m4, tu, mu
-# CHECK-NEXT:  1      4     9.00                        vzext.vf2	v4, v8
-# CHECK-NEXT:  1      4     9.00                        vsext.vf2	v4, v8
-# CHECK-NEXT:  1      4     9.00                        vzext.vf4	v4, v8
-# CHECK-NEXT:  1      4     9.00                        vsext.vf4	v4, v8
-# CHECK-NEXT:  1      4     9.00                        vzext.vf8	v4, v8
-# CHECK-NEXT:  1      4     9.00                        vsext.vf8	v4, v8
+# CHECK-NEXT:  1      4     8.00                        vzext.vf2	v4, v8
+# CHECK-NEXT:  1      4     8.00                        vsext.vf2	v4, v8
+# CHECK-NEXT:  1      4     8.00                        vzext.vf4	v4, v8
+# CHECK-NEXT:  1      4     8.00                        vsext.vf4	v4, v8
+# CHECK-NEXT:  1      4     8.00                        vzext.vf8	v4, v8
+# CHECK-NEXT:  1      4     8.00                        vsext.vf8	v4, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m8, tu, mu
-# CHECK-NEXT:  1      4     17.00                       vzext.vf2	v4, v8
-# CHECK-NEXT:  1      4     17.00                       vsext.vf2	v4, v8
-# CHECK-NEXT:  1      4     17.00                       vzext.vf4	v4, v8
-# CHECK-NEXT:  1      4     17.00                       vsext.vf4	v4, v8
-# CHECK-NEXT:  1      4     17.00                       vzext.vf8	v4, v8
-# CHECK-NEXT:  1      4     17.00                       vsext.vf8	v4, v8
+# CHECK-NEXT:  1      4     16.00                       vzext.vf2	v4, v8
+# CHECK-NEXT:  1      4     16.00                       vsext.vf2	v4, v8
+# CHECK-NEXT:  1      4     16.00                       vzext.vf4	v4, v8
+# CHECK-NEXT:  1      4     16.00                       vsext.vf4	v4, v8
+# CHECK-NEXT:  1      4     16.00                       vzext.vf8	v4, v8
+# CHECK-NEXT:  1      4     16.00                       vsext.vf8	v4, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf8, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vadc.vvm	v4, v8, v12, v0
+# CHECK-NEXT:  1      4     1.00                        vadc.vvm	v4, v8, v12, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf4, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vadc.vxm	v4, v8, a0, v0
+# CHECK-NEXT:  1      4     1.00                        vadc.vxm	v4, v8, a0, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf2, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vadc.vim	v4, v8, 0, v0
+# CHECK-NEXT:  1      4     1.00                        vadc.vim	v4, v8, 0, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m1, tu, mu
-# CHECK-NEXT:  1      4     3.00                        vmadc.vvm	v4, v8, v12, v0
+# CHECK-NEXT:  1      4     2.00                        vmadc.vvm	v4, v8, v12, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m2, tu, mu
-# CHECK-NEXT:  1      4     5.00                        vmadc.vxm	v4, v8, a0, v0
+# CHECK-NEXT:  1      4     4.00                        vmadc.vxm	v4, v8, a0, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m4, tu, mu
-# CHECK-NEXT:  1      4     9.00                        vmadc.vim	v4, v8, 0, v0
+# CHECK-NEXT:  1      4     8.00                        vmadc.vim	v4, v8, 0, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m8, tu, mu
-# CHECK-NEXT:  1      4     17.00                       vmadc.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     16.00                       vmadc.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf4, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vmadc.vx	v4, v8, a0
+# CHECK-NEXT:  1      4     1.00                        vmadc.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf2, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vmadc.vi	v4, v8, 0
+# CHECK-NEXT:  1      4     1.00                        vmadc.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m1, tu, mu
-# CHECK-NEXT:  1      4     3.00                        vsbc.vvm	v4, v8, v12, v0
+# CHECK-NEXT:  1      4     2.00                        vsbc.vvm	v4, v8, v12, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m2, tu, mu
-# CHECK-NEXT:  1      4     5.00                        vsbc.vxm	v4, v8, a0, v0
+# CHECK-NEXT:  1      4     4.00                        vsbc.vxm	v4, v8, a0, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m4, tu, mu
-# CHECK-NEXT:  1      4     9.00                        vmsbc.vvm	v4, v8, v12, v0
+# CHECK-NEXT:  1      4     8.00                        vmsbc.vvm	v4, v8, v12, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m8, tu, mu
-# CHECK-NEXT:  1      4     17.00                       vmsbc.vxm	v4, v8, a0, v0
+# CHECK-NEXT:  1      4     16.00                       vmsbc.vxm	v4, v8, a0, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, mf2, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vmsbc.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     1.00                        vmsbc.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu
-# CHECK-NEXT:  1      4     3.00                        vmsbc.vx	v4, v8, a0
+# CHECK-NEXT:  1      4     2.00                        vmsbc.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m2, tu, mu
-# CHECK-NEXT:  1      4     5.00                        vadc.vvm	v4, v8, v12, v0
+# CHECK-NEXT:  1      4     4.00                        vadc.vvm	v4, v8, v12, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m4, tu, mu
-# CHECK-NEXT:  1      4     9.00                        vadc.vxm	v4, v8, a0, v0
+# CHECK-NEXT:  1      4     8.00                        vadc.vxm	v4, v8, a0, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m8, tu, mu
-# CHECK-NEXT:  1      4     17.00                       vadc.vim	v4, v8, 0, v0
+# CHECK-NEXT:  1      4     16.00                       vadc.vim	v4, v8, 0, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m1, tu, mu
-# CHECK-NEXT:  1      4     3.00                        vmadc.vvm	v4, v8, v12, v0
+# CHECK-NEXT:  1      4     2.00                        vmadc.vvm	v4, v8, v12, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m2, tu, mu
-# CHECK-NEXT:  1      4     5.00                        vmadc.vxm	v4, v8, a0, v0
+# CHECK-NEXT:  1      4     4.00                        vmadc.vxm	v4, v8, a0, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m4, tu, mu
-# CHECK-NEXT:  1      4     9.00                        vmadc.vim	v4, v8, 0, v0
+# CHECK-NEXT:  1      4     8.00                        vmadc.vim	v4, v8, 0, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m8, tu, mu
-# CHECK-NEXT:  1      4     17.00                       vmadc.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     16.00                       vmadc.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf8, tu, mu
 # CHECK-NEXT:  1      4     1.00                        vand.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf4, tu, mu
@@ -974,43 +974,43 @@ vmv.v.v v4, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf2, tu, mu
 # CHECK-NEXT:  1      4     1.00                        vand.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m1, tu, mu
-# CHECK-NEXT:  1      4     1.50                        vor.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     1.00                        vor.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m2, tu, mu
-# CHECK-NEXT:  1      4     2.50                        vor.vx	v4, v8, a0
+# CHECK-NEXT:  1      4     2.00                        vor.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m4, tu, mu
-# CHECK-NEXT:  1      4     4.50                        vor.vi	v4, v8, 0
+# CHECK-NEXT:  1      4     4.00                        vor.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m8, tu, mu
-# CHECK-NEXT:  1      4     8.50                        vxor.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     8.00                        vxor.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf4, tu, mu
 # CHECK-NEXT:  1      4     1.00                        vxor.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf2, tu, mu
 # CHECK-NEXT:  1      4     1.00                        vxor.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m1, tu, mu
-# CHECK-NEXT:  1      4     1.50                        vand.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     1.00                        vand.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m2, tu, mu
-# CHECK-NEXT:  1      4     2.50                        vand.vx	v4, v8, a0
+# CHECK-NEXT:  1      4     2.00                        vand.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m4, tu, mu
-# CHECK-NEXT:  1      4     4.50                        vand.vi	v4, v8, 0
+# CHECK-NEXT:  1      4     4.00                        vand.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m8, tu, mu
-# CHECK-NEXT:  1      4     8.50                        vor.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     8.00                        vor.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, mf2, tu, mu
 # CHECK-NEXT:  1      4     1.00                        vor.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu
-# CHECK-NEXT:  1      4     1.50                        vor.vi	v4, v8, 0
+# CHECK-NEXT:  1      4     1.00                        vor.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m2, tu, mu
-# CHECK-NEXT:  1      4     2.50                        vxor.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     2.00                        vxor.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m4, tu, mu
-# CHECK-NEXT:  1      4     4.50                        vxor.vx	v4, v8, a0
+# CHECK-NEXT:  1      4     4.00                        vxor.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m8, tu, mu
-# CHECK-NEXT:  1      4     8.50                        vxor.vi	v4, v8, 0
+# CHECK-NEXT:  1      4     8.00                        vxor.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m1, tu, mu
-# CHECK-NEXT:  1      4     1.50                        vand.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     1.00                        vand.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m2, tu, mu
-# CHECK-NEXT:  1      4     2.50                        vand.vx	v4, v8, a0
+# CHECK-NEXT:  1      4     2.00                        vand.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m4, tu, mu
-# CHECK-NEXT:  1      4     4.50                        vand.vi	v4, v8, 0
+# CHECK-NEXT:  1      4     4.00                        vand.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m8, tu, mu
-# CHECK-NEXT:  1      4     8.50                        vor.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     8.00                        vor.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf8, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vsll.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf4, tu, mu
@@ -1018,175 +1018,175 @@ vmv.v.v v4, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf2, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vsll.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m1, tu, mu
-# CHECK-NEXT:  1      8     1.50                        vsrl.vv	v4, v8, v12
+# CHECK-NEXT:  1      8     1.00                        vsrl.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m2, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vsrl.vx	v4, v8, a0
+# CHECK-NEXT:  1      8     2.00                        vsrl.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m4, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vsrl.vi	v4, v8, 0
+# CHECK-NEXT:  1      8     4.00                        vsrl.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m8, tu, mu
-# CHECK-NEXT:  1      8     8.50                        vsra.vv	v4, v8, v12
+# CHECK-NEXT:  1      8     8.00                        vsra.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf4, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vsra.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf2, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vsra.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m1, tu, mu
-# CHECK-NEXT:  1      8     1.50                        vsll.vv	v4, v8, v12
+# CHECK-NEXT:  1      8     1.00                        vsll.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m2, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vsll.vx	v4, v8, a0
+# CHECK-NEXT:  1      8     2.00                        vsll.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m4, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vsll.vi	v4, v8, 0
+# CHECK-NEXT:  1      8     4.00                        vsll.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m8, tu, mu
-# CHECK-NEXT:  1      8     8.50                        vsrl.vv	v4, v8, v12
+# CHECK-NEXT:  1      8     8.00                        vsrl.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, mf2, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vsrl.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu
-# CHECK-NEXT:  1      8     1.50                        vsrl.vi	v4, v8, 0
+# CHECK-NEXT:  1      8     1.00                        vsrl.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m2, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vsra.vv	v4, v8, v12
+# CHECK-NEXT:  1      8     2.00                        vsra.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m4, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vsra.vx	v4, v8, a0
+# CHECK-NEXT:  1      8     4.00                        vsra.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m8, tu, mu
-# CHECK-NEXT:  1      8     8.50                        vsra.vi	v4, v8, 0
+# CHECK-NEXT:  1      8     8.00                        vsra.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m1, tu, mu
-# CHECK-NEXT:  1      8     1.50                        vsll.vv	v4, v8, v12
+# CHECK-NEXT:  1      8     1.00                        vsll.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m2, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vsll.vx	v4, v8, a0
+# CHECK-NEXT:  1      8     2.00                        vsll.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m4, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vsll.vi	v4, v8, 0
+# CHECK-NEXT:  1      8     4.00                        vsll.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m8, tu, mu
-# CHECK-NEXT:  1      8     8.50                        vsrl.vv	v4, v8, v12
+# CHECK-NEXT:  1      8     8.00                        vsrl.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf8, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vnsrl.wv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf4, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vnsrl.wx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf2, tu, mu
-# CHECK-NEXT:  1      8     1.50                        vnsrl.wi	v4, v8, 0
+# CHECK-NEXT:  1      8     1.00                        vnsrl.wi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m1, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vnsra.wv	v4, v8, v12
+# CHECK-NEXT:  1      8     2.00                        vnsra.wv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m2, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vnsra.wx	v4, v8, a0
+# CHECK-NEXT:  1      8     4.00                        vnsra.wx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m4, tu, mu
-# CHECK-NEXT:  1      8     8.50                        vnsra.wi	v4, v8, 0
+# CHECK-NEXT:  1      8     8.00                        vnsra.wi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m8, tu, mu
-# CHECK-NEXT:  1      8     8.50                        vnsrl.wv	v4, v8, v12
+# CHECK-NEXT:  1      8     8.00                        vnsrl.wv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf4, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vnsrl.wx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf2, tu, mu
-# CHECK-NEXT:  1      8     1.50                        vnsrl.wi	v4, v8, 0
+# CHECK-NEXT:  1      8     1.00                        vnsrl.wi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m1, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vnsra.wv	v4, v8, v12
+# CHECK-NEXT:  1      8     2.00                        vnsra.wv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m2, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vnsra.wx	v4, v8, a0
+# CHECK-NEXT:  1      8     4.00                        vnsra.wx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m4, tu, mu
-# CHECK-NEXT:  1      8     8.50                        vnsra.wi	v4, v8, 0
+# CHECK-NEXT:  1      8     8.00                        vnsra.wi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m8, tu, mu
-# CHECK-NEXT:  1      8     8.50                        vnsrl.wv	v4, v8, v12
+# CHECK-NEXT:  1      8     8.00                        vnsrl.wv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, mf2, tu, mu
-# CHECK-NEXT:  1      8     1.50                        vnsrl.wx	v4, v8, a0
+# CHECK-NEXT:  1      8     1.00                        vnsrl.wx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vnsrl.wi	v4, v8, 0
+# CHECK-NEXT:  1      8     2.00                        vnsrl.wi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m2, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vnsra.wv	v4, v8, v12
+# CHECK-NEXT:  1      8     4.00                        vnsra.wv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m4, tu, mu
-# CHECK-NEXT:  1      8     8.50                        vnsra.wx	v4, v8, a0
+# CHECK-NEXT:  1      8     8.00                        vnsra.wx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m8, tu, mu
-# CHECK-NEXT:  1      8     8.50                        vnsra.wi	v4, v8, 0
+# CHECK-NEXT:  1      8     8.00                        vnsra.wi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m1, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vnsrl.wv	v4, v8, v12
+# CHECK-NEXT:  1      8     2.00                        vnsrl.wv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m2, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vnsrl.wx	v4, v8, a0
+# CHECK-NEXT:  1      8     4.00                        vnsrl.wx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m4, tu, mu
-# CHECK-NEXT:  1      8     8.50                        vnsrl.wi	v4, v8, 0
+# CHECK-NEXT:  1      8     8.00                        vnsrl.wi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m8, tu, mu
-# CHECK-NEXT:  1      8     8.50                        vnsra.wv	v4, v8, v12
+# CHECK-NEXT:  1      8     8.00                        vnsra.wv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf8, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vmseq.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     1.00                        vmseq.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf4, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vmseq.vx	v4, v8, a0
+# CHECK-NEXT:  1      4     1.00                        vmseq.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf2, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vmseq.vi	v4, v8, 0
+# CHECK-NEXT:  1      4     1.00                        vmseq.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m1, tu, mu
-# CHECK-NEXT:  1      5     3.00                        vmsne.vv	v4, v8, v12
+# CHECK-NEXT:  1      5     2.00                        vmsne.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m2, tu, mu
-# CHECK-NEXT:  1      7     5.00                        vmsne.vx	v4, v8, a0
+# CHECK-NEXT:  1      7     4.00                        vmsne.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m4, tu, mu
-# CHECK-NEXT:  1      11    9.00                        vmsne.vi	v4, v8, 0
+# CHECK-NEXT:  1      11    8.00                        vmsne.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m8, tu, mu
-# CHECK-NEXT:  1      19    17.00                       vmsltu.vv	v4, v8, v12
+# CHECK-NEXT:  1      19    16.00                       vmsltu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf4, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vmsltu.vx	v4, v8, a0
+# CHECK-NEXT:  1      4     1.00                        vmsltu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf2, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vmslt.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     1.00                        vmslt.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m1, tu, mu
-# CHECK-NEXT:  1      5     3.00                        vmslt.vx	v4, v8, a0
+# CHECK-NEXT:  1      5     2.00                        vmslt.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m2, tu, mu
-# CHECK-NEXT:  1      7     5.00                        vmsleu.vv	v4, v8, v12
+# CHECK-NEXT:  1      7     4.00                        vmsleu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m4, tu, mu
-# CHECK-NEXT:  1      11    9.00                        vmsleu.vx	v4, v8, a0
+# CHECK-NEXT:  1      11    8.00                        vmsleu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m8, tu, mu
-# CHECK-NEXT:  1      19    17.00                       vmsleu.vi	v4, v8, 0
+# CHECK-NEXT:  1      19    16.00                       vmsleu.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, mf2, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vmsle.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     1.00                        vmsle.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu
-# CHECK-NEXT:  1      5     3.00                        vmsle.vx	v4, v8, a0
+# CHECK-NEXT:  1      5     2.00                        vmsle.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m2, tu, mu
-# CHECK-NEXT:  1      7     5.00                        vmsle.vi	v4, v8, 0
+# CHECK-NEXT:  1      7     4.00                        vmsle.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m4, tu, mu
-# CHECK-NEXT:  1      11    9.00                        vmsgtu.vx	v4, v8, a0
+# CHECK-NEXT:  1      11    8.00                        vmsgtu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m8, tu, mu
-# CHECK-NEXT:  1      19    17.00                       vmsgtu.vi	v4, v8, 0
+# CHECK-NEXT:  1      19    16.00                       vmsgtu.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m1, tu, mu
-# CHECK-NEXT:  1      5     3.00                        vmsgt.vx	v4, v8, a0
+# CHECK-NEXT:  1      5     2.00                        vmsgt.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m2, tu, mu
-# CHECK-NEXT:  1      7     5.00                        vmsgt.vi	v4, v8, 0
+# CHECK-NEXT:  1      7     4.00                        vmsgt.vi	v4, v8, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m4, tu, mu
-# CHECK-NEXT:  1      11    9.00                        vmseq.vv	v4, v8, v12
+# CHECK-NEXT:  1      11    8.00                        vmseq.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m8, tu, mu
-# CHECK-NEXT:  1      19    17.00                       vmseq.vx	v4, v8, a0
+# CHECK-NEXT:  1      19    16.00                       vmseq.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf8, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vminu.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     1.00                        vminu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf4, tu, mu
+# CHECK-NEXT:  1      4     1.00                        vminu.vx	v4, v8, a0
+# CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf2, tu, mu
+# CHECK-NEXT:  1      4     1.00                        vmin.vv	v4, v8, v12
+# CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m1, tu, mu
+# CHECK-NEXT:  1      4     2.00                        vmin.vx	v4, v8, a0
+# CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m2, tu, mu
+# CHECK-NEXT:  1      4     4.00                        vmaxu.vv	v4, v8, v12
+# CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m4, tu, mu
+# CHECK-NEXT:  1      4     8.00                        vmaxu.vx	v4, v8, a0
+# CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m8, tu, mu
+# CHECK-NEXT:  1      4     16.00                       vmax.vv	v4, v8, v12
+# CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf4, tu, mu
+# CHECK-NEXT:  1      4     1.00                        vmax.vx	v4, v8, a0
+# CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf2, tu, mu
+# CHECK-NEXT:  1      4     1.00                        vminu.vv	v4, v8, v12
+# CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m1, tu, mu
 # CHECK-NEXT:  1      4     2.00                        vminu.vx	v4, v8, a0
-# CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf2, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vmin.vv	v4, v8, v12
-# CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m1, tu, mu
-# CHECK-NEXT:  1      4     3.00                        vmin.vx	v4, v8, a0
-# CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m2, tu, mu
-# CHECK-NEXT:  1      4     5.00                        vmaxu.vv	v4, v8, v12
-# CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m4, tu, mu
-# CHECK-NEXT:  1      4     9.00                        vmaxu.vx	v4, v8, a0
-# CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m8, tu, mu
-# CHECK-NEXT:  1      4     17.00                       vmax.vv	v4, v8, v12
-# CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf4, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vmax.vx	v4, v8, a0
-# CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf2, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vminu.vv	v4, v8, v12
-# CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m1, tu, mu
-# CHECK-NEXT:  1      4     3.00                        vminu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m2, tu, mu
-# CHECK-NEXT:  1      4     5.00                        vmin.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     4.00                        vmin.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m4, tu, mu
-# CHECK-NEXT:  1      4     9.00                        vmin.vx	v4, v8, a0
+# CHECK-NEXT:  1      4     8.00                        vmin.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m8, tu, mu
-# CHECK-NEXT:  1      4     17.00                       vmaxu.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     16.00                       vmaxu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, mf2, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vmaxu.vx	v4, v8, a0
+# CHECK-NEXT:  1      4     1.00                        vmaxu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu
-# CHECK-NEXT:  1      4     3.00                        vmax.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     2.00                        vmax.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m2, tu, mu
-# CHECK-NEXT:  1      4     5.00                        vmax.vx	v4, v8, a0
+# CHECK-NEXT:  1      4     4.00                        vmax.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m4, tu, mu
-# CHECK-NEXT:  1      4     9.00                        vminu.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     8.00                        vminu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m8, tu, mu
-# CHECK-NEXT:  1      4     17.00                       vminu.vx	v4, v8, a0
+# CHECK-NEXT:  1      4     16.00                       vminu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m1, tu, mu
-# CHECK-NEXT:  1      4     3.00                        vmin.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     2.00                        vmin.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m2, tu, mu
-# CHECK-NEXT:  1      4     5.00                        vmin.vx	v4, v8, a0
+# CHECK-NEXT:  1      4     4.00                        vmin.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m4, tu, mu
-# CHECK-NEXT:  1      4     9.00                        vmaxu.vv	v4, v8, v12
+# CHECK-NEXT:  1      4     8.00                        vmaxu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m8, tu, mu
-# CHECK-NEXT:  1      4     17.00                       vmaxu.vx	v4, v8, a0
+# CHECK-NEXT:  1      4     16.00                       vmaxu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf8, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vmul.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf4, tu, mu
@@ -1194,87 +1194,87 @@ vmv.v.v v4, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf2, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vmulh.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m1, tu, mu
-# CHECK-NEXT:  1      8     1.50                        vmulh.vx	v4, v8, a0
+# CHECK-NEXT:  1      8     1.00                        vmulh.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m2, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vmulhu.vv	v4, v8, v12
+# CHECK-NEXT:  1      8     2.00                        vmulhu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m4, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vmulhu.vx	v4, v8, a0
+# CHECK-NEXT:  1      8     4.00                        vmulhu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m8, tu, mu
-# CHECK-NEXT:  1      8     8.50                        vmulhsu.vv	v4, v8, v12
+# CHECK-NEXT:  1      8     8.00                        vmulhsu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf4, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vmulhsu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf2, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vmul.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m1, tu, mu
-# CHECK-NEXT:  1      8     1.50                        vmul.vx	v4, v8, a0
+# CHECK-NEXT:  1      8     1.00                        vmul.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m2, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vmulh.vv	v4, v8, v12
+# CHECK-NEXT:  1      8     2.00                        vmulh.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m4, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vmulh.vx	v4, v8, a0
+# CHECK-NEXT:  1      8     4.00                        vmulh.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m8, tu, mu
-# CHECK-NEXT:  1      8     8.50                        vmulhu.vv	v4, v8, v12
+# CHECK-NEXT:  1      8     8.00                        vmulhu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, mf2, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vmulhu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu
-# CHECK-NEXT:  1      8     1.50                        vmulhsu.vv	v4, v8, v12
+# CHECK-NEXT:  1      8     1.00                        vmulhsu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m2, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vmulhsu.vx	v4, v8, a0
+# CHECK-NEXT:  1      8     2.00                        vmulhsu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m4, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vmul.vv	v4, v8, v12
+# CHECK-NEXT:  1      8     4.00                        vmul.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m8, tu, mu
-# CHECK-NEXT:  1      8     8.50                        vmul.vx	v4, v8, a0
+# CHECK-NEXT:  1      8     8.00                        vmul.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m1, tu, mu
-# CHECK-NEXT:  1      8     1.50                        vmulh.vv	v4, v8, v12
+# CHECK-NEXT:  1      8     1.00                        vmulh.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m2, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vmulh.vx	v4, v8, a0
+# CHECK-NEXT:  1      8     2.00                        vmulh.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m4, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vmulhu.vv	v4, v8, v12
+# CHECK-NEXT:  1      8     4.00                        vmulhu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m8, tu, mu
-# CHECK-NEXT:  1      8     8.50                        vmulhu.vx	v4, v8, a0
+# CHECK-NEXT:  1      8     8.00                        vmulhu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf8, tu, mu
-# CHECK-NEXT:  1      32    33.00                       vdivu.vv	v4, v8, v12
+# CHECK-NEXT:  1      32    32.00                       vdivu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf4, tu, mu
-# CHECK-NEXT:  1      64    65.00                       vdivu.vx	v4, v8, a0
+# CHECK-NEXT:  1      64    64.00                       vdivu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf2, tu, mu
-# CHECK-NEXT:  1      128   129.00                      vdiv.vv	v4, v8, v12
+# CHECK-NEXT:  1      128   128.00                      vdiv.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m1, tu, mu
-# CHECK-NEXT:  1      256   257.00                      vdiv.vx	v4, v8, a0
+# CHECK-NEXT:  1      256   256.00                      vdiv.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m2, tu, mu
-# CHECK-NEXT:  1      512   513.00                      vremu.vv	v4, v8, v12
+# CHECK-NEXT:  1      512   512.00                      vremu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m4, tu, mu
-# CHECK-NEXT:  1      1024   1025.00                      vremu.vx	v4, v8, a0
+# CHECK-NEXT:  1      1024  1024.00                     vremu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m8, tu, mu
-# CHECK-NEXT:  1      2048   2049.00                      vrem.vv	v4, v8, v12
+# CHECK-NEXT:  1      2048  2048.00                     vrem.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf4, tu, mu
-# CHECK-NEXT:  1      64    65.00                       vrem.vx	v4, v8, a0
+# CHECK-NEXT:  1      64    64.00                       vrem.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf2, tu, mu
-# CHECK-NEXT:  1      128   129.00                      vdivu.vv	v4, v8, v12
+# CHECK-NEXT:  1      128   128.00                      vdivu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m1, tu, mu
-# CHECK-NEXT:  1      256   257.00                      vdivu.vx	v4, v8, a0
+# CHECK-NEXT:  1      256   256.00                      vdivu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m2, tu, mu
-# CHECK-NEXT:  1      512   513.00                      vdiv.vv	v4, v8, v12
+# CHECK-NEXT:  1      512   512.00                      vdiv.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m4, tu, mu
-# CHECK-NEXT:  1      1024   1025.00                      vdiv.vx	v4, v8, a0
+# CHECK-NEXT:  1      1024  1024.00                     vdiv.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m8, tu, mu
-# CHECK-NEXT:  1      2048   2049.00                      vremu.vv	v4, v8, v12
+# CHECK-NEXT:  1      2048  2048.00                     vremu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, mf2, tu, mu
-# CHECK-NEXT:  1      128   129.00                      vremu.vx	v4, v8, a0
+# CHECK-NEXT:  1      128   128.00                      vremu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu
-# CHECK-NEXT:  1      256   257.00                      vrem.vv	v4, v8, v12
+# CHECK-NEXT:  1      256   256.00                      vrem.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m2, tu, mu
-# CHECK-NEXT:  1      512   513.00                      vrem.vx	v4, v8, a0
+# CHECK-NEXT:  1      512   512.00                      vrem.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m4, tu, mu
-# CHECK-NEXT:  1      1024   1025.00                      vdivu.vv	v4, v8, v12
+# CHECK-NEXT:  1      1024  1024.00                     vdivu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m8, tu, mu
-# CHECK-NEXT:  1      2048   2049.00                      vdivu.vx	v4, v8, a0
+# CHECK-NEXT:  1      2048  2048.00                     vdivu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m1, tu, mu
-# CHECK-NEXT:  1      256   257.00                      vdiv.vv	v4, v8, v12
+# CHECK-NEXT:  1      256   256.00                      vdiv.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m2, tu, mu
-# CHECK-NEXT:  1      512   513.00                      vdiv.vx	v4, v8, a0
+# CHECK-NEXT:  1      512   512.00                      vdiv.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m4, tu, mu
-# CHECK-NEXT:  1      1024   1025.00                      vremu.vv	v4, v8, v12
+# CHECK-NEXT:  1      1024  1024.00                     vremu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m8, tu, mu
-# CHECK-NEXT:  1      2048   2049.00                      vremu.vx	v4, v8, a0
+# CHECK-NEXT:  1      2048  2048.00                     vremu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf8, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vwmul.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf4, tu, mu
@@ -1282,35 +1282,35 @@ vmv.v.v v4, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf2, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vwmulu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m1, tu, mu
-# CHECK-NEXT:  1      8     1.50                        vwmulu.vx	v4, v8, a0
+# CHECK-NEXT:  1      8     1.00                        vwmulu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m2, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vwmulsu.vv	v4, v8, v12
+# CHECK-NEXT:  1      8     2.00                        vwmulsu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m4, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vwmulsu.vx	v4, v8, a0
+# CHECK-NEXT:  1      8     4.00                        vwmulsu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m8, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vwmul.vv	v4, v8, v12
+# CHECK-NEXT:  1      8     4.00                        vwmul.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf4, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vwmul.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf2, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vwmulu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m1, tu, mu
-# CHECK-NEXT:  1      8     1.50                        vwmulu.vx	v4, v8, a0
+# CHECK-NEXT:  1      8     1.00                        vwmulu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m2, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vwmulsu.vv	v4, v8, v12
+# CHECK-NEXT:  1      8     2.00                        vwmulsu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m4, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vwmulsu.vx	v4, v8, a0
+# CHECK-NEXT:  1      8     4.00                        vwmulsu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m8, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vwmul.vv	v4, v8, v12
+# CHECK-NEXT:  1      8     4.00                        vwmul.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, mf2, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vwmul.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu
-# CHECK-NEXT:  1      8     1.50                        vwmulu.vv	v4, v8, v12
+# CHECK-NEXT:  1      8     1.00                        vwmulu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m2, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vwmulu.vx	v4, v8, a0
+# CHECK-NEXT:  1      8     2.00                        vwmulu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m4, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vwmulsu.vv	v4, v8, v12
+# CHECK-NEXT:  1      8     4.00                        vwmulsu.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m8, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vwmulsu.vx	v4, v8, a0
+# CHECK-NEXT:  1      8     4.00                        vwmulsu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf8, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vmacc.vv	v4, v12, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf4, tu, mu
@@ -1318,43 +1318,43 @@ vmv.v.v v4, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf2, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vnmsac.vv	v4, v12, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m1, tu, mu
-# CHECK-NEXT:  1      8     1.50                        vnmsac.vx	v4, a0, v8
+# CHECK-NEXT:  1      8     1.00                        vnmsac.vx	v4, a0, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m2, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vmadd.vv	v4, v12, v8
+# CHECK-NEXT:  1      8     2.00                        vmadd.vv	v4, v12, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m4, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vmadd.vx	v4, a0, v8
+# CHECK-NEXT:  1      8     4.00                        vmadd.vx	v4, a0, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m8, tu, mu
-# CHECK-NEXT:  1      8     8.50                        vnmsub.vv	v4, v12, v8
+# CHECK-NEXT:  1      8     8.00                        vnmsub.vv	v4, v12, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf4, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vnmsub.vx	v4, a0, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf2, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vmacc.vv	v4, v12, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m1, tu, mu
-# CHECK-NEXT:  1      8     1.50                        vmacc.vx	v4, a0, v8
+# CHECK-NEXT:  1      8     1.00                        vmacc.vx	v4, a0, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m2, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vnmsac.vv	v4, v12, v8
+# CHECK-NEXT:  1      8     2.00                        vnmsac.vv	v4, v12, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m4, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vnmsac.vx	v4, a0, v8
+# CHECK-NEXT:  1      8     4.00                        vnmsac.vx	v4, a0, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m8, tu, mu
-# CHECK-NEXT:  1      8     8.50                        vmadd.vv	v4, v12, v8
+# CHECK-NEXT:  1      8     8.00                        vmadd.vv	v4, v12, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, mf2, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vmadd.vx	v4, a0, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu
-# CHECK-NEXT:  1      8     1.50                        vnmsub.vv	v4, v12, v8
+# CHECK-NEXT:  1      8     1.00                        vnmsub.vv	v4, v12, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m2, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vnmsub.vx	v4, a0, v8
+# CHECK-NEXT:  1      8     2.00                        vnmsub.vx	v4, a0, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m4, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vmacc.vv	v4, v12, v8
+# CHECK-NEXT:  1      8     4.00                        vmacc.vv	v4, v12, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m8, tu, mu
-# CHECK-NEXT:  1      8     8.50                        vmacc.vx	v4, a0, v8
+# CHECK-NEXT:  1      8     8.00                        vmacc.vx	v4, a0, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m1, tu, mu
-# CHECK-NEXT:  1      8     1.50                        vnmsac.vv	v4, v12, v8
+# CHECK-NEXT:  1      8     1.00                        vnmsac.vv	v4, v12, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m2, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vnmsac.vx	v4, a0, v8
+# CHECK-NEXT:  1      8     2.00                        vnmsac.vx	v4, a0, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m4, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vmadd.vv	v4, v12, v8
+# CHECK-NEXT:  1      8     4.00                        vmadd.vv	v4, v12, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m8, tu, mu
-# CHECK-NEXT:  1      8     8.50                        vmadd.vx	v4, a0, v8
+# CHECK-NEXT:  1      8     8.00                        vmadd.vx	v4, a0, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf8, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vwmaccu.vv	v4, v12, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf4, tu, mu
@@ -1362,79 +1362,79 @@ vmv.v.v v4, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf2, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vwmacc.vv	v4, v12, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m1, tu, mu
-# CHECK-NEXT:  1      8     1.50                        vwmacc.vx	v4, a0, v8
+# CHECK-NEXT:  1      8     1.00                        vwmacc.vx	v4, a0, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m2, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vwmaccsu.vv	v4, v12, v8
+# CHECK-NEXT:  1      8     2.00                        vwmaccsu.vv	v4, v12, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m4, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vwmaccsu.vx	v4, a0, v8
+# CHECK-NEXT:  1      8     4.00                        vwmaccsu.vx	v4, a0, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m8, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vwmaccus.vx	v4, a0, v8
+# CHECK-NEXT:  1      8     4.00                        vwmaccus.vx	v4, a0, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf4, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vwmaccu.vv	v4, v12, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf2, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vwmaccu.vx	v4, a0, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m1, tu, mu
-# CHECK-NEXT:  1      8     1.50                        vwmacc.vv	v4, v12, v8
+# CHECK-NEXT:  1      8     1.00                        vwmacc.vv	v4, v12, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m2, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vwmacc.vx	v4, a0, v8
+# CHECK-NEXT:  1      8     2.00                        vwmacc.vx	v4, a0, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m4, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vwmaccsu.vv	v4, v12, v8
+# CHECK-NEXT:  1      8     4.00                        vwmaccsu.vv	v4, v12, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m8, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vwmaccsu.vx	v4, a0, v8
+# CHECK-NEXT:  1      8     4.00                        vwmaccsu.vx	v4, a0, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, mf2, tu, mu
 # CHECK-NEXT:  1      8     1.00                        vwmaccus.vx	v4, a0, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu
-# CHECK-NEXT:  1      8     1.50                        vwmaccu.vv	v4, v12, v8
+# CHECK-NEXT:  1      8     1.00                        vwmaccu.vv	v4, v12, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m2, tu, mu
-# CHECK-NEXT:  1      8     2.50                        vwmaccu.vx	v4, a0, v8
+# CHECK-NEXT:  1      8     2.00                        vwmaccu.vx	v4, a0, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m4, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vwmacc.vv	v4, v12, v8
+# CHECK-NEXT:  1      8     4.00                        vwmacc.vv	v4, v12, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m8, tu, mu
-# CHECK-NEXT:  1      8     4.50                        vwmacc.vx	v4, a0, v8
+# CHECK-NEXT:  1      8     4.00                        vwmacc.vx	v4, a0, v8
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf8, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vmerge.vvm	v4, v8, v12, v0
+# CHECK-NEXT:  1      4     1.00                        vmerge.vvm	v4, v8, v12, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf4, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vmerge.vxm	v4, v8, a0, v0
+# CHECK-NEXT:  1      4     1.00                        vmerge.vxm	v4, v8, a0, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf2, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vmerge.vim	v4, v8, 0, v0
+# CHECK-NEXT:  1      4     1.00                        vmerge.vim	v4, v8, 0, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m1, tu, mu
-# CHECK-NEXT:  1      4     3.00                        vmerge.vvm	v4, v8, v12, v0
+# CHECK-NEXT:  1      4     2.00                        vmerge.vvm	v4, v8, v12, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m2, tu, mu
-# CHECK-NEXT:  1      4     5.00                        vmerge.vxm	v4, v8, a0, v0
+# CHECK-NEXT:  1      4     4.00                        vmerge.vxm	v4, v8, a0, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m4, tu, mu
-# CHECK-NEXT:  1      4     9.00                        vmerge.vim	v4, v8, 0, v0
+# CHECK-NEXT:  1      4     8.00                        vmerge.vim	v4, v8, 0, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m8, tu, mu
-# CHECK-NEXT:  1      4     17.00                       vmerge.vvm	v4, v8, v12, v0
+# CHECK-NEXT:  1      4     16.00                       vmerge.vvm	v4, v8, v12, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf4, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vmerge.vxm	v4, v8, a0, v0
+# CHECK-NEXT:  1      4     1.00                        vmerge.vxm	v4, v8, a0, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf2, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vmerge.vim	v4, v8, 0, v0
+# CHECK-NEXT:  1      4     1.00                        vmerge.vim	v4, v8, 0, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m1, tu, mu
-# CHECK-NEXT:  1      4     3.00                        vmerge.vvm	v4, v8, v12, v0
+# CHECK-NEXT:  1      4     2.00                        vmerge.vvm	v4, v8, v12, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m2, tu, mu
-# CHECK-NEXT:  1      4     5.00                        vmerge.vxm	v4, v8, a0, v0
+# CHECK-NEXT:  1      4     4.00                        vmerge.vxm	v4, v8, a0, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m4, tu, mu
-# CHECK-NEXT:  1      4     9.00                        vmerge.vim	v4, v8, 0, v0
+# CHECK-NEXT:  1      4     8.00                        vmerge.vim	v4, v8, 0, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m8, tu, mu
-# CHECK-NEXT:  1      4     17.00                       vmerge.vvm	v4, v8, v12, v0
+# CHECK-NEXT:  1      4     16.00                       vmerge.vvm	v4, v8, v12, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, mf2, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vmerge.vxm	v4, v8, a0, v0
+# CHECK-NEXT:  1      4     1.00                        vmerge.vxm	v4, v8, a0, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu
-# CHECK-NEXT:  1      4     3.00                        vmerge.vim	v4, v8, 0, v0
+# CHECK-NEXT:  1      4     2.00                        vmerge.vim	v4, v8, 0, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m2, tu, mu
-# CHECK-NEXT:  1      4     5.00                        vmerge.vvm	v4, v8, v12, v0
+# CHECK-NEXT:  1      4     4.00                        vmerge.vvm	v4, v8, v12, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m4, tu, mu
-# CHECK-NEXT:  1      4     9.00                        vmerge.vxm	v4, v8, a0, v0
+# CHECK-NEXT:  1      4     8.00                        vmerge.vxm	v4, v8, a0, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m8, tu, mu
-# CHECK-NEXT:  1      4     17.00                       vmerge.vim	v4, v8, 0, v0
+# CHECK-NEXT:  1      4     16.00                       vmerge.vim	v4, v8, 0, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m1, tu, mu
-# CHECK-NEXT:  1      4     3.00                        vmerge.vvm	v4, v8, v12, v0
+# CHECK-NEXT:  1      4     2.00                        vmerge.vvm	v4, v8, v12, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m2, tu, mu
-# CHECK-NEXT:  1      4     5.00                        vmerge.vxm	v4, v8, a0, v0
+# CHECK-NEXT:  1      4     4.00                        vmerge.vxm	v4, v8, a0, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m4, tu, mu
-# CHECK-NEXT:  1      4     9.00                        vmerge.vim	v4, v8, 0, v0
+# CHECK-NEXT:  1      4     8.00                        vmerge.vim	v4, v8, 0, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m8, tu, mu
-# CHECK-NEXT:  1      4     17.00                       vmerge.vvm	v4, v8, v12, v0
+# CHECK-NEXT:  1      4     16.00                       vmerge.vvm	v4, v8, v12, v0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf8, tu, mu
 # CHECK-NEXT:  1      4     1.00                        vmv.v.v	v4, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf4, tu, mu
@@ -1442,43 +1442,43 @@ vmv.v.v v4, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf2, tu, mu
 # CHECK-NEXT:  1      4     1.00                        vmv.v.i	v4, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m1, tu, mu
-# CHECK-NEXT:  1      4     1.50                        vmv.v.v	v4, v12
+# CHECK-NEXT:  1      4     1.00                        vmv.v.v	v4, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m2, tu, mu
-# CHECK-NEXT:  1      4     2.50                        vmv.v.x	v4, a0
+# CHECK-NEXT:  1      4     2.00                        vmv.v.x	v4, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m4, tu, mu
-# CHECK-NEXT:  1      4     4.50                        vmv.v.i	v4, 0
+# CHECK-NEXT:  1      4     4.00                        vmv.v.i	v4, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m8, tu, mu
-# CHECK-NEXT:  1      4     8.50                        vmv.v.v	v4, v12
+# CHECK-NEXT:  1      4     8.00                        vmv.v.v	v4, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf4, tu, mu
 # CHECK-NEXT:  1      4     1.00                        vmv.v.x	v4, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf2, tu, mu
 # CHECK-NEXT:  1      4     1.00                        vmv.v.i	v4, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m1, tu, mu
-# CHECK-NEXT:  1      4     1.50                        vmv.v.v	v4, v12
+# CHECK-NEXT:  1      4     1.00                        vmv.v.v	v4, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m2, tu, mu
-# CHECK-NEXT:  1      4     2.50                        vmv.v.x	v4, a0
+# CHECK-NEXT:  1      4     2.00                        vmv.v.x	v4, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m4, tu, mu
-# CHECK-NEXT:  1      4     4.50                        vmv.v.i	v4, 0
+# CHECK-NEXT:  1      4     4.00                        vmv.v.i	v4, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m8, tu, mu
-# CHECK-NEXT:  1      4     8.50                        vmv.v.v	v4, v12
+# CHECK-NEXT:  1      4     8.00                        vmv.v.v	v4, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, mf2, tu, mu
 # CHECK-NEXT:  1      4     1.00                        vmv.v.x	v4, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu
-# CHECK-NEXT:  1      4     1.50                        vmv.v.i	v4, 0
+# CHECK-NEXT:  1      4     1.00                        vmv.v.i	v4, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m2, tu, mu
-# CHECK-NEXT:  1      4     2.50                        vmv.v.v	v4, v12
+# CHECK-NEXT:  1      4     2.00                        vmv.v.v	v4, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m4, tu, mu
-# CHECK-NEXT:  1      4     4.50                        vmv.v.x	v4, a0
+# CHECK-NEXT:  1      4     4.00                        vmv.v.x	v4, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m8, tu, mu
-# CHECK-NEXT:  1      4     8.50                        vmv.v.i	v4, 0
+# CHECK-NEXT:  1      4     8.00                        vmv.v.i	v4, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m1, tu, mu
-# CHECK-NEXT:  1      4     1.50                        vmv.v.v	v4, v12
+# CHECK-NEXT:  1      4     1.00                        vmv.v.v	v4, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m2, tu, mu
-# CHECK-NEXT:  1      4     2.50                        vmv.v.x	v4, a0
+# CHECK-NEXT:  1      4     2.00                        vmv.v.x	v4, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m4, tu, mu
-# CHECK-NEXT:  1      4     4.50                        vmv.v.i	v4, 0
+# CHECK-NEXT:  1      4     4.00                        vmv.v.i	v4, 0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m8, tu, mu
-# CHECK-NEXT:  1      4     8.50                        vmv.v.v	v4, v12
+# CHECK-NEXT:  1      4     8.00                        vmv.v.v	v4, v12
 
 # CHECK:      Resources:
 # CHECK-NEXT: [0]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NFDiv

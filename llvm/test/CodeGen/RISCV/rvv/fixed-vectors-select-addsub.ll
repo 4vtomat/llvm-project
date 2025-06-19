@@ -163,14 +163,9 @@ define <64 x i32> @select_addsub_v64i32(<64 x i1> %cc, <64 x i32> %a, <64 x i32>
 ; CHECK-NEXT:    vadd.vv v24, v16, v24
 ; CHECK-NEXT:    vrsub.vi v8, v8, 0, v0.t
 ; CHECK-NEXT:    addi a0, sp, 16
-<<<<<<< HEAD
-; CHECK-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
+; CHECK-NEXT:    vl8r.v v16, (a0) # vscale x 64-byte Folded Reload
 ; CHECK-NEXT:    vadd.vv v16, v16, v8
 ; CHECK-NEXT:    vmv.v.v v8, v24
-=======
-; CHECK-NEXT:    vl8r.v v16, (a0) # vscale x 64-byte Folded Reload
-; CHECK-NEXT:    vadd.vv v16, v16, v24
->>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add sp, sp, a0

@@ -26,7 +26,7 @@ define <8 x i8> @vqshlb_u8() {
 ; CHECK-NEXT:    add a0, a2, a0
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 48
-; CHECK-NEXT:    vs1r.v v9, (a0) # Unknown-size Folded Spill
+; CHECK-NEXT:    vs1r.v v9, (a0) # vscale x 8-byte Folded Spill
 ; CHECK-NEXT:    li a0, 256
 ; CHECK-NEXT:    sub a0, a0, a1
 ; CHECK-NEXT:    # implicit-def: $v8
@@ -36,7 +36,7 @@ define <8 x i8> @vqshlb_u8() {
 ; CHECK-NEXT:    slli a1, a1, 2
 ; CHECK-NEXT:    add a1, sp, a1
 ; CHECK-NEXT:    addi a1, a1, 48
-; CHECK-NEXT:    vs1r.v v8, (a1) # Unknown-size Folded Spill
+; CHECK-NEXT:    vs1r.v v8, (a1) # vscale x 8-byte Folded Spill
 ; CHECK-NEXT:    # implicit-def: $v8
 ; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, tu, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
@@ -47,20 +47,20 @@ define <8 x i8> @vqshlb_u8() {
 ; CHECK-NEXT:    add a2, a3, a2
 ; CHECK-NEXT:    add a2, sp, a2
 ; CHECK-NEXT:    addi a2, a2, 48
-; CHECK-NEXT:    vs1r.v v8, (a2) # Unknown-size Folded Spill
+; CHECK-NEXT:    vs1r.v v8, (a2) # vscale x 8-byte Folded Spill
 ; CHECK-NEXT:    bgeu a0, a1, .LBB0_2
 ; CHECK-NEXT:  # %bb.1: # %entry
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 2
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 48
-; CHECK-NEXT:    vl1r.v v8, (a0) # Unknown-size Folded Reload
+; CHECK-NEXT:    vl1r.v v8, (a0) # vscale x 8-byte Folded Reload
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a1, a0, 2
 ; CHECK-NEXT:    add a0, a1, a0
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 48
-; CHECK-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
+; CHECK-NEXT:    vs1r.v v8, (a0) # vscale x 8-byte Folded Spill
 ; CHECK-NEXT:  .LBB0_2: # %entry
 ; CHECK-NEXT:    ld a0, 24(sp) # 8-byte Folded Reload
 ; CHECK-NEXT:    ld a1, 32(sp) # 8-byte Folded Reload
@@ -69,12 +69,12 @@ define <8 x i8> @vqshlb_u8() {
 ; CHECK-NEXT:    add a2, a3, a2
 ; CHECK-NEXT:    add a2, sp, a2
 ; CHECK-NEXT:    addi a2, a2, 48
-; CHECK-NEXT:    vl1r.v v8, (a2) # Unknown-size Folded Reload
+; CHECK-NEXT:    vl1r.v v8, (a2) # vscale x 8-byte Folded Reload
 ; CHECK-NEXT:    csrr a2, vlenb
 ; CHECK-NEXT:    slli a2, a2, 1
 ; CHECK-NEXT:    add a2, sp, a2
 ; CHECK-NEXT:    addi a2, a2, 48
-; CHECK-NEXT:    vs1r.v v8, (a2) # Unknown-size Folded Spill
+; CHECK-NEXT:    vs1r.v v8, (a2) # vscale x 8-byte Folded Spill
 ; CHECK-NEXT:    mv a2, a0
 ; CHECK-NEXT:    sd a2, 16(sp) # 8-byte Folded Spill
 ; CHECK-NEXT:    bltu a0, a1, .LBB0_4
@@ -88,13 +88,13 @@ define <8 x i8> @vqshlb_u8() {
 ; CHECK-NEXT:    slli a2, a2, 1
 ; CHECK-NEXT:    add a2, sp, a2
 ; CHECK-NEXT:    addi a2, a2, 48
-; CHECK-NEXT:    vl1r.v v8, (a2) # Unknown-size Folded Reload
+; CHECK-NEXT:    vl1r.v v8, (a2) # vscale x 8-byte Folded Reload
 ; CHECK-NEXT:    csrr a2, vlenb
 ; CHECK-NEXT:    slli a3, a2, 1
 ; CHECK-NEXT:    add a2, a3, a2
 ; CHECK-NEXT:    add a2, sp, a2
 ; CHECK-NEXT:    addi a2, a2, 48
-; CHECK-NEXT:    vl1r.v v10, (a2) # Unknown-size Folded Reload
+; CHECK-NEXT:    vl1r.v v10, (a2) # vscale x 8-byte Folded Reload
 ; CHECK-NEXT:    # implicit-def: $v9
 ; CHECK-NEXT:    vmv.v.x v9, a1
 ; CHECK-NEXT:    # implicit-def: $v11
@@ -108,25 +108,25 @@ define <8 x i8> @vqshlb_u8() {
 ; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v9, v10, 0
 ; CHECK-NEXT:    addi a1, sp, 48
-; CHECK-NEXT:    vs1r.v v9, (a1) # Unknown-size Folded Spill
+; CHECK-NEXT:    vs1r.v v9, (a1) # vscale x 8-byte Folded Spill
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    csrr a2, vlenb
 ; CHECK-NEXT:    add a2, sp, a2
 ; CHECK-NEXT:    addi a2, a2, 48
-; CHECK-NEXT:    vs1r.v v8, (a2) # Unknown-size Folded Spill
+; CHECK-NEXT:    vs1r.v v8, (a2) # vscale x 8-byte Folded Spill
 ; CHECK-NEXT:    bgeu a0, a1, .LBB0_6
 ; CHECK-NEXT:  # %bb.5: # %entry
 ; CHECK-NEXT:    addi a0, sp, 48
-; CHECK-NEXT:    vl1r.v v8, (a0) # Unknown-size Folded Reload
+; CHECK-NEXT:    vl1r.v v8, (a0) # vscale x 8-byte Folded Reload
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 48
-; CHECK-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
+; CHECK-NEXT:    vs1r.v v8, (a0) # vscale x 8-byte Folded Spill
 ; CHECK-NEXT:  .LBB0_6: # %entry
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 48
-; CHECK-NEXT:    vl1r.v v8, (a0) # Unknown-size Folded Reload
+; CHECK-NEXT:    vl1r.v v8, (a0) # vscale x 8-byte Folded Reload
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    li a1, 6
 ; CHECK-NEXT:    mul a0, a0, a1

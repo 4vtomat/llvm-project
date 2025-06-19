@@ -30,13 +30,13 @@ vid.v    v1, v0.t
 
 # CHECK:      [1]    [2]    [3]    [4]    [5]    [6]    Instructions:
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu
-# CHECK-NEXT:  1      11    12.00                       vfirst.m	a0, v2
+# CHECK-NEXT:  1      11    11.00                       vfirst.m	a0, v2
 # CHECK-NEXT:  1      1     1.00                        vmsbf.m	v1, v2
 # CHECK-NEXT:  1      1     1.00                        vmsif.m	v1, v2
 # CHECK-NEXT:  1      1     1.00                        vmsof.m	v1, v2
-# CHECK-NEXT:  1      11    12.00                       vcpop.m	a0, v2
-# CHECK-NEXT:  1      4     3.00                        viota.m	v1, v2
-# CHECK-NEXT:  1      4     3.00                        vid.v	v1, v0.t
+# CHECK-NEXT:  1      11    11.00                       vcpop.m	a0, v2
+# CHECK-NEXT:  1      4     2.00                        viota.m	v1, v2
+# CHECK-NEXT:  1      4     2.00                        vid.v	v1, v0.t
 
 # CHECK:      Resources:
 # CHECK-NEXT: [0]   - VLEN512SiFive7FDiv

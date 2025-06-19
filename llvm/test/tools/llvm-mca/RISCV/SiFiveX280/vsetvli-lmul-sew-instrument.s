@@ -26,15 +26,9 @@ vdiv.vv v8, v8, v12
 
 # CHECK:      [1]    [2]    [3]    [4]    [5]    [6]    Instructions:
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, a0, e8, m1, tu, mu
-<<<<<<< HEAD
-# CHECK-NEXT:  1      128   129.00                      vdiv.vv	v8, v8, v12
+# CHECK-NEXT:  1      128   128.00                      vdiv.vv	v8, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, a0, e32, m8, tu, mu
-# CHECK-NEXT:  1      1024   1025.00                      vdiv.vv	v8, v8, v12
-=======
-# CHECK-NEXT:  1      240   240.00                      vdiv.vv	v8, v8, v12
-# CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, a0, e32, m8, tu, mu
-# CHECK-NEXT:  1      896   896.00                      vdiv.vv	v8, v8, v12
->>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
+# CHECK-NEXT:  1      1024  1024.00                     vdiv.vv	v8, v8, v12
 
 # CHECK:      Resources:
 # CHECK-NEXT: [0]   - VLEN512SiFive7FDiv

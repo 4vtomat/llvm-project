@@ -113,11 +113,7 @@ define void @last_chance_recoloring_failure() {
 ; SUBREGLIVENESS-NEXT:    add a0, a0, a1
 ; SUBREGLIVENESS-NEXT:    vl4r.v v16, (a0) # Unknown-size Folded Reload
 ; SUBREGLIVENESS-NEXT:    addi a0, sp, 16
-<<<<<<< HEAD
-; SUBREGLIVENESS-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
-=======
-; SUBREGLIVENESS-NEXT:    vl8r.v v24, (a0) # vscale x 64-byte Folded Reload
->>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
+; SUBREGLIVENESS-NEXT:    vl8r.v v16, (a0) # vscale x 64-byte Folded Reload
 ; SUBREGLIVENESS-NEXT:    vsetvli zero, s0, e16, m4, ta, ma
 ; SUBREGLIVENESS-NEXT:    vfwsub.wv v8, v16, v12
 ; SUBREGLIVENESS-NEXT:    vsetvli zero, zero, e32, m8, tu, mu

@@ -256,12 +256,7 @@ define <128 x i16> @vwadd_v128i16(ptr %x, ptr %y) nounwind {
 ; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
 ; CHECK-NEXT:    addi a0, sp, 16
-<<<<<<< HEAD
-; CHECK-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
-=======
 ; CHECK-NEXT:    vs8r.v v8, (a0) # vscale x 64-byte Folded Spill
-; CHECK-NEXT:    vle8.v v0, (a1)
->>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
 ; CHECK-NEXT:    li a0, 64
 ; CHECK-NEXT:    vle8.v v0, (a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
@@ -306,12 +301,7 @@ define <64 x i32> @vwadd_v64i32(ptr %x, ptr %y) nounwind {
 ; CHECK-NEXT:    vsetvli zero, a2, e16, m8, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    addi a0, sp, 16
-<<<<<<< HEAD
-; CHECK-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
-=======
 ; CHECK-NEXT:    vs8r.v v8, (a0) # vscale x 64-byte Folded Spill
-; CHECK-NEXT:    vle16.v v0, (a1)
->>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
 ; CHECK-NEXT:    li a0, 32
 ; CHECK-NEXT:    vle16.v v0, (a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
