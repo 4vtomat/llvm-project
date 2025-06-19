@@ -192,11 +192,6 @@ public:
   bool useVLAVectorizer() const;
 
   unsigned getMinEarlyExitTripCount() const;
-  /// Minimum loop trip count we consider profitable for vectorization.
-  unsigned getMinTripCountTailFoldingThreshold() const {
-    return useVLAVectorizer() ? 3 : 0;
-  }
-
 #endif // SIFIVE_CUSTOMIZATION
 
   /// \name EVL Support for predicated vectorization.
