@@ -131,7 +131,7 @@ while.end:                                        ; preds = %while.cond
 define void @test6(ptr noundef %a, i8 signext %b) {
 ; CHECK-LABEL: test6:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    andi a1, a1, 255
+; CHECK-NEXT:    zext.b a1, a1
 ; CHECK-NEXT:  .LBB5_1: # %while.cond
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    nop

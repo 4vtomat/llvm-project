@@ -522,14 +522,10 @@ define i32 @tc4(ptr noundef readonly captures(none) %tmp) vscale_range(1,16) {
 ; CHECK-NEXT:    [[ADD]] = add i32 [[SUM_0179]], [[TMP5]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], 4
-<<<<<<< HEAD
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_COND_CLEANUP]], label %[[FOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
-=======
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[EXIT]], label %[[FOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[EXIT]], label %[[FOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
 ; CHECK:       [[EXIT]]:
 ; CHECK-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[ADD]], %[[FOR_BODY]] ], [ [[TMP4]], %[[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret i32 [[ADD_LCSSA]]
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
 ;
 entry:
   br label %for.body
@@ -563,14 +559,10 @@ define i32 @tc4_from_profile(ptr noundef readonly captures(none) %tmp, i64 %N) v
 ; CHECK-NEXT:    [[ADD]] = add i32 [[SUM_0179]], [[TMP0]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
-<<<<<<< HEAD
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_COND_CLEANUP]], label %[[FOR_BODY]], !prof [[PROF10:![0-9]+]]
-=======
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[EXIT:.*]], label %[[FOR_BODY]], !prof [[PROF9:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[EXIT:.*]], label %[[FOR_BODY]], !prof [[PROF10:![0-9]+]]
 ; CHECK:       [[EXIT]]:
 ; CHECK-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[ADD]], %[[FOR_BODY]] ]
 ; CHECK-NEXT:    ret i32 [[ADD_LCSSA]]
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
 ;
 entry:
   br label %for.body

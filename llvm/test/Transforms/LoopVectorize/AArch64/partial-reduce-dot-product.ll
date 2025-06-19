@@ -2903,7 +2903,7 @@ for.exit:                        ; preds = %for.body
 
 define dso_local void @not_dotp_high_register_pressure(ptr %a, ptr %b, ptr %sum, i32 %n) #1 {
 ; CHECK-INTERLEAVE1-LABEL: define dso_local void @not_dotp_high_register_pressure(
-; CHECK-INTERLEAVE1-SAME: ptr [[A:%.*]], ptr [[B:%.*]], ptr [[SUM:%.*]], i32 [[N:%.*]]) #[[ATTR1]] {
+; CHECK-INTERLEAVE1-SAME: ptr [[A:%.*]], ptr [[B:%.*]], ptr [[SUM:%.*]], i32 [[N:%.*]]) {
 ; CHECK-INTERLEAVE1-NEXT:  entry:
 ; CHECK-INTERLEAVE1-NEXT:    [[CMP100:%.*]] = icmp sgt i32 [[N]], 0
 ; CHECK-INTERLEAVE1-NEXT:    br i1 [[CMP100]], label [[FOR_BODY_LR_PH:%.*]], label [[FOR_COND_CLEANUP:%.*]]
@@ -2989,7 +2989,7 @@ define dso_local void @not_dotp_high_register_pressure(ptr %a, ptr %b, ptr %sum,
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP36]] = add <4 x i32> [[TMP35]], [[VEC_PHI]]
 ; CHECK-INTERLEAVE1-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP37:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-INTERLEAVE1-NEXT:    br i1 [[TMP37]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP39:![0-9]+]]
+; CHECK-INTERLEAVE1-NEXT:    br i1 [[TMP37]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP35:![0-9]+]]
 ; CHECK-INTERLEAVE1:       middle.block:
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP38:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[TMP36]])
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP39:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[TMP33]])
@@ -3004,7 +3004,7 @@ define dso_local void @not_dotp_high_register_pressure(ptr %a, ptr %b, ptr %sum,
 ; CHECK-INTERLEAVE1:       scalar.ph:
 ;
 ; CHECK-INTERLEAVED-LABEL: define dso_local void @not_dotp_high_register_pressure(
-; CHECK-INTERLEAVED-SAME: ptr [[A:%.*]], ptr [[B:%.*]], ptr [[SUM:%.*]], i32 [[N:%.*]]) #[[ATTR1]] {
+; CHECK-INTERLEAVED-SAME: ptr [[A:%.*]], ptr [[B:%.*]], ptr [[SUM:%.*]], i32 [[N:%.*]]) {
 ; CHECK-INTERLEAVED-NEXT:  entry:
 ; CHECK-INTERLEAVED-NEXT:    [[CMP100:%.*]] = icmp sgt i32 [[N]], 0
 ; CHECK-INTERLEAVED-NEXT:    br i1 [[CMP100]], label [[FOR_BODY_LR_PH:%.*]], label [[FOR_COND_CLEANUP:%.*]]
@@ -3160,7 +3160,7 @@ define dso_local void @not_dotp_high_register_pressure(ptr %a, ptr %b, ptr %sum,
 ; CHECK-INTERLEAVED:       scalar.ph:
 ;
 ; CHECK-MAXBW-LABEL: define dso_local void @not_dotp_high_register_pressure(
-; CHECK-MAXBW-SAME: ptr [[A:%.*]], ptr [[B:%.*]], ptr [[SUM:%.*]], i32 [[N:%.*]]) #[[ATTR1]] {
+; CHECK-MAXBW-SAME: ptr [[A:%.*]], ptr [[B:%.*]], ptr [[SUM:%.*]], i32 [[N:%.*]]) {
 ; CHECK-MAXBW-NEXT:  entry:
 ; CHECK-MAXBW-NEXT:    [[CMP100:%.*]] = icmp sgt i32 [[N]], 0
 ; CHECK-MAXBW-NEXT:    br i1 [[CMP100]], label [[FOR_BODY_LR_PH:%.*]], label [[FOR_COND_CLEANUP:%.*]]
@@ -3246,7 +3246,7 @@ define dso_local void @not_dotp_high_register_pressure(ptr %a, ptr %b, ptr %sum,
 ; CHECK-MAXBW-NEXT:    [[TMP36]] = add <4 x i32> [[TMP35]], [[VEC_PHI]]
 ; CHECK-MAXBW-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-MAXBW-NEXT:    [[TMP37:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-MAXBW-NEXT:    br i1 [[TMP37]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP39:![0-9]+]]
+; CHECK-MAXBW-NEXT:    br i1 [[TMP37]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP35:![0-9]+]]
 ; CHECK-MAXBW:       middle.block:
 ; CHECK-MAXBW-NEXT:    [[TMP38:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[TMP36]])
 ; CHECK-MAXBW-NEXT:    [[TMP39:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[TMP33]])

@@ -180,28 +180,20 @@ define zeroext i8 @test_add(ptr %p, iXLen %x, iXLen %y) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    add a2, a0, a2
 ; CHECK-NEXT:    add a0, a0, a1
-<<<<<<< HEAD
 ; CHECK-NEXT:    lbu a1, 1810(a2)
 ; CHECK-NEXT:    lbu a0, 1800(a0)
 ; CHECK-NEXT:    add a0, a1, a0
-; CHECK-NEXT:    andi a0, a0, 255
-=======
 ; CHECK-NEXT:    zext.b a0, a0
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
 ; CHECK-NEXT:    ret
 ;
 ; ZBA-LABEL: test_add:
 ; ZBA:       # %bb.0: # %entry
 ; ZBA-NEXT:    add a2, a0, a2
 ; ZBA-NEXT:    add a0, a0, a1
-<<<<<<< HEAD
 ; ZBA-NEXT:    lbu a1, 1810(a2)
 ; ZBA-NEXT:    lbu a0, 1800(a0)
 ; ZBA-NEXT:    add a0, a1, a0
-; ZBA-NEXT:    andi a0, a0, 255
-=======
 ; ZBA-NEXT:    zext.b a0, a0
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
 ; ZBA-NEXT:    ret
 entry:
   %e = getelementptr inbounds nuw i8, ptr %p, i64 1800
@@ -679,28 +671,20 @@ define zeroext i8 @test_optsize(ptr %p, iXLen %x, iXLen %y) optsize {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    add a2, a0, a2
 ; CHECK-NEXT:    add a0, a0, a1
-<<<<<<< HEAD
 ; CHECK-NEXT:    lbu a1, 1810(a2)
 ; CHECK-NEXT:    lbu a0, 1800(a0)
 ; CHECK-NEXT:    add a0, a1, a0
-; CHECK-NEXT:    andi a0, a0, 255
-=======
 ; CHECK-NEXT:    zext.b a0, a0
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
 ; CHECK-NEXT:    ret
 ;
 ; ZBA-LABEL: test_optsize:
 ; ZBA:       # %bb.0: # %entry
 ; ZBA-NEXT:    add a2, a0, a2
 ; ZBA-NEXT:    add a0, a0, a1
-<<<<<<< HEAD
 ; ZBA-NEXT:    lbu a1, 1810(a2)
 ; ZBA-NEXT:    lbu a0, 1800(a0)
 ; ZBA-NEXT:    add a0, a1, a0
-; ZBA-NEXT:    andi a0, a0, 255
-=======
 ; ZBA-NEXT:    zext.b a0, a0
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
 ; ZBA-NEXT:    ret
 entry:
   %e = getelementptr inbounds nuw i8, ptr %p, i64 1800
@@ -718,28 +702,20 @@ define zeroext i8 @test_minsize(ptr %p, iXLen %x, iXLen %y) minsize {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    add a2, a0, a2
 ; CHECK-NEXT:    add a0, a0, a1
-<<<<<<< HEAD
 ; CHECK-NEXT:    lbu a1, 1810(a2)
 ; CHECK-NEXT:    lbu a0, 1800(a0)
 ; CHECK-NEXT:    add a0, a1, a0
-; CHECK-NEXT:    andi a0, a0, 255
-=======
 ; CHECK-NEXT:    zext.b a0, a0
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
 ; CHECK-NEXT:    ret
 ;
 ; ZBA-LABEL: test_minsize:
 ; ZBA:       # %bb.0: # %entry
 ; ZBA-NEXT:    add a2, a0, a2
 ; ZBA-NEXT:    add a0, a0, a1
-<<<<<<< HEAD
 ; ZBA-NEXT:    lbu a1, 1810(a2)
 ; ZBA-NEXT:    lbu a0, 1800(a0)
 ; ZBA-NEXT:    add a0, a1, a0
-; ZBA-NEXT:    andi a0, a0, 255
-=======
 ; ZBA-NEXT:    zext.b a0, a0
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
 ; ZBA-NEXT:    ret
 entry:
   %e = getelementptr inbounds nuw i8, ptr %p, i64 1800

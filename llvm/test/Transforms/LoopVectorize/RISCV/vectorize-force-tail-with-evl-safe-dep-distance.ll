@@ -97,7 +97,7 @@ define void @test_may_clobber1(ptr %p) {
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[TMP3:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[AVL:%.*]] = sub i64 200, [[TMP3]]
-; IF-EVL-NEXT:    [[TMP0:%.*]] = call i64 @llvm.umin.i64(i64 [[AVL]], i64 50)
+; IF-EVL-NEXT:    [[TMP0:%.*]] = call i64 @llvm.umin.i64(i64 [[AVL]], i64 100)
 ; IF-EVL-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 1, i1 true)
 ; IF-EVL-NEXT:    [[TMP4:%.*]] = getelementptr i64, ptr [[P:%.*]], i64 [[TMP3]]
 ; IF-EVL-NEXT:    [[TMP5:%.*]] = getelementptr i64, ptr [[TMP4]], i32 0
@@ -394,7 +394,7 @@ define void @no_high_lmul_or_interleave(ptr %p) {
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[AVL:%.*]] = sub i64 3002, [[EVL_BASED_IV]]
-; IF-EVL-NEXT:    [[SAFE_AVL:%.*]] = call i64 @llvm.umin.i64(i64 [[AVL]], i64 64)
+; IF-EVL-NEXT:    [[SAFE_AVL:%.*]] = call i64 @llvm.umin.i64(i64 [[AVL]], i64 1024)
 ; IF-EVL-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[SAFE_AVL]], i32 1, i1 true)
 ; IF-EVL-NEXT:    [[TMP2:%.*]] = getelementptr i64, ptr [[P:%.*]], i64 [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP3:%.*]] = getelementptr i64, ptr [[TMP2]], i32 0

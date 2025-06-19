@@ -17,9 +17,9 @@ define dso_local void @radix4(ptr noalias noundef %twi1, ptr noalias noundef %tw
 ; X280-NEXT:    li t0, 0
 ; X280-NEXT:    slli t2, t2, 1
 ; X280-NEXT:    vlseg2e32.v v12, (a1)
-; X280-NEXT:    vs2r.v v8, (a0) # Unknown-size Folded Spill
+; X280-NEXT:    vs2r.v v8, (a0) # vscale x 16-byte Folded Spill
 ; X280-NEXT:    add a0, a0, t2
-; X280-NEXT:    vs2r.v v10, (a0) # Unknown-size Folded Spill
+; X280-NEXT:    vs2r.v v10, (a0) # vscale x 16-byte Folded Spill
 ; X280-NEXT:    csrr a0, vlenb
 ; X280-NEXT:    vlseg2e32.v v16, (a2)
 ; X280-NEXT:    sh2add a0, a0, sp
@@ -42,9 +42,9 @@ define dso_local void @radix4(ptr noalias noundef %twi1, ptr noalias noundef %tw
 ; X280-NEXT:    sh3add a4, t1, a4
 ; X280-NEXT:    addi t0, t0, 1
 ; X280-NEXT:    slli t4, t4, 1
-; X280-NEXT:    vl2r.v v8, (t3) # Unknown-size Folded Reload
+; X280-NEXT:    vl2r.v v8, (t3) # vscale x 16-byte Folded Reload
 ; X280-NEXT:    add t3, t3, t4
-; X280-NEXT:    vl2r.v v10, (t3) # Unknown-size Folded Reload
+; X280-NEXT:    vl2r.v v10, (t3) # vscale x 16-byte Folded Reload
 ; X280-NEXT:    vfmul.vv v20, v22, v8
 ; X280-NEXT:    vlseg2e32.v v2, (a5)
 ; X280-NEXT:    sh3add a5, t1, a5
@@ -107,9 +107,9 @@ define dso_local void @radix4(ptr noalias noundef %twi1, ptr noalias noundef %tw
 ; X280N-NEXT:    li t0, 0
 ; X280N-NEXT:    slli t2, t2, 1
 ; X280N-NEXT:    vlseg2e32.v v12, (a1)
-; X280N-NEXT:    vs2r.v v8, (a0) # Unknown-size Folded Spill
+; X280N-NEXT:    vs2r.v v8, (a0) # vscale x 16-byte Folded Spill
 ; X280N-NEXT:    add a0, a0, t2
-; X280N-NEXT:    vs2r.v v10, (a0) # Unknown-size Folded Spill
+; X280N-NEXT:    vs2r.v v10, (a0) # vscale x 16-byte Folded Spill
 ; X280N-NEXT:    csrr a0, vlenb
 ; X280N-NEXT:    vlseg2e32.v v16, (a2)
 ; X280N-NEXT:    sh2add a0, a0, sp
@@ -132,9 +132,9 @@ define dso_local void @radix4(ptr noalias noundef %twi1, ptr noalias noundef %tw
 ; X280N-NEXT:    sh3add a4, t1, a4
 ; X280N-NEXT:    addi t0, t0, 1
 ; X280N-NEXT:    slli t4, t4, 1
-; X280N-NEXT:    vl2r.v v8, (t3) # Unknown-size Folded Reload
+; X280N-NEXT:    vl2r.v v8, (t3) # vscale x 16-byte Folded Reload
 ; X280N-NEXT:    add t3, t3, t4
-; X280N-NEXT:    vl2r.v v10, (t3) # Unknown-size Folded Reload
+; X280N-NEXT:    vl2r.v v10, (t3) # vscale x 16-byte Folded Reload
 ; X280N-NEXT:    vfmul.vv v20, v22, v8
 ; X280N-NEXT:    vlseg2e32.v v2, (a5)
 ; X280N-NEXT:    sh3add a5, t1, a5

@@ -155,8 +155,6 @@ define void @truncate_to_i1_used_by_branch(i8 %x, ptr %dst) #0 {
 ; CHECK-LABEL: define void @truncate_to_i1_used_by_branch(
 ; CHECK-SAME: i8 [[X:%.*]], ptr [[DST:%.*]]) #[[ATTR1:[0-9]+]] {
 ; CHECK-NEXT:  [[ENTRY:.*]]:
-<<<<<<< HEAD
-=======
 ; CHECK-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
 ; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.vscale.i32()
@@ -193,10 +191,9 @@ define void @truncate_to_i1_used_by_branch(i8 %x, ptr %dst) #0 {
 ; CHECK-NEXT:    br i1 true, label %[[EXIT:.*]], label %[[SCALAR_PH]]
 ; CHECK:       [[SCALAR_PH]]:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i8 [ [[TMP6]], %[[MIDDLE_BLOCK]] ], [ 0, %[[ENTRY]] ]
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
 ; CHECK-NEXT:    br label %[[LOOP_HEADER:.*]]
 ; CHECK:       [[LOOP_HEADER]]:
-; CHECK-NEXT:    [[F_039:%.*]] = phi i8 [ 0, %[[ENTRY]] ], [ [[ADD:%.*]], %[[LOOP_LATCH:.*]] ]
+; CHECK-NEXT:    [[F_039:%.*]] = phi i8 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[ADD:%.*]], %[[LOOP_LATCH:.*]] ]
 ; CHECK-NEXT:    [[TMP4:%.*]] = or i8 23, [[X]]
 ; CHECK-NEXT:    [[EXTRACT_T:%.*]] = trunc i8 [[TMP4]] to i1
 ; CHECK-NEXT:    br i1 [[EXTRACT_T]], label %[[THEN:.*]], label %[[LOOP_LATCH]]
@@ -206,13 +203,8 @@ define void @truncate_to_i1_used_by_branch(i8 %x, ptr %dst) #0 {
 ; CHECK:       [[LOOP_LATCH]]:
 ; CHECK-NEXT:    [[ADD]] = add i8 [[F_039]], 1
 ; CHECK-NEXT:    [[CONV:%.*]] = sext i8 [[F_039]] to i32
-<<<<<<< HEAD
-; CHECK-NEXT:    [[CMP:%.*]] = icmp slt i32 [[CONV]], 1
-; CHECK-NEXT:    br i1 [[CMP]], label %[[LOOP_HEADER]], label %[[EXIT:.*]]
-=======
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp slt i32 [[CONV]], 8
 ; CHECK-NEXT:    br i1 [[CMP]], label %[[LOOP_HEADER]], label %[[EXIT]], !llvm.loop [[LOOP7:![0-9]+]]
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
 ; CHECK:       [[EXIT]]:
 ; CHECK-NEXT:    ret void
 ;
@@ -311,11 +303,7 @@ define void @icmp_only_first_op_truncated(ptr noalias %dst, i32 %x, i64 %N, i64 
 ; CHECK-NEXT:    call void @llvm.masked.scatter.nxv2f64.nxv2p0(<vscale x 2 x double> [[WIDE_MASKED_GATHER]], <vscale x 2 x ptr> [[BROADCAST_SPLAT6]], i32 8, <vscale x 2 x i1> [[TMP8]])
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP6]]
 ; CHECK-NEXT:    [[TMP11:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-<<<<<<< HEAD
-; CHECK-NEXT:    br i1 [[TMP11]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
-=======
 ; CHECK-NEXT:    br i1 [[TMP11]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[TMP0]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[CMP_N]], label %[[EXIT:.*]], label %[[SCALAR_PH]]
@@ -336,11 +324,7 @@ define void @icmp_only_first_op_truncated(ptr noalias %dst, i32 %x, i64 %N, i64 
 ; CHECK:       [[LOOP_LATCH]]:
 ; CHECK-NEXT:    [[IV_NEXT]] = add i64 [[IV]], 1
 ; CHECK-NEXT:    [[EC:%.*]] = icmp eq i64 [[IV]], [[V]]
-<<<<<<< HEAD
-; CHECK-NEXT:    br i1 [[EC]], label %[[EXIT]], label %[[LOOP_HEADER]], !llvm.loop [[LOOP7:![0-9]+]]
-=======
 ; CHECK-NEXT:    br i1 [[EC]], label %[[EXIT]], label %[[LOOP_HEADER]], !llvm.loop [[LOOP9:![0-9]+]]
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
 ; CHECK:       [[EXIT]]:
 ; CHECK-NEXT:    ret void
 ;
@@ -382,9 +366,6 @@ attributes #1 = { "target-features"="+64bit,+v" }
 ; CHECK: [[LOOP5]] = distinct !{[[LOOP5]], [[META2]], [[META1]]}
 ; CHECK: [[LOOP6]] = distinct !{[[LOOP6]], [[META1]], [[META2]]}
 ; CHECK: [[LOOP7]] = distinct !{[[LOOP7]], [[META2]], [[META1]]}
-<<<<<<< HEAD
-=======
 ; CHECK: [[LOOP8]] = distinct !{[[LOOP8]], [[META1]], [[META2]]}
 ; CHECK: [[LOOP9]] = distinct !{[[LOOP9]], [[META2]], [[META1]]}
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
 ;.

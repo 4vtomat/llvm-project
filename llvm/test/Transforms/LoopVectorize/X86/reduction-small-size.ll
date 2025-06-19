@@ -46,17 +46,10 @@ target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
 ; CHECK: Cost of 0 for VF 2: WIDEN ir<%conv4> = and ir<%sum.013>, ir<255>
 ; CHECK: Cost of 1 for VF 2: WIDEN ir<%add> = add ir<%conv>, ir<%conv4>
 ; CHECK: Cost of 1 for VF 2: WIDEN ir<%add5> = add ir<%add>, ir<%conv3>
-<<<<<<< HEAD
-; CHECK: Cost of 0 for VF 2: WIDEN-CAST vp<%7> = trunc ir<%add5> to i8
-; CHECK: Cost of 0 for VF 2: WIDEN-CAST vp<%8> = zext vp<%7> to i32
-; CHECK: Cost of 1 for VF 2: EMIT vp<%index.next> = add nuw vp<%3>, vp<%0>
-; CHECK: Cost of 0 for VF 2: EMIT branch-on-count vp<%index.next>, vp<%1>
-=======
 ; CHECK: Cost of 0 for VF 2: WIDEN-CAST vp<[[TRUNC:%.+]]> = trunc ir<%add5> to i8
 ; CHECK: Cost of 0 for VF 2: WIDEN-CAST vp<[[EXT]]> = zext vp<[[TRUNC]]> to i32
 ; CHECK: Cost of 0 for VF 2: EMIT vp<%index.next> = add nuw vp<[[CAN_IV]]>, vp<{{.+}}>
 ; CHECK: Cost of 0 for VF 2: EMIT branch-on-count vp<%index.next>, vp<{{.+}}>
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
 ;
 define i8 @reduction_i8(ptr nocapture readonly %a, ptr nocapture readonly %b, i32 %n) {
 entry:

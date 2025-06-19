@@ -5,9 +5,9 @@
 define i8 @composite_basic(i8 %0, i8 %1, i8 %2) {
 ; RV32-LABEL: composite_basic:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    andi a2, a2, 255
-; RV32-NEXT:    andi a0, a0, 255
-; RV32-NEXT:    andi a1, a1, 255
+; RV32-NEXT:    zext.b a2, a2
+; RV32-NEXT:    zext.b a0, a0
+; RV32-NEXT:    zext.b a1, a1
 ; RV32-NEXT:    lui a3, 4112
 ; RV32-NEXT:    mul a0, a2, a0
 ; RV32-NEXT:    xori a2, a2, 255
@@ -19,9 +19,9 @@ define i8 @composite_basic(i8 %0, i8 %1, i8 %2) {
 ;
 ; RV64-LABEL: composite_basic:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    andi a2, a2, 255
-; RV64-NEXT:    andi a0, a0, 255
-; RV64-NEXT:    andi a1, a1, 255
+; RV64-NEXT:    zext.b a2, a2
+; RV64-NEXT:    zext.b a0, a0
+; RV64-NEXT:    zext.b a1, a1
 ; RV64-NEXT:    lui a3, 4112
 ; RV64-NEXT:    mul a0, a2, a0
 ; RV64-NEXT:    xori a2, a2, 255

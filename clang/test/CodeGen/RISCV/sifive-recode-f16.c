@@ -6,16 +6,39 @@
 
 // CHECK-LABEL: @test_vfmaq_f16(
 // CHECK-NEXT:  entry:
+// CHECK-NEXT:    [[__P0_ADDR_I:%.*]] = alloca <8 x half>, align 16
+// CHECK-NEXT:    [[__P1_ADDR_I:%.*]] = alloca <8 x half>, align 16
+// CHECK-NEXT:    [[__P2_ADDR_I:%.*]] = alloca <8 x half>, align 16
+// CHECK-NEXT:    [[REF_TMP_I:%.*]] = alloca <16 x i8>, align 16
+// CHECK-NEXT:    [[__S1:%.*]] = alloca <8 x half>, align 16
+// CHECK-NEXT:    [[REF_TMP:%.*]] = alloca <16 x i8>, align 16
+// CHECK-NEXT:    [[REF_TMP2:%.*]] = alloca <16 x i8>, align 16
+// CHECK-NEXT:    [[REF_TMP5:%.*]] = alloca <16 x i8>, align 16
 // CHECK-NEXT:    [[TMP0:%.*]] = load <8 x half>, ptr [[IN_0:%.*]], align 2
-// CHECK-NEXT:    [[TMP1:%.*]] = load <8 x half>, ptr [[IN_1:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = load <8 x half>, ptr [[IN_2:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = bitcast <8 x half> [[TMP0]] to <16 x i8>
-// CHECK-NEXT:    [[TMP4:%.*]] = bitcast <8 x half> [[TMP1]] to <16 x i8>
-// CHECK-NEXT:    [[TMP5:%.*]] = bitcast <8 x half> [[TMP2]] to <16 x i8>
-// CHECK-NEXT:    [[TMP6:%.*]] = call <8 x half> @llvm.fma.v8f16(<8 x half> [[TMP1]], <8 x half> [[TMP2]], <8 x half> [[TMP0]])
-// CHECK-NEXT:    [[TMP7:%.*]] = bitcast <8 x half> [[TMP6]] to <16 x i8>
-// CHECK-NEXT:    [[TMP8:%.*]] = bitcast <16 x i8> [[TMP7]] to <8 x half>
-// CHECK-NEXT:    store <8 x half> [[TMP8]], ptr [[OUT:%.*]], align 2
+// CHECK-NEXT:    store <8 x half> [[TMP0]], ptr [[REF_TMP]], align 16
+// CHECK-NEXT:    [[TMP1:%.*]] = load <8 x half>, ptr [[REF_TMP]], align 16
+// CHECK-NEXT:    [[TMP2:%.*]] = load <8 x half>, ptr [[IN_1:%.*]], align 2
+// CHECK-NEXT:    store <8 x half> [[TMP2]], ptr [[REF_TMP2]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = load <8 x half>, ptr [[REF_TMP2]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = load <8 x half>, ptr [[IN_2:%.*]], align 2
+// CHECK-NEXT:    store <8 x half> [[TMP4]], ptr [[REF_TMP5]], align 16
+// CHECK-NEXT:    [[TMP5:%.*]] = load <8 x half>, ptr [[REF_TMP5]], align 16
+// CHECK-NEXT:    store <8 x half> [[TMP1]], ptr [[__P0_ADDR_I]], align 16
+// CHECK-NEXT:    store <8 x half> [[TMP3]], ptr [[__P1_ADDR_I]], align 16
+// CHECK-NEXT:    store <8 x half> [[TMP5]], ptr [[__P2_ADDR_I]], align 16
+// CHECK-NEXT:    [[TMP6:%.*]] = load <16 x i8>, ptr [[__P0_ADDR_I]], align 16
+// CHECK-NEXT:    [[TMP7:%.*]] = load <16 x i8>, ptr [[__P1_ADDR_I]], align 16
+// CHECK-NEXT:    [[TMP8:%.*]] = load <16 x i8>, ptr [[__P2_ADDR_I]], align 16
+// CHECK-NEXT:    [[TMP9:%.*]] = bitcast <16 x i8> [[TMP6]] to <8 x half>
+// CHECK-NEXT:    [[TMP10:%.*]] = bitcast <16 x i8> [[TMP7]] to <8 x half>
+// CHECK-NEXT:    [[TMP11:%.*]] = bitcast <16 x i8> [[TMP8]] to <8 x half>
+// CHECK-NEXT:    [[TMP12:%.*]] = call <8 x half> @llvm.fma.v8f16(<8 x half> [[TMP10]], <8 x half> [[TMP11]], <8 x half> [[TMP9]])
+// CHECK-NEXT:    store <8 x half> [[TMP12]], ptr [[REF_TMP_I]], align 16
+// CHECK-NEXT:    [[TMP13:%.*]] = load <8 x half>, ptr [[REF_TMP_I]], align 16
+// CHECK-NEXT:    store <8 x half> [[TMP13]], ptr [[__S1]], align 16
+// CHECK-NEXT:    [[TMP14:%.*]] = load <16 x i8>, ptr [[__S1]], align 16
+// CHECK-NEXT:    [[TMP15:%.*]] = bitcast <16 x i8> [[TMP14]] to <8 x half>
+// CHECK-NEXT:    store <8 x half> [[TMP15]], ptr [[OUT:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vfmaq_f16(const float16_t *in_0, const float16_t *in_1, const float16_t *in_2, float16_t *out)
@@ -25,23 +48,43 @@ void test_vfmaq_f16(const float16_t *in_0, const float16_t *in_1, const float16_
 
 // CHECK-LABEL: @test_vfmaq_n_f16(
 // CHECK-NEXT:  entry:
+// CHECK-NEXT:    [[__P0_ADDR_I:%.*]] = alloca <8 x half>, align 16
+// CHECK-NEXT:    [[__P1_ADDR_I:%.*]] = alloca <8 x half>, align 16
+// CHECK-NEXT:    [[__P2_ADDR_I:%.*]] = alloca <8 x half>, align 16
+// CHECK-NEXT:    [[REF_TMP_I:%.*]] = alloca <16 x i8>, align 16
+// CHECK-NEXT:    [[__S1:%.*]] = alloca <8 x half>, align 16
+// CHECK-NEXT:    [[REF_TMP:%.*]] = alloca <16 x i8>, align 16
+// CHECK-NEXT:    [[REF_TMP4:%.*]] = alloca <16 x i8>, align 16
 // CHECK-NEXT:    [[TMP0:%.*]] = load <8 x half>, ptr [[IN_0:%.*]], align 2
-// CHECK-NEXT:    [[TMP1:%.*]] = load <8 x half>, ptr [[IN_1:%.*]], align 2
+// CHECK-NEXT:    store <8 x half> [[TMP0]], ptr [[REF_TMP]], align 16
+// CHECK-NEXT:    [[TMP1:%.*]] = load <8 x half>, ptr [[REF_TMP]], align 16
+// CHECK-NEXT:    [[TMP2:%.*]] = load <8 x half>, ptr [[IN_1:%.*]], align 2
+// CHECK-NEXT:    store <8 x half> [[TMP2]], ptr [[REF_TMP4]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = load <8 x half>, ptr [[REF_TMP4]], align 16
 // CHECK-NEXT:    [[VECINIT:%.*]] = insertelement <8 x half> poison, half [[IN_2:%.*]], i32 0
-// CHECK-NEXT:    [[VECINIT5:%.*]] = insertelement <8 x half> [[VECINIT]], half [[IN_2]], i32 1
-// CHECK-NEXT:    [[VECINIT6:%.*]] = insertelement <8 x half> [[VECINIT5]], half [[IN_2]], i32 2
-// CHECK-NEXT:    [[VECINIT7:%.*]] = insertelement <8 x half> [[VECINIT6]], half [[IN_2]], i32 3
-// CHECK-NEXT:    [[VECINIT8:%.*]] = insertelement <8 x half> [[VECINIT7]], half [[IN_2]], i32 4
-// CHECK-NEXT:    [[VECINIT9:%.*]] = insertelement <8 x half> [[VECINIT8]], half [[IN_2]], i32 5
-// CHECK-NEXT:    [[VECINIT10:%.*]] = insertelement <8 x half> [[VECINIT9]], half [[IN_2]], i32 6
-// CHECK-NEXT:    [[VECINIT11:%.*]] = insertelement <8 x half> [[VECINIT10]], half [[IN_2]], i32 7
-// CHECK-NEXT:    [[TMP2:%.*]] = bitcast <8 x half> [[TMP0]] to <16 x i8>
-// CHECK-NEXT:    [[TMP3:%.*]] = bitcast <8 x half> [[TMP1]] to <16 x i8>
-// CHECK-NEXT:    [[TMP4:%.*]] = bitcast <8 x half> [[VECINIT11]] to <16 x i8>
-// CHECK-NEXT:    [[TMP5:%.*]] = call <8 x half> @llvm.fma.v8f16(<8 x half> [[TMP1]], <8 x half> [[VECINIT11]], <8 x half> [[TMP0]])
-// CHECK-NEXT:    [[TMP6:%.*]] = bitcast <8 x half> [[TMP5]] to <16 x i8>
-// CHECK-NEXT:    [[TMP7:%.*]] = bitcast <16 x i8> [[TMP6]] to <8 x half>
-// CHECK-NEXT:    store <8 x half> [[TMP7]], ptr [[OUT:%.*]], align 2
+// CHECK-NEXT:    [[VECINIT6:%.*]] = insertelement <8 x half> [[VECINIT]], half [[IN_2]], i32 1
+// CHECK-NEXT:    [[VECINIT7:%.*]] = insertelement <8 x half> [[VECINIT6]], half [[IN_2]], i32 2
+// CHECK-NEXT:    [[VECINIT8:%.*]] = insertelement <8 x half> [[VECINIT7]], half [[IN_2]], i32 3
+// CHECK-NEXT:    [[VECINIT9:%.*]] = insertelement <8 x half> [[VECINIT8]], half [[IN_2]], i32 4
+// CHECK-NEXT:    [[VECINIT10:%.*]] = insertelement <8 x half> [[VECINIT9]], half [[IN_2]], i32 5
+// CHECK-NEXT:    [[VECINIT11:%.*]] = insertelement <8 x half> [[VECINIT10]], half [[IN_2]], i32 6
+// CHECK-NEXT:    [[VECINIT12:%.*]] = insertelement <8 x half> [[VECINIT11]], half [[IN_2]], i32 7
+// CHECK-NEXT:    store <8 x half> [[TMP1]], ptr [[__P0_ADDR_I]], align 16
+// CHECK-NEXT:    store <8 x half> [[TMP3]], ptr [[__P1_ADDR_I]], align 16
+// CHECK-NEXT:    store <8 x half> [[VECINIT12]], ptr [[__P2_ADDR_I]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = load <16 x i8>, ptr [[__P0_ADDR_I]], align 16
+// CHECK-NEXT:    [[TMP5:%.*]] = load <16 x i8>, ptr [[__P1_ADDR_I]], align 16
+// CHECK-NEXT:    [[TMP6:%.*]] = load <16 x i8>, ptr [[__P2_ADDR_I]], align 16
+// CHECK-NEXT:    [[TMP7:%.*]] = bitcast <16 x i8> [[TMP4]] to <8 x half>
+// CHECK-NEXT:    [[TMP8:%.*]] = bitcast <16 x i8> [[TMP5]] to <8 x half>
+// CHECK-NEXT:    [[TMP9:%.*]] = bitcast <16 x i8> [[TMP6]] to <8 x half>
+// CHECK-NEXT:    [[TMP10:%.*]] = call <8 x half> @llvm.fma.v8f16(<8 x half> [[TMP8]], <8 x half> [[TMP9]], <8 x half> [[TMP7]])
+// CHECK-NEXT:    store <8 x half> [[TMP10]], ptr [[REF_TMP_I]], align 16
+// CHECK-NEXT:    [[TMP11:%.*]] = load <8 x half>, ptr [[REF_TMP_I]], align 16
+// CHECK-NEXT:    store <8 x half> [[TMP11]], ptr [[__S1]], align 16
+// CHECK-NEXT:    [[TMP12:%.*]] = load <16 x i8>, ptr [[__S1]], align 16
+// CHECK-NEXT:    [[TMP13:%.*]] = bitcast <16 x i8> [[TMP12]] to <8 x half>
+// CHECK-NEXT:    store <8 x half> [[TMP13]], ptr [[OUT:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vfmaq_n_f16(const float16_t *in_0, const float16_t *in_1, float16_t in_2, float16_t *out)
@@ -51,17 +94,40 @@ void test_vfmaq_n_f16(const float16_t *in_0, const float16_t *in_1, float16_t in
 
 // CHECK-LABEL: @test_vfmsq_f16(
 // CHECK-NEXT:  entry:
+// CHECK-NEXT:    [[__P0_ADDR_I_I:%.*]] = alloca <8 x half>, align 16
+// CHECK-NEXT:    [[__P1_ADDR_I_I:%.*]] = alloca <8 x half>, align 16
+// CHECK-NEXT:    [[__P2_ADDR_I_I:%.*]] = alloca <8 x half>, align 16
+// CHECK-NEXT:    [[REF_TMP_I_I:%.*]] = alloca <16 x i8>, align 16
+// CHECK-NEXT:    [[__S1:%.*]] = alloca <8 x half>, align 16
+// CHECK-NEXT:    [[REF_TMP:%.*]] = alloca <16 x i8>, align 16
+// CHECK-NEXT:    [[REF_TMP2:%.*]] = alloca <16 x i8>, align 16
+// CHECK-NEXT:    [[REF_TMP5:%.*]] = alloca <16 x i8>, align 16
 // CHECK-NEXT:    [[TMP0:%.*]] = load <8 x half>, ptr [[IN_0:%.*]], align 2
-// CHECK-NEXT:    [[TMP1:%.*]] = load <8 x half>, ptr [[IN_1:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = load <8 x half>, ptr [[IN_2:%.*]], align 2
-// CHECK-NEXT:    [[FNEG_I:%.*]] = fneg <8 x half> [[TMP1]]
-// CHECK-NEXT:    [[TMP3:%.*]] = bitcast <8 x half> [[TMP0]] to <16 x i8>
-// CHECK-NEXT:    [[TMP4:%.*]] = bitcast <8 x half> [[FNEG_I]] to <16 x i8>
-// CHECK-NEXT:    [[TMP5:%.*]] = bitcast <8 x half> [[TMP2]] to <16 x i8>
-// CHECK-NEXT:    [[TMP6:%.*]] = call <8 x half> @llvm.fma.v8f16(<8 x half> [[FNEG_I]], <8 x half> [[TMP2]], <8 x half> [[TMP0]])
-// CHECK-NEXT:    [[TMP7:%.*]] = bitcast <8 x half> [[TMP6]] to <16 x i8>
-// CHECK-NEXT:    [[TMP8:%.*]] = bitcast <16 x i8> [[TMP7]] to <8 x half>
-// CHECK-NEXT:    store <8 x half> [[TMP8]], ptr [[OUT:%.*]], align 2
+// CHECK-NEXT:    store <8 x half> [[TMP0]], ptr [[REF_TMP]], align 16
+// CHECK-NEXT:    [[TMP1:%.*]] = load <8 x half>, ptr [[REF_TMP]], align 16
+// CHECK-NEXT:    [[TMP2:%.*]] = load <8 x half>, ptr [[IN_1:%.*]], align 2
+// CHECK-NEXT:    store <8 x half> [[TMP2]], ptr [[REF_TMP2]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = load <8 x half>, ptr [[REF_TMP2]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = load <8 x half>, ptr [[IN_2:%.*]], align 2
+// CHECK-NEXT:    store <8 x half> [[TMP4]], ptr [[REF_TMP5]], align 16
+// CHECK-NEXT:    [[TMP5:%.*]] = load <8 x half>, ptr [[REF_TMP5]], align 16
+// CHECK-NEXT:    [[FNEG_I:%.*]] = fneg <8 x half> [[TMP3]]
+// CHECK-NEXT:    store <8 x half> [[TMP1]], ptr [[__P0_ADDR_I_I]], align 16
+// CHECK-NEXT:    store <8 x half> [[FNEG_I]], ptr [[__P1_ADDR_I_I]], align 16
+// CHECK-NEXT:    store <8 x half> [[TMP5]], ptr [[__P2_ADDR_I_I]], align 16
+// CHECK-NEXT:    [[TMP6:%.*]] = load <16 x i8>, ptr [[__P0_ADDR_I_I]], align 16
+// CHECK-NEXT:    [[TMP7:%.*]] = load <16 x i8>, ptr [[__P1_ADDR_I_I]], align 16
+// CHECK-NEXT:    [[TMP8:%.*]] = load <16 x i8>, ptr [[__P2_ADDR_I_I]], align 16
+// CHECK-NEXT:    [[TMP9:%.*]] = bitcast <16 x i8> [[TMP6]] to <8 x half>
+// CHECK-NEXT:    [[TMP10:%.*]] = bitcast <16 x i8> [[TMP7]] to <8 x half>
+// CHECK-NEXT:    [[TMP11:%.*]] = bitcast <16 x i8> [[TMP8]] to <8 x half>
+// CHECK-NEXT:    [[TMP12:%.*]] = call <8 x half> @llvm.fma.v8f16(<8 x half> [[TMP10]], <8 x half> [[TMP11]], <8 x half> [[TMP9]])
+// CHECK-NEXT:    store <8 x half> [[TMP12]], ptr [[REF_TMP_I_I]], align 16
+// CHECK-NEXT:    [[TMP13:%.*]] = load <8 x half>, ptr [[REF_TMP_I_I]], align 16
+// CHECK-NEXT:    store <8 x half> [[TMP13]], ptr [[__S1]], align 16
+// CHECK-NEXT:    [[TMP14:%.*]] = load <16 x i8>, ptr [[__S1]], align 16
+// CHECK-NEXT:    [[TMP15:%.*]] = bitcast <16 x i8> [[TMP14]] to <8 x half>
+// CHECK-NEXT:    store <8 x half> [[TMP15]], ptr [[OUT:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vfmsq_f16(const float16_t *in_0, const float16_t *in_1, const float16_t *in_2, float16_t *out)
@@ -71,12 +137,23 @@ void test_vfmsq_f16(const float16_t *in_0, const float16_t *in_1, const float16_
 
 // CHECK-LABEL: @test_vrndiq_f16(
 // CHECK-NEXT:  entry:
+// CHECK-NEXT:    [[__P0_ADDR_I:%.*]] = alloca <8 x half>, align 16
+// CHECK-NEXT:    [[REF_TMP_I:%.*]] = alloca <16 x i8>, align 16
+// CHECK-NEXT:    [[__S1:%.*]] = alloca <8 x half>, align 16
+// CHECK-NEXT:    [[REF_TMP:%.*]] = alloca <16 x i8>, align 16
 // CHECK-NEXT:    [[TMP0:%.*]] = load <8 x half>, ptr [[IN_0:%.*]], align 2
-// CHECK-NEXT:    [[TMP1:%.*]] = bitcast <8 x half> [[TMP0]] to <16 x i8>
-// CHECK-NEXT:    [[VRNDIQ_V1_I:%.*]] = call <8 x half> @llvm.nearbyint.v8f16(<8 x half> [[TMP0]])
-// CHECK-NEXT:    [[TMP2:%.*]] = bitcast <8 x half> [[VRNDIQ_V1_I]] to <16 x i8>
-// CHECK-NEXT:    [[TMP3:%.*]] = bitcast <16 x i8> [[TMP2]] to <8 x half>
-// CHECK-NEXT:    store <8 x half> [[TMP3]], ptr [[OUT:%.*]], align 2
+// CHECK-NEXT:    store <8 x half> [[TMP0]], ptr [[REF_TMP]], align 16
+// CHECK-NEXT:    [[TMP1:%.*]] = load <8 x half>, ptr [[REF_TMP]], align 16
+// CHECK-NEXT:    store <8 x half> [[TMP1]], ptr [[__P0_ADDR_I]], align 16
+// CHECK-NEXT:    [[TMP2:%.*]] = load <16 x i8>, ptr [[__P0_ADDR_I]], align 16
+// CHECK-NEXT:    [[VRNDIQ_V_I:%.*]] = bitcast <16 x i8> [[TMP2]] to <8 x half>
+// CHECK-NEXT:    [[VRNDIQ_V1_I:%.*]] = call <8 x half> @llvm.nearbyint.v8f16(<8 x half> [[VRNDIQ_V_I]])
+// CHECK-NEXT:    store <8 x half> [[VRNDIQ_V1_I]], ptr [[REF_TMP_I]], align 16
+// CHECK-NEXT:    [[TMP3:%.*]] = load <8 x half>, ptr [[REF_TMP_I]], align 16
+// CHECK-NEXT:    store <8 x half> [[TMP3]], ptr [[__S1]], align 16
+// CHECK-NEXT:    [[TMP4:%.*]] = load <16 x i8>, ptr [[__S1]], align 16
+// CHECK-NEXT:    [[TMP5:%.*]] = bitcast <16 x i8> [[TMP4]] to <8 x half>
+// CHECK-NEXT:    store <8 x half> [[TMP5]], ptr [[OUT:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vrndiq_f16(const float16_t *in_0, float16_t *out)

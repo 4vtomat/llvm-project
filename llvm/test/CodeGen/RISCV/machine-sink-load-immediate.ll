@@ -292,12 +292,7 @@ define signext i32 @branch_dispatch(i8 %a) {
 ; CHECK-NEXT:    sd s0, 0(sp) # 8-byte Folded Spill
 ; CHECK-NEXT:    .cfi_offset ra, -8
 ; CHECK-NEXT:    .cfi_offset s0, -16
-<<<<<<< HEAD
-; CHECK-NEXT:    andi a0, a0, 255
-=======
-; CHECK-NEXT:    .cfi_remember_state
 ; CHECK-NEXT:    zext.b a0, a0
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
 ; CHECK-NEXT:    li a1, 32
 ; CHECK-NEXT:    li s0, 13
 ; CHECK-NEXT:    beq a0, a1, .LBB3_8

@@ -89,14 +89,9 @@ define i32 @overflow_add_no_consts(i8 zeroext %a, i8 zeroext %b, i8 zeroext %lim
 ; CHECK-LABEL: overflow_add_no_consts:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    add a0, a1, a0
-<<<<<<< HEAD
-; CHECK-NEXT:    andi a1, a0, 255
+; CHECK-NEXT:    zext.b a1, a0
 ; CHECK-NEXT:    li a0, 8
 ; CHECK-NEXT:    bltu a2, a1, .LBB4_2
-=======
-; CHECK-NEXT:    zext.b a0, a0
-; CHECK-NEXT:    bltu a2, a0, .LBB4_2
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    li a0, 16
 ; CHECK-NEXT:  .LBB4_2:
@@ -111,16 +106,10 @@ define i32 @overflow_add_const_limit(i8 zeroext %a, i8 zeroext %b) {
 ; CHECK-LABEL: overflow_add_const_limit:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    add a0, a1, a0
-<<<<<<< HEAD
-; CHECK-NEXT:    andi a1, a0, 255
+; CHECK-NEXT:    zext.b a1, a0
 ; CHECK-NEXT:    li a2, 128
 ; CHECK-NEXT:    li a0, 8
 ; CHECK-NEXT:    bltu a2, a1, .LBB5_2
-=======
-; CHECK-NEXT:    zext.b a0, a0
-; CHECK-NEXT:    li a1, 128
-; CHECK-NEXT:    bltu a1, a0, .LBB5_2
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    li a0, 16
 ; CHECK-NEXT:  .LBB5_2:
@@ -331,7 +320,7 @@ define i8 @convert_add_order(i8 zeroext %arg) {
 ; CHECK-NEXT:    li a2, 50
 ; CHECK-NEXT:    bltu a1, a2, .LBB19_2
 ; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    andi a0, a0, 255
+; CHECK-NEXT:    zext.b a0, a0
 ; CHECK-NEXT:    ret
 ; CHECK-NEXT:  .LBB19_2:
 ; CHECK-NEXT:    addi a1, a1, -40
