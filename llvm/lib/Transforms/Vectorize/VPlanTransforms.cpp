@@ -33,7 +33,6 @@
 #include "llvm/Analysis/VectorUtils.h"
 #include "llvm/IR/Intrinsics.h"
 #include "llvm/IR/PatternMatch.h"
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/SmallPtrSet.h"
@@ -43,10 +42,8 @@
 #if SIFIVE_CUSTOMIZATION
 #define DEBUG_TYPE "loop-vectorize"
 #endif // SIFIVE_CUSTOMIZATION
-=======
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/TypeSize.h"
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
 
 using namespace llvm;
 
