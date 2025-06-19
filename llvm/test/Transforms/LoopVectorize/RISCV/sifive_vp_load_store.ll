@@ -12,8 +12,7 @@ define void @test() {
 ; SCALABLE-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; SCALABLE-NEXT:    [[TMP0:%.*]] = sub i64 7, [[EVL_BASED_IV]]
 ; SCALABLE-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
-; SCALABLE-NEXT:    [[TMP2:%.*]] = add i64 [[EVL_BASED_IV]], 0
-; SCALABLE-NEXT:    [[TMP3:%.*]] = getelementptr inbounds [125 x i32], ptr undef, i64 0, i64 [[TMP2]]
+; SCALABLE-NEXT:    [[TMP3:%.*]] = getelementptr inbounds [125 x i32], ptr undef, i64 0, i64 [[EVL_BASED_IV]]
 ; SCALABLE-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i32, ptr [[TMP3]], i32 0
 ; SCALABLE-NEXT:    call void @llvm.vp.store.nxv2i32.p0(<vscale x 2 x i32> zeroinitializer, ptr align 4 [[TMP4]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
 ; SCALABLE-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP1]] to i64

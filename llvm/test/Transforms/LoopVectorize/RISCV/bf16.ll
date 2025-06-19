@@ -106,21 +106,12 @@ define void @vfwmaccbf16.vv(ptr noalias %a, ptr noalias %b, ptr noalias %c, i64 
 ; NO-ZVFBFMIN-NEXT:    [[TMP5:%.*]] = getelementptr bfloat, ptr [[TMP2]], i32 0
 ; NO-ZVFBFMIN-NEXT:    [[WIDE_LOAD1:%.*]] = load <8 x bfloat>, ptr [[TMP5]], align 2
 ; NO-ZVFBFMIN-NEXT:    [[TMP6:%.*]] = getelementptr float, ptr [[TMP3]], i32 0
-<<<<<<< HEAD
 ; NO-ZVFBFMIN-NEXT:    [[WIDE_LOAD2:%.*]] = load <8 x float>, ptr [[TMP6]], align 4
-; NO-ZVFBFMIN-NEXT:    [[TMP7:%.*]] = fpext <8 x bfloat> [[WIDE_LOAD]] to <8 x float>
-; NO-ZVFBFMIN-NEXT:    [[TMP8:%.*]] = fpext <8 x bfloat> [[WIDE_LOAD1]] to <8 x float>
-; NO-ZVFBFMIN-NEXT:    [[TMP9:%.*]] = call <8 x float> @llvm.fmuladd.v8f32(<8 x float> [[TMP7]], <8 x float> [[TMP8]], <8 x float> [[WIDE_LOAD2]])
-; NO-ZVFBFMIN-NEXT:    store <8 x float> [[TMP9]], ptr [[TMP6]], align 4
-; NO-ZVFBFMIN-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 8
-=======
-; NO-ZVFBFMIN-NEXT:    [[WIDE_LOAD2:%.*]] = load <4 x float>, ptr [[TMP6]], align 4
-; NO-ZVFBFMIN-NEXT:    [[TMP7:%.*]] = fpext <4 x bfloat> [[WIDE_LOAD]] to <4 x float>
-; NO-ZVFBFMIN-NEXT:    [[TMP8:%.*]] = fpext <4 x bfloat> [[WIDE_LOAD1]] to <4 x float>
-; NO-ZVFBFMIN-NEXT:    [[TMP9:%.*]] = call <4 x float> @llvm.fmuladd.v4f32(<4 x float> [[TMP7]], <4 x float> [[TMP8]], <4 x float> [[WIDE_LOAD2]])
-; NO-ZVFBFMIN-NEXT:    store <4 x float> [[TMP9]], ptr [[TMP6]], align 4
-; NO-ZVFBFMIN-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[TMP0]], 4
->>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
+; NO-ZVFBFMIN-NEXT:    [[TMP9:%.*]] = fpext <8 x bfloat> [[WIDE_LOAD]] to <8 x float>
+; NO-ZVFBFMIN-NEXT:    [[TMP7:%.*]] = fpext <8 x bfloat> [[WIDE_LOAD1]] to <8 x float>
+; NO-ZVFBFMIN-NEXT:    [[TMP8:%.*]] = call <8 x float> @llvm.fmuladd.v8f32(<8 x float> [[TMP9]], <8 x float> [[TMP7]], <8 x float> [[WIDE_LOAD2]])
+; NO-ZVFBFMIN-NEXT:    store <8 x float> [[TMP8]], ptr [[TMP6]], align 4
+; NO-ZVFBFMIN-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[TMP0]], 8
 ; NO-ZVFBFMIN-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; NO-ZVFBFMIN-NEXT:    br i1 [[TMP10]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; NO-ZVFBFMIN:       [[MIDDLE_BLOCK]]:

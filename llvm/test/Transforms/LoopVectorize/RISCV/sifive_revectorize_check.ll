@@ -19,8 +19,7 @@ define fastcc void @foo(ptr %arg) {
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i32 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i32 1024, [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 [[AVL]], i32 8, i1 true)
-; CHECK-NEXT:    [[TMP1:%.*]] = add i32 [[EVL_BASED_IV]], 0
-; CHECK-NEXT:    [[TMP2:%.*]] = add i32 [[TMP1]], 0
+; CHECK-NEXT:    [[TMP2:%.*]] = add i32 [[EVL_BASED_IV]], 0
 ; CHECK-NEXT:    [[TMP3:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr null, i64 [[TMP3]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[TMP4]], i32 0
@@ -32,7 +31,7 @@ define fastcc void @foo(ptr %arg) {
 ; CHECK-NEXT:    br label %[[EXIT:.*]]
 ; CHECK:       [[SCALAR_PH]]:
 ; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ false, %[[VECTOR_SCEVCHECK]] ]
-; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label %[[SCALAR_PH5:.*]], label %[[VECTOR_SCEVCHECK2:.*]]
+; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label %[[SCALAR_PH4:.*]], label %[[VECTOR_SCEVCHECK2:.*]]
 ; CHECK:       [[VECTOR_SCEVCHECK2]]:
 ; CHECK-NEXT:    [[TMP7:%.*]] = sub i32 0, [[LOAD]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp slt i32 [[LOAD]], 0
@@ -44,31 +43,30 @@ define fastcc void @foo(ptr %arg) {
 ; CHECK-NEXT:    [[TMP11:%.*]] = icmp ugt i32 [[TMP10]], 0
 ; CHECK-NEXT:    [[TMP12:%.*]] = select i1 [[TMP8]], i1 [[TMP11]], i1 false
 ; CHECK-NEXT:    [[TMP13:%.*]] = or i1 [[TMP12]], [[MUL_OVERFLOW]]
-; CHECK-NEXT:    br i1 [[TMP13]], label %[[SCALAR_PH5]], label %[[VECTOR_PH6:.*]]
-; CHECK:       [[VECTOR_PH6]]:
+; CHECK-NEXT:    br i1 [[TMP13]], label %[[SCALAR_PH4]], label %[[VECTOR_PH5:.*]]
+; CHECK:       [[VECTOR_PH5]]:
 ; CHECK-NEXT:    [[TMP14:%.*]] = sext i32 [[LOAD]] to i64
-; CHECK-NEXT:    br label %[[VECTOR_BODY7:.*]]
-; CHECK:       [[VECTOR_BODY7]]:
-; CHECK-NEXT:    [[INDEX8:%.*]] = phi i32 [ 0, %[[VECTOR_PH6]] ], [ [[INDEX_EVL_NEXT11:%.*]], %[[VECTOR_BODY7]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV9:%.*]] = phi i32 [ 0, %[[VECTOR_PH6]] ], [ [[INDEX_EVL_NEXT11]], %[[VECTOR_BODY7]] ]
+; CHECK-NEXT:    br label %[[VECTOR_BODY6:.*]]
+; CHECK:       [[VECTOR_BODY6]]:
+; CHECK-NEXT:    [[INDEX7:%.*]] = phi i32 [ 0, %[[VECTOR_PH5]] ], [ [[INDEX_EVL_NEXT11:%.*]], %[[VECTOR_BODY6]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV9:%.*]] = phi i32 [ 0, %[[VECTOR_PH5]] ], [ [[INDEX_EVL_NEXT11]], %[[VECTOR_BODY6]] ]
 ; CHECK-NEXT:    [[AVL10:%.*]] = sub i32 1024, [[EVL_BASED_IV9]]
 ; CHECK-NEXT:    [[TMP15:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 [[AVL10]], i32 8, i1 true)
-; CHECK-NEXT:    [[TMP16:%.*]] = add i32 [[EVL_BASED_IV9]], 0
-; CHECK-NEXT:    [[TMP17:%.*]] = mul i32 [[TMP16]], [[LOAD]]
+; CHECK-NEXT:    [[TMP17:%.*]] = mul i32 [[EVL_BASED_IV9]], [[LOAD]]
 ; CHECK-NEXT:    [[TMP18:%.*]] = add i32 [[TMP17]], 0
 ; CHECK-NEXT:    [[TMP19:%.*]] = zext i32 [[TMP18]] to i64
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr null, i64 [[TMP19]]
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv8i8.p0.i64(<vscale x 8 x i8> zeroinitializer, ptr align 1 [[TMP20]], i64 [[TMP14]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP15]])
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT11]] = add nuw i32 [[TMP15]], [[EVL_BASED_IV9]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = icmp eq i32 [[INDEX_EVL_NEXT11]], 1024
-; CHECK-NEXT:    br i1 [[TMP21]], label %[[MIDDLE_BLOCK4:.*]], label %[[VECTOR_BODY7]], !llvm.loop [[LOOP3:![0-9]+]]
-; CHECK:       [[MIDDLE_BLOCK4]]:
+; CHECK-NEXT:    br i1 [[TMP21]], label %[[MIDDLE_BLOCK11:.*]], label %[[VECTOR_BODY6]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK:       [[MIDDLE_BLOCK11]]:
 ; CHECK-NEXT:    br label %[[EXIT]]
-; CHECK:       [[SCALAR_PH5]]:
+; CHECK:       [[SCALAR_PH4]]:
 ; CHECK-NEXT:    br label %[[LOOP:.*]]
 ; CHECK:       [[LOOP]]:
-; CHECK-NEXT:    [[PHI:%.*]] = phi i32 [ [[ADD:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH5]] ]
-; CHECK-NEXT:    [[PHI2:%.*]] = phi i32 [ [[ADD4:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH5]] ]
+; CHECK-NEXT:    [[PHI:%.*]] = phi i32 [ [[ADD:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH4]] ]
+; CHECK-NEXT:    [[PHI2:%.*]] = phi i32 [ [[ADD4:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH4]] ]
 ; CHECK-NEXT:    [[ADD]] = add i32 [[PHI]], 1
 ; CHECK-NEXT:    [[ICMP:%.*]] = icmp ult i32 [[PHI]], 0
 ; CHECK-NEXT:    [[MUL:%.*]] = mul i32 [[PHI2]], [[LOAD]]
@@ -80,7 +78,7 @@ define fastcc void @foo(ptr %arg) {
 ; CHECK-NEXT:    [[ICMP5:%.*]] = icmp ne i32 [[ADD4]], 1024
 ; CHECK-NEXT:    br i1 [[ICMP5]], label %[[LOOP]], label %[[EXIT]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       [[EXIT]]:
-; CHECK-NEXT:    [[PHI7:%.*]] = phi i32 [ [[ADD]], %[[LOOP]] ], [ 1024, %[[MIDDLE_BLOCK]] ], [ 1024, %[[MIDDLE_BLOCK4]] ]
+; CHECK-NEXT:    [[PHI7:%.*]] = phi i32 [ [[ADD]], %[[LOOP]] ], [ 1024, %[[MIDDLE_BLOCK]] ], [ 1024, %[[MIDDLE_BLOCK11]] ]
 ; CHECK-NEXT:    ret void
 ;
 entry:

@@ -28,11 +28,9 @@ define void @widget(ptr %a, i64 %n) {
 ; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.umin.i64(i64 [[TMP4]], i64 2)
 ; CHECK-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP5]], i32 1, i1 true)
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], -16
-; CHECK-NEXT:    [[TMP7:%.*]] = add i64 [[OFFSET_IDX]], 0
-; CHECK-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP7]]
+; CHECK-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[A]], i64 [[OFFSET_IDX]]
 ; CHECK-NEXT:    [[OFFSET_IDX5:%.*]] = mul i64 [[EVL_BASED_IV]], -16
-; CHECK-NEXT:    [[TMP8:%.*]] = add i64 [[OFFSET_IDX5]], 0
-; CHECK-NEXT:    [[NEXT_GEP6:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP8]]
+; CHECK-NEXT:    [[NEXT_GEP6:%.*]] = getelementptr i8, ptr [[B]], i64 [[OFFSET_IDX5]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr [[STRUCT:%.*]], ptr [[NEXT_GEP6]], i64 -1, i32 0
 ; CHECK-NEXT:    [[TMP10:%.*]] = sub nuw nsw i32 [[TMP6]], 1
 ; CHECK-NEXT:    [[TMP11:%.*]] = mul nuw nsw i32 [[TMP10]], 2

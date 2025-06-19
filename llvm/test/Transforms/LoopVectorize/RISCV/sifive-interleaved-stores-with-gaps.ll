@@ -28,8 +28,7 @@ define void @store_factor_2_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i32> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP8:%.*]] = sub i64 [[N]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP8]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[EVL_BASED_IV1]], 0
-; CHECK-NEXT:    [[TMP9:%.*]] = shl nsw i64 [[TMP6]], 1
+; CHECK-NEXT:    [[TMP9:%.*]] = shl nsw i64 [[EVL_BASED_IV1]], 1
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP9]]
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv2i32.p0.i64(<vscale x 2 x i32> [[VEC_IND]], ptr align 4 [[TMP10]], i64 8, <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP7]] to i64
@@ -91,8 +90,7 @@ define void @store_factor_3_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i32> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP8:%.*]] = sub i64 [[N]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP8]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[EVL_BASED_IV1]], 0
-; CHECK-NEXT:    [[TMP9:%.*]] = mul nuw nsw i64 [[TMP6]], 3
+; CHECK-NEXT:    [[TMP9:%.*]] = mul nuw nsw i64 [[EVL_BASED_IV1]], 3
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP9]]
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv2i32.p0.i64(<vscale x 2 x i32> [[VEC_IND]], ptr align 4 [[TMP10]], i64 12, <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr i32, ptr [[TMP10]], i64 1
@@ -160,8 +158,7 @@ define void @store_factor_4_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i32> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP8:%.*]] = sub i64 [[N]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP8]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[EVL_BASED_IV1]], 0
-; CHECK-NEXT:    [[TMP9:%.*]] = shl nsw i64 [[TMP6]], 2
+; CHECK-NEXT:    [[TMP9:%.*]] = shl nsw i64 [[EVL_BASED_IV1]], 2
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP9]]
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv2i32.p0.i64(<vscale x 2 x i32> [[VEC_IND]], ptr align 4 [[TMP10]], i64 16, <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP11:%.*]] = or disjoint i64 [[TMP9]], 1
@@ -241,8 +238,7 @@ define void @store_factor_5_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i32> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP8:%.*]] = sub i64 [[N]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP8]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[EVL_BASED_IV1]], 0
-; CHECK-NEXT:    [[TMP9:%.*]] = mul nuw nsw i64 [[TMP6]], 5
+; CHECK-NEXT:    [[TMP9:%.*]] = mul nuw nsw i64 [[EVL_BASED_IV1]], 5
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP9]]
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv2i32.p0.i64(<vscale x 2 x i32> [[VEC_IND]], ptr align 4 [[TMP10]], i64 20, <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr i32, ptr [[TMP10]], i64 1
@@ -322,8 +318,7 @@ define void @store_factor_6_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i32> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP8:%.*]] = sub i64 [[N]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP8]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[EVL_BASED_IV1]], 0
-; CHECK-NEXT:    [[TMP9:%.*]] = mul nuw nsw i64 [[TMP6]], 6
+; CHECK-NEXT:    [[TMP9:%.*]] = mul nuw nsw i64 [[EVL_BASED_IV1]], 6
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP9]]
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv2i32.p0.i64(<vscale x 2 x i32> [[VEC_IND]], ptr align 4 [[TMP10]], i64 24, <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr i32, ptr [[TMP10]], i64 1
@@ -409,8 +404,7 @@ define void @store_factor_7_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i32> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP8:%.*]] = sub i64 [[N]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP8]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[EVL_BASED_IV1]], 0
-; CHECK-NEXT:    [[TMP9:%.*]] = mul nuw nsw i64 [[TMP6]], 7
+; CHECK-NEXT:    [[TMP9:%.*]] = mul nuw nsw i64 [[EVL_BASED_IV1]], 7
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP9]]
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv2i32.p0.i64(<vscale x 2 x i32> [[VEC_IND]], ptr align 4 [[TMP10]], i64 28, <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr i32, ptr [[TMP10]], i64 1
@@ -502,8 +496,7 @@ define void @store_factor_8_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i32> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP8:%.*]] = sub i64 [[N]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP8]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[EVL_BASED_IV1]], 0
-; CHECK-NEXT:    [[TMP9:%.*]] = shl nsw i64 [[TMP6]], 3
+; CHECK-NEXT:    [[TMP9:%.*]] = shl nsw i64 [[EVL_BASED_IV1]], 3
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP9]]
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv2i32.p0.i64(<vscale x 2 x i32> [[VEC_IND]], ptr align 4 [[TMP10]], i64 32, <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP11:%.*]] = or disjoint i64 [[TMP9]], 1
@@ -628,8 +621,7 @@ define void @store_factor_3_with_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i32> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP8:%.*]] = sub i64 [[N]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP8]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[EVL_BASED_IV1]], 0
-; CHECK-NEXT:    [[TMP9:%.*]] = mul nuw nsw i64 [[TMP6]], 3
+; CHECK-NEXT:    [[TMP9:%.*]] = mul nuw nsw i64 [[EVL_BASED_IV1]], 3
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP9]]
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv2i32.p0.i64(<vscale x 2 x i32> [[VEC_IND]], ptr align 4 [[TMP10]], i64 12, <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr i32, ptr [[TMP10]], i64 2
@@ -697,8 +689,7 @@ define void @store_factor_4_with_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i32> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP8:%.*]] = sub i64 [[N]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP8]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[EVL_BASED_IV1]], 0
-; CHECK-NEXT:    [[TMP9:%.*]] = shl nsw i64 [[TMP6]], 2
+; CHECK-NEXT:    [[TMP9:%.*]] = shl nsw i64 [[EVL_BASED_IV1]], 2
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP9]]
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv2i32.p0.i64(<vscale x 2 x i32> [[VEC_IND]], ptr align 4 [[TMP10]], i64 16, <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP11:%.*]] = or disjoint i64 [[TMP9]], 1
@@ -778,8 +769,7 @@ define void @store_factor_5_with_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i32> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP8:%.*]] = sub i64 [[N]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP8]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[EVL_BASED_IV1]], 0
-; CHECK-NEXT:    [[TMP9:%.*]] = mul nuw nsw i64 [[TMP6]], 5
+; CHECK-NEXT:    [[TMP9:%.*]] = mul nuw nsw i64 [[EVL_BASED_IV1]], 5
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP9]]
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv2i32.p0.i64(<vscale x 2 x i32> [[VEC_IND]], ptr align 4 [[TMP10]], i64 20, <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr i32, ptr [[TMP10]], i64 1
@@ -859,8 +849,7 @@ define void @store_factor_6_with_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i32> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP8:%.*]] = sub i64 [[N]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP8]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[EVL_BASED_IV1]], 0
-; CHECK-NEXT:    [[TMP9:%.*]] = mul nuw nsw i64 [[TMP6]], 6
+; CHECK-NEXT:    [[TMP9:%.*]] = mul nuw nsw i64 [[EVL_BASED_IV1]], 6
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP9]]
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv2i32.p0.i64(<vscale x 2 x i32> [[VEC_IND]], ptr align 4 [[TMP10]], i64 24, <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr i32, ptr [[TMP10]], i64 1
@@ -946,8 +935,7 @@ define void @store_factor_7_with_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i32> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP8:%.*]] = sub i64 [[N]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP8]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[EVL_BASED_IV1]], 0
-; CHECK-NEXT:    [[TMP9:%.*]] = mul nuw nsw i64 [[TMP6]], 7
+; CHECK-NEXT:    [[TMP9:%.*]] = mul nuw nsw i64 [[EVL_BASED_IV1]], 7
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP9]]
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv2i32.p0.i64(<vscale x 2 x i32> [[VEC_IND]], ptr align 4 [[TMP10]], i64 28, <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr i32, ptr [[TMP10]], i64 1
@@ -1039,8 +1027,7 @@ define void @store_factor_8_with_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i32> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP8:%.*]] = sub i64 [[N]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP8]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[EVL_BASED_IV1]], 0
-; CHECK-NEXT:    [[TMP9:%.*]] = shl nsw i64 [[TMP6]], 3
+; CHECK-NEXT:    [[TMP9:%.*]] = shl nsw i64 [[EVL_BASED_IV1]], 3
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP9]]
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv2i32.p0.i64(<vscale x 2 x i32> [[VEC_IND]], ptr align 4 [[TMP10]], i64 32, <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP11:%.*]] = or disjoint i64 [[TMP9]], 1

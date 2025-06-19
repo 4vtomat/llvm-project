@@ -46,10 +46,8 @@ define void @test(i32 %0, i64 %conv, ptr %call5.i.i.i4.i.i101) {
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP21:%.*]] = sub i64 [[TMP1]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP22:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP21]], i32 1, i1 true)
-; CHECK-NEXT:    [[TMP18:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; CHECK-NEXT:    [[TMP19:%.*]] = trunc i64 [[EVL_BASED_IV]] to i32
-; CHECK-NEXT:    [[TMP20:%.*]] = add i32 [[TMP19]], 0
-; CHECK-NEXT:    [[TMP23:%.*]] = mul i32 [[TMP20]], [[TMP0]]
+; CHECK-NEXT:    [[TMP23:%.*]] = mul i32 [[TMP19]], [[TMP0]]
 ; CHECK-NEXT:    [[TMP24:%.*]] = zext i32 [[TMP23]] to i64
 ; CHECK-NEXT:    [[TMP25:%.*]] = getelementptr [[CLASS_SPARSEMATRIXEZ_16:%.*]], ptr null, i64 [[TMP24]]
 ; CHECK-NEXT:    [[TMP26:%.*]] = getelementptr i8, ptr [[TMP25]], i64 32
@@ -63,7 +61,7 @@ define void @test(i32 %0, i64 %conv, ptr %call5.i.i.i4.i.i101) {
 ; CHECK-NEXT:    [[VP_CAST1:%.*]] = call <vscale x 1 x i64> @llvm.vp.ptrtoint.nxv1i64.nxv1p0(<vscale x 1 x ptr> [[TMP28]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP22]])
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x i64> @llvm.vp.or.nxv1i64(<vscale x 1 x i64> [[VP_CAST]], <vscale x 1 x i64> [[VP_CAST1]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP22]])
 ; CHECK-NEXT:    [[VP_CAST2:%.*]] = call <vscale x 1 x i32> @llvm.vp.trunc.nxv1i32.nxv1i64(<vscale x 1 x i64> [[VP_OP]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP22]])
-; CHECK-NEXT:    [[TMP30:%.*]] = getelementptr i32, ptr [[CALL5_I_I_I4_I_I101]], i64 [[TMP18]]
+; CHECK-NEXT:    [[TMP30:%.*]] = getelementptr i32, ptr [[CALL5_I_I_I4_I_I101]], i64 [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP31:%.*]] = getelementptr i32, ptr [[TMP30]], i32 0
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv1i32.p0(<vscale x 1 x i32> [[VP_CAST2]], ptr align 4 [[TMP31]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP22]])
 ; CHECK-NEXT:    [[TMP33:%.*]] = zext i32 [[TMP22]] to i64

@@ -67,8 +67,7 @@ define dso_local noundef signext i32 @f(ptr noundef writeonly %c, ptr noundef re
 ; VEC-NEXT:    [[TMP20:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP19]], i32 2, i1 true)
 ; VEC-NEXT:    [[TMP21:%.*]] = zext i32 [[TMP20]] to i64
 ; VEC-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 4
-; VEC-NEXT:    [[TMP22:%.*]] = add i64 [[OFFSET_IDX]], 0
-; VEC-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[C]], i64 [[TMP22]]
+; VEC-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[C]], i64 [[OFFSET_IDX]]
 ; VEC-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2p0(<vscale x 2 x ptr> [[TMP18]], <vscale x 2 x ptr> [[BROADCAST_SPLAT]], metadata !"ult", <vscale x 2 x i1> splat (i1 true), i32 [[TMP20]])
 ; VEC-NEXT:    [[TMP23:%.*]] = extractelement <vscale x 2 x ptr> [[TMP18]], i32 0
 ; VEC-NEXT:    [[TMP24:%.*]] = getelementptr i32, ptr [[TMP23]], i32 0

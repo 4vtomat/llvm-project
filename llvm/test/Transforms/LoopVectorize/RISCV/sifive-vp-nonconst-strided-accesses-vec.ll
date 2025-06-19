@@ -32,11 +32,10 @@ define void @foo(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP5:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP5]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP7:%.*]] = add i64 [[EVL_BASED_IV]], 0
-; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i32, ptr [[S]], i64 [[TMP7]]
+; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i32, ptr [[S]], i64 [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i32, ptr [[TMP8]], i32 0
 ; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0(ptr align 4 [[TMP9]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP6]])
-; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[P]], i64 [[TMP7]]
+; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[P]], i64 [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds i32, ptr [[TMP10]], i32 0
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv2i32.p0(<vscale x 2 x i32> [[VP_OP_LOAD]], ptr align 4 [[TMP11]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP6]])
 ; CHECK-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP6]] to i64
@@ -77,8 +76,7 @@ define void @foo(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CHECK-NEXT:    [[EVL_BASED_IV15:%.*]] = phi i64 [ 0, [[VECTOR_PH11]] ], [ [[INDEX_EVL_NEXT16]], [[VECTOR_BODY13]] ]
 ; CHECK-NEXT:    [[TMP23:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV15]]
 ; CHECK-NEXT:    [[TMP24:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP23]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP25:%.*]] = add i64 [[EVL_BASED_IV15]], 0
-; CHECK-NEXT:    [[TMP26:%.*]] = mul nsw i64 [[TMP25]], [[TMP0]]
+; CHECK-NEXT:    [[TMP26:%.*]] = mul nsw i64 [[EVL_BASED_IV15]], [[TMP0]]
 ; CHECK-NEXT:    [[TMP27:%.*]] = getelementptr inbounds i32, ptr [[S]], i64 [[TMP26]]
 ; CHECK-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.experimental.vp.strided.load.nxv2i32.p0.i64(ptr align 4 [[TMP27]], i64 [[TMP21]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP24]]), !alias.scope [[META3:![0-9]+]]
 ; CHECK-NEXT:    [[TMP28:%.*]] = getelementptr inbounds i32, ptr [[P]], i64 [[TMP26]]
@@ -133,11 +131,10 @@ define void @foo(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CONSECUTIVE-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; CONSECUTIVE-NEXT:    [[TMP5:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV]]
 ; CONSECUTIVE-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP5]], i32 2, i1 true)
-; CONSECUTIVE-NEXT:    [[TMP7:%.*]] = add i64 [[EVL_BASED_IV]], 0
-; CONSECUTIVE-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i32, ptr [[S]], i64 [[TMP7]]
+; CONSECUTIVE-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i32, ptr [[S]], i64 [[EVL_BASED_IV]]
 ; CONSECUTIVE-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i32, ptr [[TMP8]], i32 0
 ; CONSECUTIVE-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0(ptr align 4 [[TMP9]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP6]])
-; CONSECUTIVE-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[P]], i64 [[TMP7]]
+; CONSECUTIVE-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[P]], i64 [[EVL_BASED_IV]]
 ; CONSECUTIVE-NEXT:    [[TMP11:%.*]] = getelementptr inbounds i32, ptr [[TMP10]], i32 0
 ; CONSECUTIVE-NEXT:    call void @llvm.vp.store.nxv2i32.p0(<vscale x 2 x i32> [[VP_OP_LOAD]], ptr align 4 [[TMP11]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP6]])
 ; CONSECUTIVE-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP6]] to i64
@@ -200,8 +197,7 @@ define void @foo(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; STRIDED-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; STRIDED-NEXT:    [[TMP10:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV]]
 ; STRIDED-NEXT:    [[TMP11:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP10]], i32 2, i1 true)
-; STRIDED-NEXT:    [[TMP12:%.*]] = add i64 [[EVL_BASED_IV]], 0
-; STRIDED-NEXT:    [[TMP13:%.*]] = mul nsw i64 [[TMP12]], [[TMP0]]
+; STRIDED-NEXT:    [[TMP13:%.*]] = mul nsw i64 [[EVL_BASED_IV]], [[TMP0]]
 ; STRIDED-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i32, ptr [[S]], i64 [[TMP13]]
 ; STRIDED-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.experimental.vp.strided.load.nxv2i32.p0.i64(ptr align 4 [[TMP14]], i64 [[TMP8]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP11]]), !alias.scope [[META0:![0-9]+]]
 ; STRIDED-NEXT:    [[TMP15:%.*]] = getelementptr inbounds i32, ptr [[P]], i64 [[TMP13]]
@@ -286,12 +282,11 @@ define void @bar(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP8:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP8]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP10:%.*]] = add i64 [[EVL_BASED_IV]], 0
-; CHECK-NEXT:    [[TMP11:%.*]] = urem i64 [[TMP10]], 4
+; CHECK-NEXT:    [[TMP11:%.*]] = urem i64 [[EVL_BASED_IV]], 4
 ; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[S]], i64 [[TMP11]]
 ; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i32, ptr [[TMP12]], i32 0
 ; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0(ptr align 4 [[TMP13]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP9]])
-; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i32, ptr [[P]], i64 [[TMP10]]
+; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i32, ptr [[P]], i64 [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr inbounds i32, ptr [[TMP14]], i32 0
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv2i32.p0(<vscale x 2 x i32> [[VP_OP_LOAD]], ptr align 4 [[TMP15]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP9]])
 ; CHECK-NEXT:    [[TMP16:%.*]] = zext i32 [[TMP9]] to i64
@@ -357,8 +352,7 @@ define void @bar(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CHECK-NEXT:    [[EVL_BASED_IV16:%.*]] = phi i64 [ 0, [[VECTOR_PH12]] ], [ [[INDEX_EVL_NEXT17]], [[VECTOR_BODY14]] ]
 ; CHECK-NEXT:    [[TMP47:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV16]]
 ; CHECK-NEXT:    [[TMP48:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP47]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP49:%.*]] = add i64 [[EVL_BASED_IV16]], 0
-; CHECK-NEXT:    [[TMP50:%.*]] = mul nsw i64 [[TMP49]], [[TMP0]]
+; CHECK-NEXT:    [[TMP50:%.*]] = mul nsw i64 [[EVL_BASED_IV16]], [[TMP0]]
 ; CHECK-NEXT:    [[TMP51:%.*]] = urem i64 [[TMP50]], 4
 ; CHECK-NEXT:    [[TMP52:%.*]] = getelementptr inbounds i32, ptr [[S]], i64 [[TMP51]]
 ; CHECK-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.experimental.vp.strided.load.nxv2i32.p0.i64(ptr align 4 [[TMP52]], i64 [[TMP45]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP48]]), !alias.scope [[META11:![0-9]+]]
@@ -418,12 +412,11 @@ define void @bar(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CONSECUTIVE-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; CONSECUTIVE-NEXT:    [[TMP8:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV]]
 ; CONSECUTIVE-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP8]], i32 2, i1 true)
-; CONSECUTIVE-NEXT:    [[TMP10:%.*]] = add i64 [[EVL_BASED_IV]], 0
-; CONSECUTIVE-NEXT:    [[TMP11:%.*]] = urem i64 [[TMP10]], 4
+; CONSECUTIVE-NEXT:    [[TMP11:%.*]] = urem i64 [[EVL_BASED_IV]], 4
 ; CONSECUTIVE-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[S]], i64 [[TMP11]]
 ; CONSECUTIVE-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i32, ptr [[TMP12]], i32 0
 ; CONSECUTIVE-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0(ptr align 4 [[TMP13]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP9]])
-; CONSECUTIVE-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i32, ptr [[P]], i64 [[TMP10]]
+; CONSECUTIVE-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i32, ptr [[P]], i64 [[EVL_BASED_IV]]
 ; CONSECUTIVE-NEXT:    [[TMP15:%.*]] = getelementptr inbounds i32, ptr [[TMP14]], i32 0
 ; CONSECUTIVE-NEXT:    call void @llvm.vp.store.nxv2i32.p0(<vscale x 2 x i32> [[VP_OP_LOAD]], ptr align 4 [[TMP15]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP9]])
 ; CONSECUTIVE-NEXT:    [[TMP16:%.*]] = zext i32 [[TMP9]] to i64
@@ -512,8 +505,7 @@ define void @bar(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; STRIDED-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; STRIDED-NEXT:    [[TMP30:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV]]
 ; STRIDED-NEXT:    [[TMP31:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP30]], i32 2, i1 true)
-; STRIDED-NEXT:    [[TMP32:%.*]] = add i64 [[EVL_BASED_IV]], 0
-; STRIDED-NEXT:    [[TMP33:%.*]] = mul nsw i64 [[TMP32]], [[TMP0]]
+; STRIDED-NEXT:    [[TMP33:%.*]] = mul nsw i64 [[EVL_BASED_IV]], [[TMP0]]
 ; STRIDED-NEXT:    [[TMP34:%.*]] = urem i64 [[TMP33]], 4
 ; STRIDED-NEXT:    [[TMP35:%.*]] = getelementptr inbounds i32, ptr [[S]], i64 [[TMP34]]
 ; STRIDED-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.experimental.vp.strided.load.nxv2i32.p0.i64(ptr align 4 [[TMP35]], i64 [[TMP28]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP31]]), !alias.scope [[META9:![0-9]+]]
@@ -594,8 +586,7 @@ define i32 @baz(ptr %a, i32 %b, i32 %c, i32 %d) {
 ; CHECK-NEXT:    [[TMP5:%.*]] = sub i64 [[TMP4]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP5]], i32 2, i1 true)
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = add i64 [[TMP0]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP7:%.*]] = add i64 [[OFFSET_IDX]], 0
-; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[TMP7]]
+; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[OFFSET_IDX]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i32, ptr [[TMP8]], i32 0
 ; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0(ptr align 4 [[TMP9]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP6]])
 ; CHECK-NEXT:    [[TMP10:%.*]] = zext i32 [[TMP6]] to i64
@@ -622,8 +613,7 @@ define i32 @baz(ptr %a, i32 %b, i32 %c, i32 %d) {
 ; CHECK-NEXT:    [[TMP18:%.*]] = sub i64 [[TMP16]], [[EVL_BASED_IV8]]
 ; CHECK-NEXT:    [[TMP19:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP18]], i32 2, i1 true)
 ; CHECK-NEXT:    [[OFFSET_IDX9:%.*]] = add i64 [[TMP0]], [[EVL_BASED_IV8]]
-; CHECK-NEXT:    [[TMP20:%.*]] = add i64 [[OFFSET_IDX9]], 0
-; CHECK-NEXT:    [[TMP21:%.*]] = mul nsw i64 [[TMP20]], [[TMP1]]
+; CHECK-NEXT:    [[TMP21:%.*]] = mul nsw i64 [[OFFSET_IDX9]], [[TMP1]]
 ; CHECK-NEXT:    [[TMP22:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP21]]
 ; CHECK-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.experimental.vp.strided.load.nxv2i32.p0.i64(ptr align 4 [[TMP22]], i64 [[TMP17]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP19]])
 ; CHECK-NEXT:    [[TMP23:%.*]] = zext i32 [[TMP19]] to i64
@@ -675,8 +665,7 @@ define i32 @baz(ptr %a, i32 %b, i32 %c, i32 %d) {
 ; CONSECUTIVE-NEXT:    [[TMP5:%.*]] = sub i64 [[TMP4]], [[EVL_BASED_IV]]
 ; CONSECUTIVE-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP5]], i32 2, i1 true)
 ; CONSECUTIVE-NEXT:    [[OFFSET_IDX:%.*]] = add i64 [[TMP0]], [[EVL_BASED_IV]]
-; CONSECUTIVE-NEXT:    [[TMP7:%.*]] = add i64 [[OFFSET_IDX]], 0
-; CONSECUTIVE-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[TMP7]]
+; CONSECUTIVE-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[OFFSET_IDX]]
 ; CONSECUTIVE-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i32, ptr [[TMP8]], i32 0
 ; CONSECUTIVE-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0(ptr align 4 [[TMP9]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP6]])
 ; CONSECUTIVE-NEXT:    [[TMP10:%.*]] = zext i32 [[TMP6]] to i64
@@ -726,8 +715,7 @@ define i32 @baz(ptr %a, i32 %b, i32 %c, i32 %d) {
 ; STRIDED-NEXT:    [[TMP6:%.*]] = sub i64 [[TMP4]], [[EVL_BASED_IV]]
 ; STRIDED-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP6]], i32 2, i1 true)
 ; STRIDED-NEXT:    [[OFFSET_IDX:%.*]] = add i64 [[TMP0]], [[EVL_BASED_IV]]
-; STRIDED-NEXT:    [[TMP8:%.*]] = add i64 [[OFFSET_IDX]], 0
-; STRIDED-NEXT:    [[TMP9:%.*]] = mul nsw i64 [[TMP8]], [[TMP1]]
+; STRIDED-NEXT:    [[TMP9:%.*]] = mul nsw i64 [[OFFSET_IDX]], [[TMP1]]
 ; STRIDED-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[TMP9]]
 ; STRIDED-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.experimental.vp.strided.load.nxv2i32.p0.i64(ptr align 4 [[TMP10]], i64 [[TMP5]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP7]])
 ; STRIDED-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP7]] to i64

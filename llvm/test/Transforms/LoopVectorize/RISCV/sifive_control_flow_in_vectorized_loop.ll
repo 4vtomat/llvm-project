@@ -31,8 +31,7 @@ define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr
 ; X280-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
 ; X280-NEXT:    [[TMP2:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV]]
 ; X280-NEXT:    [[TMP3:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP2]], i32 8, i1 true)
-; X280-NEXT:    [[TMP4:%.*]] = add i64 [[EVL_BASED_IV]], 0
-; X280-NEXT:    [[TMP5:%.*]] = getelementptr i64, ptr [[REG_24_VAL]], i64 [[TMP4]]
+; X280-NEXT:    [[TMP5:%.*]] = getelementptr i64, ptr [[REG_24_VAL]], i64 [[EVL_BASED_IV]]
 ; X280-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i64, ptr [[TMP5]], i32 0
 ; X280-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i64> @llvm.vp.load.nxv8i64.p0(ptr align 8 [[TMP6]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]])
 ; X280-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i64> @llvm.vp.and.nxv8i64(<vscale x 8 x i64> [[VP_OP_LOAD]], <vscale x 8 x i64> [[BROADCAST_SPLAT2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]])
@@ -95,8 +94,7 @@ define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr
 ; P470-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY_SPLIT]] ]
 ; P470-NEXT:    [[TMP2:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV]]
 ; P470-NEXT:    [[TMP3:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP2]], i32 4, i1 true)
-; P470-NEXT:    [[TMP4:%.*]] = add i64 [[EVL_BASED_IV]], 0
-; P470-NEXT:    [[TMP5:%.*]] = getelementptr i64, ptr [[REG_24_VAL]], i64 [[TMP4]]
+; P470-NEXT:    [[TMP5:%.*]] = getelementptr i64, ptr [[REG_24_VAL]], i64 [[EVL_BASED_IV]]
 ; P470-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i64, ptr [[TMP5]], i32 0
 ; P470-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[TMP6]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
 ; P470-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i64> @llvm.vp.and.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i64> [[BROADCAST_SPLAT2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
@@ -165,8 +163,7 @@ define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr
 ; P670-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
 ; P670-NEXT:    [[TMP2:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV]]
 ; P670-NEXT:    [[TMP3:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP2]], i32 4, i1 true)
-; P670-NEXT:    [[TMP4:%.*]] = add i64 [[EVL_BASED_IV]], 0
-; P670-NEXT:    [[TMP5:%.*]] = getelementptr i64, ptr [[REG_24_VAL]], i64 [[TMP4]]
+; P670-NEXT:    [[TMP5:%.*]] = getelementptr i64, ptr [[REG_24_VAL]], i64 [[EVL_BASED_IV]]
 ; P670-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i64, ptr [[TMP5]], i32 0
 ; P670-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[TMP6]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
 ; P670-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i64> @llvm.vp.and.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i64> [[BROADCAST_SPLAT2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])

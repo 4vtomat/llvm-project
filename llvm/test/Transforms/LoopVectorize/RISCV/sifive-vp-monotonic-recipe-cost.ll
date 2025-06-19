@@ -216,13 +216,12 @@ define i32 @dragon_escape(ptr %goal, ptr %board) #0 {
 ; P670-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 8 x i32> [ [[INDUCTION]], %[[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], %[[VECTOR_BODY]] ]
 ; P670-NEXT:    [[AVL:%.*]] = sub i64 401, [[EVL_BASED_IV]]
 ; P670-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 8, i1 true)
-; P670-NEXT:    [[TMP7:%.*]] = add i64 [[EVL_BASED_IV]], 0
-; P670-NEXT:    [[TMP8:%.*]] = getelementptr [421 x i8], ptr [[BOARD]], i64 0, i64 [[TMP7]]
+; P670-NEXT:    [[TMP8:%.*]] = getelementptr [421 x i8], ptr [[BOARD]], i64 0, i64 [[EVL_BASED_IV]]
 ; P670-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[TMP8]], i32 0
 ; P670-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP9]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
 ; P670-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
 ; P670-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 8 x i1> @llvm.vp.xor.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> splat (i1 true), <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
-; P670-NEXT:    [[TMP10:%.*]] = getelementptr i8, ptr [[GOAL]], i64 [[TMP7]]
+; P670-NEXT:    [[TMP10:%.*]] = getelementptr i8, ptr [[GOAL]], i64 [[EVL_BASED_IV]]
 ; P670-NEXT:    [[TMP11:%.*]] = getelementptr i8, ptr [[TMP10]], i32 0
 ; P670-NEXT:    [[VP_OP_LOAD3:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP11]], <vscale x 8 x i1> [[PRED_NOT]], i32 [[TMP6]])
 ; P670-NEXT:    [[VP_OP_ICMP4:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD3]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
@@ -237,7 +236,7 @@ define i32 @dragon_escape(ptr %goal, ptr %board) #0 {
 ; P670-NEXT:    [[TMP18:%.*]] = call <vscale x 8 x i32> @llvm.experimental.vp.compress.nxv8i32(<vscale x 8 x i32> [[VEC_IND]], <vscale x 8 x i1> [[TMP12]], i32 [[TMP6]])
 ; P670-NEXT:    [[TMP19:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> [[TMP12]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
 ; P670-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[TMP18]], ptr align 4 [[TMP17]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP19]])
-; P670-NEXT:    [[TMP20:%.*]] = getelementptr [400 x i32], ptr null, i64 0, i64 [[TMP7]]
+; P670-NEXT:    [[TMP20:%.*]] = getelementptr [400 x i32], ptr null, i64 0, i64 [[EVL_BASED_IV]]
 ; P670-NEXT:    [[TMP21:%.*]] = getelementptr i32, ptr [[TMP20]], i32 0
 ; P670-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> zeroinitializer, ptr align 4 [[TMP21]], <vscale x 8 x i1> [[TMP12]], i32 [[TMP6]])
 ; P670-NEXT:    [[TMP22:%.*]] = zext i32 [[TMP6]] to i64
@@ -304,13 +303,12 @@ define i32 @dragon_escape(ptr %goal, ptr %board) #0 {
 ; P470-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 8 x i32> [ [[INDUCTION]], %[[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], %[[VECTOR_BODY_SPLIT5]] ]
 ; P470-NEXT:    [[AVL:%.*]] = sub i64 401, [[EVL_BASED_IV]]
 ; P470-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 8, i1 true)
-; P470-NEXT:    [[TMP7:%.*]] = add i64 [[EVL_BASED_IV]], 0
-; P470-NEXT:    [[TMP8:%.*]] = getelementptr [421 x i8], ptr [[BOARD]], i64 0, i64 [[TMP7]]
+; P470-NEXT:    [[TMP8:%.*]] = getelementptr [421 x i8], ptr [[BOARD]], i64 0, i64 [[EVL_BASED_IV]]
 ; P470-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[TMP8]], i32 0
 ; P470-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP9]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
 ; P470-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
 ; P470-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 8 x i1> @llvm.vp.xor.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> splat (i1 true), <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
-; P470-NEXT:    [[TMP10:%.*]] = getelementptr i8, ptr [[GOAL]], i64 [[TMP7]]
+; P470-NEXT:    [[TMP10:%.*]] = getelementptr i8, ptr [[GOAL]], i64 [[EVL_BASED_IV]]
 ; P470-NEXT:    [[TMP11:%.*]] = getelementptr i8, ptr [[TMP10]], i32 0
 ; P470-NEXT:    [[VP_OP_LOAD3:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP11]], <vscale x 8 x i1> [[PRED_NOT]], i32 [[TMP6]])
 ; P470-NEXT:    [[VP_OP_ICMP4:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD3]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
@@ -335,7 +333,7 @@ define i32 @dragon_escape(ptr %goal, ptr %board) #0 {
 ; P470-NEXT:    [[TMP23:%.*]] = icmp ne i32 [[TMP22]], -1
 ; P470-NEXT:    br i1 [[TMP23]], label %[[VECTOR_IF_BB4:.*]], label %[[VECTOR_BODY_SPLIT5]]
 ; P470:       [[VECTOR_IF_BB4]]:
-; P470-NEXT:    [[TMP24:%.*]] = getelementptr [400 x i32], ptr null, i64 0, i64 [[TMP7]]
+; P470-NEXT:    [[TMP24:%.*]] = getelementptr [400 x i32], ptr null, i64 0, i64 [[EVL_BASED_IV]]
 ; P470-NEXT:    [[TMP25:%.*]] = getelementptr i32, ptr [[TMP24]], i32 0
 ; P470-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> zeroinitializer, ptr align 4 [[TMP25]], <vscale x 8 x i1> [[TMP12]], i32 [[TMP6]])
 ; P470-NEXT:    br label %[[VECTOR_BODY_SPLIT5]]
@@ -404,13 +402,12 @@ define i32 @dragon_escape(ptr %goal, ptr %board) #0 {
 ; X280-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 8 x i32> [ [[INDUCTION]], %[[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], %[[VECTOR_BODY]] ]
 ; X280-NEXT:    [[AVL:%.*]] = sub i64 401, [[EVL_BASED_IV]]
 ; X280-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 8, i1 true)
-; X280-NEXT:    [[TMP7:%.*]] = add i64 [[EVL_BASED_IV]], 0
-; X280-NEXT:    [[TMP8:%.*]] = getelementptr [421 x i8], ptr [[BOARD]], i64 0, i64 [[TMP7]]
+; X280-NEXT:    [[TMP8:%.*]] = getelementptr [421 x i8], ptr [[BOARD]], i64 0, i64 [[EVL_BASED_IV]]
 ; X280-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[TMP8]], i32 0
 ; X280-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP9]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
 ; X280-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
 ; X280-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 8 x i1> @llvm.vp.xor.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> splat (i1 true), <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
-; X280-NEXT:    [[TMP10:%.*]] = getelementptr i8, ptr [[GOAL]], i64 [[TMP7]]
+; X280-NEXT:    [[TMP10:%.*]] = getelementptr i8, ptr [[GOAL]], i64 [[EVL_BASED_IV]]
 ; X280-NEXT:    [[TMP11:%.*]] = getelementptr i8, ptr [[TMP10]], i32 0
 ; X280-NEXT:    [[VP_OP_LOAD3:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP11]], <vscale x 8 x i1> [[PRED_NOT]], i32 [[TMP6]])
 ; X280-NEXT:    [[VP_OP_ICMP4:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD3]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
@@ -425,7 +422,7 @@ define i32 @dragon_escape(ptr %goal, ptr %board) #0 {
 ; X280-NEXT:    [[TMP18:%.*]] = call <vscale x 8 x i32> @llvm.experimental.vp.compress.nxv8i32(<vscale x 8 x i32> [[VEC_IND]], <vscale x 8 x i1> [[TMP12]], i32 [[TMP6]])
 ; X280-NEXT:    [[TMP19:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> [[TMP12]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP6]])
 ; X280-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[TMP18]], ptr align 4 [[TMP17]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP19]])
-; X280-NEXT:    [[TMP20:%.*]] = getelementptr [400 x i32], ptr null, i64 0, i64 [[TMP7]]
+; X280-NEXT:    [[TMP20:%.*]] = getelementptr [400 x i32], ptr null, i64 0, i64 [[EVL_BASED_IV]]
 ; X280-NEXT:    [[TMP21:%.*]] = getelementptr i32, ptr [[TMP20]], i32 0
 ; X280-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> zeroinitializer, ptr align 4 [[TMP21]], <vscale x 8 x i1> [[TMP12]], i32 [[TMP6]])
 ; X280-NEXT:    [[TMP22:%.*]] = zext i32 [[TMP6]] to i64

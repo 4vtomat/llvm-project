@@ -33,16 +33,13 @@ define void @convert_to_ssa(ptr %0, ptr %elms.i159, ptr %1) {
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[OFFSET_IDX15:%.*]] = mul i64 [[EVL_BASED_IV]], 64
-; CHECK-NEXT:    [[TMP5:%.*]] = add i64 [[OFFSET_IDX15]], 0
-; CHECK-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[TMP0]], i64 [[TMP5]]
+; CHECK-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[TMP0]], i64 [[OFFSET_IDX15]]
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 4294967295, [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 8, i1 true)
 ; CHECK-NEXT:    [[OFFSET_IDX16:%.*]] = mul i64 [[EVL_BASED_IV1]], 64
-; CHECK-NEXT:    [[TMP4:%.*]] = add i64 [[OFFSET_IDX16]], 0
-; CHECK-NEXT:    [[NEXT_GEP16:%.*]] = getelementptr i8, ptr null, i64 [[TMP4]]
+; CHECK-NEXT:    [[NEXT_GEP16:%.*]] = getelementptr i8, ptr null, i64 [[OFFSET_IDX16]]
 ; CHECK-NEXT:    [[OFFSET_IDX17:%.*]] = mul i64 [[EVL_BASED_IV1]], 64
-; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[OFFSET_IDX17]], 0
-; CHECK-NEXT:    [[NEXT_GEP18:%.*]] = getelementptr i8, ptr [[TMP1]], i64 [[TMP6]]
+; CHECK-NEXT:    [[NEXT_GEP18:%.*]] = getelementptr i8, ptr [[TMP1]], i64 [[OFFSET_IDX17]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i64, ptr [[NEXT_GEP18]], i64 6
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i64, ptr [[NEXT_GEP18]], i64 7
 ; CHECK-NEXT:    [[TMP9:%.*]] = load i64, ptr [[ELMS_I159]], align 8, !alias.scope [[META0:![0-9]+]]
@@ -56,8 +53,8 @@ define void @convert_to_ssa(ptr %0, ptr %elms.i159, ptr %1) {
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i64> @llvm.vp.and.nxv8i64(<vscale x 8 x i64> [[BROADCAST_SPLAT]], <vscale x 8 x i64> [[VP_STRIDED_LOAD]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]])
 ; CHECK-NEXT:    [[VP_OP21:%.*]] = call <vscale x 8 x i64> @llvm.vp.or.nxv8i64(<vscale x 8 x i64> [[VP_OP]], <vscale x 8 x i64> [[BROADCAST_SPLAT20]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]])
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv8i64.p0.i64(<vscale x 8 x i64> [[VP_OP21]], ptr align 8 [[TMP7]], i64 64, <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]]), !alias.scope [[META5:![0-9]+]], !noalias [[META7:![0-9]+]]
-; CHECK-NEXT:    [[VP_STRIDED_LOAD22:%.*]] = call <vscale x 8 x i64> @llvm.experimental.vp.strided.load.nxv8i64.p0.i64(ptr align 8 [[TMP10]], i64 64, <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]]), !alias.scope [[META9:![0-9]+]]
-; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv8i64.p0.i64(<vscale x 8 x i64> [[VP_STRIDED_LOAD22]], ptr align 8 [[TMP8]], i64 64, <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]]), !alias.scope [[META5]], !noalias [[META7]]
+; CHECK-NEXT:    [[VP_STRIDED_LOAD18:%.*]] = call <vscale x 8 x i64> @llvm.experimental.vp.strided.load.nxv8i64.p0.i64(ptr align 8 [[TMP10]], i64 64, <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]]), !alias.scope [[META9:![0-9]+]]
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv8i64.p0.i64(<vscale x 8 x i64> [[VP_STRIDED_LOAD18]], ptr align 8 [[TMP8]], i64 64, <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]]), !alias.scope [[META5]], !noalias [[META7]]
 ; CHECK-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP3]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP12]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 4294967295

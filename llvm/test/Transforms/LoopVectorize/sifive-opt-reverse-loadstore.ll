@@ -17,8 +17,7 @@ define void @reverse_reverse(i64 %arg) {
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[TMP0]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = sub i64 [[ARG]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP5:%.*]] = add i64 [[OFFSET_IDX]], 0
-; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i32, ptr null, i64 [[TMP5]]
+; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i32, ptr null, i64 [[OFFSET_IDX]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP4]] to i64
 ; CHECK-NEXT:    [[TMP8:%.*]] = mul i64 0, [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = sub i64 1, [[TMP7]]
@@ -82,8 +81,7 @@ define void @reverse_binop_reverse(i64 %arg, i32 %alpha) {
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[TMP0]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = sub i64 [[ARG]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP5:%.*]] = add i64 [[OFFSET_IDX]], 0
-; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i32, ptr null, i64 [[TMP5]]
+; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i32, ptr null, i64 [[OFFSET_IDX]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP4]] to i64
 ; CHECK-NEXT:    [[TMP8:%.*]] = mul i64 0, [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = sub i64 1, [[TMP7]]

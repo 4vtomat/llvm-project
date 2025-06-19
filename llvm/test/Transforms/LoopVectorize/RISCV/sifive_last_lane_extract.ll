@@ -22,16 +22,15 @@ define ptr @Perl_newSV(ptr %call.i) {
 ; CHECK-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP5]], i32 1, i1 true)
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[EVL_BASED_IV]], 11
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = add i64 1, [[TMP7]]
-; CHECK-NEXT:    [[TMP8:%.*]] = add i64 [[OFFSET_IDX]], 0
-; CHECK-NEXT:    [[TMP9:%.*]] = add nuw nsw i64 [[TMP8]], 1
+; CHECK-NEXT:    [[TMP9:%.*]] = add nuw nsw i64 [[OFFSET_IDX]], 1
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds [[STRUCT_SV:%.*]], ptr [[CALL_I:%.*]], i64 [[TMP9]], i32 1
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv1i32.p0.i64(<vscale x 1 x i32> zeroinitializer, ptr align 8 [[TMP10]], i64 176, <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]]), !tbaa [[TBAA0:![0-9]+]]
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds [[STRUCT_SV]], ptr [[CALL_I]], i64 [[TMP9]], i32 2
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv1i32.p0.i64(<vscale x 1 x i32> zeroinitializer, ptr align 4 [[TMP11]], i64 176, <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]]), !tbaa [[TBAA6:![0-9]+]]
-; CHECK-NEXT:    [[TMP12:%.*]] = add nuw nsw i64 [[TMP8]], 6
+; CHECK-NEXT:    [[TMP12:%.*]] = add nuw nsw i64 [[OFFSET_IDX]], 6
 ; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr inbounds [[STRUCT_SV]], ptr [[CALL_I]], i64 [[TMP12]], i32 1
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv1i32.p0.i64(<vscale x 1 x i32> zeroinitializer, ptr align 8 [[TMP13]], i64 176, <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]]), !tbaa [[TBAA0]]
-; CHECK-NEXT:    [[TMP14:%.*]] = add nuw nsw i64 [[TMP8]], 10
+; CHECK-NEXT:    [[TMP14:%.*]] = add nuw nsw i64 [[OFFSET_IDX]], 10
 ; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr inbounds [[STRUCT_SV]], ptr [[CALL_I]], i64 [[TMP14]]
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> [[VEC_IND]], <vscale x 1 x i64> splat (i64 11), <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]])
 ; CHECK-NEXT:    [[TMP16:%.*]] = getelementptr inbounds [[STRUCT_SV]], ptr [[CALL_I]], <vscale x 1 x i64> [[VP_OP]]

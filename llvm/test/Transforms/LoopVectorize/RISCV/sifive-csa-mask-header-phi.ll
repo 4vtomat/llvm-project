@@ -25,8 +25,7 @@ define i32 @foo() {
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 4294967296, [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP7]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 16, i1 true)
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 2
-; CHECK-NEXT:    [[TMP8:%.*]] = add i64 [[OFFSET_IDX]], 0
-; CHECK-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr null, i64 [[TMP8]]
+; CHECK-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr null, i64 [[OFFSET_IDX]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr i16, ptr [[NEXT_GEP]], i32 0
 ; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 16 x i16> @llvm.vp.load.nxv16i16.p0(ptr align 2 [[TMP9]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i16(<vscale x 16 x i16> [[VP_OP_LOAD]], <vscale x 16 x i16> splat (i16 58), metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP7]])

@@ -506,7 +506,7 @@ define i32 @tc4(ptr noundef readonly captures(none) %tmp) vscale_range(1,16) {
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i32>, ptr [[TMP2]], align 4
 ; CHECK-NEXT:    [[TMP3]] = add <4 x i32> [[VEC_PHI]], [[WIDE_LOAD]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
-; CHECK-NEXT:    br i1 true, label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
+; CHECK-NEXT:    br i1 true, label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[TMP3]])
 ; CHECK-NEXT:    br i1 true, label %[[FOR_COND_CLEANUP:.*]], label %[[SCALAR_PH]]
@@ -525,7 +525,7 @@ define i32 @tc4(ptr noundef readonly captures(none) %tmp) vscale_range(1,16) {
 ; CHECK-NEXT:    [[ADD]] = add i32 [[SUM_0179]], [[TMP5]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], 4
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_COND_CLEANUP]], label %[[FOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_COND_CLEANUP]], label %[[FOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
 ;
 entry:
   br label %for.body
@@ -562,7 +562,7 @@ define i32 @tc4_from_profile(ptr noundef readonly captures(none) %tmp, i64 %N) v
 ; CHECK-NEXT:    [[ADD]] = add i32 [[SUM_0179]], [[TMP0]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_COND_CLEANUP]], label %[[FOR_BODY]], !prof [[PROF9:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_COND_CLEANUP]], label %[[FOR_BODY]], !prof [[PROF10:![0-9]+]]
 ;
 entry:
   br label %for.body
@@ -593,32 +593,22 @@ for.body:                                         ; preds = %entry, %for.body
 ; CHECK-VS1: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
 ; CHECK-VS1: [[LOOP3]] = distinct !{[[LOOP3]], [[META1]], [[META2]]}
 ; CHECK-VS1: [[LOOP4]] = distinct !{[[LOOP4]], [[META1]]}
-<<<<<<< HEAD
 ; CHECK-VS1: [[LOOP5]] = distinct !{[[LOOP5]]}
 ; CHECK-VS1: [[LOOP6]] = distinct !{[[LOOP6]], [[META1]], [[META2]]}
 ; CHECK-VS1: [[LOOP7]] = distinct !{[[LOOP7]], [[META1]]}
-=======
-; CHECK-VS1: [[LOOP5]] = distinct !{[[LOOP5]], [[META1]], [[META2]]}
-; CHECK-VS1: [[LOOP6]] = distinct !{[[LOOP6]], [[META1]]}
-; CHECK-VS1: [[LOOP7]] = distinct !{[[LOOP7]], [[META1]], [[META2]]}
-; CHECK-VS1: [[LOOP8]] = distinct !{[[LOOP8]], [[META2]], [[META1]]}
-; CHECK-VS1: [[PROF9]] = !{!"branch_weights", i32 10, i32 30}
->>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
+; CHECK-VS1: [[LOOP8]] = distinct !{[[LOOP8]], [[META1]], [[META2]]}
+; CHECK-VS1: [[LOOP9]] = distinct !{[[LOOP9]], [[META2]], [[META1]]}
+; CHECK-VS1: [[PROF10]] = !{!"branch_weights", i32 10, i32 30}
 ;.
 ; CHECK-VS2: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
 ; CHECK-VS2: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
 ; CHECK-VS2: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
 ; CHECK-VS2: [[LOOP3]] = distinct !{[[LOOP3]], [[META1]], [[META2]]}
 ; CHECK-VS2: [[LOOP4]] = distinct !{[[LOOP4]], [[META1]]}
-<<<<<<< HEAD
 ; CHECK-VS2: [[LOOP5]] = distinct !{[[LOOP5]]}
 ; CHECK-VS2: [[LOOP6]] = distinct !{[[LOOP6]], [[META1]], [[META2]]}
 ; CHECK-VS2: [[LOOP7]] = distinct !{[[LOOP7]], [[META1]]}
-=======
-; CHECK-VS2: [[LOOP5]] = distinct !{[[LOOP5]], [[META1]], [[META2]]}
-; CHECK-VS2: [[LOOP6]] = distinct !{[[LOOP6]], [[META1]]}
-; CHECK-VS2: [[LOOP7]] = distinct !{[[LOOP7]], [[META1]], [[META2]]}
-; CHECK-VS2: [[LOOP8]] = distinct !{[[LOOP8]], [[META2]], [[META1]]}
-; CHECK-VS2: [[PROF9]] = !{!"branch_weights", i32 10, i32 30}
->>>>>>> 8244f8210f2e62f68429a0daf104fd483ada45ab
+; CHECK-VS2: [[LOOP8]] = distinct !{[[LOOP8]], [[META1]], [[META2]]}
+; CHECK-VS2: [[LOOP9]] = distinct !{[[LOOP9]], [[META2]], [[META1]]}
+; CHECK-VS2: [[PROF10]] = !{!"branch_weights", i32 10, i32 30}
 ;.

@@ -534,8 +534,7 @@ define ptr @find_with_int_iv(ptr %first, ptr %last, i64 %count) {
 ; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.umin.i64(i64 [[AVL]], i64 16)
 ; CHECK-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP5]], i32 1, i1 true)
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 8
-; CHECK-NEXT:    [[TMP7:%.*]] = add i64 [[OFFSET_IDX]], 0
-; CHECK-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[FIRST]], i64 [[TMP7]]
+; CHECK-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[FIRST]], i64 [[OFFSET_IDX]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr ptr, ptr [[NEXT_GEP]], i32 0
 ; CHECK-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 1 x ptr>, i32 } @llvm.vp.load.ff.nxv1p0.p0(ptr align 8 [[TMP8]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]])
 ; CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 1 x ptr>, i32 } [[VP_OP_LOAD_FF]], 1
@@ -596,8 +595,7 @@ define ptr @find_with_int_iv(ptr %first, ptr %last, i64 %count) {
 ; P470-NEXT:    [[TMP5:%.*]] = call i64 @llvm.umin.i64(i64 [[AVL]], i64 16)
 ; P470-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP5]], i32 4, i1 true)
 ; P470-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 8
-; P470-NEXT:    [[TMP7:%.*]] = add i64 [[OFFSET_IDX]], 0
-; P470-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[FIRST]], i64 [[TMP7]]
+; P470-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[FIRST]], i64 [[OFFSET_IDX]]
 ; P470-NEXT:    [[TMP8:%.*]] = getelementptr ptr, ptr [[NEXT_GEP]], i32 0
 ; P470-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 4 x ptr>, i32 } @llvm.vp.load.ff.nxv4p0.p0(ptr align 8 [[TMP8]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP6]])
 ; P470-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 4 x ptr>, i32 } [[VP_OP_LOAD_FF]], 1

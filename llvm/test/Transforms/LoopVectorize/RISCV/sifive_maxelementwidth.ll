@@ -20,8 +20,7 @@ define void @foo(i64* %x, i64 %n, i64 %y) {
 ; V-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; V-NEXT:    [[TMP0:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; V-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 1, i1 true)
-; V-NEXT:    [[TMP2:%.*]] = add i64 [[EVL_BASED_IV]], 0
-; V-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i64, ptr [[X:%.*]], i64 [[TMP2]]
+; V-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i64, ptr [[X:%.*]], i64 [[EVL_BASED_IV]]
 ; V-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i64, ptr [[TMP3]], i32 0
 ; V-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 1 x i64> @llvm.vp.load.nxv1i64.p0(ptr align 8 [[TMP4]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
 ; V-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> [[VP_OP_LOAD]], <vscale x 1 x i64> [[BROADCAST_SPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])

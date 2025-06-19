@@ -35,8 +35,8 @@ define i64 @findlastiv(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-NEXT: Successor(s): middle.block
 ; CHECK-EMPTY:
 ; CHECK-NEXT: middle.block:
-; CHECK-NEXT:   EMIT vp<[[RDX:%.+]]> = compute-reduction-result ir<[[RDX_PHI]]>, ir<[[SELECT]]>
-; CHECK-NEXT:   EMIT vp<[[EXT:%[0-9]+]]> = extract-from-end vp<[[RDX]]>, ir<1>
+; CHECK-NEXT:   EMIT vp<{{.*}}> = compute-find-last-iv-result ir<%rdx>, ir<%ii>, ir<%cond>
+; CHECK-NEXT:   EMIT vp<{{.*}}> = extract-from-end vp<{{.*}}>, ir<{{.*}}>
 ; CHECK-NEXT:   EMIT vp<[[EXIT_COND:%.+]]> = icmp eq ir<[[OTC]]>, vp<[[VTC]]>
 ; CHECK-NEXT:   EMIT branch-on-cond vp<[[EXIT_COND]]>
 ; CHECK-NEXT: Successor(s): ir-bb<exit>, scalar.ph
@@ -60,7 +60,7 @@ define i64 @findlastiv(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-NEXT: No successors
 ; CHECK-EMPTY:
 ; CHECK-NEXT: ir-bb<exit>:
-; CHECK-NEXT:   IR   %cond.lcssa = phi i64 [ %cond, %for.body ] (extra operand: vp<[[EXT]]> from middle.block)
+; CHECK-NEXT:   IR %cond.lcssa = phi i64 [ %cond, %for.body ] (extra operand: vp<{{.*}}> from middle.block)
 ; CHECK-NEXT: No successors
 ; CHECK-NEXT: }
 ;
