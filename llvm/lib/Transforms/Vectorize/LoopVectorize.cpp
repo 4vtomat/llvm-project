@@ -1165,15 +1165,10 @@ public:
   /// Setup cost-based decisions for user vectorization factor.
   /// \return true if the UserVF is a feasible VF to be chosen.
   bool selectUserVectorizationFactor(ElementCount UserVF) {
-<<<<<<< HEAD
-    collectUniformsAndScalars(UserVF);
-    collectInstsToScalarize(UserVF);
+    collectNonVectorizedAndSetWideningDecisions(UserVF);
 #if SIFIVE_CUSTOMIZATION
     return expectedCost(UserVF).isValid() && expectedOverhead(UserVF).isValid();
 #else
-=======
-    collectNonVectorizedAndSetWideningDecisions(UserVF);
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
     return expectedCost(UserVF).isValid();
 #endif // SIFIVE_CUSTOMIZATION
   }
@@ -9748,19 +9743,14 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
   VPlanTransforms::convertToConcreteRecipes(BestVPlan);
 
   // Perform the actual loop transformation.
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  VPTransformState State(&TTI, BestVF, BestUF, LI, DT, ILV.Builder, &ILV,
-                         &BestVPlan, OrigLoop->getParentLoop(),
+  VPTransformState State(&TTI, BestVF, LI, DT, ILV.Builder, &ILV, &BestVPlan,
+                         OrigLoop->getParentLoop(),
                          Legal->getWidestInductionType(), EnableRISCVCSA);
   BestVPlan.initializeMasks(State);
 #else
-  VPTransformState State(&TTI, BestVF, BestUF, LI, DT, ILV.Builder, &ILV,
-                         &BestVPlan, OrigLoop->getParentLoop(),
-=======
   VPTransformState State(&TTI, BestVF, LI, DT, ILV.Builder, &ILV, &BestVPlan,
                          OrigLoop->getParentLoop(),
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
                          Legal->getWidestInductionType());
 #endif // SIFIVE_CUSTOMIZATION
 
