@@ -2345,7 +2345,7 @@ ParseStatus RISCVAsmParser::parseOperandWithSpecifier(OperandVector &Operands) {
   case RISCVMCExpr::VK_TLS_GD_GPREL_LO:
   case RISCVMCExpr::VK_TLS_GD_GPREL_HI:
   case RISCVMCExpr::VK_TLS_GD_GPREL_ADD:
-    Warning(getLoc(), "compact code model operand modifiers are deprecated");
+    Warning(getLoc(), "compact code model operand specifiers are deprecated");
     break;
   }
 #endif // SIFIVE_CUSTOMIZATION
@@ -4078,13 +4078,13 @@ bool RISCVAsmParser::checkPseudoAddRegRel(MCInst &Inst,
   switch (RE->getSpecifier()) {
   default: {
     SMLoc ErrorLoc = ((RISCVOperand &)*Operands[4]).getStartLoc();
-    return Error(ErrorLoc, "unknown third operand modifier for TP/GP-relative ADD");
+    return Error(ErrorLoc, "unknown third operand specifier for TP/GP-relative ADD");
   }
   case llvm::RISCVMCExpr::VK_TPREL_ADD:
     if (Op2.getReg() != RISCV::X4) {
       SMLoc ErrorLoc = ((RISCVOperand &)*Operands[3]).getStartLoc();
       return Error(ErrorLoc, "the second input operand must be tp/x4 when using "
-                             "%tprel_add modifier");
+                             "%tprel_add specifier");
     }
   break;
   case llvm::RISCVMCExpr::VK_GPREL_ADD:

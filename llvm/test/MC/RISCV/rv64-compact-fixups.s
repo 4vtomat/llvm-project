@@ -7,7 +7,7 @@
 
 # GPREL LLA
 
-# RELAX-FIXUP: warning: compact code model operand modifiers are deprecated
+# RELAX-FIXUP: warning: compact code model operand specifiers are deprecated
 
 lui a0, %gprel_hi(foo)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GPREL_HI20 foo 0x0
