@@ -207,18 +207,14 @@ public:
 /// VPTransformState holds information passed down when "executing" a VPlan,
 /// needed for generating the output IR.
 struct VPTransformState {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  VPTransformState(const TargetTransformInfo *TTI, ElementCount VF, unsigned UF,
+  VPTransformState(const TargetTransformInfo *TTI, ElementCount VF,
                    LoopInfo *LI, DominatorTree *DT, IRBuilderBase &Builder,
                    InnerLoopVectorizer *ILV, VPlan *Plan,
                    Loop *CurrentParentLoop, Type *CanonicalIVTy,
                    bool EnableRISCVCSA);
 #else
-  VPTransformState(const TargetTransformInfo *TTI, ElementCount VF, unsigned UF,
-=======
   VPTransformState(const TargetTransformInfo *TTI, ElementCount VF,
->>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
                    LoopInfo *LI, DominatorTree *DT, IRBuilderBase &Builder,
                    InnerLoopVectorizer *ILV, VPlan *Plan,
                    Loop *CurrentParentLoop, Type *CanonicalIVTy);
