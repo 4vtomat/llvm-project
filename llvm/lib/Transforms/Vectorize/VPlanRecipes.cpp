@@ -1163,65 +1163,6 @@ Value *VPInstruction::generate(VPTransformState &State) {
   }
 #endif // SIFIVE_CUSTOMIZATION
   case VPInstruction::ExtractFromEnd: {
-#if SIFIVE_CUSTOMIZATION
-    if (State.EVL && State.VF.isVector()) {
-      // TODO: Explicitly adjust VPlan for EVL vectorization in
-      // VPlanTransforms::adjustFixedOrderRecurrences.
-      auto *FoundFORPhi = find_if(getOperand(0)->users(), [](VPUser *U) {
-        return isa<VPFirstOrderRecurrencePHIRecipe>(U);
-      });
-      if (FoundFORPhi != getOperand(0)->users().end()) {
-        auto *FORPhi = cast<VPFirstOrderRecurrencePHIRecipe>(*FoundFORPhi);
-        auto *CI = cast<ConstantInt>(getOperand(1)->getLiveInIRValue());
-        unsigned Offset = CI->getZExtValue();
-        assert(Offset > 0 && Offset < 3 && "Offset from end must be 1 or 2");
-
-        Value *Incoming = State.get(getOperand(0), 0);
-        Value *EVL = State.get(State.EVL, /*NeedsScalar=*/true);
-        auto *IdxTy = Builder.getInt32Ty();
-        auto *Idx = Builder.CreateSub(
-            EVL, Builder.CreateIntCast(CI, IdxTy, /*isSigned=*/false));
-        Value *Res = Builder.CreateExtractElement(Incoming, Idx);
-        if (Offset == 2) {
-          // Take care of the corner case when last vector iteration processed
-          // just one element. In this case extract of the `EVL-2` element of
-          // the `PreviousDef`(`v2`) doesn't make sense as it will be
-          // overwritten on the last iteration.
-          //
-          //   vector.ph:
-          //     v_init = vector(..., ..., ..., a[-1])
-          //     initial_vl = vsetvli tripcount
-          //     br vector.body
-          //
-          //   vector.body
-          //     i = phi [0, vector.ph], [i+4, vector.body]
-          //     v1 = phi [v_init, vector.ph], [v2, vector.body]
-          //     prev.rvl = phi i32 [ %initial_vl, %vector.ph ], [ %rvl,
-          //     %vector.body ]
-          //
-          //     v2 = a[i, i+1, i+2, i+3];
-          //     v3 = vector(v1(3), v2(0, 1, 2))
-          //     b[i, i+1, i+2, i+3] = v2 - v3
-          //     br cond, vector.body, middle.block
-          //
-          // Take the value of the `PhiR`(`v1`) as it contains value from the
-          // previous iteration (or the initial value) and extract last lane
-          // using `PrevEVL`(`prev.rvl`)
-          Value *Cond =
-              Builder.CreateICmpEQ(EVL, ConstantInt::get(EVL->getType(), 1));
-          Idx = Builder.CreateSub(
-              State.get(State.Plan->getPrevEVL(), /*NeedsScalar=*/true),
-              ConstantInt::get(IdxTy, 1));
-          Value *PreviousValue = Builder.CreateExtractElement(
-              State.get(FORPhi, 0), Idx, "vector.recur.prev.extract");
-          Res = Builder.CreateSelect(Cond, PreviousValue, Res);
-        }
-        Res->setName(Name);
-        return Res;
-      }
-    }
-#endif // SIFIVE_CUSTOMIZATION
-
     auto *CI = cast<ConstantInt>(getOperand(1)->getLiveInIRValue());
     unsigned Offset = CI->getZExtValue();
     assert(Offset > 0 && "Offset from end must be positive");
