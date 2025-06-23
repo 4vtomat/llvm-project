@@ -1536,7 +1536,6 @@ CodeGenFunction::createProfileWeightsForLoop(const Stmt *Cond,
   return createProfileWeights(LoopCount,
                               std::max(*CondCount, LoopCount) - LoopCount);
 }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 llvm::MDNode *CodeGenFunction::createProfileCount(uint64_t Count) const {
   if (!PGO.haveRegionCounts() || !ClEnableProfileCountMetadata)
@@ -1545,7 +1544,6 @@ llvm::MDNode *CodeGenFunction::createProfileCount(uint64_t Count) const {
   return MDHelper.createProfileCount(Count);
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
 
 void CodeGenFunction::incrementProfileCounter(const Stmt *S,
                                               llvm::Value *StepV) {
@@ -1557,4 +1555,3 @@ void CodeGenFunction::incrementProfileCounter(const Stmt *S,
   }
   PGO.setCurrentStmt(S);
 }
->>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
