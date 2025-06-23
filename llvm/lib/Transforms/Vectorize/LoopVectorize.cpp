@@ -3161,7 +3161,6 @@ BasicBlock *InnerLoopVectorizer::createVectorizedLoopSkeleton() {
 #endif // SIFIVE_CUSTOMIZATION
   emitMemRuntimeChecks(LoopScalarPreHeader);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (useVLAVectorizer() && (PrevSCEVCheckBlock || PrevMemCheckBlock)) {
     // Make unconditional branch for TCCheckBlock
@@ -3183,9 +3182,7 @@ BasicBlock *InnerLoopVectorizer::createVectorizedLoopSkeleton() {
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
   replaceVPBBWithIRVPBB(Plan.getScalarPreheader(), LoopScalarPreHeader);
->>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
   return LoopVectorPreHeader;
 }
 
@@ -9951,6 +9948,7 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
   ILV.fixVectorizedLoop(State);
 
 #if SIFIVE_CUSTOMIZATION
+  auto *MiddleVPBB = BestVPlan.getMiddleBlock();
   // optimize conditional branch in middle.block after execution
   // if condition is always true, use unconditional branch instead.
   if (Legal->useVLAVectorizer()) {
