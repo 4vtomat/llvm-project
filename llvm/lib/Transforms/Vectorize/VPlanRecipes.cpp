@@ -2201,8 +2201,6 @@ void VPRecipeWithIRFlags::printFlags(raw_ostream &O) const {
 #endif
 
 void VPWidenRecipe::execute(VPTransformState &State) {
-<<<<<<< HEAD
-  State.setDebugLocFrom(getDebugLoc());
 #if SIFIVE_CUSTOMIZATION
   auto *I = cast_or_null<Instruction>(getUnderlyingValue());
   if (I && State.Plan->useVLAVectorizer() && State.EVL &&
@@ -2216,8 +2214,6 @@ void VPWidenRecipe::execute(VPTransformState &State) {
     return;
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
   auto &Builder = State.Builder;
   switch (Opcode) {
   case Instruction::Call:
@@ -2398,8 +2394,6 @@ void VPWidenRecipe::print(raw_ostream &O, const Twine &Indent,
 #endif
 
 void VPWidenCastRecipe::execute(VPTransformState &State) {
-<<<<<<< HEAD
-  State.setDebugLocFrom(getDebugLoc());
 #if SIFIVE_CUSTOMIZATION
   VPBasicBlock *Preheader = cast<VPBasicBlock>(State.Plan->getEntry());
   auto *I = cast_or_null<Instruction>(getUnderlyingValue());
@@ -2413,8 +2407,6 @@ void VPWidenCastRecipe::execute(VPTransformState &State) {
     return;
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
   auto &Builder = State.Builder;
   /// Vectorize casts.
   assert(State.VF.isVector() && "Not vectorizing?");
@@ -3503,11 +3495,7 @@ VPMonotonicHeaderPHIRecipe::computeCost(ElementCount VF,
 #endif // SIFIVE_CUSTOMIZATION
 
 void VPBranchOnMaskRecipe::execute(VPTransformState &State) {
-<<<<<<< HEAD
-  State.setDebugLocFrom(getDebugLoc());
 #ifndef SIFIVE_CUSTOMIZATION
-=======
->>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
   assert(State.Lane && "Branch on Mask works only on single instance.");
 #endif // !SIFIVE_CUSTOMIZATION
 
@@ -3635,9 +3623,9 @@ InstructionCost VPWidenMemoryRecipe::computeCost(ElementCount VF,
 #if SIFIVE_CUSTOMIZATION
     // Align to the legacy cost model.
     if ((isa<StoreInst>(Ingredient) &&
-         !Ctx.TTI.isLegalMaskedStore(Ty, Alignment)) ||
+         !Ctx.TTI.isLegalMaskedStore(Ty, Alignment, /* AddressSpace */ AS)) ||
         (isa<LoadInst>(Ingredient) &&
-         !Ctx.TTI.isLegalMaskedLoad(Ty, Alignment)))
+         !Ctx.TTI.isLegalMaskedLoad(Ty, Alignment, /* AddressSpace */ AS)))
       return InstructionCost::getInvalid();
 #endif // SIFIVE_CUSTOMIZATION
     return Ctx.TTI.getAddressComputationCost(Ty) +
