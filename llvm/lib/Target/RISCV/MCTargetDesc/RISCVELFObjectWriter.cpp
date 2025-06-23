@@ -62,17 +62,12 @@ unsigned RISCVELFObjectWriter::getRelocType(MCContext &Ctx,
   case RISCVMCExpr::VK_TLS_GOT_HI:
   case RISCVMCExpr::VK_TLS_GD_HI:
   case RISCVMCExpr::VK_TLSDESC_HI:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case RISCVMCExpr::VK_TLS_GOT_GPREL_HI:
   case RISCVMCExpr::VK_TLS_GD_GPREL_HI:
 #endif
-    if (auto *S = Target.getSymA())
-      cast<MCSymbolELF>(S->getSymbol()).setType(ELF::STT_TLS);
-=======
     if (auto *SA = Target.getAddSym())
       cast<MCSymbolELF>(SA)->setType(ELF::STT_TLS);
->>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
     break;
   case RISCVMCExpr::VK_PLTPCREL:
   case RISCVMCExpr::VK_GOTPCREL:
