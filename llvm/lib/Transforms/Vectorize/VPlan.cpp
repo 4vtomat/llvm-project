@@ -582,6 +582,15 @@ void VPBasicBlock::connectToPredecessors(VPTransformState &State) {
   if (SuccVPBB && State.Plan->isExitBlock(SuccVPBB))
     ParentLoop =
         State.LI->getLoopFor(cast<VPIRBasicBlock>(SuccVPBB)->getIRBasicBlock());
+
+#if SIFIVE_CUSTOMIZATION
+  // Skip adding this to the parent loop since we don't have IR early exit
+  // block now.
+  VPRegionBlock *Region = getPlan()->getVectorLoopRegion();
+  if (Region && this == Region->getEarlyExit())
+    ParentLoop = nullptr;
+#endif // SIFIVE_CUSTOMIZATION
+
   if (ParentLoop && !State.LI->getLoopFor(NewBB))
     ParentLoop->addBasicBlockToLoop(NewBB, *State.LI);
 
@@ -705,27 +714,6 @@ void VPBasicBlock::execute(VPTransformState *State) {
     State->Builder.SetInsertPoint(NewBB);
     // Temporarily terminate with unreachable until CFG is rewired.
     UnreachableInst *Terminator = State->Builder.CreateUnreachable();
-<<<<<<< HEAD
-    // Register NewBB in its loop. In innermost loops its the same for all
-    // BB's.
-    Loop *ParentLoop = State->CurrentParentLoop;
-    // If this block has a sole successor that is an exit block then it needs
-    // adding to the same parent loop as the exit block.
-    VPBlockBase *SuccVPBB = getSingleSuccessor();
-    if (SuccVPBB && State->Plan->isExitBlock(SuccVPBB))
-      ParentLoop = State->LI->getLoopFor(
-          cast<VPIRBasicBlock>(SuccVPBB)->getIRBasicBlock());
-#if SIFIVE_CUSTOMIZATION
-    // Skip adding this to the parent loop since we don't have IR early exit
-    // block now.
-    VPRegionBlock *Region = getPlan()->getVectorLoopRegion();
-    if (Region && this == Region->getEarlyExit())
-      ParentLoop = nullptr;
-#endif // SIFIVE_CUSTOMIZATION
-    if (ParentLoop)
-      ParentLoop->addBasicBlockToLoop(NewBB, *State->LI);
-=======
->>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
     State->Builder.SetInsertPoint(Terminator);
 
     State->CFG.PrevBB = NewBB;
