@@ -276,11 +276,13 @@ public:
     return TTI::AMK_None;
   }
 
-  bool isLegalMaskedStore(Type *DataType, Align Alignment) const {
+  bool isLegalMaskedStore(Type *DataType, Align Alignment,
+                          unsigned AddressSpace) const {
     return false;
   }
 
-  bool isLegalMaskedLoad(Type *DataType, Align Alignment) const {
+  bool isLegalMaskedLoad(Type *DataType, Align Alignment,
+                         unsigned AddressSpace) const {
     return false;
   }
 
@@ -1056,7 +1058,7 @@ public:
 
   bool preferFixedOverScalableIfEqualCost() const { return false; }
 
-  bool preferInLoopReduction(unsigned Opcode, Type *Ty) const { return false; }
+  bool preferInLoopReduction(RecurKind Kind, Type *Ty) const { return false; }
   bool preferAlternateOpcodeVectorization() const { return true; }
 
   bool preferPredicatedReductionSelect(unsigned Opcode, Type *Ty) const {

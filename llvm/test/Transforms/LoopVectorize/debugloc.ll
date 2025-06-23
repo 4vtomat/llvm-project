@@ -106,6 +106,7 @@ for.end:                                          ; preds = %entry, %for.cond.fo
 
 define i32 @test_debug_loc_on_branch_in_loop(ptr noalias %src, ptr noalias %dst) {
 ; CHECK-LABEL: define i32 @test_debug_loc_on_branch_in_loop(
+<<<<<<< HEAD
 ; CHECK-SAME: ptr noalias [[SRC:%.*]], ptr noalias [[DST:%.*]]) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
@@ -158,6 +159,20 @@ define i32 @test_debug_loc_on_branch_in_loop(ptr noalias %src, ptr noalias %dst)
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[LOOP_HEADER]], !llvm.loop [[LOOP31:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    ret i32 0
+=======
+; CHECK-LABEL: vector.body:
+; CHECK:        [[LOAD:%.+]] = load <2 x i32>, ptr {{.+}}, align 4
+; CHECK-NEXT:   [[CMP:%.+]] = icmp eq <2 x i32> [[LOAD]], splat (i32 10)
+; CHECK-NEXT:   [[XOR:%.+]] = xor <2 x i1> [[CMP:%.+]], splat (i1 true), !dbg [[LOC3:!.+]]
+; CHECK-NEXT:   [[EXT:%.+]] = extractelement <2 x i1> [[XOR]], i32 0, !dbg [[LOC3]]
+; CHECK-NEXT:   br i1 [[EXT]], label %pred.store.if, label %pred.store.continue, !dbg [[LOC3]]
+; CHECK-EMPTY:
+; CHECK-NEXT: pred.store.if:
+; CHECK-NEXT:   [[GEP:%.+]] = getelementptr inbounds i32, ptr %dst, i64 {{.+}}
+; CHECK-NEXT:   store i32 0, ptr [[GEP]], align 4
+; CHECK-NEXT:   br label %pred.store.continue, !dbg [[LOC3]]
+; CHECK-EMPTY:
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ;
 entry:
   br label %loop.header
@@ -185,6 +200,7 @@ exit:
 
 define i32 @test_different_debug_loc_on_replicate_recipe(ptr noalias %src, ptr noalias %dst) {
 ; CHECK-LABEL: define i32 @test_different_debug_loc_on_replicate_recipe(
+<<<<<<< HEAD
 ; CHECK-SAME: ptr noalias [[SRC:%.*]], ptr noalias [[DST:%.*]]) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
@@ -237,6 +253,20 @@ define i32 @test_different_debug_loc_on_replicate_recipe(ptr noalias %src, ptr n
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[LOOP_HEADER]], !llvm.loop [[LOOP37:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    ret i32 0
+=======
+; CHECK-LABEL: vector.body:
+; CHECK:        [[LOAD:%.+]] = load <2 x i32>, ptr {{.+}}, align 4
+; CHECK-NEXT:   [[CMP:%.+]] = icmp eq <2 x i32> [[LOAD]], splat (i32 10)
+; CHECK-NEXT:   [[XOR:%.+]] = xor <2 x i1> [[CMP:%.+]], splat (i1 true), !dbg [[LOC4:!.+]]
+; CHECK-NEXT:   [[EXT:%.+]] = extractelement <2 x i1> [[XOR]], i32 0, !dbg [[LOC4]]
+; CHECK-NEXT:   br i1 [[EXT]], label %pred.store.if, label %pred.store.continue, !dbg [[LOC4]]
+; CHECK-EMPTY:
+; CHECK-NEXT: pred.store.if:
+; CHECK-NEXT:   [[GEP:%.+]] = getelementptr inbounds i32, ptr %dst, i64 {{.+}}, !dbg [[LOC5:!.+]]
+; CHECK-NEXT:   store i32 0, ptr [[GEP]], align 4
+; CHECK-NEXT:   br label %pred.store.continue, !dbg [[LOC4]]
+; CHECK-EMPTY:
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ;
 entry:
   br label %loop.header
@@ -345,9 +375,15 @@ define void @test_scalar_steps(ptr nocapture %a, ptr noalias %b, i64 %size) !dbg
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[INDEX]], 2
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; CHECK-NEXT:    [[TMP7:%.*]] = add i64 [[OFFSET_IDX]], 2
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP6]]
+=======
+; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[OFFSET_IDX]], 0, !dbg [[LOC8:!.+]]
+; CHECK-NEXT:    [[TMP7:%.*]] = add i64 [[OFFSET_IDX]], 2, !dbg [[LOC8]]
+; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[TMP6]]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP6]]
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP7]]
@@ -393,6 +429,18 @@ exit:
   ret void
 }
 
+<<<<<<< HEAD
+=======
+; CHECK: ![[LOC2]] = !DILocation(line: 3
+; CHECK: ![[BR_LOC]] = !DILocation(line: 5,
+; CHECK: ![[LOC1]] = !DILocation(line: 6
+; CHECK: [[LOC3]] = !DILocation(line: 137
+; CHECK: [[LOC4]] = !DILocation(line: 210
+; CHECK: [[LOC5]] = !DILocation(line: 320
+; CHECK: [[LOC6]] = !DILocation(line: 430
+; CHECK: [[LOC7]] = !DILocation(line: 540
+; CHECK: [[LOC8]] = !DILocation(line: 650
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 
 
 declare void @llvm.dbg.declare(metadata, metadata, metadata)

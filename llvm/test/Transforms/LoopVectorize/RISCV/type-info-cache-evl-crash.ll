@@ -48,6 +48,10 @@ define void @type_info_cache_clobber(ptr %dstv, ptr %src, i64 %wide.trip.count) 
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br label %[[EXIT:.*]]
 ; CHECK:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; CHECK-NEXT:    br label %[[LOOP:.*]]
 ; CHECK:       [[LOOP]]:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[LOOP]] ]

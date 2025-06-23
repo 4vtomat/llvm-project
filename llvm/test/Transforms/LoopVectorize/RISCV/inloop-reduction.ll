@@ -144,10 +144,18 @@ define i32 @add_i16_i32(ptr nocapture readonly %x, i32 %n) {
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP5:%.*]] = icmp eq i32 [[INDEX_EVL_NEXT]], [[N]]
 ; IF-EVL-OUTLOOP-NEXT:    br i1 [[TMP5]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; IF-EVL-OUTLOOP:       middle.block:
+<<<<<<< HEAD
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP9:%.*]] = add i32 0, [[TMP6]]
 ; IF-EVL-OUTLOOP-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; IF-EVL-OUTLOOP:       scalar.ph:
+=======
+; IF-EVL-OUTLOOP-NEXT:    [[TMP12:%.*]] = call i32 @llvm.vector.reduce.add.nxv4i32(<vscale x 4 x i32> [[TMP10]])
+; IF-EVL-OUTLOOP-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
+; IF-EVL-OUTLOOP:       scalar.ph:
+; IF-EVL-OUTLOOP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 0, [[FOR_BODY_PREHEADER]] ]
+; IF-EVL-OUTLOOP-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ 0, [[FOR_BODY_PREHEADER]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-OUTLOOP-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL-OUTLOOP:       for.body:
 ; IF-EVL-OUTLOOP-NEXT:    [[R_7:%.*]] = phi i32 [ [[ADD1:%.*]], [[FOR_BODY]] ], [ 0, [[SCALAR_PH]] ]
@@ -194,6 +202,11 @@ define i32 @add_i16_i32(ptr nocapture readonly %x, i32 %n) {
 ; IF-EVL-INLOOP:       middle.block:
 ; IF-EVL-INLOOP-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; IF-EVL-INLOOP:       scalar.ph:
+<<<<<<< HEAD
+=======
+; IF-EVL-INLOOP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 0, [[FOR_BODY_PREHEADER]] ]
+; IF-EVL-INLOOP-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ 0, [[FOR_BODY_PREHEADER]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-INLOOP-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL-INLOOP:       for.body:
 ; IF-EVL-INLOOP-NEXT:    [[R_07:%.*]] = phi i32 [ [[ADD:%.*]], [[FOR_BODY]] ], [ 0, [[SCALAR_PH]] ]
@@ -356,9 +369,17 @@ define i32 @smin(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP6:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; IF-EVL-OUTLOOP-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; IF-EVL-OUTLOOP:       middle.block:
+<<<<<<< HEAD
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vp.reduce.smin.nxv2i32(i32 2147483647, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
 ; IF-EVL-OUTLOOP-NEXT:    br label [[FOR_END:%.*]]
 ; IF-EVL-OUTLOOP:       scalar.ph:
+=======
+; IF-EVL-OUTLOOP-NEXT:    [[TMP18:%.*]] = call i32 @llvm.vector.reduce.smin.nxv4i32(<vscale x 4 x i32> [[TMP15]])
+; IF-EVL-OUTLOOP-NEXT:    br label [[FOR_END:%.*]]
+; IF-EVL-OUTLOOP:       scalar.ph:
+; IF-EVL-OUTLOOP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
+; IF-EVL-OUTLOOP-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[START]], [[ENTRY]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-OUTLOOP-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL-OUTLOOP:       for.body:
 ; IF-EVL-OUTLOOP-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
@@ -399,6 +420,11 @@ define i32 @smin(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-INLOOP:       middle.block:
 ; IF-EVL-INLOOP-NEXT:    br label [[FOR_END:%.*]]
 ; IF-EVL-INLOOP:       scalar.ph:
+<<<<<<< HEAD
+=======
+; IF-EVL-INLOOP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
+; IF-EVL-INLOOP-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[START]], [[ENTRY]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-INLOOP-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL-INLOOP:       for.body:
 ; IF-EVL-INLOOP-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]

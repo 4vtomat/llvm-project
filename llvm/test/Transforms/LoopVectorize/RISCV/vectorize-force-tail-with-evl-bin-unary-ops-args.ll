@@ -44,6 +44,10 @@ define void @test_and(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
 ; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
@@ -127,6 +131,10 @@ define void @test_or(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
 ; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC1:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
@@ -210,6 +218,10 @@ define void @test_xor(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
 ; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
@@ -293,6 +305,10 @@ define void @test_shl(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
 ; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
@@ -376,6 +392,10 @@ define void @test_lshr(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
 ; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
@@ -459,6 +479,10 @@ define void @test_ashr(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
 ; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
@@ -542,6 +566,10 @@ define void @test_add(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
 ; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
@@ -625,6 +653,10 @@ define void @test_sub(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
 ; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
@@ -708,6 +740,10 @@ define void @test_mul(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
 ; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
@@ -791,6 +827,10 @@ define void @test_sdiv(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
 ; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
@@ -874,6 +914,10 @@ define void @test_udiv(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
 ; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
@@ -957,6 +1001,10 @@ define void @test_srem(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
 ; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
@@ -1040,6 +1088,10 @@ define void @test_urem(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
 ; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
@@ -1126,6 +1178,10 @@ define void @test_fadd(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
 ; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
@@ -1210,6 +1266,10 @@ define void @test_fsub(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
 ; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
@@ -1294,6 +1354,10 @@ define void @test_fmul(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
 ; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
@@ -1378,6 +1442,10 @@ define void @test_fdiv(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
 ; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
@@ -1515,6 +1583,10 @@ define void @test_fneg(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
 ; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]

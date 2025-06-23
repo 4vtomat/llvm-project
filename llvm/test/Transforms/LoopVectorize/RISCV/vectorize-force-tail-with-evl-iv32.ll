@@ -30,8 +30,14 @@ define void @iv32(ptr noalias %a, ptr noalias %b, i32 %N) {
 ; IF-EVL-NEXT:    [[TMP5:%.*]] = icmp eq i32 [[INDEX_EVL_NEXT]], [[N]]
 ; IF-EVL-NEXT:    br i1 [[TMP5]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; IF-EVL:       middle.block:
+<<<<<<< HEAD
 ; IF-EVL-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL:       scalar.ph:
+=======
+; IF-EVL-NEXT:    br label [[FOR_COND_CLEANUP:%.*]]
+; IF-EVL:       scalar.ph:
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 0, [[ENTRY1:%.*]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    br label [[FOR_BODY1:%.*]]
 ; IF-EVL:       for.body:
 ; IF-EVL-NEXT:    [[IV:%.*]] = phi i32 [ 0, [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY1]] ]

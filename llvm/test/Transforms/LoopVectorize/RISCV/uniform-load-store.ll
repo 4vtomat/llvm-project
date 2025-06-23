@@ -106,6 +106,10 @@ define void @uniform_load(ptr noalias nocapture %a, ptr noalias nocapture %b, i6
 ; TF-SCALABLE:       [[MIDDLE_BLOCK]]:
 ; TF-SCALABLE-NEXT:    br label %[[FOR_END:.*]]
 ; TF-SCALABLE:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; TF-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; TF-SCALABLE-NEXT:    br label %[[FOR_BODY:.*]]
 ; TF-SCALABLE:       [[FOR_BODY]]:
 ; TF-SCALABLE-NEXT:    [[IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[FOR_BODY]] ]
@@ -142,6 +146,10 @@ define void @uniform_load(ptr noalias nocapture %a, ptr noalias nocapture %b, i6
 ; TF-FIXEDLEN:       [[MIDDLE_BLOCK]]:
 ; TF-FIXEDLEN-NEXT:    br label %[[FOR_END:.*]]
 ; TF-FIXEDLEN:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; TF-FIXEDLEN-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; TF-FIXEDLEN-NEXT:    br label %[[FOR_BODY:.*]]
 ; TF-FIXEDLEN:       [[FOR_BODY]]:
 ; TF-FIXEDLEN-NEXT:    [[IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[FOR_BODY]] ]
@@ -479,6 +487,10 @@ define void @conditional_uniform_load(ptr noalias nocapture %a, ptr noalias noca
 ; TF-SCALABLE:       [[MIDDLE_BLOCK]]:
 ; TF-SCALABLE-NEXT:    br label %[[FOR_END:.*]]
 ; TF-SCALABLE:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; TF-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; TF-SCALABLE-NEXT:    br label %[[FOR_BODY:.*]]
 ; TF-SCALABLE:       [[FOR_BODY]]:
 ; TF-SCALABLE-NEXT:    [[IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[LATCH:.*]] ]
@@ -529,6 +541,10 @@ define void @conditional_uniform_load(ptr noalias nocapture %a, ptr noalias noca
 ; TF-FIXEDLEN:       [[MIDDLE_BLOCK]]:
 ; TF-FIXEDLEN-NEXT:    br label %[[FOR_END:.*]]
 ; TF-FIXEDLEN:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; TF-FIXEDLEN-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; TF-FIXEDLEN-NEXT:    br label %[[FOR_BODY:.*]]
 ; TF-FIXEDLEN:       [[FOR_BODY]]:
 ; TF-FIXEDLEN-NEXT:    [[IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[LATCH:.*]] ]
@@ -667,6 +683,10 @@ define void @uniform_load_unaligned(ptr noalias nocapture %a, ptr noalias nocapt
 ; TF-SCALABLE:       [[MIDDLE_BLOCK]]:
 ; TF-SCALABLE-NEXT:    br label %[[FOR_END:.*]]
 ; TF-SCALABLE:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; TF-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; TF-SCALABLE-NEXT:    br label %[[FOR_BODY:.*]]
 ; TF-SCALABLE:       [[FOR_BODY]]:
 ; TF-SCALABLE-NEXT:    [[IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[FOR_BODY]] ]
@@ -703,6 +723,10 @@ define void @uniform_load_unaligned(ptr noalias nocapture %a, ptr noalias nocapt
 ; TF-FIXEDLEN:       [[MIDDLE_BLOCK]]:
 ; TF-FIXEDLEN-NEXT:    br label %[[FOR_END:.*]]
 ; TF-FIXEDLEN:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; TF-FIXEDLEN-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; TF-FIXEDLEN-NEXT:    br label %[[FOR_BODY:.*]]
 ; TF-FIXEDLEN:       [[FOR_BODY]]:
 ; TF-FIXEDLEN-NEXT:    [[IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[FOR_BODY]] ]
@@ -828,6 +852,10 @@ define void @uniform_store(ptr noalias nocapture %a, ptr noalias nocapture %b, i
 ; TF-SCALABLE:       [[MIDDLE_BLOCK]]:
 ; TF-SCALABLE-NEXT:    br label %[[FOR_END:.*]]
 ; TF-SCALABLE:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; TF-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; TF-SCALABLE-NEXT:    br label %[[FOR_BODY:.*]]
 ; TF-SCALABLE:       [[FOR_BODY]]:
 ; TF-SCALABLE-NEXT:    [[IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[FOR_BODY]] ]
@@ -864,6 +892,10 @@ define void @uniform_store(ptr noalias nocapture %a, ptr noalias nocapture %b, i
 ; TF-FIXEDLEN:       [[MIDDLE_BLOCK]]:
 ; TF-FIXEDLEN-NEXT:    br label %[[FOR_END:.*]]
 ; TF-FIXEDLEN:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; TF-FIXEDLEN-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; TF-FIXEDLEN-NEXT:    br label %[[FOR_BODY:.*]]
 ; TF-FIXEDLEN:       [[FOR_BODY]]:
 ; TF-FIXEDLEN-NEXT:    [[IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[FOR_BODY]] ]
@@ -994,6 +1026,10 @@ define void @uniform_store_of_loop_varying(ptr noalias nocapture %a, ptr noalias
 ; TF-SCALABLE:       [[MIDDLE_BLOCK]]:
 ; TF-SCALABLE-NEXT:    br label %[[FOR_END:.*]]
 ; TF-SCALABLE:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; TF-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; TF-SCALABLE-NEXT:    br label %[[FOR_BODY:.*]]
 ; TF-SCALABLE:       [[FOR_BODY]]:
 ; TF-SCALABLE-NEXT:    [[IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[FOR_BODY]] ]
@@ -1009,6 +1045,55 @@ define void @uniform_store_of_loop_varying(ptr noalias nocapture %a, ptr noalias
 ; TF-FIXEDLEN-LABEL: define void @uniform_store_of_loop_varying(
 ; TF-FIXEDLEN-SAME: ptr noalias captures(none) [[A:%.*]], ptr noalias captures(none) [[B:%.*]], i64 [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; TF-FIXEDLEN-NEXT:  [[ENTRY:.*]]:
+<<<<<<< HEAD
+=======
+; TF-FIXEDLEN-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
+; TF-FIXEDLEN:       [[VECTOR_PH]]:
+; TF-FIXEDLEN-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <4 x i64> poison, i64 [[V]], i64 0
+; TF-FIXEDLEN-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <4 x i64> [[BROADCAST_SPLATINSERT]], <4 x i64> poison, <4 x i32> zeroinitializer
+; TF-FIXEDLEN-NEXT:    br label %[[VECTOR_BODY:.*]]
+; TF-FIXEDLEN:       [[VECTOR_BODY]]:
+; TF-FIXEDLEN-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[PRED_STORE_CONTINUE6:.*]] ]
+; TF-FIXEDLEN-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
+; TF-FIXEDLEN-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = call <4 x i1> @llvm.get.active.lane.mask.v4i1.i64(i64 [[TMP0]], i64 1025)
+; TF-FIXEDLEN-NEXT:    [[TMP1:%.*]] = extractelement <4 x i1> [[ACTIVE_LANE_MASK]], i32 0
+; TF-FIXEDLEN-NEXT:    br i1 [[TMP1]], label %[[PRED_STORE_IF:.*]], label %[[PRED_STORE_CONTINUE:.*]]
+; TF-FIXEDLEN:       [[PRED_STORE_IF]]:
+; TF-FIXEDLEN-NEXT:    store i64 [[TMP0]], ptr [[B]], align 8
+; TF-FIXEDLEN-NEXT:    br label %[[PRED_STORE_CONTINUE]]
+; TF-FIXEDLEN:       [[PRED_STORE_CONTINUE]]:
+; TF-FIXEDLEN-NEXT:    [[TMP2:%.*]] = extractelement <4 x i1> [[ACTIVE_LANE_MASK]], i32 1
+; TF-FIXEDLEN-NEXT:    br i1 [[TMP2]], label %[[PRED_STORE_IF1:.*]], label %[[PRED_STORE_CONTINUE2:.*]]
+; TF-FIXEDLEN:       [[PRED_STORE_IF1]]:
+; TF-FIXEDLEN-NEXT:    [[TMP3:%.*]] = add i64 [[INDEX]], 1
+; TF-FIXEDLEN-NEXT:    store i64 [[TMP3]], ptr [[B]], align 8
+; TF-FIXEDLEN-NEXT:    br label %[[PRED_STORE_CONTINUE2]]
+; TF-FIXEDLEN:       [[PRED_STORE_CONTINUE2]]:
+; TF-FIXEDLEN-NEXT:    [[TMP4:%.*]] = extractelement <4 x i1> [[ACTIVE_LANE_MASK]], i32 2
+; TF-FIXEDLEN-NEXT:    br i1 [[TMP4]], label %[[PRED_STORE_IF3:.*]], label %[[PRED_STORE_CONTINUE4:.*]]
+; TF-FIXEDLEN:       [[PRED_STORE_IF3]]:
+; TF-FIXEDLEN-NEXT:    [[TMP5:%.*]] = add i64 [[INDEX]], 2
+; TF-FIXEDLEN-NEXT:    store i64 [[TMP5]], ptr [[B]], align 8
+; TF-FIXEDLEN-NEXT:    br label %[[PRED_STORE_CONTINUE4]]
+; TF-FIXEDLEN:       [[PRED_STORE_CONTINUE4]]:
+; TF-FIXEDLEN-NEXT:    [[TMP6:%.*]] = extractelement <4 x i1> [[ACTIVE_LANE_MASK]], i32 3
+; TF-FIXEDLEN-NEXT:    br i1 [[TMP6]], label %[[PRED_STORE_IF5:.*]], label %[[PRED_STORE_CONTINUE6]]
+; TF-FIXEDLEN:       [[PRED_STORE_IF5]]:
+; TF-FIXEDLEN-NEXT:    [[TMP7:%.*]] = add i64 [[INDEX]], 3
+; TF-FIXEDLEN-NEXT:    store i64 [[TMP7]], ptr [[B]], align 8
+; TF-FIXEDLEN-NEXT:    br label %[[PRED_STORE_CONTINUE6]]
+; TF-FIXEDLEN:       [[PRED_STORE_CONTINUE6]]:
+; TF-FIXEDLEN-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i64, ptr [[A]], i64 [[TMP0]]
+; TF-FIXEDLEN-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i64, ptr [[TMP8]], i32 0
+; TF-FIXEDLEN-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> [[BROADCAST_SPLAT]], ptr [[TMP9]], i32 8, <4 x i1> [[ACTIVE_LANE_MASK]])
+; TF-FIXEDLEN-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
+; TF-FIXEDLEN-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1028
+; TF-FIXEDLEN-NEXT:    br i1 [[TMP10]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
+; TF-FIXEDLEN:       [[MIDDLE_BLOCK]]:
+; TF-FIXEDLEN-NEXT:    br label %[[FOR_END:.*]]
+; TF-FIXEDLEN:       [[SCALAR_PH]]:
+; TF-FIXEDLEN-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; TF-FIXEDLEN-NEXT:    br label %[[FOR_BODY:.*]]
 ; TF-FIXEDLEN:       [[FOR_BODY]]:
 ; TF-FIXEDLEN-NEXT:    [[IV:%.*]] = phi i64 [ 0, %[[ENTRY]] ], [ [[IV_NEXT:%.*]], %[[FOR_BODY]] ]
@@ -1151,6 +1236,10 @@ define void @conditional_uniform_store(ptr noalias nocapture %a, ptr noalias noc
 ; TF-SCALABLE:       [[MIDDLE_BLOCK]]:
 ; TF-SCALABLE-NEXT:    br label %[[FOR_END:.*]]
 ; TF-SCALABLE:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; TF-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; TF-SCALABLE-NEXT:    br label %[[FOR_BODY:.*]]
 ; TF-SCALABLE:       [[FOR_BODY]]:
 ; TF-SCALABLE-NEXT:    [[IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[LATCH:.*]] ]
@@ -1171,6 +1260,34 @@ define void @conditional_uniform_store(ptr noalias nocapture %a, ptr noalias noc
 ; TF-FIXEDLEN-LABEL: define void @conditional_uniform_store(
 ; TF-FIXEDLEN-SAME: ptr noalias captures(none) [[A:%.*]], ptr noalias captures(none) [[B:%.*]], i64 [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
 ; TF-FIXEDLEN-NEXT:  [[ENTRY:.*]]:
+<<<<<<< HEAD
+=======
+; TF-FIXEDLEN-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
+; TF-FIXEDLEN:       [[VECTOR_PH]]:
+; TF-FIXEDLEN-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <4 x i64> poison, i64 [[V]], i64 0
+; TF-FIXEDLEN-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <4 x i64> [[BROADCAST_SPLATINSERT]], <4 x i64> poison, <4 x i32> zeroinitializer
+; TF-FIXEDLEN-NEXT:    [[BROADCAST_SPLATINSERT1:%.*]] = insertelement <4 x ptr> poison, ptr [[B]], i64 0
+; TF-FIXEDLEN-NEXT:    [[BROADCAST_SPLAT2:%.*]] = shufflevector <4 x ptr> [[BROADCAST_SPLATINSERT1]], <4 x ptr> poison, <4 x i32> zeroinitializer
+; TF-FIXEDLEN-NEXT:    br label %[[VECTOR_BODY:.*]]
+; TF-FIXEDLEN:       [[VECTOR_BODY]]:
+; TF-FIXEDLEN-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
+; TF-FIXEDLEN-NEXT:    [[VEC_IND:%.*]] = phi <4 x i64> [ <i64 0, i64 1, i64 2, i64 3>, %[[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], %[[VECTOR_BODY]] ]
+; TF-FIXEDLEN-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = call <4 x i1> @llvm.get.active.lane.mask.v4i1.i64(i64 [[INDEX]], i64 1025)
+; TF-FIXEDLEN-NEXT:    [[TMP0:%.*]] = icmp ugt <4 x i64> [[VEC_IND]], splat (i64 10)
+; TF-FIXEDLEN-NEXT:    [[TMP1:%.*]] = select <4 x i1> [[ACTIVE_LANE_MASK]], <4 x i1> [[TMP0]], <4 x i1> zeroinitializer
+; TF-FIXEDLEN-NEXT:    call void @llvm.masked.scatter.v4i64.v4p0(<4 x i64> [[BROADCAST_SPLAT]], <4 x ptr> [[BROADCAST_SPLAT2]], i32 8, <4 x i1> [[TMP1]])
+; TF-FIXEDLEN-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i64, ptr [[A]], i64 [[INDEX]]
+; TF-FIXEDLEN-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i64, ptr [[TMP3]], i32 0
+; TF-FIXEDLEN-NEXT:    call void @llvm.masked.store.v4i64.p0(<4 x i64> [[BROADCAST_SPLAT]], ptr [[TMP4]], i32 8, <4 x i1> [[ACTIVE_LANE_MASK]])
+; TF-FIXEDLEN-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
+; TF-FIXEDLEN-NEXT:    [[VEC_IND_NEXT]] = add <4 x i64> [[VEC_IND]], splat (i64 4)
+; TF-FIXEDLEN-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1028
+; TF-FIXEDLEN-NEXT:    br i1 [[TMP5]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
+; TF-FIXEDLEN:       [[MIDDLE_BLOCK]]:
+; TF-FIXEDLEN-NEXT:    br label %[[FOR_END:.*]]
+; TF-FIXEDLEN:       [[SCALAR_PH]]:
+; TF-FIXEDLEN-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; TF-FIXEDLEN-NEXT:    br label %[[FOR_BODY:.*]]
 ; TF-FIXEDLEN:       [[FOR_BODY]]:
 ; TF-FIXEDLEN-NEXT:    [[IV:%.*]] = phi i64 [ 0, %[[ENTRY]] ], [ [[IV_NEXT:%.*]], %[[LATCH:.*]] ]
@@ -1307,6 +1424,10 @@ define void @uniform_store_unaligned(ptr noalias nocapture %a, ptr noalias nocap
 ; TF-SCALABLE:       [[MIDDLE_BLOCK]]:
 ; TF-SCALABLE-NEXT:    br label %[[FOR_END:.*]]
 ; TF-SCALABLE:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; TF-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; TF-SCALABLE-NEXT:    br label %[[FOR_BODY:.*]]
 ; TF-SCALABLE:       [[FOR_BODY]]:
 ; TF-SCALABLE-NEXT:    [[IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[FOR_BODY]] ]
@@ -1343,6 +1464,10 @@ define void @uniform_store_unaligned(ptr noalias nocapture %a, ptr noalias nocap
 ; TF-FIXEDLEN:       [[MIDDLE_BLOCK]]:
 ; TF-FIXEDLEN-NEXT:    br label %[[FOR_END:.*]]
 ; TF-FIXEDLEN:       [[SCALAR_PH]]:
+<<<<<<< HEAD
+=======
+; TF-FIXEDLEN-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; TF-FIXEDLEN-NEXT:    br label %[[FOR_BODY:.*]]
 ; TF-FIXEDLEN:       [[FOR_BODY]]:
 ; TF-FIXEDLEN-NEXT:    [[IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[FOR_BODY]] ]

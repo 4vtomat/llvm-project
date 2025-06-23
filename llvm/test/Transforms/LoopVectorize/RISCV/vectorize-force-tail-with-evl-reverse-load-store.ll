@@ -14,6 +14,7 @@ define void @reverse_load_store(i64 %startval, ptr noalias %ptr, ptr noalias %pt
 ; IF-EVL-NEXT:  entry:
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
+<<<<<<< HEAD
 ; IF-EVL-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-NEXT:    [[TMP17:%.*]] = mul i64 [[TMP2]], 2
 ; IF-EVL-NEXT:    [[TMP20:%.*]] = sub i64 [[STARTVAL:%.*]], 1024
@@ -24,6 +25,23 @@ define void @reverse_load_store(i64 %startval, ptr noalias %ptr, ptr noalias %pt
 ; IF-EVL-NEXT:    [[TMP0:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[OFFSET_IDX:%.*]] = sub i64 [[STARTVAL]], [[EVL_BASED_IV]]
+=======
+; IF-EVL-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; IF-EVL-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
+; IF-EVL-NEXT:    [[TMP2:%.*]] = sub i64 [[TMP1]], 1
+; IF-EVL-NEXT:    [[N_RND_UP:%.*]] = add i64 1024, [[TMP2]]
+; IF-EVL-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N_RND_UP]], [[TMP1]]
+; IF-EVL-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
+; IF-EVL-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
+; IF-EVL-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 4
+; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
+; IF-EVL:       vector.body:
+; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
+; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; IF-EVL-NEXT:    [[AVL:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
+; IF-EVL-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 4, i1 true)
+; IF-EVL-NEXT:    [[OFFSET_IDX:%.*]] = sub i64 [[STARTVAL:%.*]], [[EVL_BASED_IV]]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    [[TMP7:%.*]] = add i64 [[OFFSET_IDX]], -1
 ; IF-EVL-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i32, ptr [[PTR:%.*]], i64 [[TMP7]]
 ; IF-EVL-NEXT:    [[TMP18:%.*]] = zext i32 [[TMP1]] to i64
@@ -46,6 +64,11 @@ define void @reverse_load_store(i64 %startval, ptr noalias %ptr, ptr noalias %pt
 ; IF-EVL:       middle.block:
 ; IF-EVL-NEXT:    br label [[LOOPEND:%.*]]
 ; IF-EVL:       scalar.ph:
+<<<<<<< HEAD
+=======
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[STARTVAL]], [[ENTRY:%.*]] ]
+; IF-EVL-NEXT:    [[BC_RESUME_VAL2:%.*]] = phi i32 [ 0, [[ENTRY]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL:       for.body:
 ; IF-EVL-NEXT:    [[ADD_PHI:%.*]] = phi i64 [ [[STARTVAL]], [[SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
@@ -102,6 +125,7 @@ define void @reverse_load_store_masked(i64 %startval, ptr noalias %ptr, ptr noal
 ; IF-EVL-NEXT:  entry:
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
+<<<<<<< HEAD
 ; IF-EVL-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-NEXT:    [[TMP20:%.*]] = mul i64 [[TMP2]], 2
 ; IF-EVL-NEXT:    [[TMP23:%.*]] = sub i64 [[STARTVAL:%.*]], 1024
@@ -112,6 +136,23 @@ define void @reverse_load_store_masked(i64 %startval, ptr noalias %ptr, ptr noal
 ; IF-EVL-NEXT:    [[TMP0:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[OFFSET_IDX:%.*]] = sub i64 [[STARTVAL]], [[EVL_BASED_IV]]
+=======
+; IF-EVL-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; IF-EVL-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
+; IF-EVL-NEXT:    [[TMP2:%.*]] = sub i64 [[TMP1]], 1
+; IF-EVL-NEXT:    [[N_RND_UP:%.*]] = add i64 1024, [[TMP2]]
+; IF-EVL-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N_RND_UP]], [[TMP1]]
+; IF-EVL-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
+; IF-EVL-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
+; IF-EVL-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 4
+; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
+; IF-EVL:       vector.body:
+; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
+; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; IF-EVL-NEXT:    [[AVL:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
+; IF-EVL-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 4, i1 true)
+; IF-EVL-NEXT:    [[OFFSET_IDX:%.*]] = sub i64 [[STARTVAL:%.*]], [[EVL_BASED_IV]]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    [[OFFSET_IDX3:%.*]] = trunc i64 [[EVL_BASED_IV]] to i32
 ; IF-EVL-NEXT:    [[TMP11:%.*]] = add i64 [[OFFSET_IDX]], -1
 ; IF-EVL-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[PTR:%.*]], i32 [[OFFSET_IDX3]]
@@ -139,6 +180,11 @@ define void @reverse_load_store_masked(i64 %startval, ptr noalias %ptr, ptr noal
 ; IF-EVL:       middle.block:
 ; IF-EVL-NEXT:    br label [[LOOPEND:%.*]]
 ; IF-EVL:       scalar.ph:
+<<<<<<< HEAD
+=======
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[STARTVAL]], [[ENTRY:%.*]] ]
+; IF-EVL-NEXT:    [[BC_RESUME_VAL2:%.*]] = phi i32 [ 0, [[ENTRY]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL:       for.body:
 ; IF-EVL-NEXT:    [[ADD_PHI:%.*]] = phi i64 [ [[STARTVAL]], [[SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_INC:%.*]] ]
@@ -222,7 +268,11 @@ define void @multiple_reverse_vector_pointer(ptr noalias %a, ptr noalias %b, ptr
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
 ; IF-EVL-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
+<<<<<<< HEAD
 ; IF-EVL-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP3]], 8
+=======
+; IF-EVL-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 16
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -263,6 +313,10 @@ define void @multiple_reverse_vector_pointer(ptr noalias %a, ptr noalias %b, ptr
 ; IF-EVL:       middle.block:
 ; IF-EVL-NEXT:    br label [[EXIT:%.*]]
 ; IF-EVL:       scalar.ph:
+<<<<<<< HEAD
+=======
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1024, [[ENTRY:%.*]] ]
+>>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    br label [[LOOP:%.*]]
 ; IF-EVL:       loop:
 ; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ 1024, [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[LOOP]] ]

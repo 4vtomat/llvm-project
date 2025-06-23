@@ -54,8 +54,8 @@ public:
 #endif // SIFIVE_CUSTOMIZATION
   void printVMaskReg(const MCInst *MI, unsigned OpNo,
                      const MCSubtargetInfo &STI, raw_ostream &O);
-  void printRlist(const MCInst *MI, unsigned OpNo, const MCSubtargetInfo &STI,
-                  raw_ostream &O);
+  void printRegList(const MCInst *MI, unsigned OpNo, const MCSubtargetInfo &STI,
+                    raw_ostream &O);
   void printStackAdj(const MCInst *MI, unsigned OpNo,
                      const MCSubtargetInfo &STI, raw_ostream &O,
                      bool Negate = false);
