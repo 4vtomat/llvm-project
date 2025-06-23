@@ -96,16 +96,9 @@ define <64 x float> @vfwmul_v64f16(ptr %x, ptr %y) {
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * vlenb
 ; CHECK-NEXT:    li a2, 64
 ; CHECK-NEXT:    vsetvli zero, a2, e16, m8, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vs8r.v v8, (a0) # vscale x 64-byte Folded Spill
-=======
 ; CHECK-NEXT:    vle16.v v16, (a0)
-; CHECK-NEXT:    vle16.v v24, (a1)
->>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vle16.v v0, (a1)
+; CHECK-NEXT:    vle16.v v24, (a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v8, v16, a0
 ; CHECK-NEXT:    addi a1, sp, 16

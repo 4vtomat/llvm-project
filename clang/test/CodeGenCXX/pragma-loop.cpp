@@ -219,7 +219,6 @@ void for_test_scalable_1(int *List, int Length) {
 // CHECK-DAG: ![[INTERLEAVE_10:[0-9]+]] = !{!"llvm.loop.interleave.count", i32 10}
 // CHECK-DAG: ![[INTERLEAVE_16:[0-9]+]] = !{!"llvm.loop.interleave.count", i32 16}
 
-<<<<<<< HEAD
 // SIFIVE_CUSTOMIZATION
 // CHECK: ![[LOOP_5]] = distinct !{![[LOOP_5]], ![[UNROLL_DISABLE:.*]], ![[DISTRIBUTE_DISABLE:.*]], ![[VEC_DISABLE:.*]]}
 // CHECK: ![[VEC_DISABLE]] = !{!"llvm.loop.vectorize.enable", i1 false}
@@ -227,7 +226,6 @@ void for_test_scalable_1(int *List, int Length) {
 // COM: ![[LOOP_5]] = distinct !{![[LOOP_5]], ![[UNROLL_DISABLE:.*]], ![[DISTRIBUTE_DISABLE:.*]], ![[WIDTH_1:.*]]}
 // COM: ![[WIDTH_1]] = !{!"llvm.loop.vectorize.width", i32 1}
 // end of SIFIVE_CUSTOMIZATION
-=======
 // CHECK-DAG: ![[VECTORIZE_ENABLE:[0-9]+]] = !{!"llvm.loop.vectorize.enable", i1 true}
 // CHECK-DAG: ![[FIXED_VEC:[0-9]+]] = !{!"llvm.loop.vectorize.scalable.enable", i1 false}
 // CHECK-DAG: ![[SCALABLE_VEC:[0-9]+]] = !{!"llvm.loop.vectorize.scalable.enable", i1 true}
@@ -238,7 +236,6 @@ void for_test_scalable_1(int *List, int Length) {
 // CHECK-DAG: ![[WIDTH_8:[0-9]+]] = !{!"llvm.loop.vectorize.width", i32 8}
 // CHECK-DAG: ![[WIDTH_10:[0-9]+]] = !{!"llvm.loop.vectorize.width", i32 10}
 // CHECK-DAG: ![[WIDTH_16:[0-9]+]] = !{!"llvm.loop.vectorize.width", i32 16}
->>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 
 // CHECK-DAG: ![[ISVECTORIZED:[0-9]+]] = !{!"llvm.loop.isvectorized"}
 

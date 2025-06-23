@@ -2569,35 +2569,15 @@ define <32 x double> @vpgather_baseidx_v32f64(ptr %base, <32 x i64> %idxs, <32 x
 ; RV32-LABEL: vpgather_baseidx_v32f64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetivli zero, 16, e32, m4, ta, ma
-<<<<<<< HEAD
-; RV32-NEXT:    vmv1r.v v7, v0
 ; RV32-NEXT:    vnsrl.wi v16, v16, 0
 ; RV32-NEXT:    vnsrl.wi v8, v8, 0
-=======
-; RV32-NEXT:    vnsrl.wi v24, v16, 0
-; RV32-NEXT:    vnsrl.wi v16, v8, 0
->>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; RV32-NEXT:    li a2, 32
 ; RV32-NEXT:    vsetvli zero, a2, e32, m8, ta, ma
-<<<<<<< HEAD
 ; RV32-NEXT:    vslideup.vi v8, v16, 16
-; RV32-NEXT:    vsll.vi v24, v8, 3
-; RV32-NEXT:    sltu a2, a1, a3
-; RV32-NEXT:    addi a2, a2, -1
-; RV32-NEXT:    vsetivli zero, 16, e32, m8, ta, ma
-; RV32-NEXT:    vslidedown.vi v8, v24, 16
-; RV32-NEXT:    and a2, a2, a3
-; RV32-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
-; RV32-NEXT:    vluxei32.v v16, (a0), v8, v0.t
-; RV32-NEXT:    li a2, 16
-; RV32-NEXT:    bltu a1, a2, .LBB104_2
-=======
-; RV32-NEXT:    vslideup.vi v16, v24, 16
 ; RV32-NEXT:    li a3, 16
-; RV32-NEXT:    vsll.vi v16, v16, 3
+; RV32-NEXT:    vsll.vi v16, v8, 3
 ; RV32-NEXT:    mv a2, a1
 ; RV32-NEXT:    bltu a1, a3, .LBB104_2
->>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; RV32-NEXT:  # %bb.1:
 ; RV32-NEXT:    li a2, 16
 ; RV32-NEXT:  .LBB104_2:

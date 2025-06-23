@@ -254,16 +254,9 @@ define <128 x i16> @vwadd_v128i16(ptr %x, ptr %y) nounwind {
 ; CHECK-NEXT:    sub sp, sp, a2
 ; CHECK-NEXT:    li a2, 128
 ; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vs8r.v v8, (a0) # vscale x 64-byte Folded Spill
-=======
 ; CHECK-NEXT:    vle8.v v16, (a0)
-; CHECK-NEXT:    vle8.v v24, (a1)
->>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; CHECK-NEXT:    li a0, 64
-; CHECK-NEXT:    vle8.v v0, (a1)
+; CHECK-NEXT:    vle8.v v24, (a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v8, v16, a0
 ; CHECK-NEXT:    addi a1, sp, 16
@@ -296,16 +289,9 @@ define <64 x i32> @vwadd_v64i32(ptr %x, ptr %y) nounwind {
 ; CHECK-NEXT:    sub sp, sp, a2
 ; CHECK-NEXT:    li a2, 64
 ; CHECK-NEXT:    vsetvli zero, a2, e16, m8, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vs8r.v v8, (a0) # vscale x 64-byte Folded Spill
-=======
 ; CHECK-NEXT:    vle16.v v16, (a0)
-; CHECK-NEXT:    vle16.v v24, (a1)
->>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vle16.v v0, (a1)
+; CHECK-NEXT:    vle16.v v24, (a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v8, v16, a0
 ; CHECK-NEXT:    addi a1, sp, 16

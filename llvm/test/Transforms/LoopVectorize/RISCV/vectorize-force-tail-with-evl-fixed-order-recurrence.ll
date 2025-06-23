@@ -41,17 +41,10 @@ define void @first_order_recurrence(ptr noalias %A, ptr noalias %B, i64 %TC) {
 ; IF-EVL-NEXT:    [[TMP16:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TC]]
 ; IF-EVL-NEXT:    br i1 [[TMP16]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
-<<<<<<< HEAD
-; IF-EVL-NEXT:    [[TMP20:%.*]] = sub i32 [[TMP12]], 1
-; IF-EVL-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <vscale x 2 x i32> [[VP_OP_LOAD]], i32 [[TMP20]]
-; IF-EVL-NEXT:    br label %[[FOR_END:.*]]
-; IF-EVL:       [[SCALAR_PH]]:
-=======
 ; IF-EVL-NEXT:    br label %[[FOR_END:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
 ; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
 ; IF-EVL-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i32 [ 33, %[[ENTRY]] ]
->>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    br label %[[FOR_BODY:.*]]
 ; IF-EVL:       [[FOR_BODY]]:
 ; IF-EVL-NEXT:    [[INDVARS:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[INDVARS_NEXT:%.*]], %[[FOR_BODY]] ]
@@ -138,19 +131,6 @@ define void @second_order_recurrence(ptr noalias %A, ptr noalias %B, i64 %TC) {
 ; IF-EVL-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TC]]
 ; IF-EVL-NEXT:    br i1 [[TMP12]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
-<<<<<<< HEAD
-; IF-EVL-NEXT:    [[TMP13:%.*]] = sub i32 [[TMP15]], 1
-; IF-EVL-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <vscale x 2 x i32> [[VP_OP_LOAD]], i32 [[TMP13]]
-; IF-EVL-NEXT:    [[TMP14:%.*]] = sub i32 [[TMP15]], 1
-; IF-EVL-NEXT:    [[VECTOR_RECUR_EXTRACT4:%.*]] = extractelement <vscale x 2 x i32> [[TMP7]], i32 [[TMP14]]
-; IF-EVL-NEXT:    br label %[[FOR_END:.*]]
-; IF-EVL:       [[SCALAR_PH]]:
-; IF-EVL-NEXT:    br label %[[FOR_BODY:.*]]
-; IF-EVL:       [[FOR_BODY]]:
-; IF-EVL-NEXT:    [[INDVARS:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[INDVARS_NEXT1:%.*]], %[[FOR_BODY]] ]
-; IF-EVL-NEXT:    [[FOR1:%.*]] = phi i32 [ 33, %[[SCALAR_PH]] ], [ [[TMP19:%.*]], %[[FOR_BODY]] ]
-; IF-EVL-NEXT:    [[FOR2:%.*]] = phi i32 [ 22, %[[SCALAR_PH]] ], [ [[FOR1]], %[[FOR_BODY]] ]
-=======
 ; IF-EVL-NEXT:    br label %[[FOR_END:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
 ; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
@@ -161,7 +141,6 @@ define void @second_order_recurrence(ptr noalias %A, ptr noalias %B, i64 %TC) {
 ; IF-EVL-NEXT:    [[INDVARS:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[INDVARS_NEXT:%.*]], %[[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[FOR1:%.*]] = phi i32 [ [[SCALAR_RECUR_INIT]], %[[SCALAR_PH]] ], [ [[TMP31:%.*]], %[[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[FOR2:%.*]] = phi i32 [ [[SCALAR_RECUR_INIT3]], %[[SCALAR_PH]] ], [ [[FOR1]], %[[FOR_BODY]] ]
->>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds nuw i32, ptr [[A]], i64 [[INDVARS]]
 ; IF-EVL-NEXT:    [[TMP19]] = load i32, ptr [[ARRAYIDX]], align 4
 ; IF-EVL-NEXT:    [[ADD:%.*]] = add nsw i32 [[FOR1]], [[FOR2]]
@@ -251,22 +230,6 @@ define void @third_order_recurrence(ptr noalias %A, ptr noalias %B, i64 %TC) {
 ; IF-EVL-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TC]]
 ; IF-EVL-NEXT:    br i1 [[TMP14]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
-<<<<<<< HEAD
-; IF-EVL-NEXT:    [[TMP15:%.*]] = sub i32 [[TMP18]], 1
-; IF-EVL-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <vscale x 2 x i32> [[VP_OP_LOAD]], i32 [[TMP15]]
-; IF-EVL-NEXT:    [[TMP16:%.*]] = sub i32 [[TMP18]], 1
-; IF-EVL-NEXT:    [[VECTOR_RECUR_EXTRACT7:%.*]] = extractelement <vscale x 2 x i32> [[TMP8]], i32 [[TMP16]]
-; IF-EVL-NEXT:    [[TMP17:%.*]] = sub i32 [[TMP18]], 1
-; IF-EVL-NEXT:    [[VECTOR_RECUR_EXTRACT8:%.*]] = extractelement <vscale x 2 x i32> [[TMP9]], i32 [[TMP17]]
-; IF-EVL-NEXT:    br label %[[FOR_END:.*]]
-; IF-EVL:       [[SCALAR_PH]]:
-; IF-EVL-NEXT:    br label %[[FOR_BODY:.*]]
-; IF-EVL:       [[FOR_BODY]]:
-; IF-EVL-NEXT:    [[INDVARS:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[INDVARS_NEXT:%.*]], %[[FOR_BODY]] ]
-; IF-EVL-NEXT:    [[FOR1:%.*]] = phi i32 [ 33, %[[SCALAR_PH]] ], [ [[TMP22:%.*]], %[[FOR_BODY]] ]
-; IF-EVL-NEXT:    [[FOR2:%.*]] = phi i32 [ 22, %[[SCALAR_PH]] ], [ [[FOR1]], %[[FOR_BODY]] ]
-; IF-EVL-NEXT:    [[FOR3:%.*]] = phi i32 [ 11, %[[SCALAR_PH]] ], [ [[FOR2]], %[[FOR_BODY]] ]
-=======
 ; IF-EVL-NEXT:    br label %[[FOR_END:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
 ; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
@@ -279,7 +242,6 @@ define void @third_order_recurrence(ptr noalias %A, ptr noalias %B, i64 %TC) {
 ; IF-EVL-NEXT:    [[FOR1:%.*]] = phi i32 [ [[SCALAR_RECUR_INIT]], %[[SCALAR_PH]] ], [ [[TMP38:%.*]], %[[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[FOR2:%.*]] = phi i32 [ [[SCALAR_RECUR_INIT5]], %[[SCALAR_PH]] ], [ [[FOR1]], %[[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[FOR3:%.*]] = phi i32 [ [[SCALAR_RECUR_INIT6]], %[[SCALAR_PH]] ], [ [[FOR2]], %[[FOR_BODY]] ]
->>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds nuw i32, ptr [[A]], i64 [[INDVARS]]
 ; IF-EVL-NEXT:    [[TMP22]] = load i32, ptr [[ARRAYIDX]], align 4
 ; IF-EVL-NEXT:    [[ADD:%.*]] = add nsw i32 [[FOR2]], [[FOR3]]

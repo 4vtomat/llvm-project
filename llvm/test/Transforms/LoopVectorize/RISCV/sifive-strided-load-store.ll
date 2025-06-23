@@ -36,7 +36,7 @@ define void @gather(i32* noalias %arg, i32* noalias %arg1, i32 %arg2) {
 ; RV32V-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; RV32V-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 4 x i64> [ [[TMP8]], [[SCALAR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; RV32V-NEXT:    [[VEC_IND_TR:%.*]] = trunc <vscale x 4 x i64> [[VEC_IND]] to <vscale x 4 x i32>
-; RV32V-NEXT:    [[TMP9:%.*]] = shl <vscale x 4 x i32> [[VEC_IND_TR]], trunc (<vscale x 4 x i64> splat (i64 2) to <vscale x 4 x i32>)
+; RV32V-NEXT:    [[TMP9:%.*]] = shl <vscale x 4 x i32> [[VEC_IND_TR]], splat (i32 2)
 ; RV32V-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[ARG1:%.*]], <vscale x 4 x i32> [[TMP9]]
 ; RV32V-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <vscale x 4 x i32> @llvm.masked.gather.nxv4i32.nxv4p0(<vscale x 4 x ptr> [[TMP10]], i32 4, <vscale x 4 x i1> splat (i1 true), <vscale x 4 x i32> poison)
 ; RV32V-NEXT:    [[TMP3:%.*]] = trunc i64 [[INDEX]] to i32
