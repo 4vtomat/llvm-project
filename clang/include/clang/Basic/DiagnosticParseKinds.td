@@ -1833,7 +1833,6 @@ def err_hlsl_virtual_function
 def err_hlsl_virtual_inheritance
     : Error<"virtual inheritance is unsupported in HLSL">;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 // #pragma clang rvv lmul_sew
 def err_pragma_rvv_invalid_option : Error<
@@ -1849,10 +1848,8 @@ def err_pragma_rvv_expect_comma : Error <
   "expected ','"
 >;
 #endif
-=======
 // HLSL Root Siganture diagnostic messages
 def err_hlsl_unexpected_end_of_params
     : Error<"expected %0 to denote end of parameters, or, another valid parameter of %1">;
->>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 
 } // end of Parser diagnostics
