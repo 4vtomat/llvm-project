@@ -2669,9 +2669,17 @@ void VPlanTransforms::addExplicitVectorLengthUncountable(VPlan &Plan) {
   for (VPUser *U : to_vector(Plan.getVF().users())) {
     // VPWidenIntOrFpInductionRecipe will use EVLPlaceholder
     // because exeuction of phi is ahead of all the others
-    auto *R = dyn_cast<VPWidenIntOrFpInductionRecipe>(U);
-    assert(R && "User of VF is not VPWidenIntOrFPInduction");
-    R->setOperand(2, LastEVL);
+    if (auto *R = dyn_cast<VPWidenIntOrFpInductionRecipe>(U)) {
+      R->setOperand(2, LastEVL);
+      continue;
+    }
+
+    auto *R = dyn_cast<VPScalarIVStepsRecipe>(U);
+    // It is ok if VF is used for unrolling,
+    // it is not used when UF=1
+    if (R && R->getStepValue() != &Plan.getVF())
+      continue;
+    assert(0 && "Unknown User of VF");
   }
   Plan.getVFxUF().replaceAllUsesWith(LastEVL);
   CanonicalIVIncrement->replaceAllUsesWith(NextEVLIV);

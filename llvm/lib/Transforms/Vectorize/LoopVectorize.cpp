@@ -9731,8 +9731,9 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
                            OrigLoop->getHeader()->getContext());
   VPlanTransforms::materializeBroadcasts(BestVPlan);
 #if SIFIVE_CUSTOMIZATION
-  if (!BestVPlan.useVLAVectorizer() || !Legal->getLAI() ||
-      Legal->isSafeForAnyVectorWidth())
+  if (!BestVPlan.isUncountable() &&
+      (!BestVPlan.useVLAVectorizer() || !Legal->getLAI() ||
+       Legal->isSafeForAnyVectorWidth()))
 #endif // SIFIVE_CUSTOMIZATION
   VPlanTransforms::optimizeForVFAndUF(BestVPlan, BestVF, BestUF, PSE);
   VPlanTransforms::simplifyRecipes(BestVPlan, *Legal->getWidestInductionType());
