@@ -16674,7 +16674,6 @@ static SDValue performTRUNCATECombine(SDNode *N, SelectionDAG &DAG,
   return combineTruncSelectToSMaxUSat(N, DAG);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // Look for (and (add (mul (xor A, 255), X), (mul A, Y)), 65535). Where A, X,
 // and Y all fit in 8 bits. The AND can be removed in this case. computeKnowBits
@@ -16762,7 +16761,6 @@ static SDValue combineANDSRLLoad(SDNode *N,
 }
 #endif
 
-=======
 // InstCombinerImpl::transformZExtICmp will narrow a zext of an icmp with a
 // truncation. But RVV doesn't have truncation instructions for more than twice
 // the bitwidth.
@@ -16827,7 +16825,6 @@ static SDValue reverseZExtICmpCombine(SDNode *N, SelectionDAG &DAG,
   return DAG.getNode(ISD::ZERO_EXTEND, DL, VT, Res);
 }
 
->>>>>>> bafa2f4442bcee26f05c22369d41646d5c8befb9
 // Combines two comparison operation and logic operation to one selection
 // operation(min, max) and logic operation. Returns new constructed Node if
 // conditions for optimization are satisfied.
