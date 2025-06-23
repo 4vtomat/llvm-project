@@ -207,6 +207,7 @@
 ; CHECK-NEXT:       RISC-V Machine Constant Propagation
 ; CHECK-NEXT:       RISC-V Bullet NOP Inserter
 ; CHECK-NEXT:       Machine Copy Propagation Pass
+; CHECK-NEXT:       RISC-V Late Branch Optimisation Pass
 ; CHECK-NEXT:       Branch relaxation pass
 ; CHECK-NEXT:       RISC-V Make Compressible
 ; CHECK-NEXT:       Contiguously Lay Out Funclets

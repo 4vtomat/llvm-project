@@ -3025,6 +3025,7 @@ bool AddressSanitizer::suppressInstrumentationSiteForDebug(int &Instrumented) {
 }
 
 bool AddressSanitizer::instrumentFunction(Function &F,
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
                                           const TargetLibraryInfo *TLI,
                                           const TargetTransformInfo *TTI) {
@@ -3039,6 +3040,9 @@ bool AddressSanitizer::instrumentFunction(Function &F,
 #else
                                           const TargetLibraryInfo *TLI) {
 #endif // SIFIVE_CUSTOMIZATION
+=======
+                                          const TargetLibraryInfo *TLI) {
+>>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
   bool FunctionModified = false;
 
   // Do not apply any instrumentation for naked functions.

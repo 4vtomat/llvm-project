@@ -128,8 +128,12 @@ add_llvm_component_library(LLVMAnalysis
   ScalarEvolutionAliasAnalysis.cpp
   ScalarEvolutionDivision.cpp
   ScalarEvolutionNormalization.cpp
+<<<<<<< HEAD
   SiFive_LiveInterval.cpp
   SiFive_LiveValues.cpp
+=======
+  StaticDataProfileInfo.cpp
+>>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
   StackLifetime.cpp
   StackSafetyAnalysis.cpp
   StructuralHash.cpp

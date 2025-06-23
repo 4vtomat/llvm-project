@@ -66,6 +66,7 @@ static cl::opt<unsigned> SLPMaxVF(
         "exclusively by SLP vectorizer."),
     cl::Hidden);
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static cl::opt<unsigned> VectorPrimaryLMULMinExp(
     "vector-primary-lmul-min",
@@ -552,6 +553,14 @@ static InstructionCost getSiFiveP600RVVCost(ArrayRef<unsigned> OpCodes, MVT VT,
   return Cost;
 }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+static cl::opt<unsigned>
+    RVVMinTripCount("riscv-v-min-trip-count",
+                    cl::desc("Set the lower bound of a trip count to decide on "
+                             "vectorization while tail-folding."),
+                    cl::init(5), cl::Hidden);
+
+>>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
 InstructionCost
 RISCVTTIImpl::getRISCVInstructionCost(ArrayRef<unsigned> OpCodes, MVT VT,
                                       TTI::TargetCostKind CostKind) {
@@ -1077,10 +1086,14 @@ costShuffleViaVRegSplitting(RISCVTTIImpl &TTI, MVT LegalVT,
   copy(Mask, NormalizedMask.begin());
   InstructionCost Cost = 0;
   int NumShuffles = 0;
+  SmallDenseSet<std::pair<ArrayRef<int>, unsigned>> ReusedSingleSrcShuffles;
   processShuffleMasks(
       NormalizedMask, NumOfSrcRegs, NumOfDestRegs, NumOfDestRegs, []() {},
       [&](ArrayRef<int> RegMask, unsigned SrcReg, unsigned DestReg) {
         if (ShuffleVectorInst::isIdentityMask(RegMask, RegMask.size()))
+          return;
+        if (!ReusedSingleSrcShuffles.insert(std::make_pair(RegMask, SrcReg))
+                 .second)
           return;
         ++NumShuffles;
         Cost += TTI.getShuffleCost(TTI::SK_PermuteSingleSrc, SingleOpTy,
@@ -4099,6 +4112,7 @@ unsigned RISCVTTIImpl::getMaximumVF(unsigned ElemWidth, unsigned Opcode) const {
   return std::max<unsigned>(1U, RegWidth.getFixedValue() / ElemWidth);
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 unsigned RISCVTTIImpl::getInliningThresholdMultiplier() const {
   return InliningThresholdMultiplier;
@@ -4140,6 +4154,12 @@ bool RISCVTTIImpl::isLegalVectorInterleave(VectorType *VTy, unsigned Factor,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+unsigned RISCVTTIImpl::getMinTripCountTailFoldingThreshold() const {
+  return RVVMinTripCount;
+}
+
+>>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
 TTI::AddressingModeKind
 RISCVTTIImpl::getPreferredAddressingMode(const Loop *L,
                                          ScalarEvolution *SE) const {

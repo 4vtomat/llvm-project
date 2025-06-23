@@ -45,12 +45,17 @@ inline bool isUniformAfterVectorization(const VPValue *VPV) {
     return true;
   if (auto *Rep = dyn_cast<VPReplicateRecipe>(VPV))
     return Rep->isUniform();
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   const VPRecipeBase *Def = VPV->getDefiningRecipe();
   if (isa<VPMonotonicUpdateInstruction, VPMonotonicHeaderPHIRecipe>(Def))
     return true;
 #endif // SIFIVE_CUSTOMIZATION
   if (isa<VPWidenGEPRecipe, VPDerivedIVRecipe>(VPV))
+=======
+  if (isa<VPWidenGEPRecipe, VPDerivedIVRecipe, VPScalarCastRecipe,
+          VPBlendRecipe>(VPV))
+>>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
     return all_of(VPV->getDefiningRecipe()->operands(),
                   isUniformAfterVectorization);
   if (auto *VPI = dyn_cast<VPInstruction>(VPV))
@@ -58,8 +63,6 @@ inline bool isUniformAfterVectorization(const VPValue *VPV) {
            ((Instruction::isBinaryOp(VPI->getOpcode()) ||
              VPI->getOpcode() == VPInstruction::PtrAdd) &&
             all_of(VPI->operands(), isUniformAfterVectorization));
-  if (auto *IV = dyn_cast<VPDerivedIVRecipe>(VPV))
-    return all_of(IV->operands(), isUniformAfterVectorization);
 
   // VPExpandSCEVRecipes must be placed in the entry and are alway uniform.
   return isa<VPExpandSCEVRecipe>(VPV);

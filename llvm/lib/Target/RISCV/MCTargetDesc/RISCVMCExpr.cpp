@@ -94,7 +94,7 @@ bool RISCVMCExpr::evaluateAsRelocatableImpl(MCValue &Res,
   Res.setSpecifier(specifier);
 
   // Custom fixup types are not valid with symbol difference expressions.
-  return Res.getSymB() ? getSpecifier() == VK_None : true;
+  return !Res.getSubSym();
 }
 
 void RISCVMCExpr::visitUsedExpr(MCStreamer &Streamer) const {
@@ -118,6 +118,7 @@ RISCVMCExpr::getSpecifierForName(StringRef name) {
       .Case("tlsdesc_load_lo", VK_TLSDESC_LOAD_LO)
       .Case("tlsdesc_add_lo", VK_TLSDESC_ADD_LO)
       .Case("tlsdesc_call", VK_TLSDESC_CALL)
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       .Case("gprel_lo", VK_GPREL_LO)
       .Case("gprel_hi", VK_GPREL_HI)
@@ -132,14 +133,17 @@ RISCVMCExpr::getSpecifierForName(StringRef name) {
       .Case("tls_gd_gprel_hi", VK_TLS_GD_GPREL_HI)
       .Case("tls_gd_gprel", VK_TLS_GD_GPREL_ADD)
 #endif // SIFIVE_CUSTOMIZATION
+=======
+      // Used in data directives
+      .Case("pltpcrel", VK_PLTPCREL)
+      .Case("gotpcrel", VK_GOTPCREL)
+>>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
       .Default(std::nullopt);
 }
 
 StringRef RISCVMCExpr::getSpecifierName(Specifier S) {
   switch (S) {
   case VK_None:
-  case VK_PLT:
-  case VK_GOTPCREL:
     llvm_unreachable("not used as %specifier()");
   case VK_LO:
     return "lo";
@@ -175,6 +179,7 @@ StringRef RISCVMCExpr::getSpecifierName(Specifier S) {
     return "call_plt";
   case VK_32_PCREL:
     return "32_pcrel";
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case VK_GPREL_LO:
     return "gprel_lo";
@@ -201,33 +206,12 @@ StringRef RISCVMCExpr::getSpecifierName(Specifier S) {
   case VK_TLS_GD_GPREL_ADD:
     return "tls_gd_gprel";
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  case VK_GOTPCREL:
+    return "gotpcrel";
+  case VK_PLTPCREL:
+    return "pltpcrel";
+>>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
   }
   llvm_unreachable("Invalid ELF symbol kind");
-}
-
-bool RISCVMCExpr::evaluateAsConstant(int64_t &Res) const {
-  MCValue Value;
-  if (specifier != VK_LO && specifier != VK_HI)
-    return false;
-
-  if (!getSubExpr()->evaluateAsRelocatable(Value, nullptr))
-    return false;
-
-  if (!Value.isAbsolute())
-    return false;
-
-  Res = evaluateAsInt64(Value.getConstant());
-  return true;
-}
-
-int64_t RISCVMCExpr::evaluateAsInt64(int64_t Value) const {
-  switch (specifier) {
-  default:
-    llvm_unreachable("Invalid kind");
-  case VK_LO:
-    return SignExtend64<12>(Value);
-  case VK_HI:
-    // Add 1 if bit 11 is 1, to compensate for low 12 bits being negative.
-    return ((Value + 0x800) >> 12) & 0xfffff;
-  }
 }

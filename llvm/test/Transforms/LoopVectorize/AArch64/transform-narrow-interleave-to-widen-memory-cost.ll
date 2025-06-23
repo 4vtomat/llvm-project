@@ -76,15 +76,35 @@ define void @test_complex_add_double(ptr %res, ptr noalias %A, ptr noalias %B, i
 ; CHECK-NEXT:    [[N_VEC:%.*]] = sub i64 [[N]], [[N_MOD_VF]]
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP1:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
+=======
+; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[TMP1:%.*]] = add i64 [[INDEX]], 1
+; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds nuw { double, double }, ptr [[A]], i64 [[INDEX]]
+>>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds nuw { double, double }, ptr [[A]], i64 [[TMP1]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds nuw { double, double }, ptr [[B]], i64 [[TMP1]]
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[STRIDED_VEC5:%.*]] = load <2 x double>, ptr [[TMP3]], align 4
 ; CHECK-NEXT:    [[STRIDED_VEC11:%.*]] = load <2 x double>, ptr [[TMP5]], align 4
+=======
+; CHECK-NEXT:    [[STRIDED_VEC1:%.*]] = load <2 x double>, ptr [[TMP2]], align 4
+; CHECK-NEXT:    [[STRIDED_VEC5:%.*]] = load <2 x double>, ptr [[TMP3]], align 4
+; CHECK-NEXT:    [[STRIDED_VEC7:%.*]] = load <2 x double>, ptr [[TMP4]], align 4
+; CHECK-NEXT:    [[STRIDED_VEC11:%.*]] = load <2 x double>, ptr [[TMP5]], align 4
+; CHECK-NEXT:    [[TMP8:%.*]] = fadd <2 x double> [[STRIDED_VEC1]], [[STRIDED_VEC7]]
+>>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
 ; CHECK-NEXT:    [[TMP15:%.*]] = fadd <2 x double> [[STRIDED_VEC5]], [[STRIDED_VEC11]]
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds nuw { double, double }, ptr [[RES]], i64 [[TMP1]]
+<<<<<<< HEAD
 ; CHECK-NEXT:    store <2 x double> [[TMP15]], ptr [[TMP11]], align 4
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[TMP1]], 1
+=======
+; CHECK-NEXT:    store <2 x double> [[TMP8]], ptr [[TMP10]], align 4
+; CHECK-NEXT:    store <2 x double> [[TMP15]], ptr [[TMP11]], align 4
+; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 2
+>>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
 ; CHECK-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[TMP14]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:

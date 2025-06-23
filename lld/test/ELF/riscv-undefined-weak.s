@@ -94,3 +94,8 @@ branch:
 
 # PC-NOT:      .plt:
 # PLT:         .plt:
+<<<<<<< HEAD
+=======
+
+.word %pltpcrel(target)
+>>>>>>> 79487757b7f4b33a0940753fb02e39d0388e733a
