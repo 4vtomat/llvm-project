@@ -286,12 +286,12 @@ bool InsertCounter::declareVars(Module &M) {
   // Define a struct which contain pointers to the metadata of loop profiling
   // separate in different file. This struct help us collect the information at
   // runtime.
-  PointerType *IntArrayPoIntType = PointerType::get(IntNumLoops, 0);
-  PointerType *StrArrayPoIntType = PointerType::get(StrPtrNumLoops, 0);
-  PointerType *PointerPoIntType = PointerType::get(
-      PointerType::get(IntegerType::get(M.getContext(), 8), 0), 0);
-  IntegerType *IntType = IntegerType::get(M.getContext(), 32);
-  StructType *St = StructType::create(M.getContext(), "loop_profile_loc");
+  LLVMContext &Ctx = M.getContext();
+  PointerType *IntArrayPoIntType = PointerType::get(Ctx, 0);
+  PointerType *StrArrayPoIntType = PointerType::get(Ctx, 0);
+  PointerType *PointerPoIntType = PointerType::get(Ctx, 0);
+  IntegerType *IntType = IntegerType::get(Ctx, 32);
+  StructType *St = StructType::create(Ctx, "loop_profile_loc");
 
   // Members of the Anchor
   // {ExitCounter, ExitingCounters (deprecated), latchConters,
@@ -306,7 +306,7 @@ bool InsertCounter::declareVars(Module &M) {
                               "Anchor");
   Anchor->setSection("__llvm_loop_prof");
   Constant *NumLoopsConst =
-      ConstantInt::get(IntegerType::get(M.getContext(), 32), NumLoops);
+      ConstantInt::get(IntegerType::get(Ctx, 32), NumLoops);
   Constant *AnchorInit = ConstantStruct::get(
       St, ExitCounter, LatchCounter, LatchCounter, MinLatchCounter,
       MaxLatchCounter, LoopNames, NumLoopsConst, ExecutedFlag);
@@ -314,12 +314,11 @@ bool InsertCounter::declareVars(Module &M) {
 
   // Declare min/max caculte function provided by Runtime
   Function *MinMaxFunc;
-  Type *info_collection_args[3] = {
-      PointerType::get(IntegerType::get(M.getContext(), 64), 0),
-      IntegerType::get(M.getContext(), 32),
-      IntegerType::get(M.getContext(), 64)};
-  FunctionType *info_collection_type = FunctionType::get(
-      IntegerType::get(M.getContext(), 32), info_collection_args, false);
+  Type *info_collection_args[3] = {PointerType::get(Ctx, 0),
+                                   IntegerType::get(Ctx, 32),
+                                   IntegerType::get(Ctx, 64)};
+  FunctionType *info_collection_type =
+      FunctionType::get(IntegerType::get(Ctx, 32), info_collection_args, false);
   MinMaxFunc =
       Function::Create(info_collection_type, GlobalValue::ExternalLinkage,
                        "__loop_prof_info_collection", &M);
