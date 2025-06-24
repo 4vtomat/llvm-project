@@ -140,22 +140,17 @@ bool RISCVCodeGenPrepare::visitAnd(BinaryOperator &BO) {
 // Which eliminates the scalar -> vector -> scalar crossing during instruction
 // selection.
 bool RISCVCodeGenPrepare::visitIntrinsicInst(IntrinsicInst &I) {
-#if SIFIVE_CUSTOMIZATION
-  if (optimizeReduction(I))
-    return true;
-#endif // SIFIVE_CUSTOMIZATION
-
   if (expandVPStrideLoad(I))
     return true;
 
   if (I.getIntrinsicID() != Intrinsic::vector_reduce_fadd &&
       !isa<VPReductionIntrinsic>(&I))
-    return false;
+    return optimizeReduction(I); // SIFIVE
 
   auto *PHI = dyn_cast<PHINode>(I.getOperand(0));
   if (!PHI || !PHI->hasOneUse() ||
       !llvm::is_contained(PHI->incoming_values(), &I))
-    return false;
+    return optimizeReduction(I); // SIFIVE
 
   Type *VecTy = I.getOperand(1)->getType();
   IRBuilder<> Builder(PHI);
@@ -172,6 +167,10 @@ bool RISCVCodeGenPrepare::visitIntrinsicInst(IntrinsicInst &I) {
   I.setOperand(0, Builder.CreateExtractElement(VecPHI, (uint64_t)0));
 
   PHI->eraseFromParent();
+
+#if SIFIVE_CUSTOMIZATION
+  optimizeReduction(I);
+#endif
 
   return true;
 }

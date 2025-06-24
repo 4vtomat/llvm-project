@@ -53,19 +53,21 @@ define i32 @vp_reduce_add(ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[TRIP_COUNT:%.*]] = phi i64 [ 1024, [[ENTRY:%.*]] ], [ [[REMAINING_TRIP_COUNT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[SCALAR_IND:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[NEXT_IND:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[RED_PHI:%.*]] = phi i32 [ 0, [[ENTRY]] ], [ [[RED:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[TMP4:%.*]] = phi <vscale x 4 x i32> [ insertelement (<vscale x 4 x i32> poison, i32 0, i64 0), [[ENTRY]] ], [ [[TMP6:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL:%.*]] = tail call i32 @llvm.experimental.get.vector.length.i64(i64 [[TRIP_COUNT]], i32 4, i1 true)
 ; CHECK-NEXT:    [[EVL2:%.*]] = zext i32 [[EVL]] to i64
 ; CHECK-NEXT:    [[ARRAYIDX6:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[SCALAR_IND]]
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = tail call <vscale x 4 x i32> @llvm.vp.load.nxv4i32.p0(ptr [[ARRAYIDX6]], <vscale x 4 x i1> splat (i1 true), i32 [[EVL]])
+; CHECK-NEXT:    [[RED_PHI:%.*]] = extractelement <vscale x 4 x i32> [[TMP4]], i64 0
 ; CHECK-NEXT:    [[TMP0:%.*]] = zext i32 [[EVL]] to i64
 ; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.s.x.nxv4i32.i64(<vscale x 4 x i32> poison, i32 [[RED_PHI]], i64 [[TMP0]])
 ; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 2 x i32> @llvm.vector.extract.nxv2i32.nxv4i32(<vscale x 4 x i32> [[TMP1]], i64 0)
 ; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vredsum.nxv2i32.nxv4i32.i64(<vscale x 2 x i32> poison, <vscale x 4 x i32> [[WIDE_LOAD]], <vscale x 2 x i32> [[TMP2]], i64 [[TMP0]])
-; CHECK-NEXT:    [[RED]] = extractelement <vscale x 2 x i32> [[TMP3]], i64 0
+; CHECK-NEXT:    [[RED:%.*]] = extractelement <vscale x 2 x i32> [[TMP3]], i64 0
 ; CHECK-NEXT:    [[REMAINING_TRIP_COUNT]] = sub nuw i64 [[TRIP_COUNT]], [[EVL2]]
 ; CHECK-NEXT:    [[NEXT_IND]] = add i64 [[SCALAR_IND]], [[EVL2]]
 ; CHECK-NEXT:    [[M:%.*]] = icmp eq i64 [[REMAINING_TRIP_COUNT]], 0
+; CHECK-NEXT:    [[TMP6]] = insertelement <vscale x 4 x i32> poison, i32 [[RED]], i64 0
 ; CHECK-NEXT:    br i1 [[M]], label [[FOR_COND_CLEANUP:%.*]], label [[VECTOR_BODY]]
 ; CHECK:       for.cond.cleanup:
 ; CHECK-NEXT:    ret i32 [[RED]]
@@ -99,19 +101,21 @@ define i32 @vp_reduce_and(ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[TRIP_COUNT:%.*]] = phi i64 [ 1024, [[ENTRY:%.*]] ], [ [[REMAINING_TRIP_COUNT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[SCALAR_IND:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[NEXT_IND:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[RED_PHI:%.*]] = phi i32 [ -2147483648, [[ENTRY]] ], [ [[RED:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[TMP4:%.*]] = phi <vscale x 4 x i32> [ insertelement (<vscale x 4 x i32> poison, i32 -2147483648, i64 0), [[ENTRY]] ], [ [[TMP6:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL:%.*]] = tail call i32 @llvm.experimental.get.vector.length.i64(i64 [[TRIP_COUNT]], i32 4, i1 true)
 ; CHECK-NEXT:    [[EVL2:%.*]] = zext i32 [[EVL]] to i64
 ; CHECK-NEXT:    [[ARRAYIDX6:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[SCALAR_IND]]
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = tail call <vscale x 4 x i32> @llvm.vp.load.nxv4i32.p0(ptr [[ARRAYIDX6]], <vscale x 4 x i1> splat (i1 true), i32 [[EVL]])
+; CHECK-NEXT:    [[RED_PHI:%.*]] = extractelement <vscale x 4 x i32> [[TMP4]], i64 0
 ; CHECK-NEXT:    [[TMP0:%.*]] = zext i32 [[EVL]] to i64
 ; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.s.x.nxv4i32.i64(<vscale x 4 x i32> poison, i32 [[RED_PHI]], i64 [[TMP0]])
 ; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 2 x i32> @llvm.vector.extract.nxv2i32.nxv4i32(<vscale x 4 x i32> [[TMP1]], i64 0)
 ; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vredand.nxv2i32.nxv4i32.i64(<vscale x 2 x i32> poison, <vscale x 4 x i32> [[WIDE_LOAD]], <vscale x 2 x i32> [[TMP2]], i64 [[TMP0]])
-; CHECK-NEXT:    [[RED]] = extractelement <vscale x 2 x i32> [[TMP3]], i64 0
+; CHECK-NEXT:    [[RED:%.*]] = extractelement <vscale x 2 x i32> [[TMP3]], i64 0
 ; CHECK-NEXT:    [[REMAINING_TRIP_COUNT]] = sub nuw i64 [[TRIP_COUNT]], [[EVL2]]
 ; CHECK-NEXT:    [[NEXT_IND]] = add i64 [[SCALAR_IND]], [[EVL2]]
 ; CHECK-NEXT:    [[M:%.*]] = icmp eq i64 [[REMAINING_TRIP_COUNT]], 0
+; CHECK-NEXT:    [[TMP6]] = insertelement <vscale x 4 x i32> poison, i32 [[RED]], i64 0
 ; CHECK-NEXT:    br i1 [[M]], label [[FOR_COND_CLEANUP:%.*]], label [[VECTOR_BODY]]
 ; CHECK:       for.cond.cleanup:
 ; CHECK-NEXT:    ret i32 [[RED]]
@@ -145,19 +149,21 @@ define i32 @vp_reduce_or(ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[TRIP_COUNT:%.*]] = phi i64 [ 1024, [[ENTRY:%.*]] ], [ [[REMAINING_TRIP_COUNT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[SCALAR_IND:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[NEXT_IND:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[RED_PHI:%.*]] = phi i32 [ 0, [[ENTRY]] ], [ [[RED:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[TMP4:%.*]] = phi <vscale x 4 x i32> [ insertelement (<vscale x 4 x i32> poison, i32 0, i64 0), [[ENTRY]] ], [ [[TMP6:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL:%.*]] = tail call i32 @llvm.experimental.get.vector.length.i64(i64 [[TRIP_COUNT]], i32 4, i1 true)
 ; CHECK-NEXT:    [[EVL2:%.*]] = zext i32 [[EVL]] to i64
 ; CHECK-NEXT:    [[ARRAYIDX6:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[SCALAR_IND]]
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = tail call <vscale x 4 x i32> @llvm.vp.load.nxv4i32.p0(ptr [[ARRAYIDX6]], <vscale x 4 x i1> splat (i1 true), i32 [[EVL]])
+; CHECK-NEXT:    [[RED_PHI:%.*]] = extractelement <vscale x 4 x i32> [[TMP4]], i64 0
 ; CHECK-NEXT:    [[TMP0:%.*]] = zext i32 [[EVL]] to i64
 ; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.s.x.nxv4i32.i64(<vscale x 4 x i32> poison, i32 [[RED_PHI]], i64 [[TMP0]])
 ; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 2 x i32> @llvm.vector.extract.nxv2i32.nxv4i32(<vscale x 4 x i32> [[TMP1]], i64 0)
 ; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vredor.nxv2i32.nxv4i32.i64(<vscale x 2 x i32> poison, <vscale x 4 x i32> [[WIDE_LOAD]], <vscale x 2 x i32> [[TMP2]], i64 [[TMP0]])
-; CHECK-NEXT:    [[RED]] = extractelement <vscale x 2 x i32> [[TMP3]], i64 0
+; CHECK-NEXT:    [[RED:%.*]] = extractelement <vscale x 2 x i32> [[TMP3]], i64 0
 ; CHECK-NEXT:    [[REMAINING_TRIP_COUNT]] = sub nuw i64 [[TRIP_COUNT]], [[EVL2]]
 ; CHECK-NEXT:    [[NEXT_IND]] = add i64 [[SCALAR_IND]], [[EVL2]]
 ; CHECK-NEXT:    [[M:%.*]] = icmp eq i64 [[REMAINING_TRIP_COUNT]], 0
+; CHECK-NEXT:    [[TMP6]] = insertelement <vscale x 4 x i32> poison, i32 [[RED]], i64 0
 ; CHECK-NEXT:    br i1 [[M]], label [[FOR_COND_CLEANUP:%.*]], label [[VECTOR_BODY]]
 ; CHECK:       for.cond.cleanup:
 ; CHECK-NEXT:    ret i32 [[RED]]
@@ -191,19 +197,21 @@ define i32 @vp_reduce_xor(ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[TRIP_COUNT:%.*]] = phi i64 [ 1024, [[ENTRY:%.*]] ], [ [[REMAINING_TRIP_COUNT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[SCALAR_IND:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[NEXT_IND:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[RED_PHI:%.*]] = phi i32 [ 0, [[ENTRY]] ], [ [[RED:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[TMP4:%.*]] = phi <vscale x 4 x i32> [ insertelement (<vscale x 4 x i32> poison, i32 0, i64 0), [[ENTRY]] ], [ [[TMP6:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL:%.*]] = tail call i32 @llvm.experimental.get.vector.length.i64(i64 [[TRIP_COUNT]], i32 4, i1 true)
 ; CHECK-NEXT:    [[EVL2:%.*]] = zext i32 [[EVL]] to i64
 ; CHECK-NEXT:    [[ARRAYIDX6:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[SCALAR_IND]]
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = tail call <vscale x 4 x i32> @llvm.vp.load.nxv4i32.p0(ptr [[ARRAYIDX6]], <vscale x 4 x i1> splat (i1 true), i32 [[EVL]])
+; CHECK-NEXT:    [[RED_PHI:%.*]] = extractelement <vscale x 4 x i32> [[TMP4]], i64 0
 ; CHECK-NEXT:    [[TMP0:%.*]] = zext i32 [[EVL]] to i64
 ; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.s.x.nxv4i32.i64(<vscale x 4 x i32> poison, i32 [[RED_PHI]], i64 [[TMP0]])
 ; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 2 x i32> @llvm.vector.extract.nxv2i32.nxv4i32(<vscale x 4 x i32> [[TMP1]], i64 0)
 ; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vredxor.nxv2i32.nxv4i32.i64(<vscale x 2 x i32> poison, <vscale x 4 x i32> [[WIDE_LOAD]], <vscale x 2 x i32> [[TMP2]], i64 [[TMP0]])
-; CHECK-NEXT:    [[RED]] = extractelement <vscale x 2 x i32> [[TMP3]], i64 0
+; CHECK-NEXT:    [[RED:%.*]] = extractelement <vscale x 2 x i32> [[TMP3]], i64 0
 ; CHECK-NEXT:    [[REMAINING_TRIP_COUNT]] = sub nuw i64 [[TRIP_COUNT]], [[EVL2]]
 ; CHECK-NEXT:    [[NEXT_IND]] = add i64 [[SCALAR_IND]], [[EVL2]]
 ; CHECK-NEXT:    [[M:%.*]] = icmp eq i64 [[REMAINING_TRIP_COUNT]], 0
+; CHECK-NEXT:    [[TMP6]] = insertelement <vscale x 4 x i32> poison, i32 [[RED]], i64 0
 ; CHECK-NEXT:    br i1 [[M]], label [[FOR_COND_CLEANUP:%.*]], label [[VECTOR_BODY]]
 ; CHECK:       for.cond.cleanup:
 ; CHECK-NEXT:    ret i32 [[RED]]
@@ -237,19 +245,21 @@ define i32 @vp_reduce_smax(ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[TRIP_COUNT:%.*]] = phi i64 [ 1024, [[ENTRY:%.*]] ], [ [[REMAINING_TRIP_COUNT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[SCALAR_IND:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[NEXT_IND:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[RED_PHI:%.*]] = phi i32 [ -2147483648, [[ENTRY]] ], [ [[RED:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[TMP4:%.*]] = phi <vscale x 4 x i32> [ insertelement (<vscale x 4 x i32> poison, i32 -2147483648, i64 0), [[ENTRY]] ], [ [[TMP6:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL:%.*]] = tail call i32 @llvm.experimental.get.vector.length.i64(i64 [[TRIP_COUNT]], i32 4, i1 true)
 ; CHECK-NEXT:    [[EVL2:%.*]] = zext i32 [[EVL]] to i64
 ; CHECK-NEXT:    [[ARRAYIDX6:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[SCALAR_IND]]
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = tail call <vscale x 4 x i32> @llvm.vp.load.nxv4i32.p0(ptr [[ARRAYIDX6]], <vscale x 4 x i1> splat (i1 true), i32 [[EVL]])
+; CHECK-NEXT:    [[RED_PHI:%.*]] = extractelement <vscale x 4 x i32> [[TMP4]], i64 0
 ; CHECK-NEXT:    [[TMP0:%.*]] = zext i32 [[EVL]] to i64
 ; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.s.x.nxv4i32.i64(<vscale x 4 x i32> poison, i32 [[RED_PHI]], i64 [[TMP0]])
 ; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 2 x i32> @llvm.vector.extract.nxv2i32.nxv4i32(<vscale x 4 x i32> [[TMP1]], i64 0)
 ; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vredmax.nxv2i32.nxv4i32.i64(<vscale x 2 x i32> poison, <vscale x 4 x i32> [[WIDE_LOAD]], <vscale x 2 x i32> [[TMP2]], i64 [[TMP0]])
-; CHECK-NEXT:    [[RED]] = extractelement <vscale x 2 x i32> [[TMP3]], i64 0
+; CHECK-NEXT:    [[RED:%.*]] = extractelement <vscale x 2 x i32> [[TMP3]], i64 0
 ; CHECK-NEXT:    [[REMAINING_TRIP_COUNT]] = sub nuw i64 [[TRIP_COUNT]], [[EVL2]]
 ; CHECK-NEXT:    [[NEXT_IND]] = add i64 [[SCALAR_IND]], [[EVL2]]
 ; CHECK-NEXT:    [[M:%.*]] = icmp eq i64 [[REMAINING_TRIP_COUNT]], 0
+; CHECK-NEXT:    [[TMP6]] = insertelement <vscale x 4 x i32> poison, i32 [[RED]], i64 0
 ; CHECK-NEXT:    br i1 [[M]], label [[FOR_COND_CLEANUP:%.*]], label [[VECTOR_BODY]]
 ; CHECK:       for.cond.cleanup:
 ; CHECK-NEXT:    ret i32 [[RED]]
@@ -283,19 +293,21 @@ define i32 @vp_reduce_smin(ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[TRIP_COUNT:%.*]] = phi i64 [ 1024, [[ENTRY:%.*]] ], [ [[REMAINING_TRIP_COUNT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[SCALAR_IND:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[NEXT_IND:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[RED_PHI:%.*]] = phi i32 [ 2147483647, [[ENTRY]] ], [ [[RED:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[TMP4:%.*]] = phi <vscale x 4 x i32> [ insertelement (<vscale x 4 x i32> poison, i32 2147483647, i64 0), [[ENTRY]] ], [ [[TMP6:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL:%.*]] = tail call i32 @llvm.experimental.get.vector.length.i64(i64 [[TRIP_COUNT]], i32 4, i1 true)
 ; CHECK-NEXT:    [[EVL2:%.*]] = zext i32 [[EVL]] to i64
 ; CHECK-NEXT:    [[ARRAYIDX6:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[SCALAR_IND]]
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = tail call <vscale x 4 x i32> @llvm.vp.load.nxv4i32.p0(ptr [[ARRAYIDX6]], <vscale x 4 x i1> splat (i1 true), i32 [[EVL]])
+; CHECK-NEXT:    [[RED_PHI:%.*]] = extractelement <vscale x 4 x i32> [[TMP4]], i64 0
 ; CHECK-NEXT:    [[TMP0:%.*]] = zext i32 [[EVL]] to i64
 ; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.s.x.nxv4i32.i64(<vscale x 4 x i32> poison, i32 [[RED_PHI]], i64 [[TMP0]])
 ; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 2 x i32> @llvm.vector.extract.nxv2i32.nxv4i32(<vscale x 4 x i32> [[TMP1]], i64 0)
 ; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vredmin.nxv2i32.nxv4i32.i64(<vscale x 2 x i32> poison, <vscale x 4 x i32> [[WIDE_LOAD]], <vscale x 2 x i32> [[TMP2]], i64 [[TMP0]])
-; CHECK-NEXT:    [[RED]] = extractelement <vscale x 2 x i32> [[TMP3]], i64 0
+; CHECK-NEXT:    [[RED:%.*]] = extractelement <vscale x 2 x i32> [[TMP3]], i64 0
 ; CHECK-NEXT:    [[REMAINING_TRIP_COUNT]] = sub nuw i64 [[TRIP_COUNT]], [[EVL2]]
 ; CHECK-NEXT:    [[NEXT_IND]] = add i64 [[SCALAR_IND]], [[EVL2]]
 ; CHECK-NEXT:    [[M:%.*]] = icmp eq i64 [[REMAINING_TRIP_COUNT]], 0
+; CHECK-NEXT:    [[TMP6]] = insertelement <vscale x 4 x i32> poison, i32 [[RED]], i64 0
 ; CHECK-NEXT:    br i1 [[M]], label [[FOR_COND_CLEANUP:%.*]], label [[VECTOR_BODY]]
 ; CHECK:       for.cond.cleanup:
 ; CHECK-NEXT:    ret i32 [[RED]]
@@ -329,19 +341,21 @@ define i32 @vp_reduce_umax(ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[TRIP_COUNT:%.*]] = phi i64 [ 1024, [[ENTRY:%.*]] ], [ [[REMAINING_TRIP_COUNT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[SCALAR_IND:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[NEXT_IND:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[RED_PHI:%.*]] = phi i32 [ 0, [[ENTRY]] ], [ [[RED:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[TMP4:%.*]] = phi <vscale x 4 x i32> [ insertelement (<vscale x 4 x i32> poison, i32 0, i64 0), [[ENTRY]] ], [ [[TMP6:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL:%.*]] = tail call i32 @llvm.experimental.get.vector.length.i64(i64 [[TRIP_COUNT]], i32 4, i1 true)
 ; CHECK-NEXT:    [[EVL2:%.*]] = zext i32 [[EVL]] to i64
 ; CHECK-NEXT:    [[ARRAYIDX6:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[SCALAR_IND]]
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = tail call <vscale x 4 x i32> @llvm.vp.load.nxv4i32.p0(ptr [[ARRAYIDX6]], <vscale x 4 x i1> splat (i1 true), i32 [[EVL]])
+; CHECK-NEXT:    [[RED_PHI:%.*]] = extractelement <vscale x 4 x i32> [[TMP4]], i64 0
 ; CHECK-NEXT:    [[TMP0:%.*]] = zext i32 [[EVL]] to i64
 ; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.s.x.nxv4i32.i64(<vscale x 4 x i32> poison, i32 [[RED_PHI]], i64 [[TMP0]])
 ; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 2 x i32> @llvm.vector.extract.nxv2i32.nxv4i32(<vscale x 4 x i32> [[TMP1]], i64 0)
 ; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vredmaxu.nxv2i32.nxv4i32.i64(<vscale x 2 x i32> poison, <vscale x 4 x i32> [[WIDE_LOAD]], <vscale x 2 x i32> [[TMP2]], i64 [[TMP0]])
-; CHECK-NEXT:    [[RED]] = extractelement <vscale x 2 x i32> [[TMP3]], i64 0
+; CHECK-NEXT:    [[RED:%.*]] = extractelement <vscale x 2 x i32> [[TMP3]], i64 0
 ; CHECK-NEXT:    [[REMAINING_TRIP_COUNT]] = sub nuw i64 [[TRIP_COUNT]], [[EVL2]]
 ; CHECK-NEXT:    [[NEXT_IND]] = add i64 [[SCALAR_IND]], [[EVL2]]
 ; CHECK-NEXT:    [[M:%.*]] = icmp eq i64 [[REMAINING_TRIP_COUNT]], 0
+; CHECK-NEXT:    [[TMP6]] = insertelement <vscale x 4 x i32> poison, i32 [[RED]], i64 0
 ; CHECK-NEXT:    br i1 [[M]], label [[FOR_COND_CLEANUP:%.*]], label [[VECTOR_BODY]]
 ; CHECK:       for.cond.cleanup:
 ; CHECK-NEXT:    ret i32 [[RED]]
@@ -375,19 +389,21 @@ define i32 @vp_reduce_umin(ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[TRIP_COUNT:%.*]] = phi i64 [ 1024, [[ENTRY:%.*]] ], [ [[REMAINING_TRIP_COUNT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[SCALAR_IND:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[NEXT_IND:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[RED_PHI:%.*]] = phi i32 [ -2147483648, [[ENTRY]] ], [ [[RED:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[TMP4:%.*]] = phi <vscale x 4 x i32> [ insertelement (<vscale x 4 x i32> poison, i32 -2147483648, i64 0), [[ENTRY]] ], [ [[TMP6:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL:%.*]] = tail call i32 @llvm.experimental.get.vector.length.i64(i64 [[TRIP_COUNT]], i32 4, i1 true)
 ; CHECK-NEXT:    [[EVL2:%.*]] = zext i32 [[EVL]] to i64
 ; CHECK-NEXT:    [[ARRAYIDX6:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[SCALAR_IND]]
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = tail call <vscale x 4 x i32> @llvm.vp.load.nxv4i32.p0(ptr [[ARRAYIDX6]], <vscale x 4 x i1> splat (i1 true), i32 [[EVL]])
+; CHECK-NEXT:    [[RED_PHI:%.*]] = extractelement <vscale x 4 x i32> [[TMP4]], i64 0
 ; CHECK-NEXT:    [[TMP0:%.*]] = zext i32 [[EVL]] to i64
 ; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.s.x.nxv4i32.i64(<vscale x 4 x i32> poison, i32 [[RED_PHI]], i64 [[TMP0]])
 ; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 2 x i32> @llvm.vector.extract.nxv2i32.nxv4i32(<vscale x 4 x i32> [[TMP1]], i64 0)
 ; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vredminu.nxv2i32.nxv4i32.i64(<vscale x 2 x i32> poison, <vscale x 4 x i32> [[WIDE_LOAD]], <vscale x 2 x i32> [[TMP2]], i64 [[TMP0]])
-; CHECK-NEXT:    [[RED]] = extractelement <vscale x 2 x i32> [[TMP3]], i64 0
+; CHECK-NEXT:    [[RED:%.*]] = extractelement <vscale x 2 x i32> [[TMP3]], i64 0
 ; CHECK-NEXT:    [[REMAINING_TRIP_COUNT]] = sub nuw i64 [[TRIP_COUNT]], [[EVL2]]
 ; CHECK-NEXT:    [[NEXT_IND]] = add i64 [[SCALAR_IND]], [[EVL2]]
 ; CHECK-NEXT:    [[M:%.*]] = icmp eq i64 [[REMAINING_TRIP_COUNT]], 0
+; CHECK-NEXT:    [[TMP6]] = insertelement <vscale x 4 x i32> poison, i32 [[RED]], i64 0
 ; CHECK-NEXT:    br i1 [[M]], label [[FOR_COND_CLEANUP:%.*]], label [[VECTOR_BODY]]
 ; CHECK:       for.cond.cleanup:
 ; CHECK-NEXT:    ret i32 [[RED]]
@@ -465,19 +481,21 @@ define float @vp_reduce_fmax(ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[TRIP_COUNT:%.*]] = phi i64 [ 1024, [[ENTRY:%.*]] ], [ [[REMAINING_TRIP_COUNT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[SCALAR_IND:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[NEXT_IND:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[RED_PHI:%.*]] = phi float [ 0.000000e+00, [[ENTRY]] ], [ [[RED:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[TMP4:%.*]] = phi <vscale x 4 x float> [ insertelement (<vscale x 4 x float> poison, float 0.000000e+00, i64 0), [[ENTRY]] ], [ [[TMP6:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL:%.*]] = tail call i32 @llvm.experimental.get.vector.length.i64(i64 [[TRIP_COUNT]], i32 4, i1 true)
 ; CHECK-NEXT:    [[EVL2:%.*]] = zext i32 [[EVL]] to i64
 ; CHECK-NEXT:    [[ARRAYIDX6:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[SCALAR_IND]]
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = tail call <vscale x 4 x float> @llvm.vp.load.nxv4f32.p0(ptr [[ARRAYIDX6]], <vscale x 4 x i1> splat (i1 true), i32 [[EVL]])
+; CHECK-NEXT:    [[RED_PHI:%.*]] = extractelement <vscale x 4 x float> [[TMP4]], i64 0
 ; CHECK-NEXT:    [[TMP0:%.*]] = zext i32 [[EVL]] to i64
 ; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 4 x float> @llvm.riscv.vfmv.s.f.nxv4f32.i64(<vscale x 4 x float> poison, float [[RED_PHI]], i64 [[TMP0]])
 ; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 2 x float> @llvm.vector.extract.nxv2f32.nxv4f32(<vscale x 4 x float> [[TMP1]], i64 0)
 ; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 2 x float> @llvm.riscv.vfredmax.nxv2f32.nxv4f32.i64(<vscale x 2 x float> poison, <vscale x 4 x float> [[WIDE_LOAD]], <vscale x 2 x float> [[TMP2]], i64 [[TMP0]])
-; CHECK-NEXT:    [[RED]] = extractelement <vscale x 2 x float> [[TMP3]], i64 0
+; CHECK-NEXT:    [[RED:%.*]] = extractelement <vscale x 2 x float> [[TMP3]], i64 0
 ; CHECK-NEXT:    [[REMAINING_TRIP_COUNT]] = sub nuw i64 [[TRIP_COUNT]], [[EVL2]]
 ; CHECK-NEXT:    [[NEXT_IND]] = add i64 [[SCALAR_IND]], [[EVL2]]
 ; CHECK-NEXT:    [[M:%.*]] = icmp eq i64 [[REMAINING_TRIP_COUNT]], 0
+; CHECK-NEXT:    [[TMP6]] = insertelement <vscale x 4 x float> poison, float [[RED]], i64 0
 ; CHECK-NEXT:    br i1 [[M]], label [[FOR_COND_CLEANUP:%.*]], label [[VECTOR_BODY]]
 ; CHECK:       for.cond.cleanup:
 ; CHECK-NEXT:    ret float [[RED]]
@@ -511,19 +529,21 @@ define float @vp_reduce_fmin(ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[TRIP_COUNT:%.*]] = phi i64 [ 1024, [[ENTRY:%.*]] ], [ [[REMAINING_TRIP_COUNT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[SCALAR_IND:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[NEXT_IND:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[RED_PHI:%.*]] = phi float [ 0.000000e+00, [[ENTRY]] ], [ [[RED:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[TMP4:%.*]] = phi <vscale x 4 x float> [ insertelement (<vscale x 4 x float> poison, float 0.000000e+00, i64 0), [[ENTRY]] ], [ [[TMP6:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL:%.*]] = tail call i32 @llvm.experimental.get.vector.length.i64(i64 [[TRIP_COUNT]], i32 4, i1 true)
 ; CHECK-NEXT:    [[EVL2:%.*]] = zext i32 [[EVL]] to i64
 ; CHECK-NEXT:    [[ARRAYIDX6:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[SCALAR_IND]]
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = tail call <vscale x 4 x float> @llvm.vp.load.nxv4f32.p0(ptr [[ARRAYIDX6]], <vscale x 4 x i1> splat (i1 true), i32 [[EVL]])
+; CHECK-NEXT:    [[RED_PHI:%.*]] = extractelement <vscale x 4 x float> [[TMP4]], i64 0
 ; CHECK-NEXT:    [[TMP0:%.*]] = zext i32 [[EVL]] to i64
 ; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 4 x float> @llvm.riscv.vfmv.s.f.nxv4f32.i64(<vscale x 4 x float> poison, float [[RED_PHI]], i64 [[TMP0]])
 ; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 2 x float> @llvm.vector.extract.nxv2f32.nxv4f32(<vscale x 4 x float> [[TMP1]], i64 0)
 ; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 2 x float> @llvm.riscv.vfredmin.nxv2f32.nxv4f32.i64(<vscale x 2 x float> poison, <vscale x 4 x float> [[WIDE_LOAD]], <vscale x 2 x float> [[TMP2]], i64 [[TMP0]])
-; CHECK-NEXT:    [[RED]] = extractelement <vscale x 2 x float> [[TMP3]], i64 0
+; CHECK-NEXT:    [[RED:%.*]] = extractelement <vscale x 2 x float> [[TMP3]], i64 0
 ; CHECK-NEXT:    [[REMAINING_TRIP_COUNT]] = sub nuw i64 [[TRIP_COUNT]], [[EVL2]]
 ; CHECK-NEXT:    [[NEXT_IND]] = add i64 [[SCALAR_IND]], [[EVL2]]
 ; CHECK-NEXT:    [[M:%.*]] = icmp eq i64 [[REMAINING_TRIP_COUNT]], 0
+; CHECK-NEXT:    [[TMP6]] = insertelement <vscale x 4 x float> poison, float [[RED]], i64 0
 ; CHECK-NEXT:    br i1 [[M]], label [[FOR_COND_CLEANUP:%.*]], label [[VECTOR_BODY]]
 ; CHECK:       for.cond.cleanup:
 ; CHECK-NEXT:    ret float [[RED]]
