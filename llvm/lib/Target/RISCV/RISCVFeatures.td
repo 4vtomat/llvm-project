@@ -1209,12 +1209,12 @@ def HasVendorXSfvqmaccqoq
 let AdditionalVersions = [[0, 1]]  in // SIFIVE
 def FeatureVendorXSfvfwmaccqqq
     : RISCVExtension<1, 0,
-                     "SiFive Matrix Multiply Accumulate Instruction and 4-by-4)",
+                     "SiFive Matrix Multiply Accumulate Instruction (4-by-4)",
                      [FeatureStdExtZvfbfmin]>;
 def HasVendorXSfvfwmaccqqq
     : Predicate<"Subtarget->hasVendorXSfvfwmaccqqq()">,
       AssemblerPredicate<(all_of FeatureVendorXSfvfwmaccqqq),
-                         "'XSfvfwmaccqqq' (SiFive Matrix Multiply Accumulate Instruction and 4-by-4))">;
+                         "'XSfvfwmaccqqq' (SiFive Matrix Multiply Accumulate Instruction (4-by-4))">;
 
 let AdditionalVersions = [[0, 1]]  in // SIFIVE
 def FeatureVendorXSfvfnrclipxfqf
