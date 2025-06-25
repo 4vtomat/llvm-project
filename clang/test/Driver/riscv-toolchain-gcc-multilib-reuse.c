@@ -119,6 +119,15 @@
 
 // RUN: %clang %s \
 // RUN:   -target riscv64-unknown-elf \
+// RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv64_elf_sdk3 \
+// RUN:   --print-multi-directory \
+// RUN:   -march=rv64imafc -mabi=lp64 -mcmodel=large \
+// RUN:   | FileCheck -check-prefix=GCC-MULTI-LIB-REUSE-RV64IMAFC-LP64-LARGE %s
+// GCC-MULTI-LIB-REUSE-RV64IMAFC-LP64-LARGE: rv64imac/lp64/large
+// GCC-MULTI-LIB-REUSE-RV64IMAFC-LP64-LARGE-NOT: {{^.+$}}
+
+// RUN: %clang %s \
+// RUN:   -target riscv64-unknown-elf \
 // RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv64_elf_sdk \
 // RUN:   --print-multi-directory \
 // RUN:   -march=rv64imafdc_zicfilp_zicfiss -mabi=lp64d -fcf-protection \

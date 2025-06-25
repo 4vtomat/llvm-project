@@ -1890,6 +1890,7 @@ static bool scanRISCVGCCMultilibConfig(const Driver &D,
   std::string CurrentMCmodelOpt = llvm::StringSwitch<const char *>(CodeModel)
                                       .Case("medium", "mcmodel=medany")
                                       .Case("compact", "mcmodel=compact")
+                                      .Case("large", "mcmodel=large")
                                       .Default("mcmodel=medlow");
 
   std::string CurrentCFProtection = "fcf-protection=none";
