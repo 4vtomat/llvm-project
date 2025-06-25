@@ -9947,47 +9947,6 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
   //    predication, updating analyses.
   ILV.fixVectorizedLoop(State);
 
-#if SIFIVE_CUSTOMIZATION
-  auto *MiddleVPBB = BestVPlan.getMiddleBlock();
-  // optimize conditional branch in middle.block after execution
-  // if condition is always true, use unconditional branch instead.
-  if (Legal->useVLAVectorizer()) {
-    auto *ScalarPhVPBB = BestVPlan.getScalarPreheader();
-    BasicBlock *MiddleBB = State.CFG.VPBB2IRBB[MiddleVPBB];
-    BasicBlock *ScalarPhBB = State.CFG.VPBB2IRBB[ScalarPhVPBB];
-    auto *MiddleTerm =
-        cast<BranchInst>(MiddleBB->getTerminator());
-    if (MiddleTerm->isConditional() && ScalarPhBB->hasNPredecessorsOrMore(2)) {
-      auto *Cond = dyn_cast<ConstantInt>(MiddleTerm->getCondition());
-      if (Cond && Cond->isOne() && MiddleTerm->getSuccessor(1) == ScalarPhBB) {
-        ScalarPhBB->removePredecessor(MiddleBB, false);
-        BasicBlock *SuccBlock = MiddleTerm->getSuccessor(0);
-        BranchInst *BI = BranchInst::Create(SuccBlock);
-        ReplaceInstWithInst(MiddleTerm, BI);
-        State.CFG.DTU.applyUpdates({{DominatorTree::Delete, MiddleBB, ScalarPhBB}});
-        // MiddleBlock now can be exit of the parent loop.
-        // Need to update Loop analysis.
-        Loop *LoopForExit = LI->getLoopFor(SuccBlock);
-        Loop *LoopForMiddle = LI->getLoopFor(MiddleBB);
-        if (LoopForExit != LoopForMiddle) {
-          // Remove from current loop and its parents.
-          if (LoopForMiddle) {
-            LoopForMiddle->removeBlockFromLoop(MiddleBB);
-            LI->changeLoopFor(MiddleBB, nullptr);
-
-            // Remove from all ancestor loops
-            for (Loop *Parent = LoopForMiddle->getParentLoop(); Parent;
-                 Parent = Parent->getParentLoop())
-              Parent->removeBlockFromLoop(MiddleBB);
-          }
-          if (LoopForExit)
-            LoopForExit->addBasicBlockToLoop(MiddleBB, *LI);
-        }
-      }
-    }
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
   ILV.printDebugTracesAtEnd();
 
   // 4. Adjust branch weight of the branch in the middle block.
