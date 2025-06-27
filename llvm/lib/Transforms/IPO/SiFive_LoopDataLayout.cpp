@@ -2336,7 +2336,7 @@ static void propagateNewTypeDefinitions(
     for (unsigned i = 0, e = ArrayST->getNumElements(); i != e; ++i) {
       Type *FieldTy = ArrayST->getElementType(i);
       // Make a pointer to FieldTy and use that.
-      PointerType *PtrTy = PointerType::getUnqual(FieldTy);
+      PointerType *PtrTy = PointerType::getUnqual(FieldTy->getContext());
       EltTys.push_back(PtrTy);
     }
     std::string VarName((ArrayST->getName() + Twine("_soa")).str());
