@@ -319,8 +319,14 @@ llvm::MDNode *CodeGenTBAA::getTypeInfoHelper(const Type *Ty) {
     // and strict aliasing, emitting distinct tags for void pointers break some
     // common idioms and there is no good alternative to re-write the code
     // without strict-aliasing violations.
+#if SIFIVE_CUSTOMIZATION
+    if (CodeGenOpts.PointerTBAA)
+      if (Ty->isVoidType() || Ty->isCharType())
+        return getAnyPtr();
+#else
     if (Ty->isVoidType())
       return getAnyPtr(PtrDepth);
+#endif
 
     assert(!isa<VariableArrayType>(Ty));
     // When the underlying type is a builtin type, we compute the pointee type
