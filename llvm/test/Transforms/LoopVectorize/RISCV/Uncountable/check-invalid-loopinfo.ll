@@ -51,11 +51,12 @@ define i64 @x86_Convert(ptr %data, i64 %size, i32 %ip, ptr %state, i32 %encoding
 ; CHECK:       [[VECTOR_EARLY_EXIT]]:
 ; CHECK-NEXT:    br label %[[FOR_BODY_LR_PH_LOOPEXIT]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
-; CHECK-NEXT:    br label %[[FOR_END128:.*]]
+; CHECK-NEXT:    br i1 true, label %[[FOR_END128_LOOPEXIT2:.*]], label %[[VEC_UNCOUNTABLE_SCALAR_PH]]
 ; CHECK:       [[VEC_UNCOUNTABLE_SCALAR_PH]]:
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ getelementptr (i8, ptr null, i64 -4), %[[MIDDLE_BLOCK]] ], [ null, %[[FOR_BODY_LR_PH]] ]
 ; CHECK-NEXT:    br label %[[FOR_BODY:.*]]
 ; CHECK:       [[FOR_BODY]]:
-; CHECK-NEXT:    [[P_083:%.*]] = phi ptr [ null, %[[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], %[[FOR_INC:.*]] ]
+; CHECK-NEXT:    [[P_083:%.*]] = phi ptr [ [[BC_RESUME_VAL]], %[[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], %[[FOR_INC:.*]] ]
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i8, ptr [[P_083]], align 1
 ; CHECK-NEXT:    [[TMP1:%.*]] = and i8 [[TMP0]], -2
 ; CHECK-NEXT:    [[CMP6:%.*]] = icmp eq i8 [[TMP1]], -24
@@ -65,6 +66,8 @@ define i64 @x86_Convert(ptr %data, i64 %size, i32 %ip, ptr %state, i32 %encoding
 ; CHECK-NEXT:    [[CMP4:%.*]] = icmp ult ptr [[INCDEC_PTR]], [[ADD_PTR2]]
 ; CHECK-NEXT:    br i1 [[CMP4]], label %[[FOR_BODY]], label %[[FOR_END128_LOOPEXIT:.*]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       [[FOR_END128_LOOPEXIT]]:
+; CHECK-NEXT:    br label %[[FOR_END128:.*]]
+; CHECK:       [[FOR_END128_LOOPEXIT2]]:
 ; CHECK-NEXT:    br label %[[FOR_END128]]
 ; CHECK:       [[FOR_END128]]:
 ; CHECK-NEXT:    ret i64 0
