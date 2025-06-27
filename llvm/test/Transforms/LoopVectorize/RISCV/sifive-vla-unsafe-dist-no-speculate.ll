@@ -4,13 +4,11 @@
 define i32 @test() vscale_range(8,1024) {
 ; CHECK-LABEL: define i32 @test(
 ; CHECK-SAME: ) #[[ATTR0:[0-9]+]] {
-; CHECK-NEXT:  [[ENTRY:.*:]]
+; CHECK-NEXT:  [[ENTRY:.*]]:
 ; CHECK-NEXT:    [[V11:%.*]] = alloca [0 x [0 x [10 x i32]]], i32 0, align 8
 ; CHECK-NEXT:    [[ADD_PTR26_I:%.*]] = getelementptr i8, ptr [[V11]], i64 8
 ; CHECK-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
-; CHECK-NEXT:    [[TMP0:%.*]] = getelementptr i8, ptr [[ADD_PTR26_I]], i64 32
-; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[V11]], i64 32
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -33,11 +31,14 @@ define i32 @test() vscale_range(8,1024) {
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br label %[[EXIT:.*]]
 ; CHECK:       [[SCALAR_PH]]:
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL3:%.*]] = phi ptr [ [[ADD_PTR26_I]], %[[ENTRY]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL4:%.*]] = phi ptr [ [[V11]], %[[ENTRY]] ]
 ; CHECK-NEXT:    br label %[[LOOP:.*]]
 ; CHECK:       [[LOOP]]:
-; CHECK-NEXT:    [[__I_0155_I:%.*]] = phi i64 [ [[INC_I:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
-; CHECK-NEXT:    [[__Q_0154_I:%.*]] = phi ptr [ [[INCDEC_PTR30_I:%.*]], %[[LOOP]] ], [ [[ADD_PTR26_I]], %[[SCALAR_PH]] ]
-; CHECK-NEXT:    [[__P_1153_I:%.*]] = phi ptr [ [[INCDEC_PTR_I:%.*]], %[[LOOP]] ], [ [[V11]], %[[SCALAR_PH]] ]
+; CHECK-NEXT:    [[__I_0155_I:%.*]] = phi i64 [ [[INC_I:%.*]], %[[LOOP]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
+; CHECK-NEXT:    [[__Q_0154_I:%.*]] = phi ptr [ [[INCDEC_PTR30_I:%.*]], %[[LOOP]] ], [ [[BC_RESUME_VAL3]], %[[SCALAR_PH]] ]
+; CHECK-NEXT:    [[__P_1153_I:%.*]] = phi ptr [ [[INCDEC_PTR_I:%.*]], %[[LOOP]] ], [ [[BC_RESUME_VAL4]], %[[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[TMP10:%.*]] = load i32, ptr [[__P_1153_I]], align 4
 ; CHECK-NEXT:    store i32 [[TMP10]], ptr [[__Q_0154_I]], align 4
 ; CHECK-NEXT:    [[INCDEC_PTR_I]] = getelementptr i8, ptr [[__P_1153_I]], i64 4

@@ -138,10 +138,12 @@ define i32 @FmoGetLastCodedMBOfSliceGroup(i32 %SliceGroupID, ptr %MBAmap, i32 %P
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i32 [[TMP12]], i32 -1
 ; VP-SCALABLE-NEXT:    br label [[FOR_END_LOOPEXIT:%.*]]
 ; VP-SCALABLE:       scalar.ph:
+; VP-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_LR_PH]] ]
+; VP-SCALABLE-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ -1, [[FOR_BODY_LR_PH]] ]
 ; VP-SCALABLE-NEXT:    br label [[FOR_BODY:%.*]]
 ; VP-SCALABLE:       for.body:
-; VP-SCALABLE-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
-; VP-SCALABLE-NEXT:    [[LASTMB_06:%.*]] = phi i32 [ -1, [[SCALAR_PH]] ], [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ]
+; VP-SCALABLE-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; VP-SCALABLE-NEXT:    [[LASTMB_06:%.*]] = phi i32 [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ]
 ; VP-SCALABLE-NEXT:    [[ARRAYIDX_I:%.*]] = getelementptr inbounds i8, ptr [[MBAMAP]], i64 [[INDVARS_IV]]
 ; VP-SCALABLE-NEXT:    [[TMP13:%.*]] = load i8, ptr [[ARRAYIDX_I]], align 1
 ; VP-SCALABLE-NEXT:    [[CONV_I:%.*]] = zext i8 [[TMP13]] to i32

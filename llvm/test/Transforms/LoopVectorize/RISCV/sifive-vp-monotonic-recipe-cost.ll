@@ -199,7 +199,7 @@ for.end10:                                        ; preds = %for.end10.loopexit,
 define i32 @dragon_escape(ptr %goal, ptr %board) #0 {
 ; P670-LABEL: define i32 @dragon_escape(
 ; P670-SAME: ptr [[GOAL:%.*]], ptr [[BOARD:%.*]]) #[[ATTR0]] {
-; P670-NEXT:  [[ENTRY:.*:]]
+; P670-NEXT:  [[ENTRY:.*]]:
 ; P670-NEXT:    [[QUEUE:%.*]] = alloca [361 x i32], align 8
 ; P670-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; P670:       [[VECTOR_PH]]:
@@ -250,10 +250,12 @@ define i32 @dragon_escape(ptr %goal, ptr %board) #0 {
 ; P670:       [[MIDDLE_BLOCK]]:
 ; P670-NEXT:    br label %[[WHILE_COND_PREHEADER:.*]]
 ; P670:       [[SCALAR_PH]]:
+; P670-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
+; P670-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ 0, %[[ENTRY]] ]
 ; P670-NEXT:    br label %[[FOR_BODY:.*]]
 ; P670:       [[FOR_BODY]]:
-; P670-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_INC:.*]] ]
-; P670-NEXT:    [[QUEUE_END_0194:%.*]] = phi i32 [ 0, %[[SCALAR_PH]] ], [ [[QUEUE_END_1:%.*]], %[[FOR_INC]] ]
+; P670-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_INC:.*]] ]
+; P670-NEXT:    [[QUEUE_END_0194:%.*]] = phi i32 [ [[BC_MERGE_RDX]], %[[SCALAR_PH]] ], [ [[QUEUE_END_1:%.*]], %[[FOR_INC]] ]
 ; P670-NEXT:    [[ARRAYIDX:%.*]] = getelementptr [421 x i8], ptr [[BOARD]], i64 0, i64 [[INDVARS_IV]]
 ; P670-NEXT:    [[TMP25:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
 ; P670-NEXT:    [[CMP5_NOT:%.*]] = icmp eq i8 [[TMP25]], 0
@@ -286,7 +288,7 @@ define i32 @dragon_escape(ptr %goal, ptr %board) #0 {
 ;
 ; P470-LABEL: define i32 @dragon_escape(
 ; P470-SAME: ptr [[GOAL:%.*]], ptr [[BOARD:%.*]]) #[[ATTR0]] {
-; P470-NEXT:  [[ENTRY:.*:]]
+; P470-NEXT:  [[ENTRY:.*]]:
 ; P470-NEXT:    [[QUEUE:%.*]] = alloca [361 x i32], align 8
 ; P470-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; P470:       [[VECTOR_PH]]:
@@ -349,10 +351,12 @@ define i32 @dragon_escape(ptr %goal, ptr %board) #0 {
 ; P470:       [[MIDDLE_BLOCK]]:
 ; P470-NEXT:    br label %[[WHILE_COND_PREHEADER:.*]]
 ; P470:       [[SCALAR_PH]]:
+; P470-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
+; P470-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ 0, %[[ENTRY]] ]
 ; P470-NEXT:    br label %[[FOR_BODY:.*]]
 ; P470:       [[FOR_BODY]]:
-; P470-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_INC:.*]] ]
-; P470-NEXT:    [[QUEUE_END_0194:%.*]] = phi i32 [ 0, %[[SCALAR_PH]] ], [ [[QUEUE_END_1:%.*]], %[[FOR_INC]] ]
+; P470-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_INC:.*]] ]
+; P470-NEXT:    [[QUEUE_END_0194:%.*]] = phi i32 [ [[BC_MERGE_RDX]], %[[SCALAR_PH]] ], [ [[QUEUE_END_1:%.*]], %[[FOR_INC]] ]
 ; P470-NEXT:    [[ARRAYIDX:%.*]] = getelementptr [421 x i8], ptr [[BOARD]], i64 0, i64 [[INDVARS_IV]]
 ; P470-NEXT:    [[TMP29:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
 ; P470-NEXT:    [[CMP5_NOT:%.*]] = icmp eq i8 [[TMP29]], 0
@@ -385,7 +389,7 @@ define i32 @dragon_escape(ptr %goal, ptr %board) #0 {
 ;
 ; X280-LABEL: define i32 @dragon_escape(
 ; X280-SAME: ptr [[GOAL:%.*]], ptr [[BOARD:%.*]]) #[[ATTR0]] {
-; X280-NEXT:  [[ENTRY:.*:]]
+; X280-NEXT:  [[ENTRY:.*]]:
 ; X280-NEXT:    [[QUEUE:%.*]] = alloca [361 x i32], align 8
 ; X280-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; X280:       [[VECTOR_PH]]:
@@ -436,10 +440,12 @@ define i32 @dragon_escape(ptr %goal, ptr %board) #0 {
 ; X280:       [[MIDDLE_BLOCK]]:
 ; X280-NEXT:    br label %[[WHILE_COND_PREHEADER:.*]]
 ; X280:       [[SCALAR_PH]]:
+; X280-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
+; X280-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ 0, %[[ENTRY]] ]
 ; X280-NEXT:    br label %[[FOR_BODY:.*]]
 ; X280:       [[FOR_BODY]]:
-; X280-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_INC:.*]] ]
-; X280-NEXT:    [[QUEUE_END_0194:%.*]] = phi i32 [ 0, %[[SCALAR_PH]] ], [ [[QUEUE_END_1:%.*]], %[[FOR_INC]] ]
+; X280-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_INC:.*]] ]
+; X280-NEXT:    [[QUEUE_END_0194:%.*]] = phi i32 [ [[BC_MERGE_RDX]], %[[SCALAR_PH]] ], [ [[QUEUE_END_1:%.*]], %[[FOR_INC]] ]
 ; X280-NEXT:    [[ARRAYIDX:%.*]] = getelementptr [421 x i8], ptr [[BOARD]], i64 0, i64 [[INDVARS_IV]]
 ; X280-NEXT:    [[TMP25:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
 ; X280-NEXT:    [[CMP5_NOT:%.*]] = icmp eq i8 [[TMP25]], 0

@@ -5,7 +5,7 @@
 define i32 @foo() {
 ; CHECK-LABEL: define i32 @foo(
 ; CHECK-SAME: ) #[[ATTR0:[0-9]+]] {
-; CHECK-NEXT:  [[ENTRY:.*:]]
+; CHECK-NEXT:  [[ENTRY:.*]]:
 ; CHECK-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
@@ -50,11 +50,13 @@ define i32 @foo() {
 ; CHECK-NEXT:    [[TMP21:%.*]] = select i1 [[TMP20]], i32 [[CSA_EXTRACT]], i32 -1
 ; CHECK-NEXT:    br label %[[EXIT:.*]]
 ; CHECK:       [[SCALAR_PH]]:
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 0, %[[ENTRY]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL2:%.*]] = phi ptr [ null, %[[ENTRY]] ]
 ; CHECK-NEXT:    br label %[[LOOP:.*]]
 ; CHECK:       [[LOOP]]:
-; CHECK-NEXT:    [[PHI1:%.*]] = phi i32 [ [[ADD:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
+; CHECK-NEXT:    [[PHI1:%.*]] = phi i32 [ [[ADD:%.*]], %[[LOOP]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[PHI2:%.*]] = phi i32 [ [[SELECT:%.*]], %[[LOOP]] ], [ -1, %[[SCALAR_PH]] ]
-; CHECK-NEXT:    [[PHI3:%.*]] = phi ptr [ [[GEP:%.*]], %[[LOOP]] ], [ null, %[[SCALAR_PH]] ]
+; CHECK-NEXT:    [[PHI3:%.*]] = phi ptr [ [[GEP:%.*]], %[[LOOP]] ], [ [[BC_RESUME_VAL2]], %[[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[GEP]] = getelementptr i16, ptr [[PHI3]], i64 1
 ; CHECK-NEXT:    [[LOAD:%.*]] = load i16, ptr [[PHI3]], align 2
 ; CHECK-NEXT:    [[ICMP:%.*]] = icmp eq i16 [[LOAD]], 58

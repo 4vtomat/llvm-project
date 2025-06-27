@@ -15,11 +15,6 @@ define void @widget(ptr %a, i64 %n) {
 ; CHECK-NEXT:    [[TMP1:%.*]] = sub i64 [[TMP0]], [[UMIN]]
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-; CHECK-NEXT:    [[IND_END:%.*]] = sub i64 [[N]], [[TMP1]]
-; CHECK-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], -16
-; CHECK-NEXT:    [[IND_END1:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP2]]
-; CHECK-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP1]], -16
-; CHECK-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP3]]
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -64,11 +59,14 @@ define void @widget(ptr %a, i64 %n) {
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N]], [[PH:%.*]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL5:%.*]] = phi ptr [ [[A]], [[PH]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL6:%.*]] = phi ptr [ [[B]], [[PH]] ]
 ; CHECK-NEXT:    br label [[LOOP:%.*]]
 ; CHECK:       loop:
-; CHECK-NEXT:    [[TMP31:%.*]] = phi i64 [ [[N]], [[SCALAR_PH]] ], [ [[IV:%.*]], [[LOOP]] ]
-; CHECK-NEXT:    [[TMP32:%.*]] = phi ptr [ [[A]], [[SCALAR_PH]] ], [ [[TMP34:%.*]], [[LOOP]] ]
-; CHECK-NEXT:    [[TMP33:%.*]] = phi ptr [ [[B]], [[SCALAR_PH]] ], [ [[TMP35:%.*]], [[LOOP]] ]
+; CHECK-NEXT:    [[TMP31:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV:%.*]], [[LOOP]] ]
+; CHECK-NEXT:    [[TMP32:%.*]] = phi ptr [ [[BC_RESUME_VAL5]], [[SCALAR_PH]] ], [ [[TMP34:%.*]], [[LOOP]] ]
+; CHECK-NEXT:    [[TMP33:%.*]] = phi ptr [ [[BC_RESUME_VAL6]], [[SCALAR_PH]] ], [ [[TMP35:%.*]], [[LOOP]] ]
 ; CHECK-NEXT:    [[TMP34]] = getelementptr inbounds [[STRUCT]], ptr [[TMP32]], i64 -1
 ; CHECK-NEXT:    [[TMP35]] = getelementptr inbounds [[STRUCT]], ptr [[TMP33]], i64 -1
 ; CHECK-NEXT:    [[TMP36:%.*]] = getelementptr [[STRUCT]], ptr [[TMP33]], i64 -1, i32 0

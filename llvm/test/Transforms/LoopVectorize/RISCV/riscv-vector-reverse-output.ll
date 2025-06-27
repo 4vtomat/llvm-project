@@ -20,7 +20,7 @@
 define void @vector_reverse_i32(ptr noalias %A, ptr noalias %B) {
 ; RV64-LABEL: define void @vector_reverse_i32(
 ; RV64-SAME: ptr noalias [[A:%.*]], ptr noalias [[B:%.*]]) #[[ATTR0:[0-9]+]] {
-; RV64-NEXT:  [[ENTRY:.*:]]
+; RV64-NEXT:  [[ENTRY:.*]]:
 ; RV64-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; RV64:       [[VECTOR_PH]]:
 ; RV64-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
@@ -55,9 +55,10 @@ define void @vector_reverse_i32(ptr noalias %A, ptr noalias %B) {
 ; RV64:       [[MIDDLE_BLOCK]]:
 ; RV64-NEXT:    br label %[[EXIT:.*]]
 ; RV64:       [[SCALAR_PH]]:
+; RV64-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1023, %[[ENTRY]] ]
 ; RV64-NEXT:    br label %[[FOR_BODY:.*]]
 ; RV64:       [[FOR_BODY]]:
-; RV64-NEXT:    [[DEC_IV:%.*]] = phi i64 [ 1023, %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[FOR_BODY]] ]
+; RV64-NEXT:    [[DEC_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[FOR_BODY]] ]
 ; RV64-NEXT:    [[IV_NEXT]] = add nsw i64 [[DEC_IV]], -1
 ; RV64-NEXT:    [[ARRAYIDX_B:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[IV_NEXT]]
 ; RV64-NEXT:    [[TMP21:%.*]] = load i32, ptr [[ARRAYIDX_B]], align 4
@@ -71,7 +72,7 @@ define void @vector_reverse_i32(ptr noalias %A, ptr noalias %B) {
 ;
 ; RV32-LABEL: define void @vector_reverse_i32(
 ; RV32-SAME: ptr noalias [[A:%.*]], ptr noalias [[B:%.*]]) #[[ATTR0:[0-9]+]] {
-; RV32-NEXT:  [[ENTRY:.*:]]
+; RV32-NEXT:  [[ENTRY:.*]]:
 ; RV32-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; RV32:       [[VECTOR_PH]]:
 ; RV32-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
@@ -104,9 +105,10 @@ define void @vector_reverse_i32(ptr noalias %A, ptr noalias %B) {
 ; RV32:       [[MIDDLE_BLOCK]]:
 ; RV32-NEXT:    br label %[[EXIT:.*]]
 ; RV32:       [[SCALAR_PH]]:
+; RV32-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1023, %[[ENTRY]] ]
 ; RV32-NEXT:    br label %[[FOR_BODY:.*]]
 ; RV32:       [[FOR_BODY]]:
-; RV32-NEXT:    [[DEC_IV:%.*]] = phi i64 [ 1023, %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[FOR_BODY]] ]
+; RV32-NEXT:    [[DEC_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[FOR_BODY]] ]
 ; RV32-NEXT:    [[IV_NEXT]] = add nsw i64 [[DEC_IV]], -1
 ; RV32-NEXT:    [[ARRAYIDX_B:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[IV_NEXT]]
 ; RV32-NEXT:    [[TMP23:%.*]] = load i32, ptr [[ARRAYIDX_B]], align 4
@@ -120,7 +122,7 @@ define void @vector_reverse_i32(ptr noalias %A, ptr noalias %B) {
 ;
 ; RV64-UF2-LABEL: define void @vector_reverse_i32(
 ; RV64-UF2-SAME: ptr noalias [[A:%.*]], ptr noalias [[B:%.*]]) #[[ATTR0:[0-9]+]] {
-; RV64-UF2-NEXT:  [[ENTRY:.*:]]
+; RV64-UF2-NEXT:  [[ENTRY:.*]]:
 ; RV64-UF2-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; RV64-UF2:       [[VECTOR_PH]]:
 ; RV64-UF2-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
@@ -155,9 +157,10 @@ define void @vector_reverse_i32(ptr noalias %A, ptr noalias %B) {
 ; RV64-UF2:       [[MIDDLE_BLOCK]]:
 ; RV64-UF2-NEXT:    br label %[[EXIT:.*]]
 ; RV64-UF2:       [[SCALAR_PH]]:
+; RV64-UF2-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1023, %[[ENTRY]] ]
 ; RV64-UF2-NEXT:    br label %[[FOR_BODY:.*]]
 ; RV64-UF2:       [[FOR_BODY]]:
-; RV64-UF2-NEXT:    [[DEC_IV:%.*]] = phi i64 [ 1023, %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[FOR_BODY]] ]
+; RV64-UF2-NEXT:    [[DEC_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[FOR_BODY]] ]
 ; RV64-UF2-NEXT:    [[IV_NEXT]] = add nsw i64 [[DEC_IV]], -1
 ; RV64-UF2-NEXT:    [[ARRAYIDX_B:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[IV_NEXT]]
 ; RV64-UF2-NEXT:    [[TMP31:%.*]] = load i32, ptr [[ARRAYIDX_B]], align 4
@@ -190,7 +193,7 @@ exit:
 define void @vector_reverse_f32(ptr noalias %A, ptr noalias %B) {
 ; RV64-LABEL: define void @vector_reverse_f32(
 ; RV64-SAME: ptr noalias [[A:%.*]], ptr noalias [[B:%.*]]) #[[ATTR0]] {
-; RV64-NEXT:  [[ENTRY:.*:]]
+; RV64-NEXT:  [[ENTRY:.*]]:
 ; RV64-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; RV64:       [[VECTOR_PH]]:
 ; RV64-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
@@ -225,9 +228,10 @@ define void @vector_reverse_f32(ptr noalias %A, ptr noalias %B) {
 ; RV64:       [[MIDDLE_BLOCK]]:
 ; RV64-NEXT:    br label %[[EXIT:.*]]
 ; RV64:       [[SCALAR_PH]]:
+; RV64-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1023, %[[ENTRY]] ]
 ; RV64-NEXT:    br label %[[FOR_BODY:.*]]
 ; RV64:       [[FOR_BODY]]:
-; RV64-NEXT:    [[DEC_IV:%.*]] = phi i64 [ 1023, %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[FOR_BODY]] ]
+; RV64-NEXT:    [[DEC_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[FOR_BODY]] ]
 ; RV64-NEXT:    [[IV_NEXT]] = add nsw i64 [[DEC_IV]], -1
 ; RV64-NEXT:    [[ARRAYIDX_B:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[IV_NEXT]]
 ; RV64-NEXT:    [[TMP21:%.*]] = load float, ptr [[ARRAYIDX_B]], align 4
@@ -241,7 +245,7 @@ define void @vector_reverse_f32(ptr noalias %A, ptr noalias %B) {
 ;
 ; RV32-LABEL: define void @vector_reverse_f32(
 ; RV32-SAME: ptr noalias [[A:%.*]], ptr noalias [[B:%.*]]) #[[ATTR0]] {
-; RV32-NEXT:  [[ENTRY:.*:]]
+; RV32-NEXT:  [[ENTRY:.*]]:
 ; RV32-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; RV32:       [[VECTOR_PH]]:
 ; RV32-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
@@ -274,9 +278,10 @@ define void @vector_reverse_f32(ptr noalias %A, ptr noalias %B) {
 ; RV32:       [[MIDDLE_BLOCK]]:
 ; RV32-NEXT:    br label %[[EXIT:.*]]
 ; RV32:       [[SCALAR_PH]]:
+; RV32-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1023, %[[ENTRY]] ]
 ; RV32-NEXT:    br label %[[FOR_BODY:.*]]
 ; RV32:       [[FOR_BODY]]:
-; RV32-NEXT:    [[DEC_IV:%.*]] = phi i64 [ 1023, %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[FOR_BODY]] ]
+; RV32-NEXT:    [[DEC_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[FOR_BODY]] ]
 ; RV32-NEXT:    [[IV_NEXT]] = add nsw i64 [[DEC_IV]], -1
 ; RV32-NEXT:    [[ARRAYIDX_B:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[IV_NEXT]]
 ; RV32-NEXT:    [[TMP23:%.*]] = load float, ptr [[ARRAYIDX_B]], align 4
@@ -290,7 +295,7 @@ define void @vector_reverse_f32(ptr noalias %A, ptr noalias %B) {
 ;
 ; RV64-UF2-LABEL: define void @vector_reverse_f32(
 ; RV64-UF2-SAME: ptr noalias [[A:%.*]], ptr noalias [[B:%.*]]) #[[ATTR0]] {
-; RV64-UF2-NEXT:  [[ENTRY:.*:]]
+; RV64-UF2-NEXT:  [[ENTRY:.*]]:
 ; RV64-UF2-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; RV64-UF2:       [[VECTOR_PH]]:
 ; RV64-UF2-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
@@ -325,9 +330,10 @@ define void @vector_reverse_f32(ptr noalias %A, ptr noalias %B) {
 ; RV64-UF2:       [[MIDDLE_BLOCK]]:
 ; RV64-UF2-NEXT:    br label %[[EXIT:.*]]
 ; RV64-UF2:       [[SCALAR_PH]]:
+; RV64-UF2-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1023, %[[ENTRY]] ]
 ; RV64-UF2-NEXT:    br label %[[FOR_BODY:.*]]
 ; RV64-UF2:       [[FOR_BODY]]:
-; RV64-UF2-NEXT:    [[DEC_IV:%.*]] = phi i64 [ 1023, %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[FOR_BODY]] ]
+; RV64-UF2-NEXT:    [[DEC_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[FOR_BODY]] ]
 ; RV64-UF2-NEXT:    [[IV_NEXT]] = add nsw i64 [[DEC_IV]], -1
 ; RV64-UF2-NEXT:    [[ARRAYIDX_B:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[IV_NEXT]]
 ; RV64-UF2-NEXT:    [[TMP31:%.*]] = load float, ptr [[ARRAYIDX_B]], align 4

@@ -38,7 +38,6 @@ define i32 @updateQuantizationParameter(ptr %PMADPictureC1, ptr %FCBUPFMAD, ptr 
 ; CHECK-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-; CHECK-NEXT:    [[IND_END:%.*]] = sub i64 [[TMP1]], [[TMP6]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP6]], i32 2, i1 true)
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
@@ -63,10 +62,12 @@ define i32 @updateQuantizationParameter(ptr %PMADPictureC1, ptr %FCBUPFMAD, ptr 
 ; CHECK-NEXT:    store double [[TMP15]], ptr [[PMADPICTUREC1]], align 8, !alias.scope [[META6:![0-9]+]], !noalias [[META0]]
 ; CHECK-NEXT:    br label [[IF_END831_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
+; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi double [ [[DOTPRE]], [[FOR_BODY_PREHEADER]] ], [ [[DOTPRE]], [[VECTOR_MEMCHECK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[TMP1]], [[FOR_BODY_PREHEADER]] ], [ [[TMP1]], [[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[TMP16:%.*]] = phi double [ [[DOTPRE]], [[SCALAR_PH]] ], [ [[ADD808:%.*]], [[FOR_BODY]] ]
-; CHECK-NEXT:    [[INDVARS_IV141:%.*]] = phi i64 [ [[TMP1]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT1421:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[TMP16:%.*]] = phi double [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[ADD808:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV141:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT1421:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT1421]] = add nsw i64 [[INDVARS_IV141]], -1
 ; CHECK-NEXT:    [[ARRAYIDX8042:%.*]] = getelementptr inbounds double, ptr [[TMP2:%.*]], i64 [[INDVARS_IV_NEXT142:%.*]]
 ; CHECK-NEXT:    [[MUL805:%.*]] = fmul fast double [[TMP3:%.*]], [[TMP3]]
@@ -112,7 +113,6 @@ define i32 @updateQuantizationParameter(ptr %PMADPictureC1, ptr %FCBUPFMAD, ptr 
 ; CHECK-NO-POSTSV-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
 ; CHECK-NO-POSTSV-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]
 ; CHECK-NO-POSTSV:       vector.ph:
-; CHECK-NO-POSTSV-NEXT:    [[IND_END:%.*]] = sub i64 [[TMP1]], [[TMP6]]
 ; CHECK-NO-POSTSV-NEXT:    [[TMP8:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP6]], i32 2, i1 true)
 ; CHECK-NO-POSTSV-NEXT:    [[TMP9:%.*]] = insertelement <vscale x 2 x double> zeroinitializer, double [[DOTPRE]], i32 0
 ; CHECK-NO-POSTSV-NEXT:    br label [[VECTOR_BODY:%.*]]
@@ -137,10 +137,12 @@ define i32 @updateQuantizationParameter(ptr %PMADPictureC1, ptr %FCBUPFMAD, ptr 
 ; CHECK-NO-POSTSV-NEXT:    store double [[TMP15]], ptr [[PMADPICTUREC1]], align 8, !alias.scope [[META6:![0-9]+]], !noalias [[META0]]
 ; CHECK-NO-POSTSV-NEXT:    br label [[IF_END831_LOOPEXIT:%.*]]
 ; CHECK-NO-POSTSV:       scalar.ph:
+; CHECK-NO-POSTSV-NEXT:    [[BC_MERGE_RDX:%.*]] = phi double [ [[DOTPRE]], [[FOR_BODY_PREHEADER]] ], [ [[DOTPRE]], [[VECTOR_MEMCHECK]] ]
+; CHECK-NO-POSTSV-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[TMP1]], [[FOR_BODY_PREHEADER]] ], [ [[TMP1]], [[VECTOR_MEMCHECK]] ]
 ; CHECK-NO-POSTSV-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-NO-POSTSV:       for.body:
-; CHECK-NO-POSTSV-NEXT:    [[TMP16:%.*]] = phi double [ [[DOTPRE]], [[SCALAR_PH]] ], [ [[ADD808:%.*]], [[FOR_BODY]] ]
-; CHECK-NO-POSTSV-NEXT:    [[INDVARS_IV141:%.*]] = phi i64 [ [[TMP1]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT1421:%.*]], [[FOR_BODY]] ]
+; CHECK-NO-POSTSV-NEXT:    [[TMP16:%.*]] = phi double [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[ADD808:%.*]], [[FOR_BODY]] ]
+; CHECK-NO-POSTSV-NEXT:    [[INDVARS_IV141:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT1421:%.*]], [[FOR_BODY]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[INDVARS_IV_NEXT1421]] = add nsw i64 [[INDVARS_IV141]], -1
 ; CHECK-NO-POSTSV-NEXT:    [[ARRAYIDX8042:%.*]] = getelementptr inbounds double, ptr [[TMP2:%.*]], i64 [[INDVARS_IV_NEXT142:%.*]]
 ; CHECK-NO-POSTSV-NEXT:    [[MUL805:%.*]] = fmul fast double [[TMP3:%.*]], [[TMP3]]

@@ -4,7 +4,7 @@
 define void @foo(i32 %arg) {
 ; CHECK-LABEL: define void @foo(
 ; CHECK-SAME: i32 [[ARG:%.*]]) #[[ATTR0:[0-9]+]] {
-; CHECK-NEXT:  [[ENTRY:.*:]]
+; CHECK-NEXT:  [[ENTRY:.*]]:
 ; CHECK-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 4 x i32> poison, i32 [[ARG]], i64 0
@@ -24,9 +24,10 @@ define void @foo(i32 %arg) {
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br label %[[EXIT:.*]]
 ; CHECK:       [[SCALAR_PH]]:
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
 ; CHECK-NEXT:    br label %[[LOOP:.*]]
 ; CHECK:       [[LOOP]]:
-; CHECK-NEXT:    [[PHI:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[ADD:%.*]], %[[LOOP_NEXT:.*]] ]
+; CHECK-NEXT:    [[PHI:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[ADD:%.*]], %[[LOOP_NEXT:.*]] ]
 ; CHECK-NEXT:    [[COND:%.*]] = icmp eq i32 [[ARG]], 0
 ; CHECK-NEXT:    br i1 [[COND]], label %[[IF_THEN:.*]], label %[[LOOP_NEXT]]
 ; CHECK:       [[IF_THEN]]:

@@ -18,10 +18,6 @@ define  i32 @test_16x16(ptr %pix1_base, i32 %i_pix1, ptr %pix2_base, i32 %i_pix2
 ; CHECK-NEXT:    [[TMP4:%.*]] = or i1 [[IDENT_CHECK]], [[IDENT_CHECK1]]
 ; CHECK-NEXT:    br i1 [[TMP4]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH1:.*]]
 ; CHECK:       [[VECTOR_PH1]]:
-; CHECK-NEXT:    [[TMP1:%.*]] = mul i64 16, [[IDX_EXT]]
-; CHECK-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[ADD_PTR]], i64 [[TMP1]]
-; CHECK-NEXT:    [[TMP2:%.*]] = mul i64 16, [[IDX_EXT65]]
-; CHECK-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[ADD_PTR1]], i64 [[TMP2]]
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH1]] ], [ [[INDEX_EVL_NEXT120:%.*]], %[[VECTOR_BODY]] ]
@@ -129,6 +125,9 @@ define  i32 @test_16x16(ptr %pix1_base, i32 %i_pix1, ptr %pix2_base, i32 %i_pix2
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br label %[[FOR_COND68_PREHEADER:.*]]
 ; CHECK:       [[SCALAR_PH]]:
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_SCEVCHECK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL57:%.*]] = phi ptr [ [[ADD_PTR]], %[[VECTOR_SCEVCHECK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL58:%.*]] = phi ptr [ [[ADD_PTR1]], %[[VECTOR_SCEVCHECK]] ]
 ; CHECK-NEXT:    br label %[[FOR_BODY:.*]]
 ; CHECK:       [[FOR_COND68_PREHEADER]]:
 ; CHECK-NEXT:    [[ARRAYIDX76:%.*]] = getelementptr inbounds i8, ptr [[TMP]], i64 16
@@ -148,9 +147,9 @@ define  i32 @test_16x16(ptr %pix1_base, i32 %i_pix1, ptr %pix2_base, i32 %i_pix2
 ; CHECK-NEXT:    [[ARRAYIDX223:%.*]] = getelementptr inbounds i8, ptr [[TMP]], i64 240
 ; CHECK-NEXT:    br label %[[FOR_BODY71:.*]]
 ; CHECK:       [[FOR_BODY]]:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_BODY]] ]
-; CHECK-NEXT:    [[PIX1_0453:%.*]] = phi ptr [ [[ADD_PTR]], %[[SCALAR_PH]] ], [ [[ADD_PTR64:%.*]], %[[FOR_BODY]] ]
-; CHECK-NEXT:    [[PIX2_0452:%.*]] = phi ptr [ [[ADD_PTR1]], %[[SCALAR_PH]] ], [ [[ADD_PTR66:%.*]], %[[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_BODY]] ]
+; CHECK-NEXT:    [[PIX1_0453:%.*]] = phi ptr [ [[BC_RESUME_VAL57]], %[[SCALAR_PH]] ], [ [[ADD_PTR64:%.*]], %[[FOR_BODY]] ]
+; CHECK-NEXT:    [[PIX2_0452:%.*]] = phi ptr [ [[BC_RESUME_VAL58]], %[[SCALAR_PH]] ], [ [[ADD_PTR66:%.*]], %[[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP110:%.*]] = load i8, ptr [[PIX1_0453]], align 1
 ; CHECK-NEXT:    [[CONV:%.*]] = zext i8 [[TMP110]] to i32
 ; CHECK-NEXT:    [[TMP111:%.*]] = load i8, ptr [[PIX2_0452]], align 1
@@ -760,10 +759,6 @@ define i32 @test_8x8(ptr %pix1_base, i32 %i_pix1, ptr %pix2_base, i32 %i_pix2){
 ; CHECK-NEXT:    [[TMP81:%.*]] = or i1 [[IDENT_CHECK]], [[IDENT_CHECK1]]
 ; CHECK-NEXT:    br i1 [[TMP81]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
-; CHECK-NEXT:    [[TMP82:%.*]] = mul i64 16, [[IDX_EXT]]
-; CHECK-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[ADD_PTR]], i64 [[TMP82]]
-; CHECK-NEXT:    [[TMP83:%.*]] = mul i64 16, [[IDX_EXT65]]
-; CHECK-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[ADD_PTR1]], i64 [[TMP83]]
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT120:%.*]], %[[VECTOR_BODY]] ]
@@ -871,6 +866,9 @@ define i32 @test_8x8(ptr %pix1_base, i32 %i_pix1, ptr %pix2_base, i32 %i_pix2){
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br label %[[FOR_COND68_PREHEADER:.*]]
 ; CHECK:       [[SCALAR_PH]]:
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_SCEVCHECK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL57:%.*]] = phi ptr [ [[ADD_PTR]], %[[VECTOR_SCEVCHECK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL58:%.*]] = phi ptr [ [[ADD_PTR1]], %[[VECTOR_SCEVCHECK]] ]
 ; CHECK-NEXT:    br label %[[FOR_BODY:.*]]
 ; CHECK:       [[FOR_COND68_PREHEADER]]:
 ; CHECK-NEXT:    [[ARRAYIDX76:%.*]] = getelementptr inbounds i8, ptr [[TMP]], i64 16
@@ -1202,9 +1200,9 @@ define i32 @test_8x8(ptr %pix1_base, i32 %i_pix1, ptr %pix2_base, i32 %i_pix2){
 ; CHECK-NEXT:    call void @llvm.lifetime.end.p0(i64 128, ptr nonnull [[TMP]])
 ; CHECK-NEXT:    ret i32 [[ADD171]]
 ; CHECK:       [[FOR_BODY]]:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_BODY]] ]
-; CHECK-NEXT:    [[PIX1_0277:%.*]] = phi ptr [ [[ADD_PTR]], %[[SCALAR_PH]] ], [ [[ADD_PTR64:%.*]], %[[FOR_BODY]] ]
-; CHECK-NEXT:    [[PIX2_0276:%.*]] = phi ptr [ [[ADD_PTR1]], %[[SCALAR_PH]] ], [ [[ADD_PTR66:%.*]], %[[FOR_BODY]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_BODY]] ]
+; CHECK-NEXT:    [[PIX1_0277:%.*]] = phi ptr [ [[BC_RESUME_VAL57]], %[[SCALAR_PH]] ], [ [[ADD_PTR64:%.*]], %[[FOR_BODY]] ]
+; CHECK-NEXT:    [[PIX2_0276:%.*]] = phi ptr [ [[BC_RESUME_VAL58]], %[[SCALAR_PH]] ], [ [[ADD_PTR66:%.*]], %[[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP32:%.*]] = load i8, ptr [[PIX1_0277]], align 1
 ; CHECK-NEXT:    [[CONV:%.*]] = zext i8 [[TMP32]] to i32
 ; CHECK-NEXT:    [[TMP33:%.*]] = load i8, ptr [[PIX2_0276]], align 1

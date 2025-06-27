@@ -4,10 +4,10 @@
 define void @ham() {
 ; CHECK-LABEL: define void @ham(
 ; CHECK-SAME: ) #[[ATTR0:[0-9]+]] {
-; CHECK-NEXT:  [[BB:.*]]:
+; CHECK-NEXT:  [[ENTRY:.*]]:
 ; CHECK-NEXT:    br label %[[FOR_BODY:.*]]
 ; CHECK:       [[FOR_BODY]]:
-; CHECK-NEXT:    [[PHI:%.*]] = phi i64 [ [[ADD6:%.*]], %[[FOR_BODY_2:.*]] ], [ 0, %[[BB]] ]
+; CHECK-NEXT:    [[PHI:%.*]] = phi i64 [ [[ADD6:%.*]], %[[FOR_BODY_2:.*]] ], [ 0, %[[ENTRY]] ]
 ; CHECK-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 2 x i64> poison, i64 [[PHI]], i64 0
@@ -29,9 +29,10 @@ define void @ham() {
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br label %[[FOR_BODY_2]]
 ; CHECK:       [[SCALAR_PH]]:
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[FOR_BODY]] ]
 ; CHECK-NEXT:    br label %[[FOR_BODY_1:.*]]
 ; CHECK:       [[FOR_BODY_1]]:
-; CHECK-NEXT:    [[PHI3:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[ADD4:%.*]], %[[FOR_BODY_1]] ]
+; CHECK-NEXT:    [[PHI3:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[ADD4:%.*]], %[[FOR_BODY_1]] ]
 ; CHECK-NEXT:    [[TRUNC:%.*]] = trunc i64 [[PHI]] to i32
 ; CHECK-NEXT:    [[ADD:%.*]] = add i32 [[TRUNC]], 5
 ; CHECK-NEXT:    [[SHL:%.*]] = shl i32 0, [[ADD]]

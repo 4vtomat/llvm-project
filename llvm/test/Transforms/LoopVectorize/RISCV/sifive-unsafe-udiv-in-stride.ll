@@ -4,7 +4,7 @@
 define void @test(i64 %0, i32 %1, i32 %2) {
 ; CHECK-LABEL: define void @test(
 ; CHECK-SAME: i64 [[TMP0:%.*]], i32 [[TMP1:%.*]], i32 [[TMP2:%.*]]) #[[ATTR0:[0-9]+]] {
-; CHECK-NEXT:  [[ENTRY:.*:]]
+; CHECK-NEXT:  [[ENTRY:.*]]:
 ; CHECK-NEXT:    [[TMP3:%.*]] = udiv i32 [[TMP1]], [[TMP2]]
 ; CHECK-NEXT:    [[DIV_I1313_US1933:%.*]] = zext i32 [[TMP3]] to i64
 ; CHECK-NEXT:    [[TMP4:%.*]] = add i64 [[TMP0]], 1
@@ -39,9 +39,10 @@ define void @test(i64 %0, i32 %1, i32 %2) {
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br label %[[EXIT:.*]]
 ; CHECK:       [[SCALAR_PH]]:
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[ENTRY]] ]
 ; CHECK-NEXT:    br label %[[LOOP:.*]]
 ; CHECK:       [[LOOP]]:
-; CHECK-NEXT:    [[OC_01860_US1911:%.*]] = phi i64 [ 0, %[[SCALAR_PH]] ], [ [[INC419_US1918:%.*]], %[[LOOP]] ]
+; CHECK-NEXT:    [[OC_01860_US1911:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[INC419_US1918:%.*]], %[[LOOP]] ]
 ; CHECK-NEXT:    [[MUL413_US1916:%.*]] = mul i64 [[OC_01860_US1911]], [[DIV_I1313_US1933]]
 ; CHECK-NEXT:    [[GEP_US1917:%.*]] = getelementptr float, ptr null, i64 [[MUL413_US1916]]
 ; CHECK-NEXT:    store float 0.000000e+00, ptr [[GEP_US1917]], align 4

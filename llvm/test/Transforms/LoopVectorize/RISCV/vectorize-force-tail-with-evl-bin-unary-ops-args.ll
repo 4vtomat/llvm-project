@@ -44,10 +44,10 @@ define void @test_and(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_MEMCHECK]] ]
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
-; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
+; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
 ; IF-EVL-NEXT:    [[DEC]] = add nsw i64 [[LEN]], 1
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[LEN]]
 ; IF-EVL-NEXT:    [[TMP12:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
@@ -128,10 +128,10 @@ define void @test_or(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_MEMCHECK]] ]
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
-; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC1:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
+; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC1:%.*]], %[[LOOP]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
 ; IF-EVL-NEXT:    [[DEC1]] = add nsw i64 [[LEN]], 1
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[LEN]]
 ; IF-EVL-NEXT:    [[TMP15:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
@@ -212,10 +212,10 @@ define void @test_xor(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_MEMCHECK]] ]
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
-; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
+; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
 ; IF-EVL-NEXT:    [[DEC]] = add nsw i64 [[LEN]], 1
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[LEN]]
 ; IF-EVL-NEXT:    [[TMP20:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
@@ -296,10 +296,10 @@ define void @test_shl(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_MEMCHECK]] ]
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
-; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
+; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
 ; IF-EVL-NEXT:    [[DEC]] = add nsw i64 [[LEN]], 1
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[LEN]]
 ; IF-EVL-NEXT:    [[TMP12:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
@@ -380,10 +380,10 @@ define void @test_lshr(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_MEMCHECK]] ]
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
-; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
+; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
 ; IF-EVL-NEXT:    [[DEC]] = add nsw i64 [[LEN]], 1
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[LEN]]
 ; IF-EVL-NEXT:    [[TMP20:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
@@ -464,10 +464,10 @@ define void @test_ashr(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_MEMCHECK]] ]
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
-; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
+; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
 ; IF-EVL-NEXT:    [[DEC]] = add nsw i64 [[LEN]], 1
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[LEN]]
 ; IF-EVL-NEXT:    [[TMP12:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
@@ -548,10 +548,10 @@ define void @test_add(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_MEMCHECK]] ]
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
-; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
+; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
 ; IF-EVL-NEXT:    [[DEC]] = add nsw i64 [[LEN]], 1
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[LEN]]
 ; IF-EVL-NEXT:    [[TMP20:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
@@ -632,10 +632,10 @@ define void @test_sub(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_MEMCHECK]] ]
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
-; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
+; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
 ; IF-EVL-NEXT:    [[DEC]] = add nsw i64 [[LEN]], 1
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[LEN]]
 ; IF-EVL-NEXT:    [[TMP12:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
@@ -716,10 +716,10 @@ define void @test_mul(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_MEMCHECK]] ]
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
-; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
+; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
 ; IF-EVL-NEXT:    [[DEC]] = add nsw i64 [[LEN]], 1
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[LEN]]
 ; IF-EVL-NEXT:    [[TMP12:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
@@ -800,10 +800,10 @@ define void @test_sdiv(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_MEMCHECK]] ]
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
-; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
+; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
 ; IF-EVL-NEXT:    [[DEC]] = add nsw i64 [[LEN]], 1
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[LEN]]
 ; IF-EVL-NEXT:    [[TMP12:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
@@ -884,10 +884,10 @@ define void @test_udiv(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_MEMCHECK]] ]
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
-; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
+; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
 ; IF-EVL-NEXT:    [[DEC]] = add nsw i64 [[LEN]], 1
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[LEN]]
 ; IF-EVL-NEXT:    [[TMP20:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
@@ -968,10 +968,10 @@ define void @test_srem(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_MEMCHECK]] ]
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
-; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
+; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
 ; IF-EVL-NEXT:    [[DEC]] = add nsw i64 [[LEN]], 1
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[LEN]]
 ; IF-EVL-NEXT:    [[TMP12:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
@@ -1052,10 +1052,10 @@ define void @test_urem(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_MEMCHECK]] ]
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
-; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
+; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
 ; IF-EVL-NEXT:    [[DEC]] = add nsw i64 [[LEN]], 1
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[LEN]]
 ; IF-EVL-NEXT:    [[TMP20:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
@@ -1139,10 +1139,10 @@ define void @test_fadd(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_MEMCHECK]] ]
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
-; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
+; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
 ; IF-EVL-NEXT:    [[DEC]] = add nsw i64 [[LEN]], 1
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[LEN]]
 ; IF-EVL-NEXT:    [[TMP13:%.*]] = load float, ptr [[ARRAYIDX]], align 4
@@ -1224,10 +1224,10 @@ define void @test_fsub(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_MEMCHECK]] ]
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
-; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
+; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
 ; IF-EVL-NEXT:    [[DEC]] = add nsw i64 [[LEN]], 1
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[LEN]]
 ; IF-EVL-NEXT:    [[TMP21:%.*]] = load float, ptr [[ARRAYIDX]], align 4
@@ -1309,10 +1309,10 @@ define void @test_fmul(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_MEMCHECK]] ]
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
-; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
+; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
 ; IF-EVL-NEXT:    [[DEC]] = add nsw i64 [[LEN]], 1
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[LEN]]
 ; IF-EVL-NEXT:    [[TMP13:%.*]] = load float, ptr [[ARRAYIDX]], align 4
@@ -1394,10 +1394,10 @@ define void @test_fdiv(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_MEMCHECK]] ]
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
-; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
+; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
 ; IF-EVL-NEXT:    [[DEC]] = add nsw i64 [[LEN]], 1
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[LEN]]
 ; IF-EVL-NEXT:    [[TMP21:%.*]] = load float, ptr [[ARRAYIDX]], align 4
@@ -1532,10 +1532,10 @@ define void @test_fneg(ptr nocapture %a, ptr nocapture readonly %b) {
 ; IF-EVL:       [[MIDDLE_BLOCK]]:
 ; IF-EVL-NEXT:    br label %[[FINISH_LOOPEXIT:.*]]
 ; IF-EVL:       [[SCALAR_PH]]:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[LOOP_PREHEADER]] ], [ 0, %[[VECTOR_MEMCHECK]] ]
+; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_MEMCHECK]] ]
 ; IF-EVL-NEXT:    br label %[[LOOP:.*]]
 ; IF-EVL:       [[LOOP]]:
-; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ 0, %[[SCALAR_PH]] ]
+; IF-EVL-NEXT:    [[LEN:%.*]] = phi i64 [ [[DEC:%.*]], %[[LOOP]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
 ; IF-EVL-NEXT:    [[DEC]] = add nsw i64 [[LEN]], 1
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[LEN]]
 ; IF-EVL-NEXT:    [[TMP21:%.*]] = load float, ptr [[ARRAYIDX]], align 4

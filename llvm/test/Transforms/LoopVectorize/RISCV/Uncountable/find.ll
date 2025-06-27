@@ -81,11 +81,12 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; CHECK-NEXT:    [[IND_EARLY_ESCAPE:%.*]] = getelementptr i8, ptr [[FIRST]], i64 [[TMP32]]
 ; CHECK-NEXT:    br label [[RETURN_LOOPEXIT:%.*]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    br label [[RETURN_LOOPEXIT]]
+; CHECK-NEXT:    br i1 true, label [[RETURN_LOOPEXIT]], label [[VEC_UNCOUNTABLE_SCALAR_PH]]
 ; CHECK:       vec.uncountable.scalar.ph:
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ [[TMP10]], [[VEC_UNCOUNTABLE_MIDDLE_BLOCK]] ], [ [[FIRST]], [[FOR_BODY_LR_PH]] ], [ [[FIRST]], [[VECTOR_SCEVCHECK]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[FIRST_ADDR_07:%.*]] = phi ptr [ [[FIRST]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_INC:%.*]] ]
+; CHECK-NEXT:    [[FIRST_ADDR_07:%.*]] = phi ptr [ [[BC_RESUME_VAL]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_INC:%.*]] ]
 ; CHECK-NEXT:    [[TMP33:%.*]] = load i32, ptr [[FIRST_ADDR_07]], align 4
 ; CHECK-NEXT:    [[CMP1:%.*]] = icmp eq i32 [[TMP33]], [[TMP0]]
 ; CHECK-NEXT:    br i1 [[CMP1]], label [[RETURN_LOOPEXIT]], label [[FOR_INC]]
@@ -169,11 +170,12 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; P470-NEXT:    [[IND_EARLY_ESCAPE:%.*]] = getelementptr i8, ptr [[FIRST]], i64 [[TMP32]]
 ; P470-NEXT:    br label [[RETURN_LOOPEXIT:%.*]]
 ; P470:       middle.block:
-; P470-NEXT:    br label [[RETURN_LOOPEXIT]]
+; P470-NEXT:    br i1 true, label [[RETURN_LOOPEXIT]], label [[VEC_UNCOUNTABLE_SCALAR_PH]]
 ; P470:       vec.uncountable.scalar.ph:
+; P470-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ [[TMP10]], [[VEC_UNCOUNTABLE_MIDDLE_BLOCK]] ], [ [[FIRST]], [[FOR_BODY_LR_PH]] ], [ [[FIRST]], [[VECTOR_SCEVCHECK]] ]
 ; P470-NEXT:    br label [[FOR_BODY:%.*]]
 ; P470:       for.body:
-; P470-NEXT:    [[FIRST_ADDR_07:%.*]] = phi ptr [ [[FIRST]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_INC:%.*]] ]
+; P470-NEXT:    [[FIRST_ADDR_07:%.*]] = phi ptr [ [[BC_RESUME_VAL]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_INC:%.*]] ]
 ; P470-NEXT:    [[TMP33:%.*]] = load i32, ptr [[FIRST_ADDR_07]], align 4
 ; P470-NEXT:    [[CMP1:%.*]] = icmp eq i32 [[TMP33]], [[TMP0]]
 ; P470-NEXT:    br i1 [[CMP1]], label [[RETURN_LOOPEXIT]], label [[FOR_INC]]
@@ -401,11 +403,12 @@ define i64 @ham(ptr %arg, i64 %arg1, i32 %arg2, ptr %arg3, i32 %arg4) {
 ; CHECK:       vector.early.exit:
 ; CHECK-NEXT:    br label [[BB10_LOOPEXIT]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    br label [[BB109:%.*]]
+; CHECK-NEXT:    br i1 true, label [[BB109:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH]]
 ; CHECK:       vec.uncountable.scalar.ph:
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ [[TMP2]], [[MIDDLE_BLOCK]] ], [ [[PHI]], [[BB10]] ]
 ; CHECK-NEXT:    br label [[BB13:%.*]]
 ; CHECK:       bb13:
-; CHECK-NEXT:    [[PHI14:%.*]] = phi ptr [ [[PHI]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[GETELEMENTPTR19:%.*]], [[BB18:%.*]] ]
+; CHECK-NEXT:    [[PHI14:%.*]] = phi ptr [ [[BC_RESUME_VAL]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[GETELEMENTPTR19:%.*]], [[BB18:%.*]] ]
 ; CHECK-NEXT:    [[LOAD15:%.*]] = load i8, ptr [[PHI14]], align 1
 ; CHECK-NEXT:    [[AND16:%.*]] = and i8 [[LOAD15]], -2
 ; CHECK-NEXT:    [[ICMP17:%.*]] = icmp eq i8 [[AND16]], -24
@@ -471,11 +474,12 @@ define i64 @ham(ptr %arg, i64 %arg1, i32 %arg2, ptr %arg3, i32 %arg4) {
 ; P470:       vector.early.exit:
 ; P470-NEXT:    br label [[BB10_LOOPEXIT]]
 ; P470:       middle.block:
-; P470-NEXT:    br label [[BB109:%.*]]
+; P470-NEXT:    br i1 true, label [[BB109:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH]]
 ; P470:       vec.uncountable.scalar.ph:
+; P470-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ [[TMP2]], [[MIDDLE_BLOCK]] ], [ [[PHI]], [[BB10]] ]
 ; P470-NEXT:    br label [[BB13:%.*]]
 ; P470:       bb13:
-; P470-NEXT:    [[PHI14:%.*]] = phi ptr [ [[PHI]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[GETELEMENTPTR19:%.*]], [[BB18:%.*]] ]
+; P470-NEXT:    [[PHI14:%.*]] = phi ptr [ [[BC_RESUME_VAL]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[GETELEMENTPTR19:%.*]], [[BB18:%.*]] ]
 ; P470-NEXT:    [[LOAD15:%.*]] = load i8, ptr [[PHI14]], align 1
 ; P470-NEXT:    [[AND16:%.*]] = and i8 [[LOAD15]], -2
 ; P470-NEXT:    [[ICMP17:%.*]] = icmp eq i8 [[AND16]], -24
@@ -555,12 +559,14 @@ define ptr @find_with_int_iv(ptr %first, ptr %last, i64 %count) {
 ; CHECK-NEXT:    [[IND_EARLY_ESCAPE:%.*]] = getelementptr i8, ptr [[FIRST]], i64 [[TMP17]]
 ; CHECK-NEXT:    br label [[RETURN_EARLY:%.*]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    br label [[RETURN:%.*]]
+; CHECK-NEXT:    br i1 true, label [[RETURN:%.*]], label [[ENTRY]]
 ; CHECK:       vec.uncountable.scalar.ph:
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[TMP2]], [[MIDDLE_BLOCK]] ], [ [[COUNT]], [[ENTRY1:%.*]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL2:%.*]] = phi ptr [ [[TMP4]], [[MIDDLE_BLOCK]] ], [ [[FIRST]], [[ENTRY1]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY1:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[REMAIN:%.*]] = phi i64 [ [[REMAIN_NEXT:%.*]], [[FOR_INC:%.*]] ], [ [[COUNT]], [[ENTRY]] ]
-; CHECK-NEXT:    [[ADDR:%.*]] = phi ptr [ [[ADDR_NEXT:%.*]], [[FOR_INC]] ], [ [[FIRST]], [[ENTRY]] ]
+; CHECK-NEXT:    [[REMAIN:%.*]] = phi i64 [ [[REMAIN_NEXT:%.*]], [[FOR_INC:%.*]] ], [ [[BC_RESUME_VAL]], [[ENTRY]] ]
+; CHECK-NEXT:    [[ADDR:%.*]] = phi ptr [ [[ADDR_NEXT:%.*]], [[FOR_INC]] ], [ [[BC_RESUME_VAL2]], [[ENTRY]] ]
 ; CHECK-NEXT:    [[LOAD:%.*]] = load ptr, ptr [[ADDR]], align 8
 ; CHECK-NEXT:    [[ICMP:%.*]] = icmp eq ptr [[LOAD]], [[LAST]]
 ; CHECK-NEXT:    br i1 [[ICMP]], label [[RETURN_EARLY]], label [[FOR_INC]]
@@ -616,12 +622,14 @@ define ptr @find_with_int_iv(ptr %first, ptr %last, i64 %count) {
 ; P470-NEXT:    [[IND_EARLY_ESCAPE:%.*]] = getelementptr i8, ptr [[FIRST]], i64 [[TMP17]]
 ; P470-NEXT:    br label [[RETURN_EARLY:%.*]]
 ; P470:       middle.block:
-; P470-NEXT:    br label [[RETURN:%.*]]
+; P470-NEXT:    br i1 true, label [[RETURN:%.*]], label [[ENTRY]]
 ; P470:       vec.uncountable.scalar.ph:
+; P470-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[TMP2]], [[MIDDLE_BLOCK]] ], [ [[COUNT]], [[ENTRY1:%.*]] ]
+; P470-NEXT:    [[BC_RESUME_VAL2:%.*]] = phi ptr [ [[TMP4]], [[MIDDLE_BLOCK]] ], [ [[FIRST]], [[ENTRY1]] ]
 ; P470-NEXT:    br label [[FOR_BODY1:%.*]]
 ; P470:       for.body:
-; P470-NEXT:    [[REMAIN:%.*]] = phi i64 [ [[REMAIN_NEXT:%.*]], [[FOR_INC:%.*]] ], [ [[COUNT]], [[ENTRY]] ]
-; P470-NEXT:    [[ADDR:%.*]] = phi ptr [ [[ADDR_NEXT:%.*]], [[FOR_INC]] ], [ [[FIRST]], [[ENTRY]] ]
+; P470-NEXT:    [[REMAIN:%.*]] = phi i64 [ [[REMAIN_NEXT:%.*]], [[FOR_INC:%.*]] ], [ [[BC_RESUME_VAL]], [[ENTRY]] ]
+; P470-NEXT:    [[ADDR:%.*]] = phi ptr [ [[ADDR_NEXT:%.*]], [[FOR_INC]] ], [ [[BC_RESUME_VAL2]], [[ENTRY]] ]
 ; P470-NEXT:    [[LOAD:%.*]] = load ptr, ptr [[ADDR]], align 8
 ; P470-NEXT:    [[ICMP:%.*]] = icmp eq ptr [[LOAD]], [[LAST]]
 ; P470-NEXT:    br i1 [[ICMP]], label [[RETURN_EARLY]], label [[FOR_INC]]

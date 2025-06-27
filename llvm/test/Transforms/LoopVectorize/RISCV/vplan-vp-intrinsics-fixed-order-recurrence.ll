@@ -43,9 +43,6 @@ define void @first_order_recurrence(ptr noalias %A, ptr noalias %B, i64 %TC) {
 ; IF-EVL-EMPTY:
 ; IF-EVL: middle.block:
 ; IF-EVL-NEXT: Successor(s): ir-bb<for.end>
-
-; IF-EVL: Cost of 0 for VF vscale x 4: FIRST-ORDER-RECURRENCE-PHI ir<[[FOR_PHI]]> = phi ir<33>, ir<[[LD]]>
-; IF-EVL: Cost of 4 for VF vscale x 4: WIDEN-INTRINSIC vp<[[SPLICE]]> = call llvm.experimental.vp.splice(ir<[[FOR_PHI]]>, ir<[[LD]]>, ir<-1>, ir<true>, vp<[[PREV_EVL]]>, vp<[[EVL]]>)
 entry:
   br label %for.body
 

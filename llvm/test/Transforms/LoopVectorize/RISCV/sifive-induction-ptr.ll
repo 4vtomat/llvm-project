@@ -43,10 +43,6 @@ define dso_local noundef signext i32 @f(ptr noundef writeonly %c, ptr noundef re
 ; VEC-NEXT:    [[DIFF_CHECK:%.*]] = icmp ult i64 [[TMP10]], [[TMP9]]
 ; VEC-NEXT:    br i1 [[DIFF_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; VEC:       vector.ph:
-; VEC-NEXT:    [[TMP11:%.*]] = mul i64 [[TMP6]], 4
-; VEC-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[C]], i64 [[TMP11]]
-; VEC-NEXT:    [[TMP12:%.*]] = mul i64 [[TMP6]], 4
-; VEC-NEXT:    [[IND_END5:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP12]]
 ; VEC-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 2 x ptr> poison, ptr [[ADD_PTR2]], i64 0
 ; VEC-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 2 x ptr> [[BROADCAST_SPLATINSERT]], <vscale x 2 x ptr> poison, <vscale x 2 x i32> zeroinitializer
 ; VEC-NEXT:    [[TMP31:%.*]] = call i64 @llvm.vscale.i64()
@@ -85,10 +81,12 @@ define dso_local noundef signext i32 @f(ptr noundef writeonly %c, ptr noundef re
 ; VEC:       middle.block:
 ; VEC-NEXT:    br label [[FOR_END_LOOPEXIT:%.*]]
 ; VEC:       scalar.ph:
+; VEC-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ [[C]], [[VECTOR_MEMCHECK]] ]
+; VEC-NEXT:    [[BC_RESUME_VAL5:%.*]] = phi ptr [ [[A]], [[VECTOR_MEMCHECK]] ]
 ; VEC-NEXT:    br label [[FOR_BODY:%.*]]
 ; VEC:       for.body:
-; VEC-NEXT:    [[C_ADDR_012:%.*]] = phi ptr [ [[C]], [[SCALAR_PH]] ], [ [[INCDEC_PTR4:%.*]], [[FOR_INC:%.*]] ]
-; VEC-NEXT:    [[A_ADDR_011:%.*]] = phi ptr [ [[A]], [[SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_INC]] ]
+; VEC-NEXT:    [[C_ADDR_012:%.*]] = phi ptr [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INCDEC_PTR4:%.*]], [[FOR_INC:%.*]] ]
+; VEC-NEXT:    [[A_ADDR_011:%.*]] = phi ptr [ [[BC_RESUME_VAL5]], [[SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_INC]] ]
 ; VEC-NEXT:    [[CMP3:%.*]] = icmp ult ptr [[A_ADDR_011]], [[ADD_PTR2]]
 ; VEC-NEXT:    br i1 [[CMP3]], label [[IF_THEN:%.*]], label [[FOR_INC]]
 ; VEC:       if.then:

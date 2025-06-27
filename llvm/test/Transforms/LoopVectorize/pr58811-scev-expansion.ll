@@ -32,6 +32,7 @@ define void @test1_pr58811() {
 ; CHECK-NEXT:    br i1 [[TMP2]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[IND_ESCAPE:%.*]] = sub i32 [[IND_END]], [[INDUCTION_IV_LCSSA]]
+; CHECK-NEXT:    [[IND_ESCAPE2:%.*]] = sub i32 [[IND_END]], [[INDUCTION_IV_LCSSA]]
 ; CHECK-NEXT:    br i1 false, label [[LOOP_3_PREHEADER:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i16 [ 196, [[MIDDLE_BLOCK]] ], [ 0, [[LOOP_2_PREHEADER]] ]
@@ -127,6 +128,7 @@ define void @test2_pr58811() {
 ; CHECK-NEXT:    br i1 [[TMP2]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[IND_ESCAPE:%.*]] = sub i32 [[IND_END]], [[INDUCTION_IV_LCSSA]]
+; CHECK-NEXT:    [[IND_ESCAPE2:%.*]] = sub i32 [[IND_END]], [[INDUCTION_IV_LCSSA]]
 ; CHECK-NEXT:    br i1 false, label [[LOOP_4_PREHEADER:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i16 [ 196, [[MIDDLE_BLOCK]] ], [ 0, [[LOOP_3_PREHEADER]] ]
@@ -205,6 +207,7 @@ define void @test3_pr58811() {
 ; CHECK-NEXT:    br i1 [[TMP4]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[IND_ESCAPE:%.*]] = sub i32 [[IND_END]], [[TMP3]]
+; CHECK-NEXT:    [[IND_ESCAPE2:%.*]] = sub i32 [[IND_END]], [[TMP3]]
 ; CHECK-NEXT:    br i1 false, label [[LOOP_4_PREHEADER:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i16 [ 196, [[MIDDLE_BLOCK]] ], [ 0, [[LOOP_3_PREHEADER]] ]

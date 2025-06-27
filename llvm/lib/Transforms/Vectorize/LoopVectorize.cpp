@@ -3204,11 +3204,11 @@ void InnerLoopVectorizer::fixupIVUsers(PHINode *OrigPhi,
   DenseMap<Value *, Value *> MissingVals;
 
 #if SIFIVE_CUSTOMIZATION
-  Value *ResumeValue =
-      OrigPhi->getIncomingValueForBlock(OrigLoop->getLoopPreheader());
+  PHINode *ResumeValue =
+      dyn_cast<PHINode>(OrigPhi->getIncomingValueForBlock(OrigLoop->getLoopPreheader()));
   // SiFive: ResumeValue can be a live-in value for uncountable loop
   // do not have to handle it because collectUsersInExitBlocks does.
-  if (!dyn_cast<PHINode>(ResumeValue))
+  if (!ResumeValue || ResumeValue->getBasicBlockIndex(MiddleBlock) == -1)
     return;
 #endif // SIFIVE_CUSTOMIZATION
   Value *EndValue = cast<PHINode>(OrigPhi->getIncomingValueForBlock(
@@ -3640,12 +3640,15 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State) {
       EEL->addBasicBlockToLoop(VectorEarlyExitBB, *LI);
   }
 
-  BasicBlock *MiddleBlock = State.CFG.VPBB2IRBB[State.Plan->getMiddleBlock()];
   if (!Cost->requiresScalarEpilogue(VF.isVector())) {
-    for (const auto &Entry : Legal->getInductionVars())
-      fixupIVUsers(Entry.first, Entry.second,
-                   getOrCreateVectorTripCount(nullptr), MiddleBlock, State);
-    fixCSALiveOuts(State, Plan);
+    if (Region) {
+      BasicBlock *MiddleBlock = State.CFG.VPBB2IRBB[State.Plan->getMiddleBlock()];
+      assert(MiddleBlock && "MiddleBlock should not be nullptr");
+      for (const auto &Entry : Legal->getInductionVars())
+        fixupIVUsers(Entry.first, Entry.second,
+                     getOrCreateVectorTripCount(nullptr), MiddleBlock, State);
+      fixCSALiveOuts(State, Plan);
+    }
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -11656,7 +11659,7 @@ collectUsersInExitBlocks(Loop *OrigLoop, VPRecipeBuilder &Builder,
                        auto *P = dyn_cast<PHINode>(U);
                        return P && Inductions.contains(P);
                      });
-      if (IsIVUse || isOptimizableIVOrUse(V))
+      if (Plan.isUncountable() && (IsIVUse || isOptimizableIVOrUse(V)))
         continue;
 #endif // SIFIVE_CUSTOMIZATION
       ExitIRI->addOperand(V);

@@ -6,7 +6,7 @@
 define void @foo(ptr %arg1, i64 %arg2) {
 ; CHECK-LABEL: define void @foo(
 ; CHECK-SAME: ptr [[ARG1:%.*]], i64 [[ARG2:%.*]]) #[[ATTR0:[0-9]+]] {
-; CHECK-NEXT:  [[ENTRY:.*:]]
+; CHECK-NEXT:  [[ENTRY:.*]]:
 ; CHECK-NEXT:    [[ARG11:%.*]] = ptrtoint ptr [[ARG1]] to i64
 ; CHECK-NEXT:    [[GETP1:%.*]] = getelementptr i8, ptr [[ARG1]], i64 [[ARG2]]
 ; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[ARG2]], [[ARG11]]
@@ -59,11 +59,12 @@ define void @foo(ptr %arg1, i64 %arg2) {
 ; CHECK-NEXT:    [[IND_EARLY_ESCAPE:%.*]] = getelementptr i8, ptr [[ARG1]], i64 [[TMP23]]
 ; CHECK-NEXT:    br label %[[EXIT:.*]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
-; CHECK-NEXT:    br label %[[EXIT]]
+; CHECK-NEXT:    br i1 true, label %[[EXIT]], label %[[VEC_UNCOUNTABLE_SCALAR_PH]]
 ; CHECK:       [[VEC_UNCOUNTABLE_SCALAR_PH]]:
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ [[TMP4]], %[[MIDDLE_BLOCK]] ], [ [[ARG1]], %[[ENTRY]] ]
 ; CHECK-NEXT:    br label %[[LOOP:.*]]
 ; CHECK:       [[LOOP]]:
-; CHECK-NEXT:    [[PHI1:%.*]] = phi ptr [ [[ARG1]], %[[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[GEP2:%.*]], %[[LOOP_NEXT:.*]] ]
+; CHECK-NEXT:    [[PHI1:%.*]] = phi ptr [ [[BC_RESUME_VAL]], %[[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[GEP2:%.*]], %[[LOOP_NEXT:.*]] ]
 ; CHECK-NEXT:    [[LOAD:%.*]] = load i8, ptr [[PHI1]], align 1
 ; CHECK-NEXT:    [[ICMP1:%.*]] = icmp eq i8 [[LOAD]], 37
 ; CHECK-NEXT:    br i1 [[ICMP1]], label %[[EXIT_LOOPEXIT:.*]], label %[[LOOP_NEXT]]

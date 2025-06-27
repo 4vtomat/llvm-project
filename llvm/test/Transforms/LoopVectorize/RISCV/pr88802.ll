@@ -47,7 +47,7 @@ define void @test(ptr %p, i64 %a, i8 %b) {
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-NEXT:    br label [[FOR_COND1:%.*]]
 ; CHECK:       for.cond:
-; CHECK-NEXT:    [[IV:%.*]] = phi i32 [ 0, [[SCALAR_PH1]] ], [ [[ADD:%.*]], [[FOR_BODY:%.*]] ]
+; CHECK-NEXT:    [[IV:%.*]] = phi i32 [ [[BC_RESUME_VAL]], [[SCALAR_PH1]] ], [ [[ADD:%.*]], [[FOR_BODY:%.*]] ]
 ; CHECK-NEXT:    [[ADD]] = add i32 [[IV]], 1
 ; CHECK-NEXT:    [[CMP_SLT:%.*]] = icmp slt i32 [[IV]], 2
 ; CHECK-NEXT:    [[SHL:%.*]] = shl i64 [[A]], 48
@@ -63,7 +63,7 @@ define void @test(ptr %p, i64 %a, i8 %b) {
 ; CHECK-NEXT:    [[TRUNC:%.*]] = trunc i32 [[SHL_I32]] to i8
 ; CHECK-NEXT:    store i8 [[TRUNC]], ptr [[P]], align 1
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp slt i32 [[IV]], 8
-; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_COND1]], label [[EXIT]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_COND1]], label [[EXIT1]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    ret void
 ;
