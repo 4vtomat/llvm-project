@@ -9712,12 +9712,6 @@ static void fixReductionScalarResumeWhenVectorizingEpilog(
 DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
     ElementCount BestVF, unsigned BestUF, VPlan &BestVPlan,
     InnerLoopVectorizer &ILV, DominatorTree *DT, bool VectorizingEpilogue) {
-#if SIFIVE_CUSTOMIZATION
-  assert((!Legal->isVectorizableUncountable() ||
-          (BestVPlan.isUncountable() && BestVPlan.getInitEVL() &&
-           Legal->useVLAVectorizer())) &&
-         "Uncountable loop is not set up correctly for executing VPlan");
-#endif
   assert(BestVPlan.hasVF(BestVF) &&
          "Trying to execute plan with unsupported VF");
   assert(BestVPlan.hasUF(BestUF) &&
@@ -11869,9 +11863,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   VPlanTransforms::introduceTopLevelVectorLoopRegion(
       *Plan, Legal->getWidestInductionType(), PSE, IsUncountable, RequiresScalarEpilogueCheck,
       CM.foldTailByMasking(), OrigLoop);
-  if (IsUncountable) {
-    Plan->createInitEVL();
-  }
 #else
   VPlanTransforms::introduceTopLevelVectorLoopRegion(
       *Plan, Legal->getWidestInductionType(), PSE, RequiresScalarEpilogueCheck,
