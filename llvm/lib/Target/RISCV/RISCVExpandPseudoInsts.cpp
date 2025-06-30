@@ -71,6 +71,12 @@ private:
                            MachineBasicBlock::iterator MBBI);
   bool expandPseudoReadVLENBViaVSETVLIX0(MachineBasicBlock &MBB,
                                          MachineBasicBlock::iterator MBBI);
+#if SIFIVE_CUSTOMIZATION
+  bool expandCompactAddress(MachineBasicBlock &MBB,
+                            MachineBasicBlock::iterator MBBI,
+                            MachineBasicBlock::iterator &NextMBBI);
+#endif
+
 #ifndef NDEBUG
   unsigned getInstSizeInBytes(const MachineFunction &MF) const {
     unsigned Size = 0;
@@ -190,16 +196,20 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
   case RISCV::PseudoReadVLENBViaVSETVLIX0:
     return expandPseudoReadVLENBViaVSETVLIX0(MBB, MBBI);
 #if SIFIVE_CUSTOMIZATION
-    case RISCV::PseudoVMV_V_V_MF8:
-    case RISCV::PseudoVMV_V_V_MF4:
-    case RISCV::PseudoVMV_V_V_MF2:
-    case RISCV::PseudoVMV_V_V_M1:
-    case RISCV::PseudoVMV_V_V_M2:
-    case RISCV::PseudoVMV_V_V_M4:
-    case RISCV::PseudoVMV_V_V_M8:
-      if (MBB.getParent()->getTarget().getOptLevel() != CodeGenOptLevel::None)
-        return removeRedundantVMV(MBB, MBBI);
-      break;
+  case RISCV::PseudoVMV_V_V_MF8:
+  case RISCV::PseudoVMV_V_V_MF4:
+  case RISCV::PseudoVMV_V_V_MF2:
+  case RISCV::PseudoVMV_V_V_M1:
+  case RISCV::PseudoVMV_V_V_M2:
+  case RISCV::PseudoVMV_V_V_M4:
+  case RISCV::PseudoVMV_V_V_M8:
+    if (MBB.getParent()->getTarget().getOptLevel() != CodeGenOptLevel::None)
+      return removeRedundantVMV(MBB, MBBI);
+    break;
+  case RISCV::PseudoLA_GOT_GPREL:
+  case RISCV::PseudoLA_TLS_IE_GPREL:
+  case RISCV::PseudoLA_TLS_GD_GPREL:
+    return expandCompactAddress(MBB, MBBI, NextMBBI);
 #endif // SIFIVE_CUSTOMIZATION
   }
 
@@ -524,6 +534,65 @@ bool RISCVExpandPseudo::expandPseudoReadVLENBViaVSETVLIX0(
   return true;
 }
 
+#if SIFIVE_CUSTOMIZATION
+bool RISCVExpandPseudo::expandCompactAddress(
+    MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI,
+    MachineBasicBlock::iterator &NextMBBI) {
+  MachineFunction *MF = MBB.getParent();
+  MachineInstr &MI = *MBBI;
+  DebugLoc DL = MI.getDebugLoc();
+
+  unsigned FlagsHi, FlagsAdd, FlagsLo, LowOpcode;
+
+  switch (MI.getOpcode()) {
+  default:
+    llvm_unreachable("Unexpected opcode");
+  case RISCV::PseudoLA_GOT_GPREL:
+    FlagsHi = RISCVII::MO_GOT_GPREL_HI;
+    FlagsAdd = RISCVII::MO_GOT_GPREL_ADD;
+    FlagsLo = RISCVII::MO_GOT_GPREL_LO;
+    LowOpcode = STI->is64Bit() ? RISCV::LD : RISCV::LW;
+    break;
+  case RISCV::PseudoLA_TLS_IE_GPREL:
+    FlagsHi = RISCVII::MO_TLS_GOT_GPREL_HI;
+    FlagsAdd = RISCVII::MO_TLS_GOT_GPREL_ADD;
+    FlagsLo = RISCVII::MO_TLS_GOT_GPREL_LO;
+    LowOpcode = STI->is64Bit() ? RISCV::LD : RISCV::LW;
+    break;
+  case RISCV::PseudoLA_TLS_GD_GPREL:
+    FlagsHi = RISCVII::MO_TLS_GD_GPREL_HI;
+    FlagsAdd = RISCVII::MO_TLS_GD_GPREL_ADD;
+    FlagsLo = RISCVII::MO_TLS_GD_GPREL_LO;
+    LowOpcode = RISCV::ADDI;
+    break;
+  }
+
+  Register DestReg = MI.getOperand(0).getReg();
+
+  MachineInstr *HiMI =
+      BuildMI(MBB, MBBI, DL, TII->get(RISCV::LUI), DestReg).add(MI.getOperand(1));
+  HiMI->getOperand(1).setTargetFlags(FlagsHi);
+
+  MachineInstr *AddRegMI =
+      BuildMI(MBB, MBBI, DL, TII->get(RISCV::PseudoAddRegRel), DestReg)
+          .add(MI.getOperand(2))
+          .addReg(DestReg, RegState::Kill)
+          .add(MI.getOperand(1));
+  AddRegMI->getOperand(3).setTargetFlags(FlagsAdd);
+
+  MachineInstr *LoMI = BuildMI(MBB, MBBI, DL, TII->get(LowOpcode), DestReg)
+                           .addReg(DestReg, RegState::Kill)
+                           .add(MI.getOperand(1));
+  LoMI->getOperand(2).setTargetFlags(FlagsLo);
+
+  if (MI.hasOneMemOperand())
+    LoMI->addMemOperand(*MF, *MI.memoperands_begin());
+
+  MI.eraseFromParent();
+  return true;
+}
+#endif
+
 class RISCVPreRAExpandPseudo : public MachineFunctionPass {
 public:
   const RISCVSubtarget *STI;
@@ -565,11 +634,6 @@ private:
   bool expandLoadTLSDescAddress(MachineBasicBlock &MBB,
                                 MachineBasicBlock::iterator MBBI,
                                 MachineBasicBlock::iterator &NextMBBI);
-#if SIFIVE_CUSTOMIZATION
-  bool expandCompactAddress(MachineBasicBlock &MBB,
-                            MachineBasicBlock::iterator MBBI,
-                            MachineBasicBlock::iterator &NextMBBI);
-#endif
 
 #ifndef NDEBUG
   unsigned getInstSizeInBytes(const MachineFunction &MF) const {
@@ -631,12 +695,6 @@ bool RISCVPreRAExpandPseudo::expandMI(MachineBasicBlock &MBB,
     return expandLoadTLSGDAddress(MBB, MBBI, NextMBBI);
   case RISCV::PseudoLA_TLSDESC:
     return expandLoadTLSDescAddress(MBB, MBBI, NextMBBI);
-#if SIFIVE_CUSTOMIZATION
-  case RISCV::PseudoLA_GOT_GPREL:
-  case RISCV::PseudoLA_TLS_IE_GPREL:
-  case RISCV::PseudoLA_TLS_GD_GPREL:
-    return expandCompactAddress(MBB, MBBI, NextMBBI);
-#endif
   }
   return false;
 }
@@ -702,67 +760,6 @@ bool RISCVPreRAExpandPseudo::expandLoadTLSGDAddress(
   return expandAuipcInstPair(MBB, MBBI, NextMBBI, RISCVII::MO_TLS_GD_HI,
                              RISCV::ADDI);
 }
-
-#if SIFIVE_CUSTOMIZATION
-bool RISCVPreRAExpandPseudo::expandCompactAddress(
-    MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI,
-    MachineBasicBlock::iterator &NextMBBI) {
-  MachineFunction *MF = MBB.getParent();
-  MachineInstr &MI = *MBBI;
-  DebugLoc DL = MI.getDebugLoc();
-
-  unsigned FlagsHi, FlagsAdd, FlagsLo, LowOpcode;
-
-  switch (MI.getOpcode()) {
-  default:
-    llvm_unreachable("Unexpected opcode");
-  case RISCV::PseudoLA_GOT_GPREL:
-    FlagsHi = RISCVII::MO_GOT_GPREL_HI;
-    FlagsAdd = RISCVII::MO_GOT_GPREL_ADD;
-    FlagsLo = RISCVII::MO_GOT_GPREL_LO;
-    LowOpcode = STI->is64Bit() ? RISCV::LD : RISCV::LW;
-    break;
-  case RISCV::PseudoLA_TLS_IE_GPREL:
-    FlagsHi = RISCVII::MO_TLS_GOT_GPREL_HI;
-    FlagsAdd = RISCVII::MO_TLS_GOT_GPREL_ADD;
-    FlagsLo = RISCVII::MO_TLS_GOT_GPREL_LO;
-    LowOpcode = STI->is64Bit() ? RISCV::LD : RISCV::LW;
-    break;
-  case RISCV::PseudoLA_TLS_GD_GPREL:
-    FlagsHi = RISCVII::MO_TLS_GD_GPREL_HI;
-    FlagsAdd = RISCVII::MO_TLS_GD_GPREL_ADD;
-    FlagsLo = RISCVII::MO_TLS_GD_GPREL_LO;
-    LowOpcode = RISCV::ADDI;
-    break;
-  }
-
-  Register DestReg = MI.getOperand(0).getReg();
-  Register HiReg = MF->getRegInfo().createVirtualRegister(&RISCV::GPRRegClass);
-  Register AddReg = MF->getRegInfo().createVirtualRegister(&RISCV::GPRRegClass);
-
-  MachineInstr *HiMI =
-      BuildMI(MBB, MBBI, DL, TII->get(RISCV::LUI), HiReg).add(MI.getOperand(1));
-  HiMI->getOperand(1).setTargetFlags(FlagsHi);
-
-  MachineInstr *AddRegMI =
-      BuildMI(MBB, MBBI, DL, TII->get(RISCV::PseudoAddRegRel), AddReg)
-          .addReg(HiReg, RegState::Kill)
-          .add(MI.getOperand(2))
-          .add(MI.getOperand(1));
-  AddRegMI->getOperand(3).setTargetFlags(FlagsAdd);
-
-  MachineInstr *HiMi = BuildMI(MBB, MBBI, DL, TII->get(LowOpcode), DestReg)
-                           .addReg(AddReg, RegState::Kill)
-                           .add(MI.getOperand(1));
-  HiMi->getOperand(2).setTargetFlags(FlagsLo);
-
-  if (MI.hasOneMemOperand())
-    HiMi->addMemOperand(*MF, *MI.memoperands_begin());
-
-  MI.eraseFromParent();
-  return true;
-}
-#endif
 
 bool RISCVPreRAExpandPseudo::expandLoadTLSDescAddress(
     MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI,

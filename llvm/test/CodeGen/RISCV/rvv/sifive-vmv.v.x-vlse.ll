@@ -51,7 +51,7 @@ define <vscale x 1 x i8> @intrinsic_vmv.v.x_i_nxv1i8(iXLen %0) nounwind {
 ; COMPACT-LABEL: intrinsic_vmv.v.x_i_nxv1i8:
 ; COMPACT:       # %bb.0: # %entry
 ; COMPACT-NEXT:    lui a1, %got_gprel_hi(.LCPI0_0)
-; COMPACT-NEXT:    add a1, a1, gp, %got_gprel(.LCPI0_0)
+; COMPACT-NEXT:    add a1, gp, a1, %got_gprel(.LCPI0_0)
 ; COMPACT-NEXT:    ld a1, %got_gprel_lo(.LCPI0_0)(a1)
 ; COMPACT-NEXT:    vsetvli zero, a0, e8, mf8, ta, ma
 ; COMPACT-NEXT:    vlse8.v v8, (a1), zero
