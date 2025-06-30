@@ -1685,6 +1685,10 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
          ISD::SREM,         ISD::UREM,         ISD::INSERT_VECTOR_ELT,
          ISD::ABS,          ISD::CTPOP,        ISD::VECTOR_SHUFFLE,
          ISD::VSELECT,      ISD::VECREDUCE_ADD});
+#if SIFIVE_CUSTOMIZATION
+  if (Subtarget.hasStdExtZvfbfwma())
+    setTargetDAGCombine(ISD::FMA);
+#endif
 
   if (Subtarget.hasVendorXTHeadMemPair())
     setTargetDAGCombine({ISD::LOAD, ISD::STORE});
@@ -20244,7 +20248,122 @@ static SDValue combineVZEXT_VL(SDNode *N, SelectionDAG &DAG) {
   // Otherwise, we need to extend to i32.
   return DAG.getNode(RISCVISD::VZEXT_VL, DL, VT, Sub, Mask, EVL);
 }
+
+// Look for FMAs were one multiplicand is an fp_extend of a bf16 and the other
+// multiplicand is a splat shuffle of a fp_extend from bf16. Rewrite to shuffle
+// the input of the fp_extend first. Only do this if all uses of the splatted
+// fp_extend are also splat shuffles used by an FMA.
+static SDValue combineFMA(SDNode *N, SelectionDAG &DAG,
+                          const RISCVSubtarget &Subtarget) {
+  if (!Subtarget.hasStdExtZvfbfwma())
+    return SDValue();
+
+  EVT VT = N->getValueType(0);
+  if (!VT.isVector() || VT.getVectorElementType() != MVT::f32)
+    return SDValue();
+
+  SDValue LHS = N->getOperand(0);
+  SDValue RHS = N->getOperand(1);
+
+  auto SwapShuffleOfExtend = [&DAG](SDValue &Op) {
+    // Look for a single use splat shuffle.
+    auto *SV = dyn_cast<ShuffleVectorSDNode>(Op);
+    if (!SV || !SV->isSplat() || !SV->hasOneUse())
+      return false;
+
+    int SplatIndex = SV->getSplatIndex();
+    if (SplatIndex < 0)
+      return false;
+
+    ArrayRef<int> Mask = SV->getMask();
+    SDValue ShuffleSrc = SV->getOperand(SplatIndex / Mask.size());
+    SplatIndex %= Mask.size();
+
+    // Look through a concat_vector that might have been created to make the
+    // shuffle input type match it's output type.
+    SDValue Extend = ShuffleSrc;
+    unsigned NumConcat = 0;
+    if (Extend.getOpcode() == ISD::CONCAT_VECTORS) {
+      int OpElements =
+          Extend.getOperand(0).getValueType().getVectorNumElements();
+      if ((SplatIndex / OpElements) == 0 && Extend.getOperand(0)->hasOneUse()) {
+        NumConcat = Extend.getNumOperands();
+        Extend = Extend.getOperand(0);
+      }
+    }
+
+    if (Extend.getOpcode() != ISD::FP_EXTEND)
+      return false;
+
+    SDValue ExtendSrc = Extend.getOperand(0);
+    if (ExtendSrc.getValueType().getVectorElementType() != MVT::bf16)
+      return false;
+
+    // Make sure all uses of the shuffle input are also this pattern so that
+    // once we complete all rewrites the original extend will be dead.
+    for (SDNode *Use : ShuffleSrc->users()) {
+      // Look for single use splat shuffles.
+      auto *SVUse = dyn_cast<ShuffleVectorSDNode>(Use);
+      if (!SVUse || !SVUse->isSplat() || !SVUse->hasOneUse())
+        return false;
+
+      int SplatIndex = SVUse->getSplatIndex();
+      if (SplatIndex < 0)
+        return false;
+
+      if (SVUse->getOperand(SplatIndex / SV->getMask().size()) != ShuffleSrc)
+        return false;
+
+      // Use should be operand 0 or 1 of an FMA.
+      SDNode *FMA = SVUse->use_begin()->getUser();
+      unsigned OpNo = SVUse->use_begin()->getOperandNo();
+      if (FMA->getOpcode() != ISD::FMA || OpNo == 2)
+        return false;
+
+      // The other multiplicand should be an FP_EXTEND from bf16.
+      if (FMA->getOperand(1 - OpNo).getOpcode() != ISD::FP_EXTEND ||
+          FMA->getOperand(1 - OpNo)
+                  .getOperand(0)
+                  .getValueType()
+                  .getVectorElementType() != MVT::bf16)
+        return false;
+    }
+
+    SDLoc DL(SV);
+
+    // Rebuild the concat if we looked through one earlier.
+    if (NumConcat > 0) {
+      EVT ConcatVT =
+          EVT::getVectorVT(*DAG.getContext(), MVT::bf16,
+                           Op.getValueType().getVectorElementCount());
+      SmallVector<SDValue, 4> ConcatOps(NumConcat,
+                                        DAG.getUNDEF(ExtendSrc.getValueType()));
+      ConcatOps[0] = ExtendSrc;
+      ExtendSrc = DAG.getNode(ISD::CONCAT_VECTORS, DL, ConcatVT, ConcatOps);
+    }
+
+    // Pass the source to both inputs so we don't need to know the splat index.
+    // Canonicalization will convert it to a proper unary shuffle.
+    SDValue NewShuffle = DAG.getVectorShuffle(ExtendSrc.getValueType(), DL,
+                                              ExtendSrc, ExtendSrc, Mask);
+    Op = DAG.getNode(ISD::FP_EXTEND, DL, Op.getValueType(), NewShuffle);
+    return true;
+  };
+
+  // One operand should be an extend and the other should be a shuffle of an
+  // extend that can be rewritten.
+  if ((LHS.getOpcode() == ISD::FP_EXTEND &&
+       LHS.getOperand(0).getValueType().getVectorElementType() == MVT::bf16 &&
+       SwapShuffleOfExtend(RHS)) ||
+      (RHS.getOpcode() == ISD::FP_EXTEND &&
+       RHS.getOperand(0).getValueType().getVectorElementType() == MVT::bf16 &&
+       SwapShuffleOfExtend(LHS)))
+    return DAG.getNode(ISD::FMA, SDLoc(N), VT, LHS, RHS, N->getOperand(2));
+
+  return SDValue();
+}
 #endif // SIFIVE_CUSTOMIZATION
+
 static SDValue performVECTOR_SHUFFLECombine(SDNode *N, SelectionDAG &DAG,
                                             const RISCVSubtarget &Subtarget,
                                             const RISCVTargetLowering &TLI) {
@@ -22187,6 +22306,8 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     return combineVPShlOfSExt(N, DAG);
   case RISCVISD::VZEXT_VL:
     return combineVZEXT_VL(N, DAG);
+  case ISD::FMA:
+    return combineFMA(N, DAG, Subtarget);
 #endif // SIFIVE_CUSTOMIZATION
   case ISD::BITCAST: {
     assert(Subtarget.useRVVForFixedLengthVectors());
