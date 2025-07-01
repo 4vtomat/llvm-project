@@ -1,7 +1,11 @@
 ; RUN: opt --passes='print<inline-cost>' %s -disable-output 2>&1 | FileCheck %s
 ; RUN: opt --passes='print<inline-cost>' %s -enable-loop-inline-bonus=false -disable-output 2>&1 | FileCheck %s --check-prefix=NO-LOOP-BONUS
+; RUN: opt --passes='print<inline-cost>' %s -loop-concat-canonicalize -inline-leaf-threshold-limit=1 -disable-output 2>&1 | FileCheck %s --check-prefix=NO-LOOP-BONUS
 ; RUN: opt --passes='print<inline-cost>' %s -inverse-caller-nested-loop-inline-bonus=true -disable-output 2>&1 | FileCheck %s --check-prefix=INVERSE-CALLER
 ; RUN: opt --passes='print<inline-cost>' %s -inverse-callee-nested-loop-inline-bonus=false -disable-output 2>&1 | FileCheck %s --check-prefix=NO-INVERSE-CALLEE
+
+; The LoopConcatenation switch with an altered leaf threshold limit is equivalent to disabling
+; the loop bonus feature as it does the same thing in this case.
 
 define void @callee(ptr %dst) {
   store i64 87, ptr %dst

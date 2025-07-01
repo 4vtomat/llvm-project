@@ -850,7 +850,7 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
   void onMissedSimplification(Instruction *I) override {
     int64_t Cost = InstrCost;
     Function *Caller = CandidateCall.getFunction();
-    if (EnableLoopBonus && !Caller->hasMinSize()) {
+    if (EnableLoopBonus && !LoopConcatCanonicalize && !Caller->hasMinSize()) {
       BasicBlock *BB = I->getParent();
       if (unsigned Depth = CalleeLI.getLoopDepth(BB)) {
         unsigned DiscountPercent = 0;
@@ -2326,7 +2326,7 @@ void InlineCostCallAnalyzer::updateThreshold(CallBase &Call, Function &Callee) {
 
 #if SIFIVE_CUSTOMIZATION
     // Adjust the inline threshold according to the enclosing loop.
-    if (EnableLoopBonus) {
+    if (EnableLoopBonus && !LoopConcatCanonicalize) {
       BasicBlock *CallsiteBB = Call.getParent();
       DominatorTree CallerDT(*Caller);
       LoopInfo CallerLI(CallerDT);
