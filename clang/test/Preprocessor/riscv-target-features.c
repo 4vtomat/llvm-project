@@ -1540,6 +1540,10 @@
 // RUN: %clang --target=riscv64-unknown-linux-gnu -mtune=rocket -mcpu=sifive-x390-fast-fp64 -E -dM %s \
 // RUN:   -o - | FileCheck --check-prefix=CHECK-TUNE-MCPU-X390-FAST-VECTOR-FP64 %s
 // CHECK-TUNE-MCPU-X390-FAST-VECTOR-FP64-NOT: __sifive_slow_vector_fp64
+//
+// RUN: %clang --target=riscv64-unknown-linux-gnu -mtune=rocket -mcpu=sifive-x390 -E -dM %s \
+// RUN:   -o - | FileCheck --check-prefix=CHECK-MTUNE-PRIORITY-OVER-MCPU %s
+// CHECK-MTUNE-PRIORITY-OVER-MCPU-NOT: __sifive_slow_vector_fp64
 
 // RUN: %clang --target=riscv32 \
 // RUN: -march=rv32i_zve32x_xsfmm128t -x c -E -dM %s \

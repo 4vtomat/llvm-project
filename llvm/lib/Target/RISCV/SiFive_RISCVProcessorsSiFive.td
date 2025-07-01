@@ -622,7 +622,7 @@ defvar SIFIVE_X390_TuneFeatures = !listconcat(SiFive7TuneFeatures,
 def SIFIVE_X390_SLOW_FP64
     : RISCVProcessorModel<"sifive-x390",
                           SiFive7SVLEN1024DualVALUSlowFP64Model,
-                          SIFIVE_X390_Features, SIFIVE_X390_TuneFeatures>;
+                          !listconcat(SIFIVE_X390_Features, [FeatureSlowVectorFP64]), SIFIVE_X390_TuneFeatures>;
 
 def SIFIVE_X390_FAST_FP64
     : RISCVProcessorModel<"sifive-x390-fast-fp64",
