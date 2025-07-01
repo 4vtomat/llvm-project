@@ -81,7 +81,8 @@ define void @_Z3fn1v(i32 %n, ptr %k, i32 %l) {
 ; CHECK-NEXT:    [[FOUND_CONFLICT9:%.*]] = and i1 [[BOUND07]], [[BOUND18]]
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT9]], label [[SCALAR_PH11]], label [[VECTOR_PH12:%.*]]
 ; CHECK:       vector.ph10:
-; CHECK-NEXT:    [[TMP34:%.*]] = shl nsw i64 [[TMP0]], 3
+; CHECK-NEXT:    [[TMP33:%.*]] = sext i32 [[L]] to i64
+; CHECK-NEXT:    [[TMP34:%.*]] = shl nsw i64 [[TMP33]], 3
 ; CHECK-NEXT:    br label [[VECTOR_BODY18:%.*]]
 ; CHECK:       vector.body11:
 ; CHECK-NEXT:    [[INDEX19:%.*]] = phi i64 [ 0, [[VECTOR_PH12]] ], [ [[INDEX_EVL_NEXT22:%.*]], [[VECTOR_BODY18]] ]
