@@ -623,11 +623,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     setLoadExtAction(ISD::EXTLOAD, MVT::f64, MVT::bf16, Expand);
     setTruncStoreAction(MVT::f64, MVT::bf16, Expand);
     setOperationAction(ISD::IS_FPCLASS, MVT::f64, Custom);
-#if SIFIVE_CUSTOMIZATION
-    // SIFIVE cherry-picked from D151284 for SCT-2553.
-    setOperationAction(ISD::FP_TO_FP16, MVT::f64, Custom);
-    setOperationAction(ISD::FP16_TO_FP, MVT::f64, Expand);
-#endif // SIFIVE_CUSTOMIZATION
     setOperationAction(ISD::BF16_TO_FP, MVT::f64, Custom);
     setOperationAction(ISD::FP_TO_BF16, MVT::f64,
                        Subtarget.isSoftFPABI() ? LibCall : Custom);
