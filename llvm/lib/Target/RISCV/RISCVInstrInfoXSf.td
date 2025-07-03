@@ -240,10 +240,29 @@ multiclass CustomSiFiveVCIX<string suffix, VCIXType type,
                                              InTyRs1, 1>;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+// For XSfvqmaccdod/qoq and XSfvfwmaccqqq
+class SiFiveVMACCScheds<string name> {
+  defvar n = !tolower(name);
+  defvar prefix = !if(!ne(!find(n, "fw"), -1), "FW", "Q");
+  defvar suffix = !if(!ne(!find(n, "2x8x2"), -1), "DOD",
+                      !if(!eq(prefix, "Q"), "QOQ", "QQQ"));
+
+  string read = "ReadSF_V" # prefix # "MACC_" # suffix;
+  string write = "WriteSF_V" # prefix # "MACC_" # suffix;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
 class CustomSiFiveVMACC<bits<6> funct6, RISCVVFormat opv, string opcodestr>
     : RVInstVCCustom2<funct6{5-2}, opv.Value, (outs VR:$rd), (ins VR:$rs1, VR:$rs2),
-                      opcodestr, "$rd, $rs1, $rs2"> {
+                      opcodestr, "$rd, $rs1, $rs2">,
+#ifdef SIFIVE_CUSTOMIZATION
+      SchedTernaryMC<SiFiveVMACCScheds<NAME>.write,
+                     SiFiveVMACCScheds<NAME>.read,
+                     SiFiveVMACCScheds<NAME>.read,
+                     SiFiveVMACCScheds<NAME>.read> {
+#endif // SIFIVE_CUSTOMIZATION
   let vm = 1;
   let funct6_lo2 = funct6{1-0};
 }
@@ -456,9 +475,17 @@ multiclass VPseudoVC_XVW<LMULInfo m, DAGOperand RS1Class,
 }
 
 multiclass VPseudoSiFiveVMACC<string mx, VReg vd_type, VReg vs2_type> {
+#ifdef SIFIVE_CUSTOMIZATION
+  defvar SchedWriteName = SiFiveVMACCScheds<NAME>.write;
+  defvar SchedReadName = SiFiveVMACCScheds<NAME>.read;
+#endif // SIFIVE_CUSTOMIZATION
   def "Pseudo" # NAME # "_" # mx
       : VPseudoTernaryNoMaskWithPolicy<vd_type, V_M1.vrclass, vs2_type,
-                                       "@earlyclobber $rd">;
+                                       "@earlyclobber $rd">,
+#ifdef SIFIVE_CUSTOMIZATION
+        SchedTernary<SchedWriteName, SchedReadName, SchedReadName,
+                     SchedReadName, mx>;
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 multiclass VPseudoSiFiveVQMACCDOD {

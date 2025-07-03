@@ -273,6 +273,11 @@ defm : UnsupportedSchedZfhmin;
 defm : UnsupportedSchedSFB;
 defm : UnsupportedSchedZabha;
 defm : UnsupportedSchedXsfvcp;
-defm : UnsupportedSchedXSfsci; // SIFIVE
+#ifdef SIFIVE_CUSTOMIZATION
+defm : UnsupportedSchedXSfsci;
+defm : UnsupportedSchedXSfvqmaccdod;
+defm : UnsupportedSchedXSfvqmaccqoq;
+defm : UnsupportedSchedXSfvfwmaccqqq;
+#endif // SIFIVE_CUSTOMIZATION
 defm : UnsupportedSchedZvk;
 }

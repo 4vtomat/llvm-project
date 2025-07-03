@@ -320,7 +320,12 @@ def : ReadAdvance<ReadSingleBitImm, 0>;
 // Unsupported extensions
 defm : UnsupportedSchedV;
 defm : UnsupportedSchedXsfvcp;
-defm : UnsupportedSchedXSfsci; // SIFIVE
+#ifdef SIFIVE_CUSTOMIZATION
+defm : UnsupportedSchedXSfsci;
+defm : UnsupportedSchedXSfvqmaccdod;
+defm : UnsupportedSchedXSfvqmaccqoq;
+defm : UnsupportedSchedXSfvfwmaccqqq;
+#endif // SIFIVE_CUSTOMIZATION
 defm : UnsupportedSchedZabha;
 defm : UnsupportedSchedZbc;
 defm : UnsupportedSchedZbkb;
