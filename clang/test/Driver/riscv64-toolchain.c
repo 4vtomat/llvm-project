@@ -109,6 +109,22 @@
 // RUN: env "PATH=" %clang -### %s -fuse-ld=ld -no-pie \
 // RUN:   --target=riscv64-unknown-linux-gnu --rtlib=platform --unwindlib=platform \
 // RUN:   -march=rv64imafdc_zicsr_zifencei_zicfilp_zicfiss \
+// RUN:   -menable-experimental-extensions -fcf-protection=branch \
+// RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv_linux_sdk \
+// RUN:   --sysroot=%S/Inputs/multilib_riscv_linux_sdk/sysroot 2>&1 \
+// RUN:   | FileCheck -check-prefix=C-RV64-LINUX-MULTI-LP64D-CFI %s
+
+// RUN: env "PATH=" %clang -### %s -fuse-ld=ld -no-pie \
+// RUN:   --target=riscv64-unknown-linux-gnu --rtlib=platform --unwindlib=platform \
+// RUN:   -march=rv64imafdc_zicsr_zifencei_zicfilp_zicfiss \
+// RUN:   -menable-experimental-extensions -fcf-protection=return \
+// RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv_linux_sdk \
+// RUN:   --sysroot=%S/Inputs/multilib_riscv_linux_sdk/sysroot 2>&1 \
+// RUN:   | FileCheck -check-prefix=C-RV64-LINUX-MULTI-LP64D-CFI %s
+
+// RUN: env "PATH=" %clang -### %s -fuse-ld=ld -no-pie \
+// RUN:   --target=riscv64-unknown-linux-gnu --rtlib=platform --unwindlib=platform \
+// RUN:   -march=rv64imafdc_zicsr_zifencei_zicfilp_zicfiss \
 // RUN:   -menable-experimental-extensions -fcf-protection=full \
 // RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv_linux_sdk \
 // RUN:   --sysroot=%S/Inputs/multilib_riscv_linux_sdk/sysroot 2>&1 \
