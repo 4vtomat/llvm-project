@@ -151,3 +151,379 @@ bb:
   store <32 x float> %call31, ptr %p7, align 128
   ret void
 }
+
+define void @test3(ptr %p, <8 x bfloat> %arg1, ptr %p0, ptr %p1, ptr %p2, ptr %p3, ptr %p4, ptr %p5, ptr %p6, ptr %p7) {
+; CHECK-LABEL: test3:
+; CHECK:       # %bb.0: # %bb
+; CHECK-NEXT:    flh fa5, 0(a0)
+; CHECK-NEXT:    vsetivli zero, 8, e16, mf4, ta, ma
+; CHECK-NEXT:    vle32.v v9, (a1)
+; CHECK-NEXT:    addi t0, a0, 2047
+; CHECK-NEXT:    vle32.v v10, (a2)
+; CHECK-NEXT:    vfwmaccbf16.vf v9, fa5, v8
+; CHECK-NEXT:    flh fa5, 1(t0)
+; CHECK-NEXT:    lui t0, 1
+; CHECK-NEXT:    vle32.v v11, (a3)
+; CHECK-NEXT:    add t0, a0, t0
+; CHECK-NEXT:    vfwmaccbf16.vf v10, fa5, v8
+; CHECK-NEXT:    flh fa5, 0(t0)
+; CHECK-NEXT:    lui t0, 2
+; CHECK-NEXT:    vle32.v v12, (a5)
+; CHECK-NEXT:    add t0, a0, t0
+; CHECK-NEXT:    vfwmaccbf16.vf v11, fa5, v8
+; CHECK-NEXT:    flh fa5, 0(t0)
+; CHECK-NEXT:    ld t0, 0(sp)
+; CHECK-NEXT:    lui t1, 3
+; CHECK-NEXT:    add t1, a0, t1
+; CHECK-NEXT:    vfwmaccbf16.vf v12, fa5, v8
+; CHECK-NEXT:    flh fa5, 0(t1)
+; CHECK-NEXT:    li t1, 3
+; CHECK-NEXT:    vle32.v v13, (a7)
+; CHECK-NEXT:    vle32.v v14, (a4)
+; CHECK-NEXT:    slli t1, t1, 11
+; CHECK-NEXT:    add t1, a0, t1
+; CHECK-NEXT:    vfwmaccbf16.vf v13, fa5, v8
+; CHECK-NEXT:    flh fa5, 0(t1)
+; CHECK-NEXT:    li t1, 5
+; CHECK-NEXT:    vle32.v v15, (a6)
+; CHECK-NEXT:    slli t1, t1, 11
+; CHECK-NEXT:    add t1, a0, t1
+; CHECK-NEXT:    vfwmaccbf16.vf v14, fa5, v8
+; CHECK-NEXT:    flh fa5, 0(t1)
+; CHECK-NEXT:    li t1, 7
+; CHECK-NEXT:    slli t1, t1, 11
+; CHECK-NEXT:    add a0, a0, t1
+; CHECK-NEXT:    vfwmaccbf16.vf v15, fa5, v8
+; CHECK-NEXT:    flh fa5, 0(a0)
+; CHECK-NEXT:    vle32.v v16, (t0)
+; CHECK-NEXT:    vse32.v v9, (a1)
+; CHECK-NEXT:    vse32.v v10, (a2)
+; CHECK-NEXT:    vse32.v v11, (a3)
+; CHECK-NEXT:    vfwmaccbf16.vf v16, fa5, v8
+; CHECK-NEXT:    vse32.v v14, (a4)
+; CHECK-NEXT:    vse32.v v12, (a5)
+; CHECK-NEXT:    vse32.v v15, (a6)
+; CHECK-NEXT:    vse32.v v13, (a7)
+; CHECK-NEXT:    vse32.v v16, (t0)
+; CHECK-NEXT:    ret
+bb:
+  %strided_load = call <8 x bfloat> @llvm.experimental.vp.strided.load.v8bf16.p0.i64(ptr align 2 %p, i64 2048, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 8)
+  %fpext = fpext <8 x bfloat> %arg1 to <8 x float>
+  %fpext10 = fpext <8 x bfloat> %strided_load to <8 x float>
+  %shufflevector = shufflevector <8 x float> %fpext10, <8 x float> poison, <8 x i32> zeroinitializer
+  %load = load <8 x float>, ptr %p0, align 128
+  %call = tail call <8 x float> @llvm.fma.v32f32(<8 x float> %shufflevector, <8 x float> %fpext, <8 x float> %load)
+  %shufflevector11 = shufflevector <8 x float> %fpext10, <8 x float> poison, <8 x i32> <i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1>
+  %load12 = load <8 x float>, ptr %p1, align 128
+  %call13 = tail call <8 x float> @llvm.fma.v32f32(<8 x float> %shufflevector11, <8 x float> %fpext, <8 x float> %load12)
+  %shufflevector14 = shufflevector <8 x float> %fpext10, <8 x float> poison, <8 x i32> <i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2>
+  %load15 = load <8 x float>, ptr %p2, align 128
+  %call16 = tail call <8 x float> @llvm.fma.v32f32(<8 x float> %shufflevector14, <8 x float> %fpext, <8 x float> %load15)
+  %shufflevector17 = shufflevector <8 x float> %fpext10, <8 x float> poison, <8 x i32> <i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3>
+  %load18 = load <8 x float>, ptr %p3, align 128
+  %call19 = tail call <8 x float> @llvm.fma.v32f32(<8 x float> %shufflevector17, <8 x float> %fpext, <8 x float> %load18)
+  %shufflevector20 = shufflevector <8 x float> %fpext10, <8 x float> poison, <8 x i32> <i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4>
+  %load21 = load <8 x float>, ptr %p4, align 128
+  %call22 = tail call <8 x float> @llvm.fma.v32f32(<8 x float> %shufflevector20, <8 x float> %fpext, <8 x float> %load21)
+  %shufflevector23 = shufflevector <8 x float> %fpext10, <8 x float> poison, <8 x i32> <i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5>
+  %load24 = load <8 x float>, ptr %p5, align 128
+  %call25 = tail call <8 x float> @llvm.fma.v32f32(<8 x float> %shufflevector23, <8 x float> %fpext, <8 x float> %load24)
+  %shufflevector26 = shufflevector <8 x float> %fpext10, <8 x float> poison, <8 x i32> <i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6>
+  %load27 = load <8 x float>, ptr %p6, align 128
+  %call28 = tail call <8 x float> @llvm.fma.v32f32(<8 x float> %shufflevector26, <8 x float> %fpext, <8 x float> %load27)
+  %shufflevector29 = shufflevector <8 x float> %fpext10, <8 x float> poison, <8 x i32> <i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7>
+  %load30 = load <8 x float>, ptr %p7, align 128
+  %call31 = tail call <8 x float> @llvm.fma.v32f32(<8 x float> %shufflevector29, <8 x float> %fpext, <8 x float> %load30)
+  store <8 x float> %call, ptr %p0, align 128
+  store <8 x float> %call13, ptr %p1, align 128
+  store <8 x float> %call16, ptr %p2, align 128
+  store <8 x float> %call19, ptr %p3, align 128
+  store <8 x float> %call22, ptr %p4, align 128
+  store <8 x float> %call25, ptr %p5, align 128
+  store <8 x float> %call28, ptr %p6, align 128
+  store <8 x float> %call31, ptr %p7, align 128
+  ret void
+}
+
+define void @test4(ptr %p, <32 x bfloat> %arg1, ptr %p0, ptr %p1, ptr %p2, ptr %p3, ptr %p4, ptr %p5, ptr %p6, ptr %p7) {
+; CHECK-LABEL: test4:
+; CHECK:       # %bb.0: # %bb
+; CHECK-NEXT:    flh fa5, 0(a0)
+; CHECK-NEXT:    li t0, 32
+; CHECK-NEXT:    vsetvli zero, t0, e16, mf2, ta, ma
+; CHECK-NEXT:    vle32.v v9, (a1)
+; CHECK-NEXT:    ld t0, 0(sp)
+; CHECK-NEXT:    addi t1, a0, 2047
+; CHECK-NEXT:    vfwmaccbf16.vf v9, fa5, v8
+; CHECK-NEXT:    flh fa5, 1(t1)
+; CHECK-NEXT:    vle32.v v10, (a2)
+; CHECK-NEXT:    lui t1, 1
+; CHECK-NEXT:    add t1, a0, t1
+; CHECK-NEXT:    vle32.v v11, (a3)
+; CHECK-NEXT:    vfwmaccbf16.vf v10, fa5, v8
+; CHECK-NEXT:    flh fa5, 0(t1)
+; CHECK-NEXT:    lui t1, 2
+; CHECK-NEXT:    add t1, a0, t1
+; CHECK-NEXT:    vle32.v v12, (a5)
+; CHECK-NEXT:    vfwmaccbf16.vf v11, fa5, v8
+; CHECK-NEXT:    flh fa5, 0(t1)
+; CHECK-NEXT:    lui t1, 3
+; CHECK-NEXT:    add t1, a0, t1
+; CHECK-NEXT:    vle32.v v13, (a7)
+; CHECK-NEXT:    vfwmaccbf16.vf v12, fa5, v8
+; CHECK-NEXT:    flh fa5, 0(t1)
+; CHECK-NEXT:    li t1, 3
+; CHECK-NEXT:    slli t1, t1, 11
+; CHECK-NEXT:    add t1, a0, t1
+; CHECK-NEXT:    vfwmaccbf16.vf v13, fa5, v8
+; CHECK-NEXT:    flh fa5, 0(t1)
+; CHECK-NEXT:    li t1, 5
+; CHECK-NEXT:    vle32.v v14, (a4)
+; CHECK-NEXT:    slli t1, t1, 11
+; CHECK-NEXT:    vle32.v v15, (a6)
+; CHECK-NEXT:    add t1, a0, t1
+; CHECK-NEXT:    vfwmaccbf16.vf v14, fa5, v8
+; CHECK-NEXT:    flh fa5, 0(t1)
+; CHECK-NEXT:    li t1, 7
+; CHECK-NEXT:    slli t1, t1, 11
+; CHECK-NEXT:    add a0, a0, t1
+; CHECK-NEXT:    vfwmaccbf16.vf v15, fa5, v8
+; CHECK-NEXT:    flh fa5, 0(a0)
+; CHECK-NEXT:    vle32.v v16, (t0)
+; CHECK-NEXT:    vse32.v v9, (a1)
+; CHECK-NEXT:    vse32.v v10, (a2)
+; CHECK-NEXT:    vse32.v v11, (a3)
+; CHECK-NEXT:    vfwmaccbf16.vf v16, fa5, v8
+; CHECK-NEXT:    vse32.v v14, (a4)
+; CHECK-NEXT:    vse32.v v12, (a5)
+; CHECK-NEXT:    vse32.v v15, (a6)
+; CHECK-NEXT:    vse32.v v13, (a7)
+; CHECK-NEXT:    vse32.v v16, (t0)
+; CHECK-NEXT:    ret
+bb:
+  %strided_load = call <8 x bfloat> @llvm.experimental.vp.strided.load.v8bf16.p0.i64(ptr align 2 %p, i64 2048, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 8)
+  %fpext = fpext <32 x bfloat> %arg1 to <32 x float>
+  %fpext10 = fpext <8 x bfloat> %strided_load to <8 x float>
+  %shufflevector = shufflevector <8 x float> %fpext10, <8 x float> poison, <32 x i32> zeroinitializer
+  %load = load <32 x float>, ptr %p0, align 128
+  %call = tail call <32 x float> @llvm.fma.v32f32(<32 x float> %shufflevector, <32 x float> %fpext, <32 x float> %load)
+  %shufflevector11 = shufflevector <8 x float> %fpext10, <8 x float> poison, <32 x i32> <i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1>
+  %load12 = load <32 x float>, ptr %p1, align 128
+  %call13 = tail call <32 x float> @llvm.fma.v32f32(<32 x float> %shufflevector11, <32 x float> %fpext, <32 x float> %load12)
+  %shufflevector14 = shufflevector <8 x float> %fpext10, <8 x float> poison, <32 x i32> <i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2>
+  %load15 = load <32 x float>, ptr %p2, align 128
+  %call16 = tail call <32 x float> @llvm.fma.v32f32(<32 x float> %shufflevector14, <32 x float> %fpext, <32 x float> %load15)
+  %shufflevector17 = shufflevector <8 x float> %fpext10, <8 x float> poison, <32 x i32> <i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3>
+  %load18 = load <32 x float>, ptr %p3, align 128
+  %call19 = tail call <32 x float> @llvm.fma.v32f32(<32 x float> %shufflevector17, <32 x float> %fpext, <32 x float> %load18)
+  %shufflevector20 = shufflevector <8 x float> %fpext10, <8 x float> poison, <32 x i32> <i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4>
+  %load21 = load <32 x float>, ptr %p4, align 128
+  %call22 = tail call <32 x float> @llvm.fma.v32f32(<32 x float> %shufflevector20, <32 x float> %fpext, <32 x float> %load21)
+  %shufflevector23 = shufflevector <8 x float> %fpext10, <8 x float> poison, <32 x i32> <i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5>
+  %load24 = load <32 x float>, ptr %p5, align 128
+  %call25 = tail call <32 x float> @llvm.fma.v32f32(<32 x float> %shufflevector23, <32 x float> %fpext, <32 x float> %load24)
+  %shufflevector26 = shufflevector <8 x float> %fpext10, <8 x float> poison, <32 x i32> <i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6>
+  %load27 = load <32 x float>, ptr %p6, align 128
+  %call28 = tail call <32 x float> @llvm.fma.v32f32(<32 x float> %shufflevector26, <32 x float> %fpext, <32 x float> %load27)
+  %shufflevector29 = shufflevector <8 x float> %fpext10, <8 x float> poison, <32 x i32> <i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7>
+  %load30 = load <32 x float>, ptr %p7, align 128
+  %call31 = tail call <32 x float> @llvm.fma.v32f32(<32 x float> %shufflevector29, <32 x float> %fpext, <32 x float> %load30)
+  store <32 x float> %call, ptr %p0, align 128
+  store <32 x float> %call13, ptr %p1, align 128
+  store <32 x float> %call16, ptr %p2, align 128
+  store <32 x float> %call19, ptr %p3, align 128
+  store <32 x float> %call22, ptr %p4, align 128
+  store <32 x float> %call25, ptr %p5, align 128
+  store <32 x float> %call28, ptr %p6, align 128
+  store <32 x float> %call31, ptr %p7, align 128
+  ret void
+}
+
+define void @test5(ptr %p, <8 x bfloat> %arg1, ptr %p0, ptr %p1, ptr %p2, ptr %p3, ptr %p4, ptr %p5, ptr %p6, ptr %p7) {
+; CHECK-LABEL: test5:
+; CHECK:       # %bb.0: # %bb
+; CHECK-NEXT:    flh fa5, 0(a0)
+; CHECK-NEXT:    vsetivli zero, 8, e16, mf4, ta, ma
+; CHECK-NEXT:    vle32.v v9, (a1)
+; CHECK-NEXT:    addi t0, a0, 2047
+; CHECK-NEXT:    vle32.v v10, (a2)
+; CHECK-NEXT:    vfwmaccbf16.vf v9, fa5, v8
+; CHECK-NEXT:    flh fa5, 1(t0)
+; CHECK-NEXT:    lui t0, 1
+; CHECK-NEXT:    vle32.v v11, (a3)
+; CHECK-NEXT:    add t0, a0, t0
+; CHECK-NEXT:    vfwmaccbf16.vf v10, fa5, v8
+; CHECK-NEXT:    flh fa5, 0(t0)
+; CHECK-NEXT:    lui t0, 2
+; CHECK-NEXT:    vle32.v v12, (a5)
+; CHECK-NEXT:    add t0, a0, t0
+; CHECK-NEXT:    vfwmaccbf16.vf v11, fa5, v8
+; CHECK-NEXT:    flh fa5, 0(t0)
+; CHECK-NEXT:    ld t0, 0(sp)
+; CHECK-NEXT:    lui t1, 3
+; CHECK-NEXT:    add t1, a0, t1
+; CHECK-NEXT:    vfwmaccbf16.vf v12, fa5, v8
+; CHECK-NEXT:    flh fa5, 0(t1)
+; CHECK-NEXT:    li t1, 3
+; CHECK-NEXT:    vle32.v v13, (a7)
+; CHECK-NEXT:    vle32.v v14, (a4)
+; CHECK-NEXT:    slli t1, t1, 11
+; CHECK-NEXT:    add t1, a0, t1
+; CHECK-NEXT:    vfwmaccbf16.vf v13, fa5, v8
+; CHECK-NEXT:    flh fa5, 0(t1)
+; CHECK-NEXT:    li t1, 5
+; CHECK-NEXT:    vle32.v v15, (a6)
+; CHECK-NEXT:    slli t1, t1, 11
+; CHECK-NEXT:    add t1, a0, t1
+; CHECK-NEXT:    vfwmaccbf16.vf v14, fa5, v8
+; CHECK-NEXT:    flh fa5, 0(t1)
+; CHECK-NEXT:    li t1, 7
+; CHECK-NEXT:    slli t1, t1, 11
+; CHECK-NEXT:    add a0, a0, t1
+; CHECK-NEXT:    vfwmaccbf16.vf v15, fa5, v8
+; CHECK-NEXT:    flh fa5, 0(a0)
+; CHECK-NEXT:    vle32.v v16, (t0)
+; CHECK-NEXT:    vse32.v v9, (a1)
+; CHECK-NEXT:    vse32.v v10, (a2)
+; CHECK-NEXT:    vse32.v v11, (a3)
+; CHECK-NEXT:    vfwmaccbf16.vf v16, fa5, v8
+; CHECK-NEXT:    vse32.v v14, (a4)
+; CHECK-NEXT:    vse32.v v12, (a5)
+; CHECK-NEXT:    vse32.v v15, (a6)
+; CHECK-NEXT:    vse32.v v13, (a7)
+; CHECK-NEXT:    vse32.v v16, (t0)
+; CHECK-NEXT:    ret
+bb:
+  %strided_load = call <8 x i16> @llvm.experimental.vp.strided.load.v8i16.p0.i64(ptr align 2 %p, i64 2048, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 8)
+  %bitcast = bitcast <8 x i16> %strided_load to <8 x bfloat>
+  %fpext = fpext <8 x bfloat> %arg1 to <8 x float>
+  %fpext10 = fpext <8 x bfloat> %bitcast to <8 x float>
+  %shufflevector = shufflevector <8 x float> %fpext10, <8 x float> poison, <8 x i32> zeroinitializer
+  %load = load <8 x float>, ptr %p0, align 128
+  %call = tail call <8 x float> @llvm.fma.v32f32(<8 x float> %shufflevector, <8 x float> %fpext, <8 x float> %load)
+  %shufflevector11 = shufflevector <8 x float> %fpext10, <8 x float> poison, <8 x i32> <i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1>
+  %load12 = load <8 x float>, ptr %p1, align 128
+  %call13 = tail call <8 x float> @llvm.fma.v32f32(<8 x float> %shufflevector11, <8 x float> %fpext, <8 x float> %load12)
+  %shufflevector14 = shufflevector <8 x float> %fpext10, <8 x float> poison, <8 x i32> <i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2>
+  %load15 = load <8 x float>, ptr %p2, align 128
+  %call16 = tail call <8 x float> @llvm.fma.v32f32(<8 x float> %shufflevector14, <8 x float> %fpext, <8 x float> %load15)
+  %shufflevector17 = shufflevector <8 x float> %fpext10, <8 x float> poison, <8 x i32> <i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3>
+  %load18 = load <8 x float>, ptr %p3, align 128
+  %call19 = tail call <8 x float> @llvm.fma.v32f32(<8 x float> %shufflevector17, <8 x float> %fpext, <8 x float> %load18)
+  %shufflevector20 = shufflevector <8 x float> %fpext10, <8 x float> poison, <8 x i32> <i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4>
+  %load21 = load <8 x float>, ptr %p4, align 128
+  %call22 = tail call <8 x float> @llvm.fma.v32f32(<8 x float> %shufflevector20, <8 x float> %fpext, <8 x float> %load21)
+  %shufflevector23 = shufflevector <8 x float> %fpext10, <8 x float> poison, <8 x i32> <i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5>
+  %load24 = load <8 x float>, ptr %p5, align 128
+  %call25 = tail call <8 x float> @llvm.fma.v32f32(<8 x float> %shufflevector23, <8 x float> %fpext, <8 x float> %load24)
+  %shufflevector26 = shufflevector <8 x float> %fpext10, <8 x float> poison, <8 x i32> <i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6>
+  %load27 = load <8 x float>, ptr %p6, align 128
+  %call28 = tail call <8 x float> @llvm.fma.v32f32(<8 x float> %shufflevector26, <8 x float> %fpext, <8 x float> %load27)
+  %shufflevector29 = shufflevector <8 x float> %fpext10, <8 x float> poison, <8 x i32> <i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7>
+  %load30 = load <8 x float>, ptr %p7, align 128
+  %call31 = tail call <8 x float> @llvm.fma.v32f32(<8 x float> %shufflevector29, <8 x float> %fpext, <8 x float> %load30)
+  store <8 x float> %call, ptr %p0, align 128
+  store <8 x float> %call13, ptr %p1, align 128
+  store <8 x float> %call16, ptr %p2, align 128
+  store <8 x float> %call19, ptr %p3, align 128
+  store <8 x float> %call22, ptr %p4, align 128
+  store <8 x float> %call25, ptr %p5, align 128
+  store <8 x float> %call28, ptr %p6, align 128
+  store <8 x float> %call31, ptr %p7, align 128
+  ret void
+}
+
+define void @test6(ptr %p, <32 x bfloat> %arg1, ptr %p0, ptr %p1, ptr %p2, ptr %p3, ptr %p4, ptr %p5, ptr %p6, ptr %p7) {
+; CHECK-LABEL: test6:
+; CHECK:       # %bb.0: # %bb
+; CHECK-NEXT:    flh fa5, 0(a0)
+; CHECK-NEXT:    li t0, 32
+; CHECK-NEXT:    vsetvli zero, t0, e16, mf2, ta, ma
+; CHECK-NEXT:    vle32.v v9, (a1)
+; CHECK-NEXT:    ld t0, 0(sp)
+; CHECK-NEXT:    addi t1, a0, 2047
+; CHECK-NEXT:    vfwmaccbf16.vf v9, fa5, v8
+; CHECK-NEXT:    flh fa5, 1(t1)
+; CHECK-NEXT:    vle32.v v10, (a2)
+; CHECK-NEXT:    lui t1, 1
+; CHECK-NEXT:    add t1, a0, t1
+; CHECK-NEXT:    vle32.v v11, (a3)
+; CHECK-NEXT:    vfwmaccbf16.vf v10, fa5, v8
+; CHECK-NEXT:    flh fa5, 0(t1)
+; CHECK-NEXT:    lui t1, 2
+; CHECK-NEXT:    add t1, a0, t1
+; CHECK-NEXT:    vle32.v v12, (a5)
+; CHECK-NEXT:    vfwmaccbf16.vf v11, fa5, v8
+; CHECK-NEXT:    flh fa5, 0(t1)
+; CHECK-NEXT:    lui t1, 3
+; CHECK-NEXT:    add t1, a0, t1
+; CHECK-NEXT:    vle32.v v13, (a7)
+; CHECK-NEXT:    vfwmaccbf16.vf v12, fa5, v8
+; CHECK-NEXT:    flh fa5, 0(t1)
+; CHECK-NEXT:    li t1, 3
+; CHECK-NEXT:    slli t1, t1, 11
+; CHECK-NEXT:    add t1, a0, t1
+; CHECK-NEXT:    vfwmaccbf16.vf v13, fa5, v8
+; CHECK-NEXT:    flh fa5, 0(t1)
+; CHECK-NEXT:    li t1, 5
+; CHECK-NEXT:    vle32.v v14, (a4)
+; CHECK-NEXT:    slli t1, t1, 11
+; CHECK-NEXT:    vle32.v v15, (a6)
+; CHECK-NEXT:    add t1, a0, t1
+; CHECK-NEXT:    vfwmaccbf16.vf v14, fa5, v8
+; CHECK-NEXT:    flh fa5, 0(t1)
+; CHECK-NEXT:    li t1, 7
+; CHECK-NEXT:    slli t1, t1, 11
+; CHECK-NEXT:    add a0, a0, t1
+; CHECK-NEXT:    vfwmaccbf16.vf v15, fa5, v8
+; CHECK-NEXT:    flh fa5, 0(a0)
+; CHECK-NEXT:    vle32.v v16, (t0)
+; CHECK-NEXT:    vse32.v v9, (a1)
+; CHECK-NEXT:    vse32.v v10, (a2)
+; CHECK-NEXT:    vse32.v v11, (a3)
+; CHECK-NEXT:    vfwmaccbf16.vf v16, fa5, v8
+; CHECK-NEXT:    vse32.v v14, (a4)
+; CHECK-NEXT:    vse32.v v12, (a5)
+; CHECK-NEXT:    vse32.v v15, (a6)
+; CHECK-NEXT:    vse32.v v13, (a7)
+; CHECK-NEXT:    vse32.v v16, (t0)
+; CHECK-NEXT:    ret
+bb:
+  %strided_load = call <8 x i16> @llvm.experimental.vp.strided.load.v8i16.p0.i64(ptr align 2 %p, i64 2048, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 8)
+  %bitcast = bitcast <8 x i16> %strided_load to <8 x bfloat>
+  %fpext = fpext <32 x bfloat> %arg1 to <32 x float>
+  %fpext10 = fpext <8 x bfloat> %bitcast to <8 x float>
+  %shufflevector = shufflevector <8 x float> %fpext10, <8 x float> poison, <32 x i32> zeroinitializer
+  %load = load <32 x float>, ptr %p0, align 128
+  %call = tail call <32 x float> @llvm.fma.v32f32(<32 x float> %shufflevector, <32 x float> %fpext, <32 x float> %load)
+  %shufflevector11 = shufflevector <8 x float> %fpext10, <8 x float> poison, <32 x i32> <i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1>
+  %load12 = load <32 x float>, ptr %p1, align 128
+  %call13 = tail call <32 x float> @llvm.fma.v32f32(<32 x float> %shufflevector11, <32 x float> %fpext, <32 x float> %load12)
+  %shufflevector14 = shufflevector <8 x float> %fpext10, <8 x float> poison, <32 x i32> <i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2>
+  %load15 = load <32 x float>, ptr %p2, align 128
+  %call16 = tail call <32 x float> @llvm.fma.v32f32(<32 x float> %shufflevector14, <32 x float> %fpext, <32 x float> %load15)
+  %shufflevector17 = shufflevector <8 x float> %fpext10, <8 x float> poison, <32 x i32> <i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3>
+  %load18 = load <32 x float>, ptr %p3, align 128
+  %call19 = tail call <32 x float> @llvm.fma.v32f32(<32 x float> %shufflevector17, <32 x float> %fpext, <32 x float> %load18)
+  %shufflevector20 = shufflevector <8 x float> %fpext10, <8 x float> poison, <32 x i32> <i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4, i32 4>
+  %load21 = load <32 x float>, ptr %p4, align 128
+  %call22 = tail call <32 x float> @llvm.fma.v32f32(<32 x float> %shufflevector20, <32 x float> %fpext, <32 x float> %load21)
+  %shufflevector23 = shufflevector <8 x float> %fpext10, <8 x float> poison, <32 x i32> <i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5, i32 5>
+  %load24 = load <32 x float>, ptr %p5, align 128
+  %call25 = tail call <32 x float> @llvm.fma.v32f32(<32 x float> %shufflevector23, <32 x float> %fpext, <32 x float> %load24)
+  %shufflevector26 = shufflevector <8 x float> %fpext10, <8 x float> poison, <32 x i32> <i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6, i32 6>
+  %load27 = load <32 x float>, ptr %p6, align 128
+  %call28 = tail call <32 x float> @llvm.fma.v32f32(<32 x float> %shufflevector26, <32 x float> %fpext, <32 x float> %load27)
+  %shufflevector29 = shufflevector <8 x float> %fpext10, <8 x float> poison, <32 x i32> <i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7, i32 7>
+  %load30 = load <32 x float>, ptr %p7, align 128
+  %call31 = tail call <32 x float> @llvm.fma.v32f32(<32 x float> %shufflevector29, <32 x float> %fpext, <32 x float> %load30)
+  store <32 x float> %call, ptr %p0, align 128
+  store <32 x float> %call13, ptr %p1, align 128
+  store <32 x float> %call16, ptr %p2, align 128
+  store <32 x float> %call19, ptr %p3, align 128
+  store <32 x float> %call22, ptr %p4, align 128
+  store <32 x float> %call25, ptr %p5, align 128
+  store <32 x float> %call28, ptr %p6, align 128
+  store <32 x float> %call31, ptr %p7, align 128
+  ret void
+}

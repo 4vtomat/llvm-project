@@ -20556,11 +20556,92 @@ static SDValue combineFMA(SDNode *N, SelectionDAG &DAG,
 
   return SDValue();
 }
+
+// Try to combine splat shuffle_vector of a strided load into a splat of a
+// scalar load. Only supporting bf16 for now.
+static SDValue combineShuffleOfStridedLoad(SDNode *N, SelectionDAG &DAG,
+                                           const RISCVSubtarget &Subtarget) {
+  if (!Subtarget.hasStdExtZfbfmin() || !Subtarget.hasStdExtZvfbfmin())
+    return SDValue();
+
+  EVT VT = N->getValueType(0);
+  if (VT.getVectorElementType() != MVT::bf16)
+    return SDValue();
+
+  ShuffleVectorSDNode *SV = cast<ShuffleVectorSDNode>(N);
+
+  if (!SV->isSplat())
+    return SDValue();
+
+  int Lane = SV->getSplatIndex();
+  if (Lane < 0)
+    return SDValue();
+
+  ArrayRef<int> Mask = SV->getMask();
+  SDValue V = SV->getOperand(Lane / Mask.size());
+  Lane %= Mask.size();
+
+  // Look through concat_vectors.
+  if (V.getOpcode() == ISD::CONCAT_VECTORS) {
+    int OpElements = V.getOperand(0).getValueType().getVectorNumElements();
+    V = V.getOperand(Lane / OpElements);
+    Lane %= OpElements;
+  }
+
+  // Look through bitcast from i16.
+  // FIXME: Separate combine to fold with the load? Maybe InstCombine?
+  if (V.getOpcode() == ISD::BITCAST &&
+      V.getOperand(0).getValueType().getVectorElementType() == MVT::i16)
+    V = V.getOperand(0);
+
+  // Looking for a strided load.
+  auto *VPNode = dyn_cast<VPStridedLoadSDNode>(V);
+  if (!VPNode || !VPNode->isSimple())
+    return SDValue();
+
+  // Make sure the EVL is constant and that it includes this lane.
+  SDValue EVL = VPNode->getVectorLength();
+  auto *EVLC = dyn_cast<ConstantSDNode>(EVL);
+  if (!EVLC || EVLC->getZExtValue() < (unsigned)Lane)
+    return SDValue();
+
+  // Require all ones mask to make sure the load of the element isn't masked.
+  if (!ISD::isConstantSplatVectorAllOnes(VPNode->getMask().getNode()))
+    return SDValue();
+
+  // Require constant stride for now.
+  SDValue Stride = VPNode->getStride();
+  if (!isa<ConstantSDNode>(Stride))
+    return SDValue();
+
+  int64_t StrideC = cast<ConstantSDNode>(Stride)->getSExtValue();
+
+  SDLoc DL(N);
+  EVT StrideVT = Stride.getValueType();
+  SDValue Offset = DAG.getNode(ISD::MUL, DL, StrideVT, Stride,
+                               DAG.getConstant(Lane, DL, StrideVT));
+
+  SDValue NewAddr =
+      DAG.getNode(ISD::ADD, DL, StrideVT, VPNode->getBasePtr(), Offset);
+
+  SDValue NewLoad = DAG.getLoad(
+      MVT::bf16, DL, VPNode->getChain(), NewAddr,
+      VPNode->getPointerInfo().getWithOffset(StrideC * Lane),
+      VPNode->getOriginalAlign(), VPNode->getMemOperand()->getFlags());
+  DAG.makeEquivalentMemoryOrdering(SDValue(VPNode, 1), NewLoad.getValue(1));
+
+  return DAG.getNode(ISD::SPLAT_VECTOR, DL, VT, NewLoad);
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 static SDValue performVECTOR_SHUFFLECombine(SDNode *N, SelectionDAG &DAG,
                                             const RISCVSubtarget &Subtarget,
                                             const RISCVTargetLowering &TLI) {
+#if SIFIVE_CUSTOMIZATION
+  if (SDValue V = combineShuffleOfStridedLoad(N, DAG, Subtarget))
+    return V;
+#endif
+
   SDLoc DL(N);
   EVT VT = N->getValueType(0);
   const unsigned ElementSize = VT.getScalarSizeInBits();
