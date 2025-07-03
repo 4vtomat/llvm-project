@@ -474,7 +474,7 @@ multiclass VPseudoSiFiveVQMACCQOQ {
 }
 
 multiclass VPseudoSiFiveVFWMACC {
-  foreach m = MxListVF2 in
+  foreach m = MxListFW in
     let VLMul = m.value in
     defm NAME : VPseudoSiFiveVMACC<m.MX, m.wvrclass, m.vrclass>;
 }
