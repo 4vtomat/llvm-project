@@ -589,8 +589,7 @@ std::string Linux::getDynamicLinker(const ArgList &Args) const {
     LibDir = "lib";
 #if SIFIVE_CUSTOMIZATION
     if (Args.getLastArgValue(options::OPT_fcf_protection_EQ, "") == "full")
-      Loader = ("ld-linux-" + ArchName + "-" + ABIName + "-cfi.so.1").str();
-    else
+      LibDir = "lib-cfi";
 #endif // SIFIVE_CUSTOMIZATION
     Loader = ("ld-linux-" + ArchName + "-" + ABIName + ".so.1").str();
     break;
