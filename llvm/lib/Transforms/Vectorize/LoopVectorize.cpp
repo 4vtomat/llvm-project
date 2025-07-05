@@ -3130,6 +3130,7 @@ BasicBlock *InnerLoopVectorizer::createVectorizedLoopSkeleton() {
       emitSCEVChecks(LoopScalarPreHeader);
       emitMemRuntimeChecks(LoopScalarPreHeader);
     }
+    replaceVPBBWithIRVPBB(Plan.getScalarPreheader(), LoopScalarPreHeader);
     return LoopVectorPreHeader;
   }
 #endif
@@ -3161,6 +3162,7 @@ BasicBlock *InnerLoopVectorizer::createVectorizedLoopSkeleton() {
 #endif // SIFIVE_CUSTOMIZATION
   emitMemRuntimeChecks(LoopScalarPreHeader);
 
+  replaceVPBBWithIRVPBB(Plan.getScalarPreheader(), LoopScalarPreHeader);
 #if SIFIVE_CUSTOMIZATION
   if (useVLAVectorizer() && (PrevSCEVCheckBlock || PrevMemCheckBlock)) {
     // Make unconditional branch for TCCheckBlock
@@ -3178,11 +3180,10 @@ BasicBlock *InnerLoopVectorizer::createVectorizedLoopSkeleton() {
       VPBlockBase *TCCheckVPBB = Plan.getEntry();
       VPBlockBase *ScalarPh = Plan.getScalarPreheader();
       VPBlockUtils::disconnectBlocks(TCCheckVPBB, ScalarPh);
+      DT->deleteEdge(PrevTCCheckBlock, LoopScalarPreHeader);
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
-
-  replaceVPBBWithIRVPBB(Plan.getScalarPreheader(), LoopScalarPreHeader);
   return LoopVectorPreHeader;
 }
 
