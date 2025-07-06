@@ -4142,9 +4142,6 @@ class VPlan {
   VPValue *BackedgeTakenCount = nullptr;
 
 #if SIFIVE_CUSTOMIZATION
-  // FIXME: Temporary storage the generate values after SCEVs execution.
-  DenseMap<const SCEV *, Value *> ExpandedSCEVs;
-
   // EVL on the previous iteration. Represented as a PHI.
   VPValue *PrevEVL = nullptr;
 
@@ -4301,7 +4298,7 @@ public:
   VPValue *getTripCount() const {
 #if SIFIVE_CUSTOMIZATION
     // TripCount can be nullptr for uncountable loop, e.g. strlen()
-    if (isUncountable() && !getVectorLoopRegion()->getEarlyExit())
+    if (isUncountableAndUnbound())
       return nullptr;
 #endif
     assert(TripCount && "trip count needs to be set before accessing it");
@@ -4335,9 +4332,15 @@ public:
   }
 
 #if SIFIVE_CUSTOMIZATION
-  DenseMap<const SCEV *, Value *> &getExpandedSCEVs() { return ExpandedSCEVs; }
   /// Return whether the vPlan is uncountable
   bool isUncountable() const { return IsUncountable; }
+  bool isUncountableAndUnbound() const {
+    // For uncountable loop, there are early-exit loops with upper-bound
+    // such as std::find, and unbound loops such as strlen.
+    // For now loops with early exit always have an upper-bound
+    return isUncountable() && !getVectorLoopRegion()->getEarlyExit();
+  }
+
   void setUncountable() { IsUncountable = true; }
 
   /// Returns VPValue for PrevEVL.

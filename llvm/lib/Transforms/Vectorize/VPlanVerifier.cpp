@@ -270,7 +270,18 @@ bool VPlanVerifier::verifyVPBasicBlock(const VPBasicBlock *VPBB) {
           continue;
         }
 
+#if SIFIVE_CUSTOMIZATION
+        // SIFIVE: if the block is in a region, dominates only check if the
+        // region dominate the block
+        const VPRegionBlock *Region = VPBB->getParent();
+        bool CheckDominance = VPDT.dominates(VPBB, UI->getParent()) ||
+                              (Region && VPBB->getPlan()->isUncountable() &&
+                               VPDT.dominates(Region, UI->getParent()) &&
+                               VPDT.dominates(VPBB, Region->getExiting()));
+        if (!CheckDominance) {
+#else
         if (!VPDT.dominates(VPBB, UI->getParent())) {
+#endif // SIFIVE_CUSTOMIZATION
           errs() << "Use before def!\n";
           return false;
         }

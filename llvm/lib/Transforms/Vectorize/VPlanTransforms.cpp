@@ -1177,6 +1177,13 @@ optimizeLatchExitInductionUser(VPlan &Plan, VPTypeAnalysis &TypeInfo,
 
 void VPlanTransforms::optimizeInductionExitUsers(
     VPlan &Plan, DenseMap<VPValue *, VPValue *> &EndValues) {
+#if SIFIVE_CUSTOMIZATION
+  // Speculative WideLoadEVL is not created,
+  // we don't have the LastEVL at the moment.
+  if (Plan.isUncountableAndUnbound())
+    return;
+#endif // SIFIVE_CUSTOMIZATION
+
   VPBlockBase *MiddleVPBB = Plan.getMiddleBlock();
   VPTypeAnalysis TypeInfo(Plan.getCanonicalIV()->getScalarType());
   for (VPIRBasicBlock *ExitVPBB : Plan.getExitBlocks()) {
@@ -1186,6 +1193,7 @@ void VPlanTransforms::optimizeInductionExitUsers(
         break;
 
 #if SIFIVE_CUSTOMIZATION
+      // Skip because CSA handles its liveout values
       if (!ExitIRI->getNumOperands())
         continue;
 #endif // SIFIVE_CUSTOMIZATION
