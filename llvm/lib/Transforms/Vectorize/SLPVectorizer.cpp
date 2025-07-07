@@ -5572,6 +5572,9 @@ static bool isMaskedLoadCompress(
   SmallVector<int> Mask;
   if (!Order.empty())
     inversePermutation(Order, Mask);
+#if SIFIVE_CUSTOMIZATION
+  if (Order.empty())
+#endif // SIFIVE_CUSTOMIZATION
   if (IsStrided) {
     // Check for potential segmented(interleaved) loads.
     if (TTI.isLegalInterleavedAccessType(LoadVecTy, CompressMask[1],
