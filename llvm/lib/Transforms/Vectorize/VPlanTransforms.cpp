@@ -2271,6 +2271,7 @@ static VPRecipeBase *createEVLRecipe(VPValue *HeaderMask,
         VPValue *NewMask = GetNewMask(Red->getCondOp());
         return new VPReductionEVLRecipe(*Red, EVL, NewMask);
       })
+#if !SIFIVE_CUSTOMIZATION // cherry-pick #146695
       .Case<VPWidenSelectRecipe>([&](VPWidenSelectRecipe *Sel) {
         SmallVector<VPValue *> Ops(Sel->operands());
         Ops.push_back(&EVL);
@@ -2278,6 +2279,7 @@ static VPRecipeBase *createEVLRecipe(VPValue *HeaderMask,
                                           TypeInfo.inferScalarType(Sel),
                                           Sel->getDebugLoc());
       })
+#endif // SIFIVE_CUSTOMIZATION
       .Case<VPInstruction>([&](VPInstruction *VPI) -> VPRecipeBase * {
         if (VPI->getOpcode() == VPInstruction::FirstOrderRecurrenceSplice) {
           assert(PrevEVL && "Fixed-order recurrences require previous EVL");
