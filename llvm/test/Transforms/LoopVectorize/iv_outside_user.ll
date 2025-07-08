@@ -62,7 +62,6 @@ define i32 @preinc(i32 %k)  {
 ; CHECK-NEXT:    br i1 [[TMP0]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], {{!llvm.loop ![0-9]+}}
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i32 [[K]], [[N_VEC]]
-; CHECK-NEXT:    [[IND_ESCAPE:%.*]] = sub i32 [[N_VEC]], 1
 ; CHECK-NEXT:    [[IND_ESCAPE1:%.*]] = sub i32 [[N_VEC]], 1
 ; CHECK-NEXT:    br i1 [[CMP_N]], label %[[FOR_END:.*]], label %[[SCALAR_PH]]
 ; CHECK:       [[SCALAR_PH]]:
@@ -74,7 +73,7 @@ define i32 @preinc(i32 %k)  {
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp eq i32 [[INC]], [[K]]
 ; CHECK-NEXT:    br i1 [[CMP]], label %[[FOR_END]], label %[[FOR_BODY]], {{!llvm.loop ![0-9]+}}
 ; CHECK:       [[FOR_END]]:
-; CHECK-NEXT:    [[INC_PHI_LCSSA:%.*]] = phi i32 [ [[INC_PHI]], %[[FOR_BODY]] ], [ [[IND_ESCAPE]], %[[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[INC_PHI_LCSSA:%.*]] = phi i32 [ [[INC_PHI]], %[[FOR_BODY]] ], [ [[IND_ESCAPE1]], %[[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret i32 [[INC_PHI_LCSSA]]
 ;
 entry:
@@ -142,7 +141,6 @@ define ptr @geppre(ptr %ptr) {
 ; CHECK-NEXT:    [[TMP0:%.*]] = icmp eq i64 [[INDEX_NEXT]], 32
 ; CHECK-NEXT:    br i1 [[TMP0]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], {{!llvm.loop ![0-9]+}}
 ; CHECK:       [[MIDDLE_BLOCK]]:
-; CHECK-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[IND_END]], i64 -16
 ; CHECK-NEXT:    [[IND_ESCAPE2:%.*]] = getelementptr i8, ptr [[IND_END]], i64 -16
 ; CHECK-NEXT:    br i1 true, label %[[FOR_END:.*]], label %[[SCALAR_PH]]
 ; CHECK:       [[SCALAR_PH]]:
@@ -157,7 +155,7 @@ define ptr @geppre(ptr %ptr) {
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp eq i32 [[INC]], 32
 ; CHECK-NEXT:    br i1 [[CMP]], label %[[FOR_END]], label %[[FOR_BODY]], {{!llvm.loop ![0-9]+}}
 ; CHECK:       [[FOR_END]]:
-; CHECK-NEXT:    [[PTR_PHI_LCSSA:%.*]] = phi ptr [ [[PTR_PHI]], %[[FOR_BODY]] ], [ [[IND_ESCAPE]], %[[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[PTR_PHI_LCSSA:%.*]] = phi ptr [ [[PTR_PHI]], %[[FOR_BODY]] ], [ [[IND_ESCAPE2]], %[[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret ptr [[PTR_PHI_LCSSA]]
 ;
 entry:
@@ -201,7 +199,6 @@ define ptr @both(i32 %k)  {
 ; CHECK-NEXT:    br i1 [[TMP5]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], {{!llvm.loop ![0-9]+}}
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[TMP2]], [[N_VEC]]
-; CHECK-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[IND_END1]], i64 -4
 ; CHECK-NEXT:    [[IND_ESCAPE3:%.*]] = getelementptr i8, ptr [[IND_END1]], i64 -4
 ; CHECK-NEXT:    br i1 [[CMP_N]], label %[[FOR_END:.*]], label %[[SCALAR_PH]]
 ; CHECK:       [[SCALAR_PH]]:
@@ -218,7 +215,7 @@ define ptr @both(i32 %k)  {
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp eq i32 [[INC]], [[K]]
 ; CHECK-NEXT:    br i1 [[CMP]], label %[[FOR_END]], label %[[FOR_BODY]], {{!llvm.loop ![0-9]+}}
 ; CHECK:       [[FOR_END]]:
-; CHECK-NEXT:    [[INC_LAG1_LCSSA:%.*]] = phi ptr [ [[INC_LAG1]], %[[FOR_BODY]] ], [ [[IND_ESCAPE]], %[[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[INC_LAG1_LCSSA:%.*]] = phi ptr [ [[INC_LAG1]], %[[FOR_BODY]] ], [ [[IND_ESCAPE3]], %[[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret ptr [[INC_LAG1_LCSSA]]
 ;
 entry:
@@ -319,7 +316,6 @@ define void @PR30742() {
 ; CHECK-NEXT:    br i1 [[TMP6]], label %[[MIDDLE_BLOCK10:.*]], label %[[VECTOR_BODY7]], {{!llvm.loop ![0-9]+}}
 ; CHECK:       [[MIDDLE_BLOCK10]]:
 ; CHECK-NEXT:    [[CMP_N12:%.*]] = icmp eq i32 [[TMP4]], [[N_VEC7]]
-; CHECK-NEXT:    [[IND_ESCAPE:%.*]] = sub i32 [[IND_END8]], -8
 ; CHECK-NEXT:    [[IND_ESCAPE13:%.*]] = sub i32 [[IND_END8]], -8
 ; CHECK-NEXT:    br i1 [[CMP_N12]], label %[[BB3:.*]], label %[[SCALAR_PH2]]
 ; CHECK:       [[SCALAR_PH2]]:
@@ -331,7 +327,7 @@ define void @PR30742() {
 ; CHECK-NEXT:    [[TMP07:%.*]] = icmp sgt i32 [[TMP06]], 0
 ; CHECK-NEXT:    br i1 [[TMP07]], label %[[BB2]], label %[[BB3]], {{!llvm.loop ![0-9]+}}
 ; CHECK:       [[BB3]]:
-; CHECK-NEXT:    [[TMP08:%.*]] = phi i32 [ [[TMP05]], %[[BB2]] ], [ [[IND_ESCAPE]], %[[MIDDLE_BLOCK10]] ]
+; CHECK-NEXT:    [[TMP08:%.*]] = phi i32 [ [[TMP05]], %[[BB2]] ], [ [[IND_ESCAPE13]], %[[MIDDLE_BLOCK10]] ]
 ; CHECK-NEXT:    [[TMP09:%.*]] = sub i32 [[TMP00]], undef
 ; CHECK-NEXT:    [[TMP10:%.*]] = icmp slt i32 [[TMP09]], 1
 ; CHECK-NEXT:    [[TMP11:%.*]] = select i1 [[TMP10]], i32 1, i32 [[TMP09]]

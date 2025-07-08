@@ -31,7 +31,6 @@ define void @test1_pr58811() {
 ; CHECK-NEXT:    [[TMP2:%.*]] = icmp eq i32 [[INDEX_NEXT]], 196
 ; CHECK-NEXT:    br i1 [[TMP2]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[IND_ESCAPE:%.*]] = sub i32 [[IND_END]], [[INDUCTION_IV_LCSSA]]
 ; CHECK-NEXT:    [[IND_ESCAPE2:%.*]] = sub i32 [[IND_END]], [[INDUCTION_IV_LCSSA]]
 ; CHECK-NEXT:    br i1 false, label [[LOOP_3_PREHEADER:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
@@ -46,7 +45,7 @@ define void @test1_pr58811() {
 ; CHECK-NEXT:    [[CMP88_1:%.*]] = icmp ult i16 [[IV_3]], 198
 ; CHECK-NEXT:    br i1 [[CMP88_1]], label [[LOOP_2]], label [[LOOP_3_PREHEADER]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       loop.3.preheader:
-; CHECK-NEXT:    [[IV_4_LCSSA:%.*]] = phi i32 [ [[IV_4]], [[LOOP_2]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[IV_4_LCSSA:%.*]] = phi i32 [ [[IV_4]], [[LOOP_2]] ], [ [[IND_ESCAPE2]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    br label [[LOOP_3:%.*]]
 ; CHECK:       loop.3:
 ; CHECK-NEXT:    [[IV_5:%.*]] = phi i32 [ [[SUB93_2]], [[LOOP_3]] ], [ 0, [[LOOP_3_PREHEADER]] ]
@@ -127,7 +126,6 @@ define void @test2_pr58811() {
 ; CHECK-NEXT:    [[TMP2:%.*]] = icmp eq i32 [[INDEX_NEXT]], 196
 ; CHECK-NEXT:    br i1 [[TMP2]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[IND_ESCAPE:%.*]] = sub i32 [[IND_END]], [[INDUCTION_IV_LCSSA]]
 ; CHECK-NEXT:    [[IND_ESCAPE2:%.*]] = sub i32 [[IND_END]], [[INDUCTION_IV_LCSSA]]
 ; CHECK-NEXT:    br i1 false, label [[LOOP_4_PREHEADER:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
@@ -142,7 +140,7 @@ define void @test2_pr58811() {
 ; CHECK-NEXT:    [[CMP88_1:%.*]] = icmp ult i16 [[IV_4]], 198
 ; CHECK-NEXT:    br i1 [[CMP88_1]], label [[LOOP_3]], label [[LOOP_4_PREHEADER]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       loop.4.preheader:
-; CHECK-NEXT:    [[IV_5_LCSSA:%.*]] = phi i32 [ [[IV_5]], [[LOOP_3]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[IV_5_LCSSA:%.*]] = phi i32 [ [[IV_5]], [[LOOP_3]] ], [ [[IND_ESCAPE2]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    br label [[LOOP_4]]
 ; CHECK:       loop.4:
 ; CHECK-NEXT:    [[IV_6:%.*]] = phi i32 [ [[SUB93_2]], [[LOOP_4]] ], [ 0, [[LOOP_4_PREHEADER]] ]
@@ -206,7 +204,6 @@ define void @test3_pr58811() {
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp eq i32 [[INDEX_NEXT]], 196
 ; CHECK-NEXT:    br i1 [[TMP4]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[IND_ESCAPE:%.*]] = sub i32 [[IND_END]], [[TMP3]]
 ; CHECK-NEXT:    [[IND_ESCAPE2:%.*]] = sub i32 [[IND_END]], [[TMP3]]
 ; CHECK-NEXT:    br i1 false, label [[LOOP_4_PREHEADER:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
@@ -221,7 +218,7 @@ define void @test3_pr58811() {
 ; CHECK-NEXT:    [[CMP88_1:%.*]] = icmp ult i16 [[IV_3]], 198
 ; CHECK-NEXT:    br i1 [[CMP88_1]], label [[LOOP_3]], label [[LOOP_4_PREHEADER]], !llvm.loop [[LOOP7:![0-9]+]]
 ; CHECK:       loop.4.preheader:
-; CHECK-NEXT:    [[IV_4_LCSSA:%.*]] = phi i32 [ [[IV_4]], [[LOOP_3]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[IV_4_LCSSA:%.*]] = phi i32 [ [[IV_4]], [[LOOP_3]] ], [ [[IND_ESCAPE2]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    br label [[LOOP_4:%.*]]
 ; CHECK:       loop.4:
 ; CHECK-NEXT:    [[IV_5:%.*]] = phi i32 [ [[SUB93_2]], [[LOOP_4]] ], [ 0, [[LOOP_4_PREHEADER]] ]

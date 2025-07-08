@@ -1683,7 +1683,6 @@ define i64 @diff_exit_block_post_inc_use3(i64 %start) {
 ; CHECK:       middle.split:
 ; CHECK-NEXT:    br i1 [[TMP20]], label [[VECTOR_EARLY_EXIT:%.*]], label [[MIDDLE_BLOCK:%.*]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[IND_ESCAPE:%.*]] = sub i64 [[TMP0]], 1
 ; CHECK-NEXT:    [[IND_ESCAPE5:%.*]] = sub i64 [[TMP0]], 1
 ; CHECK-NEXT:    br i1 true, label [[LOOP_END:%.*]], label [[SCALAR_PH]]
 ; CHECK:       vector.early.exit:
@@ -1714,7 +1713,7 @@ define i64 @diff_exit_block_post_inc_use3(i64 %start) {
 ; CHECK-NEXT:    [[RETVAL1:%.*]] = phi i64 [ [[INDEX2_NEXT]], [[LOOP]] ], [ [[EARLY_EXIT_VALUE]], [[VECTOR_EARLY_EXIT]] ]
 ; CHECK-NEXT:    ret i64 [[RETVAL1]]
 ; CHECK:       loop.end:
-; CHECK-NEXT:    [[RETVAL2:%.*]] = phi i64 [ [[INDEX2]], [[LOOP_INC]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[RETVAL2:%.*]] = phi i64 [ [[INDEX2]], [[LOOP_INC]] ], [ [[IND_ESCAPE5]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret i64 [[RETVAL2]]
 ;
 entry:

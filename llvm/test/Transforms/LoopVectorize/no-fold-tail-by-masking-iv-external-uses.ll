@@ -44,7 +44,6 @@ define i32 @test(ptr %arr, i64 %n) {
 ; CHECK-NEXT:    br i1 [[TMP20]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[TMP0]], [[N_VEC]]
-; CHECK-NEXT:    [[IND_ESCAPE:%.*]] = sub i64 [[IND_END]], 1
 ; CHECK-NEXT:    [[IND_ESCAPE2:%.*]] = sub i64 [[IND_END]], 1
 ; CHECK-NEXT:    br i1 [[CMP_N]], label [[LOAD_VAL:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
@@ -62,7 +61,7 @@ define i32 @test(ptr %arr, i64 %n) {
 ; CHECK-NEXT:    [[CMP2:%.*]] = icmp ult i64 [[CONV2]], [[N]]
 ; CHECK-NEXT:    br i1 [[CMP2]], label [[LOOP]], label [[LOAD_VAL]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       load_val:
-; CHECK-NEXT:    [[FINAL:%.*]] = phi i64 [ [[CONV]], [[LOOP]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[FINAL:%.*]] = phi i64 [ [[CONV]], [[LOOP]] ], [ [[IND_ESCAPE2]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    [[PTR2:%.*]] = getelementptr inbounds i32, ptr [[ARR]], i64 [[FINAL]]
 ; CHECK-NEXT:    [[VAL:%.*]] = load i32, ptr [[PTR2]], align 4
 ; CHECK-NEXT:    br label [[DONE]]

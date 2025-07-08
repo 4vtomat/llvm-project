@@ -41,7 +41,6 @@ define ptr @test(ptr %start.1, ptr %start.2, ptr %end) {
 ; CHECK-NEXT:    br i1 [[TMP36]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[TMP3]], [[N_VEC]]
-; CHECK-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[IND_END]], i64 -8
 ; CHECK-NEXT:    [[IND_ESCAPE4:%.*]] = getelementptr i8, ptr [[IND_END]], i64 -8
 ; CHECK-NEXT:    br i1 [[CMP_N]], label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
@@ -57,7 +56,7 @@ define ptr @test(ptr %start.1, ptr %start.2, ptr %end) {
 ; CHECK-NEXT:    [[CMP_I_I_NOT_I:%.*]] = icmp eq ptr [[IV_2_NEXT]], [[END]]
 ; CHECK-NEXT:    br i1 [[CMP_I_I_NOT_I]], label [[EXIT]], label [[LOOP]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       exit:
-; CHECK-NEXT:    [[RES_LCSSA:%.*]] = phi ptr [ [[IV_1]], [[LOOP]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[RES_LCSSA:%.*]] = phi ptr [ [[IV_1]], [[LOOP]] ], [ [[IND_ESCAPE4]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret ptr [[RES_LCSSA]]
 ;
 entry:
