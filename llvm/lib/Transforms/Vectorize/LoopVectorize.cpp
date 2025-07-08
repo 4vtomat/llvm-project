@@ -3465,18 +3465,16 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State) {
       EEL->addBasicBlockToLoop(VectorEarlyExitBB, *LI);
   }
 
-  if (!Cost->requiresScalarEpilogue(VF.isVector())) {
-    if (Region) {
-      if (State.Plan->isUncountableAndUnbound()) {
-        BasicBlock *MiddleBlock =
-            State.CFG.VPBB2IRBB[State.Plan->getMiddleBlock()];
-        for (const auto &Entry : Legal->getInductionVars())
-          fixupUncountableExitIVUsers(Entry.first, Entry.second,
-                                      getOrCreateVectorTripCount(nullptr),
-                                      MiddleBlock, State);
-      }
-      fixCSALiveOuts(State, Plan);
+  if (!Cost->requiresScalarEpilogue(VF.isVector()) && Region) {
+    if (State.Plan->isUncountableAndUnbound()) {
+      BasicBlock *MiddleBlock =
+          State.CFG.VPBB2IRBB[State.Plan->getMiddleBlock()];
+      for (const auto &Entry : Legal->getInductionVars())
+        fixupUncountableExitIVUsers(Entry.first, Entry.second,
+                                    getOrCreateVectorTripCount(nullptr),
+                                    MiddleBlock, State);
     }
+    fixCSALiveOuts(State, Plan);
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -11420,14 +11418,6 @@ collectUsersInExitBlocks(Loop *OrigLoop, VPRecipeBuilder &Builder,
              auto *P = dyn_cast<PHINode>(U);
              return P && CSAs.contains(P);
            })))
-        continue;
-      bool IsIVUse = isa<Instruction>(IncomingValue) &&
-                     OrigLoop->contains(cast<Instruction>(IncomingValue)) &&
-                     any_of(IncomingValue->users(), [&Inductions](User *U) {
-                       auto *P = dyn_cast<PHINode>(U);
-                       return P && Inductions.contains(P);
-                     });
-      if (Plan.isUncountable() && IsIVUse)
         continue;
 #endif // SIFIVE_CUSTOMIZATION
       ExitIRI->addOperand(V);
