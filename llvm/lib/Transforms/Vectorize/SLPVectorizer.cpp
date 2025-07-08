@@ -5573,7 +5573,7 @@ static bool isMaskedLoadCompress(
   if (!Order.empty())
     inversePermutation(Order, Mask);
 #if SIFIVE_CUSTOMIZATION
-  if (Order.empty())
+  if (!IsMasked && Order.empty())
 #endif // SIFIVE_CUSTOMIZATION
   if (IsStrided) {
     // Check for potential segmented(interleaved) loads.
