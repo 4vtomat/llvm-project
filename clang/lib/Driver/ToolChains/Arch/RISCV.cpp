@@ -127,14 +127,6 @@ static void getRISCFeaturesFromMcpu(const Driver &D, const Arg *A,
       D.Diag(clang::diag::err_drv_unsupported_option_argument)
           << A->getSpelling() << Mcpu;
   }
-
-#if SIFIVE_CUSTOMIZATION
-  bool HasNoSlowVectorFp64 = llvm::is_contained(Features, "-slow-vector-fp64");
-  if (!HasNoSlowVectorFp64 &&
-      (Mcpu == "sifive-x390" || Mcpu == "sifive-x392-ea-singlevalu" ||
-       Mcpu == "sifive-x392-ea-dualvalu"))
-    Features.push_back("+slow-vector-fp64");
-#endif // SIFIVE_CUSTOMIZATION
 }
 
 void riscv::getRISCVTargetFeatures(const Driver &D, const llvm::Triple &Triple,
@@ -153,19 +145,11 @@ void riscv::getRISCVTargetFeatures(const Driver &D, const llvm::Triple &Triple,
   if (!getArchFeatures(D, MArch, Features, Args))
     return;
 
-#if SIFIVE_CUSTOMIZATION
-  if (Arg *A = Args.getLastArg(options::OPT_mtune_EQ)) {
-    StringRef Tune = A->getValue();
-    if (Tune == "sifive-x390" || Tune == "sifive-x392-ea-singlevalu" ||
-        Tune == "sifive-x392-ea-dualvalu")
-      Features.push_back("+slow-vector-fp64");
-    else
-      Features.push_back("-slow-vector-fp64");
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
   bool CPUFastScalarUnaligned = false;
   bool CPUFastVectorUnaligned = false;
+#if SIFIVE_CUSTOMIZATION
+  bool CPUSlowVectorFP64 = false;
+#endif
 
   // If users give march and mcpu, get std extension feature from MArch
   // and other features (ex. mirco architecture feature) from mcpu
@@ -180,7 +164,25 @@ void riscv::getRISCVTargetFeatures(const Driver &D, const llvm::Triple &Triple,
       CPUFastScalarUnaligned = true;
     if (llvm::RISCV::hasFastVectorUnalignedAccess(CPU))
       CPUFastVectorUnaligned = true;
+#if SIFIVE_CUSTOMIZATION
+    if (llvm::RISCV::hasSlowVectorFP64(CPU))
+      CPUSlowVectorFP64 = true;
+#endif
   }
+
+#if SIFIVE_CUSTOMIZATION
+  // Check mtune for slow-vector-fp64 feature. If mtune and mcpu are both
+  // present, mtune has priority over mcpu. We can't set it to true from mcpu
+  // if it should be false from mtune.
+  if (Arg *A = Args.getLastArg(options::OPT_mtune_EQ)) {
+    StringRef TuneCPU = A->getValue();
+    if (TuneCPU == "native")
+      TuneCPU = llvm::sys::getHostCPUName();
+
+    // mtune overrides mcpu setting for slow-vector-fp64
+    CPUSlowVectorFP64 = llvm::RISCV::hasSlowVectorFP64(TuneCPU);
+  }
+#endif
 
 // Handle features corresponding to "-ffixed-X" options
 #define RESERVE_REG(REG)                                                       \
@@ -265,6 +267,12 @@ void riscv::getRISCVTargetFeatures(const Driver &D, const llvm::Triple &Triple,
   } else if (CPUFastVectorUnaligned || Triple.isAndroid()) {
     Features.push_back("+unaligned-vector-mem");
   }
+
+#if SIFIVE_CUSTOMIZATION
+  // Add slow-vector-fp64 feature if the CPU supports it
+  if (CPUSlowVectorFP64)
+    Features.push_back("+slow-vector-fp64");
+#endif
 
   // Now add any that the user explicitly requested on the command line,
   // which may override the defaults.

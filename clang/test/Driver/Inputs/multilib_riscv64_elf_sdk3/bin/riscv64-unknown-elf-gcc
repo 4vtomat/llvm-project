@@ -2,3 +2,4 @@
 
 print("rv64imac/lp64;@march=rv64imac@mabi=lp64")
 print("rv64imac/lp64/compact;@march=rv64imac@mabi=lp64@mcmodel=compact")
+print("rv64imac/lp64/large;@march=rv64imac@mabi=lp64@mcmodel=large")

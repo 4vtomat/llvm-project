@@ -1890,6 +1890,7 @@ static bool scanRISCVGCCMultilibConfig(const Driver &D,
   std::string CurrentMCmodelOpt = llvm::StringSwitch<const char *>(CodeModel)
                                       .Case("medium", "mcmodel=medany")
                                       .Case("compact", "mcmodel=compact")
+                                      .Case("large", "mcmodel=large")
                                       .Default("mcmodel=medlow");
 
   std::string CurrentCFProtection = "fcf-protection=none";
@@ -2141,12 +2142,23 @@ static void findRISCVMultilibs(const Driver &D,
           .flag("-m64")
           .flag("-mabi=lp64d")
           .flag("-fcf-protection=full");
+  MultilibBuilder Lp64dCFIBranch =
+      MultilibBuilder(GCCPathForCFI, "lib-cfi", GCCPathForCFI)
+          .flag("-m64")
+          .flag("-mabi=lp64d")
+          .flag("-fcf-protection=branch");
+  MultilibBuilder Lp64dCFIReturn =
+      MultilibBuilder(GCCPathForCFI, "lib-cfi", GCCPathForCFI)
+          .flag("-m64")
+          .flag("-mabi=lp64d")
+          .flag("-fcf-protection=return");
 #endif // SIFIVE_CUSTOMIZATION
 
   MultilibSet RISCVMultilibs =
       MultilibSetBuilder()
 #if SIFIVE_CUSTOMIZATION
-          .Either({Ilp32, Ilp32f, Ilp32d, Lp64, Lp64f, Lp64d, Lp64dCFI})
+          .Either({Ilp32, Ilp32f, Ilp32d, Lp64, Lp64f, Lp64d, Lp64dCFI,
+                   Lp64dCFIBranch, Lp64dCFIReturn})
 #else
           .Either({Ilp32, Ilp32f, Ilp32d, Lp64, Lp64f, Lp64d})
 #endif // SIFIVE_CUSTOMIZATION
@@ -2168,8 +2180,14 @@ static void findRISCVMultilibs(const Driver &D,
 #if SIFIVE_CUSTOMIZATION
   bool CFProtectionFull =
       Args.getLastArgValue(options::OPT_fcf_protection_EQ, "") == "full";
+  bool CFProtectionBranch =
+      Args.getLastArgValue(options::OPT_fcf_protection_EQ, "") == "branch";
+  bool CFProtectionReturn =
+      Args.getLastArgValue(options::OPT_fcf_protection_EQ, "") == "return";
 
   addMultilibFlag(CFProtectionFull, "-fcf-protection=full", Flags);
+  addMultilibFlag(CFProtectionBranch, "-fcf-protection=branch", Flags);
+  addMultilibFlag(CFProtectionReturn, "-fcf-protection=return", Flags);
 #endif // SIFIVE_CUSTOMIZATION
 
   if (RISCVMultilibs.select(D, Flags, Result.SelectedMultilibs))

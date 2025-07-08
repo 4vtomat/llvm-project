@@ -13,10 +13,6 @@
 ; CHECK-NEXT:   d                                - 'D' (Double-Precision Floating-Point).
 ; CHECK-NEXT:   disable-latency-sched-heuristic  - Disable latency scheduling heuristic.
 ; CHECK-NEXT:   dlen-factor-2                    - Vector unit DLEN(data path width) is half of VLEN.
-; CHECK-NEXT:   dlen128b                         - 'DLen' (SiFive datapath length) 128.
-; CHECK-NEXT:   dlen256b                         - 'DLen' (SiFive datapath length) 256.
-; CHECK-NEXT:   dlen512b                         - 'DLen' (SiFive datapath length) 512.
-; CHECK-NEXT:   dlen64b                          - 'DLen' (SiFive datapath length) 64.
 ; CHECK-NEXT:   dotprod                          - dotprod (A corresponding feature for NEON dotprod.).
 ; CHECK-NEXT:   e                                - 'E' (Embedded Instruction Set with 16 GPRs).
 ; CHECK-NEXT:   exact-asm                        - Enable Exact Assembly (Disables Compression and Relaxation).
@@ -238,7 +234,7 @@
 ; CHECK-NEXT:   xsfvfexpa64e                     - 'XSfvfexpa64e' (SiFive Vector Floating-Point Exponential Approximation Instruction with Double-Precision).
 ; CHECK-NEXT:   xsfvfhbfmin                      - 'XSfvfhbfmin' (SiFive custom minimal BF16 vector support).
 ; CHECK-NEXT:   xsfvfnrclipxfqf                  - 'XSfvfnrclipxfqf' (SiFive FP32-to-int8 Ranged Clip Instructions).
-; CHECK-NEXT:   xsfvfwmaccqqq                    - 'XSfvfwmaccqqq' (SiFive Matrix Multiply Accumulate Instruction and 4-by-4)).
+; CHECK-NEXT:   xsfvfwmaccqqq                    - 'XSfvfwmaccqqq' (SiFive Matrix Multiply Accumulate Instruction (4-by-4)).
 ; CHECK-NEXT:   xsfvqdotq                        - 'XSfvqdotq' (SiFive Vector Quad-Widening 4D Dot Product Instructions).
 ; CHECK-NEXT:   xsfvqmaccdod                     - 'XSfvqmaccdod' (SiFive Int8 Matrix Multiplication Instructions (2-by-8 and 8-by-2)).
 ; CHECK-NEXT:   xsfvqmaccqoq                     - 'XSfvqmaccqoq' (SiFive Int8 Matrix Multiplication Instructions (4-by-8 and 8-by-4)).

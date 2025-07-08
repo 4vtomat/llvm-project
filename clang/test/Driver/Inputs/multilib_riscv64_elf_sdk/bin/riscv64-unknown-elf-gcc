@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 
 print("rv32iac/ilp32;@march=rv32iac@mabi=ilp32")
-print("rv32imafc/ilp32f;@march=rv32iac@mabi=ilp32f")
+print("rv32imafc/ilp32f;@march=rv32imafc@mabi=ilp32f")
+print("rv32ima_zicfilp/ilp32/cfi-lp;@march=rv32ima_zicfilp@mabi=ilp32@fcf-protection=branch")
+print("rv32ima_zicfilp_zicfiss/ilp32/cfi;@march=rv32ima_zicfilp_zicfiss@mabi=ilp32@fcf-protection=full")
+print("rv32imaf_zicfilp/ilp32f/cfi-lp;@march=rv32imaf_zicfilp@mabi=ilp32f@fcf-protection=branch")
 print("rv64imafdc/lp64d;@march=rv64imafdc@mabi=lp64d")
+print("rv64imafdc_zicfilp/lp64d/cfi-lp;@march=rv64imafdc_zicfilp@mabi=lp64d@fcf-protection=branch")
 print("rv64imafdc_zicfiss_zicfilp/lp64d/cfi;@march=rv64imafdc_zicfiss_zicfilp@mabi=lp64d@fcf-protection=full")

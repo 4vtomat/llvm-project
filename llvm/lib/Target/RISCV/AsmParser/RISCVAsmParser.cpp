@@ -939,29 +939,11 @@ public:
     if (!isImm())
       return false;
 
-#ifdef SIFIVE_CUSTOMIZATION
-    RISCVMCExpr::Specifier VK = RISCVMCExpr::VK_None;
-    RISCVAsmParser::classifySymbolRef(getImm(), VK);
-#endif // SIFIVE_CUSTOMIZATION
-
     int64_t Imm;
     if (evaluateConstantImm(getImm(), Imm))
-#ifdef SIFIVE_CUSTOMIZATION
-      return isUInt<20>(Imm) &&
-             (VK == RISCVMCExpr::VK_None || VK == RISCVMCExpr::VK_HI ||
-              VK == RISCVMCExpr::VK_TPREL_HI ||
-              VK == RISCVMCExpr::VK_GPREL_HI ||
-              VK == RISCVMCExpr::VK_GOT_GPREL_HI ||
-              VK == RISCVMCExpr::VK_TLS_GOT_GPREL_HI ||
-              VK == RISCVMCExpr::VK_TLS_GD_GPREL_HI);
-    ;
-#else
       return isUInt<20>(Imm);
-#endif // SIFIVE_CUSTOMIZATION
 
-#ifndef SIFIVE_CUSTOMIZATION
     RISCVMCExpr::Specifier VK = RISCVMCExpr::VK_None;
-#endif // SIFIVE_CUSTOMIZATION
     return RISCVAsmParser::classifySymbolRef(getImm(), VK) &&
 #ifdef SIFIVE_CUSTOMIZATION
            (VK == RISCVMCExpr::VK_HI || VK == RISCVMCExpr::VK_TPREL_HI ||

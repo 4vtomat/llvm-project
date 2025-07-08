@@ -677,9 +677,11 @@ protected:
 
 #if SIFIVE_CUSTOMIZATION
   /// Set up the values of the IVs correctly when exiting the vector loop.
-  virtual void fixupIVUsers(PHINode *OrigPhi, const InductionDescriptor &II,
-                            Value *VectorTripCount, BasicBlock *MiddleBlock,
-                            VPTransformState &State);
+  void fixupUncountableExitIVUsers(PHINode *OrigPhi,
+                                   const InductionDescriptor &II,
+                                   Value *VectorTripCount,
+                                   BasicBlock *MiddleBlock,
+                                   VPTransformState &State);
   /// Cherry-pick from #88385
   void fixupEarlyExitIVUsers(PHINode *OrigPhi, const InductionDescriptor &II,
                              BasicBlock *VectorEarlyExitBB, VPlan &Plan,
@@ -824,34 +826,6 @@ protected:
   /// introduced during skeleton creation.
   VPBlockBase *VectorPHVPB;
 };
-
-#if SIFIVE_CUSTOMIZATION
-class UncountableInnerLoopVectorizer final : public InnerLoopVectorizer {
-public:
-  UncountableInnerLoopVectorizer(
-      Loop *OrigLoop, PredicatedScalarEvolution &PSE, LoopInfo *LI,
-      DominatorTree *DT, const TargetLibraryInfo *TLI,
-      const TargetTransformInfo *TTI, AssumptionCache *AC,
-      OptimizationRemarkEmitter *ORE, ElementCount VecWidth,
-      ElementCount MinProfitableTripCount, unsigned UnrollFactor,
-      LoopVectorizationLegality *LVL, llvm::LoopVectorizationCostModel *CM,
-      BlockFrequencyInfo *BFI, ProfileSummaryInfo *PSI,
-      GeneratedRTChecks &Checks, VPlan &Plan)
-      : InnerLoopVectorizer(OrigLoop, PSE, LI, DT, TLI, TTI, AC, ORE, VecWidth,
-                            MinProfitableTripCount, UnrollFactor, LVL, CM, BFI,
-                            PSI, Checks, Plan) {
-    assert(UnrollFactor == 1 && "UF is not 1 for uncountable loops");
-  }
-
-  ~UncountableInnerLoopVectorizer() = default;
-
-  /// Set up the values of the IVs correctly when exiting the vector loop.
-  void fixupIVUsers(PHINode *OrigPhi, const InductionDescriptor &II,
-                    Value *VectorTripCount, BasicBlock *MiddleBlock,
-                    VPTransformState &State) override;
-};
-#endif // SIFIVE_CUSTOMIZATION
-
 
 /// Encapsulate information regarding vectorization of a loop and its epilogue.
 /// This information is meant to be updated and used across two stages of
@@ -3188,6 +3162,7 @@ BasicBlock *InnerLoopVectorizer::createVectorizedLoopSkeleton() {
 }
 
 #if SIFIVE_CUSTOMIZATION
+<<<<<<< HEAD
 // Fix up external users of the induction variable. At this point, we are
 // in LCSSA form, with all external PHIs that use the IV having one input value,
 // coming from the remainder loop. We need those PHIs to also have a correct
@@ -3338,6 +3313,8 @@ void InnerLoopVectorizer::fixupIVUsers(PHINode *OrigPhi,
   }
 }
 
+=======
+>>>>>>> origin/sifive-dev
 /// Cherry-pick from #88385
 void InnerLoopVectorizer::fixupEarlyExitIVUsers(PHINode *OrigPhi,
                                                 const InductionDescriptor &II,
@@ -3642,6 +3619,7 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State) {
   }
 
   if (!Cost->requiresScalarEpilogue(VF.isVector())) {
+<<<<<<< HEAD
     if (Region) {
       BasicBlock *MiddleBlock = State.CFG.VPBB2IRBB[State.Plan->getMiddleBlock()];
       assert(MiddleBlock && "MiddleBlock should not be nullptr");
@@ -3650,6 +3628,17 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State) {
                      getOrCreateVectorTripCount(nullptr), MiddleBlock, State);
       fixCSALiveOuts(State, Plan);
     }
+=======
+    if (State.Plan->isUncountableAndUnbound()) {
+      BasicBlock *MiddleBlock =
+          State.CFG.VPBB2IRBB[State.Plan->getMiddleBlock()];
+      for (const auto &Entry : Legal->getInductionVars())
+        fixupUncountableExitIVUsers(Entry.first, Entry.second,
+                                    getOrCreateVectorTripCount(nullptr),
+                                    MiddleBlock, State);
+    }
+    fixCSALiveOuts(State, Plan);
+>>>>>>> origin/sifive-dev
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -3783,21 +3772,9 @@ void InnerLoopVectorizer::fixNonInductionPHIs(VPTransformState &State) {
 
 #if SIFIVE_CUSTOMIZATION
 /// Set up the values of IVs when exiting the vector loop.
-void UncountableInnerLoopVectorizer::fixupIVUsers(PHINode *OrigPhi,
-                                                  const InductionDescriptor &II,
-                                                  Value *VectorTripCount,
-                                                  BasicBlock *MiddleBlock,
-                                                  VPTransformState &State) {
-  // The latch block is a computable exiting block if the uncountable loop
-  // has a max trip count. And last lane would be IV + last RVL.
-  // Otherwise it is a data-dependent exiting block, and the last lane
-  // would be IV + VFirst.
-  if (VectorTripCount) {
-    InnerLoopVectorizer::fixupIVUsers(OrigPhi, II, VectorTripCount, MiddleBlock,
-                                      State);
-    return;
-  }
-
+void InnerLoopVectorizer::fixupUncountableExitIVUsers(
+    PHINode *OrigPhi, const InductionDescriptor &II, Value *VectorTripCount,
+    BasicBlock *MiddleBlock, VPTransformState &State) {
   assert(Legal->isVectorizableUncountable() && "Not an uncountable loop");
   assert(!VectorTripCount && "VectorTripCount not null for uncountable loop");
 
@@ -9712,12 +9689,6 @@ static void fixReductionScalarResumeWhenVectorizingEpilog(
 DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
     ElementCount BestVF, unsigned BestUF, VPlan &BestVPlan,
     InnerLoopVectorizer &ILV, DominatorTree *DT, bool VectorizingEpilogue) {
-#if SIFIVE_CUSTOMIZATION
-  assert((!Legal->isVectorizableUncountable() ||
-          (BestVPlan.isUncountable() && BestVPlan.getInitEVL() &&
-           Legal->useVLAVectorizer())) &&
-         "Uncountable loop is not set up correctly for executing VPlan");
-#endif
   assert(BestVPlan.hasVF(BestVF) &&
          "Trying to execute plan with unsupported VF");
   assert(BestVPlan.hasUF(BestUF) &&
@@ -9778,9 +9749,6 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
   }
 
 #if SIFIVE_CUSTOMIZATION
-  // Copy ExpandSCEV to Plan for following useage.
-  // FIXME: This is just workaround for pull-down, need to fix.
-  BestVPlan.getExpandedSCEVs().copyFrom(ExpandedSCEVs);
   // cherry-pick from #88385
   if (!Legal->getCountableExitingBlocks().empty())
     State.CFG.EarlyExitBB = Legal->getUncountableEarlyExitBlock();
@@ -11567,67 +11535,6 @@ static void addScalarResumePhis(VPRecipeBuilder &Builder, VPlan &Plan,
   }
 }
 
-#if SIFIVE_CUSTOMIZATION
-/// Return true if \p VPV is an optimizable IV or IV use. That is, if \p VPV is
-/// either an untruncated wide induction, or if it increments a wide induction
-/// by its step.
-static bool isOptimizableIVOrUse(VPValue *VPV) {
-  VPRecipeBase *Def = VPV->getDefiningRecipe();
-  if (!Def)
-    return false;
-  auto *WideIV = dyn_cast<VPWidenInductionRecipe>(Def);
-  if (WideIV) {
-    // VPV itself is a wide induction, separately compute the end value for exit
-    // users if it is not a truncated IV.
-    return isa<VPWidenPointerInductionRecipe>(WideIV) ||
-           !cast<VPWidenIntOrFpInductionRecipe>(WideIV)->getTruncInst();
-  }
-
-  // Check if VPV is an optimizable induction increment.
-  if (Def->getNumOperands() != 2)
-    return false;
-  WideIV = dyn_cast<VPWidenInductionRecipe>(Def->getOperand(0));
-  if (!WideIV)
-    WideIV = dyn_cast<VPWidenInductionRecipe>(Def->getOperand(1));
-  if (!WideIV)
-    return false;
-
-  using namespace VPlanPatternMatch;
-  auto &ID = WideIV->getInductionDescriptor();
-
-  // Check if VPV increments the induction by the induction step.
-  VPValue *IVStep = WideIV->getStepValue();
-  switch (ID.getInductionOpcode()) {
-  case Instruction::Add:
-    return match(VPV, m_c_Binary<Instruction::Add>(m_Specific(WideIV),
-                                                   m_Specific(IVStep)));
-  case Instruction::FAdd:
-    return match(VPV, m_c_Binary<Instruction::FAdd>(m_Specific(WideIV),
-                                                    m_Specific(IVStep)));
-  case Instruction::FSub:
-    return match(VPV, m_Binary<Instruction::FSub>(m_Specific(WideIV),
-                                                  m_Specific(IVStep)));
-  case Instruction::Sub: {
-    // IVStep will be the negated step of the subtraction. Check if Step == -1 *
-    // IVStep.
-    VPValue *Step;
-    if (!match(VPV, m_Binary<Instruction::Sub>(m_VPValue(), m_VPValue(Step))) ||
-        !Step->isLiveIn() || !IVStep->isLiveIn())
-      return false;
-    auto *StepCI = dyn_cast<ConstantInt>(Step->getLiveInIRValue());
-    auto *IVStepCI = dyn_cast<ConstantInt>(IVStep->getLiveInIRValue());
-    return StepCI && IVStepCI &&
-           StepCI->getValue() == (-1 * IVStepCI->getValue());
-  }
-  default:
-    return ID.getKind() == InductionDescriptor::IK_PtrInduction &&
-           match(VPV, m_GetElementPtr(m_Specific(WideIV),
-                                      m_Specific(WideIV->getStepValue())));
-  }
-  llvm_unreachable("should have been covered by switch above");
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 // Collect VPIRInstructions for phis in the exit blocks that are modeled
 // in VPlan and add the exiting VPValue as operand.
 #if SIFIVE_CUSTOMIZATION
@@ -11641,6 +11548,11 @@ collectUsersInExitBlocks(Loop *OrigLoop, VPRecipeBuilder &Builder,
                          VPlan &Plan) {
 #endif // SIFIVE_CUSTOMIZATION
   SetVector<VPIRInstruction *> ExitUsersToFix;
+#if SIFIVE_CUSTOMIZATION
+  // Exit values for unbound loop are handled separately.
+  if (Plan.isUncountableAndUnbound())
+    return ExitUsersToFix;
+#endif // SIFIVE_CUSTOMIZATION
   for (VPIRBasicBlock *ExitVPBB : Plan.getExitBlocks()) {
     // Nothing to do for unreachable exit blocks.
     if (ExitVPBB->getNumPredecessors() == 0)
@@ -11671,6 +11583,7 @@ collectUsersInExitBlocks(Loop *OrigLoop, VPRecipeBuilder &Builder,
              return P && CSAs.contains(P);
            })))
         continue;
+<<<<<<< HEAD
       bool IsIVUse = isa<Instruction>(IncomingValue) &&
                      OrigLoop->contains(cast<Instruction>(IncomingValue)) &&
                      any_of(IncomingValue->users(), [&Inductions](User *U) {
@@ -11679,6 +11592,8 @@ collectUsersInExitBlocks(Loop *OrigLoop, VPRecipeBuilder &Builder,
                      });
       if (Plan.isUncountable() && (IsIVUse || isOptimizableIVOrUse(V)))
         continue;
+=======
+>>>>>>> origin/sifive-dev
 #endif // SIFIVE_CUSTOMIZATION
       ExitIRI->addOperand(V);
       if (V->isLiveIn())
@@ -11850,9 +11765,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   VPlanTransforms::introduceTopLevelVectorLoopRegion(
       *Plan, Legal->getWidestInductionType(), PSE, IsUncountable, RequiresScalarEpilogueCheck,
       CM.foldTailByMasking(), OrigLoop);
-  if (IsUncountable) {
-    Plan->createInitEVL();
-  }
 #else
   VPlanTransforms::introduceTopLevelVectorLoopRegion(
       *Plan, Legal->getWidestInductionType(), PSE, RequiresScalarEpilogueCheck,
@@ -13898,9 +13810,9 @@ bool LoopVectorizePass::processLoop(Loop *L) {
         VPlan &BestPlan = LVP.getPlanFor(VF.Width);
         ElementCount MinProfTC =
             ElementCount::getFixed(TTI->getMinEarlyExitTripCount());
-        UncountableInnerLoopVectorizer UILV(L, PSE, LI, DT, TLI, TTI, AC, ORE,
-                                            VF.Width, MinProfTC, IC, &LVL, &CM,
-                                            BFI, PSI, Checks, BestPlan);
+        InnerLoopVectorizer UILV(L, PSE, LI, DT, TLI, TTI, AC, ORE, VF.Width,
+                                 MinProfTC, IC, &LVL, &CM, BFI, PSI, Checks,
+                                 BestPlan);
         SCEVBlockRAII SCEVRAII(UILV, IgnoreSCEVMemCheckBB);
         LVP.executePlan(VF.Width, IC, BestPlan, UILV, DT, false);
         ++LoopsVectorized;

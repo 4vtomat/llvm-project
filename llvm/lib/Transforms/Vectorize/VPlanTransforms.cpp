@@ -33,6 +33,8 @@
 #include "llvm/Analysis/VectorUtils.h"
 #include "llvm/IR/Intrinsics.h"
 #include "llvm/IR/PatternMatch.h"
+#include "llvm/Support/Casting.h"
+#include "llvm/Support/TypeSize.h"
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/SmallPtrSet.h"
@@ -42,8 +44,6 @@
 #if SIFIVE_CUSTOMIZATION
 #define DEBUG_TYPE "loop-vectorize"
 #endif // SIFIVE_CUSTOMIZATION
-#include "llvm/Support/Casting.h"
-#include "llvm/Support/TypeSize.h"
 
 using namespace llvm;
 
@@ -1177,6 +1177,13 @@ optimizeLatchExitInductionUser(VPlan &Plan, VPTypeAnalysis &TypeInfo,
 
 void VPlanTransforms::optimizeInductionExitUsers(
     VPlan &Plan, DenseMap<VPValue *, VPValue *> &EndValues) {
+#if SIFIVE_CUSTOMIZATION
+  // Speculative WideLoadEVL is not created,
+  // we don't have the LastEVL at the moment.
+  if (Plan.isUncountableAndUnbound())
+    return;
+#endif // SIFIVE_CUSTOMIZATION
+
   VPBlockBase *MiddleVPBB = Plan.getMiddleBlock();
   VPTypeAnalysis TypeInfo(Plan.getCanonicalIV()->getScalarType());
   for (VPIRBasicBlock *ExitVPBB : Plan.getExitBlocks()) {
@@ -1186,6 +1193,7 @@ void VPlanTransforms::optimizeInductionExitUsers(
         break;
 
 #if SIFIVE_CUSTOMIZATION
+      // Skip because CSA handles its liveout values
       if (!ExitIRI->getNumOperands())
         continue;
 #endif // SIFIVE_CUSTOMIZATION
@@ -2325,6 +2333,7 @@ static VPRecipeBase *createEVLRecipe(VPValue *HeaderMask,
         VPValue *NewMask = GetNewMask(Red->getCondOp());
         return new VPReductionEVLRecipe(*Red, EVL, NewMask);
       })
+#if !SIFIVE_CUSTOMIZATION // cherry-pick #146695
       .Case<VPWidenSelectRecipe>([&](VPWidenSelectRecipe *Sel) {
         SmallVector<VPValue *> Ops(Sel->operands());
         Ops.push_back(&EVL);
@@ -2332,6 +2341,7 @@ static VPRecipeBase *createEVLRecipe(VPValue *HeaderMask,
                                           TypeInfo.inferScalarType(Sel),
                                           Sel->getDebugLoc());
       })
+#endif // SIFIVE_CUSTOMIZATION
       .Case<VPInstruction>([&](VPInstruction *VPI) -> VPRecipeBase * {
         if (VPI->getOpcode() == VPInstruction::FirstOrderRecurrenceSplice) {
           assert(PrevEVL && "Fixed-order recurrences require previous EVL");

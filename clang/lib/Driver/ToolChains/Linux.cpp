@@ -208,7 +208,9 @@ static StringRef getOSLibDir(const llvm::Triple &Triple, const ArgList &Args) {
     return "lib32";
 #if SIFIVE_CUSTOMIZATION
   if ((Triple.getArch() == llvm::Triple::riscv64) &&
-      (Args.getLastArgValue(options::OPT_fcf_protection_EQ, "") == "full"))
+      (Args.getLastArgValue(options::OPT_fcf_protection_EQ, "") == "full" ||
+       Args.getLastArgValue(options::OPT_fcf_protection_EQ, "") == "branch" ||
+       Args.getLastArgValue(options::OPT_fcf_protection_EQ, "") == "return"))
     return "lib-cfi";
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -588,9 +590,10 @@ std::string Linux::getDynamicLinker(const ArgList &Args) const {
     StringRef ABIName = tools::riscv::getRISCVABI(Args, Triple);
     LibDir = "lib";
 #if SIFIVE_CUSTOMIZATION
-    if (Args.getLastArgValue(options::OPT_fcf_protection_EQ, "") == "full")
-      Loader = ("ld-linux-" + ArchName + "-" + ABIName + "-cfi.so.1").str();
-    else
+    if (Args.getLastArgValue(options::OPT_fcf_protection_EQ, "") == "full" ||
+        Args.getLastArgValue(options::OPT_fcf_protection_EQ, "") == "branch" ||
+        Args.getLastArgValue(options::OPT_fcf_protection_EQ, "") == "return")
+      LibDir = "lib-cfi";
 #endif // SIFIVE_CUSTOMIZATION
     Loader = ("ld-linux-" + ArchName + "-" + ABIName + ".so.1").str();
     break;

@@ -21,13 +21,13 @@ define void @test1() {
 ; PIC-NEXT:    auipc a0, %pcrel_hi(__global_pointer__)
 ; PIC-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi0)
 ; PIC-NEXT:    ld a1, 0(a0)
-; PIC-NEXT:    lui a2, %got_gprel_hi(src)
 ; PIC-NEXT:    add a0, a0, a1
-; PIC-NEXT:    add a1, a2, a0, %got_gprel(src)
+; PIC-NEXT:    lui a1, %got_gprel_hi(src)
+; PIC-NEXT:    add a1, a0, a1, %got_gprel(src)
 ; PIC-NEXT:    ld a1, %got_gprel_lo(src)(a1)
-; PIC-NEXT:    lui a2, %got_gprel_hi(dst)
-; PIC-NEXT:    add a0, a2, a0, %got_gprel(dst)
 ; PIC-NEXT:    lw a1, 0(a1)
+; PIC-NEXT:    lui a0, %got_gprel_hi(dst)
+; PIC-NEXT:    add a0, a0, a0, %got_gprel(dst)
 ; PIC-NEXT:    ld a0, %got_gprel_lo(dst)(a0)
 ; PIC-NEXT:    sw a1, 0(a0)
 ; PIC-NEXT:    ret
@@ -35,11 +35,11 @@ define void @test1() {
 ; NoPIC-LABEL: test1:
 ; NoPIC:       # %bb.0: # %entry
 ; NoPIC-NEXT:    lui a0, %got_gprel_hi(src)
-; NoPIC-NEXT:    add a0, a0, gp, %got_gprel(src)
+; NoPIC-NEXT:    add a0, gp, a0, %got_gprel(src)
 ; NoPIC-NEXT:    ld a0, %got_gprel_lo(src)(a0)
-; NoPIC-NEXT:    lui a1, %got_gprel_hi(dst)
-; NoPIC-NEXT:    add a1, a1, gp, %got_gprel(dst)
 ; NoPIC-NEXT:    lw a0, 0(a0)
+; NoPIC-NEXT:    lui a1, %got_gprel_hi(dst)
+; NoPIC-NEXT:    add a1, gp, a1, %got_gprel(dst)
 ; NoPIC-NEXT:    ld a1, %got_gprel_lo(dst)(a1)
 ; NoPIC-NEXT:    sw a0, 0(a1)
 ; NoPIC-NEXT:    ret
@@ -56,12 +56,12 @@ define void @test2() {
 ; PIC-NEXT:    auipc a0, %pcrel_hi(__global_pointer__)
 ; PIC-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi1)
 ; PIC-NEXT:    ld a1, 0(a0)
-; PIC-NEXT:    lui a2, %got_gprel_hi(ptr)
 ; PIC-NEXT:    add a0, a0, a1
-; PIC-NEXT:    lui a1, %got_gprel_hi(lsrc)
-; PIC-NEXT:    add a2, a2, a0, %got_gprel(ptr)
-; PIC-NEXT:    add a0, a1, a0, %got_gprel(lsrc)
-; PIC-NEXT:    ld a1, %got_gprel_lo(ptr)(a2)
+; PIC-NEXT:    lui a1, %got_gprel_hi(ptr)
+; PIC-NEXT:    add a1, a0, a1, %got_gprel(ptr)
+; PIC-NEXT:    ld a1, %got_gprel_lo(ptr)(a1)
+; PIC-NEXT:    lui a0, %got_gprel_hi(lsrc)
+; PIC-NEXT:    add a0, a0, a0, %got_gprel(lsrc)
 ; PIC-NEXT:    ld a0, %got_gprel_lo(lsrc)(a0)
 ; PIC-NEXT:    sd a0, 0(a1)
 ; PIC-NEXT:    ret
@@ -69,10 +69,10 @@ define void @test2() {
 ; NoPIC-LABEL: test2:
 ; NoPIC:       # %bb.0: # %entry
 ; NoPIC-NEXT:    lui a0, %got_gprel_hi(ptr)
-; NoPIC-NEXT:    lui a1, %got_gprel_hi(lsrc)
-; NoPIC-NEXT:    add a0, a0, gp, %got_gprel(ptr)
-; NoPIC-NEXT:    add a1, a1, gp, %got_gprel(lsrc)
+; NoPIC-NEXT:    add a0, gp, a0, %got_gprel(ptr)
 ; NoPIC-NEXT:    ld a0, %got_gprel_lo(ptr)(a0)
+; NoPIC-NEXT:    lui a1, %got_gprel_hi(lsrc)
+; NoPIC-NEXT:    add a1, gp, a1, %got_gprel(lsrc)
 ; NoPIC-NEXT:    ld a1, %got_gprel_lo(lsrc)(a1)
 ; NoPIC-NEXT:    sd a1, 0(a0)
 ; NoPIC-NEXT:    ret
@@ -88,12 +88,12 @@ define void @test3() {
 ; PIC-NEXT:    auipc a0, %pcrel_hi(__global_pointer__)
 ; PIC-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi2)
 ; PIC-NEXT:    ld a1, 0(a0)
-; PIC-NEXT:    lui a2, %got_gprel_hi(ptr)
 ; PIC-NEXT:    add a0, a0, a1
-; PIC-NEXT:    lui a1, %got_gprel_hi(src)
-; PIC-NEXT:    add a2, a2, a0, %got_gprel(ptr)
-; PIC-NEXT:    add a0, a1, a0, %got_gprel(src)
-; PIC-NEXT:    ld a1, %got_gprel_lo(ptr)(a2)
+; PIC-NEXT:    lui a1, %got_gprel_hi(ptr)
+; PIC-NEXT:    add a1, a0, a1, %got_gprel(ptr)
+; PIC-NEXT:    ld a1, %got_gprel_lo(ptr)(a1)
+; PIC-NEXT:    lui a0, %got_gprel_hi(src)
+; PIC-NEXT:    add a0, a0, a0, %got_gprel(src)
 ; PIC-NEXT:    ld a0, %got_gprel_lo(src)(a0)
 ; PIC-NEXT:    sd a0, 0(a1)
 ; PIC-NEXT:    ret
@@ -101,10 +101,10 @@ define void @test3() {
 ; NoPIC-LABEL: test3:
 ; NoPIC:       # %bb.0: # %entry
 ; NoPIC-NEXT:    lui a0, %got_gprel_hi(ptr)
-; NoPIC-NEXT:    lui a1, %got_gprel_hi(src)
-; NoPIC-NEXT:    add a0, a0, gp, %got_gprel(ptr)
-; NoPIC-NEXT:    add a1, a1, gp, %got_gprel(src)
+; NoPIC-NEXT:    add a0, gp, a0, %got_gprel(ptr)
 ; NoPIC-NEXT:    ld a0, %got_gprel_lo(ptr)(a0)
+; NoPIC-NEXT:    lui a1, %got_gprel_hi(src)
+; NoPIC-NEXT:    add a1, gp, a1, %got_gprel(src)
 ; NoPIC-NEXT:    ld a1, %got_gprel_lo(src)(a1)
 ; NoPIC-NEXT:    sd a1, 0(a0)
 ; NoPIC-NEXT:    ret
@@ -121,16 +121,16 @@ define void @test4() {
 ; PIC-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi3)
 ; PIC-NEXT:    ld a1, 0(a0)
 ; PIC-NEXT:    add a0, a0, a1
-; PIC-NEXT:    lui a1, %got_gprel_hi(foo)
-; PIC-NEXT:    add a0, a1, a0, %got_gprel(foo)
-; PIC-NEXT:    ld t1, %got_gprel_lo(foo)(a0)
+; PIC-NEXT:    lui t1, %got_gprel_hi(foo)
+; PIC-NEXT:    add t1, a0, t1, %got_gprel(foo)
+; PIC-NEXT:    ld t1, %got_gprel_lo(foo)(t1)
 ; PIC-NEXT:    jr t1
 ;
 ; NoPIC-LABEL: test4:
 ; NoPIC:       # %bb.0: # %entry
-; NoPIC-NEXT:    lui a0, %got_gprel_hi(foo)
-; NoPIC-NEXT:    add a0, a0, gp, %got_gprel(foo)
-; NoPIC-NEXT:    ld t1, %got_gprel_lo(foo)(a0)
+; NoPIC-NEXT:    lui t1, %got_gprel_hi(foo)
+; NoPIC-NEXT:    add t1, gp, t1, %got_gprel(foo)
+; NoPIC-NEXT:    ld t1, %got_gprel_lo(foo)(t1)
 ; NoPIC-NEXT:    jr t1
 entry:
   tail call void @foo()
@@ -148,10 +148,10 @@ define i32* @test5() nounwind {
 ; PIC-NEXT:    ld a1, 0(a0)
 ; PIC-NEXT:    add a0, a0, a1
 ; PIC-NEXT:    lui a1, %got_gprel_hi(__tls_get_addr)
-; PIC-NEXT:    add a1, a1, a0, %got_gprel(__tls_get_addr)
+; PIC-NEXT:    add a1, a0, a1, %got_gprel(__tls_get_addr)
 ; PIC-NEXT:    ld a1, %got_gprel_lo(__tls_get_addr)(a1)
-; PIC-NEXT:    lui a2, %tls_gd_gprel_hi(unspecified)
-; PIC-NEXT:    add a0, a2, a0, %tls_gd_gprel(unspecified)
+; PIC-NEXT:    lui a0, %tls_gd_gprel_hi(unspecified)
+; PIC-NEXT:    add a0, a0, a0, %tls_gd_gprel(unspecified)
 ; PIC-NEXT:    addi a0, a0, %tls_gd_gprel_lo(unspecified)
 ; PIC-NEXT:    jalr a1
 ; PIC-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload
@@ -161,7 +161,7 @@ define i32* @test5() nounwind {
 ; NoPIC-LABEL: test5:
 ; NoPIC:       # %bb.0: # %entry
 ; NoPIC-NEXT:    lui a0, %tls_ie_gprel_hi(unspecified)
-; NoPIC-NEXT:    add a0, a0, gp, %tls_ie_gprel(unspecified)
+; NoPIC-NEXT:    add a0, gp, a0, %tls_ie_gprel(unspecified)
 ; NoPIC-NEXT:    ld a0, %tls_ie_gprel_lo(unspecified)(a0)
 ; NoPIC-NEXT:    add a0, a0, tp
 ; NoPIC-NEXT:    ret
@@ -180,10 +180,10 @@ define i32* @test6() nounwind {
 ; PIC-NEXT:    ld a1, 0(a0)
 ; PIC-NEXT:    add a0, a0, a1
 ; PIC-NEXT:    lui a1, %got_gprel_hi(__tls_get_addr)
-; PIC-NEXT:    add a1, a1, a0, %got_gprel(__tls_get_addr)
+; PIC-NEXT:    add a1, a0, a1, %got_gprel(__tls_get_addr)
 ; PIC-NEXT:    ld a1, %got_gprel_lo(__tls_get_addr)(a1)
-; PIC-NEXT:    lui a2, %tls_gd_gprel_hi(ld)
-; PIC-NEXT:    add a0, a2, a0, %tls_gd_gprel(ld)
+; PIC-NEXT:    lui a0, %tls_gd_gprel_hi(ld)
+; PIC-NEXT:    add a0, a0, a0, %tls_gd_gprel(ld)
 ; PIC-NEXT:    addi a0, a0, %tls_gd_gprel_lo(ld)
 ; PIC-NEXT:    jalr a1
 ; PIC-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload
@@ -193,7 +193,7 @@ define i32* @test6() nounwind {
 ; NoPIC-LABEL: test6:
 ; NoPIC:       # %bb.0: # %entry
 ; NoPIC-NEXT:    lui a0, %tls_ie_gprel_hi(ld)
-; NoPIC-NEXT:    add a0, a0, gp, %tls_ie_gprel(ld)
+; NoPIC-NEXT:    add a0, gp, a0, %tls_ie_gprel(ld)
 ; NoPIC-NEXT:    ld a0, %tls_ie_gprel_lo(ld)(a0)
 ; NoPIC-NEXT:    add a0, a0, tp
 ; NoPIC-NEXT:    ret
@@ -209,8 +209,8 @@ define i32* @test7() nounwind {
 ; PIC-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi6)
 ; PIC-NEXT:    ld a1, 0(a0)
 ; PIC-NEXT:    add a0, a0, a1
-; PIC-NEXT:    lui a1, %tls_ie_gprel_hi(ie)
-; PIC-NEXT:    add a0, a1, a0, %tls_ie_gprel(ie)
+; PIC-NEXT:    lui a0, %tls_ie_gprel_hi(ie)
+; PIC-NEXT:    add a0, a0, a0, %tls_ie_gprel(ie)
 ; PIC-NEXT:    ld a0, %tls_ie_gprel_lo(ie)(a0)
 ; PIC-NEXT:    add a0, a0, tp
 ; PIC-NEXT:    ret
@@ -218,7 +218,7 @@ define i32* @test7() nounwind {
 ; NoPIC-LABEL: test7:
 ; NoPIC:       # %bb.0: # %entry
 ; NoPIC-NEXT:    lui a0, %tls_ie_gprel_hi(ie)
-; NoPIC-NEXT:    add a0, a0, gp, %tls_ie_gprel(ie)
+; NoPIC-NEXT:    add a0, gp, a0, %tls_ie_gprel(ie)
 ; NoPIC-NEXT:    ld a0, %tls_ie_gprel_lo(ie)(a0)
 ; NoPIC-NEXT:    add a0, a0, tp
 ; NoPIC-NEXT:    ret
@@ -258,8 +258,8 @@ define void @lower_blockaddress() nounwind {
 ; PIC-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi7)
 ; PIC-NEXT:    ld a1, 0(a0)
 ; PIC-NEXT:    add a0, a0, a1
-; PIC-NEXT:    lui a1, %got_gprel_hi(addr)
-; PIC-NEXT:    add a0, a1, a0, %got_gprel(addr)
+; PIC-NEXT:    lui a0, %got_gprel_hi(addr)
+; PIC-NEXT:    add a0, a0, a0, %got_gprel(addr)
 ; PIC-NEXT:    ld a0, %got_gprel_lo(addr)(a0)
 ; PIC-NEXT:    li a1, 1
 ; PIC-NEXT:    sd a1, 0(a0)
@@ -268,7 +268,7 @@ define void @lower_blockaddress() nounwind {
 ; NoPIC-LABEL: lower_blockaddress:
 ; NoPIC:       # %bb.0:
 ; NoPIC-NEXT:    lui a0, %got_gprel_hi(addr)
-; NoPIC-NEXT:    add a0, a0, gp, %got_gprel(addr)
+; NoPIC-NEXT:    add a0, gp, a0, %got_gprel(addr)
 ; NoPIC-NEXT:    ld a0, %got_gprel_lo(addr)(a0)
 ; NoPIC-NEXT:    li a1, 1
 ; NoPIC-NEXT:    sd a1, 0(a0)
@@ -291,8 +291,8 @@ define signext i32 @lower_blockaddress_displ(i32 signext %w) nounwind {
 ; PIC-NEXT:    addi a1, a1, %pcrel_lo(.Lpcrel_hi8)
 ; PIC-NEXT:    ld a2, 0(a1)
 ; PIC-NEXT:    add a1, a1, a2
-; PIC-NEXT:    lui a2, %got_gprel_hi(.Ltmp0)
-; PIC-NEXT:    add a1, a2, a1, %got_gprel(.Ltmp0)
+; PIC-NEXT:    lui a1, %got_gprel_hi(.Ltmp0)
+; PIC-NEXT:    add a1, a1, a1, %got_gprel(.Ltmp0)
 ; PIC-NEXT:    ld a1, %got_gprel_lo(.Ltmp0)(a1)
 ; PIC-NEXT:    li a2, 101
 ; PIC-NEXT:    sd a1, 8(sp)
@@ -314,7 +314,7 @@ define signext i32 @lower_blockaddress_displ(i32 signext %w) nounwind {
 ; NoPIC:       # %bb.0: # %entry
 ; NoPIC-NEXT:    addi sp, sp, -16
 ; NoPIC-NEXT:    lui a1, %got_gprel_hi(.Ltmp0)
-; NoPIC-NEXT:    add a1, a1, gp, %got_gprel(.Ltmp0)
+; NoPIC-NEXT:    add a1, gp, a1, %got_gprel(.Ltmp0)
 ; NoPIC-NEXT:    ld a1, %got_gprel_lo(.Ltmp0)(a1)
 ; NoPIC-NEXT:    li a2, 101
 ; NoPIC-NEXT:    sd a1, 8(sp)
@@ -369,9 +369,9 @@ define float @lower_constantpool(float %a) nounwind {
 ; NoPIC:       # %bb.0:
 ; NoPIC-NEXT:    addi sp, sp, -16
 ; NoPIC-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
-; NoPIC-NEXT:    lui a1, %got_gprel_hi(__addsf3)
-; NoPIC-NEXT:    add a1, a1, gp, %got_gprel(__addsf3)
-; NoPIC-NEXT:    ld a2, %got_gprel_lo(__addsf3)(a1)
+; NoPIC-NEXT:    lui a2, %got_gprel_hi(__addsf3)
+; NoPIC-NEXT:    add a2, gp, a2, %got_gprel(__addsf3)
+; NoPIC-NEXT:    ld a2, %got_gprel_lo(__addsf3)(a2)
 ; NoPIC-NEXT:    lui a1, 260096
 ; NoPIC-NEXT:    jalr a2
 ; NoPIC-NEXT:    ld ra, 8(sp) # 8-byte Folded Reload
@@ -396,8 +396,8 @@ define void @lower_jumptable(i32 %in, i32* %out) nounwind {
 ; PIC-NEXT:    bltu a4, a0, .LBB11_9
 ; PIC-NEXT:  # %bb.1: # %entry
 ; PIC-NEXT:    add a2, a2, a3
-; PIC-NEXT:    lui a3, %got_gprel_hi(.LJTI11_0)
-; PIC-NEXT:    add a2, a3, a2, %got_gprel(.LJTI11_0)
+; PIC-NEXT:    lui a2, %got_gprel_hi(.LJTI11_0)
+; PIC-NEXT:    add a2, a2, a2, %got_gprel(.LJTI11_0)
 ; PIC-NEXT:    ld a2, %got_gprel_lo(.LJTI11_0)(a2)
 ; PIC-NEXT:    slli a0, a0, 2
 ; PIC-NEXT:    add a0, a2, a0
@@ -434,7 +434,7 @@ define void @lower_jumptable(i32 %in, i32* %out) nounwind {
 ; NoPIC-NEXT:    bltu a2, a0, .LBB11_9
 ; NoPIC-NEXT:  # %bb.1: # %entry
 ; NoPIC-NEXT:    lui a2, %got_gprel_hi(.LJTI11_0)
-; NoPIC-NEXT:    add a2, a2, gp, %got_gprel(.LJTI11_0)
+; NoPIC-NEXT:    add a2, gp, a2, %got_gprel(.LJTI11_0)
 ; NoPIC-NEXT:    ld a2, %got_gprel_lo(.LJTI11_0)(a2)
 ; NoPIC-NEXT:    slli a0, a0, 3
 ; NoPIC-NEXT:    add a0, a2, a0
@@ -500,8 +500,8 @@ define signext i32 @test_ptrtoint_ext() {
 ; PIC-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi10)
 ; PIC-NEXT:    ld a1, 0(a0)
 ; PIC-NEXT:    add a0, a0, a1
-; PIC-NEXT:    lui a1, %got_gprel_hi(src)
-; PIC-NEXT:    add a0, a1, a0, %got_gprel(src)
+; PIC-NEXT:    lui a0, %got_gprel_hi(src)
+; PIC-NEXT:    add a0, a0, a0, %got_gprel(src)
 ; PIC-NEXT:    ld a0, %got_gprel_lo(src)(a0)
 ; PIC-NEXT:    sext.w a0, a0
 ; PIC-NEXT:    ret
@@ -509,7 +509,7 @@ define signext i32 @test_ptrtoint_ext() {
 ; NoPIC-LABEL: test_ptrtoint_ext:
 ; NoPIC:       # %bb.0: # %entry
 ; NoPIC-NEXT:    lui a0, %got_gprel_hi(src)
-; NoPIC-NEXT:    add a0, a0, gp, %got_gprel(src)
+; NoPIC-NEXT:    add a0, gp, a0, %got_gprel(src)
 ; NoPIC-NEXT:    ld a0, %got_gprel_lo(src)(a0)
 ; NoPIC-NEXT:    sext.w a0, a0
 ; NoPIC-NEXT:    ret

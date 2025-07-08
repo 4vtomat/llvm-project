@@ -4,26 +4,8 @@
 # RUN: llvm-mc %s -triple=riscv64 -filetype=asm \
 # RUN:     | FileCheck --check-prefixes=CHECK %s
 
-.attribute arch, "rv32izicclsm"
-# CHECK: attribute      5, "rv32i2p1_zicclsm1p0"
-
-.attribute arch, "rv32iziccif"
-# CHECK: attribute      5, "rv32i2p1_ziccif1p0"
-
-.attribute arch, "rv32iziccamoa"
-# CHECK: attribute      5, "rv32i2p1_ziccamoa1p0"
-
-.attribute arch, "rv32iziccrse"
-# CHECK: attribute      5, "rv32i2p1_ziccrse1p0"
-
 .attribute arch, "rv32iza64rs"
 # CHECK: attribute      5, "rv32i2p1_za64rs1p0"
-
-.attribute arch, "rv32izama16b"
-# CHECK: attribute      5, "rv32i2p1_zama16b1p0"
-
-.attribute arch, "rv32izic64b"
-# CHECK: attribute      5, "rv32i2p1_zic64b1p0"
 
 .attribute arch, "rv32izjid0p0"
 # CHECK: attribute      5, "rv32i2p1_zjid0p0"
@@ -109,35 +91,11 @@
 .attribute arch, "rv32i_sswg0p3"
 # CHECK: attribute      5, "rv32i2p1_sswg0p3"
 
-.attribute arch, "rv32i_ssnpm1p0"
-# CHECK: attribute      5, "rv32i2p1_ssnpm1p0"
-
 .attribute arch, "rv32i_sscofpmf"
 # CHECK: attribute      5, "rv32i2p1_sscofpmf1p0"
 
-.attribute arch, "rv32i_svukte0p4"
-# CHECK: attribute      5, "rv32i2p1_svukte0p4"
-
-.attribute arch, "rv32i_zve32x_zvkb1p0"
-# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvkb1p0_zvl32b1p0"
-
-.attribute arch, "rv32i_zve32x_zvkg1p0"
-# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvkg1p0_zvl32b1p0"
-
-.attribute arch, "rv32i_zve32x_zvknha1p0"
-# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvknha1p0_zvl32b1p0"
-
-.attribute arch, "rv32i_zve64x_zvknhb1p0"
-# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zve64x1p0_zvknhb1p0_zvl32b1p0_zvl64b1p0"
-
 .attribute arch, "rv32i_zve32x_zvkns0p1"
 # CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvkns0p1_zvl32b1p0"
-
-.attribute arch, "rv32i_zve32x_zvksed1p0"
-# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvksed1p0_zvl32b1p0"
-
-.attribute arch, "rv32i_zve32x_zvksh1p0"
-# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zve32x1p0_zvksh1p0_zvl32b1p0"
 
 .attribute arch, "rv32i_xsfpmpmt0p1"
 # CHECK: attribute      5, "rv32i2p1_xsfpmpmt0p1"

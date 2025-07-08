@@ -119,6 +119,31 @@
 
 // RUN: %clang %s \
 // RUN:   -target riscv64-unknown-elf \
+// RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv64_elf_sdk3 \
+// RUN:   --print-multi-directory \
+// RUN:   -march=rv64imafc -mabi=lp64 -mcmodel=large \
+// RUN:   | FileCheck -check-prefix=GCC-MULTI-LIB-REUSE-RV64IMAFC-LP64-LARGE %s
+// GCC-MULTI-LIB-REUSE-RV64IMAFC-LP64-LARGE: rv64imac/lp64/large
+// GCC-MULTI-LIB-REUSE-RV64IMAFC-LP64-LARGE-NOT: {{^.+$}}
+
+// RUN: %clang %s \
+// RUN:   -target riscv64-unknown-elf \
+// RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv64_elf_sdk \
+// RUN:   --print-multi-directory \
+// RUN:   -march=rv64imafdc_zicfilp -mabi=lp64d -fcf-protection=branch \
+// RUN:   | FileCheck -check-prefix=GCC-MULTI-LIB-REUSE-RV64IMAFDC_ZICFILP-LP64D-CFI-BRANCH %s
+// GCC-MULTI-LIB-REUSE-RV64IMAFDC_ZICFILP-LP64D-CFI-BRANCH: rv64imafdc_zicfilp/lp64d/cfi-lp
+// GCC-MULTI-LIB-REUSE-RV64IMAFDC_ZICFILP-LP64D-CFI-BRANCH-NOT: {{^.+$}}
+
+// RUN: %clang %s \
+// RUN:   -target riscv64-unknown-elf \
+// RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv64_elf_sdk \
+// RUN:   --print-multi-directory \
+// RUN:   -march=rv64imafdc_zicfilp -mabi=lp64d -fcf-protection=none \
+// RUN:   | FileCheck -check-prefix=GCC-MULTI-LIB-REUSE-RV64IMAFDC_ZICFILP_ZICFISS-LP64D-NONE-CFI %s
+
+// RUN: %clang %s \
+// RUN:   -target riscv64-unknown-elf \
 // RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv64_elf_sdk \
 // RUN:   --print-multi-directory \
 // RUN:   -march=rv64imafdc_zicfilp_zicfiss -mabi=lp64d -fcf-protection \
@@ -138,7 +163,9 @@
 // RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv64_elf_sdk \
 // RUN:   --print-multi-directory \
 // RUN:   -march=rv64imafdc_zicfilp_zicfiss -mabi=lp64d -fcf-protection=branch \
-// RUN:   | FileCheck -check-prefix=GCC-MULTI-LIB-REUSE-RV64IMAFDC_ZICFILP_ZICFISS-LP64D-NONE-CFI %s
+// RUN:   | FileCheck -check-prefix=GCC-MULTI-LIB-REUSE-RV64IMAFDC_ZICFILP_ZICFISS-LP64D-CFI-BRANCH %s
+// GCC-MULTI-LIB-REUSE-RV64IMAFDC_ZICFILP_ZICFISS-LP64D-CFI-BRANCH: rv64imafdc_zicfilp/lp64d/cfi-lp
+// GCC-MULTI-LIB-REUSE-RV64IMAFDC_ZICFILP_ZICFISS-LP64D-CFI-BRANCH-NOT: {{^.+$}}
 
 // RUN: %clang %s \
 // RUN:   -target riscv64-unknown-elf \
@@ -155,3 +182,57 @@
 // RUN:   | FileCheck -check-prefix=GCC-MULTI-LIB-REUSE-RV64IMAFDC_ZICFILP_ZICFISS-LP64D-NONE-CFI %s
 // GCC-MULTI-LIB-REUSE-RV64IMAFDC_ZICFILP_ZICFISS-LP64D-NONE-CFI: rv64imafdc/lp64d
 // GCC-MULTI-LIB-REUSE-RV64IMAFDC_ZICFILP_ZICFISS-LP64D-NONE-CFI-NOT: {{^.+$}}
+
+// Test rv32 CFI multilib selection
+
+// RUN: %clang %s \
+// RUN:   -target riscv64-unknown-elf \
+// RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv64_elf_sdk \
+// RUN:   --print-multi-directory \
+// RUN:   -march=rv32ima_zicfilp -mabi=ilp32 -fcf-protection=branch \
+// RUN:   | FileCheck -check-prefix=GCC-MULTI-LIB-REUSE-RV32IMA_ZICFILP-ILP32-CFI-BRANCH %s
+// GCC-MULTI-LIB-REUSE-RV32IMA_ZICFILP-ILP32-CFI-BRANCH: rv32ima_zicfilp/ilp32/cfi-lp
+// GCC-MULTI-LIB-REUSE-RV32IMA_ZICFILP-ILP32-CFI-BRANCH-NOT: {{^.+$}}
+
+// RUN: %clang %s \
+// RUN:   -target riscv64-unknown-elf \
+// RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv64_elf_sdk \
+// RUN:   --print-multi-directory \
+// RUN:   -march=rv32ima_zicfilp_zicfiss -mabi=ilp32 -fcf-protection=full \
+// RUN:   | FileCheck -check-prefix=GCC-MULTI-LIB-REUSE-RV32IMA_ZICFILP_ZICFISS-ILP32-CFI %s
+// GCC-MULTI-LIB-REUSE-RV32IMA_ZICFILP_ZICFISS-ILP32-CFI: rv32ima_zicfilp_zicfiss/ilp32/cfi
+// GCC-MULTI-LIB-REUSE-RV32IMA_ZICFILP_ZICFISS-ILP32-CFI-NOT: {{^.+$}}
+
+// RUN: %clang %s \
+// RUN:   -target riscv64-unknown-elf \
+// RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv64_elf_sdk \
+// RUN:   --print-multi-directory \
+// RUN:   -march=rv32ima_zicfilp_zicfiss -mabi=ilp32 -fcf-protection=branch \
+// RUN:   | FileCheck -check-prefix=GCC-MULTI-LIB-REUSE-RV32IMA_ZICFILP_ZICFISS-ILP32-CFI-BRANCH %s
+// GCC-MULTI-LIB-REUSE-RV32IMA_ZICFILP_ZICFISS-ILP32-CFI-BRANCH: rv32ima_zicfilp/ilp32/cfi-lp
+// GCC-MULTI-LIB-REUSE-RV32IMA_ZICFILP_ZICFISS-ILP32-CFI-BRANCH-NOT: {{^.+$}}
+
+// RUN: %clang %s \
+// RUN:   -target riscv64-unknown-elf \
+// RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv64_elf_sdk \
+// RUN:   --print-multi-directory \
+// RUN:   -march=rv32imaf_zicfilp -mabi=ilp32f -fcf-protection=branch \
+// RUN:   | FileCheck -check-prefix=GCC-MULTI-LIB-REUSE-RV32IMAF_ZICFILP-ILP32F-CFI-BRANCH %s
+// GCC-MULTI-LIB-REUSE-RV32IMAF_ZICFILP-ILP32F-CFI-BRANCH: rv32imaf_zicfilp/ilp32f/cfi-lp
+// GCC-MULTI-LIB-REUSE-RV32IMAF_ZICFILP-ILP32F-CFI-BRANCH-NOT: {{^.+$}}
+
+// RUN: %clang %s \
+// RUN:   -target riscv64-unknown-elf \
+// RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv64_elf_sdk \
+// RUN:   --print-multi-directory \
+// RUN:   -march=rv32ima_zicfilp_zicfiss -mabi=ilp32 -fcf-protection=return \
+// RUN:   | FileCheck -check-prefix=GCC-MULTI-LIB-REUSE-RV32IMA_ZICFILP_ZICFISS-ILP32-NONE-CFI %s
+
+// RUN: %clang %s \
+// RUN:   -target riscv64-unknown-elf \
+// RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv64_elf_sdk \
+// RUN:   --print-multi-directory \
+// RUN:   -march=rv32ima_zicfilp_zicfiss -mabi=ilp32 -fcf-protection=none \
+// RUN:   | FileCheck -check-prefix=GCC-MULTI-LIB-REUSE-RV32IMA_ZICFILP_ZICFISS-ILP32-NONE-CFI %s
+// GCC-MULTI-LIB-REUSE-RV32IMA_ZICFILP_ZICFISS-ILP32-NONE-CFI: .
+// GCC-MULTI-LIB-REUSE-RV32IMA_ZICFILP_ZICFISS-ILP32-NONE-CFI-NOT: {{^.+$}}

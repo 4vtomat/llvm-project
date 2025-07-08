@@ -21,7 +21,7 @@ namespace RISCV {
 
 enum CPUKind : unsigned {
 #define PROC(ENUM, NAME, DEFAULT_MARCH, FAST_SCALAR_UNALIGN,                   \
-             FAST_VECTOR_UNALIGN, MVENDORID, MARCHID, MIMPID)                  \
+             FAST_VECTOR_UNALIGN, SLOW_VECTOR_FP64, MVENDORID, MARCHID, MIMPID) \
   CK_##ENUM,
 #define TUNE_PROC(ENUM, NAME) CK_##ENUM,
 #include "llvm/TargetParser/RISCVTargetParserDef.inc"
@@ -29,12 +29,13 @@ enum CPUKind : unsigned {
 
 constexpr CPUInfo RISCVCPUInfo[] = {
 #define PROC(ENUM, NAME, DEFAULT_MARCH, FAST_SCALAR_UNALIGN,                   \
-             FAST_VECTOR_UNALIGN, MVENDORID, MARCHID, MIMPID)                  \
+             FAST_VECTOR_UNALIGN, SLOW_VECTOR_FP64, MVENDORID, MARCHID, MIMPID) \
   {                                                                            \
       NAME,                                                                    \
       DEFAULT_MARCH,                                                           \
       FAST_SCALAR_UNALIGN,                                                     \
       FAST_VECTOR_UNALIGN,                                                     \
+      SLOW_VECTOR_FP64,                                                        \
       {MVENDORID, MARCHID, MIMPID},                                            \
   },
 #include "llvm/TargetParser/RISCVTargetParserDef.inc"
@@ -56,6 +57,13 @@ bool hasFastVectorUnalignedAccess(StringRef CPU) {
   const CPUInfo *Info = getCPUInfoByName(CPU);
   return Info && Info->FastVectorUnalignedAccess;
 }
+
+#if SIFIVE_CUSTOMIZATION
+bool hasSlowVectorFP64(StringRef CPU) {
+  const CPUInfo *Info = getCPUInfoByName(CPU);
+  return Info && Info->SlowVectorFP64;
+}
+#endif
 
 bool hasValidCPUModel(StringRef CPU) {
   const CPUModel Model = getCPUModel(CPU);

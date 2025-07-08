@@ -76,7 +76,7 @@ define void @foo(ptr %arg1, i64 %arg2) {
 ; CHECK-NEXT:    [[PHI2_PH:%.*]] = phi ptr [ [[PHI1]], %[[LOOP]] ], [ [[GEP2]], %[[LOOP_NEXT]] ]
 ; CHECK-NEXT:    br label %[[EXIT]]
 ; CHECK:       [[EXIT]]:
-; CHECK-NEXT:    [[PHI2:%.*]] = phi ptr [ [[IND_EARLY_ESCAPE]], %[[VECTOR_EARLY_EXIT]] ], [ [[TMP4]], %[[MIDDLE_BLOCK]] ], [ [[PHI2_PH]], %[[EXIT_LOOPEXIT]] ]
+; CHECK-NEXT:    [[PHI2:%.*]] = phi ptr [ [[TMP4]], %[[MIDDLE_BLOCK]] ], [ [[IND_EARLY_ESCAPE]], %[[VECTOR_EARLY_EXIT]] ], [ [[PHI2_PH]], %[[EXIT_LOOPEXIT]] ]
 ; CHECK-NEXT:    ret void
 ;
 entry:

@@ -9,7 +9,7 @@
 // RUN:   --print-multi-lib \
 // RUN:   | FileCheck -check-prefix=C-RV32-GCC-MULTI-LIB %s
 // C-RV32-GCC-MULTI-LIB: rv32iac/ilp32;@march=rv32iac@mabi=ilp32
-// C-RV32-GCC-MULTI-LIB-NEXT: rv32imafc/ilp32f;@march=rv32iac@mabi=ilp32f
+// C-RV32-GCC-MULTI-LIB-NEXT: rv32imafc/ilp32f;@march=rv32imafc@mabi=ilp32f
 // C-RV32-GCC-MULTI-LIB-NEXT: rv64imafdc/lp64d;@march=rv64imafdc@mabi=lp64d
 // C-RV32-GCC-MULTI-LIB-NOT:  {{^.+$}}
 
@@ -19,7 +19,7 @@
 // RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv32_elf_sdk 2>&1 \
 // RUN:   | FileCheck -check-prefix=C-RV32-GCC-MULTI-LIB-V %s
 // C-RV32-GCC-MULTI-LIB-V: Candidate multilib: rv32iac/ilp32;@march=rv32iac@mabi=ilp32
-// C-RV32-GCC-MULTI-LIB-V-NEXT: Candidate multilib: rv32imafc/ilp32f;@march=rv32iac@mabi=ilp32f
+// C-RV32-GCC-MULTI-LIB-V-NEXT: Candidate multilib: rv32imafc/ilp32f;@march=rv32imafc@mabi=ilp32f
 // C-RV32-GCC-MULTI-LIB-V-NEXT: Candidate multilib: rv64imafdc/lp64d;@march=rv64imafdc@mabi=lp64d
 
 // RUN: %clang %s \
@@ -28,8 +28,12 @@
 // RUN:   --print-multi-lib \
 // RUN:   | FileCheck -check-prefix=C-RV64-GCC-MULTI-LIB %s
 // C-RV64-GCC-MULTI-LIB: rv32iac/ilp32;@march=rv32iac@mabi=ilp32
-// C-RV64-GCC-MULTI-LIB-NEXT: rv32imafc/ilp32f;@march=rv32iac@mabi=ilp32f
+// C-RV64-GCC-MULTI-LIB-NEXT: rv32imafc/ilp32f;@march=rv32imafc@mabi=ilp32f
+// C-RV64-GCC-MULTI-LIB-NEXT: rv32ima_zicfilp/ilp32/cfi-lp;@march=rv32ima_zicfilp@mabi=ilp32@fcf-protection=branch
+// C-RV64-GCC-MULTI-LIB-NEXT: rv32ima_zicfilp_zicfiss/ilp32/cfi;@march=rv32ima_zicfilp_zicfiss@mabi=ilp32@fcf-protection=full
+// C-RV64-GCC-MULTI-LIB-NEXT: rv32imaf_zicfilp/ilp32f/cfi-lp;@march=rv32imaf_zicfilp@mabi=ilp32f@fcf-protection=branch
 // C-RV64-GCC-MULTI-LIB-NEXT: rv64imafdc/lp64d;@march=rv64imafdc@mabi=lp64d
+// C-RV64-GCC-MULTI-LIB-NEXT: rv64imafdc_zicfilp/lp64d/cfi-lp;@march=rv64imafdc_zicfilp@mabi=lp64d@fcf-protection=branch
 // C-RV64-GCC-MULTI-LIB-NEXT: rv64imafdc_zicfiss_zicfilp/lp64d/cfi;@march=rv64imafdc_zicfiss_zicfilp@mabi=lp64d@fcf-protection=full
 // C-RV64-GCC-MULTI-LIB-NOT:  {{^.+$}}
 
@@ -39,8 +43,12 @@
 // RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv64_elf_sdk 2>&1 \
 // RUN:   | FileCheck -check-prefix=C-RV64-GCC-MULTI-LIB-V %s
 // C-RV64-GCC-MULTI-LIB-V: Candidate multilib: rv32iac/ilp32;@march=rv32iac@mabi=ilp32
-// C-RV64-GCC-MULTI-LIB-V-NEXT: Candidate multilib: rv32imafc/ilp32f;@march=rv32iac@mabi=ilp32f
+// C-RV64-GCC-MULTI-LIB-V-NEXT: Candidate multilib: rv32imafc/ilp32f;@march=rv32imafc@mabi=ilp32f
+// C-RV64-GCC-MULTI-LIB-V-NEXT: Candidate multilib: rv32ima_zicfilp/ilp32/cfi-lp;@march=rv32ima_zicfilp@mabi=ilp32@fcf-protection=branch
+// C-RV64-GCC-MULTI-LIB-V-NEXT: Candidate multilib: rv32ima_zicfilp_zicfiss/ilp32/cfi;@march=rv32ima_zicfilp_zicfiss@mabi=ilp32@fcf-protection=full
+// C-RV64-GCC-MULTI-LIB-V-NEXT: Candidate multilib: rv32imaf_zicfilp/ilp32f/cfi-lp;@march=rv32imaf_zicfilp@mabi=ilp32f@fcf-protection=branch
 // C-RV64-GCC-MULTI-LIB-V-NEXT: Candidate multilib: rv64imafdc/lp64d;@march=rv64imafdc@mabi=lp64d
+// C-RV64-GCC-MULTI-LIB-V-NEXT: Candidate multilib: rv64imafdc_zicfilp/lp64d/cfi-lp;@march=rv64imafdc_zicfilp@mabi=lp64d@fcf-protection=branch
 // C-RV64-GCC-MULTI-LIB-V-NEXT: Candidate multilib: rv64imafdc_zicfiss_zicfilp/lp64d/cfi;@march=rv64imafdc_zicfiss_zicfilp@mabi=lp64d@fcf-protection=full
 
 // RUN: %clang %s \

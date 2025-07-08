@@ -176,10 +176,15 @@ static void emitRISCVProfiles(const RecordKeeper &Records, raw_ostream &OS) {
 }
 
 static void emitRISCVProcs(const RecordKeeper &RK, raw_ostream &OS) {
-  OS << "#ifndef PROC\n"
-     << "#define PROC(ENUM, NAME, DEFAULT_MARCH, FAST_SCALAR_UNALIGN"
-     << ", FAST_VECTOR_UNALIGN, MVENDORID, MARCHID, MIMPID)\n"
-     << "#endif\n\n";
+  OS << "#ifndef PROC\n";
+#if SIFIVE_CUSTOMIZATION
+  OS << "#define PROC(ENUM, NAME, DEFAULT_MARCH, FAST_SCALAR_UNALIGN"
+     << ", FAST_VECTOR_UNALIGN, SLOW_VECTOR_FP64, MVENDORID, MARCHID, MIMPID)\n";
+#else
+  OS << "#define PROC(ENUM, NAME, DEFAULT_MARCH, FAST_SCALAR_UNALIGN"
+     << ", FAST_VECTOR_UNALIGN, MVENDORID, MARCHID, MIMPID)\n";
+#endif
+  OS << "#endif\n\n";
 
   // Iterate on all definition records.
   for (const Record *Rec :
@@ -193,6 +198,12 @@ static void emitRISCVProcs(const RecordKeeper &RK, raw_ostream &OS) {
     bool FastVectorUnalignedAccess = any_of(Features, [&](auto &Feature) {
       return Feature->getValueAsString("Name") == "unaligned-vector-mem";
     });
+
+#if SIFIVE_CUSTOMIZATION
+    bool SlowVectorFP64 = any_of(Features, [&](auto &Feature) {
+      return Feature->getValueAsString("Name") == "slow-vector-fp64";
+    });
+#endif
 
     OS << "PROC(" << Rec->getName() << ", {\"" << Rec->getValueAsString("Name")
        << "\"}, {\"";
@@ -211,6 +222,9 @@ static void emitRISCVProcs(const RecordKeeper &RK, raw_ostream &OS) {
 
     OS << "\"}, " << FastScalarUnalignedAccess << ", "
        << FastVectorUnalignedAccess;
+#if SIFIVE_CUSTOMIZATION
+    OS << ", " << SlowVectorFP64;
+#endif
     OS << ", " << format_hex(MVendorID, 10);
     OS << ", " << format_hex(MArchID, 18);
     OS << ", " << format_hex(MImpID, 18);

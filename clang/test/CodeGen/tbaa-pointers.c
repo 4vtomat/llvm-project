@@ -54,16 +54,11 @@ void p4char(char ****ptr) {
   // COMMON-LABEL: define void @p4char(
   // COMMON-SAME:    ptr noundef [[PTR:%.+]])
   // COMMON:         [[PTR_ADDR:%.+]] = alloca ptr, align 8
-  // DEFAULT-NEXT:   store ptr [[PTR]], ptr [[PTR_ADDR]], align 8, !tbaa [[P4CHAR_0:!.+]]
-  // DEFAULT-NEXT:   [[BASE_0:%.+]] = load ptr, ptr [[PTR_ADDR]], align 8, !tbaa [[P4CHAR_0]]
-  // DEFAULT-NEXT:   [[BASE_1:%.+]] = load ptr, ptr [[BASE_0]], align 8, !tbaa [[P3CHAR_0:!.+]]
-  // DEFAULT-NEXT:   [[BASE_2:%.+]] = load ptr, ptr [[BASE_1]], align 8, !tbaa [[P2CHAR_0:!.+]]
-  // DEFAULT-NEXT:   store ptr null, ptr [[BASE_2]], align 8, !tbaa [[P1CHAR_0:!.+]]
-  // DISABLE-NEXT:   store ptr [[PTR]], ptr [[PTR_ADDR]], align 8, !tbaa [[ANYPTR]]
-  // DISABLE-NEXT:   [[BASE_0:%.+]] = load ptr, ptr [[PTR_ADDR]], align 8, !tbaa [[ANYPTR]]
-  // DISABLE-NEXT:   [[BASE_1:%.+]] = load ptr, ptr [[BASE_0]], align 8, !tbaa [[ANYPTR]]
-  // DISABLE-NEXT:   [[BASE_2:%.+]] = load ptr, ptr [[BASE_1]], align 8, !tbaa [[ANYPTR]]
-  // DISABLE-NEXT:   store ptr null, ptr [[BASE_2]], align 8, !tbaa [[ANYPTR]]
+  // COMMON-NEXT:    store ptr [[PTR]], ptr [[PTR_ADDR]], align 8, !tbaa [[ANYPTR:!.+]]
+  // COMMON-NEXT:    [[BASE_0:%.+]] = load ptr, ptr [[PTR_ADDR]], align 8, !tbaa [[ANYPTR]]
+  // COMMON-NEXT:    [[BASE_1:%.+]] = load ptr, ptr [[BASE_0]], align 8, !tbaa [[ANYPTR]]
+  // COMMON-NEXT:    [[BASE_2:%.+]] = load ptr, ptr [[BASE_1]], align 8, !tbaa [[ANYPTR]]
+  // COMMON-NEXT:    store ptr null, ptr [[BASE_2]], align 8, !tbaa [[ANYPTR]]
   // COMMON-NEXT:    ret void
   //
   ***ptr = 0;
@@ -71,18 +66,13 @@ void p4char(char ****ptr) {
 
 void p4char_const1(const char ****ptr) {
   // COMMON-LABEL: define void @p4char_const1(
-  // COMMON-SAME:    ptr noundef [[PTR:%.+]])
-  // COMMON:         [[PTR_ADDR:%.+]] = alloca ptr, align 8
-  // DEFAULT-NEXT:   store ptr [[PTR]], ptr [[PTR_ADDR]], align 8, !tbaa [[P4CHAR_0]]
-  // DEFAULT-NEXT:   [[BASE_0:%.+]] = load ptr, ptr [[PTR_ADDR]], align 8, !tbaa [[P4CHAR_0]]
-  // DEFAULT-NEXT:   [[BASE_1:%.+]] = load ptr, ptr [[BASE_0]], align 8, !tbaa [[P3CHAR_0]]
-  // DEFAULT-NEXT:   [[BASE_2:%.+]] = load ptr, ptr [[BASE_1]], align 8, !tbaa [[P2CHAR_0]]
-  // DEFAULT-NEXT:   store ptr null, ptr [[BASE_2]], align 8, !tbaa [[P1CHAR_0]]
-  // DISABLE-NEXT:   store ptr [[PTR]], ptr [[PTR_ADDR]], align 8, !tbaa [[ANYPTR]]
-  // DISABLE-NEXT:   [[BASE_0:%.+]] = load ptr, ptr [[PTR_ADDR]], align 8, !tbaa [[ANYPTR]]
-  // DISABLE-NEXT:   [[BASE_1:%.+]] = load ptr, ptr [[BASE_0]], align 8, !tbaa [[ANYPTR]]
-  // DISABLE-NEXT:   [[BASE_2:%.+]] = load ptr, ptr [[BASE_1]], align 8, !tbaa [[ANYPTR]]
-  // DISABLE-NEXT:   store ptr null, ptr [[BASE_2]], align 8, !tbaa [[ANYPTR]]
+  // COMMON-SAME:   ptr noundef [[PTR:%.+]])
+  // COMMON:        [[PTR_ADDR:%.+]] = alloca ptr, align 8
+  // COMMON-NEXT:   store ptr [[PTR]], ptr [[PTR_ADDR]], align 8, !tbaa [[ANYPTR]]
+  // COMMON-NEXT:   [[BASE_0:%.+]] = load ptr, ptr [[PTR_ADDR]], align 8, !tbaa [[ANYPTR]]
+  // COMMON-NEXT:   [[BASE_1:%.+]] = load ptr, ptr [[BASE_0]], align 8, !tbaa [[ANYPTR]]
+  // COMMON-NEXT:   [[BASE_2:%.+]] = load ptr, ptr [[BASE_1]], align 8, !tbaa [[ANYPTR]]
+  // COMMON-NEXT:   store ptr null, ptr [[BASE_2]], align 8, !tbaa [[ANYPTR]]
   // COMMON-NEXT:   ret void
   //
   ***ptr = 0;
@@ -92,16 +82,11 @@ void p4char_const2(const char **const **ptr) {
   // COMMON-LABEL: define void @p4char_const2(
   // COMMON-SAME:    ptr noundef [[PTR:%.+]])
   // COMMON:         [[PTR_ADDR:%.+]] = alloca ptr, align 8
-  // DEFAULT-NEXT:   store ptr [[PTR]], ptr [[PTR_ADDR]], align 8, !tbaa [[P4CHAR_0]]
-  // DEFAULT-NEXT:   [[BASE_0:%.+]] = load ptr, ptr [[PTR_ADDR]], align 8, !tbaa [[P4CHAR_0]]
-  // DEFAULT-NEXT:   [[BASE_1:%.+]] = load ptr, ptr [[BASE_0]], align 8, !tbaa [[P3CHAR_0]]
-  // DEFAULT-NEXT:   [[BASE_2:%.+]] = load ptr, ptr [[BASE_1]], align 8, !tbaa [[P2CHAR_0]]
-  // DEFAULT-NEXT:   store ptr null, ptr [[BASE_2]], align 8, !tbaa [[P1CHAR_0]]
-  // DISABLE-NEXT:   store ptr [[PTR]], ptr [[PTR_ADDR]], align 8, !tbaa [[ANYPTR]]
-  // DISABLE-NEXT:   [[BASE_0:%.+]] = load ptr, ptr [[PTR_ADDR]], align 8, !tbaa [[ANYPTR]]
-  // DISABLE-NEXT:   [[BASE_1:%.+]] = load ptr, ptr [[BASE_0]], align 8, !tbaa [[ANYPTR]]
-  // DISABLE-NEXT:   [[BASE_2:%.+]] = load ptr, ptr [[BASE_1]], align 8, !tbaa [[ANYPTR]]
-  // DISABLE-NEXT:   store ptr null, ptr [[BASE_2]], align 8, !tbaa [[ANYPTR]]
+  // COMMON-NEXT:    store ptr [[PTR]], ptr [[PTR_ADDR]], align 8, !tbaa [[ANYPTR]]
+  // COMMON-NEXT:    [[BASE_0:%.+]] = load ptr, ptr [[PTR_ADDR]], align 8, !tbaa [[ANYPTR]]
+  // COMMON-NEXT:    [[BASE_1:%.+]] = load ptr, ptr [[BASE_0]], align 8, !tbaa [[ANYPTR]]
+  // COMMON-NEXT:    [[BASE_2:%.+]] = load ptr, ptr [[BASE_1]], align 8, !tbaa [[ANYPTR]]
+  // COMMON-NEXT:    store ptr null, ptr [[BASE_2]], align 8, !tbaa [[ANYPTR]]
   // COMMON-NEXT:    ret void
   //
   ***ptr = 0;
@@ -228,47 +213,18 @@ int void_ptrs(void **ptr) {
 // COMMON: [[ANY_POINTER]] = !{!"any pointer", [[CHAR:!.+]], i64 0}
 // COMMON: [[CHAR]] = !{!"omnipotent char", [[TBAA_ROOT:!.+]], i64 0}
 // COMMON: [[TBAA_ROOT]] = !{!"Simple C/C++ TBAA"}
-// ENABLED: [[P1INT_0]] = !{[[P1INT:!.+]], [[P1INT]], i64 0}
-// ENABLED: [[P1INT]] = !{!"p1 int", [[ANY_POINTER]], i64 0}
-// ENABLED: [[P3INT_0]] = !{[[P3INT:!.+]], [[P3INT]], i64 0}
-// ENABLED: [[P3INT]] = !{!"p3 int", [[ANY_POINTER]], i64 0}
-// ENABLED: [[P4CHAR_0]] = !{[[P4CHAR:!.+]], [[P4CHAR]], i64 0}
-// ENABLED: [[P4CHAR]] = !{!"p4 omnipotent char", [[ANY_POINTER]], i64 0}
-// ENABLED: [[P3CHAR_0]] = !{[[P3CHAR:!.+]], [[P3CHAR]], i64 0}
-// ENABLED: [[P3CHAR]] = !{!"p3 omnipotent char", [[ANY_POINTER]], i64 0}
-// ENABLED: [[P2CHAR_0]] = !{[[P2CHAR:!.+]], [[P2CHAR]], i64 0}
-// ENABLED: [[P2CHAR]] = !{!"p2 omnipotent char", [[ANY_POINTER]], i64 0}
-// ENABLED: [[P1CHAR_0]] = !{[[P1CHAR:!.+]], [[P1CHAR]], i64 0}
-// ENABLED: [[P1CHAR]] = !{!"p1 omnipotent char", [[ANY_POINTER]], i64 0}
-// ENABLED: [[P2S1_TAG]] = !{[[P2S1:!.+]], [[P2S1]], i64 0}
-// ENABLED: [[P2S1]] = !{!"p2 struct S1", [[ANY_POINTER]], i64 0}
-// ENABLED: [[P1S1_TAG:!.+]] = !{[[P1S1:!.+]], [[P1S1]], i64 0}
-// ENABLED: [[P1S1]] = !{!"p1 struct S1", [[ANY_POINTER]], i64 0}
-// ENABLED: [[P1S2_TAG]] = !{[[P1S2:!.+]], [[P1S2]], i64 0}
-// ENABLED: [[P1S2]] = !{!"p1 struct S2", [[ANY_POINTER]], i64 0}
 // DEFAULT: [[P1INT_0]] = !{[[P1INT:!.+]], [[P1INT]], i64 0}
 // DEFAULT: [[P1INT]] = !{!"p1 int", [[ANY_POINTER]], i64 0}
 // DEFAULT: [[P3INT_0]] = !{[[P3INT:!.+]], [[P3INT]], i64 0}
 // DEFAULT: [[P3INT]] = !{!"p3 int", [[ANY_P3_POINTER:!.+]], i64 0}
 // DEFAULT: [[ANY_P3_POINTER]] = !{!"any p3 pointer", [[ANY_P2_POINTER]], i64 0}
-// DEFAULT: [[P4CHAR_0]] = !{[[P4CHAR:!.+]], [[P4CHAR]], i64 0}
-// DEFAULT: [[P4CHAR]] = !{!"p4 omnipotent char", [[ANY_P4_POINTER:!.*]], i64 0}
-// DEFAULT: [[ANY_P4_POINTER]] = !{!"any p4 pointer", [[ANY_P3_POINTER]], i64 0}
-// DEFAULT: [[P3CHAR_0]] = !{[[P3CHAR:!.+]], [[P3CHAR]], i64 0}
-// DEFAULT: [[P3CHAR]] = !{!"p3 omnipotent char", [[ANY_P3_POINTER]], i64 0}
-// DEFAULT: [[P2CHAR_0]] = !{[[P2CHAR:!.+]], [[P2CHAR]], i64 0}
-// DEFAULT: [[P2CHAR]] = !{!"p2 omnipotent char", [[ANY_P2_POINTER]], i64 0}
-// DEFAULT: [[P1CHAR_0]] = !{[[P1CHAR:!.+]], [[P1CHAR]], i64 0}
-// DEFAULT: [[P1CHAR]] = !{!"p1 omnipotent char", [[ANY_POINTER]], i64 0}
+// DEFAULT: [[ANYPTR]] = !{[[ANY_POINTER:!.+]], [[ANY_POINTER]], i64 0}
 // DEFAULT: [[P2S1_TAG]] = !{[[P2S1:!.+]], [[P2S1]], i64 0}
 // DEFAULT: [[P1S1_TAG:!.+]] = !{[[P1S1:!.+]], [[P1S1]], i64 0}
 // DEFAULT: [[P1S2_TAG]] = !{[[P1S2:!.+]], [[P1S2]], i64 0}
-
 // DEFAULT: [[S2_S_TAG]]  = !{[[S2_TY:!.+]], [[P1S1]], i64 0}
 // DEFAULT: [[S2_TY]]  = !{!"S2", [[P1S1]], i64 0}
 // DISABLE: [[S2_S_TAG]]  = !{[[S2_TY:!.+]], [[ANY_POINTER]], i64 0}
 // DISABLE: [[S2_TY]]  = !{!"S2", [[ANY_POINTER]], i64 0}
 // COMMON:  [[INT_TAG]] = !{[[INT_TY:!.+]], [[INT_TY]], i64 0}
 // COMMON:  [[INT_TY]] = !{!"int", [[CHAR]], i64 0}
-// DEFAULT: [[ANYPTR]] = !{[[ANY_POINTER]],  [[ANY_POINTER]], i64 0}
-// DEFAULT: [[ANYP2]] = !{[[ANY_P2_POINTER]],  [[ANY_P2_POINTER]], i64 0}

@@ -1463,6 +1463,11 @@ bool RISCVLateCodeGenPrepare::visitIntrinsicInst(IntrinsicInst &I) {
 
 bool RISCVLateCodeGenPrepare::visitMemIntrinsic(MemIntrinsic &MI) {
   Function &F = *MI.getFunction();
+
+  // We only do memcpy/memmove/memset expansion for SiFive CPUs by default.
+  if (MemToRVVOpt.getNumOccurrences() == 0 && !ST->isSiFiveCPU())
+    return false;
+
   if (!F.hasFnAttribute(Attribute::NoImplicitFloat) && !F.hasOptSize() &&
       ST->hasVInstructions() && MemToRVVOpt)
     MemCalls.push_back(&MI);

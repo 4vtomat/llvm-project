@@ -557,5 +557,8 @@ defm : UnsupportedSchedZbkb;
 defm : UnsupportedSchedZbkx;
 defm : UnsupportedSchedSFB;
 defm : UnsupportedSchedXsfvcp;
-defm : UnsupportedSchedXSfsci; // SIFIVE
+defm : UnsupportedSchedXSfsci;
+defm : UnsupportedSchedXSfvqmaccdod;
+defm : UnsupportedSchedXSfvqmaccqoq;
+defm : UnsupportedSchedXSfvfwmaccqqq;
 }

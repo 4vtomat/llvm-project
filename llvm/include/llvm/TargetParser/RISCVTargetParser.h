@@ -43,6 +43,9 @@ struct CPUInfo {
   StringLiteral DefaultMarch;
   bool FastScalarUnalignedAccess;
   bool FastVectorUnalignedAccess;
+#if SIFIVE_CUSTOMIZATION
+  bool SlowVectorFP64;
+#endif
   CPUModel Model;
   bool is64Bit() const { return DefaultMarch.starts_with("rv64"); }
 };
@@ -61,6 +64,9 @@ void fillValidCPUArchList(SmallVectorImpl<StringRef> &Values, bool IsRV64);
 void fillValidTuneCPUArchList(SmallVectorImpl<StringRef> &Values, bool IsRV64);
 bool hasFastScalarUnalignedAccess(StringRef CPU);
 bool hasFastVectorUnalignedAccess(StringRef CPU);
+#if SIFIVE_CUSTOMIZATION
+bool hasSlowVectorFP64(StringRef CPU);
+#endif
 bool hasValidCPUModel(StringRef CPU);
 CPUModel getCPUModel(StringRef CPU);
 

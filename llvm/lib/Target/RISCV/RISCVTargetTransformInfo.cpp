@@ -3337,8 +3337,8 @@ InstructionCost RISCVTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
   }
 
   /// Extra penalty for misaligned load or store
-  if (!Alignment ||
-      (ST->hasKnownDLen() && Alignment.value() < Align(ST->getDLen() / 8)))
+  if (!Alignment || (ST->hasKnownDLen() && ST->isSiFiveCPU() &&
+                     Alignment.value() < Align(ST->getDLen() / 8)))
     Cost += 1;
 
   // Load/store instructions with large lmul will run out of outstandings which

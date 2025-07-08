@@ -1,7 +1,7 @@
 ; REQUIRES: asserts
-; RUN: opt -riscv-late-codegenprepare -stats -mattr=+v -disable-output %s 2>&1 \
+; RUN: opt -riscv-late-codegenprepare -stats -mattr=+v -riscv-mem-to-rvv=true -riscv-mem-to-rvv-dlen-align=false -disable-output %s 2>&1 \
 ; RUN:     | FileCheck %s
-; RUN: opt -riscv-late-codegenprepare -stats -mattr=+v,+dlen128b -disable-output %s 2>&1 \
+; RUN: opt -riscv-late-codegenprepare -stats -mattr=+v -riscv-mem-to-rvv=true -riscv-mem-to-rvv-dlen-align=true -disable-output %s 2>&1 \
 ; RUN:     | FileCheck %s --check-prefix=CHECK-ALIGN
 
 target triple = "riscv64"
