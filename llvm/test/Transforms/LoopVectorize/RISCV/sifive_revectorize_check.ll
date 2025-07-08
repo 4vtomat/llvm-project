@@ -13,6 +13,7 @@ define fastcc void @foo(ptr %arg) {
 ; CHECK-NEXT:    [[IDENT_CHECK:%.*]] = icmp ne i32 [[LOAD]], 1
 ; CHECK-NEXT:    br i1 [[IDENT_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
+; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 1024, i32 8, i1 true)
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -45,6 +46,7 @@ define fastcc void @foo(ptr %arg) {
 ; CHECK-NEXT:    [[TMP13:%.*]] = or i1 [[TMP12]], [[MUL_OVERFLOW]]
 ; CHECK-NEXT:    br i1 [[TMP13]], label %[[SCALAR_PH4]], label %[[VECTOR_PH5:.*]]
 ; CHECK:       [[VECTOR_PH5]]:
+; CHECK-NEXT:    [[TMP16:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 1024, i32 8, i1 true)
 ; CHECK-NEXT:    [[TMP14:%.*]] = sext i32 [[LOAD]] to i64
 ; CHECK-NEXT:    br label %[[VECTOR_BODY6:.*]]
 ; CHECK:       [[VECTOR_BODY6]]:

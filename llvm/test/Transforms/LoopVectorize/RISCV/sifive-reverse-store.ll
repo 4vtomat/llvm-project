@@ -14,7 +14,7 @@ define void @reverse(ptr %y, i64 %alpha, i32 %N) {
 ; CHECK-NEXT:    [[TMP0:%.*]] = sext i32 [[N]] to i64
 ; CHECK-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
-; CHECK-NEXT:    [[TMP6:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    [[TMP3:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 1, i1 true)
 ; CHECK-NEXT:    [[TMP14:%.*]] = sub i64 [[TMP0]], [[TMP0]]
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[ALPHA]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 1 x i64> [[BROADCAST_SPLATINSERT]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer

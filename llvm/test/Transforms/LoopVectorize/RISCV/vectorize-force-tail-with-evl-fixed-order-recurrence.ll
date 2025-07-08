@@ -24,8 +24,8 @@ define void @first_order_recurrence(ptr noalias %A, ptr noalias %B, i64 %TC) {
 ; IF-EVL:       [[VECTOR_BODY]]:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
-; IF-EVL-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP10]], %[[VECTOR_PH]] ], [ [[TMP12:%.*]], %[[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[VECTOR_RECUR:%.*]] = phi <vscale x 2 x i32> [ [[VECTOR_RECUR_INIT]], %[[VECTOR_PH]] ], [ [[VP_OP_LOAD:%.*]], %[[VECTOR_BODY]] ]
+; IF-EVL-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP10]], %[[VECTOR_PH]] ], [ [[TMP12:%.*]], %[[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[AVL:%.*]] = sub i64 [[TC]], [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP12]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[TMP14:%.*]] = getelementptr inbounds nuw i32, ptr [[A]], i64 [[EVL_BASED_IV]]
@@ -112,9 +112,9 @@ define void @second_order_recurrence(ptr noalias %A, ptr noalias %B, i64 %TC) {
 ; IF-EVL:       [[VECTOR_BODY]]:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
-; IF-EVL-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP10]], %[[VECTOR_PH]] ], [ [[TMP15:%.*]], %[[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[VECTOR_RECUR:%.*]] = phi <vscale x 2 x i32> [ [[VECTOR_RECUR_INIT]], %[[VECTOR_PH]] ], [ [[VP_OP_LOAD:%.*]], %[[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[VECTOR_RECUR3:%.*]] = phi <vscale x 2 x i32> [ [[VECTOR_RECUR_INIT2]], %[[VECTOR_PH]] ], [ [[TMP7:%.*]], %[[VECTOR_BODY]] ]
+; IF-EVL-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP10]], %[[VECTOR_PH]] ], [ [[TMP15:%.*]], %[[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[AVL:%.*]] = sub i64 [[TC]], [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP15]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[TMP17:%.*]] = getelementptr inbounds nuw i32, ptr [[A]], i64 [[EVL_BASED_IV]]
@@ -209,10 +209,10 @@ define void @third_order_recurrence(ptr noalias %A, ptr noalias %B, i64 %TC) {
 ; IF-EVL:       [[VECTOR_BODY]]:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
-; IF-EVL-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP10]], %[[VECTOR_PH]] ], [ [[TMP18:%.*]], %[[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[VECTOR_RECUR:%.*]] = phi <vscale x 2 x i32> [ [[VECTOR_RECUR_INIT]], %[[VECTOR_PH]] ], [ [[VP_OP_LOAD:%.*]], %[[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[VECTOR_RECUR3:%.*]] = phi <vscale x 2 x i32> [ [[VECTOR_RECUR_INIT2]], %[[VECTOR_PH]] ], [ [[TMP8:%.*]], %[[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[VECTOR_RECUR5:%.*]] = phi <vscale x 2 x i32> [ [[VECTOR_RECUR_INIT4]], %[[VECTOR_PH]] ], [ [[TMP9:%.*]], %[[VECTOR_BODY]] ]
+; IF-EVL-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP10]], %[[VECTOR_PH]] ], [ [[TMP18:%.*]], %[[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[AVL:%.*]] = sub i64 [[TC]], [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP18]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[TMP20:%.*]] = getelementptr inbounds nuw i32, ptr [[A]], i64 [[EVL_BASED_IV]]
@@ -313,8 +313,8 @@ define i32 @FOR_reduction(ptr noalias %A, ptr noalias %B, i64 %TC) {
 ; IF-EVL:       [[VECTOR_BODY]]:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
-; IF-EVL-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP3]], %[[VECTOR_PH]] ], [ [[TMP2:%.*]], %[[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[VECTOR_RECUR:%.*]] = phi <vscale x 2 x i32> [ [[VECTOR_RECUR_INIT]], %[[VECTOR_PH]] ], [ [[VP_OP_LOAD:%.*]], %[[VECTOR_BODY]] ]
+; IF-EVL-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP3]], %[[VECTOR_PH]] ], [ [[TMP2:%.*]], %[[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[AVL:%.*]] = sub i64 [[TC]], [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP2]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds nuw i32, ptr [[A]], i64 [[EVL_BASED_IV]]

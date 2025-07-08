@@ -23,8 +23,7 @@ define void @vector_reverse_i32(ptr noalias %A, ptr noalias %B) {
 ; RV64-NEXT:  [[ENTRY:.*:]]
 ; RV64-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; RV64:       [[VECTOR_PH]]:
-; RV64-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; RV64-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP4]], 2
+; RV64-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 1023, i32 2, i1 true)
 ; RV64-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; RV64:       [[VECTOR_BODY]]:
 ; RV64-NEXT:    [[INDEX1:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -74,8 +73,7 @@ define void @vector_reverse_i32(ptr noalias %A, ptr noalias %B) {
 ; RV32-NEXT:  [[ENTRY:.*:]]
 ; RV32-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; RV32:       [[VECTOR_PH]]:
-; RV32-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; RV32-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP4]], 2
+; RV32-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 1023, i32 2, i1 true)
 ; RV32-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; RV32:       [[VECTOR_BODY]]:
 ; RV32-NEXT:    [[INDEX1:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -123,8 +121,7 @@ define void @vector_reverse_i32(ptr noalias %A, ptr noalias %B) {
 ; RV64-UF2-NEXT:  [[ENTRY:.*:]]
 ; RV64-UF2-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; RV64-UF2:       [[VECTOR_PH]]:
-; RV64-UF2-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; RV64-UF2-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP4]], 2
+; RV64-UF2-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 1023, i32 2, i1 true)
 ; RV64-UF2-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; RV64-UF2:       [[VECTOR_BODY]]:
 ; RV64-UF2-NEXT:    [[INDEX1:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -193,8 +190,7 @@ define void @vector_reverse_f32(ptr noalias %A, ptr noalias %B) {
 ; RV64-NEXT:  [[ENTRY:.*:]]
 ; RV64-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; RV64:       [[VECTOR_PH]]:
-; RV64-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; RV64-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP4]], 2
+; RV64-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 1023, i32 2, i1 true)
 ; RV64-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; RV64:       [[VECTOR_BODY]]:
 ; RV64-NEXT:    [[INDEX1:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -244,8 +240,7 @@ define void @vector_reverse_f32(ptr noalias %A, ptr noalias %B) {
 ; RV32-NEXT:  [[ENTRY:.*:]]
 ; RV32-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; RV32:       [[VECTOR_PH]]:
-; RV32-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; RV32-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP4]], 2
+; RV32-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 1023, i32 2, i1 true)
 ; RV32-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; RV32:       [[VECTOR_BODY]]:
 ; RV32-NEXT:    [[INDEX1:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -293,8 +288,7 @@ define void @vector_reverse_f32(ptr noalias %A, ptr noalias %B) {
 ; RV64-UF2-NEXT:  [[ENTRY:.*:]]
 ; RV64-UF2-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; RV64-UF2:       [[VECTOR_PH]]:
-; RV64-UF2-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; RV64-UF2-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP4]], 2
+; RV64-UF2-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 1023, i32 2, i1 true)
 ; RV64-UF2-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; RV64-UF2:       [[VECTOR_BODY]]:
 ; RV64-UF2-NEXT:    [[INDEX1:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]

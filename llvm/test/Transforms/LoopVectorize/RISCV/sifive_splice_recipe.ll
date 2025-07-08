@@ -29,9 +29,9 @@ define void @foo(ptr %b, ptr %a) {
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV3:%.*]] = phi i32 [ [[TMP5]], %[[VECTOR_PH]] ], [ [[TMP9:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VECTOR_RECUR:%.*]] = phi <vscale x 2 x float> [ [[VECTOR_RECUR_INIT]], %[[VECTOR_PH]] ], [ [[VP_OP_LOAD:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VECTOR_RECUR5:%.*]] = phi <vscale x 2 x float> [ [[VECTOR_RECUR_INIT4]], %[[VECTOR_PH]] ], [ [[TMP14:%.*]], %[[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV3:%.*]] = phi i32 [ [[TMP5]], %[[VECTOR_PH]] ], [ [[TMP9:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP8:%.*]] = sub i64 10000, [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP9]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP8]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[EVL_BASED_IV]]

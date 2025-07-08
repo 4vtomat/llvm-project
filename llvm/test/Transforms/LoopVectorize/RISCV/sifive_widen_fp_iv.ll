@@ -13,6 +13,7 @@ define void @test(i32 %input, ptr %0) {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vscale.i32()
 ; CHECK-NEXT:    [[TMP8:%.*]] = mul i32 [[TMP5]], 4
+; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 [[TMP1]], i32 4, i1 true)
 ; CHECK-NEXT:    [[DOTCAST:%.*]] = sitofp i32 [[TMP1]] to double
 ; CHECK-NEXT:    [[TMP2:%.*]] = fmul reassoc double 1.000000e+00, [[DOTCAST]]
 ; CHECK-NEXT:    [[IND_END:%.*]] = fadd reassoc double 0.000000e+00, [[TMP2]]

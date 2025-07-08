@@ -21,6 +21,7 @@ define dso_local noundef i32 @_Z3fooiPKfPf(i32 noundef signext %N, ptr nocapture
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP4]], 4
+; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 4, i1 true)
 ; CHECK-NEXT:    [[DOTCAST:%.*]] = trunc i64 [[WIDE_TRIP_COUNT]] to i32
 ; CHECK-NEXT:    [[IND_END:%.*]] = mul i32 [[DOTCAST]], 2
 ; CHECK-NEXT:    [[TMP6:%.*]] = call <vscale x 4 x i32> @llvm.stepvector.nxv4i32()

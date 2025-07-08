@@ -131,6 +131,7 @@ define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; VEC-M1-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
 ; VEC-M1-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]
 ; VEC-M1:       vector.ph:
+; VEC-M1-NEXT:    [[TMP61:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 1, i1 true)
 ; VEC-M1-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 1 x double> poison, double [[S]], i64 0
 ; VEC-M1-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 1 x double> [[BROADCAST_SPLATINSERT]], <vscale x 1 x double> poison, <vscale x 1 x i32> zeroinitializer
 ; VEC-M1-NEXT:    br label [[VECTOR_BODY:%.*]]
@@ -138,46 +139,46 @@ define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; VEC-M1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; VEC-M1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; VEC-M1-NEXT:    [[AVL:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
-; VEC-M1-NEXT:    [[TMP61:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 1, i1 true)
-; VEC-M1-NEXT:    [[TMP62:%.*]] = getelementptr [[STRUCT_SU3_VECTOR:%.*]], ptr [[A]], i64 [[EVL_BASED_IV]]
-; VEC-M1-NEXT:    [[TMP63:%.*]] = getelementptr [[STRUCT_SU3_VECTOR]], ptr [[B]], i64 [[EVL_BASED_IV]]
-; VEC-M1-NEXT:    [[TMP64:%.*]] = mul nuw nsw i32 [[TMP61]], 6
-; VEC-M1-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 6 x double> @llvm.vp.load.nxv6f64.p0(ptr align 8 [[TMP62]], <vscale x 6 x i1> splat (i1 true), i32 [[TMP64]])
+; VEC-M1-NEXT:    [[TMP62:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 1, i1 true)
+; VEC-M1-NEXT:    [[TMP63:%.*]] = getelementptr [[STRUCT_SU3_VECTOR:%.*]], ptr [[A]], i64 [[EVL_BASED_IV]]
+; VEC-M1-NEXT:    [[TMP64:%.*]] = getelementptr [[STRUCT_SU3_VECTOR]], ptr [[B]], i64 [[EVL_BASED_IV]]
+; VEC-M1-NEXT:    [[TMP65:%.*]] = mul nuw nsw i32 [[TMP62]], 6
+; VEC-M1-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 6 x double> @llvm.vp.load.nxv6f64.p0(ptr align 8 [[TMP63]], <vscale x 6 x i1> splat (i1 true), i32 [[TMP65]])
 ; VEC-M1-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } @llvm.experimental.vector.deinterleave6.nxv6f64(<vscale x 6 x double> [[WIDE_MASKED_LOAD]])
-; VEC-M1-NEXT:    [[TMP65:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 0
-; VEC-M1-NEXT:    [[TMP66:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 1
-; VEC-M1-NEXT:    [[TMP67:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 2
-; VEC-M1-NEXT:    [[TMP68:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 3
-; VEC-M1-NEXT:    [[TMP69:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 4
-; VEC-M1-NEXT:    [[TMP70:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 5
-; VEC-M1-NEXT:    [[TMP71:%.*]] = mul nuw nsw i32 [[TMP61]], 6
-; VEC-M1-NEXT:    [[WIDE_MASKED_LOAD45:%.*]] = call <vscale x 6 x double> @llvm.vp.load.nxv6f64.p0(ptr align 8 [[TMP63]], <vscale x 6 x i1> splat (i1 true), i32 [[TMP71]])
+; VEC-M1-NEXT:    [[TMP66:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 0
+; VEC-M1-NEXT:    [[TMP67:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 1
+; VEC-M1-NEXT:    [[TMP68:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 2
+; VEC-M1-NEXT:    [[TMP69:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 3
+; VEC-M1-NEXT:    [[TMP70:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 4
+; VEC-M1-NEXT:    [[TMP71:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 5
+; VEC-M1-NEXT:    [[TMP72:%.*]] = mul nuw nsw i32 [[TMP62]], 6
+; VEC-M1-NEXT:    [[WIDE_MASKED_LOAD45:%.*]] = call <vscale x 6 x double> @llvm.vp.load.nxv6f64.p0(ptr align 8 [[TMP64]], <vscale x 6 x i1> splat (i1 true), i32 [[TMP72]])
 ; VEC-M1-NEXT:    [[DEINTERLEAVED_RESULTS46:%.*]] = call { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } @llvm.experimental.vector.deinterleave6.nxv6f64(<vscale x 6 x double> [[WIDE_MASKED_LOAD45]])
-; VEC-M1-NEXT:    [[TMP72:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS46]], 0
-; VEC-M1-NEXT:    [[TMP73:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS46]], 1
-; VEC-M1-NEXT:    [[TMP74:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS46]], 2
-; VEC-M1-NEXT:    [[TMP75:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS46]], 3
-; VEC-M1-NEXT:    [[TMP76:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS46]], 4
-; VEC-M1-NEXT:    [[TMP77:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS46]], 5
-; VEC-M1-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP72]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP61]])
-; VEC-M1-NEXT:    [[VP_OP47:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP]], <vscale x 1 x double> [[TMP65]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP61]])
-; VEC-M1-NEXT:    [[VP_OP48:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP73]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP61]])
-; VEC-M1-NEXT:    [[VP_OP49:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP48]], <vscale x 1 x double> [[TMP66]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP61]])
-; VEC-M1-NEXT:    [[VP_OP50:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP74]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP61]])
-; VEC-M1-NEXT:    [[VP_OP51:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP50]], <vscale x 1 x double> [[TMP67]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP61]])
-; VEC-M1-NEXT:    [[VP_OP52:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP75]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP61]])
-; VEC-M1-NEXT:    [[VP_OP53:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP52]], <vscale x 1 x double> [[TMP68]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP61]])
-; VEC-M1-NEXT:    [[VP_OP54:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP76]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP61]])
-; VEC-M1-NEXT:    [[VP_OP55:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP54]], <vscale x 1 x double> [[TMP69]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP61]])
-; VEC-M1-NEXT:    [[VP_OP56:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP77]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP61]])
-; VEC-M1-NEXT:    [[VP_OP57:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP56]], <vscale x 1 x double> [[TMP70]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP61]])
+; VEC-M1-NEXT:    [[TMP73:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS46]], 0
+; VEC-M1-NEXT:    [[TMP74:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS46]], 1
+; VEC-M1-NEXT:    [[TMP75:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS46]], 2
+; VEC-M1-NEXT:    [[TMP76:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS46]], 3
+; VEC-M1-NEXT:    [[TMP77:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS46]], 4
+; VEC-M1-NEXT:    [[TMP78:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS46]], 5
+; VEC-M1-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP73]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M1-NEXT:    [[VP_OP47:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP]], <vscale x 1 x double> [[TMP66]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M1-NEXT:    [[VP_OP48:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP74]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M1-NEXT:    [[VP_OP49:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP48]], <vscale x 1 x double> [[TMP67]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M1-NEXT:    [[VP_OP50:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP75]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M1-NEXT:    [[VP_OP51:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP50]], <vscale x 1 x double> [[TMP68]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M1-NEXT:    [[VP_OP52:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP76]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M1-NEXT:    [[VP_OP53:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP52]], <vscale x 1 x double> [[TMP69]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M1-NEXT:    [[VP_OP54:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP77]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M1-NEXT:    [[VP_OP55:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP54]], <vscale x 1 x double> [[TMP70]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M1-NEXT:    [[VP_OP56:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP78]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M1-NEXT:    [[VP_OP57:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP56]], <vscale x 1 x double> [[TMP71]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
 ; VEC-M1-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 6 x double> @llvm.experimental.vector.interleave6.nxv6f64(<vscale x 1 x double> [[VP_OP47]], <vscale x 1 x double> [[VP_OP49]], <vscale x 1 x double> [[VP_OP51]], <vscale x 1 x double> [[VP_OP53]], <vscale x 1 x double> [[VP_OP55]], <vscale x 1 x double> [[VP_OP57]])
-; VEC-M1-NEXT:    [[TMP78:%.*]] = mul nuw nsw i32 [[TMP61]], 6
-; VEC-M1-NEXT:    call void @llvm.vp.store.nxv6f64.p0(<vscale x 6 x double> [[INTERLEAVED_VEC]], ptr align 8 [[TMP62]], <vscale x 6 x i1> splat (i1 true), i32 [[TMP78]])
-; VEC-M1-NEXT:    [[TMP79:%.*]] = zext i32 [[TMP61]] to i64
-; VEC-M1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP79]], [[EVL_BASED_IV]]
-; VEC-M1-NEXT:    [[TMP80:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
-; VEC-M1-NEXT:    br i1 [[TMP80]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; VEC-M1-NEXT:    [[TMP79:%.*]] = mul nuw nsw i32 [[TMP62]], 6
+; VEC-M1-NEXT:    call void @llvm.vp.store.nxv6f64.p0(<vscale x 6 x double> [[INTERLEAVED_VEC]], ptr align 8 [[TMP63]], <vscale x 6 x i1> splat (i1 true), i32 [[TMP79]])
+; VEC-M1-NEXT:    [[TMP80:%.*]] = zext i32 [[TMP62]] to i64
+; VEC-M1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP80]], [[EVL_BASED_IV]]
+; VEC-M1-NEXT:    [[TMP81:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
+; VEC-M1-NEXT:    br i1 [[TMP81]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; VEC-M1:       middle.block:
 ; VEC-M1-NEXT:    br label [[EXIT:%.*]]
 ; VEC-M1:       scalar.ph:
@@ -353,6 +354,7 @@ define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; VEC-M4-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
 ; VEC-M4-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]
 ; VEC-M4:       vector.ph:
+; VEC-M4-NEXT:    [[TMP61:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 4, i1 true)
 ; VEC-M4-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 4 x double> poison, double [[S]], i64 0
 ; VEC-M4-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 4 x double> [[BROADCAST_SPLATINSERT]], <vscale x 4 x double> poison, <vscale x 4 x i32> zeroinitializer
 ; VEC-M4-NEXT:    br label [[VECTOR_BODY:%.*]]
@@ -360,53 +362,53 @@ define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; VEC-M4-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; VEC-M4-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; VEC-M4-NEXT:    [[AVL:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
-; VEC-M4-NEXT:    [[TMP61:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 4, i1 true)
-; VEC-M4-NEXT:    [[TMP62:%.*]] = getelementptr [[STRUCT_SU3_VECTOR:%.*]], ptr [[A]], i64 [[EVL_BASED_IV]]
-; VEC-M4-NEXT:    [[TMP63:%.*]] = getelementptr [[STRUCT_SU3_VECTOR]], ptr [[B]], i64 [[EVL_BASED_IV]]
-; VEC-M4-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP62]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]]), !alias.scope [[META0:![0-9]+]], !noalias [[META3:![0-9]+]]
-; VEC-M4-NEXT:    [[VP_STRIDED_LOAD45:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP63]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]]), !alias.scope [[META3]]
-; VEC-M4-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x double> @llvm.vp.fmul.nxv4f64(<vscale x 4 x double> [[VP_STRIDED_LOAD45]], <vscale x 4 x double> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]])
-; VEC-M4-NEXT:    [[VP_OP46:%.*]] = call <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VP_OP]], <vscale x 4 x double> [[VP_STRIDED_LOAD]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]])
-; VEC-M4-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VP_OP46]], ptr align 8 [[TMP62]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]]), !alias.scope [[META0]], !noalias [[META3]]
-; VEC-M4-NEXT:    [[TMP64:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP62]], i64 0, i64 0, i32 1
-; VEC-M4-NEXT:    [[VP_STRIDED_LOAD47:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP64]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]]), !alias.scope [[META0]], !noalias [[META3]]
+; VEC-M4-NEXT:    [[TMP62:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 4, i1 true)
+; VEC-M4-NEXT:    [[TMP63:%.*]] = getelementptr [[STRUCT_SU3_VECTOR:%.*]], ptr [[A]], i64 [[EVL_BASED_IV]]
+; VEC-M4-NEXT:    [[TMP64:%.*]] = getelementptr [[STRUCT_SU3_VECTOR]], ptr [[B]], i64 [[EVL_BASED_IV]]
+; VEC-M4-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP63]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META0:![0-9]+]], !noalias [[META3:![0-9]+]]
+; VEC-M4-NEXT:    [[VP_STRIDED_LOAD45:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP64]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META3]]
+; VEC-M4-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x double> @llvm.vp.fmul.nxv4f64(<vscale x 4 x double> [[VP_STRIDED_LOAD45]], <vscale x 4 x double> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M4-NEXT:    [[VP_OP46:%.*]] = call <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VP_OP]], <vscale x 4 x double> [[VP_STRIDED_LOAD]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M4-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VP_OP46]], ptr align 8 [[TMP63]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META0]], !noalias [[META3]]
 ; VEC-M4-NEXT:    [[TMP65:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP63]], i64 0, i64 0, i32 1
-; VEC-M4-NEXT:    [[VP_STRIDED_LOAD48:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP65]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]]), !alias.scope [[META3]]
-; VEC-M4-NEXT:    [[VP_OP49:%.*]] = call <vscale x 4 x double> @llvm.vp.fmul.nxv4f64(<vscale x 4 x double> [[VP_STRIDED_LOAD48]], <vscale x 4 x double> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]])
-; VEC-M4-NEXT:    [[VP_OP50:%.*]] = call <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VP_OP49]], <vscale x 4 x double> [[VP_STRIDED_LOAD47]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]])
-; VEC-M4-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VP_OP50]], ptr align 8 [[TMP64]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]]), !alias.scope [[META0]], !noalias [[META3]]
-; VEC-M4-NEXT:    [[TMP66:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP62]], i64 0, i64 1
-; VEC-M4-NEXT:    [[VP_STRIDED_LOAD51:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP66]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]]), !alias.scope [[META0]], !noalias [[META3]]
+; VEC-M4-NEXT:    [[VP_STRIDED_LOAD47:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP65]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META0]], !noalias [[META3]]
+; VEC-M4-NEXT:    [[TMP66:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP64]], i64 0, i64 0, i32 1
+; VEC-M4-NEXT:    [[VP_STRIDED_LOAD48:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP66]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META3]]
+; VEC-M4-NEXT:    [[VP_OP49:%.*]] = call <vscale x 4 x double> @llvm.vp.fmul.nxv4f64(<vscale x 4 x double> [[VP_STRIDED_LOAD48]], <vscale x 4 x double> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M4-NEXT:    [[VP_OP50:%.*]] = call <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VP_OP49]], <vscale x 4 x double> [[VP_STRIDED_LOAD47]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M4-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VP_OP50]], ptr align 8 [[TMP65]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META0]], !noalias [[META3]]
 ; VEC-M4-NEXT:    [[TMP67:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP63]], i64 0, i64 1
-; VEC-M4-NEXT:    [[VP_STRIDED_LOAD52:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP67]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]]), !alias.scope [[META3]]
-; VEC-M4-NEXT:    [[VP_OP53:%.*]] = call <vscale x 4 x double> @llvm.vp.fmul.nxv4f64(<vscale x 4 x double> [[VP_STRIDED_LOAD52]], <vscale x 4 x double> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]])
-; VEC-M4-NEXT:    [[VP_OP54:%.*]] = call <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VP_OP53]], <vscale x 4 x double> [[VP_STRIDED_LOAD51]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]])
-; VEC-M4-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VP_OP54]], ptr align 8 [[TMP66]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]]), !alias.scope [[META0]], !noalias [[META3]]
-; VEC-M4-NEXT:    [[TMP68:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP62]], i64 0, i64 1, i32 1
-; VEC-M4-NEXT:    [[VP_STRIDED_LOAD55:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP68]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]]), !alias.scope [[META0]], !noalias [[META3]]
+; VEC-M4-NEXT:    [[VP_STRIDED_LOAD51:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP67]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META0]], !noalias [[META3]]
+; VEC-M4-NEXT:    [[TMP68:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP64]], i64 0, i64 1
+; VEC-M4-NEXT:    [[VP_STRIDED_LOAD52:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP68]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META3]]
+; VEC-M4-NEXT:    [[VP_OP53:%.*]] = call <vscale x 4 x double> @llvm.vp.fmul.nxv4f64(<vscale x 4 x double> [[VP_STRIDED_LOAD52]], <vscale x 4 x double> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M4-NEXT:    [[VP_OP54:%.*]] = call <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VP_OP53]], <vscale x 4 x double> [[VP_STRIDED_LOAD51]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M4-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VP_OP54]], ptr align 8 [[TMP67]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META0]], !noalias [[META3]]
 ; VEC-M4-NEXT:    [[TMP69:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP63]], i64 0, i64 1, i32 1
-; VEC-M4-NEXT:    [[VP_STRIDED_LOAD56:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP69]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]]), !alias.scope [[META3]]
-; VEC-M4-NEXT:    [[VP_OP57:%.*]] = call <vscale x 4 x double> @llvm.vp.fmul.nxv4f64(<vscale x 4 x double> [[VP_STRIDED_LOAD56]], <vscale x 4 x double> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]])
-; VEC-M4-NEXT:    [[VP_OP58:%.*]] = call <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VP_OP57]], <vscale x 4 x double> [[VP_STRIDED_LOAD55]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]])
-; VEC-M4-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VP_OP58]], ptr align 8 [[TMP68]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]]), !alias.scope [[META0]], !noalias [[META3]]
-; VEC-M4-NEXT:    [[TMP70:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP62]], i64 0, i64 2
-; VEC-M4-NEXT:    [[VP_STRIDED_LOAD59:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP70]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]]), !alias.scope [[META0]], !noalias [[META3]]
+; VEC-M4-NEXT:    [[VP_STRIDED_LOAD55:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP69]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META0]], !noalias [[META3]]
+; VEC-M4-NEXT:    [[TMP70:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP64]], i64 0, i64 1, i32 1
+; VEC-M4-NEXT:    [[VP_STRIDED_LOAD56:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP70]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META3]]
+; VEC-M4-NEXT:    [[VP_OP57:%.*]] = call <vscale x 4 x double> @llvm.vp.fmul.nxv4f64(<vscale x 4 x double> [[VP_STRIDED_LOAD56]], <vscale x 4 x double> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M4-NEXT:    [[VP_OP58:%.*]] = call <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VP_OP57]], <vscale x 4 x double> [[VP_STRIDED_LOAD55]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M4-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VP_OP58]], ptr align 8 [[TMP69]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META0]], !noalias [[META3]]
 ; VEC-M4-NEXT:    [[TMP71:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP63]], i64 0, i64 2
-; VEC-M4-NEXT:    [[VP_STRIDED_LOAD60:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP71]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]]), !alias.scope [[META3]]
-; VEC-M4-NEXT:    [[VP_OP61:%.*]] = call <vscale x 4 x double> @llvm.vp.fmul.nxv4f64(<vscale x 4 x double> [[VP_STRIDED_LOAD60]], <vscale x 4 x double> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]])
-; VEC-M4-NEXT:    [[VP_OP62:%.*]] = call <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VP_OP61]], <vscale x 4 x double> [[VP_STRIDED_LOAD59]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]])
-; VEC-M4-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VP_OP62]], ptr align 8 [[TMP70]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]]), !alias.scope [[META0]], !noalias [[META3]]
-; VEC-M4-NEXT:    [[TMP72:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP62]], i64 0, i64 2, i32 1
-; VEC-M4-NEXT:    [[VP_STRIDED_LOAD63:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP72]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]]), !alias.scope [[META0]], !noalias [[META3]]
+; VEC-M4-NEXT:    [[VP_STRIDED_LOAD59:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP71]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META0]], !noalias [[META3]]
+; VEC-M4-NEXT:    [[TMP72:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP64]], i64 0, i64 2
+; VEC-M4-NEXT:    [[VP_STRIDED_LOAD60:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP72]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META3]]
+; VEC-M4-NEXT:    [[VP_OP61:%.*]] = call <vscale x 4 x double> @llvm.vp.fmul.nxv4f64(<vscale x 4 x double> [[VP_STRIDED_LOAD60]], <vscale x 4 x double> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M4-NEXT:    [[VP_OP62:%.*]] = call <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VP_OP61]], <vscale x 4 x double> [[VP_STRIDED_LOAD59]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M4-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VP_OP62]], ptr align 8 [[TMP71]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META0]], !noalias [[META3]]
 ; VEC-M4-NEXT:    [[TMP73:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP63]], i64 0, i64 2, i32 1
-; VEC-M4-NEXT:    [[VP_STRIDED_LOAD64:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP73]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]]), !alias.scope [[META3]]
-; VEC-M4-NEXT:    [[VP_OP65:%.*]] = call <vscale x 4 x double> @llvm.vp.fmul.nxv4f64(<vscale x 4 x double> [[VP_STRIDED_LOAD64]], <vscale x 4 x double> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]])
-; VEC-M4-NEXT:    [[VP_OP66:%.*]] = call <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VP_OP65]], <vscale x 4 x double> [[VP_STRIDED_LOAD63]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]])
-; VEC-M4-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VP_OP66]], ptr align 8 [[TMP72]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP61]]), !alias.scope [[META0]], !noalias [[META3]]
-; VEC-M4-NEXT:    [[TMP74:%.*]] = zext i32 [[TMP61]] to i64
-; VEC-M4-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP74]], [[EVL_BASED_IV]]
-; VEC-M4-NEXT:    [[TMP75:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
-; VEC-M4-NEXT:    br i1 [[TMP75]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
+; VEC-M4-NEXT:    [[VP_STRIDED_LOAD63:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP73]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META0]], !noalias [[META3]]
+; VEC-M4-NEXT:    [[TMP74:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP64]], i64 0, i64 2, i32 1
+; VEC-M4-NEXT:    [[VP_STRIDED_LOAD64:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP74]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META3]]
+; VEC-M4-NEXT:    [[VP_OP65:%.*]] = call <vscale x 4 x double> @llvm.vp.fmul.nxv4f64(<vscale x 4 x double> [[VP_STRIDED_LOAD64]], <vscale x 4 x double> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M4-NEXT:    [[VP_OP66:%.*]] = call <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VP_OP65]], <vscale x 4 x double> [[VP_STRIDED_LOAD63]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M4-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VP_OP66]], ptr align 8 [[TMP73]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META0]], !noalias [[META3]]
+; VEC-M4-NEXT:    [[TMP75:%.*]] = zext i32 [[TMP62]] to i64
+; VEC-M4-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP75]], [[EVL_BASED_IV]]
+; VEC-M4-NEXT:    [[TMP76:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
+; VEC-M4-NEXT:    br i1 [[TMP76]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; VEC-M4:       middle.block:
 ; VEC-M4-NEXT:    br label [[EXIT:%.*]]
 ; VEC-M4:       scalar.ph:

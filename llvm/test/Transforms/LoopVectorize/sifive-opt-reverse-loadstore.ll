@@ -7,8 +7,7 @@ define void @reverse_reverse(i64 %arg) {
 ; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[ARG:%.*]], 1
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-; CHECK-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 2
+; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP3:%.*]] = sub i64 [[ARG]], [[TMP0]]
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
@@ -69,8 +68,7 @@ define void @reverse_binop_reverse(i64 %arg, i32 %alpha) {
 ; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[ARG:%.*]], 1
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-; CHECK-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 2
+; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP3:%.*]] = sub i64 [[ARG]], [[TMP0]]
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 2 x i32> poison, i32 [[ALPHA:%.*]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 2 x i32> [[BROADCAST_SPLATINSERT]], <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer

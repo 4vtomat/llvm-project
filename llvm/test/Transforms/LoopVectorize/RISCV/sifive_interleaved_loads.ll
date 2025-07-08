@@ -20,10 +20,9 @@ define void @interleaved_load_factor_3(i32 %n, ptr %b, ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP1]], [[VECTOR_PH]] ], [ [[TMP2:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP2]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP3:%.*]] = mul nuw nsw i64 [[EVL_BASED_IV]], 3
 ; CHECK-NEXT:    [[TMP4:%.*]] = add nuw nsw i64 [[TMP3]], 2
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP4]]
@@ -35,9 +34,9 @@ define void @interleaved_load_factor_3(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } [[DEINTERLEAVED_RESULTS]], 1
 ; CHECK-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } [[DEINTERLEAVED_RESULTS]], 2
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[VEC_PHI]], <vscale x 2 x i32> [[TMP10]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP2:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[VP_OP]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP3:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP8]], <vscale x 2 x i32> [[VP_OP2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i32> [[VP_OP3]], <vscale x 2 x i32> [[VEC_PHI]], i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP1:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[VP_OP]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP2:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP8]], <vscale x 2 x i32> [[VP_OP1]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i32> [[VP_OP2]], <vscale x 2 x i32> [[VEC_PHI]], i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP11]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
@@ -131,10 +130,9 @@ define void @interleaved_load_factor_4(i32 %n, ptr %b, ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP1]], [[VECTOR_PH]] ], [ [[TMP2:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP2]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP3:%.*]] = shl nsw i64 [[EVL_BASED_IV]], 2
 ; CHECK-NEXT:    [[TMP4:%.*]] = or disjoint i64 [[TMP3]], 3
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP4]]
@@ -147,10 +145,10 @@ define void @interleaved_load_factor_4(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } [[DEINTERLEAVED_RESULTS]], 2
 ; CHECK-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } [[DEINTERLEAVED_RESULTS]], 3
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[VEC_PHI]], <vscale x 2 x i32> [[TMP11]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP2:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP10]], <vscale x 2 x i32> [[VP_OP]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP3:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[VP_OP2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP4:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP8]], <vscale x 2 x i32> [[VP_OP3]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i32> [[VP_OP4]], <vscale x 2 x i32> [[VEC_PHI]], i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP1:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP10]], <vscale x 2 x i32> [[VP_OP]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP2:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[VP_OP1]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP3:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP8]], <vscale x 2 x i32> [[VP_OP2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i32> [[VP_OP3]], <vscale x 2 x i32> [[VEC_PHI]], i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP12]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
@@ -252,10 +250,9 @@ define void @interleaved_load_factor_5(i32 %n, ptr %b, ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP1]], [[VECTOR_PH]] ], [ [[TMP2:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP2]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP3:%.*]] = mul nuw nsw i64 [[EVL_BASED_IV]], 5
 ; CHECK-NEXT:    [[TMP4:%.*]] = add nuw nsw i64 [[TMP3]], 4
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP4]]
@@ -269,11 +266,11 @@ define void @interleaved_load_factor_5(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } [[DEINTERLEAVED_RESULTS]], 3
 ; CHECK-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } [[DEINTERLEAVED_RESULTS]], 4
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[VEC_PHI]], <vscale x 2 x i32> [[TMP12]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP2:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP11]], <vscale x 2 x i32> [[VP_OP]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP3:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP10]], <vscale x 2 x i32> [[VP_OP2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP4:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[VP_OP3]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP5:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP8]], <vscale x 2 x i32> [[VP_OP4]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i32> [[VP_OP5]], <vscale x 2 x i32> [[VEC_PHI]], i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP1:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP11]], <vscale x 2 x i32> [[VP_OP]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP2:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP10]], <vscale x 2 x i32> [[VP_OP1]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP3:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[VP_OP2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP4:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP8]], <vscale x 2 x i32> [[VP_OP3]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i32> [[VP_OP4]], <vscale x 2 x i32> [[VEC_PHI]], i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP13:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP13]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
@@ -383,10 +380,9 @@ define void @interleaved_load_factor_6(i32 %n, ptr %b, ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP1]], [[VECTOR_PH]] ], [ [[TMP2:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP2]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP3:%.*]] = mul nuw nsw i64 [[EVL_BASED_IV]], 6
 ; CHECK-NEXT:    [[TMP4:%.*]] = add nuw nsw i64 [[TMP3]], 5
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP4]]
@@ -401,12 +397,12 @@ define void @interleaved_load_factor_6(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } [[DEINTERLEAVED_RESULTS]], 4
 ; CHECK-NEXT:    [[TMP13:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } [[DEINTERLEAVED_RESULTS]], 5
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[VEC_PHI]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP2:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP12]], <vscale x 2 x i32> [[VP_OP]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP3:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP11]], <vscale x 2 x i32> [[VP_OP2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP4:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP10]], <vscale x 2 x i32> [[VP_OP3]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP5:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[VP_OP4]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP6:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP8]], <vscale x 2 x i32> [[VP_OP5]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i32> [[VP_OP6]], <vscale x 2 x i32> [[VEC_PHI]], i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP1:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP12]], <vscale x 2 x i32> [[VP_OP]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP2:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP11]], <vscale x 2 x i32> [[VP_OP1]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP3:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP10]], <vscale x 2 x i32> [[VP_OP2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP4:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[VP_OP3]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP5:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP8]], <vscale x 2 x i32> [[VP_OP4]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i32> [[VP_OP5]], <vscale x 2 x i32> [[VEC_PHI]], i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP14]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP15:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
@@ -524,10 +520,9 @@ define void @interleaved_load_factor_7(i32 %n, ptr %b, ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP1]], [[VECTOR_PH]] ], [ [[TMP2:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP2]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP3:%.*]] = mul nuw nsw i64 [[EVL_BASED_IV]], 7
 ; CHECK-NEXT:    [[TMP4:%.*]] = add nuw nsw i64 [[TMP3]], 6
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP4]]
@@ -543,13 +538,13 @@ define void @interleaved_load_factor_7(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP13:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } [[DEINTERLEAVED_RESULTS]], 5
 ; CHECK-NEXT:    [[TMP14:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } [[DEINTERLEAVED_RESULTS]], 6
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[VEC_PHI]], <vscale x 2 x i32> [[TMP14]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP2:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[VP_OP]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP3:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP12]], <vscale x 2 x i32> [[VP_OP2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP4:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP11]], <vscale x 2 x i32> [[VP_OP3]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP5:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP10]], <vscale x 2 x i32> [[VP_OP4]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP6:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[VP_OP5]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP7:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP8]], <vscale x 2 x i32> [[VP_OP6]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i32> [[VP_OP7]], <vscale x 2 x i32> [[VEC_PHI]], i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP1:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[VP_OP]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP2:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP12]], <vscale x 2 x i32> [[VP_OP1]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP3:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP11]], <vscale x 2 x i32> [[VP_OP2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP4:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP10]], <vscale x 2 x i32> [[VP_OP3]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP5:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[VP_OP4]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP6:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP8]], <vscale x 2 x i32> [[VP_OP5]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i32> [[VP_OP6]], <vscale x 2 x i32> [[VEC_PHI]], i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP15]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP16:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
@@ -675,10 +670,9 @@ define void @interleaved_load_factor_8(i32 %n, ptr %b, ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP1]], [[VECTOR_PH]] ], [ [[TMP2:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP2]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP3:%.*]] = shl nsw i64 [[EVL_BASED_IV]], 3
 ; CHECK-NEXT:    [[TMP4:%.*]] = or disjoint i64 [[TMP3]], 7
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP4]]
@@ -695,14 +689,14 @@ define void @interleaved_load_factor_8(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP14:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } [[DEINTERLEAVED_RESULTS]], 6
 ; CHECK-NEXT:    [[TMP15:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } [[DEINTERLEAVED_RESULTS]], 7
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[VEC_PHI]], <vscale x 2 x i32> [[TMP15]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP2:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP14]], <vscale x 2 x i32> [[VP_OP]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP3:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[VP_OP2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP4:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP12]], <vscale x 2 x i32> [[VP_OP3]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP5:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP11]], <vscale x 2 x i32> [[VP_OP4]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP6:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP10]], <vscale x 2 x i32> [[VP_OP5]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP7:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[VP_OP6]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP8:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP8]], <vscale x 2 x i32> [[VP_OP7]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i32> [[VP_OP8]], <vscale x 2 x i32> [[VEC_PHI]], i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP1:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP14]], <vscale x 2 x i32> [[VP_OP]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP2:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[VP_OP1]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP3:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP12]], <vscale x 2 x i32> [[VP_OP2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP4:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP11]], <vscale x 2 x i32> [[VP_OP3]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP5:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP10]], <vscale x 2 x i32> [[VP_OP4]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP6:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[VP_OP5]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP7:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP8]], <vscale x 2 x i32> [[VP_OP6]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i32> [[VP_OP7]], <vscale x 2 x i32> [[VEC_PHI]], i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP16:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP16]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]

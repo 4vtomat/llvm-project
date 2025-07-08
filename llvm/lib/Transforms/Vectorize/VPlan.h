@@ -4142,9 +4142,6 @@ class VPlan {
   VPValue *BackedgeTakenCount = nullptr;
 
 #if SIFIVE_CUSTOMIZATION
-  // EVL on the previous iteration. Represented as a PHI.
-  VPValue *PrevEVL = nullptr;
-
   /// Represent initial EVL, i.e. EVL of the first vector iteration for the
   /// predicated loop vectorizer.
   VPValue *InitEVL = nullptr;
@@ -4343,23 +4340,8 @@ public:
 
   void setUncountable() { IsUncountable = true; }
 
-  /// Returns VPValue for PrevEVL.
-  VPValue *getPrevEVL() const { return PrevEVL; }
-
-  /// Sets PrevEVL
-  void setPrevEVL(VPValue *EVL) {
-    // This would be overwritten by convertToConcreteRecipes
-    // as VPEVLBasedIVPHIRecipe is no longer a concrete recipe
-    PrevEVL = EVL;
-  }
-
   /// Returns VPValue for InitEVL
   VPValue *getInitEVL() const { return InitEVL; }
-  void setInitEVL(VPValue *EVL) {
-    // This would be overwritten by convertToConcreteRecipes
-    // as VPEVLBasedIVPHIRecipe is no longer a concrete recipe
-    InitEVL = EVL;
-  }
 
   /// Creates InitEVL VPValue
   void createInitEVL() {

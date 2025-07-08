@@ -26,10 +26,9 @@ define i32 @load_factor_2_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP2]], [[VECTOR_PH]] ], [ [[TMP5:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP4:%.*]] = sub i64 [[N_VEC]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP5]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP4]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP4]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP6:%.*]] = shl nsw i64 [[EVL_BASED_IV]], 1
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP6]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = mul nuw nsw i32 [[TMP5]], 2
@@ -97,10 +96,9 @@ define i32 @load_factor_3_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP2]], [[VECTOR_PH]] ], [ [[TMP5:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP4:%.*]] = sub i64 [[N_VEC]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP5]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP4]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP4]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP6:%.*]] = mul nuw nsw i64 [[EVL_BASED_IV]], 3
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP6]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = mul nuw nsw i32 [[TMP5]], 3
@@ -176,10 +174,9 @@ define i32 @load_factor_4_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP2]], [[VECTOR_PH]] ], [ [[TMP5:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP4:%.*]] = sub i64 [[N_VEC]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP5]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP4]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP4]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP6:%.*]] = shl nsw i64 [[EVL_BASED_IV]], 2
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP6]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = mul nuw nsw i32 [[TMP5]], 4
@@ -267,10 +264,9 @@ define i32 @load_factor_5_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP2]], [[VECTOR_PH]] ], [ [[TMP5:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP4:%.*]] = sub i64 [[N_VEC]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP5]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP4]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP4]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP6:%.*]] = mul nuw nsw i64 [[EVL_BASED_IV]], 5
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP6]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = mul nuw nsw i32 [[TMP5]], 5
@@ -362,10 +358,9 @@ define i32 @load_factor_6_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP2]], [[VECTOR_PH]] ], [ [[TMP5:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP4:%.*]] = sub i64 [[N_VEC]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP5]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP4]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP4]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP6:%.*]] = mul nuw nsw i64 [[EVL_BASED_IV]], 6
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP6]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = mul nuw nsw i32 [[TMP5]], 6
@@ -465,10 +460,9 @@ define i32 @load_factor_7_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP2]], [[VECTOR_PH]] ], [ [[TMP5:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP4:%.*]] = sub i64 [[N_VEC]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP5]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP4]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP4]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP6:%.*]] = mul nuw nsw i64 [[EVL_BASED_IV]], 7
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP6]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = mul nuw nsw i32 [[TMP5]], 7
@@ -576,10 +570,9 @@ define i32 @load_factor_8_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP2]], [[VECTOR_PH]] ], [ [[TMP5:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP4:%.*]] = sub i64 [[N_VEC]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP5]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP4]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP4]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP6:%.*]] = shl nsw i64 [[EVL_BASED_IV]], 3
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP6]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = mul nuw nsw i32 [[TMP5]], 8
@@ -715,10 +708,9 @@ define i32 @load_factor_3_with_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP1]], [[VECTOR_PH]] ], [ [[TMP4:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP3:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP4]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP3]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP3]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP5:%.*]] = mul nuw nsw i64 [[EVL_BASED_IV]], 3
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP5]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = mul nuw nsw i32 [[TMP4]], 3
@@ -790,10 +782,9 @@ define i32 @load_factor_4_with_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP1]], [[VECTOR_PH]] ], [ [[TMP4:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP3:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP4]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP3]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP3]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP5:%.*]] = shl nsw i64 [[EVL_BASED_IV]], 2
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP5]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = mul nuw nsw i32 [[TMP4]], 4
@@ -877,10 +868,9 @@ define i32 @load_factor_5_with_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP1]], [[VECTOR_PH]] ], [ [[TMP4:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP3:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP4]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP3]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP3]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP5:%.*]] = mul nuw nsw i64 [[EVL_BASED_IV]], 5
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP5]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = mul nuw nsw i32 [[TMP4]], 5
@@ -968,10 +958,9 @@ define i32 @load_factor_6_with_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP1]], [[VECTOR_PH]] ], [ [[TMP4:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP3:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP4]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP3]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP3]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP5:%.*]] = mul nuw nsw i64 [[EVL_BASED_IV]], 6
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP5]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = mul nuw nsw i32 [[TMP4]], 6
@@ -1067,10 +1056,9 @@ define i32 @load_factor_7_with_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP1]], [[VECTOR_PH]] ], [ [[TMP4:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP3:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP4]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP3]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP3]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP5:%.*]] = mul nuw nsw i64 [[EVL_BASED_IV]], 7
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP5]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = mul nuw nsw i32 [[TMP4]], 7
@@ -1174,10 +1162,9 @@ define i32 @load_factor_8_with_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP1]], [[VECTOR_PH]] ], [ [[TMP4:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP3:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP4]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP3]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP3]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP5:%.*]] = shl nsw i64 [[EVL_BASED_IV]], 3
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP5]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = mul nuw nsw i32 [[TMP4]], 8

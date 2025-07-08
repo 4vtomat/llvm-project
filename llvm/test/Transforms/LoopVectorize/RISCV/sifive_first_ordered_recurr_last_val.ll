@@ -16,17 +16,17 @@ define void @test_first_ordered_recurr(ptr %_src, ptr %_dx, i32 %W)  {
 ; CHECK-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
+; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 [[W]], i32 8, i1 true)
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT1:%.*]] = insertelement <vscale x 8 x ptr> poison, ptr [[_DX]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT1:%.*]] = shufflevector <vscale x 8 x ptr> [[BROADCAST_SPLATINSERT1]], <vscale x 8 x ptr> poison, <vscale x 8 x i32> zeroinitializer
-; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 [[W]], i32 8, i1 true)
 ; CHECK-NEXT:    [[TMP1:%.*]] = sub i32 [[TMP0]], 1
 ; CHECK-NEXT:    [[VECTOR_RECUR_INIT:%.*]] = insertelement <vscale x 8 x i8> poison, i8 0, i32 [[TMP1]]
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV2:%.*]] = phi i32 [ [[TMP0]], [[VECTOR_PH]] ], [ [[TMP3:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VECTOR_RECUR:%.*]] = phi <vscale x 8 x i8> [ [[VECTOR_RECUR_INIT]], [[VECTOR_PH]] ], [ [[BROADCAST_SPLAT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV2:%.*]] = phi i32 [ [[TMP0]], [[VECTOR_PH]] ], [ [[TMP3:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP2:%.*]] = sub i32 [[W]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP3]] = call i32 @llvm.experimental.get.vector.length.i32(i32 [[TMP2]], i32 8, i1 true)
 ; CHECK-NEXT:    [[TMP4:%.*]] = load i8, ptr [[_SRC]], align 1, !alias.scope [[META0:![0-9]+]]

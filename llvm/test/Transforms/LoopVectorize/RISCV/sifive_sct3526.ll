@@ -10,9 +10,9 @@ define void @test(ptr %a, ptr %b, i64 %stride) {
 ; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[SMAX]], 2
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
+; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], [[STRIDE]]
 ; CHECK-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP1]]
-; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP3:%.*]] = sub i32 [[TMP2]], 1
 ; CHECK-NEXT:    [[VECTOR_RECUR_INIT:%.*]] = insertelement <vscale x 2 x double> poison, double 0.000000e+00, i32 [[TMP3]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = lshr i64 [[STRIDE]], 2
@@ -21,8 +21,8 @@ define void @test(ptr %a, ptr %b, i64 %stride) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV2:%.*]] = phi i32 [ [[TMP2]], [[VECTOR_PH]] ], [ [[TMP9:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VECTOR_RECUR:%.*]] = phi <vscale x 2 x double> [ [[VECTOR_RECUR_INIT]], [[VECTOR_PH]] ], [ [[VP_OP:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV2:%.*]] = phi i32 [ [[TMP2]], [[VECTOR_PH]] ], [ [[TMP9:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP8:%.*]] = sub i64 [[TMP0]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP9]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP8]], i32 2, i1 true)
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], [[STRIDE]]
@@ -80,16 +80,16 @@ define void @test(ptr %a, ptr %b, i64 %stride) {
 ; CHECK-VERSIONING-NEXT:    [[IDENT_CHECK:%.*]] = icmp ne i64 [[STRIDE]], 1
 ; CHECK-VERSIONING-NEXT:    br i1 [[IDENT_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-VERSIONING:       vector.ph:
-; CHECK-VERSIONING-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP0]]
 ; CHECK-VERSIONING-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
+; CHECK-VERSIONING-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP0]]
 ; CHECK-VERSIONING-NEXT:    [[TMP3:%.*]] = sub i32 [[TMP2]], 1
 ; CHECK-VERSIONING-NEXT:    [[VECTOR_RECUR_INIT:%.*]] = insertelement <vscale x 2 x double> poison, double 0.000000e+00, i32 [[TMP3]]
 ; CHECK-VERSIONING-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-VERSIONING:       vector.body:
 ; CHECK-VERSIONING-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-VERSIONING-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-VERSIONING-NEXT:    [[EVL_BASED_IV2:%.*]] = phi i32 [ [[TMP2]], [[VECTOR_PH]] ], [ [[TMP6:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-VERSIONING-NEXT:    [[VECTOR_RECUR:%.*]] = phi <vscale x 2 x double> [ [[VECTOR_RECUR_INIT]], [[VECTOR_PH]] ], [ [[VP_OP:%.*]], [[VECTOR_BODY]] ]
+; CHECK-VERSIONING-NEXT:    [[EVL_BASED_IV2:%.*]] = phi i32 [ [[TMP2]], [[VECTOR_PH]] ], [ [[TMP6:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-VERSIONING-NEXT:    [[TMP5:%.*]] = sub i64 [[TMP0]], [[EVL_BASED_IV]]
 ; CHECK-VERSIONING-NEXT:    [[TMP6]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP5]], i32 2, i1 true)
 ; CHECK-VERSIONING-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[B]], i64 [[EVL_BASED_IV]]

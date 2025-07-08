@@ -18,6 +18,7 @@ define void @store_factor_2_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP14:%.*]] = mul i64 [[TMP3]], 2
+; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.stepvector.nxv2i32()
 ; CHECK-NEXT:    [[TMP2:%.*]] = mul <vscale x 2 x i32> [[TMP0]], splat (i32 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 2 x i32> zeroinitializer, [[TMP2]]
@@ -80,6 +81,7 @@ define void @store_factor_3_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP15:%.*]] = mul i64 [[TMP3]], 2
+; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.stepvector.nxv2i32()
 ; CHECK-NEXT:    [[TMP2:%.*]] = mul <vscale x 2 x i32> [[TMP0]], splat (i32 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 2 x i32> zeroinitializer, [[TMP2]]
@@ -148,6 +150,7 @@ define void @store_factor_4_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP3]], 2
+; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.stepvector.nxv2i32()
 ; CHECK-NEXT:    [[TMP2:%.*]] = mul <vscale x 2 x i32> [[TMP0]], splat (i32 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 2 x i32> zeroinitializer, [[TMP2]]
@@ -228,6 +231,7 @@ define void @store_factor_5_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP17:%.*]] = mul i64 [[TMP3]], 2
+; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.stepvector.nxv2i32()
 ; CHECK-NEXT:    [[TMP2:%.*]] = mul <vscale x 2 x i32> [[TMP0]], splat (i32 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 2 x i32> zeroinitializer, [[TMP2]]
@@ -308,6 +312,7 @@ define void @store_factor_6_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP3]], 2
+; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.stepvector.nxv2i32()
 ; CHECK-NEXT:    [[TMP2:%.*]] = mul <vscale x 2 x i32> [[TMP0]], splat (i32 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 2 x i32> zeroinitializer, [[TMP2]]
@@ -394,6 +399,7 @@ define void @store_factor_7_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP3]], 2
+; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.stepvector.nxv2i32()
 ; CHECK-NEXT:    [[TMP2:%.*]] = mul <vscale x 2 x i32> [[TMP0]], splat (i32 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 2 x i32> zeroinitializer, [[TMP2]]
@@ -486,6 +492,7 @@ define void @store_factor_8_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP26:%.*]] = mul i64 [[TMP3]], 2
+; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.stepvector.nxv2i32()
 ; CHECK-NEXT:    [[TMP2:%.*]] = mul <vscale x 2 x i32> [[TMP0]], splat (i32 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 2 x i32> zeroinitializer, [[TMP2]]
@@ -611,6 +618,7 @@ define void @store_factor_3_with_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP15:%.*]] = mul i64 [[TMP3]], 2
+; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.stepvector.nxv2i32()
 ; CHECK-NEXT:    [[TMP2:%.*]] = mul <vscale x 2 x i32> [[TMP0]], splat (i32 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 2 x i32> zeroinitializer, [[TMP2]]
@@ -679,6 +687,7 @@ define void @store_factor_4_with_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP3]], 2
+; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.stepvector.nxv2i32()
 ; CHECK-NEXT:    [[TMP2:%.*]] = mul <vscale x 2 x i32> [[TMP0]], splat (i32 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 2 x i32> zeroinitializer, [[TMP2]]
@@ -759,6 +768,7 @@ define void @store_factor_5_with_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP17:%.*]] = mul i64 [[TMP3]], 2
+; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.stepvector.nxv2i32()
 ; CHECK-NEXT:    [[TMP2:%.*]] = mul <vscale x 2 x i32> [[TMP0]], splat (i32 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 2 x i32> zeroinitializer, [[TMP2]]
@@ -839,6 +849,7 @@ define void @store_factor_6_with_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP3]], 2
+; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.stepvector.nxv2i32()
 ; CHECK-NEXT:    [[TMP2:%.*]] = mul <vscale x 2 x i32> [[TMP0]], splat (i32 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 2 x i32> zeroinitializer, [[TMP2]]
@@ -925,6 +936,7 @@ define void @store_factor_7_with_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP3]], 2
+; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.stepvector.nxv2i32()
 ; CHECK-NEXT:    [[TMP2:%.*]] = mul <vscale x 2 x i32> [[TMP0]], splat (i32 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 2 x i32> zeroinitializer, [[TMP2]]
@@ -1017,6 +1029,7 @@ define void @store_factor_8_with_gap(i64 %n, ptr %a) {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP26:%.*]] = mul i64 [[TMP3]], 2
+; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.stepvector.nxv2i32()
 ; CHECK-NEXT:    [[TMP2:%.*]] = mul <vscale x 2 x i32> [[TMP0]], splat (i32 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 2 x i32> zeroinitializer, [[TMP2]]
