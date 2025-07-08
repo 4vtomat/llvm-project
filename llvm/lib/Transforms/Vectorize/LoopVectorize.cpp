@@ -3162,159 +3162,6 @@ BasicBlock *InnerLoopVectorizer::createVectorizedLoopSkeleton() {
 }
 
 #if SIFIVE_CUSTOMIZATION
-<<<<<<< HEAD
-// Fix up external users of the induction variable. At this point, we are
-// in LCSSA form, with all external PHIs that use the IV having one input value,
-// coming from the remainder loop. We need those PHIs to also have a correct
-// value for the IV when arriving directly from the middle block.
-void InnerLoopVectorizer::fixupIVUsers(PHINode *OrigPhi,
-                                       const InductionDescriptor &II,
-                                       Value *VectorTripCount,
-                                       BasicBlock *MiddleBlock,
-                                       VPTransformState &State) {
-  // There are two kinds of external IV usages - those that use the value
-  // computed in the last iteration (the PHI) and those that use the penultimate
-  // value (the value that feeds into the phi from the loop latch).
-  // We allow both, but they, obviously, have different values.
-
-  DenseMap<Value *, Value *> MissingVals;
-
-#if SIFIVE_CUSTOMIZATION
-  PHINode *ResumeValue =
-      dyn_cast<PHINode>(OrigPhi->getIncomingValueForBlock(OrigLoop->getLoopPreheader()));
-  // SiFive: ResumeValue can be a live-in value for uncountable loop
-  // do not have to handle it because collectUsersInExitBlocks does.
-  if (!ResumeValue || ResumeValue->getBasicBlockIndex(MiddleBlock) == -1)
-    return;
-#endif // SIFIVE_CUSTOMIZATION
-  Value *EndValue = cast<PHINode>(OrigPhi->getIncomingValueForBlock(
-                                      OrigLoop->getLoopPreheader()))
-                        ->getIncomingValueForBlock(MiddleBlock);
-
-#if SIFIVE_CUSTOMIZATION
-  /// Cherry-pick from #88385
-  BasicBlock *OrigLoopLatch = OrigLoop->getLoopLatch();
-  auto IsUseFromUncountableExit = [&](Value *V, Instruction *UI) -> bool {
-    auto *PHI = cast<PHINode>(UI);
-    if (Legal->getCountableExitingBlocks().empty())
-      return false;
-
-    // If this loop has an uncountable early exit then there could be a
-    // user of OrigPhi with either:
-    //   1. Multiple uses, because each exiting block (countable or
-    //      uncountable) jumps to the same exit block, or ..
-    //   2. A single use with an incoming value from an uncountable exit
-    //      block.
-    // In both cases there is no guarantee this came from a normal, countable
-    // exit. Currently if a loop has an uncountable early exit then it must
-    // have a latch with a countable exit.
-    int Index = PHI->getBasicBlockIndex(OrigLoopLatch);
-    return (Index == -1 || PHI->getIncomingValue(Index) != V);
-  };
-#endif // SIFIVE_CUSTOMIZATION
-
-  // An external user of the last iteration's value should see the value that
-  // the remainder loop uses to initialize its own IV.
-#if SIFIVE_CUSTOMIZATION
-  /// Cherry-pick from #88385
-  Value *PostInc = OrigPhi->getIncomingValueForBlock(OrigLoopLatch);
-#else
-  Value *PostInc = OrigPhi->getIncomingValueForBlock(OrigLoop->getLoopLatch());
-#endif // SIFIVE_CUSTOMIZATION
-  for (User *U : PostInc->users()) {
-    Instruction *UI = cast<Instruction>(U);
-    if (!OrigLoop->contains(UI)) {
-#if SIFIVE_CUSTOMIZATION
-      /// Cherry-pick from #88385
-      if (!IsUseFromUncountableExit(PostInc, UI))
-        MissingVals[cast<PHINode>(UI)] = EndValue;
-#else
-      assert(isa<PHINode>(UI) && "Expected LCSSA form");
-      MissingVals[UI] = EndValue;
-#endif // SIFIVE_CUSTOMIZATION
-    }
-  }
-
-  // An external user of the penultimate value need to see EndValue - Step.
-  // The simplest way to get this is to recompute it from the constituent SCEVs,
-  // that is Start + (Step * (CRD - 1)).
-  for (User *U : OrigPhi->users()) {
-    auto *UI = cast<Instruction>(U);
-    if (!OrigLoop->contains(UI)) {
-#if SIFIVE_CUSTOMIZATION
-      /// Cherry-pick from #88385
-      if (IsUseFromUncountableExit(OrigPhi, UI))
-        continue;
-#else
-      assert(isa<PHINode>(UI) && "Expected LCSSA form");
-#endif // SIFIVE_CUSTOMIZATION
-      IRBuilder<> B(MiddleBlock->getTerminator());
-
-      // Fast-math-flags propagate from the original induction instruction.
-      if (isa_and_nonnull<FPMathOperator>(II.getInductionBinOp()))
-        B.setFastMathFlags(II.getInductionBinOp()->getFastMathFlags());
-
-      // The SCEVs in the loop-entry (preheader) will be execute before. All
-      // value of executed SCEVs will be cached in `getExpandedSCEVs()`. For
-      // non-executed SCEVs, must be a live-in value, just directly get the
-      // value from it.
-      Value *Step =
-          Plan.getExpandedSCEVs().contains(II.getStep())
-              ? Plan.getExpandedSCEVs()[II.getStep()]
-              : Plan.getSCEVExpansion(II.getStep())->getLiveInIRValue();
-      assert(Step && "Step must be non-null");
-      Value *Escape = nullptr;
-      if (EndValue->getType()->isIntegerTy())
-        Escape = B.CreateSub(EndValue, Step);
-      else if (EndValue->getType()->isPointerTy())
-        Escape = B.CreatePtrAdd(EndValue, B.CreateNeg(Step));
-      else {
-        assert(EndValue->getType()->isFloatingPointTy() &&
-               "Unexpected induction type");
-        Escape = B.CreateBinOp(II.getInductionBinOp()->getOpcode() ==
-                                       Instruction::FAdd
-                                   ? Instruction::FSub
-                                   : Instruction::FAdd,
-                               EndValue, Step);
-      }
-      Escape->setName("ind.escape");
-      MissingVals[UI] = Escape;
-    }
-  }
-
-#if SIFIVE_CUSTOMIZATION
-  // For early-exit loops, both exiting blocks can share the same exit block,
-  // Predecessors of Phi in below check can be middle block or early-exit block.
-  // So we skip the check for early-exit loops.
-  if (!isRevectorizeWithoutStrideChecks(*OrigLoop) &&
-      Legal->getCountableExitingBlocks().empty())
-#endif // SIFIVE_CUSTOMIZATION
-  assert((MissingVals.empty() ||
-          all_of(MissingVals,
-                 [MiddleBlock, this](const std::pair<Value *, Value *> &P) {
-                   return all_of(
-                       predecessors(cast<Instruction>(P.first)->getParent()),
-                       [MiddleBlock, this](BasicBlock *Pred) {
-                         return Pred == MiddleBlock ||
-                                Pred == OrigLoop->getLoopLatch();
-                       });
-                 })) &&
-         "Expected escaping values from latch/middle.block only");
-
-  for (auto &I : MissingVals) {
-    PHINode *PHI = cast<PHINode>(I.first);
-    // One corner case we have to handle is two IVs "chasing" each-other,
-    // that is %IV2 = phi [...], [ %IV1, %latch ]
-    // In this case, if IV1 has an external use, we need to avoid adding both
-    // "last value of IV1" and "penultimate value of IV2". So, verify that we
-    // don't already have an incoming value for the middle block.
-    if (PHI->getBasicBlockIndex(MiddleBlock) == -1)
-      PHI->addIncoming(I.second, MiddleBlock);
-  }
-}
-
-=======
->>>>>>> origin/sifive-dev
 /// Cherry-pick from #88385
 void InnerLoopVectorizer::fixupEarlyExitIVUsers(PHINode *OrigPhi,
                                                 const InductionDescriptor &II,
@@ -3619,26 +3466,17 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State) {
   }
 
   if (!Cost->requiresScalarEpilogue(VF.isVector())) {
-<<<<<<< HEAD
     if (Region) {
-      BasicBlock *MiddleBlock = State.CFG.VPBB2IRBB[State.Plan->getMiddleBlock()];
-      assert(MiddleBlock && "MiddleBlock should not be nullptr");
-      for (const auto &Entry : Legal->getInductionVars())
-        fixupIVUsers(Entry.first, Entry.second,
-                     getOrCreateVectorTripCount(nullptr), MiddleBlock, State);
+      if (State.Plan->isUncountableAndUnbound()) {
+        BasicBlock *MiddleBlock =
+            State.CFG.VPBB2IRBB[State.Plan->getMiddleBlock()];
+        for (const auto &Entry : Legal->getInductionVars())
+          fixupUncountableExitIVUsers(Entry.first, Entry.second,
+                                      getOrCreateVectorTripCount(nullptr),
+                                      MiddleBlock, State);
+      }
       fixCSALiveOuts(State, Plan);
     }
-=======
-    if (State.Plan->isUncountableAndUnbound()) {
-      BasicBlock *MiddleBlock =
-          State.CFG.VPBB2IRBB[State.Plan->getMiddleBlock()];
-      for (const auto &Entry : Legal->getInductionVars())
-        fixupUncountableExitIVUsers(Entry.first, Entry.second,
-                                    getOrCreateVectorTripCount(nullptr),
-                                    MiddleBlock, State);
-    }
-    fixCSALiveOuts(State, Plan);
->>>>>>> origin/sifive-dev
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -11583,17 +11421,14 @@ collectUsersInExitBlocks(Loop *OrigLoop, VPRecipeBuilder &Builder,
              return P && CSAs.contains(P);
            })))
         continue;
-<<<<<<< HEAD
       bool IsIVUse = isa<Instruction>(IncomingValue) &&
                      OrigLoop->contains(cast<Instruction>(IncomingValue)) &&
                      any_of(IncomingValue->users(), [&Inductions](User *U) {
                        auto *P = dyn_cast<PHINode>(U);
                        return P && Inductions.contains(P);
                      });
-      if (Plan.isUncountable() && (IsIVUse || isOptimizableIVOrUse(V)))
+      if (Plan.isUncountable() && IsIVUse)
         continue;
-=======
->>>>>>> origin/sifive-dev
 #endif // SIFIVE_CUSTOMIZATION
       ExitIRI->addOperand(V);
       if (V->isLiveIn())
