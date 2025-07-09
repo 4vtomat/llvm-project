@@ -386,7 +386,8 @@ Instruction *widenPredicatedMemoryInstruction(VPWidenMemoryRecipe &VPWMIR,
       return VS;
     }
     auto *DataTy = cast<VectorType>(StoredVal->getType());
-    LLVM_DEBUG(llvm::dbgs() << "Indexed store for " << *VPAddr << "\n");
+    LLVM_DEBUG(llvm::dbgs()
+               << "Indexed store for " << VPAddr->getDefiningRecipe() << "\n");
     Value *VectorGep = State.get(VPAddr);
     Value *Operands[] = {StoredVal, VectorGep, BlockInMaskPart, EVLPart};
     auto *PtrsTy = cast<VectorType>(VectorGep->getType());
@@ -413,7 +414,7 @@ Instruction *widenPredicatedMemoryInstruction(VPWidenMemoryRecipe &VPWMIR,
       Value *Stride = Exp.expandCodeFor(
           SCEVStride, SCEVStride->getType(), InsertPoint);
       LLVM_DEBUG(llvm::dbgs()
-                 << "Generating strided load for addr = " << *VPAddr
+                 << "Generating strided load for addr = " << VPAddr->getDefiningRecipe()
                  << " with a stride = " << *Stride << '\n');
       Value *Operands[] = {Ptr, Stride, BlockInMaskPart, EVLPart};
       VL = Builder.CreateIntrinsic(Intrinsic::experimental_vp_strided_load,
