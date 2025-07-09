@@ -631,16 +631,12 @@ public:
     case VPRecipeBase::VPWidenIntOrFpInductionSC:
     case VPRecipeBase::VPWidenPointerInductionSC:
     case VPRecipeBase::VPReductionPHISC:
-<<<<<<< HEAD
-    case VPRecipeBase::VPScalarCastSC:
 #if SIFIVE_CUSTOMIZATION
     case VPRecipeBase::VPCSADataUpdateSC:
     case VPRecipeBase::VPCSAExtractScalarSC:
     case VPRecipeBase::VPMonotonicUpdateSC:
     case VPRecipeBase::VPMonotonicHeaderPHISC:
 #endif
-=======
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
     case VPRecipeBase::VPPartialReductionSC:
       return true;
     case VPRecipeBase::VPBranchOnMaskSC:
@@ -2357,15 +2353,12 @@ public:
   /// Generate the phi/select nodes.
   void execute(VPTransformState &State) override;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const override;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   /// Get the factor that the VF of this recipe's output should be scaled by.
   unsigned getVFScaleFactor() const { return VFScaleFactor; }
 
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print the recipe.
   void print(raw_ostream &O, const Twine &Indent,
