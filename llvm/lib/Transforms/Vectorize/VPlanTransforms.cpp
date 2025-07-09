@@ -2737,9 +2737,9 @@ void VPlanTransforms::addExplicitVectorLengthUncountable(VPlan &Plan) {
     unsigned TySize = Ty->getScalarSizeInBits();
     if (TySize == 32)
       return EVL;
-    auto *NewEVL = new VPScalarCastRecipe(TySize < 32 ? Instruction::Trunc
-                                                      : Instruction::ZExt,
-                                          EVL, Ty, InsertPos->getDebugLoc());
+    auto *NewEVL = new VPInstructionWithType(TySize < 32 ? Instruction::Trunc
+                                                         : Instruction::ZExt,
+                                             EVL, Ty, InsertPos->getDebugLoc());
     NewEVL->insertBefore(InsertPos);
     return NewEVL;
   };
