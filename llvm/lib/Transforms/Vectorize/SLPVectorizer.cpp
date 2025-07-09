@@ -5967,34 +5967,29 @@ static bool isMaskedLoadCompress(
         TTI.getMemoryOpCost(Instruction::Load, LoadVecTy, CommonAlignment,
                             LI->getPointerAddressSpace(), CostKind);
   }
-<<<<<<< HEAD
-  SmallVector<int> Mask;
-  if (!Order.empty())
-    inversePermutation(Order, Mask);
 #if SIFIVE_CUSTOMIZATION
   if (!IsMasked && Order.empty())
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
-  if (IsStrided) {
-    // Check for potential segmented(interleaved) loads.
-    if (TTI.isLegalInterleavedAccessType(LoadVecTy, CompressMask[1],
-                                         CommonAlignment,
-                                         LI->getPointerAddressSpace())) {
-      InstructionCost InterleavedCost =
-          VectorGEPCost + TTI.getInterleavedMemoryOpCost(
-                              Instruction::Load, LoadVecTy, CompressMask[1],
-                              std::nullopt, CommonAlignment,
-                              LI->getPointerAddressSpace(), CostKind, IsMasked);
-      if (!Mask.empty())
-        InterleavedCost += ::getShuffleCost(TTI, TTI::SK_PermuteSingleSrc,
-                                            VecTy, Mask, CostKind);
-      if (InterleavedCost < GatherCost) {
-        InterleaveFactor = CompressMask[1];
-        return true;
+    if (IsStrided) {
+      // Check for potential segmented(interleaved) loads.
+      if (TTI.isLegalInterleavedAccessType(LoadVecTy, CompressMask[1],
+                                           CommonAlignment,
+                                           LI->getPointerAddressSpace())) {
+        InstructionCost InterleavedCost =
+            VectorGEPCost + TTI.getInterleavedMemoryOpCost(
+                                Instruction::Load, LoadVecTy, CompressMask[1],
+                                std::nullopt, CommonAlignment,
+                                LI->getPointerAddressSpace(), CostKind,
+                                IsMasked);
+        if (!Mask.empty())
+          InterleavedCost += ::getShuffleCost(TTI, TTI::SK_PermuteSingleSrc,
+                                              VecTy, Mask, CostKind);
+        if (InterleavedCost < GatherCost) {
+          InterleaveFactor = CompressMask[1];
+          return true;
+        }
       }
     }
-  }
   if (!Order.empty()) {
     SmallVector<int> NewMask(Sz, PoisonMaskElem);
     for (unsigned I : seq<unsigned>(Sz)) {
@@ -6154,26 +6149,10 @@ BoUpSLP::canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
       return LoadsState::Vectorize;
     // Simple check if not a strided access - clear order.
     bool IsPossibleStrided = *Diff % (Sz - 1) == 0;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     IsPossibleStrided &= IsSourceScalarInstruction;
 #endif // SIFIVE_CUSTOMIZATION
-    // Try to generate strided load node if:
-    // 1. Target with strided load support is detected.
-    // 2. The number of loads is greater than MinProfitableStridedLoads,
-    // or the potential stride <= MaxProfitableLoadStride and the
-    // potential stride is power-of-2 (to avoid perf regressions for the very
-    // small number of loads) and max distance > number of loads, or potential
-    // stride is -1.
-    // 3. The loads are ordered, or number of unordered loads <=
-    // MaxProfitableUnorderedLoads, or loads are in reversed order.
-    // (this check is to avoid extra costs for very expensive shuffles).
-    // 4. Any pointer operand is an instruction with the users outside of the
-    // current graph (for masked gathers extra extractelement instructions
-    // might be required).
-=======
     // Try to generate strided load node.
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
     auto IsAnyPointerUsedOutGraph =
         IsPossibleStrided && any_of(PointerOps, [&](Value *V) {
           return isa<Instruction>(V) && any_of(V->users(), [&](User *U) {
