@@ -1358,15 +1358,8 @@ bool VPInstruction::isFPMathOp() const {
   return Opcode == Instruction::FAdd || Opcode == Instruction::FMul ||
          Opcode == Instruction::FNeg || Opcode == Instruction::FSub ||
          Opcode == Instruction::FDiv || Opcode == Instruction::FRem ||
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-         Opcode == Instruction::Select ||
-#endif // SIFIVE_CUSTOMIZATION
-         Opcode == Instruction::FCmp || Opcode == Instruction::Select;
-=======
          Opcode == Instruction::FCmp || Opcode == Instruction::Select ||
          Opcode == VPInstruction::WideIVStep;
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
 }
 #endif
 
@@ -2696,13 +2689,7 @@ void VPWidenIntOrFpInductionRecipe::execute(VPTransformState &State) {
 #else
   Instruction *LastInduction = cast<Instruction>(
       Builder.CreateBinOp(AddOp, VecInd, SplatVF, "vec.ind.next"));
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-
-  if (isa<TruncInst>(EntryVal))
-    State.addMetadata(LastInduction, EntryVal);
-=======
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
   LastInduction->setDebugLoc(getDebugLoc());
 
   VecInd->addIncoming(SteppedStart, VectorPH);
@@ -3309,38 +3296,6 @@ void VPReplicateRecipe::print(raw_ostream &O, const Twine &Indent,
 }
 #endif
 
-<<<<<<< HEAD
-Value *VPScalarCastRecipe ::generate(VPTransformState &State) {
-  assert(vputils::onlyFirstLaneUsed(this) &&
-         "Codegen only implemented for first lane.");
-  switch (Opcode) {
-  case Instruction::SExt:
-  case Instruction::ZExt:
-  case Instruction::Trunc: {
-    // Note: SExt/ZExt not used yet.
-    Value *Op = State.get(getOperand(0), VPLane(0));
-    return State.Builder.CreateCast(Instruction::CastOps(Opcode), Op, ResultTy);
-  }
-  default:
-    llvm_unreachable("opcode not implemented yet");
-  }
-}
-
-void VPScalarCastRecipe ::execute(VPTransformState &State) {
-  State.set(this, generate(State), VPLane(0));
-}
-
-#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
-void VPScalarCastRecipe ::print(raw_ostream &O, const Twine &Indent,
-                                VPSlotTracker &SlotTracker) const {
-  O << Indent << "SCALAR-CAST ";
-  printAsOperand(O, SlotTracker);
-  O << " = " << Instruction::getOpcodeName(Opcode) << " ";
-  printOperands(O, SlotTracker);
-  O << " to " << *ResultTy;
-}
-#endif
-
 #if SIFIVE_CUSTOMIZATION
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 void VPCSAHeaderPHIRecipe::print(raw_ostream &O, const Twine &Indent,
@@ -3526,8 +3481,6 @@ VPMonotonicHeaderPHIRecipe::computeCost(ElementCount VF,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
 void VPBranchOnMaskRecipe::execute(VPTransformState &State) {
 #ifndef SIFIVE_CUSTOMIZATION
   assert(State.Lane && "Branch on Mask works only on single instance.");
