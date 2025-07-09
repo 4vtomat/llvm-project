@@ -13,8 +13,8 @@ define void @test() {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP0]], [[VECTOR_PH]] ], [ [[TMP3:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VECTOR_RECUR:%.*]] = phi <vscale x 4 x i16> [ [[VECTOR_RECUR_INIT]], [[VECTOR_PH]] ], [ [[BROADCAST_SPLAT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[PREV_EVL:%.*]] = phi i32 [ [[TMP0]], [[VECTOR_PH]] ], [ [[TMP3:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP2:%.*]] = sub i64 100, [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP3]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP2]], i32 4, i1 true)
 ; CHECK-NEXT:    [[TMP4:%.*]] = load i16, ptr null, align 2

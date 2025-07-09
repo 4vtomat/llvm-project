@@ -14,24 +14,25 @@ define void @foo(i32 %n, ptr noalias noundef %a, ptr noalias noundef %b) {
 ; CHECK-NEXT:    br i1 [[TMP0]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[N_VEC:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], 1
+; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N_VEC]], i32 2, i1 true)
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[N_VEC]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i64, ptr [[A]], i64 [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP3:%.*]] = mul nuw nsw i32 [[TMP1]], 2
-; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 4 x float> @llvm.vp.load.nxv4f32.p0(ptr align 4 [[TMP2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
+; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i64, ptr [[A]], i64 [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP4:%.*]] = mul nuw nsw i32 [[TMP2]], 2
+; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 4 x float> @llvm.vp.load.nxv4f32.p0(ptr align 4 [[TMP3]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP4]])
 ; CHECK-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 2 x float>, <vscale x 2 x float> } @llvm.vector.deinterleave2.nxv4f32(<vscale x 4 x float> [[WIDE_MASKED_LOAD]])
-; CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float> } [[DEINTERLEAVED_RESULTS]], 0
-; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x float> @llvm.vp.powi.nxv2f32.i32(<vscale x 2 x float> [[TMP4]], i32 1977, <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
-; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i64, ptr [[B]], i64 [[EVL_BASED_IV]]
-; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv2f32.p0.i64(<vscale x 2 x float> [[VP_OP]], ptr align 4 [[TMP5]], i64 8, <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
-; CHECK-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP1]] to i64
-; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP6]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float> } [[DEINTERLEAVED_RESULTS]], 0
+; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x float> @llvm.vp.powi.nxv2f32.i32(<vscale x 2 x float> [[TMP5]], i32 1977, <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i64, ptr [[B]], i64 [[EVL_BASED_IV]]
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv2f32.p0.i64(<vscale x 2 x float> [[VP_OP]], ptr align 4 [[TMP6]], i64 8, <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP2]] to i64
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP7]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N_VEC]]
+; CHECK-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
@@ -44,10 +45,10 @@ define void @foo(i32 %n, ptr noalias noundef %a, ptr noalias noundef %b) {
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i64, ptr [[A]], i64 [[INDVARS_IV]]
-; CHECK-NEXT:    [[TMP8:%.*]] = load float, ptr [[ARRAYIDX]], align 4
-; CHECK-NEXT:    [[TMP9:%.*]] = tail call float @llvm.powi.f32.i32(float [[TMP8]], i32 1977)
+; CHECK-NEXT:    [[TMP9:%.*]] = load float, ptr [[ARRAYIDX]], align 4
+; CHECK-NEXT:    [[TMP10:%.*]] = tail call float @llvm.powi.f32.i32(float [[TMP9]], i32 1977)
 ; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds i64, ptr [[B]], i64 [[INDVARS_IV]]
-; CHECK-NEXT:    store float [[TMP9]], ptr [[ARRAYIDX2]], align 4
+; CHECK-NEXT:    store float [[TMP10]], ptr [[ARRAYIDX2]], align 4
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]

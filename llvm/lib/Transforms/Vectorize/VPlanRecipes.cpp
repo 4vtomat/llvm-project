@@ -600,27 +600,24 @@ Value *VPInstruction::generate(VPTransformState &State) {
            "VPInstructions with PHI opcodes must be used for header phis only "
            "at the moment");
     BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
-#if SIFIVE_CUSTOMIZATION
-    // FIXME: Initial VL must be explicitly represented in VPlan, but as a
-    // temporary solution emit initial computation of VL here
-    Value *Start = nullptr;
-    if (getOperand(0) == State.Plan->getInitEVL()) {
-      IRBuilder<>::InsertPointGuard Guard(State.Builder);
-      BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
-      State.Builder.SetInsertPoint(VectorPH->getTerminator());
-      Start = GetSetVL(State,
-                       State.get(&State.Plan->getVectorTripCount(),
-                                 /*IsScalar=*/true),
-                       State.Plan->isUncountable());
-      State.set(State.Plan->getInitEVL(), Start, /*IsScalar=*/true);
-    } else {
-      Start = State.get(getOperand(0), VPLane(0));
-    }
-#else
     Value *Start = State.get(getOperand(0), VPLane(0));
+#if SIFIVE_CUSTOMIZATION
+    // SYNC-UPSTREAM: The widen pointer induction recipe emits IR other than the
+    // phi itself in its ::execute, which may cause a following
+    // VPInstruction::PHI to be placed outside the phi group at the top of the
+    // block. This may also be a potential issue upstream.
+    auto CurrIP = State.Builder.saveIP();
+    IRBuilder<>::InsertPointGuard Guard(State.Builder);
+    if (State.Builder.GetInsertPoint() !=
+        State.Builder.GetInsertBlock()->getFirstNonPHIIt())
+      State.Builder.SetInsertPoint(
+          State.Builder.GetInsertBlock()->getFirstNonPHIIt());
 #endif // SIFIVE_CUSTOMIZATION
     PHINode *Phi = State.Builder.CreatePHI(Start->getType(), 2, Name);
     Phi->addIncoming(Start, VectorPH);
+#if SIFIVE_CUSTOMIZATION
+    State.Builder.restoreIP(CurrIP);
+#endif // SIFIVE_CUSTOMIZATION
     return Phi;
   }
   case Instruction::Select: {
@@ -670,22 +667,6 @@ Value *VPInstruction::generate(VPTransformState &State) {
     auto *V1 = State.get(getOperand(0));
     if (!V1->getType()->isVectorTy())
       return V1;
-#if SIFIVE_CUSTOMIZATION
-    if (State.Plan->useVLAVectorizer() && State.EVL) {
-      Value *V2 = State.get(getOperand(1));
-      Value *PrevEVL =
-          State.get(State.Plan->getPrevEVL(), /*NeedsScalar=*/true);
-      Value *EVL = State.get(State.EVL, /*NeedsScalar=*/true);
-
-      auto *IdxTy = Builder.getInt32Ty();
-      Value *Shift = ConstantInt::get(IdxTy, -1);
-      Value *Mask = Builder.getTrueVector(State.VF);
-
-      return Builder.CreateIntrinsic(
-          Intrinsic::experimental_vp_splice, {V1->getType()},
-          {V1, V2, Shift, Mask, PrevEVL, EVL}, nullptr);
-    }
-#endif // SIFIVE_CUSTOMIZATION
     Value *V2 = State.get(getOperand(1));
     return Builder.CreateVectorSplice(V1, V2, -1, Name);
   }
@@ -1794,7 +1775,7 @@ void VPWidenIntrinsicRecipe::execute(VPTransformState &State) {
   if (State.Plan->useVLAVectorizer() && State.EVL) {
     // Skip if CI doesn't have vp form.
     if (Intrinsic::ID VPID = VPIntrinsic::getForIntrinsic(VectorIntrinsicID);
-        VPIntrinsic::isVPIntrinsic(VPID)) {
+        VPIntrinsic::isVPIntrinsic(VPID) && getUnderlyingValue()) {
       auto *CI = cast_or_null<CallInst>(getUnderlyingInstr());
       llvm::widenPredicatedIntrinsic(CI, this, State, VPID, State.TTI);
       Value *V = State.get(this);

@@ -16,12 +16,13 @@ define i32 @add(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-NEXT:  entry:
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
+; IF-EVL-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N:%.*]], i32 2, i1 true)
 ; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[VEC_PHI:%.*]] = phi i32 [ [[START:%.*]], [[VECTOR_PH]] ], [ [[TMP15:%.*]], [[VECTOR_BODY]] ]
-; IF-EVL-NEXT:    [[TMP9:%.*]] = sub i64 [[N:%.*]], [[EVL_BASED_IV]]
+; IF-EVL-NEXT:    [[TMP9:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP9]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i32, ptr [[TMP12]], i32 0
@@ -140,12 +141,13 @@ define i32 @or(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-NEXT:  entry:
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
+; IF-EVL-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N:%.*]], i32 2, i1 true)
 ; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[VEC_PHI:%.*]] = phi i32 [ [[START:%.*]], [[VECTOR_PH]] ], [ [[TMP15:%.*]], [[VECTOR_BODY]] ]
-; IF-EVL-NEXT:    [[TMP9:%.*]] = sub i64 [[N:%.*]], [[EVL_BASED_IV]]
+; IF-EVL-NEXT:    [[TMP9:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP9]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i32, ptr [[TMP12]], i32 0
@@ -213,12 +215,13 @@ define i32 @and(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-NEXT:  entry:
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
+; IF-EVL-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N:%.*]], i32 2, i1 true)
 ; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[VEC_PHI:%.*]] = phi i32 [ [[START:%.*]], [[VECTOR_PH]] ], [ [[TMP15:%.*]], [[VECTOR_BODY]] ]
-; IF-EVL-NEXT:    [[TMP9:%.*]] = sub i64 [[N:%.*]], [[EVL_BASED_IV]]
+; IF-EVL-NEXT:    [[TMP9:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP9]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i32, ptr [[TMP12]], i32 0
@@ -286,12 +289,13 @@ define i32 @xor(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-NEXT:  entry:
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
+; IF-EVL-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N:%.*]], i32 2, i1 true)
 ; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[VEC_PHI:%.*]] = phi i32 [ [[START:%.*]], [[VECTOR_PH]] ], [ [[TMP15:%.*]], [[VECTOR_BODY]] ]
-; IF-EVL-NEXT:    [[TMP9:%.*]] = sub i64 [[N:%.*]], [[EVL_BASED_IV]]
+; IF-EVL-NEXT:    [[TMP9:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP9]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i32, ptr [[TMP12]], i32 0
@@ -359,12 +363,13 @@ define i32 @smin(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-NEXT:  entry:
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
+; IF-EVL-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N:%.*]], i32 2, i1 true)
 ; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[VEC_PHI:%.*]] = phi i32 [ [[START:%.*]], [[VECTOR_PH]] ], [ [[RDX_MINMAX:%.*]], [[VECTOR_BODY]] ]
-; IF-EVL-NEXT:    [[TMP9:%.*]] = sub i64 [[N:%.*]], [[EVL_BASED_IV]]
+; IF-EVL-NEXT:    [[TMP9:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP9]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i32, ptr [[TMP12]], i32 0
@@ -435,12 +440,13 @@ define i32 @smax(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-NEXT:  entry:
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
+; IF-EVL-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N:%.*]], i32 2, i1 true)
 ; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[VEC_PHI:%.*]] = phi i32 [ [[START:%.*]], [[VECTOR_PH]] ], [ [[RDX_MINMAX:%.*]], [[VECTOR_BODY]] ]
-; IF-EVL-NEXT:    [[TMP9:%.*]] = sub i64 [[N:%.*]], [[EVL_BASED_IV]]
+; IF-EVL-NEXT:    [[TMP9:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP9]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i32, ptr [[TMP12]], i32 0
@@ -511,12 +517,13 @@ define i32 @umin(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-NEXT:  entry:
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
+; IF-EVL-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N:%.*]], i32 2, i1 true)
 ; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[VEC_PHI:%.*]] = phi i32 [ [[START:%.*]], [[VECTOR_PH]] ], [ [[RDX_MINMAX:%.*]], [[VECTOR_BODY]] ]
-; IF-EVL-NEXT:    [[TMP9:%.*]] = sub i64 [[N:%.*]], [[EVL_BASED_IV]]
+; IF-EVL-NEXT:    [[TMP9:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP9]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i32, ptr [[TMP12]], i32 0
@@ -587,12 +594,13 @@ define i32 @umax(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-NEXT:  entry:
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
+; IF-EVL-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N:%.*]], i32 2, i1 true)
 ; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[VEC_PHI:%.*]] = phi i32 [ [[START:%.*]], [[VECTOR_PH]] ], [ [[RDX_MINMAX:%.*]], [[VECTOR_BODY]] ]
-; IF-EVL-NEXT:    [[TMP9:%.*]] = sub i64 [[N:%.*]], [[EVL_BASED_IV]]
+; IF-EVL-NEXT:    [[TMP9:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP9]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i32, ptr [[TMP12]], i32 0
@@ -663,12 +671,13 @@ define float @fadd(ptr %a, i64 %n, float %start) {
 ; IF-EVL-NEXT:  entry:
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
+; IF-EVL-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N:%.*]], i32 2, i1 true)
 ; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[VEC_PHI:%.*]] = phi float [ [[START:%.*]], [[VECTOR_PH]] ], [ [[TMP15:%.*]], [[VECTOR_BODY]] ]
-; IF-EVL-NEXT:    [[TMP9:%.*]] = sub i64 [[N:%.*]], [[EVL_BASED_IV]]
+; IF-EVL-NEXT:    [[TMP9:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP9]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[TMP12:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP13:%.*]] = getelementptr inbounds float, ptr [[TMP12]], i32 0
@@ -787,12 +796,13 @@ define float @fmin(ptr %a, i64 %n, float %start) #0 {
 ; IF-EVL-NEXT:  entry:
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
+; IF-EVL-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N:%.*]], i32 2, i1 true)
 ; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[VEC_PHI:%.*]] = phi float [ [[START:%.*]], [[VECTOR_PH]] ], [ [[RDX_MINMAX_SELECT:%.*]], [[VECTOR_BODY]] ]
-; IF-EVL-NEXT:    [[TMP9:%.*]] = sub i64 [[N:%.*]], [[EVL_BASED_IV]]
+; IF-EVL-NEXT:    [[TMP9:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP9]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[TMP12:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP13:%.*]] = getelementptr inbounds float, ptr [[TMP12]], i32 0
@@ -864,12 +874,13 @@ define float @fmax(ptr %a, i64 %n, float %start) #0 {
 ; IF-EVL-NEXT:  entry:
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
+; IF-EVL-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N:%.*]], i32 2, i1 true)
 ; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[VEC_PHI:%.*]] = phi float [ [[START:%.*]], [[VECTOR_PH]] ], [ [[RDX_MINMAX_SELECT:%.*]], [[VECTOR_BODY]] ]
-; IF-EVL-NEXT:    [[TMP9:%.*]] = sub i64 [[N:%.*]], [[EVL_BASED_IV]]
+; IF-EVL-NEXT:    [[TMP9:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP9]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[TMP12:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP13:%.*]] = getelementptr inbounds float, ptr [[TMP12]], i32 0
@@ -1041,12 +1052,13 @@ define float @fmuladd(ptr %a, ptr %b, i64 %n, float %start) {
 ; IF-EVL-NEXT:  entry:
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
+; IF-EVL-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N:%.*]], i32 2, i1 true)
 ; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[VEC_PHI:%.*]] = phi float [ [[START:%.*]], [[VECTOR_PH]] ], [ [[TMP18:%.*]], [[VECTOR_BODY]] ]
-; IF-EVL-NEXT:    [[TMP9:%.*]] = sub i64 [[N:%.*]], [[EVL_BASED_IV]]
+; IF-EVL-NEXT:    [[TMP9:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP9]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[TMP12:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP13:%.*]] = getelementptr inbounds float, ptr [[TMP12]], i32 0
@@ -1129,10 +1141,9 @@ define i32 @anyof_icmp(ptr %a, i64 %n, i32 %start, i32 %inv) {
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[IV_NEXT]], [[FOR_BODY]] ]
-; IF-EVL-NEXT:    [[RDX:%.*]] = phi i32 [ [[START]], [[ENTRY]] ], [ [[ANYOF:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i1> [ zeroinitializer, [[ENTRY]] ], [ [[VP_OP_MERGE:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[AVL:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
-; IF-EVL-NEXT:    [[ANYOF]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
+; IF-EVL-NEXT:    [[ANYOF:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[TMP5]], i32 0
 ; IF-EVL-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0(ptr align 4 [[TMP6]], <vscale x 2 x i1> splat (i1 true), i32 [[ANYOF]])
@@ -1211,10 +1222,9 @@ define i32 @anyof_fcmp(ptr %a, i64 %n, i32 %start, i32 %inv) {
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[IV_NEXT]], [[FOR_BODY]] ]
-; IF-EVL-NEXT:    [[RDX:%.*]] = phi i32 [ [[START]], [[ENTRY]] ], [ [[ANYOF:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i1> [ zeroinitializer, [[ENTRY]] ], [ [[VP_OP_MERGE:%.*]], [[FOR_BODY]] ]
 ; IF-EVL-NEXT:    [[AVL:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
-; IF-EVL-NEXT:    [[ANYOF]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
+; IF-EVL-NEXT:    [[ANYOF:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP6:%.*]] = getelementptr inbounds float, ptr [[TMP5]], i32 0
 ; IF-EVL-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0(ptr align 4 [[TMP6]], <vscale x 2 x i1> splat (i1 true), i32 [[ANYOF]])

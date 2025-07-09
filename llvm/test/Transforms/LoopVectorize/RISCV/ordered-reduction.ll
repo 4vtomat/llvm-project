@@ -14,6 +14,7 @@ define float @fadd(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-ORDERED-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
 ; CHECK-ORDERED-NEXT:    br i1 [[TMP0]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-ORDERED:       vector.ph:
+; CHECK-ORDERED-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-ORDERED-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-ORDERED:       vector.body:
 ; CHECK-ORDERED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]

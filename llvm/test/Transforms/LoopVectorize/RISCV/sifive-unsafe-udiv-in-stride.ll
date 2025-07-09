@@ -12,6 +12,7 @@ define void @test(i64 %0, i32 %1, i32 %2) {
 ; CHECK:       [[VECTOR_PH]]:
 ; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 16
+; CHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP4]], i32 16, i1 true)
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT1:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[DIV_I1313_US1933]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT1:%.*]] = shufflevector <vscale x 16 x i64> [[BROADCAST_SPLATINSERT1]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
 ; CHECK-NEXT:    [[TMP7:%.*]] = call <vscale x 16 x i64> @llvm.stepvector.nxv16i64()

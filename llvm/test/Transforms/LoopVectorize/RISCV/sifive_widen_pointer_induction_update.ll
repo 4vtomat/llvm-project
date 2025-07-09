@@ -10,16 +10,15 @@ define void @widen_pointer_induction_update() {
 ; CHECK-NEXT:    [[DOTPRE:%.*]] = load i32, ptr @state, align 4
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.umin.i64(i64 396, i64 227)
-; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 8, i1 true)
+; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 396, i32 8, i1 true)
 ; CHECK-NEXT:    [[TMP2:%.*]] = sub i32 [[TMP1]], 1
 ; CHECK-NEXT:    [[VECTOR_RECUR_INIT:%.*]] = insertelement <vscale x 8 x i32> poison, i32 [[DOTPRE]], i32 [[TMP2]]
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP21:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV2:%.*]] = phi i32 [ [[TMP1]], [[VECTOR_PH]] ], [ [[TMP11:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VECTOR_RECUR:%.*]] = phi <vscale x 8 x i32> [ [[VECTOR_RECUR_INIT]], [[VECTOR_PH]] ], [ [[VP_OP:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV2:%.*]] = phi i32 [ [[TMP1]], [[VECTOR_PH]] ], [ [[TMP11:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP9:%.*]] = sub i64 396, [[TMP21]]
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.umin.i64(i64 [[TMP9]], i64 227)
 ; CHECK-NEXT:    [[TMP11]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP3]], i32 8, i1 true)

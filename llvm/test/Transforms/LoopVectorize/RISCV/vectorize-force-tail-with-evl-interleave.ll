@@ -15,11 +15,12 @@ define void @interleave(ptr noalias %a, ptr noalias %b, i64 %N) {
 ; IF-EVL-NEXT:  entry:
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
+; IF-EVL-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N_VEC:%.*]], i32 2, i1 true)
 ; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
-; IF-EVL-NEXT:    [[AVL:%.*]] = sub i64 [[N_VEC:%.*]], [[EVL_BASED_IV]]
+; IF-EVL-NEXT:    [[AVL:%.*]] = sub i64 [[N_VEC]], [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[TMP1:%.*]] = getelementptr inbounds [2 x i32], ptr [[B:%.*]], i64 [[EVL_BASED_IV]], i32 0
 ; IF-EVL-NEXT:    [[TMP2:%.*]] = mul nuw nsw i32 [[TMP0]], 2

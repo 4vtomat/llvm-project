@@ -36,8 +36,8 @@ define i32 @recurrence_1(ptr nocapture readonly %a, ptr nocapture %b, i32 %n) {
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV3:%.*]] = phi i32 [ [[TMP8]], %[[VECTOR_PH]] ], [ [[TMP11:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VECTOR_RECUR:%.*]] = phi <vscale x 2 x i32> [ [[VECTOR_RECUR_INIT]], %[[VECTOR_PH]] ], [ [[VP_OP_LOAD:%.*]], %[[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV3:%.*]] = phi i32 [ [[TMP8]], %[[VECTOR_PH]] ], [ [[TMP11:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP10:%.*]] = sub i64 [[TMP2]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP11]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP10]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP13:%.*]] = add nuw nsw i64 [[EVL_BASED_IV]], 1
@@ -130,9 +130,9 @@ define i32 @recurrence_2(ptr nocapture readonly %a, i32 %n) {
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP2]], %[[VECTOR_PH]] ], [ [[TMP5:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VECTOR_RECUR:%.*]] = phi <vscale x 2 x i32> [ [[VECTOR_RECUR_INIT]], %[[VECTOR_PH]] ], [ [[VP_OP_LOAD:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ undef, %[[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], %[[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP2]], %[[VECTOR_PH]] ], [ [[TMP5:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP4:%.*]] = sub i64 [[TMP0]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP5]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP4]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[EVL_BASED_IV]]
@@ -248,17 +248,21 @@ define void @recurrence_3(ptr nocapture readonly %a, ptr nocapture %b, i32 %n, f
 ; CHECK-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
+<<<<<<< HEAD
+=======
+; CHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP2]], i32 1, i1 true)
+; CHECK-NEXT:    [[IND_END:%.*]] = add i64 1, [[TMP2]]
+>>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 1 x double> poison, double [[CONV1]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 1 x double> [[BROADCAST_SPLATINSERT]], <vscale x 1 x double> poison, <vscale x 1 x i32> zeroinitializer
-; CHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP2]], i32 1, i1 true)
 ; CHECK-NEXT:    [[TMP10:%.*]] = sub i32 [[TMP9]], 1
 ; CHECK-NEXT:    [[VECTOR_RECUR_INIT:%.*]] = insertelement <vscale x 1 x i16> poison, i16 [[TMP0]], i32 [[TMP10]]
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV4:%.*]] = phi i32 [ [[TMP9]], %[[VECTOR_PH]] ], [ [[TMP12:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VECTOR_RECUR:%.*]] = phi <vscale x 1 x i16> [ [[VECTOR_RECUR_INIT]], %[[VECTOR_PH]] ], [ [[VP_OP_LOAD:%.*]], %[[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV4:%.*]] = phi i32 [ [[TMP9]], %[[VECTOR_PH]] ], [ [[TMP12:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP11:%.*]] = sub i64 [[TMP2]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP12]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP11]], i32 1, i1 true)
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = add i64 1, [[EVL_BASED_IV]]
@@ -443,8 +447,8 @@ define void @sink_after(ptr %a, ptr %b, i64 %n) {
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV3:%.*]] = phi i32 [ [[TMP3]], %[[VECTOR_PH]] ], [ [[TMP6:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VECTOR_RECUR:%.*]] = phi <vscale x 2 x i16> [ [[VECTOR_RECUR_INIT]], %[[VECTOR_PH]] ], [ [[VP_OP_LOAD:%.*]], %[[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV3:%.*]] = phi i32 [ [[TMP3]], %[[VECTOR_PH]] ], [ [[TMP6:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP5:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP6]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP5]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP8:%.*]] = add nuw nsw i64 [[EVL_BASED_IV]], 1

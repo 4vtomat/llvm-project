@@ -12,10 +12,9 @@ define void @test() {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP0]], [[VECTOR_PH]] ], [ [[TMP2:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 8 x double> [ splat (double -0.000000e+00), [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP1:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP2]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP1]], i32 8, i1 true)
+; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP1]], i32 8, i1 true)
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call reassoc <vscale x 8 x double> @llvm.vp.fmuladd.nxv8f64(<vscale x 8 x double> zeroinitializer, <vscale x 8 x double> zeroinitializer, <vscale x 8 x double> [[VEC_PHI]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[VP_OP_MERGE]] = call <vscale x 8 x double> @llvm.vp.merge.nxv8f64(<vscale x 8 x i1> splat (i1 true), <vscale x 8 x double> [[VP_OP]], <vscale x 8 x double> [[VEC_PHI]], i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP3:%.*]] = zext i32 [[TMP2]] to i64
@@ -50,10 +49,9 @@ define void @test() {
 ; CHECK-NO-POSTSV:       vector.body:
 ; CHECK-NO-POSTSV-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NO-POSTSV-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP0]], [[VECTOR_PH]] ], [ [[TMP2:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 8 x double> [ insertelement (<vscale x 8 x double> splat (double -0.000000e+00), double 0.000000e+00, i32 0), [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[TMP1:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
-; CHECK-NO-POSTSV-NEXT:    [[TMP2]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP1]], i32 8, i1 true)
+; CHECK-NO-POSTSV-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP1]], i32 8, i1 true)
 ; CHECK-NO-POSTSV-NEXT:    [[VP_OP:%.*]] = call reassoc <vscale x 8 x double> @llvm.vp.fmuladd.nxv8f64(<vscale x 8 x double> zeroinitializer, <vscale x 8 x double> zeroinitializer, <vscale x 8 x double> [[VEC_PHI]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NO-POSTSV-NEXT:    [[VP_OP_MERGE]] = call <vscale x 8 x double> @llvm.vp.merge.nxv8f64(<vscale x 8 x i1> splat (i1 true), <vscale x 8 x double> [[VP_OP]], <vscale x 8 x double> [[VEC_PHI]], i32 [[TMP2]])
 ; CHECK-NO-POSTSV-NEXT:    [[TMP3:%.*]] = zext i32 [[TMP2]] to i64

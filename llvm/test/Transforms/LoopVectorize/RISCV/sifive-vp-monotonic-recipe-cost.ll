@@ -205,6 +205,7 @@ define i32 @dragon_escape(ptr %goal, ptr %board) #0 {
 ; P670:       [[VECTOR_PH]]:
 ; P670-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; P670-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 8
+; P670-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 401, i32 8, i1 true)
 ; P670-NEXT:    [[TMP2:%.*]] = call <vscale x 8 x i32> @llvm.stepvector.nxv8i32()
 ; P670-NEXT:    [[TMP3:%.*]] = mul <vscale x 8 x i32> [[TMP2]], splat (i32 1)
 ; P670-NEXT:    [[INDUCTION:%.*]] = add <vscale x 8 x i32> zeroinitializer, [[TMP3]]
@@ -294,6 +295,7 @@ define i32 @dragon_escape(ptr %goal, ptr %board) #0 {
 ; P470:       [[VECTOR_PH]]:
 ; P470-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; P470-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 8
+; P470-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 401, i32 8, i1 true)
 ; P470-NEXT:    [[TMP2:%.*]] = call <vscale x 8 x i32> @llvm.stepvector.nxv8i32()
 ; P470-NEXT:    [[TMP3:%.*]] = mul <vscale x 8 x i32> [[TMP2]], splat (i32 1)
 ; P470-NEXT:    [[INDUCTION:%.*]] = add <vscale x 8 x i32> zeroinitializer, [[TMP3]]
@@ -395,6 +397,7 @@ define i32 @dragon_escape(ptr %goal, ptr %board) #0 {
 ; X280:       [[VECTOR_PH]]:
 ; X280-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; X280-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 8
+; X280-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 401, i32 8, i1 true)
 ; X280-NEXT:    [[TMP2:%.*]] = call <vscale x 8 x i32> @llvm.stepvector.nxv8i32()
 ; X280-NEXT:    [[TMP3:%.*]] = mul <vscale x 8 x i32> [[TMP2]], splat (i32 1)
 ; X280-NEXT:    [[INDUCTION:%.*]] = add <vscale x 8 x i32> zeroinitializer, [[TMP3]]

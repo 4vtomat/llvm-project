@@ -3,14 +3,14 @@
 
 ; REQUIRES: asserts
 
-; CHECK: VPlanCM: cost 2 for RVL (mf2, float) for VPInstruction: EMIT vp<{{.*}}> = first-order splice ir<%x.0>, ir<%1>
-; CHECK: VPlanCM: cost 2 for RVL (mf2, float) for VPInstruction: EMIT vp<{{.*}}> = first-order splice ir<%y.022>, vp<{{.*}}>
-; CHECK: VPlanCM: cost 4 for RVL (m1, float) for VPInstruction: EMIT vp<{{.*}}> = first-order splice ir<%x.0>, ir<%1>
-; CHECK: VPlanCM: cost 4 for RVL (m1, float) for VPInstruction: EMIT vp<{{.*}}> = first-order splice ir<%y.022>, vp<{{.*}}>
-; CHECK: VPlanCM: cost 16 for RVL (m4, float) for VPInstruction: EMIT vp<{{.*}}> = first-order splice ir<%x.0>, ir<%1>
-; CHECK: VPlanCM: cost 16 for RVL (m4, float) for VPInstruction: EMIT vp<{{.*}}> = first-order splice ir<%y.022>, vp<{{.*}}>
-; CHECK: VPlanCM: cost 32 for RVL (m8, float) for VPInstruction: EMIT vp<{{.*}}> = first-order splice ir<%x.0>, ir<%1>
-; CHECK: VPlanCM: cost 32 for RVL (m8, float) for VPInstruction: EMIT vp<{{.*}}> = first-order splice ir<%y.022>, vp<{{.*}}>
+; CHECK: VPlanCM: cost 0 for RVL (mf2, float) for VPInstruction: WIDEN-INTRINSIC vp<{{.*}}> = call llvm.experimental.vp.splice(ir<%x.0>, ir<%1>, ir<-1>, ir<true>, vp<%prev.evl>, vp<%5>)
+; CHECK: VPlanCM: cost 0 for RVL (mf2, float) for VPInstruction: WIDEN-INTRINSIC vp<{{.*}}> = call llvm.experimental.vp.splice(ir<%y.022>, vp<%7>, ir<-1>, ir<true>, vp<%prev.evl>, vp<%5>)
+; CHECK: VPlanCM: cost 0 for RVL (m1, float) for VPInstruction: WIDEN-INTRINSIC vp<{{.*}}> = call llvm.experimental.vp.splice(ir<%x.0>, ir<%1>, ir<-1>, ir<true>, vp<%prev.evl>, vp<%5>)
+; CHECK: VPlanCM: cost 0 for RVL (m1, float) for VPInstruction: WIDEN-INTRINSIC vp<{{.*}}> = call llvm.experimental.vp.splice(ir<%y.022>, vp<%7>, ir<-1>, ir<true>, vp<%prev.evl>, vp<%5>)
+; CHECK: VPlanCM: cost 0 for RVL (m4, float) for VPInstruction: WIDEN-INTRINSIC vp<{{.*}}> = call llvm.experimental.vp.splice(ir<%x.0>, ir<%1>, ir<-1>, ir<true>, vp<%prev.evl>, vp<%5>)
+; CHECK: VPlanCM: cost 0 for RVL (m4, float) for VPInstruction: WIDEN-INTRINSIC vp<{{.*}}> = call llvm.experimental.vp.splice(ir<%y.022>, vp<%7>, ir<-1>, ir<true>, vp<%prev.evl>, vp<%5>)
+; CHECK: VPlanCM: cost 0 for RVL (m8, float) for VPInstruction: WIDEN-INTRINSIC vp<{{.*}}> = call llvm.experimental.vp.splice(ir<%x.0>, ir<%1>, ir<-1>, ir<true>, vp<%prev.evl>, vp<%5>)
+; CHECK: VPlanCM: cost 0 for RVL (m8, float) for VPInstruction: WIDEN-INTRINSIC vp<{{.*}}> = call llvm.experimental.vp.splice(ir<%y.022>, vp<%7>, ir<-1>, ir<true>, vp<%prev.evl>, vp<%5>)
 
 define void @foo(ptr %b, ptr %a) {
 entry:

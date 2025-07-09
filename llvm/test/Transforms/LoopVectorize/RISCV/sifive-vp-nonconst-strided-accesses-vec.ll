@@ -26,6 +26,7 @@ define void @foo(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CHECK-NEXT:    [[DIFF_CHECK:%.*]] = icmp ult i64 [[TMP4]], [[TMP3]]
 ; CHECK-NEXT:    br i1 [[DIFF_CHECK]], label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
+; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 2, i1 true)
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -69,10 +70,16 @@ define void @foo(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CHECK-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH10]], label [[VECTOR_PH11:%.*]]
 ; CHECK:       vector.ph10:
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP25:%.*]] = sext i32 [[SCALE]] to i64
 ; CHECK-NEXT:    [[TMP33:%.*]] = shl nsw i64 [[TMP25]], 2
 ; CHECK-NEXT:    [[TMP21:%.*]] = sext i32 [[SCALE]] to i64
 ; CHECK-NEXT:    [[TMP22:%.*]] = shl nsw i64 [[TMP21]], 2
+=======
+; CHECK-NEXT:    [[TMP25:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP21:%.*]] = shl nsw i64 [[TMP0]], 2
+; CHECK-NEXT:    [[TMP22:%.*]] = shl nsw i64 [[TMP0]], 2
+>>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    br label [[VECTOR_BODY13:%.*]]
 ; CHECK:       vector.body11:
 ; CHECK-NEXT:    [[INDEX14:%.*]] = phi i64 [ 0, [[VECTOR_PH11]] ], [ [[INDEX_EVL_NEXT16:%.*]], [[VECTOR_BODY13]] ]
@@ -130,6 +137,7 @@ define void @foo(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CONSECUTIVE-NEXT:    [[DIFF_CHECK:%.*]] = icmp ult i64 [[TMP4]], [[TMP3]]
 ; CONSECUTIVE-NEXT:    br i1 [[DIFF_CHECK]], label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]
 ; CONSECUTIVE:       vector.ph:
+; CONSECUTIVE-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 2, i1 true)
 ; CONSECUTIVE-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CONSECUTIVE:       vector.body:
 ; CONSECUTIVE-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -195,10 +203,16 @@ define void @foo(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; STRIDED-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
 ; STRIDED-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; STRIDED:       vector.ph:
+<<<<<<< HEAD
 ; STRIDED-NEXT:    [[TMP8:%.*]] = sext i32 [[SCALE]] to i64
 ; STRIDED-NEXT:    [[TMP9:%.*]] = shl nsw i64 [[TMP8]], 2
 ; STRIDED-NEXT:    [[TMP12:%.*]] = sext i32 [[SCALE]] to i64
 ; STRIDED-NEXT:    [[TMP20:%.*]] = shl nsw i64 [[TMP12]], 2
+=======
+; STRIDED-NEXT:    [[TMP12:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 2, i1 true)
+; STRIDED-NEXT:    [[TMP8:%.*]] = shl nsw i64 [[TMP0]], 2
+; STRIDED-NEXT:    [[TMP9:%.*]] = shl nsw i64 [[TMP0]], 2
+>>>>>>> origin/sifive-dev
 ; STRIDED-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; STRIDED:       vector.body:
 ; STRIDED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -285,6 +299,7 @@ define void @bar(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CHECK-NEXT:    [[DIFF_CHECK:%.*]] = icmp ult i64 [[TMP7]], [[TMP6]]
 ; CHECK-NEXT:    br i1 [[DIFF_CHECK]], label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
+; CHECK-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 2, i1 true)
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -352,6 +367,7 @@ define void @bar(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CHECK-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH11]], label [[VECTOR_PH12:%.*]]
 ; CHECK:       vector.ph11:
+; CHECK-NEXT:    [[TMP49:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP43:%.*]] = trunc i32 [[SCALE]] to i2
 ; CHECK-NEXT:    [[TMP44:%.*]] = sext i2 [[TMP43]] to i64
 ; CHECK-NEXT:    [[TMP45:%.*]] = shl nsw i64 [[TMP44]], 2
@@ -419,6 +435,7 @@ define void @bar(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; CONSECUTIVE-NEXT:    [[DIFF_CHECK:%.*]] = icmp ult i64 [[TMP7]], [[TMP6]]
 ; CONSECUTIVE-NEXT:    br i1 [[DIFF_CHECK]], label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]
 ; CONSECUTIVE:       vector.ph:
+; CONSECUTIVE-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 2, i1 true)
 ; CONSECUTIVE-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CONSECUTIVE:       vector.body:
 ; CONSECUTIVE-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -509,6 +526,7 @@ define void @bar(ptr %p, ptr %s, i32 %n, i32 %scale) {
 ; STRIDED-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
 ; STRIDED-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]
 ; STRIDED:       vector.ph:
+; STRIDED-NEXT:    [[TMP32:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 2, i1 true)
 ; STRIDED-NEXT:    [[TMP26:%.*]] = trunc i32 [[SCALE]] to i2
 ; STRIDED-NEXT:    [[TMP27:%.*]] = sext i2 [[TMP26]] to i64
 ; STRIDED-NEXT:    [[TMP28:%.*]] = shl nsw i64 [[TMP27]], 2
@@ -594,6 +612,11 @@ define i32 @baz(ptr %a, i32 %b, i32 %c, i32 %d) {
 ; CHECK-NEXT:    [[IDENT_CHECK:%.*]] = icmp ne i32 [[B]], 1
 ; CHECK-NEXT:    br i1 [[IDENT_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
+<<<<<<< HEAD
+=======
+; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP4]], i32 2, i1 true)
+; CHECK-NEXT:    [[IND_END:%.*]] = add i64 [[TMP0]], [[TMP4]]
+>>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -620,8 +643,14 @@ define i32 @baz(ptr %a, i32 %b, i32 %c, i32 %d) {
 ; CHECK-NEXT:    [[TMP16:%.*]] = add nuw nsw i64 [[TMP15]], 1
 ; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label [[SCALAR_PH2:%.*]], label [[VECTOR_PH3:%.*]]
 ; CHECK:       vector.ph2:
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP20:%.*]] = sext i32 [[B]] to i64
 ; CHECK-NEXT:    [[TMP17:%.*]] = shl nsw i64 [[TMP20]], 2
+=======
+; CHECK-NEXT:    [[TMP20:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP16]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP31:%.*]] = add i64 [[TMP0]], [[TMP16]]
+; CHECK-NEXT:    [[TMP17:%.*]] = shl nsw i64 [[TMP1]], 2
+>>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    br label [[VECTOR_BODY6:%.*]]
 ; CHECK:       vector.body3:
 ; CHECK-NEXT:    [[INDEX7:%.*]] = phi i64 [ 0, [[VECTOR_PH3]] ], [ [[INDEX_EVL_NEXT10:%.*]], [[VECTOR_BODY6]] ]
@@ -674,6 +703,11 @@ define i32 @baz(ptr %a, i32 %b, i32 %c, i32 %d) {
 ; CONSECUTIVE-NEXT:    [[IDENT_CHECK:%.*]] = icmp ne i32 [[B]], 1
 ; CONSECUTIVE-NEXT:    br i1 [[IDENT_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CONSECUTIVE:       vector.ph:
+<<<<<<< HEAD
+=======
+; CONSECUTIVE-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP4]], i32 2, i1 true)
+; CONSECUTIVE-NEXT:    [[IND_END:%.*]] = add i64 [[TMP0]], [[TMP4]]
+>>>>>>> origin/sifive-dev
 ; CONSECUTIVE-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CONSECUTIVE:       vector.body:
 ; CONSECUTIVE-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -723,8 +757,14 @@ define i32 @baz(ptr %a, i32 %b, i32 %c, i32 %d) {
 ; STRIDED-NEXT:    [[TMP4:%.*]] = add nuw nsw i64 [[TMP3]], 1
 ; STRIDED-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; STRIDED:       vector.ph:
+<<<<<<< HEAD
 ; STRIDED-NEXT:    [[TMP8:%.*]] = sext i32 [[B]] to i64
 ; STRIDED-NEXT:    [[TMP5:%.*]] = shl nsw i64 [[TMP8]], 2
+=======
+; STRIDED-NEXT:    [[TMP8:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP4]], i32 2, i1 true)
+; STRIDED-NEXT:    [[IND_END:%.*]] = add i64 [[TMP0]], [[TMP4]]
+; STRIDED-NEXT:    [[TMP5:%.*]] = shl nsw i64 [[TMP1]], 2
+>>>>>>> origin/sifive-dev
 ; STRIDED-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; STRIDED:       vector.body:
 ; STRIDED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]

@@ -15,6 +15,15 @@ define void @widget(ptr %a, i64 %n) {
 ; CHECK-NEXT:    [[TMP1:%.*]] = sub i64 [[TMP0]], [[UMIN]]
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
+<<<<<<< HEAD
+=======
+; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP1]], i32 1, i1 true)
+; CHECK-NEXT:    [[IND_END:%.*]] = sub i64 [[N]], [[TMP1]]
+; CHECK-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], -16
+; CHECK-NEXT:    [[IND_END1:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP2]]
+; CHECK-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP1]], -16
+; CHECK-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP3]]
+>>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]

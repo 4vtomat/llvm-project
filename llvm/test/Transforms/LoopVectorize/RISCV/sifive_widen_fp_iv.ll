@@ -13,6 +13,13 @@ define void @test(i32 %input, ptr %0) {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vscale.i32()
 ; CHECK-NEXT:    [[TMP8:%.*]] = mul i32 [[TMP5]], 4
+<<<<<<< HEAD
+=======
+; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 [[TMP1]], i32 4, i1 true)
+; CHECK-NEXT:    [[DOTCAST:%.*]] = sitofp i32 [[TMP1]] to double
+; CHECK-NEXT:    [[TMP2:%.*]] = fmul reassoc double 1.000000e+00, [[DOTCAST]]
+; CHECK-NEXT:    [[IND_END:%.*]] = fadd reassoc double 0.000000e+00, [[TMP2]]
+>>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 4 x i64> @llvm.stepvector.nxv4i64()
 ; CHECK-NEXT:    [[TMP4:%.*]] = uitofp <vscale x 4 x i64> [[TMP3]] to <vscale x 4 x double>
 ; CHECK-NEXT:    [[TMP6:%.*]] = fmul reassoc <vscale x 4 x double> [[TMP4]], splat (double 1.000000e+00)

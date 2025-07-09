@@ -43,6 +43,14 @@ define dso_local noundef signext i32 @f(ptr noundef writeonly %c, ptr noundef re
 ; VEC-NEXT:    [[DIFF_CHECK:%.*]] = icmp ult i64 [[TMP10]], [[TMP9]]
 ; VEC-NEXT:    br i1 [[DIFF_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; VEC:       vector.ph:
+<<<<<<< HEAD
+=======
+; VEC-NEXT:    [[TMP13:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP6]], i32 2, i1 true)
+; VEC-NEXT:    [[TMP11:%.*]] = mul i64 [[TMP6]], 4
+; VEC-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[C]], i64 [[TMP11]]
+; VEC-NEXT:    [[TMP12:%.*]] = mul i64 [[TMP6]], 4
+; VEC-NEXT:    [[IND_END5:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP12]]
+>>>>>>> origin/sifive-dev
 ; VEC-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 2 x ptr> poison, ptr [[ADD_PTR2]], i64 0
 ; VEC-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 2 x ptr> [[BROADCAST_SPLATINSERT]], <vscale x 2 x ptr> poison, <vscale x 2 x i32> zeroinitializer
 ; VEC-NEXT:    [[TMP31:%.*]] = call i64 @llvm.vscale.i64()

@@ -11,6 +11,7 @@ define void @test_wide_integer_induction(ptr noalias %a, i64 %N) {
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[ENTRY:%.*]]
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 1, i1 true)
 ; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 1 x i64> @llvm.stepvector.nxv1i64()
 ; CHECK-NEXT:    [[TMP3:%.*]] = mul <vscale x 1 x i64> [[TMP1]], splat (i64 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 1 x i64> zeroinitializer, [[TMP3]]
@@ -70,6 +71,12 @@ define void @test_wide_ptr_induction(ptr noalias %a, ptr noalias %b, i64 %N) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
+<<<<<<< HEAD
+=======
+; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 1, i1 true)
+; CHECK-NEXT:    [[TMP0:%.*]] = mul i64 [[N]], 8
+; CHECK-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP0]]
+>>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP3]], 0
 ; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[TMP5]], i64 0

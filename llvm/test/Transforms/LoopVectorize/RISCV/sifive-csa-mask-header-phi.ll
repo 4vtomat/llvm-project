@@ -18,12 +18,11 @@ define i32 @foo() {
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP2]], %[[VECTOR_PH]] ], [ [[TMP7:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 16 x i32> [ [[INDUCTION]], %[[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[CSA_DATA_PHI:%.*]] = phi <vscale x 16 x i32> [ poison, %[[VECTOR_PH]] ], [ [[TMP15:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[CSA_MASK_PHI:%.*]] = phi <vscale x 16 x i1> [ zeroinitializer, %[[VECTOR_PH]] ], [ [[TMP14:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 4294967296, [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP7]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 16, i1 true)
+; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 16, i1 true)
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 2
 ; CHECK-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr null, i64 [[OFFSET_IDX]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr i16, ptr [[NEXT_GEP]], i32 0

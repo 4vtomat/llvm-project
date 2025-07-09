@@ -10,6 +10,7 @@ define void @ham() {
 ; CHECK-NEXT:    [[PHI:%.*]] = phi i64 [ [[ADD6:%.*]], %[[FOR_BODY_2:.*]] ], [ 0, %[[ENTRY]] ]
 ; CHECK-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
+; CHECK-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 4, i32 2, i1 true)
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 2 x i64> poison, i64 [[PHI]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 2 x i64> [[BROADCAST_SPLATINSERT]], <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer
 ; CHECK-NEXT:    [[TMP0:%.*]] = trunc <vscale x 2 x i64> [[BROADCAST_SPLAT]] to <vscale x 2 x i32>

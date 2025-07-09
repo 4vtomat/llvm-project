@@ -9,6 +9,7 @@ define void @test(ptr %p, i64 %a, i8 %b) {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.vscale.i32()
 ; CHECK-NEXT:    [[TMP1:%.*]] = mul i32 [[TMP0]], 8
+; CHECK-NEXT:    [[TMP11:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 9, i32 8, i1 true)
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x i8> poison, i8 [[B]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 8 x i8> [[BROADCAST_SPLATINSERT]], <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT1:%.*]] = insertelement <vscale x 8 x i64> poison, i64 [[A]], i64 0

@@ -26,6 +26,7 @@ define void @convert_to_ssa(ptr %0, ptr %elms.i159, ptr %1) {
 ; CHECK-NEXT:    [[CONFLICT_RDX10:%.*]] = or i1 [[CONFLICT_RDX]], [[FOUND_CONFLICT9]]
 ; CHECK-NEXT:    br i1 [[CONFLICT_RDX10]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
+; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 4294967295, i32 8, i1 true)
 ; CHECK-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[TMP0]], i64 274877906880
 ; CHECK-NEXT:    [[IND_END12:%.*]] = getelementptr i8, ptr [[TMP1]], i64 274877906880
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]

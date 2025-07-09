@@ -30,6 +30,7 @@ define void @_Z3fn1v(i32 %n, ptr %k, i32 %l) {
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[N_VEC:%.*]] = sub i64 [[TMP3]], 1
+; CHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N_VEC]], i32 2, i1 true)
 ; CHECK-NEXT:    [[IND_END:%.*]] = mul i64 [[N_VEC]], [[TMP0]]
 ; CHECK-NEXT:    [[DOTCAST:%.*]] = trunc i64 [[N_VEC]] to i32
 ; CHECK-NEXT:    [[IND_END1:%.*]] = add i32 1, [[DOTCAST]]
@@ -81,8 +82,17 @@ define void @_Z3fn1v(i32 %n, ptr %k, i32 %l) {
 ; CHECK-NEXT:    [[FOUND_CONFLICT9:%.*]] = and i1 [[BOUND07]], [[BOUND18]]
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT9]], label [[SCALAR_PH11]], label [[VECTOR_PH12:%.*]]
 ; CHECK:       vector.ph10:
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP33:%.*]] = sext i32 [[L]] to i64
 ; CHECK-NEXT:    [[TMP34:%.*]] = shl nsw i64 [[TMP33]], 3
+=======
+; CHECK-NEXT:    [[TMP36:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP23]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP33:%.*]] = mul i64 [[TMP23]], [[TMP0]]
+; CHECK-NEXT:    [[IND_END13:%.*]] = add i64 [[BC_RESUME_VAL]], [[TMP33]]
+; CHECK-NEXT:    [[DOTCAST15:%.*]] = trunc i64 [[TMP23]] to i32
+; CHECK-NEXT:    [[IND_END16:%.*]] = add i32 [[BC_RESUME_VAL2]], [[DOTCAST15]]
+; CHECK-NEXT:    [[TMP34:%.*]] = shl nsw i64 [[TMP0]], 3
+>>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    br label [[VECTOR_BODY18:%.*]]
 ; CHECK:       vector.body11:
 ; CHECK-NEXT:    [[INDEX19:%.*]] = phi i64 [ 0, [[VECTOR_PH12]] ], [ [[INDEX_EVL_NEXT22:%.*]], [[VECTOR_BODY18]] ]

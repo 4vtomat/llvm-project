@@ -6,6 +6,7 @@ define fastcc i32 @S_unpack_rec(i64 %0) {
 ; CHECK-SAME: i64 [[TMP0:%.*]]) #[[ATTR0:[0-9]+]] {
 ; CHECK-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
+; CHECK-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 536870912, i32 4, i1 true)
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -17,18 +18,24 @@ define fastcc i32 @S_unpack_rec(i64 %0) {
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp eq i32 [[INDEX_EVL_NEXT]], 536870912
 ; CHECK-NEXT:    br i1 [[TMP4]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
-; CHECK-NEXT:    br label %[[BB8:.*]]
+; CHECK-NEXT:    br label %[[BB9:.*]]
 ; CHECK:       [[SCALAR_PH]]:
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 0, [[TMP1:%.*]] ]
 ; CHECK-NEXT:    br label %[[BB4:.*]]
 ; CHECK:       [[BB4]]:
 ; CHECK-NEXT:    [[TMP6:%.*]] = phi i32 [ [[TMP7:%.*]], %[[BB4]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
+=======
+; CHECK-NEXT:    br label %[[BB5:.*]]
+; CHECK:       [[BB5]]:
+; CHECK-NEXT:    [[TMP6:%.*]] = phi i32 [ [[TMP7:%.*]], %[[BB5]] ], [ 0, %[[SCALAR_PH]] ]
+>>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    store i64 0, ptr null, align 8
 ; CHECK-NEXT:    [[TMP7]] = add nsw i32 [[TMP6]], -8
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i32 [[TMP6]], 1
-; CHECK-NEXT:    br i1 [[TMP8]], label %[[BB8]], label %[[BB4]], !llvm.loop [[LOOP3:![0-9]+]]
-; CHECK:       [[BB8]]:
-; CHECK-NEXT:    [[TMP9:%.*]] = phi i64 [ [[TMP0]], %[[BB4]] ], [ [[TMP0]], %[[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    br i1 [[TMP8]], label %[[BB9]], label %[[BB5]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK:       [[BB9]]:
+; CHECK-NEXT:    [[TMP10:%.*]] = phi i64 [ [[TMP0]], %[[BB5]] ], [ [[TMP0]], %[[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret i32 0
 ;
   br label %2

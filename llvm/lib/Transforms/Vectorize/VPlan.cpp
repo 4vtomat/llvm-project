@@ -1250,6 +1250,14 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
       VFxUF.setUnderlyingValue(
           createStepForVF(Builder, TCTy, State.VF, UF));
   }
+  if (InitEVL) {
+    assert(!isUncountable() && "Can not compute InitEVL for uncountable loop");
+    Value *InitEVLValue = Builder.CreateIntrinsic(
+        Builder.getInt32Ty(), Intrinsic::experimental_get_vector_length,
+        {VectorTripCountV, Builder.getInt32(State.VF.getKnownMinValue()),
+         Builder.getTrue()});
+    InitEVL->setUnderlyingValue(InitEVLValue);
+  }
 #else
   if (VF.getNumUsers()) {
     Value *RuntimeVF = getRuntimeVF(Builder, TCTy, State.VF);
@@ -1681,11 +1689,6 @@ void VPlanPrinter::dump() {
     OS << "\\n";
     Plan.InitEVL->print(OS, SlotTracker);
     OS << " := INIT-EVL";
-  }
-  if (Plan.PrevEVL) {
-    OS << "\\n";
-    Plan.PrevEVL->print(OS, SlotTracker);
-    OS << " := PREV-EVL";
   }
   if (Plan.AllTrueMask) {
     OS << "\\n";

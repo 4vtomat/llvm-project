@@ -1885,6 +1885,7 @@ static void licm(VPlan &Plan) {
         continue;
       R.moveBefore(*Preheader, Preheader->end());
 #if SIFIVE_CUSTOMIZATION
+    // SYNC-UPSTREAM: Investigate why LICM requires InitEVL.
     if (Plan.useVLAVectorizer() && !Plan.getInitEVL())
       Plan.createInitEVL();
 #endif // SIFIVE_CUSTOMIZATION
@@ -2312,6 +2313,15 @@ static VPRecipeBase *createEVLRecipe(VPValue *HeaderMask,
                                      VPValue *PrevEVL) {
   using namespace llvm::VPlanPatternMatch;
   auto GetNewMask = [&](VPValue *OrigMask) -> VPValue * {
+#if SIFIVE_CUSTOMIZATION
+    // SYNC-UPSTREAM: The legacy tail folding by EVL approach does not rely on
+    // the plan transformation used by tail folding by mask, and therefore lacks
+    // a header mask. Setting the header to nullptr is a workaround. This should
+    // be removed once we fully migrate to the new (upstream) tail folding by
+    // EVL approach.
+    if (!HeaderMask)
+      return OrigMask;
+#endif // SIFIVE_CUSTOMIZATION
     assert(OrigMask && "Unmasked recipe when folding tail");
     // HeaderMask will be handled using EVL.
     VPValue *Mask;
@@ -2355,6 +2365,18 @@ static VPRecipeBase *createEVLRecipe(VPValue *HeaderMask,
                                             VPI->getDebugLoc());
         }
 
+#if SIFIVE_CUSTOMIZATION
+        // SYNC-UPSTREAM: Since the legacy tail folding by EVL approach does not
+        // rely on the header mask, it cannot convert
+        //   m_Select(m_Specific(HeaderMask), m_VPValue(LHS), m_VPValue(RHS))
+        // into
+        //   vp.merge.
+        // We can removes this and the code in adjustRecipesForReductions that
+        // directly emits vp.merge, once we fully transition to the new
+        // (upstream) tail folding by EVL approach.
+        if (!HeaderMask)
+          return nullptr;
+#endif // SIFIVE_CUSTOMIZATION
         VPValue *LHS, *RHS;
         // Transform select with a header mask condition
         //   select(header_mask, LHS, RHS)
@@ -2387,8 +2409,16 @@ static void transformRecipestoEVLRecipes(VPlan &Plan, VPValue &EVL) {
   bool ContainsFORs =
       any_of(Header->phis(), IsaPred<VPFirstOrderRecurrencePHIRecipe>);
   if (ContainsFORs) {
+#if SIFIVE_CUSTOMIZATION
+    VPValue *MaxEVL = nullptr;
+    if (VPValue *InitEVL = Plan.getInitEVL())
+      MaxEVL = InitEVL;
+    else
+      MaxEVL = &Plan.getVF();
+#else
     // TODO: Use VPInstruction::ExplicitVectorLength to get maximum EVL.
     VPValue *MaxEVL = &Plan.getVF();
+#endif // SIFIVE_CUSTOMIZATION
     // Emit VPScalarCastRecipe in preheader if VF is not a 32 bits integer.
     if (unsigned VFSize =
             TypeInfo.inferScalarType(MaxEVL)->getScalarSizeInBits();
@@ -2410,9 +2440,32 @@ static void transformRecipestoEVLRecipes(VPlan &Plan, VPValue &EVL) {
 
   SmallVector<VPRecipeBase *> ToErase;
 
+#if SIFIVE_CUSTOMIZATION
+  // SYNC-UPSTREAM: As described in createEVLRecipe. This should be removed once
+  // we fully migrate to the new (upstream) tail folding by EVL approach.
+  using RecipeInfo = std::pair<VPRecipeBase *, VPValue *>;
+  SmallVector<RecipeInfo> RecipesToConvert;
+
+  SmallVector<VPValue *> HeaderMasks = collectAllHeaderMasks(Plan);
+  if (!HeaderMasks.empty()) {
+    for (VPValue *HeaderMask : HeaderMasks)
+      for (VPUser *U : collectUsersRecursively(HeaderMask))
+        RecipesToConvert.emplace_back(cast<VPRecipeBase>(U), HeaderMask);
+  } else {
+    for (VPBasicBlock *VPBB : VPBlockUtils::blocksOnly<VPBasicBlock>(
+             vp_depth_first_deep(Plan.getVectorLoopRegion()))) {
+      // The recipes in the block are processed in reverse order, to catch
+      // chains of dead recipes.
+      for (VPRecipeBase &R : make_early_inc_range(reverse(*VPBB)))
+        RecipesToConvert.emplace_back(&R, /*HeaderMask*/ nullptr);
+    }
+  }
+  for (auto &[CurRecipe, HeaderMask] : RecipesToConvert) {
+#else
   for (VPValue *HeaderMask : collectAllHeaderMasks(Plan)) {
     for (VPUser *U : collectUsersRecursively(HeaderMask)) {
       auto *CurRecipe = cast<VPRecipeBase>(U);
+#endif // SIFIVE_CUSTOMIZATION
       VPRecipeBase *EVLRecipe = createEVLRecipe(
           HeaderMask, *CurRecipe, TypeInfo, *AllOneMask, EVL, PrevEVL);
       if (!EVLRecipe)
@@ -2433,7 +2486,9 @@ static void transformRecipestoEVLRecipes(VPlan &Plan, VPValue &EVL) {
       // Defer erasing recipes till the end so that we don't invalidate the
       // VPTypeAnalysis cache.
       ToErase.push_back(CurRecipe);
+#if !SIFIVE_CUSTOMIZATION
     }
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   for (VPRecipeBase *R : reverse(ToErase)) {
@@ -2508,6 +2563,11 @@ bool VPlanTransforms::tryAddExplicitVectorLength(
   if (ContainsWidenInductions)
     return false;
 
+#if SIFIVE_CUSTOMIZATION
+  if (EnableEVLFuzzing)
+    Plan.createInitEVL();
+#endif // SIFIVE_CUSTOMIZATION
+
   auto *CanonicalIVPHI = Plan.getCanonicalIV();
   VPValue *StartV = CanonicalIVPHI->getStartValue();
 
@@ -2535,14 +2595,6 @@ bool VPlanTransforms::tryAddExplicitVectorLength(
     VPValue *Cmp = Builder.createICmp(ICmpInst::ICMP_ULT, AVL, AVLSafe);
     AVL = Builder.createSelect(Cmp, AVL, AVLSafe, DebugLoc(), "safe_avl");
   }
-
-#if SIFIVE_CUSTOMIZATION
-  VPEVLBasedIVPHIRecipe *PrevEVLPhi = nullptr;
-  if (Plan.getInitEVL()) {
-    PrevEVLPhi = new VPEVLBasedIVPHIRecipe(Plan.getInitEVL(), DebugLoc());
-    PrevEVLPhi->insertAfter(EVLPhi);
-  }
-#endif // SIFIVE_CUSTOMIZATION
   auto *VPEVL = Builder.createNaryOp(VPInstruction::ExplicitVectorLength, AVL,
                                      DebugLoc());
 
@@ -2563,62 +2615,6 @@ bool VPlanTransforms::tryAddExplicitVectorLength(
       CanonicalIVIncrement->getDebugLoc(), "index.evl.next");
   EVLPhi->addOperand(NextEVLIV);
 
-#if SIFIVE_CUSTOMIZATION
-  if (EnableEVLFuzzing) {
-    if (PrevEVLPhi) {
-      Plan.setPrevEVL(PrevEVLPhi);
-      PrevEVLPhi->addOperand(VPEVL);
-    }
-    ReversePostOrderTraversal<VPBlockDeepTraversalWrapper<VPBlockBase *>> RPOT(
-        Plan.getEntry());
-
-    VPRegionBlock *LoopRegion = Plan.getVectorLoopRegion();
-    VPBasicBlock *Preheader =
-        cast<VPBasicBlock>(LoopRegion->getSinglePredecessor());
-    for (VPBasicBlock *VPBB : VPBlockUtils::blocksOnly<VPBasicBlock>(RPOT)) {
-      if (VPBB == Preheader)
-        continue;
-      // The recipes in the block are processed in reverse order, to catch
-      // chains of dead recipes.
-      for (VPRecipeBase &R : make_early_inc_range(reverse(*VPBB))) {
-        VPRecipeBase *CurRecipe = &R;
-        VPRecipeBase *NewRecipe = nullptr;
-
-        auto GetNewMask = [&](VPValue *OrigMask) -> VPValue * {
-          return OrigMask;
-        };
-        if (auto *MemR = dyn_cast<VPWidenMemoryRecipe>(CurRecipe)) {
-          VPValue *NewMask = GetNewMask(MemR->getMask());
-          if (auto *L = dyn_cast<VPWidenLoadRecipe>(MemR))
-            NewRecipe = new VPWidenLoadEVLRecipe(*L, *VPEVL, NewMask);
-          else if (auto *S = dyn_cast<VPWidenStoreRecipe>(MemR))
-            NewRecipe = new VPWidenStoreEVLRecipe(*S, *VPEVL, NewMask);
-          else
-            llvm_unreachable("unsupported recipe");
-        } else if (auto *RedR = dyn_cast<VPReductionRecipe>(CurRecipe)) {
-          NewRecipe = new VPReductionEVLRecipe(*RedR, *VPEVL,
-                                               GetNewMask(RedR->getCondOp()));
-        }
-
-        if (NewRecipe) {
-          [[maybe_unused]] unsigned NumDefVal =
-              NewRecipe->getNumDefinedValues();
-          assert(NumDefVal == CurRecipe->getNumDefinedValues() &&
-                 "New recipe must define the same number of values as the "
-                 "original.");
-          assert(NumDefVal <= 1 && "Only supports recipes with a single "
-                                   "definition or without users.");
-          NewRecipe->insertBefore(CurRecipe);
-          if (isa<VPSingleDefRecipe, VPWidenLoadEVLRecipe>(NewRecipe)) {
-            VPValue *CurVPV = CurRecipe->getVPSingleValue();
-            CurVPV->replaceAllUsesWith(NewRecipe->getVPSingleValue());
-          }
-          CurRecipe->eraseFromParent();
-        }
-      }
-    }
-  } else
-#endif // SIFIVE_CUSTOMIZATION
   transformRecipestoEVLRecipes(Plan, *VPEVL);
 
   // Replace all uses of VPCanonicalIVPHIRecipe by
@@ -2948,15 +2944,6 @@ void VPlanTransforms::convertToConcreteRecipes(VPlan &Plan) {
           Instruction::PHI, {PhiR->getStartValue(), PhiR->getBackedgeValue()},
           PhiR->getDebugLoc(), Name);
       ScalarR->insertBefore(PhiR);
-
-#if SIFIVE_CUSTOMIZATION
-      if (isa<VPEVLBasedIVPHIRecipe>(&R)) {
-        if (Plan.getPrevEVL() == R.getVPSingleValue())
-          Plan.setPrevEVL(ScalarR);
-        else if (Plan.getInitEVL() == R.getVPSingleValue())
-          Plan.setInitEVL(ScalarR);
-      }
-#endif // SIFIVE_CUSTOMIZATION
       PhiR->replaceAllUsesWith(ScalarR);
       PhiR->eraseFromParent();
     }
