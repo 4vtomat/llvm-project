@@ -92,66 +92,6 @@ define void @test_muladd(ptr noalias nocapture %d1, ptr noalias nocapture readon
 ; AVX1:       vector.body:
 ; AVX1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; AVX1-NEXT:    [[TMP1:%.*]] = add i64 [[INDEX]], 4
-<<<<<<< HEAD
-; AVX1-NEXT:    [[TMP2:%.*]] = add i64 [[INDEX]], 8
-; AVX1-NEXT:    [[TMP3:%.*]] = add i64 [[INDEX]], 12
-; AVX1-NEXT:    [[TMP4:%.*]] = shl nuw nsw i64 [[INDEX]], 1
-; AVX1-NEXT:    [[TMP5:%.*]] = shl nuw nsw i64 [[TMP1]], 1
-; AVX1-NEXT:    [[TMP6:%.*]] = shl nuw nsw i64 [[TMP2]], 1
-; AVX1-NEXT:    [[TMP7:%.*]] = shl nuw nsw i64 [[TMP3]], 1
-; AVX1-NEXT:    [[TMP11:%.*]] = getelementptr inbounds i16, ptr [[S1:%.*]], i64 [[TMP4]]
-; AVX1-NEXT:    [[TMP27:%.*]] = getelementptr inbounds i16, ptr [[S1]], i64 [[TMP5]]
-; AVX1-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i16, ptr [[S1]], i64 [[TMP6]]
-; AVX1-NEXT:    [[TMP15:%.*]] = getelementptr inbounds i16, ptr [[S1]], i64 [[TMP7]]
-; AVX1-NEXT:    [[WIDE_VEC3:%.*]] = load <8 x i16>, ptr [[TMP11]], align 2
-; AVX1-NEXT:    [[STRIDED_VEC6:%.*]] = shufflevector <8 x i16> [[WIDE_VEC3]], <8 x i16> poison, <4 x i32> <i32 0, i32 2, i32 4, i32 6>
-; AVX1-NEXT:    [[STRIDED_VEC10:%.*]] = shufflevector <8 x i16> [[WIDE_VEC3]], <8 x i16> poison, <4 x i32> <i32 1, i32 3, i32 5, i32 7>
-; AVX1-NEXT:    [[WIDE_VEC15:%.*]] = load <8 x i16>, ptr [[TMP27]], align 2
-; AVX1-NEXT:    [[STRIDED_VEC4:%.*]] = shufflevector <8 x i16> [[WIDE_VEC15]], <8 x i16> poison, <4 x i32> <i32 0, i32 2, i32 4, i32 6>
-; AVX1-NEXT:    [[STRIDED_VEC8:%.*]] = shufflevector <8 x i16> [[WIDE_VEC15]], <8 x i16> poison, <4 x i32> <i32 1, i32 3, i32 5, i32 7>
-; AVX1-NEXT:    [[WIDE_VEC12:%.*]] = load <8 x i16>, ptr [[TMP14]], align 2
-; AVX1-NEXT:    [[STRIDED_VEC16:%.*]] = shufflevector <8 x i16> [[WIDE_VEC12]], <8 x i16> poison, <4 x i32> <i32 0, i32 2, i32 4, i32 6>
-; AVX1-NEXT:    [[STRIDED_VEC9:%.*]] = shufflevector <8 x i16> [[WIDE_VEC12]], <8 x i16> poison, <4 x i32> <i32 1, i32 3, i32 5, i32 7>
-; AVX1-NEXT:    [[WIDE_VEC13:%.*]] = load <8 x i16>, ptr [[TMP15]], align 2
-; AVX1-NEXT:    [[STRIDED_VEC17:%.*]] = shufflevector <8 x i16> [[WIDE_VEC13]], <8 x i16> poison, <4 x i32> <i32 0, i32 2, i32 4, i32 6>
-; AVX1-NEXT:    [[STRIDED_VEC11:%.*]] = shufflevector <8 x i16> [[WIDE_VEC13]], <8 x i16> poison, <4 x i32> <i32 1, i32 3, i32 5, i32 7>
-; AVX1-NEXT:    [[TMP16:%.*]] = sext <4 x i16> [[STRIDED_VEC6]] to <4 x i32>
-; AVX1-NEXT:    [[TMP17:%.*]] = sext <4 x i16> [[STRIDED_VEC4]] to <4 x i32>
-; AVX1-NEXT:    [[TMP18:%.*]] = sext <4 x i16> [[STRIDED_VEC16]] to <4 x i32>
-; AVX1-NEXT:    [[TMP19:%.*]] = sext <4 x i16> [[STRIDED_VEC17]] to <4 x i32>
-; AVX1-NEXT:    [[TMP20:%.*]] = getelementptr inbounds i16, ptr [[S2:%.*]], i64 [[TMP4]]
-; AVX1-NEXT:    [[TMP21:%.*]] = getelementptr inbounds i16, ptr [[S2]], i64 [[TMP5]]
-; AVX1-NEXT:    [[TMP22:%.*]] = getelementptr inbounds i16, ptr [[S2]], i64 [[TMP6]]
-; AVX1-NEXT:    [[TMP23:%.*]] = getelementptr inbounds i16, ptr [[S2]], i64 [[TMP7]]
-; AVX1-NEXT:    [[WIDE_VEC14:%.*]] = load <8 x i16>, ptr [[TMP20]], align 2
-; AVX1-NEXT:    [[STRIDED_VEC18:%.*]] = shufflevector <8 x i16> [[WIDE_VEC14]], <8 x i16> poison, <4 x i32> <i32 0, i32 2, i32 4, i32 6>
-; AVX1-NEXT:    [[STRIDED_VEC22:%.*]] = shufflevector <8 x i16> [[WIDE_VEC14]], <8 x i16> poison, <4 x i32> <i32 1, i32 3, i32 5, i32 7>
-; AVX1-NEXT:    [[WIDE_VEC16:%.*]] = load <8 x i16>, ptr [[TMP21]], align 2
-; AVX1-NEXT:    [[STRIDED_VEC24:%.*]] = shufflevector <8 x i16> [[WIDE_VEC16]], <8 x i16> poison, <4 x i32> <i32 0, i32 2, i32 4, i32 6>
-; AVX1-NEXT:    [[STRIDED_VEC20:%.*]] = shufflevector <8 x i16> [[WIDE_VEC16]], <8 x i16> poison, <4 x i32> <i32 1, i32 3, i32 5, i32 7>
-; AVX1-NEXT:    [[WIDE_VEC18:%.*]] = load <8 x i16>, ptr [[TMP22]], align 2
-; AVX1-NEXT:    [[STRIDED_VEC25:%.*]] = shufflevector <8 x i16> [[WIDE_VEC18]], <8 x i16> poison, <4 x i32> <i32 0, i32 2, i32 4, i32 6>
-; AVX1-NEXT:    [[STRIDED_VEC21:%.*]] = shufflevector <8 x i16> [[WIDE_VEC18]], <8 x i16> poison, <4 x i32> <i32 1, i32 3, i32 5, i32 7>
-; AVX1-NEXT:    [[WIDE_VEC21:%.*]] = load <8 x i16>, ptr [[TMP23]], align 2
-; AVX1-NEXT:    [[STRIDED_VEC19:%.*]] = shufflevector <8 x i16> [[WIDE_VEC21]], <8 x i16> poison, <4 x i32> <i32 0, i32 2, i32 4, i32 6>
-; AVX1-NEXT:    [[STRIDED_VEC23:%.*]] = shufflevector <8 x i16> [[WIDE_VEC21]], <8 x i16> poison, <4 x i32> <i32 1, i32 3, i32 5, i32 7>
-; AVX1-NEXT:    [[TMP28:%.*]] = sext <4 x i16> [[STRIDED_VEC18]] to <4 x i32>
-; AVX1-NEXT:    [[TMP29:%.*]] = sext <4 x i16> [[STRIDED_VEC24]] to <4 x i32>
-; AVX1-NEXT:    [[TMP30:%.*]] = sext <4 x i16> [[STRIDED_VEC25]] to <4 x i32>
-; AVX1-NEXT:    [[TMP31:%.*]] = sext <4 x i16> [[STRIDED_VEC19]] to <4 x i32>
-; AVX1-NEXT:    [[TMP32:%.*]] = mul nsw <4 x i32> [[TMP28]], [[TMP16]]
-; AVX1-NEXT:    [[TMP33:%.*]] = mul nsw <4 x i32> [[TMP29]], [[TMP17]]
-; AVX1-NEXT:    [[TMP34:%.*]] = mul nsw <4 x i32> [[TMP30]], [[TMP18]]
-; AVX1-NEXT:    [[TMP35:%.*]] = mul nsw <4 x i32> [[TMP31]], [[TMP19]]
-; AVX1-NEXT:    [[TMP36:%.*]] = sext <4 x i16> [[STRIDED_VEC10]] to <4 x i32>
-; AVX1-NEXT:    [[TMP37:%.*]] = sext <4 x i16> [[STRIDED_VEC8]] to <4 x i32>
-; AVX1-NEXT:    [[TMP38:%.*]] = sext <4 x i16> [[STRIDED_VEC9]] to <4 x i32>
-; AVX1-NEXT:    [[TMP39:%.*]] = sext <4 x i16> [[STRIDED_VEC11]] to <4 x i32>
-; AVX1-NEXT:    [[TMP40:%.*]] = sext <4 x i16> [[STRIDED_VEC22]] to <4 x i32>
-; AVX1-NEXT:    [[TMP41:%.*]] = sext <4 x i16> [[STRIDED_VEC20]] to <4 x i32>
-; AVX1-NEXT:    [[TMP42:%.*]] = sext <4 x i16> [[STRIDED_VEC21]] to <4 x i32>
-; AVX1-NEXT:    [[TMP43:%.*]] = sext <4 x i16> [[STRIDED_VEC23]] to <4 x i32>
-=======
 ; AVX1-NEXT:    [[TMP7:%.*]] = shl nuw nsw i64 [[INDEX]], 1
 ; AVX1-NEXT:    [[TMP2:%.*]] = shl nuw nsw i64 [[TMP1]], 1
 ; AVX1-NEXT:    [[TMP11:%.*]] = getelementptr inbounds i16, ptr [[S1:%.*]], i64 [[TMP7]]
@@ -174,7 +114,6 @@ define void @test_muladd(ptr noalias nocapture %d1, ptr noalias nocapture readon
 ; AVX1-NEXT:    [[STRIDED_VEC22:%.*]] = shufflevector <8 x i16> [[WIDE_VEC14]], <8 x i16> poison, <4 x i32> <i32 1, i32 3, i32 5, i32 7>
 ; AVX1-NEXT:    [[TMP40:%.*]] = sext <4 x i16> [[STRIDED_VEC17]] to <4 x i32>
 ; AVX1-NEXT:    [[TMP41:%.*]] = sext <4 x i16> [[STRIDED_VEC18]] to <4 x i32>
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
 ; AVX1-NEXT:    [[TMP44:%.*]] = mul nsw <4 x i32> [[TMP40]], [[TMP36]]
 ; AVX1-NEXT:    [[TMP45:%.*]] = mul nsw <4 x i32> [[TMP41]], [[TMP37]]
 ; AVX1-NEXT:    [[TMP38:%.*]] = sext <4 x i16> [[STRIDED_VEC9]] to <4 x i32>
@@ -195,57 +134,12 @@ define void @test_muladd(ptr noalias nocapture %d1, ptr noalias nocapture readon
 ; AVX1-NEXT:    br i1 [[TMP24]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; AVX1:       middle.block:
 ; AVX1-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[WIDE_TRIP_COUNT]], [[N_VEC]]
-<<<<<<< HEAD
-; AVX1-NEXT:    br i1 [[CMP_N]], label [[FOR_END_LOOPEXIT:%.*]], label [[VEC_EPILOG_ITER_CHECK:%.*]]
-; AVX1:       vec.epilog.iter.check:
-; AVX1-NEXT:    [[N_VEC_REMAINING:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[N_VEC]]
-; AVX1-NEXT:    [[MIN_EPILOG_ITERS_CHECK:%.*]] = icmp ult i64 [[N_VEC_REMAINING]], 4
-; AVX1-NEXT:    br i1 [[MIN_EPILOG_ITERS_CHECK]], label [[VEC_EPILOG_SCALAR_PH]], label [[SCALAR_PH]]
-; AVX1:       vec.epilog.ph:
-; AVX1-NEXT:    [[VEC_EPILOG_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[VEC_EPILOG_ITER_CHECK]] ], [ 0, [[VECTOR_MAIN_LOOP_ITER_CHECK]] ]
-; AVX1-NEXT:    [[N_MOD_VF24:%.*]] = urem i64 [[WIDE_TRIP_COUNT]], 4
-; AVX1-NEXT:    [[N_VEC25:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[N_MOD_VF24]]
-; AVX1-NEXT:    br label [[FOR_BODY1:%.*]]
-; AVX1:       vec.epilog.vector.body:
-; AVX1-NEXT:    [[INDEX26:%.*]] = phi i64 [ [[VEC_EPILOG_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDEX_NEXT33:%.*]], [[FOR_BODY1]] ]
-; AVX1-NEXT:    [[TMP68:%.*]] = shl nuw nsw i64 [[INDEX26]], 1
-; AVX1-NEXT:    [[TMP69:%.*]] = getelementptr inbounds i16, ptr [[S1]], i64 [[TMP68]]
-; AVX1-NEXT:    [[WIDE_VEC27:%.*]] = load <8 x i16>, ptr [[TMP69]], align 2
-; AVX1-NEXT:    [[STRIDED_VEC28:%.*]] = shufflevector <8 x i16> [[WIDE_VEC27]], <8 x i16> poison, <4 x i32> <i32 0, i32 2, i32 4, i32 6>
-; AVX1-NEXT:    [[STRIDED_VEC29:%.*]] = shufflevector <8 x i16> [[WIDE_VEC27]], <8 x i16> poison, <4 x i32> <i32 1, i32 3, i32 5, i32 7>
-; AVX1-NEXT:    [[TMP53:%.*]] = sext <4 x i16> [[STRIDED_VEC28]] to <4 x i32>
-; AVX1-NEXT:    [[TMP54:%.*]] = getelementptr inbounds i16, ptr [[S2]], i64 [[TMP68]]
-; AVX1-NEXT:    [[WIDE_VEC30:%.*]] = load <8 x i16>, ptr [[TMP54]], align 2
-; AVX1-NEXT:    [[STRIDED_VEC31:%.*]] = shufflevector <8 x i16> [[WIDE_VEC30]], <8 x i16> poison, <4 x i32> <i32 0, i32 2, i32 4, i32 6>
-; AVX1-NEXT:    [[STRIDED_VEC32:%.*]] = shufflevector <8 x i16> [[WIDE_VEC30]], <8 x i16> poison, <4 x i32> <i32 1, i32 3, i32 5, i32 7>
-; AVX1-NEXT:    [[TMP55:%.*]] = sext <4 x i16> [[STRIDED_VEC31]] to <4 x i32>
-; AVX1-NEXT:    [[TMP70:%.*]] = mul nsw <4 x i32> [[TMP55]], [[TMP53]]
-; AVX1-NEXT:    [[TMP71:%.*]] = sext <4 x i16> [[STRIDED_VEC29]] to <4 x i32>
-; AVX1-NEXT:    [[TMP72:%.*]] = sext <4 x i16> [[STRIDED_VEC32]] to <4 x i32>
-; AVX1-NEXT:    [[TMP73:%.*]] = mul nsw <4 x i32> [[TMP72]], [[TMP71]]
-; AVX1-NEXT:    [[TMP74:%.*]] = add nsw <4 x i32> [[TMP73]], [[TMP70]]
-; AVX1-NEXT:    [[TMP75:%.*]] = getelementptr inbounds i32, ptr [[D1]], i64 [[INDEX26]]
-; AVX1-NEXT:    [[TMP76:%.*]] = getelementptr inbounds i32, ptr [[TMP75]], i32 0
-; AVX1-NEXT:    store <4 x i32> [[TMP74]], ptr [[TMP76]], align 4
-; AVX1-NEXT:    [[INDEX_NEXT33]] = add nuw i64 [[INDEX26]], 4
-; AVX1-NEXT:    [[TMP77:%.*]] = icmp eq i64 [[INDEX_NEXT33]], [[N_VEC25]]
-; AVX1-NEXT:    br i1 [[TMP77]], label [[VEC_EPILOG_MIDDLE_BLOCK:%.*]], label [[FOR_BODY1]], !llvm.loop [[LOOP3:![0-9]+]]
-; AVX1:       vec.epilog.middle.block:
-; AVX1-NEXT:    [[CMP_N34:%.*]] = icmp eq i64 [[WIDE_TRIP_COUNT]], [[N_VEC25]]
-; AVX1-NEXT:    br i1 [[CMP_N34]], label [[FOR_END_LOOPEXIT]], label [[VEC_EPILOG_SCALAR_PH]]
-; AVX1:       vec.epilog.scalar.ph:
-; AVX1-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC25]], [[VEC_EPILOG_MIDDLE_BLOCK]] ], [ [[N_VEC]], [[VEC_EPILOG_ITER_CHECK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
-; AVX1-NEXT:    br label [[FOR_BODY:%.*]]
-; AVX1:       for.body:
-; AVX1-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[VEC_EPILOG_SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
-=======
 ; AVX1-NEXT:    br i1 [[CMP_N]], label [[FOR_END_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; AVX1:       scalar.ph:
 ; AVX1-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
 ; AVX1-NEXT:    br label [[FOR_BODY1:%.*]]
 ; AVX1:       for.body:
 ; AVX1-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY1]] ]
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
 ; AVX1-NEXT:    [[TMP61:%.*]] = shl nuw nsw i64 [[INDVARS_IV]], 1
 ; AVX1-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i16, ptr [[S1]], i64 [[TMP61]]
 ; AVX1-NEXT:    [[TMP62:%.*]] = load i16, ptr [[ARRAYIDX]], align 2
@@ -267,11 +161,7 @@ define void @test_muladd(ptr noalias nocapture %d1, ptr noalias nocapture readon
 ; AVX1-NEXT:    store i32 [[ADD18]], ptr [[ARRAYIDX20]], align 4
 ; AVX1-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; AVX1-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
-<<<<<<< HEAD
-; AVX1-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
-=======
 ; AVX1-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END_LOOPEXIT]], label [[FOR_BODY1]], !llvm.loop [[LOOP3:![0-9]+]]
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
 ; AVX1:       for.end.loopexit:
 ; AVX1-NEXT:    br label [[FOR_END]]
 ; AVX1:       for.end:

@@ -1661,28 +1661,24 @@ define i32 @sub_if_uge_multiuse_cmp_i32(i32 %x, i32 %y) {
 ; RV32I-NEXT:    addi a2, a2, -1
 ; RV32I-NEXT:    and a2, a2, a1
 ; RV32I-NEXT:    sub a2, a0, a2
+; RV32I-NEXT:    li a3, 2
 ; RV32I-NEXT:    bltu a0, a1, .LBB55_2
 ; RV32I-NEXT:  # %bb.1:
-; RV32I-NEXT:    li a0, 4
-; RV32I-NEXT:    sll a0, a2, a0
-; RV32I-NEXT:    ret
+; RV32I-NEXT:    li a3, 4
 ; RV32I-NEXT:  .LBB55_2:
-; RV32I-NEXT:    li a0, 2
-; RV32I-NEXT:    sll a0, a2, a0
+; RV32I-NEXT:    sll a0, a2, a3
 ; RV32I-NEXT:    ret
 ;
 ; RV32ZBB-LABEL: sub_if_uge_multiuse_cmp_i32:
 ; RV32ZBB:       # %bb.0:
 ; RV32ZBB-NEXT:    sub a2, a0, a1
 ; RV32ZBB-NEXT:    minu a2, a0, a2
+; RV32ZBB-NEXT:    li a3, 2
 ; RV32ZBB-NEXT:    bltu a0, a1, .LBB55_2
 ; RV32ZBB-NEXT:  # %bb.1:
-; RV32ZBB-NEXT:    li a0, 4
-; RV32ZBB-NEXT:    sll a0, a2, a0
-; RV32ZBB-NEXT:    ret
+; RV32ZBB-NEXT:    li a3, 4
 ; RV32ZBB-NEXT:  .LBB55_2:
-; RV32ZBB-NEXT:    li a0, 2
-; RV32ZBB-NEXT:    sll a0, a2, a0
+; RV32ZBB-NEXT:    sll a0, a2, a3
 ; RV32ZBB-NEXT:    ret
   %cmp = icmp ult i32 %x, %y
   %select = select i1 %cmp, i32 0, i32 %y

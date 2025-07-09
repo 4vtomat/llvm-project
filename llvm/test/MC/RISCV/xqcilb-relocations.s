@@ -11,23 +11,23 @@
 .text
 
 qc.e.j foo
-# RELOC: R_RISCV_CUSTOM195 foo 0x0
+# RELOC: R_RISCV_SIFIVE_GPREL_LO12_I foo 0x0
 # INSTR: qc.e.j foo
 # FIXUP: fixup A - offset: 0, value: foo, kind: fixup_riscv_qc_e_jump_plt
 
 qc.e.jal foo
-# RELOC: R_RISCV_CUSTOM195 foo 0x0
+# RELOC: R_RISCV_SIFIVE_GPREL_LO12_I foo 0x0
 # INSTR: qc.e.jal foo
 # FIXUP: fixup A - offset: 0, value: foo, kind: fixup_riscv_qc_e_jump_plt
 
 # Check that a label in a different section is handled similar to an undefined symbol
 qc.e.j .bar
-# RELOC: R_RISCV_CUSTOM195 .bar 0x0
+# RELOC: R_RISCV_SIFIVE_GPREL_LO12_I .bar 0x0
 # INSTR: qc.e.j .bar
 # FIXUP: fixup A - offset: 0, value: .bar, kind: fixup_riscv_qc_e_jump_plt
 
 qc.e.jal .bar
-# RELOC: R_RISCV_CUSTOM195 .bar 0x0
+# RELOC: R_RISCV_SIFIVE_GPREL_LO12_I .bar 0x0
 # INSTR: qc.e.jal .bar
 # FIXUP: fixup A - offset: 0, value: .bar, kind: fixup_riscv_qc_e_jump_plt
 

@@ -459,15 +459,9 @@ define i32 @test15() {
 ; CHECK-NEXT:    [[TMP2:%.*]] = load <8 x float>, ptr [[TMP1]], align 16
 ; CHECK-NEXT:    [[TMP3:%.*]] = load <4 x float>, ptr [[TMP1]], align 16
 ; CHECK-NEXT:    store <4 x float> [[TMP3]], ptr null, align 16
-; CHECK-NEXT:    [[TMP4:%.*]] = call <16 x float> @llvm.vector.insert.v16f32.v4f32(<16 x float> poison, <4 x float> zeroinitializer, i64 0)
-; CHECK-NEXT:    [[TMP5:%.*]] = call <16 x float> @llvm.vector.insert.v16f32.v4f32(<16 x float> [[TMP4]], <4 x float> zeroinitializer, i64 4)
-; CHECK-NEXT:    [[TMP6:%.*]] = call <16 x float> @llvm.vector.insert.v16f32.v4f32(<16 x float> [[TMP5]], <4 x float> zeroinitializer, i64 8)
-; CHECK-NEXT:    [[TMP7:%.*]] = call <16 x float> @llvm.vector.insert.v16f32.v4f32(<16 x float> [[TMP6]], <4 x float> zeroinitializer, i64 12)
-; CHECK-NEXT:    [[TMP8:%.*]] = call <16 x float> @llvm.vector.insert.v16f32.v4f32(<16 x float> poison, <4 x float> zeroinitializer, i64 8)
-; CHECK-NEXT:    [[TMP9:%.*]] = call <16 x float> @llvm.vector.insert.v16f32.v4f32(<16 x float> [[TMP8]], <4 x float> zeroinitializer, i64 12)
 ; CHECK-NEXT:    [[TMP10:%.*]] = shufflevector <8 x float> [[TMP2]], <8 x float> poison, <16 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7, i32 poison, i32 poison, i32 poison, i32 poison, i32 poison, i32 poison, i32 poison, i32 poison>
-; CHECK-NEXT:    [[TMP11:%.*]] = shufflevector <16 x float> [[TMP10]], <16 x float> [[TMP9]], <16 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7, i32 24, i32 25, i32 26, i32 27, i32 28, i32 29, i32 30, i32 31>
-; CHECK-NEXT:    [[TMP12:%.*]] = fadd <16 x float> [[TMP7]], [[TMP11]]
+; CHECK-NEXT:    [[TMP5:%.*]] = shufflevector <16 x float> [[TMP10]], <16 x float> <float poison, float poison, float poison, float poison, float poison, float poison, float poison, float poison, float 0.000000e+00, float 0.000000e+00, float 0.000000e+00, float 0.000000e+00, float 0.000000e+00, float 0.000000e+00, float 0.000000e+00, float 0.000000e+00>, <16 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7, i32 24, i32 25, i32 26, i32 27, i32 28, i32 29, i32 30, i32 31>
+; CHECK-NEXT:    [[TMP12:%.*]] = fadd <16 x float> zeroinitializer, [[TMP5]]
 ; CHECK-NEXT:    store <16 x float> [[TMP12]], ptr [[TMP0]], align 16
 ; CHECK-NEXT:    ret i32 0
 ;

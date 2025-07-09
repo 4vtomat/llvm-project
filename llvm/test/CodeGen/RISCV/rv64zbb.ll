@@ -1825,13 +1825,11 @@ define i32 @sub_if_uge_multiuse_cmp_i32(i32 %x, i32 %y) {
 ; RV64I-NEXT:    addi a4, a4, -1
 ; RV64I-NEXT:    and a1, a4, a1
 ; RV64I-NEXT:    subw a0, a0, a1
+; RV64I-NEXT:    li a1, 2
 ; RV64I-NEXT:    bltu a3, a2, .LBB68_2
 ; RV64I-NEXT:  # %bb.1:
 ; RV64I-NEXT:    li a1, 4
-; RV64I-NEXT:    sllw a0, a0, a1
-; RV64I-NEXT:    ret
 ; RV64I-NEXT:  .LBB68_2:
-; RV64I-NEXT:    li a1, 2
 ; RV64I-NEXT:    sllw a0, a0, a1
 ; RV64I-NEXT:    ret
 ;
@@ -1841,13 +1839,11 @@ define i32 @sub_if_uge_multiuse_cmp_i32(i32 %x, i32 %y) {
 ; RV64ZBB-NEXT:    sext.w a3, a0
 ; RV64ZBB-NEXT:    subw a0, a0, a1
 ; RV64ZBB-NEXT:    minu a0, a3, a0
+; RV64ZBB-NEXT:    li a1, 2
 ; RV64ZBB-NEXT:    bltu a3, a2, .LBB68_2
 ; RV64ZBB-NEXT:  # %bb.1:
 ; RV64ZBB-NEXT:    li a1, 4
-; RV64ZBB-NEXT:    sllw a0, a0, a1
-; RV64ZBB-NEXT:    ret
 ; RV64ZBB-NEXT:  .LBB68_2:
-; RV64ZBB-NEXT:    li a1, 2
 ; RV64ZBB-NEXT:    sllw a0, a0, a1
 ; RV64ZBB-NEXT:    ret
   %cmp = icmp ult i32 %x, %y

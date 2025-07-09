@@ -185,28 +185,11 @@ define <4 x i64> @stepvector_v4i64() {
 declare <8 x i64> @llvm.stepvector.v8i64()
 
 define <8 x i64> @stepvector_v8i64() {
-<<<<<<< HEAD
-; RV32-LABEL: stepvector_v8i64:
-; RV32:       # %bb.0:
-; RV32-NEXT:    lui a0, %hi(.LCPI15_0)
-; RV32-NEXT:    addi a0, a0, %lo(.LCPI15_0)
-; RV32-NEXT:    vsetivli zero, 16, e32, m4, ta, ma
-; RV32-NEXT:    vle8.v v11, (a0)
-; RV32-NEXT:    vsext.vf4 v8, v11
-; RV32-NEXT:    ret
-;
-; RV64-LABEL: stepvector_v8i64:
-; RV64:       # %bb.0:
-; RV64-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
-; RV64-NEXT:    vid.v v8
-; RV64-NEXT:    ret
-=======
 ; CHECK-LABEL: stepvector_v8i64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vid.v v8
 ; CHECK-NEXT:    ret
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
   %v = call <8 x i64> @llvm.stepvector.v8i64()
   ret <8 x i64> %v
 }
@@ -214,29 +197,11 @@ define <8 x i64> @stepvector_v8i64() {
 declare <16 x i64> @llvm.stepvector.v16i64()
 
 define <16 x i64> @stepvector_v16i64() {
-<<<<<<< HEAD
-; RV32-LABEL: stepvector_v16i64:
-; RV32:       # %bb.0:
-; RV32-NEXT:    li a0, 32
-; RV32-NEXT:    lui a1, %hi(.LCPI16_0)
-; RV32-NEXT:    addi a1, a1, %lo(.LCPI16_0)
-; RV32-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
-; RV32-NEXT:    vle8.v v14, (a1)
-; RV32-NEXT:    vsext.vf4 v8, v14
-; RV32-NEXT:    ret
-;
-; RV64-LABEL: stepvector_v16i64:
-; RV64:       # %bb.0:
-; RV64-NEXT:    vsetivli zero, 16, e64, m8, ta, ma
-; RV64-NEXT:    vid.v v8
-; RV64-NEXT:    ret
-=======
 ; CHECK-LABEL: stepvector_v16i64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 16, e64, m8, ta, ma
 ; CHECK-NEXT:    vid.v v8
 ; CHECK-NEXT:    ret
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
   %v = call <16 x i64> @llvm.stepvector.v16i64()
   ret <16 x i64> %v
 }

@@ -57,10 +57,10 @@ define i128 @srem_i128(i128 %lhs, i128 %rhs) {
 ; CHECK-NEXT:    selp.b64 %rd124, 0, %rd4, %p12;
 ; CHECK-NEXT:    selp.b64 %rd123, 0, %rd3, %p12;
 ; CHECK-NEXT:    setp.gt.u64 %p13, %rd66, 126;
-; CHECK-NEXT:    selp.u32 %r9, -1, 0, %p13;
+; CHECK-NEXT:    selp.b32 %r9, -1, 0, %p13;
 ; CHECK-NEXT:    selp.b32 %r10, %r9, %r5, %p8;
 ; CHECK-NEXT:    and.b32 %r11, %r10, 1;
-; CHECK-NEXT:    setp.eq.b32 %p14, %r11, 1;
+; CHECK-NEXT:    setp.ne.b32 %p14, %r11, 0;
 ; CHECK-NEXT:    or.pred %p15, %p5, %p14;
 ; CHECK-NEXT:    @%p15 bra $L__BB0_5;
 ; CHECK-NEXT:  // %bb.3: // %udiv-bb1
@@ -192,10 +192,10 @@ define i128 @urem_i128(i128 %lhs, i128 %rhs) {
 ; CHECK-NEXT:    selp.b64 %rd110, 0, %rd42, %p10;
 ; CHECK-NEXT:    selp.b64 %rd109, 0, %rd41, %p10;
 ; CHECK-NEXT:    setp.gt.u64 %p11, %rd56, 126;
-; CHECK-NEXT:    selp.u32 %r9, -1, 0, %p11;
+; CHECK-NEXT:    selp.b32 %r9, -1, 0, %p11;
 ; CHECK-NEXT:    selp.b32 %r10, %r9, %r5, %p6;
 ; CHECK-NEXT:    and.b32 %r11, %r10, 1;
-; CHECK-NEXT:    setp.eq.b32 %p12, %r11, 1;
+; CHECK-NEXT:    setp.ne.b32 %p12, %r11, 0;
 ; CHECK-NEXT:    or.pred %p13, %p3, %p12;
 ; CHECK-NEXT:    @%p13 bra $L__BB1_5;
 ; CHECK-NEXT:  // %bb.3: // %udiv-bb1
@@ -370,10 +370,10 @@ define i128 @sdiv_i128(i128 %lhs, i128 %rhs) {
 ; CHECK-NEXT:    selp.b64 %rd119, 0, %rd2, %p12;
 ; CHECK-NEXT:    selp.b64 %rd118, 0, %rd1, %p12;
 ; CHECK-NEXT:    setp.gt.u64 %p13, %rd67, 126;
-; CHECK-NEXT:    selp.u32 %r9, -1, 0, %p13;
+; CHECK-NEXT:    selp.b32 %r9, -1, 0, %p13;
 ; CHECK-NEXT:    selp.b32 %r10, %r9, %r5, %p8;
 ; CHECK-NEXT:    and.b32 %r11, %r10, 1;
-; CHECK-NEXT:    setp.eq.b32 %p14, %r11, 1;
+; CHECK-NEXT:    setp.ne.b32 %p14, %r11, 0;
 ; CHECK-NEXT:    or.pred %p15, %p5, %p14;
 ; CHECK-NEXT:    @%p15 bra $L__BB4_5;
 ; CHECK-NEXT:  // %bb.3: // %udiv-bb1
@@ -499,10 +499,10 @@ define i128 @udiv_i128(i128 %lhs, i128 %rhs) {
 ; CHECK-NEXT:    selp.b64 %rd104, 0, %rd42, %p10;
 ; CHECK-NEXT:    selp.b64 %rd103, 0, %rd41, %p10;
 ; CHECK-NEXT:    setp.gt.u64 %p11, %rd56, 126;
-; CHECK-NEXT:    selp.u32 %r9, -1, 0, %p11;
+; CHECK-NEXT:    selp.b32 %r9, -1, 0, %p11;
 ; CHECK-NEXT:    selp.b32 %r10, %r9, %r5, %p6;
 ; CHECK-NEXT:    and.b32 %r11, %r10, 1;
-; CHECK-NEXT:    setp.eq.b32 %p12, %r11, 1;
+; CHECK-NEXT:    setp.ne.b32 %p12, %r11, 0;
 ; CHECK-NEXT:    or.pred %p13, %p3, %p12;
 ; CHECK-NEXT:    @%p13 bra $L__BB5_5;
 ; CHECK-NEXT:  // %bb.3: // %udiv-bb1

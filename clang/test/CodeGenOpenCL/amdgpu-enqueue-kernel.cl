@@ -481,11 +481,11 @@ kernel void test_target_features_kernel(global int *i) {
 // GFX900-NEXT:    [[C_ADDR_ASCAST:%.*]] = addrspacecast ptr addrspace(5) [[C_ADDR]] to ptr
 // GFX900-NEXT:    [[D_ADDR_ASCAST:%.*]] = addrspacecast ptr addrspace(5) [[D_ADDR]] to ptr
 // GFX900-NEXT:    store ptr addrspace(1) [[A]], ptr [[A_ADDR_ASCAST]], align 8, !tbaa [[TBAA14:![0-9]+]]
-// GFX900-NEXT:    store i8 [[B]], ptr [[B_ADDR_ASCAST]], align 1, !tbaa [[TBAA16:![0-9]+]]
+// GFX900-NEXT:    store i8 [[B]], ptr [[B_ADDR_ASCAST]], align 1, !tbaa [[TBAA15:![0-9]+]]
 // GFX900-NEXT:    store ptr addrspace(1) [[C]], ptr [[C_ADDR_ASCAST]], align 8, !tbaa [[TBAA7]]
 // GFX900-NEXT:    store i64 [[D]], ptr [[D_ADDR_ASCAST]], align 8, !tbaa [[TBAA3]]
 // GFX900-NEXT:    [[TMP0:%.*]] = load ptr addrspace(1), ptr [[A_ADDR_ASCAST]], align 8, !tbaa [[TBAA14]]
-// GFX900-NEXT:    [[TMP1:%.*]] = load i8, ptr [[B_ADDR_ASCAST]], align 1, !tbaa [[TBAA16]]
+// GFX900-NEXT:    [[TMP1:%.*]] = load i8, ptr [[B_ADDR_ASCAST]], align 1, !tbaa [[TBAA15]]
 // GFX900-NEXT:    [[TMP2:%.*]] = load ptr addrspace(1), ptr [[C_ADDR_ASCAST]], align 8, !tbaa [[TBAA7]]
 // GFX900-NEXT:    [[TMP3:%.*]] = load i64, ptr [[D_ADDR_ASCAST]], align 8, !tbaa [[TBAA3]]
 // GFX900-NEXT:    call void @__clang_ocl_kern_imp_test(ptr addrspace(1) noundef align 1 [[TMP0]], i8 noundef signext [[TMP1]], ptr addrspace(1) noundef align 8 [[TMP2]], i64 noundef [[TMP3]]) #[[ATTR8:[0-9]+]]
@@ -530,31 +530,17 @@ kernel void test_target_features_kernel(global int *i) {
 // GFX900-NEXT:    [[BLOCK20_ASCAST:%.*]] = addrspacecast ptr addrspace(5) [[BLOCK20]] to ptr
 // GFX900-NEXT:    [[BLOCK21_ASCAST:%.*]] = addrspacecast ptr addrspace(5) [[BLOCK21]] to ptr
 // GFX900-NEXT:    [[TMP27_ASCAST:%.*]] = addrspacecast ptr addrspace(5) [[VARTMP27]] to ptr
-<<<<<<< HEAD
-// GFX900-NEXT:    store ptr addrspace(1) [[A]], ptr [[A_ADDR_ASCAST]], align 8, !tbaa [[TBAA14:![0-9]+]]
-// GFX900-NEXT:    store i8 [[B]], ptr [[B_ADDR_ASCAST]], align 1, !tbaa [[TBAA15:![0-9]+]]
-// GFX900-NEXT:    store ptr addrspace(1) [[C]], ptr [[C_ADDR_ASCAST]], align 8, !tbaa [[TBAA7]]
-// GFX900-NEXT:    store i64 [[D]], ptr [[D_ADDR_ASCAST]], align 8, !tbaa [[TBAA3]]
-// GFX900-NEXT:    call void @llvm.lifetime.start.p5(i64 8, ptr addrspace(5) [[DEFAULT_QUEUE]]) #[[ATTR7:[0-9]+]]
-// GFX900-NEXT:    call void @llvm.lifetime.start.p5(i64 4, ptr addrspace(5) [[FLAGS]]) #[[ATTR7]]
-// GFX900-NEXT:    store i32 0, ptr [[FLAGS_ASCAST]], align 4, !tbaa [[TBAA16:![0-9]+]]
-// GFX900-NEXT:    call void @llvm.lifetime.start.p5(i64 4, ptr addrspace(5) [[NDRANGE]]) #[[ATTR7]]
-// GFX900-NEXT:    [[TMP0:%.*]] = load ptr addrspace(1), ptr [[DEFAULT_QUEUE_ASCAST]], align 8, !tbaa [[TBAA18:![0-9]+]]
-// GFX900-NEXT:    [[TMP1:%.*]] = load i32, ptr [[FLAGS_ASCAST]], align 4, !tbaa [[TBAA16]]
-// GFX900-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 4 [[TMP_ASCAST]], ptr align 4 [[NDRANGE_ASCAST]], i64 4, i1 false), !tbaa.struct [[TBAA_STRUCT20:![0-9]+]]
-=======
 // GFX900-NEXT:    store ptr addrspace(1) [[A]], ptr [[A_ADDR_ASCAST]], align 8, !tbaa [[TBAA14]]
-// GFX900-NEXT:    store i8 [[B]], ptr [[B_ADDR_ASCAST]], align 1, !tbaa [[TBAA16]]
+// GFX900-NEXT:    store i8 [[B]], ptr [[B_ADDR_ASCAST]], align 1, !tbaa [[TBAA15]]
 // GFX900-NEXT:    store ptr addrspace(1) [[C]], ptr [[C_ADDR_ASCAST]], align 8, !tbaa [[TBAA7]]
 // GFX900-NEXT:    store i64 [[D]], ptr [[D_ADDR_ASCAST]], align 8, !tbaa [[TBAA3]]
 // GFX900-NEXT:    call void @llvm.lifetime.start.p5(i64 8, ptr addrspace(5) [[DEFAULT_QUEUE]]) #[[ATTR9:[0-9]+]]
 // GFX900-NEXT:    call void @llvm.lifetime.start.p5(i64 4, ptr addrspace(5) [[FLAGS]]) #[[ATTR9]]
-// GFX900-NEXT:    store i32 0, ptr [[FLAGS_ASCAST]], align 4, !tbaa [[TBAA17:![0-9]+]]
+// GFX900-NEXT:    store i32 0, ptr [[FLAGS_ASCAST]], align 4, !tbaa [[TBAA16:![0-9]+]]
 // GFX900-NEXT:    call void @llvm.lifetime.start.p5(i64 4, ptr addrspace(5) [[NDRANGE]]) #[[ATTR9]]
-// GFX900-NEXT:    [[TMP0:%.*]] = load ptr addrspace(1), ptr [[DEFAULT_QUEUE_ASCAST]], align 8, !tbaa [[TBAA19:![0-9]+]]
-// GFX900-NEXT:    [[TMP1:%.*]] = load i32, ptr [[FLAGS_ASCAST]], align 4, !tbaa [[TBAA17]]
-// GFX900-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 4 [[TMP_ASCAST]], ptr align 4 [[NDRANGE_ASCAST]], i64 4, i1 false), !tbaa.struct [[TBAA_STRUCT21:![0-9]+]]
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
+// GFX900-NEXT:    [[TMP0:%.*]] = load ptr addrspace(1), ptr [[DEFAULT_QUEUE_ASCAST]], align 8, !tbaa [[TBAA18:![0-9]+]]
+// GFX900-NEXT:    [[TMP1:%.*]] = load i32, ptr [[FLAGS_ASCAST]], align 4, !tbaa [[TBAA16]]
+// GFX900-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 4 [[TMP_ASCAST]], ptr align 4 [[NDRANGE_ASCAST]], i64 4, i1 false), !tbaa.struct [[TBAA_STRUCT20:![0-9]+]]
 // GFX900-NEXT:    [[BLOCK_SIZE:%.*]] = getelementptr inbounds nuw <{ i32, i32, ptr, ptr addrspace(1), i8 }>, ptr [[BLOCK_ASCAST]], i32 0, i32 0
 // GFX900-NEXT:    store i32 25, ptr [[BLOCK_SIZE]], align 8
 // GFX900-NEXT:    [[BLOCK_ALIGN:%.*]] = getelementptr inbounds nuw <{ i32, i32, ptr, ptr addrspace(1), i8 }>, ptr [[BLOCK_ASCAST]], i32 0, i32 1
@@ -644,19 +630,19 @@ kernel void test_target_features_kernel(global int *i) {
 //
 // GFX900: Function Attrs: convergent norecurse nounwind
 // GFX900-LABEL: define dso_local amdgpu_kernel void @test_target_features_kernel(
-// GFX900-SAME: ptr addrspace(1) noundef align 4 [[I:%.*]]) #[[ATTR2]] !kernel_arg_addr_space [[META22:![0-9]+]] !kernel_arg_access_qual [[META23:![0-9]+]] !kernel_arg_type [[META24:![0-9]+]] !kernel_arg_base_type [[META24]] !kernel_arg_type_qual [[META25:![0-9]+]] {
+// GFX900-SAME: ptr addrspace(1) noundef align 4 [[I:%.*]]) #[[ATTR2]] !kernel_arg_addr_space [[META21:![0-9]+]] !kernel_arg_access_qual [[META22:![0-9]+]] !kernel_arg_type [[META23:![0-9]+]] !kernel_arg_base_type [[META23]] !kernel_arg_type_qual [[META24:![0-9]+]] {
 // GFX900-NEXT:  [[ENTRY:.*:]]
 // GFX900-NEXT:    [[I_ADDR:%.*]] = alloca ptr addrspace(1), align 8, addrspace(5)
 // GFX900-NEXT:    [[I_ADDR_ASCAST:%.*]] = addrspacecast ptr addrspace(5) [[I_ADDR]] to ptr
-// GFX900-NEXT:    store ptr addrspace(1) [[I]], ptr [[I_ADDR_ASCAST]], align 8, !tbaa [[TBAA26:![0-9]+]]
-// GFX900-NEXT:    [[TMP0:%.*]] = load ptr addrspace(1), ptr [[I_ADDR_ASCAST]], align 8, !tbaa [[TBAA26]]
+// GFX900-NEXT:    store ptr addrspace(1) [[I]], ptr [[I_ADDR_ASCAST]], align 8, !tbaa [[TBAA25:![0-9]+]]
+// GFX900-NEXT:    [[TMP0:%.*]] = load ptr addrspace(1), ptr [[I_ADDR_ASCAST]], align 8, !tbaa [[TBAA25]]
 // GFX900-NEXT:    call void @__clang_ocl_kern_imp_test_target_features_kernel(ptr addrspace(1) noundef align 4 [[TMP0]]) #[[ATTR8]]
 // GFX900-NEXT:    ret void
 //
 //
 // GFX900: Function Attrs: convergent norecurse nounwind
 // GFX900-LABEL: define dso_local void @__clang_ocl_kern_imp_test_target_features_kernel(
-// GFX900-SAME: ptr addrspace(1) noundef align 4 [[I:%.*]]) #[[ATTR3]] !kernel_arg_addr_space [[META22]] !kernel_arg_access_qual [[META23]] !kernel_arg_type [[META24]] !kernel_arg_base_type [[META24]] !kernel_arg_type_qual [[META25]] {
+// GFX900-SAME: ptr addrspace(1) noundef align 4 [[I:%.*]]) #[[ATTR3]] !kernel_arg_addr_space [[META21]] !kernel_arg_access_qual [[META22]] !kernel_arg_type [[META23]] !kernel_arg_base_type [[META23]] !kernel_arg_type_qual [[META24]] {
 // GFX900-NEXT:  [[ENTRY:.*:]]
 // GFX900-NEXT:    [[I_ADDR:%.*]] = alloca ptr addrspace(1), align 8, addrspace(5)
 // GFX900-NEXT:    [[DEFAULT_QUEUE:%.*]] = alloca ptr addrspace(1), align 8, addrspace(5)
@@ -668,15 +654,15 @@ kernel void test_target_features_kernel(global int *i) {
 // GFX900-NEXT:    [[FLAGS_ASCAST:%.*]] = addrspacecast ptr addrspace(5) [[FLAGS]] to ptr
 // GFX900-NEXT:    [[NDRANGE_ASCAST:%.*]] = addrspacecast ptr addrspace(5) [[NDRANGE]] to ptr
 // GFX900-NEXT:    [[TMP_ASCAST:%.*]] = addrspacecast ptr addrspace(5) [[TMP]] to ptr
-// GFX900-NEXT:    store ptr addrspace(1) [[I]], ptr [[I_ADDR_ASCAST]], align 8, !tbaa [[TBAA26]]
+// GFX900-NEXT:    store ptr addrspace(1) [[I]], ptr [[I_ADDR_ASCAST]], align 8, !tbaa [[TBAA25]]
 // GFX900-NEXT:    call void @llvm.lifetime.start.p5(i64 8, ptr addrspace(5) [[DEFAULT_QUEUE]]) #[[ATTR9]]
 // GFX900-NEXT:    call void @llvm.lifetime.start.p5(i64 4, ptr addrspace(5) [[FLAGS]]) #[[ATTR9]]
-// GFX900-NEXT:    store i32 0, ptr [[FLAGS_ASCAST]], align 4, !tbaa [[TBAA17]]
+// GFX900-NEXT:    store i32 0, ptr [[FLAGS_ASCAST]], align 4, !tbaa [[TBAA16]]
 // GFX900-NEXT:    call void @llvm.lifetime.start.p5(i64 4, ptr addrspace(5) [[NDRANGE]]) #[[ATTR9]]
 // GFX900-NEXT:    [[TMP0:%.*]] = call i64 @llvm.amdgcn.s.memtime()
-// GFX900-NEXT:    [[TMP1:%.*]] = load ptr addrspace(1), ptr [[DEFAULT_QUEUE_ASCAST]], align 8, !tbaa [[TBAA19]]
-// GFX900-NEXT:    [[TMP2:%.*]] = load i32, ptr [[FLAGS_ASCAST]], align 4, !tbaa [[TBAA17]]
-// GFX900-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 4 [[TMP_ASCAST]], ptr align 4 [[NDRANGE_ASCAST]], i64 4, i1 false), !tbaa.struct [[TBAA_STRUCT21]]
+// GFX900-NEXT:    [[TMP1:%.*]] = load ptr addrspace(1), ptr [[DEFAULT_QUEUE_ASCAST]], align 8, !tbaa [[TBAA18]]
+// GFX900-NEXT:    [[TMP2:%.*]] = load i32, ptr [[FLAGS_ASCAST]], align 4, !tbaa [[TBAA16]]
+// GFX900-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 4 [[TMP_ASCAST]], ptr align 4 [[NDRANGE_ASCAST]], i64 4, i1 false), !tbaa.struct [[TBAA_STRUCT20]]
 // GFX900-NEXT:    [[TMP3:%.*]] = call i32 @__enqueue_kernel_basic(ptr addrspace(1) [[TMP1]], i32 [[TMP2]], ptr addrspace(5) [[TMP]], ptr addrspacecast (ptr addrspace(1) @__test_target_features_kernel_block_invoke_kernel.runtime.handle to ptr), ptr addrspacecast (ptr addrspace(1) @__block_literal_global to ptr))
 // GFX900-NEXT:    call void @llvm.lifetime.end.p5(i64 4, ptr addrspace(5) [[NDRANGE]]) #[[ATTR9]]
 // GFX900-NEXT:    call void @llvm.lifetime.end.p5(i64 4, ptr addrspace(5) [[FLAGS]]) #[[ATTR9]]
@@ -701,15 +687,9 @@ kernel void test_target_features_kernel(global int *i) {
 //
 //
 // GFX900: Function Attrs: convergent nounwind
-<<<<<<< HEAD
-// GFX900-LABEL: define {{[^@]+}}@__test_block_invoke_kernel
-// GFX900-SAME: (<{ i32, i32, ptr, ptr addrspace(1), i8 }> [[TMP0:%.*]]) #[[ATTR5]] !associated [[META21:![0-9]+]] !kernel_arg_addr_space [[META22:![0-9]+]] !kernel_arg_access_qual [[META23:![0-9]+]] !kernel_arg_type [[META24:![0-9]+]] !kernel_arg_base_type [[META24]] !kernel_arg_type_qual [[META25:![0-9]+]] {
-// GFX900-NEXT:  entry:
-=======
 // GFX900-LABEL: define internal amdgpu_kernel void @__test_block_invoke_kernel(
-// GFX900-SAME: <{ i32, i32, ptr, ptr addrspace(1), i8 }> [[TMP0:%.*]]) #[[ATTR6]] !associated [[META28:![0-9]+]] !kernel_arg_addr_space [[META29:![0-9]+]] !kernel_arg_access_qual [[META23]] !kernel_arg_type [[META30:![0-9]+]] !kernel_arg_base_type [[META30]] !kernel_arg_type_qual [[META25]] {
+// GFX900-SAME: <{ i32, i32, ptr, ptr addrspace(1), i8 }> [[TMP0:%.*]]) #[[ATTR6]] !associated [[META27:![0-9]+]] !kernel_arg_addr_space [[META28:![0-9]+]] !kernel_arg_access_qual [[META22]] !kernel_arg_type [[META29:![0-9]+]] !kernel_arg_base_type [[META29]] !kernel_arg_type_qual [[META24]] {
 // GFX900-NEXT:  [[ENTRY:.*:]]
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
 // GFX900-NEXT:    [[TMP1:%.*]] = alloca <{ i32, i32, ptr, ptr addrspace(1), i8 }>, align 8, addrspace(5)
 // GFX900-NEXT:    store <{ i32, i32, ptr, ptr addrspace(1), i8 }> [[TMP0]], ptr addrspace(5) [[TMP1]], align 8
 // GFX900-NEXT:    [[TMP2:%.*]] = addrspacecast ptr addrspace(5) [[TMP1]] to ptr
@@ -740,15 +720,9 @@ kernel void test_target_features_kernel(global int *i) {
 //
 //
 // GFX900: Function Attrs: convergent nounwind
-<<<<<<< HEAD
-// GFX900-LABEL: define {{[^@]+}}@__test_block_invoke_2_kernel
-// GFX900-SAME: (<{ i32, i32, ptr, ptr addrspace(1), ptr addrspace(1), i64, i8 }> [[TMP0:%.*]]) #[[ATTR5]] !associated [[META26:![0-9]+]] !kernel_arg_addr_space [[META22]] !kernel_arg_access_qual [[META23]] !kernel_arg_type [[META24]] !kernel_arg_base_type [[META24]] !kernel_arg_type_qual [[META25]] {
-// GFX900-NEXT:  entry:
-=======
 // GFX900-LABEL: define internal amdgpu_kernel void @__test_block_invoke_2_kernel(
-// GFX900-SAME: <{ i32, i32, ptr, ptr addrspace(1), ptr addrspace(1), i64, i8 }> [[TMP0:%.*]]) #[[ATTR6]] !associated [[META31:![0-9]+]] !kernel_arg_addr_space [[META29]] !kernel_arg_access_qual [[META23]] !kernel_arg_type [[META30]] !kernel_arg_base_type [[META30]] !kernel_arg_type_qual [[META25]] {
+// GFX900-SAME: <{ i32, i32, ptr, ptr addrspace(1), ptr addrspace(1), i64, i8 }> [[TMP0:%.*]]) #[[ATTR6]] !associated [[META30:![0-9]+]] !kernel_arg_addr_space [[META28]] !kernel_arg_access_qual [[META22]] !kernel_arg_type [[META29]] !kernel_arg_base_type [[META29]] !kernel_arg_type_qual [[META24]] {
 // GFX900-NEXT:  [[ENTRY:.*:]]
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
 // GFX900-NEXT:    [[TMP1:%.*]] = alloca <{ i32, i32, ptr, ptr addrspace(1), ptr addrspace(1), i64, i8 }>, align 8, addrspace(5)
 // GFX900-NEXT:    store <{ i32, i32, ptr, ptr addrspace(1), ptr addrspace(1), i64, i8 }> [[TMP0]], ptr addrspace(5) [[TMP1]], align 8
 // GFX900-NEXT:    [[TMP2:%.*]] = addrspacecast ptr addrspace(5) [[TMP1]] to ptr
@@ -765,11 +739,7 @@ kernel void test_target_features_kernel(global int *i) {
 // GFX900-NEXT:    [[DOTBLOCK_DESCRIPTOR_ADDR_ASCAST:%.*]] = addrspacecast ptr addrspace(5) [[DOTBLOCK_DESCRIPTOR_ADDR]] to ptr
 // GFX900-NEXT:    [[LP_ADDR_ASCAST:%.*]] = addrspacecast ptr addrspace(5) [[LP_ADDR]] to ptr
 // GFX900-NEXT:    store ptr [[DOTBLOCK_DESCRIPTOR]], ptr [[DOTBLOCK_DESCRIPTOR_ADDR_ASCAST]], align 8
-<<<<<<< HEAD
 // GFX900-NEXT:    store ptr addrspace(3) [[LP]], ptr [[LP_ADDR_ASCAST]], align 4, !tbaa [[TBAA14]]
-=======
-// GFX900-NEXT:    store ptr addrspace(3) [[LP]], ptr [[LP_ADDR_ASCAST]], align 4, !tbaa [[TBAA32:![0-9]+]]
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
 // GFX900-NEXT:    [[BLOCK_CAPTURE_ADDR:%.*]] = getelementptr inbounds nuw <{ i32, i32, ptr, ptr addrspace(1), ptr addrspace(1), i64, i8 }>, ptr [[DOTBLOCK_DESCRIPTOR]], i32 0, i32 6
 // GFX900-NEXT:    [[TMP0:%.*]] = load i8, ptr [[BLOCK_CAPTURE_ADDR]], align 8, !tbaa [[TBAA15]]
 // GFX900-NEXT:    [[BLOCK_CAPTURE_ADDR1:%.*]] = getelementptr inbounds nuw <{ i32, i32, ptr, ptr addrspace(1), ptr addrspace(1), i64, i8 }>, ptr [[DOTBLOCK_DESCRIPTOR]], i32 0, i32 3
@@ -782,26 +752,16 @@ kernel void test_target_features_kernel(global int *i) {
 // GFX900-NEXT:    [[TMP3:%.*]] = load ptr addrspace(1), ptr [[BLOCK_CAPTURE_ADDR3]], align 8, !tbaa [[TBAA7]]
 // GFX900-NEXT:    [[ARRAYIDX4:%.*]] = getelementptr inbounds i64, ptr addrspace(1) [[TMP3]], i64 0
 // GFX900-NEXT:    store i64 [[TMP2]], ptr addrspace(1) [[ARRAYIDX4]], align 8, !tbaa [[TBAA3]]
-<<<<<<< HEAD
 // GFX900-NEXT:    [[TMP4:%.*]] = load ptr addrspace(3), ptr [[LP_ADDR_ASCAST]], align 4, !tbaa [[TBAA14]]
-=======
-// GFX900-NEXT:    [[TMP4:%.*]] = load ptr addrspace(3), ptr [[LP_ADDR_ASCAST]], align 4, !tbaa [[TBAA32]]
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
 // GFX900-NEXT:    [[ARRAYIDX5:%.*]] = getelementptr inbounds i32, ptr addrspace(3) [[TMP4]], i64 0
 // GFX900-NEXT:    store i32 1, ptr addrspace(3) [[ARRAYIDX5]], align 4, !tbaa [[TBAA16]]
 // GFX900-NEXT:    ret void
 //
 //
 // GFX900: Function Attrs: convergent nounwind
-<<<<<<< HEAD
-// GFX900-LABEL: define {{[^@]+}}@__test_block_invoke_3_kernel
-// GFX900-SAME: (<{ i32, i32, ptr, ptr addrspace(1), ptr addrspace(1), i64, i8 }> [[TMP0:%.*]], ptr addrspace(3) [[TMP1:%.*]]) #[[ATTR5]] !associated [[META27:![0-9]+]] !kernel_arg_addr_space [[META28:![0-9]+]] !kernel_arg_access_qual [[META29:![0-9]+]] !kernel_arg_type [[META30:![0-9]+]] !kernel_arg_base_type [[META30]] !kernel_arg_type_qual [[META31:![0-9]+]] {
-// GFX900-NEXT:  entry:
-=======
 // GFX900-LABEL: define internal amdgpu_kernel void @__test_block_invoke_3_kernel(
-// GFX900-SAME: <{ i32, i32, ptr, ptr addrspace(1), ptr addrspace(1), i64, i8 }> [[TMP0:%.*]], ptr addrspace(3) [[TMP1:%.*]]) #[[ATTR6]] !associated [[META33:![0-9]+]] !kernel_arg_addr_space [[META34:![0-9]+]] !kernel_arg_access_qual [[META35:![0-9]+]] !kernel_arg_type [[META36:![0-9]+]] !kernel_arg_base_type [[META36]] !kernel_arg_type_qual [[META37:![0-9]+]] {
+// GFX900-SAME: <{ i32, i32, ptr, ptr addrspace(1), ptr addrspace(1), i64, i8 }> [[TMP0:%.*]], ptr addrspace(3) [[TMP1:%.*]]) #[[ATTR6]] !associated [[META31:![0-9]+]] !kernel_arg_addr_space [[META32:![0-9]+]] !kernel_arg_access_qual [[META33:![0-9]+]] !kernel_arg_type [[META34:![0-9]+]] !kernel_arg_base_type [[META34]] !kernel_arg_type_qual [[META35:![0-9]+]] {
 // GFX900-NEXT:  [[ENTRY:.*:]]
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
 // GFX900-NEXT:    [[TMP2:%.*]] = alloca <{ i32, i32, ptr, ptr addrspace(1), ptr addrspace(1), i64, i8 }>, align 8, addrspace(5)
 // GFX900-NEXT:    store <{ i32, i32, ptr, ptr addrspace(1), ptr addrspace(1), i64, i8 }> [[TMP0]], ptr addrspace(5) [[TMP2]], align 8
 // GFX900-NEXT:    [[TMP3:%.*]] = addrspacecast ptr addrspace(5) [[TMP2]] to ptr
@@ -825,15 +785,9 @@ kernel void test_target_features_kernel(global int *i) {
 //
 //
 // GFX900: Function Attrs: convergent nounwind
-<<<<<<< HEAD
-// GFX900-LABEL: define {{[^@]+}}@__test_block_invoke_4_kernel
-// GFX900-SAME: (<{ i32, i32, ptr, i64, ptr addrspace(1) }> [[TMP0:%.*]]) #[[ATTR5]] !associated [[META32:![0-9]+]] !kernel_arg_addr_space [[META22]] !kernel_arg_access_qual [[META23]] !kernel_arg_type [[META24]] !kernel_arg_base_type [[META24]] !kernel_arg_type_qual [[META25]] {
-// GFX900-NEXT:  entry:
-=======
 // GFX900-LABEL: define internal amdgpu_kernel void @__test_block_invoke_4_kernel(
-// GFX900-SAME: <{ i32, i32, ptr, i64, ptr addrspace(1) }> [[TMP0:%.*]]) #[[ATTR6]] !associated [[META38:![0-9]+]] !kernel_arg_addr_space [[META29]] !kernel_arg_access_qual [[META23]] !kernel_arg_type [[META30]] !kernel_arg_base_type [[META30]] !kernel_arg_type_qual [[META25]] {
+// GFX900-SAME: <{ i32, i32, ptr, i64, ptr addrspace(1) }> [[TMP0:%.*]]) #[[ATTR6]] !associated [[META36:![0-9]+]] !kernel_arg_addr_space [[META28]] !kernel_arg_access_qual [[META22]] !kernel_arg_type [[META29]] !kernel_arg_base_type [[META29]] !kernel_arg_type_qual [[META24]] {
 // GFX900-NEXT:  [[ENTRY:.*:]]
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
 // GFX900-NEXT:    [[TMP1:%.*]] = alloca <{ i32, i32, ptr, i64, ptr addrspace(1) }>, align 8, addrspace(5)
 // GFX900-NEXT:    store <{ i32, i32, ptr, i64, ptr addrspace(1) }> [[TMP0]], ptr addrspace(5) [[TMP1]], align 8
 // GFX900-NEXT:    [[TMP2:%.*]] = addrspacecast ptr addrspace(5) [[TMP1]] to ptr
@@ -841,39 +795,6 @@ kernel void test_target_features_kernel(global int *i) {
 // GFX900-NEXT:    ret void
 //
 //
-<<<<<<< HEAD
-// GFX900: Function Attrs: convergent norecurse nounwind
-// GFX900-LABEL: define {{[^@]+}}@test_target_features_kernel
-// GFX900-SAME: (ptr addrspace(1) noundef align 4 [[I:%.*]]) #[[ATTR2]] !kernel_arg_addr_space [[META33:![0-9]+]] !kernel_arg_access_qual [[META23]] !kernel_arg_type [[META34:![0-9]+]] !kernel_arg_base_type [[META34]] !kernel_arg_type_qual [[META25]] {
-// GFX900-NEXT:  entry:
-// GFX900-NEXT:    [[I_ADDR:%.*]] = alloca ptr addrspace(1), align 8, addrspace(5)
-// GFX900-NEXT:    [[DEFAULT_QUEUE:%.*]] = alloca ptr addrspace(1), align 8, addrspace(5)
-// GFX900-NEXT:    [[FLAGS:%.*]] = alloca i32, align 4, addrspace(5)
-// GFX900-NEXT:    [[NDRANGE:%.*]] = alloca [[STRUCT_NDRANGE_T:%.*]], align 4, addrspace(5)
-// GFX900-NEXT:    [[TMP:%.*]] = alloca [[STRUCT_NDRANGE_T]], align 4, addrspace(5)
-// GFX900-NEXT:    [[I_ADDR_ASCAST:%.*]] = addrspacecast ptr addrspace(5) [[I_ADDR]] to ptr
-// GFX900-NEXT:    [[DEFAULT_QUEUE_ASCAST:%.*]] = addrspacecast ptr addrspace(5) [[DEFAULT_QUEUE]] to ptr
-// GFX900-NEXT:    [[FLAGS_ASCAST:%.*]] = addrspacecast ptr addrspace(5) [[FLAGS]] to ptr
-// GFX900-NEXT:    [[NDRANGE_ASCAST:%.*]] = addrspacecast ptr addrspace(5) [[NDRANGE]] to ptr
-// GFX900-NEXT:    [[TMP_ASCAST:%.*]] = addrspacecast ptr addrspace(5) [[TMP]] to ptr
-// GFX900-NEXT:    store ptr addrspace(1) [[I]], ptr [[I_ADDR_ASCAST]], align 8, !tbaa [[TBAA35:![0-9]+]]
-// GFX900-NEXT:    call void @llvm.lifetime.start.p5(i64 8, ptr addrspace(5) [[DEFAULT_QUEUE]]) #[[ATTR7]]
-// GFX900-NEXT:    call void @llvm.lifetime.start.p5(i64 4, ptr addrspace(5) [[FLAGS]]) #[[ATTR7]]
-// GFX900-NEXT:    store i32 0, ptr [[FLAGS_ASCAST]], align 4, !tbaa [[TBAA16]]
-// GFX900-NEXT:    call void @llvm.lifetime.start.p5(i64 4, ptr addrspace(5) [[NDRANGE]]) #[[ATTR7]]
-// GFX900-NEXT:    [[TMP0:%.*]] = call i64 @llvm.amdgcn.s.memtime()
-// GFX900-NEXT:    [[TMP1:%.*]] = load ptr addrspace(1), ptr [[DEFAULT_QUEUE_ASCAST]], align 8, !tbaa [[TBAA18]]
-// GFX900-NEXT:    [[TMP2:%.*]] = load i32, ptr [[FLAGS_ASCAST]], align 4, !tbaa [[TBAA16]]
-// GFX900-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 4 [[TMP_ASCAST]], ptr align 4 [[NDRANGE_ASCAST]], i64 4, i1 false), !tbaa.struct [[TBAA_STRUCT20]]
-// GFX900-NEXT:    [[TMP3:%.*]] = call i32 @__enqueue_kernel_basic(ptr addrspace(1) [[TMP1]], i32 [[TMP2]], ptr addrspace(5) [[TMP]], ptr addrspacecast (ptr addrspace(1) @__test_target_features_kernel_block_invoke_kernel.runtime.handle to ptr), ptr addrspacecast (ptr addrspace(1) @__block_literal_global to ptr))
-// GFX900-NEXT:    call void @llvm.lifetime.end.p5(i64 4, ptr addrspace(5) [[NDRANGE]]) #[[ATTR7]]
-// GFX900-NEXT:    call void @llvm.lifetime.end.p5(i64 4, ptr addrspace(5) [[FLAGS]]) #[[ATTR7]]
-// GFX900-NEXT:    call void @llvm.lifetime.end.p5(i64 8, ptr addrspace(5) [[DEFAULT_QUEUE]]) #[[ATTR7]]
-// GFX900-NEXT:    ret void
-//
-//
-=======
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
 // GFX900: Function Attrs: convergent nounwind
 // GFX900-LABEL: define internal void @__test_target_features_kernel_block_invoke(
 // GFX900-SAME: ptr noundef [[DOTBLOCK_DESCRIPTOR:%.*]]) #[[ATTR6]] {
@@ -886,15 +807,9 @@ kernel void test_target_features_kernel(global int *i) {
 //
 //
 // GFX900: Function Attrs: convergent nounwind
-<<<<<<< HEAD
-// GFX900-LABEL: define {{[^@]+}}@__test_target_features_kernel_block_invoke_kernel
-// GFX900-SAME: ({ i32, i32, ptr } [[TMP0:%.*]]) #[[ATTR5]] !associated [[META37:![0-9]+]] !kernel_arg_addr_space [[META22]] !kernel_arg_access_qual [[META23]] !kernel_arg_type [[META24]] !kernel_arg_base_type [[META24]] !kernel_arg_type_qual [[META25]] {
-// GFX900-NEXT:  entry:
-=======
 // GFX900-LABEL: define internal amdgpu_kernel void @__test_target_features_kernel_block_invoke_kernel(
-// GFX900-SAME: { i32, i32, ptr } [[TMP0:%.*]]) #[[ATTR6]] !associated [[META39:![0-9]+]] !kernel_arg_addr_space [[META29]] !kernel_arg_access_qual [[META23]] !kernel_arg_type [[META30]] !kernel_arg_base_type [[META30]] !kernel_arg_type_qual [[META25]] {
+// GFX900-SAME: { i32, i32, ptr } [[TMP0:%.*]]) #[[ATTR6]] !associated [[META37:![0-9]+]] !kernel_arg_addr_space [[META28]] !kernel_arg_access_qual [[META22]] !kernel_arg_type [[META29]] !kernel_arg_base_type [[META29]] !kernel_arg_type_qual [[META24]] {
 // GFX900-NEXT:  [[ENTRY:.*:]]
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
 // GFX900-NEXT:    [[TMP1:%.*]] = alloca { i32, i32, ptr }, align 8, addrspace(5)
 // GFX900-NEXT:    store { i32, i32, ptr } [[TMP0]], ptr addrspace(5) [[TMP1]], align 8
 // GFX900-NEXT:    [[TMP2:%.*]] = addrspacecast ptr addrspace(5) [[TMP1]] to ptr
@@ -962,7 +877,6 @@ kernel void test_target_features_kernel(global int *i) {
 // GFX900: [[META11]] = !{!"none", !"none", !"none", !"none"}
 // GFX900: [[META12]] = !{!"char*", !"char", !"long*", !"long"}
 // GFX900: [[META13]] = !{!"", !"", !"", !""}
-<<<<<<< HEAD
 // GFX900: [[TBAA14]] = !{[[META9]], [[META9]], i64 0}
 // GFX900: [[TBAA15]] = !{[[META5]], [[META5]], i64 0}
 // GFX900: [[TBAA16]] = !{[[META17:![0-9]+]], [[META17]], i64 0}
@@ -970,51 +884,23 @@ kernel void test_target_features_kernel(global int *i) {
 // GFX900: [[TBAA18]] = !{[[META19:![0-9]+]], [[META19]], i64 0}
 // GFX900: [[META19]] = !{!"queue_t", [[META5]], i64 0}
 // GFX900: [[TBAA_STRUCT20]] = !{i64 0, i64 4, [[TBAA16]]}
-// GFX900: [[META21]] = !{ptr addrspace(1) @__test_block_invoke_kernel.runtime.handle}
-// GFX900: [[META22]] = !{i32 0}
-// GFX900: [[META23]] = !{!"none"}
-// GFX900: [[META24]] = !{!"__block_literal"}
-// GFX900: [[META25]] = !{!""}
-// GFX900: [[META26]] = !{ptr addrspace(1) @__test_block_invoke_2_kernel.runtime.handle}
-// GFX900: [[META27]] = !{ptr addrspace(1) @__test_block_invoke_3_kernel.runtime.handle}
-// GFX900: [[META28]] = !{i32 0, i32 3}
-// GFX900: [[META29]] = !{!"none", !"none"}
-// GFX900: [[META30]] = !{!"__block_literal", !"void*"}
-// GFX900: [[META31]] = !{!"", !""}
-// GFX900: [[META32]] = !{ptr addrspace(1) @__test_block_invoke_4_kernel.runtime.handle}
-// GFX900: [[META33]] = !{i32 1}
-// GFX900: [[META34]] = !{!"int*"}
-// GFX900: [[TBAA35]] = !{[[META36:![0-9]+]], [[META36]], i64 0}
-// GFX900: [[META36]] = !{!"p1 int", [[META9]], i64 0}
+// GFX900: [[META21]] = !{i32 1}
+// GFX900: [[META22]] = !{!"none"}
+// GFX900: [[META23]] = !{!"int*"}
+// GFX900: [[META24]] = !{!""}
+// GFX900: [[TBAA25]] = !{[[META26:![0-9]+]], [[META26]], i64 0}
+// GFX900: [[META26]] = !{!"p1 int", [[META9]], i64 0}
+// GFX900: [[META27]] = !{ptr addrspace(1) @__test_block_invoke_kernel.runtime.handle}
+// GFX900: [[META28]] = !{i32 0}
+// GFX900: [[META29]] = !{!"__block_literal"}
+// GFX900: [[META30]] = !{ptr addrspace(1) @__test_block_invoke_2_kernel.runtime.handle}
+// GFX900: [[META31]] = !{ptr addrspace(1) @__test_block_invoke_3_kernel.runtime.handle}
+// GFX900: [[META32]] = !{i32 0, i32 3}
+// GFX900: [[META33]] = !{!"none", !"none"}
+// GFX900: [[META34]] = !{!"__block_literal", !"void*"}
+// GFX900: [[META35]] = !{!"", !""}
+// GFX900: [[META36]] = !{ptr addrspace(1) @__test_block_invoke_4_kernel.runtime.handle}
 // GFX900: [[META37]] = !{ptr addrspace(1) @__test_target_features_kernel_block_invoke_kernel.runtime.handle}
-=======
-// GFX900: [[TBAA14]] = !{[[META15:![0-9]+]], [[META15]], i64 0}
-// GFX900: [[META15]] = !{!"p1 omnipotent char", [[META9]], i64 0}
-// GFX900: [[TBAA16]] = !{[[META5]], [[META5]], i64 0}
-// GFX900: [[TBAA17]] = !{[[META18:![0-9]+]], [[META18]], i64 0}
-// GFX900: [[META18]] = !{!"int", [[META5]], i64 0}
-// GFX900: [[TBAA19]] = !{[[META20:![0-9]+]], [[META20]], i64 0}
-// GFX900: [[META20]] = !{!"queue_t", [[META5]], i64 0}
-// GFX900: [[TBAA_STRUCT21]] = !{i64 0, i64 4, [[TBAA17]]}
-// GFX900: [[META22]] = !{i32 1}
-// GFX900: [[META23]] = !{!"none"}
-// GFX900: [[META24]] = !{!"int*"}
-// GFX900: [[META25]] = !{!""}
-// GFX900: [[TBAA26]] = !{[[META27:![0-9]+]], [[META27]], i64 0}
-// GFX900: [[META27]] = !{!"p1 int", [[META9]], i64 0}
-// GFX900: [[META28]] = !{ptr addrspace(1) @__test_block_invoke_kernel.runtime.handle}
-// GFX900: [[META29]] = !{i32 0}
-// GFX900: [[META30]] = !{!"__block_literal"}
-// GFX900: [[META31]] = !{ptr addrspace(1) @__test_block_invoke_2_kernel.runtime.handle}
-// GFX900: [[TBAA32]] = !{[[META9]], [[META9]], i64 0}
-// GFX900: [[META33]] = !{ptr addrspace(1) @__test_block_invoke_3_kernel.runtime.handle}
-// GFX900: [[META34]] = !{i32 0, i32 3}
-// GFX900: [[META35]] = !{!"none", !"none"}
-// GFX900: [[META36]] = !{!"__block_literal", !"void*"}
-// GFX900: [[META37]] = !{!"", !""}
-// GFX900: [[META38]] = !{ptr addrspace(1) @__test_block_invoke_4_kernel.runtime.handle}
-// GFX900: [[META39]] = !{ptr addrspace(1) @__test_target_features_kernel_block_invoke_kernel.runtime.handle}
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
 //.
 //// NOTE: These prefixes are unused and the list is autogenerated. Do not add tests below this line:
 // CHECK: {{.*}}

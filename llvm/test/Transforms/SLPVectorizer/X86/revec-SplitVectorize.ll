@@ -4,18 +4,9 @@
 define void @test() {
 ; CHECK-LABEL: @test(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = call <32 x i32> @llvm.vector.insert.v32i32.v4i32(<32 x i32> poison, <4 x i32> zeroinitializer, i64 0)
-; CHECK-NEXT:    [[TMP1:%.*]] = call <32 x i32> @llvm.vector.insert.v32i32.v4i32(<32 x i32> [[TMP0]], <4 x i32> zeroinitializer, i64 4)
-; CHECK-NEXT:    [[TMP2:%.*]] = call <32 x i32> @llvm.vector.insert.v32i32.v4i32(<32 x i32> [[TMP1]], <4 x i32> zeroinitializer, i64 8)
-; CHECK-NEXT:    [[TMP3:%.*]] = call <32 x i32> @llvm.vector.insert.v32i32.v4i32(<32 x i32> [[TMP2]], <4 x i32> zeroinitializer, i64 12)
-; CHECK-NEXT:    [[TMP4:%.*]] = call <32 x i32> @llvm.vector.insert.v32i32.v4i32(<32 x i32> [[TMP3]], <4 x i32> zeroinitializer, i64 16)
-; CHECK-NEXT:    [[TMP5:%.*]] = call <32 x i32> @llvm.vector.insert.v32i32.v4i32(<32 x i32> [[TMP4]], <4 x i32> zeroinitializer, i64 20)
-; CHECK-NEXT:    [[TMP6:%.*]] = call <32 x i32> @llvm.vector.insert.v32i32.v4i32(<32 x i32> [[TMP5]], <4 x i32> zeroinitializer, i64 24)
-; CHECK-NEXT:    [[TMP7:%.*]] = call <32 x i32> @llvm.vector.insert.v32i32.v4i32(<32 x i32> [[TMP6]], <4 x i32> zeroinitializer, i64 28)
-; CHECK-NEXT:    [[TMP8:%.*]] = trunc <32 x i32> [[TMP7]] to <32 x i1>
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
-; CHECK-NEXT:    [[TMP13:%.*]] = phi <32 x i1> [ [[TMP8]], [[ENTRY:%.*]] ], [ [[TMP18:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[TMP13:%.*]] = phi <32 x i1> [ zeroinitializer, [[ENTRY:%.*]] ], [ [[TMP18:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[NARROW:%.*]] = select <4 x i1> zeroinitializer, <4 x i1> zeroinitializer, <4 x i1> zeroinitializer
 ; CHECK-NEXT:    [[NARROW66:%.*]] = select <4 x i1> zeroinitializer, <4 x i1> zeroinitializer, <4 x i1> zeroinitializer
 ; CHECK-NEXT:    [[NARROW67:%.*]] = select <4 x i1> zeroinitializer, <4 x i1> zeroinitializer, <4 x i1> zeroinitializer

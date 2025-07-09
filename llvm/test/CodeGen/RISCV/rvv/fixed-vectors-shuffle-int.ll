@@ -1414,8 +1414,6 @@ define <8 x i32> @shuffle_v8i32_locally_repeating_neg(<8 x i32> %a) {
   %res = shufflevector <8 x i32> %a, <8 x i32> poison, <8 x i32> <i32 1, i32 0, i32 poison, i32 poison, i32 5, i32 4, i32 6, i32 6>
   ret <8 x i32> %res
 }
-<<<<<<< HEAD
-=======
 
 define <8 x i8> @identity_splat0(<8 x i8> %v) {
 ; CHECK-LABEL: identity_splat0:
@@ -1493,4 +1491,3 @@ define <8 x i8> @vmerge_vxm3(<8 x i8> %v, i8 %s) {
   ret <8 x i8> %shuf
 }
 
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
