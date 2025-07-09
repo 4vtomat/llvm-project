@@ -1327,6 +1327,23 @@ llvm::raw_ostream &operator<<(llvm::raw_ostream &OS, enum RVVRequire Require) {
     STRINGIFY(RVV_REQ_Zvfbfmin)
     STRINGIFY(RVV_REQ_Zvfh)
     STRINGIFY(RVV_REQ_Experimental)
+    STRINGIFY(RVV_REQ_HasBfloat16)
+    STRINGIFY(RVV_REQ_Xsfvfbfa)
+    STRINGIFY(RVV_REQ_Xsfvfbfexp16e)
+    STRINGIFY(RVV_REQ_Xsfvfexp16e)
+    STRINGIFY(RVV_REQ_Xsfvfexp32e)
+    STRINGIFY(RVV_REQ_Xsfvfexpa)
+    STRINGIFY(RVV_REQ_Xsfvfexpa64e)
+    STRINGIFY(RVV_REQ_Xsfvfhbfmin)
+    STRINGIFY(RVV_REQ_Xsfvqdotq)
+    STRINGIFY(RVV_REQ_Zvfbfmin_Xsfvfbfa)
+    STRINGIFY(RVV_REQ_Xsfmmbase)
+    STRINGIFY(RVV_REQ_Xsfmm32a)
+    STRINGIFY(RVV_REQ_Xsfmm32a8f)
+    STRINGIFY(RVV_REQ_Xsfmm32a16f)
+    STRINGIFY(RVV_REQ_Xsfmm32a32f)
+    STRINGIFY(RVV_REQ_Xsfmm64a64f)
+    STRINGIFY(RVV_REQ_Xsfmm32a8i)
   default:
     llvm_unreachable("Unsupported RVVRequire!");
     break;
