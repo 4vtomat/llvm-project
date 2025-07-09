@@ -282,53 +282,9 @@ static OverwriteResult isMaskedStoreOverwrite(const Instruction *KillingI,
     }
     return OW_Complete;
   }
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  if (KillingII->getIntrinsicID() == Intrinsic::vp_store) {
-    // Operands {0        , 1     , 2   , 3 }
-    //          {StoredVal, VecPtr, Mask, VL}
-    // Types.
-    VectorType *KillingTy =
-        cast<VectorType>(KillingII->getArgOperand(0)->getType());
-    VectorType *DeadTy = cast<VectorType>(DeadII->getArgOperand(0)->getType());
-    if (KillingTy->getScalarSizeInBits() != DeadTy->getScalarSizeInBits())
-      return OW_Unknown;
-    // Element count.
-    if (KillingTy->getElementCount() != DeadTy->getElementCount())
-      return OW_Unknown;
-    // Pointers.
-    Value *KillingPtr = KillingII->getArgOperand(1)->stripPointerCasts();
-    Value *DeadPtr = DeadII->getArgOperand(1)->stripPointerCasts();
-    if (KillingPtr != DeadPtr && !AA.isMustAlias(KillingPtr, DeadPtr))
-      return OW_Unknown;
-    // Masks.
-    // TODO: check that KillingII's mask is a superset of the DeadII's mask.
-    if (KillingII->getArgOperand(2) != DeadII->getArgOperand(2))
-      return OW_Unknown;
-    // Lengths.
-    if (KillingII->getArgOperand(3) != DeadII->getArgOperand(3))
-      return OW_Unknown;
-    // There must be scoped noalias metadata on both stores.
-    if (!KillingI->getMetadata(LLVMContext::MD_alias_scope) ||
-        !DeadI->getMetadata(LLVMContext::MD_alias_scope) ||
-        !KillingI->getMetadata(LLVMContext::MD_noalias) ||
-        !DeadI->getMetadata(LLVMContext::MD_noalias))
-      return OW_Unknown;
-    // These must be the same for both stores as well
-    if ((KillingI->getMetadata(LLVMContext::MD_alias_scope) !=
-         DeadI->getMetadata(LLVMContext::MD_alias_scope)) ||
-        (KillingI->getMetadata(LLVMContext::MD_noalias) !=
-         DeadI->getMetadata(LLVMContext::MD_noalias)))
-      return OW_Unknown;
-    return OW_Complete;
-  }
-#endif
-  return OW_Unknown;
-=======
   default:
     return OW_Unknown;
   }
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
 }
 
 /// Return 'OW_Complete' if a store to the 'KillingLoc' location completely
