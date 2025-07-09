@@ -79,14 +79,9 @@ define i32 @non_const_strided_masked_1(i64 %n, ptr %a, ptr %cond, i64 %stride) {
 ; CHECK-NEXT:    [[EVL_BASED_IV15:%.*]] = phi i64 [ 0, [[VECTOR_PH11]] ], [ [[INDEX_EVL_NEXT27]], [[VECTOR_BODY13]] ]
 ; CHECK-NEXT:    [[VEC_PHI17:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH11]] ], [ [[VP_OP_MERGE26:%.*]], [[VECTOR_BODY13]] ]
 ; CHECK-NEXT:    [[TMP27:%.*]] = sub i64 [[N]], [[EVL_BASED_IV15]]
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP28]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP27]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP28:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP27]], i32 2, i1 true)
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = add i64 [[BC_RESUME_VAL]], [[EVL_BASED_IV15]]
 ; CHECK-NEXT:    [[TMP29:%.*]] = getelementptr inbounds i8, ptr [[COND]], i64 [[OFFSET_IDX]]
-=======
-; CHECK-NEXT:    [[TMP28:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP27]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP29:%.*]] = getelementptr inbounds i8, ptr [[COND]], i64 [[EVL_BASED_IV15]]
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    [[TMP30:%.*]] = getelementptr inbounds i8, ptr [[TMP29]], i32 0
 ; CHECK-NEXT:    [[VP_OP_LOAD19:%.*]] = call <vscale x 2 x i8> @llvm.vp.load.nxv2i8.p0(ptr align 1 [[TMP30]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP28]])
 ; CHECK-NEXT:    [[VP_OP_ICMP19:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i8(<vscale x 2 x i8> [[VP_OP_LOAD19]], <vscale x 2 x i8> zeroinitializer, metadata !"eq", <vscale x 2 x i1> splat (i1 true), i32 [[TMP28]])
@@ -114,13 +109,9 @@ define i32 @non_const_strided_masked_1(i64 %n, ptr %a, ptr %cond, i64 %stride) {
 ; CHECK-NEXT:    [[TMP38:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE26]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP22]])
 ; CHECK-NEXT:    [[TMP41:%.*]] = add i32 [[BC_MERGE_RDX]], [[TMP38]]
 ; CHECK-NEXT:    br label [[EXIT]]
-<<<<<<< HEAD
-; CHECK:       scalar.ph9:
+; CHECK:       scalar.ph8:
 ; CHECK-NEXT:    [[BC_RESUME_VAL28:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[BC_MERGE_RDX29:%.*]] = phi i32 [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ]
-=======
-; CHECK:       scalar.ph8:
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL28]], [[SCALAR_PH10]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_INC:%.*]] ]
@@ -270,14 +261,9 @@ define i32 @non_const_strided_masked_2(i64 %n, ptr %a, ptr %cond, i64 %stride) {
 ; CHECK-NEXT:    [[EVL_BASED_IV13:%.*]] = phi i64 [ 0, [[VECTOR_PH9]] ], [ [[INDEX_EVL_NEXT24]], [[VECTOR_BODY11]] ]
 ; CHECK-NEXT:    [[VEC_PHI15:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH9]] ], [ [[VP_OP_MERGE23:%.*]], [[VECTOR_BODY11]] ]
 ; CHECK-NEXT:    [[TMP24:%.*]] = sub i64 [[N]], [[EVL_BASED_IV13]]
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP25]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP24]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP25:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP24]], i32 2, i1 true)
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = add i64 [[BC_RESUME_VAL]], [[EVL_BASED_IV13]]
 ; CHECK-NEXT:    [[TMP26:%.*]] = getelementptr inbounds i8, ptr [[COND]], i64 [[OFFSET_IDX]]
-=======
-; CHECK-NEXT:    [[TMP25:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP24]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP26:%.*]] = getelementptr inbounds i8, ptr [[COND]], i64 [[EVL_BASED_IV13]]
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    [[TMP27:%.*]] = getelementptr inbounds i8, ptr [[TMP26]], i32 0
 ; CHECK-NEXT:    [[VP_OP_LOAD17:%.*]] = call <vscale x 2 x i8> @llvm.vp.load.nxv2i8.p0(ptr align 1 [[TMP27]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP25]])
 ; CHECK-NEXT:    [[VP_OP_ICMP17:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i8(<vscale x 2 x i8> [[VP_OP_LOAD17]], <vscale x 2 x i8> zeroinitializer, metadata !"eq", <vscale x 2 x i1> splat (i1 true), i32 [[TMP25]])
@@ -305,13 +291,9 @@ define i32 @non_const_strided_masked_2(i64 %n, ptr %a, ptr %cond, i64 %stride) {
 ; CHECK-NEXT:    [[TMP35:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE23]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP19]])
 ; CHECK-NEXT:    [[TMP38:%.*]] = add i32 [[BC_MERGE_RDX]], [[TMP35]]
 ; CHECK-NEXT:    br label [[EXIT]]
-<<<<<<< HEAD
-; CHECK:       scalar.ph7:
+; CHECK:       scalar.ph6:
 ; CHECK-NEXT:    [[BC_RESUME_VAL25:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[BC_MERGE_RDX26:%.*]] = phi i32 [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ]
-=======
-; CHECK:       scalar.ph6:
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL25]], [[SCALAR_PH8]] ], [ [[INDVARS_IV_NEXT:%.*]], [[IF_END:%.*]] ]
@@ -460,14 +442,9 @@ define i32 @non_const_strided_masked_2_non_power_of_two(i64 %n, ptr %a, ptr %con
 ; CHECK-NEXT:    [[EVL_BASED_IV15:%.*]] = phi i64 [ 0, [[VECTOR_PH11]] ], [ [[INDEX_EVL_NEXT27]], [[VECTOR_BODY13]] ]
 ; CHECK-NEXT:    [[VEC_PHI17:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH11]] ], [ [[VP_OP_MERGE26:%.*]], [[VECTOR_BODY13]] ]
 ; CHECK-NEXT:    [[TMP27:%.*]] = sub i64 [[N]], [[EVL_BASED_IV15]]
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP28]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP27]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP28:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP27]], i32 2, i1 true)
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = add i64 [[BC_RESUME_VAL]], [[EVL_BASED_IV15]]
 ; CHECK-NEXT:    [[TMP29:%.*]] = getelementptr inbounds i8, ptr [[COND]], i64 [[OFFSET_IDX]]
-=======
-; CHECK-NEXT:    [[TMP28:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP27]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP29:%.*]] = getelementptr inbounds i8, ptr [[COND]], i64 [[EVL_BASED_IV15]]
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    [[TMP30:%.*]] = getelementptr inbounds i8, ptr [[TMP29]], i32 0
 ; CHECK-NEXT:    [[VP_OP_LOAD19:%.*]] = call <vscale x 2 x i8> @llvm.vp.load.nxv2i8.p0(ptr align 1 [[TMP30]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP28]])
 ; CHECK-NEXT:    [[VP_OP_ICMP19:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i8(<vscale x 2 x i8> [[VP_OP_LOAD19]], <vscale x 2 x i8> zeroinitializer, metadata !"eq", <vscale x 2 x i1> splat (i1 true), i32 [[TMP28]])
@@ -497,13 +474,9 @@ define i32 @non_const_strided_masked_2_non_power_of_two(i64 %n, ptr %a, ptr %con
 ; CHECK-NEXT:    [[TMP39:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE26]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP22]])
 ; CHECK-NEXT:    [[TMP42:%.*]] = add i32 [[BC_MERGE_RDX]], [[TMP39]]
 ; CHECK-NEXT:    br label [[EXIT]]
-<<<<<<< HEAD
-; CHECK:       scalar.ph9:
+; CHECK:       scalar.ph8:
 ; CHECK-NEXT:    [[BC_RESUME_VAL28:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[BC_MERGE_RDX29:%.*]] = phi i32 [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ]
-=======
-; CHECK:       scalar.ph8:
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL28]], [[SCALAR_PH10]] ], [ [[INDVARS_IV_NEXT:%.*]], [[IF_END:%.*]] ]
@@ -664,14 +637,9 @@ define i32 @non_const_strided_masked_3(i64 %n, ptr %a, ptr %cond1, ptr %cond2, i
 ; CHECK-NEXT:    [[EVL_BASED_IV19:%.*]] = phi i64 [ 0, [[VECTOR_PH15]] ], [ [[INDEX_EVL_NEXT37]], [[VECTOR_BODY17]] ]
 ; CHECK-NEXT:    [[VEC_PHI21:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH15]] ], [ [[VP_OP_MERGE36:%.*]], [[VECTOR_BODY17]] ]
 ; CHECK-NEXT:    [[TMP26:%.*]] = sub i64 [[N]], [[EVL_BASED_IV19]]
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP27]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP26]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP27:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP26]], i32 2, i1 true)
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = add i64 [[BC_RESUME_VAL]], [[EVL_BASED_IV19]]
 ; CHECK-NEXT:    [[TMP28:%.*]] = getelementptr inbounds i8, ptr [[COND1]], i64 [[OFFSET_IDX]]
-=======
-; CHECK-NEXT:    [[TMP27:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP26]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP28:%.*]] = getelementptr inbounds i8, ptr [[COND1]], i64 [[EVL_BASED_IV19]]
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    [[TMP29:%.*]] = getelementptr inbounds i8, ptr [[TMP28]], i32 0
 ; CHECK-NEXT:    [[VP_OP_LOAD22:%.*]] = call <vscale x 2 x i8> @llvm.vp.load.nxv2i8.p0(ptr align 1 [[TMP29]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP27]])
 ; CHECK-NEXT:    [[VP_OP_ICMP23:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i8(<vscale x 2 x i8> [[VP_OP_LOAD22]], <vscale x 2 x i8> zeroinitializer, metadata !"eq", <vscale x 2 x i1> splat (i1 true), i32 [[TMP27]])
@@ -708,13 +676,9 @@ define i32 @non_const_strided_masked_3(i64 %n, ptr %a, ptr %cond1, ptr %cond2, i
 ; CHECK-NEXT:    [[TMP40:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE36]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP21]])
 ; CHECK-NEXT:    [[TMP42:%.*]] = add i32 [[BC_MERGE_RDX]], [[TMP40]]
 ; CHECK-NEXT:    br label [[EXIT]]
-<<<<<<< HEAD
-; CHECK:       scalar.ph12:
+; CHECK:       scalar.ph11:
 ; CHECK-NEXT:    [[BC_RESUME_VAL35:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[BC_MERGE_RDX36:%.*]] = phi i32 [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ]
-=======
-; CHECK:       scalar.ph11:
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL35]], [[SCALAR_PH14]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_INC:%.*]] ]
@@ -891,14 +855,9 @@ define i32 @non_const_strided_masked_3_non_power_of_two(i64 %n, ptr %a, ptr %con
 ; CHECK-NEXT:    [[EVL_BASED_IV21:%.*]] = phi i64 [ 0, [[VECTOR_PH17]] ], [ [[INDEX_EVL_NEXT40]], [[VECTOR_BODY19]] ]
 ; CHECK-NEXT:    [[VEC_PHI23:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH17]] ], [ [[VP_OP_MERGE39:%.*]], [[VECTOR_BODY19]] ]
 ; CHECK-NEXT:    [[TMP29:%.*]] = sub i64 [[N]], [[EVL_BASED_IV21]]
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP30]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP29]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP30:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP29]], i32 2, i1 true)
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = add i64 [[BC_RESUME_VAL]], [[EVL_BASED_IV21]]
 ; CHECK-NEXT:    [[TMP31:%.*]] = getelementptr inbounds i8, ptr [[COND1]], i64 [[OFFSET_IDX]]
-=======
-; CHECK-NEXT:    [[TMP30:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP29]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP31:%.*]] = getelementptr inbounds i8, ptr [[COND1]], i64 [[EVL_BASED_IV21]]
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr inbounds i8, ptr [[TMP31]], i32 0
 ; CHECK-NEXT:    [[VP_OP_LOAD24:%.*]] = call <vscale x 2 x i8> @llvm.vp.load.nxv2i8.p0(ptr align 1 [[TMP32]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP30]])
 ; CHECK-NEXT:    [[VP_OP_ICMP25:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i8(<vscale x 2 x i8> [[VP_OP_LOAD24]], <vscale x 2 x i8> zeroinitializer, metadata !"eq", <vscale x 2 x i1> splat (i1 true), i32 [[TMP30]])
@@ -937,13 +896,9 @@ define i32 @non_const_strided_masked_3_non_power_of_two(i64 %n, ptr %a, ptr %con
 ; CHECK-NEXT:    [[TMP44:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE39]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP24]])
 ; CHECK-NEXT:    [[TMP46:%.*]] = add i32 [[BC_MERGE_RDX]], [[TMP44]]
 ; CHECK-NEXT:    br label [[EXIT]]
-<<<<<<< HEAD
-; CHECK:       scalar.ph14:
+; CHECK:       scalar.ph13:
 ; CHECK-NEXT:    [[BC_RESUME_VAL38:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[BC_MERGE_RDX39:%.*]] = phi i32 [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ]
-=======
-; CHECK:       scalar.ph13:
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL38]], [[SCALAR_PH16]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_INC:%.*]] ]

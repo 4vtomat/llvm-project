@@ -48,11 +48,8 @@ define fastcc void @foo(ptr %arg) {
 ; CHECK-NEXT:    [[TMP13:%.*]] = or i1 [[TMP12]], [[MUL_OVERFLOW]]
 ; CHECK-NEXT:    br i1 [[TMP13]], label %[[SCALAR_PH4]], label %[[VECTOR_PH5:.*]]
 ; CHECK:       [[VECTOR_PH5]]:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP16:%.*]] = add i32 [[BC_RESUME_VAL]], 1024
-=======
 ; CHECK-NEXT:    [[TMP16:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 1024, i32 8, i1 true)
->>>>>>> origin/sifive-dev
+; CHECK-NEXT:    [[TMP22:%.*]] = add i32 [[BC_RESUME_VAL]], 1024
 ; CHECK-NEXT:    [[TMP14:%.*]] = sext i32 [[LOAD]] to i64
 ; CHECK-NEXT:    br label %[[VECTOR_BODY6:.*]]
 ; CHECK:       [[VECTOR_BODY6]]:
@@ -89,7 +86,7 @@ define fastcc void @foo(ptr %arg) {
 ; CHECK-NEXT:    [[ICMP5:%.*]] = icmp ne i32 [[ADD4]], 1024
 ; CHECK-NEXT:    br i1 [[ICMP5]], label %[[LOOP]], label %[[EXIT]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       [[EXIT]]:
-; CHECK-NEXT:    [[PHI7:%.*]] = phi i32 [ [[ADD]], %[[LOOP]] ], [ 1024, %[[MIDDLE_BLOCK]] ], [ [[TMP16]], %[[MIDDLE_BLOCK11]] ]
+; CHECK-NEXT:    [[PHI7:%.*]] = phi i32 [ [[ADD]], %[[LOOP]] ], [ 1024, %[[MIDDLE_BLOCK]] ], [ [[TMP22]], %[[MIDDLE_BLOCK11]] ]
 ; CHECK-NEXT:    ret void
 ;
 entry:

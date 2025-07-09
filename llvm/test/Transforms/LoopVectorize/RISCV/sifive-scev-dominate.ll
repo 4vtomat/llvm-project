@@ -17,6 +17,7 @@ define i32 @SaveEXR(ptr %data, i32 %width, i32 %height, i32 %components, i32 %sa
 ; CHECK-NEXT:    [[IDENT_CHECK:%.*]] = icmp ne i32 [[COMPONENTS]], 1
 ; CHECK-NEXT:    br i1 [[IDENT_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
+; CHECK-NEXT:    [[TMP14:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[CONV47]], i32 8, i1 true)
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -38,6 +39,7 @@ define i32 @SaveEXR(ptr %data, i32 %width, i32 %height, i32 %components, i32 %sa
 ; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ false, %[[VECTOR_SCEVCHECK]] ]
 ; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label %[[SCALAR_PH1:.*]], label %[[VECTOR_PH2:.*]]
 ; CHECK:       [[VECTOR_PH2]]:
+; CHECK-NEXT:    [[TMP15:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[CONV47]], i32 8, i1 true)
 ; CHECK-NEXT:    [[TMP5:%.*]] = zext i32 [[COMPONENTS]] to i64
 ; CHECK-NEXT:    [[TMP6:%.*]] = shl nuw nsw i64 [[TMP5]], 2
 ; CHECK-NEXT:    br label %[[VECTOR_BODY3:.*]]

@@ -3641,7 +3641,6 @@ define dso_local i64 @idx_scalar_dec(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 1, i1 true)
-; CHECK-NEXT:    [[TMP3:%.*]] = sub i64 [[N]], [[N]]
 ; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[N]], i64 0
 ; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 1 x i64> [[DOTSPLATINSERT]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
 ; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 1 x i64> @llvm.stepvector.nxv1i64()
@@ -3727,7 +3726,6 @@ define dso_local i64 @idx_scalar_dec(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; DISABLE-RISCV-CSA:       vector.ph:
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 1, i1 true)
-; DISABLE-RISCV-CSA-NEXT:    [[TMP3:%.*]] = sub i64 [[N]], [[N]]
 ; DISABLE-RISCV-CSA-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[N]], i64 0
 ; DISABLE-RISCV-CSA-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 1 x i64> [[DOTSPLATINSERT]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP2:%.*]] = call <vscale x 1 x i64> @llvm.stepvector.nxv1i64()
@@ -3813,7 +3811,6 @@ define dso_local i64 @idx_scalar_dec(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-RV32:       vector.ph:
 ; CHECK-RV32-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-RV32-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 1, i1 true)
-; CHECK-RV32-NEXT:    [[TMP3:%.*]] = sub i64 [[N]], [[N]]
 ; CHECK-RV32-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[N]], i64 0
 ; CHECK-RV32-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 1 x i64> [[DOTSPLATINSERT]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
 ; CHECK-RV32-NEXT:    [[TMP2:%.*]] = call <vscale x 1 x i64> @llvm.stepvector.nxv1i64()

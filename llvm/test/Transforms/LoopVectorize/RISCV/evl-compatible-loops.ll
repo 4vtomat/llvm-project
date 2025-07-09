@@ -71,12 +71,7 @@ define void @test_wide_ptr_induction(ptr noalias %a, ptr noalias %b, i64 %N) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-<<<<<<< HEAD
-=======
 ; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 1, i1 true)
-; CHECK-NEXT:    [[TMP0:%.*]] = mul i64 [[N]], 8
-; CHECK-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP0]]
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP3]], 0
 ; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[TMP5]], i64 0

@@ -248,11 +248,7 @@ define void @recurrence_3(ptr nocapture readonly %a, ptr nocapture %b, i32 %n, f
 ; CHECK-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
-<<<<<<< HEAD
-=======
 ; CHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP2]], i32 1, i1 true)
-; CHECK-NEXT:    [[IND_END:%.*]] = add i64 1, [[TMP2]]
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 1 x double> poison, double [[CONV1]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 1 x double> [[BROADCAST_SPLATINSERT]], <vscale x 1 x double> poison, <vscale x 1 x i32> zeroinitializer
 ; CHECK-NEXT:    [[TMP10:%.*]] = sub i32 [[TMP9]], 1

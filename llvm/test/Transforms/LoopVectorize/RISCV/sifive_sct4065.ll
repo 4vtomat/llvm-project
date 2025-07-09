@@ -20,16 +20,10 @@ define fastcc i32 @S_unpack_rec(i64 %0) {
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br label %[[BB9:.*]]
 ; CHECK:       [[SCALAR_PH]]:
-<<<<<<< HEAD
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 0, [[TMP1:%.*]] ]
-; CHECK-NEXT:    br label %[[BB4:.*]]
-; CHECK:       [[BB4]]:
-; CHECK-NEXT:    [[TMP6:%.*]] = phi i32 [ [[TMP7:%.*]], %[[BB4]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
-=======
 ; CHECK-NEXT:    br label %[[BB5:.*]]
 ; CHECK:       [[BB5]]:
-; CHECK-NEXT:    [[TMP6:%.*]] = phi i32 [ [[TMP7:%.*]], %[[BB5]] ], [ 0, %[[SCALAR_PH]] ]
->>>>>>> origin/sifive-dev
+; CHECK-NEXT:    [[TMP6:%.*]] = phi i32 [ [[TMP7:%.*]], %[[BB5]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
 ; CHECK-NEXT:    store i64 0, ptr null, align 8
 ; CHECK-NEXT:    [[TMP7]] = add nsw i32 [[TMP6]], -8
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i32 [[TMP6]], 1

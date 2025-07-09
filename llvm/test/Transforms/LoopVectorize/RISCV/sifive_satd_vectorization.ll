@@ -41,14 +41,7 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; X280-NEXT:    [[TMP0:%.*]] = or i1 [[IDENT_CHECK]], [[IDENT_CHECK1]]
 ; X280-NEXT:    br i1 [[TMP0]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; X280:       [[VECTOR_PH]]:
-<<<<<<< HEAD
-=======
 ; X280-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 2, i1 true)
-; X280-NEXT:    [[TMP1:%.*]] = mul i64 16, [[IDX_EXT]]
-; X280-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[PIX1_BASE]], i64 [[TMP1]]
-; X280-NEXT:    [[TMP2:%.*]] = mul i64 16, [[IDX_EXT63]]
-; X280-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[PIX2_BASE]], i64 [[TMP2]]
->>>>>>> origin/sifive-dev
 ; X280-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; X280:       [[VECTOR_BODY]]:
 ; X280-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -162,16 +155,9 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; X280-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ false, %[[VECTOR_SCEVCHECK]] ]
 ; X280-NEXT:    br i1 [[NO_SCEV_CHECK]], label %[[SCALAR_PH59:.*]], label %[[VECTOR_PH60:.*]]
 ; X280:       [[VECTOR_PH60]]:
-<<<<<<< HEAD
-; X280-NEXT:    [[TMP41:%.*]] = sext i32 [[I_PIX1]] to i64
-; X280-NEXT:    [[TMP42:%.*]] = sext i32 [[I_PIX2]] to i64
-=======
 ; X280-NEXT:    [[TMP41:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 2, i1 true)
-; X280-NEXT:    [[TMP47:%.*]] = mul i64 16, [[IDX_EXT]]
-; X280-NEXT:    [[TMP56:%.*]] = getelementptr i8, ptr [[PIX1_BASE]], i64 [[TMP47]]
-; X280-NEXT:    [[TMP48:%.*]] = mul i64 16, [[IDX_EXT63]]
-; X280-NEXT:    [[TMP65:%.*]] = getelementptr i8, ptr [[PIX2_BASE]], i64 [[TMP48]]
->>>>>>> origin/sifive-dev
+; X280-NEXT:    [[TMP44:%.*]] = sext i32 [[I_PIX1]] to i64
+; X280-NEXT:    [[TMP42:%.*]] = sext i32 [[I_PIX2]] to i64
 ; X280-NEXT:    br label %[[VECTOR_BODY61:.*]]
 ; X280:       [[VECTOR_BODY61]]:
 ; X280-NEXT:    [[INDEX62:%.*]] = phi i64 [ 0, %[[VECTOR_PH60]] ], [ [[INDEX_EVL_NEXT120:%.*]], %[[VECTOR_BODY61]] ]
@@ -183,7 +169,7 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; X280-NEXT:    [[NEXT_GEP74:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL57]], i64 [[OFFSET_IDX73]]
 ; X280-NEXT:    [[OFFSET_IDX75:%.*]] = mul i64 [[EVL_BASED_IV71]], [[IDX_EXT63]]
 ; X280-NEXT:    [[NEXT_GEP76:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL58]], i64 [[OFFSET_IDX75]]
-; X280-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 2 x i64> @llvm.experimental.vp.strided.load.nxv2i64.p0.i64(ptr align 1 [[NEXT_GEP74]], i64 [[TMP41]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP50]])
+; X280-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 2 x i64> @llvm.experimental.vp.strided.load.nxv2i64.p0.i64(ptr align 1 [[NEXT_GEP74]], i64 [[TMP44]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP50]])
 ; X280-NEXT:    [[WIDE_STRIDED_LOAD_CAST:%.*]] = bitcast <vscale x 2 x i64> [[WIDE_STRIDED_LOAD]] to <vscale x 16 x i8>
 ; X280-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } @llvm.experimental.vector.deinterleave8.nxv16i8(<vscale x 16 x i8> [[WIDE_STRIDED_LOAD_CAST]])
 ; X280-NEXT:    [[TMP57:%.*]] = extractvalue { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } [[DEINTERLEAVED_RESULTS]], 0
@@ -373,26 +359,13 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; X280-NEXT:    [[IDENT_CHECK123:%.*]] = icmp ne i32 [[I_PIX1]], 1
 ; X280-NEXT:    [[IDENT_CHECK124:%.*]] = icmp ne i32 [[I_PIX2]], 1
 ; X280-NEXT:    [[TMP97:%.*]] = or i1 [[IDENT_CHECK123]], [[IDENT_CHECK124]]
-<<<<<<< HEAD
 ; X280-NEXT:    br i1 [[TMP97]], label %[[SCALAR_PH121:.*]], label %[[VECTOR_PH122:.*]]
 ; X280:       [[VECTOR_PH122]]:
+; X280-NEXT:    [[TMP102:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 2, i1 true)
 ; X280-NEXT:    br label %[[VECTOR_BODY123:.*]]
 ; X280:       [[VECTOR_BODY123]]:
 ; X280-NEXT:    [[INDEX124:%.*]] = phi i64 [ 0, %[[VECTOR_PH122]] ], [ [[INDEX_EVL_NEXT197:%.*]], %[[VECTOR_BODY123]] ]
 ; X280-NEXT:    [[EVL_BASED_IV135:%.*]] = phi i64 [ 0, %[[VECTOR_PH122]] ], [ [[INDEX_EVL_NEXT197]], %[[VECTOR_BODY123]] ]
-=======
-; X280-NEXT:    br i1 [[TMP97]], label %[[SCALAR_PH119:.*]], label %[[VECTOR_PH120:.*]]
-; X280:       [[VECTOR_PH120]]:
-; X280-NEXT:    [[TMP102:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 2, i1 true)
-; X280-NEXT:    [[TMP98:%.*]] = mul i64 16, [[IDX_EXT]]
-; X280-NEXT:    [[IND_END129:%.*]] = getelementptr i8, ptr [[ADD_PTR248]], i64 [[TMP98]]
-; X280-NEXT:    [[TMP99:%.*]] = mul i64 16, [[IDX_EXT63]]
-; X280-NEXT:    [[IND_END131:%.*]] = getelementptr i8, ptr [[ADD_PTR249]], i64 [[TMP99]]
-; X280-NEXT:    br label %[[VECTOR_BODY121:.*]]
-; X280:       [[VECTOR_BODY121]]:
-; X280-NEXT:    [[INDEX122:%.*]] = phi i64 [ 0, %[[VECTOR_PH120]] ], [ [[INDEX_EVL_NEXT197:%.*]], %[[VECTOR_BODY121]] ]
-; X280-NEXT:    [[EVL_BASED_IV135:%.*]] = phi i64 [ 0, %[[VECTOR_PH120]] ], [ [[INDEX_EVL_NEXT197]], %[[VECTOR_BODY121]] ]
->>>>>>> origin/sifive-dev
 ; X280-NEXT:    [[TMP100:%.*]] = sub i64 16, [[EVL_BASED_IV135]]
 ; X280-NEXT:    [[TMP101:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP100]], i32 2, i1 true)
 ; X280-NEXT:    [[OFFSET_IDX136:%.*]] = mul i64 [[EVL_BASED_IV135]], [[IDX_EXT]]
@@ -495,7 +468,6 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; X280-NEXT:    br i1 [[TMP143]], label %[[MIDDLE_BLOCK189:.*]], label %[[VECTOR_BODY123]], !llvm.loop [[LOOP5:![0-9]+]]
 ; X280:       [[MIDDLE_BLOCK189]]:
 ; X280-NEXT:    br label %[[FOR_BODY338_PREHEADER:.*]]
-<<<<<<< HEAD
 ; X280:       [[SCALAR_PH121]]:
 ; X280-NEXT:    [[BC_RESUME_VAL190:%.*]] = phi i64 [ 0, %[[VECTOR_SCEVCHECK118]] ]
 ; X280-NEXT:    [[BC_RESUME_VAL191:%.*]] = phi ptr [ [[ADD_PTR248]], %[[VECTOR_SCEVCHECK118]] ]
@@ -503,27 +475,13 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; X280-NEXT:    [[NO_SCEV_CHECK194:%.*]] = phi i1 [ false, %[[VECTOR_SCEVCHECK118]] ]
 ; X280-NEXT:    br i1 [[NO_SCEV_CHECK194]], label %[[SCALAR_PH193:.*]], label %[[VECTOR_PH195:.*]]
 ; X280:       [[VECTOR_PH195]]:
+; X280-NEXT:    [[TMP141:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 2, i1 true)
 ; X280-NEXT:    [[TMP138:%.*]] = sext i32 [[I_PIX1]] to i64
 ; X280-NEXT:    [[TMP139:%.*]] = sext i32 [[I_PIX2]] to i64
 ; X280-NEXT:    br label %[[VECTOR_BODY196:.*]]
 ; X280:       [[VECTOR_BODY196]]:
 ; X280-NEXT:    [[INDEX197:%.*]] = phi i64 [ 0, %[[VECTOR_PH195]] ], [ [[INDEX_EVL_NEXT262:%.*]], %[[VECTOR_BODY196]] ]
 ; X280-NEXT:    [[EVL_BASED_IV211:%.*]] = phi i64 [ 0, %[[VECTOR_PH195]] ], [ [[INDEX_EVL_NEXT262]], %[[VECTOR_BODY196]] ]
-=======
-; X280:       [[SCALAR_PH119]]:
-; X280-NEXT:    [[NO_SCEV_CHECK191:%.*]] = phi i1 [ false, %[[VECTOR_SCEVCHECK116]] ]
-; X280-NEXT:    br i1 [[NO_SCEV_CHECK191]], label %[[SCALAR_PH190:.*]], label %[[VECTOR_PH192:.*]]
-; X280:       [[VECTOR_PH192]]:
-; X280-NEXT:    [[TMP141:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 2, i1 true)
-; X280-NEXT:    [[TMP144:%.*]] = mul i64 16, [[IDX_EXT]]
-; X280-NEXT:    [[TMP138:%.*]] = getelementptr i8, ptr [[ADD_PTR248]], i64 [[TMP144]]
-; X280-NEXT:    [[TMP145:%.*]] = mul i64 16, [[IDX_EXT63]]
-; X280-NEXT:    [[TMP139:%.*]] = getelementptr i8, ptr [[ADD_PTR249]], i64 [[TMP145]]
-; X280-NEXT:    br label %[[VECTOR_BODY193:.*]]
-; X280:       [[VECTOR_BODY193]]:
-; X280-NEXT:    [[INDEX194:%.*]] = phi i64 [ 0, %[[VECTOR_PH192]] ], [ [[INDEX_EVL_NEXT262:%.*]], %[[VECTOR_BODY193]] ]
-; X280-NEXT:    [[EVL_BASED_IV211:%.*]] = phi i64 [ 0, %[[VECTOR_PH192]] ], [ [[INDEX_EVL_NEXT262]], %[[VECTOR_BODY193]] ]
->>>>>>> origin/sifive-dev
 ; X280-NEXT:    [[TMP146:%.*]] = sub i64 16, [[EVL_BASED_IV211]]
 ; X280-NEXT:    [[TMP147:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP146]], i32 2, i1 true)
 ; X280-NEXT:    [[OFFSET_IDX200:%.*]] = add i64 [[BC_RESUME_VAL190]], [[EVL_BASED_IV211]]
@@ -1052,14 +1010,7 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; P670-NEXT:    [[TMP0:%.*]] = or i1 [[IDENT_CHECK]], [[IDENT_CHECK1]]
 ; P670-NEXT:    br i1 [[TMP0]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; P670:       [[VECTOR_PH]]:
-<<<<<<< HEAD
-=======
 ; P670-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 4, i1 true)
-; P670-NEXT:    [[TMP1:%.*]] = mul i64 16, [[IDX_EXT]]
-; P670-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[PIX1_BASE]], i64 [[TMP1]]
-; P670-NEXT:    [[TMP2:%.*]] = mul i64 16, [[IDX_EXT63]]
-; P670-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[PIX2_BASE]], i64 [[TMP2]]
->>>>>>> origin/sifive-dev
 ; P670-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; P670:       [[VECTOR_BODY]]:
 ; P670-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -1286,14 +1237,7 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; P670-NEXT:    [[TMP63:%.*]] = or i1 [[IDENT_CHECK61]], [[IDENT_CHECK62]]
 ; P670-NEXT:    br i1 [[TMP63]], label %[[SCALAR_PH62:.*]], label %[[VECTOR_PH63:.*]]
 ; P670:       [[VECTOR_PH63]]:
-<<<<<<< HEAD
-=======
 ; P670-NEXT:    [[TMP68:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 4, i1 true)
-; P670-NEXT:    [[TMP64:%.*]] = mul i64 16, [[IDX_EXT]]
-; P670-NEXT:    [[IND_END67:%.*]] = getelementptr i8, ptr [[ADD_PTR248]], i64 [[TMP64]]
-; P670-NEXT:    [[TMP65:%.*]] = mul i64 16, [[IDX_EXT63]]
-; P670-NEXT:    [[IND_END69:%.*]] = getelementptr i8, ptr [[ADD_PTR249]], i64 [[TMP65]]
->>>>>>> origin/sifive-dev
 ; P670-NEXT:    br label %[[VECTOR_BODY64:.*]]
 ; P670:       [[VECTOR_BODY64]]:
 ; P670-NEXT:    [[INDEX65:%.*]] = phi i64 [ 0, %[[VECTOR_PH63]] ], [ [[INDEX_EVL_NEXT135:%.*]], %[[VECTOR_BODY64]] ]
@@ -1849,14 +1793,7 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; LION-NEXT:    [[TMP0:%.*]] = or i1 [[IDENT_CHECK]], [[IDENT_CHECK1]]
 ; LION-NEXT:    br i1 [[TMP0]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; LION:       [[VECTOR_PH]]:
-<<<<<<< HEAD
-=======
 ; LION-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 4, i1 true)
-; LION-NEXT:    [[TMP1:%.*]] = mul i64 16, [[IDX_EXT]]
-; LION-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[PIX1_BASE]], i64 [[TMP1]]
-; LION-NEXT:    [[TMP2:%.*]] = mul i64 16, [[IDX_EXT63]]
-; LION-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[PIX2_BASE]], i64 [[TMP2]]
->>>>>>> origin/sifive-dev
 ; LION-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; LION:       [[VECTOR_BODY]]:
 ; LION-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -1970,16 +1907,9 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; LION-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ false, %[[VECTOR_SCEVCHECK]] ]
 ; LION-NEXT:    br i1 [[NO_SCEV_CHECK]], label %[[SCALAR_PH59:.*]], label %[[VECTOR_PH60:.*]]
 ; LION:       [[VECTOR_PH60]]:
-<<<<<<< HEAD
-; LION-NEXT:    [[TMP41:%.*]] = sext i32 [[I_PIX1]] to i64
-; LION-NEXT:    [[TMP42:%.*]] = sext i32 [[I_PIX2]] to i64
-=======
 ; LION-NEXT:    [[TMP41:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 4, i1 true)
-; LION-NEXT:    [[TMP47:%.*]] = mul i64 16, [[IDX_EXT]]
-; LION-NEXT:    [[TMP56:%.*]] = getelementptr i8, ptr [[PIX1_BASE]], i64 [[TMP47]]
-; LION-NEXT:    [[TMP48:%.*]] = mul i64 16, [[IDX_EXT63]]
-; LION-NEXT:    [[TMP65:%.*]] = getelementptr i8, ptr [[PIX2_BASE]], i64 [[TMP48]]
->>>>>>> origin/sifive-dev
+; LION-NEXT:    [[TMP44:%.*]] = sext i32 [[I_PIX1]] to i64
+; LION-NEXT:    [[TMP42:%.*]] = sext i32 [[I_PIX2]] to i64
 ; LION-NEXT:    br label %[[VECTOR_BODY61:.*]]
 ; LION:       [[VECTOR_BODY61]]:
 ; LION-NEXT:    [[INDEX62:%.*]] = phi i64 [ 0, %[[VECTOR_PH60]] ], [ [[INDEX_EVL_NEXT120:%.*]], %[[VECTOR_BODY61]] ]
@@ -1991,7 +1921,7 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; LION-NEXT:    [[NEXT_GEP74:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL57]], i64 [[OFFSET_IDX73]]
 ; LION-NEXT:    [[OFFSET_IDX75:%.*]] = mul i64 [[EVL_BASED_IV71]], [[IDX_EXT63]]
 ; LION-NEXT:    [[NEXT_GEP76:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL58]], i64 [[OFFSET_IDX75]]
-; LION-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 4 x i64> @llvm.experimental.vp.strided.load.nxv4i64.p0.i64(ptr align 1 [[NEXT_GEP74]], i64 [[TMP41]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP50]])
+; LION-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 4 x i64> @llvm.experimental.vp.strided.load.nxv4i64.p0.i64(ptr align 1 [[NEXT_GEP74]], i64 [[TMP44]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP50]])
 ; LION-NEXT:    [[WIDE_STRIDED_LOAD_CAST:%.*]] = bitcast <vscale x 4 x i64> [[WIDE_STRIDED_LOAD]] to <vscale x 32 x i8>
 ; LION-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @llvm.experimental.vector.deinterleave8.nxv32i8(<vscale x 32 x i8> [[WIDE_STRIDED_LOAD_CAST]])
 ; LION-NEXT:    [[TMP57:%.*]] = extractvalue { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } [[DEINTERLEAVED_RESULTS]], 0
@@ -2181,26 +2111,13 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; LION-NEXT:    [[IDENT_CHECK123:%.*]] = icmp ne i32 [[I_PIX1]], 1
 ; LION-NEXT:    [[IDENT_CHECK124:%.*]] = icmp ne i32 [[I_PIX2]], 1
 ; LION-NEXT:    [[TMP97:%.*]] = or i1 [[IDENT_CHECK123]], [[IDENT_CHECK124]]
-<<<<<<< HEAD
 ; LION-NEXT:    br i1 [[TMP97]], label %[[SCALAR_PH121:.*]], label %[[VECTOR_PH122:.*]]
 ; LION:       [[VECTOR_PH122]]:
+; LION-NEXT:    [[TMP102:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 4, i1 true)
 ; LION-NEXT:    br label %[[VECTOR_BODY123:.*]]
 ; LION:       [[VECTOR_BODY123]]:
 ; LION-NEXT:    [[INDEX124:%.*]] = phi i64 [ 0, %[[VECTOR_PH122]] ], [ [[INDEX_EVL_NEXT197:%.*]], %[[VECTOR_BODY123]] ]
 ; LION-NEXT:    [[EVL_BASED_IV135:%.*]] = phi i64 [ 0, %[[VECTOR_PH122]] ], [ [[INDEX_EVL_NEXT197]], %[[VECTOR_BODY123]] ]
-=======
-; LION-NEXT:    br i1 [[TMP97]], label %[[SCALAR_PH119:.*]], label %[[VECTOR_PH120:.*]]
-; LION:       [[VECTOR_PH120]]:
-; LION-NEXT:    [[TMP102:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 4, i1 true)
-; LION-NEXT:    [[TMP98:%.*]] = mul i64 16, [[IDX_EXT]]
-; LION-NEXT:    [[IND_END129:%.*]] = getelementptr i8, ptr [[ADD_PTR248]], i64 [[TMP98]]
-; LION-NEXT:    [[TMP99:%.*]] = mul i64 16, [[IDX_EXT63]]
-; LION-NEXT:    [[IND_END131:%.*]] = getelementptr i8, ptr [[ADD_PTR249]], i64 [[TMP99]]
-; LION-NEXT:    br label %[[VECTOR_BODY121:.*]]
-; LION:       [[VECTOR_BODY121]]:
-; LION-NEXT:    [[INDEX122:%.*]] = phi i64 [ 0, %[[VECTOR_PH120]] ], [ [[INDEX_EVL_NEXT197:%.*]], %[[VECTOR_BODY121]] ]
-; LION-NEXT:    [[EVL_BASED_IV135:%.*]] = phi i64 [ 0, %[[VECTOR_PH120]] ], [ [[INDEX_EVL_NEXT197]], %[[VECTOR_BODY121]] ]
->>>>>>> origin/sifive-dev
 ; LION-NEXT:    [[TMP100:%.*]] = sub i64 16, [[EVL_BASED_IV135]]
 ; LION-NEXT:    [[TMP101:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP100]], i32 4, i1 true)
 ; LION-NEXT:    [[OFFSET_IDX136:%.*]] = mul i64 [[EVL_BASED_IV135]], [[IDX_EXT]]
@@ -2303,7 +2220,6 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; LION-NEXT:    br i1 [[TMP143]], label %[[MIDDLE_BLOCK189:.*]], label %[[VECTOR_BODY123]], !llvm.loop [[LOOP5:![0-9]+]]
 ; LION:       [[MIDDLE_BLOCK189]]:
 ; LION-NEXT:    br label %[[FOR_BODY338_PREHEADER:.*]]
-<<<<<<< HEAD
 ; LION:       [[SCALAR_PH121]]:
 ; LION-NEXT:    [[BC_RESUME_VAL190:%.*]] = phi i64 [ 0, %[[VECTOR_SCEVCHECK118]] ]
 ; LION-NEXT:    [[BC_RESUME_VAL191:%.*]] = phi ptr [ [[ADD_PTR248]], %[[VECTOR_SCEVCHECK118]] ]
@@ -2311,27 +2227,13 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; LION-NEXT:    [[NO_SCEV_CHECK194:%.*]] = phi i1 [ false, %[[VECTOR_SCEVCHECK118]] ]
 ; LION-NEXT:    br i1 [[NO_SCEV_CHECK194]], label %[[SCALAR_PH193:.*]], label %[[VECTOR_PH195:.*]]
 ; LION:       [[VECTOR_PH195]]:
+; LION-NEXT:    [[TMP141:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 4, i1 true)
 ; LION-NEXT:    [[TMP138:%.*]] = sext i32 [[I_PIX1]] to i64
 ; LION-NEXT:    [[TMP139:%.*]] = sext i32 [[I_PIX2]] to i64
 ; LION-NEXT:    br label %[[VECTOR_BODY196:.*]]
 ; LION:       [[VECTOR_BODY196]]:
 ; LION-NEXT:    [[INDEX197:%.*]] = phi i64 [ 0, %[[VECTOR_PH195]] ], [ [[INDEX_EVL_NEXT262:%.*]], %[[VECTOR_BODY196]] ]
 ; LION-NEXT:    [[EVL_BASED_IV211:%.*]] = phi i64 [ 0, %[[VECTOR_PH195]] ], [ [[INDEX_EVL_NEXT262]], %[[VECTOR_BODY196]] ]
-=======
-; LION:       [[SCALAR_PH119]]:
-; LION-NEXT:    [[NO_SCEV_CHECK191:%.*]] = phi i1 [ false, %[[VECTOR_SCEVCHECK116]] ]
-; LION-NEXT:    br i1 [[NO_SCEV_CHECK191]], label %[[SCALAR_PH190:.*]], label %[[VECTOR_PH192:.*]]
-; LION:       [[VECTOR_PH192]]:
-; LION-NEXT:    [[TMP141:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 4, i1 true)
-; LION-NEXT:    [[TMP144:%.*]] = mul i64 16, [[IDX_EXT]]
-; LION-NEXT:    [[TMP138:%.*]] = getelementptr i8, ptr [[ADD_PTR248]], i64 [[TMP144]]
-; LION-NEXT:    [[TMP145:%.*]] = mul i64 16, [[IDX_EXT63]]
-; LION-NEXT:    [[TMP139:%.*]] = getelementptr i8, ptr [[ADD_PTR249]], i64 [[TMP145]]
-; LION-NEXT:    br label %[[VECTOR_BODY193:.*]]
-; LION:       [[VECTOR_BODY193]]:
-; LION-NEXT:    [[INDEX194:%.*]] = phi i64 [ 0, %[[VECTOR_PH192]] ], [ [[INDEX_EVL_NEXT262:%.*]], %[[VECTOR_BODY193]] ]
-; LION-NEXT:    [[EVL_BASED_IV211:%.*]] = phi i64 [ 0, %[[VECTOR_PH192]] ], [ [[INDEX_EVL_NEXT262]], %[[VECTOR_BODY193]] ]
->>>>>>> origin/sifive-dev
 ; LION-NEXT:    [[TMP146:%.*]] = sub i64 16, [[EVL_BASED_IV211]]
 ; LION-NEXT:    [[TMP147:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP146]], i32 4, i1 true)
 ; LION-NEXT:    [[OFFSET_IDX200:%.*]] = add i64 [[BC_RESUME_VAL190]], [[EVL_BASED_IV211]]
@@ -3433,14 +3335,7 @@ define  i32 @_Z11satd_8x8_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_base
 ; X280-NEXT:    [[TMP0:%.*]] = or i1 [[IDENT_CHECK]], [[IDENT_CHECK1]]
 ; X280-NEXT:    br i1 [[TMP0]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; X280:       [[VECTOR_PH]]:
-<<<<<<< HEAD
-=======
 ; X280-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 8, i32 1, i1 true)
-; X280-NEXT:    [[TMP1:%.*]] = mul i64 8, [[IDX_EXT]]
-; X280-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[PIX1_BASE]], i64 [[TMP1]]
-; X280-NEXT:    [[TMP2:%.*]] = mul i64 8, [[IDX_EXT63]]
-; X280-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[PIX2_BASE]], i64 [[TMP2]]
->>>>>>> origin/sifive-dev
 ; X280-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; X280:       [[VECTOR_BODY]]:
 ; X280-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -3554,16 +3449,9 @@ define  i32 @_Z11satd_8x8_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_base
 ; X280-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ false, %[[VECTOR_SCEVCHECK]] ]
 ; X280-NEXT:    br i1 [[NO_SCEV_CHECK]], label %[[SCALAR_PH59:.*]], label %[[VECTOR_PH60:.*]]
 ; X280:       [[VECTOR_PH60]]:
-<<<<<<< HEAD
-; X280-NEXT:    [[TMP41:%.*]] = sext i32 [[I_PIX1]] to i64
-; X280-NEXT:    [[TMP42:%.*]] = sext i32 [[I_PIX2]] to i64
-=======
 ; X280-NEXT:    [[TMP41:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 8, i32 1, i1 true)
-; X280-NEXT:    [[TMP47:%.*]] = mul i64 8, [[IDX_EXT]]
-; X280-NEXT:    [[TMP56:%.*]] = getelementptr i8, ptr [[PIX1_BASE]], i64 [[TMP47]]
-; X280-NEXT:    [[TMP48:%.*]] = mul i64 8, [[IDX_EXT63]]
-; X280-NEXT:    [[TMP65:%.*]] = getelementptr i8, ptr [[PIX2_BASE]], i64 [[TMP48]]
->>>>>>> origin/sifive-dev
+; X280-NEXT:    [[TMP44:%.*]] = sext i32 [[I_PIX1]] to i64
+; X280-NEXT:    [[TMP42:%.*]] = sext i32 [[I_PIX2]] to i64
 ; X280-NEXT:    br label %[[VECTOR_BODY61:.*]]
 ; X280:       [[VECTOR_BODY61]]:
 ; X280-NEXT:    [[INDEX62:%.*]] = phi i64 [ 0, %[[VECTOR_PH60]] ], [ [[INDEX_EVL_NEXT120:%.*]], %[[VECTOR_BODY61]] ]
@@ -3575,7 +3463,7 @@ define  i32 @_Z11satd_8x8_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_base
 ; X280-NEXT:    [[NEXT_GEP74:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL57]], i64 [[OFFSET_IDX73]]
 ; X280-NEXT:    [[OFFSET_IDX75:%.*]] = mul i64 [[EVL_BASED_IV71]], [[IDX_EXT63]]
 ; X280-NEXT:    [[NEXT_GEP76:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL58]], i64 [[OFFSET_IDX75]]
-; X280-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 1 x i64> @llvm.experimental.vp.strided.load.nxv1i64.p0.i64(ptr align 1 [[NEXT_GEP74]], i64 [[TMP41]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP50]])
+; X280-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 1 x i64> @llvm.experimental.vp.strided.load.nxv1i64.p0.i64(ptr align 1 [[NEXT_GEP74]], i64 [[TMP44]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP50]])
 ; X280-NEXT:    [[WIDE_STRIDED_LOAD_CAST:%.*]] = bitcast <vscale x 1 x i64> [[WIDE_STRIDED_LOAD]] to <vscale x 8 x i8>
 ; X280-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } @llvm.experimental.vector.deinterleave8.nxv8i8(<vscale x 8 x i8> [[WIDE_STRIDED_LOAD_CAST]])
 ; X280-NEXT:    [[TMP57:%.*]] = extractvalue { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } [[DEINTERLEAVED_RESULTS]], 0
@@ -3857,14 +3745,7 @@ define  i32 @_Z11satd_8x8_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_base
 ; P670-NEXT:    [[TMP0:%.*]] = or i1 [[IDENT_CHECK]], [[IDENT_CHECK1]]
 ; P670-NEXT:    br i1 [[TMP0]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; P670:       [[VECTOR_PH]]:
-<<<<<<< HEAD
-=======
 ; P670-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 8, i32 4, i1 true)
-; P670-NEXT:    [[TMP1:%.*]] = mul i64 8, [[IDX_EXT]]
-; P670-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[PIX1_BASE]], i64 [[TMP1]]
-; P670-NEXT:    [[TMP2:%.*]] = mul i64 8, [[IDX_EXT63]]
-; P670-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[PIX2_BASE]], i64 [[TMP2]]
->>>>>>> origin/sifive-dev
 ; P670-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; P670:       [[VECTOR_BODY]]:
 ; P670-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -4181,14 +4062,7 @@ define  i32 @_Z11satd_8x8_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_base
 ; LION-NEXT:    [[TMP0:%.*]] = or i1 [[IDENT_CHECK]], [[IDENT_CHECK1]]
 ; LION-NEXT:    br i1 [[TMP0]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; LION:       [[VECTOR_PH]]:
-<<<<<<< HEAD
-=======
 ; LION-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 8, i32 4, i1 true)
-; LION-NEXT:    [[TMP1:%.*]] = mul i64 8, [[IDX_EXT]]
-; LION-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[PIX1_BASE]], i64 [[TMP1]]
-; LION-NEXT:    [[TMP2:%.*]] = mul i64 8, [[IDX_EXT63]]
-; LION-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[PIX2_BASE]], i64 [[TMP2]]
->>>>>>> origin/sifive-dev
 ; LION-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; LION:       [[VECTOR_BODY]]:
 ; LION-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -4302,16 +4176,9 @@ define  i32 @_Z11satd_8x8_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_base
 ; LION-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ false, %[[VECTOR_SCEVCHECK]] ]
 ; LION-NEXT:    br i1 [[NO_SCEV_CHECK]], label %[[SCALAR_PH59:.*]], label %[[VECTOR_PH60:.*]]
 ; LION:       [[VECTOR_PH60]]:
-<<<<<<< HEAD
-; LION-NEXT:    [[TMP41:%.*]] = sext i32 [[I_PIX1]] to i64
-; LION-NEXT:    [[TMP42:%.*]] = sext i32 [[I_PIX2]] to i64
-=======
 ; LION-NEXT:    [[TMP41:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 8, i32 4, i1 true)
-; LION-NEXT:    [[TMP47:%.*]] = mul i64 8, [[IDX_EXT]]
-; LION-NEXT:    [[TMP56:%.*]] = getelementptr i8, ptr [[PIX1_BASE]], i64 [[TMP47]]
-; LION-NEXT:    [[TMP48:%.*]] = mul i64 8, [[IDX_EXT63]]
-; LION-NEXT:    [[TMP65:%.*]] = getelementptr i8, ptr [[PIX2_BASE]], i64 [[TMP48]]
->>>>>>> origin/sifive-dev
+; LION-NEXT:    [[TMP44:%.*]] = sext i32 [[I_PIX1]] to i64
+; LION-NEXT:    [[TMP42:%.*]] = sext i32 [[I_PIX2]] to i64
 ; LION-NEXT:    br label %[[VECTOR_BODY61:.*]]
 ; LION:       [[VECTOR_BODY61]]:
 ; LION-NEXT:    [[INDEX62:%.*]] = phi i64 [ 0, %[[VECTOR_PH60]] ], [ [[INDEX_EVL_NEXT120:%.*]], %[[VECTOR_BODY61]] ]
@@ -4323,7 +4190,7 @@ define  i32 @_Z11satd_8x8_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_base
 ; LION-NEXT:    [[NEXT_GEP74:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL57]], i64 [[OFFSET_IDX73]]
 ; LION-NEXT:    [[OFFSET_IDX75:%.*]] = mul i64 [[EVL_BASED_IV71]], [[IDX_EXT63]]
 ; LION-NEXT:    [[NEXT_GEP76:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL58]], i64 [[OFFSET_IDX75]]
-; LION-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 4 x i64> @llvm.experimental.vp.strided.load.nxv4i64.p0.i64(ptr align 1 [[NEXT_GEP74]], i64 [[TMP41]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP50]])
+; LION-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 4 x i64> @llvm.experimental.vp.strided.load.nxv4i64.p0.i64(ptr align 1 [[NEXT_GEP74]], i64 [[TMP44]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP50]])
 ; LION-NEXT:    [[WIDE_STRIDED_LOAD_CAST:%.*]] = bitcast <vscale x 4 x i64> [[WIDE_STRIDED_LOAD]] to <vscale x 32 x i8>
 ; LION-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @llvm.experimental.vector.deinterleave8.nxv32i8(<vscale x 32 x i8> [[WIDE_STRIDED_LOAD_CAST]])
 ; LION-NEXT:    [[TMP57:%.*]] = extractvalue { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } [[DEINTERLEAVED_RESULTS]], 0
@@ -4825,14 +4692,7 @@ define  i32 @_Z8satd_8x4PhiS_i(ptr %pix1, i32  %i_pix1, ptr  %pix2, i32  %i_pix2
 ; X280-NEXT:    [[TMP0:%.*]] = or i1 [[IDENT_CHECK]], [[IDENT_CHECK1]]
 ; X280-NEXT:    br i1 [[TMP0]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; X280:       [[VECTOR_PH]]:
-<<<<<<< HEAD
-=======
 ; X280-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 4, i32 1, i1 true)
-; X280-NEXT:    [[TMP1:%.*]] = mul i64 4, [[IDX_EXT]]
-; X280-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[PIX1]], i64 [[TMP1]]
-; X280-NEXT:    [[TMP2:%.*]] = mul i64 4, [[IDX_EXT63]]
-; X280-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[PIX2]], i64 [[TMP2]]
->>>>>>> origin/sifive-dev
 ; X280-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; X280:       [[VECTOR_BODY]]:
 ; X280-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -4946,16 +4806,9 @@ define  i32 @_Z8satd_8x4PhiS_i(ptr %pix1, i32  %i_pix1, ptr  %pix2, i32  %i_pix2
 ; X280-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ false, %[[VECTOR_SCEVCHECK]] ]
 ; X280-NEXT:    br i1 [[NO_SCEV_CHECK]], label %[[SCALAR_PH59:.*]], label %[[VECTOR_PH60:.*]]
 ; X280:       [[VECTOR_PH60]]:
-<<<<<<< HEAD
-; X280-NEXT:    [[TMP41:%.*]] = sext i32 [[I_PIX1]] to i64
-; X280-NEXT:    [[TMP42:%.*]] = sext i32 [[I_PIX2]] to i64
-=======
 ; X280-NEXT:    [[TMP41:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 4, i32 1, i1 true)
-; X280-NEXT:    [[TMP47:%.*]] = mul i64 4, [[IDX_EXT]]
-; X280-NEXT:    [[TMP56:%.*]] = getelementptr i8, ptr [[PIX1]], i64 [[TMP47]]
-; X280-NEXT:    [[TMP48:%.*]] = mul i64 4, [[IDX_EXT63]]
-; X280-NEXT:    [[TMP75:%.*]] = getelementptr i8, ptr [[PIX2]], i64 [[TMP48]]
->>>>>>> origin/sifive-dev
+; X280-NEXT:    [[TMP44:%.*]] = sext i32 [[I_PIX1]] to i64
+; X280-NEXT:    [[TMP42:%.*]] = sext i32 [[I_PIX2]] to i64
 ; X280-NEXT:    br label %[[VECTOR_BODY61:.*]]
 ; X280:       [[VECTOR_BODY61]]:
 ; X280-NEXT:    [[INDEX62:%.*]] = phi i64 [ 0, %[[VECTOR_PH60]] ], [ [[INDEX_EVL_NEXT120:%.*]], %[[VECTOR_BODY61]] ]
@@ -4967,7 +4820,7 @@ define  i32 @_Z8satd_8x4PhiS_i(ptr %pix1, i32  %i_pix1, ptr  %pix2, i32  %i_pix2
 ; X280-NEXT:    [[NEXT_GEP74:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL57]], i64 [[OFFSET_IDX73]]
 ; X280-NEXT:    [[OFFSET_IDX75:%.*]] = mul i64 [[EVL_BASED_IV71]], [[IDX_EXT63]]
 ; X280-NEXT:    [[NEXT_GEP76:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL58]], i64 [[OFFSET_IDX75]]
-; X280-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 1 x i64> @llvm.experimental.vp.strided.load.nxv1i64.p0.i64(ptr align 1 [[NEXT_GEP74]], i64 [[TMP41]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP50]])
+; X280-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 1 x i64> @llvm.experimental.vp.strided.load.nxv1i64.p0.i64(ptr align 1 [[NEXT_GEP74]], i64 [[TMP44]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP50]])
 ; X280-NEXT:    [[WIDE_STRIDED_LOAD_CAST:%.*]] = bitcast <vscale x 1 x i64> [[WIDE_STRIDED_LOAD]] to <vscale x 8 x i8>
 ; X280-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } @llvm.experimental.vector.deinterleave8.nxv8i8(<vscale x 8 x i8> [[WIDE_STRIDED_LOAD_CAST]])
 ; X280-NEXT:    [[TMP57:%.*]] = extractvalue { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } [[DEINTERLEAVED_RESULTS]], 0

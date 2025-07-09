@@ -18,14 +18,7 @@ define  i32 @test_16x16(ptr %pix1_base, i32 %i_pix1, ptr %pix2_base, i32 %i_pix2
 ; CHECK-NEXT:    [[TMP4:%.*]] = or i1 [[IDENT_CHECK]], [[IDENT_CHECK1]]
 ; CHECK-NEXT:    br i1 [[TMP4]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH1:.*]]
 ; CHECK:       [[VECTOR_PH1]]:
-<<<<<<< HEAD
-=======
 ; CHECK-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 4, i1 true)
-; CHECK-NEXT:    [[TMP1:%.*]] = mul i64 16, [[IDX_EXT]]
-; CHECK-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[ADD_PTR]], i64 [[TMP1]]
-; CHECK-NEXT:    [[TMP2:%.*]] = mul i64 16, [[IDX_EXT65]]
-; CHECK-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[ADD_PTR1]], i64 [[TMP2]]
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH1]] ], [ [[INDEX_EVL_NEXT120:%.*]], %[[VECTOR_BODY]] ]
@@ -767,14 +760,7 @@ define i32 @test_8x8(ptr %pix1_base, i32 %i_pix1, ptr %pix2_base, i32 %i_pix2){
 ; CHECK-NEXT:    [[TMP81:%.*]] = or i1 [[IDENT_CHECK]], [[IDENT_CHECK1]]
 ; CHECK-NEXT:    br i1 [[TMP81]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
-<<<<<<< HEAD
-=======
 ; CHECK-NEXT:    [[TMP48:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 4, i1 true)
-; CHECK-NEXT:    [[TMP82:%.*]] = mul i64 16, [[IDX_EXT]]
-; CHECK-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[ADD_PTR]], i64 [[TMP82]]
-; CHECK-NEXT:    [[TMP83:%.*]] = mul i64 16, [[IDX_EXT65]]
-; CHECK-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[ADD_PTR1]], i64 [[TMP83]]
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT120:%.*]], %[[VECTOR_BODY]] ]

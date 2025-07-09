@@ -24,6 +24,7 @@ define dso_local void @_Z10foo_j8_i64iPaPl(i32 noundef signext %n, ptr noalias n
 ; LMUL-MAX-1-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
 ; LMUL-MAX-1-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; LMUL-MAX-1:       vector.ph:
+; LMUL-MAX-1-NEXT:    [[TMP11:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 2, i1 true)
 ; LMUL-MAX-1-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; LMUL-MAX-1:       vector.body:
 ; LMUL-MAX-1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -81,6 +82,7 @@ define dso_local void @_Z10foo_j8_i64iPaPl(i32 noundef signext %n, ptr noalias n
 ; LMUL-MAX-2-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
 ; LMUL-MAX-2-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; LMUL-MAX-2:       vector.ph:
+; LMUL-MAX-2-NEXT:    [[TMP11:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 4, i1 true)
 ; LMUL-MAX-2-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; LMUL-MAX-2:       vector.body:
 ; LMUL-MAX-2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -138,6 +140,7 @@ define dso_local void @_Z10foo_j8_i64iPaPl(i32 noundef signext %n, ptr noalias n
 ; LMUL-MAX-3-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
 ; LMUL-MAX-3-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; LMUL-MAX-3:       vector.ph:
+; LMUL-MAX-3-NEXT:    [[TMP11:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 8, i1 true)
 ; LMUL-MAX-3-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; LMUL-MAX-3:       vector.body:
 ; LMUL-MAX-3-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -229,6 +232,7 @@ define dso_local void @_Z12foo_j8_floatiPaPf(i32 noundef signext %n, ptr noalias
 ; LMUL-MAX-1-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
 ; LMUL-MAX-1-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; LMUL-MAX-1:       vector.ph:
+; LMUL-MAX-1-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 4, i1 true)
 ; LMUL-MAX-1-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; LMUL-MAX-1:       vector.body:
 ; LMUL-MAX-1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -284,6 +288,7 @@ define dso_local void @_Z12foo_j8_floatiPaPf(i32 noundef signext %n, ptr noalias
 ; LMUL-MAX-2-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
 ; LMUL-MAX-2-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; LMUL-MAX-2:       vector.ph:
+; LMUL-MAX-2-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 8, i1 true)
 ; LMUL-MAX-2-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; LMUL-MAX-2:       vector.body:
 ; LMUL-MAX-2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -339,6 +344,7 @@ define dso_local void @_Z12foo_j8_floatiPaPf(i32 noundef signext %n, ptr noalias
 ; LMUL-MAX-3-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
 ; LMUL-MAX-3-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; LMUL-MAX-3:       vector.ph:
+; LMUL-MAX-3-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 16, i1 true)
 ; LMUL-MAX-3-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; LMUL-MAX-3:       vector.body:
 ; LMUL-MAX-3-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -423,6 +429,7 @@ define dso_local void @_Z13foo_j8_doubleiPaPd(i32 noundef signext %n, ptr noalia
 ; LMUL-MAX-1-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
 ; LMUL-MAX-1-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; LMUL-MAX-1:       vector.ph:
+; LMUL-MAX-1-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 2, i1 true)
 ; LMUL-MAX-1-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; LMUL-MAX-1:       vector.body:
 ; LMUL-MAX-1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -478,6 +485,7 @@ define dso_local void @_Z13foo_j8_doubleiPaPd(i32 noundef signext %n, ptr noalia
 ; LMUL-MAX-2-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
 ; LMUL-MAX-2-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; LMUL-MAX-2:       vector.ph:
+; LMUL-MAX-2-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 4, i1 true)
 ; LMUL-MAX-2-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; LMUL-MAX-2:       vector.body:
 ; LMUL-MAX-2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -533,6 +541,7 @@ define dso_local void @_Z13foo_j8_doubleiPaPd(i32 noundef signext %n, ptr noalia
 ; LMUL-MAX-3-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
 ; LMUL-MAX-3-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; LMUL-MAX-3:       vector.ph:
+; LMUL-MAX-3-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 8, i1 true)
 ; LMUL-MAX-3-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; LMUL-MAX-3:       vector.body:
 ; LMUL-MAX-3-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]

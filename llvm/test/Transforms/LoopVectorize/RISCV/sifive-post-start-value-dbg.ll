@@ -111,13 +111,8 @@ define dso_local signext i16 @foo(i16* nocapture readonly %ptr, i32 signext %sta
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x i16> @llvm.vp.load.nxv4i16.p0(ptr align 2 [[TMP5]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP4]]), !dbg [[DBG12]], !tbaa [[TBAA13:![0-9]+]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i32> @llvm.vp.and.nxv4i32(<vscale x 4 x i32> [[VEC_PHI]], <vscale x 4 x i32> splat (i32 65535), <vscale x 4 x i1> splat (i1 true), i32 [[TMP4]]), !dbg [[DBG17:![0-9]+]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_CAST:%.*]] = call <vscale x 4 x i32> @llvm.vp.zext.nxv4i32.nxv4i16(<vscale x 4 x i16> [[VP_OP_LOAD]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP4]]), !dbg [[DBG18:![0-9]+]]
-<<<<<<< HEAD
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_OP2:%.*]] = call <vscale x 4 x i32> @llvm.vp.add.nxv4i32(<vscale x 4 x i32> [[VP_OP]], <vscale x 4 x i32> [[VP_CAST]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP4]]), !dbg [[DBG19:![0-9]+]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_OP_MERGE:%.*]] = call <vscale x 4 x i32> @llvm.vp.merge.nxv4i32(<vscale x 4 x i1> splat (i1 true), <vscale x 4 x i32> [[VP_OP2]], <vscale x 4 x i32> [[VEC_PHI]], i32 [[TMP4]])
-=======
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_OP1:%.*]] = call <vscale x 4 x i32> @llvm.vp.add.nxv4i32(<vscale x 4 x i32> [[VP_OP]], <vscale x 4 x i32> [[VP_CAST]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP4]]), !dbg [[DBG19:![0-9]+]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_OP_MERGE:%.*]] = call <vscale x 4 x i32> @llvm.vp.merge.nxv4i32(<vscale x 4 x i1> splat (i1 true), <vscale x 4 x i32> [[VP_OP1]], <vscale x 4 x i32> [[VEC_PHI]], i32 [[TMP4]]), !dbg [[DBG19]]
->>>>>>> origin/sifive-dev
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_OP_MERGE:%.*]] = call <vscale x 4 x i32> @llvm.vp.merge.nxv4i32(<vscale x 4 x i1> splat (i1 true), <vscale x 4 x i32> [[VP_OP1]], <vscale x 4 x i32> [[VEC_PHI]], i32 [[TMP4]])
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP8:%.*]] = trunc <vscale x 4 x i32> [[VP_OP_MERGE]] to <vscale x 4 x i16>
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP9]] = zext <vscale x 4 x i16> [[TMP8]] to <vscale x 4 x i32>
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP16:%.*]] = zext i32 [[TMP4]] to i64, !dbg [[DBG11]]

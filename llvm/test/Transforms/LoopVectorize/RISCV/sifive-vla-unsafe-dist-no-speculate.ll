@@ -9,12 +9,7 @@ define i32 @test() vscale_range(8,1024) {
 ; CHECK-NEXT:    [[ADD_PTR26_I:%.*]] = getelementptr i8, ptr [[V11]], i64 8
 ; CHECK-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
-<<<<<<< HEAD
-=======
 ; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 8, i32 1, i1 true)
-; CHECK-NEXT:    [[TMP0:%.*]] = getelementptr i8, ptr [[ADD_PTR26_I]], i64 32
-; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[V11]], i64 32
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]

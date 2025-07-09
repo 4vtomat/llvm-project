@@ -27,7 +27,6 @@ define dso_local signext i32 @reduction_vec(i32 noundef signext %n, i32* nocaptu
 ; CHECK-NEXT:    [[TMP9:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 2
 ; CHECK-NEXT:    [[TMP11:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP13:%.*]] = sub i64 [[TMP0]], [[TMP0]]
 ; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 2 x i64> poison, i64 [[TMP0]], i64 0
 ; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 2 x i64> [[DOTSPLATINSERT]], <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer
 ; CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 2 x i64> @llvm.stepvector.nxv2i64()
@@ -124,7 +123,6 @@ define dso_local signext i32 @reduction_vec(i32 noundef signext %n, i32* nocaptu
 ; CHECK-NO-POSTSV-NEXT:    [[TMP9:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NO-POSTSV-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 2
 ; CHECK-NO-POSTSV-NEXT:    [[TMP11:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
-; CHECK-NO-POSTSV-NEXT:    [[TMP13:%.*]] = sub i64 [[TMP0]], [[TMP0]]
 ; CHECK-NO-POSTSV-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 2 x i64> poison, i64 [[TMP0]], i64 0
 ; CHECK-NO-POSTSV-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 2 x i64> [[DOTSPLATINSERT]], <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer
 ; CHECK-NO-POSTSV-NEXT:    [[TMP12:%.*]] = call <vscale x 2 x i64> @llvm.stepvector.nxv2i64()
