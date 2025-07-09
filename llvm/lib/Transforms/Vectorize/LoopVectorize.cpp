@@ -5431,7 +5431,6 @@ bool LoopVectorizationPlanner::isMoreProfitable(const VectorizationFactor &A,
   return CmpFn(RTCostA, RTCostB);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static bool
 hasOnlyNonUnitStrideMemoryAccesses(Loop *L, LoopVectorizationLegality *Legal) {
@@ -5454,13 +5453,9 @@ hasOnlyNonUnitStrideMemoryAccesses(Loop *L, LoopVectorizationLegality *Legal) {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-bool LoopVectorizationPlanner::isMoreProfitable(
-    const VectorizationFactor &A, const VectorizationFactor &B) const {
-=======
 bool LoopVectorizationPlanner::isMoreProfitable(const VectorizationFactor &A,
                                                 const VectorizationFactor &B,
                                                 bool HasTail) const {
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
   const unsigned MaxTripCount = PSE.getSmallConstantMaxTripCount();
   return LoopVectorizationPlanner::isMoreProfitable(A, B, MaxTripCount,
                                                     HasTail);
@@ -9597,12 +9592,8 @@ VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
 #else
       InstructionCost Cost = cost(*P, VF);
       VectorizationFactor CurrentFactor(VF, Cost, ScalarCost);
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-      if (isMoreProfitable(CurrentFactor, BestFactor))
-=======
       if (isMoreProfitable(CurrentFactor, BestFactor, P->hasScalarTail()))
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
         BestFactor = CurrentFactor;
 
       // If profitable add it to ProfitableVF list.
@@ -9638,22 +9629,11 @@ VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
   VPCostContext CostCtx(CM.TTI, *CM.TLI, Legal->getWidestInductionType(), CM,
                         CM.CostKind);
   precomputeCosts(BestPlan, BestFactor.Width, CostCtx);
-<<<<<<< HEAD
 #ifndef SIFIVE_CUSTOMIZATION
-  // Set PlanForEarlyExitLoop to true if the BestPlan has been built from a
-  // loop with an uncountable early exit. The legacy cost model doesn't
-  // properly model costs for such loops.
-  bool PlanForEarlyExitLoop =
-      BestPlan.getVectorLoopRegion() &&
-      BestPlan.getVectorLoopRegion()->getSingleSuccessor() !=
-          BestPlan.getMiddleBlock();
-  assert((BestFactor.Width == LegacyVF.Width || PlanForEarlyExitLoop ||
-=======
   // Verify that the VPlan-based and legacy cost models agree, except for VPlans
   // with early exits and plans with additional VPlan simplifications. The
   // legacy cost model doesn't properly model costs for such loops.
   assert((BestFactor.Width == LegacyVF.Width || BestPlan.hasEarlyExit() ||
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
           planContainsAdditionalSimplifications(getPlanFor(BestFactor.Width),
                                                 CostCtx, OrigLoop) ||
           planContainsAdditionalSimplifications(getPlanFor(LegacyVF.Width),
