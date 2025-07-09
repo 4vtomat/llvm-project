@@ -84,20 +84,10 @@ static cl::opt<bool> PrintVPlansInDotFormat(
 #define DEBUG_TYPE "loop-vectorize"
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
-<<<<<<< HEAD
-raw_ostream &llvm::operator<<(raw_ostream &OS, const VPValue &V) {
-#if SIFIVE_CUSTOMIZATION
-  const VPRecipeBase *R = V.getDefiningRecipe();
-  VPSlotTracker SlotTracker((R && R->getParent()) ? R->getParent()->getPlan()
-                                                  : nullptr);
-#endif // SIFIVE_CUSTOMIZATION
-  V.print(OS, SlotTracker);
-=======
 raw_ostream &llvm::operator<<(raw_ostream &OS, const VPRecipeBase &R) {
   const VPBasicBlock *Parent = R.getParent();
   VPSlotTracker SlotTracker(Parent ? Parent->getPlan() : nullptr);
   R.print(OS, "", SlotTracker);
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
   return OS;
 }
 #endif
