@@ -1354,35 +1354,6 @@ raw_ostream &operator<<(raw_ostream &OS, const RVVIntrinsicRecord &Record) {
       StringRef(Record.OverloadedName).empty())
     OS << "/*OverloadedName=*/nullptr, ";
   else
-<<<<<<< HEAD
-    OS << "\"" << Record.OverloadedName << "\",";
-  OS << "{";
-  for (uint32_t Exts : Record.RequiredExtensions)
-    OS << Exts << ',';
-  OS << "},";
-  OS << Record.PrototypeIndex << ",";
-  OS << Record.SuffixIndex << ",";
-  OS << Record.OverloadedSuffixIndex << ",";
-  OS << (int)Record.PrototypeLength << ",";
-  OS << (int)Record.SuffixLength << ",";
-  OS << (int)Record.OverloadedSuffixSize << ",";
-  OS << (int)Record.TypeRangeMask << ",";
-  OS << (int)Record.Log2LMULMask << ",";
-  OS << (int)Record.NF << ",";
-  OS << (int)Record.HasMasked << ",";
-  OS << (int)Record.HasVL << ",";
-  OS << (int)Record.HasMaskedOffOperand << ",";
-  OS << (int)Record.HasTailPolicy << ",";
-  OS << (int)Record.HasMaskPolicy << ",";
-  OS << (int)Record.HasFRMRoundModeOp << ",";
-#if SIFIVE_CUSTOMIZATION
-  OS << (int)Record.HasNontemporalOperand << ",";
-  OS << (int)Record.IsV0p11Deprecated << ",";
-#endif // SIFIVE_CUSTOMIZATION
-  OS << (int)Record.IsTuple << ",";
-  OS << (int)Record.UnMaskedPolicyScheme << ",";
-  OS << (int)Record.MaskedPolicyScheme << ",";
-=======
     OS << "/*OverloadedName=*/\"" << Record.OverloadedName << "\", ";
   OS << "/*RequiredExtensions=*/" << Record.RequiredExtensions << ", ";
   OS << "/*PrototypeIndex=*/" << Record.PrototypeIndex << ", ";
@@ -1400,12 +1371,16 @@ raw_ostream &operator<<(raw_ostream &OS, const RVVIntrinsicRecord &Record) {
   OS << "/*HasTailPolicy=*/" << (int)Record.HasTailPolicy << ", ";
   OS << "/*HasMaskPolicy=*/" << (int)Record.HasMaskPolicy << ", ";
   OS << "/*HasFRMRoundModeOp=*/" << (int)Record.HasFRMRoundModeOp << ", ";
+#if SIFIVE_CUSTOMIZATION
+  OS << "/*HasNontemporalOperand=*/" << (int)Record.HasNontemporalOperand
+     << ",";
+  OS << "/*IsV0p11Deprecated=*/" << (int)Record.IsV0p11Deprecated << ",";
+#endif // SIFIVE_CUSTOMIZATION
   OS << "/*IsTuple=*/" << (int)Record.IsTuple << ", ";
   OS << "/*UnMaskedPolicyScheme=*/" << (PolicyScheme)Record.UnMaskedPolicyScheme
      << ", ";
   OS << "/*MaskedPolicyScheme=*/" << (PolicyScheme)Record.MaskedPolicyScheme
      << ", ";
->>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
   OS << "},\n";
   return OS;
 }
