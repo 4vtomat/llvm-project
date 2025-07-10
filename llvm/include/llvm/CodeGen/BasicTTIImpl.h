@@ -1729,7 +1729,7 @@ public:
       unsigned Opcode, Type *VecTy, unsigned Factor, Value *Stride,
       ArrayRef<unsigned> Indices, Align Alignment, unsigned AddressSpace,
       TTI::TargetCostKind CostKind, bool UseMaskForCond = false,
-      bool UseMaskForGaps = false) {
+      bool UseMaskForGaps = false) const {
     return getInterleavedMemoryOpCost(Opcode, VecTy, Factor, Indices, Alignment,
                                       AddressSpace, CostKind, UseMaskForCond,
                                       UseMaskForGaps);
