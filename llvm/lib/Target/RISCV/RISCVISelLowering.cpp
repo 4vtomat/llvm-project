@@ -7350,12 +7350,8 @@ static bool hasPassthruOp(unsigned Opcode) {
          Opcode <= RISCVISD::LAST_STRICTFP_OPCODE &&
          "not a RISC-V target specific op");
   static_assert(
-<<<<<<< HEAD
       RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
-          142 && // SIFIVE
-=======
-      RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP == 134 &&
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
+          146 && // SIFIVE
       RISCVISD::LAST_STRICTFP_OPCODE - RISCVISD::FIRST_STRICTFP_OPCODE == 21 &&
       "adding target specific op should update this function");
   if (Opcode >= RISCVISD::ADD_VL && Opcode <= RISCVISD::VFMAX_VL)
@@ -7379,12 +7375,8 @@ static bool hasMaskOp(unsigned Opcode) {
          Opcode <= RISCVISD::LAST_STRICTFP_OPCODE &&
          "not a RISC-V target specific op");
   static_assert(
-<<<<<<< HEAD
       RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
-          142 && // SIFIVE
-=======
-      RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP == 134 &&
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
+          146 && // SIFIVE
       RISCVISD::LAST_STRICTFP_OPCODE - RISCVISD::FIRST_STRICTFP_OPCODE == 21 &&
       "adding target specific op should update this function");
   if (Opcode >= RISCVISD::TRUNCATE_VECTOR_VL && Opcode <= RISCVISD::SETCC_VL)
@@ -22216,12 +22208,12 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     if (SDValue V = combineOp_VLToVWOp_VL(N, DCI, Subtarget))
       return V;
     return combineToVWMACC(N, DAG, Subtarget);
-  case RISCVISD::SUB_VL:
 #if SIFIVE_CUSTOMIZATION
+  case RISCVISD::SUB_VL:
+  case RISCVISD::OR_VL:
     if (SDValue Result = combineSelectAndBinOp(N, DAG))
       return Result;
     return combineOp_VLToVWOp_VL(N, DCI, Subtarget);
-  case RISCVISD::OR_VL:
   case RISCVISD::XOR_VL:
     return combineSelectAndBinOp(N, DAG);
 #endif // SIFIVE_CUSTOMIZATION
@@ -22235,11 +22227,6 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
   case RISCVISD::VWSUB_W_VL:
   case RISCVISD::VWSUBU_W_VL:
     return performVWADDSUBW_VLCombine(N, DCI, Subtarget);
-<<<<<<< HEAD
-=======
-  case RISCVISD::OR_VL:
-  case RISCVISD::SUB_VL:
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
   case RISCVISD::MUL_VL:
     return combineOp_VLToVWOp_VL(N, DCI, Subtarget);
   case RISCVISD::VFMADD_VL:
@@ -26613,9 +26600,9 @@ bool RISCVTargetLowering::isIntDivCheap(EVT VT, AttributeList Attr) const {
 }
 
 #if SIFIVE_CUSTOMIZATION
-bool RISCVTargetLowering::shouldReduceLoadWidth(SDNode *Load,
-                                                ISD::LoadExtType ExtTy,
-                                                EVT NewVT) const {
+bool RISCVTargetLowering::shouldReduceLoadWidth(
+    SDNode *Load, ISD::LoadExtType ExtTy, EVT NewVT,
+    std::optional<unsigned> ByteOffset) const {
   assert(cast<LoadSDNode>(Load)->isSimple() && "illegal to narrow");
 
   // Try the default checks first.
