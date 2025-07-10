@@ -1795,23 +1795,9 @@ bool RISCVFrameLowering::assignCalleeSavedSpillSlots(
     MFI.CreateFixedSpillStackObject(
         QCIInterruptPushAmount, -static_cast<int64_t>(QCIInterruptPushAmount));
   } else if (RVFI->isPushable(MF)) {
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-    if (int64_t PushSize = RVFI->getRVPushStackSize())
-      MFI.CreateFixedSpillStackObject(PushSize, -PushSize);
-#else
-    // Allocate a fixed object that covers all the registers that are pushed.
-    if (unsigned PushedRegs = RVFI->getRVPushRegs()) {
-      int64_t PushedRegsBytes =
-          static_cast<int64_t>(PushedRegs) * (STI.getXLen() / 8);
-      MFI.CreateFixedSpillStackObject(PushedRegsBytes, -PushedRegsBytes);
-    }
-#endif // SIFIVE_CUSTOMIZATION
-=======
     // Allocate a fixed object that covers the full push.
     if (int64_t PushSize = RVFI->getRVPushStackSize())
       MFI.CreateFixedSpillStackObject(PushSize, -PushSize);
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
   } else if (int LibCallRegs = getLibCallID(MF, CSI) + 1) {
     int64_t LibCallFrameSize =
         alignTo((STI.getXLen() / 8) * LibCallRegs, getStackAlign());
