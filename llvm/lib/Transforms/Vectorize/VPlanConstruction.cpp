@@ -24,29 +24,6 @@
 
 using namespace llvm;
 
-<<<<<<< HEAD
-void VPlanTransforms::introduceTopLevelVectorLoopRegion(
-    VPlan &Plan, Type *InductionTy, PredicatedScalarEvolution &PSE,
-#if SIFIVE_CUSTOMIZATION
-    bool IsUncountable,
-#endif // SIFIVE_CUSTOMIZATION
-    bool RequiresScalarEpilogueCheck, bool TailFolded, Loop *TheLoop) {
-  // TODO: Generalize to introduce all loop regions.
-  auto *HeaderVPBB = cast<VPBasicBlock>(Plan.getEntry()->getSingleSuccessor());
-  VPBlockUtils::disconnectBlocks(Plan.getEntry(), HeaderVPBB);
-
-  VPBasicBlock *OriginalLatch =
-      cast<VPBasicBlock>(HeaderVPBB->getSinglePredecessor());
-  VPBlockUtils::disconnectBlocks(OriginalLatch, HeaderVPBB);
-  VPBasicBlock *VecPreheader = Plan.createVPBasicBlock("vector.ph");
-  VPBlockUtils::connectBlocks(Plan.getEntry(), VecPreheader);
-  assert(OriginalLatch->getNumSuccessors() == 0 &&
-         "Plan should end at top level latch");
-#if SIFIVE_CUSTOMIZATION
-  if (IsUncountable)
-    Plan.setUncountable();
-#endif // SIFIVE_CUSTOMIZATION
-=======
 namespace {
 // Class that is used to build the plain CFG for the incoming IR.
 class PlainCFGBuilder {
@@ -465,6 +442,9 @@ static void createLoopRegion(VPlan &Plan, VPBlockBase *HeaderVPB) {
 
 void VPlanTransforms::createLoopRegions(VPlan &Plan, Type *InductionTy,
                                         PredicatedScalarEvolution &PSE,
+#if SIFIVE_CUSTOMIZATION
+                                        bool IsUncountable,
+#endif // SIFIVE_CUSTOMIZATION
                                         bool RequiresScalarEpilogueCheck,
                                         bool TailFolded, Loop *TheLoop) {
   VPDominatorTree VPDT;
@@ -480,7 +460,11 @@ void VPlanTransforms::createLoopRegions(VPlan &Plan, Type *InductionTy,
   TopRegion->setExiting(LatchVPBB);
   TopRegion->setName("vector loop");
   TopRegion->getEntryBasicBlock()->setName("vector.body");
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
+
+#if SIFIVE_CUSTOMIZATION
+  if (IsUncountable)
+    Plan.setUncountable();
+#endif // SIFIVE_CUSTOMIZATION
 
   // Create SCEV and VPValue for the trip count.
   // We use the symbolic max backedge-taken-count, which works also when
