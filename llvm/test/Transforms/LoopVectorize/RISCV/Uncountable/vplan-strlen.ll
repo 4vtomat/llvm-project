@@ -14,7 +14,7 @@ define i64 @strlen_i8(ptr %start) {
 ; VPLANS-EMPTY:
 ; VPLANS-NEXT: <x1> vector loop: {
 ; VPLANS-NEXT:   vector.body:
-; VPLANS-NEXT:     EMIT vp<[[IV:%.+]]> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; VPLANS-NEXT:     EMIT vp<[[IV:%.+]]> = CANONICAL-INDUCTION ir<0>, vp<[[IV_NEXT:%.+]]>
 ; VPLANS-NEXT:     EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<[[EVLPHI:%.+]]> = phi ir<0>, vp<%index.evl.next>
 ; VPLANS-NEXT:     EMIT vp<[[VL:%.+]]> = EXPLICIT-VECTOR-LENGTH
 ; VPLANS-NEXT:     vp<[[DERIV:%.+]]> = DERIVED-IV ir<0> + vp<[[EVLPHI]]> * ir<1>
@@ -24,8 +24,8 @@ define i64 @strlen_i8(ptr %start) {
 ; VPLANS-NEXT:     WIDEN-SPECULATIVE-INSTRUCTION ir<%0>, vp<[[NEWEVL:%.+]]> = vp.load vp<[[PTR]]>, vp<[[VL]]>	unit-strided
 ; VPLANS-NEXT:     WIDEN ir<%cmp.not> = icmp eq ir<%0>, ir<0>
 ; VPLANS-NEXT:     EMIT vp<%exitcond> = exiting-cond ir<%cmp.not>
-; VPLANS-NEXT:     EMIT vp<%9> = zext vp<%8> to i64
-; VPLANS-NEXT:     EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%3>
+; VPLANS-NEXT:     EMIT vp<[[CAST:%.+]]> = zext vp<[[NEWEVL]]> to i64
+; VPLANS-NEXT:     EMIT vp<[[IV_NEXT]]> = add nuw vp<[[CAST]]>, vp<[[EVLPHI]]>
 ; VPLANS-NEXT:     EMIT branch-on-cond vp<%exitcond>
 ; VPLANS-NEXT:   No successors
 ; VPLANS-NEXT: }
