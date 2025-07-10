@@ -32,9 +32,9 @@
 ; CHECK-NEXT:     vp<[[PTR2:%.+]]> = vector-pointer ir<[[ADDPTR]]>
 ; CHECK-NEXT:     WIDEN vp.store vp<[[PTR2]]>, ir<[[LOAD]]>, vp<[[EVL]]>, vp<[[MASK]]>       unit-strided
 ; CHECK-NEXT:     monotonic-update ir<[[INC]]> = add ir<[[MONO_PHI:%.+]]>, ir<1> @vp<[[MASK]]>
-; CHECK-NEXT:     SCALAR-CAST vp<[[ZEXT:%.+]]> = zext vp<[[EVL]]> to i64
-; CHECK-NEXT:     EMIT vp<[[EVL_NEXT]]> = add nuw vp<[[ZEXT]]>, vp<[[EVL_IV]]>
-; CHECK-NEXT:     EMIT branch-on-count vp<[[EVL_NEXT]]>, vp<[[VTC]]>
+; CHECK-NEXT:     EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:     EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:     EMIT branch-on-count vp<%index.evl.next>, vp<%0>
 ; CHECK-NEXT:   No successors
 ; CHECK-NEXT: }
 ; CHECK-NEXT: Successor(s): middle.block
@@ -107,9 +107,9 @@ for.inc:
 ; CHECK-NEXT:     vp<[[PTR3:%.+]]> = vector-pointer ir<[[ARRAYIDX3]]>
 ; CHECK-NEXT:     WIDEN vp.store vp<[[PTR3]]>, ir<[[LOAD2]]>, vp<[[EVL]]>, vp<[[MASK]]>       unit-strided
 ; CHECK-NEXT:     monotonic-update ir<[[INC]]> = add ir<[[RET_PHI]]>, ir<1> @vp<[[MASK]]>
-; CHECK-NEXT:     SCALAR-CAST vp<[[ZEXT_EVL:%.+]]> = zext vp<[[EVL]]> to i64
-; CHECK-NEXT:     EMIT vp<[[NEXT_IV]]> = add nuw vp<[[ZEXT_EVL]]>, vp<[[EVL_IV]]>
-; CHECK-NEXT:     EMIT branch-on-count vp<[[NEXT_IV]]>, vp<[[VTC]]>
+; CHECK-NEXT:     EMIT vp<%10> = zext vp<%5> to i64
+; CHECK-NEXT:     EMIT vp<%index.evl.next> = add nuw vp<%10>, vp<%4>
+; CHECK-NEXT:     EMIT branch-on-count vp<%index.evl.next>, vp<%0>
 ; CHECK-NEXT:   No successors
 ; CHECK-NEXT: }
 ; CHECK-NEXT: Successor(s): middle.block
