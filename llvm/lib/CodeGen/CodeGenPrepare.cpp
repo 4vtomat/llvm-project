@@ -1774,7 +1774,6 @@ bool CodeGenPrepare::combineToUSubWithOverflow(CmpInst *Cmp,
   return true;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // Try to sink a not of a compare into its user basic block. This will unblock
 // sinkCmpExpression for the same compare.
@@ -1861,7 +1860,6 @@ static bool sinkNotOfCmp(BinaryOperator *Xor, const TargetLowering &TLI) {
   return MadeChange;
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
 // Decanonicalizes icmp+ctpop power-of-two test if ctpop is slow.
 // The same transformation exists in DAG combiner, but we repeat it here because
 // DAG builder can break the pattern by moving icmp into a successor block.
@@ -1930,7 +1928,6 @@ bool CodeGenPrepare::unfoldPowerOf2Test(CmpInst *Cmp) {
   RecursivelyDeleteTriviallyDeadInstructions(Cmp);
   return true;
 }
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
 
 /// Sink the given CmpInst into user blocks to reduce the number of virtual
 /// registers that must be created and coalesced. This is a clear win except on
