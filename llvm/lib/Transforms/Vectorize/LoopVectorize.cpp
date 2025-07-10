@@ -674,7 +674,6 @@ public:
 protected:
   friend class LoopVectorizationPlanner;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// Set up the values of the IVs correctly when exiting the vector loop.
   void fixupUncountableExitIVUsers(PHINode *OrigPhi,
@@ -688,12 +687,6 @@ protected:
                              VPTransformState &State);
 
 #endif // SIFIVE_CUSTOMIZATION
-  /// Iteratively sink the scalarized operands of a predicated instruction into
-  /// the block that was created for it.
-  void sinkScalarOperands(Instruction *PredInst);
-
-=======
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
   /// Returns (and creates if needed) the trip count of the widened loop.
 #if SIFIVE_CUSTOMIZATION
   virtual
@@ -4965,31 +4958,6 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
     break;
   }
 
-<<<<<<< HEAD
-  // The only loops we can vectorize without a scalar epilogue, are loops with
-  // a bottom-test and a single exiting block. We'd have to handle the fact
-  // that not every instruction executes on the last iteration.  This will
-  // require a lane mask which varies through the vector loop body.  (TODO)
-  if (TheLoop->getExitingBlock() != TheLoop->getLoopLatch()) {
-    // If there was a tail-folding hint/switch, but we can't fold the tail by
-    // masking, fallback to a vectorization with a scalar epilogue.
-    if (ScalarEpilogueStatus == CM_ScalarEpilogueNotNeededUsePredicate) {
-      LLVM_DEBUG(dbgs() << "LV: Cannot fold tail by masking: vectorize with a "
-                           "scalar epilogue instead.\n");
-      ScalarEpilogueStatus = CM_ScalarEpilogueAllowed;
-      return computeFeasibleMaxVF(MaxTC, UserVF, false);
-    }
-#if SIFIVE_CUSTOMIZATION
-    if (Legal->useVLAVectorizer())
-      // Since we don't really mask the loop body, the problem above is not
-      // applicable to RVV VLA and we can generate similar code as with VLS,
-      // where remainder loop will take care of exits.
-      ScalarEpilogueStatus = CM_ScalarEpilogueAllowed;
-    else
-#endif // SIFIVE_CUSTOMIZATION
-    return FixedScalableVFPair::getNone();
-  }
-
 #if SIFIVE_CUSTOMIZATION
   // Allow scalar epilogue if interleaved groups required it.
   if (Legal->useVLAVectorizer() && InterleaveInfo.requiresScalarEpilogue())
@@ -4998,8 +4966,6 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
       ScalarEpilogueStatus = CM_ScalarEpilogueAllowed;
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
   // Now try the tail folding
 
   // Invalidate interleave groups that require an epilogue if we can't mask
@@ -6000,7 +5966,6 @@ LoopVectorizationCostModel::getSmallestAndWidestTypes() {
       const RecurrenceDescriptor &RdxDesc = PhiDescriptorPair.second;
       // When finding the min width used by the recurrence we need to account
       // for casts on the input operands of the recurrence.
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       if (MaxWidth > RdxDesc.getMinWidthCastToRecurrenceTypeInBits()) {
         MaxWidth = RdxDesc.getMinWidthCastToRecurrenceTypeInBits();
@@ -6036,26 +6001,13 @@ LoopVectorizationCostModel::getSmallestAndWidestTypes() {
         WidestType = RdxDesc.getRecurrenceType();
         MaxWidth = WidestType->getScalarSizeInBits();
       }
-
-      // Set the MinWidth here, otherwise minWidth will be -1U.
-      MinWidth = std::min<unsigned>(
-          MinWidth, std::min<unsigned>(
-                        RdxDesc.getMinWidthCastToRecurrenceTypeInBits(),
-                        RdxDesc.getRecurrenceType()->getScalarSizeInBits()));
-#else
-      MaxWidth = std::min<unsigned>(
-          MaxWidth, std::min<unsigned>(
-                        RdxDesc.getMinWidthCastToRecurrenceTypeInBits(),
-                        RdxDesc.getRecurrenceType()->getScalarSizeInBits()));
 #endif // SIFIVE_CUSTOMIZATION
-=======
       MinWidth = std::min<unsigned>(
           MinWidth, std::min<unsigned>(
                         RdxDesc.getMinWidthCastToRecurrenceTypeInBits(),
                         RdxDesc.getRecurrenceType()->getScalarSizeInBits()));
       MaxWidth = std::max<unsigned>(
           MaxWidth, RdxDesc.getRecurrenceType()->getScalarSizeInBits());
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
     }
   } else {
 #if SIFIVE_CUSTOMIZATION
@@ -11566,23 +11518,16 @@ static void addScalarResumePhis(VPRecipeBuilder &Builder, VPlan &Plan,
   }
 }
 
-<<<<<<< HEAD
-// Collect VPIRInstructions for phis in the exit blocks that are modeled
-// in VPlan and add the exiting VPValue as operand.
+// Collect VPIRInstructions for phis in the exit block from the latch only.
 #if SIFIVE_CUSTOMIZATION
-static SetVector<VPIRInstruction *> collectUsersInExitBlocks(
+static SetVector<VPIRInstruction *> collectUsersInLatchExitBlock(
     Loop *OrigLoop, VPRecipeBuilder &Builder, VPlan &Plan,
     const MapVector<PHINode *, InductionDescriptor> &Inductions,
     const MapVector<PHINode *, CSADescriptor> &CSAs) {
 #else
-static SetVector<VPIRInstruction *>
-collectUsersInExitBlocks(Loop *OrigLoop, VPRecipeBuilder &Builder,
-                         VPlan &Plan) {
+  static SetVector<VPIRInstruction *> collectUsersInLatchExitBlock(VPlan &
+                                                                   Plan) {
 #endif // SIFIVE_CUSTOMIZATION
-=======
-// Collect VPIRInstructions for phis in the exit block from the latch only.
-static SetVector<VPIRInstruction *> collectUsersInLatchExitBlock(VPlan &Plan) {
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
   SetVector<VPIRInstruction *> ExitUsersToFix;
 #if SIFIVE_CUSTOMIZATION
   // Exit values for unbound loop are handled separately.
@@ -11599,15 +11544,14 @@ static SetVector<VPIRInstruction *> collectUsersInLatchExitBlock(VPlan &Plan) {
         continue;
       }
 
-<<<<<<< HEAD
+#if SIFIVE_CUSTOMIZATION
       PHINode &ExitPhi = ExitIRI->getIRPhi();
       BasicBlock *ExitingBB = OrigLoop->getLoopLatch();
       Value *IncomingValue = ExitPhi.getIncomingValueForBlock(ExitingBB);
-      VPValue *V = Builder.getVPValueOrAddLiveIn(IncomingValue);
-#if SIFIVE_CUSTOMIZATION
+      VPValue *TmpV = Builder.getVPValueOrAddLiveIn(IncomingValue);
       // TODO: Compute CSA exit values in VPlan, use VPLiveOuts to update
       // live-outs.
-      if (isa<VPCSADataUpdateRecipe>(V) &&
+      if (isa<VPCSADataUpdateRecipe>(TmpV) &&
           (isa<Instruction>(IncomingValue) &&
            any_of(IncomingValue->users(), [&CSAs](User *U) {
              auto *P = dyn_cast<PHINode>(U);
@@ -11615,11 +11559,8 @@ static SetVector<VPIRInstruction *> collectUsersInLatchExitBlock(VPlan &Plan) {
            })))
         continue;
 #endif // SIFIVE_CUSTOMIZATION
-      ExitIRI->addOperand(V);
-=======
       assert(ExitIRI->getNumOperands() == 1 && "must have a single operand");
       VPValue *V = ExitIRI->getOperand(0);
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
       if (V->isLiveIn())
         continue;
       assert(V->getDefiningRecipe()->getParent()->getEnclosingLoopRegion() &&
@@ -11775,23 +11716,18 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
             return !CM.requiresScalarEpilogue(VF.isVector());
           },
           Range);
-<<<<<<< HEAD
-  auto Plan = std::make_unique<VPlan>(OrigLoop);
-  // Build hierarchical CFG.
-  // Convert to VPlan-transform and consoliate all transforms for VPlan
-  // creation.
-  VPlanHCFGBuilder HCFGBuilder(OrigLoop, LI, *Plan);
-  HCFGBuilder.buildHierarchicalCFG();
+  DenseMap<VPBlockBase *, BasicBlock *> VPB2IRBB;
+  auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB);
 
 #if SIFIVE_CUSTOMIZATION
   const bool IsUncountable = Legal->isVectorizableUncountable();
-  VPlanTransforms::introduceTopLevelVectorLoopRegion(
-      *Plan, Legal->getWidestInductionType(), PSE, IsUncountable, RequiresScalarEpilogueCheck,
-      CM.foldTailByMasking(), OrigLoop);
+  VPlanTransforms::createLoopRegions(
+      *Plan, Legal->getWidestInductionType(), PSE, IsUncountable,
+      RequiresScalarEpilogueCheck, CM.foldTailByMasking(), OrigLoop);
 #else
-  VPlanTransforms::introduceTopLevelVectorLoopRegion(
-      *Plan, Legal->getWidestInductionType(), PSE, RequiresScalarEpilogueCheck,
-      CM.foldTailByMasking(), OrigLoop);
+  VPlanTransforms::createLoopRegions(*Plan, Legal->getWidestInductionType(),
+                                     PSE, RequiresScalarEpilogueCheck,
+                                     CM.foldTailByMasking(), OrigLoop);
 #endif
 
 #if SIFIVE_CUSTOMIZATION
@@ -11812,13 +11748,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  DenseMap<VPBlockBase *, BasicBlock *> VPB2IRBB;
-  auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB);
-  VPlanTransforms::createLoopRegions(*Plan, Legal->getWidestInductionType(),
-                                     PSE, RequiresScalarEpilogueCheck,
-                                     CM.foldTailByMasking(), OrigLoop);
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
 
   // Don't use getDecisionAndClampRange here, because we don't know the UF
   // so this function is better to be conservative, rather than to split
@@ -12023,7 +11952,7 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     PrevVPBB = VPBB;
 
 #if SIFIVE_CUSTOMIZATION
-    if (HCFGBuilder.getIRBBForVPB(VPBB) == CouldNotComputeExitingBB) {
+    if (VPB2IRBB.lookup(VPBB) == CouldNotComputeExitingBB) {
       // TODO: Handle loop-invariant condition
       auto *BI = cast<BranchInst>(CouldNotComputeExitingBB->getTerminator());
       bool NeedsInvert = OrigLoop->contains(BI->getSuccessor(0));
@@ -12099,8 +12028,8 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   if (!Plan->isUncountable() || !Legal->getCountableExitingBlocks().empty())
     addScalarResumePhis(RecipeBuilder, *Plan, IVEndValues);
   SetVector<VPIRInstruction *> ExitUsersToFix =
-      collectUsersInExitBlocks(OrigLoop, RecipeBuilder, *Plan,
-                               Legal->getInductionVars(), Legal->getCSAs());
+      collectUsersInLatchExitBlock(OrigLoop, RecipeBuilder, *Plan,
+                                   Legal->getInductionVars(), Legal->getCSAs());
   if (!Legal->useVLAVectorizer())
     addExitUsersForFirstOrderRecurrences(*Plan, ExitUsersToFix);
 #else
@@ -12209,27 +12138,16 @@ VPlanPtr LoopVectorizationPlanner::tryToBuildVPlan(VFRange &Range) {
   assert(!OrigLoop->isInnermost());
   assert(EnableVPlanNativePath && "VPlan-native path is not enabled.");
 
-<<<<<<< HEAD
-  // Create new empty VPlan
-  auto Plan = std::make_unique<VPlan>(OrigLoop);
-  // Build hierarchical CFG
-  VPlanHCFGBuilder HCFGBuilder(OrigLoop, LI, *Plan);
-  HCFGBuilder.buildHierarchicalCFG();
-
-#if SIFIVE_CUSTOMIZATION
-  const bool IsUncountable = Legal->isVectorizableUncountable();
-  VPlanTransforms::introduceTopLevelVectorLoopRegion(
-      *Plan, Legal->getWidestInductionType(), PSE, IsUncountable, true, false, OrigLoop);
-#else
-  VPlanTransforms::introduceTopLevelVectorLoopRegion(
-      *Plan, Legal->getWidestInductionType(), PSE, true, false, OrigLoop);
-#endif // SIFIVE_CUSTOMIZATION
-=======
   DenseMap<VPBlockBase *, BasicBlock *> VPB2IRBB;
   auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB);
+#if SIFIVE_CUSTOMIZATION
+  const bool IsUncountable = Legal->isVectorizableUncountable();
+  VPlanTransforms::createLoopRegions(*Plan, Legal->getWidestInductionType(),
+                                     PSE, IsUncountable, true, false, OrigLoop);
+#else
   VPlanTransforms::createLoopRegions(*Plan, Legal->getWidestInductionType(),
                                      PSE, true, false, OrigLoop);
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
+#endif // SIFIVE_CUSTOMIZATION
 
   for (ElementCount VF : Range)
     Plan->addVF(VF);
