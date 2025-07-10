@@ -710,7 +710,7 @@ void VPlanTransforms::simplifyMonotonics(VPlan &Plan) {
         VPValue *Op0;
         VPRecipeBase *LiveOut = ExitIRI->getOperand(0)->getDefiningRecipe();
         if (match(LiveOut, VPlanPatternMatch::m_VPInstruction<
-                               VPInstruction::ExtractFromEnd>(
+                               VPInstruction::ExtractLastElement>(
                                VPlanPatternMatch::m_VPValue(Op0),
                                VPlanPatternMatch::m_VPValue())))
           if (ToRemove.contains(Op0->getDefiningRecipe())) {
