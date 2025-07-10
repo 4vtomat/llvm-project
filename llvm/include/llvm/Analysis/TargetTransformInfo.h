@@ -2184,7 +2184,6 @@ public:
   virtual bool enableAggressiveInterleaving(bool LoopHasReductions) const = 0;
   virtual MemCmpExpansionOptions
   enableMemCmpExpansion(bool OptSize, bool IsZeroCmp) const = 0;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   virtual bool
   getMemoryRefInfo(SmallVectorImpl<InterestingMemoryOperand> &Interesting,
@@ -2192,18 +2191,11 @@ public:
 
   virtual bool hasFlattenControlFlowPenalty() const = 0;
 #endif // SIFIVE_CUSTOMIZATION
-  virtual bool enableSelectOptimize() = 0;
-  virtual bool shouldTreatInstructionLikeSelect(const Instruction *I) = 0;
-  virtual bool enableInterleavedAccessVectorization() = 0;
-  virtual bool enableMaskedInterleavedAccessVectorization() = 0;
-  virtual bool isFPVectorizationPotentiallyUnsafe() = 0;
-=======
   virtual bool enableSelectOptimize() const = 0;
   virtual bool shouldTreatInstructionLikeSelect(const Instruction *I) const = 0;
   virtual bool enableInterleavedAccessVectorization() const = 0;
   virtual bool enableMaskedInterleavedAccessVectorization() const = 0;
   virtual bool isFPVectorizationPotentiallyUnsafe() const = 0;
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
   virtual bool allowsMisalignedMemoryAccesses(LLVMContext &Context,
                                               unsigned BitWidth,
                                               unsigned AddressSpace,
@@ -2397,18 +2389,14 @@ public:
   virtual InstructionCost getInterleavedMemoryOpCost(
       unsigned Opcode, Type *VecTy, unsigned Factor, ArrayRef<unsigned> Indices,
       Align Alignment, unsigned AddressSpace, TTI::TargetCostKind CostKind,
-<<<<<<< HEAD
-      bool UseMaskForCond = false, bool UseMaskForGaps = false) = 0;
+      bool UseMaskForCond = false, bool UseMaskForGaps = false) const = 0;
 #if SIFIVE_CUSTOMIZATION
   virtual InstructionCost getStridedInterleavedMemoryOpCost(
       unsigned Opcode, Type *VecTy, unsigned Factor, Value *Stride,
       ArrayRef<unsigned> Indices, Align Alignment, unsigned AddressSpace,
       TTI::TargetCostKind CostKind, bool UseMaskForCond = false,
-      bool UseMaskForGaps = false) = 0;
+      bool UseMaskForGaps = false) const = 0;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      bool UseMaskForCond = false, bool UseMaskForGaps = false) const = 0;
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
   virtual InstructionCost
   getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
                              std::optional<FastMathFlags> FMF,
@@ -2889,7 +2877,6 @@ public:
                                                bool IsZeroCmp) const override {
     return Impl.enableMemCmpExpansion(OptSize, IsZeroCmp);
   }
-<<<<<<< HEAD
 
 #if SIFIVE_CUSTOMIZATION
   bool getMemoryRefInfo(SmallVectorImpl<InterestingMemoryOperand> &Interesting,
@@ -2902,10 +2889,7 @@ public:
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-  bool enableSelectOptimize() override {
-=======
   bool enableSelectOptimize() const override {
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
     return Impl.enableSelectOptimize();
   }
   bool shouldTreatInstructionLikeSelect(const Instruction *I) const override {
@@ -3242,7 +3226,7 @@ public:
       unsigned Opcode, Type *VecTy, unsigned Factor, Value *Stride,
       ArrayRef<unsigned> Indices, Align Alignment, unsigned AddressSpace,
       TTI::TargetCostKind CostKind, bool UseMaskForCond = false,
-      bool UseMaskForGaps = false) final {
+      bool UseMaskForGaps = false) const override {
     return Impl.getStridedInterleavedMemoryOpCost(
         Opcode, VecTy, Factor, Stride, Indices, Alignment, AddressSpace,
         CostKind, UseMaskForCond, UseMaskForGaps);
