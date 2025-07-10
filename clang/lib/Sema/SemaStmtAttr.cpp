@@ -79,16 +79,16 @@ static Attr *handleRvvHintAttr(Sema &S, Stmt *St, const ParsedAttr &A,
   [[maybe_unused]] IdentifierLoc *PragmaNameLoc = A.getArgAsIdent(0);
   [[maybe_unused]] IdentifierLoc *OptionLoc = A.getArgAsIdent(1);
 
-  assert(PragmaNameLoc->Ident->getName() == "rvv" &&
+  assert(PragmaNameLoc->getIdentifierInfo()->getName() == "rvv" &&
          "Pragma name should only be 'rvv'");
-  assert(OptionLoc->Ident->getName() == "lmul_sew" &&
+  assert(OptionLoc->getIdentifierInfo()->getName() == "lmul_sew" &&
          "Option name should only be 'lmul_sew'");
 
   RvvHintAttr::OptionType Option = RvvHintAttr::OptionType::ForceRVVLmulSew;
 
   std::optional<RvvHintAttr::RvvLmulValueType> LmulValue =
       llvm::StringSwitch<std::optional<RvvHintAttr::RvvLmulValueType>>(
-          A.getArgAsIdent(2)->Ident->getName())
+          A.getArgAsIdent(2)->getIdentifierInfo()->getName())
           .Case("mf8", RvvHintAttr::RvvLmulValueType::Mf8)
           .Case("mf4", RvvHintAttr::RvvLmulValueType::Mf4)
           .Case("mf2", RvvHintAttr::RvvLmulValueType::Mf2)
@@ -102,7 +102,7 @@ static Attr *handleRvvHintAttr(Sema &S, Stmt *St, const ParsedAttr &A,
 
   std::optional<RvvHintAttr::RvvSewValueType> SewValue =
       llvm::StringSwitch<std::optional<RvvHintAttr::RvvSewValueType>>(
-          A.getArgAsIdent(3)->Ident->getName())
+          A.getArgAsIdent(3)->getIdentifierInfo()->getName())
           .Case("e8", RvvHintAttr::RvvSewValueType::E8)
           .Case("e16", RvvHintAttr::RvvSewValueType::E16)
           .Case("e32", RvvHintAttr::RvvSewValueType::E32)
@@ -120,8 +120,8 @@ static Attr *handleRvvHintAttr(Sema &S, Stmt *St, const ParsedAttr &A,
   if (Lmul < (int)llvm::Log2_32(Sew) -
                  (int)llvm::Log2_32(llvm::RISCV::RVVBitsPerBlock)) {
     S.Diag(A.getLoc(), diag::err_invalid_lmul_sew_pair)
-        << A.getArgAsIdent(2)->Ident->getName()
-        << A.getArgAsIdent(3)->Ident->getName();
+        << A.getArgAsIdent(2)->getIdentifierInfo()->getName()
+        << A.getArgAsIdent(3)->getIdentifierInfo()->getName();
     return nullptr;
   }
 
@@ -137,8 +137,8 @@ static Attr *handleRvvHintAttr(Sema &S, Stmt *St, const ParsedAttr &A,
   unsigned VF = AssumedMinimalTotalVLen / Sew;
   if (VF == 1 && TI.getMaxVectorElementWidth() < llvm::RISCV::RVVBitsPerBlock) {
     S.Diag(A.getLoc(), diag::err_require_max_vector_element_width_64)
-        << A.getArgAsIdent(2)->Ident->getName()
-        << A.getArgAsIdent(3)->Ident->getName();
+        << A.getArgAsIdent(2)->getIdentifierInfo()->getName()
+        << A.getArgAsIdent(3)->getIdentifierInfo()->getName();
     return nullptr;
   }
 
