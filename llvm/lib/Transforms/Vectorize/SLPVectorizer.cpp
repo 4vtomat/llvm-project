@@ -5973,30 +5973,9 @@ static bool isMaskedLoadCompress(
         TTI.getMemoryOpCost(Instruction::Load, LoadVecTy, CommonAlignment,
                             LI->getPointerAddressSpace(), CostKind);
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  if (!IsMasked && Order.empty())
+  if (IsStrided && !IsMasked && Order.empty()) {
 #endif // SIFIVE_CUSTOMIZATION
-    if (IsStrided) {
-      // Check for potential segmented(interleaved) loads.
-      if (TTI.isLegalInterleavedAccessType(LoadVecTy, CompressMask[1],
-                                           CommonAlignment,
-                                           LI->getPointerAddressSpace())) {
-        InstructionCost InterleavedCost =
-            VectorGEPCost + TTI.getInterleavedMemoryOpCost(
-                                Instruction::Load, LoadVecTy, CompressMask[1],
-                                std::nullopt, CommonAlignment,
-                                LI->getPointerAddressSpace(), CostKind,
-                                IsMasked);
-        if (!Mask.empty())
-          InterleavedCost += ::getShuffleCost(TTI, TTI::SK_PermuteSingleSrc,
-                                              VecTy, Mask, CostKind);
-        if (InterleavedCost < GatherCost) {
-          InterleaveFactor = CompressMask[1];
-          return true;
-        }
-=======
-  if (IsStrided && !IsMasked) {
     // Check for potential segmented(interleaved) loads.
     auto *AlignedLoadVecTy = getWidenedType(
         ScalarTy, getFullVectorNumberOfElements(TTI, ScalarTy, *Diff + 1));
@@ -6015,9 +5994,9 @@ static bool isMaskedLoadCompress(
         InterleaveFactor = CompressMask[1];
         LoadVecTy = AlignedLoadVecTy;
         return true;
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
       }
     }
+  }
   if (!Order.empty()) {
     SmallVector<int> NewMask(Sz, PoisonMaskElem);
     for (unsigned I : seq<unsigned>(Sz)) {
