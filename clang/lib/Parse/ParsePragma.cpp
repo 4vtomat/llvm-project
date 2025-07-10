@@ -1636,8 +1636,9 @@ bool Parser::HandlePragmaRvvHint(RvvHint &Hint) {
   IdentifierInfo *PragmaNameInfo = Info->PragmaName.getIdentifierInfo();
   assert(PragmaNameInfo && PragmaNameInfo->getName() == "rvv" &&
          "Only rvv hints should be handled here");
-  Hint.PragmaNameLoc = IdentifierLoc::create(
-      Actions.Context, Info->PragmaName.getLocation(), PragmaNameInfo);
+
+  Hint.PragmaNameLoc = new (Actions.Context)
+      IdentifierLoc(Info->PragmaName.getLocation(), PragmaNameInfo);
 
   assert(Info->Option.is(tok::identifier) &&
          "'rvv' should be followed by 'lmul_sew', which is an identifier");
@@ -1647,9 +1648,8 @@ bool Parser::HandlePragmaRvvHint(RvvHint &Hint) {
     return false;
   }
 
-  Hint.OptionLoc =
-      IdentifierLoc::create(Actions.Context, Info->Option.getLocation(),
-                            Info->Option.getIdentifierInfo());
+  Hint.OptionLoc = new (Actions.Context) IdentifierLoc(
+      Info->Option.getLocation(), Info->Option.getIdentifierInfo());
 
   llvm::ArrayRef<Token> Toks = Info->Toks;
   PP.EnterTokenStream(Toks, /*DisableMacroExpansion=*/false,
@@ -1679,8 +1679,8 @@ bool Parser::HandlePragmaRvvHint(RvvHint &Hint) {
       PP.Diag(Tok.getLocation(), diag::err_pragma_rvv_lmul_sew_invalid_keyword);
       IsParseSuccess = false;
     } else
-      Hint.Lmul = IdentifierLoc::create(Actions.Context, Tok.getLocation(),
-                                        Tok.getIdentifierInfo());
+      Hint.Lmul = new (Actions.Context)
+          IdentifierLoc(Tok.getLocation(), Tok.getIdentifierInfo());
   }
   // Parse for comma
   PP.Lex(Tok);
@@ -1726,8 +1726,8 @@ bool Parser::HandlePragmaRvvHint(RvvHint &Hint) {
       PP.Diag(Tok.getLocation(), diag::err_pragma_rvv_lmul_sew_invalid_keyword);
       IsParseSuccess = false;
     } else
-      Hint.Sew = IdentifierLoc::create(Actions.Context, Tok.getLocation(),
-                                       Tok.getIdentifierInfo());
+      Hint.Sew = new (Actions.Context)
+          IdentifierLoc(Tok.getLocation(), Tok.getIdentifierInfo());
   }
 
   Hint.Range = SourceRange(Info->PragmaName.getLocation(), Tok.getLocation());
