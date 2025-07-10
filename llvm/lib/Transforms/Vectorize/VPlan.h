@@ -3161,14 +3161,9 @@ protected:
   VPWidenMemoryRecipe(const char unsigned SC, Instruction &I,
                       std::initializer_list<VPValue *> Operands,
                       bool Consecutive, bool Reverse, DebugLoc DL)
-<<<<<<< HEAD
-      : VPRecipeBase(SC, Operands, DL), Ingredient(I), Consecutive(Consecutive),
-        Reverse(Reverse) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
       : VPRecipeBase(SC, Operands, DL), VPIRMetadata(I), Ingredient(I),
         Consecutive(Consecutive), Reverse(Reverse) {
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
+#endif // SIFIVE_CUSTOMIZATION
     assert((Consecutive || !Reverse) && "Reverse implies consecutive");
   }
 
