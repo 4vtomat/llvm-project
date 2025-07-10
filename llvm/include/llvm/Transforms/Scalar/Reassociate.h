@@ -149,7 +149,7 @@ private:
                                  SmallVectorImpl<reassociate::Factor> &Factors);
   Value *OptimizeMul(BinaryOperator *I,
                      SmallVectorImpl<reassociate::ValueEntry> &Ops);
-  Value *RemoveFactorFromExpression(Value *V, Value *Factor);
+  Value *RemoveFactorFromExpression(Value *V, Value *Factor, DebugLoc DL);
   void EraseInst(Instruction *I);
   void RecursivelyEraseDeadInsts(Instruction *I, OrderedSet &Insts);
   void OptimizeInst(Instruction *I);

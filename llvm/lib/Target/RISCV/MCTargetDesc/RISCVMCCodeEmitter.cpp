@@ -783,6 +783,9 @@ uint64_t RISCVMCCodeEmitter::getImmOpValue(const MCInst &MI, unsigned OpNo,
     case RISCVMCExpr::VK_TLSDESC_CALL:
       FixupKind = RISCV::fixup_riscv_tlsdesc_call;
       break;
+    case RISCVMCExpr::VK_QC_ABS20:
+      FixupKind = RISCV::fixup_riscv_qc_abs20_u;
+      break;
     }
   } else if (Kind == MCExpr::SymbolRef || Kind == MCExpr::Binary) {
     // FIXME: Sub kind binary exprs have chance of underflow.
@@ -798,6 +801,10 @@ uint64_t RISCVMCCodeEmitter::getImmOpValue(const MCInst &MI, unsigned OpNo,
       FixupKind = RISCV::fixup_riscv_12_i;
     } else if (MIFrm == RISCVII::InstFormatQC_EB) {
       FixupKind = RISCV::fixup_riscv_qc_e_branch;
+    } else if (MIFrm == RISCVII::InstFormatQC_EAI) {
+      FixupKind = RISCV::fixup_riscv_qc_e_32;
+    } else if (MIFrm == RISCVII::InstFormatQC_EJ) {
+      FixupKind = RISCV::fixup_riscv_qc_e_jump_plt;
     }
   }
 

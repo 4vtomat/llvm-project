@@ -286,6 +286,7 @@ Type *VPTypeAnalysis::inferScalarType(const VPValue *V) {
                 VPPartialReductionRecipe>([this](const VPRecipeBase *R) {
             return inferScalarType(R->getOperand(0));
           })
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
           .Case<VPWidenLoadEVLRecipe>([this, V](const VPWidenLoadEVLRecipe *R) {
             Type *ResTy = (R->isSpeculative() && (V == R->getVPValue(1)))
@@ -294,20 +295,19 @@ Type *VPTypeAnalysis::inferScalarType(const VPValue *V) {
             return ResTy;
           })
 #endif // SIFIVE_CUSTOMIZATION
+=======
+          // VPInstructionWithType must be handled before VPInstruction.
+          .Case<VPInstructionWithType, VPWidenIntrinsicRecipe,
+                VPWidenCastRecipe>(
+              [](const auto *R) { return R->getResultType(); })
+>>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
           .Case<VPBlendRecipe, VPInstruction, VPWidenRecipe, VPReplicateRecipe,
                 VPWidenCallRecipe, VPWidenMemoryRecipe, VPWidenSelectRecipe>(
               [this](const auto *R) { return inferScalarTypeForRecipe(R); })
-          .Case<VPWidenIntrinsicRecipe>([](const VPWidenIntrinsicRecipe *R) {
-            return R->getResultType();
-          })
           .Case<VPInterleaveRecipe>([V](const VPInterleaveRecipe *R) {
             // TODO: Use info from interleave group.
             return V->getUnderlyingValue()->getType();
           })
-          .Case<VPWidenCastRecipe>(
-              [](const VPWidenCastRecipe *R) { return R->getResultType(); })
-          .Case<VPScalarCastRecipe>(
-              [](const VPScalarCastRecipe *R) { return R->getResultType(); })
           .Case<VPExpandSCEVRecipe>([](const VPExpandSCEVRecipe *R) {
             return R->getSCEV()->getType();
           })

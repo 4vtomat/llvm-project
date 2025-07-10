@@ -45,6 +45,7 @@ inline bool isUniformAfterVectorization(const VPValue *VPV) {
     return true;
   if (auto *Rep = dyn_cast<VPReplicateRecipe>(VPV))
     return Rep->isUniform();
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   const VPRecipeBase *Def = VPV->getDefiningRecipe();
   if (isa<VPMonotonicUpdateInstruction, VPMonotonicHeaderPHIRecipe>(Def))
@@ -52,6 +53,9 @@ inline bool isUniformAfterVectorization(const VPValue *VPV) {
 #endif // SIFIVE_CUSTOMIZATION
   if (isa<VPWidenGEPRecipe, VPDerivedIVRecipe, VPScalarCastRecipe,
           VPBlendRecipe>(VPV))
+=======
+  if (isa<VPWidenGEPRecipe, VPDerivedIVRecipe, VPBlendRecipe>(VPV))
+>>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
     return all_of(VPV->getDefiningRecipe()->operands(),
                   isUniformAfterVectorization);
   if (auto *VPI = dyn_cast<VPInstruction>(VPV))

@@ -116,6 +116,7 @@ RISCVMCExpr::getSpecifierForName(StringRef name) {
       .Case("tlsdesc_load_lo", VK_TLSDESC_LOAD_LO)
       .Case("tlsdesc_add_lo", VK_TLSDESC_ADD_LO)
       .Case("tlsdesc_call", VK_TLSDESC_CALL)
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       .Case("gprel_lo", VK_GPREL_LO)
       .Case("gprel_hi", VK_GPREL_HI)
@@ -130,6 +131,9 @@ RISCVMCExpr::getSpecifierForName(StringRef name) {
       .Case("tls_gd_gprel_hi", VK_TLS_GD_GPREL_HI)
       .Case("tls_gd_gprel", VK_TLS_GD_GPREL_ADD)
 #endif // SIFIVE_CUSTOMIZATION
+=======
+      .Case("qc.abs20", VK_QC_ABS20)
+>>>>>>> 2271f0bebd48c9ed8b16b500886a819c4f269a6a
       // Used in data directives
       .Case("pltpcrel", VK_PLTPCREL)
       .Case("gotpcrel", VK_GOTPCREL)
@@ -204,6 +208,8 @@ StringRef RISCVMCExpr::getSpecifierName(Specifier S) {
     return "gotpcrel";
   case VK_PLTPCREL:
     return "pltpcrel";
+  case VK_QC_ABS20:
+    return "qc.abs20";
   }
   llvm_unreachable("Invalid ELF symbol kind");
 }

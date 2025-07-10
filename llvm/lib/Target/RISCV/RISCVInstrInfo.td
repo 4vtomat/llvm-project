@@ -1995,9 +1995,11 @@ class SwapSysRegImm<SysReg SR, list<Register> Regs>
 }
 
 def ReadFRM : ReadSysReg<SysRegFRM, [FRM]>;
+let hasPostISelHook = 1 in {
 def WriteFRM : WriteSysReg<SysRegFRM, [FRM]>;
 def WriteFRMImm : WriteSysRegImm<SysRegFRM, [FRM]>;
 def SwapFRMImm : SwapSysRegImm<SysRegFRM, [FRM]>;
+}
 
 let hasSideEffects = true in {
 def ReadFFLAGS : ReadSysReg<SysRegFFLAGS, [FFLAGS]>;

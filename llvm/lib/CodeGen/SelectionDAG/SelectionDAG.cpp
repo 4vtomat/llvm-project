@@ -3012,9 +3012,12 @@ bool SelectionDAG::isSplatValue(SDValue V, const APInt &DemandedElts,
     APInt UndefLHS, UndefRHS;
     SDValue LHS = V.getOperand(0);
     SDValue RHS = V.getOperand(1);
+    // Only propagate common undef elts for both operands, otherwise we might
+    // fail to handle binop-specific undef handling.
+    // e.g. (and undef, 0) -> 0 etc.
     if (isSplatValue(LHS, DemandedElts, UndefLHS, Depth + 1) &&
         isSplatValue(RHS, DemandedElts, UndefRHS, Depth + 1)) {
-      UndefElts = UndefLHS | UndefRHS;
+      UndefElts = UndefLHS & UndefRHS;
       return true;
     }
     return false;
@@ -5427,6 +5430,9 @@ bool SelectionDAG::isGuaranteedNotToBeUndefOrPoison(SDValue Op,
   case ISD::TargetFrameIndex:
   case ISD::CopyFromReg:
     return true;
+
+  case ISD::POISON:
+    return false;
 
   case ISD::UNDEF:
     return PoisonOnly;
