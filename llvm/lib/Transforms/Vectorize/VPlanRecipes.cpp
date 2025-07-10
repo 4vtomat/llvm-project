@@ -1052,7 +1052,6 @@ Value *VPInstruction::generate(VPTransformState &State) {
 
     return ReducedPartRdx;
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case VPInstruction::ComputeReductionResultWithMask: {
     // FIXME: The cross-recipe dependency on VPReductionPHIRecipe is temporary.
@@ -1154,15 +1153,9 @@ Value *VPInstruction::generate(VPTransformState &State) {
     return ReducedPartRdx;
   }
 #endif // SIFIVE_CUSTOMIZATION
-  case VPInstruction::ExtractFromEnd: {
-    auto *CI = cast<ConstantInt>(getOperand(1)->getLiveInIRValue());
-    unsigned Offset = CI->getZExtValue();
-    assert(Offset > 0 && "Offset from end must be positive");
-=======
   case VPInstruction::ExtractLastElement:
   case VPInstruction::ExtractPenultimateElement: {
     unsigned Offset = getOpcode() == VPInstruction::ExtractLastElement ? 1 : 2;
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
     Value *Res;
     if (State.VF.isVector()) {
       assert(Offset <= State.VF.getKnownMinValue() &&
@@ -1342,15 +1335,11 @@ InstructionCost VPInstruction::computeCost(ElementCount VF,
 }
 
 bool VPInstruction::isVectorToScalar() const {
-<<<<<<< HEAD
-  return getOpcode() == VPInstruction::ExtractFromEnd ||
+  return getOpcode() == VPInstruction::ExtractLastElement ||
+         getOpcode() == VPInstruction::ExtractPenultimateElement ||
 #if SIFIVE_CUSTOMIZATION
          getOpcode() == VPInstruction::ComputeReductionResultWithMask ||
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  return getOpcode() == VPInstruction::ExtractLastElement ||
-         getOpcode() == VPInstruction::ExtractPenultimateElement ||
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
          getOpcode() == Instruction::ExtractElement ||
          getOpcode() == VPInstruction::FirstActiveLane ||
          getOpcode() == VPInstruction::ComputeFindLastIVResult ||
@@ -1770,8 +1759,6 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
     Args.push_back(Arg);
   }
 
-<<<<<<< HEAD
-  assert(Variant != nullptr && "Can't create vector function.");
 #if SIFIVE_CUSTOMIZATION
   // Add VL as an explicit final argument to SiFive NF Library functions
   if (Variant->getName().starts_with(SiFiveNFLibraryPrefix) && State.EVL &&
@@ -1781,8 +1768,6 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
   auto *CI = cast_or_null<CallInst>(getUnderlyingValue());
   SmallVector<OperandBundleDef, 1> OpBundles;
   if (CI)
@@ -1843,7 +1828,8 @@ void VPWidenIntrinsicRecipe::execute(VPTransformState &State) {
       auto *CI = cast_or_null<CallInst>(getUnderlyingInstr());
       llvm::widenPredicatedIntrinsic(CI, this, State, VPID, State.TTI);
       Value *V = State.get(this);
-      State.addMetadata(V, CI);
+      if (auto *VecOp = dyn_cast<Instruction>(V))
+        applyMetadata(*VecOp);
       return;
     }
   }
@@ -2257,7 +2243,8 @@ void VPWidenRecipe::execute(VPTransformState &State) {
     Value *V = llvm::widenPredicatedInstruction(I, this, *this, State,
                                                 nullptr);
     State.set(this, V);
-    State.addMetadata(V, I);
+    if (auto *VecOp = dyn_cast<Instruction>(V))
+      applyMetadata(*VecOp);
     return;
   }
 #endif // SIFIVE_CUSTOMIZATION
@@ -2452,7 +2439,8 @@ void VPWidenCastRecipe::execute(VPTransformState &State) {
     Value *V = llvm::widenPredicatedInstruction(I, this, *this, State,
                                                 nullptr);
     State.set(this, V);
-    State.addMetadata(V, I);
+    if (auto *VecOp = dyn_cast<Instruction>(V))
+      applyMetadata(*VecOp);
     return;
   }
 #endif // SIFIVE_CUSTOMIZATION
