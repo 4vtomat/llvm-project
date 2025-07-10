@@ -689,7 +689,6 @@
 // MCPU-SIFIVE-X160-SAME: "-target-feature" "+zicbop"
 // MCPU-SIFIVE-X160-SAME: "-target-feature" "+zicboz"
 // MCPU-SIFIVE-X160-SAME: "-target-feature" "+experimental-zicfilp"
-// MCPU-SIFIVE-X160-SAME: "-target-feature" "+zicntr"
 // MCPU-SIFIVE-X160-SAME: "-target-feature" "+zicond"
 // MCPU-SIFIVE-X160-SAME: "-target-feature" "+zicsr"
 // MCPU-SIFIVE-X160-SAME: "-target-feature" "+zifencei"
