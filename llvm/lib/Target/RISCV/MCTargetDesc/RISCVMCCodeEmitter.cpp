@@ -215,11 +215,6 @@ void RISCVMCCodeEmitter::expandAddRegRel(const MCInst &MI,
   switch (Expr->getSpecifier()) {
   default:
     llvm_unreachable("Unknown relocation attached to TP/GP-relative ADD");
-  case RISCVMCExpr::VK_TPREL_ADD:
-    assert(SrcReg2.isReg() && SrcReg2.getReg() == RISCV::X4 &&
-           "Expected thread pointer as second input to TP-relative ADD");
-    FixupKind = RISCV::fixup_riscv_tprel_add;
-    break;
   case RISCVMCExpr::VK_GPREL_ADD:
     FixupKind = RISCV::fixup_riscv_gprel_add;
     break;
@@ -240,13 +235,6 @@ void RISCVMCCodeEmitter::expandAddRegRel(const MCInst &MI,
   // Emit the correct tprel_add relocation for the symbol.
   Fixups.push_back(MCFixup::create(
       0, Expr, MCFixupKind(FixupKind), MI.getLoc()));
-
-  // Emit fixup_riscv_relax for tprel_add where the relax feature is enabled.
-  if (STI.hasFeature(RISCV::FeatureRelax) && RelaxCandidate) {
-    const MCConstantExpr *Dummy = MCConstantExpr::create(0, Ctx);
-    Fixups.push_back(MCFixup::create(
-        0, Dummy, MCFixupKind(RISCV::fixup_riscv_relax), MI.getLoc()));
-  }
 
   // Emit a normal ADD instruction with the given operands.
   MCInst TmpInst = MCInstBuilder(RISCV::ADD)
