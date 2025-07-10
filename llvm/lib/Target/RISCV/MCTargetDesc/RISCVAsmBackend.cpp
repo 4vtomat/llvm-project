@@ -77,14 +77,6 @@ MCFixupKindInfo RISCVAsmBackend::getFixupKindInfo(MCFixupKind Kind) const {
        MCFixupKindInfo::FKF_IsPCRel | MCFixupKindInfo::FKF_IsTarget},
       {"fixup_riscv_pcrel_lo12_s", 0, 32,
        MCFixupKindInfo::FKF_IsPCRel | MCFixupKindInfo::FKF_IsTarget},
-<<<<<<< HEAD
-      {"fixup_riscv_got_hi20", 12, 20, MCFixupKindInfo::FKF_IsPCRel},
-      {"fixup_riscv_tprel_hi20", 12, 20, 0},
-      {"fixup_riscv_tprel_lo12_i", 20, 12, 0},
-      {"fixup_riscv_tprel_lo12_s", 0, 32, 0},
-      {"fixup_riscv_tprel_add", 0, 0, 0},
-      {"fixup_riscv_tls_got_hi20", 12, 20, MCFixupKindInfo::FKF_IsPCRel},
-      {"fixup_riscv_tls_gd_hi20", 12, 20, MCFixupKindInfo::FKF_IsPCRel},
 #if SIFIVE_CUSTOMIZATION
       {"fixup_riscv_gprel_hi20", 12, 20, 0},
       {"fixup_riscv_gprel_lo12_i", 20, 12, 0},
@@ -100,8 +92,6 @@ MCFixupKindInfo RISCVAsmBackend::getFixupKindInfo(MCFixupKind Kind) const {
       {"fixup_riscv_tls_gd_gprel_lo12_i", 20, 12, 0},
       {"fixup_riscv_tls_gd_gprel_add", 0, 0, 0},
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
       {"fixup_riscv_jal", 12, 20, MCFixupKindInfo::FKF_IsPCRel},
       {"fixup_riscv_branch", 0, 32, MCFixupKindInfo::FKF_IsPCRel},
       {"fixup_riscv_rvc_jump", 2, 11, MCFixupKindInfo::FKF_IsPCRel},
@@ -148,11 +138,6 @@ bool RISCVAsmBackend::shouldForceRelocation(const MCAssembler &Asm,
     if (Target.isAbsolute())
       return false;
     break;
-<<<<<<< HEAD
-  case RISCV::fixup_riscv_got_hi20:
-  case RISCV::fixup_riscv_tls_got_hi20:
-  case RISCV::fixup_riscv_tls_gd_hi20:
-  case RISCV::fixup_riscv_tlsdesc_hi20:
 #if SIFIVE_CUSTOMIZATION
   case RISCV::fixup_riscv_gprel_hi20:
   case RISCV::fixup_riscv_gprel_lo12_i:
@@ -166,10 +151,8 @@ bool RISCVAsmBackend::shouldForceRelocation(const MCAssembler &Asm,
   case RISCV::fixup_riscv_tls_gd_gprel_hi20:
   case RISCV::fixup_riscv_tls_gd_gprel_lo12_i:
   case RISCV::fixup_riscv_tls_gd_gprel_add:
-#endif // SIFIVE_CUSTOMIZATION
     return true;
-=======
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   return STI->hasFeature(RISCV::FeatureRelax) || ForceRelocs;
@@ -490,11 +473,6 @@ static uint64_t adjustFixupValue(const MCFixup &Fixup, uint64_t Value,
   switch (Fixup.getTargetKind()) {
   default:
     llvm_unreachable("Unknown fixup kind!");
-<<<<<<< HEAD
-  case RISCV::fixup_riscv_got_hi20:
-  case RISCV::fixup_riscv_tls_got_hi20:
-  case RISCV::fixup_riscv_tls_gd_hi20:
-  case RISCV::fixup_riscv_tlsdesc_hi20:
 #if SIFIVE_CUSTOMIZATION
   case RISCV::fixup_riscv_got_gprel_hi20:
   case RISCV::fixup_riscv_got_gprel_lo12_i:
@@ -502,10 +480,8 @@ static uint64_t adjustFixupValue(const MCFixup &Fixup, uint64_t Value,
   case RISCV::fixup_riscv_tls_got_gprel_lo12_i:
   case RISCV::fixup_riscv_tls_gd_gprel_hi20:
   case RISCV::fixup_riscv_tls_gd_gprel_lo12_i:
-#endif // SIFIVE_CUSTOMIZATION
     llvm_unreachable("Relocation should be unconditionally forced\n");
-=======
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
+#endif // SIFIVE_CUSTOMIZATION
   case FK_Data_1:
   case FK_Data_2:
   case FK_Data_4:
