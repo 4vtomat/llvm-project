@@ -482,7 +482,8 @@ def SIFIVE_X160 : RISCVProcessorModel<"sifive-x160", SiFive7NVLEN128Model,
                                       ],
                                       !listconcat(SiFive7TuneFeatures,
                                       [TuneDLenFactor2,
-                                       TuneOptimizedZeroStrideLoad])>;
+                                       TuneOptimizedZeroStrideLoad,
+                                       TunePseudoLIsimm32])>;
 
 def SIFIVE_X180 : RISCVProcessorModel<"sifive-x180", SiFive7NVLEN128Model,
                                       [Feature64Bit,
@@ -536,7 +537,8 @@ def SIFIVE_X180 : RISCVProcessorModel<"sifive-x180", SiFive7NVLEN128Model,
                                       ],
                                       !listconcat(SiFive7TuneFeatures,
                                       [TuneDLenFactor2,
-                                       TuneOptimizedZeroStrideLoad])>;
+                                       TuneOptimizedZeroStrideLoad,
+                                       TunePseudoLIsimm32])>;
 
 def SIFIVE_X280 : RISCVProcessorModel<"sifive-x280", SiFive7VLEN512Model,
                                       [Feature64Bit,
