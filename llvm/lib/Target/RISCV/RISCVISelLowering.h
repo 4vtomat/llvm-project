@@ -602,8 +602,9 @@ public:
 #if SIFIVE_CUSTOMIZATION
   /// Return true if we believe it is correct and profitable to reduce the
   /// load node to a smaller type.
-  bool shouldReduceLoadWidth(SDNode *Load, ISD::LoadExtType ExtTy,
-                             EVT NewVT) const override;
+  bool shouldReduceLoadWidth(
+      SDNode *Load, ISD::LoadExtType ExtTy, EVT NewVT,
+      std::optional<unsigned> ByteOffset = std::nullopt) const override;
 
   bool canMergeStoresTo(unsigned AddressSpace, EVT MemVT,
                         const MachineFunction &MF) const override;
