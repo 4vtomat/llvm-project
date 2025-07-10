@@ -612,20 +612,17 @@ DemandedFields getDemanded(const MachineInstr &MI, const RISCVSubtarget *ST) {
     Res.MaskPolicy = false;
   }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   Res.UseAltFmt = RISCVII::getAltFmtType(MI.getDesc().TSFlags) !=
                   RISCVII::AltFmtType::DontCare;
   Res.UseTWiden = RISCVII::hasTWidenOp(MI.getDesc().TSFlags) ||
                   isMammothVectorConfigInstr(MI);
 #endif // SIFIVE_CUSTOMIZATION
-=======
   if (isVExtractInstr(MI)) {
     assert(!RISCVII::hasVLOp(TSFlags));
     // TODO: LMUL can be any larger value (without cost)
     Res.TailPolicy = false;
   }
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
 
   return Res;
 }
