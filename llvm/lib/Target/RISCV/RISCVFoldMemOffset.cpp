@@ -274,14 +274,7 @@ bool RISCVFoldMemOffset::runOnMachineFunction(MachineFunction &MF) {
         MemMI->getOperand(2).setImm(NewOffset);
 
       MRI.replaceRegWith(MI.getOperand(0).getReg(), MI.getOperand(1).getReg());
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-      // SIFIVE cherry-picked from 2484060ad970b692443a6a1e7d3bef2797aa751b.
       MRI.clearKillFlags(MI.getOperand(1).getReg());
-#endif
-=======
-      MRI.clearKillFlags(MI.getOperand(1).getReg());
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
       MI.eraseFromParent();
     }
   }
