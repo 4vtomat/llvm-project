@@ -67,19 +67,13 @@ struct VPlanTransforms {
   /// VPBasicBlocks for the scalar preheader and exit blocks. \p InductionTy is
   /// the type of the canonical induction and used for related values, like the
   /// trip count expression.
-<<<<<<< HEAD
-  static void introduceTopLevelVectorLoopRegion(
-      VPlan &Plan, Type *InductionTy, PredicatedScalarEvolution &PSE,
-#if SIFIVE_CUSTOMIZATION
-      bool IsUncountable,
-#endif // SIFIVE_CUSTOMIZATION
-      bool RequiresScalarEpilogueCheck, bool TailFolded, Loop *TheLoop);
-=======
   static void createLoopRegions(VPlan &Plan, Type *InductionTy,
                                 PredicatedScalarEvolution &PSE,
+#if SIFIVE_CUSTOMIZATION
+                                bool IsUncountable,
+#endif // SIFIVE_CUSTOMIZATION
                                 bool RequiresScalarEpilogueCheck,
                                 bool TailFolded, Loop *TheLoop);
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
 
   /// Replaces the VPInstructions in \p Plan with corresponding
   /// widen recipes. Returns false if any VPInstructions could not be converted
