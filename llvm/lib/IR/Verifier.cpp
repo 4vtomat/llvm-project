@@ -5021,14 +5021,10 @@ void Verifier::visitDIAssignIDMetadata(Instruction &I, MDNode *MD) {
   // FIXME: We allow all intrinsic insts here to avoid trying to enumerate all
   // possible store intrinsics.
   bool ExpectedInstTy =
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       (isa<IntrinsicInst>(I) && I.mayWriteToMemory()) ||
 #endif // SIFIVE_CUSTOMIZATION
-      isa<AllocaInst>(I) || isa<StoreInst>(I) || isa<MemIntrinsic>(I);
-=======
       isa<AllocaInst>(I) || isa<StoreInst>(I) || isa<IntrinsicInst>(I);
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
   CheckDI(ExpectedInstTy, "!DIAssignID attached to unexpected instruction kind",
           I, MD);
   // Iterate over the MetadataAsValue uses of the DIAssignID - these should
