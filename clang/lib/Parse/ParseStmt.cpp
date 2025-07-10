@@ -2609,8 +2609,8 @@ StmtResult Parser::ParsePragmaRvvHint(StmtVector &Stmts,
     ArgHints[2] = Hint.Lmul;
     ArgHints[3] = Hint.Sew;
 
-    TempAttrs.addNew(Hint.PragmaNameLoc->Ident, Hint.Range, nullptr,
-                     Hint.PragmaNameLoc->Loc, ArgHints, 4,
+    TempAttrs.addNew(Hint.PragmaNameLoc->getIdentifierInfo(), Hint.Range,
+                     nullptr, Hint.PragmaNameLoc->getLoc(), ArgHints, 4,
                      ParsedAttr::Form::Pragma());
   }
 
