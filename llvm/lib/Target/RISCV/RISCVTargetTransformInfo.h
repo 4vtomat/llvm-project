@@ -78,7 +78,7 @@ public:
   std::optional<Instruction *> instCombineIntrinsic(InstCombiner &IC,
                                                     IntrinsicInst &II) const;
   bool isTargetIntrinsicWithScalarOpAtArg(Intrinsic::ID ID,
-                                          unsigned ScalarOpdIdx);
+                                          unsigned ScalarOpdIdx) const;
   bool getMemoryRefInfo(SmallVectorImpl<InterestingMemoryOperand> &Interesting,
                         IntrinsicInst *II) const;
 
@@ -244,7 +244,7 @@ public:
                                         TTI::TargetCostKind CostKind) const;
 
 #if SIFIVE_CUSTOMIZATION
-  bool isLoweredToCall(const Function *F);
+  bool isLoweredToCall(const Function *F) const;
 #endif // SIFIVE_CUSTOMIZATION
   InstructionCost getPointersChainCost(ArrayRef<const Value *> Ptrs,
                                        const Value *Base,
@@ -289,7 +289,7 @@ public:
       unsigned Opcode, Type *VecTy, unsigned Factor, Value *Stride,
       ArrayRef<unsigned> Indices, Align Alignment, unsigned AddressSpace,
       TTI::TargetCostKind CostKind, bool UseMaskForCond = false,
-      bool UseMaskForGaps = false);
+      bool UseMaskForGaps = false) const;
 #endif // SIFIVE_CUSTOMIZATION
 
   InstructionCost getGatherScatterOpCost(unsigned Opcode, Type *DataTy,
