@@ -32,26 +32,6 @@ enum Fixups {
   // 12-bit fixup corresponding to %pcrel_lo(foo) for the S-type store
   // instructions
   fixup_riscv_pcrel_lo12_s,
-<<<<<<< HEAD
-  // 20-bit fixup corresponding to %got_pcrel_hi(foo) for instructions like
-  // auipc
-  fixup_riscv_got_hi20,
-  // 20-bit fixup corresponding to %tprel_hi(foo) for instructions like lui
-  fixup_riscv_tprel_hi20,
-  // 12-bit fixup corresponding to %tprel_lo(foo) for instructions like addi
-  fixup_riscv_tprel_lo12_i,
-  // 12-bit fixup corresponding to %tprel_lo(foo) for the S-type store
-  // instructions
-  fixup_riscv_tprel_lo12_s,
-  // Fixup corresponding to %tprel_add(foo) for PseudoAddTPRel, used as a linker
-  // hint
-  fixup_riscv_tprel_add,
-  // 20-bit fixup corresponding to %tls_ie_pcrel_hi(foo) for instructions like
-  // auipc
-  fixup_riscv_tls_got_hi20,
-  // 20-bit fixup corresponding to %tls_gd_pcrel_hi(foo) for instructions like
-  // auipc
-  fixup_riscv_tls_gd_hi20,
 #if SIFIVE_CUSTOMIZATION
   // fixup_riscv_gprel_hi20 - 20-bit fixup corresponding to gprel_hi(foo) for
   // instructions like lui
@@ -95,8 +75,6 @@ enum Fixups {
   // Used to provide a hint to the linker
   fixup_riscv_tls_gd_gprel_add,
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
   // 20-bit fixup for symbol references in the jal instruction
   fixup_riscv_jal,
   // 12-bit fixup for symbol references in the branch instructions
