@@ -102,8 +102,8 @@ unsigned RISCVTTIImpl::getMinEarlyExitTripCount() const {
   return 0;
 }
 
-bool RISCVTTIImpl::isTargetIntrinsicWithScalarOpAtArg(Intrinsic::ID ID,
-                                                      unsigned ScalarOpdIdx) {
+bool RISCVTTIImpl::isTargetIntrinsicWithScalarOpAtArg(
+    Intrinsic::ID ID, unsigned ScalarOpdIdx) const {
   switch (ID) {
   case Intrinsic::aarch64_neon_rshrn:
   case Intrinsic::aarch64_neon_sqrshrn:
@@ -1561,8 +1561,7 @@ RISCVTTIImpl::getMaskedMemoryOpCost(unsigned Opcode, Type *Src, Align Alignment,
 InstructionCost RISCVTTIImpl::getInterleavedMemoryOpCost(
     unsigned Opcode, Type *VecTy, unsigned Factor, ArrayRef<unsigned> Indices,
     Align Alignment, unsigned AddressSpace, TTI::TargetCostKind CostKind,
-<<<<<<< HEAD
-    bool UseMaskForCond, bool UseMaskForGaps) {
+    bool UseMaskForCond, bool UseMaskForGaps) const {
 #if SIFIVE_CUSTOMIZATION
   // FIXME: Sync with upstream?
   if (isa<ScalableVectorType>(VecTy) && !UseMaskForGaps &&
@@ -1584,9 +1583,6 @@ InstructionCost RISCVTTIImpl::getInterleavedMemoryOpCost(
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    bool UseMaskForCond, bool UseMaskForGaps) const {
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
 
   // The interleaved memory access pass will lower interleaved memory ops (i.e
   // a load and store followed by a specific shuffle) to vlseg/vsseg
@@ -1684,7 +1680,8 @@ InstructionCost RISCVTTIImpl::getInterleavedMemoryOpCost(
 InstructionCost RISCVTTIImpl::getStridedInterleavedMemoryOpCost(
     unsigned Opcode, Type *VecTy, unsigned Factor, Value *Stride,
     ArrayRef<unsigned> Indices, Align Alignment, unsigned AddressSpace,
-    TTI::TargetCostKind CostKind, bool UseMaskForCond, bool UseMaskForGaps) {
+    TTI::TargetCostKind CostKind, bool UseMaskForCond,
+    bool UseMaskForGaps) const {
 
   if (!useVLAVectorizer() || !isa<ScalableVectorType>(VecTy) ||
       UseMaskForGaps || Factor > TLI->getMaxSupportedInterleaveFactor() ||
@@ -2946,8 +2943,7 @@ unsigned RISCVTTIImpl::getEstimatedVLFor(VectorType *Ty) const {
 InstructionCost
 RISCVTTIImpl::getMinMaxReductionCost(Intrinsic::ID IID, VectorType *Ty,
                                      FastMathFlags FMF,
-<<<<<<< HEAD
-                                     TTI::TargetCostKind CostKind) {
+                                     TTI::TargetCostKind CostKind) const {
 #if SIFIVE_CUSTOMIZATION
   if (!isa<FixedVectorType>(Ty)) {
     std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Ty);
@@ -2956,9 +2952,6 @@ RISCVTTIImpl::getMinMaxReductionCost(Intrinsic::ID IID, VectorType *Ty,
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
-                                     TTI::TargetCostKind CostKind) const {
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
   if (isa<FixedVectorType>(Ty) && !ST->useRVVForFixedLengthVectors())
     return BaseT::getMinMaxReductionCost(IID, Ty, FMF, CostKind);
 
@@ -3079,8 +3072,7 @@ RISCVTTIImpl::getMinMaxReductionCost(Intrinsic::ID IID, VectorType *Ty,
 InstructionCost
 RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
                                          std::optional<FastMathFlags> FMF,
-<<<<<<< HEAD
-                                         TTI::TargetCostKind CostKind) {
+                                         TTI::TargetCostKind CostKind) const {
 #if SIFIVE_CUSTOMIZATION
   if (!isa<FixedVectorType>(Ty)) {
     // FIXME: Revisit this code when we start to tune vectorizer's cost model
@@ -3090,9 +3082,6 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
-                                         TTI::TargetCostKind CostKind) const {
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
   if (isa<FixedVectorType>(Ty) && !ST->useRVVForFixedLengthVectors())
     return BaseT::getArithmeticReductionCost(Opcode, Ty, FMF, CostKind);
 
@@ -3225,7 +3214,7 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
 
 #if SIFIVE_CUSTOMIZATION
 // FIXME: This needs more work.
-bool RISCVTTIImpl::isLoweredToCall(const Function *F) {
+bool RISCVTTIImpl::isLoweredToCall(const Function *F) const {
   if (!F->isIntrinsic())
     return BaseT::isLoweredToCall(F);
 
@@ -3370,8 +3359,8 @@ InstructionCost RISCVTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
   }
 
   /// Extra penalty for misaligned load or store
-  if (!Alignment || (ST->hasKnownDLen() && ST->isSiFiveCPU() &&
-                     Alignment.value() < Align(ST->getDLen() / 8)))
+  if ((ST->hasKnownDLen() && ST->isSiFiveCPU() &&
+       Alignment.value() < Align(ST->getDLen() / 8).value()))
     Cost += 1;
 
   // Load/store instructions with large lmul will run out of outstandings which
@@ -3783,8 +3772,7 @@ InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
 InstructionCost RISCVTTIImpl::getArithmeticInstrCost(
     unsigned Opcode, Type *Ty, TTI::TargetCostKind CostKind,
     TTI::OperandValueInfo Op1Info, TTI::OperandValueInfo Op2Info,
-<<<<<<< HEAD
-    ArrayRef<const Value *> Args, const Instruction *CxtI) {
+    ArrayRef<const Value *> Args, const Instruction *CxtI) const {
 #if SIFIVE_CUSTOMIZATION
   if (ST->isSiFiveCPU()) {
     const unsigned ISD = TLI->InstructionOpcodeToISD(Opcode);
@@ -3819,9 +3807,6 @@ InstructionCost RISCVTTIImpl::getArithmeticInstrCost(
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    ArrayRef<const Value *> Args, const Instruction *CxtI) const {
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
 
   // TODO: Handle more cost kinds.
   if (CostKind != TTI::TCK_RecipThroughput)
@@ -4246,7 +4231,6 @@ bool RISCVTTIImpl::isLSRCostLess(const TargetTransformInfo::LSRCost &C1,
                   C2.ScaleCost, C2.ImmCost, C2.SetupCost);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 bool RISCVTTIImpl::enableUncountableVectorization() const {
   switch (ST->getProcFamily()) {
@@ -4303,11 +4287,8 @@ bool RISCVTTIImpl::enableMonotonicsVectorization() const {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-bool RISCVTTIImpl::isLegalMaskedExpandLoad(Type *DataTy, Align Alignment) {
-=======
 bool RISCVTTIImpl::isLegalMaskedExpandLoad(Type *DataTy,
                                            Align Alignment) const {
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
   auto *VTy = dyn_cast<VectorType>(DataTy);
   if (!VTy || VTy->isScalableTy())
     return false;
