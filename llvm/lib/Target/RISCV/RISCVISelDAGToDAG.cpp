@@ -1375,9 +1375,8 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
       return;
     }
 
-<<<<<<< HEAD
-    unsigned LShAmt = Subtarget->getXLen() - TrailingOnes;
 #if SIFIVE_CUSTOMIZATION
+    unsigned LShAmt = Subtarget->getXLen() - TrailingOnes;
     if (Subtarget->hasFuseBFX()) {
       // Emit as a UBFX pseudoinstruction which will be expanded to a
       // shift pair later.
@@ -1389,20 +1388,14 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
       return;
     }
 #endif // SIFIVE_CUSTOMIZATION
-    if (Subtarget->hasVendorXTHeadBb()) {
-      SDNode *THEXTU = CurDAG->getMachineNode(
-          RISCV::TH_EXTU, DL, VT, N0->getOperand(0),
-          CurDAG->getTargetConstant(TrailingOnes - 1, DL, VT),
-          CurDAG->getTargetConstant(ShAmt, DL, VT));
-      ReplaceNode(Node, THEXTU);
-=======
     const unsigned Msb = TrailingOnes - 1;
     const unsigned Lsb = ShAmt;
     if (tryUnsignedBitfieldExtract(Node, DL, VT, N0->getOperand(0), Msb, Lsb))
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
       return;
 
+#ifndef SIFIVE_CUSTOMIZATION
     unsigned LShAmt = Subtarget->getXLen() - TrailingOnes;
+#endif // SIFIVE_CUSTOMIZATION
     SDNode *SLLI =
         CurDAG->getMachineNode(RISCV::SLLI, DL, VT, N0->getOperand(0),
                                CurDAG->getTargetConstant(LShAmt, DL, VT));
