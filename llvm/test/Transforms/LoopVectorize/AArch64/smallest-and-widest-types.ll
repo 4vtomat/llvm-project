@@ -37,11 +37,7 @@ for.end:
 ; chosen. The following 3 cases check different combinations of widths.
 
 ; CHECK-LABEL: Checking a loop in 'no_loads_stores_32'
-<<<<<<< HEAD
-; CHECK: The Smallest and Widest types: 32 / 32 bits
-=======
 ; CHECK: The Smallest and Widest types: 32 / 64 bits
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
 ; CHECK: Selecting VF: 4
 
 define double @no_loads_stores_32(i32 %n) {
@@ -64,11 +60,7 @@ for.end:
 }
 
 ; CHECK-LABEL: Checking a loop in 'no_loads_stores_16'
-<<<<<<< HEAD
-; CHECK: The Smallest and Widest types: 16 / 16 bits
-=======
 ; CHECK: The Smallest and Widest types: 16 / 64 bits
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
 ; CHECK: Selecting VF: 8
 
 define double @no_loads_stores_16() {
@@ -90,11 +82,7 @@ for.end:
 }
 
 ; CHECK-LABEL: Checking a loop in 'no_loads_stores_8'
-<<<<<<< HEAD
-; CHECK: The Smallest and Widest types: 8 / 8 bits
-=======
 ; CHECK: The Smallest and Widest types: 8 / 32 bits
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
 ; CHECK: Selecting VF: 16
 
 define float @no_loads_stores_8() {

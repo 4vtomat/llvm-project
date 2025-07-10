@@ -106,7 +106,6 @@ for.end:                                          ; preds = %entry, %for.cond.fo
 
 define i32 @test_debug_loc_on_branch_in_loop(ptr noalias %src, ptr noalias %dst) {
 ; CHECK-LABEL: define i32 @test_debug_loc_on_branch_in_loop(
-<<<<<<< HEAD
 ; CHECK-SAME: ptr noalias [[SRC:%.*]], ptr noalias [[DST:%.*]]) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
@@ -114,20 +113,20 @@ define i32 @test_debug_loc_on_branch_in_loop(ptr noalias %src, ptr noalias %dst)
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[PRED_STORE_CONTINUE2:%.*]] ]
-; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
-; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[SRC]], i64 [[TMP0]]
-; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[TMP1]], i32 0
-; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <2 x i32>, ptr [[TMP2]], align 4
-; CHECK-NEXT:    [[TMP3:%.*]] = icmp eq <2 x i32> [[WIDE_LOAD]], splat (i32 10)
-; CHECK-NEXT:    [[TMP4:%.*]] = xor <2 x i1> [[TMP3]], splat (i1 true), !dbg [[DBG27:![0-9]+]]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <2 x i1> [[TMP4]], i32 0, !dbg [[DBG27]]
-; CHECK-NEXT:    br i1 [[TMP5]], label [[PRED_STORE_IF:%.*]], label [[PRED_STORE_CONTINUE:%.*]], !dbg [[DBG27]]
+; CHECK-NEXT:    [[TMP0:%.*]] = getelementptr inbounds i32, ptr [[SRC]], i64 [[INDEX]]
+; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[TMP0]], i32 0
+; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <2 x i32>, ptr [[TMP1]], align 4
+; CHECK-NEXT:    [[TMP2:%.*]] = icmp eq <2 x i32> [[WIDE_LOAD]], splat (i32 10)
+; CHECK-NEXT:    [[TMP3:%.*]] = xor <2 x i1> [[TMP2]], splat (i1 true), !dbg [[DBG27:![0-9]+]]
+; CHECK-NEXT:    [[TMP4:%.*]] = extractelement <2 x i1> [[TMP3]], i32 0, !dbg [[DBG27]]
+; CHECK-NEXT:    br i1 [[TMP4]], label [[PRED_STORE_IF:%.*]], label [[PRED_STORE_CONTINUE:%.*]], !dbg [[DBG27]]
 ; CHECK:       pred.store.if:
-; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[DST]], i64 [[TMP0]]
+; CHECK-NEXT:    [[TMP5:%.*]] = add i64 [[INDEX]], 0
+; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[DST]], i64 [[TMP5]]
 ; CHECK-NEXT:    store i32 0, ptr [[TMP6]], align 4
 ; CHECK-NEXT:    br label [[PRED_STORE_CONTINUE]], !dbg [[DBG27]]
 ; CHECK:       pred.store.continue:
-; CHECK-NEXT:    [[TMP7:%.*]] = extractelement <2 x i1> [[TMP4]], i32 1, !dbg [[DBG27]]
+; CHECK-NEXT:    [[TMP7:%.*]] = extractelement <2 x i1> [[TMP3]], i32 1, !dbg [[DBG27]]
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[PRED_STORE_IF1:%.*]], label [[PRED_STORE_CONTINUE2]], !dbg [[DBG27]]
 ; CHECK:       pred.store.if1:
 ; CHECK-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], 1
@@ -159,21 +158,6 @@ define i32 @test_debug_loc_on_branch_in_loop(ptr noalias %src, ptr noalias %dst)
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[LOOP_HEADER]], !llvm.loop [[LOOP31:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    ret i32 0
-=======
-; CHECK-LABEL: vector.body:
-; CHECK:        [[LOAD:%.+]] = load <2 x i32>, ptr {{.+}}, align 4
-; CHECK-NEXT:   [[CMP:%.+]] = icmp eq <2 x i32> [[LOAD]], splat (i32 10)
-; CHECK-NEXT:   [[XOR:%.+]] = xor <2 x i1> [[CMP:%.+]], splat (i1 true), !dbg [[LOC3:!.+]]
-; CHECK-NEXT:   [[EXT:%.+]] = extractelement <2 x i1> [[XOR]], i32 0, !dbg [[LOC3]]
-; CHECK-NEXT:   br i1 [[EXT]], label %pred.store.if, label %pred.store.continue, !dbg [[LOC3]]
-; CHECK-EMPTY:
-; CHECK-NEXT: pred.store.if:
-; CHECK-NEXT:   [[IDX:%.+]] = add i64 %index, 0
-; CHECK-NEXT:   [[GEP:%.+]] = getelementptr inbounds i32, ptr %dst, i64 [[IDX]]
-; CHECK-NEXT:   store i32 0, ptr [[GEP]], align 4
-; CHECK-NEXT:   br label %pred.store.continue, !dbg [[LOC3]]
-; CHECK-EMPTY:
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
 ;
 entry:
   br label %loop.header
@@ -201,7 +185,6 @@ exit:
 
 define i32 @test_different_debug_loc_on_replicate_recipe(ptr noalias %src, ptr noalias %dst) {
 ; CHECK-LABEL: define i32 @test_different_debug_loc_on_replicate_recipe(
-<<<<<<< HEAD
 ; CHECK-SAME: ptr noalias [[SRC:%.*]], ptr noalias [[DST:%.*]]) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
@@ -209,20 +192,20 @@ define i32 @test_different_debug_loc_on_replicate_recipe(ptr noalias %src, ptr n
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[PRED_STORE_CONTINUE2:%.*]] ]
-; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
-; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[SRC]], i64 [[TMP0]]
-; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[TMP1]], i32 0
-; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <2 x i32>, ptr [[TMP2]], align 4
-; CHECK-NEXT:    [[TMP3:%.*]] = icmp eq <2 x i32> [[WIDE_LOAD]], splat (i32 10)
-; CHECK-NEXT:    [[TMP4:%.*]] = xor <2 x i1> [[TMP3]], splat (i1 true), !dbg [[DBG32:![0-9]+]]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <2 x i1> [[TMP4]], i32 0, !dbg [[DBG32]]
-; CHECK-NEXT:    br i1 [[TMP5]], label [[PRED_STORE_IF:%.*]], label [[PRED_STORE_CONTINUE:%.*]], !dbg [[DBG32]]
+; CHECK-NEXT:    [[TMP0:%.*]] = getelementptr inbounds i32, ptr [[SRC]], i64 [[INDEX]]
+; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[TMP0]], i32 0
+; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <2 x i32>, ptr [[TMP1]], align 4
+; CHECK-NEXT:    [[TMP2:%.*]] = icmp eq <2 x i32> [[WIDE_LOAD]], splat (i32 10)
+; CHECK-NEXT:    [[TMP3:%.*]] = xor <2 x i1> [[TMP2]], splat (i1 true), !dbg [[DBG32:![0-9]+]]
+; CHECK-NEXT:    [[TMP4:%.*]] = extractelement <2 x i1> [[TMP3]], i32 0, !dbg [[DBG32]]
+; CHECK-NEXT:    br i1 [[TMP4]], label [[PRED_STORE_IF:%.*]], label [[PRED_STORE_CONTINUE:%.*]], !dbg [[DBG32]]
 ; CHECK:       pred.store.if:
-; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[DST]], i64 [[TMP0]], !dbg [[DBG35:![0-9]+]]
+; CHECK-NEXT:    [[TMP5:%.*]] = add i64 [[INDEX]], 0
+; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[DST]], i64 [[TMP5]], !dbg [[DBG35:![0-9]+]]
 ; CHECK-NEXT:    store i32 0, ptr [[TMP6]], align 4
 ; CHECK-NEXT:    br label [[PRED_STORE_CONTINUE]], !dbg [[DBG32]]
 ; CHECK:       pred.store.continue:
-; CHECK-NEXT:    [[TMP7:%.*]] = extractelement <2 x i1> [[TMP4]], i32 1, !dbg [[DBG32]]
+; CHECK-NEXT:    [[TMP7:%.*]] = extractelement <2 x i1> [[TMP3]], i32 1, !dbg [[DBG32]]
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[PRED_STORE_IF1:%.*]], label [[PRED_STORE_CONTINUE2]], !dbg [[DBG32]]
 ; CHECK:       pred.store.if1:
 ; CHECK-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], 1
@@ -254,21 +237,6 @@ define i32 @test_different_debug_loc_on_replicate_recipe(ptr noalias %src, ptr n
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[LOOP_HEADER]], !llvm.loop [[LOOP37:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    ret i32 0
-=======
-; CHECK-LABEL: vector.body:
-; CHECK:        [[LOAD:%.+]] = load <2 x i32>, ptr {{.+}}, align 4
-; CHECK-NEXT:   [[CMP:%.+]] = icmp eq <2 x i32> [[LOAD]], splat (i32 10)
-; CHECK-NEXT:   [[XOR:%.+]] = xor <2 x i1> [[CMP:%.+]], splat (i1 true), !dbg [[LOC4:!.+]]
-; CHECK-NEXT:   [[EXT:%.+]] = extractelement <2 x i1> [[XOR]], i32 0, !dbg [[LOC4]]
-; CHECK-NEXT:   br i1 [[EXT]], label %pred.store.if, label %pred.store.continue, !dbg [[LOC4]]
-; CHECK-EMPTY:
-; CHECK-NEXT: pred.store.if:
-; CHECK-NEXT:   [[IDX:%.+]] = add i64 %index, 0
-; CHECK-NEXT:   [[GEP:%.+]] = getelementptr inbounds i32, ptr %dst, i64 [[IDX]], !dbg [[LOC5:!.+]]
-; CHECK-NEXT:   store i32 0, ptr [[GEP]], align 4
-; CHECK-NEXT:   br label %pred.store.continue, !dbg [[LOC4]]
-; CHECK-EMPTY:
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
 ;
 entry:
   br label %loop.header
@@ -474,10 +442,10 @@ declare void @llvm.dbg.value(metadata, metadata, metadata)
 !41 = !DILocation(line: 650, column: 44, scope: !40)
 ;.
 ; CHECK: [[META0:![0-9]+]] = distinct !DICompileUnit(language: DW_LANG_C99, file: [[META1:![0-9]+]], producer: "{{.*}}clang version {{.*}} (llvm/trunk 185097)", isOptimized: true, runtimeVersion: 0, emissionKind: FullDebug, enums: [[META2]], retainedTypes: [[META2]], globals: [[META2]], imports: [[META2]])
-; CHECK: [[META1]] = !DIFile(filename: "-", directory: {{.*}})
+; CHECK: [[META1]] = !DIFile(filename: "{{.*}}-", directory: {{.*}})
 ; CHECK: [[META2]] = !{}
 ; CHECK: [[DBG5]] = distinct !DISubprogram(name: "f", scope: [[META6:![0-9]+]], file: [[META6]], line: 3, type: [[META7:![0-9]+]], scopeLine: 3, virtualIndex: 6, flags: DIFlagPrototyped, spFlags: DISPFlagDefinition | DISPFlagOptimized, unit: [[META0]], retainedNodes: [[META12:![0-9]+]])
-; CHECK: [[META6]] = !DIFile(filename: "<stdin>", directory: {{.*}})
+; CHECK: [[META6]] = !DIFile(filename: "{{.*}}<stdin>", directory: {{.*}})
 ; CHECK: [[META7]] = !DISubroutineType(types: [[META8:![0-9]+]])
 ; CHECK: [[META8]] = !{[[META9:![0-9]+]], [[META10:![0-9]+]], [[META11:![0-9]+]]}
 ; CHECK: [[META9]] = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)

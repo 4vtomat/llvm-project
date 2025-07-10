@@ -326,15 +326,6 @@ define void @bug18724(i1 %cond, ptr %ptr, i1 %cond.2, i64 %v.1, i32 %v.2) {
 ; VEC-NEXT:    [[WIDE_LOAD:%.*]] = load <2 x i32>, ptr [[TMP8]], align 4
 ; VEC-NEXT:    br i1 [[COND_2]], label [[PRED_STORE_IF:%.*]], label [[PRED_STORE_CONTINUE2]]
 ; VEC:       pred.store.if:
-<<<<<<< HEAD
-; VEC-NEXT:    [[TMP11:%.*]] = getelementptr inbounds [768 x i32], ptr [[PTR]], i64 0, i64 [[TMP6]]
-; VEC-NEXT:    [[TMP12:%.*]] = extractelement <2 x i32> [[WIDE_LOAD]], i32 0
-; VEC-NEXT:    store i32 [[TMP12]], ptr [[TMP11]], align 4
-; VEC-NEXT:    [[TMP13:%.*]] = add i64 [[OFFSET_IDX]], 1
-; VEC-NEXT:    [[TMP14:%.*]] = getelementptr inbounds [768 x i32], ptr [[PTR]], i64 0, i64 [[TMP13]]
-; VEC-NEXT:    [[TMP15:%.*]] = extractelement <2 x i32> [[WIDE_LOAD]], i32 1
-; VEC-NEXT:    store i32 [[TMP15]], ptr [[TMP14]], align 4
-=======
 ; VEC-NEXT:    [[INDVARS_IV3:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; VEC-NEXT:    [[ARRAYIDX16:%.*]] = getelementptr inbounds [768 x i32], ptr [[PTR]], i64 0, i64 [[INDVARS_IV3]]
 ; VEC-NEXT:    [[TMP11:%.*]] = extractelement <2 x i32> [[WIDE_LOAD]], i32 0
@@ -343,7 +334,6 @@ define void @bug18724(i1 %cond, ptr %ptr, i1 %cond.2, i64 %v.1, i32 %v.2) {
 ; VEC-NEXT:    [[TMP13:%.*]] = getelementptr inbounds [768 x i32], ptr [[PTR]], i64 0, i64 [[TMP12]]
 ; VEC-NEXT:    [[TMP14:%.*]] = extractelement <2 x i32> [[WIDE_LOAD]], i32 1
 ; VEC-NEXT:    store i32 [[TMP14]], ptr [[TMP13]], align 4
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
 ; VEC-NEXT:    br label [[PRED_STORE_CONTINUE2]]
 ; VEC:       pred.store.continue2:
 ; VEC-NEXT:    [[TMP15:%.*]] = add <2 x i32> [[VEC_PHI]], splat (i32 1)

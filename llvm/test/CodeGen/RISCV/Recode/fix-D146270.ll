@@ -19,8 +19,8 @@ define <8 x i8> @vqshlb_u8() {
 ; CHECK-NEXT:    lbu a1, 46(sp)
 ; CHECK-NEXT:    sd a1, 24(sp) # 8-byte Folded Spill
 ; CHECK-NEXT:    # implicit-def: $v9
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv.v.x v9, a0
+; CHECK-NEXT:    vsetivli zero, 8, e8, m1, tu, ma
+; CHECK-NEXT:    vmv.s.x v9, a0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a2, a0, 1
 ; CHECK-NEXT:    add a0, a2, a0
@@ -30,7 +30,7 @@ define <8 x i8> @vqshlb_u8() {
 ; CHECK-NEXT:    li a0, 256
 ; CHECK-NEXT:    sub a0, a0, a1
 ; CHECK-NEXT:    # implicit-def: $v8
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vsrl.vx v8, v9, a0
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    slli a1, a1, 2

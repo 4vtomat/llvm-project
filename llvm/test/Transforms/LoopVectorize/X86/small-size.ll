@@ -259,14 +259,9 @@ define void @example2(i32 %n, i32 %x) optsize {
 
 ; Loop has no primary induction as its integer IV has step -1 starting at
 ; unknown N, but can still be vectorized.
-<<<<<<< HEAD
-; SIFIVE: checks have been updated to combine (add (zext (add X, -1)), 1) to (zext X)
-define void @example3(i32 %n, i32* noalias nocapture %p, ptr noalias nocapture %q) optsize {
-=======
 ; Note: Most scalar pointer induction GEPs could be sunk into the conditional
 ;       blocks.
 define void @example3(i32 %n, ptr noalias nocapture %p, ptr noalias nocapture %q) optsize {
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
 ; CHECK-LABEL: @example3(
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp eq i32 [[N:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[DOT_CRIT_EDGE:%.*]], label [[DOTLR_PH_PREHEADER:%.*]]

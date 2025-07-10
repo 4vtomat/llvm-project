@@ -382,11 +382,11 @@ define <4 x half> @vfmax_v2f16_vv_nnan_insert_subvector(<2 x half> %a, <2 x half
 ; ZVFHMIN-NEXT:    vfadd.vv v9, v11, v11
 ; ZVFHMIN-NEXT:    vfadd.vv v8, v8, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v11, v9
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vslideup.vi v11, v9, 2
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v11
+; ZVFHMIN-NEXT:    vslideup.vi v9, v8, 2
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vmfeq.vv v0, v8, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
@@ -395,9 +395,9 @@ define <4 x half> @vfmax_v2f16_vv_nnan_insert_subvector(<2 x half> %a, <2 x half
 ; ZVFHMIN-NEXT:    vmerge.vvm v10, v8, v9, v0
 ; ZVFHMIN-NEXT:    vmfeq.vv v0, v9, v9
 ; ZVFHMIN-NEXT:    vmerge.vvm v8, v9, v8, v0
-; ZVFHMIN-NEXT:    vfmax.vv v9, v8, v10
+; ZVFHMIN-NEXT:    vfmax.vv v8, v8, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
   %d = fadd nnan <2 x half> %a, %a
   %e = fadd nnan <2 x half> %b, %b

@@ -556,8 +556,8 @@ define bfloat @extractelt_v8bf16_idx(<8 x bfloat> %a, i32 zeroext %idx) nounwind
 ; VISNI-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
 ; VISNI-NEXT:    vfadd.vv v8, v10, v10
 ; VISNI-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; VISNI-NEXT:    vfncvtbf16.f.f.w v10, v8
-; VISNI-NEXT:    vslidedown.vx v8, v10, a0
+; VISNI-NEXT:    vfncvtbf16.f.f.w v8, v8
+; VISNI-NEXT:    vslidedown.vx v8, v8, a0
 ; VISNI-NEXT:    vmv.x.s a0, v8
 ; VISNI-NEXT:    fmv.h.x fa0, a0
 ; VISNI-NEXT:    ret
@@ -753,8 +753,8 @@ define bfloat @extractelt_v16bf16_idx(<16 x bfloat> %a, i32 zeroext %idx) nounwi
 ; VISNI-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
 ; VISNI-NEXT:    vfadd.vv v8, v12, v12
 ; VISNI-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
-; VISNI-NEXT:    vfncvtbf16.f.f.w v12, v8
-; VISNI-NEXT:    vslidedown.vx v8, v12, a0
+; VISNI-NEXT:    vfncvtbf16.f.f.w v8, v8
+; VISNI-NEXT:    vslidedown.vx v8, v8, a0
 ; VISNI-NEXT:    vmv.x.s a0, v8
 ; VISNI-NEXT:    fmv.h.x fa0, a0
 ; VISNI-NEXT:    ret

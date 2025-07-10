@@ -143,9 +143,6 @@ exit:                                          ; preds = %loop, %entry
 
 define float @print_fmuladd_strict(ptr %a, ptr %b, i64 %n) {
 ; CHECK-LABEL: Checking a loop in 'print_fmuladd_strict'
-<<<<<<< HEAD
-; CHECK: loop not vectorized: cannot prove it is safe to reorder floating-point operations
-=======
 ; CHECK:      VPlan 'Initial VPlan for VF={4},UF>=1' {
 ; CHECK-NEXT: Live-in vp<[[VF:%.]]> = VF
 ; CHECK-NEXT: Live-in vp<[[VFxUF:%.]]> = VF * UF
@@ -200,7 +197,6 @@ define float @print_fmuladd_strict(ptr %a, ptr %b, i64 %n) {
 ; CHECK-NEXT: No successors
 ; CHECK-NEXT:}
 
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
 entry:
   br label %loop
 

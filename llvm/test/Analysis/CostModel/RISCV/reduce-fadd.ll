@@ -5,33 +5,15 @@
 ; RUN: opt < %s -mtriple=riscv64 -mattr=+v,+zfh,+zvfh,+zfbfmin,+zvfbfmin -passes="print<cost-model>" -cost-kind=code-size 2>&1 -disable-output | FileCheck %s  --check-prefix=SIZE
 
 define void @reduce_fadd_bfloat() {
-<<<<<<< HEAD
-; FP-REDUCE-LABEL: 'reduce_fadd_bfloat'
-; FP-REDUCE-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V1 = call fast bfloat @llvm.vector.reduce.fadd.v1bf16(bfloat 0xR0000, <1 x bfloat> undef)
-; FP-REDUCE-NEXT:  Cost Model: Found an estimated cost of 7 for instruction: %V2 = call fast bfloat @llvm.vector.reduce.fadd.v2bf16(bfloat 0xR0000, <2 x bfloat> undef)
-; FP-REDUCE-NEXT:  Cost Model: Found an estimated cost of 13 for instruction: %V4 = call fast bfloat @llvm.vector.reduce.fadd.v4bf16(bfloat 0xR0000, <4 x bfloat> undef)
-; FP-REDUCE-NEXT:  Cost Model: Found an estimated cost of 22 for instruction: %V8 = call fast bfloat @llvm.vector.reduce.fadd.v8bf16(bfloat 0xR0000, <8 x bfloat> undef)
-; FP-REDUCE-NEXT:  Cost Model: Found an estimated cost of 57 for instruction: %V16 = call fast bfloat @llvm.vector.reduce.fadd.v16bf16(bfloat 0xR0000, <16 x bfloat> undef)
-; FP-REDUCE-NEXT:  Cost Model: Found an estimated cost of 171 for instruction: %v32 = call fast bfloat @llvm.vector.reduce.fadd.v32bf16(bfloat 0xR0000, <32 x bfloat> undef)
-; FP-REDUCE-NEXT:  Cost Model: Found an estimated cost of 493 for instruction: %V64 = call fast bfloat @llvm.vector.reduce.fadd.v64bf16(bfloat 0xR0000, <64 x bfloat> undef)
-; FP-REDUCE-NEXT:  Cost Model: Found an estimated cost of 517 for instruction: %V128 = call fast bfloat @llvm.vector.reduce.fadd.v128bf16(bfloat 0xR0000, <128 x bfloat> undef)
-; FP-REDUCE-NEXT:  Cost Model: Invalid cost for instruction: %NXV1 = call fast bfloat @llvm.vector.reduce.fadd.nxv1bf16(bfloat 0xR0000, <vscale x 1 x bfloat> undef)
-; FP-REDUCE-NEXT:  Cost Model: Invalid cost for instruction: %NXV2 = call fast bfloat @llvm.vector.reduce.fadd.nxv2bf16(bfloat 0xR0000, <vscale x 2 x bfloat> undef)
-; FP-REDUCE-NEXT:  Cost Model: Invalid cost for instruction: %NXV4 = call fast bfloat @llvm.vector.reduce.fadd.nxv4bf16(bfloat 0xR0000, <vscale x 4 x bfloat> undef)
-; FP-REDUCE-NEXT:  Cost Model: Invalid cost for instruction: %NXV8 = call fast bfloat @llvm.vector.reduce.fadd.nxv8bf16(bfloat 0xR0000, <vscale x 8 x bfloat> undef)
-; FP-REDUCE-NEXT:  Cost Model: Invalid cost for instruction: %NXV16 = call fast bfloat @llvm.vector.reduce.fadd.nxv16bf16(bfloat 0xR0000, <vscale x 16 x bfloat> undef)
-; FP-REDUCE-NEXT:  Cost Model: Invalid cost for instruction: %NXV32 = call fast bfloat @llvm.vector.reduce.fadd.nxv32bf16(bfloat 0xR0000, <vscale x 32 x bfloat> undef)
-; FP-REDUCE-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
-=======
 ; FP-REDUCE-ZVFH-LABEL: 'reduce_fadd_bfloat'
 ; FP-REDUCE-ZVFH-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V1 = call fast bfloat @llvm.vector.reduce.fadd.v1bf16(bfloat 0xR0000, <1 x bfloat> undef)
-; FP-REDUCE-ZVFH-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %V2 = call fast bfloat @llvm.vector.reduce.fadd.v2bf16(bfloat 0xR0000, <2 x bfloat> undef)
-; FP-REDUCE-ZVFH-NEXT:  Cost Model: Found an estimated cost of 15 for instruction: %V4 = call fast bfloat @llvm.vector.reduce.fadd.v4bf16(bfloat 0xR0000, <4 x bfloat> undef)
-; FP-REDUCE-ZVFH-NEXT:  Cost Model: Found an estimated cost of 28 for instruction: %V8 = call fast bfloat @llvm.vector.reduce.fadd.v8bf16(bfloat 0xR0000, <8 x bfloat> undef)
-; FP-REDUCE-ZVFH-NEXT:  Cost Model: Found an estimated cost of 73 for instruction: %V16 = call fast bfloat @llvm.vector.reduce.fadd.v16bf16(bfloat 0xR0000, <16 x bfloat> undef)
-; FP-REDUCE-ZVFH-NEXT:  Cost Model: Found an estimated cost of 211 for instruction: %v32 = call fast bfloat @llvm.vector.reduce.fadd.v32bf16(bfloat 0xR0000, <32 x bfloat> undef)
-; FP-REDUCE-ZVFH-NEXT:  Cost Model: Found an estimated cost of 541 for instruction: %V64 = call fast bfloat @llvm.vector.reduce.fadd.v64bf16(bfloat 0xR0000, <64 x bfloat> undef)
-; FP-REDUCE-ZVFH-NEXT:  Cost Model: Found an estimated cost of 573 for instruction: %V128 = call fast bfloat @llvm.vector.reduce.fadd.v128bf16(bfloat 0xR0000, <128 x bfloat> undef)
+; FP-REDUCE-ZVFH-NEXT:  Cost Model: Found an estimated cost of 7 for instruction: %V2 = call fast bfloat @llvm.vector.reduce.fadd.v2bf16(bfloat 0xR0000, <2 x bfloat> undef)
+; FP-REDUCE-ZVFH-NEXT:  Cost Model: Found an estimated cost of 13 for instruction: %V4 = call fast bfloat @llvm.vector.reduce.fadd.v4bf16(bfloat 0xR0000, <4 x bfloat> undef)
+; FP-REDUCE-ZVFH-NEXT:  Cost Model: Found an estimated cost of 22 for instruction: %V8 = call fast bfloat @llvm.vector.reduce.fadd.v8bf16(bfloat 0xR0000, <8 x bfloat> undef)
+; FP-REDUCE-ZVFH-NEXT:  Cost Model: Found an estimated cost of 57 for instruction: %V16 = call fast bfloat @llvm.vector.reduce.fadd.v16bf16(bfloat 0xR0000, <16 x bfloat> undef)
+; FP-REDUCE-ZVFH-NEXT:  Cost Model: Found an estimated cost of 171 for instruction: %v32 = call fast bfloat @llvm.vector.reduce.fadd.v32bf16(bfloat 0xR0000, <32 x bfloat> undef)
+; FP-REDUCE-ZVFH-NEXT:  Cost Model: Found an estimated cost of 493 for instruction: %V64 = call fast bfloat @llvm.vector.reduce.fadd.v64bf16(bfloat 0xR0000, <64 x bfloat> undef)
+; FP-REDUCE-ZVFH-NEXT:  Cost Model: Found an estimated cost of 517 for instruction: %V128 = call fast bfloat @llvm.vector.reduce.fadd.v128bf16(bfloat 0xR0000, <128 x bfloat> undef)
 ; FP-REDUCE-ZVFH-NEXT:  Cost Model: Invalid cost for instruction: %NXV1 = call fast bfloat @llvm.vector.reduce.fadd.nxv1bf16(bfloat 0xR0000, <vscale x 1 x bfloat> undef)
 ; FP-REDUCE-ZVFH-NEXT:  Cost Model: Invalid cost for instruction: %NXV2 = call fast bfloat @llvm.vector.reduce.fadd.nxv2bf16(bfloat 0xR0000, <vscale x 2 x bfloat> undef)
 ; FP-REDUCE-ZVFH-NEXT:  Cost Model: Invalid cost for instruction: %NXV4 = call fast bfloat @llvm.vector.reduce.fadd.nxv4bf16(bfloat 0xR0000, <vscale x 4 x bfloat> undef)
@@ -42,13 +24,13 @@ define void @reduce_fadd_bfloat() {
 ;
 ; FP-REDUCE-ZVFHMIN-LABEL: 'reduce_fadd_bfloat'
 ; FP-REDUCE-ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V1 = call fast bfloat @llvm.vector.reduce.fadd.v1bf16(bfloat 0xR0000, <1 x bfloat> undef)
-; FP-REDUCE-ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %V2 = call fast bfloat @llvm.vector.reduce.fadd.v2bf16(bfloat 0xR0000, <2 x bfloat> undef)
-; FP-REDUCE-ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 15 for instruction: %V4 = call fast bfloat @llvm.vector.reduce.fadd.v4bf16(bfloat 0xR0000, <4 x bfloat> undef)
-; FP-REDUCE-ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 28 for instruction: %V8 = call fast bfloat @llvm.vector.reduce.fadd.v8bf16(bfloat 0xR0000, <8 x bfloat> undef)
-; FP-REDUCE-ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 73 for instruction: %V16 = call fast bfloat @llvm.vector.reduce.fadd.v16bf16(bfloat 0xR0000, <16 x bfloat> undef)
-; FP-REDUCE-ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 211 for instruction: %v32 = call fast bfloat @llvm.vector.reduce.fadd.v32bf16(bfloat 0xR0000, <32 x bfloat> undef)
-; FP-REDUCE-ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 541 for instruction: %V64 = call fast bfloat @llvm.vector.reduce.fadd.v64bf16(bfloat 0xR0000, <64 x bfloat> undef)
-; FP-REDUCE-ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 573 for instruction: %V128 = call fast bfloat @llvm.vector.reduce.fadd.v128bf16(bfloat 0xR0000, <128 x bfloat> undef)
+; FP-REDUCE-ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 7 for instruction: %V2 = call fast bfloat @llvm.vector.reduce.fadd.v2bf16(bfloat 0xR0000, <2 x bfloat> undef)
+; FP-REDUCE-ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 13 for instruction: %V4 = call fast bfloat @llvm.vector.reduce.fadd.v4bf16(bfloat 0xR0000, <4 x bfloat> undef)
+; FP-REDUCE-ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 22 for instruction: %V8 = call fast bfloat @llvm.vector.reduce.fadd.v8bf16(bfloat 0xR0000, <8 x bfloat> undef)
+; FP-REDUCE-ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 57 for instruction: %V16 = call fast bfloat @llvm.vector.reduce.fadd.v16bf16(bfloat 0xR0000, <16 x bfloat> undef)
+; FP-REDUCE-ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 171 for instruction: %v32 = call fast bfloat @llvm.vector.reduce.fadd.v32bf16(bfloat 0xR0000, <32 x bfloat> undef)
+; FP-REDUCE-ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 493 for instruction: %V64 = call fast bfloat @llvm.vector.reduce.fadd.v64bf16(bfloat 0xR0000, <64 x bfloat> undef)
+; FP-REDUCE-ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 517 for instruction: %V128 = call fast bfloat @llvm.vector.reduce.fadd.v128bf16(bfloat 0xR0000, <128 x bfloat> undef)
 ; FP-REDUCE-ZVFHMIN-NEXT:  Cost Model: Invalid cost for instruction: %NXV1 = call fast bfloat @llvm.vector.reduce.fadd.nxv1bf16(bfloat 0xR0000, <vscale x 1 x bfloat> undef)
 ; FP-REDUCE-ZVFHMIN-NEXT:  Cost Model: Invalid cost for instruction: %NXV2 = call fast bfloat @llvm.vector.reduce.fadd.nxv2bf16(bfloat 0xR0000, <vscale x 2 x bfloat> undef)
 ; FP-REDUCE-ZVFHMIN-NEXT:  Cost Model: Invalid cost for instruction: %NXV4 = call fast bfloat @llvm.vector.reduce.fadd.nxv4bf16(bfloat 0xR0000, <vscale x 4 x bfloat> undef)
@@ -73,7 +55,6 @@ define void @reduce_fadd_bfloat() {
 ; FP-REDUCE-NO-ZFHMIN-NO-ZFBFMIN-NEXT:  Cost Model: Invalid cost for instruction: %NXV16 = call fast bfloat @llvm.vector.reduce.fadd.nxv16bf16(bfloat 0xR0000, <vscale x 16 x bfloat> undef)
 ; FP-REDUCE-NO-ZFHMIN-NO-ZFBFMIN-NEXT:  Cost Model: Invalid cost for instruction: %NXV32 = call fast bfloat @llvm.vector.reduce.fadd.nxv32bf16(bfloat 0xR0000, <vscale x 32 x bfloat> undef)
 ; FP-REDUCE-NO-ZFHMIN-NO-ZFBFMIN-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
 ;
 ; SIZE-LABEL: 'reduce_fadd_bfloat'
 ; SIZE-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V1 = call fast bfloat @llvm.vector.reduce.fadd.v1bf16(bfloat 0xR0000, <1 x bfloat> undef)

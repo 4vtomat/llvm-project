@@ -684,9 +684,9 @@ define void @vnsrl_0_i32_single_src_m8(ptr %in, ptr %out) {
 ; ZIP-NEXT:    vle32.v v8, (a0)
 ; ZIP-NEXT:    li a0, 32
 ; ZIP-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
-; ZIP-NEXT:    vnsrl.wi v16, v8, 0
+; ZIP-NEXT:    vnsrl.wi v8, v8, 0
 ; ZIP-NEXT:    vsetvli zero, a2, e32, m8, ta, ma
-; ZIP-NEXT:    vse32.v v16, (a1)
+; ZIP-NEXT:    vse32.v v8, (a1)
 ; ZIP-NEXT:    ret
 entry:
   %0 = load <64 x i32>, ptr %in, align 4
@@ -729,9 +729,9 @@ define void @vnsrl_0_i32_single_src_m8_2(ptr %in, ptr %out) {
 ; ZIP-NEXT:    vle32.v v8, (a0)
 ; ZIP-NEXT:    li a0, 32
 ; ZIP-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
-; ZIP-NEXT:    vnsrl.wi v16, v8, 0
+; ZIP-NEXT:    vnsrl.wi v8, v8, 0
 ; ZIP-NEXT:    vsetvli zero, a2, e32, m8, ta, ma
-; ZIP-NEXT:    vse32.v v16, (a1)
+; ZIP-NEXT:    vse32.v v8, (a1)
 ; ZIP-NEXT:    ret
 entry:
   %0 = load <64 x i32>, ptr %in, align 4
