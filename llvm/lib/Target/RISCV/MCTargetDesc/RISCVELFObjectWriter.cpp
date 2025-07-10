@@ -148,15 +148,6 @@ unsigned RISCVELFObjectWriter::getRelocType(MCContext &Ctx,
     return ELF::R_RISCV_LO12_I;
   case RISCV::fixup_riscv_lo12_s:
     return ELF::R_RISCV_LO12_S;
-<<<<<<< HEAD
-  case RISCV::fixup_riscv_tprel_hi20:
-    return ELF::R_RISCV_TPREL_HI20;
-  case RISCV::fixup_riscv_tprel_lo12_i:
-    return ELF::R_RISCV_TPREL_LO12_I;
-  case RISCV::fixup_riscv_tprel_lo12_s:
-    return ELF::R_RISCV_TPREL_LO12_S;
-  case RISCV::fixup_riscv_tprel_add:
-    return ELF::R_RISCV_TPREL_ADD;
 #if SIFIVE_CUSTOMIZATION
   case RISCV::fixup_riscv_gprel_hi20:
     return ELF::R_RISCV_SIFIVE_GPREL_HI20;
@@ -185,12 +176,6 @@ unsigned RISCVELFObjectWriter::getRelocType(MCContext &Ctx,
   case RISCV::fixup_riscv_tls_gd_gprel_add:
     return ELF::R_RISCV_SIFIVE_TLS_GD_GPREL_ADD;
 #endif // SIFIVE_CUSTOMIZATION
-  case RISCV::fixup_riscv_relax:
-    return ELF::R_RISCV_RELAX;
-  case RISCV::fixup_riscv_align:
-    return ELF::R_RISCV_ALIGN;
-=======
->>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
   case RISCV::fixup_riscv_qc_e_32:
     return ELF::R_RISCV_QC_E_32;
   case RISCV::fixup_riscv_qc_abs20_u:
