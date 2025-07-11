@@ -206,6 +206,14 @@ void RVVType::initBuiltinStr() {
   case ScalarTypeKind::BFloat:
     BuiltinStr += "y";
     break;
+#if SIFIVE_CUSTOMIZATION
+  case ScalarTypeKind::FloatE4M3:
+    BuiltinStr += "a";
+    break;
+  case ScalarTypeKind::FloatE5M2:
+    BuiltinStr += "b";
+    break;
+#endif // SIFIVE_CUSTOMIZATION
   default:
     llvm_unreachable("ScalarType is invalid!");
   }
@@ -248,6 +256,10 @@ void RVVType::initClangBuiltinStr() {
     ClangBuiltinStr += "int";
     break;
   case ScalarTypeKind::UnsignedInteger:
+#if SIFIVE_CUSTOMIZATION
+  case ScalarTypeKind::FloatE4M3:
+  case ScalarTypeKind::FloatE5M2:
+#endif // SIFIVE_CUSTOMIZATION
     ClangBuiltinStr += "uint";
     break;
   default:
@@ -323,6 +335,10 @@ void RVVType::initTypeStr() {
     Str += getTypeString("int");
     break;
   case ScalarTypeKind::UnsignedInteger:
+#if SIFIVE_CUSTOMIZATION
+  case ScalarTypeKind::FloatE4M3:
+  case ScalarTypeKind::FloatE5M2:
+#endif // SIFIVE_CUSTOMIZATION
     Str += getTypeString("uint");
     break;
   default:
@@ -350,6 +366,14 @@ void RVVType::initShortStr() {
   case ScalarTypeKind::UnsignedInteger:
     ShortStr = "u" + utostr(ElementBitwidth);
     break;
+#if SIFIVE_CUSTOMIZATION
+  case ScalarTypeKind::FloatE4M3:
+    ShortStr = "f8e4m3";
+    break;
+  case ScalarTypeKind::FloatE5M2:
+    ShortStr = "f8e5m2";
+    break;
+#endif // SIFIVE_CUSTOMIZATION
   default:
     llvm_unreachable("Unhandled case!");
   }
@@ -399,6 +423,16 @@ void RVVType::applyBasicType() {
     ElementBitwidth = 16;
     ScalarType = ScalarTypeKind::BFloat;
     break;
+#if SIFIVE_CUSTOMIZATION
+  case BasicType::F8E4M3:
+    ElementBitwidth = 8;
+    ScalarType = ScalarTypeKind::FloatE4M3;
+    break;
+  case BasicType::F8E5M2:
+    ElementBitwidth = 8;
+    ScalarType = ScalarTypeKind::FloatE5M2;
+    break;
+#endif // SIFIVE_CUSTOMIZATION
   default:
     llvm_unreachable("Unhandled type code!");
   }
@@ -737,12 +771,20 @@ void RVVType::applyModifier(const PrototypeDescriptor &Transformer) {
     // 32-bit.
     if (ScalarType == ScalarTypeKind::BFloat)
       ScalarType = ScalarTypeKind::Float;
+    if (ScalarType == ScalarTypeKind::FloatE4M3 ||
+        ScalarType == ScalarTypeKind::FloatE5M2)
+      ScalarType = ScalarTypeKind::BFloat;
 #endif // SIFIVE_CUSTOMIZATION
     break;
   case VectorTypeModifier::Widening4XVector:
     ElementBitwidth *= 4;
     LMUL.MulLog2LMUL(2);
     Scale = LMUL.getScale(ElementBitwidth);
+#if SIFIVE_CUSTOMIZATION
+    if (ScalarType == ScalarTypeKind::FloatE4M3 ||
+        ScalarType == ScalarTypeKind::FloatE5M2)
+      ScalarType = ScalarTypeKind::Float;
+#endif // SIFIVE_CUSTOMIZATION
     break;
   case VectorTypeModifier::Widening8XVector:
     ElementBitwidth *= 8;
@@ -994,13 +1036,17 @@ RVVTypeCache::computeTypes(BasicType BT, int Log2LMUL, unsigned NF,
 static uint64_t computeRVVTypeHashValue(BasicType BT, int Log2LMUL,
                                         PrototypeDescriptor Proto) {
   // Layout of hash value:
-  // 0               8    16          24        32          40
+#if SIFIVE_CUSTOMIZATION
+  // 0               8    24          32        40          48
+#endif // SIFIVE_CUSTOMIZATION
   // | Log2LMUL + 3  | BT  | Proto.PT | Proto.TM | Proto.VTM |
   assert(Log2LMUL >= -3 && Log2LMUL <= 3);
-  return (Log2LMUL + 3) | (static_cast<uint64_t>(BT) & 0xff) << 8 |
-         ((uint64_t)(Proto.PT & 0xff) << 16) |
-         ((uint64_t)(Proto.TM & 0xff) << 24) |
-         ((uint64_t)(Proto.VTM & 0xff) << 32);
+#if SIFIVE_CUSTOMIZATION
+  return (Log2LMUL + 3) | (static_cast<uint64_t>(BT) & 0xffff) << 8 |
+#endif // SIFIVE_CUSTOMIZATION
+         ((uint64_t)(Proto.PT & 0xff) << 24) |
+         ((uint64_t)(Proto.TM & 0xff) << 32) |
+         ((uint64_t)(Proto.VTM & 0xff) << 40);
 }
 
 std::optional<RVVTypePtr> RVVTypeCache::computeType(BasicType BT, int Log2LMUL,
@@ -1038,7 +1084,7 @@ RVVIntrinsic::RVVIntrinsic(
     const RVVTypes &OutInTypes, const std::vector<int64_t> &NewIntrinsicTypes,
     unsigned NF,
 #if SIFIVE_CUSTOMIZATION
-    Policy NewPolicyAttrs, bool HasFRMRoundModeOp, unsigned TWiden)
+    Policy NewPolicyAttrs, bool HasFRMRoundModeOp, unsigned TWiden, bool AltFmt)
 #endif // SIFIVE_CUSTOMIZATION
     : IRName(IRName), IsMasked(IsMasked),
       HasMaskedOffOperand(HasMaskedOffOperand), HasVL(HasVL), Scheme(Scheme),
@@ -1061,7 +1107,10 @@ RVVIntrinsic::RVVIntrinsic(
     OverloadedName += "_" + OverloadedSuffix.str();
 
   updateNamesAndPolicy(IsMasked, hasPolicy(), Name, BuiltinName, OverloadedName,
-                       PolicyAttrs, HasFRMRoundModeOp);
+                       PolicyAttrs, HasFRMRoundModeOp
+#if SIFIVE_CUSTOMIZATION
+                       , AltFmt);
+#endif // SIFIVE_CUSTOMIZATION
 
   // Init OutputType and InputTypes
   OutputType = OutInTypes[0];
@@ -1217,9 +1266,14 @@ RVVIntrinsic::getSupportedMaskedPolicies(bool HasTailPolicy,
                    "and mask policy");
 }
 
-void RVVIntrinsic::updateNamesAndPolicy(
-    bool IsMasked, bool HasPolicy, std::string &Name, std::string &BuiltinName,
-    std::string &OverloadedName, Policy &PolicyAttrs, bool HasFRMRoundModeOp) {
+#if SIFIVE_CUSTOMIZATION
+void RVVIntrinsic::updateNamesAndPolicy(bool IsMasked, bool HasPolicy,
+                                        std::string &Name,
+                                        std::string &BuiltinName,
+                                        std::string &OverloadedName,
+                                        Policy &PolicyAttrs,
+                                        bool HasFRMRoundModeOp, bool AltFmt) {
+#endif // SIFIVE_CUSTOMIZATION
 
   auto appendPolicySuffix = [&](const std::string &suffix) {
     Name += suffix;
@@ -1231,6 +1285,11 @@ void RVVIntrinsic::updateNamesAndPolicy(
     Name += "_rm";
     BuiltinName += "_rm";
   }
+
+#if SIFIVE_CUSTOMIZATION
+  if (AltFmt)
+    BuiltinName += "_alt";
+#endif // SIFIVE_CUSTOMIZATION
 
   if (IsMasked) {
     if (PolicyAttrs.isTUMUPolicy())
@@ -1332,6 +1391,7 @@ raw_ostream &operator<<(raw_ostream &OS, const RVVIntrinsicRecord &Record) {
   OS << "/*HasNontemporalOperand=*/" << (int)Record.HasNontemporalOperand
      << ",";
   OS << "/*IsV0p11Deprecated=*/" << (int)Record.IsV0p11Deprecated << ",";
+  OS << "/*AltFmt=*/" << (int)Record.AltFmt << ",";
 #endif // SIFIVE_CUSTOMIZATION
   OS << "/*IsTuple=*/" << (int)Record.IsTuple << ", ";
   OS << "/*UnMaskedPolicyScheme=*/" << (PolicyScheme)Record.UnMaskedPolicyScheme

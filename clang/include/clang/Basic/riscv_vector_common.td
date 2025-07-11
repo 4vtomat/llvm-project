@@ -186,6 +186,8 @@ class RVVBuiltin<string suffix, string prototype, string type_range,
   // Set to true if the builtin is a deprecated intrinsic that exists in v0.11
   // and not in v1.0
   bit IsV0p11Deprecated = false;
+  // This is used by intrinsics that need vtype.altfmt
+  bit AltFmt = false;
 #endif // SIFIVE_CUSTOMIZATION
 
   // If HasMasked, this flag states that this builtin has a maskedoff operand. It

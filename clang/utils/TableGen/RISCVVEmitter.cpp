@@ -68,6 +68,7 @@ struct SemaRecord {
 #if SIFIVE_CUSTOMIZATION
   bool HasNontemporalOperand : 1;
   bool IsV0p11Deprecated : 1;
+  bool AltFmt : 1;
 #endif // SIFIVE_CUSTOMIZATION
   bool IsTuple : 1;
   LLVM_PREFERRED_TYPE(PolicyScheme)
@@ -159,6 +160,14 @@ static BasicType ParseBasicType(char c) {
   case 'y':
     return BasicType::BFloat16;
     break;
+#if SIFIVE_CUSTOMIZATION
+  case 'a':
+    return BasicType::F8E4M3;
+    break;
+  case 'b':
+    return BasicType::F8E5M2;
+    break;
+#endif // SIFIVE_CUSTOMIZATION
   default:
     return BasicType::Unknown;
   }
@@ -709,6 +718,7 @@ void RVVEmitter::createRVVIntrinsics(
 #if SIFIVE_CUSTOMIZATION
     bool HasNontemporalOperand = R->getValueAsBit("HasNontemporalOperand");
     bool IsV0p11Deprecated = R->getValueAsBit("IsV0p11Deprecated");
+    bool AltFmt = R->getValueAsBit("AltFmt");
 #endif // SIFIVE_CUSTOMIZATION
     bool SupportOverloading = R->getValueAsBit("SupportOverloading");
     bool HasBuiltinAlias = R->getValueAsBit("HasBuiltinAlias");
@@ -800,14 +810,14 @@ void RVVEmitter::createRVVIntrinsics(
             UnMaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
             ManualCodegen, *Types, IntrinsicTypes, NF, DefaultPolicy,
 #if SIFIVE_CUSTOMIZATION
-            HasFRMRoundModeOp, TWiden));
+            HasFRMRoundModeOp, TWiden, AltFmt));
         if (HasNontemporalOperand)
           Out.push_back(std::make_unique<RVVIntrinsic>(
               Name, SuffixStr, OverloadedName, OverloadedSuffixStr, IRName,
               /*IsMasked=*/false, /*HasMaskedOffOperand=*/false, HasVL,
               UnMaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
               ManualCodegen, *NTLTypes, IntrinsicTypes, NF,
-              NonTemporalDefaultPolicy, HasFRMRoundModeOp, TWiden));
+              NonTemporalDefaultPolicy, HasFRMRoundModeOp, TWiden, AltFmt));
 #endif // SIFIVE_CUSTOMIZATION
         if (UnMaskedPolicyScheme != PolicyScheme::SchemeNone)
           for (auto P : SupportedUnMaskedPolicies) {
@@ -824,7 +834,7 @@ void RVVEmitter::createRVVIntrinsics(
                 UnMaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
                 ManualCodegen, *PolicyTypes, IntrinsicTypes, NF, P,
 #if SIFIVE_CUSTOMIZATION
-                HasFRMRoundModeOp, TWiden));
+                HasFRMRoundModeOp, TWiden, AltFmt));
 #endif // SIFIVE_CUSTOMIZATION
           }
         if (!HasMasked)
@@ -837,7 +847,8 @@ void RVVEmitter::createRVVIntrinsics(
             /*IsMasked=*/true, HasMaskedOffOperand, HasVL, MaskedPolicyScheme,
             SupportOverloading, HasBuiltinAlias, ManualCodegen, *MaskTypes,
 #if SIFIVE_CUSTOMIZATION
-            IntrinsicTypes, NF, DefaultPolicy, HasFRMRoundModeOp, TWiden));
+            IntrinsicTypes, NF, DefaultPolicy, HasFRMRoundModeOp, TWiden,
+            AltFmt));
 #endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
@@ -850,7 +861,7 @@ void RVVEmitter::createRVVIntrinsics(
               /*IsMasked=*/true, HasMaskedOffOperand, HasVL, MaskedPolicyScheme,
               SupportOverloading, HasBuiltinAlias, ManualCodegen, *NTLMaskTypes,
               IntrinsicTypes, NF, NonTemporalDefaultPolicy,
-              HasFRMRoundModeOp, TWiden));
+              HasFRMRoundModeOp, TWiden, AltFmt));
 #endif // SIFIVE_CUSTOMIZATION
 
         if (MaskedPolicyScheme == PolicyScheme::SchemeNone)
@@ -868,7 +879,7 @@ void RVVEmitter::createRVVIntrinsics(
               MaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
               ManualCodegen, *PolicyTypes, IntrinsicTypes, NF,
 #if SIFIVE_CUSTOMIZATION
-              P, HasFRMRoundModeOp, TWiden));
+              P, HasFRMRoundModeOp, TWiden, AltFmt));
 #endif // SIFIVE_CUSTOMIZATION
         }
       } // End for Log2LMULList
@@ -910,6 +921,7 @@ void RVVEmitter::createRVVIntrinsics(
 #if SIFIVE_CUSTOMIZATION
     SR.HasNontemporalOperand = HasNontemporalOperand;
     SR.IsV0p11Deprecated = IsV0p11Deprecated;
+    SR.AltFmt = AltFmt;
 #endif // SIFIVE_CUSTOMIZATION
     SR.UnMaskedPolicyScheme = static_cast<uint8_t>(UnMaskedPolicyScheme);
     SR.MaskedPolicyScheme = static_cast<uint8_t>(MaskedPolicyScheme);
@@ -958,6 +970,7 @@ void RVVEmitter::createRVVIntrinsicRecords(std::vector<RVVIntrinsicRecord> &Out,
 #if SIFIVE_CUSTOMIZATION
     R.HasNontemporalOperand = SR.HasNontemporalOperand;
     R.IsV0p11Deprecated = SR.IsV0p11Deprecated;
+    R.AltFmt = SR.AltFmt;
 #endif // SIFIVE_CUSTOMIZATION
     R.UnMaskedPolicyScheme = SR.UnMaskedPolicyScheme;
     R.MaskedPolicyScheme = SR.MaskedPolicyScheme;

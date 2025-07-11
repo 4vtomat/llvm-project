@@ -140,6 +140,12 @@ static QualType RVVType2Qual(ASTContext &Context, const RVVType *Type) {
   case ScalarTypeKind::UnsignedInteger:
     QT = Context.getIntTypeForBitwidth(Type->getElementBitwidth(), false);
     break;
+#if SIFIVE_CUSTOMIZATION
+  case ScalarTypeKind::FloatE4M3:
+  case ScalarTypeKind::FloatE5M2:
+    QT = Context.getIntTypeForBitwidth(8, false);
+    break;
+#endif // SIFIVE_CUSTOMIZATION
   case ScalarTypeKind::BFloat:
     QT = Context.BFloat16Ty;
     break;
@@ -439,7 +445,10 @@ void RISCVIntrinsicManagerImpl::InitRVVIntrinsic(
 
   RVVIntrinsic::updateNamesAndPolicy(IsMasked, HasPolicy, Name, BuiltinName,
                                      OverloadedName, PolicyAttrs,
-                                     Record.HasFRMRoundModeOp);
+                                     Record.HasFRMRoundModeOp
+#if SIFIVE_CUSTOMIZATION
+                                     , Record.AltFmt);
+#endif // SIFIVE_CUSTOMIZATION
 
   // Put into IntrinsicList.
   uint32_t Index = IntrinsicList.size();
