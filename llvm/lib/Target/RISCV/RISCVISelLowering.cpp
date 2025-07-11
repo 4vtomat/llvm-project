@@ -17653,7 +17653,17 @@ namespace {
 // apply a combine.
 struct CombineResult;
 
+#if SIFIVE_CUSTOMIZATION
+// SIFIVE cherry-pick from 04e2e581ac000934782398e05853338040bf7c46
+enum ExtKind : uint8_t {
+  ZExt = 1 << 0,
+  SExt = 1 << 1,
+  FPExt = 1 << 2,
+  BF16Ext = 1 << 3
+};
+#else
 enum ExtKind : uint8_t { ZExt = 1 << 0, SExt = 1 << 1, FPExt = 1 << 2 };
+#endif
 /// Helper class for folding sign/zero extensions.
 /// In particular, this class is used for the following combines:
 /// add | add_vl | or disjoint -> vwadd(u) | vwadd(u)_w
@@ -17690,6 +17700,10 @@ struct NodeExtensionHelper {
   bool SupportsSExt;
   /// Records if this operand is like being floating-Point extended.
   bool SupportsFPExt;
+#if SIFIVE_CUSTOMIZATION
+  /// Records if this operand is extended from bf16.
+  bool SupportsBF16Ext;
+#endif
   /// This boolean captures whether we care if this operand would still be
   /// around after the folding happens.
   bool EnforceOneUse;
@@ -17725,6 +17739,7 @@ struct NodeExtensionHelper {
     case ExtKind::ZExt:
       return RISCVISD::VZEXT_VL;
     case ExtKind::FPExt:
+    case ExtKind::BF16Ext: // SIFIVE
       return RISCVISD::FP_EXTEND_VL;
     }
     llvm_unreachable("Unknown ExtKind enum");
@@ -17746,12 +17761,15 @@ struct NodeExtensionHelper {
     if (Source.getValueType() == NarrowVT)
       return Source;
 
+#if SIFIVE_CUSTOMIZATION
+#else
     // vfmadd_vl -> vfwmadd_vl can take bf16 operands
     if (Source.getValueType().getVectorElementType() == MVT::bf16) {
       assert(Root->getSimpleValueType(0).getVectorElementType() == MVT::f32 &&
              Root->getOpcode() == RISCVISD::VFMADD_VL);
       return Source;
     }
+#endif
 
     unsigned ExtOpc = getExtOpc(*SupportsExt);
 
@@ -17795,7 +17813,12 @@ struct NodeExtensionHelper {
     // Determine the narrow size.
     unsigned NarrowSize = VT.getScalarSizeInBits() / 2;
 
+#if SIFIVE_CUSTOMIZATION
+    MVT EltVT = SupportsExt == ExtKind::BF16Ext ? MVT::bf16
+                : SupportsExt == ExtKind::FPExt
+#else
     MVT EltVT = SupportsExt == ExtKind::FPExt
+#endif
                     ? MVT::getFloatingPointVT(NarrowSize)
                     : MVT::getIntegerVT(NarrowSize);
 
@@ -17969,6 +17992,17 @@ struct NodeExtensionHelper {
     EnforceOneUse = false;
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // SIFIVE cherry-pick from 04e2e581ac000934782398e05853338040bf7c46
+  bool isSupportedFPExtend(MVT NarrowEltVT, const RISCVSubtarget &Subtarget) {
+    return (NarrowEltVT == MVT::f32 ||
+            (NarrowEltVT == MVT::f16 && Subtarget.hasVInstructionsF16()));
+  }
+
+  bool isSupportedBF16Extend(MVT NarrowEltVT, const RISCVSubtarget &Subtarget) {
+    return NarrowEltVT == MVT::bf16 && Subtarget.hasStdExtZvfbfwma();
+  }
+#else
   bool isSupportedFPExtend(SDNode *Root, MVT NarrowEltVT,
                            const RISCVSubtarget &Subtarget) {
     // Any f16 extension will need zvfh
@@ -17981,6 +18015,7 @@ struct NodeExtensionHelper {
       return false;
     return true;
   }
+#endif
 
   /// Helper method to set the various fields of this struct based on the
   /// type of \p Root.
@@ -17989,6 +18024,7 @@ struct NodeExtensionHelper {
     SupportsZExt = false;
     SupportsSExt = false;
     SupportsFPExt = false;
+    SupportsBF16Ext = false; // SIFIVE
     EnforceOneUse = true;
     unsigned Opc = OrigOperand.getOpcode();
     // For the nodes we handle below, we end up using their inputs directly: see
@@ -18020,9 +18056,18 @@ struct NodeExtensionHelper {
     case RISCVISD::FP_EXTEND_VL: {
       MVT NarrowEltVT =
           OrigOperand.getOperand(0).getSimpleValueType().getVectorElementType();
+#if SIFIVE_CUSTOMIZATION
+      // SIFIVE cherry-pick from 04e2e581ac000934782398e05853338040bf7c46
+      if (isSupportedFPExtend(NarrowEltVT, Subtarget))
+        SupportsFPExt = true;
+      if (isSupportedBF16Extend(NarrowEltVT, Subtarget))
+        SupportsBF16Ext = true;
+#else
       if (!isSupportedFPExtend(Root, NarrowEltVT, Subtarget))
         break;
       SupportsFPExt = true;
+#endif
+
       break;
     }
     case ISD::SPLAT_VECTOR:
@@ -18039,16 +18084,28 @@ struct NodeExtensionHelper {
       if (Op.getOpcode() != ISD::FP_EXTEND)
         break;
 
+#if SIFIVE_CUSTOMIZATION
+#else
       if (!isSupportedFPExtend(Root, Op.getOperand(0).getSimpleValueType(),
                                Subtarget))
         break;
+#endif
 
       unsigned NarrowSize = VT.getScalarSizeInBits() / 2;
       unsigned ScalarBits = Op.getOperand(0).getValueSizeInBits();
       if (NarrowSize != ScalarBits)
         break;
 
+#if SIFIVE_CUSTOMIZATION
+      // SIFIVE cherry-pick from 04e2e581ac000934782398e05853338040bf7c46
+      if (isSupportedFPExtend(Op.getOperand(0).getSimpleValueType(), Subtarget))
+        SupportsFPExt = true;
+      if (isSupportedBF16Extend(Op.getOperand(0).getSimpleValueType(),
+                                Subtarget))
+        SupportsBF16Ext = true;
+#else
       SupportsFPExt = true;
+#endif
       break;
     }
     default:
@@ -18278,6 +18335,14 @@ canFoldToVWWithSameExtensionImpl(SDNode *Root, const NodeExtensionHelper &LHS,
     return CombineResult(NodeExtensionHelper::getFPExtOpcode(Root->getOpcode()),
                          Root, LHS, /*LHSExt=*/{ExtKind::FPExt}, RHS,
                          /*RHSExt=*/{ExtKind::FPExt});
+#if SIFIVE_CUSTOMIZATION
+  // SIFIVE cherry-pick from 04e2e581ac000934782398e05853338040bf7c46
+  if ((AllowExtMask & ExtKind::BF16Ext) && LHS.SupportsBF16Ext &&
+      RHS.SupportsBF16Ext)
+    return CombineResult(NodeExtensionHelper::getFPExtOpcode(Root->getOpcode()),
+                         Root, LHS, /*LHSExt=*/{ExtKind::BF16Ext}, RHS,
+                         /*RHSExt=*/{ExtKind::BF16Ext});
+#endif
   return std::nullopt;
 }
 
@@ -18360,6 +18425,21 @@ canFoldToVWWithFPEXT(SDNode *Root, const NodeExtensionHelper &LHS,
                                           Subtarget);
 }
 
+#if SIFIVE_CUSTOMIZATION
+// SIFIVE cherry-pick from 04e2e581ac000934782398e05853338040bf7c46
+/// Check if \p Root follows a pattern Root(bf16ext(LHS), bf16ext(RHS))
+///
+/// \returns std::nullopt if the pattern doesn't match or a CombineResult that
+/// can be used to apply the pattern.
+static std::optional<CombineResult>
+canFoldToVWWithBF16EXT(SDNode *Root, const NodeExtensionHelper &LHS,
+                       const NodeExtensionHelper &RHS, SelectionDAG &DAG,
+                       const RISCVSubtarget &Subtarget) {
+  return canFoldToVWWithSameExtensionImpl(Root, LHS, RHS, ExtKind::BF16Ext, DAG,
+                                          Subtarget);
+}
+#endif
+
 /// Check if \p Root follows a pattern Root(sext(LHS), zext(RHS))
 ///
 /// \returns std::nullopt if the pattern doesn't match or a CombineResult that
@@ -18398,6 +18478,11 @@ NodeExtensionHelper::getSupportedFoldings(const SDNode *Root) {
   case RISCVISD::VFNMADD_VL:
   case RISCVISD::VFNMSUB_VL:
     Strategies.push_back(canFoldToVWWithSameExtension);
+#if SIFIVE_CUSTOMIZATION
+    // SIFIVE cherry-pick from 04e2e581ac000934782398e05853338040bf7c46
+    if (Root->getOpcode() == RISCVISD::VFMADD_VL)
+      Strategies.push_back(canFoldToVWWithBF16EXT);
+#endif
     break;
   case ISD::MUL:
   case RISCVISD::MUL_VL:
@@ -20561,11 +20646,92 @@ static SDValue combineFMA(SDNode *N, SelectionDAG &DAG,
 
   return SDValue();
 }
+
+// Try to combine splat shuffle_vector of a strided load into a splat of a
+// scalar load. Only supporting bf16 for now.
+static SDValue combineShuffleOfStridedLoad(SDNode *N, SelectionDAG &DAG,
+                                           const RISCVSubtarget &Subtarget) {
+  if (!Subtarget.hasStdExtZfbfmin() || !Subtarget.hasStdExtZvfbfmin())
+    return SDValue();
+
+  EVT VT = N->getValueType(0);
+  if (VT.getVectorElementType() != MVT::bf16)
+    return SDValue();
+
+  ShuffleVectorSDNode *SV = cast<ShuffleVectorSDNode>(N);
+
+  if (!SV->isSplat())
+    return SDValue();
+
+  int Lane = SV->getSplatIndex();
+  if (Lane < 0)
+    return SDValue();
+
+  ArrayRef<int> Mask = SV->getMask();
+  SDValue V = SV->getOperand(Lane / Mask.size());
+  Lane %= Mask.size();
+
+  // Look through concat_vectors.
+  if (V.getOpcode() == ISD::CONCAT_VECTORS) {
+    int OpElements = V.getOperand(0).getValueType().getVectorNumElements();
+    V = V.getOperand(Lane / OpElements);
+    Lane %= OpElements;
+  }
+
+  // Look through bitcast from i16.
+  // FIXME: Separate combine to fold with the load? Maybe InstCombine?
+  if (V.getOpcode() == ISD::BITCAST &&
+      V.getOperand(0).getValueType().getVectorElementType() == MVT::i16)
+    V = V.getOperand(0);
+
+  // Looking for a strided load.
+  auto *VPNode = dyn_cast<VPStridedLoadSDNode>(V);
+  if (!VPNode || !VPNode->isSimple())
+    return SDValue();
+
+  // Make sure the EVL is constant and that it includes this lane.
+  SDValue EVL = VPNode->getVectorLength();
+  auto *EVLC = dyn_cast<ConstantSDNode>(EVL);
+  if (!EVLC || EVLC->getZExtValue() < (unsigned)Lane)
+    return SDValue();
+
+  // Require all ones mask to make sure the load of the element isn't masked.
+  if (!ISD::isConstantSplatVectorAllOnes(VPNode->getMask().getNode()))
+    return SDValue();
+
+  // Require constant stride for now.
+  SDValue Stride = VPNode->getStride();
+  if (!isa<ConstantSDNode>(Stride))
+    return SDValue();
+
+  int64_t StrideC = cast<ConstantSDNode>(Stride)->getSExtValue();
+
+  SDLoc DL(N);
+  EVT StrideVT = Stride.getValueType();
+  SDValue Offset = DAG.getNode(ISD::MUL, DL, StrideVT, Stride,
+                               DAG.getConstant(Lane, DL, StrideVT));
+
+  SDValue NewAddr =
+      DAG.getNode(ISD::ADD, DL, StrideVT, VPNode->getBasePtr(), Offset);
+
+  SDValue NewLoad = DAG.getLoad(
+      MVT::bf16, DL, VPNode->getChain(), NewAddr,
+      VPNode->getPointerInfo().getWithOffset(StrideC * Lane),
+      VPNode->getOriginalAlign(), VPNode->getMemOperand()->getFlags());
+  DAG.makeEquivalentMemoryOrdering(SDValue(VPNode, 1), NewLoad.getValue(1));
+
+  return DAG.getNode(ISD::SPLAT_VECTOR, DL, VT, NewLoad);
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 static SDValue performVECTOR_SHUFFLECombine(SDNode *N, SelectionDAG &DAG,
                                             const RISCVSubtarget &Subtarget,
                                             const RISCVTargetLowering &TLI) {
+#if SIFIVE_CUSTOMIZATION
+  if (SDValue V = combineShuffleOfStridedLoad(N, DAG, Subtarget))
+    return V;
+#endif
+
   SDLoc DL(N);
   EVT VT = N->getValueType(0);
   const unsigned ElementSize = VT.getScalarSizeInBits();

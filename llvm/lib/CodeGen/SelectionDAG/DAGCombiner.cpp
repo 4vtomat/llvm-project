@@ -12785,6 +12785,35 @@ SDValue DAGCombiner::visitVP_STRIDED_LOAD(SDNode *N) {
         SLD->getMemOperand(), SLD->isExpandingLoad());
     return CombineTo(N, NewLd, NewLd.getValue(1));
   }
+
+#if SIFIVE_CUSTOMIZATION
+  // If load is not volatile and there are no uses of the loaded value, change
+  // uses of the chain value into uses of the chain input (i.e. delete the dead
+  // load).
+  if (SLD->isSimple()) {
+    assert(N->getValueType(1) == MVT::Other);
+    if (!SLD->hasAnyUseOfValue(0)) {
+      // It's not safe to use the two value CombineTo variant here. e.g.
+      // v1, chain2 = load chain1, loc
+      // v2, chain3 = load chain2, loc
+      // v3         = add v2, c
+      // Now we replace use of chain2 with chain1.  This makes the second load
+      // isomorphic to the one we are deleting, and thus makes this load live.
+      SDValue Chain = SLD->getChain();
+      LLVM_DEBUG(dbgs() << "\nReplacing.6 "; N->dump(&DAG);
+                 dbgs() << "\nWith chain: "; Chain.dump(&DAG);
+                 dbgs() << "\n");
+      WorklistRemover DeadNodes(*this);
+      DAG.ReplaceAllUsesOfValueWith(SDValue(N, 1), Chain);
+      AddUsersToWorklist(Chain.getNode());
+      if (N->use_empty())
+        deleteAndRecombine(N);
+
+      return SDValue(N, 0);   // Return N so it doesn't get rechecked!
+    }
+  }
+#endif
+
   return SDValue();
 }
 
