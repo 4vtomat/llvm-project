@@ -248,6 +248,58 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
 
   InstructionCost Cost =
       TypeSwitch<const VPRecipeBase *, InstructionCost>(Recipe)
+          .Case<VPWidenIntrinsicRecipe>([&](const VPWidenIntrinsicRecipe
+                                                *VPIR) {
+            SmallVector<const Value *> Arguments;
+            for (const auto &[Idx, Op] : enumerate(VPIR->operands())) {
+              auto *V = Op->getUnderlyingValue();
+
+              // Push all the VP Intrinsic's ops into the Argments even if is
+              // nullptr. Some VP Intrinsic's cost will assert the number of
+              // parameters. Mainly appears in the following two scenarios:
+              // 1. EVL Op is nullptr
+              // 2. The Argmunt of the VP Intrinsic is also the VP Intrinsic
+              // Query the cost with underlying value could be more accurate
+              // in lots of the targets.
+              if (VPIntrinsic::isVPIntrinsic(VPIR->getVectorIntrinsicID())) {
+                Arguments.push_back(V);
+                continue;
+              }
+
+              if (auto *UI =
+                      dyn_cast_or_null<CallBase>(VPIR->getUnderlyingValue());
+                  UI && !V) {
+                Arguments.push_back(UI->getArgOperand(Idx));
+                continue;
+              }
+
+              // If one of the argument without underlying value, fallback to
+              // type-based query.
+              if (!V) {
+                Arguments.clear();
+                break;
+              }
+
+              Arguments.push_back(V);
+            }
+
+            Type *RetTy = getVectorType(TypeInfo.inferScalarType(VPIR), RVL);
+            SmallVector<Type *> ParamTys;
+            for (unsigned I = 0; I != VPIR->getNumOperands(); ++I)
+              ParamTys.push_back(getVectorType(
+                  TypeInfo.inferScalarType(VPIR->getOperand(I)), RVL));
+
+            // TODO: Rework TTI interface to avoid reliance on underlying
+            // IntrinsicInst.
+            FastMathFlags FMF = VPIR->hasFastMathFlags()
+                                    ? VPIR->getFastMathFlags()
+                                    : FastMathFlags();
+            IntrinsicCostAttributes CostAttrs(
+                VPIR->getVectorIntrinsicID(), RetTy, Arguments, ParamTys, FMF,
+                dyn_cast_if_present<IntrinsicInst>(VPIR->getUnderlyingValue()),
+                InstructionCost::getInvalid(), &TLI);
+            return TTI.getIntrinsicInstrCost(CostAttrs, CostKind);
+          })
           .Case<VPWidenMemoryRecipe>([&](const VPWidenMemoryRecipe *VPWMIR) {
             return getMemoryOpCost(VPWMIR, RVL);
           })
