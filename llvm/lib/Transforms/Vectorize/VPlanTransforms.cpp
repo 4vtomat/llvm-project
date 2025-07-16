@@ -711,8 +711,7 @@ void VPlanTransforms::simplifyMonotonics(VPlan &Plan) {
         VPRecipeBase *LiveOut = ExitIRI->getOperand(0)->getDefiningRecipe();
         if (match(LiveOut, VPlanPatternMatch::m_VPInstruction<
                                VPInstruction::ExtractLastElement>(
-                               VPlanPatternMatch::m_VPValue(Op0),
-                               VPlanPatternMatch::m_VPValue())))
+                               VPlanPatternMatch::m_VPValue(Op0))))
           if (ToRemove.contains(Op0->getDefiningRecipe())) {
             ExitIRI->setOperand(0, VPMUI);
             LiveOut->eraseFromParent();
