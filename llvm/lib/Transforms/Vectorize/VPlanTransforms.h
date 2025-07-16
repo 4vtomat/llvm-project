@@ -54,9 +54,21 @@ struct VPlanTransforms {
       verifyVPlanIsValid(Plan);
   }
 
+#if SIFIVE_CUSTOMIZATION
+  static std::unique_ptr<VPlan>
+  buildPlainCFG(Loop *TheLoop, LoopInfo &LI,
+                DenseMap<VPBlockBase *, BasicBlock *> &VPB2IRBB,
+                LoopVectorizationLegality *Legal);
+  static std::unique_ptr<VPlan>
+  buildPlainCFG(Loop *TheLoop, LoopInfo &LI,
+                DenseMap<VPBlockBase *, BasicBlock *> &VPB2IRBB) {
+    return buildPlainCFG(TheLoop, LI, VPB2IRBB, /*Legal*/ nullptr);
+  }
+#else
   static std::unique_ptr<VPlan>
   buildPlainCFG(Loop *TheLoop, LoopInfo &LI,
                 DenseMap<VPBlockBase *, BasicBlock *> &VPB2IRBB);
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Replace loops in \p Plan's flat CFG with VPRegionBlocks, turing \p Plan's
   /// flat CFG into a hierarchical CFG. It also creates a VPValue expression for

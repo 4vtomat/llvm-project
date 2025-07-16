@@ -11717,14 +11717,15 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
           },
           Range);
   DenseMap<VPBlockBase *, BasicBlock *> VPB2IRBB;
-  auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB);
 
 #if SIFIVE_CUSTOMIZATION
+  auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB, Legal);
   const bool IsUncountable = Legal->isVectorizableUncountable();
   VPlanTransforms::createLoopRegions(
       *Plan, Legal->getWidestInductionType(), PSE, IsUncountable,
       RequiresScalarEpilogueCheck, CM.foldTailByMasking(), OrigLoop);
 #else
+  auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB);
   VPlanTransforms::createLoopRegions(*Plan, Legal->getWidestInductionType(),
                                      PSE, RequiresScalarEpilogueCheck,
                                      CM.foldTailByMasking(), OrigLoop);
@@ -12139,12 +12140,13 @@ VPlanPtr LoopVectorizationPlanner::tryToBuildVPlan(VFRange &Range) {
   assert(EnableVPlanNativePath && "VPlan-native path is not enabled.");
 
   DenseMap<VPBlockBase *, BasicBlock *> VPB2IRBB;
-  auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB);
 #if SIFIVE_CUSTOMIZATION
+  auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB, Legal);
   const bool IsUncountable = Legal->isVectorizableUncountable();
   VPlanTransforms::createLoopRegions(*Plan, Legal->getWidestInductionType(),
                                      PSE, IsUncountable, true, false, OrigLoop);
 #else
+  auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB);
   VPlanTransforms::createLoopRegions(*Plan, Legal->getWidestInductionType(),
                                      PSE, true, false, OrigLoop);
 #endif // SIFIVE_CUSTOMIZATION

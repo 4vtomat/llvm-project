@@ -65,8 +65,14 @@ public:
       : TheLoop(Lp), LI(LI), Plan(std::make_unique<VPlan>(Lp)) {}
 
   /// Build plain CFG for TheLoop  and connects it to Plan's entry.
+#if SIFIVE_CUSTOMIZATION
+  std::unique_ptr<VPlan>
+  buildPlainCFG(DenseMap<VPBlockBase *, BasicBlock *> &VPB2IRBB,
+                LoopVectorizationLegality *Legal);
+#else
   std::unique_ptr<VPlan>
   buildPlainCFG(DenseMap<VPBlockBase *, BasicBlock *> &VPB2IRBB);
+#endif // SIFIVE_CUSTOMIZATION
 };
 } // anonymous namespace
 
@@ -266,8 +272,14 @@ void PlainCFGBuilder::createVPInstructionsForVPBB(VPBasicBlock *VPBB,
 }
 
 // Main interface to build the plain CFG.
+#if SIFIVE_CUSTOMIZATION
+std::unique_ptr<VPlan>
+PlainCFGBuilder::buildPlainCFG(DenseMap<VPBlockBase *, BasicBlock *> &VPB2IRBB,
+                               LoopVectorizationLegality *Legal) {
+#else
 std::unique_ptr<VPlan> PlainCFGBuilder::buildPlainCFG(
     DenseMap<VPBlockBase *, BasicBlock *> &VPB2IRBB) {
+#endif // SIFIVE_CUSTOMIZATION
   VPIRBasicBlock *Entry = cast<VPIRBasicBlock>(Plan->getEntry());
   BB2VPBB[Entry->getIRBasicBlock()] = Entry;
 
@@ -363,9 +375,36 @@ std::unique_ptr<VPlan> PlainCFGBuilder::buildPlainCFG(
       PHINode &Phi = PhiR->getIRPhi();
       assert(PhiR->getNumOperands() == 0 &&
              "no phi operands should be added yet");
+#if SIFIVE_CUSTOMIZATION
+      // CSA users and EarlyExit are handled outside the plan
+      BasicBlock *LoopLatch = TheLoop->getLoopLatch();
+      bool IsUncountable = Legal ? Legal->isVectorizableUncountable() : false;
+      auto IsCSASelect = [&](Value *V) {
+        if (!Legal)
+          return false;
+        auto *SI = dyn_cast<SelectInst>(V);
+        if (!SI)
+          return false;
+
+        auto *CSADescIt = find_if(Legal->getCSAs(), [&](auto CSA) {
+          return CSADescriptor::isCSASelect(CSA.second, SI);
+        });
+        return CSADescIt != Legal->getCSAs().end();
+      };
+      for (BasicBlock *Pred : predecessors(EB->getIRBasicBlock())) {
+        if (IsUncountable && Pred != LoopLatch)
+          continue;
+        Value *V = Phi.getIncomingValueForBlock(Pred);
+        if (IsCSASelect(V))
+          continue;
+        VPValue *VPV = getOrCreateVPOperand(V);
+        PhiR->addOperand(VPV);
+      }
+#else
       for (BasicBlock *Pred : predecessors(EB->getIRBasicBlock()))
         PhiR->addOperand(
             getOrCreateVPOperand(Phi.getIncomingValueForBlock(Pred)));
+#endif // SIFIVE_CUSTOMIZATION
     }
   }
 
@@ -376,12 +415,22 @@ std::unique_ptr<VPlan> PlainCFGBuilder::buildPlainCFG(
   return std::move(Plan);
 }
 
+#if SIFIVE_CUSTOMIZATION
+std::unique_ptr<VPlan>
+VPlanTransforms::buildPlainCFG(Loop *TheLoop, LoopInfo &LI,
+                               DenseMap<VPBlockBase *, BasicBlock *> &VPB2IRBB,
+                               LoopVectorizationLegality *Legal) {
+  PlainCFGBuilder Builder(TheLoop, &LI);
+  return Builder.buildPlainCFG(VPB2IRBB, Legal);
+}
+#else
 std::unique_ptr<VPlan> VPlanTransforms::buildPlainCFG(
     Loop *TheLoop, LoopInfo &LI,
     DenseMap<VPBlockBase *, BasicBlock *> &VPB2IRBB) {
   PlainCFGBuilder Builder(TheLoop, &LI);
   return Builder.buildPlainCFG(VPB2IRBB);
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 /// Checks if \p HeaderVPB is a loop header block in the plain CFG; that is, it
 /// has exactly 2 predecessors (preheader and latch), where the block
