@@ -221,18 +221,18 @@ void RISCVMCCodeEmitter::expandAddRegRel(const MCInst &MI,
     FixupKind = ELF::R_RISCV_TPREL_ADD;
     break;
   case RISCVMCExpr::VK_GPREL_ADD:
-    FixupKind = RISCV::fixup_riscv_gprel_add;
+    FixupKind = ELF::R_RISCV_SIFIVE_GPREL_ADD;
     break;
   case RISCVMCExpr::VK_GOT_GPREL_ADD:
-    FixupKind = RISCV::fixup_riscv_got_gprel_add;
+    FixupKind = ELF::R_RISCV_SIFIVE_GOT_GPREL_ADD;
     break;
   // Do not emit fixup_riscv_relax for the following cases.
   case RISCVMCExpr::VK_TLS_GOT_GPREL_ADD:
-    FixupKind = RISCV::fixup_riscv_tls_got_gprel_add;
+    FixupKind = ELF::R_RISCV_SIFIVE_TLS_GOT_GPREL_ADD;
     RelaxCandidate = false;
     break;
   case RISCVMCExpr::VK_TLS_GD_GPREL_ADD:
-    FixupKind = RISCV::fixup_riscv_tls_gd_gprel_add;
+    FixupKind = ELF::R_RISCV_SIFIVE_TLS_GD_GPREL_ADD;
     RelaxCandidate = false;
     break;
   }
@@ -722,45 +722,45 @@ uint64_t RISCVMCCodeEmitter::getImmOpValue(const MCInst &MI, unsigned OpNo,
       break;
 #if SIFIVE_CUSTOMIZATION
     case RISCVMCExpr::VK_GPREL_HI:
-      FixupKind = RISCV::fixup_riscv_gprel_hi20;
+      FixupKind = ELF::R_RISCV_SIFIVE_GPREL_HI20;
       RelaxCandidate = true;
       break;
     case RISCVMCExpr::VK_GPREL_LO:
       if (MIFrm == RISCVII::InstFormatI)
-        FixupKind = RISCV::fixup_riscv_gprel_lo12_i;
+        FixupKind = ELF::R_RISCV_SIFIVE_GPREL_LO12_I;
       else if (MIFrm == RISCVII::InstFormatS)
-        FixupKind = RISCV::fixup_riscv_gprel_lo12_s;
+        FixupKind = ELF::R_RISCV_SIFIVE_GPREL_LO12_S;
       else
         llvm_unreachable("VK_GPREL_LO used with unexpected instruction format");
       RelaxCandidate = true;
       break;
     case RISCVMCExpr::VK_GOT_GPREL_HI:
-      FixupKind = RISCV::fixup_riscv_got_gprel_hi20;
+      FixupKind = ELF::R_RISCV_SIFIVE_GOT_GPREL_HI20;
       RelaxCandidate = true;
       break;
     case RISCVMCExpr::VK_GOT_GPREL_LO:
       assert(MIFrm == RISCVII::InstFormatI &&
              "VK_GOT_GPREL_LO used with unexpected instruction format");
-      FixupKind = RISCV::fixup_riscv_got_gprel_lo12_i;
+      FixupKind = ELF::R_RISCV_SIFIVE_GOT_GPREL_LO12_I;
       RelaxCandidate = true;
       break;
     case RISCVMCExpr::VK_TLS_GOT_GPREL_HI:
-      FixupKind = RISCV::fixup_riscv_tls_got_gprel_hi20;
+      FixupKind = ELF::R_RISCV_SIFIVE_TLS_GOT_GPREL_HI20;
       break;
     case RISCVMCExpr::VK_TLS_GOT_GPREL_LO:
       assert(
           MIFrm == RISCVII::InstFormatI &&
           "VK_TLS_GOT_GPREL_LO used with unexpected instruction format");
-      FixupKind = RISCV::fixup_riscv_tls_got_gprel_lo12_i;
+      FixupKind = ELF::R_RISCV_SIFIVE_TLS_GOT_GPREL_LO12_I;
       break;
     case RISCVMCExpr::VK_TLS_GD_GPREL_HI:
-      FixupKind = RISCV::fixup_riscv_tls_gd_gprel_hi20;
+      FixupKind = ELF::R_RISCV_SIFIVE_TLS_GD_GPREL_HI20;
       break;
     case RISCVMCExpr::VK_TLS_GD_GPREL_LO:
       assert(
           MIFrm == RISCVII::InstFormatI &&
           "VK_TLS_GD_GPREL_LO used with unexpected instruction format");
-      FixupKind = RISCV::fixup_riscv_tls_gd_gprel_lo12_i;
+      FixupKind = ELF::R_RISCV_SIFIVE_TLS_GD_GPREL_LO12_I;
       break;
 #endif // SIFIVE_CUSTOMIZATION
     case RISCVMCExpr::VK_CALL:

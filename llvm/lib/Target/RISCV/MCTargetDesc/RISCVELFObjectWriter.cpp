@@ -148,34 +148,6 @@ unsigned RISCVELFObjectWriter::getRelocType(MCContext &Ctx,
     return ELF::R_RISCV_LO12_I;
   case RISCV::fixup_riscv_lo12_s:
     return ELF::R_RISCV_LO12_S;
-#if SIFIVE_CUSTOMIZATION
-  case RISCV::fixup_riscv_gprel_hi20:
-    return ELF::R_RISCV_SIFIVE_GPREL_HI20;
-  case RISCV::fixup_riscv_gprel_lo12_i:
-    return ELF::R_RISCV_SIFIVE_GPREL_LO12_I;
-  case RISCV::fixup_riscv_gprel_lo12_s:
-    return ELF::R_RISCV_SIFIVE_GPREL_LO12_S;
-  case RISCV::fixup_riscv_gprel_add:
-    return ELF::R_RISCV_SIFIVE_GPREL_ADD;
-  case RISCV::fixup_riscv_got_gprel_hi20:
-    return ELF::R_RISCV_SIFIVE_GOT_GPREL_HI20;
-  case RISCV::fixup_riscv_got_gprel_lo12_i:
-    return ELF::R_RISCV_SIFIVE_GOT_GPREL_LO12_I;
-  case RISCV::fixup_riscv_got_gprel_add:
-    return ELF::R_RISCV_SIFIVE_GOT_GPREL_ADD;
-  case RISCV::fixup_riscv_tls_got_gprel_hi20:
-    return ELF::R_RISCV_SIFIVE_TLS_GOT_GPREL_HI20;
-  case RISCV::fixup_riscv_tls_got_gprel_lo12_i:
-    return ELF::R_RISCV_SIFIVE_TLS_GOT_GPREL_LO12_I;
-  case RISCV::fixup_riscv_tls_got_gprel_add:
-    return ELF::R_RISCV_SIFIVE_TLS_GOT_GPREL_ADD;
-  case RISCV::fixup_riscv_tls_gd_gprel_hi20:
-    return ELF::R_RISCV_SIFIVE_TLS_GD_GPREL_HI20;
-  case RISCV::fixup_riscv_tls_gd_gprel_lo12_i:
-    return ELF::R_RISCV_SIFIVE_TLS_GD_GPREL_LO12_I;
-  case RISCV::fixup_riscv_tls_gd_gprel_add:
-    return ELF::R_RISCV_SIFIVE_TLS_GD_GPREL_ADD;
-#endif // SIFIVE_CUSTOMIZATION
   case RISCV::fixup_riscv_qc_e_32:
     return ELF::R_RISCV_QC_E_32;
   case RISCV::fixup_riscv_qc_abs20_u:
