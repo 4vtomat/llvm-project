@@ -397,6 +397,10 @@ std::unique_ptr<VPlan> PlainCFGBuilder::buildPlainCFG(
         Value *V = Phi.getIncomingValueForBlock(Pred);
         if (IsCSASelect(V))
           continue;
+        // For revectorized loops, there are values coming from other vector
+        // loops. Skip if the value is not coming from the loop
+        if (!TheLoop->contains(Pred))
+          continue;
         VPValue *VPV = getOrCreateVPOperand(V);
         PhiR->addOperand(VPV);
       }
