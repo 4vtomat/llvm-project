@@ -36,7 +36,7 @@ define i64 @findlastiv(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-EMPTY:
 ; CHECK-NEXT: middle.block:
 ; CHECK-NEXT:   EMIT vp<{{.*}}> = compute-find-last-iv-result ir<%rdx>, ir<%ii>, ir<%cond>
-; CHECK-NEXT:   EMIT vp<{{.*}}> = extract-from-end vp<{{.*}}>, ir<{{.*}}>
+; CHECK-NEXT:   EMIT vp<{{.*}}> = extract-last-element vp<{{.*}}>
 ; CHECK-NEXT:   EMIT vp<[[EXIT_COND:%.+]]> = icmp eq ir<[[OTC]]>, vp<[[VTC]]>
 ; CHECK-NEXT:   EMIT branch-on-cond vp<[[EXIT_COND]]>
 ; CHECK-NEXT: Successor(s): ir-bb<exit>, scalar.ph
@@ -123,7 +123,7 @@ define i64 @findlastiv_need_mask(ptr %a, ptr %b, i64 %ii, i64 %iv_start, i64 %n)
 ; CHECK-NEXT: middle.block:
 ; CHECK-NEXT:   EMIT vp<[[RDX_MASK:%.+]]> = icmp ne ir<[[SELECT]]>, ir<9223372036854775807>
 ; CHECK-NEXT:   EMIT vp<[[RDX:%.+]]> = compute-reduction-result-with-mask ir<[[RDX_PHI]]>, ir<[[SELECT]]>, vp<[[RDX_MASK]]>
-; CHECK-NEXT:   EMIT vp<[[EXT:%[0-9]+]]> = extract-from-end vp<[[RDX]]>, ir<1>
+; CHECK-NEXT:   EMIT vp<[[EXT:%[0-9]+]]> = extract-last-element vp<[[RDX]]>
 ; CHECK-NEXT:   EMIT vp<[[EXIT_COND:%.+]]> = icmp eq vp<[[OTC]]>, vp<[[VTC]]>
 ; CHECK-NEXT:   EMIT branch-on-cond vp<[[EXIT_COND]]>
 ; CHECK-NEXT: Successor(s): ir-bb<exit.loopexit>, scalar.ph
@@ -212,7 +212,7 @@ define i64 @findlastiv_need_mask_with_intermediate_store(ptr %a, ptr %b, i64 %ii
 ; CHECK-NEXT: middle.block:
 ; CHECK-NEXT:   EMIT vp<[[RDX_MASK:%.+]]> = icmp ne ir<[[SELECT]]>, ir<9223372036854775807>
 ; CHECK-NEXT:   EMIT vp<[[RDX:%.+]]> = compute-reduction-result-with-mask ir<[[RDX_PHI]]>, ir<[[SELECT]]>, vp<[[RDX_MASK]]>
-; CHECK-NEXT:   EMIT vp<[[EXT:%[0-9]+]]> = extract-from-end vp<[[RDX]]>, ir<1>
+; CHECK-NEXT:   EMIT vp<[[EXT:%[0-9]+]]> = extract-last-element vp<[[RDX]]>
 ; CHECK-NEXT:   CLONE store vp<[[RDX]]>, ir<%dst>
 ; CHECK-NEXT:   EMIT vp<[[EXIT_COND:%.+]]> = icmp eq vp<[[OTC]]>, vp<[[VTC]]>
 ; CHECK-NEXT:   EMIT branch-on-cond vp<[[EXIT_COND]]>
