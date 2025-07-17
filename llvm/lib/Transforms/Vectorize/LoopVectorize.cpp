@@ -4964,6 +4964,13 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
     if (ScalarEpilogueStatus != CM_ScalarEpilogueNotAllowedLowTripLoop &&
         ScalarEpilogueStatus != CM_ScalarEpilogueNotAllowedOptSize)
       ScalarEpilogueStatus = CM_ScalarEpilogueAllowed;
+
+  if (Legal->useVLAVectorizer() &&
+      (TheLoop->getExitingBlock() != TheLoop->getLoopLatch()))
+    // Since we don't really mask the loop body, the problem above is not
+    // applicable to RVV VLA and we can generate similar code as with VLS,
+    // where remainder loop will take care of exits.
+    ScalarEpilogueStatus = CM_ScalarEpilogueAllowed;
 #endif // SIFIVE_CUSTOMIZATION
 
   // Now try the tail folding
