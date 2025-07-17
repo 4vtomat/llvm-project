@@ -246,6 +246,11 @@ InstructionCost VPlanCostModel::getCost(const VPBlockBase *Block,
 InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
                                         const RVVPair &RVL) {
 
+  if (auto *VPS = dyn_cast<VPSingleDefRecipe>(Recipe);
+      VPS && !vputils::onlyFirstLaneUsed(VPS) &&
+      !VectorType::isValidElementType(TypeInfo.inferScalarType(VPS)))
+    return InstructionCost::getInvalid();
+
   InstructionCost Cost =
       TypeSwitch<const VPRecipeBase *, InstructionCost>(Recipe)
           .Case<VPWidenIntrinsicRecipe>([&](const VPWidenIntrinsicRecipe
