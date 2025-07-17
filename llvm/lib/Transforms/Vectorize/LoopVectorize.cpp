@@ -10511,6 +10511,10 @@ VPRecipeBuilder::tryToWidenMemory(Instruction *I, ArrayRef<VPValue *> Operands,
   default:
     break;
   }
+  VPValue *StrideVPV =
+      Stride
+          ? vputils::getOrCreateVPValueForSCEVExpr(Plan, Stride, *PSE.getSE())
+          : nullptr;
 #endif // SIFIVE_CUSTOMIZATION
 
   VPValue *Ptr = isa<LoadInst>(I) ? Operands[0] : Operands[1];
@@ -10540,7 +10544,7 @@ VPRecipeBuilder::tryToWidenMemory(Instruction *I, ArrayRef<VPValue *> Operands,
   if (LoadInst *Load = dyn_cast<LoadInst>(I))
     return new VPWidenLoadRecipe(*Load, Ptr, Mask, Consecutive, Reverse,
 #if SIFIVE_CUSTOMIZATION
-                                 I->getDebugLoc(), Stride,
+                                 I->getDebugLoc(), StrideVPV,
                                  Legal->isVectorizableUncountable() &&
                                    Legal->getSpeculativeLoads().contains(Load),
                                  IsMonotonic);
@@ -10551,7 +10555,8 @@ VPRecipeBuilder::tryToWidenMemory(Instruction *I, ArrayRef<VPValue *> Operands,
   StoreInst *Store = cast<StoreInst>(I);
   return new VPWidenStoreRecipe(*Store, Ptr, Operands[0], Mask, Consecutive,
 #if SIFIVE_CUSTOMIZATION
-                                Reverse, I->getDebugLoc(), Stride, IsMonotonic);
+                                Reverse, I->getDebugLoc(), StrideVPV,
+                                IsMonotonic);
 #else
                                 Reverse, I->getDebugLoc());
 #endif // SIFIVE_CUSTOMIZATION

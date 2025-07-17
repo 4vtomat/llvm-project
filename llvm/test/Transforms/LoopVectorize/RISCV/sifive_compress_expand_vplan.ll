@@ -30,7 +30,7 @@
 ; CHECK-NEXT:     CLONE ir<[[IDXEXT:%.+]]> = sext ir<[[MONO_PHI]]>
 ; CHECK-NEXT:     CLONE ir<[[ADDPTR:%.+]]> = getelementptr ir<[[A:%.+]]>, ir<[[IDXEXT]]>
 ; CHECK-NEXT:     vp<[[PTR2:%.+]]> = vector-pointer ir<[[ADDPTR]]>
-; CHECK-NEXT:     WIDEN vp.store vp<[[PTR2]]>, ir<[[LOAD]]>, vp<[[EVL]]>, vp<[[MASK]]>       unit-strided
+; CHECK-NEXT:     WIDEN vp.store vp<[[PTR2]]>, ir<[[LOAD]]>, vp<[[EVL]]>, ir<4>, vp<[[MASK]]>       unit-strided
 ; CHECK-NEXT:     monotonic-update ir<[[INC]]> = add ir<[[MONO_PHI:%.+]]>, ir<1> @vp<[[MASK]]>
 ; CHECK-NEXT:     EMIT vp<[[ZEXT:%.+]]> = zext vp<[[EVL]]> to i64
 ; CHECK-NEXT:     EMIT vp<[[EVL_NEXT]]> = add nuw vp<[[ZEXT]]>, vp<[[EVL_IV]]>
@@ -102,7 +102,7 @@ for.inc:
 ; CHECK-NEXT:     CLONE ir<[[IDX_PROM:%.+]]> = sext ir<[[RET_PHI]]>
 ; CHECK-NEXT:     CLONE ir<[[ARRAYIDX2:%.+]]> = getelementptr ir<[[B]]>, ir<[[IDX_PROM]]>
 ; CHECK-NEXT:     vp<[[PTR2:%.+]]> = vector-pointer ir<[[ARRAYIDX2]]>
-; CHECK-NEXT:     WIDEN ir<[[LOAD2:%.+]]> = vp.load vp<[[PTR2]]>, vp<[[EVL]]>, vp<[[MASK]]>       unit-strided
+; CHECK-NEXT:     WIDEN ir<[[LOAD2:%.+]]> = vp.load vp<[[PTR2]]>, vp<[[EVL]]>, ir<4>, vp<[[MASK]]>       unit-strided
 ; CHECK-NEXT:     CLONE ir<[[ARRAYIDX3:%.+]]> = getelementptr ir<[[A:%.+]]>, vp<[[EVL_IV]]>
 ; CHECK-NEXT:     vp<[[PTR3:%.+]]> = vector-pointer ir<[[ARRAYIDX3]]>
 ; CHECK-NEXT:     WIDEN vp.store vp<[[PTR3]]>, ir<[[LOAD2]]>, vp<[[EVL]]>, vp<[[MASK]]>       unit-strided

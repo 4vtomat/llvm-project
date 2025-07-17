@@ -591,15 +591,13 @@ void VPlanTransforms::optimizeReversedLoadStore(VPlan &Plan) {
       auto *SI = cast<StoreInst>(&StoreR->getIngredient());
       auto *ForwardLoad = new VPWidenLoadRecipe(
           *LI, LoadR->getAddr(), LoadR->getMask(), LoadR->isConsecutive(),
-          /*Reverse*/ false, LoadR->getDebugLoc(),
-          LoadR->isStrided() ? LoadR->getStrideInBytes() : nullptr,
+          /*Reverse*/ false, LoadR->getDebugLoc(), LoadR->getStride(),
           LoadR->isSpeculative(), LoadR->isMonotonic());
       ForwardLoad->insertBefore(LoadR);
       auto *ForwardStore = new VPWidenStoreRecipe(
           *SI, StoreR->getAddr(), StoreR->getStoredValue(), StoreR->getMask(),
           StoreR->isConsecutive(), /*Reverse*/ false, StoreR->getDebugLoc(),
-          StoreR->isStrided() ? StoreR->getStrideInBytes() : nullptr,
-          StoreR->isMonotonic());
+          StoreR->getStride(), StoreR->isMonotonic());
       ForwardStore->insertBefore(StoreR);
       StoreR->eraseFromParent();
       LoadR->replaceAllUsesWith(ForwardLoad);

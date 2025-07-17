@@ -27,7 +27,7 @@ for.body:
 ; Check that illegal recipe returns invalid cost
 define void @foo2(ptr %val) {
 ; CHECK-LABEL: LV: Checking a loop in 'foo2'
-; CHECK: VPlanCM: cost 4 for RVL (m1, i32) for VPInstruction: WIDEN vp.store vp<%{{.+}}>, ir<0>, vp<%{{.+}}> stride (in bytes) = 8
+; CHECK: VPlanCM: cost 4 for RVL (m1, i32) for VPInstruction: WIDEN vp.store vp<%{{.+}}>, ir<0>, vp<%{{.+}}>, ir<8> strided
 ; CHECK: VPlanCM: cost Invalid for RVL (m1, i32) for VPInstruction: REPLICATE store ir<0>, ir<%{{.+}}>
 ;
 entry:

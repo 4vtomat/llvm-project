@@ -34,6 +34,7 @@ define fastcc void @foo(ptr %arg) {
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 0, %[[VECTOR_SCEVCHECK]] ]
 ; CHECK-NEXT:    [[BC_RESUME_VAL1:%.*]] = phi i32 [ 0, %[[VECTOR_SCEVCHECK]] ]
 ; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ false, %[[VECTOR_SCEVCHECK]] ]
+; CHECK-NEXT:    [[TMP16:%.*]] = sext i32 [[LOAD]] to i64
 ; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label %[[SCALAR_PH4:.*]], label %[[VECTOR_SCEVCHECK2:.*]]
 ; CHECK:       [[VECTOR_SCEVCHECK2]]:
 ; CHECK-NEXT:    [[TMP7:%.*]] = sub i32 0, [[LOAD]]
@@ -48,9 +49,8 @@ define fastcc void @foo(ptr %arg) {
 ; CHECK-NEXT:    [[TMP13:%.*]] = or i1 [[TMP12]], [[MUL_OVERFLOW]]
 ; CHECK-NEXT:    br i1 [[TMP13]], label %[[SCALAR_PH4]], label %[[VECTOR_PH5:.*]]
 ; CHECK:       [[VECTOR_PH5]]:
-; CHECK-NEXT:    [[TMP16:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 1024, i32 8, i1 true)
-; CHECK-NEXT:    [[TMP22:%.*]] = add i32 [[BC_RESUME_VAL]], 1024
-; CHECK-NEXT:    [[TMP14:%.*]] = sext i32 [[LOAD]] to i64
+; CHECK-NEXT:    [[TMP22:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 1024, i32 8, i1 true)
+; CHECK-NEXT:    [[TMP23:%.*]] = add i32 [[BC_RESUME_VAL]], 1024
 ; CHECK-NEXT:    br label %[[VECTOR_BODY6:.*]]
 ; CHECK:       [[VECTOR_BODY6]]:
 ; CHECK-NEXT:    [[INDEX7:%.*]] = phi i32 [ 0, %[[VECTOR_PH5]] ], [ [[INDEX_EVL_NEXT11:%.*]], %[[VECTOR_BODY6]] ]
@@ -62,7 +62,7 @@ define fastcc void @foo(ptr %arg) {
 ; CHECK-NEXT:    [[TMP18:%.*]] = add i32 [[TMP17]], 0
 ; CHECK-NEXT:    [[TMP19:%.*]] = zext i32 [[TMP18]] to i64
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr null, i64 [[TMP19]]
-; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv8i8.p0.i64(<vscale x 8 x i8> zeroinitializer, ptr align 1 [[TMP20]], i64 [[TMP14]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP15]])
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv8i8.p0.i64(<vscale x 8 x i8> zeroinitializer, ptr align 1 [[TMP20]], i64 [[TMP16]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP15]])
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT11]] = add nuw i32 [[TMP15]], [[EVL_BASED_IV9]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = icmp eq i32 [[INDEX_EVL_NEXT11]], 1024
 ; CHECK-NEXT:    br i1 [[TMP21]], label %[[MIDDLE_BLOCK11:.*]], label %[[VECTOR_BODY6]], !llvm.loop [[LOOP3:![0-9]+]]
@@ -86,7 +86,7 @@ define fastcc void @foo(ptr %arg) {
 ; CHECK-NEXT:    [[ICMP5:%.*]] = icmp ne i32 [[ADD4]], 1024
 ; CHECK-NEXT:    br i1 [[ICMP5]], label %[[LOOP]], label %[[EXIT]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       [[EXIT]]:
-; CHECK-NEXT:    [[PHI7:%.*]] = phi i32 [ [[ADD]], %[[LOOP]] ], [ 1024, %[[MIDDLE_BLOCK]] ], [ [[TMP22]], %[[MIDDLE_BLOCK11]] ]
+; CHECK-NEXT:    [[PHI7:%.*]] = phi i32 [ [[ADD]], %[[LOOP]] ], [ 1024, %[[MIDDLE_BLOCK]] ], [ [[TMP23]], %[[MIDDLE_BLOCK11]] ]
 ; CHECK-NEXT:    ret void
 ;
 entry:

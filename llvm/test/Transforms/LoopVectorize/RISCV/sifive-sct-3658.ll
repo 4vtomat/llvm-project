@@ -61,6 +61,7 @@ define void @_Z3fn1v(i32 %n, ptr %k, i32 %l) {
 ; CHECK-NEXT:    [[TMP21:%.*]] = sub i32 [[TMP20]], [[BC_RESUME_VAL2]]
 ; CHECK-NEXT:    [[TMP22:%.*]] = zext i32 [[TMP21]] to i64
 ; CHECK-NEXT:    [[TMP23:%.*]] = add nuw nsw i64 [[TMP22]], 1
+; CHECK-NEXT:    [[TMP34:%.*]] = shl nsw i64 [[TMP0]], 3
 ; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label [[SCALAR_PH11:%.*]], label [[VECTOR_MEMCHECK3:%.*]]
 ; CHECK:       vector.memcheck2:
 ; CHECK-NEXT:    [[TMP24:%.*]] = add i32 [[N]], -1
@@ -82,9 +83,7 @@ define void @_Z3fn1v(i32 %n, ptr %k, i32 %l) {
 ; CHECK-NEXT:    [[FOUND_CONFLICT9:%.*]] = and i1 [[BOUND07]], [[BOUND18]]
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT9]], label [[SCALAR_PH11]], label [[VECTOR_PH12:%.*]]
 ; CHECK:       vector.ph10:
-; CHECK-NEXT:    [[TMP36:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP23]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP34:%.*]] = sext i32 [[L]] to i64
-; CHECK-NEXT:    [[TMP33:%.*]] = shl nsw i64 [[TMP34]], 3
+; CHECK-NEXT:    [[TMP33:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP23]], i32 2, i1 true)
 ; CHECK-NEXT:    br label [[VECTOR_BODY18:%.*]]
 ; CHECK:       vector.body11:
 ; CHECK-NEXT:    [[INDEX19:%.*]] = phi i64 [ 0, [[VECTOR_PH12]] ], [ [[INDEX_EVL_NEXT22:%.*]], [[VECTOR_BODY18]] ]
@@ -94,7 +93,7 @@ define void @_Z3fn1v(i32 %n, ptr %k, i32 %l) {
 ; CHECK-NEXT:    [[TMP35:%.*]] = mul i64 [[EVL_BASED_IV20]], [[TMP0]]
 ; CHECK-NEXT:    [[TMP37:%.*]] = add i64 [[BC_RESUME_VAL]], [[TMP35]]
 ; CHECK-NEXT:    [[TMP40:%.*]] = getelementptr inbounds [[CLASS_A]], ptr [[K]], i64 [[TMP37]]
-; CHECK-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.experimental.vp.strided.load.nxv2i32.p0.i64(ptr align 4 [[TMP40]], i64 [[TMP33]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP39]]), !alias.scope [[META8:![0-9]+]]
+; CHECK-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.experimental.vp.strided.load.nxv2i32.p0.i64(ptr align 4 [[TMP40]], i64 [[TMP34]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP39]]), !alias.scope [[META8:![0-9]+]]
 ; CHECK-NEXT:    call void @llvm.vp.scatter.nxv2i32.nxv2p0(<vscale x 2 x i32> [[VP_STRIDED_LOAD]], <vscale x 2 x ptr> align 4 shufflevector (<vscale x 2 x ptr> insertelement (<vscale x 2 x ptr> poison, ptr @m, i64 0), <vscale x 2 x ptr> poison, <vscale x 2 x i32> zeroinitializer), <vscale x 2 x i1> splat (i1 true), i32 [[TMP39]]), !alias.scope [[META11:![0-9]+]], !noalias [[META8]]
 ; CHECK-NEXT:    [[TMP42:%.*]] = zext i32 [[TMP39]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT22]] = add nuw i64 [[TMP42]], [[EVL_BASED_IV20]]

@@ -3104,23 +3104,31 @@ protected:
   }
 
 #if SIFIVE_CUSTOMIZATION
-  /// SCEVExpr that holds stride of that memory access. nullptr if it's indexed
-  const SCEV *StrideInBytes = nullptr;
-
   /// Speculative load/store
   bool Speculative = false;
 
   /// Compress store or expand load
   bool IsMonotonic = false;
 
+  /// Is strided
+  bool IsStrided = false;
+
+  void setStride(VPValue *Stride) {
+    assert(!IsStrided && "Setting stride twice!");
+    if (!Stride)
+      return;
+    addOperand(Stride);
+    IsStrided = true;
+  }
+
   VPWidenMemoryRecipe(const char unsigned SC, Instruction &I,
                       std::initializer_list<VPValue *> Operands,
                       bool Consecutive, bool Reverse, DebugLoc DL,
-                      const SCEV *StrideInBytes = nullptr,
-                      bool Speculative = false, bool IsMonotonic = false)
+                      VPValue *Stride = nullptr, bool Speculative = false,
+                      bool IsMonotonic = false)
       : VPRecipeBase(SC, Operands, DL), Ingredient(I), Consecutive(Consecutive),
-        Reverse(Reverse), StrideInBytes(StrideInBytes),
-        Speculative(Speculative), IsMonotonic(IsMonotonic) {
+        Reverse(Reverse), Speculative(Speculative), IsMonotonic(IsMonotonic) {
+    setStride(Stride);
 #else
   VPWidenMemoryRecipe(const char unsigned SC, Instruction &I,
                       std::initializer_list<VPValue *> Operands,
@@ -3170,11 +3178,13 @@ public:
 
 #if SIFIVE_CUSTOMIZATION
   // Return wheter NonConsecutive loads/stores can be strided
-  bool isStrided() const { return StrideInBytes != nullptr; }
+  bool isStrided() const { return IsStrided; }
 
-  const SCEV *getStrideInBytes() const {
-    assert(isStrided() && "Cannot get stride for non-strided memory access");
-    return StrideInBytes;
+  VPValue *getStride() const {
+    if (!isStrided())
+      return nullptr;
+    return isMasked() ? getOperand(getNumOperands() - 2)
+                      : getOperand(getNumOperands() - 1);
   }
 
   bool isSpeculative() const { return Speculative; }
@@ -3205,8 +3215,8 @@ struct VPWidenLoadRecipe final : public VPWidenMemoryRecipe, public VPValue {
 #if SIFIVE_CUSTOMIZATION
   VPWidenLoadRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
                     bool Consecutive, bool Reverse, DebugLoc DL,
-                    const SCEV *StrideInBytes = nullptr,
-                    bool Speculative = false, bool IsMonotonic = false)
+                    VPValue *StrideInBytes = nullptr, bool Speculative = false,
+                    bool IsMonotonic = false)
       : VPWidenMemoryRecipe(VPDef::VPWidenLoadSC, Load, {Addr}, Consecutive,
                             Reverse, DL, StrideInBytes, Speculative,
                             IsMonotonic),
@@ -3225,8 +3235,7 @@ struct VPWidenLoadRecipe final : public VPWidenMemoryRecipe, public VPValue {
                                  getMask(), Consecutive, Reverse,
 #if SIFIVE_CUSTOMIZATION
                                  getDebugLoc(),
-                                 isStrided() ? getStrideInBytes() : nullptr,
-                                 isSpeculative(), isMonotonic());
+                                 getStride(), isSpeculative(), isMonotonic());
 #else
                                  getDebugLoc());
 #endif // SIFIVE_CUSTOMIZATION
@@ -3247,6 +3256,10 @@ struct VPWidenLoadRecipe final : public VPWidenMemoryRecipe, public VPValue {
   bool onlyFirstLaneUsed(const VPValue *Op) const override {
     assert(is_contained(operands(), Op) &&
            "Op must be an operand of the recipe");
+#if SIFIVE_CUSTOMIZATION
+    if (isStrided() && Op == getStride())
+      return true;
+#endif // SIFIVE_CUSTMOZATIN
     // Widened, consecutive loads operations only demand the first lane of
     // their address.
     return Op == getAddr() && isConsecutive();
@@ -3261,8 +3274,7 @@ struct VPWidenLoadEVLRecipe final : public VPWidenMemoryRecipe, public VPValue {
       : VPWidenMemoryRecipe(VPDef::VPWidenLoadEVLSC, L.getIngredient(),
 #if SIFIVE_CUSTOMIZATION
                             {L.getAddr(), &EVL}, L.isConsecutive(),
-                            L.isReverse(), L.getDebugLoc(),
-                            L.isStrided() ? L.getStrideInBytes() : nullptr,
+                            L.isReverse(), L.getDebugLoc(), L.getStride(),
                             L.isSpeculative(), L.isMonotonic()),
 #else
                             {L.getAddr(), &EVL}, L.isConsecutive(),
@@ -3301,6 +3313,8 @@ struct VPWidenLoadEVLRecipe final : public VPWidenMemoryRecipe, public VPValue {
     // Widened loads only demand the first lane of EVL and consecutive loads
     // only demand the first lane of their address.
 #if SIFIVE_CUSTOMIZATION
+    if (isStrided() && Op == getStride())
+      return true;
     return Op == getEVL() ||
            (Op == getAddr() && (isConsecutive() || isStrided()));
 #else
@@ -3312,6 +3326,8 @@ struct VPWidenLoadEVLRecipe final : public VPWidenMemoryRecipe, public VPValue {
   bool onlyFirstLaneUsed(const VPValue *Op, unsigned Index) const override {
     assert(is_contained(operands(), Op) &&
            "Op must be an operand of the recipe");
+    if (isStrided() && Op == getStride())
+      return true;
 
     return Op == getAddr() && (isConsecutive() || isStrided()) && Index == 0;
   }
@@ -3324,8 +3340,7 @@ struct VPWidenStoreRecipe final : public VPWidenMemoryRecipe {
 #if SIFIVE_CUSTOMIZATION
   VPWidenStoreRecipe(StoreInst &Store, VPValue *Addr, VPValue *StoredVal,
                      VPValue *Mask, bool Consecutive, bool Reverse, DebugLoc DL,
-                     const SCEV *StrideInBytes = nullptr,
-                     bool IsMonotonic = false)
+                     VPValue *StrideInBytes = nullptr, bool IsMonotonic = false)
       : VPWidenMemoryRecipe(VPDef::VPWidenStoreSC, Store, {Addr, StoredVal},
                             Consecutive, Reverse, DL, StrideInBytes, false,
                             IsMonotonic) {
@@ -3342,8 +3357,7 @@ struct VPWidenStoreRecipe final : public VPWidenMemoryRecipe {
     return new VPWidenStoreRecipe(cast<StoreInst>(Ingredient), getAddr(),
                                   getStoredValue(), getMask(), Consecutive,
 #if SIFIVE_CUSTOMIZATION
-                                  Reverse, getDebugLoc(),
-                                  isStrided() ? getStrideInBytes() : nullptr,
+                                  Reverse, getDebugLoc(), getStride(),
                                   isMonotonic());
 #else
                                   Reverse, getDebugLoc());
@@ -3368,6 +3382,10 @@ struct VPWidenStoreRecipe final : public VPWidenMemoryRecipe {
   bool onlyFirstLaneUsed(const VPValue *Op) const override {
     assert(is_contained(operands(), Op) &&
            "Op must be an operand of the recipe");
+#if SIFIVE_CUSTOMIZATION
+    if (isStrided() && Op == getStride())
+      return true;
+#endif // SIFIVE_CUSTOMIZATION
     // Widened, consecutive stores only demand the first lane of their address,
     // unless the same operand is also stored.
     return Op == getAddr() && isConsecutive() && Op != getStoredValue();
@@ -3382,10 +3400,8 @@ struct VPWidenStoreEVLRecipe final : public VPWidenMemoryRecipe {
       : VPWidenMemoryRecipe(VPDef::VPWidenStoreEVLSC, S.getIngredient(),
                             {S.getAddr(), S.getStoredValue(), &EVL},
 #if SIFIVE_CUSTOMIZATION
-                            S.isConsecutive(), S.isReverse(),
-                            S.getDebugLoc(),
-                            S.isStrided() ? S.getStrideInBytes() : nullptr,
-                            S.isSpeculative(), S.isMonotonic()) {
+                            S.isConsecutive(), S.isReverse(), S.getDebugLoc(),
+                            S.getStride(), S.isSpeculative(), S.isMonotonic()) {
 #else
                             S.isConsecutive(), S.isReverse(), S.getDebugLoc()) {
 #endif // SIFIVE_CUSTOMIZATION
@@ -3425,6 +3441,8 @@ struct VPWidenStoreEVLRecipe final : public VPWidenMemoryRecipe {
     // their address, unless the same operand is also stored. That latter can
     // happen with opaque pointers.
 #if SIFIVE_CUSTOMIZATION
+    if (isStrided() && Op == getStride())
+      return true;
     return Op == getAddr() && (isConsecutive() || isStrided()) &&
            Op != getStoredValue();
 #else
@@ -3436,6 +3454,8 @@ struct VPWidenStoreEVLRecipe final : public VPWidenMemoryRecipe {
   bool onlyFirstLaneUsed(const VPValue *Op, unsigned Index) const override {
     assert(is_contained(operands(), Op) &&
            "Op must be an operand of the recipe");
+    if (isStrided() && Op == getStride())
+      return true;
 
     return Op == getAddr() && (isConsecutive() || isStrided()) && Index == 0;
   }

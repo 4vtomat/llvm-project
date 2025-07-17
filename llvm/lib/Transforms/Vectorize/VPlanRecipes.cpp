@@ -3829,8 +3829,7 @@ void VPWidenLoadEVLRecipe::print(raw_ostream &O, const Twine &Indent,
   if (isConsecutive()) {
     O << "unit-strided";
   } else if (isStrided()) {
-    O << "stride (in bytes) = ";
-    getStrideInBytes()->print(O);
+    O << "strided";
   } else {
     O << "indexed";
   }
@@ -3978,8 +3977,7 @@ void VPWidenStoreEVLRecipe::print(raw_ostream &O, const Twine &Indent,
   if (isConsecutive()) {
     O << "unit-strided";
   } else if (isStrided()) {
-    O << "stride (in bytes) = ";
-    getStrideInBytes()->print(O);
+    O << "strided";
   } else {
     O << "indexed";
   }

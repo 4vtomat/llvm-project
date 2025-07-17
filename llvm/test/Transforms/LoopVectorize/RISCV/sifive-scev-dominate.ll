@@ -37,11 +37,10 @@ define i32 @SaveEXR(ptr %data, i32 %width, i32 %height, i32 %components, i32 %sa
 ; CHECK:       [[SCALAR_PH]]:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_SCEVCHECK]] ]
 ; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ false, %[[VECTOR_SCEVCHECK]] ]
+; CHECK-NEXT:    [[TMP6:%.*]] = shl nuw nsw i64 [[CONV49]], 2
 ; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label %[[SCALAR_PH1:.*]], label %[[VECTOR_PH2:.*]]
 ; CHECK:       [[VECTOR_PH2]]:
 ; CHECK-NEXT:    [[TMP15:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[CONV47]], i32 8, i1 true)
-; CHECK-NEXT:    [[TMP5:%.*]] = zext i32 [[COMPONENTS]] to i64
-; CHECK-NEXT:    [[TMP6:%.*]] = shl nuw nsw i64 [[TMP5]], 2
 ; CHECK-NEXT:    br label %[[VECTOR_BODY3:.*]]
 ; CHECK:       [[VECTOR_BODY3]]:
 ; CHECK-NEXT:    [[INDEX4:%.*]] = phi i64 [ 0, %[[VECTOR_PH2]] ], [ [[INDEX_EVL_NEXT7:%.*]], %[[VECTOR_BODY3]] ]

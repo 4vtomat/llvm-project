@@ -348,18 +348,10 @@ Instruction *widenPredicatedMemoryInstruction(VPWidenMemoryRecipe &VPWMIR,
 
     if (VPWMIR.isStrided()) {
       Value *Ptr = State.get(VPAddr, VPLane(0));
-      const SCEV *SCEVStride = VPWMIR.getStrideInBytes();
       auto *PtrTy = cast<PointerType>(Ptr->getType());
       CallInst *VS = nullptr;
       if (!VPWMIR.isConsecutive()) {
-        auto &DL = State.CFG.PrevBB->getModule()->getDataLayout();
-        SCEVExpander Exp(*State.SE, DL, "stride");
-        Instruction *InsertPoint = &*State.Builder.GetInsertPoint();
-        assert(Exp.isSafeToExpandAt(SCEVStride, InsertPoint) &&
-               "It's not safe to expand that SCEV in the vector loop. That was "
-               "not caught by isSafeStrideAccessInfo.");
-        Value *Stride = Exp.expandCodeFor(
-            SCEVStride, SCEVStride->getType(), InsertPoint);
+        Value *Stride = State.get(VPWMIR.getStride(), VPLane(0));
         LLVM_DEBUG(llvm::dbgs() << "Generating strided store for addr = ";
                    const auto *Instr = VPAddr->getDefiningRecipe();
                    VPSlotTracker SlotTracker((Instr && Instr->getParent())
@@ -404,15 +396,7 @@ Instruction *widenPredicatedMemoryInstruction(VPWidenMemoryRecipe &VPWMIR,
     Value *Ptr = State.get(VPAddr, VPLane(0));
     auto *PtrTy = cast<PointerType>(Ptr->getType());
     if (!VPWMIR.isConsecutive()) {
-      const SCEV *SCEVStride = VPWMIR.getStrideInBytes();
-      auto &DL = State.CFG.PrevBB->getModule()->getDataLayout();
-      SCEVExpander Exp(*(State.SE), DL, "stride");
-      Instruction *InsertPoint = &*State.Builder.GetInsertPoint();
-      assert(Exp.isSafeToExpandAt(SCEVStride, InsertPoint) &&
-             "It's not safe to expand that SCEV in the vector loop. That was "
-             "not caught by isSafeStrideAccessInfo.");
-      Value *Stride = Exp.expandCodeFor(
-          SCEVStride, SCEVStride->getType(), InsertPoint);
+      Value *Stride = State.get(VPWMIR.getStride(), VPLane(0));
       LLVM_DEBUG(llvm::dbgs()
                  << "Generating strided load for addr = " << VPAddr->getDefiningRecipe()
                  << " with a stride = " << *Stride << '\n');
