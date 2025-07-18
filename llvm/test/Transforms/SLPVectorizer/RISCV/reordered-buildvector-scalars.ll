@@ -13,13 +13,9 @@ define fastcc i32 @test(i32 %0, i32 %add111.i.i, <4 x i32> %PredPel.i.sroa.86.72
 ; CHECK-NEXT:    [[LOOPARRAY_SROA_24_0_I_I3:%.*]] = ashr i32 [[TMP0]], 1
 ; CHECK-NEXT:    [[SHR143_5_I_I9:%.*]] = ashr i32 [[TMP0]], 1
 ; CHECK-NEXT:    [[ADD1392_I:%.*]] = add i32 [[TMP0]], 1
-; CHECK-NEXT:    [[PREDPEL_I_SROA_86_80_VEC_EXTRACT59312:%.*]] = extractelement <4 x i32> [[PREDPEL_I_SROA_86_72_VEC_EXTRACT]], i64 0
 ; CHECK-NEXT:    [[MUL1445_I:%.*]] = shl i32 [[TMP0]], 1
 ; CHECK-NEXT:    [[ADD2136_I:%.*]] = or i32 [[LOOPARRAY_SROA_24_0_I_I3]], [[TMP0]]
-; CHECK-NEXT:    [[SHR2137_I:%.*]] = lshr i32 [[ADD2136_I]], 1
-; CHECK-NEXT:    [[CONV2138_I:%.*]] = trunc i32 [[SHR2137_I]] to i16
-; CHECK-NEXT:    [[ADD2157_I:%.*]] = add i32 [[PREDPEL_I_SROA_86_80_VEC_EXTRACT59312]], 1
-; CHECK-NEXT:    [[SHR2158_I:%.*]] = lshr i32 [[ADD2157_I]], 1
+; CHECK-NEXT:    [[SHR2158_I:%.*]] = lshr i32 [[ADD2136_I]], 1
 ; CHECK-NEXT:    [[CONV2159_I:%.*]] = trunc i32 [[SHR2158_I]] to i16
 ; CHECK-NEXT:    [[ADD2174_I:%.*]] = add i32 [[MUL1445_I]], 2
 ; CHECK-NEXT:    [[SHR2175_I:%.*]] = lshr i32 [[ADD2174_I]], 2
@@ -42,12 +38,6 @@ define fastcc i32 @test(i32 %0, i32 %add111.i.i, <4 x i32> %PredPel.i.sroa.86.72
 ; CHECK-NEXT:    store i16 [[CONV2260_I]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8212), align 4
 ; CHECK-NEXT:    store i16 [[CONV2260_I]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8192), align 8
 ; CHECK-NEXT:    store i16 [[CONV2260_I]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8172), align 4
-; CHECK-NEXT:    [[ADD2280_I:%.*]] = add i32 [[ADD111_I_I]], 1
-; CHECK-NEXT:    [[SHR2281_I:%.*]] = lshr i32 [[ADD2280_I]], 1
-; CHECK-NEXT:    [[CONV2282_I:%.*]] = trunc i32 [[SHR2281_I]] to i16
-; CHECK-NEXT:    store i16 [[CONV2282_I]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8228), align 4
-; CHECK-NEXT:    store i16 [[CONV2282_I]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8208), align 8
-; CHECK-NEXT:    store i16 [[CONV2282_I]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8188), align 4
 ; CHECK-NEXT:    [[ADD2302_I:%.*]] = add i32 [[TMP0]], 1
 ; CHECK-NEXT:    [[SHR2303_I:%.*]] = lshr i32 [[ADD2302_I]], 1
 ; CHECK-NEXT:    [[CONV2304_I:%.*]] = trunc i32 [[SHR2303_I]] to i16
@@ -79,13 +69,19 @@ define fastcc i32 @test(i32 %0, i32 %add111.i.i, <4 x i32> %PredPel.i.sroa.86.72
 ; CHECK-NEXT:    [[CONV2396_I:%.*]] = trunc i32 [[ADD2394_I]] to i16
 ; CHECK-NEXT:    store i16 [[CONV2396_I]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8198), align 2
 ; CHECK-NEXT:    store i16 [[CONV2396_I]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8178), align 2
-; CHECK-NEXT:    store i16 [[CONV2138_I]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8214), align 2
-; CHECK-NEXT:    store i16 [[CONV2138_I]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8194), align 2
-; CHECK-NEXT:    store i16 [[CONV2138_I]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8174), align 2
-; CHECK-NEXT:    store i16 [[CONV2159_I]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8230), align 2
-; CHECK-NEXT:    store i16 [[CONV2159_I]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8210), align 2
-; CHECK-NEXT:    store i16 [[CONV2159_I]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8190), align 2
-; CHECK-NEXT:    store i16 [[CONV2159_I]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8170), align 2
+; CHECK-NEXT:    store i16 [[CONV2159_I]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8214), align 2
+; CHECK-NEXT:    store i16 [[CONV2159_I]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8194), align 2
+; CHECK-NEXT:    store i16 [[CONV2159_I]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8174), align 2
+; CHECK-NEXT:    [[TMP7:%.*]] = shufflevector <4 x i32> [[PREDPEL_I_SROA_86_72_VEC_EXTRACT]], <4 x i32> poison, <2 x i32> <i32 poison, i32 0>
+; CHECK-NEXT:    [[TMP8:%.*]] = insertelement <2 x i32> [[TMP7]], i32 [[ADD111_I_I]], i32 0
+; CHECK-NEXT:    [[TMP9:%.*]] = add <2 x i32> [[TMP8]], splat (i32 1)
+; CHECK-NEXT:    [[TMP10:%.*]] = lshr <2 x i32> [[TMP9]], splat (i32 1)
+; CHECK-NEXT:    [[TMP11:%.*]] = trunc <2 x i32> [[TMP10]] to <2 x i16>
+; CHECK-NEXT:    store <2 x i16> [[TMP11]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8228), align 4
+; CHECK-NEXT:    store <2 x i16> [[TMP11]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8208), align 8
+; CHECK-NEXT:    store <2 x i16> [[TMP11]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8188), align 4
+; CHECK-NEXT:    [[TMP12:%.*]] = extractelement <2 x i16> [[TMP11]], i32 1
+; CHECK-NEXT:    store i16 [[TMP12]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8170), align 2
 ; CHECK-NEXT:    store i16 [[CONV2176_I]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8226), align 2
 ; CHECK-NEXT:    store i16 [[CONV2176_I]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8206), align 2
 ; CHECK-NEXT:    store i16 [[CONV2176_I]], ptr getelementptr inbounds nuw (i8, ptr @images, i64 8186), align 2

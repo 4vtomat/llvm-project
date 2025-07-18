@@ -3528,6 +3528,33 @@ InstructionCost RISCVTTIImpl::getCFInstrCost(unsigned Opcode,
   return 0;
 }
 
+#if SIFIVE_CUSTOMIZATION
+InstructionCost RISCVTTIImpl::getVectorInstrCost(
+    unsigned Opcode, Type *Val, TTI::TargetCostKind CostKind, unsigned Index,
+    Value *Scalar,
+    ArrayRef<std::tuple<Value *, User *, int>> ScalarUserAndIdx) {
+  InstructionCost Cost =
+      getVectorInstrCost(Opcode, Val, CostKind, Index, nullptr, nullptr);
+  if (Opcode == Instruction::ExtractElement && CostKind != TTI::TCK_CodeSize &&
+      isa<FixedVectorType>(Val) && Index != -1U && isTypeLegal(Val) &&
+      Val->getScalarSizeInBits() != 1) {
+    const auto *It = find_if(ScalarUserAndIdx, [&](const auto &SU) {
+      return std::get<0>(SU) == Scalar;
+    });
+    if (It != ScalarUserAndIdx.end() &&
+        all_of(make_range(It, ScalarUserAndIdx.end()), [&](const auto &SU) {
+          return std::get<0>(SU) != Scalar ||
+                 isa_and_present<InsertElementInst, StoreInst>(
+                     std::get<1>(*It));
+        }))
+      // Subtract vector-to-scalar move cost
+      Cost -= ST->getVectorToScalarBaseCost();
+  }
+  assert(Cost >= 0 && "Cost should not be negative");
+  return Cost;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
                                                  TTI::TargetCostKind CostKind,
                                                  unsigned Index, Value *Op0,
