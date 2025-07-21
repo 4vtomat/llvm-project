@@ -48,19 +48,13 @@ struct RISCVProfile {
 
 } // end anonymous namespace
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static std::optional<std::pair<StringRef, RISCVISAUtils::ExtensionVersion>>
 tryDecodeExtWithVersion(StringRef Ext);
 #endif // SIFIVE_CUSTOMIZATION
 
-static const char *RISCVGImplications[] = {
-  "i", "m", "a", "f", "d", "zicsr", "zifencei"
-};
-=======
 static const char *RISCVGImplications[] = {"i", "m", "a", "f", "d"};
 static const char *RISCVGImplicationsZi[] = {"zicsr", "zifencei"};
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
 
 #define GET_SUPPORTED_EXTENSIONS
 #include "llvm/TargetParser/RISCVTargetParserDef.inc"
