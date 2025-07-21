@@ -866,7 +866,6 @@ public:
     return TypeSize::getFixed(32);
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   std::pair<ElementCount, ElementCount>
   getFeasibleMaxVFRange(TargetTransformInfo::RegisterKind K,
@@ -895,16 +894,11 @@ public:
   unsigned getMaxElementWidth() const { return 64; }
 #endif // SIFIVE_CUSTOMIZATION
 
-  std::optional<unsigned> getMaxVScale() const { return std::nullopt; }
-  std::optional<unsigned> getVScaleForTuning() const { return std::nullopt; }
-  bool isVScaleKnownToBeAPowerOfTwo() const { return false; }
-=======
   std::optional<unsigned> getMaxVScale() const override { return std::nullopt; }
   std::optional<unsigned> getVScaleForTuning() const override {
     return std::nullopt;
   }
   bool isVScaleKnownToBeAPowerOfTwo() const override { return false; }
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
 
   /// Estimate the overhead of scalarizing an instruction. Insert and Extract
   /// are set if the demanded result elements need to be inserted and/or
