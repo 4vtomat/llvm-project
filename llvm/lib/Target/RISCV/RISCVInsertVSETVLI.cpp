@@ -77,7 +77,6 @@ static unsigned getSEWOpNum(const MachineInstr &MI) {
   return RISCVII::getSEWOpNum(MI.getDesc());
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // Returns true if the instruction is a Mammoth instruction that is also an
 // alias of VSETVLI instruction, i.e. SF_VSETTNT, SF_VSETTNTX0
@@ -90,96 +89,25 @@ static bool isMammothVectorConfigTMTKInstr(const MachineInstr &MI) {
   return MI.getOpcode() == RISCV::PseudoSF_VSETTM ||
          MI.getOpcode() == RISCV::PseudoSF_VSETTK;
 }
-#endif // SIFIVE_CUSTOMIZATION
 
-static bool isVectorConfigInstr(const MachineInstr &MI) {
-  return MI.getOpcode() == RISCV::PseudoVSETVLI ||
-         MI.getOpcode() == RISCV::PseudoVSETVLIX0 ||
-#if SIFIVE_CUSTOMIZATION
-         MI.getOpcode() == RISCV::PseudoVSETIVLI ||
+static bool isCustomVectorConfigInstr(const MachineInstr &MI) {
+  return RISCVInstrInfo::isVectorConfigInstr(MI) ||
          isMammothVectorTNConfigInstr(MI);
-#endif // SIFIVE_CUSTOMIZATION
 }
 
-#if SIFIVE_CUSTOMIZATION
 static bool isMammothVectorConfigInstr(const MachineInstr &MI) {
   return isMammothVectorTNConfigInstr(MI) || isMammothVectorConfigTMTKInstr(MI);
 }
-#endif // SIFIVE_CUSTOMIZATION
 
 /// Return true if this is 'vsetvli x0, x0, vtype' which preserves
 /// VL and only sets VTYPE.
-static bool isVLPreservingConfig(const MachineInstr &MI) {
-#ifdef SIFIVE_CUSTOMIZATION
-  if (MI.getOpcode() != RISCV::PseudoVSETVLIX0 &&
-      MI.getOpcode() != RISCV::PseudoSF_VSETTNTX0)
-#else
-  if (MI.getOpcode() != RISCV::PseudoVSETVLIX0)
+static bool isCustomVLPreservingConfig(const MachineInstr &MI) {
+  if (MI.getOpcode() == RISCV::PseudoSF_VSETTNTX0)
+    return RISCV::X0 == MI.getOperand(0).getReg();
+  return RISCVInstrInfo::isVLPreservingConfig(MI);
+}
 #endif // SIFIVE_CUSTOMIZATION
-    return false;
-  assert(RISCV::X0 == MI.getOperand(1).getReg());
-  return RISCV::X0 == MI.getOperand(0).getReg();
-}
 
-static bool isFloatScalarMoveOrScalarSplatInstr(const MachineInstr &MI) {
-  switch (RISCV::getRVVMCOpcode(MI.getOpcode())) {
-  default:
-    return false;
-  case RISCV::VFMV_S_F:
-  case RISCV::VFMV_V_F:
-    return true;
-  }
-}
-
-static bool isVExtractInstr(const MachineInstr &MI) {
-  return RISCV::getRVVMCOpcode(MI.getOpcode()) == RISCV::RI_VEXTRACT;
-}
-
-static bool isScalarExtractInstr(const MachineInstr &MI) {
-  switch (RISCV::getRVVMCOpcode(MI.getOpcode())) {
-  default:
-    return false;
-  case RISCV::VMV_X_S:
-  case RISCV::VFMV_F_S:
-    return true;
-  }
-}
-
-static bool isScalarInsertInstr(const MachineInstr &MI) {
-  switch (RISCV::getRVVMCOpcode(MI.getOpcode())) {
-  default:
-    return false;
-  case RISCV::VMV_S_X:
-  case RISCV::VFMV_S_F:
-    return true;
-  }
-}
-
-static bool isScalarSplatInstr(const MachineInstr &MI) {
-  switch (RISCV::getRVVMCOpcode(MI.getOpcode())) {
-  default:
-    return false;
-  case RISCV::VMV_V_I:
-  case RISCV::VMV_V_X:
-  case RISCV::VFMV_V_F:
-    return true;
-  }
-}
-
-static bool isVSlideInstr(const MachineInstr &MI) {
-  switch (RISCV::getRVVMCOpcode(MI.getOpcode())) {
-  default:
-    return false;
-  case RISCV::VSLIDEDOWN_VX:
-  case RISCV::VSLIDEDOWN_VI:
-  case RISCV::VSLIDEUP_VX:
-  case RISCV::VSLIDEUP_VI:
-    return true;
-  }
-}
-
-=======
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
 /// Get the EEW for a load or store instruction.  Return std::nullopt if MI is
 /// not a load or store which ignores SEW.
 static std::optional<unsigned> getEEWForLoadStore(const MachineInstr &MI) {
@@ -610,17 +538,13 @@ DemandedFields getDemanded(const MachineInstr &MI, const RISCVSubtarget *ST) {
     Res.MaskPolicy = false;
   }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   Res.UseAltFmt = RISCVII::getAltFmtType(MI.getDesc().TSFlags) !=
                   RISCVII::AltFmtType::DontCare;
   Res.UseTWiden = RISCVII::hasTWidenOp(MI.getDesc().TSFlags) ||
                   isMammothVectorConfigInstr(MI);
 #endif // SIFIVE_CUSTOMIZATION
-  if (isVExtractInstr(MI)) {
-=======
   if (RISCVInstrInfo::isVExtractInstr(MI)) {
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
     assert(!RISCVII::hasVLOp(TSFlags));
     // TODO: LMUL can be any larger value (without cost)
     Res.TailPolicy = false;
@@ -1120,7 +1044,11 @@ void RISCVInsertVSETVLI::forwardVSETVLIAVL(VSETVLIInfo &Info) const {
   if (!Info.hasAVLReg())
     return;
   const MachineInstr *DefMI = Info.getAVLDefMI(LIS);
+#ifdef SIFIVE_CUSTOMIZATION
+  if (!DefMI || !isCustomVectorConfigInstr(*DefMI))
+#else
   if (!DefMI || !RISCVInstrInfo::isVectorConfigInstr(*DefMI))
+#endif // SIFIVE_CUSTOMIZATION
     return;
   VSETVLIInfo DefInstrInfo = getInfoForVSETVLI(*DefMI);
   if (!DefInstrInfo.hasSameVLMAX(Info))
@@ -1334,7 +1262,11 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
     // same, we can use the X0, X0 form.
     if (Info.hasSameVLMAX(PrevInfo) && Info.hasAVLReg()) {
       if (const MachineInstr *DefMI = Info.getAVLDefMI(LIS);
+#ifdef SIFIVE_CUSTOMIZATION
+          DefMI && isCustomVectorConfigInstr(*DefMI)) {
+#else
           DefMI && RISCVInstrInfo::isVectorConfigInstr(*DefMI)) {
+#endif // SIFIVE_CUSTOMIZATION
         VSETVLIInfo DefInfo = getInfoForVSETVLI(*DefMI);
         if (DefInfo.hasSameAVL(PrevInfo) && DefInfo.hasSameVLMAX(PrevInfo)) {
 #ifdef SIFIVE_CUSTOMIZATION
@@ -1549,7 +1481,11 @@ void RISCVInsertVSETVLI::transferBefore(VSETVLIInfo &Info,
 // reflect the changes MI might make.
 void RISCVInsertVSETVLI::transferAfter(VSETVLIInfo &Info,
                                        const MachineInstr &MI) const {
+#ifdef SIFIVE_CUSTOMIZATION
+  if (isCustomVectorConfigInstr(MI)) {
+#else
   if (RISCVInstrInfo::isVectorConfigInstr(MI)) {
+#endif // SIFIVE_CUSTOMIZATION
     Info = getInfoForVSETVLI(MI);
     return;
   }
@@ -1591,17 +1527,16 @@ bool RISCVInsertVSETVLI::computeVLVTYPEChanges(const MachineBasicBlock &MBB,
   for (const MachineInstr &MI : MBB) {
     transferBefore(Info, MI);
 
-<<<<<<< HEAD
+#ifdef SIFIVE_CUSTOMIZATION
+    if (isCustomVectorConfigInstr(MI) ||
+#else
+    if (RISCVInstrInfo::isVectorConfigInstr(MI) ||
+#endif // SIFIVE_CUSTOMIZATION
+        RISCVII::hasSEWOp(MI.getDesc().TSFlags) ||
 #if SIFIVE_CUSTOMIZATION
-    if (isVectorConfigInstr(MI) || RISCVII::hasSEWOp(MI.getDesc().TSFlags) ||
         isVectorCopy(ST->getRegisterInfo(), MI) ||
         isMammothVectorConfigInstr(MI))
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    if (RISCVInstrInfo::isVectorConfigInstr(MI) ||
-        RISCVII::hasSEWOp(MI.getDesc().TSFlags) ||
-        isVectorCopy(ST->getRegisterInfo(), MI))
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
       HadVectorOp = true;
 
     transferAfter(Info, MI);
@@ -1690,7 +1625,11 @@ bool RISCVInsertVSETVLI::needVSETVLIPHI(const VSETVLIInfo &Require,
     if (!Value)
       return true;
     MachineInstr *DefMI = LIS->getInstructionFromIndex(Value->def);
+#ifdef SIFIVE_CUSTOMIZATION
+    if (!DefMI || !isCustomVectorConfigInstr(*DefMI))
+#else
     if (!DefMI || !RISCVInstrInfo::isVectorConfigInstr(*DefMI))
+#endif // SIFIVE_CUSTOMIZATION
       return true;
 
     // We found a VSET(I)VLI make sure it matches the output of the
@@ -1721,7 +1660,11 @@ void RISCVInsertVSETVLI::emitVSETVLIs(MachineBasicBlock &MBB) {
     transferBefore(CurInfo, MI);
 
     // If this is an explicit VSETVLI or VSETIVLI, update our state.
+#ifdef SIFIVE_CUSTOMIZATION
+    if (isCustomVectorConfigInstr(MI)) {
+#else
     if (RISCVInstrInfo::isVectorConfigInstr(MI)) {
+#endif // SIFIVE_CUSTOMIZATION
       // Conservatively, mark the VL and VTYPE as live.
       assert(MI.getOperand(3).getReg() == RISCV::VL &&
              MI.getOperand(4).getReg() == RISCV::VTYPE &&
@@ -1928,12 +1871,20 @@ bool RISCVInsertVSETVLI::canMutatePriorConfig(
   // If the VL values aren't equal, return false if either a) the former is
   // demanded, or b) we can't rewrite the former to be the later for
   // implementation reasons.
+#ifdef SIFIVE_CUSTOMIZATION
+  if (!isCustomVLPreservingConfig(MI)) {
+#else
   if (!RISCVInstrInfo::isVLPreservingConfig(MI)) {
+#endif // SIFIVE_CUSTOMIZATION
     if (Used.VLAny)
       return false;
 
     if (Used.VLZeroness) {
+#ifdef SIFIVE_CUSTOMIZATION
+      if (isCustomVLPreservingConfig(PrevMI))
+#else
       if (RISCVInstrInfo::isVLPreservingConfig(PrevMI))
+#endif // SIFIVE_CUSTOMIZATION
         return false;
       if (!getInfoForVSETVLI(PrevMI).hasEquallyZeroAVL(getInfoForVSETVLI(MI),
                                                        LIS))
@@ -1984,7 +1935,11 @@ void RISCVInsertVSETVLI::coalesceVSETVLIs(MachineBasicBlock &MBB) const {
 
   for (MachineInstr &MI : make_early_inc_range(reverse(MBB))) {
 
+#ifdef SIFIVE_CUSTOMIZATION
+    if (!isCustomVectorConfigInstr(MI)) {
+#else
     if (!RISCVInstrInfo::isVectorConfigInstr(MI)) {
+#endif // SIFIVE_CUSTOMIZATION
       Used.doUnion(getDemanded(MI, ST));
       if (MI.isCall() || MI.isInlineAsm() ||
           MI.modifiesRegister(RISCV::VL, /*TRI=*/nullptr) ||
@@ -2008,7 +1963,11 @@ void RISCVInsertVSETVLI::coalesceVSETVLIs(MachineBasicBlock &MBB) const {
       }
 
       if (canMutatePriorConfig(MI, *NextMI, Used)) {
+#ifdef SIFIVE_CUSTOMIZATION
+        if (!isCustomVLPreservingConfig(*NextMI)) {
+#else
         if (!RISCVInstrInfo::isVLPreservingConfig(*NextMI)) {
+#endif // SIFIVE_CUSTOMIZATION
           Register DefReg = NextMI->getOperand(0).getReg();
 
           MI.getOperand(0).setReg(DefReg);
@@ -2132,7 +2091,7 @@ bool RISCVInsertVSETVLI::insertVSETMTK(MachineBasicBlock &MBB,
   VSETVLIInfo PreInfo = VSETVLIInfo::getUnknown();
   for (auto &MI : MBB) {
 
-    if (isVectorConfigInstr(MI)) {
+    if (isCustomVectorConfigInstr(MI)) {
       PreInfo = VSETVLIInfo::getUnknown();
       continue;
     }
