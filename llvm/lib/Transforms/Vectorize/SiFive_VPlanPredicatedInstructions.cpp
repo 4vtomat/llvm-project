@@ -315,7 +315,8 @@ void VPMonotonicHeaderPHIRecipe::execute(VPTransformState &State) {
 
   Value *StartV = State.get(getStartValue(), /*NeedsScalar=*/true);
   auto *Phi = State.Builder.CreatePHI(StartV->getType(), 2, "monotonic.phi");
-  BasicBlock *PreheaderBB = State.CFG.getPreheaderBBFor(this);
+  BasicBlock *PreheaderBB =
+      State.CFG.VPBB2IRBB.at(getParent()->getCFGPredecessor(0));
   Phi->addIncoming(StartV, PreheaderBB);
 
   State.set(this, Phi, /*IsScalar*/ true);
