@@ -781,7 +781,9 @@ Value *VPInstruction::generate(VPTransformState &State) {
   case VPInstruction::CSAMaskPhi: {
     IRBuilder<>::InsertPointGuard Guard(State.Builder);
     State.Builder.SetInsertPoint(State.CFG.PrevBB->getFirstNonPHIIt());
-    BasicBlock *PreheaderBB = State.CFG.getPreheaderBBFor(this);
+    BasicBlock *PreheaderBB =
+        State.CFG.VPBB2IRBB.at(getParent()->getCFGPredecessor(0));
+    ;
     Value *InitMask = State.get(getOperand(0));
     PHINode *MaskPhi =
         State.Builder.CreatePHI(InitMask->getType(), 2, "csa.mask.phi");
@@ -856,7 +858,9 @@ Value *VPInstruction::generate(VPTransformState &State) {
   case VPInstruction::CSAVLPhi: {
     IRBuilder<>::InsertPointGuard Guard(State.Builder);
     State.Builder.SetInsertPoint(State.CFG.PrevBB->getFirstNonPHIIt());
-    BasicBlock *PreheaderBB = State.CFG.getPreheaderBBFor(this);
+    BasicBlock *PreheaderBB =
+        State.CFG.VPBB2IRBB.at(getParent()->getCFGPredecessor(0));
+    ;
 
     // InitVL can be anything since it won't be used if no mask was active
     Value *InitVL = ConstantInt::get(State.Builder.getInt32Ty(), 0);
@@ -3425,7 +3429,9 @@ void VPCSAHeaderPHIRecipe::execute(VPTransformState &State) {
   Value *InitData = State.get(getVPInitData(), 0);
   PHINode *DataPhi =
       State.Builder.CreatePHI(InitData->getType(), 2, "csa.data.phi");
-  BasicBlock *PreheaderBB = State.CFG.getPreheaderBBFor(this);
+  BasicBlock *PreheaderBB =
+      State.CFG.VPBB2IRBB.at(getParent()->getCFGPredecessor(0));
+  ;
   DataPhi->addIncoming(InitData, PreheaderBB);
 
   State.set(this, DataPhi);
@@ -5280,6 +5286,8 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
                                     CmpInst::BAD_ICMP_PREDICATE, CostKind);
     return O;
   }
+  case RecurKind::FMaximumNum:
+  case RecurKind::FMinimumNum:
   case RecurKind::MinMaxFirstIdx:
   case RecurKind::MinMaxLastIdx:
     // FIXME: Implement cost of MinMaxFirstIdx and MinMaxLastIdx after the IR
