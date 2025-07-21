@@ -32,6 +32,7 @@ enum Fixups {
   // 12-bit fixup corresponding to %pcrel_lo(foo) for the S-type store
   // instructions
   fixup_riscv_pcrel_lo12_s,
+<<<<<<< HEAD
   // 20-bit fixup corresponding to %got_pcrel_hi(foo) for instructions like
   // auipc
   fixup_riscv_got_hi20,
@@ -94,6 +95,8 @@ enum Fixups {
   // Used to provide a hint to the linker
   fixup_riscv_tls_gd_gprel_add,
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
   // 20-bit fixup for symbol references in the jal instruction
   fixup_riscv_jal,
   // 12-bit fixup for symbol references in the branch instructions
@@ -108,18 +111,6 @@ enum Fixups {
   // Fixup representing a function call attached to the auipc instruction in a
   // pair composed of adjacent auipc+jalr instructions.
   fixup_riscv_call_plt,
-  // Used to generate an R_RISCV_RELAX relocation, which indicates the linker
-  // may relax the instruction pair.
-  fixup_riscv_relax,
-  // Used to generate an R_RISCV_ALIGN relocation, which indicates the linker
-  // should fixup the alignment after linker relaxation.
-  fixup_riscv_align,
-  // Fixups indicating a TLS descriptor code sequence, corresponding to auipc,
-  // lw/ld, addi, and jalr, respectively.
-  fixup_riscv_tlsdesc_hi20,
-  fixup_riscv_tlsdesc_load_lo12,
-  fixup_riscv_tlsdesc_add_lo12,
-  fixup_riscv_tlsdesc_call,
   // 12-bit fixup for symbol references in the 48-bit Xqcibi branch immediate
   // instructions
   fixup_riscv_qc_e_branch,

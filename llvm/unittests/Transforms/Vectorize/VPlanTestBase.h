@@ -13,7 +13,6 @@
 #define LLVM_UNITTESTS_TRANSFORMS_VECTORIZE_VPLANTESTBASE_H
 
 #include "../lib/Transforms/Vectorize/VPlan.h"
-#include "../lib/Transforms/Vectorize/VPlanHCFGBuilder.h"
 #include "../lib/Transforms/Vectorize/VPlanTransforms.h"
 #include "llvm/Analysis/AssumptionCache.h"
 #include "llvm/Analysis/BasicAliasAnalysis.h"
@@ -71,6 +70,7 @@ protected:
 
     Loop *L = LI->getLoopFor(LoopHeader);
     PredicatedScalarEvolution PSE(*SE, *L);
+<<<<<<< HEAD
     auto Plan = std::make_unique<VPlan>(L);
     VPlanHCFGBuilder HCFGBuilder(L, LI.get(), *Plan);
     HCFGBuilder.buildHierarchicalCFG();
@@ -81,6 +81,12 @@ protected:
     VPlanTransforms::introduceTopLevelVectorLoopRegion(
         *Plan, IntegerType::get(*Ctx, 64), PSE, true, false, L);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    DenseMap<VPBlockBase *, BasicBlock *> VPB2IRBB;
+    auto Plan = VPlanTransforms::buildPlainCFG(L, *LI, VPB2IRBB);
+    VPlanTransforms::createLoopRegions(*Plan, IntegerType::get(*Ctx, 64), PSE,
+                                       true, false, L);
+>>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
     return Plan;
   }
 };

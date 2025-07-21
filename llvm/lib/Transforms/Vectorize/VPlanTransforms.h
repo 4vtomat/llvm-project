@@ -29,6 +29,7 @@ class PredicatedScalarEvolution;
 class TargetLibraryInfo;
 class VPBuilder;
 class VPRecipeBuilder;
+struct VFRange;
 
 extern cl::opt<bool> VerifyEachVPlan;
 
@@ -53,23 +54,32 @@ struct VPlanTransforms {
       verifyVPlanIsValid(Plan);
   }
 
-  /// Introduce the top-level VPRegionBlock for the main loop in \p Plan. Coming
-  /// into this function, \p Plan's top-level loop is modeled using a plain CFG.
-  /// This transform wraps the plain CFG of the top-level loop within a
-  /// VPRegionBlock and creates a VPValue expression for the original trip
-  /// count. It will also introduce a dedicated VPBasicBlock for the vector
-  /// pre-header as well a VPBasicBlock as exit block of the region
-  /// (middle.block). If a check is needed to guard executing the scalar
+  static std::unique_ptr<VPlan>
+  buildPlainCFG(Loop *TheLoop, LoopInfo &LI,
+                DenseMap<VPBlockBase *, BasicBlock *> &VPB2IRBB);
+
+  /// Replace loops in \p Plan's flat CFG with VPRegionBlocks, turing \p Plan's
+  /// flat CFG into a hierarchical CFG. It also creates a VPValue expression for
+  /// the original trip count. It will also introduce a dedicated VPBasicBlock
+  /// for the vector pre-header as well a VPBasicBlock as exit block of the
+  /// region (middle.block). If a check is needed to guard executing the scalar
   /// epilogue loop, it will be added to the middle block, together with
   /// VPBasicBlocks for the scalar preheader and exit blocks. \p InductionTy is
   /// the type of the canonical induction and used for related values, like the
   /// trip count expression.
+<<<<<<< HEAD
   static void introduceTopLevelVectorLoopRegion(
       VPlan &Plan, Type *InductionTy, PredicatedScalarEvolution &PSE,
 #if SIFIVE_CUSTOMIZATION
       bool IsUncountable,
 #endif // SIFIVE_CUSTOMIZATION
       bool RequiresScalarEpilogueCheck, bool TailFolded, Loop *TheLoop);
+=======
+  static void createLoopRegions(VPlan &Plan, Type *InductionTy,
+                                PredicatedScalarEvolution &PSE,
+                                bool RequiresScalarEpilogueCheck,
+                                bool TailFolded, Loop *TheLoop);
+>>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
 
   /// Replaces the VPInstructions in \p Plan with corresponding
   /// widen recipes. Returns false if any VPInstructions could not be converted
@@ -212,10 +222,10 @@ struct VPlanTransforms {
   ///    exit conditions
   ///  * splitting the original middle block to branch to the early exit block
   ///    if taken.
-  static void handleUncountableEarlyExit(VPlan &Plan, ScalarEvolution &SE,
-                                         Loop *OrigLoop,
+  static void handleUncountableEarlyExit(VPlan &Plan, Loop *OrigLoop,
                                          BasicBlock *UncountableExitingBlock,
-                                         VPRecipeBuilder &RecipeBuilder);
+                                         VPRecipeBuilder &RecipeBuilder,
+                                         VFRange &Range);
 
   /// Lower abstract recipes to concrete ones, that can be codegen'd. Use \p
   /// CanonicalIVTy as type for all un-typed live-ins in VPTypeAnalysis.

@@ -549,7 +549,7 @@ static void populateNegativeRISCVFeatures(std::vector<std::string> &Features) {
 
   std::vector<std::string> FeatStrings =
       (*RII)->toFeatures(/* AddAllExtensions */ true);
-  Features.insert(Features.end(), FeatStrings.begin(), FeatStrings.end());
+  llvm::append_range(Features, FeatStrings);
 }
 
 static void handleFullArchString(StringRef FullArchStr,
@@ -565,7 +565,7 @@ static void handleFullArchString(StringRef FullArchStr,
     populateNegativeRISCVFeatures(Features);
     std::vector<std::string> FeatStrings =
         (*RII)->toFeatures(/* AddAllExtensions */ true);
-    Features.insert(Features.end(), FeatStrings.begin(), FeatStrings.end());
+    llvm::append_range(Features, FeatStrings);
   }
 }
 

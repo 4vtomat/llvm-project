@@ -130,6 +130,10 @@ static bool isFloatScalarMoveOrScalarSplatInstr(const MachineInstr &MI) {
   }
 }
 
+static bool isVExtractInstr(const MachineInstr &MI) {
+  return RISCV::getRVVMCOpcode(MI.getOpcode()) == RISCV::RI_VEXTRACT;
+}
+
 static bool isScalarExtractInstr(const MachineInstr &MI) {
   switch (RISCV::getRVVMCOpcode(MI.getOpcode())) {
   default:
@@ -608,12 +612,20 @@ DemandedFields getDemanded(const MachineInstr &MI, const RISCVSubtarget *ST) {
     Res.MaskPolicy = false;
   }
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   Res.UseAltFmt = RISCVII::getAltFmtType(MI.getDesc().TSFlags) !=
                   RISCVII::AltFmtType::DontCare;
   Res.UseTWiden = RISCVII::hasTWidenOp(MI.getDesc().TSFlags) ||
                   isMammothVectorConfigInstr(MI);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  if (isVExtractInstr(MI)) {
+    assert(!RISCVII::hasVLOp(TSFlags));
+    // TODO: LMUL can be any larger value (without cost)
+    Res.TailPolicy = false;
+  }
+>>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
 
   return Res;
 }
@@ -1270,7 +1282,7 @@ RISCVInsertVSETVLI::computeInfoForInstr(const MachineInstr &MI) const {
       InstrInfo.setAVLRegDef(VNI, VLOp.getReg());
     }
   } else {
-    assert(isScalarExtractInstr(MI));
+    assert(isScalarExtractInstr(MI) || isVExtractInstr(MI));
     // Pick a random value for state tracking purposes, will be ignored via
     // the demanded fields mechanism
     InstrInfo.setAVLImm(1);

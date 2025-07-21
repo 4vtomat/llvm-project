@@ -51,7 +51,6 @@ unsigned RISCVELFObjectWriter::getRelocType(MCContext &Ctx,
                                             const MCFixup &Fixup,
                                             bool IsPCRel) const {
   const MCExpr *Expr = Fixup.getValue();
-  // Determine the type of the relocation
   unsigned Kind = Fixup.getTargetKind();
   auto Spec = RISCVMCExpr::Specifier(Target.getSpecifier());
   switch (Spec) {
@@ -78,6 +77,11 @@ unsigned RISCVELFObjectWriter::getRelocType(MCContext &Ctx,
     break;
   }
 
+  // Extract the relocation type from the fixup kind, after applying STT_TLS as
+  // needed.
+  if (mc::isRelocation(Fixup.getKind()))
+    return Kind;
+
   if (IsPCRel) {
     switch (Kind) {
     default:
@@ -92,20 +96,6 @@ unsigned RISCVELFObjectWriter::getRelocType(MCContext &Ctx,
       return ELF::R_RISCV_PCREL_LO12_I;
     case RISCV::fixup_riscv_pcrel_lo12_s:
       return ELF::R_RISCV_PCREL_LO12_S;
-    case RISCV::fixup_riscv_got_hi20:
-      return ELF::R_RISCV_GOT_HI20;
-    case RISCV::fixup_riscv_tls_got_hi20:
-      return ELF::R_RISCV_TLS_GOT_HI20;
-    case RISCV::fixup_riscv_tls_gd_hi20:
-      return ELF::R_RISCV_TLS_GD_HI20;
-    case RISCV::fixup_riscv_tlsdesc_hi20:
-      return ELF::R_RISCV_TLSDESC_HI20;
-    case RISCV::fixup_riscv_tlsdesc_load_lo12:
-      return ELF::R_RISCV_TLSDESC_LOAD_LO12;
-    case RISCV::fixup_riscv_tlsdesc_add_lo12:
-      return ELF::R_RISCV_TLSDESC_ADD_LO12;
-    case RISCV::fixup_riscv_tlsdesc_call:
-      return ELF::R_RISCV_TLSDESC_CALL;
     case RISCV::fixup_riscv_jal:
       return ELF::R_RISCV_JAL;
     case RISCV::fixup_riscv_branch:
@@ -129,12 +119,6 @@ unsigned RISCVELFObjectWriter::getRelocType(MCContext &Ctx,
   default:
     Ctx.reportError(Fixup.getLoc(), "unsupported relocation type");
     return ELF::R_RISCV_NONE;
-  case RISCV::fixup_riscv_tlsdesc_load_lo12:
-    return ELF::R_RISCV_TLSDESC_LOAD_LO12;
-  case RISCV::fixup_riscv_tlsdesc_add_lo12:
-    return ELF::R_RISCV_TLSDESC_ADD_LO12;
-  case RISCV::fixup_riscv_tlsdesc_call:
-    return ELF::R_RISCV_TLSDESC_CALL;
 
   case FK_Data_1:
     Ctx.reportError(Fixup.getLoc(), "1-byte data relocations not supported");
@@ -164,6 +148,7 @@ unsigned RISCVELFObjectWriter::getRelocType(MCContext &Ctx,
     return ELF::R_RISCV_LO12_I;
   case RISCV::fixup_riscv_lo12_s:
     return ELF::R_RISCV_LO12_S;
+<<<<<<< HEAD
   case RISCV::fixup_riscv_tprel_hi20:
     return ELF::R_RISCV_TPREL_HI20;
   case RISCV::fixup_riscv_tprel_lo12_i:
@@ -204,6 +189,8 @@ unsigned RISCVELFObjectWriter::getRelocType(MCContext &Ctx,
     return ELF::R_RISCV_RELAX;
   case RISCV::fixup_riscv_align:
     return ELF::R_RISCV_ALIGN;
+=======
+>>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
   case RISCV::fixup_riscv_qc_e_32:
     return ELF::R_RISCV_QC_E_32;
   case RISCV::fixup_riscv_qc_abs20_u:

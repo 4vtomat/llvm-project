@@ -1836,6 +1836,7 @@ def err_hlsl_virtual_function
 def err_hlsl_virtual_inheritance
     : Error<"virtual inheritance is unsupported in HLSL">;
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 // #pragma clang rvv lmul_sew
 def err_pragma_rvv_invalid_option : Error<
@@ -1852,7 +1853,13 @@ def err_pragma_rvv_expect_comma : Error <
 >;
 #endif
 // HLSL Root Siganture diagnostic messages
+=======
+// HLSL Root Signature Parser Diagnostics
+>>>>>>> 60a1f5a8a00c12a34a8283d7a3cb5b0596c7fd91
 def err_hlsl_unexpected_end_of_params
     : Error<"expected %0 to denote end of parameters, or, another valid parameter of %1">;
+def err_hlsl_rootsig_repeat_param : Error<"specified the same parameter '%0' multiple times">;
+def err_hlsl_rootsig_missing_param : Error<"did not specify mandatory parameter '%0'">;
+def err_hlsl_number_literal_overflow : Error<"integer literal is too large to be represented as a 32-bit %select{signed |}0 integer type">;
 
 } // end of Parser diagnostics

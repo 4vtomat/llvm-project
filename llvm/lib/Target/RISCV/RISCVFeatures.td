@@ -107,6 +107,9 @@ def HasStdExtZicboz : Predicate<"Subtarget->hasStdExtZicboz()">,
 def FeatureStdExtZiccamoa
     : RISCVExtension<1, 0, "Main Memory Supports All Atomics in A">;
 
+def FeatureStdExtZiccamoc
+    : RISCVExtension<1, 0, "Main Memory Supports Atomics in Zacas">;
+
 def FeatureStdExtZiccif
     : RISCVExtension<1, 0,
                      "Main Memory Supports Instruction Fetch with Atomicity Requirement">;
@@ -184,7 +187,8 @@ def NoHasStdExtZicfiss : Predicate<"!Subtarget->hasStdExtZicfiss()">;
 
 def FeatureStdExtZilsd
     : RISCVExtension<1, 0,
-                     "Load/Store Pair Instructions">;
+                     "Load/Store Pair Instructions">,
+      RISCVExtensionBitmask<1, 8>;
 def HasStdExtZilsd : Predicate<"Subtarget->hasStdExtZilsd()">,
                        AssemblerPredicate<(all_of FeatureStdExtZilsd),
                                           "'Zilsd' (Load/Store pair instructions)">;
@@ -421,7 +425,8 @@ def FeatureStdExtZcf
 def FeatureStdExtZclsd
     : RISCVExtension<1, 0,
                      "Compressed Load/Store Pair Instructions",
-                     [FeatureStdExtZilsd, FeatureStdExtZca]>;
+                     [FeatureStdExtZilsd, FeatureStdExtZca]>,
+      RISCVExtensionBitmask<1, 9>;
 def HasStdExtZclsd : Predicate<"Subtarget->hasStdExtZclsd()">,
                     AssemblerPredicate<(all_of FeatureStdExtZclsd),
                         "'Zclsd' (Compressed Load/Store pair instructions)">;
@@ -429,7 +434,8 @@ def HasStdExtZclsd : Predicate<"Subtarget->hasStdExtZclsd()">,
 def FeatureStdExtZcmp
     : RISCVExtension<1, 0,
                      "sequenced instructions for code-size reduction",
-                     [FeatureStdExtZca]>;
+                     [FeatureStdExtZca]>,
+      RISCVExtensionBitmask<1, 10>;
 def HasStdExtZcmp : Predicate<"Subtarget->hasStdExtZcmp() && !Subtarget->hasStdExtC()">,
                     AssemblerPredicate<(all_of FeatureStdExtZcmp),
                         "'Zcmp' (sequenced instructions for code-size reduction)">;
@@ -909,6 +915,9 @@ def FeatureStdExtSsaia
     : RISCVExtension<1, 0,
                      "Advanced Interrupt Architecture Supervisor Level">;
 
+def FeatureStdExtSmcntrpmf
+    : RISCVExtension<1, 0, "Cycle and Instret Privilege Mode Filtering">;
+
 def FeatureStdExtSmcsrind
     : RISCVExtension<1, 0, "Indirect CSR Access Machine Level">;
 def FeatureStdExtSscsrind
@@ -1317,12 +1326,12 @@ def HasVendorXCVbi
                          "'XCVbi' (CORE-V Immediate Branching)">;
 // MIPS Extensions
 
-def FeatureVendorXMIPSCMove
-    : RISCVExtension<1, 0, "MIPS conditional move instruction(s) (ccmov)">;
-def HasVendorXMIPSCMove
-    : Predicate<"Subtarget->hasVendorXMIPSCMove()">,
-      AssemblerPredicate<(all_of FeatureVendorXMIPSCMove),
-                         "'Xmipscmove' ('mips.ccmov' instruction)">;
+def FeatureVendorXMIPSCMov
+    : RISCVExtension<1, 0, "MIPS conditional move instruction (mips.ccmov)">;
+def HasVendorXMIPSCMov
+    : Predicate<"Subtarget->hasVendorXMIPSCMov()">,
+      AssemblerPredicate<(all_of FeatureVendorXMIPSCMov),
+                         "'Xmipscmov' ('mips.ccmov' instruction)">;
 def UseCCMovInsn : Predicate<"Subtarget->useCCMovInsn()">;
 def FeatureVendorXMIPSLSP
     : RISCVExtension<1, 0, "MIPS optimization for hardware load-store bonding">;
