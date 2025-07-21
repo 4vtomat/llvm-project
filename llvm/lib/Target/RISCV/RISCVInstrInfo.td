@@ -2199,11 +2199,10 @@ def non_simm12 : ImmLeaf<XLenVT, [{ return !isInt<12>(Imm); }]>;
 // (or (lshr X, S), M) --> (not (lshr (not X), S)), where M is a non-12-bit
 // immediate w/ only the highest S bits set.
 def ones_filling_srl
-  : PatFrag<(ops node:$src),
-            (or (srl node:$src, (XLenVT imm:$shamt)), non_simm12),
-            [{
-              SDValue SRL = Node->getOperand(0);
-              const APInt &Mask = Node->getConstantOperandAPInt(1);
+    : PatFrag<(ops node:$src),
+              (or(srl node:$src, (XLenVT imm:$shamt)), non_simm12), [{
+              SDValue SRL = N->getOperand(0);
+              const APInt &Mask = N->getConstantOperandAPInt(1);
 
               uint64_t ShAmt = SRL.getConstantOperandVal(1);
               // Opt-in for using BSETI, which resulting in less
