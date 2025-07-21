@@ -23613,32 +23613,20 @@ static MachineBasicBlock *emitBuildPairF64Pseudo(MachineInstr &MI,
   return BB;
 }
 
-<<<<<<< HEAD
-static bool isSelectPseudo(MachineInstr &MI) {
+#ifdef SIFIVE_CUSTOMIZATION
+static bool isCustomSelectPseudo(MachineInstr &MI) {
   switch (MI.getOpcode()) {
   default:
-    return false;
-  case RISCV::Select_GPR_Using_CC_GPR:
-  case RISCV::Select_GPR_Using_CC_Imm:
-  case RISCV::Select_FPR16_Using_CC_GPR:
-  case RISCV::Select_FPR16INX_Using_CC_GPR:
-  case RISCV::Select_FPR32_Using_CC_GPR:
-  case RISCV::Select_FPR32INX_Using_CC_GPR:
-  case RISCV::Select_FPR64_Using_CC_GPR:
-  case RISCV::Select_FPR64INX_Using_CC_GPR:
-#if SIFIVE_CUSTOMIZATION
+    return RISCVInstrInfo::isSelectPseudo(MI);
   case RISCV::Select_VR_Using_CC_GPR:
   case RISCV::Select_VRM2_Using_CC_GPR:
   case RISCV::Select_VRM4_Using_CC_GPR:
   case RISCV::Select_VRM8_Using_CC_GPR:
-#endif // SIFIVE_CUSTOMIZATION
-  case RISCV::Select_FPR64IN32X_Using_CC_GPR:
     return true;
   }
 }
+#endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
 static MachineBasicBlock *emitQuietFCMP(MachineInstr &MI, MachineBasicBlock *BB,
                                         unsigned RelOpcode, unsigned EqOpcode,
                                         const RISCVSubtarget &Subtarget) {
@@ -23834,7 +23822,7 @@ static MachineBasicBlock *emitSelectPseudo(MachineInstr &MI,
        SequenceMBBI != E; ++SequenceMBBI) {
     if (SequenceMBBI->isDebugInstr())
       continue;
-    if (RISCVInstrInfo::isSelectPseudo(*SequenceMBBI)) {
+    if (isCustomSelectPseudo(*SequenceMBBI)) {
       if (SequenceMBBI->getOperand(1).getReg() != LHS ||
           !SequenceMBBI->getOperand(2).isReg() ||
           SequenceMBBI->getOperand(2).getReg() != RHS ||
@@ -23911,7 +23899,7 @@ static MachineBasicBlock *emitSelectPseudo(MachineInstr &MI,
   auto InsertionPoint = TailMBB->begin();
   while (SelectMBBI != SelectEnd) {
     auto Next = std::next(SelectMBBI);
-    if (RISCVInstrInfo::isSelectPseudo(*SelectMBBI)) {
+    if (isCustomSelectPseudo(*SelectMBBI)) {
       // %Result = phi [ %TrueValue, HeadMBB ], [ %FalseValue, IfFalseMBB ]
       BuildMI(*TailMBB, InsertionPoint, SelectMBBI->getDebugLoc(),
               TII.get(RISCV::PHI), SelectMBBI->getOperand(0).getReg())
