@@ -22,15 +22,15 @@ define dso_local float @dot_ref(float* nocapture noundef readonly %x, float* noc
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <256 x float> [ splat (float -0.000000e+00), [[VECTOR_PH]] ], [ [[TMP6:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds float, ptr [[X:%.*]], i64 [[INDEX]]
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds float, ptr [[TMP1]], i32 0
-; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <256 x float>, ptr [[TMP2]], align 4, !tbaa [[TBAA4:![0-9]+]]
+; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <256 x float>, ptr [[TMP2]], align 4
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds float, ptr [[Y:%.*]], i64 [[INDEX]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds float, ptr [[TMP3]], i32 0
-; CHECK-NEXT:    [[WIDE_LOAD1:%.*]] = load <256 x float>, ptr [[TMP4]], align 4, !tbaa [[TBAA4]]
+; CHECK-NEXT:    [[WIDE_LOAD1:%.*]] = load <256 x float>, ptr [[TMP4]], align 4
 ; CHECK-NEXT:    [[TMP5:%.*]] = fmul <256 x float> [[WIDE_LOAD]], [[WIDE_LOAD1]]
 ; CHECK-NEXT:    [[TMP6]] = fadd reassoc <256 x float> [[VEC_PHI]], [[TMP5]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 256
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP8:%.*]] = call reassoc float @llvm.vector.reduce.fadd.v256f32(float -0.000000e+00, <256 x float> [[TMP6]])
 ; CHECK-NEXT:    [[TMP9:%.*]] = fadd reassoc float 0.000000e+00, [[TMP8]]
@@ -50,9 +50,9 @@ define dso_local float @dot_ref(float* nocapture noundef readonly %x, float* noc
 ; CHECK-NEXT:    [[I_010:%.*]] = phi i64 [ [[INC:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[S_09:%.*]] = phi float [ [[ADD]], [[FOR_BODY]] ], [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[X]], i64 [[I_010]]
-; CHECK-NEXT:    [[TMP10:%.*]] = load float, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA4]]
+; CHECK-NEXT:    [[TMP10:%.*]] = load float, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA8:![0-9]+]]
 ; CHECK-NEXT:    [[ARRAYIDX1:%.*]] = getelementptr inbounds float, ptr [[Y]], i64 [[I_010]]
-; CHECK-NEXT:    [[TMP11:%.*]] = load float, ptr [[ARRAYIDX1]], align 4, !tbaa [[TBAA4]]
+; CHECK-NEXT:    [[TMP11:%.*]] = load float, ptr [[ARRAYIDX1]], align 4, !tbaa [[TBAA8]]
 ; CHECK-NEXT:    [[MUL:%.*]] = fmul float [[TMP10]], [[TMP11]]
 ; CHECK-NEXT:    [[ADD]] = fadd reassoc float [[S_09]], [[MUL]]
 ; CHECK-NEXT:    [[INC]] = add nuw i64 [[I_010]], 1

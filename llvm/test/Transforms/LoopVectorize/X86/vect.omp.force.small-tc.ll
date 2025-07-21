@@ -33,30 +33,30 @@ define void @vectorized(ptr noalias nocapture %A, ptr noalias nocapture readonly
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds float, ptr [[TMP1]], i32 4
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds float, ptr [[TMP1]], i32 8
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds float, ptr [[TMP1]], i32 12
-; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x float>, ptr [[TMP2]], align 4, !llvm.access.group [[ACC_GRP0:![0-9]+]]
-; CHECK-NEXT:    [[WIDE_LOAD1:%.*]] = load <4 x float>, ptr [[TMP3]], align 4, !llvm.access.group [[ACC_GRP0]]
-; CHECK-NEXT:    [[WIDE_LOAD2:%.*]] = load <4 x float>, ptr [[TMP4]], align 4, !llvm.access.group [[ACC_GRP0]]
-; CHECK-NEXT:    [[WIDE_LOAD3:%.*]] = load <4 x float>, ptr [[TMP5]], align 4, !llvm.access.group [[ACC_GRP0]]
+; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x float>, ptr [[TMP2]], align 4
+; CHECK-NEXT:    [[WIDE_LOAD1:%.*]] = load <4 x float>, ptr [[TMP3]], align 4
+; CHECK-NEXT:    [[WIDE_LOAD2:%.*]] = load <4 x float>, ptr [[TMP4]], align 4
+; CHECK-NEXT:    [[WIDE_LOAD3:%.*]] = load <4 x float>, ptr [[TMP5]], align 4
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[INDEX]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds float, ptr [[TMP6]], i32 0
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds float, ptr [[TMP6]], i32 4
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds float, ptr [[TMP6]], i32 8
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds float, ptr [[TMP6]], i32 12
-; CHECK-NEXT:    [[WIDE_LOAD4:%.*]] = load <4 x float>, ptr [[TMP7]], align 4, !llvm.access.group [[ACC_GRP0]]
-; CHECK-NEXT:    [[WIDE_LOAD5:%.*]] = load <4 x float>, ptr [[TMP8]], align 4, !llvm.access.group [[ACC_GRP0]]
-; CHECK-NEXT:    [[WIDE_LOAD6:%.*]] = load <4 x float>, ptr [[TMP9]], align 4, !llvm.access.group [[ACC_GRP0]]
-; CHECK-NEXT:    [[WIDE_LOAD7:%.*]] = load <4 x float>, ptr [[TMP10]], align 4, !llvm.access.group [[ACC_GRP0]]
+; CHECK-NEXT:    [[WIDE_LOAD4:%.*]] = load <4 x float>, ptr [[TMP7]], align 4
+; CHECK-NEXT:    [[WIDE_LOAD5:%.*]] = load <4 x float>, ptr [[TMP8]], align 4
+; CHECK-NEXT:    [[WIDE_LOAD6:%.*]] = load <4 x float>, ptr [[TMP9]], align 4
+; CHECK-NEXT:    [[WIDE_LOAD7:%.*]] = load <4 x float>, ptr [[TMP10]], align 4
 ; CHECK-NEXT:    [[TMP11:%.*]] = fadd fast <4 x float> [[WIDE_LOAD]], [[WIDE_LOAD4]]
 ; CHECK-NEXT:    [[TMP12:%.*]] = fadd fast <4 x float> [[WIDE_LOAD1]], [[WIDE_LOAD5]]
 ; CHECK-NEXT:    [[TMP13:%.*]] = fadd fast <4 x float> [[WIDE_LOAD2]], [[WIDE_LOAD6]]
 ; CHECK-NEXT:    [[TMP14:%.*]] = fadd fast <4 x float> [[WIDE_LOAD3]], [[WIDE_LOAD7]]
-; CHECK-NEXT:    store <4 x float> [[TMP11]], ptr [[TMP7]], align 4, !llvm.access.group [[ACC_GRP0]]
-; CHECK-NEXT:    store <4 x float> [[TMP12]], ptr [[TMP8]], align 4, !llvm.access.group [[ACC_GRP0]]
-; CHECK-NEXT:    store <4 x float> [[TMP13]], ptr [[TMP9]], align 4, !llvm.access.group [[ACC_GRP0]]
-; CHECK-NEXT:    store <4 x float> [[TMP14]], ptr [[TMP10]], align 4, !llvm.access.group [[ACC_GRP0]]
+; CHECK-NEXT:    store <4 x float> [[TMP11]], ptr [[TMP7]], align 4
+; CHECK-NEXT:    store <4 x float> [[TMP12]], ptr [[TMP8]], align 4
+; CHECK-NEXT:    store <4 x float> [[TMP13]], ptr [[TMP9]], align 4
+; CHECK-NEXT:    store <4 x float> [[TMP14]], ptr [[TMP10]], align 4
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
 ; CHECK-NEXT:    [[TMP15:%.*]] = icmp eq i64 [[INDEX_NEXT]], 16
-; CHECK-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP1:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br i1 false, label [[FOR_END:%.*]], label [[VEC_EPILOG_ITER_CHECK:%.*]]
 ; CHECK:       vec.epilog.iter.check:
@@ -68,12 +68,12 @@ define void @vectorized(ptr noalias nocapture %A, ptr noalias nocapture readonly
 ; CHECK-NEXT:    [[INDEX8:%.*]] = phi i64 [ [[VEC_EPILOG_RESUME_VAL]], [[VEC_EPILOG_PH]] ], [ [[INDEX_NEXT11:%.*]], [[VEC_EPILOG_VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP17:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[INDEX8]]
 ; CHECK-NEXT:    [[TMP18:%.*]] = getelementptr inbounds float, ptr [[TMP17]], i32 0
-; CHECK-NEXT:    [[WIDE_LOAD9:%.*]] = load <4 x float>, ptr [[TMP18]], align 4, !llvm.access.group [[ACC_GRP0]]
+; CHECK-NEXT:    [[WIDE_LOAD9:%.*]] = load <4 x float>, ptr [[TMP18]], align 4
 ; CHECK-NEXT:    [[TMP19:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[INDEX8]]
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr inbounds float, ptr [[TMP19]], i32 0
-; CHECK-NEXT:    [[WIDE_LOAD10:%.*]] = load <4 x float>, ptr [[TMP20]], align 4, !llvm.access.group [[ACC_GRP0]]
+; CHECK-NEXT:    [[WIDE_LOAD10:%.*]] = load <4 x float>, ptr [[TMP20]], align 4
 ; CHECK-NEXT:    [[TMP21:%.*]] = fadd fast <4 x float> [[WIDE_LOAD9]], [[WIDE_LOAD10]]
-; CHECK-NEXT:    store <4 x float> [[TMP21]], ptr [[TMP20]], align 4, !llvm.access.group [[ACC_GRP0]]
+; CHECK-NEXT:    store <4 x float> [[TMP21]], ptr [[TMP20]], align 4
 ; CHECK-NEXT:    [[INDEX_NEXT11]] = add nuw i64 [[INDEX8]], 4
 ; CHECK-NEXT:    [[TMP22:%.*]] = icmp eq i64 [[INDEX_NEXT11]], 20
 ; CHECK-NEXT:    br i1 [[TMP22]], label [[VEC_EPILOG_MIDDLE_BLOCK:%.*]], label [[VEC_EPILOG_VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
@@ -85,11 +85,11 @@ define void @vectorized(ptr noalias nocapture %A, ptr noalias nocapture readonly
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[VEC_EPILOG_SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[INDVARS_IV]]
-; CHECK-NEXT:    [[TMP23:%.*]] = load float, ptr [[ARRAYIDX]], align 4, !llvm.access.group [[ACC_GRP0]]
+; CHECK-NEXT:    [[TMP23:%.*]] = load float, ptr [[ARRAYIDX]], align 4, !llvm.access.group [[ACC_GRP2:![0-9]+]]
 ; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[INDVARS_IV]]
-; CHECK-NEXT:    [[TMP24:%.*]] = load float, ptr [[ARRAYIDX2]], align 4, !llvm.access.group [[ACC_GRP0]]
+; CHECK-NEXT:    [[TMP24:%.*]] = load float, ptr [[ARRAYIDX2]], align 4, !llvm.access.group [[ACC_GRP2]]
 ; CHECK-NEXT:    [[ADD:%.*]] = fadd fast float [[TMP23]], [[TMP24]]
-; CHECK-NEXT:    store float [[ADD]], ptr [[ARRAYIDX2]], align 4, !llvm.access.group [[ACC_GRP0]]
+; CHECK-NEXT:    store float [[ADD]], ptr [[ARRAYIDX2]], align 4, !llvm.access.group [[ACC_GRP2]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], 20
 ; CHECK-NEXT:    br i1 [[EXITCOND]], label [[FOR_END]], label [[FOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
@@ -137,15 +137,15 @@ define void @vectorized1(ptr noalias nocapture %A, ptr noalias nocapture readonl
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ule <8 x i64> [[VEC_IV]], splat (i64 19)
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds float, ptr [[B:%.*]], i64 [[INDEX]]
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds float, ptr [[TMP2]], i32 0
-; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <8 x float> @llvm.masked.load.v8f32.p0(ptr [[TMP3]], i32 4, <8 x i1> [[TMP1]], <8 x float> poison), !llvm.access.group [[ACC_GRP7:![0-9]+]]
+; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <8 x float> @llvm.masked.load.v8f32.p0(ptr [[TMP3]], i32 4, <8 x i1> [[TMP1]], <8 x float> poison)
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[INDEX]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds float, ptr [[TMP4]], i32 0
-; CHECK-NEXT:    [[WIDE_MASKED_LOAD1:%.*]] = call <8 x float> @llvm.masked.load.v8f32.p0(ptr [[TMP5]], i32 4, <8 x i1> [[TMP1]], <8 x float> poison), !llvm.access.group [[ACC_GRP7]]
+; CHECK-NEXT:    [[WIDE_MASKED_LOAD1:%.*]] = call <8 x float> @llvm.masked.load.v8f32.p0(ptr [[TMP5]], i32 4, <8 x i1> [[TMP1]], <8 x float> poison)
 ; CHECK-NEXT:    [[TMP6:%.*]] = fadd fast <8 x float> [[WIDE_MASKED_LOAD]], [[WIDE_MASKED_LOAD1]]
-; CHECK-NEXT:    call void @llvm.masked.store.v8f32.p0(<8 x float> [[TMP6]], ptr [[TMP5]], i32 4, <8 x i1> [[TMP1]]), !llvm.access.group [[ACC_GRP7]]
+; CHECK-NEXT:    call void @llvm.masked.store.v8f32.p0(<8 x float> [[TMP6]], ptr [[TMP5]], i32 4, <8 x i1> [[TMP1]])
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 8
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_NEXT]], 24
-; CHECK-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[FOR_END:%.*]]
 ; CHECK:       scalar.ph:
@@ -154,11 +154,11 @@ define void @vectorized1(ptr noalias nocapture %A, ptr noalias nocapture readonl
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[INDVARS_IV]]
-; CHECK-NEXT:    [[TMP8:%.*]] = load float, ptr [[ARRAYIDX]], align 4, !llvm.access.group [[ACC_GRP7]]
+; CHECK-NEXT:    [[TMP8:%.*]] = load float, ptr [[ARRAYIDX]], align 4, !llvm.access.group [[ACC_GRP9:![0-9]+]]
 ; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[INDVARS_IV]]
-; CHECK-NEXT:    [[TMP9:%.*]] = load float, ptr [[ARRAYIDX2]], align 4, !llvm.access.group [[ACC_GRP7]]
+; CHECK-NEXT:    [[TMP9:%.*]] = load float, ptr [[ARRAYIDX2]], align 4, !llvm.access.group [[ACC_GRP9]]
 ; CHECK-NEXT:    [[ADD:%.*]] = fadd fast float [[TMP8]], [[TMP9]]
-; CHECK-NEXT:    store float [[ADD]], ptr [[ARRAYIDX2]], align 4, !llvm.access.group [[ACC_GRP7]]
+; CHECK-NEXT:    store float [[ADD]], ptr [[ARRAYIDX2]], align 4, !llvm.access.group [[ACC_GRP9]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], 20
 ; CHECK-NEXT:    br i1 [[EXITCOND]], label [[FOR_END]], label [[FOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
@@ -201,12 +201,12 @@ define void @vectorized2(ptr noalias nocapture %A, ptr noalias nocapture readonl
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds float, ptr [[B:%.*]], i64 [[INDEX]]
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds float, ptr [[TMP1]], i32 0
-; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <8 x float>, ptr [[TMP2]], align 4, !llvm.access.group [[ACC_GRP7]]
+; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <8 x float>, ptr [[TMP2]], align 4
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[INDEX]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds float, ptr [[TMP3]], i32 0
-; CHECK-NEXT:    [[WIDE_LOAD1:%.*]] = load <8 x float>, ptr [[TMP4]], align 4, !llvm.access.group [[ACC_GRP7]]
+; CHECK-NEXT:    [[WIDE_LOAD1:%.*]] = load <8 x float>, ptr [[TMP4]], align 4
 ; CHECK-NEXT:    [[TMP5:%.*]] = fadd fast <8 x float> [[WIDE_LOAD]], [[WIDE_LOAD1]]
-; CHECK-NEXT:    store <8 x float> [[TMP5]], ptr [[TMP4]], align 4, !llvm.access.group [[ACC_GRP7]]
+; CHECK-NEXT:    store <8 x float> [[TMP5]], ptr [[TMP4]], align 4
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 8
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp eq i64 [[INDEX_NEXT]], 16
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP11:![0-9]+]]
@@ -218,11 +218,11 @@ define void @vectorized2(ptr noalias nocapture %A, ptr noalias nocapture readonl
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[INDVARS_IV]]
-; CHECK-NEXT:    [[TMP7:%.*]] = load float, ptr [[ARRAYIDX]], align 4, !llvm.access.group [[ACC_GRP7]]
+; CHECK-NEXT:    [[TMP7:%.*]] = load float, ptr [[ARRAYIDX]], align 4, !llvm.access.group [[ACC_GRP9]]
 ; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[INDVARS_IV]]
-; CHECK-NEXT:    [[TMP8:%.*]] = load float, ptr [[ARRAYIDX2]], align 4, !llvm.access.group [[ACC_GRP7]]
+; CHECK-NEXT:    [[TMP8:%.*]] = load float, ptr [[ARRAYIDX2]], align 4, !llvm.access.group [[ACC_GRP9]]
 ; CHECK-NEXT:    [[ADD:%.*]] = fadd fast float [[TMP7]], [[TMP8]]
-; CHECK-NEXT:    store float [[ADD]], ptr [[ARRAYIDX2]], align 4, !llvm.access.group [[ACC_GRP7]]
+; CHECK-NEXT:    store float [[ADD]], ptr [[ARRAYIDX2]], align 4, !llvm.access.group [[ACC_GRP9]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], 16
 ; CHECK-NEXT:    br i1 [[EXITCOND]], label [[FOR_END]], label [[FOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]

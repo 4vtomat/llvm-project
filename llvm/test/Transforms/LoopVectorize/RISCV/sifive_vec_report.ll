@@ -33,20 +33,20 @@ define dso_local void @_Z10foo_j8_i64iPaPl(i32 noundef signext %n, ptr noalias n
 ; LMUL-MAX-1-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; LMUL-MAX-1-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i64, ptr [[B:%.*]], i64 [[EVL_BASED_IV]]
 ; LMUL-MAX-1-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i64, ptr [[TMP1]], i32 0
-; LMUL-MAX-1-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i64> @llvm.vp.load.nxv2i64.p0(ptr align 8 [[TMP2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA4:![0-9]+]]
+; LMUL-MAX-1-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i64> @llvm.vp.load.nxv2i64.p0(ptr align 8 [[TMP2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-1-NEXT:    [[VP_CAST:%.*]] = call <vscale x 2 x double> @llvm.vp.sitofp.nxv2f64.nxv2i64(<vscale x 2 x i64> [[VP_OP_LOAD]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-1-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 2 x double> @llvm.vp.fadd.nxv2f64(<vscale x 2 x double> [[VP_CAST]], <vscale x 2 x double> splat (double 2.000000e+00), <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-1-NEXT:    [[VP_CAST1:%.*]] = call <vscale x 2 x i64> @llvm.vp.fptosi.nxv2i64.nxv2f64(<vscale x 2 x double> [[VP_OP]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
-; LMUL-MAX-1-NEXT:    call void @llvm.vp.store.nxv2i64.p0(<vscale x 2 x i64> [[VP_CAST1]], ptr align 8 [[TMP2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA4]]
+; LMUL-MAX-1-NEXT:    call void @llvm.vp.store.nxv2i64.p0(<vscale x 2 x i64> [[VP_CAST1]], ptr align 8 [[TMP2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-1-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i8, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; LMUL-MAX-1-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i8, ptr [[TMP3]], i32 0
-; LMUL-MAX-1-NEXT:    [[VP_OP_LOAD2:%.*]] = call <vscale x 2 x i8> @llvm.vp.load.nxv2i8.p0(ptr align 1 [[TMP4]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA8:![0-9]+]]
+; LMUL-MAX-1-NEXT:    [[VP_OP_LOAD2:%.*]] = call <vscale x 2 x i8> @llvm.vp.load.nxv2i8.p0(ptr align 1 [[TMP4]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-1-NEXT:    [[VP_OP3:%.*]] = call <vscale x 2 x i8> @llvm.vp.add.nxv2i8(<vscale x 2 x i8> [[VP_OP_LOAD2]], <vscale x 2 x i8> splat (i8 1), <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
-; LMUL-MAX-1-NEXT:    call void @llvm.vp.store.nxv2i8.p0(<vscale x 2 x i8> [[VP_OP3]], ptr align 1 [[TMP4]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA8]]
+; LMUL-MAX-1-NEXT:    call void @llvm.vp.store.nxv2i8.p0(<vscale x 2 x i8> [[VP_OP3]], ptr align 1 [[TMP4]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-1-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP0]] to i64
 ; LMUL-MAX-1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; LMUL-MAX-1-NEXT:    [[TMP6:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
-; LMUL-MAX-1-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
+; LMUL-MAX-1-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; LMUL-MAX-1:       middle.block:
 ; LMUL-MAX-1-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; LMUL-MAX-1:       scalar.ph:
@@ -59,17 +59,17 @@ define dso_local void @_Z10foo_j8_i64iPaPl(i32 noundef signext %n, ptr noalias n
 ; LMUL-MAX-1:       for.body:
 ; LMUL-MAX-1-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; LMUL-MAX-1-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i64, ptr [[B]], i64 [[INDVARS_IV]]
-; LMUL-MAX-1-NEXT:    [[TMP7:%.*]] = load i64, ptr [[ARRAYIDX]], align 8, !tbaa [[TBAA4]]
+; LMUL-MAX-1-NEXT:    [[TMP7:%.*]] = load i64, ptr [[ARRAYIDX]], align 8, !tbaa [[TBAA8:![0-9]+]]
 ; LMUL-MAX-1-NEXT:    [[CONV:%.*]] = sitofp i64 [[TMP7]] to double
 ; LMUL-MAX-1-NEXT:    [[ADD:%.*]] = fadd fast double [[CONV]], 2.000000e+00
 ; LMUL-MAX-1-NEXT:    [[CONV1:%.*]] = fptosi double [[ADD]] to i64
-; LMUL-MAX-1-NEXT:    store i64 [[CONV1]], ptr [[ARRAYIDX]], align 8, !tbaa [[TBAA4]]
+; LMUL-MAX-1-NEXT:    store i64 [[CONV1]], ptr [[ARRAYIDX]], align 8, !tbaa [[TBAA8]]
 ; LMUL-MAX-1-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[INDVARS_IV]]
-; LMUL-MAX-1-NEXT:    [[TMP8:%.*]] = load i8, ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA8]]
+; LMUL-MAX-1-NEXT:    [[TMP8:%.*]] = load i8, ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA12:![0-9]+]]
 ; LMUL-MAX-1-NEXT:    [[TMP9:%.*]] = sext i8 [[TMP8]] to i32
 ; LMUL-MAX-1-NEXT:    [[ADD513:%.*]] = add i32 [[TMP9]], 1
 ; LMUL-MAX-1-NEXT:    [[TMP10:%.*]] = trunc i32 [[ADD513]] to i8
-; LMUL-MAX-1-NEXT:    store i8 [[TMP10]], ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA8]]
+; LMUL-MAX-1-NEXT:    store i8 [[TMP10]], ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA12]]
 ; LMUL-MAX-1-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; LMUL-MAX-1-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
 ; LMUL-MAX-1-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP13:![0-9]+]]
@@ -91,20 +91,20 @@ define dso_local void @_Z10foo_j8_i64iPaPl(i32 noundef signext %n, ptr noalias n
 ; LMUL-MAX-2-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 4, i1 true)
 ; LMUL-MAX-2-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i64, ptr [[B:%.*]], i64 [[EVL_BASED_IV]]
 ; LMUL-MAX-2-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i64, ptr [[TMP1]], i32 0
-; LMUL-MAX-2-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[TMP2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA4:![0-9]+]]
+; LMUL-MAX-2-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[TMP2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-2-NEXT:    [[VP_CAST:%.*]] = call <vscale x 4 x double> @llvm.vp.sitofp.nxv4f64.nxv4i64(<vscale x 4 x i64> [[VP_OP_LOAD]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-2-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VP_CAST]], <vscale x 4 x double> splat (double 2.000000e+00), <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-2-NEXT:    [[VP_CAST1:%.*]] = call <vscale x 4 x i64> @llvm.vp.fptosi.nxv4i64.nxv4f64(<vscale x 4 x double> [[VP_OP]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
-; LMUL-MAX-2-NEXT:    call void @llvm.vp.store.nxv4i64.p0(<vscale x 4 x i64> [[VP_CAST1]], ptr align 8 [[TMP2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA4]]
+; LMUL-MAX-2-NEXT:    call void @llvm.vp.store.nxv4i64.p0(<vscale x 4 x i64> [[VP_CAST1]], ptr align 8 [[TMP2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-2-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i8, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; LMUL-MAX-2-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i8, ptr [[TMP3]], i32 0
-; LMUL-MAX-2-NEXT:    [[VP_OP_LOAD2:%.*]] = call <vscale x 4 x i8> @llvm.vp.load.nxv4i8.p0(ptr align 1 [[TMP4]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA8:![0-9]+]]
+; LMUL-MAX-2-NEXT:    [[VP_OP_LOAD2:%.*]] = call <vscale x 4 x i8> @llvm.vp.load.nxv4i8.p0(ptr align 1 [[TMP4]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-2-NEXT:    [[VP_OP3:%.*]] = call <vscale x 4 x i8> @llvm.vp.add.nxv4i8(<vscale x 4 x i8> [[VP_OP_LOAD2]], <vscale x 4 x i8> splat (i8 1), <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
-; LMUL-MAX-2-NEXT:    call void @llvm.vp.store.nxv4i8.p0(<vscale x 4 x i8> [[VP_OP3]], ptr align 1 [[TMP4]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA8]]
+; LMUL-MAX-2-NEXT:    call void @llvm.vp.store.nxv4i8.p0(<vscale x 4 x i8> [[VP_OP3]], ptr align 1 [[TMP4]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-2-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP0]] to i64
 ; LMUL-MAX-2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; LMUL-MAX-2-NEXT:    [[TMP6:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
-; LMUL-MAX-2-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
+; LMUL-MAX-2-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; LMUL-MAX-2:       middle.block:
 ; LMUL-MAX-2-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; LMUL-MAX-2:       scalar.ph:
@@ -117,17 +117,17 @@ define dso_local void @_Z10foo_j8_i64iPaPl(i32 noundef signext %n, ptr noalias n
 ; LMUL-MAX-2:       for.body:
 ; LMUL-MAX-2-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; LMUL-MAX-2-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i64, ptr [[B]], i64 [[INDVARS_IV]]
-; LMUL-MAX-2-NEXT:    [[TMP7:%.*]] = load i64, ptr [[ARRAYIDX]], align 8, !tbaa [[TBAA4]]
+; LMUL-MAX-2-NEXT:    [[TMP7:%.*]] = load i64, ptr [[ARRAYIDX]], align 8, !tbaa [[TBAA8:![0-9]+]]
 ; LMUL-MAX-2-NEXT:    [[CONV:%.*]] = sitofp i64 [[TMP7]] to double
 ; LMUL-MAX-2-NEXT:    [[ADD:%.*]] = fadd fast double [[CONV]], 2.000000e+00
 ; LMUL-MAX-2-NEXT:    [[CONV1:%.*]] = fptosi double [[ADD]] to i64
-; LMUL-MAX-2-NEXT:    store i64 [[CONV1]], ptr [[ARRAYIDX]], align 8, !tbaa [[TBAA4]]
+; LMUL-MAX-2-NEXT:    store i64 [[CONV1]], ptr [[ARRAYIDX]], align 8, !tbaa [[TBAA8]]
 ; LMUL-MAX-2-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[INDVARS_IV]]
-; LMUL-MAX-2-NEXT:    [[TMP8:%.*]] = load i8, ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA8]]
+; LMUL-MAX-2-NEXT:    [[TMP8:%.*]] = load i8, ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA12:![0-9]+]]
 ; LMUL-MAX-2-NEXT:    [[TMP9:%.*]] = sext i8 [[TMP8]] to i32
 ; LMUL-MAX-2-NEXT:    [[ADD513:%.*]] = add i32 [[TMP9]], 1
 ; LMUL-MAX-2-NEXT:    [[TMP10:%.*]] = trunc i32 [[ADD513]] to i8
-; LMUL-MAX-2-NEXT:    store i8 [[TMP10]], ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA8]]
+; LMUL-MAX-2-NEXT:    store i8 [[TMP10]], ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA12]]
 ; LMUL-MAX-2-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; LMUL-MAX-2-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
 ; LMUL-MAX-2-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP13:![0-9]+]]
@@ -149,20 +149,20 @@ define dso_local void @_Z10foo_j8_i64iPaPl(i32 noundef signext %n, ptr noalias n
 ; LMUL-MAX-3-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 8, i1 true)
 ; LMUL-MAX-3-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i64, ptr [[B:%.*]], i64 [[EVL_BASED_IV]]
 ; LMUL-MAX-3-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i64, ptr [[TMP1]], i32 0
-; LMUL-MAX-3-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i64> @llvm.vp.load.nxv8i64.p0(ptr align 8 [[TMP2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA4:![0-9]+]]
+; LMUL-MAX-3-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i64> @llvm.vp.load.nxv8i64.p0(ptr align 8 [[TMP2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-3-NEXT:    [[VP_CAST:%.*]] = call <vscale x 8 x double> @llvm.vp.sitofp.nxv8f64.nxv8i64(<vscale x 8 x i64> [[VP_OP_LOAD]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-3-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 8 x double> @llvm.vp.fadd.nxv8f64(<vscale x 8 x double> [[VP_CAST]], <vscale x 8 x double> splat (double 2.000000e+00), <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-3-NEXT:    [[VP_CAST1:%.*]] = call <vscale x 8 x i64> @llvm.vp.fptosi.nxv8i64.nxv8f64(<vscale x 8 x double> [[VP_OP]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
-; LMUL-MAX-3-NEXT:    call void @llvm.vp.store.nxv8i64.p0(<vscale x 8 x i64> [[VP_CAST1]], ptr align 8 [[TMP2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA4]]
+; LMUL-MAX-3-NEXT:    call void @llvm.vp.store.nxv8i64.p0(<vscale x 8 x i64> [[VP_CAST1]], ptr align 8 [[TMP2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-3-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i8, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; LMUL-MAX-3-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i8, ptr [[TMP3]], i32 0
-; LMUL-MAX-3-NEXT:    [[VP_OP_LOAD2:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP4]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA8:![0-9]+]]
+; LMUL-MAX-3-NEXT:    [[VP_OP_LOAD2:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP4]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-3-NEXT:    [[VP_OP3:%.*]] = call <vscale x 8 x i8> @llvm.vp.add.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD2]], <vscale x 8 x i8> splat (i8 1), <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
-; LMUL-MAX-3-NEXT:    call void @llvm.vp.store.nxv8i8.p0(<vscale x 8 x i8> [[VP_OP3]], ptr align 1 [[TMP4]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA8]]
+; LMUL-MAX-3-NEXT:    call void @llvm.vp.store.nxv8i8.p0(<vscale x 8 x i8> [[VP_OP3]], ptr align 1 [[TMP4]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-3-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP0]] to i64
 ; LMUL-MAX-3-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; LMUL-MAX-3-NEXT:    [[TMP6:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
-; LMUL-MAX-3-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
+; LMUL-MAX-3-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; LMUL-MAX-3:       middle.block:
 ; LMUL-MAX-3-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; LMUL-MAX-3:       scalar.ph:
@@ -175,17 +175,17 @@ define dso_local void @_Z10foo_j8_i64iPaPl(i32 noundef signext %n, ptr noalias n
 ; LMUL-MAX-3:       for.body:
 ; LMUL-MAX-3-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; LMUL-MAX-3-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i64, ptr [[B]], i64 [[INDVARS_IV]]
-; LMUL-MAX-3-NEXT:    [[TMP7:%.*]] = load i64, ptr [[ARRAYIDX]], align 8, !tbaa [[TBAA4]]
+; LMUL-MAX-3-NEXT:    [[TMP7:%.*]] = load i64, ptr [[ARRAYIDX]], align 8, !tbaa [[TBAA8:![0-9]+]]
 ; LMUL-MAX-3-NEXT:    [[CONV:%.*]] = sitofp i64 [[TMP7]] to double
 ; LMUL-MAX-3-NEXT:    [[ADD:%.*]] = fadd fast double [[CONV]], 2.000000e+00
 ; LMUL-MAX-3-NEXT:    [[CONV1:%.*]] = fptosi double [[ADD]] to i64
-; LMUL-MAX-3-NEXT:    store i64 [[CONV1]], ptr [[ARRAYIDX]], align 8, !tbaa [[TBAA4]]
+; LMUL-MAX-3-NEXT:    store i64 [[CONV1]], ptr [[ARRAYIDX]], align 8, !tbaa [[TBAA8]]
 ; LMUL-MAX-3-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[INDVARS_IV]]
-; LMUL-MAX-3-NEXT:    [[TMP8:%.*]] = load i8, ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA8]]
+; LMUL-MAX-3-NEXT:    [[TMP8:%.*]] = load i8, ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA12:![0-9]+]]
 ; LMUL-MAX-3-NEXT:    [[TMP9:%.*]] = sext i8 [[TMP8]] to i32
 ; LMUL-MAX-3-NEXT:    [[ADD513:%.*]] = add i32 [[TMP9]], 1
 ; LMUL-MAX-3-NEXT:    [[TMP10:%.*]] = trunc i32 [[ADD513]] to i8
-; LMUL-MAX-3-NEXT:    store i8 [[TMP10]], ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA8]]
+; LMUL-MAX-3-NEXT:    store i8 [[TMP10]], ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA12]]
 ; LMUL-MAX-3-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; LMUL-MAX-3-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
 ; LMUL-MAX-3-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP13:![0-9]+]]
@@ -241,20 +241,20 @@ define dso_local void @_Z12foo_j8_floatiPaPf(i32 noundef signext %n, ptr noalias
 ; LMUL-MAX-1-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 4, i1 true)
 ; LMUL-MAX-1-NEXT:    [[TMP1:%.*]] = getelementptr inbounds float, ptr [[B:%.*]], i64 [[EVL_BASED_IV]]
 ; LMUL-MAX-1-NEXT:    [[TMP2:%.*]] = getelementptr inbounds float, ptr [[TMP1]], i32 0
-; LMUL-MAX-1-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x float> @llvm.vp.load.nxv4f32.p0(ptr align 4 [[TMP2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA14:![0-9]+]]
+; LMUL-MAX-1-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x float> @llvm.vp.load.nxv4f32.p0(ptr align 4 [[TMP2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-1-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 4 x float> @llvm.vp.fadd.nxv4f32(<vscale x 4 x float> [[VP_OP_LOAD]], <vscale x 4 x float> splat (float 2.000000e+00), <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
-; LMUL-MAX-1-NEXT:    call void @llvm.vp.store.nxv4f32.p0(<vscale x 4 x float> [[VP_OP]], ptr align 4 [[TMP2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA14]]
+; LMUL-MAX-1-NEXT:    call void @llvm.vp.store.nxv4f32.p0(<vscale x 4 x float> [[VP_OP]], ptr align 4 [[TMP2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-1-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i8, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; LMUL-MAX-1-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i8, ptr [[TMP3]], i32 0
-; LMUL-MAX-1-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 4 x i8> @llvm.vp.load.nxv4i8.p0(ptr align 1 [[TMP4]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA8]]
+; LMUL-MAX-1-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 4 x i8> @llvm.vp.load.nxv4i8.p0(ptr align 1 [[TMP4]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-1-NEXT:    [[VP_CAST:%.*]] = call <vscale x 4 x float> @llvm.vp.sitofp.nxv4f32.nxv4i8(<vscale x 4 x i8> [[VP_OP_LOAD1]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-1-NEXT:    [[VP_OP2:%.*]] = call fast <vscale x 4 x float> @llvm.vp.fadd.nxv4f32(<vscale x 4 x float> [[VP_CAST]], <vscale x 4 x float> splat (float 1.000000e+00), <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-1-NEXT:    [[VP_CAST3:%.*]] = call <vscale x 4 x i8> @llvm.vp.fptosi.nxv4i8.nxv4f32(<vscale x 4 x float> [[VP_OP2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
-; LMUL-MAX-1-NEXT:    call void @llvm.vp.store.nxv4i8.p0(<vscale x 4 x i8> [[VP_CAST3]], ptr align 1 [[TMP4]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA8]]
+; LMUL-MAX-1-NEXT:    call void @llvm.vp.store.nxv4i8.p0(<vscale x 4 x i8> [[VP_CAST3]], ptr align 1 [[TMP4]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-1-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP0]] to i64
 ; LMUL-MAX-1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; LMUL-MAX-1-NEXT:    [[TMP6:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
-; LMUL-MAX-1-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
+; LMUL-MAX-1-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
 ; LMUL-MAX-1:       middle.block:
 ; LMUL-MAX-1-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; LMUL-MAX-1:       scalar.ph:
@@ -267,15 +267,15 @@ define dso_local void @_Z12foo_j8_floatiPaPf(i32 noundef signext %n, ptr noalias
 ; LMUL-MAX-1:       for.body:
 ; LMUL-MAX-1-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; LMUL-MAX-1-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[INDVARS_IV]]
-; LMUL-MAX-1-NEXT:    [[TMP7:%.*]] = load float, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA14]]
+; LMUL-MAX-1-NEXT:    [[TMP7:%.*]] = load float, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA15:![0-9]+]]
 ; LMUL-MAX-1-NEXT:    [[CONV1:%.*]] = fadd fast float [[TMP7]], 2.000000e+00
-; LMUL-MAX-1-NEXT:    store float [[CONV1]], ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA14]]
+; LMUL-MAX-1-NEXT:    store float [[CONV1]], ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA15]]
 ; LMUL-MAX-1-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[INDVARS_IV]]
-; LMUL-MAX-1-NEXT:    [[TMP8:%.*]] = load i8, ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA8]]
+; LMUL-MAX-1-NEXT:    [[TMP8:%.*]] = load i8, ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA12]]
 ; LMUL-MAX-1-NEXT:    [[CONV4:%.*]] = sitofp i8 [[TMP8]] to float
 ; LMUL-MAX-1-NEXT:    [[ADD5:%.*]] = fadd fast float [[CONV4]], 1.000000e+00
 ; LMUL-MAX-1-NEXT:    [[CONV6:%.*]] = fptosi float [[ADD5]] to i8
-; LMUL-MAX-1-NEXT:    store i8 [[CONV6]], ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA8]]
+; LMUL-MAX-1-NEXT:    store i8 [[CONV6]], ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA12]]
 ; LMUL-MAX-1-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; LMUL-MAX-1-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
 ; LMUL-MAX-1-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP17:![0-9]+]]
@@ -297,20 +297,20 @@ define dso_local void @_Z12foo_j8_floatiPaPf(i32 noundef signext %n, ptr noalias
 ; LMUL-MAX-2-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 8, i1 true)
 ; LMUL-MAX-2-NEXT:    [[TMP1:%.*]] = getelementptr inbounds float, ptr [[B:%.*]], i64 [[EVL_BASED_IV]]
 ; LMUL-MAX-2-NEXT:    [[TMP2:%.*]] = getelementptr inbounds float, ptr [[TMP1]], i32 0
-; LMUL-MAX-2-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x float> @llvm.vp.load.nxv8f32.p0(ptr align 4 [[TMP2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA14:![0-9]+]]
+; LMUL-MAX-2-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x float> @llvm.vp.load.nxv8f32.p0(ptr align 4 [[TMP2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-2-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 8 x float> @llvm.vp.fadd.nxv8f32(<vscale x 8 x float> [[VP_OP_LOAD]], <vscale x 8 x float> splat (float 2.000000e+00), <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
-; LMUL-MAX-2-NEXT:    call void @llvm.vp.store.nxv8f32.p0(<vscale x 8 x float> [[VP_OP]], ptr align 4 [[TMP2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA14]]
+; LMUL-MAX-2-NEXT:    call void @llvm.vp.store.nxv8f32.p0(<vscale x 8 x float> [[VP_OP]], ptr align 4 [[TMP2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-2-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i8, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; LMUL-MAX-2-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i8, ptr [[TMP3]], i32 0
-; LMUL-MAX-2-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP4]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA8]]
+; LMUL-MAX-2-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP4]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-2-NEXT:    [[VP_CAST:%.*]] = call <vscale x 8 x float> @llvm.vp.sitofp.nxv8f32.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD1]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-2-NEXT:    [[VP_OP2:%.*]] = call fast <vscale x 8 x float> @llvm.vp.fadd.nxv8f32(<vscale x 8 x float> [[VP_CAST]], <vscale x 8 x float> splat (float 1.000000e+00), <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-2-NEXT:    [[VP_CAST3:%.*]] = call <vscale x 8 x i8> @llvm.vp.fptosi.nxv8i8.nxv8f32(<vscale x 8 x float> [[VP_OP2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
-; LMUL-MAX-2-NEXT:    call void @llvm.vp.store.nxv8i8.p0(<vscale x 8 x i8> [[VP_CAST3]], ptr align 1 [[TMP4]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA8]]
+; LMUL-MAX-2-NEXT:    call void @llvm.vp.store.nxv8i8.p0(<vscale x 8 x i8> [[VP_CAST3]], ptr align 1 [[TMP4]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-2-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP0]] to i64
 ; LMUL-MAX-2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; LMUL-MAX-2-NEXT:    [[TMP6:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
-; LMUL-MAX-2-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
+; LMUL-MAX-2-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
 ; LMUL-MAX-2:       middle.block:
 ; LMUL-MAX-2-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; LMUL-MAX-2:       scalar.ph:
@@ -323,15 +323,15 @@ define dso_local void @_Z12foo_j8_floatiPaPf(i32 noundef signext %n, ptr noalias
 ; LMUL-MAX-2:       for.body:
 ; LMUL-MAX-2-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; LMUL-MAX-2-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[INDVARS_IV]]
-; LMUL-MAX-2-NEXT:    [[TMP7:%.*]] = load float, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA14]]
+; LMUL-MAX-2-NEXT:    [[TMP7:%.*]] = load float, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA15:![0-9]+]]
 ; LMUL-MAX-2-NEXT:    [[CONV1:%.*]] = fadd fast float [[TMP7]], 2.000000e+00
-; LMUL-MAX-2-NEXT:    store float [[CONV1]], ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA14]]
+; LMUL-MAX-2-NEXT:    store float [[CONV1]], ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA15]]
 ; LMUL-MAX-2-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[INDVARS_IV]]
-; LMUL-MAX-2-NEXT:    [[TMP8:%.*]] = load i8, ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA8]]
+; LMUL-MAX-2-NEXT:    [[TMP8:%.*]] = load i8, ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA12]]
 ; LMUL-MAX-2-NEXT:    [[CONV4:%.*]] = sitofp i8 [[TMP8]] to float
 ; LMUL-MAX-2-NEXT:    [[ADD5:%.*]] = fadd fast float [[CONV4]], 1.000000e+00
 ; LMUL-MAX-2-NEXT:    [[CONV6:%.*]] = fptosi float [[ADD5]] to i8
-; LMUL-MAX-2-NEXT:    store i8 [[CONV6]], ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA8]]
+; LMUL-MAX-2-NEXT:    store i8 [[CONV6]], ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA12]]
 ; LMUL-MAX-2-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; LMUL-MAX-2-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
 ; LMUL-MAX-2-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP17:![0-9]+]]
@@ -353,20 +353,20 @@ define dso_local void @_Z12foo_j8_floatiPaPf(i32 noundef signext %n, ptr noalias
 ; LMUL-MAX-3-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 16, i1 true)
 ; LMUL-MAX-3-NEXT:    [[TMP1:%.*]] = getelementptr inbounds float, ptr [[B:%.*]], i64 [[EVL_BASED_IV]]
 ; LMUL-MAX-3-NEXT:    [[TMP2:%.*]] = getelementptr inbounds float, ptr [[TMP1]], i32 0
-; LMUL-MAX-3-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 16 x float> @llvm.vp.load.nxv16f32.p0(ptr align 4 [[TMP2]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA14:![0-9]+]]
+; LMUL-MAX-3-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 16 x float> @llvm.vp.load.nxv16f32.p0(ptr align 4 [[TMP2]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-3-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 16 x float> @llvm.vp.fadd.nxv16f32(<vscale x 16 x float> [[VP_OP_LOAD]], <vscale x 16 x float> splat (float 2.000000e+00), <vscale x 16 x i1> splat (i1 true), i32 [[TMP0]])
-; LMUL-MAX-3-NEXT:    call void @llvm.vp.store.nxv16f32.p0(<vscale x 16 x float> [[VP_OP]], ptr align 4 [[TMP2]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA14]]
+; LMUL-MAX-3-NEXT:    call void @llvm.vp.store.nxv16f32.p0(<vscale x 16 x float> [[VP_OP]], ptr align 4 [[TMP2]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-3-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i8, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; LMUL-MAX-3-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i8, ptr [[TMP3]], i32 0
-; LMUL-MAX-3-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 16 x i8> @llvm.vp.load.nxv16i8.p0(ptr align 1 [[TMP4]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA8]]
+; LMUL-MAX-3-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 16 x i8> @llvm.vp.load.nxv16i8.p0(ptr align 1 [[TMP4]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-3-NEXT:    [[VP_CAST:%.*]] = call <vscale x 16 x float> @llvm.vp.sitofp.nxv16f32.nxv16i8(<vscale x 16 x i8> [[VP_OP_LOAD1]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-3-NEXT:    [[VP_OP2:%.*]] = call fast <vscale x 16 x float> @llvm.vp.fadd.nxv16f32(<vscale x 16 x float> [[VP_CAST]], <vscale x 16 x float> splat (float 1.000000e+00), <vscale x 16 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-3-NEXT:    [[VP_CAST3:%.*]] = call <vscale x 16 x i8> @llvm.vp.fptosi.nxv16i8.nxv16f32(<vscale x 16 x float> [[VP_OP2]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP0]])
-; LMUL-MAX-3-NEXT:    call void @llvm.vp.store.nxv16i8.p0(<vscale x 16 x i8> [[VP_CAST3]], ptr align 1 [[TMP4]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA8]]
+; LMUL-MAX-3-NEXT:    call void @llvm.vp.store.nxv16i8.p0(<vscale x 16 x i8> [[VP_CAST3]], ptr align 1 [[TMP4]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-3-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP0]] to i64
 ; LMUL-MAX-3-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; LMUL-MAX-3-NEXT:    [[TMP6:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
-; LMUL-MAX-3-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
+; LMUL-MAX-3-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
 ; LMUL-MAX-3:       middle.block:
 ; LMUL-MAX-3-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; LMUL-MAX-3:       scalar.ph:
@@ -379,15 +379,15 @@ define dso_local void @_Z12foo_j8_floatiPaPf(i32 noundef signext %n, ptr noalias
 ; LMUL-MAX-3:       for.body:
 ; LMUL-MAX-3-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; LMUL-MAX-3-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[INDVARS_IV]]
-; LMUL-MAX-3-NEXT:    [[TMP7:%.*]] = load float, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA14]]
+; LMUL-MAX-3-NEXT:    [[TMP7:%.*]] = load float, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA15:![0-9]+]]
 ; LMUL-MAX-3-NEXT:    [[CONV1:%.*]] = fadd fast float [[TMP7]], 2.000000e+00
-; LMUL-MAX-3-NEXT:    store float [[CONV1]], ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA14]]
+; LMUL-MAX-3-NEXT:    store float [[CONV1]], ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA15]]
 ; LMUL-MAX-3-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[INDVARS_IV]]
-; LMUL-MAX-3-NEXT:    [[TMP8:%.*]] = load i8, ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA8]]
+; LMUL-MAX-3-NEXT:    [[TMP8:%.*]] = load i8, ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA12]]
 ; LMUL-MAX-3-NEXT:    [[CONV4:%.*]] = sitofp i8 [[TMP8]] to float
 ; LMUL-MAX-3-NEXT:    [[ADD5:%.*]] = fadd fast float [[CONV4]], 1.000000e+00
 ; LMUL-MAX-3-NEXT:    [[CONV6:%.*]] = fptosi float [[ADD5]] to i8
-; LMUL-MAX-3-NEXT:    store i8 [[CONV6]], ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA8]]
+; LMUL-MAX-3-NEXT:    store i8 [[CONV6]], ptr [[ARRAYIDX3]], align 1, !tbaa [[TBAA12]]
 ; LMUL-MAX-3-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; LMUL-MAX-3-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
 ; LMUL-MAX-3-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP17:![0-9]+]]
@@ -438,20 +438,20 @@ define dso_local void @_Z13foo_j8_doubleiPaPd(i32 noundef signext %n, ptr noalia
 ; LMUL-MAX-1-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; LMUL-MAX-1-NEXT:    [[TMP1:%.*]] = getelementptr inbounds double, ptr [[B:%.*]], i64 [[EVL_BASED_IV]]
 ; LMUL-MAX-1-NEXT:    [[TMP2:%.*]] = getelementptr inbounds double, ptr [[TMP1]], i32 0
-; LMUL-MAX-1-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x double> @llvm.vp.load.nxv2f64.p0(ptr align 8 [[TMP2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA18:![0-9]+]]
+; LMUL-MAX-1-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x double> @llvm.vp.load.nxv2f64.p0(ptr align 8 [[TMP2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-1-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 2 x double> @llvm.vp.fadd.nxv2f64(<vscale x 2 x double> [[VP_OP_LOAD]], <vscale x 2 x double> splat (double 2.000000e+00), <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
-; LMUL-MAX-1-NEXT:    call void @llvm.vp.store.nxv2f64.p0(<vscale x 2 x double> [[VP_OP]], ptr align 8 [[TMP2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA18]]
+; LMUL-MAX-1-NEXT:    call void @llvm.vp.store.nxv2f64.p0(<vscale x 2 x double> [[VP_OP]], ptr align 8 [[TMP2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-1-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i8, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; LMUL-MAX-1-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i8, ptr [[TMP3]], i32 0
-; LMUL-MAX-1-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 2 x i8> @llvm.vp.load.nxv2i8.p0(ptr align 1 [[TMP4]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA8]]
+; LMUL-MAX-1-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 2 x i8> @llvm.vp.load.nxv2i8.p0(ptr align 1 [[TMP4]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-1-NEXT:    [[VP_CAST:%.*]] = call <vscale x 2 x float> @llvm.vp.sitofp.nxv2f32.nxv2i8(<vscale x 2 x i8> [[VP_OP_LOAD1]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-1-NEXT:    [[VP_OP2:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_CAST]], <vscale x 2 x float> splat (float 1.000000e+00), <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-1-NEXT:    [[VP_CAST3:%.*]] = call <vscale x 2 x i8> @llvm.vp.fptosi.nxv2i8.nxv2f32(<vscale x 2 x float> [[VP_OP2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
-; LMUL-MAX-1-NEXT:    call void @llvm.vp.store.nxv2i8.p0(<vscale x 2 x i8> [[VP_CAST3]], ptr align 1 [[TMP4]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA8]]
+; LMUL-MAX-1-NEXT:    call void @llvm.vp.store.nxv2i8.p0(<vscale x 2 x i8> [[VP_CAST3]], ptr align 1 [[TMP4]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-1-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP0]] to i64
 ; LMUL-MAX-1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; LMUL-MAX-1-NEXT:    [[TMP6:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
-; LMUL-MAX-1-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
+; LMUL-MAX-1-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
 ; LMUL-MAX-1:       middle.block:
 ; LMUL-MAX-1-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; LMUL-MAX-1:       scalar.ph:
@@ -464,15 +464,15 @@ define dso_local void @_Z13foo_j8_doubleiPaPd(i32 noundef signext %n, ptr noalia
 ; LMUL-MAX-1:       for.body:
 ; LMUL-MAX-1-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; LMUL-MAX-1-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds double, ptr [[B]], i64 [[INDVARS_IV]]
-; LMUL-MAX-1-NEXT:    [[TMP7:%.*]] = load double, ptr [[ARRAYIDX]], align 8, !tbaa [[TBAA18]]
+; LMUL-MAX-1-NEXT:    [[TMP7:%.*]] = load double, ptr [[ARRAYIDX]], align 8, !tbaa [[TBAA19:![0-9]+]]
 ; LMUL-MAX-1-NEXT:    [[ADD:%.*]] = fadd fast double [[TMP7]], 2.000000e+00
-; LMUL-MAX-1-NEXT:    store double [[ADD]], ptr [[ARRAYIDX]], align 8, !tbaa [[TBAA18]]
+; LMUL-MAX-1-NEXT:    store double [[ADD]], ptr [[ARRAYIDX]], align 8, !tbaa [[TBAA19]]
 ; LMUL-MAX-1-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[INDVARS_IV]]
-; LMUL-MAX-1-NEXT:    [[TMP8:%.*]] = load i8, ptr [[ARRAYIDX2]], align 1, !tbaa [[TBAA8]]
+; LMUL-MAX-1-NEXT:    [[TMP8:%.*]] = load i8, ptr [[ARRAYIDX2]], align 1, !tbaa [[TBAA12]]
 ; LMUL-MAX-1-NEXT:    [[CONV:%.*]] = sitofp i8 [[TMP8]] to float
 ; LMUL-MAX-1-NEXT:    [[ADD3:%.*]] = fadd fast float [[CONV]], 1.000000e+00
 ; LMUL-MAX-1-NEXT:    [[CONV4:%.*]] = fptosi float [[ADD3]] to i8
-; LMUL-MAX-1-NEXT:    store i8 [[CONV4]], ptr [[ARRAYIDX2]], align 1, !tbaa [[TBAA8]]
+; LMUL-MAX-1-NEXT:    store i8 [[CONV4]], ptr [[ARRAYIDX2]], align 1, !tbaa [[TBAA12]]
 ; LMUL-MAX-1-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; LMUL-MAX-1-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
 ; LMUL-MAX-1-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP21:![0-9]+]]
@@ -494,20 +494,20 @@ define dso_local void @_Z13foo_j8_doubleiPaPd(i32 noundef signext %n, ptr noalia
 ; LMUL-MAX-2-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 4, i1 true)
 ; LMUL-MAX-2-NEXT:    [[TMP1:%.*]] = getelementptr inbounds double, ptr [[B:%.*]], i64 [[EVL_BASED_IV]]
 ; LMUL-MAX-2-NEXT:    [[TMP2:%.*]] = getelementptr inbounds double, ptr [[TMP1]], i32 0
-; LMUL-MAX-2-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x double> @llvm.vp.load.nxv4f64.p0(ptr align 8 [[TMP2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA18:![0-9]+]]
+; LMUL-MAX-2-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x double> @llvm.vp.load.nxv4f64.p0(ptr align 8 [[TMP2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-2-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VP_OP_LOAD]], <vscale x 4 x double> splat (double 2.000000e+00), <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
-; LMUL-MAX-2-NEXT:    call void @llvm.vp.store.nxv4f64.p0(<vscale x 4 x double> [[VP_OP]], ptr align 8 [[TMP2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA18]]
+; LMUL-MAX-2-NEXT:    call void @llvm.vp.store.nxv4f64.p0(<vscale x 4 x double> [[VP_OP]], ptr align 8 [[TMP2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-2-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i8, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; LMUL-MAX-2-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i8, ptr [[TMP3]], i32 0
-; LMUL-MAX-2-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 4 x i8> @llvm.vp.load.nxv4i8.p0(ptr align 1 [[TMP4]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA8]]
+; LMUL-MAX-2-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 4 x i8> @llvm.vp.load.nxv4i8.p0(ptr align 1 [[TMP4]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-2-NEXT:    [[VP_CAST:%.*]] = call <vscale x 4 x float> @llvm.vp.sitofp.nxv4f32.nxv4i8(<vscale x 4 x i8> [[VP_OP_LOAD1]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-2-NEXT:    [[VP_OP2:%.*]] = call fast <vscale x 4 x float> @llvm.vp.fadd.nxv4f32(<vscale x 4 x float> [[VP_CAST]], <vscale x 4 x float> splat (float 1.000000e+00), <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-2-NEXT:    [[VP_CAST3:%.*]] = call <vscale x 4 x i8> @llvm.vp.fptosi.nxv4i8.nxv4f32(<vscale x 4 x float> [[VP_OP2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
-; LMUL-MAX-2-NEXT:    call void @llvm.vp.store.nxv4i8.p0(<vscale x 4 x i8> [[VP_CAST3]], ptr align 1 [[TMP4]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA8]]
+; LMUL-MAX-2-NEXT:    call void @llvm.vp.store.nxv4i8.p0(<vscale x 4 x i8> [[VP_CAST3]], ptr align 1 [[TMP4]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-2-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP0]] to i64
 ; LMUL-MAX-2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; LMUL-MAX-2-NEXT:    [[TMP6:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
-; LMUL-MAX-2-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
+; LMUL-MAX-2-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
 ; LMUL-MAX-2:       middle.block:
 ; LMUL-MAX-2-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; LMUL-MAX-2:       scalar.ph:
@@ -520,15 +520,15 @@ define dso_local void @_Z13foo_j8_doubleiPaPd(i32 noundef signext %n, ptr noalia
 ; LMUL-MAX-2:       for.body:
 ; LMUL-MAX-2-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; LMUL-MAX-2-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds double, ptr [[B]], i64 [[INDVARS_IV]]
-; LMUL-MAX-2-NEXT:    [[TMP7:%.*]] = load double, ptr [[ARRAYIDX]], align 8, !tbaa [[TBAA18]]
+; LMUL-MAX-2-NEXT:    [[TMP7:%.*]] = load double, ptr [[ARRAYIDX]], align 8, !tbaa [[TBAA19:![0-9]+]]
 ; LMUL-MAX-2-NEXT:    [[ADD:%.*]] = fadd fast double [[TMP7]], 2.000000e+00
-; LMUL-MAX-2-NEXT:    store double [[ADD]], ptr [[ARRAYIDX]], align 8, !tbaa [[TBAA18]]
+; LMUL-MAX-2-NEXT:    store double [[ADD]], ptr [[ARRAYIDX]], align 8, !tbaa [[TBAA19]]
 ; LMUL-MAX-2-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[INDVARS_IV]]
-; LMUL-MAX-2-NEXT:    [[TMP8:%.*]] = load i8, ptr [[ARRAYIDX2]], align 1, !tbaa [[TBAA8]]
+; LMUL-MAX-2-NEXT:    [[TMP8:%.*]] = load i8, ptr [[ARRAYIDX2]], align 1, !tbaa [[TBAA12]]
 ; LMUL-MAX-2-NEXT:    [[CONV:%.*]] = sitofp i8 [[TMP8]] to float
 ; LMUL-MAX-2-NEXT:    [[ADD3:%.*]] = fadd fast float [[CONV]], 1.000000e+00
 ; LMUL-MAX-2-NEXT:    [[CONV4:%.*]] = fptosi float [[ADD3]] to i8
-; LMUL-MAX-2-NEXT:    store i8 [[CONV4]], ptr [[ARRAYIDX2]], align 1, !tbaa [[TBAA8]]
+; LMUL-MAX-2-NEXT:    store i8 [[CONV4]], ptr [[ARRAYIDX2]], align 1, !tbaa [[TBAA12]]
 ; LMUL-MAX-2-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; LMUL-MAX-2-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
 ; LMUL-MAX-2-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP21:![0-9]+]]
@@ -550,20 +550,20 @@ define dso_local void @_Z13foo_j8_doubleiPaPd(i32 noundef signext %n, ptr noalia
 ; LMUL-MAX-3-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 8, i1 true)
 ; LMUL-MAX-3-NEXT:    [[TMP1:%.*]] = getelementptr inbounds double, ptr [[B:%.*]], i64 [[EVL_BASED_IV]]
 ; LMUL-MAX-3-NEXT:    [[TMP2:%.*]] = getelementptr inbounds double, ptr [[TMP1]], i32 0
-; LMUL-MAX-3-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x double> @llvm.vp.load.nxv8f64.p0(ptr align 8 [[TMP2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA18:![0-9]+]]
+; LMUL-MAX-3-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x double> @llvm.vp.load.nxv8f64.p0(ptr align 8 [[TMP2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-3-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 8 x double> @llvm.vp.fadd.nxv8f64(<vscale x 8 x double> [[VP_OP_LOAD]], <vscale x 8 x double> splat (double 2.000000e+00), <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
-; LMUL-MAX-3-NEXT:    call void @llvm.vp.store.nxv8f64.p0(<vscale x 8 x double> [[VP_OP]], ptr align 8 [[TMP2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA18]]
+; LMUL-MAX-3-NEXT:    call void @llvm.vp.store.nxv8f64.p0(<vscale x 8 x double> [[VP_OP]], ptr align 8 [[TMP2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-3-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i8, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; LMUL-MAX-3-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i8, ptr [[TMP3]], i32 0
-; LMUL-MAX-3-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP4]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA8]]
+; LMUL-MAX-3-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP4]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-3-NEXT:    [[VP_CAST:%.*]] = call <vscale x 8 x float> @llvm.vp.sitofp.nxv8f32.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD1]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-3-NEXT:    [[VP_OP2:%.*]] = call fast <vscale x 8 x float> @llvm.vp.fadd.nxv8f32(<vscale x 8 x float> [[VP_CAST]], <vscale x 8 x float> splat (float 1.000000e+00), <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-3-NEXT:    [[VP_CAST3:%.*]] = call <vscale x 8 x i8> @llvm.vp.fptosi.nxv8i8.nxv8f32(<vscale x 8 x float> [[VP_OP2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
-; LMUL-MAX-3-NEXT:    call void @llvm.vp.store.nxv8i8.p0(<vscale x 8 x i8> [[VP_CAST3]], ptr align 1 [[TMP4]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]]), !tbaa [[TBAA8]]
+; LMUL-MAX-3-NEXT:    call void @llvm.vp.store.nxv8i8.p0(<vscale x 8 x i8> [[VP_CAST3]], ptr align 1 [[TMP4]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
 ; LMUL-MAX-3-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP0]] to i64
 ; LMUL-MAX-3-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
 ; LMUL-MAX-3-NEXT:    [[TMP6:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
-; LMUL-MAX-3-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
+; LMUL-MAX-3-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
 ; LMUL-MAX-3:       middle.block:
 ; LMUL-MAX-3-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; LMUL-MAX-3:       scalar.ph:
@@ -576,15 +576,15 @@ define dso_local void @_Z13foo_j8_doubleiPaPd(i32 noundef signext %n, ptr noalia
 ; LMUL-MAX-3:       for.body:
 ; LMUL-MAX-3-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; LMUL-MAX-3-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds double, ptr [[B]], i64 [[INDVARS_IV]]
-; LMUL-MAX-3-NEXT:    [[TMP7:%.*]] = load double, ptr [[ARRAYIDX]], align 8, !tbaa [[TBAA18]]
+; LMUL-MAX-3-NEXT:    [[TMP7:%.*]] = load double, ptr [[ARRAYIDX]], align 8, !tbaa [[TBAA19:![0-9]+]]
 ; LMUL-MAX-3-NEXT:    [[ADD:%.*]] = fadd fast double [[TMP7]], 2.000000e+00
-; LMUL-MAX-3-NEXT:    store double [[ADD]], ptr [[ARRAYIDX]], align 8, !tbaa [[TBAA18]]
+; LMUL-MAX-3-NEXT:    store double [[ADD]], ptr [[ARRAYIDX]], align 8, !tbaa [[TBAA19]]
 ; LMUL-MAX-3-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[INDVARS_IV]]
-; LMUL-MAX-3-NEXT:    [[TMP8:%.*]] = load i8, ptr [[ARRAYIDX2]], align 1, !tbaa [[TBAA8]]
+; LMUL-MAX-3-NEXT:    [[TMP8:%.*]] = load i8, ptr [[ARRAYIDX2]], align 1, !tbaa [[TBAA12]]
 ; LMUL-MAX-3-NEXT:    [[CONV:%.*]] = sitofp i8 [[TMP8]] to float
 ; LMUL-MAX-3-NEXT:    [[ADD3:%.*]] = fadd fast float [[CONV]], 1.000000e+00
 ; LMUL-MAX-3-NEXT:    [[CONV4:%.*]] = fptosi float [[ADD3]] to i8
-; LMUL-MAX-3-NEXT:    store i8 [[CONV4]], ptr [[ARRAYIDX2]], align 1, !tbaa [[TBAA8]]
+; LMUL-MAX-3-NEXT:    store i8 [[CONV4]], ptr [[ARRAYIDX2]], align 1, !tbaa [[TBAA12]]
 ; LMUL-MAX-3-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; LMUL-MAX-3-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
 ; LMUL-MAX-3-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP21:![0-9]+]]

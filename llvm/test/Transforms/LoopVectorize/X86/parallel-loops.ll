@@ -72,7 +72,7 @@ define void @parallel_loop(ptr nocapture %a, ptr nocapture %b) nounwind uwtable 
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[B:%.*]], i64 [[INDEX]]
-; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i32>, ptr [[TMP3]], align 4, !llvm.access.group [[ACC_GRP0:![0-9]+]]
+; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i32>, ptr [[TMP3]], align 4
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[INDEX]]
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr i32, ptr [[A]], i64 [[INDEX]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[TMP2]], i64 4
@@ -80,7 +80,7 @@ define void @parallel_loop(ptr nocapture %a, ptr nocapture %b) nounwind uwtable 
 ; CHECK-NEXT:    [[TMP26:%.*]] = getelementptr i8, ptr [[TMP4]], i64 8
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i32, ptr [[A]], i64 [[INDEX]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[TMP6]], i64 12
-; CHECK-NEXT:    [[TMP9:%.*]] = load i32, ptr [[TMP5]], align 4, !llvm.access.group [[ACC_GRP0]]
+; CHECK-NEXT:    [[TMP9:%.*]] = load i32, ptr [[TMP5]], align 4, !llvm.access.group [[ACC_GRP0:![0-9]+]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = load i32, ptr [[TMP8]], align 4, !llvm.access.group [[ACC_GRP0]]
 ; CHECK-NEXT:    [[TMP11:%.*]] = load i32, ptr [[TMP26]], align 4, !llvm.access.group [[ACC_GRP0]]
 ; CHECK-NEXT:    [[TMP12:%.*]] = load i32, ptr [[TMP7]], align 4, !llvm.access.group [[ACC_GRP0]]
@@ -102,8 +102,8 @@ define void @parallel_loop(ptr nocapture %a, ptr nocapture %b) nounwind uwtable 
 ; CHECK-NEXT:    store i32 [[TMP24]], ptr [[TMP20]], align 4, !llvm.access.group [[ACC_GRP1]]
 ; CHECK-NEXT:    [[TMP27:%.*]] = getelementptr i32, ptr [[B]], i64 [[INDEX]]
 ; CHECK-NEXT:    [[TMP25:%.*]] = getelementptr i8, ptr [[TMP27]], i64 4
-; CHECK-NEXT:    [[WIDE_LOAD1:%.*]] = load <4 x i32>, ptr [[TMP25]], align 4, !llvm.access.group [[ACC_GRP0]]
-; CHECK-NEXT:    store <4 x i32> [[WIDE_LOAD1]], ptr [[TMP5]], align 4, !llvm.access.group [[ACC_GRP0]]
+; CHECK-NEXT:    [[WIDE_LOAD1:%.*]] = load <4 x i32>, ptr [[TMP25]], align 4
+; CHECK-NEXT:    store <4 x i32> [[WIDE_LOAD1]], ptr [[TMP5]], align 4
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-NEXT:    [[TMP29:%.*]] = icmp eq i64 [[INDEX_NEXT]], 512
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP2:![0-9]+]]

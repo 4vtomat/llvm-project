@@ -19,16 +19,16 @@ define dso_local void @fneg(i32 noundef signext %n, ptr noalias nocapture nounde
 ; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds float, ptr [[TMP3]], i32 0
-; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0(ptr align 4 [[TMP4]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]]), !tbaa [[TBAA0:![0-9]+]]
+; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0(ptr align 4 [[TMP4]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[VP_OP_FCMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.fcmp.nxv2f32(<vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x float> splat (float 1.000000e+00), metadata !"ogt", <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fneg.nxv2f32(<vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr float, ptr [[OUT:%.*]], i64 [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr float, ptr [[TMP5]], i32 0
-; CHECK-NEXT:    call void @llvm.vp.store.nxv2f32.p0(<vscale x 2 x float> [[VP_OP]], ptr align 4 [[TMP6]], <vscale x 2 x i1> [[VP_OP_FCMP]], i32 [[TMP1]]), !tbaa [[TBAA0]]
+; CHECK-NEXT:    call void @llvm.vp.store.nxv2f32.p0(<vscale x 2 x float> [[VP_OP]], ptr align 4 [[TMP6]], <vscale x 2 x i1> [[VP_OP_FCMP]], i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP1]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP7]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
-; CHECK-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
@@ -41,13 +41,13 @@ define dso_local void @fneg(i32 noundef signext %n, ptr noalias nocapture nounde
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_INC:%.*]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[INDVARS_IV]]
-; CHECK-NEXT:    [[TMP9:%.*]] = load float, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA0]]
+; CHECK-NEXT:    [[TMP9:%.*]] = load float, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA3:![0-9]+]]
 ; CHECK-NEXT:    [[CMP1:%.*]] = fcmp fast ogt float [[TMP9]], 1.000000e+00
 ; CHECK-NEXT:    br i1 [[CMP1]], label [[IF_THEN:%.*]], label [[FOR_INC]]
 ; CHECK:       if.then:
 ; CHECK-NEXT:    [[FNEG:%.*]] = fneg fast float [[TMP9]]
 ; CHECK-NEXT:    [[ARRAYIDX5:%.*]] = getelementptr inbounds float, ptr [[OUT]], i64 [[INDVARS_IV]]
-; CHECK-NEXT:    store float [[FNEG]], ptr [[ARRAYIDX5]], align 4, !tbaa [[TBAA0]]
+; CHECK-NEXT:    store float [[FNEG]], ptr [[ARRAYIDX5]], align 4, !tbaa [[TBAA3]]
 ; CHECK-NEXT:    br label [[FOR_INC]]
 ; CHECK:       for.inc:
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1

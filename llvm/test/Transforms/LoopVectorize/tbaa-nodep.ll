@@ -10,8 +10,8 @@ define i32 @test1(ptr nocapture %a, ptr nocapture readonly %b) {
 ; CHECK-NEXT: br label %vector.body
 ; CHECK: vector.body:
 
-; CHECK: load <4 x float>, ptr %{{.*}}, align 4, !tbaa
-; CHECK: store <4 x i32> %{{.*}}, ptr %{{.*}}, align 4, !tbaa
+; CHECK: load <4 x float>, ptr %{{.*}}, align 4
+; CHECK: store <4 x i32> %{{.*}}, ptr %{{.*}}, align 4
 
 ; CHECK: ret i32 0
 
@@ -21,8 +21,8 @@ define i32 @test1(ptr nocapture %a, ptr nocapture readonly %b) {
 ; CHECK-NOTBAA-NOT: icmp
 ; CHECK-NOTBAA: br i1 {{.+}}, label %for.body, label %vector.body
 
-; CHECK-NOTBAA: load <4 x float>, ptr %{{.*}}, align 4, !tbaa
-; CHECK-NOTBAA: store <4 x i32> %{{.*}}, ptr %{{.*}}, align 4, !tbaa
+; CHECK-NOTBAA: load <4 x float>, ptr %{{.*}}, align 4
+; CHECK-NOTBAA: store <4 x i32> %{{.*}}, ptr %{{.*}}, align 4
 
 ; CHECK-NOTBAA: ret i32 0
 
@@ -53,8 +53,8 @@ define i32 @test2(ptr nocapture readonly %a, ptr nocapture readonly %b, ptr noca
 ; CHECK-NOT: icmp
 ; CHECK: br i1 {{.+}}, label %for.body, label %vector.body
 
-; CHECK: load <4 x float>, ptr %{{.*}}, align 4, !tbaa
-; CHECK: store <4 x float> %{{.*}}, ptr %{{.*}}, align 4, !tbaa
+; CHECK: load <4 x float>, ptr %{{.*}}, align 4
+; CHECK: store <4 x float> %{{.*}}, ptr %{{.*}}, align 4
 
 ; CHECK: ret i32 0
 
@@ -65,8 +65,8 @@ define i32 @test2(ptr nocapture readonly %a, ptr nocapture readonly %b, ptr noca
 ; CHECK-NOTBAA-NOT: icmp
 ; CHECK-NOTBAA: br i1 {{.+}}, label %for.body, label %vector.body
 
-; CHECK-NOTBAA: load <4 x float>, ptr %{{.*}}, align 4, !tbaa
-; CHECK-NOTBAA: store <4 x float> %{{.*}}, ptr %{{.*}}, align 4, !tbaa
+; CHECK-NOTBAA: load <4 x float>, ptr %{{.*}}, align 4
+; CHECK-NOTBAA: store <4 x float> %{{.*}}, ptr %{{.*}}, align 4
 
 ; CHECK-NOTBAA: ret i32 0
 

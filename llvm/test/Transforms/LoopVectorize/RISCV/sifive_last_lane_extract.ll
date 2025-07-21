@@ -25,17 +25,17 @@ define ptr @Perl_newSV(ptr %call.i) {
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = add i64 1, [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = add nuw nsw i64 [[OFFSET_IDX]], 1
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds [[STRUCT_SV:%.*]], ptr [[CALL_I:%.*]], i64 [[TMP9]], i32 1
-; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv1i32.p0.i64(<vscale x 1 x i32> zeroinitializer, ptr align 8 [[TMP10]], i64 176, <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]]), !tbaa [[TBAA0:![0-9]+]]
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv1i32.p0.i64(<vscale x 1 x i32> zeroinitializer, ptr align 8 [[TMP10]], i64 176, <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]])
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds [[STRUCT_SV]], ptr [[CALL_I]], i64 [[TMP9]], i32 2
-; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv1i32.p0.i64(<vscale x 1 x i32> zeroinitializer, ptr align 4 [[TMP11]], i64 176, <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]]), !tbaa [[TBAA6:![0-9]+]]
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv1i32.p0.i64(<vscale x 1 x i32> zeroinitializer, ptr align 4 [[TMP11]], i64 176, <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]])
 ; CHECK-NEXT:    [[TMP12:%.*]] = add nuw nsw i64 [[OFFSET_IDX]], 6
 ; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr inbounds [[STRUCT_SV]], ptr [[CALL_I]], i64 [[TMP12]], i32 1
-; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv1i32.p0.i64(<vscale x 1 x i32> zeroinitializer, ptr align 8 [[TMP13]], i64 176, <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]]), !tbaa [[TBAA0]]
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv1i32.p0.i64(<vscale x 1 x i32> zeroinitializer, ptr align 8 [[TMP13]], i64 176, <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]])
 ; CHECK-NEXT:    [[TMP14:%.*]] = add nuw nsw i64 [[OFFSET_IDX]], 10
 ; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr inbounds [[STRUCT_SV]], ptr [[CALL_I]], i64 [[TMP14]]
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> [[VEC_IND]], <vscale x 1 x i64> splat (i64 11), <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]])
 ; CHECK-NEXT:    [[TMP16:%.*]] = getelementptr inbounds [[STRUCT_SV]], ptr [[CALL_I]], <vscale x 1 x i64> [[VP_OP]]
-; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv1p0.p0.i64(<vscale x 1 x ptr> [[TMP16]], ptr align 8 [[TMP15]], i64 176, <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]]), !tbaa [[TBAA7:![0-9]+]]
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv1p0.p0.i64(<vscale x 1 x ptr> [[TMP16]], ptr align 8 [[TMP15]], i64 176, <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]])
 ; CHECK-NEXT:    [[TMP17:%.*]] = zext i32 [[TMP6]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP17]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP18:%.*]] = sext i32 [[TMP6]] to i64
@@ -44,7 +44,7 @@ define ptr @Perl_newSV(ptr %call.i) {
 ; CHECK-NEXT:    [[DOTSPLAT2:%.*]] = shufflevector <vscale x 1 x i64> [[DOTSPLATINSERT1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> [[VEC_IND]], <vscale x 1 x i64> [[DOTSPLAT2]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]])
 ; CHECK-NEXT:    [[TMP20:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 24
-; CHECK-NEXT:    br i1 [[TMP20]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP20]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP21:%.*]] = sub i32 [[TMP6]], 1
 ; CHECK-NEXT:    [[TMP22:%.*]] = extractelement <vscale x 1 x ptr> [[TMP16]], i32 [[TMP21]]
@@ -56,17 +56,17 @@ define ptr @Perl_newSV(ptr %call.i) {
 ; CHECK-NEXT:    [[SV_026_I6_IDX_I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[SV_026_I6_ADD_I_10:%.*]], [[WHILE_BODY_I11_I]] ]
 ; CHECK-NEXT:    [[SV_026_I6_ADD_I_3:%.*]] = add nuw nsw i64 [[SV_026_I6_IDX_I]], 1
 ; CHECK-NEXT:    [[SV_REFCNT7_I8_I_4:%.*]] = getelementptr inbounds [[STRUCT_SV]], ptr [[CALL_I]], i64 [[SV_026_I6_ADD_I_3]], i32 1
-; CHECK-NEXT:    store i32 0, ptr [[SV_REFCNT7_I8_I_4]], align 8, !tbaa [[TBAA0]]
+; CHECK-NEXT:    store i32 0, ptr [[SV_REFCNT7_I8_I_4]], align 8, !tbaa [[TBAA3:![0-9]+]]
 ; CHECK-NEXT:    [[SV_FLAGS8_I9_I_4:%.*]] = getelementptr inbounds [[STRUCT_SV]], ptr [[CALL_I]], i64 [[SV_026_I6_ADD_I_3]], i32 2
-; CHECK-NEXT:    store i32 0, ptr [[SV_FLAGS8_I9_I_4]], align 4, !tbaa [[TBAA6]]
+; CHECK-NEXT:    store i32 0, ptr [[SV_FLAGS8_I9_I_4]], align 4, !tbaa [[TBAA9:![0-9]+]]
 ; CHECK-NEXT:    [[SV_026_I6_ADD_I_5:%.*]] = add nuw nsw i64 [[SV_026_I6_IDX_I]], 6
 ; CHECK-NEXT:    [[SV_REFCNT7_I8_I_6:%.*]] = getelementptr inbounds [[STRUCT_SV]], ptr [[CALL_I]], i64 [[SV_026_I6_ADD_I_5]], i32 1
-; CHECK-NEXT:    store i32 0, ptr [[SV_REFCNT7_I8_I_6]], align 8, !tbaa [[TBAA0]]
+; CHECK-NEXT:    store i32 0, ptr [[SV_REFCNT7_I8_I_6]], align 8, !tbaa [[TBAA3]]
 ; CHECK-NEXT:    [[SV_026_I6_ADD_I_9:%.*]] = add nuw nsw i64 [[SV_026_I6_IDX_I]], 10
 ; CHECK-NEXT:    [[SV_026_I6_PTR_I_10:%.*]] = getelementptr inbounds [[STRUCT_SV]], ptr [[CALL_I]], i64 [[SV_026_I6_ADD_I_9]]
 ; CHECK-NEXT:    [[SV_026_I6_ADD_I_10]] = add nuw nsw i64 [[SV_026_I6_IDX_I]], 11
 ; CHECK-NEXT:    [[ADD_PTR5_I7_PTR_I_10:%.*]] = getelementptr inbounds [[STRUCT_SV]], ptr [[CALL_I]], i64 [[SV_026_I6_ADD_I_10]]
-; CHECK-NEXT:    store ptr [[ADD_PTR5_I7_PTR_I_10]], ptr [[SV_026_I6_PTR_I_10]], align 8, !tbaa [[TBAA7]]
+; CHECK-NEXT:    store ptr [[ADD_PTR5_I7_PTR_I_10]], ptr [[SV_026_I6_PTR_I_10]], align 8, !tbaa [[TBAA10:![0-9]+]]
 ; CHECK-NEXT:    [[EXITCOND_NOT_I_10:%.*]] = icmp eq i64 [[SV_026_I6_IDX_I]], 254
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT_I_10]], label [[PERL_SV_ADD_ARENA_EXIT14_I]], label [[WHILE_BODY_I11_I]], !llvm.loop [[LOOP11:![0-9]+]]
 ; CHECK:       Perl_sv_add_arena.exit14.i:
