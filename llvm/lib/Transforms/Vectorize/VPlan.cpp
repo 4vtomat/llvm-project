@@ -332,22 +332,15 @@ VPBasicBlock::iterator VPBasicBlock::getFirstNonPhi() {
 
 VPTransformState::VPTransformState(const TargetTransformInfo *TTI,
                                    ElementCount VF, LoopInfo *LI,
-<<<<<<< HEAD
-                                   DominatorTree *DT, IRBuilderBase &Builder,
-                                   InnerLoopVectorizer *ILV, VPlan *Plan,
+                                   DominatorTree *DT, AssumptionCache *AC,
+                                   IRBuilderBase &Builder, VPlan *Plan,
 #if SIFIVE_CUSTOMIZATION
                                    Loop *CurrentParentLoop, Type *CanonicalIVTy,
                                    bool EnableRISCVCSA)
 #else
                                    Loop *CurrentParentLoop, Type *CanonicalIVTy)
 #endif // SIFIVE_CUSTOMIZATION
-    : TTI(TTI), VF(VF), CFG(DT), LI(LI), Builder(Builder), ILV(ILV), Plan(Plan),
-=======
-                                   DominatorTree *DT, AssumptionCache *AC,
-                                   IRBuilderBase &Builder, VPlan *Plan,
-                                   Loop *CurrentParentLoop, Type *CanonicalIVTy)
     : TTI(TTI), VF(VF), CFG(DT), LI(LI), AC(AC), Builder(Builder), Plan(Plan),
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
       CurrentParentLoop(CurrentParentLoop), LVer(nullptr),
 #if SIFIVE_CUSTOMIZATION
       TypeAnalysis(CanonicalIVTy), EnableRISCVCSA(EnableRISCVCSA), VPDT(*Plan) {}
