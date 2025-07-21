@@ -57,16 +57,6 @@ inline bool isUniformAfterVectorization(const VPValue *VPV) {
   // A live-in must be uniform across the scope of VPlan.
   if (VPV->isLiveIn())
     return true;
-<<<<<<< HEAD
-  if (auto *Rep = dyn_cast<VPReplicateRecipe>(VPV))
-    return Rep->isUniform();
-#if SIFIVE_CUSTOMIZATION
-  const VPRecipeBase *Def = VPV->getDefiningRecipe();
-  if (isa<VPMonotonicUpdateInstruction, VPMonotonicHeaderPHIRecipe>(Def))
-    return true;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-
   if (auto *Rep = dyn_cast<VPReplicateRecipe>(VPV)) {
     const VPRegionBlock *RegionOfR = Rep->getParent()->getParent();
     // Don't consider recipes in replicate regions as uniform yet; their first
@@ -78,7 +68,11 @@ inline bool isUniformAfterVectorization(const VPValue *VPV) {
            (PreservesUniformity(Rep->getOpcode()) &&
             all_of(Rep->operands(), isUniformAfterVectorization));
   }
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
+#if SIFIVE_CUSTOMIZATION
+  const VPRecipeBase *Def = VPV->getDefiningRecipe();
+  if (isa<VPMonotonicUpdateInstruction, VPMonotonicHeaderPHIRecipe>(Def))
+    return true;
+#endif // SIFIVE_CUSTOMIZATION
   if (isa<VPWidenGEPRecipe, VPDerivedIVRecipe, VPBlendRecipe>(VPV))
     return all_of(VPV->getDefiningRecipe()->operands(),
                   isUniformAfterVectorization);
