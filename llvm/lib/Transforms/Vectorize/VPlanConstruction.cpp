@@ -376,9 +376,11 @@ std::unique_ptr<VPlan> PlainCFGBuilder::buildPlainCFG(
       assert(PhiR->getNumOperands() == 0 &&
              "no phi operands should be added yet");
 #if SIFIVE_CUSTOMIZATION
-      // CSA users and EarlyExit are handled outside the plan
+      // CSA users, unbound users and EarlyExit are handled outside the plan
       BasicBlock *LoopLatch = TheLoop->getLoopLatch();
       bool IsUncountable = Legal ? Legal->isVectorizableUncountable() : false;
+      bool IsUnbound =
+          IsUncountable ? Legal->getCountableExitingBlocks().empty() : false;
       auto IsCSASelect = [&](Value *V) {
         if (!Legal)
           return false;
@@ -392,6 +394,8 @@ std::unique_ptr<VPlan> PlainCFGBuilder::buildPlainCFG(
         return CSADescIt != Legal->getCSAs().end();
       };
       for (BasicBlock *Pred : predecessors(EB->getIRBasicBlock())) {
+        if (IsUnbound)
+          continue;
         if (IsUncountable && Pred != LoopLatch)
           continue;
         Value *V = Phi.getIncomingValueForBlock(Pred);
