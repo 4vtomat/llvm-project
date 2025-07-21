@@ -75,10 +75,10 @@ public:
         TLI(ST->getTargetLowering()) {}
 
 #if SIFIVE_CUSTOMIZATION
-  std::optional<Instruction *> instCombineIntrinsic(InstCombiner &IC,
-                                                    IntrinsicInst &II) const;
+  std::optional<Instruction *>
+  instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const override;
   bool isTargetIntrinsicWithScalarOpAtArg(Intrinsic::ID ID,
-                                          unsigned ScalarOpdIdx) const;
+                                          unsigned ScalarOpdIdx) const override;
   bool getMemoryRefInfo(SmallVectorImpl<InterestingMemoryOperand> &Interesting,
                         IntrinsicInst *II) const;
 
@@ -249,21 +249,13 @@ public:
                         unsigned AddressSpace,
                         TTI::TargetCostKind CostKind) const override;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  bool isLoweredToCall(const Function *F) const;
+  bool isLoweredToCall(const Function *F) const override;
 #endif // SIFIVE_CUSTOMIZATION
-  InstructionCost getPointersChainCost(ArrayRef<const Value *> Ptrs,
-                                       const Value *Base,
-                                       const TTI::PointersChainInfo &Info,
-                                       Type *AccessTy,
-                                       TTI::TargetCostKind CostKind) const;
-=======
   InstructionCost
   getPointersChainCost(ArrayRef<const Value *> Ptrs, const Value *Base,
                        const TTI::PointersChainInfo &Info, Type *AccessTy,
                        TTI::TargetCostKind CostKind) const override;
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
 
   void getUnrollingPreferences(Loop *L, ScalarEvolution &SE,
                                TTI::UnrollingPreferences &UP,
@@ -467,16 +459,12 @@ public:
 
   bool isLegalMaskedCompressStore(Type *DataTy, Align Alignment) const override;
 
-<<<<<<< HEAD
-  bool isVScaleKnownToBeAPowerOfTwo() const {
+  bool isVScaleKnownToBeAPowerOfTwo() const override {
 #if SIFIVE_CUSTOMIZATION
     // Return false to avoid SVE-specific VF computations in LoopVectorizer.
     if (useVLAVectorizer())
       return false;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  bool isVScaleKnownToBeAPowerOfTwo() const override {
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
     return TLI->isVScaleKnownToBeAPowerOfTwo();
   }
 
@@ -624,14 +612,14 @@ public:
   }
 
 #if SIFIVE_CUSTOMIZATION
-  unsigned getInliningThresholdMultiplier() const;
+  unsigned getInliningThresholdMultiplier() const override;
   bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const;
 
   Type *getScalableVectorFromFixed(Type *Ty) const;
 
   bool isLegalVectorInterleave(VectorType *VTy, unsigned Factor,
                                const DataLayout &DL) const;
-  bool enableMaskedInterleavedAccessVectorization() const {
+  bool enableMaskedInterleavedAccessVectorization() const override {
     return useVLAVectorizer();
   }
 
@@ -657,7 +645,7 @@ public:
   bool enableMonotonicsVectorization() const;
 
   /// Enabled dropping solutions by default
-  bool shouldDropLSRSolutionIfLessProfitable() const;
+  bool shouldDropLSRSolutionIfLessProfitable() const override;
 #endif // SIFIVE_CUSTOMIZATION
 
   bool isLSRCostLess(const TargetTransformInfo::LSRCost &C1,
