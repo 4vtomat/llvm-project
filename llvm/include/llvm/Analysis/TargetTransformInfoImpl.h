@@ -482,7 +482,6 @@ public:
     return {};
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool getMemoryRefInfo(SmallVectorImpl<InterestingMemoryOperand> &Interesting,
                         IntrinsicInst *II) const {
@@ -492,10 +491,7 @@ public:
   bool hasFlattenControlFlowPenalty() const { return false; }
 #endif // SIFIVE_CUSTOMIZATION
 
-  bool enableSelectOptimize() const { return true; }
-=======
   virtual bool enableSelectOptimize() const { return true; }
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
 
   virtual bool shouldTreatInstructionLikeSelect(const Instruction *I) const {
     // A select with two constant operands will usually be better left as a
@@ -598,15 +594,11 @@ public:
     return TypeSize::getFixed(32);
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   unsigned getMaxElementWidth() const { return 64; }
 #endif // SIFIVE_CUSTOMIZATION
 
-  unsigned getMinVectorRegisterBitWidth() const { return 128; }
-=======
   virtual unsigned getMinVectorRegisterBitWidth() const { return 128; }
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
 
   virtual std::optional<unsigned> getMaxVScale() const { return std::nullopt; }
   virtual std::optional<unsigned> getVScaleForTuning() const {
@@ -614,7 +606,6 @@ public:
   }
   virtual bool isVScaleKnownToBeAPowerOfTwo() const { return false; }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   std::pair<ElementCount, ElementCount>
   getFeasibleMaxVFRange(TargetTransformInfo::RegisterKind K,
@@ -641,10 +632,7 @@ public:
   bool sinkSplatOperands() const { return false; }
 #endif // SIFIVE_CUSTOMIZATION
 
-  bool
-=======
   virtual bool
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
   shouldMaximizeVectorBandwidth(TargetTransformInfo::RegisterKind K) const {
     return false;
   }
@@ -1165,7 +1153,6 @@ public:
 
   virtual unsigned getGISelRematGlobalCost() const { return 1; }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool useVLAVectorizer() const { return false; }
 
@@ -1181,16 +1168,12 @@ public:
   unsigned getMinEarlyExitTripCount() const { return 0; }
 
 #endif // SIFIVE_CUSTOMIZATION
-  unsigned getMinTripCountTailFoldingThreshold() const { return 0; }
-=======
   virtual unsigned getMinTripCountTailFoldingThreshold() const { return 0; }
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
 
   virtual bool supportsScalableVectors() const { return false; }
 
   virtual bool enableScalableVectorization() const { return false; }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   Type *getScalableVectorFromFixed(Type *Ty) const {
     FixedVectorType *VecTy = cast<FixedVectorType>(Ty);
@@ -1199,12 +1182,8 @@ public:
   }
 #endif
 
-  bool hasActiveVectorLength(unsigned Opcode, Type *DataType,
-                             Align Alignment) const {
-=======
   virtual bool hasActiveVectorLength(unsigned Opcode, Type *DataType,
                                      Align Alignment) const {
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
     return false;
   }
 
@@ -1230,8 +1209,7 @@ public:
     return false;
   }
 
-<<<<<<< HEAD
-  unsigned getMaxNumArgs() const { return UINT_MAX; }
+  virtual unsigned getMaxNumArgs() const { return UINT_MAX; }
 #if SIFIVE_CUSTOMIZATION
   bool enableUncountableVectorization() const { return false; }
   bool enableNonPower2SLPFPVectorization() const { return false; }
@@ -1240,9 +1218,6 @@ public:
   unsigned getCSAOverheadFactor() const { return 1; }
   bool enableMonotonicsVectorization() const { return false; }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  virtual unsigned getMaxNumArgs() const { return UINT_MAX; }
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
 
   virtual unsigned getNumBytesToPadGlobalArray(unsigned Size,
                                                Type *ArrayType) const {
