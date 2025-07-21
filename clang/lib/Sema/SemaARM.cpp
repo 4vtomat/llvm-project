@@ -766,8 +766,7 @@ bool SemaARM::CheckNeonBuiltinFunctionCall(const TargetInfo &TI,
     if (HasConstPtr)
       EltTy = EltTy.withConst();
     QualType LHSTy = getASTContext().getPointerType(EltTy);
-<<<<<<< HEAD
-    Sema::AssignConvertType ConvTy;
+    AssignConvertType ConvTy;
 #if SIFIVE_CUSTOMIZATION
     bool IsCompatible = false;
     // Make 'const __fp16 *' and 'const _Float16 *' are compatible.
@@ -784,13 +783,9 @@ bool SemaARM::CheckNeonBuiltinFunctionCall(const TargetInfo &TI,
         }
     }
     ConvTy = IsCompatible
-                 ? Sema::Compatible
+                 ? AssignConvertType::Compatible
                  : SemaRef.CheckSingleAssignmentConstraints(LHSTy, RHS);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    AssignConvertType ConvTy;
-    ConvTy = SemaRef.CheckSingleAssignmentConstraints(LHSTy, RHS);
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
     if (RHS.isInvalid())
       return true;
     if (SemaRef.DiagnoseAssignmentResult(ConvTy, Arg->getBeginLoc(), LHSTy,
