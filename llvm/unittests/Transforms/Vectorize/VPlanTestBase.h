@@ -72,19 +72,14 @@ protected:
     PredicatedScalarEvolution PSE(*SE, *L);
     DenseMap<VPBlockBase *, BasicBlock *> VPB2IRBB;
     auto Plan = VPlanTransforms::buildPlainCFG(L, *LI, VPB2IRBB);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-    VPlanTransforms::createLoopRegions(*Plan, IntegerType::get(*Ctx, 64), PSE,
-                                       false, true, false, L);
+    VPlanTransforms::prepareForVectorization(*Plan, IntegerType::get(*Ctx, 64),
+                                             PSE, false, true, false, L, {});
 #else
-    VPlanTransforms::createLoopRegions(*Plan, IntegerType::get(*Ctx, 64), PSE,
-                                       true, false, L);
-#endif // SIFIVE_CUSTOMIZATION
-=======
     VPlanTransforms::prepareForVectorization(*Plan, IntegerType::get(*Ctx, 64),
                                              PSE, true, false, L, {});
+#endif // SIFIVE_CUSTOMIZATION
     VPlanTransforms::createLoopRegions(*Plan);
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
     return Plan;
   }
 };
