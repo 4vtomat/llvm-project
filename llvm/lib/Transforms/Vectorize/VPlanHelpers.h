@@ -210,22 +210,15 @@ public:
 struct VPTransformState {
 #if SIFIVE_CUSTOMIZATION
   VPTransformState(const TargetTransformInfo *TTI, ElementCount VF,
-                   LoopInfo *LI, DominatorTree *DT, IRBuilderBase &Builder,
-                   InnerLoopVectorizer *ILV, VPlan *Plan,
-                   Loop *CurrentParentLoop, Type *CanonicalIVTy,
-                   bool EnableRISCVCSA);
+                   LoopInfo *LI, DominatorTree *DT, AssumptionCache *AC,
+                   IRBuilderBase &Builder, VPlan *Plan, Loop *CurrentParentLoop,
+                   Type *CanonicalIVTy, bool EnableRISCVCSA);
 #else
   VPTransformState(const TargetTransformInfo *TTI, ElementCount VF,
-<<<<<<< HEAD
-                   LoopInfo *LI, DominatorTree *DT, IRBuilderBase &Builder,
-                   InnerLoopVectorizer *ILV, VPlan *Plan,
-                   Loop *CurrentParentLoop, Type *CanonicalIVTy);
-#endif // SIFIVE_CUSTOMIZATION
-=======
                    LoopInfo *LI, DominatorTree *DT, AssumptionCache *AC,
                    IRBuilderBase &Builder, VPlan *Plan, Loop *CurrentParentLoop,
                    Type *CanonicalIVTy);
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
+#endif // SIFIVE_CUSTOMIZATION
   /// Target Transform Info.
   const TargetTransformInfo *TTI;
 
@@ -385,7 +378,6 @@ struct VPTransformState {
   /// Hold a reference to the IRBuilder used to generate output IR code.
   IRBuilderBase &Builder;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// Hold a pointer to ScalarEvolution which will be used during the IR
   /// generation.
@@ -409,11 +401,6 @@ struct VPTransformState {
   Value *getVFirst() const { return VFirst; }
 #endif // SIFIVE_CUSTOMIZATION
 
-  /// Hold a pointer to InnerLoopVectorizer to reuse its IR generation methods.
-  InnerLoopVectorizer *ILV;
-
-=======
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
   /// Pointer to the VPlan code is generated for.
   VPlan *Plan;
 
