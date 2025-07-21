@@ -5354,16 +5354,18 @@ Instruction *InstCombinerImpl::foldNeutralVPReduce(Instruction &I) {
     auto getFMinPattern = [&](FastMathFlags CheckFMF,
                               const APFloat &NeutralVal) {
       return m_CombineOr(
-          m_FMin(m_Value(X),
-                 m_CombineAnd(m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_fmin>(
-                                  m_SpecificFP(NeutralVal), m_Value(Y),
-                                  m_Value(Mask), m_Value(EVL))),
-                              m_FMF(CheckFMF, MatchedFMF))),
-          m_FMin(m_CombineAnd(m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_fmin>(
-                                  m_SpecificFP(NeutralVal), m_Value(Y),
-                                  m_Value(Mask), m_Value(EVL))),
-                              m_FMF(CheckFMF, MatchedFMF)),
-                 m_Value(X)));
+          m_FMinimum(
+              m_Value(X),
+              m_CombineAnd(m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_fmin>(
+                               m_SpecificFP(NeutralVal), m_Value(Y),
+                               m_Value(Mask), m_Value(EVL))),
+                           m_FMF(CheckFMF, MatchedFMF))),
+          m_FMinimum(
+              m_CombineAnd(m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_fmin>(
+                               m_SpecificFP(NeutralVal), m_Value(Y),
+                               m_Value(Mask), m_Value(EVL))),
+                           m_FMF(CheckFMF, MatchedFMF)),
+              m_Value(X)));
     };
     // Neutral values:
     // nnan + ninf -> largest
@@ -5382,16 +5384,18 @@ Instruction *InstCombinerImpl::foldNeutralVPReduce(Instruction &I) {
     auto getFMaxPattern = [&](FastMathFlags CheckFMF,
                               const APFloat &NeutralVal) {
       return m_CombineOr(
-          m_FMax(m_Value(X),
-                 m_CombineAnd(m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_fmax>(
-                                  m_SpecificFP(NeutralVal), m_Value(Y),
-                                  m_Value(Mask), m_Value(EVL))),
-                              m_FMF(CheckFMF, MatchedFMF))),
-          m_FMax(m_CombineAnd(m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_fmax>(
-                                  m_SpecificFP(NeutralVal), m_Value(Y),
-                                  m_Value(Mask), m_Value(EVL))),
-                              m_FMF(CheckFMF, MatchedFMF)),
-                 m_Value(X)));
+          m_FMaximum(
+              m_Value(X),
+              m_CombineAnd(m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_fmax>(
+                               m_SpecificFP(NeutralVal), m_Value(Y),
+                               m_Value(Mask), m_Value(EVL))),
+                           m_FMF(CheckFMF, MatchedFMF))),
+          m_FMaximum(
+              m_CombineAnd(m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_fmax>(
+                               m_SpecificFP(NeutralVal), m_Value(Y),
+                               m_Value(Mask), m_Value(EVL))),
+                           m_FMF(CheckFMF, MatchedFMF)),
+              m_Value(X)));
     };
     // Neutral values:
     // nnan + ninf -> -largest
