@@ -519,15 +519,6 @@ static void createLoopRegion(VPlan &Plan, VPBlockBase *HeaderVPB) {
     VPBlockUtils::connectBlocks(R, Succ);
 }
 
-<<<<<<< HEAD
-void VPlanTransforms::createLoopRegions(VPlan &Plan, Type *InductionTy,
-                                        PredicatedScalarEvolution &PSE,
-#if SIFIVE_CUSTOMIZATION
-                                        bool IsUncountable,
-#endif // SIFIVE_CUSTOMIZATION
-                                        bool RequiresScalarEpilogueCheck,
-                                        bool TailFolded, Loop *TheLoop) {
-=======
 // Add the necessary canonical IV and branch recipes required to control the
 // loop.
 static void addCanonicalIVRecipes(VPlan &Plan, VPBasicBlock *HeaderVPBB,
@@ -563,10 +554,12 @@ static void addCanonicalIVRecipes(VPlan &Plan, VPBasicBlock *HeaderVPBB,
 
 void VPlanTransforms::prepareForVectorization(VPlan &Plan, Type *InductionTy,
                                               PredicatedScalarEvolution &PSE,
+#if SIFIVE_CUSTOMIZATION
+                                              bool IsUncountable,
+#endif // SIFIVE_CUSTOMIZATION
                                               bool RequiresScalarEpilogueCheck,
                                               bool TailFolded, Loop *TheLoop,
                                               DebugLoc IVDL) {
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
   VPDominatorTree VPDT;
   VPDT.recalculate(Plan);
 
