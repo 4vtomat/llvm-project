@@ -23,21 +23,21 @@ define void @test(i32 noundef %nface, i32 noundef %ncell, ptr noalias noundef %f
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds nuw i32, ptr [[FACE_CELL]], i64 [[INDEX]]
-; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i32>, ptr [[TMP1]], align 4
+; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i32>, ptr [[TMP1]], align 4, !tbaa [[TBAA0:![0-9]+]], !llvm.access.group [[ACC_GRP4:![0-9]+]]
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds nuw i32, ptr [[INVARIANT_GEP]], i64 [[INDEX]]
-; CHECK-NEXT:    [[WIDE_LOAD12:%.*]] = load <4 x i32>, ptr [[TMP2]], align 4
+; CHECK-NEXT:    [[WIDE_LOAD12:%.*]] = load <4 x i32>, ptr [[TMP2]], align 4, !tbaa [[TBAA0]], !llvm.access.group [[ACC_GRP4]]
 ; CHECK-NEXT:    [[TMP3:%.*]] = sext <4 x i32> [[WIDE_LOAD]] to <4 x i64>
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds double, ptr [[Y]], <4 x i64> [[TMP3]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = sext <4 x i32> [[WIDE_LOAD12]] to <4 x i64>
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds double, ptr [[X]], <4 x i64> [[TMP5]]
-; CHECK-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = tail call <4 x double> @llvm.masked.gather.v4f64.v4p0(<4 x ptr> [[TMP4]], i32 8, <4 x i1> splat (i1 true), <4 x double> poison)
-; CHECK-NEXT:    [[WIDE_MASKED_GATHER13:%.*]] = tail call <4 x double> @llvm.masked.gather.v4f64.v4p0(<4 x ptr> [[TMP6]], i32 8, <4 x i1> splat (i1 true), <4 x double> poison)
+; CHECK-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = tail call <4 x double> @llvm.masked.gather.v4f64.v4p0(<4 x ptr> [[TMP4]], i32 8, <4 x i1> splat (i1 true), <4 x double> poison), !tbaa [[TBAA5:![0-9]+]], !llvm.access.group [[ACC_GRP4]]
+; CHECK-NEXT:    [[WIDE_MASKED_GATHER13:%.*]] = tail call <4 x double> @llvm.masked.gather.v4f64.v4p0(<4 x ptr> [[TMP6]], i32 8, <4 x i1> splat (i1 true), <4 x double> poison), !tbaa [[TBAA5]], !llvm.access.group [[ACC_GRP4]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = fcmp fast olt <4 x double> [[WIDE_MASKED_GATHER]], [[WIDE_MASKED_GATHER13]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = select <4 x i1> [[TMP7]], <4 x double> [[WIDE_MASKED_GATHER13]], <4 x double> [[WIDE_MASKED_GATHER]]
-; CHECK-NEXT:    tail call void @llvm.masked.scatter.v4f64.v4p0(<4 x double> [[TMP8]], <4 x ptr> [[TMP4]], i32 8, <4 x i1> splat (i1 true))
+; CHECK-NEXT:    tail call void @llvm.masked.scatter.v4f64.v4p0(<4 x double> [[TMP8]], <4 x ptr> [[TMP4]], i32 8, <4 x i1> splat (i1 true)), !tbaa [[TBAA5]], !llvm.access.group [[ACC_GRP4]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP9]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP9]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N_VEC]], [[TMP0]]
 ; CHECK-NEXT:    br i1 [[CMP_N]], label %[[FOR_COND_CLEANUP]], label %[[FOR_BODY_PREHEADER14]]
@@ -49,18 +49,18 @@ define void @test(i32 noundef %nface, i32 noundef %ncell, ptr noalias noundef %f
 ; CHECK:       [[FOR_BODY]]:
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_BODY]] ], [ [[INDVARS_IV_PH]], %[[FOR_BODY_PREHEADER14]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds nuw i32, ptr [[FACE_CELL]], i64 [[INDVARS_IV]]
-; CHECK-NEXT:    [[TMP10:%.*]] = load i32, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA6:![0-9]+]], !llvm.access.group [[ACC_GRP3:![0-9]+]]
+; CHECK-NEXT:    [[TMP10:%.*]] = load i32, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA0]], !llvm.access.group [[ACC_GRP4]]
 ; CHECK-NEXT:    [[GEP:%.*]] = getelementptr inbounds nuw i32, ptr [[INVARIANT_GEP]], i64 [[INDVARS_IV]]
-; CHECK-NEXT:    [[TMP11:%.*]] = load i32, ptr [[GEP]], align 4, !tbaa [[TBAA6]], !llvm.access.group [[ACC_GRP3]]
+; CHECK-NEXT:    [[TMP11:%.*]] = load i32, ptr [[GEP]], align 4, !tbaa [[TBAA0]], !llvm.access.group [[ACC_GRP4]]
 ; CHECK-NEXT:    [[IDXPROM3:%.*]] = sext i32 [[TMP10]] to i64
 ; CHECK-NEXT:    [[ARRAYIDX4:%.*]] = getelementptr inbounds double, ptr [[Y]], i64 [[IDXPROM3]]
 ; CHECK-NEXT:    [[IDXPROM5:%.*]] = sext i32 [[TMP11]] to i64
 ; CHECK-NEXT:    [[ARRAYIDX6:%.*]] = getelementptr inbounds double, ptr [[X]], i64 [[IDXPROM5]]
-; CHECK-NEXT:    [[TMP12:%.*]] = load double, ptr [[ARRAYIDX4]], align 8, !tbaa [[TBAA10:![0-9]+]], !llvm.access.group [[ACC_GRP3]]
-; CHECK-NEXT:    [[TMP13:%.*]] = load double, ptr [[ARRAYIDX6]], align 8, !tbaa [[TBAA10]], !llvm.access.group [[ACC_GRP3]]
+; CHECK-NEXT:    [[TMP12:%.*]] = load double, ptr [[ARRAYIDX4]], align 8, !tbaa [[TBAA5]], !llvm.access.group [[ACC_GRP4]]
+; CHECK-NEXT:    [[TMP13:%.*]] = load double, ptr [[ARRAYIDX6]], align 8, !tbaa [[TBAA5]], !llvm.access.group [[ACC_GRP4]]
 ; CHECK-NEXT:    [[CMP_I:%.*]] = fcmp fast olt double [[TMP12]], [[TMP13]]
 ; CHECK-NEXT:    [[TMP14:%.*]] = select i1 [[CMP_I]], double [[TMP13]], double [[TMP12]]
-; CHECK-NEXT:    store double [[TMP14]], ptr [[ARRAYIDX4]], align 8, !tbaa [[TBAA10]], !llvm.access.group [[ACC_GRP3]]
+; CHECK-NEXT:    store double [[TMP14]], ptr [[ARRAYIDX4]], align 8, !tbaa [[TBAA5]], !llvm.access.group [[ACC_GRP4]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[TMP0]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_COND_CLEANUP]], label %[[FOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
@@ -190,17 +190,17 @@ attributes #1 = { nocallback nofree nosync nounwind willreturn memory(argmem: re
 !18 = !{!"llvm.loop.vectorize.enable", i1 true}
 
 ;.
-; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META4:![0-9]+]], [[META5:![0-9]+]]}
-; CHECK: [[META1]] = !{!"llvm.loop.mustprogress"}
-; CHECK: [[META2]] = !{!"llvm.loop.parallel_accesses", [[ACC_GRP3]]}
-; CHECK: [[ACC_GRP3]] = distinct !{}
-; CHECK: [[META4]] = !{!"llvm.loop.isvectorized", i32 1}
-; CHECK: [[META5]] = !{!"llvm.loop.unroll.runtime.disable"}
-; CHECK: [[TBAA6]] = !{[[META7:![0-9]+]], [[META7]], i64 0}
-; CHECK: [[META7]] = !{!"int", [[META8:![0-9]+]], i64 0}
-; CHECK: [[META8]] = !{!"omnipotent char", [[META9:![0-9]+]], i64 0}
-; CHECK: [[META9]] = !{!"Simple C++ TBAA"}
-; CHECK: [[TBAA10]] = !{[[META11:![0-9]+]], [[META11]], i64 0}
-; CHECK: [[META11]] = !{!"double", [[META8]], i64 0}
-; CHECK: [[LOOP12]] = distinct !{[[LOOP12]], [[META1]], [[META2]], [[META5]], [[META4]]}
+; CHECK: [[TBAA0]] = !{[[META1:![0-9]+]], [[META1]], i64 0}
+; CHECK: [[META1]] = !{!"int", [[META2:![0-9]+]], i64 0}
+; CHECK: [[META2]] = !{!"omnipotent char", [[META3:![0-9]+]], i64 0}
+; CHECK: [[META3]] = !{!"Simple C++ TBAA"}
+; CHECK: [[ACC_GRP4]] = distinct !{}
+; CHECK: [[TBAA5]] = !{[[META6:![0-9]+]], [[META6]], i64 0}
+; CHECK: [[META6]] = !{!"double", [[META2]], i64 0}
+; CHECK: [[LOOP7]] = distinct !{[[LOOP7]], [[META8:![0-9]+]], [[META9:![0-9]+]], [[META10:![0-9]+]], [[META11:![0-9]+]]}
+; CHECK: [[META8]] = !{!"llvm.loop.mustprogress"}
+; CHECK: [[META9]] = !{!"llvm.loop.parallel_accesses", [[ACC_GRP4]]}
+; CHECK: [[META10]] = !{!"llvm.loop.isvectorized", i32 1}
+; CHECK: [[META11]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK: [[LOOP12]] = distinct !{[[LOOP12]], [[META8]], [[META9]], [[META11]], [[META10]]}
 ;.

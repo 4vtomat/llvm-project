@@ -29,7 +29,7 @@ define void @drop_scalar_nuw_nsw(ptr noalias nocapture readonly %input,
 ; CHECK-NEXT:    [[TMP5:%.*]] = sub i64 [[INDEX]], 1
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr float, ptr [[INPUT:%.*]], i64 [[TMP5]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr float, ptr [[TMP6]], i32 0
-; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x float> @llvm.masked.load.v4f32.p0(ptr [[TMP8]], i32 4, <4 x i1> [[TMP7]], <4 x float> poison)
+; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x float> @llvm.masked.load.v4f32.p0(ptr [[TMP8]], i32 4, <4 x i1> [[TMP7]], <4 x float> poison), !invariant.load !0
 entry:
   br label %loop.header
 
@@ -68,7 +68,7 @@ define void @drop_scalar_gep_nusw(ptr noalias nocapture readonly %input,
 ; CHECK-NEXT:    [[TMP5:%.*]] = sub i64 [[INDEX]], 1
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr float, ptr [[INPUT:%.*]], i64 [[TMP5]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr float, ptr [[TMP6]], i32 0
-; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x float> @llvm.masked.load.v4f32.p0(ptr [[TMP8]], i32 4, <4 x i1> [[TMP7]], <4 x float> poison)
+; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x float> @llvm.masked.load.v4f32.p0(ptr [[TMP8]], i32 4, <4 x i1> [[TMP7]], <4 x float> poison), !invariant.load !0
 entry:
   br label %loop.header
 
@@ -107,7 +107,7 @@ define void @drop_scalar_gep_nuw(ptr noalias nocapture readonly %input,
 ; CHECK-NEXT:    [[TMP5:%.*]] = sub i64 [[INDEX]], 1
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr float, ptr [[INPUT:%.*]], i64 [[TMP5]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr float, ptr [[TMP6]], i32 0
-; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x float> @llvm.masked.load.v4f32.p0(ptr [[TMP8]], i32 4, <4 x i1> [[TMP7]], <4 x float> poison)
+; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x float> @llvm.masked.load.v4f32.p0(ptr [[TMP8]], i32 4, <4 x i1> [[TMP7]], <4 x float> poison), !invariant.load !0
 entry:
   br label %loop.header
 
@@ -147,7 +147,7 @@ define void @drop_nonpred_scalar_nuw_nsw(ptr noalias nocapture readonly %input,
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp eq <4 x i64> [[VEC_IND]], zeroinitializer
 ; CHECK-NEXT:    [[TMP7:%.*]] = xor <4 x i1> [[TMP4]], splat (i1 true)
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr float, ptr [[TMP6]], i32 0
-; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x float> @llvm.masked.load.v4f32.p0(ptr [[TMP8]], i32 4, <4 x i1> [[TMP7]], <4 x float> poison)
+; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x float> @llvm.masked.load.v4f32.p0(ptr [[TMP8]], i32 4, <4 x i1> [[TMP7]], <4 x float> poison), !invariant.load !0
 entry:
   br label %loop.header
 
@@ -186,7 +186,7 @@ define void @preserve_vector_nuw_nsw(ptr noalias nocapture readonly %input,
 ; CHECK-NEXT:    [[TMP5:%.*]] = sub nuw nsw <4 x i64> [[VEC_IND]], splat (i64 1)
 ; CHECK-NEXT:    [[TMP6:%.*]] = mul nuw nsw <4 x i64> [[TMP5]], splat (i64 2)
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds float, ptr [[INPUT:%.*]], <4 x i64> [[TMP6]]
-; CHECK-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <4 x float> @llvm.masked.gather.v4f32.v4p0(<4 x ptr> [[TMP7]], i32 4, <4 x i1> [[TMP8]], <4 x float> poison)
+; CHECK-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <4 x float> @llvm.masked.gather.v4f32.v4p0(<4 x ptr> [[TMP7]], i32 4, <4 x i1> [[TMP8]], <4 x float> poison), !invariant.load !0
 entry:
   br label %loop.header
 
@@ -228,7 +228,7 @@ define void @drop_vector_nuw_nsw(ptr noalias nocapture readonly %input,
 ; CHECK:         [[TMP10:%.*]] = xor <4 x i1> [[TMP4]], splat (i1 true)
 ; CHECK-NEXT:    [[TMP11:%.*]] = extractelement <4 x ptr> [[TMP7]], i32 0
 ; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr float, ptr [[TMP11]], i32 0
-; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x float> @llvm.masked.load.v4f32.p0(ptr [[TMP12]], i32 4, <4 x i1> [[TMP10]], <4 x float> poison)
+; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x float> @llvm.masked.load.v4f32.p0(ptr [[TMP12]], i32 4, <4 x i1> [[TMP10]], <4 x float> poison), !invariant.load !0
 entry:
   br label %loop.header
 
@@ -309,7 +309,7 @@ define void @drop_scalar_exact(ptr noalias nocapture readonly %input,
 ; CHECK-NEXT:    [[TMP8:%.*]] = sdiv i64 [[INDEX]], 1
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr float, ptr [[INPUT:%.*]], i64 [[TMP8]]
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr float, ptr [[TMP9]], i32 0
-; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x float> @llvm.masked.load.v4f32.p0(ptr [[TMP11]], i32 4, <4 x i1> [[TMP10]], <4 x float> poison)
+; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x float> @llvm.masked.load.v4f32.p0(ptr [[TMP11]], i32 4, <4 x i1> [[TMP10]], <4 x float> poison), !invariant.load !0
 entry:
   br label %loop.header
 
@@ -428,7 +428,7 @@ define void @preserve_vector_exact_no_addr(ptr noalias nocapture readonly %input
 ; CHECK-NEXT:    [[TMP10:%.*]] = xor <4 x i1> [[TMP7]], splat (i1 true)
 ; CHECK-NEXT:    [[TMP8:%.*]] = sdiv exact <4 x i64> [[VEC_IND]], splat (i64 2)
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds float, ptr [[INPUT:%.*]], <4 x i64> [[TMP8]]
-; CHECK-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <4 x float> @llvm.masked.gather.v4f32.v4p0(<4 x ptr> [[TMP9]], i32 4, <4 x i1> [[TMP10]], <4 x float> poison)
+; CHECK-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <4 x float> @llvm.masked.gather.v4f32.v4p0(<4 x ptr> [[TMP9]], i32 4, <4 x i1> [[TMP10]], <4 x float> poison), !invariant.load !0
 ;
 entry:
   br label %loop.header
@@ -509,7 +509,7 @@ define void @dont_vectorize_poison_phi(ptr noalias nocapture readonly %input,
 ; CHECK-NEXT:    br i1 [[I23]], label [[IF_END]], label [[IF_THEN:%.*]]
 ; CHECK:       if.then:
 ; CHECK-NEXT:    [[I29:%.*]] = getelementptr inbounds float, ptr [[INPUT:%.*]], i64 [[POISON]]
-; CHECK-NEXT:    [[I30:%.*]] = load float, ptr [[I29]], align 4
+; CHECK-NEXT:    [[I30:%.*]] = load float, ptr [[I29]], align 4, !invariant.load !0
 ; CHECK-NEXT:    br label [[IF_END]]
 ; CHECK:       if.end:
 ; CHECK-NEXT:    [[I34:%.*]] = phi float [ 0.000000e+00, [[LOOP_HEADER]] ], [ [[I30]], [[IF_THEN]] ]

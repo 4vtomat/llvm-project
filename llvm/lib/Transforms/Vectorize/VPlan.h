@@ -3154,8 +3154,9 @@ protected:
                       bool Consecutive, bool Reverse, DebugLoc DL,
                       VPValue *Stride = nullptr, bool Speculative = false,
                       bool IsMonotonic = false)
-      : VPRecipeBase(SC, Operands, DL), Ingredient(I), Consecutive(Consecutive),
-        Reverse(Reverse), Speculative(Speculative), IsMonotonic(IsMonotonic) {
+      : VPRecipeBase(SC, Operands, DL), VPIRMetadata(I), Ingredient(I),
+        Consecutive(Consecutive), Reverse(Reverse), Speculative(Speculative),
+        IsMonotonic(IsMonotonic) {
     setStride(Stride);
 #else
   VPWidenMemoryRecipe(const char unsigned SC, Instruction &I,

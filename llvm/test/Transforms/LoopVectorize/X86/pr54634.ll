@@ -42,22 +42,22 @@ define ptr addrspace(10) @japi1_vect_42283(ptr nocapture readonly %0, i32 %1) lo
 ; CHECK-NEXT:    [[TMP19:%.*]] = getelementptr inbounds { ptr addrspace(10), i64 }, ptr addrspace(13) [[TMP7]], <4 x i64> [[STEP_ADD]], i32 0
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr inbounds { ptr addrspace(10), i64 }, ptr addrspace(13) [[TMP7]], <4 x i64> [[STEP_ADD4]], i32 0
 ; CHECK-NEXT:    [[TMP21:%.*]] = getelementptr inbounds { ptr addrspace(10), i64 }, ptr addrspace(13) [[TMP7]], <4 x i64> [[STEP_ADD5]], i32 0
-; CHECK-NEXT:    call void @llvm.masked.scatter.v4p10.v4p13(<4 x ptr addrspace(10)> [[BROADCAST_SPLAT]], <4 x ptr addrspace(13)> [[TMP18]], i32 8, <4 x i1> splat (i1 true))
-; CHECK-NEXT:    call void @llvm.masked.scatter.v4p10.v4p13(<4 x ptr addrspace(10)> [[BROADCAST_SPLAT]], <4 x ptr addrspace(13)> [[TMP19]], i32 8, <4 x i1> splat (i1 true))
-; CHECK-NEXT:    call void @llvm.masked.scatter.v4p10.v4p13(<4 x ptr addrspace(10)> [[BROADCAST_SPLAT]], <4 x ptr addrspace(13)> [[TMP20]], i32 8, <4 x i1> splat (i1 true))
-; CHECK-NEXT:    call void @llvm.masked.scatter.v4p10.v4p13(<4 x ptr addrspace(10)> [[BROADCAST_SPLAT]], <4 x ptr addrspace(13)> [[TMP21]], i32 8, <4 x i1> splat (i1 true))
+; CHECK-NEXT:    call void @llvm.masked.scatter.v4p10.v4p13(<4 x ptr addrspace(10)> [[BROADCAST_SPLAT]], <4 x ptr addrspace(13)> [[TMP18]], i32 8, <4 x i1> splat (i1 true)), !tbaa [[TBAA10:![0-9]+]]
+; CHECK-NEXT:    call void @llvm.masked.scatter.v4p10.v4p13(<4 x ptr addrspace(10)> [[BROADCAST_SPLAT]], <4 x ptr addrspace(13)> [[TMP19]], i32 8, <4 x i1> splat (i1 true)), !tbaa [[TBAA10]]
+; CHECK-NEXT:    call void @llvm.masked.scatter.v4p10.v4p13(<4 x ptr addrspace(10)> [[BROADCAST_SPLAT]], <4 x ptr addrspace(13)> [[TMP20]], i32 8, <4 x i1> splat (i1 true)), !tbaa [[TBAA10]]
+; CHECK-NEXT:    call void @llvm.masked.scatter.v4p10.v4p13(<4 x ptr addrspace(10)> [[BROADCAST_SPLAT]], <4 x ptr addrspace(13)> [[TMP21]], i32 8, <4 x i1> splat (i1 true)), !tbaa [[TBAA10]]
 ; CHECK-NEXT:    [[TMP22:%.*]] = getelementptr inbounds { ptr addrspace(10), i64 }, ptr addrspace(13) [[TMP7]], <4 x i64> [[VEC_IND]], i32 1
 ; CHECK-NEXT:    [[TMP23:%.*]] = getelementptr inbounds { ptr addrspace(10), i64 }, ptr addrspace(13) [[TMP7]], <4 x i64> [[STEP_ADD]], i32 1
 ; CHECK-NEXT:    [[TMP24:%.*]] = getelementptr inbounds { ptr addrspace(10), i64 }, ptr addrspace(13) [[TMP7]], <4 x i64> [[STEP_ADD4]], i32 1
 ; CHECK-NEXT:    [[TMP25:%.*]] = getelementptr inbounds { ptr addrspace(10), i64 }, ptr addrspace(13) [[TMP7]], <4 x i64> [[STEP_ADD5]], i32 1
-; CHECK-NEXT:    call void @llvm.masked.scatter.v4i64.v4p13(<4 x i64> [[BROADCAST_SPLAT8]], <4 x ptr addrspace(13)> [[TMP22]], i32 8, <4 x i1> splat (i1 true))
-; CHECK-NEXT:    call void @llvm.masked.scatter.v4i64.v4p13(<4 x i64> [[BROADCAST_SPLAT8]], <4 x ptr addrspace(13)> [[TMP23]], i32 8, <4 x i1> splat (i1 true))
-; CHECK-NEXT:    call void @llvm.masked.scatter.v4i64.v4p13(<4 x i64> [[BROADCAST_SPLAT8]], <4 x ptr addrspace(13)> [[TMP24]], i32 8, <4 x i1> splat (i1 true))
-; CHECK-NEXT:    call void @llvm.masked.scatter.v4i64.v4p13(<4 x i64> [[BROADCAST_SPLAT8]], <4 x ptr addrspace(13)> [[TMP25]], i32 8, <4 x i1> splat (i1 true))
+; CHECK-NEXT:    call void @llvm.masked.scatter.v4i64.v4p13(<4 x i64> [[BROADCAST_SPLAT8]], <4 x ptr addrspace(13)> [[TMP22]], i32 8, <4 x i1> splat (i1 true)), !tbaa [[TBAA10]]
+; CHECK-NEXT:    call void @llvm.masked.scatter.v4i64.v4p13(<4 x i64> [[BROADCAST_SPLAT8]], <4 x ptr addrspace(13)> [[TMP23]], i32 8, <4 x i1> splat (i1 true)), !tbaa [[TBAA10]]
+; CHECK-NEXT:    call void @llvm.masked.scatter.v4i64.v4p13(<4 x i64> [[BROADCAST_SPLAT8]], <4 x ptr addrspace(13)> [[TMP24]], i32 8, <4 x i1> splat (i1 true)), !tbaa [[TBAA10]]
+; CHECK-NEXT:    call void @llvm.masked.scatter.v4i64.v4p13(<4 x i64> [[BROADCAST_SPLAT8]], <4 x ptr addrspace(13)> [[TMP25]], i32 8, <4 x i1> splat (i1 true)), !tbaa [[TBAA10]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <4 x i64> [[STEP_ADD5]], splat (i64 4)
 ; CHECK-NEXT:    [[TMP26:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP26]], label [[MIDDLE_BLOCK1:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP26]], label [[MIDDLE_BLOCK1:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[TMP8]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[CMP_N]], label [[L44:%.*]], label [[MIDDLE_BLOCK:%.*]]
@@ -81,13 +81,13 @@ define ptr addrspace(10) @japi1_vect_42283(ptr nocapture readonly %0, i32 %1) lo
 ; CHECK-NEXT:    [[INDEX7:%.*]] = phi i64 [ [[VEC_EPILOG_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDEX_NEXT14:%.*]], [[L26]] ]
 ; CHECK-NEXT:    [[VEC_IND8:%.*]] = phi <4 x i64> [ [[INDUCTION]], [[SCALAR_PH]] ], [ [[VEC_IND_NEXT9:%.*]], [[L26]] ]
 ; CHECK-NEXT:    [[TMP28:%.*]] = getelementptr inbounds { ptr addrspace(10), i64 }, ptr addrspace(13) [[TMP7]], <4 x i64> [[VEC_IND8]], i32 0
-; CHECK-NEXT:    call void @llvm.masked.scatter.v4p10.v4p13(<4 x ptr addrspace(10)> [[BROADCAST_SPLAT11]], <4 x ptr addrspace(13)> [[TMP28]], i32 8, <4 x i1> splat (i1 true))
+; CHECK-NEXT:    call void @llvm.masked.scatter.v4p10.v4p13(<4 x ptr addrspace(10)> [[BROADCAST_SPLAT11]], <4 x ptr addrspace(13)> [[TMP28]], i32 8, <4 x i1> splat (i1 true)), !tbaa [[TBAA10]]
 ; CHECK-NEXT:    [[TMP29:%.*]] = getelementptr inbounds { ptr addrspace(10), i64 }, ptr addrspace(13) [[TMP7]], <4 x i64> [[VEC_IND8]], i32 1
-; CHECK-NEXT:    call void @llvm.masked.scatter.v4i64.v4p13(<4 x i64> [[BROADCAST_SPLAT13]], <4 x ptr addrspace(13)> [[TMP29]], i32 8, <4 x i1> splat (i1 true))
+; CHECK-NEXT:    call void @llvm.masked.scatter.v4i64.v4p13(<4 x i64> [[BROADCAST_SPLAT13]], <4 x ptr addrspace(13)> [[TMP29]], i32 8, <4 x i1> splat (i1 true)), !tbaa [[TBAA10]]
 ; CHECK-NEXT:    [[INDEX_NEXT14]] = add nuw i64 [[INDEX7]], 4
 ; CHECK-NEXT:    [[VEC_IND_NEXT9]] = add <4 x i64> [[VEC_IND8]], splat (i64 4)
 ; CHECK-NEXT:    [[TMP30:%.*]] = icmp eq i64 [[INDEX_NEXT14]], [[N_VEC5]]
-; CHECK-NEXT:    br i1 [[TMP30]], label [[VEC_EPILOG_MIDDLE_BLOCK:%.*]], label [[L26]], !llvm.loop [[LOOP13:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP30]], label [[VEC_EPILOG_MIDDLE_BLOCK:%.*]], label [[L26]], !llvm.loop [[LOOP15:![0-9]+]]
 ; CHECK:       vec.epilog.middle.block:
 ; CHECK-NEXT:    [[CMP_N15:%.*]] = icmp eq i64 [[TMP8]], [[N_VEC5]]
 ; CHECK-NEXT:    br i1 [[CMP_N15]], label [[L44]], label [[VEC_EPILOG_SCALAR_PH]]
@@ -97,9 +97,9 @@ define ptr addrspace(10) @japi1_vect_42283(ptr nocapture readonly %0, i32 %1) lo
 ; CHECK:       L26:
 ; CHECK-NEXT:    [[VALUE_PHI5:%.*]] = phi i64 [ [[BC_RESUME_VAL6]], [[VEC_EPILOG_SCALAR_PH]] ], [ [[TMP27:%.*]], [[L27]] ]
 ; CHECK-NEXT:    [[DOTREPACK:%.*]] = getelementptr inbounds { ptr addrspace(10), i64 }, ptr addrspace(13) [[TMP7]], i64 [[VALUE_PHI5]], i32 0
-; CHECK-NEXT:    store ptr addrspace(10) [[DOTUNPACK]], ptr addrspace(13) [[DOTREPACK]], align 8, !tbaa [[TBAA14:![0-9]+]]
+; CHECK-NEXT:    store ptr addrspace(10) [[DOTUNPACK]], ptr addrspace(13) [[DOTREPACK]], align 8, !tbaa [[TBAA10]]
 ; CHECK-NEXT:    [[DOTREPACK4:%.*]] = getelementptr inbounds { ptr addrspace(10), i64 }, ptr addrspace(13) [[TMP7]], i64 [[VALUE_PHI5]], i32 1
-; CHECK-NEXT:    store i64 [[DOTUNPACK2]], ptr addrspace(13) [[DOTREPACK4]], align 8, !tbaa [[TBAA14]]
+; CHECK-NEXT:    store i64 [[DOTUNPACK2]], ptr addrspace(13) [[DOTREPACK4]], align 8, !tbaa [[TBAA10]]
 ; CHECK-NEXT:    [[TMP27]] = add i64 [[VALUE_PHI5]], 1
 ; CHECK-NEXT:    [[DOTNOT:%.*]] = icmp eq i64 [[VALUE_PHI5]], [[TMP2]]
 ; CHECK-NEXT:    br i1 [[DOTNOT]], label [[L44]], label [[L27]], !llvm.loop [[LOOP16:![0-9]+]]

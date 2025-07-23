@@ -62,10 +62,10 @@ define i32 @matrix_row_col(ptr nocapture readonly %data, i32 %i, i32 %j) local_u
 ; CHECK-NEXT:    [[TMP34:%.*]] = getelementptr inbounds i32, ptr [[TMP32]], i32 8
 ; CHECK-NEXT:    [[TMP35:%.*]] = getelementptr inbounds i32, ptr [[TMP32]], i32 16
 ; CHECK-NEXT:    [[TMP37:%.*]] = getelementptr inbounds i32, ptr [[TMP32]], i32 24
-; CHECK-NEXT:    [[WIDE_LOAD6:%.*]] = load <8 x i32>, ptr [[TMP36]], align 4
-; CHECK-NEXT:    [[WIDE_LOAD4:%.*]] = load <8 x i32>, ptr [[TMP34]], align 4
-; CHECK-NEXT:    [[WIDE_LOAD5:%.*]] = load <8 x i32>, ptr [[TMP35]], align 4
-; CHECK-NEXT:    [[WIDE_LOAD7:%.*]] = load <8 x i32>, ptr [[TMP37]], align 4
+; CHECK-NEXT:    [[WIDE_LOAD6:%.*]] = load <8 x i32>, ptr [[TMP36]], align 4, !tbaa [[TBAA1:![0-9]+]]
+; CHECK-NEXT:    [[WIDE_LOAD4:%.*]] = load <8 x i32>, ptr [[TMP34]], align 4, !tbaa [[TBAA1]]
+; CHECK-NEXT:    [[WIDE_LOAD5:%.*]] = load <8 x i32>, ptr [[TMP35]], align 4, !tbaa [[TBAA1]]
+; CHECK-NEXT:    [[WIDE_LOAD7:%.*]] = load <8 x i32>, ptr [[TMP37]], align 4, !tbaa [[TBAA1]]
 ; CHECK-NEXT:    [[TMP40:%.*]] = getelementptr inbounds [100 x i32], ptr [[DATA]], i64 [[TMP0]], i64 [[IDXPROM5]]
 ; CHECK-NEXT:    [[TMP41:%.*]] = getelementptr inbounds [100 x i32], ptr [[DATA]], i64 [[TMP1]], i64 [[IDXPROM5]]
 ; CHECK-NEXT:    [[TMP42:%.*]] = getelementptr inbounds [100 x i32], ptr [[DATA]], i64 [[TMP2]], i64 [[IDXPROM5]]
@@ -98,7 +98,7 @@ define i32 @matrix_row_col(ptr nocapture readonly %data, i32 %i, i32 %j) local_u
 ; CHECK-NEXT:    [[TMP66:%.*]] = getelementptr inbounds [100 x i32], ptr [[DATA]], i64 [[TMP29]], i64 [[IDXPROM5]]
 ; CHECK-NEXT:    [[TMP67:%.*]] = getelementptr inbounds [100 x i32], ptr [[DATA]], i64 [[TMP30]], i64 [[IDXPROM5]]
 ; CHECK-NEXT:    [[TMP68:%.*]] = getelementptr inbounds [100 x i32], ptr [[DATA]], i64 [[TMP31]], i64 [[IDXPROM5]]
-; CHECK-NEXT:    [[TMP120:%.*]] = load i32, ptr [[TMP40]], align 4, !tbaa [[TBAA1:![0-9]+]]
+; CHECK-NEXT:    [[TMP120:%.*]] = load i32, ptr [[TMP40]], align 4, !tbaa [[TBAA1]]
 ; CHECK-NEXT:    [[TMP121:%.*]] = load i32, ptr [[TMP41]], align 4, !tbaa [[TBAA1]]
 ; CHECK-NEXT:    [[TMP122:%.*]] = load i32, ptr [[TMP42]], align 4, !tbaa [[TBAA1]]
 ; CHECK-NEXT:    [[TMP123:%.*]] = load i32, ptr [[TMP43]], align 4, !tbaa [[TBAA1]]
@@ -199,7 +199,7 @@ define i32 @matrix_row_col(ptr nocapture readonly %data, i32 %i, i32 %j) local_u
 ; CHECK-NEXT:    [[TMP188:%.*]] = add i64 [[INDEX9]], 3
 ; CHECK-NEXT:    [[TMP152:%.*]] = getelementptr inbounds [100 x i32], ptr [[DATA]], i64 [[IDXPROM]], i64 [[TMP186]]
 ; CHECK-NEXT:    [[TMP153:%.*]] = getelementptr inbounds i32, ptr [[TMP152]], i32 0
-; CHECK-NEXT:    [[WIDE_LOAD11:%.*]] = load <4 x i32>, ptr [[TMP153]], align 4
+; CHECK-NEXT:    [[WIDE_LOAD11:%.*]] = load <4 x i32>, ptr [[TMP153]], align 4, !tbaa [[TBAA1]]
 ; CHECK-NEXT:    [[TMP154:%.*]] = getelementptr inbounds [100 x i32], ptr [[DATA]], i64 [[TMP186]], i64 [[IDXPROM5]]
 ; CHECK-NEXT:    [[TMP155:%.*]] = getelementptr inbounds [100 x i32], ptr [[DATA]], i64 [[TMP149]], i64 [[IDXPROM5]]
 ; CHECK-NEXT:    [[TMP156:%.*]] = getelementptr inbounds [100 x i32], ptr [[DATA]], i64 [[TMP187]], i64 [[IDXPROM5]]
@@ -294,10 +294,10 @@ define i32 @matrix_row_col(ptr nocapture readonly %data, i32 %i, i32 %j) local_u
 ; MAX-BW-NEXT:    [[TMP34:%.*]] = getelementptr inbounds i32, ptr [[TMP32]], i32 8
 ; MAX-BW-NEXT:    [[TMP35:%.*]] = getelementptr inbounds i32, ptr [[TMP32]], i32 16
 ; MAX-BW-NEXT:    [[TMP37:%.*]] = getelementptr inbounds i32, ptr [[TMP32]], i32 24
-; MAX-BW-NEXT:    [[WIDE_LOAD6:%.*]] = load <8 x i32>, ptr [[TMP36]], align 4
-; MAX-BW-NEXT:    [[WIDE_LOAD4:%.*]] = load <8 x i32>, ptr [[TMP34]], align 4
-; MAX-BW-NEXT:    [[WIDE_LOAD5:%.*]] = load <8 x i32>, ptr [[TMP35]], align 4
-; MAX-BW-NEXT:    [[WIDE_LOAD7:%.*]] = load <8 x i32>, ptr [[TMP37]], align 4
+; MAX-BW-NEXT:    [[WIDE_LOAD6:%.*]] = load <8 x i32>, ptr [[TMP36]], align 4, !tbaa [[TBAA1:![0-9]+]]
+; MAX-BW-NEXT:    [[WIDE_LOAD4:%.*]] = load <8 x i32>, ptr [[TMP34]], align 4, !tbaa [[TBAA1]]
+; MAX-BW-NEXT:    [[WIDE_LOAD5:%.*]] = load <8 x i32>, ptr [[TMP35]], align 4, !tbaa [[TBAA1]]
+; MAX-BW-NEXT:    [[WIDE_LOAD7:%.*]] = load <8 x i32>, ptr [[TMP37]], align 4, !tbaa [[TBAA1]]
 ; MAX-BW-NEXT:    [[TMP40:%.*]] = getelementptr inbounds [100 x i32], ptr [[DATA]], i64 [[TMP0]], i64 [[IDXPROM5]]
 ; MAX-BW-NEXT:    [[TMP41:%.*]] = getelementptr inbounds [100 x i32], ptr [[DATA]], i64 [[TMP1]], i64 [[IDXPROM5]]
 ; MAX-BW-NEXT:    [[TMP42:%.*]] = getelementptr inbounds [100 x i32], ptr [[DATA]], i64 [[TMP2]], i64 [[IDXPROM5]]
@@ -330,7 +330,7 @@ define i32 @matrix_row_col(ptr nocapture readonly %data, i32 %i, i32 %j) local_u
 ; MAX-BW-NEXT:    [[TMP66:%.*]] = getelementptr inbounds [100 x i32], ptr [[DATA]], i64 [[TMP29]], i64 [[IDXPROM5]]
 ; MAX-BW-NEXT:    [[TMP67:%.*]] = getelementptr inbounds [100 x i32], ptr [[DATA]], i64 [[TMP30]], i64 [[IDXPROM5]]
 ; MAX-BW-NEXT:    [[TMP68:%.*]] = getelementptr inbounds [100 x i32], ptr [[DATA]], i64 [[TMP31]], i64 [[IDXPROM5]]
-; MAX-BW-NEXT:    [[TMP120:%.*]] = load i32, ptr [[TMP40]], align 4, !tbaa [[TBAA1:![0-9]+]]
+; MAX-BW-NEXT:    [[TMP120:%.*]] = load i32, ptr [[TMP40]], align 4, !tbaa [[TBAA1]]
 ; MAX-BW-NEXT:    [[TMP121:%.*]] = load i32, ptr [[TMP41]], align 4, !tbaa [[TBAA1]]
 ; MAX-BW-NEXT:    [[TMP122:%.*]] = load i32, ptr [[TMP42]], align 4, !tbaa [[TBAA1]]
 ; MAX-BW-NEXT:    [[TMP123:%.*]] = load i32, ptr [[TMP43]], align 4, !tbaa [[TBAA1]]
@@ -431,7 +431,7 @@ define i32 @matrix_row_col(ptr nocapture readonly %data, i32 %i, i32 %j) local_u
 ; MAX-BW-NEXT:    [[TMP188:%.*]] = add i64 [[INDEX9]], 3
 ; MAX-BW-NEXT:    [[TMP152:%.*]] = getelementptr inbounds [100 x i32], ptr [[DATA]], i64 [[IDXPROM]], i64 [[TMP186]]
 ; MAX-BW-NEXT:    [[TMP153:%.*]] = getelementptr inbounds i32, ptr [[TMP152]], i32 0
-; MAX-BW-NEXT:    [[WIDE_LOAD11:%.*]] = load <4 x i32>, ptr [[TMP153]], align 4
+; MAX-BW-NEXT:    [[WIDE_LOAD11:%.*]] = load <4 x i32>, ptr [[TMP153]], align 4, !tbaa [[TBAA1]]
 ; MAX-BW-NEXT:    [[TMP154:%.*]] = getelementptr inbounds [100 x i32], ptr [[DATA]], i64 [[TMP186]], i64 [[IDXPROM5]]
 ; MAX-BW-NEXT:    [[TMP155:%.*]] = getelementptr inbounds [100 x i32], ptr [[DATA]], i64 [[TMP149]], i64 [[IDXPROM5]]
 ; MAX-BW-NEXT:    [[TMP156:%.*]] = getelementptr inbounds [100 x i32], ptr [[DATA]], i64 [[TMP187]], i64 [[IDXPROM5]]

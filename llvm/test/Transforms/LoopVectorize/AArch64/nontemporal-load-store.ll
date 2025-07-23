@@ -1,9 +1,5 @@
 ; RUN: opt -passes=loop-vectorize -mtriple=arm64-apple-iphones -force-vector-width=4 -force-vector-interleave=1 %s -S | FileCheck %s
 
-; SIFVIE
-; This test fails because it can't vectorize the loop.
-; UNSUPPORTED: true
-
 ; Vectors with i4 elements may not legal with nontemporal stores.
 define void @test_i4_store(ptr %ddst) {
 ; CHECK-LABEL: define void @test_i4_store(

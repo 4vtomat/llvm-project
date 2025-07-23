@@ -53,7 +53,7 @@ define dso_local signext i32 @reduction_vec(i32 noundef signext %n, i32* nocaptu
 ; CHECK-NEXT:    [[TMP24:%.*]] = getelementptr i32, ptr [[TMP20]], i64 [[TMP22]]
 ; CHECK-NEXT:    [[TMP25:%.*]] = getelementptr i32, ptr [[TMP24]], i64 [[TMP23]]
 ; CHECK-NEXT:    [[VP_REVERSE_MASK:%.*]] = call <vscale x 2 x i1> @llvm.experimental.vp.reverse.nxv2i1(<vscale x 2 x i1> [[PRED_NOT]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP17]])
-; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0(ptr align 4 [[TMP25]], <vscale x 2 x i1> [[VP_REVERSE_MASK]], i32 [[TMP17]])
+; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0(ptr align 4 [[TMP25]], <vscale x 2 x i1> [[VP_REVERSE_MASK]], i32 [[TMP17]]), !tbaa [[TBAA4:![0-9]+]]
 ; CHECK-NEXT:    [[VP_REVERSE:%.*]] = call <vscale x 2 x i32> @llvm.experimental.vp.reverse.nxv2i32(<vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP17]])
 ; CHECK-NEXT:    [[VP_OP7:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[VP_REVERSE]], <vscale x 2 x i32> [[VEC_PHI]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP17]])
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = call <vscale x 2 x i32> @llvm.vp.select.nxv2i32(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i32> [[VEC_PHI]], <vscale x 2 x i32> [[VP_OP7]], i32 [[TMP17]])
@@ -66,7 +66,7 @@ define dso_local signext i32 @reduction_vec(i32 noundef signext %n, i32* nocaptu
 ; CHECK-NEXT:    [[DOTSPLAT5:%.*]] = shufflevector <vscale x 2 x i64> [[DOTSPLATINSERT4]], <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = call <vscale x 2 x i64> @llvm.vp.add.nxv2i64(<vscale x 2 x i64> [[VEC_IND]], <vscale x 2 x i64> [[DOTSPLAT5]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP17]])
 ; CHECK-NEXT:    [[TMP29:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP0]]
-; CHECK-NEXT:    br i1 [[TMP29]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP29]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP30:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP11]])
 ; CHECK-NEXT:    [[TMP31:%.*]] = add i32 0, [[TMP30]]
@@ -91,7 +91,7 @@ define dso_local signext i32 @reduction_vec(i32 noundef signext %n, i32* nocaptu
 ; CHECK:       if.then:
 ; CHECK-NEXT:    [[IDXPROM7:%.*]] = and i64 [[INDVARS_IV_NEXT]], 4294967295
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[X]], i64 [[IDXPROM7]]
-; CHECK-NEXT:    [[TMP32:%.*]] = load i32, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA8:![0-9]+]]
+; CHECK-NEXT:    [[TMP32:%.*]] = load i32, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA4]]
 ; CHECK-NEXT:    [[ADD:%.*]] = add nsw i32 [[TMP32]], [[RED_010]]
 ; CHECK-NEXT:    br label [[FOR_INC]]
 ; CHECK:       for.inc:
@@ -149,7 +149,7 @@ define dso_local signext i32 @reduction_vec(i32 noundef signext %n, i32* nocaptu
 ; CHECK-NO-POSTSV-NEXT:    [[TMP24:%.*]] = getelementptr i32, ptr [[TMP20]], i64 [[TMP22]]
 ; CHECK-NO-POSTSV-NEXT:    [[TMP25:%.*]] = getelementptr i32, ptr [[TMP24]], i64 [[TMP23]]
 ; CHECK-NO-POSTSV-NEXT:    [[VP_REVERSE_MASK:%.*]] = call <vscale x 2 x i1> @llvm.experimental.vp.reverse.nxv2i1(<vscale x 2 x i1> [[PRED_NOT]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP17]])
-; CHECK-NO-POSTSV-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0(ptr align 4 [[TMP25]], <vscale x 2 x i1> [[VP_REVERSE_MASK]], i32 [[TMP17]])
+; CHECK-NO-POSTSV-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0(ptr align 4 [[TMP25]], <vscale x 2 x i1> [[VP_REVERSE_MASK]], i32 [[TMP17]]), !tbaa [[TBAA4:![0-9]+]]
 ; CHECK-NO-POSTSV-NEXT:    [[VP_REVERSE:%.*]] = call <vscale x 2 x i32> @llvm.experimental.vp.reverse.nxv2i32(<vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP17]])
 ; CHECK-NO-POSTSV-NEXT:    [[VP_OP7:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[VP_REVERSE]], <vscale x 2 x i32> [[VEC_PHI]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP17]])
 ; CHECK-NO-POSTSV-NEXT:    [[PREDPHI:%.*]] = call <vscale x 2 x i32> @llvm.vp.select.nxv2i32(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i32> [[VEC_PHI]], <vscale x 2 x i32> [[VP_OP7]], i32 [[TMP17]])
@@ -162,7 +162,7 @@ define dso_local signext i32 @reduction_vec(i32 noundef signext %n, i32* nocaptu
 ; CHECK-NO-POSTSV-NEXT:    [[DOTSPLAT5:%.*]] = shufflevector <vscale x 2 x i64> [[DOTSPLATINSERT4]], <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer
 ; CHECK-NO-POSTSV-NEXT:    [[VEC_IND_NEXT]] = call <vscale x 2 x i64> @llvm.vp.add.nxv2i64(<vscale x 2 x i64> [[VEC_IND]], <vscale x 2 x i64> [[DOTSPLAT5]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP17]])
 ; CHECK-NO-POSTSV-NEXT:    [[TMP29:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP0]]
-; CHECK-NO-POSTSV-NEXT:    br i1 [[TMP29]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+; CHECK-NO-POSTSV-NEXT:    br i1 [[TMP29]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
 ; CHECK-NO-POSTSV:       middle.block:
 ; CHECK-NO-POSTSV-NEXT:    [[TMP30:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP11]])
 ; CHECK-NO-POSTSV-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
@@ -186,7 +186,7 @@ define dso_local signext i32 @reduction_vec(i32 noundef signext %n, i32* nocaptu
 ; CHECK-NO-POSTSV:       if.then:
 ; CHECK-NO-POSTSV-NEXT:    [[IDXPROM7:%.*]] = and i64 [[INDVARS_IV_NEXT]], 4294967295
 ; CHECK-NO-POSTSV-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[X]], i64 [[IDXPROM7]]
-; CHECK-NO-POSTSV-NEXT:    [[TMP31:%.*]] = load i32, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA8:![0-9]+]]
+; CHECK-NO-POSTSV-NEXT:    [[TMP31:%.*]] = load i32, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA4]]
 ; CHECK-NO-POSTSV-NEXT:    [[ADD:%.*]] = add nsw i32 [[TMP31]], [[RED_010]]
 ; CHECK-NO-POSTSV-NEXT:    br label [[FOR_INC]]
 ; CHECK-NO-POSTSV:       for.inc:
