@@ -137,9 +137,12 @@ define float @fmin(float %k, <vscale x 8 x float> %merge) {
   ; Neutral = Inf
 ; CHECK-LABEL: define float @fmin(
 ; CHECK-SAME: float [[K:%.*]], <vscale x 8 x float> [[MERGE:%.*]]) {
-; CHECK-NEXT:    [[R:%.*]] = call nnan float @llvm.vp.reduce.fmin.nxv8f32(float [[K]], <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
-; CHECK-NEXT:    [[R1:%.*]] = call ninf float @llvm.vp.reduce.fmin.nxv8f32(float [[R]], <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
-; CHECK-NEXT:    [[R2:%.*]] = call float @llvm.vp.reduce.fmin.nxv8f32(float [[R1]], <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
+; CHECK-NEXT:    [[A:%.*]] = call nnan float @llvm.vp.reduce.fmin.nxv8f32(float 0x7FF0000000000000, <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
+; CHECK-NEXT:    [[R:%.*]] = call float @llvm.minnum.f32(float [[A]], float [[K]])
+; CHECK-NEXT:    [[A1:%.*]] = call ninf float @llvm.vp.reduce.fmin.nxv8f32(float 0x7FF8000000000000, <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
+; CHECK-NEXT:    [[R1:%.*]] = call float @llvm.minnum.f32(float [[A1]], float [[R]])
+; CHECK-NEXT:    [[A2:%.*]] = call float @llvm.vp.reduce.fmin.nxv8f32(float 0x7FF8000000000000, <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
+; CHECK-NEXT:    [[R2:%.*]] = call float @llvm.minnum.f32(float [[A2]], float [[R1]])
 ; CHECK-NEXT:    ret float [[R2]]
 ;
   %a = call nnan float @llvm.vp.reduce.fmin.nxv8f32(float 0x7FF0000000000000, <vscale x 8 x float> %merge, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)
@@ -157,9 +160,12 @@ define float @fmax(float %k, <vscale x 8 x float> %merge) {
   ; Neutral = -Inf
 ; CHECK-LABEL: define float @fmax(
 ; CHECK-SAME: float [[K:%.*]], <vscale x 8 x float> [[MERGE:%.*]]) {
-; CHECK-NEXT:    [[R:%.*]] = call nnan float @llvm.vp.reduce.fmax.nxv8f32(float [[K]], <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
-; CHECK-NEXT:    [[R1:%.*]] = call ninf float @llvm.vp.reduce.fmax.nxv8f32(float [[R]], <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
-; CHECK-NEXT:    [[R2:%.*]] = call float @llvm.vp.reduce.fmax.nxv8f32(float [[R1]], <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
+; CHECK-NEXT:    [[A:%.*]] = call nnan float @llvm.vp.reduce.fmax.nxv8f32(float 0xFFF0000000000000, <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
+; CHECK-NEXT:    [[R:%.*]] = call float @llvm.maxnum.f32(float [[A]], float [[K]])
+; CHECK-NEXT:    [[A1:%.*]] = call ninf float @llvm.vp.reduce.fmax.nxv8f32(float 0xFFF8000000000000, <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
+; CHECK-NEXT:    [[R1:%.*]] = call float @llvm.maxnum.f32(float [[A1]], float [[R]])
+; CHECK-NEXT:    [[A2:%.*]] = call float @llvm.vp.reduce.fmax.nxv8f32(float 0xFFF8000000000000, <vscale x 8 x float> [[MERGE]], <vscale x 8 x i1> splat (i1 true), i32 32)
+; CHECK-NEXT:    [[R2:%.*]] = call float @llvm.maxnum.f32(float [[A2]], float [[R1]])
 ; CHECK-NEXT:    ret float [[R2]]
 ;
   %a = call nnan float @llvm.vp.reduce.fmax.nxv8f32(float 0xFFF0000000000000, <vscale x 8 x float> %merge, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 32)

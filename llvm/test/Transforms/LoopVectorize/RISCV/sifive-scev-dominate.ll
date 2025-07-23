@@ -8,71 +8,53 @@ target triple = "riscv64-unknown-linux-gnu"
 define i32 @SaveEXR(ptr %data, i32 %width, i32 %height, i32 %components, i32 %save_as_fp16, ptr %outfilename, ptr %err) {
 ; CHECK-LABEL: define i32 @SaveEXR(
 ; CHECK-SAME: ptr [[DATA:%.*]], i32 [[WIDTH:%.*]], i32 [[HEIGHT:%.*]], i32 [[COMPONENTS:%.*]], i32 [[SAVE_AS_FP16:%.*]], ptr [[OUTFILENAME:%.*]], ptr [[ERR:%.*]]) #[[ATTR0:[0-9]+]] {
-; CHECK-NEXT:  [[ENTRY:.*:]]
+; CHECK-NEXT:  [[ENTRY:.*]]:
 ; CHECK-NEXT:    [[MUL46:%.*]] = mul i32 [[HEIGHT]], [[WIDTH]]
 ; CHECK-NEXT:    [[CONV47:%.*]] = sext i32 [[MUL46]] to i64
 ; CHECK-NEXT:    [[CONV49:%.*]] = zext i32 [[COMPONENTS]] to i64
-; CHECK-NEXT:    br label %[[VECTOR_SCEVCHECK:.*]]
+; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP0]], 4
+; CHECK-NEXT:    [[TMP7:%.*]] = call i64 @llvm.umax.i64(i64 8, i64 [[TMP6]])
+; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[CONV47]], [[TMP7]]
+; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_SCEVCHECK:.*]]
 ; CHECK:       [[VECTOR_SCEVCHECK]]:
 ; CHECK-NEXT:    [[IDENT_CHECK:%.*]] = icmp ne i32 [[COMPONENTS]], 1
-; CHECK-NEXT:    br i1 [[IDENT_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
+; CHECK-NEXT:    br i1 [[IDENT_CHECK]], label %[[SCALAR_PH]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
-; CHECK-NEXT:    [[TMP14:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[CONV47]], i32 8, i1 true)
+; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 4
+; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = urem i64 [[CONV47]], [[TMP4]]
+; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[CONV47]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    [[EVL_BASED_IV5:%.*]] = mul i64 [[TMP5]], 4
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
-; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[CONV47]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 8, i1 true)
-; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr float, ptr [[DATA]], i64 [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP10:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT7:%.*]], %[[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr float, ptr [[DATA]], i64 [[TMP10]]
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr float, ptr [[TMP1]], i32 0
-; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x float> @llvm.vp.load.nxv8f32.p0(ptr align 4 [[TMP2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
-; CHECK-NEXT:    call void @llvm.vp.scatter.nxv8f32.nxv8p0(<vscale x 8 x float> [[VP_OP_LOAD]], <vscale x 8 x ptr> align 4 zeroinitializer, <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
-; CHECK-NEXT:    [[TMP3:%.*]] = zext i32 [[TMP0]] to i64
-; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP3]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP4:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[CONV47]]
-; CHECK-NEXT:    br i1 [[TMP4]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
-; CHECK:       [[MIDDLE_BLOCK]]:
-; CHECK-NEXT:    br label %[[FOR_BODY220_PREHEADER:.*]]
-; CHECK:       [[SCALAR_PH]]:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_SCEVCHECK]] ]
-; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ false, %[[VECTOR_SCEVCHECK]] ]
-; CHECK-NEXT:    [[TMP6:%.*]] = shl nuw nsw i64 [[CONV49]], 2
-; CHECK-NEXT:    br i1 [[NO_SCEV_CHECK]], label %[[SCALAR_PH1:.*]], label %[[VECTOR_PH2:.*]]
-; CHECK:       [[VECTOR_PH2]]:
-; CHECK-NEXT:    [[TMP15:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[CONV47]], i32 8, i1 true)
-; CHECK-NEXT:    br label %[[VECTOR_BODY3:.*]]
-; CHECK:       [[VECTOR_BODY3]]:
-; CHECK-NEXT:    [[INDEX4:%.*]] = phi i64 [ 0, %[[VECTOR_PH2]] ], [ [[INDEX_EVL_NEXT7:%.*]], %[[VECTOR_BODY3]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV5:%.*]] = phi i64 [ 0, %[[VECTOR_PH2]] ], [ [[INDEX_EVL_NEXT7]], %[[VECTOR_BODY3]] ]
-; CHECK-NEXT:    [[AVL6:%.*]] = sub i64 [[CONV47]], [[EVL_BASED_IV5]]
-; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL6]], i32 8, i1 true)
-; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = add i64 [[BC_RESUME_VAL]], [[EVL_BASED_IV5]]
-; CHECK-NEXT:    [[TMP8:%.*]] = mul i64 [[OFFSET_IDX]], [[CONV49]]
-; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr float, ptr [[DATA]], i64 [[TMP8]]
-; CHECK-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 8 x float> @llvm.experimental.vp.strided.load.nxv8f32.p0.i64(ptr align 4 [[TMP9]], i64 [[TMP6]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP7]])
-; CHECK-NEXT:    call void @llvm.vp.scatter.nxv8f32.nxv8p0(<vscale x 8 x float> [[VP_STRIDED_LOAD]], <vscale x 8 x ptr> align 4 zeroinitializer, <vscale x 8 x i1> splat (i1 true), i32 [[TMP7]])
-; CHECK-NEXT:    [[TMP10:%.*]] = zext i32 [[TMP7]] to i64
+; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 4 x float>, ptr [[TMP2]], align 4
+; CHECK-NEXT:    call void @llvm.masked.scatter.nxv4f32.nxv4p0(<vscale x 4 x float> [[WIDE_LOAD]], <vscale x 4 x ptr> zeroinitializer, i32 4, <vscale x 4 x i1> splat (i1 true))
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT7]] = add nuw i64 [[TMP10]], [[EVL_BASED_IV5]]
-; CHECK-NEXT:    [[TMP11:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT7]], [[CONV47]]
-; CHECK-NEXT:    br i1 [[TMP11]], label %[[MIDDLE_BLOCK8:.*]], label %[[VECTOR_BODY3]], !llvm.loop [[LOOP3:![0-9]+]]
-; CHECK:       [[MIDDLE_BLOCK8]]:
-; CHECK-NEXT:    br label %[[FOR_BODY220_PREHEADER]]
-; CHECK:       [[SCALAR_PH1]]:
-; CHECK-NEXT:    [[BC_RESUME_VAL9:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
+; CHECK-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT7]], [[AVL]]
+; CHECK-NEXT:    br i1 [[TMP9]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK:       [[MIDDLE_BLOCK]]:
+; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[CONV47]], [[AVL]]
+; CHECK-NEXT:    br i1 [[CMP_N]], label %[[FOR_BODY220_PREHEADER:.*]], label %[[SCALAR_PH]]
+; CHECK:       [[SCALAR_PH]]:
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[AVL]], %[[MIDDLE_BLOCK]] ], [ 0, %[[ENTRY]] ], [ 0, %[[VECTOR_SCEVCHECK]] ]
 ; CHECK-NEXT:    br label %[[FOR_BODY:.*]]
 ; CHECK:       [[FOR_BODY220_PREHEADER]]:
 ; CHECK-NEXT:    [[TMP12:%.*]] = zext i32 [[COMPONENTS]] to i64
 ; CHECK-NEXT:    br label %[[FOR_BODY220:.*]]
 ; CHECK:       [[FOR_BODY]]:
-; CHECK-NEXT:    [[I_09:%.*]] = phi i64 [ [[BC_RESUME_VAL9]], %[[SCALAR_PH1]] ], [ [[INC:%.*]], %[[FOR_BODY]] ]
+; CHECK-NEXT:    [[I_09:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[INC:%.*]], %[[FOR_BODY]] ]
 ; CHECK-NEXT:    [[MUL50:%.*]] = mul i64 [[I_09]], [[CONV49]]
 ; CHECK-NEXT:    [[ARRAYIDX51:%.*]] = getelementptr float, ptr [[DATA]], i64 [[MUL50]]
 ; CHECK-NEXT:    [[TMP13:%.*]] = load float, ptr [[ARRAYIDX51]], align 4
 ; CHECK-NEXT:    store float [[TMP13]], ptr null, align 4
 ; CHECK-NEXT:    [[INC]] = add i64 [[I_09]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], [[CONV47]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_BODY220_PREHEADER]], label %[[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_BODY220_PREHEADER]], label %[[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       [[FOR_COND_CLEANUP219:.*]]:
 ; CHECK-NEXT:    ret i32 0
 ; CHECK:       [[FOR_BODY220]]:
@@ -110,6 +92,5 @@ for.body220:                                      ; preds = %for.body220, %for.b
 ; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
 ; CHECK: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
 ; CHECK: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
-; CHECK: [[LOOP3]] = distinct !{[[LOOP3]], [[META1]], [[META2]]}
-; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META2]], [[META1]]}
+; CHECK: [[LOOP3]] = distinct !{[[LOOP3]], [[META1]]}
 ;.

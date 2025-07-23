@@ -1311,44 +1311,32 @@ define void @test_spill_nest() "interrupt"="qci-nest" {
 ; QCI-PUSH-POP-NEXT:    .cfi_offset t4, -72
 ; QCI-PUSH-POP-NEXT:    .cfi_offset t5, -76
 ; QCI-PUSH-POP-NEXT:    .cfi_offset t6, -80
-<<<<<<< HEAD
-; QCI-PUSH-POP-NEXT:    addi sp, sp, -64
-; QCI-PUSH-POP-NEXT:    .cfi_def_cfa_offset 160
-; QCI-PUSH-POP-NEXT:    sw s1, 60(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    sw s2, 56(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    sw s3, 52(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    sw s4, 48(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    sw s5, 44(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    sw s6, 40(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    sw s7, 36(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    sw s8, 32(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    sw s9, 28(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    sw s10, 24(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    sw s11, 20(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    .cfi_offset s1, -100
-; QCI-PUSH-POP-NEXT:    .cfi_offset s2, -104
-; QCI-PUSH-POP-NEXT:    .cfi_offset s3, -108
-; QCI-PUSH-POP-NEXT:    .cfi_offset s4, -112
-; QCI-PUSH-POP-NEXT:    .cfi_offset s5, -116
+; QCI-PUSH-POP-NEXT:    cm.push {ra, s0-s11}, -96
+; QCI-PUSH-POP-NEXT:    .cfi_def_cfa_offset 192
+; QCI-PUSH-POP-NEXT:    .cfi_offset s1, -140
+; QCI-PUSH-POP-NEXT:    .cfi_offset s2, -136
+; QCI-PUSH-POP-NEXT:    .cfi_offset s3, -132
+; QCI-PUSH-POP-NEXT:    .cfi_offset s4, -128
+; QCI-PUSH-POP-NEXT:    .cfi_offset s5, -124
 ; QCI-PUSH-POP-NEXT:    .cfi_offset s6, -120
-; QCI-PUSH-POP-NEXT:    .cfi_offset s7, -124
-; QCI-PUSH-POP-NEXT:    .cfi_offset s8, -128
-; QCI-PUSH-POP-NEXT:    .cfi_offset s9, -132
-; QCI-PUSH-POP-NEXT:    .cfi_offset s10, -136
-; QCI-PUSH-POP-NEXT:    .cfi_offset s11, -140
+; QCI-PUSH-POP-NEXT:    .cfi_offset s7, -116
+; QCI-PUSH-POP-NEXT:    .cfi_offset s8, -112
+; QCI-PUSH-POP-NEXT:    .cfi_offset s9, -108
+; QCI-PUSH-POP-NEXT:    .cfi_offset s10, -104
+; QCI-PUSH-POP-NEXT:    .cfi_offset s11, -100
 ; QCI-PUSH-POP-NEXT:    lui a0, %hi(var)
 ; QCI-PUSH-POP-NEXT:    lui a2, %hi(var)
 ; QCI-PUSH-POP-NEXT:    addi a2, a2, %lo(var)
 ; QCI-PUSH-POP-NEXT:    lw a0, %lo(var)(a0)
-; QCI-PUSH-POP-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
+; QCI-PUSH-POP-NEXT:    sw a0, 28(sp) # 4-byte Folded Spill
 ; QCI-PUSH-POP-NEXT:    lw a0, 4(a2)
-; QCI-PUSH-POP-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
+; QCI-PUSH-POP-NEXT:    sw a0, 24(sp) # 4-byte Folded Spill
 ; QCI-PUSH-POP-NEXT:    lw a0, 8(a2)
-; QCI-PUSH-POP-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
+; QCI-PUSH-POP-NEXT:    sw a0, 20(sp) # 4-byte Folded Spill
 ; QCI-PUSH-POP-NEXT:    lw a0, 12(a2)
-; QCI-PUSH-POP-NEXT:    sw a0, 4(sp) # 4-byte Folded Spill
+; QCI-PUSH-POP-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
 ; QCI-PUSH-POP-NEXT:    lw a0, 16(a2)
-; QCI-PUSH-POP-NEXT:    sw a0, 0(sp) # 4-byte Folded Spill
+; QCI-PUSH-POP-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
 ; QCI-PUSH-POP-NEXT:    lw t4, 20(a2)
 ; QCI-PUSH-POP-NEXT:    lw t5, 24(a2)
 ; QCI-PUSH-POP-NEXT:    lw t6, 28(a2)
@@ -1403,122 +1391,18 @@ define void @test_spill_nest() "interrupt"="qci-nest" {
 ; QCI-PUSH-POP-NEXT:    sw t6, 28(a2)
 ; QCI-PUSH-POP-NEXT:    sw t5, 24(a2)
 ; QCI-PUSH-POP-NEXT:    sw t4, 20(a2)
-; QCI-PUSH-POP-NEXT:    lw a0, 0(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 16(a2)
-; QCI-PUSH-POP-NEXT:    lw a0, 4(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 12(a2)
-; QCI-PUSH-POP-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 8(a2)
 ; QCI-PUSH-POP-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 4(a2)
+; QCI-PUSH-POP-NEXT:    sw a0, 16(a2)
 ; QCI-PUSH-POP-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    sw a0, 12(a2)
+; QCI-PUSH-POP-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    sw a0, 8(a2)
+; QCI-PUSH-POP-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    sw a0, 4(a2)
+; QCI-PUSH-POP-NEXT:    lw a0, 28(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    lui a1, %hi(var)
 ; QCI-PUSH-POP-NEXT:    sw a0, %lo(var)(a1)
-; QCI-PUSH-POP-NEXT:    lw s1, 60(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s2, 56(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s3, 52(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s4, 48(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s5, 44(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s6, 40(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s7, 36(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s8, 32(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s9, 28(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s10, 24(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s11, 20(sp) # 4-byte Folded Reload
-=======
-; QCI-PUSH-POP-NEXT:    cm.push {ra, s0-s11}, -96
-; QCI-PUSH-POP-NEXT:    .cfi_def_cfa_offset 192
-; QCI-PUSH-POP-NEXT:    .cfi_offset s1, -140
-; QCI-PUSH-POP-NEXT:    .cfi_offset s2, -136
-; QCI-PUSH-POP-NEXT:    .cfi_offset s3, -132
-; QCI-PUSH-POP-NEXT:    .cfi_offset s4, -128
-; QCI-PUSH-POP-NEXT:    .cfi_offset s5, -124
-; QCI-PUSH-POP-NEXT:    .cfi_offset s6, -120
-; QCI-PUSH-POP-NEXT:    .cfi_offset s7, -116
-; QCI-PUSH-POP-NEXT:    .cfi_offset s8, -112
-; QCI-PUSH-POP-NEXT:    .cfi_offset s9, -108
-; QCI-PUSH-POP-NEXT:    .cfi_offset s10, -104
-; QCI-PUSH-POP-NEXT:    .cfi_offset s11, -100
-; QCI-PUSH-POP-NEXT:    lui t0, %hi(var)
-; QCI-PUSH-POP-NEXT:    lw a0, %lo(var)(t0)
-; QCI-PUSH-POP-NEXT:    sw a0, 28(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, %lo(var+4)(t0)
-; QCI-PUSH-POP-NEXT:    sw a0, 24(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, %lo(var+8)(t0)
-; QCI-PUSH-POP-NEXT:    sw a0, 20(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, %lo(var+12)(t0)
-; QCI-PUSH-POP-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    addi a5, t0, %lo(var)
-; QCI-PUSH-POP-NEXT:    lw a0, 16(a5)
-; QCI-PUSH-POP-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 20(a5)
-; QCI-PUSH-POP-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw t4, 24(a5)
-; QCI-PUSH-POP-NEXT:    lw t5, 28(a5)
-; QCI-PUSH-POP-NEXT:    lw t6, 32(a5)
-; QCI-PUSH-POP-NEXT:    lw s2, 36(a5)
-; QCI-PUSH-POP-NEXT:    lw s3, 40(a5)
-; QCI-PUSH-POP-NEXT:    lw s4, 44(a5)
-; QCI-PUSH-POP-NEXT:    lw s5, 48(a5)
-; QCI-PUSH-POP-NEXT:    lw s6, 52(a5)
-; QCI-PUSH-POP-NEXT:    lw s7, 56(a5)
-; QCI-PUSH-POP-NEXT:    lw s8, 60(a5)
-; QCI-PUSH-POP-NEXT:    lw s9, 64(a5)
-; QCI-PUSH-POP-NEXT:    lw s10, 68(a5)
-; QCI-PUSH-POP-NEXT:    lw s11, 72(a5)
-; QCI-PUSH-POP-NEXT:    lw ra, 76(a5)
-; QCI-PUSH-POP-NEXT:    lw s1, 80(a5)
-; QCI-PUSH-POP-NEXT:    lw t3, 84(a5)
-; QCI-PUSH-POP-NEXT:    lw t2, 88(a5)
-; QCI-PUSH-POP-NEXT:    lw t1, 92(a5)
-; QCI-PUSH-POP-NEXT:    lw a7, 112(a5)
-; QCI-PUSH-POP-NEXT:    lw s0, 116(a5)
-; QCI-PUSH-POP-NEXT:    lw a3, 120(a5)
-; QCI-PUSH-POP-NEXT:    lw a0, 124(a5)
-; QCI-PUSH-POP-NEXT:    lw a6, 96(a5)
-; QCI-PUSH-POP-NEXT:    lw a4, 100(a5)
-; QCI-PUSH-POP-NEXT:    lw a2, 104(a5)
-; QCI-PUSH-POP-NEXT:    lw a1, 108(a5)
-; QCI-PUSH-POP-NEXT:    sw a0, 124(a5)
-; QCI-PUSH-POP-NEXT:    sw a3, 120(a5)
-; QCI-PUSH-POP-NEXT:    sw s0, 116(a5)
-; QCI-PUSH-POP-NEXT:    sw a7, 112(a5)
-; QCI-PUSH-POP-NEXT:    sw a1, 108(a5)
-; QCI-PUSH-POP-NEXT:    sw a2, 104(a5)
-; QCI-PUSH-POP-NEXT:    sw a4, 100(a5)
-; QCI-PUSH-POP-NEXT:    sw a6, 96(a5)
-; QCI-PUSH-POP-NEXT:    sw t1, 92(a5)
-; QCI-PUSH-POP-NEXT:    sw t2, 88(a5)
-; QCI-PUSH-POP-NEXT:    sw t3, 84(a5)
-; QCI-PUSH-POP-NEXT:    sw s1, 80(a5)
-; QCI-PUSH-POP-NEXT:    sw ra, 76(a5)
-; QCI-PUSH-POP-NEXT:    sw s11, 72(a5)
-; QCI-PUSH-POP-NEXT:    sw s10, 68(a5)
-; QCI-PUSH-POP-NEXT:    sw s9, 64(a5)
-; QCI-PUSH-POP-NEXT:    sw s8, 60(a5)
-; QCI-PUSH-POP-NEXT:    sw s7, 56(a5)
-; QCI-PUSH-POP-NEXT:    sw s6, 52(a5)
-; QCI-PUSH-POP-NEXT:    sw s5, 48(a5)
-; QCI-PUSH-POP-NEXT:    sw s4, 44(a5)
-; QCI-PUSH-POP-NEXT:    sw s3, 40(a5)
-; QCI-PUSH-POP-NEXT:    sw s2, 36(a5)
-; QCI-PUSH-POP-NEXT:    sw t6, 32(a5)
-; QCI-PUSH-POP-NEXT:    sw t5, 28(a5)
-; QCI-PUSH-POP-NEXT:    sw t4, 24(a5)
-; QCI-PUSH-POP-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 20(a5)
-; QCI-PUSH-POP-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 16(a5)
-; QCI-PUSH-POP-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, %lo(var+12)(t0)
-; QCI-PUSH-POP-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, %lo(var+8)(t0)
-; QCI-PUSH-POP-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, %lo(var+4)(t0)
-; QCI-PUSH-POP-NEXT:    lw a0, 28(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, %lo(var)(t0)
 ; QCI-PUSH-POP-NEXT:    cm.pop {ra, s0-s11}, 96
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
 ; QCI-PUSH-POP-NEXT:    .cfi_restore s1
 ; QCI-PUSH-POP-NEXT:    .cfi_restore s2
 ; QCI-PUSH-POP-NEXT:    .cfi_restore s3
@@ -1530,10 +1414,6 @@ define void @test_spill_nest() "interrupt"="qci-nest" {
 ; QCI-PUSH-POP-NEXT:    .cfi_restore s9
 ; QCI-PUSH-POP-NEXT:    .cfi_restore s10
 ; QCI-PUSH-POP-NEXT:    .cfi_restore s11
-<<<<<<< HEAD
-; QCI-PUSH-POP-NEXT:    addi sp, sp, 64
-=======
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
 ; QCI-PUSH-POP-NEXT:    .cfi_def_cfa_offset 96
 ; QCI-PUSH-POP-NEXT:    qc.c.mileaveret
 ;
@@ -1571,84 +1451,84 @@ define void @test_spill_nest() "interrupt"="qci-nest" {
 ; QCI-QCCMP-PUSH-POP-NEXT:    .cfi_offset s9, -140
 ; QCI-QCCMP-PUSH-POP-NEXT:    .cfi_offset s10, -144
 ; QCI-QCCMP-PUSH-POP-NEXT:    .cfi_offset s11, -148
-; QCI-QCCMP-PUSH-POP-NEXT:    lui t0, %hi(var)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, %lo(var)(t0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lui a0, %hi(var)
+; QCI-QCCMP-PUSH-POP-NEXT:    lui a2, %hi(var)
+; QCI-QCCMP-PUSH-POP-NEXT:    addi a2, a2, %lo(var)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, %lo(var)(a0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 28(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, %lo(var+4)(t0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 4(a2)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 24(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, %lo(var+8)(t0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 8(a2)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 20(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, %lo(var+12)(t0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 12(a2)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    addi a5, t0, %lo(var)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 16(a5)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 16(a2)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 20(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw t4, 24(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw t5, 28(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw t6, 32(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s2, 36(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s3, 40(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s4, 44(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s5, 48(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s6, 52(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s7, 56(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s8, 60(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s9, 64(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s10, 68(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s11, 72(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw ra, 76(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s1, 80(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw t3, 84(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw t2, 88(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw t1, 92(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a7, 112(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s0, 116(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a3, 120(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 124(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a6, 96(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a4, 100(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a2, 104(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a1, 108(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 124(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a3, 120(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s0, 116(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a7, 112(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a1, 108(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a2, 104(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a4, 100(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a6, 96(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw t1, 92(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw t2, 88(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw t3, 84(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s1, 80(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw ra, 76(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s11, 72(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s10, 68(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s9, 64(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s8, 60(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s7, 56(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s6, 52(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s5, 48(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s4, 44(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s3, 40(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s2, 36(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw t6, 32(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw t5, 28(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw t4, 24(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 20(a5)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw t4, 20(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw t5, 24(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw t6, 28(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s2, 32(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s3, 36(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s4, 40(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s5, 44(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s6, 48(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s7, 52(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s8, 56(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s9, 60(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s10, 64(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s11, 68(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw ra, 72(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw t3, 76(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s0, 80(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s1, 84(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw t2, 88(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw t1, 92(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw t0, 96(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a6, 116(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a4, 120(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a1, 124(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a7, 100(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a5, 104(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a3, 108(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 112(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a1, 124(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a4, 120(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a6, 116(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 112(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a3, 108(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a5, 104(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a7, 100(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw t0, 96(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw t1, 92(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw t2, 88(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s1, 84(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s0, 80(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw t3, 76(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw ra, 72(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s11, 68(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s10, 64(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s9, 60(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s8, 56(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s7, 52(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s6, 48(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s5, 44(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s4, 40(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s3, 36(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s2, 32(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw t6, 28(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw t5, 24(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw t4, 20(a2)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 16(a5)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 16(a2)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, %lo(var+12)(t0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 12(a2)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, %lo(var+8)(t0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 8(a2)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, %lo(var+4)(t0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 4(a2)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 28(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, %lo(var)(t0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lui a1, %hi(var)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, %lo(var)(a1)
 ; QCI-QCCMP-PUSH-POP-NEXT:    qc.cm.pop {ra, s0-s11}, 96
 ; QCI-QCCMP-PUSH-POP-NEXT:    .cfi_restore s1
 ; QCI-QCCMP-PUSH-POP-NEXT:    .cfi_restore s2
@@ -1699,86 +1579,86 @@ define void @test_spill_nest() "interrupt"="qci-nest" {
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    .cfi_offset s10, -144
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    .cfi_offset s11, -148
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    .cfi_def_cfa s0, 0
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lui t1, %hi(var)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, %lo(var)(t1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lui a0, %hi(var)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lui a2, %hi(var)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    addi a2, a2, %lo(var)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, %lo(var)(a0)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -164(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, %lo(var+4)(t1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 4(a2)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -168(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, %lo(var+8)(t1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 8(a2)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -172(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, %lo(var+12)(t1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 12(a2)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -176(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    addi a5, t1, %lo(var)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 16(a5)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 16(a2)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -180(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 20(a5)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 20(a2)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -184(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 24(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -188(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t5, 28(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t6, 32(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s2, 36(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s3, 40(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s4, 44(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s5, 48(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s6, 52(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s7, 56(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s8, 60(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s9, 64(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s10, 68(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s11, 72(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw ra, 76(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t4, 80(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t3, 84(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t2, 88(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s1, 92(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t0, 112(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a4, 116(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a3, 120(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 124(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a7, 96(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a6, 100(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a2, 104(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a1, 108(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 124(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a3, 120(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a4, 116(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t0, 112(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a1, 108(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a2, 104(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a6, 100(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a7, 96(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s1, 92(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t2, 88(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t3, 84(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t4, 80(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw ra, 76(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s11, 72(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s10, 68(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s9, 64(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s8, 60(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s7, 56(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s6, 52(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s5, 48(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s4, 44(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s3, 40(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s2, 36(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t6, 32(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t5, 28(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -188(s0) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 24(a5)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t5, 24(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t6, 28(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s2, 32(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s3, 36(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s4, 40(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s5, 44(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s6, 48(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s7, 52(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s8, 56(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s9, 60(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s10, 64(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s11, 68(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw ra, 72(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s1, 76(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t4, 80(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t3, 84(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t2, 88(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t1, 92(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t0, 96(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a6, 116(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a4, 120(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a1, 124(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a7, 100(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a5, 104(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a3, 108(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 112(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a1, 124(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a4, 120(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a6, 116(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 112(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a3, 108(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a5, 104(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a7, 100(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t0, 96(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t1, 92(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t2, 88(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t3, 84(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t4, 80(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s1, 76(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw ra, 72(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s11, 68(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s10, 64(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s9, 60(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s8, 56(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s7, 52(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s6, 48(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s5, 44(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s4, 40(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s3, 36(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s2, 32(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t6, 28(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t5, 24(a2)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -184(s0) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 20(a5)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 20(a2)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -180(s0) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 16(a5)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 16(a2)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -176(s0) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, %lo(var+12)(t1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 12(a2)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -172(s0) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, %lo(var+8)(t1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 8(a2)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -168(s0) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, %lo(var+4)(t1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 4(a2)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -164(s0) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, %lo(var)(t1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lui a1, %hi(var)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, %lo(var)(a1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    .cfi_def_cfa sp, 192
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    qc.cm.pop {ra, s0-s11}, 96
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    .cfi_restore s1
@@ -2123,44 +2003,32 @@ define void @test_spill_nonest() "interrupt"="qci-nonest" {
 ; QCI-PUSH-POP-NEXT:    .cfi_offset t4, -72
 ; QCI-PUSH-POP-NEXT:    .cfi_offset t5, -76
 ; QCI-PUSH-POP-NEXT:    .cfi_offset t6, -80
-<<<<<<< HEAD
-; QCI-PUSH-POP-NEXT:    addi sp, sp, -64
-; QCI-PUSH-POP-NEXT:    .cfi_def_cfa_offset 160
-; QCI-PUSH-POP-NEXT:    sw s1, 60(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    sw s2, 56(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    sw s3, 52(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    sw s4, 48(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    sw s5, 44(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    sw s6, 40(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    sw s7, 36(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    sw s8, 32(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    sw s9, 28(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    sw s10, 24(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    sw s11, 20(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    .cfi_offset s1, -100
-; QCI-PUSH-POP-NEXT:    .cfi_offset s2, -104
-; QCI-PUSH-POP-NEXT:    .cfi_offset s3, -108
-; QCI-PUSH-POP-NEXT:    .cfi_offset s4, -112
-; QCI-PUSH-POP-NEXT:    .cfi_offset s5, -116
+; QCI-PUSH-POP-NEXT:    cm.push {ra, s0-s11}, -96
+; QCI-PUSH-POP-NEXT:    .cfi_def_cfa_offset 192
+; QCI-PUSH-POP-NEXT:    .cfi_offset s1, -140
+; QCI-PUSH-POP-NEXT:    .cfi_offset s2, -136
+; QCI-PUSH-POP-NEXT:    .cfi_offset s3, -132
+; QCI-PUSH-POP-NEXT:    .cfi_offset s4, -128
+; QCI-PUSH-POP-NEXT:    .cfi_offset s5, -124
 ; QCI-PUSH-POP-NEXT:    .cfi_offset s6, -120
-; QCI-PUSH-POP-NEXT:    .cfi_offset s7, -124
-; QCI-PUSH-POP-NEXT:    .cfi_offset s8, -128
-; QCI-PUSH-POP-NEXT:    .cfi_offset s9, -132
-; QCI-PUSH-POP-NEXT:    .cfi_offset s10, -136
-; QCI-PUSH-POP-NEXT:    .cfi_offset s11, -140
+; QCI-PUSH-POP-NEXT:    .cfi_offset s7, -116
+; QCI-PUSH-POP-NEXT:    .cfi_offset s8, -112
+; QCI-PUSH-POP-NEXT:    .cfi_offset s9, -108
+; QCI-PUSH-POP-NEXT:    .cfi_offset s10, -104
+; QCI-PUSH-POP-NEXT:    .cfi_offset s11, -100
 ; QCI-PUSH-POP-NEXT:    lui a0, %hi(var)
 ; QCI-PUSH-POP-NEXT:    lui a2, %hi(var)
 ; QCI-PUSH-POP-NEXT:    addi a2, a2, %lo(var)
 ; QCI-PUSH-POP-NEXT:    lw a0, %lo(var)(a0)
-; QCI-PUSH-POP-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
+; QCI-PUSH-POP-NEXT:    sw a0, 28(sp) # 4-byte Folded Spill
 ; QCI-PUSH-POP-NEXT:    lw a0, 4(a2)
-; QCI-PUSH-POP-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
+; QCI-PUSH-POP-NEXT:    sw a0, 24(sp) # 4-byte Folded Spill
 ; QCI-PUSH-POP-NEXT:    lw a0, 8(a2)
-; QCI-PUSH-POP-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
+; QCI-PUSH-POP-NEXT:    sw a0, 20(sp) # 4-byte Folded Spill
 ; QCI-PUSH-POP-NEXT:    lw a0, 12(a2)
-; QCI-PUSH-POP-NEXT:    sw a0, 4(sp) # 4-byte Folded Spill
+; QCI-PUSH-POP-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
 ; QCI-PUSH-POP-NEXT:    lw a0, 16(a2)
-; QCI-PUSH-POP-NEXT:    sw a0, 0(sp) # 4-byte Folded Spill
+; QCI-PUSH-POP-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
 ; QCI-PUSH-POP-NEXT:    lw t4, 20(a2)
 ; QCI-PUSH-POP-NEXT:    lw t5, 24(a2)
 ; QCI-PUSH-POP-NEXT:    lw t6, 28(a2)
@@ -2215,122 +2083,18 @@ define void @test_spill_nonest() "interrupt"="qci-nonest" {
 ; QCI-PUSH-POP-NEXT:    sw t6, 28(a2)
 ; QCI-PUSH-POP-NEXT:    sw t5, 24(a2)
 ; QCI-PUSH-POP-NEXT:    sw t4, 20(a2)
-; QCI-PUSH-POP-NEXT:    lw a0, 0(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 16(a2)
-; QCI-PUSH-POP-NEXT:    lw a0, 4(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 12(a2)
-; QCI-PUSH-POP-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 8(a2)
 ; QCI-PUSH-POP-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 4(a2)
+; QCI-PUSH-POP-NEXT:    sw a0, 16(a2)
 ; QCI-PUSH-POP-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    sw a0, 12(a2)
+; QCI-PUSH-POP-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    sw a0, 8(a2)
+; QCI-PUSH-POP-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    sw a0, 4(a2)
+; QCI-PUSH-POP-NEXT:    lw a0, 28(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    lui a1, %hi(var)
 ; QCI-PUSH-POP-NEXT:    sw a0, %lo(var)(a1)
-; QCI-PUSH-POP-NEXT:    lw s1, 60(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s2, 56(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s3, 52(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s4, 48(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s5, 44(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s6, 40(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s7, 36(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s8, 32(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s9, 28(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s10, 24(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s11, 20(sp) # 4-byte Folded Reload
-=======
-; QCI-PUSH-POP-NEXT:    cm.push {ra, s0-s11}, -96
-; QCI-PUSH-POP-NEXT:    .cfi_def_cfa_offset 192
-; QCI-PUSH-POP-NEXT:    .cfi_offset s1, -140
-; QCI-PUSH-POP-NEXT:    .cfi_offset s2, -136
-; QCI-PUSH-POP-NEXT:    .cfi_offset s3, -132
-; QCI-PUSH-POP-NEXT:    .cfi_offset s4, -128
-; QCI-PUSH-POP-NEXT:    .cfi_offset s5, -124
-; QCI-PUSH-POP-NEXT:    .cfi_offset s6, -120
-; QCI-PUSH-POP-NEXT:    .cfi_offset s7, -116
-; QCI-PUSH-POP-NEXT:    .cfi_offset s8, -112
-; QCI-PUSH-POP-NEXT:    .cfi_offset s9, -108
-; QCI-PUSH-POP-NEXT:    .cfi_offset s10, -104
-; QCI-PUSH-POP-NEXT:    .cfi_offset s11, -100
-; QCI-PUSH-POP-NEXT:    lui t0, %hi(var)
-; QCI-PUSH-POP-NEXT:    lw a0, %lo(var)(t0)
-; QCI-PUSH-POP-NEXT:    sw a0, 28(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, %lo(var+4)(t0)
-; QCI-PUSH-POP-NEXT:    sw a0, 24(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, %lo(var+8)(t0)
-; QCI-PUSH-POP-NEXT:    sw a0, 20(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, %lo(var+12)(t0)
-; QCI-PUSH-POP-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    addi a5, t0, %lo(var)
-; QCI-PUSH-POP-NEXT:    lw a0, 16(a5)
-; QCI-PUSH-POP-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 20(a5)
-; QCI-PUSH-POP-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw t4, 24(a5)
-; QCI-PUSH-POP-NEXT:    lw t5, 28(a5)
-; QCI-PUSH-POP-NEXT:    lw t6, 32(a5)
-; QCI-PUSH-POP-NEXT:    lw s2, 36(a5)
-; QCI-PUSH-POP-NEXT:    lw s3, 40(a5)
-; QCI-PUSH-POP-NEXT:    lw s4, 44(a5)
-; QCI-PUSH-POP-NEXT:    lw s5, 48(a5)
-; QCI-PUSH-POP-NEXT:    lw s6, 52(a5)
-; QCI-PUSH-POP-NEXT:    lw s7, 56(a5)
-; QCI-PUSH-POP-NEXT:    lw s8, 60(a5)
-; QCI-PUSH-POP-NEXT:    lw s9, 64(a5)
-; QCI-PUSH-POP-NEXT:    lw s10, 68(a5)
-; QCI-PUSH-POP-NEXT:    lw s11, 72(a5)
-; QCI-PUSH-POP-NEXT:    lw ra, 76(a5)
-; QCI-PUSH-POP-NEXT:    lw s1, 80(a5)
-; QCI-PUSH-POP-NEXT:    lw t3, 84(a5)
-; QCI-PUSH-POP-NEXT:    lw t2, 88(a5)
-; QCI-PUSH-POP-NEXT:    lw t1, 92(a5)
-; QCI-PUSH-POP-NEXT:    lw a7, 112(a5)
-; QCI-PUSH-POP-NEXT:    lw s0, 116(a5)
-; QCI-PUSH-POP-NEXT:    lw a3, 120(a5)
-; QCI-PUSH-POP-NEXT:    lw a0, 124(a5)
-; QCI-PUSH-POP-NEXT:    lw a6, 96(a5)
-; QCI-PUSH-POP-NEXT:    lw a4, 100(a5)
-; QCI-PUSH-POP-NEXT:    lw a2, 104(a5)
-; QCI-PUSH-POP-NEXT:    lw a1, 108(a5)
-; QCI-PUSH-POP-NEXT:    sw a0, 124(a5)
-; QCI-PUSH-POP-NEXT:    sw a3, 120(a5)
-; QCI-PUSH-POP-NEXT:    sw s0, 116(a5)
-; QCI-PUSH-POP-NEXT:    sw a7, 112(a5)
-; QCI-PUSH-POP-NEXT:    sw a1, 108(a5)
-; QCI-PUSH-POP-NEXT:    sw a2, 104(a5)
-; QCI-PUSH-POP-NEXT:    sw a4, 100(a5)
-; QCI-PUSH-POP-NEXT:    sw a6, 96(a5)
-; QCI-PUSH-POP-NEXT:    sw t1, 92(a5)
-; QCI-PUSH-POP-NEXT:    sw t2, 88(a5)
-; QCI-PUSH-POP-NEXT:    sw t3, 84(a5)
-; QCI-PUSH-POP-NEXT:    sw s1, 80(a5)
-; QCI-PUSH-POP-NEXT:    sw ra, 76(a5)
-; QCI-PUSH-POP-NEXT:    sw s11, 72(a5)
-; QCI-PUSH-POP-NEXT:    sw s10, 68(a5)
-; QCI-PUSH-POP-NEXT:    sw s9, 64(a5)
-; QCI-PUSH-POP-NEXT:    sw s8, 60(a5)
-; QCI-PUSH-POP-NEXT:    sw s7, 56(a5)
-; QCI-PUSH-POP-NEXT:    sw s6, 52(a5)
-; QCI-PUSH-POP-NEXT:    sw s5, 48(a5)
-; QCI-PUSH-POP-NEXT:    sw s4, 44(a5)
-; QCI-PUSH-POP-NEXT:    sw s3, 40(a5)
-; QCI-PUSH-POP-NEXT:    sw s2, 36(a5)
-; QCI-PUSH-POP-NEXT:    sw t6, 32(a5)
-; QCI-PUSH-POP-NEXT:    sw t5, 28(a5)
-; QCI-PUSH-POP-NEXT:    sw t4, 24(a5)
-; QCI-PUSH-POP-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 20(a5)
-; QCI-PUSH-POP-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 16(a5)
-; QCI-PUSH-POP-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, %lo(var+12)(t0)
-; QCI-PUSH-POP-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, %lo(var+8)(t0)
-; QCI-PUSH-POP-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, %lo(var+4)(t0)
-; QCI-PUSH-POP-NEXT:    lw a0, 28(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, %lo(var)(t0)
 ; QCI-PUSH-POP-NEXT:    cm.pop {ra, s0-s11}, 96
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
 ; QCI-PUSH-POP-NEXT:    .cfi_restore s1
 ; QCI-PUSH-POP-NEXT:    .cfi_restore s2
 ; QCI-PUSH-POP-NEXT:    .cfi_restore s3
@@ -2342,10 +2106,6 @@ define void @test_spill_nonest() "interrupt"="qci-nonest" {
 ; QCI-PUSH-POP-NEXT:    .cfi_restore s9
 ; QCI-PUSH-POP-NEXT:    .cfi_restore s10
 ; QCI-PUSH-POP-NEXT:    .cfi_restore s11
-<<<<<<< HEAD
-; QCI-PUSH-POP-NEXT:    addi sp, sp, 64
-=======
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
 ; QCI-PUSH-POP-NEXT:    .cfi_def_cfa_offset 96
 ; QCI-PUSH-POP-NEXT:    qc.c.mileaveret
 ;
@@ -2383,84 +2143,84 @@ define void @test_spill_nonest() "interrupt"="qci-nonest" {
 ; QCI-QCCMP-PUSH-POP-NEXT:    .cfi_offset s9, -140
 ; QCI-QCCMP-PUSH-POP-NEXT:    .cfi_offset s10, -144
 ; QCI-QCCMP-PUSH-POP-NEXT:    .cfi_offset s11, -148
-; QCI-QCCMP-PUSH-POP-NEXT:    lui t0, %hi(var)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, %lo(var)(t0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lui a0, %hi(var)
+; QCI-QCCMP-PUSH-POP-NEXT:    lui a2, %hi(var)
+; QCI-QCCMP-PUSH-POP-NEXT:    addi a2, a2, %lo(var)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, %lo(var)(a0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 28(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, %lo(var+4)(t0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 4(a2)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 24(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, %lo(var+8)(t0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 8(a2)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 20(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, %lo(var+12)(t0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 12(a2)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    addi a5, t0, %lo(var)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 16(a5)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 16(a2)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 20(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw t4, 24(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw t5, 28(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw t6, 32(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s2, 36(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s3, 40(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s4, 44(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s5, 48(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s6, 52(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s7, 56(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s8, 60(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s9, 64(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s10, 68(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s11, 72(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw ra, 76(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s1, 80(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw t3, 84(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw t2, 88(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw t1, 92(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a7, 112(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s0, 116(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a3, 120(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 124(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a6, 96(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a4, 100(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a2, 104(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a1, 108(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 124(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a3, 120(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s0, 116(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a7, 112(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a1, 108(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a2, 104(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a4, 100(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a6, 96(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw t1, 92(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw t2, 88(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw t3, 84(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s1, 80(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw ra, 76(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s11, 72(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s10, 68(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s9, 64(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s8, 60(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s7, 56(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s6, 52(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s5, 48(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s4, 44(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s3, 40(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s2, 36(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw t6, 32(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw t5, 28(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw t4, 24(a5)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 20(a5)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw t4, 20(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw t5, 24(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw t6, 28(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s2, 32(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s3, 36(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s4, 40(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s5, 44(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s6, 48(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s7, 52(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s8, 56(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s9, 60(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s10, 64(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s11, 68(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw ra, 72(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw t3, 76(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s0, 80(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s1, 84(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw t2, 88(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw t1, 92(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw t0, 96(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a6, 116(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a4, 120(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a1, 124(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a7, 100(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a5, 104(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a3, 108(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 112(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a1, 124(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a4, 120(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a6, 116(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 112(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a3, 108(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a5, 104(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a7, 100(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw t0, 96(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw t1, 92(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw t2, 88(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s1, 84(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s0, 80(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw t3, 76(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw ra, 72(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s11, 68(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s10, 64(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s9, 60(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s8, 56(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s7, 52(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s6, 48(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s5, 44(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s4, 40(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s3, 36(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s2, 32(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw t6, 28(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw t5, 24(a2)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw t4, 20(a2)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 16(a5)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 16(a2)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, %lo(var+12)(t0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 12(a2)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, %lo(var+8)(t0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 8(a2)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, %lo(var+4)(t0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 4(a2)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 28(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, %lo(var)(t0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lui a1, %hi(var)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, %lo(var)(a1)
 ; QCI-QCCMP-PUSH-POP-NEXT:    qc.cm.pop {ra, s0-s11}, 96
 ; QCI-QCCMP-PUSH-POP-NEXT:    .cfi_restore s1
 ; QCI-QCCMP-PUSH-POP-NEXT:    .cfi_restore s2
@@ -2511,86 +2271,86 @@ define void @test_spill_nonest() "interrupt"="qci-nonest" {
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    .cfi_offset s10, -144
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    .cfi_offset s11, -148
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    .cfi_def_cfa s0, 0
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lui t1, %hi(var)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, %lo(var)(t1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lui a0, %hi(var)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lui a2, %hi(var)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    addi a2, a2, %lo(var)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, %lo(var)(a0)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -164(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, %lo(var+4)(t1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 4(a2)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -168(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, %lo(var+8)(t1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 8(a2)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -172(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, %lo(var+12)(t1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 12(a2)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -176(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    addi a5, t1, %lo(var)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 16(a5)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 16(a2)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -180(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 20(a5)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 20(a2)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -184(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 24(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -188(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t5, 28(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t6, 32(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s2, 36(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s3, 40(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s4, 44(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s5, 48(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s6, 52(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s7, 56(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s8, 60(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s9, 64(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s10, 68(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s11, 72(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw ra, 76(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t4, 80(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t3, 84(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t2, 88(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s1, 92(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t0, 112(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a4, 116(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a3, 120(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 124(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a7, 96(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a6, 100(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a2, 104(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a1, 108(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 124(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a3, 120(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a4, 116(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t0, 112(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a1, 108(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a2, 104(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a6, 100(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a7, 96(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s1, 92(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t2, 88(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t3, 84(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t4, 80(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw ra, 76(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s11, 72(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s10, 68(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s9, 64(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s8, 60(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s7, 56(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s6, 52(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s5, 48(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s4, 44(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s3, 40(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s2, 36(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t6, 32(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t5, 28(a5)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -188(s0) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 24(a5)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t5, 24(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t6, 28(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s2, 32(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s3, 36(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s4, 40(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s5, 44(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s6, 48(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s7, 52(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s8, 56(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s9, 60(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s10, 64(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s11, 68(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw ra, 72(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s1, 76(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t4, 80(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t3, 84(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t2, 88(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t1, 92(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw t0, 96(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a6, 116(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a4, 120(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a1, 124(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a7, 100(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a5, 104(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a3, 108(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 112(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a1, 124(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a4, 120(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a6, 116(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 112(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a3, 108(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a5, 104(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a7, 100(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t0, 96(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t1, 92(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t2, 88(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t3, 84(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t4, 80(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s1, 76(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw ra, 72(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s11, 68(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s10, 64(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s9, 60(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s8, 56(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s7, 52(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s6, 48(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s5, 44(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s4, 40(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s3, 36(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s2, 32(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t6, 28(a2)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw t5, 24(a2)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -184(s0) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 20(a5)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 20(a2)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -180(s0) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 16(a5)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 16(a2)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -176(s0) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, %lo(var+12)(t1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 12(a2)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -172(s0) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, %lo(var+8)(t1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 8(a2)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -168(s0) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, %lo(var+4)(t1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 4(a2)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -164(s0) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, %lo(var)(t1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lui a1, %hi(var)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, %lo(var)(a1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    .cfi_def_cfa sp, 192
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    qc.cm.pop {ra, s0-s11}, 96
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    .cfi_restore s1
@@ -3031,57 +2791,58 @@ define void @test_spill_call_nest() "interrupt"="qci-nest" {
 ; QCI-PUSH-POP-NEXT:    .cfi_offset s4, -128
 ; QCI-PUSH-POP-NEXT:    .cfi_offset s5, -124
 ; QCI-PUSH-POP-NEXT:    .cfi_offset s6, -120
-<<<<<<< HEAD
-; QCI-PUSH-POP-NEXT:    .cfi_offset s7, -124
-; QCI-PUSH-POP-NEXT:    .cfi_offset s8, -128
-; QCI-PUSH-POP-NEXT:    .cfi_offset s9, -132
-; QCI-PUSH-POP-NEXT:    .cfi_offset s10, -136
-; QCI-PUSH-POP-NEXT:    .cfi_offset s11, -140
+; QCI-PUSH-POP-NEXT:    .cfi_offset s7, -116
+; QCI-PUSH-POP-NEXT:    .cfi_offset s8, -112
+; QCI-PUSH-POP-NEXT:    .cfi_offset s9, -108
+; QCI-PUSH-POP-NEXT:    .cfi_offset s10, -104
+; QCI-PUSH-POP-NEXT:    .cfi_offset s11, -100
+; QCI-PUSH-POP-NEXT:    addi sp, sp, -48
+; QCI-PUSH-POP-NEXT:    .cfi_def_cfa_offset 256
 ; QCI-PUSH-POP-NEXT:    lui a0, %hi(var)
 ; QCI-PUSH-POP-NEXT:    lui s0, %hi(var)
 ; QCI-PUSH-POP-NEXT:    addi s0, s0, %lo(var)
 ; QCI-PUSH-POP-NEXT:    lw a0, %lo(var)(a0)
-; QCI-PUSH-POP-NEXT:    sw a0, 96(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 4(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 92(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 8(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 4(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 88(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 12(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 8(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 84(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 16(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 12(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 80(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 20(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 16(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 76(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 24(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 20(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 72(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 28(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 24(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 68(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 32(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 28(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 64(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 36(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 32(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 60(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 40(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 36(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 56(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 44(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 40(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 52(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 48(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 44(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 48(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 52(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 48(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 44(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 56(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 52(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 40(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 60(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 56(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 36(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 64(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 60(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 32(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 68(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 64(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 28(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 72(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 68(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 24(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 76(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 72(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 20(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 80(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 76(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
+; QCI-PUSH-POP-NEXT:    lw a0, 80(s0)
+; QCI-PUSH-POP-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
 ; QCI-PUSH-POP-NEXT:    lw s2, 84(s0)
 ; QCI-PUSH-POP-NEXT:    lw s3, 88(s0)
 ; QCI-PUSH-POP-NEXT:    lw s4, 92(s0)
@@ -3093,71 +2854,6 @@ define void @test_spill_call_nest() "interrupt"="qci-nest" {
 ; QCI-PUSH-POP-NEXT:    lw s10, 116(s0)
 ; QCI-PUSH-POP-NEXT:    lw s11, 120(s0)
 ; QCI-PUSH-POP-NEXT:    lw s1, 124(s0)
-=======
-; QCI-PUSH-POP-NEXT:    .cfi_offset s7, -116
-; QCI-PUSH-POP-NEXT:    .cfi_offset s8, -112
-; QCI-PUSH-POP-NEXT:    .cfi_offset s9, -108
-; QCI-PUSH-POP-NEXT:    .cfi_offset s10, -104
-; QCI-PUSH-POP-NEXT:    .cfi_offset s11, -100
-; QCI-PUSH-POP-NEXT:    addi sp, sp, -48
-; QCI-PUSH-POP-NEXT:    .cfi_def_cfa_offset 256
-; QCI-PUSH-POP-NEXT:    lui s0, %hi(var)
-; QCI-PUSH-POP-NEXT:    lw a0, %lo(var)(s0)
-; QCI-PUSH-POP-NEXT:    sw a0, 92(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, %lo(var+4)(s0)
-; QCI-PUSH-POP-NEXT:    sw a0, 88(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, %lo(var+8)(s0)
-; QCI-PUSH-POP-NEXT:    sw a0, 84(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, %lo(var+12)(s0)
-; QCI-PUSH-POP-NEXT:    sw a0, 80(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    addi s1, s0, %lo(var)
-; QCI-PUSH-POP-NEXT:    lw a0, 16(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 76(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 20(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 72(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 24(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 68(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 28(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 64(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 32(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 60(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 36(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 56(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 40(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 52(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 44(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 48(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 48(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 44(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 52(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 40(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 56(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 36(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 60(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 32(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 64(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 28(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 68(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 24(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 72(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 20(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 76(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 80(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 84(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw s4, 88(s1)
-; QCI-PUSH-POP-NEXT:    lw s5, 92(s1)
-; QCI-PUSH-POP-NEXT:    lw s6, 96(s1)
-; QCI-PUSH-POP-NEXT:    lw s7, 100(s1)
-; QCI-PUSH-POP-NEXT:    lw s8, 104(s1)
-; QCI-PUSH-POP-NEXT:    lw s9, 108(s1)
-; QCI-PUSH-POP-NEXT:    lw s10, 112(s1)
-; QCI-PUSH-POP-NEXT:    lw s11, 116(s1)
-; QCI-PUSH-POP-NEXT:    lw s2, 120(s1)
-; QCI-PUSH-POP-NEXT:    lw s3, 124(s1)
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
 ; QCI-PUSH-POP-NEXT:    li a0, 4
 ; QCI-PUSH-POP-NEXT:    li a2, 1
 ; QCI-PUSH-POP-NEXT:    li a4, 2
@@ -3170,7 +2866,6 @@ define void @test_spill_call_nest() "interrupt"="qci-nest" {
 ; QCI-PUSH-POP-NEXT:    li a7, 0
 ; QCI-PUSH-POP-NEXT:    call function_with_one_stack_arg
 ; QCI-PUSH-POP-NEXT:    call use_i64
-<<<<<<< HEAD
 ; QCI-PUSH-POP-NEXT:    sw s1, 124(s0)
 ; QCI-PUSH-POP-NEXT:    sw s11, 120(s0)
 ; QCI-PUSH-POP-NEXT:    sw s10, 116(s0)
@@ -3182,119 +2877,52 @@ define void @test_spill_call_nest() "interrupt"="qci-nest" {
 ; QCI-PUSH-POP-NEXT:    sw s4, 92(s0)
 ; QCI-PUSH-POP-NEXT:    sw s3, 88(s0)
 ; QCI-PUSH-POP-NEXT:    sw s2, 84(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 80(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 76(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 72(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 28(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 68(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 32(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 28(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 64(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 36(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 32(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 60(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 40(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 36(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 56(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 44(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 40(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 52(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 48(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 44(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 48(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 52(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 48(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 44(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 56(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 52(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 40(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 60(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 56(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 36(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 64(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 60(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 32(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 68(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 64(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 28(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 72(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 68(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 24(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 76(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 72(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 20(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 80(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 76(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 16(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 84(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 80(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 12(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 88(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 84(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 8(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 92(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 88(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 4(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 96(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 92(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    lui a1, %hi(var)
 ; QCI-PUSH-POP-NEXT:    sw a0, %lo(var)(a1)
-; QCI-PUSH-POP-NEXT:    lw s1, 140(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s2, 136(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s3, 132(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s4, 128(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s5, 124(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s6, 120(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s7, 116(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s8, 112(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s9, 108(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s10, 104(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s11, 100(sp) # 4-byte Folded Reload
-=======
-; QCI-PUSH-POP-NEXT:    sw s3, 124(s1)
-; QCI-PUSH-POP-NEXT:    sw s2, 120(s1)
-; QCI-PUSH-POP-NEXT:    sw s11, 116(s1)
-; QCI-PUSH-POP-NEXT:    sw s10, 112(s1)
-; QCI-PUSH-POP-NEXT:    sw s9, 108(s1)
-; QCI-PUSH-POP-NEXT:    sw s8, 104(s1)
-; QCI-PUSH-POP-NEXT:    sw s7, 100(s1)
-; QCI-PUSH-POP-NEXT:    sw s6, 96(s1)
-; QCI-PUSH-POP-NEXT:    sw s5, 92(s1)
-; QCI-PUSH-POP-NEXT:    sw s4, 88(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 84(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 80(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 76(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 72(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 68(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 28(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 64(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 32(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 60(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 36(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 56(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 40(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 52(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 44(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 48(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 48(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 44(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 52(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 40(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 56(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 36(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 60(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 32(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 64(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 28(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 68(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 24(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 72(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 20(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 76(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 16(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 80(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, %lo(var+12)(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 84(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, %lo(var+8)(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 88(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, %lo(var+4)(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 92(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, %lo(var)(s0)
 ; QCI-PUSH-POP-NEXT:    addi sp, sp, 48
 ; QCI-PUSH-POP-NEXT:    .cfi_def_cfa_offset 208
 ; QCI-PUSH-POP-NEXT:    cm.pop {ra, s0-s11}, 112
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
 ; QCI-PUSH-POP-NEXT:    .cfi_restore s1
 ; QCI-PUSH-POP-NEXT:    .cfi_restore s2
 ; QCI-PUSH-POP-NEXT:    .cfi_restore s3
@@ -3345,62 +2973,62 @@ define void @test_spill_call_nest() "interrupt"="qci-nest" {
 ; QCI-QCCMP-PUSH-POP-NEXT:    .cfi_offset s11, -148
 ; QCI-QCCMP-PUSH-POP-NEXT:    addi sp, sp, -48
 ; QCI-QCCMP-PUSH-POP-NEXT:    .cfi_def_cfa_offset 256
+; QCI-QCCMP-PUSH-POP-NEXT:    lui a0, %hi(var)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lui s0, %hi(var)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, %lo(var)(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    addi s0, s0, %lo(var)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, %lo(var)(a0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 92(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, %lo(var+4)(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 4(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 88(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, %lo(var+8)(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 8(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 84(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, %lo(var+12)(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 12(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 80(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    addi s1, s0, %lo(var)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 16(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 16(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 76(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 20(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 20(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 72(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 24(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 24(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 68(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 28(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 28(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 64(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 32(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 32(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 60(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 36(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 36(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 56(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 40(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 40(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 52(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 44(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 44(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 48(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 48(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 48(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 44(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 52(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 52(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 40(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 56(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 56(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 36(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 60(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 60(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 32(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 64(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 64(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 28(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 68(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 68(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 24(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 72(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 72(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 20(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 76(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 76(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 80(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 80(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 84(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s4, 88(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s5, 92(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s6, 96(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s7, 100(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s8, 104(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s9, 108(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s10, 112(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s11, 116(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s2, 120(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s3, 124(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s2, 84(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s3, 88(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s4, 92(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s5, 96(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s6, 100(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s7, 104(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s8, 108(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s9, 112(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s10, 116(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s11, 120(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s1, 124(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    li a0, 4
 ; QCI-QCCMP-PUSH-POP-NEXT:    li a2, 1
 ; QCI-QCCMP-PUSH-POP-NEXT:    li a4, 2
@@ -3413,60 +3041,60 @@ define void @test_spill_call_nest() "interrupt"="qci-nest" {
 ; QCI-QCCMP-PUSH-POP-NEXT:    li a7, 0
 ; QCI-QCCMP-PUSH-POP-NEXT:    call function_with_one_stack_arg
 ; QCI-QCCMP-PUSH-POP-NEXT:    call use_i64
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s3, 124(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s2, 120(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s11, 116(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s10, 112(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s9, 108(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s8, 104(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s7, 100(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s6, 96(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s5, 92(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s4, 88(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 84(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s1, 124(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s11, 120(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s10, 116(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s9, 112(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s8, 108(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s7, 104(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s6, 100(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s5, 96(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s4, 92(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s3, 88(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s2, 84(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 80(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 80(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 76(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 76(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 72(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 72(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 68(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 68(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 28(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 64(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 64(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 32(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 60(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 60(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 36(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 56(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 56(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 40(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 52(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 52(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 44(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 48(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 48(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 48(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 44(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 44(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 52(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 40(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 40(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 56(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 36(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 36(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 60(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 32(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 32(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 64(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 28(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 28(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 68(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 24(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 24(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 72(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 20(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 20(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 76(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 16(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 16(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 80(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, %lo(var+12)(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 12(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 84(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, %lo(var+8)(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 8(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 88(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, %lo(var+4)(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 4(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 92(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, %lo(var)(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lui a1, %hi(var)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, %lo(var)(a1)
 ; QCI-QCCMP-PUSH-POP-NEXT:    addi sp, sp, 48
 ; QCI-QCCMP-PUSH-POP-NEXT:    .cfi_def_cfa_offset 208
 ; QCI-QCCMP-PUSH-POP-NEXT:    qc.cm.pop {ra, s0-s11}, 112
@@ -3521,16 +3149,17 @@ define void @test_spill_call_nest() "interrupt"="qci-nest" {
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    addi sp, sp, -48
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    .cfi_def_cfa_offset 256
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    .cfi_def_cfa s0, 0
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lui s6, %hi(var)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, %lo(var)(s6)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lui a0, %hi(var)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lui s1, %hi(var)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    addi s1, s1, %lo(var)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, %lo(var)(a0)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -164(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, %lo(var+4)(s6)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 4(s1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -168(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, %lo(var+8)(s6)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 8(s1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -172(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, %lo(var+12)(s6)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 12(s1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -176(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    addi s1, s6, %lo(var)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 16(s1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -180(s0) # 4-byte Folded Spill
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 20(s1)
@@ -3567,17 +3196,16 @@ define void @test_spill_call_nest() "interrupt"="qci-nest" {
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -244(s0) # 4-byte Folded Spill
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 84(s1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -248(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 88(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -252(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s8, 92(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s9, 96(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s10, 100(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s11, 104(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s2, 108(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s3, 112(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s4, 116(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s5, 120(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s7, 124(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s5, 88(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s6, 92(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s7, 96(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s8, 100(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s9, 104(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s10, 108(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s11, 112(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s2, 116(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s3, 120(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s4, 124(s1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    li a0, 4
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    li a2, 1
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    li a4, 2
@@ -3590,17 +3218,16 @@ define void @test_spill_call_nest() "interrupt"="qci-nest" {
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    li a7, 0
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    call function_with_one_stack_arg
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    call use_i64
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s7, 124(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s5, 120(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s4, 116(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s3, 112(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s2, 108(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s11, 104(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s10, 100(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s9, 96(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s8, 92(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -252(s0) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 88(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s4, 124(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s3, 120(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s2, 116(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s11, 112(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s10, 108(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s9, 104(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s8, 100(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s7, 96(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s6, 92(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s5, 88(s1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -248(s0) # 4-byte Folded Reload
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 84(s1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -244(s0) # 4-byte Folded Reload
@@ -3638,13 +3265,14 @@ define void @test_spill_call_nest() "interrupt"="qci-nest" {
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -180(s0) # 4-byte Folded Reload
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 16(s1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -176(s0) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, %lo(var+12)(s6)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 12(s1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -172(s0) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, %lo(var+8)(s6)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 8(s1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -168(s0) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, %lo(var+4)(s6)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 4(s1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -164(s0) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, %lo(var)(s6)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lui a1, %hi(var)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, %lo(var)(a1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    .cfi_def_cfa sp, 256
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    addi sp, sp, 48
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    .cfi_def_cfa_offset 208
@@ -4089,57 +3717,58 @@ define void @test_spill_call_nonest() "interrupt"="qci-nonest" {
 ; QCI-PUSH-POP-NEXT:    .cfi_offset s4, -128
 ; QCI-PUSH-POP-NEXT:    .cfi_offset s5, -124
 ; QCI-PUSH-POP-NEXT:    .cfi_offset s6, -120
-<<<<<<< HEAD
-; QCI-PUSH-POP-NEXT:    .cfi_offset s7, -124
-; QCI-PUSH-POP-NEXT:    .cfi_offset s8, -128
-; QCI-PUSH-POP-NEXT:    .cfi_offset s9, -132
-; QCI-PUSH-POP-NEXT:    .cfi_offset s10, -136
-; QCI-PUSH-POP-NEXT:    .cfi_offset s11, -140
+; QCI-PUSH-POP-NEXT:    .cfi_offset s7, -116
+; QCI-PUSH-POP-NEXT:    .cfi_offset s8, -112
+; QCI-PUSH-POP-NEXT:    .cfi_offset s9, -108
+; QCI-PUSH-POP-NEXT:    .cfi_offset s10, -104
+; QCI-PUSH-POP-NEXT:    .cfi_offset s11, -100
+; QCI-PUSH-POP-NEXT:    addi sp, sp, -48
+; QCI-PUSH-POP-NEXT:    .cfi_def_cfa_offset 256
 ; QCI-PUSH-POP-NEXT:    lui a0, %hi(var)
 ; QCI-PUSH-POP-NEXT:    lui s0, %hi(var)
 ; QCI-PUSH-POP-NEXT:    addi s0, s0, %lo(var)
 ; QCI-PUSH-POP-NEXT:    lw a0, %lo(var)(a0)
-; QCI-PUSH-POP-NEXT:    sw a0, 96(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 4(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 92(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 8(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 4(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 88(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 12(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 8(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 84(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 16(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 12(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 80(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 20(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 16(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 76(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 24(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 20(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 72(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 28(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 24(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 68(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 32(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 28(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 64(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 36(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 32(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 60(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 40(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 36(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 56(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 44(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 40(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 52(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 48(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 44(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 48(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 52(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 48(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 44(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 56(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 52(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 40(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 60(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 56(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 36(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 64(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 60(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 32(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 68(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 64(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 28(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 72(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 68(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 24(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 76(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 72(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 20(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 80(s0)
+; QCI-PUSH-POP-NEXT:    lw a0, 76(s0)
 ; QCI-PUSH-POP-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
+; QCI-PUSH-POP-NEXT:    lw a0, 80(s0)
+; QCI-PUSH-POP-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
 ; QCI-PUSH-POP-NEXT:    lw s2, 84(s0)
 ; QCI-PUSH-POP-NEXT:    lw s3, 88(s0)
 ; QCI-PUSH-POP-NEXT:    lw s4, 92(s0)
@@ -4151,71 +3780,6 @@ define void @test_spill_call_nonest() "interrupt"="qci-nonest" {
 ; QCI-PUSH-POP-NEXT:    lw s10, 116(s0)
 ; QCI-PUSH-POP-NEXT:    lw s11, 120(s0)
 ; QCI-PUSH-POP-NEXT:    lw s1, 124(s0)
-=======
-; QCI-PUSH-POP-NEXT:    .cfi_offset s7, -116
-; QCI-PUSH-POP-NEXT:    .cfi_offset s8, -112
-; QCI-PUSH-POP-NEXT:    .cfi_offset s9, -108
-; QCI-PUSH-POP-NEXT:    .cfi_offset s10, -104
-; QCI-PUSH-POP-NEXT:    .cfi_offset s11, -100
-; QCI-PUSH-POP-NEXT:    addi sp, sp, -48
-; QCI-PUSH-POP-NEXT:    .cfi_def_cfa_offset 256
-; QCI-PUSH-POP-NEXT:    lui s0, %hi(var)
-; QCI-PUSH-POP-NEXT:    lw a0, %lo(var)(s0)
-; QCI-PUSH-POP-NEXT:    sw a0, 92(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, %lo(var+4)(s0)
-; QCI-PUSH-POP-NEXT:    sw a0, 88(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, %lo(var+8)(s0)
-; QCI-PUSH-POP-NEXT:    sw a0, 84(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, %lo(var+12)(s0)
-; QCI-PUSH-POP-NEXT:    sw a0, 80(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    addi s1, s0, %lo(var)
-; QCI-PUSH-POP-NEXT:    lw a0, 16(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 76(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 20(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 72(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 24(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 68(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 28(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 64(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 32(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 60(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 36(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 56(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 40(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 52(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 44(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 48(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 48(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 44(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 52(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 40(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 56(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 36(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 60(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 32(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 64(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 28(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 68(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 24(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 72(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 20(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 76(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 80(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw a0, 84(s1)
-; QCI-PUSH-POP-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
-; QCI-PUSH-POP-NEXT:    lw s4, 88(s1)
-; QCI-PUSH-POP-NEXT:    lw s5, 92(s1)
-; QCI-PUSH-POP-NEXT:    lw s6, 96(s1)
-; QCI-PUSH-POP-NEXT:    lw s7, 100(s1)
-; QCI-PUSH-POP-NEXT:    lw s8, 104(s1)
-; QCI-PUSH-POP-NEXT:    lw s9, 108(s1)
-; QCI-PUSH-POP-NEXT:    lw s10, 112(s1)
-; QCI-PUSH-POP-NEXT:    lw s11, 116(s1)
-; QCI-PUSH-POP-NEXT:    lw s2, 120(s1)
-; QCI-PUSH-POP-NEXT:    lw s3, 124(s1)
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
 ; QCI-PUSH-POP-NEXT:    li a0, 4
 ; QCI-PUSH-POP-NEXT:    li a2, 1
 ; QCI-PUSH-POP-NEXT:    li a4, 2
@@ -4228,7 +3792,6 @@ define void @test_spill_call_nonest() "interrupt"="qci-nonest" {
 ; QCI-PUSH-POP-NEXT:    li a7, 0
 ; QCI-PUSH-POP-NEXT:    call function_with_one_stack_arg
 ; QCI-PUSH-POP-NEXT:    call use_i64
-<<<<<<< HEAD
 ; QCI-PUSH-POP-NEXT:    sw s1, 124(s0)
 ; QCI-PUSH-POP-NEXT:    sw s11, 120(s0)
 ; QCI-PUSH-POP-NEXT:    sw s10, 116(s0)
@@ -4240,119 +3803,52 @@ define void @test_spill_call_nonest() "interrupt"="qci-nonest" {
 ; QCI-PUSH-POP-NEXT:    sw s4, 92(s0)
 ; QCI-PUSH-POP-NEXT:    sw s3, 88(s0)
 ; QCI-PUSH-POP-NEXT:    sw s2, 84(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 80(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 76(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 72(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 28(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 68(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 32(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 28(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 64(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 36(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 32(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 60(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 40(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 36(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 56(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 44(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 40(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 52(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 48(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 44(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 48(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 52(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 48(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 44(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 56(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 52(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 40(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 60(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 56(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 36(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 64(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 60(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 32(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 68(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 64(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 28(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 72(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 68(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 24(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 76(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 72(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 20(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 80(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 76(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 16(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 84(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 80(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 12(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 88(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 84(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 8(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 92(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 88(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    sw a0, 4(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 96(sp) # 4-byte Folded Reload
+; QCI-PUSH-POP-NEXT:    lw a0, 92(sp) # 4-byte Folded Reload
 ; QCI-PUSH-POP-NEXT:    lui a1, %hi(var)
 ; QCI-PUSH-POP-NEXT:    sw a0, %lo(var)(a1)
-; QCI-PUSH-POP-NEXT:    lw s1, 140(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s2, 136(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s3, 132(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s4, 128(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s5, 124(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s6, 120(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s7, 116(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s8, 112(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s9, 108(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s10, 104(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    lw s11, 100(sp) # 4-byte Folded Reload
-=======
-; QCI-PUSH-POP-NEXT:    sw s3, 124(s1)
-; QCI-PUSH-POP-NEXT:    sw s2, 120(s1)
-; QCI-PUSH-POP-NEXT:    sw s11, 116(s1)
-; QCI-PUSH-POP-NEXT:    sw s10, 112(s1)
-; QCI-PUSH-POP-NEXT:    sw s9, 108(s1)
-; QCI-PUSH-POP-NEXT:    sw s8, 104(s1)
-; QCI-PUSH-POP-NEXT:    sw s7, 100(s1)
-; QCI-PUSH-POP-NEXT:    sw s6, 96(s1)
-; QCI-PUSH-POP-NEXT:    sw s5, 92(s1)
-; QCI-PUSH-POP-NEXT:    sw s4, 88(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 84(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 80(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 76(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 72(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 68(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 28(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 64(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 32(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 60(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 36(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 56(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 40(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 52(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 44(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 48(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 48(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 44(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 52(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 40(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 56(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 36(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 60(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 32(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 64(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 28(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 68(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 24(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 72(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 20(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 76(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, 16(s1)
-; QCI-PUSH-POP-NEXT:    lw a0, 80(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, %lo(var+12)(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 84(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, %lo(var+8)(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 88(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, %lo(var+4)(s0)
-; QCI-PUSH-POP-NEXT:    lw a0, 92(sp) # 4-byte Folded Reload
-; QCI-PUSH-POP-NEXT:    sw a0, %lo(var)(s0)
 ; QCI-PUSH-POP-NEXT:    addi sp, sp, 48
 ; QCI-PUSH-POP-NEXT:    .cfi_def_cfa_offset 208
 ; QCI-PUSH-POP-NEXT:    cm.pop {ra, s0-s11}, 112
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
 ; QCI-PUSH-POP-NEXT:    .cfi_restore s1
 ; QCI-PUSH-POP-NEXT:    .cfi_restore s2
 ; QCI-PUSH-POP-NEXT:    .cfi_restore s3
@@ -4403,62 +3899,62 @@ define void @test_spill_call_nonest() "interrupt"="qci-nonest" {
 ; QCI-QCCMP-PUSH-POP-NEXT:    .cfi_offset s11, -148
 ; QCI-QCCMP-PUSH-POP-NEXT:    addi sp, sp, -48
 ; QCI-QCCMP-PUSH-POP-NEXT:    .cfi_def_cfa_offset 256
+; QCI-QCCMP-PUSH-POP-NEXT:    lui a0, %hi(var)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lui s0, %hi(var)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, %lo(var)(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    addi s0, s0, %lo(var)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, %lo(var)(a0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 92(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, %lo(var+4)(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 4(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 88(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, %lo(var+8)(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 8(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 84(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, %lo(var+12)(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 12(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 80(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    addi s1, s0, %lo(var)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 16(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 16(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 76(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 20(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 20(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 72(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 24(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 24(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 68(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 28(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 28(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 64(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 32(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 32(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 60(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 36(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 36(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 56(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 40(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 40(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 52(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 44(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 44(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 48(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 48(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 48(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 44(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 52(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 52(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 40(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 56(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 56(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 36(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 60(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 60(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 32(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 64(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 64(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 28(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 68(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 68(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 24(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 72(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 72(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 20(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 76(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 76(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 80(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 80(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 84(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s4, 88(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s5, 92(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s6, 96(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s7, 100(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s8, 104(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s9, 108(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s10, 112(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s11, 116(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s2, 120(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw s3, 124(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s2, 84(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s3, 88(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s4, 92(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s5, 96(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s6, 100(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s7, 104(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s8, 108(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s9, 112(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s10, 116(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s11, 120(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lw s1, 124(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    li a0, 4
 ; QCI-QCCMP-PUSH-POP-NEXT:    li a2, 1
 ; QCI-QCCMP-PUSH-POP-NEXT:    li a4, 2
@@ -4471,60 +3967,60 @@ define void @test_spill_call_nonest() "interrupt"="qci-nonest" {
 ; QCI-QCCMP-PUSH-POP-NEXT:    li a7, 0
 ; QCI-QCCMP-PUSH-POP-NEXT:    call function_with_one_stack_arg
 ; QCI-QCCMP-PUSH-POP-NEXT:    call use_i64
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s3, 124(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s2, 120(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s11, 116(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s10, 112(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s9, 108(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s8, 104(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s7, 100(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s6, 96(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s5, 92(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    sw s4, 88(s1)
-; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 84(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s1, 124(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s11, 120(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s10, 116(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s9, 112(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s8, 108(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s7, 104(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s6, 100(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s5, 96(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s4, 92(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s3, 88(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw s2, 84(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 80(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 80(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 76(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 76(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 72(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 72(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 68(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 68(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 28(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 64(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 64(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 32(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 60(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 60(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 36(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 56(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 56(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 40(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 52(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 52(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 44(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 48(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 48(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 48(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 44(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 44(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 52(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 40(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 40(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 56(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 36(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 36(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 60(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 32(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 32(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 64(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 28(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 28(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 68(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 24(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 24(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 72(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 20(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 20(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 76(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 16(s1)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 16(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 80(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, %lo(var+12)(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 12(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 84(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, %lo(var+8)(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 8(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 88(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, %lo(var+4)(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, 4(s0)
 ; QCI-QCCMP-PUSH-POP-NEXT:    lw a0, 92(sp) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, %lo(var)(s0)
+; QCI-QCCMP-PUSH-POP-NEXT:    lui a1, %hi(var)
+; QCI-QCCMP-PUSH-POP-NEXT:    sw a0, %lo(var)(a1)
 ; QCI-QCCMP-PUSH-POP-NEXT:    addi sp, sp, 48
 ; QCI-QCCMP-PUSH-POP-NEXT:    .cfi_def_cfa_offset 208
 ; QCI-QCCMP-PUSH-POP-NEXT:    qc.cm.pop {ra, s0-s11}, 112
@@ -4579,16 +4075,17 @@ define void @test_spill_call_nonest() "interrupt"="qci-nonest" {
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    addi sp, sp, -48
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    .cfi_def_cfa_offset 256
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    .cfi_def_cfa s0, 0
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lui s6, %hi(var)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, %lo(var)(s6)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lui a0, %hi(var)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lui s1, %hi(var)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    addi s1, s1, %lo(var)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, %lo(var)(a0)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -164(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, %lo(var+4)(s6)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 4(s1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -168(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, %lo(var+8)(s6)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 8(s1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -172(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, %lo(var+12)(s6)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 12(s1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -176(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    addi s1, s6, %lo(var)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 16(s1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -180(s0) # 4-byte Folded Spill
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 20(s1)
@@ -4625,17 +4122,16 @@ define void @test_spill_call_nonest() "interrupt"="qci-nonest" {
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -244(s0) # 4-byte Folded Spill
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 84(s1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -248(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, 88(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, -252(s0) # 4-byte Folded Spill
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s8, 92(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s9, 96(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s10, 100(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s11, 104(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s2, 108(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s3, 112(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s4, 116(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s5, 120(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s7, 124(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s5, 88(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s6, 92(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s7, 96(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s8, 100(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s9, 104(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s10, 108(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s11, 112(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s2, 116(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s3, 120(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw s4, 124(s1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    li a0, 4
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    li a2, 1
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    li a4, 2
@@ -4648,17 +4144,16 @@ define void @test_spill_call_nonest() "interrupt"="qci-nonest" {
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    li a7, 0
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    call function_with_one_stack_arg
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    call use_i64
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s7, 124(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s5, 120(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s4, 116(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s3, 112(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s2, 108(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s11, 104(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s10, 100(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s9, 96(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s8, 92(s1)
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -252(s0) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 88(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s4, 124(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s3, 120(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s2, 116(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s11, 112(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s10, 108(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s9, 104(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s8, 100(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s7, 96(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s6, 92(s1)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw s5, 88(s1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -248(s0) # 4-byte Folded Reload
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 84(s1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -244(s0) # 4-byte Folded Reload
@@ -4696,13 +4191,14 @@ define void @test_spill_call_nonest() "interrupt"="qci-nonest" {
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -180(s0) # 4-byte Folded Reload
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 16(s1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -176(s0) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, %lo(var+12)(s6)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 12(s1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -172(s0) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, %lo(var+8)(s6)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 8(s1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -168(s0) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, %lo(var+4)(s6)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, 4(s1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    lw a0, -164(s0) # 4-byte Folded Reload
-; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, %lo(var)(s6)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    lui a1, %hi(var)
+; QCI-QCCMP-PUSH-POP-FP-NEXT:    sw a0, %lo(var)(a1)
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    .cfi_def_cfa sp, 256
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    addi sp, sp, 48
 ; QCI-QCCMP-PUSH-POP-FP-NEXT:    .cfi_def_cfa_offset 208

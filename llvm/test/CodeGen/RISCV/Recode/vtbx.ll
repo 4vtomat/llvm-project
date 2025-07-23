@@ -4,17 +4,16 @@
 define void @vqtbx1_s8(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqtbx1_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a2)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vle8.v v9, (a1)
+; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vmsgtu.vi v0, v8, 15
-; CHECK-NEXT:    vsetivli zero, 8, e8, m1, ta, ma
-; CHECK-NEXT:    vrgather.vv v10, v9, v8
+; CHECK-NEXT:    vle8.v v10, (a2)
+; CHECK-NEXT:    vmsgtu.vi v0, v10, 15
+; CHECK-NEXT:    vsetivli zero, 8, e8, m2, ta, ma
+; CHECK-NEXT:    vrgather.vv v12, v8, v10
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v10, (a0), v0.t
-; CHECK-NEXT:    vse8.v v10, (a3)
+; CHECK-NEXT:    vle8.v v12, (a0), v0.t
+; CHECK-NEXT:    vse8.v v12, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -28,17 +27,16 @@ entry:
 define void @vqtbx1_u8(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqtbx1_u8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a2)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vle8.v v9, (a1)
+; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vmsgtu.vi v0, v8, 15
-; CHECK-NEXT:    vsetivli zero, 8, e8, m1, ta, ma
-; CHECK-NEXT:    vrgather.vv v10, v9, v8
+; CHECK-NEXT:    vle8.v v10, (a2)
+; CHECK-NEXT:    vmsgtu.vi v0, v10, 15
+; CHECK-NEXT:    vsetivli zero, 8, e8, m2, ta, ma
+; CHECK-NEXT:    vrgather.vv v12, v8, v10
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v10, (a0), v0.t
-; CHECK-NEXT:    vse8.v v10, (a3)
+; CHECK-NEXT:    vle8.v v12, (a0), v0.t
+; CHECK-NEXT:    vse8.v v12, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -52,13 +50,15 @@ entry:
 define void @vqtbx1q_s8(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqtbx1q_s8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
+; CHECK-NEXT:    vle8.v v8, (a1)
+; CHECK-NEXT:    vle8.v v10, (a2)
+; CHECK-NEXT:    vmsgtu.vi v0, v10, 15
+; CHECK-NEXT:    vsetivli zero, 16, e8, m2, ta, ma
+; CHECK-NEXT:    vrgather.vv v12, v8, v10
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v8, (a2)
-; CHECK-NEXT:    vle8.v v9, (a1)
-; CHECK-NEXT:    vmsgtu.vi v0, v8, 15
-; CHECK-NEXT:    vrgather.vv v10, v9, v8
-; CHECK-NEXT:    vle8.v v10, (a0), v0.t
-; CHECK-NEXT:    vse8.v v10, (a3)
+; CHECK-NEXT:    vle8.v v12, (a0), v0.t
+; CHECK-NEXT:    vse8.v v12, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1
@@ -72,13 +72,15 @@ entry:
 define void @vqtbx1q_u8(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vqtbx1q_u8:
 ; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
+; CHECK-NEXT:    vle8.v v8, (a1)
+; CHECK-NEXT:    vle8.v v10, (a2)
+; CHECK-NEXT:    vmsgtu.vi v0, v10, 15
+; CHECK-NEXT:    vsetivli zero, 16, e8, m2, ta, ma
+; CHECK-NEXT:    vrgather.vv v12, v8, v10
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v8, (a2)
-; CHECK-NEXT:    vle8.v v9, (a1)
-; CHECK-NEXT:    vmsgtu.vi v0, v8, 15
-; CHECK-NEXT:    vrgather.vv v10, v9, v8
-; CHECK-NEXT:    vle8.v v10, (a0), v0.t
-; CHECK-NEXT:    vse8.v v10, (a3)
+; CHECK-NEXT:    vle8.v v12, (a0), v0.t
+; CHECK-NEXT:    vse8.v v12, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1
@@ -93,17 +95,18 @@ define void @vqtbx2_s8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, 
 ; CHECK-LABEL: vqtbx2_s8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    li a4, 32
-; CHECK-NEXT:    vsetvli zero, a4, e8, m2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vle8.v v10, (a2)
-; CHECK-NEXT:    li a1, 31
-; CHECK-NEXT:    vmsgtu.vx v0, v10, a1
-; CHECK-NEXT:    vsetivli zero, 8, e8, m2, ta, ma
-; CHECK-NEXT:    vrgather.vv v12, v8, v10
+; CHECK-NEXT:    vle8.v v8, (a2)
+; CHECK-NEXT:    li a2, 31
+; CHECK-NEXT:    vsetvli zero, a4, e8, m2, ta, ma
+; CHECK-NEXT:    vle8.v v12, (a1)
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
+; CHECK-NEXT:    vmsgtu.vx v0, v8, a2
+; CHECK-NEXT:    vsetivli zero, 8, e8, m4, ta, ma
+; CHECK-NEXT:    vrgather.vv v16, v12, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v12, (a0), v0.t
-; CHECK-NEXT:    vse8.v v12, (a3)
+; CHECK-NEXT:    vle8.v v16, (a0), v0.t
+; CHECK-NEXT:    vse8.v v16, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -120,17 +123,18 @@ define void @vqtbx2_u8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, 
 ; CHECK-LABEL: vqtbx2_u8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    li a4, 32
-; CHECK-NEXT:    vsetvli zero, a4, e8, m2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vle8.v v10, (a2)
-; CHECK-NEXT:    li a1, 31
-; CHECK-NEXT:    vmsgtu.vx v0, v10, a1
-; CHECK-NEXT:    vsetivli zero, 8, e8, m2, ta, ma
-; CHECK-NEXT:    vrgather.vv v12, v8, v10
+; CHECK-NEXT:    vle8.v v8, (a2)
+; CHECK-NEXT:    li a2, 31
+; CHECK-NEXT:    vsetvli zero, a4, e8, m2, ta, ma
+; CHECK-NEXT:    vle8.v v12, (a1)
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
+; CHECK-NEXT:    vmsgtu.vx v0, v8, a2
+; CHECK-NEXT:    vsetivli zero, 8, e8, m4, ta, ma
+; CHECK-NEXT:    vrgather.vv v16, v12, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v12, (a0), v0.t
-; CHECK-NEXT:    vse8.v v12, (a3)
+; CHECK-NEXT:    vle8.v v16, (a0), v0.t
+; CHECK-NEXT:    vse8.v v16, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -147,17 +151,18 @@ define void @vqtbx2q_s8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1,
 ; CHECK-LABEL: vqtbx2q_s8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    li a4, 32
-; CHECK-NEXT:    vsetvli zero, a4, e8, m2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vle8.v v10, (a2)
-; CHECK-NEXT:    li a1, 31
-; CHECK-NEXT:    vmsgtu.vx v0, v10, a1
-; CHECK-NEXT:    vsetivli zero, 16, e8, m2, ta, ma
-; CHECK-NEXT:    vrgather.vv v12, v8, v10
+; CHECK-NEXT:    vle8.v v8, (a2)
+; CHECK-NEXT:    li a2, 31
+; CHECK-NEXT:    vsetvli zero, a4, e8, m2, ta, ma
+; CHECK-NEXT:    vle8.v v12, (a1)
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
+; CHECK-NEXT:    vmsgtu.vx v0, v8, a2
+; CHECK-NEXT:    vsetivli zero, 16, e8, m4, ta, ma
+; CHECK-NEXT:    vrgather.vv v16, v12, v8
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v12, (a0), v0.t
-; CHECK-NEXT:    vse8.v v12, (a3)
+; CHECK-NEXT:    vle8.v v16, (a0), v0.t
+; CHECK-NEXT:    vse8.v v16, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1
@@ -174,17 +179,18 @@ define void @vqtbx2q_u8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1,
 ; CHECK-LABEL: vqtbx2q_u8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    li a4, 32
-; CHECK-NEXT:    vsetvli zero, a4, e8, m2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vle8.v v10, (a2)
-; CHECK-NEXT:    li a1, 31
-; CHECK-NEXT:    vmsgtu.vx v0, v10, a1
-; CHECK-NEXT:    vsetivli zero, 16, e8, m2, ta, ma
-; CHECK-NEXT:    vrgather.vv v12, v8, v10
+; CHECK-NEXT:    vle8.v v8, (a2)
+; CHECK-NEXT:    li a2, 31
+; CHECK-NEXT:    vsetvli zero, a4, e8, m2, ta, ma
+; CHECK-NEXT:    vle8.v v12, (a1)
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
+; CHECK-NEXT:    vmsgtu.vx v0, v8, a2
+; CHECK-NEXT:    vsetivli zero, 16, e8, m4, ta, ma
+; CHECK-NEXT:    vrgather.vv v16, v12, v8
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v12, (a0), v0.t
-; CHECK-NEXT:    vse8.v v12, (a3)
+; CHECK-NEXT:    vle8.v v16, (a0), v0.t
+; CHECK-NEXT:    vse8.v v16, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1
@@ -203,16 +209,16 @@ define void @vqtbx3_s8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, 
 ; CHECK-NEXT:    li a4, 48
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a2)
+; CHECK-NEXT:    li a2, 47
 ; CHECK-NEXT:    vsetvli zero, a4, e8, m4, ta, ma
-; CHECK-NEXT:    vle8.v v12, (a1)
-; CHECK-NEXT:    li a1, 47
+; CHECK-NEXT:    vle8.v v16, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vmsgtu.vx v0, v8, a1
-; CHECK-NEXT:    vsetivli zero, 8, e8, m4, ta, ma
-; CHECK-NEXT:    vrgather.vv v16, v12, v8
+; CHECK-NEXT:    vmsgtu.vx v0, v8, a2
+; CHECK-NEXT:    vsetivli zero, 8, e8, m8, ta, ma
+; CHECK-NEXT:    vrgather.vv v24, v16, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v16, (a0), v0.t
-; CHECK-NEXT:    vse8.v v16, (a3)
+; CHECK-NEXT:    vle8.v v24, (a0), v0.t
+; CHECK-NEXT:    vse8.v v24, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -232,16 +238,16 @@ define void @vqtbx3_u8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, 
 ; CHECK-NEXT:    li a4, 48
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a2)
+; CHECK-NEXT:    li a2, 47
 ; CHECK-NEXT:    vsetvli zero, a4, e8, m4, ta, ma
-; CHECK-NEXT:    vle8.v v12, (a1)
-; CHECK-NEXT:    li a1, 47
+; CHECK-NEXT:    vle8.v v16, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vmsgtu.vx v0, v8, a1
-; CHECK-NEXT:    vsetivli zero, 8, e8, m4, ta, ma
-; CHECK-NEXT:    vrgather.vv v16, v12, v8
+; CHECK-NEXT:    vmsgtu.vx v0, v8, a2
+; CHECK-NEXT:    vsetivli zero, 8, e8, m8, ta, ma
+; CHECK-NEXT:    vrgather.vv v24, v16, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v16, (a0), v0.t
-; CHECK-NEXT:    vse8.v v16, (a3)
+; CHECK-NEXT:    vle8.v v24, (a0), v0.t
+; CHECK-NEXT:    vse8.v v24, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -261,16 +267,16 @@ define void @vqtbx3q_s8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1,
 ; CHECK-NEXT:    li a4, 48
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a2)
+; CHECK-NEXT:    li a2, 47
 ; CHECK-NEXT:    vsetvli zero, a4, e8, m4, ta, ma
-; CHECK-NEXT:    vle8.v v12, (a1)
-; CHECK-NEXT:    li a1, 47
+; CHECK-NEXT:    vle8.v v16, (a1)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vmsgtu.vx v0, v8, a1
-; CHECK-NEXT:    vsetivli zero, 16, e8, m4, ta, ma
-; CHECK-NEXT:    vrgather.vv v16, v12, v8
+; CHECK-NEXT:    vmsgtu.vx v0, v8, a2
+; CHECK-NEXT:    vsetivli zero, 16, e8, m8, ta, ma
+; CHECK-NEXT:    vrgather.vv v24, v16, v8
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v16, (a0), v0.t
-; CHECK-NEXT:    vse8.v v16, (a3)
+; CHECK-NEXT:    vle8.v v24, (a0), v0.t
+; CHECK-NEXT:    vse8.v v24, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1
@@ -290,16 +296,16 @@ define void @vqtbx3q_u8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1,
 ; CHECK-NEXT:    li a4, 48
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a2)
+; CHECK-NEXT:    li a2, 47
 ; CHECK-NEXT:    vsetvli zero, a4, e8, m4, ta, ma
-; CHECK-NEXT:    vle8.v v12, (a1)
-; CHECK-NEXT:    li a1, 47
+; CHECK-NEXT:    vle8.v v16, (a1)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vmsgtu.vx v0, v8, a1
-; CHECK-NEXT:    vsetivli zero, 16, e8, m4, ta, ma
-; CHECK-NEXT:    vrgather.vv v16, v12, v8
+; CHECK-NEXT:    vmsgtu.vx v0, v8, a2
+; CHECK-NEXT:    vsetivli zero, 16, e8, m8, ta, ma
+; CHECK-NEXT:    vrgather.vv v24, v16, v8
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v16, (a0), v0.t
-; CHECK-NEXT:    vse8.v v16, (a3)
+; CHECK-NEXT:    vle8.v v24, (a0), v0.t
+; CHECK-NEXT:    vse8.v v24, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1
@@ -319,16 +325,16 @@ define void @vqtbx4_s8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, 
 ; CHECK-NEXT:    li a4, 64
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a2)
+; CHECK-NEXT:    li a2, 63
 ; CHECK-NEXT:    vsetvli zero, a4, e8, m4, ta, ma
-; CHECK-NEXT:    vle8.v v12, (a1)
-; CHECK-NEXT:    li a1, 63
+; CHECK-NEXT:    vle8.v v16, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vmsgtu.vx v0, v8, a1
-; CHECK-NEXT:    vsetivli zero, 8, e8, m4, ta, ma
-; CHECK-NEXT:    vrgather.vv v16, v12, v8
+; CHECK-NEXT:    vmsgtu.vx v0, v8, a2
+; CHECK-NEXT:    vsetivli zero, 8, e8, m8, ta, ma
+; CHECK-NEXT:    vrgather.vv v24, v16, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v16, (a0), v0.t
-; CHECK-NEXT:    vse8.v v16, (a3)
+; CHECK-NEXT:    vle8.v v24, (a0), v0.t
+; CHECK-NEXT:    vse8.v v24, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -349,16 +355,16 @@ define void @vqtbx4_u8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, 
 ; CHECK-NEXT:    li a4, 64
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a2)
+; CHECK-NEXT:    li a2, 63
 ; CHECK-NEXT:    vsetvli zero, a4, e8, m4, ta, ma
-; CHECK-NEXT:    vle8.v v12, (a1)
-; CHECK-NEXT:    li a1, 63
+; CHECK-NEXT:    vle8.v v16, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vmsgtu.vx v0, v8, a1
-; CHECK-NEXT:    vsetivli zero, 8, e8, m4, ta, ma
-; CHECK-NEXT:    vrgather.vv v16, v12, v8
+; CHECK-NEXT:    vmsgtu.vx v0, v8, a2
+; CHECK-NEXT:    vsetivli zero, 8, e8, m8, ta, ma
+; CHECK-NEXT:    vrgather.vv v24, v16, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v16, (a0), v0.t
-; CHECK-NEXT:    vse8.v v16, (a3)
+; CHECK-NEXT:    vle8.v v24, (a0), v0.t
+; CHECK-NEXT:    vse8.v v24, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -379,16 +385,16 @@ define void @vqtbx4q_s8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1,
 ; CHECK-NEXT:    li a4, 64
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a2)
+; CHECK-NEXT:    li a2, 63
 ; CHECK-NEXT:    vsetvli zero, a4, e8, m4, ta, ma
-; CHECK-NEXT:    vle8.v v12, (a1)
-; CHECK-NEXT:    li a1, 63
+; CHECK-NEXT:    vle8.v v16, (a1)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vmsgtu.vx v0, v8, a1
-; CHECK-NEXT:    vsetivli zero, 16, e8, m4, ta, ma
-; CHECK-NEXT:    vrgather.vv v16, v12, v8
+; CHECK-NEXT:    vmsgtu.vx v0, v8, a2
+; CHECK-NEXT:    vsetivli zero, 16, e8, m8, ta, ma
+; CHECK-NEXT:    vrgather.vv v24, v16, v8
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v16, (a0), v0.t
-; CHECK-NEXT:    vse8.v v16, (a3)
+; CHECK-NEXT:    vle8.v v24, (a0), v0.t
+; CHECK-NEXT:    vse8.v v24, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1
@@ -409,16 +415,16 @@ define void @vqtbx4q_u8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1,
 ; CHECK-NEXT:    li a4, 64
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a2)
+; CHECK-NEXT:    li a2, 63
 ; CHECK-NEXT:    vsetvli zero, a4, e8, m4, ta, ma
-; CHECK-NEXT:    vle8.v v12, (a1)
-; CHECK-NEXT:    li a1, 63
+; CHECK-NEXT:    vle8.v v16, (a1)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vmsgtu.vx v0, v8, a1
-; CHECK-NEXT:    vsetivli zero, 16, e8, m4, ta, ma
-; CHECK-NEXT:    vrgather.vv v16, v12, v8
+; CHECK-NEXT:    vmsgtu.vx v0, v8, a2
+; CHECK-NEXT:    vsetivli zero, 16, e8, m8, ta, ma
+; CHECK-NEXT:    vrgather.vv v24, v16, v8
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v16, (a0), v0.t
-; CHECK-NEXT:    vse8.v v16, (a3)
+; CHECK-NEXT:    vle8.v v24, (a0), v0.t
+; CHECK-NEXT:    vse8.v v24, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1
@@ -436,17 +442,16 @@ entry:
 define void @vtbx2_s8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vtbx2_s8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a2)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vle8.v v9, (a1)
+; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vmsgtu.vi v0, v8, 15
-; CHECK-NEXT:    vsetivli zero, 8, e8, m1, ta, ma
-; CHECK-NEXT:    vrgather.vv v10, v9, v8
+; CHECK-NEXT:    vle8.v v10, (a2)
+; CHECK-NEXT:    vmsgtu.vi v0, v10, 15
+; CHECK-NEXT:    vsetivli zero, 8, e8, m2, ta, ma
+; CHECK-NEXT:    vrgather.vv v12, v8, v10
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v10, (a0), v0.t
-; CHECK-NEXT:    vse8.v v10, (a3)
+; CHECK-NEXT:    vle8.v v12, (a0), v0.t
+; CHECK-NEXT:    vse8.v v12, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -463,17 +468,16 @@ entry:
 define void @vtbx2_u8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vtbx2_u8:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a2)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vle8.v v9, (a1)
+; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vmsgtu.vi v0, v8, 15
-; CHECK-NEXT:    vsetivli zero, 8, e8, m1, ta, ma
-; CHECK-NEXT:    vrgather.vv v10, v9, v8
+; CHECK-NEXT:    vle8.v v10, (a2)
+; CHECK-NEXT:    vmsgtu.vi v0, v10, 15
+; CHECK-NEXT:    vsetivli zero, 8, e8, m2, ta, ma
+; CHECK-NEXT:    vrgather.vv v12, v8, v10
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v10, (a0), v0.t
-; CHECK-NEXT:    vse8.v v10, (a3)
+; CHECK-NEXT:    vle8.v v12, (a0), v0.t
+; CHECK-NEXT:    vse8.v v12, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -491,17 +495,18 @@ define void @vtbx4_s8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, p
 ; CHECK-LABEL: vtbx4_s8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    li a4, 32
-; CHECK-NEXT:    vsetvli zero, a4, e8, m2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vle8.v v10, (a2)
-; CHECK-NEXT:    li a1, 31
-; CHECK-NEXT:    vmsgtu.vx v0, v10, a1
-; CHECK-NEXT:    vsetivli zero, 8, e8, m2, ta, ma
-; CHECK-NEXT:    vrgather.vv v12, v8, v10
+; CHECK-NEXT:    vle8.v v8, (a2)
+; CHECK-NEXT:    li a2, 31
+; CHECK-NEXT:    vsetvli zero, a4, e8, m2, ta, ma
+; CHECK-NEXT:    vle8.v v12, (a1)
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
+; CHECK-NEXT:    vmsgtu.vx v0, v8, a2
+; CHECK-NEXT:    vsetivli zero, 8, e8, m4, ta, ma
+; CHECK-NEXT:    vrgather.vv v16, v12, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v12, (a0), v0.t
-; CHECK-NEXT:    vse8.v v12, (a3)
+; CHECK-NEXT:    vle8.v v16, (a0), v0.t
+; CHECK-NEXT:    vse8.v v16, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -522,17 +527,18 @@ define void @vtbx4_u8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, p
 ; CHECK-LABEL: vtbx4_u8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    li a4, 32
-; CHECK-NEXT:    vsetvli zero, a4, e8, m2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vle8.v v10, (a2)
-; CHECK-NEXT:    li a1, 31
-; CHECK-NEXT:    vmsgtu.vx v0, v10, a1
-; CHECK-NEXT:    vsetivli zero, 8, e8, m2, ta, ma
-; CHECK-NEXT:    vrgather.vv v12, v8, v10
+; CHECK-NEXT:    vle8.v v8, (a2)
+; CHECK-NEXT:    li a2, 31
+; CHECK-NEXT:    vsetvli zero, a4, e8, m2, ta, ma
+; CHECK-NEXT:    vle8.v v12, (a1)
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
+; CHECK-NEXT:    vmsgtu.vx v0, v8, a2
+; CHECK-NEXT:    vsetivli zero, 8, e8, m4, ta, ma
+; CHECK-NEXT:    vrgather.vv v16, v12, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vle8.v v12, (a0), v0.t
-; CHECK-NEXT:    vse8.v v12, (a3)
+; CHECK-NEXT:    vle8.v v16, (a0), v0.t
+; CHECK-NEXT:    vse8.v v16, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1

@@ -492,8 +492,6 @@ exit:
 define i1 @any_of_cost(ptr %start, ptr %end) #0 {
 ; CHECK-LABEL: @any_of_cost(
 ; CHECK-NEXT:  entry:
-<<<<<<< HEAD
-=======
 ; CHECK-NEXT:    [[START2:%.*]] = ptrtoint ptr [[START:%.*]] to i64
 ; CHECK-NEXT:    [[END1:%.*]] = ptrtoint ptr [[END:%.*]] to i64
 ; CHECK-NEXT:    [[TMP0:%.*]] = sub i64 [[END1]], [[START2]]
@@ -550,7 +548,6 @@ define i1 @any_of_cost(ptr %start, ptr %end) #0 {
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i1 [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ], [ false, [[ENTRY:%.*]] ]
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ [[START]], [[ENTRY]] ]
->>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
 ; CHECK-NEXT:    br label [[LOOP:%.*]]
 ; CHECK:       loop:
 ; CHECK-NEXT:    [[ANY_OF:%.*]] = phi i1 [ false, [[SCALAR_PH:%.*]] ], [ [[ANY_OF_NEXT:%.*]], [[LOOP]] ]

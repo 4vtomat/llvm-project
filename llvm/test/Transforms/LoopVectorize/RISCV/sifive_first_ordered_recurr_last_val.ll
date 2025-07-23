@@ -7,42 +7,52 @@ define void @test_first_ordered_recurr(ptr %_src, ptr %_dx, i32 %W)  {
 ; CHECK-NEXT:    [[CMP1:%.*]] = icmp sgt i32 [[W:%.*]], 0
 ; CHECK-NEXT:    br i1 [[CMP1]], label [[FOR_BODY_PREHEADER:%.*]], label [[FOR_END:%.*]]
 ; CHECK:       for.body.preheader:
-; CHECK-NEXT:    br label [[VECTOR_MEMCHECK:%.*]]
+; CHECK-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vscale.i32()
+; CHECK-NEXT:    [[TMP9:%.*]] = mul i32 [[TMP8]], 8
+; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.umax.i32(i32 64, i32 [[TMP9]])
+; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i32 [[W]], [[TMP2]]
+; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_MEMCHECK:%.*]]
 ; CHECK:       vector.memcheck:
 ; CHECK-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[_DX:%.*]], i64 2
 ; CHECK-NEXT:    [[SCEVGEP1:%.*]] = getelementptr i8, ptr [[_SRC:%.*]], i64 1
 ; CHECK-NEXT:    [[BOUND0:%.*]] = icmp ult ptr [[_DX]], [[SCEVGEP1]]
 ; CHECK-NEXT:    [[BOUND1:%.*]] = icmp ult ptr [[_SRC]], [[SCEVGEP]]
 ; CHECK-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
-; CHECK-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 [[W]], i32 8, i1 true)
-; CHECK-NEXT:    [[BROADCAST_SPLATINSERT1:%.*]] = insertelement <vscale x 8 x ptr> poison, ptr [[_DX]], i64 0
-; CHECK-NEXT:    [[BROADCAST_SPLAT1:%.*]] = shufflevector <vscale x 8 x ptr> [[BROADCAST_SPLATINSERT1]], <vscale x 8 x ptr> poison, <vscale x 8 x i32> zeroinitializer
+; CHECK-NEXT:    [[TMP3:%.*]] = call i32 @llvm.vscale.i32()
+; CHECK-NEXT:    [[TMP10:%.*]] = mul i32 [[TMP3]], 8
+; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i32 [[W]], [[TMP10]]
+; CHECK-NEXT:    [[N_VEC:%.*]] = sub i32 [[W]], [[N_MOD_VF]]
+; CHECK-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vscale.i32()
+; CHECK-NEXT:    [[TMP6:%.*]] = mul i32 [[TMP5]], 8
+; CHECK-NEXT:    [[TMP18:%.*]] = call i32 @llvm.vscale.i32()
+; CHECK-NEXT:    [[TMP0:%.*]] = mul i32 [[TMP18]], 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = sub i32 [[TMP0]], 1
 ; CHECK-NEXT:    [[VECTOR_RECUR_INIT:%.*]] = insertelement <vscale x 8 x i8> poison, i8 0, i32 [[TMP1]]
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
-; CHECK-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VECTOR_RECUR:%.*]] = phi <vscale x 8 x i8> [ [[VECTOR_RECUR_INIT]], [[VECTOR_PH]] ], [ [[BROADCAST_SPLAT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV2:%.*]] = phi i32 [ [[TMP0]], [[VECTOR_PH]] ], [ [[TMP3:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[TMP2:%.*]] = sub i32 [[W]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP3]] = call i32 @llvm.experimental.get.vector.length.i32(i32 [[TMP2]], i32 8, i1 true)
 ; CHECK-NEXT:    [[TMP4:%.*]] = load i8, ptr [[_SRC]], align 1, !alias.scope [[META0:![0-9]+]]
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x i8> poison, i8 [[TMP4]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT]] = shufflevector <vscale x 8 x i8> [[BROADCAST_SPLATINSERT]], <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer
-; CHECK-NEXT:    [[TMP5:%.*]] = call <vscale x 8 x i8> @llvm.experimental.vp.splice.nxv8i8(<vscale x 8 x i8> [[VECTOR_RECUR]], <vscale x 8 x i8> [[BROADCAST_SPLAT]], i32 -1, <vscale x 8 x i1> splat (i1 true), i32 [[EVL_BASED_IV2]], i32 [[TMP3]])
-; CHECK-NEXT:    [[VP_CAST:%.*]] = call <vscale x 8 x i16> @llvm.vp.zext.nxv8i16.nxv8i8(<vscale x 8 x i8> [[TMP5]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]])
-; CHECK-NEXT:    call void @llvm.vp.scatter.nxv8i16.nxv8p0(<vscale x 8 x i16> [[VP_CAST]], <vscale x 8 x ptr> align 2 [[BROADCAST_SPLAT1]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP3]]), !alias.scope [[META3:![0-9]+]], !noalias [[META0]]
-; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i32 [[TMP3]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP6:%.*]] = icmp eq i32 [[INDEX_EVL_NEXT]], [[W]]
-; CHECK-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
+; CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 8 x i8> @llvm.vector.splice.nxv8i8(<vscale x 8 x i8> [[VECTOR_RECUR]], <vscale x 8 x i8> [[BROADCAST_SPLAT]], i32 -1)
+; CHECK-NEXT:    [[TMP12:%.*]] = zext <vscale x 8 x i8> [[TMP11]] to <vscale x 8 x i16>
+; CHECK-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vscale.i32()
+; CHECK-NEXT:    [[TMP14:%.*]] = mul i32 [[TMP13]], 8
+; CHECK-NEXT:    [[TMP15:%.*]] = sub i32 [[TMP14]], 1
+; CHECK-NEXT:    [[TMP16:%.*]] = extractelement <vscale x 8 x i16> [[TMP12]], i32 [[TMP15]]
+; CHECK-NEXT:    store i16 [[TMP16]], ptr [[_DX]], align 2, !alias.scope [[META3:![0-9]+]], !noalias [[META0]]
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i32 [[EVL_BASED_IV]], [[TMP6]]
+; CHECK-NEXT:    [[TMP17:%.*]] = icmp eq i32 [[INDEX_EVL_NEXT]], [[N_VEC]]
+; CHECK-NEXT:    br i1 [[TMP17]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    br label [[FOR_END_LOOPEXIT:%.*]]
+; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i32 [[W]], [[N_VEC]]
+; CHECK-NEXT:    br i1 [[CMP_N]], label [[FOR_END_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 0, [[VECTOR_MEMCHECK]] ]
-; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i8 [ 0, [[VECTOR_MEMCHECK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ], [ 0, [[VECTOR_MEMCHECK]] ]
+; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i8 [ [[TMP4]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ], [ 0, [[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[J_04:%.*]] = phi i32 [ [[ADD:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]

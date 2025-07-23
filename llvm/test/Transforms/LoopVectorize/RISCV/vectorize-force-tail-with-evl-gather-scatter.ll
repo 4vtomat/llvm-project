@@ -12,41 +12,18 @@
 define void @gather_scatter(ptr noalias %in, ptr noalias %out, ptr noalias %index, i64 %n) {
 ; IF-EVL-LABEL: @gather_scatter(
 ; IF-EVL-NEXT:  entry:
-; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
-; IF-EVL:       vector.ph:
-; IF-EVL-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N:%.*]], i32 1, i1 true)
-; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
-; IF-EVL:       vector.body:
-; IF-EVL-NEXT:    [[INDEX1:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
-; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF-EVL-NEXT:    [[TMP0:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
-; IF-EVL-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 1, i1 true)
-; IF-EVL-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[INDEX:%.*]], i64 [[EVL_BASED_IV]]
-; IF-EVL-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 1 x i64> @llvm.experimental.vp.strided.load.nxv1i64.p0.i64(ptr align 8 [[TMP3]], i64 4, <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
-; IF-EVL-NEXT:    [[TMP4:%.*]] = getelementptr inbounds float, ptr [[IN:%.*]], <vscale x 1 x i64> [[VP_STRIDED_LOAD]]
-; IF-EVL-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <vscale x 1 x float> @llvm.vp.gather.nxv1f32.nxv1p0(<vscale x 1 x ptr> align 4 [[TMP4]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
-; IF-EVL-NEXT:    [[TMP5:%.*]] = getelementptr inbounds float, ptr [[OUT:%.*]], <vscale x 1 x i64> [[VP_STRIDED_LOAD]]
-; IF-EVL-NEXT:    call void @llvm.vp.scatter.nxv1f32.nxv1p0(<vscale x 1 x float> [[WIDE_MASKED_GATHER]], <vscale x 1 x ptr> align 4 [[TMP5]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP1]])
-; IF-EVL-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP1]] to i64
-; IF-EVL-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP6]], [[EVL_BASED_IV]]
-; IF-EVL-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
-; IF-EVL-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
-; IF-EVL:       middle.block:
-; IF-EVL-NEXT:    br label [[FOR_END:%.*]]
-; IF-EVL:       scalar.ph:
-; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; IF-EVL-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL:       for.body:
-; IF-EVL-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
-; IF-EVL-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds i32, ptr [[INDEX]], i64 [[INDVARS_IV]]
+; IF-EVL-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; IF-EVL-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds i32, ptr [[INDEX:%.*]], i64 [[INDVARS_IV]]
 ; IF-EVL-NEXT:    [[TMP8:%.*]] = load i64, ptr [[ARRAYIDX3]], align 8
-; IF-EVL-NEXT:    [[ARRAYIDX5:%.*]] = getelementptr inbounds float, ptr [[IN]], i64 [[TMP8]]
+; IF-EVL-NEXT:    [[ARRAYIDX5:%.*]] = getelementptr inbounds float, ptr [[IN:%.*]], i64 [[TMP8]]
 ; IF-EVL-NEXT:    [[TMP9:%.*]] = load float, ptr [[ARRAYIDX5]], align 4
-; IF-EVL-NEXT:    [[ARRAYIDX7:%.*]] = getelementptr inbounds float, ptr [[OUT]], i64 [[TMP8]]
+; IF-EVL-NEXT:    [[ARRAYIDX7:%.*]] = getelementptr inbounds float, ptr [[OUT:%.*]], i64 [[TMP8]]
 ; IF-EVL-NEXT:    store float [[TMP9]], ptr [[ARRAYIDX7]], align 4
 ; IF-EVL-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
-; IF-EVL-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
-; IF-EVL-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; IF-EVL-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N:%.*]]
+; IF-EVL-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END:%.*]], label [[FOR_BODY]]
 ; IF-EVL:       for.end:
 ; IF-EVL-NEXT:    ret void
 ;
