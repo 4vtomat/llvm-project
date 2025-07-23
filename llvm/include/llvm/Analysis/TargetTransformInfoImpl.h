@@ -483,12 +483,13 @@ public:
   }
 
 #if SIFIVE_CUSTOMIZATION
-  bool getMemoryRefInfo(SmallVectorImpl<InterestingMemoryOperand> &Interesting,
-                        IntrinsicInst *II) const {
+  virtual bool
+  getMemoryRefInfo(SmallVectorImpl<InterestingMemoryOperand> &Interesting,
+                   IntrinsicInst *II) const {
     return false;
   }
 
-  bool hasFlattenControlFlowPenalty() const { return false; }
+  virtual bool hasFlattenControlFlowPenalty() const { return false; }
 #endif // SIFIVE_CUSTOMIZATION
 
   virtual bool enableSelectOptimize() const { return true; }
@@ -595,7 +596,7 @@ public:
   }
 
 #if SIFIVE_CUSTOMIZATION
-  unsigned getMaxElementWidth() const { return 64; }
+  virtual unsigned getMaxElementWidth() const { return 64; }
 #endif // SIFIVE_CUSTOMIZATION
 
   virtual unsigned getMinVectorRegisterBitWidth() const { return 128; }
@@ -607,12 +608,10 @@ public:
   virtual bool isVScaleKnownToBeAPowerOfTwo() const { return false; }
 
 #if SIFIVE_CUSTOMIZATION
-  std::pair<ElementCount, ElementCount>
-  getFeasibleMaxVFRange(TargetTransformInfo::RegisterKind K,
-                        unsigned SmallestType, unsigned WidestType,
-                        unsigned MaxSafeRegisterWidth = -1U,
-                        unsigned RegWidthFactor = 1,
-                        bool IsScalable = false) const {
+  virtual std::pair<ElementCount, ElementCount> getFeasibleMaxVFRange(
+      TargetTransformInfo::RegisterKind K, unsigned SmallestType,
+      unsigned WidestType, unsigned MaxSafeRegisterWidth = -1U,
+      unsigned RegWidthFactor = 1, bool IsScalable = false) const {
     unsigned WidestRegister = std::min<unsigned>(
         getRegisterBitWidth(K).getFixedValue(), MaxSafeRegisterWidth);
 
@@ -629,7 +628,7 @@ public:
     return {LowerBoundVF, UpperBoundVF};
   }
 
-  bool sinkSplatOperands() const { return false; }
+  virtual bool sinkSplatOperands() const { return false; }
 #endif // SIFIVE_CUSTOMIZATION
 
   virtual bool
@@ -912,7 +911,7 @@ public:
     return 1;
   }
 #if SIFIVE_CUSTOMIZATION
-  InstructionCost getStridedInterleavedMemoryOpCost(
+  virtual InstructionCost getStridedInterleavedMemoryOpCost(
       unsigned Opcode, Type *VecTy, unsigned Factor, Value *Stride,
       ArrayRef<unsigned> Indices, Align Alignment, unsigned AddressSpace,
       TTI::TargetCostKind CostKind, bool UseMaskForCond = false,
@@ -1154,18 +1153,18 @@ public:
   virtual unsigned getGISelRematGlobalCost() const { return 1; }
 
 #if SIFIVE_CUSTOMIZATION
-  bool useVLAVectorizer() const { return false; }
+  virtual bool useVLAVectorizer() const { return false; }
 
-  bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const {
+  virtual bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const {
     return false;
   }
 
-  bool isLegalVectorInterleave(VectorType *VTy, unsigned Factor,
-                               const DataLayout &DL) const {
+  virtual bool isLegalVectorInterleave(VectorType *VTy, unsigned Factor,
+                                       const DataLayout &DL) const {
     return false;
   }
 
-  unsigned getMinEarlyExitTripCount() const { return 0; }
+  virtual unsigned getMinEarlyExitTripCount() const { return 0; }
 
 #endif // SIFIVE_CUSTOMIZATION
   virtual unsigned getMinTripCountTailFoldingThreshold() const { return 0; }
@@ -1175,7 +1174,7 @@ public:
   virtual bool enableScalableVectorization() const { return false; }
 
 #if SIFIVE_CUSTOMIZATION
-  Type *getScalableVectorFromFixed(Type *Ty) const {
+  virtual Type *getScalableVectorFromFixed(Type *Ty) const {
     FixedVectorType *VecTy = cast<FixedVectorType>(Ty);
     return ScalableVectorType::get(VecTy->getElementType(),
                                    VecTy->getNumElements());
@@ -1211,12 +1210,12 @@ public:
 
   virtual unsigned getMaxNumArgs() const { return UINT_MAX; }
 #if SIFIVE_CUSTOMIZATION
-  bool enableUncountableVectorization() const { return false; }
-  bool enableNonPower2SLPFPVectorization() const { return false; }
-  bool enableCSAVectorization() const { return false; }
-  unsigned getCSABodyFactor() const { return 1; }
-  unsigned getCSAOverheadFactor() const { return 1; }
-  bool enableMonotonicsVectorization() const { return false; }
+  virtual bool enableUncountableVectorization() const { return false; }
+  virtual bool enableNonPower2SLPFPVectorization() const { return false; }
+  virtual bool enableCSAVectorization() const { return false; }
+  virtual unsigned getCSABodyFactor() const { return 1; }
+  virtual unsigned getCSAOverheadFactor() const { return 1; }
+  virtual bool enableMonotonicsVectorization() const { return false; }
 #endif // SIFIVE_CUSTOMIZATION
 
   virtual unsigned getNumBytesToPadGlobalArray(unsigned Size,

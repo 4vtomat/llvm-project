@@ -867,12 +867,10 @@ public:
   }
 
 #if SIFIVE_CUSTOMIZATION
-  std::pair<ElementCount, ElementCount>
-  getFeasibleMaxVFRange(TargetTransformInfo::RegisterKind K,
-                        unsigned SmallestType, unsigned WidestType,
-                        unsigned MaxSafeRegisterWidth = -1U,
-                        unsigned RegWidthFactor = 1,
-                        bool IsScalable = false) const {
+  std::pair<ElementCount, ElementCount> getFeasibleMaxVFRange(
+      TargetTransformInfo::RegisterKind K, unsigned SmallestType,
+      unsigned WidestType, unsigned MaxSafeRegisterWidth = -1U,
+      unsigned RegWidthFactor = 1, bool IsScalable = false) const override {
     unsigned WidestRegister =
         static_cast<const T *>(this)->getRegisterBitWidth(K).getFixedValue();
     WidestRegister = std::min(WidestRegister, MaxSafeRegisterWidth);
@@ -890,8 +888,8 @@ public:
     return {LowerBoundVF, UpperBoundVF};
   }
 
-  bool sinkSplatOperands() const { return false; }
-  unsigned getMaxElementWidth() const { return 64; }
+  bool sinkSplatOperands() const override { return false; }
+  unsigned getMaxElementWidth() const override { return 64; }
 #endif // SIFIVE_CUSTOMIZATION
 
   std::optional<unsigned> getMaxVScale() const override { return std::nullopt; }
@@ -1742,7 +1740,7 @@ public:
       unsigned Opcode, Type *VecTy, unsigned Factor, Value *Stride,
       ArrayRef<unsigned> Indices, Align Alignment, unsigned AddressSpace,
       TTI::TargetCostKind CostKind, bool UseMaskForCond = false,
-      bool UseMaskForGaps = false) const {
+      bool UseMaskForGaps = false) const override {
     return getInterleavedMemoryOpCost(Opcode, VecTy, Factor, Indices, Alignment,
                                       AddressSpace, CostKind, UseMaskForCond,
                                       UseMaskForGaps);

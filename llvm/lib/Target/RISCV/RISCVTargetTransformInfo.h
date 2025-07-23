@@ -80,9 +80,9 @@ public:
   bool isTargetIntrinsicWithScalarOpAtArg(Intrinsic::ID ID,
                                           unsigned ScalarOpdIdx) const override;
   bool getMemoryRefInfo(SmallVectorImpl<InterestingMemoryOperand> &Interesting,
-                        IntrinsicInst *II) const;
+                        IntrinsicInst *II) const override;
 
-  bool hasFlattenControlFlowPenalty() const;
+  bool hasFlattenControlFlowPenalty() const override;
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Return the cost of materializing an immediate for a value operand of
@@ -180,17 +180,17 @@ public:
     return MinCost;
   }
 
-  unsigned getMaxElementWidth() const;
+  unsigned getMaxElementWidth() const override;
   std::pair<ElementCount, ElementCount> getFeasibleMaxVFRange(
       TargetTransformInfo::RegisterKind K, unsigned SmallestType,
       unsigned WidestType, unsigned MaxSafeRegisterWidth = -1U,
-      unsigned RegWidthFactor = 1, bool IsScalable = false) const;
+      unsigned RegWidthFactor = 1, bool IsScalable = false) const override;
 
-  bool sinkSplatOperands() const;
+  bool sinkSplatOperands() const override;
 
-  bool useVLAVectorizer() const;
+  bool useVLAVectorizer() const override;
 
-  unsigned getMinEarlyExitTripCount() const;
+  unsigned getMinEarlyExitTripCount() const override;
 #endif // SIFIVE_CUSTOMIZATION
 
   /// \name EVL Support for predicated vectorization.
@@ -293,7 +293,7 @@ public:
       unsigned Opcode, Type *VecTy, unsigned Factor, Value *Stride,
       ArrayRef<unsigned> Indices, Align Alignment, unsigned AddressSpace,
       TTI::TargetCostKind CostKind, bool UseMaskForCond = false,
-      bool UseMaskForGaps = false) const;
+      bool UseMaskForGaps = false) const override;
 #endif // SIFIVE_CUSTOMIZATION
 
   InstructionCost getGatherScatterOpCost(unsigned Opcode, Type *DataTy,
@@ -613,36 +613,36 @@ public:
 
 #if SIFIVE_CUSTOMIZATION
   unsigned getInliningThresholdMultiplier() const override;
-  bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const;
+  bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const override;
 
-  Type *getScalableVectorFromFixed(Type *Ty) const;
+  Type *getScalableVectorFromFixed(Type *Ty) const override;
 
   bool isLegalVectorInterleave(VectorType *VTy, unsigned Factor,
-                               const DataLayout &DL) const;
+                               const DataLayout &DL) const override;
   bool enableMaskedInterleavedAccessVectorization() const override {
     return useVLAVectorizer();
   }
 
   /// \returns true if the loop vectorizer should vectorize uncountable
   /// loop for the target
-  bool enableUncountableVectorization() const;
+  bool enableUncountableVectorization() const override;
 
   /// \returns true if the non-power-of-2 vectorization in SLP vectorizer for
   /// float point is profitable.
-  bool enableNonPower2SLPFPVectorization() const {
+  bool enableNonPower2SLPFPVectorization() const override {
     return !ST->isSiFiveBulletCPU();
   }
 
   /// \returns true if the loop vectorizer should vectorize conditional
   /// scalar assignments for the target.
-  bool enableCSAVectorization() const;
+  bool enableCSAVectorization() const override;
 
-  unsigned getCSABodyFactor() const;
-  unsigned getCSAOverheadFactor() const;
+  unsigned getCSABodyFactor() const override;
+  unsigned getCSAOverheadFactor() const override;
 
   /// \returns true if ISA supports all needed instructions to vectorize
   /// monotonics
-  bool enableMonotonicsVectorization() const;
+  bool enableMonotonicsVectorization() const override;
 
   /// Enabled dropping solutions by default
   bool shouldDropLSRSolutionIfLessProfitable() const override;
