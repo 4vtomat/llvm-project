@@ -187,12 +187,11 @@ define i32 @cond_add_pred(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP11:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP10]], i32 2, i1 true)
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP16:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[EVL_BASED_IV]]
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP17:%.*]] = getelementptr inbounds i32, ptr [[TMP16]], i32 0
-; IF-EVL-OUTLOOP-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x i32> @llvm.vp.load.nxv4i32.p0(ptr align 4 [[TMP17]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP11]])
-; IF-EVL-OUTLOOP-NEXT:    [[TMP18:%.*]] = icmp sle <vscale x 4 x i32> [[VP_OP_LOAD]], splat (i32 3)
-; IF-EVL-OUTLOOP-NEXT:    [[TMP19:%.*]] = add <vscale x 4 x i32> [[VEC_PHI]], [[VP_OP_LOAD]]
-; IF-EVL-OUTLOOP-NEXT:    [[TMP21:%.*]] = select <vscale x 4 x i1> [[TMP15]], <vscale x 4 x i1> [[TMP18]], <vscale x 4 x i1> zeroinitializer
-; IF-EVL-OUTLOOP-NEXT:    [[PREDPHI1:%.*]] = select <vscale x 4 x i1> [[TMP21]], <vscale x 4 x i32> [[VEC_PHI]], <vscale x 4 x i32> [[TMP19]]
-; IF-EVL-OUTLOOP-NEXT:    [[PREDPHI]] = call <vscale x 4 x i32> @llvm.vp.merge.nxv4i32(<vscale x 4 x i1> splat (i1 true), <vscale x 4 x i32> [[PREDPHI1]], <vscale x 4 x i32> [[VEC_PHI]], i32 [[TMP11]])
+; IF-EVL-OUTLOOP-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0(ptr align 4 [[TMP17]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP11]])
+; IF-EVL-OUTLOOP-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i32(<vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i32> splat (i32 3), metadata !"sgt", <vscale x 2 x i1> splat (i1 true), i32 [[TMP11]])
+; IF-EVL-OUTLOOP-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[VEC_PHI]], <vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP11]])
+; IF-EVL-OUTLOOP-NEXT:    [[PREDPHI:%.*]] = call <vscale x 2 x i32> @llvm.vp.select.nxv2i32(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i32> [[VP_OP]], <vscale x 2 x i32> [[VEC_PHI]], i32 [[TMP11]])
+; IF-EVL-OUTLOOP-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i32> [[PREDPHI]], <vscale x 2 x i32> [[VEC_PHI]], i32 [[TMP11]])
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP23:%.*]] = zext i32 [[TMP11]] to i64
 ; IF-EVL-OUTLOOP-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[TMP23]], [[EVL_BASED_IV]]
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N]]

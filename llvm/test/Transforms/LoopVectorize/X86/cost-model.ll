@@ -492,62 +492,6 @@ exit:
 define i1 @any_of_cost(ptr %start, ptr %end) #0 {
 ; CHECK-LABEL: @any_of_cost(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[START2:%.*]] = ptrtoint ptr [[START:%.*]] to i64
-; CHECK-NEXT:    [[END1:%.*]] = ptrtoint ptr [[END:%.*]] to i64
-; CHECK-NEXT:    [[TMP0:%.*]] = sub i64 [[END1]], [[START2]]
-; CHECK-NEXT:    [[TMP1:%.*]] = udiv i64 [[TMP0]], 40
-; CHECK-NEXT:    [[TMP2:%.*]] = add nuw nsw i64 [[TMP1]], 1
-; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[TMP2]], 4
-; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
-; CHECK:       vector.ph:
-; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[TMP2]], 4
-; CHECK-NEXT:    [[TMP3:%.*]] = icmp eq i64 [[N_MOD_VF]], 0
-; CHECK-NEXT:    [[TMP4:%.*]] = select i1 [[TMP3]], i64 4, i64 [[N_MOD_VF]]
-; CHECK-NEXT:    [[N_VEC:%.*]] = sub i64 [[TMP2]], [[TMP4]]
-; CHECK-NEXT:    [[TMP5:%.*]] = mul i64 [[N_VEC]], 40
-; CHECK-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP5]]
-; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
-; CHECK:       vector.body:
-; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <2 x i1> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP26:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[VEC_PHI3:%.*]] = phi <2 x i1> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP27:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[INDEX]], 40
-; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[OFFSET_IDX]], 0
-; CHECK-NEXT:    [[TMP7:%.*]] = add i64 [[OFFSET_IDX]], 40
-; CHECK-NEXT:    [[TMP8:%.*]] = add i64 [[OFFSET_IDX]], 80
-; CHECK-NEXT:    [[TMP9:%.*]] = add i64 [[OFFSET_IDX]], 120
-; CHECK-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP6]]
-; CHECK-NEXT:    [[NEXT_GEP4:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP7]]
-; CHECK-NEXT:    [[NEXT_GEP5:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
-; CHECK-NEXT:    [[NEXT_GEP6:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
-; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i64 8
-; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr i8, ptr [[NEXT_GEP4]], i64 8
-; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr i8, ptr [[NEXT_GEP5]], i64 8
-; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr i8, ptr [[NEXT_GEP6]], i64 8
-; CHECK-NEXT:    [[TMP14:%.*]] = load ptr, ptr [[TMP10]], align 8
-; CHECK-NEXT:    [[TMP15:%.*]] = load ptr, ptr [[TMP11]], align 8
-; CHECK-NEXT:    [[TMP16:%.*]] = insertelement <2 x ptr> poison, ptr [[TMP14]], i32 0
-; CHECK-NEXT:    [[TMP17:%.*]] = insertelement <2 x ptr> [[TMP16]], ptr [[TMP15]], i32 1
-; CHECK-NEXT:    [[TMP18:%.*]] = load ptr, ptr [[TMP12]], align 8
-; CHECK-NEXT:    [[TMP19:%.*]] = load ptr, ptr [[TMP13]], align 8
-; CHECK-NEXT:    [[TMP20:%.*]] = insertelement <2 x ptr> poison, ptr [[TMP18]], i32 0
-; CHECK-NEXT:    [[TMP21:%.*]] = insertelement <2 x ptr> [[TMP20]], ptr [[TMP19]], i32 1
-; CHECK-NEXT:    [[TMP24:%.*]] = icmp ne <2 x ptr> [[TMP17]], zeroinitializer
-; CHECK-NEXT:    [[TMP25:%.*]] = icmp ne <2 x ptr> [[TMP21]], zeroinitializer
-; CHECK-NEXT:    [[TMP26]] = or <2 x i1> [[VEC_PHI]], [[TMP24]]
-; CHECK-NEXT:    [[TMP27]] = or <2 x i1> [[VEC_PHI3]], [[TMP25]]
-; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
-; CHECK-NEXT:    [[TMP28:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP28]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP15:![0-9]+]]
-; CHECK:       middle.block:
-; CHECK-NEXT:    [[BIN_RDX:%.*]] = or <2 x i1> [[TMP27]], [[TMP26]]
-; CHECK-NEXT:    [[TMP29:%.*]] = call i1 @llvm.vector.reduce.or.v2i1(<2 x i1> [[BIN_RDX]])
-; CHECK-NEXT:    [[TMP30:%.*]] = freeze i1 [[TMP29]]
-; CHECK-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[TMP30]], i1 false, i1 false
-; CHECK-NEXT:    br label [[SCALAR_PH]]
-; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i1 [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ], [ false, [[ENTRY:%.*]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ [[START]], [[ENTRY]] ]
 ; CHECK-NEXT:    br label [[LOOP:%.*]]
 ; CHECK:       loop:
 ; CHECK-NEXT:    [[ANY_OF:%.*]] = phi i1 [ false, [[SCALAR_PH:%.*]] ], [ [[ANY_OF_NEXT:%.*]], [[LOOP]] ]
