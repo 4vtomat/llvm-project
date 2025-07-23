@@ -5354,13 +5354,13 @@ Instruction *InstCombinerImpl::foldNeutralVPReduce(Instruction &I) {
     auto getFMinPattern = [&](FastMathFlags CheckFMF,
                               const APFloat &NeutralVal) {
       return m_CombineOr(
-          m_FMinimum(
+          m_FMinNum(
               m_Value(X),
               m_CombineAnd(m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_fmin>(
                                m_SpecificFP(NeutralVal), m_Value(Y),
                                m_Value(Mask), m_Value(EVL))),
                            m_FMF(CheckFMF, MatchedFMF))),
-          m_FMinimum(
+          m_FMinNum(
               m_CombineAnd(m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_fmin>(
                                m_SpecificFP(NeutralVal), m_Value(Y),
                                m_Value(Mask), m_Value(EVL))),
@@ -5384,13 +5384,13 @@ Instruction *InstCombinerImpl::foldNeutralVPReduce(Instruction &I) {
     auto getFMaxPattern = [&](FastMathFlags CheckFMF,
                               const APFloat &NeutralVal) {
       return m_CombineOr(
-          m_FMaximum(
+          m_FMaxNum(
               m_Value(X),
               m_CombineAnd(m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_fmax>(
                                m_SpecificFP(NeutralVal), m_Value(Y),
                                m_Value(Mask), m_Value(EVL))),
                            m_FMF(CheckFMF, MatchedFMF))),
-          m_FMaximum(
+          m_FMaxNum(
               m_CombineAnd(m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_fmax>(
                                m_SpecificFP(NeutralVal), m_Value(Y),
                                m_Value(Mask), m_Value(EVL))),
