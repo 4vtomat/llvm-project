@@ -11712,11 +11712,13 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   // Build initial VPlan: Scan the body of the loop in a topological order to
   // visit each basic block after having visited its predecessor basic blocks.
   // ---------------------------------------------------------------------------
+
   // Create initial VPlan skeleton, having a basic block for the pre-header
   // which contains SCEV expansions that need to happen before the CFG is
   // modified; a basic block for the vector pre-header, followed by a region for
   // the vector loop, followed by the middle basic block. The skeleton vector
   // loop region contains a header and latch basic blocks.
+
   bool RequiresScalarEpilogueCheck =
       LoopVectorizationPlanner::getDecisionAndClampRange(
           [this](ElementCount VF) {
@@ -12345,7 +12347,6 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
       PreviousLink = RedRecipe;
     }
   }
-
   VPBasicBlock *LatchVPBB = VectorLoopRegion->getExitingBasicBlock();
 #if SIFIVE_CUSTOMIZATION
   // FIXME: Work with upstream to address the following issue:
@@ -12488,7 +12489,7 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
             VPInstruction::ComputeReductionResultWithMask,
             {PhiR, NewExitingVPV, FinalReductionMask}, ExitDL);
         FinalReductionMaskedResult->insertBefore(FinalReductionResult);
-	FinalReductionMask->insertBefore(FinalReductionMaskedResult);
+        FinalReductionMask->insertBefore(FinalReductionMaskedResult);
         FinalReductionResult->replaceAllUsesWith(FinalReductionMaskedResult);
         FinalReductionResult->eraseFromParent();
       }

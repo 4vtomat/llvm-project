@@ -1167,8 +1167,7 @@ public:
   bool isSingleScalar() const;
 
   /// Returns the symbolic name assigned to the VPInstruction.
-  StringRef getName() const {
-      return Name; }
+  StringRef getName() const { return Name; }
 };
 
 /// A specialization of VPInstruction augmenting it with a dedicated result
@@ -2353,8 +2352,7 @@ public:
         PostFixStartValue(PostFixStartValue),
         VFScaleFactor(VFScaleFactor) {
 #else
-                       bool IsOrdered = false,
-                       unsigned VFScaleFactor = 1)
+                       bool IsOrdered = false, unsigned VFScaleFactor = 1)
       : VPHeaderPHIRecipe(VPDef::VPReductionPHISC, Phi, &Start),
         RdxDesc(RdxDesc), IsInLoop(IsInLoop), IsOrdered(IsOrdered),
         VFScaleFactor(VFScaleFactor) {

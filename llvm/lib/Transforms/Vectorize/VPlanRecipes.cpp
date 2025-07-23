@@ -730,7 +730,7 @@ Value *VPInstruction::generate(VPTransformState &State) {
     // branch, hooking it up to backward destination for exiting blocks now and
     // to forward destination(s) later when they are created.
     BranchInst *CondBr =
-            Builder.CreateCondBr(Cond, Builder.GetInsertBlock(), nullptr);
+        Builder.CreateCondBr(Cond, Builder.GetInsertBlock(), nullptr);
     CondBr->setSuccessor(0, nullptr);
     Builder.GetInsertBlock()->getTerminator()->eraseFromParent();
 
@@ -1040,8 +1040,8 @@ Value *VPInstruction::generate(VPTransformState &State) {
             createAnyOfReduction(Builder, ReducedPartRdx, RdxDesc, OrigPhi);
       else
         ReducedPartRdx = createSimpleReduction(Builder, ReducedPartRdx, RK);
-    }
 #endif // SIFIVE_CUSTOMIZATION
+
       // If the reduction can be performed in a smaller type, we need to extend
       // the reduction to the wider type before we branch to the original loop.
       if (PhiTy != RdxDesc.getRecurrenceType())
