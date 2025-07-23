@@ -56,35 +56,35 @@ static void addVariantDeclaration(CallInst &CI, const ElementCount &VF,
       Function::Create(VectorFTy, Function::ExternalLinkage, VFName, M);
   VecFunc->copyAttributesFrom(CI.getCalledFunction());
 #if SIFIVE_CUSTOMIZATION
-   for (const auto I : enumerate(VectorFTy->params()))
-     if (I.value()->isVectorTy()) {
-       // Vector argument could not have attribute SExt/ZExt.
-       if (VecFunc->hasParamAttribute(I.index(), Attribute::SExt))
-         VecFunc->removeParamAttr(I.index(), Attribute::SExt);
-       if (VecFunc->hasParamAttribute(I.index(), Attribute::ZExt))
-         VecFunc->removeParamAttr(I.index(), Attribute::ZExt);
-     }
-   if (VectorFTy->getReturnType()->isVectorTy()) {
-     if (VecFunc->hasRetAttribute(Attribute::SExt))
-       VecFunc->removeRetAttr(Attribute::SExt);
-     if (VecFunc->hasRetAttribute(Attribute::ZExt))
-       VecFunc->removeRetAttr(Attribute::ZExt);
-   }
+  for (const auto I : enumerate(VectorFTy->params()))
+    if (I.value()->isVectorTy()) {
+      // Vector argument could not have attribute SExt/ZExt.
+      if (VecFunc->hasParamAttribute(I.index(), Attribute::SExt))
+        VecFunc->removeParamAttr(I.index(), Attribute::SExt);
+      if (VecFunc->hasParamAttribute(I.index(), Attribute::ZExt))
+        VecFunc->removeParamAttr(I.index(), Attribute::ZExt);
+    }
+  if (VectorFTy->getReturnType()->isVectorTy()) {
+    if (VecFunc->hasRetAttribute(Attribute::SExt))
+      VecFunc->removeRetAttr(Attribute::SExt);
+    if (VecFunc->hasRetAttribute(Attribute::ZExt))
+      VecFunc->removeRetAttr(Attribute::ZExt);
+  }
 #endif
-   if (auto CC = VD->getCallingConv())
-     VecFunc->setCallingConv(*CC);
-   ++NumVFDeclAdded;
-   LLVM_DEBUG(dbgs() << DEBUG_TYPE << ": Added to the module: `" << VFName
-                     << "` of type " << *VectorFTy << "\n");
+  if (auto CC = VD->getCallingConv())
+    VecFunc->setCallingConv(*CC);
+  ++NumVFDeclAdded;
+  LLVM_DEBUG(dbgs() << DEBUG_TYPE << ": Added to the module: `" << VFName
+                    << "` of type " << *VectorFTy << "\n");
 
-   // Make function declaration (without a body) "sticky" in the IR by
-   // listing it in the @llvm.compiler.used intrinsic.
-   assert(!VecFunc->size() && "VFABI attribute requires `@llvm.compiler.used` "
-                              "only on declarations.");
-   appendToCompilerUsed(*M, {VecFunc});
-   LLVM_DEBUG(dbgs() << DEBUG_TYPE << ": Adding `" << VFName
-                     << "` to `@llvm.compiler.used`.\n");
-   ++NumCompUsedAdded;
+  // Make function declaration (without a body) "sticky" in the IR by
+  // listing it in the @llvm.compiler.used intrinsic.
+  assert(!VecFunc->size() && "VFABI attribute requires `@llvm.compiler.used` "
+                             "only on declarations.");
+  appendToCompilerUsed(*M, {VecFunc});
+  LLVM_DEBUG(dbgs() << DEBUG_TYPE << ": Adding `" << VFName
+                    << "` to `@llvm.compiler.used`.\n");
+  ++NumCompUsedAdded;
 }
 
 static void addMappingsFromTLI(const TargetLibraryInfo &TLI, CallInst &CI) {
