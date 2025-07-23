@@ -10,28 +10,31 @@ target triple = "riscv64"
 define float @fadd(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-ORDERED-LABEL: @fadd(
 ; CHECK-ORDERED-NEXT:  entry:
-; CHECK-ORDERED-NEXT:    [[TMP0:%.*]] = icmp ult i64 [[N1:%.*]], 4
+; CHECK-ORDERED-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N:%.*]], 12
+; CHECK-ORDERED-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
 ; CHECK-ORDERED-NEXT:    br i1 [[TMP0]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-ORDERED:       vector.ph:
-; CHECK-ORDERED-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N1]], 4
-; CHECK-ORDERED-NEXT:    [[N:%.*]] = sub i64 [[N1]], [[N_MOD_VF]]
+; CHECK-ORDERED-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-ORDERED-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-ORDERED:       vector.body:
 ; CHECK-ORDERED-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-ORDERED-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
 ; CHECK-ORDERED-NEXT:    [[VEC_PHI:%.*]] = phi float [ 0.000000e+00, [[VECTOR_PH]] ], [ [[TMP3:%.*]], [[VECTOR_BODY]] ]
-; CHECK-ORDERED-NEXT:    [[TMP1:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
+; CHECK-ORDERED-NEXT:    [[AVL:%.*]] = sub i64 [[N]], [[EVL_BASED_IV1]]
+; CHECK-ORDERED-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
+; CHECK-ORDERED-NEXT:    [[TMP1:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[EVL_BASED_IV1]]
 ; CHECK-ORDERED-NEXT:    [[TMP2:%.*]] = getelementptr inbounds float, ptr [[TMP1]], i32 0
-; CHECK-ORDERED-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x float>, ptr [[TMP2]], align 4
-; CHECK-ORDERED-NEXT:    [[TMP3]] = call float @llvm.vector.reduce.fadd.v4f32(float [[VEC_PHI]], <4 x float> [[WIDE_LOAD]])
-; CHECK-ORDERED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[EVL_BASED_IV]], 4
+; CHECK-ORDERED-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0(ptr align 4 [[TMP2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP5]])
+; CHECK-ORDERED-NEXT:    [[TMP3]] = call float @llvm.vp.reduce.fadd.nxv2f32(float [[VEC_PHI]], <vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP5]])
+; CHECK-ORDERED-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; CHECK-ORDERED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[TMP7]], [[EVL_BASED_IV1]]
 ; CHECK-ORDERED-NEXT:    [[TMP6:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N]]
 ; CHECK-ORDERED-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-ORDERED:       middle.block:
-; CHECK-ORDERED-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N1]], [[N]]
-; CHECK-ORDERED-NEXT:    br i1 [[CMP_N]], label [[FOR_END:%.*]], label [[SCALAR_PH]]
+; CHECK-ORDERED-NEXT:    br label [[FOR_END:%.*]]
 ; CHECK-ORDERED:       scalar.ph:
-; CHECK-ORDERED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
-; CHECK-ORDERED-NEXT:    [[BC_MERGE_RDX:%.*]] = phi float [ [[TMP3]], [[MIDDLE_BLOCK]] ], [ 0.000000e+00, [[ENTRY]] ]
+; CHECK-ORDERED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
+; CHECK-ORDERED-NEXT:    [[BC_MERGE_RDX:%.*]] = phi float [ 0.000000e+00, [[ENTRY]] ]
 ; CHECK-ORDERED-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-ORDERED:       for.body:
 ; CHECK-ORDERED-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
@@ -40,7 +43,7 @@ define float @fadd(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-ORDERED-NEXT:    [[TMP9:%.*]] = load float, ptr [[ARRAYIDX]], align 4
 ; CHECK-ORDERED-NEXT:    [[ADD]] = fadd float [[TMP9]], [[SUM_07]]
 ; CHECK-ORDERED-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
-; CHECK-ORDERED-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], [[N1]]
+; CHECK-ORDERED-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], [[N]]
 ; CHECK-ORDERED-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK-ORDERED:       for.end:
 ; CHECK-ORDERED-NEXT:    [[ADD_LCSSA:%.*]] = phi float [ [[ADD]], [[FOR_BODY]] ], [ [[TMP3]], [[MIDDLE_BLOCK]] ]

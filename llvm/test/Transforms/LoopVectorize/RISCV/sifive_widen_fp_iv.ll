@@ -9,53 +9,38 @@ define void @test(i32 %input, ptr %0) {
 ; CHECK-SAME: i32 [[INPUT:%.*]], ptr [[TMP0:%.*]]) #[[ATTR0:[0-9]+]] {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP1:%.*]] = add i32 [[INPUT]], 1
-; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.vscale.i32()
-; CHECK-NEXT:    [[TMP3:%.*]] = mul i32 [[TMP2]], 2
-; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i32 [[TMP1]], [[TMP3]]
-; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-; CHECK-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vscale.i32()
-; CHECK-NEXT:    [[TMP21:%.*]] = mul i32 [[TMP5]], 2
-; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i32 [[TMP1]], [[TMP21]]
-; CHECK-NEXT:    [[N_VEC:%.*]] = sub i32 [[TMP1]], [[N_MOD_VF]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vscale.i32()
-; CHECK-NEXT:    [[TMP7:%.*]] = mul i32 [[TMP6]], 2
-; CHECK-NEXT:    [[DOTCAST:%.*]] = sitofp i32 [[N_VEC]] to double
-; CHECK-NEXT:    [[TMP8:%.*]] = fmul reassoc double 1.000000e+00, [[DOTCAST]]
-; CHECK-NEXT:    [[TMP9:%.*]] = fadd reassoc double 0.000000e+00, [[TMP8]]
-; CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 2 x i32> @llvm.stepvector.nxv2i32()
-; CHECK-NEXT:    [[TMP11:%.*]] = mul <vscale x 2 x i32> [[TMP10]], splat (i32 1)
-; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 2 x i32> zeroinitializer, [[TMP11]]
-; CHECK-NEXT:    [[TMP12:%.*]] = mul i32 1, [[TMP7]]
-; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 2 x i32> poison, i32 [[TMP12]], i64 0
-; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 2 x i32> [[DOTSPLATINSERT]], <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer
-; CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 2 x i64> @llvm.stepvector.nxv2i64()
-; CHECK-NEXT:    [[TMP14:%.*]] = uitofp <vscale x 2 x i64> [[TMP13]] to <vscale x 2 x double>
-; CHECK-NEXT:    [[TMP15:%.*]] = fmul reassoc <vscale x 2 x double> [[TMP14]], splat (double 1.000000e+00)
-; CHECK-NEXT:    [[INDUCTION1:%.*]] = fadd reassoc <vscale x 2 x double> zeroinitializer, [[TMP15]]
-; CHECK-NEXT:    [[TMP16:%.*]] = uitofp i32 [[TMP7]] to double
-; CHECK-NEXT:    [[TMP17:%.*]] = fmul reassoc double 1.000000e+00, [[TMP16]]
-; CHECK-NEXT:    [[DOTSPLATINSERT2:%.*]] = insertelement <vscale x 2 x double> poison, double [[TMP17]], i64 0
-; CHECK-NEXT:    [[DOTSPLAT3:%.*]] = shufflevector <vscale x 2 x double> [[DOTSPLATINSERT2]], <vscale x 2 x double> poison, <vscale x 2 x i32> zeroinitializer
+; CHECK-NEXT:    [[TMP3:%.*]] = mul i32 [[TMP6]], 4
+; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 [[TMP1]], i32 4, i1 true)
+; CHECK-NEXT:    [[TMP5:%.*]] = call <vscale x 4 x i64> @llvm.stepvector.nxv4i64()
+; CHECK-NEXT:    [[TMP14:%.*]] = uitofp <vscale x 4 x i64> [[TMP5]] to <vscale x 4 x double>
+; CHECK-NEXT:    [[TMP7:%.*]] = fmul reassoc <vscale x 4 x double> [[TMP14]], splat (double 1.000000e+00)
+; CHECK-NEXT:    [[INDUCTION:%.*]] = fadd reassoc <vscale x 4 x double> zeroinitializer, [[TMP7]]
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT1:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i32> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[VEC_IND4:%.*]] = phi <vscale x 2 x double> [ [[INDUCTION1]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT5:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[TMP18:%.*]] = zext <vscale x 2 x i32> [[VEC_IND]] to <vscale x 2 x i64>
-; CHECK-NEXT:    [[TMP19:%.*]] = getelementptr [[POINT:%.*]], ptr [[TMP0]], <vscale x 2 x i64> [[TMP18]], i32 0, i32 0, i64 2
-; CHECK-NEXT:    call void @llvm.masked.scatter.nxv2f64.nxv2p0(<vscale x 2 x double> [[VEC_IND4]], <vscale x 2 x ptr> [[TMP19]], i32 8, <vscale x 2 x i1> splat (i1 true))
-; CHECK-NEXT:    [[INDEX_EVL_NEXT1]] = add nuw i32 [[EVL_BASED_IV1]], [[TMP7]]
-; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <vscale x 2 x i32> [[VEC_IND]], [[DOTSPLAT]]
-; CHECK-NEXT:    [[VEC_IND_NEXT5]] = fadd reassoc <vscale x 2 x double> [[VEC_IND4]], [[DOTSPLAT3]]
-; CHECK-NEXT:    [[TMP20:%.*]] = icmp eq i32 [[INDEX_EVL_NEXT1]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP20]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT1]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 4 x double> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[AVL:%.*]] = sub i32 [[TMP1]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP8:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 [[AVL]], i32 4, i1 true)
+; CHECK-NEXT:    [[TMP9:%.*]] = zext i32 [[EVL_BASED_IV]] to i64
+; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr [[POINT:%.*]], ptr [[TMP0]], i64 [[TMP9]], i32 0, i32 0, i64 2
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VEC_IND]], ptr align 8 [[TMP10]], i64 24, <vscale x 4 x i1> splat (i1 true), i32 [[TMP8]])
+; CHECK-NEXT:    [[INDEX_EVL_NEXT1]] = add nuw i32 [[TMP8]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP11:%.*]] = uitofp i32 [[TMP8]] to double
+; CHECK-NEXT:    [[TMP12:%.*]] = fmul reassoc double 1.000000e+00, [[TMP11]]
+; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 4 x double> poison, double [[TMP12]], i64 0
+; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 4 x double> [[DOTSPLATINSERT]], <vscale x 4 x double> poison, <vscale x 4 x i32> zeroinitializer
+; CHECK-NEXT:    [[STEP_ADD]] = call reassoc <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VEC_IND]], <vscale x 4 x double> [[DOTSPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP8]])
+; CHECK-NEXT:    [[TMP13:%.*]] = icmp eq i32 [[INDEX_EVL_NEXT1]], [[TMP1]]
+; CHECK-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i32 [[TMP1]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[CMP_N]], label [[LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL1:%.*]] = phi double [ [[TMP9]], [[MIDDLE_BLOCK]] ], [ 0.000000e+00, [[ENTRY]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 0, [[ENTRY:%.*]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL1:%.*]] = phi double [ 0.000000e+00, [[ENTRY]] ]
 ; CHECK-NEXT:    br label [[PREHEADER:%.*]]
 ; CHECK:       preheader:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i32 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[PREHEADER]] ]

@@ -10,200 +10,410 @@
 ; non-profitable case on p670
 ; reduced from Spec2k6 FP 433.milc quark_stuff.c:993
 define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
+; VEC-M1-LABEL: define void @eo_fermion_force
+; VEC-M1-SAME: (ptr [[A:%.*]], ptr [[B:%.*]], double [[S:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
+; VEC-M1-NEXT:  entry:
+; VEC-M1-NEXT:    br label [[VECTOR_SCEVCHECK:%.*]]
+; VEC-M1:       vector.scevcheck:
+; VEC-M1-NEXT:    [[TMP0:%.*]] = add i64 [[N]], -1
+; VEC-M1-NEXT:    [[MUL:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP0]])
+; VEC-M1-NEXT:    [[MUL_RESULT:%.*]] = extractvalue { i64, i1 } [[MUL]], 0
+; VEC-M1-NEXT:    [[MUL_OVERFLOW:%.*]] = extractvalue { i64, i1 } [[MUL]], 1
+; VEC-M1-NEXT:    [[TMP1:%.*]] = sub i64 0, [[MUL_RESULT]]
+; VEC-M1-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[A]], i64 [[MUL_RESULT]]
+; VEC-M1-NEXT:    [[TMP3:%.*]] = icmp ult ptr [[TMP2]], [[A]]
+; VEC-M1-NEXT:    [[TMP4:%.*]] = or i1 [[TMP3]], [[MUL_OVERFLOW]]
+; VEC-M1-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[A]], i64 8
+; VEC-M1-NEXT:    [[MUL1:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP0]])
+; VEC-M1-NEXT:    [[MUL_RESULT2:%.*]] = extractvalue { i64, i1 } [[MUL1]], 0
+; VEC-M1-NEXT:    [[MUL_OVERFLOW3:%.*]] = extractvalue { i64, i1 } [[MUL1]], 1
+; VEC-M1-NEXT:    [[TMP5:%.*]] = sub i64 0, [[MUL_RESULT2]]
+; VEC-M1-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[SCEVGEP]], i64 [[MUL_RESULT2]]
+; VEC-M1-NEXT:    [[TMP7:%.*]] = icmp ult ptr [[TMP6]], [[SCEVGEP]]
+; VEC-M1-NEXT:    [[TMP8:%.*]] = or i1 [[TMP7]], [[MUL_OVERFLOW3]]
+; VEC-M1-NEXT:    [[SCEVGEP4:%.*]] = getelementptr i8, ptr [[A]], i64 16
+; VEC-M1-NEXT:    [[MUL5:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP0]])
+; VEC-M1-NEXT:    [[MUL_RESULT6:%.*]] = extractvalue { i64, i1 } [[MUL5]], 0
+; VEC-M1-NEXT:    [[MUL_OVERFLOW7:%.*]] = extractvalue { i64, i1 } [[MUL5]], 1
+; VEC-M1-NEXT:    [[TMP9:%.*]] = sub i64 0, [[MUL_RESULT6]]
+; VEC-M1-NEXT:    [[TMP10:%.*]] = getelementptr i8, ptr [[SCEVGEP4]], i64 [[MUL_RESULT6]]
+; VEC-M1-NEXT:    [[TMP11:%.*]] = icmp ult ptr [[TMP10]], [[SCEVGEP4]]
+; VEC-M1-NEXT:    [[TMP12:%.*]] = or i1 [[TMP11]], [[MUL_OVERFLOW7]]
+; VEC-M1-NEXT:    [[SCEVGEP8:%.*]] = getelementptr i8, ptr [[A]], i64 24
+; VEC-M1-NEXT:    [[MUL9:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP0]])
+; VEC-M1-NEXT:    [[MUL_RESULT10:%.*]] = extractvalue { i64, i1 } [[MUL9]], 0
+; VEC-M1-NEXT:    [[MUL_OVERFLOW11:%.*]] = extractvalue { i64, i1 } [[MUL9]], 1
+; VEC-M1-NEXT:    [[TMP13:%.*]] = sub i64 0, [[MUL_RESULT10]]
+; VEC-M1-NEXT:    [[TMP14:%.*]] = getelementptr i8, ptr [[SCEVGEP8]], i64 [[MUL_RESULT10]]
+; VEC-M1-NEXT:    [[TMP15:%.*]] = icmp ult ptr [[TMP14]], [[SCEVGEP8]]
+; VEC-M1-NEXT:    [[TMP16:%.*]] = or i1 [[TMP15]], [[MUL_OVERFLOW11]]
+; VEC-M1-NEXT:    [[SCEVGEP12:%.*]] = getelementptr i8, ptr [[A]], i64 32
+; VEC-M1-NEXT:    [[MUL13:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP0]])
+; VEC-M1-NEXT:    [[MUL_RESULT14:%.*]] = extractvalue { i64, i1 } [[MUL13]], 0
+; VEC-M1-NEXT:    [[MUL_OVERFLOW15:%.*]] = extractvalue { i64, i1 } [[MUL13]], 1
+; VEC-M1-NEXT:    [[TMP17:%.*]] = sub i64 0, [[MUL_RESULT14]]
+; VEC-M1-NEXT:    [[TMP18:%.*]] = getelementptr i8, ptr [[SCEVGEP12]], i64 [[MUL_RESULT14]]
+; VEC-M1-NEXT:    [[TMP19:%.*]] = icmp ult ptr [[TMP18]], [[SCEVGEP12]]
+; VEC-M1-NEXT:    [[TMP20:%.*]] = or i1 [[TMP19]], [[MUL_OVERFLOW15]]
+; VEC-M1-NEXT:    [[SCEVGEP16:%.*]] = getelementptr i8, ptr [[A]], i64 40
+; VEC-M1-NEXT:    [[MUL17:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP0]])
+; VEC-M1-NEXT:    [[MUL_RESULT18:%.*]] = extractvalue { i64, i1 } [[MUL17]], 0
+; VEC-M1-NEXT:    [[MUL_OVERFLOW19:%.*]] = extractvalue { i64, i1 } [[MUL17]], 1
+; VEC-M1-NEXT:    [[TMP21:%.*]] = sub i64 0, [[MUL_RESULT18]]
+; VEC-M1-NEXT:    [[TMP22:%.*]] = getelementptr i8, ptr [[SCEVGEP16]], i64 [[MUL_RESULT18]]
+; VEC-M1-NEXT:    [[TMP23:%.*]] = icmp ult ptr [[TMP22]], [[SCEVGEP16]]
+; VEC-M1-NEXT:    [[TMP24:%.*]] = or i1 [[TMP23]], [[MUL_OVERFLOW19]]
+; VEC-M1-NEXT:    [[MUL20:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP0]])
+; VEC-M1-NEXT:    [[MUL_RESULT21:%.*]] = extractvalue { i64, i1 } [[MUL20]], 0
+; VEC-M1-NEXT:    [[MUL_OVERFLOW22:%.*]] = extractvalue { i64, i1 } [[MUL20]], 1
+; VEC-M1-NEXT:    [[TMP25:%.*]] = sub i64 0, [[MUL_RESULT21]]
+; VEC-M1-NEXT:    [[TMP26:%.*]] = getelementptr i8, ptr [[B]], i64 [[MUL_RESULT21]]
+; VEC-M1-NEXT:    [[TMP27:%.*]] = icmp ult ptr [[TMP26]], [[B]]
+; VEC-M1-NEXT:    [[TMP28:%.*]] = or i1 [[TMP27]], [[MUL_OVERFLOW22]]
+; VEC-M1-NEXT:    [[SCEVGEP23:%.*]] = getelementptr i8, ptr [[B]], i64 8
+; VEC-M1-NEXT:    [[MUL24:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP0]])
+; VEC-M1-NEXT:    [[MUL_RESULT25:%.*]] = extractvalue { i64, i1 } [[MUL24]], 0
+; VEC-M1-NEXT:    [[MUL_OVERFLOW26:%.*]] = extractvalue { i64, i1 } [[MUL24]], 1
+; VEC-M1-NEXT:    [[TMP29:%.*]] = sub i64 0, [[MUL_RESULT25]]
+; VEC-M1-NEXT:    [[TMP30:%.*]] = getelementptr i8, ptr [[SCEVGEP23]], i64 [[MUL_RESULT25]]
+; VEC-M1-NEXT:    [[TMP31:%.*]] = icmp ult ptr [[TMP30]], [[SCEVGEP23]]
+; VEC-M1-NEXT:    [[TMP32:%.*]] = or i1 [[TMP31]], [[MUL_OVERFLOW26]]
+; VEC-M1-NEXT:    [[SCEVGEP27:%.*]] = getelementptr i8, ptr [[B]], i64 16
+; VEC-M1-NEXT:    [[MUL28:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP0]])
+; VEC-M1-NEXT:    [[MUL_RESULT29:%.*]] = extractvalue { i64, i1 } [[MUL28]], 0
+; VEC-M1-NEXT:    [[MUL_OVERFLOW30:%.*]] = extractvalue { i64, i1 } [[MUL28]], 1
+; VEC-M1-NEXT:    [[TMP33:%.*]] = sub i64 0, [[MUL_RESULT29]]
+; VEC-M1-NEXT:    [[TMP34:%.*]] = getelementptr i8, ptr [[SCEVGEP27]], i64 [[MUL_RESULT29]]
+; VEC-M1-NEXT:    [[TMP35:%.*]] = icmp ult ptr [[TMP34]], [[SCEVGEP27]]
+; VEC-M1-NEXT:    [[TMP36:%.*]] = or i1 [[TMP35]], [[MUL_OVERFLOW30]]
+; VEC-M1-NEXT:    [[SCEVGEP31:%.*]] = getelementptr i8, ptr [[B]], i64 24
+; VEC-M1-NEXT:    [[MUL32:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP0]])
+; VEC-M1-NEXT:    [[MUL_RESULT33:%.*]] = extractvalue { i64, i1 } [[MUL32]], 0
+; VEC-M1-NEXT:    [[MUL_OVERFLOW34:%.*]] = extractvalue { i64, i1 } [[MUL32]], 1
+; VEC-M1-NEXT:    [[TMP37:%.*]] = sub i64 0, [[MUL_RESULT33]]
+; VEC-M1-NEXT:    [[TMP38:%.*]] = getelementptr i8, ptr [[SCEVGEP31]], i64 [[MUL_RESULT33]]
+; VEC-M1-NEXT:    [[TMP39:%.*]] = icmp ult ptr [[TMP38]], [[SCEVGEP31]]
+; VEC-M1-NEXT:    [[TMP40:%.*]] = or i1 [[TMP39]], [[MUL_OVERFLOW34]]
+; VEC-M1-NEXT:    [[SCEVGEP35:%.*]] = getelementptr i8, ptr [[B]], i64 32
+; VEC-M1-NEXT:    [[MUL36:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP0]])
+; VEC-M1-NEXT:    [[MUL_RESULT37:%.*]] = extractvalue { i64, i1 } [[MUL36]], 0
+; VEC-M1-NEXT:    [[MUL_OVERFLOW38:%.*]] = extractvalue { i64, i1 } [[MUL36]], 1
+; VEC-M1-NEXT:    [[TMP41:%.*]] = sub i64 0, [[MUL_RESULT37]]
+; VEC-M1-NEXT:    [[TMP42:%.*]] = getelementptr i8, ptr [[SCEVGEP35]], i64 [[MUL_RESULT37]]
+; VEC-M1-NEXT:    [[TMP43:%.*]] = icmp ult ptr [[TMP42]], [[SCEVGEP35]]
+; VEC-M1-NEXT:    [[TMP44:%.*]] = or i1 [[TMP43]], [[MUL_OVERFLOW38]]
+; VEC-M1-NEXT:    [[SCEVGEP39:%.*]] = getelementptr i8, ptr [[B]], i64 40
+; VEC-M1-NEXT:    [[MUL40:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP0]])
+; VEC-M1-NEXT:    [[MUL_RESULT41:%.*]] = extractvalue { i64, i1 } [[MUL40]], 0
+; VEC-M1-NEXT:    [[MUL_OVERFLOW42:%.*]] = extractvalue { i64, i1 } [[MUL40]], 1
+; VEC-M1-NEXT:    [[TMP45:%.*]] = sub i64 0, [[MUL_RESULT41]]
+; VEC-M1-NEXT:    [[TMP46:%.*]] = getelementptr i8, ptr [[SCEVGEP39]], i64 [[MUL_RESULT41]]
+; VEC-M1-NEXT:    [[TMP47:%.*]] = icmp ult ptr [[TMP46]], [[SCEVGEP39]]
+; VEC-M1-NEXT:    [[TMP48:%.*]] = or i1 [[TMP47]], [[MUL_OVERFLOW42]]
+; VEC-M1-NEXT:    [[TMP49:%.*]] = or i1 [[TMP4]], [[TMP8]]
+; VEC-M1-NEXT:    [[TMP50:%.*]] = or i1 [[TMP49]], [[TMP12]]
+; VEC-M1-NEXT:    [[TMP51:%.*]] = or i1 [[TMP50]], [[TMP16]]
+; VEC-M1-NEXT:    [[TMP52:%.*]] = or i1 [[TMP51]], [[TMP20]]
+; VEC-M1-NEXT:    [[TMP53:%.*]] = or i1 [[TMP52]], [[TMP24]]
+; VEC-M1-NEXT:    [[TMP54:%.*]] = or i1 [[TMP53]], [[TMP28]]
+; VEC-M1-NEXT:    [[TMP55:%.*]] = or i1 [[TMP54]], [[TMP32]]
+; VEC-M1-NEXT:    [[TMP56:%.*]] = or i1 [[TMP55]], [[TMP36]]
+; VEC-M1-NEXT:    [[TMP57:%.*]] = or i1 [[TMP56]], [[TMP40]]
+; VEC-M1-NEXT:    [[TMP58:%.*]] = or i1 [[TMP57]], [[TMP44]]
+; VEC-M1-NEXT:    [[TMP59:%.*]] = or i1 [[TMP58]], [[TMP48]]
+; VEC-M1-NEXT:    br i1 [[TMP59]], label [[SCALAR_PH:%.*]], label [[VECTOR_MEMCHECK:%.*]]
+; VEC-M1:       vector.memcheck:
+; VEC-M1-NEXT:    [[TMP60:%.*]] = mul i64 [[N]], 48
+; VEC-M1-NEXT:    [[SCEVGEP43:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP60]]
+; VEC-M1-NEXT:    [[SCEVGEP44:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP60]]
+; VEC-M1-NEXT:    [[BOUND0:%.*]] = icmp ult ptr [[A]], [[SCEVGEP44]]
+; VEC-M1-NEXT:    [[BOUND1:%.*]] = icmp ult ptr [[B]], [[SCEVGEP43]]
+; VEC-M1-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
+; VEC-M1-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]
+; VEC-M1:       vector.ph:
+; VEC-M1-NEXT:    [[TMP61:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 1, i1 true)
+; VEC-M1-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 1 x double> poison, double [[S]], i64 0
+; VEC-M1-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 1 x double> [[BROADCAST_SPLATINSERT]], <vscale x 1 x double> poison, <vscale x 1 x i32> zeroinitializer
+; VEC-M1-NEXT:    br label [[VECTOR_BODY:%.*]]
+; VEC-M1:       vector.body:
+; VEC-M1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; VEC-M1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
+; VEC-M1-NEXT:    [[AVL:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
+; VEC-M1-NEXT:    [[TMP62:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 1, i1 true)
+; VEC-M1-NEXT:    [[TMP63:%.*]] = getelementptr [[STRUCT_SU3_VECTOR:%.*]], ptr [[A]], i64 [[EVL_BASED_IV]]
+; VEC-M1-NEXT:    [[TMP64:%.*]] = getelementptr [[STRUCT_SU3_VECTOR]], ptr [[B]], i64 [[EVL_BASED_IV]]
+; VEC-M1-NEXT:    [[TMP65:%.*]] = mul nuw nsw i32 [[TMP62]], 6
+; VEC-M1-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 6 x double> @llvm.vp.load.nxv6f64.p0(ptr align 8 [[TMP63]], <vscale x 6 x i1> splat (i1 true), i32 [[TMP65]])
+; VEC-M1-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } @llvm.experimental.vector.deinterleave6.nxv6f64(<vscale x 6 x double> [[WIDE_MASKED_LOAD]])
+; VEC-M1-NEXT:    [[TMP66:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 0
+; VEC-M1-NEXT:    [[TMP67:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 1
+; VEC-M1-NEXT:    [[TMP68:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 2
+; VEC-M1-NEXT:    [[TMP69:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 3
+; VEC-M1-NEXT:    [[TMP70:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 4
+; VEC-M1-NEXT:    [[TMP71:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 5
+; VEC-M1-NEXT:    [[TMP72:%.*]] = mul nuw nsw i32 [[TMP62]], 6
+; VEC-M1-NEXT:    [[WIDE_MASKED_LOAD45:%.*]] = call <vscale x 6 x double> @llvm.vp.load.nxv6f64.p0(ptr align 8 [[TMP64]], <vscale x 6 x i1> splat (i1 true), i32 [[TMP72]])
+; VEC-M1-NEXT:    [[DEINTERLEAVED_RESULTS46:%.*]] = call { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } @llvm.experimental.vector.deinterleave6.nxv6f64(<vscale x 6 x double> [[WIDE_MASKED_LOAD45]])
+; VEC-M1-NEXT:    [[TMP73:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS46]], 0
+; VEC-M1-NEXT:    [[TMP74:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS46]], 1
+; VEC-M1-NEXT:    [[TMP75:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS46]], 2
+; VEC-M1-NEXT:    [[TMP76:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS46]], 3
+; VEC-M1-NEXT:    [[TMP77:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS46]], 4
+; VEC-M1-NEXT:    [[TMP78:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS46]], 5
+; VEC-M1-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP73]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M1-NEXT:    [[VP_OP47:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP]], <vscale x 1 x double> [[TMP66]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M1-NEXT:    [[VP_OP48:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP74]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M1-NEXT:    [[VP_OP49:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP48]], <vscale x 1 x double> [[TMP67]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M1-NEXT:    [[VP_OP50:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP75]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M1-NEXT:    [[VP_OP51:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP50]], <vscale x 1 x double> [[TMP68]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M1-NEXT:    [[VP_OP52:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP76]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M1-NEXT:    [[VP_OP53:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP52]], <vscale x 1 x double> [[TMP69]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M1-NEXT:    [[VP_OP54:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP77]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M1-NEXT:    [[VP_OP55:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP54]], <vscale x 1 x double> [[TMP70]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M1-NEXT:    [[VP_OP56:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP78]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M1-NEXT:    [[VP_OP57:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP56]], <vscale x 1 x double> [[TMP71]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M1-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 6 x double> @llvm.experimental.vector.interleave6.nxv6f64(<vscale x 1 x double> [[VP_OP47]], <vscale x 1 x double> [[VP_OP49]], <vscale x 1 x double> [[VP_OP51]], <vscale x 1 x double> [[VP_OP53]], <vscale x 1 x double> [[VP_OP55]], <vscale x 1 x double> [[VP_OP57]])
+; VEC-M1-NEXT:    [[TMP79:%.*]] = mul nuw nsw i32 [[TMP62]], 6
+; VEC-M1-NEXT:    call void @llvm.vp.store.nxv6f64.p0(<vscale x 6 x double> [[INTERLEAVED_VEC]], ptr align 8 [[TMP63]], <vscale x 6 x i1> splat (i1 true), i32 [[TMP79]])
+; VEC-M1-NEXT:    [[TMP80:%.*]] = zext i32 [[TMP62]] to i64
+; VEC-M1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP80]], [[EVL_BASED_IV]]
+; VEC-M1-NEXT:    [[TMP81:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
+; VEC-M1-NEXT:    br i1 [[TMP81]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; VEC-M1:       middle.block:
+; VEC-M1-NEXT:    br label [[EXIT:%.*]]
+; VEC-M1:       scalar.ph:
+; VEC-M1-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[VECTOR_SCEVCHECK]] ], [ 0, [[VECTOR_MEMCHECK]] ]
+; VEC-M1-NEXT:    br label [[LOOP:%.*]]
+; VEC-M1:       loop:
+; VEC-M1-NEXT:    [[COUNTER:%.*]] = phi i64 [ [[COUNTER_NEXT:%.*]], [[LOOP]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
+; VEC-M1-NEXT:    [[ADDRA:%.*]] = getelementptr [[STRUCT_SU3_VECTOR]], ptr [[A]], i64 [[COUNTER]]
+; VEC-M1-NEXT:    [[ADDRB:%.*]] = getelementptr [[STRUCT_SU3_VECTOR]], ptr [[B]], i64 [[COUNTER]]
+; VEC-M1-NEXT:    [[A0R:%.*]] = load double, ptr [[ADDRA]], align 8
+; VEC-M1-NEXT:    [[B0R:%.*]] = load double, ptr [[ADDRB]], align 8
+; VEC-M1-NEXT:    [[T0R:%.*]] = fmul double [[B0R]], [[S]]
+; VEC-M1-NEXT:    [[C0R:%.*]] = fadd double [[T0R]], [[A0R]]
+; VEC-M1-NEXT:    store double [[C0R]], ptr [[ADDRA]], align 8
+; VEC-M1-NEXT:    [[ADDRA0I:%.*]] = getelementptr [3 x %struct.complex], ptr [[ADDRA]], i64 0, i64 0, i32 1
+; VEC-M1-NEXT:    [[A0I:%.*]] = load double, ptr [[ADDRA0I]], align 8
+; VEC-M1-NEXT:    [[ADDRB0I:%.*]] = getelementptr [3 x %struct.complex], ptr [[ADDRB]], i64 0, i64 0, i32 1
+; VEC-M1-NEXT:    [[B0I:%.*]] = load double, ptr [[ADDRB0I]], align 8
+; VEC-M1-NEXT:    [[T0I:%.*]] = fmul double [[B0I]], [[S]]
+; VEC-M1-NEXT:    [[C0I:%.*]] = fadd double [[T0I]], [[A0I]]
+; VEC-M1-NEXT:    store double [[C0I]], ptr [[ADDRA0I]], align 8
+; VEC-M1-NEXT:    [[ADDRA1R:%.*]] = getelementptr [3 x %struct.complex], ptr [[ADDRA]], i64 0, i64 1
+; VEC-M1-NEXT:    [[A1R:%.*]] = load double, ptr [[ADDRA1R]], align 8
+; VEC-M1-NEXT:    [[ADDRB1R:%.*]] = getelementptr [3 x %struct.complex], ptr [[ADDRB]], i64 0, i64 1
+; VEC-M1-NEXT:    [[B1R:%.*]] = load double, ptr [[ADDRB1R]], align 8
+; VEC-M1-NEXT:    [[T1R:%.*]] = fmul double [[B1R]], [[S]]
+; VEC-M1-NEXT:    [[C1R:%.*]] = fadd double [[T1R]], [[A1R]]
+; VEC-M1-NEXT:    store double [[C1R]], ptr [[ADDRA1R]], align 8
+; VEC-M1-NEXT:    [[ADDRA1I:%.*]] = getelementptr [3 x %struct.complex], ptr [[ADDRA]], i64 0, i64 1, i32 1
+; VEC-M1-NEXT:    [[A1I:%.*]] = load double, ptr [[ADDRA1I]], align 8
+; VEC-M1-NEXT:    [[ADDRB1I:%.*]] = getelementptr [3 x %struct.complex], ptr [[ADDRB]], i64 0, i64 1, i32 1
+; VEC-M1-NEXT:    [[B1I:%.*]] = load double, ptr [[ADDRB1I]], align 8
+; VEC-M1-NEXT:    [[T1I:%.*]] = fmul double [[B1I]], [[S]]
+; VEC-M1-NEXT:    [[C1I:%.*]] = fadd double [[T1I]], [[A1I]]
+; VEC-M1-NEXT:    store double [[C1I]], ptr [[ADDRA1I]], align 8
+; VEC-M1-NEXT:    [[ADDRA2R:%.*]] = getelementptr [3 x %struct.complex], ptr [[ADDRA]], i64 0, i64 2
+; VEC-M1-NEXT:    [[A2R:%.*]] = load double, ptr [[ADDRA2R]], align 8
+; VEC-M1-NEXT:    [[ADDRB2R:%.*]] = getelementptr [3 x %struct.complex], ptr [[ADDRB]], i64 0, i64 2
+; VEC-M1-NEXT:    [[B2R:%.*]] = load double, ptr [[ADDRB2R]], align 8
+; VEC-M1-NEXT:    [[T2R:%.*]] = fmul double [[B2R]], [[S]]
+; VEC-M1-NEXT:    [[C2R:%.*]] = fadd double [[T2R]], [[A2R]]
+; VEC-M1-NEXT:    store double [[C2R]], ptr [[ADDRA2R]], align 8
+; VEC-M1-NEXT:    [[ADDRA2I:%.*]] = getelementptr [3 x %struct.complex], ptr [[ADDRA]], i64 0, i64 2, i32 1
+; VEC-M1-NEXT:    [[A2I:%.*]] = load double, ptr [[ADDRA2I]], align 8
+; VEC-M1-NEXT:    [[ADDRB2I:%.*]] = getelementptr [3 x %struct.complex], ptr [[ADDRB]], i64 0, i64 2, i32 1
+; VEC-M1-NEXT:    [[B2I:%.*]] = load double, ptr [[ADDRB2I]], align 8
+; VEC-M1-NEXT:    [[T2I:%.*]] = fmul double [[B2I]], [[S]]
+; VEC-M1-NEXT:    [[C2I:%.*]] = fadd double [[T2I]], [[A2I]]
+; VEC-M1-NEXT:    store double [[C2I]], ptr [[ADDRA2I]], align 8
+; VEC-M1-NEXT:    [[COUNTER_NEXT]] = add i64 [[COUNTER]], 1
+; VEC-M1-NEXT:    [[COND:%.*]] = icmp ne i64 [[COUNTER_NEXT]], [[N]]
+; VEC-M1-NEXT:    br i1 [[COND]], label [[LOOP]], label [[EXIT]], !llvm.loop [[LOOP3:![0-9]+]]
+; VEC-M1:       exit:
+; VEC-M1-NEXT:    ret void
+;
 ; VEC-M4-LABEL: define void @eo_fermion_force
 ; VEC-M4-SAME: (ptr [[A:%.*]], ptr [[B:%.*]], double [[S:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
 ; VEC-M4-NEXT:  entry:
-; VEC-M4-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; VEC-M4-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 2
-; VEC-M4-NEXT:    [[TMP2:%.*]] = call i64 @llvm.umax.i64(i64 36, i64 [[TMP1]])
-; VEC-M4-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], [[TMP2]]
-; VEC-M4-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_SCEVCHECK:%.*]]
+; VEC-M4-NEXT:    br label [[VECTOR_SCEVCHECK:%.*]]
 ; VEC-M4:       vector.scevcheck:
-; VEC-M4-NEXT:    [[TMP3:%.*]] = add i64 [[N]], -1
-; VEC-M4-NEXT:    [[MUL:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP3]])
+; VEC-M4-NEXT:    [[TMP0:%.*]] = add i64 [[N]], -1
+; VEC-M4-NEXT:    [[MUL:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP0]])
 ; VEC-M4-NEXT:    [[MUL_RESULT:%.*]] = extractvalue { i64, i1 } [[MUL]], 0
 ; VEC-M4-NEXT:    [[MUL_OVERFLOW:%.*]] = extractvalue { i64, i1 } [[MUL]], 1
-; VEC-M4-NEXT:    [[TMP4:%.*]] = sub i64 0, [[MUL_RESULT]]
-; VEC-M4-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[A]], i64 [[MUL_RESULT]]
-; VEC-M4-NEXT:    [[TMP6:%.*]] = icmp ult ptr [[TMP5]], [[A]]
-; VEC-M4-NEXT:    [[TMP7:%.*]] = or i1 [[TMP6]], [[MUL_OVERFLOW]]
+; VEC-M4-NEXT:    [[TMP1:%.*]] = sub i64 0, [[MUL_RESULT]]
+; VEC-M4-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[A]], i64 [[MUL_RESULT]]
+; VEC-M4-NEXT:    [[TMP3:%.*]] = icmp ult ptr [[TMP2]], [[A]]
+; VEC-M4-NEXT:    [[TMP4:%.*]] = or i1 [[TMP3]], [[MUL_OVERFLOW]]
 ; VEC-M4-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[A]], i64 8
-; VEC-M4-NEXT:    [[MUL1:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP3]])
+; VEC-M4-NEXT:    [[MUL1:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP0]])
 ; VEC-M4-NEXT:    [[MUL_RESULT2:%.*]] = extractvalue { i64, i1 } [[MUL1]], 0
 ; VEC-M4-NEXT:    [[MUL_OVERFLOW3:%.*]] = extractvalue { i64, i1 } [[MUL1]], 1
-; VEC-M4-NEXT:    [[TMP8:%.*]] = sub i64 0, [[MUL_RESULT2]]
-; VEC-M4-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[SCEVGEP]], i64 [[MUL_RESULT2]]
-; VEC-M4-NEXT:    [[TMP10:%.*]] = icmp ult ptr [[TMP9]], [[SCEVGEP]]
-; VEC-M4-NEXT:    [[TMP11:%.*]] = or i1 [[TMP10]], [[MUL_OVERFLOW3]]
+; VEC-M4-NEXT:    [[TMP5:%.*]] = sub i64 0, [[MUL_RESULT2]]
+; VEC-M4-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[SCEVGEP]], i64 [[MUL_RESULT2]]
+; VEC-M4-NEXT:    [[TMP7:%.*]] = icmp ult ptr [[TMP6]], [[SCEVGEP]]
+; VEC-M4-NEXT:    [[TMP8:%.*]] = or i1 [[TMP7]], [[MUL_OVERFLOW3]]
 ; VEC-M4-NEXT:    [[SCEVGEP4:%.*]] = getelementptr i8, ptr [[A]], i64 16
-; VEC-M4-NEXT:    [[MUL5:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP3]])
+; VEC-M4-NEXT:    [[MUL5:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP0]])
 ; VEC-M4-NEXT:    [[MUL_RESULT6:%.*]] = extractvalue { i64, i1 } [[MUL5]], 0
 ; VEC-M4-NEXT:    [[MUL_OVERFLOW7:%.*]] = extractvalue { i64, i1 } [[MUL5]], 1
-; VEC-M4-NEXT:    [[TMP12:%.*]] = sub i64 0, [[MUL_RESULT6]]
-; VEC-M4-NEXT:    [[TMP13:%.*]] = getelementptr i8, ptr [[SCEVGEP4]], i64 [[MUL_RESULT6]]
-; VEC-M4-NEXT:    [[TMP14:%.*]] = icmp ult ptr [[TMP13]], [[SCEVGEP4]]
-; VEC-M4-NEXT:    [[TMP15:%.*]] = or i1 [[TMP14]], [[MUL_OVERFLOW7]]
+; VEC-M4-NEXT:    [[TMP9:%.*]] = sub i64 0, [[MUL_RESULT6]]
+; VEC-M4-NEXT:    [[TMP10:%.*]] = getelementptr i8, ptr [[SCEVGEP4]], i64 [[MUL_RESULT6]]
+; VEC-M4-NEXT:    [[TMP11:%.*]] = icmp ult ptr [[TMP10]], [[SCEVGEP4]]
+; VEC-M4-NEXT:    [[TMP12:%.*]] = or i1 [[TMP11]], [[MUL_OVERFLOW7]]
 ; VEC-M4-NEXT:    [[SCEVGEP8:%.*]] = getelementptr i8, ptr [[A]], i64 24
-; VEC-M4-NEXT:    [[MUL9:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP3]])
+; VEC-M4-NEXT:    [[MUL9:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP0]])
 ; VEC-M4-NEXT:    [[MUL_RESULT10:%.*]] = extractvalue { i64, i1 } [[MUL9]], 0
 ; VEC-M4-NEXT:    [[MUL_OVERFLOW11:%.*]] = extractvalue { i64, i1 } [[MUL9]], 1
-; VEC-M4-NEXT:    [[TMP16:%.*]] = sub i64 0, [[MUL_RESULT10]]
-; VEC-M4-NEXT:    [[TMP17:%.*]] = getelementptr i8, ptr [[SCEVGEP8]], i64 [[MUL_RESULT10]]
-; VEC-M4-NEXT:    [[TMP18:%.*]] = icmp ult ptr [[TMP17]], [[SCEVGEP8]]
-; VEC-M4-NEXT:    [[TMP19:%.*]] = or i1 [[TMP18]], [[MUL_OVERFLOW11]]
+; VEC-M4-NEXT:    [[TMP13:%.*]] = sub i64 0, [[MUL_RESULT10]]
+; VEC-M4-NEXT:    [[TMP14:%.*]] = getelementptr i8, ptr [[SCEVGEP8]], i64 [[MUL_RESULT10]]
+; VEC-M4-NEXT:    [[TMP15:%.*]] = icmp ult ptr [[TMP14]], [[SCEVGEP8]]
+; VEC-M4-NEXT:    [[TMP16:%.*]] = or i1 [[TMP15]], [[MUL_OVERFLOW11]]
 ; VEC-M4-NEXT:    [[SCEVGEP12:%.*]] = getelementptr i8, ptr [[A]], i64 32
-; VEC-M4-NEXT:    [[MUL13:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP3]])
+; VEC-M4-NEXT:    [[MUL13:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP0]])
 ; VEC-M4-NEXT:    [[MUL_RESULT14:%.*]] = extractvalue { i64, i1 } [[MUL13]], 0
 ; VEC-M4-NEXT:    [[MUL_OVERFLOW15:%.*]] = extractvalue { i64, i1 } [[MUL13]], 1
-; VEC-M4-NEXT:    [[TMP20:%.*]] = sub i64 0, [[MUL_RESULT14]]
-; VEC-M4-NEXT:    [[TMP21:%.*]] = getelementptr i8, ptr [[SCEVGEP12]], i64 [[MUL_RESULT14]]
-; VEC-M4-NEXT:    [[TMP22:%.*]] = icmp ult ptr [[TMP21]], [[SCEVGEP12]]
-; VEC-M4-NEXT:    [[TMP23:%.*]] = or i1 [[TMP22]], [[MUL_OVERFLOW15]]
+; VEC-M4-NEXT:    [[TMP17:%.*]] = sub i64 0, [[MUL_RESULT14]]
+; VEC-M4-NEXT:    [[TMP18:%.*]] = getelementptr i8, ptr [[SCEVGEP12]], i64 [[MUL_RESULT14]]
+; VEC-M4-NEXT:    [[TMP19:%.*]] = icmp ult ptr [[TMP18]], [[SCEVGEP12]]
+; VEC-M4-NEXT:    [[TMP20:%.*]] = or i1 [[TMP19]], [[MUL_OVERFLOW15]]
 ; VEC-M4-NEXT:    [[SCEVGEP16:%.*]] = getelementptr i8, ptr [[A]], i64 40
-; VEC-M4-NEXT:    [[MUL17:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP3]])
+; VEC-M4-NEXT:    [[MUL17:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP0]])
 ; VEC-M4-NEXT:    [[MUL_RESULT18:%.*]] = extractvalue { i64, i1 } [[MUL17]], 0
 ; VEC-M4-NEXT:    [[MUL_OVERFLOW19:%.*]] = extractvalue { i64, i1 } [[MUL17]], 1
-; VEC-M4-NEXT:    [[TMP24:%.*]] = sub i64 0, [[MUL_RESULT18]]
-; VEC-M4-NEXT:    [[TMP25:%.*]] = getelementptr i8, ptr [[SCEVGEP16]], i64 [[MUL_RESULT18]]
-; VEC-M4-NEXT:    [[TMP26:%.*]] = icmp ult ptr [[TMP25]], [[SCEVGEP16]]
-; VEC-M4-NEXT:    [[TMP27:%.*]] = or i1 [[TMP26]], [[MUL_OVERFLOW19]]
-; VEC-M4-NEXT:    [[MUL20:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP3]])
+; VEC-M4-NEXT:    [[TMP21:%.*]] = sub i64 0, [[MUL_RESULT18]]
+; VEC-M4-NEXT:    [[TMP22:%.*]] = getelementptr i8, ptr [[SCEVGEP16]], i64 [[MUL_RESULT18]]
+; VEC-M4-NEXT:    [[TMP23:%.*]] = icmp ult ptr [[TMP22]], [[SCEVGEP16]]
+; VEC-M4-NEXT:    [[TMP24:%.*]] = or i1 [[TMP23]], [[MUL_OVERFLOW19]]
+; VEC-M4-NEXT:    [[MUL20:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP0]])
 ; VEC-M4-NEXT:    [[MUL_RESULT21:%.*]] = extractvalue { i64, i1 } [[MUL20]], 0
 ; VEC-M4-NEXT:    [[MUL_OVERFLOW22:%.*]] = extractvalue { i64, i1 } [[MUL20]], 1
-; VEC-M4-NEXT:    [[TMP28:%.*]] = sub i64 0, [[MUL_RESULT21]]
-; VEC-M4-NEXT:    [[TMP29:%.*]] = getelementptr i8, ptr [[B]], i64 [[MUL_RESULT21]]
-; VEC-M4-NEXT:    [[TMP30:%.*]] = icmp ult ptr [[TMP29]], [[B]]
-; VEC-M4-NEXT:    [[TMP31:%.*]] = or i1 [[TMP30]], [[MUL_OVERFLOW22]]
+; VEC-M4-NEXT:    [[TMP25:%.*]] = sub i64 0, [[MUL_RESULT21]]
+; VEC-M4-NEXT:    [[TMP26:%.*]] = getelementptr i8, ptr [[B]], i64 [[MUL_RESULT21]]
+; VEC-M4-NEXT:    [[TMP27:%.*]] = icmp ult ptr [[TMP26]], [[B]]
+; VEC-M4-NEXT:    [[TMP28:%.*]] = or i1 [[TMP27]], [[MUL_OVERFLOW22]]
 ; VEC-M4-NEXT:    [[SCEVGEP23:%.*]] = getelementptr i8, ptr [[B]], i64 8
-; VEC-M4-NEXT:    [[MUL24:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP3]])
+; VEC-M4-NEXT:    [[MUL24:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP0]])
 ; VEC-M4-NEXT:    [[MUL_RESULT25:%.*]] = extractvalue { i64, i1 } [[MUL24]], 0
 ; VEC-M4-NEXT:    [[MUL_OVERFLOW26:%.*]] = extractvalue { i64, i1 } [[MUL24]], 1
-; VEC-M4-NEXT:    [[TMP32:%.*]] = sub i64 0, [[MUL_RESULT25]]
-; VEC-M4-NEXT:    [[TMP33:%.*]] = getelementptr i8, ptr [[SCEVGEP23]], i64 [[MUL_RESULT25]]
-; VEC-M4-NEXT:    [[TMP34:%.*]] = icmp ult ptr [[TMP33]], [[SCEVGEP23]]
-; VEC-M4-NEXT:    [[TMP35:%.*]] = or i1 [[TMP34]], [[MUL_OVERFLOW26]]
+; VEC-M4-NEXT:    [[TMP29:%.*]] = sub i64 0, [[MUL_RESULT25]]
+; VEC-M4-NEXT:    [[TMP30:%.*]] = getelementptr i8, ptr [[SCEVGEP23]], i64 [[MUL_RESULT25]]
+; VEC-M4-NEXT:    [[TMP31:%.*]] = icmp ult ptr [[TMP30]], [[SCEVGEP23]]
+; VEC-M4-NEXT:    [[TMP32:%.*]] = or i1 [[TMP31]], [[MUL_OVERFLOW26]]
 ; VEC-M4-NEXT:    [[SCEVGEP27:%.*]] = getelementptr i8, ptr [[B]], i64 16
-; VEC-M4-NEXT:    [[MUL28:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP3]])
+; VEC-M4-NEXT:    [[MUL28:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP0]])
 ; VEC-M4-NEXT:    [[MUL_RESULT29:%.*]] = extractvalue { i64, i1 } [[MUL28]], 0
 ; VEC-M4-NEXT:    [[MUL_OVERFLOW30:%.*]] = extractvalue { i64, i1 } [[MUL28]], 1
-; VEC-M4-NEXT:    [[TMP36:%.*]] = sub i64 0, [[MUL_RESULT29]]
-; VEC-M4-NEXT:    [[TMP37:%.*]] = getelementptr i8, ptr [[SCEVGEP27]], i64 [[MUL_RESULT29]]
-; VEC-M4-NEXT:    [[TMP38:%.*]] = icmp ult ptr [[TMP37]], [[SCEVGEP27]]
-; VEC-M4-NEXT:    [[TMP39:%.*]] = or i1 [[TMP38]], [[MUL_OVERFLOW30]]
+; VEC-M4-NEXT:    [[TMP33:%.*]] = sub i64 0, [[MUL_RESULT29]]
+; VEC-M4-NEXT:    [[TMP34:%.*]] = getelementptr i8, ptr [[SCEVGEP27]], i64 [[MUL_RESULT29]]
+; VEC-M4-NEXT:    [[TMP35:%.*]] = icmp ult ptr [[TMP34]], [[SCEVGEP27]]
+; VEC-M4-NEXT:    [[TMP36:%.*]] = or i1 [[TMP35]], [[MUL_OVERFLOW30]]
 ; VEC-M4-NEXT:    [[SCEVGEP31:%.*]] = getelementptr i8, ptr [[B]], i64 24
-; VEC-M4-NEXT:    [[MUL32:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP3]])
+; VEC-M4-NEXT:    [[MUL32:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP0]])
 ; VEC-M4-NEXT:    [[MUL_RESULT33:%.*]] = extractvalue { i64, i1 } [[MUL32]], 0
 ; VEC-M4-NEXT:    [[MUL_OVERFLOW34:%.*]] = extractvalue { i64, i1 } [[MUL32]], 1
-; VEC-M4-NEXT:    [[TMP40:%.*]] = sub i64 0, [[MUL_RESULT33]]
-; VEC-M4-NEXT:    [[TMP41:%.*]] = getelementptr i8, ptr [[SCEVGEP31]], i64 [[MUL_RESULT33]]
-; VEC-M4-NEXT:    [[TMP42:%.*]] = icmp ult ptr [[TMP41]], [[SCEVGEP31]]
-; VEC-M4-NEXT:    [[TMP43:%.*]] = or i1 [[TMP42]], [[MUL_OVERFLOW34]]
+; VEC-M4-NEXT:    [[TMP37:%.*]] = sub i64 0, [[MUL_RESULT33]]
+; VEC-M4-NEXT:    [[TMP38:%.*]] = getelementptr i8, ptr [[SCEVGEP31]], i64 [[MUL_RESULT33]]
+; VEC-M4-NEXT:    [[TMP39:%.*]] = icmp ult ptr [[TMP38]], [[SCEVGEP31]]
+; VEC-M4-NEXT:    [[TMP40:%.*]] = or i1 [[TMP39]], [[MUL_OVERFLOW34]]
 ; VEC-M4-NEXT:    [[SCEVGEP35:%.*]] = getelementptr i8, ptr [[B]], i64 32
-; VEC-M4-NEXT:    [[MUL36:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP3]])
+; VEC-M4-NEXT:    [[MUL36:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP0]])
 ; VEC-M4-NEXT:    [[MUL_RESULT37:%.*]] = extractvalue { i64, i1 } [[MUL36]], 0
 ; VEC-M4-NEXT:    [[MUL_OVERFLOW38:%.*]] = extractvalue { i64, i1 } [[MUL36]], 1
-; VEC-M4-NEXT:    [[TMP44:%.*]] = sub i64 0, [[MUL_RESULT37]]
-; VEC-M4-NEXT:    [[TMP45:%.*]] = getelementptr i8, ptr [[SCEVGEP35]], i64 [[MUL_RESULT37]]
-; VEC-M4-NEXT:    [[TMP46:%.*]] = icmp ult ptr [[TMP45]], [[SCEVGEP35]]
-; VEC-M4-NEXT:    [[TMP47:%.*]] = or i1 [[TMP46]], [[MUL_OVERFLOW38]]
+; VEC-M4-NEXT:    [[TMP41:%.*]] = sub i64 0, [[MUL_RESULT37]]
+; VEC-M4-NEXT:    [[TMP42:%.*]] = getelementptr i8, ptr [[SCEVGEP35]], i64 [[MUL_RESULT37]]
+; VEC-M4-NEXT:    [[TMP43:%.*]] = icmp ult ptr [[TMP42]], [[SCEVGEP35]]
+; VEC-M4-NEXT:    [[TMP44:%.*]] = or i1 [[TMP43]], [[MUL_OVERFLOW38]]
 ; VEC-M4-NEXT:    [[SCEVGEP39:%.*]] = getelementptr i8, ptr [[B]], i64 40
-; VEC-M4-NEXT:    [[MUL40:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP3]])
+; VEC-M4-NEXT:    [[MUL40:%.*]] = call { i64, i1 } @llvm.umul.with.overflow.i64(i64 48, i64 [[TMP0]])
 ; VEC-M4-NEXT:    [[MUL_RESULT41:%.*]] = extractvalue { i64, i1 } [[MUL40]], 0
 ; VEC-M4-NEXT:    [[MUL_OVERFLOW42:%.*]] = extractvalue { i64, i1 } [[MUL40]], 1
-; VEC-M4-NEXT:    [[TMP48:%.*]] = sub i64 0, [[MUL_RESULT41]]
-; VEC-M4-NEXT:    [[TMP49:%.*]] = getelementptr i8, ptr [[SCEVGEP39]], i64 [[MUL_RESULT41]]
-; VEC-M4-NEXT:    [[TMP50:%.*]] = icmp ult ptr [[TMP49]], [[SCEVGEP39]]
-; VEC-M4-NEXT:    [[TMP51:%.*]] = or i1 [[TMP50]], [[MUL_OVERFLOW42]]
-; VEC-M4-NEXT:    [[TMP52:%.*]] = or i1 [[TMP7]], [[TMP11]]
-; VEC-M4-NEXT:    [[TMP53:%.*]] = or i1 [[TMP52]], [[TMP15]]
-; VEC-M4-NEXT:    [[TMP54:%.*]] = or i1 [[TMP53]], [[TMP19]]
-; VEC-M4-NEXT:    [[TMP55:%.*]] = or i1 [[TMP54]], [[TMP23]]
-; VEC-M4-NEXT:    [[TMP56:%.*]] = or i1 [[TMP55]], [[TMP27]]
-; VEC-M4-NEXT:    [[TMP57:%.*]] = or i1 [[TMP56]], [[TMP31]]
-; VEC-M4-NEXT:    [[TMP58:%.*]] = or i1 [[TMP57]], [[TMP35]]
-; VEC-M4-NEXT:    [[TMP59:%.*]] = or i1 [[TMP58]], [[TMP39]]
-; VEC-M4-NEXT:    [[TMP60:%.*]] = or i1 [[TMP59]], [[TMP43]]
-; VEC-M4-NEXT:    [[TMP61:%.*]] = or i1 [[TMP60]], [[TMP47]]
-; VEC-M4-NEXT:    [[TMP62:%.*]] = or i1 [[TMP61]], [[TMP51]]
-; VEC-M4-NEXT:    br i1 [[TMP62]], label [[SCALAR_PH]], label [[VECTOR_MEMCHECK:%.*]]
+; VEC-M4-NEXT:    [[TMP45:%.*]] = sub i64 0, [[MUL_RESULT41]]
+; VEC-M4-NEXT:    [[TMP46:%.*]] = getelementptr i8, ptr [[SCEVGEP39]], i64 [[MUL_RESULT41]]
+; VEC-M4-NEXT:    [[TMP47:%.*]] = icmp ult ptr [[TMP46]], [[SCEVGEP39]]
+; VEC-M4-NEXT:    [[TMP48:%.*]] = or i1 [[TMP47]], [[MUL_OVERFLOW42]]
+; VEC-M4-NEXT:    [[TMP49:%.*]] = or i1 [[TMP4]], [[TMP8]]
+; VEC-M4-NEXT:    [[TMP50:%.*]] = or i1 [[TMP49]], [[TMP12]]
+; VEC-M4-NEXT:    [[TMP51:%.*]] = or i1 [[TMP50]], [[TMP16]]
+; VEC-M4-NEXT:    [[TMP52:%.*]] = or i1 [[TMP51]], [[TMP20]]
+; VEC-M4-NEXT:    [[TMP53:%.*]] = or i1 [[TMP52]], [[TMP24]]
+; VEC-M4-NEXT:    [[TMP54:%.*]] = or i1 [[TMP53]], [[TMP28]]
+; VEC-M4-NEXT:    [[TMP55:%.*]] = or i1 [[TMP54]], [[TMP32]]
+; VEC-M4-NEXT:    [[TMP56:%.*]] = or i1 [[TMP55]], [[TMP36]]
+; VEC-M4-NEXT:    [[TMP57:%.*]] = or i1 [[TMP56]], [[TMP40]]
+; VEC-M4-NEXT:    [[TMP58:%.*]] = or i1 [[TMP57]], [[TMP44]]
+; VEC-M4-NEXT:    [[TMP59:%.*]] = or i1 [[TMP58]], [[TMP48]]
+; VEC-M4-NEXT:    br i1 [[TMP59]], label [[SCALAR_PH:%.*]], label [[VECTOR_MEMCHECK:%.*]]
 ; VEC-M4:       vector.memcheck:
-; VEC-M4-NEXT:    [[TMP63:%.*]] = mul i64 [[N]], 48
-; VEC-M4-NEXT:    [[SCEVGEP43:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP63]]
-; VEC-M4-NEXT:    [[SCEVGEP44:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP63]]
+; VEC-M4-NEXT:    [[TMP60:%.*]] = mul i64 [[N]], 48
+; VEC-M4-NEXT:    [[SCEVGEP43:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP60]]
+; VEC-M4-NEXT:    [[SCEVGEP44:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP60]]
 ; VEC-M4-NEXT:    [[BOUND0:%.*]] = icmp ult ptr [[A]], [[SCEVGEP44]]
 ; VEC-M4-NEXT:    [[BOUND1:%.*]] = icmp ult ptr [[B]], [[SCEVGEP43]]
 ; VEC-M4-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
 ; VEC-M4-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]
 ; VEC-M4:       vector.ph:
-; VEC-M4-NEXT:    [[TMP64:%.*]] = call i64 @llvm.vscale.i64()
-; VEC-M4-NEXT:    [[TMP65:%.*]] = mul i64 [[TMP64]], 2
-; VEC-M4-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N]], [[TMP65]]
-; VEC-M4-NEXT:    [[N_VEC:%.*]] = sub i64 [[N]], [[N_MOD_VF]]
-; VEC-M4-NEXT:    [[TMP66:%.*]] = call i64 @llvm.vscale.i64()
-; VEC-M4-NEXT:    [[TMP67:%.*]] = mul i64 [[TMP66]], 2
-; VEC-M4-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 2 x double> poison, double [[S]], i64 0
-; VEC-M4-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 2 x double> [[BROADCAST_SPLATINSERT]], <vscale x 2 x double> poison, <vscale x 2 x i32> zeroinitializer
-; VEC-M4-NEXT:    [[TMP68:%.*]] = call <vscale x 2 x i64> @llvm.stepvector.nxv2i64()
-; VEC-M4-NEXT:    [[TMP69:%.*]] = mul <vscale x 2 x i64> [[TMP68]], splat (i64 1)
-; VEC-M4-NEXT:    [[INDUCTION:%.*]] = add <vscale x 2 x i64> zeroinitializer, [[TMP69]]
-; VEC-M4-NEXT:    [[TMP70:%.*]] = mul i64 1, [[TMP67]]
-; VEC-M4-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 2 x i64> poison, i64 [[TMP70]], i64 0
-; VEC-M4-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 2 x i64> [[DOTSPLATINSERT]], <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer
+; VEC-M4-NEXT:    [[TMP61:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 4, i1 true)
+; VEC-M4-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 4 x double> poison, double [[S]], i64 0
+; VEC-M4-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 4 x double> [[BROADCAST_SPLATINSERT]], <vscale x 4 x double> poison, <vscale x 4 x i32> zeroinitializer
 ; VEC-M4-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; VEC-M4:       vector.body:
-; VEC-M4-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; VEC-M4-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 2 x i64> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
-; VEC-M4-NEXT:    [[TMP71:%.*]] = getelementptr [[STRUCT_SU3_VECTOR:%.*]], ptr [[A]], <vscale x 2 x i64> [[VEC_IND]]
-; VEC-M4-NEXT:    [[TMP72:%.*]] = getelementptr [[STRUCT_SU3_VECTOR]], ptr [[B]], <vscale x 2 x i64> [[VEC_IND]]
-; VEC-M4-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <vscale x 2 x double> @llvm.masked.gather.nxv2f64.nxv2p0(<vscale x 2 x ptr> [[TMP71]], i32 8, <vscale x 2 x i1> splat (i1 true), <vscale x 2 x double> poison), !alias.scope [[META0:![0-9]+]], !noalias [[META3:![0-9]+]]
-; VEC-M4-NEXT:    [[WIDE_MASKED_GATHER45:%.*]] = call <vscale x 2 x double> @llvm.masked.gather.nxv2f64.nxv2p0(<vscale x 2 x ptr> [[TMP72]], i32 8, <vscale x 2 x i1> splat (i1 true), <vscale x 2 x double> poison), !alias.scope [[META3]]
-; VEC-M4-NEXT:    [[TMP73:%.*]] = fmul <vscale x 2 x double> [[WIDE_MASKED_GATHER45]], [[BROADCAST_SPLAT]]
-; VEC-M4-NEXT:    [[TMP74:%.*]] = fadd <vscale x 2 x double> [[TMP73]], [[WIDE_MASKED_GATHER]]
-; VEC-M4-NEXT:    call void @llvm.masked.scatter.nxv2f64.nxv2p0(<vscale x 2 x double> [[TMP74]], <vscale x 2 x ptr> [[TMP71]], i32 8, <vscale x 2 x i1> splat (i1 true)), !alias.scope [[META0]], !noalias [[META3]]
-; VEC-M4-NEXT:    [[TMP75:%.*]] = getelementptr [3 x %struct.complex], <vscale x 2 x ptr> [[TMP71]], i64 0, i64 0, i32 1
-; VEC-M4-NEXT:    [[WIDE_MASKED_GATHER46:%.*]] = call <vscale x 2 x double> @llvm.masked.gather.nxv2f64.nxv2p0(<vscale x 2 x ptr> [[TMP75]], i32 8, <vscale x 2 x i1> splat (i1 true), <vscale x 2 x double> poison), !alias.scope [[META0]], !noalias [[META3]]
-; VEC-M4-NEXT:    [[TMP76:%.*]] = getelementptr [3 x %struct.complex], <vscale x 2 x ptr> [[TMP72]], i64 0, i64 0, i32 1
-; VEC-M4-NEXT:    [[WIDE_MASKED_GATHER47:%.*]] = call <vscale x 2 x double> @llvm.masked.gather.nxv2f64.nxv2p0(<vscale x 2 x ptr> [[TMP76]], i32 8, <vscale x 2 x i1> splat (i1 true), <vscale x 2 x double> poison), !alias.scope [[META3]]
-; VEC-M4-NEXT:    [[TMP77:%.*]] = fmul <vscale x 2 x double> [[WIDE_MASKED_GATHER47]], [[BROADCAST_SPLAT]]
-; VEC-M4-NEXT:    [[TMP78:%.*]] = fadd <vscale x 2 x double> [[TMP77]], [[WIDE_MASKED_GATHER46]]
-; VEC-M4-NEXT:    call void @llvm.masked.scatter.nxv2f64.nxv2p0(<vscale x 2 x double> [[TMP78]], <vscale x 2 x ptr> [[TMP75]], i32 8, <vscale x 2 x i1> splat (i1 true)), !alias.scope [[META0]], !noalias [[META3]]
-; VEC-M4-NEXT:    [[TMP79:%.*]] = getelementptr [3 x %struct.complex], <vscale x 2 x ptr> [[TMP71]], i64 0, i64 1
-; VEC-M4-NEXT:    [[WIDE_MASKED_GATHER48:%.*]] = call <vscale x 2 x double> @llvm.masked.gather.nxv2f64.nxv2p0(<vscale x 2 x ptr> [[TMP79]], i32 8, <vscale x 2 x i1> splat (i1 true), <vscale x 2 x double> poison), !alias.scope [[META0]], !noalias [[META3]]
-; VEC-M4-NEXT:    [[TMP80:%.*]] = getelementptr [3 x %struct.complex], <vscale x 2 x ptr> [[TMP72]], i64 0, i64 1
-; VEC-M4-NEXT:    [[WIDE_MASKED_GATHER49:%.*]] = call <vscale x 2 x double> @llvm.masked.gather.nxv2f64.nxv2p0(<vscale x 2 x ptr> [[TMP80]], i32 8, <vscale x 2 x i1> splat (i1 true), <vscale x 2 x double> poison), !alias.scope [[META3]]
-; VEC-M4-NEXT:    [[TMP81:%.*]] = fmul <vscale x 2 x double> [[WIDE_MASKED_GATHER49]], [[BROADCAST_SPLAT]]
-; VEC-M4-NEXT:    [[TMP82:%.*]] = fadd <vscale x 2 x double> [[TMP81]], [[WIDE_MASKED_GATHER48]]
-; VEC-M4-NEXT:    call void @llvm.masked.scatter.nxv2f64.nxv2p0(<vscale x 2 x double> [[TMP82]], <vscale x 2 x ptr> [[TMP79]], i32 8, <vscale x 2 x i1> splat (i1 true)), !alias.scope [[META0]], !noalias [[META3]]
-; VEC-M4-NEXT:    [[TMP83:%.*]] = getelementptr [3 x %struct.complex], <vscale x 2 x ptr> [[TMP71]], i64 0, i64 1, i32 1
-; VEC-M4-NEXT:    [[WIDE_MASKED_GATHER50:%.*]] = call <vscale x 2 x double> @llvm.masked.gather.nxv2f64.nxv2p0(<vscale x 2 x ptr> [[TMP83]], i32 8, <vscale x 2 x i1> splat (i1 true), <vscale x 2 x double> poison), !alias.scope [[META0]], !noalias [[META3]]
-; VEC-M4-NEXT:    [[TMP84:%.*]] = getelementptr [3 x %struct.complex], <vscale x 2 x ptr> [[TMP72]], i64 0, i64 1, i32 1
-; VEC-M4-NEXT:    [[WIDE_MASKED_GATHER51:%.*]] = call <vscale x 2 x double> @llvm.masked.gather.nxv2f64.nxv2p0(<vscale x 2 x ptr> [[TMP84]], i32 8, <vscale x 2 x i1> splat (i1 true), <vscale x 2 x double> poison), !alias.scope [[META3]]
-; VEC-M4-NEXT:    [[TMP85:%.*]] = fmul <vscale x 2 x double> [[WIDE_MASKED_GATHER51]], [[BROADCAST_SPLAT]]
-; VEC-M4-NEXT:    [[TMP86:%.*]] = fadd <vscale x 2 x double> [[TMP85]], [[WIDE_MASKED_GATHER50]]
-; VEC-M4-NEXT:    call void @llvm.masked.scatter.nxv2f64.nxv2p0(<vscale x 2 x double> [[TMP86]], <vscale x 2 x ptr> [[TMP83]], i32 8, <vscale x 2 x i1> splat (i1 true)), !alias.scope [[META0]], !noalias [[META3]]
-; VEC-M4-NEXT:    [[TMP87:%.*]] = getelementptr [3 x %struct.complex], <vscale x 2 x ptr> [[TMP71]], i64 0, i64 2
-; VEC-M4-NEXT:    [[WIDE_MASKED_GATHER52:%.*]] = call <vscale x 2 x double> @llvm.masked.gather.nxv2f64.nxv2p0(<vscale x 2 x ptr> [[TMP87]], i32 8, <vscale x 2 x i1> splat (i1 true), <vscale x 2 x double> poison), !alias.scope [[META0]], !noalias [[META3]]
-; VEC-M4-NEXT:    [[TMP88:%.*]] = getelementptr [3 x %struct.complex], <vscale x 2 x ptr> [[TMP72]], i64 0, i64 2
-; VEC-M4-NEXT:    [[WIDE_MASKED_GATHER53:%.*]] = call <vscale x 2 x double> @llvm.masked.gather.nxv2f64.nxv2p0(<vscale x 2 x ptr> [[TMP88]], i32 8, <vscale x 2 x i1> splat (i1 true), <vscale x 2 x double> poison), !alias.scope [[META3]]
-; VEC-M4-NEXT:    [[TMP89:%.*]] = fmul <vscale x 2 x double> [[WIDE_MASKED_GATHER53]], [[BROADCAST_SPLAT]]
-; VEC-M4-NEXT:    [[TMP90:%.*]] = fadd <vscale x 2 x double> [[TMP89]], [[WIDE_MASKED_GATHER52]]
-; VEC-M4-NEXT:    call void @llvm.masked.scatter.nxv2f64.nxv2p0(<vscale x 2 x double> [[TMP90]], <vscale x 2 x ptr> [[TMP87]], i32 8, <vscale x 2 x i1> splat (i1 true)), !alias.scope [[META0]], !noalias [[META3]]
-; VEC-M4-NEXT:    [[TMP91:%.*]] = getelementptr [3 x %struct.complex], <vscale x 2 x ptr> [[TMP71]], i64 0, i64 2, i32 1
-; VEC-M4-NEXT:    [[WIDE_MASKED_GATHER54:%.*]] = call <vscale x 2 x double> @llvm.masked.gather.nxv2f64.nxv2p0(<vscale x 2 x ptr> [[TMP91]], i32 8, <vscale x 2 x i1> splat (i1 true), <vscale x 2 x double> poison), !alias.scope [[META0]], !noalias [[META3]]
-; VEC-M4-NEXT:    [[TMP92:%.*]] = getelementptr [3 x %struct.complex], <vscale x 2 x ptr> [[TMP72]], i64 0, i64 2, i32 1
-; VEC-M4-NEXT:    [[WIDE_MASKED_GATHER55:%.*]] = call <vscale x 2 x double> @llvm.masked.gather.nxv2f64.nxv2p0(<vscale x 2 x ptr> [[TMP92]], i32 8, <vscale x 2 x i1> splat (i1 true), <vscale x 2 x double> poison), !alias.scope [[META3]]
-; VEC-M4-NEXT:    [[TMP93:%.*]] = fmul <vscale x 2 x double> [[WIDE_MASKED_GATHER55]], [[BROADCAST_SPLAT]]
-; VEC-M4-NEXT:    [[TMP94:%.*]] = fadd <vscale x 2 x double> [[TMP93]], [[WIDE_MASKED_GATHER54]]
-; VEC-M4-NEXT:    call void @llvm.masked.scatter.nxv2f64.nxv2p0(<vscale x 2 x double> [[TMP94]], <vscale x 2 x ptr> [[TMP91]], i32 8, <vscale x 2 x i1> splat (i1 true)), !alias.scope [[META0]], !noalias [[META3]]
-; VEC-M4-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP67]]
-; VEC-M4-NEXT:    [[VEC_IND_NEXT]] = add <vscale x 2 x i64> [[VEC_IND]], [[DOTSPLAT]]
-; VEC-M4-NEXT:    [[TMP95:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; VEC-M4-NEXT:    br i1 [[TMP95]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
+; VEC-M4-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; VEC-M4-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
+; VEC-M4-NEXT:    [[AVL:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
+; VEC-M4-NEXT:    [[TMP62:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 4, i1 true)
+; VEC-M4-NEXT:    [[TMP63:%.*]] = getelementptr [[STRUCT_SU3_VECTOR:%.*]], ptr [[A]], i64 [[EVL_BASED_IV]]
+; VEC-M4-NEXT:    [[TMP64:%.*]] = getelementptr [[STRUCT_SU3_VECTOR]], ptr [[B]], i64 [[EVL_BASED_IV]]
+; VEC-M4-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP63]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META0:![0-9]+]], !noalias [[META3:![0-9]+]]
+; VEC-M4-NEXT:    [[VP_STRIDED_LOAD45:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP64]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META3]]
+; VEC-M4-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x double> @llvm.vp.fmul.nxv4f64(<vscale x 4 x double> [[VP_STRIDED_LOAD45]], <vscale x 4 x double> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M4-NEXT:    [[VP_OP46:%.*]] = call <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VP_OP]], <vscale x 4 x double> [[VP_STRIDED_LOAD]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M4-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VP_OP46]], ptr align 8 [[TMP63]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META0]], !noalias [[META3]]
+; VEC-M4-NEXT:    [[TMP65:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP63]], i64 0, i64 0, i32 1
+; VEC-M4-NEXT:    [[VP_STRIDED_LOAD47:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP65]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META0]], !noalias [[META3]]
+; VEC-M4-NEXT:    [[TMP66:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP64]], i64 0, i64 0, i32 1
+; VEC-M4-NEXT:    [[VP_STRIDED_LOAD48:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP66]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META3]]
+; VEC-M4-NEXT:    [[VP_OP49:%.*]] = call <vscale x 4 x double> @llvm.vp.fmul.nxv4f64(<vscale x 4 x double> [[VP_STRIDED_LOAD48]], <vscale x 4 x double> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M4-NEXT:    [[VP_OP50:%.*]] = call <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VP_OP49]], <vscale x 4 x double> [[VP_STRIDED_LOAD47]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M4-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VP_OP50]], ptr align 8 [[TMP65]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META0]], !noalias [[META3]]
+; VEC-M4-NEXT:    [[TMP67:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP63]], i64 0, i64 1
+; VEC-M4-NEXT:    [[VP_STRIDED_LOAD51:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP67]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META0]], !noalias [[META3]]
+; VEC-M4-NEXT:    [[TMP68:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP64]], i64 0, i64 1
+; VEC-M4-NEXT:    [[VP_STRIDED_LOAD52:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP68]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META3]]
+; VEC-M4-NEXT:    [[VP_OP53:%.*]] = call <vscale x 4 x double> @llvm.vp.fmul.nxv4f64(<vscale x 4 x double> [[VP_STRIDED_LOAD52]], <vscale x 4 x double> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M4-NEXT:    [[VP_OP54:%.*]] = call <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VP_OP53]], <vscale x 4 x double> [[VP_STRIDED_LOAD51]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M4-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VP_OP54]], ptr align 8 [[TMP67]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META0]], !noalias [[META3]]
+; VEC-M4-NEXT:    [[TMP69:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP63]], i64 0, i64 1, i32 1
+; VEC-M4-NEXT:    [[VP_STRIDED_LOAD55:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP69]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META0]], !noalias [[META3]]
+; VEC-M4-NEXT:    [[TMP70:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP64]], i64 0, i64 1, i32 1
+; VEC-M4-NEXT:    [[VP_STRIDED_LOAD56:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP70]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META3]]
+; VEC-M4-NEXT:    [[VP_OP57:%.*]] = call <vscale x 4 x double> @llvm.vp.fmul.nxv4f64(<vscale x 4 x double> [[VP_STRIDED_LOAD56]], <vscale x 4 x double> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M4-NEXT:    [[VP_OP58:%.*]] = call <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VP_OP57]], <vscale x 4 x double> [[VP_STRIDED_LOAD55]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M4-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VP_OP58]], ptr align 8 [[TMP69]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META0]], !noalias [[META3]]
+; VEC-M4-NEXT:    [[TMP71:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP63]], i64 0, i64 2
+; VEC-M4-NEXT:    [[VP_STRIDED_LOAD59:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP71]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META0]], !noalias [[META3]]
+; VEC-M4-NEXT:    [[TMP72:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP64]], i64 0, i64 2
+; VEC-M4-NEXT:    [[VP_STRIDED_LOAD60:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP72]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META3]]
+; VEC-M4-NEXT:    [[VP_OP61:%.*]] = call <vscale x 4 x double> @llvm.vp.fmul.nxv4f64(<vscale x 4 x double> [[VP_STRIDED_LOAD60]], <vscale x 4 x double> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M4-NEXT:    [[VP_OP62:%.*]] = call <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VP_OP61]], <vscale x 4 x double> [[VP_STRIDED_LOAD59]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M4-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VP_OP62]], ptr align 8 [[TMP71]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META0]], !noalias [[META3]]
+; VEC-M4-NEXT:    [[TMP73:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP63]], i64 0, i64 2, i32 1
+; VEC-M4-NEXT:    [[VP_STRIDED_LOAD63:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP73]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META0]], !noalias [[META3]]
+; VEC-M4-NEXT:    [[TMP74:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP64]], i64 0, i64 2, i32 1
+; VEC-M4-NEXT:    [[VP_STRIDED_LOAD64:%.*]] = call <vscale x 4 x double> @llvm.experimental.vp.strided.load.nxv4f64.p0.i64(ptr align 8 [[TMP74]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META3]]
+; VEC-M4-NEXT:    [[VP_OP65:%.*]] = call <vscale x 4 x double> @llvm.vp.fmul.nxv4f64(<vscale x 4 x double> [[VP_STRIDED_LOAD64]], <vscale x 4 x double> [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M4-NEXT:    [[VP_OP66:%.*]] = call <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VP_OP65]], <vscale x 4 x double> [[VP_STRIDED_LOAD63]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]])
+; VEC-M4-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VP_OP66]], ptr align 8 [[TMP73]], i64 48, <vscale x 4 x i1> splat (i1 true), i32 [[TMP62]]), !alias.scope [[META0]], !noalias [[META3]]
+; VEC-M4-NEXT:    [[TMP75:%.*]] = zext i32 [[TMP62]] to i64
+; VEC-M4-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP75]], [[EVL_BASED_IV]]
+; VEC-M4-NEXT:    [[TMP76:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
+; VEC-M4-NEXT:    br i1 [[TMP76]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; VEC-M4:       middle.block:
-; VEC-M4-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N]], [[N_VEC]]
-; VEC-M4-NEXT:    br i1 [[CMP_N]], label [[EXIT:%.*]], label [[SCALAR_PH]]
+; VEC-M4-NEXT:    br label [[EXIT:%.*]]
 ; VEC-M4:       scalar.ph:
-; VEC-M4-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ], [ 0, [[VECTOR_SCEVCHECK]] ], [ 0, [[VECTOR_MEMCHECK]] ]
+; VEC-M4-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[VECTOR_SCEVCHECK]] ], [ 0, [[VECTOR_MEMCHECK]] ]
 ; VEC-M4-NEXT:    br label [[LOOP:%.*]]
 ; VEC-M4:       loop:
 ; VEC-M4-NEXT:    [[COUNTER:%.*]] = phi i64 [ [[COUNTER_NEXT:%.*]], [[LOOP]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
@@ -312,5 +522,3 @@ loop:
 exit:
   ret void
 }
-;; NOTE: These prefixes are unused and the list is autogenerated. Do not add tests below this line:
-; VEC-M1: {{.*}}

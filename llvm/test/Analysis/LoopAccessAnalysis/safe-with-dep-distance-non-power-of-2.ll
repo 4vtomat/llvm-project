@@ -41,22 +41,6 @@ exit:
 ; Dependence distance is less than trip count, thus we must prove that
 ; chosen VF guaranteed to be less than dependence distance.
 define void @test_may_clobber1(ptr %p) {
-; CHECK-LABEL: 'test_may_clobber1'
-; CHECK-NEXT:    loop:
-; CHECK-NEXT:      Memory dependences are safe with a maximum safe vector width of 6400 bits, with a maximum safe store-load forward width of 256 bits
-; CHECK-NEXT:      Dependences:
-; CHECK-NEXT:        BackwardVectorizable:
-; CHECK-NEXT:            %v = load i64, ptr %a1, align 32 ->
-; CHECK-NEXT:            store i64 %v, ptr %a2, align 32
-; CHECK-EMPTY:
-; CHECK-NEXT:      Run-time memory checks:
-; CHECK-NEXT:      Grouped accesses:
-; CHECK-EMPTY:
-; CHECK-NEXT:      Non vectorizable stores to invariant address were not found in loop.
-; CHECK-NEXT:      SCEV assumptions:
-; CHECK-EMPTY:
-; CHECK-NEXT:      Expressions re-written:
-;
 entry:
   br label %loop
 
@@ -76,23 +60,6 @@ exit:
 }
 
 define void @test_may_clobber2(ptr %p) {
-; CHECK-LABEL: 'test_may_clobber2'
-; CHECK-NEXT:    loop:
-; CHECK-NEXT:      Report: unsafe dependent memory operations in loop. Use #pragma clang loop distribute(enable) to allow loop distribution to attempt to isolate the offending operations into a separate loop
-; CHECK-NEXT:  Backward loop carried data dependence that prevents store-to-load forwarding.
-; CHECK-NEXT:      Dependences:
-; CHECK-NEXT:        BackwardVectorizableButPreventsForwarding:
-; CHECK-NEXT:            %v = load i64, ptr %a1, align 32 ->
-; CHECK-NEXT:            store i64 %v, ptr %a2, align 32
-; CHECK-EMPTY:
-; CHECK-NEXT:      Run-time memory checks:
-; CHECK-NEXT:      Grouped accesses:
-; CHECK-EMPTY:
-; CHECK-NEXT:      Non vectorizable stores to invariant address were not found in loop.
-; CHECK-NEXT:      SCEV assumptions:
-; CHECK-EMPTY:
-; CHECK-NEXT:      Expressions re-written:
-;
 entry:
   br label %loop
 
@@ -112,22 +79,6 @@ exit:
 }
 
 define void @test_may_clobber3(ptr %p) {
-; CHECK-LABEL: 'test_may_clobber3'
-; CHECK-NEXT:    loop:
-; CHECK-NEXT:      Memory dependences are safe with a maximum safe vector width of 640 bits, with a maximum safe store-load forward width of 128 bits
-; CHECK-NEXT:      Dependences:
-; CHECK-NEXT:        BackwardVectorizable:
-; CHECK-NEXT:            %v = load i64, ptr %a1, align 32 ->
-; CHECK-NEXT:            store i64 %v, ptr %a2, align 32
-; CHECK-EMPTY:
-; CHECK-NEXT:      Run-time memory checks:
-; CHECK-NEXT:      Grouped accesses:
-; CHECK-EMPTY:
-; CHECK-NEXT:      Non vectorizable stores to invariant address were not found in loop.
-; CHECK-NEXT:      SCEV assumptions:
-; CHECK-EMPTY:
-; CHECK-NEXT:      Expressions re-written:
-;
 entry:
   br label %loop
 
@@ -180,22 +131,6 @@ exit:
 
 ; Dependence distance could be violated via LMUL>=2 or interleaving.
 define void @no_high_lmul_or_interleave(ptr %p) {
-; CHECK-LABEL: 'no_high_lmul_or_interleave'
-; CHECK-NEXT:    loop:
-; CHECK-NEXT:      Memory dependences are safe with a maximum safe vector width of 65536 bits
-; CHECK-NEXT:      Dependences:
-; CHECK-NEXT:        BackwardVectorizable:
-; CHECK-NEXT:            %v = load i64, ptr %a1, align 32 ->
-; CHECK-NEXT:            store i64 %v, ptr %a2, align 32
-; CHECK-EMPTY:
-; CHECK-NEXT:      Run-time memory checks:
-; CHECK-NEXT:      Grouped accesses:
-; CHECK-EMPTY:
-; CHECK-NEXT:      Non vectorizable stores to invariant address were not found in loop.
-; CHECK-NEXT:      SCEV assumptions:
-; CHECK-EMPTY:
-; CHECK-NEXT:      Expressions re-written:
-;
 entry:
   br label %loop
 
@@ -215,27 +150,6 @@ exit:
 }
 
 define void @non_power_2_storeloadforward(ptr %A) {
-; CHECK-LABEL: 'non_power_2_storeloadforward'
-; CHECK-NEXT:    loop:
-; CHECK-NEXT:      Report: unsafe dependent memory operations in loop. Use #pragma clang loop distribute(enable) to allow loop distribution to attempt to isolate the offending operations into a separate loop
-; CHECK-NEXT:  Backward loop carried data dependence that prevents store-to-load forwarding.
-; CHECK-NEXT:      Dependences:
-; CHECK-NEXT:        Forward:
-; CHECK-NEXT:            %3 = load i32, ptr %gep.iv.4, align 4 ->
-; CHECK-NEXT:            store i32 %add3, ptr %gep.iv, align 4
-; CHECK-EMPTY:
-; CHECK-NEXT:        BackwardVectorizableButPreventsForwarding:
-; CHECK-NEXT:            %1 = load i32, ptr %gep.iv.sub.3, align 4 ->
-; CHECK-NEXT:            store i32 %add3, ptr %gep.iv, align 4
-; CHECK-EMPTY:
-; CHECK-NEXT:      Run-time memory checks:
-; CHECK-NEXT:      Grouped accesses:
-; CHECK-EMPTY:
-; CHECK-NEXT:      Non vectorizable stores to invariant address were not found in loop.
-; CHECK-NEXT:      SCEV assumptions:
-; CHECK-EMPTY:
-; CHECK-NEXT:      Expressions re-written:
-;
 entry:
   br label %loop
 

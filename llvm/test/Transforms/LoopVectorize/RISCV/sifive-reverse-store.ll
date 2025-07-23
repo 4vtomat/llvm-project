@@ -12,14 +12,43 @@ define void @reverse(ptr %y, i64 %alpha, i32 %N) {
 ; CHECK-NEXT:    br i1 [[COND2]], label %[[EXIT:.*]], label %[[PREHEADER:.*]]
 ; CHECK:       [[PREHEADER]]:
 ; CHECK-NEXT:    [[TMP0:%.*]] = sext i32 [[N]] to i64
+; CHECK-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
+; CHECK:       [[VECTOR_PH]]:
+; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 1, i1 true)
+; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[ALPHA]], i64 0
+; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 1 x i64> [[BROADCAST_SPLATINSERT]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
+; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
+; CHECK:       [[VECTOR_BODY]]:
+; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[TMP0]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 1, i1 true)
+; CHECK-NEXT:    [[IV:%.*]] = sub i64 [[TMP0]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[IV_NEXT:%.*]] = add nsw i64 [[IV]], -1
+; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i64, ptr [[Y]], i64 [[IV_NEXT]]
+; CHECK-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP2]] to i64
+; CHECK-NEXT:    [[TMP6:%.*]] = mul i64 0, [[TMP5]]
+; CHECK-NEXT:    [[TMP7:%.*]] = sub i64 1, [[TMP5]]
+; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i64, ptr [[ARRAYIDX]], i64 [[TMP6]]
+; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr i64, ptr [[TMP8]], i64 [[TMP7]]
+; CHECK-NEXT:    [[VP_REVERSE:%.*]] = call <vscale x 1 x i64> @llvm.experimental.vp.reverse.nxv1i64(<vscale x 1 x i64> [[BROADCAST_SPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    call void @llvm.vp.store.nxv1i64.p0(<vscale x 1 x i64> [[VP_REVERSE]], ptr align 8 [[TMP9]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[TMP10:%.*]] = zext i32 [[TMP2]] to i64
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP10]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP11:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP0]]
+; CHECK-NEXT:    br i1 [[TMP11]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK:       [[MIDDLE_BLOCK]]:
+; CHECK-NEXT:    br label %[[EXIT_LOOPEXIT:.*]]
+; CHECK:       [[SCALAR_PH]]:
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[TMP0]], %[[PREHEADER]] ]
 ; CHECK-NEXT:    br label %[[WHILE_BODY:.*]]
 ; CHECK:       [[WHILE_BODY]]:
-; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ [[TMP0]], %[[PREHEADER]] ], [ [[IV_NEXT:%.*]], %[[WHILE_BODY]] ]
-; CHECK-NEXT:    [[IV_NEXT]] = add nsw i64 [[IV]], -1
-; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i64, ptr [[Y]], i64 [[IV_NEXT]]
-; CHECK-NEXT:    store i64 [[ALPHA]], ptr [[ARRAYIDX]], align 8
-; CHECK-NEXT:    [[COND:%.*]] = icmp eq i64 [[IV_NEXT]], 0
-; CHECK-NEXT:    br i1 [[COND]], label %[[EXIT_LOOPEXIT:.*]], label %[[WHILE_BODY]]
+; CHECK-NEXT:    [[IV1:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[IV_NEXT1:%.*]], %[[WHILE_BODY]] ]
+; CHECK-NEXT:    [[IV_NEXT1]] = add nsw i64 [[IV1]], -1
+; CHECK-NEXT:    [[ARRAYIDX1:%.*]] = getelementptr inbounds i64, ptr [[Y]], i64 [[IV_NEXT1]]
+; CHECK-NEXT:    store i64 [[ALPHA]], ptr [[ARRAYIDX1]], align 8
+; CHECK-NEXT:    [[COND:%.*]] = icmp eq i64 [[IV_NEXT1]], 0
+; CHECK-NEXT:    br i1 [[COND]], label %[[EXIT_LOOPEXIT]], label %[[WHILE_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       [[EXIT_LOOPEXIT]]:
 ; CHECK-NEXT:    br label %[[EXIT]]
 ; CHECK:       [[EXIT]]:
@@ -44,3 +73,9 @@ while.body:
 exit:
   ret void
 }
+;.
+; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; CHECK: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
+; CHECK: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+;.
