@@ -12295,15 +12295,7 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
     }
   }
   VPBasicBlock *LatchVPBB = VectorLoopRegion->getExitingBasicBlock();
-#if SIFIVE_CUSTOMIZATION
-  // FIXME: Work with upstream to address the following issue:
-  // upstream's code tries to dereference iplist's iterator, which is a
-  // Sentinel when VPBB is empty, like when we do uncountable loop
-  // vectorization.
-  Builder.setInsertPoint(LatchVPBB, LatchVPBB->begin());
-#else
   Builder.setInsertPoint(&*std::prev(std::prev(LatchVPBB->end())));
-#endif // SIFIVE_CUSTOMIZATION
   VPBasicBlock::iterator IP = MiddleVPBB->getFirstNonPhi();
   for (VPRecipeBase &R :
        Plan->getVectorLoopRegion()->getEntryBasicBlock()->phis()) {
