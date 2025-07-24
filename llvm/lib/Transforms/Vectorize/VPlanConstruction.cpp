@@ -277,7 +277,7 @@ void PlainCFGBuilder::createVPInstructionsForVPBB(VPBasicBlock *VPBB,
 std::unique_ptr<VPlan>
 PlainCFGBuilder::buildPlainCFG(DenseMap<VPBlockBase *, BasicBlock *> &VPB2IRBB,
                                LoopVectorizationLegality *Legal) {
-  if (Legal->isVectorizableUncountable()) {
+  if (Legal && Legal->isVectorizableUncountable()) {
     Plan->setUncountable();
     if (Legal->getCountableExitingBlocks().empty())
       Plan->setUnbound();
