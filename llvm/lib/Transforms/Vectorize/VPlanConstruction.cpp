@@ -277,6 +277,12 @@ void PlainCFGBuilder::createVPInstructionsForVPBB(VPBasicBlock *VPBB,
 std::unique_ptr<VPlan>
 PlainCFGBuilder::buildPlainCFG(DenseMap<VPBlockBase *, BasicBlock *> &VPB2IRBB,
                                LoopVectorizationLegality *Legal) {
+  if (Legal->isVectorizableUncountable()) {
+    Plan->setUncountable();
+    if (Legal->getCountableExitingBlocks().empty())
+      Plan->setUnbound();
+  }
+
 #else
 std::unique_ptr<VPlan> PlainCFGBuilder::buildPlainCFG(
     DenseMap<VPBlockBase *, BasicBlock *> &VPB2IRBB) {
@@ -548,8 +554,15 @@ static void addCanonicalIVRecipes(VPlan &Plan, VPBasicBlock *HeaderVPBB,
   CanonicalIVPHI->addOperand(CanonicalIVIncrement);
 
   // Add the BranchOnCount VPInstruction to the latch.
+#ifdef SIFIVE_CUSTOMIZATION
+  if (!Plan.isUncountableAndUnbound())
+    Builder.createNaryOp(VPInstruction::BranchOnCount,
+                         {CanonicalIVIncrement, &Plan.getVectorTripCount()},
+                         DL);
+#else
   Builder.createNaryOp(VPInstruction::BranchOnCount,
                        {CanonicalIVIncrement, &Plan.getVectorTripCount()}, DL);
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 void VPlanTransforms::prepareForVectorization(VPlan &Plan, Type *InductionTy,
@@ -576,11 +589,6 @@ void VPlanTransforms::prepareForVectorization(VPlan &Plan, Type *InductionTy,
 
   addCanonicalIVRecipes(Plan, cast<VPBasicBlock>(HeaderVPB),
                         cast<VPBasicBlock>(LatchVPB), InductionTy, IVDL);
-
-#if SIFIVE_CUSTOMIZATION
-  if (IsUncountable)
-    Plan.setUncountable();
-#endif // SIFIVE_CUSTOMIZATION
 
   // Create SCEV and VPValue for the trip count.
   // We use the symbolic max backedge-taken-count, which works also when

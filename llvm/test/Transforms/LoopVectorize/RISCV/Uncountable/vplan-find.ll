@@ -36,7 +36,7 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; VPLANS-NEXT:   for.inc:
 ; VPLANS-NEXT:     EMIT vp<[[EVL2_I64:%.+]]> = zext vp<[[EVL2]]> to i64
 ; VPLANS-NEXT:     EMIT vp<[[EVL_IV_NEXT:%.+]]> = add nuw vp<[[EVL2_I64]]>, vp<[[EVL_IV]]>
-; VPLANS-NEXT:     EMIT branch-on-count vp<[[EVL_IV_NEXT]]>, vp<[[TC]]>
+; VPLANS-NEXT:     EMIT branch-on-count vp<[[EVL_IV_NEXT]]>, vp<[[VTC]]>
 ; VPLANS-NEXT:   No successors
 ; VPLANS-NEXT: }
 ; VPLANS-NEXT: Successor(s): middle.block

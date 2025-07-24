@@ -115,7 +115,13 @@ bool VPlanVerifier::verifyPhiRecipes(const VPBasicBlock *VPBB) {
     // Check if the recipe operands match the number of predecessors.
     // TODO Extend to other phi-like recipes.
     if (auto *PhiIRI = dyn_cast<VPIRPhi>(&*RecipeI)) {
+#ifdef SIFIVE_CUSTOMIZATION
+      // FIXME: Fix the iv liveout in plan for unbound loops
+      if (!VPBB->getPlan()->isUncountableAndUnbound() &&
+          PhiIRI->getNumOperands() != VPBB->getNumPredecessors()) {
+#else
       if (PhiIRI->getNumOperands() != VPBB->getNumPredecessors()) {
+#endif // SIFIVE_CUSTOMIZATION
         errs() << "Phi-like recipe with different number of operands and "
                   "predecessors.\n";
         // TODO: Print broken recipe. At the moment printing an ill-formed

@@ -11214,37 +11214,6 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
 }
 
 #if SIFIVE_CUSTOMIZATION
-static void addCanonicalIVRecipesUncountable(VPlan &Plan, Type *IdxTy,
-                                             bool HasNUW,
-                                             VPValue *VPMaxTripCount,
-                                             DebugLoc DL) {
-  Value *StartIdx = ConstantInt::get(IdxTy, 0);
-  auto *StartV = Plan.getOrAddLiveIn(StartIdx);
-
-  // Add a VPCanonicalIVPHIRecipe starting at 0 to the header.
-  auto *CanonicalIVPHI = new VPCanonicalIVPHIRecipe(StartV, DL);
-  VPRegionBlock *TopRegion = Plan.getVectorLoopRegion();
-  VPBasicBlock *Header = TopRegion->getEntryBasicBlock();
-  Header->insert(CanonicalIVPHI, Header->begin());
-
-  // Add a CanonicalIVIncrement{NUW} VPInstruction to increment the scalar
-  // IV by VF * UF.
-  auto *CanonicalIVIncrement =
-      new VPInstruction(Instruction::Add, {CanonicalIVPHI, &Plan.getVFxUF()},
-                        {HasNUW, false}, DL, "index.next");
-  CanonicalIVPHI->addOperand(CanonicalIVIncrement);
-
-  VPBasicBlock *EB = TopRegion->getExitingBasicBlock();
-  EB->appendRecipe(CanonicalIVIncrement);
-
-  if (VPMaxTripCount) {
-    auto *Branch =
-        new VPInstruction(VPInstruction::BranchOnCount,
-                          {CanonicalIVIncrement, VPMaxTripCount}, DL);
-    EB->appendRecipe(Branch);
-  }
-}
-
 /// Add CSA Recipes that can occur before each instruction in the input IR
 /// is processed and introduced into VPlan.
 static void
@@ -11726,11 +11695,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
 #if SIFIVE_CUSTOMIZATION
   DebugLoc DL = getDebugLocFromInstOrOperands(Legal->getPrimaryInduction());
 
-  // Canonical IV is not available for uncountable loops in general.
-  if (Plan->isUncountable()) {
-    addCanonicalIVRecipesUncountable(*Plan, Legal->getWidestInductionType(),
-                                     HasNUW, Plan->getTripCount(), DL);
-  }
   // Create the node for previous EVL value, required for the splice
   // intrinsic of a fixed order recurrence and CSA
   if (Legal->useVLAVectorizer() && needOtherEVLs(*Legal, CM)) {

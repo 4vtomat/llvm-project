@@ -6,12 +6,31 @@ define void @strlen(ptr %s) {
 ; CHECK-SAME: ptr [[S:%.*]]) #[[ATTR0:[0-9]+]] {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    br label [[WHILE_COND:%.*]]
+; CHECK:       vector.body:
+; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[WHILE_COND]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[WHILE_COND]] ]
+; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 8, i1 true)
+; CHECK-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[S]], i64 [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; CHECK-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 8 x i8>, i32 } @llvm.vp.load.ff.nxv8i8.p0(ptr align 1 [[TMP1]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
+; CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 8 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP3]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; CHECK-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[WHILE_COND]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK:       middle.block:
+; CHECK-NEXT:    br i1 true, label [[WHILE_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; CHECK:       vec.uncountable.scalar.ph:
+; CHECK-NEXT:    br label [[WHILE_COND1:%.*]]
 ; CHECK:       while.cond:
-; CHECK-NEXT:    [[END_0:%.*]] = phi ptr [ [[S]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND]] ]
-; CHECK-NEXT:    [[TMP8:%.*]] = load i8, ptr [[END_0]], align 1, !tbaa [[TBAA0:![0-9]+]]
+; CHECK-NEXT:    [[END_0:%.*]] = phi ptr [ [[S]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND1]] ]
+; CHECK-NEXT:    [[TMP8:%.*]] = load i8, ptr [[END_0]], align 1, !tbaa [[TBAA3:![0-9]+]]
 ; CHECK-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP8]], 0
 ; CHECK-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; CHECK-NEXT:    br i1 [[CMP_NOT]], label [[WHILE_END:%.*]], label [[WHILE_COND]]
+; CHECK-NEXT:    br i1 [[CMP_NOT]], label [[WHILE_END]], label [[WHILE_COND1]], !llvm.loop [[LOOP6:![0-9]+]]
 ; CHECK:       while.end:
 ; CHECK-NEXT:    ret void
 ;

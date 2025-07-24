@@ -26,14 +26,36 @@ define i64 @strlen_i8(ptr %start) {
 ; DEFAULT-LABEL: @strlen_i8(
 ; DEFAULT-NEXT:  entry:
 ; DEFAULT-NEXT:    br label [[FOR_COND:%.*]]
+; DEFAULT:       vector.body:
+; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; DEFAULT-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[EVL_BASED_IV]]
+; DEFAULT-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; DEFAULT-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; DEFAULT-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; DEFAULT-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; DEFAULT-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> zeroinitializer, metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; DEFAULT-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; DEFAULT-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; DEFAULT-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; DEFAULT-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP0:![0-9]+]]
+; DEFAULT:       middle.block:
+; DEFAULT-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; DEFAULT-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; DEFAULT-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
+; DEFAULT-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; DEFAULT:       vec.uncountable.scalar.ph:
+; DEFAULT-NEXT:    br label [[FOR_COND1:%.*]]
 ; DEFAULT:       for.cond:
-; DEFAULT-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; DEFAULT-NEXT:    [[TMP10:%.*]] = load i8, ptr [[END_0]], align 1
 ; DEFAULT-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP10]], 0
 ; DEFAULT-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; DEFAULT-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; DEFAULT-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP3:![0-9]+]]
 ; DEFAULT:       for.end:
-; DEFAULT-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; DEFAULT-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; DEFAULT-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; DEFAULT-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -42,14 +64,36 @@ define i64 @strlen_i8(ptr %start) {
 ; ON-LABEL: @strlen_i8(
 ; ON-NEXT:  entry:
 ; ON-NEXT:    br label [[FOR_COND:%.*]]
+; ON:       vector.body:
+; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; ON-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; ON-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; ON-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[EVL_BASED_IV]]
+; ON-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; ON-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; ON-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; ON-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> zeroinitializer, metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; ON-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; ON-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; ON-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; ON-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP0:![0-9]+]]
+; ON:       middle.block:
+; ON-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; ON-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; ON-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
+; ON-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; ON:       vec.uncountable.scalar.ph:
+; ON-NEXT:    br label [[FOR_COND1:%.*]]
 ; ON:       for.cond:
-; ON-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; ON-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; ON-NEXT:    [[TMP10:%.*]] = load i8, ptr [[END_0]], align 1
 ; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP10]], 0
 ; ON-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP3:![0-9]+]]
 ; ON:       for.end:
-; ON-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; ON-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; ON-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; ON-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; ON-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -90,14 +134,36 @@ define i64 @strlen_i8(ptr %start) {
 ; stress-LABEL: @strlen_i8(
 ; stress-NEXT:  entry:
 ; stress-NEXT:    br label [[FOR_COND:%.*]]
+; stress:       vector.body:
+; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; stress-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; stress-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; stress-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[EVL_BASED_IV]]
+; stress-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; stress-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; stress-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; stress-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> zeroinitializer, metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; stress-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; stress-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; stress-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; stress-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP0:![0-9]+]]
+; stress:       middle.block:
+; stress-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; stress-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; stress-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
+; stress-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; stress:       vec.uncountable.scalar.ph:
+; stress-NEXT:    br label [[FOR_COND1:%.*]]
 ; stress:       for.cond:
-; stress-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; stress-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; stress-NEXT:    [[TMP10:%.*]] = load i8, ptr [[END_0]], align 1
 ; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP10]], 0
 ; stress-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP3:![0-9]+]]
 ; stress:       for.end:
-; stress-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; stress-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; stress-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; stress-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; stress-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -122,14 +188,36 @@ define i64 @strlen_i8(ptr %start) {
 ; IF0-LABEL: @strlen_i8(
 ; IF0-NEXT:  entry:
 ; IF0-NEXT:    br label [[FOR_COND:%.*]]
+; IF0:       vector.body:
+; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; IF0-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; IF0-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; IF0-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[EVL_BASED_IV]]
+; IF0-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; IF0-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; IF0-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF0-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF0-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> zeroinitializer, metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF0-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; IF0-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF0-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; IF0-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP0:![0-9]+]]
+; IF0:       middle.block:
+; IF0-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; IF0-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; IF0-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
+; IF0-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF0:       vec.uncountable.scalar.ph:
+; IF0-NEXT:    br label [[FOR_COND1:%.*]]
 ; IF0:       for.cond:
-; IF0-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; IF0-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; IF0-NEXT:    [[TMP10:%.*]] = load i8, ptr [[END_0]], align 1
 ; IF0-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP10]], 0
 ; IF0-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; IF0-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; IF0-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP3:![0-9]+]]
 ; IF0:       for.end:
-; IF0-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; IF0-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF0-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; IF0-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; IF0-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -138,14 +226,36 @@ define i64 @strlen_i8(ptr %start) {
 ; IF1-LABEL: @strlen_i8(
 ; IF1-NEXT:  entry:
 ; IF1-NEXT:    br label [[FOR_COND:%.*]]
+; IF1:       vector.body:
+; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; IF1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; IF1-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; IF1-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[EVL_BASED_IV]]
+; IF1-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; IF1-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; IF1-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF1-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF1-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> zeroinitializer, metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF1-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; IF1-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF1-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; IF1-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP0:![0-9]+]]
+; IF1:       middle.block:
+; IF1-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; IF1-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; IF1-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
+; IF1-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF1:       vec.uncountable.scalar.ph:
+; IF1-NEXT:    br label [[FOR_COND1:%.*]]
 ; IF1:       for.cond:
-; IF1-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; IF1-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; IF1-NEXT:    [[TMP10:%.*]] = load i8, ptr [[END_0]], align 1
 ; IF1-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP10]], 0
 ; IF1-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; IF1-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; IF1-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP3:![0-9]+]]
 ; IF1:       for.end:
-; IF1-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; IF1-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF1-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; IF1-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; IF1-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -154,14 +264,36 @@ define i64 @strlen_i8(ptr %start) {
 ; IF2-LABEL: @strlen_i8(
 ; IF2-NEXT:  entry:
 ; IF2-NEXT:    br label [[FOR_COND:%.*]]
+; IF2:       vector.body:
+; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; IF2-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; IF2-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; IF2-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[EVL_BASED_IV]]
+; IF2-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; IF2-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; IF2-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF2-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF2-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> zeroinitializer, metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF2-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; IF2-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF2-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; IF2-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP0:![0-9]+]]
+; IF2:       middle.block:
+; IF2-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; IF2-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; IF2-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
+; IF2-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF2:       vec.uncountable.scalar.ph:
+; IF2-NEXT:    br label [[FOR_COND1:%.*]]
 ; IF2:       for.cond:
-; IF2-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; IF2-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; IF2-NEXT:    [[TMP10:%.*]] = load i8, ptr [[END_0]], align 1
 ; IF2-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP10]], 0
 ; IF2-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; IF2-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; IF2-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP3:![0-9]+]]
 ; IF2:       for.end:
-; IF2-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; IF2-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF2-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; IF2-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; IF2-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -189,14 +321,38 @@ define i64 @strlen_i16(ptr %start) {
 ; DEFAULT-LABEL: @strlen_i16(
 ; DEFAULT-NEXT:  entry:
 ; DEFAULT-NEXT:    br label [[FOR_COND:%.*]]
+; DEFAULT:       vector.body:
+; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
+; DEFAULT-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 2
+; DEFAULT-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[OFFSET_IDX]]
+; DEFAULT-NEXT:    [[TMP1:%.*]] = getelementptr i16, ptr [[NEXT_GEP]], i32 0
+; DEFAULT-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 16 x i16>, i32 } @llvm.vp.load.ff.nxv16i16.p0(ptr align 2 [[TMP1]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP0]])
+; DEFAULT-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 16 x i16>, i32 } [[VP_OP_LOAD_FF]], 1
+; DEFAULT-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 16 x i16>, i32 } [[VP_OP_LOAD_FF]], 0
+; DEFAULT-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i16(<vscale x 16 x i16> [[TMP3]], <vscale x 16 x i16> zeroinitializer, metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP2]])
+; DEFAULT-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; DEFAULT-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP2]])
+; DEFAULT-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; DEFAULT-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP4:![0-9]+]]
+; DEFAULT:       middle.block:
+; DEFAULT-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; DEFAULT-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; DEFAULT-NEXT:    [[TMP9:%.*]] = mul i64 [[TMP8]], 2
+; DEFAULT-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
+; DEFAULT-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; DEFAULT:       vec.uncountable.scalar.ph:
+; DEFAULT-NEXT:    br label [[FOR_COND1:%.*]]
 ; DEFAULT:       for.cond:
-; DEFAULT-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; DEFAULT-NEXT:    [[TMP11:%.*]] = load i16, ptr [[END_0]], align 2
 ; DEFAULT-NEXT:    [[CMP_NOT:%.*]] = icmp eq i16 [[TMP11]], 0
 ; DEFAULT-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i16, ptr [[END_0]], i64 1
-; DEFAULT-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; DEFAULT-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP5:![0-9]+]]
 ; DEFAULT:       for.end:
-; DEFAULT-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; DEFAULT-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; DEFAULT-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; DEFAULT-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -206,14 +362,38 @@ define i64 @strlen_i16(ptr %start) {
 ; ON-LABEL: @strlen_i16(
 ; ON-NEXT:  entry:
 ; ON-NEXT:    br label [[FOR_COND:%.*]]
+; ON:       vector.body:
+; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; ON-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; ON-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
+; ON-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 2
+; ON-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[OFFSET_IDX]]
+; ON-NEXT:    [[TMP1:%.*]] = getelementptr i16, ptr [[NEXT_GEP]], i32 0
+; ON-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 16 x i16>, i32 } @llvm.vp.load.ff.nxv16i16.p0(ptr align 2 [[TMP1]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP0]])
+; ON-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 16 x i16>, i32 } [[VP_OP_LOAD_FF]], 1
+; ON-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 16 x i16>, i32 } [[VP_OP_LOAD_FF]], 0
+; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i16(<vscale x 16 x i16> [[TMP3]], <vscale x 16 x i16> zeroinitializer, metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP2]])
+; ON-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; ON-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP2]])
+; ON-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; ON-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP4:![0-9]+]]
+; ON:       middle.block:
+; ON-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; ON-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; ON-NEXT:    [[TMP9:%.*]] = mul i64 [[TMP8]], 2
+; ON-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
+; ON-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; ON:       vec.uncountable.scalar.ph:
+; ON-NEXT:    br label [[FOR_COND1:%.*]]
 ; ON:       for.cond:
-; ON-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; ON-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; ON-NEXT:    [[TMP11:%.*]] = load i16, ptr [[END_0]], align 2
 ; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i16 [[TMP11]], 0
 ; ON-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i16, ptr [[END_0]], i64 1
-; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP5:![0-9]+]]
 ; ON:       for.end:
-; ON-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; ON-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; ON-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; ON-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; ON-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -257,14 +437,38 @@ define i64 @strlen_i16(ptr %start) {
 ; stress-LABEL: @strlen_i16(
 ; stress-NEXT:  entry:
 ; stress-NEXT:    br label [[FOR_COND:%.*]]
+; stress:       vector.body:
+; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; stress-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; stress-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
+; stress-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 2
+; stress-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[OFFSET_IDX]]
+; stress-NEXT:    [[TMP1:%.*]] = getelementptr i16, ptr [[NEXT_GEP]], i32 0
+; stress-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 16 x i16>, i32 } @llvm.vp.load.ff.nxv16i16.p0(ptr align 2 [[TMP1]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP0]])
+; stress-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 16 x i16>, i32 } [[VP_OP_LOAD_FF]], 1
+; stress-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 16 x i16>, i32 } [[VP_OP_LOAD_FF]], 0
+; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i16(<vscale x 16 x i16> [[TMP3]], <vscale x 16 x i16> zeroinitializer, metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP2]])
+; stress-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; stress-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP2]])
+; stress-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; stress-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP4:![0-9]+]]
+; stress:       middle.block:
+; stress-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; stress-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; stress-NEXT:    [[TMP9:%.*]] = mul i64 [[TMP8]], 2
+; stress-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
+; stress-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; stress:       vec.uncountable.scalar.ph:
+; stress-NEXT:    br label [[FOR_COND1:%.*]]
 ; stress:       for.cond:
-; stress-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; stress-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; stress-NEXT:    [[TMP11:%.*]] = load i16, ptr [[END_0]], align 2
 ; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i16 [[TMP11]], 0
 ; stress-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i16, ptr [[END_0]], i64 1
-; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP5:![0-9]+]]
 ; stress:       for.end:
-; stress-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; stress-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; stress-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; stress-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; stress-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -291,14 +495,38 @@ define i64 @strlen_i16(ptr %start) {
 ; IF0-LABEL: @strlen_i16(
 ; IF0-NEXT:  entry:
 ; IF0-NEXT:    br label [[FOR_COND:%.*]]
+; IF0:       vector.body:
+; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; IF0-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; IF0-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
+; IF0-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 2
+; IF0-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[OFFSET_IDX]]
+; IF0-NEXT:    [[TMP1:%.*]] = getelementptr i16, ptr [[NEXT_GEP]], i32 0
+; IF0-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 16 x i16>, i32 } @llvm.vp.load.ff.nxv16i16.p0(ptr align 2 [[TMP1]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP0]])
+; IF0-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 16 x i16>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF0-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 16 x i16>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF0-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i16(<vscale x 16 x i16> [[TMP3]], <vscale x 16 x i16> zeroinitializer, metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP2]])
+; IF0-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; IF0-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP2]])
+; IF0-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; IF0-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP4:![0-9]+]]
+; IF0:       middle.block:
+; IF0-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; IF0-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; IF0-NEXT:    [[TMP9:%.*]] = mul i64 [[TMP8]], 2
+; IF0-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
+; IF0-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF0:       vec.uncountable.scalar.ph:
+; IF0-NEXT:    br label [[FOR_COND1:%.*]]
 ; IF0:       for.cond:
-; IF0-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; IF0-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; IF0-NEXT:    [[TMP11:%.*]] = load i16, ptr [[END_0]], align 2
 ; IF0-NEXT:    [[CMP_NOT:%.*]] = icmp eq i16 [[TMP11]], 0
 ; IF0-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i16, ptr [[END_0]], i64 1
-; IF0-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; IF0-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP5:![0-9]+]]
 ; IF0:       for.end:
-; IF0-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; IF0-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF0-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; IF0-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; IF0-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -308,14 +536,38 @@ define i64 @strlen_i16(ptr %start) {
 ; IF1-LABEL: @strlen_i16(
 ; IF1-NEXT:  entry:
 ; IF1-NEXT:    br label [[FOR_COND:%.*]]
+; IF1:       vector.body:
+; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; IF1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; IF1-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
+; IF1-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 2
+; IF1-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[OFFSET_IDX]]
+; IF1-NEXT:    [[TMP1:%.*]] = getelementptr i16, ptr [[NEXT_GEP]], i32 0
+; IF1-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 16 x i16>, i32 } @llvm.vp.load.ff.nxv16i16.p0(ptr align 2 [[TMP1]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP0]])
+; IF1-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 16 x i16>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF1-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 16 x i16>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF1-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i16(<vscale x 16 x i16> [[TMP3]], <vscale x 16 x i16> zeroinitializer, metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP2]])
+; IF1-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; IF1-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP2]])
+; IF1-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; IF1-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP4:![0-9]+]]
+; IF1:       middle.block:
+; IF1-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; IF1-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; IF1-NEXT:    [[TMP9:%.*]] = mul i64 [[TMP8]], 2
+; IF1-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
+; IF1-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF1:       vec.uncountable.scalar.ph:
+; IF1-NEXT:    br label [[FOR_COND1:%.*]]
 ; IF1:       for.cond:
-; IF1-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; IF1-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; IF1-NEXT:    [[TMP11:%.*]] = load i16, ptr [[END_0]], align 2
 ; IF1-NEXT:    [[CMP_NOT:%.*]] = icmp eq i16 [[TMP11]], 0
 ; IF1-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i16, ptr [[END_0]], i64 1
-; IF1-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; IF1-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP5:![0-9]+]]
 ; IF1:       for.end:
-; IF1-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; IF1-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF1-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; IF1-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; IF1-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -325,14 +577,38 @@ define i64 @strlen_i16(ptr %start) {
 ; IF2-LABEL: @strlen_i16(
 ; IF2-NEXT:  entry:
 ; IF2-NEXT:    br label [[FOR_COND:%.*]]
+; IF2:       vector.body:
+; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; IF2-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; IF2-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
+; IF2-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 2
+; IF2-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[OFFSET_IDX]]
+; IF2-NEXT:    [[TMP1:%.*]] = getelementptr i16, ptr [[NEXT_GEP]], i32 0
+; IF2-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 16 x i16>, i32 } @llvm.vp.load.ff.nxv16i16.p0(ptr align 2 [[TMP1]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP0]])
+; IF2-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 16 x i16>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF2-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 16 x i16>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF2-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i16(<vscale x 16 x i16> [[TMP3]], <vscale x 16 x i16> zeroinitializer, metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP2]])
+; IF2-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; IF2-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP2]])
+; IF2-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; IF2-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP4:![0-9]+]]
+; IF2:       middle.block:
+; IF2-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; IF2-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; IF2-NEXT:    [[TMP9:%.*]] = mul i64 [[TMP8]], 2
+; IF2-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
+; IF2-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF2:       vec.uncountable.scalar.ph:
+; IF2-NEXT:    br label [[FOR_COND1:%.*]]
 ; IF2:       for.cond:
-; IF2-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; IF2-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; IF2-NEXT:    [[TMP11:%.*]] = load i16, ptr [[END_0]], align 2
 ; IF2-NEXT:    [[CMP_NOT:%.*]] = icmp eq i16 [[TMP11]], 0
 ; IF2-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i16, ptr [[END_0]], i64 1
-; IF2-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; IF2-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP5:![0-9]+]]
 ; IF2:       for.end:
-; IF2-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; IF2-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF2-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; IF2-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; IF2-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -362,14 +638,38 @@ define i64 @strlen_i32(ptr %start) {
 ; DEFAULT-LABEL: @strlen_i32(
 ; DEFAULT-NEXT:  entry:
 ; DEFAULT-NEXT:    br label [[FOR_COND:%.*]]
+; DEFAULT:       vector.body:
+; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 8, i1 true)
+; DEFAULT-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 4
+; DEFAULT-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[OFFSET_IDX]]
+; DEFAULT-NEXT:    [[TMP1:%.*]] = getelementptr i32, ptr [[NEXT_GEP]], i32 0
+; DEFAULT-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 8 x i32>, i32 } @llvm.vp.load.ff.nxv8i32.p0(ptr align 4 [[TMP1]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
+; DEFAULT-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x i32>, i32 } [[VP_OP_LOAD_FF]], 1
+; DEFAULT-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 8 x i32>, i32 } [[VP_OP_LOAD_FF]], 0
+; DEFAULT-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i32(<vscale x 8 x i32> [[TMP3]], <vscale x 8 x i32> zeroinitializer, metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP2]])
+; DEFAULT-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; DEFAULT-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP2]])
+; DEFAULT-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; DEFAULT-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP6:![0-9]+]]
+; DEFAULT:       middle.block:
+; DEFAULT-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; DEFAULT-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; DEFAULT-NEXT:    [[TMP9:%.*]] = mul i64 [[TMP8]], 4
+; DEFAULT-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
+; DEFAULT-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; DEFAULT:       vec.uncountable.scalar.ph:
+; DEFAULT-NEXT:    br label [[FOR_COND1:%.*]]
 ; DEFAULT:       for.cond:
-; DEFAULT-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; DEFAULT-NEXT:    [[TMP11:%.*]] = load i32, ptr [[END_0]], align 4
 ; DEFAULT-NEXT:    [[CMP_NOT:%.*]] = icmp eq i32 [[TMP11]], 0
 ; DEFAULT-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i32, ptr [[END_0]], i64 1
-; DEFAULT-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; DEFAULT-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP7:![0-9]+]]
 ; DEFAULT:       for.end:
-; DEFAULT-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; DEFAULT-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; DEFAULT-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; DEFAULT-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -379,14 +679,38 @@ define i64 @strlen_i32(ptr %start) {
 ; ON-LABEL: @strlen_i32(
 ; ON-NEXT:  entry:
 ; ON-NEXT:    br label [[FOR_COND:%.*]]
+; ON:       vector.body:
+; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; ON-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; ON-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 8, i1 true)
+; ON-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 4
+; ON-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[OFFSET_IDX]]
+; ON-NEXT:    [[TMP1:%.*]] = getelementptr i32, ptr [[NEXT_GEP]], i32 0
+; ON-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 8 x i32>, i32 } @llvm.vp.load.ff.nxv8i32.p0(ptr align 4 [[TMP1]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
+; ON-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x i32>, i32 } [[VP_OP_LOAD_FF]], 1
+; ON-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 8 x i32>, i32 } [[VP_OP_LOAD_FF]], 0
+; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i32(<vscale x 8 x i32> [[TMP3]], <vscale x 8 x i32> zeroinitializer, metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP2]])
+; ON-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; ON-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP2]])
+; ON-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; ON-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP6:![0-9]+]]
+; ON:       middle.block:
+; ON-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; ON-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; ON-NEXT:    [[TMP9:%.*]] = mul i64 [[TMP8]], 4
+; ON-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
+; ON-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; ON:       vec.uncountable.scalar.ph:
+; ON-NEXT:    br label [[FOR_COND1:%.*]]
 ; ON:       for.cond:
-; ON-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; ON-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; ON-NEXT:    [[TMP11:%.*]] = load i32, ptr [[END_0]], align 4
 ; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i32 [[TMP11]], 0
 ; ON-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i32, ptr [[END_0]], i64 1
-; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP7:![0-9]+]]
 ; ON:       for.end:
-; ON-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; ON-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; ON-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; ON-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; ON-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -430,14 +754,38 @@ define i64 @strlen_i32(ptr %start) {
 ; stress-LABEL: @strlen_i32(
 ; stress-NEXT:  entry:
 ; stress-NEXT:    br label [[FOR_COND:%.*]]
+; stress:       vector.body:
+; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; stress-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; stress-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 8, i1 true)
+; stress-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 4
+; stress-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[OFFSET_IDX]]
+; stress-NEXT:    [[TMP1:%.*]] = getelementptr i32, ptr [[NEXT_GEP]], i32 0
+; stress-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 8 x i32>, i32 } @llvm.vp.load.ff.nxv8i32.p0(ptr align 4 [[TMP1]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
+; stress-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x i32>, i32 } [[VP_OP_LOAD_FF]], 1
+; stress-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 8 x i32>, i32 } [[VP_OP_LOAD_FF]], 0
+; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i32(<vscale x 8 x i32> [[TMP3]], <vscale x 8 x i32> zeroinitializer, metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP2]])
+; stress-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; stress-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP2]])
+; stress-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; stress-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP6:![0-9]+]]
+; stress:       middle.block:
+; stress-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; stress-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; stress-NEXT:    [[TMP9:%.*]] = mul i64 [[TMP8]], 4
+; stress-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
+; stress-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; stress:       vec.uncountable.scalar.ph:
+; stress-NEXT:    br label [[FOR_COND1:%.*]]
 ; stress:       for.cond:
-; stress-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; stress-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; stress-NEXT:    [[TMP11:%.*]] = load i32, ptr [[END_0]], align 4
 ; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i32 [[TMP11]], 0
 ; stress-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i32, ptr [[END_0]], i64 1
-; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP7:![0-9]+]]
 ; stress:       for.end:
-; stress-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; stress-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; stress-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; stress-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; stress-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -464,14 +812,38 @@ define i64 @strlen_i32(ptr %start) {
 ; IF0-LABEL: @strlen_i32(
 ; IF0-NEXT:  entry:
 ; IF0-NEXT:    br label [[FOR_COND:%.*]]
+; IF0:       vector.body:
+; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; IF0-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; IF0-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 8, i1 true)
+; IF0-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 4
+; IF0-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[OFFSET_IDX]]
+; IF0-NEXT:    [[TMP1:%.*]] = getelementptr i32, ptr [[NEXT_GEP]], i32 0
+; IF0-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 8 x i32>, i32 } @llvm.vp.load.ff.nxv8i32.p0(ptr align 4 [[TMP1]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
+; IF0-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x i32>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF0-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 8 x i32>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF0-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i32(<vscale x 8 x i32> [[TMP3]], <vscale x 8 x i32> zeroinitializer, metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP2]])
+; IF0-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; IF0-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP2]])
+; IF0-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; IF0-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP6:![0-9]+]]
+; IF0:       middle.block:
+; IF0-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; IF0-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; IF0-NEXT:    [[TMP9:%.*]] = mul i64 [[TMP8]], 4
+; IF0-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
+; IF0-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF0:       vec.uncountable.scalar.ph:
+; IF0-NEXT:    br label [[FOR_COND1:%.*]]
 ; IF0:       for.cond:
-; IF0-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; IF0-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; IF0-NEXT:    [[TMP11:%.*]] = load i32, ptr [[END_0]], align 4
 ; IF0-NEXT:    [[CMP_NOT:%.*]] = icmp eq i32 [[TMP11]], 0
 ; IF0-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i32, ptr [[END_0]], i64 1
-; IF0-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; IF0-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP7:![0-9]+]]
 ; IF0:       for.end:
-; IF0-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; IF0-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF0-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; IF0-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; IF0-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -481,14 +853,38 @@ define i64 @strlen_i32(ptr %start) {
 ; IF1-LABEL: @strlen_i32(
 ; IF1-NEXT:  entry:
 ; IF1-NEXT:    br label [[FOR_COND:%.*]]
+; IF1:       vector.body:
+; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; IF1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; IF1-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 8, i1 true)
+; IF1-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 4
+; IF1-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[OFFSET_IDX]]
+; IF1-NEXT:    [[TMP1:%.*]] = getelementptr i32, ptr [[NEXT_GEP]], i32 0
+; IF1-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 8 x i32>, i32 } @llvm.vp.load.ff.nxv8i32.p0(ptr align 4 [[TMP1]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
+; IF1-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x i32>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF1-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 8 x i32>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF1-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i32(<vscale x 8 x i32> [[TMP3]], <vscale x 8 x i32> zeroinitializer, metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP2]])
+; IF1-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; IF1-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP2]])
+; IF1-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; IF1-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP6:![0-9]+]]
+; IF1:       middle.block:
+; IF1-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; IF1-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; IF1-NEXT:    [[TMP9:%.*]] = mul i64 [[TMP8]], 4
+; IF1-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
+; IF1-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF1:       vec.uncountable.scalar.ph:
+; IF1-NEXT:    br label [[FOR_COND1:%.*]]
 ; IF1:       for.cond:
-; IF1-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; IF1-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; IF1-NEXT:    [[TMP11:%.*]] = load i32, ptr [[END_0]], align 4
 ; IF1-NEXT:    [[CMP_NOT:%.*]] = icmp eq i32 [[TMP11]], 0
 ; IF1-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i32, ptr [[END_0]], i64 1
-; IF1-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; IF1-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP7:![0-9]+]]
 ; IF1:       for.end:
-; IF1-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; IF1-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF1-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; IF1-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; IF1-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -498,14 +894,38 @@ define i64 @strlen_i32(ptr %start) {
 ; IF2-LABEL: @strlen_i32(
 ; IF2-NEXT:  entry:
 ; IF2-NEXT:    br label [[FOR_COND:%.*]]
+; IF2:       vector.body:
+; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; IF2-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; IF2-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 8, i1 true)
+; IF2-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 4
+; IF2-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[OFFSET_IDX]]
+; IF2-NEXT:    [[TMP1:%.*]] = getelementptr i32, ptr [[NEXT_GEP]], i32 0
+; IF2-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 8 x i32>, i32 } @llvm.vp.load.ff.nxv8i32.p0(ptr align 4 [[TMP1]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
+; IF2-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x i32>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF2-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 8 x i32>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF2-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i32(<vscale x 8 x i32> [[TMP3]], <vscale x 8 x i32> zeroinitializer, metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP2]])
+; IF2-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; IF2-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP2]])
+; IF2-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; IF2-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP6:![0-9]+]]
+; IF2:       middle.block:
+; IF2-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; IF2-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; IF2-NEXT:    [[TMP9:%.*]] = mul i64 [[TMP8]], 4
+; IF2-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP9]]
+; IF2-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF2:       vec.uncountable.scalar.ph:
+; IF2-NEXT:    br label [[FOR_COND1:%.*]]
 ; IF2:       for.cond:
-; IF2-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; IF2-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; IF2-NEXT:    [[TMP11:%.*]] = load i32, ptr [[END_0]], align 4
 ; IF2-NEXT:    [[CMP_NOT:%.*]] = icmp eq i32 [[TMP11]], 0
 ; IF2-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i32, ptr [[END_0]], i64 1
-; IF2-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; IF2-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP7:![0-9]+]]
 ; IF2:       for.end:
-; IF2-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; IF2-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF2-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; IF2-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; IF2-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -709,15 +1129,38 @@ define i64 @SingleBlock0(ptr %start) {
 ; DEFAULT-LABEL: @SingleBlock0(
 ; DEFAULT-NEXT:  entry:
 ; DEFAULT-NEXT:    br label [[FOR_COND:%.*]]
+; DEFAULT:       vector.body:
+; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; DEFAULT-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[EVL_BASED_IV]]
+; DEFAULT-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; DEFAULT-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; DEFAULT-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; DEFAULT-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; DEFAULT-NEXT:    [[VP_OP:%.*]] = call <vscale x 32 x i8> @llvm.vp.smax.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> splat (i8 1), <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; DEFAULT-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[VP_OP]], <vscale x 32 x i8> splat (i8 1), metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; DEFAULT-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; DEFAULT-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; DEFAULT-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; DEFAULT-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP8:![0-9]+]]
+; DEFAULT:       middle.block:
+; DEFAULT-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; DEFAULT-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; DEFAULT-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
+; DEFAULT-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; DEFAULT:       vec.uncountable.scalar.ph:
+; DEFAULT-NEXT:    br label [[FOR_COND1:%.*]]
 ; DEFAULT:       for.cond:
-; DEFAULT-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; DEFAULT-NEXT:    [[TMP10:%.*]] = load i8, ptr [[END_0]], align 1
 ; DEFAULT-NEXT:    [[MAX:%.*]] = tail call i8 @llvm.smax.i8(i8 [[TMP10]], i8 1)
 ; DEFAULT-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[MAX]], 1
 ; DEFAULT-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; DEFAULT-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; DEFAULT-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP9:![0-9]+]]
 ; DEFAULT:       for.end:
-; DEFAULT-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; DEFAULT-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; DEFAULT-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; DEFAULT-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -726,15 +1169,38 @@ define i64 @SingleBlock0(ptr %start) {
 ; ON-LABEL: @SingleBlock0(
 ; ON-NEXT:  entry:
 ; ON-NEXT:    br label [[FOR_COND:%.*]]
+; ON:       vector.body:
+; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; ON-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; ON-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; ON-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[EVL_BASED_IV]]
+; ON-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; ON-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; ON-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; ON-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; ON-NEXT:    [[VP_OP:%.*]] = call <vscale x 32 x i8> @llvm.vp.smax.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> splat (i8 1), <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[VP_OP]], <vscale x 32 x i8> splat (i8 1), metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; ON-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; ON-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; ON-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; ON-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP8:![0-9]+]]
+; ON:       middle.block:
+; ON-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; ON-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; ON-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
+; ON-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; ON:       vec.uncountable.scalar.ph:
+; ON-NEXT:    br label [[FOR_COND1:%.*]]
 ; ON:       for.cond:
-; ON-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; ON-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; ON-NEXT:    [[TMP10:%.*]] = load i8, ptr [[END_0]], align 1
 ; ON-NEXT:    [[MAX:%.*]] = tail call i8 @llvm.smax.i8(i8 [[TMP10]], i8 1)
 ; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[MAX]], 1
 ; ON-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP9:![0-9]+]]
 ; ON:       for.end:
-; ON-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; ON-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; ON-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; ON-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; ON-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -777,15 +1243,38 @@ define i64 @SingleBlock0(ptr %start) {
 ; stress-LABEL: @SingleBlock0(
 ; stress-NEXT:  entry:
 ; stress-NEXT:    br label [[FOR_COND:%.*]]
+; stress:       vector.body:
+; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; stress-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; stress-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; stress-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[EVL_BASED_IV]]
+; stress-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; stress-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; stress-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; stress-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; stress-NEXT:    [[VP_OP:%.*]] = call <vscale x 32 x i8> @llvm.vp.smax.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> splat (i8 1), <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[VP_OP]], <vscale x 32 x i8> splat (i8 1), metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; stress-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; stress-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; stress-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; stress-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP8:![0-9]+]]
+; stress:       middle.block:
+; stress-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; stress-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; stress-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
+; stress-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; stress:       vec.uncountable.scalar.ph:
+; stress-NEXT:    br label [[FOR_COND1:%.*]]
 ; stress:       for.cond:
-; stress-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; stress-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; stress-NEXT:    [[TMP10:%.*]] = load i8, ptr [[END_0]], align 1
 ; stress-NEXT:    [[MAX:%.*]] = tail call i8 @llvm.smax.i8(i8 [[TMP10]], i8 1)
 ; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[MAX]], 1
 ; stress-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP9:![0-9]+]]
 ; stress:       for.end:
-; stress-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; stress-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; stress-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; stress-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; stress-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -811,15 +1300,38 @@ define i64 @SingleBlock0(ptr %start) {
 ; IF0-LABEL: @SingleBlock0(
 ; IF0-NEXT:  entry:
 ; IF0-NEXT:    br label [[FOR_COND:%.*]]
+; IF0:       vector.body:
+; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; IF0-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; IF0-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; IF0-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[EVL_BASED_IV]]
+; IF0-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; IF0-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; IF0-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF0-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF0-NEXT:    [[VP_OP:%.*]] = call <vscale x 32 x i8> @llvm.vp.smax.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> splat (i8 1), <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF0-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[VP_OP]], <vscale x 32 x i8> splat (i8 1), metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF0-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; IF0-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF0-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; IF0-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP8:![0-9]+]]
+; IF0:       middle.block:
+; IF0-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; IF0-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; IF0-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
+; IF0-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF0:       vec.uncountable.scalar.ph:
+; IF0-NEXT:    br label [[FOR_COND1:%.*]]
 ; IF0:       for.cond:
-; IF0-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; IF0-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; IF0-NEXT:    [[TMP10:%.*]] = load i8, ptr [[END_0]], align 1
 ; IF0-NEXT:    [[MAX:%.*]] = tail call i8 @llvm.smax.i8(i8 [[TMP10]], i8 1)
 ; IF0-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[MAX]], 1
 ; IF0-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; IF0-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; IF0-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP9:![0-9]+]]
 ; IF0:       for.end:
-; IF0-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; IF0-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF0-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; IF0-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; IF0-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -828,15 +1340,38 @@ define i64 @SingleBlock0(ptr %start) {
 ; IF1-LABEL: @SingleBlock0(
 ; IF1-NEXT:  entry:
 ; IF1-NEXT:    br label [[FOR_COND:%.*]]
+; IF1:       vector.body:
+; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; IF1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; IF1-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; IF1-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[EVL_BASED_IV]]
+; IF1-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; IF1-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; IF1-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF1-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF1-NEXT:    [[VP_OP:%.*]] = call <vscale x 32 x i8> @llvm.vp.smax.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> splat (i8 1), <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF1-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[VP_OP]], <vscale x 32 x i8> splat (i8 1), metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF1-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; IF1-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF1-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; IF1-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP8:![0-9]+]]
+; IF1:       middle.block:
+; IF1-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; IF1-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; IF1-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
+; IF1-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF1:       vec.uncountable.scalar.ph:
+; IF1-NEXT:    br label [[FOR_COND1:%.*]]
 ; IF1:       for.cond:
-; IF1-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; IF1-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; IF1-NEXT:    [[TMP10:%.*]] = load i8, ptr [[END_0]], align 1
 ; IF1-NEXT:    [[MAX:%.*]] = tail call i8 @llvm.smax.i8(i8 [[TMP10]], i8 1)
 ; IF1-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[MAX]], 1
 ; IF1-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; IF1-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; IF1-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP9:![0-9]+]]
 ; IF1:       for.end:
-; IF1-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; IF1-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF1-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; IF1-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; IF1-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -845,15 +1380,38 @@ define i64 @SingleBlock0(ptr %start) {
 ; IF2-LABEL: @SingleBlock0(
 ; IF2-NEXT:  entry:
 ; IF2-NEXT:    br label [[FOR_COND:%.*]]
+; IF2:       vector.body:
+; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; IF2-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; IF2-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; IF2-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[EVL_BASED_IV]]
+; IF2-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; IF2-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; IF2-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF2-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF2-NEXT:    [[VP_OP:%.*]] = call <vscale x 32 x i8> @llvm.vp.smax.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> splat (i8 1), <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF2-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[VP_OP]], <vscale x 32 x i8> splat (i8 1), metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF2-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; IF2-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF2-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; IF2-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP8:![0-9]+]]
+; IF2:       middle.block:
+; IF2-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; IF2-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; IF2-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
+; IF2-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF2:       vec.uncountable.scalar.ph:
+; IF2-NEXT:    br label [[FOR_COND1:%.*]]
 ; IF2:       for.cond:
-; IF2-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; IF2-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; IF2-NEXT:    [[TMP10:%.*]] = load i8, ptr [[END_0]], align 1
 ; IF2-NEXT:    [[MAX:%.*]] = tail call i8 @llvm.smax.i8(i8 [[TMP10]], i8 1)
 ; IF2-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[MAX]], 1
 ; IF2-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; IF2-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; IF2-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP9:![0-9]+]]
 ; IF2:       for.end:
-; IF2-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; IF2-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF2-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; IF2-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; IF2-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -1404,15 +1962,52 @@ for.end:
 define i64 @SingleBlock4(ptr %start) {
 ; DEFAULT-LABEL: @SingleBlock4(
 ; DEFAULT-NEXT:  entry:
+; DEFAULT-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; DEFAULT-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; DEFAULT-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 0
+; DEFAULT-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP2]], i64 0
+; DEFAULT-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
+; DEFAULT-NEXT:    [[TMP3:%.*]] = call <vscale x 16 x i64> @llvm.stepvector.nxv16i64()
+; DEFAULT-NEXT:    [[TMP4:%.*]] = add <vscale x 16 x i64> [[DOTSPLAT]], [[TMP3]]
 ; DEFAULT-NEXT:    br label [[FOR_COND:%.*]]
+; DEFAULT:       vector.body:
+; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY]] ], [ [[PTR_IND:%.*]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[TMP5:%.*]] = mul <vscale x 16 x i64> [[TMP4]], splat (i64 1)
+; DEFAULT-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 16 x i64> [[TMP5]]
+; DEFAULT-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
+; DEFAULT-NEXT:    [[TMP7:%.*]] = extractelement <vscale x 16 x ptr> [[VECTOR_GEP]], i32 0
+; DEFAULT-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[TMP7]], i32 0
+; DEFAULT-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 16 x i8>, i32 } @llvm.vp.load.ff.nxv16i8.p0(ptr align 1 [[TMP8]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP6]])
+; DEFAULT-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 16 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; DEFAULT-NEXT:    [[TMP10:%.*]] = zext i32 [[TMP9]] to i64
+; DEFAULT-NEXT:    [[TMP20:%.*]] = extractvalue { <vscale x 16 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; DEFAULT-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i8(<vscale x 16 x i8> [[TMP20]], <vscale x 16 x i8> zeroinitializer, metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; DEFAULT-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP9]] to i64
+; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP12]], [[EVL_BASED_IV]]
+; DEFAULT-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; DEFAULT-NEXT:    [[TMP14:%.*]] = mul i64 [[TMP10]], 1
+; DEFAULT-NEXT:    [[TMP15:%.*]] = mul i64 1, [[TMP14]]
+; DEFAULT-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP15]]
+; DEFAULT-NEXT:    [[TMP16:%.*]] = icmp sge i32 [[TMP13]], 0
+; DEFAULT-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP10:![0-9]+]]
+; DEFAULT:       middle.block:
+; DEFAULT-NEXT:    [[TMP17:%.*]] = add i32 [[TMP13]], 1
+; DEFAULT-NEXT:    [[TMP18:%.*]] = zext i32 [[TMP17]] to i64
+; DEFAULT-NEXT:    [[TMP19:%.*]] = add i64 [[INDEX]], [[TMP18]]
+; DEFAULT-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP19]]
+; DEFAULT-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; DEFAULT:       vec.uncountable.scalar.ph:
+; DEFAULT-NEXT:    br label [[FOR_COND1:%.*]]
 ; DEFAULT:       for.cond:
-; DEFAULT-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; DEFAULT-NEXT:    [[TMP11:%.*]] = load i8, ptr [[END_0]], align 1
 ; DEFAULT-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP11]], 0
 ; DEFAULT-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; DEFAULT-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; DEFAULT-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP11:![0-9]+]]
 ; DEFAULT:       for.end:
-; DEFAULT-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[INCDEC_PTR]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[INCDEC_PTR]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; DEFAULT-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[INCDEC_PTR_LCSSA]] to i64
 ; DEFAULT-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; DEFAULT-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -1420,15 +2015,52 @@ define i64 @SingleBlock4(ptr %start) {
 ;
 ; ON-LABEL: @SingleBlock4(
 ; ON-NEXT:  entry:
+; ON-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; ON-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; ON-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 0
+; ON-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP2]], i64 0
+; ON-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
+; ON-NEXT:    [[TMP3:%.*]] = call <vscale x 16 x i64> @llvm.stepvector.nxv16i64()
+; ON-NEXT:    [[TMP4:%.*]] = add <vscale x 16 x i64> [[DOTSPLAT]], [[TMP3]]
 ; ON-NEXT:    br label [[FOR_COND:%.*]]
+; ON:       vector.body:
+; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; ON-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; ON-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY]] ], [ [[PTR_IND:%.*]], [[FOR_COND]] ]
+; ON-NEXT:    [[TMP5:%.*]] = mul <vscale x 16 x i64> [[TMP4]], splat (i64 1)
+; ON-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 16 x i64> [[TMP5]]
+; ON-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
+; ON-NEXT:    [[TMP7:%.*]] = extractelement <vscale x 16 x ptr> [[VECTOR_GEP]], i32 0
+; ON-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[TMP7]], i32 0
+; ON-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 16 x i8>, i32 } @llvm.vp.load.ff.nxv16i8.p0(ptr align 1 [[TMP8]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP6]])
+; ON-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 16 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; ON-NEXT:    [[TMP10:%.*]] = zext i32 [[TMP9]] to i64
+; ON-NEXT:    [[TMP20:%.*]] = extractvalue { <vscale x 16 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i8(<vscale x 16 x i8> [[TMP20]], <vscale x 16 x i8> zeroinitializer, metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; ON-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP9]] to i64
+; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP12]], [[EVL_BASED_IV]]
+; ON-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; ON-NEXT:    [[TMP14:%.*]] = mul i64 [[TMP10]], 1
+; ON-NEXT:    [[TMP15:%.*]] = mul i64 1, [[TMP14]]
+; ON-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP15]]
+; ON-NEXT:    [[TMP16:%.*]] = icmp sge i32 [[TMP13]], 0
+; ON-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP10:![0-9]+]]
+; ON:       middle.block:
+; ON-NEXT:    [[TMP17:%.*]] = add i32 [[TMP13]], 1
+; ON-NEXT:    [[TMP18:%.*]] = zext i32 [[TMP17]] to i64
+; ON-NEXT:    [[TMP19:%.*]] = add i64 [[INDEX]], [[TMP18]]
+; ON-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP19]]
+; ON-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; ON:       vec.uncountable.scalar.ph:
+; ON-NEXT:    br label [[FOR_COND1:%.*]]
 ; ON:       for.cond:
-; ON-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; ON-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; ON-NEXT:    [[TMP11:%.*]] = load i8, ptr [[END_0]], align 1
 ; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP11]], 0
 ; ON-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP11:![0-9]+]]
 ; ON:       for.end:
-; ON-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[INCDEC_PTR]], [[FOR_COND]] ]
+; ON-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[INCDEC_PTR]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; ON-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[INCDEC_PTR_LCSSA]] to i64
 ; ON-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; ON-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -1468,15 +2100,52 @@ define i64 @SingleBlock4(ptr %start) {
 ;
 ; stress-LABEL: @SingleBlock4(
 ; stress-NEXT:  entry:
+; stress-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; stress-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; stress-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 0
+; stress-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP2]], i64 0
+; stress-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
+; stress-NEXT:    [[TMP3:%.*]] = call <vscale x 16 x i64> @llvm.stepvector.nxv16i64()
+; stress-NEXT:    [[TMP4:%.*]] = add <vscale x 16 x i64> [[DOTSPLAT]], [[TMP3]]
 ; stress-NEXT:    br label [[FOR_COND:%.*]]
+; stress:       vector.body:
+; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; stress-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; stress-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY]] ], [ [[PTR_IND:%.*]], [[FOR_COND]] ]
+; stress-NEXT:    [[TMP5:%.*]] = mul <vscale x 16 x i64> [[TMP4]], splat (i64 1)
+; stress-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 16 x i64> [[TMP5]]
+; stress-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
+; stress-NEXT:    [[TMP7:%.*]] = extractelement <vscale x 16 x ptr> [[VECTOR_GEP]], i32 0
+; stress-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[TMP7]], i32 0
+; stress-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 16 x i8>, i32 } @llvm.vp.load.ff.nxv16i8.p0(ptr align 1 [[TMP8]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP6]])
+; stress-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 16 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; stress-NEXT:    [[TMP10:%.*]] = zext i32 [[TMP9]] to i64
+; stress-NEXT:    [[TMP20:%.*]] = extractvalue { <vscale x 16 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i8(<vscale x 16 x i8> [[TMP20]], <vscale x 16 x i8> zeroinitializer, metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; stress-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP9]] to i64
+; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP12]], [[EVL_BASED_IV]]
+; stress-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; stress-NEXT:    [[TMP14:%.*]] = mul i64 [[TMP10]], 1
+; stress-NEXT:    [[TMP15:%.*]] = mul i64 1, [[TMP14]]
+; stress-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP15]]
+; stress-NEXT:    [[TMP16:%.*]] = icmp sge i32 [[TMP13]], 0
+; stress-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP10:![0-9]+]]
+; stress:       middle.block:
+; stress-NEXT:    [[TMP17:%.*]] = add i32 [[TMP13]], 1
+; stress-NEXT:    [[TMP18:%.*]] = zext i32 [[TMP17]] to i64
+; stress-NEXT:    [[TMP19:%.*]] = add i64 [[INDEX]], [[TMP18]]
+; stress-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP19]]
+; stress-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; stress:       vec.uncountable.scalar.ph:
+; stress-NEXT:    br label [[FOR_COND1:%.*]]
 ; stress:       for.cond:
-; stress-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; stress-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; stress-NEXT:    [[TMP11:%.*]] = load i8, ptr [[END_0]], align 1
 ; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP11]], 0
 ; stress-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP11:![0-9]+]]
 ; stress:       for.end:
-; stress-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[INCDEC_PTR]], [[FOR_COND]] ]
+; stress-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[INCDEC_PTR]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; stress-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[INCDEC_PTR_LCSSA]] to i64
 ; stress-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; stress-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -1500,15 +2169,52 @@ define i64 @SingleBlock4(ptr %start) {
 ;
 ; IF0-LABEL: @SingleBlock4(
 ; IF0-NEXT:  entry:
+; IF0-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; IF0-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; IF0-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 0
+; IF0-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP2]], i64 0
+; IF0-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
+; IF0-NEXT:    [[TMP3:%.*]] = call <vscale x 16 x i64> @llvm.stepvector.nxv16i64()
+; IF0-NEXT:    [[TMP4:%.*]] = add <vscale x 16 x i64> [[DOTSPLAT]], [[TMP3]]
 ; IF0-NEXT:    br label [[FOR_COND:%.*]]
+; IF0:       vector.body:
+; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; IF0-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; IF0-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY]] ], [ [[PTR_IND:%.*]], [[FOR_COND]] ]
+; IF0-NEXT:    [[TMP5:%.*]] = mul <vscale x 16 x i64> [[TMP4]], splat (i64 1)
+; IF0-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 16 x i64> [[TMP5]]
+; IF0-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
+; IF0-NEXT:    [[TMP7:%.*]] = extractelement <vscale x 16 x ptr> [[VECTOR_GEP]], i32 0
+; IF0-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[TMP7]], i32 0
+; IF0-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 16 x i8>, i32 } @llvm.vp.load.ff.nxv16i8.p0(ptr align 1 [[TMP8]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP6]])
+; IF0-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 16 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF0-NEXT:    [[TMP10:%.*]] = zext i32 [[TMP9]] to i64
+; IF0-NEXT:    [[TMP20:%.*]] = extractvalue { <vscale x 16 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF0-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i8(<vscale x 16 x i8> [[TMP20]], <vscale x 16 x i8> zeroinitializer, metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; IF0-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP9]] to i64
+; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP12]], [[EVL_BASED_IV]]
+; IF0-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; IF0-NEXT:    [[TMP14:%.*]] = mul i64 [[TMP10]], 1
+; IF0-NEXT:    [[TMP15:%.*]] = mul i64 1, [[TMP14]]
+; IF0-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP15]]
+; IF0-NEXT:    [[TMP16:%.*]] = icmp sge i32 [[TMP13]], 0
+; IF0-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP10:![0-9]+]]
+; IF0:       middle.block:
+; IF0-NEXT:    [[TMP17:%.*]] = add i32 [[TMP13]], 1
+; IF0-NEXT:    [[TMP18:%.*]] = zext i32 [[TMP17]] to i64
+; IF0-NEXT:    [[TMP19:%.*]] = add i64 [[INDEX]], [[TMP18]]
+; IF0-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP19]]
+; IF0-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF0:       vec.uncountable.scalar.ph:
+; IF0-NEXT:    br label [[FOR_COND1:%.*]]
 ; IF0:       for.cond:
-; IF0-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; IF0-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; IF0-NEXT:    [[TMP11:%.*]] = load i8, ptr [[END_0]], align 1
 ; IF0-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP11]], 0
 ; IF0-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; IF0-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; IF0-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP11:![0-9]+]]
 ; IF0:       for.end:
-; IF0-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[INCDEC_PTR]], [[FOR_COND]] ]
+; IF0-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[INCDEC_PTR]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF0-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[INCDEC_PTR_LCSSA]] to i64
 ; IF0-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; IF0-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -1516,15 +2222,52 @@ define i64 @SingleBlock4(ptr %start) {
 ;
 ; IF1-LABEL: @SingleBlock4(
 ; IF1-NEXT:  entry:
+; IF1-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; IF1-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; IF1-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 0
+; IF1-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP2]], i64 0
+; IF1-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
+; IF1-NEXT:    [[TMP3:%.*]] = call <vscale x 16 x i64> @llvm.stepvector.nxv16i64()
+; IF1-NEXT:    [[TMP4:%.*]] = add <vscale x 16 x i64> [[DOTSPLAT]], [[TMP3]]
 ; IF1-NEXT:    br label [[FOR_COND:%.*]]
+; IF1:       vector.body:
+; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; IF1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; IF1-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY]] ], [ [[PTR_IND:%.*]], [[FOR_COND]] ]
+; IF1-NEXT:    [[TMP5:%.*]] = mul <vscale x 16 x i64> [[TMP4]], splat (i64 1)
+; IF1-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 16 x i64> [[TMP5]]
+; IF1-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
+; IF1-NEXT:    [[TMP7:%.*]] = extractelement <vscale x 16 x ptr> [[VECTOR_GEP]], i32 0
+; IF1-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[TMP7]], i32 0
+; IF1-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 16 x i8>, i32 } @llvm.vp.load.ff.nxv16i8.p0(ptr align 1 [[TMP8]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP6]])
+; IF1-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 16 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF1-NEXT:    [[TMP10:%.*]] = zext i32 [[TMP9]] to i64
+; IF1-NEXT:    [[TMP20:%.*]] = extractvalue { <vscale x 16 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF1-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i8(<vscale x 16 x i8> [[TMP20]], <vscale x 16 x i8> zeroinitializer, metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; IF1-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP9]] to i64
+; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP12]], [[EVL_BASED_IV]]
+; IF1-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; IF1-NEXT:    [[TMP14:%.*]] = mul i64 [[TMP10]], 1
+; IF1-NEXT:    [[TMP15:%.*]] = mul i64 1, [[TMP14]]
+; IF1-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP15]]
+; IF1-NEXT:    [[TMP16:%.*]] = icmp sge i32 [[TMP13]], 0
+; IF1-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP10:![0-9]+]]
+; IF1:       middle.block:
+; IF1-NEXT:    [[TMP17:%.*]] = add i32 [[TMP13]], 1
+; IF1-NEXT:    [[TMP18:%.*]] = zext i32 [[TMP17]] to i64
+; IF1-NEXT:    [[TMP19:%.*]] = add i64 [[INDEX]], [[TMP18]]
+; IF1-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP19]]
+; IF1-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF1:       vec.uncountable.scalar.ph:
+; IF1-NEXT:    br label [[FOR_COND1:%.*]]
 ; IF1:       for.cond:
-; IF1-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; IF1-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; IF1-NEXT:    [[TMP11:%.*]] = load i8, ptr [[END_0]], align 1
 ; IF1-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP11]], 0
 ; IF1-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; IF1-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; IF1-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP11:![0-9]+]]
 ; IF1:       for.end:
-; IF1-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[INCDEC_PTR]], [[FOR_COND]] ]
+; IF1-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[INCDEC_PTR]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF1-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[INCDEC_PTR_LCSSA]] to i64
 ; IF1-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; IF1-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -1532,15 +2275,52 @@ define i64 @SingleBlock4(ptr %start) {
 ;
 ; IF2-LABEL: @SingleBlock4(
 ; IF2-NEXT:  entry:
+; IF2-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; IF2-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; IF2-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 0
+; IF2-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP2]], i64 0
+; IF2-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
+; IF2-NEXT:    [[TMP3:%.*]] = call <vscale x 16 x i64> @llvm.stepvector.nxv16i64()
+; IF2-NEXT:    [[TMP4:%.*]] = add <vscale x 16 x i64> [[DOTSPLAT]], [[TMP3]]
 ; IF2-NEXT:    br label [[FOR_COND:%.*]]
+; IF2:       vector.body:
+; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; IF2-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; IF2-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY]] ], [ [[PTR_IND:%.*]], [[FOR_COND]] ]
+; IF2-NEXT:    [[TMP5:%.*]] = mul <vscale x 16 x i64> [[TMP4]], splat (i64 1)
+; IF2-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 16 x i64> [[TMP5]]
+; IF2-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
+; IF2-NEXT:    [[TMP7:%.*]] = extractelement <vscale x 16 x ptr> [[VECTOR_GEP]], i32 0
+; IF2-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[TMP7]], i32 0
+; IF2-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 16 x i8>, i32 } @llvm.vp.load.ff.nxv16i8.p0(ptr align 1 [[TMP8]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP6]])
+; IF2-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 16 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF2-NEXT:    [[TMP10:%.*]] = zext i32 [[TMP9]] to i64
+; IF2-NEXT:    [[TMP20:%.*]] = extractvalue { <vscale x 16 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF2-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i8(<vscale x 16 x i8> [[TMP20]], <vscale x 16 x i8> zeroinitializer, metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; IF2-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP9]] to i64
+; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP12]], [[EVL_BASED_IV]]
+; IF2-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; IF2-NEXT:    [[TMP14:%.*]] = mul i64 [[TMP10]], 1
+; IF2-NEXT:    [[TMP15:%.*]] = mul i64 1, [[TMP14]]
+; IF2-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP15]]
+; IF2-NEXT:    [[TMP16:%.*]] = icmp sge i32 [[TMP13]], 0
+; IF2-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP10:![0-9]+]]
+; IF2:       middle.block:
+; IF2-NEXT:    [[TMP17:%.*]] = add i32 [[TMP13]], 1
+; IF2-NEXT:    [[TMP18:%.*]] = zext i32 [[TMP17]] to i64
+; IF2-NEXT:    [[TMP19:%.*]] = add i64 [[INDEX]], [[TMP18]]
+; IF2-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP19]]
+; IF2-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF2:       vec.uncountable.scalar.ph:
+; IF2-NEXT:    br label [[FOR_COND1:%.*]]
 ; IF2:       for.cond:
-; IF2-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; IF2-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; IF2-NEXT:    [[TMP11:%.*]] = load i8, ptr [[END_0]], align 1
 ; IF2-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP11]], 0
 ; IF2-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; IF2-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; IF2-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP11:![0-9]+]]
 ; IF2:       for.end:
-; IF2-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[INCDEC_PTR]], [[FOR_COND]] ]
+; IF2-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[INCDEC_PTR]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF2-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[INCDEC_PTR_LCSSA]] to i64
 ; IF2-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; IF2-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -1569,14 +2349,36 @@ define i64 @SingleBlock5(ptr %start) {
 ; DEFAULT-LABEL: @SingleBlock5(
 ; DEFAULT-NEXT:  entry:
 ; DEFAULT-NEXT:    br label [[FOR_COND:%.*]]
+; DEFAULT:       vector.body:
+; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; DEFAULT-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[EVL_BASED_IV]]
+; DEFAULT-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; DEFAULT-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; DEFAULT-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; DEFAULT-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; DEFAULT-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> zeroinitializer, metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; DEFAULT-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; DEFAULT-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; DEFAULT-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; DEFAULT-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP12:![0-9]+]]
+; DEFAULT:       middle.block:
+; DEFAULT-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; DEFAULT-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; DEFAULT-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
+; DEFAULT-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; DEFAULT:       vec.uncountable.scalar.ph:
+; DEFAULT-NEXT:    br label [[FOR_COND1:%.*]]
 ; DEFAULT:       for.cond:
-; DEFAULT-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; DEFAULT-NEXT:    [[TMP10:%.*]] = load i8, ptr [[END_0]], align 1
 ; DEFAULT-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP10]], 0
 ; DEFAULT-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; DEFAULT-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; DEFAULT-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP13:![0-9]+]]
 ; DEFAULT:       for.end:
-; DEFAULT-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; DEFAULT-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[INCDEC_PTR_LCSSA]] to i64
 ; DEFAULT-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; DEFAULT-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -1585,14 +2387,36 @@ define i64 @SingleBlock5(ptr %start) {
 ; ON-LABEL: @SingleBlock5(
 ; ON-NEXT:  entry:
 ; ON-NEXT:    br label [[FOR_COND:%.*]]
+; ON:       vector.body:
+; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; ON-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; ON-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; ON-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[EVL_BASED_IV]]
+; ON-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; ON-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; ON-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; ON-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> zeroinitializer, metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; ON-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; ON-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; ON-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; ON-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP12:![0-9]+]]
+; ON:       middle.block:
+; ON-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; ON-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; ON-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
+; ON-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; ON:       vec.uncountable.scalar.ph:
+; ON-NEXT:    br label [[FOR_COND1:%.*]]
 ; ON:       for.cond:
-; ON-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; ON-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; ON-NEXT:    [[TMP10:%.*]] = load i8, ptr [[END_0]], align 1
 ; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP10]], 0
 ; ON-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP13:![0-9]+]]
 ; ON:       for.end:
-; ON-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; ON-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; ON-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[INCDEC_PTR_LCSSA]] to i64
 ; ON-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; ON-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -1633,14 +2457,36 @@ define i64 @SingleBlock5(ptr %start) {
 ; stress-LABEL: @SingleBlock5(
 ; stress-NEXT:  entry:
 ; stress-NEXT:    br label [[FOR_COND:%.*]]
+; stress:       vector.body:
+; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; stress-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; stress-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; stress-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[EVL_BASED_IV]]
+; stress-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; stress-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; stress-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; stress-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> zeroinitializer, metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; stress-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; stress-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; stress-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; stress-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP12:![0-9]+]]
+; stress:       middle.block:
+; stress-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; stress-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; stress-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
+; stress-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; stress:       vec.uncountable.scalar.ph:
+; stress-NEXT:    br label [[FOR_COND1:%.*]]
 ; stress:       for.cond:
-; stress-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; stress-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; stress-NEXT:    [[TMP10:%.*]] = load i8, ptr [[END_0]], align 1
 ; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP10]], 0
 ; stress-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP13:![0-9]+]]
 ; stress:       for.end:
-; stress-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; stress-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; stress-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[INCDEC_PTR_LCSSA]] to i64
 ; stress-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; stress-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -1665,14 +2511,36 @@ define i64 @SingleBlock5(ptr %start) {
 ; IF0-LABEL: @SingleBlock5(
 ; IF0-NEXT:  entry:
 ; IF0-NEXT:    br label [[FOR_COND:%.*]]
+; IF0:       vector.body:
+; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; IF0-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; IF0-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; IF0-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[EVL_BASED_IV]]
+; IF0-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; IF0-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; IF0-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF0-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF0-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> zeroinitializer, metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF0-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; IF0-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF0-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; IF0-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP12:![0-9]+]]
+; IF0:       middle.block:
+; IF0-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; IF0-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; IF0-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
+; IF0-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF0:       vec.uncountable.scalar.ph:
+; IF0-NEXT:    br label [[FOR_COND1:%.*]]
 ; IF0:       for.cond:
-; IF0-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; IF0-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; IF0-NEXT:    [[TMP10:%.*]] = load i8, ptr [[END_0]], align 1
 ; IF0-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP10]], 0
 ; IF0-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; IF0-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; IF0-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP13:![0-9]+]]
 ; IF0:       for.end:
-; IF0-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; IF0-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF0-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[INCDEC_PTR_LCSSA]] to i64
 ; IF0-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; IF0-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -1681,14 +2549,36 @@ define i64 @SingleBlock5(ptr %start) {
 ; IF1-LABEL: @SingleBlock5(
 ; IF1-NEXT:  entry:
 ; IF1-NEXT:    br label [[FOR_COND:%.*]]
+; IF1:       vector.body:
+; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; IF1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; IF1-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; IF1-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[EVL_BASED_IV]]
+; IF1-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; IF1-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; IF1-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF1-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF1-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> zeroinitializer, metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF1-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; IF1-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF1-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; IF1-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP12:![0-9]+]]
+; IF1:       middle.block:
+; IF1-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; IF1-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; IF1-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
+; IF1-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF1:       vec.uncountable.scalar.ph:
+; IF1-NEXT:    br label [[FOR_COND1:%.*]]
 ; IF1:       for.cond:
-; IF1-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; IF1-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; IF1-NEXT:    [[TMP10:%.*]] = load i8, ptr [[END_0]], align 1
 ; IF1-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP10]], 0
 ; IF1-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; IF1-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; IF1-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP13:![0-9]+]]
 ; IF1:       for.end:
-; IF1-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; IF1-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF1-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[INCDEC_PTR_LCSSA]] to i64
 ; IF1-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; IF1-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -1697,14 +2587,36 @@ define i64 @SingleBlock5(ptr %start) {
 ; IF2-LABEL: @SingleBlock5(
 ; IF2-NEXT:  entry:
 ; IF2-NEXT:    br label [[FOR_COND:%.*]]
+; IF2:       vector.body:
+; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; IF2-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; IF2-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; IF2-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[EVL_BASED_IV]]
+; IF2-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; IF2-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; IF2-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF2-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF2-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> zeroinitializer, metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF2-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; IF2-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF2-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; IF2-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP12:![0-9]+]]
+; IF2:       middle.block:
+; IF2-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; IF2-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; IF2-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
+; IF2-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF2:       vec.uncountable.scalar.ph:
+; IF2-NEXT:    br label [[FOR_COND1:%.*]]
 ; IF2:       for.cond:
-; IF2-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; IF2-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; IF2-NEXT:    [[TMP10:%.*]] = load i8, ptr [[END_0]], align 1
 ; IF2-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP10]], 0
 ; IF2-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; IF2-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; IF2-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP13:![0-9]+]]
 ; IF2:       for.end:
-; IF2-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; IF2-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF2-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[INCDEC_PTR_LCSSA]] to i64
 ; IF2-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; IF2-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -2195,15 +3107,38 @@ define i64 @SingleBlock9(ptr %start) {
 ; DEFAULT-LABEL: @SingleBlock9(
 ; DEFAULT-NEXT:  entry:
 ; DEFAULT-NEXT:    br label [[FOR_COND:%.*]]
+; DEFAULT:       vector.body:
+; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; DEFAULT-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[EVL_BASED_IV]]
+; DEFAULT-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; DEFAULT-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; DEFAULT-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; DEFAULT-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; DEFAULT-NEXT:    [[VP_OP:%.*]] = call <vscale x 32 x i8> @llvm.vp.add.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> [[TMP3]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; DEFAULT-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[VP_OP]], <vscale x 32 x i8> zeroinitializer, metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; DEFAULT-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; DEFAULT-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; DEFAULT-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; DEFAULT-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP14:![0-9]+]]
+; DEFAULT:       middle.block:
+; DEFAULT-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; DEFAULT-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; DEFAULT-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
+; DEFAULT-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; DEFAULT:       vec.uncountable.scalar.ph:
+; DEFAULT-NEXT:    br label [[FOR_COND1:%.*]]
 ; DEFAULT:       for.cond:
-; DEFAULT-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; DEFAULT-NEXT:    [[TMP10:%.*]] = load i8, ptr [[END_0]], align 1
 ; DEFAULT-NEXT:    [[TMP11:%.*]] = add i8 [[TMP10]], [[TMP10]]
 ; DEFAULT-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP11]], 0
 ; DEFAULT-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; DEFAULT-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; DEFAULT-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP15:![0-9]+]]
 ; DEFAULT:       for.end:
-; DEFAULT-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; DEFAULT-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; DEFAULT-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; DEFAULT-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; DEFAULT-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -2212,15 +3147,38 @@ define i64 @SingleBlock9(ptr %start) {
 ; ON-LABEL: @SingleBlock9(
 ; ON-NEXT:  entry:
 ; ON-NEXT:    br label [[FOR_COND:%.*]]
+; ON:       vector.body:
+; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; ON-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; ON-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; ON-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[EVL_BASED_IV]]
+; ON-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; ON-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; ON-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; ON-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; ON-NEXT:    [[VP_OP:%.*]] = call <vscale x 32 x i8> @llvm.vp.add.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> [[TMP3]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[VP_OP]], <vscale x 32 x i8> zeroinitializer, metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; ON-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; ON-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; ON-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; ON-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP14:![0-9]+]]
+; ON:       middle.block:
+; ON-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; ON-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; ON-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
+; ON-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; ON:       vec.uncountable.scalar.ph:
+; ON-NEXT:    br label [[FOR_COND1:%.*]]
 ; ON:       for.cond:
-; ON-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; ON-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; ON-NEXT:    [[TMP10:%.*]] = load i8, ptr [[END_0]], align 1
 ; ON-NEXT:    [[TMP11:%.*]] = add i8 [[TMP10]], [[TMP10]]
 ; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP11]], 0
 ; ON-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP15:![0-9]+]]
 ; ON:       for.end:
-; ON-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; ON-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; ON-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; ON-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; ON-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -2263,15 +3221,38 @@ define i64 @SingleBlock9(ptr %start) {
 ; stress-LABEL: @SingleBlock9(
 ; stress-NEXT:  entry:
 ; stress-NEXT:    br label [[FOR_COND:%.*]]
+; stress:       vector.body:
+; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; stress-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; stress-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; stress-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[EVL_BASED_IV]]
+; stress-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; stress-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; stress-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; stress-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; stress-NEXT:    [[VP_OP:%.*]] = call <vscale x 32 x i8> @llvm.vp.add.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> [[TMP3]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[VP_OP]], <vscale x 32 x i8> zeroinitializer, metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; stress-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; stress-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; stress-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; stress-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP14:![0-9]+]]
+; stress:       middle.block:
+; stress-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; stress-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; stress-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
+; stress-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; stress:       vec.uncountable.scalar.ph:
+; stress-NEXT:    br label [[FOR_COND1:%.*]]
 ; stress:       for.cond:
-; stress-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; stress-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; stress-NEXT:    [[TMP10:%.*]] = load i8, ptr [[END_0]], align 1
 ; stress-NEXT:    [[TMP11:%.*]] = add i8 [[TMP10]], [[TMP10]]
 ; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP11]], 0
 ; stress-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP15:![0-9]+]]
 ; stress:       for.end:
-; stress-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; stress-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; stress-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; stress-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; stress-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -2297,15 +3278,38 @@ define i64 @SingleBlock9(ptr %start) {
 ; IF0-LABEL: @SingleBlock9(
 ; IF0-NEXT:  entry:
 ; IF0-NEXT:    br label [[FOR_COND:%.*]]
+; IF0:       vector.body:
+; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; IF0-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; IF0-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; IF0-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[EVL_BASED_IV]]
+; IF0-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; IF0-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; IF0-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF0-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF0-NEXT:    [[VP_OP:%.*]] = call <vscale x 32 x i8> @llvm.vp.add.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> [[TMP3]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF0-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[VP_OP]], <vscale x 32 x i8> zeroinitializer, metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF0-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; IF0-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF0-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; IF0-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP14:![0-9]+]]
+; IF0:       middle.block:
+; IF0-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; IF0-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; IF0-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
+; IF0-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF0:       vec.uncountable.scalar.ph:
+; IF0-NEXT:    br label [[FOR_COND1:%.*]]
 ; IF0:       for.cond:
-; IF0-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; IF0-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; IF0-NEXT:    [[TMP10:%.*]] = load i8, ptr [[END_0]], align 1
 ; IF0-NEXT:    [[TMP11:%.*]] = add i8 [[TMP10]], [[TMP10]]
 ; IF0-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP11]], 0
 ; IF0-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; IF0-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; IF0-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP15:![0-9]+]]
 ; IF0:       for.end:
-; IF0-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; IF0-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF0-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; IF0-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; IF0-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -2314,15 +3318,38 @@ define i64 @SingleBlock9(ptr %start) {
 ; IF1-LABEL: @SingleBlock9(
 ; IF1-NEXT:  entry:
 ; IF1-NEXT:    br label [[FOR_COND:%.*]]
+; IF1:       vector.body:
+; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; IF1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; IF1-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; IF1-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[EVL_BASED_IV]]
+; IF1-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; IF1-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; IF1-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF1-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF1-NEXT:    [[VP_OP:%.*]] = call <vscale x 32 x i8> @llvm.vp.add.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> [[TMP3]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF1-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[VP_OP]], <vscale x 32 x i8> zeroinitializer, metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF1-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; IF1-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF1-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; IF1-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP14:![0-9]+]]
+; IF1:       middle.block:
+; IF1-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; IF1-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; IF1-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
+; IF1-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF1:       vec.uncountable.scalar.ph:
+; IF1-NEXT:    br label [[FOR_COND1:%.*]]
 ; IF1:       for.cond:
-; IF1-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; IF1-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; IF1-NEXT:    [[TMP10:%.*]] = load i8, ptr [[END_0]], align 1
 ; IF1-NEXT:    [[TMP11:%.*]] = add i8 [[TMP10]], [[TMP10]]
 ; IF1-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP11]], 0
 ; IF1-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; IF1-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; IF1-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP15:![0-9]+]]
 ; IF1:       for.end:
-; IF1-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; IF1-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF1-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; IF1-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; IF1-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -2331,15 +3358,38 @@ define i64 @SingleBlock9(ptr %start) {
 ; IF2-LABEL: @SingleBlock9(
 ; IF2-NEXT:  entry:
 ; IF2-NEXT:    br label [[FOR_COND:%.*]]
+; IF2:       vector.body:
+; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
+; IF2-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
+; IF2-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; IF2-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[EVL_BASED_IV]]
+; IF2-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; IF2-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; IF2-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF2-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF2-NEXT:    [[VP_OP:%.*]] = call <vscale x 32 x i8> @llvm.vp.add.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> [[TMP3]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF2-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[VP_OP]], <vscale x 32 x i8> zeroinitializer, metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF2-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; IF2-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF2-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; IF2-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP14:![0-9]+]]
+; IF2:       middle.block:
+; IF2-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; IF2-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; IF2-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP8]]
+; IF2-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF2:       vec.uncountable.scalar.ph:
+; IF2-NEXT:    br label [[FOR_COND1:%.*]]
 ; IF2:       for.cond:
-; IF2-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; IF2-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND1]] ]
 ; IF2-NEXT:    [[TMP10:%.*]] = load i8, ptr [[END_0]], align 1
 ; IF2-NEXT:    [[TMP11:%.*]] = add i8 [[TMP10]], [[TMP10]]
 ; IF2-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP11]], 0
 ; IF2-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; IF2-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; IF2-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND1]], !llvm.loop [[LOOP15:![0-9]+]]
 ; IF2:       for.end:
-; IF2-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ]
+; IF2-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF2-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
 ; IF2-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; IF2-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -2504,27 +3554,71 @@ define ptr @SingleBlock11(ptr %s) {
 ; DEFAULT-LABEL: @SingleBlock11(
 ; DEFAULT-NEXT:  entry:
 ; DEFAULT-NEXT:    br label [[WHILE_COND:%.*]]
+; DEFAULT:       vector.body:
+; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[WHILE_COND]] ]
+; DEFAULT-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[WHILE_COND]] ]
+; DEFAULT-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; DEFAULT-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[S:%.*]], i64 [[EVL_BASED_IV]]
+; DEFAULT-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; DEFAULT-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; DEFAULT-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; DEFAULT-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; DEFAULT-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> splat (i8 49), metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; DEFAULT-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; DEFAULT-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; DEFAULT-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; DEFAULT-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[WHILE_COND]], !llvm.loop [[LOOP16:![0-9]+]]
+; DEFAULT:       middle.block:
+; DEFAULT-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; DEFAULT-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; DEFAULT-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[S]], i64 [[TMP8]]
+; DEFAULT-NEXT:    br i1 true, label [[WHILE_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; DEFAULT:       vec.uncountable.scalar.ph:
+; DEFAULT-NEXT:    br label [[WHILE_COND1:%.*]]
 ; DEFAULT:       while.cond:
-; DEFAULT-NEXT:    [[S_ADDR_0:%.*]] = phi ptr [ [[S:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND]] ]
+; DEFAULT-NEXT:    [[S_ADDR_0:%.*]] = phi ptr [ [[S]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND1]] ]
 ; DEFAULT-NEXT:    [[TMP10:%.*]] = load i8, ptr [[S_ADDR_0]], align 1
 ; DEFAULT-NEXT:    [[CMP:%.*]] = icmp eq i8 [[TMP10]], 49
 ; DEFAULT-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[S_ADDR_0]], i64 1
-; DEFAULT-NEXT:    br i1 [[CMP]], label [[WHILE_COND]], label [[WHILE_END:%.*]]
+; DEFAULT-NEXT:    br i1 [[CMP]], label [[WHILE_COND1]], label [[WHILE_END]], !llvm.loop [[LOOP17:![0-9]+]]
 ; DEFAULT:       while.end:
-; DEFAULT-NEXT:    [[S_ADDR_0_LCSSA:%.*]] = phi ptr [ [[S_ADDR_0]], [[WHILE_COND]] ]
+; DEFAULT-NEXT:    [[S_ADDR_0_LCSSA:%.*]] = phi ptr [ [[S_ADDR_0]], [[WHILE_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; DEFAULT-NEXT:    ret ptr [[S_ADDR_0_LCSSA]]
 ;
 ; ON-LABEL: @SingleBlock11(
 ; ON-NEXT:  entry:
 ; ON-NEXT:    br label [[WHILE_COND:%.*]]
+; ON:       vector.body:
+; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[WHILE_COND]] ]
+; ON-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[WHILE_COND]] ]
+; ON-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; ON-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[S:%.*]], i64 [[EVL_BASED_IV]]
+; ON-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; ON-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; ON-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; ON-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> splat (i8 49), metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; ON-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; ON-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; ON-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; ON-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[WHILE_COND]], !llvm.loop [[LOOP16:![0-9]+]]
+; ON:       middle.block:
+; ON-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; ON-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; ON-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[S]], i64 [[TMP8]]
+; ON-NEXT:    br i1 true, label [[WHILE_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; ON:       vec.uncountable.scalar.ph:
+; ON-NEXT:    br label [[WHILE_COND1:%.*]]
 ; ON:       while.cond:
-; ON-NEXT:    [[S_ADDR_0:%.*]] = phi ptr [ [[S:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND]] ]
+; ON-NEXT:    [[S_ADDR_0:%.*]] = phi ptr [ [[S]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND1]] ]
 ; ON-NEXT:    [[TMP10:%.*]] = load i8, ptr [[S_ADDR_0]], align 1
 ; ON-NEXT:    [[CMP:%.*]] = icmp eq i8 [[TMP10]], 49
 ; ON-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[S_ADDR_0]], i64 1
-; ON-NEXT:    br i1 [[CMP]], label [[WHILE_COND]], label [[WHILE_END:%.*]]
+; ON-NEXT:    br i1 [[CMP]], label [[WHILE_COND1]], label [[WHILE_END]], !llvm.loop [[LOOP17:![0-9]+]]
 ; ON:       while.end:
-; ON-NEXT:    [[S_ADDR_0_LCSSA:%.*]] = phi ptr [ [[S_ADDR_0]], [[WHILE_COND]] ]
+; ON-NEXT:    [[S_ADDR_0_LCSSA:%.*]] = phi ptr [ [[S_ADDR_0]], [[WHILE_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; ON-NEXT:    ret ptr [[S_ADDR_0_LCSSA]]
 ;
 ; OFF-LABEL: @SingleBlock11(
@@ -2556,14 +3650,36 @@ define ptr @SingleBlock11(ptr %s) {
 ; stress-LABEL: @SingleBlock11(
 ; stress-NEXT:  entry:
 ; stress-NEXT:    br label [[WHILE_COND:%.*]]
+; stress:       vector.body:
+; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[WHILE_COND]] ]
+; stress-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[WHILE_COND]] ]
+; stress-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; stress-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[S:%.*]], i64 [[EVL_BASED_IV]]
+; stress-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; stress-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; stress-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; stress-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> splat (i8 49), metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; stress-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; stress-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; stress-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; stress-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[WHILE_COND]], !llvm.loop [[LOOP16:![0-9]+]]
+; stress:       middle.block:
+; stress-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; stress-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; stress-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[S]], i64 [[TMP8]]
+; stress-NEXT:    br i1 true, label [[WHILE_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; stress:       vec.uncountable.scalar.ph:
+; stress-NEXT:    br label [[WHILE_COND1:%.*]]
 ; stress:       while.cond:
-; stress-NEXT:    [[S_ADDR_0:%.*]] = phi ptr [ [[S:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND]] ]
+; stress-NEXT:    [[S_ADDR_0:%.*]] = phi ptr [ [[S]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND1]] ]
 ; stress-NEXT:    [[TMP10:%.*]] = load i8, ptr [[S_ADDR_0]], align 1
 ; stress-NEXT:    [[CMP:%.*]] = icmp eq i8 [[TMP10]], 49
 ; stress-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[S_ADDR_0]], i64 1
-; stress-NEXT:    br i1 [[CMP]], label [[WHILE_COND]], label [[WHILE_END:%.*]]
+; stress-NEXT:    br i1 [[CMP]], label [[WHILE_COND1]], label [[WHILE_END]], !llvm.loop [[LOOP17:![0-9]+]]
 ; stress:       while.end:
-; stress-NEXT:    [[S_ADDR_0_LCSSA:%.*]] = phi ptr [ [[S_ADDR_0]], [[WHILE_COND]] ]
+; stress-NEXT:    [[S_ADDR_0_LCSSA:%.*]] = phi ptr [ [[S_ADDR_0]], [[WHILE_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; stress-NEXT:    ret ptr [[S_ADDR_0_LCSSA]]
 ;
 ; VLS-LABEL: @SingleBlock11(
@@ -2582,40 +3698,106 @@ define ptr @SingleBlock11(ptr %s) {
 ; IF0-LABEL: @SingleBlock11(
 ; IF0-NEXT:  entry:
 ; IF0-NEXT:    br label [[WHILE_COND:%.*]]
+; IF0:       vector.body:
+; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[WHILE_COND]] ]
+; IF0-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[WHILE_COND]] ]
+; IF0-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; IF0-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[S:%.*]], i64 [[EVL_BASED_IV]]
+; IF0-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; IF0-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; IF0-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF0-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF0-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> splat (i8 49), metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF0-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; IF0-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF0-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; IF0-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[WHILE_COND]], !llvm.loop [[LOOP16:![0-9]+]]
+; IF0:       middle.block:
+; IF0-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; IF0-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; IF0-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[S]], i64 [[TMP8]]
+; IF0-NEXT:    br i1 true, label [[WHILE_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF0:       vec.uncountable.scalar.ph:
+; IF0-NEXT:    br label [[WHILE_COND1:%.*]]
 ; IF0:       while.cond:
-; IF0-NEXT:    [[S_ADDR_0:%.*]] = phi ptr [ [[S:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND]] ]
+; IF0-NEXT:    [[S_ADDR_0:%.*]] = phi ptr [ [[S]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND1]] ]
 ; IF0-NEXT:    [[TMP10:%.*]] = load i8, ptr [[S_ADDR_0]], align 1
 ; IF0-NEXT:    [[CMP:%.*]] = icmp eq i8 [[TMP10]], 49
 ; IF0-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[S_ADDR_0]], i64 1
-; IF0-NEXT:    br i1 [[CMP]], label [[WHILE_COND]], label [[WHILE_END:%.*]]
+; IF0-NEXT:    br i1 [[CMP]], label [[WHILE_COND1]], label [[WHILE_END]], !llvm.loop [[LOOP17:![0-9]+]]
 ; IF0:       while.end:
-; IF0-NEXT:    [[S_ADDR_0_LCSSA:%.*]] = phi ptr [ [[S_ADDR_0]], [[WHILE_COND]] ]
+; IF0-NEXT:    [[S_ADDR_0_LCSSA:%.*]] = phi ptr [ [[S_ADDR_0]], [[WHILE_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF0-NEXT:    ret ptr [[S_ADDR_0_LCSSA]]
 ;
 ; IF1-LABEL: @SingleBlock11(
 ; IF1-NEXT:  entry:
 ; IF1-NEXT:    br label [[WHILE_COND:%.*]]
+; IF1:       vector.body:
+; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[WHILE_COND]] ]
+; IF1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[WHILE_COND]] ]
+; IF1-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; IF1-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[S:%.*]], i64 [[EVL_BASED_IV]]
+; IF1-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; IF1-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; IF1-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF1-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF1-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> splat (i8 49), metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF1-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; IF1-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF1-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; IF1-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[WHILE_COND]], !llvm.loop [[LOOP16:![0-9]+]]
+; IF1:       middle.block:
+; IF1-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; IF1-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; IF1-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[S]], i64 [[TMP8]]
+; IF1-NEXT:    br i1 true, label [[WHILE_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF1:       vec.uncountable.scalar.ph:
+; IF1-NEXT:    br label [[WHILE_COND1:%.*]]
 ; IF1:       while.cond:
-; IF1-NEXT:    [[S_ADDR_0:%.*]] = phi ptr [ [[S:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND]] ]
+; IF1-NEXT:    [[S_ADDR_0:%.*]] = phi ptr [ [[S]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND1]] ]
 ; IF1-NEXT:    [[TMP10:%.*]] = load i8, ptr [[S_ADDR_0]], align 1
 ; IF1-NEXT:    [[CMP:%.*]] = icmp eq i8 [[TMP10]], 49
 ; IF1-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[S_ADDR_0]], i64 1
-; IF1-NEXT:    br i1 [[CMP]], label [[WHILE_COND]], label [[WHILE_END:%.*]]
+; IF1-NEXT:    br i1 [[CMP]], label [[WHILE_COND1]], label [[WHILE_END]], !llvm.loop [[LOOP17:![0-9]+]]
 ; IF1:       while.end:
-; IF1-NEXT:    [[S_ADDR_0_LCSSA:%.*]] = phi ptr [ [[S_ADDR_0]], [[WHILE_COND]] ]
+; IF1-NEXT:    [[S_ADDR_0_LCSSA:%.*]] = phi ptr [ [[S_ADDR_0]], [[WHILE_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF1-NEXT:    ret ptr [[S_ADDR_0_LCSSA]]
 ;
 ; IF2-LABEL: @SingleBlock11(
 ; IF2-NEXT:  entry:
 ; IF2-NEXT:    br label [[WHILE_COND:%.*]]
+; IF2:       vector.body:
+; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[WHILE_COND]] ]
+; IF2-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[WHILE_COND]] ]
+; IF2-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; IF2-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[S:%.*]], i64 [[EVL_BASED_IV]]
+; IF2-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; IF2-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; IF2-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF2-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF2-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> splat (i8 49), metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF2-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; IF2-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF2-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; IF2-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[WHILE_COND]], !llvm.loop [[LOOP16:![0-9]+]]
+; IF2:       middle.block:
+; IF2-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; IF2-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; IF2-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[S]], i64 [[TMP8]]
+; IF2-NEXT:    br i1 true, label [[WHILE_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF2:       vec.uncountable.scalar.ph:
+; IF2-NEXT:    br label [[WHILE_COND1:%.*]]
 ; IF2:       while.cond:
-; IF2-NEXT:    [[S_ADDR_0:%.*]] = phi ptr [ [[S:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND]] ]
+; IF2-NEXT:    [[S_ADDR_0:%.*]] = phi ptr [ [[S]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND1]] ]
 ; IF2-NEXT:    [[TMP10:%.*]] = load i8, ptr [[S_ADDR_0]], align 1
 ; IF2-NEXT:    [[CMP:%.*]] = icmp eq i8 [[TMP10]], 49
 ; IF2-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[S_ADDR_0]], i64 1
-; IF2-NEXT:    br i1 [[CMP]], label [[WHILE_COND]], label [[WHILE_END:%.*]]
+; IF2-NEXT:    br i1 [[CMP]], label [[WHILE_COND1]], label [[WHILE_END]], !llvm.loop [[LOOP17:![0-9]+]]
 ; IF2:       while.end:
-; IF2-NEXT:    [[S_ADDR_0_LCSSA:%.*]] = phi ptr [ [[S_ADDR_0]], [[WHILE_COND]] ]
+; IF2-NEXT:    [[S_ADDR_0_LCSSA:%.*]] = phi ptr [ [[S_ADDR_0]], [[WHILE_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF2-NEXT:    ret ptr [[S_ADDR_0_LCSSA]]
 ;
 entry:
@@ -3827,32 +5009,86 @@ for.end.loopexit:
 define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; DEFAULT-LABEL: @SingleBlock19(
 ; DEFAULT-NEXT:  entry:
+; DEFAULT-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 32 x i8> poison, i8 [[N:%.*]], i64 0
+; DEFAULT-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 32 x i8> [[BROADCAST_SPLATINSERT]], <vscale x 32 x i8> poison, <vscale x 32 x i32> zeroinitializer
 ; DEFAULT-NEXT:    br label [[WHILE_COND:%.*]]
+; DEFAULT:       vector.body:
+; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[WHILE_COND]] ]
+; DEFAULT-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[WHILE_COND]] ]
+; DEFAULT-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; DEFAULT-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[SRC:%.*]], i64 [[EVL_BASED_IV]]
+; DEFAULT-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; DEFAULT-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; DEFAULT-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; DEFAULT-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; DEFAULT-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> [[BROADCAST_SPLAT]], metadata !"ult", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; DEFAULT-NEXT:    [[VP_OP_ICMP1:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> zeroinitializer, metadata !"ne", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; DEFAULT-NEXT:    [[VP_OP:%.*]] = call <vscale x 32 x i1> @llvm.vp.and.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> [[VP_OP_ICMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; DEFAULT-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; DEFAULT-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 32 x i1> @llvm.vp.xor.nxv32i1(<vscale x 32 x i1> [[VP_OP]], <vscale x 32 x i1> splat (i1 true), <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; DEFAULT-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[PRED_NOT]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; DEFAULT-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; DEFAULT-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[WHILE_COND]], !llvm.loop [[LOOP18:![0-9]+]]
+; DEFAULT:       middle.block:
+; DEFAULT-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; DEFAULT-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; DEFAULT-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[SRC]], i64 [[TMP8]]
+; DEFAULT-NEXT:    br i1 true, label [[WHILE_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; DEFAULT:       vec.uncountable.scalar.ph:
+; DEFAULT-NEXT:    br label [[WHILE_COND1:%.*]]
 ; DEFAULT:       while.cond:
-; DEFAULT-NEXT:    [[SRC_ADDR_0:%.*]] = phi ptr [ [[SRC:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND]] ]
+; DEFAULT-NEXT:    [[SRC_ADDR_0:%.*]] = phi ptr [ [[SRC]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND1]] ]
 ; DEFAULT-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[SRC_ADDR_0]], i64 1
 ; DEFAULT-NEXT:    [[TMP10:%.*]] = load i8, ptr [[SRC_ADDR_0]], align 1
-; DEFAULT-NEXT:    [[CMP:%.*]] = icmp ult i8 [[TMP10]], [[N:%.*]]
+; DEFAULT-NEXT:    [[CMP:%.*]] = icmp ult i8 [[TMP10]], [[N]]
 ; DEFAULT-NEXT:    [[CMP3:%.*]] = icmp ne i8 [[TMP10]], 0
 ; DEFAULT-NEXT:    [[TMP11:%.*]] = and i1 [[CMP]], [[CMP3]]
-; DEFAULT-NEXT:    br i1 [[TMP11]], label [[WHILE_COND]], label [[WHILE_END:%.*]]
+; DEFAULT-NEXT:    br i1 [[TMP11]], label [[WHILE_COND1]], label [[WHILE_END]], !llvm.loop [[LOOP19:![0-9]+]]
 ; DEFAULT:       while.end:
-; DEFAULT-NEXT:    [[DOTLCSSA:%.*]] = phi ptr [ [[SRC_ADDR_0]], [[WHILE_COND]] ]
+; DEFAULT-NEXT:    [[DOTLCSSA:%.*]] = phi ptr [ [[SRC_ADDR_0]], [[WHILE_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; DEFAULT-NEXT:    ret ptr [[DOTLCSSA]]
 ;
 ; ON-LABEL: @SingleBlock19(
 ; ON-NEXT:  entry:
+; ON-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 32 x i8> poison, i8 [[N:%.*]], i64 0
+; ON-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 32 x i8> [[BROADCAST_SPLATINSERT]], <vscale x 32 x i8> poison, <vscale x 32 x i32> zeroinitializer
 ; ON-NEXT:    br label [[WHILE_COND:%.*]]
+; ON:       vector.body:
+; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[WHILE_COND]] ]
+; ON-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[WHILE_COND]] ]
+; ON-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; ON-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[SRC:%.*]], i64 [[EVL_BASED_IV]]
+; ON-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; ON-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; ON-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; ON-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> [[BROADCAST_SPLAT]], metadata !"ult", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; ON-NEXT:    [[VP_OP_ICMP1:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> zeroinitializer, metadata !"ne", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; ON-NEXT:    [[VP_OP:%.*]] = call <vscale x 32 x i1> @llvm.vp.and.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> [[VP_OP_ICMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; ON-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; ON-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 32 x i1> @llvm.vp.xor.nxv32i1(<vscale x 32 x i1> [[VP_OP]], <vscale x 32 x i1> splat (i1 true), <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; ON-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[PRED_NOT]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; ON-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; ON-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[WHILE_COND]], !llvm.loop [[LOOP18:![0-9]+]]
+; ON:       middle.block:
+; ON-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; ON-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; ON-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[SRC]], i64 [[TMP8]]
+; ON-NEXT:    br i1 true, label [[WHILE_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; ON:       vec.uncountable.scalar.ph:
+; ON-NEXT:    br label [[WHILE_COND1:%.*]]
 ; ON:       while.cond:
-; ON-NEXT:    [[SRC_ADDR_0:%.*]] = phi ptr [ [[SRC:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND]] ]
+; ON-NEXT:    [[SRC_ADDR_0:%.*]] = phi ptr [ [[SRC]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND1]] ]
 ; ON-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[SRC_ADDR_0]], i64 1
 ; ON-NEXT:    [[TMP10:%.*]] = load i8, ptr [[SRC_ADDR_0]], align 1
-; ON-NEXT:    [[CMP:%.*]] = icmp ult i8 [[TMP10]], [[N:%.*]]
+; ON-NEXT:    [[CMP:%.*]] = icmp ult i8 [[TMP10]], [[N]]
 ; ON-NEXT:    [[CMP3:%.*]] = icmp ne i8 [[TMP10]], 0
 ; ON-NEXT:    [[TMP11:%.*]] = and i1 [[CMP]], [[CMP3]]
-; ON-NEXT:    br i1 [[TMP11]], label [[WHILE_COND]], label [[WHILE_END:%.*]]
+; ON-NEXT:    br i1 [[TMP11]], label [[WHILE_COND1]], label [[WHILE_END]], !llvm.loop [[LOOP19:![0-9]+]]
 ; ON:       while.end:
-; ON-NEXT:    [[DOTLCSSA:%.*]] = phi ptr [ [[SRC_ADDR_0]], [[WHILE_COND]] ]
+; ON-NEXT:    [[DOTLCSSA:%.*]] = phi ptr [ [[SRC_ADDR_0]], [[WHILE_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; ON-NEXT:    ret ptr [[DOTLCSSA]]
 ;
 ; OFF-LABEL: @SingleBlock19(
@@ -3887,17 +5123,44 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ;
 ; stress-LABEL: @SingleBlock19(
 ; stress-NEXT:  entry:
+; stress-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 32 x i8> poison, i8 [[N:%.*]], i64 0
+; stress-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 32 x i8> [[BROADCAST_SPLATINSERT]], <vscale x 32 x i8> poison, <vscale x 32 x i32> zeroinitializer
 ; stress-NEXT:    br label [[WHILE_COND:%.*]]
+; stress:       vector.body:
+; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[WHILE_COND]] ]
+; stress-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[WHILE_COND]] ]
+; stress-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; stress-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[SRC:%.*]], i64 [[EVL_BASED_IV]]
+; stress-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; stress-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; stress-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; stress-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> [[BROADCAST_SPLAT]], metadata !"ult", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; stress-NEXT:    [[VP_OP_ICMP1:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> zeroinitializer, metadata !"ne", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; stress-NEXT:    [[VP_OP:%.*]] = call <vscale x 32 x i1> @llvm.vp.and.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> [[VP_OP_ICMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; stress-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; stress-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 32 x i1> @llvm.vp.xor.nxv32i1(<vscale x 32 x i1> [[VP_OP]], <vscale x 32 x i1> splat (i1 true), <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; stress-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[PRED_NOT]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; stress-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; stress-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[WHILE_COND]], !llvm.loop [[LOOP18:![0-9]+]]
+; stress:       middle.block:
+; stress-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; stress-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; stress-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[SRC]], i64 [[TMP8]]
+; stress-NEXT:    br i1 true, label [[WHILE_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; stress:       vec.uncountable.scalar.ph:
+; stress-NEXT:    br label [[WHILE_COND1:%.*]]
 ; stress:       while.cond:
-; stress-NEXT:    [[SRC_ADDR_0:%.*]] = phi ptr [ [[SRC:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND]] ]
+; stress-NEXT:    [[SRC_ADDR_0:%.*]] = phi ptr [ [[SRC]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND1]] ]
 ; stress-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[SRC_ADDR_0]], i64 1
 ; stress-NEXT:    [[TMP10:%.*]] = load i8, ptr [[SRC_ADDR_0]], align 1
-; stress-NEXT:    [[CMP:%.*]] = icmp ult i8 [[TMP10]], [[N:%.*]]
+; stress-NEXT:    [[CMP:%.*]] = icmp ult i8 [[TMP10]], [[N]]
 ; stress-NEXT:    [[CMP3:%.*]] = icmp ne i8 [[TMP10]], 0
 ; stress-NEXT:    [[TMP11:%.*]] = and i1 [[CMP]], [[CMP3]]
-; stress-NEXT:    br i1 [[TMP11]], label [[WHILE_COND]], label [[WHILE_END:%.*]]
+; stress-NEXT:    br i1 [[TMP11]], label [[WHILE_COND1]], label [[WHILE_END]], !llvm.loop [[LOOP19:![0-9]+]]
 ; stress:       while.end:
-; stress-NEXT:    [[DOTLCSSA:%.*]] = phi ptr [ [[SRC_ADDR_0]], [[WHILE_COND]] ]
+; stress-NEXT:    [[DOTLCSSA:%.*]] = phi ptr [ [[SRC_ADDR_0]], [[WHILE_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; stress-NEXT:    ret ptr [[DOTLCSSA]]
 ;
 ; VLS-LABEL: @SingleBlock19(
@@ -3917,47 +5180,128 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ;
 ; IF0-LABEL: @SingleBlock19(
 ; IF0-NEXT:  entry:
+; IF0-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 32 x i8> poison, i8 [[N:%.*]], i64 0
+; IF0-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 32 x i8> [[BROADCAST_SPLATINSERT]], <vscale x 32 x i8> poison, <vscale x 32 x i32> zeroinitializer
 ; IF0-NEXT:    br label [[WHILE_COND:%.*]]
+; IF0:       vector.body:
+; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[WHILE_COND]] ]
+; IF0-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[WHILE_COND]] ]
+; IF0-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; IF0-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[SRC:%.*]], i64 [[EVL_BASED_IV]]
+; IF0-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; IF0-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; IF0-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF0-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF0-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> [[BROADCAST_SPLAT]], metadata !"ult", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF0-NEXT:    [[VP_OP_ICMP1:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> zeroinitializer, metadata !"ne", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF0-NEXT:    [[VP_OP:%.*]] = call <vscale x 32 x i1> @llvm.vp.and.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> [[VP_OP_ICMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF0-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; IF0-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 32 x i1> @llvm.vp.xor.nxv32i1(<vscale x 32 x i1> [[VP_OP]], <vscale x 32 x i1> splat (i1 true), <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF0-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[PRED_NOT]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF0-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; IF0-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[WHILE_COND]], !llvm.loop [[LOOP18:![0-9]+]]
+; IF0:       middle.block:
+; IF0-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; IF0-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; IF0-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[SRC]], i64 [[TMP8]]
+; IF0-NEXT:    br i1 true, label [[WHILE_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF0:       vec.uncountable.scalar.ph:
+; IF0-NEXT:    br label [[WHILE_COND1:%.*]]
 ; IF0:       while.cond:
-; IF0-NEXT:    [[SRC_ADDR_0:%.*]] = phi ptr [ [[SRC:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND]] ]
+; IF0-NEXT:    [[SRC_ADDR_0:%.*]] = phi ptr [ [[SRC]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND1]] ]
 ; IF0-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[SRC_ADDR_0]], i64 1
 ; IF0-NEXT:    [[TMP10:%.*]] = load i8, ptr [[SRC_ADDR_0]], align 1
-; IF0-NEXT:    [[CMP:%.*]] = icmp ult i8 [[TMP10]], [[N:%.*]]
+; IF0-NEXT:    [[CMP:%.*]] = icmp ult i8 [[TMP10]], [[N]]
 ; IF0-NEXT:    [[CMP3:%.*]] = icmp ne i8 [[TMP10]], 0
 ; IF0-NEXT:    [[TMP11:%.*]] = and i1 [[CMP]], [[CMP3]]
-; IF0-NEXT:    br i1 [[TMP11]], label [[WHILE_COND]], label [[WHILE_END:%.*]]
+; IF0-NEXT:    br i1 [[TMP11]], label [[WHILE_COND1]], label [[WHILE_END]], !llvm.loop [[LOOP19:![0-9]+]]
 ; IF0:       while.end:
-; IF0-NEXT:    [[DOTLCSSA:%.*]] = phi ptr [ [[SRC_ADDR_0]], [[WHILE_COND]] ]
+; IF0-NEXT:    [[DOTLCSSA:%.*]] = phi ptr [ [[SRC_ADDR_0]], [[WHILE_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF0-NEXT:    ret ptr [[DOTLCSSA]]
 ;
 ; IF1-LABEL: @SingleBlock19(
 ; IF1-NEXT:  entry:
+; IF1-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 32 x i8> poison, i8 [[N:%.*]], i64 0
+; IF1-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 32 x i8> [[BROADCAST_SPLATINSERT]], <vscale x 32 x i8> poison, <vscale x 32 x i32> zeroinitializer
 ; IF1-NEXT:    br label [[WHILE_COND:%.*]]
+; IF1:       vector.body:
+; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[WHILE_COND]] ]
+; IF1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[WHILE_COND]] ]
+; IF1-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; IF1-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[SRC:%.*]], i64 [[EVL_BASED_IV]]
+; IF1-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; IF1-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; IF1-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF1-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF1-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> [[BROADCAST_SPLAT]], metadata !"ult", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF1-NEXT:    [[VP_OP_ICMP1:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> zeroinitializer, metadata !"ne", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF1-NEXT:    [[VP_OP:%.*]] = call <vscale x 32 x i1> @llvm.vp.and.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> [[VP_OP_ICMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF1-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; IF1-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 32 x i1> @llvm.vp.xor.nxv32i1(<vscale x 32 x i1> [[VP_OP]], <vscale x 32 x i1> splat (i1 true), <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF1-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[PRED_NOT]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF1-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; IF1-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[WHILE_COND]], !llvm.loop [[LOOP18:![0-9]+]]
+; IF1:       middle.block:
+; IF1-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; IF1-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; IF1-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[SRC]], i64 [[TMP8]]
+; IF1-NEXT:    br i1 true, label [[WHILE_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF1:       vec.uncountable.scalar.ph:
+; IF1-NEXT:    br label [[WHILE_COND1:%.*]]
 ; IF1:       while.cond:
-; IF1-NEXT:    [[SRC_ADDR_0:%.*]] = phi ptr [ [[SRC:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND]] ]
+; IF1-NEXT:    [[SRC_ADDR_0:%.*]] = phi ptr [ [[SRC]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND1]] ]
 ; IF1-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[SRC_ADDR_0]], i64 1
 ; IF1-NEXT:    [[TMP10:%.*]] = load i8, ptr [[SRC_ADDR_0]], align 1
-; IF1-NEXT:    [[CMP:%.*]] = icmp ult i8 [[TMP10]], [[N:%.*]]
+; IF1-NEXT:    [[CMP:%.*]] = icmp ult i8 [[TMP10]], [[N]]
 ; IF1-NEXT:    [[CMP3:%.*]] = icmp ne i8 [[TMP10]], 0
 ; IF1-NEXT:    [[TMP11:%.*]] = and i1 [[CMP]], [[CMP3]]
-; IF1-NEXT:    br i1 [[TMP11]], label [[WHILE_COND]], label [[WHILE_END:%.*]]
+; IF1-NEXT:    br i1 [[TMP11]], label [[WHILE_COND1]], label [[WHILE_END]], !llvm.loop [[LOOP19:![0-9]+]]
 ; IF1:       while.end:
-; IF1-NEXT:    [[DOTLCSSA:%.*]] = phi ptr [ [[SRC_ADDR_0]], [[WHILE_COND]] ]
+; IF1-NEXT:    [[DOTLCSSA:%.*]] = phi ptr [ [[SRC_ADDR_0]], [[WHILE_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF1-NEXT:    ret ptr [[DOTLCSSA]]
 ;
 ; IF2-LABEL: @SingleBlock19(
 ; IF2-NEXT:  entry:
+; IF2-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 32 x i8> poison, i8 [[N:%.*]], i64 0
+; IF2-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 32 x i8> [[BROADCAST_SPLATINSERT]], <vscale x 32 x i8> poison, <vscale x 32 x i32> zeroinitializer
 ; IF2-NEXT:    br label [[WHILE_COND:%.*]]
+; IF2:       vector.body:
+; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[WHILE_COND]] ]
+; IF2-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[WHILE_COND]] ]
+; IF2-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
+; IF2-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[SRC:%.*]], i64 [[EVL_BASED_IV]]
+; IF2-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
+; IF2-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP0]])
+; IF2-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF2-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF2-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> [[BROADCAST_SPLAT]], metadata !"ult", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF2-NEXT:    [[VP_OP_ICMP1:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP3]], <vscale x 32 x i8> zeroinitializer, metadata !"ne", <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF2-NEXT:    [[VP_OP:%.*]] = call <vscale x 32 x i1> @llvm.vp.and.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> [[VP_OP_ICMP1]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF2-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
+; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP4]], [[EVL_BASED_IV]]
+; IF2-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 32 x i1> @llvm.vp.xor.nxv32i1(<vscale x 32 x i1> [[VP_OP]], <vscale x 32 x i1> splat (i1 true), <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF2-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[PRED_NOT]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP2]])
+; IF2-NEXT:    [[TMP6:%.*]] = icmp sge i32 [[TMP5]], 0
+; IF2-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[WHILE_COND]], !llvm.loop [[LOOP18:![0-9]+]]
+; IF2:       middle.block:
+; IF2-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
+; IF2-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], [[TMP7]]
+; IF2-NEXT:    [[IND_ESCAPE:%.*]] = getelementptr i8, ptr [[SRC]], i64 [[TMP8]]
+; IF2-NEXT:    br i1 true, label [[WHILE_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF2:       vec.uncountable.scalar.ph:
+; IF2-NEXT:    br label [[WHILE_COND1:%.*]]
 ; IF2:       while.cond:
-; IF2-NEXT:    [[SRC_ADDR_0:%.*]] = phi ptr [ [[SRC:%.*]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND]] ]
+; IF2-NEXT:    [[SRC_ADDR_0:%.*]] = phi ptr [ [[SRC]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND1]] ]
 ; IF2-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[SRC_ADDR_0]], i64 1
 ; IF2-NEXT:    [[TMP10:%.*]] = load i8, ptr [[SRC_ADDR_0]], align 1
-; IF2-NEXT:    [[CMP:%.*]] = icmp ult i8 [[TMP10]], [[N:%.*]]
+; IF2-NEXT:    [[CMP:%.*]] = icmp ult i8 [[TMP10]], [[N]]
 ; IF2-NEXT:    [[CMP3:%.*]] = icmp ne i8 [[TMP10]], 0
 ; IF2-NEXT:    [[TMP11:%.*]] = and i1 [[CMP]], [[CMP3]]
-; IF2-NEXT:    br i1 [[TMP11]], label [[WHILE_COND]], label [[WHILE_END:%.*]]
+; IF2-NEXT:    br i1 [[TMP11]], label [[WHILE_COND1]], label [[WHILE_END]], !llvm.loop [[LOOP19:![0-9]+]]
 ; IF2:       while.end:
-; IF2-NEXT:    [[DOTLCSSA:%.*]] = phi ptr [ [[SRC_ADDR_0]], [[WHILE_COND]] ]
+; IF2-NEXT:    [[DOTLCSSA:%.*]] = phi ptr [ [[SRC_ADDR_0]], [[WHILE_COND1]] ], [ [[IND_ESCAPE]], [[MIDDLE_BLOCK]] ]
 ; IF2-NEXT:    ret ptr [[DOTLCSSA]]
 ;
 entry:

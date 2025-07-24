@@ -4282,6 +4282,8 @@ class VPlan {
 
   /// Uncountable loops
   bool IsUncountable = false;
+  /// Uncountable loops without upperbound trip count
+  bool IsUnbound = false;
 
   /// Use VLA Vectorizer
   bool UseVLAVectorizer = false;
@@ -4476,10 +4478,11 @@ public:
     // For uncountable loop, there are early-exit loops with upper-bound
     // such as std::find, and unbound loops such as strlen.
     // For now loops with early exit always have an upper-bound
-    return isUncountable() && !getVectorLoopRegion()->getEarlyExit();
+    return isUncountable() && IsUnbound;
   }
 
   void setUncountable() { IsUncountable = true; }
+  void setUnbound() { IsUnbound = true; }
 
   /// Returns VPValue for InitEVL
   VPValue *getInitEVL() const { return InitEVL; }
@@ -4522,8 +4525,8 @@ public:
   /// The vector trip count.
 #if SIFIVE_CUSTOMIZATION
   VPValue &getVectorTripCount() {
-    assert((!isUncountable() || getVectorLoopRegion()->getEarlyExit()) &&
-           "Should not get vectro trip count for uncountable loops");
+    assert(!isUncountableAndUnbound() &&
+           "Should not get vector trip count for unbound loops");
     return VectorTripCount;
   }
 
