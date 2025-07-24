@@ -27033,7 +27033,11 @@ static bool isMultipleOfN(const Value *V, const DataLayout &DL, unsigned N) {
   using namespace PatternMatch;
   // Right now we're only recognizing the simplest pattern.
   uint64_t C;
+#if SIFIVE_CUSTOMIZATION
+  return match(V, m_NUWMul(m_Value(), m_ConstantInt(C))) && C && C % N == 0;
+#else
   return match(V, m_c_Mul(m_Value(), m_ConstantInt(C))) && C && C % N == 0;
+#endif
 }
 
 /// Lower an interleaved vp.load into a vlsegN intrinsic.
@@ -27101,9 +27105,15 @@ bool RISCVTargetLowering::lowerDeinterleavedIntrinsicToVPLoad(
     return false;
 
   auto *XLenTy = Type::getIntNTy(Load->getContext(), Subtarget.getXLen());
+#if SIFIVE_CUSTOMIZATION
+  auto *FactorC = ConstantInt::get(WideEVL->getType(), Factor);
+  Value *EVL = Builder.CreateZExt(
+      Builder.CreateExactUDiv(WideEVL, FactorC), XLenTy);
+#else
   Value *EVL = Builder.CreateZExt(
       Builder.CreateUDiv(WideEVL, ConstantInt::get(WideEVL->getType(), Factor)),
       XLenTy);
+#endif // SIFIVE_CUSTOMIZATION
 
   static const Intrinsic::ID IntrMaskIds[] = {
       Intrinsic::riscv_vlseg2_mask, Intrinsic::riscv_vlseg3_mask,
@@ -27208,9 +27218,16 @@ bool RISCVTargetLowering::lowerInterleavedIntrinsicToVPStore(
     return false;
 
   auto *XLenTy = Type::getIntNTy(Store->getContext(), Subtarget.getXLen());
+#if SIFIVE_CUSTOMIZATION
+  auto *FactorC = ConstantInt::get(WideEVL->getType(), Factor);
+  Value *EVL = Builder.CreateZExt(
+      Builder.CreateExactUDiv(WideEVL, FactorC),
+      XLenTy);
+#else
   Value *EVL = Builder.CreateZExt(
       Builder.CreateUDiv(WideEVL, ConstantInt::get(WideEVL->getType(), Factor)),
       XLenTy);
+#endif
 
   static const Intrinsic::ID IntrMaskIds[] = {
       Intrinsic::riscv_vsseg2_mask, Intrinsic::riscv_vsseg3_mask,
