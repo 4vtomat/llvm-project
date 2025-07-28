@@ -383,31 +383,17 @@ std::unique_ptr<VPlan> PlainCFGBuilder::buildPlainCFG(
       assert(PhiR->getNumOperands() == 0 &&
              "no phi operands should be added yet");
 #if SIFIVE_CUSTOMIZATION
-      // CSA users, unbound users and EarlyExit are handled outside the plan
+      // Unbound users and EarlyExit are handled outside the plan
       BasicBlock *LoopLatch = TheLoop->getLoopLatch();
       bool IsUncountable = Legal ? Legal->isVectorizableUncountable() : false;
       bool IsUnbound =
           IsUncountable ? Legal->getCountableExitingBlocks().empty() : false;
-      auto IsCSASelect = [&](Value *V) {
-        if (!Legal)
-          return false;
-        auto *SI = dyn_cast<SelectInst>(V);
-        if (!SI)
-          return false;
-
-        auto *CSADescIt = find_if(Legal->getCSAs(), [&](auto CSA) {
-          return CSADescriptor::isCSASelect(CSA.second, SI);
-        });
-        return CSADescIt != Legal->getCSAs().end();
-      };
       for (BasicBlock *Pred : predecessors(EB->getIRBasicBlock())) {
         if (IsUnbound)
           continue;
         if (IsUncountable && Pred != LoopLatch)
           continue;
         Value *V = Phi.getIncomingValueForBlock(Pred);
-        if (IsCSASelect(V))
-          continue;
         // For revectorized loops, there are values coming from other vector
         // loops. Skip if the value is not coming from the loop
         if (!TheLoop->contains(Pred))

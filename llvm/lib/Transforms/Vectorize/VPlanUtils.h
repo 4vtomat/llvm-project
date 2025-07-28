@@ -70,7 +70,8 @@ inline bool isUniformAfterVectorization(const VPValue *VPV) {
   }
 #if SIFIVE_CUSTOMIZATION
   const VPRecipeBase *Def = VPV->getDefiningRecipe();
-  if (isa<VPMonotonicUpdateInstruction, VPMonotonicHeaderPHIRecipe>(Def))
+  if (isa<VPMonotonicUpdateInstruction, VPMonotonicHeaderPHIRecipe,
+          VPCSAExtractScalarRecipe>(Def))
     return true;
 #endif // SIFIVE_CUSTOMIZATION
   if (isa<VPWidenGEPRecipe, VPDerivedIVRecipe, VPBlendRecipe>(VPV))

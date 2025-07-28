@@ -3420,7 +3420,6 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State) {
                                     getOrCreateVectorTripCount(nullptr),
                                     MiddleBlock, State);
     }
-    fixCSALiveOuts(State, Plan);
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -11022,12 +11021,7 @@ VPRecipeBase *VPRecipeBuilder::tryToCreateWidenRecipe(
 #endif // SIFIVE_CUSTOMIZATION
 
     // Add backedge value.
-#if SIFIVE_CUSTOMIZATION
-    if (!Legal->isCSAPhi(Phi))
-      PhiRecipe->addOperand(Operands[1]);
-#else
     PhiRecipe->addOperand(Operands[1]);
-#endif // SIFIVE_CUSTOMIZATION
     return PhiRecipe;
   }
 
@@ -11421,8 +11415,18 @@ static void addScalarResumePhis(VPRecipeBuilder &Builder, VPlan &Plan,
     }
 
 #if SIFIVE_CUSTOMIZATION
-    if (dyn_cast<VPCSAHeaderPHIRecipe>(VectorPhiR))
+    if (auto *CSAPhi = dyn_cast<VPCSAHeaderPHIRecipe>(VectorPhiR)) {
+      VPCSAState *State = Plan.getCSAStates()
+                              .find(cast<PHINode>(CSAPhi->getUnderlyingValue()))
+                              ->second;
+      auto *ResumeFromVectorLoop = State->getExtractScalarRecipe();
+      auto *ResumePhiR = ScalarPHBuilder.createNaryOp(
+          VPInstruction::ResumePhi,
+          {ResumeFromVectorLoop, ResumeFromVectorLoop->getVPInitScalar()}, {},
+          "bc.merge.csa");
+      ScalarPhiIRI->addOperand(ResumePhiR);
       continue;
+    }
 #endif // SIFIVE_CUSTOMIZATION
 
     // The backedge value provides the value to resume coming out of a loop,
@@ -11445,15 +11449,7 @@ static void addScalarResumePhis(VPRecipeBuilder &Builder, VPlan &Plan,
 }
 
 // Collect VPIRInstructions for phis in the exit block from the latch only.
-#if SIFIVE_CUSTOMIZATION
-static SetVector<VPIRInstruction *> collectUsersInLatchExitBlock(
-    Loop *OrigLoop, VPRecipeBuilder &Builder, VPlan &Plan,
-    const MapVector<PHINode *, InductionDescriptor> &Inductions,
-    const MapVector<PHINode *, CSADescriptor> &CSAs) {
-#else
-  static SetVector<VPIRInstruction *> collectUsersInLatchExitBlock(VPlan &
-                                                                   Plan) {
-#endif // SIFIVE_CUSTOMIZATION
+static SetVector<VPIRInstruction *> collectUsersInLatchExitBlock(VPlan &Plan) {
   SetVector<VPIRInstruction *> ExitUsersToFix;
 #if SIFIVE_CUSTOMIZATION
   // Exit values for unbound loop are handled separately.
@@ -11467,21 +11463,6 @@ static SetVector<VPIRInstruction *> collectUsersInLatchExitBlock(
 
     for (VPRecipeBase &R : ExitVPBB->phis()) {
       auto *ExitIRI = cast<VPIRPhi>(&R);
-#if SIFIVE_CUSTOMIZATION
-      PHINode &ExitPhi = ExitIRI->getIRPhi();
-      BasicBlock *ExitingBB = OrigLoop->getLoopLatch();
-      Value *IncomingValue = ExitPhi.getIncomingValueForBlock(ExitingBB);
-      VPValue *TmpV = Builder.getVPValueOrAddLiveIn(IncomingValue);
-      // TODO: Compute CSA exit values in VPlan, use VPLiveOuts to update
-      // live-outs.
-      if (isa<VPCSADataUpdateRecipe>(TmpV) &&
-          (isa<Instruction>(IncomingValue) &&
-           any_of(IncomingValue->users(), [&CSAs](User *U) {
-             auto *P = dyn_cast<PHINode>(U);
-             return P && CSAs.contains(P);
-           })))
-        continue;
-#endif // SIFIVE_CUSTOMIZATION
       assert(ExitIRI->getNumOperands() == 1 && "must have a single operand");
       VPValue *V = ExitIRI->getOperand(0);
       if (V->isLiveIn())
@@ -11515,6 +11496,33 @@ addUsersInExitBlocks(VPlan &Plan,
     ExitIRI->extractLastLaneOfFirstOperand(B);
   }
 }
+
+#if SIFIVE_CUSTOMIZATION
+static void addExitUsersForCSA(VPlan &Plan,
+                               SetVector<VPIRInstruction *> &ExitUsersToFix) {
+  VPRegionBlock *VectorRegion = Plan.getVectorLoopRegion();
+
+  for (const auto &CSA : Plan.getCSAStates()) {
+    VPCSADataUpdateRecipe *VPDataUpdate = CSA.second->getDataUpdate();
+    VPCSAExtractScalarRecipe *VPExtractedScalar =
+        CSA.second->getExtractScalarRecipe();
+    assert(VPDataUpdate && VPExtractedScalar &&
+           "VPDataUpdate and VPExtractedScalar must have been introduced "
+           "prior to fixing live outs");
+
+    assert(VectorRegion->getSingleSuccessor() == Plan.getMiddleBlock() &&
+           "Cannot handle loops with uncountable early exits");
+
+    for (VPIRInstruction *ExitIRI : ExitUsersToFix) {
+      if (ExitIRI->getOperand(0) != VPDataUpdate)
+        continue;
+
+      ExitIRI->setOperand(0, VPExtractedScalar);
+      ExitUsersToFix.remove(ExitIRI);
+    }
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 /// Handle users in the exit block for first order reductions in the original
 /// exit block. The penultimate value of recurrences is fed to their LCSSA phi
@@ -11700,6 +11708,11 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   if (Legal->useVLAVectorizer() && needOtherEVLs(*Legal, CM)) {
     Plan->createInitEVL();
   }
+
+  if (!Plan->isUncountable())
+    addCSAPreprocessRecipes(Legal->getCSAs(), OrigLoop, Plan->getEntry(),
+                            Plan->getVectorLoopRegion()->getEntryBasicBlock(),
+                            DL, Range, *Plan);
 #endif // SIFIVE_CUSTOMIZATION
   if (!HasNUW) {
     auto *IVInc = Plan->getVectorLoopRegion()
@@ -11948,10 +11961,10 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   if (!Plan->isUncountable() || !Legal->getCountableExitingBlocks().empty())
     addScalarResumePhis(RecipeBuilder, *Plan, IVEndValues);
   SetVector<VPIRInstruction *> ExitUsersToFix =
-      collectUsersInLatchExitBlock(OrigLoop, RecipeBuilder, *Plan,
-                                   Legal->getInductionVars(), Legal->getCSAs());
+      collectUsersInLatchExitBlock(*Plan);
   if (!Legal->useVLAVectorizer())
     addExitUsersForFirstOrderRecurrences(*Plan, ExitUsersToFix);
+  addExitUsersForCSA(*Plan, ExitUsersToFix);
 #else
   addScalarResumePhis(RecipeBuilder, *Plan, IVEndValues);
   SetVector<VPIRInstruction *> ExitUsersToFix =
