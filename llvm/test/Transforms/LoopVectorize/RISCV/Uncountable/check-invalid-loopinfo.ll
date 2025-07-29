@@ -24,8 +24,8 @@ define i64 @x86_Convert(ptr %data, i64 %size, i32 %ip, ptr %state, i32 %encoding
 ; CHECK-NEXT:    [[TMP3:%.*]] = mul <vscale x 16 x i64> [[TMP2]], splat (i64 1)
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
-; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[FOR_INC1:.*]] ]
-; CHECK-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ null, %[[VECTOR_PH]] ], [ [[PTR_IND:%.*]], %[[FOR_INC1]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ null, %[[VECTOR_PH]] ], [ [[PTR_IND:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 16 x i64> [[TMP3]]
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 -4, [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = call i64 @llvm.umin.i64(i64 [[AVL]], i64 16)
@@ -38,22 +38,24 @@ define i64 @x86_Convert(ptr %data, i64 %size, i32 %ip, ptr %state, i32 %encoding
 ; CHECK-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 16 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 16 x i8> @llvm.vp.and.nxv16i8(<vscale x 16 x i8> [[TMP10]], <vscale x 16 x i8> splat (i8 -2), <vscale x 16 x i1> splat (i1 true), i32 [[TMP8]])
 ; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i8(<vscale x 16 x i8> [[VP_OP]], <vscale x 16 x i8> splat (i8 -24), metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP8]])
-; CHECK-NEXT:    [[TMP11:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP8]])
-; CHECK-NEXT:    [[TMP12:%.*]] = icmp sge i32 [[TMP11]], 0
-; CHECK-NEXT:    br i1 [[TMP12]], label %[[VECTOR_EARLY_EXIT:.*]], label %[[FOR_INC1]]
-; CHECK:       [[FOR_INC1]]:
-; CHECK-NEXT:    [[TMP13:%.*]] = zext i32 [[TMP8]] to i64
-; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP13]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP17:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP8]])
+; CHECK-NEXT:    [[TMP12:%.*]] = icmp sge i32 [[TMP17]], 0
+; CHECK-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP8]] to i64
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP11]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], -4
 ; CHECK-NEXT:    [[DOTREASS:%.*]] = mul i64 [[TMP9]], 1
 ; CHECK-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[DOTREASS]]
-; CHECK-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], -4
-; CHECK-NEXT:    br i1 [[TMP14]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    [[TMP14:%.*]] = or i1 [[TMP12]], [[TMP13]]
+; CHECK-NEXT:    br i1 [[TMP14]], label %[[MIDDLE_SPLIT:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK:       [[MIDDLE_SPLIT]]:
+; CHECK-NEXT:    [[DOTLCSSA:%.*]] = phi i1 [ [[TMP12]], %[[VECTOR_BODY]] ]
+; CHECK-NEXT:    br i1 [[DOTLCSSA]], label %[[VECTOR_EARLY_EXIT:.*]], label %[[MIDDLE_BLOCK:.*]]
+; CHECK:       [[MIDDLE_BLOCK]]:
+; CHECK-NEXT:    br label %[[FOR_END128:.*]]
 ; CHECK:       [[VECTOR_EARLY_EXIT]]:
 ; CHECK-NEXT:    br label %[[FOR_BODY_LR_PH_LOOPEXIT]]
-; CHECK:       [[MIDDLE_BLOCK]]:
-; CHECK-NEXT:    br i1 true, label %[[FOR_END128_LOOPEXIT2:.*]], label %[[VEC_UNCOUNTABLE_SCALAR_PH]]
 ; CHECK:       [[VEC_UNCOUNTABLE_SCALAR_PH]]:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ getelementptr (i8, ptr null, i64 -4), %[[MIDDLE_BLOCK]] ], [ null, %[[FOR_BODY_LR_PH]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ null, %[[FOR_BODY_LR_PH]] ]
 ; CHECK-NEXT:    br label %[[FOR_BODY:.*]]
 ; CHECK:       [[FOR_BODY]]:
 ; CHECK-NEXT:    [[P_083:%.*]] = phi ptr [ [[BC_RESUME_VAL]], %[[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], %[[FOR_INC:.*]] ]
@@ -66,8 +68,6 @@ define i64 @x86_Convert(ptr %data, i64 %size, i32 %ip, ptr %state, i32 %encoding
 ; CHECK-NEXT:    [[CMP4:%.*]] = icmp ult ptr [[INCDEC_PTR]], [[ADD_PTR2]]
 ; CHECK-NEXT:    br i1 [[CMP4]], label %[[FOR_BODY]], label %[[FOR_END128_LOOPEXIT:.*]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       [[FOR_END128_LOOPEXIT]]:
-; CHECK-NEXT:    br label %[[FOR_END128:.*]]
-; CHECK:       [[FOR_END128_LOOPEXIT2]]:
 ; CHECK-NEXT:    br label %[[FOR_END128]]
 ; CHECK:       [[FOR_END128]]:
 ; CHECK-NEXT:    ret i64 0

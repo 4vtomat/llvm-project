@@ -384,14 +384,11 @@ std::unique_ptr<VPlan> PlainCFGBuilder::buildPlainCFG(
              "no phi operands should be added yet");
 #if SIFIVE_CUSTOMIZATION
       // Unbound users and EarlyExit are handled outside the plan
-      BasicBlock *LoopLatch = TheLoop->getLoopLatch();
       bool IsUncountable = Legal ? Legal->isVectorizableUncountable() : false;
       bool IsUnbound =
           IsUncountable ? Legal->getCountableExitingBlocks().empty() : false;
       for (BasicBlock *Pred : predecessors(EB->getIRBasicBlock())) {
         if (IsUnbound)
-          continue;
-        if (IsUncountable && Pred != LoopLatch)
           continue;
         Value *V = Phi.getIncomingValueForBlock(Pred);
         // For revectorized loops, there are values coming from other vector

@@ -1007,6 +1007,7 @@ public:
     AnyOf,
 #if SIFIVE_CUSTOMIZATION
     ComputeReductionResultWithMask,
+    VPFirst,
     ExitingCond,
     CSAInitMask,
     CSAInitData,

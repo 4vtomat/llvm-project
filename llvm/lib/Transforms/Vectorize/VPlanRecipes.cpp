@@ -882,6 +882,17 @@ Value *VPInstruction::generate(VPTransformState &State) {
     cast<PHINode>(VLPhi)->addIncoming(VLSel, State.CFG.PrevBB);
     return VLSel;
   }
+  case VPInstruction::VPFirst: {
+    Value *Mask = State.get(getOperand(0));
+    Value *EVL = State.get(getOperand(1), /*NeedsScalar=*/true);
+    Value *VFirstI = Builder.CreateIntrinsic(
+        Intrinsic::vp_first, {Mask->getType()},
+        {Mask,
+         Builder.getTrueVector(
+             cast<VectorType>(Mask->getType())->getElementCount()),
+         EVL});
+    return VFirstI;
+  }
   case VPInstruction::ExitingCond: {
     VPValue *VPVectorCond = getOperand(0);
     assert(VPVectorCond && "Mask cannot be null for vfirst");
@@ -1345,6 +1356,8 @@ bool VPInstruction::isVectorToScalar() const {
          getOpcode() == VPInstruction::ExtractPenultimateElement ||
 #if SIFIVE_CUSTOMIZATION
          getOpcode() == VPInstruction::ComputeReductionResultWithMask ||
+         getOpcode() == VPInstruction::VPFirst ||
+         getOpcode() == VPInstruction::ExitingCond ||
 #endif // SIFIVE_CUSTOMIZATION
          getOpcode() == Instruction::ExtractElement ||
          getOpcode() == VPInstruction::FirstActiveLane ||
@@ -1385,8 +1398,7 @@ void VPInstruction::execute(VPTransformState &State) {
   GeneratesPerFirstLaneOnly = GeneratesPerFirstLaneOnly ||
                               getOpcode() == VPInstruction::CSAVLSel ||
                               getOpcode() == VPInstruction::CSAVLPhi ||
-                              getOpcode() == VPInstruction::CSAAnyActive ||
-                              getOpcode() == VPInstruction::ExitingCond;
+                              getOpcode() == VPInstruction::CSAAnyActive;
 #endif // SIFIVE_CUSTOMIZATION
   bool GeneratesPerAllLanes = doesGeneratePerAllLanes();
   if (GeneratesPerAllLanes) {
@@ -1565,6 +1577,9 @@ void VPInstruction::print(raw_ostream &O, const Twine &Indent,
 #if SIFIVE_CUSTOMIZATION
   case VPInstruction::ComputeReductionResultWithMask:
     O << "compute-reduction-result-with-mask";
+    break;
+  case VPInstruction::VPFirst:
+    O << "vp-first";
     break;
   case VPInstruction::CSAInitMask:
     O << "csa-init-mask";
