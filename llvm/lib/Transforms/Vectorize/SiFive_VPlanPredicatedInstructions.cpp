@@ -145,8 +145,7 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     Value *B = State.get(User.getOperand(1));
 
     assert((Op || cast<VPInstruction>(Def)) && "Invalid recipe");
-    CmpInst::Predicate Pred = Op ? cast<CmpInst>(Op)->getPredicate()
-                                 : cast<VPInstruction>(Def)->getPredicate();
+    CmpInst::Predicate Pred = cast<VPRecipeWithIRFlags>(Def)->getPredicate();
     VectorType *OpTy = cast<VectorType>(A->getType());
     Value *MaskArg = MaskValue(OpTy->getElementCount());
     Builder.setMask(MaskArg);
