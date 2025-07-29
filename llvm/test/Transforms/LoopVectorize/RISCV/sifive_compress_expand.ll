@@ -96,7 +96,7 @@ define i32 @compress_store(i32 %n, ptr noalias %a, ptr noalias %b) {
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[TMP2]], i32 0
 ; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP3]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP1]])
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i32(<vscale x 8 x i32> [[VP_OP_LOAD]], <vscale x 8 x i32> zeroinitializer, metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i32(<vscale x 8 x i32> [[VP_OP_LOAD]], <vscale x 8 x i32> zeroinitializer, metadata !"ne", <vscale x 8 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp ne i32 [[TMP4]], -1
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[VECTOR_IF_BB:%.*]], label [[VECTOR_BODY_SPLIT]]
@@ -341,7 +341,7 @@ define i32 @expand_load(i32 %n, ptr noalias %a, ptr noalias %b) {
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[TMP2]], i32 0
 ; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP3]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP19]])
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i32(<vscale x 8 x i32> [[VP_OP_LOAD]], <vscale x 8 x i32> zeroinitializer, metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP19]])
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i32(<vscale x 8 x i32> [[VP_OP_LOAD]], <vscale x 8 x i32> zeroinitializer, metadata !"ne", <vscale x 8 x i1> splat (i1 true), i32 [[TMP19]])
 ; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP19]])
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp ne i32 [[TMP4]], -1
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[VECTOR_IF_BB:%.*]], label [[VECTOR_BODY_SPLIT]]

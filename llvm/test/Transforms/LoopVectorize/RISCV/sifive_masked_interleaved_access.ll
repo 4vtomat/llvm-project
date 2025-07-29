@@ -37,7 +37,7 @@ define void @masked_store(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[N_VEC]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i64> @llvm.vp.and.nxv2i64(<vscale x 2 x i64> [[VEC_IND]], <vscale x 2 x i64> splat (i64 1), <vscale x 2 x i1> splat (i1 true), i32 [[TMP8]])
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i64(<vscale x 2 x i64> [[VP_OP]], <vscale x 2 x i64> zeroinitializer, metadata !"eq", <vscale x 2 x i1> splat (i1 true), i32 [[TMP8]])
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i64(<vscale x 2 x i64> [[VP_OP]], <vscale x 2 x i64> zeroinitializer, metadata !"ne", <vscale x 2 x i1> splat (i1 true), i32 [[TMP8]])
 ; CHECK-NEXT:    [[TMP9:%.*]] = shl i64 [[EVL_BASED_IV]], 1
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr i32, ptr [[A]], i64 [[TMP9]]
 ; CHECK-NEXT:    [[INTERLEAVED_MASK:%.*]] = call <vscale x 4 x i1> @llvm.vector.interleave2.nxv4i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]])

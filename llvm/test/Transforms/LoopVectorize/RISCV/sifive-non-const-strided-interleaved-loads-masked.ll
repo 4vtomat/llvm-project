@@ -600,7 +600,7 @@ define i32 @non_const_strided_masked_3(i64 %n, ptr %a, ptr %cond1, ptr %cond2, i
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i8, ptr [[COND2]], i64 [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i8, ptr [[TMP8]], i32 0
 ; CHECK-NEXT:    [[VP_OP_LOAD3:%.*]] = call <vscale x 2 x i8> @llvm.vp.load.nxv2i8.p0(ptr align 1 [[TMP9]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
-; CHECK-NEXT:    [[VP_OP_ICMP4:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i8(<vscale x 2 x i8> [[VP_OP_LOAD3]], <vscale x 2 x i8> zeroinitializer, metadata !"eq", <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_OP_ICMP4:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i8(<vscale x 2 x i8> [[VP_OP_LOAD3]], <vscale x 2 x i8> zeroinitializer, metadata !"ne", <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP41:%.*]] = call <vscale x 2 x i1> @llvm.vp.select.nxv2i1(<vscale x 2 x i1> [[VP_OP2]], <vscale x 2 x i1> [[VP_OP_ICMP4]], <vscale x 2 x i1> zeroinitializer, i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP10:%.*]] = add i64 [[EVL_BASED_IV1]], 1
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr i32, ptr [[A]], i64 [[TMP10]]
@@ -655,7 +655,7 @@ define i32 @non_const_strided_masked_3(i64 %n, ptr %a, ptr %cond1, ptr %cond2, i
 ; CHECK-NEXT:    [[TMP29:%.*]] = getelementptr inbounds i8, ptr [[COND2]], i64 [[OFFSET_IDX]]
 ; CHECK-NEXT:    [[TMP30:%.*]] = getelementptr inbounds i8, ptr [[TMP29]], i32 0
 ; CHECK-NEXT:    [[VP_OP_LOAD23:%.*]] = call <vscale x 2 x i8> @llvm.vp.load.nxv2i8.p0(ptr align 1 [[TMP30]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP24]])
-; CHECK-NEXT:    [[VP_OP_ICMP24:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i8(<vscale x 2 x i8> [[VP_OP_LOAD23]], <vscale x 2 x i8> zeroinitializer, metadata !"eq", <vscale x 2 x i1> splat (i1 true), i32 [[TMP24]])
+; CHECK-NEXT:    [[VP_OP_ICMP24:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i8(<vscale x 2 x i8> [[VP_OP_LOAD23]], <vscale x 2 x i8> zeroinitializer, metadata !"ne", <vscale x 2 x i1> splat (i1 true), i32 [[TMP24]])
 ; CHECK-NEXT:    [[TMP31:%.*]] = call <vscale x 2 x i1> @llvm.vp.select.nxv2i1(<vscale x 2 x i1> [[VP_OP21]], <vscale x 2 x i1> [[VP_OP_ICMP24]], <vscale x 2 x i1> zeroinitializer, i32 [[TMP24]])
 ; CHECK-NEXT:    [[TMP32:%.*]] = mul i64 [[OFFSET_IDX]], [[STRIDE]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = add i64 [[TMP32]], 1
@@ -812,7 +812,7 @@ define i32 @non_const_strided_masked_3_non_power_of_two(i64 %n, ptr %a, ptr %con
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i8, ptr [[COND2]], i64 [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i8, ptr [[TMP8]], i32 0
 ; CHECK-NEXT:    [[VP_OP_LOAD3:%.*]] = call <vscale x 2 x i8> @llvm.vp.load.nxv2i8.p0(ptr align 1 [[TMP9]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
-; CHECK-NEXT:    [[VP_OP_ICMP4:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i8(<vscale x 2 x i8> [[VP_OP_LOAD3]], <vscale x 2 x i8> zeroinitializer, metadata !"eq", <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_OP_ICMP4:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i8(<vscale x 2 x i8> [[VP_OP_LOAD3]], <vscale x 2 x i8> zeroinitializer, metadata !"ne", <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP45:%.*]] = call <vscale x 2 x i1> @llvm.vp.select.nxv2i1(<vscale x 2 x i1> [[VP_OP2]], <vscale x 2 x i1> [[VP_OP_ICMP4]], <vscale x 2 x i1> zeroinitializer, i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP10:%.*]] = add i64 [[EVL_BASED_IV1]], 1
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr i32, ptr [[A]], i64 [[TMP10]]
@@ -872,7 +872,7 @@ define i32 @non_const_strided_masked_3_non_power_of_two(i64 %n, ptr %a, ptr %con
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr inbounds i8, ptr [[COND2]], i64 [[OFFSET_IDX]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = getelementptr inbounds i8, ptr [[TMP32]], i32 0
 ; CHECK-NEXT:    [[VP_OP_LOAD25:%.*]] = call <vscale x 2 x i8> @llvm.vp.load.nxv2i8.p0(ptr align 1 [[TMP33]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP27]])
-; CHECK-NEXT:    [[VP_OP_ICMP26:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i8(<vscale x 2 x i8> [[VP_OP_LOAD25]], <vscale x 2 x i8> zeroinitializer, metadata !"eq", <vscale x 2 x i1> splat (i1 true), i32 [[TMP27]])
+; CHECK-NEXT:    [[VP_OP_ICMP26:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i8(<vscale x 2 x i8> [[VP_OP_LOAD25]], <vscale x 2 x i8> zeroinitializer, metadata !"ne", <vscale x 2 x i1> splat (i1 true), i32 [[TMP27]])
 ; CHECK-NEXT:    [[TMP34:%.*]] = call <vscale x 2 x i1> @llvm.vp.select.nxv2i1(<vscale x 2 x i1> [[VP_OP23]], <vscale x 2 x i1> [[VP_OP_ICMP26]], <vscale x 2 x i1> zeroinitializer, i32 [[TMP27]])
 ; CHECK-NEXT:    [[TMP35:%.*]] = mul i64 [[OFFSET_IDX]], [[STRIDE]]
 ; CHECK-NEXT:    [[TMP36:%.*]] = add i64 [[TMP35]], 1

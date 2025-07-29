@@ -767,7 +767,7 @@ define void @interleaved_masked_store_factor_3(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[N_VEC]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i64> @llvm.vp.and.nxv2i64(<vscale x 2 x i64> [[VEC_IND]], <vscale x 2 x i64> splat (i64 1), <vscale x 2 x i1> splat (i1 true), i32 [[TMP9]])
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i64(<vscale x 2 x i64> [[VP_OP]], <vscale x 2 x i64> zeroinitializer, metadata !"eq", <vscale x 2 x i1> splat (i1 true), i32 [[TMP9]])
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i64(<vscale x 2 x i64> [[VP_OP]], <vscale x 2 x i64> zeroinitializer, metadata !"ne", <vscale x 2 x i1> splat (i1 true), i32 [[TMP9]])
 ; CHECK-NEXT:    [[TMP10:%.*]] = shl i64 [[EVL_BASED_IV]], 1
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr i32, ptr [[A]], i64 [[TMP10]]
 ; CHECK-NEXT:    [[INTERLEAVED_MASK:%.*]] = call <vscale x 4 x i1> @llvm.vector.interleave2.nxv4i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]])
@@ -902,7 +902,7 @@ define void @interleaved_masked_store_factor_4(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[N_VEC]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i64> @llvm.vp.and.nxv2i64(<vscale x 2 x i64> [[VEC_IND]], <vscale x 2 x i64> splat (i64 1), <vscale x 2 x i1> splat (i1 true), i32 [[TMP9]])
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i64(<vscale x 2 x i64> [[VP_OP]], <vscale x 2 x i64> zeroinitializer, metadata !"eq", <vscale x 2 x i1> splat (i1 true), i32 [[TMP9]])
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i64(<vscale x 2 x i64> [[VP_OP]], <vscale x 2 x i64> zeroinitializer, metadata !"ne", <vscale x 2 x i1> splat (i1 true), i32 [[TMP9]])
 ; CHECK-NEXT:    [[TMP10:%.*]] = shl i64 [[EVL_BASED_IV]], 1
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr i32, ptr [[A]], i64 [[TMP10]]
 ; CHECK-NEXT:    [[INTERLEAVED_MASK:%.*]] = call <vscale x 4 x i1> @llvm.vector.interleave2.nxv4i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]])
@@ -1043,7 +1043,7 @@ define void @interleaved_masked_store_factor_5(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[N_VEC]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i64> @llvm.vp.and.nxv2i64(<vscale x 2 x i64> [[VEC_IND]], <vscale x 2 x i64> splat (i64 1), <vscale x 2 x i1> splat (i1 true), i32 [[TMP9]])
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i64(<vscale x 2 x i64> [[VP_OP]], <vscale x 2 x i64> zeroinitializer, metadata !"eq", <vscale x 2 x i1> splat (i1 true), i32 [[TMP9]])
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i64(<vscale x 2 x i64> [[VP_OP]], <vscale x 2 x i64> zeroinitializer, metadata !"ne", <vscale x 2 x i1> splat (i1 true), i32 [[TMP9]])
 ; CHECK-NEXT:    [[TMP10:%.*]] = shl i64 [[EVL_BASED_IV]], 1
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr i32, ptr [[A]], i64 [[TMP10]]
 ; CHECK-NEXT:    [[INTERLEAVED_MASK:%.*]] = call <vscale x 4 x i1> @llvm.vector.interleave2.nxv4i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]])
@@ -1190,7 +1190,7 @@ define void @interleaved_masked_store_factor_6(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[N_VEC]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i64> @llvm.vp.and.nxv2i64(<vscale x 2 x i64> [[VEC_IND]], <vscale x 2 x i64> splat (i64 1), <vscale x 2 x i1> splat (i1 true), i32 [[TMP9]])
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i64(<vscale x 2 x i64> [[VP_OP]], <vscale x 2 x i64> zeroinitializer, metadata !"eq", <vscale x 2 x i1> splat (i1 true), i32 [[TMP9]])
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i64(<vscale x 2 x i64> [[VP_OP]], <vscale x 2 x i64> zeroinitializer, metadata !"ne", <vscale x 2 x i1> splat (i1 true), i32 [[TMP9]])
 ; CHECK-NEXT:    [[TMP10:%.*]] = shl i64 [[EVL_BASED_IV]], 1
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr i32, ptr [[A]], i64 [[TMP10]]
 ; CHECK-NEXT:    [[INTERLEAVED_MASK:%.*]] = call <vscale x 4 x i1> @llvm.vector.interleave2.nxv4i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]])
@@ -1343,7 +1343,7 @@ define void @interleaved_masked_store_factor_7(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[N_VEC]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i64> @llvm.vp.and.nxv2i64(<vscale x 2 x i64> [[VEC_IND]], <vscale x 2 x i64> splat (i64 1), <vscale x 2 x i1> splat (i1 true), i32 [[TMP9]])
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i64(<vscale x 2 x i64> [[VP_OP]], <vscale x 2 x i64> zeroinitializer, metadata !"eq", <vscale x 2 x i1> splat (i1 true), i32 [[TMP9]])
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i64(<vscale x 2 x i64> [[VP_OP]], <vscale x 2 x i64> zeroinitializer, metadata !"ne", <vscale x 2 x i1> splat (i1 true), i32 [[TMP9]])
 ; CHECK-NEXT:    [[TMP10:%.*]] = shl i64 [[EVL_BASED_IV]], 1
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr i32, ptr [[A]], i64 [[TMP10]]
 ; CHECK-NEXT:    [[INTERLEAVED_MASK:%.*]] = call <vscale x 4 x i1> @llvm.vector.interleave2.nxv4i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]])
@@ -1502,7 +1502,7 @@ define void @interleaved_masked_store_factor_8(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[N_VEC]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i64> @llvm.vp.and.nxv2i64(<vscale x 2 x i64> [[VEC_IND]], <vscale x 2 x i64> splat (i64 1), <vscale x 2 x i1> splat (i1 true), i32 [[TMP9]])
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i64(<vscale x 2 x i64> [[VP_OP]], <vscale x 2 x i64> zeroinitializer, metadata !"eq", <vscale x 2 x i1> splat (i1 true), i32 [[TMP9]])
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i64(<vscale x 2 x i64> [[VP_OP]], <vscale x 2 x i64> zeroinitializer, metadata !"ne", <vscale x 2 x i1> splat (i1 true), i32 [[TMP9]])
 ; CHECK-NEXT:    [[TMP10:%.*]] = shl i64 [[EVL_BASED_IV]], 1
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr i32, ptr [[A]], i64 [[TMP10]]
 ; CHECK-NEXT:    [[INTERLEAVED_MASK:%.*]] = call <vscale x 4 x i1> @llvm.vector.interleave2.nxv4i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]])

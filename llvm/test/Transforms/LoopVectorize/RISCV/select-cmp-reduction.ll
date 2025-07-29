@@ -127,7 +127,7 @@ define i32 @select_icmp(i32 %x, i32 %y, ptr nocapture readonly %c, i64 %n) #0 {
 ; VP_SCALABLE-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[C]], i64 [[EVL_BASED_IV]]
 ; VP_SCALABLE-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[TMP5]], i32 0
 ; VP_SCALABLE-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x i32> @llvm.vp.load.nxv4i32.p0(ptr align 4 [[TMP6]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP2]])
-; VP_SCALABLE-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i32(<vscale x 4 x i32> [[VP_OP_LOAD]], <vscale x 4 x i32> [[BROADCAST_SPLAT]], metadata !"slt", <vscale x 4 x i1> splat (i1 true), i32 [[TMP2]])
+; VP_SCALABLE-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i32(<vscale x 4 x i32> [[VP_OP_LOAD]], <vscale x 4 x i32> [[BROADCAST_SPLAT]], metadata !"sge", <vscale x 4 x i1> splat (i1 true), i32 [[TMP2]])
 ; VP_SCALABLE-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i1> @llvm.vp.or.nxv4i1(<vscale x 4 x i1> [[VEC_PHI]], <vscale x 4 x i1> [[VP_OP_ICMP]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP2]])
 ; VP_SCALABLE-NEXT:    [[VP_OP_MERGE]] = call <vscale x 4 x i1> @llvm.vp.merge.nxv4i1(<vscale x 4 x i1> splat (i1 true), <vscale x 4 x i1> [[VP_OP]], <vscale x 4 x i1> [[VEC_PHI]], i32 [[TMP2]])
 ; VP_SCALABLE-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP2]] to i64
@@ -294,7 +294,7 @@ define i32 @select_fcmp(float %x, i32 %y, ptr nocapture readonly %c, i64 %n) #0 
 ; VP_SCALABLE-NEXT:    [[TMP5:%.*]] = getelementptr inbounds float, ptr [[C]], i64 [[EVL_BASED_IV]]
 ; VP_SCALABLE-NEXT:    [[TMP6:%.*]] = getelementptr inbounds float, ptr [[TMP5]], i32 0
 ; VP_SCALABLE-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x float> @llvm.vp.load.nxv4f32.p0(ptr align 4 [[TMP6]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP2]])
-; VP_SCALABLE-NEXT:    [[VP_OP_FCMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.fcmp.nxv4f32(<vscale x 4 x float> [[VP_OP_LOAD]], <vscale x 4 x float> [[BROADCAST_SPLAT]], metadata !"olt", <vscale x 4 x i1> splat (i1 true), i32 [[TMP2]])
+; VP_SCALABLE-NEXT:    [[VP_OP_FCMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.fcmp.nxv4f32(<vscale x 4 x float> [[VP_OP_LOAD]], <vscale x 4 x float> [[BROADCAST_SPLAT]], metadata !"uge", <vscale x 4 x i1> splat (i1 true), i32 [[TMP2]])
 ; VP_SCALABLE-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i1> @llvm.vp.or.nxv4i1(<vscale x 4 x i1> [[VEC_PHI]], <vscale x 4 x i1> [[VP_OP_FCMP]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP2]])
 ; VP_SCALABLE-NEXT:    [[VP_OP_MERGE]] = call <vscale x 4 x i1> @llvm.vp.merge.nxv4i1(<vscale x 4 x i1> splat (i1 true), <vscale x 4 x i1> [[VP_OP]], <vscale x 4 x i1> [[VEC_PHI]], i32 [[TMP2]])
 ; VP_SCALABLE-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP2]] to i64
@@ -455,7 +455,7 @@ define i32 @select_const_i32_from_icmp(ptr nocapture readonly %v, i64 %n) #0 {
 ; VP_SCALABLE-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[V]], i64 [[EVL_BASED_IV]]
 ; VP_SCALABLE-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[TMP5]], i32 0
 ; VP_SCALABLE-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x i32> @llvm.vp.load.nxv4i32.p0(ptr align 4 [[TMP6]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
-; VP_SCALABLE-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i32(<vscale x 4 x i32> [[VP_OP_LOAD]], <vscale x 4 x i32> splat (i32 3), metadata !"eq", <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
+; VP_SCALABLE-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i32(<vscale x 4 x i32> [[VP_OP_LOAD]], <vscale x 4 x i32> splat (i32 3), metadata !"ne", <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
 ; VP_SCALABLE-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i1> @llvm.vp.or.nxv4i1(<vscale x 4 x i1> [[VEC_PHI]], <vscale x 4 x i1> [[VP_OP_ICMP]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
 ; VP_SCALABLE-NEXT:    [[VP_OP_MERGE]] = call <vscale x 4 x i1> @llvm.vp.merge.nxv4i1(<vscale x 4 x i1> splat (i1 true), <vscale x 4 x i1> [[VP_OP]], <vscale x 4 x i1> [[VEC_PHI]], i32 [[TMP3]])
 ; VP_SCALABLE-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP3]] to i64
@@ -616,7 +616,7 @@ define i32 @select_i32_from_icmp(ptr nocapture readonly %v, i32 %a, i32 %b, i64 
 ; VP_SCALABLE-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[V]], i64 [[EVL_BASED_IV]]
 ; VP_SCALABLE-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[TMP5]], i32 0
 ; VP_SCALABLE-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x i32> @llvm.vp.load.nxv4i32.p0(ptr align 4 [[TMP6]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
-; VP_SCALABLE-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i32(<vscale x 4 x i32> [[VP_OP_LOAD]], <vscale x 4 x i32> splat (i32 3), metadata !"eq", <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
+; VP_SCALABLE-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i32(<vscale x 4 x i32> [[VP_OP_LOAD]], <vscale x 4 x i32> splat (i32 3), metadata !"ne", <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
 ; VP_SCALABLE-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i1> @llvm.vp.or.nxv4i1(<vscale x 4 x i1> [[VEC_PHI]], <vscale x 4 x i1> [[VP_OP_ICMP]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
 ; VP_SCALABLE-NEXT:    [[VP_OP_MERGE]] = call <vscale x 4 x i1> @llvm.vp.merge.nxv4i1(<vscale x 4 x i1> splat (i1 true), <vscale x 4 x i1> [[VP_OP]], <vscale x 4 x i1> [[VEC_PHI]], i32 [[TMP3]])
 ; VP_SCALABLE-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP3]] to i64
@@ -777,7 +777,7 @@ define i32 @select_const_i32_from_fcmp(ptr nocapture readonly %v, i64 %n) #0 {
 ; VP_SCALABLE-NEXT:    [[TMP5:%.*]] = getelementptr inbounds float, ptr [[V]], i64 [[EVL_BASED_IV]]
 ; VP_SCALABLE-NEXT:    [[TMP6:%.*]] = getelementptr inbounds float, ptr [[TMP5]], i32 0
 ; VP_SCALABLE-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x float> @llvm.vp.load.nxv4f32.p0(ptr align 4 [[TMP6]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
-; VP_SCALABLE-NEXT:    [[VP_OP_FCMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.fcmp.nxv4f32(<vscale x 4 x float> [[VP_OP_LOAD]], <vscale x 4 x float> splat (float 3.000000e+00), metadata !"ueq", <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
+; VP_SCALABLE-NEXT:    [[VP_OP_FCMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.fcmp.nxv4f32(<vscale x 4 x float> [[VP_OP_LOAD]], <vscale x 4 x float> splat (float 3.000000e+00), metadata !"one", <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
 ; VP_SCALABLE-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i1> @llvm.vp.or.nxv4i1(<vscale x 4 x i1> [[VEC_PHI]], <vscale x 4 x i1> [[VP_OP_FCMP]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
 ; VP_SCALABLE-NEXT:    [[VP_OP_MERGE]] = call <vscale x 4 x i1> @llvm.vp.merge.nxv4i1(<vscale x 4 x i1> splat (i1 true), <vscale x 4 x i1> [[VP_OP]], <vscale x 4 x i1> [[VEC_PHI]], i32 [[TMP3]])
 ; VP_SCALABLE-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP3]] to i64
