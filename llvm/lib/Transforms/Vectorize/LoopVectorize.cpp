@@ -3375,26 +3375,6 @@ void InnerLoopVectorizer::fixCSALiveOuts(VPTransformState &State, VPlan &Plan) {
       Phi->addIncoming(ExtractedScalar, MiddleBlock);
   }
 }
-
-static void AddMissingUsersInEarlyExitBlock(Loop *OrigLoop,
-                                            BasicBlock *OriginEarlyExitBB,
-                                            BasicBlock *VectorEarlyExitBB,
-                                            BasicBlock *ScalarEarlyExitingBB) {
-  // Add missing live-in value in the exit block
-  for (auto &I : *OriginEarlyExitBB) {
-    auto *Phi = dyn_cast<PHINode>(&I);
-    if (!Phi)
-      break;
-    // Skip if VectorEarlyExitBlock is added
-    if (Phi->getBasicBlockIndex(VectorEarlyExitBB) != -1)
-      continue;
-    Value *V = Phi->getIncomingValueForBlock(ScalarEarlyExitingBB);
-    assert(isa<Constant>(V) ||
-           (isa<Instruction>(V) && !OrigLoop->contains(cast<Instruction>(V))) &&
-               "Values coming from loop should be fixed earlier");
-    Phi->addIncoming(V, VectorEarlyExitBB);
-  }
-}
 #endif // SIFIVE_CUSTOMIZATION
 
 void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State) {
@@ -3416,29 +3396,7 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State) {
   PSE.getSE()->forgetBlockAndLoopDispositions();
 
 #if SIFIVE_CUSTOMIZATION
-  /// Cherry-pick from #88385
-
   VPRegionBlock *Region = State.Plan->getVectorLoopRegion();
-  VPBasicBlock *VectorEarlyExitVPBB =
-      Region ? dyn_cast_if_present<VPBasicBlock>(Region->getEarlyExit())
-             : nullptr;
-  if (VectorEarlyExitVPBB) {
-    // Fix-up external users of the induction variables.
-    BasicBlock *VectorEarlyExitBB = State.CFG.VPBB2IRBB[VectorEarlyExitVPBB];
-    for (const auto &Entry : Legal->getInductionVars())
-      fixupEarlyExitIVUsers(Entry.first, Entry.second, VectorEarlyExitBB, Plan,
-                            State);
-
-    // TODO: model this in the plan when VPIRInstruction PHI supports more than
-    // one operand
-    AddMissingUsersInEarlyExitBlock(
-        OrigLoop, Legal->getUncountableEarlyExitBlock(), VectorEarlyExitBB,
-        Legal->getUncountableEarlyExitingBlock());
-    BasicBlock *OrigEarlyExitBB = Legal->getUncountableEarlyExitBlock();
-    if (Loop *EEL = LI->getLoopFor(OrigEarlyExitBB))
-      EEL->addBasicBlockToLoop(VectorEarlyExitBB, *LI);
-  }
-
   if (!Cost->requiresScalarEpilogue(VF.isVector()) && Region) {
     if (State.Plan->isUncountableAndUnbound()) {
       BasicBlock *MiddleBlock =
@@ -9740,8 +9698,7 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
 #endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
-  VPRegionBlock *Region = BestVPlan.getVectorLoopRegion();
-  if (!BestVPlan.isUncountable() || Region->getEarlyExit()) {
+  if (!BestVPlan.isUncountableAndUnbound()) {
 #endif
   if (!ILV.getTripCount())
     ILV.setTripCount(State.get(BestVPlan.getTripCount(), VPLane(0)));
@@ -11193,7 +11150,7 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
 #if SIFIVE_CUSTOMIZATION
       bool EnableEVLFuzzing = Legal->useVLAVectorizer();
       if (Legal->useVLAVectorizer()) {
-        if (Plan->isUncountable()) {
+        if (Plan->isUncountableAndUnbound()) {
           VPlanTransforms::optimizeUncountable(*Plan, *PSE.getSE());
           VPlanTransforms::addExplicitVectorLengthUncountable(*Plan);
           VPlanTransforms::optimizeUncountable(*Plan, *PSE.getSE());
@@ -11201,8 +11158,11 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
           VPlanTransforms::optimizeUncountable(*Plan, *PSE.getSE());
         } else {
           VPlanTransforms::optimize(*Plan);
-          VPlanTransforms::tryAddExplicitVectorLength(
-              *Plan, CM.getMaxSafeElements(), /*EnableEVLFuzzing=*/true);
+          if (Plan->isUncountable())
+            VPlanTransforms::addExplicitVectorLengthUncountable(*Plan);
+          else
+            VPlanTransforms::tryAddExplicitVectorLength(
+                *Plan, CM.getMaxSafeElements(), /*EnableEVLFuzzing=*/true);
           VPlanTransforms::optimize(*Plan);
           VPlanTransforms::optimizeGEPs(*Plan);
           VPlanTransforms::optimize(*Plan);
@@ -11741,21 +11701,16 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
 #endif
 
 #if SIFIVE_CUSTOMIZATION
+  if (IsUncountable && Legal->getCountableExitingBlocks().empty())
+    Plan->setUnbound();
   BasicBlock *CouldNotComputeExitingBB = nullptr;
   VPRecipeBase *VPDataDepExitCond = nullptr;
   Value *DataDepExitCond = nullptr;
-  VPBasicBlock *EarlyExitVPBB = nullptr;
-  BasicBlock *EarlyExitingBB = nullptr;
-  if (IsUncountable) {
+  if (Plan->isUncountableAndUnbound()) {
     CouldNotComputeExitingBB = Legal->getUncountableEarlyExitingBlock();
     BranchInst *BI =
         cast<BranchInst>(CouldNotComputeExitingBB->getTerminator());
     DataDepExitCond = BI->getCondition();
-    if (!Legal->getCountableExitingBlocks().empty()) {
-      EarlyExitingBB = CouldNotComputeExitingBB;
-      EarlyExitVPBB = Plan->createVPBasicBlock("vector.early.exit");
-      Plan->getVectorLoopRegion()->setEarlyExit(EarlyExitVPBB);
-    }
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -11776,7 +11731,7 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   bool HasNUW = !IVUpdateMayOverflow || Style == TailFoldingStyle::None;
 #if SIFIVE_CUSTOMIZATION
   // Canonical IV is not available for uncountable loops in general.
-  if (Plan->isUncountable()) {
+  if (Plan->isUncountableAndUnbound()) {
     addCanonicalIVRecipesUncountable(*Plan, Legal->getWidestInductionType(),
                                      HasNUW, Plan->getTripCount(), DL);
   } else {
@@ -11962,7 +11917,8 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     PrevVPBB = VPBB;
 
 #if SIFIVE_CUSTOMIZATION
-    if (VPB2IRBB.lookup(VPBB) == CouldNotComputeExitingBB) {
+    if (Plan->isUncountableAndUnbound() &&
+        VPB2IRBB.lookup(VPBB) == CouldNotComputeExitingBB) {
       // TODO: Handle loop-invariant condition
       auto *BI = cast<BranchInst>(CouldNotComputeExitingBB->getTerminator());
       bool NeedsInvert = OrigLoop->contains(BI->getSuccessor(0));
@@ -11978,14 +11934,8 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
       auto *NewBR =
           new VPInstruction(VPInstruction::BranchOnCond, {ScalarExitCond});
       // The branch recipe belongs to latch block if there is no early exiting.
-      if (EarlyExitingBB) {
-        RecipeBuilder.setRecipe(BI, NewBR);
-        VPBB->appendRecipe(NewBR);
-        VPBlockUtils::connectBlocks(VPBB, EarlyExitVPBB);
-      } else {
-        VPBasicBlock *EB = Plan->getVectorLoopRegion()->getExitingBasicBlock();
-        EB->appendRecipe(NewBR);
-      }
+      VPBasicBlock *EB = Plan->getVectorLoopRegion()->getExitingBasicBlock();
+      EB->appendRecipe(NewBR);
     }
 #endif // SIFIVE_CUSTOMIZATION
   }
@@ -12018,11 +11968,10 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   }
 
 #if SIFIVE_CUSTOMIZATION
-  // SiFive uncountable loop exits early in the loop
-  // do not need this transform.
+  // SiFive unbound loops do not need this transform.
   BasicBlock *UncountableExitingBlock;
-  if (!Plan->isUncountable() && (UncountableExitingBlock =
-          Legal->getUncountableEarlyExitingBlock())) {
+  if (!Plan->isUncountableAndUnbound() &&
+      (UncountableExitingBlock = Legal->getUncountableEarlyExitingBlock())) {
 #else
   if (auto *UncountableExitingBlock =
           Legal->getUncountableEarlyExitingBlock()) {
@@ -12035,7 +11984,7 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
 #if SIFIVE_CUSTOMIZATION
   // addScalarResumePhis requires TripCount to produce end-value
   // skip this for uncountable loop without trip count. e.g. strlen()
-  if (!Plan->isUncountable() || !Legal->getCountableExitingBlocks().empty())
+  if (!Plan->isUncountableAndUnbound())
     addScalarResumePhis(RecipeBuilder, *Plan, IVEndValues);
   SetVector<VPIRInstruction *> ExitUsersToFix =
       collectUsersInLatchExitBlock(OrigLoop, RecipeBuilder, *Plan,

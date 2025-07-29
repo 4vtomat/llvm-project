@@ -13,7 +13,6 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; VPLANS-NEXT: Successor(s): vector.ph
 ; VPLANS-EMPTY:
 ; VPLANS-NEXT: vector.ph:
-; VPLANS-NEXT:   vp<[[ENDV:%.+]]> = DERIVED-IV ir<%first> + vp<[[VTC]]> * ir<4>
 ; VPLANS-NEXT: Successor(s): vector loop
 ; VPLANS-EMPTY:
 ; VPLANS-NEXT: <x1> vector loop: {
@@ -26,37 +25,32 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; VPLANS-NEXT:     vp<[[VEC_PTR:%.+]]> = vector-pointer ir<%first.addr.07>
 ; VPLANS-NEXT:     WIDEN-SPECULATIVE-INSTRUCTION ir<[[DATA:%.+]]>, vp<[[EVL2:%.+]]> = vp.load vp<[[VEC_PTR]]>, vp<[[EVL]]>	unit-strided
 ; VPLANS-NEXT:     WIDEN ir<%cmp1> = icmp eq ir<[[DATA]]>, ir<%0>
-; VPLANS-NEXT:     EMIT vp<[[CMP:%.+]]> = exiting-cond ir<%cmp1>
-; VPLANS-NEXT:     EMIT branch-on-cond vp<[[CMP]]>
-; VPLANS-NEXT:   Successor(s): vector.early.exit, for.inc
-; VPLANS-EMPTY:
-; VPLANS-NEXT:   vector.early.exit:
-; VPLANS-NEXT:   No successors
-; VPLANS-EMPTY:
-; VPLANS-NEXT:   for.inc:
+; VPLANS-NEXT:     EMIT vp<[[VPFIRST:%.+]]> = vp-first ir<%cmp1>, vp<[[EVL2]]>
+; VPLANS-NEXT:     EMIT vp<[[COND1:%.+]]> = icmp sge vp<[[VPFIRST]]>, ir<0>
 ; VPLANS-NEXT:     EMIT vp<[[EVL2_I64:%.+]]> = zext vp<[[EVL2]]> to i64
 ; VPLANS-NEXT:     EMIT vp<[[EVL_IV_NEXT:%.+]]> = add nuw vp<[[EVL2_I64]]>, vp<[[EVL_IV]]>
-; VPLANS-NEXT:     EMIT branch-on-count vp<[[EVL_IV_NEXT]]>, vp<[[TC]]>
+; VPLANS-NEXT:     EMIT vp<[[COND2:%.+]]> = icmp eq vp<[[EVL_IV_NEXT]]>, vp<[[VTC]]>
+; VPLANS-NEXT:     EMIT vp<[[ALLCOND:%.+]]> = or vp<[[COND1]]>, vp<[[COND2]]>
+; VPLANS-NEXT:     EMIT branch-on-cond vp<[[ALLCOND]]>
 ; VPLANS-NEXT:   No successors
 ; VPLANS-NEXT: }
-; VPLANS-NEXT: Successor(s): middle.block
+; VPLANS-NEXT: Successor(s): middle.split
+; VPLANS-EMPTY:
+; VPLANS-NEXT: middle.split:
+; VPLANS-NEXT:   EMIT branch-on-cond vp<%8>
+; VPLANS-NEXT: Successor(s): vector.early.exit, middle.block
 ; VPLANS-EMPTY:
 ; VPLANS-NEXT: middle.block:
-; VPLANS-NEXT:   EMIT branch-on-cond ir<true>
-; VPLANS-NEXT: Successor(s): ir-bb<return.loopexit>, scalar.ph
+; VPLANS-NEXT: Successor(s): ir-bb<return.loopexit>
 ; VPLANS-EMPTY:
-; VPLANS-NEXT: scalar.ph:
-; VPLANS-NEXT:   EMIT vp<%bc.resume.val> = resume-phi vp<[[ENDV]]>, ir<%first>
-; VPLANS-NEXT: Successor(s): ir-bb<for.body>
-; VPLANS-EMPTY:
-; VPLANS-NEXT: ir-bb<for.body>:
-; VPLANS-NEXT:   IR   %first.addr.07 = phi ptr [ %first, %for.body.lr.ph ], [ %incdec.ptr, %for.inc ] (extra operand: vp<%bc.resume.val> from scalar.ph)
-; VPLANS-NEXT:   IR   %1 = load i32, ptr %first.addr.07, align 4
-; VPLANS-NEXT:   IR   %cmp1 = icmp eq i32 %1, %0
-; VPLANS-NEXT: No successors
+; VPLANS-NEXT: vector.early.exit:
+; VPLANS-NEXT:   EMIT vp<[[VPFIRST_I64:%.+]]> = zext vp<[[VPFIRST]]> to i64
+; VPLANS-NEXT:   EMIT vp<[[TC:%.+]]> = add vp<[[EVL_IV]]>, vp<[[VPFIRST_I64]]>
+; VPLANS-NEXT:   vp<[[ENDV1:%.+]]> = DERIVED-IV ir<%first> + vp<[[TC]]> * ir<4>
+; VPLANS-NEXT: Successor(s): ir-bb<return.loopexit>
 ; VPLANS-EMPTY:
 ; VPLANS-NEXT: ir-bb<return.loopexit>:
-; VPLANS-NEXT:   IR   %retval.0.ph = phi ptr [ %first.addr.07, %for.body ], [ %last, %for.inc ] (extra operand: ir<%last> from middle.block)
+; VPLANS-NEXT:   IR   %retval.0.ph = phi ptr [ %first.addr.07, %for.body ], [ %last, %for.inc ] (extra operands: ir<%last> from middle.block, vp<[[ENDV1]]> from vector.early.exit)
 ; VPLANS-NEXT: No successors
 ; VPLAN-NEXT: }
 entry:

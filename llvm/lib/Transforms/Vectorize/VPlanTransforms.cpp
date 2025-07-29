@@ -2674,6 +2674,85 @@ bool VPlanTransforms::tryAddExplicitVectorLength(
 }
 
 #if SIFIVE_CUSTOMIZATION
+static void
+optimizeWithVPFirst(VPlan &Plan,
+                    SmallDenseMap<VPBlockBase *, VPValue *> &BlockLastEVL) {
+  using namespace llvm::VPlanPatternMatch;
+  if (Plan.isUncountableAndUnbound())
+    return;
+  // Optimize any-of and first-active-lane with vp-first
+  // Before:
+  //   Latch-exiting:
+  //     %early.exit.cond = any-of %maskcond
+  //     ...
+  //     %cond = or %early.exit.cond, %main.exit.cond
+  //     branch-on-cond %cond
+  //
+  //   vector.early.exit:
+  //     %lane.id = first-active-lane %maskcond
+  //     ...
+  // After:
+  //   Latch-exiting:
+  //     %lane.id = vp-first %maskcond
+  //     %early.exit.cond = icmp ge %lane.id, 0
+  //     ...
+  //     %cond = or %early.exit.cond, %main.exit.cond
+  //     branch-on-cond %cond
+  VPRegionBlock *LoopRegion = Plan.getVectorLoopRegion();
+  VPBasicBlock *LatchExiting = LoopRegion->getExiting()->getEntryBasicBlock();
+
+  auto *CondBranch =
+      cast_if_present<VPInstruction>(LatchExiting->getTerminator());
+  VPValue *VPExitMask;
+  VPValue *EarlyExitCond;
+  VPValue *MainExitCond;
+  assert(
+      CondBranch &&
+      match(CondBranch, m_BranchOnCond(m_BinaryOr(m_VPValue(EarlyExitCond),
+                                                  m_VPValue(MainExitCond)))) &&
+      "Terminator does not match (or EarlyExitCond, MainExitCond)");
+  assert(match(EarlyExitCond,
+               m_VPInstruction<VPInstruction::AnyOf>(m_VPValue(VPExitMask))) &&
+         "EarlyExit condition should come from AnyOf");
+  DebugLoc DL = EarlyExitCond->getDefiningRecipe()->getDebugLoc();
+  VPValue *CurEVL = BlockLastEVL[VPExitMask->getDefiningRecipe()->getParent()];
+
+  auto *VPFirst =
+      new VPInstruction(VPInstruction::VPFirst, {VPExitMask, CurEVL}, DL);
+  VPFirst->insertAfter(VPExitMask->getDefiningRecipe());
+  LLVMContext &Ctx = Plan.getCanonicalIV()->getScalarType()->getContext();
+  Type *TyI32 = Type::getIntNTy(Ctx, 32);
+  VPValue *VPZero = Plan.getOrAddLiveIn(ConstantInt::get(TyI32, 0, false));
+  auto *NewEarlyExitCond = new VPInstruction(
+      Instruction::ICmp, ICmpInst::ICMP_SGE, VPFirst, VPZero, DL);
+  NewEarlyExitCond->insertAfter(VPFirst);
+  EarlyExitCond->replaceAllUsesWith(NewEarlyExitCond);
+  EarlyExitCond->getDefiningRecipe()->eraseFromParent();
+
+  // Replace all FirstActiveLane in EarlyExit
+  auto *MiddleSplitVPBB = cast<VPBasicBlock>(LoopRegion->getSingleSuccessor());
+  VPBasicBlock *EarlyExitVPBB =
+      MiddleSplitVPBB->getSuccessors()[0]->getEntryBasicBlock();
+  if (none_of(*EarlyExitVPBB, [&VPExitMask] (VPRecipeBase &R) {
+    return match(&R, m_VPInstruction<VPInstruction::FirstActiveLane>(
+                       m_Specific(VPExitMask)));
+  }))
+    return;
+
+  Type *TyI64 = Type::getIntNTy(Ctx, 64);
+  auto *VPFirstI64 = new VPInstructionWithType(Instruction::ZExt, VPFirst,
+                                               TyI64, VPFirst->getDebugLoc());
+  VPFirstI64->insertBefore(*EarlyExitVPBB, EarlyExitVPBB->getFirstNonPhi());
+  for (VPRecipeBase &R : make_early_inc_range(*EarlyExitVPBB)) {
+    if (!match(&R, m_VPInstruction<VPInstruction::FirstActiveLane>(
+                       m_Specific(VPExitMask))))
+      continue;
+    auto *VPFirstActiveLane = dyn_cast<VPInstruction>(&R);
+    VPFirstActiveLane->replaceAllUsesWith(VPFirstI64);
+    VPFirstActiveLane->eraseFromParent();
+  }
+}
+
 void VPlanTransforms::addExplicitVectorLengthUncountable(VPlan &Plan) {
   // Create ExplicitVectorLengthPhi recipe
   VPBasicBlock *Header = Plan.getVectorLoopRegion()->getEntryBasicBlock();
@@ -2788,11 +2867,12 @@ void VPlanTransforms::addExplicitVectorLengthUncountable(VPlan &Plan) {
       continue;
     assert(0 && "Unknown User of VF");
   }
-  Plan.getVFxUF().replaceAllUsesWith(LastEVL);
+  Plan.getVFxUF().replaceAllUsesWith(OpVPEVL);
   CanonicalIVIncrement->replaceAllUsesWith(NextEVLIV);
   CanonicalIVIncrement->setOperand(0, CanonicalIVPHI);
   // TODO: support unroll factor > 1.
   Plan.setUF(1);
+  optimizeWithVPFirst(Plan, BlockLastEVL);
 }
 #endif // SIFIVE_CUSTOMIZATION
 

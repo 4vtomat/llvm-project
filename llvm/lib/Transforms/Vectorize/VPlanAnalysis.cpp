@@ -91,6 +91,7 @@ Type *VPTypeAnalysis::inferScalarTypeForRecipe(const VPInstruction *R) {
 #if SIFIVE_CUSTOMIZATION
   case VPInstruction::CSAVLPhi:
   case VPInstruction::CSAVLSel:
+  case VPInstruction::VPFirst:
 #endif // SIFIVE_CUSTOMIZATION
   case VPInstruction::ExplicitVectorLength:
     return Type::getIntNTy(Ctx, 32);

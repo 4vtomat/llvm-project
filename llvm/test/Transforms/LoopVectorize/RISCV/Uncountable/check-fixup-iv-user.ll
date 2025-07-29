@@ -27,9 +27,8 @@ define void @foo(ptr %arg1, i64 %arg2) {
 ; CHECK-NEXT:    [[TMP10:%.*]] = mul <vscale x 16 x i64> [[TMP9]], splat (i64 1)
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
-; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[LOOP_NEXT2:.*]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[LOOP_NEXT2]] ]
-; CHECK-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[ARG1]], %[[VECTOR_PH]] ], [ [[PTR_IND:%.*]], %[[LOOP_NEXT2]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[ARG1]], %[[VECTOR_PH]] ], [ [[PTR_IND:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 16 x i64> [[TMP10]]
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[TMP2]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP11:%.*]] = call i64 @llvm.umin.i64(i64 [[AVL]], i64 16)
@@ -41,27 +40,29 @@ define void @foo(ptr %arg1, i64 %arg2) {
 ; CHECK-NEXT:    [[TMP16:%.*]] = zext i32 [[TMP15]] to i64
 ; CHECK-NEXT:    [[TMP17:%.*]] = extractvalue { <vscale x 16 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
 ; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i8(<vscale x 16 x i8> [[TMP17]], <vscale x 16 x i8> splat (i8 37), metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP15]])
-; CHECK-NEXT:    [[TMP19:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP15]])
-; CHECK-NEXT:    [[TMP20:%.*]] = icmp sge i32 [[TMP19]], 0
-; CHECK-NEXT:    br i1 [[TMP20]], label %[[VECTOR_EARLY_EXIT:.*]], label %[[LOOP_NEXT2]]
-; CHECK:       [[LOOP_NEXT2]]:
+; CHECK-NEXT:    [[TMP24:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP15]])
+; CHECK-NEXT:    [[TMP19:%.*]] = icmp sge i32 [[TMP24]], 0
 ; CHECK-NEXT:    [[TMP18:%.*]] = zext i32 [[TMP15]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP18]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP20:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP2]]
 ; CHECK-NEXT:    [[DOTREASS:%.*]] = mul i64 [[TMP16]], 1
 ; CHECK-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[DOTREASS]]
-; CHECK-NEXT:    [[TMP21:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP2]]
-; CHECK-NEXT:    br i1 [[TMP21]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    [[TMP21:%.*]] = or i1 [[TMP19]], [[TMP20]]
+; CHECK-NEXT:    br i1 [[TMP21]], label %[[MIDDLE_SPLIT:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK:       [[MIDDLE_SPLIT]]:
+; CHECK-NEXT:    [[TMP22:%.*]] = phi i64 [ [[EVL_BASED_IV]], %[[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[DOTLCSSA2:%.*]] = phi i32 [ [[TMP24]], %[[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[DOTLCSSA:%.*]] = phi i1 [ [[TMP19]], %[[VECTOR_BODY]] ]
+; CHECK-NEXT:    br i1 [[DOTLCSSA]], label %[[VECTOR_EARLY_EXIT:.*]], label %[[MIDDLE_BLOCK:.*]]
+; CHECK:       [[MIDDLE_BLOCK]]:
+; CHECK-NEXT:    br label %[[EXIT:.*]]
 ; CHECK:       [[VECTOR_EARLY_EXIT]]:
-; CHECK-NEXT:    [[INDEX_LCSSA:%.*]] = phi i64 [ [[INDEX]], %[[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[DOTLCSSA:%.*]] = phi i32 [ [[TMP19]], %[[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[TMP22:%.*]] = zext i32 [[DOTLCSSA]] to i64
+; CHECK-NEXT:    [[INDEX_LCSSA:%.*]] = zext i32 [[DOTLCSSA2]] to i64
 ; CHECK-NEXT:    [[TMP23:%.*]] = add i64 [[TMP22]], [[INDEX_LCSSA]]
 ; CHECK-NEXT:    [[IND_EARLY_ESCAPE:%.*]] = getelementptr i8, ptr [[ARG1]], i64 [[TMP23]]
-; CHECK-NEXT:    br label %[[EXIT:.*]]
-; CHECK:       [[MIDDLE_BLOCK]]:
-; CHECK-NEXT:    br i1 true, label %[[EXIT]], label %[[VEC_UNCOUNTABLE_SCALAR_PH]]
+; CHECK-NEXT:    br label %[[EXIT]]
 ; CHECK:       [[VEC_UNCOUNTABLE_SCALAR_PH]]:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ [[TMP4]], %[[MIDDLE_BLOCK]] ], [ [[ARG1]], %[[ENTRY]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ [[ARG1]], %[[ENTRY]] ]
 ; CHECK-NEXT:    br label %[[LOOP:.*]]
 ; CHECK:       [[LOOP]]:
 ; CHECK-NEXT:    [[PHI1:%.*]] = phi ptr [ [[BC_RESUME_VAL]], %[[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[GEP2:%.*]], %[[LOOP_NEXT:.*]] ]
