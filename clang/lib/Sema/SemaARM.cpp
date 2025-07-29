@@ -766,6 +766,7 @@ bool SemaARM::CheckNeonBuiltinFunctionCall(const TargetInfo &TI,
     if (HasConstPtr)
       EltTy = EltTy.withConst();
     QualType LHSTy = getASTContext().getPointerType(EltTy);
+<<<<<<< HEAD
     Sema::AssignConvertType ConvTy;
 #if SIFIVE_CUSTOMIZATION
     bool IsCompatible = false;
@@ -786,6 +787,10 @@ bool SemaARM::CheckNeonBuiltinFunctionCall(const TargetInfo &TI,
                  ? Sema::Compatible
                  : SemaRef.CheckSingleAssignmentConstraints(LHSTy, RHS);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    AssignConvertType ConvTy;
+    ConvTy = SemaRef.CheckSingleAssignmentConstraints(LHSTy, RHS);
+>>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
     if (RHS.isInvalid())
       return true;
     if (SemaRef.DiagnoseAssignmentResult(ConvTy, Arg->getBeginLoc(), LHSTy,
@@ -1028,11 +1033,8 @@ bool SemaARM::CheckARMBuiltinFunctionCall(const TargetInfo &TI,
   case ARM::BI__builtin_arm_vcvtr_d:
     return SemaRef.BuiltinConstantArgRange(TheCall, 1, 0, 1);
   case ARM::BI__builtin_arm_dmb:
-  case ARM::BI__dmb:
   case ARM::BI__builtin_arm_dsb:
-  case ARM::BI__dsb:
   case ARM::BI__builtin_arm_isb:
-  case ARM::BI__isb:
   case ARM::BI__builtin_arm_dbg:
     return SemaRef.BuiltinConstantArgRange(TheCall, 0, 0, 15);
   case ARM::BI__builtin_arm_cdp:
@@ -1129,11 +1131,8 @@ bool SemaARM::CheckAArch64BuiltinFunctionCall(const TargetInfo &TI,
   switch (BuiltinID) {
   default: return false;
   case AArch64::BI__builtin_arm_dmb:
-  case AArch64::BI__dmb:
   case AArch64::BI__builtin_arm_dsb:
-  case AArch64::BI__dsb:
   case AArch64::BI__builtin_arm_isb:
-  case AArch64::BI__isb:
     l = 0;
     u = 15;
     break;

@@ -27,6 +27,7 @@
 
 namespace llvm {
 
+class AssumptionCache;
 class BasicBlock;
 class DominatorTree;
 class InnerLoopVectorizer;
@@ -215,10 +216,16 @@ struct VPTransformState {
                    bool EnableRISCVCSA);
 #else
   VPTransformState(const TargetTransformInfo *TTI, ElementCount VF,
+<<<<<<< HEAD
                    LoopInfo *LI, DominatorTree *DT, IRBuilderBase &Builder,
                    InnerLoopVectorizer *ILV, VPlan *Plan,
                    Loop *CurrentParentLoop, Type *CanonicalIVTy);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+                   LoopInfo *LI, DominatorTree *DT, AssumptionCache *AC,
+                   IRBuilderBase &Builder, VPlan *Plan, Loop *CurrentParentLoop,
+                   Type *CanonicalIVTy);
+>>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
   /// Target Transform Info.
   const TargetTransformInfo *TTI;
 
@@ -366,18 +373,19 @@ struct VPTransformState {
 
     CFGState(DominatorTree *DT)
         : DTU(DT, DomTreeUpdater::UpdateStrategy::Lazy) {}
-
-    /// Returns the BasicBlock* mapped to the pre-header of the loop region
-    /// containing \p R.
-    BasicBlock *getPreheaderBBFor(VPRecipeBase *R);
   } CFG;
 
   /// Hold a pointer to LoopInfo to register new basic blocks in the loop.
   LoopInfo *LI;
 
+  /// Hold a pointer to AssumptionCache to register new assumptions after
+  /// replicating assume calls.
+  AssumptionCache *AC;
+
   /// Hold a reference to the IRBuilder used to generate output IR code.
   IRBuilderBase &Builder;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// Hold a pointer to ScalarEvolution which will be used during the IR
   /// generation.
@@ -404,6 +412,8 @@ struct VPTransformState {
   /// Hold a pointer to InnerLoopVectorizer to reuse its IR generation methods.
   InnerLoopVectorizer *ILV;
 
+=======
+>>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
   /// Pointer to the VPlan code is generated for.
   VPlan *Plan;
 

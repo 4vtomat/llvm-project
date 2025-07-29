@@ -22,14 +22,10 @@ define i32 @test_scalar_predicated_cost(i64 %x, i64 %y, ptr %A) #0 {
 ; CHECK-NEXT:    [[STEP_ADD:%.*]] = add <8 x i64> [[VEC_IND]], splat (i64 8)
 ; CHECK-NEXT:    [[STEP_ADD1:%.*]] = add <8 x i64> [[STEP_ADD]], splat (i64 8)
 ; CHECK-NEXT:    [[STEP_ADD2:%.*]] = add <8 x i64> [[STEP_ADD1]], splat (i64 8)
-; CHECK-NEXT:    [[TMP4:%.*]] = icmp ule <8 x i64> [[VEC_IND]], [[BROADCAST_SPLAT]]
-; CHECK-NEXT:    [[TMP5:%.*]] = icmp ule <8 x i64> [[STEP_ADD]], [[BROADCAST_SPLAT]]
-; CHECK-NEXT:    [[TMP6:%.*]] = icmp ule <8 x i64> [[STEP_ADD1]], [[BROADCAST_SPLAT]]
-; CHECK-NEXT:    [[TMP7:%.*]] = icmp ule <8 x i64> [[STEP_ADD2]], [[BROADCAST_SPLAT]]
-; CHECK-NEXT:    [[TMP8:%.*]] = xor <8 x i1> [[TMP4]], splat (i1 true)
-; CHECK-NEXT:    [[TMP9:%.*]] = xor <8 x i1> [[TMP5]], splat (i1 true)
-; CHECK-NEXT:    [[TMP10:%.*]] = xor <8 x i1> [[TMP6]], splat (i1 true)
-; CHECK-NEXT:    [[TMP11:%.*]] = xor <8 x i1> [[TMP7]], splat (i1 true)
+; CHECK-NEXT:    [[TMP8:%.*]] = icmp ugt <8 x i64> [[VEC_IND]], [[BROADCAST_SPLAT]]
+; CHECK-NEXT:    [[TMP9:%.*]] = icmp ugt <8 x i64> [[STEP_ADD]], [[BROADCAST_SPLAT]]
+; CHECK-NEXT:    [[TMP10:%.*]] = icmp ugt <8 x i64> [[STEP_ADD1]], [[BROADCAST_SPLAT]]
+; CHECK-NEXT:    [[TMP11:%.*]] = icmp ugt <8 x i64> [[STEP_ADD2]], [[BROADCAST_SPLAT]]
 ; CHECK-NEXT:    [[TMP12:%.*]] = or <8 x i64> [[BROADCAST_SPLAT5]], [[VEC_IND]]
 ; CHECK-NEXT:    [[TMP13:%.*]] = or <8 x i64> [[BROADCAST_SPLAT5]], [[STEP_ADD]]
 ; CHECK-NEXT:    [[TMP14:%.*]] = or <8 x i64> [[BROADCAST_SPLAT5]], [[STEP_ADD1]]
@@ -64,6 +60,27 @@ define i32 @test_scalar_predicated_cost(i64 %x, i64 %y, ptr %A) #0 {
 ; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <4 x i64> poison, i64 [[BC_RESUME_VAL]], i64 0
 ; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <4 x i64> [[DOTSPLATINSERT]], <4 x i64> poison, <4 x i32> zeroinitializer
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <4 x i64> [[DOTSPLAT]], <i64 0, i64 1, i64 2, i64 3>
+<<<<<<< HEAD
+=======
+; CHECK-NEXT:    br label [[LOOP_HEADER:%.*]]
+; CHECK:       vec.epilog.vector.body:
+; CHECK-NEXT:    [[INDEX4:%.*]] = phi i64 [ [[VEC_EPILOG_RESUME_VAL]], [[VEC_EPILOG_PH]] ], [ [[INDEX_NEXT11:%.*]], [[LOOP_HEADER]] ]
+; CHECK-NEXT:    [[VEC_IND5:%.*]] = phi <4 x i64> [ [[INDUCTION]], [[VEC_EPILOG_PH]] ], [ [[VEC_IND_NEXT6:%.*]], [[LOOP_HEADER]] ]
+; CHECK-NEXT:    [[TMP33:%.*]] = icmp ugt <4 x i64> [[VEC_IND5]], [[BROADCAST_SPLAT8]]
+; CHECK-NEXT:    [[TMP34:%.*]] = or <4 x i64> [[BROADCAST_SPLAT10]], [[VEC_IND5]]
+; CHECK-NEXT:    [[TMP35:%.*]] = getelementptr i32, ptr [[A]], i64 [[INDEX4]]
+; CHECK-NEXT:    [[TMP36:%.*]] = trunc <4 x i64> [[TMP34]] to <4 x i32>
+; CHECK-NEXT:    [[TMP29:%.*]] = getelementptr i32, ptr [[TMP35]], i32 0
+; CHECK-NEXT:    call void @llvm.masked.store.v4i32.p0(<4 x i32> [[TMP36]], ptr [[TMP29]], i32 4, <4 x i1> [[TMP33]])
+; CHECK-NEXT:    [[INDEX_NEXT11]] = add nuw i64 [[INDEX4]], 4
+; CHECK-NEXT:    [[VEC_IND_NEXT6]] = add <4 x i64> [[VEC_IND5]], splat (i64 4)
+; CHECK-NEXT:    [[TMP30:%.*]] = icmp eq i64 [[INDEX_NEXT11]], 100
+; CHECK-NEXT:    br i1 [[TMP30]], label [[VEC_EPILOG_MIDDLE_BLOCK:%.*]], label [[LOOP_HEADER]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK:       vec.epilog.middle.block:
+; CHECK-NEXT:    br i1 false, label [[EXIT]], label [[SCALAR_PH]]
+; CHECK:       vec.epilog.scalar.ph:
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 100, [[VEC_EPILOG_MIDDLE_BLOCK]] ], [ 96, [[VEC_EPILOG_ITER_CHECK]] ], [ 0, [[ITER_CHECK:%.*]] ]
+>>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
 ; CHECK-NEXT:    br label [[LOOP_HEADER1:%.*]]
 ; CHECK:       vec.epilog.vector.body:
 ; CHECK-NEXT:    [[INDEX3:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[VEC_EPILOG_PH1]] ], [ [[INDEX_NEXT10:%.*]], [[LOOP_HEADER1]] ]

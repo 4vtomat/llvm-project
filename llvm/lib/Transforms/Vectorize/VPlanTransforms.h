@@ -70,6 +70,7 @@ struct VPlanTransforms {
                 DenseMap<VPBlockBase *, BasicBlock *> &VPB2IRBB);
 #endif // SIFIVE_CUSTOMIZATION
 
+<<<<<<< HEAD
   /// Replace loops in \p Plan's flat CFG with VPRegionBlocks, turing \p Plan's
   /// flat CFG into a hierarchical CFG. It also creates a VPValue expression for
   /// the original trip count. It will also introduce a dedicated VPBasicBlock
@@ -86,6 +87,25 @@ struct VPlanTransforms {
 #endif // SIFIVE_CUSTOMIZATION
                                 bool RequiresScalarEpilogueCheck,
                                 bool TailFolded, Loop *TheLoop);
+=======
+  /// Prepare the plan for vectorization. It will introduce a dedicated
+  /// VPBasicBlock for the vector pre-header as well as a VPBasicBlock as exit
+  /// block of the main vector loop (middle.block). If a check is needed to
+  /// guard executing the scalar epilogue loop, it will be added to the middle
+  /// block, together with VPBasicBlocks for the scalar preheader and exit
+  /// blocks. \p InductionTy is the type of the canonical induction and used for
+  /// related values, like the trip count expression.  It also creates a VPValue
+  /// expression for the original trip count.
+  static void prepareForVectorization(VPlan &Plan, Type *InductionTy,
+                                      PredicatedScalarEvolution &PSE,
+                                      bool RequiresScalarEpilogueCheck,
+                                      bool TailFolded, Loop *TheLoop,
+                                      DebugLoc IVDL);
+
+  /// Replace loops in \p Plan's flat CFG with VPRegionBlocks, turning \p Plan's
+  /// flat CFG into a hierarchical CFG.
+  static void createLoopRegions(VPlan &Plan);
+>>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
 
   /// Replaces the VPInstructions in \p Plan with corresponding
   /// widen recipes. Returns false if any VPInstructions could not be converted

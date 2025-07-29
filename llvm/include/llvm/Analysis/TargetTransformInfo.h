@@ -211,6 +211,7 @@ struct TailFoldingInfo {
 
 class TargetTransformInfo;
 typedef TargetTransformInfo TTI;
+class TargetTransformInfoImplBase;
 
 /// This pass provides access to the codegen interfaces that are needed
 /// for IR-level transformations.
@@ -227,7 +228,8 @@ public:
   ///
   /// This is used by targets to construct a TTI wrapping their target-specific
   /// implementation that encodes appropriate costs for their target.
-  template <typename T> TargetTransformInfo(T Impl);
+  explicit TargetTransformInfo(
+      std::unique_ptr<const TargetTransformInfoImplBase> Impl);
 
   /// Construct a baseline TTI object using a minimal implementation of
   /// the \c Concept API below.
@@ -952,6 +954,7 @@ public:
                                            const APInt &DemandedElts,
                                            bool Insert, bool Extract,
                                            TTI::TargetCostKind CostKind,
+                                           bool ForPoisonSrc = true,
                                            ArrayRef<Value *> VL = {}) const;
 
   /// Estimate the overhead of scalarizing an instructions unique
@@ -1489,8 +1492,9 @@ public:
   /// vectorizer passes.
   InstructionCost getVectorInstrCost(unsigned Opcode, Type *Val,
                                      TTI::TargetCostKind CostKind,
-                                     unsigned Index = -1, Value *Op0 = nullptr,
-                                     Value *Op1 = nullptr) const;
+                                     unsigned Index = -1,
+                                     const Value *Op0 = nullptr,
+                                     const Value *Op1 = nullptr) const;
 
   /// \return The expected cost of vector Insert and Extract.
   /// Use -1 to indicate that there is no information on the index value.
@@ -2008,17 +2012,10 @@ public:
       SmallVectorImpl<std::pair<StringRef, int64_t>> &LB) const;
 
 private:
-  /// The abstract base class used to type erase specific TTI
-  /// implementations.
-  class Concept;
-
-  /// The template model for the base class which wraps a concrete
-  /// implementation in a type erased interface.
-  template <typename T> class Model;
-
-  std::unique_ptr<const Concept> TTIImpl;
+  std::unique_ptr<const TargetTransformInfoImplBase> TTIImpl;
 };
 
+<<<<<<< HEAD
 class TargetTransformInfo::Concept {
 public:
   virtual ~Concept() = 0;
@@ -3501,6 +3498,8 @@ template <typename T>
 TargetTransformInfo::TargetTransformInfo(T Impl)
     : TTIImpl(new Model<T>(Impl)) {}
 
+=======
+>>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
 /// Analysis pass providing the \c TargetTransformInfo.
 ///
 /// The core idea of the TargetIRAnalysis is to expose an interface through

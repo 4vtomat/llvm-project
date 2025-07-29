@@ -332,6 +332,7 @@ VPBasicBlock::iterator VPBasicBlock::getFirstNonPhi() {
 
 VPTransformState::VPTransformState(const TargetTransformInfo *TTI,
                                    ElementCount VF, LoopInfo *LI,
+<<<<<<< HEAD
                                    DominatorTree *DT, IRBuilderBase &Builder,
                                    InnerLoopVectorizer *ILV, VPlan *Plan,
 #if SIFIVE_CUSTOMIZATION
@@ -341,6 +342,12 @@ VPTransformState::VPTransformState(const TargetTransformInfo *TTI,
                                    Loop *CurrentParentLoop, Type *CanonicalIVTy)
 #endif // SIFIVE_CUSTOMIZATION
     : TTI(TTI), VF(VF), CFG(DT), LI(LI), Builder(Builder), ILV(ILV), Plan(Plan),
+=======
+                                   DominatorTree *DT, AssumptionCache *AC,
+                                   IRBuilderBase &Builder, VPlan *Plan,
+                                   Loop *CurrentParentLoop, Type *CanonicalIVTy)
+    : TTI(TTI), VF(VF), CFG(DT), LI(LI), AC(AC), Builder(Builder), Plan(Plan),
+>>>>>>> 8404b29b4151d95135ccc8d0d985be5ec8bb6f49
       CurrentParentLoop(CurrentParentLoop), LVer(nullptr),
 #if SIFIVE_CUSTOMIZATION
       TypeAnalysis(CanonicalIVTy), EnableRISCVCSA(EnableRISCVCSA), VPDT(*Plan) {}
@@ -486,11 +493,6 @@ Value *VPTransformState::get(const VPValue *Def, bool NeedsScalar) {
   }
   Builder.restoreIP(OldIP);
   return VectorValue;
-}
-
-BasicBlock *VPTransformState::CFGState::getPreheaderBBFor(VPRecipeBase *R) {
-  VPRegionBlock *LoopRegion = R->getParent()->getEnclosingLoopRegion();
-  return VPBB2IRBB[LoopRegion->getPreheaderVPBB()];
 }
 
 void VPTransformState::addNewMetadata(Instruction *To,
@@ -742,7 +744,6 @@ VPBasicBlock *VPBasicBlock::splitAt(iterator SplitAt) {
   assert((SplitAt == end() || SplitAt->getParent() == this) &&
          "can only split at a position in the same block");
 
-  SmallVector<VPBlockBase *, 2> Succs(successors());
   // Create new empty block after the block to split.
   auto *SplitBlock = getPlan()->createVPBasicBlock(getName() + ".split");
   VPBlockUtils::insertBlockAfter(SplitBlock, this);
@@ -978,6 +979,25 @@ InstructionCost VPBasicBlock::cost(ElementCount VF, VPCostContext &Ctx) {
   for (VPRecipeBase &R : Recipes)
     Cost += R.cost(VF, Ctx);
   return Cost;
+}
+
+const VPBasicBlock *VPBasicBlock::getCFGPredecessor(unsigned Idx) const {
+  const VPBlockBase *Pred = nullptr;
+  if (getNumPredecessors() > 0) {
+    Pred = getPredecessors()[Idx];
+  } else {
+    auto *Region = getParent();
+    assert(Region && !Region->isReplicator() && Region->getEntry() == this &&
+           "must be in the entry block of a non-replicate region");
+    assert(Idx < 2 && Region->getNumPredecessors() == 1 &&
+           "loop region has a single predecessor (preheader), its entry block "
+           "has 2 incoming blocks");
+
+    // Idx ==  0 selects the predecessor of the region, Idx == 1 selects the
+    // region itself whose exiting block feeds the phi across the backedge.
+    Pred = Idx == 0 ? Region->getSinglePredecessor() : Region;
+  }
+  return Pred->getExitingBasicBlock();
 }
 
 InstructionCost VPRegionBlock::cost(ElementCount VF, VPCostContext &Ctx) {

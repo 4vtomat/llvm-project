@@ -186,6 +186,33 @@ GetEnvironmentFromArguments(const llvm::json::Object &arguments) {
   return envs;
 }
 
+lldb::StopDisassemblyType
+GetStopDisassemblyDisplay(lldb::SBDebugger &debugger) {
+  lldb::StopDisassemblyType result =
+      lldb::StopDisassemblyType::eStopDisassemblyTypeNoDebugInfo;
+  lldb::SBStructuredData string_result =
+      debugger.GetSetting("stop-disassembly-display");
+  const size_t result_length = string_result.GetStringValue(nullptr, 0);
+  if (result_length > 0) {
+    std::string result_string(result_length, '\0');
+    string_result.GetStringValue(result_string.data(), result_length + 1);
+
+    result =
+        llvm::StringSwitch<lldb::StopDisassemblyType>(result_string)
+            .Case("never", lldb::StopDisassemblyType::eStopDisassemblyTypeNever)
+            .Case("always",
+                  lldb::StopDisassemblyType::eStopDisassemblyTypeAlways)
+            .Case("no-source",
+                  lldb::StopDisassemblyType::eStopDisassemblyTypeNoSource)
+            .Case("no-debuginfo",
+                  lldb::StopDisassemblyType::eStopDisassemblyTypeNoDebugInfo)
+            .Default(
+                lldb::StopDisassemblyType::eStopDisassemblyTypeNoDebugInfo);
+  }
+
+  return result;
+}
+
 llvm::Error ToError(const lldb::SBError &error) {
   if (error.Success())
     return llvm::Error::success();
@@ -207,5 +234,12 @@ std::string GetStringValue(const lldb::SBStructuredData &data) {
   data.GetStringValue(str.data(), str_length + 1);
   return str;
 }
+
+ScopeSyncMode::ScopeSyncMode(lldb::SBDebugger &debugger)
+    : m_debugger(debugger), m_async(m_debugger.GetAsync()) {
+  m_debugger.SetAsync(false);
+}
+
+ScopeSyncMode::~ScopeSyncMode() { m_debugger.SetAsync(m_async); }
 
 } // namespace lldb_dap

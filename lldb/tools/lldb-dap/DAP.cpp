@@ -35,6 +35,7 @@
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/Twine.h"
+#include "llvm/Support/Chrono.h"
 #include "llvm/Support/Error.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/FormatVariadic.h"
@@ -692,13 +693,19 @@ void DAP::SetTarget(const lldb::SBTarget target) {
     lldb::SBListener listener = this->debugger.GetListener();
     listener.StartListeningForEvents(
         this->target.GetBroadcaster(),
-        lldb::SBTarget::eBroadcastBitBreakpointChanged);
+        lldb::SBTarget::eBroadcastBitBreakpointChanged |
+            lldb::SBTarget::eBroadcastBitModulesLoaded |
+            lldb::SBTarget::eBroadcastBitModulesUnloaded |
+            lldb::SBTarget::eBroadcastBitSymbolsLoaded |
+            lldb::SBTarget::eBroadcastBitSymbolsChanged);
     listener.StartListeningForEvents(this->broadcaster,
                                      eBroadcastBitStopEventThread);
   }
 }
 
 bool DAP::HandleObject(const Message &M) {
+  TelemetryDispatcher dispatcher(&debugger);
+  dispatcher.Set("client_name", transport.GetClientName().str());
   if (const auto *req = std::get_if<Request>(&M)) {
     {
       std::lock_guard<std::mutex> guard(m_active_request_mutex);
@@ -715,11 +722,15 @@ bool DAP::HandleObject(const Message &M) {
     });
 
     auto handler_pos = request_handlers.find(req->command);
+    dispatcher.Set("client_data",
+                   llvm::Twine("request_command:", req->command).str());
     if (handler_pos != request_handlers.end()) {
       handler_pos->second->Run(*req);
       return true; // Success
     }
 
+    dispatcher.Set("error",
+                   llvm::Twine("unhandled-command:" + req->command).str());
     DAP_LOG(log, "({0}) error: unhandled command '{1}'",
             transport.GetClientName(), req->command);
     return false; // Fail
@@ -743,6 +754,8 @@ bool DAP::HandleObject(const Message &M) {
     // Result should be given, use null if not.
     if (resp->success) {
       (*response_handler)(resp->body);
+      dispatcher.Set("client_data",
+                     llvm::Twine("response_command:", resp->command).str());
     } else {
       llvm::StringRef message = "Unknown error, response failed";
       if (resp->message) {
@@ -763,6 +776,7 @@ bool DAP::HandleObject(const Message &M) {
                            }),
                        *resp->message);
       }
+      dispatcher.Set("error", message.str());
 
       (*response_handler)(llvm::createStringError(
           std::error_code(-1, std::generic_category()), message));
@@ -771,6 +785,7 @@ bool DAP::HandleObject(const Message &M) {
     return true;
   }
 
+  dispatcher.Set("error", "Unsupported protocol message");
   DAP_LOG(log, "Unsupported protocol message");
 
   return false;
@@ -805,11 +820,11 @@ llvm::Error DAP::Disconnect(bool terminateDebuggee) {
   case lldb::eStateCrashed:
   case lldb::eStateSuspended:
   case lldb::eStateStopped:
-  case lldb::eStateRunning:
-    debugger.SetAsync(false);
+  case lldb::eStateRunning: {
+    ScopeSyncMode scope_sync_mode(debugger);
     error = terminateDebuggee ? process.Kill() : process.Detach();
-    debugger.SetAsync(true);
     break;
+  }
   }
 
   SendTerminatedEvent();
@@ -847,8 +862,10 @@ static std::optional<T> getArgumentsIfRequest(const Message &pm,
 }
 
 llvm::Error DAP::Loop() {
-  std::future<llvm::Error> queue_reader =
-      std::async(std::launch::async, [&]() -> llvm::Error {
+  // Can't use \a std::future<llvm::Error> because it doesn't compile on
+  // Windows.
+  std::future<lldb::SBError> queue_reader =
+      std::async(std::launch::async, [&]() -> lldb::SBError {
         llvm::set_thread_name(transport.GetClientName() + ".transport_handler");
         auto cleanup = llvm::make_scope_exit([&]() {
           // Ensure we're marked as disconnecting when the reader exits.
@@ -870,8 +887,11 @@ llvm::Error DAP::Loop() {
             continue;
           }
 
-          if (llvm::Error err = next.takeError())
-            return err;
+          if (llvm::Error err = next.takeError()) {
+            lldb::SBError errWrapper;
+            errWrapper.SetErrorString(llvm::toString(std::move(err)).c_str());
+            return errWrapper;
+          }
 
           if (const protocol::Request *req =
                   std::get_if<protocol::Request>(&*next);
@@ -909,7 +929,7 @@ llvm::Error DAP::Loop() {
           m_queue_cv.notify_one();
         }
 
-        return llvm::Error::success();
+        return lldb::SBError();
       });
 
   auto cleanup = llvm::make_scope_exit([&]() {
@@ -933,7 +953,7 @@ llvm::Error DAP::Loop() {
                                      "unhandled packet");
   }
 
-  return queue_reader.get();
+  return ToError(queue_reader.get());
 }
 
 lldb::SBError DAP::WaitForProcessToStop(std::chrono::seconds seconds) {
@@ -948,6 +968,7 @@ lldb::SBError DAP::WaitForProcessToStop(std::chrono::seconds seconds) {
   while (std::chrono::steady_clock::now() < timeout_time) {
     const auto state = process.GetState();
     switch (state) {
+    case lldb::eStateUnloaded:
     case lldb::eStateAttaching:
     case lldb::eStateConnected:
     case lldb::eStateInvalid:
@@ -962,18 +983,16 @@ lldb::SBError DAP::WaitForProcessToStop(std::chrono::seconds seconds) {
     case lldb::eStateExited:
       error.SetErrorString("process exited during launch or attach");
       return error;
-    case lldb::eStateUnloaded:
-      error.SetErrorString("process unloaded during launch or attach");
-      return error;
     case lldb::eStateCrashed:
     case lldb::eStateStopped:
       return lldb::SBError(); // Success!
     }
     std::this_thread::sleep_for(std::chrono::microseconds(250));
   }
-  error.SetErrorStringWithFormat("process failed to stop within %" PRId64
-                                 " seconds",
-                                 static_cast<uint64_t>(seconds.count()));
+  error.SetErrorString(
+      llvm::formatv("process failed to stop within {0}", seconds)
+          .str()
+          .c_str());
   return error;
 }
 

@@ -321,8 +321,7 @@ private:
 PreservedAnalyses LICMPass::run(Loop &L, LoopAnalysisManager &AM,
                                 LoopStandardAnalysisResults &AR, LPMUpdater &) {
   if (!AR.MSSA)
-    report_fatal_error("LICM requires MemorySSA (loop-mssa)",
-                       /*GenCrashDiag*/false);
+    reportFatalUsageError("LICM requires MemorySSA (loop-mssa)");
 
   // For the new PM, we also can't use OptimizationRemarkEmitter as an analysis
   // pass.  Function analyses need to be preserved across loop transformations
@@ -359,8 +358,7 @@ PreservedAnalyses LNICMPass::run(LoopNest &LN, LoopAnalysisManager &AM,
                                  LoopStandardAnalysisResults &AR,
                                  LPMUpdater &) {
   if (!AR.MSSA)
-    report_fatal_error("LNICM requires MemorySSA (loop-mssa)",
-                       /*GenCrashDiag*/false);
+    reportFatalUsageError("LNICM requires MemorySSA (loop-mssa)");
 
   // For the new PM, we also can't use OptimizationRemarkEmitter as an analysis
   // pass.  Function analyses need to be preserved across loop transformations
