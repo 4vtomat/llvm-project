@@ -5065,13 +5065,10 @@ void DAGTypeLegalizer::WidenVectorResult(SDNode *N, unsigned ResNo) {
   case ISD::FREEZE:
   case ISD::ARITH_FENCE:
   case ISD::FCANONICALIZE:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case ISD::EXPERIMENTAL_VP_SET_BEFORE_FIRST:
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case ISD::AssertNoFPClass:
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
     Res = WidenVecRes_Unary(N);
     break;
   case ISD::FMA: case ISD::VP_FMA:
