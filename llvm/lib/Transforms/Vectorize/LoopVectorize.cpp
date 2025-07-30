@@ -9620,27 +9620,20 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
          "Trying to execute plan with unsupported VF");
   assert(BestVPlan.hasUF(BestUF) &&
          "Trying to execute plan with unsupported UF");
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (!BestVPlan.isUncountable())
 #endif
-=======
   VPlanTransforms::runPass(VPlanTransforms::materializeStepVectors, BestVPlan);
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
   // TODO: Move to VPlan transform stage once the transition to the VPlan-based
   // cost model is complete for better cost estimates.
   VPlanTransforms::runPass(VPlanTransforms::unrollByUF, BestVPlan, BestUF,
                            OrigLoop->getHeader()->getContext());
-<<<<<<< HEAD
-  VPlanTransforms::materializeBroadcasts(BestVPlan);
+  VPlanTransforms::runPass(VPlanTransforms::materializeBroadcasts, BestVPlan);
 #if SIFIVE_CUSTOMIZATION
   if (!BestVPlan.isUncountable() &&
       (!BestVPlan.useVLAVectorizer() || !Legal->getLAI() ||
        Legal->isSafeForAnyVectorWidth()))
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  VPlanTransforms::runPass(VPlanTransforms::materializeBroadcasts, BestVPlan);
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
   VPlanTransforms::optimizeForVFAndUF(BestVPlan, BestVF, BestUF, PSE);
   VPlanTransforms::simplifyRecipes(BestVPlan, *Legal->getWidestInductionType());
   VPlanTransforms::narrowInterleaveGroups(
@@ -9709,7 +9702,6 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
   if (VectorizingEpilogue)
     VPlanTransforms::removeDeadRecipes(BestVPlan);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // When execute the VPWidenLoadEVLRecipe with stride, need to expand the SCEV
   // stride value. The SCEV expander will try to reuse previous expanded value
@@ -9771,27 +9763,6 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
     State.Plan->addLMULTypePair(State.LMULExp, SEWType);
   }
 #endif // SIFIVE_CUSTOMIZATION
-
-  // Only use noalias metadata when using memory checks guaranteeing no overlap
-  // across all iterations.
-  const LoopAccessInfo *LAI = Legal->getLAI();
-  std::unique_ptr<LoopVersioning> LVer = nullptr;
-  if (LAI && !LAI->getRuntimePointerChecking()->getChecks().empty() &&
-      !LAI->getRuntimePointerChecking()->getDiffChecks()) {
-
-    //  We currently don't use LoopVersioning for the actual loop cloning but we
-    //  still use it to add the noalias metadata.
-    //  TODO: Find a better way to re-use LoopVersioning functionality to add
-    //        metadata.
-    LVer = std::make_unique<LoopVersioning>(
-        *LAI, LAI->getRuntimePointerChecking()->getChecks(), OrigLoop, LI, DT,
-        PSE.getSE());
-    State.LVer = &*LVer;
-    State.LVer->prepareNoAliasMetadata();
-  }
-
-=======
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
   ILV.printDebugTracesAtStart();
 
   //===------------------------------------------------===//
@@ -10433,32 +10404,24 @@ VPRecipeBuilder::tryToWidenMemory(Instruction *I, ArrayRef<VPValue *> Operands,
   }
   if (LoadInst *Load = dyn_cast<LoadInst>(I))
     return new VPWidenLoadRecipe(*Load, Ptr, Mask, Consecutive, Reverse,
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-                                 I->getDebugLoc(), StrideVPV,
-                                 Legal->isVectorizableUncountable() &&
-                                   Legal->getSpeculativeLoads().contains(Load),
-                                 IsMonotonic);
+        VPIRMetadata(*Load, LVer), I->getDebugLoc(), StrideVPV,
+        Legal->isVectorizableUncountable() &&
+            Legal->getSpeculativeLoads().contains(Load),
+        IsMonotonic);
 #else
-                                 I->getDebugLoc());
+        VPIRMetadata(*Load, LVer), I->getDebugLoc());
 #endif // SIFIVE_CUSTOMIZATION
 
   StoreInst *Store = cast<StoreInst>(I);
   return new VPWidenStoreRecipe(*Store, Ptr, Operands[0], Mask, Consecutive,
 #if SIFIVE_CUSTOMIZATION
-                                Reverse, I->getDebugLoc(), StrideVPV,
-                                IsMonotonic);
+                                Reverse, VPIRMetadata(*Store, LVer),
+                                I->getDebugLoc(), StrideVPV, IsMonotonic);
 #else
-                                Reverse, I->getDebugLoc());
-#endif // SIFIVE_CUSTOMIZATION
-=======
-                                 VPIRMetadata(*Load, LVer), I->getDebugLoc());
-
-  StoreInst *Store = cast<StoreInst>(I);
-  return new VPWidenStoreRecipe(*Store, Ptr, Operands[0], Mask, Consecutive,
                                 Reverse, VPIRMetadata(*Store, LVer),
                                 I->getDebugLoc());
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 /// Creates a VPWidenIntOrFpInductionRecpipe for \p Phi. If needed, it will also
@@ -10679,17 +10642,13 @@ VPWidenRecipe *VPRecipeBuilder::tryToWiden(Instruction *I,
     // div/rem operation itself.  Otherwise fall through to general handling below.
     if (CM.isPredicatedInst(I)) {
       SmallVector<VPValue *> Ops(Operands);
-<<<<<<< HEAD
-      VPValue *Mask = getBlockInMask(I->getParent());
+      VPValue *Mask = getBlockInMask(Builder.getInsertBlock());
 
 #if SIFIVE_CUSTOMIZATION
       assert((Mask || Legal->useVLAVectorizer()) &&
              "Mask cannot be nullptr for in non RVV VLA vectorization");
       if (Mask) {
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      VPValue *Mask = getBlockInMask(Builder.getInsertBlock());
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
       VPValue *One =
           Plan.getOrAddLiveIn(ConstantInt::get(I->getType(), 1u, false));
       auto *SafeRHS = Builder.createSelect(Mask, Ops[1], One, I->getDebugLoc());
@@ -11177,7 +11136,6 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
 #endif // SIFIVE_CUSTOMIZATION
         VPlanTransforms::runPass(VPlanTransforms::truncateToMinimalBitwidths,
                                  *Plan, CM.getMinimalBitwidths());
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       bool EnableEVLFuzzing = Legal->useVLAVectorizer();
       if (Legal->useVLAVectorizer()) {
@@ -11188,21 +11146,21 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
           VPlanTransforms::optimizeGEPs(*Plan);
           VPlanTransforms::optimizeUncountable(*Plan, *PSE.getSE());
         } else {
-          VPlanTransforms::optimize(*Plan);
+          VPlanTransforms::runPass(VPlanTransforms::optimize, *Plan);
           if (Plan->isUncountable())
             VPlanTransforms::addExplicitVectorLengthUncountable(*Plan);
           else
             VPlanTransforms::tryAddExplicitVectorLength(
                 *Plan, CM.getMaxSafeElements(), /*EnableEVLFuzzing=*/true);
-          VPlanTransforms::optimize(*Plan);
+          VPlanTransforms::runPass(VPlanTransforms::optimize, *Plan);
           VPlanTransforms::optimizeGEPs(*Plan);
-          VPlanTransforms::optimize(*Plan);
+          VPlanTransforms::runPass(VPlanTransforms::optimize, *Plan);
 
           VPlanTransforms::optimizeConditionalRecipes(
               *Plan, *Legal, TTI, *TLI);
         }
       } else {
-        VPlanTransforms::optimize(*Plan);
+        VPlanTransforms::runPass(VPlanTransforms::optimize, *Plan);
         // TODO: try to put it close to addActiveLaneMask().
         // Discard the plan if it is not EVL-compatible
         if (CM.foldTailWithEVL() &&
@@ -11212,10 +11170,7 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
           break;
       }
 #else
-      VPlanTransforms::optimize(*Plan);
-=======
       VPlanTransforms::runPass(VPlanTransforms::optimize, *Plan);
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
       // TODO: try to put it close to addActiveLaneMask().
       // Discard the plan if it is not EVL-compatible
       if (CM.foldTailWithEVL() && !HasScalarVF &&
@@ -11673,8 +11628,7 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range,
             return !CM.requiresScalarEpilogue(VF.isVector());
           },
           Range);
-<<<<<<< HEAD
-  DenseMap<VPBlockBase *, BasicBlock *> VPB2IRBB;
+  DenseMap<const VPBlockBase *, BasicBlock *> VPB2IRBB;
 
 #if SIFIVE_CUSTOMIZATION
   auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB, Legal);
@@ -11682,22 +11636,16 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range,
   VPlanTransforms::prepareForVectorization(
       *Plan, Legal->getWidestInductionType(), PSE, IsUncountable,
       RequiresScalarEpilogueCheck, CM.foldTailByMasking(), OrigLoop,
-      getDebugLocFromInstOrOperands(Legal->getPrimaryInduction()));
+      getDebugLocFromInstOrOperands(Legal->getPrimaryInduction()),
+      Legal->hasUncountableEarlyExit(), Range);
 #else
-=======
-  DenseMap<const VPBlockBase *, BasicBlock *> VPB2IRBB;
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
   auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB);
   VPlanTransforms::prepareForVectorization(
       *Plan, Legal->getWidestInductionType(), PSE, RequiresScalarEpilogueCheck,
       CM.foldTailByMasking(), OrigLoop,
-<<<<<<< HEAD
-      getDebugLocFromInstOrOperands(Legal->getPrimaryInduction()));
-#endif
-=======
       getDebugLocFromInstOrOperands(Legal->getPrimaryInduction()),
       Legal->hasUncountableEarlyExit(), Range);
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
+#endif
   VPlanTransforms::createLoopRegions(*Plan);
 
 #if SIFIVE_CUSTOMIZATION
@@ -11878,18 +11826,13 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range,
       }
 
       VPRecipeBase *Recipe =
-<<<<<<< HEAD
-          RecipeBuilder.tryToCreateWidenRecipe(Instr, Operands, Range);
+          RecipeBuilder.tryToCreateWidenRecipe(SingleDef, Range);
 #if SIFIVE_CUSTOMIZATION
       if (Instr == DataDepExitCond)
         VPDataDepExitCond = Recipe;
 #endif // SIFIVE_CUSTOMIZATION
-      if (!Recipe)
-=======
-          RecipeBuilder.tryToCreateWidenRecipe(SingleDef, Range);
       if (!Recipe) {
         SmallVector<VPValue *, 4> Operands(R.operands());
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
         Recipe = RecipeBuilder.handleReplication(Instr, Operands, Range);
       }
 
@@ -11972,7 +11915,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range,
     R->setOperand(1, WideIV->getStepValue());
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // SiFive unbound loops do not need this transform.
   BasicBlock *UncountableExitingBlock;
@@ -11986,8 +11928,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range,
                              OrigLoop, UncountableExitingBlock, RecipeBuilder,
                              Range);
   }
-=======
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
   DenseMap<VPValue *, VPValue *> IVEndValues;
 #if SIFIVE_CUSTOMIZATION
   // addScalarResumePhis requires TripCount to produce end-value
@@ -12105,28 +12045,21 @@ VPlanPtr LoopVectorizationPlanner::tryToBuildVPlan(VFRange &Range) {
   assert(!OrigLoop->isInnermost());
   assert(EnableVPlanNativePath && "VPlan-native path is not enabled.");
 
-<<<<<<< HEAD
-  DenseMap<VPBlockBase *, BasicBlock *> VPB2IRBB;
+  DenseMap<const VPBlockBase *, BasicBlock *> VPB2IRBB;
 #if SIFIVE_CUSTOMIZATION
   auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB, Legal);
   const bool IsUncountable = Legal->isVectorizableUncountable();
   VPlanTransforms::prepareForVectorization(
       *Plan, Legal->getWidestInductionType(), PSE, IsUncountable, true, false,
-      OrigLoop, getDebugLocFromInstOrOperands(Legal->getPrimaryInduction()));
+      OrigLoop, getDebugLocFromInstOrOperands(Legal->getPrimaryInduction()),
+      false, Range);
 #else
-  auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB);
-  VPlanTransforms::prepareForVectorization(
-      *Plan, Legal->getWidestInductionType(), PSE, true, false, OrigLoop,
-      getDebugLocFromInstOrOperands(Legal->getPrimaryInduction()));
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  DenseMap<const VPBlockBase *, BasicBlock *> VPB2IRBB;
   auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB);
   VPlanTransforms::prepareForVectorization(
       *Plan, Legal->getWidestInductionType(), PSE, true, false, OrigLoop,
       getDebugLocFromInstOrOperands(Legal->getPrimaryInduction()), false,
       Range);
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
+#endif // SIFIVE_CUSTOMIZATION
   VPlanTransforms::createLoopRegions(*Plan);
 
   for (ElementCount VF : Range)
@@ -12333,15 +12266,11 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
     // different numbers of lanes. Partial reductions mask the input instead.
     if (!PhiR->isInLoop() && CM.foldTailByMasking() &&
         !isa<VPPartialReductionRecipe>(OrigExitingVPV->getDefiningRecipe())) {
-<<<<<<< HEAD
-      VPValue *Cond = RecipeBuilder.getBlockInMask(OrigLoop->getHeader());
+      VPValue *Cond = RecipeBuilder.getBlockInMask(PhiR->getParent());
 #if SIFIVE_CUSTOMIZATION
       if (!Cond && Legal->useVLAVectorizer())
         Cond = Plan->getOrCreateAllTrueMask();
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      VPValue *Cond = RecipeBuilder.getBlockInMask(PhiR->getParent());
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
       Type *PhiTy = PhiR->getOperand(0)->getLiveInIRValue()->getType();
       std::optional<FastMathFlags> FMFs =
           PhiTy->isFloatingPointTy()
