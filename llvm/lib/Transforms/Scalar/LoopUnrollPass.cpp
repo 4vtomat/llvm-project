@@ -1344,17 +1344,8 @@ tryToUnrollLoop(Loop *L, DominatorTree &DT, LoopInfo *LI, ScalarEvolution &SE,
     });
 
     ValueToValueMapTy VMap;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
     if (peelLoop(L, PP.PeelCount, PP.PeelLast, LI, &SE, DT, &AC, PreserveLCSSA,
                  VMap)) {
-#else
-    if (peelLoop(L, PP.PeelCount, LI, &SE, DT, &AC, PreserveLCSSA, VMap)) {
-#endif
-=======
-    if (peelLoop(L, PP.PeelCount, PP.PeelLast, LI, &SE, DT, &AC, PreserveLCSSA,
-                 VMap)) {
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
       simplifyLoopAfterUnroll(L, true, LI, &SE, &DT, &AC, &TTI, nullptr);
       // If the loop was peeled, we already "used up" the profile information
       // we had, so we don't want to unroll or peel again.
