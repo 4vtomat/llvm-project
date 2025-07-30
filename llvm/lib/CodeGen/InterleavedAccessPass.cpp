@@ -252,7 +252,6 @@ static bool isReInterleaveMask(ShuffleVectorInst *SVI, unsigned &Factor,
   return false;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static unsigned getFactorFromVectorInterleaveIntrinsic(IntrinsicInst *II) {
     switch (II->getIntrinsicID()) {
@@ -297,7 +296,6 @@ static unsigned getFactorFromVectorDeInterleaveIntrinsic(IntrinsicInst *DI) {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
 // Return the corresponded deinterleaved mask, or nullptr if there is no valid
 // mask.
 static Value *getMask(Value *WideMask, unsigned Factor,
@@ -308,7 +306,6 @@ static Value *getMask(Value *WideMask, unsigned Factor,
   return getMask(WideMask, Factor, LeafValueTy->getElementCount());
 }
 
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
 bool InterleavedAccessImpl::lowerInterleavedLoad(
     Instruction *Load, SmallSetVector<Instruction *, 32> &DeadInsts) {
   if (isa<ScalableVectorType>(Load->getType()))
