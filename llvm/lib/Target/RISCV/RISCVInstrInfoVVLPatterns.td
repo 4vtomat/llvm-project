@@ -134,29 +134,6 @@ def riscv_vfmv_v_f_vl : RVSDNode<"VFMV_V_F_VL",
                                                       SDTCisEltOfVec<2, 0>,
                                                       SDTCisVT<3, XLenVT>]>>;
 
-// FIXME: Those SIFIVE_CUSTOMIZATION need decide MASK and PassThru flag.
-#ifdef SIFIVE_CUSTOMIZATION
-def riscv_shsub_vl      : SDNode<"RISCVISD::SHSUB_VL", SDT_RISCVIntBinOp_VL>;
-def riscv_uhsub_vl : SDNode<"RISCVISD::UHSUB_VL", SDT_RISCVIntBinOp_VL>;
-
-def riscv_vsmul_vl  : SDNode<"RISCVISD::VSMUL_VL", SDT_RISCVIntBinOp_RM_VL>;
-def riscv_vssrl_vl : SDNode<"RISCVISD::VSSRL_VL", SDT_RISCVIntBinOp_RM_VL>;
-def riscv_vssra_vl : SDNode<"RISCVISD::VSSRA_VL", SDT_RISCVIntBinOp_RM_VL>;
-def riscv_vnclipu_vl : SDNode<"RISCVISD::VNCLIPU_VL", SDT_RISCVVNBinOp_RM_VL>;
-def riscv_vnclip_vl : SDNode<"RISCVISD::VNCLIP_VL", SDT_RISCVVNBinOp_RM_VL>;
-
-def riscv_vfrsqrt7_vl : SDNode<"RISCVISD::VFRSQRT7_VL", SDT_RISCVFPUnOp_VL>;
-def riscv_vfrec7_vl : SDNode<"RISCVISD::VFREC7_VL", SDT_RISCVFPUnOp_VL>;
-
-def riscv_vfclass_vl : SDNode<"RISCVISD::VFCLASS_VL",
-                              SDTypeProfile<1, 3, [SDTCisInt<0>, SDTCisVec<0>,
-                                                   SDTCisFP<1>, SDTCisVec<1>,
-                                                   SDTCisSameSizeAs<0, 1>,
-                                                   SDTCVecEltisVT<2, i1>,
-                                                   SDTCisSameNumEltsAs<0, 2>,
-                                                   SDTCisVT<3, XLenVT>]>>;
-#endif // SIFIVE_CUSTOMIZATION
-
 // VMV_S_X_VL matches the semantics of vmv.s.x. It carries a VL operand.
 def riscv_vmv_s_x_vl : RVSDNode<"VMV_S_X_VL",
                                 SDTypeProfile<1, 3, [SDTCisSameAs<0, 1>,
@@ -219,6 +196,18 @@ let HasPassthruOp = true, HasMaskOp = true in {
   def riscv_fsub_vl  : RVSDNode<"FSUB_VL",  SDT_RISCVFPBinOp_VL>;
   def riscv_fmul_vl  : RVSDNode<"FMUL_VL",  SDT_RISCVFPBinOp_VL, [SDNPCommutative]>;
   def riscv_fdiv_vl  : RVSDNode<"FDIV_VL",  SDT_RISCVFPBinOp_VL>;
+
+#ifdef SIFIVE_CUSTOMIZATION
+  def riscv_shsub_vl : RVSDNode<"SHSUB_VL", SDT_RISCVIntBinOp_VL>;
+  def riscv_uhsub_vl : RVSDNode<"UHSUB_VL", SDT_RISCVIntBinOp_VL>;
+
+  def riscv_vsmul_vl : RVSDNode<"VSMUL_VL", SDT_RISCVIntBinOp_RM_VL>;
+  def riscv_vssrl_vl : RVSDNode<"VSSRL_VL", SDT_RISCVIntBinOp_RM_VL>;
+  def riscv_vssra_vl : RVSDNode<"VSSRA_VL", SDT_RISCVIntBinOp_RM_VL>;
+
+  def riscv_vnclipu_vl : RVSDNode<"VNCLIPU_VL", SDT_RISCVVNBinOp_RM_VL>;
+  def riscv_vnclip_vl  : RVSDNode<"VNCLIP_VL", SDT_RISCVVNBinOp_RM_VL>;
+#endif
 } // let HasPassthruOp = true, HasMaskOp = true
 
 // Vector unary ops with a mask as a second operand and VL as a third operand.
@@ -226,6 +215,19 @@ let HasMaskOp = true in {
   def riscv_fneg_vl  : RVSDNode<"FNEG_VL",  SDT_RISCVFPUnOp_VL>;
   def riscv_fabs_vl  : RVSDNode<"FABS_VL",  SDT_RISCVFPUnOp_VL>;
   def riscv_fsqrt_vl : RVSDNode<"FSQRT_VL", SDT_RISCVFPUnOp_VL>;
+
+#ifdef SIFIVE_CUSTOMIZATION
+  def riscv_vfrsqrt7_vl : RVSDNode<"VFRSQRT7_VL", SDT_RISCVFPUnOp_VL>;
+  def riscv_vfrec7_vl : RVSDNode<"VFREC7_VL", SDT_RISCVFPUnOp_VL>;
+
+  def riscv_vfclass_vl : RVSDNode<"VFCLASS_VL",
+                                  SDTypeProfile<1, 3, [SDTCisInt<0>, SDTCisVec<0>,
+                                                     SDTCisFP<1>, SDTCisVec<1>,
+                                                     SDTCisSameSizeAs<0, 1>,
+                                                     SDTCVecEltisVT<2, i1>,
+                                                     SDTCisSameNumEltsAs<0, 2>,
+                                                     SDTCisVT<3, XLenVT>]>>;
+#endif
 } // let HasMaskOp = true
 
 let HasPassthruOp = true, HasMaskOp = true in {
@@ -284,11 +286,11 @@ let HasMaskOp = true in {
   def riscv_vfnmadd_vl : RVSDNode<"VFNMADD_VL", SDT_RISCVVecFMA_VL, [SDNPCommutative]>;
   def riscv_vfmsub_vl  : RVSDNode<"VFMSUB_VL",  SDT_RISCVVecFMA_VL, [SDNPCommutative]>;
   def riscv_vfnmsub_vl : RVSDNode<"VFNMSUB_VL", SDT_RISCVVecFMA_VL, [SDNPCommutative]>;
-}
 
 #ifdef SIFIVE_CUSTOMIZATION
-def riscv_vfnmsac_vl : SDNode<"RISCVISD::VFNMSAC_VL", SDT_RISCVVecFMA_VL>;
+  def riscv_vfnmsac_vl : RVSDNode<"VFNMSAC_VL", SDT_RISCVVecFMA_VL>;
 #endif // SIFIVE_CUSTOMIZATION
+}
 
 def SDT_RISCVWVecFMA_VL : SDTypeProfile<1, 5, [SDTCisVec<0>, SDTCisFP<0>,
                                                SDTCisVec<1>, SDTCisFP<1>,

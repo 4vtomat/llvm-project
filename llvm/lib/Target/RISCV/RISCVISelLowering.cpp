@@ -11166,8 +11166,6 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     SDValue Mask, VL;
     std::tie(Mask, VL) = getDefaultVLOps(Op0VT, Op0VecVT, DL, DAG, Subtarget);
     SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::RNU, DL, XLenVT);
-    SDValue Policy =
-        DAG.getTargetConstant(RISCVVType::TAIL_AGNOSTIC, DL, XLenVT);
     SDValue Ssrl = convertFromScalableVector(
         Op0VT,
         DAG.getNode(
@@ -11176,7 +11174,7 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
              DAG.getNode(
                  RISCVISD::VMV_V_X_VL, DL, Op0VecVT, DAG.getUNDEF(Op0VecVT),
                  DAG.getAnyExtOrTrunc(Op.getOperand(2), DL, XLenVT), VL),
-             Passthru, Mask, RM, VL, Policy}),
+             Passthru, Mask, RM, VL}),
         DAG, Subtarget);
     return DAG.getAnyExtOrTrunc(Ssrl, DL, Op.getSimpleValueType());
   }
