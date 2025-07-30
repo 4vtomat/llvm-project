@@ -68,16 +68,12 @@ public:
   /// Build plain CFG for TheLoop  and connects it to Plan's entry.
 #if SIFIVE_CUSTOMIZATION
   std::unique_ptr<VPlan>
-  buildPlainCFG(DenseMap<VPBlockBase *, BasicBlock *> &VPB2IRBB,
+  buildPlainCFG(DenseMap<const VPBlockBase *, BasicBlock *> &VPB2IRBB,
                 LoopVectorizationLegality *Legal);
 #else
   std::unique_ptr<VPlan>
-<<<<<<< HEAD
-  buildPlainCFG(DenseMap<VPBlockBase *, BasicBlock *> &VPB2IRBB);
-#endif // SIFIVE_CUSTOMIZATION
-=======
   buildPlainCFG(DenseMap<const VPBlockBase *, BasicBlock *> &VPB2IRBB);
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
+#endif // SIFIVE_CUSTOMIZATION
 };
 } // anonymous namespace
 
@@ -253,9 +249,9 @@ void PlainCFGBuilder::createVPInstructionsForVPBB(VPBasicBlock *VPBB,
 
 // Main interface to build the plain CFG.
 #if SIFIVE_CUSTOMIZATION
-std::unique_ptr<VPlan>
-PlainCFGBuilder::buildPlainCFG(DenseMap<VPBlockBase *, BasicBlock *> &VPB2IRBB,
-                               LoopVectorizationLegality *Legal) {
+std::unique_ptr<VPlan> PlainCFGBuilder::buildPlainCFG(
+    DenseMap<const VPBlockBase *, BasicBlock *> &VPB2IRBB,
+    LoopVectorizationLegality *Legal) {
   if (Legal && Legal->isVectorizableUncountable()) {
     Plan->setUncountable();
     if (Legal->getCountableExitingBlocks().empty())
@@ -264,12 +260,8 @@ PlainCFGBuilder::buildPlainCFG(DenseMap<VPBlockBase *, BasicBlock *> &VPB2IRBB,
 
 #else
 std::unique_ptr<VPlan> PlainCFGBuilder::buildPlainCFG(
-<<<<<<< HEAD
-    DenseMap<VPBlockBase *, BasicBlock *> &VPB2IRBB) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
     DenseMap<const VPBlockBase *, BasicBlock *> &VPB2IRBB) {
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
+#endif // SIFIVE_CUSTOMIZATION
   VPIRBasicBlock *Entry = cast<VPIRBasicBlock>(Plan->getEntry());
   BB2VPBB[Entry->getIRBasicBlock()] = Entry;
   for (VPIRBasicBlock *ExitVPBB : Plan->getExitBlocks())
@@ -386,10 +378,10 @@ std::unique_ptr<VPlan> PlainCFGBuilder::buildPlainCFG(
 }
 
 #if SIFIVE_CUSTOMIZATION
-std::unique_ptr<VPlan>
-VPlanTransforms::buildPlainCFG(Loop *TheLoop, LoopInfo &LI,
-                               DenseMap<VPBlockBase *, BasicBlock *> &VPB2IRBB,
-                               LoopVectorizationLegality *Legal) {
+std::unique_ptr<VPlan> VPlanTransforms::buildPlainCFG(
+    Loop *TheLoop, LoopInfo &LI,
+    DenseMap<const VPBlockBase *, BasicBlock *> &VPB2IRBB,
+    LoopVectorizationLegality *Legal) {
   PlainCFGBuilder Builder(TheLoop, &LI);
   return Builder.buildPlainCFG(VPB2IRBB, Legal);
 }
@@ -521,21 +513,13 @@ static void addCanonicalIVRecipes(VPlan &Plan, VPBasicBlock *HeaderVPBB,
 #endif // SIFIVE_CUSTOMIZATION
 }
 
-<<<<<<< HEAD
-void VPlanTransforms::prepareForVectorization(VPlan &Plan, Type *InductionTy,
-                                              PredicatedScalarEvolution &PSE,
-#if SIFIVE_CUSTOMIZATION
-                                              bool IsUncountable,
-#endif // SIFIVE_CUSTOMIZATION
-                                              bool RequiresScalarEpilogueCheck,
-                                              bool TailFolded, Loop *TheLoop,
-                                              DebugLoc IVDL) {
-=======
 void VPlanTransforms::prepareForVectorization(
     VPlan &Plan, Type *InductionTy, PredicatedScalarEvolution &PSE,
+#if SIFIVE_CUSTOMIZATION
+    bool IsUncountable,
+#endif // SIFIVE_CUSTOMIZATION
     bool RequiresScalarEpilogueCheck, bool TailFolded, Loop *TheLoop,
     DebugLoc IVDL, bool HasUncountableEarlyExit, VFRange &Range) {
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
   VPDominatorTree VPDT;
   VPDT.recalculate(Plan);
 
