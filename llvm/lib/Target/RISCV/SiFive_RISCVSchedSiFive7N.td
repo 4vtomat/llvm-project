@@ -84,6 +84,7 @@ multiclass SiFive7NSchedResources<int VLEN, bit ExtraVALU = false,
   defm "SiFive7N" : BulletReadAdvance;
   //===----------------------------------------------------------------------===//
   // Unsupported extensions
+  defm : UnsupportedSchedQ;
   defm : UnsupportedSchedZabha;
   defm : UnsupportedSchedZbc;
   defm : UnsupportedSchedZbkb;
