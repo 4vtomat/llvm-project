@@ -5985,13 +5985,7 @@ static bool isMaskedLoadCompress(
         TTI.getMemoryOpCost(Instruction::Load, LoadVecTy, CommonAlignment,
                             LI->getPointerAddressSpace(), CostKind);
   }
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   if (IsStrided && !IsMasked && Order.empty()) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  if (IsStrided && !IsMasked && Order.empty()) {
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
     // Check for potential segmented(interleaved) loads.
     VectorType *AlignedLoadVecTy = getWidenedType(
         ScalarTy, getFullVectorNumberOfElements(TTI, ScalarTy, *Diff + 1));
