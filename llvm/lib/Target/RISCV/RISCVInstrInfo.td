@@ -69,10 +69,6 @@ def riscv_sw_guarded_tail : RVSDNode<"SW_GUARDED_TAIL", SDT_RISCVCall,
                                      [SDNPHasChain, SDNPOptInGlue, SDNPOutGlue,
                                       SDNPVariadic]>;
 
-<<<<<<< HEAD
-def riscv_add_lo : SDNode<"RISCVISD::ADD_LO", SDTIntBinOp>;
-def riscv_hi : SDNode<"RISCVISD::HI", SDTIntUnaryOp>;
-def riscv_lla : SDNode<"RISCVISD::LLA", SDTIntUnaryOp>;
 #ifdef SIFIVE_CUSTOMIZATION
 def riscv_add_regrel : SDNode<"RISCVISD::ADD_REGREL",
                               SDTypeProfile<1, 3, [SDTCisSameAs<0, 1>,
@@ -86,7 +82,6 @@ def riscv_add_tprel : SDNode<"RISCVISD::ADD_TPREL",
                                                   SDTCisSameAs<0, 3>,
                                                   SDTCisInt<0>]>>;
 #endif // SIFIVE_CUSTOMIZATION
-=======
 def riscv_ret_glue  : RVSDNode<"RET_GLUE", SDTNone,
                                [SDNPHasChain, SDNPOptInGlue, SDNPVariadic]>;
 def riscv_sret_glue : RVSDNode<"SRET_GLUE", SDTNone,
@@ -95,7 +90,6 @@ def riscv_mret_glue : RVSDNode<"MRET_GLUE", SDTNone,
                                [SDNPHasChain, SDNPOptInGlue]>;
 def riscv_mileaveret_glue : RVSDNode<"QC_C_MILEAVERET_GLUE", SDTNone,
                                      [SDNPHasChain, SDNPOptInGlue]>;
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
 
 // Select with condition operator - This selects between a true value and
 // a false value (ops #3 and #4) based on the boolean result of comparing
@@ -2309,9 +2303,11 @@ include "RISCVInstrInfoZalasr.td"
 // Integer
 include "RISCVInstrInfoZimop.td"
 include "RISCVInstrInfoZicbo.td"
+include "SiFive_RISCVInstrInfoCompactPseudos.td" // SIFIVE
 include "RISCVInstrInfoZicond.td"
 include "RISCVInstrInfoZicfiss.td"
 include "RISCVInstrInfoZilsd.td"
+include "SiFive_RISCVInstrInfoZjid.td" // SIFIVE
 
 // Scalar FP
 include "RISCVInstrInfoF.td"
@@ -2330,18 +2326,6 @@ include "RISCVInstrInfoV.td"
 include "RISCVInstrInfoZvk.td"
 include "RISCVInstrInfoZvqdotq.td"
 
-<<<<<<< HEAD
-// Integer
-include "RISCVInstrInfoZimop.td"
-include "RISCVInstrInfoZicbo.td"
-include "SiFive_RISCVInstrInfoCompactPseudos.td" // SIFIVE
-include "RISCVInstrInfoZicond.td"
-include "RISCVInstrInfoZicfiss.td"
-include "RISCVInstrInfoZilsd.td"
-include "SiFive_RISCVInstrInfoZjid.td" // SIFIVE
-
-=======
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
 // Compressed
 include "RISCVInstrInfoC.td"
 include "RISCVInstrInfoZc.td"
