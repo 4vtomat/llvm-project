@@ -16,13 +16,10 @@
 #include "VPlan.h"
 #include "VPlanCFG.h"
 #include "VPlanDominatorTree.h"
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 #include "VPlanUtils.h"
 #endif // SIFIVE_CUSTOMIZATION
-=======
 #include "VPlanHelpers.h"
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
 #include "llvm/ADT/SmallPtrSet.h"
 #include "llvm/ADT/TypeSwitch.h"
 
@@ -310,23 +307,6 @@ bool VPlanVerifier::verifyVPBasicBlock(const VPBasicBlock *VPBB) {
             continue;
         }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-        // SIFIVE: if the block is in a region, dominates only check if the
-        // region dominate the block
-        const VPRegionBlock *Region = VPBB->getParent();
-        bool CheckDominance = VPDT.dominates(VPBB, UI->getParent()) ||
-                              (Region && VPBB->getPlan()->isUncountable() &&
-                               VPDT.dominates(Region, UI->getParent()) &&
-                               VPDT.dominates(VPBB, Region->getExiting()));
-        if (!CheckDominance) {
-#else
-        if (!VPDT.dominates(VPBB, UI->getParent())) {
-#endif // SIFIVE_CUSTOMIZATION
-          errs() << "Use before def!\n";
-          return false;
-        }
-=======
         errs() << "Use before def!\n";
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
         VPSlotTracker Tracker(VPBB->getPlan());
@@ -336,7 +316,6 @@ bool VPlanVerifier::verifyVPBasicBlock(const VPBasicBlock *VPBB) {
         errs() << "\n";
 #endif
         return false;
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
       }
     }
     if (const auto *EVL = dyn_cast<VPInstruction>(&R)) {
