@@ -3247,61 +3247,27 @@ bool RISCVDAGToDAGISel::SelectAddrRegImm(SDValue Addr, SDValue &Base,
   MVT VT = Addr.getSimpleValueType();
 
   if (Addr.getOpcode() == RISCVISD::ADD_LO) {
-<<<<<<< HEAD
-    // If this is non RV32Zdinx we can always fold.
-    if (!IsRV32Zdinx) {
 #if SIFIVE_CUSTOMIZATION
-      bool CanFold = true;
-      // Unconditionally fold if operand 1 is not a global address (e.g.
-      // externsymbol)
-      if (auto *GA = dyn_cast<GlobalAddressSDNode>(Addr.getOperand(1))) {
-        const DataLayout &DL = CurDAG->getDataLayout();
-        Align Alignment = commonAlignment(
-              GA->getGlobal()->getPointerAlignment(DL), GA->getOffset());
-        if (!areOffsetsWithinAlignment(Addr, Alignment))
-          CanFold = false;
-      }
-      if (CanFold) {
-        Base = Addr.getOperand(0);
-        Offset = Addr.getOperand(1);
-        return true;
-      }
-#else
-      Base = Addr.getOperand(0);
-      Offset = Addr.getOperand(1);
-      return true;
-#endif // SIFIVE_CUSTOMIZATION
-    }
-
-    // For RV32Zdinx we need to have more than 4 byte alignment so we can add 4
-    // to the offset when we expand in RISCVExpandPseudoInsts.
+    bool CanFold = true;
+    // Unconditionally fold if operand 1 is not a global address (e.g.
+    // externsymbol)
     if (auto *GA = dyn_cast<GlobalAddressSDNode>(Addr.getOperand(1))) {
       const DataLayout &DL = CurDAG->getDataLayout();
       Align Alignment = commonAlignment(
-          GA->getGlobal()->getPointerAlignment(DL), GA->getOffset());
-#if SIFIVE_CUSTOMIZATION
-      if (Alignment > 4 || areOffsetsWithinAlignment(Addr, Alignment)) {
+            GA->getGlobal()->getPointerAlignment(DL), GA->getOffset());
+      if (!areOffsetsWithinAlignment(Addr, Alignment))
+        CanFold = false;
+    }
+    if (CanFold) {
+      Base = Addr.getOperand(0);
+      Offset = Addr.getOperand(1);
+      return true;
+    }
 #else
-      if (Alignment > 4) {
-#endif // SIFIVE_CUSTOMIZATION
-        Base = Addr.getOperand(0);
-        Offset = Addr.getOperand(1);
-        return true;
-      }
-    }
-    if (auto *CP = dyn_cast<ConstantPoolSDNode>(Addr.getOperand(1))) {
-      Align Alignment = commonAlignment(CP->getAlign(), CP->getOffset());
-      if (Alignment > 4) {
-        Base = Addr.getOperand(0);
-        Offset = Addr.getOperand(1);
-        return true;
-      }
-    }
-=======
     Base = Addr.getOperand(0);
     Offset = Addr.getOperand(1);
     return true;
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   if (CurDAG->isBaseWithConstantOffset(Addr)) {
@@ -3319,16 +3285,11 @@ bool RISCVDAGToDAGISel::SelectAddrRegImm(SDValue Addr, SDValue &Base,
           const DataLayout &DL = CurDAG->getDataLayout();
           Align Alignment = commonAlignment(
               GA->getGlobal()->getPointerAlignment(DL), GA->getOffset());
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-          if (areOffsetsWithinAlignment(Base, Alignment) && !IsRV32Zdinx) {
+          if (areOffsetsWithinAlignment(Base, Alignment)) {
 #else
-          if ((CVal == 0 || Alignment > CVal) &&
-              (!IsRV32Zdinx || commonAlignment(Alignment, CVal) > 4)) {
-#endif
-=======
           if ((CVal == 0 || Alignment > CVal)) {
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
+#endif
             int64_t CombinedOffset = CVal + GA->getOffset();
             Base = Base.getOperand(0);
             Offset = CurDAG->getTargetGlobalAddress(
