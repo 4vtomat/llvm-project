@@ -7,24 +7,24 @@ define dso_local void @foo() {
 
 !llvm.module.flags = !{!0, !1}
 
-; CHECK:        .size   foo, .Lfunc_end0-foo
-; CHECK:        .cfi_endproc
-; CHECK:                                        # -- End function
-; CHECK:        .section        ".note.GNU-stack","",@progbits
-; CHECK:        .section        .note.gnu.property,"a",@note
-; RV32:         .p2align        2, 0x0
-; RV64:         .p2align        3, 0x0
-; CHECK:        .word   4
-; RV32:         .word   12
-; RV64:         .word   16
-; CHECK:        .word   5
-; CHECK:        .asciz  "GNU"
-; CHECK:        .word   3221225472
-; CHECK:        .word   4
-; CHECK:        .word   4
-; RV64:         .word   0
-; CHECK:.Lsec_end0:
-; CHECK:        .section        ".note.GNU-stack","",@progbits
+; CHECK:              .size   foo, .Lfunc_end0-foo
+; CHECK:              .cfi_endproc
+; CHECK:                                              # -- End function
+; CHECK:              .section        ".note.GNU-stack","",@progbits
+; CHECK-NEXT:         .section        .note.gnu.property,"a",@note
+; RV32-NEXT:          .p2align        2, 0x0
+; RV64-NEXT:          .p2align        3, 0x0
+; CHECK-NEXT:         .word   4
+; RV32-NEXT:          .word   12
+; RV64-NEXT:          .word   16
+; CHECK-NEXT:         .word   5
+; CHECK-NEXT:         .asciz  "GNU"
+; CHECK-NEXT:         .word   3221225472
+; CHECK-NEXT:         .word   4
+; CHECK-NEXT:         .word   4
+; RV32-NEXT:          .p2align        2, 0x0
+; RV64-NEXT:          .p2align        3, 0x0
+; CHECK-NEXT:         .section        ".note.GNU-stack","",@progbits
 
 
 !0 = !{i32 8, !"cf-protection-branch", i32 1}
