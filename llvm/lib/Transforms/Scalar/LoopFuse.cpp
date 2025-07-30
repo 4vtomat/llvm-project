@@ -862,17 +862,8 @@ private:
                       << " iterations of the first loop. \n");
 
     ValueToValueMapTy VMap;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
     FC0.Peeled =
         peelLoop(FC0.L, PeelCount, false, &LI, &SE, DT, &AC, true, VMap);
-#else
-    FC0.Peeled = peelLoop(FC0.L, PeelCount, &LI, &SE, DT, &AC, true, VMap);
-#endif
-=======
-    FC0.Peeled =
-        peelLoop(FC0.L, PeelCount, false, &LI, &SE, DT, &AC, true, VMap);
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
     if (FC0.Peeled) {
       LLVM_DEBUG(dbgs() << "Done Peeling\n");
 
