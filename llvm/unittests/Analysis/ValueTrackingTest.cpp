@@ -1618,8 +1618,6 @@ TEST_F(ComputeKnownFPClassTest, FMulNoZero) {
   expectKnownFPClass(fcAllFlags, std::nullopt, A7);
 }
 
-<<<<<<< HEAD
-=======
 TEST_F(ComputeKnownFPClassTest, MinimumNumSignBit) {
   parseAssembly(
       R"(
@@ -1784,7 +1782,6 @@ TEST_F(ComputeKnownFPClassTest, SelfPhiSecondArg) {
   expectKnownFPClass(~fcInf, std::nullopt);
 }
 
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
 TEST_F(ComputeKnownFPClassTest, CannotBeOrderedLessThanZero) {
   parseAssembly("define float @test(float %arg) {\n"
                 "  %A = fmul float %arg, %arg"
