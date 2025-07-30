@@ -2128,8 +2128,7 @@ void NeonEmitter::createIntrinsic(const Record *R,
       }
     }
     Entry.emplace_back(R, Name, Proto, I.first, I.second, CK, Body, *this,
-<<<<<<< HEAD
-                       ArchGuard, TargetGuard, IsUnavailable, BigEndianSafe);
+                       NewArchGuard, TargetGuard, IsUnavailable, BigEndianSafe);
 #if SIFIVE_CUSTOMIZATION
     // EmitNeonSema does not enable RecodeMode. But headers (run, runFP16) will
     // enable RecodeMode. As a result, arm_neon.h only includes intrinsics that
@@ -2151,9 +2150,6 @@ void NeonEmitter::createIntrinsic(const Record *R,
           TargetGuard.find("v8.5a") != std::string::npos)))
       continue;
 #endif
-=======
-                       NewArchGuard, TargetGuard, IsUnavailable, BigEndianSafe);
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
     Out.push_back(&Entry.back());
   }
 
