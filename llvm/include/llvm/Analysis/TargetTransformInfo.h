@@ -682,11 +682,7 @@ public:
     /// some iterations and in this case it will set this to false.
     bool PeelProfiledIterations;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-    /// Peel off the last PeelCount loop iterations.
-    bool PeelLast;
-
     /// Allow peeling from the beginning iterations (set by detection)
     bool PeelProlog;
     /// Allow peeling from the end iterations (set by detection)
@@ -694,10 +690,8 @@ public:
     /// Enable epilog peeling per target.
     bool AllowEpilogPeeling;
 #endif
-=======
     /// Peel off the last PeelCount loop iterations.
     bool PeelLast;
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
   };
 
   /// Get target-customized preferences for the generic loop peeling
