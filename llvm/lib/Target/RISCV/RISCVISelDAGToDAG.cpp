@@ -3145,6 +3145,10 @@ static bool areOffsetsWithinAlignment(SDValue Addr, Align Alignment) {
           cast<AtomicSDNode>(Use)->getVal() == Addr)
         return false;
       if (Use->getOpcode() == ISD::LOAD || Use->getOpcode() == ISD::STORE ||
+#if SIFIVE_CUSTOMIZATION
+          Use->getOpcode() == RISCVISD::LD_RV32 ||
+          Use->getOpcode() == RISCVISD::SD_RV32 ||
+#endif
           Use->getOpcode() == ISD::ATOMIC_LOAD ||
           Use->getOpcode() == ISD::ATOMIC_STORE)
         continue;
@@ -3157,7 +3161,8 @@ static bool areOffsetsWithinAlignment(SDValue Addr, Align Alignment) {
       unsigned int Opcode = Use->getMachineOpcode();
       if (Opcode == RISCV::LB || Opcode == RISCV::LBU || Opcode == RISCV::LH ||
           Opcode == RISCV::LHU || Opcode == RISCV::LW || Opcode == RISCV::LWU ||
-          Opcode == RISCV::LD || Opcode == RISCV::FLH || Opcode == RISCV::FLW ||
+          Opcode == RISCV::LD || Opcode == RISCV::LD_RV32 ||
+          Opcode == RISCV::FLH || Opcode == RISCV::FLW ||
           Opcode == RISCV::FLD) {
         if (auto *Offset = dyn_cast<ConstantSDNode>(Use->getOperand(1))) {
           if (Offset->isZero() || Alignment > Offset->getSExtValue())
@@ -3166,7 +3171,8 @@ static bool areOffsetsWithinAlignment(SDValue Addr, Align Alignment) {
         return false;
       }
       if (Opcode == RISCV::SB || Opcode == RISCV::SH || Opcode == RISCV::SW ||
-          Opcode == RISCV::SD || Opcode == RISCV::FSH || Opcode == RISCV::FSW ||
+          Opcode == RISCV::SD || Opcode == RISCV::SD_RV32 ||
+          Opcode == RISCV::FSH || Opcode == RISCV::FSW ||
           Opcode == RISCV::FSD) {
         // Also check if Addr is used as the value of store here
         if (Use->getOperand(0) == Addr)
