@@ -57,22 +57,18 @@ struct VPlanTransforms {
 #if SIFIVE_CUSTOMIZATION
   static std::unique_ptr<VPlan>
   buildPlainCFG(Loop *TheLoop, LoopInfo &LI,
-                DenseMap<VPBlockBase *, BasicBlock *> &VPB2IRBB,
+                DenseMap<const VPBlockBase *, BasicBlock *> &VPB2IRBB,
                 LoopVectorizationLegality *Legal);
   static std::unique_ptr<VPlan>
   buildPlainCFG(Loop *TheLoop, LoopInfo &LI,
-                DenseMap<VPBlockBase *, BasicBlock *> &VPB2IRBB) {
+                DenseMap<const VPBlockBase *, BasicBlock *> &VPB2IRBB) {
     return buildPlainCFG(TheLoop, LI, VPB2IRBB, /*Legal*/ nullptr);
   }
 #else
   static std::unique_ptr<VPlan>
   buildPlainCFG(Loop *TheLoop, LoopInfo &LI,
-<<<<<<< HEAD
-                DenseMap<VPBlockBase *, BasicBlock *> &VPB2IRBB);
-#endif // SIFIVE_CUSTOMIZATION
-=======
                 DenseMap<const VPBlockBase *, BasicBlock *> &VPB2IRBB);
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Prepare the plan for vectorization. It will introduce a dedicated
   /// VPBasicBlock for the vector pre-header as well as a VPBasicBlock as exit
