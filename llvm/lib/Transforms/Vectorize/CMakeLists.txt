@@ -1,9 +1,5 @@
 add_llvm_component_library(LLVMVectorize
-<<<<<<< HEAD
   SiFive_EVLIndVarSimplify.cpp
-=======
-  EVLIndVarSimplify.cpp
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
   LoadStoreVectorizer.cpp
   LoopIdiomVectorize.cpp
   LoopVectorizationLegality.cpp
@@ -39,6 +35,10 @@ add_llvm_component_library(LLVMVectorize
   SiFive_VPlanCostModel.cpp
   # end SIFIVE_CUSTOMIZATION
   VPlanUtils.cpp
+
+  # SIFIVE_CUSTOMIZATION
+  PARTIAL_SOURCES_INTENDED
+  # end SIFIVE_CUSTOMIZATION
 
   ADDITIONAL_HEADER_DIRS
   ${LLVM_MAIN_INCLUDE_DIR}/llvm/Transforms
