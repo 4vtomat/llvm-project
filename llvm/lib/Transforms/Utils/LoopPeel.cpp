@@ -49,13 +49,8 @@ using namespace llvm::PatternMatch;
 
 #define DEBUG_TYPE "loop-peel"
 
-#if SIFIVE_CUSTOMIZATION
 STATISTIC(NumPeeled, "Number of loops peeled");
 STATISTIC(NumPeeledEnd, "Number of loops peeled from end");
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
 
 static cl::opt<unsigned> UnrollPeelCount(
     "unroll-peel-count", cl::Hidden,
@@ -402,7 +397,6 @@ static unsigned peelToTurnInvariantLoadsDerefencebale(Loop &L,
   return 0;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static bool isCanonicalForm(Loop &L, Value *Condition,
                             ScalarEvolution &SE,
@@ -447,23 +441,13 @@ bool llvm::canPeelLastIteration(const Loop &L, ScalarEvolution &SE) {
 
   Value *Inc;
   Value *Bound;
-=======
-bool llvm::canPeelLastIteration(const Loop &L, ScalarEvolution &SE) {
-  const SCEV *BTC = SE.getBackedgeTakenCount(&L);
-  Value *Inc;
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
   CmpPredicate Pred;
   BasicBlock *Succ1;
   BasicBlock *Succ2;
   // The loop must execute at least 2 iterations to guarantee that peeled
   // iteration executes.
   // TODO: Add checks during codegen.
-<<<<<<< HEAD
   if (isa<SCEVCouldNotCompute>(BTC))
-=======
-  if (isa<SCEVCouldNotCompute>(BTC) ||
-      !SE.isKnownPredicate(CmpInst::ICMP_UGT, BTC, SE.getZero(BTC->getType())))
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
     return false;
 
   // Check if the exit condition of the loop can be adjusted by the peeling
@@ -474,7 +458,6 @@ bool llvm::canPeelLastIteration(const Loop &L, ScalarEvolution &SE) {
   BasicBlock *Latch = L.getLoopLatch();
   return Latch && Latch == L.getExitingBlock() &&
          match(Latch->getTerminator(),
-<<<<<<< HEAD
                m_Br(m_OneUse(m_ICmp(Pred, m_Value(Inc), m_Value(Bound))),
                     m_BasicBlock(Succ1), m_BasicBlock(Succ2))) &&
          ((Pred == CmpInst::ICMP_EQ && Succ2 == L.getHeader()) ||
@@ -486,34 +469,31 @@ bool llvm::canPeelLastIteration(const Loop &L, ScalarEvolution &SE) {
 #else
 bool llvm::canPeelLastIteration(const Loop &L, ScalarEvolution &SE) {
   const SCEV *BTC = SE.getBackedgeTakenCount(&L);
-
   Value *Inc;
-  Value *Bound;
   CmpPredicate Pred;
   BasicBlock *Succ1;
   BasicBlock *Succ2;
   // The loop must execute at least 2 iterations to guarantee that peeled
   // iteration executes.
   // TODO: Add checks during codegen.
-  if (isa<SCEVCouldNotCompute>(BTC))
+  if (isa<SCEVCouldNotCompute>(BTC) ||
+      !SE.isKnownPredicate(CmpInst::ICMP_UGT, BTC, SE.getZero(BTC->getType())))
     return false;
 
   // Check if the exit condition of the loop can be adjusted by the peeling
   // codegen. For now, it must
   // * exit via the latch,
   // * the exit condition must be a NE/EQ compare of an induction with step
-  // of 1 and must only be used by the exiting branch.
+  // of 1.
   BasicBlock *Latch = L.getLoopLatch();
   return Latch && Latch == L.getExitingBlock() &&
          match(Latch->getTerminator(),
-               m_Br(m_OneUse(m_ICmp(Pred, m_Value(Inc), m_Value(Bound))),
-                    m_BasicBlock(Succ1), m_BasicBlock(Succ2))) &&
+               m_Br(m_ICmp(Pred, m_Value(Inc), m_Value()), m_BasicBlock(Succ1),
+                    m_BasicBlock(Succ2))) &&
          ((Pred == CmpInst::ICMP_EQ && Succ2 == L.getHeader()) ||
           (Pred == CmpInst::ICMP_NE && Succ1 == L.getHeader())) &&
-         Bound->getType()->isIntegerTy() &&
-         SE.isLoopInvariant(SE.getSCEV(Bound), &L) &&
-         match(SE.getSCEV(Inc),
-               m_scev_AffineAddRec(m_SCEV(), m_scev_One(), m_SpecificLoop(&L)));
+         isa<SCEVAddRecExpr>(SE.getSCEV(Inc)) &&
+         cast<SCEVAddRecExpr>(SE.getSCEV(Inc))->getStepRecurrence(SE)->isOne();
 }
 #endif
 #endif
@@ -523,35 +503,19 @@ bool llvm::canPeelLastIteration(const Loop &L, ScalarEvolution &SE) {
 // it arrives will go into the else version below and we will keep ours as the
 // sifive version, removing the outer customization and this note.
 #if SIFIVE_CUSTOMIZATION
-=======
-               m_Br(m_ICmp(Pred, m_Value(Inc), m_Value()), m_BasicBlock(Succ1),
-                    m_BasicBlock(Succ2))) &&
-         ((Pred == CmpInst::ICMP_EQ && Succ2 == L.getHeader()) ||
-          (Pred == CmpInst::ICMP_NE && Succ1 == L.getHeader())) &&
-         isa<SCEVAddRecExpr>(SE.getSCEV(Inc)) &&
-         cast<SCEVAddRecExpr>(SE.getSCEV(Inc))->getStepRecurrence(SE)->isOne();
-}
-
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
 /// Returns true if the last iteration can be peeled off and the condition (Pred
 /// LeftAR, RightSCEV) is known at the last iteration and the inverse condition
 /// is known at the second-to-last.
 static bool shouldPeelLastIteration(Loop &L, CmpPredicate Pred,
                                     const SCEVAddRecExpr *LeftAR,
-                                    const SCEV *RightSCEV,
-<<<<<<< HEAD
-                                    const SCEV *Step,
+                                    const SCEV *RightSCEV, const SCEV *Step,
                                     ScalarEvolution &SE,
                                     const TargetTransformInfo &TTI) {
-=======
-                                    ScalarEvolution &SE) {
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
   if (!canPeelLastIteration(L, SE))
     return false;
 
   const SCEV *BTC = SE.getBackedgeTakenCount(&L);
   const SCEV *ValAtLastIter = LeftAR->evaluateAtIteration(BTC, SE);
-<<<<<<< HEAD
   const SCEV *NewBECount = BTC;
   SCEVExpander Expander(SE, L.getHeader()->getDataLayout(), "loop-peel");
   if (!SE.isKnownNonZero(BTC) &&
@@ -579,24 +543,18 @@ static bool shouldPeelLastIteration(Loop &L, CmpPredicate Pred,
   return (KnownLast && KnownSecondToLast);
 }
 #else
+/// Returns true if the last iteration can be peeled off and the condition (Pred
+/// LeftAR, RightSCEV) is known at the last iteration and the inverse condition
+/// is known at the second-to-last.
 static bool shouldPeelLastIteration(Loop &L, CmpPredicate Pred,
                                     const SCEVAddRecExpr *LeftAR,
                                     const SCEV *RightSCEV,
-                                    ScalarEvolution &SE,
-                                    const TargetTransformInfo &TTI) {
+                                    ScalarEvolution &SE) {
   if (!canPeelLastIteration(L, SE))
     return false;
 
   const SCEV *BTC = SE.getBackedgeTakenCount(&L);
-  SCEVExpander Expander(SE, L.getHeader()->getDataLayout(), "loop-peel");
-  if (!SE.isKnownNonZero(BTC) &&
-      Expander.isHighCostExpansion(BTC, &L, SCEVCheapExpansionBudget, &TTI,
-                                   L.getLoopPredecessor()->getTerminator()))
-    return false;
-
   const SCEV *ValAtLastIter = LeftAR->evaluateAtIteration(BTC, SE);
-=======
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
   const SCEV *ValAtSecondToLastIter = LeftAR->evaluateAtIteration(
       SE.getMinusSCEV(BTC, SE.getOne(BTC->getType())), SE);
 
@@ -604,12 +562,8 @@ static bool shouldPeelLastIteration(Loop &L, CmpPredicate Pred,
                              RightSCEV) &&
          SE.isKnownPredicate(Pred, ValAtSecondToLastIter, RightSCEV);
 }
-<<<<<<< HEAD
 #endif
 #endif
-
-=======
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
 
 // Return the number of iterations to peel off from the beginning and end of the
 // loop respectively, that make conditions in the body true/false. For example,
@@ -622,28 +576,18 @@ static bool shouldPeelLastIteration(Loop &L, CmpPredicate Pred,
 //    else
 //      ..
 //   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static std::pair<unsigned, unsigned>
 countToEliminateCompares(Loop &L, unsigned MaxPeelCount, ScalarEvolution &SE,
                          const TargetTransformInfo &TTI,
                          bool PeelProlog, unsigned TripCount) {
 #else
-static unsigned
+static std::pair<unsigned, unsigned>
 countToEliminateCompares(Loop &L, unsigned MaxPeelCount, ScalarEvolution &SE) {
 #endif // SIFIVE_CUSTOMIZATION
   assert(L.isLoopSimplifyForm() && "Loop needs to be in loop simplify form");
   unsigned DesiredPeelCount = 0;
-#if SIFIVE_CUSTOMIZATION
   unsigned DesiredPeelCountLast = 0;
-#endif
-=======
-static std::pair<unsigned, unsigned>
-countToEliminateCompares(Loop &L, unsigned MaxPeelCount, ScalarEvolution &SE) {
-  assert(L.isLoopSimplifyForm() && "Loop needs to be in loop simplify form");
-  unsigned DesiredPeelCount = 0;
-  unsigned DesiredPeelCountLast = 0;
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
 
   // Do not peel the entire loop.
   const SCEV *BE = SE.getConstantMaxBackedgeTakenCount(&L);
@@ -763,7 +707,6 @@ countToEliminateCompares(Loop &L, unsigned MaxPeelCount, ScalarEvolution &SE) {
     const SCEV *Step = LeftAR->getStepRecurrence(SE);
     if (!PeelWhilePredicateIsKnown(NewPeelCount, IterVal, RightSCEV, Step,
                                    Pred)) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // Note for upstream merge:  The upstream version will go into the else version below
 // and we will keep ours as the sifive version, removing the outer customization
@@ -776,14 +719,10 @@ countToEliminateCompares(Loop &L, unsigned MaxPeelCount, ScalarEvolution &SE) {
           DesiredPeelCountLast = 1;
       }
 #else
-      if (shouldPeelLastIteration(L, Pred, LeftAR, RightSCEV, SE, TTI))
-        DesiredPeelCountLast = 1;
-#endif
-#endif
-=======
       if (shouldPeelLastIteration(L, Pred, LeftAR, RightSCEV, SE))
         DesiredPeelCountLast = 1;
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
+#endif
+#endif
       return;
     }
 
@@ -807,7 +746,7 @@ countToEliminateCompares(Loop &L, unsigned MaxPeelCount, ScalarEvolution &SE) {
     }
 
     DesiredPeelCount = std::max(DesiredPeelCount, NewPeelCount);
-<<<<<<< HEAD
+    DesiredPeelCountLast = std::max(DesiredPeelCountLast, NewPeelCount);
 #if SIFIVE_CUSTOMIZATION
     if (!PeelProlog)
       if (NewPeelCount < MaxPeelCount) {
@@ -816,9 +755,6 @@ countToEliminateCompares(Loop &L, unsigned MaxPeelCount, ScalarEvolution &SE) {
           DesiredPeelCountLast = 1;
       }
 #endif
-=======
-    DesiredPeelCountLast = std::max(DesiredPeelCountLast, NewPeelCount);
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
   };
 
   auto ComputePeelCountMinMax = [&](MinMaxIntrinsic *MinMax) {
@@ -889,15 +825,7 @@ countToEliminateCompares(Loop &L, unsigned MaxPeelCount, ScalarEvolution &SE) {
     ComputePeelCount(BI->getCondition(), 0);
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   return {DesiredPeelCount, DesiredPeelCountLast};
-#else
-  return DesiredPeelCount;
-#endif
-=======
-  return {DesiredPeelCount, DesiredPeelCountLast};
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
 }
 
 /// This "heuristic" exactly matches implicit behavior which used to exist
@@ -1014,21 +942,15 @@ void llvm::computePeelCount(Loop *L, unsigned LoopSize,
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   const auto &[CountToEliminateCmps, CountToEliminateCmpsLast] =
-      countToEliminateCompares(*L, MaxPeelCount, SE, TTI,
-                               PP.PeelProlog, TripCount);
-  DesiredPeelCount = std::max(DesiredPeelCount, CountToEliminateCmps);
+      countToEliminateCompares(*L, MaxPeelCount, SE, TTI, PP.PeelProlog,
+                               TripCount);
 #else
-  DesiredPeelCount = std::max(DesiredPeelCount,
-                              countToEliminateCompares(*L, MaxPeelCount, SE));
-#endif
-=======
   const auto &[CountToEliminateCmps, CountToEliminateCmpsLast] =
       countToEliminateCompares(*L, MaxPeelCount, SE);
+#endif
   DesiredPeelCount = std::max(DesiredPeelCount, CountToEliminateCmps);
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
 
 #if SIFIVE_CUSTOMIZATION
   if (DesiredPeelCount == 0 && (PP.PeelProlog))
@@ -1462,13 +1384,6 @@ static void cloneLoopBlocks(
   // Similarly, for the latch:
   // The original exiting edge is still hooked up to the loop exit.
   BasicBlock *NewLatch = cast<BasicBlock>(VMap[Latch]);
-<<<<<<< HEAD
-  auto *LatchTerm = NewLatch->getTerminator();
-  for (unsigned idx = 0, e = LatchTerm->getNumSuccessors(); idx < e; ++idx)
-    if (LatchTerm->getSuccessor(idx) == Header) {
-      LatchTerm->setSuccessor(idx, InsertBot);
-      break;
-=======
   if (PeelLast) {
     // This is the last iteration and we definitely will go to the exit. Just
     // set both successors to InsertBot and let the branch be simplified later.
@@ -1486,7 +1401,6 @@ static void cloneLoopBlocks(
         LatchTerm->setSuccessor(idx, InsertBot);
         break;
       }
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
     }
   }
   if (DT)
@@ -1496,22 +1410,6 @@ static void cloneLoopBlocks(
   // that pick an incoming value from either the preheader, or the previous
   // loop iteration. Since this copy is no longer part of the loop, we
   // resolve this statically:
-<<<<<<< HEAD
-  // For any other iteration, we replace the phi with the value generated by
-  // the immediately preceding clone of the loop body (which represents
-  // the previous iteration).
-  for (BasicBlock::iterator I = Header->begin(); isa<PHINode>(I); ++I) {
-    PHINode *NewPHI = cast<PHINode>(VMap[&*I]);
-    if (IterNumber == 0) {
-      VMap[&*I] = NewPHI->getIncomingValueForBlock(PreHeader);
-    } else {
-      Value *LatchVal = NewPHI->getIncomingValueForBlock(Latch);
-      Instruction *LatchInst = dyn_cast<Instruction>(LatchVal);
-      if (LatchInst && L->contains(LatchInst))
-        VMap[&*I] = LVMap[LatchInst];
-      else
-        VMap[&*I] = LatchVal;
-=======
   if (PeelLast) {
     // For the last iteration, we use the value from the latch of the original
     // loop directly.
@@ -1538,7 +1436,6 @@ static void cloneLoopBlocks(
           VMap[&*I] = LatchVal;
       }
       NewPHI->eraseFromParent();
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
     }
   }
 
@@ -2224,13 +2121,8 @@ bool llvm::peelLoop(Loop *L, unsigned PeelCount, bool PeelLast, LoopInfo *LI,
   for (unsigned Iter = 0; Iter < PeelCount; ++Iter) {
     SmallVector<BasicBlock *, 8> NewBlocks;
 
-<<<<<<< HEAD
-    cloneLoopBlocks(L, Iter, InsertTop, InsertBot,
-                    ExitEdges, NewBlocks, LoopBlocks, VMap, LVMap, &DT, LI,
-=======
     cloneLoopBlocks(L, Iter, PeelLast, InsertTop, InsertBot, ExitEdges,
                     NewBlocks, LoopBlocks, VMap, LVMap, &DT, LI,
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
                     LoopLocalNoAliasDeclScopes, *SE);
 
     // Remap to use values from the current iteration instead of the
@@ -2326,12 +2218,9 @@ bool llvm::peelLoop(Loop *L, unsigned PeelCount, bool PeelLast, LoopInfo *LI,
   // FIXME: Incrementally update loop-simplify
   simplifyLoop(L, &DT, LI, SE, AC, nullptr, PreserveLCSSA);
 
-<<<<<<< HEAD
-=======
   NumPeeled++;
   NumPeeledEnd += PeelLast;
 
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
   return true;
 }
 #endif
