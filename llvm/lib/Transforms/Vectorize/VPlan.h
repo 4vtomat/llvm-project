@@ -3241,7 +3241,8 @@ protected:
 
   VPWidenMemoryRecipe(const char unsigned SC, Instruction &I,
                       std::initializer_list<VPValue *> Operands,
-                      bool Consecutive, bool Reverse, DebugLoc DL,
+                      bool Consecutive, bool Reverse,
+                      const VPIRMetadata &Metadata, DebugLoc DL,
                       VPValue *Stride = nullptr, bool Speculative = false,
                       bool IsMonotonic = false)
       : VPRecipeBase(SC, Operands, DL), VPIRMetadata(I), Ingredient(I),
@@ -3334,38 +3335,31 @@ public:
 struct VPWidenLoadRecipe final : public VPWidenMemoryRecipe, public VPValue {
 #if SIFIVE_CUSTOMIZATION
   VPWidenLoadRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
-                    bool Consecutive, bool Reverse, DebugLoc DL,
+                    bool Consecutive, bool Reverse,
+                    const VPIRMetadata &Metadata, DebugLoc DL,
                     VPValue *StrideInBytes = nullptr, bool Speculative = false,
                     bool IsMonotonic = false)
       : VPWidenMemoryRecipe(VPDef::VPWidenLoadSC, Load, {Addr}, Consecutive,
-                            Reverse, DL, StrideInBytes, Speculative,
+                            Reverse, Metadata, DL, StrideInBytes, Speculative,
                             IsMonotonic),
 #else
   VPWidenLoadRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
                     bool Consecutive, bool Reverse,
                     const VPIRMetadata &Metadata, DebugLoc DL)
       : VPWidenMemoryRecipe(VPDef::VPWidenLoadSC, Load, {Addr}, Consecutive,
-<<<<<<< HEAD
-                            Reverse, DL),
-#endif // SIFIVE_CUSTOMIZATION
-=======
                             Reverse, Metadata, DL),
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
+#endif // SIFIVE_CUSTOMIZATION
         VPValue(this, &Load) {
     setMask(Mask);
   }
 
   VPWidenLoadRecipe *clone() override {
     return new VPWidenLoadRecipe(cast<LoadInst>(Ingredient), getAddr(),
-<<<<<<< HEAD
-                                 getMask(), Consecutive, Reverse,
-#if SIFIVE_CUSTOMIZATION
-                                 getDebugLoc(),
-                                 getStride(), isSpeculative(), isMonotonic());
-#else
-=======
                                  getMask(), Consecutive, Reverse, *this,
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
+#if SIFIVE_CUSTOMIZATION
+                                 getDebugLoc(), getStride(), isSpeculative(),
+                                 isMonotonic());
+#else
                                  getDebugLoc());
 #endif // SIFIVE_CUSTOMIZATION
   }
@@ -3403,16 +3397,12 @@ struct VPWidenLoadEVLRecipe final : public VPWidenMemoryRecipe, public VPValue {
       : VPWidenMemoryRecipe(VPDef::VPWidenLoadEVLSC, L.getIngredient(),
 #if SIFIVE_CUSTOMIZATION
                             {L.getAddr(), &EVL}, L.isConsecutive(),
-                            L.isReverse(), L.getDebugLoc(), L.getStride(),
+                            L.isReverse(), L, L.getDebugLoc(), L.getStride(),
                             L.isSpeculative(), L.isMonotonic()),
 #else
                             {L.getAddr(), &EVL}, L.isConsecutive(),
-<<<<<<< HEAD
-                            L.isReverse(), L.getDebugLoc()),
-#endif // SIFIVE_CUSTOMIZATION
-=======
                             L.isReverse(), L, L.getDebugLoc()),
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
+#endif // SIFIVE_CUSTOMIZATION
         VPValue(this, &getIngredient()) {
 #if SIFIVE_CUSTOMIZATION
     if (Speculative)
@@ -3472,38 +3462,31 @@ struct VPWidenLoadEVLRecipe final : public VPWidenMemoryRecipe, public VPValue {
 struct VPWidenStoreRecipe final : public VPWidenMemoryRecipe {
 #if SIFIVE_CUSTOMIZATION
   VPWidenStoreRecipe(StoreInst &Store, VPValue *Addr, VPValue *StoredVal,
-                     VPValue *Mask, bool Consecutive, bool Reverse, DebugLoc DL,
+                     VPValue *Mask, bool Consecutive, bool Reverse,
+                     const VPIRMetadata &Metadata, DebugLoc DL,
                      VPValue *StrideInBytes = nullptr, bool IsMonotonic = false)
       : VPWidenMemoryRecipe(VPDef::VPWidenStoreSC, Store, {Addr, StoredVal},
-                            Consecutive, Reverse, DL, StrideInBytes, false,
-                            IsMonotonic) {
+                            Consecutive, Reverse, Metadata, DL, StrideInBytes,
+                            false, IsMonotonic) {
 #else
   VPWidenStoreRecipe(StoreInst &Store, VPValue *Addr, VPValue *StoredVal,
                      VPValue *Mask, bool Consecutive, bool Reverse,
                      const VPIRMetadata &Metadata, DebugLoc DL)
       : VPWidenMemoryRecipe(VPDef::VPWidenStoreSC, Store, {Addr, StoredVal},
-<<<<<<< HEAD
-                            Consecutive, Reverse, DL) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
                             Consecutive, Reverse, Metadata, DL) {
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
+#endif // SIFIVE_CUSTOMIZATION
     setMask(Mask);
   }
 
   VPWidenStoreRecipe *clone() override {
     return new VPWidenStoreRecipe(cast<StoreInst>(Ingredient), getAddr(),
                                   getStoredValue(), getMask(), Consecutive,
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-                                  Reverse, getDebugLoc(), getStride(),
+                                  Reverse, *this, getDebugLoc(), getStride(),
                                   isMonotonic());
 #else
-                                  Reverse, getDebugLoc());
-#endif // SIFIVE_CUSTOMIZATION
-=======
                                   Reverse, *this, getDebugLoc());
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   VP_CLASSOF_IMPL(VPDef::VPWidenStoreSC);
@@ -3541,17 +3524,14 @@ struct VPWidenStoreEVLRecipe final : public VPWidenMemoryRecipe {
   VPWidenStoreEVLRecipe(VPWidenStoreRecipe &S, VPValue &EVL, VPValue *Mask)
       : VPWidenMemoryRecipe(VPDef::VPWidenStoreEVLSC, S.getIngredient(),
                             {S.getAddr(), S.getStoredValue(), &EVL},
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-                            S.isConsecutive(), S.isReverse(), S.getDebugLoc(),
-                            S.getStride(), S.isSpeculative(), S.isMonotonic()) {
+                            S.isConsecutive(), S.isReverse(), S,
+                            S.getDebugLoc(), S.getStride(), S.isSpeculative(),
+                            S.isMonotonic()) {
 #else
-                            S.isConsecutive(), S.isReverse(), S.getDebugLoc()) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
                             S.isConsecutive(), S.isReverse(), S,
                             S.getDebugLoc()) {
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
+#endif // SIFIVE_CUSTOMIZATION
     setMask(Mask);
   }
 
