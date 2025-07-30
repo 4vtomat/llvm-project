@@ -627,7 +627,6 @@ void RISCVAsmPrinter::emitEndOfAsmFile(Module &M) {
   RISCVTargetStreamer &RTS =
       static_cast<RISCVTargetStreamer &>(*OutStreamer->getTargetStreamer());
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (TM.getCodeModel() == CodeModel::Compact)
     emitCompactStub();
@@ -656,10 +655,7 @@ void RISCVAsmPrinter::emitEndOfAsmFile(Module &M) {
   emitNoteSection(GNUNoteFlags);
 #endif // SIFIVE_CUSTOMIZATION
 
-  if (TM.getTargetTriple().isOSBinFormatELF())
-=======
   if (TM.getTargetTriple().isOSBinFormatELF()) {
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
     RTS.finishAttributeSection();
     emitNoteGnuProperty(M);
   }
