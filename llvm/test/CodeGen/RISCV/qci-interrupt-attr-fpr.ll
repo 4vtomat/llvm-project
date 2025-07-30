@@ -1083,83 +1083,81 @@ define void @test_spill_nest() "interrupt"="qci-nest" {
 ; QCI-F-NEXT:    .cfi_offset s10, -136
 ; QCI-F-NEXT:    .cfi_offset s11, -140
 ; QCI-F-NEXT:    lui a0, %hi(var)
-; QCI-F-NEXT:    lui a2, %hi(var)
-; QCI-F-NEXT:    addi a2, a2, %lo(var)
-; QCI-F-NEXT:    lw a0, %lo(var)(a0)
-; QCI-F-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
-; QCI-F-NEXT:    lw a0, 4(a2)
-; QCI-F-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
-; QCI-F-NEXT:    lw a0, 8(a2)
-; QCI-F-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
-; QCI-F-NEXT:    lw a0, 12(a2)
-; QCI-F-NEXT:    sw a0, 4(sp) # 4-byte Folded Spill
-; QCI-F-NEXT:    lw a0, 16(a2)
-; QCI-F-NEXT:    sw a0, 0(sp) # 4-byte Folded Spill
-; QCI-F-NEXT:    lw t4, 20(a2)
-; QCI-F-NEXT:    lw t5, 24(a2)
-; QCI-F-NEXT:    lw t6, 28(a2)
-; QCI-F-NEXT:    lw s2, 32(a2)
-; QCI-F-NEXT:    lw s3, 36(a2)
-; QCI-F-NEXT:    lw s4, 40(a2)
-; QCI-F-NEXT:    lw s5, 44(a2)
-; QCI-F-NEXT:    lw s6, 48(a2)
-; QCI-F-NEXT:    lw s7, 52(a2)
-; QCI-F-NEXT:    lw s8, 56(a2)
-; QCI-F-NEXT:    lw s9, 60(a2)
-; QCI-F-NEXT:    lw s10, 64(a2)
-; QCI-F-NEXT:    lw s11, 68(a2)
-; QCI-F-NEXT:    lw ra, 72(a2)
-; QCI-F-NEXT:    lw t3, 76(a2)
-; QCI-F-NEXT:    lw s0, 80(a2)
-; QCI-F-NEXT:    lw s1, 84(a2)
-; QCI-F-NEXT:    lw t2, 88(a2)
-; QCI-F-NEXT:    lw t1, 92(a2)
-; QCI-F-NEXT:    lw t0, 96(a2)
-; QCI-F-NEXT:    lw a6, 116(a2)
-; QCI-F-NEXT:    lw a4, 120(a2)
-; QCI-F-NEXT:    lw a1, 124(a2)
-; QCI-F-NEXT:    lw a7, 100(a2)
-; QCI-F-NEXT:    lw a5, 104(a2)
-; QCI-F-NEXT:    lw a3, 108(a2)
-; QCI-F-NEXT:    lw a0, 112(a2)
-; QCI-F-NEXT:    sw a1, 124(a2)
-; QCI-F-NEXT:    sw a4, 120(a2)
-; QCI-F-NEXT:    sw a6, 116(a2)
-; QCI-F-NEXT:    sw a0, 112(a2)
-; QCI-F-NEXT:    sw a3, 108(a2)
-; QCI-F-NEXT:    sw a5, 104(a2)
-; QCI-F-NEXT:    sw a7, 100(a2)
-; QCI-F-NEXT:    sw t0, 96(a2)
-; QCI-F-NEXT:    sw t1, 92(a2)
-; QCI-F-NEXT:    sw t2, 88(a2)
-; QCI-F-NEXT:    sw s1, 84(a2)
-; QCI-F-NEXT:    sw s0, 80(a2)
-; QCI-F-NEXT:    sw t3, 76(a2)
-; QCI-F-NEXT:    sw ra, 72(a2)
-; QCI-F-NEXT:    sw s11, 68(a2)
-; QCI-F-NEXT:    sw s10, 64(a2)
-; QCI-F-NEXT:    sw s9, 60(a2)
-; QCI-F-NEXT:    sw s8, 56(a2)
-; QCI-F-NEXT:    sw s7, 52(a2)
-; QCI-F-NEXT:    sw s6, 48(a2)
-; QCI-F-NEXT:    sw s5, 44(a2)
-; QCI-F-NEXT:    sw s4, 40(a2)
-; QCI-F-NEXT:    sw s3, 36(a2)
-; QCI-F-NEXT:    sw s2, 32(a2)
-; QCI-F-NEXT:    sw t6, 28(a2)
-; QCI-F-NEXT:    sw t5, 24(a2)
-; QCI-F-NEXT:    sw t4, 20(a2)
-; QCI-F-NEXT:    lw a0, 0(sp) # 4-byte Folded Reload
-; QCI-F-NEXT:    sw a0, 16(a2)
-; QCI-F-NEXT:    lw a0, 4(sp) # 4-byte Folded Reload
-; QCI-F-NEXT:    sw a0, 12(a2)
-; QCI-F-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
-; QCI-F-NEXT:    sw a0, 8(a2)
-; QCI-F-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
-; QCI-F-NEXT:    sw a0, 4(a2)
-; QCI-F-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
-; QCI-F-NEXT:    lui a1, %hi(var)
-; QCI-F-NEXT:    sw a0, %lo(var)(a1)
+; QCI-F-NEXT:    addi a0, a0, %lo(var)
+; QCI-F-NEXT:    lw a1, 0(a0)
+; QCI-F-NEXT:    sw a1, 16(sp) # 4-byte Folded Spill
+; QCI-F-NEXT:    lw a1, 4(a0)
+; QCI-F-NEXT:    sw a1, 12(sp) # 4-byte Folded Spill
+; QCI-F-NEXT:    lw a1, 8(a0)
+; QCI-F-NEXT:    sw a1, 8(sp) # 4-byte Folded Spill
+; QCI-F-NEXT:    lw a1, 12(a0)
+; QCI-F-NEXT:    sw a1, 4(sp) # 4-byte Folded Spill
+; QCI-F-NEXT:    lw a1, 16(a0)
+; QCI-F-NEXT:    sw a1, 0(sp) # 4-byte Folded Spill
+; QCI-F-NEXT:    lw t3, 20(a0)
+; QCI-F-NEXT:    lw t4, 24(a0)
+; QCI-F-NEXT:    lw t5, 28(a0)
+; QCI-F-NEXT:    lw t6, 32(a0)
+; QCI-F-NEXT:    lw s2, 36(a0)
+; QCI-F-NEXT:    lw s3, 40(a0)
+; QCI-F-NEXT:    lw s4, 44(a0)
+; QCI-F-NEXT:    lw s5, 48(a0)
+; QCI-F-NEXT:    lw s6, 52(a0)
+; QCI-F-NEXT:    lw s7, 56(a0)
+; QCI-F-NEXT:    lw s8, 60(a0)
+; QCI-F-NEXT:    lw s9, 64(a0)
+; QCI-F-NEXT:    lw s10, 68(a0)
+; QCI-F-NEXT:    lw s11, 72(a0)
+; QCI-F-NEXT:    lw ra, 76(a0)
+; QCI-F-NEXT:    lw t2, 80(a0)
+; QCI-F-NEXT:    lw s0, 84(a0)
+; QCI-F-NEXT:    lw s1, 88(a0)
+; QCI-F-NEXT:    lw t1, 92(a0)
+; QCI-F-NEXT:    lw t0, 112(a0)
+; QCI-F-NEXT:    lw a5, 116(a0)
+; QCI-F-NEXT:    lw a3, 120(a0)
+; QCI-F-NEXT:    lw a1, 124(a0)
+; QCI-F-NEXT:    lw a7, 96(a0)
+; QCI-F-NEXT:    lw a6, 100(a0)
+; QCI-F-NEXT:    lw a4, 104(a0)
+; QCI-F-NEXT:    lw a2, 108(a0)
+; QCI-F-NEXT:    sw a1, 124(a0)
+; QCI-F-NEXT:    sw a3, 120(a0)
+; QCI-F-NEXT:    sw a5, 116(a0)
+; QCI-F-NEXT:    sw t0, 112(a0)
+; QCI-F-NEXT:    sw a2, 108(a0)
+; QCI-F-NEXT:    sw a4, 104(a0)
+; QCI-F-NEXT:    sw a6, 100(a0)
+; QCI-F-NEXT:    sw a7, 96(a0)
+; QCI-F-NEXT:    sw t1, 92(a0)
+; QCI-F-NEXT:    sw s1, 88(a0)
+; QCI-F-NEXT:    sw s0, 84(a0)
+; QCI-F-NEXT:    sw t2, 80(a0)
+; QCI-F-NEXT:    sw ra, 76(a0)
+; QCI-F-NEXT:    sw s11, 72(a0)
+; QCI-F-NEXT:    sw s10, 68(a0)
+; QCI-F-NEXT:    sw s9, 64(a0)
+; QCI-F-NEXT:    sw s8, 60(a0)
+; QCI-F-NEXT:    sw s7, 56(a0)
+; QCI-F-NEXT:    sw s6, 52(a0)
+; QCI-F-NEXT:    sw s5, 48(a0)
+; QCI-F-NEXT:    sw s4, 44(a0)
+; QCI-F-NEXT:    sw s3, 40(a0)
+; QCI-F-NEXT:    sw s2, 36(a0)
+; QCI-F-NEXT:    sw t6, 32(a0)
+; QCI-F-NEXT:    sw t5, 28(a0)
+; QCI-F-NEXT:    sw t4, 24(a0)
+; QCI-F-NEXT:    sw t3, 20(a0)
+; QCI-F-NEXT:    lw a1, 0(sp) # 4-byte Folded Reload
+; QCI-F-NEXT:    sw a1, 16(a0)
+; QCI-F-NEXT:    lw a1, 4(sp) # 4-byte Folded Reload
+; QCI-F-NEXT:    sw a1, 12(a0)
+; QCI-F-NEXT:    lw a1, 8(sp) # 4-byte Folded Reload
+; QCI-F-NEXT:    sw a1, 8(a0)
+; QCI-F-NEXT:    lw a1, 12(sp) # 4-byte Folded Reload
+; QCI-F-NEXT:    sw a1, 4(a0)
+; QCI-F-NEXT:    lw a1, 16(sp) # 4-byte Folded Reload
+; QCI-F-NEXT:    sw a1, 0(a0)
 ; QCI-F-NEXT:    lw s1, 60(sp) # 4-byte Folded Reload
 ; QCI-F-NEXT:    lw s2, 56(sp) # 4-byte Folded Reload
 ; QCI-F-NEXT:    lw s3, 52(sp) # 4-byte Folded Reload
@@ -1232,83 +1230,81 @@ define void @test_spill_nest() "interrupt"="qci-nest" {
 ; QCI-D-NEXT:    .cfi_offset s10, -136
 ; QCI-D-NEXT:    .cfi_offset s11, -140
 ; QCI-D-NEXT:    lui a0, %hi(var)
-; QCI-D-NEXT:    lui a2, %hi(var)
-; QCI-D-NEXT:    addi a2, a2, %lo(var)
-; QCI-D-NEXT:    lw a0, %lo(var)(a0)
-; QCI-D-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
-; QCI-D-NEXT:    lw a0, 4(a2)
-; QCI-D-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
-; QCI-D-NEXT:    lw a0, 8(a2)
-; QCI-D-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
-; QCI-D-NEXT:    lw a0, 12(a2)
-; QCI-D-NEXT:    sw a0, 4(sp) # 4-byte Folded Spill
-; QCI-D-NEXT:    lw a0, 16(a2)
-; QCI-D-NEXT:    sw a0, 0(sp) # 4-byte Folded Spill
-; QCI-D-NEXT:    lw t4, 20(a2)
-; QCI-D-NEXT:    lw t5, 24(a2)
-; QCI-D-NEXT:    lw t6, 28(a2)
-; QCI-D-NEXT:    lw s2, 32(a2)
-; QCI-D-NEXT:    lw s3, 36(a2)
-; QCI-D-NEXT:    lw s4, 40(a2)
-; QCI-D-NEXT:    lw s5, 44(a2)
-; QCI-D-NEXT:    lw s6, 48(a2)
-; QCI-D-NEXT:    lw s7, 52(a2)
-; QCI-D-NEXT:    lw s8, 56(a2)
-; QCI-D-NEXT:    lw s9, 60(a2)
-; QCI-D-NEXT:    lw s10, 64(a2)
-; QCI-D-NEXT:    lw s11, 68(a2)
-; QCI-D-NEXT:    lw ra, 72(a2)
-; QCI-D-NEXT:    lw t3, 76(a2)
-; QCI-D-NEXT:    lw s0, 80(a2)
-; QCI-D-NEXT:    lw s1, 84(a2)
-; QCI-D-NEXT:    lw t2, 88(a2)
-; QCI-D-NEXT:    lw t1, 92(a2)
-; QCI-D-NEXT:    lw t0, 96(a2)
-; QCI-D-NEXT:    lw a6, 116(a2)
-; QCI-D-NEXT:    lw a4, 120(a2)
-; QCI-D-NEXT:    lw a1, 124(a2)
-; QCI-D-NEXT:    lw a7, 100(a2)
-; QCI-D-NEXT:    lw a5, 104(a2)
-; QCI-D-NEXT:    lw a3, 108(a2)
-; QCI-D-NEXT:    lw a0, 112(a2)
-; QCI-D-NEXT:    sw a1, 124(a2)
-; QCI-D-NEXT:    sw a4, 120(a2)
-; QCI-D-NEXT:    sw a6, 116(a2)
-; QCI-D-NEXT:    sw a0, 112(a2)
-; QCI-D-NEXT:    sw a3, 108(a2)
-; QCI-D-NEXT:    sw a5, 104(a2)
-; QCI-D-NEXT:    sw a7, 100(a2)
-; QCI-D-NEXT:    sw t0, 96(a2)
-; QCI-D-NEXT:    sw t1, 92(a2)
-; QCI-D-NEXT:    sw t2, 88(a2)
-; QCI-D-NEXT:    sw s1, 84(a2)
-; QCI-D-NEXT:    sw s0, 80(a2)
-; QCI-D-NEXT:    sw t3, 76(a2)
-; QCI-D-NEXT:    sw ra, 72(a2)
-; QCI-D-NEXT:    sw s11, 68(a2)
-; QCI-D-NEXT:    sw s10, 64(a2)
-; QCI-D-NEXT:    sw s9, 60(a2)
-; QCI-D-NEXT:    sw s8, 56(a2)
-; QCI-D-NEXT:    sw s7, 52(a2)
-; QCI-D-NEXT:    sw s6, 48(a2)
-; QCI-D-NEXT:    sw s5, 44(a2)
-; QCI-D-NEXT:    sw s4, 40(a2)
-; QCI-D-NEXT:    sw s3, 36(a2)
-; QCI-D-NEXT:    sw s2, 32(a2)
-; QCI-D-NEXT:    sw t6, 28(a2)
-; QCI-D-NEXT:    sw t5, 24(a2)
-; QCI-D-NEXT:    sw t4, 20(a2)
-; QCI-D-NEXT:    lw a0, 0(sp) # 4-byte Folded Reload
-; QCI-D-NEXT:    sw a0, 16(a2)
-; QCI-D-NEXT:    lw a0, 4(sp) # 4-byte Folded Reload
-; QCI-D-NEXT:    sw a0, 12(a2)
-; QCI-D-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
-; QCI-D-NEXT:    sw a0, 8(a2)
-; QCI-D-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
-; QCI-D-NEXT:    sw a0, 4(a2)
-; QCI-D-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
-; QCI-D-NEXT:    lui a1, %hi(var)
-; QCI-D-NEXT:    sw a0, %lo(var)(a1)
+; QCI-D-NEXT:    addi a0, a0, %lo(var)
+; QCI-D-NEXT:    lw a1, 0(a0)
+; QCI-D-NEXT:    sw a1, 16(sp) # 4-byte Folded Spill
+; QCI-D-NEXT:    lw a1, 4(a0)
+; QCI-D-NEXT:    sw a1, 12(sp) # 4-byte Folded Spill
+; QCI-D-NEXT:    lw a1, 8(a0)
+; QCI-D-NEXT:    sw a1, 8(sp) # 4-byte Folded Spill
+; QCI-D-NEXT:    lw a1, 12(a0)
+; QCI-D-NEXT:    sw a1, 4(sp) # 4-byte Folded Spill
+; QCI-D-NEXT:    lw a1, 16(a0)
+; QCI-D-NEXT:    sw a1, 0(sp) # 4-byte Folded Spill
+; QCI-D-NEXT:    lw t3, 20(a0)
+; QCI-D-NEXT:    lw t4, 24(a0)
+; QCI-D-NEXT:    lw t5, 28(a0)
+; QCI-D-NEXT:    lw t6, 32(a0)
+; QCI-D-NEXT:    lw s2, 36(a0)
+; QCI-D-NEXT:    lw s3, 40(a0)
+; QCI-D-NEXT:    lw s4, 44(a0)
+; QCI-D-NEXT:    lw s5, 48(a0)
+; QCI-D-NEXT:    lw s6, 52(a0)
+; QCI-D-NEXT:    lw s7, 56(a0)
+; QCI-D-NEXT:    lw s8, 60(a0)
+; QCI-D-NEXT:    lw s9, 64(a0)
+; QCI-D-NEXT:    lw s10, 68(a0)
+; QCI-D-NEXT:    lw s11, 72(a0)
+; QCI-D-NEXT:    lw ra, 76(a0)
+; QCI-D-NEXT:    lw t2, 80(a0)
+; QCI-D-NEXT:    lw s0, 84(a0)
+; QCI-D-NEXT:    lw s1, 88(a0)
+; QCI-D-NEXT:    lw t1, 92(a0)
+; QCI-D-NEXT:    lw t0, 112(a0)
+; QCI-D-NEXT:    lw a5, 116(a0)
+; QCI-D-NEXT:    lw a3, 120(a0)
+; QCI-D-NEXT:    lw a1, 124(a0)
+; QCI-D-NEXT:    lw a7, 96(a0)
+; QCI-D-NEXT:    lw a6, 100(a0)
+; QCI-D-NEXT:    lw a4, 104(a0)
+; QCI-D-NEXT:    lw a2, 108(a0)
+; QCI-D-NEXT:    sw a1, 124(a0)
+; QCI-D-NEXT:    sw a3, 120(a0)
+; QCI-D-NEXT:    sw a5, 116(a0)
+; QCI-D-NEXT:    sw t0, 112(a0)
+; QCI-D-NEXT:    sw a2, 108(a0)
+; QCI-D-NEXT:    sw a4, 104(a0)
+; QCI-D-NEXT:    sw a6, 100(a0)
+; QCI-D-NEXT:    sw a7, 96(a0)
+; QCI-D-NEXT:    sw t1, 92(a0)
+; QCI-D-NEXT:    sw s1, 88(a0)
+; QCI-D-NEXT:    sw s0, 84(a0)
+; QCI-D-NEXT:    sw t2, 80(a0)
+; QCI-D-NEXT:    sw ra, 76(a0)
+; QCI-D-NEXT:    sw s11, 72(a0)
+; QCI-D-NEXT:    sw s10, 68(a0)
+; QCI-D-NEXT:    sw s9, 64(a0)
+; QCI-D-NEXT:    sw s8, 60(a0)
+; QCI-D-NEXT:    sw s7, 56(a0)
+; QCI-D-NEXT:    sw s6, 52(a0)
+; QCI-D-NEXT:    sw s5, 48(a0)
+; QCI-D-NEXT:    sw s4, 44(a0)
+; QCI-D-NEXT:    sw s3, 40(a0)
+; QCI-D-NEXT:    sw s2, 36(a0)
+; QCI-D-NEXT:    sw t6, 32(a0)
+; QCI-D-NEXT:    sw t5, 28(a0)
+; QCI-D-NEXT:    sw t4, 24(a0)
+; QCI-D-NEXT:    sw t3, 20(a0)
+; QCI-D-NEXT:    lw a1, 0(sp) # 4-byte Folded Reload
+; QCI-D-NEXT:    sw a1, 16(a0)
+; QCI-D-NEXT:    lw a1, 4(sp) # 4-byte Folded Reload
+; QCI-D-NEXT:    sw a1, 12(a0)
+; QCI-D-NEXT:    lw a1, 8(sp) # 4-byte Folded Reload
+; QCI-D-NEXT:    sw a1, 8(a0)
+; QCI-D-NEXT:    lw a1, 12(sp) # 4-byte Folded Reload
+; QCI-D-NEXT:    sw a1, 4(a0)
+; QCI-D-NEXT:    lw a1, 16(sp) # 4-byte Folded Reload
+; QCI-D-NEXT:    sw a1, 0(a0)
 ; QCI-D-NEXT:    lw s1, 60(sp) # 4-byte Folded Reload
 ; QCI-D-NEXT:    lw s2, 56(sp) # 4-byte Folded Reload
 ; QCI-D-NEXT:    lw s3, 52(sp) # 4-byte Folded Reload
@@ -1386,83 +1382,81 @@ define void @test_spill_nonest() "interrupt"="qci-nonest" {
 ; QCI-F-NEXT:    .cfi_offset s10, -136
 ; QCI-F-NEXT:    .cfi_offset s11, -140
 ; QCI-F-NEXT:    lui a0, %hi(var)
-; QCI-F-NEXT:    lui a2, %hi(var)
-; QCI-F-NEXT:    addi a2, a2, %lo(var)
-; QCI-F-NEXT:    lw a0, %lo(var)(a0)
-; QCI-F-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
-; QCI-F-NEXT:    lw a0, 4(a2)
-; QCI-F-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
-; QCI-F-NEXT:    lw a0, 8(a2)
-; QCI-F-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
-; QCI-F-NEXT:    lw a0, 12(a2)
-; QCI-F-NEXT:    sw a0, 4(sp) # 4-byte Folded Spill
-; QCI-F-NEXT:    lw a0, 16(a2)
-; QCI-F-NEXT:    sw a0, 0(sp) # 4-byte Folded Spill
-; QCI-F-NEXT:    lw t4, 20(a2)
-; QCI-F-NEXT:    lw t5, 24(a2)
-; QCI-F-NEXT:    lw t6, 28(a2)
-; QCI-F-NEXT:    lw s2, 32(a2)
-; QCI-F-NEXT:    lw s3, 36(a2)
-; QCI-F-NEXT:    lw s4, 40(a2)
-; QCI-F-NEXT:    lw s5, 44(a2)
-; QCI-F-NEXT:    lw s6, 48(a2)
-; QCI-F-NEXT:    lw s7, 52(a2)
-; QCI-F-NEXT:    lw s8, 56(a2)
-; QCI-F-NEXT:    lw s9, 60(a2)
-; QCI-F-NEXT:    lw s10, 64(a2)
-; QCI-F-NEXT:    lw s11, 68(a2)
-; QCI-F-NEXT:    lw ra, 72(a2)
-; QCI-F-NEXT:    lw t3, 76(a2)
-; QCI-F-NEXT:    lw s0, 80(a2)
-; QCI-F-NEXT:    lw s1, 84(a2)
-; QCI-F-NEXT:    lw t2, 88(a2)
-; QCI-F-NEXT:    lw t1, 92(a2)
-; QCI-F-NEXT:    lw t0, 96(a2)
-; QCI-F-NEXT:    lw a6, 116(a2)
-; QCI-F-NEXT:    lw a4, 120(a2)
-; QCI-F-NEXT:    lw a1, 124(a2)
-; QCI-F-NEXT:    lw a7, 100(a2)
-; QCI-F-NEXT:    lw a5, 104(a2)
-; QCI-F-NEXT:    lw a3, 108(a2)
-; QCI-F-NEXT:    lw a0, 112(a2)
-; QCI-F-NEXT:    sw a1, 124(a2)
-; QCI-F-NEXT:    sw a4, 120(a2)
-; QCI-F-NEXT:    sw a6, 116(a2)
-; QCI-F-NEXT:    sw a0, 112(a2)
-; QCI-F-NEXT:    sw a3, 108(a2)
-; QCI-F-NEXT:    sw a5, 104(a2)
-; QCI-F-NEXT:    sw a7, 100(a2)
-; QCI-F-NEXT:    sw t0, 96(a2)
-; QCI-F-NEXT:    sw t1, 92(a2)
-; QCI-F-NEXT:    sw t2, 88(a2)
-; QCI-F-NEXT:    sw s1, 84(a2)
-; QCI-F-NEXT:    sw s0, 80(a2)
-; QCI-F-NEXT:    sw t3, 76(a2)
-; QCI-F-NEXT:    sw ra, 72(a2)
-; QCI-F-NEXT:    sw s11, 68(a2)
-; QCI-F-NEXT:    sw s10, 64(a2)
-; QCI-F-NEXT:    sw s9, 60(a2)
-; QCI-F-NEXT:    sw s8, 56(a2)
-; QCI-F-NEXT:    sw s7, 52(a2)
-; QCI-F-NEXT:    sw s6, 48(a2)
-; QCI-F-NEXT:    sw s5, 44(a2)
-; QCI-F-NEXT:    sw s4, 40(a2)
-; QCI-F-NEXT:    sw s3, 36(a2)
-; QCI-F-NEXT:    sw s2, 32(a2)
-; QCI-F-NEXT:    sw t6, 28(a2)
-; QCI-F-NEXT:    sw t5, 24(a2)
-; QCI-F-NEXT:    sw t4, 20(a2)
-; QCI-F-NEXT:    lw a0, 0(sp) # 4-byte Folded Reload
-; QCI-F-NEXT:    sw a0, 16(a2)
-; QCI-F-NEXT:    lw a0, 4(sp) # 4-byte Folded Reload
-; QCI-F-NEXT:    sw a0, 12(a2)
-; QCI-F-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
-; QCI-F-NEXT:    sw a0, 8(a2)
-; QCI-F-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
-; QCI-F-NEXT:    sw a0, 4(a2)
-; QCI-F-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
-; QCI-F-NEXT:    lui a1, %hi(var)
-; QCI-F-NEXT:    sw a0, %lo(var)(a1)
+; QCI-F-NEXT:    addi a0, a0, %lo(var)
+; QCI-F-NEXT:    lw a1, 0(a0)
+; QCI-F-NEXT:    sw a1, 16(sp) # 4-byte Folded Spill
+; QCI-F-NEXT:    lw a1, 4(a0)
+; QCI-F-NEXT:    sw a1, 12(sp) # 4-byte Folded Spill
+; QCI-F-NEXT:    lw a1, 8(a0)
+; QCI-F-NEXT:    sw a1, 8(sp) # 4-byte Folded Spill
+; QCI-F-NEXT:    lw a1, 12(a0)
+; QCI-F-NEXT:    sw a1, 4(sp) # 4-byte Folded Spill
+; QCI-F-NEXT:    lw a1, 16(a0)
+; QCI-F-NEXT:    sw a1, 0(sp) # 4-byte Folded Spill
+; QCI-F-NEXT:    lw t3, 20(a0)
+; QCI-F-NEXT:    lw t4, 24(a0)
+; QCI-F-NEXT:    lw t5, 28(a0)
+; QCI-F-NEXT:    lw t6, 32(a0)
+; QCI-F-NEXT:    lw s2, 36(a0)
+; QCI-F-NEXT:    lw s3, 40(a0)
+; QCI-F-NEXT:    lw s4, 44(a0)
+; QCI-F-NEXT:    lw s5, 48(a0)
+; QCI-F-NEXT:    lw s6, 52(a0)
+; QCI-F-NEXT:    lw s7, 56(a0)
+; QCI-F-NEXT:    lw s8, 60(a0)
+; QCI-F-NEXT:    lw s9, 64(a0)
+; QCI-F-NEXT:    lw s10, 68(a0)
+; QCI-F-NEXT:    lw s11, 72(a0)
+; QCI-F-NEXT:    lw ra, 76(a0)
+; QCI-F-NEXT:    lw t2, 80(a0)
+; QCI-F-NEXT:    lw s0, 84(a0)
+; QCI-F-NEXT:    lw s1, 88(a0)
+; QCI-F-NEXT:    lw t1, 92(a0)
+; QCI-F-NEXT:    lw t0, 112(a0)
+; QCI-F-NEXT:    lw a5, 116(a0)
+; QCI-F-NEXT:    lw a3, 120(a0)
+; QCI-F-NEXT:    lw a1, 124(a0)
+; QCI-F-NEXT:    lw a7, 96(a0)
+; QCI-F-NEXT:    lw a6, 100(a0)
+; QCI-F-NEXT:    lw a4, 104(a0)
+; QCI-F-NEXT:    lw a2, 108(a0)
+; QCI-F-NEXT:    sw a1, 124(a0)
+; QCI-F-NEXT:    sw a3, 120(a0)
+; QCI-F-NEXT:    sw a5, 116(a0)
+; QCI-F-NEXT:    sw t0, 112(a0)
+; QCI-F-NEXT:    sw a2, 108(a0)
+; QCI-F-NEXT:    sw a4, 104(a0)
+; QCI-F-NEXT:    sw a6, 100(a0)
+; QCI-F-NEXT:    sw a7, 96(a0)
+; QCI-F-NEXT:    sw t1, 92(a0)
+; QCI-F-NEXT:    sw s1, 88(a0)
+; QCI-F-NEXT:    sw s0, 84(a0)
+; QCI-F-NEXT:    sw t2, 80(a0)
+; QCI-F-NEXT:    sw ra, 76(a0)
+; QCI-F-NEXT:    sw s11, 72(a0)
+; QCI-F-NEXT:    sw s10, 68(a0)
+; QCI-F-NEXT:    sw s9, 64(a0)
+; QCI-F-NEXT:    sw s8, 60(a0)
+; QCI-F-NEXT:    sw s7, 56(a0)
+; QCI-F-NEXT:    sw s6, 52(a0)
+; QCI-F-NEXT:    sw s5, 48(a0)
+; QCI-F-NEXT:    sw s4, 44(a0)
+; QCI-F-NEXT:    sw s3, 40(a0)
+; QCI-F-NEXT:    sw s2, 36(a0)
+; QCI-F-NEXT:    sw t6, 32(a0)
+; QCI-F-NEXT:    sw t5, 28(a0)
+; QCI-F-NEXT:    sw t4, 24(a0)
+; QCI-F-NEXT:    sw t3, 20(a0)
+; QCI-F-NEXT:    lw a1, 0(sp) # 4-byte Folded Reload
+; QCI-F-NEXT:    sw a1, 16(a0)
+; QCI-F-NEXT:    lw a1, 4(sp) # 4-byte Folded Reload
+; QCI-F-NEXT:    sw a1, 12(a0)
+; QCI-F-NEXT:    lw a1, 8(sp) # 4-byte Folded Reload
+; QCI-F-NEXT:    sw a1, 8(a0)
+; QCI-F-NEXT:    lw a1, 12(sp) # 4-byte Folded Reload
+; QCI-F-NEXT:    sw a1, 4(a0)
+; QCI-F-NEXT:    lw a1, 16(sp) # 4-byte Folded Reload
+; QCI-F-NEXT:    sw a1, 0(a0)
 ; QCI-F-NEXT:    lw s1, 60(sp) # 4-byte Folded Reload
 ; QCI-F-NEXT:    lw s2, 56(sp) # 4-byte Folded Reload
 ; QCI-F-NEXT:    lw s3, 52(sp) # 4-byte Folded Reload
@@ -1535,83 +1529,81 @@ define void @test_spill_nonest() "interrupt"="qci-nonest" {
 ; QCI-D-NEXT:    .cfi_offset s10, -136
 ; QCI-D-NEXT:    .cfi_offset s11, -140
 ; QCI-D-NEXT:    lui a0, %hi(var)
-; QCI-D-NEXT:    lui a2, %hi(var)
-; QCI-D-NEXT:    addi a2, a2, %lo(var)
-; QCI-D-NEXT:    lw a0, %lo(var)(a0)
-; QCI-D-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
-; QCI-D-NEXT:    lw a0, 4(a2)
-; QCI-D-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
-; QCI-D-NEXT:    lw a0, 8(a2)
-; QCI-D-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
-; QCI-D-NEXT:    lw a0, 12(a2)
-; QCI-D-NEXT:    sw a0, 4(sp) # 4-byte Folded Spill
-; QCI-D-NEXT:    lw a0, 16(a2)
-; QCI-D-NEXT:    sw a0, 0(sp) # 4-byte Folded Spill
-; QCI-D-NEXT:    lw t4, 20(a2)
-; QCI-D-NEXT:    lw t5, 24(a2)
-; QCI-D-NEXT:    lw t6, 28(a2)
-; QCI-D-NEXT:    lw s2, 32(a2)
-; QCI-D-NEXT:    lw s3, 36(a2)
-; QCI-D-NEXT:    lw s4, 40(a2)
-; QCI-D-NEXT:    lw s5, 44(a2)
-; QCI-D-NEXT:    lw s6, 48(a2)
-; QCI-D-NEXT:    lw s7, 52(a2)
-; QCI-D-NEXT:    lw s8, 56(a2)
-; QCI-D-NEXT:    lw s9, 60(a2)
-; QCI-D-NEXT:    lw s10, 64(a2)
-; QCI-D-NEXT:    lw s11, 68(a2)
-; QCI-D-NEXT:    lw ra, 72(a2)
-; QCI-D-NEXT:    lw t3, 76(a2)
-; QCI-D-NEXT:    lw s0, 80(a2)
-; QCI-D-NEXT:    lw s1, 84(a2)
-; QCI-D-NEXT:    lw t2, 88(a2)
-; QCI-D-NEXT:    lw t1, 92(a2)
-; QCI-D-NEXT:    lw t0, 96(a2)
-; QCI-D-NEXT:    lw a6, 116(a2)
-; QCI-D-NEXT:    lw a4, 120(a2)
-; QCI-D-NEXT:    lw a1, 124(a2)
-; QCI-D-NEXT:    lw a7, 100(a2)
-; QCI-D-NEXT:    lw a5, 104(a2)
-; QCI-D-NEXT:    lw a3, 108(a2)
-; QCI-D-NEXT:    lw a0, 112(a2)
-; QCI-D-NEXT:    sw a1, 124(a2)
-; QCI-D-NEXT:    sw a4, 120(a2)
-; QCI-D-NEXT:    sw a6, 116(a2)
-; QCI-D-NEXT:    sw a0, 112(a2)
-; QCI-D-NEXT:    sw a3, 108(a2)
-; QCI-D-NEXT:    sw a5, 104(a2)
-; QCI-D-NEXT:    sw a7, 100(a2)
-; QCI-D-NEXT:    sw t0, 96(a2)
-; QCI-D-NEXT:    sw t1, 92(a2)
-; QCI-D-NEXT:    sw t2, 88(a2)
-; QCI-D-NEXT:    sw s1, 84(a2)
-; QCI-D-NEXT:    sw s0, 80(a2)
-; QCI-D-NEXT:    sw t3, 76(a2)
-; QCI-D-NEXT:    sw ra, 72(a2)
-; QCI-D-NEXT:    sw s11, 68(a2)
-; QCI-D-NEXT:    sw s10, 64(a2)
-; QCI-D-NEXT:    sw s9, 60(a2)
-; QCI-D-NEXT:    sw s8, 56(a2)
-; QCI-D-NEXT:    sw s7, 52(a2)
-; QCI-D-NEXT:    sw s6, 48(a2)
-; QCI-D-NEXT:    sw s5, 44(a2)
-; QCI-D-NEXT:    sw s4, 40(a2)
-; QCI-D-NEXT:    sw s3, 36(a2)
-; QCI-D-NEXT:    sw s2, 32(a2)
-; QCI-D-NEXT:    sw t6, 28(a2)
-; QCI-D-NEXT:    sw t5, 24(a2)
-; QCI-D-NEXT:    sw t4, 20(a2)
-; QCI-D-NEXT:    lw a0, 0(sp) # 4-byte Folded Reload
-; QCI-D-NEXT:    sw a0, 16(a2)
-; QCI-D-NEXT:    lw a0, 4(sp) # 4-byte Folded Reload
-; QCI-D-NEXT:    sw a0, 12(a2)
-; QCI-D-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
-; QCI-D-NEXT:    sw a0, 8(a2)
-; QCI-D-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
-; QCI-D-NEXT:    sw a0, 4(a2)
-; QCI-D-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
-; QCI-D-NEXT:    lui a1, %hi(var)
-; QCI-D-NEXT:    sw a0, %lo(var)(a1)
+; QCI-D-NEXT:    addi a0, a0, %lo(var)
+; QCI-D-NEXT:    lw a1, 0(a0)
+; QCI-D-NEXT:    sw a1, 16(sp) # 4-byte Folded Spill
+; QCI-D-NEXT:    lw a1, 4(a0)
+; QCI-D-NEXT:    sw a1, 12(sp) # 4-byte Folded Spill
+; QCI-D-NEXT:    lw a1, 8(a0)
+; QCI-D-NEXT:    sw a1, 8(sp) # 4-byte Folded Spill
+; QCI-D-NEXT:    lw a1, 12(a0)
+; QCI-D-NEXT:    sw a1, 4(sp) # 4-byte Folded Spill
+; QCI-D-NEXT:    lw a1, 16(a0)
+; QCI-D-NEXT:    sw a1, 0(sp) # 4-byte Folded Spill
+; QCI-D-NEXT:    lw t3, 20(a0)
+; QCI-D-NEXT:    lw t4, 24(a0)
+; QCI-D-NEXT:    lw t5, 28(a0)
+; QCI-D-NEXT:    lw t6, 32(a0)
+; QCI-D-NEXT:    lw s2, 36(a0)
+; QCI-D-NEXT:    lw s3, 40(a0)
+; QCI-D-NEXT:    lw s4, 44(a0)
+; QCI-D-NEXT:    lw s5, 48(a0)
+; QCI-D-NEXT:    lw s6, 52(a0)
+; QCI-D-NEXT:    lw s7, 56(a0)
+; QCI-D-NEXT:    lw s8, 60(a0)
+; QCI-D-NEXT:    lw s9, 64(a0)
+; QCI-D-NEXT:    lw s10, 68(a0)
+; QCI-D-NEXT:    lw s11, 72(a0)
+; QCI-D-NEXT:    lw ra, 76(a0)
+; QCI-D-NEXT:    lw t2, 80(a0)
+; QCI-D-NEXT:    lw s0, 84(a0)
+; QCI-D-NEXT:    lw s1, 88(a0)
+; QCI-D-NEXT:    lw t1, 92(a0)
+; QCI-D-NEXT:    lw t0, 112(a0)
+; QCI-D-NEXT:    lw a5, 116(a0)
+; QCI-D-NEXT:    lw a3, 120(a0)
+; QCI-D-NEXT:    lw a1, 124(a0)
+; QCI-D-NEXT:    lw a7, 96(a0)
+; QCI-D-NEXT:    lw a6, 100(a0)
+; QCI-D-NEXT:    lw a4, 104(a0)
+; QCI-D-NEXT:    lw a2, 108(a0)
+; QCI-D-NEXT:    sw a1, 124(a0)
+; QCI-D-NEXT:    sw a3, 120(a0)
+; QCI-D-NEXT:    sw a5, 116(a0)
+; QCI-D-NEXT:    sw t0, 112(a0)
+; QCI-D-NEXT:    sw a2, 108(a0)
+; QCI-D-NEXT:    sw a4, 104(a0)
+; QCI-D-NEXT:    sw a6, 100(a0)
+; QCI-D-NEXT:    sw a7, 96(a0)
+; QCI-D-NEXT:    sw t1, 92(a0)
+; QCI-D-NEXT:    sw s1, 88(a0)
+; QCI-D-NEXT:    sw s0, 84(a0)
+; QCI-D-NEXT:    sw t2, 80(a0)
+; QCI-D-NEXT:    sw ra, 76(a0)
+; QCI-D-NEXT:    sw s11, 72(a0)
+; QCI-D-NEXT:    sw s10, 68(a0)
+; QCI-D-NEXT:    sw s9, 64(a0)
+; QCI-D-NEXT:    sw s8, 60(a0)
+; QCI-D-NEXT:    sw s7, 56(a0)
+; QCI-D-NEXT:    sw s6, 52(a0)
+; QCI-D-NEXT:    sw s5, 48(a0)
+; QCI-D-NEXT:    sw s4, 44(a0)
+; QCI-D-NEXT:    sw s3, 40(a0)
+; QCI-D-NEXT:    sw s2, 36(a0)
+; QCI-D-NEXT:    sw t6, 32(a0)
+; QCI-D-NEXT:    sw t5, 28(a0)
+; QCI-D-NEXT:    sw t4, 24(a0)
+; QCI-D-NEXT:    sw t3, 20(a0)
+; QCI-D-NEXT:    lw a1, 0(sp) # 4-byte Folded Reload
+; QCI-D-NEXT:    sw a1, 16(a0)
+; QCI-D-NEXT:    lw a1, 4(sp) # 4-byte Folded Reload
+; QCI-D-NEXT:    sw a1, 12(a0)
+; QCI-D-NEXT:    lw a1, 8(sp) # 4-byte Folded Reload
+; QCI-D-NEXT:    sw a1, 8(a0)
+; QCI-D-NEXT:    lw a1, 12(sp) # 4-byte Folded Reload
+; QCI-D-NEXT:    sw a1, 4(a0)
+; QCI-D-NEXT:    lw a1, 16(sp) # 4-byte Folded Reload
+; QCI-D-NEXT:    sw a1, 0(a0)
 ; QCI-D-NEXT:    lw s1, 60(sp) # 4-byte Folded Reload
 ; QCI-D-NEXT:    lw s2, 56(sp) # 4-byte Folded Reload
 ; QCI-D-NEXT:    lw s3, 52(sp) # 4-byte Folded Reload
@@ -1728,10 +1720,9 @@ define void @test_spill_call_nest() "interrupt"="qci-nest" {
 ; QCI-F-NEXT:    .cfi_offset ft9, -212
 ; QCI-F-NEXT:    .cfi_offset ft10, -216
 ; QCI-F-NEXT:    .cfi_offset ft11, -220
-; QCI-F-NEXT:    lui a0, %hi(var)
 ; QCI-F-NEXT:    lui s0, %hi(var)
 ; QCI-F-NEXT:    addi s0, s0, %lo(var)
-; QCI-F-NEXT:    lw a0, %lo(var)(a0)
+; QCI-F-NEXT:    lw a0, 0(s0)
 ; QCI-F-NEXT:    sw a0, 96(sp) # 4-byte Folded Spill
 ; QCI-F-NEXT:    lw a0, 4(s0)
 ; QCI-F-NEXT:    sw a0, 92(sp) # 4-byte Folded Spill
@@ -1775,16 +1766,16 @@ define void @test_spill_call_nest() "interrupt"="qci-nest" {
 ; QCI-F-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
 ; QCI-F-NEXT:    lw a0, 84(s0)
 ; QCI-F-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
-; QCI-F-NEXT:    lw s3, 88(s0)
-; QCI-F-NEXT:    lw s4, 92(s0)
-; QCI-F-NEXT:    lw s5, 96(s0)
-; QCI-F-NEXT:    lw s6, 100(s0)
-; QCI-F-NEXT:    lw s7, 104(s0)
-; QCI-F-NEXT:    lw s8, 108(s0)
-; QCI-F-NEXT:    lw s9, 112(s0)
-; QCI-F-NEXT:    lw s10, 116(s0)
-; QCI-F-NEXT:    lw s11, 120(s0)
-; QCI-F-NEXT:    lw s2, 124(s0)
+; QCI-F-NEXT:    lw s2, 88(s0)
+; QCI-F-NEXT:    lw s3, 92(s0)
+; QCI-F-NEXT:    lw s4, 96(s0)
+; QCI-F-NEXT:    lw s5, 100(s0)
+; QCI-F-NEXT:    lw s6, 104(s0)
+; QCI-F-NEXT:    lw s7, 108(s0)
+; QCI-F-NEXT:    lw s8, 112(s0)
+; QCI-F-NEXT:    lw s9, 116(s0)
+; QCI-F-NEXT:    lw s10, 120(s0)
+; QCI-F-NEXT:    lw s11, 124(s0)
 ; QCI-F-NEXT:    lui a7, 266496
 ; QCI-F-NEXT:    li t0, 5
 ; QCI-F-NEXT:    lui a0, 260096
@@ -1815,16 +1806,16 @@ define void @test_spill_call_nest() "interrupt"="qci-nest" {
 ; QCI-F-NEXT:    li a7, 0
 ; QCI-F-NEXT:    call function_with_one_stack_arg
 ; QCI-F-NEXT:    call use_float
-; QCI-F-NEXT:    sw s2, 124(s0)
-; QCI-F-NEXT:    sw s11, 120(s0)
-; QCI-F-NEXT:    sw s10, 116(s0)
-; QCI-F-NEXT:    sw s9, 112(s0)
-; QCI-F-NEXT:    sw s8, 108(s0)
-; QCI-F-NEXT:    sw s7, 104(s0)
-; QCI-F-NEXT:    sw s6, 100(s0)
-; QCI-F-NEXT:    sw s5, 96(s0)
-; QCI-F-NEXT:    sw s4, 92(s0)
-; QCI-F-NEXT:    sw s3, 88(s0)
+; QCI-F-NEXT:    sw s11, 124(s0)
+; QCI-F-NEXT:    sw s10, 120(s0)
+; QCI-F-NEXT:    sw s9, 116(s0)
+; QCI-F-NEXT:    sw s8, 112(s0)
+; QCI-F-NEXT:    sw s7, 108(s0)
+; QCI-F-NEXT:    sw s6, 104(s0)
+; QCI-F-NEXT:    sw s5, 100(s0)
+; QCI-F-NEXT:    sw s4, 96(s0)
+; QCI-F-NEXT:    sw s3, 92(s0)
+; QCI-F-NEXT:    sw s2, 88(s0)
 ; QCI-F-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
 ; QCI-F-NEXT:    sw a0, 84(s0)
 ; QCI-F-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
@@ -1868,8 +1859,7 @@ define void @test_spill_call_nest() "interrupt"="qci-nest" {
 ; QCI-F-NEXT:    lw a0, 92(sp) # 4-byte Folded Reload
 ; QCI-F-NEXT:    sw a0, 4(s0)
 ; QCI-F-NEXT:    lw a0, 96(sp) # 4-byte Folded Reload
-; QCI-F-NEXT:    lui a1, %hi(var)
-; QCI-F-NEXT:    sw a0, %lo(var)(a1)
+; QCI-F-NEXT:    sw a0, 0(s0)
 ; QCI-F-NEXT:    lw s1, 220(sp) # 4-byte Folded Reload
 ; QCI-F-NEXT:    lw s2, 216(sp) # 4-byte Folded Reload
 ; QCI-F-NEXT:    lw s3, 212(sp) # 4-byte Folded Reload
@@ -2021,10 +2011,9 @@ define void @test_spill_call_nest() "interrupt"="qci-nest" {
 ; QCI-D-NEXT:    .cfi_offset ft9, -288
 ; QCI-D-NEXT:    .cfi_offset ft10, -296
 ; QCI-D-NEXT:    .cfi_offset ft11, -304
-; QCI-D-NEXT:    lui a0, %hi(var)
 ; QCI-D-NEXT:    lui s0, %hi(var)
 ; QCI-D-NEXT:    addi s0, s0, %lo(var)
-; QCI-D-NEXT:    lw a0, %lo(var)(a0)
+; QCI-D-NEXT:    lw a0, 0(s0)
 ; QCI-D-NEXT:    sw a0, 92(sp) # 4-byte Folded Spill
 ; QCI-D-NEXT:    lw a0, 4(s0)
 ; QCI-D-NEXT:    sw a0, 88(sp) # 4-byte Folded Spill
@@ -2068,16 +2057,16 @@ define void @test_spill_call_nest() "interrupt"="qci-nest" {
 ; QCI-D-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
 ; QCI-D-NEXT:    lw a0, 84(s0)
 ; QCI-D-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
-; QCI-D-NEXT:    lw s3, 88(s0)
-; QCI-D-NEXT:    lw s4, 92(s0)
-; QCI-D-NEXT:    lw s5, 96(s0)
-; QCI-D-NEXT:    lw s6, 100(s0)
-; QCI-D-NEXT:    lw s7, 104(s0)
-; QCI-D-NEXT:    lw s8, 108(s0)
-; QCI-D-NEXT:    lw s9, 112(s0)
-; QCI-D-NEXT:    lw s10, 116(s0)
-; QCI-D-NEXT:    lw s11, 120(s0)
-; QCI-D-NEXT:    lw s2, 124(s0)
+; QCI-D-NEXT:    lw s2, 88(s0)
+; QCI-D-NEXT:    lw s3, 92(s0)
+; QCI-D-NEXT:    lw s4, 96(s0)
+; QCI-D-NEXT:    lw s5, 100(s0)
+; QCI-D-NEXT:    lw s6, 104(s0)
+; QCI-D-NEXT:    lw s7, 108(s0)
+; QCI-D-NEXT:    lw s8, 112(s0)
+; QCI-D-NEXT:    lw s9, 116(s0)
+; QCI-D-NEXT:    lw s10, 120(s0)
+; QCI-D-NEXT:    lw s11, 124(s0)
 ; QCI-D-NEXT:    lui a7, 266496
 ; QCI-D-NEXT:    li t0, 5
 ; QCI-D-NEXT:    lui a0, 260096
@@ -2108,16 +2097,16 @@ define void @test_spill_call_nest() "interrupt"="qci-nest" {
 ; QCI-D-NEXT:    li a7, 0
 ; QCI-D-NEXT:    call function_with_one_stack_arg
 ; QCI-D-NEXT:    call use_float
-; QCI-D-NEXT:    sw s2, 124(s0)
-; QCI-D-NEXT:    sw s11, 120(s0)
-; QCI-D-NEXT:    sw s10, 116(s0)
-; QCI-D-NEXT:    sw s9, 112(s0)
-; QCI-D-NEXT:    sw s8, 108(s0)
-; QCI-D-NEXT:    sw s7, 104(s0)
-; QCI-D-NEXT:    sw s6, 100(s0)
-; QCI-D-NEXT:    sw s5, 96(s0)
-; QCI-D-NEXT:    sw s4, 92(s0)
-; QCI-D-NEXT:    sw s3, 88(s0)
+; QCI-D-NEXT:    sw s11, 124(s0)
+; QCI-D-NEXT:    sw s10, 120(s0)
+; QCI-D-NEXT:    sw s9, 116(s0)
+; QCI-D-NEXT:    sw s8, 112(s0)
+; QCI-D-NEXT:    sw s7, 108(s0)
+; QCI-D-NEXT:    sw s6, 104(s0)
+; QCI-D-NEXT:    sw s5, 100(s0)
+; QCI-D-NEXT:    sw s4, 96(s0)
+; QCI-D-NEXT:    sw s3, 92(s0)
+; QCI-D-NEXT:    sw s2, 88(s0)
 ; QCI-D-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
 ; QCI-D-NEXT:    sw a0, 84(s0)
 ; QCI-D-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
@@ -2161,8 +2150,7 @@ define void @test_spill_call_nest() "interrupt"="qci-nest" {
 ; QCI-D-NEXT:    lw a0, 88(sp) # 4-byte Folded Reload
 ; QCI-D-NEXT:    sw a0, 4(s0)
 ; QCI-D-NEXT:    lw a0, 92(sp) # 4-byte Folded Reload
-; QCI-D-NEXT:    lui a1, %hi(var)
-; QCI-D-NEXT:    sw a0, %lo(var)(a1)
+; QCI-D-NEXT:    sw a0, 0(s0)
 ; QCI-D-NEXT:    lw s1, 300(sp) # 4-byte Folded Reload
 ; QCI-D-NEXT:    lw s2, 296(sp) # 4-byte Folded Reload
 ; QCI-D-NEXT:    lw s3, 292(sp) # 4-byte Folded Reload
@@ -2321,10 +2309,9 @@ define void @test_spill_call_nonest() "interrupt"="qci-nonest" {
 ; QCI-F-NEXT:    .cfi_offset ft9, -212
 ; QCI-F-NEXT:    .cfi_offset ft10, -216
 ; QCI-F-NEXT:    .cfi_offset ft11, -220
-; QCI-F-NEXT:    lui a0, %hi(var)
 ; QCI-F-NEXT:    lui s0, %hi(var)
 ; QCI-F-NEXT:    addi s0, s0, %lo(var)
-; QCI-F-NEXT:    lw a0, %lo(var)(a0)
+; QCI-F-NEXT:    lw a0, 0(s0)
 ; QCI-F-NEXT:    sw a0, 96(sp) # 4-byte Folded Spill
 ; QCI-F-NEXT:    lw a0, 4(s0)
 ; QCI-F-NEXT:    sw a0, 92(sp) # 4-byte Folded Spill
@@ -2368,16 +2355,16 @@ define void @test_spill_call_nonest() "interrupt"="qci-nonest" {
 ; QCI-F-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
 ; QCI-F-NEXT:    lw a0, 84(s0)
 ; QCI-F-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
-; QCI-F-NEXT:    lw s3, 88(s0)
-; QCI-F-NEXT:    lw s4, 92(s0)
-; QCI-F-NEXT:    lw s5, 96(s0)
-; QCI-F-NEXT:    lw s6, 100(s0)
-; QCI-F-NEXT:    lw s7, 104(s0)
-; QCI-F-NEXT:    lw s8, 108(s0)
-; QCI-F-NEXT:    lw s9, 112(s0)
-; QCI-F-NEXT:    lw s10, 116(s0)
-; QCI-F-NEXT:    lw s11, 120(s0)
-; QCI-F-NEXT:    lw s2, 124(s0)
+; QCI-F-NEXT:    lw s2, 88(s0)
+; QCI-F-NEXT:    lw s3, 92(s0)
+; QCI-F-NEXT:    lw s4, 96(s0)
+; QCI-F-NEXT:    lw s5, 100(s0)
+; QCI-F-NEXT:    lw s6, 104(s0)
+; QCI-F-NEXT:    lw s7, 108(s0)
+; QCI-F-NEXT:    lw s8, 112(s0)
+; QCI-F-NEXT:    lw s9, 116(s0)
+; QCI-F-NEXT:    lw s10, 120(s0)
+; QCI-F-NEXT:    lw s11, 124(s0)
 ; QCI-F-NEXT:    lui a7, 266496
 ; QCI-F-NEXT:    li t0, 5
 ; QCI-F-NEXT:    lui a0, 260096
@@ -2408,16 +2395,16 @@ define void @test_spill_call_nonest() "interrupt"="qci-nonest" {
 ; QCI-F-NEXT:    li a7, 0
 ; QCI-F-NEXT:    call function_with_one_stack_arg
 ; QCI-F-NEXT:    call use_float
-; QCI-F-NEXT:    sw s2, 124(s0)
-; QCI-F-NEXT:    sw s11, 120(s0)
-; QCI-F-NEXT:    sw s10, 116(s0)
-; QCI-F-NEXT:    sw s9, 112(s0)
-; QCI-F-NEXT:    sw s8, 108(s0)
-; QCI-F-NEXT:    sw s7, 104(s0)
-; QCI-F-NEXT:    sw s6, 100(s0)
-; QCI-F-NEXT:    sw s5, 96(s0)
-; QCI-F-NEXT:    sw s4, 92(s0)
-; QCI-F-NEXT:    sw s3, 88(s0)
+; QCI-F-NEXT:    sw s11, 124(s0)
+; QCI-F-NEXT:    sw s10, 120(s0)
+; QCI-F-NEXT:    sw s9, 116(s0)
+; QCI-F-NEXT:    sw s8, 112(s0)
+; QCI-F-NEXT:    sw s7, 108(s0)
+; QCI-F-NEXT:    sw s6, 104(s0)
+; QCI-F-NEXT:    sw s5, 100(s0)
+; QCI-F-NEXT:    sw s4, 96(s0)
+; QCI-F-NEXT:    sw s3, 92(s0)
+; QCI-F-NEXT:    sw s2, 88(s0)
 ; QCI-F-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
 ; QCI-F-NEXT:    sw a0, 84(s0)
 ; QCI-F-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
@@ -2461,8 +2448,7 @@ define void @test_spill_call_nonest() "interrupt"="qci-nonest" {
 ; QCI-F-NEXT:    lw a0, 92(sp) # 4-byte Folded Reload
 ; QCI-F-NEXT:    sw a0, 4(s0)
 ; QCI-F-NEXT:    lw a0, 96(sp) # 4-byte Folded Reload
-; QCI-F-NEXT:    lui a1, %hi(var)
-; QCI-F-NEXT:    sw a0, %lo(var)(a1)
+; QCI-F-NEXT:    sw a0, 0(s0)
 ; QCI-F-NEXT:    lw s1, 220(sp) # 4-byte Folded Reload
 ; QCI-F-NEXT:    lw s2, 216(sp) # 4-byte Folded Reload
 ; QCI-F-NEXT:    lw s3, 212(sp) # 4-byte Folded Reload
@@ -2614,10 +2600,9 @@ define void @test_spill_call_nonest() "interrupt"="qci-nonest" {
 ; QCI-D-NEXT:    .cfi_offset ft9, -288
 ; QCI-D-NEXT:    .cfi_offset ft10, -296
 ; QCI-D-NEXT:    .cfi_offset ft11, -304
-; QCI-D-NEXT:    lui a0, %hi(var)
 ; QCI-D-NEXT:    lui s0, %hi(var)
 ; QCI-D-NEXT:    addi s0, s0, %lo(var)
-; QCI-D-NEXT:    lw a0, %lo(var)(a0)
+; QCI-D-NEXT:    lw a0, 0(s0)
 ; QCI-D-NEXT:    sw a0, 92(sp) # 4-byte Folded Spill
 ; QCI-D-NEXT:    lw a0, 4(s0)
 ; QCI-D-NEXT:    sw a0, 88(sp) # 4-byte Folded Spill
@@ -2661,16 +2646,16 @@ define void @test_spill_call_nonest() "interrupt"="qci-nonest" {
 ; QCI-D-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
 ; QCI-D-NEXT:    lw a0, 84(s0)
 ; QCI-D-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
-; QCI-D-NEXT:    lw s3, 88(s0)
-; QCI-D-NEXT:    lw s4, 92(s0)
-; QCI-D-NEXT:    lw s5, 96(s0)
-; QCI-D-NEXT:    lw s6, 100(s0)
-; QCI-D-NEXT:    lw s7, 104(s0)
-; QCI-D-NEXT:    lw s8, 108(s0)
-; QCI-D-NEXT:    lw s9, 112(s0)
-; QCI-D-NEXT:    lw s10, 116(s0)
-; QCI-D-NEXT:    lw s11, 120(s0)
-; QCI-D-NEXT:    lw s2, 124(s0)
+; QCI-D-NEXT:    lw s2, 88(s0)
+; QCI-D-NEXT:    lw s3, 92(s0)
+; QCI-D-NEXT:    lw s4, 96(s0)
+; QCI-D-NEXT:    lw s5, 100(s0)
+; QCI-D-NEXT:    lw s6, 104(s0)
+; QCI-D-NEXT:    lw s7, 108(s0)
+; QCI-D-NEXT:    lw s8, 112(s0)
+; QCI-D-NEXT:    lw s9, 116(s0)
+; QCI-D-NEXT:    lw s10, 120(s0)
+; QCI-D-NEXT:    lw s11, 124(s0)
 ; QCI-D-NEXT:    lui a7, 266496
 ; QCI-D-NEXT:    li t0, 5
 ; QCI-D-NEXT:    lui a0, 260096
@@ -2701,16 +2686,16 @@ define void @test_spill_call_nonest() "interrupt"="qci-nonest" {
 ; QCI-D-NEXT:    li a7, 0
 ; QCI-D-NEXT:    call function_with_one_stack_arg
 ; QCI-D-NEXT:    call use_float
-; QCI-D-NEXT:    sw s2, 124(s0)
-; QCI-D-NEXT:    sw s11, 120(s0)
-; QCI-D-NEXT:    sw s10, 116(s0)
-; QCI-D-NEXT:    sw s9, 112(s0)
-; QCI-D-NEXT:    sw s8, 108(s0)
-; QCI-D-NEXT:    sw s7, 104(s0)
-; QCI-D-NEXT:    sw s6, 100(s0)
-; QCI-D-NEXT:    sw s5, 96(s0)
-; QCI-D-NEXT:    sw s4, 92(s0)
-; QCI-D-NEXT:    sw s3, 88(s0)
+; QCI-D-NEXT:    sw s11, 124(s0)
+; QCI-D-NEXT:    sw s10, 120(s0)
+; QCI-D-NEXT:    sw s9, 116(s0)
+; QCI-D-NEXT:    sw s8, 112(s0)
+; QCI-D-NEXT:    sw s7, 108(s0)
+; QCI-D-NEXT:    sw s6, 104(s0)
+; QCI-D-NEXT:    sw s5, 100(s0)
+; QCI-D-NEXT:    sw s4, 96(s0)
+; QCI-D-NEXT:    sw s3, 92(s0)
+; QCI-D-NEXT:    sw s2, 88(s0)
 ; QCI-D-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
 ; QCI-D-NEXT:    sw a0, 84(s0)
 ; QCI-D-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
@@ -2754,8 +2739,7 @@ define void @test_spill_call_nonest() "interrupt"="qci-nonest" {
 ; QCI-D-NEXT:    lw a0, 88(sp) # 4-byte Folded Reload
 ; QCI-D-NEXT:    sw a0, 4(s0)
 ; QCI-D-NEXT:    lw a0, 92(sp) # 4-byte Folded Reload
-; QCI-D-NEXT:    lui a1, %hi(var)
-; QCI-D-NEXT:    sw a0, %lo(var)(a1)
+; QCI-D-NEXT:    sw a0, 0(s0)
 ; QCI-D-NEXT:    lw s1, 300(sp) # 4-byte Folded Reload
 ; QCI-D-NEXT:    lw s2, 296(sp) # 4-byte Folded Reload
 ; QCI-D-NEXT:    lw s3, 292(sp) # 4-byte Folded Reload

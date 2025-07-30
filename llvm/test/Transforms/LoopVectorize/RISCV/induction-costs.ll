@@ -83,11 +83,11 @@ define void @skip_free_iv_truncate(i16 %x, ptr %A) #0 {
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 8 x i64> [ [[INDUCTION]], %[[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP57:%.*]] = getelementptr i16, ptr [[A]], <vscale x 8 x i64> [[VEC_IND]]
-; CHECK-NEXT:    call void @llvm.masked.scatter.nxv8i16.nxv8p0(<vscale x 8 x i16> zeroinitializer, <vscale x 8 x ptr> [[TMP57]], i32 2, <vscale x 8 x i1> splat (i1 true)), !alias.scope [[META0:![0-9]+]], !noalias [[META3:![0-9]+]]
+; CHECK-NEXT:    call void @llvm.masked.scatter.nxv8i16.nxv8p0(<vscale x 8 x i16> zeroinitializer, <vscale x 8 x ptr> [[TMP57]], i32 2, <vscale x 8 x i1> splat (i1 true))
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP52]]
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <vscale x 8 x i64> [[VEC_IND]], [[DOTSPLAT25]]
 ; CHECK-NEXT:    [[TMP60:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP60]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP60]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br label %[[SCALAR_PH]]
 ; CHECK:       [[SCALAR_PH]]:
@@ -107,7 +107,7 @@ define void @skip_free_iv_truncate(i16 %x, ptr %A) #0 {
 ; CHECK-NEXT:    [[IV_NEXT]] = add i64 [[IV]], 3
 ; CHECK-NEXT:    [[TMP64]] = trunc i64 [[IV_NEXT]] to i32
 ; CHECK-NEXT:    [[C:%.*]] = icmp slt i64 [[IV]], 99
-; CHECK-NEXT:    br i1 [[C]], label %[[LOOP]], label %[[EXIT:.*]], !llvm.loop [[LOOP9:![0-9]+]]
+; CHECK-NEXT:    br i1 [[C]], label %[[LOOP]], label %[[EXIT:.*]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       [[EXIT]]:
 ; CHECK-NEXT:    ret void
 ;
@@ -138,14 +138,8 @@ exit:
 
 attributes #0 = { "target-features"="+64bit,+v,+zvl256b" }
 ;.
-; CHECK: [[META0]] = !{[[META1:![0-9]+]]}
-; CHECK: [[META1]] = distinct !{[[META1]], [[META2:![0-9]+]]}
-; CHECK: [[META2]] = distinct !{[[META2]], !"LVerDomain"}
-; CHECK: [[META3]] = !{[[META4:![0-9]+]], [[META5:![0-9]+]]}
-; CHECK: [[META4]] = distinct !{[[META4]], [[META2]]}
-; CHECK: [[META5]] = distinct !{[[META5]], [[META2]]}
-; CHECK: [[LOOP6]] = distinct !{[[LOOP6]], [[META7:![0-9]+]], [[META8:![0-9]+]]}
-; CHECK: [[META7]] = !{!"llvm.loop.isvectorized", i32 1}
-; CHECK: [[META8]] = !{!"llvm.loop.unroll.runtime.disable"}
-; CHECK: [[LOOP9]] = distinct !{[[LOOP9]], [[META7]]}
+; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; CHECK: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
+; CHECK: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK: [[LOOP3]] = distinct !{[[LOOP3]], [[META1]]}
 ;.

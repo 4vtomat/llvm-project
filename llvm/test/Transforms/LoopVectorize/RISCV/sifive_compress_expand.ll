@@ -145,7 +145,7 @@ define i32 @compress_store(i32 %n, ptr noalias %a, ptr noalias %b) {
 ; CHECK-NEXT:    [[RET_1]] = phi i32 [ [[INC]], [[IF_THEN]] ], [ [[RET_011]], [[FOR_BODY1]] ]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY1]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY1]], !llvm.loop [[LOOP4:![0-9]+]]
 ;
 entry:
   %cmp10 = icmp sgt i32 %n, 0
@@ -363,7 +363,7 @@ define i32 @expand_load(i32 %n, ptr noalias %a, ptr noalias %b) {
 ; CHECK-NEXT:    [[TMP16:%.*]] = zext i32 [[TMP19]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP16]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
-; CHECK-NEXT:    br i1 [[TMP17]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_BODY1]], !llvm.loop [[LOOP4:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP17]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_BODY1]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
@@ -395,7 +395,7 @@ define i32 @expand_load(i32 %n, ptr noalias %a, ptr noalias %b) {
 ; CHECK-NEXT:    [[RET_1]] = phi i32 [ [[ADD]], [[IF_THEN]] ], [ [[RET_012]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ;
 entry:
   %cmp11 = icmp sgt i32 %n, 0
@@ -648,10 +648,11 @@ for.inc:
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
 ;.
-; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
 ; CHECK: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
-; CHECK: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
-; CHECK: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
-; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META1]], [[META2]]}
-; CHECK: [[LOOP5]] = distinct !{[[LOOP5]], [[META2]], [[META1]]}
+; CHECK: [[META2]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; CHECK: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META3]], [[META1]]}
+; CHECK: [[LOOP5]] = distinct !{[[LOOP5]], [[META1]], [[META2]], [[META3]]}
+; CHECK: [[LOOP6]] = distinct !{[[LOOP6]], [[META3]], [[META1]]}
 ;.

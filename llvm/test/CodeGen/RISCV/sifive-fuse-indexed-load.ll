@@ -277,28 +277,34 @@ define i64 @load_i32_zext_index(ptr %0, ptr %1, i32 %2) {
 define i64 @load_i64_zext_index(ptr %0, ptr %1, i32 %2) {
 ; NOFUSION-LABEL: load_i64_zext_index:
 ; NOFUSION:       # %bb.0:
-; NOFUSION-NEXT:    sh3add.uw a1, a2, a1
+; NOFUSION-NEXT:    slli a2, a2, 3
+; NOFUSION-NEXT:    srli a2, a2, 3
 ; NOFUSION-NEXT:    sh3add.uw a0, a2, a0
-; NOFUSION-NEXT:    ld a1, 0(a1)
+; NOFUSION-NEXT:    sh3add.uw a1, a2, a1
 ; NOFUSION-NEXT:    ld a0, 0(a0)
+; NOFUSION-NEXT:    ld a1, 0(a1)
 ; NOFUSION-NEXT:    add a0, a0, a1
 ; NOFUSION-NEXT:    ret
 ;
 ; FUSEADD-LABEL: load_i64_zext_index:
 ; FUSEADD:       # %bb.0:
-; FUSEADD-NEXT:    sh3add.uw a1, a2, a1
+; FUSEADD-NEXT:    slli a2, a2, 3
+; FUSEADD-NEXT:    srli a2, a2, 3
 ; FUSEADD-NEXT:    sh3add.uw a0, a2, a0
-; FUSEADD-NEXT:    ld a1, 0(a1)
+; FUSEADD-NEXT:    sh3add.uw a1, a2, a1
 ; FUSEADD-NEXT:    ld a0, 0(a0)
+; FUSEADD-NEXT:    ld a1, 0(a1)
 ; FUSEADD-NEXT:    add a0, a0, a1
 ; FUSEADD-NEXT:    ret
 ;
 ; FUSEZBA-LABEL: load_i64_zext_index:
 ; FUSEZBA:       # %bb.0:
-; FUSEZBA-NEXT:    sh3add.uw a1, a2, a1
-; FUSEZBA-NEXT:    ld a1, 0(a1)
+; FUSEZBA-NEXT:    slli a2, a2, 3
+; FUSEZBA-NEXT:    srli a2, a2, 3
 ; FUSEZBA-NEXT:    sh3add.uw a0, a2, a0
 ; FUSEZBA-NEXT:    ld a0, 0(a0)
+; FUSEZBA-NEXT:    sh3add.uw a1, a2, a1
+; FUSEZBA-NEXT:    ld a1, 0(a1)
 ; FUSEZBA-NEXT:    add a0, a0, a1
 ; FUSEZBA-NEXT:    ret
   %4 = zext i32 %2 to i64

@@ -58,7 +58,7 @@ define i32 @load_factor_2_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[ADD1]] = add nsw i32 [[TMP17]], [[RED_069]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    [[ADD1_LCSSA:%.*]] = phi i32 [ [[ADD1]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    ret i32 [[ADD1_LCSSA]]
@@ -112,7 +112,7 @@ define i32 @load_factor_3_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP3]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP9]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP11:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP16:%.*]] = add i32 0, [[TMP11]]
@@ -133,7 +133,7 @@ define i32 @load_factor_3_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[ADD6]] = add nsw i32 [[ADD1]], [[TMP19]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    [[ADD6_LCSSA:%.*]] = phi i32 [ [[ADD6]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    ret i32 [[ADD6_LCSSA]]
@@ -192,7 +192,7 @@ define i32 @load_factor_4_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[TMP10:%.*]] = zext i32 [[TMP3]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP10]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP15:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP12:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP17:%.*]] = add i32 0, [[TMP12]]
@@ -218,7 +218,7 @@ define i32 @load_factor_4_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[ADD11]] = add nsw i32 [[ADD6]], [[TMP23]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    [[ADD11_LCSSA:%.*]] = phi i32 [ [[ADD11]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    ret i32 [[ADD11_LCSSA]]
@@ -284,7 +284,7 @@ define i32 @load_factor_5_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP3]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP11]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP16:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP18:%.*]] = add i32 0, [[TMP13]]
@@ -311,7 +311,7 @@ define i32 @load_factor_5_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[ADD16]] = add nsw i32 [[ADD11]], [[TMP23]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    [[ADD16_LCSSA:%.*]] = phi i32 [ [[ADD16]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    ret i32 [[ADD16_LCSSA]]
@@ -380,7 +380,7 @@ define i32 @load_factor_6_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP3]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP12]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP17]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP17]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP11:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP14:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP19:%.*]] = add i32 0, [[TMP14]]
@@ -410,7 +410,7 @@ define i32 @load_factor_6_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[ADD21]] = add nsw i32 [[ADD16]], [[TMP25]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP11:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    [[ADD21_LCSSA:%.*]] = phi i32 [ [[ADD21]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    ret i32 [[ADD21_LCSSA]]
@@ -484,7 +484,7 @@ define i32 @load_factor_7_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[TMP13:%.*]] = zext i32 [[TMP3]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP13]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP18:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP18]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP18]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP13:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP15:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP20:%.*]] = add i32 0, [[TMP15]]
@@ -517,7 +517,7 @@ define i32 @load_factor_7_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[ADD26]] = add nsw i32 [[ADD21]], [[TMP27]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP13:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    [[ADD26_LCSSA:%.*]] = phi i32 [ [[ADD26]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    ret i32 [[ADD26_LCSSA]]
@@ -596,7 +596,7 @@ define i32 @load_factor_8_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP3]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP14]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP19:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP19]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP19]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP15:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP16:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP21:%.*]] = add i32 0, [[TMP16]]
@@ -638,7 +638,7 @@ define i32 @load_factor_8_with_tail_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[ADD31]] = add nsw i32 [[ADD26]], [[TMP35]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP15:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    [[ADD31_LCSSA:%.*]] = phi i32 [ [[ADD31]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    ret i32 [[ADD31_LCSSA]]
@@ -724,7 +724,7 @@ define i32 @load_factor_3_with_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP8]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[TMP9]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP9]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP17:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP10:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP15:%.*]] = add i32 0, [[TMP10]]
@@ -745,7 +745,7 @@ define i32 @load_factor_3_with_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[ADD6]] = add nsw i32 [[ADD1]], [[TMP18]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP17:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    [[ADD6_LCSSA:%.*]] = phi i32 [ [[ADD6]], [[FOR_BODY]] ], [ [[TMP15]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret i32 [[ADD6_LCSSA]]
@@ -802,7 +802,7 @@ define i32 @load_factor_4_with_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP9]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[TMP10]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP10]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP19:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP11:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP16:%.*]] = add i32 0, [[TMP11]]
@@ -828,7 +828,7 @@ define i32 @load_factor_4_with_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[ADD11]] = add nsw i32 [[ADD6]], [[TMP22]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP19:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    [[ADD11_LCSSA:%.*]] = phi i32 [ [[ADD11]], [[FOR_BODY]] ], [ [[TMP16]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret i32 [[ADD11_LCSSA]]
@@ -892,7 +892,7 @@ define i32 @load_factor_5_with_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[TMP10:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP10]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP11:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[TMP11]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP11]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP21:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP12:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP17:%.*]] = add i32 0, [[TMP12]]
@@ -919,7 +919,7 @@ define i32 @load_factor_5_with_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[ADD16]] = add nsw i32 [[ADD11]], [[TMP22]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP21:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP22:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    [[ADD16_LCSSA:%.*]] = phi i32 [ [[ADD16]], [[FOR_BODY]] ], [ [[TMP17]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret i32 [[ADD16_LCSSA]]
@@ -986,7 +986,7 @@ define i32 @load_factor_6_with_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP11]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[TMP12]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP22:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP12]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP23:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP18:%.*]] = add i32 0, [[TMP13]]
@@ -1016,7 +1016,7 @@ define i32 @load_factor_6_with_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[ADD21]] = add nsw i32 [[ADD16]], [[TMP24]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP23:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP24:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    [[ADD21_LCSSA:%.*]] = phi i32 [ [[ADD21]], [[FOR_BODY]] ], [ [[TMP18]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret i32 [[ADD21_LCSSA]]
@@ -1088,7 +1088,7 @@ define i32 @load_factor_7_with_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP12]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP24:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP25:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP14:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP19:%.*]] = add i32 0, [[TMP14]]
@@ -1121,7 +1121,7 @@ define i32 @load_factor_7_with_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[ADD26]] = add nsw i32 [[ADD21]], [[TMP26]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP25:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP26:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    [[ADD26_LCSSA:%.*]] = phi i32 [ [[ADD26]], [[FOR_BODY]] ], [ [[TMP19]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret i32 [[ADD26_LCSSA]]
@@ -1198,7 +1198,7 @@ define i32 @load_factor_8_with_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[TMP13:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP13]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP26:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP27:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP15:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP20:%.*]] = add i32 0, [[TMP15]]
@@ -1240,7 +1240,7 @@ define i32 @load_factor_8_with_gap(i64 %n, ptr %a) {
 ; CHECK-NEXT:    [[ADD31]] = add nsw i32 [[ADD26]], [[TMP34]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP27:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP28:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    [[ADD31_LCSSA:%.*]] = phi i32 [ [[ADD31]], [[FOR_BODY]] ], [ [[TMP20]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret i32 [[ADD31_LCSSA]]
@@ -1287,32 +1287,33 @@ exit:
   ret i32 %add31
 }
 ;.
-; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
 ; CHECK: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
-; CHECK: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
-; CHECK: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
-; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META1]], [[META2]]}
-; CHECK: [[LOOP5]] = distinct !{[[LOOP5]], [[META2]], [[META1]]}
-; CHECK: [[LOOP6]] = distinct !{[[LOOP6]], [[META1]], [[META2]]}
-; CHECK: [[LOOP7]] = distinct !{[[LOOP7]], [[META2]], [[META1]]}
-; CHECK: [[LOOP8]] = distinct !{[[LOOP8]], [[META1]], [[META2]]}
-; CHECK: [[LOOP9]] = distinct !{[[LOOP9]], [[META2]], [[META1]]}
-; CHECK: [[LOOP10]] = distinct !{[[LOOP10]], [[META1]], [[META2]]}
-; CHECK: [[LOOP11]] = distinct !{[[LOOP11]], [[META2]], [[META1]]}
-; CHECK: [[LOOP12]] = distinct !{[[LOOP12]], [[META1]], [[META2]]}
-; CHECK: [[LOOP13]] = distinct !{[[LOOP13]], [[META2]], [[META1]]}
-; CHECK: [[LOOP14]] = distinct !{[[LOOP14]], [[META1]], [[META2]]}
-; CHECK: [[LOOP15]] = distinct !{[[LOOP15]], [[META2]], [[META1]]}
-; CHECK: [[LOOP16]] = distinct !{[[LOOP16]], [[META1]], [[META2]]}
-; CHECK: [[LOOP17]] = distinct !{[[LOOP17]], [[META2]], [[META1]]}
-; CHECK: [[LOOP18]] = distinct !{[[LOOP18]], [[META1]], [[META2]]}
-; CHECK: [[LOOP19]] = distinct !{[[LOOP19]], [[META2]], [[META1]]}
-; CHECK: [[LOOP20]] = distinct !{[[LOOP20]], [[META1]], [[META2]]}
-; CHECK: [[LOOP21]] = distinct !{[[LOOP21]], [[META2]], [[META1]]}
-; CHECK: [[LOOP22]] = distinct !{[[LOOP22]], [[META1]], [[META2]]}
-; CHECK: [[LOOP23]] = distinct !{[[LOOP23]], [[META2]], [[META1]]}
-; CHECK: [[LOOP24]] = distinct !{[[LOOP24]], [[META1]], [[META2]]}
-; CHECK: [[LOOP25]] = distinct !{[[LOOP25]], [[META2]], [[META1]]}
-; CHECK: [[LOOP26]] = distinct !{[[LOOP26]], [[META1]], [[META2]]}
-; CHECK: [[LOOP27]] = distinct !{[[LOOP27]], [[META2]], [[META1]]}
+; CHECK: [[META2]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; CHECK: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META3]], [[META1]]}
+; CHECK: [[LOOP5]] = distinct !{[[LOOP5]], [[META1]], [[META2]], [[META3]]}
+; CHECK: [[LOOP6]] = distinct !{[[LOOP6]], [[META3]], [[META1]]}
+; CHECK: [[LOOP7]] = distinct !{[[LOOP7]], [[META1]], [[META2]], [[META3]]}
+; CHECK: [[LOOP8]] = distinct !{[[LOOP8]], [[META3]], [[META1]]}
+; CHECK: [[LOOP9]] = distinct !{[[LOOP9]], [[META1]], [[META2]], [[META3]]}
+; CHECK: [[LOOP10]] = distinct !{[[LOOP10]], [[META3]], [[META1]]}
+; CHECK: [[LOOP11]] = distinct !{[[LOOP11]], [[META1]], [[META2]], [[META3]]}
+; CHECK: [[LOOP12]] = distinct !{[[LOOP12]], [[META3]], [[META1]]}
+; CHECK: [[LOOP13]] = distinct !{[[LOOP13]], [[META1]], [[META2]], [[META3]]}
+; CHECK: [[LOOP14]] = distinct !{[[LOOP14]], [[META3]], [[META1]]}
+; CHECK: [[LOOP15]] = distinct !{[[LOOP15]], [[META1]], [[META2]], [[META3]]}
+; CHECK: [[LOOP16]] = distinct !{[[LOOP16]], [[META3]], [[META1]]}
+; CHECK: [[LOOP17]] = distinct !{[[LOOP17]], [[META1]], [[META2]], [[META3]]}
+; CHECK: [[LOOP18]] = distinct !{[[LOOP18]], [[META3]], [[META1]]}
+; CHECK: [[LOOP19]] = distinct !{[[LOOP19]], [[META1]], [[META2]], [[META3]]}
+; CHECK: [[LOOP20]] = distinct !{[[LOOP20]], [[META3]], [[META1]]}
+; CHECK: [[LOOP21]] = distinct !{[[LOOP21]], [[META1]], [[META2]], [[META3]]}
+; CHECK: [[LOOP22]] = distinct !{[[LOOP22]], [[META3]], [[META1]]}
+; CHECK: [[LOOP23]] = distinct !{[[LOOP23]], [[META1]], [[META2]], [[META3]]}
+; CHECK: [[LOOP24]] = distinct !{[[LOOP24]], [[META3]], [[META1]]}
+; CHECK: [[LOOP25]] = distinct !{[[LOOP25]], [[META1]], [[META2]], [[META3]]}
+; CHECK: [[LOOP26]] = distinct !{[[LOOP26]], [[META3]], [[META1]]}
+; CHECK: [[LOOP27]] = distinct !{[[LOOP27]], [[META1]], [[META2]], [[META3]]}
+; CHECK: [[LOOP28]] = distinct !{[[LOOP28]], [[META3]], [[META1]]}
 ;.

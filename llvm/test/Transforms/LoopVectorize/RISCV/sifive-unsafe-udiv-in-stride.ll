@@ -13,9 +13,9 @@ define void @test(i64 %0, i32 %1, i32 %2) {
 ; CHECK-NEXT:    [[TMP7:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP7]], 16
 ; CHECK-NEXT:    [[TMP13:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP4]], i32 16, i1 true)
+; CHECK-NEXT:    [[TMP8:%.*]] = call <vscale x 16 x i64> @llvm.stepvector.nxv16i64()
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[DIV_I1313_US1933]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[BROADCAST_SPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
-; CHECK-NEXT:    [[TMP8:%.*]] = call <vscale x 16 x i64> @llvm.stepvector.nxv16i64()
 ; CHECK-NEXT:    [[TMP9:%.*]] = mul <vscale x 16 x i64> [[TMP8]], splat (i64 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 16 x i64> zeroinitializer, [[TMP9]]
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
@@ -49,7 +49,7 @@ define void @test(i64 %0, i32 %1, i32 %2) {
 ; CHECK-NEXT:    store float 0.000000e+00, ptr [[GEP_US1917]], align 4
 ; CHECK-NEXT:    [[INC419_US1918]] = add i64 [[OC_01860_US1911]], 1
 ; CHECK-NEXT:    [[EXITCOND1973_NOT:%.*]] = icmp eq i64 [[OC_01860_US1911]], [[TMP0]]
-; CHECK-NEXT:    br i1 [[EXITCOND1973_NOT]], label %[[EXIT]], label %[[LOOP]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND1973_NOT]], label %[[EXIT]], label %[[LOOP]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       [[EXIT]]:
 ; CHECK-NEXT:    ret void
 ;
@@ -72,8 +72,9 @@ exit:
 }
 
 ;.
-; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
 ; CHECK: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
-; CHECK: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
-; CHECK: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+; CHECK: [[META2]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; CHECK: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META3]], [[META1]]}
 ;.

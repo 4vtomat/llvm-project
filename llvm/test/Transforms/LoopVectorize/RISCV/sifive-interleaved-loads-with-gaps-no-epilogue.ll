@@ -43,7 +43,7 @@ define i32 @load_factor_2_with_tail_gap(i64 %n, ptr %a) local_unnamed_addr #0 {
 ; CHECK-NEXT:    [[ADD1]] = add nsw i32 [[TMP16]], [[RED_069]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    [[ADD1_LCSSA:%.*]] = phi i32 [ [[ADD1]], [[FOR_BODY]] ], [ [[TMP9]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret i32 [[ADD1_LCSSA]]
@@ -96,7 +96,7 @@ define i32 @cond_load_factor_2_with_tail_gap(i64 %n, ptr %a, ptr %cond) local_un
 ; CHECK-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP5]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP14]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP15:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP16:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP11:%.*]] = add i32 0, [[TMP16]]
@@ -122,7 +122,7 @@ define i32 @cond_load_factor_2_with_tail_gap(i64 %n, ptr %a, ptr %cond) local_un
 ; CHECK-NEXT:    [[RED_1]] = phi i32 [ [[ADD3]], [[IF_THEN]] ], [ [[RED_036]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    [[RED_1_LCSSA:%.*]] = phi i32 [ [[RED_1]], [[FOR_INC]] ], [ [[TMP11]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret i32 [[RED_1_LCSSA]]
@@ -157,10 +157,11 @@ exit:
 
 attributes #0 = { optsize }
 ;.
-; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
 ; CHECK: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
-; CHECK: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
-; CHECK: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
-; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META1]], [[META2]]}
-; CHECK: [[LOOP5]] = distinct !{[[LOOP5]], [[META2]], [[META1]]}
+; CHECK: [[META2]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; CHECK: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META3]], [[META1]]}
+; CHECK: [[LOOP5]] = distinct !{[[LOOP5]], [[META1]], [[META2]], [[META3]]}
+; CHECK: [[LOOP6]] = distinct !{[[LOOP6]], [[META3]], [[META1]]}
 ;.

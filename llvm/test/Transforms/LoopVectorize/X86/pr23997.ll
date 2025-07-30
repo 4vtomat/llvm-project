@@ -36,21 +36,21 @@ define void @foo(ptr addrspace(1) align 8 dereferenceable_or_null(16), ptr addrs
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds nuw i8, ptr addrspace(1) [[TMP5]], i64 32
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds nuw i8, ptr addrspace(1) [[TMP5]], i64 64
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds nuw i8, ptr addrspace(1) [[TMP5]], i64 96
-; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x ptr addrspace(1)>, ptr addrspace(1) [[TMP5]], align 8, !alias.scope [[META0:![0-9]+]]
-; CHECK-NEXT:    [[WIDE_LOAD4:%.*]] = load <4 x ptr addrspace(1)>, ptr addrspace(1) [[TMP6]], align 8, !alias.scope [[META0]]
-; CHECK-NEXT:    [[WIDE_LOAD5:%.*]] = load <4 x ptr addrspace(1)>, ptr addrspace(1) [[TMP7]], align 8, !alias.scope [[META0]]
-; CHECK-NEXT:    [[WIDE_LOAD6:%.*]] = load <4 x ptr addrspace(1)>, ptr addrspace(1) [[TMP8]], align 8, !alias.scope [[META0]]
+; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x ptr addrspace(1)>, ptr addrspace(1) [[TMP5]], align 8
+; CHECK-NEXT:    [[WIDE_LOAD4:%.*]] = load <4 x ptr addrspace(1)>, ptr addrspace(1) [[TMP6]], align 8
+; CHECK-NEXT:    [[WIDE_LOAD5:%.*]] = load <4 x ptr addrspace(1)>, ptr addrspace(1) [[TMP7]], align 8
+; CHECK-NEXT:    [[WIDE_LOAD6:%.*]] = load <4 x ptr addrspace(1)>, ptr addrspace(1) [[TMP8]], align 8
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds ptr addrspace(1), ptr addrspace(1) [[DOT10]], i64 [[INDEX]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds nuw i8, ptr addrspace(1) [[TMP9]], i64 32
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds nuw i8, ptr addrspace(1) [[TMP9]], i64 64
 ; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds nuw i8, ptr addrspace(1) [[TMP9]], i64 96
-; CHECK-NEXT:    store <4 x ptr addrspace(1)> [[WIDE_LOAD]], ptr addrspace(1) [[TMP9]], align 8, !alias.scope [[META3:![0-9]+]], !noalias [[META0]]
-; CHECK-NEXT:    store <4 x ptr addrspace(1)> [[WIDE_LOAD4]], ptr addrspace(1) [[TMP10]], align 8, !alias.scope [[META3]], !noalias [[META0]]
-; CHECK-NEXT:    store <4 x ptr addrspace(1)> [[WIDE_LOAD5]], ptr addrspace(1) [[TMP11]], align 8, !alias.scope [[META3]], !noalias [[META0]]
-; CHECK-NEXT:    store <4 x ptr addrspace(1)> [[WIDE_LOAD6]], ptr addrspace(1) [[TMP12]], align 8, !alias.scope [[META3]], !noalias [[META0]]
+; CHECK-NEXT:    store <4 x ptr addrspace(1)> [[WIDE_LOAD]], ptr addrspace(1) [[TMP9]], align 8
+; CHECK-NEXT:    store <4 x ptr addrspace(1)> [[WIDE_LOAD4]], ptr addrspace(1) [[TMP10]], align 8
+; CHECK-NEXT:    store <4 x ptr addrspace(1)> [[WIDE_LOAD5]], ptr addrspace(1) [[TMP11]], align 8
+; CHECK-NEXT:    store <4 x ptr addrspace(1)> [[WIDE_LOAD6]], ptr addrspace(1) [[TMP12]], align 8
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
 ; CHECK-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[TMP2]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[CMP_N]], label [[LOOPEXIT:%.*]], label [[VEC_EPILOG_ITER_CHECK:%.*]]
@@ -65,12 +65,12 @@ define void @foo(ptr addrspace(1) align 8 dereferenceable_or_null(16), ptr addrs
 ; CHECK:       vec.epilog.vector.body:
 ; CHECK-NEXT:    [[INDEX9:%.*]] = phi i64 [ [[VEC_EPILOG_RESUME_VAL]], [[VEC_EPILOG_PH]] ], [ [[INDEX_NEXT11:%.*]], [[VEC_EPILOG_VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr inbounds ptr addrspace(1), ptr addrspace(1) [[DOT12]], i64 [[INDEX9]]
-; CHECK-NEXT:    [[WIDE_LOAD10:%.*]] = load <4 x ptr addrspace(1)>, ptr addrspace(1) [[TMP14]], align 8, !alias.scope [[META8:![0-9]+]]
+; CHECK-NEXT:    [[WIDE_LOAD10:%.*]] = load <4 x ptr addrspace(1)>, ptr addrspace(1) [[TMP14]], align 8
 ; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr inbounds ptr addrspace(1), ptr addrspace(1) [[DOT10]], i64 [[INDEX9]]
-; CHECK-NEXT:    store <4 x ptr addrspace(1)> [[WIDE_LOAD10]], ptr addrspace(1) [[TMP15]], align 8, !alias.scope [[META11:![0-9]+]], !noalias [[META8]]
+; CHECK-NEXT:    store <4 x ptr addrspace(1)> [[WIDE_LOAD10]], ptr addrspace(1) [[TMP15]], align 8
 ; CHECK-NEXT:    [[INDEX_NEXT11]] = add nuw i64 [[INDEX9]], 4
 ; CHECK-NEXT:    [[TMP16:%.*]] = icmp eq i64 [[INDEX_NEXT11]], [[N_VEC8]]
-; CHECK-NEXT:    br i1 [[TMP16]], label [[VEC_EPILOG_MIDDLE_BLOCK:%.*]], label [[VEC_EPILOG_VECTOR_BODY]], !llvm.loop [[LOOP13:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP16]], label [[VEC_EPILOG_MIDDLE_BLOCK:%.*]], label [[VEC_EPILOG_VECTOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       vec.epilog.middle.block:
 ; CHECK-NEXT:    [[CMP_N12:%.*]] = icmp eq i64 [[TMP2]], [[N_VEC8]]
 ; CHECK-NEXT:    br i1 [[CMP_N12]], label [[LOOPEXIT]], label [[VEC_EPILOG_SCALAR_PH]]
@@ -85,7 +85,7 @@ define void @foo(ptr addrspace(1) align 8 dereferenceable_or_null(16), ptr addrs
 ; CHECK-NEXT:    store ptr addrspace(1) [[V]], ptr addrspace(1) [[DOT20]], align 8
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT4]] = add nuw nsw i64 [[INDVARS_IV3]], 1
 ; CHECK-NEXT:    [[DOT21:%.*]] = icmp ult i64 [[INDVARS_IV_NEXT4]], [[TMP2]]
-; CHECK-NEXT:    br i1 [[DOT21]], label [[LOOP]], label [[LOOPEXIT]], !llvm.loop [[LOOP14:![0-9]+]]
+; CHECK-NEXT:    br i1 [[DOT21]], label [[LOOP]], label [[LOOPEXIT]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       loopexit:
 ; CHECK-NEXT:    ret void
 ;

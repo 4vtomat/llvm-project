@@ -862,11 +862,11 @@ define void @dead_load_in_block(ptr %dst, ptr %src, i8 %N, i64 %x) #0 {
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 4 x i64> [ [[INDUCTION]], %[[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP22:%.*]] = getelementptr i32, ptr [[DST]], <vscale x 4 x i64> [[VEC_IND]]
-; CHECK-NEXT:    call void @llvm.masked.scatter.nxv4i32.nxv4p0(<vscale x 4 x i32> zeroinitializer, <vscale x 4 x ptr> [[TMP22]], i32 4, <vscale x 4 x i1> splat (i1 true)), !alias.scope [[META18:![0-9]+]], !noalias [[META21:![0-9]+]]
+; CHECK-NEXT:    call void @llvm.masked.scatter.nxv4i32.nxv4p0(<vscale x 4 x i32> zeroinitializer, <vscale x 4 x ptr> [[TMP22]], i32 4, <vscale x 4 x i1> splat (i1 true))
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP17]]
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <vscale x 4 x i64> [[VEC_IND]], [[DOTSPLAT]]
 ; CHECK-NEXT:    [[TMP25:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP25]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP24:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP25]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[TMP3]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[CMP_N]], label %[[EXIT:.*]], label %[[SCALAR_PH]]
@@ -887,7 +887,7 @@ define void @dead_load_in_block(ptr %dst, ptr %src, i8 %N, i64 %x) #0 {
 ; CHECK-NEXT:    store i32 0, ptr [[GEP_DST]], align 4
 ; CHECK-NEXT:    [[IV_NEXT]] = add i64 [[IV]], 3
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp ult i64 [[IV]], [[N_EXT]]
-; CHECK-NEXT:    br i1 [[CMP]], label %[[LOOP_HEADER]], label %[[EXIT]], !llvm.loop [[LOOP25:![0-9]+]]
+; CHECK-NEXT:    br i1 [[CMP]], label %[[LOOP_HEADER]], label %[[EXIT]], !llvm.loop [[LOOP19:![0-9]+]]
 ; CHECK:       [[EXIT]]:
 ; CHECK-NEXT:    ret void
 ;
@@ -937,12 +937,6 @@ attributes #0 = { "target-features"="+64bit,+v" }
 ; CHECK: [[LOOP15]] = distinct !{[[LOOP15]], [[META2]], [[META1]]}
 ; CHECK: [[LOOP16]] = distinct !{[[LOOP16]], [[META1]], [[META2]]}
 ; CHECK: [[LOOP17]] = distinct !{[[LOOP17]], [[META2]], [[META1]]}
-; CHECK: [[META18]] = !{[[META19:![0-9]+]]}
-; CHECK: [[META19]] = distinct !{[[META19]], [[META20:![0-9]+]]}
-; CHECK: [[META20]] = distinct !{[[META20]], !"LVerDomain"}
-; CHECK: [[META21]] = !{[[META22:![0-9]+]], [[META23:![0-9]+]]}
-; CHECK: [[META22]] = distinct !{[[META22]], [[META20]]}
-; CHECK: [[META23]] = distinct !{[[META23]], [[META20]]}
-; CHECK: [[LOOP24]] = distinct !{[[LOOP24]], [[META1]], [[META2]]}
-; CHECK: [[LOOP25]] = distinct !{[[LOOP25]], [[META1]]}
+; CHECK: [[LOOP18]] = distinct !{[[LOOP18]], [[META1]], [[META2]]}
+; CHECK: [[LOOP19]] = distinct !{[[LOOP19]], [[META1]]}
 ;.

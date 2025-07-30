@@ -53,19 +53,19 @@ define void @s172(i32 noundef %xa, i32 noundef %xb, ptr noundef %a, ptr noundef 
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = add i64 [[TMP19]], [[TMP0]]
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[OFFSET_IDX]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = getelementptr inbounds nuw i8, ptr [[TMP20]], i64 16
-; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i32>, ptr [[TMP20]], align 4, !alias.scope [[META0:![0-9]+]]
-; CHECK-NEXT:    [[WIDE_LOAD10:%.*]] = load <4 x i32>, ptr [[TMP21]], align 4, !alias.scope [[META0]]
+; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i32>, ptr [[TMP20]], align 4
+; CHECK-NEXT:    [[WIDE_LOAD10:%.*]] = load <4 x i32>, ptr [[TMP21]], align 4
 ; CHECK-NEXT:    [[TMP22:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[OFFSET_IDX]]
 ; CHECK-NEXT:    [[TMP23:%.*]] = getelementptr inbounds nuw i8, ptr [[TMP22]], i64 16
-; CHECK-NEXT:    [[WIDE_LOAD11:%.*]] = load <4 x i32>, ptr [[TMP22]], align 4, !alias.scope [[META3:![0-9]+]], !noalias [[META0]]
-; CHECK-NEXT:    [[WIDE_LOAD12:%.*]] = load <4 x i32>, ptr [[TMP23]], align 4, !alias.scope [[META3]], !noalias [[META0]]
+; CHECK-NEXT:    [[WIDE_LOAD11:%.*]] = load <4 x i32>, ptr [[TMP22]], align 4
+; CHECK-NEXT:    [[WIDE_LOAD12:%.*]] = load <4 x i32>, ptr [[TMP23]], align 4
 ; CHECK-NEXT:    [[TMP24:%.*]] = add nsw <4 x i32> [[WIDE_LOAD11]], [[WIDE_LOAD]]
 ; CHECK-NEXT:    [[TMP25:%.*]] = add nsw <4 x i32> [[WIDE_LOAD12]], [[WIDE_LOAD10]]
-; CHECK-NEXT:    store <4 x i32> [[TMP24]], ptr [[TMP22]], align 4, !alias.scope [[META3]], !noalias [[META0]]
-; CHECK-NEXT:    store <4 x i32> [[TMP25]], ptr [[TMP23]], align 4, !alias.scope [[META3]], !noalias [[META0]]
+; CHECK-NEXT:    store <4 x i32> [[TMP24]], ptr [[TMP22]], align 4
+; CHECK-NEXT:    store <4 x i32> [[TMP25]], ptr [[TMP23]], align 4
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 8
 ; CHECK-NEXT:    [[TMP26:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP26]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP26]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[TMP8]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[CMP_N]], label [[FOR_END]], label [[FOR_BODY_PREHEADER13]]
@@ -82,7 +82,7 @@ define void @s172(i32 noundef %xa, i32 noundef %xb, ptr noundef %a, ptr noundef 
 ; CHECK-NEXT:    store i32 [[ADD]], ptr [[GEP_A]], align 4
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nsw i64 [[INDVARS_IV]], [[TMP1]]
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp slt i64 [[INDVARS_IV_NEXT]], 32000
-; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END]], !llvm.loop [[LOOP9:![0-9]+]]
+; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       for.end:
 ; CHECK-NEXT:    ret void
 ;
@@ -120,14 +120,9 @@ for.end:
 !0 = distinct !{!0, !1}
 !1 = !{!"llvm.loop.mustprogress"}
 ;.
-; CHECK: [[META0]] = !{[[META1:![0-9]+]]}
-; CHECK: [[META1]] = distinct !{[[META1]], [[META2:![0-9]+]]}
-; CHECK: [[META2]] = distinct !{[[META2]], !"LVerDomain"}
-; CHECK: [[META3]] = !{[[META4:![0-9]+]]}
-; CHECK: [[META4]] = distinct !{[[META4]], [[META2]]}
-; CHECK: [[LOOP5]] = distinct !{[[LOOP5]], [[META6:![0-9]+]], [[META7:![0-9]+]], [[META8:![0-9]+]]}
-; CHECK: [[META6]] = !{!"llvm.loop.mustprogress"}
-; CHECK: [[META7]] = !{!"llvm.loop.isvectorized", i32 1}
-; CHECK: [[META8]] = !{!"llvm.loop.unroll.runtime.disable"}
-; CHECK: [[LOOP9]] = distinct !{[[LOOP9]], [[META6]], [[META7]]}
+; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
+; CHECK: [[META1]] = !{!"llvm.loop.mustprogress"}
+; CHECK: [[META2]] = !{!"llvm.loop.isvectorized", i32 1}
+; CHECK: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META1]], [[META2]]}
 ;.

@@ -40,7 +40,7 @@ define void @ham() {
 ; CHECK-NEXT:    store i32 [[SHL]], ptr null, align 4
 ; CHECK-NEXT:    [[ADD4]] = add i64 [[PHI3]], 1
 ; CHECK-NEXT:    [[ICMP:%.*]] = icmp eq i64 [[ADD4]], 4
-; CHECK-NEXT:    br i1 [[ICMP]], label %[[FOR_BODY_2]], label %[[FOR_BODY_1]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NEXT:    br i1 [[ICMP]], label %[[FOR_BODY_2]], label %[[FOR_BODY_1]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       [[FOR_BODY_2]]:
 ; CHECK-NEXT:    [[ADD6]] = add i64 [[PHI]], 1
 ; CHECK-NEXT:    br label %[[FOR_BODY]]
@@ -68,8 +68,9 @@ for.body.2:
 }
 
 ;.
-; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
 ; CHECK: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
-; CHECK: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
-; CHECK: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+; CHECK: [[META2]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; CHECK: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META3]], [[META1]]}
 ;.

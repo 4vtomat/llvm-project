@@ -81,20 +81,20 @@ define void @many_deps(ptr noalias %buckets, ptr %array, ptr %indices, ptr %othe
 ; NORMAL_DEP_LIMIT-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; NORMAL_DEP_LIMIT-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 4 x i32> [ [[TMP7]], [[ENTRY]] ], [ [[VEC_IND_NEXT:%.*]], [[FOR_BODY]] ]
 ; NORMAL_DEP_LIMIT-NEXT:    [[GEP_INDICES:%.*]] = getelementptr inbounds i32, ptr [[INDICES]], i64 [[IV]]
-; NORMAL_DEP_LIMIT-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 4 x i32>, ptr [[GEP_INDICES]], align 4, !alias.scope [[META0:![0-9]+]]
+; NORMAL_DEP_LIMIT-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 4 x i32>, ptr [[GEP_INDICES]], align 4
 ; NORMAL_DEP_LIMIT-NEXT:    [[TMP11:%.*]] = zext <vscale x 4 x i32> [[WIDE_LOAD]] to <vscale x 4 x i64>
 ; NORMAL_DEP_LIMIT-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[BUCKETS]], <vscale x 4 x i64> [[TMP11]]
 ; NORMAL_DEP_LIMIT-NEXT:    call void @llvm.experimental.vector.histogram.add.nxv4p0.i32(<vscale x 4 x ptr> [[TMP12]], i32 1, <vscale x 4 x i1> splat (i1 true))
 ; NORMAL_DEP_LIMIT-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i32, ptr [[ARRAY]], i64 [[IV]]
-; NORMAL_DEP_LIMIT-NEXT:    store <vscale x 4 x i32> [[VEC_IND]], ptr [[TMP13]], align 4, !alias.scope [[META3:![0-9]+]], !noalias [[META5:![0-9]+]]
+; NORMAL_DEP_LIMIT-NEXT:    store <vscale x 4 x i32> [[VEC_IND]], ptr [[TMP13]], align 4
 ; NORMAL_DEP_LIMIT-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i32, ptr [[OTHER]], i64 [[IV]]
-; NORMAL_DEP_LIMIT-NEXT:    [[WIDE_LOAD10:%.*]] = load <vscale x 4 x i32>, ptr [[TMP14]], align 4, !alias.scope [[META7:![0-9]+]], !noalias [[META0]]
+; NORMAL_DEP_LIMIT-NEXT:    [[WIDE_LOAD10:%.*]] = load <vscale x 4 x i32>, ptr [[TMP14]], align 4
 ; NORMAL_DEP_LIMIT-NEXT:    [[TMP15:%.*]] = add <vscale x 4 x i32> [[WIDE_LOAD10]], [[VEC_IND]]
-; NORMAL_DEP_LIMIT-NEXT:    store <vscale x 4 x i32> [[TMP15]], ptr [[TMP14]], align 4, !alias.scope [[META7]], !noalias [[META0]]
+; NORMAL_DEP_LIMIT-NEXT:    store <vscale x 4 x i32> [[TMP15]], ptr [[TMP14]], align 4
 ; NORMAL_DEP_LIMIT-NEXT:    [[IV_NEXT]] = add nuw i64 [[IV]], [[TMP6]]
 ; NORMAL_DEP_LIMIT-NEXT:    [[VEC_IND_NEXT]] = add <vscale x 4 x i32> [[VEC_IND]], [[DOTSPLAT]]
 ; NORMAL_DEP_LIMIT-NEXT:    [[TMP16:%.*]] = icmp eq i64 [[IV_NEXT]], [[N_VEC]]
-; NORMAL_DEP_LIMIT-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
+; NORMAL_DEP_LIMIT-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; NORMAL_DEP_LIMIT:       middle.block:
 ; NORMAL_DEP_LIMIT-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N_MOD_VF]], 0
 ; NORMAL_DEP_LIMIT-NEXT:    br i1 [[CMP_N]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]

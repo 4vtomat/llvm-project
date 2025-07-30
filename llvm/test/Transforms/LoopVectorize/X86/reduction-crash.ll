@@ -36,11 +36,11 @@ define void @pr15344(ptr noalias %ar, ptr noalias %ar2, i32 %exit.limit, i1 %con
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds float, ptr [[AR2]], i32 [[INDEX]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds float, ptr [[TMP4]], i32 0
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds float, ptr [[TMP4]], i32 2
-; CHECK-NEXT:    store <2 x float> splat (float 2.000000e+00), ptr [[TMP5]], align 4, !alias.scope [[META0:![0-9]+]], !noalias [[META3:![0-9]+]]
-; CHECK-NEXT:    store <2 x float> splat (float 2.000000e+00), ptr [[TMP6]], align 4, !alias.scope [[META0]], !noalias [[META3]]
+; CHECK-NEXT:    store <2 x float> splat (float 2.000000e+00), ptr [[TMP5]], align 4
+; CHECK-NEXT:    store <2 x float> splat (float 2.000000e+00), ptr [[TMP6]], align 4
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i32 [[INDEX]], 4
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i32 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP7]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP7]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    [[BIN_RDX:%.*]] = fadd fast <2 x double> [[TMP3]], [[TMP2]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = call fast double @llvm.vector.reduce.fadd.v2f64(double 0.000000e+00, <2 x double> [[BIN_RDX]])
@@ -60,7 +60,7 @@ define void @pr15344(ptr noalias %ar, ptr noalias %ar2, i32 %exit.limit, i1 %con
 ; CHECK-NEXT:    store float 2.000000e+00, ptr [[GEP_AR2]], align 4
 ; CHECK-NEXT:    [[IV_NEXT]] = add nsw i32 [[IV]], 1
 ; CHECK-NEXT:    [[EXIT_COND:%.*]] = icmp eq i32 [[IV_NEXT]], [[EXIT_LIMIT]]
-; CHECK-NEXT:    br i1 [[EXIT_COND]], label %[[EXIT_LOOPEXIT]], label %[[LOOP]], !llvm.loop [[LOOP8:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXIT_COND]], label %[[EXIT_LOOPEXIT]], label %[[LOOP]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       [[EXIT_LOOPEXIT]]:
 ; CHECK-NEXT:    [[FADD_LCSSA:%.*]] = phi double [ [[FADD]], %[[LOOP]] ], [ [[TMP8]], %[[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    br label %[[EXIT]]

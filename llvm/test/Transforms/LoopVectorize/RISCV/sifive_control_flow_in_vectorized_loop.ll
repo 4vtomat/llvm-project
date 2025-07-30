@@ -63,7 +63,7 @@ define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr
 ; X280:       [[FOR_INC]]:
 ; X280-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; X280-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
-; X280-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_END_LOOPEXIT]], label %[[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; X280-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_END_LOOPEXIT]], label %[[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; X280:       [[FOR_END_LOOPEXIT]]:
 ; X280-NEXT:    br label %[[FOR_END]]
 ; X280:       [[FOR_END]]:
@@ -134,7 +134,7 @@ define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr
 ; P470:       [[FOR_INC]]:
 ; P470-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; P470-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
-; P470-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_END_LOOPEXIT]], label %[[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; P470-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_END_LOOPEXIT]], label %[[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; P470:       [[FOR_END_LOOPEXIT]]:
 ; P470-NEXT:    br label %[[FOR_END]]
 ; P470:       [[FOR_END]]:
@@ -199,7 +199,7 @@ define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr
 ; P670:       [[FOR_INC]]:
 ; P670-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; P670-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
-; P670-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_END_LOOPEXIT]], label %[[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; P670-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_END_LOOPEXIT]], label %[[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; P670:       [[FOR_END_LOOPEXIT]]:
 ; P670-NEXT:    br label %[[FOR_END]]
 ; P670:       [[FOR_END]]:
@@ -246,18 +246,21 @@ for.end:
   ret void
 }
 ;.
-; X280: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; X280: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
 ; X280: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
-; X280: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
-; X280: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+; X280: [[META2]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; X280: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
+; X280: [[LOOP4]] = distinct !{[[LOOP4]], [[META3]], [[META1]]}
 ;.
-; P470: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; P470: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
 ; P470: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
-; P470: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
-; P470: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+; P470: [[META2]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; P470: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
+; P470: [[LOOP4]] = distinct !{[[LOOP4]], [[META3]], [[META1]]}
 ;.
-; P670: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; P670: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
 ; P670: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
-; P670: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
-; P670: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+; P670: [[META2]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; P670: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
+; P670: [[LOOP4]] = distinct !{[[LOOP4]], [[META3]], [[META1]]}
 ;.

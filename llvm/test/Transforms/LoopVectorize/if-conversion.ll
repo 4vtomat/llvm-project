@@ -55,17 +55,17 @@ define i32 @function0(ptr nocapture %a, ptr nocapture %b, i32 %start, i32 %end) 
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = add i64 [[INDEX]], [[TMP0]]
 ; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[OFFSET_IDX]]
-; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i32>, ptr [[TMP13]], align 4, !alias.scope [[META0:![0-9]+]], !noalias [[META3:![0-9]+]]
+; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i32>, ptr [[TMP13]], align 4
 ; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[OFFSET_IDX]]
-; CHECK-NEXT:    [[WIDE_LOAD4:%.*]] = load <4 x i32>, ptr [[TMP14]], align 4, !alias.scope [[META3]]
+; CHECK-NEXT:    [[WIDE_LOAD4:%.*]] = load <4 x i32>, ptr [[TMP14]], align 4
 ; CHECK-NEXT:    [[DOTNOT:%.*]] = icmp sgt <4 x i32> [[WIDE_LOAD]], [[WIDE_LOAD4]]
 ; CHECK-NEXT:    [[TMP15:%.*]] = mul <4 x i32> [[WIDE_LOAD]], splat (i32 5)
 ; CHECK-NEXT:    [[TMP16:%.*]] = add <4 x i32> [[TMP15]], splat (i32 3)
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[DOTNOT]], <4 x i32> [[TMP16]], <4 x i32> [[WIDE_LOAD]]
-; CHECK-NEXT:    store <4 x i32> [[PREDPHI]], ptr [[TMP13]], align 4, !alias.scope [[META0]], !noalias [[META3]]
+; CHECK-NEXT:    store <4 x i32> [[PREDPHI]], ptr [[TMP13]], align 4
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP17]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP17]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[TMP4]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[CMP_N]], label %[[FOR_END_LOOPEXIT:.*]], label %[[SCALAR_PH]]
@@ -90,7 +90,7 @@ define i32 @function0(ptr nocapture %a, ptr nocapture %b, i32 %start, i32 %end) 
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[TMP20:%.*]] = trunc i64 [[INDVARS_IV_NEXT]] to i32
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[END]], [[TMP20]]
-; CHECK-NEXT:    br i1 [[CMP]], label %[[FOR_BODY]], label %[[FOR_END_LOOPEXIT]], !llvm.loop [[LOOP8:![0-9]+]]
+; CHECK-NEXT:    br i1 [[CMP]], label %[[FOR_BODY]], label %[[FOR_END_LOOPEXIT]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       [[FOR_END_LOOPEXIT]]:
 ; CHECK-NEXT:    br label %[[FOR_END]]
 ; CHECK:       [[FOR_END]]:
@@ -165,7 +165,7 @@ define i32 @reduction_func(ptr nocapture %A, i32 %n) nounwind uwtable readonly s
 ; CHECK-NEXT:    [[PREDPHI]] = select <4 x i1> [[TMP2]], <4 x i32> [[TMP4]], <4 x i32> [[VEC_PHI]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP5]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP5]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[PREDPHI]])
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N_VEC]], [[TMP0]]
@@ -190,7 +190,7 @@ define i32 @reduction_func(ptr nocapture %A, i32 %n) nounwind uwtable readonly s
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[LFTR_WIDEIV:%.*]] = trunc i64 [[INDVARS_IV_NEXT]] to i32
 ; CHECK-NEXT:    [[EXITCOND:%.*]] = icmp eq i32 [[N]], [[LFTR_WIDEIV]]
-; CHECK-NEXT:    br i1 [[EXITCOND]], label %[[FOR_END_LOOPEXIT]], label %[[FOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND]], label %[[FOR_END_LOOPEXIT]], label %[[FOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       [[FOR_END_LOOPEXIT]]:
 ; CHECK-NEXT:    [[SUM_1_LCSSA:%.*]] = phi i32 [ [[SUM_1]], %[[FOR_INC]] ], [ [[TMP6]], %[[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    br label %[[FOR_END]]
@@ -244,7 +244,7 @@ define void @PR34523() {
 ; CHECK:       [[VECTOR_PH]]:
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
-; CHECK-NEXT:    br i1 poison, label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP11:![0-9]+]]
+; CHECK-NEXT:    br i1 poison, label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br i1 poison, label %[[BB5:.*]], label %[[SCALAR_PH]]
 ; CHECK:       [[SCALAR_PH]]:
@@ -257,7 +257,7 @@ define void @PR34523() {
 ; CHECK:       [[BB4]]:
 ; CHECK-NEXT:    [[_TMP2]] = add i16 [[I]], 1
 ; CHECK-NEXT:    [[_TMP3:%.*]] = icmp slt i16 [[_TMP2]], 2
-; CHECK-NEXT:    br i1 [[_TMP3]], label %[[BB2]], label %[[BB5]], !llvm.loop [[LOOP12:![0-9]+]]
+; CHECK-NEXT:    br i1 [[_TMP3]], label %[[BB2]], label %[[BB5]], !llvm.loop [[LOOP7:![0-9]+]]
 ; CHECK:       [[BB5]]:
 ; CHECK-NEXT:    unreachable
 ;

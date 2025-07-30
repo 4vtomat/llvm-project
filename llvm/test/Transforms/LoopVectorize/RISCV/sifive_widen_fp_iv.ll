@@ -51,7 +51,7 @@ define void @test(i32 %input, ptr %0) {
 ; CHECK-NEXT:    [[IV_NEXT]] = add i32 [[IV]], 1
 ; CHECK-NEXT:    [[Y_NEXT]] = fadd reassoc double [[Y]], 1.000000e+00
 ; CHECK-NEXT:    [[EXITCOND:%.*]] = icmp eq i32 [[IV]], [[INPUT]]
-; CHECK-NEXT:    br i1 [[EXITCOND]], label [[LOOPEXIT]], label [[PREHEADER]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND]], label [[LOOPEXIT]], label [[PREHEADER]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       loopexit:
 ; CHECK-NEXT:    ret void
 ;
@@ -73,8 +73,9 @@ loopexit:
   ret void
 }
 ;.
-; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
 ; CHECK: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
-; CHECK: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
-; CHECK: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+; CHECK: [[META2]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; CHECK: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META3]], [[META1]]}
 ;.

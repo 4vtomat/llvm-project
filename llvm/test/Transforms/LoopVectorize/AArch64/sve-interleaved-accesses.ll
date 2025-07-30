@@ -1300,21 +1300,21 @@ define void @PR34743(ptr %a, ptr %b, i64 %n) #1 {
 ; CHECK-NEXT:    [[TMP18:%.*]] = add nuw nsw <vscale x 4 x i64> [[VEC_IND]], splat (i64 1)
 ; CHECK-NEXT:    [[TMP19:%.*]] = add nuw nsw <vscale x 4 x i64> [[VEC_IND]], splat (i64 2)
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr inbounds i16, ptr [[A]], <vscale x 4 x i64> [[TMP18]]
-; CHECK-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <vscale x 4 x i16> @llvm.masked.gather.nxv4i16.nxv4p0(<vscale x 4 x ptr> [[TMP20]], i32 4, <vscale x 4 x i1> splat (i1 true), <vscale x 4 x i16> poison), !alias.scope [[META34:![0-9]+]]
+; CHECK-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <vscale x 4 x i16> @llvm.masked.gather.nxv4i16.nxv4p0(<vscale x 4 x ptr> [[TMP20]], i32 4, <vscale x 4 x i1> splat (i1 true), <vscale x 4 x i16> poison)
 ; CHECK-NEXT:    [[TMP21:%.*]] = sext <vscale x 4 x i16> [[WIDE_MASKED_GATHER]] to <vscale x 4 x i32>
 ; CHECK-NEXT:    [[TMP22:%.*]] = getelementptr inbounds i16, ptr [[A]], <vscale x 4 x i64> [[TMP19]]
-; CHECK-NEXT:    [[WIDE_MASKED_GATHER4]] = call <vscale x 4 x i16> @llvm.masked.gather.nxv4i16.nxv4p0(<vscale x 4 x ptr> [[TMP22]], i32 4, <vscale x 4 x i1> splat (i1 true), <vscale x 4 x i16> poison), !alias.scope [[META34]]
+; CHECK-NEXT:    [[WIDE_MASKED_GATHER4]] = call <vscale x 4 x i16> @llvm.masked.gather.nxv4i16.nxv4p0(<vscale x 4 x ptr> [[TMP22]], i32 4, <vscale x 4 x i1> splat (i1 true), <vscale x 4 x i16> poison)
 ; CHECK-NEXT:    [[TMP23:%.*]] = call <vscale x 4 x i16> @llvm.vector.splice.nxv4i16(<vscale x 4 x i16> [[VECTOR_RECUR]], <vscale x 4 x i16> [[WIDE_MASKED_GATHER4]], i32 -1)
 ; CHECK-NEXT:    [[TMP24:%.*]] = sext <vscale x 4 x i16> [[TMP23]] to <vscale x 4 x i32>
 ; CHECK-NEXT:    [[TMP25:%.*]] = sext <vscale x 4 x i16> [[WIDE_MASKED_GATHER4]] to <vscale x 4 x i32>
 ; CHECK-NEXT:    [[TMP26:%.*]] = mul nsw <vscale x 4 x i32> [[TMP24]], [[TMP21]]
 ; CHECK-NEXT:    [[TMP27:%.*]] = mul nsw <vscale x 4 x i32> [[TMP26]], [[TMP25]]
 ; CHECK-NEXT:    [[TMP28:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[INDEX]]
-; CHECK-NEXT:    store <vscale x 4 x i32> [[TMP27]], ptr [[TMP28]], align 4, !alias.scope [[META37:![0-9]+]], !noalias [[META34]]
+; CHECK-NEXT:    store <vscale x 4 x i32> [[TMP27]], ptr [[TMP28]], align 4
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP10]]
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <vscale x 4 x i64> [[VEC_IND]], [[DOTSPLAT]]
 ; CHECK-NEXT:    [[TMP29:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP29]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP39:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP29]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP34:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP30:%.*]] = call i32 @llvm.vscale.i32()
 ; CHECK-NEXT:    [[TMP31:%.*]] = shl nuw nsw i32 [[TMP30]], 2
@@ -1413,7 +1413,7 @@ define void @interleave_deinterleave(ptr writeonly noalias %dst, ptr readonly %a
 ; CHECK-NEXT:    store <vscale x 16 x i32> [[INTERLEAVED_VEC13]], ptr [[TMP21]], align 4
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; CHECK-NEXT:    [[TMP25:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP25]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP41:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP25]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP36:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N_MOD_VF]], 0
 ; CHECK-NEXT:    br i1 [[CMP_N]], label [[FOR_COND_CLEANUP:%.*]], label [[SCALAR_PH]]
@@ -1532,7 +1532,7 @@ define void @interleave_deinterleave_reverse(ptr noalias nocapture readonly %A, 
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP1]]
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <vscale x 4 x i32> [[VEC_IND]], [[DOTSPLAT]]
 ; CHECK-NEXT:    [[TMP27:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
-; CHECK-NEXT:    br i1 [[TMP27]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP43:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP27]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP38:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:

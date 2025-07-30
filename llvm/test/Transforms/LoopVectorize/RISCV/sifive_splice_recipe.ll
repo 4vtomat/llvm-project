@@ -71,7 +71,7 @@ define void @foo(ptr %b, ptr %a) {
 ; CHECK-NEXT:    store float [[MUL]], ptr [[ARRAYIDX8]], align 4
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], 10000
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_COND_CLEANUP]], label %[[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_COND_CLEANUP]], label %[[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ;
 entry:
   %arrayidx = getelementptr inbounds float, ptr %b, i64 9999
@@ -99,8 +99,9 @@ for.body:                                         ; preds = %entry, %for.body
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
 ;.
-; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
 ; CHECK: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
-; CHECK: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
-; CHECK: [[LOOP3]] = distinct !{[[LOOP3]], [[META1]]}
+; CHECK: [[META2]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; CHECK: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META1]]}
 ;.

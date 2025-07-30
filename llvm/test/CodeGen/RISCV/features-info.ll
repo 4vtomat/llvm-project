@@ -90,11 +90,8 @@
 ; CHECK-NEXT:   predictable-select-expensive     - Prefer likely predicted branches over selects.
 ; CHECK-NEXT:   prefer-vsetvli-over-read-vlenb   - Prefer vsetvli over read vlenb CSR to calculate VLEN.
 ; CHECK-NEXT:   prefer-w-inst                    - Prefer instructions with W suffix.
-<<<<<<< HEAD
 ; CHECK-NEXT:   pseudo-li-simm32                 - Enable treating LUI+ADDI(W) as a single macro instruction in some passes.
-=======
 ; CHECK-NEXT:   q                                - 'Q' (Quad-Precision Floating-Point).
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
 ; CHECK-NEXT:   relax                            - Enable Linker relaxation..
 ; CHECK-NEXT:   reserve-x1                       - Reserve X1.
 ; CHECK-NEXT:   reserve-x10                      - Reserve X10.

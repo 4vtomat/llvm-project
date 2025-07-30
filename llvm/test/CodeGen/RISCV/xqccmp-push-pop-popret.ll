@@ -686,7 +686,7 @@ entry:
 define i32 @nocompress(i32 signext %size) {
 ; RV32IXQCCMP-LABEL: nocompress:
 ; RV32IXQCCMP:       # %bb.0: # %entry
-; RV32IXQCCMP-NEXT:    qc.cm.pushfp {ra, s0-s8}, -48
+; RV32IXQCCMP-NEXT:    qc.cm.pushfp {ra, s0-s7}, -48
 ; RV32IXQCCMP-NEXT:    .cfi_def_cfa_offset 48
 ; RV32IXQCCMP-NEXT:    .cfi_offset ra, -4
 ; RV32IXQCCMP-NEXT:    .cfi_offset s0, -8
@@ -697,31 +697,29 @@ define i32 @nocompress(i32 signext %size) {
 ; RV32IXQCCMP-NEXT:    .cfi_offset s5, -28
 ; RV32IXQCCMP-NEXT:    .cfi_offset s6, -32
 ; RV32IXQCCMP-NEXT:    .cfi_offset s7, -36
-; RV32IXQCCMP-NEXT:    .cfi_offset s8, -40
 ; RV32IXQCCMP-NEXT:    .cfi_def_cfa s0, 0
 ; RV32IXQCCMP-NEXT:    addi a0, a0, 15
 ; RV32IXQCCMP-NEXT:    andi a0, a0, -16
-; RV32IXQCCMP-NEXT:    sub s3, sp, a0
-; RV32IXQCCMP-NEXT:    mv sp, s3
-; RV32IXQCCMP-NEXT:    lui s2, %hi(var)
+; RV32IXQCCMP-NEXT:    sub s2, sp, a0
+; RV32IXQCCMP-NEXT:    mv sp, s2
 ; RV32IXQCCMP-NEXT:    lui s1, %hi(var)
 ; RV32IXQCCMP-NEXT:    addi s1, s1, %lo(var)
-; RV32IXQCCMP-NEXT:    lw s4, %lo(var)(s2)
-; RV32IXQCCMP-NEXT:    lw s5, 4(s1)
-; RV32IXQCCMP-NEXT:    lw s6, 8(s1)
-; RV32IXQCCMP-NEXT:    lw s7, 12(s1)
-; RV32IXQCCMP-NEXT:    lw s8, 16(s1)
-; RV32IXQCCMP-NEXT:    mv a0, s3
+; RV32IXQCCMP-NEXT:    lw s3, 0(s1)
+; RV32IXQCCMP-NEXT:    lw s4, 4(s1)
+; RV32IXQCCMP-NEXT:    lw s5, 8(s1)
+; RV32IXQCCMP-NEXT:    lw s6, 12(s1)
+; RV32IXQCCMP-NEXT:    lw s7, 16(s1)
+; RV32IXQCCMP-NEXT:    mv a0, s2
 ; RV32IXQCCMP-NEXT:    call callee_void
-; RV32IXQCCMP-NEXT:    sw s8, 16(s1)
-; RV32IXQCCMP-NEXT:    sw s7, 12(s1)
-; RV32IXQCCMP-NEXT:    sw s6, 8(s1)
-; RV32IXQCCMP-NEXT:    sw s5, 4(s1)
-; RV32IXQCCMP-NEXT:    sw s4, %lo(var)(s2)
-; RV32IXQCCMP-NEXT:    mv a0, s3
+; RV32IXQCCMP-NEXT:    sw s7, 16(s1)
+; RV32IXQCCMP-NEXT:    sw s6, 12(s1)
+; RV32IXQCCMP-NEXT:    sw s5, 8(s1)
+; RV32IXQCCMP-NEXT:    sw s4, 4(s1)
+; RV32IXQCCMP-NEXT:    sw s3, 0(s1)
+; RV32IXQCCMP-NEXT:    mv a0, s2
 ; RV32IXQCCMP-NEXT:    addi sp, s0, -48
 ; RV32IXQCCMP-NEXT:    .cfi_def_cfa sp, 48
-; RV32IXQCCMP-NEXT:    qc.cm.pop {ra, s0-s8}, 48
+; RV32IXQCCMP-NEXT:    qc.cm.pop {ra, s0-s7}, 48
 ; RV32IXQCCMP-NEXT:    .cfi_restore ra
 ; RV32IXQCCMP-NEXT:    .cfi_restore s0
 ; RV32IXQCCMP-NEXT:    .cfi_restore s1
@@ -731,13 +729,12 @@ define i32 @nocompress(i32 signext %size) {
 ; RV32IXQCCMP-NEXT:    .cfi_restore s5
 ; RV32IXQCCMP-NEXT:    .cfi_restore s6
 ; RV32IXQCCMP-NEXT:    .cfi_restore s7
-; RV32IXQCCMP-NEXT:    .cfi_restore s8
 ; RV32IXQCCMP-NEXT:    .cfi_def_cfa_offset 0
 ; RV32IXQCCMP-NEXT:    tail callee
 ;
 ; RV64IXQCCMP-LABEL: nocompress:
 ; RV64IXQCCMP:       # %bb.0: # %entry
-; RV64IXQCCMP-NEXT:    qc.cm.pushfp {ra, s0-s8}, -80
+; RV64IXQCCMP-NEXT:    qc.cm.pushfp {ra, s0-s7}, -80
 ; RV64IXQCCMP-NEXT:    .cfi_def_cfa_offset 80
 ; RV64IXQCCMP-NEXT:    .cfi_offset ra, -8
 ; RV64IXQCCMP-NEXT:    .cfi_offset s0, -16
@@ -748,33 +745,31 @@ define i32 @nocompress(i32 signext %size) {
 ; RV64IXQCCMP-NEXT:    .cfi_offset s5, -56
 ; RV64IXQCCMP-NEXT:    .cfi_offset s6, -64
 ; RV64IXQCCMP-NEXT:    .cfi_offset s7, -72
-; RV64IXQCCMP-NEXT:    .cfi_offset s8, -80
 ; RV64IXQCCMP-NEXT:    .cfi_def_cfa s0, 0
 ; RV64IXQCCMP-NEXT:    slli a0, a0, 32
 ; RV64IXQCCMP-NEXT:    srli a0, a0, 32
 ; RV64IXQCCMP-NEXT:    addi a0, a0, 15
 ; RV64IXQCCMP-NEXT:    andi a0, a0, -16
-; RV64IXQCCMP-NEXT:    sub s3, sp, a0
-; RV64IXQCCMP-NEXT:    mv sp, s3
-; RV64IXQCCMP-NEXT:    lui s2, %hi(var)
+; RV64IXQCCMP-NEXT:    sub s2, sp, a0
+; RV64IXQCCMP-NEXT:    mv sp, s2
 ; RV64IXQCCMP-NEXT:    lui s1, %hi(var)
 ; RV64IXQCCMP-NEXT:    addi s1, s1, %lo(var)
-; RV64IXQCCMP-NEXT:    lw s4, %lo(var)(s2)
-; RV64IXQCCMP-NEXT:    lw s5, 4(s1)
-; RV64IXQCCMP-NEXT:    lw s6, 8(s1)
-; RV64IXQCCMP-NEXT:    lw s7, 12(s1)
-; RV64IXQCCMP-NEXT:    lw s8, 16(s1)
-; RV64IXQCCMP-NEXT:    mv a0, s3
+; RV64IXQCCMP-NEXT:    lw s3, 0(s1)
+; RV64IXQCCMP-NEXT:    lw s4, 4(s1)
+; RV64IXQCCMP-NEXT:    lw s5, 8(s1)
+; RV64IXQCCMP-NEXT:    lw s6, 12(s1)
+; RV64IXQCCMP-NEXT:    lw s7, 16(s1)
+; RV64IXQCCMP-NEXT:    mv a0, s2
 ; RV64IXQCCMP-NEXT:    call callee_void
-; RV64IXQCCMP-NEXT:    sw s8, 16(s1)
-; RV64IXQCCMP-NEXT:    sw s7, 12(s1)
-; RV64IXQCCMP-NEXT:    sw s6, 8(s1)
-; RV64IXQCCMP-NEXT:    sw s5, 4(s1)
-; RV64IXQCCMP-NEXT:    sw s4, %lo(var)(s2)
-; RV64IXQCCMP-NEXT:    mv a0, s3
+; RV64IXQCCMP-NEXT:    sw s7, 16(s1)
+; RV64IXQCCMP-NEXT:    sw s6, 12(s1)
+; RV64IXQCCMP-NEXT:    sw s5, 8(s1)
+; RV64IXQCCMP-NEXT:    sw s4, 4(s1)
+; RV64IXQCCMP-NEXT:    sw s3, 0(s1)
+; RV64IXQCCMP-NEXT:    mv a0, s2
 ; RV64IXQCCMP-NEXT:    addi sp, s0, -80
 ; RV64IXQCCMP-NEXT:    .cfi_def_cfa sp, 80
-; RV64IXQCCMP-NEXT:    qc.cm.pop {ra, s0-s8}, 80
+; RV64IXQCCMP-NEXT:    qc.cm.pop {ra, s0-s7}, 80
 ; RV64IXQCCMP-NEXT:    .cfi_restore ra
 ; RV64IXQCCMP-NEXT:    .cfi_restore s0
 ; RV64IXQCCMP-NEXT:    .cfi_restore s1
@@ -784,13 +779,12 @@ define i32 @nocompress(i32 signext %size) {
 ; RV64IXQCCMP-NEXT:    .cfi_restore s5
 ; RV64IXQCCMP-NEXT:    .cfi_restore s6
 ; RV64IXQCCMP-NEXT:    .cfi_restore s7
-; RV64IXQCCMP-NEXT:    .cfi_restore s8
 ; RV64IXQCCMP-NEXT:    .cfi_def_cfa_offset 0
 ; RV64IXQCCMP-NEXT:    tail callee
 ;
 ; RV32IXQCCMP-FP-LABEL: nocompress:
 ; RV32IXQCCMP-FP:       # %bb.0: # %entry
-; RV32IXQCCMP-FP-NEXT:    qc.cm.pushfp {ra, s0-s8}, -48
+; RV32IXQCCMP-FP-NEXT:    qc.cm.pushfp {ra, s0-s7}, -48
 ; RV32IXQCCMP-FP-NEXT:    .cfi_def_cfa_offset 48
 ; RV32IXQCCMP-FP-NEXT:    .cfi_offset ra, -4
 ; RV32IXQCCMP-FP-NEXT:    .cfi_offset s0, -8
@@ -801,31 +795,29 @@ define i32 @nocompress(i32 signext %size) {
 ; RV32IXQCCMP-FP-NEXT:    .cfi_offset s5, -28
 ; RV32IXQCCMP-FP-NEXT:    .cfi_offset s6, -32
 ; RV32IXQCCMP-FP-NEXT:    .cfi_offset s7, -36
-; RV32IXQCCMP-FP-NEXT:    .cfi_offset s8, -40
 ; RV32IXQCCMP-FP-NEXT:    .cfi_def_cfa s0, 0
 ; RV32IXQCCMP-FP-NEXT:    addi a0, a0, 15
 ; RV32IXQCCMP-FP-NEXT:    andi a0, a0, -16
-; RV32IXQCCMP-FP-NEXT:    sub s3, sp, a0
-; RV32IXQCCMP-FP-NEXT:    mv sp, s3
-; RV32IXQCCMP-FP-NEXT:    lui s2, %hi(var)
+; RV32IXQCCMP-FP-NEXT:    sub s2, sp, a0
+; RV32IXQCCMP-FP-NEXT:    mv sp, s2
 ; RV32IXQCCMP-FP-NEXT:    lui s1, %hi(var)
 ; RV32IXQCCMP-FP-NEXT:    addi s1, s1, %lo(var)
-; RV32IXQCCMP-FP-NEXT:    lw s4, %lo(var)(s2)
-; RV32IXQCCMP-FP-NEXT:    lw s5, 4(s1)
-; RV32IXQCCMP-FP-NEXT:    lw s6, 8(s1)
-; RV32IXQCCMP-FP-NEXT:    lw s7, 12(s1)
-; RV32IXQCCMP-FP-NEXT:    lw s8, 16(s1)
-; RV32IXQCCMP-FP-NEXT:    mv a0, s3
+; RV32IXQCCMP-FP-NEXT:    lw s3, 0(s1)
+; RV32IXQCCMP-FP-NEXT:    lw s4, 4(s1)
+; RV32IXQCCMP-FP-NEXT:    lw s5, 8(s1)
+; RV32IXQCCMP-FP-NEXT:    lw s6, 12(s1)
+; RV32IXQCCMP-FP-NEXT:    lw s7, 16(s1)
+; RV32IXQCCMP-FP-NEXT:    mv a0, s2
 ; RV32IXQCCMP-FP-NEXT:    call callee_void
-; RV32IXQCCMP-FP-NEXT:    sw s8, 16(s1)
-; RV32IXQCCMP-FP-NEXT:    sw s7, 12(s1)
-; RV32IXQCCMP-FP-NEXT:    sw s6, 8(s1)
-; RV32IXQCCMP-FP-NEXT:    sw s5, 4(s1)
-; RV32IXQCCMP-FP-NEXT:    sw s4, %lo(var)(s2)
-; RV32IXQCCMP-FP-NEXT:    mv a0, s3
+; RV32IXQCCMP-FP-NEXT:    sw s7, 16(s1)
+; RV32IXQCCMP-FP-NEXT:    sw s6, 12(s1)
+; RV32IXQCCMP-FP-NEXT:    sw s5, 8(s1)
+; RV32IXQCCMP-FP-NEXT:    sw s4, 4(s1)
+; RV32IXQCCMP-FP-NEXT:    sw s3, 0(s1)
+; RV32IXQCCMP-FP-NEXT:    mv a0, s2
 ; RV32IXQCCMP-FP-NEXT:    addi sp, s0, -48
 ; RV32IXQCCMP-FP-NEXT:    .cfi_def_cfa sp, 48
-; RV32IXQCCMP-FP-NEXT:    qc.cm.pop {ra, s0-s8}, 48
+; RV32IXQCCMP-FP-NEXT:    qc.cm.pop {ra, s0-s7}, 48
 ; RV32IXQCCMP-FP-NEXT:    .cfi_restore ra
 ; RV32IXQCCMP-FP-NEXT:    .cfi_restore s0
 ; RV32IXQCCMP-FP-NEXT:    .cfi_restore s1
@@ -835,13 +827,12 @@ define i32 @nocompress(i32 signext %size) {
 ; RV32IXQCCMP-FP-NEXT:    .cfi_restore s5
 ; RV32IXQCCMP-FP-NEXT:    .cfi_restore s6
 ; RV32IXQCCMP-FP-NEXT:    .cfi_restore s7
-; RV32IXQCCMP-FP-NEXT:    .cfi_restore s8
 ; RV32IXQCCMP-FP-NEXT:    .cfi_def_cfa_offset 0
 ; RV32IXQCCMP-FP-NEXT:    tail callee
 ;
 ; RV64IXQCCMP-FP-LABEL: nocompress:
 ; RV64IXQCCMP-FP:       # %bb.0: # %entry
-; RV64IXQCCMP-FP-NEXT:    qc.cm.pushfp {ra, s0-s8}, -80
+; RV64IXQCCMP-FP-NEXT:    qc.cm.pushfp {ra, s0-s7}, -80
 ; RV64IXQCCMP-FP-NEXT:    .cfi_def_cfa_offset 80
 ; RV64IXQCCMP-FP-NEXT:    .cfi_offset ra, -8
 ; RV64IXQCCMP-FP-NEXT:    .cfi_offset s0, -16
@@ -852,33 +843,31 @@ define i32 @nocompress(i32 signext %size) {
 ; RV64IXQCCMP-FP-NEXT:    .cfi_offset s5, -56
 ; RV64IXQCCMP-FP-NEXT:    .cfi_offset s6, -64
 ; RV64IXQCCMP-FP-NEXT:    .cfi_offset s7, -72
-; RV64IXQCCMP-FP-NEXT:    .cfi_offset s8, -80
 ; RV64IXQCCMP-FP-NEXT:    .cfi_def_cfa s0, 0
 ; RV64IXQCCMP-FP-NEXT:    slli a0, a0, 32
 ; RV64IXQCCMP-FP-NEXT:    srli a0, a0, 32
 ; RV64IXQCCMP-FP-NEXT:    addi a0, a0, 15
 ; RV64IXQCCMP-FP-NEXT:    andi a0, a0, -16
-; RV64IXQCCMP-FP-NEXT:    sub s3, sp, a0
-; RV64IXQCCMP-FP-NEXT:    mv sp, s3
-; RV64IXQCCMP-FP-NEXT:    lui s2, %hi(var)
+; RV64IXQCCMP-FP-NEXT:    sub s2, sp, a0
+; RV64IXQCCMP-FP-NEXT:    mv sp, s2
 ; RV64IXQCCMP-FP-NEXT:    lui s1, %hi(var)
 ; RV64IXQCCMP-FP-NEXT:    addi s1, s1, %lo(var)
-; RV64IXQCCMP-FP-NEXT:    lw s4, %lo(var)(s2)
-; RV64IXQCCMP-FP-NEXT:    lw s5, 4(s1)
-; RV64IXQCCMP-FP-NEXT:    lw s6, 8(s1)
-; RV64IXQCCMP-FP-NEXT:    lw s7, 12(s1)
-; RV64IXQCCMP-FP-NEXT:    lw s8, 16(s1)
-; RV64IXQCCMP-FP-NEXT:    mv a0, s3
+; RV64IXQCCMP-FP-NEXT:    lw s3, 0(s1)
+; RV64IXQCCMP-FP-NEXT:    lw s4, 4(s1)
+; RV64IXQCCMP-FP-NEXT:    lw s5, 8(s1)
+; RV64IXQCCMP-FP-NEXT:    lw s6, 12(s1)
+; RV64IXQCCMP-FP-NEXT:    lw s7, 16(s1)
+; RV64IXQCCMP-FP-NEXT:    mv a0, s2
 ; RV64IXQCCMP-FP-NEXT:    call callee_void
-; RV64IXQCCMP-FP-NEXT:    sw s8, 16(s1)
-; RV64IXQCCMP-FP-NEXT:    sw s7, 12(s1)
-; RV64IXQCCMP-FP-NEXT:    sw s6, 8(s1)
-; RV64IXQCCMP-FP-NEXT:    sw s5, 4(s1)
-; RV64IXQCCMP-FP-NEXT:    sw s4, %lo(var)(s2)
-; RV64IXQCCMP-FP-NEXT:    mv a0, s3
+; RV64IXQCCMP-FP-NEXT:    sw s7, 16(s1)
+; RV64IXQCCMP-FP-NEXT:    sw s6, 12(s1)
+; RV64IXQCCMP-FP-NEXT:    sw s5, 8(s1)
+; RV64IXQCCMP-FP-NEXT:    sw s4, 4(s1)
+; RV64IXQCCMP-FP-NEXT:    sw s3, 0(s1)
+; RV64IXQCCMP-FP-NEXT:    mv a0, s2
 ; RV64IXQCCMP-FP-NEXT:    addi sp, s0, -80
 ; RV64IXQCCMP-FP-NEXT:    .cfi_def_cfa sp, 80
-; RV64IXQCCMP-FP-NEXT:    qc.cm.pop {ra, s0-s8}, 80
+; RV64IXQCCMP-FP-NEXT:    qc.cm.pop {ra, s0-s7}, 80
 ; RV64IXQCCMP-FP-NEXT:    .cfi_restore ra
 ; RV64IXQCCMP-FP-NEXT:    .cfi_restore s0
 ; RV64IXQCCMP-FP-NEXT:    .cfi_restore s1
@@ -888,13 +877,12 @@ define i32 @nocompress(i32 signext %size) {
 ; RV64IXQCCMP-FP-NEXT:    .cfi_restore s5
 ; RV64IXQCCMP-FP-NEXT:    .cfi_restore s6
 ; RV64IXQCCMP-FP-NEXT:    .cfi_restore s7
-; RV64IXQCCMP-FP-NEXT:    .cfi_restore s8
 ; RV64IXQCCMP-FP-NEXT:    .cfi_def_cfa_offset 0
 ; RV64IXQCCMP-FP-NEXT:    tail callee
 ;
 ; RV32IXQCCMP-SR-LABEL: nocompress:
 ; RV32IXQCCMP-SR:       # %bb.0: # %entry
-; RV32IXQCCMP-SR-NEXT:    qc.cm.pushfp {ra, s0-s8}, -48
+; RV32IXQCCMP-SR-NEXT:    qc.cm.pushfp {ra, s0-s7}, -48
 ; RV32IXQCCMP-SR-NEXT:    .cfi_def_cfa_offset 48
 ; RV32IXQCCMP-SR-NEXT:    .cfi_offset ra, -4
 ; RV32IXQCCMP-SR-NEXT:    .cfi_offset s0, -8
@@ -905,31 +893,29 @@ define i32 @nocompress(i32 signext %size) {
 ; RV32IXQCCMP-SR-NEXT:    .cfi_offset s5, -28
 ; RV32IXQCCMP-SR-NEXT:    .cfi_offset s6, -32
 ; RV32IXQCCMP-SR-NEXT:    .cfi_offset s7, -36
-; RV32IXQCCMP-SR-NEXT:    .cfi_offset s8, -40
 ; RV32IXQCCMP-SR-NEXT:    .cfi_def_cfa s0, 0
 ; RV32IXQCCMP-SR-NEXT:    addi a0, a0, 15
 ; RV32IXQCCMP-SR-NEXT:    andi a0, a0, -16
-; RV32IXQCCMP-SR-NEXT:    sub s3, sp, a0
-; RV32IXQCCMP-SR-NEXT:    mv sp, s3
-; RV32IXQCCMP-SR-NEXT:    lui s2, %hi(var)
+; RV32IXQCCMP-SR-NEXT:    sub s2, sp, a0
+; RV32IXQCCMP-SR-NEXT:    mv sp, s2
 ; RV32IXQCCMP-SR-NEXT:    lui s1, %hi(var)
 ; RV32IXQCCMP-SR-NEXT:    addi s1, s1, %lo(var)
-; RV32IXQCCMP-SR-NEXT:    lw s4, %lo(var)(s2)
-; RV32IXQCCMP-SR-NEXT:    lw s5, 4(s1)
-; RV32IXQCCMP-SR-NEXT:    lw s6, 8(s1)
-; RV32IXQCCMP-SR-NEXT:    lw s7, 12(s1)
-; RV32IXQCCMP-SR-NEXT:    lw s8, 16(s1)
-; RV32IXQCCMP-SR-NEXT:    mv a0, s3
+; RV32IXQCCMP-SR-NEXT:    lw s3, 0(s1)
+; RV32IXQCCMP-SR-NEXT:    lw s4, 4(s1)
+; RV32IXQCCMP-SR-NEXT:    lw s5, 8(s1)
+; RV32IXQCCMP-SR-NEXT:    lw s6, 12(s1)
+; RV32IXQCCMP-SR-NEXT:    lw s7, 16(s1)
+; RV32IXQCCMP-SR-NEXT:    mv a0, s2
 ; RV32IXQCCMP-SR-NEXT:    call callee_void
-; RV32IXQCCMP-SR-NEXT:    sw s8, 16(s1)
-; RV32IXQCCMP-SR-NEXT:    sw s7, 12(s1)
-; RV32IXQCCMP-SR-NEXT:    sw s6, 8(s1)
-; RV32IXQCCMP-SR-NEXT:    sw s5, 4(s1)
-; RV32IXQCCMP-SR-NEXT:    sw s4, %lo(var)(s2)
-; RV32IXQCCMP-SR-NEXT:    mv a0, s3
+; RV32IXQCCMP-SR-NEXT:    sw s7, 16(s1)
+; RV32IXQCCMP-SR-NEXT:    sw s6, 12(s1)
+; RV32IXQCCMP-SR-NEXT:    sw s5, 8(s1)
+; RV32IXQCCMP-SR-NEXT:    sw s4, 4(s1)
+; RV32IXQCCMP-SR-NEXT:    sw s3, 0(s1)
+; RV32IXQCCMP-SR-NEXT:    mv a0, s2
 ; RV32IXQCCMP-SR-NEXT:    addi sp, s0, -48
 ; RV32IXQCCMP-SR-NEXT:    .cfi_def_cfa sp, 48
-; RV32IXQCCMP-SR-NEXT:    qc.cm.pop {ra, s0-s8}, 48
+; RV32IXQCCMP-SR-NEXT:    qc.cm.pop {ra, s0-s7}, 48
 ; RV32IXQCCMP-SR-NEXT:    .cfi_restore ra
 ; RV32IXQCCMP-SR-NEXT:    .cfi_restore s0
 ; RV32IXQCCMP-SR-NEXT:    .cfi_restore s1
@@ -939,13 +925,12 @@ define i32 @nocompress(i32 signext %size) {
 ; RV32IXQCCMP-SR-NEXT:    .cfi_restore s5
 ; RV32IXQCCMP-SR-NEXT:    .cfi_restore s6
 ; RV32IXQCCMP-SR-NEXT:    .cfi_restore s7
-; RV32IXQCCMP-SR-NEXT:    .cfi_restore s8
 ; RV32IXQCCMP-SR-NEXT:    .cfi_def_cfa_offset 0
 ; RV32IXQCCMP-SR-NEXT:    tail callee
 ;
 ; RV64IXQCCMP-SR-LABEL: nocompress:
 ; RV64IXQCCMP-SR:       # %bb.0: # %entry
-; RV64IXQCCMP-SR-NEXT:    qc.cm.pushfp {ra, s0-s8}, -80
+; RV64IXQCCMP-SR-NEXT:    qc.cm.pushfp {ra, s0-s7}, -80
 ; RV64IXQCCMP-SR-NEXT:    .cfi_def_cfa_offset 80
 ; RV64IXQCCMP-SR-NEXT:    .cfi_offset ra, -8
 ; RV64IXQCCMP-SR-NEXT:    .cfi_offset s0, -16
@@ -956,33 +941,31 @@ define i32 @nocompress(i32 signext %size) {
 ; RV64IXQCCMP-SR-NEXT:    .cfi_offset s5, -56
 ; RV64IXQCCMP-SR-NEXT:    .cfi_offset s6, -64
 ; RV64IXQCCMP-SR-NEXT:    .cfi_offset s7, -72
-; RV64IXQCCMP-SR-NEXT:    .cfi_offset s8, -80
 ; RV64IXQCCMP-SR-NEXT:    .cfi_def_cfa s0, 0
 ; RV64IXQCCMP-SR-NEXT:    slli a0, a0, 32
 ; RV64IXQCCMP-SR-NEXT:    srli a0, a0, 32
 ; RV64IXQCCMP-SR-NEXT:    addi a0, a0, 15
 ; RV64IXQCCMP-SR-NEXT:    andi a0, a0, -16
-; RV64IXQCCMP-SR-NEXT:    sub s3, sp, a0
-; RV64IXQCCMP-SR-NEXT:    mv sp, s3
-; RV64IXQCCMP-SR-NEXT:    lui s2, %hi(var)
+; RV64IXQCCMP-SR-NEXT:    sub s2, sp, a0
+; RV64IXQCCMP-SR-NEXT:    mv sp, s2
 ; RV64IXQCCMP-SR-NEXT:    lui s1, %hi(var)
 ; RV64IXQCCMP-SR-NEXT:    addi s1, s1, %lo(var)
-; RV64IXQCCMP-SR-NEXT:    lw s4, %lo(var)(s2)
-; RV64IXQCCMP-SR-NEXT:    lw s5, 4(s1)
-; RV64IXQCCMP-SR-NEXT:    lw s6, 8(s1)
-; RV64IXQCCMP-SR-NEXT:    lw s7, 12(s1)
-; RV64IXQCCMP-SR-NEXT:    lw s8, 16(s1)
-; RV64IXQCCMP-SR-NEXT:    mv a0, s3
+; RV64IXQCCMP-SR-NEXT:    lw s3, 0(s1)
+; RV64IXQCCMP-SR-NEXT:    lw s4, 4(s1)
+; RV64IXQCCMP-SR-NEXT:    lw s5, 8(s1)
+; RV64IXQCCMP-SR-NEXT:    lw s6, 12(s1)
+; RV64IXQCCMP-SR-NEXT:    lw s7, 16(s1)
+; RV64IXQCCMP-SR-NEXT:    mv a0, s2
 ; RV64IXQCCMP-SR-NEXT:    call callee_void
-; RV64IXQCCMP-SR-NEXT:    sw s8, 16(s1)
-; RV64IXQCCMP-SR-NEXT:    sw s7, 12(s1)
-; RV64IXQCCMP-SR-NEXT:    sw s6, 8(s1)
-; RV64IXQCCMP-SR-NEXT:    sw s5, 4(s1)
-; RV64IXQCCMP-SR-NEXT:    sw s4, %lo(var)(s2)
-; RV64IXQCCMP-SR-NEXT:    mv a0, s3
+; RV64IXQCCMP-SR-NEXT:    sw s7, 16(s1)
+; RV64IXQCCMP-SR-NEXT:    sw s6, 12(s1)
+; RV64IXQCCMP-SR-NEXT:    sw s5, 8(s1)
+; RV64IXQCCMP-SR-NEXT:    sw s4, 4(s1)
+; RV64IXQCCMP-SR-NEXT:    sw s3, 0(s1)
+; RV64IXQCCMP-SR-NEXT:    mv a0, s2
 ; RV64IXQCCMP-SR-NEXT:    addi sp, s0, -80
 ; RV64IXQCCMP-SR-NEXT:    .cfi_def_cfa sp, 80
-; RV64IXQCCMP-SR-NEXT:    qc.cm.pop {ra, s0-s8}, 80
+; RV64IXQCCMP-SR-NEXT:    qc.cm.pop {ra, s0-s7}, 80
 ; RV64IXQCCMP-SR-NEXT:    .cfi_restore ra
 ; RV64IXQCCMP-SR-NEXT:    .cfi_restore s0
 ; RV64IXQCCMP-SR-NEXT:    .cfi_restore s1
@@ -992,7 +975,6 @@ define i32 @nocompress(i32 signext %size) {
 ; RV64IXQCCMP-SR-NEXT:    .cfi_restore s5
 ; RV64IXQCCMP-SR-NEXT:    .cfi_restore s6
 ; RV64IXQCCMP-SR-NEXT:    .cfi_restore s7
-; RV64IXQCCMP-SR-NEXT:    .cfi_restore s8
 ; RV64IXQCCMP-SR-NEXT:    .cfi_def_cfa_offset 0
 ; RV64IXQCCMP-SR-NEXT:    tail callee
 entry:
@@ -1154,107 +1136,103 @@ define i32 @varargs(ptr %fmt, ...) {
 define void @many_args(i32, i32, i32, i32, i32, i32, i32, i32, i32) {
 ; RV32IXQCCMP-LABEL: many_args:
 ; RV32IXQCCMP:       # %bb.0: # %entry
-; RV32IXQCCMP-NEXT:    qc.cm.push {ra, s0-s4}, -32
+; RV32IXQCCMP-NEXT:    qc.cm.push {ra, s0-s3}, -32
 ; RV32IXQCCMP-NEXT:    .cfi_def_cfa_offset 32
 ; RV32IXQCCMP-NEXT:    .cfi_offset s0, -8
 ; RV32IXQCCMP-NEXT:    .cfi_offset s1, -12
 ; RV32IXQCCMP-NEXT:    .cfi_offset s2, -16
 ; RV32IXQCCMP-NEXT:    .cfi_offset s3, -20
-; RV32IXQCCMP-NEXT:    .cfi_offset s4, -24
-; RV32IXQCCMP-NEXT:    lui a6, %hi(var0)
-; RV32IXQCCMP-NEXT:    lui a1, %hi(var0)
-; RV32IXQCCMP-NEXT:    addi a1, a1, %lo(var0)
-; RV32IXQCCMP-NEXT:    lw a7, %lo(var0)(a6)
-; RV32IXQCCMP-NEXT:    lw t0, 4(a1)
-; RV32IXQCCMP-NEXT:    lw t1, 8(a1)
-; RV32IXQCCMP-NEXT:    lw t2, 12(a1)
-; RV32IXQCCMP-NEXT:    lw t3, 16(a1)
-; RV32IXQCCMP-NEXT:    lw t4, 20(a1)
-; RV32IXQCCMP-NEXT:    lw t5, 24(a1)
-; RV32IXQCCMP-NEXT:    lw t6, 28(a1)
-; RV32IXQCCMP-NEXT:    lw s2, 32(a1)
-; RV32IXQCCMP-NEXT:    lw s3, 52(a1)
-; RV32IXQCCMP-NEXT:    lw a2, 56(a1)
-; RV32IXQCCMP-NEXT:    lw a3, 60(a1)
-; RV32IXQCCMP-NEXT:    lw a4, 64(a1)
-; RV32IXQCCMP-NEXT:    lw s0, 68(a1)
-; RV32IXQCCMP-NEXT:    lw s4, 36(a1)
-; RV32IXQCCMP-NEXT:    lw a5, 40(a1)
-; RV32IXQCCMP-NEXT:    lw a0, 44(a1)
-; RV32IXQCCMP-NEXT:    lw s1, 48(a1)
-; RV32IXQCCMP-NEXT:    sw s0, 68(a1)
-; RV32IXQCCMP-NEXT:    sw a4, 64(a1)
-; RV32IXQCCMP-NEXT:    sw a3, 60(a1)
-; RV32IXQCCMP-NEXT:    sw a2, 56(a1)
-; RV32IXQCCMP-NEXT:    sw s3, 52(a1)
-; RV32IXQCCMP-NEXT:    sw s1, 48(a1)
-; RV32IXQCCMP-NEXT:    sw a0, 44(a1)
-; RV32IXQCCMP-NEXT:    sw a5, 40(a1)
-; RV32IXQCCMP-NEXT:    sw s4, 36(a1)
-; RV32IXQCCMP-NEXT:    sw s2, 32(a1)
-; RV32IXQCCMP-NEXT:    sw t6, 28(a1)
-; RV32IXQCCMP-NEXT:    sw t5, 24(a1)
-; RV32IXQCCMP-NEXT:    sw t4, 20(a1)
-; RV32IXQCCMP-NEXT:    sw t3, 16(a1)
-; RV32IXQCCMP-NEXT:    sw t2, 12(a1)
-; RV32IXQCCMP-NEXT:    sw t1, 8(a1)
-; RV32IXQCCMP-NEXT:    sw t0, 4(a1)
-; RV32IXQCCMP-NEXT:    sw a7, %lo(var0)(a6)
-; RV32IXQCCMP-NEXT:    qc.cm.popret {ra, s0-s4}, 32
+; RV32IXQCCMP-NEXT:    lui a0, %hi(var0)
+; RV32IXQCCMP-NEXT:    addi a0, a0, %lo(var0)
+; RV32IXQCCMP-NEXT:    lw a6, 0(a0)
+; RV32IXQCCMP-NEXT:    lw a7, 4(a0)
+; RV32IXQCCMP-NEXT:    lw t0, 8(a0)
+; RV32IXQCCMP-NEXT:    lw t1, 12(a0)
+; RV32IXQCCMP-NEXT:    lw t2, 16(a0)
+; RV32IXQCCMP-NEXT:    lw t3, 20(a0)
+; RV32IXQCCMP-NEXT:    lw t4, 24(a0)
+; RV32IXQCCMP-NEXT:    lw t5, 28(a0)
+; RV32IXQCCMP-NEXT:    lw t6, 48(a0)
+; RV32IXQCCMP-NEXT:    lw s2, 52(a0)
+; RV32IXQCCMP-NEXT:    lw a1, 56(a0)
+; RV32IXQCCMP-NEXT:    lw a2, 60(a0)
+; RV32IXQCCMP-NEXT:    lw a3, 64(a0)
+; RV32IXQCCMP-NEXT:    lw a4, 68(a0)
+; RV32IXQCCMP-NEXT:    lw s3, 32(a0)
+; RV32IXQCCMP-NEXT:    lw s1, 36(a0)
+; RV32IXQCCMP-NEXT:    lw a5, 40(a0)
+; RV32IXQCCMP-NEXT:    lw s0, 44(a0)
+; RV32IXQCCMP-NEXT:    sw a4, 68(a0)
+; RV32IXQCCMP-NEXT:    sw a3, 64(a0)
+; RV32IXQCCMP-NEXT:    sw a2, 60(a0)
+; RV32IXQCCMP-NEXT:    sw a1, 56(a0)
+; RV32IXQCCMP-NEXT:    sw s2, 52(a0)
+; RV32IXQCCMP-NEXT:    sw t6, 48(a0)
+; RV32IXQCCMP-NEXT:    sw s0, 44(a0)
+; RV32IXQCCMP-NEXT:    sw a5, 40(a0)
+; RV32IXQCCMP-NEXT:    sw s1, 36(a0)
+; RV32IXQCCMP-NEXT:    sw s3, 32(a0)
+; RV32IXQCCMP-NEXT:    sw t5, 28(a0)
+; RV32IXQCCMP-NEXT:    sw t4, 24(a0)
+; RV32IXQCCMP-NEXT:    sw t3, 20(a0)
+; RV32IXQCCMP-NEXT:    sw t2, 16(a0)
+; RV32IXQCCMP-NEXT:    sw t1, 12(a0)
+; RV32IXQCCMP-NEXT:    sw t0, 8(a0)
+; RV32IXQCCMP-NEXT:    sw a7, 4(a0)
+; RV32IXQCCMP-NEXT:    sw a6, 0(a0)
+; RV32IXQCCMP-NEXT:    qc.cm.popret {ra, s0-s3}, 32
 ;
 ; RV64IXQCCMP-LABEL: many_args:
 ; RV64IXQCCMP:       # %bb.0: # %entry
-; RV64IXQCCMP-NEXT:    qc.cm.push {ra, s0-s4}, -48
+; RV64IXQCCMP-NEXT:    qc.cm.push {ra, s0-s3}, -48
 ; RV64IXQCCMP-NEXT:    .cfi_def_cfa_offset 48
 ; RV64IXQCCMP-NEXT:    .cfi_offset s0, -16
 ; RV64IXQCCMP-NEXT:    .cfi_offset s1, -24
 ; RV64IXQCCMP-NEXT:    .cfi_offset s2, -32
 ; RV64IXQCCMP-NEXT:    .cfi_offset s3, -40
-; RV64IXQCCMP-NEXT:    .cfi_offset s4, -48
-; RV64IXQCCMP-NEXT:    lui a6, %hi(var0)
-; RV64IXQCCMP-NEXT:    lui a1, %hi(var0)
-; RV64IXQCCMP-NEXT:    addi a1, a1, %lo(var0)
-; RV64IXQCCMP-NEXT:    lw a7, %lo(var0)(a6)
-; RV64IXQCCMP-NEXT:    lw t0, 4(a1)
-; RV64IXQCCMP-NEXT:    lw t1, 8(a1)
-; RV64IXQCCMP-NEXT:    lw t2, 12(a1)
-; RV64IXQCCMP-NEXT:    lw t3, 16(a1)
-; RV64IXQCCMP-NEXT:    lw t4, 20(a1)
-; RV64IXQCCMP-NEXT:    lw t5, 24(a1)
-; RV64IXQCCMP-NEXT:    lw t6, 28(a1)
-; RV64IXQCCMP-NEXT:    lw s2, 32(a1)
-; RV64IXQCCMP-NEXT:    lw s3, 52(a1)
-; RV64IXQCCMP-NEXT:    lw a2, 56(a1)
-; RV64IXQCCMP-NEXT:    lw a3, 60(a1)
-; RV64IXQCCMP-NEXT:    lw a4, 64(a1)
-; RV64IXQCCMP-NEXT:    lw s0, 68(a1)
-; RV64IXQCCMP-NEXT:    lw s4, 36(a1)
-; RV64IXQCCMP-NEXT:    lw a5, 40(a1)
-; RV64IXQCCMP-NEXT:    lw a0, 44(a1)
-; RV64IXQCCMP-NEXT:    lw s1, 48(a1)
-; RV64IXQCCMP-NEXT:    sw s0, 68(a1)
-; RV64IXQCCMP-NEXT:    sw a4, 64(a1)
-; RV64IXQCCMP-NEXT:    sw a3, 60(a1)
-; RV64IXQCCMP-NEXT:    sw a2, 56(a1)
-; RV64IXQCCMP-NEXT:    sw s3, 52(a1)
-; RV64IXQCCMP-NEXT:    sw s1, 48(a1)
-; RV64IXQCCMP-NEXT:    sw a0, 44(a1)
-; RV64IXQCCMP-NEXT:    sw a5, 40(a1)
-; RV64IXQCCMP-NEXT:    sw s4, 36(a1)
-; RV64IXQCCMP-NEXT:    sw s2, 32(a1)
-; RV64IXQCCMP-NEXT:    sw t6, 28(a1)
-; RV64IXQCCMP-NEXT:    sw t5, 24(a1)
-; RV64IXQCCMP-NEXT:    sw t4, 20(a1)
-; RV64IXQCCMP-NEXT:    sw t3, 16(a1)
-; RV64IXQCCMP-NEXT:    sw t2, 12(a1)
-; RV64IXQCCMP-NEXT:    sw t1, 8(a1)
-; RV64IXQCCMP-NEXT:    sw t0, 4(a1)
-; RV64IXQCCMP-NEXT:    sw a7, %lo(var0)(a6)
-; RV64IXQCCMP-NEXT:    qc.cm.popret {ra, s0-s4}, 48
+; RV64IXQCCMP-NEXT:    lui a0, %hi(var0)
+; RV64IXQCCMP-NEXT:    addi a0, a0, %lo(var0)
+; RV64IXQCCMP-NEXT:    lw a6, 0(a0)
+; RV64IXQCCMP-NEXT:    lw a7, 4(a0)
+; RV64IXQCCMP-NEXT:    lw t0, 8(a0)
+; RV64IXQCCMP-NEXT:    lw t1, 12(a0)
+; RV64IXQCCMP-NEXT:    lw t2, 16(a0)
+; RV64IXQCCMP-NEXT:    lw t3, 20(a0)
+; RV64IXQCCMP-NEXT:    lw t4, 24(a0)
+; RV64IXQCCMP-NEXT:    lw t5, 28(a0)
+; RV64IXQCCMP-NEXT:    lw t6, 48(a0)
+; RV64IXQCCMP-NEXT:    lw s2, 52(a0)
+; RV64IXQCCMP-NEXT:    lw a1, 56(a0)
+; RV64IXQCCMP-NEXT:    lw a2, 60(a0)
+; RV64IXQCCMP-NEXT:    lw a3, 64(a0)
+; RV64IXQCCMP-NEXT:    lw a4, 68(a0)
+; RV64IXQCCMP-NEXT:    lw s3, 32(a0)
+; RV64IXQCCMP-NEXT:    lw s1, 36(a0)
+; RV64IXQCCMP-NEXT:    lw a5, 40(a0)
+; RV64IXQCCMP-NEXT:    lw s0, 44(a0)
+; RV64IXQCCMP-NEXT:    sw a4, 68(a0)
+; RV64IXQCCMP-NEXT:    sw a3, 64(a0)
+; RV64IXQCCMP-NEXT:    sw a2, 60(a0)
+; RV64IXQCCMP-NEXT:    sw a1, 56(a0)
+; RV64IXQCCMP-NEXT:    sw s2, 52(a0)
+; RV64IXQCCMP-NEXT:    sw t6, 48(a0)
+; RV64IXQCCMP-NEXT:    sw s0, 44(a0)
+; RV64IXQCCMP-NEXT:    sw a5, 40(a0)
+; RV64IXQCCMP-NEXT:    sw s1, 36(a0)
+; RV64IXQCCMP-NEXT:    sw s3, 32(a0)
+; RV64IXQCCMP-NEXT:    sw t5, 28(a0)
+; RV64IXQCCMP-NEXT:    sw t4, 24(a0)
+; RV64IXQCCMP-NEXT:    sw t3, 20(a0)
+; RV64IXQCCMP-NEXT:    sw t2, 16(a0)
+; RV64IXQCCMP-NEXT:    sw t1, 12(a0)
+; RV64IXQCCMP-NEXT:    sw t0, 8(a0)
+; RV64IXQCCMP-NEXT:    sw a7, 4(a0)
+; RV64IXQCCMP-NEXT:    sw a6, 0(a0)
+; RV64IXQCCMP-NEXT:    qc.cm.popret {ra, s0-s3}, 48
 ;
 ; RV32IXQCCMP-FP-LABEL: many_args:
 ; RV32IXQCCMP-FP:       # %bb.0: # %entry
-; RV32IXQCCMP-FP-NEXT:    qc.cm.pushfp {ra, s0-s5}, -32
+; RV32IXQCCMP-FP-NEXT:    qc.cm.pushfp {ra, s0-s4}, -32
 ; RV32IXQCCMP-FP-NEXT:    .cfi_def_cfa_offset 32
 ; RV32IXQCCMP-FP-NEXT:    .cfi_offset ra, -4
 ; RV32IXQCCMP-FP-NEXT:    .cfi_offset s0, -8
@@ -1262,203 +1240,195 @@ define void @many_args(i32, i32, i32, i32, i32, i32, i32, i32, i32) {
 ; RV32IXQCCMP-FP-NEXT:    .cfi_offset s2, -16
 ; RV32IXQCCMP-FP-NEXT:    .cfi_offset s3, -20
 ; RV32IXQCCMP-FP-NEXT:    .cfi_offset s4, -24
-; RV32IXQCCMP-FP-NEXT:    .cfi_offset s5, -28
 ; RV32IXQCCMP-FP-NEXT:    .cfi_def_cfa s0, 0
-; RV32IXQCCMP-FP-NEXT:    lui a6, %hi(var0)
-; RV32IXQCCMP-FP-NEXT:    lui a1, %hi(var0)
-; RV32IXQCCMP-FP-NEXT:    addi a1, a1, %lo(var0)
-; RV32IXQCCMP-FP-NEXT:    lw a7, %lo(var0)(a6)
-; RV32IXQCCMP-FP-NEXT:    lw t0, 4(a1)
-; RV32IXQCCMP-FP-NEXT:    lw t1, 8(a1)
-; RV32IXQCCMP-FP-NEXT:    lw t2, 12(a1)
-; RV32IXQCCMP-FP-NEXT:    lw t3, 16(a1)
-; RV32IXQCCMP-FP-NEXT:    lw t4, 20(a1)
-; RV32IXQCCMP-FP-NEXT:    lw t5, 24(a1)
-; RV32IXQCCMP-FP-NEXT:    lw t6, 28(a1)
-; RV32IXQCCMP-FP-NEXT:    lw s2, 32(a1)
-; RV32IXQCCMP-FP-NEXT:    lw s3, 52(a1)
-; RV32IXQCCMP-FP-NEXT:    lw s5, 56(a1)
-; RV32IXQCCMP-FP-NEXT:    lw a3, 60(a1)
-; RV32IXQCCMP-FP-NEXT:    lw a4, 64(a1)
-; RV32IXQCCMP-FP-NEXT:    lw s1, 68(a1)
-; RV32IXQCCMP-FP-NEXT:    lw s4, 36(a1)
-; RV32IXQCCMP-FP-NEXT:    lw a0, 40(a1)
-; RV32IXQCCMP-FP-NEXT:    lw a5, 44(a1)
-; RV32IXQCCMP-FP-NEXT:    lw a2, 48(a1)
-; RV32IXQCCMP-FP-NEXT:    sw s1, 68(a1)
-; RV32IXQCCMP-FP-NEXT:    sw a4, 64(a1)
-; RV32IXQCCMP-FP-NEXT:    sw a3, 60(a1)
-; RV32IXQCCMP-FP-NEXT:    sw s5, 56(a1)
-; RV32IXQCCMP-FP-NEXT:    sw s3, 52(a1)
-; RV32IXQCCMP-FP-NEXT:    sw a2, 48(a1)
-; RV32IXQCCMP-FP-NEXT:    sw a5, 44(a1)
-; RV32IXQCCMP-FP-NEXT:    sw a0, 40(a1)
-; RV32IXQCCMP-FP-NEXT:    sw s4, 36(a1)
-; RV32IXQCCMP-FP-NEXT:    sw s2, 32(a1)
-; RV32IXQCCMP-FP-NEXT:    sw t6, 28(a1)
-; RV32IXQCCMP-FP-NEXT:    sw t5, 24(a1)
-; RV32IXQCCMP-FP-NEXT:    sw t4, 20(a1)
-; RV32IXQCCMP-FP-NEXT:    sw t3, 16(a1)
-; RV32IXQCCMP-FP-NEXT:    sw t2, 12(a1)
-; RV32IXQCCMP-FP-NEXT:    sw t1, 8(a1)
-; RV32IXQCCMP-FP-NEXT:    sw t0, 4(a1)
-; RV32IXQCCMP-FP-NEXT:    sw a7, %lo(var0)(a6)
+; RV32IXQCCMP-FP-NEXT:    lui a0, %hi(var0)
+; RV32IXQCCMP-FP-NEXT:    addi a0, a0, %lo(var0)
+; RV32IXQCCMP-FP-NEXT:    lw a6, 0(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a7, 4(a0)
+; RV32IXQCCMP-FP-NEXT:    lw t0, 8(a0)
+; RV32IXQCCMP-FP-NEXT:    lw t1, 12(a0)
+; RV32IXQCCMP-FP-NEXT:    lw t2, 16(a0)
+; RV32IXQCCMP-FP-NEXT:    lw t3, 20(a0)
+; RV32IXQCCMP-FP-NEXT:    lw t4, 24(a0)
+; RV32IXQCCMP-FP-NEXT:    lw t5, 28(a0)
+; RV32IXQCCMP-FP-NEXT:    lw t6, 48(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s2, 52(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s4, 56(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a2, 60(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a3, 64(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a4, 68(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s3, 32(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a5, 36(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s1, 40(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a1, 44(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a4, 68(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a3, 64(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a2, 60(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s4, 56(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s2, 52(a0)
+; RV32IXQCCMP-FP-NEXT:    sw t6, 48(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a1, 44(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s1, 40(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a5, 36(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s3, 32(a0)
+; RV32IXQCCMP-FP-NEXT:    sw t5, 28(a0)
+; RV32IXQCCMP-FP-NEXT:    sw t4, 24(a0)
+; RV32IXQCCMP-FP-NEXT:    sw t3, 20(a0)
+; RV32IXQCCMP-FP-NEXT:    sw t2, 16(a0)
+; RV32IXQCCMP-FP-NEXT:    sw t1, 12(a0)
+; RV32IXQCCMP-FP-NEXT:    sw t0, 8(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a7, 4(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a6, 0(a0)
 ; RV32IXQCCMP-FP-NEXT:    .cfi_def_cfa sp, 32
-; RV32IXQCCMP-FP-NEXT:    qc.cm.popret {ra, s0-s5}, 32
+; RV32IXQCCMP-FP-NEXT:    qc.cm.popret {ra, s0-s4}, 32
 ;
 ; RV64IXQCCMP-FP-LABEL: many_args:
 ; RV64IXQCCMP-FP:       # %bb.0: # %entry
-; RV64IXQCCMP-FP-NEXT:    qc.cm.pushfp {ra, s0-s5}, -64
-; RV64IXQCCMP-FP-NEXT:    .cfi_def_cfa_offset 64
+; RV64IXQCCMP-FP-NEXT:    qc.cm.pushfp {ra, s0-s4}, -48
+; RV64IXQCCMP-FP-NEXT:    .cfi_def_cfa_offset 48
 ; RV64IXQCCMP-FP-NEXT:    .cfi_offset ra, -8
 ; RV64IXQCCMP-FP-NEXT:    .cfi_offset s0, -16
 ; RV64IXQCCMP-FP-NEXT:    .cfi_offset s1, -24
 ; RV64IXQCCMP-FP-NEXT:    .cfi_offset s2, -32
 ; RV64IXQCCMP-FP-NEXT:    .cfi_offset s3, -40
 ; RV64IXQCCMP-FP-NEXT:    .cfi_offset s4, -48
-; RV64IXQCCMP-FP-NEXT:    .cfi_offset s5, -56
 ; RV64IXQCCMP-FP-NEXT:    .cfi_def_cfa s0, 0
-; RV64IXQCCMP-FP-NEXT:    lui a6, %hi(var0)
-; RV64IXQCCMP-FP-NEXT:    lui a1, %hi(var0)
-; RV64IXQCCMP-FP-NEXT:    addi a1, a1, %lo(var0)
-; RV64IXQCCMP-FP-NEXT:    lw a7, %lo(var0)(a6)
-; RV64IXQCCMP-FP-NEXT:    lw t0, 4(a1)
-; RV64IXQCCMP-FP-NEXT:    lw t1, 8(a1)
-; RV64IXQCCMP-FP-NEXT:    lw t2, 12(a1)
-; RV64IXQCCMP-FP-NEXT:    lw t3, 16(a1)
-; RV64IXQCCMP-FP-NEXT:    lw t4, 20(a1)
-; RV64IXQCCMP-FP-NEXT:    lw t5, 24(a1)
-; RV64IXQCCMP-FP-NEXT:    lw t6, 28(a1)
-; RV64IXQCCMP-FP-NEXT:    lw s2, 32(a1)
-; RV64IXQCCMP-FP-NEXT:    lw s3, 52(a1)
-; RV64IXQCCMP-FP-NEXT:    lw s5, 56(a1)
-; RV64IXQCCMP-FP-NEXT:    lw a3, 60(a1)
-; RV64IXQCCMP-FP-NEXT:    lw a4, 64(a1)
-; RV64IXQCCMP-FP-NEXT:    lw s1, 68(a1)
-; RV64IXQCCMP-FP-NEXT:    lw s4, 36(a1)
-; RV64IXQCCMP-FP-NEXT:    lw a0, 40(a1)
-; RV64IXQCCMP-FP-NEXT:    lw a5, 44(a1)
-; RV64IXQCCMP-FP-NEXT:    lw a2, 48(a1)
-; RV64IXQCCMP-FP-NEXT:    sw s1, 68(a1)
-; RV64IXQCCMP-FP-NEXT:    sw a4, 64(a1)
-; RV64IXQCCMP-FP-NEXT:    sw a3, 60(a1)
-; RV64IXQCCMP-FP-NEXT:    sw s5, 56(a1)
-; RV64IXQCCMP-FP-NEXT:    sw s3, 52(a1)
-; RV64IXQCCMP-FP-NEXT:    sw a2, 48(a1)
-; RV64IXQCCMP-FP-NEXT:    sw a5, 44(a1)
-; RV64IXQCCMP-FP-NEXT:    sw a0, 40(a1)
-; RV64IXQCCMP-FP-NEXT:    sw s4, 36(a1)
-; RV64IXQCCMP-FP-NEXT:    sw s2, 32(a1)
-; RV64IXQCCMP-FP-NEXT:    sw t6, 28(a1)
-; RV64IXQCCMP-FP-NEXT:    sw t5, 24(a1)
-; RV64IXQCCMP-FP-NEXT:    sw t4, 20(a1)
-; RV64IXQCCMP-FP-NEXT:    sw t3, 16(a1)
-; RV64IXQCCMP-FP-NEXT:    sw t2, 12(a1)
-; RV64IXQCCMP-FP-NEXT:    sw t1, 8(a1)
-; RV64IXQCCMP-FP-NEXT:    sw t0, 4(a1)
-; RV64IXQCCMP-FP-NEXT:    sw a7, %lo(var0)(a6)
-; RV64IXQCCMP-FP-NEXT:    .cfi_def_cfa sp, 64
-; RV64IXQCCMP-FP-NEXT:    qc.cm.popret {ra, s0-s5}, 64
+; RV64IXQCCMP-FP-NEXT:    lui a0, %hi(var0)
+; RV64IXQCCMP-FP-NEXT:    addi a0, a0, %lo(var0)
+; RV64IXQCCMP-FP-NEXT:    lw a6, 0(a0)
+; RV64IXQCCMP-FP-NEXT:    lw a7, 4(a0)
+; RV64IXQCCMP-FP-NEXT:    lw t0, 8(a0)
+; RV64IXQCCMP-FP-NEXT:    lw t1, 12(a0)
+; RV64IXQCCMP-FP-NEXT:    lw t2, 16(a0)
+; RV64IXQCCMP-FP-NEXT:    lw t3, 20(a0)
+; RV64IXQCCMP-FP-NEXT:    lw t4, 24(a0)
+; RV64IXQCCMP-FP-NEXT:    lw t5, 28(a0)
+; RV64IXQCCMP-FP-NEXT:    lw t6, 48(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s2, 52(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s4, 56(a0)
+; RV64IXQCCMP-FP-NEXT:    lw a2, 60(a0)
+; RV64IXQCCMP-FP-NEXT:    lw a3, 64(a0)
+; RV64IXQCCMP-FP-NEXT:    lw a4, 68(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s3, 32(a0)
+; RV64IXQCCMP-FP-NEXT:    lw a5, 36(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s1, 40(a0)
+; RV64IXQCCMP-FP-NEXT:    lw a1, 44(a0)
+; RV64IXQCCMP-FP-NEXT:    sw a4, 68(a0)
+; RV64IXQCCMP-FP-NEXT:    sw a3, 64(a0)
+; RV64IXQCCMP-FP-NEXT:    sw a2, 60(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s4, 56(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s2, 52(a0)
+; RV64IXQCCMP-FP-NEXT:    sw t6, 48(a0)
+; RV64IXQCCMP-FP-NEXT:    sw a1, 44(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s1, 40(a0)
+; RV64IXQCCMP-FP-NEXT:    sw a5, 36(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s3, 32(a0)
+; RV64IXQCCMP-FP-NEXT:    sw t5, 28(a0)
+; RV64IXQCCMP-FP-NEXT:    sw t4, 24(a0)
+; RV64IXQCCMP-FP-NEXT:    sw t3, 20(a0)
+; RV64IXQCCMP-FP-NEXT:    sw t2, 16(a0)
+; RV64IXQCCMP-FP-NEXT:    sw t1, 12(a0)
+; RV64IXQCCMP-FP-NEXT:    sw t0, 8(a0)
+; RV64IXQCCMP-FP-NEXT:    sw a7, 4(a0)
+; RV64IXQCCMP-FP-NEXT:    sw a6, 0(a0)
+; RV64IXQCCMP-FP-NEXT:    .cfi_def_cfa sp, 48
+; RV64IXQCCMP-FP-NEXT:    qc.cm.popret {ra, s0-s4}, 48
 ;
 ; RV32IXQCCMP-SR-LABEL: many_args:
 ; RV32IXQCCMP-SR:       # %bb.0: # %entry
-; RV32IXQCCMP-SR-NEXT:    qc.cm.push {ra, s0-s4}, -32
+; RV32IXQCCMP-SR-NEXT:    qc.cm.push {ra, s0-s3}, -32
 ; RV32IXQCCMP-SR-NEXT:    .cfi_def_cfa_offset 32
 ; RV32IXQCCMP-SR-NEXT:    .cfi_offset s0, -8
 ; RV32IXQCCMP-SR-NEXT:    .cfi_offset s1, -12
 ; RV32IXQCCMP-SR-NEXT:    .cfi_offset s2, -16
 ; RV32IXQCCMP-SR-NEXT:    .cfi_offset s3, -20
-; RV32IXQCCMP-SR-NEXT:    .cfi_offset s4, -24
-; RV32IXQCCMP-SR-NEXT:    lui a6, %hi(var0)
-; RV32IXQCCMP-SR-NEXT:    lui a1, %hi(var0)
-; RV32IXQCCMP-SR-NEXT:    addi a1, a1, %lo(var0)
-; RV32IXQCCMP-SR-NEXT:    lw a7, %lo(var0)(a6)
-; RV32IXQCCMP-SR-NEXT:    lw t0, 4(a1)
-; RV32IXQCCMP-SR-NEXT:    lw t1, 8(a1)
-; RV32IXQCCMP-SR-NEXT:    lw t2, 12(a1)
-; RV32IXQCCMP-SR-NEXT:    lw t3, 16(a1)
-; RV32IXQCCMP-SR-NEXT:    lw t4, 20(a1)
-; RV32IXQCCMP-SR-NEXT:    lw t5, 24(a1)
-; RV32IXQCCMP-SR-NEXT:    lw t6, 28(a1)
-; RV32IXQCCMP-SR-NEXT:    lw s2, 32(a1)
-; RV32IXQCCMP-SR-NEXT:    lw s3, 52(a1)
-; RV32IXQCCMP-SR-NEXT:    lw a2, 56(a1)
-; RV32IXQCCMP-SR-NEXT:    lw a3, 60(a1)
-; RV32IXQCCMP-SR-NEXT:    lw a4, 64(a1)
-; RV32IXQCCMP-SR-NEXT:    lw s0, 68(a1)
-; RV32IXQCCMP-SR-NEXT:    lw s4, 36(a1)
-; RV32IXQCCMP-SR-NEXT:    lw a5, 40(a1)
-; RV32IXQCCMP-SR-NEXT:    lw a0, 44(a1)
-; RV32IXQCCMP-SR-NEXT:    lw s1, 48(a1)
-; RV32IXQCCMP-SR-NEXT:    sw s0, 68(a1)
-; RV32IXQCCMP-SR-NEXT:    sw a4, 64(a1)
-; RV32IXQCCMP-SR-NEXT:    sw a3, 60(a1)
-; RV32IXQCCMP-SR-NEXT:    sw a2, 56(a1)
-; RV32IXQCCMP-SR-NEXT:    sw s3, 52(a1)
-; RV32IXQCCMP-SR-NEXT:    sw s1, 48(a1)
-; RV32IXQCCMP-SR-NEXT:    sw a0, 44(a1)
-; RV32IXQCCMP-SR-NEXT:    sw a5, 40(a1)
-; RV32IXQCCMP-SR-NEXT:    sw s4, 36(a1)
-; RV32IXQCCMP-SR-NEXT:    sw s2, 32(a1)
-; RV32IXQCCMP-SR-NEXT:    sw t6, 28(a1)
-; RV32IXQCCMP-SR-NEXT:    sw t5, 24(a1)
-; RV32IXQCCMP-SR-NEXT:    sw t4, 20(a1)
-; RV32IXQCCMP-SR-NEXT:    sw t3, 16(a1)
-; RV32IXQCCMP-SR-NEXT:    sw t2, 12(a1)
-; RV32IXQCCMP-SR-NEXT:    sw t1, 8(a1)
-; RV32IXQCCMP-SR-NEXT:    sw t0, 4(a1)
-; RV32IXQCCMP-SR-NEXT:    sw a7, %lo(var0)(a6)
-; RV32IXQCCMP-SR-NEXT:    qc.cm.popret {ra, s0-s4}, 32
+; RV32IXQCCMP-SR-NEXT:    lui a0, %hi(var0)
+; RV32IXQCCMP-SR-NEXT:    addi a0, a0, %lo(var0)
+; RV32IXQCCMP-SR-NEXT:    lw a6, 0(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a7, 4(a0)
+; RV32IXQCCMP-SR-NEXT:    lw t0, 8(a0)
+; RV32IXQCCMP-SR-NEXT:    lw t1, 12(a0)
+; RV32IXQCCMP-SR-NEXT:    lw t2, 16(a0)
+; RV32IXQCCMP-SR-NEXT:    lw t3, 20(a0)
+; RV32IXQCCMP-SR-NEXT:    lw t4, 24(a0)
+; RV32IXQCCMP-SR-NEXT:    lw t5, 28(a0)
+; RV32IXQCCMP-SR-NEXT:    lw t6, 48(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s2, 52(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a1, 56(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a2, 60(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a3, 64(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a4, 68(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s3, 32(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s1, 36(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a5, 40(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s0, 44(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a4, 68(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a3, 64(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a2, 60(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a1, 56(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s2, 52(a0)
+; RV32IXQCCMP-SR-NEXT:    sw t6, 48(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s0, 44(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a5, 40(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s1, 36(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s3, 32(a0)
+; RV32IXQCCMP-SR-NEXT:    sw t5, 28(a0)
+; RV32IXQCCMP-SR-NEXT:    sw t4, 24(a0)
+; RV32IXQCCMP-SR-NEXT:    sw t3, 20(a0)
+; RV32IXQCCMP-SR-NEXT:    sw t2, 16(a0)
+; RV32IXQCCMP-SR-NEXT:    sw t1, 12(a0)
+; RV32IXQCCMP-SR-NEXT:    sw t0, 8(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a7, 4(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a6, 0(a0)
+; RV32IXQCCMP-SR-NEXT:    qc.cm.popret {ra, s0-s3}, 32
 ;
 ; RV64IXQCCMP-SR-LABEL: many_args:
 ; RV64IXQCCMP-SR:       # %bb.0: # %entry
-; RV64IXQCCMP-SR-NEXT:    qc.cm.push {ra, s0-s4}, -48
+; RV64IXQCCMP-SR-NEXT:    qc.cm.push {ra, s0-s3}, -48
 ; RV64IXQCCMP-SR-NEXT:    .cfi_def_cfa_offset 48
 ; RV64IXQCCMP-SR-NEXT:    .cfi_offset s0, -16
 ; RV64IXQCCMP-SR-NEXT:    .cfi_offset s1, -24
 ; RV64IXQCCMP-SR-NEXT:    .cfi_offset s2, -32
 ; RV64IXQCCMP-SR-NEXT:    .cfi_offset s3, -40
-; RV64IXQCCMP-SR-NEXT:    .cfi_offset s4, -48
-; RV64IXQCCMP-SR-NEXT:    lui a6, %hi(var0)
-; RV64IXQCCMP-SR-NEXT:    lui a1, %hi(var0)
-; RV64IXQCCMP-SR-NEXT:    addi a1, a1, %lo(var0)
-; RV64IXQCCMP-SR-NEXT:    lw a7, %lo(var0)(a6)
-; RV64IXQCCMP-SR-NEXT:    lw t0, 4(a1)
-; RV64IXQCCMP-SR-NEXT:    lw t1, 8(a1)
-; RV64IXQCCMP-SR-NEXT:    lw t2, 12(a1)
-; RV64IXQCCMP-SR-NEXT:    lw t3, 16(a1)
-; RV64IXQCCMP-SR-NEXT:    lw t4, 20(a1)
-; RV64IXQCCMP-SR-NEXT:    lw t5, 24(a1)
-; RV64IXQCCMP-SR-NEXT:    lw t6, 28(a1)
-; RV64IXQCCMP-SR-NEXT:    lw s2, 32(a1)
-; RV64IXQCCMP-SR-NEXT:    lw s3, 52(a1)
-; RV64IXQCCMP-SR-NEXT:    lw a2, 56(a1)
-; RV64IXQCCMP-SR-NEXT:    lw a3, 60(a1)
-; RV64IXQCCMP-SR-NEXT:    lw a4, 64(a1)
-; RV64IXQCCMP-SR-NEXT:    lw s0, 68(a1)
-; RV64IXQCCMP-SR-NEXT:    lw s4, 36(a1)
-; RV64IXQCCMP-SR-NEXT:    lw a5, 40(a1)
-; RV64IXQCCMP-SR-NEXT:    lw a0, 44(a1)
-; RV64IXQCCMP-SR-NEXT:    lw s1, 48(a1)
-; RV64IXQCCMP-SR-NEXT:    sw s0, 68(a1)
-; RV64IXQCCMP-SR-NEXT:    sw a4, 64(a1)
-; RV64IXQCCMP-SR-NEXT:    sw a3, 60(a1)
-; RV64IXQCCMP-SR-NEXT:    sw a2, 56(a1)
-; RV64IXQCCMP-SR-NEXT:    sw s3, 52(a1)
-; RV64IXQCCMP-SR-NEXT:    sw s1, 48(a1)
-; RV64IXQCCMP-SR-NEXT:    sw a0, 44(a1)
-; RV64IXQCCMP-SR-NEXT:    sw a5, 40(a1)
-; RV64IXQCCMP-SR-NEXT:    sw s4, 36(a1)
-; RV64IXQCCMP-SR-NEXT:    sw s2, 32(a1)
-; RV64IXQCCMP-SR-NEXT:    sw t6, 28(a1)
-; RV64IXQCCMP-SR-NEXT:    sw t5, 24(a1)
-; RV64IXQCCMP-SR-NEXT:    sw t4, 20(a1)
-; RV64IXQCCMP-SR-NEXT:    sw t3, 16(a1)
-; RV64IXQCCMP-SR-NEXT:    sw t2, 12(a1)
-; RV64IXQCCMP-SR-NEXT:    sw t1, 8(a1)
-; RV64IXQCCMP-SR-NEXT:    sw t0, 4(a1)
-; RV64IXQCCMP-SR-NEXT:    sw a7, %lo(var0)(a6)
-; RV64IXQCCMP-SR-NEXT:    qc.cm.popret {ra, s0-s4}, 48
+; RV64IXQCCMP-SR-NEXT:    lui a0, %hi(var0)
+; RV64IXQCCMP-SR-NEXT:    addi a0, a0, %lo(var0)
+; RV64IXQCCMP-SR-NEXT:    lw a6, 0(a0)
+; RV64IXQCCMP-SR-NEXT:    lw a7, 4(a0)
+; RV64IXQCCMP-SR-NEXT:    lw t0, 8(a0)
+; RV64IXQCCMP-SR-NEXT:    lw t1, 12(a0)
+; RV64IXQCCMP-SR-NEXT:    lw t2, 16(a0)
+; RV64IXQCCMP-SR-NEXT:    lw t3, 20(a0)
+; RV64IXQCCMP-SR-NEXT:    lw t4, 24(a0)
+; RV64IXQCCMP-SR-NEXT:    lw t5, 28(a0)
+; RV64IXQCCMP-SR-NEXT:    lw t6, 48(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s2, 52(a0)
+; RV64IXQCCMP-SR-NEXT:    lw a1, 56(a0)
+; RV64IXQCCMP-SR-NEXT:    lw a2, 60(a0)
+; RV64IXQCCMP-SR-NEXT:    lw a3, 64(a0)
+; RV64IXQCCMP-SR-NEXT:    lw a4, 68(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s3, 32(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s1, 36(a0)
+; RV64IXQCCMP-SR-NEXT:    lw a5, 40(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s0, 44(a0)
+; RV64IXQCCMP-SR-NEXT:    sw a4, 68(a0)
+; RV64IXQCCMP-SR-NEXT:    sw a3, 64(a0)
+; RV64IXQCCMP-SR-NEXT:    sw a2, 60(a0)
+; RV64IXQCCMP-SR-NEXT:    sw a1, 56(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s2, 52(a0)
+; RV64IXQCCMP-SR-NEXT:    sw t6, 48(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s0, 44(a0)
+; RV64IXQCCMP-SR-NEXT:    sw a5, 40(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s1, 36(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s3, 32(a0)
+; RV64IXQCCMP-SR-NEXT:    sw t5, 28(a0)
+; RV64IXQCCMP-SR-NEXT:    sw t4, 24(a0)
+; RV64IXQCCMP-SR-NEXT:    sw t3, 20(a0)
+; RV64IXQCCMP-SR-NEXT:    sw t2, 16(a0)
+; RV64IXQCCMP-SR-NEXT:    sw t1, 12(a0)
+; RV64IXQCCMP-SR-NEXT:    sw t0, 8(a0)
+; RV64IXQCCMP-SR-NEXT:    sw a7, 4(a0)
+; RV64IXQCCMP-SR-NEXT:    sw a6, 0(a0)
+; RV64IXQCCMP-SR-NEXT:    qc.cm.popret {ra, s0-s3}, 48
 entry:
   %val = load [18 x i32], ptr @var0
   store volatile [18 x i32] %val, ptr @var0
@@ -2172,83 +2142,81 @@ define void @callee_with_irq() "interrupt"="machine" {
 ; RV32IXQCCMP-NEXT:    .cfi_offset t5, -120
 ; RV32IXQCCMP-NEXT:    .cfi_offset t6, -124
 ; RV32IXQCCMP-NEXT:    lui a0, %hi(var_test_irq)
-; RV32IXQCCMP-NEXT:    lui a2, %hi(var_test_irq)
-; RV32IXQCCMP-NEXT:    addi a2, a2, %lo(var_test_irq)
-; RV32IXQCCMP-NEXT:    lw a0, %lo(var_test_irq)(a0)
-; RV32IXQCCMP-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
-; RV32IXQCCMP-NEXT:    lw a0, 4(a2)
-; RV32IXQCCMP-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
-; RV32IXQCCMP-NEXT:    lw a0, 8(a2)
-; RV32IXQCCMP-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
-; RV32IXQCCMP-NEXT:    lw a0, 12(a2)
-; RV32IXQCCMP-NEXT:    sw a0, 4(sp) # 4-byte Folded Spill
-; RV32IXQCCMP-NEXT:    lw a0, 16(a2)
-; RV32IXQCCMP-NEXT:    sw a0, 0(sp) # 4-byte Folded Spill
-; RV32IXQCCMP-NEXT:    lw t4, 20(a2)
-; RV32IXQCCMP-NEXT:    lw t5, 24(a2)
-; RV32IXQCCMP-NEXT:    lw t6, 28(a2)
-; RV32IXQCCMP-NEXT:    lw s2, 32(a2)
-; RV32IXQCCMP-NEXT:    lw s3, 36(a2)
-; RV32IXQCCMP-NEXT:    lw s4, 40(a2)
-; RV32IXQCCMP-NEXT:    lw s5, 44(a2)
-; RV32IXQCCMP-NEXT:    lw s6, 48(a2)
-; RV32IXQCCMP-NEXT:    lw s7, 52(a2)
-; RV32IXQCCMP-NEXT:    lw s8, 56(a2)
-; RV32IXQCCMP-NEXT:    lw s9, 60(a2)
-; RV32IXQCCMP-NEXT:    lw s10, 64(a2)
-; RV32IXQCCMP-NEXT:    lw s11, 68(a2)
-; RV32IXQCCMP-NEXT:    lw ra, 72(a2)
-; RV32IXQCCMP-NEXT:    lw t3, 76(a2)
-; RV32IXQCCMP-NEXT:    lw s0, 80(a2)
-; RV32IXQCCMP-NEXT:    lw s1, 84(a2)
-; RV32IXQCCMP-NEXT:    lw t2, 88(a2)
-; RV32IXQCCMP-NEXT:    lw t1, 92(a2)
-; RV32IXQCCMP-NEXT:    lw t0, 96(a2)
-; RV32IXQCCMP-NEXT:    lw a6, 116(a2)
-; RV32IXQCCMP-NEXT:    lw a4, 120(a2)
-; RV32IXQCCMP-NEXT:    lw a1, 124(a2)
-; RV32IXQCCMP-NEXT:    lw a7, 100(a2)
-; RV32IXQCCMP-NEXT:    lw a5, 104(a2)
-; RV32IXQCCMP-NEXT:    lw a3, 108(a2)
-; RV32IXQCCMP-NEXT:    lw a0, 112(a2)
-; RV32IXQCCMP-NEXT:    sw a1, 124(a2)
-; RV32IXQCCMP-NEXT:    sw a4, 120(a2)
-; RV32IXQCCMP-NEXT:    sw a6, 116(a2)
-; RV32IXQCCMP-NEXT:    sw a0, 112(a2)
-; RV32IXQCCMP-NEXT:    sw a3, 108(a2)
-; RV32IXQCCMP-NEXT:    sw a5, 104(a2)
-; RV32IXQCCMP-NEXT:    sw a7, 100(a2)
-; RV32IXQCCMP-NEXT:    sw t0, 96(a2)
-; RV32IXQCCMP-NEXT:    sw t1, 92(a2)
-; RV32IXQCCMP-NEXT:    sw t2, 88(a2)
-; RV32IXQCCMP-NEXT:    sw s1, 84(a2)
-; RV32IXQCCMP-NEXT:    sw s0, 80(a2)
-; RV32IXQCCMP-NEXT:    sw t3, 76(a2)
-; RV32IXQCCMP-NEXT:    sw ra, 72(a2)
-; RV32IXQCCMP-NEXT:    sw s11, 68(a2)
-; RV32IXQCCMP-NEXT:    sw s10, 64(a2)
-; RV32IXQCCMP-NEXT:    sw s9, 60(a2)
-; RV32IXQCCMP-NEXT:    sw s8, 56(a2)
-; RV32IXQCCMP-NEXT:    sw s7, 52(a2)
-; RV32IXQCCMP-NEXT:    sw s6, 48(a2)
-; RV32IXQCCMP-NEXT:    sw s5, 44(a2)
-; RV32IXQCCMP-NEXT:    sw s4, 40(a2)
-; RV32IXQCCMP-NEXT:    sw s3, 36(a2)
-; RV32IXQCCMP-NEXT:    sw s2, 32(a2)
-; RV32IXQCCMP-NEXT:    sw t6, 28(a2)
-; RV32IXQCCMP-NEXT:    sw t5, 24(a2)
-; RV32IXQCCMP-NEXT:    sw t4, 20(a2)
-; RV32IXQCCMP-NEXT:    lw a0, 0(sp) # 4-byte Folded Reload
-; RV32IXQCCMP-NEXT:    sw a0, 16(a2)
-; RV32IXQCCMP-NEXT:    lw a0, 4(sp) # 4-byte Folded Reload
-; RV32IXQCCMP-NEXT:    sw a0, 12(a2)
-; RV32IXQCCMP-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
-; RV32IXQCCMP-NEXT:    sw a0, 8(a2)
-; RV32IXQCCMP-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
-; RV32IXQCCMP-NEXT:    sw a0, 4(a2)
-; RV32IXQCCMP-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
-; RV32IXQCCMP-NEXT:    lui a1, %hi(var_test_irq)
-; RV32IXQCCMP-NEXT:    sw a0, %lo(var_test_irq)(a1)
+; RV32IXQCCMP-NEXT:    addi a0, a0, %lo(var_test_irq)
+; RV32IXQCCMP-NEXT:    lw a1, 0(a0)
+; RV32IXQCCMP-NEXT:    sw a1, 16(sp) # 4-byte Folded Spill
+; RV32IXQCCMP-NEXT:    lw a1, 4(a0)
+; RV32IXQCCMP-NEXT:    sw a1, 12(sp) # 4-byte Folded Spill
+; RV32IXQCCMP-NEXT:    lw a1, 8(a0)
+; RV32IXQCCMP-NEXT:    sw a1, 8(sp) # 4-byte Folded Spill
+; RV32IXQCCMP-NEXT:    lw a1, 12(a0)
+; RV32IXQCCMP-NEXT:    sw a1, 4(sp) # 4-byte Folded Spill
+; RV32IXQCCMP-NEXT:    lw a1, 16(a0)
+; RV32IXQCCMP-NEXT:    sw a1, 0(sp) # 4-byte Folded Spill
+; RV32IXQCCMP-NEXT:    lw t3, 20(a0)
+; RV32IXQCCMP-NEXT:    lw t4, 24(a0)
+; RV32IXQCCMP-NEXT:    lw t5, 28(a0)
+; RV32IXQCCMP-NEXT:    lw t6, 32(a0)
+; RV32IXQCCMP-NEXT:    lw s2, 36(a0)
+; RV32IXQCCMP-NEXT:    lw s3, 40(a0)
+; RV32IXQCCMP-NEXT:    lw s4, 44(a0)
+; RV32IXQCCMP-NEXT:    lw s5, 48(a0)
+; RV32IXQCCMP-NEXT:    lw s6, 52(a0)
+; RV32IXQCCMP-NEXT:    lw s7, 56(a0)
+; RV32IXQCCMP-NEXT:    lw s8, 60(a0)
+; RV32IXQCCMP-NEXT:    lw s9, 64(a0)
+; RV32IXQCCMP-NEXT:    lw s10, 68(a0)
+; RV32IXQCCMP-NEXT:    lw s11, 72(a0)
+; RV32IXQCCMP-NEXT:    lw ra, 76(a0)
+; RV32IXQCCMP-NEXT:    lw t2, 80(a0)
+; RV32IXQCCMP-NEXT:    lw s0, 84(a0)
+; RV32IXQCCMP-NEXT:    lw s1, 88(a0)
+; RV32IXQCCMP-NEXT:    lw t1, 92(a0)
+; RV32IXQCCMP-NEXT:    lw t0, 112(a0)
+; RV32IXQCCMP-NEXT:    lw a5, 116(a0)
+; RV32IXQCCMP-NEXT:    lw a3, 120(a0)
+; RV32IXQCCMP-NEXT:    lw a1, 124(a0)
+; RV32IXQCCMP-NEXT:    lw a7, 96(a0)
+; RV32IXQCCMP-NEXT:    lw a6, 100(a0)
+; RV32IXQCCMP-NEXT:    lw a4, 104(a0)
+; RV32IXQCCMP-NEXT:    lw a2, 108(a0)
+; RV32IXQCCMP-NEXT:    sw a1, 124(a0)
+; RV32IXQCCMP-NEXT:    sw a3, 120(a0)
+; RV32IXQCCMP-NEXT:    sw a5, 116(a0)
+; RV32IXQCCMP-NEXT:    sw t0, 112(a0)
+; RV32IXQCCMP-NEXT:    sw a2, 108(a0)
+; RV32IXQCCMP-NEXT:    sw a4, 104(a0)
+; RV32IXQCCMP-NEXT:    sw a6, 100(a0)
+; RV32IXQCCMP-NEXT:    sw a7, 96(a0)
+; RV32IXQCCMP-NEXT:    sw t1, 92(a0)
+; RV32IXQCCMP-NEXT:    sw s1, 88(a0)
+; RV32IXQCCMP-NEXT:    sw s0, 84(a0)
+; RV32IXQCCMP-NEXT:    sw t2, 80(a0)
+; RV32IXQCCMP-NEXT:    sw ra, 76(a0)
+; RV32IXQCCMP-NEXT:    sw s11, 72(a0)
+; RV32IXQCCMP-NEXT:    sw s10, 68(a0)
+; RV32IXQCCMP-NEXT:    sw s9, 64(a0)
+; RV32IXQCCMP-NEXT:    sw s8, 60(a0)
+; RV32IXQCCMP-NEXT:    sw s7, 56(a0)
+; RV32IXQCCMP-NEXT:    sw s6, 52(a0)
+; RV32IXQCCMP-NEXT:    sw s5, 48(a0)
+; RV32IXQCCMP-NEXT:    sw s4, 44(a0)
+; RV32IXQCCMP-NEXT:    sw s3, 40(a0)
+; RV32IXQCCMP-NEXT:    sw s2, 36(a0)
+; RV32IXQCCMP-NEXT:    sw t6, 32(a0)
+; RV32IXQCCMP-NEXT:    sw t5, 28(a0)
+; RV32IXQCCMP-NEXT:    sw t4, 24(a0)
+; RV32IXQCCMP-NEXT:    sw t3, 20(a0)
+; RV32IXQCCMP-NEXT:    lw a1, 0(sp) # 4-byte Folded Reload
+; RV32IXQCCMP-NEXT:    sw a1, 16(a0)
+; RV32IXQCCMP-NEXT:    lw a1, 4(sp) # 4-byte Folded Reload
+; RV32IXQCCMP-NEXT:    sw a1, 12(a0)
+; RV32IXQCCMP-NEXT:    lw a1, 8(sp) # 4-byte Folded Reload
+; RV32IXQCCMP-NEXT:    sw a1, 8(a0)
+; RV32IXQCCMP-NEXT:    lw a1, 12(sp) # 4-byte Folded Reload
+; RV32IXQCCMP-NEXT:    sw a1, 4(a0)
+; RV32IXQCCMP-NEXT:    lw a1, 16(sp) # 4-byte Folded Reload
+; RV32IXQCCMP-NEXT:    sw a1, 0(a0)
 ; RV32IXQCCMP-NEXT:    lw t0, 76(sp) # 4-byte Folded Reload
 ; RV32IXQCCMP-NEXT:    lw t1, 72(sp) # 4-byte Folded Reload
 ; RV32IXQCCMP-NEXT:    lw t2, 68(sp) # 4-byte Folded Reload
@@ -2348,83 +2316,81 @@ define void @callee_with_irq() "interrupt"="machine" {
 ; RV64IXQCCMP-NEXT:    .cfi_offset t5, -224
 ; RV64IXQCCMP-NEXT:    .cfi_offset t6, -232
 ; RV64IXQCCMP-NEXT:    lui a0, %hi(var_test_irq)
-; RV64IXQCCMP-NEXT:    lui a2, %hi(var_test_irq)
-; RV64IXQCCMP-NEXT:    addi a2, a2, %lo(var_test_irq)
-; RV64IXQCCMP-NEXT:    lw a0, %lo(var_test_irq)(a0)
-; RV64IXQCCMP-NEXT:    sd a0, 32(sp) # 8-byte Folded Spill
-; RV64IXQCCMP-NEXT:    lw a0, 4(a2)
-; RV64IXQCCMP-NEXT:    sd a0, 24(sp) # 8-byte Folded Spill
-; RV64IXQCCMP-NEXT:    lw a0, 8(a2)
-; RV64IXQCCMP-NEXT:    sd a0, 16(sp) # 8-byte Folded Spill
-; RV64IXQCCMP-NEXT:    lw a0, 12(a2)
-; RV64IXQCCMP-NEXT:    sd a0, 8(sp) # 8-byte Folded Spill
-; RV64IXQCCMP-NEXT:    lw a0, 16(a2)
-; RV64IXQCCMP-NEXT:    sd a0, 0(sp) # 8-byte Folded Spill
-; RV64IXQCCMP-NEXT:    lw t4, 20(a2)
-; RV64IXQCCMP-NEXT:    lw t5, 24(a2)
-; RV64IXQCCMP-NEXT:    lw t6, 28(a2)
-; RV64IXQCCMP-NEXT:    lw s2, 32(a2)
-; RV64IXQCCMP-NEXT:    lw s3, 36(a2)
-; RV64IXQCCMP-NEXT:    lw s4, 40(a2)
-; RV64IXQCCMP-NEXT:    lw s5, 44(a2)
-; RV64IXQCCMP-NEXT:    lw s6, 48(a2)
-; RV64IXQCCMP-NEXT:    lw s7, 52(a2)
-; RV64IXQCCMP-NEXT:    lw s8, 56(a2)
-; RV64IXQCCMP-NEXT:    lw s9, 60(a2)
-; RV64IXQCCMP-NEXT:    lw s10, 64(a2)
-; RV64IXQCCMP-NEXT:    lw s11, 68(a2)
-; RV64IXQCCMP-NEXT:    lw ra, 72(a2)
-; RV64IXQCCMP-NEXT:    lw t3, 76(a2)
-; RV64IXQCCMP-NEXT:    lw s0, 80(a2)
-; RV64IXQCCMP-NEXT:    lw s1, 84(a2)
-; RV64IXQCCMP-NEXT:    lw t2, 88(a2)
-; RV64IXQCCMP-NEXT:    lw t1, 92(a2)
-; RV64IXQCCMP-NEXT:    lw t0, 96(a2)
-; RV64IXQCCMP-NEXT:    lw a6, 116(a2)
-; RV64IXQCCMP-NEXT:    lw a4, 120(a2)
-; RV64IXQCCMP-NEXT:    lw a1, 124(a2)
-; RV64IXQCCMP-NEXT:    lw a7, 100(a2)
-; RV64IXQCCMP-NEXT:    lw a5, 104(a2)
-; RV64IXQCCMP-NEXT:    lw a3, 108(a2)
-; RV64IXQCCMP-NEXT:    lw a0, 112(a2)
-; RV64IXQCCMP-NEXT:    sw a1, 124(a2)
-; RV64IXQCCMP-NEXT:    sw a4, 120(a2)
-; RV64IXQCCMP-NEXT:    sw a6, 116(a2)
-; RV64IXQCCMP-NEXT:    sw a0, 112(a2)
-; RV64IXQCCMP-NEXT:    sw a3, 108(a2)
-; RV64IXQCCMP-NEXT:    sw a5, 104(a2)
-; RV64IXQCCMP-NEXT:    sw a7, 100(a2)
-; RV64IXQCCMP-NEXT:    sw t0, 96(a2)
-; RV64IXQCCMP-NEXT:    sw t1, 92(a2)
-; RV64IXQCCMP-NEXT:    sw t2, 88(a2)
-; RV64IXQCCMP-NEXT:    sw s1, 84(a2)
-; RV64IXQCCMP-NEXT:    sw s0, 80(a2)
-; RV64IXQCCMP-NEXT:    sw t3, 76(a2)
-; RV64IXQCCMP-NEXT:    sw ra, 72(a2)
-; RV64IXQCCMP-NEXT:    sw s11, 68(a2)
-; RV64IXQCCMP-NEXT:    sw s10, 64(a2)
-; RV64IXQCCMP-NEXT:    sw s9, 60(a2)
-; RV64IXQCCMP-NEXT:    sw s8, 56(a2)
-; RV64IXQCCMP-NEXT:    sw s7, 52(a2)
-; RV64IXQCCMP-NEXT:    sw s6, 48(a2)
-; RV64IXQCCMP-NEXT:    sw s5, 44(a2)
-; RV64IXQCCMP-NEXT:    sw s4, 40(a2)
-; RV64IXQCCMP-NEXT:    sw s3, 36(a2)
-; RV64IXQCCMP-NEXT:    sw s2, 32(a2)
-; RV64IXQCCMP-NEXT:    sw t6, 28(a2)
-; RV64IXQCCMP-NEXT:    sw t5, 24(a2)
-; RV64IXQCCMP-NEXT:    sw t4, 20(a2)
-; RV64IXQCCMP-NEXT:    ld a0, 0(sp) # 8-byte Folded Reload
-; RV64IXQCCMP-NEXT:    sw a0, 16(a2)
-; RV64IXQCCMP-NEXT:    ld a0, 8(sp) # 8-byte Folded Reload
-; RV64IXQCCMP-NEXT:    sw a0, 12(a2)
-; RV64IXQCCMP-NEXT:    ld a0, 16(sp) # 8-byte Folded Reload
-; RV64IXQCCMP-NEXT:    sw a0, 8(a2)
-; RV64IXQCCMP-NEXT:    ld a0, 24(sp) # 8-byte Folded Reload
-; RV64IXQCCMP-NEXT:    sw a0, 4(a2)
-; RV64IXQCCMP-NEXT:    ld a0, 32(sp) # 8-byte Folded Reload
-; RV64IXQCCMP-NEXT:    lui a1, %hi(var_test_irq)
-; RV64IXQCCMP-NEXT:    sw a0, %lo(var_test_irq)(a1)
+; RV64IXQCCMP-NEXT:    addi a0, a0, %lo(var_test_irq)
+; RV64IXQCCMP-NEXT:    lw a1, 0(a0)
+; RV64IXQCCMP-NEXT:    sd a1, 32(sp) # 8-byte Folded Spill
+; RV64IXQCCMP-NEXT:    lw a1, 4(a0)
+; RV64IXQCCMP-NEXT:    sd a1, 24(sp) # 8-byte Folded Spill
+; RV64IXQCCMP-NEXT:    lw a1, 8(a0)
+; RV64IXQCCMP-NEXT:    sd a1, 16(sp) # 8-byte Folded Spill
+; RV64IXQCCMP-NEXT:    lw a1, 12(a0)
+; RV64IXQCCMP-NEXT:    sd a1, 8(sp) # 8-byte Folded Spill
+; RV64IXQCCMP-NEXT:    lw a1, 16(a0)
+; RV64IXQCCMP-NEXT:    sd a1, 0(sp) # 8-byte Folded Spill
+; RV64IXQCCMP-NEXT:    lw t3, 20(a0)
+; RV64IXQCCMP-NEXT:    lw t4, 24(a0)
+; RV64IXQCCMP-NEXT:    lw t5, 28(a0)
+; RV64IXQCCMP-NEXT:    lw t6, 32(a0)
+; RV64IXQCCMP-NEXT:    lw s2, 36(a0)
+; RV64IXQCCMP-NEXT:    lw s3, 40(a0)
+; RV64IXQCCMP-NEXT:    lw s4, 44(a0)
+; RV64IXQCCMP-NEXT:    lw s5, 48(a0)
+; RV64IXQCCMP-NEXT:    lw s6, 52(a0)
+; RV64IXQCCMP-NEXT:    lw s7, 56(a0)
+; RV64IXQCCMP-NEXT:    lw s8, 60(a0)
+; RV64IXQCCMP-NEXT:    lw s9, 64(a0)
+; RV64IXQCCMP-NEXT:    lw s10, 68(a0)
+; RV64IXQCCMP-NEXT:    lw s11, 72(a0)
+; RV64IXQCCMP-NEXT:    lw ra, 76(a0)
+; RV64IXQCCMP-NEXT:    lw t2, 80(a0)
+; RV64IXQCCMP-NEXT:    lw s0, 84(a0)
+; RV64IXQCCMP-NEXT:    lw s1, 88(a0)
+; RV64IXQCCMP-NEXT:    lw t1, 92(a0)
+; RV64IXQCCMP-NEXT:    lw t0, 112(a0)
+; RV64IXQCCMP-NEXT:    lw a5, 116(a0)
+; RV64IXQCCMP-NEXT:    lw a3, 120(a0)
+; RV64IXQCCMP-NEXT:    lw a1, 124(a0)
+; RV64IXQCCMP-NEXT:    lw a7, 96(a0)
+; RV64IXQCCMP-NEXT:    lw a6, 100(a0)
+; RV64IXQCCMP-NEXT:    lw a4, 104(a0)
+; RV64IXQCCMP-NEXT:    lw a2, 108(a0)
+; RV64IXQCCMP-NEXT:    sw a1, 124(a0)
+; RV64IXQCCMP-NEXT:    sw a3, 120(a0)
+; RV64IXQCCMP-NEXT:    sw a5, 116(a0)
+; RV64IXQCCMP-NEXT:    sw t0, 112(a0)
+; RV64IXQCCMP-NEXT:    sw a2, 108(a0)
+; RV64IXQCCMP-NEXT:    sw a4, 104(a0)
+; RV64IXQCCMP-NEXT:    sw a6, 100(a0)
+; RV64IXQCCMP-NEXT:    sw a7, 96(a0)
+; RV64IXQCCMP-NEXT:    sw t1, 92(a0)
+; RV64IXQCCMP-NEXT:    sw s1, 88(a0)
+; RV64IXQCCMP-NEXT:    sw s0, 84(a0)
+; RV64IXQCCMP-NEXT:    sw t2, 80(a0)
+; RV64IXQCCMP-NEXT:    sw ra, 76(a0)
+; RV64IXQCCMP-NEXT:    sw s11, 72(a0)
+; RV64IXQCCMP-NEXT:    sw s10, 68(a0)
+; RV64IXQCCMP-NEXT:    sw s9, 64(a0)
+; RV64IXQCCMP-NEXT:    sw s8, 60(a0)
+; RV64IXQCCMP-NEXT:    sw s7, 56(a0)
+; RV64IXQCCMP-NEXT:    sw s6, 52(a0)
+; RV64IXQCCMP-NEXT:    sw s5, 48(a0)
+; RV64IXQCCMP-NEXT:    sw s4, 44(a0)
+; RV64IXQCCMP-NEXT:    sw s3, 40(a0)
+; RV64IXQCCMP-NEXT:    sw s2, 36(a0)
+; RV64IXQCCMP-NEXT:    sw t6, 32(a0)
+; RV64IXQCCMP-NEXT:    sw t5, 28(a0)
+; RV64IXQCCMP-NEXT:    sw t4, 24(a0)
+; RV64IXQCCMP-NEXT:    sw t3, 20(a0)
+; RV64IXQCCMP-NEXT:    ld a1, 0(sp) # 8-byte Folded Reload
+; RV64IXQCCMP-NEXT:    sw a1, 16(a0)
+; RV64IXQCCMP-NEXT:    ld a1, 8(sp) # 8-byte Folded Reload
+; RV64IXQCCMP-NEXT:    sw a1, 12(a0)
+; RV64IXQCCMP-NEXT:    ld a1, 16(sp) # 8-byte Folded Reload
+; RV64IXQCCMP-NEXT:    sw a1, 8(a0)
+; RV64IXQCCMP-NEXT:    ld a1, 24(sp) # 8-byte Folded Reload
+; RV64IXQCCMP-NEXT:    sw a1, 4(a0)
+; RV64IXQCCMP-NEXT:    ld a1, 32(sp) # 8-byte Folded Reload
+; RV64IXQCCMP-NEXT:    sw a1, 0(a0)
 ; RV64IXQCCMP-NEXT:    ld t0, 152(sp) # 8-byte Folded Reload
 ; RV64IXQCCMP-NEXT:    ld t1, 144(sp) # 8-byte Folded Reload
 ; RV64IXQCCMP-NEXT:    ld t2, 136(sp) # 8-byte Folded Reload
@@ -2525,85 +2491,83 @@ define void @callee_with_irq() "interrupt"="machine" {
 ; RV32IXQCCMP-FP-NEXT:    .cfi_offset t6, -124
 ; RV32IXQCCMP-FP-NEXT:    .cfi_def_cfa s0, 0
 ; RV32IXQCCMP-FP-NEXT:    lui a0, %hi(var_test_irq)
-; RV32IXQCCMP-FP-NEXT:    lui a2, %hi(var_test_irq)
-; RV32IXQCCMP-FP-NEXT:    addi a2, a2, %lo(var_test_irq)
-; RV32IXQCCMP-FP-NEXT:    lw a0, %lo(var_test_irq)(a0)
-; RV32IXQCCMP-FP-NEXT:    sw a0, -128(s0) # 4-byte Folded Spill
-; RV32IXQCCMP-FP-NEXT:    lw a0, 4(a2)
-; RV32IXQCCMP-FP-NEXT:    sw a0, -132(s0) # 4-byte Folded Spill
-; RV32IXQCCMP-FP-NEXT:    lw a0, 8(a2)
-; RV32IXQCCMP-FP-NEXT:    sw a0, -136(s0) # 4-byte Folded Spill
-; RV32IXQCCMP-FP-NEXT:    lw a0, 12(a2)
-; RV32IXQCCMP-FP-NEXT:    sw a0, -140(s0) # 4-byte Folded Spill
-; RV32IXQCCMP-FP-NEXT:    lw a0, 16(a2)
-; RV32IXQCCMP-FP-NEXT:    sw a0, -144(s0) # 4-byte Folded Spill
-; RV32IXQCCMP-FP-NEXT:    lw a0, 20(a2)
-; RV32IXQCCMP-FP-NEXT:    sw a0, -148(s0) # 4-byte Folded Spill
-; RV32IXQCCMP-FP-NEXT:    lw t5, 24(a2)
-; RV32IXQCCMP-FP-NEXT:    lw t6, 28(a2)
-; RV32IXQCCMP-FP-NEXT:    lw s2, 32(a2)
-; RV32IXQCCMP-FP-NEXT:    lw s3, 36(a2)
-; RV32IXQCCMP-FP-NEXT:    lw s4, 40(a2)
-; RV32IXQCCMP-FP-NEXT:    lw s5, 44(a2)
-; RV32IXQCCMP-FP-NEXT:    lw s6, 48(a2)
-; RV32IXQCCMP-FP-NEXT:    lw s7, 52(a2)
-; RV32IXQCCMP-FP-NEXT:    lw s8, 56(a2)
-; RV32IXQCCMP-FP-NEXT:    lw s9, 60(a2)
-; RV32IXQCCMP-FP-NEXT:    lw s10, 64(a2)
-; RV32IXQCCMP-FP-NEXT:    lw s11, 68(a2)
-; RV32IXQCCMP-FP-NEXT:    lw ra, 72(a2)
-; RV32IXQCCMP-FP-NEXT:    lw s1, 76(a2)
-; RV32IXQCCMP-FP-NEXT:    lw t4, 80(a2)
-; RV32IXQCCMP-FP-NEXT:    lw t3, 84(a2)
-; RV32IXQCCMP-FP-NEXT:    lw t2, 88(a2)
-; RV32IXQCCMP-FP-NEXT:    lw t1, 92(a2)
-; RV32IXQCCMP-FP-NEXT:    lw t0, 96(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a6, 116(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a4, 120(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a1, 124(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a7, 100(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a5, 104(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a3, 108(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a0, 112(a2)
-; RV32IXQCCMP-FP-NEXT:    sw a1, 124(a2)
-; RV32IXQCCMP-FP-NEXT:    sw a4, 120(a2)
-; RV32IXQCCMP-FP-NEXT:    sw a6, 116(a2)
-; RV32IXQCCMP-FP-NEXT:    sw a0, 112(a2)
-; RV32IXQCCMP-FP-NEXT:    sw a3, 108(a2)
-; RV32IXQCCMP-FP-NEXT:    sw a5, 104(a2)
-; RV32IXQCCMP-FP-NEXT:    sw a7, 100(a2)
-; RV32IXQCCMP-FP-NEXT:    sw t0, 96(a2)
-; RV32IXQCCMP-FP-NEXT:    sw t1, 92(a2)
-; RV32IXQCCMP-FP-NEXT:    sw t2, 88(a2)
-; RV32IXQCCMP-FP-NEXT:    sw t3, 84(a2)
-; RV32IXQCCMP-FP-NEXT:    sw t4, 80(a2)
-; RV32IXQCCMP-FP-NEXT:    sw s1, 76(a2)
-; RV32IXQCCMP-FP-NEXT:    sw ra, 72(a2)
-; RV32IXQCCMP-FP-NEXT:    sw s11, 68(a2)
-; RV32IXQCCMP-FP-NEXT:    sw s10, 64(a2)
-; RV32IXQCCMP-FP-NEXT:    sw s9, 60(a2)
-; RV32IXQCCMP-FP-NEXT:    sw s8, 56(a2)
-; RV32IXQCCMP-FP-NEXT:    sw s7, 52(a2)
-; RV32IXQCCMP-FP-NEXT:    sw s6, 48(a2)
-; RV32IXQCCMP-FP-NEXT:    sw s5, 44(a2)
-; RV32IXQCCMP-FP-NEXT:    sw s4, 40(a2)
-; RV32IXQCCMP-FP-NEXT:    sw s3, 36(a2)
-; RV32IXQCCMP-FP-NEXT:    sw s2, 32(a2)
-; RV32IXQCCMP-FP-NEXT:    sw t6, 28(a2)
-; RV32IXQCCMP-FP-NEXT:    sw t5, 24(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a0, -148(s0) # 4-byte Folded Reload
-; RV32IXQCCMP-FP-NEXT:    sw a0, 20(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a0, -144(s0) # 4-byte Folded Reload
-; RV32IXQCCMP-FP-NEXT:    sw a0, 16(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a0, -140(s0) # 4-byte Folded Reload
-; RV32IXQCCMP-FP-NEXT:    sw a0, 12(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a0, -136(s0) # 4-byte Folded Reload
-; RV32IXQCCMP-FP-NEXT:    sw a0, 8(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a0, -132(s0) # 4-byte Folded Reload
-; RV32IXQCCMP-FP-NEXT:    sw a0, 4(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a0, -128(s0) # 4-byte Folded Reload
-; RV32IXQCCMP-FP-NEXT:    lui a1, %hi(var_test_irq)
-; RV32IXQCCMP-FP-NEXT:    sw a0, %lo(var_test_irq)(a1)
+; RV32IXQCCMP-FP-NEXT:    addi a0, a0, %lo(var_test_irq)
+; RV32IXQCCMP-FP-NEXT:    lw a1, 0(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a1, -128(s0) # 4-byte Folded Spill
+; RV32IXQCCMP-FP-NEXT:    lw a1, 4(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a1, -132(s0) # 4-byte Folded Spill
+; RV32IXQCCMP-FP-NEXT:    lw a1, 8(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a1, -136(s0) # 4-byte Folded Spill
+; RV32IXQCCMP-FP-NEXT:    lw a1, 12(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a1, -140(s0) # 4-byte Folded Spill
+; RV32IXQCCMP-FP-NEXT:    lw a1, 16(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a1, -144(s0) # 4-byte Folded Spill
+; RV32IXQCCMP-FP-NEXT:    lw a1, 20(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a1, -148(s0) # 4-byte Folded Spill
+; RV32IXQCCMP-FP-NEXT:    lw t4, 24(a0)
+; RV32IXQCCMP-FP-NEXT:    lw t5, 28(a0)
+; RV32IXQCCMP-FP-NEXT:    lw t6, 32(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s2, 36(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s3, 40(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s4, 44(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s5, 48(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s6, 52(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s7, 56(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s8, 60(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s9, 64(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s10, 68(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s11, 72(a0)
+; RV32IXQCCMP-FP-NEXT:    lw ra, 76(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s1, 80(a0)
+; RV32IXQCCMP-FP-NEXT:    lw t3, 84(a0)
+; RV32IXQCCMP-FP-NEXT:    lw t2, 88(a0)
+; RV32IXQCCMP-FP-NEXT:    lw t1, 92(a0)
+; RV32IXQCCMP-FP-NEXT:    lw t0, 112(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a6, 116(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a4, 120(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a1, 124(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a7, 96(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a5, 100(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a3, 104(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a2, 108(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a1, 124(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a4, 120(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a6, 116(a0)
+; RV32IXQCCMP-FP-NEXT:    sw t0, 112(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a2, 108(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a3, 104(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a5, 100(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a7, 96(a0)
+; RV32IXQCCMP-FP-NEXT:    sw t1, 92(a0)
+; RV32IXQCCMP-FP-NEXT:    sw t2, 88(a0)
+; RV32IXQCCMP-FP-NEXT:    sw t3, 84(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s1, 80(a0)
+; RV32IXQCCMP-FP-NEXT:    sw ra, 76(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s11, 72(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s10, 68(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s9, 64(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s8, 60(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s7, 56(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s6, 52(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s5, 48(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s4, 44(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s3, 40(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s2, 36(a0)
+; RV32IXQCCMP-FP-NEXT:    sw t6, 32(a0)
+; RV32IXQCCMP-FP-NEXT:    sw t5, 28(a0)
+; RV32IXQCCMP-FP-NEXT:    sw t4, 24(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a1, -148(s0) # 4-byte Folded Reload
+; RV32IXQCCMP-FP-NEXT:    sw a1, 20(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a1, -144(s0) # 4-byte Folded Reload
+; RV32IXQCCMP-FP-NEXT:    sw a1, 16(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a1, -140(s0) # 4-byte Folded Reload
+; RV32IXQCCMP-FP-NEXT:    sw a1, 12(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a1, -136(s0) # 4-byte Folded Reload
+; RV32IXQCCMP-FP-NEXT:    sw a1, 8(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a1, -132(s0) # 4-byte Folded Reload
+; RV32IXQCCMP-FP-NEXT:    sw a1, 4(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a1, -128(s0) # 4-byte Folded Reload
+; RV32IXQCCMP-FP-NEXT:    sw a1, 0(a0)
 ; RV32IXQCCMP-FP-NEXT:    .cfi_def_cfa sp, 160
 ; RV32IXQCCMP-FP-NEXT:    lw t0, 92(sp) # 4-byte Folded Reload
 ; RV32IXQCCMP-FP-NEXT:    lw t1, 88(sp) # 4-byte Folded Reload
@@ -2705,85 +2669,83 @@ define void @callee_with_irq() "interrupt"="machine" {
 ; RV64IXQCCMP-FP-NEXT:    .cfi_offset t6, -232
 ; RV64IXQCCMP-FP-NEXT:    .cfi_def_cfa s0, 0
 ; RV64IXQCCMP-FP-NEXT:    lui a0, %hi(var_test_irq)
-; RV64IXQCCMP-FP-NEXT:    lui a2, %hi(var_test_irq)
-; RV64IXQCCMP-FP-NEXT:    addi a2, a2, %lo(var_test_irq)
-; RV64IXQCCMP-FP-NEXT:    lw a0, %lo(var_test_irq)(a0)
-; RV64IXQCCMP-FP-NEXT:    sd a0, -240(s0) # 8-byte Folded Spill
-; RV64IXQCCMP-FP-NEXT:    lw a0, 4(a2)
-; RV64IXQCCMP-FP-NEXT:    sd a0, -248(s0) # 8-byte Folded Spill
-; RV64IXQCCMP-FP-NEXT:    lw a0, 8(a2)
-; RV64IXQCCMP-FP-NEXT:    sd a0, -256(s0) # 8-byte Folded Spill
-; RV64IXQCCMP-FP-NEXT:    lw a0, 12(a2)
-; RV64IXQCCMP-FP-NEXT:    sd a0, -264(s0) # 8-byte Folded Spill
-; RV64IXQCCMP-FP-NEXT:    lw a0, 16(a2)
-; RV64IXQCCMP-FP-NEXT:    sd a0, -272(s0) # 8-byte Folded Spill
-; RV64IXQCCMP-FP-NEXT:    lw a0, 20(a2)
-; RV64IXQCCMP-FP-NEXT:    sd a0, -280(s0) # 8-byte Folded Spill
-; RV64IXQCCMP-FP-NEXT:    lw t5, 24(a2)
-; RV64IXQCCMP-FP-NEXT:    lw t6, 28(a2)
-; RV64IXQCCMP-FP-NEXT:    lw s2, 32(a2)
-; RV64IXQCCMP-FP-NEXT:    lw s3, 36(a2)
-; RV64IXQCCMP-FP-NEXT:    lw s4, 40(a2)
-; RV64IXQCCMP-FP-NEXT:    lw s5, 44(a2)
-; RV64IXQCCMP-FP-NEXT:    lw s6, 48(a2)
-; RV64IXQCCMP-FP-NEXT:    lw s7, 52(a2)
-; RV64IXQCCMP-FP-NEXT:    lw s8, 56(a2)
-; RV64IXQCCMP-FP-NEXT:    lw s9, 60(a2)
-; RV64IXQCCMP-FP-NEXT:    lw s10, 64(a2)
-; RV64IXQCCMP-FP-NEXT:    lw s11, 68(a2)
-; RV64IXQCCMP-FP-NEXT:    lw ra, 72(a2)
-; RV64IXQCCMP-FP-NEXT:    lw s1, 76(a2)
-; RV64IXQCCMP-FP-NEXT:    lw t4, 80(a2)
-; RV64IXQCCMP-FP-NEXT:    lw t3, 84(a2)
-; RV64IXQCCMP-FP-NEXT:    lw t2, 88(a2)
-; RV64IXQCCMP-FP-NEXT:    lw t1, 92(a2)
-; RV64IXQCCMP-FP-NEXT:    lw t0, 96(a2)
-; RV64IXQCCMP-FP-NEXT:    lw a6, 116(a2)
-; RV64IXQCCMP-FP-NEXT:    lw a4, 120(a2)
-; RV64IXQCCMP-FP-NEXT:    lw a1, 124(a2)
-; RV64IXQCCMP-FP-NEXT:    lw a7, 100(a2)
-; RV64IXQCCMP-FP-NEXT:    lw a5, 104(a2)
-; RV64IXQCCMP-FP-NEXT:    lw a3, 108(a2)
-; RV64IXQCCMP-FP-NEXT:    lw a0, 112(a2)
-; RV64IXQCCMP-FP-NEXT:    sw a1, 124(a2)
-; RV64IXQCCMP-FP-NEXT:    sw a4, 120(a2)
-; RV64IXQCCMP-FP-NEXT:    sw a6, 116(a2)
-; RV64IXQCCMP-FP-NEXT:    sw a0, 112(a2)
-; RV64IXQCCMP-FP-NEXT:    sw a3, 108(a2)
-; RV64IXQCCMP-FP-NEXT:    sw a5, 104(a2)
-; RV64IXQCCMP-FP-NEXT:    sw a7, 100(a2)
-; RV64IXQCCMP-FP-NEXT:    sw t0, 96(a2)
-; RV64IXQCCMP-FP-NEXT:    sw t1, 92(a2)
-; RV64IXQCCMP-FP-NEXT:    sw t2, 88(a2)
-; RV64IXQCCMP-FP-NEXT:    sw t3, 84(a2)
-; RV64IXQCCMP-FP-NEXT:    sw t4, 80(a2)
-; RV64IXQCCMP-FP-NEXT:    sw s1, 76(a2)
-; RV64IXQCCMP-FP-NEXT:    sw ra, 72(a2)
-; RV64IXQCCMP-FP-NEXT:    sw s11, 68(a2)
-; RV64IXQCCMP-FP-NEXT:    sw s10, 64(a2)
-; RV64IXQCCMP-FP-NEXT:    sw s9, 60(a2)
-; RV64IXQCCMP-FP-NEXT:    sw s8, 56(a2)
-; RV64IXQCCMP-FP-NEXT:    sw s7, 52(a2)
-; RV64IXQCCMP-FP-NEXT:    sw s6, 48(a2)
-; RV64IXQCCMP-FP-NEXT:    sw s5, 44(a2)
-; RV64IXQCCMP-FP-NEXT:    sw s4, 40(a2)
-; RV64IXQCCMP-FP-NEXT:    sw s3, 36(a2)
-; RV64IXQCCMP-FP-NEXT:    sw s2, 32(a2)
-; RV64IXQCCMP-FP-NEXT:    sw t6, 28(a2)
-; RV64IXQCCMP-FP-NEXT:    sw t5, 24(a2)
-; RV64IXQCCMP-FP-NEXT:    ld a0, -280(s0) # 8-byte Folded Reload
-; RV64IXQCCMP-FP-NEXT:    sw a0, 20(a2)
-; RV64IXQCCMP-FP-NEXT:    ld a0, -272(s0) # 8-byte Folded Reload
-; RV64IXQCCMP-FP-NEXT:    sw a0, 16(a2)
-; RV64IXQCCMP-FP-NEXT:    ld a0, -264(s0) # 8-byte Folded Reload
-; RV64IXQCCMP-FP-NEXT:    sw a0, 12(a2)
-; RV64IXQCCMP-FP-NEXT:    ld a0, -256(s0) # 8-byte Folded Reload
-; RV64IXQCCMP-FP-NEXT:    sw a0, 8(a2)
-; RV64IXQCCMP-FP-NEXT:    ld a0, -248(s0) # 8-byte Folded Reload
-; RV64IXQCCMP-FP-NEXT:    sw a0, 4(a2)
-; RV64IXQCCMP-FP-NEXT:    ld a0, -240(s0) # 8-byte Folded Reload
-; RV64IXQCCMP-FP-NEXT:    lui a1, %hi(var_test_irq)
-; RV64IXQCCMP-FP-NEXT:    sw a0, %lo(var_test_irq)(a1)
+; RV64IXQCCMP-FP-NEXT:    addi a0, a0, %lo(var_test_irq)
+; RV64IXQCCMP-FP-NEXT:    lw a1, 0(a0)
+; RV64IXQCCMP-FP-NEXT:    sd a1, -240(s0) # 8-byte Folded Spill
+; RV64IXQCCMP-FP-NEXT:    lw a1, 4(a0)
+; RV64IXQCCMP-FP-NEXT:    sd a1, -248(s0) # 8-byte Folded Spill
+; RV64IXQCCMP-FP-NEXT:    lw a1, 8(a0)
+; RV64IXQCCMP-FP-NEXT:    sd a1, -256(s0) # 8-byte Folded Spill
+; RV64IXQCCMP-FP-NEXT:    lw a1, 12(a0)
+; RV64IXQCCMP-FP-NEXT:    sd a1, -264(s0) # 8-byte Folded Spill
+; RV64IXQCCMP-FP-NEXT:    lw a1, 16(a0)
+; RV64IXQCCMP-FP-NEXT:    sd a1, -272(s0) # 8-byte Folded Spill
+; RV64IXQCCMP-FP-NEXT:    lw a1, 20(a0)
+; RV64IXQCCMP-FP-NEXT:    sd a1, -280(s0) # 8-byte Folded Spill
+; RV64IXQCCMP-FP-NEXT:    lw t4, 24(a0)
+; RV64IXQCCMP-FP-NEXT:    lw t5, 28(a0)
+; RV64IXQCCMP-FP-NEXT:    lw t6, 32(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s2, 36(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s3, 40(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s4, 44(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s5, 48(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s6, 52(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s7, 56(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s8, 60(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s9, 64(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s10, 68(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s11, 72(a0)
+; RV64IXQCCMP-FP-NEXT:    lw ra, 76(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s1, 80(a0)
+; RV64IXQCCMP-FP-NEXT:    lw t3, 84(a0)
+; RV64IXQCCMP-FP-NEXT:    lw t2, 88(a0)
+; RV64IXQCCMP-FP-NEXT:    lw t1, 92(a0)
+; RV64IXQCCMP-FP-NEXT:    lw t0, 112(a0)
+; RV64IXQCCMP-FP-NEXT:    lw a6, 116(a0)
+; RV64IXQCCMP-FP-NEXT:    lw a4, 120(a0)
+; RV64IXQCCMP-FP-NEXT:    lw a1, 124(a0)
+; RV64IXQCCMP-FP-NEXT:    lw a7, 96(a0)
+; RV64IXQCCMP-FP-NEXT:    lw a5, 100(a0)
+; RV64IXQCCMP-FP-NEXT:    lw a3, 104(a0)
+; RV64IXQCCMP-FP-NEXT:    lw a2, 108(a0)
+; RV64IXQCCMP-FP-NEXT:    sw a1, 124(a0)
+; RV64IXQCCMP-FP-NEXT:    sw a4, 120(a0)
+; RV64IXQCCMP-FP-NEXT:    sw a6, 116(a0)
+; RV64IXQCCMP-FP-NEXT:    sw t0, 112(a0)
+; RV64IXQCCMP-FP-NEXT:    sw a2, 108(a0)
+; RV64IXQCCMP-FP-NEXT:    sw a3, 104(a0)
+; RV64IXQCCMP-FP-NEXT:    sw a5, 100(a0)
+; RV64IXQCCMP-FP-NEXT:    sw a7, 96(a0)
+; RV64IXQCCMP-FP-NEXT:    sw t1, 92(a0)
+; RV64IXQCCMP-FP-NEXT:    sw t2, 88(a0)
+; RV64IXQCCMP-FP-NEXT:    sw t3, 84(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s1, 80(a0)
+; RV64IXQCCMP-FP-NEXT:    sw ra, 76(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s11, 72(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s10, 68(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s9, 64(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s8, 60(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s7, 56(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s6, 52(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s5, 48(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s4, 44(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s3, 40(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s2, 36(a0)
+; RV64IXQCCMP-FP-NEXT:    sw t6, 32(a0)
+; RV64IXQCCMP-FP-NEXT:    sw t5, 28(a0)
+; RV64IXQCCMP-FP-NEXT:    sw t4, 24(a0)
+; RV64IXQCCMP-FP-NEXT:    ld a1, -280(s0) # 8-byte Folded Reload
+; RV64IXQCCMP-FP-NEXT:    sw a1, 20(a0)
+; RV64IXQCCMP-FP-NEXT:    ld a1, -272(s0) # 8-byte Folded Reload
+; RV64IXQCCMP-FP-NEXT:    sw a1, 16(a0)
+; RV64IXQCCMP-FP-NEXT:    ld a1, -264(s0) # 8-byte Folded Reload
+; RV64IXQCCMP-FP-NEXT:    sw a1, 12(a0)
+; RV64IXQCCMP-FP-NEXT:    ld a1, -256(s0) # 8-byte Folded Reload
+; RV64IXQCCMP-FP-NEXT:    sw a1, 8(a0)
+; RV64IXQCCMP-FP-NEXT:    ld a1, -248(s0) # 8-byte Folded Reload
+; RV64IXQCCMP-FP-NEXT:    sw a1, 4(a0)
+; RV64IXQCCMP-FP-NEXT:    ld a1, -240(s0) # 8-byte Folded Reload
+; RV64IXQCCMP-FP-NEXT:    sw a1, 0(a0)
 ; RV64IXQCCMP-FP-NEXT:    .cfi_def_cfa sp, 288
 ; RV64IXQCCMP-FP-NEXT:    ld t0, 168(sp) # 8-byte Folded Reload
 ; RV64IXQCCMP-FP-NEXT:    ld t1, 160(sp) # 8-byte Folded Reload
@@ -2884,83 +2846,81 @@ define void @callee_with_irq() "interrupt"="machine" {
 ; RV32IXQCCMP-SR-NEXT:    .cfi_offset t5, -120
 ; RV32IXQCCMP-SR-NEXT:    .cfi_offset t6, -124
 ; RV32IXQCCMP-SR-NEXT:    lui a0, %hi(var_test_irq)
-; RV32IXQCCMP-SR-NEXT:    lui a2, %hi(var_test_irq)
-; RV32IXQCCMP-SR-NEXT:    addi a2, a2, %lo(var_test_irq)
-; RV32IXQCCMP-SR-NEXT:    lw a0, %lo(var_test_irq)(a0)
-; RV32IXQCCMP-SR-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
-; RV32IXQCCMP-SR-NEXT:    lw a0, 4(a2)
-; RV32IXQCCMP-SR-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
-; RV32IXQCCMP-SR-NEXT:    lw a0, 8(a2)
-; RV32IXQCCMP-SR-NEXT:    sw a0, 8(sp) # 4-byte Folded Spill
-; RV32IXQCCMP-SR-NEXT:    lw a0, 12(a2)
-; RV32IXQCCMP-SR-NEXT:    sw a0, 4(sp) # 4-byte Folded Spill
-; RV32IXQCCMP-SR-NEXT:    lw a0, 16(a2)
-; RV32IXQCCMP-SR-NEXT:    sw a0, 0(sp) # 4-byte Folded Spill
-; RV32IXQCCMP-SR-NEXT:    lw t4, 20(a2)
-; RV32IXQCCMP-SR-NEXT:    lw t5, 24(a2)
-; RV32IXQCCMP-SR-NEXT:    lw t6, 28(a2)
-; RV32IXQCCMP-SR-NEXT:    lw s2, 32(a2)
-; RV32IXQCCMP-SR-NEXT:    lw s3, 36(a2)
-; RV32IXQCCMP-SR-NEXT:    lw s4, 40(a2)
-; RV32IXQCCMP-SR-NEXT:    lw s5, 44(a2)
-; RV32IXQCCMP-SR-NEXT:    lw s6, 48(a2)
-; RV32IXQCCMP-SR-NEXT:    lw s7, 52(a2)
-; RV32IXQCCMP-SR-NEXT:    lw s8, 56(a2)
-; RV32IXQCCMP-SR-NEXT:    lw s9, 60(a2)
-; RV32IXQCCMP-SR-NEXT:    lw s10, 64(a2)
-; RV32IXQCCMP-SR-NEXT:    lw s11, 68(a2)
-; RV32IXQCCMP-SR-NEXT:    lw ra, 72(a2)
-; RV32IXQCCMP-SR-NEXT:    lw t3, 76(a2)
-; RV32IXQCCMP-SR-NEXT:    lw s0, 80(a2)
-; RV32IXQCCMP-SR-NEXT:    lw s1, 84(a2)
-; RV32IXQCCMP-SR-NEXT:    lw t2, 88(a2)
-; RV32IXQCCMP-SR-NEXT:    lw t1, 92(a2)
-; RV32IXQCCMP-SR-NEXT:    lw t0, 96(a2)
-; RV32IXQCCMP-SR-NEXT:    lw a6, 116(a2)
-; RV32IXQCCMP-SR-NEXT:    lw a4, 120(a2)
-; RV32IXQCCMP-SR-NEXT:    lw a1, 124(a2)
-; RV32IXQCCMP-SR-NEXT:    lw a7, 100(a2)
-; RV32IXQCCMP-SR-NEXT:    lw a5, 104(a2)
-; RV32IXQCCMP-SR-NEXT:    lw a3, 108(a2)
-; RV32IXQCCMP-SR-NEXT:    lw a0, 112(a2)
-; RV32IXQCCMP-SR-NEXT:    sw a1, 124(a2)
-; RV32IXQCCMP-SR-NEXT:    sw a4, 120(a2)
-; RV32IXQCCMP-SR-NEXT:    sw a6, 116(a2)
-; RV32IXQCCMP-SR-NEXT:    sw a0, 112(a2)
-; RV32IXQCCMP-SR-NEXT:    sw a3, 108(a2)
-; RV32IXQCCMP-SR-NEXT:    sw a5, 104(a2)
-; RV32IXQCCMP-SR-NEXT:    sw a7, 100(a2)
-; RV32IXQCCMP-SR-NEXT:    sw t0, 96(a2)
-; RV32IXQCCMP-SR-NEXT:    sw t1, 92(a2)
-; RV32IXQCCMP-SR-NEXT:    sw t2, 88(a2)
-; RV32IXQCCMP-SR-NEXT:    sw s1, 84(a2)
-; RV32IXQCCMP-SR-NEXT:    sw s0, 80(a2)
-; RV32IXQCCMP-SR-NEXT:    sw t3, 76(a2)
-; RV32IXQCCMP-SR-NEXT:    sw ra, 72(a2)
-; RV32IXQCCMP-SR-NEXT:    sw s11, 68(a2)
-; RV32IXQCCMP-SR-NEXT:    sw s10, 64(a2)
-; RV32IXQCCMP-SR-NEXT:    sw s9, 60(a2)
-; RV32IXQCCMP-SR-NEXT:    sw s8, 56(a2)
-; RV32IXQCCMP-SR-NEXT:    sw s7, 52(a2)
-; RV32IXQCCMP-SR-NEXT:    sw s6, 48(a2)
-; RV32IXQCCMP-SR-NEXT:    sw s5, 44(a2)
-; RV32IXQCCMP-SR-NEXT:    sw s4, 40(a2)
-; RV32IXQCCMP-SR-NEXT:    sw s3, 36(a2)
-; RV32IXQCCMP-SR-NEXT:    sw s2, 32(a2)
-; RV32IXQCCMP-SR-NEXT:    sw t6, 28(a2)
-; RV32IXQCCMP-SR-NEXT:    sw t5, 24(a2)
-; RV32IXQCCMP-SR-NEXT:    sw t4, 20(a2)
-; RV32IXQCCMP-SR-NEXT:    lw a0, 0(sp) # 4-byte Folded Reload
-; RV32IXQCCMP-SR-NEXT:    sw a0, 16(a2)
-; RV32IXQCCMP-SR-NEXT:    lw a0, 4(sp) # 4-byte Folded Reload
-; RV32IXQCCMP-SR-NEXT:    sw a0, 12(a2)
-; RV32IXQCCMP-SR-NEXT:    lw a0, 8(sp) # 4-byte Folded Reload
-; RV32IXQCCMP-SR-NEXT:    sw a0, 8(a2)
-; RV32IXQCCMP-SR-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
-; RV32IXQCCMP-SR-NEXT:    sw a0, 4(a2)
-; RV32IXQCCMP-SR-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
-; RV32IXQCCMP-SR-NEXT:    lui a1, %hi(var_test_irq)
-; RV32IXQCCMP-SR-NEXT:    sw a0, %lo(var_test_irq)(a1)
+; RV32IXQCCMP-SR-NEXT:    addi a0, a0, %lo(var_test_irq)
+; RV32IXQCCMP-SR-NEXT:    lw a1, 0(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a1, 16(sp) # 4-byte Folded Spill
+; RV32IXQCCMP-SR-NEXT:    lw a1, 4(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a1, 12(sp) # 4-byte Folded Spill
+; RV32IXQCCMP-SR-NEXT:    lw a1, 8(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a1, 8(sp) # 4-byte Folded Spill
+; RV32IXQCCMP-SR-NEXT:    lw a1, 12(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a1, 4(sp) # 4-byte Folded Spill
+; RV32IXQCCMP-SR-NEXT:    lw a1, 16(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a1, 0(sp) # 4-byte Folded Spill
+; RV32IXQCCMP-SR-NEXT:    lw t3, 20(a0)
+; RV32IXQCCMP-SR-NEXT:    lw t4, 24(a0)
+; RV32IXQCCMP-SR-NEXT:    lw t5, 28(a0)
+; RV32IXQCCMP-SR-NEXT:    lw t6, 32(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s2, 36(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s3, 40(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s4, 44(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s5, 48(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s6, 52(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s7, 56(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s8, 60(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s9, 64(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s10, 68(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s11, 72(a0)
+; RV32IXQCCMP-SR-NEXT:    lw ra, 76(a0)
+; RV32IXQCCMP-SR-NEXT:    lw t2, 80(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s0, 84(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s1, 88(a0)
+; RV32IXQCCMP-SR-NEXT:    lw t1, 92(a0)
+; RV32IXQCCMP-SR-NEXT:    lw t0, 112(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a5, 116(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a3, 120(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a1, 124(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a7, 96(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a6, 100(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a4, 104(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a2, 108(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a1, 124(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a3, 120(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a5, 116(a0)
+; RV32IXQCCMP-SR-NEXT:    sw t0, 112(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a2, 108(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a4, 104(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a6, 100(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a7, 96(a0)
+; RV32IXQCCMP-SR-NEXT:    sw t1, 92(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s1, 88(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s0, 84(a0)
+; RV32IXQCCMP-SR-NEXT:    sw t2, 80(a0)
+; RV32IXQCCMP-SR-NEXT:    sw ra, 76(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s11, 72(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s10, 68(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s9, 64(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s8, 60(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s7, 56(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s6, 52(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s5, 48(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s4, 44(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s3, 40(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s2, 36(a0)
+; RV32IXQCCMP-SR-NEXT:    sw t6, 32(a0)
+; RV32IXQCCMP-SR-NEXT:    sw t5, 28(a0)
+; RV32IXQCCMP-SR-NEXT:    sw t4, 24(a0)
+; RV32IXQCCMP-SR-NEXT:    sw t3, 20(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a1, 0(sp) # 4-byte Folded Reload
+; RV32IXQCCMP-SR-NEXT:    sw a1, 16(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a1, 4(sp) # 4-byte Folded Reload
+; RV32IXQCCMP-SR-NEXT:    sw a1, 12(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a1, 8(sp) # 4-byte Folded Reload
+; RV32IXQCCMP-SR-NEXT:    sw a1, 8(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a1, 12(sp) # 4-byte Folded Reload
+; RV32IXQCCMP-SR-NEXT:    sw a1, 4(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a1, 16(sp) # 4-byte Folded Reload
+; RV32IXQCCMP-SR-NEXT:    sw a1, 0(a0)
 ; RV32IXQCCMP-SR-NEXT:    lw t0, 76(sp) # 4-byte Folded Reload
 ; RV32IXQCCMP-SR-NEXT:    lw t1, 72(sp) # 4-byte Folded Reload
 ; RV32IXQCCMP-SR-NEXT:    lw t2, 68(sp) # 4-byte Folded Reload
@@ -3060,83 +3020,81 @@ define void @callee_with_irq() "interrupt"="machine" {
 ; RV64IXQCCMP-SR-NEXT:    .cfi_offset t5, -224
 ; RV64IXQCCMP-SR-NEXT:    .cfi_offset t6, -232
 ; RV64IXQCCMP-SR-NEXT:    lui a0, %hi(var_test_irq)
-; RV64IXQCCMP-SR-NEXT:    lui a2, %hi(var_test_irq)
-; RV64IXQCCMP-SR-NEXT:    addi a2, a2, %lo(var_test_irq)
-; RV64IXQCCMP-SR-NEXT:    lw a0, %lo(var_test_irq)(a0)
-; RV64IXQCCMP-SR-NEXT:    sd a0, 32(sp) # 8-byte Folded Spill
-; RV64IXQCCMP-SR-NEXT:    lw a0, 4(a2)
-; RV64IXQCCMP-SR-NEXT:    sd a0, 24(sp) # 8-byte Folded Spill
-; RV64IXQCCMP-SR-NEXT:    lw a0, 8(a2)
-; RV64IXQCCMP-SR-NEXT:    sd a0, 16(sp) # 8-byte Folded Spill
-; RV64IXQCCMP-SR-NEXT:    lw a0, 12(a2)
-; RV64IXQCCMP-SR-NEXT:    sd a0, 8(sp) # 8-byte Folded Spill
-; RV64IXQCCMP-SR-NEXT:    lw a0, 16(a2)
-; RV64IXQCCMP-SR-NEXT:    sd a0, 0(sp) # 8-byte Folded Spill
-; RV64IXQCCMP-SR-NEXT:    lw t4, 20(a2)
-; RV64IXQCCMP-SR-NEXT:    lw t5, 24(a2)
-; RV64IXQCCMP-SR-NEXT:    lw t6, 28(a2)
-; RV64IXQCCMP-SR-NEXT:    lw s2, 32(a2)
-; RV64IXQCCMP-SR-NEXT:    lw s3, 36(a2)
-; RV64IXQCCMP-SR-NEXT:    lw s4, 40(a2)
-; RV64IXQCCMP-SR-NEXT:    lw s5, 44(a2)
-; RV64IXQCCMP-SR-NEXT:    lw s6, 48(a2)
-; RV64IXQCCMP-SR-NEXT:    lw s7, 52(a2)
-; RV64IXQCCMP-SR-NEXT:    lw s8, 56(a2)
-; RV64IXQCCMP-SR-NEXT:    lw s9, 60(a2)
-; RV64IXQCCMP-SR-NEXT:    lw s10, 64(a2)
-; RV64IXQCCMP-SR-NEXT:    lw s11, 68(a2)
-; RV64IXQCCMP-SR-NEXT:    lw ra, 72(a2)
-; RV64IXQCCMP-SR-NEXT:    lw t3, 76(a2)
-; RV64IXQCCMP-SR-NEXT:    lw s0, 80(a2)
-; RV64IXQCCMP-SR-NEXT:    lw s1, 84(a2)
-; RV64IXQCCMP-SR-NEXT:    lw t2, 88(a2)
-; RV64IXQCCMP-SR-NEXT:    lw t1, 92(a2)
-; RV64IXQCCMP-SR-NEXT:    lw t0, 96(a2)
-; RV64IXQCCMP-SR-NEXT:    lw a6, 116(a2)
-; RV64IXQCCMP-SR-NEXT:    lw a4, 120(a2)
-; RV64IXQCCMP-SR-NEXT:    lw a1, 124(a2)
-; RV64IXQCCMP-SR-NEXT:    lw a7, 100(a2)
-; RV64IXQCCMP-SR-NEXT:    lw a5, 104(a2)
-; RV64IXQCCMP-SR-NEXT:    lw a3, 108(a2)
-; RV64IXQCCMP-SR-NEXT:    lw a0, 112(a2)
-; RV64IXQCCMP-SR-NEXT:    sw a1, 124(a2)
-; RV64IXQCCMP-SR-NEXT:    sw a4, 120(a2)
-; RV64IXQCCMP-SR-NEXT:    sw a6, 116(a2)
-; RV64IXQCCMP-SR-NEXT:    sw a0, 112(a2)
-; RV64IXQCCMP-SR-NEXT:    sw a3, 108(a2)
-; RV64IXQCCMP-SR-NEXT:    sw a5, 104(a2)
-; RV64IXQCCMP-SR-NEXT:    sw a7, 100(a2)
-; RV64IXQCCMP-SR-NEXT:    sw t0, 96(a2)
-; RV64IXQCCMP-SR-NEXT:    sw t1, 92(a2)
-; RV64IXQCCMP-SR-NEXT:    sw t2, 88(a2)
-; RV64IXQCCMP-SR-NEXT:    sw s1, 84(a2)
-; RV64IXQCCMP-SR-NEXT:    sw s0, 80(a2)
-; RV64IXQCCMP-SR-NEXT:    sw t3, 76(a2)
-; RV64IXQCCMP-SR-NEXT:    sw ra, 72(a2)
-; RV64IXQCCMP-SR-NEXT:    sw s11, 68(a2)
-; RV64IXQCCMP-SR-NEXT:    sw s10, 64(a2)
-; RV64IXQCCMP-SR-NEXT:    sw s9, 60(a2)
-; RV64IXQCCMP-SR-NEXT:    sw s8, 56(a2)
-; RV64IXQCCMP-SR-NEXT:    sw s7, 52(a2)
-; RV64IXQCCMP-SR-NEXT:    sw s6, 48(a2)
-; RV64IXQCCMP-SR-NEXT:    sw s5, 44(a2)
-; RV64IXQCCMP-SR-NEXT:    sw s4, 40(a2)
-; RV64IXQCCMP-SR-NEXT:    sw s3, 36(a2)
-; RV64IXQCCMP-SR-NEXT:    sw s2, 32(a2)
-; RV64IXQCCMP-SR-NEXT:    sw t6, 28(a2)
-; RV64IXQCCMP-SR-NEXT:    sw t5, 24(a2)
-; RV64IXQCCMP-SR-NEXT:    sw t4, 20(a2)
-; RV64IXQCCMP-SR-NEXT:    ld a0, 0(sp) # 8-byte Folded Reload
-; RV64IXQCCMP-SR-NEXT:    sw a0, 16(a2)
-; RV64IXQCCMP-SR-NEXT:    ld a0, 8(sp) # 8-byte Folded Reload
-; RV64IXQCCMP-SR-NEXT:    sw a0, 12(a2)
-; RV64IXQCCMP-SR-NEXT:    ld a0, 16(sp) # 8-byte Folded Reload
-; RV64IXQCCMP-SR-NEXT:    sw a0, 8(a2)
-; RV64IXQCCMP-SR-NEXT:    ld a0, 24(sp) # 8-byte Folded Reload
-; RV64IXQCCMP-SR-NEXT:    sw a0, 4(a2)
-; RV64IXQCCMP-SR-NEXT:    ld a0, 32(sp) # 8-byte Folded Reload
-; RV64IXQCCMP-SR-NEXT:    lui a1, %hi(var_test_irq)
-; RV64IXQCCMP-SR-NEXT:    sw a0, %lo(var_test_irq)(a1)
+; RV64IXQCCMP-SR-NEXT:    addi a0, a0, %lo(var_test_irq)
+; RV64IXQCCMP-SR-NEXT:    lw a1, 0(a0)
+; RV64IXQCCMP-SR-NEXT:    sd a1, 32(sp) # 8-byte Folded Spill
+; RV64IXQCCMP-SR-NEXT:    lw a1, 4(a0)
+; RV64IXQCCMP-SR-NEXT:    sd a1, 24(sp) # 8-byte Folded Spill
+; RV64IXQCCMP-SR-NEXT:    lw a1, 8(a0)
+; RV64IXQCCMP-SR-NEXT:    sd a1, 16(sp) # 8-byte Folded Spill
+; RV64IXQCCMP-SR-NEXT:    lw a1, 12(a0)
+; RV64IXQCCMP-SR-NEXT:    sd a1, 8(sp) # 8-byte Folded Spill
+; RV64IXQCCMP-SR-NEXT:    lw a1, 16(a0)
+; RV64IXQCCMP-SR-NEXT:    sd a1, 0(sp) # 8-byte Folded Spill
+; RV64IXQCCMP-SR-NEXT:    lw t3, 20(a0)
+; RV64IXQCCMP-SR-NEXT:    lw t4, 24(a0)
+; RV64IXQCCMP-SR-NEXT:    lw t5, 28(a0)
+; RV64IXQCCMP-SR-NEXT:    lw t6, 32(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s2, 36(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s3, 40(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s4, 44(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s5, 48(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s6, 52(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s7, 56(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s8, 60(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s9, 64(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s10, 68(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s11, 72(a0)
+; RV64IXQCCMP-SR-NEXT:    lw ra, 76(a0)
+; RV64IXQCCMP-SR-NEXT:    lw t2, 80(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s0, 84(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s1, 88(a0)
+; RV64IXQCCMP-SR-NEXT:    lw t1, 92(a0)
+; RV64IXQCCMP-SR-NEXT:    lw t0, 112(a0)
+; RV64IXQCCMP-SR-NEXT:    lw a5, 116(a0)
+; RV64IXQCCMP-SR-NEXT:    lw a3, 120(a0)
+; RV64IXQCCMP-SR-NEXT:    lw a1, 124(a0)
+; RV64IXQCCMP-SR-NEXT:    lw a7, 96(a0)
+; RV64IXQCCMP-SR-NEXT:    lw a6, 100(a0)
+; RV64IXQCCMP-SR-NEXT:    lw a4, 104(a0)
+; RV64IXQCCMP-SR-NEXT:    lw a2, 108(a0)
+; RV64IXQCCMP-SR-NEXT:    sw a1, 124(a0)
+; RV64IXQCCMP-SR-NEXT:    sw a3, 120(a0)
+; RV64IXQCCMP-SR-NEXT:    sw a5, 116(a0)
+; RV64IXQCCMP-SR-NEXT:    sw t0, 112(a0)
+; RV64IXQCCMP-SR-NEXT:    sw a2, 108(a0)
+; RV64IXQCCMP-SR-NEXT:    sw a4, 104(a0)
+; RV64IXQCCMP-SR-NEXT:    sw a6, 100(a0)
+; RV64IXQCCMP-SR-NEXT:    sw a7, 96(a0)
+; RV64IXQCCMP-SR-NEXT:    sw t1, 92(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s1, 88(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s0, 84(a0)
+; RV64IXQCCMP-SR-NEXT:    sw t2, 80(a0)
+; RV64IXQCCMP-SR-NEXT:    sw ra, 76(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s11, 72(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s10, 68(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s9, 64(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s8, 60(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s7, 56(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s6, 52(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s5, 48(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s4, 44(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s3, 40(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s2, 36(a0)
+; RV64IXQCCMP-SR-NEXT:    sw t6, 32(a0)
+; RV64IXQCCMP-SR-NEXT:    sw t5, 28(a0)
+; RV64IXQCCMP-SR-NEXT:    sw t4, 24(a0)
+; RV64IXQCCMP-SR-NEXT:    sw t3, 20(a0)
+; RV64IXQCCMP-SR-NEXT:    ld a1, 0(sp) # 8-byte Folded Reload
+; RV64IXQCCMP-SR-NEXT:    sw a1, 16(a0)
+; RV64IXQCCMP-SR-NEXT:    ld a1, 8(sp) # 8-byte Folded Reload
+; RV64IXQCCMP-SR-NEXT:    sw a1, 12(a0)
+; RV64IXQCCMP-SR-NEXT:    ld a1, 16(sp) # 8-byte Folded Reload
+; RV64IXQCCMP-SR-NEXT:    sw a1, 8(a0)
+; RV64IXQCCMP-SR-NEXT:    ld a1, 24(sp) # 8-byte Folded Reload
+; RV64IXQCCMP-SR-NEXT:    sw a1, 4(a0)
+; RV64IXQCCMP-SR-NEXT:    ld a1, 32(sp) # 8-byte Folded Reload
+; RV64IXQCCMP-SR-NEXT:    sw a1, 0(a0)
 ; RV64IXQCCMP-SR-NEXT:    ld t0, 152(sp) # 8-byte Folded Reload
 ; RV64IXQCCMP-SR-NEXT:    ld t1, 144(sp) # 8-byte Folded Reload
 ; RV64IXQCCMP-SR-NEXT:    ld t2, 136(sp) # 8-byte Folded Reload
@@ -3209,83 +3167,81 @@ define void @callee_no_irq() {
 ; RV32IXQCCMP-NEXT:    .cfi_offset s10, -48
 ; RV32IXQCCMP-NEXT:    .cfi_offset s11, -52
 ; RV32IXQCCMP-NEXT:    lui a0, %hi(var_test_irq)
-; RV32IXQCCMP-NEXT:    lui a2, %hi(var_test_irq)
-; RV32IXQCCMP-NEXT:    addi a2, a2, %lo(var_test_irq)
-; RV32IXQCCMP-NEXT:    lw a0, %lo(var_test_irq)(a0)
-; RV32IXQCCMP-NEXT:    sw a0, 28(sp) # 4-byte Folded Spill
-; RV32IXQCCMP-NEXT:    lw a0, 4(a2)
-; RV32IXQCCMP-NEXT:    sw a0, 24(sp) # 4-byte Folded Spill
-; RV32IXQCCMP-NEXT:    lw a0, 8(a2)
-; RV32IXQCCMP-NEXT:    sw a0, 20(sp) # 4-byte Folded Spill
-; RV32IXQCCMP-NEXT:    lw a0, 12(a2)
-; RV32IXQCCMP-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
-; RV32IXQCCMP-NEXT:    lw a0, 16(a2)
-; RV32IXQCCMP-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
-; RV32IXQCCMP-NEXT:    lw t4, 20(a2)
-; RV32IXQCCMP-NEXT:    lw t5, 24(a2)
-; RV32IXQCCMP-NEXT:    lw t6, 28(a2)
-; RV32IXQCCMP-NEXT:    lw s2, 32(a2)
-; RV32IXQCCMP-NEXT:    lw s3, 36(a2)
-; RV32IXQCCMP-NEXT:    lw s4, 40(a2)
-; RV32IXQCCMP-NEXT:    lw s5, 44(a2)
-; RV32IXQCCMP-NEXT:    lw s6, 48(a2)
-; RV32IXQCCMP-NEXT:    lw s7, 52(a2)
-; RV32IXQCCMP-NEXT:    lw s8, 56(a2)
-; RV32IXQCCMP-NEXT:    lw s9, 60(a2)
-; RV32IXQCCMP-NEXT:    lw s10, 64(a2)
-; RV32IXQCCMP-NEXT:    lw s11, 68(a2)
-; RV32IXQCCMP-NEXT:    lw ra, 72(a2)
-; RV32IXQCCMP-NEXT:    lw t3, 76(a2)
-; RV32IXQCCMP-NEXT:    lw s0, 80(a2)
-; RV32IXQCCMP-NEXT:    lw s1, 84(a2)
-; RV32IXQCCMP-NEXT:    lw t2, 88(a2)
-; RV32IXQCCMP-NEXT:    lw t1, 92(a2)
-; RV32IXQCCMP-NEXT:    lw t0, 96(a2)
-; RV32IXQCCMP-NEXT:    lw a6, 116(a2)
-; RV32IXQCCMP-NEXT:    lw a4, 120(a2)
-; RV32IXQCCMP-NEXT:    lw a1, 124(a2)
-; RV32IXQCCMP-NEXT:    lw a7, 100(a2)
-; RV32IXQCCMP-NEXT:    lw a5, 104(a2)
-; RV32IXQCCMP-NEXT:    lw a3, 108(a2)
-; RV32IXQCCMP-NEXT:    lw a0, 112(a2)
-; RV32IXQCCMP-NEXT:    sw a1, 124(a2)
-; RV32IXQCCMP-NEXT:    sw a4, 120(a2)
-; RV32IXQCCMP-NEXT:    sw a6, 116(a2)
-; RV32IXQCCMP-NEXT:    sw a0, 112(a2)
-; RV32IXQCCMP-NEXT:    sw a3, 108(a2)
-; RV32IXQCCMP-NEXT:    sw a5, 104(a2)
-; RV32IXQCCMP-NEXT:    sw a7, 100(a2)
-; RV32IXQCCMP-NEXT:    sw t0, 96(a2)
-; RV32IXQCCMP-NEXT:    sw t1, 92(a2)
-; RV32IXQCCMP-NEXT:    sw t2, 88(a2)
-; RV32IXQCCMP-NEXT:    sw s1, 84(a2)
-; RV32IXQCCMP-NEXT:    sw s0, 80(a2)
-; RV32IXQCCMP-NEXT:    sw t3, 76(a2)
-; RV32IXQCCMP-NEXT:    sw ra, 72(a2)
-; RV32IXQCCMP-NEXT:    sw s11, 68(a2)
-; RV32IXQCCMP-NEXT:    sw s10, 64(a2)
-; RV32IXQCCMP-NEXT:    sw s9, 60(a2)
-; RV32IXQCCMP-NEXT:    sw s8, 56(a2)
-; RV32IXQCCMP-NEXT:    sw s7, 52(a2)
-; RV32IXQCCMP-NEXT:    sw s6, 48(a2)
-; RV32IXQCCMP-NEXT:    sw s5, 44(a2)
-; RV32IXQCCMP-NEXT:    sw s4, 40(a2)
-; RV32IXQCCMP-NEXT:    sw s3, 36(a2)
-; RV32IXQCCMP-NEXT:    sw s2, 32(a2)
-; RV32IXQCCMP-NEXT:    sw t6, 28(a2)
-; RV32IXQCCMP-NEXT:    sw t5, 24(a2)
-; RV32IXQCCMP-NEXT:    sw t4, 20(a2)
-; RV32IXQCCMP-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
-; RV32IXQCCMP-NEXT:    sw a0, 16(a2)
-; RV32IXQCCMP-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
-; RV32IXQCCMP-NEXT:    sw a0, 12(a2)
-; RV32IXQCCMP-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
-; RV32IXQCCMP-NEXT:    sw a0, 8(a2)
-; RV32IXQCCMP-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
-; RV32IXQCCMP-NEXT:    sw a0, 4(a2)
-; RV32IXQCCMP-NEXT:    lw a0, 28(sp) # 4-byte Folded Reload
-; RV32IXQCCMP-NEXT:    lui a1, %hi(var_test_irq)
-; RV32IXQCCMP-NEXT:    sw a0, %lo(var_test_irq)(a1)
+; RV32IXQCCMP-NEXT:    addi a0, a0, %lo(var_test_irq)
+; RV32IXQCCMP-NEXT:    lw a1, 0(a0)
+; RV32IXQCCMP-NEXT:    sw a1, 28(sp) # 4-byte Folded Spill
+; RV32IXQCCMP-NEXT:    lw a1, 4(a0)
+; RV32IXQCCMP-NEXT:    sw a1, 24(sp) # 4-byte Folded Spill
+; RV32IXQCCMP-NEXT:    lw a1, 8(a0)
+; RV32IXQCCMP-NEXT:    sw a1, 20(sp) # 4-byte Folded Spill
+; RV32IXQCCMP-NEXT:    lw a1, 12(a0)
+; RV32IXQCCMP-NEXT:    sw a1, 16(sp) # 4-byte Folded Spill
+; RV32IXQCCMP-NEXT:    lw a1, 16(a0)
+; RV32IXQCCMP-NEXT:    sw a1, 12(sp) # 4-byte Folded Spill
+; RV32IXQCCMP-NEXT:    lw t3, 20(a0)
+; RV32IXQCCMP-NEXT:    lw t4, 24(a0)
+; RV32IXQCCMP-NEXT:    lw t5, 28(a0)
+; RV32IXQCCMP-NEXT:    lw t6, 32(a0)
+; RV32IXQCCMP-NEXT:    lw s2, 36(a0)
+; RV32IXQCCMP-NEXT:    lw s3, 40(a0)
+; RV32IXQCCMP-NEXT:    lw s4, 44(a0)
+; RV32IXQCCMP-NEXT:    lw s5, 48(a0)
+; RV32IXQCCMP-NEXT:    lw s6, 52(a0)
+; RV32IXQCCMP-NEXT:    lw s7, 56(a0)
+; RV32IXQCCMP-NEXT:    lw s8, 60(a0)
+; RV32IXQCCMP-NEXT:    lw s9, 64(a0)
+; RV32IXQCCMP-NEXT:    lw s10, 68(a0)
+; RV32IXQCCMP-NEXT:    lw s11, 72(a0)
+; RV32IXQCCMP-NEXT:    lw ra, 76(a0)
+; RV32IXQCCMP-NEXT:    lw t2, 80(a0)
+; RV32IXQCCMP-NEXT:    lw s0, 84(a0)
+; RV32IXQCCMP-NEXT:    lw s1, 88(a0)
+; RV32IXQCCMP-NEXT:    lw t1, 92(a0)
+; RV32IXQCCMP-NEXT:    lw t0, 112(a0)
+; RV32IXQCCMP-NEXT:    lw a5, 116(a0)
+; RV32IXQCCMP-NEXT:    lw a3, 120(a0)
+; RV32IXQCCMP-NEXT:    lw a1, 124(a0)
+; RV32IXQCCMP-NEXT:    lw a7, 96(a0)
+; RV32IXQCCMP-NEXT:    lw a6, 100(a0)
+; RV32IXQCCMP-NEXT:    lw a4, 104(a0)
+; RV32IXQCCMP-NEXT:    lw a2, 108(a0)
+; RV32IXQCCMP-NEXT:    sw a1, 124(a0)
+; RV32IXQCCMP-NEXT:    sw a3, 120(a0)
+; RV32IXQCCMP-NEXT:    sw a5, 116(a0)
+; RV32IXQCCMP-NEXT:    sw t0, 112(a0)
+; RV32IXQCCMP-NEXT:    sw a2, 108(a0)
+; RV32IXQCCMP-NEXT:    sw a4, 104(a0)
+; RV32IXQCCMP-NEXT:    sw a6, 100(a0)
+; RV32IXQCCMP-NEXT:    sw a7, 96(a0)
+; RV32IXQCCMP-NEXT:    sw t1, 92(a0)
+; RV32IXQCCMP-NEXT:    sw s1, 88(a0)
+; RV32IXQCCMP-NEXT:    sw s0, 84(a0)
+; RV32IXQCCMP-NEXT:    sw t2, 80(a0)
+; RV32IXQCCMP-NEXT:    sw ra, 76(a0)
+; RV32IXQCCMP-NEXT:    sw s11, 72(a0)
+; RV32IXQCCMP-NEXT:    sw s10, 68(a0)
+; RV32IXQCCMP-NEXT:    sw s9, 64(a0)
+; RV32IXQCCMP-NEXT:    sw s8, 60(a0)
+; RV32IXQCCMP-NEXT:    sw s7, 56(a0)
+; RV32IXQCCMP-NEXT:    sw s6, 52(a0)
+; RV32IXQCCMP-NEXT:    sw s5, 48(a0)
+; RV32IXQCCMP-NEXT:    sw s4, 44(a0)
+; RV32IXQCCMP-NEXT:    sw s3, 40(a0)
+; RV32IXQCCMP-NEXT:    sw s2, 36(a0)
+; RV32IXQCCMP-NEXT:    sw t6, 32(a0)
+; RV32IXQCCMP-NEXT:    sw t5, 28(a0)
+; RV32IXQCCMP-NEXT:    sw t4, 24(a0)
+; RV32IXQCCMP-NEXT:    sw t3, 20(a0)
+; RV32IXQCCMP-NEXT:    lw a1, 12(sp) # 4-byte Folded Reload
+; RV32IXQCCMP-NEXT:    sw a1, 16(a0)
+; RV32IXQCCMP-NEXT:    lw a1, 16(sp) # 4-byte Folded Reload
+; RV32IXQCCMP-NEXT:    sw a1, 12(a0)
+; RV32IXQCCMP-NEXT:    lw a1, 20(sp) # 4-byte Folded Reload
+; RV32IXQCCMP-NEXT:    sw a1, 8(a0)
+; RV32IXQCCMP-NEXT:    lw a1, 24(sp) # 4-byte Folded Reload
+; RV32IXQCCMP-NEXT:    sw a1, 4(a0)
+; RV32IXQCCMP-NEXT:    lw a1, 28(sp) # 4-byte Folded Reload
+; RV32IXQCCMP-NEXT:    sw a1, 0(a0)
 ; RV32IXQCCMP-NEXT:    qc.cm.popret {ra, s0-s11}, 96
 ;
 ; RV64IXQCCMP-LABEL: callee_no_irq:
@@ -3306,83 +3262,81 @@ define void @callee_no_irq() {
 ; RV64IXQCCMP-NEXT:    .cfi_offset s10, -96
 ; RV64IXQCCMP-NEXT:    .cfi_offset s11, -104
 ; RV64IXQCCMP-NEXT:    lui a0, %hi(var_test_irq)
-; RV64IXQCCMP-NEXT:    lui a2, %hi(var_test_irq)
-; RV64IXQCCMP-NEXT:    addi a2, a2, %lo(var_test_irq)
-; RV64IXQCCMP-NEXT:    lw a0, %lo(var_test_irq)(a0)
-; RV64IXQCCMP-NEXT:    sd a0, 40(sp) # 8-byte Folded Spill
-; RV64IXQCCMP-NEXT:    lw a0, 4(a2)
-; RV64IXQCCMP-NEXT:    sd a0, 32(sp) # 8-byte Folded Spill
-; RV64IXQCCMP-NEXT:    lw a0, 8(a2)
-; RV64IXQCCMP-NEXT:    sd a0, 24(sp) # 8-byte Folded Spill
-; RV64IXQCCMP-NEXT:    lw a0, 12(a2)
-; RV64IXQCCMP-NEXT:    sd a0, 16(sp) # 8-byte Folded Spill
-; RV64IXQCCMP-NEXT:    lw a0, 16(a2)
-; RV64IXQCCMP-NEXT:    sd a0, 8(sp) # 8-byte Folded Spill
-; RV64IXQCCMP-NEXT:    lw t4, 20(a2)
-; RV64IXQCCMP-NEXT:    lw t5, 24(a2)
-; RV64IXQCCMP-NEXT:    lw t6, 28(a2)
-; RV64IXQCCMP-NEXT:    lw s2, 32(a2)
-; RV64IXQCCMP-NEXT:    lw s3, 36(a2)
-; RV64IXQCCMP-NEXT:    lw s4, 40(a2)
-; RV64IXQCCMP-NEXT:    lw s5, 44(a2)
-; RV64IXQCCMP-NEXT:    lw s6, 48(a2)
-; RV64IXQCCMP-NEXT:    lw s7, 52(a2)
-; RV64IXQCCMP-NEXT:    lw s8, 56(a2)
-; RV64IXQCCMP-NEXT:    lw s9, 60(a2)
-; RV64IXQCCMP-NEXT:    lw s10, 64(a2)
-; RV64IXQCCMP-NEXT:    lw s11, 68(a2)
-; RV64IXQCCMP-NEXT:    lw ra, 72(a2)
-; RV64IXQCCMP-NEXT:    lw t3, 76(a2)
-; RV64IXQCCMP-NEXT:    lw s0, 80(a2)
-; RV64IXQCCMP-NEXT:    lw s1, 84(a2)
-; RV64IXQCCMP-NEXT:    lw t2, 88(a2)
-; RV64IXQCCMP-NEXT:    lw t1, 92(a2)
-; RV64IXQCCMP-NEXT:    lw t0, 96(a2)
-; RV64IXQCCMP-NEXT:    lw a6, 116(a2)
-; RV64IXQCCMP-NEXT:    lw a4, 120(a2)
-; RV64IXQCCMP-NEXT:    lw a1, 124(a2)
-; RV64IXQCCMP-NEXT:    lw a7, 100(a2)
-; RV64IXQCCMP-NEXT:    lw a5, 104(a2)
-; RV64IXQCCMP-NEXT:    lw a3, 108(a2)
-; RV64IXQCCMP-NEXT:    lw a0, 112(a2)
-; RV64IXQCCMP-NEXT:    sw a1, 124(a2)
-; RV64IXQCCMP-NEXT:    sw a4, 120(a2)
-; RV64IXQCCMP-NEXT:    sw a6, 116(a2)
-; RV64IXQCCMP-NEXT:    sw a0, 112(a2)
-; RV64IXQCCMP-NEXT:    sw a3, 108(a2)
-; RV64IXQCCMP-NEXT:    sw a5, 104(a2)
-; RV64IXQCCMP-NEXT:    sw a7, 100(a2)
-; RV64IXQCCMP-NEXT:    sw t0, 96(a2)
-; RV64IXQCCMP-NEXT:    sw t1, 92(a2)
-; RV64IXQCCMP-NEXT:    sw t2, 88(a2)
-; RV64IXQCCMP-NEXT:    sw s1, 84(a2)
-; RV64IXQCCMP-NEXT:    sw s0, 80(a2)
-; RV64IXQCCMP-NEXT:    sw t3, 76(a2)
-; RV64IXQCCMP-NEXT:    sw ra, 72(a2)
-; RV64IXQCCMP-NEXT:    sw s11, 68(a2)
-; RV64IXQCCMP-NEXT:    sw s10, 64(a2)
-; RV64IXQCCMP-NEXT:    sw s9, 60(a2)
-; RV64IXQCCMP-NEXT:    sw s8, 56(a2)
-; RV64IXQCCMP-NEXT:    sw s7, 52(a2)
-; RV64IXQCCMP-NEXT:    sw s6, 48(a2)
-; RV64IXQCCMP-NEXT:    sw s5, 44(a2)
-; RV64IXQCCMP-NEXT:    sw s4, 40(a2)
-; RV64IXQCCMP-NEXT:    sw s3, 36(a2)
-; RV64IXQCCMP-NEXT:    sw s2, 32(a2)
-; RV64IXQCCMP-NEXT:    sw t6, 28(a2)
-; RV64IXQCCMP-NEXT:    sw t5, 24(a2)
-; RV64IXQCCMP-NEXT:    sw t4, 20(a2)
-; RV64IXQCCMP-NEXT:    ld a0, 8(sp) # 8-byte Folded Reload
-; RV64IXQCCMP-NEXT:    sw a0, 16(a2)
-; RV64IXQCCMP-NEXT:    ld a0, 16(sp) # 8-byte Folded Reload
-; RV64IXQCCMP-NEXT:    sw a0, 12(a2)
-; RV64IXQCCMP-NEXT:    ld a0, 24(sp) # 8-byte Folded Reload
-; RV64IXQCCMP-NEXT:    sw a0, 8(a2)
-; RV64IXQCCMP-NEXT:    ld a0, 32(sp) # 8-byte Folded Reload
-; RV64IXQCCMP-NEXT:    sw a0, 4(a2)
-; RV64IXQCCMP-NEXT:    ld a0, 40(sp) # 8-byte Folded Reload
-; RV64IXQCCMP-NEXT:    lui a1, %hi(var_test_irq)
-; RV64IXQCCMP-NEXT:    sw a0, %lo(var_test_irq)(a1)
+; RV64IXQCCMP-NEXT:    addi a0, a0, %lo(var_test_irq)
+; RV64IXQCCMP-NEXT:    lw a1, 0(a0)
+; RV64IXQCCMP-NEXT:    sd a1, 40(sp) # 8-byte Folded Spill
+; RV64IXQCCMP-NEXT:    lw a1, 4(a0)
+; RV64IXQCCMP-NEXT:    sd a1, 32(sp) # 8-byte Folded Spill
+; RV64IXQCCMP-NEXT:    lw a1, 8(a0)
+; RV64IXQCCMP-NEXT:    sd a1, 24(sp) # 8-byte Folded Spill
+; RV64IXQCCMP-NEXT:    lw a1, 12(a0)
+; RV64IXQCCMP-NEXT:    sd a1, 16(sp) # 8-byte Folded Spill
+; RV64IXQCCMP-NEXT:    lw a1, 16(a0)
+; RV64IXQCCMP-NEXT:    sd a1, 8(sp) # 8-byte Folded Spill
+; RV64IXQCCMP-NEXT:    lw t3, 20(a0)
+; RV64IXQCCMP-NEXT:    lw t4, 24(a0)
+; RV64IXQCCMP-NEXT:    lw t5, 28(a0)
+; RV64IXQCCMP-NEXT:    lw t6, 32(a0)
+; RV64IXQCCMP-NEXT:    lw s2, 36(a0)
+; RV64IXQCCMP-NEXT:    lw s3, 40(a0)
+; RV64IXQCCMP-NEXT:    lw s4, 44(a0)
+; RV64IXQCCMP-NEXT:    lw s5, 48(a0)
+; RV64IXQCCMP-NEXT:    lw s6, 52(a0)
+; RV64IXQCCMP-NEXT:    lw s7, 56(a0)
+; RV64IXQCCMP-NEXT:    lw s8, 60(a0)
+; RV64IXQCCMP-NEXT:    lw s9, 64(a0)
+; RV64IXQCCMP-NEXT:    lw s10, 68(a0)
+; RV64IXQCCMP-NEXT:    lw s11, 72(a0)
+; RV64IXQCCMP-NEXT:    lw ra, 76(a0)
+; RV64IXQCCMP-NEXT:    lw t2, 80(a0)
+; RV64IXQCCMP-NEXT:    lw s0, 84(a0)
+; RV64IXQCCMP-NEXT:    lw s1, 88(a0)
+; RV64IXQCCMP-NEXT:    lw t1, 92(a0)
+; RV64IXQCCMP-NEXT:    lw t0, 112(a0)
+; RV64IXQCCMP-NEXT:    lw a5, 116(a0)
+; RV64IXQCCMP-NEXT:    lw a3, 120(a0)
+; RV64IXQCCMP-NEXT:    lw a1, 124(a0)
+; RV64IXQCCMP-NEXT:    lw a7, 96(a0)
+; RV64IXQCCMP-NEXT:    lw a6, 100(a0)
+; RV64IXQCCMP-NEXT:    lw a4, 104(a0)
+; RV64IXQCCMP-NEXT:    lw a2, 108(a0)
+; RV64IXQCCMP-NEXT:    sw a1, 124(a0)
+; RV64IXQCCMP-NEXT:    sw a3, 120(a0)
+; RV64IXQCCMP-NEXT:    sw a5, 116(a0)
+; RV64IXQCCMP-NEXT:    sw t0, 112(a0)
+; RV64IXQCCMP-NEXT:    sw a2, 108(a0)
+; RV64IXQCCMP-NEXT:    sw a4, 104(a0)
+; RV64IXQCCMP-NEXT:    sw a6, 100(a0)
+; RV64IXQCCMP-NEXT:    sw a7, 96(a0)
+; RV64IXQCCMP-NEXT:    sw t1, 92(a0)
+; RV64IXQCCMP-NEXT:    sw s1, 88(a0)
+; RV64IXQCCMP-NEXT:    sw s0, 84(a0)
+; RV64IXQCCMP-NEXT:    sw t2, 80(a0)
+; RV64IXQCCMP-NEXT:    sw ra, 76(a0)
+; RV64IXQCCMP-NEXT:    sw s11, 72(a0)
+; RV64IXQCCMP-NEXT:    sw s10, 68(a0)
+; RV64IXQCCMP-NEXT:    sw s9, 64(a0)
+; RV64IXQCCMP-NEXT:    sw s8, 60(a0)
+; RV64IXQCCMP-NEXT:    sw s7, 56(a0)
+; RV64IXQCCMP-NEXT:    sw s6, 52(a0)
+; RV64IXQCCMP-NEXT:    sw s5, 48(a0)
+; RV64IXQCCMP-NEXT:    sw s4, 44(a0)
+; RV64IXQCCMP-NEXT:    sw s3, 40(a0)
+; RV64IXQCCMP-NEXT:    sw s2, 36(a0)
+; RV64IXQCCMP-NEXT:    sw t6, 32(a0)
+; RV64IXQCCMP-NEXT:    sw t5, 28(a0)
+; RV64IXQCCMP-NEXT:    sw t4, 24(a0)
+; RV64IXQCCMP-NEXT:    sw t3, 20(a0)
+; RV64IXQCCMP-NEXT:    ld a1, 8(sp) # 8-byte Folded Reload
+; RV64IXQCCMP-NEXT:    sw a1, 16(a0)
+; RV64IXQCCMP-NEXT:    ld a1, 16(sp) # 8-byte Folded Reload
+; RV64IXQCCMP-NEXT:    sw a1, 12(a0)
+; RV64IXQCCMP-NEXT:    ld a1, 24(sp) # 8-byte Folded Reload
+; RV64IXQCCMP-NEXT:    sw a1, 8(a0)
+; RV64IXQCCMP-NEXT:    ld a1, 32(sp) # 8-byte Folded Reload
+; RV64IXQCCMP-NEXT:    sw a1, 4(a0)
+; RV64IXQCCMP-NEXT:    ld a1, 40(sp) # 8-byte Folded Reload
+; RV64IXQCCMP-NEXT:    sw a1, 0(a0)
 ; RV64IXQCCMP-NEXT:    qc.cm.popret {ra, s0-s11}, 160
 ;
 ; RV32IXQCCMP-FP-LABEL: callee_no_irq:
@@ -3404,85 +3358,83 @@ define void @callee_no_irq() {
 ; RV32IXQCCMP-FP-NEXT:    .cfi_offset s11, -52
 ; RV32IXQCCMP-FP-NEXT:    .cfi_def_cfa s0, 0
 ; RV32IXQCCMP-FP-NEXT:    lui a0, %hi(var_test_irq)
-; RV32IXQCCMP-FP-NEXT:    lui a2, %hi(var_test_irq)
-; RV32IXQCCMP-FP-NEXT:    addi a2, a2, %lo(var_test_irq)
-; RV32IXQCCMP-FP-NEXT:    lw a0, %lo(var_test_irq)(a0)
-; RV32IXQCCMP-FP-NEXT:    sw a0, -68(s0) # 4-byte Folded Spill
-; RV32IXQCCMP-FP-NEXT:    lw a0, 4(a2)
-; RV32IXQCCMP-FP-NEXT:    sw a0, -72(s0) # 4-byte Folded Spill
-; RV32IXQCCMP-FP-NEXT:    lw a0, 8(a2)
-; RV32IXQCCMP-FP-NEXT:    sw a0, -76(s0) # 4-byte Folded Spill
-; RV32IXQCCMP-FP-NEXT:    lw a0, 12(a2)
-; RV32IXQCCMP-FP-NEXT:    sw a0, -80(s0) # 4-byte Folded Spill
-; RV32IXQCCMP-FP-NEXT:    lw a0, 16(a2)
-; RV32IXQCCMP-FP-NEXT:    sw a0, -84(s0) # 4-byte Folded Spill
-; RV32IXQCCMP-FP-NEXT:    lw a0, 20(a2)
-; RV32IXQCCMP-FP-NEXT:    sw a0, -88(s0) # 4-byte Folded Spill
-; RV32IXQCCMP-FP-NEXT:    lw t5, 24(a2)
-; RV32IXQCCMP-FP-NEXT:    lw t6, 28(a2)
-; RV32IXQCCMP-FP-NEXT:    lw s2, 32(a2)
-; RV32IXQCCMP-FP-NEXT:    lw s3, 36(a2)
-; RV32IXQCCMP-FP-NEXT:    lw s4, 40(a2)
-; RV32IXQCCMP-FP-NEXT:    lw s5, 44(a2)
-; RV32IXQCCMP-FP-NEXT:    lw s6, 48(a2)
-; RV32IXQCCMP-FP-NEXT:    lw s7, 52(a2)
-; RV32IXQCCMP-FP-NEXT:    lw s8, 56(a2)
-; RV32IXQCCMP-FP-NEXT:    lw s9, 60(a2)
-; RV32IXQCCMP-FP-NEXT:    lw s10, 64(a2)
-; RV32IXQCCMP-FP-NEXT:    lw s11, 68(a2)
-; RV32IXQCCMP-FP-NEXT:    lw ra, 72(a2)
-; RV32IXQCCMP-FP-NEXT:    lw s1, 76(a2)
-; RV32IXQCCMP-FP-NEXT:    lw t4, 80(a2)
-; RV32IXQCCMP-FP-NEXT:    lw t3, 84(a2)
-; RV32IXQCCMP-FP-NEXT:    lw t2, 88(a2)
-; RV32IXQCCMP-FP-NEXT:    lw t1, 92(a2)
-; RV32IXQCCMP-FP-NEXT:    lw t0, 96(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a6, 116(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a4, 120(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a1, 124(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a7, 100(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a5, 104(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a3, 108(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a0, 112(a2)
-; RV32IXQCCMP-FP-NEXT:    sw a1, 124(a2)
-; RV32IXQCCMP-FP-NEXT:    sw a4, 120(a2)
-; RV32IXQCCMP-FP-NEXT:    sw a6, 116(a2)
-; RV32IXQCCMP-FP-NEXT:    sw a0, 112(a2)
-; RV32IXQCCMP-FP-NEXT:    sw a3, 108(a2)
-; RV32IXQCCMP-FP-NEXT:    sw a5, 104(a2)
-; RV32IXQCCMP-FP-NEXT:    sw a7, 100(a2)
-; RV32IXQCCMP-FP-NEXT:    sw t0, 96(a2)
-; RV32IXQCCMP-FP-NEXT:    sw t1, 92(a2)
-; RV32IXQCCMP-FP-NEXT:    sw t2, 88(a2)
-; RV32IXQCCMP-FP-NEXT:    sw t3, 84(a2)
-; RV32IXQCCMP-FP-NEXT:    sw t4, 80(a2)
-; RV32IXQCCMP-FP-NEXT:    sw s1, 76(a2)
-; RV32IXQCCMP-FP-NEXT:    sw ra, 72(a2)
-; RV32IXQCCMP-FP-NEXT:    sw s11, 68(a2)
-; RV32IXQCCMP-FP-NEXT:    sw s10, 64(a2)
-; RV32IXQCCMP-FP-NEXT:    sw s9, 60(a2)
-; RV32IXQCCMP-FP-NEXT:    sw s8, 56(a2)
-; RV32IXQCCMP-FP-NEXT:    sw s7, 52(a2)
-; RV32IXQCCMP-FP-NEXT:    sw s6, 48(a2)
-; RV32IXQCCMP-FP-NEXT:    sw s5, 44(a2)
-; RV32IXQCCMP-FP-NEXT:    sw s4, 40(a2)
-; RV32IXQCCMP-FP-NEXT:    sw s3, 36(a2)
-; RV32IXQCCMP-FP-NEXT:    sw s2, 32(a2)
-; RV32IXQCCMP-FP-NEXT:    sw t6, 28(a2)
-; RV32IXQCCMP-FP-NEXT:    sw t5, 24(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a0, -88(s0) # 4-byte Folded Reload
-; RV32IXQCCMP-FP-NEXT:    sw a0, 20(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a0, -84(s0) # 4-byte Folded Reload
-; RV32IXQCCMP-FP-NEXT:    sw a0, 16(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a0, -80(s0) # 4-byte Folded Reload
-; RV32IXQCCMP-FP-NEXT:    sw a0, 12(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a0, -76(s0) # 4-byte Folded Reload
-; RV32IXQCCMP-FP-NEXT:    sw a0, 8(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a0, -72(s0) # 4-byte Folded Reload
-; RV32IXQCCMP-FP-NEXT:    sw a0, 4(a2)
-; RV32IXQCCMP-FP-NEXT:    lw a0, -68(s0) # 4-byte Folded Reload
-; RV32IXQCCMP-FP-NEXT:    lui a1, %hi(var_test_irq)
-; RV32IXQCCMP-FP-NEXT:    sw a0, %lo(var_test_irq)(a1)
+; RV32IXQCCMP-FP-NEXT:    addi a0, a0, %lo(var_test_irq)
+; RV32IXQCCMP-FP-NEXT:    lw a1, 0(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a1, -68(s0) # 4-byte Folded Spill
+; RV32IXQCCMP-FP-NEXT:    lw a1, 4(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a1, -72(s0) # 4-byte Folded Spill
+; RV32IXQCCMP-FP-NEXT:    lw a1, 8(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a1, -76(s0) # 4-byte Folded Spill
+; RV32IXQCCMP-FP-NEXT:    lw a1, 12(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a1, -80(s0) # 4-byte Folded Spill
+; RV32IXQCCMP-FP-NEXT:    lw a1, 16(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a1, -84(s0) # 4-byte Folded Spill
+; RV32IXQCCMP-FP-NEXT:    lw a1, 20(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a1, -88(s0) # 4-byte Folded Spill
+; RV32IXQCCMP-FP-NEXT:    lw t4, 24(a0)
+; RV32IXQCCMP-FP-NEXT:    lw t5, 28(a0)
+; RV32IXQCCMP-FP-NEXT:    lw t6, 32(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s2, 36(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s3, 40(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s4, 44(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s5, 48(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s6, 52(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s7, 56(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s8, 60(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s9, 64(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s10, 68(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s11, 72(a0)
+; RV32IXQCCMP-FP-NEXT:    lw ra, 76(a0)
+; RV32IXQCCMP-FP-NEXT:    lw s1, 80(a0)
+; RV32IXQCCMP-FP-NEXT:    lw t3, 84(a0)
+; RV32IXQCCMP-FP-NEXT:    lw t2, 88(a0)
+; RV32IXQCCMP-FP-NEXT:    lw t1, 92(a0)
+; RV32IXQCCMP-FP-NEXT:    lw t0, 112(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a6, 116(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a4, 120(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a1, 124(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a7, 96(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a5, 100(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a3, 104(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a2, 108(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a1, 124(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a4, 120(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a6, 116(a0)
+; RV32IXQCCMP-FP-NEXT:    sw t0, 112(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a2, 108(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a3, 104(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a5, 100(a0)
+; RV32IXQCCMP-FP-NEXT:    sw a7, 96(a0)
+; RV32IXQCCMP-FP-NEXT:    sw t1, 92(a0)
+; RV32IXQCCMP-FP-NEXT:    sw t2, 88(a0)
+; RV32IXQCCMP-FP-NEXT:    sw t3, 84(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s1, 80(a0)
+; RV32IXQCCMP-FP-NEXT:    sw ra, 76(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s11, 72(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s10, 68(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s9, 64(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s8, 60(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s7, 56(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s6, 52(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s5, 48(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s4, 44(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s3, 40(a0)
+; RV32IXQCCMP-FP-NEXT:    sw s2, 36(a0)
+; RV32IXQCCMP-FP-NEXT:    sw t6, 32(a0)
+; RV32IXQCCMP-FP-NEXT:    sw t5, 28(a0)
+; RV32IXQCCMP-FP-NEXT:    sw t4, 24(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a1, -88(s0) # 4-byte Folded Reload
+; RV32IXQCCMP-FP-NEXT:    sw a1, 20(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a1, -84(s0) # 4-byte Folded Reload
+; RV32IXQCCMP-FP-NEXT:    sw a1, 16(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a1, -80(s0) # 4-byte Folded Reload
+; RV32IXQCCMP-FP-NEXT:    sw a1, 12(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a1, -76(s0) # 4-byte Folded Reload
+; RV32IXQCCMP-FP-NEXT:    sw a1, 8(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a1, -72(s0) # 4-byte Folded Reload
+; RV32IXQCCMP-FP-NEXT:    sw a1, 4(a0)
+; RV32IXQCCMP-FP-NEXT:    lw a1, -68(s0) # 4-byte Folded Reload
+; RV32IXQCCMP-FP-NEXT:    sw a1, 0(a0)
 ; RV32IXQCCMP-FP-NEXT:    .cfi_def_cfa sp, 96
 ; RV32IXQCCMP-FP-NEXT:    qc.cm.popret {ra, s0-s11}, 96
 ;
@@ -3505,85 +3457,83 @@ define void @callee_no_irq() {
 ; RV64IXQCCMP-FP-NEXT:    .cfi_offset s11, -104
 ; RV64IXQCCMP-FP-NEXT:    .cfi_def_cfa s0, 0
 ; RV64IXQCCMP-FP-NEXT:    lui a0, %hi(var_test_irq)
-; RV64IXQCCMP-FP-NEXT:    lui a2, %hi(var_test_irq)
-; RV64IXQCCMP-FP-NEXT:    addi a2, a2, %lo(var_test_irq)
-; RV64IXQCCMP-FP-NEXT:    lw a0, %lo(var_test_irq)(a0)
-; RV64IXQCCMP-FP-NEXT:    sd a0, -120(s0) # 8-byte Folded Spill
-; RV64IXQCCMP-FP-NEXT:    lw a0, 4(a2)
-; RV64IXQCCMP-FP-NEXT:    sd a0, -128(s0) # 8-byte Folded Spill
-; RV64IXQCCMP-FP-NEXT:    lw a0, 8(a2)
-; RV64IXQCCMP-FP-NEXT:    sd a0, -136(s0) # 8-byte Folded Spill
-; RV64IXQCCMP-FP-NEXT:    lw a0, 12(a2)
-; RV64IXQCCMP-FP-NEXT:    sd a0, -144(s0) # 8-byte Folded Spill
-; RV64IXQCCMP-FP-NEXT:    lw a0, 16(a2)
-; RV64IXQCCMP-FP-NEXT:    sd a0, -152(s0) # 8-byte Folded Spill
-; RV64IXQCCMP-FP-NEXT:    lw a0, 20(a2)
-; RV64IXQCCMP-FP-NEXT:    sd a0, -160(s0) # 8-byte Folded Spill
-; RV64IXQCCMP-FP-NEXT:    lw t5, 24(a2)
-; RV64IXQCCMP-FP-NEXT:    lw t6, 28(a2)
-; RV64IXQCCMP-FP-NEXT:    lw s2, 32(a2)
-; RV64IXQCCMP-FP-NEXT:    lw s3, 36(a2)
-; RV64IXQCCMP-FP-NEXT:    lw s4, 40(a2)
-; RV64IXQCCMP-FP-NEXT:    lw s5, 44(a2)
-; RV64IXQCCMP-FP-NEXT:    lw s6, 48(a2)
-; RV64IXQCCMP-FP-NEXT:    lw s7, 52(a2)
-; RV64IXQCCMP-FP-NEXT:    lw s8, 56(a2)
-; RV64IXQCCMP-FP-NEXT:    lw s9, 60(a2)
-; RV64IXQCCMP-FP-NEXT:    lw s10, 64(a2)
-; RV64IXQCCMP-FP-NEXT:    lw s11, 68(a2)
-; RV64IXQCCMP-FP-NEXT:    lw ra, 72(a2)
-; RV64IXQCCMP-FP-NEXT:    lw s1, 76(a2)
-; RV64IXQCCMP-FP-NEXT:    lw t4, 80(a2)
-; RV64IXQCCMP-FP-NEXT:    lw t3, 84(a2)
-; RV64IXQCCMP-FP-NEXT:    lw t2, 88(a2)
-; RV64IXQCCMP-FP-NEXT:    lw t1, 92(a2)
-; RV64IXQCCMP-FP-NEXT:    lw t0, 96(a2)
-; RV64IXQCCMP-FP-NEXT:    lw a6, 116(a2)
-; RV64IXQCCMP-FP-NEXT:    lw a4, 120(a2)
-; RV64IXQCCMP-FP-NEXT:    lw a1, 124(a2)
-; RV64IXQCCMP-FP-NEXT:    lw a7, 100(a2)
-; RV64IXQCCMP-FP-NEXT:    lw a5, 104(a2)
-; RV64IXQCCMP-FP-NEXT:    lw a3, 108(a2)
-; RV64IXQCCMP-FP-NEXT:    lw a0, 112(a2)
-; RV64IXQCCMP-FP-NEXT:    sw a1, 124(a2)
-; RV64IXQCCMP-FP-NEXT:    sw a4, 120(a2)
-; RV64IXQCCMP-FP-NEXT:    sw a6, 116(a2)
-; RV64IXQCCMP-FP-NEXT:    sw a0, 112(a2)
-; RV64IXQCCMP-FP-NEXT:    sw a3, 108(a2)
-; RV64IXQCCMP-FP-NEXT:    sw a5, 104(a2)
-; RV64IXQCCMP-FP-NEXT:    sw a7, 100(a2)
-; RV64IXQCCMP-FP-NEXT:    sw t0, 96(a2)
-; RV64IXQCCMP-FP-NEXT:    sw t1, 92(a2)
-; RV64IXQCCMP-FP-NEXT:    sw t2, 88(a2)
-; RV64IXQCCMP-FP-NEXT:    sw t3, 84(a2)
-; RV64IXQCCMP-FP-NEXT:    sw t4, 80(a2)
-; RV64IXQCCMP-FP-NEXT:    sw s1, 76(a2)
-; RV64IXQCCMP-FP-NEXT:    sw ra, 72(a2)
-; RV64IXQCCMP-FP-NEXT:    sw s11, 68(a2)
-; RV64IXQCCMP-FP-NEXT:    sw s10, 64(a2)
-; RV64IXQCCMP-FP-NEXT:    sw s9, 60(a2)
-; RV64IXQCCMP-FP-NEXT:    sw s8, 56(a2)
-; RV64IXQCCMP-FP-NEXT:    sw s7, 52(a2)
-; RV64IXQCCMP-FP-NEXT:    sw s6, 48(a2)
-; RV64IXQCCMP-FP-NEXT:    sw s5, 44(a2)
-; RV64IXQCCMP-FP-NEXT:    sw s4, 40(a2)
-; RV64IXQCCMP-FP-NEXT:    sw s3, 36(a2)
-; RV64IXQCCMP-FP-NEXT:    sw s2, 32(a2)
-; RV64IXQCCMP-FP-NEXT:    sw t6, 28(a2)
-; RV64IXQCCMP-FP-NEXT:    sw t5, 24(a2)
-; RV64IXQCCMP-FP-NEXT:    ld a0, -160(s0) # 8-byte Folded Reload
-; RV64IXQCCMP-FP-NEXT:    sw a0, 20(a2)
-; RV64IXQCCMP-FP-NEXT:    ld a0, -152(s0) # 8-byte Folded Reload
-; RV64IXQCCMP-FP-NEXT:    sw a0, 16(a2)
-; RV64IXQCCMP-FP-NEXT:    ld a0, -144(s0) # 8-byte Folded Reload
-; RV64IXQCCMP-FP-NEXT:    sw a0, 12(a2)
-; RV64IXQCCMP-FP-NEXT:    ld a0, -136(s0) # 8-byte Folded Reload
-; RV64IXQCCMP-FP-NEXT:    sw a0, 8(a2)
-; RV64IXQCCMP-FP-NEXT:    ld a0, -128(s0) # 8-byte Folded Reload
-; RV64IXQCCMP-FP-NEXT:    sw a0, 4(a2)
-; RV64IXQCCMP-FP-NEXT:    ld a0, -120(s0) # 8-byte Folded Reload
-; RV64IXQCCMP-FP-NEXT:    lui a1, %hi(var_test_irq)
-; RV64IXQCCMP-FP-NEXT:    sw a0, %lo(var_test_irq)(a1)
+; RV64IXQCCMP-FP-NEXT:    addi a0, a0, %lo(var_test_irq)
+; RV64IXQCCMP-FP-NEXT:    lw a1, 0(a0)
+; RV64IXQCCMP-FP-NEXT:    sd a1, -120(s0) # 8-byte Folded Spill
+; RV64IXQCCMP-FP-NEXT:    lw a1, 4(a0)
+; RV64IXQCCMP-FP-NEXT:    sd a1, -128(s0) # 8-byte Folded Spill
+; RV64IXQCCMP-FP-NEXT:    lw a1, 8(a0)
+; RV64IXQCCMP-FP-NEXT:    sd a1, -136(s0) # 8-byte Folded Spill
+; RV64IXQCCMP-FP-NEXT:    lw a1, 12(a0)
+; RV64IXQCCMP-FP-NEXT:    sd a1, -144(s0) # 8-byte Folded Spill
+; RV64IXQCCMP-FP-NEXT:    lw a1, 16(a0)
+; RV64IXQCCMP-FP-NEXT:    sd a1, -152(s0) # 8-byte Folded Spill
+; RV64IXQCCMP-FP-NEXT:    lw a1, 20(a0)
+; RV64IXQCCMP-FP-NEXT:    sd a1, -160(s0) # 8-byte Folded Spill
+; RV64IXQCCMP-FP-NEXT:    lw t4, 24(a0)
+; RV64IXQCCMP-FP-NEXT:    lw t5, 28(a0)
+; RV64IXQCCMP-FP-NEXT:    lw t6, 32(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s2, 36(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s3, 40(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s4, 44(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s5, 48(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s6, 52(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s7, 56(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s8, 60(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s9, 64(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s10, 68(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s11, 72(a0)
+; RV64IXQCCMP-FP-NEXT:    lw ra, 76(a0)
+; RV64IXQCCMP-FP-NEXT:    lw s1, 80(a0)
+; RV64IXQCCMP-FP-NEXT:    lw t3, 84(a0)
+; RV64IXQCCMP-FP-NEXT:    lw t2, 88(a0)
+; RV64IXQCCMP-FP-NEXT:    lw t1, 92(a0)
+; RV64IXQCCMP-FP-NEXT:    lw t0, 112(a0)
+; RV64IXQCCMP-FP-NEXT:    lw a6, 116(a0)
+; RV64IXQCCMP-FP-NEXT:    lw a4, 120(a0)
+; RV64IXQCCMP-FP-NEXT:    lw a1, 124(a0)
+; RV64IXQCCMP-FP-NEXT:    lw a7, 96(a0)
+; RV64IXQCCMP-FP-NEXT:    lw a5, 100(a0)
+; RV64IXQCCMP-FP-NEXT:    lw a3, 104(a0)
+; RV64IXQCCMP-FP-NEXT:    lw a2, 108(a0)
+; RV64IXQCCMP-FP-NEXT:    sw a1, 124(a0)
+; RV64IXQCCMP-FP-NEXT:    sw a4, 120(a0)
+; RV64IXQCCMP-FP-NEXT:    sw a6, 116(a0)
+; RV64IXQCCMP-FP-NEXT:    sw t0, 112(a0)
+; RV64IXQCCMP-FP-NEXT:    sw a2, 108(a0)
+; RV64IXQCCMP-FP-NEXT:    sw a3, 104(a0)
+; RV64IXQCCMP-FP-NEXT:    sw a5, 100(a0)
+; RV64IXQCCMP-FP-NEXT:    sw a7, 96(a0)
+; RV64IXQCCMP-FP-NEXT:    sw t1, 92(a0)
+; RV64IXQCCMP-FP-NEXT:    sw t2, 88(a0)
+; RV64IXQCCMP-FP-NEXT:    sw t3, 84(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s1, 80(a0)
+; RV64IXQCCMP-FP-NEXT:    sw ra, 76(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s11, 72(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s10, 68(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s9, 64(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s8, 60(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s7, 56(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s6, 52(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s5, 48(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s4, 44(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s3, 40(a0)
+; RV64IXQCCMP-FP-NEXT:    sw s2, 36(a0)
+; RV64IXQCCMP-FP-NEXT:    sw t6, 32(a0)
+; RV64IXQCCMP-FP-NEXT:    sw t5, 28(a0)
+; RV64IXQCCMP-FP-NEXT:    sw t4, 24(a0)
+; RV64IXQCCMP-FP-NEXT:    ld a1, -160(s0) # 8-byte Folded Reload
+; RV64IXQCCMP-FP-NEXT:    sw a1, 20(a0)
+; RV64IXQCCMP-FP-NEXT:    ld a1, -152(s0) # 8-byte Folded Reload
+; RV64IXQCCMP-FP-NEXT:    sw a1, 16(a0)
+; RV64IXQCCMP-FP-NEXT:    ld a1, -144(s0) # 8-byte Folded Reload
+; RV64IXQCCMP-FP-NEXT:    sw a1, 12(a0)
+; RV64IXQCCMP-FP-NEXT:    ld a1, -136(s0) # 8-byte Folded Reload
+; RV64IXQCCMP-FP-NEXT:    sw a1, 8(a0)
+; RV64IXQCCMP-FP-NEXT:    ld a1, -128(s0) # 8-byte Folded Reload
+; RV64IXQCCMP-FP-NEXT:    sw a1, 4(a0)
+; RV64IXQCCMP-FP-NEXT:    ld a1, -120(s0) # 8-byte Folded Reload
+; RV64IXQCCMP-FP-NEXT:    sw a1, 0(a0)
 ; RV64IXQCCMP-FP-NEXT:    .cfi_def_cfa sp, 160
 ; RV64IXQCCMP-FP-NEXT:    qc.cm.popret {ra, s0-s11}, 160
 ;
@@ -3605,83 +3555,81 @@ define void @callee_no_irq() {
 ; RV32IXQCCMP-SR-NEXT:    .cfi_offset s10, -48
 ; RV32IXQCCMP-SR-NEXT:    .cfi_offset s11, -52
 ; RV32IXQCCMP-SR-NEXT:    lui a0, %hi(var_test_irq)
-; RV32IXQCCMP-SR-NEXT:    lui a2, %hi(var_test_irq)
-; RV32IXQCCMP-SR-NEXT:    addi a2, a2, %lo(var_test_irq)
-; RV32IXQCCMP-SR-NEXT:    lw a0, %lo(var_test_irq)(a0)
-; RV32IXQCCMP-SR-NEXT:    sw a0, 28(sp) # 4-byte Folded Spill
-; RV32IXQCCMP-SR-NEXT:    lw a0, 4(a2)
-; RV32IXQCCMP-SR-NEXT:    sw a0, 24(sp) # 4-byte Folded Spill
-; RV32IXQCCMP-SR-NEXT:    lw a0, 8(a2)
-; RV32IXQCCMP-SR-NEXT:    sw a0, 20(sp) # 4-byte Folded Spill
-; RV32IXQCCMP-SR-NEXT:    lw a0, 12(a2)
-; RV32IXQCCMP-SR-NEXT:    sw a0, 16(sp) # 4-byte Folded Spill
-; RV32IXQCCMP-SR-NEXT:    lw a0, 16(a2)
-; RV32IXQCCMP-SR-NEXT:    sw a0, 12(sp) # 4-byte Folded Spill
-; RV32IXQCCMP-SR-NEXT:    lw t4, 20(a2)
-; RV32IXQCCMP-SR-NEXT:    lw t5, 24(a2)
-; RV32IXQCCMP-SR-NEXT:    lw t6, 28(a2)
-; RV32IXQCCMP-SR-NEXT:    lw s2, 32(a2)
-; RV32IXQCCMP-SR-NEXT:    lw s3, 36(a2)
-; RV32IXQCCMP-SR-NEXT:    lw s4, 40(a2)
-; RV32IXQCCMP-SR-NEXT:    lw s5, 44(a2)
-; RV32IXQCCMP-SR-NEXT:    lw s6, 48(a2)
-; RV32IXQCCMP-SR-NEXT:    lw s7, 52(a2)
-; RV32IXQCCMP-SR-NEXT:    lw s8, 56(a2)
-; RV32IXQCCMP-SR-NEXT:    lw s9, 60(a2)
-; RV32IXQCCMP-SR-NEXT:    lw s10, 64(a2)
-; RV32IXQCCMP-SR-NEXT:    lw s11, 68(a2)
-; RV32IXQCCMP-SR-NEXT:    lw ra, 72(a2)
-; RV32IXQCCMP-SR-NEXT:    lw t3, 76(a2)
-; RV32IXQCCMP-SR-NEXT:    lw s0, 80(a2)
-; RV32IXQCCMP-SR-NEXT:    lw s1, 84(a2)
-; RV32IXQCCMP-SR-NEXT:    lw t2, 88(a2)
-; RV32IXQCCMP-SR-NEXT:    lw t1, 92(a2)
-; RV32IXQCCMP-SR-NEXT:    lw t0, 96(a2)
-; RV32IXQCCMP-SR-NEXT:    lw a6, 116(a2)
-; RV32IXQCCMP-SR-NEXT:    lw a4, 120(a2)
-; RV32IXQCCMP-SR-NEXT:    lw a1, 124(a2)
-; RV32IXQCCMP-SR-NEXT:    lw a7, 100(a2)
-; RV32IXQCCMP-SR-NEXT:    lw a5, 104(a2)
-; RV32IXQCCMP-SR-NEXT:    lw a3, 108(a2)
-; RV32IXQCCMP-SR-NEXT:    lw a0, 112(a2)
-; RV32IXQCCMP-SR-NEXT:    sw a1, 124(a2)
-; RV32IXQCCMP-SR-NEXT:    sw a4, 120(a2)
-; RV32IXQCCMP-SR-NEXT:    sw a6, 116(a2)
-; RV32IXQCCMP-SR-NEXT:    sw a0, 112(a2)
-; RV32IXQCCMP-SR-NEXT:    sw a3, 108(a2)
-; RV32IXQCCMP-SR-NEXT:    sw a5, 104(a2)
-; RV32IXQCCMP-SR-NEXT:    sw a7, 100(a2)
-; RV32IXQCCMP-SR-NEXT:    sw t0, 96(a2)
-; RV32IXQCCMP-SR-NEXT:    sw t1, 92(a2)
-; RV32IXQCCMP-SR-NEXT:    sw t2, 88(a2)
-; RV32IXQCCMP-SR-NEXT:    sw s1, 84(a2)
-; RV32IXQCCMP-SR-NEXT:    sw s0, 80(a2)
-; RV32IXQCCMP-SR-NEXT:    sw t3, 76(a2)
-; RV32IXQCCMP-SR-NEXT:    sw ra, 72(a2)
-; RV32IXQCCMP-SR-NEXT:    sw s11, 68(a2)
-; RV32IXQCCMP-SR-NEXT:    sw s10, 64(a2)
-; RV32IXQCCMP-SR-NEXT:    sw s9, 60(a2)
-; RV32IXQCCMP-SR-NEXT:    sw s8, 56(a2)
-; RV32IXQCCMP-SR-NEXT:    sw s7, 52(a2)
-; RV32IXQCCMP-SR-NEXT:    sw s6, 48(a2)
-; RV32IXQCCMP-SR-NEXT:    sw s5, 44(a2)
-; RV32IXQCCMP-SR-NEXT:    sw s4, 40(a2)
-; RV32IXQCCMP-SR-NEXT:    sw s3, 36(a2)
-; RV32IXQCCMP-SR-NEXT:    sw s2, 32(a2)
-; RV32IXQCCMP-SR-NEXT:    sw t6, 28(a2)
-; RV32IXQCCMP-SR-NEXT:    sw t5, 24(a2)
-; RV32IXQCCMP-SR-NEXT:    sw t4, 20(a2)
-; RV32IXQCCMP-SR-NEXT:    lw a0, 12(sp) # 4-byte Folded Reload
-; RV32IXQCCMP-SR-NEXT:    sw a0, 16(a2)
-; RV32IXQCCMP-SR-NEXT:    lw a0, 16(sp) # 4-byte Folded Reload
-; RV32IXQCCMP-SR-NEXT:    sw a0, 12(a2)
-; RV32IXQCCMP-SR-NEXT:    lw a0, 20(sp) # 4-byte Folded Reload
-; RV32IXQCCMP-SR-NEXT:    sw a0, 8(a2)
-; RV32IXQCCMP-SR-NEXT:    lw a0, 24(sp) # 4-byte Folded Reload
-; RV32IXQCCMP-SR-NEXT:    sw a0, 4(a2)
-; RV32IXQCCMP-SR-NEXT:    lw a0, 28(sp) # 4-byte Folded Reload
-; RV32IXQCCMP-SR-NEXT:    lui a1, %hi(var_test_irq)
-; RV32IXQCCMP-SR-NEXT:    sw a0, %lo(var_test_irq)(a1)
+; RV32IXQCCMP-SR-NEXT:    addi a0, a0, %lo(var_test_irq)
+; RV32IXQCCMP-SR-NEXT:    lw a1, 0(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a1, 28(sp) # 4-byte Folded Spill
+; RV32IXQCCMP-SR-NEXT:    lw a1, 4(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a1, 24(sp) # 4-byte Folded Spill
+; RV32IXQCCMP-SR-NEXT:    lw a1, 8(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a1, 20(sp) # 4-byte Folded Spill
+; RV32IXQCCMP-SR-NEXT:    lw a1, 12(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a1, 16(sp) # 4-byte Folded Spill
+; RV32IXQCCMP-SR-NEXT:    lw a1, 16(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a1, 12(sp) # 4-byte Folded Spill
+; RV32IXQCCMP-SR-NEXT:    lw t3, 20(a0)
+; RV32IXQCCMP-SR-NEXT:    lw t4, 24(a0)
+; RV32IXQCCMP-SR-NEXT:    lw t5, 28(a0)
+; RV32IXQCCMP-SR-NEXT:    lw t6, 32(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s2, 36(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s3, 40(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s4, 44(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s5, 48(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s6, 52(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s7, 56(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s8, 60(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s9, 64(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s10, 68(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s11, 72(a0)
+; RV32IXQCCMP-SR-NEXT:    lw ra, 76(a0)
+; RV32IXQCCMP-SR-NEXT:    lw t2, 80(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s0, 84(a0)
+; RV32IXQCCMP-SR-NEXT:    lw s1, 88(a0)
+; RV32IXQCCMP-SR-NEXT:    lw t1, 92(a0)
+; RV32IXQCCMP-SR-NEXT:    lw t0, 112(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a5, 116(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a3, 120(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a1, 124(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a7, 96(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a6, 100(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a4, 104(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a2, 108(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a1, 124(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a3, 120(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a5, 116(a0)
+; RV32IXQCCMP-SR-NEXT:    sw t0, 112(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a2, 108(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a4, 104(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a6, 100(a0)
+; RV32IXQCCMP-SR-NEXT:    sw a7, 96(a0)
+; RV32IXQCCMP-SR-NEXT:    sw t1, 92(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s1, 88(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s0, 84(a0)
+; RV32IXQCCMP-SR-NEXT:    sw t2, 80(a0)
+; RV32IXQCCMP-SR-NEXT:    sw ra, 76(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s11, 72(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s10, 68(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s9, 64(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s8, 60(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s7, 56(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s6, 52(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s5, 48(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s4, 44(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s3, 40(a0)
+; RV32IXQCCMP-SR-NEXT:    sw s2, 36(a0)
+; RV32IXQCCMP-SR-NEXT:    sw t6, 32(a0)
+; RV32IXQCCMP-SR-NEXT:    sw t5, 28(a0)
+; RV32IXQCCMP-SR-NEXT:    sw t4, 24(a0)
+; RV32IXQCCMP-SR-NEXT:    sw t3, 20(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a1, 12(sp) # 4-byte Folded Reload
+; RV32IXQCCMP-SR-NEXT:    sw a1, 16(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a1, 16(sp) # 4-byte Folded Reload
+; RV32IXQCCMP-SR-NEXT:    sw a1, 12(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a1, 20(sp) # 4-byte Folded Reload
+; RV32IXQCCMP-SR-NEXT:    sw a1, 8(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a1, 24(sp) # 4-byte Folded Reload
+; RV32IXQCCMP-SR-NEXT:    sw a1, 4(a0)
+; RV32IXQCCMP-SR-NEXT:    lw a1, 28(sp) # 4-byte Folded Reload
+; RV32IXQCCMP-SR-NEXT:    sw a1, 0(a0)
 ; RV32IXQCCMP-SR-NEXT:    qc.cm.popret {ra, s0-s11}, 96
 ;
 ; RV64IXQCCMP-SR-LABEL: callee_no_irq:
@@ -3702,83 +3650,81 @@ define void @callee_no_irq() {
 ; RV64IXQCCMP-SR-NEXT:    .cfi_offset s10, -96
 ; RV64IXQCCMP-SR-NEXT:    .cfi_offset s11, -104
 ; RV64IXQCCMP-SR-NEXT:    lui a0, %hi(var_test_irq)
-; RV64IXQCCMP-SR-NEXT:    lui a2, %hi(var_test_irq)
-; RV64IXQCCMP-SR-NEXT:    addi a2, a2, %lo(var_test_irq)
-; RV64IXQCCMP-SR-NEXT:    lw a0, %lo(var_test_irq)(a0)
-; RV64IXQCCMP-SR-NEXT:    sd a0, 40(sp) # 8-byte Folded Spill
-; RV64IXQCCMP-SR-NEXT:    lw a0, 4(a2)
-; RV64IXQCCMP-SR-NEXT:    sd a0, 32(sp) # 8-byte Folded Spill
-; RV64IXQCCMP-SR-NEXT:    lw a0, 8(a2)
-; RV64IXQCCMP-SR-NEXT:    sd a0, 24(sp) # 8-byte Folded Spill
-; RV64IXQCCMP-SR-NEXT:    lw a0, 12(a2)
-; RV64IXQCCMP-SR-NEXT:    sd a0, 16(sp) # 8-byte Folded Spill
-; RV64IXQCCMP-SR-NEXT:    lw a0, 16(a2)
-; RV64IXQCCMP-SR-NEXT:    sd a0, 8(sp) # 8-byte Folded Spill
-; RV64IXQCCMP-SR-NEXT:    lw t4, 20(a2)
-; RV64IXQCCMP-SR-NEXT:    lw t5, 24(a2)
-; RV64IXQCCMP-SR-NEXT:    lw t6, 28(a2)
-; RV64IXQCCMP-SR-NEXT:    lw s2, 32(a2)
-; RV64IXQCCMP-SR-NEXT:    lw s3, 36(a2)
-; RV64IXQCCMP-SR-NEXT:    lw s4, 40(a2)
-; RV64IXQCCMP-SR-NEXT:    lw s5, 44(a2)
-; RV64IXQCCMP-SR-NEXT:    lw s6, 48(a2)
-; RV64IXQCCMP-SR-NEXT:    lw s7, 52(a2)
-; RV64IXQCCMP-SR-NEXT:    lw s8, 56(a2)
-; RV64IXQCCMP-SR-NEXT:    lw s9, 60(a2)
-; RV64IXQCCMP-SR-NEXT:    lw s10, 64(a2)
-; RV64IXQCCMP-SR-NEXT:    lw s11, 68(a2)
-; RV64IXQCCMP-SR-NEXT:    lw ra, 72(a2)
-; RV64IXQCCMP-SR-NEXT:    lw t3, 76(a2)
-; RV64IXQCCMP-SR-NEXT:    lw s0, 80(a2)
-; RV64IXQCCMP-SR-NEXT:    lw s1, 84(a2)
-; RV64IXQCCMP-SR-NEXT:    lw t2, 88(a2)
-; RV64IXQCCMP-SR-NEXT:    lw t1, 92(a2)
-; RV64IXQCCMP-SR-NEXT:    lw t0, 96(a2)
-; RV64IXQCCMP-SR-NEXT:    lw a6, 116(a2)
-; RV64IXQCCMP-SR-NEXT:    lw a4, 120(a2)
-; RV64IXQCCMP-SR-NEXT:    lw a1, 124(a2)
-; RV64IXQCCMP-SR-NEXT:    lw a7, 100(a2)
-; RV64IXQCCMP-SR-NEXT:    lw a5, 104(a2)
-; RV64IXQCCMP-SR-NEXT:    lw a3, 108(a2)
-; RV64IXQCCMP-SR-NEXT:    lw a0, 112(a2)
-; RV64IXQCCMP-SR-NEXT:    sw a1, 124(a2)
-; RV64IXQCCMP-SR-NEXT:    sw a4, 120(a2)
-; RV64IXQCCMP-SR-NEXT:    sw a6, 116(a2)
-; RV64IXQCCMP-SR-NEXT:    sw a0, 112(a2)
-; RV64IXQCCMP-SR-NEXT:    sw a3, 108(a2)
-; RV64IXQCCMP-SR-NEXT:    sw a5, 104(a2)
-; RV64IXQCCMP-SR-NEXT:    sw a7, 100(a2)
-; RV64IXQCCMP-SR-NEXT:    sw t0, 96(a2)
-; RV64IXQCCMP-SR-NEXT:    sw t1, 92(a2)
-; RV64IXQCCMP-SR-NEXT:    sw t2, 88(a2)
-; RV64IXQCCMP-SR-NEXT:    sw s1, 84(a2)
-; RV64IXQCCMP-SR-NEXT:    sw s0, 80(a2)
-; RV64IXQCCMP-SR-NEXT:    sw t3, 76(a2)
-; RV64IXQCCMP-SR-NEXT:    sw ra, 72(a2)
-; RV64IXQCCMP-SR-NEXT:    sw s11, 68(a2)
-; RV64IXQCCMP-SR-NEXT:    sw s10, 64(a2)
-; RV64IXQCCMP-SR-NEXT:    sw s9, 60(a2)
-; RV64IXQCCMP-SR-NEXT:    sw s8, 56(a2)
-; RV64IXQCCMP-SR-NEXT:    sw s7, 52(a2)
-; RV64IXQCCMP-SR-NEXT:    sw s6, 48(a2)
-; RV64IXQCCMP-SR-NEXT:    sw s5, 44(a2)
-; RV64IXQCCMP-SR-NEXT:    sw s4, 40(a2)
-; RV64IXQCCMP-SR-NEXT:    sw s3, 36(a2)
-; RV64IXQCCMP-SR-NEXT:    sw s2, 32(a2)
-; RV64IXQCCMP-SR-NEXT:    sw t6, 28(a2)
-; RV64IXQCCMP-SR-NEXT:    sw t5, 24(a2)
-; RV64IXQCCMP-SR-NEXT:    sw t4, 20(a2)
-; RV64IXQCCMP-SR-NEXT:    ld a0, 8(sp) # 8-byte Folded Reload
-; RV64IXQCCMP-SR-NEXT:    sw a0, 16(a2)
-; RV64IXQCCMP-SR-NEXT:    ld a0, 16(sp) # 8-byte Folded Reload
-; RV64IXQCCMP-SR-NEXT:    sw a0, 12(a2)
-; RV64IXQCCMP-SR-NEXT:    ld a0, 24(sp) # 8-byte Folded Reload
-; RV64IXQCCMP-SR-NEXT:    sw a0, 8(a2)
-; RV64IXQCCMP-SR-NEXT:    ld a0, 32(sp) # 8-byte Folded Reload
-; RV64IXQCCMP-SR-NEXT:    sw a0, 4(a2)
-; RV64IXQCCMP-SR-NEXT:    ld a0, 40(sp) # 8-byte Folded Reload
-; RV64IXQCCMP-SR-NEXT:    lui a1, %hi(var_test_irq)
-; RV64IXQCCMP-SR-NEXT:    sw a0, %lo(var_test_irq)(a1)
+; RV64IXQCCMP-SR-NEXT:    addi a0, a0, %lo(var_test_irq)
+; RV64IXQCCMP-SR-NEXT:    lw a1, 0(a0)
+; RV64IXQCCMP-SR-NEXT:    sd a1, 40(sp) # 8-byte Folded Spill
+; RV64IXQCCMP-SR-NEXT:    lw a1, 4(a0)
+; RV64IXQCCMP-SR-NEXT:    sd a1, 32(sp) # 8-byte Folded Spill
+; RV64IXQCCMP-SR-NEXT:    lw a1, 8(a0)
+; RV64IXQCCMP-SR-NEXT:    sd a1, 24(sp) # 8-byte Folded Spill
+; RV64IXQCCMP-SR-NEXT:    lw a1, 12(a0)
+; RV64IXQCCMP-SR-NEXT:    sd a1, 16(sp) # 8-byte Folded Spill
+; RV64IXQCCMP-SR-NEXT:    lw a1, 16(a0)
+; RV64IXQCCMP-SR-NEXT:    sd a1, 8(sp) # 8-byte Folded Spill
+; RV64IXQCCMP-SR-NEXT:    lw t3, 20(a0)
+; RV64IXQCCMP-SR-NEXT:    lw t4, 24(a0)
+; RV64IXQCCMP-SR-NEXT:    lw t5, 28(a0)
+; RV64IXQCCMP-SR-NEXT:    lw t6, 32(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s2, 36(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s3, 40(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s4, 44(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s5, 48(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s6, 52(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s7, 56(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s8, 60(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s9, 64(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s10, 68(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s11, 72(a0)
+; RV64IXQCCMP-SR-NEXT:    lw ra, 76(a0)
+; RV64IXQCCMP-SR-NEXT:    lw t2, 80(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s0, 84(a0)
+; RV64IXQCCMP-SR-NEXT:    lw s1, 88(a0)
+; RV64IXQCCMP-SR-NEXT:    lw t1, 92(a0)
+; RV64IXQCCMP-SR-NEXT:    lw t0, 112(a0)
+; RV64IXQCCMP-SR-NEXT:    lw a5, 116(a0)
+; RV64IXQCCMP-SR-NEXT:    lw a3, 120(a0)
+; RV64IXQCCMP-SR-NEXT:    lw a1, 124(a0)
+; RV64IXQCCMP-SR-NEXT:    lw a7, 96(a0)
+; RV64IXQCCMP-SR-NEXT:    lw a6, 100(a0)
+; RV64IXQCCMP-SR-NEXT:    lw a4, 104(a0)
+; RV64IXQCCMP-SR-NEXT:    lw a2, 108(a0)
+; RV64IXQCCMP-SR-NEXT:    sw a1, 124(a0)
+; RV64IXQCCMP-SR-NEXT:    sw a3, 120(a0)
+; RV64IXQCCMP-SR-NEXT:    sw a5, 116(a0)
+; RV64IXQCCMP-SR-NEXT:    sw t0, 112(a0)
+; RV64IXQCCMP-SR-NEXT:    sw a2, 108(a0)
+; RV64IXQCCMP-SR-NEXT:    sw a4, 104(a0)
+; RV64IXQCCMP-SR-NEXT:    sw a6, 100(a0)
+; RV64IXQCCMP-SR-NEXT:    sw a7, 96(a0)
+; RV64IXQCCMP-SR-NEXT:    sw t1, 92(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s1, 88(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s0, 84(a0)
+; RV64IXQCCMP-SR-NEXT:    sw t2, 80(a0)
+; RV64IXQCCMP-SR-NEXT:    sw ra, 76(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s11, 72(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s10, 68(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s9, 64(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s8, 60(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s7, 56(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s6, 52(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s5, 48(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s4, 44(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s3, 40(a0)
+; RV64IXQCCMP-SR-NEXT:    sw s2, 36(a0)
+; RV64IXQCCMP-SR-NEXT:    sw t6, 32(a0)
+; RV64IXQCCMP-SR-NEXT:    sw t5, 28(a0)
+; RV64IXQCCMP-SR-NEXT:    sw t4, 24(a0)
+; RV64IXQCCMP-SR-NEXT:    sw t3, 20(a0)
+; RV64IXQCCMP-SR-NEXT:    ld a1, 8(sp) # 8-byte Folded Reload
+; RV64IXQCCMP-SR-NEXT:    sw a1, 16(a0)
+; RV64IXQCCMP-SR-NEXT:    ld a1, 16(sp) # 8-byte Folded Reload
+; RV64IXQCCMP-SR-NEXT:    sw a1, 12(a0)
+; RV64IXQCCMP-SR-NEXT:    ld a1, 24(sp) # 8-byte Folded Reload
+; RV64IXQCCMP-SR-NEXT:    sw a1, 8(a0)
+; RV64IXQCCMP-SR-NEXT:    ld a1, 32(sp) # 8-byte Folded Reload
+; RV64IXQCCMP-SR-NEXT:    sw a1, 4(a0)
+; RV64IXQCCMP-SR-NEXT:    ld a1, 40(sp) # 8-byte Folded Reload
+; RV64IXQCCMP-SR-NEXT:    sw a1, 0(a0)
 ; RV64IXQCCMP-SR-NEXT:    qc.cm.popret {ra, s0-s11}, 160
   %val = load [32 x i32], ptr @var_test_irq
   store volatile [32 x i32] %val, ptr @var_test_irq

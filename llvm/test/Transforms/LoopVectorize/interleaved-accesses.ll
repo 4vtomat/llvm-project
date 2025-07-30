@@ -1499,10 +1499,10 @@ define void @PR34743(ptr %a, ptr %b, i64 %n) {
 ; CHECK-NEXT:    [[TMP12:%.*]] = mul nsw <4 x i32> [[TMP9]], [[TMP10]]
 ; CHECK-NEXT:    [[TMP13:%.*]] = mul nsw <4 x i32> [[TMP12]], [[TMP11]]
 ; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[INDEX]]
-; CHECK-NEXT:    store <4 x i32> [[TMP13]], ptr [[TMP14]], align 4, !alias.scope [[META36:![0-9]+]], !noalias [[META39:![0-9]+]]
+; CHECK-NEXT:    store <4 x i32> [[TMP13]], ptr [[TMP14]], align 4
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-NEXT:    [[TMP15:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP41:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP36:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <8 x i16> [[WIDE_VEC]], i64 7
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[TMP1]], [[N_VEC]]
@@ -1531,7 +1531,7 @@ define void @PR34743(ptr %a, ptr %b, i64 %n) {
 ; CHECK-NEXT:    [[ARRAYIDX5:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[I]]
 ; CHECK-NEXT:    store i32 [[MUL012]], ptr [[ARRAYIDX5]], align 4
 ; CHECK-NEXT:    [[EXITCOND:%.*]] = icmp eq i64 [[IV]], [[N]]
-; CHECK-NEXT:    br i1 [[EXITCOND]], label [[END]], label [[LOOP]], !llvm.loop [[LOOP42:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND]], label [[END]], label [[LOOP]], !llvm.loop [[LOOP37:![0-9]+]]
 ; CHECK:       end:
 ; CHECK-NEXT:    ret void
 ;

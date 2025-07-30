@@ -27,9 +27,9 @@ define dso_local signext i32 @reduction_vec(i32 noundef signext %n, i32* nocaptu
 ; CHECK-NEXT:    [[TMP9:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 2
 ; CHECK-NEXT:    [[TMP11:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 2 x i64> @llvm.stepvector.nxv2i64()
 ; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 2 x i64> poison, i64 [[TMP0]], i64 0
 ; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 2 x i64> [[DOTSPLATINSERT]], <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer
-; CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 2 x i64> @llvm.stepvector.nxv2i64()
 ; CHECK-NEXT:    [[TMP14:%.*]] = mul <vscale x 2 x i64> [[TMP12]], splat (i64 -1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 2 x i64> [[DOTSPLAT]], [[TMP14]]
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
@@ -97,7 +97,7 @@ define dso_local signext i32 @reduction_vec(i32 noundef signext %n, i32* nocaptu
 ; CHECK:       for.inc:
 ; CHECK-NEXT:    [[RED_1]] = phi i32 [ [[ADD]], [[IF_THEN]] ], [ [[RED_010]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp ugt i64 [[INDVARS_IV]], 1
-; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_COND_CLEANUP_LOOPEXIT]], !llvm.loop [[LOOP12:![0-9]+]]
+; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_COND_CLEANUP_LOOPEXIT]], !llvm.loop [[LOOP13:![0-9]+]]
 ;
 ; CHECK-NO-POSTSV-LABEL: @reduction_vec(
 ; CHECK-NO-POSTSV-NEXT:  entry:
@@ -123,9 +123,9 @@ define dso_local signext i32 @reduction_vec(i32 noundef signext %n, i32* nocaptu
 ; CHECK-NO-POSTSV-NEXT:    [[TMP9:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NO-POSTSV-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 2
 ; CHECK-NO-POSTSV-NEXT:    [[TMP11:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
+; CHECK-NO-POSTSV-NEXT:    [[TMP12:%.*]] = call <vscale x 2 x i64> @llvm.stepvector.nxv2i64()
 ; CHECK-NO-POSTSV-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 2 x i64> poison, i64 [[TMP0]], i64 0
 ; CHECK-NO-POSTSV-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 2 x i64> [[DOTSPLATINSERT]], <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer
-; CHECK-NO-POSTSV-NEXT:    [[TMP12:%.*]] = call <vscale x 2 x i64> @llvm.stepvector.nxv2i64()
 ; CHECK-NO-POSTSV-NEXT:    [[TMP14:%.*]] = mul <vscale x 2 x i64> [[TMP12]], splat (i64 -1)
 ; CHECK-NO-POSTSV-NEXT:    [[INDUCTION:%.*]] = add <vscale x 2 x i64> [[DOTSPLAT]], [[TMP14]]
 ; CHECK-NO-POSTSV-NEXT:    br label [[VECTOR_BODY:%.*]]
@@ -192,7 +192,7 @@ define dso_local signext i32 @reduction_vec(i32 noundef signext %n, i32* nocaptu
 ; CHECK-NO-POSTSV:       for.inc:
 ; CHECK-NO-POSTSV-NEXT:    [[RED_1]] = phi i32 [ [[ADD]], [[IF_THEN]] ], [ [[RED_010]], [[FOR_BODY]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[CMP:%.*]] = icmp ugt i64 [[INDVARS_IV]], 1
-; CHECK-NO-POSTSV-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_COND_CLEANUP_LOOPEXIT]], !llvm.loop [[LOOP12:![0-9]+]]
+; CHECK-NO-POSTSV-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_COND_CLEANUP_LOOPEXIT]], !llvm.loop [[LOOP13:![0-9]+]]
 ;
 
 entry:

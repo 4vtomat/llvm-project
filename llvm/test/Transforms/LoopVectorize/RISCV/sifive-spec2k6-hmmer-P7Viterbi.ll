@@ -113,7 +113,7 @@ define float @P7Viterbi(ptr noundef %dsq, i64 noundef signext %L, ptr noundef %h
 ; X280-NEXT:    store i32 [[SPEC_SELECT_LDIST1]], ptr [[ARRAYIDX80_LDIST1]], align 4
 ; X280-NEXT:    [[INDVARS_IV_NEXT180_LDIST1]] = add nuw nsw i64 [[INDVARS_IV179_LDIST1]], 1
 ; X280-NEXT:    [[EXITCOND_NOT_LDIST1:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT180_LDIST1]], [[L]]
-; X280-NEXT:    br i1 [[EXITCOND_NOT_LDIST1]], label %[[FOR_EXIT]], label %[[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; X280-NEXT:    br i1 [[EXITCOND_NOT_LDIST1]], label %[[FOR_EXIT]], label %[[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; X280:       [[FOR_EXIT]]:
 ; X280-NEXT:    ret float 0.000000e+00
 ;
@@ -219,7 +219,7 @@ define float @P7Viterbi(ptr noundef %dsq, i64 noundef signext %L, ptr noundef %h
 ; X390-NEXT:    store i32 [[SPEC_SELECT_LDIST1]], ptr [[ARRAYIDX80_LDIST1]], align 4
 ; X390-NEXT:    [[INDVARS_IV_NEXT180_LDIST1]] = add nuw nsw i64 [[INDVARS_IV179_LDIST1]], 1
 ; X390-NEXT:    [[EXITCOND_NOT_LDIST1:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT180_LDIST1]], [[L]]
-; X390-NEXT:    br i1 [[EXITCOND_NOT_LDIST1]], label %[[FOR_EXIT]], label %[[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; X390-NEXT:    br i1 [[EXITCOND_NOT_LDIST1]], label %[[FOR_EXIT]], label %[[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; X390:       [[FOR_EXIT]]:
 ; X390-NEXT:    ret float 0.000000e+00
 ;
@@ -269,13 +269,15 @@ for.exit:
 
 }
 ;.
-; X280: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; X280: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
 ; X280: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
-; X280: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
-; X280: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+; X280: [[META2]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; X280: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
+; X280: [[LOOP4]] = distinct !{[[LOOP4]], [[META3]], [[META1]]}
 ;.
-; X390: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; X390: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
 ; X390: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
-; X390: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
-; X390: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+; X390: [[META2]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; X390: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
+; X390: [[LOOP4]] = distinct !{[[LOOP4]], [[META3]], [[META1]]}
 ;.

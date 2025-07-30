@@ -59,7 +59,7 @@ define void @widen_pointer_induction_update() {
 ; CHECK-NEXT:    store i32 [[TMP32]], ptr [[P_017]], align 4
 ; CHECK-NEXT:    [[DEC]] = add nsw i32 [[DEC18]], -1
 ; CHECK-NEXT:    [[TOBOOL_NOT:%.*]] = icmp eq i32 [[DEC]], 0
-; CHECK-NEXT:    br i1 [[TOBOOL_NOT]], label [[FOR_END]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TOBOOL_NOT]], label [[FOR_END]], label [[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       for.end:
 ; CHECK-NEXT:    [[DOTLCSSA:%.*]] = phi i32 [ [[SCALAR_RECUR]], [[FOR_BODY]] ], [ [[TMP34]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    [[P_017_LCSSA:%.*]] = phi ptr [ [[P_017]], [[FOR_BODY]] ], [ getelementptr (i8, ptr getelementptr (i8, ptr @state, i64 1584), i64 -4), [[MIDDLE_BLOCK]] ]
@@ -92,8 +92,9 @@ for.end:
   ret void
 }
 ;.
-; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
 ; CHECK: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
-; CHECK: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
-; CHECK: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+; CHECK: [[META2]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; CHECK: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META3]], [[META1]]}
 ;.

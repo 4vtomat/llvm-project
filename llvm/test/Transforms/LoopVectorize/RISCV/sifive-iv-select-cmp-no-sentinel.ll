@@ -36,9 +36,9 @@ define i32 @FmoGetLastCodedMBOfSliceGroup(i32 %SliceGroupID, ptr %MBAmap, i32 %P
 ; SCALABLE-NEXT:    [[N_VEC:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[N_MOD_VF]]
 ; SCALABLE-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
 ; SCALABLE-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP4]], 4
+; SCALABLE-NEXT:    [[TMP6:%.*]] = call <vscale x 4 x i32> @llvm.stepvector.nxv4i32()
 ; SCALABLE-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 4 x i32> poison, i32 [[SLICEGROUPID]], i64 0
 ; SCALABLE-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 4 x i32> [[BROADCAST_SPLATINSERT]], <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer
-; SCALABLE-NEXT:    [[TMP6:%.*]] = call <vscale x 4 x i32> @llvm.stepvector.nxv4i32()
 ; SCALABLE-NEXT:    [[TMP7:%.*]] = mul <vscale x 4 x i32> [[TMP6]], splat (i32 1)
 ; SCALABLE-NEXT:    [[INDUCTION:%.*]] = add <vscale x 4 x i32> zeroinitializer, [[TMP7]]
 ; SCALABLE-NEXT:    [[TMP8:%.*]] = trunc i64 [[TMP5]] to i32
@@ -103,9 +103,9 @@ define i32 @FmoGetLastCodedMBOfSliceGroup(i32 %SliceGroupID, ptr %MBAmap, i32 %P
 ; VP-SCALABLE-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
 ; VP-SCALABLE-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 4
 ; VP-SCALABLE-NEXT:    [[TMP3:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 4, i1 true)
+; VP-SCALABLE-NEXT:    [[TMP4:%.*]] = call <vscale x 4 x i32> @llvm.stepvector.nxv4i32()
 ; VP-SCALABLE-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 4 x i32> poison, i32 [[SLICEGROUPID]], i64 0
 ; VP-SCALABLE-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 4 x i32> [[BROADCAST_SPLATINSERT]], <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer
-; VP-SCALABLE-NEXT:    [[TMP4:%.*]] = call <vscale x 4 x i32> @llvm.stepvector.nxv4i32()
 ; VP-SCALABLE-NEXT:    [[TMP5:%.*]] = mul <vscale x 4 x i32> [[TMP4]], splat (i32 1)
 ; VP-SCALABLE-NEXT:    [[INDUCTION:%.*]] = add <vscale x 4 x i32> zeroinitializer, [[TMP5]]
 ; VP-SCALABLE-NEXT:    br label [[VECTOR_BODY:%.*]]
@@ -151,7 +151,7 @@ define i32 @FmoGetLastCodedMBOfSliceGroup(i32 %SliceGroupID, ptr %MBAmap, i32 %P
 ; VP-SCALABLE-NEXT:    [[SPEC_SELECT]] = select i1 [[CMP1]], i32 [[TMP14]], i32 [[LASTMB_06]]
 ; VP-SCALABLE-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; VP-SCALABLE-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
-; VP-SCALABLE-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; VP-SCALABLE-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; VP-SCALABLE:       for.end.loopexit:
 ; VP-SCALABLE-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; VP-SCALABLE-NEXT:    br label [[FOR_END]]

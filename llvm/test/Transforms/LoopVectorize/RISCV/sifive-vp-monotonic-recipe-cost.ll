@@ -277,7 +277,7 @@ define i32 @dragon_escape(ptr %goal, ptr %board) #0 {
 ; P670-NEXT:    [[QUEUE_END_1]] = phi i32 [ [[INC]], %[[IF_THEN11]] ], [ [[QUEUE_END_0194]], %[[LAND_LHS_TRUE]] ], [ [[QUEUE_END_0194]], %[[FOR_BODY]] ]
 ; P670-NEXT:    [[INDVARS_IV_NEXT]] = add i64 [[INDVARS_IV1]], 1
 ; P670-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV1]], 400
-; P670-NEXT:    br i1 [[EXITCOND_NOT]], label %[[WHILE_COND_PREHEADER]], label %[[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; P670-NEXT:    br i1 [[EXITCOND_NOT]], label %[[WHILE_COND_PREHEADER]], label %[[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; P670:       [[WHILE_COND_PREHEADER]]:
 ; P670-NEXT:    [[TMP28:%.*]] = load i32, ptr [[QUEUE]], align 4
 ; P670-NEXT:    [[IDXPROM728:%.*]] = sext i32 [[TMP28]] to i64
@@ -377,7 +377,7 @@ define i32 @dragon_escape(ptr %goal, ptr %board) #0 {
 ; P470-NEXT:    [[QUEUE_END_1]] = phi i32 [ [[INC]], %[[IF_THEN11]] ], [ [[QUEUE_END_0194]], %[[LAND_LHS_TRUE]] ], [ [[QUEUE_END_0194]], %[[FOR_BODY]] ]
 ; P470-NEXT:    [[INDVARS_IV_NEXT]] = add i64 [[INDVARS_IV1]], 1
 ; P470-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV1]], 400
-; P470-NEXT:    br i1 [[EXITCOND_NOT]], label %[[WHILE_COND_PREHEADER]], label %[[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; P470-NEXT:    br i1 [[EXITCOND_NOT]], label %[[WHILE_COND_PREHEADER]], label %[[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; P470:       [[WHILE_COND_PREHEADER]]:
 ; P470-NEXT:    [[TMP32:%.*]] = load i32, ptr [[QUEUE]], align 4
 ; P470-NEXT:    [[IDXPROM728:%.*]] = sext i32 [[TMP32]] to i64
@@ -465,7 +465,7 @@ define i32 @dragon_escape(ptr %goal, ptr %board) #0 {
 ; X280-NEXT:    [[QUEUE_END_1]] = phi i32 [ [[INC]], %[[IF_THEN11]] ], [ [[QUEUE_END_0194]], %[[LAND_LHS_TRUE]] ], [ [[QUEUE_END_0194]], %[[FOR_BODY]] ]
 ; X280-NEXT:    [[INDVARS_IV_NEXT]] = add i64 [[INDVARS_IV1]], 1
 ; X280-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV1]], 400
-; X280-NEXT:    br i1 [[EXITCOND_NOT]], label %[[WHILE_COND_PREHEADER]], label %[[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; X280-NEXT:    br i1 [[EXITCOND_NOT]], label %[[WHILE_COND_PREHEADER]], label %[[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; X280:       [[WHILE_COND_PREHEADER]]:
 ; X280-NEXT:    [[TMP28:%.*]] = load i32, ptr [[QUEUE]], align 4
 ; X280-NEXT:    [[IDXPROM728:%.*]] = sext i32 [[TMP28]] to i64
@@ -515,18 +515,21 @@ while.cond.preheader:
   ret i32 0
 }
 ;.
-; P670: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; P670: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
 ; P670: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
-; P670: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
-; P670: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+; P670: [[META2]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; P670: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
+; P670: [[LOOP4]] = distinct !{[[LOOP4]], [[META3]], [[META1]]}
 ;.
-; P470: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; P470: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
 ; P470: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
-; P470: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
-; P470: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+; P470: [[META2]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; P470: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
+; P470: [[LOOP4]] = distinct !{[[LOOP4]], [[META3]], [[META1]]}
 ;.
-; X280: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; X280: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
 ; X280: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
-; X280: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
-; X280: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+; X280: [[META2]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; X280: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
+; X280: [[LOOP4]] = distinct !{[[LOOP4]], [[META3]], [[META1]]}
 ;.

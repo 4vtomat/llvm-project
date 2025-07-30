@@ -27,16 +27,16 @@ define void @isnormal(ptr %src, ptr %dst, i64 %n) {
 ; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP1]], i32 1, i1 true)
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds double, ptr [[SRC]], i64 [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds double, ptr [[TMP4]], i32 0
-; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 1 x double> @llvm.vp.load.nxv1f64.p0(ptr align 8 [[TMP5]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP2]]), !alias.scope [[META0:![0-9]+]]
+; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 1 x double> @llvm.vp.load.nxv1f64.p0(ptr align 8 [[TMP5]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x i1> @llvm.vp.is.fpclass.nxv1f64(<vscale x 1 x double> [[VP_OP_LOAD]], i32 264, <vscale x 1 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i8, ptr [[DST]], i64 [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[VP_CAST:%.*]] = call <vscale x 1 x i8> @llvm.vp.zext.nxv1i8.nxv1i1(<vscale x 1 x i1> [[VP_OP]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i8, ptr [[TMP7]], i32 0
-; CHECK-NEXT:    call void @llvm.vp.store.nxv1i8.p0(<vscale x 1 x i8> [[VP_CAST]], ptr align 1 [[TMP8]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP2]]), !alias.scope [[META3:![0-9]+]], !noalias [[META0]]
+; CHECK-NEXT:    call void @llvm.vp.store.nxv1i8.p0(<vscale x 1 x i8> [[VP_CAST]], ptr align 1 [[TMP8]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP9]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[TMP10]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP10]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br label %[[FOR_END_LOOPEXIT:.*]]
 ; CHECK:       [[SCALAR_PH]]:
@@ -52,7 +52,7 @@ define void @isnormal(ptr %src, ptr %dst, i64 %n) {
 ; CHECK-NEXT:    store i8 [[STOREDV]], ptr [[ARRAYIDX2]], align 1
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_END_LOOPEXIT]], label %[[FOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_END_LOOPEXIT]], label %[[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       [[FOR_END_LOOPEXIT]]:
 ; CHECK-NEXT:    br label %[[FOR_END]]
 ; CHECK:       [[FOR_END]]:
@@ -80,13 +80,9 @@ for.end:
 
 declare i1 @llvm.is.fpclass.f64(double, i32 immarg)
 ;.
-; CHECK: [[META0]] = !{[[META1:![0-9]+]]}
-; CHECK: [[META1]] = distinct !{[[META1]], [[META2:![0-9]+]]}
-; CHECK: [[META2]] = distinct !{[[META2]], !"LVerDomain"}
-; CHECK: [[META3]] = !{[[META4:![0-9]+]]}
-; CHECK: [[META4]] = distinct !{[[META4]], [[META2]]}
-; CHECK: [[LOOP5]] = distinct !{[[LOOP5]], [[META6:![0-9]+]], [[META7:![0-9]+]]}
-; CHECK: [[META6]] = !{!"llvm.loop.isvectorized", i32 1}
-; CHECK: [[META7]] = !{!"llvm.loop.unroll.runtime.disable"}
-; CHECK: [[LOOP8]] = distinct !{[[LOOP8]], [[META6]]}
+; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
+; CHECK: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
+; CHECK: [[META2]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; CHECK: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META1]]}
 ;.

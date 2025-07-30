@@ -67,7 +67,7 @@ define void @test(ptr %a, ptr %b, i64 %stride) {
 ; CHECK-NEXT:    [[IV_NEXT]] = add nsw i64 [[IV]], 1
 ; CHECK-NEXT:    [[DELTA_NEXT]] = getelementptr i8, ptr [[DELTA]], i64 [[STRIDE]]
 ; CHECK-NEXT:    [[DOTNOT:%.*]] = icmp sgt i64 [[IV]], [[STRIDE]]
-; CHECK-NEXT:    br i1 [[DOTNOT]], label [[LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NEXT:    br i1 [[DOTNOT]], label [[LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ;
 ; CHECK-VERSIONING-LABEL: define void @test(
 ; CHECK-VERSIONING-SAME: ptr [[A:%.*]], ptr [[B:%.*]], i64 [[STRIDE:%.*]]) #[[ATTR0:[0-9]+]] {
@@ -131,7 +131,7 @@ define void @test(ptr %a, ptr %b, i64 %stride) {
 ; CHECK-VERSIONING-NEXT:    [[IV_NEXT]] = add nsw i64 [[IV]], 1
 ; CHECK-VERSIONING-NEXT:    [[DELTA_NEXT]] = getelementptr i8, ptr [[DELTA]], i64 [[STRIDE]]
 ; CHECK-VERSIONING-NEXT:    [[DOTNOT:%.*]] = icmp sgt i64 [[IV]], [[STRIDE]]
-; CHECK-VERSIONING-NEXT:    br i1 [[DOTNOT]], label [[LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-VERSIONING-NEXT:    br i1 [[DOTNOT]], label [[LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ;
 entry:
   br label %for.body
@@ -161,13 +161,15 @@ for.body:
 ; Function Attrs: nocallback nofree nosync nounwind speculatable willreturn memory(none)
 declare double @llvm.fmuladd.f64(double, double, double) #0
 ;.
-; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
 ; CHECK: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
-; CHECK: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
-; CHECK: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+; CHECK: [[META2]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; CHECK: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META3]], [[META1]]}
 ;.
-; CHECK-VERSIONING: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; CHECK-VERSIONING: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
 ; CHECK-VERSIONING: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
-; CHECK-VERSIONING: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
-; CHECK-VERSIONING: [[LOOP3]] = distinct !{[[LOOP3]]}
+; CHECK-VERSIONING: [[META2]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; CHECK-VERSIONING: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK-VERSIONING: [[LOOP4]] = distinct !{[[LOOP4]]}
 ;.

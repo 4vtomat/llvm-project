@@ -29,11 +29,11 @@ define void @vf_will_not_generate_any_vector_insts(ptr %src, ptr %dst) {
 ; CHECK-NEXT:    [[TMP5:%.*]] = load i32, ptr [[SRC]], align 4, !alias.scope [[META0:![0-9]+]]
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT2:%.*]] = insertelement <vscale x 2 x i32> poison, i32 [[TMP5]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT3:%.*]] = shufflevector <vscale x 2 x i32> [[BROADCAST_SPLATINSERT2]], <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer
-; CHECK-NEXT:    call void @llvm.vp.scatter.nxv2i32.nxv2p0(<vscale x 2 x i32> [[BROADCAST_SPLAT3]], <vscale x 2 x ptr> align 4 [[BROADCAST_SPLAT]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP4]]), !alias.scope [[META3:![0-9]+]], !noalias [[META0]]
+; CHECK-NEXT:    call void @llvm.vp.scatter.nxv2i32.nxv2p0(<vscale x 2 x i32> [[BROADCAST_SPLAT3]], <vscale x 2 x ptr> align 4 [[BROADCAST_SPLAT]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP4]])
 ; CHECK-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP4]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[TMP6]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp eq i64 [[INDEX_NEXT]], 100
-; CHECK-NEXT:    br i1 [[TMP1]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP1]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br label %[[EXIT:.*]]
 ; CHECK:       [[SCALAR_PH]]:
@@ -45,7 +45,7 @@ define void @vf_will_not_generate_any_vector_insts(ptr %src, ptr %dst) {
 ; CHECK-NEXT:    store i32 [[DOTPRE]], ptr [[DST]], align 4
 ; CHECK-NEXT:    [[TMP3]] = add nuw i64 [[TMP2]], 1
 ; CHECK-NEXT:    [[EC:%.*]] = icmp eq i64 [[TMP3]], 100
-; CHECK-NEXT:    br i1 [[EC]], label %[[EXIT]], label %[[LOOP]], !llvm.loop [[LOOP8:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EC]], label %[[EXIT]], label %[[LOOP]], !llvm.loop [[LOOP7:![0-9]+]]
 ; CHECK:       [[EXIT]]:
 ; CHECK-NEXT:    ret void
 ;
@@ -67,10 +67,9 @@ exit:
 ; CHECK: [[META0]] = !{[[META1:![0-9]+]]}
 ; CHECK: [[META1]] = distinct !{[[META1]], [[META2:![0-9]+]]}
 ; CHECK: [[META2]] = distinct !{[[META2]], !"LVerDomain"}
-; CHECK: [[META3]] = !{[[META4:![0-9]+]]}
-; CHECK: [[META4]] = distinct !{[[META4]], [[META2]]}
-; CHECK: [[LOOP5]] = distinct !{[[LOOP5]], [[META6:![0-9]+]], [[META7:![0-9]+]]}
-; CHECK: [[META6]] = !{!"llvm.loop.isvectorized", i32 1}
-; CHECK: [[META7]] = !{!"llvm.loop.unroll.runtime.disable"}
-; CHECK: [[LOOP8]] = distinct !{[[LOOP8]], [[META6]]}
+; CHECK: [[LOOP3]] = distinct !{[[LOOP3]], [[META4:![0-9]+]], [[META5:![0-9]+]], [[META6:![0-9]+]]}
+; CHECK: [[META4]] = !{!"llvm.loop.isvectorized", i32 1}
+; CHECK: [[META5]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; CHECK: [[META6]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK: [[LOOP7]] = distinct !{[[LOOP7]], [[META4]]}
 ;.

@@ -29,19 +29,19 @@ define i32 @foo(ptr nocapture %A, ptr nocapture %B, i32 %n) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[INDEX]]
-; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i32>, ptr [[TMP5]], align 4, !alias.scope [[META0:![0-9]+]], !noalias [[META3:![0-9]+]]
+; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i32>, ptr [[TMP5]], align 4
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[INDEX]]
-; CHECK-NEXT:    [[WIDE_LOAD2:%.*]] = load <4 x i32>, ptr [[TMP6]], align 4, !alias.scope [[META3]]
+; CHECK-NEXT:    [[WIDE_LOAD2:%.*]] = load <4 x i32>, ptr [[TMP6]], align 4
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp sgt <4 x i32> [[WIDE_LOAD]], [[WIDE_LOAD2]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp sgt <4 x i32> [[WIDE_LOAD]], splat (i32 19)
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp slt <4 x i32> [[WIDE_LOAD2]], splat (i32 4)
 ; CHECK-NEXT:    [[TMP10:%.*]] = select <4 x i1> [[TMP9]], <4 x i32> splat (i32 4), <4 x i32> splat (i32 5)
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP8]], <4 x i32> splat (i32 3), <4 x i32> [[TMP10]]
 ; CHECK-NEXT:    [[PREDPHI3:%.*]] = select <4 x i1> [[TMP7]], <4 x i32> [[PREDPHI]], <4 x i32> splat (i32 9)
-; CHECK-NEXT:    store <4 x i32> [[PREDPHI3]], ptr [[TMP5]], align 4, !alias.scope [[META0]], !noalias [[META3]]
+; CHECK-NEXT:    store <4 x i32> [[PREDPHI3]], ptr [[TMP5]], align 4
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-NEXT:    [[TMP11:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP11]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP11]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N_VEC]], [[TMP0]]
 ; CHECK-NEXT:    br i1 [[CMP_N]], label [[FOR_END_LOOPEXIT:%.*]], label [[SCALAR_PH]]
@@ -69,7 +69,7 @@ define i32 @foo(ptr nocapture %A, ptr nocapture %B, i32 %n) {
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[LFTR_WIDEIV:%.*]] = trunc i64 [[INDVARS_IV_NEXT]] to i32
 ; CHECK-NEXT:    [[EXITCOND:%.*]] = icmp eq i32 [[N]], [[LFTR_WIDEIV]]
-; CHECK-NEXT:    br i1 [[EXITCOND]], label [[FOR_END_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND]], label [[FOR_END_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       for.end.loopexit:
 ; CHECK-NEXT:    br label [[FOR_END]]
 ; CHECK:       for.end:
@@ -136,23 +136,11 @@ define i32 @multi_variable_if_nest(ptr nocapture %A, ptr nocapture %B, i32 %n) {
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[INDEX]]
-; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i32>, ptr [[TMP5]], align 4, !alias.scope [[META9:![0-9]+]], !noalias [[META12:![0-9]+]]
+; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i32>, ptr [[TMP5]], align 4
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[INDEX]]
-; CHECK-NEXT:    [[WIDE_LOAD2:%.*]] = load <4 x i32>, ptr [[TMP6]], align 4, !alias.scope [[META12]]
+; CHECK-NEXT:    [[WIDE_LOAD2:%.*]] = load <4 x i32>, ptr [[TMP6]], align 4
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp sgt <4 x i32> [[WIDE_LOAD]], [[WIDE_LOAD2]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp sgt <4 x i32> [[WIDE_LOAD]], splat (i32 19)
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP9:%.*]] = xor <4 x i1> [[TMP8]], splat (i1 true)
-; CHECK-NEXT:    [[TMP10:%.*]] = and <4 x i1> [[TMP7]], [[TMP9]]
-; CHECK-NEXT:    [[TMP12:%.*]] = icmp slt <4 x i32> [[WIDE_LOAD2]], splat (i32 4)
-; CHECK-NEXT:    [[TMP13:%.*]] = select <4 x i1> [[TMP12]], <4 x i32> splat (i32 4), <4 x i32> splat (i32 5)
-; CHECK-NEXT:    [[TMP14:%.*]] = select <4 x i1> [[TMP12]], <4 x i32> splat (i32 6), <4 x i32> splat (i32 11)
-; CHECK-NEXT:    [[TMP11:%.*]] = and <4 x i1> [[TMP7]], [[TMP8]]
-; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP11]], <4 x i32> splat (i32 3), <4 x i32> splat (i32 9)
-; CHECK-NEXT:    [[PREDPHI3:%.*]] = select <4 x i1> [[TMP10]], <4 x i32> [[TMP13]], <4 x i32> [[PREDPHI]]
-; CHECK-NEXT:    [[PREDPHI4:%.*]] = select <4 x i1> [[TMP11]], <4 x i32> splat (i32 7), <4 x i32> splat (i32 18)
-; CHECK-NEXT:    [[PREDPHI5:%.*]] = select <4 x i1> [[TMP10]], <4 x i32> [[TMP14]], <4 x i32> [[PREDPHI4]]
-=======
 ; CHECK-NEXT:    [[TMP11:%.*]] = icmp slt <4 x i32> [[WIDE_LOAD2]], splat (i32 4)
 ; CHECK-NEXT:    [[TMP12:%.*]] = select <4 x i1> [[TMP11]], <4 x i32> splat (i32 4), <4 x i32> splat (i32 5)
 ; CHECK-NEXT:    [[TMP13:%.*]] = select <4 x i1> [[TMP11]], <4 x i32> splat (i32 6), <4 x i32> splat (i32 11)
@@ -161,12 +149,11 @@ define i32 @multi_variable_if_nest(ptr nocapture %A, ptr nocapture %B, i32 %n) {
 ; CHECK-NEXT:    [[PREDPHI3:%.*]] = select <4 x i1> [[TMP7]], <4 x i32> [[PREDPHI]], <4 x i32> splat (i32 9)
 ; CHECK-NEXT:    [[PREDPHI4:%.*]] = select <4 x i1> [[TMP14]], <4 x i32> splat (i32 7), <4 x i32> [[TMP13]]
 ; CHECK-NEXT:    [[PREDPHI5:%.*]] = select <4 x i1> [[TMP7]], <4 x i32> [[PREDPHI4]], <4 x i32> splat (i32 18)
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
-; CHECK-NEXT:    store <4 x i32> [[PREDPHI3]], ptr [[TMP5]], align 4, !alias.scope [[META9]], !noalias [[META12]]
-; CHECK-NEXT:    store <4 x i32> [[PREDPHI5]], ptr [[TMP6]], align 4, !alias.scope [[META12]]
+; CHECK-NEXT:    store <4 x i32> [[PREDPHI3]], ptr [[TMP5]], align 4
+; CHECK-NEXT:    store <4 x i32> [[PREDPHI5]], ptr [[TMP6]], align 4
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-NEXT:    [[TMP15:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N_VEC]], [[TMP0]]
 ; CHECK-NEXT:    br i1 [[CMP_N]], label [[FOR_END_LOOPEXIT:%.*]], label [[SCALAR_PH]]
@@ -197,7 +184,7 @@ define i32 @multi_variable_if_nest(ptr nocapture %A, ptr nocapture %B, i32 %n) {
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[LFTR_WIDEIV:%.*]] = trunc i64 [[INDVARS_IV_NEXT]] to i32
 ; CHECK-NEXT:    [[EXITCOND:%.*]] = icmp eq i32 [[N]], [[LFTR_WIDEIV]]
-; CHECK-NEXT:    br i1 [[EXITCOND]], label [[FOR_END_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP15:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND]], label [[FOR_END_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       for.end.loopexit:
 ; CHECK-NEXT:    br label [[FOR_END]]
 ; CHECK:       for.end:
