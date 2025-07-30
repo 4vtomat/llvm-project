@@ -602,35 +602,7 @@ Value *VPInstruction::generate(VPTransformState &State) {
     return Builder.CreateCmp(getPredicate(), A, B, Name);
   }
   case Instruction::PHI: {
-<<<<<<< HEAD
-    assert(getParent() ==
-               getParent()->getPlan()->getVectorLoopRegion()->getEntry() &&
-           "VPInstructions with PHI opcodes must be used for header phis only "
-           "at the moment");
-    BasicBlock *VectorPH =
-        State.CFG.VPBB2IRBB.at(getParent()->getCFGPredecessor(0));
-    Value *Start = State.get(getOperand(0), VPLane(0));
-#if SIFIVE_CUSTOMIZATION
-    // SYNC-UPSTREAM: The widen pointer induction recipe emits IR other than the
-    // phi itself in its ::execute, which may cause a following
-    // VPInstruction::PHI to be placed outside the phi group at the top of the
-    // block. This may also be a potential issue upstream.
-    auto CurrIP = State.Builder.saveIP();
-    IRBuilder<>::InsertPointGuard Guard(State.Builder);
-    if (State.Builder.GetInsertPoint() !=
-        State.Builder.GetInsertBlock()->getFirstNonPHIIt())
-      State.Builder.SetInsertPoint(
-          State.Builder.GetInsertBlock()->getFirstNonPHIIt());
-#endif // SIFIVE_CUSTOMIZATION
-    PHINode *Phi = State.Builder.CreatePHI(Start->getType(), 2, Name);
-    Phi->addIncoming(Start, VectorPH);
-#if SIFIVE_CUSTOMIZATION
-    State.Builder.restoreIP(CurrIP);
-#endif // SIFIVE_CUSTOMIZATION
-    return Phi;
-=======
     llvm_unreachable("should be handled by VPPhi::execute");
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
   }
   case Instruction::Select: {
     bool OnlyFirstLaneUsed = vputils::onlyFirstLaneUsed(this);
