@@ -227,20 +227,12 @@
 // RV32-LETTER: error: invalid arch name 'rv32q',
 // RV32-LETTER: first letter after 'rv32' should be 'e', 'i' or 'g'
 
-<<<<<<< HEAD
-// RUN: not %clang --target=riscv32-unknown-elf -march=rv32imcq -### %s \
-// RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-ORDER %s
-// RV32-ORDER: error: invalid arch name 'rv32imcq',
-// RV32-ORDER: unsupported standard user-level extension 'q'
-
 // SIFIVE_CUSTOMIZATION
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32id -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-DER %s
 // RV32-DER: "-target-feature" "+d"
 // end SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
 // RUN: not %clang --target=riscv32-unknown-elf -march=rv32izvl64b -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-ZVL64B-ER %s
 // RV32-ZVL64B-ER: error: invalid arch name 'rv32izvl64b',
