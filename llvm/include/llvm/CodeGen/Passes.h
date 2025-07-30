@@ -536,19 +536,14 @@ FunctionPass *createExpandLargeDivRemPass();
 // Expands large div/rem instructions.
 FunctionPass *createExpandFpPass();
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  // Expands powi instructions.
-  FunctionPass *createExpandPowiPass();
-  FunctionPass *createExpandVPReductionPass();
+// Expands powi instructions.
+FunctionPass *createExpandPowiPass();
+FunctionPass *createExpandVPReductionPass();
 #endif
 
-  // This pass expands memcmp() to load/stores.
-  FunctionPass *createExpandMemCmpLegacyPass();
-=======
 // This pass expands memcmp() to load/stores.
 FunctionPass *createExpandMemCmpLegacyPass();
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
 
 /// Creates Break False Dependencies pass. \see BreakFalseDeps.cpp
 FunctionPass *createBreakFalseDeps();
