@@ -11915,19 +11915,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range,
     R->setOperand(1, WideIV->getStepValue());
   }
 
-#if SIFIVE_CUSTOMIZATION
-  // SiFive unbound loops do not need this transform.
-  BasicBlock *UncountableExitingBlock;
-  if (!Plan->isUncountableAndUnbound() &&
-      (UncountableExitingBlock = Legal->getUncountableEarlyExitingBlock())) {
-#else
-  if (auto *UncountableExitingBlock =
-          Legal->getUncountableEarlyExitingBlock()) {
-#endif // SIFIVE_CUSTOMIZATION
-    VPlanTransforms::runPass(VPlanTransforms::handleUncountableEarlyExit, *Plan,
-                             OrigLoop, UncountableExitingBlock, RecipeBuilder,
-                             Range);
-  }
   DenseMap<VPValue *, VPValue *> IVEndValues;
 #if SIFIVE_CUSTOMIZATION
   // addScalarResumePhis requires TripCount to produce end-value
