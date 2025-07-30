@@ -4275,18 +4275,16 @@ bool RISCVAsmParser::processInstruction(MCInst &Inst, SMLoc IDLoc,
   case RISCV::PseudoFSD:
     emitLoadStoreSymbol(Inst, RISCV::FSD, IDLoc, Out, /*HasTmpReg=*/true);
     return false;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  case RISCV::PseudoAddRegRel:
-    if (checkPseudoAddRegRel(Inst, Operands))
-#endif // SIFIVE_CUSTOMIZATION
-=======
   case RISCV::PseudoFSQ:
     emitLoadStoreSymbol(Inst, RISCV::FSQ, IDLoc, Out, /*HasTmpReg=*/true);
     return false;
+#if SIFIVE_CUSTOMIZATION
+  case RISCV::PseudoAddRegRel:
+    if (checkPseudoAddRegRel(Inst, Operands))
+#else
   case RISCV::PseudoAddTPRel:
     if (checkPseudoAddTPRel(Inst, Operands))
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
+#endif // SIFIVE_CUSTOMIZATION
       return true;
     break;
   case RISCV::PseudoTLSDESCCall:
