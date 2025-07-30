@@ -796,13 +796,13 @@ inline cstfp_pred_ty<is_non_zero_fp> m_NonZeroFP() {
 
 #if SIFIVE_CUSTOMIZATION
 struct match_fast_math_flags {
-  FastMathFlags FMF;
-  FastMathFlags *MatchedFMF;
+  mutable FastMathFlags FMF;
+  mutable FastMathFlags *MatchedFMF;
 
   match_fast_math_flags(FastMathFlags FMF, FastMathFlags *MatchedFMF)
       : FMF(FMF), MatchedFMF(MatchedFMF) {}
 
-  template <typename ValTy> bool match(ValTy *V) {
+  template <typename ValTy> bool match(ValTy *V) const {
     if (auto *I = dyn_cast<FPMathOperator>(V)) {
       FastMathFlags OrigFMF = FMF;
       FastMathFlags TargetFMF = I->getFastMathFlags();
@@ -1014,7 +1014,7 @@ struct specific_apfloat {
     }
   }
 
-  template <typename ITy> bool match(ITy *V) {
+  template <typename ITy> bool match(ITy *V) const {
     if (const auto *CFP = dyn_cast<ConstantFP>(V))
       return isEqual(CFP->getValue());
     if (V->getType()->isVectorTy())
