@@ -7316,55 +7316,6 @@ static unsigned getRISCVVLOp(SDValue Op) {
 #undef VP_CASE
 }
 
-<<<<<<< HEAD
-/// Return true if a RISC-V target specified op has a passthru operand.
-static bool hasPassthruOp(unsigned Opcode) {
-  assert(Opcode > RISCVISD::FIRST_NUMBER &&
-         Opcode <= RISCVISD::LAST_STRICTFP_OPCODE &&
-         "not a RISC-V target specific op");
-  static_assert(
-      RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
-          146 && // SIFIVE
-      RISCVISD::LAST_STRICTFP_OPCODE - RISCVISD::FIRST_STRICTFP_OPCODE == 21 &&
-      "adding target specific op should update this function");
-  if (Opcode >= RISCVISD::ADD_VL && Opcode <= RISCVISD::VFMAX_VL)
-    return true;
-  if (Opcode == RISCVISD::FCOPYSIGN_VL)
-    return true;
-  if (Opcode >= RISCVISD::VWMUL_VL && Opcode <= RISCVISD::VFWSUB_W_VL)
-    return true;
-  if (Opcode == RISCVISD::SETCC_VL)
-    return true;
-  if (Opcode >= RISCVISD::STRICT_FADD_VL && Opcode <= RISCVISD::STRICT_FDIV_VL)
-    return true;
-  if (Opcode == RISCVISD::VMERGE_VL)
-    return true;
-  return false;
-}
-
-/// Return true if a RISC-V target specified op has a mask operand.
-static bool hasMaskOp(unsigned Opcode) {
-  assert(Opcode > RISCVISD::FIRST_NUMBER &&
-         Opcode <= RISCVISD::LAST_STRICTFP_OPCODE &&
-         "not a RISC-V target specific op");
-  static_assert(
-      RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
-          146 && // SIFIVE
-      RISCVISD::LAST_STRICTFP_OPCODE - RISCVISD::FIRST_STRICTFP_OPCODE == 21 &&
-      "adding target specific op should update this function");
-  if (Opcode >= RISCVISD::TRUNCATE_VECTOR_VL && Opcode <= RISCVISD::SETCC_VL)
-    return true;
-  if (Opcode >= RISCVISD::VRGATHER_VX_VL &&
-      Opcode <= RISCVISD::LAST_VL_VECTOR_OP)
-    return true;
-  if (Opcode >= RISCVISD::STRICT_FADD_VL &&
-      Opcode <= RISCVISD::STRICT_VFROUND_NOEXCEPT_VL)
-    return true;
-  return false;
-}
-
-=======
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
 static bool isPromotedOpNeedingSplit(SDValue Op,
                                      const RISCVSubtarget &Subtarget) {
   if (Op.getValueType() == MVT::nxv32f16 &&
@@ -11647,8 +11598,7 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_VOID(SDValue Op,
   switch (IntNo) {
   default:
     break;
-<<<<<<< HEAD
-  // SIFIVE
+#ifdef SIFIVE_CUSTOMIZATION
   case Intrinsic::riscv_vsetvxrm: {
     SDLoc DL(Op);
     MVT XLenVT = Subtarget.getXLenVT();
@@ -11659,15 +11609,7 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_VOID(SDValue Op,
         DAG.getMachineNode(RISCV::WriteVXRM, DL, MVT::Other, RoundMode, Chain),
         0);
   }
-  // end SIFIVE
-  case Intrinsic::riscv_seg2_store:
-  case Intrinsic::riscv_seg3_store:
-  case Intrinsic::riscv_seg4_store:
-  case Intrinsic::riscv_seg5_store:
-  case Intrinsic::riscv_seg6_store:
-  case Intrinsic::riscv_seg7_store:
-  case Intrinsic::riscv_seg8_store: {
-=======
+#endif // SIFIVE_CUSTOMIZATION
   case Intrinsic::riscv_seg2_store_mask:
   case Intrinsic::riscv_seg3_store_mask:
   case Intrinsic::riscv_seg4_store_mask:
@@ -11675,7 +11617,6 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_VOID(SDValue Op,
   case Intrinsic::riscv_seg6_store_mask:
   case Intrinsic::riscv_seg7_store_mask:
   case Intrinsic::riscv_seg8_store_mask: {
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
     SDLoc DL(Op);
     static const Intrinsic::ID VssegInts[] = {
         Intrinsic::riscv_vsseg2_mask, Intrinsic::riscv_vsseg3_mask,
@@ -17601,26 +17542,9 @@ static SDValue expandMul(SDNode *N, SelectionDAG &DAG,
       }
     }
 
-<<<<<<< HEAD
-  // 2^N - 2^M -> (sub (shl X, C1), (shl X, C2))
-  uint64_t MulAmtLowBit = MulAmt & (-MulAmt);
-  if (isPowerOf2_64(MulAmt + MulAmtLowBit)) {
-    uint64_t ShiftAmt1 = MulAmt + MulAmtLowBit;
-    SDLoc DL(N);
-    SDValue Shift1 = DAG.getNode(ISD::SHL, DL, VT, N->getOperand(0),
-                                 DAG.getConstant(Log2_64(ShiftAmt1), DL, VT));
-    SDValue Shift2 =
-        DAG.getNode(ISD::SHL, DL, VT, N->getOperand(0),
-                    DAG.getConstant(Log2_64(MulAmtLowBit), DL, VT));
-    return DAG.getNode(ISD::SUB, DL, VT, Shift1, Shift2);
-  }
-
-#if SIFIVE_CUSTOMIZATION
-  // The code below doesn't see profitable for our cores.
+#ifdef SIFIVE_CUSTOMIZATION
+    // The code below doesn't see profitable for our cores.
 #else
-  if (HasShlAdd) {
-=======
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
     for (uint64_t Divisor : {3, 5, 9}) {
       if (MulAmt % Divisor != 0)
         continue;
@@ -17644,8 +17568,8 @@ static SDValue expandMul(SDNode *N, SelectionDAG &DAG,
         }
       }
     }
+#endif // SIFIVE_CUSTOMIZATION
   }
-#endif
 
   if (SDValue V = expandMulToAddOrSubOfShl(N, DAG, MulAmt))
     return V;
@@ -18760,7 +18684,6 @@ NodeExtensionHelper::getSupportedFoldings(const SDNode *Root) {
 }
 } // End anonymous namespace.
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static SDValue combineSelectAndBinOp(const SDNode *N, SelectionDAG &DAG) {
   assert(N != nullptr);
@@ -18824,7 +18747,6 @@ static SDValue combineSelectAndBinOp(const SDNode *N, SelectionDAG &DAG) {
                      NewMask, VL);
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
 static SDValue simplifyOp_VL(SDNode *N) {
   // TODO: Extend this to other binops using generic identity logic
   assert(N->getOpcode() == RISCVISD::ADD_VL);
@@ -18843,7 +18765,6 @@ static SDValue simplifyOp_VL(SDNode *N) {
     return A;
   return SDValue();
 }
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
 
 /// Combine a binary or FMA operation to its equivalent VW or VW_W form.
 /// The supported combines are:
@@ -22526,15 +22447,12 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     break;
   }
   case RISCVISD::ADD_VL:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (SDValue Result = combineSelectAndBinOp(N, DAG))
       return Result;
 #endif // SIFIVE_CUSTOMIZATION
-=======
     if (SDValue V = simplifyOp_VL(N))
       return V;
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
     if (SDValue V = combineOp_VLToVWOp_VL(N, DCI, Subtarget))
       return V;
     if (SDValue V = combineVqdotAccum(N, DAG, Subtarget))
@@ -25536,302 +25454,6 @@ bool RISCVTargetLowering::mayBeEmittedAsTailCall(const CallInst *CI) const {
   return CI->isTailCall();
 }
 
-<<<<<<< HEAD
-const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
-#define NODE_NAME_CASE(NODE)                                                   \
-  case RISCVISD::NODE:                                                         \
-    return "RISCVISD::" #NODE;
-  // clang-format off
-  switch ((RISCVISD::NodeType)Opcode) {
-  case RISCVISD::FIRST_NUMBER:
-    break;
-  NODE_NAME_CASE(RET_GLUE)
-  NODE_NAME_CASE(SRET_GLUE)
-  NODE_NAME_CASE(MRET_GLUE)
-  NODE_NAME_CASE(QC_C_MILEAVERET_GLUE)
-  NODE_NAME_CASE(CALL)
-  NODE_NAME_CASE(TAIL)
-  NODE_NAME_CASE(SELECT_CC)
-  NODE_NAME_CASE(BR_CC)
-  NODE_NAME_CASE(BuildGPRPair)
-  NODE_NAME_CASE(SplitGPRPair)
-  NODE_NAME_CASE(BuildPairF64)
-  NODE_NAME_CASE(SplitF64)
-  NODE_NAME_CASE(ADD_LO)
-  NODE_NAME_CASE(HI)
-  NODE_NAME_CASE(LLA)
-#if SIFIVE_CUSTOMIZATION
-  NODE_NAME_CASE(ADD_REGREL)
-#else
-  NODE_NAME_CASE(ADD_TPREL)
-#endif
-  NODE_NAME_CASE(MULHSU)
-  NODE_NAME_CASE(SHL_ADD)
-  NODE_NAME_CASE(SLLW)
-  NODE_NAME_CASE(SRAW)
-  NODE_NAME_CASE(SRLW)
-  NODE_NAME_CASE(DIVW)
-  NODE_NAME_CASE(DIVUW)
-  NODE_NAME_CASE(REMUW)
-  NODE_NAME_CASE(ROLW)
-  NODE_NAME_CASE(RORW)
-  NODE_NAME_CASE(CLZW)
-  NODE_NAME_CASE(CTZW)
-  NODE_NAME_CASE(ABSW)
-  NODE_NAME_CASE(FMV_H_X)
-  NODE_NAME_CASE(FMV_X_ANYEXTH)
-  NODE_NAME_CASE(FMV_X_SIGNEXTH)
-  NODE_NAME_CASE(FMV_W_X_RV64)
-  NODE_NAME_CASE(FMV_X_ANYEXTW_RV64)
-  NODE_NAME_CASE(FCVT_X)
-  NODE_NAME_CASE(FCVT_XU)
-  NODE_NAME_CASE(FCVT_W_RV64)
-  NODE_NAME_CASE(FCVT_WU_RV64)
-  NODE_NAME_CASE(STRICT_FCVT_W_RV64)
-  NODE_NAME_CASE(STRICT_FCVT_WU_RV64)
-  NODE_NAME_CASE(FROUND)
-  NODE_NAME_CASE(FCLASS)
-  NODE_NAME_CASE(FSGNJX)
-  NODE_NAME_CASE(FMAX)
-  NODE_NAME_CASE(FMIN)
-  NODE_NAME_CASE(FLI)
-  NODE_NAME_CASE(READ_COUNTER_WIDE)
-  NODE_NAME_CASE(BREV8)
-  NODE_NAME_CASE(ORC_B)
-  NODE_NAME_CASE(ZIP)
-  NODE_NAME_CASE(UNZIP)
-  NODE_NAME_CASE(CLMUL)
-  NODE_NAME_CASE(CLMULH)
-  NODE_NAME_CASE(CLMULR)
-  NODE_NAME_CASE(MOPR)
-  NODE_NAME_CASE(MOPRR)
-  NODE_NAME_CASE(SHA256SIG0)
-  NODE_NAME_CASE(SHA256SIG1)
-  NODE_NAME_CASE(SHA256SUM0)
-  NODE_NAME_CASE(SHA256SUM1)
-  NODE_NAME_CASE(SM4KS)
-  NODE_NAME_CASE(SM4ED)
-  NODE_NAME_CASE(SM3P0)
-  NODE_NAME_CASE(SM3P1)
-  NODE_NAME_CASE(TH_LWD)
-  NODE_NAME_CASE(TH_LWUD)
-  NODE_NAME_CASE(TH_LDD)
-  NODE_NAME_CASE(TH_SWD)
-  NODE_NAME_CASE(TH_SDD)
-  NODE_NAME_CASE(VMV_V_V_VL)
-  NODE_NAME_CASE(VMV_V_X_VL)
-  NODE_NAME_CASE(VFMV_V_F_VL)
-  NODE_NAME_CASE(VMV_X_S)
-  NODE_NAME_CASE(VMV_S_X_VL)
-  NODE_NAME_CASE(VFMV_S_F_VL)
-  NODE_NAME_CASE(SPLAT_VECTOR_SPLIT_I64_VL)
-  NODE_NAME_CASE(READ_VLENB)
-  NODE_NAME_CASE(TRUNCATE_VECTOR_VL)
-  NODE_NAME_CASE(TRUNCATE_VECTOR_VL_SSAT)
-  NODE_NAME_CASE(TRUNCATE_VECTOR_VL_USAT)
-  NODE_NAME_CASE(VSLIDEUP_VL)
-  NODE_NAME_CASE(VSLIDE1UP_VL)
-  NODE_NAME_CASE(VSLIDEDOWN_VL)
-  NODE_NAME_CASE(VSLIDE1DOWN_VL)
-  NODE_NAME_CASE(VFSLIDE1UP_VL)
-  NODE_NAME_CASE(VFSLIDE1DOWN_VL)
-  NODE_NAME_CASE(VID_VL)
-  NODE_NAME_CASE(VFNCVT_ROD_VL)
-  NODE_NAME_CASE(VECREDUCE_ADD_VL)
-  NODE_NAME_CASE(VECREDUCE_UMAX_VL)
-  NODE_NAME_CASE(VECREDUCE_SMAX_VL)
-  NODE_NAME_CASE(VECREDUCE_UMIN_VL)
-  NODE_NAME_CASE(VECREDUCE_SMIN_VL)
-  NODE_NAME_CASE(VECREDUCE_AND_VL)
-  NODE_NAME_CASE(VECREDUCE_OR_VL)
-  NODE_NAME_CASE(VECREDUCE_XOR_VL)
-  NODE_NAME_CASE(VECREDUCE_FADD_VL)
-  NODE_NAME_CASE(VECREDUCE_SEQ_FADD_VL)
-  NODE_NAME_CASE(VECREDUCE_FMIN_VL)
-  NODE_NAME_CASE(VECREDUCE_FMAX_VL)
-  NODE_NAME_CASE(ADD_VL)
-  NODE_NAME_CASE(AND_VL)
-  NODE_NAME_CASE(MUL_VL)
-  NODE_NAME_CASE(OR_VL)
-  NODE_NAME_CASE(SDIV_VL)
-  NODE_NAME_CASE(SHL_VL)
-  NODE_NAME_CASE(SREM_VL)
-  NODE_NAME_CASE(SRA_VL)
-  NODE_NAME_CASE(SRL_VL)
-  NODE_NAME_CASE(ROTL_VL)
-  NODE_NAME_CASE(ROTR_VL)
-  NODE_NAME_CASE(SUB_VL)
-  NODE_NAME_CASE(UDIV_VL)
-  NODE_NAME_CASE(UREM_VL)
-  NODE_NAME_CASE(XOR_VL)
-  NODE_NAME_CASE(AVGFLOORS_VL)
-  NODE_NAME_CASE(AVGFLOORU_VL)
-  NODE_NAME_CASE(AVGCEILS_VL)
-  NODE_NAME_CASE(AVGCEILU_VL)
-  NODE_NAME_CASE(SHSUB_VL) // SIFIVE
-  NODE_NAME_CASE(UHSUB_VL) // SIFIVE
-  NODE_NAME_CASE(SADDSAT_VL)
-  NODE_NAME_CASE(UADDSAT_VL)
-  NODE_NAME_CASE(SSUBSAT_VL)
-  NODE_NAME_CASE(USUBSAT_VL)
-  NODE_NAME_CASE(VSMUL_VL)   // SIFIVE
-  NODE_NAME_CASE(VSSRL_VL)   // SIFIVE
-  NODE_NAME_CASE(VSSRA_VL)   // SIFIVE
-  NODE_NAME_CASE(VNCLIP_VL)  // SIFIVE
-  NODE_NAME_CASE(VNCLIPU_VL) // SIFIVE
-  NODE_NAME_CASE(FADD_VL)
-  NODE_NAME_CASE(FSUB_VL)
-  NODE_NAME_CASE(FMUL_VL)
-  NODE_NAME_CASE(FDIV_VL)
-  NODE_NAME_CASE(FNEG_VL)
-  NODE_NAME_CASE(FABS_VL)
-  NODE_NAME_CASE(FSQRT_VL)
-  NODE_NAME_CASE(VFRSQRT7_VL) // SIFIVE
-  NODE_NAME_CASE(VFREC7_VL) // SIFIVE
-  NODE_NAME_CASE(VFCLASS_VL) // SIFIVE
-  NODE_NAME_CASE(FCLASS_VL)
-  NODE_NAME_CASE(VFMADD_VL)
-  NODE_NAME_CASE(VFNMADD_VL)
-  NODE_NAME_CASE(VFMSUB_VL)
-  NODE_NAME_CASE(VFNMSUB_VL)
-  NODE_NAME_CASE(VFNMSAC_VL) // SIFIVE
-  NODE_NAME_CASE(VFWMADD_VL)
-  NODE_NAME_CASE(VFWNMADD_VL)
-  NODE_NAME_CASE(VFWMSUB_VL)
-  NODE_NAME_CASE(VFWNMSUB_VL)
-  NODE_NAME_CASE(FCOPYSIGN_VL)
-  NODE_NAME_CASE(SMIN_VL)
-  NODE_NAME_CASE(SMAX_VL)
-  NODE_NAME_CASE(UMIN_VL)
-  NODE_NAME_CASE(UMAX_VL)
-  NODE_NAME_CASE(BITREVERSE_VL)
-  NODE_NAME_CASE(BSWAP_VL)
-  NODE_NAME_CASE(CTLZ_VL)
-  NODE_NAME_CASE(CTTZ_VL)
-  NODE_NAME_CASE(CTPOP_VL)
-  NODE_NAME_CASE(VFMIN_VL)
-  NODE_NAME_CASE(VFMAX_VL)
-  NODE_NAME_CASE(MULHS_VL)
-  NODE_NAME_CASE(MULHU_VL)
-  NODE_NAME_CASE(VFCVT_RTZ_X_F_VL)
-  NODE_NAME_CASE(VFCVT_RTZ_XU_F_VL)
-  NODE_NAME_CASE(VFCVT_RM_X_F_VL)
-  NODE_NAME_CASE(VFCVT_RM_XU_F_VL)
-  NODE_NAME_CASE(VFROUND_NOEXCEPT_VL)
-  NODE_NAME_CASE(SINT_TO_FP_VL)
-  NODE_NAME_CASE(UINT_TO_FP_VL)
-  NODE_NAME_CASE(VFCVT_RM_F_XU_VL)
-  NODE_NAME_CASE(VFCVT_RM_F_X_VL)
-  NODE_NAME_CASE(FP_EXTEND_VL)
-  NODE_NAME_CASE(FP_ROUND_VL)
-  NODE_NAME_CASE(STRICT_FADD_VL)
-  NODE_NAME_CASE(STRICT_FSUB_VL)
-  NODE_NAME_CASE(STRICT_FMUL_VL)
-  NODE_NAME_CASE(STRICT_FDIV_VL)
-  NODE_NAME_CASE(STRICT_FSQRT_VL)
-  NODE_NAME_CASE(STRICT_VFMADD_VL)
-  NODE_NAME_CASE(STRICT_VFNMADD_VL)
-  NODE_NAME_CASE(STRICT_VFMSUB_VL)
-  NODE_NAME_CASE(STRICT_VFNMSUB_VL)
-  NODE_NAME_CASE(STRICT_FP_ROUND_VL)
-  NODE_NAME_CASE(STRICT_FP_EXTEND_VL)
-  NODE_NAME_CASE(STRICT_VFNCVT_ROD_VL)
-  NODE_NAME_CASE(STRICT_SINT_TO_FP_VL)
-  NODE_NAME_CASE(STRICT_UINT_TO_FP_VL)
-  NODE_NAME_CASE(STRICT_VFCVT_RM_X_F_VL)
-  NODE_NAME_CASE(STRICT_VFCVT_RTZ_X_F_VL)
-  NODE_NAME_CASE(STRICT_VFCVT_RTZ_XU_F_VL)
-  NODE_NAME_CASE(STRICT_FSETCC_VL)
-  NODE_NAME_CASE(STRICT_FSETCCS_VL)
-  NODE_NAME_CASE(STRICT_VFROUND_NOEXCEPT_VL)
-  NODE_NAME_CASE(VWMUL_VL)
-  NODE_NAME_CASE(VWMULU_VL)
-  NODE_NAME_CASE(VWMULSU_VL)
-  NODE_NAME_CASE(VWADD_VL)
-  NODE_NAME_CASE(VWADDU_VL)
-  NODE_NAME_CASE(VWSUB_VL)
-  NODE_NAME_CASE(VWSUBU_VL)
-  NODE_NAME_CASE(VWADD_W_VL)
-  NODE_NAME_CASE(VWADDU_W_VL)
-  NODE_NAME_CASE(VWSUB_W_VL)
-  NODE_NAME_CASE(VWSUBU_W_VL)
-  NODE_NAME_CASE(VWSLL_VL)
-  NODE_NAME_CASE(VFWMUL_VL)
-  NODE_NAME_CASE(VFWADD_VL)
-  NODE_NAME_CASE(VFWSUB_VL)
-  NODE_NAME_CASE(VFWADD_W_VL)
-  NODE_NAME_CASE(VFWSUB_W_VL)
-  NODE_NAME_CASE(VWMACC_VL)
-  NODE_NAME_CASE(VWMACCU_VL)
-  NODE_NAME_CASE(VWMACCSU_VL)
-  NODE_NAME_CASE(SETCC_VL)
-  NODE_NAME_CASE(VMERGE_VL)
-  NODE_NAME_CASE(VMAND_VL)
-  NODE_NAME_CASE(VMOR_VL)
-  NODE_NAME_CASE(VMXOR_VL)
-  NODE_NAME_CASE(VMCLR_VL)
-  NODE_NAME_CASE(VMSET_VL)
-  NODE_NAME_CASE(VRGATHER_VX_VL)
-  NODE_NAME_CASE(VRGATHER_VV_VL)
-  NODE_NAME_CASE(VRGATHEREI16_VV_VL)
-  NODE_NAME_CASE(VSEXT_VL)
-  NODE_NAME_CASE(VZEXT_VL)
-  NODE_NAME_CASE(VMSBF_VL) // SIFIVE
-  NODE_NAME_CASE(VCPOP_VL)
-  NODE_NAME_CASE(VFIRST_VL)
-  NODE_NAME_CASE(RI_VINSERT_VL)
-  NODE_NAME_CASE(RI_VZIPEVEN_VL)
-  NODE_NAME_CASE(RI_VZIPODD_VL)
-  NODE_NAME_CASE(RI_VZIP2A_VL)
-  NODE_NAME_CASE(RI_VZIP2B_VL)
-  NODE_NAME_CASE(RI_VUNZIP2A_VL)
-  NODE_NAME_CASE(RI_VUNZIP2B_VL)
-  NODE_NAME_CASE(RI_VEXTRACT)
-  NODE_NAME_CASE(READ_CSR)
-  NODE_NAME_CASE(WRITE_CSR)
-  NODE_NAME_CASE(SWAP_CSR)
-  NODE_NAME_CASE(CZERO_EQZ)
-  NODE_NAME_CASE(CZERO_NEZ)
-  NODE_NAME_CASE(SW_GUARDED_BRIND)
-  NODE_NAME_CASE(SW_GUARDED_CALL)
-  NODE_NAME_CASE(SW_GUARDED_TAIL)
-  NODE_NAME_CASE(TUPLE_INSERT)
-  NODE_NAME_CASE(TUPLE_EXTRACT)
-  NODE_NAME_CASE(SF_VC_XV_SE)
-  NODE_NAME_CASE(SF_VC_IV_SE)
-  NODE_NAME_CASE(SF_VC_VV_SE)
-  NODE_NAME_CASE(SF_VC_FV_SE)
-  NODE_NAME_CASE(SF_VC_XVV_SE)
-  NODE_NAME_CASE(SF_VC_IVV_SE)
-  NODE_NAME_CASE(SF_VC_VVV_SE)
-  NODE_NAME_CASE(SF_VC_FVV_SE)
-  NODE_NAME_CASE(SF_VC_XVW_SE)
-  NODE_NAME_CASE(SF_VC_IVW_SE)
-  NODE_NAME_CASE(SF_VC_VVW_SE)
-  NODE_NAME_CASE(SF_VC_FVW_SE)
-  NODE_NAME_CASE(SF_VC_V_X_SE)
-  NODE_NAME_CASE(SF_VC_V_I_SE)
-  NODE_NAME_CASE(SF_VC_V_XV_SE)
-  NODE_NAME_CASE(SF_VC_V_IV_SE)
-  NODE_NAME_CASE(SF_VC_V_VV_SE)
-  NODE_NAME_CASE(SF_VC_V_FV_SE)
-  NODE_NAME_CASE(SF_VC_V_XVV_SE)
-  NODE_NAME_CASE(SF_VC_V_IVV_SE)
-  NODE_NAME_CASE(SF_VC_V_VVV_SE)
-  NODE_NAME_CASE(SF_VC_V_FVV_SE)
-  NODE_NAME_CASE(SF_VC_V_XVW_SE)
-  NODE_NAME_CASE(SF_VC_V_IVW_SE)
-  NODE_NAME_CASE(SF_VC_V_VVW_SE)
-  NODE_NAME_CASE(SF_VC_V_FVW_SE)
-  NODE_NAME_CASE(PROBED_ALLOCA)
-  }
-  // clang-format on
-  return nullptr;
-#undef NODE_NAME_CASE
-}
-
-=======
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
 /// getConstraintType - Given a constraint letter, return the type of
 /// constraint it is for this target.
 RISCVTargetLowering::ConstraintType
@@ -27363,7 +26985,11 @@ static bool isMultipleOfN(const Value *V, const DataLayout &DL, unsigned N) {
   // Right now we're only recognizing the simplest pattern.
   uint64_t C;
   if (match(V, m_CombineOr(m_ConstantInt(C),
+#if SIFIVE_CUSTOMIZATION
+                           m_NUWMul(m_Value(), m_ConstantInt(C)))) &&
+#else
                            m_c_Mul(m_Value(), m_ConstantInt(C)))) &&
+#endif
       C && C % N == 0)
     return true;
 
@@ -27372,18 +26998,7 @@ static bool isMultipleOfN(const Value *V, const DataLayout &DL, unsigned N) {
     return KB.countMinTrailingZeros() >= Log2_32(N);
   }
 
-<<<<<<< HEAD
-  using namespace PatternMatch;
-  // Right now we're only recognizing the simplest pattern.
-  uint64_t C;
-#if SIFIVE_CUSTOMIZATION
-  return match(V, m_NUWMul(m_Value(), m_ConstantInt(C))) && C && C % N == 0;
-#else
-  return match(V, m_c_Mul(m_Value(), m_ConstantInt(C))) && C && C % N == 0;
-#endif
-=======
   return false;
->>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
 }
 
 /// Lower an interleaved vp.load into a vlsegN intrinsic.
