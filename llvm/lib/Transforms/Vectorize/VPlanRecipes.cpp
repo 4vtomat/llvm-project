@@ -519,7 +519,6 @@ bool VPInstruction::canGenerateScalarForFirstLane() const {
   case VPInstruction::CSAVLSel:
   case VPInstruction::CSAVLPhi:
   case VPInstruction::CSAAnyActive:
-  case VPInstruction::ExitingCond:
 #endif // SIFIVE_CUSTOMIZATION
     return true;
   default:
@@ -892,26 +891,6 @@ Value *VPInstruction::generate(VPTransformState &State) {
              cast<VectorType>(Mask->getType())->getElementCount()),
          EVL});
     return VFirstI;
-  }
-  case VPInstruction::ExitingCond: {
-    VPValue *VPVectorCond = getOperand(0);
-    assert(VPVectorCond && "Mask cannot be null for vfirst");
-    // Create vfirst
-    Value *Mask = State.get(VPVectorCond);
-    Value *EVL = State.get(State.EVL, /*NeedsScalar=*/true);
-    assert(EVL && "VL is null for uncountable loops");
-    Value *VFirstI = Builder.CreateIntrinsic(
-        Intrinsic::vp_first, {Mask->getType()},
-        {Mask,
-         Builder.getTrueVector(
-             cast<VectorType>(Mask->getType())->getElementCount()),
-         EVL});
-    State.setVFirst(VFirstI);
-
-    // Create cmp
-    Value *Cond = Builder.CreateICmp(ICmpInst::ICMP_SGE, VFirstI,
-                                     ConstantInt::get(VFirstI->getType(), 0));
-    return Cond;
   }
   // TODO: This case can be removed when support for Call instruction is added
   // to VPlan in upstream. For now it helps catch any use of VPInstruction for
@@ -1357,7 +1336,6 @@ bool VPInstruction::isVectorToScalar() const {
 #if SIFIVE_CUSTOMIZATION
          getOpcode() == VPInstruction::ComputeReductionResultWithMask ||
          getOpcode() == VPInstruction::VPFirst ||
-         getOpcode() == VPInstruction::ExitingCond ||
 #endif // SIFIVE_CUSTOMIZATION
          getOpcode() == Instruction::ExtractElement ||
          getOpcode() == VPInstruction::FirstActiveLane ||
@@ -1455,7 +1433,6 @@ bool VPInstruction::onlyFirstLaneUsed(const VPValue *Op) const {
 
   switch (getOpcode()) {
 #if SIFIVE_CUSTOMIZATION
-  case VPInstruction::ExitingCond:
   case VPInstruction::CSAAnyActive:
 #endif // SIFIVE_CUSTOMIZATION
   default:
@@ -1601,9 +1578,6 @@ void VPInstruction::print(raw_ostream &O, const Twine &Indent,
     break;
   case VPInstruction::CSAAnyActive:
     O << "csa-anyactive";
-    break;
-  case VPInstruction::ExitingCond:
-    O << "exiting-cond";
     break;
 #endif // SIFIVE_CUSTOMIZATION
   case VPInstruction::LogicalAnd:

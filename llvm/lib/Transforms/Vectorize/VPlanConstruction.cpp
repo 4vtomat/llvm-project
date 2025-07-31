@@ -363,6 +363,23 @@ std::unique_ptr<VPlan> PlainCFGBuilder::buildPlainCFG(
     VPBB->setTwoSuccessors(Successor0, Successor1);
   }
 
+#ifdef SIFIVE_CUSTOMIZATION
+  // Create branch-on-cond for unbound loops
+  if (Plan->isUncountableAndUnbound()) {
+    BasicBlock *Latch = TheLoop->getLoopLatch();
+    VPBasicBlock *LatchVPBB = BB2VPBB[Latch];
+    VPBuilder Builder(LatchVPBB);
+    auto *Br = cast<BranchInst>(Latch->getTerminator());
+    VPValue *Cond = getOrCreateVPOperand(Br->getCondition());
+    bool NeedsInvert = TheLoop->contains(Br->getSuccessor(0));
+    if (NeedsInvert)
+      Cond = Builder.createNaryOp(VPInstruction::Not, {Cond});
+    Cond =
+        Builder.createNaryOp(VPInstruction::AnyOf, {Cond});
+    Builder.createNaryOp(VPInstruction::BranchOnCond, {Cond}, Br->getDebugLoc());
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   // 2. The whole CFG has been built at this point so all the input Values must
   // have a VPlan counterpart. Fix VPlan header phi by adding their
   // corresponding VPlan operands.
@@ -383,20 +400,16 @@ std::unique_ptr<VPlan> PlainCFGBuilder::buildPlainCFG(
       assert(PhiR->getNumOperands() == 0 &&
              "no phi operands should be added yet");
 #if SIFIVE_CUSTOMIZATION
-      // Unbound users and EarlyExit are handled outside the plan
-      bool IsUncountable = Legal ? Legal->isVectorizableUncountable() : false;
-      bool IsUnbound =
-          IsUncountable ? Legal->getCountableExitingBlocks().empty() : false;
+      // Unbound users are handled outside the plan
+      if (Plan->isUncountableAndUnbound())
+        continue;
       for (BasicBlock *Pred : predecessors(EB->getIRBasicBlock())) {
-        if (IsUnbound)
-          continue;
-        Value *V = Phi.getIncomingValueForBlock(Pred);
         // For revectorized loops, there are values coming from other vector
         // loops. Skip if the value is not coming from the loop
         if (!TheLoop->contains(Pred))
           continue;
-        VPValue *VPV = getOrCreateVPOperand(V);
-        PhiR->addOperand(VPV);
+        PhiR->addOperand(
+            getOrCreateVPOperand(Phi.getIncomingValueForBlock(Pred)));
       }
 #else
       for (BasicBlock *Pred : predecessors(EB->getIRBasicBlock()))
@@ -510,9 +523,39 @@ static void createLoopRegion(VPlan &Plan, VPBlockBase *HeaderVPB) {
 
 // Add the necessary canonical IV and branch recipes required to control the
 // loop.
+static void addCanonicalIVRecipesForUnbounds(VPlan &Plan, VPBasicBlock *HeaderVPBB,
+                                             VPBasicBlock *LatchVPBB, Type *IdxTy,
+                                             DebugLoc DL) {
+  using namespace VPlanPatternMatch;
+  Value *StartIdx = ConstantInt::get(IdxTy, 0);
+  auto *StartV = Plan.getOrAddLiveIn(StartIdx);
+
+  // Add a VPCanonicalIVPHIRecipe starting at 0 to the header.
+  auto *CanonicalIVPHI = new VPCanonicalIVPHIRecipe(StartV, DL);
+  HeaderVPBB->insert(CanonicalIVPHI, HeaderVPBB->begin());
+
+  VPBuilder Builder(LatchVPBB, LatchVPBB->getTerminator()->getIterator());
+  // Add a VPInstruction to increment the scalar canonical IV by VF * UF.
+  // Initially the induction increment is guaranteed to not wrap, but that may
+  // change later, e.g. when tail-folding, when the flags need to be dropped.
+  auto *CanonicalIVIncrement = Builder.createOverflowingOp(
+      Instruction::Add, {CanonicalIVPHI, &Plan.getVFxUF()}, {true, false}, DL,
+      "index.next");
+  CanonicalIVPHI->addOperand(CanonicalIVIncrement);
+}
+
 static void addCanonicalIVRecipes(VPlan &Plan, VPBasicBlock *HeaderVPBB,
                                   VPBasicBlock *LatchVPBB, Type *IdxTy,
                                   DebugLoc DL) {
+#ifdef SIFIVE_CUSTOMIZATION
+  // addCanonicalIVRecipes replaces branch-on-cond which is needed for unbound
+  // loops. create a different path for unbound loops.
+  if (Plan.isUncountableAndUnbound()) {
+    addCanonicalIVRecipesForUnbounds(Plan, HeaderVPBB, LatchVPBB, IdxTy, DL);
+    return;
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   using namespace VPlanPatternMatch;
   Value *StartIdx = ConstantInt::get(IdxTy, 0);
   auto *StartV = Plan.getOrAddLiveIn(StartIdx);
@@ -537,25 +580,18 @@ static void addCanonicalIVRecipes(VPlan &Plan, VPBasicBlock *HeaderVPBB,
   CanonicalIVPHI->addOperand(CanonicalIVIncrement);
 
   // Add the BranchOnCount VPInstruction to the latch.
-#ifdef SIFIVE_CUSTOMIZATION
-  if (!Plan.isUncountableAndUnbound())
-    Builder.createNaryOp(VPInstruction::BranchOnCount,
-                         {CanonicalIVIncrement, &Plan.getVectorTripCount()},
-                         DL);
-#else
   Builder.createNaryOp(VPInstruction::BranchOnCount,
                        {CanonicalIVIncrement, &Plan.getVectorTripCount()}, DL);
-#endif // SIFIVE_CUSTOMIZATION
 }
 
 void VPlanTransforms::prepareForVectorization(VPlan &Plan, Type *InductionTy,
                                               PredicatedScalarEvolution &PSE,
-#if SIFIVE_CUSTOMIZATION
-                                              bool IsUncountable,
-#endif // SIFIVE_CUSTOMIZATION
                                               bool RequiresScalarEpilogueCheck,
                                               bool TailFolded, Loop *TheLoop,
                                               DebugLoc IVDL) {
+#if SIFIVE_CUSTOMIZATION
+  bool IsUncountable = Plan.isUncountable();
+#endif // SIFIVE_CUSTOMIZATION
   VPDominatorTree VPDT;
   VPDT.recalculate(Plan);
 

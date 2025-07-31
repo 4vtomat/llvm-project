@@ -681,11 +681,6 @@ protected:
                                    Value *VectorTripCount,
                                    BasicBlock *MiddleBlock,
                                    VPTransformState &State);
-  /// Cherry-pick from #88385
-  void fixupEarlyExitIVUsers(PHINode *OrigPhi, const InductionDescriptor &II,
-                             BasicBlock *VectorEarlyExitBB, VPlan &Plan,
-                             VPTransformState &State);
-
 #endif // SIFIVE_CUSTOMIZATION
   /// Returns (and creates if needed) the trip count of the widened loop.
 #if SIFIVE_CUSTOMIZATION
@@ -3107,99 +3102,6 @@ BasicBlock *InnerLoopVectorizer::createVectorizedLoopSkeleton() {
   return LoopVectorPreHeader;
 }
 
-#if SIFIVE_CUSTOMIZATION
-/// Cherry-pick from #88385
-void InnerLoopVectorizer::fixupEarlyExitIVUsers(PHINode *OrigPhi,
-                                                const InductionDescriptor &II,
-                                                BasicBlock *VectorEarlyExitBB,
-                                                VPlan &Plan,
-                                                VPTransformState &State) {
-  // There are two kinds of external IV usages - those that use the value
-  // computed in the last iteration (the PHI) and those that use the penultimate
-  // value (the value that feeds into the phi from the loop latch).
-  // We allow both, but they, obviously, have different values.
-  DenseMap<Value *, Value *> MissingVals;
-  BasicBlock *OrigEarlyExitingBlock = Legal->getUncountableEarlyExitingBlock();
-  BasicBlock *OrigLoopLatch = OrigLoop->getLoopLatch();
-  Value *PostInc = OrigPhi->getIncomingValueForBlock(OrigLoopLatch);
-
-  VPBasicBlock *EntryVPBB = Plan.getVectorLoopRegion()->getEntryBasicBlock();
-  auto *CanonicalIV = cast<VPInstruction>(&*EntryVPBB->begin());
-
-  auto FixUpPhi = [&](Instruction *UI, bool PostInc) -> Value * {
-    IRBuilder<> B(VectorEarlyExitBB->getTerminator());
-    assert(isa<PHINode>(UI) && "Expected LCSSA form");
-
-    // Fast-math-flags propagate from the original induction instruction.
-    if (II.getInductionBinOp() && isa<FPMathOperator>(II.getInductionBinOp()))
-      B.setFastMathFlags(II.getInductionBinOp()->getFastMathFlags());
-
-    // We need to discover the mask that led us into the early exit block.
-    Value *VFirst = State.getVFirst();
-    Type *CtzType = CanonicalIV->getOperand(0)->getLiveInIRValue()->getType();
-    Value *Ctz;
-    if (VFirst)
-      Ctz = VFirst;
-    else
-      Ctz = ConstantInt::get(CtzType, 0);
-    if (Ctz->getType() != CtzType)
-      Ctz = B.CreateZExtOrTrunc(Ctz, CtzType);
-    Ctz = B.CreateAdd(Ctz,
-                      cast<PHINode>(State.get(CanonicalIV->getVPSingleValue(),
-                                              /*IsScalar=*/true)));
-    if (PostInc)
-      Ctz = B.CreateAdd(Ctz, ConstantInt::get(CtzType, 1));
-
-    Value *Escape = nullptr;
-    VPValue *StepVPV = Plan.getSCEVExpansion(II.getStep());
-    assert(StepVPV && "step must have been expanded during VPlan execution");
-    Value *Step = StepVPV->isLiveIn() ? StepVPV->getLiveInIRValue()
-                                      : State.get(StepVPV, /*IsScalar=*/true);
-    Escape = emitTransformedIndex(B, Ctz, II.getStartValue(), Step,
-                                  II.getKind(), II.getInductionBinOp());
-    Escape->setName("ind.early.escape");
-
-    return Escape;
-  };
-
-  for (User *U : PostInc->users()) {
-    // This assumes if it's not in the loop then it must be the normal
-    // exit block. However, it could be a user in an early exit block different
-    // to the latch's exit block.
-    auto *UI = cast<Instruction>(U);
-    if (!OrigLoop->contains(UI)) {
-      PHINode *PHI = dyn_cast<PHINode>(UI);
-      assert(PHI && "Expected LCSSA form");
-      int Index = PHI->getBasicBlockIndex(OrigEarlyExitingBlock);
-      if (Index != -1 && PHI->getIncomingValue(Index) == PostInc)
-        MissingVals[UI] = FixUpPhi(UI, true);
-    }
-  }
-
-  for (User *U : OrigPhi->users()) {
-    auto *UI = cast<Instruction>(U);
-    if (!OrigLoop->contains(UI)) {
-      auto *PHI = cast<PHINode>(UI);
-      int Index = PHI->getBasicBlockIndex(OrigEarlyExitingBlock);
-      if (Index != -1 && PHI->getIncomingValue(Index) == OrigPhi)
-        MissingVals[UI] = FixUpPhi(UI, false);
-    }
-  }
-
-  for (auto &I : MissingVals) {
-    auto *PHI = cast<PHINode>(I.first);
-    // One corner case we have to handle is two IVs "chasing" each-other,
-    // that is %IV2 = phi [...], [ %IV1, %latch ]
-    // In this case, if IV1 has an external use, we need to avoid adding both
-    // "last value of IV1" and "penultimate value of IV2". So, verify that we
-    // don't already have an incoming value for the middle block.
-    if (PHI->getBasicBlockIndex(VectorEarlyExitBB) == -1) {
-      PHI->addIncoming(I.second, VectorEarlyExitBB);
-    }
-  }
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 namespace {
 
 struct CSEDenseMapInfo {
@@ -3445,6 +3347,10 @@ void InnerLoopVectorizer::fixupUncountableExitIVUsers(
   VPValue *CanonicalV = EntryVPBB->begin()->getVPSingleValue();
   Value *CanonicalIVPHI = State.get(CanonicalV, /*NeedsScalar=*/true);
 
+  BasicBlock *LatchBB = MiddleBlock->getSinglePredecessor();
+  auto *ICmp = cast<ICmpInst>(LatchBB->getTerminator()->getOperand(0));
+  Value *VFirst = ICmp->getOperand(0);
+  assert(VFirst && "VFirst is null for uncountable loops");
   // ATM, all IVs in uncountable loops have their exiting values routed to the
   // penultimate value (the value that feeds into the phi from the loop latch).
   // This makes their exit values to penultimate value + last iteration's VL.
@@ -3469,8 +3375,6 @@ void InnerLoopVectorizer::fixupUncountableExitIVUsers(
 
     // Fix liveout values of IVs in the middle block i.e. vector loop IV
     // PHI+VFirst+1. This is because VFirst starts from 0.
-    Value *VFirst = State.getVFirst();
-    assert(VFirst && "VFirst is null for uncountable loops");
     Value *LastValidVL =
         AddOne ? B.CreateAdd(VFirst, ConstantInt::get(VFirst->getType(), 1))
                : VFirst;
@@ -11613,33 +11517,14 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
 
 #if SIFIVE_CUSTOMIZATION
   auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB, Legal);
-  const bool IsUncountable = Legal->isVectorizableUncountable();
-  VPlanTransforms::prepareForVectorization(
-      *Plan, Legal->getWidestInductionType(), PSE, IsUncountable,
-      RequiresScalarEpilogueCheck, CM.foldTailByMasking(), OrigLoop,
-      getDebugLocFromInstOrOperands(Legal->getPrimaryInduction()));
 #else
   auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB);
+#endif
   VPlanTransforms::prepareForVectorization(
       *Plan, Legal->getWidestInductionType(), PSE, RequiresScalarEpilogueCheck,
       CM.foldTailByMasking(), OrigLoop,
       getDebugLocFromInstOrOperands(Legal->getPrimaryInduction()));
-#endif
   VPlanTransforms::createLoopRegions(*Plan);
-
-#if SIFIVE_CUSTOMIZATION
-  if (IsUncountable && Legal->getCountableExitingBlocks().empty())
-    Plan->setUnbound();
-  BasicBlock *CouldNotComputeExitingBB = nullptr;
-  VPRecipeBase *VPDataDepExitCond = nullptr;
-  Value *DataDepExitCond = nullptr;
-  if (Plan->isUncountableAndUnbound()) {
-    CouldNotComputeExitingBB = Legal->getUncountableEarlyExitingBlock();
-    BranchInst *BI =
-        cast<BranchInst>(CouldNotComputeExitingBB->getTerminator());
-    DataDepExitCond = BI->getCondition();
-  }
-#endif // SIFIVE_CUSTOMIZATION
 
   // Don't use getDecisionAndClampRange here, because we don't know the UF
   // so this function is better to be conservative, rather than to split
@@ -11807,10 +11692,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
       SmallVector<VPValue *, 4> Operands(R.operands());
       VPRecipeBase *Recipe =
           RecipeBuilder.tryToCreateWidenRecipe(Instr, Operands, Range);
-#if SIFIVE_CUSTOMIZATION
-      if (Instr == DataDepExitCond)
-        VPDataDepExitCond = Recipe;
-#endif // SIFIVE_CUSTOMIZATION
       if (!Recipe)
         Recipe = RecipeBuilder.handleReplication(Instr, Operands, Range);
 
@@ -11838,29 +11719,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     if (PrevVPBB)
       VPBlockUtils::connectBlocks(PrevVPBB, VPBB);
     PrevVPBB = VPBB;
-
-#if SIFIVE_CUSTOMIZATION
-    if (Plan->isUncountableAndUnbound() &&
-        VPB2IRBB.lookup(VPBB) == CouldNotComputeExitingBB) {
-      // TODO: Handle loop-invariant condition
-      auto *BI = cast<BranchInst>(CouldNotComputeExitingBB->getTerminator());
-      bool NeedsInvert = OrigLoop->contains(BI->getSuccessor(0));
-      VPValue *ExitMask = VPDataDepExitCond->getVPSingleValue();
-      if (NeedsInvert) {
-        ExitMask = new VPInstruction(VPInstruction::Not, {ExitMask});
-        VPBB->appendRecipe(cast<VPInstruction>(ExitMask));
-      }
-      auto *VPCond = new VPInstruction(VPInstruction::ExitingCond, {ExitMask},
-                                       BI->getDebugLoc(), "exitcond");
-      VPBB->appendRecipe(cast<VPInstruction>(VPCond));
-      VPValue *ScalarExitCond = VPCond;
-      auto *NewBR =
-          new VPInstruction(VPInstruction::BranchOnCond, {ScalarExitCond});
-      // The branch recipe belongs to latch block if there is no early exiting.
-      VPBasicBlock *EB = Plan->getVectorLoopRegion()->getExitingBasicBlock();
-      EB->appendRecipe(NewBR);
-    }
-#endif // SIFIVE_CUSTOMIZATION
   }
 
 #if SIFIVE_CUSTOMIZATION
@@ -11890,15 +11748,8 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     R->setOperand(1, WideIV->getStepValue());
   }
 
-#if SIFIVE_CUSTOMIZATION
-  // SiFive unbound loops do not need this transform.
-  BasicBlock *UncountableExitingBlock;
-  if (!Plan->isUncountableAndUnbound() &&
-      (UncountableExitingBlock = Legal->getUncountableEarlyExitingBlock())) {
-#else
   if (auto *UncountableExitingBlock =
           Legal->getUncountableEarlyExitingBlock()) {
-#endif // SIFIVE_CUSTOMIZATION
     VPlanTransforms::runPass(VPlanTransforms::handleUncountableEarlyExit, *Plan,
                              OrigLoop, UncountableExitingBlock, RecipeBuilder,
                              Range);
@@ -12023,16 +11874,12 @@ VPlanPtr LoopVectorizationPlanner::tryToBuildVPlan(VFRange &Range) {
   DenseMap<VPBlockBase *, BasicBlock *> VPB2IRBB;
 #if SIFIVE_CUSTOMIZATION
   auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB, Legal);
-  const bool IsUncountable = Legal->isVectorizableUncountable();
-  VPlanTransforms::prepareForVectorization(
-      *Plan, Legal->getWidestInductionType(), PSE, IsUncountable, true, false,
-      OrigLoop, getDebugLocFromInstOrOperands(Legal->getPrimaryInduction()));
 #else
   auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB);
+#endif // SIFIVE_CUSTOMIZATION
   VPlanTransforms::prepareForVectorization(
       *Plan, Legal->getWidestInductionType(), PSE, true, false, OrigLoop,
       getDebugLocFromInstOrOperands(Legal->getPrimaryInduction()));
-#endif // SIFIVE_CUSTOMIZATION
   VPlanTransforms::createLoopRegions(*Plan);
 
   for (ElementCount VF : Range)

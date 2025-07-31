@@ -2703,9 +2703,8 @@ static void
 optimizeWithVPFirst(VPlan &Plan,
                     SmallDenseMap<VPBlockBase *, VPValue *> &BlockLastEVL) {
   using namespace llvm::VPlanPatternMatch;
-  if (Plan.isUncountableAndUnbound())
-    return;
   // Optimize any-of and first-active-lane with vp-first
+  // Pattern 1:
   // Before:
   //   Latch-exiting:
   //     %early.exit.cond = any-of %maskcond
@@ -2723,6 +2722,17 @@ optimizeWithVPFirst(VPlan &Plan,
   //     ...
   //     %cond = or %early.exit.cond, %main.exit.cond
   //     branch-on-cond %cond
+  //
+  // Pattern 2:
+  // Before:
+  //   Latch-exiting:
+  //     %early.exit.cond = any-of %maskcond
+  //     branch-on-cond %early.exit.cond
+  // After:
+  //   Latch-exiting:
+  //     %lane.id = vp-first %maskcond
+  //     %early.exit.cond = icmp ge %lane.id, 0
+  //     branch-on-cond %early.exit.cond
   VPRegionBlock *LoopRegion = Plan.getVectorLoopRegion();
   VPBasicBlock *LatchExiting = LoopRegion->getExiting()->getEntryBasicBlock();
 
@@ -2731,14 +2741,20 @@ optimizeWithVPFirst(VPlan &Plan,
   VPValue *VPExitMask;
   VPValue *EarlyExitCond;
   VPValue *MainExitCond;
-  assert(
-      CondBranch &&
-      match(CondBranch, m_BranchOnCond(m_BinaryOr(m_VPValue(EarlyExitCond),
-                                                  m_VPValue(MainExitCond)))) &&
-      "Terminator does not match (or EarlyExitCond, MainExitCond)");
-  assert(match(EarlyExitCond,
-               m_VPInstruction<VPInstruction::AnyOf>(m_VPValue(VPExitMask))) &&
-         "EarlyExit condition should come from AnyOf");
+
+  if (match(CondBranch, m_BranchOnCond(
+               m_VPInstruction<VPInstruction::AnyOf>(m_VPValue(VPExitMask))))) {
+    EarlyExitCond = CondBranch->getOperand(0);
+  } else {
+    assert(
+        CondBranch &&
+        match(CondBranch, m_BranchOnCond(m_BinaryOr(m_VPValue(EarlyExitCond),
+                                                    m_VPValue(MainExitCond)))) &&
+        "Terminator does not match (or EarlyExitCond, MainExitCond)");
+    assert(match(EarlyExitCond,
+                 m_VPInstruction<VPInstruction::AnyOf>(m_VPValue(VPExitMask))) &&
+           "EarlyExit condition should come from AnyOf");
+  }
   DebugLoc DL = EarlyExitCond->getDefiningRecipe()->getDebugLoc();
   VPValue *CurEVL = BlockLastEVL[VPExitMask->getDefiningRecipe()->getParent()];
 
@@ -3146,6 +3162,11 @@ void VPlanTransforms::convertToConcreteRecipes(VPlan &Plan,
 void VPlanTransforms::handleUncountableEarlyExit(
     VPlan &Plan, Loop *OrigLoop, BasicBlock *UncountableExitingBlock,
     VPRecipeBuilder &RecipeBuilder, VFRange &Range) {
+#ifdef SIFIVE_CUSTOMIZATION
+  // SiFive unbound loops do not need this transform.
+  if (Plan.isUncountableAndUnbound())
+    return;
+#endif // SIFIVE_CUSTOMIZATION
   VPRegionBlock *LoopRegion = Plan.getVectorLoopRegion();
   auto *LatchVPBB = cast<VPBasicBlock>(LoopRegion->getExiting());
   VPBuilder Builder(LatchVPBB->getTerminator());

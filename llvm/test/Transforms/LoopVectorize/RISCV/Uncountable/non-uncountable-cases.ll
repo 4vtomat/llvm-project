@@ -25,11 +25,11 @@ define void @foo() {
 ; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i8(<vscale x 4 x i8> [[TMP4]], <vscale x 4 x i8> [[TMP6]], metadata !"ne", <vscale x 4 x i1> splat (i1 true), i32 [[TMP5]])
 ; CHECK-NEXT:    [[VP_OP_ICMP2:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i8(<vscale x 4 x i8> [[TMP4]], <vscale x 4 x i8> zeroinitializer, metadata !"eq", <vscale x 4 x i1> splat (i1 true), i32 [[TMP5]])
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i1> @llvm.vp.or.nxv4i1(<vscale x 4 x i1> [[VP_OP_ICMP2]], <vscale x 4 x i1> [[VP_OP_ICMP]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP5]])
+; CHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.vp.first.nxv4i1(<vscale x 4 x i1> [[VP_OP]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP5]])
+; CHECK-NEXT:    [[TMP8:%.*]] = icmp sge i32 [[TMP9]], 0
 ; CHECK-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP7]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vp.first.nxv4i1(<vscale x 4 x i1> [[VP_OP]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP5]])
-; CHECK-NEXT:    [[TMP9:%.*]] = icmp sge i32 [[TMP8]], 0
-; CHECK-NEXT:    br i1 [[TMP9]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP8]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br i1 true, label %[[EXIT:.*]], label %[[VEC_UNCOUNTABLE_SCALAR_PH:.*]]
 ; CHECK:       [[VEC_UNCOUNTABLE_SCALAR_PH]]:

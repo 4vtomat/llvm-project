@@ -389,16 +389,6 @@ struct VPTransformState {
   /// UnknownNumSafeElems if the dependence distance is unknown, or there is no
   /// dependency.
   uint64_t MaxSafeNumElems = UnknownNumSafeElems;
-
-  // TODO: Use a VPValue to hold the mapping to VFirst for consistency.
-  /// Keep the vfirst instruction
-  Value *VFirst = nullptr;
-
-  /// Set vfirst
-  void setVFirst(Value *VFirst) { this->VFirst = VFirst; }
-
-  /// Get vfirst
-  Value *getVFirst() const { return VFirst; }
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Pointer to the VPlan code is generated for.

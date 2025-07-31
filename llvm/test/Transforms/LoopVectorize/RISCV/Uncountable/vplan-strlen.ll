@@ -23,10 +23,11 @@ define i64 @strlen_i8(ptr %start) {
 ; VPLANS-NEXT:     vp<[[PTR:%.+]]> = vector-pointer vp<%next.gep>
 ; VPLANS-NEXT:     WIDEN-SPECULATIVE-INSTRUCTION ir<%0>, vp<[[NEWEVL:%.+]]> = vp.load vp<[[PTR]]>, vp<[[VL]]>	unit-strided
 ; VPLANS-NEXT:     WIDEN ir<%cmp.not> = icmp eq ir<%0>, ir<0>
+; VPLANS-NEXT:     EMIT vp<[[VPFIRST:%.+]]> = vp-first ir<%cmp.not>, vp<[[NEWEVL]]>
+; VPLANS-NEXT:     EMIT vp<[[EXITCOND:%.+]]> = icmp sge vp<[[VPFIRST]]>, ir<0>
 ; VPLANS-NEXT:     EMIT vp<[[CAST:%.+]]> = zext vp<[[NEWEVL]]> to i64
 ; VPLANS-NEXT:     EMIT vp<[[IV_NEXT]]> = add nuw vp<[[CAST]]>, vp<[[EVLPHI]]>
-; VPLANS-NEXT:     EMIT vp<%exitcond> = exiting-cond ir<%cmp.not>
-; VPLANS-NEXT:     EMIT branch-on-cond vp<%exitcond>
+; VPLANS-NEXT:     EMIT branch-on-cond vp<[[EXITCOND]]>
 ; VPLANS-NEXT:   No successors
 ; VPLANS-NEXT: }
 entry:
