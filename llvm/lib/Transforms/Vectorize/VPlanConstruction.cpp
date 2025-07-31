@@ -324,8 +324,26 @@ std::unique_ptr<VPlan> PlainCFGBuilder::buildPlainCFG(
     VPBB->setTwoSuccessors(Successor0, Successor1);
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // This is basically copy from `setVPBBPredsFromBB()` + check if the
+  // predecessor is in the loop. When revectoring loop in downstream, the exit
+  // block will have two predecessors, middle block and scalar exiting.
+  // Unfortunately, when trying the getPlan() from exit blocks, it will perform
+  // a BFS from the exit to the entry block. And the middle block, which has no
+  // any predecessor in the Plan/Loop so it will be mis-recognized as the entry
+  // (has no predecessor) which will make `getPlan()` return nullptr.
+  // TODO: Use upstream approach if possible.
+  for (auto *EB : Plan->getExitBlocks()) {
+    SmallVector<VPBlockBase *, 2> VPBBPreds;
+    for (BasicBlock *Pred : predecessors(EB->getIRBasicBlock()))
+      if (TheLoop->contains(Pred))
+        VPBBPreds.push_back(getOrCreateVPBB(Pred));
+    EB->setPredecessors(VPBBPreds);
+  }
+#else  // SIFIVE_CUSTOMIZATION
   for (auto *EB : Plan->getExitBlocks())
     setVPBBPredsFromBB(EB, EB->getIRBasicBlock());
+#endif // SIFIVE_CUSTOMIZATION
 
   // 2. The whole CFG has been built at this point so all the input Values must
   // have a VPlan counterpart. Fix VPlan header phi by adding their
