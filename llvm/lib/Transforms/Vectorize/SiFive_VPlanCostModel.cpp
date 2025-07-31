@@ -893,6 +893,13 @@ InstructionCost VPlanCostModel::getInstructionCost(const VPInstruction *VPI,
     auto *VectorTy = getVectorType(ResultTy, RVL);
     return TTI.getArithmeticInstrCost(Instruction::And, VectorTy, CostKind);
   }
+  case VPInstruction::VPFirst: {
+    Type *VLTy = getVLType(RVL);
+    auto &Ctx = VLTy->getContext();
+    auto *VectorTy = cast<VectorType>(getVectorType(Type::getInt1Ty(Ctx), RVL));
+    Type *RetTy = Type::getInt32Ty(Ctx);
+    return getIntrinsicCost(Intrinsic::vp_first, RetTy, {VectorTy, VLTy});
+  }
   case VPInstruction::BranchOnCount:
     return 0;
   default:
