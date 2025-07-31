@@ -233,7 +233,7 @@ define  i32 @test_16x16(ptr %pix1_base, i32 %i_pix1, ptr %pix2_base, i32 %i_pix2
 ; CHECK-NEXT:    [[ADD_PTR64]] = getelementptr inbounds i8, ptr [[PIX1_0453]], i64 [[IDX_EXT]]
 ; CHECK-NEXT:    [[ADD_PTR66]] = getelementptr inbounds i8, ptr [[PIX2_0452]], i64 [[IDX_EXT65]]
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], 16
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_COND68_PREHEADER]], label %[[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_COND68_PREHEADER]], label %[[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       [[FOR_COND_CLEANUP70:.*]]:
 ; CHECK-NEXT:    [[ADD114_LCSSA:%.*]] = phi i32 [ [[ADD114:%.*]], %[[FOR_BODY71]] ]
 ; CHECK-NEXT:    [[ADD158_LCSSA:%.*]] = phi i32 [ [[ADD158:%.*]], %[[FOR_BODY71]] ]
@@ -864,7 +864,7 @@ define i32 @test_8x8(ptr %pix1_base, i32 %i_pix1, ptr %pix2_base, i32 %i_pix2){
 ; CHECK-NEXT:    [[TMP49:%.*]] = zext i32 [[TMP85]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT120]] = add nuw i64 [[TMP49]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP80:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT120]], 16
-; CHECK-NEXT:    br i1 [[TMP80]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP80]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br label %[[FOR_COND68_PREHEADER:.*]]
 ; CHECK:       [[SCALAR_PH]]:
@@ -1287,7 +1287,7 @@ define i32 @test_8x8(ptr %pix1_base, i32 %i_pix1, ptr %pix2_base, i32 %i_pix2){
 ; CHECK-NEXT:    [[ADD_PTR64]] = getelementptr inbounds i8, ptr [[PIX1_0277]], i64 [[IDX_EXT]]
 ; CHECK-NEXT:    [[ADD_PTR66]] = getelementptr inbounds i8, ptr [[PIX2_0276]], i64 [[IDX_EXT65]]
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], 16
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_COND68_PREHEADER]], label %[[FOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_COND68_PREHEADER]], label %[[FOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ;
 entry:
   %tmp = alloca [8 x [4 x i32]], align 8
@@ -1717,10 +1717,11 @@ for.body:                                         ; preds = %entry, %for.body
   br i1 %exitcond.not, label %for.cond68.preheader, label %for.body
 }
 ;.
-; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
 ; CHECK: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
-; CHECK: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
-; CHECK: [[LOOP3]] = distinct !{[[LOOP3]]}
-; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META1]], [[META2]]}
-; CHECK: [[LOOP5]] = distinct !{[[LOOP5]]}
+; CHECK: [[META2]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; CHECK: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK: [[LOOP4]] = distinct !{[[LOOP4]]}
+; CHECK: [[LOOP5]] = distinct !{[[LOOP5]], [[META1]], [[META2]], [[META3]]}
+; CHECK: [[LOOP6]] = distinct !{[[LOOP6]]}
 ;.

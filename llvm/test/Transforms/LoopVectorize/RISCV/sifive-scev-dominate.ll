@@ -55,7 +55,7 @@ define i32 @SaveEXR(ptr %data, i32 %width, i32 %height, i32 %components, i32 %sa
 ; CHECK-NEXT:    [[TMP10:%.*]] = zext i32 [[TMP8]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT7]] = add nuw i64 [[TMP10]], [[EVL_BASED_IV5]]
 ; CHECK-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT7]], [[CONV47]]
-; CHECK-NEXT:    br i1 [[TMP14]], label %[[MIDDLE_BLOCK8:.*]], label %[[VECTOR_BODY3]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP14]], label %[[MIDDLE_BLOCK8:.*]], label %[[VECTOR_BODY3]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK8]]:
 ; CHECK-NEXT:    br label %[[FOR_BODY220_PREHEADER]]
 ; CHECK:       [[SCALAR_PH1]]:
@@ -72,7 +72,7 @@ define i32 @SaveEXR(ptr %data, i32 %width, i32 %height, i32 %components, i32 %sa
 ; CHECK-NEXT:    store float [[TMP13]], ptr null, align 4
 ; CHECK-NEXT:    [[INC]] = add i64 [[I_09]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], [[CONV47]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_BODY220_PREHEADER]], label %[[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_BODY220_PREHEADER]], label %[[FOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       [[FOR_COND_CLEANUP219:.*]]:
 ; CHECK-NEXT:    ret i32 0
 ; CHECK:       [[FOR_BODY220]]:
@@ -107,9 +107,10 @@ for.body220:                                      ; preds = %for.body220, %for.b
   br i1 %cmp218, label %for.body220, label %for.cond.cleanup219
 }
 ;.
-; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
 ; CHECK: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
-; CHECK: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
-; CHECK: [[LOOP3]] = distinct !{[[LOOP3]], [[META1]], [[META2]]}
-; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META2]], [[META1]]}
+; CHECK: [[META2]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; CHECK: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META1]], [[META2]], [[META3]]}
+; CHECK: [[LOOP5]] = distinct !{[[LOOP5]], [[META3]], [[META1]]}
 ;.

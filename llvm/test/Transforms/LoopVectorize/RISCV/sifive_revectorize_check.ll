@@ -65,7 +65,7 @@ define fastcc void @foo(ptr %arg) {
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv8i8.p0.i64(<vscale x 8 x i8> zeroinitializer, ptr align 1 [[TMP21]], i64 [[TMP7]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP17]])
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT10]] = add nuw i32 [[TMP17]], [[EVL_BASED_IV8]]
 ; CHECK-NEXT:    [[TMP22:%.*]] = icmp eq i32 [[INDEX_EVL_NEXT10]], 1024
-; CHECK-NEXT:    br i1 [[TMP22]], label %[[MIDDLE_BLOCK11:.*]], label %[[VECTOR_BODY6]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP22]], label %[[MIDDLE_BLOCK11:.*]], label %[[VECTOR_BODY6]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK11]]:
 ; CHECK-NEXT:    br label %[[EXIT]]
 ; CHECK:       [[SCALAR_PH4]]:
@@ -84,7 +84,7 @@ define fastcc void @foo(ptr %arg) {
 ; CHECK-NEXT:    store i8 0, ptr [[GETELEMENTPTR]], align 1
 ; CHECK-NEXT:    [[ADD4]] = add i32 [[PHI2]], 1
 ; CHECK-NEXT:    [[ICMP5:%.*]] = icmp ne i32 [[ADD4]], 1024
-; CHECK-NEXT:    br i1 [[ICMP5]], label %[[LOOP]], label %[[EXIT]], !llvm.loop [[LOOP4:![0-9]+]]
+; CHECK-NEXT:    br i1 [[ICMP5]], label %[[LOOP]], label %[[EXIT]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       [[EXIT]]:
 ; CHECK-NEXT:    [[PHI7:%.*]] = phi i32 [ [[ADD]], %[[LOOP]] ], [ 1024, %[[MIDDLE_BLOCK]] ], [ [[TMP16]], %[[MIDDLE_BLOCK11]] ]
 ; CHECK-NEXT:    ret void
@@ -112,9 +112,10 @@ exit:                                              ; preds = %loop
   ret void
 }
 ;.
-; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
 ; CHECK: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
-; CHECK: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
-; CHECK: [[LOOP3]] = distinct !{[[LOOP3]], [[META1]], [[META2]]}
-; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META1]]}
+; CHECK: [[META2]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; CHECK: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META1]], [[META2]], [[META3]]}
+; CHECK: [[LOOP5]] = distinct !{[[LOOP5]], [[META1]]}
 ;.
