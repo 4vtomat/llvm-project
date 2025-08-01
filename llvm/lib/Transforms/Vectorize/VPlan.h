@@ -3250,7 +3250,7 @@ protected:
                       const VPIRMetadata &Metadata, DebugLoc DL,
                       VPValue *Stride = nullptr, bool Speculative = false,
                       bool IsMonotonic = false)
-      : VPRecipeBase(SC, Operands, DL), VPIRMetadata(I), Ingredient(I),
+      : VPRecipeBase(SC, Operands, DL), VPIRMetadata(Metadata), Ingredient(I),
         Consecutive(Consecutive), Reverse(Reverse), Speculative(Speculative),
         IsMonotonic(IsMonotonic) {
     setStride(Stride);
