@@ -90,11 +90,6 @@ static bool isMammothVectorConfigTMTKInstr(const MachineInstr &MI) {
          MI.getOpcode() == RISCV::PseudoSF_VSETTK;
 }
 
-static bool isCustomVectorConfigInstr(const MachineInstr &MI) {
-  return RISCVInstrInfo::isVectorConfigInstr(MI) ||
-         isMammothVectorTNConfigInstr(MI);
-}
-
 static bool isMammothVectorConfigInstr(const MachineInstr &MI) {
   return isMammothVectorTNConfigInstr(MI) || isMammothVectorConfigTMTKInstr(MI);
 }
@@ -1044,11 +1039,7 @@ void RISCVInsertVSETVLI::forwardVSETVLIAVL(VSETVLIInfo &Info) const {
   if (!Info.hasAVLReg())
     return;
   const MachineInstr *DefMI = Info.getAVLDefMI(LIS);
-#ifdef SIFIVE_CUSTOMIZATION
-  if (!DefMI || !isCustomVectorConfigInstr(*DefMI))
-#else
   if (!DefMI || !RISCVInstrInfo::isVectorConfigInstr(*DefMI))
-#endif // SIFIVE_CUSTOMIZATION
     return;
   VSETVLIInfo DefInstrInfo = getInfoForVSETVLI(*DefMI);
   if (!DefInstrInfo.hasSameVLMAX(Info))
@@ -1262,11 +1253,7 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
     // same, we can use the X0, X0 form.
     if (Info.hasSameVLMAX(PrevInfo) && Info.hasAVLReg()) {
       if (const MachineInstr *DefMI = Info.getAVLDefMI(LIS);
-#ifdef SIFIVE_CUSTOMIZATION
-          DefMI && isCustomVectorConfigInstr(*DefMI)) {
-#else
           DefMI && RISCVInstrInfo::isVectorConfigInstr(*DefMI)) {
-#endif // SIFIVE_CUSTOMIZATION
         VSETVLIInfo DefInfo = getInfoForVSETVLI(*DefMI);
         if (DefInfo.hasSameAVL(PrevInfo) && DefInfo.hasSameVLMAX(PrevInfo)) {
 #ifdef SIFIVE_CUSTOMIZATION
@@ -1481,11 +1468,7 @@ void RISCVInsertVSETVLI::transferBefore(VSETVLIInfo &Info,
 // reflect the changes MI might make.
 void RISCVInsertVSETVLI::transferAfter(VSETVLIInfo &Info,
                                        const MachineInstr &MI) const {
-#ifdef SIFIVE_CUSTOMIZATION
-  if (isCustomVectorConfigInstr(MI)) {
-#else
   if (RISCVInstrInfo::isVectorConfigInstr(MI)) {
-#endif // SIFIVE_CUSTOMIZATION
     Info = getInfoForVSETVLI(MI);
     return;
   }
@@ -1527,11 +1510,7 @@ bool RISCVInsertVSETVLI::computeVLVTYPEChanges(const MachineBasicBlock &MBB,
   for (const MachineInstr &MI : MBB) {
     transferBefore(Info, MI);
 
-#ifdef SIFIVE_CUSTOMIZATION
-    if (isCustomVectorConfigInstr(MI) ||
-#else
     if (RISCVInstrInfo::isVectorConfigInstr(MI) ||
-#endif // SIFIVE_CUSTOMIZATION
         RISCVII::hasSEWOp(MI.getDesc().TSFlags) ||
 #if SIFIVE_CUSTOMIZATION
         isVectorCopy(ST->getRegisterInfo(), MI) ||
@@ -1625,11 +1604,7 @@ bool RISCVInsertVSETVLI::needVSETVLIPHI(const VSETVLIInfo &Require,
     if (!Value)
       return true;
     MachineInstr *DefMI = LIS->getInstructionFromIndex(Value->def);
-#ifdef SIFIVE_CUSTOMIZATION
-    if (!DefMI || !isCustomVectorConfigInstr(*DefMI))
-#else
     if (!DefMI || !RISCVInstrInfo::isVectorConfigInstr(*DefMI))
-#endif // SIFIVE_CUSTOMIZATION
       return true;
 
     // We found a VSET(I)VLI make sure it matches the output of the
@@ -1660,11 +1635,7 @@ void RISCVInsertVSETVLI::emitVSETVLIs(MachineBasicBlock &MBB) {
     transferBefore(CurInfo, MI);
 
     // If this is an explicit VSETVLI or VSETIVLI, update our state.
-#ifdef SIFIVE_CUSTOMIZATION
-    if (isCustomVectorConfigInstr(MI)) {
-#else
     if (RISCVInstrInfo::isVectorConfigInstr(MI)) {
-#endif // SIFIVE_CUSTOMIZATION
       // Conservatively, mark the VL and VTYPE as live.
       assert(MI.getOperand(3).getReg() == RISCV::VL &&
              MI.getOperand(4).getReg() == RISCV::VTYPE &&
@@ -1935,11 +1906,7 @@ void RISCVInsertVSETVLI::coalesceVSETVLIs(MachineBasicBlock &MBB) const {
 
   for (MachineInstr &MI : make_early_inc_range(reverse(MBB))) {
 
-#ifdef SIFIVE_CUSTOMIZATION
-    if (!isCustomVectorConfigInstr(MI)) {
-#else
     if (!RISCVInstrInfo::isVectorConfigInstr(MI)) {
-#endif // SIFIVE_CUSTOMIZATION
       Used.doUnion(getDemanded(MI, ST));
       if (MI.isCall() || MI.isInlineAsm() ||
           MI.modifiesRegister(RISCV::VL, /*TRI=*/nullptr) ||
@@ -2091,7 +2058,7 @@ bool RISCVInsertVSETVLI::insertVSETMTK(MachineBasicBlock &MBB,
   VSETVLIInfo PreInfo = VSETVLIInfo::getUnknown();
   for (auto &MI : MBB) {
 
-    if (isCustomVectorConfigInstr(MI)) {
+    if (RISCVInstrInfo::isVectorConfigInstr(MI)) {
       PreInfo = VSETVLIInfo::getUnknown();
       continue;
     }

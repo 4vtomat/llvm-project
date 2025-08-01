@@ -64,6 +64,10 @@ def isVectorConfigInstr
     : TIIPredicate<"isVectorConfigInstr",
                    MCReturnStatement<
                      CheckOpcode<[
+#ifdef SIFIVE_CUSTOMIZATION
+                       PseudoSF_VSETTNT,
+                       PseudoSF_VSETTNTX0,
+#endif
                        PseudoVSETVLI,
                        PseudoVSETVLIX0,
                        PseudoVSETIVLI
