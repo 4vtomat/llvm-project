@@ -902,6 +902,11 @@ InstructionCost VPlanCostModel::getInstructionCost(const VPInstruction *VPI,
   }
   case VPInstruction::BranchOnCount:
     return 0;
+  case VPInstruction::AnyOf: {
+    auto *VecTy = getVectorType(TypeInfo.inferScalarType(VPI), RVL);
+    return TTI.getArithmeticReductionCost(
+        Instruction::Or, cast<VectorType>(VecTy), std::nullopt, CostKind);
+  }
   default:
     return 0;
   }
