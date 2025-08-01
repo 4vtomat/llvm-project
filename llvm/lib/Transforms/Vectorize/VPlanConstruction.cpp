@@ -588,8 +588,15 @@ void VPlanTransforms::prepareForVectorization(
     }
   }
 
+#ifdef SIFIVE_CUSTOMIZATION
+  // FIXME: HasUncountableEarlyExit should be false for unbound loops
+  assert(Plan.isUncountableAndUnbound() ||
+         (!HasUncountableEarlyExit || HandledUncountableEarlyExit) &&
+             "missed an uncountable exit that must be handled");
+#else
   assert((!HasUncountableEarlyExit || HandledUncountableEarlyExit) &&
          "missed an uncountable exit that must be handled");
+#endif // SIFIVE_CUSTOMIZATION
 
   // Create SCEV and VPValue for the trip count.
   // We use the symbolic max backedge-taken-count, which works also when
