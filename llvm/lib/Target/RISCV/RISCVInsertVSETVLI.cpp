@@ -745,6 +745,8 @@ public:
 
 #if SIFIVE_CUSTOMIZATION
   void setAltFmt(bool AF) { AltFmt = AF; }
+
+  void setTWiden(unsigned W) { TWiden = W; }
 #endif // SIFIVE_CUSTOMIZATION
 
   void setVLMul(RISCVVType::VLMUL VLMul) { this->VLMul = VLMul; }
@@ -1009,7 +1011,13 @@ private:
 
   bool canMutatePriorConfig(const MachineInstr &PrevMI, const MachineInstr &MI,
                             const DemandedFields &Used) const;
+
   void coalesceVSETVLIs(MachineBasicBlock &MBB) const;
+#ifdef SIFIVE_CUSTOMIZATION
+  bool canMutatePriorConfigWithTWiden(const MachineInstr &PrevMI,
+                                      const MachineInstr &MI) const;
+  void coalesceVSETVLIsForTWiden(MachineBasicBlock &MBB) const;
+#endif // SIFIVE_CUSTOMIZATION
 
   VSETVLIInfo getInfoForVSETVLI(const MachineInstr &MI) const;
   VSETVLIInfo computeInfoForInstr(const MachineInstr &MI) const;
@@ -1633,7 +1641,6 @@ void RISCVInsertVSETVLI::emitVSETVLIs(MachineBasicBlock &MBB) {
   for (MachineInstr &MI : MBB) {
     const VSETVLIInfo PrevInfo = CurInfo;
     transferBefore(CurInfo, MI);
-
     // If this is an explicit VSETVLI or VSETIVLI, update our state.
     if (RISCVInstrInfo::isVectorConfigInstr(MI)) {
       // Conservatively, mark the VL and VTYPE as live.
@@ -1879,6 +1886,100 @@ bool RISCVInsertVSETVLI::canMutatePriorConfig(
   auto VType = MI.getOperand(2).getImm();
   return areCompatibleVTYPEs(PriorVType, VType, Used);
 }
+
+#ifdef SIFIVE_CUSTOMIZATION
+// When twiden != 0, LMUL, tail policy, and mask policy from the user are
+// ignored. The tail policy and mask policy are always treated as agnostic. The
+// normal RVV instruction will ignore the twiden parameter. This observation
+// could allow the RVV instruction and mommath instruction to share the same
+// configuration instruction.
+//
+// We need to make sure the AVL, SEW, and AltFmt is same between VSETVL and
+// VSETVLTN.
+//
+// For example:
+//
+// %avl = SETTM or SETTK
+// ...
+// VSETVL %avl, type1
+// VSETVLTN %avl, type2
+//
+// ->
+//
+// %avl = SETTM or SETTK
+// ...
+// VSETVLTN %avl, type2
+//
+bool RISCVInsertVSETVLI::canMutatePriorConfigWithTWiden(
+    const MachineInstr &PrevMI, const MachineInstr &MI) const {
+
+  if (PrevMI.getOpcode() != RISCV::PseudoVSETVLI)
+    return false;
+
+  if (MI.getOpcode() != RISCV::PseudoSF_VSETTNT)
+    return false;
+
+  auto PrevInfo = getInfoForVSETVLI(PrevMI);
+  auto CurrInfo = getInfoForVSETVLI(MI);
+
+  auto AVLReg = CurrInfo.getAVLReg();
+
+  auto *AVLRegDefMI = MRI->getUniqueVRegDef(AVLReg);
+
+  if (!AVLRegDefMI)
+    return false;
+
+  if (!isMammothVectorConfigTMTKInstr(*AVLRegDefMI))
+    return false;
+
+  auto AVLRegDefMIInfo = computeInfoForInstr(*AVLRegDefMI);
+  if (AVLRegDefMIInfo.getTWiden() != CurrInfo.getTWiden())
+    return false;
+
+  if (AVLRegDefMIInfo.getSEW() != PrevInfo.getSEW())
+    return false;
+
+  // CurrInfo twiden != 0, so TailAgnostic and MaskAgnostic bit default to 1
+  if (!PrevInfo.getTailAgnostic() || !PrevInfo.getMaskAgnostic())
+    return false;
+
+  if (!PrevInfo.hasSameAVL(CurrInfo))
+    return false;
+
+  if (PrevInfo.getSEW() != CurrInfo.getSEW())
+    return false;
+
+  if (PrevInfo.getAltFmt() != CurrInfo.getAltFmt())
+    return false;
+
+  return true;
+}
+
+void RISCVInsertVSETVLI::coalesceVSETVLIsForTWiden(
+    MachineBasicBlock &MBB) const {
+  MachineInstr *NextMI = nullptr;
+
+  for (MachineInstr &MI : make_early_inc_range(reverse(MBB))) {
+
+    if (!RISCVInstrInfo::isVectorConfigInstr(MI))
+      continue;
+
+    if (NextMI) {
+      // If only TWiden different. Update the MI and drop the NextMI.
+      if (canMutatePriorConfigWithTWiden(MI, *NextMI)) {
+
+        auto NextInfo = getInfoForVSETVLI(*NextMI);
+        MI.getOperand(2).setImm(NextInfo.encodeVTYPE());
+
+        if (LIS)
+          LIS->RemoveMachineInstrFromMaps(*NextMI);
+        NextMI->eraseFromParent();
+      }
+    }
+    NextMI = &MI;
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 void RISCVInsertVSETVLI::coalesceVSETVLIs(MachineBasicBlock &MBB) const {
   MachineInstr *NextMI = nullptr;
@@ -2183,6 +2284,11 @@ bool RISCVInsertVSETVLI::runOnMachineFunction(MachineFunction &MF) {
   // dataflow at the same time without introducing inconsistencies.
   for (MachineBasicBlock &MBB : MF)
     coalesceVSETVLIs(MBB);
+
+#ifdef SIFIVE_CUSTOMIZATION
+  for (MachineBasicBlock &MBB : MF)
+    coalesceVSETVLIsForTWiden(MBB);
+#endif // SIFIVE_CUSTOMIZATION
 
   // Insert PseudoReadVL after VLEFF/VLSEGFF and replace it with the vl output
   // of VLEFF/VLSEGFF.
