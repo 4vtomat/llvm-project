@@ -2643,8 +2643,8 @@ InnerLoopVectorizer::getOrCreateVectorTripCount(BasicBlock *InsertBlock) {
     return VectorTripCount;
 
 #if SIFIVE_CUSTOMIZATION
-  if (Legal->isVectorizableUncountable() && Legal->getCountableExitingBlocks().empty()) {
-    // The trip count is unknown for uncountable loop without early exit
+  if (Plan.isUncountableAndUnbound()) {
+    // The trip count is unknown for unbound loops
     return nullptr;
   }
 
@@ -9519,9 +9519,6 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
          "Trying to execute plan with unsupported VF");
   assert(BestVPlan.hasUF(BestUF) &&
          "Trying to execute plan with unsupported UF");
-#if SIFIVE_CUSTOMIZATION
-  if (!BestVPlan.isUncountable())
-#endif
   // TODO: Move to VPlan transform stage once the transition to the VPlan-based
   // cost model is complete for better cost estimates.
   VPlanTransforms::runPass(VPlanTransforms::unrollByUF, BestVPlan, BestUF,
@@ -9574,12 +9571,6 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
       BestVPlan.resetTripCount(Exp);
     ExpSCEV->eraseFromParent();
   }
-
-#if SIFIVE_CUSTOMIZATION
-  // cherry-pick from #88385
-  if (!Legal->getCountableExitingBlocks().empty())
-    State.CFG.EarlyExitBB = Legal->getUncountableEarlyExitBlock();
-#endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
   if (!BestVPlan.isUncountableAndUnbound()) {
@@ -11015,11 +11006,7 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
     if (auto Plan = tryToBuildVPlanWithVPRecipes(SubRange)) {
       bool HasScalarVF = Plan->hasScalarVFOnly();
       // Now optimize the initial VPlan.
-#if SIFIVE_CUSTOMIZATION
-      if (!HasScalarVF && !Plan->isUncountable())
-#else
       if (!HasScalarVF)
-#endif // SIFIVE_CUSTOMIZATION
         VPlanTransforms::runPass(VPlanTransforms::truncateToMinimalBitwidths,
                                  *Plan, CM.getMinimalBitwidths());
 #if SIFIVE_CUSTOMIZATION
@@ -11549,10 +11536,9 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     Plan->createInitEVL();
   }
 
-  if (!Plan->isUncountable())
-    addCSAPreprocessRecipes(Legal->getCSAs(), OrigLoop, Plan->getEntry(),
-                            Plan->getVectorLoopRegion()->getEntryBasicBlock(),
-                            DL, Range, *Plan);
+  addCSAPreprocessRecipes(Legal->getCSAs(), OrigLoop, Plan->getEntry(),
+                          Plan->getVectorLoopRegion()->getEntryBasicBlock(),
+                          DL, Range, *Plan);
 #endif // SIFIVE_CUSTOMIZATION
   if (!HasNUW) {
     auto *IVInc = Plan->getVectorLoopRegion()
@@ -12274,8 +12260,8 @@ void VPDerivedIVRecipe::execute(VPTransformState &State) {
   // in VPlan and can be used during VPlan simplification.
 #if SIFIVE_CUSTOMIZATION
   // This assertion calls getVectorTripCount() which is not supported by
-  // uncountable loops
-  if (!getParent()->getPlan()->isUncountable())
+  // unbound loops
+  if (!getParent()->getPlan()->isUncountableAndUnbound())
 #endif // SIFIVE_CUSTOMIZATION
   assert((DerivedIV != Index ||
           getOperand(1) == &getParent()->getPlan()->getVectorTripCount()) &&

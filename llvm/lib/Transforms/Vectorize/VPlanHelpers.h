@@ -349,14 +349,6 @@ struct VPTransformState {
     /// vector loop.
     BasicBlock *ExitBB = nullptr;
 
-#if SIFIVE_CUSTOMIZATION
-    // cherry-pick from #88385
-    /// We need to keep track of the early exit block from the original scalar
-    /// loop in order to update the dominator tree correctly, since the vector
-    /// early exit will also jump to the original.
-    BasicBlock *EarlyExitBB = nullptr;
-#endif // SIFIVE_CUSTOMIZATION
-
     /// A mapping of each VPBasicBlock to the corresponding BasicBlock. In case
     /// of replication, maps the BasicBlock of the last replica created.
     SmallDenseMap<const VPBasicBlock *, BasicBlock *> VPBB2IRBB;

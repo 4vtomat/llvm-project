@@ -591,6 +591,7 @@ void VPlanTransforms::prepareForVectorization(VPlan &Plan, Type *InductionTy,
                                               DebugLoc IVDL) {
 #if SIFIVE_CUSTOMIZATION
   bool IsUncountable = Plan.isUncountable();
+  bool IsUncountableAndUnbound = Plan.isUncountableAndUnbound();
 #endif // SIFIVE_CUSTOMIZATION
   VPDominatorTree VPDT;
   VPDT.recalculate(Plan);
@@ -614,7 +615,7 @@ void VPlanTransforms::prepareForVectorization(VPlan &Plan, Type *InductionTy,
   // vectorizing loops with uncountable early exits.
   const SCEV *BackedgeTakenCountSCEV = PSE.getSymbolicMaxBackedgeTakenCount();
 #if SIFIVE_CUSTOMIZATION
-  if (!IsUncountable)
+  if (!IsUncountableAndUnbound)
 #endif
     assert(!isa<SCEVCouldNotCompute>(BackedgeTakenCountSCEV) &&
            "Invalid loop count");
@@ -626,7 +627,7 @@ void VPlanTransforms::prepareForVectorization(VPlan &Plan, Type *InductionTy,
           : SE.getTripCountFromExitCount(BackedgeTakenCountSCEV, InductionTy,
                                          TheLoop);
 
-  if (!IsUncountable || TripCount)
+  if (!IsUncountableAndUnbound)
     Plan.setTripCount(
         vputils::getOrCreateVPValueForSCEVExpr(Plan, TripCount, SE));
 #else
@@ -674,7 +675,7 @@ void VPlanTransforms::prepareForVectorization(VPlan &Plan, Type *InductionTy,
   VPBuilder Builder(MiddleVPBB);
 #if SIFIVE_CUSTOMIZATION
   LLVMContext &Ctx =
-      IsUncountable ? SE.getContext() : TripCount->getType()->getContext();
+      IsUncountableAndUnbound ? SE.getContext() : TripCount->getType()->getContext();
   VPValue *Cmp =
       IsUncountable || TailFolded
           ? Plan.getOrAddLiveIn(
