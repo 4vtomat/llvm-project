@@ -1664,8 +1664,23 @@ void VPPhi::execute(VPTransformState &State) {
          "at the moment");
   BasicBlock *VectorPH = State.CFG.VPBB2IRBB.at(getIncomingBlock(0));
   Value *Start = State.get(getIncomingValue(0), VPLane(0));
+#if SIFIVE_CUSTOMIZATION
+  // SYNC-UPSTREAM: The widen pointer induction recipe emits IR other than the
+  // phi itself in its ::execute, which may cause a following
+  // VPInstruction::PHI to be placed outside the phi group at the top of the
+  // block. This may also be a potential issue upstream.
+  auto CurrIP = State.Builder.saveIP();
+  IRBuilder<>::InsertPointGuard Guard(State.Builder);
+  if (State.Builder.GetInsertPoint() !=
+      State.Builder.GetInsertBlock()->getFirstNonPHIIt())
+    State.Builder.SetInsertPoint(
+        State.Builder.GetInsertBlock()->getFirstNonPHIIt());
+#endif // SIFIVE_CUSTOMIZATION
   PHINode *Phi = State.Builder.CreatePHI(Start->getType(), 2, getName());
   Phi->addIncoming(Start, VectorPH);
+#if SIFIVE_CUSTOMIZATION
+  State.Builder.restoreIP(CurrIP);
+#endif // SIFIVE_CUSTOMIZATION
   State.set(this, Phi, VPLane(0));
 }
 
