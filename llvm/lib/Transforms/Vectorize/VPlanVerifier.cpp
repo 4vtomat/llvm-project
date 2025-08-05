@@ -16,9 +16,13 @@
 #include "VPlan.h"
 #include "VPlanCFG.h"
 #include "VPlanDominatorTree.h"
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 #include "VPlanUtils.h"
 #endif // SIFIVE_CUSTOMIZATION
+=======
+#include "VPlanHelpers.h"
+>>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
 #include "llvm/ADT/SmallPtrSet.h"
 #include "llvm/ADT/TypeSwitch.h"
 
@@ -242,8 +246,7 @@ bool VPlanVerifier::verifyVPBasicBlock(const VPBasicBlock *VPBB) {
   if (!verifyPhiRecipes(VPBB))
     return false;
 
-  // Verify that defs in VPBB dominate all their uses. The current
-  // implementation is still incomplete.
+  // Verify that defs in VPBB dominate all their uses.
   DenseMap<const VPRecipeBase *, unsigned> RecipeNumbering;
   unsigned Cnt = 0;
   for (const VPRecipeBase &R : *VPBB)
@@ -270,24 +273,44 @@ bool VPlanVerifier::verifyVPBasicBlock(const VPBasicBlock *VPBB) {
 
       for (const VPUser *U : V->users()) {
         auto *UI = cast<VPRecipeBase>(U);
-        // TODO: check dominance of incoming values for phis properly.
-        if (!UI ||
-            isa<VPHeaderPHIRecipe, VPWidenPHIRecipe, VPPredInstPHIRecipe,
-                VPIRPhi>(UI) ||
-            (isa<VPInstruction>(UI) &&
-             cast<VPInstruction>(UI)->getOpcode() == Instruction::PHI))
+        if (auto *Phi = dyn_cast<VPPhiAccessors>(UI)) {
+          for (unsigned Idx = 0; Idx != Phi->getNumIncoming(); ++Idx) {
+            VPValue *IncomingVPV = Phi->getIncomingValue(Idx);
+            if (IncomingVPV != V)
+              continue;
+
+            const VPBasicBlock *IncomingVPBB = Phi->getIncomingBlock(Idx);
+            if (VPDT.dominates(VPBB, IncomingVPBB))
+              continue;
+
+            errs() << "Incoming def at index " << Idx
+                   << " does not dominate incoming block!\n";
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+            VPSlotTracker Tracker(VPBB->getPlan());
+            IncomingVPV->getDefiningRecipe()->print(errs(), "  ", Tracker);
+            errs() << "\n  does not dominate " << IncomingVPBB->getName()
+                   << " for\n";
+            UI->print(errs(), "  ", Tracker);
+#endif
+            return false;
+          }
+          continue;
+        }
+        // TODO: Also verify VPPredInstPHIRecipe.
+        if (isa<VPPredInstPHIRecipe>(UI))
           continue;
 
         // If the user is in the same block, check it comes after R in the
         // block.
         if (UI->getParent() == VPBB) {
-          if (RecipeNumbering[UI] < RecipeNumbering[&R]) {
-            errs() << "Use before def!\n";
-            return false;
-          }
-          continue;
+          if (RecipeNumbering[UI] >= RecipeNumbering[&R])
+            continue;
+        } else {
+          if (VPDT.dominates(VPBB, UI->getParent()))
+            continue;
         }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
         // SIFIVE: if the block is in a region, dominates only check if the
         // region dominate the block
@@ -303,6 +326,17 @@ bool VPlanVerifier::verifyVPBasicBlock(const VPBasicBlock *VPBB) {
           errs() << "Use before def!\n";
           return false;
         }
+=======
+        errs() << "Use before def!\n";
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+        VPSlotTracker Tracker(VPBB->getPlan());
+        UI->print(errs(), "  ", Tracker);
+        errs() << "\n  before\n";
+        R.print(errs(), "  ", Tracker);
+        errs() << "\n";
+#endif
+        return false;
+>>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
       }
     }
     if (const auto *EVL = dyn_cast<VPInstruction>(&R)) {

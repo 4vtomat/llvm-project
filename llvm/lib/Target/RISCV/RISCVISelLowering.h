@@ -26,6 +26,7 @@ class InstructionCost;
 class RISCVSubtarget;
 struct RISCVRegisterInfo;
 
+<<<<<<< HEAD
 namespace RISCVISD {
 // clang-format off
 enum NodeType : unsigned {
@@ -553,6 +554,8 @@ enum NodeType : unsigned {
 // clang-format on
 } // namespace RISCVISD
 
+=======
+>>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
 class RISCVTargetLowering : public TargetLowering {
   const RISCVSubtarget &Subtarget;
 
@@ -701,9 +704,6 @@ public:
                                            unsigned Depth) const override;
 
   const Constant *getTargetConstantFromLoad(LoadSDNode *LD) const override;
-
-  // This method returns the name of a target specific DAG node.
-  const char *getTargetNodeName(unsigned Opcode) const override;
 
   MachineMemOperand::Flags
   getTargetMMOFlags(const Instruction &I) const override;
@@ -971,13 +971,11 @@ public:
   bool lowerInterleaveIntrinsicToStore(
       StoreInst *SI, ArrayRef<Value *> InterleaveValues) const override;
 
-  bool lowerDeinterleavedIntrinsicToVPLoad(
-      VPIntrinsic *Load, Value *Mask,
-      ArrayRef<Value *> DeinterleaveRes) const override;
+  bool lowerInterleavedVPLoad(VPIntrinsic *Load, Value *Mask,
+                              ArrayRef<Value *> DeinterleaveRes) const override;
 
-  bool lowerInterleavedIntrinsicToVPStore(
-      VPIntrinsic *Store, Value *Mask,
-      ArrayRef<Value *> InterleaveOps) const override;
+  bool lowerInterleavedVPStore(VPIntrinsic *Store, Value *Mask,
+                               ArrayRef<Value *> InterleaveOps) const override;
 
 #if SIFIVE_CUSTOMIZATION
   bool lowerDeinterleaveIntrinsicToStridedLoad(VPIntrinsic *StridedLoad,

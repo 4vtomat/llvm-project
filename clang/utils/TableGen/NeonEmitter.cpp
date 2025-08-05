@@ -503,11 +503,8 @@ public:
 
   bool operator<(const Intrinsic &Other) const {
     // Sort lexicographically on a three-tuple (ArchGuard, TargetGuard, Name)
-    if (ArchGuard != Other.ArchGuard)
-      return ArchGuard < Other.ArchGuard;
-    if (TargetGuard != Other.TargetGuard)
-      return TargetGuard < Other.TargetGuard;
-    return Name < Other.Name;
+    return std::tie(ArchGuard, TargetGuard, Name) <
+           std::tie(Other.ArchGuard, Other.TargetGuard, Other.Name);
   }
 
   ClassKind getClassKind(bool UseClassBIfScalar = false) {
@@ -2118,7 +2115,20 @@ void NeonEmitter::createIntrinsic(const Record *R,
   auto &Entry = IntrinsicMap[Name];
 
   for (auto &I : NewTypeSpecs) {
+
+    // MFloat8 type is only available on AArch64. If encountered set ArchGuard
+    // correctly.
+    std::string NewArchGuard = ArchGuard;
+    if (Type(I.first, ".").isMFloat8()) {
+      if (NewArchGuard.empty()) {
+        NewArchGuard = "defined(__aarch64__)";
+      } else if (NewArchGuard.find("defined(__aarch64__)") ==
+                 std::string::npos) {
+        NewArchGuard = "defined(__aarch64__) && (" + NewArchGuard + ")";
+      }
+    }
     Entry.emplace_back(R, Name, Proto, I.first, I.second, CK, Body, *this,
+<<<<<<< HEAD
                        ArchGuard, TargetGuard, IsUnavailable, BigEndianSafe);
 #if SIFIVE_CUSTOMIZATION
     // EmitNeonSema does not enable RecodeMode. But headers (run, runFP16) will
@@ -2141,6 +2151,9 @@ void NeonEmitter::createIntrinsic(const Record *R,
           TargetGuard.find("v8.5a") != std::string::npos)))
       continue;
 #endif
+=======
+                       NewArchGuard, TargetGuard, IsUnavailable, BigEndianSafe);
+>>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
     Out.push_back(&Entry.back());
   }
 

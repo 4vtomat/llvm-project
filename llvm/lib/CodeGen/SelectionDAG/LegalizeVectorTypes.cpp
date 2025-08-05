@@ -69,6 +69,7 @@ void DAGTypeLegalizer::ScalarizeVectorResult(SDNode *N, unsigned ResNo) {
   case ISD::AssertZext:
   case ISD::AssertSext:
   case ISD::FPOWI:
+  case ISD::AssertNoFPClass:
     R = ScalarizeVecRes_UnaryOpWithExtraInput(N);
     break;
   case ISD::INSERT_VECTOR_ELT: R = ScalarizeVecRes_INSERT_VECTOR_ELT(N); break;
@@ -1291,6 +1292,7 @@ void DAGTypeLegalizer::SplitVectorResult(SDNode *N, unsigned ResNo) {
   case ISD::UINT_TO_FP:
   case ISD::VP_UINT_TO_FP:
   case ISD::FCANONICALIZE:
+  case ISD::AssertNoFPClass:
     SplitVecRes_UnaryOp(N, Lo, Hi);
     break;
   case ISD::ADDRSPACECAST:
@@ -2639,7 +2641,7 @@ void DAGTypeLegalizer::SplitVecRes_UnaryOp(SDNode *N, SDValue &Lo,
   const SDNodeFlags Flags = N->getFlags();
   unsigned Opcode = N->getOpcode();
   if (N->getNumOperands() <= 2) {
-    if (Opcode == ISD::FP_ROUND) {
+    if (Opcode == ISD::FP_ROUND || Opcode == ISD::AssertNoFPClass) {
       Lo = DAG.getNode(Opcode, dl, LoVT, Lo, N->getOperand(1), Flags);
       Hi = DAG.getNode(Opcode, dl, HiVT, Hi, N->getOperand(1), Flags);
     } else {
@@ -4474,11 +4476,8 @@ SDValue DAGTypeLegalizer::SplitVecOp_VSETCC(SDNode *N) {
   GetSplitVector(N->getOperand(isStrict ? 1 : 0), Lo0, Hi0);
   GetSplitVector(N->getOperand(isStrict ? 2 : 1), Lo1, Hi1);
 
-  auto PartEltCnt = Lo0.getValueType().getVectorElementCount();
-
-  LLVMContext &Context = *DAG.getContext();
-  EVT PartResVT = EVT::getVectorVT(Context, MVT::i1, PartEltCnt);
-  EVT WideResVT = EVT::getVectorVT(Context, MVT::i1, PartEltCnt*2);
+  EVT VT = N->getValueType(0);
+  EVT PartResVT = Lo0.getValueType().changeElementType(VT.getScalarType());
 
   if (Opc == ISD::SETCC) {
     LoRes = DAG.getNode(ISD::SETCC, DL, PartResVT, Lo0, Lo1, N->getOperand(2));
@@ -4502,12 +4501,8 @@ SDValue DAGTypeLegalizer::SplitVecOp_VSETCC(SDNode *N) {
     HiRes = DAG.getNode(ISD::VP_SETCC, DL, PartResVT, Hi0, Hi1,
                         N->getOperand(2), MaskHi, EVLHi);
   }
-  SDValue Con = DAG.getNode(ISD::CONCAT_VECTORS, DL, WideResVT, LoRes, HiRes);
 
-  EVT OpVT = N->getOperand(0).getValueType();
-  ISD::NodeType ExtendCode =
-      TargetLowering::getExtendForContent(TLI.getBooleanContents(OpVT));
-  return DAG.getNode(ExtendCode, DL, N->getValueType(0), Con);
+  return DAG.getNode(ISD::CONCAT_VECTORS, DL, VT, LoRes, HiRes);
 }
 
 
@@ -5070,9 +5065,13 @@ void DAGTypeLegalizer::WidenVectorResult(SDNode *N, unsigned ResNo) {
   case ISD::FREEZE:
   case ISD::ARITH_FENCE:
   case ISD::FCANONICALIZE:
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case ISD::EXPERIMENTAL_VP_SET_BEFORE_FIRST:
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  case ISD::AssertNoFPClass:
+>>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
     Res = WidenVecRes_Unary(N);
     break;
   case ISD::FMA: case ISD::VP_FMA:
@@ -5817,6 +5816,9 @@ SDValue DAGTypeLegalizer::WidenVecRes_Unary(SDNode *N) {
   SDValue InOp = GetWidenedVector(N->getOperand(0));
   if (N->getNumOperands() == 1)
     return DAG.getNode(N->getOpcode(), SDLoc(N), WidenVT, InOp, N->getFlags());
+  if (N->getOpcode() == ISD::AssertNoFPClass)
+    return DAG.getNode(N->getOpcode(), SDLoc(N), WidenVT, InOp,
+                       N->getOperand(1), N->getFlags());
 
   assert(N->getNumOperands() == 3 && "Unexpected number of operands!");
   assert(N->isVPOpcode() && "Expected VP opcode");

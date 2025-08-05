@@ -341,12 +341,17 @@ VPTransformState::VPTransformState(const TargetTransformInfo *TTI,
                                    Loop *CurrentParentLoop, Type *CanonicalIVTy)
 #endif // SIFIVE_CUSTOMIZATION
     : TTI(TTI), VF(VF), CFG(DT), LI(LI), AC(AC), Builder(Builder), Plan(Plan),
+<<<<<<< HEAD
       CurrentParentLoop(CurrentParentLoop), LVer(nullptr),
 #if SIFIVE_CUSTOMIZATION
       TypeAnalysis(CanonicalIVTy), EnableRISCVCSA(EnableRISCVCSA), VPDT(*Plan) {}
 #else
       TypeAnalysis(CanonicalIVTy), VPDT(*Plan) {}
 #endif // SIFIVE_CUSTOMIZATION
+=======
+      CurrentParentLoop(CurrentParentLoop), TypeAnalysis(CanonicalIVTy),
+      VPDT(*Plan) {}
+>>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
 
 Value *VPTransformState::get(const VPValue *Def, const VPLane &Lane) {
   if (Def->isLiveIn())
@@ -486,14 +491,6 @@ Value *VPTransformState::get(const VPValue *Def, bool NeedsScalar) {
   }
   Builder.restoreIP(OldIP);
   return VectorValue;
-}
-
-void VPTransformState::addNewMetadata(Instruction *To,
-                                      const Instruction *Orig) {
-  // If the loop was versioned with memchecks, add the corresponding no-alias
-  // metadata.
-  if (LVer && isa<LoadInst, StoreInst>(Orig))
-    LVer->annotateInstWithNoAlias(To, Orig);
 }
 
 void VPTransformState::setDebugLocFrom(DebugLoc DL) {

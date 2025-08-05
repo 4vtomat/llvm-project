@@ -55,12 +55,16 @@ extern const SubtargetFeatureKV RISCVFeatureKV[RISCV::NumSubtargetFeatures];
 
 namespace {
 class RISCVAsmPrinter : public AsmPrinter {
+public:
+  static char ID;
+
+private:
   const RISCVSubtarget *STI;
 
 public:
   explicit RISCVAsmPrinter(TargetMachine &TM,
                            std::unique_ptr<MCStreamer> Streamer)
-      : AsmPrinter(TM, std::move(Streamer)) {}
+      : AsmPrinter(TM, std::move(Streamer), ID) {}
 
   StringRef getPassName() const override { return "RISC-V Assembly Printer"; }
 
@@ -107,6 +111,8 @@ public:
 
   void emitFunctionEntryLabel() override;
   bool emitDirectiveOptionArch();
+
+  void emitNoteGnuProperty(const Module &M);
 
 private:
 #if SIFIVE_CUSTOMIZATION
@@ -621,6 +627,7 @@ void RISCVAsmPrinter::emitEndOfAsmFile(Module &M) {
   RISCVTargetStreamer &RTS =
       static_cast<RISCVTargetStreamer &>(*OutStreamer->getTargetStreamer());
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (TM.getCodeModel() == CodeModel::Compact)
     emitCompactStub();
@@ -650,7 +657,12 @@ void RISCVAsmPrinter::emitEndOfAsmFile(Module &M) {
 #endif // SIFIVE_CUSTOMIZATION
 
   if (TM.getTargetTriple().isOSBinFormatELF())
+=======
+  if (TM.getTargetTriple().isOSBinFormatELF()) {
+>>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
     RTS.finishAttributeSection();
+    emitNoteGnuProperty(M);
+  }
   EmitHwasanMemaccessSymbols(M);
 }
 
@@ -1043,6 +1055,15 @@ void RISCVAsmPrinter::EmitHwasanMemaccessSymbols(Module &M) {
   }
 }
 
+void RISCVAsmPrinter::emitNoteGnuProperty(const Module &M) {
+  if (const Metadata *const Flag = M.getModuleFlag("cf-protection-return");
+      Flag && !mdconst::extract<ConstantInt>(Flag)->isZero()) {
+    RISCVTargetStreamer &RTS =
+        static_cast<RISCVTargetStreamer &>(*OutStreamer->getTargetStreamer());
+    RTS.emitNoteGnuPropertySection(ELF::GNU_PROPERTY_RISCV_FEATURE_1_CFI_SS);
+  }
+}
+
 static MCOperand lowerSymbolOperand(const MachineOperand &MO, MCSymbol *Sym,
                                     const AsmPrinter &AP) {
   MCContext &Ctx = AP.OutContext;
@@ -1353,3 +1374,8 @@ void RISCVAsmPrinter::emitMachineConstantPoolValue(
   uint64_t Size = getDataLayout().getTypeAllocSize(RCPV->getType());
   OutStreamer->emitValue(Expr, Size);
 }
+
+char RISCVAsmPrinter::ID = 0;
+
+INITIALIZE_PASS(RISCVAsmPrinter, "riscv-asm-printer", "RISC-V Assembly Printer",
+                false, false)

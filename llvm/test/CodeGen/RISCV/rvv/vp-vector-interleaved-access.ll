@@ -616,6 +616,7 @@ define void @not_balanced_store_tree(<vscale x 1 x i32> %v0, <vscale x 2 x i32> 
   ret void
 }
 
+<<<<<<< HEAD
 ; We only support scalable vectors for now.
 define {<2 x i32>, <2 x i32>, <2 x i32>, <2 x i32>} @not_scalable_vectors(ptr %ptr, i32 %evl) {
 ; RV32-LABEL: not_scalable_vectors:
@@ -669,6 +670,8 @@ define {<2 x i32>, <2 x i32>, <2 x i32>, <2 x i32>} @not_scalable_vectors(ptr %p
   ret { <2 x i32>, <2 x i32>, <2 x i32>, <2 x i32> } %res3
 }
 
+=======
+>>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
 define {<vscale x 2 x i32>, <vscale x 2 x i32>} @not_same_mask(<vscale x 2 x i1> %mask0, <vscale x 2 x i1> %mask1, ptr %ptr, i32 %evl) {
 ; RV32-LABEL: not_same_mask:
 ; RV32:       # %bb.0:

@@ -28,6 +28,7 @@ bool canPeelEpilog(const Loop * L);
 /// executes at least 2 iterations.
 bool canPeelLastIteration(const Loop &L, ScalarEvolution &SE);
 
+<<<<<<< HEAD
 /// VMap is the value-map that maps instructions from the original loop to
 /// instructions in the last peeled-off iteration. If \p PeelLast is true, peel
 /// off the last \p PeelCount iterations from \p L (canPeelLastIteration must be
@@ -42,6 +43,15 @@ bool peelLoop(Loop *L, unsigned PeelCount, LoopInfo *LI, ScalarEvolution *SE,
               DominatorTree &DT, AssumptionCache *AC, bool PreserveLCSSA,
               ValueToValueMapTy &VMap);
 #endif
+=======
+/// VMap is the value-map that maps instructions from the original loop to
+/// instructions in the last peeled-off iteration. If \p PeelLast is true, peel
+/// off the last \p PeelCount iterations from \p L (canPeelLastIteration must be
+/// true for \p L), otherwise peel off the first \p PeelCount iterations.
+bool peelLoop(Loop *L, unsigned PeelCount, bool PeelLast, LoopInfo *LI,
+              ScalarEvolution *SE, DominatorTree &DT, AssumptionCache *AC,
+              bool PreserveLCSSA, ValueToValueMapTy &VMap);
+>>>>>>> faf5d747f174cc9d714839f0d3bce1a783eac2ac
 
 TargetTransformInfo::PeelingPreferences
 gatherPeelingPreferences(Loop *L, ScalarEvolution &SE,
