@@ -334,41 +334,6 @@ static DecodeStatus DecodeVRM8RegisterClass(MCInst &Inst, uint32_t RegNo,
   return MCDisassembler::Success;
 }
 
-#if SIFIVE_CUSTOMIZATION
-static DecodeStatus DecodeTRRegisterClass(MCInst &Inst, uint32_t RegNo,
-                                          uint64_t Address,
-                                          const MCDisassembler *Decoder) {
-  if (RegNo > 15)
-    return MCDisassembler::Fail;
-
-  MCRegister Reg = RISCV::T0 + RegNo;
-  Inst.addOperand(MCOperand::createReg(Reg));
-  return MCDisassembler::Success;
-}
-
-static DecodeStatus DecodeTRM2RegisterClass(MCInst &Inst, uint32_t RegNo,
-                                            uint64_t Address,
-                                            const MCDisassembler *Decoder) {
-  if (RegNo > 15 || RegNo % 2)
-    return MCDisassembler::Fail;
-
-  MCRegister Reg = RISCV::T0 + RegNo;
-  Inst.addOperand(MCOperand::createReg(Reg));
-  return MCDisassembler::Success;
-}
-
-static DecodeStatus DecodeTRM4RegisterClass(MCInst &Inst, uint32_t RegNo,
-                                            uint64_t Address,
-                                            const MCDisassembler *Decoder) {
-  if (RegNo > 15 || RegNo % 4)
-    return MCDisassembler::Fail;
-
-  MCRegister Reg = RISCV::T0 + RegNo;
-  Inst.addOperand(MCOperand::createReg(Reg));
-  return MCDisassembler::Success;
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 static DecodeStatus DecodeVMV0RegisterClass(MCInst &Inst, uint32_t RegNo,
                                             uint64_t Address,
                                             const MCDisassembler *Decoder) {
@@ -840,7 +805,6 @@ static constexpr DecoderListEntry DecoderList32[]{
     {DecoderTableXSfvfexp32, {RISCV::FeatureVendorXSfvfexp32e}, "SiFive vfexp32e"},
     {DecoderTableXSfvfexpa32, {RISCV::FeatureVendorXSfvfexpa}, "SiFive vfexpa"},
     {DecoderTableXSfvqdotq32, {RISCV::FeatureVendorXSfvqdotq}, "SiFive vqdotq"},
-    {DecoderTableXSfmm32, {RISCV::FeatureVendorXSfmmbase}, "SiFive XSfmm32"},
     {DecoderTableXSfsci32, {RISCV::FeatureVendorXSfsci}, "SiFive SCI"},
 #endif
 };
