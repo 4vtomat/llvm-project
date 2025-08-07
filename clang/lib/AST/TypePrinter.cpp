@@ -2059,6 +2059,11 @@ void TypePrinter::printAttributedAfter(const AttributedType *T,
   case attr::ArmOut:
   case attr::ArmInOut:
   case attr::ArmPreserves:
+  case attr::XSfmmIn:
+  case attr::XSfmmOut:
+  case attr::XSfmmInOut:
+  case attr::XSfmmPreserves:
+  case attr::XSfmmNew:
   case attr::NonBlocking:
   case attr::NonAllocating:
   case attr::Blocking:

@@ -3480,6 +3480,36 @@ def RISCVVLSCC: DeclOrTypeAttr, TargetSpecificAttr<TargetRISCV> {
  let Documentation = [RISCVVLSCCDocs];
 }
 
+def XSfmmIn : TypeAttr, TargetSpecificAttr<TargetRISCV> {
+  let Spellings = [RegularKeyword<"__xsfmm_in">];
+  let Subjects = SubjectList<[HasFunctionProto], ErrorDiag>;
+  let Documentation = [XSfmmInDocs];
+}
+
+def XSfmmOut : TypeAttr, TargetSpecificAttr<TargetRISCV> {
+  let Spellings = [RegularKeyword<"__xsfmm_out">];
+  let Subjects = SubjectList<[HasFunctionProto], ErrorDiag>;
+  let Documentation = [XSfmmOutDocs];
+}
+
+def XSfmmInOut : TypeAttr, TargetSpecificAttr<TargetRISCV> {
+  let Spellings = [RegularKeyword<"__xsfmm_inout">];
+  let Subjects = SubjectList<[HasFunctionProto], ErrorDiag>;
+  let Documentation = [XSfmmInOutDocs];
+}
+
+def XSfmmPreserves : TypeAttr, TargetSpecificAttr<TargetRISCV> {
+  let Spellings = [RegularKeyword<"__xsfmm_preserves">];
+  let Subjects = SubjectList<[HasFunctionProto], ErrorDiag>;
+  let Documentation = [XSfmmPreservesDocs];
+}
+
+def XSfmmNew : TypeAttr, TargetSpecificAttr<TargetRISCV> {
+  let Spellings = [RegularKeyword<"__xsfmm_new">];
+  let Subjects = SubjectList<[HasFunctionProto], ErrorDiag>;
+  let Documentation = [XSfmmNewDocs];
+}
+
 def Target : InheritableAttr {
   let Spellings = [GCC<"target">];
   let Args = [StringArgument<"featuresStr">];

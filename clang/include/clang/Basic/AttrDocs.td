@@ -6327,6 +6327,66 @@ the ABI. This variant aims to pass fixed-length vectors via vector registers,
 if possible, rather than through general-purpose registers.}];
 }
 
+def XSfmmInDocs : Documentation {
+  let Category = DocCatFunction;
+  let Heading = "__xsfmm_in";
+  let Content = [{
+The ``__xsfmm_in`` attribute indicates that a function reads matrix tile state.
+This attribute is used in RISC-V matrix extensions to specify that the function
+will read from matrix tiles passed as arguments.
+This helps the compiler optimize matrix operations and ensures proper handling
+of tile state.
+  }];
+}
+
+def XSfmmOutDocs : Documentation {
+  let Category = DocCatFunction;
+  let Heading = "__xsfmm_out";
+  let Content = [{
+The ``__xsfmm_out`` attribute indicates that a function writes matrix tile
+state. This attribute is used in RISC-V matrix extensions to specify that the
+function will read from matrix tiles passed as arguments.
+This helps the compiler optimize matrix operations and ensures proper handling
+of tile state.
+  }];
+}
+
+def XSfmmInOutDocs : Documentation {
+  let Category = DocCatFunction;
+  let Heading = "__xsfmm_inout";
+  let Content = [{
+The ``__xsfmm_out`` attribute indicates that a function reads and writes matrix
+tile state. This attribute is used in RISC-V matrix extensions to specify that
+the function will read from matrix tiles passed as arguments.
+This helps the compiler optimize matrix operations and ensures proper handling
+of tile state.
+  }];
+}
+
+def XSfmmPreservesDocs : Documentation {
+  let Category = DocCatFunction;
+  let Heading = "__xsfmm_preserves";
+  let Content = [{
+The ``__xsfmm_out`` attribute indicates that a function neither reads nor writes
+matrix tile state. This attribute is used in RISC-V matrix extensions to specify
+that the function will read from matrix tiles passed as arguments.
+This helps the compiler optimize matrix operations and ensures proper handling
+of tile state.
+  }];
+}
+
+def XSfmmNewDocs : Documentation {
+  let Category = DocCatFunction;
+  let Heading = "__xsfmm_new";
+  let Content = [{
+The ``__xsfmm_out`` attribute indicates that a function initiates a new matrix
+tile state. This attribute is used in RISC-V matrix extensions to specify that
+the function will read from matrix tiles passed as arguments.
+This helps the compiler optimize matrix operations and ensures proper handling
+of tile state.
+  }];
+}
+
 def PreferredNameDocs : Documentation {
   let Category = DocCatDecl;
   let Content = [{

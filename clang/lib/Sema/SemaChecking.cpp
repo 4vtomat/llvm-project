@@ -3627,6 +3627,17 @@ void Sema::checkCall(NamedDecl *FDecl, const FunctionProtoType *Proto,
       }
     }
 
+    if (ExtInfo.SiFiveXSfmmAttributes != FunctionType::XSfmmNone) {
+      if (auto *CallerFD = dyn_cast<FunctionDecl>(CurContext)) {
+        llvm::StringMap<bool> CallerFeatureMap;
+        Context.getFunctionFeatureMap(CallerFeatureMap, CallerFD);
+        if (!CallerFeatureMap.contains("xsfmmbase") || !CallerFeatureMap["xsfmmbase"])
+          Diag(Loc, diag::err_xsfmm_call_in_non_xsfmm_target);
+      } else if (!Context.getTargetInfo().hasFeature("xsfmmbase")) {
+        Diag(Loc, diag::err_xsfmm_call_in_non_xsfmm_target);
+      }
+    }
+
     // If the call requires a streaming-mode change and has scalable vector
     // arguments or return values, then warn the user that the streaming and
     // non-streaming vector lengths may be different.
@@ -3687,6 +3698,57 @@ void Sema::checkCall(NamedDecl *FDecl, const FunctionProtoType *Proto,
           CalleeArmZT0State != FunctionType::ARM_None) {
         Diag(Loc, diag::err_sme_unimplemented_za_save_restore);
         Diag(Loc, diag::note_sme_use_preserves_za);
+      }
+    }
+
+    FunctionType::SiFiveXSfmmStateValue CalleeSiFIveXSfmmState =
+        FunctionType::getSiFiveXSfmmState(ExtInfo.SiFiveXSfmmAttributes);
+    if (!FD || !FD->getBuiltinID()) {
+      if (const auto *FPT = CallerFD->getType()->getAs<FunctionProtoType>()) {
+        FunctionProtoType::ExtProtoInfo CallerExtInfo = FPT->getExtProtoInfo();
+        FunctionType::SiFiveXSfmmStateValue CallerSiFIveXSfmmState =
+            FunctionType::getSiFiveXSfmmState(
+                CallerExtInfo.SiFiveXSfmmAttributes);
+        if (CalleeSiFIveXSfmmState != FunctionType::XSfmmNone) {
+          // Check XSfmm state limitation:
+          // 1. XSfmm function can not be called in a Non-XSfmm function except
+          // for __xsfmm_new.
+          if (CallerSiFIveXSfmmState == FunctionType::XSfmmNone &&
+              CalleeSiFIveXSfmmState != FunctionType::XSfmmNew)
+            Diag(Loc, diag::err_conflicting_attributes_xsfmm_state)
+                << FunctionType::ToAttrString(CalleeSiFIveXSfmmState)
+                << FunctionType::ToAttrString(CallerSiFIveXSfmmState);
+          // 2. Function with __xsfmm_new can only be called in a Non-XSfmm
+          // function.
+          if (CalleeSiFIveXSfmmState == FunctionType::XSfmmNew &&
+              CallerSiFIveXSfmmState != FunctionType::XSfmmNone)
+            Diag(Loc, diag::err_conflicting_attributes_xsfmm_state)
+                << FunctionType::ToAttrString(CalleeSiFIveXSfmmState)
+                << FunctionType::ToAttrString(CallerSiFIveXSfmmState);
+          // 3. Function with __xsfmm_out and __xsfmm_inout can not be called in
+          // __xsfmm_in function.
+          if (CallerSiFIveXSfmmState == FunctionType::XSfmmIn &&
+              (CalleeSiFIveXSfmmState == FunctionType::XSfmmOut ||
+               CalleeSiFIveXSfmmState == FunctionType::XSfmmInOut))
+            Diag(Loc, diag::err_conflicting_attributes_xsfmm_state)
+                << FunctionType::ToAttrString(CalleeSiFIveXSfmmState)
+                << FunctionType::ToAttrString(CallerSiFIveXSfmmState);
+          // 4. Function with __xsfmm_in, __xsfmm_out and __xsfmm_inout can not
+          // be called in __xsfmm_preserves function.
+          if (CallerSiFIveXSfmmState == FunctionType::XSfmmPreserves &&
+              (CalleeSiFIveXSfmmState == FunctionType::XSfmmIn ||
+               CalleeSiFIveXSfmmState == FunctionType::XSfmmOut ||
+               CalleeSiFIveXSfmmState == FunctionType::XSfmmInOut))
+            Diag(Loc, diag::err_conflicting_attributes_xsfmm_state)
+                << FunctionType::ToAttrString(CalleeSiFIveXSfmmState)
+                << FunctionType::ToAttrString(CallerSiFIveXSfmmState);
+        } else {
+          // 1. None-XSfmm function can not be called in a XSfmm function.
+          if (CallerSiFIveXSfmmState != FunctionType::XSfmmNone)
+            Diag(Loc, diag::err_conflicting_attributes_xsfmm_state)
+                << FunctionType::ToAttrString(CalleeSiFIveXSfmmState)
+                << FunctionType::ToAttrString(CallerSiFIveXSfmmState);
+        }
       }
     }
   }

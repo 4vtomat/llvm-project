@@ -4660,11 +4660,14 @@ public:
     unsigned HasArmTypeAttributes : 1;
 
     LLVM_PREFERRED_TYPE(bool)
+    unsigned HasXSfmmTypeAttributes : 1;
+
+    LLVM_PREFERRED_TYPE(bool)
     unsigned EffectsHaveConditions : 1;
     unsigned NumFunctionEffects : 4;
 
     FunctionTypeExtraBitfields()
-        : NumExceptionType(0), HasArmTypeAttributes(false),
+        : NumExceptionType(0), HasArmTypeAttributes(false),HasXSfmmTypeAttributes(false),
           EffectsHaveConditions(false), NumFunctionEffects(0) {}
   };
 
@@ -4700,12 +4703,43 @@ public:
     ARM_InOut = 4,
   };
 
+  enum SiFiveXSfmmStateValue : unsigned {
+    XSfmmNone = 0,
+    XSfmmIn = 1,
+    XSfmmOut = 2,
+    XSfmmInOut = 3,
+    XSfmmPreserves = 4,
+    XSfmmNew = 5,
+    TotalXSfmmAttr = XSfmmNew,
+  };
+
+  static const char *ToAttrString(SiFiveXSfmmStateValue St) {
+    switch (St) {
+    case XSfmmNone:
+      return "none";
+    case XSfmmIn:
+      return "__xsfmm_in";
+    case XSfmmOut:
+      return "__xsfmm_out";
+    case XSfmmInOut:
+      return "__xsfmm_inout";
+    case XSfmmPreserves:
+      return "__xsfmm_preserves";
+    case XSfmmNew:
+      return "__xsfmm_new";
+    }
+  }
+
   static ArmStateValue getArmZAState(unsigned AttrBits) {
     return (ArmStateValue)((AttrBits & SME_ZAMask) >> SME_ZAShift);
   }
 
   static ArmStateValue getArmZT0State(unsigned AttrBits) {
     return (ArmStateValue)((AttrBits & SME_ZT0Mask) >> SME_ZT0Shift);
+  }
+
+  static SiFiveXSfmmStateValue getSiFiveXSfmmState(unsigned AttrBits) {
+    return (SiFiveXSfmmStateValue)AttrBits;
   }
 
   /// A holder for Arm type attributes as described in the Arm C/C++
@@ -4717,6 +4751,12 @@ public:
     unsigned AArch64SMEAttributes : 9;
 
     FunctionTypeArmAttributes() : AArch64SMEAttributes(SME_NormalFunction) {}
+  };
+
+  struct alignas(void *) FunctionTypeSiFiveXSfmmAttributes {
+    unsigned SiFiveXSfmmAttributes : 3;
+
+    FunctionTypeSiFiveXSfmmAttributes() : SiFiveXSfmmAttributes(XSfmmNone) {}
   };
 
 protected:
@@ -5195,7 +5235,7 @@ class FunctionProtoType final
       private llvm::TrailingObjects<
           FunctionProtoType, QualType, SourceLocation,
           FunctionType::FunctionTypeExtraBitfields,
-          FunctionType::FunctionTypeArmAttributes, FunctionType::ExceptionType,
+          FunctionType::FunctionTypeArmAttributes, FunctionType::FunctionTypeSiFiveXSfmmAttributes, FunctionType::ExceptionType,
           Expr *, FunctionDecl *, FunctionType::ExtParameterInfo, Qualifiers,
           FunctionEffect, EffectConditionExpr> {
   friend class ASTContext; // ASTContext creates these.
@@ -5291,6 +5331,7 @@ public:
     LLVM_PREFERRED_TYPE(bool)
     unsigned CFIUncheckedCallee : 1;
     unsigned AArch64SMEAttributes : 9;
+    unsigned SiFiveXSfmmAttributes : 3;
     Qualifiers TypeQuals;
     RefQualifierKind RefQualifier = RQ_None;
     ExceptionSpecInfo ExceptionSpec;
@@ -5300,11 +5341,11 @@ public:
 
     ExtProtoInfo()
         : Variadic(false), HasTrailingReturn(false), CFIUncheckedCallee(false),
-          AArch64SMEAttributes(SME_NormalFunction) {}
+          AArch64SMEAttributes(SME_NormalFunction), SiFiveXSfmmAttributes(XSfmmNone) {}
 
     ExtProtoInfo(CallingConv CC)
         : ExtInfo(CC), Variadic(false), HasTrailingReturn(false),
-          CFIUncheckedCallee(false), AArch64SMEAttributes(SME_NormalFunction) {}
+          CFIUncheckedCallee(false), AArch64SMEAttributes(SME_NormalFunction), SiFiveXSfmmAttributes(XSfmmNone) {}
 
     ExtProtoInfo withExceptionSpec(const ExceptionSpecInfo &ESI) {
       ExtProtoInfo Result(*this);
@@ -5321,6 +5362,7 @@ public:
     bool requiresFunctionProtoTypeExtraBitfields() const {
       return ExceptionSpec.Type == EST_Dynamic ||
              requiresFunctionProtoTypeArmAttributes() ||
+             requiresFunctionProtoTypeSiFiveXSfmmAttributes() ||
              !FunctionEffects.empty();
     }
 
@@ -5333,6 +5375,15 @@ public:
         AArch64SMEAttributes |= Kind;
       else
         AArch64SMEAttributes &= ~Kind;
+    }
+
+    bool requiresFunctionProtoTypeSiFiveXSfmmAttributes() const {
+      return SiFiveXSfmmAttributes != XSfmmNone;
+    }
+
+    void setSiFiveXSfmmAttribute(SiFiveXSfmmStateValue Kind) {
+      assert((SiFiveXSfmmAttributes == SiFiveXSfmmStateValue::XSfmmNone || SiFiveXSfmmAttributes == Kind) && "XSfmm state already exists");
+      SiFiveXSfmmAttributes = Kind;
     }
   };
 
@@ -5347,6 +5398,10 @@ private:
 
   unsigned numTrailingObjects(OverloadToken<FunctionTypeArmAttributes>) const {
     return hasArmTypeAttributes();
+  }
+
+  unsigned numTrailingObjects(OverloadToken<FunctionTypeSiFiveXSfmmAttributes>) const {
+    return hasXSfmmTypeAttributes();
   }
 
   unsigned numTrailingObjects(OverloadToken<FunctionTypeExtraBitfields>) const {
@@ -5451,6 +5506,12 @@ private:
                ->HasArmTypeAttributes;
   }
 
+  bool hasXSfmmTypeAttributes() const {
+    return FunctionTypeBits.HasExtraBitfields &&
+           getTrailingObjects<FunctionTypeExtraBitfields>()
+               ->HasXSfmmTypeAttributes;
+  }
+
   bool hasExtQualifiers() const {
     return FunctionTypeBits.HasExtQuals;
   }
@@ -5479,6 +5540,7 @@ public:
     EPI.RefQualifier = getRefQualifier();
     EPI.ExtParameterInfos = getExtParameterInfosOrNull();
     EPI.AArch64SMEAttributes = getAArch64SMEAttributes();
+    EPI.SiFiveXSfmmAttributes = getSiFiveXSfmmAttributes();
     EPI.FunctionEffects = getFunctionEffects();
     return EPI;
   }
@@ -5672,6 +5734,13 @@ public:
       return SME_NormalFunction;
     return getTrailingObjects<FunctionTypeArmAttributes>()
         ->AArch64SMEAttributes;
+  }
+
+  unsigned getSiFiveXSfmmAttributes() const {
+    if (!hasXSfmmTypeAttributes())
+      return XSfmmNone;
+    return getTrailingObjects<FunctionTypeSiFiveXSfmmAttributes>()
+        ->SiFiveXSfmmAttributes;
   }
 
   ExtParameterInfo getExtParameterInfo(unsigned I) const {

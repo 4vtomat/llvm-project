@@ -166,6 +166,11 @@ static void diagnoseBadTypeAttribute(Sema &S, const ParsedAttr &attr,
   case ParsedAttr::AT_ArmAgnostic:                                             \
   case ParsedAttr::AT_AnyX86NoCallerSavedRegisters:                            \
   case ParsedAttr::AT_AnyX86NoCfCheck:                                         \
+  case ParsedAttr::AT_XSfmmIn:                                         \
+  case ParsedAttr::AT_XSfmmOut:                                         \
+  case ParsedAttr::AT_XSfmmInOut:                                         \
+  case ParsedAttr::AT_XSfmmPreserves:                                         \
+  case ParsedAttr::AT_XSfmmNew:                                         \
     CALLING_CONV_ATTRS_CASELIST
 
 // Microsoft-specific type qualifiers.
@@ -7791,6 +7796,25 @@ static bool handleArmStateAttribute(Sema &S,
   return false;
 }
 
+static bool handleXSfmmStateAttribute(Sema &S,
+                                      FunctionProtoType::ExtProtoInfo &EPI,
+                                      ParsedAttr &Attr,
+                                      FunctionType::SiFiveXSfmmStateValue State) {
+  StringRef AttrName = Attr.getAttrName()->getName();
+  FunctionType::SiFiveXSfmmStateValue ExistingState;
+  ExistingState = FunctionType::getSiFiveXSfmmState(EPI.SiFiveXSfmmAttributes);
+  // __xsfmm_in, __xsfmm_out, __xsfmm_inout and __xsfmm_preserves are all
+  // mutually exclusive, so check if there are conflicting attributes.
+  if (ExistingState != FunctionType::XSfmmNone && ExistingState != State) {
+    S.Diag(Attr.getLoc(), diag::err_mutual_exclusive_attributes_xsfmm_state) << AttrName << FunctionType::ToAttrString(ExistingState);
+    Attr.setInvalid();
+    return true;
+  }
+
+  EPI.setSiFiveXSfmmAttribute(State);
+  return false;
+}
+
 /// Process an individual function attribute.  Returns true to
 /// indicate that the attribute was handled, false if it wasn't.
 static bool handleFunctionTypeAttr(TypeProcessingState &state, ParsedAttr &attr,
@@ -8005,6 +8029,55 @@ static bool handleFunctionTypeAttr(TypeProcessingState &state, ParsedAttr &attr,
       break;
     default:
       llvm_unreachable("Unsupported attribute");
+    }
+
+    QualType newtype = S.Context.getFunctionType(FnTy->getReturnType(),
+                                                 FnTy->getParamTypes(), EPI);
+    type = unwrapped.wrap(S, newtype->getAs<FunctionType>());
+    return true;
+  }
+
+  if (attr.getKind() == ParsedAttr::AT_XSfmmIn ||
+      attr.getKind() == ParsedAttr::AT_XSfmmOut ||
+      attr.getKind() == ParsedAttr::AT_XSfmmInOut ||
+      attr.getKind() == ParsedAttr::AT_XSfmmPreserves ||
+      attr.getKind() == ParsedAttr::AT_XSfmmNew) {
+    if (!unwrapped.isFunctionType())
+      return false;
+
+    const auto *FnTy = unwrapped.get()->getAs<FunctionProtoType>();
+    if (!FnTy) {
+      S.Diag(attr.getLoc(), diag::warn_attribute_wrong_decl_type)
+          << attr << attr.isRegularKeywordAttribute()
+          << ExpectedFunctionWithProtoType;
+      attr.setInvalid();
+      return false;
+    }
+
+    FunctionProtoType::ExtProtoInfo EPI = FnTy->getExtProtoInfo();
+    switch (attr.getKind()) {
+      case ParsedAttr::AT_XSfmmIn:
+        if (handleXSfmmStateAttribute(S, EPI, attr, FunctionType::XSfmmIn))
+          return true;
+        break;
+      case ParsedAttr::AT_XSfmmOut:
+        if (handleXSfmmStateAttribute(S, EPI, attr, FunctionType::XSfmmOut))
+          return true;
+        break;
+      case ParsedAttr::AT_XSfmmInOut:
+        if (handleXSfmmStateAttribute(S, EPI, attr, FunctionType::XSfmmInOut))
+          return true;
+        break;
+      case ParsedAttr::AT_XSfmmPreserves:
+        if (handleXSfmmStateAttribute(S, EPI, attr, FunctionType::XSfmmPreserves))
+          return true;
+        break;
+      case ParsedAttr::AT_XSfmmNew:
+        if (handleXSfmmStateAttribute(S, EPI, attr, FunctionType::XSfmmNew))
+          return true;
+        break;
+      default:
+        llvm_unreachable("Unsupported attribute");
     }
 
     QualType newtype = S.Context.getFunctionType(FnTy->getReturnType(),

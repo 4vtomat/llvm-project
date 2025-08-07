@@ -3686,6 +3686,15 @@ FunctionProtoType::FunctionProtoType(QualType result, ArrayRef<QualType> params,
     ExtraBits.HasArmTypeAttributes = true;
   }
 
+  if (epi.requiresFunctionProtoTypeSiFiveXSfmmAttributes()) {
+    auto &XSfmmTypeAttrs = *getTrailingObjects<FunctionTypeSiFiveXSfmmAttributes>();
+    XSfmmTypeAttrs = FunctionTypeSiFiveXSfmmAttributes();
+
+    // Also set the bit in FunctionTypeExtraBitfields
+    auto &ExtraBits = *getTrailingObjects<FunctionTypeExtraBitfields>();
+    ExtraBits.HasXSfmmTypeAttributes = true;
+  }
+
   // Fill in the trailing argument array.
   auto *argSlot = getTrailingObjects<QualType>();
   for (unsigned i = 0; i != getNumParams(); ++i) {
@@ -3700,6 +3709,14 @@ FunctionProtoType::FunctionProtoType(QualType result, ArrayRef<QualType> params,
     assert(epi.AArch64SMEAttributes <= SME_AttributeMask &&
            "Not enough bits to encode SME attributes");
     ArmTypeAttrs.AArch64SMEAttributes = epi.AArch64SMEAttributes;
+  }
+
+  // Propagate the SiFive XSfmm attributes.
+  if (epi.SiFiveXSfmmAttributes != XSfmmNone) {
+    auto &XSfmmTypeAttrs = *getTrailingObjects<FunctionTypeSiFiveXSfmmAttributes>();
+    assert(epi.SiFiveXSfmmAttributes <= TotalXSfmmAttr &&
+           "Not enough bits to encode XSfmm attributes");
+    XSfmmTypeAttrs.SiFiveXSfmmAttributes = epi.SiFiveXSfmmAttributes;
   }
 
   // Fill in the exception type array if present.
@@ -3935,6 +3952,7 @@ void FunctionProtoType::Profile(llvm::FoldingSetNodeID &ID, QualType Result,
 
   ID.AddInteger((EffectCount << 3) | (HasConds << 2) |
                 (epi.AArch64SMEAttributes << 1) | epi.HasTrailingReturn);
+  ID.AddInteger(epi.SiFiveXSfmmAttributes);
   ID.AddInteger(epi.CFIUncheckedCallee);
 
   for (unsigned Idx = 0; Idx != EffectCount; ++Idx) {
