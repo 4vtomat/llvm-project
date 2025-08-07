@@ -49,19 +49,12 @@ bool RecurrenceDescriptor::isIntegerRecurrenceKind(RecurKind Kind) {
   case RecurKind::SMin:
   case RecurKind::UMax:
   case RecurKind::UMin:
-<<<<<<< HEAD
-  case RecurKind::IAnyOf:
-  case RecurKind::FAnyOf:
-  case RecurKind::IFindLastIV:
-  case RecurKind::FFindLastIV:
 #if SIFIVE_CUSTOMIZATION
   case RecurKind::MinMaxFirstIdx:
   case RecurKind::MinMaxLastIdx:
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case RecurKind::AnyOf:
   case RecurKind::FindLastIV:
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
     return true;
   }
   return false;
@@ -809,23 +802,15 @@ RecurrenceDescriptor::isFindLastIVPattern(Loop *TheLoop, PHINode *OrigPhi,
   // TODO: Support for monotonically decreasing induction variable
 #if SIFIVE_CUSTOMIZATION
   if (auto ValidSentinel = GetSentinelIfIncreasing(NonRdxPhi))
-    return InstDesc(I,
-                    isa<ICmpInst>(I->getOperand(0)) ? RecurKind::IFindLastIV
-                                                    : RecurKind::FFindLastIV,
-                    ValidSentinel.value());
+    return InstDesc(I, RecurKind::FindLastIV, ValidSentinel.value());
 
   return InstDesc(false, I);
 #else
   if (!IsIncreasingLoopInduction(NonRdxPhi))
     return InstDesc(false, I);
 
-<<<<<<< HEAD
-  return InstDesc(I, isa<ICmpInst>(I->getOperand(0)) ? RecurKind::IFindLastIV
-                                                     : RecurKind::FFindLastIV);
-#endif // SIFIVE_CUSTOMIZATION
-=======
   return InstDesc(I, RecurKind::FindLastIV);
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 RecurrenceDescriptor::InstDesc
@@ -1460,15 +1445,10 @@ unsigned RecurrenceDescriptor::getOpcode(RecurKind Kind) {
   case RecurKind::SMin:
   case RecurKind::UMax:
   case RecurKind::UMin:
-<<<<<<< HEAD
-  case RecurKind::IAnyOf:
-  case RecurKind::IFindLastIV:
 #if SIFIVE_CUSTOMIZATION
   case RecurKind::MinMaxFirstIdx:
   case RecurKind::MinMaxLastIdx:
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
     return Instruction::ICmp;
   case RecurKind::FMax:
   case RecurKind::FMin:
