@@ -110,15 +110,14 @@ RISCVMCExpr::getSpecifierForName(StringRef name) {
       .Case("pcrel_hi", ELF::R_RISCV_PCREL_HI20)
       .Case("got_pcrel_hi", ELF::R_RISCV_GOT_HI20)
       .Case("tprel_lo", VK_TPREL_LO)
-<<<<<<< HEAD
-      .Case("tprel_hi", VK_TPREL_HI)
-      .Case("tprel_add", VK_TPREL_ADD)
-      .Case("tls_ie_pcrel_hi", VK_TLS_GOT_HI)
-      .Case("tls_gd_pcrel_hi", VK_TLS_GD_HI)
-      .Case("tlsdesc_hi", VK_TLSDESC_HI)
-      .Case("tlsdesc_load_lo", VK_TLSDESC_LOAD_LO)
-      .Case("tlsdesc_add_lo", VK_TLSDESC_ADD_LO)
-      .Case("tlsdesc_call", VK_TLSDESC_CALL)
+      .Case("tprel_hi", ELF::R_RISCV_TPREL_HI20)
+      .Case("tprel_add", ELF::R_RISCV_TPREL_ADD)
+      .Case("tls_ie_pcrel_hi", ELF::R_RISCV_TLS_GOT_HI20)
+      .Case("tls_gd_pcrel_hi", ELF::R_RISCV_TLS_GD_HI20)
+      .Case("tlsdesc_hi", ELF::R_RISCV_TLSDESC_HI20)
+      .Case("tlsdesc_load_lo", ELF::R_RISCV_TLSDESC_LOAD_LO12)
+      .Case("tlsdesc_add_lo", ELF::R_RISCV_TLSDESC_ADD_LO12)
+      .Case("tlsdesc_call", ELF::R_RISCV_TLSDESC_CALL)
 #if SIFIVE_CUSTOMIZATION
       .Case("gprel_lo", VK_GPREL_LO)
       .Case("gprel_hi", VK_GPREL_HI)
@@ -133,16 +132,6 @@ RISCVMCExpr::getSpecifierForName(StringRef name) {
       .Case("tls_gd_gprel_hi", VK_TLS_GD_GPREL_HI)
       .Case("tls_gd_gprel", VK_TLS_GD_GPREL_ADD)
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      .Case("tprel_hi", ELF::R_RISCV_TPREL_HI20)
-      .Case("tprel_add", ELF::R_RISCV_TPREL_ADD)
-      .Case("tls_ie_pcrel_hi", ELF::R_RISCV_TLS_GOT_HI20)
-      .Case("tls_gd_pcrel_hi", ELF::R_RISCV_TLS_GD_HI20)
-      .Case("tlsdesc_hi", ELF::R_RISCV_TLSDESC_HI20)
-      .Case("tlsdesc_load_lo", ELF::R_RISCV_TLSDESC_LOAD_LO12)
-      .Case("tlsdesc_add_lo", ELF::R_RISCV_TLSDESC_ADD_LO12)
-      .Case("tlsdesc_call", ELF::R_RISCV_TLSDESC_CALL)
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
       .Case("qc.abs20", VK_QC_ABS20)
       // Used in data directives
       .Case("pltpcrel", ELF::R_RISCV_PLT32)
@@ -186,7 +175,6 @@ StringRef RISCVMCExpr::getSpecifierName(Specifier S) {
     return "call_plt";
   case ELF::R_RISCV_32_PCREL:
     return "32_pcrel";
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case VK_GPREL_LO:
     return "gprel_lo";
@@ -213,10 +201,7 @@ StringRef RISCVMCExpr::getSpecifierName(Specifier S) {
   case VK_TLS_GD_GPREL_ADD:
     return "tls_gd_gprel";
 #endif // SIFIVE_CUSTOMIZATION
-  case VK_GOTPCREL:
-=======
   case ELF::R_RISCV_GOT32_PCREL:
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
     return "gotpcrel";
   case ELF::R_RISCV_PLT32:
     return "pltpcrel";
