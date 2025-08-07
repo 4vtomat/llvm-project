@@ -988,8 +988,9 @@ Value *VPInstruction::generate(VPTransformState &State) {
         // Truncate start value if the reduction is performed in a smaller type.
         if (PhiTy != RdxDesc.getRecurrenceType())
           StartV = Builder.CreateTrunc(StartV, RdxDesc.getRecurrenceType());
-        ReducedPartRdx = Builder.CreateBinOp((Instruction::BinaryOps)Op, StartV,
-                                             ReducedPartRdx);
+        ReducedPartRdx =
+            Builder.CreateBinOp((Instruction::BinaryOps)RdxDesc.getOpcode(),
+                                StartV, ReducedPartRdx);
       }
 #else
       if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RK))
@@ -5349,8 +5350,7 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
     return Ctx.TTI.getMinMaxReductionCost(Id, VectorTy,
                                           RdxDesc.getFastMathFlags(), CostKind);
   }
-  case RecurKind::IAnyOf:
-  case RecurKind::FAnyOf: {
+  case RecurKind::AnyOf: {
     // The cost references the instructions created in
     // llvm::createAnyOfReduction
     auto *VecCondTy = cast<VectorType>(CmpInst::makeCmpResultType(VectorTy));
@@ -5365,8 +5365,7 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
                                     CmpInst::BAD_ICMP_PREDICATE, CostKind);
     return O;
   }
-  case RecurKind::IFindLastIV:
-  case RecurKind::FFindLastIV: {
+  case RecurKind::FindLastIV: {
     // Emit reduce.smax to get the last induction value
     InstructionCost O = Ctx.TTI.getMinMaxReductionCost(
         Intrinsic::smax, VectorTy, FastMathFlags(), CostKind);
