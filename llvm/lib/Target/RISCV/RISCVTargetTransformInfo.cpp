@@ -859,7 +859,6 @@ RISCVTTIImpl::getPopcntSupport(unsigned TyWidth) const {
              : TTI::PSK_Software;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 std::pair<ElementCount, ElementCount>
 RISCVTTIImpl::getFeasibleMaxVFRange(TargetTransformInfo::RegisterKind K,
@@ -942,7 +941,6 @@ RISCVTTIImpl::getFeasibleMaxVFRange(TargetTransformInfo::RegisterKind K,
 bool RISCVTTIImpl::sinkSplatOperands() const { return ST->sinkSplatOperands(); }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
 InstructionCost RISCVTTIImpl::getPartialReductionCost(
     unsigned Opcode, Type *InputTypeA, Type *InputTypeB, Type *AccumType,
     ElementCount VF, TTI::PartialReductionExtendKind OpAExtend,
@@ -966,7 +964,6 @@ InstructionCost RISCVTTIImpl::getPartialReductionCost(
                                             TTI::TCK_RecipThroughput);
 }
 
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 bool RISCVTTIImpl::shouldExpandReduction(const IntrinsicInst *II) const {
   // Currently, the ExpandReductions pass can't expand scalable-vector
   // reductions, but we still request expansion as RVV doesn't support certain
