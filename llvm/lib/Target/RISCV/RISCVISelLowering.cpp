@@ -6667,7 +6667,7 @@ SDValue RISCVTargetLowering::expandUnalignedVPLoad(SDValue Op,
 
   SDValue L = DAG.getLoadVP(NewVT, DL, Load->getChain(), Load->getBasePtr(),
                             DAG.getAllOnesConstant(DL, Mask.getValueType()), VL,
-                            Load->getPointerInfo(), Load->getOriginalAlign(),
+                            Load->getPointerInfo(), Load->getBaseAlign(),
                             Load->getMemOperand()->getFlags(), AAMDNodes());
   return DAG.getMergeValues({DAG.getBitcast(VT, L), L.getValue(1)}, DL);
 }
@@ -6714,7 +6714,7 @@ SDValue RISCVTargetLowering::expandUnalignedVPStore(SDValue Op,
   MachineFunction &MF = DAG.getMachineFunction();
   MachineMemOperand *MMO = MF.getMachineMemOperand(
       Store->getPointerInfo(), Store->getMemOperand()->getFlags(), Size,
-      Store->getOriginalAlign());
+      Store->getBaseAlign());
 
   return DAG.getStoreVP(Store->getChain(), DL, StoredVal, Store->getBasePtr(),
                         DAG.getUNDEF(Store->getBasePtr().getValueType()),
@@ -21151,10 +21151,10 @@ static SDValue combineShuffleOfStridedLoad(SDNode *N, SelectionDAG &DAG,
   SDValue NewAddr =
       DAG.getNode(ISD::ADD, DL, StrideVT, VPNode->getBasePtr(), Offset);
 
-  SDValue NewLoad = DAG.getLoad(
-      MVT::bf16, DL, VPNode->getChain(), NewAddr,
-      VPNode->getPointerInfo().getWithOffset(StrideC * Lane),
-      VPNode->getOriginalAlign(), VPNode->getMemOperand()->getFlags());
+  SDValue NewLoad =
+      DAG.getLoad(MVT::bf16, DL, VPNode->getChain(), NewAddr,
+                  VPNode->getPointerInfo().getWithOffset(StrideC * Lane),
+                  VPNode->getBaseAlign(), VPNode->getMemOperand()->getFlags());
   DAG.makeEquivalentMemoryOrdering(SDValue(VPNode, 1), NewLoad.getValue(1));
 
   return DAG.getNode(ISD::SPLAT_VECTOR, DL, VT, NewLoad);
@@ -23059,7 +23059,7 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
                        Src1.getOperand(3), VL};
       SDValue NewVLE = DAG.getMemIntrinsicNode(
           ISD::INTRINSIC_W_CHAIN, DL, VTs, Ops, N->getValueType(0),
-          IntrNode->getPointerInfo(), IntrNode->getOriginalAlign(),
+          IntrNode->getPointerInfo(), IntrNode->getBaseAlign(),
           IntrNode->getMemOperand()->getFlags());
       // Replace uses of the old chains with the new chain.
       DAG.ReplaceAllUsesOfValueWith(Src1.getValue(1), NewVLE.getValue(1));
