@@ -4289,11 +4289,8 @@ void PragmaMaxTokensTotalHandler::HandlePragma(Preprocessor &PP,
 
 // Handle '#pragma clang riscv intrinsic vector'.
 //        '#pragma clang riscv intrinsic sifive_vector'.
-<<<<<<< HEAD
-//        '#pragma clang riscv intrinsic v0p11'. (SIFIVE)
-=======
 //        '#pragma clang riscv intrinsic andes_vector'.
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
+//        '#pragma clang riscv intrinsic v0p11'. (SIFIVE)
 void PragmaRISCVHandler::HandlePragma(Preprocessor &PP,
                                       PragmaIntroducer Introducer,
                                       Token &FirstToken) {
@@ -4309,27 +4306,22 @@ void PragmaRISCVHandler::HandlePragma(Preprocessor &PP,
 
   PP.Lex(Tok);
   II = Tok.getIdentifierInfo();
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  if (!II || !(II->isStr("vector") || II->isStr("sifive_vector") ||
-               II->isStr("v0p11"))) {
+  if (!II ||
+      !(II->isStr("vector") || II->isStr("sifive_vector") ||
+        II->isStr("andes_vector")) ||
+      II->isStr("v0p11")) {
 #else
-  if (!II || !(II->isStr("vector") || II->isStr("sifive_vector"))) {
-#endif
-    PP.Diag(Tok.getLocation(), diag::warn_pragma_invalid_argument)
-        << PP.getSpelling(Tok) << "riscv" << /*Expected=*/true
-#if SIFIVE_CUSTOMIZATION
-        << "'vector' or 'sifive_vector' or 'v0p11'";
-#else
-        << "'vector' or 'sifive_vector'";
-#endif
-=======
   if (!II || !(II->isStr("vector") || II->isStr("sifive_vector") ||
                II->isStr("andes_vector"))) {
+#endif
     PP.Diag(Tok.getLocation(), diag::warn_pragma_invalid_argument)
         << PP.getSpelling(Tok) << "riscv" << /*Expected=*/true
+#if SIFIVE_CUSTOMIZATION
+        << "'vector', 'sifive_vector' or 'andes_vector' or 'v0p11'";
+#else
         << "'vector', 'sifive_vector' or 'andes_vector'";
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
+#endif
     return;
   }
 
@@ -4344,15 +4336,12 @@ void PragmaRISCVHandler::HandlePragma(Preprocessor &PP,
     Actions.RISCV().DeclareRVVBuiltins = true;
   else if (II->isStr("sifive_vector"))
     Actions.RISCV().DeclareSiFiveVectorBuiltins = true;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   else if (II->isStr("v0p11"))
     Actions.RISCV().DeclareVectorV0p11Builtins = true;
 #endif
-=======
   else if (II->isStr("andes_vector"))
     Actions.RISCV().DeclareAndesVectorBuiltins = true;
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 }
 
 #if SIFIVE_CUSTOMIZATION
