@@ -56,35 +56,18 @@ enum class RecurKind {
   FMulAdd,  ///< Sum of float products with llvm.fmuladd(a * b + sum).
   AnyOf,    ///< AnyOf reduction with select(cmp(),x,y) where one of (x,y) is
             ///< loop invariant, and both x and y are integer type.
-<<<<<<< HEAD
-  FAnyOf,   ///< Any_of reduction with select(fcmp(),x,y) where one of (x,y) is
-            ///< loop invariant, and both x and y are integer type.
-  IFindLastIV, ///< FindLast reduction with select(icmp(),x,y) where one of
-               ///< (x,y) is increasing loop induction, and both x and y are
-               ///< integer type.
+  FindLastIV, ///< FindLast reduction with select(cmp(),x,y) where one of
+              ///< (x,y) is increasing loop induction, and both x and y are
+              ///< integer type.
 #if SIFIVE_CUSTOMIZATION
-  FFindLastIV, ///< FindLast reduction with select(fcmp(),x,y) where one of
-               ///< (x,y) is increasing loop induction, and both x and y are
-               ///< integer type.
-  // TODO: Any_of and FindLast reduction need not be restricted to integer type
-  // only.
   MinMaxFirstIdx, ///< Integer Min/Max with first index
   MinMaxLastIdx,   ///< Integer Min/Max with last index
   // TODO: Support floating-point Min/Max with index by merging IFindLastIV and
   // FFindLastIV.
-#else
-  FFindLastIV ///< FindLast reduction with select(fcmp(),x,y) where one of (x,y)
-              ///< is increasing loop induction, and both x and y are integer
-              ///< type.
-=======
-  FindLastIV, ///< FindLast reduction with select(cmp(),x,y) where one of
-              ///< (x,y) is increasing loop induction, and both x and y are
-              ///< integer type.
-  // clang-format on
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
+#endif // SIFIVE_CUSTOMIZATION
   // TODO: Any_of and FindLast reduction need not be restricted to integer type
   // only.
-#endif // SIFIVE_CUSTOMIZATION
+  // clang-format on
 };
 
 /// The RecurrenceDescriptor is used to identify recurrences variables in a
