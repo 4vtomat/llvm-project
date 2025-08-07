@@ -216,7 +216,7 @@ void RISCVMCCodeEmitter::expandAddRegRel(const MCInst &MI,
   switch (Expr->getSpecifier()) {
   default:
     llvm_unreachable("Unknown relocation attached to TP/GP-relative ADD");
-  case RISCVMCExpr::VK_TPREL_ADD:
+  case ELF::R_RISCV_TPREL_ADD:
     assert(SrcReg2.isReg() && SrcReg2.getReg() == RISCV::X4 &&
            "Expected thread pointer as second input to TP-relative ADD");
     FixupKind = ELF::R_RISCV_TPREL_ADD;
@@ -643,13 +643,11 @@ uint64_t RISCVMCCodeEmitter::getImmOpValue(const MCInst &MI, unsigned OpNo,
     const RISCVMCExpr *RVExpr = cast<RISCVMCExpr>(Expr);
     FixupKind = RVExpr->getSpecifier();
     switch (RVExpr->getSpecifier()) {
-<<<<<<< HEAD
-    case RISCVMCExpr::VK_None:
-    case RISCVMCExpr::VK_32_PCREL:
-    case RISCVMCExpr::VK_GOTPCREL:
-    case RISCVMCExpr::VK_PLTPCREL:
-      llvm_unreachable("unhandled specifier");
-    case RISCVMCExpr::VK_TPREL_ADD:
+    default:
+      assert(FixupKind && FixupKind < FirstTargetFixupKind &&
+             "invalid specifier");
+      break;
+    case ELF::R_RISCV_TPREL_ADD:
 #if SIFIVE_CUSTOMIZATION
     case RISCVMCExpr::VK_GPREL_ADD:
     case RISCVMCExpr::VK_GOT_GPREL_ADD:
@@ -662,24 +660,13 @@ uint64_t RISCVMCCodeEmitter::getImmOpValue(const MCInst &MI, unsigned OpNo,
       llvm_unreachable(
           "VK_*[TPREL|GPREL]_ADD should not represent an instruction operand");
 #else
-=======
-    default:
-      assert(FixupKind && FixupKind < FirstTargetFixupKind &&
-             "invalid specifier");
-      break;
-    case ELF::R_RISCV_TPREL_ADD:
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
       // tprel_add is only used to indicate that a relocation should be emitted
       // for an add instruction used in TP-relative addressing. It should not be
       // expanded as if representing an actual instruction operand and so to
       // encounter it here is an error.
       llvm_unreachable(
-<<<<<<< HEAD
-          "VK_TPREL_ADD should not represent an instruction operand");
-#endif // SIFIVE_CUSTOMIZATION
-=======
           "ELF::R_RISCV_TPREL_ADD should not represent an instruction operand");
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
+#endif // SIFIVE_CUSTOMIZATION
     case RISCVMCExpr::VK_LO:
       if (MIFrm == RISCVII::InstFormatI)
         FixupKind = RISCV::fixup_riscv_lo12_i;
@@ -717,13 +704,6 @@ uint64_t RISCVMCCodeEmitter::getImmOpValue(const MCInst &MI, unsigned OpNo,
       break;
     case ELF::R_RISCV_TPREL_HI20:
       RelaxCandidate = true;
-      break;
-<<<<<<< HEAD
-    case RISCVMCExpr::VK_TLS_GOT_HI:
-      FixupKind = ELF::R_RISCV_TLS_GOT_HI20;
-      break;
-    case RISCVMCExpr::VK_TLS_GD_HI:
-      FixupKind = ELF::R_RISCV_TLS_GD_HI20;
       break;
 #if SIFIVE_CUSTOMIZATION
     case RISCVMCExpr::VK_GPREL_HI:
@@ -768,14 +748,7 @@ uint64_t RISCVMCCodeEmitter::getImmOpValue(const MCInst &MI, unsigned OpNo,
       FixupKind = ELF::R_RISCV_SIFIVE_TLS_GD_GPREL_LO12_I;
       break;
 #endif // SIFIVE_CUSTOMIZATION
-    case RISCVMCExpr::VK_CALL:
-      FixupKind = RISCV::fixup_riscv_call;
-      RelaxCandidate = true;
-      break;
-    case RISCVMCExpr::VK_CALL_PLT:
-=======
     case ELF::R_RISCV_CALL_PLT:
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
       FixupKind = RISCV::fixup_riscv_call_plt;
       RelaxCandidate = true;
       break;
