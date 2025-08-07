@@ -121,14 +121,10 @@ private:
   bool ATTRIBUTE = DEFAULT;
 #include "RISCVGenSubtargetInfo.inc"
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   uint8_t VectorToScalarBaseCost = 1;
-  unsigned XSfmmTE = 0;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   unsigned XSfmmTE = 0;
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
   unsigned ZvlLen = 0;
   unsigned RVVVectorBitsMin;
   unsigned RVVVectorBitsMax;
