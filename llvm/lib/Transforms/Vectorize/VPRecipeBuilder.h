@@ -13,15 +13,10 @@
 #include "VPlan.h"
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/Analysis/ScalarEvolutionExpressions.h"
-<<<<<<< HEAD
-#include "llvm/IR/IRBuilder.h"
 #if SIFIVE_CUSTOMIZATION
 #include "VPlanValue.h"
 #include "llvm/IR/Instruction.h"
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
-
 namespace llvm {
 
 class LoopVectorizationLegality;
