@@ -32,20 +32,8 @@ public:
     VK_LO = FirstTargetFixupKind,
     VK_PCREL_LO,
     VK_TPREL_LO,
-<<<<<<< HEAD
-    VK_TPREL_HI,
-    VK_TPREL_ADD,
-    VK_TLS_GOT_HI,
-    VK_TLS_GD_HI,
-    VK_CALL,
-    VK_CALL_PLT,
-    VK_32_PCREL,
-    VK_GOTPCREL,
-    VK_PLTPCREL,
-    VK_TLSDESC_HI,
-    VK_TLSDESC_LOAD_LO,
-    VK_TLSDESC_ADD_LO,
-    VK_TLSDESC_CALL,
+  // Vendor-specific relocation types might conflict across vendors.
+  // Refer to them using Specifier constants.
 #if SIFIVE_CUSTOMIZATION
     VK_GPREL_LO,
     VK_GPREL_HI,
@@ -60,10 +48,6 @@ public:
     VK_TLS_GD_GPREL_HI,
     VK_TLS_GD_GPREL_ADD,
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    // Vendor-specific relocation types might conflict across vendors.
-    // Refer to them using Specifier constants.
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
     VK_QC_ABS20,
   };
 
