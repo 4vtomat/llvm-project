@@ -2372,7 +2372,7 @@ include "RISCVInstrInfoSFB.td"
 include "RISCVInstrInfoXVentana.td"
 include "RISCVInstrInfoXTHead.td"
 include "RISCVInstrInfoXSf.td"
-include "RISCVInstrInfoXSfmm.td"
+// include "RISCVInstrInfoXSfmm.td" // SIFIVE
 include "RISCVInstrInfoXCV.td"
 include "RISCVInstrInfoXwch.td"
 include "RISCVInstrInfoXqci.td"
