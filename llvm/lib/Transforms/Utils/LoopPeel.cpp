@@ -854,10 +854,9 @@ void llvm::computePeelCount(Loop *L, unsigned LoopSize,
   // TTI.getPeelingPreferences or by the flag -unroll-peel-count.
   unsigned TargetPeelCount = PP.PeelCount;
   PP.PeelCount = 0;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  PP.PeelLast = false;
 
+  PP.PeelLast = false;
+#if SIFIVE_CUSTOMIZATION
   if (PP.PeelProlog && !canPeel(L))
     return;
 
@@ -868,9 +867,6 @@ void llvm::computePeelCount(Loop *L, unsigned LoopSize,
   assert(PP.PeelProlog != PP.PeelEpilog &&
          "Unsupported use of computePeelCount");
 #else
-=======
-  PP.PeelLast = false;
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
   if (!canPeel(L))
     return;
 #endif
