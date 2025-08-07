@@ -52,21 +52,14 @@ unsigned RISCVELFObjectWriter::getRelocType(const MCFixup &Fixup,
   unsigned Kind = Fixup.getTargetKind();
   auto Spec = RISCVMCExpr::Specifier(Target.getSpecifier());
   switch (Spec) {
-<<<<<<< HEAD
-  case RISCVMCExpr::VK_TPREL_HI:
-  case RISCVMCExpr::VK_TLS_GOT_HI:
-  case RISCVMCExpr::VK_TLS_GD_HI:
-  case RISCVMCExpr::VK_TLSDESC_HI:
-#if SIFIVE_CUSTOMIZATION
-  case RISCVMCExpr::VK_TLS_GOT_GPREL_HI:
-  case RISCVMCExpr::VK_TLS_GD_GPREL_HI:
-#endif
-=======
   case ELF::R_RISCV_TPREL_HI20:
   case ELF::R_RISCV_TLS_GOT_HI20:
   case ELF::R_RISCV_TLS_GD_HI20:
   case ELF::R_RISCV_TLSDESC_HI20:
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
+#if SIFIVE_CUSTOMIZATION
+  case RISCVMCExpr::VK_TLS_GOT_GPREL_HI:
+  case RISCVMCExpr::VK_TLS_GD_GPREL_HI:
+#endif
     if (auto *SA = Target.getAddSym())
       cast<MCSymbolELF>(SA)->setType(ELF::STT_TLS);
     break;
