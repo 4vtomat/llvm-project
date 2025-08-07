@@ -577,13 +577,15 @@ void VPBasicBlock::connectToPredecessors(VPTransformState &State) {
   // Register NewBB in its loop. In innermost loops its the same for all
   // BB's.
   Loop *ParentLoop = State.CurrentParentLoop;
-<<<<<<< HEAD
-  // If this block has a sole successor that is an exit block then it needs
-  // adding to the same parent loop as the exit block.
-  VPBlockBase *SuccVPBB = getSingleSuccessor();
-  if (SuccVPBB && State.Plan->isExitBlock(SuccVPBB))
-    ParentLoop =
-        State.LI->getLoopFor(cast<VPIRBasicBlock>(SuccVPBB)->getIRBasicBlock());
+  // If this block has a sole successor that is an exit block or is an exit
+  // block itself then it needs adding to the same parent loop as the exit
+  // block.
+  VPBlockBase *SuccOrExitVPB = getSingleSuccessor();
+  SuccOrExitVPB = SuccOrExitVPB ? SuccOrExitVPB : this;
+  if (State.Plan->isExitBlock(SuccOrExitVPB)) {
+    ParentLoop = State.LI->getLoopFor(
+        cast<VPIRBasicBlock>(SuccOrExitVPB)->getIRBasicBlock());
+  }
 
 #if SIFIVE_CUSTOMIZATION
   // Skip adding this to the parent loop since we don't have IR early exit
@@ -598,17 +600,6 @@ void VPBasicBlock::connectToPredecessors(VPTransformState &State) {
   if (VPIRBB && find(getPlan()->getExitBlocks(), VPIRBB) != getPlan()->getExitBlocks().end())
     ParentLoop = nullptr;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  // If this block has a sole successor that is an exit block or is an exit
-  // block itself then it needs adding to the same parent loop as the exit
-  // block.
-  VPBlockBase *SuccOrExitVPB = getSingleSuccessor();
-  SuccOrExitVPB = SuccOrExitVPB ? SuccOrExitVPB : this;
-  if (State.Plan->isExitBlock(SuccOrExitVPB)) {
-    ParentLoop = State.LI->getLoopFor(
-        cast<VPIRBasicBlock>(SuccOrExitVPB)->getIRBasicBlock());
-  }
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 
   if (ParentLoop && !State.LI->getLoopFor(NewBB))
     ParentLoop->addBasicBlockToLoop(NewBB, *State.LI);
@@ -982,18 +973,10 @@ void VPRegionBlock::execute(VPTransformState *State) {
   assert(isReplicator() &&
          "Loop regions should have been lowered to plain CFG");
   assert(!State->Lane && "Replicating a Region with non-null instance.");
-<<<<<<< HEAD
-
-  // Enter replicating mode.
-#if !SIFIVE_CUSTOMIZATION
-  assert(!State->VF.isScalable() && "VF is assumed to be non scalable.");
-#endif // SIFIVE_CUSTOMIZATION
-=======
   assert(!State->VF.isScalable() && "VF is assumed to be non scalable.");
 
   ReversePostOrderTraversal<VPBlockShallowTraversalWrapper<VPBlockBase *>> RPOT(
       Entry);
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
   State->Lane = VPLane(0);
   for (unsigned Lane = 0, VF = State->VF.getKnownMinValue(); Lane < VF;
        ++Lane) {
@@ -1171,7 +1154,6 @@ void VPConditionalRegionBlock::print(raw_ostream &O, const Twine &Indent,
 #endif // SIFIVE_CUSTOMIZATION
 #endif
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 InstructionCost VPlan::overhead(ElementCount VF, VPCostContext &Ctx) const {
   InstructionCost Overhead;
@@ -1208,7 +1190,6 @@ InstructionCost VPBasicBlock::overhead(ElementCount VF,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
 void VPRegionBlock::dissolveToCFGLoop() {
   auto *Header = cast<VPBasicBlock>(getEntry());
   VPBlockBase *Preheader = getSinglePredecessor();
@@ -1225,7 +1206,6 @@ void VPRegionBlock::dissolveToCFGLoop() {
   VPBlockUtils::connectBlocks(ExitingLatch, Header);
 }
 
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 VPlan::VPlan(Loop *L) {
   setEntry(createVPIRBasicBlock(L->getLoopPreheader()));
   ScalarHeader = createVPIRBasicBlock(L->getHeader());
@@ -1452,8 +1432,8 @@ void VPlan::execute(VPTransformState *State) {
                         cast<VPReductionPHIRecipe>(PhiR)->isInLoop());
 
     Value *Phi = State->get(PhiR, NeedsScalar);
-<<<<<<< HEAD
-    // VPHeaderPHIRecipe supports getBackedgeValue() but VPInstruction does not.
+    // VPHeaderPHIRecipe supports getBackedgeValue() but VPInstruction does
+    // not.
     Value *Val = State->get(PhiR->getOperand(1), NeedsScalar); 
 #if SIFIVE_CUSTOMIZATION
     if (Val->getType()->isIntegerTy()) {
@@ -1463,11 +1443,6 @@ void VPlan::execute(VPTransformState *State) {
       Val = State->Builder.CreateZExtOrTrunc(Val, Phi->getType());
     }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    // VPHeaderPHIRecipe supports getBackedgeValue() but VPInstruction does
-    // not.
-    Value *Val = State->get(PhiR->getOperand(1), NeedsScalar);
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
     cast<PHINode>(Phi)->addIncoming(Val, VectorLatchBB);
   }
 
