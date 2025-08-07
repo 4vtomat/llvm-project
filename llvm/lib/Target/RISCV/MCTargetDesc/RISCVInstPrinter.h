@@ -48,15 +48,8 @@ public:
                             const MCSubtargetInfo &STI, raw_ostream &O);
   void printVTypeI(const MCInst *MI, unsigned OpNo, const MCSubtargetInfo &STI,
                    raw_ostream &O);
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   void printXSfmmVType(const MCInst *MI, unsigned OpNo,
                        const MCSubtargetInfo &STI, raw_ostream &O);
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  void printXSfmmVType(const MCInst *MI, unsigned OpNo,
-                       const MCSubtargetInfo &STI, raw_ostream &O);
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
   void printVMaskReg(const MCInst *MI, unsigned OpNo,
                      const MCSubtargetInfo &STI, raw_ostream &O);
   void printRegList(const MCInst *MI, unsigned OpNo, const MCSubtargetInfo &STI,
