@@ -57,18 +57,11 @@ include "RISCVMacroFusion.td"
 include "RISCVSchedGenericOOO.td"
 include "RISCVSchedMIPSP8700.td"
 include "RISCVSchedRocket.td"
-<<<<<<< HEAD
 // include "RISCVSchedSiFive7.td" // SIFIVE
 // include "RISCVSchedSiFiveP400.td" // SIFIVE
 // include "RISCVSchedSiFiveP500.td" // SIFIVE
 // include "RISCVSchedSiFiveP600.td" // SIFIVE
-=======
-include "RISCVSchedSiFive7.td"
-include "RISCVSchedSiFiveP400.td"
-include "RISCVSchedSiFiveP500.td"
-include "RISCVSchedSiFiveP600.td"
 include "RISCVSchedSiFiveP800.td"
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 include "RISCVSchedSpacemitX60.td"
 include "RISCVSchedSyntacoreSCR1.td"
 include "RISCVSchedSyntacoreSCR345.td"
