@@ -1217,6 +1217,11 @@ public:
   }
 
 #if SIFIVE_CUSTOMIZATION
+  /// \return Returns information about the register usages of the loop for the
+  /// given vectorization factors.
+  SmallVector<RegisterUsage, 8>
+  calculateRegisterUsage(ArrayRef<ElementCount> VFs);
+
   /// Returns true if the target prefer to postpone the operation of start value
   /// into postexit.
   bool postFixStartValue(const RecurrenceDescriptor &RdxDesc, PHINode *Phi) const {
@@ -4900,35 +4905,6 @@ ElementCount LoopVectorizationCostModel::getMaximizedVFForTarget(
         ComputeScalableMaxVF);
     MaxVF = MinVF(MaxVectorElementCountMaxBW, MaxSafeVF);
 
-<<<<<<< HEAD
-    // Collect all viable vectorization factors larger than the default MaxVF
-    // (i.e. MaxVectorElementCount).
-    SmallVector<ElementCount, 8> VFs;
-    for (ElementCount VS = MaxVectorElementCount * 2;
-         ElementCount::isKnownLE(VS, MaxVectorElementCountMaxBW); VS *= 2)
-      VFs.push_back(VS);
-
-    // For each VF calculate its register usage.
-    auto RUs = calculateRegisterUsage(VFs);
-#if SIFIVE_CUSTOMIZATION
-    // FIXME: calculateRegisterUsage takes decisions because it calls
-    // collectUniformsAndScalars.
-    invalidateCostModelingDecisions();
-#endif // SIFIVE_CUSTOMIZATION
-
-    // Select the largest VF which doesn't require more registers than existing
-    // ones.
-    for (int I = RUs.size() - 1; I >= 0; --I) {
-      const auto &MLU = RUs[I].MaxLocalUsers;
-      if (all_of(MLU, [&](decltype(MLU.front()) &LU) {
-            return LU.second <= TTI.getNumberOfRegisters(LU.first);
-          })) {
-        MaxVF = VFs[I];
-        break;
-      }
-    }
-=======
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
     if (ElementCount MinVF =
             TTI.getMinimumVF(SmallestType, ComputeScalableMaxVF)) {
       if (ElementCount::isKnownLT(MaxVF, MinVF)) {
@@ -5402,7 +5378,11 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
       if (VF.isScalar())
         continue;
 
-<<<<<<< HEAD
+      /// Don't consider the VF if it exceeds the number of registers for the
+      /// target.
+      if (RU.exceedsMaxNumRegs(TTI))
+        continue;
+
 #if SIFIVE_CUSTOMIZATION
       // Notice that the vector loop needs to be executed less times, so
       // we need to divide the cost of the vector loops by the width of
@@ -5430,13 +5410,6 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
         C = CM.expectedCost(VF);
       }
 #else
-=======
-      /// Don't consider the VF if it exceeds the number of registers for the
-      /// target.
-      if (RU.exceedsMaxNumRegs(TTI))
-        continue;
-
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
       InstructionCost C = CM.expectedCost(VF);
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -6370,7 +6343,7 @@ LoopVectorizationCostModel::selectInterleaveCount(VPlan &Plan, ElementCount VF,
   return 1;
 }
 
-<<<<<<< HEAD
+#ifdef SIFIVE_CUSTOMIZATION
 SmallVector<LoopVectorizationCostModel::RegisterUsage, 8>
 LoopVectorizationCostModel::calculateRegisterUsage(ArrayRef<ElementCount> VFs) {
   // This function calculates the register usage by measuring the highest number
@@ -6582,9 +6555,7 @@ LoopVectorizationCostModel::calculateRegisterUsage(ArrayRef<ElementCount> VFs) {
 
   return RUs;
 }
-
-=======
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
+#endif // SIFIVE_CUSTOMIZATION
 bool LoopVectorizationCostModel::useEmulatedMaskMemRefHack(Instruction *I,
                                                            ElementCount VF) {
   // TODO: Cost model for emulated masked load/store is completely
@@ -9286,9 +9257,7 @@ VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
 #else
       InstructionCost Cost = cost(*P, VF);
       VectorizationFactor CurrentFactor(VF, Cost, ScalarCost);
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-=======
 
       if (RU.exceedsMaxNumRegs(TTI)) {
         LLVM_DEBUG(dbgs() << "LV(REG): Not considering vector loop of width "
@@ -9296,7 +9265,6 @@ VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
         continue;
       }
 
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
       if (isMoreProfitable(CurrentFactor, BestFactor, P->hasScalarTail()))
         BestFactor = CurrentFactor;
 
@@ -9543,7 +9511,6 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
   if (VectorizingEpilogue)
     VPlanTransforms::removeDeadRecipes(BestVPlan);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   State.SE = ILV.PSE.getSE();
 
@@ -9589,11 +9556,9 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
     State.Plan->addLMULTypePair(State.LMULExp, SEWType);
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   assert(verifyVPlanIsValid(BestVPlan, true /*VerifyLate*/) &&
          "final VPlan is invalid");
 
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
   ILV.printDebugTracesAtStart();
 
   //===------------------------------------------------===//
@@ -9966,195 +9931,6 @@ void EpilogueVectorizerEpilogueLoop::printDebugTracesAtEnd() {
   });
 }
 
-<<<<<<< HEAD
-void VPRecipeBuilder::createSwitchEdgeMasks(SwitchInst *SI) {
-  BasicBlock *Src = SI->getParent();
-  assert(!OrigLoop->isLoopExiting(Src) &&
-         all_of(successors(Src),
-                [this](BasicBlock *Succ) {
-                  return OrigLoop->getHeader() != Succ;
-                }) &&
-         "unsupported switch either exiting loop or continuing to header");
-  // Create masks where the terminator in Src is a switch. We create mask for
-  // all edges at the same time. This is more efficient, as we can create and
-  // collect compares for all cases once.
-  VPValue *Cond = getVPValueOrAddLiveIn(SI->getCondition());
-  BasicBlock *DefaultDst = SI->getDefaultDest();
-  MapVector<BasicBlock *, SmallVector<VPValue *>> Dst2Compares;
-  for (auto &C : SI->cases()) {
-    BasicBlock *Dst = C.getCaseSuccessor();
-    assert(!EdgeMaskCache.contains({Src, Dst}) && "Edge masks already created");
-    // Cases whose destination is the same as default are redundant and can be
-    // ignored - they will get there anyhow.
-    if (Dst == DefaultDst)
-      continue;
-    auto &Compares = Dst2Compares[Dst];
-    VPValue *V = getVPValueOrAddLiveIn(C.getCaseValue());
-    Compares.push_back(Builder.createICmp(CmpInst::ICMP_EQ, Cond, V));
-  }
-
-  // We need to handle 2 separate cases below for all entries in Dst2Compares,
-  // which excludes destinations matching the default destination.
-  VPValue *SrcMask = getBlockInMask(Src);
-  VPValue *DefaultMask = nullptr;
-  for (const auto &[Dst, Conds] : Dst2Compares) {
-    // 1. Dst is not the default destination. Dst is reached if any of the cases
-    // with destination == Dst are taken. Join the conditions for each case
-    // whose destination == Dst using an OR.
-    VPValue *Mask = Conds[0];
-    for (VPValue *V : ArrayRef<VPValue *>(Conds).drop_front())
-      Mask = Builder.createOr(Mask, V);
-    if (SrcMask)
-      Mask = Builder.createLogicalAnd(SrcMask, Mask);
-    EdgeMaskCache[{Src, Dst}] = Mask;
-
-    // 2. Create the mask for the default destination, which is reached if none
-    // of the cases with destination != default destination are taken. Join the
-    // conditions for each case where the destination is != Dst using an OR and
-    // negate it.
-    DefaultMask = DefaultMask ? Builder.createOr(DefaultMask, Mask) : Mask;
-  }
-
-  if (DefaultMask) {
-    DefaultMask = Builder.createNot(DefaultMask);
-    if (SrcMask)
-      DefaultMask = Builder.createLogicalAnd(SrcMask, DefaultMask);
-  }
-  EdgeMaskCache[{Src, DefaultDst}] = DefaultMask;
-}
-
-VPValue *VPRecipeBuilder::createEdgeMask(BasicBlock *Src, BasicBlock *Dst) {
-  assert(is_contained(predecessors(Dst), Src) && "Invalid edge");
-
-  // Look for cached value.
-  std::pair<BasicBlock *, BasicBlock *> Edge(Src, Dst);
-  EdgeMaskCacheTy::iterator ECEntryIt = EdgeMaskCache.find(Edge);
-  if (ECEntryIt != EdgeMaskCache.end())
-    return ECEntryIt->second;
-
-  if (auto *SI = dyn_cast<SwitchInst>(Src->getTerminator())) {
-    createSwitchEdgeMasks(SI);
-    assert(EdgeMaskCache.contains(Edge) && "Mask for Edge not created?");
-    return EdgeMaskCache[Edge];
-  }
-
-  VPValue *SrcMask = getBlockInMask(Src);
-
-  // The terminator has to be a branch inst!
-  BranchInst *BI = dyn_cast<BranchInst>(Src->getTerminator());
-  assert(BI && "Unexpected terminator found");
-  if (!BI->isConditional() || BI->getSuccessor(0) == BI->getSuccessor(1))
-    return EdgeMaskCache[Edge] = SrcMask;
-
-  // If source is an exiting block, we know the exit edge is dynamically dead
-  // in the vector loop, and thus we don't need to restrict the mask.  Avoid
-  // adding uses of an otherwise potentially dead instruction unless we are
-  // vectorizing a loop with uncountable exits. In that case, we always
-  // materialize the mask.
-  if (OrigLoop->isLoopExiting(Src) &&
-      Src != Legal->getUncountableEarlyExitingBlock())
-    return EdgeMaskCache[Edge] = SrcMask;
-
-  VPValue *EdgeMask = getVPValueOrAddLiveIn(BI->getCondition());
-  assert(EdgeMask && "No Edge Mask found for condition");
-
-  if (BI->getSuccessor(0) != Dst)
-    EdgeMask = Builder.createNot(EdgeMask, BI->getDebugLoc());
-
-  if (SrcMask) { // Otherwise block in-mask is all-one, no need to AND.
-    // The bitwise 'And' of SrcMask and EdgeMask introduces new UB if SrcMask
-    // is false and EdgeMask is poison. Avoid that by using 'LogicalAnd'
-    // instead which generates 'select i1 SrcMask, i1 EdgeMask, i1 false'.
-    EdgeMask = Builder.createLogicalAnd(SrcMask, EdgeMask, BI->getDebugLoc());
-  }
-
-  return EdgeMaskCache[Edge] = EdgeMask;
-}
-
-VPValue *VPRecipeBuilder::getEdgeMask(BasicBlock *Src, BasicBlock *Dst) const {
-  assert(is_contained(predecessors(Dst), Src) && "Invalid edge");
-
-  // Look for cached value.
-  std::pair<BasicBlock *, BasicBlock *> Edge(Src, Dst);
-  EdgeMaskCacheTy::const_iterator ECEntryIt = EdgeMaskCache.find(Edge);
-  assert(ECEntryIt != EdgeMaskCache.end() &&
-         "looking up mask for edge which has not been created");
-  return ECEntryIt->second;
-}
-
-void VPRecipeBuilder::createHeaderMask() {
-  BasicBlock *Header = OrigLoop->getHeader();
-
-  // When not folding the tail, use nullptr to model all-true mask.
-  if (!CM.foldTailByMasking()) {
-    BlockMaskCache[Header] = nullptr;
-    return;
-  }
-#if SIFIVE_CUSTOMIZATION
-  // We don't maks the loop body with this style of vectorization
-  if (Legal->useVLAVectorizer()) {
-    BlockMaskCache[Header] = nullptr;
-    return;
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
-  // Introduce the early-exit compare IV <= BTC to form header block mask.
-  // This is used instead of IV < TC because TC may wrap, unlike BTC. Start by
-  // constructing the desired canonical IV in the header block as its first
-  // non-phi instructions.
-
-  VPBasicBlock *HeaderVPBB = Plan.getVectorLoopRegion()->getEntryBasicBlock();
-  auto NewInsertionPoint = HeaderVPBB->getFirstNonPhi();
-  auto *IV = new VPWidenCanonicalIVRecipe(Plan.getCanonicalIV());
-  HeaderVPBB->insert(IV, NewInsertionPoint);
-
-  VPBuilder::InsertPointGuard Guard(Builder);
-  Builder.setInsertPoint(HeaderVPBB, NewInsertionPoint);
-  VPValue *BlockMask = nullptr;
-  VPValue *BTC = Plan.getOrCreateBackedgeTakenCount();
-  BlockMask = Builder.createICmp(CmpInst::ICMP_ULE, IV, BTC);
-  BlockMaskCache[Header] = BlockMask;
-}
-
-VPValue *VPRecipeBuilder::getBlockInMask(BasicBlock *BB) const {
-  // Return the cached value.
-  BlockMaskCacheTy::const_iterator BCEntryIt = BlockMaskCache.find(BB);
-  assert(BCEntryIt != BlockMaskCache.end() &&
-         "Trying to access mask for block without one.");
-  return BCEntryIt->second;
-}
-
-void VPRecipeBuilder::createBlockInMask(BasicBlock *BB) {
-  assert(OrigLoop->contains(BB) && "Block is not a part of a loop");
-  assert(BlockMaskCache.count(BB) == 0 && "Mask for block already computed");
-  assert(OrigLoop->getHeader() != BB &&
-         "Loop header must have cached block mask");
-
-  // All-one mask is modelled as no-mask following the convention for masked
-  // load/store/gather/scatter. Initialize BlockMask to no-mask.
-  VPValue *BlockMask = nullptr;
-  // This is the block mask. We OR all unique incoming edges.
-  for (auto *Predecessor :
-       SetVector<BasicBlock *>(llvm::from_range, predecessors(BB))) {
-    VPValue *EdgeMask = createEdgeMask(Predecessor, BB);
-    if (!EdgeMask) { // Mask of predecessor is all-one so mask of block is too.
-      BlockMaskCache[BB] = EdgeMask;
-      return;
-    }
-
-    if (!BlockMask) { // BlockMask has its initialized nullptr value.
-      BlockMask = EdgeMask;
-      continue;
-    }
-
-    BlockMask = Builder.createOr(BlockMask, EdgeMask, {});
-  }
-
-  BlockMaskCache[BB] = BlockMask;
-}
-
-=======
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 VPWidenMemoryRecipe *
 VPRecipeBuilder::tryToWidenMemory(Instruction *I, ArrayRef<VPValue *> Operands,
                                   VFRange &Range) {
@@ -10833,7 +10609,11 @@ VPRecipeBase *VPRecipeBuilder::tryToCreateWidenRecipe(VPSingleDefRecipe *R,
     assert(MD && "Monotonic descriptor was not found");
     assert(Operands.size() == 2 &&
            "Only binary monotonic updates are supported");
-    VPValue *Mask = getBlockInMask(Instr->getParent());
+
+    VPBasicBlock *VPBB = R->getParent();
+    assert(VPBB && "Recipe should have a parent VPBasicBlock");
+    VPValue *Mask = getBlockInMask(VPBB);
+
     return new VPMonotonicUpdateInstruction(Mask, Operands[0], Operands[1],
                                             Instr->getDebugLoc(), *MD);
   }
@@ -11494,17 +11274,12 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range,
             return !CM.requiresScalarEpilogue(VF.isVector());
           },
           Range);
-<<<<<<< HEAD
-  DenseMap<const VPBlockBase *, BasicBlock *> VPB2IRBB;
 
 #if SIFIVE_CUSTOMIZATION
-  auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB, Legal);
+  auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, Legal);
 #else
-  auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB);
-#endif
-=======
   auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI);
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
+#endif
   VPlanTransforms::prepareForVectorization(
       *Plan, Legal->getWidestInductionType(), PSE, RequiresScalarEpilogueCheck,
       CM.foldTailByMasking(), OrigLoop,
@@ -11855,16 +11630,11 @@ VPlanPtr LoopVectorizationPlanner::tryToBuildVPlan(VFRange &Range) {
   assert(!OrigLoop->isInnermost());
   assert(EnableVPlanNativePath && "VPlan-native path is not enabled.");
 
-<<<<<<< HEAD
-  DenseMap<const VPBlockBase *, BasicBlock *> VPB2IRBB;
 #if SIFIVE_CUSTOMIZATION
-  auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB, Legal);
+  auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, Legal);
 #else
-  auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB);
-#endif // SIFIVE_CUSTOMIZATION
-=======
   auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI);
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
+#endif // SIFIVE_CUSTOMIZATION
   VPlanTransforms::prepareForVectorization(
       *Plan, Legal->getWidestInductionType(), PSE, true, false, OrigLoop,
       getDebugLocFromInstOrOperands(Legal->getPrimaryInduction()), false,
@@ -12181,8 +11951,8 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
         VPValue *SentinelVPV =
             Plan->getOrAddLiveIn(cast<ConstantInt>(Sentinel));
         auto *FinalReductionMask =
-            new VPInstruction(Instruction::ICmp, CmpInst::ICMP_NE,
-                              NewExitingVPV, SentinelVPV, ExitDL);
+            new VPInstruction(Instruction::ICmp, {NewExitingVPV, SentinelVPV},
+                              VPIRFlags(CmpInst::ICMP_NE), ExitDL);
         auto *FinalReductionMaskedResult = new VPInstruction(
             VPInstruction::ComputeReductionResultWithMask,
             {PhiR, NewExitingVPV, FinalReductionMask}, ExitDL);
