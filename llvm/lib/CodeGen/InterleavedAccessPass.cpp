@@ -674,7 +674,6 @@ static void interleaveLeafValues(MutableArrayRef<Value *> SubLeaves) {
 static bool
 getVectorInterleaveFactor(IntrinsicInst *II, SmallVectorImpl<Value *> &Operands,
                           SmallVectorImpl<Instruction *> &DeadInsts) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (unsigned Factor = getFactorFromVectorInterleaveIntrinsic(II);
       Factor > 2) {
@@ -685,13 +684,10 @@ getVectorInterleaveFactor(IntrinsicInst *II, SmallVectorImpl<Value *> &Operands,
     return true;
   }
 #endif
-  assert(II->getIntrinsicID() == Intrinsic::vector_interleave2);
-=======
   assert(II->getIntrinsicID() == Intrinsic::vector_interleave2 ||
          II->getIntrinsicID() == Intrinsic::vector_interleave3 ||
          II->getIntrinsicID() == Intrinsic::vector_interleave5 ||
          II->getIntrinsicID() == Intrinsic::vector_interleave7);
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 
   // Visit with BFS
   SmallVector<IntrinsicInst *, 8> Queue;
@@ -735,7 +731,6 @@ static bool
 getVectorDeinterleaveFactor(IntrinsicInst *II,
                             SmallVectorImpl<Value *> &Results,
                             SmallVectorImpl<Instruction *> &DeadInsts) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (unsigned Factor = getFactorFromVectorDeInterleaveIntrinsic(II);
       Factor > 2) {
@@ -764,13 +759,10 @@ getVectorDeinterleaveFactor(IntrinsicInst *II,
     return true;
   }
 #endif
-  assert(II->getIntrinsicID() == Intrinsic::vector_deinterleave2);
-=======
   assert(II->getIntrinsicID() == Intrinsic::vector_deinterleave2 ||
          II->getIntrinsicID() == Intrinsic::vector_deinterleave3 ||
          II->getIntrinsicID() == Intrinsic::vector_deinterleave5 ||
          II->getIntrinsicID() == Intrinsic::vector_deinterleave7);
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
   using namespace PatternMatch;
   if (!II->hasNUses(getIntrinsicFactor(II)))
     return false;
@@ -1048,33 +1040,28 @@ bool InterleavedAccessImpl::runOnFunction(Function &F) {
 
     if (auto *II = dyn_cast<IntrinsicInst>(&I)) {
       // At present, we only have intrinsics to represent (de)interleaving
-<<<<<<< HEAD
-      // with a factor of 2.
-#if SIFIVE_CUSTOMIZATION
-      if (getFactorFromVectorDeInterleaveIntrinsic(II) != 0)
-#else
-      if (II->getIntrinsicID() == Intrinsic::vector_deinterleave2)
-#endif // SIFIVE_CUSTOMIZATION
-        Changed |= lowerDeinterleaveIntrinsic(II, DeadInsts);
-#if SIFIVE_CUSTOMIZATION
-      else if (getFactorFromVectorInterleaveIntrinsic(II) != 0)
-#else
-      else if (II->getIntrinsicID() == Intrinsic::vector_interleave2)
-#endif // SIFIVE_CUSTOMIZATION
-=======
       // with a factor of 2,3,5 and 7.
       switch (II->getIntrinsicID()) {
       case Intrinsic::vector_deinterleave2:
       case Intrinsic::vector_deinterleave3:
       case Intrinsic::vector_deinterleave5:
       case Intrinsic::vector_deinterleave7:
+#ifdef SIFIVE_CUSTOMIZATION
+      case Intrinsic::experimental_vector_deinterleave4:
+      case Intrinsic::experimental_vector_deinterleave6:
+      case Intrinsic::experimental_vector_deinterleave8:
+#endif // SIFIVE_CUSTOMIZATION
         Changed |= lowerDeinterleaveIntrinsic(II, DeadInsts);
         break;
       case Intrinsic::vector_interleave2:
       case Intrinsic::vector_interleave3:
       case Intrinsic::vector_interleave5:
       case Intrinsic::vector_interleave7:
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
+#ifdef SIFIVE_CUSTOMIZATION
+      case Intrinsic::experimental_vector_interleave4:
+      case Intrinsic::experimental_vector_interleave6:
+      case Intrinsic::experimental_vector_interleave8:
+#endif // SIFIVE_CUSTOMIZATION
         Changed |= lowerInterleaveIntrinsic(II, DeadInsts);
         break;
       default:
