@@ -23182,19 +23182,12 @@ private:
         case RecurKind::Mul:
         case RecurKind::FMul:
         case RecurKind::FMulAdd:
-<<<<<<< HEAD
-        case RecurKind::IAnyOf:
-        case RecurKind::FAnyOf:
-        case RecurKind::IFindLastIV:
-        case RecurKind::FFindLastIV:
+        case RecurKind::AnyOf:
+        case RecurKind::FindLastIV:
 #if SIFIVE_CUSTOMIZATION
         case RecurKind::MinMaxFirstIdx:
         case RecurKind::MinMaxLastIdx:
 #endif // SIFIVE_CUSTOMIZATION
-=======
-        case RecurKind::AnyOf:
-        case RecurKind::FindLastIV:
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
         case RecurKind::FMaximumNum:
         case RecurKind::FMinimumNum:
         case RecurKind::None:
@@ -23327,19 +23320,12 @@ private:
     case RecurKind::Mul:
     case RecurKind::FMul:
     case RecurKind::FMulAdd:
-<<<<<<< HEAD
-    case RecurKind::IAnyOf:
-    case RecurKind::FAnyOf:
-    case RecurKind::IFindLastIV:
-    case RecurKind::FFindLastIV:
+    case RecurKind::AnyOf:
+    case RecurKind::FindLastIV:
 #if SIFIVE_CUSTOMIZATION
     case RecurKind::MinMaxFirstIdx:
     case RecurKind::MinMaxLastIdx:
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    case RecurKind::AnyOf:
-    case RecurKind::FindLastIV:
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
     case RecurKind::FMaximumNum:
     case RecurKind::FMinimumNum:
     case RecurKind::None:
@@ -23437,19 +23423,12 @@ private:
     case RecurKind::Mul:
     case RecurKind::FMul:
     case RecurKind::FMulAdd:
-<<<<<<< HEAD
-    case RecurKind::IAnyOf:
-    case RecurKind::FAnyOf:
-    case RecurKind::IFindLastIV:
-    case RecurKind::FFindLastIV:
+    case RecurKind::AnyOf:
+    case RecurKind::FindLastIV:
 #if SIFIVE_CUSTOMIZATION
     case RecurKind::MinMaxFirstIdx:
     case RecurKind::MinMaxLastIdx:
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    case RecurKind::AnyOf:
-    case RecurKind::FindLastIV:
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
     case RecurKind::FMaximumNum:
     case RecurKind::FMinimumNum:
     case RecurKind::None:
