@@ -135,16 +135,12 @@ class RISCVAsmParser : public MCTargetAsmParser {
 #endif // SIFIVE_CUSTOMIZATION
   bool generateVTypeError(SMLoc ErrorLoc);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool parseXSfmmVTypeToken(const AsmToken &Tok, WWEEState &State, unsigned &WW,
                             unsigned &EE, bool &AltFmt);
-  bool generateXSfmmVTypeError(SMLoc ErrorLoc);
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
   bool generateXSfmmVTypeError(SMLoc ErrorLoc);
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
   // Helper to actually emit an instruction to the MCStreamer. Also, when
   // possible, compression of the instruction is performed.
   void emitToStreamer(MCStreamer &S, const MCInst &Inst);
@@ -254,13 +250,7 @@ class RISCVAsmParser : public MCTargetAsmParser {
   }
 
   ParseStatus parseRegReg(OperandVector &Operands);
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   ParseStatus parseXSfmmVType(OperandVector &Operands);
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  ParseStatus parseXSfmmVType(OperandVector &Operands);
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
   ParseStatus parseRetval(OperandVector &Operands);
   ParseStatus parseZcmpStackAdj(OperandVector &Operands,
                                 bool ExpectNegative = false);
@@ -649,15 +639,10 @@ public:
 
     RISCVMCExpr::Specifier VK = RISCVMCExpr::VK_None;
     return RISCVAsmParser::classifySymbolRef(getImm(), VK) &&
-<<<<<<< HEAD
-           (VK == RISCVMCExpr::VK_TPREL_ADD ||
-            VK == RISCVMCExpr::VK_GPREL_ADD ||
+           (VK == ELF::R_RISCV_TPREL_ADD || VK == RISCVMCExpr::VK_GPREL_ADD ||
             VK == RISCVMCExpr::VK_GOT_GPREL_ADD ||
             VK == RISCVMCExpr::VK_TLS_GOT_GPREL_ADD ||
             VK == RISCVMCExpr::VK_TLS_GD_GPREL_ADD);
-=======
-           VK == ELF::R_RISCV_TPREL_ADD;
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -687,17 +672,9 @@ public:
     return isUImm<11>();
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   bool isXSfmmVType() const {
     return Kind == KindTy::VType && RISCVVType::isValidXSfmmVType(VType.Val);
   }
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  bool isXSfmmVType() const {
-    return Kind == KindTy::VType && RISCVVType::isValidXSfmmVType(VType.Val);
-  }
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 
   /// Return true if the operand is a valid for the fence instruction e.g.
   /// ('iorw').
@@ -937,21 +914,17 @@ public:
     return RISCVAsmParser::classifySymbolRef(getImm(), VK) &&
            (VK == RISCVMCExpr::VK_LO || VK == RISCVMCExpr::VK_PCREL_LO ||
             VK == RISCVMCExpr::VK_TPREL_LO ||
-<<<<<<< HEAD
-            VK == RISCVMCExpr::VK_TLSDESC_LOAD_LO ||
+            VK == ELF::R_RISCV_TLSDESC_LOAD_LO12 ||
 #if SIFIVE_CUSTOMIZATION
-            VK == RISCVMCExpr::VK_TLSDESC_ADD_LO ||
+            VK == ELF::R_RISCV_TLSDESC_ADD_LO12 ||
             VK == RISCVMCExpr::VK_GPREL_LO ||
             VK == RISCVMCExpr::VK_GOT_GPREL_LO ||
             VK == RISCVMCExpr::VK_TLS_GOT_GPREL_LO ||
             VK == RISCVMCExpr::VK_TLS_GD_GPREL_LO);
 #else
-            VK == RISCVMCExpr::VK_TLSDESC_ADD_LO);
-#endif // SIFIVE_CUSTOMIZATION
-=======
             VK == ELF::R_RISCV_TLSDESC_LOAD_LO12 ||
             VK == ELF::R_RISCV_TLSDESC_ADD_LO12);
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   bool isSImm12Lsb00000() const {
@@ -994,19 +967,15 @@ public:
 
     RISCVMCExpr::Specifier VK = RISCVMCExpr::VK_None;
     return RISCVAsmParser::classifySymbolRef(getImm(), VK) &&
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-           (VK == RISCVMCExpr::VK_HI || VK == RISCVMCExpr::VK_TPREL_HI ||
+           (VK == ELF::R_RISCV_HI20 || VK == ELF::R_RISCV_TPREL_HI20 ||
             VK == RISCVMCExpr::VK_GPREL_HI ||
             VK == RISCVMCExpr::VK_GOT_GPREL_HI ||
             VK == RISCVMCExpr::VK_TLS_GOT_GPREL_HI ||
             VK == RISCVMCExpr::VK_TLS_GD_GPREL_HI);
 #else
-           (VK == RISCVMCExpr::VK_HI || VK == RISCVMCExpr::VK_TPREL_HI);
-#endif // SIFIVE_CUSTOMIZATION
-=======
            (VK == ELF::R_RISCV_HI20 || VK == ELF::R_RISCV_TPREL_HI20);
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   bool isUImm20AUIPC() const {
@@ -2492,75 +2461,12 @@ bool RISCVAsmParser::generateVTypeError(SMLoc ErrorLoc) {
 #endif // SIFIVE_CUSTOMIZATION
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-bool RISCVAsmParser::parseXSfmmVTypeToken(const AsmToken &Tok, WWEEState &State,
-                                          unsigned &WW, unsigned &EE,
-                                          bool &AltFmt) {
-  if (getLexer().isNot(AsmToken::Identifier))
-    return true;
-
-  StringRef Identifier = getTok().getIdentifier();
-
-  switch (State) {
-  case WWEEState_SEW:
-    if (!Identifier.consume_front("e"))
-      break;
-    if (Identifier.getAsInteger(10, EE)) {
-      if (Identifier != "16alt")
-        break;
-
-      AltFmt = true;
-      EE = 16;
-    }
-    if (!RISCVVType::isValidSEW(EE) || EE > 64)
-      break;
-    State = WWEEState_Widen;
-    return false;
-  case WWEEState_Widen:
-    if (!Identifier.consume_front("w"))
-      break;
-    if (Identifier.getAsInteger(10, WW))
-      break;
-    if (WW != 1 && WW != 2 && WW != 4)
-      break;
-    State = WWEEState_Done;
-    return false;
-  case WWEEState_Done:
-    // Extra token?
-    break;
-  }
-
-  return true;
-}
-
-=======
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 ParseStatus RISCVAsmParser::parseXSfmmVType(OperandVector &Operands) {
   SMLoc S = getLoc();
 
   unsigned Widen = 0;
   unsigned SEW = 0;
   bool AltFmt = false;
-<<<<<<< HEAD
-
-  WWEEState State = WWEEState_SEW;
-
-  if (parseXSfmmVTypeToken(getTok(), State, Widen, SEW, AltFmt))
-    return generateXSfmmVTypeError(S);
-
-  getLexer().Lex();
-
-  if (!parseOptionalToken(AsmToken::Comma))
-    return generateXSfmmVTypeError(S);
-
-  if (parseXSfmmVTypeToken(getTok(), State, Widen, SEW, AltFmt))
-    return generateXSfmmVTypeError(S);
-
-  getLexer().Lex();
-
-  if (getLexer().is(AsmToken::EndOfStatement) && State == WWEEState_Done) {
-=======
   StringRef Identifier;
 
   if (getTok().isNot(AsmToken::Identifier))
@@ -2601,26 +2507,18 @@ ParseStatus RISCVAsmParser::parseXSfmmVType(OperandVector &Operands) {
   Lex();
 
   if (getLexer().is(AsmToken::EndOfStatement)) {
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
     Operands.push_back(RISCVOperand::createVType(
         RISCVVType::encodeXSfmmVType(SEW, Widen, AltFmt), S));
     return ParseStatus::Success;
   }
 
-<<<<<<< HEAD
-=======
 Fail:
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
   return generateXSfmmVTypeError(S);
 }
 
 bool RISCVAsmParser::generateXSfmmVTypeError(SMLoc ErrorLoc) {
   return Error(ErrorLoc, "operand must be e[8|16|16alt|32|64],w[1|2|4]");
 }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 
 ParseStatus RISCVAsmParser::parseMaskReg(OperandVector &Operands) {
   if (getLexer().isNot(AsmToken::Identifier))
@@ -4036,7 +3934,7 @@ bool RISCVAsmParser::checkPseudoAddRegRel(MCInst &Inst,
     SMLoc ErrorLoc = ((RISCVOperand &)*Operands[4]).getStartLoc();
     return Error(ErrorLoc, "unknown third operand specifier for TP/GP-relative ADD");
   }
-  case llvm::RISCVMCExpr::VK_TPREL_ADD:
+  case ELF::R_RISCV_TPREL_ADD:
     if (Op2.getReg() != RISCV::X4) {
       SMLoc ErrorLoc = ((RISCVOperand &)*Operands[3]).getStartLoc();
       return Error(ErrorLoc, "the second input operand must be tp/x4 when using "
