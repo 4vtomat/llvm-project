@@ -76,16 +76,10 @@ bool VPlanVerifier::verifyPhiRecipes(const VPBasicBlock *VPBB) {
   auto RecipeI = VPBB->begin();
   auto End = VPBB->end();
   unsigned NumActiveLaneMaskPhiRecipes = 0;
-<<<<<<< HEAD
-  const VPRegionBlock *ParentR = VPBB->getParent();
-  bool IsHeaderVPBB = ParentR && !ParentR->isReplicator() &&
-                      ParentR->getEntryBasicBlock() == VPBB;
+  bool IsHeaderVPBB = VPBlockUtils::isHeader(VPBB, VPDT);
 #if SIFIVE_CUSTOMIZATION
   while (RecipeI != End && vputils::isPhi(*RecipeI)) {
 #else
-=======
-  bool IsHeaderVPBB = VPBlockUtils::isHeader(VPBB, VPDT);
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
   while (RecipeI != End && RecipeI->isPhi()) {
 #endif // SIFIVE_CUSTOMIZATION
     if (isa<VPActiveLaneMaskPHIRecipe>(RecipeI))
@@ -501,16 +495,13 @@ bool VPlanVerifier::verify(const VPlan &Plan) {
     return false;
   }
 
-<<<<<<< HEAD
+// TODO: Remove once loop regions are dissolved before execution.
 #if SIFIVE_CUSTOMIZATION
-  if (!Plan.isUncountable() && !isa<VPCanonicalIVPHIRecipe>(&*Entry->begin())) {
+  if (!Plan.isUncountable() && !VerifyLate &&
+      !isa<VPCanonicalIVPHIRecipe>(&*Entry->begin())) {
 #else
-  if (!isa<VPCanonicalIVPHIRecipe>(&*Entry->begin())) {
-#endif
-=======
-  // TODO: Remove once loop regions are dissolved before execution.
   if (!VerifyLate && !isa<VPCanonicalIVPHIRecipe>(&*Entry->begin())) {
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
+#endif
     errs() << "VPlan vector loop header does not start with a "
               "VPCanonicalIVPHIRecipe\n";
     return false;
