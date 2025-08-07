@@ -331,14 +331,13 @@ static constexpr int NumRISCVBuiltins =
     RISCV::LastTSBuiltin - RISCVVector::FirstTSBuiltin;
 static constexpr int NumBuiltins =
     RISCV::LastTSBuiltin - Builtin::FirstTSBuiltin;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static_assert(NumBuiltins ==
               (NumNeonBuiltins + NumFp16Builtins + NumRVVBuiltins +
-               NumRVVSiFiveBuiltins + NumRISCVBuiltins));
+               NumRVVAndesBuiltins + NumRVVSiFiveBuiltins + NumRISCVBuiltins));
 #else
-static_assert(NumBuiltins ==
-              (NumRVVBuiltins + NumRVVSiFiveBuiltins + NumRISCVBuiltins));
+static_assert(NumBuiltins == (NumRVVBuiltins + NumRVVSiFiveBuiltins +
+                              NumRVVAndesBuiltins + NumRISCVBuiltins));
 #endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
@@ -368,10 +367,6 @@ static constexpr std::array<Builtin::Info, NumFp16Builtins> BuiltinInfos = {
 } // namespace NEON
 } // namespace clang
 #endif // SIFIVE_CUSTOMIZATION
-=======
-static_assert(NumBuiltins == (NumRVVBuiltins + NumRVVSiFiveBuiltins +
-                              NumRVVAndesBuiltins + NumRISCVBuiltins));
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 
 namespace RVV {
 #define GET_RISCVV_BUILTIN_STR_TABLE
