@@ -522,7 +522,7 @@ void baremetal::Linker::ConstructJob(Compilation &C, const JobAction &JA,
 #ifdef SIFIVE_CUSTOMIZATION
   if (D.isUsingLTO()) {
     assert(!Inputs.empty() && "Must have at least one input.");
-    addLTOOptions(TC, Args, CmdArgs, Output, Inputs[0],
+    addLTOOptions(TC, Args, CmdArgs, Output, Inputs,
                   D.getLTOMode() == LTOK_Thin);
   }
 #endif // SIFIVE_CUSTOMIZATION
