@@ -367,7 +367,7 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
           })
           .Case<VPMonotonicHeaderPHIRecipe>(
               [&](const VPMonotonicHeaderPHIRecipe *VPM) -> InstructionCost {
-                assert(vputils::isUniformAfterVectorization(
+                assert(vputils::isSingleScalar(
                            const_cast<VPValue *>(VPM->getVPSingleValue())) &&
                        "Cost model does not expect non-uniform monotonics");
                 return 1;
@@ -1014,7 +1014,7 @@ InstructionCost VPlanCostModel::getReplicateOpCost(const VPReplicateRecipe *VPR,
     // is scalarized or not. Therefore, we handle GEPs with the memory
     // instruction cost.
     return 0;
-  if (VPR->isUniform())
+  if (VPR->isSingleScalar())
     return 1;
   if (isa<AllocaInst>(I)) {
     ElementCount VF = getElementCount(RVL);
