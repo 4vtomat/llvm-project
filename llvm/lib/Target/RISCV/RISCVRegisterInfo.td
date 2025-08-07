@@ -873,10 +873,6 @@ def : RISCVRegisterClass<[XLenVT], 32, (add SF_VCIX_STATE)> {
   let isAllocatable = 0;
 }
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-=======
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 //===----------------------------------------------------------------------===//
 // XSfmmbase tiles
 //===----------------------------------------------------------------------===//
@@ -889,7 +885,3 @@ let RegInfos = XLenRI in {
   def TRM2 : RISCVRegisterClass<[untyped], 32, (add (decimate TR, 2))>;
   def TRM4 : RISCVRegisterClass<[untyped], 32, (add (decimate TR, 4))>;
 }
-<<<<<<< HEAD
-#endif //SIFIVE_CUSTOMIZATION
-=======
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
