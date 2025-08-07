@@ -205,6 +205,7 @@ struct VPlanTransforms {
                              bool EnableEVLFuzzing = false);
 
   static void addExplicitVectorLengthUncountable(VPlan &Plan);
+  static void optimizeInductionExitUsersForUnboundLoops(VPlan &Plan);
 #else
   static bool
   tryAddExplicitVectorLength(VPlan &Plan,

@@ -674,18 +674,7 @@ public:
 protected:
   friend class LoopVectorizationPlanner;
 
-#if SIFIVE_CUSTOMIZATION
-  /// Set up the values of the IVs correctly when exiting the vector loop.
-  void fixupUncountableExitIVUsers(PHINode *OrigPhi,
-                                   const InductionDescriptor &II,
-                                   Value *VectorTripCount,
-                                   BasicBlock *MiddleBlock,
-                                   VPTransformState &State);
-#endif // SIFIVE_CUSTOMIZATION
   /// Returns (and creates if needed) the trip count of the widened loop.
-#if SIFIVE_CUSTOMIZATION
-  virtual
-#endif
   Value *getOrCreateVectorTripCount(BasicBlock *InsertBlock);
 
   /// Emit a bypass check to see if the vector trip count is zero, including if
@@ -3269,20 +3258,6 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State) {
   PSE.getSE()->forgetLoop(OrigLoop);
   PSE.getSE()->forgetBlockAndLoopDispositions();
 
-#if SIFIVE_CUSTOMIZATION
-  VPRegionBlock *Region = State.Plan->getVectorLoopRegion();
-  if (!Cost->requiresScalarEpilogue(VF.isVector()) && Region) {
-    if (State.Plan->isUncountableAndUnbound()) {
-      BasicBlock *MiddleBlock =
-          State.CFG.VPBB2IRBB[State.Plan->getMiddleBlock()];
-      for (const auto &Entry : Legal->getInductionVars())
-        fixupUncountableExitIVUsers(Entry.first, Entry.second,
-                                    getOrCreateVectorTripCount(nullptr),
-                                    MiddleBlock, State);
-    }
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
   // Don't apply optimizations below when no vector region remains, as they all
   // require a vector loop at the moment.
   if (!State.Plan->getVectorLoopRegion())
@@ -3331,93 +3306,6 @@ void InnerLoopVectorizer::fixNonInductionPHIs(VPTransformState &State) {
     }
   }
 }
-
-#if SIFIVE_CUSTOMIZATION
-/// Set up the values of IVs when exiting the vector loop.
-void InnerLoopVectorizer::fixupUncountableExitIVUsers(
-    PHINode *OrigPhi, const InductionDescriptor &II, Value *VectorTripCount,
-    BasicBlock *MiddleBlock, VPTransformState &State) {
-  assert(Legal->isVectorizableUncountable() && "Not an uncountable loop");
-  assert(!VectorTripCount && "VectorTripCount not null for uncountable loop");
-
-  // Compute trip count as (CanonicalIVPHI + VFirst)
-  // FIXME: This only works on strlen(). When loop exits normally (not early),
-  // the vfirst is -1 and cannot be used.
-  VPBasicBlock *EntryVPBB = Plan.getVectorLoopRegion()->getEntryBasicBlock();
-  VPValue *CanonicalV = EntryVPBB->begin()->getVPSingleValue();
-  Value *CanonicalIVPHI = State.get(CanonicalV, /*NeedsScalar=*/true);
-
-  BasicBlock *LatchBB = MiddleBlock->getSinglePredecessor();
-  auto *ICmp = cast<ICmpInst>(LatchBB->getTerminator()->getOperand(0));
-  Value *VFirst = ICmp->getOperand(0);
-  assert(VFirst && "VFirst is null for uncountable loops");
-  // ATM, all IVs in uncountable loops have their exiting values routed to the
-  // penultimate value (the value that feeds into the phi from the loop latch).
-  // This makes their exit values to penultimate value + last iteration's VL.
-  // The assumption that their increments happens before exiting the loop holds
-  // for single-block uncountable loops.
-  assert(OrigLoop->getUniqueExitBlock() && "Expected a single exit block");
-  DenseMap<Value *, Value *> MissingVals;
-
-  auto FixupIVUser = [&](Instruction *UI, bool AddOne) {
-    if (OrigLoop->contains(UI))
-      return;
-
-    assert(isa<PHINode>(UI) && "Expected LCSSA form");
-    IRBuilder<> B(MiddleBlock->getTerminator());
-
-    // Fast-math-flags propagate from the original induction instruction.
-    if (isa_and_present<FPMathOperator>(II.getInductionBinOp()))
-      B.setFastMathFlags(II.getInductionBinOp()->getFastMathFlags());
-
-    LLVM_DEBUG(dbgs() << "Uncountable Loop: MiddleBlock before fixupIVUsers\n";
-               MiddleBlock->dump(););
-
-    // Fix liveout values of IVs in the middle block i.e. vector loop IV
-    // PHI+VFirst+1. This is because VFirst starts from 0.
-    Value *LastValidVL =
-        AddOne ? B.CreateAdd(VFirst, ConstantInt::get(VFirst->getType(), 1))
-               : VFirst;
-    VPValue *StepVPV = Plan.getSCEVExpansion(II.getStep());
-    Value *Step = StepVPV->isLiveIn() ? StepVPV->getLiveInIRValue()
-                                      : State.get(StepVPV, VPLane(0));
-    if (LastValidVL->getType() != CanonicalIVPHI->getType())
-      LastValidVL = B.CreateZExtOrTrunc(LastValidVL, CanonicalIVPHI->getType());
-    Value *Count = B.CreateAdd(CanonicalIVPHI, LastValidVL);
-    Value *Escape = emitTransformedIndex(B, Count, II.getStartValue(), Step,
-                                         II.getKind(), II.getInductionBinOp());
-    Escape->setName("ind.escape");
-    MissingVals[UI] = Escape;
-  };
-
-  // An external user of the last iteration's value should see the value that
-  // the remainder loop uses to initialize its own IV.
-  Value *PostInc = OrigPhi->getIncomingValueForBlock(OrigLoop->getLoopLatch());
-  for (User *U : PostInc->users()) {
-    auto *UI = cast<Instruction>(U);
-    FixupIVUser(UI, true);
-  }
-
-  // An external user of the penultimate value need to see the value from the
-  // phi.
-  for (User *U : OrigPhi->users()) {
-    auto *UI = cast<Instruction>(U);
-    FixupIVUser(UI, false);
-  }
-
-  for (auto &I : MissingVals) {
-    auto *PHI = cast<PHINode>(I.first);
-    // One corner case we have to handle is two IVs "chasing" each-other,
-    // that is %IV2 = phi [...], [ %IV1, %latch ]
-    // In this case, if IV1 has an external use, we need to avoid adding both
-    // "last value of IV1" and "penultimate value of IV2". So, verify that we
-    // don't already have an incoming value for the middle block.
-    if (PHI->getBasicBlockIndex(MiddleBlock) == -1) {
-      PHI->addIncoming(I.second, MiddleBlock);
-    }
-  }
-}
-#endif // SIFIVE_CUSTOMIZATION
 
 void LoopVectorizationCostModel::collectLoopScalars(ElementCount VF) {
   // We should not collect Scalars more than once per VF. Right now, this
@@ -11477,6 +11365,68 @@ static void addExitUsersForFirstOrderRecurrences(
   }
 }
 
+#if SIFIVE_CUSTOMIZATION
+// This function updates the phis in the exit to consume the first active
+// element rather than the last element.
+static void handleUnboundExitUsers(VPlan &Plan, Loop *OrigLoop,
+                                   VFRange &Range) {
+  // The expected terminator of unbound loops.
+  //   latch.bb:
+  //     ...
+  //     %cond = any-of %mask
+  //     branch-on-cond %cond
+
+  using namespace llvm::VPlanPatternMatch;
+  VPRegionBlock *LoopRegion = Plan.getVectorLoopRegion();
+  auto *LatchVPBB = cast<VPBasicBlock>(LoopRegion->getExiting());
+
+  // Step 1. Find AnyOf in the terminator.
+  auto *VPBranchOnCond = cast<VPInstruction>(LatchVPBB->getTerminator());
+  VPValue *VPExitMask;
+  assert(match(VPBranchOnCond,
+               m_BranchOnCond(m_VPInstruction<VPInstruction::AnyOf>(
+                   m_VPValue(VPExitMask)))) &&
+         "Unexpected terminator");
+
+  // Step 2. Create ActiveLane on the Mask in middle block.
+  VPBasicBlock *MiddleVPBB = cast<VPBasicBlock>(Plan.getMiddleBlock());
+  VPBuilder MiddleBuilder(MiddleVPBB, MiddleVPBB->getFirstNonPhi());
+  auto *FirstActiveLane = MiddleBuilder.createNaryOp(
+      VPInstruction::FirstActiveLane, VPExitMask, nullptr, "first.active.lane");
+
+  // Step 3. Create extract element for each phi at the exit.
+  BasicBlock *UncountableExitingBlock = OrigLoop->getLoopLatch();
+  auto *ExitingBranch =
+      cast<BranchInst>(UncountableExitingBlock->getTerminator());
+  BasicBlock *TrueSucc = ExitingBranch->getSuccessor(0);
+  BasicBlock *FalseSucc = ExitingBranch->getSuccessor(1);
+  BasicBlock *ExitIRBB = !OrigLoop->contains(TrueSucc) ? TrueSucc : FalseSucc;
+  VPIRBasicBlock *VPExitBlock = Plan.getExitBlock(ExitIRBB);
+  for (VPRecipeBase &R : VPExitBlock->phis()) {
+    auto *ExitIRI = cast<VPIRPhi>(&R);
+    // Unbound loops have single exiting block, so the phi is expected to have
+    // single operand.
+    assert(ExitIRI->getNumOperands() == 1 && "Phi should have sinlge operand");
+    unsigned ExitIdx = 0;
+
+    VPValue *IncomingV = ExitIRI->getOperand(ExitIdx);
+    auto IsVector = [](ElementCount VF) { return VF.isVector(); };
+    // When the VFs are vectors, need to add `extract` to get the incoming value
+    // from early exit. When the range contains scalar VF, limit the range to
+    // scalar VF to prevent mis-compilation for the range containing both scalar
+    // and vector VFs.
+    if (!IncomingV->isLiveIn() &&
+        LoopVectorizationPlanner::getDecisionAndClampRange(IsVector, Range)) {
+      // Update the incoming value from the early exit.
+      IncomingV = MiddleBuilder.createNaryOp(Instruction::ExtractElement,
+                                             {IncomingV, FirstActiveLane},
+                                             nullptr, "exit.value");
+      ExitIRI->setOperand(ExitIdx, IncomingV);
+    }
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 VPlanPtr
 LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
 
@@ -11740,6 +11690,16 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
                              OrigLoop, UncountableExitingBlock, RecipeBuilder,
                              Range);
   }
+#if SIFIVE_CUSTOMIZATION
+  // Users consuming values from uncountable exits require an first-active-lane
+  // to correctly extract the last active element rather than the last element.
+  // Early exit loops handle this in handleUncountableEarlyExit, while unbounded
+  // loops handle it in handleUnboundExitUsers.
+  // The active-lane-mask will be optimized by VPFirst in later stages when
+  // EVL is introduced.
+  if (Plan->isUncountableAndUnbound())
+    handleUnboundExitUsers(*Plan, OrigLoop, Range);
+#endif // SIFIVE_CUSTOMIZATION
   DenseMap<VPValue *, VPValue *> IVEndValues;
 #if SIFIVE_CUSTOMIZATION
   // addScalarResumePhis requires TripCount to produce end-value

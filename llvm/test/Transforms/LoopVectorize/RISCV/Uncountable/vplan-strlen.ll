@@ -30,6 +30,32 @@ define i64 @strlen_i8(ptr %start) {
 ; VPLANS-NEXT:     EMIT branch-on-cond vp<[[EXITCOND]]>
 ; VPLANS-NEXT:   No successors
 ; VPLANS-NEXT: }
+; VPLANS-NEXT: Successor(s): middle.block
+; VPLANS-EMPTY:
+; VPLANS-NEXT: middle.block:
+; VPLANS-NEXT:   EMIT vp<[[VPFIRST64:%.+]]> = zext vp<[[VPFIRST]]> to i64
+; VPLANS-NEXT:   EMIT vp<[[TC:%.+]]> = add vp<[[EVLPHI]]>, vp<[[VPFIRST64]]>
+; VPLANS-NEXT:   vp<[[DERIV2:%.+]]> = DERIVED-IV ir<%start> + vp<[[TC]]> * ir<1>
+; VPLANS-NEXT:   EMIT branch-on-cond ir<true>
+; VPLANS-NEXT: Successor(s): ir-bb<for.end>, scalar.ph
+; VPLANS-EMPTY:
+; VPLANS-NEXT: scalar.ph:
+; VPLANS-NEXT: Successor(s): ir-bb<for.cond>
+; VPLANS-EMPTY:
+; VPLANS-NEXT: ir-bb<for.cond>:
+; VPLANS-NEXT:   IR   %end.0 = phi ptr [ %start, %entry ], [ %incdec.ptr, %for.cond ]
+; VPLANS-NEXT:   IR   %0 = load i8, ptr %end.0, align 1
+; VPLANS-NEXT:   IR   %cmp.not = icmp eq i8 %0, 0
+; VPLANS-NEXT:   IR   %incdec.ptr = getelementptr inbounds i8, ptr %end.0, i64 1
+; VPLANS-NEXT: No successors
+; VPLANS-EMPTY:
+; VPLANS-NEXT: ir-bb<for.end>:
+; VPLANS-NEXT:   IR   %end.0.lcssa = phi ptr [ %end.0, %for.cond ] (extra operand: vp<[[DERIV2]]> from middle.block)
+; VPLANS-NEXT:   IR   %sub.ptr.lhs.cast = ptrtoint ptr %end.0.lcssa to i64
+; VPLANS-NEXT:   IR   %sub.ptr.rhs.cast = ptrtoint ptr %start to i64
+; VPLANS-NEXT:   IR   %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+; VPLANS-NEXT: No successors
+; VPLANS-NEXT: }
 entry:
   br label %for.cond
 
