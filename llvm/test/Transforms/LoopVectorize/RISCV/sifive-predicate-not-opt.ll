@@ -42,13 +42,8 @@ define i32 @main() {
 ; CHECK-NEXT:    br label %[[FOR_BODY22:.*]]
 ; CHECK:       [[FOR_COND20:.*]]:
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT66:%.*]] = add i64 [[INDVARS_IV65:%.*]], 1
-<<<<<<< HEAD
-; CHECK-NEXT:    [[EXITCOND69_NOT:%.*]] = icmp eq i64 0, 0
-; CHECK-NEXT:    br i1 [[EXITCOND69_NOT]], label %[[FOR_END32_LOOPEXIT]], label %[[FOR_BODY22]], !llvm.loop [[LOOP4:![0-9]+]]
-=======
 ; CHECK-NEXT:    [[EXITCOND69_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT66]], 100
-; CHECK-NEXT:    br i1 [[EXITCOND69_NOT]], label %[[FOR_END32_LOOPEXIT]], label %[[FOR_BODY22]], !llvm.loop [[LOOP3:![0-9]+]]
->>>>>>> 13c1d23383fe995896807e2c1bbe32a43e9fb250
+; CHECK-NEXT:    br i1 [[EXITCOND69_NOT]], label %[[FOR_END32_LOOPEXIT]], label %[[FOR_BODY22]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       [[FOR_BODY22]]:
 ; CHECK-NEXT:    [[INDVARS_IV65]] = phi i64 [ [[BC_RESUME_VAL]], %[[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INDVARS_IV_NEXT66]], %[[FOR_COND20]] ]
 ; CHECK-NEXT:    [[ARRAYIDX24:%.*]] = getelementptr [13 x i32], ptr null, i64 0, i64 [[INDVARS_IV65]]
