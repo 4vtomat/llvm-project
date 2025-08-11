@@ -9524,10 +9524,7 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
          "Trying to execute plan with unsupported VF");
   assert(BestVPlan.hasUF(BestUF) &&
          "Trying to execute plan with unsupported UF");
-<<<<<<< HEAD
   VPlanTransforms::runPass(VPlanTransforms::materializeStepVectors, BestVPlan);
-=======
->>>>>>> 13c1d23383fe995896807e2c1bbe32a43e9fb250
   // TODO: Move to VPlan transform stage once the transition to the VPlan-based
   // cost model is complete for better cost estimates.
   VPlanTransforms::runPass(VPlanTransforms::unrollByUF, BestVPlan, BestUF,
@@ -11526,28 +11523,14 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range,
 
 #if SIFIVE_CUSTOMIZATION
   auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB, Legal);
-<<<<<<< HEAD
-  const bool IsUncountable = Legal->isVectorizableUncountable();
-  VPlanTransforms::prepareForVectorization(
-      *Plan, Legal->getWidestInductionType(), PSE, IsUncountable,
-      RequiresScalarEpilogueCheck, CM.foldTailByMasking(), OrigLoop,
-      getDebugLocFromInstOrOperands(Legal->getPrimaryInduction()),
-      Legal->hasUncountableEarlyExit(), Range);
-=======
->>>>>>> 13c1d23383fe995896807e2c1bbe32a43e9fb250
 #else
   auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB);
 #endif
   VPlanTransforms::prepareForVectorization(
       *Plan, Legal->getWidestInductionType(), PSE, RequiresScalarEpilogueCheck,
       CM.foldTailByMasking(), OrigLoop,
-<<<<<<< HEAD
       getDebugLocFromInstOrOperands(Legal->getPrimaryInduction()),
       Legal->hasUncountableEarlyExit(), Range);
-#endif
-=======
-      getDebugLocFromInstOrOperands(Legal->getPrimaryInduction()));
->>>>>>> 13c1d23383fe995896807e2c1bbe32a43e9fb250
   VPlanTransforms::createLoopRegions(*Plan);
 
   // Don't use getDecisionAndClampRange here, because we don't know the UF
@@ -11713,18 +11696,9 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range,
       }
 
       VPRecipeBase *Recipe =
-<<<<<<< HEAD
           RecipeBuilder.tryToCreateWidenRecipe(SingleDef, Range);
-#if SIFIVE_CUSTOMIZATION
-      if (Instr == DataDepExitCond)
-        VPDataDepExitCond = Recipe;
-#endif // SIFIVE_CUSTOMIZATION
       if (!Recipe) {
         SmallVector<VPValue *, 4> Operands(R.operands());
-=======
-          RecipeBuilder.tryToCreateWidenRecipe(Instr, Operands, Range);
-      if (!Recipe)
->>>>>>> 13c1d23383fe995896807e2c1bbe32a43e9fb250
         Recipe = RecipeBuilder.handleReplication(Instr, Operands, Range);
       }
 
@@ -11784,15 +11758,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range,
     R->setOperand(1, WideIV->getStepValue());
   }
 
-<<<<<<< HEAD
-=======
-  if (auto *UncountableExitingBlock =
-          Legal->getUncountableEarlyExitingBlock()) {
-    VPlanTransforms::runPass(VPlanTransforms::handleUncountableEarlyExit, *Plan,
-                             OrigLoop, UncountableExitingBlock, RecipeBuilder,
-                             Range);
-  }
->>>>>>> 13c1d23383fe995896807e2c1bbe32a43e9fb250
   DenseMap<VPValue *, VPValue *> IVEndValues;
 #if SIFIVE_CUSTOMIZATION
   // addScalarResumePhis requires TripCount to produce end-value
@@ -11913,26 +11878,13 @@ VPlanPtr LoopVectorizationPlanner::tryToBuildVPlan(VFRange &Range) {
   DenseMap<const VPBlockBase *, BasicBlock *> VPB2IRBB;
 #if SIFIVE_CUSTOMIZATION
   auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB, Legal);
-<<<<<<< HEAD
-  const bool IsUncountable = Legal->isVectorizableUncountable();
-  VPlanTransforms::prepareForVectorization(
-      *Plan, Legal->getWidestInductionType(), PSE, IsUncountable, true, false,
-      OrigLoop, getDebugLocFromInstOrOperands(Legal->getPrimaryInduction()),
-      false, Range);
-=======
->>>>>>> 13c1d23383fe995896807e2c1bbe32a43e9fb250
 #else
   auto Plan = VPlanTransforms::buildPlainCFG(OrigLoop, *LI, VPB2IRBB);
 #endif // SIFIVE_CUSTOMIZATION
   VPlanTransforms::prepareForVectorization(
       *Plan, Legal->getWidestInductionType(), PSE, true, false, OrigLoop,
-<<<<<<< HEAD
       getDebugLocFromInstOrOperands(Legal->getPrimaryInduction()), false,
       Range);
-#endif // SIFIVE_CUSTOMIZATION
-=======
-      getDebugLocFromInstOrOperands(Legal->getPrimaryInduction()));
->>>>>>> 13c1d23383fe995896807e2c1bbe32a43e9fb250
   VPlanTransforms::createLoopRegions(*Plan);
 
   for (ElementCount VF : Range)
