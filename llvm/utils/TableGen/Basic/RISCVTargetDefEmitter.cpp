@@ -43,7 +43,7 @@ static void printExtensionTable(raw_ostream &OS,
 
 #if SIFIVE_CUSTOMIZATION
     const ListInit *AdditionalVersions = R->getValueAsListInit("AdditionalVersions");
-    for (const Init *VersionI : AdditionalVersions->getValues()) {
+    for (const Init *VersionI : AdditionalVersions->getElements()) {
       auto *VersionLI = cast<ListInit>(VersionI);
       assert(VersionLI->size() == 2);
       OS << "    {\"" << getExtensionName(R) << "\", {"
