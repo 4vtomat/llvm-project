@@ -2517,7 +2517,12 @@ class VPInterleaveRecipe : public VPRecipeBase {
 
 public:
   VPInterleaveRecipe(const InterleaveGroup<Instruction> *IG, VPValue *Addr,
+#if SIFIVE_CUSTOMIZATION
+                     ArrayRef<VPValue *> StoredValues, VPValue *Stride,
+                     VPValue *Mask,
+#else
                      ArrayRef<VPValue *> StoredValues, VPValue *Mask,
+#endif // SIFIVE_CUSTOMIZATION
                      bool NeedsMaskForGaps, DebugLoc DL)
       : VPRecipeBase(VPDef::VPInterleaveSC, {Addr},
                      DL),
@@ -2532,6 +2537,12 @@ public:
 
     for (auto *SV : StoredValues)
       addOperand(SV);
+#if SIFIVE_CUSTOMIZATION
+    if (IG->isStrided()) {
+      assert(Stride && "Stride cannot be nullptr");
+      addOperand(Stride);
+    }
+#endif // SIFIVE_CUSTOMIZATION
     if (Mask) {
       HasMask = true;
       addOperand(Mask);
@@ -2540,7 +2551,12 @@ public:
   ~VPInterleaveRecipe() override = default;
 
   VPInterleaveRecipe *clone() override {
+#if SIFIVE_CUSTOMIZATION
+    return new VPInterleaveRecipe(IG, getAddr(), getStoredValues(), getStride(),
+                                  getMask(),
+#else
     return new VPInterleaveRecipe(IG, getAddr(), getStoredValues(), getMask(),
+#endif // SIFIVE_CUSTOMIZATION
                                   NeedsMaskForGaps, getDebugLoc());
   }
 
@@ -2582,6 +2598,20 @@ public:
 
 #if SIFIVE_CUSTOMIZATION
   const InterleaveGroup<Instruction> *getInterleaveGroup() const { return IG; }
+
+  bool isStrided() const { return IG->isStrided(); }
+
+  unsigned getMaskOffset() const {
+    return HasMask ? getNumOperands() - 1 : getNumOperands();
+  }
+
+  VPValue *getStride() const {
+    if (!isStrided())
+      return nullptr;
+
+    return getOperand(getMaskOffset() - 1);
+  }
+
 #else
   const InterleaveGroup<Instruction> *getInterleaveGroup() { return IG; }
 #endif // SIFIVE_CUSTOMIZATION
@@ -2589,13 +2619,27 @@ public:
   /// Returns the number of stored operands of this interleave group. Returns 0
   /// for load interleave groups.
   unsigned getNumStoreOperands() const {
+#if SIFIVE_CUSTOMIZATION
+    // May have two optional operands at the end of the op list.
+    unsigned N = getNumOperands() - 1;
+    if (HasMask)
+      N -= 1;
+    if (isStrided())
+      N -= 1;
+    return N;
+#else
     return getNumOperands() - (HasMask ? 2 : 1);
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   /// The recipe only uses the first lane of the address.
   bool onlyFirstLaneUsed(const VPValue *Op) const override {
     assert(is_contained(operands(), Op) &&
            "Op must be an operand of the recipe");
+#if SIFIVE_CUSTOMIZATION
+    if (isStrided() && Op == getStride())
+      return true;
+#endif // SIFVIE_CUSTOMIZATION
     return Op == getAddr() && !llvm::is_contained(getStoredValues(), Op);
   }
 

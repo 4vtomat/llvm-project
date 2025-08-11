@@ -11732,7 +11732,11 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   // single VPInterleaveRecipe at its insertion point.
   VPlanTransforms::runPass(VPlanTransforms::createInterleaveGroups, *Plan,
                            InterleaveGroups, RecipeBuilder,
+#if SIFIVE_CUSTOMIZATION
+                           CM.isScalarEpilogueAllowed(), PSE);
+#else
                            CM.isScalarEpilogueAllowed());
+#endif // SIFIVE_CUSTOMIZATION
 
   // Replace VPValues for known constant strides guaranteed by predicate scalar
   // evolution.
