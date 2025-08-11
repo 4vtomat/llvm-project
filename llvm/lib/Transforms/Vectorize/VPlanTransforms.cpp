@@ -3215,14 +3215,8 @@ void VPlanTransforms::convertToConcreteRecipes(VPlan &Plan,
 }
 
 void VPlanTransforms::handleUncountableEarlyExit(
-<<<<<<< HEAD
     VPBasicBlock *EarlyExitingVPBB, VPBasicBlock *EarlyExitVPBB, VPlan &Plan,
     VPBasicBlock *HeaderVPBB, VPBasicBlock *LatchVPBB, VFRange &Range) {
-#ifdef SIFIVE_CUSTOMIZATION
-  // SiFive unbound loops do not need this transform.
-  if (Plan.isUncountableAndUnbound())
-    return;
-#endif // SIFIVE_CUSTOMIZATION
   using namespace llvm::VPlanPatternMatch;
 
   VPBlockBase *MiddleVPBB = LatchVPBB->getSuccessors()[0];
@@ -3238,12 +3232,6 @@ void VPlanTransforms::handleUncountableEarlyExit(
       cast<VPIRPhi>(&R)->swapOperands();
   }
 
-=======
-    VPlan &Plan, Loop *OrigLoop, BasicBlock *UncountableExitingBlock,
-    VPRecipeBuilder &RecipeBuilder, VFRange &Range) {
-  VPRegionBlock *LoopRegion = Plan.getVectorLoopRegion();
-  auto *LatchVPBB = cast<VPBasicBlock>(LoopRegion->getExiting());
->>>>>>> origin/sifive-dev
   VPBuilder Builder(LatchVPBB->getTerminator());
   VPBlockBase *TrueSucc = EarlyExitingVPBB->getSuccessors()[0];
   assert(
