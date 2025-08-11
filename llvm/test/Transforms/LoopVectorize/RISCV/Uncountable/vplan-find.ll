@@ -19,10 +19,11 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; VPLANS-NEXT:   vector.body:
 ; VPLANS-NEXT:     EMIT vp<[[CAN_IV:%.+]]> = CANONICAL-INDUCTION ir<0>
 ; VPLANS-NEXT:     EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<[[EVL_IV:%.+]]> = phi ir<0>
-; VPLANS-NEXT:     EMIT ir<%first.addr.07> = WIDEN-POINTER-INDUCTION ir<%first>, ir<4>
 ; VPLANS-NEXT:     EMIT vp<[[AVL:%.+]]> = sub vp<[[TC]]>, vp<[[EVL_IV]]>
 ; VPLANS-NEXT:     EMIT vp<[[EVL:%.+]]> = EXPLICIT-VECTOR-LENGTH vp<%avl>
-; VPLANS-NEXT:     vp<[[VEC_PTR:%.+]]> = vector-pointer ir<%first.addr.07>
+; VPLANS-NEXT:     vp<[[DERIVED_IV:%.+]]> = DERIVED-IV ir<0> + vp<[[EVL_IV]]> * ir<4>
+; VPLANS-NEXT:     EMIT vp<[[NEXT_GEP:%.+]]> = ptradd ir<%first>, vp<[[DERIVED_IV]]>
+; VPLANS-NEXT:     vp<[[VEC_PTR:%.+]]> = vector-pointer vp<[[NEXT_GEP]]>
 ; VPLANS-NEXT:     WIDEN-SPECULATIVE-INSTRUCTION ir<[[DATA:%.+]]>, vp<[[EVL2:%.+]]> = vp.load vp<[[VEC_PTR]]>, vp<[[EVL]]>	unit-strided
 ; VPLANS-NEXT:     WIDEN ir<%cmp1> = icmp eq ir<[[DATA]]>, ir<%0>
 ; VPLANS-NEXT:     EMIT vp<[[VPFIRST:%.+]]> = vp-first ir<%cmp1>, vp<[[EVL2]]>
@@ -37,7 +38,7 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; VPLANS-NEXT: Successor(s): middle.split
 ; VPLANS-EMPTY:
 ; VPLANS-NEXT: middle.split:
-; VPLANS-NEXT:   EMIT branch-on-cond vp<%8>
+; VPLANS-NEXT:   EMIT branch-on-cond vp<[[COND1]]>
 ; VPLANS-NEXT: Successor(s): vector.early.exit, middle.block
 ; VPLANS-EMPTY:
 ; VPLANS-NEXT: middle.block:
