@@ -1077,6 +1077,91 @@ static VPWidenInductionRecipe *getOptimizableIVOf(VPValue *VPV) {
   return IsWideIVInc() ? WideIV : nullptr;
 }
 
+#if SIFIVE_CUSTOMIZATION
+/// Attempts to optimize the induction variable exit values for users in the
+/// unbound main exit block.
+static VPValue *optimizeUnboundExitInductionUser(VPlan &Plan,
+                                                 VPTypeAnalysis &TypeInfo,
+                                                 VPBasicBlock *PredVPBB,
+                                                 VPValue *Op) {
+  using namespace VPlanPatternMatch;
+
+  VPValue *Incoming, *Mask;
+  if (!match(Op, m_VPInstruction<Instruction::ExtractElement>(
+                     m_VPValue(Incoming),
+                     m_VPInstruction<VPInstruction::FirstActiveLane>(
+                         m_VPValue(Mask)))))
+    return nullptr;
+
+  auto *WideIV = getOptimizableIVOf(Incoming);
+  if (!WideIV)
+    return nullptr;
+
+  auto *WideIntOrFp = dyn_cast<VPWidenIntOrFpInductionRecipe>(WideIV);
+  if (WideIntOrFp && WideIntOrFp->getTruncInst())
+    return nullptr;
+
+  // Calculate the final index.
+  VPValue *EndValue = Plan.getCanonicalIV();
+  auto CanonicalIVType = Plan.getCanonicalIV()->getScalarType();
+  VPBuilder B(PredVPBB->getTerminator());
+
+  DebugLoc DL = cast<VPInstruction>(Op)->getDebugLoc();
+  VPValue *FirstActiveLane =
+      B.createNaryOp(VPInstruction::FirstActiveLane, Mask, DL);
+  Type *FirstActiveLaneType = TypeInfo.inferScalarType(FirstActiveLane);
+  if (CanonicalIVType != FirstActiveLaneType) {
+    Instruction::CastOps CastOp =
+        CanonicalIVType->getScalarSizeInBits() <
+                FirstActiveLaneType->getScalarSizeInBits()
+            ? Instruction::Trunc
+            : Instruction::ZExt;
+    FirstActiveLane =
+        B.createScalarCast(CastOp, FirstActiveLane, CanonicalIVType, DL);
+  }
+  EndValue = B.createNaryOp(Instruction::Add, {EndValue, FirstActiveLane}, DL);
+
+  // `getOptimizableIVOf()` always returns the pre-incremented IV, so if it
+  // changed it means the exit is using the incremented value, so we need to
+  // add the step.
+  if (Incoming != WideIV) {
+    VPValue *One = Plan.getOrAddLiveIn(ConstantInt::get(CanonicalIVType, 1));
+    EndValue = B.createNaryOp(Instruction::Add, {EndValue, One}, DL);
+  }
+
+  if (!WideIntOrFp || !WideIntOrFp->isCanonical()) {
+    const InductionDescriptor &ID = WideIV->getInductionDescriptor();
+    VPValue *Start = WideIV->getStartValue();
+    VPValue *Step = WideIV->getStepValue();
+    EndValue = B.createDerivedIV(
+        ID.getKind(), dyn_cast_or_null<FPMathOperator>(ID.getInductionBinOp()),
+        Start, EndValue, Step);
+  }
+
+  return EndValue;
+}
+
+void VPlanTransforms::optimizeInductionExitUsersForUnboundLoops(VPlan &Plan) {
+  VPTypeAnalysis TypeInfo(Plan.getCanonicalIV()->getScalarType());
+  for (VPIRBasicBlock *ExitVPBB : Plan.getExitBlocks()) {
+    for (VPRecipeBase &R : ExitVPBB->phis()) {
+      auto *ExitIRI = cast<VPIRPhi>(&R);
+      for (auto [Idx, PredVPBB] : enumerate(ExitVPBB->getPredecessors())) {
+        VPValue *Escape = nullptr;
+        Escape = optimizeUnboundExitInductionUser(Plan, TypeInfo,
+                                                  cast<VPBasicBlock>(PredVPBB),
+                                                  ExitIRI->getOperand(Idx));
+        if (Escape)
+          ExitIRI->setOperand(Idx, Escape);
+      }
+    }
+  }
+  // Remove dead recipes now for widen-iv to be optimized in later pass.
+  runPass(removeDeadRecipes, Plan);
+  return;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 /// Attempts to optimize the induction variable exit values for users in the
 /// early exit block.
 static VPValue *optimizeEarlyExitInductionUser(VPlan &Plan,
@@ -1200,10 +1285,10 @@ optimizeLatchExitInductionUser(VPlan &Plan, VPTypeAnalysis &TypeInfo,
 void VPlanTransforms::optimizeInductionExitUsers(
     VPlan &Plan, DenseMap<VPValue *, VPValue *> &EndValues) {
 #if SIFIVE_CUSTOMIZATION
-  // Speculative WideLoadEVL is not created,
-  // we don't have the LastEVL at the moment.
-  if (Plan.isUncountableAndUnbound())
+  if (Plan.isUncountableAndUnbound()) {
+    optimizeInductionExitUsersForUnboundLoops(Plan);
     return;
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   VPBlockBase *MiddleVPBB = Plan.getMiddleBlock();
@@ -2742,27 +2827,25 @@ optimizeWithVPFirst(VPlan &Plan,
   EarlyExitCond->replaceAllUsesWith(NewEarlyExitCond);
   EarlyExitCond->getDefiningRecipe()->eraseFromParent();
 
-  // Replace all FirstActiveLane in EarlyExit
-  auto *MiddleSplitVPBB = cast<VPBasicBlock>(LoopRegion->getSingleSuccessor());
-  VPBasicBlock *EarlyExitVPBB =
-      MiddleSplitVPBB->getSuccessors()[0]->getEntryBasicBlock();
-  if (none_of(*EarlyExitVPBB, [&VPExitMask] (VPRecipeBase &R) {
-    return match(&R, m_VPInstruction<VPInstruction::FirstActiveLane>(
-                       m_Specific(VPExitMask)));
-  }))
-    return;
-
-  Type *TyI64 = Type::getIntNTy(Ctx, 64);
-  auto *VPFirstI64 = new VPInstructionWithType(Instruction::ZExt, VPFirst,
+  // Replace all first-active-lane with vp.first in middle block and exit block.
+  auto *MiddleVPBB = cast<VPBasicBlock>(LoopRegion->getSingleSuccessor());
+  auto *ExitVPBB = cast<VPBasicBlock>(MiddleVPBB->getSuccessors()[0]);
+  for (auto *VPBB : {MiddleVPBB, ExitVPBB}) {
+    VPInstructionWithType *VPFirstI64 = nullptr;
+    for (VPRecipeBase &R : make_early_inc_range(*VPBB)) {
+      if (!match(&R, m_VPInstruction<VPInstruction::FirstActiveLane>(
+                         m_Specific(VPExitMask))))
+        continue;
+      if (!VPFirstI64) {
+        Type *TyI64 = Type::getIntNTy(Ctx, 64);
+        VPFirstI64 = new VPInstructionWithType(Instruction::ZExt, VPFirst,
                                                TyI64, VPFirst->getDebugLoc());
-  VPFirstI64->insertBefore(*EarlyExitVPBB, EarlyExitVPBB->getFirstNonPhi());
-  for (VPRecipeBase &R : make_early_inc_range(*EarlyExitVPBB)) {
-    if (!match(&R, m_VPInstruction<VPInstruction::FirstActiveLane>(
-                       m_Specific(VPExitMask))))
-      continue;
-    auto *VPFirstActiveLane = dyn_cast<VPInstruction>(&R);
-    VPFirstActiveLane->replaceAllUsesWith(VPFirstI64);
-    VPFirstActiveLane->eraseFromParent();
+        VPFirstI64->insertBefore(*VPBB, VPBB->getFirstNonPhi());
+      }
+      auto *VPFirstActiveLane = dyn_cast<VPInstruction>(&R);
+      VPFirstActiveLane->replaceAllUsesWith(VPFirstI64);
+      VPFirstActiveLane->eraseFromParent();
+    }
   }
 }
 
@@ -3132,6 +3215,7 @@ void VPlanTransforms::convertToConcreteRecipes(VPlan &Plan,
 }
 
 void VPlanTransforms::handleUncountableEarlyExit(
+<<<<<<< HEAD
     VPBasicBlock *EarlyExitingVPBB, VPBasicBlock *EarlyExitVPBB, VPlan &Plan,
     VPBasicBlock *HeaderVPBB, VPBasicBlock *LatchVPBB, VFRange &Range) {
 #ifdef SIFIVE_CUSTOMIZATION
@@ -3154,6 +3238,12 @@ void VPlanTransforms::handleUncountableEarlyExit(
       cast<VPIRPhi>(&R)->swapOperands();
   }
 
+=======
+    VPlan &Plan, Loop *OrigLoop, BasicBlock *UncountableExitingBlock,
+    VPRecipeBuilder &RecipeBuilder, VFRange &Range) {
+  VPRegionBlock *LoopRegion = Plan.getVectorLoopRegion();
+  auto *LatchVPBB = cast<VPBasicBlock>(LoopRegion->getExiting());
+>>>>>>> origin/sifive-dev
   VPBuilder Builder(LatchVPBB->getTerminator());
   VPBlockBase *TrueSucc = EarlyExitingVPBB->getSuccessors()[0];
   assert(

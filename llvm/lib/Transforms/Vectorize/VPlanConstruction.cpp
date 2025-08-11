@@ -382,9 +382,6 @@ std::unique_ptr<VPlan> PlainCFGBuilder::buildPlainCFG(
       assert(PhiR->getNumOperands() == 0 &&
              "no phi operands should be added yet");
 #if SIFIVE_CUSTOMIZATION
-      // Unbound users are handled outside the plan
-      if (Plan->isUncountableAndUnbound())
-        continue;
       for (BasicBlock *Pred : predecessors(EB->getIRBasicBlock())) {
         // For revectorized loops, there are values coming from other vector
         // loops. Skip if the value is not coming from the loop
