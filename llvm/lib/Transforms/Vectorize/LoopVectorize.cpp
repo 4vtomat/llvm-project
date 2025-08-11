@@ -9469,23 +9469,7 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
     VPlanTransforms::removeDeadRecipes(BestVPlan);
 
 #if SIFIVE_CUSTOMIZATION
-  // When execute the VPWidenLoadEVLRecipe with stride, need to expand the SCEV
-  // stride value. The SCEV expander will try to reuse previous expanded value
-  // (instruction) if posibble (opernads must dominate... etc). When setting the
-  // State.SE by PSE here with old SE and old DT here, the newly created BBs
-  // (vector preheader ...) are unrechable in the old DT. And if a BB is
-  // unreachable in the DT, all of the `dominates(<any_value>,
-  // <unreachable_BB>)` will be true. So need to create a new ScalarEvolution
-  // here with updated DT to prevent SCEV expander generate instruction breaks
-  // functin verifier.
-  // Note that if the SCEV value cannot be hoist to the vector
-  // preheader (need to insert the SCEV value in vector body), following changes
-  // may not correct since the DT only conaions the information of
-  // vector.preheader updated by `createVectorizedLoopSkeleton()`.
-  auto *AC = new AssumptionCache(*State.CFG.PrevBB->getParent());
-  State.SE =
-      new ScalarEvolution(*State.CFG.PrevBB->getParent(),
-                          *const_cast<TargetLibraryInfo *>(TLI), *AC, *DT, *LI);
+  State.SE = ILV.PSE.getSE();
 
   if (Legal->useVLAVectorizer()) {
     unsigned SEW;
