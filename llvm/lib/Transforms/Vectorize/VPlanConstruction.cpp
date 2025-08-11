@@ -345,23 +345,6 @@ std::unique_ptr<VPlan> PlainCFGBuilder::buildPlainCFG(
     setVPBBPredsFromBB(EB, EB->getIRBasicBlock());
 #endif // SIFIVE_CUSTOMIZATION
 
-#ifdef SIFIVE_CUSTOMIZATION
-  // Create branch-on-cond for unbound loops
-  if (Plan->isUncountableAndUnbound()) {
-    BasicBlock *Latch = TheLoop->getLoopLatch();
-    VPBasicBlock *LatchVPBB = BB2VPBB[Latch];
-    VPBuilder Builder(LatchVPBB);
-    auto *Br = cast<BranchInst>(Latch->getTerminator());
-    VPValue *Cond = getOrCreateVPOperand(Br->getCondition());
-    bool NeedsInvert = TheLoop->contains(Br->getSuccessor(0));
-    if (NeedsInvert)
-      Cond = Builder.createNaryOp(VPInstruction::Not, {Cond});
-    Cond =
-        Builder.createNaryOp(VPInstruction::AnyOf, {Cond});
-    Builder.createNaryOp(VPInstruction::BranchOnCond, {Cond}, Br->getDebugLoc());
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
   // 2. The whole CFG has been built at this point so all the input Values must
   // have a VPlan counterpart. Fix VPlan header phi by adding their
   // corresponding VPlan operands.
@@ -522,6 +505,14 @@ static void addCanonicalIVRecipesForUnbounds(VPlan &Plan, VPBasicBlock *HeaderVP
       Instruction::Add, {CanonicalIVPHI, &Plan.getVFxUF()}, {true, false}, DL,
       "index.next");
   CanonicalIVPHI->addOperand(CanonicalIVIncrement);
+  // Add the BranchOnCond to the latch.
+  // Original BranchOnCond has underlying value so it will be removed
+  // when widening.
+  auto *BranchOnCond = LatchVPBB->getTerminator();
+  auto *Cond =
+      Builder.createNaryOp(VPInstruction::AnyOf, {BranchOnCond->getOperand(0)});
+  Builder.createNaryOp(VPInstruction::BranchOnCond, Cond);
+  BranchOnCond->eraseFromParent();
 }
 
 static void addCanonicalIVRecipes(VPlan &Plan, VPBasicBlock *HeaderVPBB,
