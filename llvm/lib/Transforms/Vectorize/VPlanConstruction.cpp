@@ -324,7 +324,6 @@ std::unique_ptr<VPlan> PlainCFGBuilder::buildPlainCFG(
     VPBB->setTwoSuccessors(Successor0, Successor1);
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // This is basically copy from `setVPBBPredsFromBB()` + check if the
   // predecessor is in the loop. When revectoring loop in downstream, the exit
@@ -344,7 +343,8 @@ std::unique_ptr<VPlan> PlainCFGBuilder::buildPlainCFG(
 #else  // SIFIVE_CUSTOMIZATION
   for (auto *EB : Plan->getExitBlocks())
     setVPBBPredsFromBB(EB, EB->getIRBasicBlock());
-=======
+#endif // SIFIVE_CUSTOMIZATION
+
 #ifdef SIFIVE_CUSTOMIZATION
   // Create branch-on-cond for unbound loops
   if (Plan->isUncountableAndUnbound()) {
@@ -360,7 +360,6 @@ std::unique_ptr<VPlan> PlainCFGBuilder::buildPlainCFG(
         Builder.createNaryOp(VPInstruction::AnyOf, {Cond});
     Builder.createNaryOp(VPInstruction::BranchOnCond, {Cond}, Br->getDebugLoc());
   }
->>>>>>> 13c1d23383fe995896807e2c1bbe32a43e9fb250
 #endif // SIFIVE_CUSTOMIZATION
 
   // 2. The whole CFG has been built at this point so all the input Values must
@@ -568,25 +567,14 @@ static void addCanonicalIVRecipes(VPlan &Plan, VPBasicBlock *HeaderVPBB,
                        {CanonicalIVIncrement, &Plan.getVectorTripCount()}, DL);
 }
 
-<<<<<<< HEAD
 void VPlanTransforms::prepareForVectorization(
     VPlan &Plan, Type *InductionTy, PredicatedScalarEvolution &PSE,
-#if SIFIVE_CUSTOMIZATION
-    bool IsUncountable,
-#endif // SIFIVE_CUSTOMIZATION
     bool RequiresScalarEpilogueCheck, bool TailFolded, Loop *TheLoop,
     DebugLoc IVDL, bool HasUncountableEarlyExit, VFRange &Range) {
-=======
-void VPlanTransforms::prepareForVectorization(VPlan &Plan, Type *InductionTy,
-                                              PredicatedScalarEvolution &PSE,
-                                              bool RequiresScalarEpilogueCheck,
-                                              bool TailFolded, Loop *TheLoop,
-                                              DebugLoc IVDL) {
 #if SIFIVE_CUSTOMIZATION
   bool IsUncountable = Plan.isUncountable();
   bool IsUncountableAndUnbound = Plan.isUncountableAndUnbound();
 #endif // SIFIVE_CUSTOMIZATION
->>>>>>> 13c1d23383fe995896807e2c1bbe32a43e9fb250
   VPDominatorTree VPDT;
   VPDT.recalculate(Plan);
 
