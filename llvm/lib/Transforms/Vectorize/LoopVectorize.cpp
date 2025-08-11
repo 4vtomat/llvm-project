@@ -11708,6 +11708,15 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range,
     R->setOperand(1, WideIV->getStepValue());
   }
 
+  // Users consuming values from uncountable exits require an first-active-lane
+  // to correctly extract the last active element rather than the last element.
+  // Early exit loops handle this in handleUncountableEarlyExit, while unbounded
+  // loops handle it in handleUnboundExitUsers.
+  // The active-lane-mask will be optimized by VPFirst in later stages when
+  // EVL is introduced.
+  if (Plan->isUncountableAndUnbound())
+    handleUnboundExitUsers(*Plan, OrigLoop, Range);
+
   DenseMap<VPValue *, VPValue *> IVEndValues;
 #if SIFIVE_CUSTOMIZATION
   // addScalarResumePhis requires TripCount to produce end-value
