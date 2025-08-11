@@ -2853,7 +2853,7 @@ void AsmPrinter::emitConstantPool() {
       C = CPE.Val.ConstVal;
 
     MCSection *S = getObjFileLowering().getSectionForConstant(
-        getDataLayout(), Kind, C, Alignment, getConstantSectionSuffix(C));
+        getDataLayout(), Kind, C, Alignment, &MF->getFunction(), getConstantSectionSuffix(C));
 
     // The number of sections are small, just do a linear search from the
     // last section to the first.
@@ -4178,7 +4178,7 @@ MCSymbol *AsmPrinter::GetCPISymbol(unsigned CPID) const {
       Align Alignment = CPE.Alignment;
       if (const MCSectionCOFF *S = dyn_cast<MCSectionCOFF>(
               getObjFileLowering().getSectionForConstant(DL, Kind, C,
-                                                         Alignment))) {
+                                                         Alignment, nullptr))) { // SIFIVE: fix build issue when picking #151393
         if (MCSymbol *Sym = S->getCOMDATSymbol()) {
           if (Sym->isUndefined())
             OutStreamer->emitSymbolAttribute(Sym, MCSA_Global);

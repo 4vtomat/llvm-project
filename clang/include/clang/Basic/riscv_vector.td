@@ -2911,9 +2911,17 @@ let RequiredFeatures = ["Xsfvfbfa"] in {
 defm vfneg_v : RVVPseudoVFUnaryBuiltin<"vfsgnjn", "fd">;
 let RequiredFeatures = ["Zvfh"] in
   defm vfneg_v : RVVPseudoVFUnaryBuiltin<"vfsgnjn", "x">;
+#ifdef SIFIVE_CUSTOMIZATION
+let RequiredFeatures = ["Xsfvfbfa"] in
+  defm vfneg_v : RVVPseudoVFUnaryBuiltin<"vfsgnjn", "y">;
+#endif
 defm vfabs_v : RVVPseudoVFUnaryBuiltin<"vfsgnjx", "fd">;
 let RequiredFeatures = ["Zvfh"] in
   defm vfabs_v : RVVPseudoVFUnaryBuiltin<"vfsgnjx", "x">;
+#ifdef SIFIVE_CUSTOMIZATION
+let RequiredFeatures = ["Xsfvfbfa"] in
+  defm vfabs_v : RVVPseudoVFUnaryBuiltin<"vfsgnjx", "y">;
+#endif
 
 // 13.13. Vector Floating-Point Compare Instructions
 let MaskedPolicyScheme = HasPassthruOperand,

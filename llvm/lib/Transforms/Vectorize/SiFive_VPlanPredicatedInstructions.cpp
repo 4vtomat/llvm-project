@@ -167,10 +167,12 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
 
     if (FCmp) {
       IRBuilder<>::FastMathFlagGuard FMFG(BuilderIR);
-      if (Op)
-        BuilderIR.setFastMathFlags(Op->getFastMathFlags());
-      return Builder.createVectorInstruction(Opcode, OpTy, {A, B, PredArg},
-                                             "vp.op.fcmp");
+      auto *V = Builder.createVectorInstruction(Opcode, OpTy, {A, B, PredArg},
+                                                "vp.op.fcmp");
+      if (auto *VPF = dyn_cast<VPRecipeWithIRFlags>(Def))
+        VPF->applyFlags(cast<Instruction>(*V));
+
+      return V;
     }
     return Builder.createVectorInstruction(Opcode, OpTy, {A, B, PredArg},
                                            "vp.op.icmp");
@@ -224,9 +226,10 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     Value *V =
         widenPredicatedArithmeticOp(State, Opcode, Ops, MaskArg, "vp.op");
 
-    if (Op)
-      if (auto *VecOp = dyn_cast<Instruction>(V))
-        VecOp->copyIRFlags(Op);
+    if (auto *VPF = dyn_cast<VPRecipeWithIRFlags>(Def))
+      if (auto *VecOp = dyn_cast<Instruction>(V);
+          VecOp && isa<FPMathOperator>(V))
+        VPF->applyFlags(*VecOp);
 
     return V;
   }
@@ -259,8 +262,9 @@ void widenPredicatedIntrinsic(CallInst *CI, VPValue *Def,
   Args.push_back(State.get(State.EVL, /*NeedsScalar=*/true));
   CallInst *V =
       Builder.CreateIntrinsic(VPID, TysForDecl, Args, nullptr, "vp.op");
-  if (isa<FPMathOperator>(V))
-    V->copyFastMathFlags(CI);
+  if (auto *VPF = dyn_cast<VPRecipeWithIRFlags>(Def);
+      VPF && isa<FPMathOperator>(V))
+    VPF->applyFlags(*V);
   State.set(Def, V);
 }
 

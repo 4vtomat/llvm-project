@@ -537,6 +537,12 @@ public:
   /// Returns true if the loop has exactly one uncountable early exit, i.e. an
   /// uncountable exit that isn't the latch block.
   bool hasUncountableEarlyExit() const {
+#if SIFIVE_CUSTOMIZATION
+    // Exit from latch is not early exiting.
+    if (getUncountableEdge().has_value() &&
+        getUncountableEdge()->first == TheLoop->getLoopLatch())
+      return false;
+#endif // SIFIVE_CUSTOMIZATION
     return getUncountableEdge().has_value();
   }
 

@@ -68,7 +68,6 @@ Type *VPTypeAnalysis::inferScalarTypeForRecipe(const VPInstruction *R) {
     // result is later or-ed with i1
     return IntegerType::get(Ctx, 1);
   case VPInstruction::ComputeReductionResultWithMask:
-  case VPInstruction::ExitingCond:
   case VPInstruction::CSAInitMask:
   case VPInstruction::CSAInitData:
   case VPInstruction::CSAMaskPhi:

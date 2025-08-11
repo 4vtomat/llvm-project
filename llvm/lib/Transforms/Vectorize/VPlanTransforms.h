@@ -80,9 +80,6 @@ struct VPlanTransforms {
   /// expression for the original trip count.
   static void prepareForVectorization(VPlan &Plan, Type *InductionTy,
                                       PredicatedScalarEvolution &PSE,
-#if SIFIVE_CUSTOMIZATION
-                                      bool IsUncountable,
-#endif // SIFIVE_CUSTOMIZATION
                                       bool RequiresScalarEpilogueCheck,
                                       bool TailFolded, Loop *TheLoop,
                                       DebugLoc IVDL, bool HasUncountableExit,

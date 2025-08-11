@@ -851,6 +851,16 @@ VPlanCostModel::getMemoryOpCost(const VPWidenMemoryRecipe *VPWMIR,
 InstructionCost VPlanCostModel::getInstructionCost(const VPInstruction *VPI,
                                                    const RVVPair &RVL) const {
   switch (VPI->getOpcode()) {
+  case Instruction::ICmp: {
+    auto *VPFirst = dyn_cast<VPInstruction>(VPI->getOperand(0));
+    if (VPFirst && VPFirst->getOpcode() == VPInstruction::VPFirst) {
+      Type *RetTy = TypeInfo.inferScalarType(VPFirst);
+      InstructionCost CmpCost = TTI.getCmpSelInstrCost(
+          BinaryOperator::ICmp, RetTy, nullptr, VPI->getPredicate(), CostKind);
+      return CmpCost;
+    }
+    return 0;
+  }
   case Instruction::FMul: {
     const Value *UV = VPI->getOperand(0)->getUnderlyingValue();
     if (!UV)
@@ -864,16 +874,6 @@ InstructionCost VPlanCostModel::getInstructionCost(const VPInstruction *VPI,
     // VPSelectInstruction is generated to emit TU policy. Currently it has no
     // overhead in HW
     return 0;
-  case VPInstruction::ExitingCond: {
-    LLVMContext &Context = Legal.getLoop()->getHeader()->getContext();
-    Type *VFirstTy = Type::getInt32Ty(Context);
-    Type *MaskTy = getVectorType(Type::getInt1Ty(Context), RVL);
-    IntrinsicCostAttributes CostAttrs(Intrinsic::vp_first, VFirstTy, MaskTy);
-    InstructionCost VFirstCost = TTI.getIntrinsicInstrCost(CostAttrs, CostKind);
-    InstructionCost CmpCost = TTI.getCmpSelInstrCost(
-        BinaryOperator::ICmp, VFirstTy, nullptr, CmpInst::ICMP_SGE, CostKind);
-    return VFirstCost + CmpCost;
-  }
   case VPInstruction::FirstOrderRecurrenceSplice: {
     auto *V = VPI->getOperand(0)->getUnderlyingValue();
     if (!RVVPair::isValidType(V->getType(), RVL))
@@ -893,8 +893,20 @@ InstructionCost VPlanCostModel::getInstructionCost(const VPInstruction *VPI,
     auto *VectorTy = getVectorType(ResultTy, RVL);
     return TTI.getArithmeticInstrCost(Instruction::And, VectorTy, CostKind);
   }
+  case VPInstruction::VPFirst: {
+    Type *VLTy = getVLType(RVL);
+    auto &Ctx = VLTy->getContext();
+    auto *VectorTy = cast<VectorType>(getVectorType(Type::getInt1Ty(Ctx), RVL));
+    Type *RetTy = Type::getInt32Ty(Ctx);
+    return getIntrinsicCost(Intrinsic::vp_first, RetTy, {VectorTy, VLTy});
+  }
   case VPInstruction::BranchOnCount:
     return 0;
+  case VPInstruction::AnyOf: {
+    auto *VecTy = getVectorType(TypeInfo.inferScalarType(VPI), RVL);
+    return TTI.getArithmeticReductionCost(
+        Instruction::Or, cast<VectorType>(VecTy), std::nullopt, CostKind);
+  }
   default:
     return 0;
   }

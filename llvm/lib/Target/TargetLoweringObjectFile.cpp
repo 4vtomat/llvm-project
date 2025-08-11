@@ -356,7 +356,7 @@ MCSection *TargetLoweringObjectFile::getSectionForJumpTable(
   Align Alignment(1);
   return getSectionForConstant(F.getDataLayout(),
                                SectionKind::getReadOnly(), /*C=*/nullptr,
-                               Alignment);
+                               Alignment, &F);
 }
 
 bool TargetLoweringObjectFile::shouldPutJumpTableInFunctionSection(
@@ -378,7 +378,7 @@ bool TargetLoweringObjectFile::shouldPutJumpTableInFunctionSection(
 /// information, return a section that it should be placed in.
 MCSection *TargetLoweringObjectFile::getSectionForConstant(
     const DataLayout &DL, SectionKind Kind, const Constant *C,
-    Align &Alignment) const {
+    Align &Alignment, const Function *F) const {
   if (Kind.isReadOnly() && ReadOnlySection != nullptr)
     return ReadOnlySection;
 
@@ -387,11 +387,11 @@ MCSection *TargetLoweringObjectFile::getSectionForConstant(
 
 MCSection *TargetLoweringObjectFile::getSectionForConstant(
     const DataLayout &DL, SectionKind Kind, const Constant *C, Align &Alignment,
-    StringRef SectionPrefix) const {
+    const Function *F, StringRef SectionPrefix) const {
   // Fallback to `getSectionForConstant` without `SectionPrefix` parameter if it
   // is empty.
   if (SectionPrefix.empty())
-    return getSectionForConstant(DL, Kind, C, Alignment);
+    return getSectionForConstant(DL, Kind, C, Alignment, F);
   report_fatal_error(
       "TargetLoweringObjectFile::getSectionForConstant that "
       "accepts SectionPrefix is not implemented for the object file format");
