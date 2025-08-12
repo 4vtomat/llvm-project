@@ -3025,15 +3025,9 @@ BasicBlock *InnerLoopVectorizer::createVectorizedLoopSkeleton() {
   // Create an empty vector loop, and prepare basic blocks for the runtime
   // checks.
 #if SIFIVE_CUSTOMIZATION
-  if (Legal->isVectorizableUncountable()) {
+  if (Legal->isVectorizableUncountable() &&
+      Legal->getCountableExitingBlocks().empty()) {
     createVectorLoopSkeleton("vec.uncountable.");
-    // Countable loop with early exits has trip count
-    // which can be used to create IVEndValue for IV users
-    if (!Legal->getCountableExitingBlocks().empty()) {
-      emitIterationCountCheck(LoopScalarPreHeader);
-      emitSCEVChecks(LoopScalarPreHeader);
-      emitMemRuntimeChecks(LoopScalarPreHeader);
-    }
     replaceVPBBWithIRVPBB(Plan.getScalarPreheader(), LoopScalarPreHeader);
     return LoopVectorPreHeader;
   }
@@ -3890,27 +3884,22 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
   // uniform.
   SmallVector<BasicBlock *> Exiting;
   TheLoop->getExitingBlocks(Exiting);
-#if SIFIVE_CUSTOMIZATION
-  // Exiting condition is non-uniform if the block is not countable.
-  // e.g. in strlen the compare is widened.
-  // Skip this if the loop is uncountable.
-  if (!Legal->isVectorizableUncountable())
-    for (BasicBlock *E : Exiting) {
-      if (Legal->hasUncountableEarlyExit() && TheLoop->getLoopLatch() != E)
-        continue;
-      auto *Cmp = dyn_cast<Instruction>(E->getTerminator()->getOperand(0));
-      if (Cmp && TheLoop->contains(Cmp) && Cmp->hasOneUse())
-        AddToWorklistIfAllowed(Cmp);
-    }
-#else
   for (BasicBlock *E : Exiting) {
+#if SIFIVE_CUSTOMIZATION
+    // Exiting condition is non-uniform if the block is not countable.
+    // e.g. in strlen the exit condition in the latch must be widened and use
+    // AnyOf to check. Skip this if the loop is uncountable and have no
+    // countable blocks.
+    if (Legal->isVectorizableUncountable() &&
+        Legal->getCountableExitingBlocks().empty())
+      continue;
+#endif // SIFIVE_CUSTOMIZATION
     if (Legal->hasUncountableEarlyExit() && TheLoop->getLoopLatch() != E)
       continue;
     auto *Cmp = dyn_cast<Instruction>(E->getTerminator()->getOperand(0));
     if (Cmp && TheLoop->contains(Cmp) && Cmp->hasOneUse())
       AddToWorklistIfAllowed(Cmp);
   }
-#endif // SIFIVE_CUSTOMIZATION
 
   auto PrevVF = VF.divideCoefficientBy(2);
   // Return true if all lanes perform the same memory operation, and we can
@@ -9486,23 +9475,7 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
     VPlanTransforms::removeDeadRecipes(BestVPlan);
 
 #if SIFIVE_CUSTOMIZATION
-  // When execute the VPWidenLoadEVLRecipe with stride, need to expand the SCEV
-  // stride value. The SCEV expander will try to reuse previous expanded value
-  // (instruction) if posibble (opernads must dominate... etc). When setting the
-  // State.SE by PSE here with old SE and old DT here, the newly created BBs
-  // (vector preheader ...) are unrechable in the old DT. And if a BB is
-  // unreachable in the DT, all of the `dominates(<any_value>,
-  // <unreachable_BB>)` will be true. So need to create a new ScalarEvolution
-  // here with updated DT to prevent SCEV expander generate instruction breaks
-  // functin verifier.
-  // Note that if the SCEV value cannot be hoist to the vector
-  // preheader (need to insert the SCEV value in vector body), following changes
-  // may not correct since the DT only conaions the information of
-  // vector.preheader updated by `createVectorizedLoopSkeleton()`.
-  auto *AC = new AssumptionCache(*State.CFG.PrevBB->getParent());
-  State.SE =
-      new ScalarEvolution(*State.CFG.PrevBB->getParent(),
-                          *const_cast<TargetLibraryInfo *>(TLI), *AC, *DT, *LI);
+  State.SE = ILV.PSE.getSE();
 
   if (Legal->useVLAVectorizer()) {
     unsigned SEW;
@@ -11750,7 +11723,11 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range,
   // single VPInterleaveRecipe at its insertion point.
   VPlanTransforms::runPass(VPlanTransforms::createInterleaveGroups, *Plan,
                            InterleaveGroups, RecipeBuilder,
+#if SIFIVE_CUSTOMIZATION
+                           CM.isScalarEpilogueAllowed(), PSE);
+#else
                            CM.isScalarEpilogueAllowed());
+#endif // SIFIVE_CUSTOMIZATION
 
   // Replace VPValues for known constant strides guaranteed by predicate scalar
   // evolution.

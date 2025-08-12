@@ -4504,20 +4504,7 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
           State.get(State.EVL, /*NeedsScalar=*/true),
           State.Builder.getInt32Ty());
       if (Group->isStrided()) {
-        // Generate the stride.
-        // The stride in InterleavedAccessInfo is represented in elements, but
-        // the stride in strided load/store intrinsics is represented in
-        // bytes. Therefore, the stride needs to be converted into bytes.
-        auto &DL = State.CFG.PrevBB->getModule()->getDataLayout();
-        ScalarEvolution *SE = State.SE;
-        uint64_t EltSize = DL.getTypeAllocSize(ScalarTy);
-        const SCEV *StrideScev = Group->getStride();
-        const SCEV *StrideInBytesScev = SE->getMulExpr(
-            SE->getConstant(StrideScev->getType(), EltSize), StrideScev);
-        SCEVExpander Exp(*SE, DL, "stride");
-        Instruction *InsertPoint = &*State.Builder.GetInsertPoint();
-        Value *StrideInBytes = Exp.expandCodeFor(
-            StrideInBytesScev, StrideInBytesScev->getType(), InsertPoint);
+        Value *StrideInBytes = State.get(getStride(), true);
         // Use an integer type with the same width as the element type for
         // strided access. Mainly to support access of float types.
         // TODO: Better to add specific intrinsics to handle strided
@@ -4841,6 +4828,12 @@ void VPInterleaveRecipe::print(raw_ostream &O, const Twine &Indent,
   IG->getInsertPos()->printAsOperand(O, false);
   O << ", ";
   getAddr()->printAsOperand(O, SlotTracker);
+#if SIFIVE_CUSTOMIZATION
+  if (isStrided()) {
+    O << ", stride = ";
+    getStride()->printAsOperand(O, SlotTracker);
+  }
+#endif // SIFIVE_CUSTOMIZATION
   VPValue *Mask = getMask();
   if (Mask) {
     O << ", ";

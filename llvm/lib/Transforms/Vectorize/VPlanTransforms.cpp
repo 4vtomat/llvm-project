@@ -3074,7 +3074,12 @@ void VPlanTransforms::createInterleaveGroups(
     VPlan &Plan,
     const SmallPtrSetImpl<const InterleaveGroup<Instruction> *>
         &InterleaveGroups,
+#if SIFIVE_CUSTOMIZATION
+    VPRecipeBuilder &RecipeBuilder, const bool &ScalarEpilogueAllowed,
+    PredicatedScalarEvolution &PSE) {
+#else
     VPRecipeBuilder &RecipeBuilder, const bool &ScalarEpilogueAllowed) {
+#endif // SIFIVE_CUSTOMIZATION
   if (InterleaveGroups.empty())
     return;
 
@@ -3128,7 +3133,25 @@ void VPlanTransforms::createInterleaveGroups(
       Addr = InBounds ? B.createInBoundsPtrAdd(InsertPos->getAddr(), OffsetVPV)
                       : B.createPtrAdd(InsertPos->getAddr(), OffsetVPV);
     }
+#if SIFIVE_CUSTOMIZATION
+    VPValue *Stride = nullptr;
+    auto &DL = IRInsertPos->getDataLayout();
+    if (IG->isStrided()) {
+      uint64_t EltSize = DL.getTypeAllocSize(getLoadStoreType(IRInsertPos));
+      ScalarEvolution &SE = *PSE.getSE();
+      // The stride in InterleavedAccessInfo is represented in elements, but
+      // the stride in strided load/store intrinsics is represented in
+      // bytes. Therefore, the stride needs to be converted into bytes.
+      const SCEV *StrideScev = IG->getStride();
+      const SCEV *StrideInBytesScev = SE.getMulExpr(
+          SE.getConstant(StrideScev->getType(), EltSize), StrideScev);
+      Stride =
+          vputils::getOrCreateVPValueForSCEVExpr(Plan, StrideInBytesScev, SE);
+    }
+    auto *VPIG = new VPInterleaveRecipe(IG, Addr, StoredValues, Stride,
+#else
     auto *VPIG = new VPInterleaveRecipe(IG, Addr, StoredValues,
+#endif // SIFIVE_CUSTOMIZTAION
                                         InsertPos->getMask(), NeedsMaskForGaps, InsertPos->getDebugLoc());
     VPIG->insertBefore(InsertPos);
 

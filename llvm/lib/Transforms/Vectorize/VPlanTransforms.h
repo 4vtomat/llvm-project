@@ -220,7 +220,12 @@ struct VPlanTransforms {
       VPlan &Plan,
       const SmallPtrSetImpl<const InterleaveGroup<Instruction> *>
           &InterleaveGroups,
+#if SIFIVE_CUSTOMIZATION
+      VPRecipeBuilder &RecipeBuilder, const bool &ScalarEpilogueAllowed,
+      PredicatedScalarEvolution &);
+#else
       VPRecipeBuilder &RecipeBuilder, const bool &ScalarEpilogueAllowed);
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Remove dead recipes from \p Plan.
   static void removeDeadRecipes(VPlan &Plan);

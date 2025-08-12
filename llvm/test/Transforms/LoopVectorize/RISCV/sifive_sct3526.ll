@@ -8,13 +8,13 @@ define void @test(ptr %a, ptr %b, i64 %stride) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[SMAX:%.*]] = call i64 @llvm.smax.i64(i64 [[STRIDE]], i64 -1)
 ; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[SMAX]], 2
+; CHECK-NEXT:    [[TMP1:%.*]] = lshr i64 [[STRIDE]], 2
+; CHECK-NEXT:    [[TMP4:%.*]] = shl nuw i64 [[TMP1]], 2
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP3:%.*]] = sub i32 [[TMP2]], 1
 ; CHECK-NEXT:    [[VECTOR_RECUR_INIT:%.*]] = insertelement <vscale x 2 x double> poison, double 0.000000e+00, i32 [[TMP3]]
-; CHECK-NEXT:    [[TMP5:%.*]] = lshr i64 [[STRIDE]], 2
-; CHECK-NEXT:    [[TMP4:%.*]] = shl nuw i64 [[TMP5]], 2
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
