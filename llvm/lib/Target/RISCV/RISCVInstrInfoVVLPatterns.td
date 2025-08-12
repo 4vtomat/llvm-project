@@ -535,12 +535,12 @@ def riscv_vmnot_vl : PatFrag<(ops node:$rs, node:$vl),
                              (riscv_vmxor_vl node:$rs, true_mask, node:$vl)>;
 
 #ifdef SIFIVE_CUSTOMIZATION
-def riscv_vmsbf_vl : SDNode<"RISCVISD::VMSBF_VL",
-                            SDTypeProfile<1, 3, [SDTCisVec<0>, SDTCisInt<0>,
-                                                 SDTCVecEltisVT<0, i1>,
-                                                 SDTCisSameAs<0, 1>,
-                                                 SDTCisSameAs<0, 2>,
-                                                 SDTCisVT<3, XLenVT>]>>;
+def riscv_vmsbf_vl : RVSDNode<"VMSBF_VL",
+                              SDTypeProfile<1, 3, [SDTCisVec<0>, SDTCisInt<0>,
+                                                   SDTCVecEltisVT<0, i1>,
+                                                   SDTCisSameAs<0, 1>,
+                                                   SDTCisSameAs<0, 2>,
+                                                   SDTCisVT<3, XLenVT>]>>;
 #endif // SIFIVE_CUSTOMIZATION
 
 let HasMaskOp = true in {
