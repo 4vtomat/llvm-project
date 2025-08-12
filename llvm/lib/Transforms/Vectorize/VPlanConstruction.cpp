@@ -629,9 +629,12 @@ void VPlanTransforms::prepareForVectorization(
   const SCEV *BackedgeTakenCountSCEV = PSE.getSymbolicMaxBackedgeTakenCount();
 #if SIFIVE_CUSTOMIZATION
   if (!IsUncountableAndUnbound)
+  assert(!isa<SCEVCouldNotCompute>(BackedgeTakenCountSCEV) &&
+         "Invalid loop count");
+#else
+  assert(!isa<SCEVCouldNotCompute>(BackedgeTakenCountSCEV) &&
+         "Invalid loop count");
 #endif
-    assert(!isa<SCEVCouldNotCompute>(BackedgeTakenCountSCEV) &&
-           "Invalid loop count");
   ScalarEvolution &SE = *PSE.getSE();
 #if SIFIVE_CUSTOMIZATION
   const SCEV *TripCount =

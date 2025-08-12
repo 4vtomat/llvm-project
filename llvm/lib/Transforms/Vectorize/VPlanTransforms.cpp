@@ -2647,14 +2647,6 @@ static void transformRecipestoEVLRecipes(VPlan &Plan, VPValue &EVL) {
 /// %NextEVLIV = add IVSize (cast i32 %VPEVVL to IVSize), %EVLPhi
 /// ...
 ///
-#if SIFIVE_CUSTOMIZATION
-bool VPlanTransforms::tryAddExplicitVectorLength(
-    VPlan &Plan, const std::optional<unsigned> &MaxSafeElements,
-    bool EnableEVLFuzzing) {
-#else
-bool VPlanTransforms::tryAddExplicitVectorLength(
-    VPlan &Plan, const std::optional<unsigned> &MaxSafeElements) {
-#endif // SIFIVE_CUSTOMIZATION
 /// If MaxSafeElements is provided, the function adds the following recipes:
 /// vector.ph:
 /// ...
@@ -2671,6 +2663,14 @@ bool VPlanTransforms::tryAddExplicitVectorLength(
 /// %NextEVLIV = add IVSize (cast i32 %VPEVL to IVSize), %EVLPhi
 /// ...
 ///
+#if SIFIVE_CUSTOMIZATION
+bool VPlanTransforms::tryAddExplicitVectorLength(
+    VPlan &Plan, const std::optional<unsigned> &MaxSafeElements,
+    bool EnableEVLFuzzing) {
+#else
+bool VPlanTransforms::tryAddExplicitVectorLength(
+    VPlan &Plan, const std::optional<unsigned> &MaxSafeElements) {
+#endif // SIFIVE_CUSTOMIZATION
   VPBasicBlock *Header = Plan.getVectorLoopRegion()->getEntryBasicBlock();
   // The transform updates all users of inductions to work based on EVL, instead
   // of the VF directly. At the moment, widened inductions cannot be updated, so
