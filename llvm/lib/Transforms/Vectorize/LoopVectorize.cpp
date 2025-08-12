@@ -10732,6 +10732,7 @@ VPRecipeBase *VPRecipeBuilder::tryToCreateWidenRecipe(VPSingleDefRecipe *R,
           Legal->getReductionVars().find(Phi)->second;
       assert(RdxDesc.getRecurrenceStartValue() ==
              Phi->getIncomingValueForBlock(OrigLoop->getLoopPreheader()));
+
       // If the PHI is used by a partial reduction, set the scale factor.
       unsigned ScaleFactor =
           getScalingForReduction(RdxDesc.getLoopExitInstr()).value_or(1);
