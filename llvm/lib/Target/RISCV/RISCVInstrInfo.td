@@ -441,25 +441,35 @@ def pseudo_jump_symbol : Operand<XLenVT> {
   let ParserMatchClass = PseudoJumpSymbol;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
 def RegRelAddSymbol : AsmOperandClass {
   let Name = "RegRelAddSymbol";
   let RenderMethod = "addImmOperands";
-#ifdef SIFIVE_CUSTOMIZATION
   let DiagnosticType = "InvalidRegRelAddSymbol";
   let DiagnosticString = "operand must be a symbol with any of %tprel_add, "
                          "%gprel, %got_gprel, %tls_ie_gprel, or %tls_gd_gprel "
                          "specifier";
 #else
+def TPRelAddSymbol : AsmOperandClass {
+  let Name = "TPRelAddSymbol";
+  let RenderMethod = "addImmOperands";
   let DiagnosticType = "InvalidTPRelAddSymbol";
   let DiagnosticString = "operand must be a symbol with %tprel_add specifier";
 #endif // SIFIVE_CUSTOMIZATION
   let ParserMethod = "parseOperandWithSpecifier";
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
 // A bare symbol attached to the Add for linker relaxation.
 def regrel_add_symbol : Operand<XLenVT> {
   let ParserMatchClass = RegRelAddSymbol;
 }
+#else
+// A bare symbol with the %tprel_add variant.
+def tprel_add_symbol : Operand<XLenVT> {
+  let ParserMatchClass = TPRelAddSymbol;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 def CSRSystemRegister : AsmOperandClass {
   let Name = "CSRSystemRegister";
@@ -1658,6 +1668,7 @@ def riscv_selectcc_frag : PatFrag<(ops node:$lhs, node:$rhs, node:$cc,
                                                   node:$falsev), [{}],
                                   IntCCtoRISCVCC>;
 
+#ifdef SIFIVE_CUSTOMIZATION
 // Macrofusion pseudo for (srli (slli X, $shamt1), $shamt2)
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0, Size = 8, isCodeGenOnly = 1,
     isPseudo = 1 in {
@@ -1673,6 +1684,7 @@ def PseudoSBFX : Pseudo<(outs GPR:$dst),
 let Predicates = [HasFuseBFX] in
 def : Pat<(XLenVT (and GPR:$rs, TrailingOnesMask:$mask)),
           (PseudoUBFX $rs, TrailingOnesMask:$mask, TrailingOnesMask:$mask)>;
+#endif // SIFIVE_CUSTOMIZATION
 
 multiclass SelectCC_GPR_rrirr<DAGOperand valty, ValueType vt> {
   let usesCustomInserter = 1 in
@@ -2086,7 +2098,6 @@ def SwapVXRMImm : SwapSysRegImm<SysRegVXRM, [VXRM]>;
 #endif // SIFIVE_CUSTOMIZATION
 
 }
-
 /// Other pseudo-instructions
 
 // Pessimistically assume the stack pointer will be clobbered
