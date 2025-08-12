@@ -69,19 +69,6 @@ def riscv_sw_guarded_tail : RVSDNode<"SW_GUARDED_TAIL", SDT_RISCVCall,
                                      [SDNPHasChain, SDNPOptInGlue, SDNPOutGlue,
                                       SDNPVariadic]>;
 
-#ifdef SIFIVE_CUSTOMIZATION
-def riscv_add_regrel : SDNode<"RISCVISD::ADD_REGREL",
-                              SDTypeProfile<1, 3, [SDTCisSameAs<0, 1>,
-                                                   SDTCisSameAs<0, 2>,
-                                                   SDTCisSameAs<0, 3>,
-                                                   SDTCisInt<0>]>>;
-#else
-def riscv_add_tprel : SDNode<"RISCVISD::ADD_TPREL",
-                             SDTypeProfile<1, 3, [SDTCisSameAs<0, 1>,
-                                                  SDTCisSameAs<0, 2>,
-                                                  SDTCisSameAs<0, 3>,
-                                                  SDTCisInt<0>]>>;
-#endif // SIFIVE_CUSTOMIZATION
 def riscv_ret_glue  : RVSDNode<"RET_GLUE", SDTNone,
                                [SDNPHasChain, SDNPOptInGlue, SDNPVariadic]>;
 def riscv_sret_glue : RVSDNode<"SRET_GLUE", SDTNone,
@@ -152,12 +139,21 @@ def riscv_hi : RVSDNode<"HI", SDTIntUnaryOp>;
 // Represents an AUIPC+ADDI pair. Selected to PseudoLLA.
 def riscv_lla : RVSDNode<"LLA", SDTIntUnaryOp>;
 
+#ifdef SIFIVE_CUSTOMIZATION
+// Selected as PseudoAddRegRel. Used to emit a reg-relative relocation.
+def riscv_add_regrel : RVSDNode<"ADD_REGREL",
+                                SDTypeProfile<1, 3, [SDTCisSameAs<0, 1>,
+                                                     SDTCisSameAs<0, 2>,
+                                                     SDTCisSameAs<0, 3>,
+                                                     SDTCisInt<0>]>>;
+#else
 // Selected as PseudoAddTPRel. Used to emit a TP-relative relocation.
 def riscv_add_tprel : RVSDNode<"ADD_TPREL",
                                SDTypeProfile<1, 3, [SDTCisSameAs<0, 1>,
                                                     SDTCisSameAs<0, 2>,
                                                     SDTCisSameAs<0, 3>,
                                                     SDTCisInt<0>]>>;
+#endif // SIFIVE_CUSTOMIZATION
 
 // To avoid stack clash, allocation is performed by block and each block is
 // probed.
@@ -1513,9 +1509,15 @@ def : PatGprGpr<shiftop<sra>, SRA>;
 // The relocation does not affect any bits of the instruction itself but is used
 // as a hint to the linker.
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0, isCodeGenOnly = 0 in
+#ifdef SIFIVE_CUSTOMIZATION
 def PseudoAddRegRel : Pseudo<(outs GPR:$rd),
                              (ins GPR:$rs1, GPR:$rs2, regrel_add_symbol:$src), [],
                              "add", "$rd, $rs1, $rs2, $src">;
+#else
+def PseudoAddTPRel : Pseudo<(outs GPR:$rd),
+                            (ins GPR:$rs1, GPR:$rs2, tprel_add_symbol:$src), [],
+                            "add", "$rd, $rs1, $rs2, $src">;
+#endif
 
 /// FrameIndex calculations
 
