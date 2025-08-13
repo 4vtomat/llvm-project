@@ -20,9 +20,12 @@
 #endif // SIFIVE_CUSTOMIZATION
 #include "RISCVSelectionDAGInfo.h"
 #include "RISCVTargetMachine.h"
+<<<<<<< HEAD
 #include "llvm/CodeGen/MacroFusion.h"
 #include "llvm/CodeGen/MachineScheduler.h"
 #include "llvm/CodeGen/ScheduleDAGMutation.h"
+=======
+>>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 #include "llvm/MC/TargetRegistry.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/MathExtras.h"

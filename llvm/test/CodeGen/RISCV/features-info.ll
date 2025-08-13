@@ -220,6 +220,7 @@
 ; CHECK-NEXT:   xsfcease                         - 'XSfcease' (SiFive sf.cease Instruction).
 ; CHECK-NEXT:   xsfmm128t                        - 'XSfmm128t' (TE=128 configuration).
 ; CHECK-NEXT:   xsfmm16t                         - 'XSfmm16t' (TE=16 configuration).
+<<<<<<< HEAD
 ; CHECK-NEXT:   xsfmm32a                         - 'XSfmm32a' ((TEW=32-bit accumulation) operands - int: 8b; float: fp16, bf16, fp32).
 ; CHECK-NEXT:   xsfmm32a16f                      - 'XSfmm32a16f' ((TEW=32-bit accumulation) operands - float: 16b, widen=2 (IEEE, BF)).
 ; CHECK-NEXT:   xsfmm32a32f                      - 'XSfmm32a32f' ((TEW=32-bit accumulation) operands - float: 32b).
@@ -232,6 +233,16 @@
 ; CHECK-NEXT:   xsfpgflushdlone                  - 'XSfpgflushdlone' (Cache Flush/Power Down Instructions).
 ; CHECK-NEXT:   xsfpmpmt                         - 'XSfpmpmt' (SiFive PMP-based Memory Types Extension).
 ; CHECK-NEXT:   xsfsci                           - 'XSfsci' (SiFive Custom Scalar Coprocessor Interface Instructions).
+=======
+; CHECK-NEXT:   xsfmm32a16f                      - 'XSfmm32a16f' (TEW=32-bit accumulation, operands - float: 16b, widen=2 (IEEE, BF)). 
+; CHECK-NEXT:   xsfmm32a32f                      - 'XSfmm32a32f' (TEW=32-bit accumulation, operands - float: 32b). 
+; CHECK-NEXT:   xsfmm32a8f                       - 'XSfmm32a8f' (TEW=32-bit accumulation, operands - float: fp8). 
+; CHECK-NEXT:   xsfmm32a8i                       - 'XSfmm32a8i' (TEW=32-bit accumulation, operands - int: 8b). 
+; CHECK-NEXT:   xsfmm32t                         - 'XSfmm32t' (TE=32 configuration). 
+; CHECK-NEXT:   xsfmm64a64f                      - 'XSfmm64a64f' (TEW=64-bit accumulation, operands - float: fp64). 
+; CHECK-NEXT:   xsfmm64t                         - 'XSfmm64t' (TE=64 configuration). 
+; CHECK-NEXT:   xsfmmbase                        - 'XSfmmbase' (All non arithmetic instructions for all TEWs and sf.vtzero).
+>>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 ; CHECK-NEXT:   xsfvcp                           - 'XSfvcp' (SiFive Custom Vector Coprocessor Interface Instructions).
 ; CHECK-NEXT:   xsfvfbfa                         - 'XSfvfbfa' (SiFive custom additional BF16 vector compute support).
 ; CHECK-NEXT:   xsfvfbfexp16e                    - 'XSfvfbfexp16e' (SiFive Vector Floating-Point Exponential Function Instruction, BFloat16).

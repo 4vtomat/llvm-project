@@ -367,7 +367,7 @@ def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", SiFiveP600Model,
                                        TunePostRAScheduler]>;
 #endif // SIFIVE_CUSTOMIZATION
 
-def SIFIVE_P870 : RISCVProcessorModel<"sifive-p870", NoSchedModel,
+def SIFIVE_P870 : RISCVProcessorModel<"sifive-p870", SiFiveP800Model,
                                       !listconcat(RVA23U64Features,
                                       [FeatureStdExtZama16b,
                                        FeatureStdExtZfh,
@@ -650,6 +650,36 @@ def RP2350_HAZARD3 : RISCVProcessorModel<"rp2350-hazard3",
                                           FeatureStdExtZcb,
                                           FeatureStdExtZcmp]>;
 
+def ANDES_A25 : RISCVProcessorModel<"andes-a25",
+                                    NoSchedModel,
+                                    [Feature32Bit,
+                                     FeatureStdExtI,
+                                     FeatureStdExtZicsr,
+                                     FeatureStdExtZifencei,
+                                     FeatureStdExtM,
+                                     FeatureStdExtA,
+                                     FeatureStdExtF,
+                                     FeatureStdExtD,
+                                     FeatureStdExtC,
+                                     FeatureStdExtB,
+                                     FeatureStdExtZbc,
+                                     FeatureVendorXAndesPerf]>;
+
+def ANDES_AX25 : RISCVProcessorModel<"andes-ax25",
+                                     NoSchedModel,
+                                     [Feature64Bit,
+                                      FeatureStdExtI,
+                                      FeatureStdExtZicsr,
+                                      FeatureStdExtZifencei,
+                                      FeatureStdExtM,
+                                      FeatureStdExtA,
+                                      FeatureStdExtF,
+                                      FeatureStdExtD,
+                                      FeatureStdExtC,
+                                      FeatureStdExtB,
+                                      FeatureStdExtZbc,
+                                      FeatureVendorXAndesPerf]>;
+
 def ANDES_N45 : RISCVProcessorModel<"andes-n45",
                                     NoSchedModel,
                                     [Feature32Bit,
@@ -661,7 +691,8 @@ def ANDES_N45 : RISCVProcessorModel<"andes-n45",
                                      FeatureStdExtF,
                                      FeatureStdExtD,
                                      FeatureStdExtC,
-                                     FeatureStdExtB]>;
+                                     FeatureStdExtB,
+                                     FeatureVendorXAndesPerf]>;
 
 def ANDES_NX45 : RISCVProcessorModel<"andes-nx45",
                                      NoSchedModel,
@@ -674,7 +705,8 @@ def ANDES_NX45 : RISCVProcessorModel<"andes-nx45",
                                       FeatureStdExtF,
                                       FeatureStdExtD,
                                       FeatureStdExtC,
-                                      FeatureStdExtB]>;
+                                      FeatureStdExtB,
+                                      FeatureVendorXAndesPerf]>;
 
 def ANDES_A45 : RISCVProcessorModel<"andes-a45",
                                     NoSchedModel,
@@ -687,7 +719,8 @@ def ANDES_A45 : RISCVProcessorModel<"andes-a45",
                                      FeatureStdExtF,
                                      FeatureStdExtD,
                                      FeatureStdExtC,
-                                     FeatureStdExtB]>;
+                                     FeatureStdExtB,
+                                     FeatureVendorXAndesPerf]>;
 
 def ANDES_AX45 : RISCVProcessorModel<"andes-ax45",
                                      NoSchedModel,
@@ -700,4 +733,5 @@ def ANDES_AX45 : RISCVProcessorModel<"andes-ax45",
                                       FeatureStdExtF,
                                       FeatureStdExtD,
                                       FeatureStdExtC,
-                                      FeatureStdExtB]>;
+                                      FeatureStdExtB,
+                                      FeatureVendorXAndesPerf]>;

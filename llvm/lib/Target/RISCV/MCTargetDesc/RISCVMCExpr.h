@@ -15,6 +15,7 @@
 #define LLVM_LIB_TARGET_RISCV_MCTARGETDESC_RISCVMCEXPR_H
 
 #include "llvm/MC/MCExpr.h"
+#include "llvm/MC/MCFixup.h"
 
 namespace llvm {
 
@@ -22,14 +23,16 @@ class StringRef;
 
 class RISCVMCExpr : public MCTargetExpr {
 public:
-  enum Specifier : uint8_t {
+  using Specifier = uint16_t;
+  // Specifiers mapping to relocation types below FirstTargetFixupKind are
+  // encoded literally, with these exceptions:
+  enum {
     VK_None,
-    VK_LO = MCSymbolRefExpr::FirstTargetSpecifier,
-    VK_HI,
+    // Specifiers mapping to distinct relocation types.
+    VK_LO = FirstTargetFixupKind,
     VK_PCREL_LO,
-    VK_PCREL_HI,
-    VK_GOT_HI,
     VK_TPREL_LO,
+<<<<<<< HEAD
     VK_TPREL_HI,
     VK_TPREL_ADD,
     VK_TLS_GOT_HI,
@@ -57,6 +60,10 @@ public:
     VK_TLS_GD_GPREL_HI,
     VK_TLS_GD_GPREL_ADD,
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    // Vendor-specific relocation types might conflict across vendors.
+    // Refer to them using Specifier constants.
+>>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
     VK_QC_ABS20,
   };
 

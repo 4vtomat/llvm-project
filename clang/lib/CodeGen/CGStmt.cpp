@@ -1130,6 +1130,7 @@ void CodeGenFunction::EmitWhileStmt(const WhileStmt &S,
     if (!Weights && CGM.getCodeGenOpts().OptimizationLevel)
       BoolCondVal = emitCondLikelihoodViaExpectIntrinsic(
           BoolCondVal, Stmt::getLikelihood(S.getBody()));
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     // Appending Branch_weight, Unpredictable and Profile_count metadata.
     Builder.CreateCondBr(BoolCondVal, LoopBody, ExitBlock, Weights, nullptr,
@@ -1137,6 +1138,17 @@ void CodeGenFunction::EmitWhileStmt(const WhileStmt &S,
 #else
     Builder.CreateCondBr(BoolCondVal, LoopBody, ExitBlock, Weights);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    auto *I = Builder.CreateCondBr(BoolCondVal, LoopBody, ExitBlock, Weights);
+    // Key Instructions: Emit the condition and branch as separate source
+    // location atoms otherwise we may omit a step onto the loop condition in
+    // favour of the `while` keyword.
+    // FIXME: We could have the branch as the backup location for the condition,
+    // which would probably be a better experience. Explore this later.
+    if (auto *CondI = dyn_cast<llvm::Instruction>(BoolCondVal))
+      addInstToNewSourceAtom(CondI, nullptr);
+    addInstToNewSourceAtom(I, nullptr);
+>>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 
     if (ExitBlock != LoopExit.getBlock()) {
       EmitBlock(ExitBlock);
@@ -1248,6 +1260,7 @@ void CodeGenFunction::EmitDoStmt(const DoStmt &S,
   // As long as the condition is true, iterate the loop.
   if (EmitBoolCondBranch) {
     uint64_t BackedgeCount = getProfileCount(S.getBody()) - ParentCount;
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     // Appending Branch_weight, Unpredictable and Profile_count metadata.
     Builder.CreateCondBr(
@@ -1259,6 +1272,20 @@ void CodeGenFunction::EmitDoStmt(const DoStmt &S,
         BoolCondVal, LoopBody, LoopExit.getBlock(),
         createProfileWeightsForLoop(S.getCond(), BackedgeCount));
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    auto *I = Builder.CreateCondBr(
+        BoolCondVal, LoopBody, LoopExit.getBlock(),
+        createProfileWeightsForLoop(S.getCond(), BackedgeCount));
+
+    // Key Instructions: Emit the condition and branch as separate source
+    // location atoms otherwise we may omit a step onto the loop condition in
+    // favour of the closing brace.
+    // FIXME: We could have the branch as the backup location for the condition,
+    // which would probably be a better experience (no jumping to the brace).
+    if (auto *CondI = dyn_cast<llvm::Instruction>(BoolCondVal))
+      addInstToNewSourceAtom(CondI, nullptr);
+    addInstToNewSourceAtom(I, nullptr);
+>>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
   }
 
   LoopStack.pop();

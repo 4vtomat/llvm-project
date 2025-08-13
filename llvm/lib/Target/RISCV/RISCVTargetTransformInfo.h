@@ -212,6 +212,13 @@ public:
   TargetTransformInfo::PopcntSupportKind
   getPopcntSupport(unsigned TyWidth) const override;
 
+  InstructionCost
+  getPartialReductionCost(unsigned Opcode, Type *InputTypeA, Type *InputTypeB,
+                          Type *AccumType, ElementCount VF,
+                          TTI::PartialReductionExtendKind OpAExtend,
+                          TTI::PartialReductionExtendKind OpBExtend,
+                          std::optional<unsigned> BinOp) const override;
+
   bool shouldExpandReduction(const IntrinsicInst *II) const override;
   bool supportsScalableVectors() const override {
     return ST->hasVInstructions();
@@ -522,10 +529,10 @@ public:
     case RecurKind::SMax:
     case RecurKind::UMin:
     case RecurKind::UMax:
-    case RecurKind::IAnyOf:
     case RecurKind::FMin:
     case RecurKind::FMax:
       return true;
+<<<<<<< HEAD
     case RecurKind::FAnyOf:
 #if SIFIVE_CUSTOMIZATION
     case RecurKind::IFindLastIV:
@@ -533,6 +540,9 @@ public:
     case RecurKind::Mul:
       return true;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    case RecurKind::AnyOf:
+>>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
     case RecurKind::FAdd:
     case RecurKind::FMulAdd:
       // We can't promote f16/bf16 fadd reductions and scalable vectors can't be

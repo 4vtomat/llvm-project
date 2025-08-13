@@ -7,6 +7,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "VPlanUtils.h"
+#include "VPlanCFG.h"
 #include "VPlanPatternMatch.h"
 #include "llvm/ADT/TypeSwitch.h"
 #include "llvm/Analysis/ScalarEvolutionExpressions.h"
@@ -109,7 +110,7 @@ bool vputils::isUniformAcrossVFsAndUFs(VPValue *V) {
         // VPReplicateRecipe.IsUniform. They are also uniform across UF parts if
         // all their operands are invariant.
         // TODO: Further relax the restrictions.
-        return R->isUniform() &&
+        return R->isSingleScalar() &&
                (isa<LoadInst, StoreInst>(R->getUnderlyingValue())) &&
                all_of(R->operands(), isUniformAcrossVFsAndUFs);
       })
@@ -127,6 +128,7 @@ bool vputils::isUniformAcrossVFsAndUFs(VPValue *V) {
       });
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 bool vputils::isInLoopRegion(const VPRecipeBase &Recipe, const VPlan &Plan) {
   const VPBlockBase *Parent = Recipe.getParent();
@@ -138,3 +140,12 @@ bool vputils::isInLoopRegion(const VPRecipeBase &Recipe, const VPlan &Plan) {
   return false;
 }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+VPBasicBlock *vputils::getFirstLoopHeader(VPlan &Plan, VPDominatorTree &VPDT) {
+  auto DepthFirst = vp_depth_first_shallow(Plan.getEntry());
+  auto I = find_if(DepthFirst, [&VPDT](VPBlockBase *VPB) {
+    return VPBlockUtils::isHeader(VPB, VPDT);
+  });
+  return I == DepthFirst.end() ? nullptr : cast<VPBasicBlock>(*I);
+}
+>>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976

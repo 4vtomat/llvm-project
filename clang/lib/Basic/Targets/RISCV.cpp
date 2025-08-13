@@ -291,6 +291,25 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
 #endif // SIFIVE_CUSTOMIZATION
   if (Opts.CFProtectionReturn && ISAInfo->hasExtension("zicfiss"))
     Builder.defineMacro("__riscv_shadow_stack");
+
+  if (Opts.CFProtectionBranch) {
+    auto Scheme = Opts.getCFBranchLabelScheme();
+    if (Scheme == CFBranchLabelSchemeKind::Default)
+      Scheme = getDefaultCFBranchLabelScheme();
+
+    Builder.defineMacro("__riscv_landing_pad");
+    switch (Scheme) {
+    case CFBranchLabelSchemeKind::Unlabeled:
+      Builder.defineMacro("__riscv_landing_pad_unlabeled");
+      break;
+    case CFBranchLabelSchemeKind::FuncSig:
+      // TODO: Define macros after the func-sig scheme is implemented
+      break;
+    case CFBranchLabelSchemeKind::Default:
+      llvm_unreachable("default cf-branch-label scheme should already be "
+                       "transformed to other scheme");
+    }
+  }
 }
 
 #if SIFIVE_CUSTOMIZATION
@@ -305,11 +324,14 @@ static constexpr int NumRVVBuiltins =
     RISCVVector::FirstSiFiveBuiltin - Builtin::FirstTSBuiltin;
 #endif // SIFIVE_CUSTOMIZATION
 static constexpr int NumRVVSiFiveBuiltins =
-    RISCVVector::FirstTSBuiltin - RISCVVector::FirstSiFiveBuiltin;
+    RISCVVector::FirstAndesBuiltin - RISCVVector::FirstSiFiveBuiltin;
+static constexpr int NumRVVAndesBuiltins =
+    RISCVVector::FirstTSBuiltin - RISCVVector::FirstAndesBuiltin;
 static constexpr int NumRISCVBuiltins =
     RISCV::LastTSBuiltin - RISCVVector::FirstTSBuiltin;
 static constexpr int NumBuiltins =
     RISCV::LastTSBuiltin - Builtin::FirstTSBuiltin;
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static_assert(NumBuiltins ==
               (NumNeonBuiltins + NumFp16Builtins + NumRVVBuiltins +
@@ -346,6 +368,10 @@ static constexpr std::array<Builtin::Info, NumFp16Builtins> BuiltinInfos = {
 } // namespace NEON
 } // namespace clang
 #endif // SIFIVE_CUSTOMIZATION
+=======
+static_assert(NumBuiltins == (NumRVVBuiltins + NumRVVSiFiveBuiltins +
+                              NumRVVAndesBuiltins + NumRISCVBuiltins));
+>>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 
 namespace RVV {
 #define GET_RISCVV_BUILTIN_STR_TABLE
@@ -373,6 +399,19 @@ static constexpr std::array<Builtin::Info, NumRVVSiFiveBuiltins> BuiltinInfos =
 };
 } // namespace RVVSiFive
 
+namespace RVVAndes {
+#define GET_RISCVV_BUILTIN_STR_TABLE
+#include "clang/Basic/riscv_andes_vector_builtins.inc"
+#undef GET_RISCVV_BUILTIN_STR_TABLE
+
+static constexpr std::array<Builtin::Info, NumRVVAndesBuiltins> BuiltinInfos =
+    {
+#define GET_RISCVV_BUILTIN_INFOS
+#include "clang/Basic/riscv_andes_vector_builtins.inc"
+#undef GET_RISCVV_BUILTIN_INFOS
+};
+} // namespace RVVAndes
+
 #define GET_BUILTIN_STR_TABLE
 #include "clang/Basic/BuiltinsRISCV.inc"
 #undef GET_BUILTIN_STR_TABLE
@@ -394,6 +433,7 @@ RISCVTargetInfo::getTargetBuiltins() const {
 #endif // SIFIVE_CUSTOMIZATION
       {&RVV::BuiltinStrings, RVV::BuiltinInfos, "__builtin_rvv_"},
       {&RVVSiFive::BuiltinStrings, RVVSiFive::BuiltinInfos, "__builtin_rvv_"},
+      {&RVVAndes::BuiltinStrings, RVVAndes::BuiltinInfos, "__builtin_rvv_"},
       {&BuiltinStrings, BuiltinInfos},
   };
 }
@@ -440,7 +480,8 @@ bool RISCVTargetInfo::initFeatureMap(
 
 std::optional<std::pair<unsigned, unsigned>>
 RISCVTargetInfo::getVScaleRange(const LangOptions &LangOpts,
-                                bool IsArmStreamingFunction) const {
+                                bool IsArmStreamingFunction,
+                                llvm::StringMap<bool> *FeatureMap) const {
   // RISCV::RVVBitsPerBlock is 64.
   unsigned VScaleMin = ISAInfo->getMinVLen() / llvm::RISCV::RVVBitsPerBlock;
 

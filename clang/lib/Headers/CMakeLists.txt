@@ -128,6 +128,7 @@ set(riscv_files
   riscv_ntlh.h
   sifive_sci.h # SIFIVE
   sifive_vector.h
+  andes_vector.h
   )
 
 # SIFIVE_CUSTOMIZATION

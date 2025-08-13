@@ -103,6 +103,8 @@ unsigned encodeVTYPE(VLMUL VLMUL, unsigned SEW, bool TailAgnostic,
 unsigned encodeXSfmmVType(unsigned SEW, unsigned Widen, bool AltFmt);
 #endif // SIFIVE_CUSTOMIZATION
 
+unsigned encodeXSfmmVType(unsigned SEW, unsigned Widen, bool AltFmt);
+
 inline static VLMUL getVLMUL(unsigned VType) {
   unsigned VLMul = VType & 0x7;
   return static_cast<VLMUL>(VLMul);
@@ -132,7 +134,10 @@ inline static unsigned getSEW(unsigned VType) {
   return decodeVSEW(VSEW);
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 inline static unsigned decodeTWiden(unsigned TWiden) {
   assert((TWiden == 1 || TWiden == 2 || TWiden == 3) &&
          "Unexpected TWiden value");
@@ -154,15 +159,22 @@ static inline bool isValidXSfmmVType(unsigned VTypeI) {
   return (VTypeI & ~0x738) == 0 && RISCVVType::hasXSfmmWiden(VTypeI) &&
          RISCVVType::getSEW(VTypeI) * RISCVVType::getXSfmmWiden(VTypeI) <= 64;
 }
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 
 inline static bool isTailAgnostic(unsigned VType) { return VType & 0x40; }
 
 inline static bool isMaskAgnostic(unsigned VType) { return VType & 0x80; }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 inline static bool isAltFmt(unsigned VType) { return VType & 0x100; }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+inline static bool isAltFmt(unsigned VType) { return VType & 0x100; }
+>>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 
 void printVType(unsigned VType, raw_ostream &OS);
 

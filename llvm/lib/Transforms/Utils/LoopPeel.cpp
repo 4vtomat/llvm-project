@@ -18,6 +18,7 @@
 #include "llvm/Analysis/LoopIterator.h"
 #include "llvm/Analysis/ScalarEvolution.h"
 #include "llvm/Analysis/ScalarEvolutionExpressions.h"
+#include "llvm/Analysis/ScalarEvolutionPatternMatch.h"
 #include "llvm/Analysis/TargetTransformInfo.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Dominators.h"
@@ -46,6 +47,7 @@
 
 using namespace llvm;
 using namespace llvm::PatternMatch;
+using namespace llvm::SCEVPatternMatch;
 
 #define DEBUG_TYPE "loop-peel"
 
@@ -465,10 +467,6 @@ bool llvm::canPeelLastIteration(const Loop &L, ScalarEvolution &SE) {
 #else
 bool llvm::canPeelLastIteration(const Loop &L, ScalarEvolution &SE) {
   const SCEV *BTC = SE.getBackedgeTakenCount(&L);
-  Value *Inc;
-  CmpPredicate Pred;
-  BasicBlock *Succ1;
-  BasicBlock *Succ2;
   // The loop must execute at least 2 iterations to guarantee that peeled
   // iteration executes.
   // TODO: Add checks during codegen.
@@ -480,16 +478,22 @@ bool llvm::canPeelLastIteration(const Loop &L, ScalarEvolution &SE) {
   // codegen. For now, it must
   // * exit via the latch,
   // * the exit condition must be a NE/EQ compare of an induction with step
-  // of 1.
+  // of 1 and must only be used by the exiting branch.
   BasicBlock *Latch = L.getLoopLatch();
+  Value *Inc;
+  Value *Bound;
+  CmpPredicate Pred;
+  BasicBlock *Succ1;
+  BasicBlock *Succ2;
   return Latch && Latch == L.getExitingBlock() &&
          match(Latch->getTerminator(),
-               m_Br(m_ICmp(Pred, m_Value(Inc), m_Value()), m_BasicBlock(Succ1),
-                    m_BasicBlock(Succ2))) &&
+               m_Br(m_OneUse(m_ICmp(Pred, m_Value(Inc), m_Value(Bound))),
+                    m_BasicBlock(Succ1), m_BasicBlock(Succ2))) &&
          ((Pred == CmpInst::ICMP_EQ && Succ2 == L.getHeader()) ||
           (Pred == CmpInst::ICMP_NE && Succ1 == L.getHeader())) &&
-         isa<SCEVAddRecExpr>(SE.getSCEV(Inc)) &&
-         cast<SCEVAddRecExpr>(SE.getSCEV(Inc))->getStepRecurrence(SE)->isOne();
+         SE.isLoopInvariant(SE.getSCEV(Bound), &L) &&
+         match(SE.getSCEV(Inc),
+               m_scev_AffineAddRec(m_SCEV(), m_scev_One(), m_SpecificLoop(&L)));
 }
 #endif
 
@@ -850,6 +854,7 @@ void llvm::computePeelCount(Loop *L, unsigned LoopSize,
   // TTI.getPeelingPreferences or by the flag -unroll-peel-count.
   unsigned TargetPeelCount = PP.PeelCount;
   PP.PeelCount = 0;
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   PP.PeelLast = false;
 
@@ -863,6 +868,9 @@ void llvm::computePeelCount(Loop *L, unsigned LoopSize,
   assert(PP.PeelProlog != PP.PeelEpilog &&
          "Unsupported use of computePeelCount");
 #else
+=======
+  PP.PeelLast = false;
+>>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
   if (!canPeel(L))
     return;
 #endif
@@ -1298,6 +1306,7 @@ llvm::gatherPeelingPreferences(Loop *L, ScalarEvolution &SE,
   PP.PeelCount = 0;
   PP.AllowPeeling = true;
   PP.AllowLoopNestsPeeling = false;
+  PP.PeelLast = false;
   PP.PeelProfiledIterations = true;
 #if SIFIVE_CUSTOMIZATION
   PP.AllowEpilogPeeling = false;
