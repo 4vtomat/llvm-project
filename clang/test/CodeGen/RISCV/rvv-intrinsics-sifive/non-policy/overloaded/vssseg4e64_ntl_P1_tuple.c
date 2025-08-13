@@ -13,7 +13,7 @@
 // CHECK-RV64-LABEL: define dso_local void @test_vssseg4e64_v_f64m1x4_ntl_P1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], target("riscv.vector.tuple", <vscale x 8 x i8>, 4) [[V_TUPLE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0:[0-9]+]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vssseg4.triscv.vector.tuple_nxv8i8_4t.i64(target("riscv.vector.tuple", <vscale x 8 x i8>, 4) [[V_TUPLE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]], i64 0), !nontemporal [[META6:![0-9]+]]
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vssseg4.triscv.vector.tuple_nxv8i8_4t.p0.i64(target("riscv.vector.tuple", <vscale x 8 x i8>, 4) [[V_TUPLE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]], i64 0), !nontemporal [[META6:![0-9]+]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vssseg4e64_v_f64m1x4_ntl_P1(double *base, ptrdiff_t bstride, vfloat64m1x4_t v_tuple, size_t vl, int domain) {
@@ -23,7 +23,7 @@ void test_vssseg4e64_v_f64m1x4_ntl_P1(double *base, ptrdiff_t bstride, vfloat64m
 // CHECK-RV64-LABEL: define dso_local void @test_vssseg4e64_v_f64m2x4_ntl_P1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], target("riscv.vector.tuple", <vscale x 16 x i8>, 4) [[V_TUPLE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vssseg4.triscv.vector.tuple_nxv16i8_4t.i64(target("riscv.vector.tuple", <vscale x 16 x i8>, 4) [[V_TUPLE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]], i64 0), !nontemporal [[META6]]
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vssseg4.triscv.vector.tuple_nxv16i8_4t.p0.i64(target("riscv.vector.tuple", <vscale x 16 x i8>, 4) [[V_TUPLE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]], i64 0), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vssseg4e64_v_f64m2x4_ntl_P1(double *base, ptrdiff_t bstride, vfloat64m2x4_t v_tuple, size_t vl, int domain) {
@@ -33,7 +33,7 @@ void test_vssseg4e64_v_f64m2x4_ntl_P1(double *base, ptrdiff_t bstride, vfloat64m
 // CHECK-RV64-LABEL: define dso_local void @test_vssseg4e64_v_i64m1x4_ntl_P1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], target("riscv.vector.tuple", <vscale x 8 x i8>, 4) [[V_TUPLE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vssseg4.triscv.vector.tuple_nxv8i8_4t.i64(target("riscv.vector.tuple", <vscale x 8 x i8>, 4) [[V_TUPLE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]], i64 0), !nontemporal [[META6]]
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vssseg4.triscv.vector.tuple_nxv8i8_4t.p0.i64(target("riscv.vector.tuple", <vscale x 8 x i8>, 4) [[V_TUPLE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]], i64 0), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vssseg4e64_v_i64m1x4_ntl_P1(int64_t *base, ptrdiff_t bstride, vint64m1x4_t v_tuple, size_t vl, int domain) {
@@ -43,7 +43,7 @@ void test_vssseg4e64_v_i64m1x4_ntl_P1(int64_t *base, ptrdiff_t bstride, vint64m1
 // CHECK-RV64-LABEL: define dso_local void @test_vssseg4e64_v_i64m2x4_ntl_P1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], target("riscv.vector.tuple", <vscale x 16 x i8>, 4) [[V_TUPLE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vssseg4.triscv.vector.tuple_nxv16i8_4t.i64(target("riscv.vector.tuple", <vscale x 16 x i8>, 4) [[V_TUPLE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]], i64 0), !nontemporal [[META6]]
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vssseg4.triscv.vector.tuple_nxv16i8_4t.p0.i64(target("riscv.vector.tuple", <vscale x 16 x i8>, 4) [[V_TUPLE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]], i64 0), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vssseg4e64_v_i64m2x4_ntl_P1(int64_t *base, ptrdiff_t bstride, vint64m2x4_t v_tuple, size_t vl, int domain) {
@@ -53,7 +53,7 @@ void test_vssseg4e64_v_i64m2x4_ntl_P1(int64_t *base, ptrdiff_t bstride, vint64m2
 // CHECK-RV64-LABEL: define dso_local void @test_vssseg4e64_v_u64m1x4_ntl_P1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], target("riscv.vector.tuple", <vscale x 8 x i8>, 4) [[V_TUPLE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vssseg4.triscv.vector.tuple_nxv8i8_4t.i64(target("riscv.vector.tuple", <vscale x 8 x i8>, 4) [[V_TUPLE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]], i64 0), !nontemporal [[META6]]
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vssseg4.triscv.vector.tuple_nxv8i8_4t.p0.i64(target("riscv.vector.tuple", <vscale x 8 x i8>, 4) [[V_TUPLE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]], i64 0), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vssseg4e64_v_u64m1x4_ntl_P1(uint64_t *base, ptrdiff_t bstride, vuint64m1x4_t v_tuple, size_t vl, int domain) {
@@ -63,7 +63,7 @@ void test_vssseg4e64_v_u64m1x4_ntl_P1(uint64_t *base, ptrdiff_t bstride, vuint64
 // CHECK-RV64-LABEL: define dso_local void @test_vssseg4e64_v_u64m2x4_ntl_P1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], target("riscv.vector.tuple", <vscale x 16 x i8>, 4) [[V_TUPLE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vssseg4.triscv.vector.tuple_nxv16i8_4t.i64(target("riscv.vector.tuple", <vscale x 16 x i8>, 4) [[V_TUPLE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]], i64 0), !nontemporal [[META6]]
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vssseg4.triscv.vector.tuple_nxv16i8_4t.p0.i64(target("riscv.vector.tuple", <vscale x 16 x i8>, 4) [[V_TUPLE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]], i64 0), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vssseg4e64_v_u64m2x4_ntl_P1(uint64_t *base, ptrdiff_t bstride, vuint64m2x4_t v_tuple, size_t vl, int domain) {
@@ -73,7 +73,7 @@ void test_vssseg4e64_v_u64m2x4_ntl_P1(uint64_t *base, ptrdiff_t bstride, vuint64
 // CHECK-RV64-LABEL: define dso_local void @test_vssseg4e64_v_f64m1x4_m_ntl_P1
 // CHECK-RV64-SAME: (<vscale x 1 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], target("riscv.vector.tuple", <vscale x 8 x i8>, 4) [[V_TUPLE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vssseg4.mask.triscv.vector.tuple_nxv8i8_4t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 8 x i8>, 4) [[V_TUPLE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 0), !nontemporal [[META6]]
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vssseg4.mask.triscv.vector.tuple_nxv8i8_4t.p0.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 8 x i8>, 4) [[V_TUPLE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 0), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vssseg4e64_v_f64m1x4_m_ntl_P1(vbool64_t mask, double *base, ptrdiff_t bstride, vfloat64m1x4_t v_tuple, size_t vl, int domain) {
@@ -83,7 +83,7 @@ void test_vssseg4e64_v_f64m1x4_m_ntl_P1(vbool64_t mask, double *base, ptrdiff_t 
 // CHECK-RV64-LABEL: define dso_local void @test_vssseg4e64_v_f64m2x4_m_ntl_P1
 // CHECK-RV64-SAME: (<vscale x 2 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], target("riscv.vector.tuple", <vscale x 16 x i8>, 4) [[V_TUPLE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vssseg4.mask.triscv.vector.tuple_nxv16i8_4t.i64.nxv2i1(target("riscv.vector.tuple", <vscale x 16 x i8>, 4) [[V_TUPLE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 0), !nontemporal [[META6]]
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vssseg4.mask.triscv.vector.tuple_nxv16i8_4t.p0.i64.nxv2i1(target("riscv.vector.tuple", <vscale x 16 x i8>, 4) [[V_TUPLE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 0), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vssseg4e64_v_f64m2x4_m_ntl_P1(vbool32_t mask, double *base, ptrdiff_t bstride, vfloat64m2x4_t v_tuple, size_t vl, int domain) {
@@ -93,7 +93,7 @@ void test_vssseg4e64_v_f64m2x4_m_ntl_P1(vbool32_t mask, double *base, ptrdiff_t 
 // CHECK-RV64-LABEL: define dso_local void @test_vssseg4e64_v_i64m1x4_m_ntl_P1
 // CHECK-RV64-SAME: (<vscale x 1 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], target("riscv.vector.tuple", <vscale x 8 x i8>, 4) [[V_TUPLE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vssseg4.mask.triscv.vector.tuple_nxv8i8_4t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 8 x i8>, 4) [[V_TUPLE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 0), !nontemporal [[META6]]
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vssseg4.mask.triscv.vector.tuple_nxv8i8_4t.p0.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 8 x i8>, 4) [[V_TUPLE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 0), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vssseg4e64_v_i64m1x4_m_ntl_P1(vbool64_t mask, int64_t *base, ptrdiff_t bstride, vint64m1x4_t v_tuple, size_t vl, int domain) {
@@ -103,7 +103,7 @@ void test_vssseg4e64_v_i64m1x4_m_ntl_P1(vbool64_t mask, int64_t *base, ptrdiff_t
 // CHECK-RV64-LABEL: define dso_local void @test_vssseg4e64_v_i64m2x4_m_ntl_P1
 // CHECK-RV64-SAME: (<vscale x 2 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], target("riscv.vector.tuple", <vscale x 16 x i8>, 4) [[V_TUPLE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vssseg4.mask.triscv.vector.tuple_nxv16i8_4t.i64.nxv2i1(target("riscv.vector.tuple", <vscale x 16 x i8>, 4) [[V_TUPLE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 0), !nontemporal [[META6]]
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vssseg4.mask.triscv.vector.tuple_nxv16i8_4t.p0.i64.nxv2i1(target("riscv.vector.tuple", <vscale x 16 x i8>, 4) [[V_TUPLE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 0), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vssseg4e64_v_i64m2x4_m_ntl_P1(vbool32_t mask, int64_t *base, ptrdiff_t bstride, vint64m2x4_t v_tuple, size_t vl, int domain) {
@@ -113,7 +113,7 @@ void test_vssseg4e64_v_i64m2x4_m_ntl_P1(vbool32_t mask, int64_t *base, ptrdiff_t
 // CHECK-RV64-LABEL: define dso_local void @test_vssseg4e64_v_u64m1x4_m_ntl_P1
 // CHECK-RV64-SAME: (<vscale x 1 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], target("riscv.vector.tuple", <vscale x 8 x i8>, 4) [[V_TUPLE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vssseg4.mask.triscv.vector.tuple_nxv8i8_4t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 8 x i8>, 4) [[V_TUPLE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 0), !nontemporal [[META6]]
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vssseg4.mask.triscv.vector.tuple_nxv8i8_4t.p0.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 8 x i8>, 4) [[V_TUPLE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 0), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vssseg4e64_v_u64m1x4_m_ntl_P1(vbool64_t mask, uint64_t *base, ptrdiff_t bstride, vuint64m1x4_t v_tuple, size_t vl, int domain) {
@@ -123,7 +123,7 @@ void test_vssseg4e64_v_u64m1x4_m_ntl_P1(vbool64_t mask, uint64_t *base, ptrdiff_
 // CHECK-RV64-LABEL: define dso_local void @test_vssseg4e64_v_u64m2x4_m_ntl_P1
 // CHECK-RV64-SAME: (<vscale x 2 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], target("riscv.vector.tuple", <vscale x 16 x i8>, 4) [[V_TUPLE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vssseg4.mask.triscv.vector.tuple_nxv16i8_4t.i64.nxv2i1(target("riscv.vector.tuple", <vscale x 16 x i8>, 4) [[V_TUPLE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 0), !nontemporal [[META6]]
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vssseg4.mask.triscv.vector.tuple_nxv16i8_4t.p0.i64.nxv2i1(target("riscv.vector.tuple", <vscale x 16 x i8>, 4) [[V_TUPLE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 0), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vssseg4e64_v_u64m2x4_m_ntl_P1(vbool32_t mask, uint64_t *base, ptrdiff_t bstride, vuint64m2x4_t v_tuple, size_t vl, int domain) {

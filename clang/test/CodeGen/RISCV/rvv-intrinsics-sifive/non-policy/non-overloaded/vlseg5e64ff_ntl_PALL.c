@@ -15,7 +15,7 @@
 #include <riscv_ntlh.h>
 // CHECK-LABEL: @test_vlseg5e64ff_v_f64m1_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { target("riscv.vector.tuple", <vscale x 8 x i8>, 5), i64 } @llvm.riscv.vlseg5ff.triscv.vector.tuple_nxv8i8_5t.i64(target("riscv.vector.tuple", <vscale x 8 x i8>, 5) poison, ptr [[BASE:%.*]], i64 [[VL:%.*]], i64 6), !nontemporal [[META6:![0-9]+]]
+// CHECK-NEXT:    [[TMP0:%.*]] = call { target("riscv.vector.tuple", <vscale x 8 x i8>, 5), i64 } @llvm.riscv.vlseg5ff.triscv.vector.tuple_nxv8i8_5t.i64.p0(target("riscv.vector.tuple", <vscale x 8 x i8>, 5) poison, ptr [[BASE:%.*]], i64 [[VL:%.*]], i64 6), !nontemporal [[META6:![0-9]+]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 5), i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_5t(target("riscv.vector.tuple", <vscale x 8 x i8>, 5) [[TMP1]], i32 0)
 // CHECK-NEXT:    store <vscale x 8 x i8> [[TMP2]], ptr [[V0:%.*]], align 8
@@ -37,7 +37,7 @@ void test_vlseg5e64ff_v_f64m1_ntl_PALL(vfloat64m1_t *v0, vfloat64m1_t *v1, vfloa
 
 // CHECK-LABEL: @test_vlseg5e64ff_v_i64m1_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { target("riscv.vector.tuple", <vscale x 8 x i8>, 5), i64 } @llvm.riscv.vlseg5ff.triscv.vector.tuple_nxv8i8_5t.i64(target("riscv.vector.tuple", <vscale x 8 x i8>, 5) poison, ptr [[BASE:%.*]], i64 [[VL:%.*]], i64 6), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP0:%.*]] = call { target("riscv.vector.tuple", <vscale x 8 x i8>, 5), i64 } @llvm.riscv.vlseg5ff.triscv.vector.tuple_nxv8i8_5t.i64.p0(target("riscv.vector.tuple", <vscale x 8 x i8>, 5) poison, ptr [[BASE:%.*]], i64 [[VL:%.*]], i64 6), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 5), i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_5t(target("riscv.vector.tuple", <vscale x 8 x i8>, 5) [[TMP1]], i32 0)
 // CHECK-NEXT:    store <vscale x 8 x i8> [[TMP2]], ptr [[V0:%.*]], align 8
@@ -59,7 +59,7 @@ void test_vlseg5e64ff_v_i64m1_ntl_PALL(vint64m1_t *v0, vint64m1_t *v1, vint64m1_
 
 // CHECK-LABEL: @test_vlseg5e64ff_v_u64m1_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { target("riscv.vector.tuple", <vscale x 8 x i8>, 5), i64 } @llvm.riscv.vlseg5ff.triscv.vector.tuple_nxv8i8_5t.i64(target("riscv.vector.tuple", <vscale x 8 x i8>, 5) poison, ptr [[BASE:%.*]], i64 [[VL:%.*]], i64 6), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP0:%.*]] = call { target("riscv.vector.tuple", <vscale x 8 x i8>, 5), i64 } @llvm.riscv.vlseg5ff.triscv.vector.tuple_nxv8i8_5t.i64.p0(target("riscv.vector.tuple", <vscale x 8 x i8>, 5) poison, ptr [[BASE:%.*]], i64 [[VL:%.*]], i64 6), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 5), i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_5t(target("riscv.vector.tuple", <vscale x 8 x i8>, 5) [[TMP1]], i32 0)
 // CHECK-NEXT:    store <vscale x 8 x i8> [[TMP2]], ptr [[V0:%.*]], align 8
@@ -81,7 +81,7 @@ void test_vlseg5e64ff_v_u64m1_ntl_PALL(vuint64m1_t *v0, vuint64m1_t *v1, vuint64
 
 // CHECK-LABEL: @test_vlseg5e64ff_v_f64m1_m_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { target("riscv.vector.tuple", <vscale x 8 x i8>, 5), i64 } @llvm.riscv.vlseg5ff.mask.triscv.vector.tuple_nxv8i8_5t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 8 x i8>, 5) poison, ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3, i64 6), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP0:%.*]] = call { target("riscv.vector.tuple", <vscale x 8 x i8>, 5), i64 } @llvm.riscv.vlseg5ff.mask.triscv.vector.tuple_nxv8i8_5t.i64.p0.nxv1i1(target("riscv.vector.tuple", <vscale x 8 x i8>, 5) poison, ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3, i64 6), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 5), i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_5t(target("riscv.vector.tuple", <vscale x 8 x i8>, 5) [[TMP1]], i32 0)
 // CHECK-NEXT:    store <vscale x 8 x i8> [[TMP2]], ptr [[V0:%.*]], align 8
@@ -103,7 +103,7 @@ void test_vlseg5e64ff_v_f64m1_m_ntl_PALL(vfloat64m1_t *v0, vfloat64m1_t *v1, vfl
 
 // CHECK-LABEL: @test_vlseg5e64ff_v_i64m1_m_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { target("riscv.vector.tuple", <vscale x 8 x i8>, 5), i64 } @llvm.riscv.vlseg5ff.mask.triscv.vector.tuple_nxv8i8_5t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 8 x i8>, 5) poison, ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3, i64 6), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP0:%.*]] = call { target("riscv.vector.tuple", <vscale x 8 x i8>, 5), i64 } @llvm.riscv.vlseg5ff.mask.triscv.vector.tuple_nxv8i8_5t.i64.p0.nxv1i1(target("riscv.vector.tuple", <vscale x 8 x i8>, 5) poison, ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3, i64 6), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 5), i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_5t(target("riscv.vector.tuple", <vscale x 8 x i8>, 5) [[TMP1]], i32 0)
 // CHECK-NEXT:    store <vscale x 8 x i8> [[TMP2]], ptr [[V0:%.*]], align 8
@@ -125,7 +125,7 @@ void test_vlseg5e64ff_v_i64m1_m_ntl_PALL(vint64m1_t *v0, vint64m1_t *v1, vint64m
 
 // CHECK-LABEL: @test_vlseg5e64ff_v_u64m1_m_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { target("riscv.vector.tuple", <vscale x 8 x i8>, 5), i64 } @llvm.riscv.vlseg5ff.mask.triscv.vector.tuple_nxv8i8_5t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 8 x i8>, 5) poison, ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3, i64 6), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP0:%.*]] = call { target("riscv.vector.tuple", <vscale x 8 x i8>, 5), i64 } @llvm.riscv.vlseg5ff.mask.triscv.vector.tuple_nxv8i8_5t.i64.p0.nxv1i1(target("riscv.vector.tuple", <vscale x 8 x i8>, 5) poison, ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3, i64 6), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 5), i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_5t(target("riscv.vector.tuple", <vscale x 8 x i8>, 5) [[TMP1]], i32 0)
 // CHECK-NEXT:    store <vscale x 8 x i8> [[TMP2]], ptr [[V0:%.*]], align 8

@@ -934,13 +934,22 @@ multiclass RVVUnitStridedSegLoadTuple<string op> {
         llvm::Function *TupleInsertFunc = CGM.getIntrinsic(Intrinsic::riscv_tuple_insert, IntrinsicTypes);
         llvm::Value *TupVal = PoisonValue::get(TupType);
         unsigned PassthruStartIdx = 0;
+        unsigned BasePtrIdx = 0;
+        if (IsMasked)
+          BasePtrIdx = NF + 1;
+        else
+          BasePtrIdx = NF;
         // Please refer to comment under 'defvar NFList' in this file
         if (!(IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) &&
             !(!IsMasked && PolicyAttrs & RVV_VTA)) {
-          if (IsMasked)
+          if (IsMasked) {
             PassthruStartIdx = NF + 1;
-          else // Unmasked
+            BasePtrIdx = 2 * NF + 1;
+          }
+          else { // Unmasked
             PassthruStartIdx = NF;
+            BasePtrIdx = 2 * NF;
+          }
         }
 
         if (PassthruStartIdx != 0)
@@ -948,9 +957,9 @@ multiclass RVVUnitStridedSegLoadTuple<string op> {
             TupVal = Builder.CreateCall(TupleInsertFunc, {TupVal, Ops[i], Builder.getInt32(i - PassthruStartIdx)}, "");
 
         if (IsMasked)
-          IntrinsicTypes = {TupType, Ops[NF]->getType(), Ops.back()->getType()};
+          IntrinsicTypes = {TupType, Ops[BasePtrIdx]->getType(), Ops[NF]->getType(), Ops.back()->getType()};
         else
-          IntrinsicTypes = {TupType, Ops.back()->getType()};
+          IntrinsicTypes = {TupType, Ops[BasePtrIdx]->getType(), Ops.back()->getType()};
         SmallVector<llvm::Value*, 12> Operands = {TupVal};
 
         unsigned PtrOperandIdx = IsMasked ?
@@ -1109,12 +1118,12 @@ multiclass RVVUnitStridedSegStoreTuple<string op> {
           // Builtin: (mask, ptr, val0, val1, ..., vl)
           // Intrinsic: (val0, val1, ..., ptr, mask, vl)
           Operands.append({Ops[1], Ops[0], Ops[NF + 2]});
-          IntrinsicTypes = {TupType, Ops[0]->getType(), Ops[NF + 2]->getType()};
+          IntrinsicTypes = {TupType, Ops[ValOffset - 1]->getType(), Ops[0]->getType(), Ops[NF + 2]->getType()};
         } else {
           // Builtin: (ptr, val0, val1, ..., vl)
           // Intrinsic: (val0, val1, ..., ptr, vl)
           Operands.append({Ops[0], Ops[NF + 1]});
-          IntrinsicTypes = {TupType, Ops[NF + 1]->getType()};
+          IntrinsicTypes = {TupType, Ops[ValOffset - 1]->getType(), Ops[NF + 1]->getType()};
         }
         Operands.push_back(ConstantInt::get(Ops.back()->getType(), Log2_32(EltWidth)));
 
@@ -1227,13 +1236,22 @@ multiclass RVVUnitStridedSegLoadFFTuple<string op> {
         llvm::Function *TupleInsertFunc = CGM.getIntrinsic(Intrinsic::riscv_tuple_insert, IntrinsicTypes);
         llvm::Value *TupVal = PoisonValue::get(TupType);
         unsigned PassthruStartIdx = 0;
+        unsigned BasePtrIdx = 0;
+        if (IsMasked)
+          BasePtrIdx = NF + 1;
+        else
+          BasePtrIdx = NF;
         // Please refer to comment under 'defvar NFList' in this file
         if (!(IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) &&
             !(!IsMasked && PolicyAttrs & RVV_VTA)) {
-          if (IsMasked)
+          if (IsMasked) {
             PassthruStartIdx = NF + 1;
-          else // Unmasked
+            BasePtrIdx = 2 * NF + 1;
+          }
+          else { // Unmasked
             PassthruStartIdx = NF;
+            BasePtrIdx = 2 * NF;
+          }
         }
 
         if (PassthruStartIdx != 0)
@@ -1242,9 +1260,9 @@ multiclass RVVUnitStridedSegLoadFFTuple<string op> {
 
         // llvm::Type *RetType = StructType::get(Context, {});
         if (IsMasked)
-          IntrinsicTypes = {TupType, Ops.back()->getType(), Ops[NF]->getType()};
+          IntrinsicTypes = {TupType, Ops.back()->getType(), Ops[BasePtrIdx]->getType(), Ops[NF]->getType()};
         else
-          IntrinsicTypes = {TupType, Ops.back()->getType()};
+          IntrinsicTypes = {TupType, Ops.back()->getType(), Ops[BasePtrIdx]->getType()};
         SmallVector<llvm::Value*, 12> Operands = {TupVal};
 
         unsigned PtrOperandIdx = IsMasked ?
@@ -1408,13 +1426,22 @@ multiclass RVVStridedSegLoadTuple<string op> {
         llvm::Function *TupleInsertFunc = CGM.getIntrinsic(Intrinsic::riscv_tuple_insert, IntrinsicTypes);
         llvm::Value *TupVal = PoisonValue::get(TupType);
         unsigned PassthruStartIdx = 0;
+        unsigned BasePtrIdx = 0;
+        if (IsMasked)
+          BasePtrIdx = NF + 1;
+        else
+          BasePtrIdx = NF;
         // Please refer to comment under 'defvar NFList' in this file
         if (!(IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) &&
             !(!IsMasked && PolicyAttrs & RVV_VTA)) {
-          if (IsMasked)
+          if (IsMasked) {
             PassthruStartIdx = NF + 1;
-          else // Unmasked
+            BasePtrIdx = 2 * NF + 1;
+          }
+          else { // Unmasked
             PassthruStartIdx = NF;
+            BasePtrIdx = 2 * NF;
+          }
         }
 
         if (PassthruStartIdx != 0)
@@ -1422,9 +1449,9 @@ multiclass RVVStridedSegLoadTuple<string op> {
             TupVal = Builder.CreateCall(TupleInsertFunc, {TupVal, Ops[i], Builder.getInt32(i - PassthruStartIdx)}, "");
 
         if (IsMasked)
-          IntrinsicTypes = {TupType, Ops.back()->getType(), Ops[NF]->getType()};
+          IntrinsicTypes = {TupType, Ops[BasePtrIdx]->getType(), Ops.back()->getType(), Ops[NF]->getType()};
         else
-          IntrinsicTypes = {TupType, Ops.back()->getType()};
+          IntrinsicTypes = {TupType, Ops[BasePtrIdx]->getType(), Ops.back()->getType()};
         SmallVector<llvm::Value*, 12> Operands = {TupVal};
 
         unsigned PtrOperandIdx = IsMasked ?
@@ -1587,12 +1614,12 @@ multiclass RVVStridedSegStoreTuple<string op> {
           // Builtin: (mask, ptr, stride, val0, val1, ..., vl)
           // Intrinsic: (val0, val1, ..., ptr, stride, mask, vl)
           Operands.append({Ops[1], Ops[2], Ops[0], Ops[NF + 3]});
-          IntrinsicTypes = {TupType, Ops[NF + 3]->getType(), Ops[0]->getType()};
+          IntrinsicTypes = {TupType, Ops[1]->getType(), Ops[NF + 3]->getType(), Ops[0]->getType()};
         } else {
           // Builtin: (ptr, stride, val0, val1, ..., vl)
           // Intrinsic: (val0, val1, ..., ptr, stride, vl)
           Operands.append({Ops[0], Ops[1], Ops[NF + 2]});
-          IntrinsicTypes = {TupType, Ops[NF + 2]->getType()};
+          IntrinsicTypes = {TupType, Ops[0]->getType(), Ops[NF + 2]->getType()};
         }
 
         Operands.push_back(ConstantInt::get(Ops.back()->getType(), Log2_32(EltWidth)));
@@ -1702,13 +1729,22 @@ multiclass RVVIndexedSegLoadTuple<string op> {
         llvm::Function *TupleInsertFunc = CGM.getIntrinsic(Intrinsic::riscv_tuple_insert, IntrinsicTypes);
         llvm::Value *TupVal = PoisonValue::get(TupType);
         unsigned PassthruStartIdx = 0;
+        unsigned BasePtrIdx = 0;
+        if (IsMasked)
+          BasePtrIdx = NF + 1;
+        else
+          BasePtrIdx = NF;
         // Please refer to comment under 'defvar NFList' in this file
         if (!(IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) &&
             !(!IsMasked && PolicyAttrs & RVV_VTA)) {
-          if (IsMasked)
+          if (IsMasked) {
             PassthruStartIdx = NF + 1;
-          else // Unmasked
+            BasePtrIdx = 2 * NF + 1;
+          }
+          else { // Unmasked
             PassthruStartIdx = NF;
+            BasePtrIdx = 2 * NF;
+          }
         }
 
         if (PassthruStartIdx != 0)
@@ -1733,9 +1769,9 @@ multiclass RVVIndexedSegLoadTuple<string op> {
         Operands.push_back(ConstantInt::get(Ops.back()->getType(), Log2_32(EltWidth)));
 
         if (IsMasked)
-          IntrinsicTypes = {TupType, IndexOperand->getType(), Ops[NF]->getType(), Ops.back()->getType()};
+          IntrinsicTypes = {TupType, Ops[BasePtrIdx]->getType(), IndexOperand->getType(), Ops[NF]->getType(), Ops.back()->getType()};
         else
-          IntrinsicTypes = {TupType, IndexOperand->getType(), Ops.back()->getType()};
+          IntrinsicTypes = {TupType, Ops[BasePtrIdx]->getType(), IndexOperand->getType(), Ops.back()->getType()};
         llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
         llvm::Value *LoadValue;
         if (IsNontemporal)
@@ -1881,12 +1917,12 @@ multiclass RVVIndexedSegStoreTuple<string op> {
           // Builtin: (mask, ptr, index, val0, val1, ..., vl)
           // Intrinsic: (val0, val1, ..., ptr, index, mask, vl)
           Operands.append({Ops[1], Ops[2], Ops[0], Ops[NF + 3]});
-          IntrinsicTypes = {TupType, Ops[2]->getType(), Ops[0]->getType(), Ops[NF + 3]->getType()};
+          IntrinsicTypes = {TupType, Ops[1]->getType(), Ops[2]->getType(), Ops[0]->getType(), Ops[NF + 3]->getType()};
         } else {
           // Builtin: (ptr, index, val0, val1, ..., vl)
           // Intrinsic: (val0, val1, ..., ptr, index, vl)
           Operands.append({Ops[0], Ops[1], Ops[NF + 2]});
-          IntrinsicTypes = {TupType, Ops[1]->getType(), Ops[NF + 2]->getType()};
+          IntrinsicTypes = {TupType, Ops[0]->getType(), Ops[1]->getType(), Ops[NF + 2]->getType()};
         }
 
         Operands.push_back(ConstantInt::get(Ops.back()->getType(), Log2_32(EltWidth)));

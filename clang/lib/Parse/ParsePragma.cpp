@@ -4307,10 +4307,8 @@ void PragmaRISCVHandler::HandlePragma(Preprocessor &PP,
   PP.Lex(Tok);
   II = Tok.getIdentifierInfo();
 #if SIFIVE_CUSTOMIZATION
-  if (!II ||
-      !(II->isStr("vector") || II->isStr("sifive_vector") ||
-        II->isStr("andes_vector")) ||
-      II->isStr("v0p11")) {
+  if (!II || !(II->isStr("vector") || II->isStr("sifive_vector") ||
+               II->isStr("andes_vector") || II->isStr("v0p11"))) {
 #else
   if (!II || !(II->isStr("vector") || II->isStr("sifive_vector") ||
                II->isStr("andes_vector"))) {
