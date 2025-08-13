@@ -1080,10 +1080,9 @@ static VPWidenInductionRecipe *getOptimizableIVOf(VPValue *VPV) {
 #if SIFIVE_CUSTOMIZATION
 /// Attempts to optimize the induction variable exit values for users in the
 /// unbound main exit block.
-static VPValue *optimizeUnboundExitInductionUser(VPlan &Plan,
-                                                 VPTypeAnalysis &TypeInfo,
-                                                 VPBasicBlock *PredVPBB,
-                                                 VPValue *Op) {
+static VPValue *optimizeUnboundExitInductionUser(
+    VPlan &Plan, VPTypeAnalysis &TypeInfo, VPBasicBlock *PredVPBB, VPValue *Op,
+    SmallDenseMap<VPValue *, VPWidenInductionRecipe *> &MapIVs) {
   using namespace VPlanPatternMatch;
 
   VPValue *Incoming, *Mask;
@@ -1094,6 +1093,8 @@ static VPValue *optimizeUnboundExitInductionUser(VPlan &Plan,
     return nullptr;
 
   auto *WideIV = getOptimizableIVOf(Incoming);
+  if (!WideIV)
+    WideIV = MapIVs.lookup(Incoming);
   if (!WideIV)
     return nullptr;
 
@@ -1141,16 +1142,19 @@ static VPValue *optimizeUnboundExitInductionUser(VPlan &Plan,
   return EndValue;
 }
 
-void VPlanTransforms::optimizeInductionExitUsersForUnboundLoops(VPlan &Plan) {
+void VPlanTransforms::optimizeInductionExitUsersForUnboundLoops(
+    VPlan &Plan, SmallDenseMap<VPValue *, VPWidenInductionRecipe *> &MapIVs) {
+  if (!Plan.isUncountableAndUnbound())
+    return;
   VPTypeAnalysis TypeInfo(Plan.getCanonicalIV()->getScalarType());
   for (VPIRBasicBlock *ExitVPBB : Plan.getExitBlocks()) {
     for (VPRecipeBase &R : ExitVPBB->phis()) {
       auto *ExitIRI = cast<VPIRPhi>(&R);
       for (auto [Idx, PredVPBB] : enumerate(ExitVPBB->getPredecessors())) {
         VPValue *Escape = nullptr;
-        Escape = optimizeUnboundExitInductionUser(Plan, TypeInfo,
-                                                  cast<VPBasicBlock>(PredVPBB),
-                                                  ExitIRI->getOperand(Idx));
+        Escape = optimizeUnboundExitInductionUser(
+            Plan, TypeInfo, cast<VPBasicBlock>(PredVPBB),
+            ExitIRI->getOperand(Idx), MapIVs);
         if (Escape)
           ExitIRI->setOperand(Idx, Escape);
       }
@@ -1285,10 +1289,8 @@ optimizeLatchExitInductionUser(VPlan &Plan, VPTypeAnalysis &TypeInfo,
 void VPlanTransforms::optimizeInductionExitUsers(
     VPlan &Plan, DenseMap<VPValue *, VPValue *> &EndValues) {
 #if SIFIVE_CUSTOMIZATION
-  if (Plan.isUncountableAndUnbound()) {
-    optimizeInductionExitUsersForUnboundLoops(Plan);
+  if (Plan.isUncountableAndUnbound())
     return;
-  }
 #endif // SIFIVE_CUSTOMIZATION
 
   VPBlockBase *MiddleVPBB = Plan.getMiddleBlock();
