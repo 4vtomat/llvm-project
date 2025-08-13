@@ -202,13 +202,8 @@
 // CHECK-RV64:      "-cc1" "-triple" "riscv64-unknown-unknown-elf"
 // CHECK-RV64-SAME: "-resource-dir" "[[RESOURCE_DIR:[^"]+]]"
 // CHECK-RV64-SAME: "-isysroot" "[[SYSROOT:[^"]*]]"
-<<<<<<< HEAD
-// CHECK-RV64-SAME: "-internal-isystem" "[[SYSROOT]]{{[/\\]+}}rv64imafdc{{[/\\]+}}lp64d{{[/\\]+}}include{{[/\\]+}}c++{{[/\\]+}}v1"
-// CHECk-RV64-SAME: "-internal-isystem" "[[SYSROOT]]{{[/\\]+}}rv64imafdc{{[/\\]+}}lp64d{{[/\\]+}}include"
-=======
 // CHECK-RV64-SAME: "-internal-isystem" "[[SYSROOT]]{{[/\\]+}}include{{[/\\]+}}c++{{[/\\]+}}v1"
 // CHECK-RV64-SAME: "-internal-isystem" "[[SYSROOT]]{{[/\\]+}}include"
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 // CHECK-RV64-SAME: "-x" "c++" "{{.*}}baremetal.cpp"
 // CHECK-RV64-NEXT: ld{{(.exe)?}}" "{{.*}}.o" "-Bstatic"
 // CHECK-RV64-SAME: "-Lsome{{[/\\]+}}directory{{[/\\]+}}user{{[/\\]+}}asked{{[/\\]+}}for"

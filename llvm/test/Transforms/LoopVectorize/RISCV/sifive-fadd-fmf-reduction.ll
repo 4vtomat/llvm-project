@@ -107,7 +107,7 @@ define float @fadd_fmf_reduction(float* noalias nocapture readonly %a, i64 %n, f
 ; CHECK-SCALABLE-NEXT:    [[TMP1:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; CHECK-SCALABLE-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP1]], i32 2, i1 true)
 ; CHECK-SCALABLE-NEXT:    [[TMP3:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
-; CHECK-SCALABLE-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0(ptr align 4 [[TMP3]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-SCALABLE-NEXT:    [[VP_OP_LOAD:%.*]] = load <vscale x 2 x float>, ptr [[TMP3]], align 4
 ; CHECK-SCALABLE-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x float> [[VEC_PHI]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-SCALABLE-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x float> [[VP_OP]], <vscale x 2 x float> [[VEC_PHI]], i32 [[TMP2]])
 ; CHECK-SCALABLE-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP2]] to i64
@@ -127,7 +127,7 @@ define float @fadd_fmf_reduction(float* noalias nocapture readonly %a, i64 %n, f
 ; CHECK-SCALABLE-NEXT:    [[ADD]] = fadd fast float [[TMP7]], [[SUM_07]]
 ; CHECK-SCALABLE-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
 ; CHECK-SCALABLE-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], [[N]]
-; CHECK-SCALABLE-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-SCALABLE-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END]], label [[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK-SCALABLE:       for.end:
 ; CHECK-SCALABLE-NEXT:    [[ADD_LCSSA:%.*]] = phi float [ [[ADD]], [[FOR_BODY]] ], [ [[TMP6]], [[MIDDLE_BLOCK]] ]
 ; CHECK-SCALABLE-NEXT:    ret float [[ADD_LCSSA]]
@@ -146,7 +146,7 @@ define float @fadd_fmf_reduction(float* noalias nocapture readonly %a, i64 %n, f
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP2:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP3:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP2]], i32 2, i1 true)
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP4:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0(ptr align 4 [[TMP4]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP3]])
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[VP_OP_LOAD:%.*]] = load <vscale x 2 x float>, ptr [[TMP4]], align 4
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 2 x float> @llvm.vp.fadd.nxv2f32(<vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x float> [[VEC_PHI]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP3]])
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x float> @llvm.vp.merge.nxv2f32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x float> [[VP_OP]], <vscale x 2 x float> [[VEC_PHI]], i32 [[TMP3]])
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP3]] to i64
@@ -166,7 +166,7 @@ define float @fadd_fmf_reduction(float* noalias nocapture readonly %a, i64 %n, f
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[ADD]] = fadd fast float [[TMP8]], [[SUM_07]]
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], [[N]]
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END]], label [[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK-SCALABLE-NO-POSTSV:       for.end:
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[ADD_LCSSA:%.*]] = phi float [ [[ADD]], [[FOR_BODY]] ], [ [[TMP7]], [[MIDDLE_BLOCK]] ]
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    ret float [[ADD_LCSSA]]

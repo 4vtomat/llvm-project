@@ -14,35 +14,6 @@
  ; IF-EVL:      ir-bb<entry>:
  ; IF-EVL-NEXT: Successor(s): vector.ph
 
-<<<<<<< HEAD
- ; IF-EVL:      vector.ph:
- ; IF-EVL-NEXT: Successor(s): vector loop
-
- ; IF-EVL: <x1> vector loop: {
- ; IF-EVL-NEXT:   vector.body:
- ; IF-EVL-NEXT:     EMIT vp<[[IV:%.+]]> = CANONICAL-INDUCTION ir<0>, vp<[[IV_EVL_NEXT:%.+]]>
- ; IF-EVL-NEXT:     EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<[[EVL_PHI:%.+]]> = phi ir<0>, vp<[[IV_EVL_NEXT:%.+]]>
- ; IF-EVL-NEXT:     EMIT vp<[[AVL:%.+]]> = sub vp<[[VTC]]>, vp<[[EVL_PHI]]>
- ; IF-EVL-NEXT:     EMIT vp<[[EVL:%.+]]> = EXPLICIT-VECTOR-LENGTH vp<[[AVL]]>
- ; IF-EVL-NEXT:     CLONE ir<[[GEP1:%.+]]> = getelementptr inbounds ir<%b>, vp<[[EVL_PHI]]>
- ; IF-EVL-NEXT:     vp<[[PTR1:%[0-9]+]]> = vector-pointer ir<[[GEP1]]>
- ; IF-EVL-NEXT:     WIDEN ir<[[LD1:%.+]]> = vp.load vp<[[PTR1]]>, vp<[[EVL]]>
- ; IF-EVL-NEXT:     CLONE ir<[[GEP2:%.+]]> = getelementptr inbounds ir<%c>, vp<[[EVL_PHI]]>
- ; IF-EVL-NEXT:     vp<[[PTR2:%[0-9]+]]> = vector-pointer ir<[[GEP2]]>
- ; IF-EVL-NEXT:     WIDEN ir<[[LD2:%.+]]> = vp.load vp<[[PTR2]]>, vp<[[EVL]]>
- ; IF-EVL-NEXT:     WIDEN ir<[[CMP:%.+]]> = icmp sgt ir<[[LD1]]>, ir<[[LD2]]>
- ; IF-EVL-NEXT:     WIDEN ir<[[SUB:%.+]]> = sub ir<0>, ir<[[LD2]]>
- ; IF-EVL-NEXT:     WIDEN-SELECT ir<[[SELECT:%.+]]> = select ir<[[CMP]]>, ir<[[LD2]]>, ir<[[SUB]]>
- ; IF-EVL-NEXT:     WIDEN ir<[[ADD:%.+]]> = add ir<[[SELECT]]>, ir<[[LD1]]>
- ; IF-EVL-NEXT:     CLONE ir<[[GEP3:%.+]]> = getelementptr inbounds ir<%a>, vp<[[EVL_PHI]]>
- ; IF-EVL-NEXT:     vp<[[PTR3:%.+]]> = vector-pointer ir<[[GEP3]]>
- ; IF-EVL-NEXT:     WIDEN vp.store vp<[[PTR3]]>, ir<[[ADD]]>, vp<[[EVL]]>
- ; IF-EVL-NEXT:     EMIT vp<[[CAST:%[0-9]+]]> = zext vp<[[EVL]]> to i64
- ; IF-EVL-NEXT:     EMIT vp<[[IV_EVL_NEXT]]> = add nuw vp<[[CAST]]>, vp<[[EVL_PHI]]>
- ; IF-EVL-NEXT:     EMIT branch-on-count vp<[[IV_EVL_NEXT]]>, vp<[[VTC]]>
- ; IF-EVL-NEXT:   No successors
- ; IF-EVL-NEXT: }
-=======
  ; IF-EVL:      ir-bb<vector.ph>:
  ; IF-EVL-NEXT:   IR   %4 = call i64 @llvm.vscale.i64()
  ; IF-EVL-NEXT:   IR   %5 = mul i64 %4, 4
@@ -76,7 +47,6 @@
  ; IF-EVL-NEXT:   EMIT vp<[[IV_NEX]]> = add vp<[[CAST]]>, vp<[[EVL_PHI]]>
  ; IF-EVL-NEXT:   EMIT vp<[[IV_NEXT_EXIT]]> = add vp<[[IV]]>, ir<[[VFUF]]>
  ; IF-EVL-NEXT:   EMIT branch-on-count vp<[[IV_NEXT_EXIT]]>,  ir<[[VTC]]>
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 
  entry:
    br label %for.body

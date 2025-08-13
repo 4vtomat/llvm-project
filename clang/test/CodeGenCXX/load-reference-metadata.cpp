@@ -17,16 +17,16 @@ struct S {
 // CHECK-NEXT:    [[TMP0:%.*]] = load ptr, ptr [[S_ADDR]], align 8, !tbaa [[TBAA2]], !nonnull [[META7:![0-9]+]], !align [[META8:![0-9]+]]
 // CHECK-NEXT:    [[A:%.*]] = getelementptr inbounds nuw [[STRUCT_S:%.*]], ptr [[TMP0]], i32 0, i32 0
 // CHECK-NEXT:    [[TMP1:%.*]] = load ptr, ptr [[A]], align 8, !tbaa [[TBAA9:![0-9]+]], !nonnull [[META7]]
-// CHECK-NEXT:    store i8 0, ptr [[TMP1]], align 1, !tbaa [[TBAA14:![0-9]+]]
+// CHECK-NEXT:    store i8 0, ptr [[TMP1]], align 1, !tbaa [[TBAA13:![0-9]+]]
 // CHECK-NEXT:    [[TMP2:%.*]] = load ptr, ptr [[S_ADDR]], align 8, !tbaa [[TBAA2]], !nonnull [[META7]], !align [[META8]]
 // CHECK-NEXT:    [[B:%.*]] = getelementptr inbounds nuw [[STRUCT_S]], ptr [[TMP2]], i32 0, i32 1
-// CHECK-NEXT:    [[TMP3:%.*]] = load ptr, ptr [[B]], align 8, !tbaa [[TBAA15:![0-9]+]], !nonnull [[META7]], !align [[META16:![0-9]+]]
-// CHECK-NEXT:    store i32 0, ptr [[TMP3]], align 4, !tbaa [[TBAA17:![0-9]+]]
+// CHECK-NEXT:    [[TMP3:%.*]] = load ptr, ptr [[B]], align 8, !tbaa [[TBAA14:![0-9]+]], !nonnull [[META7]], !align [[META15:![0-9]+]]
+// CHECK-NEXT:    store i32 0, ptr [[TMP3]], align 4, !tbaa [[TBAA16:![0-9]+]]
 // CHECK-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[S_ADDR]], align 8, !tbaa [[TBAA2]], !nonnull [[META7]], !align [[META8]]
 // CHECK-NEXT:    [[C:%.*]] = getelementptr inbounds nuw [[STRUCT_S]], ptr [[TMP4]], i32 0, i32 2
-// CHECK-NEXT:    [[TMP5:%.*]] = load ptr, ptr [[C]], align 8, !tbaa [[TBAA19:![0-9]+]], !nonnull [[META7]], !align [[META20:![0-9]+]]
+// CHECK-NEXT:    [[TMP5:%.*]] = load ptr, ptr [[C]], align 8, !tbaa [[TBAA18:![0-9]+]], !nonnull [[META7]], !align [[META19:![0-9]+]]
 // CHECK-NEXT:    [[X:%.*]] = getelementptr inbounds nuw [[STRUCT_F:%.*]], ptr [[TMP5]], i32 0, i32 0
-// CHECK-NEXT:    store i32 0, ptr [[X]], align 32, !tbaa [[TBAA21:![0-9]+]]
+// CHECK-NEXT:    store i32 0, ptr [[X]], align 32, !tbaa [[TBAA20:![0-9]+]]
 // CHECK-NEXT:    ret void
 //
 void test(S &s) {
@@ -42,13 +42,13 @@ extern B (&bb)[2];
 // CHECK-LABEL: define dso_local void @_Z13test_externalv(
 // CHECK-SAME: ) #[[ATTR0]] {
 // CHECK-NEXT:  [[ENTRY:.*:]]
-// CHECK-NEXT:    [[TMP0:%.*]] = load ptr, ptr @b, align 8, !tbaa [[TBAA23:![0-9]+]], !nonnull [[META7]], !align [[META8]]
+// CHECK-NEXT:    [[TMP0:%.*]] = load ptr, ptr @b, align 8, !tbaa [[TBAA22:![0-9]+]], !nonnull [[META7]], !align [[META8]]
 // CHECK-NEXT:    [[C:%.*]] = getelementptr inbounds nuw [[STRUCT_B:%.*]], ptr [[TMP0]], i32 0, i32 2
-// CHECK-NEXT:    store i8 0, ptr [[C]], align 8, !tbaa [[TBAA25:![0-9]+]]
-// CHECK-NEXT:    [[TMP1:%.*]] = load ptr, ptr @bb, align 8, !tbaa [[TBAA23]], !nonnull [[META7]], !align [[META20]]
+// CHECK-NEXT:    store i8 0, ptr [[C]], align 8, !tbaa [[TBAA24:![0-9]+]]
+// CHECK-NEXT:    [[TMP1:%.*]] = load ptr, ptr @bb, align 8, !tbaa [[TBAA22]], !nonnull [[META7]], !align [[META19]]
 // CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds [2 x %struct.B], ptr [[TMP1]], i64 0, i64 0
 // CHECK-NEXT:    [[C1:%.*]] = getelementptr inbounds nuw [[STRUCT_B]], ptr [[ARRAYIDX]], i32 0, i32 2
-// CHECK-NEXT:    store i8 0, ptr [[C1]], align 16, !tbaa [[TBAA25]]
+// CHECK-NEXT:    store i8 0, ptr [[C1]], align 16, !tbaa [[TBAA24]]
 // CHECK-NEXT:    ret void
 //
 void test_external() {
@@ -60,8 +60,8 @@ void test_external() {
 // CHECK-SAME: ptr noundef nonnull align 8 dereferenceable(17) [[S:%.*]]) #[[ATTR0]] {
 // CHECK-NEXT:  [[ENTRY:.*:]]
 // CHECK-NEXT:    [[S_ADDR:%.*]] = alloca ptr, align 8
-// CHECK-NEXT:    store ptr [[S]], ptr [[S_ADDR]], align 8, !tbaa [[TBAA23]]
-// CHECK-NEXT:    [[TMP0:%.*]] = load ptr, ptr [[S_ADDR]], align 8, !tbaa [[TBAA23]], !nonnull [[META7]], !align [[META8]]
+// CHECK-NEXT:    store ptr [[S]], ptr [[S_ADDR]], align 8, !tbaa [[TBAA22]]
+// CHECK-NEXT:    [[TMP0:%.*]] = load ptr, ptr [[S_ADDR]], align 8, !tbaa [[TBAA22]], !nonnull [[META7]], !align [[META8]]
 // CHECK-NEXT:    [[C:%.*]] = getelementptr inbounds nuw [[STRUCT_B:%.*]], ptr [[TMP0]], i32 0, i32 2
 // CHECK-NEXT:    ret ptr [[C]]
 //
@@ -76,23 +76,22 @@ char* test_deref_only(B &s) {
 // CHECK: [[META6]] = !{!"Simple C++ TBAA"}
 // CHECK: [[META7]] = !{}
 // CHECK: [[META8]] = !{i64 8}
-// CHECK: [[TBAA9]] = !{[[META10:![0-9]+]], [[META11:![0-9]+]], i64 0}
-// CHECK: [[META10]] = !{!"_ZTS1S", [[META11]], i64 0, [[META12:![0-9]+]], i64 8, [[META13:![0-9]+]], i64 16}
-// CHECK: [[META11]] = !{!"p1 omnipotent char", [[META4]], i64 0}
-// CHECK: [[META12]] = !{!"p1 int", [[META4]], i64 0}
-// CHECK: [[META13]] = !{!"p1 _ZTS1F", [[META4]], i64 0}
-// CHECK: [[TBAA14]] = !{[[META5]], [[META5]], i64 0}
-// CHECK: [[TBAA15]] = !{[[META10]], [[META12]], i64 8}
-// CHECK: [[META16]] = !{i64 4}
-// CHECK: [[TBAA17]] = !{[[META18:![0-9]+]], [[META18]], i64 0}
-// CHECK: [[META18]] = !{!"int", [[META5]], i64 0}
-// CHECK: [[TBAA19]] = !{[[META10]], [[META13]], i64 16}
-// CHECK: [[META20]] = !{i64 32}
-// CHECK: [[TBAA21]] = !{[[META22:![0-9]+]], [[META18]], i64 0}
-// CHECK: [[META22]] = !{!"_ZTS1F", [[META18]], i64 0}
-// CHECK: [[TBAA23]] = !{[[META24:![0-9]+]], [[META24]], i64 0}
-// CHECK: [[META24]] = !{!"p1 _ZTS1B", [[META4]], i64 0}
-// CHECK: [[TBAA25]] = !{[[META26:![0-9]+]], [[META5]], i64 16}
-// CHECK: [[META26]] = !{!"_ZTS1B", [[META27:![0-9]+]], i64 8, [[META5]], i64 16}
-// CHECK: [[META27]] = !{!"long long", [[META5]], i64 0}
+// CHECK: [[TBAA9]] = !{[[META10:![0-9]+]], [[META4]], i64 0}
+// CHECK: [[META10]] = !{!"_ZTS1S", [[META4]], i64 0, [[META11:![0-9]+]], i64 8, [[META12:![0-9]+]], i64 16}
+// CHECK: [[META11]] = !{!"p1 int", [[META4]], i64 0}
+// CHECK: [[META12]] = !{!"p1 _ZTS1F", [[META4]], i64 0}
+// CHECK: [[TBAA13]] = !{[[META5]], [[META5]], i64 0}
+// CHECK: [[TBAA14]] = !{[[META10]], [[META11]], i64 8}
+// CHECK: [[META15]] = !{i64 4}
+// CHECK: [[TBAA16]] = !{[[META17:![0-9]+]], [[META17]], i64 0}
+// CHECK: [[META17]] = !{!"int", [[META5]], i64 0}
+// CHECK: [[TBAA18]] = !{[[META10]], [[META12]], i64 16}
+// CHECK: [[META19]] = !{i64 32}
+// CHECK: [[TBAA20]] = !{[[META21:![0-9]+]], [[META17]], i64 0}
+// CHECK: [[META21]] = !{!"_ZTS1F", [[META17]], i64 0}
+// CHECK: [[TBAA22]] = !{[[META23:![0-9]+]], [[META23]], i64 0}
+// CHECK: [[META23]] = !{!"p1 _ZTS1B", [[META4]], i64 0}
+// CHECK: [[TBAA24]] = !{[[META25:![0-9]+]], [[META5]], i64 16}
+// CHECK: [[META25]] = !{!"_ZTS1B", [[META26:![0-9]+]], i64 8, [[META5]], i64 16}
+// CHECK: [[META26]] = !{!"long long", [[META5]], i64 0}
 //.

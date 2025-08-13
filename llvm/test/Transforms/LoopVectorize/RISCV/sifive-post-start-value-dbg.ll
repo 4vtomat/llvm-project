@@ -108,23 +108,23 @@ define dso_local signext i16 @foo(i16* nocapture readonly %ptr, i32 signext %sta
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP3:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 4, i1 true)
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i16, ptr [[PTR:%.*]], i64 [[EVL_BASED_IV]], !dbg [[DBG12:![0-9]+]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i16, ptr [[TMP4]], i32 0, !dbg [[DBG12]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x i16> @llvm.vp.load.nxv4i16.p0(ptr align 2 [[TMP5]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]]), !dbg [[DBG12]], !tbaa [[TBAA13:![0-9]+]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 4 x i16>, ptr [[TMP5]], align 2, !dbg [[DBG12]], !tbaa [[TBAA13:![0-9]+]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i32> @llvm.vp.and.nxv4i32(<vscale x 4 x i32> [[VEC_PHI]], <vscale x 4 x i32> splat (i32 65535), <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]]), !dbg [[DBG17:![0-9]+]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_CAST:%.*]] = call <vscale x 4 x i32> @llvm.vp.zext.nxv4i32.nxv4i16(<vscale x 4 x i16> [[VP_OP_LOAD]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]]), !dbg [[DBG18:![0-9]+]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_CAST:%.*]] = call <vscale x 4 x i32> @llvm.vp.zext.nxv4i32.nxv4i16(<vscale x 4 x i16> [[WIDE_LOAD]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]]), !dbg [[DBG18:![0-9]+]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_OP1:%.*]] = call <vscale x 4 x i32> @llvm.vp.add.nxv4i32(<vscale x 4 x i32> [[VP_OP]], <vscale x 4 x i32> [[VP_CAST]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]]), !dbg [[DBG19:![0-9]+]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_OP_MERGE:%.*]] = call <vscale x 4 x i32> @llvm.vp.merge.nxv4i32(<vscale x 4 x i1> splat (i1 true), <vscale x 4 x i32> [[VP_OP1]], <vscale x 4 x i32> [[VEC_PHI]], i32 [[TMP3]])
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP6:%.*]] = trunc <vscale x 4 x i32> [[VP_OP_MERGE]] to <vscale x 4 x i16>
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP7]] = zext <vscale x 4 x i16> [[TMP6]] to <vscale x 4 x i32>
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP3]] to i64, !dbg [[DBG11]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP8]], [[EVL_BASED_IV]], !dbg [[DBG11]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP0]], !dbg [[DBG11]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    br i1 [[TMP9]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !dbg [[DBG11]], !llvm.loop [[LOOP20:![0-9]+]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP3]] to i64, !dbg [[DBG11]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP9]], [[EVL_BASED_IV]], !dbg [[DBG11]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP0]], !dbg [[DBG11]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    br i1 [[TMP10]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !dbg [[DBG11]], !llvm.loop [[LOOP20:![0-9]+]]
 ; IGNORE-INTERLEAVE-FOR-VLA:       middle.block:
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP10:%.*]] = trunc <vscale x 4 x i32> [[TMP7]] to <vscale x 4 x i16>, !dbg [[DBG10]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP11:%.*]] = call i16 @llvm.vp.reduce.add.nxv4i16(i16 0, <vscale x 4 x i16> [[TMP10]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP2]]), !dbg [[DBG10]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP12:%.*]] = trunc i32 [[START]] to i16, !dbg [[DBG10]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP13:%.*]] = add i16 [[TMP12]], [[TMP11]], !dbg [[DBG10]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP14:%.*]] = zext i16 [[TMP13]] to i32, !dbg [[DBG10]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP11:%.*]] = trunc <vscale x 4 x i32> [[TMP7]] to <vscale x 4 x i16>, !dbg [[DBG10]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP12:%.*]] = call i16 @llvm.vp.reduce.add.nxv4i16(i16 0, <vscale x 4 x i16> [[TMP11]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP2]]), !dbg [[DBG10]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP13:%.*]] = trunc i32 [[START]] to i16, !dbg [[DBG10]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP14:%.*]] = add i16 [[TMP13]], [[TMP12]], !dbg [[DBG10]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP15:%.*]] = zext i16 [[TMP14]] to i32, !dbg [[DBG10]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    br label [[WHILE_END_LOOPEXIT:%.*]], !dbg [[DBG11]]
 ; IGNORE-INTERLEAVE-FOR-VLA:       scalar.ph:
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[WHILE_BODY_PREHEADER]] ]
@@ -134,20 +134,20 @@ define dso_local signext i16 @foo(i16* nocapture readonly %ptr, i32 signext %sta
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[WHILE_BODY]] ]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[SUM_010:%.*]] = phi i32 [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[ADD:%.*]], [[WHILE_BODY]] ]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i16, ptr [[PTR]], i64 [[INDVARS_IV]], !dbg [[DBG12]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP15:%.*]] = load i16, ptr [[ARRAYIDX]], align 2, !dbg [[DBG12]], !tbaa [[TBAA13]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP16:%.*]] = load i16, ptr [[ARRAYIDX]], align 2, !dbg [[DBG12]], !tbaa [[TBAA13]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[AND:%.*]] = and i32 [[SUM_010]], 65535, !dbg [[DBG17]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[CONV:%.*]] = zext i16 [[TMP15]] to i32, !dbg [[DBG18]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[CONV:%.*]] = zext i16 [[TMP16]] to i32, !dbg [[DBG18]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[ADD]] = add nuw nsw i32 [[AND]], [[CONV]], !dbg [[DBG19]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1, !dbg [[DBG11]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[CMP_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[TMP0]], !dbg [[DBG9]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    br i1 [[CMP_NOT]], label [[WHILE_END_LOOPEXIT]], label [[WHILE_BODY]], !dbg [[DBG10]], !llvm.loop [[LOOP25:![0-9]+]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    br i1 [[CMP_NOT]], label [[WHILE_END_LOOPEXIT]], label [[WHILE_BODY]], !dbg [[DBG10]], !llvm.loop [[LOOP26:![0-9]+]]
 ; IGNORE-INTERLEAVE-FOR-VLA:       while.end.loopexit:
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[ADD]], [[WHILE_BODY]] ], [ [[TMP14]], [[MIDDLE_BLOCK]] ], !dbg [[DBG19]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[ADD]], [[WHILE_BODY]] ], [ [[TMP15]], [[MIDDLE_BLOCK]] ], !dbg [[DBG19]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[EXTRACT_T12:%.*]] = trunc i32 [[ADD_LCSSA]] to i16, !dbg [[DBG10]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    br label [[WHILE_END]], !dbg [[DBG26:![0-9]+]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    br label [[WHILE_END]], !dbg [[DBG27:![0-9]+]]
 ; IGNORE-INTERLEAVE-FOR-VLA:       while.end:
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[SUM_0_LCSSA_OFF0:%.*]] = phi i16 [ [[EXTRACT_T]], [[ENTRY:%.*]] ], [ [[EXTRACT_T12]], [[WHILE_END_LOOPEXIT]] ]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    ret i16 [[SUM_0_LCSSA_OFF0]], !dbg [[DBG26]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    ret i16 [[SUM_0_LCSSA_OFF0]], !dbg [[DBG27]]
 ;
 
 entry:

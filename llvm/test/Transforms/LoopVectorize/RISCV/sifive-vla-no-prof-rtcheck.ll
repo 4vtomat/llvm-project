@@ -28,7 +28,7 @@ define i32 @foo(i32 %n, ptr %a) {
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[EVL_BASED_IV1]]
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[TMP5]], i32 0
-; CHECK-HAS-PROF-RTCHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0(ptr align 4 [[TMP6]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-HAS-PROF-RTCHECK-NEXT:    [[VP_OP_LOAD:%.*]] = load <vscale x 2 x i32>, ptr [[TMP6]], align 4
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i32> [[VEC_PHI]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i32> [[VP_OP]], <vscale x 2 x i32> [[VEC_PHI]], i32 [[TMP2]])
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP2]] to i64
@@ -57,7 +57,7 @@ define i32 @foo(i32 %n, ptr %a) {
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[ADD]] = add nsw i32 [[TMP12]], [[SUM_05]]
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
-; CHECK-HAS-PROF-RTCHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-HAS-PROF-RTCHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ;
 ; CHECK-NO-PROF-RTCHECK-LABEL: define i32 @foo(
 ; CHECK-NO-PROF-RTCHECK-SAME: i32 [[N:%.*]], ptr [[A:%.*]]) #[[ATTR0:[0-9]+]] {
@@ -78,7 +78,7 @@ define i32 @foo(i32 %n, ptr %a) {
 ; CHECK-NO-PROF-RTCHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; CHECK-NO-PROF-RTCHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[EVL_BASED_IV1]]
 ; CHECK-NO-PROF-RTCHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[TMP4]], i32 0
-; CHECK-NO-PROF-RTCHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0(ptr align 4 [[TMP5]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NO-PROF-RTCHECK-NEXT:    [[VP_OP_LOAD:%.*]] = load <vscale x 2 x i32>, ptr [[TMP5]], align 4
 ; CHECK-NO-PROF-RTCHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i32> [[VEC_PHI]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NO-PROF-RTCHECK-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i32> [[VP_OP]], <vscale x 2 x i32> [[VEC_PHI]], i32 [[TMP1]])
 ; CHECK-NO-PROF-RTCHECK-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP1]] to i64
@@ -107,7 +107,7 @@ define i32 @foo(i32 %n, ptr %a) {
 ; CHECK-NO-PROF-RTCHECK-NEXT:    [[ADD]] = add nsw i32 [[TMP11]], [[SUM_05]]
 ; CHECK-NO-PROF-RTCHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NO-PROF-RTCHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
-; CHECK-NO-PROF-RTCHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NO-PROF-RTCHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ;
 
 entry:

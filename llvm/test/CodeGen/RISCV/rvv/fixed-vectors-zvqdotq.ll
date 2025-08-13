@@ -671,9 +671,9 @@ define <2 x i32> @vqdot_vv_partial_reduce_v2i32_v64i8(<64 x i8> %a, <64 x i8> %b
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x05, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 5 * vlenb
 ; CHECK-NEXT:    li a0, 32
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
-; CHECK-NEXT:    vsext.vf2 v24, v8
-; CHECK-NEXT:    vsext.vf2 v28, v12
-; CHECK-NEXT:    vwmul.vv v16, v24, v28
+; CHECK-NEXT:    vsext.vf2 v20, v8
+; CHECK-NEXT:    vsext.vf2 v24, v12
+; CHECK-NEXT:    vwmul.vv v16, v20, v24
 ; CHECK-NEXT:    vsetivli zero, 2, e32, m8, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v24, v16, 28
 ; CHECK-NEXT:    vslidedown.vi v0, v16, 26
@@ -840,9 +840,9 @@ define <4 x i32> @vqdot_vv_partial_reduce_v4i32_v16i8(<16 x i8> %a, <16 x i8> %b
 ; NODOT-LABEL: vqdot_vv_partial_reduce_v4i32_v16i8:
 ; NODOT:       # %bb.0: # %entry
 ; NODOT-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
-; NODOT-NEXT:    vsext.vf2 v12, v8
-; NODOT-NEXT:    vsext.vf2 v14, v9
-; NODOT-NEXT:    vwmul.vv v8, v12, v14
+; NODOT-NEXT:    vsext.vf2 v10, v8
+; NODOT-NEXT:    vsext.vf2 v12, v9
+; NODOT-NEXT:    vwmul.vv v8, v10, v12
 ; NODOT-NEXT:    vsetivli zero, 4, e32, m4, ta, ma
 ; NODOT-NEXT:    vslidedown.vi v12, v8, 12
 ; NODOT-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
@@ -918,9 +918,9 @@ define <4 x i32> @vqdot_vv_partial_reduce_m1_accum(<16 x i8> %a, <16 x i8> %b, <
 ; NODOT-LABEL: vqdot_vv_partial_reduce_m1_accum:
 ; NODOT:       # %bb.0: # %entry
 ; NODOT-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
-; NODOT-NEXT:    vsext.vf2 v16, v8
-; NODOT-NEXT:    vsext.vf2 v18, v9
-; NODOT-NEXT:    vwmul.vv v12, v16, v18
+; NODOT-NEXT:    vsext.vf2 v14, v8
+; NODOT-NEXT:    vsext.vf2 v8, v9
+; NODOT-NEXT:    vwmul.vv v12, v14, v8
 ; NODOT-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; NODOT-NEXT:    vadd.vv v16, v10, v12
 ; NODOT-NEXT:    vsetivli zero, 4, e32, m4, ta, ma
@@ -954,9 +954,9 @@ define <16 x i32> @vqdot_vv_partial_reduce3(<16 x i8> %a, <16 x i8> %b) {
 ; CHECK-LABEL: vqdot_vv_partial_reduce3:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
-; CHECK-NEXT:    vsext.vf2 v12, v8
-; CHECK-NEXT:    vsext.vf2 v14, v9
-; CHECK-NEXT:    vwmul.vv v8, v12, v14
+; CHECK-NEXT:    vsext.vf2 v10, v8
+; CHECK-NEXT:    vsext.vf2 v12, v9
+; CHECK-NEXT:    vwmul.vv v8, v10, v12
 ; CHECK-NEXT:    ret
 entry:
   %a.sext = sext <16 x i8> %a to <16 x i32>

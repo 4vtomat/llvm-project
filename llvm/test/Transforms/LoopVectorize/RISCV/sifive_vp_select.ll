@@ -37,7 +37,7 @@ define dso_local void @_Z3fooiPKfPfS1_(i32 noundef signext %N, ptr nocapture nou
 ; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x float> @llvm.vp.load.nxv4f32.p0(ptr align 4 [[TMP11]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds float, ptr [[TMP10]], i32 0
 ; CHECK-NEXT:    [[VP_OP_LOAD5:%.*]] = call <vscale x 4 x float> @llvm.vp.load.nxv4f32.p0(ptr align 4 [[TMP12]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP7]])
-; CHECK-NEXT:    [[VP_OP_FCMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.fcmp.nxv4f32(<vscale x 4 x float> [[VP_OP_LOAD]], <vscale x 4 x float> [[VP_OP_LOAD5]], metadata !"olt", <vscale x 4 x i1> splat (i1 true), i32 [[TMP7]])
+; CHECK-NEXT:    [[VP_OP_FCMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.fcmp.nxv4f32(<vscale x 4 x float> [[VP_OP_LOAD]], <vscale x 4 x float> [[VP_OP_LOAD5]], metadata !"olt", <vscale x 4 x i1> splat (i1 true), i32 [[TMP6]])
 ; CHECK-NEXT:    [[VP_WIDEN_SELECT:%.*]] = call <vscale x 4 x float> @llvm.vp.select.nxv4f32(<vscale x 4 x i1> [[VP_OP_FCMP]], <vscale x 4 x float> [[VP_OP_LOAD5]], <vscale x 4 x float> [[VP_OP_LOAD]], i32 [[TMP7]])
 ; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr inbounds float, ptr [[C]], i64 [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr inbounds float, ptr [[TMP13]], i32 0
@@ -67,7 +67,7 @@ define dso_local void @_Z3fooiPKfPfS1_(i32 noundef signext %N, ptr nocapture nou
 ; CHECK-NEXT:    store float [[TMP19]], ptr [[ARRAYIDX4]], align 4
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ;
 entry:
   %cmp9 = icmp sgt i32 %N, 0

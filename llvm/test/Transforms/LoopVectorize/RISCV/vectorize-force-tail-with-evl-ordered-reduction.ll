@@ -26,7 +26,7 @@ define float @fadd(ptr noalias nocapture readonly %a, i64 %n) {
 ; IF-EVL-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP9]], i32 2, i1 true)
 ; IF-EVL-NEXT:    [[TMP12:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP13:%.*]] = getelementptr inbounds float, ptr [[TMP12]], i32 0
-; IF-EVL-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0(ptr align 4 [[TMP13]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP10]])
+; IF-EVL-NEXT:    [[VP_OP_LOAD:%.*]] = load <vscale x 2 x float>, ptr [[TMP13]], align 4
 ; IF-EVL-NEXT:    [[TMP14]] = call float @llvm.vp.reduce.fadd.nxv2f32(float [[VEC_PHI]], <vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP10]])
 ; IF-EVL-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP10]] to i64
 ; IF-EVL-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[TMP15]], [[EVL_BASED_IV]]

@@ -1153,10 +1153,7 @@ R"(All available -march extensions for RISC-V
     xsfcease             1.0
     xsfmm128t            0.6
     xsfmm16t             0.6
-<<<<<<< HEAD
     xsfmm32a             0.6
-=======
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
     xsfmm32a16f          0.6
     xsfmm32a32f          0.6
     xsfmm32a8f           0.6
@@ -1165,12 +1162,9 @@ R"(All available -march extensions for RISC-V
     xsfmm64a64f          0.6
     xsfmm64t             0.6
     xsfmmbase            0.6
-<<<<<<< HEAD
     xsfpgflushdlone      0.1
     xsfpmpmt             0.1
     xsfsci               1.0
-=======
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
     xsfvcp               1.0
     xsfvfbfa             0.1
     xsfvfbfexp16e        0.1

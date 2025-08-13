@@ -6,7 +6,7 @@ define i64 @vcpop(ptr nocapture noundef readonly %x, i32 noundef signext %vl) {
 ; CHECK-SAME: ptr noundef readonly captures(none) [[X:%.*]], i32 noundef signext [[VL:%.*]]) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[CONV:%.*]] = sext i32 [[VL]] to i64
-; CHECK-NEXT:    [[TMP0:%.*]] = tail call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.i64(<vscale x 2 x i32> poison, ptr [[X]], i64 [[CONV]])
+; CHECK-NEXT:    [[TMP0:%.*]] = tail call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.p0.i64(<vscale x 2 x i32> poison, ptr [[X]], i64 [[CONV]])
 ; CHECK-NEXT:    [[TMP1:%.*]] = tail call <vscale x 2 x i1> @llvm.riscv.vmseq.nxv2i32.i32.i64(<vscale x 2 x i32> [[TMP0]], i32 0, i64 [[CONV]])
 ; CHECK-NEXT:    [[TMP2:%.*]] = tail call i64 @llvm.riscv.vcpop.nxv2i1.i64(<vscale x 2 x i1> [[TMP1]], i64 [[CONV]])
 ; CHECK-NEXT:    ret i64 [[TMP2]]

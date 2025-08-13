@@ -24,7 +24,7 @@ define float @fadd(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-ORDERED-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
 ; CHECK-ORDERED-NEXT:    [[TMP1:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[EVL_BASED_IV1]]
 ; CHECK-ORDERED-NEXT:    [[TMP2:%.*]] = getelementptr inbounds float, ptr [[TMP1]], i32 0
-; CHECK-ORDERED-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0(ptr align 4 [[TMP2]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP5]])
+; CHECK-ORDERED-NEXT:    [[VP_OP_LOAD:%.*]] = load <vscale x 2 x float>, ptr [[TMP2]], align 4
 ; CHECK-ORDERED-NEXT:    [[TMP3]] = call float @llvm.vp.reduce.fadd.nxv2f32(float [[VEC_PHI]], <vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP5]])
 ; CHECK-ORDERED-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP5]] to i64
 ; CHECK-ORDERED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[TMP7]], [[EVL_BASED_IV1]]
@@ -44,7 +44,7 @@ define float @fadd(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-ORDERED-NEXT:    [[ADD]] = fadd float [[TMP9]], [[SUM_07]]
 ; CHECK-ORDERED-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
 ; CHECK-ORDERED-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], [[N]]
-; CHECK-ORDERED-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-ORDERED-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END]], label [[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK-ORDERED:       for.end:
 ; CHECK-ORDERED-NEXT:    [[ADD_LCSSA:%.*]] = phi float [ [[ADD]], [[FOR_BODY]] ], [ [[TMP3]], [[MIDDLE_BLOCK]] ]
 ; CHECK-ORDERED-NEXT:    ret float [[ADD_LCSSA]]

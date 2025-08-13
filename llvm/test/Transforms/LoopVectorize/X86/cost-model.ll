@@ -890,10 +890,7 @@ define i64 @cost_assume(ptr %end, i64 %N) {
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[TMP2]], 16
 ; CHECK-NEXT:    [[N_VEC:%.*]] = sub i64 [[TMP2]], [[N_MOD_VF]]
-<<<<<<< HEAD
-; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <4 x i64> poison, i64 [[N:%.*]], i64 0
-; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <4 x i64> [[BROADCAST_SPLATINSERT]], <4 x i64> poison, <4 x i32> zeroinitializer
-; CHECK-NEXT:    [[TMP3:%.*]] = icmp ne <4 x i64> [[BROADCAST_SPLAT]], zeroinitializer
+; CHECK-NEXT:    [[TMP11:%.*]] = icmp ne i64 [[N:%.*]], 0
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH1]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -905,21 +902,6 @@ define i64 @cost_assume(ptr %end, i64 %N) {
 ; CHECK-NEXT:    [[TMP5]] = add <4 x i64> [[VEC_PHI3]], splat (i64 1)
 ; CHECK-NEXT:    [[TMP6]] = add <4 x i64> [[VEC_PHI4]], splat (i64 1)
 ; CHECK-NEXT:    [[TMP7]] = add <4 x i64> [[VEC_PHI5]], splat (i64 1)
-; CHECK-NEXT:    [[TMP11:%.*]] = extractelement <4 x i1> [[TMP3]], i32 0
-=======
-; CHECK-NEXT:    [[TMP11:%.*]] = icmp ne i64 [[N:%.*]], 0
-; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
-; CHECK:       vector.body:
-; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <2 x i64> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP7:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[VEC_PHI2:%.*]] = phi <2 x i64> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP8:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[VEC_PHI3:%.*]] = phi <2 x i64> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP9:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[VEC_PHI4:%.*]] = phi <2 x i64> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP10:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[TMP7]] = add <2 x i64> [[VEC_PHI]], splat (i64 1)
-; CHECK-NEXT:    [[TMP8]] = add <2 x i64> [[VEC_PHI2]], splat (i64 1)
-; CHECK-NEXT:    [[TMP9]] = add <2 x i64> [[VEC_PHI3]], splat (i64 1)
-; CHECK-NEXT:    [[TMP10]] = add <2 x i64> [[VEC_PHI4]], splat (i64 1)
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 ; CHECK-NEXT:    tail call void @llvm.assume(i1 [[TMP11]])
 ; CHECK-NEXT:    tail call void @llvm.assume(i1 [[TMP11]])
 ; CHECK-NEXT:    tail call void @llvm.assume(i1 [[TMP11]])
@@ -955,16 +937,13 @@ define i64 @cost_assume(ptr %end, i64 %N) {
 ; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[TMP10]], [[VEC_EPILOG_ITER_CHECK]] ], [ 0, [[VECTOR_PH]] ]
 ; CHECK-NEXT:    [[N_MOD_VF8:%.*]] = urem i64 [[TMP2]], 4
 ; CHECK-NEXT:    [[N_VEC9:%.*]] = sub i64 [[TMP2]], [[N_MOD_VF8]]
-; CHECK-NEXT:    [[BROADCAST_SPLATINSERT10:%.*]] = insertelement <4 x i64> poison, i64 [[N]], i64 0
-; CHECK-NEXT:    [[BROADCAST_SPLAT11:%.*]] = shufflevector <4 x i64> [[BROADCAST_SPLATINSERT10]], <4 x i64> poison, <4 x i32> zeroinitializer
-; CHECK-NEXT:    [[TMP17:%.*]] = icmp ne <4 x i64> [[BROADCAST_SPLAT11]], zeroinitializer
+; CHECK-NEXT:    [[TMP14:%.*]] = icmp ne i64 [[N]], 0
 ; CHECK-NEXT:    [[TMP18:%.*]] = insertelement <4 x i64> zeroinitializer, i64 [[BC_MERGE_RDX]], i32 0
 ; CHECK-NEXT:    br label [[LOOP:%.*]]
 ; CHECK:       vec.epilog.vector.body:
 ; CHECK-NEXT:    [[INDEX12:%.*]] = phi i64 [ [[VEC_EPILOG_RESUME_VAL]], [[VEC_EPILOG_PH]] ], [ [[INDEX_NEXT14:%.*]], [[LOOP]] ]
 ; CHECK-NEXT:    [[VEC_PHI13:%.*]] = phi <4 x i64> [ [[TMP18]], [[VEC_EPILOG_PH]] ], [ [[TMP19:%.*]], [[LOOP]] ]
 ; CHECK-NEXT:    [[TMP19]] = add <4 x i64> [[VEC_PHI13]], splat (i64 1)
-; CHECK-NEXT:    [[TMP14:%.*]] = extractelement <4 x i1> [[TMP17]], i32 0
 ; CHECK-NEXT:    tail call void @llvm.assume(i1 [[TMP14]])
 ; CHECK-NEXT:    tail call void @llvm.assume(i1 [[TMP14]])
 ; CHECK-NEXT:    tail call void @llvm.assume(i1 [[TMP14]])

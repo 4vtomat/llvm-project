@@ -31,21 +31,21 @@ define void @type_info_cache_clobber(ptr %dstv, ptr %src, i64 %wide.trip.count) 
 ; CHECK-NEXT:    [[TMP11:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 4, i1 true)
 ; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr i8, ptr [[SRC]], i64 [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr i8, ptr [[TMP13]], i32 0
-; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x i8> @llvm.vp.load.nxv4i8.p0(ptr align 1 [[TMP14]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP11]])
+; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x i8> @llvm.vp.load.nxv4i8.p0(ptr align 1 [[TMP14]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP11]]), !alias.scope [[META0:![0-9]+]]
 ; CHECK-NEXT:    [[VP_CAST:%.*]] = call <vscale x 4 x i32> @llvm.vp.zext.nxv4i32.nxv4i8(<vscale x 4 x i8> [[VP_OP_LOAD]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP11]])
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i32> @llvm.vp.mul.nxv4i32(<vscale x 4 x i32> [[VP_CAST]], <vscale x 4 x i32> zeroinitializer, <vscale x 4 x i1> splat (i1 true), i32 [[TMP11]])
 ; CHECK-NEXT:    [[VP_OP2:%.*]] = call <vscale x 4 x i32> @llvm.vp.ashr.nxv4i32(<vscale x 4 x i32> [[VP_CAST]], <vscale x 4 x i32> zeroinitializer, <vscale x 4 x i1> splat (i1 true), i32 [[TMP11]])
 ; CHECK-NEXT:    [[VP_OP3:%.*]] = call <vscale x 4 x i32> @llvm.vp.or.nxv4i32(<vscale x 4 x i32> [[VP_OP2]], <vscale x 4 x i32> zeroinitializer, <vscale x 4 x i1> splat (i1 true), i32 [[TMP11]])
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i32(<vscale x 4 x i32> [[VP_CAST]], <vscale x 4 x i32> zeroinitializer, metadata !"ult", <vscale x 4 x i1> splat (i1 true), i32 [[TMP11]])
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i32(<vscale x 4 x i32> [[VP_CAST]], <vscale x 4 x i32> zeroinitializer, metadata !"ult", <vscale x 4 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[VP_WIDEN_SELECT:%.*]] = call <vscale x 4 x i32> @llvm.vp.select.nxv4i32(<vscale x 4 x i1> [[VP_OP_ICMP]], <vscale x 4 x i32> [[VP_OP3]], <vscale x 4 x i32> zeroinitializer, i32 [[TMP11]])
 ; CHECK-NEXT:    [[VP_CAST4:%.*]] = call <vscale x 4 x i8> @llvm.vp.trunc.nxv4i8.nxv4i32(<vscale x 4 x i32> [[VP_WIDEN_SELECT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP11]])
-; CHECK-NEXT:    call void @llvm.vp.scatter.nxv4i8.nxv4p0(<vscale x 4 x i8> [[VP_CAST4]], <vscale x 4 x ptr> align 1 [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP11]])
+; CHECK-NEXT:    call void @llvm.vp.scatter.nxv4i8.nxv4p0(<vscale x 4 x i8> [[VP_CAST4]], <vscale x 4 x ptr> align 1 [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP11]]), !alias.scope [[META3:![0-9]+]], !noalias [[META0]]
 ; CHECK-NEXT:    [[VP_CAST5:%.*]] = call <vscale x 4 x i16> @llvm.vp.trunc.nxv4i16.nxv4i32(<vscale x 4 x i32> [[VP_OP]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP11]])
 ; CHECK-NEXT:    call void @llvm.vp.scatter.nxv4i16.nxv4p0(<vscale x 4 x i16> [[VP_CAST5]], <vscale x 4 x ptr> align 2 zeroinitializer, <vscale x 4 x i1> splat (i1 true), i32 [[TMP11]])
 ; CHECK-NEXT:    [[TMP20:%.*]] = zext i32 [[TMP11]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP20]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP0]]
-; CHECK-NEXT:    br i1 [[TMP7]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP7]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br label %[[EXIT:.*]]
 ; CHECK:       [[SCALAR_PH]]:
@@ -67,7 +67,7 @@ define void @type_info_cache_clobber(ptr %dstv, ptr %src, i64 %wide.trip.count) 
 ; CHECK-NEXT:    store i16 [[CONV36]], ptr null, align 2
 ; CHECK-NEXT:    [[IV_NEXT]] = add i64 [[IV]], 1
 ; CHECK-NEXT:    [[EC:%.*]] = icmp eq i64 [[IV]], [[WIDE_TRIP_COUNT]]
-; CHECK-NEXT:    br i1 [[EC]], label %[[EXIT]], label %[[LOOP]], !llvm.loop [[LOOP4:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EC]], label %[[EXIT]], label %[[LOOP]], !llvm.loop [[LOOP9:![0-9]+]]
 ; CHECK:       [[EXIT]]:
 ; CHECK-NEXT:    ret void
 ;
@@ -96,9 +96,14 @@ exit:
   ret void
 }
 ;.
-; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
-; CHECK: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
-; CHECK: [[META2]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
-; CHECK: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
-; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META1]]}
+; CHECK: [[META0]] = !{[[META1:![0-9]+]]}
+; CHECK: [[META1]] = distinct !{[[META1]], [[META2:![0-9]+]]}
+; CHECK: [[META2]] = distinct !{[[META2]], !"LVerDomain"}
+; CHECK: [[META3]] = !{[[META4:![0-9]+]]}
+; CHECK: [[META4]] = distinct !{[[META4]], [[META2]]}
+; CHECK: [[LOOP5]] = distinct !{[[LOOP5]], [[META6:![0-9]+]], [[META7:![0-9]+]], [[META8:![0-9]+]]}
+; CHECK: [[META6]] = !{!"llvm.loop.isvectorized", i32 1}
+; CHECK: [[META7]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; CHECK: [[META8]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK: [[LOOP9]] = distinct !{[[LOOP9]], [[META6]]}
 ;.

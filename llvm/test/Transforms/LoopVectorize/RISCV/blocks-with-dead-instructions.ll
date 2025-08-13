@@ -137,13 +137,6 @@ define void @block_with_dead_inst_2(ptr %src) #0 {
 ; CHECK-NEXT:    [[TMP18:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[TMP18]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP19:%.*]] = call i32 @llvm.vscale.i32()
-; CHECK-NEXT:    [[TMP20:%.*]] = mul i32 [[TMP19]], 8
-; CHECK-NEXT:    [[TMP21:%.*]] = sub i32 [[TMP20]], 1
-; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <vscale x 8 x i16> zeroinitializer, i32 [[TMP21]]
-=======
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 ; CHECK-NEXT:    br label %[[SCALAR_PH]]
 ; CHECK:       [[SCALAR_PH]]:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[IND_END]], %[[MIDDLE_BLOCK]] ], [ 0, %[[ENTRY]] ]
@@ -234,13 +227,6 @@ define void @multiple_blocks_with_dead_insts_3(ptr %src) #0 {
 ; CHECK-NEXT:    [[TMP18:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[TMP18]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP19:%.*]] = call i32 @llvm.vscale.i32()
-; CHECK-NEXT:    [[TMP20:%.*]] = mul i32 [[TMP19]], 8
-; CHECK-NEXT:    [[TMP21:%.*]] = sub i32 [[TMP20]], 1
-; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <vscale x 8 x i16> zeroinitializer, i32 [[TMP21]]
-=======
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 ; CHECK-NEXT:    br label %[[SCALAR_PH]]
 ; CHECK:       [[SCALAR_PH]]:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[IND_END]], %[[MIDDLE_BLOCK]] ], [ 0, %[[ENTRY]] ]
@@ -443,13 +429,6 @@ define void @multiple_blocks_with_dead_inst_multiple_successors_5(ptr %src) #0 {
 ; CHECK-NEXT:    [[TMP18:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[TMP18]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP19:%.*]] = call i32 @llvm.vscale.i32()
-; CHECK-NEXT:    [[TMP20:%.*]] = mul i32 [[TMP19]], 8
-; CHECK-NEXT:    [[TMP21:%.*]] = sub i32 [[TMP20]], 1
-; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <vscale x 8 x i16> zeroinitializer, i32 [[TMP21]]
-=======
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
 ; CHECK-NEXT:    br label %[[SCALAR_PH]]
 ; CHECK:       [[SCALAR_PH]]:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[IND_END]], %[[MIDDLE_BLOCK]] ], [ 0, %[[ENTRY]] ]
