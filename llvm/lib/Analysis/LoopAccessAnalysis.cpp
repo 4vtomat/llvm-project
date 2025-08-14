@@ -2377,12 +2377,21 @@ bool MemoryDepChecker::areDepsSafe(const DepCandidates &DepCands,
 SmallVector<Instruction *, 4>
 MemoryDepChecker::getInstructionsForAccess(Value *Ptr, bool IsWrite) const {
   MemAccessInfo Access(Ptr, IsWrite);
+#if SIFIVE_CUSTOMIZATION
+  auto I = Accesses.find(Access);
+  SmallVector<Instruction *, 4> Insts;
+  if (I != Accesses.end()) {
+    transform(I->second, std::back_inserter(Insts),
+              [&](unsigned Idx) { return this->InstMap[Idx]; });
+  }
+#else
   auto &IndexVector = Accesses.find(Access)->second;
 
   SmallVector<Instruction *, 4> Insts;
   transform(IndexVector,
                  std::back_inserter(Insts),
                  [&](unsigned Idx) { return this->InstMap[Idx]; });
+#endif
   return Insts;
 }
 

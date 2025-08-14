@@ -511,8 +511,15 @@ public:
     SmallVector<int, 8> PtrToPartitions(N);
     for (unsigned I = 0; I < N; ++I) {
       Value *Ptr = RtPtrCheck->Pointers[I].PointerValue;
+#if SIFIVE_CUSTOMIZATION
+      auto Instructions = LAI.getInstructionsForAccess(Ptr, /* IsWrite */ true);
+      auto ReadInstructions =
+          LAI.getInstructionsForAccess(Ptr, /* IsWrite */ false);
+      Instructions.append(ReadInstructions.begin(), ReadInstructions.end());
+#else
       auto Instructions =
           LAI.getInstructionsForAccess(Ptr, RtPtrCheck->Pointers[I].IsWritePtr);
+#endif
 
       int &Partition = PtrToPartitions[I];
       // First set it to uninitialized.
@@ -530,35 +537,6 @@ public:
           Partition = -1;
       }
       assert(Partition != -2 && "Pointer not belonging to any partition");
-#if SIFIVE_CUSTOMIZATION
-      // All the store context uses of our address were processed,
-      // Now make sure we don't have cross partition loads.
-      if (RtPtrCheck->Pointers[I].IsWritePtr) {
-        if (Ptr->hasOneUse() || isa<GlobalVariable>(Ptr) || Partition == -1)
-          continue;
-
-        bool ProcessLoads = false;
-        for (User *U : Ptr->users())
-          if (auto *CurLoad = dyn_cast<LoadInst>(U))
-            if (L->contains(CurLoad->getParent())) {
-              ProcessLoads = true;
-              break;
-            }
-
-        if (!ProcessLoads)
-          continue;
-
-        const bool IsWritePtr = false;
-        auto Instructions = LAI.getInstructionsForAccess(Ptr, IsWritePtr);
-        for (Instruction *Inst : Instructions)
-          if (Partition != (int)this->InstToPartitionId[Inst]) {
-            // -1 means belonging to multiple partitions.
-            Partition = -1;
-            break;
-          }
-
-      }
-#endif
     }
 
     return PtrToPartitions;
