@@ -646,10 +646,10 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         ConstantInt *VL = Builder.getIntN(XLEN, VectorNumElements);
         Ops.push_back(VL);
         Ops.push_back(Builder.getIntN(XLEN, Log2_32(SEW)));
-        CallInst *NewLoad =
-            Builder.CreateIntrinsic(IsDup ? Vlsseg[StructNumElements - 2]
-                                          : Vlseg[StructNumElements - 2],
-                                    {VecTupTy, VL->getType()}, Ops);
+        CallInst *NewLoad = Builder.CreateIntrinsic(
+            IsDup ? Vlsseg[StructNumElements - 2]
+                  : Vlseg[StructNumElements - 2],
+            {VecTupTy, II->getArgOperand(0)->getType(), VL->getType()}, Ops);
 
         Value *NewDes = PoisonValue::get(DesTy);
         Function *TupExtractFunc = Intrinsic::getOrInsertDeclaration(
@@ -977,9 +977,11 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         ConstantInt *VL = Builder.getIntN(XLEN, VectorNumElements);
         Ops.push_back(VL);
         Ops.push_back(Builder.getIntN(XLEN, Log2_32(SEW)));
-        II->replaceAllUsesWith(
-            Builder.CreateIntrinsic(Vsseg[StructNumElements - 2],
-                                    {Ops[0]->getType(), VL->getType()}, Ops));
+        II->replaceAllUsesWith(Builder.CreateIntrinsic(
+            Vsseg[StructNumElements - 2],
+            {Ops[0]->getType(), II->getArgOperand(StructNumElements)->getType(),
+             VL->getType()},
+            Ops));
         break;
       }
       case Intrinsic::aarch64_neon_st2lane:

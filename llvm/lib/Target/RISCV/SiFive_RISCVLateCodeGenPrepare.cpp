@@ -619,12 +619,13 @@ void RISCVLateCodeGenPrepare::expandMemmoveUnknownSizeAligned(MemMoveInst *M) {
     NewCopyLen = Builder.CreateSub(CopyLen, VL);
 
     SrcLastElemAddr = Builder.CreateGEP(Int8Type, SrcAddr, NewCopyLen);
-    Value *Load =
-        Builder.CreateIntrinsic(Intrinsic::riscv_vle, {VTy, CopyLenType},
-                                {UndefValue::get(VTy), SrcLastElemAddr, VL});
+    Value *Load = Builder.CreateIntrinsic(
+        Intrinsic::riscv_vle, {VTy, SrcLastElemAddr->getType(), CopyLenType},
+        {UndefValue::get(VTy), SrcLastElemAddr, VL});
 
     DstLastElemAddr = Builder.CreateGEP(Int8Type, DstAddr, NewCopyLen);
-    Builder.CreateIntrinsic(Intrinsic::riscv_vse, {VTy, CopyLenType},
+    Builder.CreateIntrinsic(Intrinsic::riscv_vse,
+                            {VTy, DstLastElemAddr->getType(), CopyLenType},
                             {Load, DstLastElemAddr, VL});
 
     Builder.CreateCondBr(Builder.CreateICmpNE(NewCopyLen, Zero), BackwardLoopBB,
@@ -650,11 +651,12 @@ void RISCVLateCodeGenPrepare::expandMemmoveUnknownSizeAligned(MemMoveInst *M) {
                                         {AlignLen, Sew8, Lmul});
     NewCopyLen = Builder.CreateSub(CopyLen, VL);
 
-    Value *Load =
-        Builder.CreateIntrinsic(Intrinsic::riscv_vle, {VTy, CopyLenType},
-                                {UndefValue::get(VTy), SrcAddr, VL});
+    Value *Load = Builder.CreateIntrinsic(
+        Intrinsic::riscv_vle, {VTy, SrcAddr->getType(), CopyLenType},
+        {UndefValue::get(VTy), SrcAddr, VL});
 
-    Builder.CreateIntrinsic(Intrinsic::riscv_vse, {VTy, CopyLenType},
+    Builder.CreateIntrinsic(Intrinsic::riscv_vse,
+                            {VTy, SrcAddr->getType(), CopyLenType},
                             {Load, DstAddr, VL});
 
     SrcFirstElemAddr = Builder.CreateGEP(Int8Type, SrcAddr, VL);
@@ -829,11 +831,12 @@ void RISCVLateCodeGenPrepare::createMemcpyLoopBody(
       DstIndexTmp = Builder.CreateGEP(Int8Type, DstIndexTmp, NegVL);
     }
 
-    Value *Load =
-        Builder.CreateIntrinsic(Intrinsic::riscv_vle, {VTy, CopyLenType},
-                                {UndefValue::get(VTy), SrcIndexTmp, VL});
+    Value *Load = Builder.CreateIntrinsic(
+        Intrinsic::riscv_vle, {VTy, SrcIndexTmp->getType(), CopyLenType},
+        {UndefValue::get(VTy), SrcIndexTmp, VL});
 
-    Builder.CreateIntrinsic(Intrinsic::riscv_vse, {VTy, CopyLenType},
+    Builder.CreateIntrinsic(Intrinsic::riscv_vse,
+                            {VTy, DstIndexTmp->getType(), CopyLenType},
                             {Load, DstIndexTmp, VL});
 
     if (FullyUnrolled && !UnrollCount)
@@ -876,11 +879,12 @@ void RISCVLateCodeGenPrepare::createMemcpyLoopBody(
     Value *VL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
                                         {LoopCount, Sew8, Lmul});
 
-    Value *Load =
-        Builder.CreateIntrinsic(Intrinsic::riscv_vle, {VTy, CopyLenType},
-                                {UndefValue::get(VTy), SrcIndex, VL});
+    Value *Load = Builder.CreateIntrinsic(
+        Intrinsic::riscv_vle, {VTy, SrcIndex->getType(), CopyLenType},
+        {UndefValue::get(VTy), SrcIndex, VL});
 
-    Builder.CreateIntrinsic(Intrinsic::riscv_vse, {VTy, CopyLenType},
+    Builder.CreateIntrinsic(Intrinsic::riscv_vse,
+                            {VTy, DstIndex->getType(), CopyLenType},
                             {Load, DstIndex, VL});
 
     NewLoopCount = Builder.CreateSub(LoopCount, VL);
@@ -1013,10 +1017,11 @@ void RISCVLateCodeGenPrepare::expandMemCpyUnknownSizewithAlign(MemCpyInst *M) {
       Intrinsic::umin, DLenElement, CopyLen, nullptr, "length.select");
   Value *AlignVL = Builder.CreateIntrinsic(
       Intrinsic::riscv_vsetvli, {CopyLenType}, {AlignLen, SEW, LMUL});
-  Value *Load =
-      Builder.CreateIntrinsic(Intrinsic::riscv_vle, {VTy, CopyLenType},
-                              {UndefValue::get(VTy), SrcAddr, AlignVL});
-  Builder.CreateIntrinsic(Intrinsic::riscv_vse, {VTy, CopyLenType},
+  Value *Load = Builder.CreateIntrinsic(
+      Intrinsic::riscv_vle, {VTy, SrcAddr->getType(), CopyLenType},
+      {UndefValue::get(VTy), SrcAddr, AlignVL});
+  Builder.CreateIntrinsic(Intrinsic::riscv_vse,
+                          {VTy, DstAddr->getType(), CopyLenType},
                           {Load, DstAddr, AlignVL});
 
   Value *AlignSrcGEP = Builder.CreateGEP(Int8Type, SrcAddr, AlignVL);
@@ -1085,7 +1090,8 @@ void RISCVLateCodeGenPrepare::expandMemSetUnknownSizeAligned(MemSetInst *M) {
   Value *AlignVL = Builder.CreateIntrinsic(
       Intrinsic::riscv_vsetvli, {CopyLenType}, {AlignLen, SEW, LMUL});
   CopyLen = Builder.CreateSub(CopyLen, AlignVL);
-  Builder.CreateIntrinsic(Intrinsic::riscv_vse, {VTy, CopyLenType},
+  Builder.CreateIntrinsic(Intrinsic::riscv_vse,
+                          {VTy, DstAddr->getType(), CopyLenType},
                           {TmpVal, DstAddr, AlignVL});
 
   DstAddr = Builder.CreateGEP(Int8Type, DstAddr, AlignVL);
@@ -1199,7 +1205,8 @@ void RISCVLateCodeGenPrepare::createMemsetLoopBody(
           Intrinsic::riscv_vsetvli, {CopyLenType},
           {ConstantInt::get(CopyLenType, KnownCurrentLen + MaxCopySize), SEW,
            LMUL});
-    Builder.CreateIntrinsic(Intrinsic::riscv_vse, {VTy, CopyLenType},
+    Builder.CreateIntrinsic(Intrinsic::riscv_vse,
+                            {VTy, DstIndices[TmpUC]->getType(), CopyLenType},
                             {Val, DstIndices[TmpUC], VL});
   }
 
@@ -1232,7 +1239,8 @@ void RISCVLateCodeGenPrepare::createMemsetLoopBody(
     Value *VL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
                                         {LoopCount, SEW, LMUL});
 
-    Builder.CreateIntrinsic(Intrinsic::riscv_vse, {VTy, CopyLenType},
+    Builder.CreateIntrinsic(Intrinsic::riscv_vse,
+                            {VTy, DstIndex->getType(), CopyLenType},
                             {Val, DstIndex, VL});
 
     NewLoopCount = Builder.CreateSub(LoopCount, VL);
