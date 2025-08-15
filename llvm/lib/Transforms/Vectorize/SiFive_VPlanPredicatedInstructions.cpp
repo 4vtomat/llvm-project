@@ -149,17 +149,7 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     VectorType *OpTy = cast<VectorType>(A->getType());
     Value *MaskArg = MaskValue(OpTy->getElementCount());
     Builder.setMask(MaskArg);
-
-    Value *EVLArg;
-    if (!vputils::isInLoopRegion(*Def->getDefiningRecipe(), *State.Plan)) {
-      Value *InitEVL =
-          State.get(State.Plan->getInitEVL(), /*NeedsScalar=*/true);
-      assert(InitEVL && "InitEVL must be initialized before use");
-      EVLArg = InitEVL;
-    } else {
-      EVLArg = State.get(EVL, /*NeedsScalar=*/true);
-    }
-    Builder.setEVL(EVLArg);
+    Builder.setEVL(State.get(EVL, /*NeedScalar=*/ true));
 
     StringRef PredicateStr = CmpInst::getPredicateName(Pred);
     auto *PredicateMDS = MDString::get(A->getContext(), PredicateStr);

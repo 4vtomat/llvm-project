@@ -128,18 +128,6 @@ bool vputils::isUniformAcrossVFsAndUFs(VPValue *V) {
       });
 }
 
-#if SIFIVE_CUSTOMIZATION
-bool vputils::isInLoopRegion(const VPRecipeBase &Recipe, const VPlan &Plan) {
-  const VPBlockBase *Parent = Recipe.getParent();
-  while (Parent) {
-    if (Parent == Plan.getVectorLoopRegion())
-      return true;
-    Parent = Parent->getParent();
-  }
-  return false;
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 VPBasicBlock *vputils::getFirstLoopHeader(VPlan &Plan, VPDominatorTree &VPDT) {
   auto DepthFirst = vp_depth_first_shallow(Plan.getEntry());
   auto I = find_if(DepthFirst, [&VPDT](VPBlockBase *VPB) {

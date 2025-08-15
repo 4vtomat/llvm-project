@@ -117,8 +117,6 @@ inline bool isHeaderPhi(const VPRecipeBase &R) {
            VPInst->getOpcode() == VPInstruction::CSAVLPhi;
   return false;
 }
-
-bool isInLoopRegion(const VPRecipeBase &Recipe, const VPlan &Plan);
 #endif // SIFIVE_CUSTOMIZATION
 
 /// Return true if \p V is a header mask in \p Plan.
