@@ -4664,6 +4664,9 @@ class VPlan {
   bool IsUncountable = false;
   /// Uncountable loops without upperbound trip count
   bool IsUnbound = false;
+  /// VPTypeAnalysis retrieves canonical IV type from trip count
+  /// when loop region dissolves. Save the type for unbound loops.
+  Type *CanonicalIVTy = nullptr;
 
   /// Use VLA Vectorizer
   bool UseVLAVectorizer = false;
@@ -4864,6 +4867,9 @@ public:
   void setUncountable() { IsUncountable = true; }
   void setUnbound() { IsUnbound = true; }
 
+  void setCanonicalIVType(Type *Ty) { CanonicalIVTy = Ty; }
+  Type *getCanonicalIVType() const { return CanonicalIVTy; }
+
   /// Returns VPValue for InitEVL
   VPValue *getInitEVL() const { return InitEVL; }
 
@@ -4902,19 +4908,13 @@ public:
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-  /// The vector trip count.
 #if SIFIVE_CUSTOMIZATION
-  VPValue &getVectorTripCount() {
-    assert(!isUncountableAndUnbound() &&
-           "Should not get vector trip count for unbound loops");
-    return VectorTripCount;
-  }
-
   /// Initialize AllTrue and AllFalse masks if there are users.
   void initializeMasks(VPTransformState &State);
-#else
-  VPValue &getVectorTripCount() { return VectorTripCount; }
 #endif
+
+  /// The vector trip count.
+  VPValue &getVectorTripCount() { return VectorTripCount; }
 
   /// Returns the VF of the vector loop region.
   VPValue &getVF() { return VF; };

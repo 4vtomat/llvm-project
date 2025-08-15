@@ -483,6 +483,7 @@ static void addCanonicalIVRecipesForUnbounds(VPlan &Plan, VPBasicBlock *HeaderVP
   Value *StartIdx = ConstantInt::get(IdxTy, 0);
   auto *StartV = Plan.getOrAddLiveIn(StartIdx);
 
+  Plan.setCanonicalIVType(IdxTy);
   // Add a VPCanonicalIVPHIRecipe starting at 0 to the header.
   auto *CanonicalIVPHI = new VPCanonicalIVPHIRecipe(StartV, DL);
   HeaderVPBB->insert(CanonicalIVPHI, HeaderVPBB->begin());

@@ -30,6 +30,13 @@ VPTypeAnalysis::VPTypeAnalysis(const VPlan &Plan)
     }
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // Unbound loops have no trip count
+  if (Plan.isUncountableAndUnbound()) {
+    CanonicalIVTy = Plan.getCanonicalIVType();
+    return;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   // If there's no canonical IV, retrieve the type from the trip count
   // expression.
   auto *TC = Plan.getTripCount();
