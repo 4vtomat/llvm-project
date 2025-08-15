@@ -2942,27 +2942,26 @@ optimizeWithVPFirst(VPlan &Plan,
   EarlyExitCond->replaceAllUsesWith(NewEarlyExitCond);
   EarlyExitCond->getDefiningRecipe()->eraseFromParent();
 
-  // Replace all FirstActiveLane in EarlyExit
-  auto *MiddleSplitVPBB = cast<VPBasicBlock>(LoopRegion->getSingleSuccessor());
-  VPBasicBlock *EarlyExitVPBB =
-      MiddleSplitVPBB->getSuccessors()[0]->getEntryBasicBlock();
-  if (none_of(*EarlyExitVPBB, [&VPExitMask] (VPRecipeBase &R) {
-    return match(&R, m_VPInstruction<VPInstruction::FirstActiveLane>(
-                       m_Specific(VPExitMask)));
-  }))
-    return;
-
-  Type *TyI64 = Type::getIntNTy(Ctx, 64);
-  auto *VPFirstI64 = new VPInstructionWithType(
-      Instruction::ZExt, {VPFirst}, TyI64, VPIRFlags(), VPFirst->getDebugLoc());
-  VPFirstI64->insertBefore(*EarlyExitVPBB, EarlyExitVPBB->getFirstNonPhi());
-  for (VPRecipeBase &R : make_early_inc_range(*EarlyExitVPBB)) {
-    if (!match(&R, m_VPInstruction<VPInstruction::FirstActiveLane>(
-                       m_Specific(VPExitMask))))
-      continue;
-    auto *VPFirstActiveLane = dyn_cast<VPInstruction>(&R);
-    VPFirstActiveLane->replaceAllUsesWith(VPFirstI64);
-    VPFirstActiveLane->eraseFromParent();
+  // Replace all first-active-lane with vp.first in middle block and exit block.
+  auto *MiddleVPBB = cast<VPBasicBlock>(LoopRegion->getSingleSuccessor());
+  auto *ExitVPBB = cast<VPBasicBlock>(MiddleVPBB->getSuccessors()[0]);
+  for (auto *VPBB : {MiddleVPBB, ExitVPBB}) {
+    VPInstructionWithType *VPFirstI64 = nullptr;
+    for (VPRecipeBase &R : make_early_inc_range(*VPBB)) {
+      if (!match(&R, m_VPInstruction<VPInstruction::FirstActiveLane>(
+                         m_Specific(VPExitMask))))
+        continue;
+      if (!VPFirstI64) {
+        Type *TyI64 = Type::getIntNTy(Ctx, 64);
+        VPFirstI64 =
+            new VPInstructionWithType(Instruction::ZExt, {VPFirst}, TyI64,
+                                      VPIRFlags(), VPFirst->getDebugLoc());
+        VPFirstI64->insertBefore(*VPBB, VPBB->getFirstNonPhi());
+      }
+      auto *VPFirstActiveLane = dyn_cast<VPInstruction>(&R);
+      VPFirstActiveLane->replaceAllUsesWith(VPFirstI64);
+      VPFirstActiveLane->eraseFromParent();
+    }
   }
 }
 
