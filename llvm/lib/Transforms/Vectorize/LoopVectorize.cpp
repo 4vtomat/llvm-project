@@ -11363,8 +11363,13 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range,
   // ---------------------------------------------------------------------------
   // Predicate and linearize the top-level loop region.
   // ---------------------------------------------------------------------------
+#if SIFIVE_CUSTOMIZATION
+  auto BlockMaskCache = VPlanTransforms::introduceMasksAndLinearize(
+      *Plan, !Legal->useVLAVectorizer());
+#else
   auto BlockMaskCache = VPlanTransforms::introduceMasksAndLinearize(
       *Plan, CM.foldTailByMasking());
+#endif //SIFIVE_CUSTOMIZATION
 
   // ---------------------------------------------------------------------------
   // Construct wide recipes and apply predication for original scalar
