@@ -30,7 +30,7 @@ define void @strlen(ptr %s) {
 ; CHECK-NEXT:    [[TMP8:%.*]] = load i8, ptr [[END_0]], align 1, !tbaa [[TBAA0]]
 ; CHECK-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP8]], 0
 ; CHECK-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; CHECK-NEXT:    br i1 [[CMP_NOT]], label [[WHILE_END]], label [[WHILE_COND1]], !llvm.loop [[LOOP6:![0-9]+]]
+; CHECK-NEXT:    br i1 [[CMP_NOT]], label [[WHILE_END]], label [[WHILE_COND1]], !llvm.loop [[LOOP7:![0-9]+]]
 ; CHECK:       while.end:
 ; CHECK-NEXT:    ret void
 ;

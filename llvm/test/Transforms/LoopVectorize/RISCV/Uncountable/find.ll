@@ -79,7 +79,7 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; CHECK:       for.inc:
 ; CHECK-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i32, ptr [[FIRST_ADDR_07]], i64 1
 ; CHECK-NEXT:    [[CMP_NOT:%.*]] = icmp eq ptr [[INCDEC_PTR]], [[LAST]]
-; CHECK-NEXT:    br i1 [[CMP_NOT]], label [[RETURN_LOOPEXIT]], label [[FOR_BODY1]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NEXT:    br i1 [[CMP_NOT]], label [[RETURN_LOOPEXIT]], label [[FOR_BODY1]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       return.loopexit:
 ; CHECK-NEXT:    [[RETVAL_0_PH:%.*]] = phi ptr [ [[FIRST_ADDR_07]], [[FOR_BODY1]] ], [ [[LAST]], [[FOR_INC]] ], [ [[LAST]], [[VEC_UNCOUNTABLE_MIDDLE_BLOCK]] ], [ [[IND_EARLY_ESCAPE]], [[VECTOR_EARLY_EXIT]] ]
 ; CHECK-NEXT:    br label [[RETURN]]
@@ -154,7 +154,7 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; P470:       for.inc:
 ; P470-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i32, ptr [[FIRST_ADDR_07]], i64 1
 ; P470-NEXT:    [[CMP_NOT:%.*]] = icmp eq ptr [[INCDEC_PTR]], [[LAST]]
-; P470-NEXT:    br i1 [[CMP_NOT]], label [[RETURN_LOOPEXIT]], label [[FOR_BODY1]], !llvm.loop [[LOOP3:![0-9]+]]
+; P470-NEXT:    br i1 [[CMP_NOT]], label [[RETURN_LOOPEXIT]], label [[FOR_BODY1]], !llvm.loop [[LOOP4:![0-9]+]]
 ; P470:       return.loopexit:
 ; P470-NEXT:    [[RETVAL_0_PH:%.*]] = phi ptr [ [[FIRST_ADDR_07]], [[FOR_BODY1]] ], [ [[LAST]], [[FOR_INC]] ], [ [[LAST]], [[VEC_UNCOUNTABLE_MIDDLE_BLOCK]] ], [ [[IND_EARLY_ESCAPE]], [[VECTOR_EARLY_EXIT]] ]
 ; P470-NEXT:    br label [[RETURN]]
@@ -273,7 +273,7 @@ define i1 @find3(ptr %first, ptr %last) {
 ; CHECK:       for.inc:
 ; CHECK-NEXT:    [[FIRST_NEXT]] = getelementptr inbounds nuw i8, ptr [[FIRST_ADDR]], i64 1
 ; CHECK-NEXT:    [[ICMP6:%.*]] = icmp ugt ptr [[FIRST_NEXT]], [[LAST:%.*]]
-; CHECK-NEXT:    br i1 [[ICMP6]], label [[RETURN:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+; CHECK-NEXT:    br i1 [[ICMP6]], label [[RETURN:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       return.early:
 ; CHECK-NEXT:    ret i1 true
 ; CHECK:       return:
@@ -290,7 +290,7 @@ define i1 @find3(ptr %first, ptr %last) {
 ; P470:       for.inc:
 ; P470-NEXT:    [[FIRST_NEXT]] = getelementptr inbounds nuw i8, ptr [[FIRST_ADDR]], i64 1
 ; P470-NEXT:    [[ICMP6:%.*]] = icmp ugt ptr [[FIRST_NEXT]], [[LAST:%.*]]
-; P470-NEXT:    br i1 [[ICMP6]], label [[RETURN:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+; P470-NEXT:    br i1 [[ICMP6]], label [[RETURN:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; P470:       return.early:
 ; P470-NEXT:    ret i1 true
 ; P470:       return:
@@ -355,7 +355,7 @@ define i64 @ham(ptr %arg, i64 %arg1, i32 %arg2, ptr %arg3, i32 %arg4) {
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP16]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP18:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP1]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = or i1 [[TMP17]], [[TMP18]]
-; CHECK-NEXT:    br i1 [[TMP21]], label [[MIDDLE_SPLIT:%.*]], label [[BB13]], !llvm.loop [[LOOP6:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP21]], label [[MIDDLE_SPLIT:%.*]], label [[BB13]], !llvm.loop [[LOOP7:![0-9]+]]
 ; CHECK:       middle.split:
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[VECTOR_EARLY_EXIT:%.*]], label [[MIDDLE_BLOCK:%.*]]
 ; CHECK:       middle.block:
@@ -374,7 +374,7 @@ define i64 @ham(ptr %arg, i64 %arg1, i32 %arg2, ptr %arg3, i32 %arg4) {
 ; CHECK:       bb18:
 ; CHECK-NEXT:    [[GETELEMENTPTR19]] = getelementptr i8, ptr [[PHI14]], i64 1
 ; CHECK-NEXT:    [[ICMP20:%.*]] = icmp ult ptr [[GETELEMENTPTR19]], [[GETELEMENTPTR6]]
-; CHECK-NEXT:    br i1 [[ICMP20]], label [[BB14]], label [[BB109]], !llvm.loop [[LOOP7:![0-9]+]]
+; CHECK-NEXT:    br i1 [[ICMP20]], label [[BB14]], label [[BB109]], !llvm.loop [[LOOP8:![0-9]+]]
 ; CHECK:       bb109:
 ; CHECK-NEXT:    ret i64 0
 ;
@@ -398,21 +398,21 @@ define i64 @ham(ptr %arg, i64 %arg1, i32 %arg2, ptr %arg3, i32 %arg4) {
 ; P470-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[BB13]] ]
 ; P470-NEXT:    [[AVL:%.*]] = sub i64 [[TMP1]], [[EVL_BASED_IV]]
 ; P470-NEXT:    [[TMP9:%.*]] = call i64 @llvm.umin.i64(i64 [[AVL]], i64 16)
-; P470-NEXT:    [[TMP3:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP9]], i32 32, i1 true)
+; P470-NEXT:    [[TMP3:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP9]], i32 16, i1 true)
 ; P470-NEXT:    [[TMP11:%.*]] = getelementptr i8, ptr [[PHI]], i64 [[EVL_BASED_IV]]
 ; P470-NEXT:    [[TMP12:%.*]] = getelementptr i8, ptr [[TMP11]], i32 0
-; P470-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 32 x i8>, i32 } @llvm.vp.load.ff.nxv32i8.p0(ptr align 1 [[TMP12]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP3]])
-; P470-NEXT:    [[TMP13:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
-; P470-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
-; P470-NEXT:    [[VP_OP:%.*]] = call <vscale x 32 x i8> @llvm.vp.and.nxv32i8(<vscale x 32 x i8> [[TMP6]], <vscale x 32 x i8> splat (i8 -2), <vscale x 32 x i1> splat (i1 true), i32 [[TMP13]])
-; P470-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[VP_OP]], <vscale x 32 x i8> splat (i8 -24), metadata !"eq", <vscale x 32 x i1> splat (i1 true), i32 [[TMP13]])
-; P470-NEXT:    [[TMP22:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> splat (i1 true), i32 [[TMP13]])
+; P470-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 16 x i8>, i32 } @llvm.vp.load.ff.nxv16i8.p0(ptr align 1 [[TMP12]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP3]])
+; P470-NEXT:    [[TMP13:%.*]] = extractvalue { <vscale x 16 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; P470-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 16 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; P470-NEXT:    [[VP_OP:%.*]] = call <vscale x 16 x i8> @llvm.vp.and.nxv16i8(<vscale x 16 x i8> [[TMP6]], <vscale x 16 x i8> splat (i8 -2), <vscale x 16 x i1> splat (i1 true), i32 [[TMP13]])
+; P470-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i8(<vscale x 16 x i8> [[VP_OP]], <vscale x 16 x i8> splat (i8 -24), metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP13]])
+; P470-NEXT:    [[TMP22:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP13]])
 ; P470-NEXT:    [[TMP17:%.*]] = icmp sge i32 [[TMP22]], 0
 ; P470-NEXT:    [[TMP16:%.*]] = zext i32 [[TMP13]] to i64
 ; P470-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP16]], [[EVL_BASED_IV]]
 ; P470-NEXT:    [[TMP18:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP1]]
 ; P470-NEXT:    [[TMP21:%.*]] = or i1 [[TMP17]], [[TMP18]]
-; P470-NEXT:    br i1 [[TMP21]], label [[MIDDLE_SPLIT:%.*]], label [[BB13]], !llvm.loop [[LOOP6:![0-9]+]]
+; P470-NEXT:    br i1 [[TMP21]], label [[MIDDLE_SPLIT:%.*]], label [[BB13]], !llvm.loop [[LOOP7:![0-9]+]]
 ; P470:       middle.split:
 ; P470-NEXT:    br i1 [[TMP17]], label [[VECTOR_EARLY_EXIT:%.*]], label [[MIDDLE_BLOCK:%.*]]
 ; P470:       middle.block:
@@ -431,7 +431,7 @@ define i64 @ham(ptr %arg, i64 %arg1, i32 %arg2, ptr %arg3, i32 %arg4) {
 ; P470:       bb18:
 ; P470-NEXT:    [[GETELEMENTPTR19]] = getelementptr i8, ptr [[PHI14]], i64 1
 ; P470-NEXT:    [[ICMP20:%.*]] = icmp ult ptr [[GETELEMENTPTR19]], [[GETELEMENTPTR6]]
-; P470-NEXT:    br i1 [[ICMP20]], label [[BB14]], label [[BB109]], !llvm.loop [[LOOP7:![0-9]+]]
+; P470-NEXT:    br i1 [[ICMP20]], label [[BB14]], label [[BB109]], !llvm.loop [[LOOP8:![0-9]+]]
 ; P470:       bb109:
 ; P470-NEXT:    ret i64 0
 ;
@@ -491,7 +491,7 @@ define ptr @find_with_int_iv(ptr %first, ptr %last, i64 %count) {
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP11]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP1]]
 ; CHECK-NEXT:    [[TMP13:%.*]] = or i1 [[TMP12]], [[TMP14]]
-; CHECK-NEXT:    br i1 [[TMP13]], label [[MIDDLE_SPLIT:%.*]], label [[FOR_BODY1]], !llvm.loop [[LOOP8:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP13]], label [[MIDDLE_SPLIT:%.*]], label [[FOR_BODY1]], !llvm.loop [[LOOP9:![0-9]+]]
 ; CHECK:       middle.split:
 ; CHECK-NEXT:    br i1 [[TMP12]], label [[VECTOR_EARLY_EXIT:%.*]], label [[MIDDLE_BLOCK:%.*]]
 ; CHECK:       middle.block:
@@ -516,7 +516,7 @@ define ptr @find_with_int_iv(ptr %first, ptr %last, i64 %count) {
 ; CHECK-NEXT:    [[ADDR_NEXT]] = getelementptr inbounds nuw ptr, ptr [[ADDR]], i64 1
 ; CHECK-NEXT:    [[REMAIN_NEXT]] = add nsw i64 [[REMAIN]], -1
 ; CHECK-NEXT:    [[ICMP2:%.*]] = icmp sgt i64 [[REMAIN]], 1
-; CHECK-NEXT:    br i1 [[ICMP2]], label [[FOR_BODY]], label [[RETURN]], !llvm.loop [[LOOP9:![0-9]+]]
+; CHECK-NEXT:    br i1 [[ICMP2]], label [[FOR_BODY]], label [[RETURN]], !llvm.loop [[LOOP10:![0-9]+]]
 ; CHECK:       return.early:
 ; CHECK-NEXT:    [[RET:%.*]] = phi ptr [ [[ADDR]], [[FOR_BODY]] ], [ [[IND_EARLY_ESCAPE]], [[VECTOR_EARLY_EXIT]] ]
 ; CHECK-NEXT:    ret ptr [[RET]]
@@ -552,7 +552,7 @@ define ptr @find_with_int_iv(ptr %first, ptr %last, i64 %count) {
 ; P470-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP11]], [[EVL_BASED_IV]]
 ; P470-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP1]]
 ; P470-NEXT:    [[TMP13:%.*]] = or i1 [[TMP12]], [[TMP14]]
-; P470-NEXT:    br i1 [[TMP13]], label [[MIDDLE_SPLIT:%.*]], label [[FOR_BODY1]], !llvm.loop [[LOOP8:![0-9]+]]
+; P470-NEXT:    br i1 [[TMP13]], label [[MIDDLE_SPLIT:%.*]], label [[FOR_BODY1]], !llvm.loop [[LOOP9:![0-9]+]]
 ; P470:       middle.split:
 ; P470-NEXT:    br i1 [[TMP12]], label [[VECTOR_EARLY_EXIT:%.*]], label [[MIDDLE_BLOCK:%.*]]
 ; P470:       middle.block:
@@ -577,7 +577,7 @@ define ptr @find_with_int_iv(ptr %first, ptr %last, i64 %count) {
 ; P470-NEXT:    [[ADDR_NEXT]] = getelementptr inbounds nuw ptr, ptr [[ADDR]], i64 1
 ; P470-NEXT:    [[REMAIN_NEXT]] = add nsw i64 [[REMAIN]], -1
 ; P470-NEXT:    [[ICMP2:%.*]] = icmp sgt i64 [[REMAIN]], 1
-; P470-NEXT:    br i1 [[ICMP2]], label [[FOR_BODY]], label [[RETURN]], !llvm.loop [[LOOP9:![0-9]+]]
+; P470-NEXT:    br i1 [[ICMP2]], label [[FOR_BODY]], label [[RETURN]], !llvm.loop [[LOOP10:![0-9]+]]
 ; P470:       return.early:
 ; P470-NEXT:    [[RET:%.*]] = phi ptr [ [[ADDR]], [[FOR_BODY]] ], [ [[IND_EARLY_ESCAPE]], [[VECTOR_EARLY_EXIT]] ]
 ; P470-NEXT:    ret ptr [[RET]]
@@ -632,7 +632,7 @@ define i32 @find_no_liveout(ptr %p) {
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP12]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 60
 ; CHECK-NEXT:    [[TMP10:%.*]] = or i1 [[TMP8]], [[TMP9]]
-; CHECK-NEXT:    br i1 [[TMP10]], label [[MIDDLE_SPLIT:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP10]], label [[MIDDLE_SPLIT:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP11:![0-9]+]]
 ; CHECK:       middle.split:
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[VECTOR_EARLY_EXIT:%.*]], label [[MIDDLE_BLOCK:%.*]]
 ; CHECK:       middle.block:
@@ -651,7 +651,7 @@ define i32 @find_no_liveout(ptr %p) {
 ; CHECK:       for.cond:
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], 60
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[CLEANUP]], label [[FOR_BODY]], !llvm.loop [[LOOP11:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[CLEANUP]], label [[FOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
 ; CHECK:       cleanup:
 ; CHECK-NEXT:    [[RETVAL_0:%.*]] = phi i32 [ 0, [[FOR_BODY]] ], [ 1, [[FOR_COND]] ], [ 1, [[MIDDLE_BLOCK]] ], [ 0, [[VECTOR_EARLY_EXIT]] ]
 ; CHECK-NEXT:    ret i32 [[RETVAL_0]]
@@ -679,7 +679,7 @@ define i32 @find_no_liveout(ptr %p) {
 ; P470-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP12]], [[EVL_BASED_IV]]
 ; P470-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 60
 ; P470-NEXT:    [[TMP10:%.*]] = or i1 [[TMP8]], [[TMP9]]
-; P470-NEXT:    br i1 [[TMP10]], label [[MIDDLE_SPLIT:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
+; P470-NEXT:    br i1 [[TMP10]], label [[MIDDLE_SPLIT:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP11:![0-9]+]]
 ; P470:       middle.split:
 ; P470-NEXT:    br i1 [[TMP8]], label [[VECTOR_EARLY_EXIT:%.*]], label [[MIDDLE_BLOCK:%.*]]
 ; P470:       middle.block:
@@ -698,7 +698,7 @@ define i32 @find_no_liveout(ptr %p) {
 ; P470:       for.cond:
 ; P470-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; P470-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], 60
-; P470-NEXT:    br i1 [[EXITCOND_NOT]], label [[CLEANUP]], label [[FOR_BODY]], !llvm.loop [[LOOP11:![0-9]+]]
+; P470-NEXT:    br i1 [[EXITCOND_NOT]], label [[CLEANUP]], label [[FOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
 ; P470:       cleanup:
 ; P470-NEXT:    [[RETVAL_0:%.*]] = phi i32 [ 0, [[FOR_BODY]] ], [ 1, [[FOR_COND]] ], [ 1, [[MIDDLE_BLOCK]] ], [ 0, [[VECTOR_EARLY_EXIT]] ]
 ; P470-NEXT:    ret i32 [[RETVAL_0]]
