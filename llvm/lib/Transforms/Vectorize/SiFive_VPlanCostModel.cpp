@@ -48,7 +48,7 @@ cl::opt<unsigned> SiFiveVectorConditionFrequency(
     "sifive-vplan-cost-model-vector-condition-frequency", cl::init(2),
     cl::Hidden,
     cl::desc("Control heuristic of how frequent vector condition of "
-             "VPConditionalRegionBlock is executed. The value `N` represents "
+             "conditional VPBB is executed. The value `N` represents "
              "that cost model will assume that vector condition is true each "
              "`N`-th vector iteration."));
 #endif // SIFIVE_CUSTOMIZATION
@@ -209,26 +209,12 @@ InstructionCost VPlanCostModel::getCost(const VPBlockBase *Block,
         InstructionCost Cost = 0;
         for (const VPRecipeBase &Recipe : *BBlock)
           Cost += getCost(&Recipe, RVL);
-        return Cost;
-      })
-      .Case<VPConditionalRegionBlock>([&](const VPConditionalRegionBlock *IfBlock) {
-        InstructionCost Cost = 0;
-        for (const VPBlockBase *Block :
-             vp_depth_first_shallow(IfBlock->getEntry()))
-          Cost += getCost(Block, RVL);
-        // Denominator represents number of vector iterations when condition is
-        // true, therefore requires execution of the nested vector code.
-        LLVM_DEBUG(dbgs() << "Adjust cost of the VPConditionalRegionBlock from " << Cost);
-        Cost /= std::max(SiFiveVectorConditionFrequency.getValue(), 1U);
-        LLVM_DEBUG(dbgs() << " to " << Cost << '\n');
-
-        Type *CondTy = TypeInfo.inferScalarType(IfBlock->getCondition());
-        auto *VectorTy = cast<VectorType>(getVectorType(CondTy, RVL));
-        Type *VLTy = getVLType(RVL);
-        Type *RetTy = Type::getInt32Ty(VLTy->getContext());
-        Cost += getIntrinsicCost(Intrinsic::vp_first, RetTy, {VectorTy, VLTy});
-        LLVM_DEBUG(dbgs() << "VPlanCM: cost " << Cost << " for RVL " << RVL
-                          << " for VPConditionalRegionBlock\n");
+        if (BBlock->isConditional()) {
+          LLVM_DEBUG(dbgs() << "VPlanCM: Adjust cost for conditional VPBB from "
+                            << Cost);
+          Cost /= std::max(SiFiveVectorConditionFrequency.getValue(), 1U);
+          LLVM_DEBUG(dbgs() << " to " << Cost << '\n');
+        }
         return Cost;
       })
       .Case<VPRegionBlock>([&](const VPRegionBlock *RegionBlock) {

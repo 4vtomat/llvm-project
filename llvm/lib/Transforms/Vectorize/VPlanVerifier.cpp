@@ -193,6 +193,12 @@ bool VPlanVerifier::verifyEVLRecipe(const VPInstruction &EVL) const {
         .Case<VPInstruction>([&](const VPInstruction *I) {
           if (I->getOpcode() == Instruction::PHI)
             return VerifyEVLUse(*I, 1);
+#if SIFIVE_CUSTOMIZATION
+          // TODO: Add attribute in VPInstruction indicate this function is
+          // vp-intrinsics.
+          if (I->getOpcode() == VPInstruction::VPFirst)
+            return VerifyEVLUse(*I, 1);
+#endif // SIFIVE_CUSTOMIZATION
           if (I->getOpcode() != Instruction::Add) {
             errs() << "EVL is used as an operand in non-VPInstruction::Add\n";
             return false;
@@ -367,19 +373,6 @@ bool VPlanVerifier::verifyBlock(const VPBlockBase *VPB) {
       return false;
     }
   }
-#if SIFIVE_CUSTOMIZATION
-  if (auto *IfB = dyn_cast<VPConditionalRegionBlock>(VPB)) {
-    if (IfB->getNumSuccessors() != 1) {
-      errs() << "VPConditionalRegionBlock must have one immediate successor\n";
-      return false;
-    }
-    if (IfB->getNumPredecessors() != 1) {
-      errs()
-          << "VPConditionalRegionBlock must have one immediate predecessor\n";
-      return false;
-    }
-  }
-#endif // SIFIVE_CUSTOMIZATION
 
   // Check block's successors.
   const auto &Successors = VPB->getSuccessors();

@@ -10900,6 +10900,7 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
           VPlanTransforms::optimizeUncountable(*Plan, *PSE.getSE());
         } else {
           VPlanTransforms::runPass(VPlanTransforms::optimize, *Plan);
+          VPlanTransforms::optimizeConditionalRecipes(*Plan, *Legal, TTI, *TLI);
           if (Plan->isUncountable())
             VPlanTransforms::addExplicitVectorLengthUncountable(*Plan);
           else
@@ -10908,9 +10909,6 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
           VPlanTransforms::runPass(VPlanTransforms::optimize, *Plan);
           VPlanTransforms::optimizeGEPs(*Plan);
           VPlanTransforms::runPass(VPlanTransforms::optimize, *Plan);
-
-          VPlanTransforms::optimizeConditionalRecipes(
-              *Plan, *Legal, TTI, *TLI);
         }
       } else {
         VPlanTransforms::runPass(VPlanTransforms::optimize, *Plan);

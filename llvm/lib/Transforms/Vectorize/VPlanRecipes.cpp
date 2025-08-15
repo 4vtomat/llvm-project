@@ -520,6 +520,7 @@ bool VPInstruction::canGenerateScalarForFirstLane() const {
   case VPInstruction::CSAVLSel:
   case VPInstruction::CSAVLPhi:
   case VPInstruction::CSAAnyActive:
+  case VPInstruction::VPFirst:
 #endif // SIFIVE_CUSTOMIZATION
     return true;
   default:
@@ -739,6 +740,17 @@ Value *VPInstruction::generate(VPTransformState &State) {
     BranchInst *CondBr = Builder.CreateCondBr(Cond, Builder.GetInsertBlock(),
                                               State.CFG.VPBB2IRBB[Header]);
     CondBr->setSuccessor(0, nullptr);
+#if SIFIVE_CUSTOMIZATION
+    // Conditional VPBB transformation will split the loop body into multiple
+    // blocks. So the successor[1] may not always be the header, it could also
+    // be an another VPBB. If current VPBB has more 2 successors, also need to
+    // clear the successor[1] which will fixed in `connectToPredecessor()`.
+    if (getParent()->getNumSuccessors() > 1) {
+      assert(getParent()->getSuccessors()[1] != Header &&
+             "Shouldn't reset the successor of VPBB that is alreadey created.");
+      CondBr->setSuccessor(1, nullptr);
+    }
+#endif
     Builder.GetInsertBlock()->getTerminator()->eraseFromParent();
     return CondBr;
   }
@@ -1442,6 +1454,11 @@ bool VPInstruction::onlyFirstLaneUsed(const VPValue *Op) const {
     return Op == getOperand(0) || vputils::onlyFirstLaneUsed(this);
   case VPInstruction::ComputeFindLastIVResult:
     return Op == getOperand(1);
+#if SIFIVE_CUSTOMIZATION
+  // Last operand is EVL.
+  case VPInstruction::VPFirst:
+    return Op == getOperand(1);
+#endif // SIFIVE_CUSTOMIZATION
   };
   llvm_unreachable("switch should return");
 }
@@ -3664,41 +3681,15 @@ void VPBranchOnMaskRecipe::execute(VPTransformState &State) {
 #endif // !SIFIVE_CUSTOMIZATION
 
   VPValue *BlockInMask = getOperand(0);
-#if SIFIVE_CUSTOMIZATION
-  Value *ConditionBit;
-  // For the entry of conditional region block, this block always branch to
-  // the successor of the region unconditionally. So the mask must be a live-in
-  // all-true.
-  if (TrueBB == FalseBB &&
-      isa<VPConditionalRegionBlock>(getParent()->getParent()))
-    ConditionBit = State.get(BlockInMask, true);
-  else
-    ConditionBit = State.get(BlockInMask, *State.Lane);
-#else
   Value *ConditionBit = State.get(BlockInMask, *State.Lane);
-#endif // SIFIVE_CUSTOMIZATION
 
   // Replace the temporary unreachable terminator with a new conditional branch,
   // whose two destinations will be set later when they are created.
   auto *CurrentTerminator = State.CFG.PrevBB->getTerminator();
   assert(isa<UnreachableInst>(CurrentTerminator) &&
          "Expected to replace unreachable terminator with conditional branch.");
-#if SIFIVE_CUSTOMIZATION
-  BranchInst *CondBr;
-  // Currently, there is only one block in the VPConditionalRegionBlock.
-  // This block is the entry of the region so it sould terminate with condition
-  // branch. Since we only have one BB in the region, we can directly branch to
-  // the successor of the region block unconditionally.
-  if (TrueBB == FalseBB &&
-      isa<VPConditionalRegionBlock>(getParent()->getParent()))
-    CondBr = State.Builder.CreateBr(State.CFG.PrevBB);
-  else
-    CondBr =
-        State.Builder.CreateCondBr(ConditionBit, State.CFG.PrevBB, nullptr);
-#else
   auto CondBr =
       State.Builder.CreateCondBr(ConditionBit, State.CFG.PrevBB, nullptr);
-#endif // SIFIVE_CUSTOMIZATION
   CondBr->setSuccessor(0, nullptr);
   CurrentTerminator->eraseFromParent();
 }
