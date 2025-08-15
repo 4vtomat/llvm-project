@@ -202,8 +202,10 @@ bool VPlanVerifier::verifyEVLRecipe(const VPInstruction &EVL) const {
                 return !isa<VPCanonicalIVPHIRecipe, VPEVLBasedIVPHIRecipe,
                             VPInstruction>(U) ||
                        (isa<VPInstruction>(U) &&
-                        cast<VPInstruction>(U)->getOpcode() !=
-                            VPInstruction::BranchOnCount);
+                        (cast<VPInstruction>(U)->getOpcode() !=
+                             VPInstruction::BranchOnCount &&
+                         cast<VPInstruction>(U)->getOpcode() !=
+                             Instruction::PHI));
               })) {
             errs() << "Result of VPInstruction::Add with EVL operand is "
                       "not used by VPEVLBasedIVPHIRecipe, "
