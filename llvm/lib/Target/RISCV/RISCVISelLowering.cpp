@@ -27472,14 +27472,15 @@ bool RISCVTargetLowering::lowerDeinterleaveIntrinsicToStridedLoad(
 
   Operands.push_back(ConstantInt::get(XLenTy, Log2_64(SEW)));
 
+  auto *PtrTy = StridedLoad->getArgOperand(0)->getType();
   Function *VlssegNFunc;
   if (IsMasked) {
-    VlssegNFunc =
-        Intrinsic::getOrInsertDeclaration(StridedLoad->getModule(), VlssegNID,
-                                  {VecTupTy, EVL->getType(), Mask->getType()});
+    VlssegNFunc = Intrinsic::getOrInsertDeclaration(
+        StridedLoad->getModule(), VlssegNID,
+        {VecTupTy, PtrTy, EVL->getType(), Mask->getType()});
   } else {
-    VlssegNFunc = Intrinsic::getOrInsertDeclaration(StridedLoad->getModule(), VlssegNID,
-                                                    {VecTupTy, EVL->getType()});
+    VlssegNFunc = Intrinsic::getOrInsertDeclaration(
+        StridedLoad->getModule(), VlssegNID, {VecTupTy, PtrTy, EVL->getType()});
   }
   CallInst *VlssegN = Builder.CreateCall(VlssegNFunc, Operands);
 
