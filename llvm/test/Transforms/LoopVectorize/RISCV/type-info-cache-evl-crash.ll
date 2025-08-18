@@ -36,7 +36,7 @@ define void @type_info_cache_clobber(ptr %dstv, ptr %src, i64 %wide.trip.count) 
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i32> @llvm.vp.mul.nxv4i32(<vscale x 4 x i32> [[VP_CAST]], <vscale x 4 x i32> zeroinitializer, <vscale x 4 x i1> splat (i1 true), i32 [[TMP11]])
 ; CHECK-NEXT:    [[VP_OP2:%.*]] = call <vscale x 4 x i32> @llvm.vp.ashr.nxv4i32(<vscale x 4 x i32> [[VP_CAST]], <vscale x 4 x i32> zeroinitializer, <vscale x 4 x i1> splat (i1 true), i32 [[TMP11]])
 ; CHECK-NEXT:    [[VP_OP3:%.*]] = call <vscale x 4 x i32> @llvm.vp.or.nxv4i32(<vscale x 4 x i32> [[VP_OP2]], <vscale x 4 x i32> zeroinitializer, <vscale x 4 x i1> splat (i1 true), i32 [[TMP11]])
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i32(<vscale x 4 x i32> [[VP_CAST]], <vscale x 4 x i32> zeroinitializer, metadata !"ult", <vscale x 4 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i32(<vscale x 4 x i32> [[VP_CAST]], <vscale x 4 x i32> zeroinitializer, metadata !"ult", <vscale x 4 x i1> splat (i1 true), i32 [[TMP11]])
 ; CHECK-NEXT:    [[VP_WIDEN_SELECT:%.*]] = call <vscale x 4 x i32> @llvm.vp.select.nxv4i32(<vscale x 4 x i1> [[VP_OP_ICMP]], <vscale x 4 x i32> [[VP_OP3]], <vscale x 4 x i32> zeroinitializer, i32 [[TMP11]])
 ; CHECK-NEXT:    [[VP_CAST4:%.*]] = call <vscale x 4 x i8> @llvm.vp.trunc.nxv4i8.nxv4i32(<vscale x 4 x i32> [[VP_WIDEN_SELECT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP11]])
 ; CHECK-NEXT:    call void @llvm.vp.scatter.nxv4i8.nxv4p0(<vscale x 4 x i8> [[VP_CAST4]], <vscale x 4 x ptr> align 1 [[BROADCAST_SPLAT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP11]]), !alias.scope [[META3:![0-9]+]], !noalias [[META0]]

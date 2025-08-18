@@ -27,7 +27,7 @@ define i32 @foo() {
 ; CHECK-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr null, i64 [[OFFSET_IDX]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i16, ptr [[NEXT_GEP]], i32 0
 ; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i16> @llvm.vp.load.nxv8i16.p0(ptr align 2 [[TMP6]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP5]])
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i16(<vscale x 8 x i16> [[VP_OP_LOAD]], <vscale x 8 x i16> splat (i16 58), metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i16(<vscale x 8 x i16> [[VP_OP_LOAD]], <vscale x 8 x i16> splat (i16 58), metadata !"eq", <vscale x 8 x i1> splat (i1 true), i32 [[TMP5]])
 ; CHECK-NEXT:    [[TMP7:%.*]] = call <vscale x 8 x i1> @llvm.vp.merge.nxv8i1(<vscale x 8 x i1> splat (i1 true), <vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> zeroinitializer, i32 [[TMP5]])
 ; CHECK-NEXT:    [[TMP8:%.*]] = call <vscale x 8 x i1> @llvm.experimental.vp.set.before.first.nxv8i1(<vscale x 8 x i1> [[TMP7]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP9:%.*]] = call <vscale x 8 x i1> @llvm.vp.and.nxv8i1(<vscale x 8 x i1> [[TMP8]], <vscale x 8 x i1> [[CSA_MASK_PHI]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP2]])

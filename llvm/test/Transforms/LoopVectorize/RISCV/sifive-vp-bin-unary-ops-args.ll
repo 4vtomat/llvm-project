@@ -6,14 +6,14 @@ define void @test() {
 ; CHECK-NEXT:  while.body380.preheader:
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-; CHECK-NEXT:    [[TMP3:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 100, i32 8, i1 true)
+; CHECK-NEXT:    [[TMP3:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 100, i32 4, i1 true)
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP0:%.*]] = sub i32 100, [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 [[TMP0]], i32 8, i1 true)
-; CHECK-NEXT:    call void @llvm.vp.scatter.nxv8i8.nxv8p0(<vscale x 8 x i8> zeroinitializer, <vscale x 8 x ptr> align 1 zeroinitializer, <vscale x 8 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 [[TMP0]], i32 4, i1 true)
+; CHECK-NEXT:    call void @llvm.vp.scatter.nxv4i8.nxv4p0(<vscale x 4 x i8> zeroinitializer, <vscale x 4 x ptr> align 1 zeroinitializer, <vscale x 4 x i1> splat (i1 true), i32 [[TMP1]])
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i32 [[TMP1]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP2:%.*]] = icmp eq i32 [[INDEX_EVL_NEXT]], 100
 ; CHECK-NEXT:    br i1 [[TMP2]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
@@ -28,7 +28,7 @@ define void @test() {
 ; CHECK-NEXT:    [[AND385681:%.*]] = and i8 0, 0
 ; CHECK-NEXT:    store i8 [[AND385681]], ptr null, align 1
 ; CHECK-NEXT:    [[TOBOOL379_NOT:%.*]] = icmp eq i32 [[DEC378]], 100
-; CHECK-NEXT:    br i1 [[TOBOOL379_NOT]], label [[FINISH_LOOPEXIT]], label [[WHILE_BODY380]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TOBOOL379_NOT]], label [[FINISH_LOOPEXIT]], label [[WHILE_BODY380]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       finish.loopexit:
 ; CHECK-NEXT:    ret void
 ;

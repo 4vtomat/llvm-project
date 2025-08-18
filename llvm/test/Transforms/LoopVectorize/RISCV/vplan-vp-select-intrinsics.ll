@@ -15,14 +15,7 @@
  ; IF-EVL-NEXT: Successor(s): vector.ph
 
  ; IF-EVL:      ir-bb<vector.ph>:
- ; IF-EVL-NEXT:   IR   %4 = call i64 @llvm.vscale.i64()
- ; IF-EVL-NEXT:   IR   %5 = mul i64 %4, 4
- ; IF-EVL-NEXT:   IR   %6 = sub i64 %5, 1
- ; IF-EVL-NEXT:   IR   %n.rnd.up = add i64 %N, %6
- ; IF-EVL-NEXT:   IR   %n.mod.vf = urem i64 %n.rnd.up, %5
- ; IF-EVL-NEXT:   IR   %n.vec = sub i64 %n.rnd.up, %n.mod.vf
- ; IF-EVL-NEXT:   IR   %7 = call i64 @llvm.vscale.i64()
- ; IF-EVL-NEXT:   IR   %8 = mul i64 %7, 4
+ ; IF-EVL-NEXT: IR   %0 = call i32 @llvm.experimental.get.vector.length.i64(i64 %N, i32 2, i1 true)
  ; IF-EVL-NEXT: Successor(s): vector.body
  ; IF-EVL-EMPTY:
  ; IF-EVL-NEXT: vector.body:
@@ -38,15 +31,14 @@
  ; IF-EVL-NEXT:   WIDEN ir<[[LD2:%.+]]> = vp.load vp<[[PTR2]]>, vp<[[EVL]]>
  ; IF-EVL-NEXT:   WIDEN ir<[[CMP:%.+]]> = icmp sgt ir<[[LD1]]>, ir<[[LD2]]>
  ; IF-EVL-NEXT:   WIDEN ir<[[SUB:%.+]]> = sub ir<0>, ir<[[LD2]]>
- ; IF-EVL-NEXT:   WIDEN-INTRINSIC vp<[[SELECT:%.+]]> = call llvm.vp.select(ir<[[CMP]]>, ir<[[LD2]]>, ir<[[SUB]]>, vp<[[EVL]]>)
- ; IF-EVL-NEXT:   WIDEN ir<[[ADD:%.+]]> = add vp<[[SELECT]]>, ir<[[LD1]]>
+ ; IF-EVL-NEXT:   WIDEN-SELECT ir<[[SELECT:%.+]]> = select ir<[[CMP]]>, ir<[[LD2]]>, ir<[[SUB]]>
+ ; IF-EVL-NEXT:   WIDEN ir<[[ADD:%.+]]> = add ir<[[SELECT]]>, ir<[[LD1]]>
  ; IF-EVL-NEXT:   CLONE ir<[[GEP3:%.+]]> = getelementptr inbounds ir<%a>, vp<[[EVL_PHI]]>
  ; IF-EVL-NEXT:   vp<[[PTR3:%.+]]> = vector-pointer ir<[[GEP3]]>
  ; IF-EVL-NEXT:   WIDEN vp.store vp<[[PTR3]]>, ir<[[ADD]]>, vp<[[EVL]]>
  ; IF-EVL-NEXT:   EMIT vp<[[CAST:%[0-9]+]]> = zext vp<[[EVL]]> to i64
- ; IF-EVL-NEXT:   EMIT vp<[[IV_NEX]]> = add vp<[[CAST]]>, vp<[[EVL_PHI]]>
- ; IF-EVL-NEXT:   EMIT vp<[[IV_NEXT_EXIT]]> = add vp<[[IV]]>, ir<[[VFUF]]>
- ; IF-EVL-NEXT:   EMIT branch-on-count vp<[[IV_NEXT_EXIT]]>,  ir<[[VTC]]>
+ ; IF-EVL-NEXT:   EMIT vp<[[IV_NEX]]> = add nuw vp<[[CAST]]>, vp<[[EVL_PHI]]>
+ ; IF-EVL-NEXT:   EMIT branch-on-count vp<[[IV_NEX]]>,  ir<%N>
 
  entry:
    br label %for.body
