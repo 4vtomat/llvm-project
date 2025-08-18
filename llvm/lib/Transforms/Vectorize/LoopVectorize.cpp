@@ -11364,8 +11364,9 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range,
   // Predicate and linearize the top-level loop region.
   // ---------------------------------------------------------------------------
 #if SIFIVE_CUSTOMIZATION
+  // Don't create haeader mask when using VLAVectorizer.
   auto BlockMaskCache = VPlanTransforms::introduceMasksAndLinearize(
-      *Plan, !Legal->useVLAVectorizer());
+      *Plan, !Legal->useVLAVectorizer() && CM.foldTailByMasking());
 #else
   auto BlockMaskCache = VPlanTransforms::introduceMasksAndLinearize(
       *Plan, CM.foldTailByMasking());
