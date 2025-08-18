@@ -5944,6 +5944,9 @@ calculateRegisterUsage(VPlan &Plan, ArrayRef<ElementCount> VFs,
 
         if (VFs[J].isScalar() ||
             isa<VPCanonicalIVPHIRecipe, VPReplicateRecipe, VPDerivedIVRecipe,
+#if SIFIVE_CUSTOMIZATION
+                VPEVLBasedIVPHIRecipe,
+#endif // SIFIVE_CUSTOMIZATION
                 VPScalarIVStepsRecipe>(R) ||
             (isa<VPInstruction>(R) &&
              all_of(cast<VPSingleDefRecipe>(R)->users(),

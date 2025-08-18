@@ -123,57 +123,57 @@ define float @P7Viterbi(ptr noundef %dsq, i64 noundef signext %L, ptr noundef %h
 ; X390-NEXT:    [[TMP7:%.*]] = add i64 [[L]], -1
 ; X390-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; X390:       [[VECTOR_PH]]:
-; X390-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP7]], i32 8, i1 true)
-; X390-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x i32> poison, i32 [[INT321]], i64 0
-; X390-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 8 x i32> [[BROADCAST_SPLATINSERT]], <vscale x 8 x i32> poison, <vscale x 8 x i32> zeroinitializer
+; X390-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP7]], i32 16, i1 true)
+; X390-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 16 x i32> poison, i32 [[INT321]], i64 0
+; X390-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 16 x i32> [[BROADCAST_SPLATINSERT]], <vscale x 16 x i32> poison, <vscale x 16 x i32> zeroinitializer
 ; X390-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; X390:       [[VECTOR_BODY]]:
 ; X390-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; X390-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
 ; X390-NEXT:    [[TMP8:%.*]] = sub i64 [[TMP7]], [[EVL_BASED_IV]]
-; X390-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP8]], i32 8, i1 true)
+; X390-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP8]], i32 16, i1 true)
 ; X390-NEXT:    [[OFFSET_IDX:%.*]] = add i64 1, [[EVL_BASED_IV]]
 ; X390-NEXT:    [[TMP11:%.*]] = add nsw i64 [[OFFSET_IDX]], -1
 ; X390-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[DSQ]], i64 [[TMP11]]
 ; X390-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i32, ptr [[TMP12]], i32 0
-; X390-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP13]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr align 4 [[TMP13]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
 ; X390-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i32, ptr [[HMM]], i64 [[TMP11]]
 ; X390-NEXT:    [[TMP15:%.*]] = getelementptr inbounds i32, ptr [[TMP14]], i32 0
-; X390-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP15]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
-; X390-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VP_OP_LOAD1]], <vscale x 8 x i32> [[VP_OP_LOAD]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr align 4 [[TMP15]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP:%.*]] = call <vscale x 16 x i32> @llvm.vp.add.nxv16i32(<vscale x 16 x i32> [[VP_OP_LOAD1]], <vscale x 16 x i32> [[VP_OP_LOAD]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
 ; X390-NEXT:    [[TMP16:%.*]] = getelementptr inbounds i32, ptr [[TMP0]], i64 [[OFFSET_IDX]]
 ; X390-NEXT:    [[TMP17:%.*]] = getelementptr inbounds i32, ptr [[TMP16]], i32 0
-; X390-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[VP_OP]], ptr align 4 [[TMP17]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[VP_OP]], ptr align 4 [[TMP17]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
 ; X390-NEXT:    [[TMP18:%.*]] = getelementptr inbounds i32, ptr [[TMP1]], i64 [[TMP11]]
 ; X390-NEXT:    [[TMP19:%.*]] = getelementptr inbounds i32, ptr [[TMP18]], i32 0
-; X390-NEXT:    [[VP_OP_LOAD2:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP19]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP_LOAD2:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr align 4 [[TMP19]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
 ; X390-NEXT:    [[TMP20:%.*]] = getelementptr inbounds i32, ptr [[TMP2]], i64 [[TMP11]]
 ; X390-NEXT:    [[TMP21:%.*]] = getelementptr inbounds i32, ptr [[TMP20]], i32 0
-; X390-NEXT:    [[VP_OP_LOAD3:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP21]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
-; X390-NEXT:    [[VP_OP4:%.*]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VP_OP_LOAD3]], <vscale x 8 x i32> [[VP_OP_LOAD2]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
-; X390-NEXT:    [[VP_OP5:%.*]] = call <vscale x 8 x i32> @llvm.vp.smax.nxv8i32(<vscale x 8 x i32> [[VP_OP4]], <vscale x 8 x i32> [[VP_OP]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
-; X390-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[VP_OP5]], ptr align 4 [[TMP17]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP_LOAD3:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr align 4 [[TMP21]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP4:%.*]] = call <vscale x 16 x i32> @llvm.vp.add.nxv16i32(<vscale x 16 x i32> [[VP_OP_LOAD3]], <vscale x 16 x i32> [[VP_OP_LOAD2]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP5:%.*]] = call <vscale x 16 x i32> @llvm.vp.smax.nxv16i32(<vscale x 16 x i32> [[VP_OP4]], <vscale x 16 x i32> [[VP_OP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[VP_OP5]], ptr align 4 [[TMP17]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
 ; X390-NEXT:    [[TMP22:%.*]] = getelementptr inbounds i32, ptr [[TMP3]], i64 [[TMP11]]
 ; X390-NEXT:    [[TMP23:%.*]] = getelementptr inbounds i32, ptr [[TMP22]], i32 0
-; X390-NEXT:    [[VP_OP_LOAD6:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP23]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP_LOAD6:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr align 4 [[TMP23]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
 ; X390-NEXT:    [[TMP24:%.*]] = getelementptr inbounds i32, ptr [[TMP4]], i64 [[TMP11]]
 ; X390-NEXT:    [[TMP25:%.*]] = getelementptr inbounds i32, ptr [[TMP24]], i32 0
-; X390-NEXT:    [[VP_OP_LOAD7:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP25]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
-; X390-NEXT:    [[VP_OP8:%.*]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VP_OP_LOAD7]], <vscale x 8 x i32> [[VP_OP_LOAD6]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
-; X390-NEXT:    [[VP_OP9:%.*]] = call <vscale x 8 x i32> @llvm.vp.smax.nxv8i32(<vscale x 8 x i32> [[VP_OP8]], <vscale x 8 x i32> [[VP_OP5]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
-; X390-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[VP_OP9]], ptr align 4 [[TMP17]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP_LOAD7:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr align 4 [[TMP25]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP8:%.*]] = call <vscale x 16 x i32> @llvm.vp.add.nxv16i32(<vscale x 16 x i32> [[VP_OP_LOAD7]], <vscale x 16 x i32> [[VP_OP_LOAD6]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP9:%.*]] = call <vscale x 16 x i32> @llvm.vp.smax.nxv16i32(<vscale x 16 x i32> [[VP_OP8]], <vscale x 16 x i32> [[VP_OP5]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[VP_OP9]], ptr align 4 [[TMP17]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
 ; X390-NEXT:    [[TMP26:%.*]] = getelementptr inbounds i32, ptr [[TMP5]], i64 [[OFFSET_IDX]]
 ; X390-NEXT:    [[TMP27:%.*]] = getelementptr inbounds i32, ptr [[TMP26]], i32 0
-; X390-NEXT:    [[VP_OP_LOAD10:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP27]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
-; X390-NEXT:    [[VP_OP11:%.*]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VP_OP_LOAD10]], <vscale x 8 x i32> [[BROADCAST_SPLAT]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
-; X390-NEXT:    [[VP_OP12:%.*]] = call <vscale x 8 x i32> @llvm.vp.smax.nxv8i32(<vscale x 8 x i32> [[VP_OP11]], <vscale x 8 x i32> [[VP_OP9]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
-; X390-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[VP_OP12]], ptr align 4 [[TMP17]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP_LOAD10:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr align 4 [[TMP27]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP11:%.*]] = call <vscale x 16 x i32> @llvm.vp.add.nxv16i32(<vscale x 16 x i32> [[VP_OP_LOAD10]], <vscale x 16 x i32> [[BROADCAST_SPLAT]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP12:%.*]] = call <vscale x 16 x i32> @llvm.vp.smax.nxv16i32(<vscale x 16 x i32> [[VP_OP11]], <vscale x 16 x i32> [[VP_OP9]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[VP_OP12]], ptr align 4 [[TMP17]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
 ; X390-NEXT:    [[TMP28:%.*]] = getelementptr inbounds i32, ptr [[TMP6]], i64 [[OFFSET_IDX]]
 ; X390-NEXT:    [[TMP29:%.*]] = getelementptr inbounds i32, ptr [[TMP28]], i32 0
-; X390-NEXT:    [[VP_OP_LOAD13:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP29]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
-; X390-NEXT:    [[VP_OP14:%.*]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VP_OP12]], <vscale x 8 x i32> [[VP_OP_LOAD13]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
-; X390-NEXT:    [[VP_OP15:%.*]] = call <vscale x 8 x i32> @llvm.vp.smax.nxv8i32(<vscale x 8 x i32> [[VP_OP14]], <vscale x 8 x i32> splat (i32 -987654321), <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
-; X390-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[VP_OP15]], ptr align 4 [[TMP17]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP_LOAD13:%.*]] = call <vscale x 16 x i32> @llvm.vp.load.nxv16i32.p0(ptr align 4 [[TMP29]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP14:%.*]] = call <vscale x 16 x i32> @llvm.vp.add.nxv16i32(<vscale x 16 x i32> [[VP_OP12]], <vscale x 16 x i32> [[VP_OP_LOAD13]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    [[VP_OP15:%.*]] = call <vscale x 16 x i32> @llvm.vp.smax.nxv16i32(<vscale x 16 x i32> [[VP_OP14]], <vscale x 16 x i32> splat (i32 -987654321), <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
+; X390-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[VP_OP15]], ptr align 4 [[TMP17]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP9]])
 ; X390-NEXT:    [[TMP31:%.*]] = zext i32 [[TMP9]] to i64
 ; X390-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP31]], [[EVL_BASED_IV]]
 ; X390-NEXT:    [[TMP30:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP7]]
