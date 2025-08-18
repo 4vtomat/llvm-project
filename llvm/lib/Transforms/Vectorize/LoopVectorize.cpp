@@ -11531,7 +11531,14 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range,
   // clamp the range for better cost estimation.
   // TODO: Enable following transform when the EVL-version of extended-reduction
   // and mulacc-reduction are implemented.
+#if SIFIVE_CUSTOMIZATION
+  // TODO: Currently only redeuction recipes will be convert to abstract recipes
+  // so prevent entire `convertToAbstractRecipes()` is fine for now. Need to
+  // update if this optimization contains more recipes optimizations.
+  if (!CM.foldTailWithEVL() && !Legal->useVLAVectorizer()) {
+#else
   if (!CM.foldTailWithEVL()) {
+#endif // SIFIVE_CUSTOMIZATION
     VPCostContext CostCtx(CM.TTI, *CM.TLI, Legal->getWidestInductionType(), CM,
                           CM.CostKind);
     VPlanTransforms::runPass(VPlanTransforms::convertToAbstractRecipes, *Plan,
