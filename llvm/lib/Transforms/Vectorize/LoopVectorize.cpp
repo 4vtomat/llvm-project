@@ -11475,12 +11475,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range,
          "entry block must be set to a VPRegionBlock having a non-empty entry "
          "VPBasicBlock");
 
-<<<<<<< HEAD
-=======
-  for (ElementCount VF : Range)
-    Plan->addVF(VF);
-  Plan->setName("Initial VPlan");
-
 #if SIFIVE_CUSTOMIZATION
   // The optimization on IV step use pattern match, but cannot recognize all the
   // case. A map is created to handle non-matched cases.
@@ -11497,7 +11491,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range,
   }
 #endif // SIFIVE_CUSTOMIZATION
 
->>>>>>> origin/sifive-dev
   // Update wide induction increments to use the same step as the corresponding
   // wide induction. This enables detecting induction increments directly in
   // VPlan and removes redundant splats.
