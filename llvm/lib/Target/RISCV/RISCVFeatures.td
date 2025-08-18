@@ -1215,9 +1215,6 @@ def HasVendorXSfvcp : Predicate<"Subtarget->hasVendorXSfvcp()">,
                       AssemblerPredicate<(all_of FeatureVendorXSfvcp),
                           "'XSfvcp' (SiFive Custom Vector Coprocessor Interface Instructions)">;
 
-<<<<<<< HEAD
-let AdditionalVersions = [[0, 1]]  in // SIFIVE
-=======
 def FeatureVendorXSfmmbase
     : RISCVExtension<0, 6,
                      "All non arithmetic instructions for all TEWs and sf.vtzero",
@@ -1285,7 +1282,14 @@ def FeatureVendorXSfmm128t
                      "TE=128 configuration",
                      [FeatureVendorXSfmmbase, FeatureStdExtZvl512b], "XSfmmTE", "128">;
 
->>>>>>> d45031ce5281b9fae54f2fdf5edff831e1308976
+#ifdef SIFIVE_CUSTOMIZATION
+def FeatureVendorXSfmm32a
+    : RISCVExtension<0, 6,
+                     "(TEW=32-bit accumulation) operands - int: 8b; float: fp16, bf16, fp32",
+                     [FeatureVendorXSfmm32a8i, FeatureVendorXSfmm32a16f, FeatureVendorXSfmm32a32f]>;
+#endif // SIFIVE_CUSTOMIZATION
+
+let AdditionalVersions = [[0, 1]]  in // SIFIVE
 def FeatureVendorXSfvqmaccdod
     : RISCVExtension<1, 0,
                      "SiFive Int8 Matrix Multiplication Instructions (2-by-8 and 8-by-2)",
