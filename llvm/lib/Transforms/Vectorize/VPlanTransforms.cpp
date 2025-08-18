@@ -2637,8 +2637,8 @@ static VPRecipeBase *createEVLRecipe(VPValue *HeaderMask,
           auto *VPFirst = new VPInstruction(VPInstruction::VPFirst, {M, &EVL},
                                             DebugLoc(), "vp.first.mask");
           VPFirst->insertBefore(VPI);
-          return new VPInstruction(Instruction::ICmp, CmpInst::ICMP_NE, VPFirst,
-                                   NegOne);
+          return new VPInstruction(Instruction::ICmp, {VPFirst, NegOne},
+                                   CmpInst::ICMP_NE);
         }
 
         // SYNC-UPSTREAM: Since the legacy tail folding by EVL approach does not
