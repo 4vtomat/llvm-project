@@ -10731,6 +10731,7 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
           VPlanTransforms::optimizeUncountable(*Plan, *PSE.getSE());
         } else {
           VPlanTransforms::runPass(VPlanTransforms::optimize, *Plan);
+          VPlanTransforms::optimizeConditionalRecipes(*Plan, *Legal, TTI, *TLI);
           if (Plan->isUncountable())
             VPlanTransforms::addExplicitVectorLengthUncountable(*Plan);
           else
@@ -10739,9 +10740,6 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
           VPlanTransforms::runPass(VPlanTransforms::optimize, *Plan);
           VPlanTransforms::optimizeGEPs(*Plan);
           VPlanTransforms::runPass(VPlanTransforms::optimize, *Plan);
-
-          VPlanTransforms::optimizeConditionalRecipes(
-              *Plan, *Legal, TTI, *TLI);
         }
       } else {
         VPlanTransforms::runPass(VPlanTransforms::optimize, *Plan);
@@ -11477,6 +11475,29 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range,
          "entry block must be set to a VPRegionBlock having a non-empty entry "
          "VPBasicBlock");
 
+<<<<<<< HEAD
+=======
+  for (ElementCount VF : Range)
+    Plan->addVF(VF);
+  Plan->setName("Initial VPlan");
+
+#if SIFIVE_CUSTOMIZATION
+  // The optimization on IV step use pattern match, but cannot recognize all the
+  // case. A map is created to handle non-matched cases.
+  SmallDenseMap<VPValue *, VPWidenInductionRecipe *> MapIVs;
+  for (const auto &[Phi, ID] : Legal->getInductionVars()) {
+    auto *IVInc = cast<Instruction>(
+        Phi->getIncomingValueForBlock(OrigLoop->getLoopLatch()));
+    VPWidenInductionRecipe *WideIV =
+        cast<VPWidenInductionRecipe>(RecipeBuilder.getRecipe(Phi));
+    VPRecipeBase *R = RecipeBuilder.getRecipe(IVInc);
+    // The map is for non-phi IVInc.
+    if (!isa<PHINode>(IVInc))
+      MapIVs[R->getVPSingleValue()] = WideIV;
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
+>>>>>>> origin/sifive-dev
   // Update wide induction increments to use the same step as the corresponding
   // wide induction. This enables detecting induction increments directly in
   // VPlan and removes redundant splats.
@@ -11629,6 +11650,9 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range,
     VPlanTransforms::addActiveLaneMask(*Plan, ForControlFlow,
                                        WithoutRuntimeCheck);
   }
+#if SIFIVE_CUSTOMIZATION
+  VPlanTransforms::optimizeInductionExitUsersForUnboundLoops(*Plan, MapIVs);
+#endif // SIFIVE_CUSTOMIZATION
   VPlanTransforms::optimizeInductionExitUsers(*Plan, IVEndValues);
 
   assert(verifyVPlanIsValid(*Plan) && "VPlan is invalid");

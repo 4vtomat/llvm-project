@@ -734,6 +734,7 @@ void VPlanTransforms::simplifyMonotonics(VPlan &Plan) {
     }
 }
 
+static SmallVector<VPValue *> collectAllHeaderMasks(VPlan &Plan);
 void VPlanTransforms::optimizeConditionalRecipes(
     VPlan &Plan, LoopVectorizationLegality &Legal,
     const TargetTransformInfo &TTI, const TargetLibraryInfo &TLI) {
@@ -750,19 +751,30 @@ void VPlanTransforms::optimizeConditionalRecipes(
   // which VPConditionalRegionBlock will be constructed.
   // TODO: Change algorithm or add optimization to combine constructed IfBlocks
   // when possible. Currently it's not done as it requires to check dependencies
-  // as affected recipes will be moved
-  auto GetMask = [](VPRecipeBase *R) {
-    return TypeSwitch<VPRecipeBase *, VPValue *>(R)
-        .Case<VPWidenStoreEVLRecipe>(
-            [&](VPWidenStoreEVLRecipe *S) { return S->getMask(); })
-        .Default([](VPRecipeBase *R) { return nullptr; });
+  // as affected recipes will be moved.
+  SmallVector<VPValue *> HeaderMasks = collectAllHeaderMasks(Plan);
+  auto GetMask = [&HeaderMasks](VPRecipeBase &R) -> VPValue * {
+    using namespace llvm::VPlanPatternMatch;
+    if (isa<VPWidenStoreRecipe, VPWidenStoreEVLRecipe>(R)) {
+      VPValue *OrigMask = cast<VPWidenMemoryRecipe>(R).getMask();
+      if (!OrigMask)
+        return OrigMask;
+
+      assert(HeaderMasks.size() <= 1 && "At most one header mask");
+      if (HeaderMasks.size() > 0 && OrigMask == HeaderMasks[0])
+        return nullptr;
+
+      return OrigMask;
+    }
+    return nullptr;
   };
+
   ReversePostOrderTraversal<VPBlockDeepTraversalWrapper<VPBlockBase *>> RPOT(
       Plan.getEntry());
   SmallVector<std::pair<VPRecipeBase *, VPValue *>> MaskedLeafRecipes;
   for (VPBasicBlock *VPBB : VPBlockUtils::blocksOnly<VPBasicBlock>(RPOT))
     for (VPRecipeBase &R : *VPBB)
-      if (VPValue *M = GetMask(&R))
+      if (VPValue *M = GetMask(R))
         MaskedLeafRecipes.emplace_back(&R, M);
 
   DenseSet<VPRecipeBase *> Candidates;
@@ -840,34 +852,40 @@ void VPlanTransforms::optimizeConditionalRecipes(
   }
   for (const auto &List : Tries) {
     VPRecipeBase *LR = List.front();
-    VPValue *M = GetMask(LR);
+    VPValue *M = GetMask(*LR);
     assert(M && "Mask VPValue must exist at this point");
     auto Recipes = reverse(List.getArrayRef());
 
-    // 1. Split current basic block at LR point so that VPConditionalRegionBlock can be added
-    // inbetween
+    // 1. Split current basic block at LR point so that conditional VPBB can be
+    // added inbetween
     VPBasicBlock *ParentBB = LR->getParent();
     VPBasicBlock *ContBB = ParentBB->splitAt(LR->getIterator());
 
-    // 2. Create VPBB, VPConditionalRegionBlock and insert it inbetween of ParentBB and ContBB
+    // Create VPBB and insert it between ParentBB and ContBB.
     VPBasicBlock *IfBB = Plan.createVPBasicBlock("vector.if.bb");
-    VPConditionalRegionBlock *IfBlock =
-        Plan.createVPConditionalRegionBlock(*M, IfBB, IfBB);
-    VPBlockUtils::insertBlockAfter(IfBlock, ParentBB);
+    IfBB->setConditional(true);
+    VPBlockUtils::insertBlockAfter(IfBB, ParentBB);
     if (ContBB->getNumSuccessors() == 0)
       ParentBB->getEnclosingLoopRegion()->setExiting(ContBB);
 
-    // 3. Move recipes into IfBB
+    // Copy recipes into conditional block.
     for (VPRecipeBase *R : Recipes)
       R->moveBefore(*IfBB, IfBB->end());
 
-    // 4. Add unconditional branch to IfBB
-    LLVMContext &Ctx = Plan.getCanonicalIV()->getScalarType()->getContext();
-    VPValue *True = Plan.getOrAddLiveIn(ConstantInt::getTrue(Ctx));
-    // Set true and false block to the same block which can be optimized to
-    // unconditional branch.
-    auto *Br = new VPBranchOnMaskRecipe(True, ContBB, ContBB);
-    Br->insertBefore(*IfBB, IfBB->end());
+    // Add the condition and brach in the parent block.
+    auto *ActiveLane =
+        new VPInstruction(VPInstruction::AnyOf, {M}, nullptr, "any.of.mask");
+
+    auto *BranchOnCond =
+        new VPInstruction(VPInstruction::BranchOnCond, {ActiveLane});
+    ParentBB->appendRecipe(ActiveLane);
+    ParentBB->appendRecipe(BranchOnCond);
+
+    // Set proper predecessor and successors for modifed basicblocks.
+    ParentBB->clearSuccessors();
+    ParentBB->setTwoSuccessors(IfBB, ContBB);
+    ContBB->clearPredecessors();
+    ContBB->setPredecessors({ParentBB, IfBB});
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
@@ -1080,10 +1098,9 @@ static VPWidenInductionRecipe *getOptimizableIVOf(VPValue *VPV) {
 #if SIFIVE_CUSTOMIZATION
 /// Attempts to optimize the induction variable exit values for users in the
 /// unbound main exit block.
-static VPValue *optimizeUnboundExitInductionUser(VPlan &Plan,
-                                                 VPTypeAnalysis &TypeInfo,
-                                                 VPBasicBlock *PredVPBB,
-                                                 VPValue *Op) {
+static VPValue *optimizeUnboundExitInductionUser(
+    VPlan &Plan, VPTypeAnalysis &TypeInfo, VPBasicBlock *PredVPBB, VPValue *Op,
+    SmallDenseMap<VPValue *, VPWidenInductionRecipe *> &MapIVs) {
   using namespace VPlanPatternMatch;
 
   VPValue *Incoming, *Mask;
@@ -1094,6 +1111,8 @@ static VPValue *optimizeUnboundExitInductionUser(VPlan &Plan,
     return nullptr;
 
   auto *WideIV = getOptimizableIVOf(Incoming);
+  if (!WideIV)
+    WideIV = MapIVs.lookup(Incoming);
   if (!WideIV)
     return nullptr;
 
@@ -1141,16 +1160,19 @@ static VPValue *optimizeUnboundExitInductionUser(VPlan &Plan,
   return EndValue;
 }
 
-void VPlanTransforms::optimizeInductionExitUsersForUnboundLoops(VPlan &Plan) {
+void VPlanTransforms::optimizeInductionExitUsersForUnboundLoops(
+    VPlan &Plan, SmallDenseMap<VPValue *, VPWidenInductionRecipe *> &MapIVs) {
+  if (!Plan.isUncountableAndUnbound())
+    return;
   VPTypeAnalysis TypeInfo(Plan.getCanonicalIV()->getScalarType());
   for (VPIRBasicBlock *ExitVPBB : Plan.getExitBlocks()) {
     for (VPRecipeBase &R : ExitVPBB->phis()) {
       auto *ExitIRI = cast<VPIRPhi>(&R);
       for (auto [Idx, PredVPBB] : enumerate(ExitVPBB->getPredecessors())) {
         VPValue *Escape = nullptr;
-        Escape = optimizeUnboundExitInductionUser(Plan, TypeInfo,
-                                                  cast<VPBasicBlock>(PredVPBB),
-                                                  ExitIRI->getOperand(Idx));
+        Escape = optimizeUnboundExitInductionUser(
+            Plan, TypeInfo, cast<VPBasicBlock>(PredVPBB),
+            ExitIRI->getOperand(Idx), MapIVs);
         if (Escape)
           ExitIRI->setOperand(Idx, Escape);
       }
@@ -1285,10 +1307,8 @@ optimizeLatchExitInductionUser(VPlan &Plan, VPTypeAnalysis &TypeInfo,
 void VPlanTransforms::optimizeInductionExitUsers(
     VPlan &Plan, DenseMap<VPValue *, VPValue *> &EndValues) {
 #if SIFIVE_CUSTOMIZATION
-  if (Plan.isUncountableAndUnbound()) {
-    optimizeInductionExitUsersForUnboundLoops(Plan);
+  if (Plan.isUncountableAndUnbound())
     return;
-  }
 #endif // SIFIVE_CUSTOMIZATION
 
   VPBlockBase *MiddleVPBB = Plan.getMiddleBlock();
@@ -2603,6 +2623,24 @@ static VPRecipeBase *createEVLRecipe(VPValue *HeaderMask,
         }
 
 #if SIFIVE_CUSTOMIZATION
+        // Optimize `any-of(%mask)` to `icmp ne (vp_first(%mask), -1)`.
+        VPValue *M;
+        if (match(VPI, m_VPInstruction<VPInstruction::AnyOf>(m_VPValue(M))) &&
+            !VPI->hasMoreThanOneUniqueUser()) {
+          if (!match(*VPI->user_begin(),
+                     m_VPInstruction<VPInstruction::BranchOnCond>(
+                         m_Specific(VPI))))
+            return nullptr;
+
+          auto *NegOne = VPI->getParent()->getPlan()->getOrAddLiveIn(
+              ConstantInt::get(Type::getInt32Ty(TypeInfo.getContext()), -1));
+          auto *VPFirst = new VPInstruction(VPInstruction::VPFirst, {M, &EVL},
+                                            DebugLoc(), "vp.first.mask");
+          VPFirst->insertBefore(VPI);
+          return new VPInstruction(Instruction::ICmp, CmpInst::ICMP_NE, VPFirst,
+                                   NegOne);
+        }
+
         // SYNC-UPSTREAM: Since the legacy tail folding by EVL approach does not
         // rely on the header mask, it cannot convert
         //   m_Select(m_Specific(HeaderMask), m_VPValue(LHS), m_VPValue(RHS))

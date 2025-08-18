@@ -200,7 +200,8 @@ struct VPlanTransforms {
                              bool EnableEVLFuzzing = false);
 
   static void addExplicitVectorLengthUncountable(VPlan &Plan);
-  static void optimizeInductionExitUsersForUnboundLoops(VPlan &Plan);
+  static void optimizeInductionExitUsersForUnboundLoops(
+      VPlan &Plan, SmallDenseMap<VPValue *, VPWidenInductionRecipe *> &MapIVs);
 #else
   static bool
   tryAddExplicitVectorLength(VPlan &Plan,

@@ -235,7 +235,6 @@ public:
     VPRegionBlockSC,
     VPBasicBlockSC,
     VPIRBasicBlockSC,
-    VPConditionalRegionBlockSC,
   };
 #else
   using VPBlockTy = enum { VPRegionBlockSC, VPBasicBlockSC, VPIRBasicBlockSC };
@@ -4235,8 +4234,17 @@ class VPBasicBlock : public VPBlockBase {
       appendRecipe(Recipe);
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // For cost model, can be removed if find better method to identify
+  // conditional block.
+  bool IsConditional = false;
+#endif // SIFIVE_CUSTOMIZATION
 public:
   using RecipeListTy = iplist<VPRecipeBase>;
+#if SIFIVE_CUSTOMIZATION
+  void setConditional(bool Cond) { IsConditional = Cond; }
+  bool isConditional() const { return IsConditional; }
+#endif // SIFIVE_CUSTOMIZATION
 
 protected:
   /// The VPRecipes held in the order of output instructions to generate.
@@ -4469,13 +4477,7 @@ public:
 
   /// Method to support type inquiry through isa, cast, and dyn_cast.
   static inline bool classof(const VPBlockBase *V) {
-#if SIFIVE_CUSTOMIZATION
-    return V->getVPBlockID() == VPBlockBase::VPRegionBlockSC ||
-           V->getVPBlockID() == VPBlockBase::VPConditionalRegionBlockSC;
-    ;
-#else
     return V->getVPBlockID() == VPBlockBase::VPRegionBlockSC;
-#endif // SIFIVE_CUSTOMIZATION
   }
 
   const VPBlockBase *getEntry() const { return Entry; }
@@ -4555,54 +4557,6 @@ public:
   /// its entry, and its exiting block to its successor.
   void dissolveToCFGLoop();
 };
-
-#if SIFIVE_CUSTOMIZATION
-/// VPConditionalRegionBlock hierarchically represents if-like control flow in a VPlan.
-/// Vector code generation will construct CFG that is similar to
-///  if (Cond) {
-///    <VPBBEntry>
-///    ...
-///    <VPBBExit>
-///    br Exit
-///  }
-///  <VPConditionalRegionBlockSuccessor>
-class VPConditionalRegionBlock : public VPRegionBlock {
-  VPValue *Cond = nullptr;
-
-public:
-  explicit VPConditionalRegionBlock(VPValue &Cond, VPBlockBase *Entry,
-                                    VPBlockBase *Exit)
-      : VPRegionBlock(VPConditionalRegionBlockSC, Entry, Exit), Cond(&Cond) {}
-
-  VPValue *getCondition() { return Cond; }
-  const VPValue *getCondition() const { return Cond; }
-
-  /// The method which generates the output IR instructions that correspond to
-  /// this VPRegionBlock, thereby "executing" the VPlan.
-  void execute(VPTransformState *State) final;
-
-  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const override {
-    return 0;
-  };
-
-  InstructionCost cost(ElementCount VF, VPCostContext &Ctx) override;
-
-  /// Method to support type inquiry through isa, cast, and dyn_cast.
-  static inline bool classof(const VPBlockBase *V) {
-    return V->getVPBlockID() == VPBlockBase::VPConditionalRegionBlockSC;
-  }
-
-#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
-  void print(raw_ostream &O, const Twine &Indent,
-             VPSlotTracker &SlotTracker) const override;
-#endif
-
-  VPConditionalRegionBlock *clone() final {
-    llvm_unreachable(
-        "clone function is not implemented for VPConditionalRegionBlock");
-  }
-};
-#endif // SIFIVE_CUSTOMIZATION
 
 /// VPlan models a candidate for vectorization, encoding various decisions take
 /// to produce efficient output IR, including which branches, basic-blocks and
@@ -5067,15 +5021,6 @@ public:
     CreatedBlocks.push_back(VPB);
     return VPB;
   }
-#if SIFIVE_CUSTOMIZATION
-  VPConditionalRegionBlock *createVPConditionalRegionBlock(VPValue &Cond,
-                                                           VPBlockBase *Entry,
-                                                           VPBlockBase *Exit) {
-    auto *VPB = new VPConditionalRegionBlock(Cond, Entry, Exit);
-    CreatedBlocks.push_back(VPB);
-    return VPB;
-  }
-#endif // SIFIVE_CUSTOMIZATION
 
   /// Create a VPIRBasicBlock wrapping \p IRBB, but do not create
   /// VPIRInstructions wrapping the instructions in t\p IRBB.  The returned

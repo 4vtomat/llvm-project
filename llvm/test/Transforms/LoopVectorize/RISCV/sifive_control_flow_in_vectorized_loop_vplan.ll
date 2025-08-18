@@ -5,6 +5,41 @@
 
 ; VPLAN:  VPlan 'Final VPlan for VF={vscale x 1,vscale x 2,vscale x 4},UF={1}' {
 ; VPLAN-NEXT:  Live-in ir<%wide.trip.count> = vector-trip-count
+; VPLAN:       ir-bb<for.body.lr.ph>:
+; VPLAN:       Successor(s): ir-bb<scalar.ph>, ir-bb<vector.ph>
+; VPLAN-EMPTY:
+; VPLAN-NEXT:  ir-bb<[[VEC_PH:.+]]>:
+; VPLAN:       Successor(s): vector loop
+; VPLAN-EMPTY:
+; VPLAN-NEXT:  <x1> vector loop: {
+; VPLAN-NEXT:    vector.body:
+; VPLAN-NEXT:      EMIT vp<[[IV:.+]]> = phi [ ir<0>, ir-bb<[[VEC_PH]]> ], [ vp<[[IV_NEXT:.+]]>, vector.body.split ]
+; VPLAN-NEXT:      EMIT vp<[[EVL_IV:.+]]> = phi [ ir<0>, ir-bb<[[VEC_PH]]> ], [ vp<[[EVL_IV_NEXT:.+]]>, vector.body.split ]
+; VPLAN-NEXT:      EMIT vp<[[AVL:.+]]> = sub ir<[[TC:.+]]>, vp<[[EVL_IV]]>
+; VPLAN-NEXT:      EMIT vp<[[EVL:.+]]> = EXPLICIT-VECTOR-LENGTH vp<[[AVL]]>
+; VPLAN-NEXT:      CLONE ir<[[ARRIDX:.+]]> = getelementptr ir<{{.*}}>, vp<[[EVL_IV]]>
+; VPLAN-NEXT:      vp<[[VECTOR_POINTER:.+]]> = vector-pointer ir<[[ARRIDX]]>
+; VPLAN-NEXT:      WIDEN ir<[[LOAD:.+]]> = vp.load vp<[[VECTOR_POINTER]]>, vp<[[EVL]]> unit-strided
+; VPLAN-NEXT:      WIDEN ir<[[AND:.+]]> = and ir<[[LOAD]]>, vp<{{.*}}>
+; VPLAN-NEXT:      WIDEN ir<[[MASK:.+]]> = icmp eq ir<[[AND]]>, {{.*}}>
+; VPLAN-NEXT:      EMIT vp<[[VP_FIRST:.+]]> = vp-first ir<[[MASK]]>
+; VPLAN-NEXT:      EMIT vp<[[COND:.+]]> = icmp ne vp<[[VP_FIRST]]>, ir<-1>
+; VPLAN-NEXT:      EMIT branch-on-cond vp<[[COND]]>
+; VPLAN-NEXT:    Successor(s): vector.if.bb, vector.body.split
+; VPLAN-EMPTY:
+; VPLAN-NEXT:    vector.if.bb:
+; VPLAN-NEXT:      WIDEN ir<%xor> = xor ir<{{.*}}>, vp<{{.*}}>
+; VPLAN-NEXT:      vp<{{.*}}> = vector-pointer ir<[[ARRIDX]]>
+; VPLAN-NEXT:      WIDEN vp.store vp<{{.*}}>, ir<{{.*}}>, vp<[[EVL]]>, ir<[[MASK]]> unit-strided
+; VPLAN-NEXT:    Successor(s): vector.body.split
+; VPLAN-EMPTY:
+; VPLAN-NEXT:    vector.body.split:
+; VPLAN-NEXT:      EMIT vp<[[EXT:.*]]> = zext vp<[[EVL]]> to i64
+; VPLAN-NEXT:      EMIT vp<[[EVL_NEXT:.+]]> = add nuw vp<[[EXT]]>, vp<[[EVL_IV]]>
+; VPLAN-NEXT:      EMIT branch-on-count vp<[[EVL_NEXT]]>, ir<{{.*}}>
+; VPLAN:         No successors
+; VPLAN-NEXT:  }
+; VPLAN-NEXT:  Successor(s): middle.block
 
 define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr %reg.24.val) {
 entry:

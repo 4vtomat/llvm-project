@@ -5473,3 +5473,410 @@ exit:
   ret i32 %iv
 }
 
+define i64 @check_extract(ptr %datap) {
+; DEFAULT-LABEL: @check_extract(
+; DEFAULT-NEXT:  entry:
+; DEFAULT-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; DEFAULT-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; DEFAULT-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 0
+; DEFAULT-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP2]], i64 0
+; DEFAULT-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
+; DEFAULT-NEXT:    [[TMP3:%.*]] = call <vscale x 16 x i64> @llvm.stepvector.nxv16i64()
+; DEFAULT-NEXT:    [[TMP4:%.*]] = add <vscale x 16 x i64> [[DOTSPLAT]], [[TMP3]]
+; DEFAULT-NEXT:    br label [[VECTOR_BODY:%.*]]
+; DEFAULT:       vector.body:
+; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; DEFAULT-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
+; DEFAULT-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[DATAP:%.*]], [[ENTRY]] ], [ [[PTR_IND:%.*]], [[VECTOR_BODY]] ]
+; DEFAULT-NEXT:    [[TMP5:%.*]] = mul <vscale x 16 x i64> [[TMP4]], splat (i64 2)
+; DEFAULT-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 16 x i64> [[TMP5]]
+; DEFAULT-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
+; DEFAULT-NEXT:    [[TMP7:%.*]] = getelementptr inbounds nuw i16, <vscale x 16 x ptr> [[VECTOR_GEP]], i64 1
+; DEFAULT-NEXT:    [[TMP8:%.*]] = extractelement <vscale x 16 x ptr> [[TMP7]], i32 0
+; DEFAULT-NEXT:    [[TMP9:%.*]] = getelementptr inbounds nuw i16, ptr [[TMP8]], i32 0
+; DEFAULT-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 16 x i16>, i32 } @llvm.vp.load.ff.nxv16i16.p0(ptr align 2 [[TMP9]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP6]])
+; DEFAULT-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 16 x i16>, i32 } [[VP_OP_LOAD_FF]], 1
+; DEFAULT-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP10]] to i64
+; DEFAULT-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 16 x i16>, i32 } [[VP_OP_LOAD_FF]], 0
+; DEFAULT-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i16(<vscale x 16 x i16> [[TMP12]], <vscale x 16 x i16> zeroinitializer, metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP10]])
+; DEFAULT-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP10]])
+; DEFAULT-NEXT:    [[TMP14:%.*]] = icmp sge i32 [[TMP13]], 0
+; DEFAULT-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP10]] to i64
+; DEFAULT-NEXT:    [[TMP16:%.*]] = mul i64 [[TMP11]], 1
+; DEFAULT-NEXT:    [[TMP17:%.*]] = mul i64 2, [[TMP16]]
+; DEFAULT-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP17]]
+; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP15]], [[EVL_BASED_IV]]
+; DEFAULT-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
+; DEFAULT:       middle.block:
+; DEFAULT-NEXT:    [[TMP18:%.*]] = zext i32 [[TMP13]] to i64
+; DEFAULT-NEXT:    [[TMP19:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP18]]
+; DEFAULT-NEXT:    [[TMP20:%.*]] = add i64 [[TMP19]], 1
+; DEFAULT-NEXT:    [[TMP21:%.*]] = mul i64 [[TMP20]], 2
+; DEFAULT-NEXT:    [[EXIT_VALUE:%.*]] = getelementptr i8, ptr [[DATAP]], i64 [[TMP21]]
+; DEFAULT-NEXT:    br i1 true, label [[EXIT:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; DEFAULT:       vec.uncountable.scalar.ph:
+; DEFAULT-NEXT:    br label [[LOOP:%.*]]
+; DEFAULT:       loop:
+; DEFAULT-NEXT:    [[PTR_IV:%.*]] = phi ptr [ [[PTR_NEXT:%.*]], [[LOOP]] ], [ [[DATAP]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ]
+; DEFAULT-NEXT:    [[PTR_NEXT]] = getelementptr inbounds nuw i16, ptr [[PTR_IV]], i64 1
+; DEFAULT-NEXT:    [[DATA:%.*]] = load i16, ptr [[PTR_NEXT]], align 2
+; DEFAULT-NEXT:    [[COND:%.*]] = icmp eq i16 [[DATA]], 0
+; DEFAULT-NEXT:    br i1 [[COND]], label [[EXIT]], label [[LOOP]], !llvm.loop [[LOOP21:![0-9]+]]
+; DEFAULT:       exit:
+; DEFAULT-NEXT:    [[PHI643:%.*]] = phi ptr [ [[PTR_NEXT]], [[LOOP]] ], [ [[EXIT_VALUE]], [[MIDDLE_BLOCK]] ]
+; DEFAULT-NEXT:    [[PTRTOINT:%.*]] = ptrtoint ptr [[PHI643]] to i64
+; DEFAULT-NEXT:    [[PTRTOINT644:%.*]] = ptrtoint ptr [[DATAP]] to i64
+; DEFAULT-NEXT:    [[SUB645:%.*]] = sub i64 [[PTRTOINT]], [[PTRTOINT644]]
+; DEFAULT-NEXT:    [[LSHR:%.*]] = lshr exact i64 [[SUB645]], 1
+; DEFAULT-NEXT:    ret i64 [[LSHR]]
+;
+; ON-LABEL: @check_extract(
+; ON-NEXT:  entry:
+; ON-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; ON-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; ON-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 0
+; ON-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP2]], i64 0
+; ON-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
+; ON-NEXT:    [[TMP3:%.*]] = call <vscale x 16 x i64> @llvm.stepvector.nxv16i64()
+; ON-NEXT:    [[TMP4:%.*]] = add <vscale x 16 x i64> [[DOTSPLAT]], [[TMP3]]
+; ON-NEXT:    br label [[VECTOR_BODY:%.*]]
+; ON:       vector.body:
+; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; ON-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
+; ON-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[DATAP:%.*]], [[ENTRY]] ], [ [[PTR_IND:%.*]], [[VECTOR_BODY]] ]
+; ON-NEXT:    [[TMP5:%.*]] = mul <vscale x 16 x i64> [[TMP4]], splat (i64 2)
+; ON-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 16 x i64> [[TMP5]]
+; ON-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
+; ON-NEXT:    [[TMP7:%.*]] = getelementptr inbounds nuw i16, <vscale x 16 x ptr> [[VECTOR_GEP]], i64 1
+; ON-NEXT:    [[TMP8:%.*]] = extractelement <vscale x 16 x ptr> [[TMP7]], i32 0
+; ON-NEXT:    [[TMP9:%.*]] = getelementptr inbounds nuw i16, ptr [[TMP8]], i32 0
+; ON-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 16 x i16>, i32 } @llvm.vp.load.ff.nxv16i16.p0(ptr align 2 [[TMP9]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP6]])
+; ON-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 16 x i16>, i32 } [[VP_OP_LOAD_FF]], 1
+; ON-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP10]] to i64
+; ON-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 16 x i16>, i32 } [[VP_OP_LOAD_FF]], 0
+; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i16(<vscale x 16 x i16> [[TMP12]], <vscale x 16 x i16> zeroinitializer, metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP10]])
+; ON-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP10]])
+; ON-NEXT:    [[TMP14:%.*]] = icmp sge i32 [[TMP13]], 0
+; ON-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP10]] to i64
+; ON-NEXT:    [[TMP16:%.*]] = mul i64 [[TMP11]], 1
+; ON-NEXT:    [[TMP17:%.*]] = mul i64 2, [[TMP16]]
+; ON-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP17]]
+; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP15]], [[EVL_BASED_IV]]
+; ON-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
+; ON:       middle.block:
+; ON-NEXT:    [[TMP18:%.*]] = zext i32 [[TMP13]] to i64
+; ON-NEXT:    [[TMP19:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP18]]
+; ON-NEXT:    [[TMP20:%.*]] = add i64 [[TMP19]], 1
+; ON-NEXT:    [[TMP21:%.*]] = mul i64 [[TMP20]], 2
+; ON-NEXT:    [[EXIT_VALUE:%.*]] = getelementptr i8, ptr [[DATAP]], i64 [[TMP21]]
+; ON-NEXT:    br i1 true, label [[EXIT:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; ON:       vec.uncountable.scalar.ph:
+; ON-NEXT:    br label [[LOOP:%.*]]
+; ON:       loop:
+; ON-NEXT:    [[PTR_IV:%.*]] = phi ptr [ [[PTR_NEXT:%.*]], [[LOOP]] ], [ [[DATAP]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ]
+; ON-NEXT:    [[PTR_NEXT]] = getelementptr inbounds nuw i16, ptr [[PTR_IV]], i64 1
+; ON-NEXT:    [[DATA:%.*]] = load i16, ptr [[PTR_NEXT]], align 2
+; ON-NEXT:    [[COND:%.*]] = icmp eq i16 [[DATA]], 0
+; ON-NEXT:    br i1 [[COND]], label [[EXIT]], label [[LOOP]], !llvm.loop [[LOOP21:![0-9]+]]
+; ON:       exit:
+; ON-NEXT:    [[PHI643:%.*]] = phi ptr [ [[PTR_NEXT]], [[LOOP]] ], [ [[EXIT_VALUE]], [[MIDDLE_BLOCK]] ]
+; ON-NEXT:    [[PTRTOINT:%.*]] = ptrtoint ptr [[PHI643]] to i64
+; ON-NEXT:    [[PTRTOINT644:%.*]] = ptrtoint ptr [[DATAP]] to i64
+; ON-NEXT:    [[SUB645:%.*]] = sub i64 [[PTRTOINT]], [[PTRTOINT644]]
+; ON-NEXT:    [[LSHR:%.*]] = lshr exact i64 [[SUB645]], 1
+; ON-NEXT:    ret i64 [[LSHR]]
+;
+; OFF-LABEL: @check_extract(
+; OFF-NEXT:  entry:
+; OFF-NEXT:    br label [[LOOP:%.*]]
+; OFF:       loop:
+; OFF-NEXT:    [[PTR_IV:%.*]] = phi ptr [ [[PTR_NEXT:%.*]], [[LOOP]] ], [ [[DATAP:%.*]], [[ENTRY:%.*]] ]
+; OFF-NEXT:    [[PTR_NEXT]] = getelementptr inbounds nuw i16, ptr [[PTR_IV]], i64 1
+; OFF-NEXT:    [[DATA:%.*]] = load i16, ptr [[PTR_NEXT]], align 2
+; OFF-NEXT:    [[COND:%.*]] = icmp eq i16 [[DATA]], 0
+; OFF-NEXT:    br i1 [[COND]], label [[EXIT:%.*]], label [[LOOP]]
+; OFF:       exit:
+; OFF-NEXT:    [[PHI643:%.*]] = phi ptr [ [[PTR_NEXT]], [[LOOP]] ]
+; OFF-NEXT:    [[PTRTOINT:%.*]] = ptrtoint ptr [[PHI643]] to i64
+; OFF-NEXT:    [[PTRTOINT644:%.*]] = ptrtoint ptr [[DATAP]] to i64
+; OFF-NEXT:    [[SUB645:%.*]] = sub i64 [[PTRTOINT]], [[PTRTOINT644]]
+; OFF-NEXT:    [[LSHR:%.*]] = lshr exact i64 [[SUB645]], 1
+; OFF-NEXT:    ret i64 [[LSHR]]
+;
+; ANALYSIS-ONLY-LABEL: @check_extract(
+; ANALYSIS-ONLY-NEXT:  entry:
+; ANALYSIS-ONLY-NEXT:    br label [[LOOP:%.*]]
+; ANALYSIS-ONLY:       loop:
+; ANALYSIS-ONLY-NEXT:    [[PTR_IV:%.*]] = phi ptr [ [[PTR_NEXT:%.*]], [[LOOP]] ], [ [[DATAP:%.*]], [[ENTRY:%.*]] ]
+; ANALYSIS-ONLY-NEXT:    [[PTR_NEXT]] = getelementptr inbounds nuw i16, ptr [[PTR_IV]], i64 1
+; ANALYSIS-ONLY-NEXT:    [[DATA:%.*]] = load i16, ptr [[PTR_NEXT]], align 2
+; ANALYSIS-ONLY-NEXT:    [[COND:%.*]] = icmp eq i16 [[DATA]], 0
+; ANALYSIS-ONLY-NEXT:    br i1 [[COND]], label [[EXIT:%.*]], label [[LOOP]]
+; ANALYSIS-ONLY:       exit:
+; ANALYSIS-ONLY-NEXT:    [[PHI643:%.*]] = phi ptr [ [[PTR_NEXT]], [[LOOP]] ]
+; ANALYSIS-ONLY-NEXT:    [[PTRTOINT:%.*]] = ptrtoint ptr [[PHI643]] to i64
+; ANALYSIS-ONLY-NEXT:    [[PTRTOINT644:%.*]] = ptrtoint ptr [[DATAP]] to i64
+; ANALYSIS-ONLY-NEXT:    [[SUB645:%.*]] = sub i64 [[PTRTOINT]], [[PTRTOINT644]]
+; ANALYSIS-ONLY-NEXT:    [[LSHR:%.*]] = lshr exact i64 [[SUB645]], 1
+; ANALYSIS-ONLY-NEXT:    ret i64 [[LSHR]]
+;
+; stress-LABEL: @check_extract(
+; stress-NEXT:  entry:
+; stress-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; stress-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; stress-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 0
+; stress-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP2]], i64 0
+; stress-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
+; stress-NEXT:    [[TMP3:%.*]] = call <vscale x 16 x i64> @llvm.stepvector.nxv16i64()
+; stress-NEXT:    [[TMP4:%.*]] = add <vscale x 16 x i64> [[DOTSPLAT]], [[TMP3]]
+; stress-NEXT:    br label [[VECTOR_BODY:%.*]]
+; stress:       vector.body:
+; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; stress-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
+; stress-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[DATAP:%.*]], [[ENTRY]] ], [ [[PTR_IND:%.*]], [[VECTOR_BODY]] ]
+; stress-NEXT:    [[TMP5:%.*]] = mul <vscale x 16 x i64> [[TMP4]], splat (i64 2)
+; stress-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 16 x i64> [[TMP5]]
+; stress-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
+; stress-NEXT:    [[TMP7:%.*]] = getelementptr inbounds nuw i16, <vscale x 16 x ptr> [[VECTOR_GEP]], i64 1
+; stress-NEXT:    [[TMP8:%.*]] = extractelement <vscale x 16 x ptr> [[TMP7]], i32 0
+; stress-NEXT:    [[TMP9:%.*]] = getelementptr inbounds nuw i16, ptr [[TMP8]], i32 0
+; stress-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 16 x i16>, i32 } @llvm.vp.load.ff.nxv16i16.p0(ptr align 2 [[TMP9]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP6]])
+; stress-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 16 x i16>, i32 } [[VP_OP_LOAD_FF]], 1
+; stress-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP10]] to i64
+; stress-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 16 x i16>, i32 } [[VP_OP_LOAD_FF]], 0
+; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i16(<vscale x 16 x i16> [[TMP12]], <vscale x 16 x i16> zeroinitializer, metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP10]])
+; stress-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP10]])
+; stress-NEXT:    [[TMP14:%.*]] = icmp sge i32 [[TMP13]], 0
+; stress-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP10]] to i64
+; stress-NEXT:    [[TMP16:%.*]] = mul i64 [[TMP11]], 1
+; stress-NEXT:    [[TMP17:%.*]] = mul i64 2, [[TMP16]]
+; stress-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP17]]
+; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP15]], [[EVL_BASED_IV]]
+; stress-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
+; stress:       middle.block:
+; stress-NEXT:    [[TMP18:%.*]] = zext i32 [[TMP13]] to i64
+; stress-NEXT:    [[TMP19:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP18]]
+; stress-NEXT:    [[TMP20:%.*]] = add i64 [[TMP19]], 1
+; stress-NEXT:    [[TMP21:%.*]] = mul i64 [[TMP20]], 2
+; stress-NEXT:    [[EXIT_VALUE:%.*]] = getelementptr i8, ptr [[DATAP]], i64 [[TMP21]]
+; stress-NEXT:    br i1 true, label [[EXIT:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; stress:       vec.uncountable.scalar.ph:
+; stress-NEXT:    br label [[LOOP:%.*]]
+; stress:       loop:
+; stress-NEXT:    [[PTR_IV:%.*]] = phi ptr [ [[PTR_NEXT:%.*]], [[LOOP]] ], [ [[DATAP]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ]
+; stress-NEXT:    [[PTR_NEXT]] = getelementptr inbounds nuw i16, ptr [[PTR_IV]], i64 1
+; stress-NEXT:    [[DATA:%.*]] = load i16, ptr [[PTR_NEXT]], align 2
+; stress-NEXT:    [[COND:%.*]] = icmp eq i16 [[DATA]], 0
+; stress-NEXT:    br i1 [[COND]], label [[EXIT]], label [[LOOP]], !llvm.loop [[LOOP21:![0-9]+]]
+; stress:       exit:
+; stress-NEXT:    [[PHI643:%.*]] = phi ptr [ [[PTR_NEXT]], [[LOOP]] ], [ [[EXIT_VALUE]], [[MIDDLE_BLOCK]] ]
+; stress-NEXT:    [[PTRTOINT:%.*]] = ptrtoint ptr [[PHI643]] to i64
+; stress-NEXT:    [[PTRTOINT644:%.*]] = ptrtoint ptr [[DATAP]] to i64
+; stress-NEXT:    [[SUB645:%.*]] = sub i64 [[PTRTOINT]], [[PTRTOINT644]]
+; stress-NEXT:    [[LSHR:%.*]] = lshr exact i64 [[SUB645]], 1
+; stress-NEXT:    ret i64 [[LSHR]]
+;
+; VLS-LABEL: @check_extract(
+; VLS-NEXT:  entry:
+; VLS-NEXT:    br label [[LOOP:%.*]]
+; VLS:       loop:
+; VLS-NEXT:    [[PTR_IV:%.*]] = phi ptr [ [[PTR_NEXT:%.*]], [[LOOP]] ], [ [[DATAP:%.*]], [[ENTRY:%.*]] ]
+; VLS-NEXT:    [[PTR_NEXT]] = getelementptr inbounds nuw i16, ptr [[PTR_IV]], i64 1
+; VLS-NEXT:    [[DATA:%.*]] = load i16, ptr [[PTR_NEXT]], align 2
+; VLS-NEXT:    [[COND:%.*]] = icmp eq i16 [[DATA]], 0
+; VLS-NEXT:    br i1 [[COND]], label [[EXIT:%.*]], label [[LOOP]]
+; VLS:       exit:
+; VLS-NEXT:    [[PHI643:%.*]] = phi ptr [ [[PTR_NEXT]], [[LOOP]] ]
+; VLS-NEXT:    [[PTRTOINT:%.*]] = ptrtoint ptr [[PHI643]] to i64
+; VLS-NEXT:    [[PTRTOINT644:%.*]] = ptrtoint ptr [[DATAP]] to i64
+; VLS-NEXT:    [[SUB645:%.*]] = sub i64 [[PTRTOINT]], [[PTRTOINT644]]
+; VLS-NEXT:    [[LSHR:%.*]] = lshr exact i64 [[SUB645]], 1
+; VLS-NEXT:    ret i64 [[LSHR]]
+;
+; IF0-LABEL: @check_extract(
+; IF0-NEXT:  entry:
+; IF0-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; IF0-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; IF0-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 0
+; IF0-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP2]], i64 0
+; IF0-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
+; IF0-NEXT:    [[TMP3:%.*]] = call <vscale x 16 x i64> @llvm.stepvector.nxv16i64()
+; IF0-NEXT:    [[TMP4:%.*]] = add <vscale x 16 x i64> [[DOTSPLAT]], [[TMP3]]
+; IF0-NEXT:    br label [[VECTOR_BODY:%.*]]
+; IF0:       vector.body:
+; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; IF0-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
+; IF0-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[DATAP:%.*]], [[ENTRY]] ], [ [[PTR_IND:%.*]], [[VECTOR_BODY]] ]
+; IF0-NEXT:    [[TMP5:%.*]] = mul <vscale x 16 x i64> [[TMP4]], splat (i64 2)
+; IF0-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 16 x i64> [[TMP5]]
+; IF0-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
+; IF0-NEXT:    [[TMP7:%.*]] = getelementptr inbounds nuw i16, <vscale x 16 x ptr> [[VECTOR_GEP]], i64 1
+; IF0-NEXT:    [[TMP8:%.*]] = extractelement <vscale x 16 x ptr> [[TMP7]], i32 0
+; IF0-NEXT:    [[TMP9:%.*]] = getelementptr inbounds nuw i16, ptr [[TMP8]], i32 0
+; IF0-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 16 x i16>, i32 } @llvm.vp.load.ff.nxv16i16.p0(ptr align 2 [[TMP9]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP6]])
+; IF0-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 16 x i16>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF0-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP10]] to i64
+; IF0-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 16 x i16>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF0-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i16(<vscale x 16 x i16> [[TMP12]], <vscale x 16 x i16> zeroinitializer, metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP10]])
+; IF0-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP10]])
+; IF0-NEXT:    [[TMP14:%.*]] = icmp sge i32 [[TMP13]], 0
+; IF0-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP10]] to i64
+; IF0-NEXT:    [[TMP16:%.*]] = mul i64 [[TMP11]], 1
+; IF0-NEXT:    [[TMP17:%.*]] = mul i64 2, [[TMP16]]
+; IF0-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP17]]
+; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP15]], [[EVL_BASED_IV]]
+; IF0-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
+; IF0:       middle.block:
+; IF0-NEXT:    [[TMP18:%.*]] = zext i32 [[TMP13]] to i64
+; IF0-NEXT:    [[TMP19:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP18]]
+; IF0-NEXT:    [[TMP20:%.*]] = add i64 [[TMP19]], 1
+; IF0-NEXT:    [[TMP21:%.*]] = mul i64 [[TMP20]], 2
+; IF0-NEXT:    [[EXIT_VALUE:%.*]] = getelementptr i8, ptr [[DATAP]], i64 [[TMP21]]
+; IF0-NEXT:    br i1 true, label [[EXIT:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF0:       vec.uncountable.scalar.ph:
+; IF0-NEXT:    br label [[LOOP:%.*]]
+; IF0:       loop:
+; IF0-NEXT:    [[PTR_IV:%.*]] = phi ptr [ [[PTR_NEXT:%.*]], [[LOOP]] ], [ [[DATAP]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ]
+; IF0-NEXT:    [[PTR_NEXT]] = getelementptr inbounds nuw i16, ptr [[PTR_IV]], i64 1
+; IF0-NEXT:    [[DATA:%.*]] = load i16, ptr [[PTR_NEXT]], align 2
+; IF0-NEXT:    [[COND:%.*]] = icmp eq i16 [[DATA]], 0
+; IF0-NEXT:    br i1 [[COND]], label [[EXIT]], label [[LOOP]], !llvm.loop [[LOOP21:![0-9]+]]
+; IF0:       exit:
+; IF0-NEXT:    [[PHI643:%.*]] = phi ptr [ [[PTR_NEXT]], [[LOOP]] ], [ [[EXIT_VALUE]], [[MIDDLE_BLOCK]] ]
+; IF0-NEXT:    [[PTRTOINT:%.*]] = ptrtoint ptr [[PHI643]] to i64
+; IF0-NEXT:    [[PTRTOINT644:%.*]] = ptrtoint ptr [[DATAP]] to i64
+; IF0-NEXT:    [[SUB645:%.*]] = sub i64 [[PTRTOINT]], [[PTRTOINT644]]
+; IF0-NEXT:    [[LSHR:%.*]] = lshr exact i64 [[SUB645]], 1
+; IF0-NEXT:    ret i64 [[LSHR]]
+;
+; IF1-LABEL: @check_extract(
+; IF1-NEXT:  entry:
+; IF1-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; IF1-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; IF1-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 0
+; IF1-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP2]], i64 0
+; IF1-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
+; IF1-NEXT:    [[TMP3:%.*]] = call <vscale x 16 x i64> @llvm.stepvector.nxv16i64()
+; IF1-NEXT:    [[TMP4:%.*]] = add <vscale x 16 x i64> [[DOTSPLAT]], [[TMP3]]
+; IF1-NEXT:    br label [[VECTOR_BODY:%.*]]
+; IF1:       vector.body:
+; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; IF1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
+; IF1-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[DATAP:%.*]], [[ENTRY]] ], [ [[PTR_IND:%.*]], [[VECTOR_BODY]] ]
+; IF1-NEXT:    [[TMP5:%.*]] = mul <vscale x 16 x i64> [[TMP4]], splat (i64 2)
+; IF1-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 16 x i64> [[TMP5]]
+; IF1-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
+; IF1-NEXT:    [[TMP7:%.*]] = getelementptr inbounds nuw i16, <vscale x 16 x ptr> [[VECTOR_GEP]], i64 1
+; IF1-NEXT:    [[TMP8:%.*]] = extractelement <vscale x 16 x ptr> [[TMP7]], i32 0
+; IF1-NEXT:    [[TMP9:%.*]] = getelementptr inbounds nuw i16, ptr [[TMP8]], i32 0
+; IF1-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 16 x i16>, i32 } @llvm.vp.load.ff.nxv16i16.p0(ptr align 2 [[TMP9]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP6]])
+; IF1-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 16 x i16>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF1-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP10]] to i64
+; IF1-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 16 x i16>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF1-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i16(<vscale x 16 x i16> [[TMP12]], <vscale x 16 x i16> zeroinitializer, metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP10]])
+; IF1-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP10]])
+; IF1-NEXT:    [[TMP14:%.*]] = icmp sge i32 [[TMP13]], 0
+; IF1-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP10]] to i64
+; IF1-NEXT:    [[TMP16:%.*]] = mul i64 [[TMP11]], 1
+; IF1-NEXT:    [[TMP17:%.*]] = mul i64 2, [[TMP16]]
+; IF1-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP17]]
+; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP15]], [[EVL_BASED_IV]]
+; IF1-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
+; IF1:       middle.block:
+; IF1-NEXT:    [[TMP18:%.*]] = zext i32 [[TMP13]] to i64
+; IF1-NEXT:    [[TMP19:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP18]]
+; IF1-NEXT:    [[TMP20:%.*]] = add i64 [[TMP19]], 1
+; IF1-NEXT:    [[TMP21:%.*]] = mul i64 [[TMP20]], 2
+; IF1-NEXT:    [[EXIT_VALUE:%.*]] = getelementptr i8, ptr [[DATAP]], i64 [[TMP21]]
+; IF1-NEXT:    br i1 true, label [[EXIT:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF1:       vec.uncountable.scalar.ph:
+; IF1-NEXT:    br label [[LOOP:%.*]]
+; IF1:       loop:
+; IF1-NEXT:    [[PTR_IV:%.*]] = phi ptr [ [[PTR_NEXT:%.*]], [[LOOP]] ], [ [[DATAP]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ]
+; IF1-NEXT:    [[PTR_NEXT]] = getelementptr inbounds nuw i16, ptr [[PTR_IV]], i64 1
+; IF1-NEXT:    [[DATA:%.*]] = load i16, ptr [[PTR_NEXT]], align 2
+; IF1-NEXT:    [[COND:%.*]] = icmp eq i16 [[DATA]], 0
+; IF1-NEXT:    br i1 [[COND]], label [[EXIT]], label [[LOOP]], !llvm.loop [[LOOP21:![0-9]+]]
+; IF1:       exit:
+; IF1-NEXT:    [[PHI643:%.*]] = phi ptr [ [[PTR_NEXT]], [[LOOP]] ], [ [[EXIT_VALUE]], [[MIDDLE_BLOCK]] ]
+; IF1-NEXT:    [[PTRTOINT:%.*]] = ptrtoint ptr [[PHI643]] to i64
+; IF1-NEXT:    [[PTRTOINT644:%.*]] = ptrtoint ptr [[DATAP]] to i64
+; IF1-NEXT:    [[SUB645:%.*]] = sub i64 [[PTRTOINT]], [[PTRTOINT644]]
+; IF1-NEXT:    [[LSHR:%.*]] = lshr exact i64 [[SUB645]], 1
+; IF1-NEXT:    ret i64 [[LSHR]]
+;
+; IF2-LABEL: @check_extract(
+; IF2-NEXT:  entry:
+; IF2-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; IF2-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; IF2-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 0
+; IF2-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP2]], i64 0
+; IF2-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
+; IF2-NEXT:    [[TMP3:%.*]] = call <vscale x 16 x i64> @llvm.stepvector.nxv16i64()
+; IF2-NEXT:    [[TMP4:%.*]] = add <vscale x 16 x i64> [[DOTSPLAT]], [[TMP3]]
+; IF2-NEXT:    br label [[VECTOR_BODY:%.*]]
+; IF2:       vector.body:
+; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; IF2-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
+; IF2-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[DATAP:%.*]], [[ENTRY]] ], [ [[PTR_IND:%.*]], [[VECTOR_BODY]] ]
+; IF2-NEXT:    [[TMP5:%.*]] = mul <vscale x 16 x i64> [[TMP4]], splat (i64 2)
+; IF2-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 16 x i64> [[TMP5]]
+; IF2-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
+; IF2-NEXT:    [[TMP7:%.*]] = getelementptr inbounds nuw i16, <vscale x 16 x ptr> [[VECTOR_GEP]], i64 1
+; IF2-NEXT:    [[TMP8:%.*]] = extractelement <vscale x 16 x ptr> [[TMP7]], i32 0
+; IF2-NEXT:    [[TMP9:%.*]] = getelementptr inbounds nuw i16, ptr [[TMP8]], i32 0
+; IF2-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 16 x i16>, i32 } @llvm.vp.load.ff.nxv16i16.p0(ptr align 2 [[TMP9]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP6]])
+; IF2-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 16 x i16>, i32 } [[VP_OP_LOAD_FF]], 1
+; IF2-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP10]] to i64
+; IF2-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 16 x i16>, i32 } [[VP_OP_LOAD_FF]], 0
+; IF2-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i16(<vscale x 16 x i16> [[TMP12]], <vscale x 16 x i16> zeroinitializer, metadata !"eq", <vscale x 16 x i1> splat (i1 true), i32 [[TMP10]])
+; IF2-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP10]])
+; IF2-NEXT:    [[TMP14:%.*]] = icmp sge i32 [[TMP13]], 0
+; IF2-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP10]] to i64
+; IF2-NEXT:    [[TMP16:%.*]] = mul i64 [[TMP11]], 1
+; IF2-NEXT:    [[TMP17:%.*]] = mul i64 2, [[TMP16]]
+; IF2-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP17]]
+; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP15]], [[EVL_BASED_IV]]
+; IF2-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
+; IF2:       middle.block:
+; IF2-NEXT:    [[TMP18:%.*]] = zext i32 [[TMP13]] to i64
+; IF2-NEXT:    [[TMP19:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP18]]
+; IF2-NEXT:    [[TMP20:%.*]] = add i64 [[TMP19]], 1
+; IF2-NEXT:    [[TMP21:%.*]] = mul i64 [[TMP20]], 2
+; IF2-NEXT:    [[EXIT_VALUE:%.*]] = getelementptr i8, ptr [[DATAP]], i64 [[TMP21]]
+; IF2-NEXT:    br i1 true, label [[EXIT:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; IF2:       vec.uncountable.scalar.ph:
+; IF2-NEXT:    br label [[LOOP:%.*]]
+; IF2:       loop:
+; IF2-NEXT:    [[PTR_IV:%.*]] = phi ptr [ [[PTR_NEXT:%.*]], [[LOOP]] ], [ [[DATAP]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ]
+; IF2-NEXT:    [[PTR_NEXT]] = getelementptr inbounds nuw i16, ptr [[PTR_IV]], i64 1
+; IF2-NEXT:    [[DATA:%.*]] = load i16, ptr [[PTR_NEXT]], align 2
+; IF2-NEXT:    [[COND:%.*]] = icmp eq i16 [[DATA]], 0
+; IF2-NEXT:    br i1 [[COND]], label [[EXIT]], label [[LOOP]], !llvm.loop [[LOOP21:![0-9]+]]
+; IF2:       exit:
+; IF2-NEXT:    [[PHI643:%.*]] = phi ptr [ [[PTR_NEXT]], [[LOOP]] ], [ [[EXIT_VALUE]], [[MIDDLE_BLOCK]] ]
+; IF2-NEXT:    [[PTRTOINT:%.*]] = ptrtoint ptr [[PHI643]] to i64
+; IF2-NEXT:    [[PTRTOINT644:%.*]] = ptrtoint ptr [[DATAP]] to i64
+; IF2-NEXT:    [[SUB645:%.*]] = sub i64 [[PTRTOINT]], [[PTRTOINT644]]
+; IF2-NEXT:    [[LSHR:%.*]] = lshr exact i64 [[SUB645]], 1
+; IF2-NEXT:    ret i64 [[LSHR]]
+;
+entry:
+  br label %loop
+
+loop:
+  %ptr.iv = phi ptr [ %ptr.next, %loop ], [ %datap, %entry]
+  %ptr.next = getelementptr inbounds nuw i16, ptr %ptr.iv, i64 1
+  %data = load i16, ptr %ptr.next, align 2
+  %cond = icmp eq i16 %data, 0
+  br i1 %cond, label %exit, label %loop
+
+exit:
+  %endp = phi ptr [ %ptr.next, %loop ]
+  %endp64 = ptrtoint ptr %endp to i64
+  %datap64 = ptrtoint ptr %datap to i64
+  %sub = sub i64 %endp64, %datap64
+  %lshr = lshr exact i64 %sub, 1
+  ret i64 %lshr
+}
+
