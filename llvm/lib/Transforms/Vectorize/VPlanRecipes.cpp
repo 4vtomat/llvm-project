@@ -728,37 +728,7 @@ Value *VPInstruction::generate(VPTransformState &State) {
     Value *IV = State.get(getOperand(0), /*IsScalar*/ true);
     Value *TC = State.get(getOperand(1), /*IsScalar*/ true);
     Value *Cond = Builder.CreateICmpEQ(IV, TC);
-<<<<<<< HEAD
     return createCondBranch(Cond, getParent(), State);
-=======
-
-    // Now create the branch.
-    auto *Plan = getParent()->getPlan();
-    VPRegionBlock *TopRegion = Plan->getVectorLoopRegion();
-    VPBasicBlock *Header = TopRegion->getEntry()->getEntryBasicBlock();
-
-    // Replace the temporary unreachable terminator with a new conditional
-    // branch, hooking it up to backward destination (the header) now and to the
-    // forward destination (the exit/middle block) later when it is created.
-    // Note that CreateCondBr expects a valid BB as first argument, so we need
-    // to set it to nullptr later.
-    BranchInst *CondBr = Builder.CreateCondBr(Cond, Builder.GetInsertBlock(),
-                                              State.CFG.VPBB2IRBB[Header]);
-    CondBr->setSuccessor(0, nullptr);
-#if SIFIVE_CUSTOMIZATION
-    // Conditional VPBB transformation will split the loop body into multiple
-    // blocks. So the successor[1] may not always be the header, it could also
-    // be an another VPBB. If current VPBB has more 2 successors, also need to
-    // clear the successor[1] which will fixed in `connectToPredecessor()`.
-    if (getParent()->getNumSuccessors() > 1) {
-      assert(getParent()->getSuccessors()[1] != Header &&
-             "Shouldn't reset the successor of VPBB that is alreadey created.");
-      CondBr->setSuccessor(1, nullptr);
-    }
-#endif
-    Builder.GetInsertBlock()->getTerminator()->eraseFromParent();
-    return CondBr;
->>>>>>> origin/sifive-dev
   }
 #if SIFIVE_CUSTOMIZATION
   case VPInstruction::CSAInitMask: {
