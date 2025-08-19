@@ -2891,6 +2891,38 @@ bool VPlanTransforms::tryAddExplicitVectorLength(
 
   transformRecipestoEVLRecipes(Plan, *VPEVL);
 
+#if SIFIVE_CUSTOMIZATION
+  // In the middle block, the transformation replaces the Instruction::ICmp
+  // generating the mask with a vp.icmp using InitEVL.
+  if (EnableEVLFuzzing) {
+    auto *MiddleVPBB =
+        cast<VPBasicBlock>(Plan.getVectorLoopRegion()->getSingleSuccessor());
+    LLVMContext &Ctx = CanonicalIVPHI->getScalarType()->getContext();
+    VPTypeAnalysis TypeInfo(CanonicalIVPHI->getScalarType());
+    VPValue *AllOneMask = Plan.getOrAddLiveIn(ConstantInt::getTrue(Ctx));
+    VPValue *InitEVL = Plan.getInitEVL();
+    for (VPRecipeBase &R : make_early_inc_range(*MiddleVPBB)) {
+      auto *VPI = dyn_cast<VPInstruction>(&R);
+      if (!VPI || VPI->getOpcode() != Instruction::ICmp)
+        continue;
+
+      VPValue *LHS = VPI->getOperand(0);
+      VPValue *RHS = VPI->getOperand(1);
+      CmpInst::Predicate Pred = cast<VPRecipeWithIRFlags>(VPI)->getPredicate();
+      StringRef PredicateStr = CmpInst::getPredicateName(Pred);
+      auto *PredicateMDS = MDString::get(Ctx, PredicateStr);
+      Value *PredArg = MetadataAsValue::get(Ctx, PredicateMDS);
+      VPValue *VPPredArg = Plan.getOrAddLiveIn(PredArg);
+      auto *NewICmp = new VPWidenIntrinsicRecipe(
+          Intrinsic::vp_icmp, {LHS, RHS, VPPredArg, AllOneMask, InitEVL},
+          TypeInfo.inferScalarType(VPI), VPI->getDebugLoc());
+      NewICmp->insertBefore(VPI);
+      VPValue *Def = VPI->getVPSingleValue();
+      Def->replaceAllUsesWith(NewICmp->getVPSingleValue());
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   // Replace all uses of VPCanonicalIVPHIRecipe by
   // VPEVLBasedIVPHIRecipe except for the canonical IV increment.
   CanonicalIVPHI->replaceAllUsesWith(EVLPhi);

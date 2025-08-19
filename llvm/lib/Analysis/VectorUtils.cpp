@@ -208,6 +208,9 @@ bool llvm::isVectorIntrinsicWithScalarOpAtArg(Intrinsic::ID ID,
   case Intrinsic::smul_fix_sat:
   case Intrinsic::umul_fix:
   case Intrinsic::umul_fix_sat:
+#if SIFIVE_CUSTOMIZATION
+  case Intrinsic::vp_icmp:
+#endif // SIFIVE_CUSTOMIZATION
     return (ScalarOpdIdx == 2);
   case Intrinsic::experimental_vp_splice:
     return ScalarOpdIdx == 2 || ScalarOpdIdx == 4;
@@ -241,6 +244,9 @@ bool llvm::isVectorIntrinsicWithOverloadTypeAtArg(
   case Intrinsic::sincospi:
   case Intrinsic::is_fpclass:
   case Intrinsic::vp_is_fpclass:
+#if SIFIVE_CUSTOMIZATION
+  case Intrinsic::vp_icmp:
+#endif // SIFIVE_CUSTOMIZATION
     return OpdIdx == 0;
   case Intrinsic::powi:
 #if SIFIVE_CUSTOMIZATION

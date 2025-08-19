@@ -239,8 +239,8 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
 
   InstructionCost Cost =
       TypeSwitch<const VPRecipeBase *, InstructionCost>(Recipe)
-          .Case<VPWidenIntrinsicRecipe>([&](const VPWidenIntrinsicRecipe
-                                                *VPIR) {
+          .Case<VPWidenIntrinsicRecipe>([&](const VPWidenIntrinsicRecipe *VPIR)
+                                            -> InstructionCost {
             SmallVector<const Value *> Arguments;
             for (const auto &[Idx, Op] : enumerate(VPIR->operands())) {
               auto *V = Op->getUnderlyingValue();
@@ -253,6 +253,9 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
               // Query the cost with underlying value could be more accurate
               // in lots of the targets.
               if (VPIntrinsic::isVPIntrinsic(VPIR->getVectorIntrinsicID())) {
+                // Align to the cost of Instruction::ICmp.
+                if (VPIR->getVectorIntrinsicID() == Intrinsic::vp_icmp)
+                  return 0;
                 Arguments.push_back(V);
                 continue;
               }
