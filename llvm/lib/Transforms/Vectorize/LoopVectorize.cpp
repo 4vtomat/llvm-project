@@ -11487,10 +11487,11 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range,
         Phi->getIncomingValueForBlock(OrigLoop->getLoopLatch()));
     VPWidenInductionRecipe *WideIV =
         cast<VPWidenInductionRecipe>(RecipeBuilder.getRecipe(Phi));
+    if (isa<PHINode>(IVInc))
+      continue;
     VPRecipeBase *R = RecipeBuilder.getRecipe(IVInc);
     // The map is for non-phi IVInc.
-    if (!isa<PHINode>(IVInc))
-      MapIVs[R->getVPSingleValue()] = WideIV;
+    MapIVs[R->getVPSingleValue()] = WideIV;
   }
 #endif // SIFIVE_CUSTOMIZATION
 
