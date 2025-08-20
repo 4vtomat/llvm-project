@@ -1,5 +1,5 @@
 add_llvm_component_library(LLVMVectorize
-  SiFive_EVLIndVarSimplify.cpp
+  EVLIndVarSimplify.cpp
   LoadStoreVectorizer.cpp
   LoopIdiomVectorize.cpp
   LoopVectorizationLegality.cpp
