@@ -898,59 +898,9 @@ void RVVEmitter::createRVVIntrinsics(
       Log2LMULMask |= 1 << (Log2LMUL + 3);
 
     SR.Log2LMULMask = Log2LMULMask;
-<<<<<<< HEAD
-
-    for (auto RequiredFeature : RequiredFeatures) {
-      unsigned RequireExt =
-          StringSwitch<RVVRequire>(RequiredFeature)
-              .Case("RV64", RVV_REQ_RV64)
-              .Case("Zvfhmin", RVV_REQ_Zvfhmin)
-              .Case("Xandesvpackfph", RVV_REQ_Xandesvpackfph)
-              .Case("Xsfvcp", RVV_REQ_Xsfvcp)
-              .Case("Xsfvfnrclipxfqf", RVV_REQ_Xsfvfnrclipxfqf)
-              .Case("Xsfvfwmaccqqq", RVV_REQ_Xsfvfwmaccqqq)
-              .Case("Xsfvqmaccdod", RVV_REQ_Xsfvqmaccdod)
-              .Case("Xsfvqmaccqoq", RVV_REQ_Xsfvqmaccqoq)
-              .Case("Zvbb", RVV_REQ_Zvbb)
-              .Case("Zvbc", RVV_REQ_Zvbc)
-              .Case("Zvkb", RVV_REQ_Zvkb)
-              .Case("Zvkg", RVV_REQ_Zvkg)
-              .Case("Zvkned", RVV_REQ_Zvkned)
-              .Case("Zvknha", RVV_REQ_Zvknha)
-              .Case("Zvknhb", RVV_REQ_Zvknhb)
-              .Case("Zvksed", RVV_REQ_Zvksed)
-              .Case("Zvksh", RVV_REQ_Zvksh)
-              .Case("Zvfbfwma", RVV_REQ_Zvfbfwma)
-              .Case("Zvfbfmin", RVV_REQ_Zvfbfmin)
-              .Case("Zvfh", RVV_REQ_Zvfh)
-#if SIFIVE_CUSTOMIZATION
-              .Case("HasBfloat16", RVV_REQ_HasBfloat16)
-              .Case("Xsfvfbfa", RVV_REQ_Xsfvfbfa)
-              .Case("Xsfvfbfexp16e", RVV_REQ_Xsfvfbfexp16e)
-              .Case("Xsfvfexp16e", RVV_REQ_Xsfvfexp16e)
-              .Case("Xsfvfexp32e", RVV_REQ_Xsfvfexp32e)
-              .Case("Xsfvfexpa", RVV_REQ_Xsfvfexpa)
-              .Case("Xsfvfexpa64e", RVV_REQ_Xsfvfexpa64e)
-              .Case("Xsfvfhbfmin", RVV_REQ_Xsfvfhbfmin)
-              .Case("Xsfvqdotq", RVV_REQ_Xsfvqdotq)
-              .Case("Zvfbfmin_Xsfvfbfa", RVV_REQ_Zvfbfmin_Xsfvfbfa)
-              .Case("Xsfmmbase", RVV_REQ_Xsfmmbase)
-              .Case("Xsfmm32a", RVV_REQ_Xsfmm32a)
-              .Case("Xsfmm32a8f", RVV_REQ_Xsfmm32a8f)
-              .Case("Xsfmm32a16f", RVV_REQ_Xsfmm32a16f)
-              .Case("Xsfmm32a32f", RVV_REQ_Xsfmm32a32f)
-              .Case("Xsfmm64a64f", RVV_REQ_Xsfmm64a64f)
-              .Case("Xsfmm32a8i", RVV_REQ_Xsfmm32a8i)
-#endif // SIFIVE_CUSTOMIZATION
-              .Case("Experimental", RVV_REQ_Experimental);
-      SR.RequiredExtensions.set(RequireExt);
-    }
-
-=======
     std::string RFs =
         join(RequiredFeatures.begin(), RequiredFeatures.end(), ",");
     SR.RequiredExtensions = RFs;
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
     SR.NF = NF;
     SR.HasMasked = HasMasked;
     SR.HasVL = HasVL;
