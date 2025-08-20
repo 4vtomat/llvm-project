@@ -1548,49 +1548,6 @@ public:
                      PtrInfo, MemVT, Alignment.value_or(getEVTAlign(MemVT)),
                      MMOFlags, AAInfo, Ranges, IsExpanding);
   }
-<<<<<<< HEAD
-  SDValue getLoadVP(ISD::MemIndexedMode AM, ISD::LoadExtType ExtType, EVT VT,
-                    const SDLoc &dl, SDValue Chain, SDValue Ptr, SDValue Offset,
-                    SDValue Mask, SDValue EVL, EVT MemVT,
-                    MachineMemOperand *MMO, bool IsExpanding = false);
-  SDValue getLoadVP(EVT VT, const SDLoc &dl, SDValue Chain, SDValue Ptr,
-                    SDValue Mask, SDValue EVL, MachinePointerInfo PtrInfo,
-                    MaybeAlign Alignment, MachineMemOperand::Flags MMOFlags,
-                    const AAMDNodes &AAInfo, const MDNode *Ranges = nullptr,
-                    bool IsExpanding = false);
-  SDValue getLoadVP(EVT VT, const SDLoc &dl, SDValue Chain, SDValue Ptr,
-                    SDValue Mask, SDValue EVL, MachineMemOperand *MMO,
-                    bool IsExpanding = false);
-#if SIFIVE_CUSTOMIZATION
-  SDValue getLoadFFVP(EVT VT, const SDLoc &dl, SDValue Chain, SDValue Ptr,
-                      SDValue Mask, SDValue EVL, MachineMemOperand *MMO);
-#endif
-  SDValue getExtLoadVP(ISD::LoadExtType ExtType, const SDLoc &dl, EVT VT,
-                       SDValue Chain, SDValue Ptr, SDValue Mask, SDValue EVL,
-                       MachinePointerInfo PtrInfo, EVT MemVT,
-                       MaybeAlign Alignment, MachineMemOperand::Flags MMOFlags,
-                       const AAMDNodes &AAInfo, bool IsExpanding = false);
-  SDValue getExtLoadVP(ISD::LoadExtType ExtType, const SDLoc &dl, EVT VT,
-                       SDValue Chain, SDValue Ptr, SDValue Mask, SDValue EVL,
-                       EVT MemVT, MachineMemOperand *MMO,
-                       bool IsExpanding = false);
-  SDValue getIndexedLoadVP(SDValue OrigLoad, const SDLoc &dl, SDValue Base,
-                           SDValue Offset, ISD::MemIndexedMode AM);
-  SDValue getStoreVP(SDValue Chain, const SDLoc &dl, SDValue Val, SDValue Ptr,
-                     SDValue Offset, SDValue Mask, SDValue EVL, EVT MemVT,
-                     MachineMemOperand *MMO, ISD::MemIndexedMode AM,
-                     bool IsTruncating = false, bool IsCompressing = false);
-  SDValue getTruncStoreVP(SDValue Chain, const SDLoc &dl, SDValue Val,
-                          SDValue Ptr, SDValue Mask, SDValue EVL,
-                          MachinePointerInfo PtrInfo, EVT SVT, Align Alignment,
-                          MachineMemOperand::Flags MMOFlags,
-                          const AAMDNodes &AAInfo, bool IsCompressing = false);
-  SDValue getTruncStoreVP(SDValue Chain, const SDLoc &dl, SDValue Val,
-                          SDValue Ptr, SDValue Mask, SDValue EVL, EVT SVT,
-                          MachineMemOperand *MMO, bool IsCompressing = false);
-  SDValue getIndexedStoreVP(SDValue OrigStore, const SDLoc &dl, SDValue Base,
-                            SDValue Offset, ISD::MemIndexedMode AM);
-=======
   LLVM_ABI SDValue getLoadVP(ISD::MemIndexedMode AM, ISD::LoadExtType ExtType,
                              EVT VT, const SDLoc &dl, SDValue Chain,
                              SDValue Ptr, SDValue Offset, SDValue Mask,
@@ -1606,6 +1563,10 @@ public:
   LLVM_ABI SDValue getLoadVP(EVT VT, const SDLoc &dl, SDValue Chain,
                              SDValue Ptr, SDValue Mask, SDValue EVL,
                              MachineMemOperand *MMO, bool IsExpanding = false);
+#if SIFIVE_CUSTOMIZATION
+  SDValue getLoadFFVP(EVT VT, const SDLoc &dl, SDValue Chain, SDValue Ptr,
+                      SDValue Mask, SDValue EVL, MachineMemOperand *MMO);
+#endif
   LLVM_ABI SDValue getExtLoadVP(
       ISD::LoadExtType ExtType, const SDLoc &dl, EVT VT, SDValue Chain,
       SDValue Ptr, SDValue Mask, SDValue EVL, MachinePointerInfo PtrInfo,
@@ -1638,7 +1599,6 @@ public:
   LLVM_ABI SDValue getIndexedStoreVP(SDValue OrigStore, const SDLoc &dl,
                                      SDValue Base, SDValue Offset,
                                      ISD::MemIndexedMode AM);
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 
   LLVM_ABI SDValue getStridedLoadVP(
       ISD::MemIndexedMode AM, ISD::LoadExtType ExtType, EVT VT, const SDLoc &DL,
