@@ -71,12 +71,9 @@
 // RISCV64-SAME: {{^}}, sifive-u74r
 // RISCV64-SAME: {{^}}, sifive-x180
 // RISCV64-SAME: {{^}}, sifive-x280
-<<<<<<< HEAD
 // RISCV64-SAME: {{^}}, sifive-x280n
 // RISCV64-SAME: {{^}}, sifive-x280o
 // RISCV64-SAME: {{^}}, sifive-x390-fast-fp64
-=======
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 // RISCV64-SAME: {{^}}, sifive-x390
 // RISCV64-SAME: {{^}}, spacemit-x60
 // RISCV64-SAME: {{^}}, syntacore-scr3-rv64
@@ -170,12 +167,9 @@
 // TUNE-RISCV64-SAME: {{^}}, sifive-u74r
 // TUNE-RISCV64-SAME: {{^}}, sifive-x180
 // TUNE-RISCV64-SAME: {{^}}, sifive-x280
-<<<<<<< HEAD
 // TUNE-RISCV64-SAME: {{^}}, sifive-x280n
 // TUNE-RISCV64-SAME: {{^}}, sifive-x280o
 // TUNE-RISCV64-SAME: {{^}}, sifive-x390-fast-fp64
-=======
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 // TUNE-RISCV64-SAME: {{^}}, sifive-x390
 // TUNE-RISCV64-SAME: {{^}}, spacemit-x60
 // TUNE-RISCV64-SAME: {{^}}, syntacore-scr3-rv64
