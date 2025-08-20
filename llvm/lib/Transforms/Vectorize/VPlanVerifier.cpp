@@ -176,7 +176,11 @@ bool VPlanVerifier::verifyEVLRecipe(const VPInstruction &EVL) const {
     }
     return true;
   };
+#ifdef SIFIVE_CUSTOMIZATION
+  return all_of(EVL.users(), [&VerifyEVLUse](VPUser *U) {
+#else
   return all_of(EVL.users(), [this, &VerifyEVLUse](VPUser *U) {
+#endif // SIFIVE_CUSTOMIZATION
     return TypeSwitch<const VPUser *, bool>(U)
         .Case<VPWidenIntrinsicRecipe>([&](const VPWidenIntrinsicRecipe *S) {
           return VerifyEVLUse(*S, S->getNumOperands() - 1);
