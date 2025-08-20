@@ -2161,11 +2161,8 @@ void BaseMemOpClusterMutation::clusterNeighboringMemOps(
 
     SUnit *SUa = MemOpa.SU;
     SUnit *SUb = MemOpb.SU;
-<<<<<<< HEAD
 #endif
-=======
 
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
     if (!ReorderWhileClustering && SUa->NodeNum > SUb->NodeNum)
       std::swap(SUa, SUb);
 
