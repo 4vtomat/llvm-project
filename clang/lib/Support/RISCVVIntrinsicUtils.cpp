@@ -1305,56 +1305,6 @@ llvm::raw_ostream &operator<<(llvm::raw_ostream &OS, enum PolicyScheme PS) {
   return OS;
 }
 
-<<<<<<< HEAD
-llvm::raw_ostream &operator<<(llvm::raw_ostream &OS, enum RVVRequire Require) {
-  switch (Require) {
-    STRINGIFY(RVV_REQ_RV64)
-    STRINGIFY(RVV_REQ_Zvfhmin)
-    STRINGIFY(RVV_REQ_Xandesvpackfph)
-    STRINGIFY(RVV_REQ_Xsfvcp)
-    STRINGIFY(RVV_REQ_Xsfvfnrclipxfqf)
-    STRINGIFY(RVV_REQ_Xsfvfwmaccqqq)
-    STRINGIFY(RVV_REQ_Xsfvqmaccdod)
-    STRINGIFY(RVV_REQ_Xsfvqmaccqoq)
-    STRINGIFY(RVV_REQ_Zvbb)
-    STRINGIFY(RVV_REQ_Zvbc)
-    STRINGIFY(RVV_REQ_Zvkb)
-    STRINGIFY(RVV_REQ_Zvkg)
-    STRINGIFY(RVV_REQ_Zvkned)
-    STRINGIFY(RVV_REQ_Zvknha)
-    STRINGIFY(RVV_REQ_Zvknhb)
-    STRINGIFY(RVV_REQ_Zvksed)
-    STRINGIFY(RVV_REQ_Zvksh)
-    STRINGIFY(RVV_REQ_Zvfbfwma)
-    STRINGIFY(RVV_REQ_Zvfbfmin)
-    STRINGIFY(RVV_REQ_Zvfh)
-    STRINGIFY(RVV_REQ_Experimental)
-    STRINGIFY(RVV_REQ_HasBfloat16)
-    STRINGIFY(RVV_REQ_Xsfvfbfa)
-    STRINGIFY(RVV_REQ_Xsfvfbfexp16e)
-    STRINGIFY(RVV_REQ_Xsfvfexp16e)
-    STRINGIFY(RVV_REQ_Xsfvfexp32e)
-    STRINGIFY(RVV_REQ_Xsfvfexpa)
-    STRINGIFY(RVV_REQ_Xsfvfexpa64e)
-    STRINGIFY(RVV_REQ_Xsfvfhbfmin)
-    STRINGIFY(RVV_REQ_Xsfvqdotq)
-    STRINGIFY(RVV_REQ_Zvfbfmin_Xsfvfbfa)
-    STRINGIFY(RVV_REQ_Xsfmmbase)
-    STRINGIFY(RVV_REQ_Xsfmm32a)
-    STRINGIFY(RVV_REQ_Xsfmm32a8f)
-    STRINGIFY(RVV_REQ_Xsfmm32a16f)
-    STRINGIFY(RVV_REQ_Xsfmm32a32f)
-    STRINGIFY(RVV_REQ_Xsfmm64a64f)
-    STRINGIFY(RVV_REQ_Xsfmm32a8i)
-  default:
-    llvm_unreachable("Unsupported RVVRequire!");
-    break;
-  }
-  return OS;
-}
-
-=======
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 #undef STRINGIFY
 
 raw_ostream &operator<<(raw_ostream &OS, const RVVIntrinsicRecord &Record) {
