@@ -17,13 +17,10 @@
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/IR/IntrinsicInst.h"
 #include "llvm/IR/ValueHandle.h"
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/ADT/SetVector.h"
 #endif // SIFIVE_CUSTOMIZATION
-=======
 #include "llvm/Support/Compiler.h"
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 
 namespace llvm {
 
