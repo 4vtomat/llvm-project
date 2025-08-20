@@ -3042,32 +3042,21 @@ void LoopAccessInfo::print(raw_ostream &OS, unsigned Depth) const {
   PSE->print(OS, Depth);
 }
 
-<<<<<<< HEAD
-const LoopAccessInfo &LoopAccessInfoManager::getInfo(Loop &L) {
+const LoopAccessInfo &LoopAccessInfoManager::getInfo(Loop &L,
+                                                     bool AllowPartial) {
 #if SIFIVE_CUSTOMIZATION
   auto [It, Inserted] = LoopAccessInfoMap.insert({&L, nullptr});
 #else
-  const auto &[It, Inserted] = LoopAccessInfoMap.insert({&L, nullptr});
+  const auto &[It, Inserted] = LoopAccessInfoMap.try_emplace(&L);
 #endif
 
 #if SIFIVE_CUSTOMIZATION
   if (isRevectorizeWithoutStrideChecks(L) || isVectorizeWithoutStrideChecks(L))
     std::tie(It, Inserted) = LoopAccessInfoNoStridesMap.insert({&L, nullptr});
 #endif // SIFIVE_CUSTOMIZATION
-  if (Inserted)
-    It->second =
-        std::make_unique<LoopAccessInfo>(&L, &SE, TTI, TLI, &AA, &DT, &LI);
-=======
-const LoopAccessInfo &LoopAccessInfoManager::getInfo(Loop &L,
-                                                     bool AllowPartial) {
-  const auto &[It, Inserted] = LoopAccessInfoMap.try_emplace(&L);
-
-  // We need to create the LoopAccessInfo if either we don't already have one,
-  // or if it was created with a different value of AllowPartial.
   if (Inserted || It->second->hasAllowPartial() != AllowPartial)
     It->second = std::make_unique<LoopAccessInfo>(&L, &SE, TTI, TLI, &AA, &DT,
                                                   &LI, AllowPartial);
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 
   return *It->second;
 }
