@@ -345,18 +345,13 @@ RISCVTargetMachine::createMachineScheduler(MachineSchedContext *C) const {
   }
 
   const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
-    DAG = DAG ? DAG : createGenericSchedLive(C);
+    DAG = DAG ? DAG : createSchedLive(C);
     DAG->addMutation(createRISCVMaskInstDAGMutation());
   }
 #endif // SIFIVE_CUSTOMIZATION
-  if (!DisableVectorMaskMutation && ST.hasVInstructions()) {
-    DAG = DAG ? DAG : createGenericSchedLive(C);
-=======
   if (!DisableVectorMaskMutation && ST.hasVInstructions())
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
     DAG->addMutation(createRISCVVectorMaskDAGMutation(DAG->TRI));
 
   return DAG;
