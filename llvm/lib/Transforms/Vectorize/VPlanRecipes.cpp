@@ -892,8 +892,30 @@ Value *VPInstruction::generate(VPTransformState &State) {
           (Instruction::BinaryOps)RecurrenceDescriptor::getOpcode(
               RecurKind::AnyOf),
           State.get(getOperand(Idx)), ReducedPartRdx, "bin.rdx");
+
+#if SIFIVE_CUSTOMIZATION
+    // Get its reduction variable descriptor.
+    const RecurrenceDescriptor &RdxDesc = PhiR->getRecurrenceDescriptor();
+
+    Value *InitEVL = nullptr;
+    if (State.Plan->useVLAVectorizer()) {
+      InitEVL = State.get(State.Plan->getInitEVL(), /*NeedsScalar=*/true);
+      assert(InitEVL &&
+             "InitEVL must be initialized in emitIterationCountCheck when "
+             "using VP intrinsic to generate unordered reduction");
+    }
+#endif // SIFIVE_CUSTOMIZATION
+
+#if SIFIVE_CUSTOMIZATION
+    return InitEVL ? createAnyOfReduction(Builder, ReducedPartRdx, RdxDesc,
+                                          OrigPhi, InitEVL)
+                   : createAnyOfReduction(Builder, ReducedPartRdx,
+                                          State.get(getOperand(1), VPLane(0)),
+                                          OrigPhi);
+#else
     return createAnyOfReduction(Builder, ReducedPartRdx,
                                 State.get(getOperand(1), VPLane(0)), OrigPhi);
+#endif // SIFIVE_CUSTOMIZATION
   }
   case VPInstruction::ComputeFindLastIVResult: {
     // FIXME: The cross-recipe dependency on VPReductionPHIRecipe is temporary
@@ -916,9 +938,27 @@ Value *VPInstruction::generate(VPTransformState &State) {
                                       State.get(getOperand(2 + Part)));
     }
 
+#if SIFIVE_CUSTOMIZATION
+    Value *InitEVL = nullptr;
+    if (State.Plan->useVLAVectorizer()) {
+      InitEVL = State.get(State.Plan->getInitEVL(), /*NeedsScalar=*/true);
+      assert(InitEVL &&
+             "InitEVL must be initialized in emitIterationCountCheck when "
+             "using VP intrinsic to generate unordered reduction");
+    }
+#endif // SIFIVE_CUSTOMIZATION
+
+#ifdef SIFIVE_CUSTOMIZATION
+    return InitEVL ? createFindLastIVReduction(Builder, ReducedPartRdx, RdxDesc,
+                                               InitEVL)
+                   : createFindLastIVReduction(Builder, ReducedPartRdx,
+                                               State.get(getOperand(1), true),
+                                               RdxDesc.getSentinelValue());
+#else
     return createFindLastIVReduction(Builder, ReducedPartRdx,
                                      State.get(getOperand(1), true),
                                      RdxDesc.getSentinelValue());
+#endif // SIFIVE_CUSTOMIZATION
   }
   case VPInstruction::ComputeReductionResult: {
     // FIXME: The cross-recipe dependency on VPReductionPHIRecipe is temporary
@@ -971,73 +1011,11 @@ Value *VPInstruction::generate(VPTransformState &State) {
 
     // Create the reduction after the loop. Note that inloop reductions create
     // the target reduction in the loop using a Reduction recipe.
-<<<<<<< HEAD
-    if ((State.VF.isVector() ||
-         RecurrenceDescriptor::isAnyOfRecurrenceKind(RK)) &&
-        !PhiR->isInLoop()) {
-#if SIFIVE_CUSTOMIZATION
-      Value *InitEVL = nullptr;
-      if (State.Plan->useVLAVectorizer()) {
-        InitEVL = State.get(State.Plan->getInitEVL(), /*NeedsScalar=*/true);
-        assert(InitEVL &&
-               "InitEVL must be initialized in emitIterationCountCheck when "
-               "using VP intrinsic to generate unordered reduction");
-      }
-#endif // SIFIVE_CUSTOMIZATION
-      // TODO: Support in-order reductions based on the recurrence descriptor.
-      // All ops in the reduction inherit fast-math-flags from the recurrence
-      // descriptor.
-      IRBuilderBase::FastMathFlagGuard FMFG(Builder);
-      Builder.setFastMathFlags(RdxDesc.getFastMathFlags());
-
-#if SIFIVE_CUSTOMIZATION
-      if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RK))
-        ReducedPartRdx = InitEVL
-                             ? createAnyOfReduction(Builder, ReducedPartRdx,
-                                                    RdxDesc, OrigPhi, InitEVL)
-                             : createAnyOfReduction(Builder, ReducedPartRdx,
-                                                    RdxDesc, OrigPhi);
-      else if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
-        ReducedPartRdx =
-            InitEVL ? createFindLastIVReduction(Builder, ReducedPartRdx,
-                                                RdxDesc, InitEVL)
-                    : createFindLastIVReduction(Builder, ReducedPartRdx,
-                                                State.get(getOperand(1), true),
-                                                RdxDesc);
-      else
-        ReducedPartRdx =
-            InitEVL
-                ? createSimpleReduction(Builder, ReducedPartRdx, RK, InitEVL)
-                : createSimpleReduction(Builder, ReducedPartRdx, RK);
-
-      // Adjust the final scalar result after the loop if the target prefers
-      // that.
-      // FIXME: Handle situation that the start value and identity are equal.
-      if (PhiR->postFixStartValue()) {
-        IRBuilderBase::FastMathFlagGuard FMFG(Builder);
-        Builder.setFastMathFlags(RdxDesc.getFastMathFlags());
-        Value *StartV = PhiR->getStartValue()->getLiveInIRValue();
-        // Truncate start value if the reduction is performed in a smaller type.
-        if (PhiTy != RdxDesc.getRecurrenceType())
-          StartV = Builder.CreateTrunc(StartV, RdxDesc.getRecurrenceType());
-        ReducedPartRdx =
-            Builder.CreateBinOp((Instruction::BinaryOps)RdxDesc.getOpcode(),
-                                StartV, ReducedPartRdx);
-      }
-#else
-      if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RK))
-        ReducedPartRdx =
-            createAnyOfReduction(Builder, ReducedPartRdx, RdxDesc, OrigPhi);
-      else
-        ReducedPartRdx = createSimpleReduction(Builder, ReducedPartRdx, RK);
-#endif // SIFIVE_CUSTOMIZATION
-=======
     if (State.VF.isVector() && !PhiR->isInLoop()) {
       // TODO: Support in-order reductions based on the recurrence descriptor.
       // All ops in the reduction inherit fast-math-flags from the recurrence
       // descriptor.
       ReducedPartRdx = createSimpleReduction(Builder, ReducedPartRdx, RK);
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 
       // If the reduction can be performed in a smaller type, we need to extend
       // the reduction to the wider type before we branch to the original loop.
@@ -1203,16 +1181,13 @@ Value *VPInstruction::generate(VPTransformState &State) {
 InstructionCost VPInstruction::computeCost(ElementCount VF,
                                            VPCostContext &Ctx) const {
   if (Instruction::isBinaryOp(getOpcode())) {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    // Most of the VPInstruction doesn't have underlying value.
-#else  // SIFIV_CUSTOMIZATION
-=======
     Type *ResTy = Ctx.Types.inferScalarType(this);
     if (!vputils::onlyFirstLaneUsed(this))
       ResTy = toVectorTy(ResTy, VF);
 
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
+#if SIFIVE_CUSTOMIZATION
+    // Most of the VPInstruction doesn't have underlying value.
+#else  // SIFIV_CUSTOMIZATION
     if (!getUnderlyingValue()) {
       switch (getOpcode()) {
       case Instruction::FMul:
@@ -1270,8 +1245,7 @@ InstructionCost VPInstruction::computeCost(ElementCount VF,
           case VPRecipeBase::VPReplicateSC:
             return true;
           case VPRecipeBase::VPInstructionSC:
-            return cast<VPInstruction>(R)->getOpcode() ==
-                   VPInstruction::ResumePhi;
+            return cast<VPInstruction>(R)->getOpcode() == Instruction::PHI;
           }
         }))
       return InstructionCost::getInvalid();
@@ -1650,9 +1624,6 @@ void VPInstructionWithType::print(raw_ostream &O, const Twine &Indent,
 
 void VPPhi::execute(VPTransformState &State) {
   State.setDebugLocFrom(getDebugLoc());
-<<<<<<< HEAD
-  BasicBlock *VectorPH = State.CFG.VPBB2IRBB.at(getIncomingBlock(0));
-  Value *Start = State.get(getIncomingValue(0), VPLane(0));
 #if SIFIVE_CUSTOMIZATION
   // SYNC-UPSTREAM: The widen pointer induction recipe emits IR other than the
   // phi itself in its ::execute, which may cause a following
@@ -1665,13 +1636,6 @@ void VPPhi::execute(VPTransformState &State) {
     State.Builder.SetInsertPoint(
         State.Builder.GetInsertBlock()->getFirstNonPHIIt());
 #endif // SIFIVE_CUSTOMIZATION
-  PHINode *Phi = State.Builder.CreatePHI(Start->getType(), 2, getName());
-  Phi->addIncoming(Start, VectorPH);
-#if SIFIVE_CUSTOMIZATION
-  State.Builder.restoreIP(CurrIP);
-#endif // SIFIVE_CUSTOMIZATION
-  State.set(this, Phi, VPLane(0));
-=======
   PHINode *NewPhi = State.Builder.CreatePHI(
       State.TypeAnalysis.inferScalarType(this), 2, getName());
   unsigned NumIncoming = getNumIncoming();
@@ -1685,8 +1649,10 @@ void VPPhi::execute(VPTransformState &State) {
     BasicBlock *PredBB = State.CFG.VPBB2IRBB.at(getIncomingBlock(Idx));
     NewPhi->addIncoming(IncV, PredBB);
   }
+#if SIFIVE_CUSTOMIZATION
+  State.Builder.restoreIP(CurrIP);
+#endif // SIFIVE_CUSTOMIZATION
   State.set(this, NewPhi, VPLane(0));
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
@@ -5311,78 +5277,7 @@ void VPReductionPHIRecipe::execute(VPTransformState &State) {
   Phi->insertBefore(HeaderBB->getFirstInsertionPt());
   State.set(this, Phi, IsInLoop);
 
-<<<<<<< HEAD
-  BasicBlock *VectorPH =
-      State.CFG.VPBB2IRBB.at(getParent()->getCFGPredecessor(0));
-
-#if SIFIVE_CUSTOMIZATION
-  bool PostSV = postFixStartValue();
-#endif // SIFIVE_CUSTOMIZATION
-
-  Value *Iden = nullptr;
-  RecurKind RK = RdxDesc.getRecurrenceKind();
-  unsigned CurrentPart = getUnrollPart(*this);
-
-  if (RecurrenceDescriptor::isMinMaxRecurrenceKind(RK) ||
-      RecurrenceDescriptor::isAnyOfRecurrenceKind(RK)) {
-    // MinMax and AnyOf reductions have the start value as their identity.
-    if (ScalarPHI) {
-      Iden = StartV;
-    } else {
-      IRBuilderBase::InsertPointGuard IPBuilder(Builder);
-      Builder.SetInsertPoint(VectorPH->getTerminator());
-      StartV = Iden = State.get(StartVPV);
-    }
-  } else if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK)) {
-    // [I|F]FindLastIV will use a sentinel value to initialize the reduction
-    // phi or the resume value from the main vector loop when vectorizing the
-    // epilogue loop. In the exit block, ComputeReductionResult will generate
-    // checks to verify if the reduction result is the sentinel value. If the
-    // result is the sentinel value, it will be corrected back to the start
-    // value.
-    // TODO: The sentinel value is not always necessary. When the start value is
-    // a constant, and smaller than the start value of the induction variable,
-    // the start value can be directly used to initialize the reduction phi.
-    Iden = StartV;
-    if (!ScalarPHI) {
-      IRBuilderBase::InsertPointGuard IPBuilder(Builder);
-      Builder.SetInsertPoint(VectorPH->getTerminator());
-      StartV = Iden = Builder.CreateVectorSplat(State.VF, Iden);
-    }
-  } else {
-    Iden = llvm::getRecurrenceIdentity(RK, VecTy->getScalarType(),
-                                       RdxDesc.getFastMathFlags());
-
-    if (!ScalarPHI) {
-      if (CurrentPart == 0) {
-        // Create start and identity vector values for the reduction in the
-        // preheader.
-        // TODO: Introduce recipes in VPlan preheader to create initial values.
-        Iden = Builder.CreateVectorSplat(VF, Iden);
-#if SIFIVE_CUSTOMIZATION
-        if (PostSV) {
-        StartV = Iden;
-        } else {
-#endif // SIFIVE_CUSTOMIZATION
-        IRBuilderBase::InsertPointGuard IPBuilder(Builder);
-        Builder.SetInsertPoint(VectorPH->getTerminator());
-        Constant *Zero = Builder.getInt32(0);
-        StartV = Builder.CreateInsertElement(Iden, StartV, Zero);
-#if SIFIVE_CUSTOMIZATION
-        }
-#endif // SIFIVE_CUSTOMIZATION
-      } else {
-        Iden = Builder.CreateVectorSplat(VF, Iden);
-      }
-    }
-  }
-
-  Phi = cast<PHINode>(State.get(this, IsInLoop));
-  Value *StartVal = (CurrentPart == 0) ? StartV : Iden;
-  Phi->addIncoming(StartVal, VectorPH);
-=======
   Phi->addIncoming(StartV, VectorPH);
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 }
 
 #if SIFIVE_CUSTOMIZATION
