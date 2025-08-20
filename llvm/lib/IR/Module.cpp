@@ -54,14 +54,11 @@
 
 using namespace llvm;
 
-<<<<<<< HEAD
 extern cl::opt<bool> UseNewDbgInfoFormat;
 
 #if SIFIVE_CUSTOMIZATION
 extern cl::opt<bool> DisableProfMetadata;
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 //===----------------------------------------------------------------------===//
 // Methods to implement the globals and functions lists.
 //
