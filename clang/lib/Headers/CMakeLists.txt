@@ -133,7 +133,6 @@ set(riscv_files
   andes_vector.h
   )
 
-<<<<<<< HEAD
 # SIFIVE_CUSTOMIZATION
 set(rvv_v0p10_compatible_header_file
   rvv_v0p10_compatible/riscv_vector.h
@@ -142,11 +141,9 @@ set(rvv_v0p11_compatible_header_file
   rvv_v0p11_compatible/riscv_vector.h
 )
 #end SIFIVE_CUSTOMIZATION
-=======
 set(spirv_files
   __clang_spirv_builtins.h
   )
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 
 set(systemz_files
   s390intrin.h
