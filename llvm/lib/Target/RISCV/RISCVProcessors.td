@@ -271,18 +271,11 @@ def SIFIVE_U74 : RISCVProcessorModel<"sifive-u74",
                                       FeatureStdExtC],
                                      SiFive7TuneFeatures>;
 
-<<<<<<< HEAD
 #ifndef SIFIVE_CUSTOMIZATION
-defvar SiFiveX280TuneFeatures = !listconcat(SiFive7TuneFeatures,
-                                            [TuneDLenFactor2,
-                                             TuneOptimizedZeroStrideLoad,
-                                             TuneOptimizedNF2SegmentLoadStore]);
-=======
 defvar SiFiveIntelligenceTuneFeatures = !listconcat(SiFive7TuneFeatures,
                                                     [TuneDLenFactor2,
                                                      TuneOptimizedZeroStrideLoad,
                                                      TuneOptimizedNF2SegmentLoadStore]);
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 def SIFIVE_X280 : RISCVProcessorModel<"sifive-x280", SiFive7Model,
                                       [Feature64Bit,
                                        FeatureStdExtI,
