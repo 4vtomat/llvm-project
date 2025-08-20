@@ -99,15 +99,8 @@ def VMConstraint  : RISCVVConstraint<0b100>;
 //
 // * vcompress: The destination vector register group cannot overlap the
 // source vector register group or the source mask register
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
 def WidenVNoMask : RISCVVConstraint<!or(VS2Constraint.Value,
                                         VS1Constraint.Value)>;
-#endif
-=======
-def WidenVNoMask : RISCVVConstraint<!or(VS2Constraint.Value,
-                                        VS1Constraint.Value)>;
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 def WidenV       : RISCVVConstraint<!or(VS2Constraint.Value,
                                         VS1Constraint.Value,
                                         VMConstraint.Value)>;
