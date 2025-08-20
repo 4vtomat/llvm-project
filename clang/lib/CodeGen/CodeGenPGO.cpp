@@ -1538,7 +1538,7 @@ CodeGenFunction::createProfileWeightsForLoop(const Stmt *Cond,
 }
 #if SIFIVE_CUSTOMIZATION
 llvm::MDNode *CodeGenFunction::createProfileCount(uint64_t Count) const {
-  if (!PGO.haveRegionCounts() || !ClEnableProfileCountMetadata)
+  if (!PGO->haveRegionCounts() || !ClEnableProfileCountMetadata)
     return nullptr;
   llvm::MDBuilder MDHelper(CGM.getLLVMContext());
   return MDHelper.createProfileCount(Count);
