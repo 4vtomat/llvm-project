@@ -1379,16 +1379,14 @@ void CodeGenFunction::EmitForStmt(const ForStmt &S,
       BoolCondVal = emitCondLikelihoodViaExpectIntrinsic(
           BoolCondVal, Stmt::getLikelihood(S.getBody()));
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     // Appending Branch_weight, Unpredictable and Profile_count metadata.
-    Builder.CreateCondBr(BoolCondVal, ForBody, ExitBlock, Weights, nullptr,
-                         createProfileCount(getProfileCount(S.getBody())));
+    auto *I =
+        Builder.CreateCondBr(BoolCondVal, ForBody, ExitBlock, Weights, nullptr,
+                             createProfileCount(getProfileCount(S.getBody())));
 #else
-    Builder.CreateCondBr(BoolCondVal, ForBody, ExitBlock, Weights);
-#endif // SIFIVE_CUSTOMIZATION
-=======
     auto *I = Builder.CreateCondBr(BoolCondVal, ForBody, ExitBlock, Weights);
+#endif // SIFIVE_CUSTOMIZATION
     // Key Instructions: Emit the condition and branch as separate atoms to
     // match existing loop stepping behaviour. FIXME: We could have the branch
     // as the backup location for the condition, which would probably be a
@@ -1396,7 +1394,6 @@ void CodeGenFunction::EmitForStmt(const ForStmt &S,
     if (auto *CondI = dyn_cast<llvm::Instruction>(BoolCondVal))
       addInstToNewSourceAtom(CondI, nullptr);
     addInstToNewSourceAtom(I, nullptr);
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 
     if (ExitBlock != LoopExit.getBlock()) {
       EmitBlock(ExitBlock);
@@ -1507,16 +1504,14 @@ CodeGenFunction::EmitCXXForRangeStmt(const CXXForRangeStmt &S,
   if (!Weights && CGM.getCodeGenOpts().OptimizationLevel)
     BoolCondVal = emitCondLikelihoodViaExpectIntrinsic(
         BoolCondVal, Stmt::getLikelihood(S.getBody()));
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Appending Branch_weight, Unpredictable and Profile_count metadata.
-  Builder.CreateCondBr(BoolCondVal, ForBody, ExitBlock, Weights, nullptr,
-                       createProfileCount(getProfileCount(S.getBody())));
+  auto *I =
+      Builder.CreateCondBr(BoolCondVal, ForBody, ExitBlock, Weights, nullptr,
+                           createProfileCount(getProfileCount(S.getBody())));
 #else
-  Builder.CreateCondBr(BoolCondVal, ForBody, ExitBlock, Weights);
-#endif // SIFIVE_CUSTOMIZATION
-=======
   auto *I = Builder.CreateCondBr(BoolCondVal, ForBody, ExitBlock, Weights);
+#endif // SIFIVE_CUSTOMIZATION
   // Key Instructions: Emit the condition and branch as separate atoms to
   // match existing loop stepping behaviour. FIXME: We could have the branch as
   // the backup location for the condition, which would probably be a better
@@ -1524,7 +1519,6 @@ CodeGenFunction::EmitCXXForRangeStmt(const CXXForRangeStmt &S,
   if (auto *CondI = dyn_cast<llvm::Instruction>(BoolCondVal))
     addInstToNewSourceAtom(CondI, nullptr);
   addInstToNewSourceAtom(I, nullptr);
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 
   if (ExitBlock != LoopExit.getBlock()) {
     EmitBlock(ExitBlock);
