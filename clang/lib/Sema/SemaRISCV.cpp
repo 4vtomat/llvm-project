@@ -627,11 +627,15 @@ bool SemaRISCV::CheckBuiltinFunctionCall(const TargetInfo &TI,
     StringRef FeaturesStr = A->getFeaturesStr();
     llvm::SmallVector<StringRef> RequiredFeatures;
     FeaturesStr.split(RequiredFeatures, ',');
-    for (auto RF : RequiredFeatures)
+#ifdef SIFIVE_CUSTOMIZATION
+    for (auto RF : RequiredFeatures) {
+      if (RF.starts_with("zvfbfmin_xsfvfbfa") && (TI.hasFeature("zvfbfmin") || TI.hasFeature("xsfvfbfa"))) continue;
       if (!TI.hasFeature(RF) && !FunctionFeatureMap.lookup(RF))
         return Diag(TheCall->getBeginLoc(),
                     diag::err_riscv_builtin_requires_extension)
                << /* IsExtension */ true << TheCall->getSourceRange() << RF;
+    }
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   // vmulh.vv, vmulh.vx, vmulhu.vv, vmulhu.vx, vmulhsu.vv, vmulhsu.vx,

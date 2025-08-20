@@ -151,7 +151,7 @@ multiclass RVVIndexedLoad<string op> {
         let Name = op # eew # "_v", IRName = op, MaskedIRName = op # "_mask",
             RequiredFeatures = !if(!eq(type, "x"), ["zvfhmin"],
 #ifdef SIFIVE_CUSTOMIZATION
-                                   !if(!eq(type, "y"), ["zvfbfmin_Xsfvfbfa"],
+                                   !if(!eq(type, "y"), ["zvfbfmin_xsfvfbfa"],
 #endif // SIFIVE_CUSTOMIZATION
                                                    []<string>)) in {
           def: RVVOutOp0Op1Builtin<"v", "vPCe" # eew_type # "Uv", type>;
@@ -165,7 +165,7 @@ multiclass RVVIndexedLoad<string op> {
       let Name = op # eew64 # "_v", IRName = op, MaskedIRName = op # "_mask",
           RequiredFeatures = !if(!eq(type, "x"), ["zvfhmin", "64bit"],
 #ifdef SIFIVE_CUSTOMIZATION
-                                 !if(!eq(type, "y"), ["zvfbfmin_Xsfvfbfa", "64bit"],
+                                 !if(!eq(type, "y"), ["zvfbfmin_xsfvfbfa", "64bit"],
 #endif // SIFIVE_CUSTOMIZATION
                                                  ["64bit"])) in {
           def: RVVOutOp0Op1Builtin<"v", "vPCe" # eew64_type # "Uv", type>;
@@ -310,7 +310,7 @@ multiclass RVVIndexedStore<string op> {
           let Name = op # eew  # "_v", IRName = op, MaskedIRName = op # "_mask",
           RequiredFeatures = !if(!eq(type, "x"), ["zvfhmin"],
 #ifdef SIFIVE_CUSTOMIZATION
-                                 !if(!eq(type, "y"), ["zvfbfmin_Xsfvfbfa"],
+                                 !if(!eq(type, "y"), ["zvfbfmin_xsfvfbfa"],
 #endif // SIFIVE_CUSTOMIZATION
                                                  []<string>)) in  {
             def : RVVBuiltin<"v", "0Pe" # eew_type # "Uvv", type>;
@@ -324,7 +324,7 @@ multiclass RVVIndexedStore<string op> {
         let Name = op # eew64  # "_v", IRName = op, MaskedIRName = op # "_mask",
             RequiredFeatures = !if(!eq(type, "x"), ["zvfhmin", "64bit"],
 #ifdef SIFIVE_CUSTOMIZATION
-                                   !if(!eq(type, "y"), ["zvfbfmin_Xsfvfbfa", "64bit"],
+                                   !if(!eq(type, "y"), ["zvfbfmin_xsfvfbfa", "64bit"],
 #endif // SIFIVE_CUSTOMIZATION
                                                    ["64bit"])) in  {
           def : RVVBuiltin<"v", "0Pe" # eew64_type # "Uvv", type>;
@@ -455,7 +455,7 @@ multiclass RVVNonTupleVCreateBuiltin<int dst_lmul, list<int> src_lmul_list> {
                                                  dst_v # src_s,
                                                  "x", dst_v>;
 #ifdef SIFIVE_CUSTOMIZATION
-    let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
+    let RequiredFeatures = ["zvfbfmin_xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
       def vcreate_bf16 # src_v # dst_v : RVVBuiltin<src_v # dst_v,
                                                     dst_v # src_s,
@@ -832,7 +832,7 @@ defm vle16: RVVVLEBuiltin<["s"]>;
 let Name = "vle16_v", RequiredFeatures = ["zvfhmin"] in
   defm vle16_h: RVVVLEBuiltin<["x"]>;
 #ifdef SIFIVE_CUSTOMIZATION
-let Name = "vle16_v", RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
+let Name = "vle16_v", RequiredFeatures = ["zvfbfmin_xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
   defm vle16_bf16 : RVVVLEBuiltin<["y"]>;
 defm vle32: RVVVLEBuiltin<["i","f"]>;
@@ -844,7 +844,7 @@ defm vse16: RVVVSEBuiltin<["s"]>;
 let Name = "vse16_v", RequiredFeatures = ["zvfhmin"] in
   defm vse16_h: RVVVSEBuiltin<["x"]>;
 #ifdef SIFIVE_CUSTOMIZATION
-let Name = "vse16_v", RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
+let Name = "vse16_v", RequiredFeatures = ["zvfbfmin_xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
   defm vse16_bf16: RVVVSEBuiltin<["y"]>;
 defm vse32: RVVVSEBuiltin<["i","f"]>;
@@ -856,7 +856,7 @@ defm vlse16: RVVVLSEBuiltin<["s"]>;
 let Name = "vlse16_v", RequiredFeatures = ["zvfhmin"] in
   defm vlse16_h: RVVVLSEBuiltin<["x"]>;
 #ifdef SIFIVE_CUSTOMIZATION
-let Name = "vlse16_v", RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
+let Name = "vlse16_v", RequiredFeatures = ["zvfbfmin_xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
   defm vlse16_bf16: RVVVLSEBuiltin<["y"]>;
 defm vlse32: RVVVLSEBuiltin<["i","f"]>;
@@ -867,7 +867,7 @@ defm vsse16: RVVVSSEBuiltin<["s"]>;
 let Name = "vsse16_v", RequiredFeatures = ["zvfhmin"] in
   defm vsse16_h: RVVVSSEBuiltin<["x"]>;
 #ifdef SIFIVE_CUSTOMIZATION
-let Name = "vsse16_v", RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
+let Name = "vsse16_v", RequiredFeatures = ["zvfbfmin_xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
   defm vsse16_bf: RVVVSSEBuiltin<["y"]>;
 defm vsse32: RVVVSSEBuiltin<["i","f"]>;
@@ -886,7 +886,7 @@ defm vle16ff: RVVVLEFFBuiltin<["s"]>;
 let Name = "vle16ff_v", RequiredFeatures = ["zvfhmin"] in
   defm vle16ff: RVVVLEFFBuiltin<["x"]>;
 #ifdef SIFIVE_CUSTOMIZATION
-let Name = "vle16ff_v", RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
+let Name = "vle16ff_v", RequiredFeatures = ["zvfbfmin_xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
   defm vle16ff: RVVVLEFFBuiltin<["y"]>;
 defm vle32ff: RVVVLEFFBuiltin<["i", "f"]>;
@@ -909,7 +909,7 @@ multiclass RVVUnitStridedSegLoadTuple<string op> {
             NF = nf,
             RequiredFeatures = !if(!eq(type, "x"), ["zvfhmin"],
 #ifdef SIFIVE_CUSTOMIZATION
-                                   !if(!eq(type, "y"), ["zvfbfmin_Xsfvfbfa"],
+                                   !if(!eq(type, "y"), ["zvfbfmin_xsfvfbfa"],
 #endif // SIFIVE_CUSTOMIZATION
                                                    []<string>)),
             ManualCodegen = [{
@@ -1085,7 +1085,7 @@ multiclass RVVUnitStridedSegStoreTuple<string op> {
           HasMaskedOffOperand = false,
           RequiredFeatures = !if(!eq(type, "x"), ["zvfhmin"],
 #ifdef SIFIVE_CUSTOMIZATION
-                                 !if(!eq(type, "y"), ["zvfbfmin_Xsfvfbfa"],
+                                 !if(!eq(type, "y"), ["zvfbfmin_xsfvfbfa"],
 #endif // SIFIVE_CUSTOMIZATION
                                                  []<string>)),
           ManualCodegen = [{
@@ -1211,7 +1211,7 @@ multiclass RVVUnitStridedSegLoadFFTuple<string op> {
             NF = nf,
             RequiredFeatures = !if(!eq(type, "x"), ["zvfhmin"],
 #ifdef SIFIVE_CUSTOMIZATION
-                                   !if(!eq(type, "y"), ["zvfbfmin_Xsfvfbfa"],
+                                   !if(!eq(type, "y"), ["zvfbfmin_xsfvfbfa"],
 #endif // SIFIVE_CUSTOMIZATION
                                                    []<string>)),
             ManualCodegen = [{
@@ -1401,7 +1401,7 @@ multiclass RVVStridedSegLoadTuple<string op> {
             NF = nf,
             RequiredFeatures = !if(!eq(type, "x"), ["zvfhmin"],
 #ifdef SIFIVE_CUSTOMIZATION
-                                   !if(!eq(type, "y"), ["zvfbfmin_Xsfvfbfa"],
+                                   !if(!eq(type, "y"), ["zvfbfmin_xsfvfbfa"],
 #endif // SIFIVE_CUSTOMIZATION
                                                    []<string>)),
             ManualCodegen = [{
@@ -1581,7 +1581,7 @@ multiclass RVVStridedSegStoreTuple<string op> {
             MaskedPolicyScheme = NonePolicy,
             RequiredFeatures = !if(!eq(type, "x"), ["zvfhmin"],
 #ifdef SIFIVE_CUSTOMIZATION
-                                   !if(!eq(type, "y"), ["zvfbfmin_Xsfvfbfa"],
+                                   !if(!eq(type, "y"), ["zvfbfmin_xsfvfbfa"],
 #endif // SIFIVE_CUSTOMIZATION
                                                    []<string>)),
             ManualCodegen = [{
@@ -1704,7 +1704,7 @@ multiclass RVVIndexedSegLoadTuple<string op> {
             NF = nf,
             RequiredFeatures = !if(!eq(type, "x"), ["zvfhmin"],
 #ifdef SIFIVE_CUSTOMIZATION
-                                   !if(!eq(type, "y"), ["zvfbfmin_Xsfvfbfa"],
+                                   !if(!eq(type, "y"), ["zvfbfmin_xsfvfbfa"],
 #endif // SIFIVE_CUSTOMIZATION
                                                    []<string>)),
             ManualCodegen = [{
@@ -1884,7 +1884,7 @@ multiclass RVVIndexedSegStoreTuple<string op> {
             MaskedPolicyScheme = NonePolicy,
             RequiredFeatures = !if(!eq(type, "x"), ["zvfhmin"],
 #ifdef SIFIVE_CUSTOMIZATION
-                                   !if(!eq(type, "y"), ["zvfbfmin_Xsfvfbfa"],
+                                   !if(!eq(type, "y"), ["zvfbfmin_xsfvfbfa"],
 #endif // SIFIVE_CUSTOMIZATION
                                                    []<string>)),
             ManualCodegen = [{
@@ -2215,7 +2215,7 @@ let HasMasked = false,
       defm vmv_v : RVVOutBuiltinSet<"vmv_v_v", "x",
                                     [["v", "v", "vv"]]>;
 #ifdef SIFIVE_CUSTOMIZATION
-      let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
+      let RequiredFeatures = ["zvfbfmin_xsfvfbfa"] in
 #else
       let RequiredFeatures = ["zvfbfmin"] in
 #endif // SIFIVE_CUSTOMIZATION
@@ -2411,7 +2411,7 @@ let ManualCodegen = [{
     defm vfdiv  : RVVFloatingBinBuiltinSetRoundingMode;
     defm vfrdiv : RVVFloatingBinVFBuiltinSetRoundingMode;
 #ifdef SIFIVE_CUSTOMIZATION
-    let RequiredFeatures = ["Xsfvfbfa"] in {
+    let RequiredFeatures = ["xsfvfbfa"] in {
       let Name = "vfadd_vv" in 
         defm : RVVOutOp1BuiltinSet<"vfadd", "y", [["", "v", "vvvu"]]>;
       let Name = "vfadd_vf" in 
@@ -2452,7 +2452,7 @@ let ManualCodegen = [{
   defm vfdiv  : RVVFloatingBinBuiltinSet;
   defm vfrdiv : RVVFloatingBinVFBuiltinSet;
 #ifdef SIFIVE_CUSTOMIZATION
-  let RequiredFeatures = ["Xsfvfbfa"] in {
+  let RequiredFeatures = ["xsfvfbfa"] in {
     let Name = "vfadd_vv" in 
       defm : RVVOutOp1BuiltinSet<"vfadd", "y", [["", "v", "vvv"]]>;
     let Name = "vfadd_vf" in 
@@ -2541,7 +2541,7 @@ let ManualCodegen = [{
                                               ["vf", "w", "wveu"]]>;
     }
 #ifdef SIFIVE_CUSTOMIZATION
-    let RequiredFeatures = ["Xsfvfbfa"] in {
+    let RequiredFeatures = ["xsfvfbfa"] in {
       let Name = "vfwadd_vv", OverloadedName = "vfwadd_vv" in
         defm : RVVWidenBuiltinSet<"vfwadd", "y", [["", "v", "wvvu"]]>;
       let Name = "vfwadd_vf", OverloadedName = "vfwadd_vf" in
@@ -2575,7 +2575,7 @@ let ManualCodegen = [{
                                             ["vf", "w", "wve"]]>;
   }
 #ifdef SIFIVE_CUSTOMIZATION
-  let RequiredFeatures = ["Xsfvfbfa"] in {
+  let RequiredFeatures = ["xsfvfbfa"] in {
     let Name = "vfwadd_vv", OverloadedName = "vfwadd_vv" in
       defm : RVVWidenBuiltinSet<"vfwadd", "y", [["", "v", "wvv"]]>;
     let Name = "vfwadd_vf", OverloadedName = "vfwadd_vf" in
@@ -2645,7 +2645,7 @@ let ManualCodegen = [{
     defm vfmsub  : RVVFloatingTerBuiltinSetRoundingMode;
     defm vfnmsub : RVVFloatingTerBuiltinSetRoundingMode;
 #ifdef SIFIVE_CUSTOMIZATION
-    let RequiredFeatures = ["Xsfvfbfa"], HasMaskedOffOperand = false in {
+    let RequiredFeatures = ["xsfvfbfa"], HasMaskedOffOperand = false in {
       let Name = "vfmacc_vv" in
         defm : RVVOutOp1BuiltinSet<"vfmacc", "y", [["", "v", "vvvvu"]]>;
       let Name = "vfmacc_vf" in
@@ -2691,7 +2691,7 @@ let ManualCodegen = [{
   defm vfmsub  : RVVFloatingTerBuiltinSet;
   defm vfnmsub : RVVFloatingTerBuiltinSet;
 #ifdef SIFIVE_CUSTOMIZATION
-  let RequiredFeatures = ["Xsfvfbfa"], HasMaskedOffOperand = false in {
+  let RequiredFeatures = ["xsfvfbfa"], HasMaskedOffOperand = false in {
     let Name = "vfmacc_vv" in
       defm : RVVOutOp1BuiltinSet<"vfmacc", "y", [["", "v", "vvvv"]]>;
     let Name = "vfmacc_vf" in
@@ -2780,7 +2780,7 @@ let ManualCodegen = [{
                                               [["vv", "Fw", "FwFwvvu"],
                                                ["vf", "Fw", "FwFwevu"]]>;
 #ifdef SIFIVE_CUSTOMIZATION
-    let RequiredFeatures = ["Xsfvfbfa"],
+    let RequiredFeatures = ["xsfvfbfa"],
         HasMaskedOffOperand = false,
         Log2LMUL = [-2, -1, 0, 1, 2] in {
       let Name = "vfwmacc_vv" in
@@ -2816,7 +2816,7 @@ let ManualCodegen = [{
                                             [["vv", "Fw", "FwFwvv"],
                                              ["vf", "Fw", "FwFwev"]]>;
 #ifdef SIFIVE_CUSTOMIZATION
-    let RequiredFeatures = ["Xsfvfbfa"],
+    let RequiredFeatures = ["xsfvfbfa"],
         HasMaskedOffOperand = false,
         Log2LMUL = [-2, -1, 0, 1, 2] in {
       let Name = "vfwmacc_vv" in
@@ -2896,7 +2896,7 @@ let ManualCodegen = [{
     let RequiredFeatures = ["zvfh"] in
       defm vfrec7 : RVVOutBuiltinSet<"vfrec7", "x", [["v", "v", "vvu"]]>;
 #ifdef SIFIVE_CUSTOMIZATION
-    let RequiredFeatures = ["Xsfvfbfa"], Name = "vfrec7_v" in
+    let RequiredFeatures = ["xsfvfbfa"], Name = "vfrec7_v" in
       defm : RVVOutBuiltinSet<"vfrec7", "y", [["", "v", "vvu"]]>;
 #endif // SIFIVE_CUSTOMIZATION
   }
@@ -2910,7 +2910,7 @@ let ManualCodegen = [{
   let RequiredFeatures = ["zvfh"] in
     defm vfrec7 : RVVOutBuiltinSet<"vfrec7", "x", [["v", "v", "vv"]]>;
 #ifdef SIFIVE_CUSTOMIZATION
-  let RequiredFeatures = ["Xsfvfbfa"], Name = "vfrec7_v" in
+  let RequiredFeatures = ["xsfvfbfa"], Name = "vfrec7_v" in
     defm : RVVOutBuiltinSet<"vfrec7", "y", [["", "v", "vv"]]>;
 #endif // SIFIVE_CUSTOMIZATION
 }
@@ -2920,7 +2920,7 @@ defm vfrsqrt7 : RVVOutBuiltinSet<"vfrsqrt7", "fd", [["v", "v", "vv"]]>;
 let RequiredFeatures = ["zvfh"] in
   defm vfrsqrt7 : RVVOutBuiltinSet<"vfrsqrt7", "x", [["v", "v", "vv"]]>;
 #ifdef SIFIVE_CUSTOMIZATION
-  let RequiredFeatures = ["Xsfvfbfa"], Name = "vfrsqrt7_v" in
+  let RequiredFeatures = ["xsfvfbfa"], Name = "vfrsqrt7_v" in
     defm : RVVOutBuiltinSet<"vfrsqrt7", "y", [["", "v", "vv"]]>;
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -2928,7 +2928,7 @@ let RequiredFeatures = ["zvfh"] in
 defm vfmin : RVVFloatingBinBuiltinSet;
 defm vfmax : RVVFloatingBinBuiltinSet;
 #ifdef SIFIVE_CUSTOMIZATION
-let RequiredFeatures = ["Xsfvfbfa"] in {
+let RequiredFeatures = ["xsfvfbfa"] in {
   let Name = "vfmin_vv" in
     defm : RVVOutOp1BuiltinSet<"vfmin", "y", [["", "v", "vvv"]]>;
   let Name = "vfmin_vf" in
@@ -2945,7 +2945,7 @@ defm vfsgnj  : RVVFloatingBinBuiltinSet;
 defm vfsgnjn : RVVFloatingBinBuiltinSet;
 defm vfsgnjx : RVVFloatingBinBuiltinSet;
 #ifdef SIFIVE_CUSTOMIZATION
-let RequiredFeatures = ["Xsfvfbfa"] in {
+let RequiredFeatures = ["xsfvfbfa"] in {
   let Name = "vfsgnj_vv" in
     defm : RVVOutOp1BuiltinSet<"vfsgnj", "y", [["", "v", "vvv"]]>;
   let Name = "vfsgnj_vf" in
@@ -2965,14 +2965,14 @@ defm vfneg_v : RVVPseudoVFUnaryBuiltin<"vfsgnjn", "fd">;
 let RequiredFeatures = ["zvfh"] in
   defm vfneg_v : RVVPseudoVFUnaryBuiltin<"vfsgnjn", "x">;
 #ifdef SIFIVE_CUSTOMIZATION
-let RequiredFeatures = ["Xsfvfbfa"] in
+let RequiredFeatures = ["xsfvfbfa"] in
   defm vfneg_v : RVVPseudoVFUnaryBuiltin<"vfsgnjn", "y">;
 #endif
 defm vfabs_v : RVVPseudoVFUnaryBuiltin<"vfsgnjx", "fd">;
 let RequiredFeatures = ["zvfh"] in
   defm vfabs_v : RVVPseudoVFUnaryBuiltin<"vfsgnjx", "x">;
 #ifdef SIFIVE_CUSTOMIZATION
-let RequiredFeatures = ["Xsfvfbfa"] in
+let RequiredFeatures = ["xsfvfbfa"] in
   defm vfabs_v : RVVPseudoVFUnaryBuiltin<"vfsgnjx", "y">;
 #endif
 
@@ -2986,7 +2986,7 @@ defm vmfle : RVVFloatingMaskOutBuiltinSet;
 defm vmfgt : RVVFloatingMaskOutBuiltinSet;
 defm vmfge : RVVFloatingMaskOutBuiltinSet;
 #ifdef SIFIVE_CUSTOMIZATION
-let RequiredFeatures = ["Xsfvfbfa"] in {
+let RequiredFeatures = ["xsfvfbfa"] in {
   let Name = "vmfeq_vv" in
     defm : RVVOp0Op1BuiltinSet<"vmfeq", "y", [["", "vm", "mvv"]]>;
   let Name = "vmfeq_vf" in
@@ -3021,7 +3021,7 @@ defm vfclass : RVVOp0BuiltinSet<"vfclass", "fd", [["v", "Uv", "Uvv"]]>;
 let RequiredFeatures = ["zvfh"] in
   defm vfclass : RVVOp0BuiltinSet<"vfclass", "x", [["v", "Uv", "Uvv"]]>;
 #ifdef SIFIVE_CUSTOMIZATION
-let Name = "vfclass_v", RequiredFeatures = ["Xsfvfbfa"],
+let Name = "vfclass_v", RequiredFeatures = ["xsfvfbfa"],
     IRName = "vfclass",
     MaskedIRName = "vfclass_mask" in
   def : RVVOp0Builtin<"UvYv", "Uvv", "y">;
@@ -3045,7 +3045,7 @@ let HasMasked = false,
     defm vmerge : RVVOutOp1BuiltinSet<"vmerge", "x",
                                       [["vvm", "v", "vvvm"]]>;
 #ifdef SIFIVE_CUSTOMIZATION
-      let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
+      let RequiredFeatures = ["zvfbfmin_xsfvfbfa"] in
 #else
       let RequiredFeatures = ["zvfbfmin"] in
 #endif // SIFIVE_CUSTOMIZATION
@@ -3057,7 +3057,7 @@ let HasMasked = false,
     defm vfmerge : RVVOutOp1BuiltinSet<"vfmerge", "x",
                                        [["vfm", "v", "vvem"]]>;
 #ifdef SIFIVE_CUSTOMIZATION
-  let RequiredFeatures = ["Xsfvfbfa"], Name = "vfmerge_vfm" in
+  let RequiredFeatures = ["xsfvfbfa"], Name = "vfmerge_vfm" in
     defm : RVVOutOp1BuiltinSet<"vfmerge", "y", [["", "v", "vvem"]]>;
 #endif // SIFIVE_CUSTOMIZATION
 }
@@ -3074,7 +3074,7 @@ let HasMasked = false,
     defm vfmv_v : RVVOutBuiltinSet<"vfmv_v_f", "x",
                                    [["f", "v", "ve"]]>;
 #ifdef SIFIVE_CUSTOMIZATION
-  let RequiredFeatures = ["Xsfvfbfa"], Name = "vfmv_v_f" in
+  let RequiredFeatures = ["xsfvfbfa"], Name = "vfmv_v_f" in
     defm : RVVOutBuiltinSet<"vfmv_v_f", "y", [["", "v", "ve"]]>;
 #endif // SIFIVE_CUSTOMIZATION
 }
@@ -3118,7 +3118,7 @@ let Log2LMUL = [-3, -2, -1, 0, 1, 2] in {
       defm : RVVConvBuiltinSet<"vfwcvt_f_f_v", "x", [["w", "wv"]]>;
   }
 #ifdef SIFIVE_CUSTOMIZATION
-  let RequiredFeatures = ["Xsfvfbfa"] in {
+  let RequiredFeatures = ["xsfvfbfa"] in {
     let Name = "vfwcvt_f_f_v",
         IRName = "vfwcvt_f_f_v",
         MaskedIRName = "vfwcvt_f_f_v_mask" in
@@ -3153,7 +3153,7 @@ let Log2LMUL = [-3, -2, -1, 0, 1, 2] in {
       defm : RVVConvBuiltinSet<"vfncvt_rod_f_f_w", "x", [["v", "vw"]]>;
   }
 #ifdef SIFIVE_CUSTOMIZATION
-  let RequiredFeatures = ["Xsfvfbfa"] in {
+  let RequiredFeatures = ["xsfvfbfa"] in {
     let Name = "vfncvt_rtz_xu_f_w",
         IRName = "vfncvt_rtz_xu_f_w",
         MaskedIRName = "vfncvt_rtz_xu_f_w_mask" in
@@ -3259,7 +3259,7 @@ let ManualCodegen = [{
           defm : RVVConvBuiltinSet<"vfncvt_x_f_w", "c", [["Iv", "IvFwu"]]>;
       }
 #ifdef SIFIVE_CUSTOMIZATION
-      let RequiredFeatures = ["Xsfvfbfa"] in {
+      let RequiredFeatures = ["xsfvfbfa"] in {
         let OverloadedName = "vfncvt_x" in
           defm : RVVConvBuiltinSet<"vfncvt_x_f_w", "c", [["Yw", "IvYwu"]]>;
         let OverloadedName = "vfncvt_xu" in
@@ -3285,7 +3285,7 @@ let ManualCodegen = [{
           defm : RVVConvBuiltinSet<"vfncvt_f_f_w", "x", [["v", "vwu"]]>;
       }
 #ifdef SIFIVE_CUSTOMIZATION
-      let RequiredFeatures = ["Xsfvfbfa"], Name = "vfncvt_bf_f_w", OverloadedName = "vfncvt_bf" in
+      let RequiredFeatures = ["xsfvfbfa"], Name = "vfncvt_bf_f_w", OverloadedName = "vfncvt_bf" in
         defm : RVVConvBuiltinSet<"vfncvt_f_f_w", "y", [["v", "vwu"]]>;
 #endif // SIFIVE_CUSTOMIZATION
     }
@@ -3337,7 +3337,7 @@ let ManualCodegen = [{
         defm : RVVConvBuiltinSet<"vfncvt_x_f_w", "c", [["Iv", "IvFw"]]>;
     }
 #ifdef SIFIVE_CUSTOMIZATION
-    let RequiredFeatures = ["Xsfvfbfa"] in {
+    let RequiredFeatures = ["xsfvfbfa"] in {
       let OverloadedName = "vfncvt_x" in
         defm : RVVConvBuiltinSet<"vfncvt_x_f_w", "c", [["Yw", "IvYw"]]>;
       let OverloadedName = "vfncvt_xu" in
@@ -3363,7 +3363,7 @@ let ManualCodegen = [{
         defm : RVVConvBuiltinSet<"vfncvt_f_f_w", "x", [["v", "vw"]]>;
     }
 #ifdef SIFIVE_CUSTOMIZATION
-    let RequiredFeatures = ["Xsfvfbfa"], Name = "vfncvt_bf_f_w", OverloadedName = "vfncvt_bf" in
+    let RequiredFeatures = ["xsfvfbfa"], Name = "vfncvt_bf_f_w", OverloadedName = "vfncvt_bf" in
       defm : RVVConvBuiltinSet<"vfncvt_f_f_w", "y", [["v", "vw"]]>;
 #endif // SIFIVE_CUSTOMIZATION
   }
@@ -3543,7 +3543,7 @@ let HasMasked = false, MaskedPolicyScheme = NonePolicy in {
                                       ["x", "Uv", "UvUe"]]>;
   }
 #ifdef SIFIVE_CUSTOMIZATION
-  let RequiredFeatures = ["Xsfvfbfa"] in {
+  let RequiredFeatures = ["xsfvfbfa"] in {
     let Name = "vfmv_f_s", HasVL = false, OverloadedName = "vfmv_f" in
       defm : RVVOp0BuiltinSet<"vfmv_f_s", "y", [["", "ve", "ev"]]>;
     let Name = "vfmv_s_f",
@@ -3571,7 +3571,7 @@ defm vslide1down : RVVSlideOneBuiltinSet;
 defm vfslide1down : RVVFloatingBinVFBuiltinSet;
 
 #ifdef SIFIVE_CUSTOMIZATION
-let RequiredFeatures = ["Xsfvfbfa"] in {
+let RequiredFeatures = ["xsfvfbfa"] in {
   let Name = "vfslide1up_vf" in
     defm : RVVOutOp1BuiltinSet<"vfslide1up", "y", [["", "v", "vve"]]>;
   let Name = "vfslide1down_vf" in
@@ -3592,7 +3592,7 @@ let RequiredFeatures = ["zvfhmin"] in {
                                    [["vx", "v", "vvz"]]>;
 }
 #ifdef SIFIVE_CUSTOMIZATION
-      let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in {
+      let RequiredFeatures = ["zvfbfmin_xsfvfbfa"] in {
 #else
       let RequiredFeatures = ["zvfbfmin"] in {
 #endif // SIFIVE_CUSTOMIZATION
@@ -3689,7 +3689,7 @@ let HasMasked = false, HasVL = false, IRName = "" in {
       def vreinterpret_h_u : RVVBuiltin<"UvFv", "FvUv", "s", "Fv">;
     }
 #ifdef SIFIVE_CUSTOMIZATION
-    let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in {
+    let RequiredFeatures = ["zvfbfmin_xsfvfbfa"] in {
 #endif // SIFIVE_CUSTOMIZATION
       def vreinterpret_i_bf16 : RVVBuiltin<"vIv", "Ivv", "y", "Iv">;
       def vreinterpret_u_bf16 : RVVBuiltin<"vUv", "Uvv", "y", "Uv">;
@@ -3763,7 +3763,7 @@ let HasMasked = false, HasVL = false, IRName = "" in {
     let RequiredFeatures = ["zvfhmin"] in
       def vundefined_h : RVVBuiltin<"v", "v", "x">;
 #ifdef SIFIVE_CUSTOMIZATION
-    let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
+    let RequiredFeatures = ["zvfbfmin_xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
       def vundefined_bf16 : RVVBuiltin<"v", "v", "y">;
     def vundefined_u : RVVBuiltin<"Uv", "Uv", "csil">;
@@ -3775,7 +3775,7 @@ let HasMasked = false, HasVL = false, IRName = "" in {
         let RequiredFeatures = ["zvfhmin"] in
           def : RVVBuiltin<T # "v", T # "v", "x">;
 #ifdef SIFIVE_CUSTOMIZATION
-        let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
+        let RequiredFeatures = ["zvfbfmin_xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
           def : RVVBuiltin<T # "v", T # "v", "y">;
         def : RVVBuiltin<T # "Uv", T # "Uv", "csil">;
@@ -3800,7 +3800,7 @@ let HasMasked = false, HasVL = false, IRName = "" in {
         def vlmul_trunc_h # dst_lmul : RVVBuiltin<"v" # dst_lmul # "v",
                                                   dst_lmul # "vv", "x", dst_lmul # "v">;
 #ifdef SIFIVE_CUSTOMIZATION
-      let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
+      let RequiredFeatures = ["zvfbfmin_xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
         def vlmul_trunc_bf16 # dst_lmul : RVVBuiltin<"v" # dst_lmul # "v",
                                                      dst_lmul # "vv", "y", dst_lmul # "v">;
@@ -3826,7 +3826,7 @@ let HasMasked = false, HasVL = false, IRName = "" in {
         def vlmul_ext_h # dst_lmul : RVVBuiltin<"v" # dst_lmul # "v",
                                                 dst_lmul # "vv", "x", dst_lmul # "v">;
 #ifdef SIFIVE_CUSTOMIZATION
-      let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
+      let RequiredFeatures = ["zvfbfmin_xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
         def vlmul_ext_bf16 # dst_lmul : RVVBuiltin<"v" # dst_lmul # "v",
                                                    dst_lmul # "vv", "y", dst_lmul # "v">;
@@ -3862,7 +3862,7 @@ let HasMasked = false, HasVL = false, IRName = "" in {
       let RequiredFeatures = ["zvfhmin"] in
         def : RVVBuiltin<"v" # dst_lmul # "v", dst_lmul # "vvKz", "x", dst_lmul # "v">;
 #ifdef SIFIVE_CUSTOMIZATION
-      let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
+      let RequiredFeatures = ["zvfbfmin_xsfvfbfa"] in
 #else
       let RequiredFeatures = ["zvfbfmin"] in
 #endif // SIFIVE_CUSTOMIZATION
@@ -3875,7 +3875,7 @@ let HasMasked = false, HasVL = false, IRName = "" in {
       let RequiredFeatures = ["zvfhmin"] in
         def : RVVBuiltin<T # "vv", "v" # T # "vKz", "x", "v">;
 #ifdef SIFIVE_CUSTOMIZATION
-      let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
+      let RequiredFeatures = ["zvfbfmin_xsfvfbfa"] in
 #else
       let RequiredFeatures = ["zvfbfmin"] in
 #endif // SIFIVE_CUSTOMIZATION
@@ -3911,7 +3911,7 @@ let HasMasked = false, HasVL = false, IRName = "" in {
       let RequiredFeatures = ["zvfhmin"] in
         def : RVVBuiltin<"v" # dst_lmul # "v", dst_lmul # "v" # dst_lmul # "vKzv", "x">;
 #ifdef SIFIVE_CUSTOMIZATION
-      let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
+      let RequiredFeatures = ["zvfbfmin_xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
         def : RVVBuiltin<"v" # dst_lmul # "v", dst_lmul # "v" # dst_lmul # "vKzv", "y">;
       def : RVVBuiltin<"Uv" # dst_lmul # "Uv", dst_lmul # "Uv" # dst_lmul #"UvKzUv", "csil">;
@@ -3922,7 +3922,7 @@ let HasMasked = false, HasVL = false, IRName = "" in {
       let RequiredFeatures = ["zvfhmin"] in
         def : RVVBuiltin<"v" # T # "v", T # "v" # T # "vKzv", "x">;
 #ifdef SIFIVE_CUSTOMIZATION
-      let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
+      let RequiredFeatures = ["zvfbfmin_xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
         def : RVVBuiltin<"v" # T # "v", T # "v" # T # "vKzv", "y">;
       def : RVVBuiltin<"Uv" # T # "Uv", T # "Uv" # T # "UvKzUv", "csil">;
@@ -3973,7 +3973,7 @@ let HasMasked = false, HasVL = false, IRName = "" in {
         let RequiredFeatures = ["zvfhmin"] in
           def : RVVBuiltin<T # "v", T # "v" # V, "x">;
 #ifdef SIFIVE_CUSTOMIZATION
-        let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
+        let RequiredFeatures = ["zvfbfmin_xsfvfbfa"] in
 #else
         let RequiredFeatures = ["zvfbfmin"] in
 #endif // SIFIVE_CUSTOMIZATION
@@ -4114,7 +4114,7 @@ let IntrinsicTypes = [-1] in
   def vgetvxrm : RVVBuiltin<"", "z", "i">;
 }
 
-let RequiredFeatures = ["Xsfvfhbfmin"], UnMaskedPolicyScheme = HasPassthruOperand,
+let RequiredFeatures = ["xsfvfhbfmin"], UnMaskedPolicyScheme = HasPassthruOperand,
     Log2LMUL = [-3, -2, -1, 0, 1, 2] in {
   def sf_vfwcvt_f_bf16_v : RVVConvBuiltin<"w", "wv", "y", "sf_vfwcvt_f">;
   def sf_vfncvt_bf16_f_w : RVVConvBuiltin<"v", "vw", "y", "sf_vfncvt_bf16">;

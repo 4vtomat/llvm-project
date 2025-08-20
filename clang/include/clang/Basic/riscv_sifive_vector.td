@@ -227,7 +227,7 @@ let ManualCodegen = [{
 #ifdef SIFIVE_CUSTOMIZATION
 // Only SEW=32 is defined for Xsfvqdotq so far, and since inputs are in fact
 // four 8-bit integer bundles, we use unsigned type to represent all of them
-let RequiredFeatures = ["Xsfvqdotq"] in {
+let RequiredFeatures = ["xsfvqdotq"] in {
   defm sf_vqdot : RVVVQDOTQBuiltinSet<[["vv", "v", "vv(FixedSEW:8)v(FixedSEW:8)v"],
                                        ["vx", "v", "vv(FixedSEW:8)vUe"]]>;
   defm sf_vqdotu : RVVVQDOTQBuiltinSet<[["vv", "Uv", "UvUv(FixedSEW:8)Uv(FixedSEW:8)Uv"],
@@ -237,23 +237,23 @@ let RequiredFeatures = ["Xsfvqdotq"] in {
   defm sf_vqdotus : RVVVQDOTQBuiltinSet<[["vx", "v", "vv(FixedSEW:8)UvUe"]]>;
 }
 
-let RequiredFeatures = ["Xsfvfbfexp16e"] in {
+let RequiredFeatures = ["xsfvfbfexp16e"] in {
   defm sf_vfexp : RVVVFEXPBuiltinSet<[["v", "v", "vv"]], "y">;
 }
 
-let RequiredFeatures = ["Xsfvfexp16e"] in {
+let RequiredFeatures = ["xsfvfexp16e"] in {
   defm sf_vfexp : RVVVFEXPBuiltinSet<[["v", "v", "vv"]], "x">;
 }
 
-let RequiredFeatures = ["Xsfvfexp32e"] in {
+let RequiredFeatures = ["xsfvfexp32e"] in {
   defm sf_vfexp : RVVVFEXPBuiltinSet<[["v", "v", "vv"]], "f">;
 }
 
-let RequiredFeatures = ["Xsfvfexpa"] in {
+let RequiredFeatures = ["xsfvfexpa"] in {
   defm sf_vfexpa : RVVVFEXPBuiltinSet<[["v", "v", "vv"]], "xf">;
 }
 
-let RequiredFeatures = ["Xsfvfexpa64e"] in {
+let RequiredFeatures = ["xsfvfexpa64e"] in {
   defm sf_vfexpa : RVVVFEXPBuiltinSet<[["v", "v", "vv"]], "d">;
 }
 
@@ -268,8 +268,8 @@ multiclass RVVSFTileLoadStoreBuiltinSet<list<string> types,
       ManualCodegen = [{IntrinsicTypes = {Ops.back()->getType()};}] in
     foreach type = types in {
       let RequiredFeatures = !listconcat(RequiredFeatures,
-                                         !cond(!eq(type, "x"): ["Zvfhmin"],
-                                               !eq(type, "y"): ["Zvfbfmin"],
+                                         !cond(!eq(type, "x"): ["zvfhmin"],
+                                               !eq(type, "y"): ["zvfbfmin"],
                                                true:           []<string>)) in {
         def : RVVBuiltin<"e", "0zP" # !if(is_store, "", "C") # "e", type>;
         if !not(IsFloat<type>.val) then
@@ -284,8 +284,8 @@ multiclass RVVSFTileMoveBuiltinSet<list<list<string>> suffixes_prototypes,
                                    list<string> RequiredFeatures = []> {
   foreach sp = suffixes_prototypes in
     let RequiredFeatures = !listconcat(RequiredFeatures,
-                                       !cond(!eq(type, "x"): ["Zvfhmin"],
-                                             !eq(type, "y"): ["Zvfbfmin"],
+                                       !cond(!eq(type, "x"): ["zvfhmin"],
+                                             !eq(type, "y"): ["zvfbfmin"],
                                              true:           []<string>)),
         SupportOverloading = false,
         HasMasked = false,
@@ -368,7 +368,7 @@ multiclass RVVSFVTDiscardBuiltinSet {
     defm : RVVBuiltinSet<NAME, "i", [["", "", "0"]], []>;
 }
 
-let RequiredFeatures = ["Xsfmmbase"] in {
+let RequiredFeatures = ["xsfmmbase"] in {
   let SupportOverloading = false,
       HasVL = false,
       HasMasked = false,
@@ -386,20 +386,20 @@ let RequiredFeatures = ["Xsfmmbase"] in {
   defm sf_vtdiscard : RVVSFVTDiscardBuiltinSet;
 }
 
-defm sf_vtmv_v_t : RVVSFTileMoveVTBuiltinSet<["Xsfmmbase"]>;
-defm sf_vtmv_t_v : RVVSFTileMoveTVBuiltinSet<["Xsfmmbase"]>;
+defm sf_vtmv_v_t : RVVSFTileMoveVTBuiltinSet<["xsfmmbase"]>;
+defm sf_vtmv_t_v : RVVSFTileMoveTVBuiltinSet<["xsfmmbase"]>;
 
-defm sf_vlte8  : RVVSFTileLoadStoreBuiltinSet<["c"], ["Xsfmmbase"]>;
-defm sf_vlte16 : RVVSFTileLoadStoreBuiltinSet<["s", "x", "y"], ["Xsfmmbase"]>;
-defm sf_vlte32 : RVVSFTileLoadStoreBuiltinSet<["i", "f"], ["Xsfmmbase"]>;
-defm sf_vlte64 : RVVSFTileLoadStoreBuiltinSet<["l", "d"], ["Xsfmmbase"]>;
+defm sf_vlte8  : RVVSFTileLoadStoreBuiltinSet<["c"], ["xsfmmbase"]>;
+defm sf_vlte16 : RVVSFTileLoadStoreBuiltinSet<["s", "x", "y"], ["xsfmmbase"]>;
+defm sf_vlte32 : RVVSFTileLoadStoreBuiltinSet<["i", "f"], ["xsfmmbase"]>;
+defm sf_vlte64 : RVVSFTileLoadStoreBuiltinSet<["l", "d"], ["xsfmmbase"]>;
 
-defm sf_vste8  : RVVSFTileLoadStoreBuiltinSet<["c"], ["Xsfmmbase"], /*is_store*/ 1>;
-defm sf_vste16 : RVVSFTileLoadStoreBuiltinSet<["s", "x", "y"], ["Xsfmmbase"], /*is_store*/ 1>;
-defm sf_vste32 : RVVSFTileLoadStoreBuiltinSet<["i", "f"], ["Xsfmmbase"], /*is_store*/ 1 >;
-defm sf_vste64 : RVVSFTileLoadStoreBuiltinSet<["l", "d"], ["Xsfmmbase"], /*is_store*/ 1>;
+defm sf_vste8  : RVVSFTileLoadStoreBuiltinSet<["c"], ["xsfmmbase"], /*is_store*/ 1>;
+defm sf_vste16 : RVVSFTileLoadStoreBuiltinSet<["s", "x", "y"], ["xsfmmbase"], /*is_store*/ 1>;
+defm sf_vste32 : RVVSFTileLoadStoreBuiltinSet<["i", "f"], ["xsfmmbase"], /*is_store*/ 1 >;
+defm sf_vste64 : RVVSFTileLoadStoreBuiltinSet<["l", "d"], ["xsfmmbase"], /*is_store*/ 1>;
 
-let RequiredFeatures = ["Xsfmm32a8i"] in {
+let RequiredFeatures = ["xsfmm32a8i"] in {
   defm sf_mm_u_u   : RVVSFMatMulBuiltinSet<"0KzUvUvzzz", "UvUv", "c", [4]>;
   defm sf_mm_s_u   : RVVSFMatMulBuiltinSet<"0KzvUvzzz", "vUv", "c", [4]>;
   defm sf_mm_u_s   : RVVSFMatMulBuiltinSet<"0KzUvvzzz", "Uvv", "c", [4]>;
@@ -407,13 +407,13 @@ let RequiredFeatures = ["Xsfmm32a8i"] in {
 
 }
 
-let RequiredFeatures = ["Xsfmm32a16f"] in
+let RequiredFeatures = ["xsfmm32a16f"] in
   defm : RVVSFMatMulFloatBuiltinSet<"sf_mm_f_f", "0Kzvvzzz", "v", ["x", "y"], 2>;
 
-let RequiredFeatures = ["Xsfmm32a32f"] in
+let RequiredFeatures = ["xsfmm32a32f"] in
   defm : RVVSFMatMulFloatBuiltinSet<"sf_mm_f_f", "0Kzvvzzz", "v", ["f"], 1>;
 
-let RequiredFeatures = ["Xsfmm32a8f"] in
+let RequiredFeatures = ["xsfmm32a8f"] in
   foreach e1 = [5, 4] in
     foreach e2 = [5, 4] in
       let OverloadedName = "sf_mm_e" # e1 # "m" # !sub(7, e1) # "_e" # e2 # "m" # !sub(7, e2) in
@@ -421,6 +421,6 @@ let RequiredFeatures = ["Xsfmm32a8f"] in
             "sf_mm_e" # e1 # "m" # !sub(7, e1) # "_e" # e2 # "m" # !sub(7, e2),
             "0KzUvUvzzz", "UvUv", ["c"], 4>;
 
-let RequiredFeatures = ["Xsfmm64a64f"] in
+let RequiredFeatures = ["xsfmm64a64f"] in
   defm : RVVSFMatMulFloatBuiltinSet<"sf_mm_f_f", "0Kzvvzzz", "v", ["d"], 1>;
 #endif // SIFIVE_CUSTOMIZATION
