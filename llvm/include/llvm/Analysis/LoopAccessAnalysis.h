@@ -36,15 +36,11 @@ struct VectorizerParams {
   LLVM_ABI static const unsigned MaxVectorWidth;
 
   /// VF as overridden by the user.
-<<<<<<< HEAD
-  static unsigned VectorizationFactor;
+  LLVM_ABI static unsigned VectorizationFactor;
 #if SIFIVE_CUSTOMIZATION
   /// Default VF
   static const unsigned DefaultVectorizationFactor;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  LLVM_ABI static unsigned VectorizationFactor;
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
   /// Interleave factor as overridden by the user.
   LLVM_ABI static unsigned VectorizationInterleave;
   /// True if force-vector-interleave was specified by the user.
