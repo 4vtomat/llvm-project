@@ -79,15 +79,11 @@
 #include "llvm/Transforms/Instrumentation/CGProfile.h"
 #include "llvm/Transforms/Instrumentation/ControlHeightReduction.h"
 #include "llvm/Transforms/Instrumentation/InstrProfiling.h"
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/Transforms/Instrumentation/SiFive_LoopCountProfiler.h"
 #endif // SIFIVE_CUSTOMIZATION
-#include "llvm/Transforms/Instrumentation/MemProfiler.h"
-=======
 #include "llvm/Transforms/Instrumentation/MemProfInstrumentation.h"
 #include "llvm/Transforms/Instrumentation/MemProfUse.h"
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 #include "llvm/Transforms/Instrumentation/PGOCtxProfFlattening.h"
 #include "llvm/Transforms/Instrumentation/PGOCtxProfLowering.h"
 #include "llvm/Transforms/Instrumentation/PGOForceFunctionAttrs.h"
