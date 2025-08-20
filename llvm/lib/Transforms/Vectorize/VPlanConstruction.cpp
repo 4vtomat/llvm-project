@@ -686,41 +686,21 @@ void VPlanTransforms::prepareForVectorization(
   // E.g., if the compare has got a line number inside the loop.
   DebugLoc LatchDL = TheLoop->getLoopLatch()->getTerminator()->getDebugLoc();
   VPBuilder Builder(MiddleVPBB);
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  LLVMContext &Ctx =
-      IsUncountableAndUnbound ? SE.getContext() : TripCount->getType()->getContext();
-  VPValue *Cmp =
-      IsUncountable || TailFolded
-          ? Plan.getOrAddLiveIn(
-                ConstantInt::getTrue(IntegerType::getInt1Ty(Ctx)))
-          : Builder.createICmp(CmpInst::ICMP_EQ, Plan.getTripCount(),
-                               &Plan.getVectorTripCount(),
-                               ScalarLatchTerm->getDebugLoc(), "cmp.n");
-#else
-  VPValue *Cmp =
-      TailFolded
-          ? Plan.getOrAddLiveIn(ConstantInt::getTrue(
-                IntegerType::getInt1Ty(TripCount->getType()->getContext())))
-          : Builder.createICmp(CmpInst::ICMP_EQ, Plan.getTripCount(),
-                               &Plan.getVectorTripCount(),
-                               ScalarLatchTerm->getDebugLoc(), "cmp.n");
-#endif // SIFIVE_CUSTOMIZATION
-  Builder.createNaryOp(VPInstruction::BranchOnCond, {Cmp},
-                       ScalarLatchTerm->getDebugLoc());
-=======
   VPValue *Cmp;
   if (!RequiresScalarEpilogueCheck)
     Cmp = Plan.getOrAddLiveIn(ConstantInt::getFalse(
         IntegerType::getInt1Ty(TripCount->getType()->getContext())));
+#ifdef SIFIVE_CUSTOMIZATION
+  else if (TailFolded || IsUncountable)
+#else
   else if (TailFolded)
+#endif // SIFIVE_CUSTOMIZATION
     Cmp = Plan.getOrAddLiveIn(ConstantInt::getTrue(
         IntegerType::getInt1Ty(TripCount->getType()->getContext())));
   else
     Cmp = Builder.createICmp(CmpInst::ICMP_EQ, Plan.getTripCount(),
                              &Plan.getVectorTripCount(), LatchDL, "cmp.n");
   Builder.createNaryOp(VPInstruction::BranchOnCond, {Cmp}, LatchDL);
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 }
 
 void VPlanTransforms::createLoopRegions(VPlan &Plan) {
