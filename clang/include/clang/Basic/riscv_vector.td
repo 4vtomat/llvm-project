@@ -149,15 +149,10 @@ multiclass RVVIndexedLoad<string op> {
         defvar eew = eew_list[0];
         defvar eew_type = eew_list[1];
         let Name = op # eew # "_v", IRName = op, MaskedIRName = op # "_mask",
-<<<<<<< HEAD
-            RequiredFeatures = !if(!eq(type, "x"), ["Zvfhmin"],
-#ifdef SIFIVE_CUSTOMIZATION
-                                   !if(!eq(type, "y"), ["Zvfbfmin_Xsfvfbfa"],
-#endif // SIFIVE_CUSTOMIZATION
-=======
             RequiredFeatures = !if(!eq(type, "x"), ["zvfhmin"],
-                                   !if(!eq(type, "y"), ["zvfbfmin"],
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
+#ifdef SIFIVE_CUSTOMIZATION
+                                   !if(!eq(type, "y"), ["zvfbfmin_Xsfvfbfa"],
+#endif // SIFIVE_CUSTOMIZATION
                                                    []<string>)) in {
           def: RVVOutOp0Op1Builtin<"v", "vPCe" # eew_type # "Uv", type>;
             if !not(IsFloat<type>.val) then {
@@ -168,17 +163,11 @@ multiclass RVVIndexedLoad<string op> {
       defvar eew64 = "64";
       defvar eew64_type = "(Log2EEW:6)";
       let Name = op # eew64 # "_v", IRName = op, MaskedIRName = op # "_mask",
-<<<<<<< HEAD
-          RequiredFeatures = !if(!eq(type, "x"), ["Zvfhmin", "RV64"],
-#ifdef SIFIVE_CUSTOMIZATION
-                                 !if(!eq(type, "y"), ["Zvfbfmin_Xsfvfbfa", "RV64"],
-#endif // SIFIVE_CUSTOMIZATION
-                                                 ["RV64"])) in {
-=======
           RequiredFeatures = !if(!eq(type, "x"), ["zvfhmin", "64bit"],
-                                 !if(!eq(type, "y"), ["zvfbfmin", "64bit"],
+#ifdef SIFIVE_CUSTOMIZATION
+                                 !if(!eq(type, "y"), ["zvfbfmin_Xsfvfbfa", "64bit"],
+#endif // SIFIVE_CUSTOMIZATION
                                                  ["64bit"])) in {
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
           def: RVVOutOp0Op1Builtin<"v", "vPCe" # eew64_type # "Uv", type>;
             if !not(IsFloat<type>.val) then {
               def: RVVOutOp0Op1Builtin<"Uv", "UvPCUe" # eew64_type # "Uv", type>;
@@ -319,15 +308,10 @@ multiclass RVVIndexedStore<string op> {
           defvar eew = eew_list[0];
           defvar eew_type = eew_list[1];
           let Name = op # eew  # "_v", IRName = op, MaskedIRName = op # "_mask",
-<<<<<<< HEAD
-          RequiredFeatures = !if(!eq(type, "x"), ["Zvfhmin"],
-#ifdef SIFIVE_CUSTOMIZATION
-                                 !if(!eq(type, "y"), ["Zvfbfmin_Xsfvfbfa"],
-#endif // SIFIVE_CUSTOMIZATION
-=======
           RequiredFeatures = !if(!eq(type, "x"), ["zvfhmin"],
-                                 !if(!eq(type, "y"), ["zvfbfmin"],
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
+#ifdef SIFIVE_CUSTOMIZATION
+                                 !if(!eq(type, "y"), ["zvfbfmin_Xsfvfbfa"],
+#endif // SIFIVE_CUSTOMIZATION
                                                  []<string>)) in  {
             def : RVVBuiltin<"v", "0Pe" # eew_type # "Uvv", type>;
             if !not(IsFloat<type>.val) then {
@@ -338,17 +322,11 @@ multiclass RVVIndexedStore<string op> {
         defvar eew64 = "64";
         defvar eew64_type = "(Log2EEW:6)";
         let Name = op # eew64  # "_v", IRName = op, MaskedIRName = op # "_mask",
-<<<<<<< HEAD
-            RequiredFeatures = !if(!eq(type, "x"), ["Zvfhmin", "RV64"],
-#ifdef SIFIVE_CUSTOMIZATION
-                                   !if(!eq(type, "y"), ["Zvfbfmin_Xsfvfbfa", "RV64"],
-#endif // SIFIVE_CUSTOMIZATION
-                                                   ["RV64"])) in  {
-=======
             RequiredFeatures = !if(!eq(type, "x"), ["zvfhmin", "64bit"],
-                                   !if(!eq(type, "y"), ["zvfbfmin", "64bit"],
+#ifdef SIFIVE_CUSTOMIZATION
+                                   !if(!eq(type, "y"), ["zvfbfmin_Xsfvfbfa", "64bit"],
+#endif // SIFIVE_CUSTOMIZATION
                                                    ["64bit"])) in  {
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
           def : RVVBuiltin<"v", "0Pe" # eew64_type # "Uvv", type>;
           if !not(IsFloat<type>.val) then {
             def : RVVBuiltin<"Uv", "0PUe" # eew64_type # "UvUv", type>;
@@ -476,13 +454,9 @@ multiclass RVVNonTupleVCreateBuiltin<int dst_lmul, list<int> src_lmul_list> {
       def vcreate_h # src_v # dst_v : RVVBuiltin<src_v # dst_v,
                                                  dst_v # src_s,
                                                  "x", dst_v>;
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-    let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+    let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    let RequiredFeatures = ["zvfbfmin"] in
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
       def vcreate_bf16 # src_v # dst_v : RVVBuiltin<src_v # dst_v,
                                                     dst_v # src_s,
                                                     "y", dst_v>;
@@ -857,13 +831,9 @@ defm vle8: RVVVLEBuiltin<["c"]>;
 defm vle16: RVVVLEBuiltin<["s"]>;
 let Name = "vle16_v", RequiredFeatures = ["zvfhmin"] in
   defm vle16_h: RVVVLEBuiltin<["x"]>;
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-let Name = "vle16_v", RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+let Name = "vle16_v", RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
-=======
-let Name = "vle16_v", RequiredFeatures = ["zvfbfmin"] in
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
   defm vle16_bf16 : RVVVLEBuiltin<["y"]>;
 defm vle32: RVVVLEBuiltin<["i","f"]>;
 defm vle64: RVVVLEBuiltin<["l","d"]>;
@@ -873,13 +843,9 @@ defm vse8 : RVVVSEBuiltin<["c"]>;
 defm vse16: RVVVSEBuiltin<["s"]>;
 let Name = "vse16_v", RequiredFeatures = ["zvfhmin"] in
   defm vse16_h: RVVVSEBuiltin<["x"]>;
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-let Name = "vse16_v", RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+let Name = "vse16_v", RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
-=======
-let Name = "vse16_v", RequiredFeatures = ["zvfbfmin"] in
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
   defm vse16_bf16: RVVVSEBuiltin<["y"]>;
 defm vse32: RVVVSEBuiltin<["i","f"]>;
 defm vse64: RVVVSEBuiltin<["l","d"]>;
@@ -889,13 +855,9 @@ defm vlse8: RVVVLSEBuiltin<["c"]>;
 defm vlse16: RVVVLSEBuiltin<["s"]>;
 let Name = "vlse16_v", RequiredFeatures = ["zvfhmin"] in
   defm vlse16_h: RVVVLSEBuiltin<["x"]>;
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-let Name = "vlse16_v", RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+let Name = "vlse16_v", RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
-=======
-let Name = "vlse16_v", RequiredFeatures = ["zvfbfmin"] in
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
   defm vlse16_bf16: RVVVLSEBuiltin<["y"]>;
 defm vlse32: RVVVLSEBuiltin<["i","f"]>;
 defm vlse64: RVVVLSEBuiltin<["l","d"]>;
@@ -904,13 +866,9 @@ defm vsse8 : RVVVSSEBuiltin<["c"]>;
 defm vsse16: RVVVSSEBuiltin<["s"]>;
 let Name = "vsse16_v", RequiredFeatures = ["zvfhmin"] in
   defm vsse16_h: RVVVSSEBuiltin<["x"]>;
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-let Name = "vsse16_v", RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+let Name = "vsse16_v", RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
-=======
-let Name = "vsse16_v", RequiredFeatures = ["zvfbfmin"] in
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
   defm vsse16_bf: RVVVSSEBuiltin<["y"]>;
 defm vsse32: RVVVSSEBuiltin<["i","f"]>;
 defm vsse64: RVVVSSEBuiltin<["l","d"]>;
@@ -927,13 +885,9 @@ defm vle8ff: RVVVLEFFBuiltin<["c"]>;
 defm vle16ff: RVVVLEFFBuiltin<["s"]>;
 let Name = "vle16ff_v", RequiredFeatures = ["zvfhmin"] in
   defm vle16ff: RVVVLEFFBuiltin<["x"]>;
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-let Name = "vle16ff_v", RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+let Name = "vle16ff_v", RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
-=======
-let Name = "vle16ff_v", RequiredFeatures = ["zvfbfmin"] in
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
   defm vle16ff: RVVVLEFFBuiltin<["y"]>;
 defm vle32ff: RVVVLEFFBuiltin<["i", "f"]>;
 defm vle64ff: RVVVLEFFBuiltin<["l", "d"]>;
@@ -953,15 +907,10 @@ multiclass RVVUnitStridedSegLoadTuple<string op> {
             IRName = op # nf,
             MaskedIRName = op # nf # "_mask",
             NF = nf,
-<<<<<<< HEAD
-            RequiredFeatures = !if(!eq(type, "x"), ["Zvfhmin"],
-#ifdef SIFIVE_CUSTOMIZATION
-                                   !if(!eq(type, "y"), ["Zvfbfmin_Xsfvfbfa"],
-#endif // SIFIVE_CUSTOMIZATION
-=======
             RequiredFeatures = !if(!eq(type, "x"), ["zvfhmin"],
-                                   !if(!eq(type, "y"), ["zvfbfmin"],
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
+#ifdef SIFIVE_CUSTOMIZATION
+                                   !if(!eq(type, "y"), ["zvfbfmin_Xsfvfbfa"],
+#endif // SIFIVE_CUSTOMIZATION
                                                    []<string>)),
             ManualCodegen = [{
     {
@@ -1134,15 +1083,10 @@ multiclass RVVUnitStridedSegStoreTuple<string op> {
           MaskedIRName = op # nf # "_mask",
           NF = nf,
           HasMaskedOffOperand = false,
-<<<<<<< HEAD
-          RequiredFeatures = !if(!eq(type, "x"), ["Zvfhmin"],
-#ifdef SIFIVE_CUSTOMIZATION
-                                 !if(!eq(type, "y"), ["Zvfbfmin_Xsfvfbfa"],
-#endif // SIFIVE_CUSTOMIZATION
-=======
           RequiredFeatures = !if(!eq(type, "x"), ["zvfhmin"],
-                                 !if(!eq(type, "y"), ["zvfbfmin"],
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
+#ifdef SIFIVE_CUSTOMIZATION
+                                 !if(!eq(type, "y"), ["zvfbfmin_Xsfvfbfa"],
+#endif // SIFIVE_CUSTOMIZATION
                                                  []<string>)),
           ManualCodegen = [{
     {
@@ -1265,15 +1209,10 @@ multiclass RVVUnitStridedSegLoadFFTuple<string op> {
             IRName = op # nf # "ff",
             MaskedIRName = op # nf # "ff_mask",
             NF = nf,
-<<<<<<< HEAD
-            RequiredFeatures = !if(!eq(type, "x"), ["Zvfhmin"],
-#ifdef SIFIVE_CUSTOMIZATION
-                                   !if(!eq(type, "y"), ["Zvfbfmin_Xsfvfbfa"],
-#endif // SIFIVE_CUSTOMIZATION
-=======
             RequiredFeatures = !if(!eq(type, "x"), ["zvfhmin"],
-                                   !if(!eq(type, "y"), ["zvfbfmin"],
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
+#ifdef SIFIVE_CUSTOMIZATION
+                                   !if(!eq(type, "y"), ["zvfbfmin_Xsfvfbfa"],
+#endif // SIFIVE_CUSTOMIZATION
                                                    []<string>)),
             ManualCodegen = [{
     {
@@ -1460,15 +1399,10 @@ multiclass RVVStridedSegLoadTuple<string op> {
             IRName = op # nf,
             MaskedIRName = op # nf # "_mask",
             NF = nf,
-<<<<<<< HEAD
-            RequiredFeatures = !if(!eq(type, "x"), ["Zvfhmin"],
-#ifdef SIFIVE_CUSTOMIZATION
-                                   !if(!eq(type, "y"), ["Zvfbfmin_Xsfvfbfa"],
-#endif // SIFIVE_CUSTOMIZATION
-=======
             RequiredFeatures = !if(!eq(type, "x"), ["zvfhmin"],
-                                   !if(!eq(type, "y"), ["zvfbfmin"],
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
+#ifdef SIFIVE_CUSTOMIZATION
+                                   !if(!eq(type, "y"), ["zvfbfmin_Xsfvfbfa"],
+#endif // SIFIVE_CUSTOMIZATION
                                                    []<string>)),
             ManualCodegen = [{
     {
@@ -1645,15 +1579,10 @@ multiclass RVVStridedSegStoreTuple<string op> {
             NF = nf,
             HasMaskedOffOperand = false,
             MaskedPolicyScheme = NonePolicy,
-<<<<<<< HEAD
-            RequiredFeatures = !if(!eq(type, "x"), ["Zvfhmin"],
-#ifdef SIFIVE_CUSTOMIZATION
-                                   !if(!eq(type, "y"), ["Zvfbfmin_Xsfvfbfa"],
-#endif // SIFIVE_CUSTOMIZATION
-=======
             RequiredFeatures = !if(!eq(type, "x"), ["zvfhmin"],
-                                   !if(!eq(type, "y"), ["zvfbfmin"],
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
+#ifdef SIFIVE_CUSTOMIZATION
+                                   !if(!eq(type, "y"), ["zvfbfmin_Xsfvfbfa"],
+#endif // SIFIVE_CUSTOMIZATION
                                                    []<string>)),
             ManualCodegen = [{
     {
@@ -1773,15 +1702,10 @@ multiclass RVVIndexedSegLoadTuple<string op> {
             IRName = op # nf,
             MaskedIRName = op # nf # "_mask",
             NF = nf,
-<<<<<<< HEAD
-            RequiredFeatures = !if(!eq(type, "x"), ["Zvfhmin"],
-#ifdef SIFIVE_CUSTOMIZATION
-                                   !if(!eq(type, "y"), ["Zvfbfmin_Xsfvfbfa"],
-#endif // SIFIVE_CUSTOMIZATION
-=======
             RequiredFeatures = !if(!eq(type, "x"), ["zvfhmin"],
-                                   !if(!eq(type, "y"), ["zvfbfmin"],
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
+#ifdef SIFIVE_CUSTOMIZATION
+                                   !if(!eq(type, "y"), ["zvfbfmin_Xsfvfbfa"],
+#endif // SIFIVE_CUSTOMIZATION
                                                    []<string>)),
             ManualCodegen = [{
     {
@@ -1958,15 +1882,10 @@ multiclass RVVIndexedSegStoreTuple<string op> {
             NF = nf,
             HasMaskedOffOperand = false,
             MaskedPolicyScheme = NonePolicy,
-<<<<<<< HEAD
-            RequiredFeatures = !if(!eq(type, "x"), ["Zvfhmin"],
-#ifdef SIFIVE_CUSTOMIZATION
-                                   !if(!eq(type, "y"), ["Zvfbfmin_Xsfvfbfa"],
-#endif // SIFIVE_CUSTOMIZATION
-=======
             RequiredFeatures = !if(!eq(type, "x"), ["zvfhmin"],
-                                   !if(!eq(type, "y"), ["zvfbfmin"],
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
+#ifdef SIFIVE_CUSTOMIZATION
+                                   !if(!eq(type, "y"), ["zvfbfmin_Xsfvfbfa"],
+#endif // SIFIVE_CUSTOMIZATION
                                                    []<string>)),
             ManualCodegen = [{
     {
@@ -2295,15 +2214,11 @@ let HasMasked = false,
     let RequiredFeatures = ["zvfhmin"] in
       defm vmv_v : RVVOutBuiltinSet<"vmv_v_v", "x",
                                     [["v", "v", "vv"]]>;
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-      let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+      let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
 #else
-      let RequiredFeatures = ["Zvfbfmin"] in
+      let RequiredFeatures = ["zvfbfmin"] in
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    let RequiredFeatures = ["zvfbfmin"] in
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
       defm vmv_v : RVVOutBuiltinSet<"vmv_v_v", "y",
                                     [["v", "v", "vv"]]>;
   let SupportOverloading = false in
@@ -3129,15 +3044,11 @@ let HasMasked = false,
   let RequiredFeatures = ["zvfhmin"] in
     defm vmerge : RVVOutOp1BuiltinSet<"vmerge", "x",
                                       [["vvm", "v", "vvvm"]]>;
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-      let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+      let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
 #else
-      let RequiredFeatures = ["Zvfbfmin"] in
+      let RequiredFeatures = ["zvfbfmin"] in
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  let RequiredFeatures = ["zvfbfmin"] in
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
     defm vmerge : RVVOutOp1BuiltinSet<"vmerge", "y",
                                       [["vvm", "v", "vvvm"]]>;
   defm vfmerge : RVVOutOp1BuiltinSet<"vfmerge", "fd",
@@ -3680,15 +3591,11 @@ let RequiredFeatures = ["zvfhmin"] in {
   defm vrgather : RVVOutBuiltinSet<"vrgather_vx", "x",
                                    [["vx", "v", "vvz"]]>;
 }
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-      let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in {
+      let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in {
 #else
-      let RequiredFeatures = ["Zvfbfmin"] in {
+      let RequiredFeatures = ["zvfbfmin"] in {
 #endif // SIFIVE_CUSTOMIZATION
-=======
-let RequiredFeatures = ["zvfbfmin"] in {
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
   defm vrgather : RVVOutBuiltinSet<"vrgather_vv", "y",
                                    [["vv", "v", "vvUv"]]>;
   defm vrgather : RVVOutBuiltinSet<"vrgather_vx", "y",
@@ -3781,13 +3688,9 @@ let HasMasked = false, HasVL = false, IRName = "" in {
       def vreinterpret_h_i : RVVBuiltin<"vFv", "Fvv", "s", "Fv">;
       def vreinterpret_h_u : RVVBuiltin<"UvFv", "FvUv", "s", "Fv">;
     }
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-    let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in {
+    let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in {
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    let RequiredFeatures = ["zvfbfmin"] in {
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
       def vreinterpret_i_bf16 : RVVBuiltin<"vIv", "Ivv", "y", "Iv">;
       def vreinterpret_u_bf16 : RVVBuiltin<"vUv", "Uvv", "y", "Uv">;
       def vreinterpret_bf16_i : RVVBuiltin<"Ivv", "vIv", "y", "v">;
@@ -3859,13 +3762,9 @@ let HasMasked = false, HasVL = false, IRName = "" in {
     def vundefined : RVVBuiltin<"v", "v", "csilfd">;
     let RequiredFeatures = ["zvfhmin"] in
       def vundefined_h : RVVBuiltin<"v", "v", "x">;
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-    let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+    let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    let RequiredFeatures = ["zvfbfmin"] in
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
       def vundefined_bf16 : RVVBuiltin<"v", "v", "y">;
     def vundefined_u : RVVBuiltin<"Uv", "Uv", "csil">;
     
@@ -3875,13 +3774,9 @@ let HasMasked = false, HasVL = false, IRName = "" in {
         def : RVVBuiltin<T # "v", T # "v", "csilfd">;
         let RequiredFeatures = ["zvfhmin"] in
           def : RVVBuiltin<T # "v", T # "v", "x">;
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-        let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+        let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
-=======
-        let RequiredFeatures = ["zvfbfmin"] in
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
           def : RVVBuiltin<T # "v", T # "v", "y">;
         def : RVVBuiltin<T # "Uv", T # "Uv", "csil">;
       }
@@ -3904,13 +3799,9 @@ let HasMasked = false, HasVL = false, IRName = "" in {
       let RequiredFeatures = ["zvfhmin"] in
         def vlmul_trunc_h # dst_lmul : RVVBuiltin<"v" # dst_lmul # "v",
                                                   dst_lmul # "vv", "x", dst_lmul # "v">;
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-      let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+      let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      let RequiredFeatures = ["zvfbfmin"] in
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
         def vlmul_trunc_bf16 # dst_lmul : RVVBuiltin<"v" # dst_lmul # "v",
                                                      dst_lmul # "vv", "y", dst_lmul # "v">;
       def vlmul_trunc_u # dst_lmul : RVVBuiltin<"Uv" # dst_lmul # "Uv",
@@ -3934,13 +3825,9 @@ let HasMasked = false, HasVL = false, IRName = "" in {
       let RequiredFeatures = ["zvfhmin"] in
         def vlmul_ext_h # dst_lmul : RVVBuiltin<"v" # dst_lmul # "v",
                                                 dst_lmul # "vv", "x", dst_lmul # "v">;
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-      let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+      let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      let RequiredFeatures = ["zvfbfmin"] in
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
         def vlmul_ext_bf16 # dst_lmul : RVVBuiltin<"v" # dst_lmul # "v",
                                                    dst_lmul # "vv", "y", dst_lmul # "v">;
       def vlmul_ext_u # dst_lmul : RVVBuiltin<"Uv" # dst_lmul # "Uv",
@@ -3974,15 +3861,11 @@ let HasMasked = false, HasVL = false, IRName = "" in {
       def : RVVBuiltin<"v" # dst_lmul # "v", dst_lmul # "vvKz", "csilfd", dst_lmul # "v">;
       let RequiredFeatures = ["zvfhmin"] in
         def : RVVBuiltin<"v" # dst_lmul # "v", dst_lmul # "vvKz", "x", dst_lmul # "v">;
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-      let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+      let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
 #else
-      let RequiredFeatures = ["Zvfbfmin"] in
-#endif // SIFIVE_CUSTOMIZATION
-=======
       let RequiredFeatures = ["zvfbfmin"] in
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
+#endif // SIFIVE_CUSTOMIZATION
         def : RVVBuiltin<"v" # dst_lmul # "v", dst_lmul # "vvKz", "y", dst_lmul # "v">;
       def : RVVBuiltin<"Uv" # dst_lmul # "Uv", dst_lmul # "UvUvKz", "csil", dst_lmul # "Uv">;
     }
@@ -3991,15 +3874,11 @@ let HasMasked = false, HasVL = false, IRName = "" in {
       def : RVVBuiltin<T # "vv", "v" # T # "vKz", "csilfd", "v">;
       let RequiredFeatures = ["zvfhmin"] in
         def : RVVBuiltin<T # "vv", "v" # T # "vKz", "x", "v">;
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-      let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+      let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
 #else
-      let RequiredFeatures = ["Zvfbfmin"] in
-#endif // SIFIVE_CUSTOMIZATION
-=======
       let RequiredFeatures = ["zvfbfmin"] in
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
+#endif // SIFIVE_CUSTOMIZATION
         def : RVVBuiltin<T # "vv", "v" # T # "vKz", "y", "v">;
       def : RVVBuiltin<T # "UvUv", "Uv" # T # "UvKz", "csil", "Uv">;
     }
@@ -4031,13 +3910,9 @@ let HasMasked = false, HasVL = false, IRName = "" in {
       def : RVVBuiltin<"v" # dst_lmul # "v", dst_lmul # "v" # dst_lmul # "vKzv", "csilfd">;
       let RequiredFeatures = ["zvfhmin"] in
         def : RVVBuiltin<"v" # dst_lmul # "v", dst_lmul # "v" # dst_lmul # "vKzv", "x">;
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-      let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+      let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      let RequiredFeatures = ["zvfbfmin"] in
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
         def : RVVBuiltin<"v" # dst_lmul # "v", dst_lmul # "v" # dst_lmul # "vKzv", "y">;
       def : RVVBuiltin<"Uv" # dst_lmul # "Uv", dst_lmul # "Uv" # dst_lmul #"UvKzUv", "csil">;
     }
@@ -4046,13 +3921,9 @@ let HasMasked = false, HasVL = false, IRName = "" in {
       def : RVVBuiltin<"v" # T # "v", T # "v" # T # "vKzv", "csilfd">;
       let RequiredFeatures = ["zvfhmin"] in
         def : RVVBuiltin<"v" # T # "v", T # "v" # T # "vKzv", "x">;
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-      let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+      let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      let RequiredFeatures = ["zvfbfmin"] in
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
         def : RVVBuiltin<"v" # T # "v", T # "v" # T # "vKzv", "y">;
       def : RVVBuiltin<"Uv" # T # "Uv", T # "Uv" # T # "UvKzUv", "csil">;
     }
@@ -4101,15 +3972,11 @@ let HasMasked = false, HasVL = false, IRName = "" in {
         def : RVVBuiltin<T # "v", T # "v" # V, "csilfd">;
         let RequiredFeatures = ["zvfhmin"] in
           def : RVVBuiltin<T # "v", T # "v" # V, "x">;
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-        let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+        let RequiredFeatures = ["zvfbfmin_Xsfvfbfa"] in
 #else
-        let RequiredFeatures = ["Zvfbfmin"] in
-#endif // SIFIVE_CUSTOMIZATION
-=======
         let RequiredFeatures = ["zvfbfmin"] in
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
+#endif // SIFIVE_CUSTOMIZATION
           def : RVVBuiltin<T # "v", T # "v" # V, "y">;
         def : RVVBuiltin<T # "Uv", T # "Uv" # UV, "csil">;
       }
