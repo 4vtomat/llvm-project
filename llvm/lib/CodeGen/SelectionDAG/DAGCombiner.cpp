@@ -8488,16 +8488,13 @@ SDValue DAGCombiner::visitOR(SDNode *N) {
     if (SDValue R = foldLogicTreeOfShifts(N, N0, N1, DAG))
       return R;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (SDValue V = reassociateForFoldLogicOfSetCCs(N))
     return V;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   if (VT.isScalarInteger() && VT != MVT::i1)
     if (SDValue R = foldMaskedMerge(N, DAG, TLI, DL))
       return R;
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 
   return SDValue();
 }
