@@ -100,7 +100,7 @@ define i64 @select_icmp_const_1(ptr nocapture readonly %a, i64 %n) #0 {
 ; VP-SCALABLE-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; VP-SCALABLE-NEXT:    br i1 [[TMP12]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; VP-SCALABLE:       middle.block:
-; VP-SCALABLE-NEXT:    [[TMP13:%.*]] = call i64 @llvm.vector.reduce.smax.nxv2i64(<vscale x 2 x i64> [[VP_OP_MERGE]])
+; VP-SCALABLE-NEXT:    [[TMP13:%.*]] = call i64 @llvm.vp.reduce.smax.nxv2i64(i64 -9223372036854775808, <vscale x 2 x i64> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP3]])
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i64 [[TMP13]], -9223372036854775808
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i64 [[TMP13]], i64 3
 ; VP-SCALABLE-NEXT:    br label [[EXIT:%.*]]
@@ -237,7 +237,7 @@ define i64 @select_icmp_const_2(ptr nocapture readonly %a, i64 %n) #0 {
 ; VP-SCALABLE-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; VP-SCALABLE-NEXT:    br i1 [[TMP12]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; VP-SCALABLE:       middle.block:
-; VP-SCALABLE-NEXT:    [[TMP13:%.*]] = call i64 @llvm.vector.reduce.smax.nxv2i64(<vscale x 2 x i64> [[VP_OP_MERGE]])
+; VP-SCALABLE-NEXT:    [[TMP13:%.*]] = call i64 @llvm.vp.reduce.smax.nxv2i64(i64 -9223372036854775808, <vscale x 2 x i64> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP3]])
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i64 [[TMP13]], -9223372036854775808
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i64 [[TMP13]], i64 3
 ; VP-SCALABLE-NEXT:    br label [[EXIT:%.*]]
@@ -374,7 +374,7 @@ define i64 @select_icmp_const_3(ptr nocapture readonly %a, i64 %ii, i64 %n) #0 {
 ; VP-SCALABLE-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; VP-SCALABLE-NEXT:    br i1 [[TMP12]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
 ; VP-SCALABLE:       middle.block:
-; VP-SCALABLE-NEXT:    [[TMP13:%.*]] = call i64 @llvm.vector.reduce.smax.nxv2i64(<vscale x 2 x i64> [[VP_OP_MERGE]])
+; VP-SCALABLE-NEXT:    [[TMP13:%.*]] = call i64 @llvm.vp.reduce.smax.nxv2i64(i64 -9223372036854775808, <vscale x 2 x i64> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP3]])
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i64 [[TMP13]], -9223372036854775808
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i64 [[TMP13]], i64 [[II]]
 ; VP-SCALABLE-NEXT:    br label [[EXIT:%.*]]
@@ -511,7 +511,7 @@ define i64 @select_fcmp_const_fast(ptr nocapture readonly %a, i64 %n) #0 {
 ; VP-SCALABLE-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; VP-SCALABLE-NEXT:    br i1 [[TMP12]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
 ; VP-SCALABLE:       middle.block:
-; VP-SCALABLE-NEXT:    [[TMP13:%.*]] = call i64 @llvm.vector.reduce.smax.nxv2i64(<vscale x 2 x i64> [[VP_OP_MERGE]])
+; VP-SCALABLE-NEXT:    [[TMP13:%.*]] = call i64 @llvm.vp.reduce.smax.nxv2i64(i64 -9223372036854775808, <vscale x 2 x i64> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP3]])
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i64 [[TMP13]], -9223372036854775808
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i64 [[TMP13]], i64 2
 ; VP-SCALABLE-NEXT:    br label [[EXIT:%.*]]
@@ -648,7 +648,7 @@ define i64 @select_fcmp_const(ptr nocapture readonly %a, i64 %n) #0 {
 ; VP-SCALABLE-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; VP-SCALABLE-NEXT:    br i1 [[TMP12]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP11:![0-9]+]]
 ; VP-SCALABLE:       middle.block:
-; VP-SCALABLE-NEXT:    [[TMP13:%.*]] = call i64 @llvm.vector.reduce.smax.nxv2i64(<vscale x 2 x i64> [[VP_OP_MERGE]])
+; VP-SCALABLE-NEXT:    [[TMP13:%.*]] = call i64 @llvm.vp.reduce.smax.nxv2i64(i64 -9223372036854775808, <vscale x 2 x i64> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP3]])
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i64 [[TMP13]], -9223372036854775808
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i64 [[TMP13]], i64 2
 ; VP-SCALABLE-NEXT:    br label [[EXIT:%.*]]
@@ -793,7 +793,7 @@ define i64 @select_icmp(ptr nocapture readonly %a, ptr nocapture readonly %b, i6
 ; VP-SCALABLE-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; VP-SCALABLE-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP13:![0-9]+]]
 ; VP-SCALABLE:       middle.block:
-; VP-SCALABLE-NEXT:    [[TMP15:%.*]] = call i64 @llvm.vector.reduce.smax.nxv2i64(<vscale x 2 x i64> [[VP_OP_MERGE]])
+; VP-SCALABLE-NEXT:    [[TMP15:%.*]] = call i64 @llvm.vp.reduce.smax.nxv2i64(i64 -9223372036854775808, <vscale x 2 x i64> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP3]])
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i64 [[TMP15]], -9223372036854775808
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i64 [[TMP15]], i64 [[II]]
 ; VP-SCALABLE-NEXT:    br label [[EXIT:%.*]]
@@ -942,7 +942,7 @@ define i64 @select_fcmp(ptr nocapture readonly %a, ptr nocapture readonly %b, i6
 ; VP-SCALABLE-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; VP-SCALABLE-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP15:![0-9]+]]
 ; VP-SCALABLE:       middle.block:
-; VP-SCALABLE-NEXT:    [[TMP15:%.*]] = call i64 @llvm.vector.reduce.smax.nxv2i64(<vscale x 2 x i64> [[VP_OP_MERGE]])
+; VP-SCALABLE-NEXT:    [[TMP15:%.*]] = call i64 @llvm.vp.reduce.smax.nxv2i64(i64 -9223372036854775808, <vscale x 2 x i64> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP3]])
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i64 [[TMP15]], -9223372036854775808
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i64 [[TMP15]], i64 [[II]]
 ; VP-SCALABLE-NEXT:    br label [[EXIT:%.*]]
@@ -1094,7 +1094,7 @@ define i64 @select_icmp_min_iv_start_value(ptr nocapture readonly %a, ptr nocapt
 ; VP-SCALABLE-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; VP-SCALABLE-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP17:![0-9]+]]
 ; VP-SCALABLE:       middle.block:
-; VP-SCALABLE-NEXT:    [[TMP15:%.*]] = call i64 @llvm.vector.reduce.smax.nxv2i64(<vscale x 2 x i64> [[VP_OP_MERGE]])
+; VP-SCALABLE-NEXT:    [[TMP15:%.*]] = call i64 @llvm.vp.reduce.smax.nxv2i64(i64 -9223372036854775808, <vscale x 2 x i64> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP3]])
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i64 [[TMP15]], -9223372036854775808
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i64 [[TMP15]], i64 [[II]]
 ; VP-SCALABLE-NEXT:    br label [[EXIT:%.*]]

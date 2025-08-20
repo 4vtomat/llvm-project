@@ -6,13 +6,8 @@
 ;    a[i] = b[i] + 1.0;
 
 ; REQUIRES: asserts
-<<<<<<< HEAD
-; RUN: opt -riscv-use-vla-vectorizer=false -passes=loop-vectorize,dce,instcombine -mtriple riscv64-linux-gnu \
-; RUN:   -mattr=+v -debug-only=loop-vectorize -scalable-vectorization=on \
-=======
 ; RUN: opt -passes=loop-vectorize,dce,instcombine -mtriple riscv64-linux-gnu \
 ; RUN:   -mattr=+v -debug-only=loop-vectorize,vplan -scalable-vectorization=on \
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 ; RUN:   -riscv-v-vector-bits-min=128 -disable-output < %s 2>&1 | FileCheck %s
 
 define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocapture noundef readonly %B, i32 noundef signext %n) {

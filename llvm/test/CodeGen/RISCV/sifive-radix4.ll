@@ -33,7 +33,7 @@ define dso_local void @radix4(ptr noalias noundef %twi1, ptr noalias noundef %tw
 ; X280-NEXT:    csrr a0, vlenb
 ; X280-NEXT:    sh2add a0, a0, sp
 ; X280-NEXT:    ld a0, 16(a0)
-; X280-NEXT:    bgeu zero, t2, .LBB0_2
+; X280-NEXT:    beqz t2, .LBB0_2
 ; X280-NEXT:  .LBB0_1: # %for.body
 ; X280-NEXT:    # =>This Inner Loop Header: Depth=1
 ; X280-NEXT:    vlseg2e32.v v22, (a4)
@@ -123,7 +123,7 @@ define dso_local void @radix4(ptr noalias noundef %twi1, ptr noalias noundef %tw
 ; X280N-NEXT:    csrr a0, vlenb
 ; X280N-NEXT:    sh2add a0, a0, sp
 ; X280N-NEXT:    ld a0, 16(a0)
-; X280N-NEXT:    bgeu zero, t2, .LBB0_2
+; X280N-NEXT:    beqz t2, .LBB0_2
 ; X280N-NEXT:  .LBB0_1: # %for.body
 ; X280N-NEXT:    # =>This Inner Loop Header: Depth=1
 ; X280N-NEXT:    vlseg2e32.v v22, (a4)

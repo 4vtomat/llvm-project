@@ -19,7 +19,7 @@ define i64 @imm64_shifted() nounwind {
 ; RV64I-LABEL: imm64_shifted:
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    lui a0, 9321
-; RV64I-NEXT:    addiw a0, a0, -1329
+; RV64I-NEXT:    addi a0, a0, -1329
 ; RV64I-NEXT:    slli a0, a0, 35
 ; RV64I-NEXT:    ret
   ret i64 1311768464867721216 ; 0x1234_5678_0000_0000
@@ -41,7 +41,7 @@ define i128 @imm128_shifted() nounwind {
 ; RV64I-LABEL: imm128_shifted:
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    lui a1, 74565
-; RV64I-NEXT:    addiw a1, a1, 1656
+; RV64I-NEXT:    addi a1, a1, 1656
 ; RV64I-NEXT:    li a0, 0
 ; RV64I-NEXT:    ret
   %a = shl i128 305419896, 64 ; 0x1234_5678

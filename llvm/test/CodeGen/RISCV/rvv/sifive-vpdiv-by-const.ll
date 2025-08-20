@@ -327,7 +327,7 @@ define <vscale x 1 x i64> @vpudiv_by_const_no_add_nxv1i64(<vscale x 1 x i64> %va
 ; CHECK-LABEL: vpudiv_by_const_no_add_nxv1i64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, 838861
-; CHECK-NEXT:    addiw a1, a1, -819
+; CHECK-NEXT:    addi a1, a1, -819
 ; CHECK-NEXT:    slli a2, a1, 32
 ; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
@@ -866,7 +866,7 @@ define <vscale x 1 x i64> @vpsdiv_const_add_ashr_nxv1i64(<vscale x 1 x i64> %va,
 ; CHECK-LABEL: vpsdiv_const_add_ashr_nxv1i64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, 559241
-; CHECK-NEXT:    addiw a1, a1, -1911
+; CHECK-NEXT:    addi a1, a1, -1911
 ; CHECK-NEXT:    slli a2, a1, 32
 ; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
@@ -944,7 +944,7 @@ define <vscale x 1 x i64> @vpsdiv_const_sub_ashr_nxv1i64(<vscale x 1 x i64> %va,
 ; CHECK-LABEL: vpsdiv_const_sub_ashr_nxv1i64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, 349525
-; CHECK-NEXT:    addiw a1, a1, 1365
+; CHECK-NEXT:    addi a1, a1, 1365
 ; CHECK-NEXT:    slli a2, a1, 32
 ; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
@@ -1018,7 +1018,7 @@ define <vscale x 1 x i64> @vpurem_by_const_nxv1i64(<vscale x 1 x i64> %va, <vsca
 ; CHECK-LABEL: vpurem_by_const_nxv1i64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a1, 838861
-; CHECK-NEXT:    addiw a1, a1, -819
+; CHECK-NEXT:    addi a1, a1, -819
 ; CHECK-NEXT:    slli a2, a1, 32
 ; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma

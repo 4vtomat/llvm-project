@@ -1644,12 +1644,7 @@ define i32 @select_cst2(i1 zeroext %cond) {
 ; RV64IM-NEXT:    bnez a1, .LBB44_2
 ; RV64IM-NEXT:  # %bb.1:
 ; RV64IM-NEXT:    lui a0, 5
-<<<<<<< HEAD
-; RV64IM-NEXT:    addiw a0, a0, -480
-=======
 ; RV64IM-NEXT:    addi a0, a0, -480
-; RV64IM-NEXT:    ret
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 ; RV64IM-NEXT:  .LBB44_2:
 ; RV64IM-NEXT:    ret
 ;
@@ -1749,12 +1744,7 @@ define i32 @select_cst5(i1 zeroext %cond) {
 ; RV64IM-NEXT:    bnez a1, .LBB47_2
 ; RV64IM-NEXT:  # %bb.1:
 ; RV64IM-NEXT:    lui a0, 1
-<<<<<<< HEAD
-; RV64IM-NEXT:    addiw a0, a0, -2047
-=======
 ; RV64IM-NEXT:    addi a0, a0, -2047
-; RV64IM-NEXT:    ret
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 ; RV64IM-NEXT:  .LBB47_2:
 ; RV64IM-NEXT:    ret
 ;

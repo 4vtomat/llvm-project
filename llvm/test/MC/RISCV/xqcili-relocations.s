@@ -13,24 +13,6 @@
 # are not converted into inverted branches with long jumps by the assembler.
 .option exact
 
-<<<<<<< HEAD
-qc.li x4, %qc.abs20(foo)
-# RELOC: R_RISCV_SIFIVE_SET_ULEB128 foo 0x0
-# INSTR: qc.li tp, %qc.abs20(foo)
-
-qc.e.li x5, foo
-# RELOC: R_RISCV_SIFIVE_GPREL_HI20 foo 0x0
-# INSTR: qc.e.li t0, foo
-
-# Check that a label in a different section is handled similar to an undefined symbol
-qc.li x9, %qc.abs20(.bar)
-# RELOC: R_RISCV_SIFIVE_SET_ULEB128 .bar 0x0
-# INSTR: qc.li s1, %qc.abs20(.bar)
-
-qc.e.li x8, .bar
-# RELOC: R_RISCV_SIFIVE_GPREL_HI20 .bar 0x0
-# INSTR: qc.e.li s0, .bar
-=======
 .set abs_symbol, 0x0
 
 # ASM-LABEL: this_section:
@@ -40,15 +22,14 @@ this_section:
 # ASM: qc.li a0, %qc.abs20(undef)
 # OBJ: qc.li a0, 0x0
 # OBJ-NEXT: R_RISCV_VENDOR QUALCOMM{{$}}
-# OBJ-NEXT: R_RISCV_CUSTOM192 undef{{$}}
+# OBJ-NEXT: R_RISCV_SIFIVE_SET_ULEB128 undef{{$}}
 qc.li a0, %qc.abs20(undef)
 
 # ASM: qc.e.li s0, undef
 # OBJ-NEXT: qc.e.li s0, 0x0
 # OBJ-NEXT: R_RISCV_VENDOR QUALCOMM{{$}}
-# OBJ-NEXT: R_RISCV_CUSTOM194 undef{{$}}
+# OBJ-NEXT: R_RISCV_SIFIVE_GPREL_HI20 undef{{$}}
 qc.e.li s0, undef
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 
 
 # ASM: qc.li a1, %qc.abs20(0)
@@ -63,25 +44,25 @@ qc.e.li s1, abs_symbol
 # ASM: qc.li a2, %qc.abs20(same_section)
 # OBJ-NEXT: qc.li a2, 0x0
 # OBJ-NEXT: R_RISCV_VENDOR QUALCOMM{{$}}
-# OBJ-NEXT: R_RISCV_CUSTOM192 same_section{{$}}
+# OBJ-NEXT: R_RISCV_SIFIVE_SET_ULEB128 same_section{{$}}
 qc.li a2, %qc.abs20(same_section)
 
 # ASM: qc.e.li s2, same_section
 # OBJ-NEXT: qc.e.li s2, 0x0
 # OBJ-NEXT: R_RISCV_VENDOR QUALCOMM{{$}}
-# OBJ-NEXT: R_RISCV_CUSTOM194 same_section{{$}}
+# OBJ-NEXT: R_RISCV_SIFIVE_GPREL_HI20 same_section{{$}}
 qc.e.li s2, same_section
 
 # ASM: qc.li a3, %qc.abs20(other_section)
 # OBJ-NEXT: qc.li a3, 0x0
 # OBJ-NEXT: R_RISCV_VENDOR QUALCOMM{{$}}
-# OBJ-NEXT: R_RISCV_CUSTOM192 other_section{{$}}
+# OBJ-NEXT: R_RISCV_SIFIVE_SET_ULEB128 other_section{{$}}
 qc.li a3, %qc.abs20(other_section)
 
 # ASM: qc.e.li s3, other_section
 # OBJ-NEXT: qc.e.li s3, 0x0
 # OBJ-NEXT: R_RISCV_VENDOR QUALCOMM{{$}}
-# OBJ-NEXT: R_RISCV_CUSTOM194 other_section{{$}}
+# OBJ-NEXT: R_RISCV_SIFIVE_GPREL_HI20 other_section{{$}}
 qc.e.li s3, other_section
 
 # ASM-LABEL: same_section:
@@ -94,7 +75,7 @@ same_section:
 # ASM: qc.li a1, %qc.abs20(0)
 # OBJ: qc.li a1, 0x0
 # OBJ-NEXT: R_RISCV_VENDOR QUALCOMM{{$}}
-# OBJ-NEXT: R_RISCV_CUSTOM192 *ABS*{{$}}
+# OBJ-NEXT: R_RISCV_SIFIVE_SET_ULEB128 *ABS*{{$}}
 # OBJ-NEXT: R_RISCV_RELAX
 qc.li a1, %qc.abs20(abs_symbol)
 
@@ -105,14 +86,14 @@ qc.e.li s1, abs_symbol
 # ASM: qc.li a1, %qc.abs20(undef)
 # OBJ-NEXT: qc.li a1, 0x0
 # OBJ-NEXT: R_RISCV_VENDOR QUALCOMM{{$}}
-# OBJ-NEXT: R_RISCV_CUSTOM192 undef{{$}}
+# OBJ-NEXT: R_RISCV_SIFIVE_SET_ULEB128 undef{{$}}
 # OBJ-NEXT: R_RISCV_RELAX
 qc.li a1, %qc.abs20(undef)
 
 # ASM: qc.e.li s1, undef
 # OBJ-NEXT: qc.e.li s1, 0x0
 # OBJ-NEXT: R_RISCV_VENDOR QUALCOMM{{$}}
-# OBJ-NEXT: R_RISCV_CUSTOM194 undef{{$}}
+# OBJ-NEXT: R_RISCV_SIFIVE_GPREL_HI20 undef{{$}}
 # OBJ-NEXT: R_RISCV_RELAX
 qc.e.li s1, undef
 

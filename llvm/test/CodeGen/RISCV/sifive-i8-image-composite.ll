@@ -27,7 +27,7 @@ define i8 @composite_basic(i8 %0, i8 %1, i8 %2) {
 ; RV64-NEXT:    xori a2, a2, 255
 ; RV64-NEXT:    mul a1, a2, a1
 ; RV64-NEXT:    add a0, a1, a0
-; RV64-NEXT:    addiw a1, a3, 258
+; RV64-NEXT:    addi a1, a3, 258
 ; RV64-NEXT:    mul a0, a0, a1
 ; RV64-NEXT:    srli a0, a0, 32
 ; RV64-NEXT:    ret

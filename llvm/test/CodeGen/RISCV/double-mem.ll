@@ -142,18 +142,10 @@ define dso_local double @fld_fsd_global(double %a, double %b) nounwind {
 ; RV32IZFINXZDINXZILSD-NEXT:    lui a4, %hi(G)
 ; RV32IZFINXZDINXZILSD-NEXT:    addi a4, a4, %lo(G)
 ; RV32IZFINXZDINXZILSD-NEXT:    fadd.d a0, a0, a2
-<<<<<<< HEAD
-; RV32IZFINXZDINXZILSD-NEXT:    ld a2, 0(a4)
+; RV32IZFINXZDINXZILSD-NEXT:    ld zero, 0(a4)
 ; RV32IZFINXZDINXZILSD-NEXT:    sd a0, 0(a4)
-; RV32IZFINXZDINXZILSD-NEXT:    ld a2, 72(a4)
+; RV32IZFINXZDINXZILSD-NEXT:    ld zero, 72(a4)
 ; RV32IZFINXZDINXZILSD-NEXT:    sd a0, 72(a4)
-=======
-; RV32IZFINXZDINXZILSD-NEXT:    ld zero, %lo(G)(a4)
-; RV32IZFINXZDINXZILSD-NEXT:    addi a2, a4, %lo(G)
-; RV32IZFINXZDINXZILSD-NEXT:    sd a0, %lo(G)(a4)
-; RV32IZFINXZDINXZILSD-NEXT:    ld zero, 72(a2)
-; RV32IZFINXZDINXZILSD-NEXT:    sd a0, 72(a2)
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 ; RV32IZFINXZDINXZILSD-NEXT:    ret
 ; Use %a and %b in an FP op to ensure floating point registers are used, even
 ; for the soft float ABI

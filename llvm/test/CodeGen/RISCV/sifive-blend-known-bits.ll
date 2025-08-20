@@ -15,7 +15,7 @@ define void @spam(ptr %arg, ptr %arg1, i32 signext %arg2, i32 signext %arg3, ptr
 ; CHECK-NEXT:    sh2add.uw a1, a2, a1
 ; CHECK-NEXT:    lui a2, 8
 ; CHECK-NEXT:    addi a1, a1, 5
-; CHECK-NEXT:    addiw a2, a2, 129
+; CHECK-NEXT:    addi a2, a2, 129
 ; CHECK-NEXT:    j .LBB0_3
 ; CHECK-NEXT:  .LBB0_2: # %bb16
 ; CHECK-NEXT:    # in Loop: Header=BB0_3 Depth=1

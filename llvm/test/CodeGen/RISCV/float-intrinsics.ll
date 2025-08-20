@@ -1652,15 +1652,11 @@ define i1 @fpclass(float %x) {
 ; RV64I-NEXT:    lui a2, 522240
 ; RV64I-NEXT:    lui a3, 2048
 ; RV64I-NEXT:    srli a0, a0, 33
-<<<<<<< HEAD
-; RV64I-NEXT:    addiw a3, a3, -1
+; RV64I-NEXT:    addi a3, a3, -1
 ; RV64I-NEXT:    addi a4, a0, -1
 ; RV64I-NEXT:    sltu a3, a4, a3
 ; RV64I-NEXT:    lui a4, 1046528
-; RV64I-NEXT:    addiw a2, a2, -1
-=======
 ; RV64I-NEXT:    addi a2, a2, -1
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 ; RV64I-NEXT:    slti a1, a1, 0
 ; RV64I-NEXT:    slt a2, a2, a0
 ; RV64I-NEXT:    add a4, a0, a4

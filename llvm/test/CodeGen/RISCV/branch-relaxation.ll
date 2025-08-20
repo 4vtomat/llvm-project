@@ -1204,7 +1204,7 @@ define void @relax_jal_spill_32_adjust_spill_slot() {
 ; CHECK-RV64-NEXT:    addi s0, sp, 2032
 ; CHECK-RV64-NEXT:    .cfi_def_cfa s0, 0
 ; CHECK-RV64-NEXT:    lui a0, 2
-; CHECK-RV64-NEXT:    addiw a0, a0, -2032
+; CHECK-RV64-NEXT:    addi a0, a0, -2032
 ; CHECK-RV64-NEXT:    sub sp, sp, a0
 ; CHECK-RV64-NEXT:    srli a0, sp, 12
 ; CHECK-RV64-NEXT:    slli sp, a0, 12
@@ -1466,7 +1466,7 @@ define void @relax_jal_spill_32_adjust_spill_slot() {
 ; CHECK-ZICFILP-NEXT:    addi s0, sp, 2032
 ; CHECK-ZICFILP-NEXT:    .cfi_def_cfa s0, 0
 ; CHECK-ZICFILP-NEXT:    lui a0, 2
-; CHECK-ZICFILP-NEXT:    addiw a0, a0, -2032
+; CHECK-ZICFILP-NEXT:    addi a0, a0, -2032
 ; CHECK-ZICFILP-NEXT:    sub sp, sp, a0
 ; CHECK-ZICFILP-NEXT:    srli a0, sp, 12
 ; CHECK-ZICFILP-NEXT:    slli sp, a0, 12
@@ -3250,7 +3250,7 @@ define void @relax_jal_spill_64_adjust_spill_slot() {
 ; CHECK-RV64-NEXT:    addi s0, sp, 2032
 ; CHECK-RV64-NEXT:    .cfi_def_cfa s0, 0
 ; CHECK-RV64-NEXT:    lui a0, 2
-; CHECK-RV64-NEXT:    addiw a0, a0, -2032
+; CHECK-RV64-NEXT:    addi a0, a0, -2032
 ; CHECK-RV64-NEXT:    sub sp, sp, a0
 ; CHECK-RV64-NEXT:    srli a0, sp, 12
 ; CHECK-RV64-NEXT:    slli sp, a0, 12
@@ -3500,7 +3500,7 @@ define void @relax_jal_spill_64_adjust_spill_slot() {
 ; CHECK-ZICFILP-NEXT:    addi s0, sp, 2032
 ; CHECK-ZICFILP-NEXT:    .cfi_def_cfa s0, 0
 ; CHECK-ZICFILP-NEXT:    lui a0, 2
-; CHECK-ZICFILP-NEXT:    addiw a0, a0, -2032
+; CHECK-ZICFILP-NEXT:    addi a0, a0, -2032
 ; CHECK-ZICFILP-NEXT:    sub sp, sp, a0
 ; CHECK-ZICFILP-NEXT:    srli a0, sp, 12
 ; CHECK-ZICFILP-NEXT:    slli sp, a0, 12

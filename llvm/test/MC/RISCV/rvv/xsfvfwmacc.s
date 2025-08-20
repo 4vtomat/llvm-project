@@ -17,9 +17,5 @@ sf.vfwmacc.4x4x4 v8, v4, v20
 sf.vfwmacc.4x4x4 v0, v4, v20
 # CHECK-INST: sf.vfwmacc.4x4x4 v0, v4, v20
 # CHECK-ENCODING: [0x5b,0x10,0x42,0xf3]
-<<<<<<< HEAD
 # CHECK-ERROR: instruction requires the following: 'XSfvfwmaccqqq' (SiFive Matrix Multiply Accumulate Instruction (4-by-4))
-=======
-# CHECK-ERROR: instruction requires the following: 'XSfvfwmaccqqq' (SiFive Matrix Multiply Accumulate Instruction and 4-by-4))
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 # CHECK-UNKNOWN: f342105b <unknown>

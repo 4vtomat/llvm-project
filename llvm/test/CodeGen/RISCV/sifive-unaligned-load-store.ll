@@ -146,9 +146,9 @@ define i64 @load_i64(ptr %p) {
 ; P550-NEXT:    or a1, a1, a2
 ; P550-NEXT:    or a3, a3, a4
 ; P550-NEXT:    lbu a2, 4(a0)
+; P550-NEXT:    lbu a4, 6(a0)
 ; P550-NEXT:    or a1, a1, a3
 ; P550-NEXT:    lbu a3, 5(a0)
-; P550-NEXT:    lbu a4, 6(a0)
 ; P550-NEXT:    slli a3, a3, 8
 ; P550-NEXT:    lbu a0, 7(a0)
 ; P550-NEXT:    slli a4, a4, 16
@@ -228,8 +228,8 @@ define void @store_i32(ptr %p, i32 %v) {
 ; X280-NEXT:    srli a2, a1, 8
 ; X280-NEXT:    sb a1, 0(a0)
 ; X280-NEXT:    srli a3, a1, 16
-; X280-NEXT:    sb a2, 1(a0)
 ; X280-NEXT:    srli a1, a1, 24
+; X280-NEXT:    sb a2, 1(a0)
 ; X280-NEXT:    sb a3, 2(a0)
 ; X280-NEXT:    sb a1, 3(a0)
 ; X280-NEXT:    ret
@@ -267,8 +267,8 @@ define void @store_i64(ptr %p, i64 %v) {
 ; X280-NEXT:    srli a2, a1, 40
 ; X280-NEXT:    sb a3, 4(a0)
 ; X280-NEXT:    srli a3, a1, 48
-; X280-NEXT:    sb a2, 5(a0)
 ; X280-NEXT:    srli a1, a1, 56
+; X280-NEXT:    sb a2, 5(a0)
 ; X280-NEXT:    sb a3, 6(a0)
 ; X280-NEXT:    sb a1, 7(a0)
 ; X280-NEXT:    ret

@@ -937,8 +937,8 @@ define i64 @cost_assume(ptr %end, i64 %N) {
 ; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[TMP10]], [[VEC_EPILOG_ITER_CHECK]] ], [ 0, [[VECTOR_PH]] ]
 ; CHECK-NEXT:    [[N_MOD_VF8:%.*]] = urem i64 [[TMP2]], 4
 ; CHECK-NEXT:    [[N_VEC9:%.*]] = sub i64 [[TMP2]], [[N_MOD_VF8]]
-; CHECK-NEXT:    [[TMP14:%.*]] = icmp ne i64 [[N]], 0
 ; CHECK-NEXT:    [[TMP18:%.*]] = insertelement <4 x i64> zeroinitializer, i64 [[BC_MERGE_RDX]], i32 0
+; CHECK-NEXT:    [[TMP14:%.*]] = icmp ne i64 [[N]], 0
 ; CHECK-NEXT:    br label [[LOOP:%.*]]
 ; CHECK:       vec.epilog.vector.body:
 ; CHECK-NEXT:    [[INDEX12:%.*]] = phi i64 [ [[VEC_EPILOG_RESUME_VAL]], [[VEC_EPILOG_PH]] ], [ [[INDEX_NEXT14:%.*]], [[LOOP]] ]

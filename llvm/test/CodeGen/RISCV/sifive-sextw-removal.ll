@@ -15,7 +15,7 @@ define void @test1(i32 %arg) nounwind {
 ; CHECK-NEXT:    sd s1, 8(sp) # 8-byte Folded Spill
 ; CHECK-NEXT:    mv s0, a0
 ; CHECK-NEXT:    lui s1, 2
-; CHECK-NEXT:    addiw s1, s1, 5
+; CHECK-NEXT:    addi s1, s1, 5
 ; CHECK-NEXT:  .LBB0_1: # %bb2
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    mv a0, s1
@@ -37,7 +37,7 @@ define void @test1(i32 %arg) nounwind {
 ; NOREMOVAL-NEXT:    sd s1, 8(sp) # 8-byte Folded Spill
 ; NOREMOVAL-NEXT:    mv s0, a0
 ; NOREMOVAL-NEXT:    lui s1, 2
-; NOREMOVAL-NEXT:    addiw s1, s1, 5
+; NOREMOVAL-NEXT:    addi s1, s1, 5
 ; NOREMOVAL-NEXT:  .LBB0_1: # %bb2
 ; NOREMOVAL-NEXT:    # =>This Inner Loop Header: Depth=1
 ; NOREMOVAL-NEXT:    sext.w a0, s1

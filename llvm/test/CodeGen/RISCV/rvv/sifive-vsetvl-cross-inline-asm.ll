@@ -9,7 +9,7 @@ define void @foo(<vscale x 8 x half> %0, <vscale x 8 x half> %1) {
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI0_0)
 ; CHECK-NEXT:    vlse32.v v12, (a0), zero
 ; CHECK-NEXT:    lui a0, 1
-; CHECK-NEXT:    addiw a0, a0, -1096
+; CHECK-NEXT:    addi a0, a0, -1096
 ; CHECK-NEXT:    vmv.v.v v16, v12
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
 ; CHECK-NEXT:    #APP

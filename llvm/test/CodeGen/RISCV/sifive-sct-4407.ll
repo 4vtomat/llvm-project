@@ -27,29 +27,17 @@ while.end:                                        ; preds = %while.cond
 }
 
 define void @test2(ptr noundef %a) {
-; RV32-LABEL: test2:
-; RV32:       # %bb.0: # %entry
-; RV32-NEXT:    lui a1, 74565
-; RV32-NEXT:    addi a1, a1, 1656
-; RV32-NEXT:  .LBB1_1: # %while.cond
-; RV32-NEXT:    # =>This Inner Loop Header: Depth=1
-; RV32-NEXT:    nop
-; RV32-NEXT:    lw a2, 0(a0)
-; RV32-NEXT:    bne a2, a1, .LBB1_1
-; RV32-NEXT:  # %bb.2: # %while.end
-; RV32-NEXT:    ret
-;
-; RV64-LABEL: test2:
-; RV64:       # %bb.0: # %entry
-; RV64-NEXT:    lui a1, 74565
-; RV64-NEXT:    addiw a1, a1, 1656
-; RV64-NEXT:  .LBB1_1: # %while.cond
-; RV64-NEXT:    # =>This Inner Loop Header: Depth=1
-; RV64-NEXT:    nop
-; RV64-NEXT:    lw a2, 0(a0)
-; RV64-NEXT:    bne a2, a1, .LBB1_1
-; RV64-NEXT:  # %bb.2: # %while.end
-; RV64-NEXT:    ret
+; CHECK-LABEL: test2:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    lui a1, 74565
+; CHECK-NEXT:    addi a1, a1, 1656
+; CHECK-NEXT:  .LBB1_1: # %while.cond
+; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
+; CHECK-NEXT:    nop
+; CHECK-NEXT:    lw a2, 0(a0)
+; CHECK-NEXT:    bne a2, a1, .LBB1_1
+; CHECK-NEXT:  # %bb.2: # %while.end
+; CHECK-NEXT:    ret
 entry:
   br label %while.cond
 

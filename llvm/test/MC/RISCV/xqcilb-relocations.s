@@ -14,24 +14,6 @@
 # by the assembler
 .option exact
 
-<<<<<<< HEAD
-qc.e.j foo
-# RELOC: R_RISCV_SIFIVE_GPREL_LO12_I foo 0x0
-# INSTR: qc.e.j foo
-
-qc.e.jal foo
-# RELOC: R_RISCV_SIFIVE_GPREL_LO12_I foo 0x0
-# INSTR: qc.e.jal foo
-
-# Check that a label in a different section is handled similar to an undefined symbol
-qc.e.j .bar
-# RELOC: R_RISCV_SIFIVE_GPREL_LO12_I .bar 0x0
-# INSTR: qc.e.j .bar
-
-qc.e.jal .bar
-# RELOC: R_RISCV_SIFIVE_GPREL_LO12_I .bar 0x0
-# INSTR: qc.e.jal .bar
-=======
 # ASM-LABEL: this_section:
 # OBJ-LABEL: <this_section>:
 this_section:
@@ -39,16 +21,15 @@ this_section:
 # ASM: qc.e.j undef
 # OBJ: qc.e.j 0x0 <this_section>
 # OBJ-NEXT: R_RISCV_VENDOR QUALCOMM{{$}}
-# OBJ-NEXT: R_RISCV_CUSTOM195 undef{{$}}
+# OBJ-NEXT: R_RISCV_SIFIVE_GPREL_LO12_I undef{{$}}
 qc.e.j undef
 
 # ASM: qc.e.jal undef
 # OBJ-NEXT: qc.e.jal 0x6 <this_section+0x6>
 # OBJ-NEXT: R_RISCV_VENDOR QUALCOMM{{$}}
-# OBJ-NEXT: R_RISCV_CUSTOM195 undef{{$}}
+# OBJ-NEXT: R_RISCV_SIFIVE_GPREL_LO12_I undef{{$}}
 qc.e.jal undef
 
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 
 # ASM: qc.e.j same_section
 # OBJ-NEXT: qc.e.j 0x30 <same_section>
@@ -61,26 +42,26 @@ qc.e.jal same_section
 # ASM: qc.e.j same_section_extern
 # OBJ-NEXT: qc.e.j 0x18 <this_section+0x18>
 # OBJ-NEXT: R_RISCV_VENDOR QUALCOMM{{$}}
-# OBJ-NEXT: R_RISCV_CUSTOM195 same_section_extern{{$}}
+# OBJ-NEXT: R_RISCV_SIFIVE_GPREL_LO12_I same_section_extern{{$}}
 qc.e.j same_section_extern
 
 # ASM: qc.e.jal same_section_extern
 # OBJ-NEXT: qc.e.jal 0x1e <this_section+0x1e>
 # OBJ-NEXT: R_RISCV_VENDOR QUALCOMM{{$}}
-# OBJ-NEXT: R_RISCV_CUSTOM195 same_section_extern{{$}}
+# OBJ-NEXT: R_RISCV_SIFIVE_GPREL_LO12_I same_section_extern{{$}}
 qc.e.jal same_section_extern
 
 
 # ASM: qc.e.j other_section
 # OBJ-NEXT: qc.e.j 0x24 <this_section+0x24>
 # OBJ-NEXT: R_RISCV_VENDOR QUALCOMM{{$}}
-# OBJ-NEXT: R_RISCV_CUSTOM195 other_section{{$}}
+# OBJ-NEXT: R_RISCV_SIFIVE_GPREL_LO12_I other_section{{$}}
 qc.e.j other_section
 
 # ASM: qc.e.jal other_section
 # OBJ-NEXT: qc.e.jal 0x2a <this_section+0x2a>
 # OBJ-NEXT: R_RISCV_VENDOR QUALCOMM{{$}}
-# OBJ-NEXT: R_RISCV_CUSTOM195 other_section{{$}}
+# OBJ-NEXT: R_RISCV_SIFIVE_GPREL_LO12_I other_section{{$}}
 qc.e.jal other_section
 
 
@@ -100,14 +81,14 @@ same_section_extern:
 # ASM: qc.e.j same_section
 # OBJ: qc.e.j 0x38 <same_section_extern+0x4>
 # OBJ-NEXT: R_RISCV_VENDOR QUALCOMM{{$}}
-# OBJ-NEXT: R_RISCV_CUSTOM195 same_section{{$}}
+# OBJ-NEXT: R_RISCV_SIFIVE_GPREL_LO12_I same_section{{$}}
 # OBJ-NEXT: R_RISCV_RELAX
 qc.e.j same_section
 
 # ASM: qc.e.jal same_section
 # OBJ-NEXT: qc.e.jal 0x3e <same_section_extern+0xa>
 # OBJ-NEXT: R_RISCV_VENDOR QUALCOMM{{$}}
-# OBJ-NEXT: R_RISCV_CUSTOM195 same_section{{$}}
+# OBJ-NEXT: R_RISCV_SIFIVE_GPREL_LO12_I same_section{{$}}
 # OBJ-NEXT: R_RISCV_RELAX
 qc.e.jal same_section
 

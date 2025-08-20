@@ -24,8 +24,7 @@ define i128 @constant_fold_barrier_i128(i128 %x) {
 ; RV64-NEXT:    slli a2, a2, 11
 ; RV64-NEXT:    and a0, a0, a2
 ; RV64-NEXT:    add a0, a0, a2
-; RV64-NEXT:    sltu a2, a0, a2
-; RV64-NEXT:    mv a1, a2
+; RV64-NEXT:    sltu a1, a0, a2
 ; RV64-NEXT:    ret
 entry:
   %and = and i128 %x, 2048

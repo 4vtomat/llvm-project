@@ -189,20 +189,20 @@ define void @shuffle1(ptr %explicit_0, ptr %explicit_1) vscale_range(2,2) {
 ; RV32-NEXT:    slli a3, a3, 16
 ; RV32-NEXT:    slli a4, a4, 24
 ; RV32-NEXT:    or a2, a2, a5
-; RV32-NEXT:    lbu a5, 256(a0)
-; RV32-NEXT:    lbu a6, 257(a0)
 ; RV32-NEXT:    or a3, a4, a3
-; RV32-NEXT:    lbu a4, 258(a0)
+; RV32-NEXT:    lbu a4, 257(a0)
+; RV32-NEXT:    lbu a5, 256(a0)
+; RV32-NEXT:    lbu a6, 258(a0)
 ; RV32-NEXT:    lbu a0, 259(a0)
-; RV32-NEXT:    slli a6, a6, 8
-; RV32-NEXT:    or a5, a6, a5
-; RV32-NEXT:    slli a4, a4, 16
+; RV32-NEXT:    slli a4, a4, 8
+; RV32-NEXT:    or a4, a4, a5
+; RV32-NEXT:    slli a6, a6, 16
 ; RV32-NEXT:    slli a0, a0, 24
-; RV32-NEXT:    or a0, a0, a4
+; RV32-NEXT:    or a0, a0, a6
 ; RV32-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
 ; RV32-NEXT:    vmv.v.i v8, 0
 ; RV32-NEXT:    or a2, a3, a2
-; RV32-NEXT:    or a0, a0, a5
+; RV32-NEXT:    or a0, a0, a4
 ; RV32-NEXT:    vsetvli zero, zero, e32, m2, tu, ma
 ; RV32-NEXT:    vmv.s.x v9, a0
 ; RV32-NEXT:    vmv.s.x v10, a2
@@ -222,20 +222,20 @@ define void @shuffle1(ptr %explicit_0, ptr %explicit_1) vscale_range(2,2) {
 ; RV64-NEXT:    slli a3, a3, 16
 ; RV64-NEXT:    slli a4, a4, 24
 ; RV64-NEXT:    or a2, a2, a5
-; RV64-NEXT:    lbu a5, 256(a0)
-; RV64-NEXT:    lbu a6, 257(a0)
 ; RV64-NEXT:    or a3, a4, a3
-; RV64-NEXT:    lbu a4, 258(a0)
+; RV64-NEXT:    lbu a4, 257(a0)
+; RV64-NEXT:    lbu a5, 256(a0)
+; RV64-NEXT:    lbu a6, 258(a0)
 ; RV64-NEXT:    lb a0, 259(a0)
-; RV64-NEXT:    slli a6, a6, 8
-; RV64-NEXT:    or a5, a6, a5
-; RV64-NEXT:    slli a4, a4, 16
+; RV64-NEXT:    slli a4, a4, 8
+; RV64-NEXT:    or a4, a4, a5
+; RV64-NEXT:    slli a6, a6, 16
 ; RV64-NEXT:    slli a0, a0, 24
-; RV64-NEXT:    or a0, a0, a4
+; RV64-NEXT:    or a0, a0, a6
 ; RV64-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
 ; RV64-NEXT:    vmv.v.i v8, 0
 ; RV64-NEXT:    or a2, a3, a2
-; RV64-NEXT:    or a0, a0, a5
+; RV64-NEXT:    or a0, a0, a4
 ; RV64-NEXT:    vsetvli zero, zero, e32, m2, tu, ma
 ; RV64-NEXT:    vmv.s.x v9, a0
 ; RV64-NEXT:    vmv.s.x v10, a2

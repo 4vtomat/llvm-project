@@ -27,12 +27,12 @@ define void @add_sext_shl_moreOneUse_add(ptr %array1, i32 %a, i32 %b) {
 ;
 ; XANDESPERF-LABEL: add_sext_shl_moreOneUse_add:
 ; XANDESPERF:       # %bb.0: # %entry
-; XANDESPERF-NEXT:    addi a3, a1, 5
-; XANDESPERF-NEXT:    sext.w a1, a1
-; XANDESPERF-NEXT:    nds.lea.w a0, a0, a1
+; XANDESPERF-NEXT:    sext.w a3, a1
+; XANDESPERF-NEXT:    addi a1, a1, 5
+; XANDESPERF-NEXT:    nds.lea.w a0, a0, a3
 ; XANDESPERF-NEXT:    sw a2, 20(a0)
 ; XANDESPERF-NEXT:    sw a2, 24(a0)
-; XANDESPERF-NEXT:    sw a3, 140(a0)
+; XANDESPERF-NEXT:    sw a1, 140(a0)
 ; XANDESPERF-NEXT:    ret
 entry:
   %add = add nsw i32 %a, 5
@@ -80,14 +80,14 @@ define void @add_sext_shl_moreOneUse_addexceedsign12(ptr %array1, i32 %a, i32 %b
 ;
 ; XANDESPERF-LABEL: add_sext_shl_moreOneUse_addexceedsign12:
 ; XANDESPERF:       # %bb.0: # %entry
-; XANDESPERF-NEXT:    addi a3, a1, 2047
+; XANDESPERF-NEXT:    sext.w a3, a1
+; XANDESPERF-NEXT:    addi a1, a1, 2047
 ; XANDESPERF-NEXT:    lui a4, 2
-; XANDESPERF-NEXT:    sext.w a1, a1
-; XANDESPERF-NEXT:    addi a3, a3, 1
-; XANDESPERF-NEXT:    nds.lea.w a0, a0, a1
+; XANDESPERF-NEXT:    addi a1, a1, 1
+; XANDESPERF-NEXT:    nds.lea.w a0, a0, a3
 ; XANDESPERF-NEXT:    add a0, a0, a4
 ; XANDESPERF-NEXT:    sw a2, 0(a0)
-; XANDESPERF-NEXT:    sw a3, 4(a0)
+; XANDESPERF-NEXT:    sw a1, 4(a0)
 ; XANDESPERF-NEXT:    sw a2, 120(a0)
 ; XANDESPERF-NEXT:    ret
 entry:

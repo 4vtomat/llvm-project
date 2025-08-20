@@ -450,9 +450,9 @@ define i16 @reduce_udiv(ptr %src, i16 %x, i64 %N) #0 {
 ; VSCALEFORTUNING2-NEXT:    [[N_VEC5:%.*]] = sub i64 [[TMP0]], [[N_MOD_VF4]]
 ; VSCALEFORTUNING2-NEXT:    [[TMP25:%.*]] = call i64 @llvm.vscale.i64()
 ; VSCALEFORTUNING2-NEXT:    [[TMP26:%.*]] = mul i64 [[TMP25]], 4
+; VSCALEFORTUNING2-NEXT:    [[TMP27:%.*]] = insertelement <vscale x 4 x i16> zeroinitializer, i16 [[BC_MERGE_RDX]], i32 0
 ; VSCALEFORTUNING2-NEXT:    [[BROADCAST_SPLATINSERT6:%.*]] = insertelement <vscale x 4 x i16> poison, i16 [[X]], i64 0
 ; VSCALEFORTUNING2-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 4 x i16> [[BROADCAST_SPLATINSERT6]], <vscale x 4 x i16> poison, <vscale x 4 x i32> zeroinitializer
-; VSCALEFORTUNING2-NEXT:    [[TMP27:%.*]] = insertelement <vscale x 4 x i16> zeroinitializer, i16 [[BC_MERGE_RDX]], i32 0
 ; VSCALEFORTUNING2-NEXT:    br label %[[VEC_EPILOG_VECTOR_BODY:.*]]
 ; VSCALEFORTUNING2:       [[VEC_EPILOG_VECTOR_BODY]]:
 ; VSCALEFORTUNING2-NEXT:    [[TMP28:%.*]] = phi i64 [ [[VEC_EPILOG_RESUME_VAL]], %[[VEC_EPILOG_PH]] ], [ [[INDEX_NEXT11:%.*]], %[[VEC_EPILOG_VECTOR_BODY]] ]

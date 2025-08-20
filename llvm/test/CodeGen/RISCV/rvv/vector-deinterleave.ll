@@ -864,24 +864,24 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16
 ; CHECK-NEXT:    vmerge.vim v28, v10, 1, v0
 ; CHECK-NEXT:    vs8r.v v24, (a0)
 ; CHECK-NEXT:    vsetvli a2, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vlseg6e8.v v16, (a1)
-; CHECK-NEXT:    vlseg6e8.v v10, (a0)
-; CHECK-NEXT:    vmv2r.v v8, v16
-; CHECK-NEXT:    vmv2r.v v22, v18
-; CHECK-NEXT:    vmv2r.v v24, v20
-; CHECK-NEXT:    vmv1r.v v9, v10
+; CHECK-NEXT:    vlseg6e8.v v14, (a1)
+; CHECK-NEXT:    vlseg6e8.v v8, (a0)
+; CHECK-NEXT:    vmv2r.v v20, v14
+; CHECK-NEXT:    vmv2r.v v22, v16
+; CHECK-NEXT:    vmv2r.v v24, v18
+; CHECK-NEXT:    vmv1r.v v21, v8
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
-; CHECK-NEXT:    vmsne.vi v0, v8, 0
-; CHECK-NEXT:    vmv1r.v v10, v17
-; CHECK-NEXT:    vmsne.vi v8, v10, 0
-; CHECK-NEXT:    vmv1r.v v23, v12
+; CHECK-NEXT:    vmsne.vi v0, v20, 0
+; CHECK-NEXT:    vmv1r.v v8, v15
+; CHECK-NEXT:    vmsne.vi v8, v8, 0
+; CHECK-NEXT:    vmv1r.v v23, v10
 ; CHECK-NEXT:    vmsne.vi v9, v22, 0
-; CHECK-NEXT:    vmv1r.v v12, v19
-; CHECK-NEXT:    vmsne.vi v10, v12, 0
-; CHECK-NEXT:    vmv1r.v v25, v14
+; CHECK-NEXT:    vmv1r.v v10, v17
+; CHECK-NEXT:    vmsne.vi v10, v10, 0
+; CHECK-NEXT:    vmv1r.v v25, v12
 ; CHECK-NEXT:    vmsne.vi v11, v24, 0
-; CHECK-NEXT:    vmv1r.v v14, v21
-; CHECK-NEXT:    vmsne.vi v12, v14, 0
+; CHECK-NEXT:    vmv1r.v v12, v19
+; CHECK-NEXT:    vmsne.vi v12, v12, 0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 4
 ; CHECK-NEXT:    add sp, sp, a0
@@ -1377,29 +1377,29 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16
 ; CHECK-NEXT:    vmerge.vim v30, v10, 1, v0
 ; CHECK-NEXT:    vs8r.v v24, (a0)
 ; CHECK-NEXT:    vsetvli a2, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vlseg8e8.v v18, (a1)
-; CHECK-NEXT:    vlseg8e8.v v10, (a0)
-; CHECK-NEXT:    vmv2r.v v8, v18
-; CHECK-NEXT:    vmv2r.v v26, v20
-; CHECK-NEXT:    vmv2r.v v28, v22
-; CHECK-NEXT:    vmv2r.v v30, v24
-; CHECK-NEXT:    vmv1r.v v9, v10
+; CHECK-NEXT:    vlseg8e8.v v16, (a1)
+; CHECK-NEXT:    vlseg8e8.v v8, (a0)
+; CHECK-NEXT:    vmv2r.v v24, v16
+; CHECK-NEXT:    vmv2r.v v26, v18
+; CHECK-NEXT:    vmv2r.v v28, v20
+; CHECK-NEXT:    vmv2r.v v30, v22
+; CHECK-NEXT:    vmv1r.v v25, v8
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
-; CHECK-NEXT:    vmsne.vi v0, v8, 0
-; CHECK-NEXT:    vmv1r.v v10, v19
-; CHECK-NEXT:    vmsne.vi v8, v10, 0
-; CHECK-NEXT:    vmv1r.v v27, v12
+; CHECK-NEXT:    vmsne.vi v0, v24, 0
+; CHECK-NEXT:    vmv1r.v v8, v17
+; CHECK-NEXT:    vmsne.vi v8, v8, 0
+; CHECK-NEXT:    vmv1r.v v27, v10
 ; CHECK-NEXT:    vmsne.vi v9, v26, 0
-; CHECK-NEXT:    vmv1r.v v12, v21
-; CHECK-NEXT:    vmsne.vi v10, v12, 0
-; CHECK-NEXT:    vmv1r.v v29, v14
+; CHECK-NEXT:    vmv1r.v v10, v19
+; CHECK-NEXT:    vmsne.vi v10, v10, 0
+; CHECK-NEXT:    vmv1r.v v29, v12
 ; CHECK-NEXT:    vmsne.vi v11, v28, 0
-; CHECK-NEXT:    vmv1r.v v14, v23
-; CHECK-NEXT:    vmsne.vi v12, v14, 0
-; CHECK-NEXT:    vmv1r.v v31, v16
+; CHECK-NEXT:    vmv1r.v v12, v21
+; CHECK-NEXT:    vmsne.vi v12, v12, 0
+; CHECK-NEXT:    vmv1r.v v31, v14
 ; CHECK-NEXT:    vmsne.vi v13, v30, 0
-; CHECK-NEXT:    vmv1r.v v16, v25
-; CHECK-NEXT:    vmsne.vi v14, v16, 0
+; CHECK-NEXT:    vmv1r.v v14, v23
+; CHECK-NEXT:    vmsne.vi v14, v14, 0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 4
 ; CHECK-NEXT:    add sp, sp, a0

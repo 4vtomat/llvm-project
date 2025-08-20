@@ -231,7 +231,7 @@ define <4 x i16> @test_v4i64_v4i16(<4 x i64> %x, <4 x i1> %m, i32 zeroext %evl) 
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    vmax.vx v8, v8, zero, v0.t
 ; CHECK-NEXT:    lui a0, 16
-; CHECK-NEXT:    addiw a0, a0, -1
+; CHECK-NEXT:    addi a0, a0, -1
 ; CHECK-NEXT:    vmin.vx v8, v8, a0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
