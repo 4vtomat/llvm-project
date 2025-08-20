@@ -573,7 +573,7 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
 
   // Any use of monotonic within a vector context is not allowed
   auto *VPI = dyn_cast_or_null<VPInstruction>(Recipe);
-  bool IsResumePhiR = VPI && VPI->getOpcode() == VPInstruction::ResumePhi;
+  bool IsResumePhiR = VPI && VPI->getOpcode() == Instruction::PHI;
   if (!IsResumePhiR && !isa<VPReplicateRecipe, VPMonotonicHeaderPHIRecipe,
            VPMonotonicUpdateInstruction, VPIRInstruction>(Recipe))
     for (const VPValue *Operand : Recipe->operands())
