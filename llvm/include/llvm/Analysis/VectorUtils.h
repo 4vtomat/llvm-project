@@ -20,14 +20,11 @@
 #include "llvm/IR/VFABIDemangler.h"
 #include "llvm/IR/VectorTypeUtils.h"
 #include "llvm/Support/CheckedArithmetic.h"
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/Analysis/ScalarEvolutionExpressions.h"
 #include "llvm/Support/CommandLine.h"
 #endif // SIFIVE_CUSTOMIZATION
-=======
 #include "llvm/Support/Compiler.h"
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 
 namespace llvm {
 class TargetLibraryInfo;
@@ -184,18 +181,14 @@ LLVM_ABI bool isVectorIntrinsicWithStructReturnOverloadAtField(
 /// Returns intrinsic ID for call.
 /// For the input call instruction it finds mapping intrinsic and returns
 /// its intrinsic ID, in case it does not found it return not_intrinsic.
-<<<<<<< HEAD
-Intrinsic::ID getVectorIntrinsicIDForCall(const CallInst *CI,
+LLVM_ABI Intrinsic::ID getVectorIntrinsicIDForCall(const CallInst *CI,
 #if SIFIVE_CUSTOMIZATION
-                                          const TargetLibraryInfo *TLI,
-                                          bool UseVP = false);
+                                                   const TargetLibraryInfo *TLI,
+                                                   bool UseVP = false);
 #else
-                                          const TargetLibraryInfo *TLI);
+                                                   const TargetLibraryInfo
+                                                       *TLI);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-LLVM_ABI Intrinsic::ID
-getVectorIntrinsicIDForCall(const CallInst *CI, const TargetLibraryInfo *TLI);
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 
 /// Given a vector and an element number, see if the scalar value is
 /// already around as a register, for example if it were inserted then extracted
@@ -733,20 +726,16 @@ public:
   /// Use information of symbolic strides from PredicatedScalarEvolution if \p
   /// EnableRTStrideChecks is true. NOTE: `false` must only be used for
   /// heuristic purposes and not emit code.
-  void analyzeInterleaving(bool EnableMaskedInterleavedGroup,
-                           bool EnableNonConstStride = false,
-                           bool EnableRTStrideChecks = true);
+  LLVM_ABI void analyzeInterleaving(bool EnableMaskedInterleavedGroup,
+                                    bool EnableNonConstStride = false,
+                                    bool EnableRTStrideChecks = true);
 #else
   /// Analyze the interleaved accesses and collect them in interleave
   /// groups. Substitute symbolic strides using \p Strides.
   /// Consider also predicated loads/stores in the analysis if
   /// \p EnableMaskedInterleavedGroup is true.
-<<<<<<< HEAD
-  void analyzeInterleaving(bool EnableMaskedInterleavedGroup);
-#endif // SIFIVE_CUSTOMIZATION
-=======
   LLVM_ABI void analyzeInterleaving(bool EnableMaskedInterleavedGroup);
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Invalidate groups, e.g., in case all blocks in loop will be predicated
   /// contrary to original assumption. Although we currently prevent group
