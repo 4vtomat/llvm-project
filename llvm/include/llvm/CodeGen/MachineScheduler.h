@@ -1064,9 +1064,8 @@ public:
   LLVM_ABI SUnit *pickOnlyChoice();
 
   /// Dump the state of the information that tracks resource usage.
-<<<<<<< HEAD
-  void dumpReservedCycles() const;
-  void dumpScheduledState() const;
+  LLVM_ABI void dumpReservedCycles() const;
+  LLVM_ABI void dumpScheduledState() const;
 
 #ifdef SIFIVE_CUSTOMIZATION
   void bumpCycleUntilReleaseSUFromPending(SUnit *SU, unsigned ReadyListLimit) {
@@ -1077,10 +1076,6 @@ public:
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  LLVM_ABI void dumpReservedCycles() const;
-  LLVM_ABI void dumpScheduledState() const;
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 };
 
 /// Base class for GenericScheduler. This class maintains information about
