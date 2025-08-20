@@ -305,6 +305,11 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
     case CFBranchLabelSchemeKind::FuncSig:
       // TODO: Define macros after the func-sig scheme is implemented
       break;
+#ifdef SIFIVE_CUSTOMIZATION
+    case CFBranchLabelSchemeKind::FixedOne:
+      // TODO: Do we need to do anything for FixedOne?
+      break;
+#endif // SIFIVE_CUSTOMIZATION
     case CFBranchLabelSchemeKind::Default:
       llvm_unreachable("default cf-branch-label scheme should already be "
                        "transformed to other scheme");
