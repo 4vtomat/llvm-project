@@ -227,50 +227,6 @@ public:
 
 void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
     ArrayRef<RVVIntrinsicRecord> Recs, IntrinsicKind K) {
-<<<<<<< HEAD
-  const TargetInfo &TI = Context.getTargetInfo();
-  static const std::pair<const char *, unsigned> FeatureCheckList[] = {
-      {"64bit", RVV_REQ_RV64},
-      {"xandesvpackfph", RVV_REQ_Xandesvpackfph},
-      {"xsfvcp", RVV_REQ_Xsfvcp},
-      {"xsfvfnrclipxfqf", RVV_REQ_Xsfvfnrclipxfqf},
-      {"xsfvfwmaccqqq", RVV_REQ_Xsfvfwmaccqqq},
-      {"xsfvqmaccdod", RVV_REQ_Xsfvqmaccdod},
-      {"xsfvqmaccqoq", RVV_REQ_Xsfvqmaccqoq},
-      {"zvbb", RVV_REQ_Zvbb},
-      {"zvbc", RVV_REQ_Zvbc},
-      {"zvkb", RVV_REQ_Zvkb},
-      {"zvkg", RVV_REQ_Zvkg},
-      {"zvkned", RVV_REQ_Zvkned},
-      {"zvknha", RVV_REQ_Zvknha},
-      {"zvknhb", RVV_REQ_Zvknhb},
-      {"zvksed", RVV_REQ_Zvksed},
-      {"zvksh", RVV_REQ_Zvksh},
-      {"zvfbfwma", RVV_REQ_Zvfbfwma},
-      {"zvfbfmin", RVV_REQ_Zvfbfmin},
-      {"zvfh", RVV_REQ_Zvfh},
-#if SIFIVE_CUSTOMIZATION
-      {"experimental", RVV_REQ_Experimental},
-      {"xsfvfbfa", RVV_REQ_Xsfvfbfa},
-      {"xsfvfbfexp16e", RVV_REQ_Xsfvfbfexp16e},
-      {"xsfvfexp16e", RVV_REQ_Xsfvfexp16e},
-      {"xsfvfexp32e", RVV_REQ_Xsfvfexp32e},
-      {"xsfvfexpa", RVV_REQ_Xsfvfexpa},
-      {"xsfvfexpa64e", RVV_REQ_Xsfvfexpa64e},
-      {"xsfvfhbfmin", RVV_REQ_Xsfvfhbfmin},
-      {"xsfvqdotq", RVV_REQ_Xsfvqdotq},
-      {"", RVV_REQ_Zvfbfmin_Xsfvfbfa},
-      {"xsfmmbase", RVV_REQ_Xsfmmbase},
-      {"xsfmm32a", RVV_REQ_Xsfmm32a},
-      {"xsfmm32a8f", RVV_REQ_Xsfmm32a8f},
-      {"xsfmm32a16f", RVV_REQ_Xsfmm32a16f},
-      {"xsfmm32a32f", RVV_REQ_Xsfmm32a32f},
-      {"xsfmm64a64f", RVV_REQ_Xsfmm64a64f},
-      {"xsfmm32a8i", RVV_REQ_Xsfmm32a8i}};
-#else
-      {"experimental", RVV_REQ_Experimental}};
-#endif // SIFIVE_CUSTOMIZATION
-
   // Construction of RVVIntrinsicRecords need to sync with createRVVIntrinsics
   // in RISCVVEmitter.cpp.
   for (auto &Record : Recs) {
@@ -280,24 +236,6 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
     if (!S.RISCV().DeclareVectorV0p11Builtins && Record.IsV0p11Deprecated)
       continue;
 #endif
-
-    // Check requirements.
-    if (llvm::any_of(FeatureCheckList, [&](const auto &Item) {
-#if SIFIVE_CUSTOMIZATION
-          if (Item.second == RVV_REQ_Zvfbfmin_Xsfvfbfa)
-            return Record.RequiredExtensions[Item.second] &&
-                   (!TI.hasFeature("zvfbfmin") && !TI.hasFeature("xsfvfbfa"));
-#endif // SIFIVE_CUSTOMIZATION
-          return Record.RequiredExtensions[Item.second] &&
-                 !TI.hasFeature(Item.first);
-        }))
-      continue;
-
-=======
-  // Construction of RVVIntrinsicRecords need to sync with createRVVIntrinsics
-  // in RISCVVEmitter.cpp.
-  for (auto &Record : Recs) {
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
     // Create Intrinsics for each type and LMUL.
     BasicType BaseType = BasicType::Unknown;
     ArrayRef<PrototypeDescriptor> BasicProtoSeq =
