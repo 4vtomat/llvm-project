@@ -8236,7 +8236,6 @@ void SelectionDAGBuilder::visitIntrinsicCall(const CallInst &I,
   case Intrinsic::vector_deinterleave7:
     visitVectorDeinterleave(I, 7);
     return;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case Intrinsic::experimental_vector_interleave4:
     visitVectorInterleave(I, 4);
@@ -8261,11 +8260,9 @@ void SelectionDAGBuilder::visitIntrinsicCall(const CallInst &I,
     visitTargetIntrinsic(I, Intrinsic);
     return;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case Intrinsic::vector_deinterleave8:
     visitVectorDeinterleave(I, 8);
     return;
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
   case Intrinsic::experimental_vector_compress:
     setValue(&I, DAG.getNode(ISD::VECTOR_COMPRESS, sdl,
                              getValue(I.getArgOperand(0)).getValueType(),
@@ -9632,23 +9629,16 @@ void SelectionDAGBuilder::visitCall(const CallInst &I) {
   // Deopt bundles are lowered in LowerCallSiteWithDeoptBundle, and we don't
   // have to do anything here to lower funclet bundles.
   // CFGuardTarget bundles are lowered in LowerCallTo.
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  assert(!I.hasOperandBundlesOtherThan(
-             {LLVMContext::OB_deopt, LLVMContext::OB_funclet,
-              LLVMContext::OB_cfguardtarget, LLVMContext::OB_preallocated,
-              LLVMContext::OB_clang_arc_attachedcall, LLVMContext::OB_kcfi,
-              LLVMContext::OB_convergencectrl, LLVMContext::OB_riscv_cfi}) &&
-         "Cannot lower calls with arbitrary operand bundles!");
-#endif // SIFIVE_CUSTOMIZATION
-=======
   if (I.hasOperandBundlesOtherThan(
           {LLVMContext::OB_deopt, LLVMContext::OB_funclet,
            LLVMContext::OB_cfguardtarget, LLVMContext::OB_preallocated,
            LLVMContext::OB_clang_arc_attachedcall, LLVMContext::OB_kcfi,
+#if SIFIVE_CUSTOMIZATION
+           LLVMContext::OB_convergencectrl, LLVMContext::OB_riscv_cfi}))
+#else
            LLVMContext::OB_convergencectrl}))
+#endif // SIFIVE_CUSTOMIZATION
     reportFatalUsageError("cannot lower calls with arbitrary operand bundles!");
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 
   SDValue Callee = getValue(I.getCalledOperand());
 
