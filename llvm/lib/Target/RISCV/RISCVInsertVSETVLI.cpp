@@ -1249,17 +1249,13 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
     // Use X0, X0 form if the AVL is the same and the SEW+LMUL gives the same
     // VLMAX.
     if (Info.hasSameAVL(PrevInfo) && Info.hasSameVLMAX(PrevInfo)) {
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
       auto MI = BuildMI(MBB, InsertPt, DL,
                         TII->get(Info.getTWiden() ? RISCV::PseudoSF_VSETTNTX0
-                                                  : RISCV::PseudoVSETVLIX0))
+                                                  : RISCV::PseudoVSETVLIX0X0))
 #else
-      auto MI = BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoVSETVLIX0))
-#endif // SIFIVE_CUSTOMIZATION
-=======
       auto MI = BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoVSETVLIX0X0))
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
+#endif // SIFIVE_CUSTOMIZATION
                     .addReg(RISCV::X0, RegState::Define | RegState::Dead)
                     .addReg(RISCV::X0, RegState::Kill)
                     .addImm(Info.encodeVTYPE())
@@ -1277,30 +1273,23 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
           DefMI && RISCVInstrInfo::isVectorConfigInstr(*DefMI)) {
         VSETVLIInfo DefInfo = getInfoForVSETVLI(*DefMI);
         if (DefInfo.hasSameAVL(PrevInfo) && DefInfo.hasSameVLMAX(PrevInfo)) {
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
           auto MI =
               BuildMI(MBB, InsertPt, DL,
                       TII->get(Info.getTWiden() ? RISCV::PseudoSF_VSETTNTX0
-                                                : RISCV::PseudoVSETVLIX0))
-=======
-          auto MI =
-              BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoVSETVLIX0X0))
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
+                                                : RISCV::PseudoVSETVLIX0X0))
                   .addReg(RISCV::X0, RegState::Define | RegState::Dead)
                   .addReg(RISCV::X0, RegState::Kill)
                   .addImm(Info.encodeVTYPE())
                   .addReg(RISCV::VL, RegState::Implicit);
-<<<<<<< HEAD
 #else
-          auto MI = BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoVSETVLIX0))
-                        .addReg(RISCV::X0, RegState::Define | RegState::Dead)
-                        .addReg(RISCV::X0, RegState::Kill)
-                        .addImm(Info.encodeVTYPE())
-                        .addReg(RISCV::VL, RegState::Implicit);
+          auto MI =
+              BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoVSETVLIX0X0))
+                  .addReg(RISCV::X0, RegState::Define | RegState::Dead)
+                  .addReg(RISCV::X0, RegState::Kill)
+                  .addImm(Info.encodeVTYPE())
+                  .addReg(RISCV::VL, RegState::Implicit);
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
           if (LIS)
             LIS->InsertMachineInstrInMaps(*MI);
           return;
@@ -1320,16 +1309,12 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
   }
 
   if (Info.hasAVLVLMAX()) {
-<<<<<<< HEAD
-    Register DestReg = MRI->createVirtualRegister(&RISCV::GPRRegClass);
+    Register DestReg = MRI->createVirtualRegister(&RISCV::GPRNoX0RegClass);
 #ifdef SIFIVE_CUSTOMIZATION
     auto MI = BuildMI(MBB, InsertPt, DL,
                       TII->get(Info.getTWiden() ? RISCV::PseudoSF_VSETTNTX0
                                                 : RISCV::PseudoVSETVLIX0))
 #else
-=======
-    Register DestReg = MRI->createVirtualRegister(&RISCV::GPRNoX0RegClass);
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
     auto MI = BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoVSETVLIX0))
 #endif // SIFIVE_CUSTOMIZATION
                   .addReg(DestReg, RegState::Define | RegState::Dead)
@@ -2066,11 +2051,6 @@ void RISCVInsertVSETVLI::coalesceVSETVLIs(MachineBasicBlock &MBB) const {
           MI.getOperand(0).setReg(DefReg);
           MI.getOperand(0).setIsDead(false);
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-          // Cherry-pick a029ece
-=======
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
           // Move the AVL from NextMI to MI
           dropAVLUse(MI.getOperand(1));
           if (NextMI->getOperand(1).isImm())
@@ -2079,29 +2059,16 @@ void RISCVInsertVSETVLI::coalesceVSETVLIs(MachineBasicBlock &MBB) const {
             MI.getOperand(1).ChangeToRegister(NextMI->getOperand(1).getReg(),
                                               false);
           dropAVLUse(NextMI->getOperand(1));
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 
           // The def of DefReg moved to MI, so extend the LiveInterval up to
           // it.
           if (DefReg.isVirtual() && LIS) {
             LiveInterval &DefLI = LIS->getInterval(DefReg);
             SlotIndex MISlot = LIS->getInstructionIndex(MI).getRegSlot();
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-            // Cherry-pick a029ece
-=======
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
             SlotIndex NextMISlot =
                 LIS->getInstructionIndex(*NextMI).getRegSlot();
             VNInfo *DefVNI = DefLI.getVNInfoAt(NextMISlot);
             LiveInterval::Segment S(MISlot, NextMISlot, DefVNI);
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
             DefLI.addSegment(S);
             DefVNI->def = MISlot;
             // Mark DefLI as spillable if it was previously unspillable
