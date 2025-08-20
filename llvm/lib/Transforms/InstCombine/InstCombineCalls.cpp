@@ -3936,6 +3936,24 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
     }
     break;
   }
+  case Intrinsic::vp_reduce_add: {
+    Value *C, *X, *Y, *Z, *Mask, *EVL;
+    if (match(II, m_Intrinsic<Intrinsic::vp_reduce_add>(m_Value(X),
+                      m_Value(Y), m_Value(Mask), m_Value(EVL)))) {
+      if (match(X, m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_add>(m_Value(C),
+                       m_Value(Z), m_Specific(Mask), m_Specific(EVL))))) {
+        if (isa<VPIntrinsic>(C))
+          break;
+
+        Value *AddRes = Builder.CreateIntrinsic(
+           Intrinsic::vp_add, {Y->getType()}, {Y, Z, Mask, EVL});
+        Value *Res = Builder.CreateIntrinsic(
+           Intrinsic::vp_reduce_add, {Y->getType()}, {C, AddRes, Mask, EVL});
+        return replaceInstUsesWith(CI, Res);
+      }
+    }
+    break;
+  }
   case Intrinsic::vp_trunc: {
     Value *Src = II->getOperand(0);
     if (auto *VPI = dyn_cast<VPIntrinsic>(Src)) {
