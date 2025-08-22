@@ -346,6 +346,21 @@ It is recommended to add ``llvm.loop.disable_nonforced`` to
 fallback version (which is likely never executed) is further optimized
 which would increase the code size.
 
+SIFIVE_CUSTOMIZATION Start
+
+Attributes defined in ``llvm.loop.isdistributed`` are added to successfully
+distributed loops to prevent subsequent reprocessing.
+
+As an example, the following instructs a loop to be ignored during
+loop distribution.
+
+.. code-block:: llvm
+    !4 = distinct !{!4, !5, !6}
+    !5 = !{!"llvm.loop.mustprogress"}
+    !6 = !{!"llvm.loop.isdistributed", i32 1}
+
+SIFIVE_CUSTOMIZATION End
+
 Versioning LICM
 ---------------
 

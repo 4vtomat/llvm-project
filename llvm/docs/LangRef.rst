@@ -7906,6 +7906,17 @@ The attributes in this metadata is added to all followup loops of the
 loop distribution pass. See
 :ref:`Transformation Metadata <transformation-metadata>` for details.
 
+SIFIVE_CUSTOMIZATION Start
+
+'``llvm.loop.isdistributed``' Metadata
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If a loop was successfully processed by the loop distribution pass,
+this metadata is added (i.e. has been distributed).  See
+:ref:`Transformation Metadata <transformation-metadata>` for details.
+
+SIFIVE_CUSTOMIZATION End
+
 '``llvm.licm.disable``' Metadata
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

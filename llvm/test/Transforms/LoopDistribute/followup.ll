@@ -134,7 +134,7 @@ for.end:
 ; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
 ; CHECK: [[META1]] = !{!"FollowupAll"}
 ; CHECK: [[META2]] = !{!"FollowupFallback"}
-; CHECK: [[META3]] = !{!"llvm.loop.distribute.count", i32 2}
+; CHECK: [[META3]] = !{!"llvm.loop.isdistributed", i32 1}
 ; CHECK: [[META4]] = !{[[META5:![0-9]+]]}
 ; CHECK: [[META5]] = distinct !{[[META5]], [[META6:![0-9]+]]}
 ; CHECK: [[META6]] = distinct !{[[META6]], !"LVerDomain"}
