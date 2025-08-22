@@ -3059,7 +3059,8 @@ BasicBlock *InnerLoopVectorizer::createVectorizedLoopSkeleton() {
     BasicBlock *PrevTCCheckBlock = LoopBypassBlocks[PrevTCCheckBlockID];
     BranchInst *OrigBr = cast<BranchInst>(PrevTCCheckBlock->getTerminator());
     ConstantInt *Cond = dyn_cast<ConstantInt>(OrigBr->getCondition());
-    if (Cond && Cond->isZero()) {
+    if (Cond && Cond->isZero() &&
+        Plan.getScalarPreheader()->getNumPredecessors() > 1) {
       BasicBlock *Succ = OrigBr->getSuccessor(1);
       BranchInst *Br = BranchInst::Create(Succ);
       ReplaceInstWithInst(OrigBr, Br);
@@ -3067,6 +3068,15 @@ BasicBlock *InnerLoopVectorizer::createVectorizedLoopSkeleton() {
 
       VPBlockBase *TCCheckVPBB = Plan.getEntry();
       VPBlockBase *ScalarPh = Plan.getScalarPreheader();
+
+      // Update phis in the disconnected Succ VPBB.
+      for (VPRecipeBase &R : cast<VPIRBasicBlock>(ScalarPh)->phis()) {
+        auto *Phi = cast<VPPhiAccessors>(&R);
+        assert((!isa<VPIRPhi>(&R) || ScalarPh->getNumPredecessors() == 1) &&
+               "VPIRPhis must have a single predecessor");
+        Phi->removeIncomingValueFor(TCCheckVPBB);
+      }
+
       VPBlockUtils::disconnectBlocks(TCCheckVPBB, ScalarPh);
       DT->deleteEdge(PrevTCCheckBlock, LoopScalarPreHeader);
     }
