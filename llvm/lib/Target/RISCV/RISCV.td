@@ -61,7 +61,7 @@ include "RISCVSchedRocket.td"
 // include "RISCVSchedSiFiveP400.td" // SIFIVE
 // include "RISCVSchedSiFiveP500.td" // SIFIVE
 // include "RISCVSchedSiFiveP600.td" // SIFIVE
-include "RISCVSchedSiFiveP800.td"
+//include "RISCVSchedSiFiveP800.td" // SIFIVE
 include "RISCVSchedSpacemitX60.td"
 include "RISCVSchedSyntacoreSCR1.td"
 include "RISCVSchedSyntacoreSCR345.td"

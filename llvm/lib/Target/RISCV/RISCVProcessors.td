@@ -365,7 +365,6 @@ def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", SiFiveP600Model,
                                        TuneNoSinkSplatOperands,
                                        TuneVXRMPipelineFlush,
                                        TunePostRAScheduler]>;
-#endif // SIFIVE_CUSTOMIZATION
 
 def SIFIVE_P870 : RISCVProcessorModel<"sifive-p870", SiFiveP800Model,
                                       !listconcat(RVA23U64Features,
@@ -390,6 +389,7 @@ def SIFIVE_P870 : RISCVProcessorModel<"sifive-p870", SiFiveP800Model,
                                        TuneNoSinkSplatOperands,
                                        TuneVXRMPipelineFlush,
                                        TunePostRAScheduler]>;
+#endif // SIFIVE_CUSTOMIZATION
 
 def SYNTACORE_SCR1_BASE : RISCVProcessorModel<"syntacore-scr1-base",
                                               SyntacoreSCR1Model,

@@ -2,6 +2,7 @@
 # RUN: llvm-mca -mtriple=riscv64 -mcpu=sifive-p870 -iterations=1 -instruction-tables=full < %s | FileCheck %s
 # COM: Check if we're only bypassing on rs3 of FMADD (i.e. addend) or not.
 # RUN: llvm-mca -mtriple=riscv64 -mcpu=sifive-p870 -iterations=1 -timeline < %s | FileCheck %s --check-prefix=TIMELINE
+# XFAIL: *
 
 fmadd.s fa0, fa0, fa1, fa2
 fmadd.s fa2, fa2, fa1, fa0
