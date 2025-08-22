@@ -50,12 +50,9 @@
 # LE-EMPTY:
 
 # LE-RELAX:      <.text>:
-# LE-RELAX-NEXT:   add     a1, a1, tp
 # LE-RELAX-NEXT:   addi a1, tp, 0x8
-# LE-RELAX-NEXT:   add     a2, a2, tp
 # LE-RELAX-NEXT:   addi a2, tp, 0x7fc
 # LE-RELAX-NEXT:   addi a0, a0, 0x1
-# LE-RELAX-NEXT:   add     a3, a3, tp
 # LE-RELAX-NEXT:   addi a0, a0, 0x2
 # LE-RELAX-NEXT:   sw a0, 0x7fc(tp)
 # LE-RELAX-NEXT:   lui a4, 0x1
