@@ -22,8 +22,7 @@ define double @foo() {
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], -1
 ; CHECK-NEXT:    br i1 [[TMP4]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP5:%.*]] = call fast double @llvm.vp.reduce.fadd.nxv1f64(double -0.000000e+00, <vscale x 1 x double> [[VP_OP_MERGE]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP0]])
-; CHECK-NEXT:    [[TMP6:%.*]] = fadd fast double 0.000000e+00, [[TMP5]]
+; CHECK-NEXT:    [[TMP6:%.*]] = call fast double @llvm.vector.reduce.fadd.nxv1f64(double 0.000000e+00, <vscale x 1 x double> [[VP_OP_MERGE]])
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 2, [[FOR_BODY_PREHEADER:%.*]] ]
@@ -39,7 +38,7 @@ define double @foo() {
 ; CHECK-NEXT:    [[ADD]] = fadd fast double [[SUM_08]], 0.000000e+00
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp ugt i64 [[INDVARS_IV]], 1
-; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_COND_CLEANUP_LOOPEXIT]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_COND_CLEANUP_LOOPEXIT]], !llvm.loop [[LOOP4:![0-9]+]]
 ;
 ; CHECK-NO-POSTSV-LABEL: @foo(
 ; CHECK-NO-POSTSV-NEXT:  for.body.preheader:
@@ -60,7 +59,7 @@ define double @foo() {
 ; CHECK-NO-POSTSV-NEXT:    [[TMP4:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], -1
 ; CHECK-NO-POSTSV-NEXT:    br i1 [[TMP4]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-NO-POSTSV:       middle.block:
-; CHECK-NO-POSTSV-NEXT:    [[TMP5:%.*]] = call fast double @llvm.vp.reduce.fadd.nxv1f64(double -0.000000e+00, <vscale x 1 x double> [[VP_OP_MERGE]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP0]])
+; CHECK-NO-POSTSV-NEXT:    [[TMP5:%.*]] = call fast double @llvm.vector.reduce.fadd.nxv1f64(double 0.000000e+00, <vscale x 1 x double> [[VP_OP_MERGE]])
 ; CHECK-NO-POSTSV-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK-NO-POSTSV:       scalar.ph:
 ; CHECK-NO-POSTSV-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 2, [[FOR_BODY_PREHEADER:%.*]] ]
@@ -76,7 +75,7 @@ define double @foo() {
 ; CHECK-NO-POSTSV-NEXT:    [[ADD]] = fadd fast double [[SUM_08]], 0.000000e+00
 ; CHECK-NO-POSTSV-NEXT:    [[INDVARS_IV_NEXT]] = add nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NO-POSTSV-NEXT:    [[CMP:%.*]] = icmp ugt i64 [[INDVARS_IV]], 1
-; CHECK-NO-POSTSV-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_COND_CLEANUP_LOOPEXIT]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NO-POSTSV-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_COND_CLEANUP_LOOPEXIT]], !llvm.loop [[LOOP4:![0-9]+]]
 ;
 for.body.preheader:
   br label %for.body
