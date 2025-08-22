@@ -242,12 +242,8 @@ void RISCVMCCodeEmitter::expandAddRegRel(const MCInst &MI,
   Fixups.push_back(MCFixup::create(
       0, Expr, MCFixupKind(FixupKind), MI.getLoc()));
 
-  // Emit fixup_riscv_relax for tprel_add where the relax feature is enabled.
-  if (STI.hasFeature(RISCV::FeatureRelax) && RelaxCandidate) {
-    const MCConstantExpr *Dummy = MCConstantExpr::create(0, Ctx);
-    Fixups.push_back(
-        MCFixup::create(0, Dummy, ELF::R_RISCV_RELAX, MI.getLoc()));
-  }
+  if (RelaxCandidate && STI.hasFeature(RISCV::FeatureRelax))
+    Fixups.back().setLinkerRelaxable();
 
   // Emit a normal ADD instruction with the given operands.
   MCInst TmpInst = MCInstBuilder(RISCV::ADD)
