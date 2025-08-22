@@ -11751,8 +11751,10 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
 #if SIFIVE_CUSTOMIZATION
       VPValue *StartV = nullptr;
       if (PhiR->postFixStartValue()) {
-        StartV = PHBuilder.createNaryOp(VPInstruction::ReductionStartVector,
-                                        {Iden, Iden, ScaleFactorVPV});
+        StartV = PHBuilder.createNaryOp(
+            VPInstruction::ReductionStartVector, {Iden, Iden, ScaleFactorVPV},
+            PhiTy->isFloatingPointTy() ? RdxDesc.getFastMathFlags()
+                                       : FastMathFlags());
       } else {
 #endif // SIFIVE_CUSTOMIZATION
         StartV = PHBuilder.createNaryOp(
