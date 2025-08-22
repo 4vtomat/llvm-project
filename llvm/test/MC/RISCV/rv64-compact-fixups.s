@@ -16,7 +16,6 @@ lui a0, %gprel_hi(foo)
 # RELAX-RELOC: R_RISCV_SIFIVE_GPREL_HI20 foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %gprel_hi(foo), relocation type: 194
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 add a0, gp, a0, %gprel(foo)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GPREL_ADD foo 0x0
@@ -24,7 +23,6 @@ add a0, gp, a0, %gprel(foo)
 # RELAX-RELOC: R_RISCV_SIFIVE_GPREL_ADD foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %gprel(foo), relocation type: 197
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 addi a0, a0, %gprel_lo(foo)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_I foo 0x0
@@ -32,7 +30,6 @@ addi a0, a0, %gprel_lo(foo)
 # RELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_I foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %gprel_lo(foo), relocation type: 195
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 # GOT GPREL LA
 
@@ -42,7 +39,6 @@ lui a0, %got_gprel_hi(foo)
 # RELAX-RELOC: R_RISCV_SIFIVE_GOT_GPREL_HI20 foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %got_gprel_hi(foo), relocation type: 200
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 add a0, gp, a0, %got_gprel(foo)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GOT_GPREL_ADD foo 0x0
@@ -50,7 +46,6 @@ add a0, gp, a0, %got_gprel(foo)
 # RELAX-RELOC: R_RISCV_SIFIVE_GOT_GPREL_ADD foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %got_gprel(foo), relocation type: 202
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 addi a0, a0, %got_gprel_lo(foo)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GOT_GPREL_LO12_I foo 0x0
@@ -58,7 +53,6 @@ addi a0, a0, %got_gprel_lo(foo)
 # RELAX-RELOC: R_RISCV_SIFIVE_GOT_GPREL_LO12_I foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %got_gprel_lo(foo), relocation type: 201
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 # GPREL LA TLS GD
 
@@ -114,7 +108,6 @@ lb a0, %gprel_lo(foo)(a0)
 # RELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_I foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %gprel_lo(foo), relocation type: 195
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 lh a0, %gprel_lo(foo)(a0)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_I foo 0x0
@@ -122,7 +115,6 @@ lh a0, %gprel_lo(foo)(a0)
 # RELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_I foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %gprel_lo(foo), relocation type: 195
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 lw a0, %gprel_lo(foo)(a0)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_I foo 0x0
@@ -130,7 +122,6 @@ lw a0, %gprel_lo(foo)(a0)
 # RELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_I foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %gprel_lo(foo), relocation type: 195
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 ld a0, %gprel_lo(foo)(a0)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_I foo 0x0
@@ -138,7 +129,6 @@ ld a0, %gprel_lo(foo)(a0)
 # RELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_I foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %gprel_lo(foo), relocation type: 195
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 lbu a0, %gprel_lo(foo)(a0)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_I foo 0x0
@@ -146,7 +136,6 @@ lbu a0, %gprel_lo(foo)(a0)
 # RELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_I foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %gprel_lo(foo), relocation type: 195
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 lhu a0, %gprel_lo(foo)(a0)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_I foo 0x0
@@ -154,7 +143,6 @@ lhu a0, %gprel_lo(foo)(a0)
 # RELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_I foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %gprel_lo(foo), relocation type: 195
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 lwu a0, %gprel_lo(foo)(a0)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_I foo 0x0
@@ -162,7 +150,6 @@ lwu a0, %gprel_lo(foo)(a0)
 # RELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_I foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %gprel_lo(foo), relocation type: 195
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 flw fa0, %gprel_lo(foo)(a1)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_I foo 0x0
@@ -170,7 +157,6 @@ flw fa0, %gprel_lo(foo)(a1)
 # RELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_I foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %gprel_lo(foo), relocation type: 195
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 fld fa0, %gprel_lo(foo)(a1)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_I foo 0x0
@@ -178,7 +164,6 @@ fld fa0, %gprel_lo(foo)(a1)
 # RELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_I foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %gprel_lo(foo), relocation type: 195
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 # GPREL LO12_S
 
@@ -188,7 +173,6 @@ sb a0, %gprel_lo(foo)(a1)
 # RELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_S foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %gprel_lo(foo), relocation type: 196
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 sh a0, %gprel_lo(foo)(a1)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_S foo 0x0
@@ -196,7 +180,6 @@ sh a0, %gprel_lo(foo)(a1)
 # RELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_S foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %gprel_lo(foo), relocation type: 196
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 sw a0, %gprel_lo(foo)(a1)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_S foo 0x0
@@ -204,7 +187,6 @@ sw a0, %gprel_lo(foo)(a1)
 # RELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_S foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %gprel_lo(foo), relocation type: 196
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 sd a0, %gprel_lo(foo)(a1)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_S foo 0x0
@@ -212,7 +194,6 @@ sd a0, %gprel_lo(foo)(a1)
 # RELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_S foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %gprel_lo(foo), relocation type: 196
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 fsw fa0, %gprel_lo(foo)(a1)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_S foo 0x0
@@ -220,7 +201,6 @@ fsw fa0, %gprel_lo(foo)(a1)
 # RELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_S foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %gprel_lo(foo), relocation type: 196
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 fsd fa0, %gprel_lo(foo)(a1)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_S foo 0x0
@@ -228,7 +208,6 @@ fsd fa0, %gprel_lo(foo)(a1)
 # RELAX-RELOC: R_RISCV_SIFIVE_GPREL_LO12_S foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %gprel_lo(foo), relocation type: 196
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 # GOT GPREL LO12_I
 
@@ -238,7 +217,6 @@ lb a0, %got_gprel_lo(foo)(a0)
 # RELAX-RELOC: R_RISCV_SIFIVE_GOT_GPREL_LO12_I foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %got_gprel_lo(foo), relocation type: 201
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 lh a0, %got_gprel_lo(foo)(a0)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GOT_GPREL_LO12_I foo 0x0
@@ -246,7 +224,6 @@ lh a0, %got_gprel_lo(foo)(a0)
 # RELAX-RELOC: R_RISCV_SIFIVE_GOT_GPREL_LO12_I foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %got_gprel_lo(foo), relocation type: 201
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 lw a0, %got_gprel_lo(foo)(a0)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GOT_GPREL_LO12_I foo 0x0
@@ -254,7 +231,6 @@ lw a0, %got_gprel_lo(foo)(a0)
 # RELAX-RELOC: R_RISCV_SIFIVE_GOT_GPREL_LO12_I foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %got_gprel_lo(foo), relocation type: 201
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 ld a0, %got_gprel_lo(foo)(a0)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GOT_GPREL_LO12_I foo 0x0
@@ -262,7 +238,6 @@ ld a0, %got_gprel_lo(foo)(a0)
 # RELAX-RELOC: R_RISCV_SIFIVE_GOT_GPREL_LO12_I foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %got_gprel_lo(foo), relocation type: 201
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 lbu a0, %got_gprel_lo(foo)(a0)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GOT_GPREL_LO12_I foo 0x0
@@ -270,7 +245,6 @@ lbu a0, %got_gprel_lo(foo)(a0)
 # RELAX-RELOC: R_RISCV_SIFIVE_GOT_GPREL_LO12_I foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %got_gprel_lo(foo), relocation type: 201
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 lhu a0, %got_gprel_lo(foo)(a0)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GOT_GPREL_LO12_I foo 0x0
@@ -278,7 +252,6 @@ lhu a0, %got_gprel_lo(foo)(a0)
 # RELAX-RELOC: R_RISCV_SIFIVE_GOT_GPREL_LO12_I foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %got_gprel_lo(foo), relocation type: 201
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 lwu a0, %got_gprel_lo(foo)(a0)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GOT_GPREL_LO12_I foo 0x0
@@ -286,7 +259,6 @@ lwu a0, %got_gprel_lo(foo)(a0)
 # RELAX-RELOC: R_RISCV_SIFIVE_GOT_GPREL_LO12_I foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %got_gprel_lo(foo), relocation type: 201
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 flw fa0, %got_gprel_lo(foo)(a1)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GOT_GPREL_LO12_I foo 0x0
@@ -294,7 +266,6 @@ flw fa0, %got_gprel_lo(foo)(a1)
 # RELAX-RELOC: R_RISCV_SIFIVE_GOT_GPREL_LO12_I foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %got_gprel_lo(foo), relocation type: 201
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
 
 fld fa0, %got_gprel_lo(foo)(a1)
 # NORELAX-RELOC: R_RISCV_SIFIVE_GOT_GPREL_LO12_I foo 0x0
@@ -302,4 +273,3 @@ fld fa0, %got_gprel_lo(foo)(a1)
 # RELAX-RELOC: R_RISCV_SIFIVE_GOT_GPREL_LO12_I foo 0x0
 # RELAX-RELOC: R_RISCV_RELAX - 0x0
 # RELAX-FIXUP: fixup A - offset: 0, value: %got_gprel_lo(foo), relocation type: 201
-# RELAX-FIXUP: fixup B - offset: 0, value: 0, relocation type: 51
