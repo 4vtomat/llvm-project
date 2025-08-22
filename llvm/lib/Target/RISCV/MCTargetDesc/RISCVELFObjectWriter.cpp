@@ -56,10 +56,6 @@ unsigned RISCVELFObjectWriter::getRelocType(const MCFixup &Fixup,
   case ELF::R_RISCV_TLS_GOT_HI20:
   case ELF::R_RISCV_TLS_GD_HI20:
   case ELF::R_RISCV_TLSDESC_HI20:
-#if SIFIVE_CUSTOMIZATION
-  case RISCVMCExpr::VK_TLS_GOT_GPREL_HI:
-  case RISCVMCExpr::VK_TLS_GD_GPREL_HI:
-#endif
     if (auto *SA = Target.getAddSym())
       cast<MCSymbolELF>(SA)->setType(ELF::STT_TLS);
     break;
