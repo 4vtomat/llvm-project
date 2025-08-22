@@ -203,7 +203,7 @@
 // CHECK-RV64-SAME: "-resource-dir" "[[RESOURCE_DIR:[^"]+]]"
 // CHECK-RV64-SAME: "-isysroot" "[[SYSROOT:[^"]*]]"
 // CHECK-RV64-SAME: "-internal-isystem" "[[SYSROOT]]{{[/\\]+}}rv64imafdc{{[/\\]+}}lp64d{{[/\\]+}}include{{[/\\]+}}c++{{[/\\]+}}v1"
-// CHECk-RV64-SAME: "-internal-isystem" "[[SYSROOT]]{{[/\\]+}}rv64imafdc{{[/\\]+}}lp64d{{[/\\]+}}include"
+// CHECK-RV64-SAME: "-internal-isystem" "[[SYSROOT]]{{[/\\]+}}rv64imafdc{{[/\\]+}}lp64d{{[/\\]+}}include"
 // CHECK-RV64-SAME: "-x" "c++" "{{.*}}baremetal.cpp"
 // CHECK-RV64-NEXT: ld{{(.exe)?}}" "{{.*}}.o" "-Bstatic"
 // CHECK-RV64-SAME: "-Lsome{{[/\\]+}}directory{{[/\\]+}}user{{[/\\]+}}asked{{[/\\]+}}for"
