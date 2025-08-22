@@ -65,9 +65,9 @@ enum class RecurKind {
   // TODO: Support floating-point Min/Max with index by merging IFindLastIV and
   // FFindLastIV.
 #endif // SIFIVE_CUSTOMIZATION
+  // clang-format on
   // TODO: Any_of and FindLast reduction need not be restricted to integer type
   // only.
-  // clang-format on
 };
 
 /// The RecurrenceDescriptor is used to identify recurrences variables in a
