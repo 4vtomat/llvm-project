@@ -1568,6 +1568,12 @@ VPlan *VPlan::duplicate() {
         VPB != NewScalarHeader)
       NewPlan->ExitBlocks.push_back(cast<VPIRBasicBlock>(VPB));
   }
+#if SIFIVE_CUSTOMIZATION
+  if (isUncountable())
+    NewPlan->setUncountable();
+  if (isUncountableAndUnbound())
+    NewPlan->setUnbound();
+#endif // SIFIVE_CUSTOMIZATION
 
   return NewPlan;
 }
