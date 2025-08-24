@@ -3072,11 +3072,12 @@ void VPlanTransforms::addExplicitVectorLengthUncountable(VPlan &Plan) {
   // Traverse the EVL update and record the last EVL per basic block
   SmallDenseMap<VPBlockBase *, VPValue *> BlockLastEVL;
 
+  VPValue *LastEVL = nullptr;
   std::queue<VPBasicBlock *> WorkList;
   SmallPtrSet<VPBlockBase *, 4> VisitedBlocks;
-  WorkList.push(Plan.getEntry());
-  VisitedBlocks.insert(Plan.getEntry());
-  VPBasicBlock *LastVPBB = nullptr;
+  WorkList.push(Plan.getVectorLoopRegion()->getEntryBasicBlock());
+  VisitedBlocks.insert(Plan.getVectorLoopRegion()->getEntryBasicBlock());
+
   while (!WorkList.empty()) {
     VPBasicBlock *VPBB = WorkList.front();
     WorkList.pop();
@@ -3092,9 +3093,9 @@ void VPlanTransforms::addExplicitVectorLengthUncountable(VPlan &Plan) {
            VPBB->getSinglePredecessor() &&
                "Uncountable loop doesn't support blocks having multiple "
                "predecessors");
-    VPValue *LastEVL = (VPBB->getNumPredecessors() == 0)
-                           ? nullptr
-                           : BlockLastEVL[VPBB->getSinglePredecessor()];
+    LastEVL = (VPBB->getNumPredecessors() == 0)
+                  ? nullptr
+                  : BlockLastEVL[VPBB->getSinglePredecessor()];
     for (VPRecipeBase &Recipe : make_early_inc_range(*VPBB)) {
       // Check if the recipe updates EVL
       if (auto *R = dyn_cast<VPWidenLoadRecipe>(&Recipe)) {
@@ -3112,7 +3113,6 @@ void VPlanTransforms::addExplicitVectorLengthUncountable(VPlan &Plan) {
       }
     }
     BlockLastEVL[VPBB] = LastEVL;
-    LastVPBB = VPBB;
   }
   auto CastVPEVL = [](VPValue *EVL, Type *Ty,
                       VPRecipeBase *InsertPos) -> VPValue * {
@@ -3126,7 +3126,6 @@ void VPlanTransforms::addExplicitVectorLengthUncountable(VPlan &Plan) {
     return NewEVL;
   };
 
-  VPValue *LastEVL = BlockLastEVL[LastVPBB];
   VPValue *OpVPEVL =
       CastVPEVL(LastEVL, CanonicalIVPHI->getScalarType(),
                 CanonicalIVIncrement);
