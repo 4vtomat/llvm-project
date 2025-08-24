@@ -587,20 +587,6 @@ void VPBasicBlock::connectToPredecessors(VPTransformState &State) {
         cast<VPIRBasicBlock>(SuccOrExitVPB)->getIRBasicBlock());
   }
 
-#if SIFIVE_CUSTOMIZATION
-  // Skip adding this to the parent loop since we don't have IR early exit
-  // block now.
-  VPRegionBlock *Region = getPlan()->getVectorLoopRegion();
-  if (Region && this == Region->getEarlyExit())
-    ParentLoop = nullptr;
-
-  // If the IR block is the exit block, cannot add it back to the loop.
-  // This will break the loop verifier.
-  auto *VPIRBB = dyn_cast<VPIRBasicBlock>(this);
-  if (VPIRBB && find(getPlan()->getExitBlocks(), VPIRBB) != getPlan()->getExitBlocks().end())
-    ParentLoop = nullptr;
-#endif // SIFIVE_CUSTOMIZATION
-
   if (ParentLoop && !State.LI->getLoopFor(NewBB))
     ParentLoop->addBasicBlockToLoop(NewBB, *State.LI);
 
