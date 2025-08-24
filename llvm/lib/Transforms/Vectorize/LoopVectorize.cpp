@@ -3019,6 +3019,17 @@ BasicBlock *InnerLoopVectorizer::createVectorizedLoopSkeleton() {
       Legal->getCountableExitingBlocks().empty()) {
     createVectorLoopSkeleton("vec.uncountable.");
     replaceVPBBWithIRVPBB(Plan.getScalarPreheader(), LoopScalarPreHeader);
+    // vector preheader is created in emitIterationCountCheck.
+    // We have to manually create it for unbound loops.
+    // And entry is expected to connect to scalar preheader.
+    BasicBlock *Entry = LoopVectorPreHeader;
+    LoopVectorPreHeader = SplitBlock(Entry, Entry->getTerminator(),
+                                     static_cast<DominatorTree *>(nullptr), LI,
+                                     nullptr, "vector.ph");
+    IRBuilder<> Builder(Entry->getTerminator());
+    BranchInst &BI = *BranchInst::Create(
+        LoopScalarPreHeader, LoopVectorPreHeader, Builder.getFalse());
+    ReplaceInstWithInst(Entry->getTerminator(), &BI);
     return LoopVectorPreHeader;
   }
 #endif
