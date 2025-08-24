@@ -10,7 +10,7 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; VPLANS-NEXT: ir-bb<for.body.lr.ph>:
 ; VPLANS-NEXT:   IR   %0 = load i32, ptr %value, align 4
 ; VPLANS-NEXT:   EMIT vp<[[TC]]> = EXPAND SCEV (1 + ((-4 + (-1 * (ptrtoint ptr %first to i64)) + (ptrtoint ptr %last to i64)) /u 4))<nuw><nsw>
-; VPLANS-NEXT: Successor(s): vector.ph
+; VPLANS-NEXT: Successor(s): scalar.ph, vector.ph
 ; VPLANS-EMPTY:
 ; VPLANS-NEXT: vector.ph:
 ; VPLANS-NEXT: Successor(s): vector loop

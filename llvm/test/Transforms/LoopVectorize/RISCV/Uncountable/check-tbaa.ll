@@ -5,9 +5,11 @@ define void @strlen(ptr %s) {
 ; CHECK-LABEL: define void @strlen(
 ; CHECK-SAME: ptr [[S:%.*]]) #[[ATTR0:[0-9]+]] {
 ; CHECK-NEXT:  entry:
+; CHECK-NEXT:    br i1 false, label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]], label [[ENTRY:%.*]]
+; CHECK:       vector.ph:
 ; CHECK-NEXT:    br label [[WHILE_COND:%.*]]
 ; CHECK:       vector.body:
-; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[WHILE_COND]] ]
+; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT:%.*]], [[WHILE_COND]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[WHILE_COND]] ]
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 8, i1 true)
 ; CHECK-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[S]], i64 [[EVL_BASED_IV]]
@@ -22,7 +24,7 @@ define void @strlen(ptr %s) {
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP7]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[WHILE_COND]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    br i1 true, label [[WHILE_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; CHECK-NEXT:    br i1 true, label [[WHILE_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH]]
 ; CHECK:       vec.uncountable.scalar.ph:
 ; CHECK-NEXT:    br label [[WHILE_COND1:%.*]]
 ; CHECK:       while.cond:

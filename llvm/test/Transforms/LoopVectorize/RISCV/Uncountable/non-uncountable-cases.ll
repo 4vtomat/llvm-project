@@ -7,17 +7,44 @@
 define void @foo() {
 ; CHECK-LABEL: define void @foo(
 ; CHECK-SAME: ) #[[ATTR0:[0-9]+]] {
-; CHECK-NEXT:  [[ENTRY:.*]]:
+; CHECK-NEXT:  [[ENTRY:.*:]]
+; CHECK-NEXT:    br i1 false, label %[[VEC_UNCOUNTABLE_SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
+; CHECK:       [[VECTOR_PH]]:
+; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
+; CHECK:       [[VECTOR_BODY]]:
+; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 4, i1 true)
+; CHECK-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr @global, i64 [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i64 1
+; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[TMP1]], i32 0
+; CHECK-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 4 x i8>, i32 } @llvm.vp.load.ff.nxv4i8.p0(ptr align 1 [[TMP2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP0]])
+; CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 4 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 4 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; CHECK-NEXT:    [[VP_OP_LOAD_FF1:%.*]] = call { <vscale x 4 x i8>, i32 } @llvm.vp.load.ff.nxv4i8.p0(ptr align 1 [[TMP2]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
+; CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 4 x i8>, i32 } [[VP_OP_LOAD_FF1]], 1
+; CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 4 x i8>, i32 } [[VP_OP_LOAD_FF1]], 0
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i8(<vscale x 4 x i8> [[TMP4]], <vscale x 4 x i8> [[TMP6]], metadata !"ne", <vscale x 4 x i1> splat (i1 true), i32 [[TMP5]])
+; CHECK-NEXT:    [[VP_OP_ICMP2:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i8(<vscale x 4 x i8> [[TMP4]], <vscale x 4 x i8> zeroinitializer, metadata !"eq", <vscale x 4 x i1> splat (i1 true), i32 [[TMP5]])
+; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i1> @llvm.vp.or.nxv4i1(<vscale x 4 x i1> [[VP_OP_ICMP2]], <vscale x 4 x i1> [[VP_OP_ICMP]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP5]])
+; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.vp.first.nxv4i1(<vscale x 4 x i1> [[VP_OP]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP5]])
+; CHECK-NEXT:    [[TMP8:%.*]] = icmp sge i32 [[TMP7]], 0
+; CHECK-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP5]] to i64
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP9]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    br i1 [[TMP8]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK:       [[MIDDLE_BLOCK]]:
+; CHECK-NEXT:    br i1 true, label %[[EXIT:.*]], label %[[VEC_UNCOUNTABLE_SCALAR_PH]]
+; CHECK:       [[VEC_UNCOUNTABLE_SCALAR_PH]]:
 ; CHECK-NEXT:    br label %[[LOOP:.*]]
 ; CHECK:       [[LOOP]]:
-; CHECK-NEXT:    [[PHI:%.*]] = phi ptr [ [[GETELEMENTPTR:%.*]], %[[LOOP]] ], [ @global, %[[ENTRY]] ]
+; CHECK-NEXT:    [[PHI:%.*]] = phi ptr [ [[GETELEMENTPTR:%.*]], %[[LOOP]] ], [ @global, %[[VEC_UNCOUNTABLE_SCALAR_PH]] ]
 ; CHECK-NEXT:    [[GETELEMENTPTR]] = getelementptr i8, ptr [[PHI]], i64 1
 ; CHECK-NEXT:    [[LOAD:%.*]] = load i8, ptr [[GETELEMENTPTR]], align 1
 ; CHECK-NEXT:    [[LOAD3:%.*]] = load i8, ptr [[GETELEMENTPTR]], align 1
 ; CHECK-NEXT:    [[ICMP:%.*]] = icmp ne i8 [[LOAD]], [[LOAD3]]
 ; CHECK-NEXT:    [[ICMP4:%.*]] = icmp eq i8 [[LOAD]], 0
 ; CHECK-NEXT:    [[OR:%.*]] = or i1 [[ICMP4]], [[ICMP]]
-; CHECK-NEXT:    br i1 [[OR]], label %[[EXIT:.*]], label %[[LOOP]]
+; CHECK-NEXT:    br i1 [[OR]], label %[[EXIT]], label %[[LOOP]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       [[EXIT]]:
 ; CHECK-NEXT:    ret void
 ;
@@ -37,3 +64,10 @@ loop:
 exit:
   ret void
 }
+;.
+; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]], [[META3:![0-9]+]]}
+; CHECK: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
+; CHECK: [[META2]] = !{!"llvm.loop.isvectorized.tailfoldingstyle", !"evl"}
+; CHECK: [[META3]] = !{!"llvm.loop.unroll.runtime.disable"}
+; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META3]], [[META1]]}
+;.

@@ -7,7 +7,7 @@ define i64 @strlen_i8(ptr %start) {
 ; VPLANS-NEXT: Live-in vp<[[VF:%.+]]> = VF
 ; VPLANS-EMPTY:
 ; VPLANS-NEXT: ir-bb<entry>:
-; VPLANS-NEXT: Successor(s): vector.ph
+; VPLANS-NEXT: Successor(s): scalar.ph, vector.ph
 ; VPLANS-EMPTY:
 ; VPLANS-NEXT: vector.ph:
 ; VPLANS-NEXT: Successor(s): vector loop
@@ -39,6 +39,13 @@ define i64 @strlen_i8(ptr %start) {
 ; VPLANS-NEXT:   EMIT branch-on-cond ir<true>
 ; VPLANS-NEXT: Successor(s): ir-bb<for.end>, scalar.ph
 ; VPLANS-EMPTY:
+; VPLANS-NEXT: ir-bb<for.end>:
+; VPLANS-NEXT:   IR   %end.0.lcssa = phi ptr [ %end.0, %for.cond ] (extra operand: vp<[[DERIV2]]> from middle.block)
+; VPLANS-NEXT:   IR   %sub.ptr.lhs.cast = ptrtoint ptr %end.0.lcssa to i64
+; VPLANS-NEXT:   IR   %sub.ptr.rhs.cast = ptrtoint ptr %start to i64
+; VPLANS-NEXT:   IR   %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+; VPLANS-NEXT: No successors
+; VPLANS-EMPTY:
 ; VPLANS-NEXT: scalar.ph:
 ; VPLANS-NEXT: Successor(s): ir-bb<for.cond>
 ; VPLANS-EMPTY:
@@ -47,13 +54,6 @@ define i64 @strlen_i8(ptr %start) {
 ; VPLANS-NEXT:   IR   %0 = load i8, ptr %end.0, align 1
 ; VPLANS-NEXT:   IR   %cmp.not = icmp eq i8 %0, 0
 ; VPLANS-NEXT:   IR   %incdec.ptr = getelementptr inbounds i8, ptr %end.0, i64 1
-; VPLANS-NEXT: No successors
-; VPLANS-EMPTY:
-; VPLANS-NEXT: ir-bb<for.end>:
-; VPLANS-NEXT:   IR   %end.0.lcssa = phi ptr [ %end.0, %for.cond ] (extra operand: vp<[[DERIV2]]> from middle.block)
-; VPLANS-NEXT:   IR   %sub.ptr.lhs.cast = ptrtoint ptr %end.0.lcssa to i64
-; VPLANS-NEXT:   IR   %sub.ptr.rhs.cast = ptrtoint ptr %start to i64
-; VPLANS-NEXT:   IR   %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
 ; VPLANS-NEXT: No successors
 ; VPLANS-NEXT: }
 entry:
