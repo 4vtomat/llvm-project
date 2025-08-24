@@ -4588,6 +4588,7 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
     bool IsOptSize = ScalarEpilogueStatus == CM_ScalarEpilogueNotAllowedOptSize;
     if (IsOptSize && runtimeChecksRequired())
       return FixedScalableVFPair::getNone();
+    setTailFoldingStyles(MaxVF.ScalableVF.isNonZero(), UserIC);
     return MaxVF;
   }
 #endif // SIFIVE_CUSTOMIZATION

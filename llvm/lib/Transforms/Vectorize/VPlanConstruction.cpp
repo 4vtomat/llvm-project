@@ -553,6 +553,8 @@ void VPlanTransforms::prepareForVectorization(
 #if SIFIVE_CUSTOMIZATION
   bool IsUncountable = Plan.isUncountable();
   bool IsUncountableAndUnbound = Plan.isUncountableAndUnbound();
+  assert(!IsUncountable || (RequiresScalarEpilogueCheck && TailFolded) &&
+         "Uncountable loop does not jump to scalar epilog unconditionally");
 #endif // SIFIVE_CUSTOMIZATION
   VPDominatorTree VPDT;
   VPDT.recalculate(Plan);
@@ -690,13 +692,17 @@ void VPlanTransforms::prepareForVectorization(
   if (!RequiresScalarEpilogueCheck)
     Cmp = Plan.getOrAddLiveIn(ConstantInt::getFalse(
         IntegerType::getInt1Ty(TripCount->getType()->getContext())));
-#ifdef SIFIVE_CUSTOMIZATION
-  else if (TailFolded || IsUncountable)
+#if SIFIVE_CUSTOMIZATION
+  else if (TailFolded || IsUncountable) {
+    LLVMContext &Ctx = SE.getContext();
+    Cmp =
+        Plan.getOrAddLiveIn(ConstantInt::getTrue(IntegerType::getInt1Ty(Ctx)));
+  }
 #else
   else if (TailFolded)
-#endif // SIFIVE_CUSTOMIZATION
     Cmp = Plan.getOrAddLiveIn(ConstantInt::getTrue(
         IntegerType::getInt1Ty(TripCount->getType()->getContext())));
+#endif // SIFIVE_CUSTOMIZATION
   else
     Cmp = Builder.createICmp(CmpInst::ICMP_EQ, Plan.getTripCount(),
                              &Plan.getVectorTripCount(), LatchDL, "cmp.n");
