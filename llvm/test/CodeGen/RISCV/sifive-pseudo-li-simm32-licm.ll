@@ -2,12 +2,12 @@
 ;
 ; Test to show that there is an ADDIW that is not hoisted without +pseudo-li-simm32
 ; RUN: [ $(llc -mtriple=riscv64 -debug-only=machinelicm < %s 2>&1 \
-; RUN:     | grep -c "Won't hoist.*ADDIW") \
+; RUN:     | grep -c "Won't hoist.*ADDI") \
 ; RUN:   -gt 0 ]
 
 ; Test to show that ADDIW is hoisted with +pseudo-li-simm32
 ; RUN: [ $(llc -mtriple=riscv64 -debug-only=machinelicm -mattr=+pseudo-li-simm32 < %s 2>&1 \
-; RUN:     | grep -c "Won't hoist.*ADDIW") \
+; RUN:     | grep -c "Won't hoist.*ADDI") \
 ; RUN:   -eq 0 ]
 
 @a = external local_unnamed_addr global [0 x i32], align 4
