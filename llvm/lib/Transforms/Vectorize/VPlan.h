@@ -2448,12 +2448,6 @@ class VPReductionPHIRecipe : public VPHeaderPHIRecipe,
   /// The phi is part of an ordered reduction. Requires IsInLoop to be true.
   bool IsOrdered;
 
-#if SIFIVE_CUSTOMIZATION
-  /// Postpone the operation of start value into postexit. Require IsInLoop
-  /// and IsOrdered to be false.
-  bool PostFixStartValue;
-#endif // SIFIVE_CUSTOMIZATION
-
   /// When expanding the reduction PHI, the plan's VF element count is divided
   /// by this factor to form the reduction phi's VF.
   unsigned VFScaleFactor = 1;
@@ -2463,25 +2457,11 @@ public:
   /// RdxDesc.
   VPReductionPHIRecipe(PHINode *Phi, const RecurrenceDescriptor &RdxDesc,
                        VPValue &Start, bool IsInLoop = false,
-#if SIFIVE_CUSTOMIZATION
-                       bool IsOrdered = false,
-                       unsigned VFScaleFactor = 1,
-                       bool PostFixStartValue = false)
-      : VPHeaderPHIRecipe(VPReductionPHISC, Phi, &Start), RdxDesc(RdxDesc),
-        IsInLoop(IsInLoop), IsOrdered(IsOrdered),
-        PostFixStartValue(PostFixStartValue),
-        VFScaleFactor(VFScaleFactor) {
-#else
                        bool IsOrdered = false, unsigned VFScaleFactor = 1)
       : VPHeaderPHIRecipe(VPDef::VPReductionPHISC, Phi, &Start),
         RdxDesc(RdxDesc), IsInLoop(IsInLoop), IsOrdered(IsOrdered),
         VFScaleFactor(VFScaleFactor) {
-#endif // SIFIVE_CUSTOMIZATION
     assert((!IsOrdered || IsInLoop) && "IsOrdered requires IsInLoop");
-#if SIFIVE_CUSTOMIZATION
-    assert((!PostFixStartValue || !IsOrdered || !IsInLoop) &&
-           "PostFixStartValue requires IsInLoop and IsOrdered to be false");
-#endif // SIFIVE_CUSTOMIZATION
   }
 
   ~VPReductionPHIRecipe() override = default;
@@ -2514,12 +2494,6 @@ public:
   const RecurrenceDescriptor &getRecurrenceDescriptor() const {
     return RdxDesc;
   }
-
-#if SIFIVE_CUSTOMIZATION
-  /// Returns true, if the operation of start value is preferred to postpone
-  /// into postexit.
-  bool postFixStartValue() const { return PostFixStartValue; }
-#endif // SIFIVE_CUSTOMIZATION
 
   /// Returns true, if the phi is part of an ordered reduction.
   bool isOrdered() const { return IsOrdered; }

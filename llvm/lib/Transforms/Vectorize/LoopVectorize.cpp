@@ -1202,18 +1202,6 @@ public:
   /// given vectorization factors.
   SmallVector<VPRegisterUsage, 8>
   calculateRegisterUsage(ArrayRef<ElementCount> VFs);
-
-  /// Returns true if the target prefer to postpone the operation of start value
-  /// into postexit.
-  bool postFixStartValue(const RecurrenceDescriptor &RdxDesc, PHINode *Phi) const {
-    RecurKind RK = RdxDesc.getRecurrenceKind();
-    return !useOrderedReductions(RdxDesc) && !isInLoopReduction(Phi) &&
-           !RecurrenceDescriptor::isMinMaxRecurrenceKind(RK) &&
-           !RecurrenceDescriptor::isAnyOfRecurrenceKind(RK) &&
-           !RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK) &&
-           TTI.preferPostFixStartValue(RdxDesc.getOpcode(),
-                                       RdxDesc.getRecurrenceType());
-  }
 #endif // SIFIVE_CUSTOMIZATION
 
   /// \returns The smallest bitwidth each instruction can be represented with.
@@ -10237,12 +10225,7 @@ VPRecipeBase *VPRecipeBuilder::tryToCreateWidenRecipe(VPSingleDefRecipe *R,
           getScalingForReduction(RdxDesc.getLoopExitInstr()).value_or(1);
       PhiRecipe = new VPReductionPHIRecipe(
           Phi, RdxDesc, *StartV, CM.isInLoopReduction(Phi),
-#if SIFIVE_CUSTOMIZATION
-          CM.useOrderedReductions(RdxDesc), ScaleFactor,
-          CM.postFixStartValue(RdxDesc, Phi));
-#else
           CM.useOrderedReductions(RdxDesc), ScaleFactor);
-#endif // SIFIVE_CUSTOMIZATION
 #if SIFIVE_CUSTOMIZATION
     } else if (Legal->isFixedOrderRecurrence(Phi)) {
 #else
@@ -11759,23 +11742,11 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
       Type *I32Ty = IntegerType::getInt32Ty(PhiTy->getContext());
       auto *ScaleFactorVPV =
           Plan->getOrAddLiveIn(ConstantInt::get(I32Ty, ScaleFactor));
-#if SIFIVE_CUSTOMIZATION
-      VPValue *StartV = nullptr;
-      if (PhiR->postFixStartValue()) {
-        StartV = PHBuilder.createNaryOp(
-            VPInstruction::ReductionStartVector, {Iden, Iden, ScaleFactorVPV},
-            PhiTy->isFloatingPointTy() ? RdxDesc.getFastMathFlags()
-                                       : FastMathFlags());
-      } else {
-#endif // SIFIVE_CUSTOMIZATION
-        StartV = PHBuilder.createNaryOp(
-            VPInstruction::ReductionStartVector,
-            {PhiR->getStartValue(), Iden, ScaleFactorVPV},
-            PhiTy->isFloatingPointTy() ? RdxDesc.getFastMathFlags()
-                                       : FastMathFlags());
-#ifdef SIFIVE_CUSTOMIZATION
-      }
-#endif // SIFIVE_CUSTOMIZATION
+      VPValue *StartV = PHBuilder.createNaryOp(
+          VPInstruction::ReductionStartVector,
+          {PhiR->getStartValue(), Iden, ScaleFactorVPV},
+          PhiTy->isFloatingPointTy() ? RdxDesc.getFastMathFlags()
+                                     : FastMathFlags());
       PhiR->setOperand(0, StartV);
     }
   }

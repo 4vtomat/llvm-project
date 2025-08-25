@@ -1152,10 +1152,6 @@ public:
 #if SIFIVE_CUSTOMIZATION
   virtual bool useVLAVectorizer() const { return false; }
 
-  virtual bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const {
-    return false;
-  }
-
   virtual bool isLegalVectorInterleave(VectorType *VTy, unsigned Factor,
                                        const DataLayout &DL) const {
     return false;

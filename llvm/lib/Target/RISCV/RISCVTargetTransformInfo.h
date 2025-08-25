@@ -618,7 +618,6 @@ public:
 
 #if SIFIVE_CUSTOMIZATION
   unsigned getInliningThresholdMultiplier() const override;
-  bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const override;
 
   Type *getScalableVectorFromFixed(Type *Ty) const override;
 

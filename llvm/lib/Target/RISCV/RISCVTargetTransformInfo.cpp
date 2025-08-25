@@ -40,11 +40,6 @@ static cl::opt<bool>
                      cl::desc("Enable VLA Vectorizer on RISCV Targets"),
                      cl::init(true), cl::Hidden);
 
-static cl::opt<bool> PreferPostFixStartValue(
-    "riscv-prefer-post-fix-start-value",
-    cl::desc("Prefer to postpone the computation of start value in reduction."),
-    cl::init(true), cl::Hidden);
-
 static cl::opt<unsigned>
   ExitingBlockThreshold("riscv-exiting-block-threshold",
                         cl::desc("Maximum number of exiting blocks allowed for "
@@ -4195,12 +4190,6 @@ unsigned RISCVTTIImpl::getMaximumVF(unsigned ElemWidth, unsigned Opcode) const {
 #if SIFIVE_CUSTOMIZATION
 unsigned RISCVTTIImpl::getInliningThresholdMultiplier() const {
   return InliningThresholdMultiplier;
-}
-
-bool RISCVTTIImpl::preferPostFixStartValue(unsigned Opcode, Type *Ty) const {
-  // TODO: More experiments are needed to confirm whether all kinds of reduction
-  // can benefit.
-  return PreferPostFixStartValue;
 }
 
 Type *RISCVTTIImpl::getScalableVectorFromFixed(Type *Ty) const {

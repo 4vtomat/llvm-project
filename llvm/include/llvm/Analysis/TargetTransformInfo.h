@@ -1881,10 +1881,6 @@ public:
   /// \returns True if the target should use the VLA Vectorizer.
   bool useVLAVectorizer() const;
 
-  /// \returns True if the target prefers to postpone the computation of the
-  /// start value.
-  bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const;
-
   /// \returns True if `experimental.vector.interleave` or
   /// `experimental.vector.deinterleave` intrinsics are legal for a given vector
   /// type \p VTy and given interleave factor \p Factor

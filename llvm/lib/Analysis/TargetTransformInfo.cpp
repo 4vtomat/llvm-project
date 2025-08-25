@@ -1524,11 +1524,6 @@ bool TargetTransformInfo::useVLAVectorizer() const {
   return TTIImpl->useVLAVectorizer();
 }
 
-bool TargetTransformInfo::preferPostFixStartValue(unsigned Opcode,
-                                                  Type *Ty) const {
-  return TTIImpl->preferPostFixStartValue(Opcode, Ty);
-}
-
 bool TargetTransformInfo::isLegalVectorInterleave(VectorType *VTy,
                                                   unsigned Factor,
                                                   const DataLayout &DL) const {
