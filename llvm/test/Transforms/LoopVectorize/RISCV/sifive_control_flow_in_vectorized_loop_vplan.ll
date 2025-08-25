@@ -11,8 +11,8 @@
 ; VPLAN:       Successor(s): vector.body
 ; VPLAN-EMPTY:
 ; VPLAN-NEXT:  vector.body:
-; VPLAN-NEXT:    EMIT vp<[[IV:.+]]> = phi [ ir<0>, ir-bb<[[VEC_PH]]> ], [ vp<[[IV_NEXT:.+]]>, vector.body.split ]
-; VPLAN-NEXT:    EMIT vp<[[EVL_IV:.+]]> = phi [ ir<0>, ir-bb<[[VEC_PH]]> ], [ vp<[[EVL_IV_NEXT:.+]]>, vector.body.split ]
+; VPLAN-NEXT:    EMIT-SCALAR vp<[[IV:.+]]> = phi [ ir<0>, ir-bb<[[VEC_PH]]> ], [ vp<[[IV_NEXT:.+]]>, vector.body.split ]
+; VPLAN-NEXT:    EMIT-SCALAR vp<[[EVL_IV:.+]]> = phi [ ir<0>, ir-bb<[[VEC_PH]]> ], [ vp<[[EVL_IV_NEXT:.+]]>, vector.body.split ]
 ; VPLAN-NEXT:    EMIT vp<[[AVL:.+]]> = sub ir<[[TC:.+]]>, vp<[[EVL_IV]]>
 ; VPLAN-NEXT:    EMIT vp<[[EVL:.+]]> = EXPLICIT-VECTOR-LENGTH vp<[[AVL]]>
 ; VPLAN-NEXT:    CLONE ir<[[ARRIDX:.+]]> = getelementptr ir<{{.*}}>, vp<[[EVL_IV]]>

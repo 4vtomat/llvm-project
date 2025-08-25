@@ -50,7 +50,7 @@ define i64 @test_external_iv_user(ptr %a, ptr %b) #0 {
 ; CHECK-NEXT: Cost of 0 for VF 16: induction instruction   %i.iv = phi i64 [ 0, %entry ], [ %i.iv.next, %for.body ]
 ; CHECK-NEXT: Cost of 0 for VF 16: EMIT vp<{{.+}}> = CANONICAL-INDUCTION ir<0>, vp<%index.next>
 ; CHECK: Cost for VF 16: 58
-; CHECK: Cost of Invalid for VF vscale x 1: WIDEN ir<%0> = load vp<%5>
+; CHECK: Cost of Invalid for VF vscale x 1: WIDEN ir<%0> = load vp<%6>
 entry:
   br label %for.body
 
