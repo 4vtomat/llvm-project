@@ -10686,8 +10686,7 @@ static void addScalarResumePhis(VPRecipeBuilder &Builder, VPlan &Plan,
                               .find(cast<PHINode>(CSAPhi->getUnderlyingValue()))
                               ->second;
       auto *ResumeFromVectorLoop = State->getExtractScalarRecipe();
-      auto *ResumePhiR = ScalarPHBuilder.createNaryOp(
-          Instruction::PHI,
+      auto *ResumePhiR = ScalarPHBuilder.createScalarPhi(
           {ResumeFromVectorLoop, ResumeFromVectorLoop->getVPInitScalar()}, {},
           "bc.merge.csa");
       ScalarPhiIRI->addOperand(ResumePhiR);
