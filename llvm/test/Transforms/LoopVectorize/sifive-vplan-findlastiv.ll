@@ -35,15 +35,19 @@ define i64 @findlastiv(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-NEXT: Successor(s): middle.block
 ; CHECK-EMPTY:
 ; CHECK-NEXT: middle.block:
-; CHECK-NEXT:   EMIT vp<{{.*}}> = compute-find-last-iv-result ir<%rdx>, ir<%ii>, ir<%cond>
-; CHECK-NEXT:   EMIT vp<{{.*}}> = extract-last-element vp<{{.*}}>
+; CHECK-NEXT:   EMIT vp<[[RESULT:%.+]]> = compute-find-last-iv-result ir<%rdx>, ir<%ii>, ir<%cond>
+; CHECK-NEXT:   EMIT vp<[[EXTRACT_RES:%.+]]> = extract-last-element vp<[[RESULT]]>
 ; CHECK-NEXT:   EMIT vp<[[EXIT_COND:%.+]]> = icmp eq ir<[[OTC]]>, vp<[[VTC]]>
 ; CHECK-NEXT:   EMIT branch-on-cond vp<[[EXIT_COND]]>
 ; CHECK-NEXT: Successor(s): ir-bb<exit>, scalar.ph
 ; CHECK-EMPTY:
+; CHECK-NEXT: ir-bb<exit>:
+; CHECK-NEXT:   IR   %cond.lcssa = phi i64 [ %cond, %for.body ] (extra operand: vp<[[EXTRACT_RES]]> from middle.block)
+; CHECK-NEXT: No successors
+; CHECK-EMPTY:
 ; CHECK-NEXT: scalar.ph:
-; CHECK-NEXT:   EMIT vp<%bc.resume.val> = resume-phi vp<%2>, ir<0>
-; CHECK-NEXT:   EMIT vp<%bc.merge.rdx> = resume-phi vp<%8>, ir<%ii>
+; CHECK-NEXT:   EMIT-SCALAR vp<%bc.resume.val> = phi [ vp<[[VTC]]>, middle.block ], [ ir<0>, ir-bb<entry> ]
+; CHECK-NEXT:   EMIT-SCALAR vp<%bc.merge.rdx> = phi [ vp<[[RESULT]]>, middle.block ], [ ir<%ii>, ir-bb<entry> ]
 ; CHECK-NEXT: Successor(s): ir-bb<for.body>
 ; CHECK-EMPTY:
 ; CHECK-NEXT: ir-bb<for.body>:
@@ -57,10 +61,6 @@ define i64 @findlastiv(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-NEXT:   IR   %cond = select i1 %cmp2, i64 %iv, i64 %rdx
 ; CHECK-NEXT:   IR   %inc = add nuw nsw i64 %iv, 1
 ; CHECK-NEXT:   IR   %exitcond.not = icmp eq i64 %inc, %n
-; CHECK-NEXT: No successors
-; CHECK-EMPTY:
-; CHECK-NEXT: ir-bb<exit>:
-; CHECK-NEXT:   IR %cond.lcssa = phi i64 [ %cond, %for.body ] (extra operand: vp<{{.*}}> from middle.block)
 ; CHECK-NEXT: No successors
 ; CHECK-NEXT: }
 ;
@@ -93,7 +93,7 @@ define i64 @findlastiv_need_mask(ptr %a, ptr %b, i64 %ii, i64 %iv_start, i64 %n)
 ; CHECK-EMPTY:
 ; CHECK:      ir-bb<for.body.preheader>:
 ; CHECK-NEXT:   EMIT vp<[[OTC]]> = EXPAND SCEV ((-1 * %iv_start) + %n)
-; CHECK-NEXT: Successor(s): vector.ph
+; CHECK-NEXT: Successor(s): scalar.ph, vector.ph
 ; CHECK-EMPTY:
 ; CHECK:      vector.ph:
 ; CHECK-NEXT:    vp<[[DIV0:%.+]]> = DERIVED-IV ir<%iv_start> + vp<%2> * ir<1>
@@ -128,9 +128,13 @@ define i64 @findlastiv_need_mask(ptr %a, ptr %b, i64 %ii, i64 %iv_start, i64 %n)
 ; CHECK-NEXT:   EMIT branch-on-cond vp<[[EXIT_COND]]>
 ; CHECK-NEXT: Successor(s): ir-bb<exit.loopexit>, scalar.ph
 ; CHECK-EMPTY:
+; CHECK-NEXT: ir-bb<exit.loopexit>:
+; CHECK-NEXT:   IR   %cond.lcssa1 = phi i64 [ %cond, %for.body ] (extra operand: vp<[[EXT]]> from middle.block)
+; CHECK-NEXT: No successors
+; CHECK-EMPTY:
 ; CHECK-NEXT: scalar.ph:
-; CHECK-NEXT:   EMIT vp<%bc.resume.val> = resume-phi vp<%4>, ir<%iv_start>
-; CHECK-NEXT:   EMIT vp<%bc.merge.rdx> = resume-phi vp<%12>, ir<%ii>
+; CHECK-NEXT:   EMIT-SCALAR vp<%bc.resume.val> = phi [ vp<[[DIV0]]>, middle.block ], [ ir<%iv_start>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:   EMIT-SCALAR vp<%bc.merge.rdx> = phi [ vp<[[RDX]]>, middle.block ], [ ir<%ii>, ir-bb<for.body.preheader> ]
 ; CHECK-NEXT: Successor(s): ir-bb<for.body>
 ; CHECK-EMPTY:
 ; CHECK-NEXT: ir-bb<for.body>:
@@ -144,10 +148,6 @@ define i64 @findlastiv_need_mask(ptr %a, ptr %b, i64 %ii, i64 %iv_start, i64 %n)
 ; CHECK-NEXT:   IR   %cond = select i1 %cmp2, i64 %iv, i64 %rdx
 ; CHECK-NEXT:   IR   %inc = add nuw nsw i64 %iv, 1
 ; CHECK-NEXT:   IR   %exitcond.not = icmp eq i64 %inc, %n
-; CHECK-NEXT: No successors
-; CHECK-EMPTY:
-; CHECK-NEXT: ir-bb<exit.loopexit>:
-; CHECK-NEXT:   IR   %cond.lcssa1 = phi i64 [ %cond, %for.body ] (extra operand: vp<[[EXT]]> from middle.block)
 ; CHECK-NEXT: No successors
 ; CHECK-NEXT: }
 ;
@@ -182,10 +182,10 @@ define i64 @findlastiv_need_mask_with_intermediate_store(ptr %a, ptr %b, i64 %ii
 ; CHECK-EMPTY:
 ; CHECK:      ir-bb<for.body.preheader>:
 ; CHECK-NEXT:   EMIT vp<[[OTC]]> = EXPAND SCEV ((-1 * %iv_start) + %n)
-; CHECK-NEXT: Successor(s): vector.ph
+; CHECK-NEXT: Successor(s): scalar.ph, vector.ph
 ; CHECK-EMPTY:
 ; CHECK:      vector.ph:
-; CHECK-NEXT:   vp<%4> = DERIVED-IV ir<%iv_start> + vp<[[VTC]]> * ir<1>
+; CHECK-NEXT:   vp<[[DIV0:%.+]]> = DERIVED-IV ir<%iv_start> + vp<[[VTC]]> * ir<1>
 ; CHECK-NEXT: Successor(s): vector loop
 ; CHECK-EMPTY:
 ; CHECK-NEXT: <x1> vector loop: {
@@ -218,9 +218,13 @@ define i64 @findlastiv_need_mask_with_intermediate_store(ptr %a, ptr %b, i64 %ii
 ; CHECK-NEXT:   EMIT branch-on-cond vp<[[EXIT_COND]]>
 ; CHECK-NEXT: Successor(s): ir-bb<exit.loopexit>, scalar.ph
 ; CHECK-EMPTY:
+; CHECK-NEXT: ir-bb<exit.loopexit>:
+; CHECK-NEXT:   IR   %cond.lcssa1 = phi i64 [ %cond, %for.body ] (extra operand: vp<[[EXT]]> from middle.block)
+; CHECK-NEXT: No successors
+; CHECK-EMPTY:
 ; CHECK-NEXT: scalar.ph:
-; CHECK-NEXT:   EMIT vp<%bc.resume.val> = resume-phi vp<%4>, ir<%iv_start>
-; CHECK-NEXT:   EMIT vp<%bc.merge.rdx> = resume-phi vp<%12>, ir<%ii>
+; CHECK-NEXT:   EMIT-SCALAR vp<%bc.resume.val> = phi [ vp<[[DIV0]]>, middle.block ], [ ir<%iv_start>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:   EMIT-SCALAR vp<%bc.merge.rdx> = phi [ vp<[[RDX]]>, middle.block ], [ ir<%ii>, ir-bb<for.body.preheader> ]
 ; CHECK-NEXT: Successor(s): ir-bb<for.body>
 ; CHECK-EMPTY:
 ; CHECK-NEXT: ir-bb<for.body>:
@@ -235,10 +239,6 @@ define i64 @findlastiv_need_mask_with_intermediate_store(ptr %a, ptr %b, i64 %ii
 ; CHECK-NEXT:   IR   store i64 %cond, ptr %dst, align 8
 ; CHECK-NEXT:   IR   %inc = add nuw nsw i64 %iv, 1
 ; CHECK-NEXT:   IR   %exitcond.not = icmp eq i64 %inc, %n
-; CHECK-NEXT: No successors
-; CHECK-EMPTY:
-; CHECK-NEXT: ir-bb<exit.loopexit>:
-; CHECK-NEXT:   IR   %cond.lcssa1 = phi i64 [ %cond, %for.body ] (extra operand: vp<[[EXT]]> from middle.block)
 ; CHECK-NEXT: No successors
 ; CHECK-NEXT: }
 ;
