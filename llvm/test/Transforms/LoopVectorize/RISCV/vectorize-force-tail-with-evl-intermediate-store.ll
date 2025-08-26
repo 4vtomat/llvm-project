@@ -54,8 +54,8 @@ define void @reduction_intermediate_store(ptr %a, i64 %n, i32 %start, ptr %addr)
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP6:%.*]] = icmp eq i64 [[IV_NEXT]], [[N]]
 ; IF-EVL-OUTLOOP-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ; IF-EVL-OUTLOOP:       middle.block:
-; IF-EVL-OUTLOOP-NEXT:    [[TMP7:%.*]] = call i32 @llvm.vector.reduce.add.nxv2i32(<vscale x 2 x i32> [[VP_OP_MERGE]])
-; IF-EVL-OUTLOOP-NEXT:    store i32 [[TMP7]], ptr [[ADDR]], align 4, !alias.scope [[META7:![0-9]+]], !noalias [[META0]]
+; IF-EVL-OUTLOOP-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; IF-EVL-OUTLOOP-NEXT:    store i32 [[TMP8]], ptr [[ADDR]], align 4, !alias.scope [[META7:![0-9]+]], !noalias [[META0]]
 ; IF-EVL-OUTLOOP-NEXT:    br label [[FOR_END:%.*]]
 ; IF-EVL-OUTLOOP:       scalar.ph:
 ; IF-EVL-OUTLOOP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[VECTOR_MEMCHECK]] ]

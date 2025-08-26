@@ -1266,12 +1266,8 @@ Value *llvm::createAnyOfReduction(IRBuilderBase &Builder, Value *Src,
 
 #if SIFIVE_CUSTOMIZATION
 Value *llvm::createAnyOfReduction(IRBuilderBase &Builder, Value *Src,
-                                  const RecurrenceDescriptor &Desc,
-                                  PHINode *OrigPhi, Value *EVL) {
-  assert(
-      RecurrenceDescriptor::isAnyOfRecurrenceKind(Desc.getRecurrenceKind()) &&
-      "Unexpected reduction kind");
-  Value *InitVal = Desc.getRecurrenceStartValue();
+                                  Value *InitVal, PHINode *OrigPhi,
+                                  Value *EVL) {
   Value *NewVal = nullptr;
 
   // First use the original phi to determine the new value we're trying to
@@ -1310,13 +1306,8 @@ Value *llvm::createFindLastIVReduction(IRBuilderBase &Builder, Value *Src,
 
 #if SIFIVE_CUSTOMIZATION
 Value *llvm::createFindLastIVReduction(IRBuilderBase &Builder, Value *Src,
-                                       const RecurrenceDescriptor &Desc,
+                                       Value *Start, Value *Sentinel,
                                        Value *EVL, Value *Mask) {
-  assert(RecurrenceDescriptor::isFindLastIVRecurrenceKind(
-             Desc.getRecurrenceKind()) &&
-         "Unexpected reduction kind");
-  Value *StartVal = Desc.getRecurrenceStartValue();
-  Value *Sentinel = Desc.getSentinelValue();
   assert(Src->getType()->isVectorTy() &&
          "Must be vector type for tail folding with EVL");
   Value *MaxRdx = Builder.CreateIntMaxReduce(Src, EVL, true, Mask);
@@ -1324,7 +1315,7 @@ Value *llvm::createFindLastIVReduction(IRBuilderBase &Builder, Value *Src,
   // reduction is sentinel value.
   Value *Cmp =
       Builder.CreateCmp(CmpInst::ICMP_NE, MaxRdx, Sentinel, "rdx.select.cmp");
-  return Builder.CreateSelect(Cmp, MaxRdx, StartVal, "rdx.select");
+  return Builder.CreateSelect(Cmp, MaxRdx, Start, "rdx.select");
 }
 #endif // SIFIVE_CUSTOMIZATION
 

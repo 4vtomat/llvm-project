@@ -33,7 +33,7 @@ define float @load_factor_2(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP9:%.*]] = call fast float @llvm.vector.reduce.fadd.nxv2f32(float 0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE]])
+; CHECK-NEXT:    [[TMP9:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[VECTOR_SCEVCHECK]] ]
@@ -69,7 +69,7 @@ define float @load_factor_2(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[TMP21:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT13]], [[N]]
 ; CHECK-NEXT:    br i1 [[TMP21]], label [[MIDDLE_BLOCK14:%.*]], label [[VECTOR_BODY5]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       middle.block14:
-; CHECK-NEXT:    [[TMP22:%.*]] = call fast float @llvm.vector.reduce.fadd.nxv2f32(float 0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE12]])
+; CHECK-NEXT:    [[TMP22:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE12]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP13]])
 ; CHECK-NEXT:    br label [[EXIT]]
 ; CHECK:       scalar.ph3:
 ; CHECK-NEXT:    [[BC_RESUME_VAL15:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
@@ -153,7 +153,7 @@ define float @load_factor_3(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[TMP11:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[TMP11]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP12:%.*]] = call fast float @llvm.vector.reduce.fadd.nxv2f32(float 0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE]])
+; CHECK-NEXT:    [[TMP12:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[VECTOR_SCEVCHECK]] ]
@@ -191,7 +191,7 @@ define float @load_factor_3(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[TMP25:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT16]], [[N]]
 ; CHECK-NEXT:    br i1 [[TMP25]], label [[MIDDLE_BLOCK17:%.*]], label [[VECTOR_BODY7]], !llvm.loop [[LOOP7:![0-9]+]]
 ; CHECK:       middle.block17:
-; CHECK-NEXT:    [[TMP26:%.*]] = call fast float @llvm.vector.reduce.fadd.nxv2f32(float 0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE15]])
+; CHECK-NEXT:    [[TMP26:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE15]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP16]])
 ; CHECK-NEXT:    br label [[EXIT]]
 ; CHECK:       scalar.ph5:
 ; CHECK-NEXT:    [[BC_RESUME_VAL18:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
@@ -288,7 +288,7 @@ define float @load_factor_4(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP15:%.*]] = call fast float @llvm.vector.reduce.fadd.nxv2f32(float 0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE]])
+; CHECK-NEXT:    [[TMP15:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[VECTOR_SCEVCHECK]] ]
@@ -328,7 +328,7 @@ define float @load_factor_4(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[TMP29:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT19]], [[N]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[MIDDLE_BLOCK20:%.*]], label [[VECTOR_BODY9]], !llvm.loop [[LOOP10:![0-9]+]]
 ; CHECK:       middle.block20:
-; CHECK-NEXT:    [[TMP30:%.*]] = call fast float @llvm.vector.reduce.fadd.nxv2f32(float 0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE18]])
+; CHECK-NEXT:    [[TMP30:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE18]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP19]])
 ; CHECK-NEXT:    br label [[EXIT]]
 ; CHECK:       scalar.ph7:
 ; CHECK-NEXT:    [[BC_RESUME_VAL21:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
@@ -438,7 +438,7 @@ define float @load_factor_5(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP18:%.*]] = call fast float @llvm.vector.reduce.fadd.nxv2f32(float 0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE]])
+; CHECK-NEXT:    [[TMP18:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[VECTOR_SCEVCHECK]] ]
@@ -480,7 +480,7 @@ define float @load_factor_5(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[TMP33:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT22]], [[N]]
 ; CHECK-NEXT:    br i1 [[TMP33]], label [[MIDDLE_BLOCK23:%.*]], label [[VECTOR_BODY11]], !llvm.loop [[LOOP13:![0-9]+]]
 ; CHECK:       middle.block23:
-; CHECK-NEXT:    [[TMP34:%.*]] = call fast float @llvm.vector.reduce.fadd.nxv2f32(float 0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE21]])
+; CHECK-NEXT:    [[TMP34:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE21]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP22]])
 ; CHECK-NEXT:    br label [[EXIT]]
 ; CHECK:       scalar.ph9:
 ; CHECK-NEXT:    [[BC_RESUME_VAL24:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
@@ -603,7 +603,7 @@ define float @load_factor_6(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[TMP20:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[TMP20]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP15:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP21:%.*]] = call fast float @llvm.vector.reduce.fadd.nxv2f32(float 0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE]])
+; CHECK-NEXT:    [[TMP21:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[VECTOR_SCEVCHECK]] ]
@@ -647,7 +647,7 @@ define float @load_factor_6(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[TMP37:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT25]], [[N]]
 ; CHECK-NEXT:    br i1 [[TMP37]], label [[MIDDLE_BLOCK26:%.*]], label [[VECTOR_BODY13]], !llvm.loop [[LOOP16:![0-9]+]]
 ; CHECK:       middle.block26:
-; CHECK-NEXT:    [[TMP38:%.*]] = call fast float @llvm.vector.reduce.fadd.nxv2f32(float 0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE24]])
+; CHECK-NEXT:    [[TMP38:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE24]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP25]])
 ; CHECK-NEXT:    br label [[EXIT]]
 ; CHECK:       scalar.ph11:
 ; CHECK-NEXT:    [[BC_RESUME_VAL27:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
@@ -783,7 +783,7 @@ define float @load_factor_7(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[TMP23:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[TMP23]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP24:%.*]] = call fast float @llvm.vector.reduce.fadd.nxv2f32(float 0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE]])
+; CHECK-NEXT:    [[TMP24:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[VECTOR_SCEVCHECK]] ]
@@ -829,7 +829,7 @@ define float @load_factor_7(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[TMP41:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT28]], [[N]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[MIDDLE_BLOCK29:%.*]], label [[VECTOR_BODY15]], !llvm.loop [[LOOP19:![0-9]+]]
 ; CHECK:       middle.block29:
-; CHECK-NEXT:    [[TMP42:%.*]] = call fast float @llvm.vector.reduce.fadd.nxv2f32(float 0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE27]])
+; CHECK-NEXT:    [[TMP42:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE27]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP28]])
 ; CHECK-NEXT:    br label [[EXIT]]
 ; CHECK:       scalar.ph13:
 ; CHECK-NEXT:    [[BC_RESUME_VAL30:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
@@ -978,7 +978,7 @@ define float @load_factor_8(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[TMP26:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[TMP26]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP21:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP27:%.*]] = call fast float @llvm.vector.reduce.fadd.nxv2f32(float 0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE]])
+; CHECK-NEXT:    [[TMP27:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[VECTOR_SCEVCHECK]] ]
@@ -1026,7 +1026,7 @@ define float @load_factor_8(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[TMP45:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT31]], [[N]]
 ; CHECK-NEXT:    br i1 [[TMP45]], label [[MIDDLE_BLOCK32:%.*]], label [[VECTOR_BODY17]], !llvm.loop [[LOOP22:![0-9]+]]
 ; CHECK:       middle.block32:
-; CHECK-NEXT:    [[TMP46:%.*]] = call fast float @llvm.vector.reduce.fadd.nxv2f32(float 0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE30]])
+; CHECK-NEXT:    [[TMP46:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE30]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP31]])
 ; CHECK-NEXT:    br label [[EXIT]]
 ; CHECK:       scalar.ph15:
 ; CHECK-NEXT:    [[BC_RESUME_VAL33:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
@@ -1165,7 +1165,7 @@ define float @load_factor_5_with_gap(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP24:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP15:%.*]] = call fast float @llvm.vector.reduce.fadd.nxv2f32(float 0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE]])
+; CHECK-NEXT:    [[TMP15:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[VECTOR_SCEVCHECK]] ]
@@ -1206,7 +1206,7 @@ define float @load_factor_5_with_gap(i64 %n, ptr %a, i64 %stride) {
 ; CHECK-NEXT:    [[TMP29:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT22]], [[N]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[MIDDLE_BLOCK23:%.*]], label [[VECTOR_BODY9]], !llvm.loop [[LOOP25:![0-9]+]]
 ; CHECK:       middle.block23:
-; CHECK-NEXT:    [[TMP30:%.*]] = call fast float @llvm.vector.reduce.fadd.nxv2f32(float 0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE21]])
+; CHECK-NEXT:    [[TMP30:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE21]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP17]])
 ; CHECK-NEXT:    br label [[EXIT]]
 ; CHECK:       scalar.ph7:
 ; CHECK-NEXT:    [[BC_RESUME_VAL24:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]

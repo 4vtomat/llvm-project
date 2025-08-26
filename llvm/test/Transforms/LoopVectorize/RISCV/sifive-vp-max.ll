@@ -35,7 +35,7 @@ define i64 @test_smin(i32 %n, i64 %s, ptr noundef %a) {
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP8:%.*]] = call i64 @llvm.vector.reduce.smin.nxv1i64(<vscale x 1 x i64> [[VP_OP_MERGE]])
+; CHECK-NEXT:    [[TMP8:%.*]] = call i64 @llvm.vp.reduce.smin.nxv1i64(i64 9223372036854775807, <vscale x 1 x i64> [[VP_OP_MERGE]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
@@ -109,7 +109,7 @@ define i64 @test_smax(i32 %n, i64 %s, ptr noundef %a) {
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP8:%.*]] = call i64 @llvm.vector.reduce.smax.nxv1i64(<vscale x 1 x i64> [[VP_OP_MERGE]])
+; CHECK-NEXT:    [[TMP8:%.*]] = call i64 @llvm.vp.reduce.smax.nxv1i64(i64 -9223372036854775808, <vscale x 1 x i64> [[VP_OP_MERGE]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
@@ -183,7 +183,7 @@ define i64 @test_umin(i32 %n, i64 %s, ptr noundef %a) {
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP8:%.*]] = call i64 @llvm.vector.reduce.umin.nxv1i64(<vscale x 1 x i64> [[VP_OP_MERGE]])
+; CHECK-NEXT:    [[TMP8:%.*]] = call i64 @llvm.vp.reduce.umin.nxv1i64(i64 -1, <vscale x 1 x i64> [[VP_OP_MERGE]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
@@ -257,7 +257,7 @@ define i64 @test_umax(i32 %n, i64 %s, ptr noundef %a) {
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP8:%.*]] = call i64 @llvm.vector.reduce.umax.nxv1i64(<vscale x 1 x i64> [[VP_OP_MERGE]])
+; CHECK-NEXT:    [[TMP8:%.*]] = call i64 @llvm.vp.reduce.umax.nxv1i64(i64 0, <vscale x 1 x i64> [[VP_OP_MERGE]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]

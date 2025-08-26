@@ -56,7 +56,7 @@ define i32 @updateQuantizationParameter(ptr %PMADPictureC1, ptr %FCBUPFMAD, ptr 
 ; CHECK-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP6]]
 ; CHECK-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP14:%.*]] = call fast double @llvm.vector.reduce.fadd.nxv2f64(double 0.000000e+00, <vscale x 2 x double> [[VP_OP_MERGE]])
+; CHECK-NEXT:    [[TMP14:%.*]] = call fast double @llvm.vp.reduce.fadd.nxv2f64(double -0.000000e+00, <vscale x 2 x double> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP8]])
 ; CHECK-NEXT:    store double [[TMP14]], ptr [[PMADPICTUREC1]], align 8, !alias.scope [[META7:![0-9]+]], !noalias [[META0]]
 ; CHECK-NEXT:    br label [[IF_END831_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:

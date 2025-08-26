@@ -21,7 +21,7 @@ define void @test() {
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 1024
 ; CHECK-NEXT:    br i1 [[TMP4]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP6:%.*]] = call reassoc double @llvm.vector.reduce.fadd.nxv8f64(double -0.000000e+00, <vscale x 8 x double> [[VP_OP_MERGE]])
+; CHECK-NEXT:    [[TMP6:%.*]] = call reassoc double @llvm.vp.reduce.fadd.nxv8f64(double -0.000000e+00, <vscale x 8 x double> [[VP_OP_MERGE]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    br label [[FOR_END277_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY264_PREHEADER:%.*]] ]

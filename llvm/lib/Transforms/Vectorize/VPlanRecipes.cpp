@@ -894,20 +894,13 @@ Value *VPInstruction::generate(VPTransformState &State) {
           State.get(getOperand(Idx)), ReducedPartRdx, "bin.rdx");
 
 #if SIFIVE_CUSTOMIZATION
-    // Get its reduction variable descriptor.
-    const RecurrenceDescriptor &RdxDesc = PhiR->getRecurrenceDescriptor();
-
     Value *InitEVL = nullptr;
     if (State.Plan->useVLAVectorizer()) {
       InitEVL = State.get(State.Plan->getInitEVL(), /*NeedsScalar=*/true);
-      assert(InitEVL &&
-             "InitEVL must be initialized in emitIterationCountCheck when "
-             "using VP intrinsic to generate unordered reduction");
+      assert(InitEVL && "InitEVL must be generated when tail folding by EVL");
     }
-#endif // SIFIVE_CUSTOMIZATION
-
-#if SIFIVE_CUSTOMIZATION
-    return InitEVL ? createAnyOfReduction(Builder, ReducedPartRdx, RdxDesc,
+    return InitEVL ? createAnyOfReduction(Builder, ReducedPartRdx,
+                                          State.get(getOperand(1), VPLane(0)),
                                           OrigPhi, InitEVL)
                    : createAnyOfReduction(Builder, ReducedPartRdx,
                                           State.get(getOperand(1), VPLane(0)),
@@ -942,18 +935,15 @@ Value *VPInstruction::generate(VPTransformState &State) {
     Value *InitEVL = nullptr;
     if (State.Plan->useVLAVectorizer()) {
       InitEVL = State.get(State.Plan->getInitEVL(), /*NeedsScalar=*/true);
-      assert(InitEVL &&
-             "InitEVL must be initialized in emitIterationCountCheck when "
-             "using VP intrinsic to generate unordered reduction");
+      assert(InitEVL && "InitEVL must be generated when tail folding by EVL");
     }
-#endif // SIFIVE_CUSTOMIZATION
-
-#ifdef SIFIVE_CUSTOMIZATION
-    return InitEVL ? createFindLastIVReduction(Builder, ReducedPartRdx, RdxDesc,
-                                               InitEVL)
-                   : createFindLastIVReduction(Builder, ReducedPartRdx,
-                                               State.get(getOperand(1), true),
-                                               RdxDesc.getSentinelValue());
+    return InitEVL
+               ? createFindLastIVReduction(Builder, ReducedPartRdx,
+                                           State.get(getOperand(1), true),
+                                           RdxDesc.getSentinelValue(), InitEVL)
+               : createFindLastIVReduction(Builder, ReducedPartRdx,
+                                           State.get(getOperand(1), true),
+                                           RdxDesc.getSentinelValue());
 #else
     return createFindLastIVReduction(Builder, ReducedPartRdx,
                                      State.get(getOperand(1), true),
@@ -1015,7 +1005,18 @@ Value *VPInstruction::generate(VPTransformState &State) {
       // TODO: Support in-order reductions based on the recurrence descriptor.
       // All ops in the reduction inherit fast-math-flags from the recurrence
       // descriptor.
+#if SIFIVE_CUSTOMIZATION
+      Value *InitEVL = nullptr;
+      if (State.Plan->useVLAVectorizer()) {
+        InitEVL = State.get(State.Plan->getInitEVL(), /*NeedsScalar=*/true);
+        assert(InitEVL && "InitEVL must be generated when tail folding by EVL");
+      }
+      ReducedPartRdx =
+          InitEVL ? createSimpleReduction(Builder, ReducedPartRdx, RK, InitEVL)
+                  : createSimpleReduction(Builder, ReducedPartRdx, RK);
+#else
       ReducedPartRdx = createSimpleReduction(Builder, ReducedPartRdx, RK);
+#endif // SIFIVE_CUSTOMIZATION
 
       // If the reduction can be performed in a smaller type, we need to extend
       // the reduction to the wider type before we branch to the original loop.

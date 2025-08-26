@@ -36,7 +36,7 @@ define i32 @vqdot(ptr %a, ptr %b) #0 {
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 1024
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.vector.reduce.add.nxv2i32(<vscale x 2 x i32> [[TMP6]])
+; CHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[TMP6]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    br label [[FOR_EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ;
@@ -68,7 +68,7 @@ define i32 @vqdot(ptr %a, ptr %b) #0 {
 ; FIXED-V-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
 ; FIXED-V-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; FIXED-V:       middle.block:
-; FIXED-V-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vector.reduce.add.v8i32(<8 x i32> [[TMP13]])
+; FIXED-V-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vp.reduce.add.v8i32(i32 0, <8 x i32> [[TMP13]], <8 x i1> splat (i1 true), i32 [[TMP2]])
 ; FIXED-V-NEXT:    [[TMP9:%.*]] = call <8 x i1> @llvm.vp.icmp.v8i64(<8 x i64> splat (i64 1024), <8 x i64> splat (i64 1024), metadata !"eq", <8 x i1> splat (i1 true), i32 [[TMP2]])
 ; FIXED-V-NEXT:    [[TMP10:%.*]] = extractelement <8 x i1> [[TMP9]], i32 0
 ; FIXED-V-NEXT:    br i1 [[TMP10]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
@@ -102,7 +102,7 @@ define i32 @vqdot(ptr %a, ptr %b) #0 {
 ; FIXED-ZVQDOTQ-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
 ; FIXED-ZVQDOTQ-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; FIXED-ZVQDOTQ:       middle.block:
-; FIXED-ZVQDOTQ-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vector.reduce.add.v2i32(<2 x i32> [[PARTIAL_REDUCE5]])
+; FIXED-ZVQDOTQ-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vp.reduce.add.v2i32(i32 0, <2 x i32> [[PARTIAL_REDUCE5]], <2 x i1> splat (i1 true), i32 [[TMP2]])
 ; FIXED-ZVQDOTQ-NEXT:    [[TMP9:%.*]] = call <8 x i1> @llvm.vp.icmp.v8i64(<8 x i64> splat (i64 1024), <8 x i64> splat (i64 1024), metadata !"eq", <8 x i1> splat (i1 true), i32 [[TMP2]])
 ; FIXED-ZVQDOTQ-NEXT:    [[TMP10:%.*]] = extractelement <8 x i1> [[TMP9]], i32 0
 ; FIXED-ZVQDOTQ-NEXT:    br i1 [[TMP10]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
@@ -161,7 +161,7 @@ define i32 @vqdotu(ptr %a, ptr %b) #0 {
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 1024
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.vector.reduce.add.nxv2i32(<vscale x 2 x i32> [[TMP6]])
+; CHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[TMP6]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    br label [[FOR_EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ;
@@ -193,7 +193,7 @@ define i32 @vqdotu(ptr %a, ptr %b) #0 {
 ; FIXED-V-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
 ; FIXED-V-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; FIXED-V:       middle.block:
-; FIXED-V-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vector.reduce.add.v8i32(<8 x i32> [[TMP13]])
+; FIXED-V-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vp.reduce.add.v8i32(i32 0, <8 x i32> [[TMP13]], <8 x i1> splat (i1 true), i32 [[TMP2]])
 ; FIXED-V-NEXT:    [[TMP9:%.*]] = call <8 x i1> @llvm.vp.icmp.v8i64(<8 x i64> splat (i64 1024), <8 x i64> splat (i64 1024), metadata !"eq", <8 x i1> splat (i1 true), i32 [[TMP2]])
 ; FIXED-V-NEXT:    [[TMP10:%.*]] = extractelement <8 x i1> [[TMP9]], i32 0
 ; FIXED-V-NEXT:    br i1 [[TMP10]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
@@ -227,7 +227,7 @@ define i32 @vqdotu(ptr %a, ptr %b) #0 {
 ; FIXED-ZVQDOTQ-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
 ; FIXED-ZVQDOTQ-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; FIXED-ZVQDOTQ:       middle.block:
-; FIXED-ZVQDOTQ-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vector.reduce.add.v2i32(<2 x i32> [[PARTIAL_REDUCE5]])
+; FIXED-ZVQDOTQ-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vp.reduce.add.v2i32(i32 0, <2 x i32> [[PARTIAL_REDUCE5]], <2 x i1> splat (i1 true), i32 [[TMP2]])
 ; FIXED-ZVQDOTQ-NEXT:    [[TMP9:%.*]] = call <8 x i1> @llvm.vp.icmp.v8i64(<8 x i64> splat (i64 1024), <8 x i64> splat (i64 1024), metadata !"eq", <8 x i1> splat (i1 true), i32 [[TMP2]])
 ; FIXED-ZVQDOTQ-NEXT:    [[TMP10:%.*]] = extractelement <8 x i1> [[TMP9]], i32 0
 ; FIXED-ZVQDOTQ-NEXT:    br i1 [[TMP10]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
@@ -286,7 +286,7 @@ define i32 @vqdotsu(ptr %a, ptr %b) #0 {
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vector.reduce.add.nxv2i32(<vscale x 2 x i32> [[TMP11]])
+; CHECK-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[TMP11]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    br label [[FOR_EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ;
@@ -318,7 +318,7 @@ define i32 @vqdotsu(ptr %a, ptr %b) #0 {
 ; FIXED-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
 ; FIXED-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
 ; FIXED:       middle.block:
-; FIXED-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vector.reduce.add.v8i32(<8 x i32> [[TMP13]])
+; FIXED-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vp.reduce.add.v8i32(i32 0, <8 x i32> [[TMP13]], <8 x i1> splat (i1 true), i32 [[TMP2]])
 ; FIXED-NEXT:    [[TMP9:%.*]] = call <8 x i1> @llvm.vp.icmp.v8i64(<8 x i64> splat (i64 1024), <8 x i64> splat (i64 1024), metadata !"eq", <8 x i1> splat (i1 true), i32 [[TMP2]])
 ; FIXED-NEXT:    [[TMP10:%.*]] = extractelement <8 x i1> [[TMP9]], i32 0
 ; FIXED-NEXT:    br i1 [[TMP10]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
@@ -376,7 +376,7 @@ define i32 @vqdotsu2(ptr %a, ptr %b) #0 {
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vector.reduce.add.nxv2i32(<vscale x 2 x i32> [[TMP11]])
+; CHECK-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[TMP11]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    br label [[FOR_EXIT:%.*]]
 ; CHECK:       scalar.ph:
 ;
@@ -408,7 +408,7 @@ define i32 @vqdotsu2(ptr %a, ptr %b) #0 {
 ; FIXED-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
 ; FIXED-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
 ; FIXED:       middle.block:
-; FIXED-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vector.reduce.add.v8i32(<8 x i32> [[TMP13]])
+; FIXED-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vp.reduce.add.v8i32(i32 0, <8 x i32> [[TMP13]], <8 x i1> splat (i1 true), i32 [[TMP2]])
 ; FIXED-NEXT:    [[TMP9:%.*]] = call <8 x i1> @llvm.vp.icmp.v8i64(<8 x i64> splat (i64 1024), <8 x i64> splat (i64 1024), metadata !"eq", <8 x i1> splat (i1 true), i32 [[TMP2]])
 ; FIXED-NEXT:    [[TMP10:%.*]] = extractelement <8 x i1> [[TMP9]], i32 0
 ; FIXED-NEXT:    br i1 [[TMP10]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]

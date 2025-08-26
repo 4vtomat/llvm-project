@@ -53,6 +53,7 @@ define float @fadd_fmf_reduction(float* noalias nocapture readonly %a, i64 %n, f
 ; CHECK-SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N:%.*]], 13
 ; CHECK-SCALABLE-NEXT:    br i1 [[PROF_MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-SCALABLE:       vector.ph:
+; CHECK-SCALABLE-NEXT:    [[TMP8:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-SCALABLE-NEXT:    [[TMP0:%.*]] = insertelement <vscale x 2 x float> zeroinitializer, float [[START:%.*]], i64 0
 ; CHECK-SCALABLE-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-SCALABLE:       vector.body:
@@ -69,7 +70,7 @@ define float @fadd_fmf_reduction(float* noalias nocapture readonly %a, i64 %n, f
 ; CHECK-SCALABLE-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; CHECK-SCALABLE-NEXT:    br i1 [[TMP5]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-SCALABLE:       middle.block:
-; CHECK-SCALABLE-NEXT:    [[TMP6:%.*]] = call fast float @llvm.vector.reduce.fadd.nxv2f32(float 0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE]])
+; CHECK-SCALABLE-NEXT:    [[TMP6:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP8]])
 ; CHECK-SCALABLE-NEXT:    br label [[FOR_END:%.*]]
 ; CHECK-SCALABLE:       scalar.ph:
 ; CHECK-SCALABLE-NEXT:    br label [[FOR_BODY:%.*]]

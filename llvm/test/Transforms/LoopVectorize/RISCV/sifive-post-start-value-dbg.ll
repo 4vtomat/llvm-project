@@ -121,7 +121,7 @@ define dso_local signext i16 @foo(i16* nocapture readonly %ptr, i32 signext %sta
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    br i1 [[TMP10]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !dbg [[DBG11]], !llvm.loop [[LOOP20:![0-9]+]]
 ; IGNORE-INTERLEAVE-FOR-VLA:       middle.block:
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP11:%.*]] = trunc <vscale x 4 x i32> [[TMP7]] to <vscale x 4 x i16>, !dbg [[DBG10]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP12:%.*]] = call i16 @llvm.vector.reduce.add.nxv4i16(<vscale x 4 x i16> [[TMP11]]), !dbg [[DBG10]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP12:%.*]] = call i16 @llvm.vp.reduce.add.nxv4i16(i16 0, <vscale x 4 x i16> [[TMP11]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP2]]), !dbg [[DBG10]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP13:%.*]] = zext i16 [[TMP12]] to i32, !dbg [[DBG10]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    br label [[WHILE_END_LOOPEXIT:%.*]], !dbg [[DBG11]]
 ; IGNORE-INTERLEAVE-FOR-VLA:       scalar.ph:

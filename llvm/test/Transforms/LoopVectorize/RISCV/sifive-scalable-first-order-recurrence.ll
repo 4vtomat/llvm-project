@@ -150,7 +150,7 @@ define i32 @recurrence_2(ptr nocapture readonly %a, i32 %n) {
 ; CHECK-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP0]]
 ; CHECK-NEXT:    br i1 [[TMP13]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
-; CHECK-NEXT:    [[TMP10:%.*]] = call i32 @llvm.vector.reduce.smin.nxv2i32(<vscale x 2 x i32> [[VP_OP_MERGE]])
+; CHECK-NEXT:    [[TMP10:%.*]] = call i32 @llvm.vp.reduce.smin.nxv2i32(i32 2147483647, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP23]])
 ; CHECK-NEXT:    br label %[[FOR_COND_CLEANUP_LOOPEXIT:.*]]
 ; CHECK:       [[SCALAR_PH]]:
 ; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i32 [ [[DOTPRE]], %[[FOR_PREHEADER]] ]

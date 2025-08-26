@@ -21,7 +21,7 @@ define double @foo() {
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], -1
 ; CHECK-NEXT:    br i1 [[TMP4]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP6:%.*]] = call fast double @llvm.vector.reduce.fadd.nxv1f64(double 0.000000e+00, <vscale x 1 x double> [[VP_OP_MERGE]])
+; CHECK-NEXT:    [[TMP6:%.*]] = call fast double @llvm.vp.reduce.fadd.nxv1f64(double -0.000000e+00, <vscale x 1 x double> [[VP_OP_MERGE]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP0]])
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 2, [[FOR_BODY_PREHEADER:%.*]] ]
