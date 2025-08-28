@@ -1166,7 +1166,6 @@ public:
 
   virtual bool enableScalableVectorization() const { return false; }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   virtual Type *getScalableVectorFromFixed(Type *Ty) const {
     FixedVectorType *VecTy = cast<FixedVectorType>(Ty);
@@ -1175,13 +1174,7 @@ public:
   }
 #endif
 
-  virtual bool hasActiveVectorLength(unsigned Opcode, Type *DataType,
-                                     Align Alignment) const {
-    return false;
-  }
-=======
   virtual bool hasActiveVectorLength() const { return false; }
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 
   virtual bool isProfitableToSinkOperands(Instruction *I,
                                           SmallVectorImpl<Use *> &Ops) const {
