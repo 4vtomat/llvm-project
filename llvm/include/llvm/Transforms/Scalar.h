@@ -165,16 +165,11 @@ LLVM_ABI FunctionPass *createPartiallyInlineLibCallsPass();
 //
 // SeparateConstOffsetFromGEP - Split GEPs for better CSE
 //
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-FunctionPass *
+LLVM_ABI FunctionPass *
 createSeparateConstOffsetFromGEPPass(bool LowerGEP = false,
                                      bool ForceCheckAddressingMode = false);
 #endif
-=======
-LLVM_ABI FunctionPass *
-createSeparateConstOffsetFromGEPPass(bool LowerGEP = false);
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 
 //===----------------------------------------------------------------------===//
 //
