@@ -7300,7 +7300,6 @@ static SDValue foldLogicTreeOfShifts(SDNode *N, SDValue LeftHand,
   return DAG.getNode(LogicOpcode, DL, VT, CombinedShifts, W);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // and (and a, (setcc b c)), (setcc d e) ->
 // and a, foldLogicOfSetCCs((and (setcc b c), (setcc d e))
@@ -7330,7 +7329,6 @@ SDValue DAGCombiner::reassociateForFoldLogicOfSetCCs(SDNode *N) {
   return SDValue();
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
 /// Fold "masked merge" expressions like `(m & x) | (~m & y)` and its DeMorgan
 /// variant `(~m | x) & (m | y)` into the equivalent `((x ^ y) & m) ^ y)`
 /// pattern. This is typically a better representation for targets without a
@@ -7362,7 +7360,6 @@ static SDValue foldMaskedMerge(SDNode *Node, SelectionDAG &DAG,
   }
   return SDValue();
 }
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 
 SDValue DAGCombiner::visitAND(SDNode *N) {
   SDValue N0 = N->getOperand(0);
@@ -7810,16 +7807,13 @@ SDValue DAGCombiner::visitAND(SDNode *N) {
     if (SDValue R = foldLogicTreeOfShifts(N, N0, N1, DAG))
       return R;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (SDValue V = reassociateForFoldLogicOfSetCCs(N))
     return V;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   if (VT.isScalarInteger() && VT != MVT::i1)
     if (SDValue R = foldMaskedMerge(N, DAG, TLI, DL))
       return R;
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 
   return SDValue();
 }
@@ -11414,24 +11408,19 @@ SDValue DAGCombiner::foldABSToABD(SDNode *N, const SDLoc &DL) {
   if (N->getOpcode() == ISD::TRUNCATE)
     N = N->getOperand(0).getNode();
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (!matcher.match(SDValue(N, 0), ISD::ABS))
-#endif // SIFIVE_CUSTOMIZATION
     return SDValue();
-
-=======
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+#endif // SIFIVE_CUSTOMIZATION
   EVT VT = N->getValueType(0);
   SDValue Op0, Op1;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+  SDValue AbsOp1 = N->getOperand(0);
   if (!matcher.match(AbsOp1, ISD::SUB))
+    return SDValue();
 #endif // SIFIVE_CUSTOMIZATION
-=======
   if (!sd_match(N, m_Abs(m_Sub(m_Value(Op0), m_Value(Op1)))))
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
     return SDValue();
 
   SDValue AbsOp0 = N->getOperand(0);
@@ -11447,17 +11436,18 @@ SDValue DAGCombiner::foldABSToABD(SDNode *N, const SDLoc &DL) {
        Opc0 != ISD::SIGN_EXTEND_INREG)) {
     // fold (abs (sub nsw x, y)) -> abds(x, y)
     // Don't fold this for unsupported types as we lose the NSW handling.
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (AbsOp1->getFlags().hasNoSignedWrap() &&
         matcher.isOperationLegalOrCustom(ISD::ABDS, VT, LegalOperations) &&
-=======
-    if (AbsOp0->getFlags().hasNoSignedWrap() && hasOperation(ISD::ABDS, VT) &&
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
         TLI.preferABDSToABSWithNSW(VT)) {
       SDValue ABD = matcher.getNode(ISD::ABDS, DL, VT, Op0, Op1);
       return matcher.getZExtOrTrunc(ABD, DL, SrcVT);
+    }
 #endif // SIFIVE_CUSTOMIZATION
+    if (AbsOp0->getFlags().hasNoSignedWrap() && hasOperation(ISD::ABDS, VT) &&
+        TLI.preferABDSToABSWithNSW(VT)) {
+      SDValue ABD = DAG.getNode(ISD::ABDS, DL, VT, Op0, Op1);
+      return DAG.getZExtOrTrunc(ABD, DL, SrcVT);
     }
     return SDValue();
   }
