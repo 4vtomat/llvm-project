@@ -32,11 +32,7 @@ namespace llvm {
 class raw_ostream;
 class Triple;
 
-<<<<<<< HEAD
-const unsigned MAX_SUBTARGET_WORDS = 6; // SIFIVE
-=======
 const unsigned MAX_SUBTARGET_WORDS = 6;
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 const unsigned MAX_SUBTARGET_FEATURES = MAX_SUBTARGET_WORDS * 64;
 
 /// Container class for subtarget features.
