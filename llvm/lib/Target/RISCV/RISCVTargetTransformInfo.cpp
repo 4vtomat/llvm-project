@@ -14,6 +14,7 @@
 #include "llvm/CodeGen/CostTable.h"
 #include "llvm/CodeGen/TargetLowering.h"
 #if SIFIVE_CUSTOMIZATION
+#include "llvm/IR/IRBuilder.h"
 #include "llvm/TargetParser/RISCVTargetParser.h"
 #endif // SIFIVE_CUSTOMIZATION
 #include "llvm/CodeGen/ValueTypes.h"
@@ -828,7 +829,6 @@ RISCVTTIImpl::getIntImmCostIntrin(Intrinsic::ID IID, unsigned Idx,
   return TTI::TCC_Free;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 unsigned RISCVTTIImpl::getMaxElementWidth() const {
   // Returns ELEN. This is the value for which k-scale-factor would be one.
@@ -843,10 +843,7 @@ bool RISCVTTIImpl::useVLAVectorizer() const {
 
 #endif // SIFIVE_CUSTOMIZATION
 
-bool RISCVTTIImpl::hasActiveVectorLength(unsigned, Type *DataTy, Align) const {
-=======
 bool RISCVTTIImpl::hasActiveVectorLength() const {
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
   return ST->hasVInstructions();
 }
 
