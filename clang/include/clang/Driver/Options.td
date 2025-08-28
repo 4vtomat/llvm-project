@@ -3489,18 +3489,12 @@ def fveclib : Joined<["-"], "fveclib=">, Group<f_Group>,
   Visibility<[ClangOption, CC1Option, FlangOption, FC1Option]>,
     HelpText<"Use the given vector functions library">,
     HelpTextForVariants<[ClangOption, CC1Option],
-<<<<<<< HEAD
-      "Use the given vector functions library. "
-      "Note: -fveclib={ArmPL,SLEEF} implies -fno-math-errno">,
-// SIFIVE_CUSTOMIZATION
-    Values<"Accelerate,libmvec,MASSV,SiFive_NF,SVML,SLEEF,Darwin_libsystem_m,ArmPL,AMDLIBM,none">,
-// end SIFIVE_CUSTOMIZATION
-=======
       "Use the given vector functions library.\n"
       "  Note: -fveclib={ArmPL,SLEEF,libmvec} implies -fno-math-errno.\n"
       "  Note: -fveclib=libmvec on AArch64 requires GLIBC 2.40 or newer.">,
-    Values<"Accelerate,libmvec,MASSV,SVML,SLEEF,Darwin_libsystem_m,ArmPL,AMDLIBM,none">,
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+// SIFIVE_CUSTOMIZATION
+    Values<"Accelerate,libmvec,MASSV,SiFive_NF,SVML,SLEEF,Darwin_libsystem_m,ArmPL,AMDLIBM,none">,
+// end SIFIVE_CUSTOMIZATION
     NormalizedValuesScope<"llvm::driver::VectorLibrary">,
 // SIFIVE_CUSTOMIZATION
     NormalizedValues<["Accelerate", "LIBMVEC", "MASSV", "SiFive_NF", "SVML", "SLEEF",
