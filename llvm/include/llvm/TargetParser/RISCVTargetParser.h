@@ -54,23 +54,6 @@ struct CPUInfo {
 static constexpr unsigned RVVBitsPerBlock = 64;
 static constexpr unsigned RVVBytesPerBlock = RVVBitsPerBlock / 8;
 
-<<<<<<< HEAD
-void getFeaturesForCPU(StringRef CPU,
-                       SmallVectorImpl<std::string> &EnabledFeatures,
-                       bool NeedPlus = false);
-bool parseCPU(StringRef CPU, bool IsRV64);
-bool parseTuneCPU(StringRef CPU, bool IsRV64);
-StringRef getMArchFromMcpu(StringRef CPU);
-void fillValidCPUArchList(SmallVectorImpl<StringRef> &Values, bool IsRV64);
-void fillValidTuneCPUArchList(SmallVectorImpl<StringRef> &Values, bool IsRV64);
-bool hasFastScalarUnalignedAccess(StringRef CPU);
-bool hasFastVectorUnalignedAccess(StringRef CPU);
-#if SIFIVE_CUSTOMIZATION
-bool hasSlowVectorFP64(StringRef CPU);
-#endif
-bool hasValidCPUModel(StringRef CPU);
-CPUModel getCPUModel(StringRef CPU);
-=======
 LLVM_ABI void getFeaturesForCPU(StringRef CPU,
                                 SmallVectorImpl<std::string> &EnabledFeatures,
                                 bool NeedPlus = false);
@@ -83,10 +66,12 @@ LLVM_ABI void fillValidTuneCPUArchList(SmallVectorImpl<StringRef> &Values,
                                        bool IsRV64);
 LLVM_ABI bool hasFastScalarUnalignedAccess(StringRef CPU);
 LLVM_ABI bool hasFastVectorUnalignedAccess(StringRef CPU);
+#if SIFIVE_CUSTOMIZATION
+bool hasSlowVectorFP64(StringRef CPU);
+#endif
 LLVM_ABI bool hasValidCPUModel(StringRef CPU);
 LLVM_ABI CPUModel getCPUModel(StringRef CPU);
 LLVM_ABI StringRef getCPUNameFromCPUModel(const CPUModel &Model);
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 
 } // namespace RISCV
 
@@ -118,21 +103,12 @@ inline static bool isValidLMUL(unsigned LMUL, bool Fractional) {
   return isPowerOf2_32(LMUL) && LMUL <= 8 && (!Fractional || LMUL != 1);
 }
 
-<<<<<<< HEAD
-unsigned encodeVTYPE(VLMUL VLMUL, unsigned SEW, bool TailAgnostic,
-#if SIFIVE_CUSTOMIZATION
-                     bool MaskAgnostic, bool AltFmt);
-#else
-                     bool MaskAgnostic);
-#endif // SIFIVE_CUSTOMIZATION
-
-#if SIFIVE_CUSTOMIZATION
-unsigned encodeXSfmmVType(unsigned SEW, unsigned Widen, bool AltFmt);
-#endif // SIFIVE_CUSTOMIZATION
-=======
 LLVM_ABI unsigned encodeVTYPE(VLMUL VLMUL, unsigned SEW, bool TailAgnostic,
+#if SIFIVE_CUSTOMIZATION
+                              bool MaskAgnostic, bool AltFmt);
+#else
                               bool MaskAgnostic);
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+#endif // SIFIVE_CUSTOMIZATION
 
 LLVM_ABI unsigned encodeXSfmmVType(unsigned SEW, unsigned Widen, bool AltFmt);
 
