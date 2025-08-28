@@ -935,30 +935,24 @@ Value *VPInstruction::generate(VPTransformState &State) {
                                       State.get(getOperand(3 + Part)));
     }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     Value *InitEVL = nullptr;
     if (State.Plan->useVLAVectorizer()) {
       InitEVL = State.get(State.Plan->getInitEVL(), /*NeedsScalar=*/true);
       assert(InitEVL && "InitEVL must be generated when tail folding by EVL");
     }
-    return InitEVL
-               ? createFindLastIVReduction(Builder, ReducedPartRdx,
-                                           State.get(getOperand(1), true),
-                                           RdxDesc.getSentinelValue(), InitEVL)
-               : createFindLastIVReduction(Builder, ReducedPartRdx,
-                                           State.get(getOperand(1), true),
-                                           RdxDesc.getSentinelValue());
+    Value *Sentinel = getOperand(2)->getLiveInIRValue();
+    return InitEVL ? createFindLastIVReduction(Builder, ReducedPartRdx,
+                                               State.get(getOperand(1), true),
+                                               Sentinel, InitEVL)
+                   : createFindLastIVReduction(Builder, ReducedPartRdx,
+                                               State.get(getOperand(1), true),
+                                               Sentinel);
 #else
-    return createFindLastIVReduction(Builder, ReducedPartRdx,
-                                     State.get(getOperand(1), true),
-                                     RdxDesc.getSentinelValue());
-#endif // SIFIVE_CUSTOMIZATION
-=======
     Value *Start = State.get(getOperand(1), true);
     Value *Sentinel = getOperand(2)->getLiveInIRValue();
     return createFindLastIVReduction(Builder, ReducedPartRdx, Start, Sentinel);
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+#endif // SIFIVE_CUSTOMIZATION
   }
   case VPInstruction::ComputeReductionResult: {
     // FIXME: The cross-recipe dependency on VPReductionPHIRecipe is temporary
@@ -2620,143 +2614,6 @@ static Constant *getSignedIntOrFpConstant(Type *Ty, int64_t C) {
                            : ConstantFP::get(Ty, C);
 }
 
-<<<<<<< HEAD
-void VPWidenIntOrFpInductionRecipe::execute(VPTransformState &State) {
-  assert(!State.Lane && "Int or FP induction being replicated.");
-
-  Value *Start = getStartValue()->getLiveInIRValue();
-  const InductionDescriptor &ID = getInductionDescriptor();
-  TruncInst *Trunc = getTruncInst();
-  IRBuilderBase &Builder = State.Builder;
-  assert(getPHINode()->getType() == ID.getStartValue()->getType() &&
-         "Types must match");
-  assert(State.VF.isVector() && "must have vector VF");
-
-  // The value from the original loop to which we are mapping the new induction
-  // variable.
-  Instruction *EntryVal = Trunc ? cast<Instruction>(Trunc) : getPHINode();
-
-  // Fast-math-flags propagate from the original induction instruction.
-  IRBuilder<>::FastMathFlagGuard FMFG(Builder);
-  if (isa_and_present<FPMathOperator>(ID.getInductionBinOp()))
-    Builder.setFastMathFlags(ID.getInductionBinOp()->getFastMathFlags());
-
-  // Now do the actual transformations, and start with fetching the step value.
-  Value *Step = State.get(getStepValue(), VPLane(0));
-
-  assert((isa<PHINode, TruncInst>(EntryVal)) &&
-         "Expected either an induction phi-node or a truncate of it!");
-
-  // Construct the initial value of the vector IV in the vector loop preheader
-  auto CurrIP = Builder.saveIP();
-  BasicBlock *VectorPH =
-      State.CFG.VPBB2IRBB.at(getParent()->getCFGPredecessor(0));
-  Builder.SetInsertPoint(VectorPH->getTerminator());
-  if (isa<TruncInst>(EntryVal)) {
-    assert(Start->getType()->isIntegerTy() &&
-           "Truncation requires an integer type");
-    auto *TruncType = cast<IntegerType>(EntryVal->getType());
-    Step = Builder.CreateTrunc(Step, TruncType);
-    Start = Builder.CreateCast(Instruction::Trunc, Start, TruncType);
-  }
-
-  Value *SplatStart = Builder.CreateVectorSplat(State.VF, Start);
-  Value *SteppedStart =
-      ::getStepVector(SplatStart, Step, State.get(getStepVector()),
-                      ID.getInductionOpcode(), State.VF, State.Builder);
-
-  // We create vector phi nodes for both integer and floating-point induction
-  // variables. Here, we determine the kind of arithmetic we will perform.
-  Instruction::BinaryOps AddOp;
-  Instruction::BinaryOps MulOp;
-  if (Step->getType()->isIntegerTy()) {
-    AddOp = Instruction::Add;
-    MulOp = Instruction::Mul;
-  } else {
-    AddOp = ID.getInductionOpcode();
-    MulOp = Instruction::FMul;
-  }
-
-  Value *SplatVF;
-#if SIFIVE_CUSTOMIZATION
-  if (State.Plan->useVLAVectorizer()) {
-    // FIXME: Remove this code with a proper representation of pointer induction
-    // in a VPlan.
-    assert(!State.EVL &&
-           "Runtime VL is available, but code was not updated to use it.");
-    Value *EVLPart = nullptr;
-    Value *EVLPartCast = nullptr;
-    Type *StepType = Step->getType();
-    if (!State.EVLPlaceholder) {
-      Type *I32Ty = Builder.getInt32Ty();
-      State.EVLPlaceholder = EVLPart = State.Builder.CreateLoad(
-          I32Ty, PoisonValue::get(PointerType::get(I32Ty->getContext(),
-                                                  /*AddressSpace=*/0)));
-    } else {
-      EVLPart = State.EVLPlaceholder;
-    }
-    EVLPartCast = StepType->isIntegerTy()
-                      ? Builder.CreateSExtOrTrunc(EVLPart, StepType)
-                      : Builder.CreateUIToFP(EVLPart, StepType);
-    Value *Mul = Builder.CreateBinOp(MulOp, Step, EVLPartCast);
-    SplatVF = Builder.CreateVectorSplat(State.VF, Mul);
-  } else
-#endif // SIFIVE_CUSTOMIZATION
-  if (VPValue *SplatVFOperand = getSplatVFValue()) {
-    // The recipe has been unrolled. In that case, fetch the splat value for the
-    // induction increment.
-    SplatVF = State.get(SplatVFOperand);
-  } else {
-    // Multiply the vectorization factor by the step using integer or
-    // floating-point arithmetic as appropriate.
-    Type *StepType = Step->getType();
-    Value *RuntimeVF = State.get(getVFValue(), VPLane(0));
-    if (Step->getType()->isFloatingPointTy())
-      RuntimeVF = Builder.CreateUIToFP(RuntimeVF, StepType);
-    else
-      RuntimeVF = Builder.CreateZExtOrTrunc(RuntimeVF, StepType);
-    Value *Mul = Builder.CreateBinOp(MulOp, Step, RuntimeVF);
-
-    // Create a vector splat to use in the induction update.
-    SplatVF = Builder.CreateVectorSplat(State.VF, Mul);
-  }
-
-  Builder.restoreIP(CurrIP);
-
-  // We may need to add the step a number of times, depending on the unroll
-  // factor. The last of those goes into the PHI.
-  PHINode *VecInd = PHINode::Create(SteppedStart->getType(), 2, "vec.ind");
-  VecInd->insertBefore(State.CFG.PrevBB->getFirstInsertionPt());
-  VecInd->setDebugLoc(getDebugLoc());
-  State.set(this, VecInd);
-
-#if SIFIVE_CUSTOMIZATION
-  Instruction *LastInduction = VecInd;
-  if (State.Plan->useVLAVectorizer()) {
-    LastInduction = widenPredicatedArithmeticOp(
-        State, AddOp, {LastInduction, SplatVF},
-        /*Mask=*/nullptr, "step.add");
-  } else {
-    LastInduction = cast<Instruction>(
-      Builder.CreateBinOp(AddOp, VecInd, SplatVF, "vec.ind.next"));
-  }
-#else
-  Instruction *LastInduction = cast<Instruction>(
-      Builder.CreateBinOp(AddOp, VecInd, SplatVF, "vec.ind.next"));
-#endif // SIFIVE_CUSTOMIZATION
-  LastInduction->setDebugLoc(getDebugLoc());
-
-  VecInd->addIncoming(SteppedStart, VectorPH);
-  // Add induction update using an incorrect block temporarily. The phi node
-  // will be fixed after VPlan execution. Note that at this point the latch
-  // block cannot be used, as it does not exist yet.
-  // TODO: Model increment value in VPlan, by turning the recipe into a
-  // multi-def and a subclass of VPHeaderPHIRecipe.
-  VecInd->addIncoming(LastInduction, VectorPH);
-}
-
-=======
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 void VPWidenIntOrFpInductionRecipe::print(raw_ostream &O, const Twine &Indent,
                                           VPSlotTracker &SlotTracker) const {
@@ -4486,21 +4343,16 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
   if (isa<LoadInst>(Instr)) {
     Value *MaskForGaps = nullptr;
     if (NeedsMaskForGaps) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       if (State.Plan->useVLAVectorizer())
         MaskForGaps = CreateMaskForGaps(State.Builder, State.VF, *Group);
       else
-        MaskForGaps =
-            createBitMaskForGaps(State.Builder, State.VF.getKnownMinValue(), *Group);
+        MaskForGaps = createBitMaskForGaps(State.Builder,
+                                           State.VF.getFixedValue(), *Group);
 #else
-      MaskForGaps = createBitMaskForGaps(State.Builder,
-                                         State.VF.getKnownMinValue(), *Group);
-#endif // SIFIVE_CUSTOMIZATION
-=======
       MaskForGaps =
           createBitMaskForGaps(State.Builder, State.VF.getFixedValue(), *Group);
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+#endif // SIFIVE_CUSTOMIZATION
       assert(MaskForGaps && "Mask for Gaps is required but it is null");
     }
 
