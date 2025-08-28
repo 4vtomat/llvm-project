@@ -147,15 +147,12 @@ private:
 #endif // SIFIVE_CUSTOMIZATION
 
 public:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  LoopVectorizePass(LoopVectorizeOptions Opts = {}, bool IsLTOPreLink = false);
+  LLVM_ABI LoopVectorizePass(LoopVectorizeOptions Opts = {},
+                             bool IsLTOPreLink = false);
 #else
-  LoopVectorizePass(LoopVectorizeOptions Opts = {});
-#endif
-=======
   LLVM_ABI LoopVectorizePass(LoopVectorizeOptions Opts = {});
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+#endif
 
   ScalarEvolution *SE;
   LoopInfo *LI;
