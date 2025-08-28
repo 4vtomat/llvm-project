@@ -4055,21 +4055,13 @@ bool RISCVInstrInfo::findCommutedOpIndices(const MachineInstr &MI,
   CASE_VFMA_CHANGE_OPCODE_COMMON(OLDOP, NEWOP, TYPE, MF2, SEW)                 \
   CASE_VFMA_CHANGE_OPCODE_LMULS_M1(OLDOP, NEWOP, TYPE, SEW)
 
-<<<<<<< HEAD
-#define CASE_VFMA_CHANGE_OPCODE_VV(OLDOP, NEWOP)                               \
-  CASE_VFMA_CHANGE_OPCODE_LMULS_MF4(OLDOP, NEWOP, VV, E16)                     \
-  CASE_VFMA_CHANGE_OPCODE_LMULS_MF4(OLDOP##_ALT, NEWOP##_ALT, VV, E16) /* SIFIVE */ \
-  CASE_VFMA_CHANGE_OPCODE_LMULS_MF2(OLDOP, NEWOP, VV, E32)                     \
-  CASE_VFMA_CHANGE_OPCODE_LMULS_M1(OLDOP, NEWOP, VV, E64)
-
-=======
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 #define CASE_VFMA_CHANGE_OPCODE_LMULS_MF4(OLDOP, NEWOP, TYPE, SEW)             \
   CASE_VFMA_CHANGE_OPCODE_COMMON(OLDOP, NEWOP, TYPE, MF4, SEW)                 \
   CASE_VFMA_CHANGE_OPCODE_LMULS_MF2(OLDOP, NEWOP, TYPE, SEW)
 
 #define CASE_VFMA_CHANGE_OPCODE_VV(OLDOP, NEWOP)                               \
   CASE_VFMA_CHANGE_OPCODE_LMULS_MF4(OLDOP, NEWOP, VV, E16)                     \
+  CASE_VFMA_CHANGE_OPCODE_LMULS_MF4(OLDOP##_ALT, NEWOP##_ALT, VV, E16) /* SIFIVE */ \
   CASE_VFMA_CHANGE_OPCODE_LMULS_MF2(OLDOP, NEWOP, VV, E32)                     \
   CASE_VFMA_CHANGE_OPCODE_LMULS_M1(OLDOP, NEWOP, VV, E64)
 
@@ -4515,10 +4507,6 @@ bool RISCVInstrInfo::simplifyInstruction(MachineInstr &MI) const {
   CASE_FP_WIDEOP_CHANGE_OPCODE_COMMON(OP, M2, E32)                             \
   CASE_FP_WIDEOP_CHANGE_OPCODE_COMMON(OP, M4, E16)                             \
   CASE_FP_WIDEOP_CHANGE_OPCODE_COMMON(OP, M4, E32)                             \
-<<<<<<< HEAD
-
-#define CASE_FP_WIDEOP_CHANGE_OPCODE_LMULS(OP)                                 \
-  CASE_FP_WIDEOP_CHANGE_OPCODE_LMULS_MF4(OP)
 
 #if SIFIVE_CUSTOMIZATION
 #define CASE_FP_WIDEOP_OPCODE_LMULS_ALT(OP)                                    \
@@ -4535,8 +4523,6 @@ bool RISCVInstrInfo::simplifyInstruction(MachineInstr &MI) const {
   CASE_FP_WIDEOP_CHANGE_OPCODE_COMMON(OP, M2, E16)                             \
   CASE_FP_WIDEOP_CHANGE_OPCODE_COMMON(OP, M4, E16)
 #endif
-=======
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 // clang-format on
 
 MachineInstr *RISCVInstrInfo::convertToThreeAddress(MachineInstr &MI,
@@ -4546,17 +4532,12 @@ MachineInstr *RISCVInstrInfo::convertToThreeAddress(MachineInstr &MI,
   switch (MI.getOpcode()) {
   default:
     return nullptr;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case CASE_FP_WIDEOP_OPCODE_LMULS_ALT(FWADD_ALT_WV):
   case CASE_FP_WIDEOP_OPCODE_LMULS_ALT(FWSUB_ALT_WV):
 #endif
-  case CASE_FP_WIDEOP_OPCODE_LMULS_MF4(FWADD_WV):
-  case CASE_FP_WIDEOP_OPCODE_LMULS_MF4(FWSUB_WV): {
-=======
   case CASE_FP_WIDEOP_OPCODE_LMULS(FWADD_WV):
   case CASE_FP_WIDEOP_OPCODE_LMULS(FWSUB_WV): {
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
     assert(RISCVII::hasVecPolicyOp(MI.getDesc().TSFlags) &&
            MI.getNumExplicitOperands() == 7 &&
            "Expect 7 explicit operands rd, rs2, rs1, rm, vl, sew, policy");
@@ -4569,17 +4550,12 @@ MachineInstr *RISCVInstrInfo::convertToThreeAddress(MachineInstr &MI,
     switch (MI.getOpcode()) {
     default:
       llvm_unreachable("Unexpected opcode");
-<<<<<<< HEAD
-    CASE_FP_WIDEOP_CHANGE_OPCODE_LMULS_MF4(FWADD_WV)
-    CASE_FP_WIDEOP_CHANGE_OPCODE_LMULS_MF4(FWSUB_WV)
+    CASE_FP_WIDEOP_CHANGE_OPCODE_LMULS(FWADD_WV)
+    CASE_FP_WIDEOP_CHANGE_OPCODE_LMULS(FWSUB_WV)
 #if SIFIVE_CUSTOMIZATION
     CASE_FP_WIDEOP_CHANGE_OPCODE_LMULS_ALT(FWADD_ALT_WV)
     CASE_FP_WIDEOP_CHANGE_OPCODE_LMULS_ALT(FWSUB_ALT_WV)
 #endif
-=======
-    CASE_FP_WIDEOP_CHANGE_OPCODE_LMULS(FWADD_WV)
-    CASE_FP_WIDEOP_CHANGE_OPCODE_LMULS(FWSUB_WV)
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
     }
     // clang-format on
 
