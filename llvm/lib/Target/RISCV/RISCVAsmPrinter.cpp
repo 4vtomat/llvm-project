@@ -1092,31 +1092,31 @@ static MCOperand lowerSymbolOperand(const MachineOperand &MO, MCSymbol *Sym,
     break;
 #if SIFIVE_CUSTOMIZATION
   case RISCVII::MO_TLS_GOT_GPREL_LO:
-    Kind = RISCVMCExpr::VK_TLS_GOT_GPREL_LO;
+    Kind = RISCV::VK_TLS_GOT_GPREL_LO;
     break;
   case RISCVII::MO_TLS_GOT_GPREL_HI:
-    Kind = RISCVMCExpr::VK_TLS_GOT_GPREL_HI;
+    Kind = RISCV::VK_TLS_GOT_GPREL_HI;
     break;
   case RISCVII::MO_TLS_GOT_GPREL_ADD:
-    Kind = RISCVMCExpr::VK_TLS_GOT_GPREL_ADD;
+    Kind = RISCV::VK_TLS_GOT_GPREL_ADD;
     break;
   case RISCVII::MO_TLS_GD_GPREL_LO:
-    Kind = RISCVMCExpr::VK_TLS_GD_GPREL_LO;
+    Kind = RISCV::VK_TLS_GD_GPREL_LO;
     break;
   case RISCVII::MO_TLS_GD_GPREL_HI:
-    Kind = RISCVMCExpr::VK_TLS_GD_GPREL_HI;
+    Kind = RISCV::VK_TLS_GD_GPREL_HI;
     break;
   case RISCVII::MO_TLS_GD_GPREL_ADD:
-    Kind = RISCVMCExpr::VK_TLS_GD_GPREL_ADD;
+    Kind = RISCV::VK_TLS_GD_GPREL_ADD;
     break;
   case RISCVII::MO_GOT_GPREL_ADD:
-    Kind = RISCVMCExpr::VK_GOT_GPREL_ADD;
+    Kind = RISCV::VK_GOT_GPREL_ADD;
     break;
   case RISCVII::MO_GOT_GPREL_LO:
-    Kind = RISCVMCExpr::VK_GOT_GPREL_LO;
+    Kind = RISCV::VK_GOT_GPREL_LO;
     break;
   case RISCVII::MO_GOT_GPREL_HI:
-    Kind = RISCVMCExpr::VK_GOT_GPREL_HI;
+    Kind = RISCV::VK_GOT_GPREL_HI;
     break;
 #endif // SIFIVE_CUSTOMIZATION
   }
