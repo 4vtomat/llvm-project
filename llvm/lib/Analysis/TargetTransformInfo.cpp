@@ -1508,20 +1508,14 @@ bool TargetTransformInfo::enableScalableVectorization() const {
   return TTIImpl->enableScalableVectorization();
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 Type *TargetTransformInfo::getScalableVectorFromFixed(Type *Ty) const {
   return TTIImpl->getScalableVectorFromFixed(Ty);
 }
 #endif
 
-bool TargetTransformInfo::hasActiveVectorLength(unsigned Opcode, Type *DataType,
-                                                Align Alignment) const {
-  return TTIImpl->hasActiveVectorLength(Opcode, DataType, Alignment);
-=======
 bool TargetTransformInfo::hasActiveVectorLength() const {
   return TTIImpl->hasActiveVectorLength();
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 }
 
 #if SIFIVE_CUSTOMIZATION
