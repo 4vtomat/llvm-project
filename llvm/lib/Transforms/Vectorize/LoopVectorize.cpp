@@ -2800,7 +2800,6 @@ Value *InnerLoopVectorizer::createIterationCountCheck(ElementCount VF,
     // Don't execute the vector loop if (UMax - n) < (VF * UF).
     CheckMinIters = Builder.CreateICmp(ICmpInst::ICMP_ULT, LHS, CreateStep());
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   else if (useVLAVectorizer() && Cost->requiresScalarEpilogue(VF.isVector())) {
     // If RVV VLA vectorization requires scalar remainder loop (for example, the
@@ -2829,14 +2828,12 @@ Value *InnerLoopVectorizer::createIterationCountCheck(ElementCount VF,
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   return CheckMinIters;
 }
 
 void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
   BasicBlock *const TCCheckBlock = LoopVectorPreHeader;
   Value *CheckMinIters = createIterationCountCheck(VF, UF);
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
   // Create new preheader for vector loop.
   LoopVectorPreHeader = SplitBlock(TCCheckBlock, TCCheckBlock->getTerminator(),
                                    static_cast<DominatorTree *>(nullptr), LI,
@@ -2862,21 +2859,6 @@ BasicBlock *InnerLoopVectorizer::emitSCEVChecks(BasicBlock *Bypass) {
   assert((!Cost->OptForSize ||
           Cost->Hints->getForce() == LoopVectorizeHints::FK_Enabled) &&
          "Cannot SCEV check stride or overflow when optimizing for size");
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // Some uncountable loops don't have a trip count so there is no iteration
-  // count check.
-  assert(Legal->isVectorizableUncountable() ||
-         !LoopBypassBlocks.empty() &&
-         "Should already be a bypass block due to iteration count check");
-#else
-  assert(!LoopBypassBlocks.empty() &&
-         "Should already be a bypass block due to iteration count check");
-#endif // SIFIVE_CUSTOMIZATION
-  LoopBypassBlocks.push_back(SCEVCheckBlock);
-  AddedSafetyChecks = true;
-=======
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 
   introduceCheckBlockInVPlan(SCEVCheckBlock);
   return SCEVCheckBlock;
@@ -3051,7 +3033,11 @@ BasicBlock *InnerLoopVectorizer::createVectorizedLoopSkeleton() {
   // to the scalar loop.
   emitIterationCountCheck(LoopScalarPreHeader);
 #if SIFIVE_CUSTOMIZATION
-  size_t PrevTCCheckBlockID = LoopBypassBlocks.size() - 1;
+  // TODO: Make sure it same BB as origin need.
+  // Does TCC stand for trip count check?
+  BasicBlock *PrevTCCheckBlock = nullptr;
+  if (auto *EntryVPBB = dyn_cast<VPIRBasicBlock>(Plan.getEntry()))
+    PrevTCCheckBlock = EntryVPBB->getIRBasicBlock();
 #endif // SIFIVE_CUSTOMIZATION
 
   // Generate the code to check any assumptions that we've made for SCEV
@@ -3075,7 +3061,6 @@ BasicBlock *InnerLoopVectorizer::createVectorizedLoopSkeleton() {
     // Make unconditional branch for TCCheckBlock
     // if the condition is known to be false and there are other checkblocks
     // then LoopScalarPreHeader is still reachable from other checkblocks
-    BasicBlock *PrevTCCheckBlock = LoopBypassBlocks[PrevTCCheckBlockID];
     BranchInst *OrigBr = cast<BranchInst>(PrevTCCheckBlock->getTerminator());
     ConstantInt *Cond = dyn_cast<ConstantInt>(OrigBr->getCondition());
     if (Cond && Cond->isZero() &&
@@ -3083,7 +3068,6 @@ BasicBlock *InnerLoopVectorizer::createVectorizedLoopSkeleton() {
       BasicBlock *Succ = OrigBr->getSuccessor(1);
       BranchInst *Br = BranchInst::Create(Succ);
       ReplaceInstWithInst(OrigBr, Br);
-      LoopBypassBlocks.erase(LoopBypassBlocks.begin() + PrevTCCheckBlockID);
 
       VPBlockBase *TCCheckVPBB = Plan.getEntry();
       VPBlockBase *ScalarPh = Plan.getScalarPreheader();
@@ -3707,20 +3691,13 @@ bool LoopVectorizationCostModel::interleavedAccessCanBeWidened(
   if (hasIrregularType(ScalarTy, DL))
     return false;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (!Legal->useVLAVectorizer())
 #endif
-  // For scalable vectors, the only interleave factor currently supported
-  // must be power of 2 since we require the (de)interleave2 intrinsics
-  // instead of shufflevectors.
-  if (VF.isScalable() && !isPowerOf2_32(InterleaveFactor))
-=======
-  // For scalable vectors, the interleave factors must be <= 8 since we require
-  // the (de)interleaveN intrinsics instead of shufflevectors.
-  if (VF.isScalable() && InterleaveFactor > 8)
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
-    return false;
+    // For scalable vectors, the interleave factors must be <= 8 since we
+    // require the (de)interleaveN intrinsics instead of shufflevectors.
+    if (VF.isScalable() && InterleaveFactor > 8)
+      return false;
 
   // If the group involves a non-integral pointer, we may not be able to
   // losslessly cast all values to a common type.
@@ -9181,17 +9158,15 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
   VPlanTransforms::runPass(VPlanTransforms::unrollByUF, BestVPlan, BestUF,
                            OrigLoop->getHeader()->getContext());
   VPlanTransforms::runPass(VPlanTransforms::materializeBroadcasts, BestVPlan);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (!BestVPlan.isUncountable() &&
       (!BestVPlan.useVLAVectorizer() || !Legal->getLAI() ||
        Legal->isSafeForAnyVectorWidth()))
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  if (hasBranchWeightMD(*OrigLoop->getLoopLatch()->getTerminator()))
-    VPlanTransforms::runPass(VPlanTransforms::addBranchWeightToMiddleTerminator,
-                             BestVPlan, BestVF);
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+    if (hasBranchWeightMD(*OrigLoop->getLoopLatch()->getTerminator()))
+      VPlanTransforms::runPass(
+          VPlanTransforms::addBranchWeightToMiddleTerminator, BestVPlan,
+          BestVF);
   VPlanTransforms::optimizeForVFAndUF(BestVPlan, BestVF, BestUF, PSE);
   VPlanTransforms::simplifyRecipes(BestVPlan, *Legal->getWidestInductionType());
   VPlanTransforms::narrowInterleaveGroups(
@@ -11055,20 +11030,14 @@ VPlanPtr LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(
       bool Result = (VF.isVector() && // Query is illegal for VF == 1
                      CM.getWideningDecision(IG->getInsertPos(), VF) ==
                          LoopVectorizationCostModel::CM_Interleave);
-<<<<<<< HEAD
       // For scalable vectors, the only interleave factor currently supported
 #if SIFIVE_CUSTOMIZATION
       assert((!Result || !VF.isScalable() || IG->getFactor() <= 8) &&
              "Unsupported interleave factor for scalable vectors");
 #else
-      // must be power of 2 since we require the (de)interleave2 intrinsics
-      // instead of shufflevectors.
-      assert((!Result || !VF.isScalable() || isPowerOf2_32(IG->getFactor())) &&
-=======
       // For scalable vectors, the interleave factors must be <= 8 since we
       // require the (de)interleaveN intrinsics instead of shufflevectors.
       assert((!Result || !VF.isScalable() || IG->getFactor() <= 8) &&
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
              "Unsupported interleave factor for scalable vectors");
 #endif // SIFIVE_CUSTOMIZATION
       return Result;
@@ -11244,18 +11213,14 @@ VPlanPtr LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(
   SetVector<VPIRInstruction *> ExitUsersToFix =
       collectUsersInLatchExitBlock(*Plan);
   if (!Legal->useVLAVectorizer())
-    addExitUsersForFirstOrderRecurrences(*Plan, ExitUsersToFix);
+    addExitUsersForFirstOrderRecurrences(*Plan, ExitUsersToFix, Range);
   addExitUsersForCSA(*Plan, ExitUsersToFix);
 #else
   addScalarResumePhis(RecipeBuilder, *Plan, IVEndValues);
   SetVector<VPIRInstruction *> ExitUsersToFix =
       collectUsersInLatchExitBlock(*Plan);
-<<<<<<< HEAD
-  addExitUsersForFirstOrderRecurrences(*Plan, ExitUsersToFix);
-#endif // SIFIVE_CUSTOMIZATION
-=======
   addExitUsersForFirstOrderRecurrences(*Plan, ExitUsersToFix, Range);
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+#endif // SIFIVE_CUSTOMIZATION
   addUsersInExitBlocks(*Plan, ExitUsersToFix);
 
   // ---------------------------------------------------------------------------
@@ -12821,7 +12786,7 @@ bool LoopVectorizePass::processLoop(Loop *L) {
   // Do not vectorize loops with small trip count and reductions.
   if (ExpectedTC && LVL.useVLAVectorizer())
     if (auto ProfitableVectorTripCount = CM.getProfitableVectorTripCount())
-      if (*ExpectedTC <=
+      if (ExpectedTC->getFixedValue() <=
           *ProfitableVectorTripCount * LVL.getReductionVars().size() * IC) {
         LLVM_DEBUG(dbgs() << "LV: Found a loop with a very small trip count.");
         if (Hints.getForce() == LoopVectorizeHints::FK_Enabled)
