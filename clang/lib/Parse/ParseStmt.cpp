@@ -2409,7 +2409,7 @@ StmtResult Parser::ParsePragmaRvvHint(StmtVector &Stmts,
     ArgHints[3] = Hint.Sew;
 
     TempAttrs.addNew(Hint.PragmaNameLoc->getIdentifierInfo(), Hint.Range,
-                     nullptr, Hint.PragmaNameLoc->getLoc(), ArgHints, 4,
+                     AttributeScopeInfo(), ArgHints, 4,
                      ParsedAttr::Form::Pragma());
   }
 
