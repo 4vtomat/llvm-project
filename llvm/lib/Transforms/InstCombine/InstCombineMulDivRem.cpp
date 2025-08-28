@@ -1083,12 +1083,10 @@ Instruction *InstCombinerImpl::visitFMul(BinaryOperator &I) {
     return Result;
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (Instruction *NewI = foldNeutralVPReduce(I))
     return NewI;
 #endif
-=======
   // tan(X) * cos(X) -> sin(X)
   if (I.hasAllowContract() &&
       match(&I,
@@ -1100,7 +1098,6 @@ Instruction *InstCombinerImpl::visitFMul(BinaryOperator &I) {
     }
     return replaceInstUsesWith(I, Sin);
   }
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 
   return nullptr;
 }
