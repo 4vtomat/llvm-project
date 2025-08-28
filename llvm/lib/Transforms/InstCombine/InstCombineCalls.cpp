@@ -3923,7 +3923,6 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
     }
     break;
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case Intrinsic::vp_add:
   case Intrinsic::vp_fadd:
@@ -3983,16 +3982,6 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
     else if (isSplatFPOne(RHS))
       return replaceInstUsesWith(CI, LHS);
 
-    break;
-  }
-  case Intrinsic::experimental_vp_reverse: {
-    Value *Vec = II->getArgOperand(0);
-    Value *Mask = II->getArgOperand(1);
-    Value *VL = II->getArgOperand(2);
-    if (isSplatValue(Mask) && canEvaluateVPReversed(Vec, VL)) {
-      Value *V = evaluateVPReversed(Vec, *this);
-      return replaceInstUsesWith(CI, V);
-    }
     break;
   }
   case Intrinsic::vp_select: {
@@ -4101,7 +4090,6 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
     break;
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case Intrinsic::experimental_vp_reverse: {
     Value *X;
     Value *Vec = II->getArgOperand(0);
@@ -4121,7 +4109,6 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
     }
     break;
   }
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
   case Intrinsic::vector_reduce_or:
   case Intrinsic::vector_reduce_and: {
     // Canonicalize logical or/and reductions:
