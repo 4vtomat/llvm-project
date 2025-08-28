@@ -6,16 +6,16 @@ define void @sct3433(ptr %g) {
 ; CHECK-SAME: ptr [[G:%.*]]) #[[ATTR0:[0-9]+]] {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
+; CHECK-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
 ; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 23, [[TMP1]]
 ; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 4
+; CHECK-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP2]], 4
 ; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i64 23, [[TMP3]]
 ; CHECK-NEXT:    [[N_VEC:%.*]] = sub i64 23, [[N_MOD_VF]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP4]], 4
+; CHECK-NEXT:    [[TMP5:%.*]] = mul nuw i64 [[TMP4]], 4
 ; CHECK-NEXT:    [[TMP6:%.*]] = call <vscale x 4 x i64> @llvm.stepvector.nxv4i64()
 ; CHECK-NEXT:    [[TMP8:%.*]] = mul <vscale x 4 x i64> [[TMP6]], splat (i64 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 4 x i64> zeroinitializer, [[TMP8]]

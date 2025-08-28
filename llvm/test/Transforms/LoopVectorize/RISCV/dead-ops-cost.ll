@@ -93,13 +93,8 @@ define i8 @dead_live_out_due_to_scalar_epilogue_required(ptr %src, ptr %dst) {
 ; CHECK-SAME: ptr [[SRC:%.*]], ptr [[DST:%.*]]) #[[ATTR0]] {
 ; CHECK-NEXT:  [[ENTRY:.*]]:
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.vscale.i32()
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP1:%.*]] = mul i32 [[TMP0]], 8
+; CHECK-NEXT:    [[TMP1:%.*]] = mul nuw i32 [[TMP0]], 8
 ; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.umax.i32(i32 16, i32 [[TMP1]])
-=======
-; CHECK-NEXT:    [[TMP1:%.*]] = mul nuw i32 [[TMP0]], 4
-; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.umax.i32(i32 8, i32 [[TMP1]])
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ule i32 252, [[TMP2]]
 ; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_MEMCHECK:.*]]
 ; CHECK:       [[VECTOR_MEMCHECK]]:
@@ -111,21 +106,13 @@ define i8 @dead_live_out_due_to_scalar_epilogue_required(ptr %src, ptr %dst) {
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT]], label %[[SCALAR_PH]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i32 @llvm.vscale.i32()
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP4:%.*]] = mul i32 [[TMP3]], 8
-=======
-; CHECK-NEXT:    [[TMP4:%.*]] = mul nuw i32 [[TMP3]], 4
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+; CHECK-NEXT:    [[TMP4:%.*]] = mul nuw i32 [[TMP3]], 8
 ; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i32 252, [[TMP4]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp eq i32 [[N_MOD_VF]], 0
 ; CHECK-NEXT:    [[TMP6:%.*]] = select i1 [[TMP5]], i32 [[TMP4]], i32 [[N_MOD_VF]]
 ; CHECK-NEXT:    [[N_VEC:%.*]] = sub i32 252, [[TMP6]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.vscale.i32()
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP8:%.*]] = mul i32 [[TMP7]], 8
-=======
-; CHECK-NEXT:    [[TMP8:%.*]] = mul nuw i32 [[TMP7]], 4
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+; CHECK-NEXT:    [[TMP8:%.*]] = mul nuw i32 [[TMP7]], 8
 ; CHECK-NEXT:    [[IND_END:%.*]] = mul i32 [[N_VEC]], 4
 ; CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 8 x i32> @llvm.stepvector.nxv8i32()
 ; CHECK-NEXT:    [[TMP11:%.*]] = mul <vscale x 8 x i32> [[TMP10]], splat (i32 4)
@@ -330,32 +317,18 @@ define void @test_phi_in_latch_redundant(ptr %dst, i32 %a) {
 ; CHECK-SAME: ptr [[DST:%.*]], i32 [[A:%.*]]) #[[ATTR0]] {
 ; CHECK-NEXT:  [[ENTRY:.*]]:
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
-=======
-; CHECK-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 2
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+; CHECK-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
 ; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 37, [[TMP1]]
 ; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
 ; CHECK-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 4
+; CHECK-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP2]], 4
 ; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i64 37, [[TMP3]]
 ; CHECK-NEXT:    [[N_VEC:%.*]] = sub i64 37, [[N_MOD_VF]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP4]], 4
+; CHECK-NEXT:    [[TMP5:%.*]] = mul nuw i64 [[TMP4]], 4
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 4 x i32> poison, i32 [[A]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 4 x i32> [[BROADCAST_SPLATINSERT]], <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer
-=======
-; CHECK-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP2]], 2
-; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i64 37, [[TMP3]]
-; CHECK-NEXT:    [[N_VEC:%.*]] = sub i64 37, [[N_MOD_VF]]
-; CHECK-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP5:%.*]] = mul nuw i64 [[TMP4]], 2
-; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 2 x i32> poison, i32 [[A]], i64 0
-; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 2 x i32> [[BROADCAST_SPLATINSERT]], <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[N_VEC]], 9
 ; CHECK-NEXT:    [[TMP10:%.*]] = xor <vscale x 4 x i32> [[BROADCAST_SPLAT]], splat (i32 -1)
 ; CHECK-NEXT:    [[TMP8:%.*]] = call <vscale x 4 x i64> @llvm.stepvector.nxv4i64()

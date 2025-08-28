@@ -11,8 +11,6 @@
 ; RUN:   -riscv-v-vector-bits-min=128 -disable-output < %s 2>&1 | FileCheck %s
 
 define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocapture noundef readonly %B, i32 noundef signext %n) {
-<<<<<<< HEAD
-=======
 ; CHECK-LABEL: 'vector_reverse_i64'
 ; CHECK-NEXT:  LV: Loop hints: force=enabled width=vscale x 4 interleave=0
 ; CHECK-NEXT:  LV: Found a loop: for.body
@@ -394,7 +392,6 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Vectorizing: innermost loop.
 ; CHECK-EMPTY:
 ;
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 entry:
   %cmp7 = icmp sgt i32 %n, 0
   br i1 %cmp7, label %for.body.preheader, label %for.cond.cleanup
@@ -422,8 +419,6 @@ for.body:                                         ; preds = %for.body.preheader,
 }
 
 define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocapture noundef readonly %B, i32 noundef signext %n) {
-<<<<<<< HEAD
-=======
 ; CHECK-LABEL: 'vector_reverse_f32'
 ; CHECK-NEXT:  LV: Loop hints: force=enabled width=vscale x 4 interleave=0
 ; CHECK-NEXT:  LV: Found a loop: for.body
@@ -805,7 +800,6 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Interleaving disabled by the pass manager
 ; CHECK-NEXT:  LV: Vectorizing: innermost loop.
 ;
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 entry:
   %cmp7 = icmp sgt i32 %n, 0
   br i1 %cmp7, label %for.body.preheader, label %for.cond.cleanup

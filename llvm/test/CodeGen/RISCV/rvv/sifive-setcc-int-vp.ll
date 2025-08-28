@@ -41,8 +41,7 @@ define <vscale x 16 x i1> @icmp_eq_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale 
 ; CHECK-NEXT:    vl8r.v v24, (a1) # vscale x 64-byte Folded Reload
 ; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; CHECK-NEXT:    vmseq.vv v0, v24, v8, v0.t
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
@@ -83,8 +82,7 @@ define <vscale x 16 x i1> @icmp_eq_vx_nxv16i64(<vscale x 16 x i64> %va, i64 %b, 
 ; RV32-NEXT:    vmv1r.v v0, v7
 ; RV32-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; RV32-NEXT:    vmseq.vv v0, v8, v24, v0.t
-; RV32-NEXT:    add a1, a0, a0
-; RV32-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; RV32-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; RV32-NEXT:    vslideup.vx v0, v16, a0
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    .cfi_def_cfa_offset 0
@@ -110,8 +108,7 @@ define <vscale x 16 x i1> @icmp_eq_vx_nxv16i64(<vscale x 16 x i64> %va, i64 %b, 
 ; RV64-NEXT:    vmv1r.v v0, v24
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
 ; RV64-NEXT:    vmseq.vx v0, v8, a0, v0.t
-; RV64-NEXT:    add a0, a2, a2
-; RV64-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; RV64-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; RV64-NEXT:    vslideup.vx v0, v16, a2
 ; RV64-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 %b, i32 0
@@ -148,8 +145,7 @@ define <vscale x 16 x i1> @icmp_eq_vx_swap_nxv16i64(<vscale x 16 x i64> %va, i64
 ; RV32-NEXT:    vmv1r.v v0, v7
 ; RV32-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; RV32-NEXT:    vmseq.vv v0, v24, v8, v0.t
-; RV32-NEXT:    add a1, a0, a0
-; RV32-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; RV32-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; RV32-NEXT:    vslideup.vx v0, v16, a0
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    .cfi_def_cfa_offset 0
@@ -175,8 +171,7 @@ define <vscale x 16 x i1> @icmp_eq_vx_swap_nxv16i64(<vscale x 16 x i64> %va, i64
 ; RV64-NEXT:    vmv1r.v v0, v24
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
 ; RV64-NEXT:    vmseq.vx v0, v8, a0, v0.t
-; RV64-NEXT:    add a0, a2, a2
-; RV64-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; RV64-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; RV64-NEXT:    vslideup.vx v0, v16, a2
 ; RV64-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 %b, i32 0
@@ -206,8 +201,7 @@ define <vscale x 16 x i1> @icmp_eq_vi_nxv16i64(<vscale x 16 x i64> %va, <vscale 
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vmseq.vi v0, v8, 4, v0.t
-; CHECK-NEXT:    add a0, a1, a1
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a1
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 4, i32 0
@@ -237,8 +231,7 @@ define <vscale x 16 x i1> @icmp_eq_vi_swap_nxv16i64(<vscale x 16 x i64> %va, <vs
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vmseq.vi v0, v8, 4, v0.t
-; CHECK-NEXT:    add a0, a1, a1
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a1
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 4, i32 0
@@ -282,8 +275,7 @@ define <vscale x 16 x i1> @icmp_ne_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale 
 ; CHECK-NEXT:    vl8r.v v24, (a1) # vscale x 64-byte Folded Reload
 ; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; CHECK-NEXT:    vmsne.vv v0, v24, v8, v0.t
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
@@ -324,8 +316,7 @@ define <vscale x 16 x i1> @icmp_ne_vx_nxv16i64(<vscale x 16 x i64> %va, i64 %b, 
 ; RV32-NEXT:    vmv1r.v v0, v7
 ; RV32-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; RV32-NEXT:    vmsne.vv v0, v8, v24, v0.t
-; RV32-NEXT:    add a1, a0, a0
-; RV32-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; RV32-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; RV32-NEXT:    vslideup.vx v0, v16, a0
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    .cfi_def_cfa_offset 0
@@ -351,8 +342,7 @@ define <vscale x 16 x i1> @icmp_ne_vx_nxv16i64(<vscale x 16 x i64> %va, i64 %b, 
 ; RV64-NEXT:    vmv1r.v v0, v24
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
 ; RV64-NEXT:    vmsne.vx v0, v8, a0, v0.t
-; RV64-NEXT:    add a0, a2, a2
-; RV64-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; RV64-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; RV64-NEXT:    vslideup.vx v0, v16, a2
 ; RV64-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 %b, i32 0
@@ -389,8 +379,7 @@ define <vscale x 16 x i1> @icmp_ne_vx_swap_nxv16i64(<vscale x 16 x i64> %va, i64
 ; RV32-NEXT:    vmv1r.v v0, v7
 ; RV32-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; RV32-NEXT:    vmsne.vv v0, v24, v8, v0.t
-; RV32-NEXT:    add a1, a0, a0
-; RV32-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; RV32-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; RV32-NEXT:    vslideup.vx v0, v16, a0
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    .cfi_def_cfa_offset 0
@@ -416,8 +405,7 @@ define <vscale x 16 x i1> @icmp_ne_vx_swap_nxv16i64(<vscale x 16 x i64> %va, i64
 ; RV64-NEXT:    vmv1r.v v0, v24
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
 ; RV64-NEXT:    vmsne.vx v0, v8, a0, v0.t
-; RV64-NEXT:    add a0, a2, a2
-; RV64-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; RV64-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; RV64-NEXT:    vslideup.vx v0, v16, a2
 ; RV64-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 %b, i32 0
@@ -447,8 +435,7 @@ define <vscale x 16 x i1> @icmp_ne_vi_nxv16i64(<vscale x 16 x i64> %va, <vscale 
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vmsne.vi v0, v8, 4, v0.t
-; CHECK-NEXT:    add a0, a1, a1
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a1
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 4, i32 0
@@ -478,8 +465,7 @@ define <vscale x 16 x i1> @icmp_ne_vi_swap_nxv16i64(<vscale x 16 x i64> %va, <vs
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vmsne.vi v0, v8, 4, v0.t
-; CHECK-NEXT:    add a0, a1, a1
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a1
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 4, i32 0
@@ -523,8 +509,7 @@ define <vscale x 16 x i1> @icmp_ugt_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK-NEXT:    vl8r.v v24, (a1) # vscale x 64-byte Folded Reload
 ; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; CHECK-NEXT:    vmsltu.vv v0, v8, v24, v0.t
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
@@ -565,8 +550,7 @@ define <vscale x 16 x i1> @icmp_ugt_vx_nxv16i64(<vscale x 16 x i64> %va, i64 %b,
 ; RV32-NEXT:    vmv1r.v v0, v7
 ; RV32-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; RV32-NEXT:    vmsltu.vv v0, v24, v8, v0.t
-; RV32-NEXT:    add a1, a0, a0
-; RV32-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; RV32-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; RV32-NEXT:    vslideup.vx v0, v16, a0
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    .cfi_def_cfa_offset 0
@@ -592,8 +576,7 @@ define <vscale x 16 x i1> @icmp_ugt_vx_nxv16i64(<vscale x 16 x i64> %va, i64 %b,
 ; RV64-NEXT:    vmv1r.v v0, v24
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
 ; RV64-NEXT:    vmsgtu.vx v0, v8, a0, v0.t
-; RV64-NEXT:    add a0, a2, a2
-; RV64-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; RV64-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; RV64-NEXT:    vslideup.vx v0, v16, a2
 ; RV64-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 %b, i32 0
@@ -630,8 +613,7 @@ define <vscale x 16 x i1> @icmp_ugt_vx_swap_nxv16i64(<vscale x 16 x i64> %va, i6
 ; RV32-NEXT:    vmv1r.v v0, v7
 ; RV32-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; RV32-NEXT:    vmsltu.vv v0, v8, v24, v0.t
-; RV32-NEXT:    add a1, a0, a0
-; RV32-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; RV32-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; RV32-NEXT:    vslideup.vx v0, v16, a0
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    .cfi_def_cfa_offset 0
@@ -657,8 +639,7 @@ define <vscale x 16 x i1> @icmp_ugt_vx_swap_nxv16i64(<vscale x 16 x i64> %va, i6
 ; RV64-NEXT:    vmv1r.v v0, v24
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
 ; RV64-NEXT:    vmsltu.vx v0, v8, a0, v0.t
-; RV64-NEXT:    add a0, a2, a2
-; RV64-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; RV64-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; RV64-NEXT:    vslideup.vx v0, v16, a2
 ; RV64-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 %b, i32 0
@@ -688,8 +669,7 @@ define <vscale x 16 x i1> @icmp_ugt_vi_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vmsgtu.vi v0, v8, 4, v0.t
-; CHECK-NEXT:    add a0, a1, a1
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a1
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 4, i32 0
@@ -719,8 +699,7 @@ define <vscale x 16 x i1> @icmp_ugt_vi_swap_nxv16i64(<vscale x 16 x i64> %va, <v
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vmsleu.vi v0, v8, 3, v0.t
-; CHECK-NEXT:    add a0, a1, a1
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a1
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 4, i32 0
@@ -764,8 +743,7 @@ define <vscale x 16 x i1> @icmp_uge_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK-NEXT:    vl8r.v v24, (a1) # vscale x 64-byte Folded Reload
 ; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; CHECK-NEXT:    vmsleu.vv v0, v8, v24, v0.t
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
@@ -806,8 +784,7 @@ define <vscale x 16 x i1> @icmp_uge_vx_nxv16i64(<vscale x 16 x i64> %va, i64 %b,
 ; RV32-NEXT:    vmv1r.v v0, v7
 ; RV32-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; RV32-NEXT:    vmsleu.vv v0, v24, v8, v0.t
-; RV32-NEXT:    add a1, a0, a0
-; RV32-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; RV32-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; RV32-NEXT:    vslideup.vx v0, v16, a0
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    .cfi_def_cfa_offset 0
@@ -835,8 +812,7 @@ define <vscale x 16 x i1> @icmp_uge_vx_nxv16i64(<vscale x 16 x i64> %va, i64 %b,
 ; RV64-NEXT:    vmv1r.v v0, v7
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
 ; RV64-NEXT:    vmsleu.vv v0, v24, v8, v0.t
-; RV64-NEXT:    add a1, a0, a0
-; RV64-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; RV64-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; RV64-NEXT:    vslideup.vx v0, v16, a0
 ; RV64-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 %b, i32 0
@@ -873,8 +849,7 @@ define <vscale x 16 x i1> @icmp_uge_vx_swap_nxv16i64(<vscale x 16 x i64> %va, i6
 ; RV32-NEXT:    vmv1r.v v0, v7
 ; RV32-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; RV32-NEXT:    vmsleu.vv v0, v8, v24, v0.t
-; RV32-NEXT:    add a1, a0, a0
-; RV32-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; RV32-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; RV32-NEXT:    vslideup.vx v0, v16, a0
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    .cfi_def_cfa_offset 0
@@ -900,8 +875,7 @@ define <vscale x 16 x i1> @icmp_uge_vx_swap_nxv16i64(<vscale x 16 x i64> %va, i6
 ; RV64-NEXT:    vmv1r.v v0, v24
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
 ; RV64-NEXT:    vmsleu.vx v0, v8, a0, v0.t
-; RV64-NEXT:    add a0, a2, a2
-; RV64-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; RV64-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; RV64-NEXT:    vslideup.vx v0, v16, a2
 ; RV64-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 %b, i32 0
@@ -931,8 +905,7 @@ define <vscale x 16 x i1> @icmp_uge_vi_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vmsgtu.vi v0, v8, 3, v0.t
-; CHECK-NEXT:    add a0, a1, a1
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a1
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 4, i32 0
@@ -962,8 +935,7 @@ define <vscale x 16 x i1> @icmp_uge_vi_swap_nxv16i64(<vscale x 16 x i64> %va, <v
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vmsleu.vi v0, v8, 4, v0.t
-; CHECK-NEXT:    add a0, a1, a1
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a1
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 4, i32 0
@@ -1007,8 +979,7 @@ define <vscale x 16 x i1> @icmp_ult_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK-NEXT:    vl8r.v v24, (a1) # vscale x 64-byte Folded Reload
 ; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; CHECK-NEXT:    vmsltu.vv v0, v24, v8, v0.t
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
@@ -1049,8 +1020,7 @@ define <vscale x 16 x i1> @icmp_ult_vx_nxv16i64(<vscale x 16 x i64> %va, i64 %b,
 ; RV32-NEXT:    vmv1r.v v0, v7
 ; RV32-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; RV32-NEXT:    vmsltu.vv v0, v8, v24, v0.t
-; RV32-NEXT:    add a1, a0, a0
-; RV32-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; RV32-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; RV32-NEXT:    vslideup.vx v0, v16, a0
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    .cfi_def_cfa_offset 0
@@ -1076,8 +1046,7 @@ define <vscale x 16 x i1> @icmp_ult_vx_nxv16i64(<vscale x 16 x i64> %va, i64 %b,
 ; RV64-NEXT:    vmv1r.v v0, v24
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
 ; RV64-NEXT:    vmsltu.vx v0, v8, a0, v0.t
-; RV64-NEXT:    add a0, a2, a2
-; RV64-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; RV64-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; RV64-NEXT:    vslideup.vx v0, v16, a2
 ; RV64-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 %b, i32 0
@@ -1114,8 +1083,7 @@ define <vscale x 16 x i1> @icmp_ult_vx_swap_nxv16i64(<vscale x 16 x i64> %va, i6
 ; RV32-NEXT:    vmv1r.v v0, v7
 ; RV32-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; RV32-NEXT:    vmsltu.vv v0, v24, v8, v0.t
-; RV32-NEXT:    add a1, a0, a0
-; RV32-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; RV32-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; RV32-NEXT:    vslideup.vx v0, v16, a0
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    .cfi_def_cfa_offset 0
@@ -1141,8 +1109,7 @@ define <vscale x 16 x i1> @icmp_ult_vx_swap_nxv16i64(<vscale x 16 x i64> %va, i6
 ; RV64-NEXT:    vmv1r.v v0, v24
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
 ; RV64-NEXT:    vmsgtu.vx v0, v8, a0, v0.t
-; RV64-NEXT:    add a0, a2, a2
-; RV64-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; RV64-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; RV64-NEXT:    vslideup.vx v0, v16, a2
 ; RV64-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 %b, i32 0
@@ -1172,8 +1139,7 @@ define <vscale x 16 x i1> @icmp_ult_vi_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vmsleu.vi v0, v8, 3, v0.t
-; CHECK-NEXT:    add a0, a1, a1
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a1
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 4, i32 0
@@ -1203,8 +1169,7 @@ define <vscale x 16 x i1> @icmp_ult_vi_swap_nxv16i64(<vscale x 16 x i64> %va, <v
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vmsgtu.vi v0, v8, 4, v0.t
-; CHECK-NEXT:    add a0, a1, a1
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a1
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 4, i32 0
@@ -1248,8 +1213,7 @@ define <vscale x 16 x i1> @icmp_sgt_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK-NEXT:    vl8r.v v24, (a1) # vscale x 64-byte Folded Reload
 ; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; CHECK-NEXT:    vmslt.vv v0, v8, v24, v0.t
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
@@ -1290,8 +1254,7 @@ define <vscale x 16 x i1> @icmp_sgt_vx_nxv16i64(<vscale x 16 x i64> %va, i64 %b,
 ; RV32-NEXT:    vmv1r.v v0, v7
 ; RV32-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; RV32-NEXT:    vmslt.vv v0, v24, v8, v0.t
-; RV32-NEXT:    add a1, a0, a0
-; RV32-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; RV32-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; RV32-NEXT:    vslideup.vx v0, v16, a0
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    .cfi_def_cfa_offset 0
@@ -1317,8 +1280,7 @@ define <vscale x 16 x i1> @icmp_sgt_vx_nxv16i64(<vscale x 16 x i64> %va, i64 %b,
 ; RV64-NEXT:    vmv1r.v v0, v24
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
 ; RV64-NEXT:    vmsgt.vx v0, v8, a0, v0.t
-; RV64-NEXT:    add a0, a2, a2
-; RV64-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; RV64-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; RV64-NEXT:    vslideup.vx v0, v16, a2
 ; RV64-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 %b, i32 0
@@ -1355,8 +1317,7 @@ define <vscale x 16 x i1> @icmp_sgt_vx_swap_nxv16i64(<vscale x 16 x i64> %va, i6
 ; RV32-NEXT:    vmv1r.v v0, v7
 ; RV32-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; RV32-NEXT:    vmslt.vv v0, v8, v24, v0.t
-; RV32-NEXT:    add a1, a0, a0
-; RV32-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; RV32-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; RV32-NEXT:    vslideup.vx v0, v16, a0
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    .cfi_def_cfa_offset 0
@@ -1382,8 +1343,7 @@ define <vscale x 16 x i1> @icmp_sgt_vx_swap_nxv16i64(<vscale x 16 x i64> %va, i6
 ; RV64-NEXT:    vmv1r.v v0, v24
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
 ; RV64-NEXT:    vmslt.vx v0, v8, a0, v0.t
-; RV64-NEXT:    add a0, a2, a2
-; RV64-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; RV64-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; RV64-NEXT:    vslideup.vx v0, v16, a2
 ; RV64-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 %b, i32 0
@@ -1413,8 +1373,7 @@ define <vscale x 16 x i1> @icmp_sgt_vi_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vmsgt.vi v0, v8, 4, v0.t
-; CHECK-NEXT:    add a0, a1, a1
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a1
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 4, i32 0
@@ -1444,8 +1403,7 @@ define <vscale x 16 x i1> @icmp_sgt_vi_swap_nxv16i64(<vscale x 16 x i64> %va, <v
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vmsle.vi v0, v8, 3, v0.t
-; CHECK-NEXT:    add a0, a1, a1
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a1
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 4, i32 0
@@ -1489,8 +1447,7 @@ define <vscale x 16 x i1> @icmp_sge_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK-NEXT:    vl8r.v v24, (a1) # vscale x 64-byte Folded Reload
 ; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; CHECK-NEXT:    vmsle.vv v0, v8, v24, v0.t
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
@@ -1531,8 +1488,7 @@ define <vscale x 16 x i1> @icmp_sge_vx_nxv16i64(<vscale x 16 x i64> %va, i64 %b,
 ; RV32-NEXT:    vmv1r.v v0, v7
 ; RV32-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; RV32-NEXT:    vmsle.vv v0, v24, v8, v0.t
-; RV32-NEXT:    add a1, a0, a0
-; RV32-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; RV32-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; RV32-NEXT:    vslideup.vx v0, v16, a0
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    .cfi_def_cfa_offset 0
@@ -1560,8 +1516,7 @@ define <vscale x 16 x i1> @icmp_sge_vx_nxv16i64(<vscale x 16 x i64> %va, i64 %b,
 ; RV64-NEXT:    vmv1r.v v0, v7
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
 ; RV64-NEXT:    vmsle.vv v0, v24, v8, v0.t
-; RV64-NEXT:    add a1, a0, a0
-; RV64-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; RV64-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; RV64-NEXT:    vslideup.vx v0, v16, a0
 ; RV64-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 %b, i32 0
@@ -1598,8 +1553,7 @@ define <vscale x 16 x i1> @icmp_sge_vx_swap_nxv16i64(<vscale x 16 x i64> %va, i6
 ; RV32-NEXT:    vmv1r.v v0, v7
 ; RV32-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; RV32-NEXT:    vmsle.vv v0, v8, v24, v0.t
-; RV32-NEXT:    add a1, a0, a0
-; RV32-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; RV32-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; RV32-NEXT:    vslideup.vx v0, v16, a0
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    .cfi_def_cfa_offset 0
@@ -1625,8 +1579,7 @@ define <vscale x 16 x i1> @icmp_sge_vx_swap_nxv16i64(<vscale x 16 x i64> %va, i6
 ; RV64-NEXT:    vmv1r.v v0, v24
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
 ; RV64-NEXT:    vmsle.vx v0, v8, a0, v0.t
-; RV64-NEXT:    add a0, a2, a2
-; RV64-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; RV64-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; RV64-NEXT:    vslideup.vx v0, v16, a2
 ; RV64-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 %b, i32 0
@@ -1656,8 +1609,7 @@ define <vscale x 16 x i1> @icmp_sge_vi_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vmsgt.vi v0, v8, 3, v0.t
-; CHECK-NEXT:    add a0, a1, a1
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a1
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 4, i32 0
@@ -1687,8 +1639,7 @@ define <vscale x 16 x i1> @icmp_sge_vi_swap_nxv16i64(<vscale x 16 x i64> %va, <v
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vmsle.vi v0, v8, 4, v0.t
-; CHECK-NEXT:    add a0, a1, a1
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a1
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 4, i32 0
@@ -1732,8 +1683,7 @@ define <vscale x 16 x i1> @icmp_slt_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK-NEXT:    vl8r.v v24, (a1) # vscale x 64-byte Folded Reload
 ; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; CHECK-NEXT:    vmslt.vv v0, v24, v8, v0.t
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
@@ -1774,8 +1724,7 @@ define <vscale x 16 x i1> @icmp_slt_vx_nxv16i64(<vscale x 16 x i64> %va, i64 %b,
 ; RV32-NEXT:    vmv1r.v v0, v7
 ; RV32-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; RV32-NEXT:    vmslt.vv v0, v8, v24, v0.t
-; RV32-NEXT:    add a1, a0, a0
-; RV32-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; RV32-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; RV32-NEXT:    vslideup.vx v0, v16, a0
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    .cfi_def_cfa_offset 0
@@ -1801,8 +1750,7 @@ define <vscale x 16 x i1> @icmp_slt_vx_nxv16i64(<vscale x 16 x i64> %va, i64 %b,
 ; RV64-NEXT:    vmv1r.v v0, v24
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
 ; RV64-NEXT:    vmslt.vx v0, v8, a0, v0.t
-; RV64-NEXT:    add a0, a2, a2
-; RV64-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; RV64-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; RV64-NEXT:    vslideup.vx v0, v16, a2
 ; RV64-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 %b, i32 0
@@ -1839,8 +1787,7 @@ define <vscale x 16 x i1> @icmp_slt_vx_swap_nxv16i64(<vscale x 16 x i64> %va, i6
 ; RV32-NEXT:    vmv1r.v v0, v7
 ; RV32-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; RV32-NEXT:    vmslt.vv v0, v24, v8, v0.t
-; RV32-NEXT:    add a1, a0, a0
-; RV32-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; RV32-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; RV32-NEXT:    vslideup.vx v0, v16, a0
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    .cfi_def_cfa_offset 0
@@ -1866,8 +1813,7 @@ define <vscale x 16 x i1> @icmp_slt_vx_swap_nxv16i64(<vscale x 16 x i64> %va, i6
 ; RV64-NEXT:    vmv1r.v v0, v24
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
 ; RV64-NEXT:    vmsgt.vx v0, v8, a0, v0.t
-; RV64-NEXT:    add a0, a2, a2
-; RV64-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; RV64-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; RV64-NEXT:    vslideup.vx v0, v16, a2
 ; RV64-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 %b, i32 0
@@ -1897,8 +1843,7 @@ define <vscale x 16 x i1> @icmp_slt_vi_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vmsle.vi v0, v8, 3, v0.t
-; CHECK-NEXT:    add a0, a1, a1
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a1
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 4, i32 0
@@ -1928,8 +1873,7 @@ define <vscale x 16 x i1> @icmp_slt_vi_swap_nxv16i64(<vscale x 16 x i64> %va, <v
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vmsgt.vi v0, v8, 4, v0.t
-; CHECK-NEXT:    add a0, a1, a1
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a1
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 4, i32 0
@@ -1973,8 +1917,7 @@ define <vscale x 16 x i1> @icmp_sle_vv_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK-NEXT:    vl8r.v v24, (a1) # vscale x 64-byte Folded Reload
 ; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; CHECK-NEXT:    vmsle.vv v0, v24, v8, v0.t
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
@@ -2015,8 +1958,7 @@ define <vscale x 16 x i1> @icmp_sle_vx_nxv16i64(<vscale x 16 x i64> %va, i64 %b,
 ; RV32-NEXT:    vmv1r.v v0, v7
 ; RV32-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; RV32-NEXT:    vmsle.vv v0, v8, v24, v0.t
-; RV32-NEXT:    add a1, a0, a0
-; RV32-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; RV32-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; RV32-NEXT:    vslideup.vx v0, v16, a0
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    .cfi_def_cfa_offset 0
@@ -2042,8 +1984,7 @@ define <vscale x 16 x i1> @icmp_sle_vx_nxv16i64(<vscale x 16 x i64> %va, i64 %b,
 ; RV64-NEXT:    vmv1r.v v0, v24
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
 ; RV64-NEXT:    vmsle.vx v0, v8, a0, v0.t
-; RV64-NEXT:    add a0, a2, a2
-; RV64-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; RV64-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; RV64-NEXT:    vslideup.vx v0, v16, a2
 ; RV64-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 %b, i32 0
@@ -2080,8 +2021,7 @@ define <vscale x 16 x i1> @icmp_sle_vx_swap_nxv16i64(<vscale x 16 x i64> %va, i6
 ; RV32-NEXT:    vmv1r.v v0, v7
 ; RV32-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; RV32-NEXT:    vmsle.vv v0, v24, v8, v0.t
-; RV32-NEXT:    add a1, a0, a0
-; RV32-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; RV32-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; RV32-NEXT:    vslideup.vx v0, v16, a0
 ; RV32-NEXT:    addi sp, sp, 16
 ; RV32-NEXT:    .cfi_def_cfa_offset 0
@@ -2109,8 +2049,7 @@ define <vscale x 16 x i1> @icmp_sle_vx_swap_nxv16i64(<vscale x 16 x i64> %va, i6
 ; RV64-NEXT:    vmv1r.v v0, v7
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
 ; RV64-NEXT:    vmsle.vv v0, v24, v8, v0.t
-; RV64-NEXT:    add a1, a0, a0
-; RV64-NEXT:    vsetvli zero, a1, e8, mf4, ta, ma
+; RV64-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
 ; RV64-NEXT:    vslideup.vx v0, v16, a0
 ; RV64-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 %b, i32 0
@@ -2140,8 +2079,7 @@ define <vscale x 16 x i1> @icmp_sle_vi_nxv16i64(<vscale x 16 x i64> %va, <vscale
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vmsle.vi v0, v8, 4, v0.t
-; CHECK-NEXT:    add a0, a1, a1
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a1
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 4, i32 0
@@ -2171,8 +2109,7 @@ define <vscale x 16 x i1> @icmp_sle_vi_swap_nxv16i64(<vscale x 16 x i64> %va, <v
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vmsgt.vi v0, v8, 3, v0.t
-; CHECK-NEXT:    add a0, a1, a1
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a1
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x i64> poison, i64 4, i32 0

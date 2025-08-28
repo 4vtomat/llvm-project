@@ -2197,17 +2197,9 @@ define <vscale x 32 x i1> @icmp_eq_vv_nxv32i32(<vscale x 32 x i32> %va, <vscale 
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vl8r.v v24, (a1) # vscale x 64-byte Folded Reload
 ; CHECK-NEXT:    vsetvli zero, a2, e32, m8, ta, ma
-<<<<<<< HEAD
 ; CHECK-NEXT:    vmseq.vv v0, v24, v8, v0.t
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, mf2, ta, ma
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v16, a0
-=======
-; CHECK-NEXT:    vmseq.vv v16, v24, v8, v0.t
-; CHECK-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
-; CHECK-NEXT:    vslideup.vx v16, v6, a1
-; CHECK-NEXT:    vmv1r.v v0, v16
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add sp, sp, a0
@@ -2240,17 +2232,9 @@ define <vscale x 32 x i1> @icmp_eq_vx_nxv32i32(<vscale x 32 x i32> %va, i32 %b, 
 ; CHECK-NEXT:  .LBB190_2:
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vsetvli zero, a1, e32, m8, ta, ma
-<<<<<<< HEAD
 ; CHECK-NEXT:    vmseq.vx v0, v8, a0, v0.t
-; CHECK-NEXT:    add a0, a2, a2
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, ma
-; CHECK-NEXT:    vslideup.vx v0, v16, a2
-=======
-; CHECK-NEXT:    vmseq.vx v16, v8, a0, v0.t
 ; CHECK-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
-; CHECK-NEXT:    vslideup.vx v16, v25, a2
-; CHECK-NEXT:    vmv1r.v v0, v16
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+; CHECK-NEXT:    vslideup.vx v0, v16, a2
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 32 x i32> poison, i32 %b, i32 0
   %vb = shufflevector <vscale x 32 x i32> %elt.head, <vscale x 32 x i32> poison, <vscale x 32 x i32> zeroinitializer
@@ -2279,17 +2263,9 @@ define <vscale x 32 x i1> @icmp_eq_vx_swap_nxv32i32(<vscale x 32 x i32> %va, i32
 ; CHECK-NEXT:  .LBB191_2:
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vsetvli zero, a1, e32, m8, ta, ma
-<<<<<<< HEAD
 ; CHECK-NEXT:    vmseq.vx v0, v8, a0, v0.t
-; CHECK-NEXT:    add a0, a2, a2
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, ma
-; CHECK-NEXT:    vslideup.vx v0, v16, a2
-=======
-; CHECK-NEXT:    vmseq.vx v16, v8, a0, v0.t
 ; CHECK-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
-; CHECK-NEXT:    vslideup.vx v16, v25, a2
-; CHECK-NEXT:    vmv1r.v v0, v16
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+; CHECK-NEXT:    vslideup.vx v0, v16, a2
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 32 x i32> poison, i32 %b, i32 0
   %vb = shufflevector <vscale x 32 x i32> %elt.head, <vscale x 32 x i32> poison, <vscale x 32 x i32> zeroinitializer

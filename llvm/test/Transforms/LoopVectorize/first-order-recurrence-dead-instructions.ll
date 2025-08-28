@@ -6,9 +6,7 @@ define i8 @recurrence_phi_with_same_incoming_values_after_simplifications(i8 %fo
 ; CHECK-LABEL: define i8 @recurrence_phi_with_same_incoming_values_after_simplifications(
 ; CHECK-SAME: i8 [[FOR_START:%.*]], ptr [[DST:%.*]]) {
 ; CHECK-NEXT:  [[ENTRY:.*]]:
-; CHECK-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_SCEVCHECK:.*]]
-; CHECK:       [[VECTOR_SCEVCHECK]]:
-; CHECK-NEXT:    br i1 true, label %[[SCALAR_PH]], label %[[VECTOR_PH:.*]]
+; CHECK-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <4 x i8> poison, i8 [[FOR_START]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <4 x i8> [[BROADCAST_SPLATINSERT]], <4 x i8> poison, <4 x i32> zeroinitializer
@@ -17,11 +15,34 @@ define i8 @recurrence_phi_with_same_incoming_values_after_simplifications(i8 %fo
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = add i32 1, [[INDEX]]
-; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i8, ptr [[DST]], i32 [[OFFSET_IDX]]
-; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i8, ptr [[TMP1]], i32 0
-; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i8, ptr [[TMP1]], i32 4
-; CHECK-NEXT:    store <4 x i8> [[TMP0]], ptr [[TMP2]], align 1
-; CHECK-NEXT:    store <4 x i8> [[TMP0]], ptr [[TMP3]], align 1
+; CHECK-NEXT:    [[TMP1:%.*]] = add i32 [[OFFSET_IDX]], 0
+; CHECK-NEXT:    [[TMP2:%.*]] = add i32 [[OFFSET_IDX]], 1
+; CHECK-NEXT:    [[TMP3:%.*]] = add i32 [[OFFSET_IDX]], 2
+; CHECK-NEXT:    [[TMP21:%.*]] = add i32 [[OFFSET_IDX]], 3
+; CHECK-NEXT:    [[TMP22:%.*]] = add i32 [[OFFSET_IDX]], 4
+; CHECK-NEXT:    [[TMP6:%.*]] = add i32 [[OFFSET_IDX]], 5
+; CHECK-NEXT:    [[TMP7:%.*]] = add i32 [[OFFSET_IDX]], 6
+; CHECK-NEXT:    [[TMP8:%.*]] = add i32 [[OFFSET_IDX]], 7
+; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i8, ptr [[DST]], i32 [[TMP1]]
+; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i8, ptr [[DST]], i32 [[TMP2]]
+; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds i8, ptr [[DST]], i32 [[TMP3]]
+; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i8, ptr [[DST]], i32 [[TMP21]]
+; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i8, ptr [[DST]], i32 [[TMP22]]
+; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i8, ptr [[DST]], i32 [[TMP6]]
+; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr inbounds i8, ptr [[DST]], i32 [[TMP7]]
+; CHECK-NEXT:    [[TMP16:%.*]] = getelementptr inbounds i8, ptr [[DST]], i32 [[TMP8]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <4 x i8> [[TMP0]], i32 0
+; CHECK-NEXT:    store i8 [[TMP17]], ptr [[TMP9]], align 1
+; CHECK-NEXT:    [[TMP18:%.*]] = extractelement <4 x i8> [[TMP0]], i32 1
+; CHECK-NEXT:    store i8 [[TMP18]], ptr [[TMP10]], align 1
+; CHECK-NEXT:    [[TMP19:%.*]] = extractelement <4 x i8> [[TMP0]], i32 2
+; CHECK-NEXT:    store i8 [[TMP19]], ptr [[TMP11]], align 1
+; CHECK-NEXT:    [[TMP20:%.*]] = extractelement <4 x i8> [[TMP0]], i32 3
+; CHECK-NEXT:    store i8 [[TMP20]], ptr [[TMP12]], align 1
+; CHECK-NEXT:    store i8 [[TMP17]], ptr [[TMP13]], align 1
+; CHECK-NEXT:    store i8 [[TMP18]], ptr [[TMP14]], align 1
+; CHECK-NEXT:    store i8 [[TMP19]], ptr [[TMP15]], align 1
+; CHECK-NEXT:    store i8 [[TMP20]], ptr [[TMP16]], align 1
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i32 [[INDEX]], 8
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp eq i32 [[INDEX_NEXT]], -8
 ; CHECK-NEXT:    br i1 [[TMP4]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
@@ -30,8 +51,8 @@ define i8 @recurrence_phi_with_same_incoming_values_after_simplifications(i8 %fo
 ; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <4 x i8> [[BROADCAST_SPLAT]], i32 3
 ; CHECK-NEXT:    br i1 false, label %[[EXIT:.*]], label %[[SCALAR_PH]]
 ; CHECK:       [[SCALAR_PH]]:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ -7, %[[MIDDLE_BLOCK]] ], [ 1, %[[ENTRY]] ], [ 1, %[[VECTOR_SCEVCHECK]] ]
-; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i8 [ [[VECTOR_RECUR_EXTRACT]], %[[MIDDLE_BLOCK]] ], [ [[FOR_START]], %[[ENTRY]] ], [ [[FOR_START]], %[[VECTOR_SCEVCHECK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ -7, %[[MIDDLE_BLOCK]] ], [ 1, %[[ENTRY]] ]
+; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i8 [ [[VECTOR_RECUR_EXTRACT]], %[[MIDDLE_BLOCK]] ], [ [[FOR_START]], %[[ENTRY]] ]
 ; CHECK-NEXT:    br label %[[LOOP:.*]]
 ; CHECK:       [[LOOP]]:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i32 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[LOOP]] ]

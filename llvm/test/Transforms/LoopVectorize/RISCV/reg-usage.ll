@@ -24,23 +24,6 @@
 
 define void @add(ptr noalias nocapture readonly %src1, ptr noalias nocapture readonly %src2, i32 signext %size, ptr noalias nocapture writeonly %result) {
 ; CHECK-LABEL: add
-<<<<<<< HEAD
-; CHECK-SCALAR: {{.*}}
-; CHECK-LMUL1:      LV(REG): VF = vscale x 1
-; CHECK-LMUL1-NEXT: LV(REG): Found max usage: 2 item
-; CHECK-LMUL1-NEXT: LV(REG): RegisterClass: RISCV::GPRRC, 2 registers
-; CHECK-LMUL1-NEXT: LV(REG): RegisterClass: RISCV::VRRC, 2 registers
-; CHECK-LMUL1-NEXT: LV(REG): Found invariant usage: 1 item
-; CHECK-LMUL1-NEXT: LV(REG): RegisterClass: RISCV::GPRRC, 1 registers
-; CHECK-LMUL2:       LV(REG): VF = vscale x 2
-; CHECK-LMUL2-NEXT:  LV(REG): Found max usage: 2 item
-; CHECK-LMUL2-NEXT:  LV(REG): RegisterClass: RISCV::GPRRC, 2 registers
-; CHECK-LMUL2-NEXT:  LV(REG): RegisterClass: RISCV::VRRC, 2 registers
-; CHECK-LMUL2-NEXT:  LV(REG): Found invariant usage: 1 item
-; CHECK-LMUL2-NEXT:  LV(REG): RegisterClass: RISCV::GPRRC, 1 registers
-; CHECK-LMUL4: {{.*}}
-; CHECK-LMUL8: {{.*}}
-=======
 ; CHECK-SCALAR:      LV(REG): VF = 1
 ; CHECK-SCALAR-NEXT: LV(REG): Found max usage: 2 item
 ; CHECK-SCALAR-NEXT: LV(REG): RegisterClass: RISCV::GPRRC, 3 registers
@@ -68,7 +51,6 @@ define void @add(ptr noalias nocapture readonly %src1, ptr noalias nocapture rea
 ; CHECK-LMUL8-NEXT:  LV(REG): Found invariant usage: 1 item
 ; CHECK-LMUL8-NEXT:  LV(REG): RegisterClass: RISCV::GPRRC, 1 registers
 
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 entry:
   %conv = zext i32 %size to i64
   %cmp10.not = icmp eq i32 %size, 0
@@ -93,23 +75,6 @@ for.body:
 
 define void @goo(ptr nocapture noundef %a, i32 noundef signext %n) {
 ; CHECK-LABEL: goo
-<<<<<<< HEAD
-; CHECK-SCALAR: {{.*}}
-; CHECK-LMUL1:       LV(REG): VF = vscale x 1
-; CHECK-LMUL1-NEXT:  LV(REG): Found max usage: 2 item
-; CHECK-LMUL1-NEXT:  LV(REG): RegisterClass: RISCV::GPRRC, 4 registers
-; CHECK-LMUL1-NEXT:  LV(REG): RegisterClass: RISCV::VRRC, 2 registers
-; CHECK-LMUL1-NEXT:  LV(REG): Found invariant usage: 1 item
-; CHECK-LMUL1-NEXT:  LV(REG): RegisterClass: RISCV::GPRRC, 1 registers
-; CHECK-LMUL2:       LV(REG): VF = vscale x 2
-; CHECK-LMUL2-NEXT:  LV(REG): Found max usage: 2 item
-; CHECK-LMUL2-NEXT:  LV(REG): RegisterClass: RISCV::GPRRC, 4 registers
-; CHECK-LMUL2-NEXT:  LV(REG): RegisterClass: RISCV::VRRC, 2 registers
-; CHECK-LMUL2-NEXT:  LV(REG): Found invariant usage: 1 item
-; CHECK-LMUL2-NEXT:  LV(REG): RegisterClass: RISCV::GPRRC, 1 registers
-; CHECK-LMUL4: {{.*}}
-; CHECK-LMUL8: {{.*}}
-=======
 ; CHECK-SCALAR:      LV(REG): VF = 1
 ; CHECK-SCALAR-NEXT: LV(REG): Found max usage: 1 item
 ; CHECK-SCALAR-NEXT: LV(REG): RegisterClass: RISCV::GPRRC, 3 registers
@@ -125,7 +90,6 @@ define void @goo(ptr nocapture noundef %a, i32 noundef signext %n) {
 ; CHECK-LMUL8:       LV(REG): Found max usage: 2 item
 ; CHECK-LMUL8-NEXT:  LV(REG): RegisterClass: RISCV::GPRRC, 2 registers
 ; CHECK-LMUL8-NEXT:  LV(REG): RegisterClass: RISCV::VRRC, 8 registers
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 entry:
   %cmp3 = icmp sgt i32 %n, 0
   br i1 %cmp3, label %for.body.preheader, label %for.cond.cleanup

@@ -14,23 +14,21 @@ define <vscale x 112 x i1> @vector_interleave_nxv112i1_nxv16i1(<vscale x 16 x i1
 ; CHECK-NEXT:    sub sp, sp, a0
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v14, 0
-; CHECK-NEXT:    addi a4, sp, 16
+; CHECK-NEXT:    addi a3, sp, 16
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a1, a0, 3
 ; CHECK-NEXT:    sub a0, a1, a0
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    csrr a2, vlenb
+; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    vmerge.vim v16, v14, 1, v0
 ; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    vmerge.vim v22, v14, 1, v0
-; CHECK-NEXT:    add a3, a4, a2
-; CHECK-NEXT:    srli a1, a2, 2
-; CHECK-NEXT:    add a5, a0, a2
+; CHECK-NEXT:    add a2, a3, a1
 ; CHECK-NEXT:    vmv4r.v v24, v16
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vmerge.vim v18, v14, 1, v0
-; CHECK-NEXT:    add a6, a3, a2
+; CHECK-NEXT:    add a4, a2, a1
 ; CHECK-NEXT:    vmv1r.v v25, v22
 ; CHECK-NEXT:    vmv1r.v v0, v10
 ; CHECK-NEXT:    vmerge.vim v8, v14, 1, v0
@@ -42,41 +40,41 @@ define <vscale x 112 x i1> @vector_interleave_nxv112i1_nxv16i1(<vscale x 16 x i1
 ; CHECK-NEXT:    vmerge.vim v10, v14, 1, v0
 ; CHECK-NEXT:    vmv1r.v v28, v20
 ; CHECK-NEXT:    vmv1r.v v18, v23
-; CHECK-NEXT:    add a7, a6, a2
+; CHECK-NEXT:    add a5, a4, a1
 ; CHECK-NEXT:    vmv1r.v v29, v10
 ; CHECK-NEXT:    vmv1r.v v20, v9
 ; CHECK-NEXT:    vmv1r.v v0, v13
 ; CHECK-NEXT:    vmerge.vim v30, v14, 1, v0
 ; CHECK-NEXT:    vmv1r.v v22, v11
-; CHECK-NEXT:    vsetvli t0, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vsseg7e8.v v24, (a4)
+; CHECK-NEXT:    vsetvli a6, zero, e8, m1, ta, ma
+; CHECK-NEXT:    vsseg7e8.v v24, (a3)
 ; CHECK-NEXT:    vmv1r.v v23, v31
 ; CHECK-NEXT:    vsseg7e8.v v17, (a0)
-; CHECK-NEXT:    vl1r.v v8, (a6)
-; CHECK-NEXT:    add a6, a7, a2
-; CHECK-NEXT:    vl1r.v v10, (a4)
-; CHECK-NEXT:    add a4, a6, a2
-; CHECK-NEXT:    vl1r.v v12, (a6)
-; CHECK-NEXT:    add a6, a4, a2
-; CHECK-NEXT:    vl1r.v v14, (a6)
-; CHECK-NEXT:    add a6, a5, a2
-; CHECK-NEXT:    vl1r.v v16, (a5)
-; CHECK-NEXT:    add a5, a6, a2
-; CHECK-NEXT:    vl1r.v v18, (a5)
-; CHECK-NEXT:    add a5, a5, a2
-; CHECK-NEXT:    vl1r.v v9, (a7)
-; CHECK-NEXT:    add a7, a5, a2
-; CHECK-NEXT:    vl1r.v v20, (a7)
-; CHECK-NEXT:    add a7, a7, a2
-; CHECK-NEXT:    srli a2, a2, 1
-; CHECK-NEXT:    vl1r.v v11, (a3)
-; CHECK-NEXT:    add a3, a1, a1
-; CHECK-NEXT:    vl1r.v v13, (a4)
-; CHECK-NEXT:    add a4, a2, a2
+; CHECK-NEXT:    vl1r.v v8, (a4)
+; CHECK-NEXT:    add a4, a5, a1
+; CHECK-NEXT:    vl1r.v v10, (a3)
+; CHECK-NEXT:    add a6, a4, a1
+; CHECK-NEXT:    vl1r.v v12, (a4)
+; CHECK-NEXT:    add a3, a6, a1
+; CHECK-NEXT:    vl1r.v v14, (a3)
+; CHECK-NEXT:    srli a3, a1, 1
+; CHECK-NEXT:    vl1r.v v9, (a5)
+; CHECK-NEXT:    add a4, a0, a1
+; CHECK-NEXT:    vl1r.v v16, (a4)
+; CHECK-NEXT:    add a4, a4, a1
+; CHECK-NEXT:    vl1r.v v11, (a2)
+; CHECK-NEXT:    add a2, a4, a1
+; CHECK-NEXT:    vl1r.v v18, (a2)
+; CHECK-NEXT:    add a2, a2, a1
+; CHECK-NEXT:    vl1r.v v13, (a6)
+; CHECK-NEXT:    add a5, a2, a1
+; CHECK-NEXT:    vl1r.v v20, (a5)
+; CHECK-NEXT:    add a5, a5, a1
+; CHECK-NEXT:    srli a1, a1, 2
 ; CHECK-NEXT:    vl1r.v v15, (a0)
-; CHECK-NEXT:    vl1r.v v19, (a5)
-; CHECK-NEXT:    vl1r.v v17, (a6)
-; CHECK-NEXT:    vl1r.v v21, (a7)
+; CHECK-NEXT:    vl1r.v v19, (a2)
+; CHECK-NEXT:    vl1r.v v17, (a4)
+; CHECK-NEXT:    vl1r.v v21, (a5)
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v22, v8, 0
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
@@ -85,13 +83,13 @@ define <vscale x 112 x i1> @vector_interleave_nxv112i1_nxv16i1(<vscale x 16 x i1
 ; CHECK-NEXT:    vmsne.vi v11, v18, 0
 ; CHECK-NEXT:    vmsne.vi v8, v16, 0
 ; CHECK-NEXT:    vmsne.vi v12, v20, 0
-; CHECK-NEXT:    vsetvli zero, a3, e8, mf2, ta, ma
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v22, a1
 ; CHECK-NEXT:    vslideup.vx v9, v10, a1
 ; CHECK-NEXT:    vslideup.vx v8, v11, a1
-; CHECK-NEXT:    vsetvli zero, a4, e8, m1, ta, ma
-; CHECK-NEXT:    vslideup.vx v0, v9, a2
-; CHECK-NEXT:    vslideup.vx v8, v12, a2
+; CHECK-NEXT:    vsetvli a0, zero, e8, m1, ta, ma
+; CHECK-NEXT:    vslideup.vx v0, v9, a3
+; CHECK-NEXT:    vslideup.vx v8, v12, a3
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    li a1, 14
 ; CHECK-NEXT:    mul a0, a0, a1

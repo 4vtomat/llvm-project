@@ -7,16 +7,16 @@ define i32 @sct3313() {
 ; CHECK-SAME: ) #[[ATTR0:[0-9]+]] {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
+; CHECK-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
 ; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 23, [[TMP1]]
 ; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 4
+; CHECK-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP2]], 4
 ; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i64 23, [[TMP3]]
 ; CHECK-NEXT:    [[N_VEC:%.*]] = sub i64 23, [[N_MOD_VF]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 4
+; CHECK-NEXT:    [[TMP10:%.*]] = mul nuw i64 [[TMP9]], 4
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[FOR_OUTER_CLEANUP2:%.*]] ]
@@ -74,16 +74,16 @@ define i32 @sct3313() {
 ; CHECK-VLA-SAME: ) #[[ATTR0:[0-9]+]] {
 ; CHECK-VLA-NEXT:  entry:
 ; CHECK-VLA-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-VLA-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
+; CHECK-VLA-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
 ; CHECK-VLA-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 23, [[TMP1]]
 ; CHECK-VLA-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-VLA:       vector.ph:
 ; CHECK-VLA-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-VLA-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 4
+; CHECK-VLA-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP2]], 4
 ; CHECK-VLA-NEXT:    [[N_MOD_VF:%.*]] = urem i64 23, [[TMP3]]
 ; CHECK-VLA-NEXT:    [[N_VEC:%.*]] = sub i64 23, [[N_MOD_VF]]
 ; CHECK-VLA-NEXT:    [[TMP9:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-VLA-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 4
+; CHECK-VLA-NEXT:    [[TMP10:%.*]] = mul nuw i64 [[TMP9]], 4
 ; CHECK-VLA-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-VLA:       vector.body:
 ; CHECK-VLA-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[FOR_OUTER_CLEANUP2:%.*]] ]

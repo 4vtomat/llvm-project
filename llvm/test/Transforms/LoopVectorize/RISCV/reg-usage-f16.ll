@@ -5,8 +5,6 @@
 
 define void @add(ptr noalias nocapture readonly %src1, ptr noalias nocapture readonly %src2, i32 signext %size, ptr noalias nocapture writeonly %result) {
 ; CHECK-LABEL: add
-<<<<<<< HEAD
-=======
 ; ZVFH:  LV(REG): Found max usage: 2 item
 ; ZVFH-NEXT:  LV(REG): RegisterClass: RISCV::GPRRC, 3 registers
 ; ZVFH-NEXT:  LV(REG): RegisterClass: RISCV::VRRC, 2 registers
@@ -17,7 +15,6 @@ define void @add(ptr noalias nocapture readonly %src1, ptr noalias nocapture rea
 ; ZVFHMIN-NEXT:  LV(REG): RegisterClass: RISCV::VRRC, 4 registers
 ; ZVFHMIN-NEXT:  LV(REG): Found invariant usage: 1 item
 ; ZVFHMIN-NEXT:  LV(REG): RegisterClass: RISCV::GPRRC, 1 registers
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 
 entry:
   %conv = zext i32 %size to i64

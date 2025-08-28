@@ -11,46 +11,45 @@ define void @baz(ptr %arg) {
 ; CHECK:       # %bb.0: # %bb
 ; CHECK-NEXT:    vsetvli a1, zero, e64, m8, ta, ma
 ; CHECK-NEXT:    vid.v v8
-; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    csrr a2, vlenb
 ; CHECK-NEXT:    li a7, -65
 ; CHECK-NEXT:    li a6, 32
 ; CHECK-NEXT:    li t0, 26
 ; CHECK-NEXT:    addi a0, a0, 8
-; CHECK-NEXT:    minu a4, a1, a6
-; CHECK-NEXT:    slli a2, a1, 3
-; CHECK-NEXT:    maxu a3, a1, a6
-; CHECK-NEXT:    sub a3, a3, a1
-; CHECK-NEXT:    srli a1, a1, 3
+; CHECK-NEXT:    minu a4, a2, a6
+; CHECK-NEXT:    slli a1, a2, 3
+; CHECK-NEXT:    maxu a3, a2, a6
+; CHECK-NEXT:    sub a3, a3, a2
+; CHECK-NEXT:    srli a2, a2, 3
 ; CHECK-NEXT:    vsll.vi v8, v8, 3
 ; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
 ; CHECK-NEXT:    vadd.vx v16, v8, a7
 ; CHECK-NEXT:    vmsltu.vx v0, v16, t0
 ; CHECK-NEXT:    vsetvli a5, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vadd.vx v16, v8, a2
+; CHECK-NEXT:    vadd.vx v16, v8, a1
 ; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
-; CHECK-NEXT:    li a2, -64
+; CHECK-NEXT:    li a1, -64
 ; CHECK-NEXT:    vadd.vx v24, v16, a7
 ; CHECK-NEXT:    vmsltu.vx v7, v24, t0
 ; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
-; CHECK-NEXT:    vadd.vx v24, v8, a2
+; CHECK-NEXT:    vadd.vx v24, v8, a1
 ; CHECK-NEXT:    vmsltu.vx v6, v24, t0
 ; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
-; CHECK-NEXT:    vadd.vx v24, v16, a2
-; CHECK-NEXT:    li a2, -63
+; CHECK-NEXT:    vadd.vx v24, v16, a1
+; CHECK-NEXT:    li a1, -63
 ; CHECK-NEXT:    vmsltu.vx v24, v24, t0
 ; CHECK-NEXT:    vsetvli zero, a4, e64, m8, ta, ma
-; CHECK-NEXT:    vadd.vx v8, v8, a2
+; CHECK-NEXT:    vadd.vx v8, v8, a1
 ; CHECK-NEXT:    vmsltu.vx v25, v8, t0
 ; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
-; CHECK-NEXT:    vadd.vx v8, v16, a2
-; CHECK-NEXT:    add a2, a1, a1
+; CHECK-NEXT:    vadd.vx v8, v16, a1
 ; CHECK-NEXT:    vmsltu.vx v16, v8, t0
-; CHECK-NEXT:    vsetvli zero, a2, e8, mf4, ta, ma
-; CHECK-NEXT:    vslideup.vx v0, v7, a1
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
+; CHECK-NEXT:    vslideup.vx v0, v7, a2
 ; CHECK-NEXT:    vsetvli zero, a6, e8, m2, ta, ma
 ; CHECK-NEXT:    vmorn.mm v9, v0, v0
-; CHECK-NEXT:    vsetvli zero, a2, e8, mf4, ta, ma
-; CHECK-NEXT:    vslideup.vx v6, v24, a1
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
+; CHECK-NEXT:    vslideup.vx v6, v24, a2
 ; CHECK-NEXT:    vsetvli zero, a6, e8, m2, ta, ma
 ; CHECK-NEXT:    vle8.v v10, (a0), v0.t
 ; CHECK-NEXT:    vmand.mm v8, v9, v6
@@ -61,8 +60,8 @@ define void @baz(ptr %arg) {
 ; CHECK-NEXT:    vmand.mm v12, v12, v9
 ; CHECK-NEXT:    vmandn.mm v9, v8, v9
 ; CHECK-NEXT:    vmor.mm v9, v12, v9
-; CHECK-NEXT:    vsetvli zero, a2, e8, mf4, ta, ma
-; CHECK-NEXT:    vslideup.vx v25, v16, a1
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
+; CHECK-NEXT:    vslideup.vx v25, v16, a2
 ; CHECK-NEXT:    vsetvli zero, a6, e8, m2, ta, ma
 ; CHECK-NEXT:    vle8.v v10, (a0), v0.t
 ; CHECK-NEXT:    vmand.mm v9, v9, v25

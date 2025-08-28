@@ -858,23 +858,13 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16
 ; CHECK-NEXT:    vsetvli a1, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmerge.vim v28, v10, 1, v0
 ; CHECK-NEXT:    vs8r.v v24, (a0)
-<<<<<<< HEAD
-; CHECK-NEXT:    vsetvli a2, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vlseg6e8.v v14, (a1)
+; CHECK-NEXT:    vsetvli a1, zero, e8, m1, ta, ma
+; CHECK-NEXT:    vlseg6e8.v v14, (a2)
 ; CHECK-NEXT:    vlseg6e8.v v8, (a0)
 ; CHECK-NEXT:    vmv2r.v v20, v14
 ; CHECK-NEXT:    vmv2r.v v22, v16
 ; CHECK-NEXT:    vmv2r.v v24, v18
 ; CHECK-NEXT:    vmv1r.v v21, v8
-=======
-; CHECK-NEXT:    vsetvli a1, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vlseg6e8.v v16, (a2)
-; CHECK-NEXT:    vlseg6e8.v v10, (a0)
-; CHECK-NEXT:    vmv2r.v v8, v16
-; CHECK-NEXT:    vmv2r.v v22, v18
-; CHECK-NEXT:    vmv2r.v v24, v20
-; CHECK-NEXT:    vmv1r.v v9, v10
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v0, v20, 0
 ; CHECK-NEXT:    vmv1r.v v8, v15
@@ -1379,25 +1369,14 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16
 ; CHECK-NEXT:    vsetvli a1, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmerge.vim v26, v10, 1, v0
 ; CHECK-NEXT:    vs8r.v v24, (a0)
-<<<<<<< HEAD
-; CHECK-NEXT:    vsetvli a2, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vlseg8e8.v v16, (a1)
+; CHECK-NEXT:    vsetvli a1, zero, e8, m1, ta, ma
+; CHECK-NEXT:    vlseg8e8.v v16, (a2)
 ; CHECK-NEXT:    vlseg8e8.v v8, (a0)
 ; CHECK-NEXT:    vmv2r.v v24, v16
 ; CHECK-NEXT:    vmv2r.v v26, v18
 ; CHECK-NEXT:    vmv2r.v v28, v20
 ; CHECK-NEXT:    vmv2r.v v30, v22
 ; CHECK-NEXT:    vmv1r.v v25, v8
-=======
-; CHECK-NEXT:    vsetvli a1, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vlseg8e8.v v18, (a2)
-; CHECK-NEXT:    vlseg8e8.v v10, (a0)
-; CHECK-NEXT:    vmv2r.v v8, v18
-; CHECK-NEXT:    vmv2r.v v26, v20
-; CHECK-NEXT:    vmv2r.v v28, v22
-; CHECK-NEXT:    vmv2r.v v30, v24
-; CHECK-NEXT:    vmv1r.v v9, v10
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v0, v24, 0
 ; CHECK-NEXT:    vmv1r.v v8, v17

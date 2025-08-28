@@ -1218,7 +1218,7 @@ Experimental extensions
     smwgd                0.3
     ssctr                1.0
     sswg                 0.3
-    svukte               0.3
+    svukte               0.4
     xqccmp               0.3
     xqcia                0.7
     xqciac               0.3

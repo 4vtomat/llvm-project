@@ -25,15 +25,11 @@ define void @reduction_intermediate_store(ptr %a, i64 %n, i32 %start, ptr %addr)
 ; IF-EVL-OUTLOOP-LABEL: define void @reduction_intermediate_store(
 ; IF-EVL-OUTLOOP-SAME: ptr [[A:%.*]], i64 [[N:%.*]], i32 [[START:%.*]], ptr [[ADDR:%.*]]) #[[ATTR0:[0-9]+]] {
 ; IF-EVL-OUTLOOP-NEXT:  entry:
-<<<<<<< HEAD
-; IF-EVL-OUTLOOP-NEXT:    br label [[VECTOR_MEMCHECK:%.*]]
-=======
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP0:%.*]] = sub i64 -1, [[N]]
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP2:%.*]] = mul nuw i64 [[TMP1]], 4
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP3:%.*]] = icmp ult i64 [[TMP0]], [[TMP2]]
 ; IF-EVL-OUTLOOP-NEXT:    br i1 [[TMP3]], label [[SCALAR_PH:%.*]], label [[VECTOR_MEMCHECK:%.*]]
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; IF-EVL-OUTLOOP:       vector.memcheck:
 ; IF-EVL-OUTLOOP-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[ADDR]], i64 4
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP4:%.*]] = shl i64 [[N]], 2
@@ -43,10 +39,6 @@ define void @reduction_intermediate_store(ptr %a, i64 %n, i32 %start, ptr %addr)
 ; IF-EVL-OUTLOOP-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
 ; IF-EVL-OUTLOOP-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH:%.*]], label [[ENTRY:%.*]]
 ; IF-EVL-OUTLOOP:       vector.ph:
-<<<<<<< HEAD
-; IF-EVL-OUTLOOP-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
-; IF-EVL-OUTLOOP-NEXT:    [[TMP2:%.*]] = insertelement <vscale x 2 x i32> zeroinitializer, i32 [[START]], i32 0
-=======
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP6:%.*]] = mul nuw i64 [[TMP5]], 4
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP7:%.*]] = sub i64 [[TMP6]], 1
@@ -56,7 +48,6 @@ define void @reduction_intermediate_store(ptr %a, i64 %n, i32 %start, ptr %addr)
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP8:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP9:%.*]] = mul nuw i64 [[TMP8]], 4
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP10:%.*]] = insertelement <vscale x 4 x i32> zeroinitializer, i32 [[START]], i32 0
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; IF-EVL-OUTLOOP-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL-OUTLOOP:       vector.body:
 ; IF-EVL-OUTLOOP-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
@@ -97,15 +88,11 @@ define void @reduction_intermediate_store(ptr %a, i64 %n, i32 %start, ptr %addr)
 ; IF-EVL-INLOOP-LABEL: define void @reduction_intermediate_store(
 ; IF-EVL-INLOOP-SAME: ptr [[A:%.*]], i64 [[N:%.*]], i32 [[START:%.*]], ptr [[ADDR:%.*]]) #[[ATTR0:[0-9]+]] {
 ; IF-EVL-INLOOP-NEXT:  entry:
-<<<<<<< HEAD
-; IF-EVL-INLOOP-NEXT:    br label [[VECTOR_MEMCHECK:%.*]]
-=======
 ; IF-EVL-INLOOP-NEXT:    [[TMP0:%.*]] = sub i64 -1, [[N]]
 ; IF-EVL-INLOOP-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-INLOOP-NEXT:    [[TMP2:%.*]] = mul nuw i64 [[TMP1]], 4
 ; IF-EVL-INLOOP-NEXT:    [[TMP4:%.*]] = icmp ult i64 [[TMP0]], [[TMP2]]
 ; IF-EVL-INLOOP-NEXT:    br i1 [[TMP4]], label [[SCALAR_PH:%.*]], label [[VECTOR_MEMCHECK:%.*]]
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; IF-EVL-INLOOP:       vector.memcheck:
 ; IF-EVL-INLOOP-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[ADDR]], i64 4
 ; IF-EVL-INLOOP-NEXT:    [[TMP0:%.*]] = shl i64 [[N]], 2
@@ -115,9 +102,6 @@ define void @reduction_intermediate_store(ptr %a, i64 %n, i32 %start, ptr %addr)
 ; IF-EVL-INLOOP-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
 ; IF-EVL-INLOOP-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL-INLOOP:       vector.ph:
-<<<<<<< HEAD
-; IF-EVL-INLOOP-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
-=======
 ; IF-EVL-INLOOP-NEXT:    [[TMP8:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-INLOOP-NEXT:    [[TMP9:%.*]] = mul nuw i64 [[TMP8]], 4
 ; IF-EVL-INLOOP-NEXT:    [[TMP10:%.*]] = sub i64 [[TMP9]], 1
@@ -126,7 +110,6 @@ define void @reduction_intermediate_store(ptr %a, i64 %n, i32 %start, ptr %addr)
 ; IF-EVL-INLOOP-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
 ; IF-EVL-INLOOP-NEXT:    [[TMP11:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-INLOOP-NEXT:    [[TMP12:%.*]] = mul nuw i64 [[TMP11]], 4
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; IF-EVL-INLOOP-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL-INLOOP:       vector.body:
 ; IF-EVL-INLOOP-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -166,8 +149,6 @@ define void @reduction_intermediate_store(ptr %a, i64 %n, i32 %start, ptr %addr)
 ; NO-VP-OUTLOOP-LABEL: define void @reduction_intermediate_store(
 ; NO-VP-OUTLOOP-SAME: ptr [[A:%.*]], i64 [[N:%.*]], i32 [[START:%.*]], ptr [[ADDR:%.*]]) #[[ATTR0:[0-9]+]] {
 ; NO-VP-OUTLOOP-NEXT:  entry:
-<<<<<<< HEAD
-=======
 ; NO-VP-OUTLOOP-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; NO-VP-OUTLOOP-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
 ; NO-VP-OUTLOOP-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], [[TMP1]]
@@ -207,7 +188,6 @@ define void @reduction_intermediate_store(ptr %a, i64 %n, i32 %start, ptr %addr)
 ; NO-VP-OUTLOOP:       scalar.ph:
 ; NO-VP-OUTLOOP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ], [ 0, [[VECTOR_MEMCHECK]] ]
 ; NO-VP-OUTLOOP-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[TMP14]], [[MIDDLE_BLOCK]] ], [ [[START]], [[ENTRY]] ], [ [[START]], [[VECTOR_MEMCHECK]] ]
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; NO-VP-OUTLOOP-NEXT:    br label [[FOR_BODY:%.*]]
 ; NO-VP-OUTLOOP:       for.body:
 ; NO-VP-OUTLOOP-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
@@ -225,8 +205,6 @@ define void @reduction_intermediate_store(ptr %a, i64 %n, i32 %start, ptr %addr)
 ; NO-VP-INLOOP-LABEL: define void @reduction_intermediate_store(
 ; NO-VP-INLOOP-SAME: ptr [[A:%.*]], i64 [[N:%.*]], i32 [[START:%.*]], ptr [[ADDR:%.*]]) #[[ATTR0:[0-9]+]] {
 ; NO-VP-INLOOP-NEXT:  entry:
-<<<<<<< HEAD
-=======
 ; NO-VP-INLOOP-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; NO-VP-INLOOP-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
 ; NO-VP-INLOOP-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], [[TMP1]]
@@ -265,7 +243,6 @@ define void @reduction_intermediate_store(ptr %a, i64 %n, i32 %start, ptr %addr)
 ; NO-VP-INLOOP:       scalar.ph:
 ; NO-VP-INLOOP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ], [ 0, [[VECTOR_MEMCHECK]] ]
 ; NO-VP-INLOOP-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[TMP12]], [[MIDDLE_BLOCK]] ], [ [[START]], [[ENTRY]] ], [ [[START]], [[VECTOR_MEMCHECK]] ]
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; NO-VP-INLOOP-NEXT:    br label [[FOR_BODY:%.*]]
 ; NO-VP-INLOOP:       for.body:
 ; NO-VP-INLOOP-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]

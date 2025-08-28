@@ -64,11 +64,8 @@
 ; CHECK-NEXT:       Insert fentry calls
 ; CHECK-NEXT:       Insert XRay ops
 ; CHECK-NEXT:       Implement the 'patchable-function' attribute
-<<<<<<< HEAD
 ; CHECK-NEXT:       RISC-V Bullet NOP Inserter
-=======
 ; CHECK-NEXT:       RISC-V Indirect Branch Tracking
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; CHECK-NEXT:       Branch relaxation pass
 ; CHECK-NEXT:       RISC-V Make Compressible
 ; CHECK-NEXT:       Contiguously Lay Out Funclets

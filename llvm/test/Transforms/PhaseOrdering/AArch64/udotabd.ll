@@ -36,10 +36,6 @@ define dso_local i32 @test(ptr noundef %p1, i32 noundef %s_p1, ptr noundef %p2, 
 ; CHECK-O3-NEXT:    [[TMP63:%.*]] = zext <4 x i16> [[TMP55]] to <4 x i32>
 ; CHECK-O3-NEXT:    [[TMP71:%.*]] = extractelement <16 x i16> [[TMP220]], i64 13
 ; CHECK-O3-NEXT:    [[TMP79:%.*]] = zext i16 [[TMP71]] to i32
-; CHECK-O3-NEXT:    [[TMP87:%.*]] = extractelement <16 x i16> [[TMP220]], i64 14
-; CHECK-O3-NEXT:    [[TMP95:%.*]] = zext i16 [[TMP87]] to i32
-; CHECK-O3-NEXT:    [[TMP15:%.*]] = extractelement <16 x i16> [[TMP220]], i64 15
-; CHECK-O3-NEXT:    [[TMP103:%.*]] = zext i16 [[TMP15]] to i32
 ; CHECK-O3-NEXT:    [[TMP111:%.*]] = getelementptr i8, ptr [[NEXT_GEP_7]], i64 16
 ; CHECK-O3-NEXT:    [[TMP129:%.*]] = load i8, ptr [[TMP111]], align 1, !tbaa [[TBAA0]]
 ; CHECK-O3-NEXT:    [[TMP130:%.*]] = zext i8 [[TMP129]] to i32
@@ -55,6 +51,10 @@ define dso_local i32 @test(ptr noundef %p1, i32 noundef %s_p1, ptr noundef %p2, 
 ; CHECK-O3-NEXT:    [[TMP136:%.*]] = shufflevector <4 x i32> [[RDX_OP]], <4 x i32> poison, <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 poison, i32 poison, i32 poison, i32 poison>
 ; CHECK-O3-NEXT:    [[TMP137:%.*]] = shufflevector <8 x i32> [[TMP136]], <8 x i32> [[TMP47]], <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 12, i32 13, i32 14, i32 15>
 ; CHECK-O3-NEXT:    [[VECTOR_ACCUMULATOR_UPDATE50]] = add <8 x i32> [[TMP137]], [[VECTOR_ACCUMULATOR49]]
+; CHECK-O3-NEXT:    [[TMP87:%.*]] = extractelement <16 x i16> [[TMP220]], i64 14
+; CHECK-O3-NEXT:    [[TMP95:%.*]] = zext i16 [[TMP87]] to i32
+; CHECK-O3-NEXT:    [[TMP140:%.*]] = extractelement <16 x i16> [[TMP220]], i64 15
+; CHECK-O3-NEXT:    [[TMP103:%.*]] = zext i16 [[TMP140]] to i32
 ; CHECK-O3-NEXT:    [[OP_RDX31:%.*]] = add nuw nsw i32 [[TMP95]], [[TMP103]]
 ; CHECK-O3-NEXT:    [[OP_RDX32:%.*]] = add i32 [[TMP134]], [[VEC_PHI16]]
 ; CHECK-O3-NEXT:    [[OP_RDX33:%.*]] = add i32 [[TMP79]], [[OP_RDX31]]

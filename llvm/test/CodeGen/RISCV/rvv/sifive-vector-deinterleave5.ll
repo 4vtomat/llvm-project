@@ -17,11 +17,9 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    vmerge.vim v16, v12, 1, v0
 ; CHECK-NEXT:    srli a1, a0, 2
-; CHECK-NEXT:    srli a2, a0, 1
-; CHECK-NEXT:    vsetvli a3, zero, e8, m1, ta, ma
+; CHECK-NEXT:    vsetvli a2, zero, e8, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v0, v0, a1
-; CHECK-NEXT:    srli a1, a0, 3
-; CHECK-NEXT:    slli a1, a1, 1
+; CHECK-NEXT:    srli a2, a0, 1
 ; CHECK-NEXT:    vsetvli a3, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmerge.vim v18, v12, 1, v0
 ; CHECK-NEXT:    vsetvli a3, zero, e8, m1, ta, ma

@@ -15,11 +15,6 @@ define void @first_order_recurrence(ptr noalias %A, ptr noalias %B, i64 %TC) {
 ; IF-EVL-LABEL: define void @first_order_recurrence(
 ; IF-EVL-SAME: ptr noalias [[A:%.*]], ptr noalias [[B:%.*]], i64 [[TC:%.*]]) #[[ATTR0:[0-9]+]] {
 ; IF-EVL-NEXT:  [[ENTRY:.*]]:
-<<<<<<< HEAD
-; IF-EVL-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
-; IF-EVL:       [[VECTOR_PH]]:
-; IF-EVL-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TC]], i32 2, i1 true)
-=======
 ; IF-EVL-NEXT:    [[TMP0:%.*]] = sub i64 -1, [[TC]]
 ; IF-EVL-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-NEXT:    [[TMP2:%.*]] = mul nuw i64 [[TMP1]], 4
@@ -37,7 +32,6 @@ define void @first_order_recurrence(ptr noalias %A, ptr noalias %B, i64 %TC) {
 ; IF-EVL-NEXT:    [[TMP25:%.*]] = trunc i64 [[TMP8]] to i32
 ; IF-EVL-NEXT:    [[TMP9:%.*]] = call i32 @llvm.vscale.i32()
 ; IF-EVL-NEXT:    [[TMP10:%.*]] = mul nuw i32 [[TMP9]], 4
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; IF-EVL-NEXT:    [[TMP11:%.*]] = sub i32 [[TMP10]], 1
 ; IF-EVL-NEXT:    [[VECTOR_RECUR_INIT:%.*]] = insertelement <vscale x 2 x i32> poison, i32 33, i32 [[TMP11]]
 ; IF-EVL-NEXT:    br label %[[VECTOR_BODY:.*]]
@@ -83,8 +77,6 @@ define void @first_order_recurrence(ptr noalias %A, ptr noalias %B, i64 %TC) {
 ; NO-VP-LABEL: define void @first_order_recurrence(
 ; NO-VP-SAME: ptr noalias [[A:%.*]], ptr noalias [[B:%.*]], i64 [[TC:%.*]]) #[[ATTR0:[0-9]+]] {
 ; NO-VP-NEXT:  [[ENTRY:.*]]:
-<<<<<<< HEAD
-=======
 ; NO-VP-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; NO-VP-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
 ; NO-VP-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[TC]], [[TMP1]]
@@ -125,7 +117,6 @@ define void @first_order_recurrence(ptr noalias %A, ptr noalias %B, i64 %TC) {
 ; NO-VP:       [[SCALAR_PH]]:
 ; NO-VP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], %[[MIDDLE_BLOCK]] ], [ 0, %[[ENTRY]] ]
 ; NO-VP-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i32 [ [[VECTOR_RECUR_EXTRACT]], %[[MIDDLE_BLOCK]] ], [ 33, %[[ENTRY]] ]
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; NO-VP-NEXT:    br label %[[FOR_BODY:.*]]
 ; NO-VP:       [[FOR_BODY]]:
 ; NO-VP-NEXT:    [[INDVARS1:%.*]] = phi i64 [ 0, %[[ENTRY]] ], [ [[INDVARS_NEXT:%.*]], %[[FOR_BODY]] ]
@@ -164,15 +155,6 @@ define void @second_order_recurrence(ptr noalias %A, ptr noalias %B, i64 %TC) {
 ; IF-EVL-LABEL: define void @second_order_recurrence(
 ; IF-EVL-SAME: ptr noalias [[A:%.*]], ptr noalias [[B:%.*]], i64 [[TC:%.*]]) #[[ATTR0]] {
 ; IF-EVL-NEXT:  [[ENTRY:.*]]:
-<<<<<<< HEAD
-; IF-EVL-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
-; IF-EVL:       [[VECTOR_PH]]:
-; IF-EVL-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TC]], i32 2, i1 true)
-; IF-EVL-NEXT:    [[TMP11:%.*]] = sub i32 [[TMP10]], 1
-; IF-EVL-NEXT:    [[VECTOR_RECUR_INIT:%.*]] = insertelement <vscale x 2 x i32> poison, i32 33, i32 [[TMP11]]
-; IF-EVL-NEXT:    [[TMP2:%.*]] = sub i32 [[TMP10]], 1
-; IF-EVL-NEXT:    [[VECTOR_RECUR_INIT1:%.*]] = insertelement <vscale x 2 x i32> poison, i32 22, i32 [[TMP2]]
-=======
 ; IF-EVL-NEXT:    [[TMP0:%.*]] = sub i64 -1, [[TC]]
 ; IF-EVL-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-NEXT:    [[TMP2:%.*]] = mul nuw i64 [[TMP1]], 4
@@ -196,7 +178,6 @@ define void @second_order_recurrence(ptr noalias %A, ptr noalias %B, i64 %TC) {
 ; IF-EVL-NEXT:    [[TMP13:%.*]] = mul nuw i32 [[TMP12]], 4
 ; IF-EVL-NEXT:    [[TMP14:%.*]] = sub i32 [[TMP13]], 1
 ; IF-EVL-NEXT:    [[VECTOR_RECUR_INIT1:%.*]] = insertelement <vscale x 4 x i32> poison, i32 22, i32 [[TMP14]]
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; IF-EVL-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; IF-EVL:       [[VECTOR_BODY]]:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -244,8 +225,6 @@ define void @second_order_recurrence(ptr noalias %A, ptr noalias %B, i64 %TC) {
 ; NO-VP-LABEL: define void @second_order_recurrence(
 ; NO-VP-SAME: ptr noalias [[A:%.*]], ptr noalias [[B:%.*]], i64 [[TC:%.*]]) #[[ATTR0]] {
 ; NO-VP-NEXT:  [[ENTRY:.*]]:
-<<<<<<< HEAD
-=======
 ; NO-VP-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; NO-VP-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
 ; NO-VP-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[TC]], [[TMP1]]
@@ -297,7 +276,6 @@ define void @second_order_recurrence(ptr noalias %A, ptr noalias %B, i64 %TC) {
 ; NO-VP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], %[[MIDDLE_BLOCK]] ], [ 0, %[[ENTRY]] ]
 ; NO-VP-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i32 [ [[VECTOR_RECUR_EXTRACT]], %[[MIDDLE_BLOCK]] ], [ 33, %[[ENTRY]] ]
 ; NO-VP-NEXT:    [[SCALAR_RECUR_INIT4:%.*]] = phi i32 [ [[VECTOR_RECUR_EXTRACT3]], %[[MIDDLE_BLOCK]] ], [ 22, %[[ENTRY]] ]
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; NO-VP-NEXT:    br label %[[FOR_BODY:.*]]
 ; NO-VP:       [[FOR_BODY]]:
 ; NO-VP-NEXT:    [[INDVARS1:%.*]] = phi i64 [ 0, %[[ENTRY]] ], [ [[INDVARS_NEXT:%.*]], %[[FOR_BODY]] ]
@@ -338,17 +316,6 @@ define void @third_order_recurrence(ptr noalias %A, ptr noalias %B, i64 %TC) {
 ; IF-EVL-LABEL: define void @third_order_recurrence(
 ; IF-EVL-SAME: ptr noalias [[A:%.*]], ptr noalias [[B:%.*]], i64 [[TC:%.*]]) #[[ATTR0]] {
 ; IF-EVL-NEXT:  [[ENTRY:.*]]:
-<<<<<<< HEAD
-; IF-EVL-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
-; IF-EVL:       [[VECTOR_PH]]:
-; IF-EVL-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TC]], i32 2, i1 true)
-; IF-EVL-NEXT:    [[TMP11:%.*]] = sub i32 [[TMP10]], 1
-; IF-EVL-NEXT:    [[VECTOR_RECUR_INIT:%.*]] = insertelement <vscale x 2 x i32> poison, i32 33, i32 [[TMP11]]
-; IF-EVL-NEXT:    [[TMP2:%.*]] = sub i32 [[TMP10]], 1
-; IF-EVL-NEXT:    [[VECTOR_RECUR_INIT1:%.*]] = insertelement <vscale x 2 x i32> poison, i32 22, i32 [[TMP2]]
-; IF-EVL-NEXT:    [[TMP3:%.*]] = sub i32 [[TMP10]], 1
-; IF-EVL-NEXT:    [[VECTOR_RECUR_INIT3:%.*]] = insertelement <vscale x 2 x i32> poison, i32 11, i32 [[TMP3]]
-=======
 ; IF-EVL-NEXT:    [[TMP0:%.*]] = sub i64 -1, [[TC]]
 ; IF-EVL-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-NEXT:    [[TMP2:%.*]] = mul nuw i64 [[TMP1]], 4
@@ -376,7 +343,6 @@ define void @third_order_recurrence(ptr noalias %A, ptr noalias %B, i64 %TC) {
 ; IF-EVL-NEXT:    [[TMP16:%.*]] = mul nuw i32 [[TMP15]], 4
 ; IF-EVL-NEXT:    [[TMP17:%.*]] = sub i32 [[TMP16]], 1
 ; IF-EVL-NEXT:    [[VECTOR_RECUR_INIT3:%.*]] = insertelement <vscale x 4 x i32> poison, i32 11, i32 [[TMP17]]
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; IF-EVL-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; IF-EVL:       [[VECTOR_BODY]]:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -430,8 +396,6 @@ define void @third_order_recurrence(ptr noalias %A, ptr noalias %B, i64 %TC) {
 ; NO-VP-LABEL: define void @third_order_recurrence(
 ; NO-VP-SAME: ptr noalias [[A:%.*]], ptr noalias [[B:%.*]], i64 [[TC:%.*]]) #[[ATTR0]] {
 ; NO-VP-NEXT:  [[ENTRY:.*]]:
-<<<<<<< HEAD
-=======
 ; NO-VP-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; NO-VP-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
 ; NO-VP-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[TC]], [[TMP1]]
@@ -495,7 +459,6 @@ define void @third_order_recurrence(ptr noalias %A, ptr noalias %B, i64 %TC) {
 ; NO-VP-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i32 [ [[VECTOR_RECUR_EXTRACT]], %[[MIDDLE_BLOCK]] ], [ 33, %[[ENTRY]] ]
 ; NO-VP-NEXT:    [[SCALAR_RECUR_INIT7:%.*]] = phi i32 [ [[VECTOR_RECUR_EXTRACT5]], %[[MIDDLE_BLOCK]] ], [ 22, %[[ENTRY]] ]
 ; NO-VP-NEXT:    [[SCALAR_RECUR_INIT8:%.*]] = phi i32 [ [[VECTOR_RECUR_EXTRACT6]], %[[MIDDLE_BLOCK]] ], [ 11, %[[ENTRY]] ]
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; NO-VP-NEXT:    br label %[[FOR_BODY:.*]]
 ; NO-VP:       [[FOR_BODY]]:
 ; NO-VP-NEXT:    [[INDVARS1:%.*]] = phi i64 [ 0, %[[ENTRY]] ], [ [[INDVARS_NEXT:%.*]], %[[FOR_BODY]] ]
@@ -591,8 +554,6 @@ define i32 @FOR_reduction(ptr noalias %A, ptr noalias %B, i64 %TC) {
 ; NO-VP-LABEL: define i32 @FOR_reduction(
 ; NO-VP-SAME: ptr noalias [[A:%.*]], ptr noalias [[B:%.*]], i64 [[TC:%.*]]) #[[ATTR0]] {
 ; NO-VP-NEXT:  [[ENTRY:.*]]:
-<<<<<<< HEAD
-=======
 ; NO-VP-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; NO-VP-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
 ; NO-VP-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[TC]], [[TMP1]]
@@ -637,7 +598,6 @@ define i32 @FOR_reduction(ptr noalias %A, ptr noalias %B, i64 %TC) {
 ; NO-VP:       [[SCALAR_PH]]:
 ; NO-VP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], %[[MIDDLE_BLOCK]] ], [ 0, %[[ENTRY]] ]
 ; NO-VP-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i32 [ [[VECTOR_RECUR_EXTRACT]], %[[MIDDLE_BLOCK]] ], [ 33, %[[ENTRY]] ]
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; NO-VP-NEXT:    br label %[[FOR_BODY:.*]]
 ; NO-VP:       [[FOR_BODY]]:
 ; NO-VP-NEXT:    [[IV:%.*]] = phi i64 [ 0, %[[ENTRY]] ], [ [[INDVARS_NEXT:%.*]], %[[FOR_BODY]] ]

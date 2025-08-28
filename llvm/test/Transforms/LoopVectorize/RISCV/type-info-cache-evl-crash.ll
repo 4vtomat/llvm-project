@@ -10,15 +10,11 @@ define void @type_info_cache_clobber(ptr %dstv, ptr %src, i64 %wide.trip.count) 
 ; CHECK-SAME: ptr [[DSTV:%.*]], ptr [[SRC:%.*]], i64 [[WIDE_TRIP_COUNT:%.*]]) #[[ATTR0:[0-9]+]] {
 ; CHECK-NEXT:  [[ENTRY:.*:]]
 ; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[WIDE_TRIP_COUNT]], 1
-<<<<<<< HEAD
-; CHECK-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
-=======
 ; CHECK-NEXT:    [[TMP1:%.*]] = sub i64 -1, [[TMP0]]
 ; CHECK-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP2]], 8
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp ult i64 [[TMP1]], [[TMP3]]
 ; CHECK-NEXT:    br i1 [[TMP4]], label %[[SCALAR_PH:.*]], label %[[VECTOR_MEMCHECK:.*]]
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; CHECK:       [[VECTOR_MEMCHECK]]:
 ; CHECK-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[DSTV]], i64 1
 ; CHECK-NEXT:    [[TMP5:%.*]] = add i64 [[WIDE_TRIP_COUNT]], 1
@@ -28,11 +24,6 @@ define void @type_info_cache_clobber(ptr %dstv, ptr %src, i64 %wide.trip.count) 
 ; CHECK-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 4, i1 true)
-; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 4 x ptr> poison, ptr [[DSTV]], i64 0
-; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 4 x ptr> [[BROADCAST_SPLATINSERT]], <vscale x 4 x ptr> poison, <vscale x 4 x i32> zeroinitializer
-=======
 ; CHECK-NEXT:    [[TMP6:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul nuw i64 [[TMP6]], 8
 ; CHECK-NEXT:    [[TMP8:%.*]] = sub i64 [[TMP7]], 1
@@ -43,7 +34,6 @@ define void @type_info_cache_clobber(ptr %dstv, ptr %src, i64 %wide.trip.count) 
 ; CHECK-NEXT:    [[TMP10:%.*]] = mul nuw i64 [[TMP9]], 8
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x ptr> poison, ptr [[DSTV]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 8 x ptr> [[BROADCAST_SPLATINSERT]], <vscale x 8 x ptr> poison, <vscale x 8 x i32> zeroinitializer
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]

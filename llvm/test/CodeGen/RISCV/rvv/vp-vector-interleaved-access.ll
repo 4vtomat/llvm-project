@@ -719,14 +719,8 @@ define void @not_balanced_store_tree(<vscale x 1 x i32> %v0, <vscale x 2 x i32> 
 ; RV32-NEXT:    vsetvli a4, zero, e32, m1, ta, ma
 ; RV32-NEXT:    vslidedown.vx v8, v12, a3
 ; RV32-NEXT:    vslideup.vx v12, v8, a3
-<<<<<<< HEAD
-; RV32-NEXT:    vsetvli a3, zero, e32, m1, ta, ma
 ; RV32-NEXT:    vwaddu.vv v14, v12, v9
 ; RV32-NEXT:    vwmaccu.vx v14, a2, v9
-=======
-; RV32-NEXT:    vwaddu.vv v16, v12, v9
-; RV32-NEXT:    vwmaccu.vx v16, a2, v9
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; RV32-NEXT:    vsetvli a3, zero, e32, m2, ta, ma
 ; RV32-NEXT:    vwaddu.vv v12, v14, v10
 ; RV32-NEXT:    vwmaccu.vx v12, a2, v10
@@ -746,14 +740,8 @@ define void @not_balanced_store_tree(<vscale x 1 x i32> %v0, <vscale x 2 x i32> 
 ; RV64-NEXT:    vsetvli a4, zero, e32, m1, ta, ma
 ; RV64-NEXT:    vslidedown.vx v8, v12, a3
 ; RV64-NEXT:    vslideup.vx v12, v8, a3
-<<<<<<< HEAD
-; RV64-NEXT:    vsetvli a3, zero, e32, m1, ta, ma
 ; RV64-NEXT:    vwaddu.vv v14, v12, v9
 ; RV64-NEXT:    vwmaccu.vx v14, a2, v9
-=======
-; RV64-NEXT:    vwaddu.vv v16, v12, v9
-; RV64-NEXT:    vwmaccu.vx v16, a2, v9
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; RV64-NEXT:    vsetvli a3, zero, e32, m2, ta, ma
 ; RV64-NEXT:    vwaddu.vv v12, v14, v10
 ; RV64-NEXT:    vwmaccu.vx v12, a2, v10

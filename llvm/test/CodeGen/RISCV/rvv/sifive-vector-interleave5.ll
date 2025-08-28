@@ -25,7 +25,7 @@ define <vscale x 80 x i1> @vector_interleave_nxv80i1_nxv16i1(<vscale x 16 x i1> 
 ; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    vmerge.vim v18, v12, 1, v0
 ; CHECK-NEXT:    add a2, a4, a1
-; CHECK-NEXT:    srli a3, a1, 2
+; CHECK-NEXT:    srli a3, a1, 1
 ; CHECK-NEXT:    vmv2r.v v20, v14
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vmerge.vim v16, v12, 1, v0
@@ -55,11 +55,9 @@ define <vscale x 80 x i1> @vector_interleave_nxv80i1_nxv16i1(<vscale x 16 x i1> 
 ; CHECK-NEXT:    add a5, a4, a1
 ; CHECK-NEXT:    vl1r.v v16, (a5)
 ; CHECK-NEXT:    add a5, a5, a1
-; CHECK-NEXT:    srli a1, a1, 1
+; CHECK-NEXT:    srli a1, a1, 2
 ; CHECK-NEXT:    vl1r.v v11, (a2)
-; CHECK-NEXT:    add a2, a3, a3
 ; CHECK-NEXT:    vl1r.v v15, (a4)
-; CHECK-NEXT:    add a4, a1, a1
 ; CHECK-NEXT:    vl1r.v v13, (a0)
 ; CHECK-NEXT:    vl1r.v v17, (a5)
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
@@ -67,11 +65,11 @@ define <vscale x 80 x i1> @vector_interleave_nxv80i1_nxv16i1(<vscale x 16 x i1> 
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
 ; CHECK-NEXT:    vmsne.vi v9, v14, 0
 ; CHECK-NEXT:    vmsne.vi v10, v12, 0
-; CHECK-NEXT:    vsetvli zero, a2, e8, mf2, ta, ma
-; CHECK-NEXT:    vslideup.vx v0, v8, a3
-; CHECK-NEXT:    vslideup.vx v10, v9, a3
-; CHECK-NEXT:    vsetvli zero, a4, e8, m1, ta, ma
-; CHECK-NEXT:    vslideup.vx v0, v10, a1
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
+; CHECK-NEXT:    vslideup.vx v0, v8, a1
+; CHECK-NEXT:    vslideup.vx v10, v9, a1
+; CHECK-NEXT:    vsetvli a0, zero, e8, m1, ta, ma
+; CHECK-NEXT:    vslideup.vx v0, v10, a3
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v16, 0
 ; CHECK-NEXT:    csrr a0, vlenb

@@ -91,23 +91,23 @@ declare <vscale x 16 x i32> @llvm.vector.insert.nxv16i32.nxv4i32(<vscale x 16 x 
 
 define void @vector_reverse() {
 ; CHECK-LABEL: 'vector_reverse'
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 139 for instruction: %reverse_nxv16i8 = call <vscale x 16 x i8> @llvm.vector.reverse.nxv16i8(<vscale x 16 x i8> undef)
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 275 for instruction: %reverse_nxv32i8 = call <vscale x 32 x i8> @llvm.vector.reverse.nxv32i8(<vscale x 32 x i8> undef)
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 135 for instruction: %reverse_nxv16i8 = call <vscale x 16 x i8> @llvm.vector.reverse.nxv16i8(<vscale x 16 x i8> undef)
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 263 for instruction: %reverse_nxv32i8 = call <vscale x 32 x i8> @llvm.vector.reverse.nxv32i8(<vscale x 32 x i8> undef)
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 69 for instruction: %reverse_nxv2i16 = call <vscale x 2 x i16> @llvm.vector.reverse.nxv2i16(<vscale x 2 x i16> undef)
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 39 for instruction: %reverse_nxv4i16 = call <vscale x 4 x i16> @llvm.vector.reverse.nxv4i16(<vscale x 4 x i16> undef)
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 75 for instruction: %reverse_nxv8i16 = call <vscale x 8 x i16> @llvm.vector.reverse.nxv8i16(<vscale x 8 x i16> undef)
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 147 for instruction: %reverse_nxv16i16 = call <vscale x 16 x i16> @llvm.vector.reverse.nxv16i16(<vscale x 16 x i16> undef)
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 43 for instruction: %reverse_nxv4i32 = call <vscale x 4 x i32> @llvm.vector.reverse.nxv4i32(<vscale x 4 x i32> undef)
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 83 for instruction: %reverse_nxv8i32 = call <vscale x 8 x i32> @llvm.vector.reverse.nxv8i32(<vscale x 8 x i32> undef)
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 27 for instruction: %reverse_nxv2i64 = call <vscale x 2 x i64> @llvm.vector.reverse.nxv2i64(<vscale x 2 x i64> undef)
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 51 for instruction: %reverse_nxv4i64 = call <vscale x 4 x i64> @llvm.vector.reverse.nxv4i64(<vscale x 4 x i64> undef)
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 99 for instruction: %reverse_nxv8i64 = call <vscale x 8 x i64> @llvm.vector.reverse.nxv8i64(<vscale x 8 x i64> undef)
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 198 for instruction: %reverse_nxv16i64 = call <vscale x 16 x i64> @llvm.vector.reverse.nxv16i64(<vscale x 16 x i64> undef)
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 396 for instruction: %reverse_nxv32i64 = call <vscale x 32 x i64> @llvm.vector.reverse.nxv32i64(<vscale x 32 x i64> undef)
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1038 for instruction: %reverse_nxv16i1 = call <vscale x 16 x i1> @llvm.vector.reverse.nxv16i1(<vscale x 16 x i1> undef)
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 522 for instruction: %reverse_nxv8i1 = call <vscale x 8 x i1> @llvm.vector.reverse.nxv8i1(<vscale x 8 x i1> undef)
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1032 for instruction: %reverse_nxv4i1 = call <vscale x 4 x i1> @llvm.vector.reverse.nxv4i1(<vscale x 4 x i1> undef)
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 2056 for instruction: %reverse_nxv2i1 = call <vscale x 2 x i1> @llvm.vector.reverse.nxv2i1(<vscale x 2 x i1> undef)
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 71 for instruction: %reverse_nxv8i16 = call <vscale x 8 x i16> @llvm.vector.reverse.nxv8i16(<vscale x 8 x i16> undef)
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 135 for instruction: %reverse_nxv16i16 = call <vscale x 16 x i16> @llvm.vector.reverse.nxv16i16(<vscale x 16 x i16> undef)
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 39 for instruction: %reverse_nxv4i32 = call <vscale x 4 x i32> @llvm.vector.reverse.nxv4i32(<vscale x 4 x i32> undef)
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 71 for instruction: %reverse_nxv8i32 = call <vscale x 8 x i32> @llvm.vector.reverse.nxv8i32(<vscale x 8 x i32> undef)
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 23 for instruction: %reverse_nxv2i64 = call <vscale x 2 x i64> @llvm.vector.reverse.nxv2i64(<vscale x 2 x i64> undef)
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 39 for instruction: %reverse_nxv4i64 = call <vscale x 4 x i64> @llvm.vector.reverse.nxv4i64(<vscale x 4 x i64> undef)
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 71 for instruction: %reverse_nxv8i64 = call <vscale x 8 x i64> @llvm.vector.reverse.nxv8i64(<vscale x 8 x i64> undef)
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 135 for instruction: %reverse_nxv16i64 = call <vscale x 16 x i64> @llvm.vector.reverse.nxv16i64(<vscale x 16 x i64> undef)
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 263 for instruction: %reverse_nxv32i64 = call <vscale x 32 x i64> @llvm.vector.reverse.nxv32i64(<vscale x 32 x i64> undef)
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 151 for instruction: %reverse_nxv16i1 = call <vscale x 16 x i1> @llvm.vector.reverse.nxv16i1(<vscale x 16 x i1> undef)
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 79 for instruction: %reverse_nxv8i1 = call <vscale x 8 x i1> @llvm.vector.reverse.nxv8i1(<vscale x 8 x i1> undef)
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 137 for instruction: %reverse_nxv4i1 = call <vscale x 4 x i1> @llvm.vector.reverse.nxv4i1(<vscale x 4 x i1> undef)
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 265 for instruction: %reverse_nxv2i1 = call <vscale x 2 x i1> @llvm.vector.reverse.nxv2i1(<vscale x 2 x i1> undef)
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
 ; SIZE-LABEL: 'vector_reverse'

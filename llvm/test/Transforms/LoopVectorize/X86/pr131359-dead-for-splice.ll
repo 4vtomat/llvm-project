@@ -15,20 +15,11 @@ define void @no_use() {
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
-<<<<<<< HEAD
-; CHECK-NEXT:    [[VECTOR_RECUR:%.*]] = phi <8 x i32> [ <i32 poison, i32 poison, i32 poison, i32 poison, i32 poison, i32 poison, i32 poison, i32 0>, %[[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <8 x i32> [ <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7>, %[[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], %[[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[STEP_ADD]] = add <8 x i32> [[VEC_IND]], splat (i32 8)
+; CHECK-NEXT:    [[STEP_ADD:%.*]] = add <8 x i32> [[VEC_IND]], splat (i32 8)
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i32 [[INDEX]], 16
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <8 x i32> [[STEP_ADD]], splat (i32 8)
 ; CHECK-NEXT:    [[TMP0:%.*]] = icmp eq i32 [[INDEX_NEXT]], 32
-=======
-; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <4 x i32> [ <i32 0, i32 1, i32 2, i32 3>, %[[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], %[[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[STEP_ADD:%.*]] = add <4 x i32> [[VEC_IND]], splat (i32 4)
-; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i32 [[INDEX]], 8
-; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <4 x i32> [[STEP_ADD]], splat (i32 4)
-; CHECK-NEXT:    [[TMP0:%.*]] = icmp eq i32 [[INDEX_NEXT]], 40
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; CHECK-NEXT:    br i1 [[TMP0]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <8 x i32> [[STEP_ADD]], i32 7
@@ -68,20 +59,11 @@ define void @dead_use() {
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
-<<<<<<< HEAD
-; CHECK-NEXT:    [[VECTOR_RECUR:%.*]] = phi <8 x i32> [ <i32 poison, i32 poison, i32 poison, i32 poison, i32 poison, i32 poison, i32 poison, i32 0>, %[[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <8 x i32> [ <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7>, %[[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], %[[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[STEP_ADD]] = add <8 x i32> [[VEC_IND]], splat (i32 8)
+; CHECK-NEXT:    [[STEP_ADD:%.*]] = add <8 x i32> [[VEC_IND]], splat (i32 8)
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i32 [[INDEX]], 16
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <8 x i32> [[STEP_ADD]], splat (i32 8)
 ; CHECK-NEXT:    [[TMP0:%.*]] = icmp eq i32 [[INDEX_NEXT]], 32
-=======
-; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <4 x i32> [ <i32 0, i32 1, i32 2, i32 3>, %[[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], %[[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[STEP_ADD:%.*]] = add <4 x i32> [[VEC_IND]], splat (i32 4)
-; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i32 [[INDEX]], 8
-; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <4 x i32> [[STEP_ADD]], splat (i32 4)
-; CHECK-NEXT:    [[TMP0:%.*]] = icmp eq i32 [[INDEX_NEXT]], 40
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; CHECK-NEXT:    br i1 [[TMP0]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <8 x i32> [[STEP_ADD]], i32 7

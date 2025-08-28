@@ -25,25 +25,6 @@ define void @test(ptr %p, i64 %a, i8 %b) {
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 8 x i32> zeroinitializer, [[TMP8]]
 ; CHECK-NEXT:    br label [[FOR_COND:%.*]]
 ; CHECK:       vector.body:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
-; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
-; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 8 x i32> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], [[FOR_COND]] ]
-; CHECK-NEXT:    [[AVL:%.*]] = sub i32 9, [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 [[AVL]], i32 8, i1 true)
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i32(<vscale x 8 x i32> [[VEC_IND]], <vscale x 8 x i32> splat (i32 2), metadata !"slt", <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
-; CHECK-NEXT:    [[PREDPHI:%.*]] = call <vscale x 8 x i32> @llvm.vp.select.nxv8i32(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i32> [[TMP6]], <vscale x 8 x i32> [[TMP5]], i32 [[TMP9]])
-; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i32> @llvm.vp.shl.nxv8i32(<vscale x 8 x i32> [[PREDPHI]], <vscale x 8 x i32> splat (i32 8), <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
-; CHECK-NEXT:    [[VP_CAST:%.*]] = call <vscale x 8 x i8> @llvm.vp.trunc.nxv8i8.nxv8i32(<vscale x 8 x i32> [[VP_OP]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
-; CHECK-NEXT:    call void @llvm.vp.scatter.nxv8i8.nxv8p0(<vscale x 8 x i8> [[VP_CAST]], <vscale x 8 x ptr> align 1 [[BROADCAST_SPLAT4]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
-; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i32 [[TMP9]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP10:%.*]] = mul i32 1, [[TMP9]]
-; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 8 x i32> poison, i32 [[TMP10]], i64 0
-; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 8 x i32> [[DOTSPLATINSERT]], <vscale x 8 x i32> poison, <vscale x 8 x i32> zeroinitializer
-; CHECK-NEXT:    [[STEP_ADD]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VEC_IND]], <vscale x 8 x i32> [[DOTSPLAT]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP9]])
-; CHECK-NEXT:    [[TMP11:%.*]] = icmp eq i32 [[INDEX_EVL_NEXT]], 9
-; CHECK-NEXT:    br i1 [[TMP11]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP0:![0-9]+]]
-=======
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[PRED_STORE_CONTINUE8:%.*]] ]
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <16 x i32> [ <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7, i32 8, i32 9, i32 10, i32 11, i32 12, i32 13, i32 14, i32 15>, [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[PRED_STORE_CONTINUE8]] ]
 ; CHECK-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = call <16 x i1> @llvm.get.active.lane.mask.v16i1.i32(i32 [[INDEX]], i32 9)
@@ -167,7 +148,6 @@ define void @test(ptr %p, i64 %a, i8 %b) {
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i32 [[INDEX]], 16
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <16 x i32> [[VEC_IND]], splat (i32 16)
 ; CHECK-NEXT:    br i1 true, label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP0:![0-9]+]]
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[EXIT1:%.*]]
 ; CHECK:       scalar.ph:

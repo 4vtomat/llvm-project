@@ -25,12 +25,6 @@ define i32 @cond_add(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-OUTLOOP-LABEL: define i32 @cond_add(
 ; IF-EVL-OUTLOOP-SAME: ptr [[A:%.*]], i64 [[N:%.*]], i32 [[START:%.*]]) #[[ATTR0:[0-9]+]] {
 ; IF-EVL-OUTLOOP-NEXT:  entry:
-<<<<<<< HEAD
-; IF-EVL-OUTLOOP-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
-; IF-EVL-OUTLOOP:       vector.ph:
-; IF-EVL-OUTLOOP-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
-; IF-EVL-OUTLOOP-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 2 x i32> zeroinitializer, i32 [[START]], i32 0
-=======
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP0:%.*]] = sub i64 -1, [[N]]
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP2:%.*]] = mul nuw i64 [[TMP1]], 4
@@ -46,7 +40,6 @@ define i32 @cond_add(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP7:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP8:%.*]] = mul nuw i64 [[TMP7]], 4
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP9:%.*]] = insertelement <vscale x 4 x i32> zeroinitializer, i32 [[START]], i32 0
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; IF-EVL-OUTLOOP-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL-OUTLOOP:       vector.body:
 ; IF-EVL-OUTLOOP-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -90,11 +83,6 @@ define i32 @cond_add(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-INLOOP-LABEL: define i32 @cond_add(
 ; IF-EVL-INLOOP-SAME: ptr [[A:%.*]], i64 [[N:%.*]], i32 [[START:%.*]]) #[[ATTR0:[0-9]+]] {
 ; IF-EVL-INLOOP-NEXT:  entry:
-<<<<<<< HEAD
-; IF-EVL-INLOOP-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
-; IF-EVL-INLOOP:       vector.ph:
-; IF-EVL-INLOOP-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
-=======
 ; IF-EVL-INLOOP-NEXT:    [[TMP0:%.*]] = sub i64 -1, [[N]]
 ; IF-EVL-INLOOP-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-INLOOP-NEXT:    [[TMP2:%.*]] = mul nuw i64 [[TMP1]], 4
@@ -109,7 +97,6 @@ define i32 @cond_add(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-INLOOP-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
 ; IF-EVL-INLOOP-NEXT:    [[TMP9:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-INLOOP-NEXT:    [[TMP10:%.*]] = mul nuw i64 [[TMP9]], 4
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; IF-EVL-INLOOP-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL-INLOOP:       vector.body:
 ; IF-EVL-INLOOP-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -152,8 +139,6 @@ define i32 @cond_add(ptr %a, i64 %n, i32 %start) {
 ; NO-VP-OUTLOOP-LABEL: define i32 @cond_add(
 ; NO-VP-OUTLOOP-SAME: ptr [[A:%.*]], i64 [[N:%.*]], i32 [[START:%.*]]) #[[ATTR0:[0-9]+]] {
 ; NO-VP-OUTLOOP-NEXT:  entry:
-<<<<<<< HEAD
-=======
 ; NO-VP-OUTLOOP-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
 ; NO-VP-OUTLOOP-NEXT:    [[TMP2:%.*]] = mul nuw i64 [[TMP1]], 4
 ; NO-VP-OUTLOOP-NEXT:    [[TMP3:%.*]] = icmp ult i64 [[N]], [[TMP2]]
@@ -186,7 +171,6 @@ define i32 @cond_add(ptr %a, i64 %n, i32 %start) {
 ; NO-VP-OUTLOOP:       scalar.ph:
 ; NO-VP-OUTLOOP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; NO-VP-OUTLOOP-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[TMP20]], [[MIDDLE_BLOCK]] ], [ [[START]], [[ENTRY]] ]
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; NO-VP-OUTLOOP-NEXT:    br label [[FOR_BODY:%.*]]
 ; NO-VP-OUTLOOP:       for.body:
 ; NO-VP-OUTLOOP-NEXT:    [[IV1:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[IV_NEXT1:%.*]], [[FOR_BODY]] ]
@@ -206,8 +190,6 @@ define i32 @cond_add(ptr %a, i64 %n, i32 %start) {
 ; NO-VP-INLOOP-LABEL: define i32 @cond_add(
 ; NO-VP-INLOOP-SAME: ptr [[A:%.*]], i64 [[N:%.*]], i32 [[START:%.*]]) #[[ATTR0:[0-9]+]] {
 ; NO-VP-INLOOP-NEXT:  entry:
-<<<<<<< HEAD
-=======
 ; NO-VP-INLOOP-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; NO-VP-INLOOP-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
 ; NO-VP-INLOOP-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], [[TMP1]]
@@ -239,7 +221,6 @@ define i32 @cond_add(ptr %a, i64 %n, i32 %start) {
 ; NO-VP-INLOOP:       scalar.ph:
 ; NO-VP-INLOOP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; NO-VP-INLOOP-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[TMP12]], [[MIDDLE_BLOCK]] ], [ [[START]], [[ENTRY]] ]
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; NO-VP-INLOOP-NEXT:    br label [[FOR_BODY:%.*]]
 ; NO-VP-INLOOP:       for.body:
 ; NO-VP-INLOOP-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_NEXT:%.*]], [[FOR_BODY]] ]
@@ -279,12 +260,6 @@ define i32 @cond_add_pred(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-OUTLOOP-LABEL: define i32 @cond_add_pred(
 ; IF-EVL-OUTLOOP-SAME: ptr [[A:%.*]], i64 [[N:%.*]], i32 [[START:%.*]]) #[[ATTR0]] {
 ; IF-EVL-OUTLOOP-NEXT:  entry:
-<<<<<<< HEAD
-; IF-EVL-OUTLOOP-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
-; IF-EVL-OUTLOOP:       vector.ph:
-; IF-EVL-OUTLOOP-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
-; IF-EVL-OUTLOOP-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 2 x i32> zeroinitializer, i32 [[START]], i32 0
-=======
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP0:%.*]] = sub i64 -1, [[N]]
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP2:%.*]] = mul nuw i64 [[TMP1]], 4
@@ -303,7 +278,6 @@ define i32 @cond_add_pred(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP9:%.*]] = insertelement <vscale x 4 x i32> zeroinitializer, i32 [[START]], i32 0
 ; IF-EVL-OUTLOOP-NEXT:    [[BROADCAST_SPLATINSERT1:%.*]] = insertelement <vscale x 4 x i64> poison, i64 [[TRIP_COUNT_MINUS_1]], i64 0
 ; IF-EVL-OUTLOOP-NEXT:    [[BROADCAST_SPLAT2:%.*]] = shufflevector <vscale x 4 x i64> [[BROADCAST_SPLATINSERT1]], <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; IF-EVL-OUTLOOP-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL-OUTLOOP:       vector.body:
 ; IF-EVL-OUTLOOP-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -351,11 +325,6 @@ define i32 @cond_add_pred(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-INLOOP-LABEL: define i32 @cond_add_pred(
 ; IF-EVL-INLOOP-SAME: ptr [[A:%.*]], i64 [[N:%.*]], i32 [[START:%.*]]) #[[ATTR0]] {
 ; IF-EVL-INLOOP-NEXT:  entry:
-<<<<<<< HEAD
-; IF-EVL-INLOOP-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
-; IF-EVL-INLOOP:       vector.ph:
-; IF-EVL-INLOOP-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
-=======
 ; IF-EVL-INLOOP-NEXT:    [[TMP0:%.*]] = sub i64 -1, [[N]]
 ; IF-EVL-INLOOP-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-INLOOP-NEXT:    [[TMP2:%.*]] = mul nuw i64 [[TMP1]], 4
@@ -370,7 +339,6 @@ define i32 @cond_add_pred(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-INLOOP-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
 ; IF-EVL-INLOOP-NEXT:    [[TMP9:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-INLOOP-NEXT:    [[TMP10:%.*]] = mul nuw i64 [[TMP9]], 4
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; IF-EVL-INLOOP-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL-INLOOP:       vector.body:
 ; IF-EVL-INLOOP-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -416,8 +384,6 @@ define i32 @cond_add_pred(ptr %a, i64 %n, i32 %start) {
 ; NO-VP-OUTLOOP-LABEL: define i32 @cond_add_pred(
 ; NO-VP-OUTLOOP-SAME: ptr [[A:%.*]], i64 [[N:%.*]], i32 [[START:%.*]]) #[[ATTR0]] {
 ; NO-VP-OUTLOOP-NEXT:  entry:
-<<<<<<< HEAD
-=======
 ; NO-VP-OUTLOOP-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
 ; NO-VP-OUTLOOP-NEXT:    [[TMP2:%.*]] = mul nuw i64 [[TMP1]], 4
 ; NO-VP-OUTLOOP-NEXT:    [[TMP3:%.*]] = icmp ult i64 [[N]], [[TMP2]]
@@ -450,7 +416,6 @@ define i32 @cond_add_pred(ptr %a, i64 %n, i32 %start) {
 ; NO-VP-OUTLOOP:       scalar.ph:
 ; NO-VP-OUTLOOP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; NO-VP-OUTLOOP-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[TMP14]], [[MIDDLE_BLOCK]] ], [ [[START]], [[ENTRY]] ]
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; NO-VP-OUTLOOP-NEXT:    br label [[FOR_BODY:%.*]]
 ; NO-VP-OUTLOOP:       for.body:
 ; NO-VP-OUTLOOP-NEXT:    [[IV1:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[IV_NEXT:%.*]], [[FOR_INC:%.*]] ]
@@ -474,8 +439,6 @@ define i32 @cond_add_pred(ptr %a, i64 %n, i32 %start) {
 ; NO-VP-INLOOP-LABEL: define i32 @cond_add_pred(
 ; NO-VP-INLOOP-SAME: ptr [[A:%.*]], i64 [[N:%.*]], i32 [[START:%.*]]) #[[ATTR0]] {
 ; NO-VP-INLOOP-NEXT:  entry:
-<<<<<<< HEAD
-=======
 ; NO-VP-INLOOP-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; NO-VP-INLOOP-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
 ; NO-VP-INLOOP-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], [[TMP1]]
@@ -507,7 +470,6 @@ define i32 @cond_add_pred(ptr %a, i64 %n, i32 %start) {
 ; NO-VP-INLOOP:       scalar.ph:
 ; NO-VP-INLOOP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; NO-VP-INLOOP-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[TMP12]], [[MIDDLE_BLOCK]] ], [ [[START]], [[ENTRY]] ]
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; NO-VP-INLOOP-NEXT:    br label [[FOR_BODY:%.*]]
 ; NO-VP-INLOOP:       for.body:
 ; NO-VP-INLOOP-NEXT:    [[IV1:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[IV_NEXT:%.*]], [[FOR_INC:%.*]] ]
@@ -671,8 +633,6 @@ define i32 @step_cond_add(ptr %a, i64 %n, i32 %start) {
 ; NO-VP-OUTLOOP-LABEL: define i32 @step_cond_add(
 ; NO-VP-OUTLOOP-SAME: ptr [[A:%.*]], i64 [[N:%.*]], i32 [[START:%.*]]) #[[ATTR0]] {
 ; NO-VP-OUTLOOP-NEXT:  entry:
-<<<<<<< HEAD
-=======
 ; NO-VP-OUTLOOP-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
 ; NO-VP-OUTLOOP-NEXT:    [[TMP2:%.*]] = mul nuw i64 [[TMP1]], 4
 ; NO-VP-OUTLOOP-NEXT:    [[TMP3:%.*]] = icmp ult i64 [[N]], [[TMP2]]
@@ -714,7 +674,6 @@ define i32 @step_cond_add(ptr %a, i64 %n, i32 %start) {
 ; NO-VP-OUTLOOP:       scalar.ph:
 ; NO-VP-OUTLOOP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; NO-VP-OUTLOOP-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[TMP26]], [[MIDDLE_BLOCK]] ], [ [[START]], [[ENTRY]] ]
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; NO-VP-OUTLOOP-NEXT:    br label [[FOR_BODY:%.*]]
 ; NO-VP-OUTLOOP:       for.body:
 ; NO-VP-OUTLOOP-NEXT:    [[IV1:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[IV_NEXT1:%.*]], [[FOR_BODY]] ]
@@ -735,8 +694,6 @@ define i32 @step_cond_add(ptr %a, i64 %n, i32 %start) {
 ; NO-VP-INLOOP-LABEL: define i32 @step_cond_add(
 ; NO-VP-INLOOP-SAME: ptr [[A:%.*]], i64 [[N:%.*]], i32 [[START:%.*]]) #[[ATTR0]] {
 ; NO-VP-INLOOP-NEXT:  entry:
-<<<<<<< HEAD
-=======
 ; NO-VP-INLOOP-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; NO-VP-INLOOP-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
 ; NO-VP-INLOOP-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], [[TMP1]]
@@ -777,7 +734,6 @@ define i32 @step_cond_add(ptr %a, i64 %n, i32 %start) {
 ; NO-VP-INLOOP:       scalar.ph:
 ; NO-VP-INLOOP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; NO-VP-INLOOP-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[TMP18]], [[MIDDLE_BLOCK]] ], [ [[START]], [[ENTRY]] ]
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; NO-VP-INLOOP-NEXT:    br label [[FOR_BODY:%.*]]
 ; NO-VP-INLOOP:       for.body:
 ; NO-VP-INLOOP-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_NEXT:%.*]], [[FOR_BODY]] ]
@@ -940,8 +896,6 @@ define i32 @step_cond_add_pred(ptr %a, i64 %n, i32 %start) {
 ; NO-VP-OUTLOOP-LABEL: define i32 @step_cond_add_pred(
 ; NO-VP-OUTLOOP-SAME: ptr [[A:%.*]], i64 [[N:%.*]], i32 [[START:%.*]]) #[[ATTR0]] {
 ; NO-VP-OUTLOOP-NEXT:  entry:
-<<<<<<< HEAD
-=======
 ; NO-VP-OUTLOOP-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
 ; NO-VP-OUTLOOP-NEXT:    [[TMP2:%.*]] = mul nuw i64 [[TMP1]], 4
 ; NO-VP-OUTLOOP-NEXT:    [[TMP3:%.*]] = icmp ult i64 [[N]], [[TMP2]]
@@ -983,7 +937,6 @@ define i32 @step_cond_add_pred(ptr %a, i64 %n, i32 %start) {
 ; NO-VP-OUTLOOP:       scalar.ph:
 ; NO-VP-OUTLOOP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; NO-VP-OUTLOOP-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[TMP20]], [[MIDDLE_BLOCK]] ], [ [[START]], [[ENTRY]] ]
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; NO-VP-OUTLOOP-NEXT:    br label [[FOR_BODY:%.*]]
 ; NO-VP-OUTLOOP:       for.body:
 ; NO-VP-OUTLOOP-NEXT:    [[IV1:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[IV_NEXT:%.*]], [[FOR_INC:%.*]] ]
@@ -1008,8 +961,6 @@ define i32 @step_cond_add_pred(ptr %a, i64 %n, i32 %start) {
 ; NO-VP-INLOOP-LABEL: define i32 @step_cond_add_pred(
 ; NO-VP-INLOOP-SAME: ptr [[A:%.*]], i64 [[N:%.*]], i32 [[START:%.*]]) #[[ATTR0]] {
 ; NO-VP-INLOOP-NEXT:  entry:
-<<<<<<< HEAD
-=======
 ; NO-VP-INLOOP-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; NO-VP-INLOOP-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
 ; NO-VP-INLOOP-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], [[TMP1]]
@@ -1050,7 +1001,6 @@ define i32 @step_cond_add_pred(ptr %a, i64 %n, i32 %start) {
 ; NO-VP-INLOOP:       scalar.ph:
 ; NO-VP-INLOOP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; NO-VP-INLOOP-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[TMP18]], [[MIDDLE_BLOCK]] ], [ [[START]], [[ENTRY]] ]
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; NO-VP-INLOOP-NEXT:    br label [[FOR_BODY:%.*]]
 ; NO-VP-INLOOP:       for.body:
 ; NO-VP-INLOOP-NEXT:    [[IV1:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[IV_NEXT:%.*]], [[FOR_INC:%.*]] ]

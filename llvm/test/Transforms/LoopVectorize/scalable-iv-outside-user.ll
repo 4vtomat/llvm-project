@@ -44,17 +44,10 @@ define i32 @iv_live_out_wide(ptr %dst) {
 ; CHECK-NEXT:    [[TMP16:%.*]] = icmp eq i32 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[TMP16]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP20:%.*]] = call i32 @llvm.vscale.i32()
-; CHECK-NEXT:    [[TMP17:%.*]] = mul i32 [[TMP20]], 2
-; CHECK-NEXT:    [[TMP18:%.*]] = sub i32 [[TMP17]], 1
-; CHECK-NEXT:    [[TMP19:%.*]] = extractelement <vscale x 2 x i32> [[TMP15]], i32 [[TMP18]]
-=======
 ; CHECK-NEXT:    [[TMP17:%.*]] = call i32 @llvm.vscale.i32()
 ; CHECK-NEXT:    [[TMP18:%.*]] = mul nuw i32 [[TMP17]], 2
 ; CHECK-NEXT:    [[TMP19:%.*]] = sub i32 [[TMP18]], 1
 ; CHECK-NEXT:    [[TMP20:%.*]] = extractelement <vscale x 2 x i32> [[TMP15]], i32 [[TMP19]]
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i32 2000, [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[CMP_N]], label %[[E_EXIT:.*]], label %[[SCALAR_PH]]
 ; CHECK:       [[SCALAR_PH]]:
@@ -68,7 +61,7 @@ define i32 @iv_live_out_wide(ptr %dst) {
 ; CHECK-NEXT:    [[CMP_I:%.*]] = icmp slt i32 [[IV_NEXT]], 2000
 ; CHECK-NEXT:    br i1 [[CMP_I]], label %[[LOOP]], label %[[E_EXIT]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       [[E_EXIT]]:
-; CHECK-NEXT:    [[RES:%.*]] = phi i32 [ [[IV_NEXT]], %[[LOOP]] ], [ [[TMP19]], %[[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[RES:%.*]] = phi i32 [ [[IV_NEXT]], %[[LOOP]] ], [ [[TMP20]], %[[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret i32 [[RES]]
 ;
 entry:

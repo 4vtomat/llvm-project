@@ -335,32 +335,18 @@ define i16 @reduce_udiv(ptr %src, i16 %x, i64 %N) #0 {
 ; DEFAULT-NEXT:  [[ENTRY:.*]]:
 ; DEFAULT-NEXT:    [[TMP0:%.*]] = add i64 [[N]], 1
 ; DEFAULT-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
-<<<<<<< HEAD
-; DEFAULT-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 16
-=======
-; DEFAULT-NEXT:    [[TMP2:%.*]] = mul nuw i64 [[TMP1]], 8
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+; DEFAULT-NEXT:    [[TMP2:%.*]] = mul nuw i64 [[TMP1]], 16
 ; DEFAULT-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[TMP0]], [[TMP2]]
 ; DEFAULT-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; DEFAULT:       [[VECTOR_PH]]:
 ; DEFAULT-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
-<<<<<<< HEAD
-; DEFAULT-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 16
+; DEFAULT-NEXT:    [[TMP4:%.*]] = mul nuw i64 [[TMP3]], 16
 ; DEFAULT-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[TMP0]], [[TMP4]]
 ; DEFAULT-NEXT:    [[N_VEC:%.*]] = sub i64 [[TMP0]], [[N_MOD_VF]]
 ; DEFAULT-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
-; DEFAULT-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 16
+; DEFAULT-NEXT:    [[TMP6:%.*]] = mul nuw i64 [[TMP5]], 16
 ; DEFAULT-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x i16> poison, i16 [[X]], i64 0
 ; DEFAULT-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 8 x i16> [[BROADCAST_SPLATINSERT]], <vscale x 8 x i16> poison, <vscale x 8 x i32> zeroinitializer
-=======
-; DEFAULT-NEXT:    [[TMP4:%.*]] = mul nuw i64 [[TMP3]], 8
-; DEFAULT-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[TMP0]], [[TMP4]]
-; DEFAULT-NEXT:    [[N_VEC:%.*]] = sub i64 [[TMP0]], [[N_MOD_VF]]
-; DEFAULT-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
-; DEFAULT-NEXT:    [[TMP6:%.*]] = mul nuw i64 [[TMP5]], 8
-; DEFAULT-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 4 x i16> poison, i16 [[X]], i64 0
-; DEFAULT-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 4 x i16> [[BROADCAST_SPLATINSERT]], <vscale x 4 x i16> poison, <vscale x 4 x i32> zeroinitializer
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; DEFAULT-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; DEFAULT:       [[VECTOR_BODY]]:
 ; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -369,11 +355,7 @@ define i16 @reduce_udiv(ptr %src, i16 %x, i64 %N) #0 {
 ; DEFAULT-NEXT:    [[TMP13:%.*]] = getelementptr i16, ptr [[SRC]], i64 [[INDEX]]
 ; DEFAULT-NEXT:    [[TMP15:%.*]] = getelementptr i16, ptr [[TMP13]], i32 0
 ; DEFAULT-NEXT:    [[TMP16:%.*]] = call i64 @llvm.vscale.i64()
-<<<<<<< HEAD
-; DEFAULT-NEXT:    [[TMP17:%.*]] = mul i64 [[TMP16]], 8
-=======
-; DEFAULT-NEXT:    [[TMP17:%.*]] = mul nuw i64 [[TMP16]], 4
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+; DEFAULT-NEXT:    [[TMP17:%.*]] = mul nuw i64 [[TMP16]], 8
 ; DEFAULT-NEXT:    [[TMP18:%.*]] = getelementptr i16, ptr [[TMP13]], i64 [[TMP17]]
 ; DEFAULT-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 8 x i16>, ptr [[TMP15]], align 2
 ; DEFAULT-NEXT:    [[WIDE_LOAD2:%.*]] = load <vscale x 8 x i16>, ptr [[TMP18]], align 2
@@ -412,37 +394,23 @@ define i16 @reduce_udiv(ptr %src, i16 %x, i64 %N) #0 {
 ; VSCALEFORTUNING2-NEXT:  [[ITER_CHECK:.*]]:
 ; VSCALEFORTUNING2-NEXT:    [[TMP0:%.*]] = add i64 [[N]], 1
 ; VSCALEFORTUNING2-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
-<<<<<<< HEAD
-; VSCALEFORTUNING2-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 4
-=======
-; VSCALEFORTUNING2-NEXT:    [[TMP2:%.*]] = mul nuw i64 [[TMP1]], 8
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+; VSCALEFORTUNING2-NEXT:    [[TMP2:%.*]] = mul nuw i64 [[TMP1]], 4
 ; VSCALEFORTUNING2-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[TMP0]], [[TMP2]]
 ; VSCALEFORTUNING2-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[VEC_EPILOG_SCALAR_PH:.*]], label %[[VECTOR_MAIN_LOOP_ITER_CHECK:.*]]
 ; VSCALEFORTUNING2:       [[VECTOR_MAIN_LOOP_ITER_CHECK]]:
 ; VSCALEFORTUNING2-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
-<<<<<<< HEAD
-; VSCALEFORTUNING2-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 16
-; VSCALEFORTUNING2-NEXT:    [[MIN_ITERS_CHECK1:%.*]] = icmp ult i64 [[TMP0]], [[TMP4]]
+; VSCALEFORTUNING2-NEXT:    [[TMP6:%.*]] = mul nuw i64 [[TMP3]], 16
+; VSCALEFORTUNING2-NEXT:    [[MIN_ITERS_CHECK1:%.*]] = icmp ult i64 [[TMP0]], [[TMP6]]
 ; VSCALEFORTUNING2-NEXT:    br i1 [[MIN_ITERS_CHECK1]], label %[[VEC_EPILOG_PH:.*]], label %[[VECTOR_PH:.*]]
 ; VSCALEFORTUNING2:       [[VECTOR_PH]]:
-; VSCALEFORTUNING2-NEXT:    [[TMP13:%.*]] = call i64 @llvm.vscale.i64()
-; VSCALEFORTUNING2-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP13]], 16
-; VSCALEFORTUNING2-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[TMP0]], [[TMP6]]
-; VSCALEFORTUNING2-NEXT:    [[N_VEC:%.*]] = sub i64 [[TMP0]], [[N_MOD_VF]]
-; VSCALEFORTUNING2-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
-; VSCALEFORTUNING2-NEXT:    [[TMP31:%.*]] = mul i64 [[TMP5]], 16
-; VSCALEFORTUNING2-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x i16> poison, i16 [[X]], i64 0
-; VSCALEFORTUNING2-NEXT:    [[BROADCAST_SPLAT1:%.*]] = shufflevector <vscale x 8 x i16> [[BROADCAST_SPLATINSERT]], <vscale x 8 x i16> poison, <vscale x 8 x i32> zeroinitializer
-=======
-; VSCALEFORTUNING2-NEXT:    [[TMP4:%.*]] = mul nuw i64 [[TMP3]], 8
+; VSCALEFORTUNING2-NEXT:    [[TMP7:%.*]] = call i64 @llvm.vscale.i64()
+; VSCALEFORTUNING2-NEXT:    [[TMP4:%.*]] = mul nuw i64 [[TMP7]], 16
 ; VSCALEFORTUNING2-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[TMP0]], [[TMP4]]
 ; VSCALEFORTUNING2-NEXT:    [[N_VEC:%.*]] = sub i64 [[TMP0]], [[N_MOD_VF]]
 ; VSCALEFORTUNING2-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
-; VSCALEFORTUNING2-NEXT:    [[TMP6:%.*]] = mul nuw i64 [[TMP5]], 8
-; VSCALEFORTUNING2-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 4 x i16> poison, i16 [[X]], i64 0
-; VSCALEFORTUNING2-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 4 x i16> [[BROADCAST_SPLATINSERT]], <vscale x 4 x i16> poison, <vscale x 4 x i32> zeroinitializer
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+; VSCALEFORTUNING2-NEXT:    [[TMP31:%.*]] = mul nuw i64 [[TMP5]], 16
+; VSCALEFORTUNING2-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x i16> poison, i16 [[X]], i64 0
+; VSCALEFORTUNING2-NEXT:    [[BROADCAST_SPLAT1:%.*]] = shufflevector <vscale x 8 x i16> [[BROADCAST_SPLATINSERT]], <vscale x 8 x i16> poison, <vscale x 8 x i32> zeroinitializer
 ; VSCALEFORTUNING2-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; VSCALEFORTUNING2:       [[VECTOR_BODY]]:
 ; VSCALEFORTUNING2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -451,11 +419,7 @@ define i16 @reduce_udiv(ptr %src, i16 %x, i64 %N) #0 {
 ; VSCALEFORTUNING2-NEXT:    [[TMP8:%.*]] = getelementptr i16, ptr [[SRC]], i64 [[INDEX]]
 ; VSCALEFORTUNING2-NEXT:    [[TMP9:%.*]] = getelementptr i16, ptr [[TMP8]], i32 0
 ; VSCALEFORTUNING2-NEXT:    [[TMP10:%.*]] = call i64 @llvm.vscale.i64()
-<<<<<<< HEAD
-; VSCALEFORTUNING2-NEXT:    [[TMP11:%.*]] = mul i64 [[TMP10]], 8
-=======
-; VSCALEFORTUNING2-NEXT:    [[TMP11:%.*]] = mul nuw i64 [[TMP10]], 4
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+; VSCALEFORTUNING2-NEXT:    [[TMP11:%.*]] = mul nuw i64 [[TMP10]], 8
 ; VSCALEFORTUNING2-NEXT:    [[TMP12:%.*]] = getelementptr i16, ptr [[TMP8]], i64 [[TMP11]]
 ; VSCALEFORTUNING2-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 8 x i16>, ptr [[TMP9]], align 2
 ; VSCALEFORTUNING2-NEXT:    [[WIDE_LOAD3:%.*]] = load <vscale x 8 x i16>, ptr [[TMP12]], align 2
@@ -474,18 +438,18 @@ define i16 @reduce_udiv(ptr %src, i16 %x, i64 %N) #0 {
 ; VSCALEFORTUNING2:       [[VEC_EPILOG_ITER_CHECK]]:
 ; VSCALEFORTUNING2-NEXT:    [[N_VEC_REMAINING:%.*]] = sub i64 [[TMP0]], [[N_VEC]]
 ; VSCALEFORTUNING2-NEXT:    [[TMP21:%.*]] = call i64 @llvm.vscale.i64()
-; VSCALEFORTUNING2-NEXT:    [[TMP22:%.*]] = mul i64 [[TMP21]], 4
+; VSCALEFORTUNING2-NEXT:    [[TMP22:%.*]] = mul nuw i64 [[TMP21]], 4
 ; VSCALEFORTUNING2-NEXT:    [[MIN_EPILOG_ITERS_CHECK:%.*]] = icmp ult i64 [[N_VEC_REMAINING]], [[TMP22]]
 ; VSCALEFORTUNING2-NEXT:    br i1 [[MIN_EPILOG_ITERS_CHECK]], label %[[VEC_EPILOG_SCALAR_PH]], label %[[VEC_EPILOG_PH]]
 ; VSCALEFORTUNING2:       [[VEC_EPILOG_PH]]:
 ; VSCALEFORTUNING2-NEXT:    [[VEC_EPILOG_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], %[[VEC_EPILOG_ITER_CHECK]] ], [ 0, %[[VECTOR_MAIN_LOOP_ITER_CHECK]] ]
 ; VSCALEFORTUNING2-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i16 [ [[TMP20]], %[[VEC_EPILOG_ITER_CHECK]] ], [ 0, %[[VECTOR_MAIN_LOOP_ITER_CHECK]] ]
 ; VSCALEFORTUNING2-NEXT:    [[TMP23:%.*]] = call i64 @llvm.vscale.i64()
-; VSCALEFORTUNING2-NEXT:    [[TMP24:%.*]] = mul i64 [[TMP23]], 4
+; VSCALEFORTUNING2-NEXT:    [[TMP24:%.*]] = mul nuw i64 [[TMP23]], 4
 ; VSCALEFORTUNING2-NEXT:    [[N_MOD_VF4:%.*]] = urem i64 [[TMP0]], [[TMP24]]
 ; VSCALEFORTUNING2-NEXT:    [[N_VEC5:%.*]] = sub i64 [[TMP0]], [[N_MOD_VF4]]
 ; VSCALEFORTUNING2-NEXT:    [[TMP25:%.*]] = call i64 @llvm.vscale.i64()
-; VSCALEFORTUNING2-NEXT:    [[TMP26:%.*]] = mul i64 [[TMP25]], 4
+; VSCALEFORTUNING2-NEXT:    [[TMP26:%.*]] = mul nuw i64 [[TMP25]], 4
 ; VSCALEFORTUNING2-NEXT:    [[TMP27:%.*]] = insertelement <vscale x 4 x i16> zeroinitializer, i16 [[BC_MERGE_RDX]], i32 0
 ; VSCALEFORTUNING2-NEXT:    [[BROADCAST_SPLATINSERT6:%.*]] = insertelement <vscale x 4 x i16> poison, i16 [[X]], i64 0
 ; VSCALEFORTUNING2-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 4 x i16> [[BROADCAST_SPLATINSERT6]], <vscale x 4 x i16> poison, <vscale x 4 x i32> zeroinitializer

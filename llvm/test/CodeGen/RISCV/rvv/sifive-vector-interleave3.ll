@@ -28,19 +28,17 @@ define <vscale x 48 x i1> @vector_interleave_nxv48i1_nxv16i1(<vscale x 16 x i1> 
 ; CHECK-NEXT:    add a2, a3, a2
 ; CHECK-NEXT:    vsseg3e8.v v14, (a0)
 ; CHECK-NEXT:    vl2r.v v8, (a2)
-; CHECK-NEXT:    srli a2, a1, 2
-; CHECK-NEXT:    srli a1, a1, 1
+; CHECK-NEXT:    srli a2, a1, 1
 ; CHECK-NEXT:    vl2r.v v10, (a3)
 ; CHECK-NEXT:    vl2r.v v12, (a0)
-; CHECK-NEXT:    add a0, a2, a2
+; CHECK-NEXT:    srli a1, a1, 2
 ; CHECK-NEXT:    vmsne.vi v8, v8, 0
 ; CHECK-NEXT:    vmsne.vi v9, v10, 0
 ; CHECK-NEXT:    vmsne.vi v0, v12, 0
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, ma
-; CHECK-NEXT:    vslideup.vx v0, v9, a2
-; CHECK-NEXT:    add a0, a1, a1
-; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
-; CHECK-NEXT:    vslideup.vx v0, v8, a1
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
+; CHECK-NEXT:    vslideup.vx v0, v9, a1
+; CHECK-NEXT:    vsetvli a0, zero, e8, m1, ta, ma
+; CHECK-NEXT:    vslideup.vx v0, v8, a2
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    li a1, 6
 ; CHECK-NEXT:    mul a0, a0, a1

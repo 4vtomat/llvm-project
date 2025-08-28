@@ -583,11 +583,10 @@ define i128 @lshr128_shamt32(i128 %a, i32 signext %b) nounwind {
 ; RV32I-NEXT:    sw zero, 24(sp)
 ; RV32I-NEXT:    sw zero, 28(sp)
 ; RV32I-NEXT:    srli a6, a2, 3
-; RV32I-NEXT:    mv a7, sp
 ; RV32I-NEXT:    andi t0, a2, 31
 ; RV32I-NEXT:    andi a6, a6, 12
 ; RV32I-NEXT:    xori t0, t0, 31
-; RV32I-NEXT:    add a6, a7, a6
+; RV32I-NEXT:    add a6, sp, a6
 ; RV32I-NEXT:    sw a3, 0(sp)
 ; RV32I-NEXT:    sw a4, 4(sp)
 ; RV32I-NEXT:    sw a5, 8(sp)
@@ -648,11 +647,10 @@ define i128 @ashr128_shamt32(i128 %a, i32 signext %b) nounwind {
 ; RV32I-NEXT:    lw a5, 8(a1)
 ; RV32I-NEXT:    lw a1, 12(a1)
 ; RV32I-NEXT:    srli a6, a2, 3
-; RV32I-NEXT:    mv a7, sp
 ; RV32I-NEXT:    andi t0, a2, 31
 ; RV32I-NEXT:    andi a6, a6, 12
 ; RV32I-NEXT:    xori t0, t0, 31
-; RV32I-NEXT:    add a6, a7, a6
+; RV32I-NEXT:    add a6, sp, a6
 ; RV32I-NEXT:    sw a3, 0(sp)
 ; RV32I-NEXT:    sw a4, 4(sp)
 ; RV32I-NEXT:    sw a5, 8(sp)

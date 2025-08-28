@@ -60,7 +60,7 @@ define void @small_trip_count_min_vlen_32(ptr nocapture %a) nounwind vscale_rang
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.vscale.i32()
-; CHECK-NEXT:    [[TMP7:%.*]] = mul i32 [[TMP4]], 4
+; CHECK-NEXT:    [[TMP7:%.*]] = mul nuw i32 [[TMP4]], 4
 ; CHECK-NEXT:    [[TMP2:%.*]] = sub i32 [[TMP7]], 1
 ; CHECK-NEXT:    [[N_RND_UP:%.*]] = add i32 4, [[TMP2]]
 ; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i32 [[N_RND_UP]], [[TMP7]]

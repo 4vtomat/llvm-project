@@ -100,11 +100,6 @@ define  void @vscale_mul_8(ptr noalias noundef readonly captures(none) %a, ptr n
 ; CHECK-NEXT:    [[TMP4:%.*]] = mul nuw i64 [[TMP3]], 8
 ; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[MUL1]], [[TMP4]]
 ; CHECK-NEXT:    [[N_VEC:%.*]] = sub i64 [[MUL1]], [[N_MOD_VF]]
-<<<<<<< HEAD
-=======
-; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP6:%.*]] = mul nuw i64 [[TMP5]], 8
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds nuw float, ptr [[A]], i32 0
 ; CHECK-NEXT:    [[TMP9:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP10:%.*]] = mul nuw i64 [[TMP9]], 4

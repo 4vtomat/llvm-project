@@ -13,29 +13,6 @@
 define void @interleave(ptr noalias %a, ptr noalias %b, i64 %N) {
 ; IF-EVL-LABEL: @interleave(
 ; IF-EVL-NEXT:  entry:
-<<<<<<< HEAD
-; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
-; IF-EVL:       vector.ph:
-; IF-EVL-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N_VEC:%.*]], i32 2, i1 true)
-; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
-; IF-EVL:       vector.body:
-; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; IF-EVL-NEXT:    [[TMP12:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
-; IF-EVL-NEXT:    [[AVL:%.*]] = sub i64 [[N_VEC]], [[TMP12]]
-; IF-EVL-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
-; IF-EVL-NEXT:    [[TMP22:%.*]] = getelementptr inbounds [2 x i32], ptr [[B:%.*]], i64 [[TMP12]], i32 0
-; IF-EVL-NEXT:    [[TMP3:%.*]] = mul nuw nsw i32 [[TMP1]], 2
-; IF-EVL-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 4 x i32> @llvm.vp.load.nxv4i32.p0(ptr align 4 [[TMP22]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP3]])
-; IF-EVL-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.vector.deinterleave2.nxv4i32(<vscale x 4 x i32> [[WIDE_MASKED_LOAD]])
-; IF-EVL-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32> } [[DEINTERLEAVED_RESULTS]], 0
-; IF-EVL-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32> } [[DEINTERLEAVED_RESULTS]], 1
-; IF-EVL-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP5]], <vscale x 2 x i32> [[TMP4]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
-; IF-EVL-NEXT:    [[TMP27:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[TMP12]]
-; IF-EVL-NEXT:    [[TMP29:%.*]] = getelementptr inbounds i32, ptr [[TMP27]], i32 0
-; IF-EVL-NEXT:    call void @llvm.vp.store.nxv2i32.p0(<vscale x 2 x i32> [[VP_OP]], ptr align 4 [[TMP29]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
-; IF-EVL-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP1]] to i64
-; IF-EVL-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[TMP8]], [[TMP12]]
-=======
 ; IF-EVL-NEXT:    [[TMP0:%.*]] = sub i64 -1, [[N:%.*]]
 ; IF-EVL-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-NEXT:    [[TMP2:%.*]] = mul nuw i64 [[TMP1]], 8
@@ -85,7 +62,6 @@ define void @interleave(ptr noalias %a, ptr noalias %b, i64 %N) {
 ; IF-EVL-NEXT:    call void @llvm.masked.store.nxv4i32.p0(<vscale x 4 x i32> [[TMP26]], ptr [[TMP32]], i32 4, <vscale x 4 x i1> [[TMP20]])
 ; IF-EVL-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP9]]
 ; IF-EVL-NEXT:    [[VEC_IND_NEXT]] = add <vscale x 4 x i64> [[STEP_ADD]], [[BROADCAST_SPLAT2]]
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; IF-EVL-NEXT:    [[TMP33:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; IF-EVL-NEXT:    br i1 [[TMP33]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; IF-EVL:       middle.block:
@@ -110,9 +86,6 @@ define void @interleave(ptr noalias %a, ptr noalias %b, i64 %N) {
 ;
 ; NO-VP-LABEL: @interleave(
 ; NO-VP-NEXT:  entry:
-<<<<<<< HEAD
-; NO-VP-NEXT:    br label [[FOR_BODY1:%.*]]
-=======
 ; NO-VP-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; NO-VP-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 8
 ; NO-VP-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N:%.*]], [[TMP1]]
@@ -159,7 +132,6 @@ define void @interleave(ptr noalias %a, ptr noalias %b, i64 %N) {
 ; NO-VP:       scalar.ph:
 ; NO-VP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; NO-VP-NEXT:    br label [[FOR_BODY:%.*]]
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; NO-VP:       for.body:
 ; NO-VP-NEXT:    [[IV1:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[IV_NEXT1:%.*]], [[FOR_BODY1]] ]
 ; NO-VP-NEXT:    [[ARRAYIDX1:%.*]] = getelementptr inbounds [2 x i32], ptr [[B:%.*]], i64 [[IV1]], i32 0

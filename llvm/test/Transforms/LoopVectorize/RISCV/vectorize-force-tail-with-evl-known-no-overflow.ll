@@ -15,11 +15,6 @@ define void @trip_count_max_1024(ptr %p, i64 %tc) vscale_range(2, 1024) {
 ; CHECK-NEXT:    br i1 [[GUARD]], label %[[EXIT:.*]], label %[[LOOP_PREHEADER:.*]]
 ; CHECK:       [[LOOP_PREHEADER]]:
 ; CHECK-NEXT:    [[UMAX:%.*]] = call i64 @llvm.umax.i64(i64 [[TC]], i64 1)
-<<<<<<< HEAD
-; CHECK-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
-; CHECK:       [[VECTOR_PH]]:
-; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[UMAX]], i32 1, i1 true)
-=======
 ; CHECK-NEXT:    [[TMP0:%.*]] = sub i64 -1, [[UMAX]]
 ; CHECK-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP2:%.*]] = mul nuw i64 [[TMP1]], 2
@@ -34,7 +29,6 @@ define void @trip_count_max_1024(ptr %p, i64 %tc) vscale_range(2, 1024) {
 ; CHECK-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP8:%.*]] = mul nuw i64 [[TMP7]], 2
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -95,11 +89,6 @@ define void @overflow_at_0(ptr %p, i64 %tc) vscale_range(2, 1024) {
 ; CHECK-NEXT:    [[GUARD:%.*]] = icmp ugt i64 [[TC]], 1024
 ; CHECK-NEXT:    br i1 [[GUARD]], label %[[EXIT:.*]], label %[[LOOP_PREHEADER:.*]]
 ; CHECK:       [[LOOP_PREHEADER]]:
-<<<<<<< HEAD
-; CHECK-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
-; CHECK:       [[VECTOR_PH]]:
-; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TC]], i32 1, i1 true)
-=======
 ; CHECK-NEXT:    [[TMP0:%.*]] = sub i64 -1, [[TC]]
 ; CHECK-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP2:%.*]] = mul nuw i64 [[TMP1]], 2
@@ -114,7 +103,6 @@ define void @overflow_at_0(ptr %p, i64 %tc) vscale_range(2, 1024) {
 ; CHECK-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP8:%.*]] = mul nuw i64 [[TMP7]], 2
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -177,9 +165,6 @@ define void @no_overflow_at_0(ptr %p, i64 %tc) vscale_range(2, 1024) {
 ; CHECK:       [[LOOP_PREHEADER]]:
 ; CHECK-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TC_ADD]], i32 1, i1 true)
-=======
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 2
 ; CHECK-NEXT:    [[TMP2:%.*]] = sub i64 [[TMP1]], 1
@@ -188,7 +173,6 @@ define void @no_overflow_at_0(ptr %p, i64 %tc) vscale_range(2, 1024) {
 ; CHECK-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP4:%.*]] = mul nuw i64 [[TMP3]], 2
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]

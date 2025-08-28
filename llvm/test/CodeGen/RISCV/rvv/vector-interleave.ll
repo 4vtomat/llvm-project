@@ -19,27 +19,15 @@ define <vscale x 32 x i1> @vector_interleave_nxv32i1_nxv16i1(<vscale x 16 x i1> 
 ; V-NEXT:    li a0, -1
 ; V-NEXT:    vmerge.vim v12, v10, 1, v0
 ; V-NEXT:    vmv1r.v v0, v9
-<<<<<<< HEAD
 ; V-NEXT:    vmerge.vim v10, v10, 1, v0
-; V-NEXT:    srli a1, a1, 2
 ; V-NEXT:    vwaddu.vv v8, v10, v12
 ; V-NEXT:    vwmaccu.vx v8, a0, v12
-; V-NEXT:    vmsne.vi v10, v10, 0
-; V-NEXT:    vmsne.vi v0, v8, 0
-; V-NEXT:    add a0, a1, a1
-; V-NEXT:    vsetvli zero, a0, e8, mf2, ta, ma
-; V-NEXT:    vslideup.vx v0, v10, a1
-=======
-; V-NEXT:    vmerge.vim v14, v10, 1, v0
-; V-NEXT:    vwaddu.vv v8, v14, v12
-; V-NEXT:    vwmaccu.vx v8, a0, v12
 ; V-NEXT:    csrr a0, vlenb
-; V-NEXT:    vmsne.vi v12, v10, 0
+; V-NEXT:    vmsne.vi v10, v10, 0
 ; V-NEXT:    vmsne.vi v0, v8, 0
 ; V-NEXT:    srli a0, a0, 2
 ; V-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
-; V-NEXT:    vslideup.vx v0, v12, a0
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+; V-NEXT:    vslideup.vx v0, v10, a0
 ; V-NEXT:    ret
 ;
 ; ZVBB-LABEL: vector_interleave_nxv32i1_nxv16i1:
@@ -274,14 +262,8 @@ define <vscale x 128 x i1> @vector_interleave_nxv128i1_nxv64i1(<vscale x 64 x i1
 ; ZIP-NEXT:    ri.vzip2a.vv v0, v8, v16
 ; ZIP-NEXT:    ri.vzip2a.vv v24, v12, v20
 ; ZIP-NEXT:    vsetvli a0, zero, e8, m8, ta, ma
-<<<<<<< HEAD
 ; ZIP-NEXT:    vmsne.vi v0, v0, 0
 ; ZIP-NEXT:    vmsne.vi v8, v24, 0
-=======
-; ZIP-NEXT:    vmsne.vi v9, v0, 0
-; ZIP-NEXT:    vmsne.vi v8, v24, 0
-; ZIP-NEXT:    vmv1r.v v0, v9
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; ZIP-NEXT:    ret
   %res = call <vscale x 128 x i1> @llvm.vector.interleave2.nxv128i1(<vscale x 64 x i1> %a, <vscale x 64 x i1> %b)
   ret <vscale x 128 x i1> %res
@@ -517,26 +499,14 @@ define <vscale x 48 x i1> @vector_interleave_nxv48i1_nxv16i1(<vscale x 16 x i1> 
 ; CHECK-NEXT:    srli a2, a1, 1
 ; CHECK-NEXT:    vl2r.v v10, (a3)
 ; CHECK-NEXT:    vl2r.v v12, (a0)
-<<<<<<< HEAD
-; CHECK-NEXT:    add a0, a2, a2
+; CHECK-NEXT:    srli a1, a1, 2
 ; CHECK-NEXT:    vmsne.vi v8, v8, 0
 ; CHECK-NEXT:    vmsne.vi v9, v10, 0
 ; CHECK-NEXT:    vmsne.vi v0, v12, 0
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, ma
-; CHECK-NEXT:    vslideup.vx v0, v9, a2
-; CHECK-NEXT:    add a0, a1, a1
-; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
-; CHECK-NEXT:    vslideup.vx v0, v8, a1
-=======
-; CHECK-NEXT:    srli a1, a1, 2
-; CHECK-NEXT:    vmsne.vi v14, v8, 0
-; CHECK-NEXT:    vmsne.vi v8, v10, 0
-; CHECK-NEXT:    vmsne.vi v0, v12, 0
 ; CHECK-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
-; CHECK-NEXT:    vslideup.vx v0, v8, a1
+; CHECK-NEXT:    vslideup.vx v0, v9, a1
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vslideup.vx v0, v14, a2
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+; CHECK-NEXT:    vslideup.vx v0, v8, a2
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    li a1, 6
 ; CHECK-NEXT:    mul a0, a0, a1
@@ -570,26 +540,14 @@ define <vscale x 48 x i1> @vector_interleave_nxv48i1_nxv16i1(<vscale x 16 x i1> 
 ; ZVBB-NEXT:    srli a2, a1, 1
 ; ZVBB-NEXT:    vl2r.v v10, (a3)
 ; ZVBB-NEXT:    vl2r.v v12, (a0)
-<<<<<<< HEAD
-; ZVBB-NEXT:    add a0, a2, a2
+; ZVBB-NEXT:    srli a1, a1, 2
 ; ZVBB-NEXT:    vmsne.vi v8, v8, 0
 ; ZVBB-NEXT:    vmsne.vi v9, v10, 0
 ; ZVBB-NEXT:    vmsne.vi v0, v12, 0
-; ZVBB-NEXT:    vsetvli zero, a0, e8, mf2, ta, ma
-; ZVBB-NEXT:    vslideup.vx v0, v9, a2
-; ZVBB-NEXT:    add a0, a1, a1
-; ZVBB-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
-; ZVBB-NEXT:    vslideup.vx v0, v8, a1
-=======
-; ZVBB-NEXT:    srli a1, a1, 2
-; ZVBB-NEXT:    vmsne.vi v14, v8, 0
-; ZVBB-NEXT:    vmsne.vi v8, v10, 0
-; ZVBB-NEXT:    vmsne.vi v0, v12, 0
 ; ZVBB-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
-; ZVBB-NEXT:    vslideup.vx v0, v8, a1
+; ZVBB-NEXT:    vslideup.vx v0, v9, a1
 ; ZVBB-NEXT:    vsetvli a0, zero, e8, m1, ta, ma
-; ZVBB-NEXT:    vslideup.vx v0, v14, a2
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+; ZVBB-NEXT:    vslideup.vx v0, v8, a2
 ; ZVBB-NEXT:    csrr a0, vlenb
 ; ZVBB-NEXT:    li a1, 6
 ; ZVBB-NEXT:    mul a0, a0, a1
@@ -847,20 +805,11 @@ define <vscale x 64 x i1> @vector_interleave_nxv64i1_nxv16i1(<vscale x 16 x i1> 
 ; CHECK-NEXT:    vmsne.vi v9, v10, 0
 ; CHECK-NEXT:    vmsne.vi v10, v12, 0
 ; CHECK-NEXT:    vmsne.vi v0, v14, 0
-<<<<<<< HEAD
-; CHECK-NEXT:    vsetvli zero, a4, e8, mf2, ta, ma
-; CHECK-NEXT:    vslideup.vx v9, v8, a2
-; CHECK-NEXT:    vslideup.vx v0, v10, a2
-; CHECK-NEXT:    add a0, a1, a1
-; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
-; CHECK-NEXT:    vslideup.vx v0, v9, a1
-=======
 ; CHECK-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
-; CHECK-NEXT:    vslideup.vx v8, v16, a1
-; CHECK-NEXT:    vslideup.vx v0, v9, a1
+; CHECK-NEXT:    vslideup.vx v9, v8, a1
+; CHECK-NEXT:    vslideup.vx v0, v10, a1
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vslideup.vx v0, v8, a2
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+; CHECK-NEXT:    vslideup.vx v0, v9, a2
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add sp, sp, a0
@@ -901,20 +850,11 @@ define <vscale x 64 x i1> @vector_interleave_nxv64i1_nxv16i1(<vscale x 16 x i1> 
 ; ZVBB-NEXT:    vmsne.vi v9, v10, 0
 ; ZVBB-NEXT:    vmsne.vi v10, v12, 0
 ; ZVBB-NEXT:    vmsne.vi v0, v14, 0
-<<<<<<< HEAD
-; ZVBB-NEXT:    vsetvli zero, a4, e8, mf2, ta, ma
-; ZVBB-NEXT:    vslideup.vx v9, v8, a2
-; ZVBB-NEXT:    vslideup.vx v0, v10, a2
-; ZVBB-NEXT:    add a0, a1, a1
-; ZVBB-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
-; ZVBB-NEXT:    vslideup.vx v0, v9, a1
-=======
 ; ZVBB-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
-; ZVBB-NEXT:    vslideup.vx v8, v16, a1
-; ZVBB-NEXT:    vslideup.vx v0, v9, a1
+; ZVBB-NEXT:    vslideup.vx v9, v8, a1
+; ZVBB-NEXT:    vslideup.vx v0, v10, a1
 ; ZVBB-NEXT:    vsetvli a0, zero, e8, m1, ta, ma
-; ZVBB-NEXT:    vslideup.vx v0, v8, a2
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+; ZVBB-NEXT:    vslideup.vx v0, v9, a2
 ; ZVBB-NEXT:    csrr a0, vlenb
 ; ZVBB-NEXT:    slli a0, a0, 3
 ; ZVBB-NEXT:    add sp, sp, a0
@@ -1192,23 +1132,13 @@ define <vscale x 80 x i1> @vector_interleave_nxv80i1_nxv16i1(<vscale x 16 x i1> 
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v8, 0
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
-<<<<<<< HEAD
 ; CHECK-NEXT:    vmsne.vi v9, v14, 0
 ; CHECK-NEXT:    vmsne.vi v10, v12, 0
-; CHECK-NEXT:    vsetvli zero, a2, e8, mf2, ta, ma
-; CHECK-NEXT:    vslideup.vx v0, v8, a3
-; CHECK-NEXT:    vslideup.vx v10, v9, a3
-; CHECK-NEXT:    vsetvli zero, a4, e8, m1, ta, ma
-; CHECK-NEXT:    vslideup.vx v0, v10, a1
-=======
-; CHECK-NEXT:    vmsne.vi v8, v14, 0
-; CHECK-NEXT:    vmsne.vi v9, v12, 0
 ; CHECK-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
-; CHECK-NEXT:    vslideup.vx v0, v18, a1
-; CHECK-NEXT:    vslideup.vx v9, v8, a1
+; CHECK-NEXT:    vslideup.vx v0, v8, a1
+; CHECK-NEXT:    vslideup.vx v10, v9, a1
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vslideup.vx v0, v9, a3
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+; CHECK-NEXT:    vslideup.vx v0, v10, a3
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v16, 0
 ; CHECK-NEXT:    csrr a0, vlenb
@@ -1276,23 +1206,13 @@ define <vscale x 80 x i1> @vector_interleave_nxv80i1_nxv16i1(<vscale x 16 x i1> 
 ; ZVBB-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; ZVBB-NEXT:    vmsne.vi v8, v8, 0
 ; ZVBB-NEXT:    vmsne.vi v0, v10, 0
-<<<<<<< HEAD
 ; ZVBB-NEXT:    vmsne.vi v9, v14, 0
 ; ZVBB-NEXT:    vmsne.vi v10, v12, 0
-; ZVBB-NEXT:    vsetvli zero, a2, e8, mf2, ta, ma
-; ZVBB-NEXT:    vslideup.vx v0, v8, a3
-; ZVBB-NEXT:    vslideup.vx v10, v9, a3
-; ZVBB-NEXT:    vsetvli zero, a4, e8, m1, ta, ma
-; ZVBB-NEXT:    vslideup.vx v0, v10, a1
-=======
-; ZVBB-NEXT:    vmsne.vi v8, v14, 0
-; ZVBB-NEXT:    vmsne.vi v9, v12, 0
 ; ZVBB-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
-; ZVBB-NEXT:    vslideup.vx v0, v18, a1
-; ZVBB-NEXT:    vslideup.vx v9, v8, a1
+; ZVBB-NEXT:    vslideup.vx v0, v8, a1
+; ZVBB-NEXT:    vslideup.vx v10, v9, a1
 ; ZVBB-NEXT:    vsetvli a0, zero, e8, m1, ta, ma
-; ZVBB-NEXT:    vslideup.vx v0, v9, a3
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+; ZVBB-NEXT:    vslideup.vx v0, v10, a3
 ; ZVBB-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; ZVBB-NEXT:    vmsne.vi v8, v16, 0
 ; ZVBB-NEXT:    csrr a0, vlenb
@@ -2446,19 +2366,11 @@ define <vscale x 96 x i1> @vector_interleave_nxv96i1_nxv16i1(<vscale x 16 x i1> 
 ; CHECK-NEXT:    vmsne.vi v8, v14, 0
 ; CHECK-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vslideup.vx v9, v20, a1
-<<<<<<< HEAD
 ; CHECK-NEXT:    vslideup.vx v0, v10, a1
-; CHECK-NEXT:    vsetvli zero, a5, e8, m1, ta, ma
-; CHECK-NEXT:    vslideup.vx v0, v9, a2
-; CHECK-NEXT:    vsetvli zero, a3, e8, mf2, ta, ma
-; CHECK-NEXT:    vslideup.vx v8, v11, a1
-=======
-; CHECK-NEXT:    vslideup.vx v0, v16, a1
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m1, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v9, a3
 ; CHECK-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
-; CHECK-NEXT:    vslideup.vx v8, v10, a1
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+; CHECK-NEXT:    vslideup.vx v8, v11, a1
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    li a1, 12
 ; CHECK-NEXT:    mul a0, a0, a1
@@ -2539,19 +2451,11 @@ define <vscale x 96 x i1> @vector_interleave_nxv96i1_nxv16i1(<vscale x 16 x i1> 
 ; ZVBB-NEXT:    vmsne.vi v8, v14, 0
 ; ZVBB-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
 ; ZVBB-NEXT:    vslideup.vx v9, v20, a1
-<<<<<<< HEAD
 ; ZVBB-NEXT:    vslideup.vx v0, v10, a1
-; ZVBB-NEXT:    vsetvli zero, a5, e8, m1, ta, ma
-; ZVBB-NEXT:    vslideup.vx v0, v9, a2
-; ZVBB-NEXT:    vsetvli zero, a3, e8, mf2, ta, ma
-; ZVBB-NEXT:    vslideup.vx v8, v11, a1
-=======
-; ZVBB-NEXT:    vslideup.vx v0, v16, a1
 ; ZVBB-NEXT:    vsetvli a0, zero, e8, m1, ta, ma
 ; ZVBB-NEXT:    vslideup.vx v0, v9, a3
 ; ZVBB-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
-; ZVBB-NEXT:    vslideup.vx v8, v10, a1
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+; ZVBB-NEXT:    vslideup.vx v8, v11, a1
 ; ZVBB-NEXT:    csrr a0, vlenb
 ; ZVBB-NEXT:    li a1, 12
 ; ZVBB-NEXT:    mul a0, a0, a1
@@ -5655,54 +5559,30 @@ define <vscale x 128 x i1> @vector_interleave_nxv128i1_nxv16i1(<vscale x 16 x i1
 ; CHECK-NEXT:    vl1r.v v9, (a7)
 ; CHECK-NEXT:    vl1r.v v15, (a3)
 ; CHECK-NEXT:    vsetvli a3, zero, e8, m2, ta, ma
-<<<<<<< HEAD
 ; CHECK-NEXT:    vmsne.vi v16, v16, 0
-; CHECK-NEXT:    vmsne.vi v17, v10, 0
-; CHECK-NEXT:    vl1r.v v10, (a6)
-; CHECK-NEXT:    vmsne.vi v20, v12, 0
-=======
-; CHECK-NEXT:    vmsne.vi v20, v16, 0
-; CHECK-NEXT:    vmsne.vi v16, v12, 0
+; CHECK-NEXT:    vmsne.vi v17, v12, 0
 ; CHECK-NEXT:    vl1r.v v12, (a6)
-; CHECK-NEXT:    vmsne.vi v17, v8, 0
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+; CHECK-NEXT:    vmsne.vi v20, v8, 0
 ; CHECK-NEXT:    vmsne.vi v0, v14, 0
-; CHECK-NEXT:    vl1r.v v14, (a1)
+; CHECK-NEXT:    vl1r.v v8, (a1)
 ; CHECK-NEXT:    vl1r.v v19, (a5)
 ; CHECK-NEXT:    vl1r.v v11, (a2)
 ; CHECK-NEXT:    vl1r.v v13, (t0)
-; CHECK-NEXT:    vl1r.v v15, (a4)
-; CHECK-NEXT:    vmsne.vi v9, v18, 0
-<<<<<<< HEAD
+; CHECK-NEXT:    vl1r.v v9, (a4)
+; CHECK-NEXT:    vmsne.vi v14, v18, 0
 ; CHECK-NEXT:    vmsne.vi v10, v10, 0
-; CHECK-NEXT:    vmsne.vi v8, v12, 0
-; CHECK-NEXT:    srli a1, a0, 2
-; CHECK-NEXT:    add a2, a1, a1
-; CHECK-NEXT:    vsetvli zero, a2, e8, mf2, ta, ma
-; CHECK-NEXT:    vslideup.vx v17, v16, a1
-; CHECK-NEXT:    vslideup.vx v0, v20, a1
-; CHECK-NEXT:    vslideup.vx v9, v14, a1
-; CHECK-NEXT:    vslideup.vx v8, v10, a1
-; CHECK-NEXT:    srli a0, a0, 1
-; CHECK-NEXT:    add a1, a0, a0
-; CHECK-NEXT:    vsetvli zero, a1, e8, m1, ta, ma
-; CHECK-NEXT:    vslideup.vx v0, v17, a0
-; CHECK-NEXT:    vslideup.vx v8, v9, a0
-=======
-; CHECK-NEXT:    vmsne.vi v18, v10, 0
-; CHECK-NEXT:    vmsne.vi v10, v12, 0
-; CHECK-NEXT:    vmsne.vi v8, v14, 0
+; CHECK-NEXT:    vmsne.vi v11, v12, 0
+; CHECK-NEXT:    vmsne.vi v8, v8, 0
 ; CHECK-NEXT:    srli a1, a0, 2
 ; CHECK-NEXT:    vsetvli a2, zero, e8, mf2, ta, ma
-; CHECK-NEXT:    vslideup.vx v16, v20, a1
-; CHECK-NEXT:    vslideup.vx v0, v17, a1
-; CHECK-NEXT:    vslideup.vx v18, v9, a1
-; CHECK-NEXT:    vslideup.vx v8, v10, a1
+; CHECK-NEXT:    vslideup.vx v17, v16, a1
+; CHECK-NEXT:    vslideup.vx v0, v20, a1
+; CHECK-NEXT:    vslideup.vx v10, v14, a1
+; CHECK-NEXT:    vslideup.vx v8, v11, a1
 ; CHECK-NEXT:    srli a0, a0, 1
 ; CHECK-NEXT:    vsetvli a1, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vslideup.vx v0, v16, a0
-; CHECK-NEXT:    vslideup.vx v8, v18, a0
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+; CHECK-NEXT:    vslideup.vx v0, v17, a0
+; CHECK-NEXT:    vslideup.vx v8, v10, a0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 4
 ; CHECK-NEXT:    add sp, sp, a0
@@ -5778,54 +5658,30 @@ define <vscale x 128 x i1> @vector_interleave_nxv128i1_nxv16i1(<vscale x 16 x i1
 ; ZVBB-NEXT:    vl1r.v v9, (a7)
 ; ZVBB-NEXT:    vl1r.v v15, (a3)
 ; ZVBB-NEXT:    vsetvli a3, zero, e8, m2, ta, ma
-<<<<<<< HEAD
 ; ZVBB-NEXT:    vmsne.vi v16, v16, 0
-; ZVBB-NEXT:    vmsne.vi v17, v10, 0
-; ZVBB-NEXT:    vl1r.v v10, (a6)
-; ZVBB-NEXT:    vmsne.vi v20, v12, 0
-=======
-; ZVBB-NEXT:    vmsne.vi v20, v16, 0
-; ZVBB-NEXT:    vmsne.vi v16, v12, 0
+; ZVBB-NEXT:    vmsne.vi v17, v12, 0
 ; ZVBB-NEXT:    vl1r.v v12, (a6)
-; ZVBB-NEXT:    vmsne.vi v17, v8, 0
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+; ZVBB-NEXT:    vmsne.vi v20, v8, 0
 ; ZVBB-NEXT:    vmsne.vi v0, v14, 0
-; ZVBB-NEXT:    vl1r.v v14, (a1)
+; ZVBB-NEXT:    vl1r.v v8, (a1)
 ; ZVBB-NEXT:    vl1r.v v19, (a5)
 ; ZVBB-NEXT:    vl1r.v v11, (a2)
 ; ZVBB-NEXT:    vl1r.v v13, (t0)
-; ZVBB-NEXT:    vl1r.v v15, (a4)
-; ZVBB-NEXT:    vmsne.vi v9, v18, 0
-<<<<<<< HEAD
+; ZVBB-NEXT:    vl1r.v v9, (a4)
+; ZVBB-NEXT:    vmsne.vi v14, v18, 0
 ; ZVBB-NEXT:    vmsne.vi v10, v10, 0
-; ZVBB-NEXT:    vmsne.vi v8, v12, 0
-; ZVBB-NEXT:    srli a1, a0, 2
-; ZVBB-NEXT:    add a2, a1, a1
-; ZVBB-NEXT:    vsetvli zero, a2, e8, mf2, ta, ma
-; ZVBB-NEXT:    vslideup.vx v17, v16, a1
-; ZVBB-NEXT:    vslideup.vx v0, v20, a1
-; ZVBB-NEXT:    vslideup.vx v9, v14, a1
-; ZVBB-NEXT:    vslideup.vx v8, v10, a1
-; ZVBB-NEXT:    srli a0, a0, 1
-; ZVBB-NEXT:    add a1, a0, a0
-; ZVBB-NEXT:    vsetvli zero, a1, e8, m1, ta, ma
-; ZVBB-NEXT:    vslideup.vx v0, v17, a0
-; ZVBB-NEXT:    vslideup.vx v8, v9, a0
-=======
-; ZVBB-NEXT:    vmsne.vi v18, v10, 0
-; ZVBB-NEXT:    vmsne.vi v10, v12, 0
-; ZVBB-NEXT:    vmsne.vi v8, v14, 0
+; ZVBB-NEXT:    vmsne.vi v11, v12, 0
+; ZVBB-NEXT:    vmsne.vi v8, v8, 0
 ; ZVBB-NEXT:    srli a1, a0, 2
 ; ZVBB-NEXT:    vsetvli a2, zero, e8, mf2, ta, ma
-; ZVBB-NEXT:    vslideup.vx v16, v20, a1
-; ZVBB-NEXT:    vslideup.vx v0, v17, a1
-; ZVBB-NEXT:    vslideup.vx v18, v9, a1
-; ZVBB-NEXT:    vslideup.vx v8, v10, a1
+; ZVBB-NEXT:    vslideup.vx v17, v16, a1
+; ZVBB-NEXT:    vslideup.vx v0, v20, a1
+; ZVBB-NEXT:    vslideup.vx v10, v14, a1
+; ZVBB-NEXT:    vslideup.vx v8, v11, a1
 ; ZVBB-NEXT:    srli a0, a0, 1
 ; ZVBB-NEXT:    vsetvli a1, zero, e8, m1, ta, ma
-; ZVBB-NEXT:    vslideup.vx v0, v16, a0
-; ZVBB-NEXT:    vslideup.vx v8, v18, a0
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+; ZVBB-NEXT:    vslideup.vx v0, v17, a0
+; ZVBB-NEXT:    vslideup.vx v8, v10, a0
 ; ZVBB-NEXT:    csrr a0, vlenb
 ; ZVBB-NEXT:    slli a0, a0, 4
 ; ZVBB-NEXT:    add sp, sp, a0
