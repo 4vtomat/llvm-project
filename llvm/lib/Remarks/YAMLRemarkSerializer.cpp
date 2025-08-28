@@ -21,21 +21,15 @@ using namespace llvm::remarks;
 
 // Use the same keys whether we use a string table or not (respectively, T is an
 // unsigned or a StringRef).
-<<<<<<< HEAD
-template <typename T>
-static void mapRemarkHeader(yaml::IO &io, T PassName, T RemarkName,
-                            std::optional<RemarkLocation> RL, T FunctionName,
-                            std::optional<uint64_t> Hotness,
-#if SIFIVE_CUSTOMIZATION
-                            std::optional<uint64_t> ProfileCount,
-#endif // SIFIVE_CUSTOMIZATION
-                            ArrayRef<Argument> Args) {
-=======
 static void
 mapRemarkHeader(yaml::IO &io, StringRef PassName, StringRef RemarkName,
                 std::optional<RemarkLocation> RL, StringRef FunctionName,
+#if SIFIVE_CUSTOMIZATION
+                std::optional<uint64_t> Hotness,
+                std::optional<uint64_t> ProfileCount, ArrayRef<Argument> Args) {
+#else
                 std::optional<uint64_t> Hotness, ArrayRef<Argument> Args) {
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+#endif // SIFIVE_CUSTOMIZATION
   io.mapRequired("Pass", PassName);
   io.mapRequired("Name", RemarkName);
   io.mapOptional("DebugLoc", RL);
@@ -71,33 +65,14 @@ template <> struct MappingTraits<remarks::Remark *> {
     else
       llvm_unreachable("Unknown remark type");
 
-<<<<<<< HEAD
-    if (auto *Serializer = dyn_cast<YAMLStrTabRemarkSerializer>(
-            reinterpret_cast<RemarkSerializer *>(io.getContext()))) {
-      assert(Serializer->StrTab && "YAMLStrTabSerializer with no StrTab.");
-      StringTable &StrTab = *Serializer->StrTab;
-      unsigned PassID = StrTab.add(Remark->PassName).first;
-      unsigned NameID = StrTab.add(Remark->RemarkName).first;
-      unsigned FunctionID = StrTab.add(Remark->FunctionName).first;
-      mapRemarkHeader(io, PassID, NameID, Remark->Loc, FunctionID,
 #if SIFIVE_CUSTOMIZATION
-                      Remark->Hotness, Remark->ProfileCount, Remark->Args);
+    mapRemarkHeader(io, Remark->PassName, Remark->RemarkName, Remark->Loc,
+                    Remark->FunctionName, Remark->Hotness, Remark->ProfileCount,
+                    Remark->Args);
 #else
-                      Remark->Hotness, Remark->Args);
-#endif // SIFIVE_CUSTOMIZATION
-    } else {
-      mapRemarkHeader(io, Remark->PassName, Remark->RemarkName, Remark->Loc,
-#if SIFIVE_CUSTOMIZATION
-                      Remark->FunctionName, Remark->Hotness,
-                      Remark->ProfileCount, Remark->Args);
-#else
-                      Remark->FunctionName, Remark->Hotness, Remark->Args);
-#endif // SIFIVE_CUSTOMIZATION
-    }
-=======
     mapRemarkHeader(io, Remark->PassName, Remark->RemarkName, Remark->Loc,
                     Remark->FunctionName, Remark->Hotness, Remark->Args);
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+#endif // SIFIVE_CUSTOMIZATION
   }
 };
 
