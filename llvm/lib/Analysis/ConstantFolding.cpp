@@ -72,13 +72,12 @@ static cl::opt<bool> DisableFPCallFolding(
 namespace {
 
 #if SIFIVE_CUSTOMIZATION
-#define ALL_VECTOR_INTERLEAVE_CASES                   \
-  Intrinsic::vector_interleave2:                      \
-  case Intrinsic::vector_interleave3:    \
-  case Intrinsic::experimental_vector_interleave4:    \
-  case Intrinsic::vector_interleave5:    \
-  case Intrinsic::experimental_vector_interleave6:    \
-  case Intrinsic::vector_interleave7:    \
+#define ALL_VECTOR_INTERLEAVE_CASES                                            \
+  Intrinsic::vector_interleave3                                                \
+      : case Intrinsic::experimental_vector_interleave4:                       \
+  case Intrinsic::vector_interleave5:                                          \
+  case Intrinsic::experimental_vector_interleave6:                             \
+  case Intrinsic::vector_interleave7:                                          \
   case Intrinsic::experimental_vector_interleave8
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -3801,14 +3800,12 @@ static Constant *ConstantFoldFixedVectorCall(
     }
     return nullptr;
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case ALL_VECTOR_INTERLEAVE_CASES:
     if (Constant *NewSplat = constantFoldVectorInterleave(FVTy, Operands))
       return NewSplat;
     break;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case Intrinsic::vector_extract: {
     auto *Idx = dyn_cast<ConstantInt>(Operands[1]);
     Constant *Vec = Operands[0];
@@ -3875,7 +3872,6 @@ static Constant *ConstantFoldFixedVectorCall(
     }
     return ConstantVector::get(Result);
   }
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
   default:
     break;
   }
