@@ -492,17 +492,12 @@ bool VPlanVerifier::verify(const VPlan &Plan) {
     return false;
   }
 
-<<<<<<< HEAD
 // TODO: Remove once loop regions are dissolved before execution.
 #if SIFIVE_CUSTOMIZATION
-  if (!Plan.isUncountable() && !VerifyLate &&
-      !isa<VPCanonicalIVPHIRecipe>(&*Entry->begin())) {
+  if (!Plan.isUncountable() && !isa<VPCanonicalIVPHIRecipe>(&*Entry->begin())) {
 #else
-  if (!VerifyLate && !isa<VPCanonicalIVPHIRecipe>(&*Entry->begin())) {
-#endif
-=======
   if (!isa<VPCanonicalIVPHIRecipe>(&*Entry->begin())) {
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+#endif
     errs() << "VPlan vector loop header does not start with a "
               "VPCanonicalIVPHIRecipe\n";
     return false;
