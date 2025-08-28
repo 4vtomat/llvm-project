@@ -210,17 +210,14 @@ private:
   bool doPeepholeMergeVVMFold();
   bool doPeepholeNoRegPassThru();
   bool performCombineVMergeAndVOps(SDNode *N);
-<<<<<<< HEAD
 
 #if SIFIVE_CUSTOMIZATION
   template <class NodeTy>
   SDValue getAddr(NodeTy *N, SelectionDAG &DAG, bool IsLocal = true,
                   bool IsExternWeak = false) const;
 #endif
-=======
   bool selectImm64IfCheaper(int64_t Imm, int64_t OrigImm, SDValue N,
                             SDValue &Val);
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 };
 
 class RISCVDAGToDAGISelLegacy : public SelectionDAGISelLegacy {
