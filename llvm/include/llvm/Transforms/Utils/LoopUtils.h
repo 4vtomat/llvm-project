@@ -190,23 +190,17 @@ LLVM_ABI bool sinkRegionForLoopNest(DomTreeNode *, AAResults *, LoopInfo *,
 /// Diagnostics is emitted via \p ORE. It returns changed status.
 /// \p AllowSpeculation is whether values should be hoisted even if they are not
 /// guaranteed to execute in the loop, but are safe to speculatively execute.
-<<<<<<< HEAD
-bool hoistRegion(DomTreeNode *, AAResults *, LoopInfo *, DominatorTree *,
-                 AssumptionCache *, TargetLibraryInfo *, Loop *,
-#if SIFIVE_CUSTOMIZATION
-                 LiveValues *, TargetTransformInfo *,
-#endif // SIFIVE_CUSTOMIZATION
-                 MemorySSAUpdater &, ScalarEvolution *, ICFLoopSafetyInfo *,
-                 SinkAndHoistLICMFlags &, OptimizationRemarkEmitter *, bool,
-                 bool AllowSpeculation);
-=======
 LLVM_ABI bool hoistRegion(DomTreeNode *, AAResults *, LoopInfo *,
                           DominatorTree *, AssumptionCache *,
+#if SIFIVE_CUSTOMIZATION
+                          TargetLibraryInfo *, Loop *, LiveValues *,
+                          TargetTransformInfo *, MemorySSAUpdater &,
+#else
                           TargetLibraryInfo *, Loop *, MemorySSAUpdater &,
+#endif // SIFIVE_CUSTOMIZATION
                           ScalarEvolution *, ICFLoopSafetyInfo *,
                           SinkAndHoistLICMFlags &, OptimizationRemarkEmitter *,
                           bool, bool AllowSpeculation);
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 
 /// Return true if the induction variable \p IV in a Loop whose latch is
 /// \p LatchBlock would become dead if the exit test \p Cond were removed.
@@ -391,24 +385,16 @@ LLVM_ABI void getLoopAnalysisUsage(AnalysisUsage &AU);
 /// to assess the legality of duplicating atomic loads.  Generally, this is
 /// true when moving out of loop and not true when moving into loops.
 /// If \p ORE is set use it to emit optimization remarks.
-<<<<<<< HEAD
-bool canSinkOrHoistInst(Instruction &I, AAResults *AA, DominatorTree *DT,
-                        Loop *CurLoop, MemorySSAUpdater &MSSAU,
-                        bool TargetExecutesOncePerLoop,
-                        SinkAndHoistLICMFlags &LICMFlags,
-#if SIFIVE_CUSTOMIZATION
-                        TargetLibraryInfo *TLI,
-                        bool NewStructTBAAPtrHoisting,
-#endif // SIFIVE_CUSTOMIZATION
-                        OptimizationRemarkEmitter *ORE = nullptr);
-=======
 LLVM_ABI bool canSinkOrHoistInst(Instruction &I, AAResults *AA,
                                  DominatorTree *DT, Loop *CurLoop,
                                  MemorySSAUpdater &MSSAU,
                                  bool TargetExecutesOncePerLoop,
                                  SinkAndHoistLICMFlags &LICMFlags,
+#if SIFIVE_CUSTOMIZATION
+                                 TargetLibraryInfo *TLI,
+                                 bool NewStructTBAAPtrHoisting,
+#endif // SIFIVE_CUSTOMIZATION
                                  OptimizationRemarkEmitter *ORE = nullptr);
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 
 /// Returns the llvm.vector.reduce intrinsic that corresponds to the recurrence
 /// kind.
@@ -492,9 +478,8 @@ Value *createAnyOfReduction(IRBuilderBase &B, Value *Src, Value *InitVal,
 
 /// Create a reduction of the given vector \p Src for a reduction of the
 /// kind RecurKind::FindLastIV.
-<<<<<<< HEAD
-Value *createFindLastIVReduction(IRBuilderBase &B, Value *Src, Value *Start,
-                                 Value *Sentinel);
+LLVM_ABI Value *createFindLastIVReduction(IRBuilderBase &B, Value *Src,
+                                          Value *Start, Value *Sentinel);
 #if SIFIVE_CUSTOMIZATION
 /// Allow \p Mask when folding by \p EVL. The mask is all-true if \p Mask is
 /// nullptr.
@@ -502,10 +487,6 @@ Value *createFindLastIVReduction(IRBuilderBase &B, Value *Src, Value *Start,
                                  Value *Sentinel, Value *EVL,
                                  Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-LLVM_ABI Value *createFindLastIVReduction(IRBuilderBase &B, Value *Src,
-                                          Value *Start, Value *Sentinel);
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 
 /// Create an ordered reduction intrinsic using the given recurrence
 /// kind \p RdxKind.
