@@ -1408,36 +1408,18 @@ bool llvm::canSinkOrHoistInst(Instruction &I, AAResults *AA, DominatorTree *DT,
     if (Behavior.doesNotAccessMemory())
       return true;
     if (Behavior.onlyReadsMemory()) {
-<<<<<<< HEAD
-      // A readonly argmemonly function only reads from memory pointed to by
-      // it's arguments with arbitrary offsets.  If we can prove there are no
-      // writes to this memory in the loop, we can hoist or sink.
-      if (Behavior.onlyAccessesArgPointees()) {
-        // TODO: expand to writeable arguments
-        for (Value *Op : CI->args())
-          if (Op->getType()->isPointerTy() &&
-              pointerInvalidatedByLoop(
-                  MSSA, cast<MemoryUse>(MSSA->getMemoryAccess(CI)), CurLoop, I,
-#if SIFIVE_CUSTOMIZATION
-                  /*NewStructTBAAPtrContext=*/false,
-                  TLI,
-#endif // SIFIVE_CUSTOMIZATION
-		  Flags, /*InvariantGroup=*/false))
-            return false;
-        return true;
-      }
-
-      // If this call only reads from memory and there are no writes to memory
-      // in the loop, we can hoist or sink the call as appropriate.
-      if (isReadOnly(MSSAU, CurLoop))
-        return true;
-=======
       // If we can prove there are no writes to the memory read by the call, we
       // can hoist or sink.
+#if SIFIVE_CUSTOMIZATION
+      return !pointerInvalidatedByLoop(
+          MSSA, cast<MemoryUse>(MSSA->getMemoryAccess(CI)), CurLoop, I,
+          /*NewStructTBAAPtrContext=*/false, TLI, Flags,
+          /*InvariantGroup=*/false);
+#else
       return !pointerInvalidatedByLoop(
           MSSA, cast<MemoryUse>(MSSA->getMemoryAccess(CI)), CurLoop, I, Flags,
           /*InvariantGroup=*/false);
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
+#endif // SIFIVE_CUSTOMIZATION
     }
 
     if (Behavior.onlyWritesMemory()) {
