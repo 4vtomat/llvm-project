@@ -6988,25 +6988,6 @@ static Value *simplifyIntrinsic(CallBase *Call, Value *Callee,
                             *FPI->getExceptionBehavior(),
                             *FPI->getRoundingMode());
   }
-#if SIFIVE_CUSTOMIZATION
-  case Intrinsic::experimental_vp_reverse: {
-    Value *Op0 = Call->getArgOperand(0);
-    Value *VL = Call->getArgOperand(2);
-
-    // experimental.vp.reverse(xperimental.vp.reverse(X), ...) -> x
-    // if VL matches.
-    Value *X;
-    if (match(Op0, m_Intrinsic<Intrinsic::experimental_vp_reverse>(
-                       m_Value(X), m_Value(), m_Specific(VL))))
-      return X;
-
-    // experimental.vp.reverse(splat(X), ...) -> splat(x)
-    if (isSplatValue(Op0))
-      return Op0;
-
-    return nullptr;
-  }
-#endif // SIFIVE_CUSTOMIZATION
   case Intrinsic::experimental_constrained_ldexp:
     return simplifyLdexp(Args[0], Args[1], Q, true);
   case Intrinsic::experimental_gc_relocate: {
