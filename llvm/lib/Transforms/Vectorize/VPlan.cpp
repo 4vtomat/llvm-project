@@ -1289,17 +1289,9 @@ void VPlan::execute(VPTransformState *State) {
       // consistent placement of all induction updates.
       Instruction *Inc = cast<Instruction>(Phi->getIncomingValue(1));
       Inc->moveBefore(std::prev(VectorLatchBB->getTerminator()->getIterator()));
-<<<<<<< HEAD
-
-      // Use the steps for the last part as backedge value for the induction.
-      if (auto *IV = dyn_cast<VPWidenIntOrFpInductionRecipe>(&R))
-        Inc->setOperand(0, State->get(IV->getLastUnrolledPartOperand()));
-
 #if SIFIVE_CUSTOMIZATION
       moveStepComputationsToIVUpdate(State, R, Inc);
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
       continue;
     }
 
