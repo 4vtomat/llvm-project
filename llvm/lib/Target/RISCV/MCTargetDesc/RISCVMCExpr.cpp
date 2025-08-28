@@ -42,7 +42,6 @@ RISCV::Specifier RISCV::parseSpecifierName(StringRef name) {
       .Case("tlsdesc_load_lo", ELF::R_RISCV_TLSDESC_LOAD_LO12)
       .Case("tlsdesc_add_lo", ELF::R_RISCV_TLSDESC_ADD_LO12)
       .Case("tlsdesc_call", ELF::R_RISCV_TLSDESC_CALL)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       .Case("gprel_lo", VK_GPREL_LO)
       .Case("gprel_hi", VK_GPREL_HI)
@@ -57,10 +56,7 @@ RISCV::Specifier RISCV::parseSpecifierName(StringRef name) {
       .Case("tls_gd_gprel_hi", VK_TLS_GD_GPREL_HI)
       .Case("tls_gd_gprel", VK_TLS_GD_GPREL_ADD)
 #endif // SIFIVE_CUSTOMIZATION
-      .Case("qc.abs20", VK_QC_ABS20)
-=======
       .Case("qc.abs20", RISCV::S_QC_ABS20)
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
       // Used in data directives
       .Case("pltpcrel", ELF::R_RISCV_PLT32)
       .Case("gotpcrel", ELF::R_RISCV_GOT32_PCREL)
