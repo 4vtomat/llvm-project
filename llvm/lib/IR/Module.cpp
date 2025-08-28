@@ -39,6 +39,7 @@
 #include "llvm/IR/ValueSymbolTable.h"
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/CodeGen.h"
+#include "llvm/Support/Compiler.h"
 #include "llvm/Support/Error.h"
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/Path.h"
@@ -53,21 +54,24 @@
 
 using namespace llvm;
 
+<<<<<<< HEAD
 extern cl::opt<bool> UseNewDbgInfoFormat;
 
 #if SIFIVE_CUSTOMIZATION
 extern cl::opt<bool> DisableProfMetadata;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 //===----------------------------------------------------------------------===//
 // Methods to implement the globals and functions lists.
 //
 
 // Explicit instantiations of SymbolTableListTraits since some of the methods
 // are not in the public header file.
-template class llvm::SymbolTableListTraits<Function>;
-template class llvm::SymbolTableListTraits<GlobalVariable>;
-template class llvm::SymbolTableListTraits<GlobalAlias>;
-template class llvm::SymbolTableListTraits<GlobalIFunc>;
+template class LLVM_EXPORT_TEMPLATE llvm::SymbolTableListTraits<Function>;
+template class LLVM_EXPORT_TEMPLATE llvm::SymbolTableListTraits<GlobalVariable>;
+template class LLVM_EXPORT_TEMPLATE llvm::SymbolTableListTraits<GlobalAlias>;
+template class LLVM_EXPORT_TEMPLATE llvm::SymbolTableListTraits<GlobalIFunc>;
 
 //===----------------------------------------------------------------------===//
 // Primitive Module methods.
@@ -76,7 +80,7 @@ template class llvm::SymbolTableListTraits<GlobalIFunc>;
 Module::Module(StringRef MID, LLVMContext &C)
     : Context(C), ValSymTab(std::make_unique<ValueSymbolTable>(-1)),
       ModuleID(std::string(MID)), SourceFileName(std::string(MID)),
-      IsNewDbgInfoFormat(UseNewDbgInfoFormat) {
+      IsNewDbgInfoFormat(true) {
   Context.addModule(this);
 }
 
@@ -253,12 +257,9 @@ GlobalVariable *Module::getGlobalVariable(StringRef Name,
 }
 
 /// getOrInsertGlobal - Look up the specified global in the module symbol table.
-///   1. If it does not exist, add a declaration of the global and return it.
-///   2. Else, the global exists but has the wrong type: return the function
-///      with a constantexpr cast to the right type.
-///   3. Finally, if the existing global is the correct declaration, return the
-///      existing global.
-Constant *Module::getOrInsertGlobal(
+/// If it does not exist, add a declaration of the global and return it.
+/// Otherwise, return the existing global.
+GlobalVariable *Module::getOrInsertGlobal(
     StringRef Name, Type *Ty,
     function_ref<GlobalVariable *()> CreateGlobalCallback) {
   // See if we have a definition for the specified global already.
@@ -272,7 +273,7 @@ Constant *Module::getOrInsertGlobal(
 }
 
 // Overload to construct a global variable using its constructor's defaults.
-Constant *Module::getOrInsertGlobal(StringRef Name, Type *Ty) {
+GlobalVariable *Module::getOrInsertGlobal(StringRef Name, Type *Ty) {
   return getOrInsertGlobal(Name, Ty, [&] {
     return new GlobalVariable(*this, Ty, false, GlobalVariable::ExternalLinkage,
                               nullptr, Name);

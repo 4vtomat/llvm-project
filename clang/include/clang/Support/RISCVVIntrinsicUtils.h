@@ -11,7 +11,6 @@
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/BitmaskEnum.h"
-#include "llvm/ADT/Bitset.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Support/MathExtras.h" // SIFIVE
@@ -531,6 +530,7 @@ public:
                                    Policy &PolicyAttrs, bool HasFRMRoundModeOp);
 };
 
+<<<<<<< HEAD
 // RVVRequire should be sync'ed with target features, but only
 // required features used in riscv_vector.td.
 enum RVVRequire {
@@ -594,6 +594,8 @@ struct RequiredExtensionBits {
 llvm::raw_ostream &operator<<(llvm::raw_ostream &OS,
                               const RequiredExtensionBits &Exts);
 
+=======
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 // Raw RVV intrinsic info, used to expand later.
 // This struct is highly compact for minimized code size.
 struct RVVIntrinsicRecord {
@@ -605,7 +607,7 @@ struct RVVIntrinsicRecord {
   const char *OverloadedName;
 
   // Required target features for this intrinsic.
-  RequiredExtensionBits RequiredExtensions;
+  const char *RequiredExtensions;
 
   // Prototype for this intrinsic, index of RVVSignatureTable.
   uint16_t PrototypeIndex;

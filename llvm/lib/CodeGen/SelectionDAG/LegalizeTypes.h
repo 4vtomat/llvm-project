@@ -435,6 +435,7 @@ private:
   SDValue PromoteIntOp_VP_SPLICE(SDNode *N, unsigned OpNo);
   SDValue PromoteIntOp_VECTOR_HISTOGRAM(SDNode *N, unsigned OpNo);
   SDValue PromoteIntOp_VECTOR_FIND_LAST_ACTIVE(SDNode *N, unsigned OpNo);
+  SDValue PromoteIntOp_GET_ACTIVE_LANE_MASK(SDNode *N);
   SDValue PromoteIntOp_PARTIAL_REDUCE_MLA(SDNode *N);
 
   void SExtOrZExtPromotedOperands(SDValue &LHS, SDValue &RHS);
@@ -653,6 +654,7 @@ private:
   SDValue SoftenFloatOp_STORE(SDNode *N, unsigned OpNo);
   SDValue SoftenFloatOp_ATOMIC_STORE(SDNode *N, unsigned OpNo);
   SDValue SoftenFloatOp_FCOPYSIGN(SDNode *N);
+  SDValue SoftenFloatOp_FAKE_USE(SDNode *N);
 
   //===--------------------------------------------------------------------===//
   // Float Expansion Support: LegalizeFloatTypes.cpp
@@ -992,6 +994,7 @@ private:
 #endif
   void SplitVecRes_VP_REVERSE(SDNode *N, SDValue &Lo, SDValue &Hi);
   void SplitVecRes_PARTIAL_REDUCE_MLA(SDNode *N, SDValue &Lo, SDValue &Hi);
+  void SplitVecRes_GET_ACTIVE_LANE_MASK(SDNode *N, SDValue &Lo, SDValue &Hi);
 
   // Vector Operand Splitting: <128 x ty> -> 2 x <64 x ty>.
   bool SplitVectorOperand(SDNode *N, unsigned OpNo);
@@ -1092,6 +1095,7 @@ private:
   SDValue WidenVecRes_UNDEF(SDNode *N);
   SDValue WidenVecRes_VECTOR_SHUFFLE(ShuffleVectorSDNode *N);
   SDValue WidenVecRes_VECTOR_REVERSE(SDNode *N);
+  SDValue WidenVecRes_GET_ACTIVE_LANE_MASK(SDNode *N);
 
   SDValue WidenVecRes_Ternary(SDNode *N);
   SDValue WidenVecRes_Binary(SDNode *N);

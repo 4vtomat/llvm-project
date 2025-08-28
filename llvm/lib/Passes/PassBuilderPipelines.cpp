@@ -24,7 +24,6 @@
 #include "llvm/Analysis/ProfileSummaryInfo.h"
 #include "llvm/Analysis/ScopedNoAliasAA.h"
 #include "llvm/Analysis/TypeBasedAliasAnalysis.h"
-#include "llvm/CodeGen/GlobalMergeFunctions.h"
 #include "llvm/IR/PassManager.h"
 #include "llvm/Pass.h"
 #include "llvm/Passes/OptimizationLevel.h"
@@ -80,10 +79,15 @@
 #include "llvm/Transforms/Instrumentation/CGProfile.h"
 #include "llvm/Transforms/Instrumentation/ControlHeightReduction.h"
 #include "llvm/Transforms/Instrumentation/InstrProfiling.h"
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/Transforms/Instrumentation/SiFive_LoopCountProfiler.h"
 #endif // SIFIVE_CUSTOMIZATION
 #include "llvm/Transforms/Instrumentation/MemProfiler.h"
+=======
+#include "llvm/Transforms/Instrumentation/MemProfInstrumentation.h"
+#include "llvm/Transforms/Instrumentation/MemProfUse.h"
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 #include "llvm/Transforms/Instrumentation/PGOCtxProfFlattening.h"
 #include "llvm/Transforms/Instrumentation/PGOCtxProfLowering.h"
 #include "llvm/Transforms/Instrumentation/PGOForceFunctionAttrs.h"
@@ -154,7 +158,6 @@
 #include "llvm/Transforms/Utils/NameAnonGlobals.h"
 #include "llvm/Transforms/Utils/RelLookupTableConverter.h"
 #include "llvm/Transforms/Utils/SimplifyCFGOptions.h"
-#include "llvm/Transforms/Vectorize/EVLIndVarSimplify.h"
 #include "llvm/Transforms/Vectorize/LoopVectorize.h"
 #include "llvm/Transforms/Vectorize/SLPVectorizer.h"
 #include "llvm/Transforms/Vectorize/VectorCombine.h"
@@ -1358,6 +1361,9 @@ PassBuilder::buildModuleSimplificationPipeline(OptimizationLevel Level,
   // Remove any dead arguments exposed by cleanups, constant folding globals,
   // and argument promotion.
   MPM.addPass(DeadArgumentEliminationPass());
+
+  if (Phase == ThinOrFullLTOPhase::ThinLTOPostLink)
+    MPM.addPass(SimplifyTypeTestsPass());
 
   if (Phase != ThinOrFullLTOPhase::ThinLTOPreLink)
     MPM.addPass(CoroCleanupPass());

@@ -13,11 +13,17 @@ define void @small_trip_count_min_vlen_128(ptr nocapture %a) nounwind vscale_ran
 ; CHECK-NEXT:    [[N_VEC:%.*]] = sub i32 [[N_RND_UP]], [[N_MOD_VF]]
 ; CHECK-NEXT:    br label [[LOOP:%.*]]
 ; CHECK:       vector.body:
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = call <vscale x 1 x i1> @llvm.get.active.lane.mask.nxv1i1.i32(i32 0, i32 4)
 ; CHECK-NEXT:    [[TMP0:%.*]] = getelementptr inbounds i32, ptr [[TMP4:%.*]], i32 0
 ; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[TMP0]], i32 0
 ; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 1 x i32> @llvm.masked.load.nxv1i32.p0(ptr [[TMP1]], i32 4, <vscale x 1 x i1> [[ACTIVE_LANE_MASK]], <vscale x 1 x i32> poison)
 ; CHECK-NEXT:    [[TMP6:%.*]] = add nsw <vscale x 1 x i32> [[WIDE_MASKED_LOAD]], splat (i32 1)
+=======
+; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[TMP0:%.*]], i32 0
+; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i32>, ptr [[TMP1]], align 4
+; CHECK-NEXT:    [[TMP2:%.*]] = add nsw <4 x i32> [[WIDE_LOAD]], splat (i32 1)
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[TMP0]], i32 0
 ; CHECK-NEXT:    call void @llvm.masked.store.nxv1i32.p0(<vscale x 1 x i32> [[TMP6]], ptr [[TMP3]], i32 4, <vscale x 1 x i1> [[ACTIVE_LANE_MASK]])
 ; CHECK-NEXT:    br label [[MIDDLE_BLOCK:%.*]]
@@ -28,7 +34,7 @@ define void @small_trip_count_min_vlen_128(ptr nocapture %a) nounwind vscale_ran
 ; CHECK-NEXT:    br label [[LOOP1:%.*]]
 ; CHECK:       loop:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i32 [ [[IV_NEXT:%.*]], [[LOOP1]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
-; CHECK-NEXT:    [[GEP:%.*]] = getelementptr inbounds i32, ptr [[TMP4]], i32 [[IV]]
+; CHECK-NEXT:    [[GEP:%.*]] = getelementptr inbounds i32, ptr [[TMP0]], i32 [[IV]]
 ; CHECK-NEXT:    [[V:%.*]] = load i32, ptr [[GEP]], align 4
 ; CHECK-NEXT:    [[ADD:%.*]] = add nsw i32 [[V]], 1
 ; CHECK-NEXT:    store i32 [[ADD]], ptr [[GEP]], align 4
@@ -68,11 +74,17 @@ define void @small_trip_count_min_vlen_32(ptr nocapture %a) nounwind vscale_rang
 ; CHECK-NEXT:    [[N_VEC:%.*]] = sub i32 [[N_RND_UP]], [[N_MOD_VF]]
 ; CHECK-NEXT:    br label [[LOOP:%.*]]
 ; CHECK:       vector.body:
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i32(i32 0, i32 4)
 ; CHECK-NEXT:    [[TMP0:%.*]] = getelementptr inbounds i32, ptr [[TMP6:%.*]], i32 0
 ; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[TMP0]], i32 0
 ; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 4 x i32> @llvm.masked.load.nxv4i32.p0(ptr [[TMP1]], i32 4, <vscale x 4 x i1> [[ACTIVE_LANE_MASK]], <vscale x 4 x i32> poison)
 ; CHECK-NEXT:    [[TMP5:%.*]] = add nsw <vscale x 4 x i32> [[WIDE_MASKED_LOAD]], splat (i32 1)
+=======
+; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[TMP0:%.*]], i32 0
+; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i32>, ptr [[TMP1]], align 4
+; CHECK-NEXT:    [[TMP2:%.*]] = add nsw <4 x i32> [[WIDE_LOAD]], splat (i32 1)
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[TMP0]], i32 0
 ; CHECK-NEXT:    call void @llvm.masked.store.nxv4i32.p0(<vscale x 4 x i32> [[TMP5]], ptr [[TMP3]], i32 4, <vscale x 4 x i1> [[ACTIVE_LANE_MASK]])
 ; CHECK-NEXT:    br label [[MIDDLE_BLOCK:%.*]]
@@ -83,7 +95,7 @@ define void @small_trip_count_min_vlen_32(ptr nocapture %a) nounwind vscale_rang
 ; CHECK-NEXT:    br label [[LOOP1:%.*]]
 ; CHECK:       loop:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i32 [ [[IV_NEXT:%.*]], [[LOOP1]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
-; CHECK-NEXT:    [[GEP:%.*]] = getelementptr inbounds i32, ptr [[TMP6]], i32 [[IV]]
+; CHECK-NEXT:    [[GEP:%.*]] = getelementptr inbounds i32, ptr [[TMP0]], i32 [[IV]]
 ; CHECK-NEXT:    [[V:%.*]] = load i32, ptr [[GEP]], align 4
 ; CHECK-NEXT:    [[ADD:%.*]] = add nsw i32 [[V]], 1
 ; CHECK-NEXT:    store i32 [[ADD]], ptr [[GEP]], align 4

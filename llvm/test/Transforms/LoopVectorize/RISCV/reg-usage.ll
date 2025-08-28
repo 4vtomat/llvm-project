@@ -1,4 +1,5 @@
 ; REQUIRES: asserts
+<<<<<<< HEAD
 ; RUN: opt -riscv-use-vla-vectorizer=false -passes=loop-vectorize -mtriple riscv64-linux-gnu \
 ; RUN:   -mattr=+v,+d -debug-only=loop-vectorize --disable-output \
 ; RUN:   -riscv-v-vector-bits-min=128 -force-vector-width=1 \
@@ -17,6 +18,26 @@
 ; RUN:   -S < %s 2>&1 | FileCheck %s --check-prefix=CHECK-LMUL4
 ; RUN: opt -riscv-use-vla-vectorizer=false -passes=loop-vectorize -mtriple riscv64-linux-gnu \
 ; RUN:   -mattr=+v,+d -debug-only=loop-vectorize --disable-output \
+=======
+; RUN: opt -passes=loop-vectorize -mtriple riscv64-linux-gnu \
+; RUN:   -mattr=+v,+d -debug-only=loop-vectorize,vplan --disable-output \
+; RUN:   -riscv-v-vector-bits-min=128 -force-vector-width=1 \
+; RUN:   -S < %s 2>&1 | FileCheck %s --check-prefix=CHECK-SCALAR
+; RUN: opt -passes=loop-vectorize -mtriple riscv64-linux-gnu \
+; RUN:   -mattr=+v,+d -debug-only=loop-vectorize,vplan --disable-output \
+; RUN:   -riscv-v-vector-bits-min=128 -riscv-v-register-bit-width-lmul=1 \
+; RUN:   -S < %s 2>&1 | FileCheck %s --check-prefix=CHECK-LMUL1
+; RUN: opt -passes=loop-vectorize -mtriple riscv64-linux-gnu \
+; RUN:   -mattr=+v,+d -debug-only=loop-vectorize,vplan --disable-output \
+; RUN:   -riscv-v-vector-bits-min=128 -riscv-v-register-bit-width-lmul=2 \
+; RUN:   -S < %s 2>&1 | FileCheck %s --check-prefix=CHECK-LMUL2
+; RUN: opt -passes=loop-vectorize -mtriple riscv64-linux-gnu \
+; RUN:   -mattr=+v,+d -debug-only=loop-vectorize,vplan --disable-output \
+; RUN:   -riscv-v-vector-bits-min=128 -riscv-v-register-bit-width-lmul=4 \
+; RUN:   -S < %s 2>&1 | FileCheck %s --check-prefix=CHECK-LMUL4
+; RUN: opt -passes=loop-vectorize -mtriple riscv64-linux-gnu \
+; RUN:   -mattr=+v,+d -debug-only=loop-vectorize,vplan --disable-output \
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 ; RUN:   -riscv-v-vector-bits-min=128 -riscv-v-register-bit-width-lmul=8 \
 ; RUN:   -S < %s 2>&1 | FileCheck %s --check-prefix=CHECK-LMUL8
 

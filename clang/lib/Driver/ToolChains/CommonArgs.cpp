@@ -6,7 +6,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "CommonArgs.h"
+#include "clang/Driver/CommonArgs.h"
 #include "Arch/AArch64.h"
 #include "Arch/ARM.h"
 #include "Arch/CSKY.h"
@@ -19,21 +19,15 @@
 #include "Arch/SystemZ.h"
 #include "Arch/VE.h"
 #include "Arch/X86.h"
-#include "BareMetal.h"
 #include "HIPAMD.h"
 #include "Hexagon.h"
 #include "MSP430.h"
 #include "Solaris.h"
-#include "clang/Basic/CharInfo.h"
 #include "clang/Basic/CodeGenOptions.h"
-#include "clang/Basic/LangOptions.h"
-#include "clang/Basic/ObjCRuntime.h"
-#include "clang/Basic/Version.h"
 #include "clang/Config/config.h"
 #include "clang/Driver/Action.h"
 #include "clang/Driver/Compilation.h"
 #include "clang/Driver/Driver.h"
-#include "clang/Driver/DriverDiagnostic.h"
 #include "clang/Driver/InputInfo.h"
 #include "clang/Driver/Job.h"
 #include "clang/Driver/Options.h"
@@ -54,13 +48,11 @@
 #include "llvm/Option/Option.h"
 #include "llvm/Support/CodeGen.h"
 #include "llvm/Support/Compression.h"
-#include "llvm/Support/Debug.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/Path.h"
 #include "llvm/Support/Process.h"
 #include "llvm/Support/Program.h"
-#include "llvm/Support/ScopedPrinter.h"
 #include "llvm/Support/Threading.h"
 #include "llvm/Support/VirtualFileSystem.h"
 #include "llvm/Support/YAMLParser.h"
@@ -2837,7 +2829,7 @@ void tools::addOpenMPDeviceRTL(const Driver &D,
 
   StringRef ArchPrefix = Triple.isAMDGCN()  ? "amdgpu"
                          : Triple.isNVPTX() ? "nvptx"
-                                            : "spirv64";
+                                            : "spirv";
   std::string LibOmpTargetName = ("libomptarget-" + ArchPrefix + ".bc").str();
 
   // First check whether user specifies bc library
@@ -3204,4 +3196,26 @@ void tools::handleInterchangeLoopsArgs(const ArgList &Args,
   if (Args.hasFlag(options::OPT_floop_interchange, InterchangeAliasOption,
                    options::OPT_fno_loop_interchange, EnableInterchange))
     CmdArgs.push_back("-floop-interchange");
+}
+
+// Parse -mprefer-vector-width=. Return the Value string if well-formed.
+// Otherwise, return an empty string and issue a diagnosic message if needed.
+StringRef tools::ParseMPreferVectorWidthOption(clang::DiagnosticsEngine &Diags,
+                                               const llvm::opt::ArgList &Args) {
+  Arg *A = Args.getLastArg(clang::driver::options::OPT_mprefer_vector_width_EQ);
+  if (!A)
+    return "";
+
+  StringRef Value = A->getValue();
+  unsigned Width LLVM_ATTRIBUTE_UNINITIALIZED;
+
+  // Only "none" and Integer values are accepted by
+  // -mprefer-vector-width=<value>.
+  if (Value != "none" && Value.getAsInteger(10, Width)) {
+    Diags.Report(clang::diag::err_drv_invalid_value)
+        << A->getOption().getName() << Value;
+    return "";
+  }
+
+  return Value;
 }

@@ -440,6 +440,7 @@ Value *createSimpleReduction(IRBuilderBase &B, Value *Src,
 /// reduction.
 Value *createSimpleReduction(VectorBuilder &VB, Value *Src, RecurKind RdxKind);
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 /// Create a target reduction of the given vector. The reduction operation
 /// is described by the \p Opcode parameter. min/max reductions require
@@ -456,6 +457,11 @@ Value *createSimpleReduction(IRBuilderBase &B, Value *Src, RecurKind RdxKind,
 /// described by \p Desc.
 Value *createAnyOfReduction(IRBuilderBase &B, Value *Src,
                             const RecurrenceDescriptor &Desc,
+=======
+/// Create a reduction of the given vector \p Src for a reduction of kind
+/// RecurKind::AnyOf. The start value of the reduction is \p InitVal.
+Value *createAnyOfReduction(IRBuilderBase &B, Value *Src, Value *InitVal,
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
                             PHINode *OrigPhi);
 
 #if SIFIVE_CUSTOMIZATION
@@ -465,9 +471,9 @@ Value *createAnyOfReduction(IRBuilderBase &B, Value *Src,
 #endif // SIFIVE_CUSTOMIZATION
 
 /// Create a reduction of the given vector \p Src for a reduction of the
-/// kind RecurKind::IFindLastIV or RecurKind::FFindLastIV. The reduction
-/// operation is described by \p Desc.
+/// kind RecurKind::FindLastIV.
 Value *createFindLastIVReduction(IRBuilderBase &B, Value *Src, Value *Start,
+<<<<<<< HEAD
                                  const RecurrenceDescriptor &Desc);
 #if SIFIVE_CUSTOMIZATION
 /// Allow \p Mask when folding by \p EVL. The mask is all-true if \p Mask is
@@ -476,6 +482,9 @@ Value *createFindLastIVReduction(IRBuilderBase &B, Value *Src,
                                  const RecurrenceDescriptor &Desc, Value *EVL,
                                  Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+                                 Value *Sentinel);
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 
 /// Create an ordered reduction intrinsic using the given recurrence
 /// kind \p RdxKind.

@@ -6,7 +6,19 @@ define i64 @peel_single_block_loop_iv_step_1() {
 ; CHECK-NEXT:  [[ENTRY:.*]]:
 ; CHECK-NEXT:    br label %[[LOOP:.*]]
 ; CHECK:       [[LOOP]]:
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, %[[ENTRY]] ], [ [[IV_NEXT:%.*]], %[[LOOP]] ]
+=======
+; CHECK-NEXT:    [[IV1:%.*]] = phi i64 [ 0, %[[ENTRY]] ], [ [[IV_NEXT1:%.*]], %[[LOOP]] ]
+; CHECK-NEXT:    call void @foo(i32 20)
+; CHECK-NEXT:    [[IV_NEXT1]] = add nuw nsw i64 [[IV1]], 1
+; CHECK-NEXT:    [[EC1:%.*]] = icmp ne i64 [[IV_NEXT1]], 63
+; CHECK-NEXT:    br i1 [[EC1]], label %[[LOOP]], label %[[EXIT_PEEL_BEGIN:.*]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK:       [[EXIT_PEEL_BEGIN]]:
+; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ [[IV_NEXT1]], %[[LOOP]] ]
+; CHECK-NEXT:    br label %[[LOOP_PEEL:.*]]
+; CHECK:       [[LOOP_PEEL]]:
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 ; CHECK-NEXT:    [[CMP18_NOT:%.*]] = icmp eq i64 [[IV]], 63
 ; CHECK-NEXT:    [[COND:%.*]] = select i1 [[CMP18_NOT]], i32 10, i32 20
 ; CHECK-NEXT:    call void @foo(i32 [[COND]])
@@ -73,7 +85,19 @@ define i64 @peel_single_block_loop_iv_step_1_eq_pred() {
 ; CHECK-NEXT:  [[ENTRY:.*]]:
 ; CHECK-NEXT:    br label %[[LOOP:.*]]
 ; CHECK:       [[LOOP]]:
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[IV_NEXT_LCSSA:%.*]] = phi i64 [ 0, %[[ENTRY]] ], [ [[IV_NEXT:%.*]], %[[LOOP]] ]
+=======
+; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, %[[ENTRY]] ], [ [[IV_LCSSA:%.*]], %[[LOOP]] ]
+; CHECK-NEXT:    call void @foo(i32 20)
+; CHECK-NEXT:    [[IV_LCSSA]] = add nuw nsw i64 [[IV]], 1
+; CHECK-NEXT:    [[CMP_PEEL:%.*]] = icmp eq i64 [[IV_LCSSA]], 63
+; CHECK-NEXT:    br i1 [[CMP_PEEL]], label %[[EXIT_PEEL_BEGIN:.*]], label %[[LOOP]], !llvm.loop [[LOOP2:![0-9]+]]
+; CHECK:       [[EXIT_PEEL_BEGIN]]:
+; CHECK-NEXT:    [[IV_NEXT_LCSSA:%.*]] = phi i64 [ [[IV_LCSSA]], %[[LOOP]] ]
+; CHECK-NEXT:    br label %[[LOOP_PEEL:.*]]
+; CHECK:       [[LOOP_PEEL]]:
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 ; CHECK-NEXT:    [[CMP_PEEL1:%.*]] = icmp eq i64 [[IV_NEXT_LCSSA]], 63
 ; CHECK-NEXT:    [[COND:%.*]] = select i1 [[CMP_PEEL1]], i32 10, i32 20
 ; CHECK-NEXT:    call void @foo(i32 [[COND]])
@@ -140,7 +164,19 @@ define i64 @peel_single_block_loop_iv_step_1_nested_loop() {
 ; CHECK-NEXT:    [[OUTER_IV:%.*]] = phi i64 [ 0, %[[ENTRY]] ], [ [[OUTER_IV_NEXT:%.*]], %[[OUTER_LATCH:.*]] ]
 ; CHECK-NEXT:    br label %[[LOOP:.*]]
 ; CHECK:       [[LOOP]]:
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[IV_NEXT_LCSSA:%.*]] = phi i64 [ 0, %[[OUTER_HEADER]] ], [ [[IV_NEXT_PEEL:%.*]], %[[LOOP]] ]
+=======
+; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, %[[OUTER_HEADER]] ], [ [[IV_NEXT:%.*]], %[[LOOP]] ]
+; CHECK-NEXT:    call void @foo(i32 20)
+; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
+; CHECK-NEXT:    [[EC:%.*]] = icmp ne i64 [[IV_NEXT]], 63
+; CHECK-NEXT:    br i1 [[EC]], label %[[LOOP]], label %[[OUTER_LATCH_PEEL_BEGIN:.*]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK:       [[OUTER_LATCH_PEEL_BEGIN]]:
+; CHECK-NEXT:    [[IV_NEXT_LCSSA:%.*]] = phi i64 [ [[IV_NEXT]], %[[LOOP]] ]
+; CHECK-NEXT:    br label %[[LOOP_PEEL:.*]]
+; CHECK:       [[LOOP_PEEL]]:
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 ; CHECK-NEXT:    [[CMP_PEEL:%.*]] = icmp eq i64 [[IV_NEXT_LCSSA]], 63
 ; CHECK-NEXT:    [[COND_PEEL:%.*]] = select i1 [[CMP_PEEL]], i32 10, i32 20
 ; CHECK-NEXT:    call void @foo(i32 [[COND_PEEL]])
@@ -188,7 +224,25 @@ define i64 @peel_multi_block_loop_iv_step_1() {
 ; CHECK-NEXT:  [[ENTRY:.*]]:
 ; CHECK-NEXT:    br label %[[LOOP:.*]]
 ; CHECK:       [[LOOP]]:
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[IV_NEXT_LCSSA:%.*]] = phi i64 [ 0, %[[ENTRY]] ], [ [[IV_NEXT_PEEL:%.*]], %[[LATCH:.*]] ]
+=======
+; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, %[[ENTRY]] ], [ [[IV_NEXT:%.*]], %[[LATCH:.*]] ]
+; CHECK-NEXT:    call void @foo(i32 20)
+; CHECK-NEXT:    [[C:%.*]] = call i1 @cond()
+; CHECK-NEXT:    br i1 [[C]], label %[[THEN:.*]], label %[[LATCH]]
+; CHECK:       [[THEN]]:
+; CHECK-NEXT:    call void @foo(i32 20)
+; CHECK-NEXT:    br label %[[LATCH]]
+; CHECK:       [[LATCH]]:
+; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
+; CHECK-NEXT:    [[EC:%.*]] = icmp ne i64 [[IV_NEXT]], 63
+; CHECK-NEXT:    br i1 [[EC]], label %[[LOOP]], label %[[EXIT_PEEL_BEGIN:.*]], !llvm.loop [[LOOP4:![0-9]+]]
+; CHECK:       [[EXIT_PEEL_BEGIN]]:
+; CHECK-NEXT:    [[IV_NEXT_LCSSA:%.*]] = phi i64 [ [[IV_NEXT]], %[[LATCH]] ]
+; CHECK-NEXT:    br label %[[LOOP_PEEL:.*]]
+; CHECK:       [[LOOP_PEEL]]:
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 ; CHECK-NEXT:    [[CMP_PEEL:%.*]] = icmp eq i64 [[IV_NEXT_LCSSA]], 63
 ; CHECK-NEXT:    [[COND_PEEL:%.*]] = select i1 [[CMP_PEEL]], i32 10, i32 20
 ; CHECK-NEXT:    call void @foo(i32 [[COND_PEEL]])
@@ -305,7 +359,18 @@ define i64 @peel_single_block_loop_iv_step_1_btc_1() {
 ; CHECK-NEXT:  [[ENTRY:.*]]:
 ; CHECK-NEXT:    br label %[[LOOP:.*]]
 ; CHECK:       [[LOOP]]:
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, %[[ENTRY]] ], [ [[IV_NEXT:%.*]], %[[LOOP]] ]
+=======
+; CHECK-NEXT:    [[IV1:%.*]] = phi i64 [ 0, %[[ENTRY]] ], [ [[IV_NEXT1:%.*]], %[[LOOP]] ]
+; CHECK-NEXT:    call void @foo(i32 20)
+; CHECK-NEXT:    [[IV_NEXT1]] = add nuw nsw i64 [[IV1]], 1
+; CHECK-NEXT:    br i1 false, label %[[LOOP]], label %[[EXIT_PEEL_BEGIN:.*]], !llvm.loop [[LOOP5:![0-9]+]]
+; CHECK:       [[EXIT_PEEL_BEGIN]]:
+; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ [[IV_NEXT1]], %[[LOOP]] ]
+; CHECK-NEXT:    br label %[[LOOP_PEEL:.*]]
+; CHECK:       [[LOOP_PEEL]]:
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp eq i64 [[IV]], 1
 ; CHECK-NEXT:    [[COND:%.*]] = select i1 [[CMP]], i32 10, i32 20
 ; CHECK-NEXT:    call void @foo(i32 [[COND]])
@@ -412,6 +477,26 @@ define i32 @peel_loop_with_branch_and_phi_uses(ptr %x, i1 %c) {
 ; CHECK-NEXT:    tail call void @foo(i32 10)
 ; CHECK-NEXT:    br label %[[LOOP_LATCH]]
 ; CHECK:       [[LOOP_LATCH]]:
+<<<<<<< HEAD
+=======
+; CHECK-NEXT:    [[GEP_X1:%.*]] = getelementptr inbounds nuw i32, ptr [[X]], i32 [[IV1]]
+; CHECK-NEXT:    [[L1:%.*]] = load i32, ptr [[GEP_X1]], align 4
+; CHECK-NEXT:    [[ADD1]] = add nsw i32 [[L1]], [[RED1]]
+; CHECK-NEXT:    [[IV_NEXT1]] = add nuw nsw i32 [[IV1]], 1
+; CHECK-NEXT:    [[EC1:%.*]] = icmp ne i32 [[IV_NEXT1]], 99
+; CHECK-NEXT:    br i1 [[EC1]], label %[[LOOP_HEADER]], label %[[LOOPEXIT_PEEL_BEGIN:.*]], !llvm.loop [[LOOP6:![0-9]+]]
+; CHECK:       [[LOOPEXIT_PEEL_BEGIN]]:
+; CHECK-NEXT:    [[IV:%.*]] = phi i32 [ [[IV_NEXT1]], %[[LOOP_LATCH]] ]
+; CHECK-NEXT:    [[RED:%.*]] = phi i32 [ [[ADD1]], %[[LOOP_LATCH]] ]
+; CHECK-NEXT:    br label %[[LOOP_HEADER_PEEL:.*]]
+; CHECK:       [[LOOP_HEADER_PEEL]]:
+; CHECK-NEXT:    [[CMP1:%.*]] = icmp eq i32 [[IV]], 99
+; CHECK-NEXT:    br i1 [[CMP1]], label %[[IF_THEN_PEEL:.*]], label %[[LOOP_LATCH_PEEL:.*]]
+; CHECK:       [[IF_THEN_PEEL]]:
+; CHECK-NEXT:    tail call void @foo(i32 10)
+; CHECK-NEXT:    br label %[[LOOP_LATCH_PEEL]]
+; CHECK:       [[LOOP_LATCH_PEEL]]:
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 ; CHECK-NEXT:    [[GEP_X:%.*]] = getelementptr inbounds nuw i32, ptr [[X]], i32 [[IV]]
 ; CHECK-NEXT:    [[L:%.*]] = load i32, ptr [[GEP_X]], align 4
 ; CHECK-NEXT:    [[ADD]] = add nsw i32 [[L]], [[RED]]

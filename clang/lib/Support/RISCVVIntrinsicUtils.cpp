@@ -1305,6 +1305,7 @@ llvm::raw_ostream &operator<<(llvm::raw_ostream &OS, enum PolicyScheme PS) {
   return OS;
 }
 
+<<<<<<< HEAD
 llvm::raw_ostream &operator<<(llvm::raw_ostream &OS, enum RVVRequire Require) {
   switch (Require) {
     STRINGIFY(RVV_REQ_RV64)
@@ -1352,18 +1353,9 @@ llvm::raw_ostream &operator<<(llvm::raw_ostream &OS, enum RVVRequire Require) {
   return OS;
 }
 
+=======
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 #undef STRINGIFY
-
-llvm::raw_ostream &operator<<(llvm::raw_ostream &OS,
-                              const RequiredExtensionBits &Exts) {
-  OS << "{";
-  ListSeparator LS;
-  for (unsigned I = 0; I < RVV_REQ_NUM; I++)
-    if (Exts[I])
-      OS << LS << static_cast<RVVRequire>(I);
-  OS << "}";
-  return OS;
-}
 
 raw_ostream &operator<<(raw_ostream &OS, const RVVIntrinsicRecord &Record) {
   OS << "{";
@@ -1373,7 +1365,7 @@ raw_ostream &operator<<(raw_ostream &OS, const RVVIntrinsicRecord &Record) {
     OS << "/*OverloadedName=*/nullptr, ";
   else
     OS << "/*OverloadedName=*/\"" << Record.OverloadedName << "\", ";
-  OS << "/*RequiredExtensions=*/" << Record.RequiredExtensions << ", ";
+  OS << "/*RequiredExtensions=*/\"" << Record.RequiredExtensions << "\", ";
   OS << "/*PrototypeIndex=*/" << Record.PrototypeIndex << ", ";
   OS << "/*SuffixIndex=*/" << Record.SuffixIndex << ", ";
   OS << "/*OverloadedSuffixIndex=*/" << Record.OverloadedSuffixIndex << ", ";

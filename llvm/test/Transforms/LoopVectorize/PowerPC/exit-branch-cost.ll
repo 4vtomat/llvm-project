@@ -49,6 +49,18 @@ define i1 @select_exit_cond(ptr %start, ptr %end, i64 %N) {
 ; CHECK-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START]], i64 [[INDEX]]
 ; CHECK-NEXT:    [[NEXT_GEP10:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP11]]
 ; CHECK-NEXT:    [[TMP56:%.*]] = getelementptr i8, ptr [[START]], i64 [[N_VEC25]]
+<<<<<<< HEAD
+=======
+; CHECK-NEXT:    [[TMP57:%.*]] = insertelement <2 x i64> zeroinitializer, i64 [[BC_MERGE_RDX]], i32 0
+; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <2 x i64> poison, i64 [[VEC_EPILOG_RESUME_VAL]], i64 0
+; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <2 x i64> [[DOTSPLATINSERT]], <2 x i64> poison, <2 x i32> zeroinitializer
+; CHECK-NEXT:    [[INDUCTION:%.*]] = add <2 x i64> [[DOTSPLAT]], <i64 0, i64 1>
+; CHECK-NEXT:    br label %[[VEC_EPILOG_VECTOR_BODY:.*]]
+; CHECK:       [[VEC_EPILOG_VECTOR_BODY]]:
+; CHECK-NEXT:    [[INDEX38:%.*]] = phi i64 [ [[VEC_EPILOG_RESUME_VAL]], %[[VEC_EPILOG_PH]] ], [ [[INDEX_NEXT32:%.*]], %[[VEC_EPILOG_VECTOR_BODY]] ]
+; CHECK-NEXT:    [[VEC_IND27:%.*]] = phi <2 x i64> [ [[INDUCTION]], %[[VEC_EPILOG_PH]] ], [ [[VEC_IND_NEXT28:%.*]], %[[VEC_EPILOG_VECTOR_BODY]] ]
+; CHECK-NEXT:    [[VEC_PHI29:%.*]] = phi <2 x i64> [ [[TMP57]], %[[VEC_EPILOG_PH]] ], [ [[TMP58:%.*]], %[[VEC_EPILOG_VECTOR_BODY]] ]
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 ; CHECK-NEXT:    [[NEXT_GEP30:%.*]] = getelementptr i8, ptr [[START]], i64 [[INDEX38]]
 ; CHECK-NEXT:    [[NEXT_GEP13:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP14]]
 ; CHECK-NEXT:    [[NEXT_GEP14:%.*]] = getelementptr i8, ptr [[START]], i64 [[TMP15]]

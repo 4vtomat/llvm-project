@@ -49,6 +49,9 @@ struct RVVIntrinsicDef {
   /// Mapping to which clang built-in function, e.g. __builtin_rvv_vadd.
   std::string BuiltinName;
 
+  /// Mapping to RequiredFeatures in riscv_vector.td
+  std::string RequiredExtensions;
+
   /// Function signature, first element is return type.
   RVVTypes Signature;
 };
@@ -180,7 +183,6 @@ namespace {
 class RISCVIntrinsicManagerImpl : public sema::RISCVIntrinsicManager {
 private:
   Sema &S;
-  ASTContext &Context;
   RVVTypeCache TypeCache;
   bool ConstructedRISCVVBuiltins;
   bool ConstructedRISCVSiFiveVectorBuiltins;
@@ -207,7 +209,7 @@ private:
                               IntrinsicKind K);
 
 public:
-  RISCVIntrinsicManagerImpl(clang::Sema &S) : S(S), Context(S.Context) {
+  RISCVIntrinsicManagerImpl(clang::Sema &S) : S(S) {
     ConstructedRISCVVBuiltins = false;
     ConstructedRISCVSiFiveVectorBuiltins = false;
     ConstructedRISCVAndesVectorBuiltins = false;
@@ -225,6 +227,7 @@ public:
 
 void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
     ArrayRef<RVVIntrinsicRecord> Recs, IntrinsicKind K) {
+<<<<<<< HEAD
   const TargetInfo &TI = Context.getTargetInfo();
   static const std::pair<const char *, unsigned> FeatureCheckList[] = {
       {"64bit", RVV_REQ_RV64},
@@ -290,6 +293,11 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
         }))
       continue;
 
+=======
+  // Construction of RVVIntrinsicRecords need to sync with createRVVIntrinsics
+  // in RISCVVEmitter.cpp.
+  for (auto &Record : Recs) {
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
     // Create Intrinsics for each type and LMUL.
     BasicType BaseType = BasicType::Unknown;
     ArrayRef<PrototypeDescriptor> BasicProtoSeq =
@@ -499,7 +507,7 @@ void RISCVIntrinsicManagerImpl::InitRVVIntrinsic(
   uint32_t Index = IntrinsicList.size();
   assert(IntrinsicList.size() == (size_t)Index &&
          "Intrinsics indices overflow.");
-  IntrinsicList.push_back({BuiltinName, Signature});
+  IntrinsicList.push_back({BuiltinName, Record.RequiredExtensions, Signature});
 
   // Creating mapping to Intrinsics.
   Intrinsics.insert({Name, Index});
@@ -562,6 +570,9 @@ void RISCVIntrinsicManagerImpl::CreateRVVIntrinsicDecl(LookupResult &LR,
   if (IsOverload)
     RVVIntrinsicDecl->addAttr(OverloadableAttr::CreateImplicit(Context));
 
+  if (IDef.RequiredExtensions != "")
+    RVVIntrinsicDecl->addAttr(
+        TargetAttr::CreateImplicit(Context, IDef.RequiredExtensions));
   // Setup alias to __builtin_rvv_*
   IdentifierInfo &IntrinsicII =
       PP.getIdentifierTable().get("__builtin_rvv_" + IDef.BuiltinName);
@@ -630,8 +641,10 @@ bool SemaRISCV::CheckLMUL(CallExpr *TheCall, unsigned ArgNum) {
          << Arg->getSourceRange();
 }
 
-static bool CheckInvalidVLENandLMUL(const TargetInfo &TI, CallExpr *TheCall,
-                                    Sema &S, QualType Type, int EGW) {
+static bool CheckInvalidVLENandLMUL(const TargetInfo &TI,
+                                    llvm::StringMap<bool> &FunctionFeatureMap,
+                                    CallExpr *TheCall, Sema &S, QualType Type,
+                                    int EGW) {
   assert((EGW == 128 || EGW == 256) && "EGW can only be 128 or 256 bits");
 
   // LMUL * VLEN >= EGW
@@ -652,7 +665,7 @@ static bool CheckInvalidVLENandLMUL(const TargetInfo &TI, CallExpr *TheCall,
   // Vscale is VLEN/RVVBitsPerBlock.
   unsigned MinRequiredVLEN = VScaleFactor * llvm::RISCV::RVVBitsPerBlock;
   std::string RequiredExt = "zvl" + std::to_string(MinRequiredVLEN) + "b";
-  if (!TI.hasFeature(RequiredExt))
+  if (!TI.hasFeature(RequiredExt) && !FunctionFeatureMap.lookup(RequiredExt))
     return S.Diag(TheCall->getBeginLoc(),
                   diag::err_riscv_type_requires_extension)
            << Type << RequiredExt;
@@ -668,6 +681,21 @@ bool SemaRISCV::CheckBuiltinFunctionCall(const TargetInfo &TI,
     return SemaRef.ARM().CheckNeonBuiltinFunctionCall(TI, BuiltinID, TheCall);
 #endif // SIFIVE_CUSTOMIZATION
   ASTContext &Context = getASTContext();
+  const FunctionDecl *FD = SemaRef.getCurFunctionDecl();
+  llvm::StringMap<bool> FunctionFeatureMap;
+  Context.getFunctionFeatureMap(FunctionFeatureMap, FD);
+
+  if (const auto *A = TheCall->getCalleeDecl()->getAttr<TargetAttr>()) {
+    StringRef FeaturesStr = A->getFeaturesStr();
+    llvm::SmallVector<StringRef> RequiredFeatures;
+    FeaturesStr.split(RequiredFeatures, ',');
+    for (auto RF : RequiredFeatures)
+      if (!TI.hasFeature(RF) && !FunctionFeatureMap.lookup(RF))
+        return Diag(TheCall->getBeginLoc(),
+                    diag::err_riscv_builtin_requires_extension)
+               << /* IsExtension */ true << TheCall->getSourceRange() << RF;
+  }
+
   // vmulh.vv, vmulh.vx, vmulhu.vv, vmulhu.vx, vmulhsu.vv, vmulhsu.vx,
   // vsmul.vv, vsmul.vx are not included for EEW=64 in Zve64*.
   switch (BuiltinID) {
@@ -723,10 +751,6 @@ bool SemaRISCV::CheckBuiltinFunctionCall(const TargetInfo &TI,
   case RISCVVector::BI__builtin_rvv_vsmul_vx_tumu: {
     ASTContext::BuiltinVectorTypeInfo Info = Context.getBuiltinVectorTypeInfo(
         TheCall->getType()->castAs<BuiltinType>());
-
-    const FunctionDecl *FD = SemaRef.getCurFunctionDecl();
-    llvm::StringMap<bool> FunctionFeatureMap;
-    Context.getFunctionFeatureMap(FunctionFeatureMap, FD);
 
     if (Context.getTypeSize(Info.ElementType) == 64 && !TI.hasFeature("v") &&
         !FunctionFeatureMap.lookup("v"))
@@ -849,20 +873,24 @@ bool SemaRISCV::CheckBuiltinFunctionCall(const TargetInfo &TI,
   case RISCVVector::BI__builtin_rvv_vsm4k_vi_tu: {
     QualType Arg0Type = TheCall->getArg(0)->getType();
     QualType Arg1Type = TheCall->getArg(1)->getType();
-    return CheckInvalidVLENandLMUL(TI, TheCall, SemaRef, Arg0Type, 128) ||
-           CheckInvalidVLENandLMUL(TI, TheCall, SemaRef, Arg1Type, 128) ||
+    return CheckInvalidVLENandLMUL(TI, FunctionFeatureMap, TheCall, SemaRef,
+                                   Arg0Type, 128) ||
+           CheckInvalidVLENandLMUL(TI, FunctionFeatureMap, TheCall, SemaRef,
+                                   Arg1Type, 128) ||
            SemaRef.BuiltinConstantArgRange(TheCall, 2, 0, 31);
   }
   case RISCVVector::BI__builtin_rvv_vsm3c_vi_tu:
   case RISCVVector::BI__builtin_rvv_vsm3c_vi: {
     QualType Arg0Type = TheCall->getArg(0)->getType();
-    return CheckInvalidVLENandLMUL(TI, TheCall, SemaRef, Arg0Type, 256) ||
+    return CheckInvalidVLENandLMUL(TI, FunctionFeatureMap, TheCall, SemaRef,
+                                   Arg0Type, 256) ||
            SemaRef.BuiltinConstantArgRange(TheCall, 2, 0, 31);
   }
   case RISCVVector::BI__builtin_rvv_vaeskf1_vi:
   case RISCVVector::BI__builtin_rvv_vsm4k_vi: {
     QualType Arg0Type = TheCall->getArg(0)->getType();
-    return CheckInvalidVLENandLMUL(TI, TheCall, SemaRef, Arg0Type, 128) ||
+    return CheckInvalidVLENandLMUL(TI, FunctionFeatureMap, TheCall, SemaRef,
+                                   Arg0Type, 128) ||
            SemaRef.BuiltinConstantArgRange(TheCall, 1, 0, 31);
   }
   case RISCVVector::BI__builtin_rvv_vaesdf_vv:
@@ -889,8 +917,10 @@ bool SemaRISCV::CheckBuiltinFunctionCall(const TargetInfo &TI,
   case RISCVVector::BI__builtin_rvv_vsm4r_vs_tu: {
     QualType Arg0Type = TheCall->getArg(0)->getType();
     QualType Arg1Type = TheCall->getArg(1)->getType();
-    return CheckInvalidVLENandLMUL(TI, TheCall, SemaRef, Arg0Type, 128) ||
-           CheckInvalidVLENandLMUL(TI, TheCall, SemaRef, Arg1Type, 128);
+    return CheckInvalidVLENandLMUL(TI, FunctionFeatureMap, TheCall, SemaRef,
+                                   Arg0Type, 128) ||
+           CheckInvalidVLENandLMUL(TI, FunctionFeatureMap, TheCall, SemaRef,
+                                   Arg1Type, 128);
   }
   case RISCVVector::BI__builtin_rvv_vsha2ch_vv:
   case RISCVVector::BI__builtin_rvv_vsha2cl_vv:
@@ -904,17 +934,25 @@ bool SemaRISCV::CheckBuiltinFunctionCall(const TargetInfo &TI,
     ASTContext::BuiltinVectorTypeInfo Info =
         Context.getBuiltinVectorTypeInfo(Arg0Type->castAs<BuiltinType>());
     uint64_t ElemSize = Context.getTypeSize(Info.ElementType);
-    if (ElemSize == 64 && !TI.hasFeature("zvknhb"))
+    if (ElemSize == 64 && !TI.hasFeature("zvknhb") &&
+        !FunctionFeatureMap.lookup("zvknhb"))
       return Diag(TheCall->getBeginLoc(),
                   diag::err_riscv_builtin_requires_extension)
              << /* IsExtension */ true << TheCall->getSourceRange() << "zvknhb";
+    // If ElemSize is 32, check at least zvknha or zvknhb is enabled.
+    if (!TI.hasFeature("zvknha") && !FunctionFeatureMap.lookup("zvknha") &&
+        !TI.hasFeature("zvknhb") && !FunctionFeatureMap.lookup("zvknhb"))
+      return Diag(TheCall->getBeginLoc(),
+                  diag::err_riscv_builtin_requires_extension)
+             << /* IsExtension */ true << TheCall->getSourceRange()
+             << "zvknha or zvknhb";
 
-    return CheckInvalidVLENandLMUL(TI, TheCall, SemaRef, Arg0Type,
-                                   ElemSize * 4) ||
-           CheckInvalidVLENandLMUL(TI, TheCall, SemaRef, Arg1Type,
-                                   ElemSize * 4) ||
-           CheckInvalidVLENandLMUL(TI, TheCall, SemaRef, Arg2Type,
-                                   ElemSize * 4);
+    return CheckInvalidVLENandLMUL(TI, FunctionFeatureMap, TheCall, SemaRef,
+                                   Arg0Type, ElemSize * 4) ||
+           CheckInvalidVLENandLMUL(TI, FunctionFeatureMap, TheCall, SemaRef,
+                                   Arg1Type, ElemSize * 4) ||
+           CheckInvalidVLENandLMUL(TI, FunctionFeatureMap, TheCall, SemaRef,
+                                   Arg2Type, ElemSize * 4);
   }
 
   case RISCVVector::BI__builtin_rvv_sf_vc_i_se:

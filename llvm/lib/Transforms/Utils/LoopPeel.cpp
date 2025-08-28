@@ -467,11 +467,7 @@ bool llvm::canPeelLastIteration(const Loop &L, ScalarEvolution &SE) {
 #else
 bool llvm::canPeelLastIteration(const Loop &L, ScalarEvolution &SE) {
   const SCEV *BTC = SE.getBackedgeTakenCount(&L);
-  // The loop must execute at least 2 iterations to guarantee that peeled
-  // iteration executes.
-  // TODO: Add checks during codegen.
-  if (isa<SCEVCouldNotCompute>(BTC) ||
-      !SE.isKnownPredicate(CmpInst::ICMP_UGT, BTC, SE.getZero(BTC->getType())))
+  if (isa<SCEVCouldNotCompute>(BTC))
     return false;
 
   // Check if the exit condition of the loop can be adjusted by the peeling
@@ -491,6 +487,7 @@ bool llvm::canPeelLastIteration(const Loop &L, ScalarEvolution &SE) {
                     m_BasicBlock(Succ1), m_BasicBlock(Succ2))) &&
          ((Pred == CmpInst::ICMP_EQ && Succ2 == L.getHeader()) ||
           (Pred == CmpInst::ICMP_NE && Succ1 == L.getHeader())) &&
+         Bound->getType()->isIntegerTy() && 
          SE.isLoopInvariant(SE.getSCEV(Bound), &L) &&
          match(SE.getSCEV(Inc),
                m_scev_AffineAddRec(m_SCEV(), m_scev_One(), m_SpecificLoop(&L)));
@@ -543,12 +540,21 @@ static bool shouldPeelLastIteration(Loop &L, CmpPredicate Pred,
 /// is known at the second-to-last.
 static bool shouldPeelLastIteration(Loop &L, CmpPredicate Pred,
                                     const SCEVAddRecExpr *LeftAR,
-                                    const SCEV *RightSCEV,
-                                    ScalarEvolution &SE) {
+                                    const SCEV *RightSCEV, ScalarEvolution &SE,
+                                    const TargetTransformInfo &TTI) {
   if (!canPeelLastIteration(L, SE))
     return false;
 
   const SCEV *BTC = SE.getBackedgeTakenCount(&L);
+  SCEVExpander Expander(SE, L.getHeader()->getDataLayout(), "loop-peel");
+  if (!SE.isKnownNonZero(BTC) &&
+      Expander.isHighCostExpansion(BTC, &L, SCEVCheapExpansionBudget, &TTI,
+                                   L.getLoopPredecessor()->getTerminator()))
+    return false;
+
+  auto Guards = ScalarEvolution::LoopGuards::collect(&L, SE);
+  BTC = SE.applyLoopGuards(BTC, Guards);
+  RightSCEV = SE.applyLoopGuards(RightSCEV, Guards);
   const SCEV *ValAtLastIter = LeftAR->evaluateAtIteration(BTC, SE);
   const SCEV *ValAtSecondToLastIter = LeftAR->evaluateAtIteration(
       SE.getMinusSCEV(BTC, SE.getOne(BTC->getType())), SE);
@@ -577,8 +583,13 @@ countToEliminateCompares(Loop &L, unsigned MaxPeelCount, ScalarEvolution &SE,
                          bool PeelProlog, unsigned TripCount) {
 #else
 static std::pair<unsigned, unsigned>
+<<<<<<< HEAD
 countToEliminateCompares(Loop &L, unsigned MaxPeelCount, ScalarEvolution &SE) {
 #endif // SIFIVE_CUSTOMIZATION
+=======
+countToEliminateCompares(Loop &L, unsigned MaxPeelCount, ScalarEvolution &SE,
+                         const TargetTransformInfo &TTI) {
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
   assert(L.isLoopSimplifyForm() && "Loop needs to be in loop simplify form");
   unsigned DesiredPeelCount = 0;
   unsigned DesiredPeelCountLast = 0;
@@ -701,6 +712,7 @@ countToEliminateCompares(Loop &L, unsigned MaxPeelCount, ScalarEvolution &SE) {
     const SCEV *Step = LeftAR->getStepRecurrence(SE);
     if (!PeelWhilePredicateIsKnown(NewPeelCount, IterVal, RightSCEV, Step,
                                    Pred)) {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       if (!PeelProlog) {
         if (NewPeelCount < MaxPeelCount)
@@ -711,6 +723,9 @@ countToEliminateCompares(Loop &L, unsigned MaxPeelCount, ScalarEvolution &SE) {
       }
 #else
       if (shouldPeelLastIteration(L, Pred, LeftAR, RightSCEV, SE))
+=======
+      if (shouldPeelLastIteration(L, Pred, LeftAR, RightSCEV, SE, TTI))
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
         DesiredPeelCountLast = 1;
 #endif
       return;
@@ -938,8 +953,12 @@ void llvm::computePeelCount(Loop *L, unsigned LoopSize,
                                TripCount);
 #else
   const auto &[CountToEliminateCmps, CountToEliminateCmpsLast] =
+<<<<<<< HEAD
       countToEliminateCompares(*L, MaxPeelCount, SE);
 #endif
+=======
+      countToEliminateCompares(*L, MaxPeelCount, SE, TTI);
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
   DesiredPeelCount = std::max(DesiredPeelCount, CountToEliminateCmps);
 
 #if SIFIVE_CUSTOMIZATION
@@ -1233,10 +1252,18 @@ static void cloneLoopBlocks(
   // loop iteration. Since this copy is no longer part of the loop, we
   // resolve this statically:
   if (PeelLast) {
+<<<<<<< HEAD
     // For the last iteration, we use the value from the latch of the original
     // loop directly.
     //
     IRBuilder<> B(InsertTop->getTerminator());
+=======
+    // For the last iteration, we introduce new phis for each header phi in
+    // InsertTop, using the incoming value from the preheader for the original
+    // preheader (when skipping the main loop) and the incoming value from the
+    // latch for the latch (when continuing from the main loop).
+    IRBuilder<> B(InsertTop, InsertTop->getFirstNonPHIIt());
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
     for (BasicBlock::iterator I = Header->begin(); isa<PHINode>(I); ++I) {
       PHINode *NewPHI = cast<PHINode>(VMap[&*I]);
       PHINode *PN = B.CreatePHI(NewPHI->getType(), 2);
@@ -1565,12 +1592,21 @@ bool llvm::peelLoop(Loop *L, unsigned PeelCount, bool PeelLast, LoopInfo *LI,
 
     InsertTop->setName(Exit->getName() + ".peel.begin");
     InsertBot->setName(Exit->getName() + ".peel.next");
+<<<<<<< HEAD
 
     // If the original loop may only execute a single iteration we need to
     // insert a trip count check and skip the peeled loop if necessary.
     if (!isa<SCEVCouldNotCompute>(BTC) &&
         !SE->isKnownPredicate(CmpInst::ICMP_UGT, BTC,
                               SE->getZero(BTC->getType()))) {
+=======
+    NewPreHeader = nullptr;
+
+    // If the original loop may only execute a single iteration we need to
+    // insert a trip count check and skip the original loop with the last
+    // iteration peeled off if necessary.
+    if (!SE->isKnownNonZero(BTC)) {
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
       NewPreHeader = SplitEdge(PreHeader, Header, &DT, LI);
       SCEVExpander Expander(*SE, Latch->getDataLayout(), "loop-peel");
 
@@ -1585,12 +1621,15 @@ bool llvm::peelLoop(Loop *L, unsigned PeelCount, bool PeelLast, LoopInfo *LI,
 
       // PreHeader now dominates InsertTop.
       DT.changeImmediateDominator(InsertTop, PreHeader);
+<<<<<<< HEAD
 
       // If we branch from PreHeader to InsertTop, we are guaranteed to execute
       // the peeled iteration, so the exit values from the original loop are
       // dead. Use poison for them.
       for (auto &PN : InsertTop->phis())
         PN.addIncoming(PoisonValue::get(PN.getType()), PreHeader);
+=======
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
     }
   } else {
     // It is convenient to split the preheader into 3 parts - two blocks to
@@ -1665,7 +1704,10 @@ bool llvm::peelLoop(Loop *L, unsigned PeelCount, bool PeelLast, LoopInfo *LI,
   for (unsigned Iter = 0; Iter < PeelCount; ++Iter) {
     SmallVector<BasicBlock *, 8> NewBlocks;
 
+<<<<<<< HEAD
     // Note: this may be the site of the break for prolog peeling in 502.gcc
+=======
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
     cloneLoopBlocks(L, Iter, PeelLast, InsertTop, InsertBot,
                     NewPreHeader ? PreHeader : nullptr, ExitEdges, NewBlocks,
                     LoopBlocks, VMap, LVMap, &DT, LI,
@@ -1732,9 +1774,15 @@ bool llvm::peelLoop(Loop *L, unsigned PeelCount, bool PeelLast, LoopInfo *LI,
 
   if (PeelLast) {
     // Now adjust users of the original exit values by replacing them with the
-    // exit value from the peeled iteration.
-    for (const auto &[P, E] : ExitValues)
-      P->replaceAllUsesWith(isa<Constant>(E) ? E : &*VMap.lookup(E));
+    // exit value from the peeled iteration and remove them.
+    for (const auto &[P, E] : ExitValues) {
+      Instruction *ExitInst = dyn_cast<Instruction>(E);
+      if (ExitInst && L->contains(ExitInst))
+        P->replaceAllUsesWith(&*VMap[ExitInst]);
+      else
+        P->replaceAllUsesWith(E);
+      P->eraseFromParent();
+    }
     formLCSSA(*L, DT, LI, SE);
   } else {
     // Now adjust the phi nodes in the loop header to get their initial values

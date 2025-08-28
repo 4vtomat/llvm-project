@@ -271,11 +271,18 @@ def SIFIVE_U74 : RISCVProcessorModel<"sifive-u74",
                                       FeatureStdExtC],
                                      SiFive7TuneFeatures>;
 
+<<<<<<< HEAD
 #ifndef SIFIVE_CUSTOMIZATION
 defvar SiFiveX280TuneFeatures = !listconcat(SiFive7TuneFeatures,
                                             [TuneDLenFactor2,
                                              TuneOptimizedZeroStrideLoad,
                                              TuneOptimizedNF2SegmentLoadStore]);
+=======
+defvar SiFiveIntelligenceTuneFeatures = !listconcat(SiFive7TuneFeatures,
+                                                    [TuneDLenFactor2,
+                                                     TuneOptimizedZeroStrideLoad,
+                                                     TuneOptimizedNF2SegmentLoadStore]);
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
 def SIFIVE_X280 : RISCVProcessorModel<"sifive-x280", SiFive7Model,
                                       [Feature64Bit,
                                        FeatureStdExtI,
@@ -291,7 +298,51 @@ def SIFIVE_X280 : RISCVProcessorModel<"sifive-x280", SiFive7Model,
                                        FeatureStdExtZvfh,
                                        FeatureStdExtZba,
                                        FeatureStdExtZbb],
-                                      SiFiveX280TuneFeatures>;
+                                      SiFiveIntelligenceTuneFeatures>;
+
+def SIFIVE_X390 : RISCVProcessorModel<"sifive-x390", NoSchedModel,
+                                      [Feature64Bit,
+                                       FeatureStdExtI,
+                                       FeatureStdExtM,
+                                       FeatureStdExtA,
+                                       FeatureStdExtF,
+                                       FeatureStdExtD,
+                                       FeatureStdExtC,
+                                       FeatureStdExtB,
+                                       FeatureStdExtV,
+                                       FeatureStdExtZic64b,
+                                       FeatureStdExtZicbom,
+                                       FeatureStdExtZicbop,
+                                       FeatureStdExtZicboz,
+                                       FeatureStdExtZiccamoa,
+                                       FeatureStdExtZiccif,
+                                       FeatureStdExtZiccrse,
+                                       FeatureStdExtZicfilp,
+                                       FeatureStdExtZicfiss,
+                                       FeatureStdExtZicntr,
+                                       FeatureStdExtZicond,
+                                       FeatureStdExtZifencei,
+                                       FeatureStdExtZihintntl,
+                                       FeatureStdExtZihintpause,
+                                       FeatureStdExtZihpm,
+                                       FeatureStdExtZimop,
+                                       FeatureStdExtZa64rs,
+                                       FeatureStdExtZawrs,
+                                       FeatureStdExtZfa,
+                                       FeatureStdExtZfh,
+                                       FeatureStdExtZcb,
+                                       FeatureStdExtZcmop,
+                                       FeatureStdExtZkr,
+                                       FeatureStdExtZkt,
+                                       FeatureStdExtZvbb,
+                                       FeatureStdExtZvfbfmin,
+                                       FeatureStdExtZvfbfwma,
+                                       FeatureStdExtZvfh,
+                                       FeatureStdExtZvkt,
+                                       FeatureStdExtZvl1024b,
+                                       FeatureVendorXSiFivecdiscarddlone,
+                                       FeatureVendorXSiFivecflushdlone],
+                                      SiFiveIntelligenceTuneFeatures>;
 
 defvar SiFiveP400TuneFeatures = [TuneNoDefaultUnroll,
                                  TuneConditionalCompressedMoveFusion,
@@ -680,8 +731,11 @@ def ANDES_AX25 : RISCVProcessorModel<"andes-ax25",
                                       FeatureStdExtZbc,
                                       FeatureVendorXAndesPerf]>;
 
+def ANDES_45 : RISCVTuneProcessorModel<"andes-45-series",
+                                       Andes45Model>;
+
 def ANDES_N45 : RISCVProcessorModel<"andes-n45",
-                                    NoSchedModel,
+                                    Andes45Model,
                                     [Feature32Bit,
                                      FeatureStdExtI,
                                      FeatureStdExtZicsr,
@@ -695,7 +749,7 @@ def ANDES_N45 : RISCVProcessorModel<"andes-n45",
                                      FeatureVendorXAndesPerf]>;
 
 def ANDES_NX45 : RISCVProcessorModel<"andes-nx45",
-                                     NoSchedModel,
+                                     Andes45Model,
                                      [Feature64Bit,
                                       FeatureStdExtI,
                                       FeatureStdExtZicsr,
@@ -709,7 +763,7 @@ def ANDES_NX45 : RISCVProcessorModel<"andes-nx45",
                                       FeatureVendorXAndesPerf]>;
 
 def ANDES_A45 : RISCVProcessorModel<"andes-a45",
-                                    NoSchedModel,
+                                    Andes45Model,
                                     [Feature32Bit,
                                      FeatureStdExtI,
                                      FeatureStdExtZicsr,
@@ -723,7 +777,7 @@ def ANDES_A45 : RISCVProcessorModel<"andes-a45",
                                      FeatureVendorXAndesPerf]>;
 
 def ANDES_AX45 : RISCVProcessorModel<"andes-ax45",
-                                     NoSchedModel,
+                                     Andes45Model,
                                      [Feature64Bit,
                                       FeatureStdExtI,
                                       FeatureStdExtZicsr,

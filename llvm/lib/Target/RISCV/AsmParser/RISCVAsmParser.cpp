@@ -2039,8 +2039,7 @@ ParseStatus RISCVAsmParser::parseCSRSystemRegister(OperandVector &Operands) {
     if (Sym && Sym->isVariable()) {
       // Pass false for SetUsed, since redefining the value later does not
       // affect this instruction.
-      if (auto SysOpnd = SysRegFromConstantInt(
-              Sym->getVariableValue(/*SetUsed=*/false), S)) {
+      if (auto SysOpnd = SysRegFromConstantInt(Sym->getVariableValue(), S)) {
         Operands.push_back(std::move(SysOpnd));
         return ParseStatus::Success;
       }
@@ -2218,7 +2217,7 @@ ParseStatus RISCVAsmParser::parseBareSymbol(OperandVector &Operands) {
   MCSymbol *Sym = getContext().getOrCreateSymbol(Identifier);
 
   if (Sym->isVariable()) {
-    const MCExpr *V = Sym->getVariableValue(/*SetUsed=*/false);
+    const MCExpr *V = Sym->getVariableValue();
     if (!isa<MCSymbolRefExpr>(V)) {
       getLexer().UnLex(Tok); // Put back if it's not a bare symbol.
       return ParseStatus::NoMatch;

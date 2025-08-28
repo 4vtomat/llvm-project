@@ -45,7 +45,7 @@ struct SemaRecord {
   unsigned Log2LMULMask;
 
   // Required extensions for this intrinsic.
-  RequiredExtensionBits RequiredExtensions;
+  std::string RequiredExtensions;
 
   // Prototype for this intrinsic.
   SmallVector<PrototypeDescriptor> Prototype;
@@ -898,6 +898,7 @@ void RVVEmitter::createRVVIntrinsics(
       Log2LMULMask |= 1 << (Log2LMUL + 3);
 
     SR.Log2LMULMask = Log2LMULMask;
+<<<<<<< HEAD
 
     for (auto RequiredFeature : RequiredFeatures) {
       unsigned RequireExt =
@@ -945,6 +946,11 @@ void RVVEmitter::createRVVIntrinsics(
       SR.RequiredExtensions.set(RequireExt);
     }
 
+=======
+    std::string RFs =
+        join(RequiredFeatures.begin(), RequiredFeatures.end(), ",");
+    SR.RequiredExtensions = RFs;
+>>>>>>> 80ea5f46df3e365a0a2112889bb91732167b6214
     SR.NF = NF;
     SR.HasMasked = HasMasked;
     SR.HasVL = HasVL;
@@ -990,7 +996,7 @@ void RVVEmitter::createRVVIntrinsicRecords(std::vector<RVVIntrinsicRecord> &Out,
     R.PrototypeLength = SR.Prototype.size();
     R.SuffixLength = SR.Suffix.size();
     R.OverloadedSuffixSize = SR.OverloadedSuffix.size();
-    R.RequiredExtensions = SR.RequiredExtensions;
+    R.RequiredExtensions = SR.RequiredExtensions.c_str();
     R.TypeRangeMask = SR.TypeRangeMask;
     R.Log2LMULMask = SR.Log2LMULMask;
     R.NF = SR.NF;
