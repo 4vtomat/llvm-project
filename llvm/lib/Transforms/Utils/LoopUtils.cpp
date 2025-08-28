@@ -1390,12 +1390,14 @@ Value *llvm::createSimpleReduction(IRBuilderBase &Builder, Value *Src,
   }
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
 Value *llvm::createSimpleReduction(IRBuilderBase &Builder, Value *Src,
-                                   RecurKind RdxKind, Value *EVL, Value *Mask) {
+                                   RecurKind Kind, Value *Mask, Value *EVL) {
+  assert(!RecurrenceDescriptor::isAnyOfRecurrenceKind(Kind) &&
+         !RecurrenceDescriptor::isFindLastIVRecurrenceKind(Kind) &&
+         "AnyOf or FindLastIV reductions are not supported.");
+#if SIFIVE_CUSTOMIZATION
   auto *SrcVecEltTy = cast<VectorType>(Src->getType())->getElementType();
-  switch (RdxKind) {
+  switch (Kind) {
   case RecurKind::Add:
     return Builder.CreateAddReduce(Src, EVL, Mask);
   case RecurKind::Mul:
@@ -1411,8 +1413,8 @@ Value *llvm::createSimpleReduction(IRBuilderBase &Builder, Value *Src,
     return Builder.CreateFAddReduce(ConstantFP::getNegativeZero(SrcVecEltTy),
                                     Src, EVL, Mask);
   case RecurKind::FMul:
-    return Builder.CreateFMulReduce(ConstantFP::get(SrcVecEltTy, 1.0), Src,
-                                    EVL, Mask);
+    return Builder.CreateFMulReduce(ConstantFP::get(SrcVecEltTy, 1.0), Src, EVL,
+                                    Mask);
   case RecurKind::SMax:
     return Builder.CreateIntMaxReduce(Src, EVL, true, Mask);
   case RecurKind::SMin:
@@ -1426,20 +1428,11 @@ Value *llvm::createSimpleReduction(IRBuilderBase &Builder, Value *Src,
   case RecurKind::FMin:
     return Builder.CreateFPMinReduce(Src, EVL, Mask);
   default:
-    llvm_unreachable("Unhandled opcode");
+    // back to the upstream approach.
+    break;
   }
-}
 #endif // SIFIVE_CUSTOMIZATION
 
-Value *llvm::createSimpleReduction(VectorBuilder &VBuilder, Value *Src,
-                                   RecurKind Kind) {
-=======
-Value *llvm::createSimpleReduction(IRBuilderBase &Builder, Value *Src,
-                                   RecurKind Kind, Value *Mask, Value *EVL) {
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
-  assert(!RecurrenceDescriptor::isAnyOfRecurrenceKind(Kind) &&
-         !RecurrenceDescriptor::isFindLastIVRecurrenceKind(Kind) &&
-         "AnyOf or FindLastIV reductions are not supported.");
   Intrinsic::ID Id = getReductionIntrinsicID(Kind);
   auto VPID = VPIntrinsic::getForIntrinsic(Id);
   assert(VPReductionIntrinsic::isVPReduction(VPID) &&
