@@ -105,7 +105,6 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
                                   VPValue *BlockInMask) {
   VPValue *EVL = State.EVL;
   IRBuilderBase &BuilderIR = State.Builder;
-  VectorBuilder Builder(BuilderIR);
   auto &&MaskValue = [&](ElementCount EC) -> Value * {
     if (!BlockInMask)
       return BuilderIR.getTrueVector(State.VF);
@@ -126,9 +125,9 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     auto *PredTy = cast<VectorType>(A->getType());
     Value *MaskArg = BuilderIR.getTrueVector(State.VF);
     Value *EVLArg = State.get(EVL, /*NeedsScalar=*/true);
-    Builder.setMask(MaskArg).setEVL(EVLArg);
-    return Builder.createVectorInstruction(Instruction::Xor, PredTy,
-                                           {A, MaskArg}, "pred.not");
+    return BuilderIR.CreateIntrinsic(
+        PredTy->getElementType(), Intrinsic::vp_xor,
+        {A, MaskArg, MaskArg, EVLArg}, nullptr, "pred.not");
   }
   case Instruction::Select: {
     assert((!Op || isa<VPWidenSelectRecipe>(Def->getDefiningRecipe())) &&
@@ -148,8 +147,7 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     CmpInst::Predicate Pred = cast<VPRecipeWithIRFlags>(Def)->getPredicate();
     VectorType *OpTy = cast<VectorType>(A->getType());
     Value *MaskArg = MaskValue(OpTy->getElementCount());
-    Builder.setMask(MaskArg);
-    Builder.setEVL(State.get(EVL, /*NeedScalar=*/ true));
+    Value *EVLArg = State.get(EVL, /*NeedScalar=*/true);
 
     StringRef PredicateStr = CmpInst::getPredicateName(Pred);
     auto *PredicateMDS = MDString::get(A->getContext(), PredicateStr);
@@ -157,15 +155,17 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
 
     if (FCmp) {
       IRBuilder<>::FastMathFlagGuard FMFG(BuilderIR);
-      auto *V = Builder.createVectorInstruction(Opcode, OpTy, {A, B, PredArg},
-                                                "vp.op.fcmp");
+      auto *V = BuilderIR.CreateIntrinsic(
+          OpTy->getElementType(), Intrinsic::vp_fcmp,
+          {A, B, PredArg, MaskArg, EVLArg}, nullptr, "vp.op.fcmp");
       if (auto *VPF = dyn_cast<VPRecipeWithIRFlags>(Def))
         VPF->applyFlags(cast<Instruction>(*V));
 
       return V;
     }
-    return Builder.createVectorInstruction(Opcode, OpTy, {A, B, PredArg},
-                                           "vp.op.icmp");
+    return BuilderIR.CreateIntrinsic(OpTy->getElementType(), Intrinsic::vp_icmp,
+                                     {A, B, PredArg, MaskArg, EVLArg}, nullptr,
+                                     "vp.op.icmp");
   }
   case Instruction::SExt:
   case Instruction::ZExt:
@@ -189,10 +189,12 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     // during VPlan construction by looking at the target and exceptions that
     // are enabled.
     // Since LV is targeting RVV, use all-true mask for conversions.
-    Builder.setMask(BuilderIR.getTrueVector(SrcTy->getElementCount()));
-    Builder.setEVL(State.get(EVL, /*NeedsScalar=*/true));
-    return Builder.createVectorInstruction(VPWC->getOpcode(), DestVecTy,
-                                           {SrcVal}, "vp.cast");
+    Value *MaskArg = BuilderIR.getTrueVector(SrcTy->getElementCount());
+    Value *EVLArg = State.get(EVL, /*NeedsScalar=*/true);
+    auto VPID = VPIntrinsic::getForOpcode(VPWC->getOpcode());
+    return BuilderIR.CreateIntrinsic(DestVecTy->getElementType(), VPID,
+                                     {SrcVal, MaskArg, EVLArg}, nullptr,
+                                     "vp.cast");
   }
   default:
     break;
@@ -433,7 +435,6 @@ Instruction *widenPredicatedArithmeticOp(VPTransformState &State,
   assert(((Instruction::isBinaryOp(Opcode) && (Ops.size() == 2)) ||
           (Instruction::isUnaryOp(Opcode) && (Ops.size() == 1))) &&
          "Invalid number of operands.");
-  VectorBuilder VBuilder(State.Builder);
   VPValue *EVL = State.EVL;
   Value *EVLPart =
       State.EVL ? State.get(EVL, /*NeedsScalar=*/true) : State.EVLPlaceholder;
@@ -442,8 +443,14 @@ Instruction *widenPredicatedArithmeticOp(VPTransformState &State,
   assert(EVLPart && "EVL was not created");
   if (!Mask)
     Mask = State.Builder.getTrueVector(State.VF);
-  VBuilder.setMask(Mask).setEVL(EVLPart);
-  return cast<Instruction>(
-      VBuilder.createVectorInstruction(Opcode, Ops[0]->getType(), Ops, Name));
+
+  auto VPID = VPIntrinsic::getForOpcode(Opcode);
+  SmallVector<Value *> VPOps;
+  VPOps.append(Ops.begin(), Ops.end());
+  VPOps.push_back(Mask);
+  VPOps.push_back(EVLPart);
+
+  return cast<Instruction>(State.Builder.CreateIntrinsic(
+      Ops[0]->getType()->getScalarType(), VPID, VPOps, nullptr, Name));
 }
 } // namespace llvm
