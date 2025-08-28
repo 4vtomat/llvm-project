@@ -212,7 +212,7 @@ void RISCVMCCodeEmitter::expandAddRegRel(const MCInst &MI,
   assert(SrcSymbol.isExpr() &&
          "Expected expression as third input to TP/GP-relative ADD");
 
-  const RISCVMCExpr *Expr = cast<RISCVMCExpr>(SrcSymbol.getExpr());
+  const MCSpecifierExpr *Expr = cast<MCSpecifierExpr>(SrcSymbol.getExpr());
   switch (Expr->getSpecifier()) {
   default:
     llvm_unreachable("Unknown relocation attached to TP/GP-relative ADD");
@@ -221,18 +221,18 @@ void RISCVMCCodeEmitter::expandAddRegRel(const MCInst &MI,
            "Expected thread pointer as second input to TP-relative ADD");
     FixupKind = ELF::R_RISCV_TPREL_ADD;
     break;
-  case RISCVMCExpr::VK_GPREL_ADD:
+  case RISCV::VK_GPREL_ADD:
     FixupKind = ELF::R_RISCV_SIFIVE_GPREL_ADD;
     break;
-  case RISCVMCExpr::VK_GOT_GPREL_ADD:
+  case RISCV::VK_GOT_GPREL_ADD:
     FixupKind = ELF::R_RISCV_SIFIVE_GOT_GPREL_ADD;
     break;
   // Do not emit fixup_riscv_relax for the following cases.
-  case RISCVMCExpr::VK_TLS_GOT_GPREL_ADD:
+  case RISCV::VK_TLS_GOT_GPREL_ADD:
     FixupKind = ELF::R_RISCV_SIFIVE_TLS_GOT_GPREL_ADD;
     RelaxCandidate = false;
     break;
-  case RISCVMCExpr::VK_TLS_GD_GPREL_ADD:
+  case RISCV::VK_TLS_GD_GPREL_ADD:
     FixupKind = ELF::R_RISCV_SIFIVE_TLS_GD_GPREL_ADD;
     RelaxCandidate = false;
     break;
@@ -645,10 +645,10 @@ uint64_t RISCVMCCodeEmitter::getImmOpValue(const MCInst &MI, unsigned OpNo,
       break;
     case ELF::R_RISCV_TPREL_ADD:
 #if SIFIVE_CUSTOMIZATION
-    case RISCVMCExpr::VK_GPREL_ADD:
-    case RISCVMCExpr::VK_GOT_GPREL_ADD:
-    case RISCVMCExpr::VK_TLS_GOT_GPREL_ADD:
-    case RISCVMCExpr::VK_TLS_GD_GPREL_ADD:
+    case RISCV::VK_GPREL_ADD:
+    case RISCV::VK_GOT_GPREL_ADD:
+    case RISCV::VK_TLS_GOT_GPREL_ADD:
+    case RISCV::VK_TLS_GD_GPREL_ADD:
       // These are only used to indicate that a relocation should be
       // emitted for an add instruction used in TP/GP-relative addressing.
       // It should not be expanded as if representing an actual instruction
@@ -662,12 +662,8 @@ uint64_t RISCVMCCodeEmitter::getImmOpValue(const MCInst &MI, unsigned OpNo,
       // encounter it here is an error.
       llvm_unreachable(
           "ELF::R_RISCV_TPREL_ADD should not represent an instruction operand");
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-    case RISCVMCExpr::VK_LO:
-=======
     case RISCV::S_LO:
->>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
       if (MIFrm == RISCVII::InstFormatI)
         FixupKind = RISCV::fixup_riscv_lo12_i;
       else if (MIFrm == RISCVII::InstFormatS)
@@ -706,11 +702,11 @@ uint64_t RISCVMCCodeEmitter::getImmOpValue(const MCInst &MI, unsigned OpNo,
       RelaxCandidate = true;
       break;
 #if SIFIVE_CUSTOMIZATION
-    case RISCVMCExpr::VK_GPREL_HI:
+    case RISCV::VK_GPREL_HI:
       FixupKind = ELF::R_RISCV_SIFIVE_GPREL_HI20;
       RelaxCandidate = true;
       break;
-    case RISCVMCExpr::VK_GPREL_LO:
+    case RISCV::VK_GPREL_LO:
       if (MIFrm == RISCVII::InstFormatI)
         FixupKind = ELF::R_RISCV_SIFIVE_GPREL_LO12_I;
       else if (MIFrm == RISCVII::InstFormatS)
@@ -719,29 +715,29 @@ uint64_t RISCVMCCodeEmitter::getImmOpValue(const MCInst &MI, unsigned OpNo,
         llvm_unreachable("VK_GPREL_LO used with unexpected instruction format");
       RelaxCandidate = true;
       break;
-    case RISCVMCExpr::VK_GOT_GPREL_HI:
+    case RISCV::VK_GOT_GPREL_HI:
       FixupKind = ELF::R_RISCV_SIFIVE_GOT_GPREL_HI20;
       RelaxCandidate = true;
       break;
-    case RISCVMCExpr::VK_GOT_GPREL_LO:
+    case RISCV::VK_GOT_GPREL_LO:
       assert(MIFrm == RISCVII::InstFormatI &&
              "VK_GOT_GPREL_LO used with unexpected instruction format");
       FixupKind = ELF::R_RISCV_SIFIVE_GOT_GPREL_LO12_I;
       RelaxCandidate = true;
       break;
-    case RISCVMCExpr::VK_TLS_GOT_GPREL_HI:
+    case RISCV::VK_TLS_GOT_GPREL_HI:
       FixupKind = ELF::R_RISCV_SIFIVE_TLS_GOT_GPREL_HI20;
       break;
-    case RISCVMCExpr::VK_TLS_GOT_GPREL_LO:
+    case RISCV::VK_TLS_GOT_GPREL_LO:
       assert(
           MIFrm == RISCVII::InstFormatI &&
           "VK_TLS_GOT_GPREL_LO used with unexpected instruction format");
       FixupKind = ELF::R_RISCV_SIFIVE_TLS_GOT_GPREL_LO12_I;
       break;
-    case RISCVMCExpr::VK_TLS_GD_GPREL_HI:
+    case RISCV::VK_TLS_GD_GPREL_HI:
       FixupKind = ELF::R_RISCV_SIFIVE_TLS_GD_GPREL_HI20;
       break;
-    case RISCVMCExpr::VK_TLS_GD_GPREL_LO:
+    case RISCV::VK_TLS_GD_GPREL_LO:
       assert(
           MIFrm == RISCVII::InstFormatI &&
           "VK_TLS_GD_GPREL_LO used with unexpected instruction format");
