@@ -41,8 +41,22 @@ enum {
   S_LO = FirstTargetFixupKind,
   S_PCREL_LO,
   S_TPREL_LO,
-  // Vendor-specific relocation types might conflict across vendors.
-  // Refer to them using Specifier constants.
+// Vendor-specific relocation types might conflict across vendors.
+// Refer to them using Specifier constants.
+#if SIFIVE_CUSTOMIZATION
+  VK_GPREL_LO,
+  VK_GPREL_HI,
+  VK_GPREL_ADD,
+  VK_GOT_GPREL_LO,
+  VK_GOT_GPREL_HI,
+  VK_GOT_GPREL_ADD,
+  VK_TLS_GOT_GPREL_LO,
+  VK_TLS_GOT_GPREL_HI,
+  VK_TLS_GOT_GPREL_ADD,
+  VK_TLS_GD_GPREL_LO,
+  VK_TLS_GD_GPREL_HI,
+  VK_TLS_GD_GPREL_ADD,
+#endif // SIFIVE_CUSTOMIZATION
   S_QC_ABS20,
 };
 
