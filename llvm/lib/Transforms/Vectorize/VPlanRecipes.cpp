@@ -1016,7 +1016,7 @@ Value *VPInstruction::generate(VPTransformState &State) {
         assert(InitEVL && "InitEVL must be generated when tail folding by EVL");
       }
       ReducedPartRdx =
-          InitEVL ? createSimpleReduction(Builder, ReducedPartRdx, RK, InitEVL)
+          InitEVL ? createSimpleReduction(Builder, ReducedPartRdx, RK, nullptr, InitEVL)
                   : createSimpleReduction(Builder, ReducedPartRdx, RK);
 #else
       ReducedPartRdx = createSimpleReduction(Builder, ReducedPartRdx, RK);
@@ -1107,10 +1107,12 @@ Value *VPInstruction::generate(VPTransformState &State) {
         assert(InitEVL &&
                "InitEVL must be initialized in emitIterationCountCheck when "
                "using VP intrinsic to generate unordered reduction");
+        assert(InitEVL && "EVL must has value");
         ReducedPartRdx = createSimpleReduction(
-            Builder, ReducedPartRdx, RecurKind::SMax, InitEVL, MaskPartRdx);
+            Builder, ReducedPartRdx, RecurKind::SMax, MaskPartRdx, InitEVL);
+        assert(InitEVL && "EVL must has value");
         MaskPartRdx =
-            createSimpleReduction(Builder, MaskPartRdx, RecurKind::Or, InitEVL);
+            createSimpleReduction(Builder, MaskPartRdx, RecurKind::Or, nullptr, InitEVL);
       } else {
         ReducedPartRdx =
             createSimpleReduction(Builder, ReducedPartRdx, RecurKind::SMax);

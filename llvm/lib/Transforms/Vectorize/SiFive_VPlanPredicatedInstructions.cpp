@@ -126,7 +126,7 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     Value *MaskArg = BuilderIR.getTrueVector(State.VF);
     Value *EVLArg = State.get(EVL, /*NeedsScalar=*/true);
     return BuilderIR.CreateIntrinsic(
-        PredTy->getElementType(), Intrinsic::vp_xor,
+      MaskArg->getType(), Intrinsic::vp_xor,
         {A, MaskArg, MaskArg, EVLArg}, nullptr, "pred.not");
   }
   case Instruction::Select: {
@@ -156,14 +156,15 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     if (FCmp) {
       IRBuilder<>::FastMathFlagGuard FMFG(BuilderIR);
       auto *V = BuilderIR.CreateIntrinsic(
-          OpTy->getElementType(), Intrinsic::vp_fcmp,
+        MaskArg->getType(), Intrinsic::vp_fcmp,
           {A, B, PredArg, MaskArg, EVLArg}, nullptr, "vp.op.fcmp");
       if (auto *VPF = dyn_cast<VPRecipeWithIRFlags>(Def))
         VPF->applyFlags(cast<Instruction>(*V));
 
       return V;
     }
-    return BuilderIR.CreateIntrinsic(OpTy->getElementType(), Intrinsic::vp_icmp,
+    
+    return BuilderIR.CreateIntrinsic(MaskArg->getType(), Intrinsic::vp_icmp,
                                      {A, B, PredArg, MaskArg, EVLArg}, nullptr,
                                      "vp.op.icmp");
   }
@@ -192,9 +193,8 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     Value *MaskArg = BuilderIR.getTrueVector(SrcTy->getElementCount());
     Value *EVLArg = State.get(EVL, /*NeedsScalar=*/true);
     auto VPID = VPIntrinsic::getForOpcode(VPWC->getOpcode());
-    return BuilderIR.CreateIntrinsic(DestVecTy->getElementType(), VPID,
-                                     {SrcVal, MaskArg, EVLArg}, nullptr,
-                                     "vp.cast");
+    return BuilderIR.CreateIntrinsic(DestVecTy, VPID, {SrcVal, MaskArg, EVLArg},
+                                     nullptr, "vp.cast");
   }
   default:
     break;
@@ -451,6 +451,6 @@ Instruction *widenPredicatedArithmeticOp(VPTransformState &State,
   VPOps.push_back(EVLPart);
 
   return cast<Instruction>(State.Builder.CreateIntrinsic(
-      Ops[0]->getType()->getScalarType(), VPID, VPOps, nullptr, Name));
+      Ops[0]->getType(), VPID, VPOps, nullptr, Name));
 }
 } // namespace llvm

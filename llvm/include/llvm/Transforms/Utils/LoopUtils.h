@@ -455,17 +455,6 @@ LLVM_ABI Value *createSimpleReduction(IRBuilderBase &B, Value *Src,
                                       RecurKind RdxKind, Value *Mask,
                                       Value *EVL);
 
-#if SIFIVE_CUSTOMIZATION
-/// Create a target reduction of the given vector. The reduction operation
-/// is described by the \p Opcode parameter. min/max reductions require
-/// additional information supplied in \p RdxKind.
-/// The target is queried to determine if intrinsics or shuffle sequences are
-/// required to implement the reduction.
-/// Fast-math-flags are propagated using the IRBuilder's setting.
-Value *createSimpleReduction(IRBuilderBase &B, Value *Src, RecurKind RdxKind,
-                             Value *EVL, Value *Mask = nullptr);
-#endif // SIFIVE_CUSTOMIZATION
-
 /// Create a reduction of the given vector \p Src for a reduction of kind
 /// RecurKind::AnyOf. The start value of the reduction is \p InitVal.
 LLVM_ABI Value *createAnyOfReduction(IRBuilderBase &B, Value *Src,
