@@ -9158,15 +9158,15 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
   VPlanTransforms::runPass(VPlanTransforms::unrollByUF, BestVPlan, BestUF,
                            OrigLoop->getHeader()->getContext());
   VPlanTransforms::runPass(VPlanTransforms::materializeBroadcasts, BestVPlan);
+  if (hasBranchWeightMD(*OrigLoop->getLoopLatch()->getTerminator()))
+    VPlanTransforms::runPass(
+        VPlanTransforms::addBranchWeightToMiddleTerminator, BestVPlan,
+        BestVF);
 #if SIFIVE_CUSTOMIZATION
-  if (!BestVPlan.isUncountable() &&
-      (!BestVPlan.useVLAVectorizer() || !Legal->getLAI() ||
-       Legal->isSafeForAnyVectorWidth()))
-#endif // SIFIVE_CUSTOMIZATION
-    if (hasBranchWeightMD(*OrigLoop->getLoopLatch()->getTerminator()))
-      VPlanTransforms::runPass(
-          VPlanTransforms::addBranchWeightToMiddleTerminator, BestVPlan,
-          BestVF);
+if (!BestVPlan.isUncountable() &&
+    (!BestVPlan.useVLAVectorizer() || !Legal->getLAI() ||
+    Legal->isSafeForAnyVectorWidth()))
+#endif // SIFIVE_CUSTOMIZATION                           
   VPlanTransforms::optimizeForVFAndUF(BestVPlan, BestVF, BestUF, PSE);
   VPlanTransforms::simplifyRecipes(BestVPlan, *Legal->getWidestInductionType());
   VPlanTransforms::narrowInterleaveGroups(
