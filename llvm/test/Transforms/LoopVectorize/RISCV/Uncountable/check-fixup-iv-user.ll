@@ -14,11 +14,11 @@ define void @foo(ptr %arg1, i64 %arg2) {
 ; CHECK-NEXT:    [[UMAX:%.*]] = call i64 @llvm.umax.i64(i64 [[TMP0]], i64 [[TMP1]])
 ; CHECK-NEXT:    [[TMP2:%.*]] = sub i64 [[UMAX]], [[ARG11]]
 ; CHECK-NEXT:    [[TMP3:%.*]] = icmp ule i64 [[TMP2]], 10
-; CHECK-NEXT:    br i1 [[TMP3]], label %[[VEC_UNCOUNTABLE_SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
+; CHECK-NEXT:    br i1 [[TMP3]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[ARG1]], i64 [[TMP2]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 16
+; CHECK-NEXT:    [[TMP6:%.*]] = mul nuw i64 [[TMP5]], 16
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP6]], 0
 ; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP7]], i64 0
 ; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
@@ -61,11 +61,11 @@ define void @foo(ptr %arg1, i64 %arg2) {
 ; CHECK-NEXT:    [[TMP23:%.*]] = add i64 [[TMP22]], [[INDEX_LCSSA]]
 ; CHECK-NEXT:    [[IND_EARLY_ESCAPE:%.*]] = getelementptr i8, ptr [[ARG1]], i64 [[TMP23]]
 ; CHECK-NEXT:    br label %[[EXIT]]
-; CHECK:       [[VEC_UNCOUNTABLE_SCALAR_PH]]:
+; CHECK:       [[SCALAR_PH]]:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ [[ARG1]], %[[ENTRY]] ]
 ; CHECK-NEXT:    br label %[[LOOP:.*]]
 ; CHECK:       [[LOOP]]:
-; CHECK-NEXT:    [[PHI1:%.*]] = phi ptr [ [[BC_RESUME_VAL]], %[[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[GEP2:%.*]], %[[LOOP_NEXT:.*]] ]
+; CHECK-NEXT:    [[PHI1:%.*]] = phi ptr [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[GEP2:%.*]], %[[LOOP_NEXT:.*]] ]
 ; CHECK-NEXT:    [[LOAD:%.*]] = load i8, ptr [[PHI1]], align 1
 ; CHECK-NEXT:    [[ICMP1:%.*]] = icmp eq i8 [[LOAD]], 37
 ; CHECK-NEXT:    br i1 [[ICMP1]], label %[[EXIT_LOOPEXIT:.*]], label %[[LOOP_NEXT]]

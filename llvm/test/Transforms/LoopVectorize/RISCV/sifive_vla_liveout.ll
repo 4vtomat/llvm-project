@@ -13,20 +13,24 @@ define dso_local noundef i32 @_Z3fooiPKfPf(i32 noundef signext %N, ptr nocapture
 ; CHECK-NEXT:    br label [[VECTOR_MEMCHECK:%.*]]
 ; CHECK:       vector.memcheck:
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
+; CHECK-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
 ; CHECK-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 4
 ; CHECK-NEXT:    [[TMP3:%.*]] = sub i64 [[B1]], [[A2]]
 ; CHECK-NEXT:    [[DIFF_CHECK:%.*]] = icmp ult i64 [[TMP3]], [[TMP2]]
 ; CHECK-NEXT:    br i1 [[DIFF_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP4]], 4
+; CHECK-NEXT:    [[TMP5:%.*]] = mul nuw i64 [[TMP4]], 4
 ; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 4, i1 true)
 ; CHECK-NEXT:    [[DOTCAST:%.*]] = trunc i64 [[WIDE_TRIP_COUNT]] to i32
 ; CHECK-NEXT:    [[IND_END:%.*]] = mul i32 [[DOTCAST]], 2
 ; CHECK-NEXT:    [[TMP6:%.*]] = call <vscale x 4 x i32> @llvm.stepvector.nxv4i32()
 ; CHECK-NEXT:    [[TMP8:%.*]] = mul <vscale x 4 x i32> [[TMP6]], splat (i32 2)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 4 x i32> zeroinitializer, [[TMP8]]
+; CHECK-NEXT:    [[TMP10:%.*]] = trunc i64 [[TMP5]] to i32
+; CHECK-NEXT:    [[TMP13:%.*]] = mul i32 2, [[TMP10]]
+; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 4 x i32> poison, i32 [[TMP13]], i64 0
+; CHECK-NEXT:    [[DOTSPLAT5:%.*]] = shufflevector <vscale x 4 x i32> [[BROADCAST_SPLATINSERT]], <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -43,9 +47,6 @@ define dso_local noundef i32 @_Z3fooiPKfPf(i32 noundef signext %N, ptr nocapture
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv4i32.p0(<vscale x 4 x i32> [[VP_OP]], ptr align 4 [[TMP17]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP12]]), !tbaa [[TBAA3]]
 ; CHECK-NEXT:    [[TMP18:%.*]] = zext i32 [[TMP12]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP18]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP19:%.*]] = mul i32 2, [[TMP12]]
-; CHECK-NEXT:    [[DOTSPLATINSERT4:%.*]] = insertelement <vscale x 4 x i32> poison, i32 [[TMP19]], i64 0
-; CHECK-NEXT:    [[DOTSPLAT5:%.*]] = shufflevector <vscale x 4 x i32> [[DOTSPLATINSERT4]], <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = call <vscale x 4 x i32> @llvm.vp.add.nxv4i32(<vscale x 4 x i32> [[VEC_IND]], <vscale x 4 x i32> [[DOTSPLAT5]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP12]])
 ; CHECK-NEXT:    [[TMP20:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
 ; CHECK-NEXT:    br i1 [[TMP20]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
@@ -72,7 +73,7 @@ define dso_local noundef i32 @_Z3fooiPKfPf(i32 noundef signext %N, ptr nocapture
 ; CHECK-NEXT:    [[ADD3]] = add i32 [[LINEAR_010]], 2
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP11:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
 ;
 entry:
   %cmp9 = icmp sgt i32 %N, 0

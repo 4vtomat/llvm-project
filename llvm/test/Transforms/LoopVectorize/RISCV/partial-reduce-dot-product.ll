@@ -7,79 +7,38 @@
 target triple = "riscv64-none-unknown-elf"
 
 define i32 @vqdot(ptr %a, ptr %b) #0 {
-; V-LABEL: define i32 @vqdot(
-; V-SAME: ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0:[0-9]+]] {
-; V-NEXT:  entry:
-; V-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; V-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
-; V-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 1024, [[TMP1]]
-; V-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
-; V:       vector.ph:
-; V-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; V-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP2]], 4
-; V-NEXT:    [[N_MOD_VF:%.*]] = urem i64 1024, [[TMP3]]
-; V-NEXT:    [[N_VEC:%.*]] = sub i64 1024, [[N_MOD_VF]]
-; V-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; V-NEXT:    [[TMP5:%.*]] = mul nuw i64 [[TMP4]], 4
-; V-NEXT:    br label [[VECTOR_BODY:%.*]]
-; V:       vector.body:
-; V-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; V-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 4 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP13:%.*]], [[VECTOR_BODY]] ]
-; V-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[A]], i64 [[INDEX]]
-; V-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[TMP6]], i32 0
-; V-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 4 x i8>, ptr [[TMP7]], align 1
-; V-NEXT:    [[TMP8:%.*]] = sext <vscale x 4 x i8> [[WIDE_LOAD]] to <vscale x 4 x i32>
-; V-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[B]], i64 [[INDEX]]
-; V-NEXT:    [[TMP10:%.*]] = getelementptr i8, ptr [[TMP9]], i32 0
-; V-NEXT:    [[WIDE_LOAD1:%.*]] = load <vscale x 4 x i8>, ptr [[TMP10]], align 1
-; V-NEXT:    [[TMP11:%.*]] = sext <vscale x 4 x i8> [[WIDE_LOAD1]] to <vscale x 4 x i32>
-; V-NEXT:    [[TMP12:%.*]] = mul <vscale x 4 x i32> [[TMP11]], [[TMP8]]
-; V-NEXT:    [[TMP13]] = add <vscale x 4 x i32> [[TMP12]], [[VEC_PHI]]
-; V-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
-; V-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; V-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
-; V:       middle.block:
-; V-NEXT:    [[TMP15:%.*]] = call i32 @llvm.vector.reduce.add.nxv4i32(<vscale x 4 x i32> [[TMP13]])
-; V-NEXT:    [[CMP_N:%.*]] = icmp eq i64 1024, [[N_VEC]]
-; V-NEXT:    br i1 [[CMP_N]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
-; V:       scalar.ph:
-;
-; ZVQDOTQ-LABEL: define i32 @vqdot(
-; ZVQDOTQ-SAME: ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0:[0-9]+]] {
-; ZVQDOTQ-NEXT:  entry:
-; ZVQDOTQ-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; ZVQDOTQ-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
-; ZVQDOTQ-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 1024, [[TMP1]]
-; ZVQDOTQ-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
-; ZVQDOTQ:       vector.ph:
-; ZVQDOTQ-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; ZVQDOTQ-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP2]], 4
-; ZVQDOTQ-NEXT:    [[N_MOD_VF:%.*]] = urem i64 1024, [[TMP3]]
-; ZVQDOTQ-NEXT:    [[N_VEC:%.*]] = sub i64 1024, [[N_MOD_VF]]
-; ZVQDOTQ-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; ZVQDOTQ-NEXT:    [[TMP5:%.*]] = mul nuw i64 [[TMP4]], 4
-; ZVQDOTQ-NEXT:    br label [[VECTOR_BODY:%.*]]
-; ZVQDOTQ:       vector.body:
-; ZVQDOTQ-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; ZVQDOTQ-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 1 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[PARTIAL_REDUCE:%.*]], [[VECTOR_BODY]] ]
-; ZVQDOTQ-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[A]], i64 [[INDEX]]
-; ZVQDOTQ-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[TMP6]], i32 0
-; ZVQDOTQ-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 4 x i8>, ptr [[TMP7]], align 1
-; ZVQDOTQ-NEXT:    [[TMP8:%.*]] = sext <vscale x 4 x i8> [[WIDE_LOAD]] to <vscale x 4 x i32>
-; ZVQDOTQ-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[B]], i64 [[INDEX]]
-; ZVQDOTQ-NEXT:    [[TMP10:%.*]] = getelementptr i8, ptr [[TMP9]], i32 0
-; ZVQDOTQ-NEXT:    [[WIDE_LOAD1:%.*]] = load <vscale x 4 x i8>, ptr [[TMP10]], align 1
-; ZVQDOTQ-NEXT:    [[TMP11:%.*]] = sext <vscale x 4 x i8> [[WIDE_LOAD1]] to <vscale x 4 x i32>
-; ZVQDOTQ-NEXT:    [[TMP12:%.*]] = mul <vscale x 4 x i32> [[TMP11]], [[TMP8]]
-; ZVQDOTQ-NEXT:    [[PARTIAL_REDUCE]] = call <vscale x 1 x i32> @llvm.experimental.vector.partial.reduce.add.nxv1i32.nxv4i32(<vscale x 1 x i32> [[VEC_PHI]], <vscale x 4 x i32> [[TMP12]])
-; ZVQDOTQ-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
-; ZVQDOTQ-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; ZVQDOTQ-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
-; ZVQDOTQ:       middle.block:
-; ZVQDOTQ-NEXT:    [[TMP14:%.*]] = call i32 @llvm.vector.reduce.add.nxv1i32(<vscale x 1 x i32> [[PARTIAL_REDUCE]])
-; ZVQDOTQ-NEXT:    [[CMP_N:%.*]] = icmp eq i64 1024, [[N_VEC]]
-; ZVQDOTQ-NEXT:    br i1 [[CMP_N]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
-; ZVQDOTQ:       scalar.ph:
+; CHECK-LABEL: define i32 @vqdot(
+; CHECK-SAME: ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0:[0-9]+]] {
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK:       vector.ph:
+; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 1024, i32 2, i1 true)
+; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
+; CHECK:       vector.body:
+; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[AVL:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[A]], i64 [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[TMP2]], i32 0
+; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i8> @llvm.vp.load.nxv2i8.p0(ptr align 1 [[TMP3]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_CAST:%.*]] = call <vscale x 2 x i32> @llvm.vp.sext.nxv2i32.nxv2i8(<vscale x 2 x i8> [[VP_OP_LOAD]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[B]], i64 [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[TMP4]], i32 0
+; CHECK-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 2 x i8> @llvm.vp.load.nxv2i8.p0(ptr align 1 [[TMP5]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_CAST2:%.*]] = call <vscale x 2 x i32> @llvm.vp.sext.nxv2i32.nxv2i8(<vscale x 2 x i8> [[VP_OP_LOAD1]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i32> @llvm.vp.mul.nxv2i32(<vscale x 2 x i32> [[VP_CAST2]], <vscale x 2 x i32> [[VP_CAST]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_OP3:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[VP_OP]], <vscale x 2 x i32> [[VEC_PHI]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i32> [[VP_OP3]], <vscale x 2 x i32> [[VEC_PHI]], i32 [[TMP1]])
+; CHECK-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP1]] to i64
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP6]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 1024
+; CHECK-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK:       middle.block:
+; CHECK-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
+; CHECK-NEXT:    br label [[FOR_EXIT:%.*]]
+; CHECK:       scalar.ph:
 ;
 ; FIXED-V-LABEL: define i32 @vqdot(
 ; FIXED-V-SAME: ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0:[0-9]+]] {
@@ -173,79 +132,38 @@ for.exit:                        ; preds = %for.body
 
 
 define i32 @vqdotu(ptr %a, ptr %b) #0 {
-; V-LABEL: define i32 @vqdotu(
-; V-SAME: ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0]] {
-; V-NEXT:  entry:
-; V-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; V-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
-; V-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 1024, [[TMP1]]
-; V-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
-; V:       vector.ph:
-; V-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; V-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP2]], 4
-; V-NEXT:    [[N_MOD_VF:%.*]] = urem i64 1024, [[TMP3]]
-; V-NEXT:    [[N_VEC:%.*]] = sub i64 1024, [[N_MOD_VF]]
-; V-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; V-NEXT:    [[TMP5:%.*]] = mul nuw i64 [[TMP4]], 4
-; V-NEXT:    br label [[VECTOR_BODY:%.*]]
-; V:       vector.body:
-; V-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; V-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 4 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP13:%.*]], [[VECTOR_BODY]] ]
-; V-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[A]], i64 [[INDEX]]
-; V-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[TMP6]], i32 0
-; V-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 4 x i8>, ptr [[TMP7]], align 1
-; V-NEXT:    [[TMP8:%.*]] = zext <vscale x 4 x i8> [[WIDE_LOAD]] to <vscale x 4 x i32>
-; V-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[B]], i64 [[INDEX]]
-; V-NEXT:    [[TMP10:%.*]] = getelementptr i8, ptr [[TMP9]], i32 0
-; V-NEXT:    [[WIDE_LOAD1:%.*]] = load <vscale x 4 x i8>, ptr [[TMP10]], align 1
-; V-NEXT:    [[TMP11:%.*]] = zext <vscale x 4 x i8> [[WIDE_LOAD1]] to <vscale x 4 x i32>
-; V-NEXT:    [[TMP12:%.*]] = mul <vscale x 4 x i32> [[TMP11]], [[TMP8]]
-; V-NEXT:    [[TMP13]] = add <vscale x 4 x i32> [[TMP12]], [[VEC_PHI]]
-; V-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
-; V-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; V-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
-; V:       middle.block:
-; V-NEXT:    [[TMP15:%.*]] = call i32 @llvm.vector.reduce.add.nxv4i32(<vscale x 4 x i32> [[TMP13]])
-; V-NEXT:    [[CMP_N:%.*]] = icmp eq i64 1024, [[N_VEC]]
-; V-NEXT:    br i1 [[CMP_N]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
-; V:       scalar.ph:
-;
-; ZVQDOTQ-LABEL: define i32 @vqdotu(
-; ZVQDOTQ-SAME: ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0]] {
-; ZVQDOTQ-NEXT:  entry:
-; ZVQDOTQ-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; ZVQDOTQ-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
-; ZVQDOTQ-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 1024, [[TMP1]]
-; ZVQDOTQ-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
-; ZVQDOTQ:       vector.ph:
-; ZVQDOTQ-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; ZVQDOTQ-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP2]], 4
-; ZVQDOTQ-NEXT:    [[N_MOD_VF:%.*]] = urem i64 1024, [[TMP3]]
-; ZVQDOTQ-NEXT:    [[N_VEC:%.*]] = sub i64 1024, [[N_MOD_VF]]
-; ZVQDOTQ-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; ZVQDOTQ-NEXT:    [[TMP5:%.*]] = mul nuw i64 [[TMP4]], 4
-; ZVQDOTQ-NEXT:    br label [[VECTOR_BODY:%.*]]
-; ZVQDOTQ:       vector.body:
-; ZVQDOTQ-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; ZVQDOTQ-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 1 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[PARTIAL_REDUCE:%.*]], [[VECTOR_BODY]] ]
-; ZVQDOTQ-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[A]], i64 [[INDEX]]
-; ZVQDOTQ-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[TMP6]], i32 0
-; ZVQDOTQ-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 4 x i8>, ptr [[TMP7]], align 1
-; ZVQDOTQ-NEXT:    [[TMP8:%.*]] = zext <vscale x 4 x i8> [[WIDE_LOAD]] to <vscale x 4 x i32>
-; ZVQDOTQ-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[B]], i64 [[INDEX]]
-; ZVQDOTQ-NEXT:    [[TMP10:%.*]] = getelementptr i8, ptr [[TMP9]], i32 0
-; ZVQDOTQ-NEXT:    [[WIDE_LOAD1:%.*]] = load <vscale x 4 x i8>, ptr [[TMP10]], align 1
-; ZVQDOTQ-NEXT:    [[TMP11:%.*]] = zext <vscale x 4 x i8> [[WIDE_LOAD1]] to <vscale x 4 x i32>
-; ZVQDOTQ-NEXT:    [[TMP12:%.*]] = mul <vscale x 4 x i32> [[TMP11]], [[TMP8]]
-; ZVQDOTQ-NEXT:    [[PARTIAL_REDUCE]] = call <vscale x 1 x i32> @llvm.experimental.vector.partial.reduce.add.nxv1i32.nxv4i32(<vscale x 1 x i32> [[VEC_PHI]], <vscale x 4 x i32> [[TMP12]])
-; ZVQDOTQ-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
-; ZVQDOTQ-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; ZVQDOTQ-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
-; ZVQDOTQ:       middle.block:
-; ZVQDOTQ-NEXT:    [[TMP14:%.*]] = call i32 @llvm.vector.reduce.add.nxv1i32(<vscale x 1 x i32> [[PARTIAL_REDUCE]])
-; ZVQDOTQ-NEXT:    [[CMP_N:%.*]] = icmp eq i64 1024, [[N_VEC]]
-; ZVQDOTQ-NEXT:    br i1 [[CMP_N]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
-; ZVQDOTQ:       scalar.ph:
+; CHECK-LABEL: define i32 @vqdotu(
+; CHECK-SAME: ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0]] {
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK:       vector.ph:
+; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 1024, i32 2, i1 true)
+; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
+; CHECK:       vector.body:
+; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[AVL:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[A]], i64 [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[TMP2]], i32 0
+; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i8> @llvm.vp.load.nxv2i8.p0(ptr align 1 [[TMP3]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_CAST:%.*]] = call <vscale x 2 x i32> @llvm.vp.zext.nxv2i32.nxv2i8(<vscale x 2 x i8> [[VP_OP_LOAD]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[B]], i64 [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[TMP4]], i32 0
+; CHECK-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 2 x i8> @llvm.vp.load.nxv2i8.p0(ptr align 1 [[TMP5]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_CAST2:%.*]] = call <vscale x 2 x i32> @llvm.vp.zext.nxv2i32.nxv2i8(<vscale x 2 x i8> [[VP_OP_LOAD1]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i32> @llvm.vp.mul.nxv2i32(<vscale x 2 x i32> [[VP_CAST2]], <vscale x 2 x i32> [[VP_CAST]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_OP3:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[VP_OP]], <vscale x 2 x i32> [[VEC_PHI]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i32> [[VP_OP3]], <vscale x 2 x i32> [[VEC_PHI]], i32 [[TMP1]])
+; CHECK-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP1]] to i64
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP6]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 1024
+; CHECK-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
+; CHECK:       middle.block:
+; CHECK-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
+; CHECK-NEXT:    br label [[FOR_EXIT:%.*]]
+; CHECK:       scalar.ph:
 ;
 ; FIXED-V-LABEL: define i32 @vqdotu(
 ; FIXED-V-SAME: ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0]] {
@@ -339,115 +257,71 @@ for.exit:                        ; preds = %for.body
 
 
 define i32 @vqdotsu(ptr %a, ptr %b) #0 {
-; V-LABEL: define i32 @vqdotsu(
-; V-SAME: ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0]] {
-; V-NEXT:  entry:
-; V-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; V-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
-; V-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 1024, [[TMP1]]
-; V-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
-; V:       vector.ph:
-; V-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; V-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP2]], 4
-; V-NEXT:    [[N_MOD_VF:%.*]] = urem i64 1024, [[TMP3]]
-; V-NEXT:    [[N_VEC:%.*]] = sub i64 1024, [[N_MOD_VF]]
-; V-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; V-NEXT:    [[TMP5:%.*]] = mul nuw i64 [[TMP4]], 4
-; V-NEXT:    br label [[VECTOR_BODY:%.*]]
-; V:       vector.body:
-; V-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; V-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 4 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP13:%.*]], [[VECTOR_BODY]] ]
-; V-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[A]], i64 [[INDEX]]
-; V-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[TMP6]], i32 0
-; V-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 4 x i8>, ptr [[TMP7]], align 1
-; V-NEXT:    [[TMP8:%.*]] = zext <vscale x 4 x i8> [[WIDE_LOAD]] to <vscale x 4 x i32>
-; V-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[B]], i64 [[INDEX]]
-; V-NEXT:    [[TMP10:%.*]] = getelementptr i8, ptr [[TMP9]], i32 0
-; V-NEXT:    [[WIDE_LOAD1:%.*]] = load <vscale x 4 x i8>, ptr [[TMP10]], align 1
-; V-NEXT:    [[TMP11:%.*]] = sext <vscale x 4 x i8> [[WIDE_LOAD1]] to <vscale x 4 x i32>
-; V-NEXT:    [[TMP12:%.*]] = mul <vscale x 4 x i32> [[TMP11]], [[TMP8]]
-; V-NEXT:    [[TMP13]] = add <vscale x 4 x i32> [[TMP12]], [[VEC_PHI]]
-; V-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
-; V-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; V-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
-; V:       middle.block:
-; V-NEXT:    [[TMP15:%.*]] = call i32 @llvm.vector.reduce.add.nxv4i32(<vscale x 4 x i32> [[TMP13]])
-; V-NEXT:    [[CMP_N:%.*]] = icmp eq i64 1024, [[N_VEC]]
-; V-NEXT:    br i1 [[CMP_N]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
-; V:       scalar.ph:
-;
-; ZVQDOTQ-LABEL: define i32 @vqdotsu(
-; ZVQDOTQ-SAME: ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0]] {
-; ZVQDOTQ-NEXT:  entry:
-; ZVQDOTQ-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; ZVQDOTQ-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
-; ZVQDOTQ-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 1024, [[TMP1]]
-; ZVQDOTQ-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
-; ZVQDOTQ:       vector.ph:
-; ZVQDOTQ-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; ZVQDOTQ-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP2]], 4
-; ZVQDOTQ-NEXT:    [[N_MOD_VF:%.*]] = urem i64 1024, [[TMP3]]
-; ZVQDOTQ-NEXT:    [[N_VEC:%.*]] = sub i64 1024, [[N_MOD_VF]]
-; ZVQDOTQ-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; ZVQDOTQ-NEXT:    [[TMP5:%.*]] = mul nuw i64 [[TMP4]], 4
-; ZVQDOTQ-NEXT:    br label [[VECTOR_BODY:%.*]]
-; ZVQDOTQ:       vector.body:
-; ZVQDOTQ-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; ZVQDOTQ-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 1 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[PARTIAL_REDUCE:%.*]], [[VECTOR_BODY]] ]
-; ZVQDOTQ-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[A]], i64 [[INDEX]]
-; ZVQDOTQ-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[TMP6]], i32 0
-; ZVQDOTQ-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 4 x i8>, ptr [[TMP7]], align 1
-; ZVQDOTQ-NEXT:    [[TMP8:%.*]] = zext <vscale x 4 x i8> [[WIDE_LOAD]] to <vscale x 4 x i32>
-; ZVQDOTQ-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[B]], i64 [[INDEX]]
-; ZVQDOTQ-NEXT:    [[TMP10:%.*]] = getelementptr i8, ptr [[TMP9]], i32 0
-; ZVQDOTQ-NEXT:    [[WIDE_LOAD1:%.*]] = load <vscale x 4 x i8>, ptr [[TMP10]], align 1
-; ZVQDOTQ-NEXT:    [[TMP11:%.*]] = sext <vscale x 4 x i8> [[WIDE_LOAD1]] to <vscale x 4 x i32>
-; ZVQDOTQ-NEXT:    [[TMP12:%.*]] = mul <vscale x 4 x i32> [[TMP11]], [[TMP8]]
-; ZVQDOTQ-NEXT:    [[PARTIAL_REDUCE]] = call <vscale x 1 x i32> @llvm.experimental.vector.partial.reduce.add.nxv1i32.nxv4i32(<vscale x 1 x i32> [[VEC_PHI]], <vscale x 4 x i32> [[TMP12]])
-; ZVQDOTQ-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
-; ZVQDOTQ-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; ZVQDOTQ-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
-; ZVQDOTQ:       middle.block:
-; ZVQDOTQ-NEXT:    [[TMP14:%.*]] = call i32 @llvm.vector.reduce.add.nxv1i32(<vscale x 1 x i32> [[PARTIAL_REDUCE]])
-; ZVQDOTQ-NEXT:    [[CMP_N:%.*]] = icmp eq i64 1024, [[N_VEC]]
-; ZVQDOTQ-NEXT:    br i1 [[CMP_N]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
-; ZVQDOTQ:       scalar.ph:
+; CHECK-LABEL: define i32 @vqdotsu(
+; CHECK-SAME: ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0]] {
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK:       vector.ph:
+; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 1024, i32 2, i1 true)
+; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
+; CHECK:       vector.body:
+; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[AVL:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[A]], i64 [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[TMP2]], i32 0
+; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i8> @llvm.vp.load.nxv2i8.p0(ptr align 1 [[TMP3]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_CAST:%.*]] = call <vscale x 2 x i32> @llvm.vp.zext.nxv2i32.nxv2i8(<vscale x 2 x i8> [[VP_OP_LOAD]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[B]], i64 [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[TMP4]], i32 0
+; CHECK-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 2 x i8> @llvm.vp.load.nxv2i8.p0(ptr align 1 [[TMP5]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_CAST2:%.*]] = call <vscale x 2 x i32> @llvm.vp.sext.nxv2i32.nxv2i8(<vscale x 2 x i8> [[VP_OP_LOAD1]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i32> @llvm.vp.mul.nxv2i32(<vscale x 2 x i32> [[VP_CAST2]], <vscale x 2 x i32> [[VP_CAST]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_OP3:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[VP_OP]], <vscale x 2 x i32> [[VEC_PHI]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i32> [[VP_OP3]], <vscale x 2 x i32> [[VEC_PHI]], i32 [[TMP1]])
+; CHECK-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP1]] to i64
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP6]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 1024
+; CHECK-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
+; CHECK:       middle.block:
+; CHECK-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
+; CHECK-NEXT:    br label [[FOR_EXIT:%.*]]
+; CHECK:       scalar.ph:
 ;
 ; FIXED-V-LABEL: define i32 @vqdotsu(
 ; FIXED-V-SAME: ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0]] {
 ; FIXED-V-NEXT:  entry:
 ; FIXED-V-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; FIXED-V:       vector.ph:
+; FIXED-V-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 1024, i32 8, i1 true)
 ; FIXED-V-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; FIXED-V:       vector.body:
 ; FIXED-V-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; FIXED-V-NEXT:    [[VEC_PHI:%.*]] = phi <8 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP12:%.*]], [[VECTOR_BODY]] ]
+; FIXED-V-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
 ; FIXED-V-NEXT:    [[VEC_PHI1:%.*]] = phi <8 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP13:%.*]], [[VECTOR_BODY]] ]
-; FIXED-V-NEXT:    [[TMP0:%.*]] = getelementptr i8, ptr [[A]], i64 [[INDEX]]
+; FIXED-V-NEXT:    [[AVL:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
+; FIXED-V-NEXT:    [[TMP3:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 8, i1 true)
+; FIXED-V-NEXT:    [[TMP0:%.*]] = getelementptr i8, ptr [[A]], i64 [[EVL_BASED_IV]]
 ; FIXED-V-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[TMP0]], i32 0
-; FIXED-V-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[TMP0]], i32 8
-; FIXED-V-NEXT:    [[WIDE_LOAD:%.*]] = load <8 x i8>, ptr [[TMP1]], align 1
-; FIXED-V-NEXT:    [[WIDE_LOAD2:%.*]] = load <8 x i8>, ptr [[TMP2]], align 1
-; FIXED-V-NEXT:    [[TMP3:%.*]] = zext <8 x i8> [[WIDE_LOAD]] to <8 x i32>
-; FIXED-V-NEXT:    [[TMP4:%.*]] = zext <8 x i8> [[WIDE_LOAD2]] to <8 x i32>
-; FIXED-V-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[B]], i64 [[INDEX]]
+; FIXED-V-NEXT:    [[VP_OP_LOAD:%.*]] = call <8 x i8> @llvm.vp.load.v8i8.p0(ptr align 1 [[TMP1]], <8 x i1> splat (i1 true), i32 [[TMP3]])
+; FIXED-V-NEXT:    [[VP_CAST:%.*]] = call <8 x i32> @llvm.vp.zext.v8i32.v8i8(<8 x i8> [[VP_OP_LOAD]], <8 x i1> splat (i1 true), i32 [[TMP3]])
+; FIXED-V-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[B]], i64 [[EVL_BASED_IV]]
 ; FIXED-V-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[TMP5]], i32 0
-; FIXED-V-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[TMP5]], i32 8
-; FIXED-V-NEXT:    [[WIDE_LOAD3:%.*]] = load <8 x i8>, ptr [[TMP6]], align 1
-; FIXED-V-NEXT:    [[WIDE_LOAD4:%.*]] = load <8 x i8>, ptr [[TMP7]], align 1
-; FIXED-V-NEXT:    [[TMP8:%.*]] = sext <8 x i8> [[WIDE_LOAD3]] to <8 x i32>
-; FIXED-V-NEXT:    [[TMP9:%.*]] = sext <8 x i8> [[WIDE_LOAD4]] to <8 x i32>
-; FIXED-V-NEXT:    [[TMP10:%.*]] = mul <8 x i32> [[TMP8]], [[TMP3]]
-; FIXED-V-NEXT:    [[TMP11:%.*]] = mul <8 x i32> [[TMP9]], [[TMP4]]
-; FIXED-V-NEXT:    [[TMP12]] = add <8 x i32> [[TMP10]], [[VEC_PHI]]
-; FIXED-V-NEXT:    [[TMP13]] = add <8 x i32> [[TMP11]], [[VEC_PHI1]]
-; FIXED-V-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
+; FIXED-V-NEXT:    [[VP_OP_LOAD1:%.*]] = call <8 x i8> @llvm.vp.load.v8i8.p0(ptr align 1 [[TMP6]], <8 x i1> splat (i1 true), i32 [[TMP3]])
+; FIXED-V-NEXT:    [[VP_CAST2:%.*]] = call <8 x i32> @llvm.vp.sext.v8i32.v8i8(<8 x i8> [[VP_OP_LOAD1]], <8 x i1> splat (i1 true), i32 [[TMP3]])
+; FIXED-V-NEXT:    [[VP_OP:%.*]] = call <8 x i32> @llvm.vp.mul.v8i32(<8 x i32> [[VP_CAST2]], <8 x i32> [[VP_CAST]], <8 x i1> splat (i1 true), i32 [[TMP3]])
+; FIXED-V-NEXT:    [[TMP13]] = call <8 x i32> @llvm.vp.add.v8i32(<8 x i32> [[VP_OP]], <8 x i32> [[VEC_PHI1]], <8 x i1> splat (i1 true), i32 [[TMP3]])
+; FIXED-V-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP3]] to i64
+; FIXED-V-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[TMP7]], [[EVL_BASED_IV]]
 ; FIXED-V-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
-; FIXED-V-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
+; FIXED-V-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
 ; FIXED-V:       middle.block:
-; FIXED-V-NEXT:    [[BIN_RDX:%.*]] = add <8 x i32> [[TMP13]], [[TMP12]]
-; FIXED-V-NEXT:    [[TMP15:%.*]] = call i32 @llvm.vector.reduce.add.v8i32(<8 x i32> [[BIN_RDX]])
-; FIXED-V-NEXT:    br i1 true, label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
+; FIXED-V-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vp.reduce.add.v8i32(i32 0, <8 x i32> [[TMP13]], <8 x i1> splat (i1 true), i32 [[TMP2]])
+; FIXED-V-NEXT:    [[TMP9:%.*]] = call <8 x i1> @llvm.vp.icmp.v8i64(<8 x i64> splat (i64 1024), <8 x i64> splat (i64 1024), metadata !"eq", <8 x i1> splat (i1 true), i32 [[TMP2]])
+; FIXED-V-NEXT:    [[TMP10:%.*]] = extractelement <8 x i1> [[TMP9]], i32 0
+; FIXED-V-NEXT:    br i1 [[TMP10]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
 ; FIXED-V:       scalar.ph:
 ;
 ; FIXED-ZVQDOTQ-LABEL: define i32 @vqdotsu(
@@ -455,36 +329,33 @@ define i32 @vqdotsu(ptr %a, ptr %b) #0 {
 ; FIXED-ZVQDOTQ-NEXT:  entry:
 ; FIXED-ZVQDOTQ-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; FIXED-ZVQDOTQ:       vector.ph:
+; FIXED-ZVQDOTQ-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 1024, i32 8, i1 true)
 ; FIXED-ZVQDOTQ-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; FIXED-ZVQDOTQ:       vector.body:
 ; FIXED-ZVQDOTQ-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; FIXED-ZVQDOTQ-NEXT:    [[VEC_PHI:%.*]] = phi <2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[PARTIAL_REDUCE:%.*]], [[VECTOR_BODY]] ]
+; FIXED-ZVQDOTQ-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
 ; FIXED-ZVQDOTQ-NEXT:    [[VEC_PHI1:%.*]] = phi <2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[PARTIAL_REDUCE5:%.*]], [[VECTOR_BODY]] ]
-; FIXED-ZVQDOTQ-NEXT:    [[TMP0:%.*]] = getelementptr i8, ptr [[A]], i64 [[INDEX]]
+; FIXED-ZVQDOTQ-NEXT:    [[AVL:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
+; FIXED-ZVQDOTQ-NEXT:    [[TMP3:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 8, i1 true)
+; FIXED-ZVQDOTQ-NEXT:    [[TMP0:%.*]] = getelementptr i8, ptr [[A]], i64 [[EVL_BASED_IV]]
 ; FIXED-ZVQDOTQ-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[TMP0]], i32 0
-; FIXED-ZVQDOTQ-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[TMP0]], i32 8
-; FIXED-ZVQDOTQ-NEXT:    [[WIDE_LOAD:%.*]] = load <8 x i8>, ptr [[TMP1]], align 1
-; FIXED-ZVQDOTQ-NEXT:    [[WIDE_LOAD2:%.*]] = load <8 x i8>, ptr [[TMP2]], align 1
-; FIXED-ZVQDOTQ-NEXT:    [[TMP3:%.*]] = zext <8 x i8> [[WIDE_LOAD]] to <8 x i32>
-; FIXED-ZVQDOTQ-NEXT:    [[TMP4:%.*]] = zext <8 x i8> [[WIDE_LOAD2]] to <8 x i32>
-; FIXED-ZVQDOTQ-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[B]], i64 [[INDEX]]
+; FIXED-ZVQDOTQ-NEXT:    [[VP_OP_LOAD:%.*]] = call <8 x i8> @llvm.vp.load.v8i8.p0(ptr align 1 [[TMP1]], <8 x i1> splat (i1 true), i32 [[TMP3]])
+; FIXED-ZVQDOTQ-NEXT:    [[VP_CAST:%.*]] = call <8 x i32> @llvm.vp.zext.v8i32.v8i8(<8 x i8> [[VP_OP_LOAD]], <8 x i1> splat (i1 true), i32 [[TMP3]])
+; FIXED-ZVQDOTQ-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[B]], i64 [[EVL_BASED_IV]]
 ; FIXED-ZVQDOTQ-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[TMP5]], i32 0
-; FIXED-ZVQDOTQ-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[TMP5]], i32 8
-; FIXED-ZVQDOTQ-NEXT:    [[WIDE_LOAD3:%.*]] = load <8 x i8>, ptr [[TMP6]], align 1
-; FIXED-ZVQDOTQ-NEXT:    [[WIDE_LOAD4:%.*]] = load <8 x i8>, ptr [[TMP7]], align 1
-; FIXED-ZVQDOTQ-NEXT:    [[TMP8:%.*]] = sext <8 x i8> [[WIDE_LOAD3]] to <8 x i32>
-; FIXED-ZVQDOTQ-NEXT:    [[TMP9:%.*]] = sext <8 x i8> [[WIDE_LOAD4]] to <8 x i32>
-; FIXED-ZVQDOTQ-NEXT:    [[TMP10:%.*]] = mul <8 x i32> [[TMP8]], [[TMP3]]
-; FIXED-ZVQDOTQ-NEXT:    [[TMP11:%.*]] = mul <8 x i32> [[TMP9]], [[TMP4]]
-; FIXED-ZVQDOTQ-NEXT:    [[PARTIAL_REDUCE]] = call <2 x i32> @llvm.experimental.vector.partial.reduce.add.v2i32.v8i32(<2 x i32> [[VEC_PHI]], <8 x i32> [[TMP10]])
+; FIXED-ZVQDOTQ-NEXT:    [[VP_OP_LOAD1:%.*]] = call <8 x i8> @llvm.vp.load.v8i8.p0(ptr align 1 [[TMP6]], <8 x i1> splat (i1 true), i32 [[TMP3]])
+; FIXED-ZVQDOTQ-NEXT:    [[VP_CAST2:%.*]] = call <8 x i32> @llvm.vp.sext.v8i32.v8i8(<8 x i8> [[VP_OP_LOAD1]], <8 x i1> splat (i1 true), i32 [[TMP3]])
+; FIXED-ZVQDOTQ-NEXT:    [[TMP11:%.*]] = call <8 x i32> @llvm.vp.mul.v8i32(<8 x i32> [[VP_CAST2]], <8 x i32> [[VP_CAST]], <8 x i1> splat (i1 true), i32 [[TMP3]])
 ; FIXED-ZVQDOTQ-NEXT:    [[PARTIAL_REDUCE5]] = call <2 x i32> @llvm.experimental.vector.partial.reduce.add.v2i32.v8i32(<2 x i32> [[VEC_PHI1]], <8 x i32> [[TMP11]])
-; FIXED-ZVQDOTQ-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
+; FIXED-ZVQDOTQ-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP3]] to i64
+; FIXED-ZVQDOTQ-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[TMP7]], [[EVL_BASED_IV]]
 ; FIXED-ZVQDOTQ-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
-; FIXED-ZVQDOTQ-NEXT:    br i1 [[TMP12]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
+; FIXED-ZVQDOTQ-NEXT:    br i1 [[TMP12]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
 ; FIXED-ZVQDOTQ:       middle.block:
-; FIXED-ZVQDOTQ-NEXT:    [[BIN_RDX:%.*]] = add <2 x i32> [[PARTIAL_REDUCE5]], [[PARTIAL_REDUCE]]
-; FIXED-ZVQDOTQ-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vector.reduce.add.v2i32(<2 x i32> [[BIN_RDX]])
-; FIXED-ZVQDOTQ-NEXT:    br i1 true, label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
+; FIXED-ZVQDOTQ-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vp.reduce.add.v2i32(i32 0, <2 x i32> [[PARTIAL_REDUCE5]], <2 x i1> splat (i1 true), i32 [[TMP2]])
+; FIXED-ZVQDOTQ-NEXT:    [[TMP9:%.*]] = call <8 x i1> @llvm.vp.icmp.v8i64(<8 x i64> splat (i64 1024), <8 x i64> splat (i64 1024), metadata !"eq", <8 x i1> splat (i1 true), i32 [[TMP2]])
+; FIXED-ZVQDOTQ-NEXT:    [[TMP10:%.*]] = extractelement <8 x i1> [[TMP9]], i32 0
+; FIXED-ZVQDOTQ-NEXT:    br i1 [[TMP10]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
 ; FIXED-ZVQDOTQ:       scalar.ph:
 ;
 entry:
@@ -510,115 +381,71 @@ for.exit:                        ; preds = %for.body
 }
 
 define i32 @vqdotsu2(ptr %a, ptr %b) #0 {
-; V-LABEL: define i32 @vqdotsu2(
-; V-SAME: ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0]] {
-; V-NEXT:  entry:
-; V-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; V-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
-; V-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 1024, [[TMP1]]
-; V-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
-; V:       vector.ph:
-; V-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; V-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP2]], 4
-; V-NEXT:    [[N_MOD_VF:%.*]] = urem i64 1024, [[TMP3]]
-; V-NEXT:    [[N_VEC:%.*]] = sub i64 1024, [[N_MOD_VF]]
-; V-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; V-NEXT:    [[TMP5:%.*]] = mul nuw i64 [[TMP4]], 4
-; V-NEXT:    br label [[VECTOR_BODY:%.*]]
-; V:       vector.body:
-; V-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; V-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 4 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP13:%.*]], [[VECTOR_BODY]] ]
-; V-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[A]], i64 [[INDEX]]
-; V-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[TMP6]], i32 0
-; V-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 4 x i8>, ptr [[TMP7]], align 1
-; V-NEXT:    [[TMP8:%.*]] = sext <vscale x 4 x i8> [[WIDE_LOAD]] to <vscale x 4 x i32>
-; V-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[B]], i64 [[INDEX]]
-; V-NEXT:    [[TMP10:%.*]] = getelementptr i8, ptr [[TMP9]], i32 0
-; V-NEXT:    [[WIDE_LOAD1:%.*]] = load <vscale x 4 x i8>, ptr [[TMP10]], align 1
-; V-NEXT:    [[TMP11:%.*]] = zext <vscale x 4 x i8> [[WIDE_LOAD1]] to <vscale x 4 x i32>
-; V-NEXT:    [[TMP12:%.*]] = mul <vscale x 4 x i32> [[TMP11]], [[TMP8]]
-; V-NEXT:    [[TMP13]] = add <vscale x 4 x i32> [[TMP12]], [[VEC_PHI]]
-; V-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
-; V-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; V-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
-; V:       middle.block:
-; V-NEXT:    [[TMP15:%.*]] = call i32 @llvm.vector.reduce.add.nxv4i32(<vscale x 4 x i32> [[TMP13]])
-; V-NEXT:    [[CMP_N:%.*]] = icmp eq i64 1024, [[N_VEC]]
-; V-NEXT:    br i1 [[CMP_N]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
-; V:       scalar.ph:
-;
-; ZVQDOTQ-LABEL: define i32 @vqdotsu2(
-; ZVQDOTQ-SAME: ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0]] {
-; ZVQDOTQ-NEXT:  entry:
-; ZVQDOTQ-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; ZVQDOTQ-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
-; ZVQDOTQ-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 1024, [[TMP1]]
-; ZVQDOTQ-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
-; ZVQDOTQ:       vector.ph:
-; ZVQDOTQ-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; ZVQDOTQ-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP2]], 4
-; ZVQDOTQ-NEXT:    [[N_MOD_VF:%.*]] = urem i64 1024, [[TMP3]]
-; ZVQDOTQ-NEXT:    [[N_VEC:%.*]] = sub i64 1024, [[N_MOD_VF]]
-; ZVQDOTQ-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; ZVQDOTQ-NEXT:    [[TMP5:%.*]] = mul nuw i64 [[TMP4]], 4
-; ZVQDOTQ-NEXT:    br label [[VECTOR_BODY:%.*]]
-; ZVQDOTQ:       vector.body:
-; ZVQDOTQ-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; ZVQDOTQ-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 1 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[PARTIAL_REDUCE:%.*]], [[VECTOR_BODY]] ]
-; ZVQDOTQ-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[A]], i64 [[INDEX]]
-; ZVQDOTQ-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[TMP6]], i32 0
-; ZVQDOTQ-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 4 x i8>, ptr [[TMP7]], align 1
-; ZVQDOTQ-NEXT:    [[TMP8:%.*]] = sext <vscale x 4 x i8> [[WIDE_LOAD]] to <vscale x 4 x i32>
-; ZVQDOTQ-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[B]], i64 [[INDEX]]
-; ZVQDOTQ-NEXT:    [[TMP10:%.*]] = getelementptr i8, ptr [[TMP9]], i32 0
-; ZVQDOTQ-NEXT:    [[WIDE_LOAD1:%.*]] = load <vscale x 4 x i8>, ptr [[TMP10]], align 1
-; ZVQDOTQ-NEXT:    [[TMP11:%.*]] = zext <vscale x 4 x i8> [[WIDE_LOAD1]] to <vscale x 4 x i32>
-; ZVQDOTQ-NEXT:    [[TMP12:%.*]] = mul <vscale x 4 x i32> [[TMP11]], [[TMP8]]
-; ZVQDOTQ-NEXT:    [[PARTIAL_REDUCE]] = call <vscale x 1 x i32> @llvm.experimental.vector.partial.reduce.add.nxv1i32.nxv4i32(<vscale x 1 x i32> [[VEC_PHI]], <vscale x 4 x i32> [[TMP12]])
-; ZVQDOTQ-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
-; ZVQDOTQ-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; ZVQDOTQ-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
-; ZVQDOTQ:       middle.block:
-; ZVQDOTQ-NEXT:    [[TMP14:%.*]] = call i32 @llvm.vector.reduce.add.nxv1i32(<vscale x 1 x i32> [[PARTIAL_REDUCE]])
-; ZVQDOTQ-NEXT:    [[CMP_N:%.*]] = icmp eq i64 1024, [[N_VEC]]
-; ZVQDOTQ-NEXT:    br i1 [[CMP_N]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
-; ZVQDOTQ:       scalar.ph:
+; CHECK-LABEL: define i32 @vqdotsu2(
+; CHECK-SAME: ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0]] {
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK:       vector.ph:
+; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 1024, i32 2, i1 true)
+; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
+; CHECK:       vector.body:
+; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[AVL:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[A]], i64 [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[TMP2]], i32 0
+; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i8> @llvm.vp.load.nxv2i8.p0(ptr align 1 [[TMP3]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_CAST:%.*]] = call <vscale x 2 x i32> @llvm.vp.sext.nxv2i32.nxv2i8(<vscale x 2 x i8> [[VP_OP_LOAD]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[B]], i64 [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[TMP4]], i32 0
+; CHECK-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 2 x i8> @llvm.vp.load.nxv2i8.p0(ptr align 1 [[TMP5]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_CAST2:%.*]] = call <vscale x 2 x i32> @llvm.vp.zext.nxv2i32.nxv2i8(<vscale x 2 x i8> [[VP_OP_LOAD1]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i32> @llvm.vp.mul.nxv2i32(<vscale x 2 x i32> [[VP_CAST2]], <vscale x 2 x i32> [[VP_CAST]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_OP3:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[VP_OP]], <vscale x 2 x i32> [[VEC_PHI]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
+; CHECK-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i32> [[VP_OP3]], <vscale x 2 x i32> [[VEC_PHI]], i32 [[TMP1]])
+; CHECK-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP1]] to i64
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP6]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 1024
+; CHECK-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
+; CHECK:       middle.block:
+; CHECK-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP0]])
+; CHECK-NEXT:    br label [[FOR_EXIT:%.*]]
+; CHECK:       scalar.ph:
 ;
 ; FIXED-V-LABEL: define i32 @vqdotsu2(
 ; FIXED-V-SAME: ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0]] {
 ; FIXED-V-NEXT:  entry:
 ; FIXED-V-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; FIXED-V:       vector.ph:
+; FIXED-V-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 1024, i32 8, i1 true)
 ; FIXED-V-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; FIXED-V:       vector.body:
 ; FIXED-V-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; FIXED-V-NEXT:    [[VEC_PHI:%.*]] = phi <8 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP12:%.*]], [[VECTOR_BODY]] ]
+; FIXED-V-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
 ; FIXED-V-NEXT:    [[VEC_PHI1:%.*]] = phi <8 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP13:%.*]], [[VECTOR_BODY]] ]
-; FIXED-V-NEXT:    [[TMP0:%.*]] = getelementptr i8, ptr [[A]], i64 [[INDEX]]
+; FIXED-V-NEXT:    [[AVL:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
+; FIXED-V-NEXT:    [[TMP3:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 8, i1 true)
+; FIXED-V-NEXT:    [[TMP0:%.*]] = getelementptr i8, ptr [[A]], i64 [[EVL_BASED_IV]]
 ; FIXED-V-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[TMP0]], i32 0
-; FIXED-V-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[TMP0]], i32 8
-; FIXED-V-NEXT:    [[WIDE_LOAD:%.*]] = load <8 x i8>, ptr [[TMP1]], align 1
-; FIXED-V-NEXT:    [[WIDE_LOAD2:%.*]] = load <8 x i8>, ptr [[TMP2]], align 1
-; FIXED-V-NEXT:    [[TMP3:%.*]] = sext <8 x i8> [[WIDE_LOAD]] to <8 x i32>
-; FIXED-V-NEXT:    [[TMP4:%.*]] = sext <8 x i8> [[WIDE_LOAD2]] to <8 x i32>
-; FIXED-V-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[B]], i64 [[INDEX]]
+; FIXED-V-NEXT:    [[VP_OP_LOAD:%.*]] = call <8 x i8> @llvm.vp.load.v8i8.p0(ptr align 1 [[TMP1]], <8 x i1> splat (i1 true), i32 [[TMP3]])
+; FIXED-V-NEXT:    [[VP_CAST:%.*]] = call <8 x i32> @llvm.vp.sext.v8i32.v8i8(<8 x i8> [[VP_OP_LOAD]], <8 x i1> splat (i1 true), i32 [[TMP3]])
+; FIXED-V-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[B]], i64 [[EVL_BASED_IV]]
 ; FIXED-V-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[TMP5]], i32 0
-; FIXED-V-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[TMP5]], i32 8
-; FIXED-V-NEXT:    [[WIDE_LOAD3:%.*]] = load <8 x i8>, ptr [[TMP6]], align 1
-; FIXED-V-NEXT:    [[WIDE_LOAD4:%.*]] = load <8 x i8>, ptr [[TMP7]], align 1
-; FIXED-V-NEXT:    [[TMP8:%.*]] = zext <8 x i8> [[WIDE_LOAD3]] to <8 x i32>
-; FIXED-V-NEXT:    [[TMP9:%.*]] = zext <8 x i8> [[WIDE_LOAD4]] to <8 x i32>
-; FIXED-V-NEXT:    [[TMP10:%.*]] = mul <8 x i32> [[TMP8]], [[TMP3]]
-; FIXED-V-NEXT:    [[TMP11:%.*]] = mul <8 x i32> [[TMP9]], [[TMP4]]
-; FIXED-V-NEXT:    [[TMP12]] = add <8 x i32> [[TMP10]], [[VEC_PHI]]
-; FIXED-V-NEXT:    [[TMP13]] = add <8 x i32> [[TMP11]], [[VEC_PHI1]]
-; FIXED-V-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
+; FIXED-V-NEXT:    [[VP_OP_LOAD1:%.*]] = call <8 x i8> @llvm.vp.load.v8i8.p0(ptr align 1 [[TMP6]], <8 x i1> splat (i1 true), i32 [[TMP3]])
+; FIXED-V-NEXT:    [[VP_CAST2:%.*]] = call <8 x i32> @llvm.vp.zext.v8i32.v8i8(<8 x i8> [[VP_OP_LOAD1]], <8 x i1> splat (i1 true), i32 [[TMP3]])
+; FIXED-V-NEXT:    [[VP_OP:%.*]] = call <8 x i32> @llvm.vp.mul.v8i32(<8 x i32> [[VP_CAST2]], <8 x i32> [[VP_CAST]], <8 x i1> splat (i1 true), i32 [[TMP3]])
+; FIXED-V-NEXT:    [[TMP13]] = call <8 x i32> @llvm.vp.add.v8i32(<8 x i32> [[VP_OP]], <8 x i32> [[VEC_PHI1]], <8 x i1> splat (i1 true), i32 [[TMP3]])
+; FIXED-V-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP3]] to i64
+; FIXED-V-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[TMP7]], [[EVL_BASED_IV]]
 ; FIXED-V-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
-; FIXED-V-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
+; FIXED-V-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
 ; FIXED-V:       middle.block:
-; FIXED-V-NEXT:    [[BIN_RDX:%.*]] = add <8 x i32> [[TMP13]], [[TMP12]]
-; FIXED-V-NEXT:    [[TMP15:%.*]] = call i32 @llvm.vector.reduce.add.v8i32(<8 x i32> [[BIN_RDX]])
-; FIXED-V-NEXT:    br i1 true, label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
+; FIXED-V-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vp.reduce.add.v8i32(i32 0, <8 x i32> [[TMP13]], <8 x i1> splat (i1 true), i32 [[TMP2]])
+; FIXED-V-NEXT:    [[TMP9:%.*]] = call <8 x i1> @llvm.vp.icmp.v8i64(<8 x i64> splat (i64 1024), <8 x i64> splat (i64 1024), metadata !"eq", <8 x i1> splat (i1 true), i32 [[TMP2]])
+; FIXED-V-NEXT:    [[TMP10:%.*]] = extractelement <8 x i1> [[TMP9]], i32 0
+; FIXED-V-NEXT:    br i1 [[TMP10]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
 ; FIXED-V:       scalar.ph:
 ;
 ; FIXED-ZVQDOTQ-LABEL: define i32 @vqdotsu2(
@@ -626,36 +453,33 @@ define i32 @vqdotsu2(ptr %a, ptr %b) #0 {
 ; FIXED-ZVQDOTQ-NEXT:  entry:
 ; FIXED-ZVQDOTQ-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; FIXED-ZVQDOTQ:       vector.ph:
+; FIXED-ZVQDOTQ-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 1024, i32 8, i1 true)
 ; FIXED-ZVQDOTQ-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; FIXED-ZVQDOTQ:       vector.body:
 ; FIXED-ZVQDOTQ-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; FIXED-ZVQDOTQ-NEXT:    [[VEC_PHI:%.*]] = phi <2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[PARTIAL_REDUCE:%.*]], [[VECTOR_BODY]] ]
+; FIXED-ZVQDOTQ-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
 ; FIXED-ZVQDOTQ-NEXT:    [[VEC_PHI1:%.*]] = phi <2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[PARTIAL_REDUCE5:%.*]], [[VECTOR_BODY]] ]
-; FIXED-ZVQDOTQ-NEXT:    [[TMP0:%.*]] = getelementptr i8, ptr [[A]], i64 [[INDEX]]
+; FIXED-ZVQDOTQ-NEXT:    [[AVL:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
+; FIXED-ZVQDOTQ-NEXT:    [[TMP3:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 8, i1 true)
+; FIXED-ZVQDOTQ-NEXT:    [[TMP0:%.*]] = getelementptr i8, ptr [[A]], i64 [[EVL_BASED_IV]]
 ; FIXED-ZVQDOTQ-NEXT:    [[TMP1:%.*]] = getelementptr i8, ptr [[TMP0]], i32 0
-; FIXED-ZVQDOTQ-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[TMP0]], i32 8
-; FIXED-ZVQDOTQ-NEXT:    [[WIDE_LOAD:%.*]] = load <8 x i8>, ptr [[TMP1]], align 1
-; FIXED-ZVQDOTQ-NEXT:    [[WIDE_LOAD2:%.*]] = load <8 x i8>, ptr [[TMP2]], align 1
-; FIXED-ZVQDOTQ-NEXT:    [[TMP3:%.*]] = sext <8 x i8> [[WIDE_LOAD]] to <8 x i32>
-; FIXED-ZVQDOTQ-NEXT:    [[TMP4:%.*]] = sext <8 x i8> [[WIDE_LOAD2]] to <8 x i32>
-; FIXED-ZVQDOTQ-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[B]], i64 [[INDEX]]
+; FIXED-ZVQDOTQ-NEXT:    [[VP_OP_LOAD:%.*]] = call <8 x i8> @llvm.vp.load.v8i8.p0(ptr align 1 [[TMP1]], <8 x i1> splat (i1 true), i32 [[TMP3]])
+; FIXED-ZVQDOTQ-NEXT:    [[VP_CAST:%.*]] = call <8 x i32> @llvm.vp.sext.v8i32.v8i8(<8 x i8> [[VP_OP_LOAD]], <8 x i1> splat (i1 true), i32 [[TMP3]])
+; FIXED-ZVQDOTQ-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[B]], i64 [[EVL_BASED_IV]]
 ; FIXED-ZVQDOTQ-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[TMP5]], i32 0
-; FIXED-ZVQDOTQ-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[TMP5]], i32 8
-; FIXED-ZVQDOTQ-NEXT:    [[WIDE_LOAD3:%.*]] = load <8 x i8>, ptr [[TMP6]], align 1
-; FIXED-ZVQDOTQ-NEXT:    [[WIDE_LOAD4:%.*]] = load <8 x i8>, ptr [[TMP7]], align 1
-; FIXED-ZVQDOTQ-NEXT:    [[TMP8:%.*]] = zext <8 x i8> [[WIDE_LOAD3]] to <8 x i32>
-; FIXED-ZVQDOTQ-NEXT:    [[TMP9:%.*]] = zext <8 x i8> [[WIDE_LOAD4]] to <8 x i32>
-; FIXED-ZVQDOTQ-NEXT:    [[TMP10:%.*]] = mul <8 x i32> [[TMP8]], [[TMP3]]
-; FIXED-ZVQDOTQ-NEXT:    [[TMP11:%.*]] = mul <8 x i32> [[TMP9]], [[TMP4]]
-; FIXED-ZVQDOTQ-NEXT:    [[PARTIAL_REDUCE]] = call <2 x i32> @llvm.experimental.vector.partial.reduce.add.v2i32.v8i32(<2 x i32> [[VEC_PHI]], <8 x i32> [[TMP10]])
+; FIXED-ZVQDOTQ-NEXT:    [[VP_OP_LOAD1:%.*]] = call <8 x i8> @llvm.vp.load.v8i8.p0(ptr align 1 [[TMP6]], <8 x i1> splat (i1 true), i32 [[TMP3]])
+; FIXED-ZVQDOTQ-NEXT:    [[VP_CAST2:%.*]] = call <8 x i32> @llvm.vp.zext.v8i32.v8i8(<8 x i8> [[VP_OP_LOAD1]], <8 x i1> splat (i1 true), i32 [[TMP3]])
+; FIXED-ZVQDOTQ-NEXT:    [[TMP11:%.*]] = call <8 x i32> @llvm.vp.mul.v8i32(<8 x i32> [[VP_CAST2]], <8 x i32> [[VP_CAST]], <8 x i1> splat (i1 true), i32 [[TMP3]])
 ; FIXED-ZVQDOTQ-NEXT:    [[PARTIAL_REDUCE5]] = call <2 x i32> @llvm.experimental.vector.partial.reduce.add.v2i32.v8i32(<2 x i32> [[VEC_PHI1]], <8 x i32> [[TMP11]])
-; FIXED-ZVQDOTQ-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
+; FIXED-ZVQDOTQ-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP3]] to i64
+; FIXED-ZVQDOTQ-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[TMP7]], [[EVL_BASED_IV]]
 ; FIXED-ZVQDOTQ-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
-; FIXED-ZVQDOTQ-NEXT:    br i1 [[TMP12]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
+; FIXED-ZVQDOTQ-NEXT:    br i1 [[TMP12]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
 ; FIXED-ZVQDOTQ:       middle.block:
-; FIXED-ZVQDOTQ-NEXT:    [[BIN_RDX:%.*]] = add <2 x i32> [[PARTIAL_REDUCE5]], [[PARTIAL_REDUCE]]
-; FIXED-ZVQDOTQ-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vector.reduce.add.v2i32(<2 x i32> [[BIN_RDX]])
-; FIXED-ZVQDOTQ-NEXT:    br i1 true, label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
+; FIXED-ZVQDOTQ-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vp.reduce.add.v2i32(i32 0, <2 x i32> [[PARTIAL_REDUCE5]], <2 x i1> splat (i1 true), i32 [[TMP2]])
+; FIXED-ZVQDOTQ-NEXT:    [[TMP9:%.*]] = call <8 x i1> @llvm.vp.icmp.v8i64(<8 x i64> splat (i64 1024), <8 x i64> splat (i64 1024), metadata !"eq", <8 x i1> splat (i1 true), i32 [[TMP2]])
+; FIXED-ZVQDOTQ-NEXT:    [[TMP10:%.*]] = extractelement <8 x i1> [[TMP9]], i32 0
+; FIXED-ZVQDOTQ-NEXT:    br i1 [[TMP10]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
 ; FIXED-ZVQDOTQ:       scalar.ph:
 ;
 entry:
@@ -680,5 +504,6 @@ for.exit:                        ; preds = %for.body
   ret i32 %add
 }
 ;; NOTE: These prefixes are unused and the list is autogenerated. Do not add tests below this line:
-; CHECK: {{.*}}
 ; FIXED: {{.*}}
+; V: {{.*}}
+; ZVQDOTQ: {{.*}}

@@ -12,7 +12,7 @@
 
 define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocapture noundef readonly %B, i32 noundef signext %n) {
 ; CHECK-LABEL: 'vector_reverse_i64'
-; CHECK-NEXT:  LV: Loop hints: force=enabled width=vscale x 4 interleave=0
+; CHECK-NEXT:  LV: Loop hints: force=enabled width=vscale x 0 interleave=0
 ; CHECK-NEXT:  LV: Found a loop: for.body
 ; CHECK-NEXT:  LV: Found an induction variable.
 ; CHECK-NEXT:  LV: Found an induction variable.
@@ -21,31 +21,101 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Loop does not require scalar epilogue
 ; CHECK-NEXT:  LV: Found trip count: 0
 ; CHECK-NEXT:  LV: Found maximum trip count: 4294967295
+; CHECK-NEXT:  LV: vector predicate hint/switch found.
+; CHECK-NEXT:  LV: Not allowing scalar epilogue, creating predicated vector loop.
 ; CHECK-NEXT:  LV: Scalable vectorization is available
 ; CHECK-NEXT:  LV: The max safe fixed VF is: 67108864.
 ; CHECK-NEXT:  LV: The max safe scalable VF is: vscale x 4294967295.
+; CHECK-NEXT:  LV: The Smallest and Widest types: 32 / 32 bits.
+; CHECK-NEXT:  LV: The Widest register safe to use is: 256 bits.
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: The Widest register safe to use is: vscale x 128 bits.
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: Found feasible scalable VF = vscale x 4
 ; CHECK-NEXT:  LV: Found uniform instruction: %cmp = icmp ugt i64 %indvars.iv, 1
 ; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
 ; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
 ; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
 ; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
 ; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
 ; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
 ; CHECK-NEXT:  LV: Found uniform instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
 ; CHECK-NEXT:  LV: Found uniform instruction: %i.0 = add nsw i32 %i.0.in8, -1
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %i.0 = add nsw i32 %i.0.in8, -1
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %idxprom = zext i32 %i.0 to i64
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
-; CHECK-NEXT:  LV: Found an estimated cost of 9 for VF vscale x 4 For instruction: %1 = load i32, ptr %arrayidx, align 4
-; CHECK-NEXT:  LV: Found an estimated cost of 2 for VF vscale x 4 For instruction: %add9 = add i32 %1, 1
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
-; CHECK-NEXT:  LV: Found an estimated cost of 9 for VF vscale x 4 For instruction: store i32 %add9, ptr %arrayidx3, align 4
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %cmp = icmp ugt i64 %indvars.iv, 1
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: br i1 %cmp, label %for.body, label %for.cond.cleanup.loopexit, !llvm.loop !0
-; CHECK-NEXT:  LV: Using user VF vscale x 4.
+; CHECK-NEXT:  LV: Found scalar instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found scalar instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found scalar instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  LV: Found scalar instruction: %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found scalar instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found scalar instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found scalar instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  LV: Found scalar instruction: %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found scalar instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found scalar instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found scalar instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  LV: Found scalar instruction: %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %i.0 = add nsw i32 %i.0.in8, -1
 ; CHECK-NEXT:  Creating VPBasicBlock for for.body
 ; CHECK-NEXT:  VPlan 'Plain CFG
 ; CHECK-NEXT:   for UF>=1' {
@@ -73,59 +143,104 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  No successors
 ; CHECK-NEXT:  }
 ; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: Scalarizing: %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Scalarizing: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Scalarizing: %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Scalarizing: %1 = load i32, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Scalarizing: %add9 = add i32 %1, 1
+; CHECK-NEXT:  LV: Scalarizing: %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Scalarizing: store i32 %add9, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Scalarizing: %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Scalarizing: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
 ; CHECK-NEXT:  LV: Scalarizing: %i.0 = add nsw i32 %i.0.in8, -1
 ; CHECK-NEXT:  LV: Scalarizing: %idxprom = zext i32 %i.0 to i64
 ; CHECK-NEXT:  LV: Scalarizing: %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
 ; CHECK-NEXT:  LV: Scalarizing: %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
 ; CHECK-NEXT:  LV: Scalarizing: %cmp = icmp ugt i64 %indvars.iv, 1
 ; CHECK-NEXT:  LV: Scalarizing: %indvars.iv.next = add nsw i64 %indvars.iv, -1
-; CHECK-NEXT:  VPlan 'Initial VPlan for VF={vscale x 4},UF>=1' {
-; CHECK-NEXT:  Live-in vp<%0> = VF
-; CHECK-NEXT:  Live-in vp<%1> = VF * UF
-; CHECK-NEXT:  Live-in vp<%2> = vector-trip-count
-; CHECK-NEXT:  vp<%3> = original trip-count
+; CHECK-NEXT:  Creating VPBasicBlock for for.body
+; CHECK-NEXT:  VPlan 'Plain CFG
+; CHECK-NEXT:   for UF>=1' {
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  ir-bb<for.body.preheader>:
 ; CHECK-NEXT:    IR %0 = zext i32 %n to i64
-; CHECK-NEXT:    EMIT vp<%3> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  Successor(s): for.body
+; CHECK-EMPTY:
+; CHECK-NEXT:  for.body:
+; CHECK-NEXT:    WIDEN-PHI ir<%indvars.iv> = phi [ ir<%indvars.iv.next>, for.body ], [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:    WIDEN-PHI ir<%i.0.in8> = phi [ ir<%i.0>, for.body ], [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:    EMIT ir<%i.0> = add ir<%i.0.in8>, ir<-1>
+; CHECK-NEXT:    EMIT ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:    EMIT ir<%arrayidx> = getelementptr ir<%B>, ir<%idxprom>
+; CHECK-NEXT:    EMIT ir<%1> = load ir<%arrayidx>
+; CHECK-NEXT:    EMIT ir<%add9> = add ir<%1>, ir<1>
+; CHECK-NEXT:    EMIT ir<%arrayidx3> = getelementptr ir<%A>, ir<%idxprom>
+; CHECK-NEXT:    EMIT store ir<%add9>, ir<%arrayidx3>
+; CHECK-NEXT:    EMIT ir<%cmp> = icmp ir<%indvars.iv>, ir<1>
+; CHECK-NEXT:    EMIT ir<%indvars.iv.next> = add ir<%indvars.iv>, ir<-1>
+; CHECK-NEXT:    EMIT branch-on-cond ir<%cmp>
+; CHECK-NEXT:  Successor(s): for.body, ir-bb<for.cond.cleanup.loopexit>
+; CHECK-EMPTY:
+; CHECK-NEXT:  ir-bb<for.cond.cleanup.loopexit>:
+; CHECK-NEXT:  No successors
+; CHECK-NEXT:  }
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: Scalarizing: %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Scalarizing: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Scalarizing: %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Scalarizing: %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Scalarizing: %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Scalarizing: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  VPlan 'Initial VPlan for VF={1},UF={1}' {
+; CHECK-NEXT:  Live-in vp<%0> = vector-trip-count
+; CHECK-NEXT:  vp<%2> = original trip-count
+; CHECK-EMPTY:
+; CHECK-NEXT:  ir-bb<for.body.preheader>:
+; CHECK-NEXT:    IR %0 = zext i32 %n to i64
+; CHECK-NEXT:    EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
 ; CHECK-NEXT:  Successor(s): scalar.ph, vector.ph
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  vector.ph:
-; CHECK-NEXT:    vp<%4> = DERIVED-IV ir<%0> + vp<%2> * ir<-1>
-; CHECK-NEXT:    vp<%5> = DERIVED-IV ir<%n> + vp<%2> * ir<-1>
 ; CHECK-NEXT:  Successor(s): vector loop
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  <x1> vector loop: {
 ; CHECK-NEXT:    vector.body:
-; CHECK-NEXT:      EMIT vp<%6> = CANONICAL-INDUCTION ir<0>, vp<%index.next>
-; CHECK-NEXT:      vp<%7> = DERIVED-IV ir<%n> + vp<%6> * ir<-1>
-; CHECK-NEXT:      vp<%8> = SCALAR-STEPS vp<%7>, ir<-1>, vp<%0>
-; CHECK-NEXT:      CLONE ir<%i.0> = add nsw vp<%8>, ir<-1>
+; CHECK-NEXT:      EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:      EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:      EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:      EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:      vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:      CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:      CLONE ir<%idxprom> = zext ir<%i.0>
 ; CHECK-NEXT:      CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
-; CHECK-NEXT:      vp<%9> = vector-end-pointer inbounds ir<%arrayidx>, vp<%0>
-; CHECK-NEXT:      WIDEN ir<%1> = load vp<%9>
-; CHECK-NEXT:      WIDEN ir<%add9> = add ir<%1>, ir<1>
+; CHECK-NEXT:      CLONE ir<%1> = load ir<%arrayidx>
+; CHECK-NEXT:      CLONE ir<%add9> = add ir<%1>, ir<1>
 ; CHECK-NEXT:      CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
-; CHECK-NEXT:      vp<%10> = vector-end-pointer inbounds ir<%arrayidx3>, vp<%0>
-; CHECK-NEXT:      WIDEN store vp<%10>, ir<%add9>
-; CHECK-NEXT:      EMIT vp<%index.next> = add nuw vp<%6>, vp<%1>
-; CHECK-NEXT:      EMIT branch-on-count vp<%index.next>, vp<%2>
+; CHECK-NEXT:      CLONE store ir<%add9>, ir<%arrayidx3>
+; CHECK-NEXT:      EMIT vp<%7> = zext vp<%5> to i64
+; CHECK-NEXT:      EMIT vp<%index.evl.next> = add nuw vp<%7>, vp<%4>
+; CHECK-NEXT:      EMIT branch-on-count vp<%index.evl.next>, vp<%0>
 ; CHECK-NEXT:    No successors
 ; CHECK-NEXT:  }
 ; CHECK-NEXT:  Successor(s): middle.block
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  middle.block:
-; CHECK-NEXT:    EMIT vp<%cmp.n> = icmp eq vp<%3>, vp<%2>
-; CHECK-NEXT:    EMIT branch-on-cond vp<%cmp.n>
-; CHECK-NEXT:  Successor(s): ir-bb<for.cond.cleanup.loopexit>, scalar.ph
+; CHECK-NEXT:  Successor(s): ir-bb<for.cond.cleanup.loopexit>
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  ir-bb<for.cond.cleanup.loopexit>:
 ; CHECK-NEXT:  No successors
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  scalar.ph:
-; CHECK-NEXT:    EMIT-SCALAR vp<%bc.resume.val> = phi [ vp<%4>, middle.block ], [ ir<%0>, ir-bb<for.body.preheader> ]
-; CHECK-NEXT:    EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ vp<%5>, middle.block ], [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:    EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:    EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
 ; CHECK-NEXT:  Successor(s): ir-bb<for.body>
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  ir-bb<for.body>:
@@ -142,122 +257,627 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:    IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
 ; CHECK-NEXT:  No successors
 ; CHECK-NEXT:  }
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %i.0 = add nsw i32 %i.0.in8, -1
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %idxprom = zext i32 %i.0 to i64
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
-; CHECK-NEXT:  LV: Found an estimated cost of 9 for VF vscale x 4 For instruction: %1 = load i32, ptr %arrayidx, align 4
-; CHECK-NEXT:  LV: Found an estimated cost of 2 for VF vscale x 4 For instruction: %add9 = add i32 %1, 1
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
-; CHECK-NEXT:  LV: Found an estimated cost of 9 for VF vscale x 4 For instruction: store i32 %add9, ptr %arrayidx3, align 4
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %cmp = icmp ugt i64 %indvars.iv, 1
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: br i1 %cmp, label %for.body, label %for.cond.cleanup.loopexit, !llvm.loop !0
-; CHECK-NEXT:  LV(REG): Calculating max register usage:
-; CHECK-NEXT:  LV(REG): At #0 Interval # 0
-; CHECK-NEXT:  LV(REG): At #1 Interval # 1
-; CHECK-NEXT:  LV(REG): At #2 Interval # 2
-; CHECK-NEXT:  LV(REG): At #3 Interval # 2
-; CHECK-NEXT:  LV(REG): At #4 Interval # 2
-; CHECK-NEXT:  LV(REG): At #5 Interval # 2
-; CHECK-NEXT:  LV(REG): At #6 Interval # 3
-; CHECK-NEXT:  LV(REG): At #7 Interval # 3
-; CHECK-NEXT:  LV(REG): At #8 Interval # 3
-; CHECK-NEXT:  LV(REG): At #9 Interval # 3
-; CHECK-NEXT:  LV(REG): At #10 Interval # 3
-; CHECK-NEXT:  LV(REG): At #11 Interval # 3
-; CHECK-NEXT:  LV(REG): At #12 Interval # 2
-; CHECK-NEXT:  LV(REG): At #13 Interval # 2
-; CHECK-NEXT:  LV(REG): VF = vscale x 4
-; CHECK-NEXT:  LV(REG): Found max usage: 2 item
-; CHECK-NEXT:  LV(REG): RegisterClass: RISCV::GPRRC, 3 registers
-; CHECK-NEXT:  LV(REG): RegisterClass: RISCV::VRRC, 2 registers
-; CHECK-NEXT:  LV(REG): Found invariant usage: 1 item
-; CHECK-NEXT:  LV(REG): RegisterClass: RISCV::GPRRC, 1 registers
-; CHECK-NEXT:  LV: The target has 31 registers of RISCV::GPRRC register class
-; CHECK-NEXT:  LV: The target has 32 registers of RISCV::VRRC register class
-; CHECK-NEXT:  LV: Loop does not require scalar epilogue
-; CHECK-NEXT:  LV: Loop cost is 24
-; CHECK-NEXT:  LV: IC is 1
-; CHECK-NEXT:  LV: VF is vscale x 4
-; CHECK-NEXT:  LV: Not Interleaving.
-; CHECK-NEXT:  LV: Interleaving is not beneficial.
-; CHECK-NEXT:  LV: Found a vectorizable loop (vscale x 4) in <stdin>
-; CHECK-NEXT:  LEV: Epilogue vectorization is not profitable for this loop
-; CHECK-NEXT:  LV: Loop does not require scalar epilogue
-; CHECK-NEXT:  LV: Loop does not require scalar epilogue
-; CHECK-NEXT:  Executing best plan with VF=vscale x 4, UF=1
-; CHECK-NEXT:  VPlan 'Final VPlan for VF={vscale x 4},UF={1}' {
-; CHECK-NEXT:  Live-in ir<%18> = VF
-; CHECK-NEXT:  Live-in ir<%18>.1 = VF * UF
-; CHECK-NEXT:  Live-in ir<%n.vec> = vector-trip-count
-; CHECK-NEXT:  Live-in ir<%0> = original trip-count
+; CHECK-NEXT:  VPlan 'Initial VPlan for VF={2,4,8},UF={1}' {
+; CHECK-NEXT:  Live-in vp<%0> = vector-trip-count
+; CHECK-NEXT:  vp<%2> = original trip-count
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  ir-bb<for.body.preheader>:
 ; CHECK-NEXT:    IR %0 = zext i32 %n to i64
-; CHECK-NEXT:  Successor(s): ir-bb<scalar.ph>, ir-bb<vector.scevcheck>
+; CHECK-NEXT:    EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  Successor(s): scalar.ph, vector.ph
+; CHECK-EMPTY:
+; CHECK-NEXT:  vector.ph:
+; CHECK-NEXT:  Successor(s): vector loop
+; CHECK-EMPTY:
+; CHECK-NEXT:  <x1> vector loop: {
+; CHECK-NEXT:    vector.body:
+; CHECK-NEXT:      EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:      EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:      EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:      EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:      vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:      CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:      CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:      CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:      vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:      WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:      WIDEN ir<%add9> = add ir<%1>, ir<1>
+; CHECK-NEXT:      CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:      vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:      WIDEN vp.store vp<%8>, ir<%add9>, vp<%5> unit-strided
+; CHECK-NEXT:      EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:      EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:      EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:    No successors
+; CHECK-NEXT:  }
+; CHECK-NEXT:  Successor(s): middle.block
+; CHECK-EMPTY:
+; CHECK-NEXT:  middle.block:
+; CHECK-NEXT:  Successor(s): ir-bb<for.cond.cleanup.loopexit>
+; CHECK-EMPTY:
+; CHECK-NEXT:  ir-bb<for.cond.cleanup.loopexit>:
+; CHECK-NEXT:  No successors
+; CHECK-EMPTY:
+; CHECK-NEXT:  scalar.ph:
+; CHECK-NEXT:    EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:    EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  Successor(s): ir-bb<for.body>
+; CHECK-EMPTY:
+; CHECK-NEXT:  ir-bb<for.body>:
+; CHECK-NEXT:    IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:    IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:    IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:    IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:    IR %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
+; CHECK-NEXT:    IR %1 = load i32, ptr %arrayidx, align 4
+; CHECK-NEXT:    IR %add9 = add i32 %1, 1
+; CHECK-NEXT:    IR %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
+; CHECK-NEXT:    IR store i32 %add9, ptr %arrayidx3, align 4
+; CHECK-NEXT:    IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:    IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  No successors
+; CHECK-NEXT:  }
+; CHECK-NEXT:  VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2,vscale x 4},UF={1}' {
+; CHECK-NEXT:  Live-in vp<%0> = vector-trip-count
+; CHECK-NEXT:  vp<%2> = original trip-count
+; CHECK-EMPTY:
+; CHECK-NEXT:  ir-bb<for.body.preheader>:
+; CHECK-NEXT:    IR %0 = zext i32 %n to i64
+; CHECK-NEXT:    EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  Successor(s): scalar.ph, vector.ph
+; CHECK-EMPTY:
+; CHECK-NEXT:  vector.ph:
+; CHECK-NEXT:  Successor(s): vector loop
+; CHECK-EMPTY:
+; CHECK-NEXT:  <x1> vector loop: {
+; CHECK-NEXT:    vector.body:
+; CHECK-NEXT:      EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:      EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:      EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:      EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:      vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:      CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:      CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:      CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:      vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:      WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:      WIDEN ir<%add9> = add ir<%1>, ir<1>
+; CHECK-NEXT:      CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:      vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:      WIDEN vp.store vp<%8>, ir<%add9>, vp<%5> unit-strided
+; CHECK-NEXT:      EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:      EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:      EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:    No successors
+; CHECK-NEXT:  }
+; CHECK-NEXT:  Successor(s): middle.block
+; CHECK-EMPTY:
+; CHECK-NEXT:  middle.block:
+; CHECK-NEXT:  Successor(s): ir-bb<for.cond.cleanup.loopexit>
+; CHECK-EMPTY:
+; CHECK-NEXT:  ir-bb<for.cond.cleanup.loopexit>:
+; CHECK-NEXT:  No successors
+; CHECK-EMPTY:
+; CHECK-NEXT:  scalar.ph:
+; CHECK-NEXT:    EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:    EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  Successor(s): ir-bb<for.body>
+; CHECK-EMPTY:
+; CHECK-NEXT:  ir-bb<for.body>:
+; CHECK-NEXT:    IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:    IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:    IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:    IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:    IR %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
+; CHECK-NEXT:    IR %1 = load i32, ptr %arrayidx, align 4
+; CHECK-NEXT:    IR %add9 = add i32 %1, 1
+; CHECK-NEXT:    IR %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
+; CHECK-NEXT:    IR store i32 %add9, ptr %arrayidx3, align 4
+; CHECK-NEXT:    IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:    IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  No successors
+; CHECK-NEXT:  }
+; CHECK-NEXT:  LV: Computing best VF using cost kind: Reciprocal Throughput
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF 1 For instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF 1 For instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF 1 For instruction: %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: %1 = load i32, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: %add9 = add i32 %1, 1
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF 1 For instruction: %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: store i32 %add9, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF 1 For instruction: br i1 %cmp, label %for.body, label %for.cond.cleanup.loopexit, !llvm.loop !0
+; CHECK-NEXT:  LV: Scalar loop costs: 7.
+; CHECK-NEXT:  LV: Changed scalar cost to Inf as user forced vectorization.
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %1 = load i32, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %add9 = add i32 %1, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR store i32 %add9, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: WIDEN ir<%add9> = add ir<%1>, ir<1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: WIDEN vp.store vp<%8>, ir<%add9>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %1 = load i32, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %add9 = add i32 %1, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR store i32 %add9, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: WIDEN ir<%add9> = add ir<%1>, ir<1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: WIDEN vp.store vp<%8>, ir<%add9>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %1 = load i32, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %add9 = add i32 %1, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR store i32 %add9, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: WIDEN ir<%add9> = add ir<%1>, ir<1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: WIDEN vp.store vp<%8>, ir<%add9>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %1 = load i32, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %add9 = add i32 %1, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR store i32 %add9, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: WIDEN ir<%add9> = add ir<%1>, ir<1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: WIDEN vp.store vp<%8>, ir<%add9>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %1 = load i32, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %add9 = add i32 %1, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR store i32 %add9, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: WIDEN ir<%add9> = add ir<%1>, ir<1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: WIDEN vp.store vp<%8>, ir<%add9>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %1 = load i32, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %add9 = add i32 %1, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR store i32 %add9, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: WIDEN ir<%add9> = add ir<%1>, ir<1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: WIDEN vp.store vp<%8>, ir<%add9>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF 1 For instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF 1 For instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF 1 For instruction: %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: %1 = load i32, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: %add9 = add i32 %1, 1
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF 1 For instruction: %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: store i32 %add9, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF 1 For instruction: br i1 %cmp, label %for.body, label %for.cond.cleanup.loopexit, !llvm.loop !0
+; CHECK-NEXT:  LV: Scalar loop costs: 7.
+; CHECK-NEXT:  LV: Changed scalar cost to Inf as user forced vectorization.
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %1 = load i32, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %add9 = add i32 %1, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR store i32 %add9, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: WIDEN ir<%add9> = add ir<%1>, ir<1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: WIDEN vp.store vp<%8>, ir<%add9>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:  Cost of 1 for VF 2: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Vector loop of width 2 costs: 3.
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %1 = load i32, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %add9 = add i32 %1, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR store i32 %add9, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: WIDEN ir<%add9> = add ir<%1>, ir<1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: WIDEN vp.store vp<%8>, ir<%add9>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:  Cost of 1 for VF 4: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Vector loop of width 4 costs: 2.
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %1 = load i32, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %add9 = add i32 %1, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR store i32 %add9, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: WIDEN ir<%add9> = add ir<%1>, ir<1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: WIDEN vp.store vp<%8>, ir<%add9>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:  Cost of 1 for VF 8: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Vector loop of width 8 costs: 2.
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %1 = load i32, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %add9 = add i32 %1, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR store i32 %add9, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: WIDEN ir<%add9> = add ir<%1>, ir<1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: WIDEN vp.store vp<%8>, ir<%add9>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:  Cost of 1 for VF vscale x 1: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Vector loop of width vscale x 1 costs: 3 (assuming a minimum vscale of 2).
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %1 = load i32, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %add9 = add i32 %1, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR store i32 %add9, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: WIDEN ir<%add9> = add ir<%1>, ir<1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: WIDEN vp.store vp<%8>, ir<%add9>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:  Cost of 1 for VF vscale x 2: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Vector loop of width vscale x 2 costs: 1 (assuming a minimum vscale of 2).
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %1 = load i32, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %add9 = add i32 %1, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR store i32 %add9, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: WIDEN ir<%add9> = add ir<%1>, ir<1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: WIDEN vp.store vp<%8>, ir<%add9>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:  Cost of 1 for VF vscale x 4: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Vector loop of width vscale x 4 costs: 1 (assuming a minimum vscale of 2).
+; CHECK-NEXT:  Cost of 1 for VF vscale x 4: induction instruction %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  Cost of 0 for VF vscale x 4: induction instruction %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  Cost of 1 for VF vscale x 4: induction instruction %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  Cost of 0 for VF vscale x 4: induction instruction %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  Cost of 1 for VF vscale x 4: exit condition instruction %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Selecting VF: vscale x 4.
+; CHECK-NEXT:  LV: Interleaving is not beneficial.
+; CHECK-NEXT:  LV: Found a vectorizable loop (vscale x 4) in <stdin>
+; CHECK-NEXT:  LEV: Unable to vectorize epilogue because no epilogue is allowed.
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  Executing best plan with VF=vscale x 4, UF=1
+; CHECK-NEXT:  VPlan 'Final VPlan for VF={vscale x 1,vscale x 2,vscale x 4},UF={1}' {
+; CHECK-NEXT:  Live-in ir<%0> = vector-trip-count
+; CHECK-NEXT:  Live-in ir<%0>.1 = original trip-count
+; CHECK-EMPTY:
+; CHECK-NEXT:  ir-bb<for.body.preheader>:
+; CHECK-NEXT:    IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  Successor(s): ir-bb<vector.scevcheck>
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  ir-bb<vector.scevcheck>:
-; CHECK-NEXT:    IR %3 = add nsw i64 %0, -1
-; CHECK-NEXT:    IR %4 = add i32 %n, -1
-; CHECK-NEXT:    IR %5 = trunc i64 %3 to i32
-; CHECK-NEXT:    IR %mul = call { i32, i1 } @llvm.umul.with.overflow.i32(i32 1, i32 %5)
+; CHECK-NEXT:    IR %1 = add nsw i64 %0, -1
+; CHECK-NEXT:    IR %2 = add i32 %n, -1
+; CHECK-NEXT:    IR %3 = trunc i64 %1 to i32
+; CHECK-NEXT:    IR %mul = call { i32, i1 } @llvm.umul.with.overflow.i32(i32 1, i32 %3)
 ; CHECK-NEXT:    IR %mul.result = extractvalue { i32, i1 } %mul, 0
 ; CHECK-NEXT:    IR %mul.overflow = extractvalue { i32, i1 } %mul, 1
-; CHECK-NEXT:    IR %6 = sub i32 %4, %mul.result
-; CHECK-NEXT:    IR %7 = icmp ugt i32 %6, %4
-; CHECK-NEXT:    IR %8 = or i1 %7, %mul.overflow
-; CHECK-NEXT:    IR %9 = icmp ugt i64 %3, 4294967295
-; CHECK-NEXT:    IR %10 = or i1 %8, %9
+; CHECK-NEXT:    IR %4 = sub i32 %2, %mul.result
+; CHECK-NEXT:    IR %5 = icmp ugt i32 %4, %2
+; CHECK-NEXT:    IR %6 = or i1 %5, %mul.overflow
+; CHECK-NEXT:    IR %7 = icmp ugt i64 %1, 4294967295
+; CHECK-NEXT:    IR %8 = or i1 %6, %7
 ; CHECK-NEXT:  Successor(s): ir-bb<scalar.ph>, ir-bb<vector.memcheck>
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  ir-bb<vector.memcheck>:
-; CHECK-NEXT:    IR %11 = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    IR %12 = mul nuw i64 %11, 4
-; CHECK-NEXT:    IR %13 = mul i64 %12, 4
-; CHECK-NEXT:    IR %14 = sub i64 %B1, %A2
-; CHECK-NEXT:    IR %diff.check = icmp ult i64 %14, %13
+; CHECK-NEXT:    IR %9 = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    IR %10 = mul nuw i64 %9, 4
+; CHECK-NEXT:    IR %11 = mul i64 %10, 4
+; CHECK-NEXT:    IR %12 = sub i64 %B1, %A2
+; CHECK-NEXT:    IR %diff.check = icmp ult i64 %12, %11
 ; CHECK-NEXT:  Successor(s): ir-bb<scalar.ph>, ir-bb<vector.ph>
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  ir-bb<vector.ph>:
-; CHECK-NEXT:    IR %15 = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    IR %16 = mul nuw i64 %15, 4
-; CHECK-NEXT:    IR %n.mod.vf = urem i64 %0, %16
-; CHECK-NEXT:    IR %n.vec = sub i64 %0, %n.mod.vf
-; CHECK-NEXT:    IR %17 = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    IR %18 = mul nuw i64 %17, 4
-; CHECK-NEXT:    vp<%1> = DERIVED-IV ir<%0> + ir<%n.vec> * ir<-1>
-; CHECK-NEXT:    vp<%2> = DERIVED-IV ir<%n> + ir<%n.vec> * ir<-1>
+; CHECK-NEXT:    IR %13 = call i32 @llvm.experimental.get.vector.length.i64(i64 %0, i32 4, i1 true)
 ; CHECK-NEXT:  Successor(s): vector.body
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  vector.body:
-; CHECK-NEXT:    EMIT-SCALAR vp<%index> = phi [ ir<0>, ir-bb<vector.ph> ], [ vp<%index.next>, vector.body ]
-; CHECK-NEXT:    vp<%3> = DERIVED-IV ir<%n> + vp<%index> * ir<-1>
-; CHECK-NEXT:    CLONE ir<%i.0> = add nsw vp<%3>, ir<-1>
+; CHECK-NEXT:    EMIT-SCALAR vp<%index> = phi [ ir<0>, ir-bb<vector.ph> ], [ vp<%index.evl.next>, vector.body ]
+; CHECK-NEXT:    EMIT-SCALAR vp<%evl.based.iv> = phi [ ir<0>, ir-bb<vector.ph> ], [ vp<%index.evl.next>, vector.body ]
+; CHECK-NEXT:    EMIT vp<%avl> = sub ir<%0>, vp<%evl.based.iv>
+; CHECK-NEXT:    EMIT vp<%1> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:    vp<%2> = DERIVED-IV ir<%n> + vp<%evl.based.iv> * ir<-1>
+; CHECK-NEXT:    CLONE ir<%i.0> = add nsw vp<%2>, ir<-1>
 ; CHECK-NEXT:    CLONE ir<%idxprom> = zext ir<%i.0>
 ; CHECK-NEXT:    CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
-; CHECK-NEXT:    vp<%4> = vector-end-pointer inbounds ir<%arrayidx>, ir<%18>
-; CHECK-NEXT:    WIDEN ir<%19> = load vp<%4>
-; CHECK-NEXT:    WIDEN ir<%add9> = add ir<%19>, ir<1>
+; CHECK-NEXT:    vp<%3> = vector-end-pointer ir<%arrayidx>, vp<%1>
+; CHECK-NEXT:    WIDEN ir<%14> = vp.load vp<%3>, vp<%1> unit-strided
+; CHECK-NEXT:    WIDEN ir<%add9> = add ir<%14>, ir<1>
 ; CHECK-NEXT:    CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
-; CHECK-NEXT:    vp<%5> = vector-end-pointer inbounds ir<%arrayidx3>, ir<%18>
-; CHECK-NEXT:    WIDEN store vp<%5>, ir<%add9>
-; CHECK-NEXT:    EMIT vp<%index.next> = add nuw vp<%index>, ir<%18>.1
-; CHECK-NEXT:    EMIT branch-on-count vp<%index.next>, ir<%n.vec>
+; CHECK-NEXT:    vp<%4> = vector-end-pointer ir<%arrayidx3>, vp<%1>
+; CHECK-NEXT:    WIDEN vp.store vp<%4>, ir<%add9>, vp<%1> unit-strided
+; CHECK-NEXT:    EMIT vp<%5> = zext vp<%1> to i64
+; CHECK-NEXT:    EMIT vp<%index.evl.next> = add nuw vp<%5>, vp<%evl.based.iv>
+; CHECK-NEXT:    EMIT branch-on-count vp<%index.evl.next>, ir<%0>
 ; CHECK-NEXT:  Successor(s): middle.block, vector.body
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  middle.block:
-; CHECK-NEXT:    EMIT vp<%cmp.n> = icmp eq ir<%0>, ir<%n.vec>
-; CHECK-NEXT:    EMIT branch-on-cond vp<%cmp.n>
-; CHECK-NEXT:  Successor(s): ir-bb<for.cond.cleanup.loopexit>, ir-bb<scalar.ph>
+; CHECK-NEXT:  Successor(s): ir-bb<for.cond.cleanup.loopexit>
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  ir-bb<for.cond.cleanup.loopexit>:
 ; CHECK-NEXT:  No successors
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  ir-bb<scalar.ph>:
-; CHECK-NEXT:    EMIT-SCALAR vp<%bc.resume.val> = phi [ vp<%1>, middle.block ], [ ir<%0>, ir-bb<for.body.preheader> ], [ ir<%0>, ir-bb<vector.scevcheck> ], [ ir<%0>, ir-bb<vector.memcheck> ]
-; CHECK-NEXT:    EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ vp<%2>, middle.block ], [ ir<%n>, ir-bb<for.body.preheader> ], [ ir<%n>, ir-bb<vector.scevcheck> ], [ ir<%n>, ir-bb<vector.memcheck> ]
+; CHECK-NEXT:    EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>.1, ir-bb<vector.scevcheck> ], [ ir<%0>.1, ir-bb<vector.memcheck> ]
+; CHECK-NEXT:    EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<vector.scevcheck> ], [ ir<%n>, ir-bb<vector.memcheck> ]
 ; CHECK-NEXT:  Successor(s): ir-bb<for.body>
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  ir-bb<for.body>:
@@ -266,8 +886,8 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:    IR %i.0 = add nsw i32 %i.0.in8, -1
 ; CHECK-NEXT:    IR %idxprom = zext i32 %i.0 to i64
 ; CHECK-NEXT:    IR %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
-; CHECK-NEXT:    IR %19 = load i32, ptr %arrayidx, align 4
-; CHECK-NEXT:    IR %add9 = add i32 %19, 1
+; CHECK-NEXT:    IR %14 = load i32, ptr %arrayidx, align 4
+; CHECK-NEXT:    IR %add9 = add i32 %14, 1
 ; CHECK-NEXT:    IR %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
 ; CHECK-NEXT:    IR store i32 %add9, ptr %arrayidx3, align 4
 ; CHECK-NEXT:    IR %cmp = icmp ugt i64 %indvars.iv, 1
@@ -278,48 +898,37 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: filled BB:
 ; CHECK-NEXT:  for.body.preheader: ; preds = %entry
 ; CHECK-NEXT:    %0 = zext i32 %n to i64
-; CHECK-NEXT:    %1 = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    %2 = mul nuw i64 %1, 4
-; CHECK-NEXT:    %min.iters.check = icmp ult i64 %0, %2
-; CHECK-NEXT:    br i1 %min.iters.check, label %scalar.ph, label %vector.scevcheck
+; CHECK-NEXT:    br label %vector.scevcheck
 ; CHECK-NEXT:  LV: vectorizing VPBB:ir-bb<vector.scevcheck> in BB:vector.scevcheck
 ; CHECK-NEXT:  LV: filled BB:
 ; CHECK-NEXT:  vector.scevcheck: ; preds = %for.body.preheader
-; CHECK-NEXT:    %3 = add nsw i64 %0, -1
-; CHECK-NEXT:    %4 = add i32 %n, -1
-; CHECK-NEXT:    %5 = trunc i64 %3 to i32
-; CHECK-NEXT:    %mul = call { i32, i1 } @llvm.umul.with.overflow.i32(i32 1, i32 %5)
+; CHECK-NEXT:    %1 = add nsw i64 %0, -1
+; CHECK-NEXT:    %2 = add i32 %n, -1
+; CHECK-NEXT:    %3 = trunc i64 %1 to i32
+; CHECK-NEXT:    %mul = call { i32, i1 } @llvm.umul.with.overflow.i32(i32 1, i32 %3)
 ; CHECK-NEXT:    %mul.result = extractvalue { i32, i1 } %mul, 0
 ; CHECK-NEXT:    %mul.overflow = extractvalue { i32, i1 } %mul, 1
-; CHECK-NEXT:    %6 = sub i32 %4, %mul.result
-; CHECK-NEXT:    %7 = icmp ugt i32 %6, %4
-; CHECK-NEXT:    %8 = or i1 %7, %mul.overflow
-; CHECK-NEXT:    %9 = icmp ugt i64 %3, 4294967295
-; CHECK-NEXT:    %10 = or i1 %8, %9
-; CHECK-NEXT:    br i1 %10, label %scalar.ph, label %vector.memcheck
+; CHECK-NEXT:    %4 = sub i32 %2, %mul.result
+; CHECK-NEXT:    %5 = icmp ugt i32 %4, %2
+; CHECK-NEXT:    %6 = or i1 %5, %mul.overflow
+; CHECK-NEXT:    %7 = icmp ugt i64 %1, 4294967295
+; CHECK-NEXT:    %8 = or i1 %6, %7
+; CHECK-NEXT:    br i1 %8, label %scalar.ph, label %vector.memcheck
 ; CHECK-NEXT:  LV: draw edge fromfor.body.preheader
 ; CHECK-NEXT:  LV: vectorizing VPBB:ir-bb<vector.memcheck> in BB:vector.memcheck
 ; CHECK-NEXT:  LV: filled BB:
 ; CHECK-NEXT:  vector.memcheck: ; preds = %vector.scevcheck
-; CHECK-NEXT:    %11 = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    %12 = mul nuw i64 %11, 4
-; CHECK-NEXT:    %13 = mul i64 %12, 4
-; CHECK-NEXT:    %14 = sub i64 %B1, %A2
-; CHECK-NEXT:    %diff.check = icmp ult i64 %14, %13
+; CHECK-NEXT:    %9 = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    %10 = mul nuw i64 %9, 4
+; CHECK-NEXT:    %11 = mul i64 %10, 4
+; CHECK-NEXT:    %12 = sub i64 %B1, %A2
+; CHECK-NEXT:    %diff.check = icmp ult i64 %12, %11
 ; CHECK-NEXT:    br i1 %diff.check, label %scalar.ph, label %vector.ph
 ; CHECK-NEXT:  LV: draw edge fromvector.scevcheck
 ; CHECK-NEXT:  LV: vectorizing VPBB:ir-bb<vector.ph> in BB:vector.ph
 ; CHECK-NEXT:  LV: filled BB:
 ; CHECK-NEXT:  vector.ph: ; preds = %vector.memcheck
-; CHECK-NEXT:    %15 = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    %16 = mul nuw i64 %15, 4
-; CHECK-NEXT:    %n.mod.vf = urem i64 %0, %16
-; CHECK-NEXT:    %n.vec = sub i64 %0, %n.mod.vf
-; CHECK-NEXT:    %17 = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    %18 = mul nuw i64 %17, 4
-; CHECK-NEXT:    %19 = sub i64 %0, %n.vec
-; CHECK-NEXT:    %.cast = trunc i64 %n.vec to i32
-; CHECK-NEXT:    %20 = sub i32 %n, %.cast
+; CHECK-NEXT:    %13 = call i32 @llvm.experimental.get.vector.length.i64(i64 %0, i32 4, i1 true)
 ; CHECK-NEXT:    br
 ; CHECK-NEXT:  LV: draw edge fromvector.memcheck
 ; CHECK-NEXT:  LV: created vector.body
@@ -328,35 +937,38 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: filled BB:
 ; CHECK-NEXT:  vector.body: ; preds = %vector.body, %vector.ph
 ; CHECK-NEXT:    %index = phi i64 [ 0, %vector.ph ]
-; CHECK-NEXT:    %.cast3 = trunc i64 %index to i32
-; CHECK-NEXT:    %offset.idx = sub i32 %n, %.cast3
-; CHECK-NEXT:    %21 = add nsw i32 %offset.idx, -1
-; CHECK-NEXT:    %22 = zext i32 %21 to i64
-; CHECK-NEXT:    %23 = getelementptr inbounds i32, ptr %B, i64 %22
-; CHECK-NEXT:    %24 = mul i64 0, %18
-; CHECK-NEXT:    %25 = sub i64 1, %18
-; CHECK-NEXT:    %26 = getelementptr inbounds i32, ptr %23, i64 %24
-; CHECK-NEXT:    %27 = getelementptr inbounds i32, ptr %26, i64 %25
-; CHECK-NEXT:    %wide.load = load <vscale x 4 x i32>, ptr %27, align 4
-; CHECK-NEXT:    %reverse = call <vscale x 4 x i32> @llvm.vector.reverse.nxv4i32(<vscale x 4 x i32> %wide.load)
-; CHECK-NEXT:    %28 = add <vscale x 4 x i32> %reverse, splat (i32 1)
-; CHECK-NEXT:    %29 = getelementptr inbounds i32, ptr %A, i64 %22
-; CHECK-NEXT:    %30 = mul i64 0, %18
-; CHECK-NEXT:    %31 = sub i64 1, %18
-; CHECK-NEXT:    %32 = getelementptr inbounds i32, ptr %29, i64 %30
-; CHECK-NEXT:    %33 = getelementptr inbounds i32, ptr %32, i64 %31
-; CHECK-NEXT:    %reverse4 = call <vscale x 4 x i32> @llvm.vector.reverse.nxv4i32(<vscale x 4 x i32> %28)
-; CHECK-NEXT:    store <vscale x 4 x i32> %reverse4, ptr %33, align 4
-; CHECK-NEXT:    %index.next = add nuw i64 %index, %18
-; CHECK-NEXT:    %34 = icmp eq i64 %index.next, %n.vec
-; CHECK-NEXT:    br i1 %34, <null operand!>, label %vector.body
+; CHECK-NEXT:    %evl.based.iv = phi i64 [ 0, %vector.ph ]
+; CHECK-NEXT:    %avl = sub i64 %0, %evl.based.iv
+; CHECK-NEXT:    %14 = call i32 @llvm.experimental.get.vector.length.i64(i64 %avl, i32 4, i1 true)
+; CHECK-NEXT:    %.cast = trunc i64 %evl.based.iv to i32
+; CHECK-NEXT:    %offset.idx = sub i32 %n, %.cast
+; CHECK-NEXT:    %15 = add nsw i32 %offset.idx, -1
+; CHECK-NEXT:    %16 = zext i32 %15 to i64
+; CHECK-NEXT:    %17 = getelementptr inbounds i32, ptr %B, i64 %16
+; CHECK-NEXT:    %18 = zext i32 %14 to i64
+; CHECK-NEXT:    %19 = mul i64 0, %18
+; CHECK-NEXT:    %20 = sub i64 1, %18
+; CHECK-NEXT:    %21 = getelementptr i32, ptr %17, i64 %19
+; CHECK-NEXT:    %22 = getelementptr i32, ptr %21, i64 %20
+; CHECK-NEXT:    %vp.op.load = call <vscale x 4 x i32> @llvm.vp.load.nxv4i32.p0(ptr align 4 %22, <vscale x 4 x i1> splat (i1 true), i32 %14)
+; CHECK-NEXT:    %vp.op = call <vscale x 4 x i32> @llvm.vp.add.nxv4i32(<vscale x 4 x i32> %vp.op.load, <vscale x 4 x i32> splat (i32 1), <vscale x 4 x i1> splat (i1 true), i32 %14)
+; CHECK-NEXT:    %23 = getelementptr inbounds i32, ptr %A, i64 %16
+; CHECK-NEXT:    %24 = zext i32 %14 to i64
+; CHECK-NEXT:    %25 = mul i64 0, %24
+; CHECK-NEXT:    %26 = sub i64 1, %24
+; CHECK-NEXT:    %27 = getelementptr i32, ptr %23, i64 %25
+; CHECK-NEXT:    %28 = getelementptr i32, ptr %27, i64 %26
+; CHECK-NEXT:    call void @llvm.vp.store.nxv4i32.p0(<vscale x 4 x i32> %vp.op, ptr align 4 %28, <vscale x 4 x i1> splat (i1 true), i32 %14)
+; CHECK-NEXT:    %29 = zext i32 %14 to i64
+; CHECK-NEXT:    %index.evl.next = add nuw i64 %29, %evl.based.iv
+; CHECK-NEXT:    %30 = icmp eq i64 %index.evl.next, %0
+; CHECK-NEXT:    br i1 %30, <null operand!>, label %vector.body
 ; CHECK-NEXT:  LV: created middle.block
 ; CHECK-NEXT:  LV: draw edge fromvector.body
 ; CHECK-NEXT:  LV: vectorizing VPBB:middle.block in BB:middle.block
 ; CHECK-NEXT:  LV: filled BB:
 ; CHECK-NEXT:  middle.block: ; preds = %vector.body
-; CHECK-NEXT:    %cmp.n = icmp eq i64 %0, %n.vec
-; CHECK-NEXT:    br i1 %cmp.n, <null operand!>, <null operand!>
+; CHECK-NEXT:    unreachable
 ; CHECK-NEXT:  LV: vectorizing VPBB:ir-bb<for.cond.cleanup.loopexit> in BB:for.cond.cleanup.loopexit
 ; CHECK-NEXT:  LV: filled BB:
 ; CHECK-NEXT:  for.cond.cleanup.loopexit: ; preds = %for.body
@@ -364,24 +976,22 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: draw edge frommiddle.block
 ; CHECK-NEXT:  LV: vectorizing VPBB:ir-bb<scalar.ph> in BB:scalar.ph
 ; CHECK-NEXT:  LV: filled BB:
-; CHECK-NEXT:  scalar.ph: ; preds = %vector.memcheck, %vector.scevcheck, %for.body.preheader
-; CHECK-NEXT:    %bc.resume.val = phi i64 [ %19, %middle.block ], [ %0, %for.body.preheader ], [ %0, %vector.scevcheck ], [ %0, %vector.memcheck ]
-; CHECK-NEXT:    %bc.resume.val5 = phi i32 [ %20, %middle.block ], [ %n, %for.body.preheader ], [ %n, %vector.scevcheck ], [ %n, %vector.memcheck ]
+; CHECK-NEXT:  scalar.ph: ; preds = %vector.memcheck, %vector.scevcheck
+; CHECK-NEXT:    %bc.resume.val = phi i64 [ %0, %vector.scevcheck ], [ %0, %vector.memcheck ]
+; CHECK-NEXT:    %bc.resume.val3 = phi i32 [ %n, %vector.scevcheck ], [ %n, %vector.memcheck ]
 ; CHECK-NEXT:    br label %for.body
-; CHECK-NEXT:  LV: draw edge frommiddle.block
-; CHECK-NEXT:  LV: draw edge fromfor.body.preheader
 ; CHECK-NEXT:  LV: draw edge fromvector.scevcheck
 ; CHECK-NEXT:  LV: draw edge fromvector.memcheck
 ; CHECK-NEXT:  LV: vectorizing VPBB:ir-bb<for.body> in BB:for.body
 ; CHECK-NEXT:  LV: filled BB:
 ; CHECK-NEXT:  for.body: ; preds = %for.body, %scalar.ph
 ; CHECK-NEXT:    %indvars.iv = phi i64 [ %bc.resume.val, %scalar.ph ], [ %indvars.iv.next, %for.body ]
-; CHECK-NEXT:    %i.0.in8 = phi i32 [ %bc.resume.val5, %scalar.ph ], [ %i.0, %for.body ]
+; CHECK-NEXT:    %i.0.in8 = phi i32 [ %bc.resume.val3, %scalar.ph ], [ %i.0, %for.body ]
 ; CHECK-NEXT:    %i.0 = add nsw i32 %i.0.in8, -1
 ; CHECK-NEXT:    %idxprom = zext i32 %i.0 to i64
 ; CHECK-NEXT:    %arrayidx = getelementptr inbounds i32, ptr %B, i64 %idxprom
-; CHECK-NEXT:    %35 = load i32, ptr %arrayidx, align 4
-; CHECK-NEXT:    %add9 = add i32 %35, 1
+; CHECK-NEXT:    %31 = load i32, ptr %arrayidx, align 4
+; CHECK-NEXT:    %add9 = add i32 %31, 1
 ; CHECK-NEXT:    %arrayidx3 = getelementptr inbounds i32, ptr %A, i64 %idxprom
 ; CHECK-NEXT:    store i32 %add9, ptr %arrayidx3, align 4
 ; CHECK-NEXT:    %cmp = icmp ugt i64 %indvars.iv, 1
@@ -389,7 +999,6 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:    br i1 %cmp, label %for.body, label %for.cond.cleanup.loopexit, !llvm.loop !0
 ; CHECK-NEXT:  LV: draw edge fromscalar.ph
 ; CHECK-NEXT:  LV: Interleaving disabled by the pass manager
-; CHECK-NEXT:  LV: Vectorizing: innermost loop.
 ; CHECK-EMPTY:
 ;
 entry:
@@ -420,7 +1029,7 @@ for.body:                                         ; preds = %for.body.preheader,
 
 define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocapture noundef readonly %B, i32 noundef signext %n) {
 ; CHECK-LABEL: 'vector_reverse_f32'
-; CHECK-NEXT:  LV: Loop hints: force=enabled width=vscale x 4 interleave=0
+; CHECK-NEXT:  LV: Loop hints: force=enabled width=vscale x 0 interleave=0
 ; CHECK-NEXT:  LV: Found a loop: for.body
 ; CHECK-NEXT:  LV: Found an induction variable.
 ; CHECK-NEXT:  LV: Found an induction variable.
@@ -430,31 +1039,101 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Loop does not require scalar epilogue
 ; CHECK-NEXT:  LV: Found trip count: 0
 ; CHECK-NEXT:  LV: Found maximum trip count: 4294967295
+; CHECK-NEXT:  LV: vector predicate hint/switch found.
+; CHECK-NEXT:  LV: Not allowing scalar epilogue, creating predicated vector loop.
 ; CHECK-NEXT:  LV: Scalable vectorization is available
 ; CHECK-NEXT:  LV: The max safe fixed VF is: 67108864.
 ; CHECK-NEXT:  LV: The max safe scalable VF is: vscale x 4294967295.
+; CHECK-NEXT:  LV: The Smallest and Widest types: 32 / 32 bits.
+; CHECK-NEXT:  LV: The Widest register safe to use is: 256 bits.
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: The Widest register safe to use is: vscale x 128 bits.
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: Found feasible scalable VF = vscale x 4
 ; CHECK-NEXT:  LV: Found uniform instruction: %cmp = icmp ugt i64 %indvars.iv, 1
 ; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
 ; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
 ; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
 ; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
 ; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
 ; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
 ; CHECK-NEXT:  LV: Found uniform instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
 ; CHECK-NEXT:  LV: Found uniform instruction: %i.0 = add nsw i32 %i.0.in8, -1
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %i.0 = add nsw i32 %i.0.in8, -1
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %idxprom = zext i32 %i.0 to i64
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
-; CHECK-NEXT:  LV: Found an estimated cost of 9 for VF vscale x 4 For instruction: %1 = load float, ptr %arrayidx, align 4
-; CHECK-NEXT:  LV: Found an estimated cost of 4 for VF vscale x 4 For instruction: %conv1 = fadd float %1, 1.000000e+00
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
-; CHECK-NEXT:  LV: Found an estimated cost of 9 for VF vscale x 4 For instruction: store float %conv1, ptr %arrayidx3, align 4
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %cmp = icmp ugt i64 %indvars.iv, 1
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: br i1 %cmp, label %for.body, label %for.cond.cleanup.loopexit, !llvm.loop !0
-; CHECK-NEXT:  LV: Using user VF vscale x 4.
+; CHECK-NEXT:  LV: Found scalar instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found scalar instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found scalar instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  LV: Found scalar instruction: %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found scalar instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found scalar instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found scalar instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  LV: Found scalar instruction: %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found scalar instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found scalar instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found scalar instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  LV: Found scalar instruction: %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found uniform instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction: %i.0 = add nsw i32 %i.0.in8, -1
 ; CHECK-NEXT:  Creating VPBasicBlock for for.body
 ; CHECK-NEXT:  VPlan 'Plain CFG
 ; CHECK-NEXT:   for UF>=1' {
@@ -482,59 +1161,104 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  No successors
 ; CHECK-NEXT:  }
 ; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: Scalarizing: %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Scalarizing: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Scalarizing: %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Scalarizing: %1 = load float, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Scalarizing: %conv1 = fadd float %1, 1.000000e+00
+; CHECK-NEXT:  LV: Scalarizing: %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Scalarizing: store float %conv1, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Scalarizing: %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Scalarizing: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
 ; CHECK-NEXT:  LV: Scalarizing: %i.0 = add nsw i32 %i.0.in8, -1
 ; CHECK-NEXT:  LV: Scalarizing: %idxprom = zext i32 %i.0 to i64
 ; CHECK-NEXT:  LV: Scalarizing: %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
 ; CHECK-NEXT:  LV: Scalarizing: %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
 ; CHECK-NEXT:  LV: Scalarizing: %cmp = icmp ugt i64 %indvars.iv, 1
 ; CHECK-NEXT:  LV: Scalarizing: %indvars.iv.next = add nsw i64 %indvars.iv, -1
-; CHECK-NEXT:  VPlan 'Initial VPlan for VF={vscale x 4},UF>=1' {
-; CHECK-NEXT:  Live-in vp<%0> = VF
-; CHECK-NEXT:  Live-in vp<%1> = VF * UF
-; CHECK-NEXT:  Live-in vp<%2> = vector-trip-count
-; CHECK-NEXT:  vp<%3> = original trip-count
+; CHECK-NEXT:  Creating VPBasicBlock for for.body
+; CHECK-NEXT:  VPlan 'Plain CFG
+; CHECK-NEXT:   for UF>=1' {
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  ir-bb<for.body.preheader>:
 ; CHECK-NEXT:    IR %0 = zext i32 %n to i64
-; CHECK-NEXT:    EMIT vp<%3> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  Successor(s): for.body
+; CHECK-EMPTY:
+; CHECK-NEXT:  for.body:
+; CHECK-NEXT:    WIDEN-PHI ir<%indvars.iv> = phi [ ir<%indvars.iv.next>, for.body ], [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:    WIDEN-PHI ir<%i.0.in8> = phi [ ir<%i.0>, for.body ], [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:    EMIT ir<%i.0> = add ir<%i.0.in8>, ir<-1>
+; CHECK-NEXT:    EMIT ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:    EMIT ir<%arrayidx> = getelementptr ir<%B>, ir<%idxprom>
+; CHECK-NEXT:    EMIT ir<%1> = load ir<%arrayidx>
+; CHECK-NEXT:    EMIT ir<%conv1> = fadd ir<%1>, ir<1.000000e+00>
+; CHECK-NEXT:    EMIT ir<%arrayidx3> = getelementptr ir<%A>, ir<%idxprom>
+; CHECK-NEXT:    EMIT store ir<%conv1>, ir<%arrayidx3>
+; CHECK-NEXT:    EMIT ir<%cmp> = icmp ir<%indvars.iv>, ir<1>
+; CHECK-NEXT:    EMIT ir<%indvars.iv.next> = add ir<%indvars.iv>, ir<-1>
+; CHECK-NEXT:    EMIT branch-on-cond ir<%cmp>
+; CHECK-NEXT:  Successor(s): for.body, ir-bb<for.cond.cleanup.loopexit>
+; CHECK-EMPTY:
+; CHECK-NEXT:  ir-bb<for.cond.cleanup.loopexit>:
+; CHECK-NEXT:  No successors
+; CHECK-NEXT:  }
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: Scalarizing: %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Scalarizing: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Scalarizing: %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Scalarizing: %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Scalarizing: %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Scalarizing: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  VPlan 'Initial VPlan for VF={1},UF={1}' {
+; CHECK-NEXT:  Live-in vp<%0> = vector-trip-count
+; CHECK-NEXT:  vp<%2> = original trip-count
+; CHECK-EMPTY:
+; CHECK-NEXT:  ir-bb<for.body.preheader>:
+; CHECK-NEXT:    IR %0 = zext i32 %n to i64
+; CHECK-NEXT:    EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
 ; CHECK-NEXT:  Successor(s): scalar.ph, vector.ph
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  vector.ph:
-; CHECK-NEXT:    vp<%4> = DERIVED-IV ir<%0> + vp<%2> * ir<-1>
-; CHECK-NEXT:    vp<%5> = DERIVED-IV ir<%n> + vp<%2> * ir<-1>
 ; CHECK-NEXT:  Successor(s): vector loop
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  <x1> vector loop: {
 ; CHECK-NEXT:    vector.body:
-; CHECK-NEXT:      EMIT vp<%6> = CANONICAL-INDUCTION ir<0>, vp<%index.next>
-; CHECK-NEXT:      vp<%7> = DERIVED-IV ir<%n> + vp<%6> * ir<-1>
-; CHECK-NEXT:      vp<%8> = SCALAR-STEPS vp<%7>, ir<-1>, vp<%0>
-; CHECK-NEXT:      CLONE ir<%i.0> = add nsw vp<%8>, ir<-1>
+; CHECK-NEXT:      EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:      EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:      EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:      EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:      vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:      CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:      CLONE ir<%idxprom> = zext ir<%i.0>
 ; CHECK-NEXT:      CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
-; CHECK-NEXT:      vp<%9> = vector-end-pointer inbounds ir<%arrayidx>, vp<%0>
-; CHECK-NEXT:      WIDEN ir<%1> = load vp<%9>
-; CHECK-NEXT:      WIDEN ir<%conv1> = fadd ir<%1>, ir<1.000000e+00>
+; CHECK-NEXT:      CLONE ir<%1> = load ir<%arrayidx>
+; CHECK-NEXT:      CLONE ir<%conv1> = fadd ir<%1>, ir<1.000000e+00>
 ; CHECK-NEXT:      CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
-; CHECK-NEXT:      vp<%10> = vector-end-pointer inbounds ir<%arrayidx3>, vp<%0>
-; CHECK-NEXT:      WIDEN store vp<%10>, ir<%conv1>
-; CHECK-NEXT:      EMIT vp<%index.next> = add nuw vp<%6>, vp<%1>
-; CHECK-NEXT:      EMIT branch-on-count vp<%index.next>, vp<%2>
+; CHECK-NEXT:      CLONE store ir<%conv1>, ir<%arrayidx3>
+; CHECK-NEXT:      EMIT vp<%7> = zext vp<%5> to i64
+; CHECK-NEXT:      EMIT vp<%index.evl.next> = add nuw vp<%7>, vp<%4>
+; CHECK-NEXT:      EMIT branch-on-count vp<%index.evl.next>, vp<%0>
 ; CHECK-NEXT:    No successors
 ; CHECK-NEXT:  }
 ; CHECK-NEXT:  Successor(s): middle.block
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  middle.block:
-; CHECK-NEXT:    EMIT vp<%cmp.n> = icmp eq vp<%3>, vp<%2>
-; CHECK-NEXT:    EMIT branch-on-cond vp<%cmp.n>
-; CHECK-NEXT:  Successor(s): ir-bb<for.cond.cleanup.loopexit>, scalar.ph
+; CHECK-NEXT:  Successor(s): ir-bb<for.cond.cleanup.loopexit>
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  ir-bb<for.cond.cleanup.loopexit>:
 ; CHECK-NEXT:  No successors
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  scalar.ph:
-; CHECK-NEXT:    EMIT-SCALAR vp<%bc.resume.val> = phi [ vp<%4>, middle.block ], [ ir<%0>, ir-bb<for.body.preheader> ]
-; CHECK-NEXT:    EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ vp<%5>, middle.block ], [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:    EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:    EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
 ; CHECK-NEXT:  Successor(s): ir-bb<for.body>
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  ir-bb<for.body>:
@@ -551,122 +1275,627 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:    IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
 ; CHECK-NEXT:  No successors
 ; CHECK-NEXT:  }
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %i.0 = add nsw i32 %i.0.in8, -1
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %idxprom = zext i32 %i.0 to i64
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
-; CHECK-NEXT:  LV: Found an estimated cost of 9 for VF vscale x 4 For instruction: %1 = load float, ptr %arrayidx, align 4
-; CHECK-NEXT:  LV: Found an estimated cost of 4 for VF vscale x 4 For instruction: %conv1 = fadd float %1, 1.000000e+00
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
-; CHECK-NEXT:  LV: Found an estimated cost of 9 for VF vscale x 4 For instruction: store float %conv1, ptr %arrayidx3, align 4
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %cmp = icmp ugt i64 %indvars.iv, 1
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: br i1 %cmp, label %for.body, label %for.cond.cleanup.loopexit, !llvm.loop !0
-; CHECK-NEXT:  LV(REG): Calculating max register usage:
-; CHECK-NEXT:  LV(REG): At #0 Interval # 0
-; CHECK-NEXT:  LV(REG): At #1 Interval # 1
-; CHECK-NEXT:  LV(REG): At #2 Interval # 2
-; CHECK-NEXT:  LV(REG): At #3 Interval # 2
-; CHECK-NEXT:  LV(REG): At #4 Interval # 2
-; CHECK-NEXT:  LV(REG): At #5 Interval # 2
-; CHECK-NEXT:  LV(REG): At #6 Interval # 3
-; CHECK-NEXT:  LV(REG): At #7 Interval # 3
-; CHECK-NEXT:  LV(REG): At #8 Interval # 3
-; CHECK-NEXT:  LV(REG): At #9 Interval # 3
-; CHECK-NEXT:  LV(REG): At #10 Interval # 3
-; CHECK-NEXT:  LV(REG): At #11 Interval # 3
-; CHECK-NEXT:  LV(REG): At #12 Interval # 2
-; CHECK-NEXT:  LV(REG): At #13 Interval # 2
-; CHECK-NEXT:  LV(REG): VF = vscale x 4
-; CHECK-NEXT:  LV(REG): Found max usage: 2 item
-; CHECK-NEXT:  LV(REG): RegisterClass: RISCV::GPRRC, 3 registers
-; CHECK-NEXT:  LV(REG): RegisterClass: RISCV::VRRC, 2 registers
-; CHECK-NEXT:  LV(REG): Found invariant usage: 1 item
-; CHECK-NEXT:  LV(REG): RegisterClass: RISCV::GPRRC, 1 registers
-; CHECK-NEXT:  LV: The target has 31 registers of RISCV::GPRRC register class
-; CHECK-NEXT:  LV: The target has 32 registers of RISCV::VRRC register class
-; CHECK-NEXT:  LV: Loop does not require scalar epilogue
-; CHECK-NEXT:  LV: Loop cost is 26
-; CHECK-NEXT:  LV: IC is 1
-; CHECK-NEXT:  LV: VF is vscale x 4
-; CHECK-NEXT:  LV: Not Interleaving.
-; CHECK-NEXT:  LV: Interleaving is not beneficial.
-; CHECK-NEXT:  LV: Found a vectorizable loop (vscale x 4) in <stdin>
-; CHECK-NEXT:  LEV: Epilogue vectorization is not profitable for this loop
-; CHECK-NEXT:  LV: Loop does not require scalar epilogue
-; CHECK-NEXT:  LV: Loop does not require scalar epilogue
-; CHECK-NEXT:  Executing best plan with VF=vscale x 4, UF=1
-; CHECK-NEXT:  VPlan 'Final VPlan for VF={vscale x 4},UF={1}' {
-; CHECK-NEXT:  Live-in ir<%18> = VF
-; CHECK-NEXT:  Live-in ir<%18>.1 = VF * UF
-; CHECK-NEXT:  Live-in ir<%n.vec> = vector-trip-count
-; CHECK-NEXT:  Live-in ir<%0> = original trip-count
+; CHECK-NEXT:  VPlan 'Initial VPlan for VF={2,4,8},UF={1}' {
+; CHECK-NEXT:  Live-in vp<%0> = vector-trip-count
+; CHECK-NEXT:  vp<%2> = original trip-count
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  ir-bb<for.body.preheader>:
 ; CHECK-NEXT:    IR %0 = zext i32 %n to i64
-; CHECK-NEXT:  Successor(s): ir-bb<scalar.ph>, ir-bb<vector.scevcheck>
+; CHECK-NEXT:    EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  Successor(s): scalar.ph, vector.ph
+; CHECK-EMPTY:
+; CHECK-NEXT:  vector.ph:
+; CHECK-NEXT:  Successor(s): vector loop
+; CHECK-EMPTY:
+; CHECK-NEXT:  <x1> vector loop: {
+; CHECK-NEXT:    vector.body:
+; CHECK-NEXT:      EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:      EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:      EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:      EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:      vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:      CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:      CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:      CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:      vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:      WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:      WIDEN ir<%conv1> = fadd ir<%1>, ir<1.000000e+00>
+; CHECK-NEXT:      CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:      vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:      WIDEN vp.store vp<%8>, ir<%conv1>, vp<%5> unit-strided
+; CHECK-NEXT:      EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:      EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:      EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:    No successors
+; CHECK-NEXT:  }
+; CHECK-NEXT:  Successor(s): middle.block
+; CHECK-EMPTY:
+; CHECK-NEXT:  middle.block:
+; CHECK-NEXT:  Successor(s): ir-bb<for.cond.cleanup.loopexit>
+; CHECK-EMPTY:
+; CHECK-NEXT:  ir-bb<for.cond.cleanup.loopexit>:
+; CHECK-NEXT:  No successors
+; CHECK-EMPTY:
+; CHECK-NEXT:  scalar.ph:
+; CHECK-NEXT:    EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:    EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  Successor(s): ir-bb<for.body>
+; CHECK-EMPTY:
+; CHECK-NEXT:  ir-bb<for.body>:
+; CHECK-NEXT:    IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:    IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:    IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:    IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:    IR %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:    IR %1 = load float, ptr %arrayidx, align 4
+; CHECK-NEXT:    IR %conv1 = fadd float %1, 1.000000e+00
+; CHECK-NEXT:    IR %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:    IR store float %conv1, ptr %arrayidx3, align 4
+; CHECK-NEXT:    IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:    IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  No successors
+; CHECK-NEXT:  }
+; CHECK-NEXT:  VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2,vscale x 4},UF={1}' {
+; CHECK-NEXT:  Live-in vp<%0> = vector-trip-count
+; CHECK-NEXT:  vp<%2> = original trip-count
+; CHECK-EMPTY:
+; CHECK-NEXT:  ir-bb<for.body.preheader>:
+; CHECK-NEXT:    IR %0 = zext i32 %n to i64
+; CHECK-NEXT:    EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  Successor(s): scalar.ph, vector.ph
+; CHECK-EMPTY:
+; CHECK-NEXT:  vector.ph:
+; CHECK-NEXT:  Successor(s): vector loop
+; CHECK-EMPTY:
+; CHECK-NEXT:  <x1> vector loop: {
+; CHECK-NEXT:    vector.body:
+; CHECK-NEXT:      EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:      EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:      EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:      EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:      vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:      CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:      CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:      CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:      vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:      WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:      WIDEN ir<%conv1> = fadd ir<%1>, ir<1.000000e+00>
+; CHECK-NEXT:      CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:      vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:      WIDEN vp.store vp<%8>, ir<%conv1>, vp<%5> unit-strided
+; CHECK-NEXT:      EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:      EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:      EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:    No successors
+; CHECK-NEXT:  }
+; CHECK-NEXT:  Successor(s): middle.block
+; CHECK-EMPTY:
+; CHECK-NEXT:  middle.block:
+; CHECK-NEXT:  Successor(s): ir-bb<for.cond.cleanup.loopexit>
+; CHECK-EMPTY:
+; CHECK-NEXT:  ir-bb<for.cond.cleanup.loopexit>:
+; CHECK-NEXT:  No successors
+; CHECK-EMPTY:
+; CHECK-NEXT:  scalar.ph:
+; CHECK-NEXT:    EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:    EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  Successor(s): ir-bb<for.body>
+; CHECK-EMPTY:
+; CHECK-NEXT:  ir-bb<for.body>:
+; CHECK-NEXT:    IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:    IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:    IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:    IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:    IR %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:    IR %1 = load float, ptr %arrayidx, align 4
+; CHECK-NEXT:    IR %conv1 = fadd float %1, 1.000000e+00
+; CHECK-NEXT:    IR %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:    IR store float %conv1, ptr %arrayidx3, align 4
+; CHECK-NEXT:    IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:    IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  No successors
+; CHECK-NEXT:  }
+; CHECK-NEXT:  LV: Computing best VF using cost kind: Reciprocal Throughput
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF 1 For instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF 1 For instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF 1 For instruction: %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: %1 = load float, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated cost of 2 for VF 1 For instruction: %conv1 = fadd float %1, 1.000000e+00
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF 1 For instruction: %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: store float %conv1, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF 1 For instruction: br i1 %cmp, label %for.body, label %for.cond.cleanup.loopexit, !llvm.loop !0
+; CHECK-NEXT:  LV: Scalar loop costs: 8.
+; CHECK-NEXT:  LV: Changed scalar cost to Inf as user forced vectorization.
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %1 = load float, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %conv1 = fadd float %1, 1.000000e+00
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR store float %conv1, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: WIDEN ir<%conv1> = fadd ir<%1>, ir<1.000000e+00>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: WIDEN vp.store vp<%8>, ir<%conv1>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %1 = load float, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %conv1 = fadd float %1, 1.000000e+00
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR store float %conv1, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: WIDEN ir<%conv1> = fadd ir<%1>, ir<1.000000e+00>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: WIDEN vp.store vp<%8>, ir<%conv1>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %1 = load float, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %conv1 = fadd float %1, 1.000000e+00
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR store float %conv1, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: WIDEN ir<%conv1> = fadd ir<%1>, ir<1.000000e+00>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: WIDEN vp.store vp<%8>, ir<%conv1>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %1 = load float, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %conv1 = fadd float %1, 1.000000e+00
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR store float %conv1, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: WIDEN ir<%conv1> = fadd ir<%1>, ir<1.000000e+00>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: WIDEN vp.store vp<%8>, ir<%conv1>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %1 = load float, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %conv1 = fadd float %1, 1.000000e+00
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR store float %conv1, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: WIDEN ir<%conv1> = fadd ir<%1>, ir<1.000000e+00>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: WIDEN vp.store vp<%8>, ir<%conv1>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %1 = load float, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %conv1 = fadd float %1, 1.000000e+00
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR store float %conv1, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: WIDEN ir<%conv1> = fadd ir<%1>, ir<1.000000e+00>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: WIDEN vp.store vp<%8>, ir<%conv1>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF 1 For instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF 1 For instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF 1 For instruction: %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: %1 = load float, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated cost of 2 for VF 1 For instruction: %conv1 = fadd float %1, 1.000000e+00
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF 1 For instruction: %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: store float %conv1, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF 1 For instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF 1 For instruction: br i1 %cmp, label %for.body, label %for.cond.cleanup.loopexit, !llvm.loop !0
+; CHECK-NEXT:  LV: Scalar loop costs: 8.
+; CHECK-NEXT:  LV: Changed scalar cost to Inf as user forced vectorization.
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %1 = load float, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %conv1 = fadd float %1, 1.000000e+00
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR store float %conv1, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: WIDEN ir<%conv1> = fadd ir<%1>, ir<1.000000e+00>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: WIDEN vp.store vp<%8>, ir<%conv1>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:  Cost of 1 for VF 2: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Vector loop of width 2 costs: 3.
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %1 = load float, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %conv1 = fadd float %1, 1.000000e+00
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR store float %conv1, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: WIDEN ir<%conv1> = fadd ir<%1>, ir<1.000000e+00>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: WIDEN vp.store vp<%8>, ir<%conv1>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:  Cost of 1 for VF 4: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Vector loop of width 4 costs: 2.
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %1 = load float, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %conv1 = fadd float %1, 1.000000e+00
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR store float %conv1, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: WIDEN ir<%conv1> = fadd ir<%1>, ir<1.000000e+00>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: WIDEN vp.store vp<%8>, ir<%conv1>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:  Cost of 1 for VF 8: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Vector loop of width 8 costs: 2.
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %1 = load float, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %conv1 = fadd float %1, 1.000000e+00
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR store float %conv1, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: WIDEN ir<%conv1> = fadd ir<%1>, ir<1.000000e+00>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: WIDEN vp.store vp<%8>, ir<%conv1>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:  Cost of 1 for VF vscale x 1: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Vector loop of width vscale x 1 costs: 3 (assuming a minimum vscale of 2).
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %1 = load float, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %conv1 = fadd float %1, 1.000000e+00
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR store float %conv1, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: WIDEN ir<%conv1> = fadd ir<%1>, ir<1.000000e+00>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: WIDEN vp.store vp<%8>, ir<%conv1>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:  Cost of 1 for VF vscale x 2: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Vector loop of width vscale x 2 costs: 1 (assuming a minimum vscale of 2).
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<for.body.preheader> ]
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ] (extra operand: vp<%bc.resume.val> from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ] (extra operand: vp<%bc.resume.val>.1 from scalar.ph)
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %1 = load float, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %conv1 = fadd float %1, 1.000000e+00
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR store float %conv1, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: vp<%7> = vector-end-pointer ir<%arrayidx>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: WIDEN ir<%1> = vp.load vp<%7>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: WIDEN ir<%conv1> = fadd ir<%1>, ir<1.000000e+00>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: vp<%8> = vector-end-pointer ir<%arrayidx3>, vp<%5>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: WIDEN vp.store vp<%8>, ir<%conv1>, vp<%5> unit-strided
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%9> = zext vp<%5> to i64
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
+; CHECK-NEXT:  Cost of 1 for VF vscale x 4: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Vector loop of width vscale x 4 costs: 1 (assuming a minimum vscale of 2).
+; CHECK-NEXT:  Cost of 1 for VF vscale x 4: induction instruction %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  Cost of 0 for VF vscale x 4: induction instruction %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  Cost of 1 for VF vscale x 4: induction instruction %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  Cost of 0 for VF vscale x 4: induction instruction %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  Cost of 1 for VF vscale x 4: exit condition instruction %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Selecting VF: vscale x 4.
+; CHECK-NEXT:  LV: Interleaving is not beneficial.
+; CHECK-NEXT:  LV: Found a vectorizable loop (vscale x 4) in <stdin>
+; CHECK-NEXT:  LEV: Unable to vectorize epilogue because no epilogue is allowed.
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  LV: Loop does not require scalar epilogue
+; CHECK-NEXT:  Executing best plan with VF=vscale x 4, UF=1
+; CHECK-NEXT:  VPlan 'Final VPlan for VF={vscale x 1,vscale x 2,vscale x 4},UF={1}' {
+; CHECK-NEXT:  Live-in ir<%0> = vector-trip-count
+; CHECK-NEXT:  Live-in ir<%0>.1 = original trip-count
+; CHECK-EMPTY:
+; CHECK-NEXT:  ir-bb<for.body.preheader>:
+; CHECK-NEXT:    IR %0 = zext i32 %n to i64
+; CHECK-NEXT:  Successor(s): ir-bb<vector.scevcheck>
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  ir-bb<vector.scevcheck>:
-; CHECK-NEXT:    IR %3 = add nsw i64 %0, -1
-; CHECK-NEXT:    IR %4 = add i32 %n, -1
-; CHECK-NEXT:    IR %5 = trunc i64 %3 to i32
-; CHECK-NEXT:    IR %mul = call { i32, i1 } @llvm.umul.with.overflow.i32(i32 1, i32 %5)
+; CHECK-NEXT:    IR %1 = add nsw i64 %0, -1
+; CHECK-NEXT:    IR %2 = add i32 %n, -1
+; CHECK-NEXT:    IR %3 = trunc i64 %1 to i32
+; CHECK-NEXT:    IR %mul = call { i32, i1 } @llvm.umul.with.overflow.i32(i32 1, i32 %3)
 ; CHECK-NEXT:    IR %mul.result = extractvalue { i32, i1 } %mul, 0
 ; CHECK-NEXT:    IR %mul.overflow = extractvalue { i32, i1 } %mul, 1
-; CHECK-NEXT:    IR %6 = sub i32 %4, %mul.result
-; CHECK-NEXT:    IR %7 = icmp ugt i32 %6, %4
-; CHECK-NEXT:    IR %8 = or i1 %7, %mul.overflow
-; CHECK-NEXT:    IR %9 = icmp ugt i64 %3, 4294967295
-; CHECK-NEXT:    IR %10 = or i1 %8, %9
+; CHECK-NEXT:    IR %4 = sub i32 %2, %mul.result
+; CHECK-NEXT:    IR %5 = icmp ugt i32 %4, %2
+; CHECK-NEXT:    IR %6 = or i1 %5, %mul.overflow
+; CHECK-NEXT:    IR %7 = icmp ugt i64 %1, 4294967295
+; CHECK-NEXT:    IR %8 = or i1 %6, %7
 ; CHECK-NEXT:  Successor(s): ir-bb<scalar.ph>, ir-bb<vector.memcheck>
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  ir-bb<vector.memcheck>:
-; CHECK-NEXT:    IR %11 = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    IR %12 = mul nuw i64 %11, 4
-; CHECK-NEXT:    IR %13 = mul i64 %12, 4
-; CHECK-NEXT:    IR %14 = sub i64 %B1, %A2
-; CHECK-NEXT:    IR %diff.check = icmp ult i64 %14, %13
+; CHECK-NEXT:    IR %9 = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    IR %10 = mul nuw i64 %9, 4
+; CHECK-NEXT:    IR %11 = mul i64 %10, 4
+; CHECK-NEXT:    IR %12 = sub i64 %B1, %A2
+; CHECK-NEXT:    IR %diff.check = icmp ult i64 %12, %11
 ; CHECK-NEXT:  Successor(s): ir-bb<scalar.ph>, ir-bb<vector.ph>
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  ir-bb<vector.ph>:
-; CHECK-NEXT:    IR %15 = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    IR %16 = mul nuw i64 %15, 4
-; CHECK-NEXT:    IR %n.mod.vf = urem i64 %0, %16
-; CHECK-NEXT:    IR %n.vec = sub i64 %0, %n.mod.vf
-; CHECK-NEXT:    IR %17 = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    IR %18 = mul nuw i64 %17, 4
-; CHECK-NEXT:    vp<%1> = DERIVED-IV ir<%0> + ir<%n.vec> * ir<-1>
-; CHECK-NEXT:    vp<%2> = DERIVED-IV ir<%n> + ir<%n.vec> * ir<-1>
+; CHECK-NEXT:    IR %13 = call i32 @llvm.experimental.get.vector.length.i64(i64 %0, i32 4, i1 true)
 ; CHECK-NEXT:  Successor(s): vector.body
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  vector.body:
-; CHECK-NEXT:    EMIT-SCALAR vp<%index> = phi [ ir<0>, ir-bb<vector.ph> ], [ vp<%index.next>, vector.body ]
-; CHECK-NEXT:    vp<%3> = DERIVED-IV ir<%n> + vp<%index> * ir<-1>
-; CHECK-NEXT:    CLONE ir<%i.0> = add nsw vp<%3>, ir<-1>
+; CHECK-NEXT:    EMIT-SCALAR vp<%index> = phi [ ir<0>, ir-bb<vector.ph> ], [ vp<%index.evl.next>, vector.body ]
+; CHECK-NEXT:    EMIT-SCALAR vp<%evl.based.iv> = phi [ ir<0>, ir-bb<vector.ph> ], [ vp<%index.evl.next>, vector.body ]
+; CHECK-NEXT:    EMIT vp<%avl> = sub ir<%0>, vp<%evl.based.iv>
+; CHECK-NEXT:    EMIT vp<%1> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:    vp<%2> = DERIVED-IV ir<%n> + vp<%evl.based.iv> * ir<-1>
+; CHECK-NEXT:    CLONE ir<%i.0> = add nsw vp<%2>, ir<-1>
 ; CHECK-NEXT:    CLONE ir<%idxprom> = zext ir<%i.0>
 ; CHECK-NEXT:    CLONE ir<%arrayidx> = getelementptr inbounds ir<%B>, ir<%idxprom>
-; CHECK-NEXT:    vp<%4> = vector-end-pointer inbounds ir<%arrayidx>, ir<%18>
-; CHECK-NEXT:    WIDEN ir<%19> = load vp<%4>
-; CHECK-NEXT:    WIDEN ir<%conv1> = fadd ir<%19>, ir<1.000000e+00>
+; CHECK-NEXT:    vp<%3> = vector-end-pointer ir<%arrayidx>, vp<%1>
+; CHECK-NEXT:    WIDEN ir<%14> = vp.load vp<%3>, vp<%1> unit-strided
+; CHECK-NEXT:    WIDEN ir<%conv1> = fadd ir<%14>, ir<1.000000e+00>
 ; CHECK-NEXT:    CLONE ir<%arrayidx3> = getelementptr inbounds ir<%A>, ir<%idxprom>
-; CHECK-NEXT:    vp<%5> = vector-end-pointer inbounds ir<%arrayidx3>, ir<%18>
-; CHECK-NEXT:    WIDEN store vp<%5>, ir<%conv1>
-; CHECK-NEXT:    EMIT vp<%index.next> = add nuw vp<%index>, ir<%18>.1
-; CHECK-NEXT:    EMIT branch-on-count vp<%index.next>, ir<%n.vec>
+; CHECK-NEXT:    vp<%4> = vector-end-pointer ir<%arrayidx3>, vp<%1>
+; CHECK-NEXT:    WIDEN vp.store vp<%4>, ir<%conv1>, vp<%1> unit-strided
+; CHECK-NEXT:    EMIT vp<%5> = zext vp<%1> to i64
+; CHECK-NEXT:    EMIT vp<%index.evl.next> = add nuw vp<%5>, vp<%evl.based.iv>
+; CHECK-NEXT:    EMIT branch-on-count vp<%index.evl.next>, ir<%0>
 ; CHECK-NEXT:  Successor(s): middle.block, vector.body
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  middle.block:
-; CHECK-NEXT:    EMIT vp<%cmp.n> = icmp eq ir<%0>, ir<%n.vec>
-; CHECK-NEXT:    EMIT branch-on-cond vp<%cmp.n>
-; CHECK-NEXT:  Successor(s): ir-bb<for.cond.cleanup.loopexit>, ir-bb<scalar.ph>
+; CHECK-NEXT:  Successor(s): ir-bb<for.cond.cleanup.loopexit>
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  ir-bb<for.cond.cleanup.loopexit>:
 ; CHECK-NEXT:  No successors
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  ir-bb<scalar.ph>:
-; CHECK-NEXT:    EMIT-SCALAR vp<%bc.resume.val> = phi [ vp<%1>, middle.block ], [ ir<%0>, ir-bb<for.body.preheader> ], [ ir<%0>, ir-bb<vector.scevcheck> ], [ ir<%0>, ir-bb<vector.memcheck> ]
-; CHECK-NEXT:    EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ vp<%2>, middle.block ], [ ir<%n>, ir-bb<for.body.preheader> ], [ ir<%n>, ir-bb<vector.scevcheck> ], [ ir<%n>, ir-bb<vector.memcheck> ]
+; CHECK-NEXT:    EMIT-SCALAR vp<%bc.resume.val> = phi [ ir<%0>.1, ir-bb<vector.scevcheck> ], [ ir<%0>.1, ir-bb<vector.memcheck> ]
+; CHECK-NEXT:    EMIT-SCALAR vp<%bc.resume.val>.1 = phi [ ir<%n>, ir-bb<vector.scevcheck> ], [ ir<%n>, ir-bb<vector.memcheck> ]
 ; CHECK-NEXT:  Successor(s): ir-bb<for.body>
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  ir-bb<for.body>:
@@ -675,8 +1904,8 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:    IR %i.0 = add nsw i32 %i.0.in8, -1
 ; CHECK-NEXT:    IR %idxprom = zext i32 %i.0 to i64
 ; CHECK-NEXT:    IR %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
-; CHECK-NEXT:    IR %19 = load float, ptr %arrayidx, align 4
-; CHECK-NEXT:    IR %conv1 = fadd float %19, 1.000000e+00
+; CHECK-NEXT:    IR %14 = load float, ptr %arrayidx, align 4
+; CHECK-NEXT:    IR %conv1 = fadd float %14, 1.000000e+00
 ; CHECK-NEXT:    IR %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
 ; CHECK-NEXT:    IR store float %conv1, ptr %arrayidx3, align 4
 ; CHECK-NEXT:    IR %cmp = icmp ugt i64 %indvars.iv, 1
@@ -687,48 +1916,37 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: filled BB:
 ; CHECK-NEXT:  for.body.preheader: ; preds = %entry
 ; CHECK-NEXT:    %0 = zext i32 %n to i64
-; CHECK-NEXT:    %1 = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    %2 = mul nuw i64 %1, 4
-; CHECK-NEXT:    %min.iters.check = icmp ult i64 %0, %2
-; CHECK-NEXT:    br i1 %min.iters.check, label %scalar.ph, label %vector.scevcheck
+; CHECK-NEXT:    br label %vector.scevcheck
 ; CHECK-NEXT:  LV: vectorizing VPBB:ir-bb<vector.scevcheck> in BB:vector.scevcheck
 ; CHECK-NEXT:  LV: filled BB:
 ; CHECK-NEXT:  vector.scevcheck: ; preds = %for.body.preheader
-; CHECK-NEXT:    %3 = add nsw i64 %0, -1
-; CHECK-NEXT:    %4 = add i32 %n, -1
-; CHECK-NEXT:    %5 = trunc i64 %3 to i32
-; CHECK-NEXT:    %mul = call { i32, i1 } @llvm.umul.with.overflow.i32(i32 1, i32 %5)
+; CHECK-NEXT:    %1 = add nsw i64 %0, -1
+; CHECK-NEXT:    %2 = add i32 %n, -1
+; CHECK-NEXT:    %3 = trunc i64 %1 to i32
+; CHECK-NEXT:    %mul = call { i32, i1 } @llvm.umul.with.overflow.i32(i32 1, i32 %3)
 ; CHECK-NEXT:    %mul.result = extractvalue { i32, i1 } %mul, 0
 ; CHECK-NEXT:    %mul.overflow = extractvalue { i32, i1 } %mul, 1
-; CHECK-NEXT:    %6 = sub i32 %4, %mul.result
-; CHECK-NEXT:    %7 = icmp ugt i32 %6, %4
-; CHECK-NEXT:    %8 = or i1 %7, %mul.overflow
-; CHECK-NEXT:    %9 = icmp ugt i64 %3, 4294967295
-; CHECK-NEXT:    %10 = or i1 %8, %9
-; CHECK-NEXT:    br i1 %10, label %scalar.ph, label %vector.memcheck
+; CHECK-NEXT:    %4 = sub i32 %2, %mul.result
+; CHECK-NEXT:    %5 = icmp ugt i32 %4, %2
+; CHECK-NEXT:    %6 = or i1 %5, %mul.overflow
+; CHECK-NEXT:    %7 = icmp ugt i64 %1, 4294967295
+; CHECK-NEXT:    %8 = or i1 %6, %7
+; CHECK-NEXT:    br i1 %8, label %scalar.ph, label %vector.memcheck
 ; CHECK-NEXT:  LV: draw edge fromfor.body.preheader
 ; CHECK-NEXT:  LV: vectorizing VPBB:ir-bb<vector.memcheck> in BB:vector.memcheck
 ; CHECK-NEXT:  LV: filled BB:
 ; CHECK-NEXT:  vector.memcheck: ; preds = %vector.scevcheck
-; CHECK-NEXT:    %11 = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    %12 = mul nuw i64 %11, 4
-; CHECK-NEXT:    %13 = mul i64 %12, 4
-; CHECK-NEXT:    %14 = sub i64 %B1, %A2
-; CHECK-NEXT:    %diff.check = icmp ult i64 %14, %13
+; CHECK-NEXT:    %9 = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    %10 = mul nuw i64 %9, 4
+; CHECK-NEXT:    %11 = mul i64 %10, 4
+; CHECK-NEXT:    %12 = sub i64 %B1, %A2
+; CHECK-NEXT:    %diff.check = icmp ult i64 %12, %11
 ; CHECK-NEXT:    br i1 %diff.check, label %scalar.ph, label %vector.ph
 ; CHECK-NEXT:  LV: draw edge fromvector.scevcheck
 ; CHECK-NEXT:  LV: vectorizing VPBB:ir-bb<vector.ph> in BB:vector.ph
 ; CHECK-NEXT:  LV: filled BB:
 ; CHECK-NEXT:  vector.ph: ; preds = %vector.memcheck
-; CHECK-NEXT:    %15 = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    %16 = mul nuw i64 %15, 4
-; CHECK-NEXT:    %n.mod.vf = urem i64 %0, %16
-; CHECK-NEXT:    %n.vec = sub i64 %0, %n.mod.vf
-; CHECK-NEXT:    %17 = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    %18 = mul nuw i64 %17, 4
-; CHECK-NEXT:    %19 = sub i64 %0, %n.vec
-; CHECK-NEXT:    %.cast = trunc i64 %n.vec to i32
-; CHECK-NEXT:    %20 = sub i32 %n, %.cast
+; CHECK-NEXT:    %13 = call i32 @llvm.experimental.get.vector.length.i64(i64 %0, i32 4, i1 true)
 ; CHECK-NEXT:    br
 ; CHECK-NEXT:  LV: draw edge fromvector.memcheck
 ; CHECK-NEXT:  LV: created vector.body
@@ -737,35 +1955,38 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: filled BB:
 ; CHECK-NEXT:  vector.body: ; preds = %vector.body, %vector.ph
 ; CHECK-NEXT:    %index = phi i64 [ 0, %vector.ph ]
-; CHECK-NEXT:    %.cast3 = trunc i64 %index to i32
-; CHECK-NEXT:    %offset.idx = sub i32 %n, %.cast3
-; CHECK-NEXT:    %21 = add nsw i32 %offset.idx, -1
-; CHECK-NEXT:    %22 = zext i32 %21 to i64
-; CHECK-NEXT:    %23 = getelementptr inbounds float, ptr %B, i64 %22
-; CHECK-NEXT:    %24 = mul i64 0, %18
-; CHECK-NEXT:    %25 = sub i64 1, %18
-; CHECK-NEXT:    %26 = getelementptr inbounds float, ptr %23, i64 %24
-; CHECK-NEXT:    %27 = getelementptr inbounds float, ptr %26, i64 %25
-; CHECK-NEXT:    %wide.load = load <vscale x 4 x float>, ptr %27, align 4
-; CHECK-NEXT:    %reverse = call <vscale x 4 x float> @llvm.vector.reverse.nxv4f32(<vscale x 4 x float> %wide.load)
-; CHECK-NEXT:    %28 = fadd <vscale x 4 x float> %reverse, splat (float 1.000000e+00)
-; CHECK-NEXT:    %29 = getelementptr inbounds float, ptr %A, i64 %22
-; CHECK-NEXT:    %30 = mul i64 0, %18
-; CHECK-NEXT:    %31 = sub i64 1, %18
-; CHECK-NEXT:    %32 = getelementptr inbounds float, ptr %29, i64 %30
-; CHECK-NEXT:    %33 = getelementptr inbounds float, ptr %32, i64 %31
-; CHECK-NEXT:    %reverse4 = call <vscale x 4 x float> @llvm.vector.reverse.nxv4f32(<vscale x 4 x float> %28)
-; CHECK-NEXT:    store <vscale x 4 x float> %reverse4, ptr %33, align 4
-; CHECK-NEXT:    %index.next = add nuw i64 %index, %18
-; CHECK-NEXT:    %34 = icmp eq i64 %index.next, %n.vec
-; CHECK-NEXT:    br i1 %34, <null operand!>, label %vector.body
+; CHECK-NEXT:    %evl.based.iv = phi i64 [ 0, %vector.ph ]
+; CHECK-NEXT:    %avl = sub i64 %0, %evl.based.iv
+; CHECK-NEXT:    %14 = call i32 @llvm.experimental.get.vector.length.i64(i64 %avl, i32 4, i1 true)
+; CHECK-NEXT:    %.cast = trunc i64 %evl.based.iv to i32
+; CHECK-NEXT:    %offset.idx = sub i32 %n, %.cast
+; CHECK-NEXT:    %15 = add nsw i32 %offset.idx, -1
+; CHECK-NEXT:    %16 = zext i32 %15 to i64
+; CHECK-NEXT:    %17 = getelementptr inbounds float, ptr %B, i64 %16
+; CHECK-NEXT:    %18 = zext i32 %14 to i64
+; CHECK-NEXT:    %19 = mul i64 0, %18
+; CHECK-NEXT:    %20 = sub i64 1, %18
+; CHECK-NEXT:    %21 = getelementptr float, ptr %17, i64 %19
+; CHECK-NEXT:    %22 = getelementptr float, ptr %21, i64 %20
+; CHECK-NEXT:    %vp.op.load = call <vscale x 4 x float> @llvm.vp.load.nxv4f32.p0(ptr align 4 %22, <vscale x 4 x i1> splat (i1 true), i32 %14)
+; CHECK-NEXT:    %vp.op = call <vscale x 4 x float> @llvm.vp.fadd.nxv4f32(<vscale x 4 x float> %vp.op.load, <vscale x 4 x float> splat (float 1.000000e+00), <vscale x 4 x i1> splat (i1 true), i32 %14)
+; CHECK-NEXT:    %23 = getelementptr inbounds float, ptr %A, i64 %16
+; CHECK-NEXT:    %24 = zext i32 %14 to i64
+; CHECK-NEXT:    %25 = mul i64 0, %24
+; CHECK-NEXT:    %26 = sub i64 1, %24
+; CHECK-NEXT:    %27 = getelementptr float, ptr %23, i64 %25
+; CHECK-NEXT:    %28 = getelementptr float, ptr %27, i64 %26
+; CHECK-NEXT:    call void @llvm.vp.store.nxv4f32.p0(<vscale x 4 x float> %vp.op, ptr align 4 %28, <vscale x 4 x i1> splat (i1 true), i32 %14)
+; CHECK-NEXT:    %29 = zext i32 %14 to i64
+; CHECK-NEXT:    %index.evl.next = add nuw i64 %29, %evl.based.iv
+; CHECK-NEXT:    %30 = icmp eq i64 %index.evl.next, %0
+; CHECK-NEXT:    br i1 %30, <null operand!>, label %vector.body
 ; CHECK-NEXT:  LV: created middle.block
 ; CHECK-NEXT:  LV: draw edge fromvector.body
 ; CHECK-NEXT:  LV: vectorizing VPBB:middle.block in BB:middle.block
 ; CHECK-NEXT:  LV: filled BB:
 ; CHECK-NEXT:  middle.block: ; preds = %vector.body
-; CHECK-NEXT:    %cmp.n = icmp eq i64 %0, %n.vec
-; CHECK-NEXT:    br i1 %cmp.n, <null operand!>, <null operand!>
+; CHECK-NEXT:    unreachable
 ; CHECK-NEXT:  LV: vectorizing VPBB:ir-bb<for.cond.cleanup.loopexit> in BB:for.cond.cleanup.loopexit
 ; CHECK-NEXT:  LV: filled BB:
 ; CHECK-NEXT:  for.cond.cleanup.loopexit: ; preds = %for.body
@@ -773,24 +1994,22 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: draw edge frommiddle.block
 ; CHECK-NEXT:  LV: vectorizing VPBB:ir-bb<scalar.ph> in BB:scalar.ph
 ; CHECK-NEXT:  LV: filled BB:
-; CHECK-NEXT:  scalar.ph: ; preds = %vector.memcheck, %vector.scevcheck, %for.body.preheader
-; CHECK-NEXT:    %bc.resume.val = phi i64 [ %19, %middle.block ], [ %0, %for.body.preheader ], [ %0, %vector.scevcheck ], [ %0, %vector.memcheck ]
-; CHECK-NEXT:    %bc.resume.val5 = phi i32 [ %20, %middle.block ], [ %n, %for.body.preheader ], [ %n, %vector.scevcheck ], [ %n, %vector.memcheck ]
+; CHECK-NEXT:  scalar.ph: ; preds = %vector.memcheck, %vector.scevcheck
+; CHECK-NEXT:    %bc.resume.val = phi i64 [ %0, %vector.scevcheck ], [ %0, %vector.memcheck ]
+; CHECK-NEXT:    %bc.resume.val3 = phi i32 [ %n, %vector.scevcheck ], [ %n, %vector.memcheck ]
 ; CHECK-NEXT:    br label %for.body
-; CHECK-NEXT:  LV: draw edge frommiddle.block
-; CHECK-NEXT:  LV: draw edge fromfor.body.preheader
 ; CHECK-NEXT:  LV: draw edge fromvector.scevcheck
 ; CHECK-NEXT:  LV: draw edge fromvector.memcheck
 ; CHECK-NEXT:  LV: vectorizing VPBB:ir-bb<for.body> in BB:for.body
 ; CHECK-NEXT:  LV: filled BB:
 ; CHECK-NEXT:  for.body: ; preds = %for.body, %scalar.ph
 ; CHECK-NEXT:    %indvars.iv = phi i64 [ %bc.resume.val, %scalar.ph ], [ %indvars.iv.next, %for.body ]
-; CHECK-NEXT:    %i.0.in8 = phi i32 [ %bc.resume.val5, %scalar.ph ], [ %i.0, %for.body ]
+; CHECK-NEXT:    %i.0.in8 = phi i32 [ %bc.resume.val3, %scalar.ph ], [ %i.0, %for.body ]
 ; CHECK-NEXT:    %i.0 = add nsw i32 %i.0.in8, -1
 ; CHECK-NEXT:    %idxprom = zext i32 %i.0 to i64
 ; CHECK-NEXT:    %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
-; CHECK-NEXT:    %35 = load float, ptr %arrayidx, align 4
-; CHECK-NEXT:    %conv1 = fadd float %35, 1.000000e+00
+; CHECK-NEXT:    %31 = load float, ptr %arrayidx, align 4
+; CHECK-NEXT:    %conv1 = fadd float %31, 1.000000e+00
 ; CHECK-NEXT:    %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
 ; CHECK-NEXT:    store float %conv1, ptr %arrayidx3, align 4
 ; CHECK-NEXT:    %cmp = icmp ugt i64 %indvars.iv, 1
@@ -798,7 +2017,6 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:    br i1 %cmp, label %for.body, label %for.cond.cleanup.loopexit, !llvm.loop !0
 ; CHECK-NEXT:  LV: draw edge fromscalar.ph
 ; CHECK-NEXT:  LV: Interleaving disabled by the pass manager
-; CHECK-NEXT:  LV: Vectorizing: innermost loop.
 ;
 entry:
   %cmp7 = icmp sgt i32 %n, 0
@@ -831,5 +2049,3 @@ for.body:                                         ; preds = %for.body.preheader,
 !2 = !{!"llvm.loop.vectorize.width", i32 4}
 !3 = !{!"llvm.loop.vectorize.scalable.enable", i1 true}
 !4 = !{!"llvm.loop.vectorize.enable", i1 true}
-;; NOTE: These prefixes are unused and the list is autogenerated. Do not add tests below this line:
-; CHECK: {{.*}}

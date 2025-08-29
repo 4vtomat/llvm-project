@@ -14,6 +14,9 @@ define ptr @Perl_newSV(ptr %call.i) {
 ; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 1 x i64> @llvm.stepvector.nxv1i64()
 ; CHECK-NEXT:    [[TMP3:%.*]] = mul <vscale x 1 x i64> [[TMP1]], splat (i64 11)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 1 x i64> splat (i64 1), [[TMP3]]
+; CHECK-NEXT:    [[TMP4:%.*]] = mul i64 11, [[TMP0]]
+; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[TMP4]], i64 0
+; CHECK-NEXT:    [[DOTSPLAT2:%.*]] = shufflevector <vscale x 1 x i64> [[BROADCAST_SPLATINSERT]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -38,10 +41,6 @@ define ptr @Perl_newSV(ptr %call.i) {
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv1p0.p0.i64(<vscale x 1 x ptr> [[TMP16]], ptr align 8 [[TMP15]], i64 176, <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]]), !tbaa [[TBAA7:![0-9]+]]
 ; CHECK-NEXT:    [[TMP17:%.*]] = zext i32 [[TMP6]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP17]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP18:%.*]] = sext i32 [[TMP6]] to i64
-; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 11, [[TMP18]]
-; CHECK-NEXT:    [[DOTSPLATINSERT1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[TMP19]], i64 0
-; CHECK-NEXT:    [[DOTSPLAT2:%.*]] = shufflevector <vscale x 1 x i64> [[DOTSPLATINSERT1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> [[VEC_IND]], <vscale x 1 x i64> [[DOTSPLAT2]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP6]])
 ; CHECK-NEXT:    [[TMP20:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 24
 ; CHECK-NEXT:    br i1 [[TMP20]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
@@ -68,7 +67,7 @@ define ptr @Perl_newSV(ptr %call.i) {
 ; CHECK-NEXT:    [[ADD_PTR5_I7_PTR_I_10:%.*]] = getelementptr inbounds [[STRUCT_SV]], ptr [[CALL_I]], i64 [[SV_026_I6_ADD_I_10]]
 ; CHECK-NEXT:    store ptr [[ADD_PTR5_I7_PTR_I_10]], ptr [[SV_026_I6_PTR_I_10]], align 8, !tbaa [[TBAA7]]
 ; CHECK-NEXT:    [[EXITCOND_NOT_I_10:%.*]] = icmp eq i64 [[SV_026_I6_IDX_I]], 254
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT_I_10]], label [[PERL_SV_ADD_ARENA_EXIT14_I]], label [[WHILE_BODY_I11_I]], !llvm.loop [[LOOP11:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT_I_10]], label [[PERL_SV_ADD_ARENA_EXIT14_I]], label [[WHILE_BODY_I11_I]], !llvm.loop [[LOOP12:![0-9]+]]
 ; CHECK:       Perl_sv_add_arena.exit14.i:
 ; CHECK-NEXT:    [[ADD_PTR5_I7_PTR_I_10_LCSSA:%.*]] = phi ptr [ [[ADD_PTR5_I7_PTR_I_10]], [[WHILE_BODY_I11_I]] ], [ [[TMP22]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    store ptr null, ptr [[ADD_PTR5_I7_PTR_I_10_LCSSA]], align 8

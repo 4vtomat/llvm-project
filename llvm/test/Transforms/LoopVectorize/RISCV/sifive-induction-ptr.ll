@@ -37,7 +37,7 @@ define dso_local noundef signext i32 @f(ptr noundef writeonly %c, ptr noundef re
 ; VEC-NEXT:    br label [[VECTOR_MEMCHECK:%.*]]
 ; VEC:       vector.memcheck:
 ; VEC-NEXT:    [[TMP7:%.*]] = call i64 @llvm.vscale.i64()
-; VEC-NEXT:    [[TMP8:%.*]] = mul i64 [[TMP7]], 2
+; VEC-NEXT:    [[TMP8:%.*]] = mul nuw i64 [[TMP7]], 2
 ; VEC-NEXT:    [[TMP9:%.*]] = mul i64 [[TMP8]], 4
 ; VEC-NEXT:    [[TMP10:%.*]] = sub i64 [[C1]], [[A2]]
 ; VEC-NEXT:    [[DIFF_CHECK:%.*]] = icmp ult i64 [[TMP10]], [[TMP9]]
@@ -47,7 +47,7 @@ define dso_local noundef signext i32 @f(ptr noundef writeonly %c, ptr noundef re
 ; VEC-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 2 x ptr> poison, ptr [[ADD_PTR2]], i64 0
 ; VEC-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 2 x ptr> [[BROADCAST_SPLATINSERT]], <vscale x 2 x ptr> poison, <vscale x 2 x i32> zeroinitializer
 ; VEC-NEXT:    [[TMP16:%.*]] = call i64 @llvm.vscale.i64()
-; VEC-NEXT:    [[TMP13:%.*]] = mul i64 [[TMP16]], 2
+; VEC-NEXT:    [[TMP13:%.*]] = mul nuw i64 [[TMP16]], 2
 ; VEC-NEXT:    [[TMP14:%.*]] = mul i64 [[TMP13]], 0
 ; VEC-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 2 x i64> poison, i64 [[TMP14]], i64 0
 ; VEC-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 2 x i64> [[DOTSPLATINSERT]], <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer
@@ -99,7 +99,7 @@ define dso_local noundef signext i32 @f(ptr noundef writeonly %c, ptr noundef re
 ; VEC-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[A_ADDR_011]], i64 4
 ; VEC-NEXT:    [[INCDEC_PTR4]] = getelementptr inbounds i8, ptr [[C_ADDR_012]], i64 4
 ; VEC-NEXT:    [[CMP:%.*]] = icmp ult ptr [[INCDEC_PTR4]], [[ADD_PTR]]
-; VEC-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END_LOOPEXIT]], !llvm.loop [[LOOP3:![0-9]+]]
+; VEC-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END_LOOPEXIT]], !llvm.loop [[LOOP4:![0-9]+]]
 ; VEC:       for.end.loopexit:
 ; VEC-NEXT:    br label [[FOR_END]]
 ; VEC:       for.end:

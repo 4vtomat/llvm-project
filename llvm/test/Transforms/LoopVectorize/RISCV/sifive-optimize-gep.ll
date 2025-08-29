@@ -18,6 +18,9 @@ define void @test2(ptr %a, i64 %n) {
 ; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 1 x i64> @llvm.stepvector.nxv1i64()
 ; CHECK-NEXT:    [[TMP3:%.*]] = mul <vscale x 1 x i64> [[TMP2]], splat (i64 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 1 x i64> zeroinitializer, [[TMP3]]
+; CHECK-NEXT:    [[TMP8:%.*]] = mul i64 1, [[TMP4]]
+; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[TMP8]], i64 0
+; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 1 x i64> [[BROADCAST_SPLATINSERT]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -30,10 +33,6 @@ define void @test2(ptr %a, i64 %n) {
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv1p0.p0.i64(<vscale x 1 x ptr> [[TMP6]], ptr align 8 [[TMP5]], i64 16, <vscale x 1 x i1> splat (i1 true), i32 [[TMP11]])
 ; CHECK-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP11]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP7]], [[EVL_BASED_IV1]]
-; CHECK-NEXT:    [[TMP8:%.*]] = sext i32 [[TMP11]] to i64
-; CHECK-NEXT:    [[TMP9:%.*]] = mul i64 1, [[TMP8]]
-; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[TMP9]], i64 0
-; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 1 x i64> [[DOTSPLATINSERT]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
 ; CHECK-NEXT:    [[STEP_ADD]] = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> [[VEC_IND]], <vscale x 1 x i64> [[DOTSPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP11]])
 ; CHECK-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
@@ -52,7 +51,7 @@ define void @test2(ptr %a, i64 %n) {
 ; CHECK-NEXT:    store ptr [[ARRAYIDX]], ptr [[ARRAYIDX]], align 8
 ; CHECK-NEXT:    [[INC]] = add nuw nsw i64 [[I_07]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], [[N]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ;
 entry:
   %cmp6 = icmp sgt i64 %n, 0

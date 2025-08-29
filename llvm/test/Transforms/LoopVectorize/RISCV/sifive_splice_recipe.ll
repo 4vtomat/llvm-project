@@ -14,7 +14,7 @@ define void @foo(ptr %b, ptr %a) {
 ; CHECK-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
 ; CHECK:       [[VECTOR_MEMCHECK]]:
 ; CHECK-NEXT:    [[TMP14:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP14]], 2
+; CHECK-NEXT:    [[TMP2:%.*]] = mul nuw i64 [[TMP14]], 2
 ; CHECK-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 4
 ; CHECK-NEXT:    [[TMP4:%.*]] = sub i64 [[A1]], [[B2]]
 ; CHECK-NEXT:    [[DIFF_CHECK:%.*]] = icmp ult i64 [[TMP4]], [[TMP3]]

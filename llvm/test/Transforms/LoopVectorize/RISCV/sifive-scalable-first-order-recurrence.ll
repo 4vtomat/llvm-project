@@ -22,7 +22,7 @@ define i32 @recurrence_1(ptr nocapture readonly %a, ptr nocapture %b, i32 %n) {
 ; CHECK-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
 ; CHECK:       [[VECTOR_MEMCHECK]]:
 ; CHECK-NEXT:    [[TMP19:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP19]], 2
+; CHECK-NEXT:    [[TMP4:%.*]] = mul nuw i64 [[TMP19]], 2
 ; CHECK-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP4]], 4
 ; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[B1]], -4
 ; CHECK-NEXT:    [[TMP7:%.*]] = sub i64 [[TMP6]], [[A2]]

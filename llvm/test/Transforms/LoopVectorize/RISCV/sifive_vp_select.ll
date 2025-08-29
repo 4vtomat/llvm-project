@@ -14,7 +14,7 @@ define dso_local void @_Z3fooiPKfPfS1_(i32 noundef signext %N, ptr nocapture nou
 ; CHECK-NEXT:    br label [[VECTOR_MEMCHECK:%.*]]
 ; CHECK:       vector.memcheck:
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
+; CHECK-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
 ; CHECK-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 4
 ; CHECK-NEXT:    [[TMP3:%.*]] = sub i64 [[C1]], [[A2]]
 ; CHECK-NEXT:    [[DIFF_CHECK:%.*]] = icmp ult i64 [[TMP3]], [[TMP2]]

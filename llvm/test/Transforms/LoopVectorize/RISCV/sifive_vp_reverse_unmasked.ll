@@ -24,13 +24,16 @@ define dso_local signext i32 @reduction_vec(i32 noundef signext %n, i32* nocaptu
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP9:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP10:%.*]] = mul i64 [[TMP9]], 2
+; CHECK-NEXT:    [[TMP10:%.*]] = mul nuw i64 [[TMP9]], 2
 ; CHECK-NEXT:    [[TMP11:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 2 x i64> @llvm.stepvector.nxv2i64()
 ; CHECK-NEXT:    [[DOTSPLATINSERT1:%.*]] = insertelement <vscale x 2 x i64> poison, i64 [[TMP0]], i64 0
 ; CHECK-NEXT:    [[DOTSPLAT1:%.*]] = shufflevector <vscale x 2 x i64> [[DOTSPLATINSERT1]], <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer
 ; CHECK-NEXT:    [[TMP14:%.*]] = mul <vscale x 2 x i64> [[TMP12]], splat (i64 -1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 2 x i64> [[DOTSPLAT1]], [[TMP14]]
+; CHECK-NEXT:    [[TMP15:%.*]] = mul i64 -1, [[TMP10]]
+; CHECK-NEXT:    [[BROADCAST_SPLATINSERT1:%.*]] = insertelement <vscale x 2 x i64> poison, i64 [[TMP15]], i64 0
+; CHECK-NEXT:    [[DOTSPLAT5:%.*]] = shufflevector <vscale x 2 x i64> [[BROADCAST_SPLATINSERT1]], <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -59,10 +62,6 @@ define dso_local signext i32 @reduction_vec(i32 noundef signext %n, i32* nocaptu
 ; CHECK-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> splat (i1 true), <vscale x 2 x i32> [[PREDPHI]], <vscale x 2 x i32> [[VEC_PHI]], i32 [[TMP17]])
 ; CHECK-NEXT:    [[TMP26:%.*]] = zext i32 [[TMP17]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP26]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP27:%.*]] = sext i32 [[TMP17]] to i64
-; CHECK-NEXT:    [[TMP28:%.*]] = mul i64 -1, [[TMP27]]
-; CHECK-NEXT:    [[DOTSPLATINSERT4:%.*]] = insertelement <vscale x 2 x i64> poison, i64 [[TMP28]], i64 0
-; CHECK-NEXT:    [[DOTSPLAT5:%.*]] = shufflevector <vscale x 2 x i64> [[DOTSPLATINSERT4]], <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = call <vscale x 2 x i64> @llvm.vp.add.nxv2i64(<vscale x 2 x i64> [[VEC_IND]], <vscale x 2 x i64> [[DOTSPLAT5]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP17]])
 ; CHECK-NEXT:    [[TMP29:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP0]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]

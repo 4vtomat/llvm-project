@@ -15,6 +15,9 @@ define void @test_wide_integer_induction(ptr noalias %a, i64 %N) {
 ; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 1 x i64> @llvm.stepvector.nxv1i64()
 ; CHECK-NEXT:    [[TMP3:%.*]] = mul <vscale x 1 x i64> [[TMP2]], splat (i64 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 1 x i64> zeroinitializer, [[TMP3]]
+; CHECK-NEXT:    [[TMP8:%.*]] = mul i64 1, [[TMP0]]
+; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[TMP8]], i64 0
+; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 1 x i64> [[BROADCAST_SPLATINSERT]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
 ; CHECK-NEXT:    br label [[FOR_BODY1:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[IV1:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[IV_NEXT1:%.*]], [[FOR_BODY1]] ]
@@ -27,10 +30,6 @@ define void @test_wide_integer_induction(ptr noalias %a, i64 %N) {
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv1i64.p0(<vscale x 1 x i64> [[VEC_IND]], ptr align 8 [[TMP6]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP4]])
 ; CHECK-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP4]] to i64
 ; CHECK-NEXT:    [[IV_NEXT1]] = add nuw i64 [[TMP7]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP8:%.*]] = sext i32 [[TMP4]] to i64
-; CHECK-NEXT:    [[TMP9:%.*]] = mul i64 1, [[TMP8]]
-; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[TMP9]], i64 0
-; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 1 x i64> [[DOTSPLATINSERT]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
 ; CHECK-NEXT:    [[STEP_ADD]] = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> [[VEC_IND]], <vscale x 1 x i64> [[DOTSPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP4]])
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT1]], [[N]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_BODY1]], !llvm.loop [[LOOP0:![0-9]+]]
