@@ -2013,7 +2013,7 @@ define i64 @SingleBlock4(ptr %start) {
 ; DEFAULT-NEXT:    br i1 false, label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]], label [[ENTRY:%.*]]
 ; DEFAULT:       vector.ph:
 ; DEFAULT-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; DEFAULT-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; DEFAULT-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 16
 ; DEFAULT-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 0
 ; DEFAULT-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP2]], i64 0
 ; DEFAULT-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
@@ -2068,7 +2068,7 @@ define i64 @SingleBlock4(ptr %start) {
 ; ON-NEXT:    br i1 false, label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]], label [[ENTRY:%.*]]
 ; ON:       vector.ph:
 ; ON-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; ON-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; ON-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 16
 ; ON-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 0
 ; ON-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP2]], i64 0
 ; ON-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
@@ -2155,7 +2155,7 @@ define i64 @SingleBlock4(ptr %start) {
 ; stress-NEXT:    br i1 false, label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]], label [[ENTRY:%.*]]
 ; stress:       vector.ph:
 ; stress-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; stress-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; stress-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 16
 ; stress-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 0
 ; stress-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP2]], i64 0
 ; stress-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
@@ -2226,7 +2226,7 @@ define i64 @SingleBlock4(ptr %start) {
 ; IF0-NEXT:    br i1 false, label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]], label [[ENTRY:%.*]]
 ; IF0:       vector.ph:
 ; IF0-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; IF0-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; IF0-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 16
 ; IF0-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 0
 ; IF0-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP2]], i64 0
 ; IF0-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
@@ -2281,7 +2281,7 @@ define i64 @SingleBlock4(ptr %start) {
 ; IF1-NEXT:    br i1 false, label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]], label [[ENTRY:%.*]]
 ; IF1:       vector.ph:
 ; IF1-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; IF1-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; IF1-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 16
 ; IF1-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 0
 ; IF1-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP2]], i64 0
 ; IF1-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
@@ -2336,7 +2336,7 @@ define i64 @SingleBlock4(ptr %start) {
 ; IF2-NEXT:    br i1 false, label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]], label [[ENTRY:%.*]]
 ; IF2:       vector.ph:
 ; IF2-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; IF2-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; IF2-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 16
 ; IF2-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 0
 ; IF2-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP2]], i64 0
 ; IF2-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
@@ -5587,7 +5587,7 @@ define i64 @check_extract(ptr %datap) {
 ; DEFAULT-NEXT:    br i1 false, label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]], label [[ENTRY:%.*]]
 ; DEFAULT:       vector.ph:
 ; DEFAULT-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; DEFAULT-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; DEFAULT-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 16
 ; DEFAULT-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 0
 ; DEFAULT-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP2]], i64 0
 ; DEFAULT-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
@@ -5645,7 +5645,7 @@ define i64 @check_extract(ptr %datap) {
 ; ON-NEXT:    br i1 false, label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]], label [[ENTRY:%.*]]
 ; ON:       vector.ph:
 ; ON-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; ON-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; ON-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 16
 ; ON-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 0
 ; ON-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP2]], i64 0
 ; ON-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
@@ -5737,7 +5737,7 @@ define i64 @check_extract(ptr %datap) {
 ; stress-NEXT:    br i1 false, label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]], label [[ENTRY:%.*]]
 ; stress:       vector.ph:
 ; stress-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; stress-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; stress-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 16
 ; stress-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 0
 ; stress-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP2]], i64 0
 ; stress-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
@@ -5812,7 +5812,7 @@ define i64 @check_extract(ptr %datap) {
 ; IF0-NEXT:    br i1 false, label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]], label [[ENTRY:%.*]]
 ; IF0:       vector.ph:
 ; IF0-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; IF0-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; IF0-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 16
 ; IF0-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 0
 ; IF0-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP2]], i64 0
 ; IF0-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
@@ -5870,7 +5870,7 @@ define i64 @check_extract(ptr %datap) {
 ; IF1-NEXT:    br i1 false, label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]], label [[ENTRY:%.*]]
 ; IF1:       vector.ph:
 ; IF1-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; IF1-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; IF1-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 16
 ; IF1-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 0
 ; IF1-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP2]], i64 0
 ; IF1-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
@@ -5928,7 +5928,7 @@ define i64 @check_extract(ptr %datap) {
 ; IF2-NEXT:    br i1 false, label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]], label [[ENTRY:%.*]]
 ; IF2:       vector.ph:
 ; IF2-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; IF2-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 16
+; IF2-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 16
 ; IF2-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 0
 ; IF2-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP2]], i64 0
 ; IF2-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[DOTSPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
