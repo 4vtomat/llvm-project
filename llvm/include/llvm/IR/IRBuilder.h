@@ -755,8 +755,8 @@ public:
   /// sequential reduction.
   LLVM_ABI CallInst *CreateFAddReduce(Value *Acc, Value *Src);
 #if SIFIVE_CUSTOMIZATION
-  CallInst *CreateFAddReduce(Value *Acc, Value *Src, Value *EVL,
-                             Value *Mask = nullptr);
+  LLVM_ABI CallInst *CreateFAddReduce(Value *Acc, Value *Src, Value *EVL,
+                                      Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Create a sequential vector fmul reduction intrinsic of the source vector.
