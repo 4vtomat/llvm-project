@@ -181,13 +181,12 @@ LLVM_ABI bool isVectorIntrinsicWithStructReturnOverloadAtField(
 /// Returns intrinsic ID for call.
 /// For the input call instruction it finds mapping intrinsic and returns
 /// its intrinsic ID, in case it does not found it return not_intrinsic.
-LLVM_ABI Intrinsic::ID getVectorIntrinsicIDForCall(const CallInst *CI,
+LLVM_ABI Intrinsic::ID
 #if SIFIVE_CUSTOMIZATION
-                                                   const TargetLibraryInfo *TLI,
-                                                   bool UseVP = false);
+getVectorIntrinsicIDForCall(const CallInst *CI, const TargetLibraryInfo *TLI,
+                            bool UseVP = false);
 #else
-                                                   const TargetLibraryInfo
-                                                       *TLI);
+getVectorIntrinsicIDForCall(const CallInst *CI, const TargetLibraryInfo *TLI);
 #endif // SIFIVE_CUSTOMIZATION
 
 /// Given a vector and an element number, see if the scalar value is
