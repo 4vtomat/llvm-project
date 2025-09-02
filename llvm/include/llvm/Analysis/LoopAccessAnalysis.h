@@ -39,7 +39,7 @@ struct VectorizerParams {
   LLVM_ABI static unsigned VectorizationFactor;
 #if SIFIVE_CUSTOMIZATION
   /// Default VF
-  static const unsigned DefaultVectorizationFactor;
+  LLVM_ABI static const unsigned DefaultVectorizationFactor;
 #endif // SIFIVE_CUSTOMIZATION
   /// Interleave factor as overridden by the user.
   LLVM_ABI static unsigned VectorizationInterleave;
