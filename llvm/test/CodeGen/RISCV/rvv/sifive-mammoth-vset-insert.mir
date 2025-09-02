@@ -218,11 +218,11 @@ body:             |
     ; CHECK-NEXT: dead $x0 = PseudoSF_VSETTM [[COPY2]], 4, 2, implicit-def $vtype, implicit $vtype
     ; CHECK-NEXT: dead $x0 = PseudoSF_VSETTK [[COPY]], 4, 2, implicit-def $vtype, implicit $vtype
     ; CHECK-NEXT: PseudoSF_MM_F_F $t2, [[COPY4]], [[COPY4]], 7, $noreg, $noreg, $noreg, 4, 2, implicit $frm, implicit $vl, implicit $vtype
-    ; CHECK-NEXT: dead $x0 = PseudoSF_VSETTNTX0 killed $x0, 1288, implicit-def $vl, implicit-def $vtype, implicit $vl
+    ; CHECK-NEXT: dead $x0 = PseudoSF_VSETTNTX0X0 killed $x0, 1288, implicit-def $vl, implicit-def $vtype, implicit $vl
     ; CHECK-NEXT: dead $x0 = PseudoSF_VSETTM [[COPY2]], 4, 2, implicit-def $vtype, implicit $vtype
     ; CHECK-NEXT: dead $x0 = PseudoSF_VSETTK [[COPY]], 4, 2, implicit-def $vtype, implicit $vtype
     ; CHECK-NEXT: PseudoSF_MM_F_F_ALT $t2, [[COPY3]], [[COPY3]], 7, $noreg, $noreg, $noreg, 4, 2, implicit $frm, implicit $vl, implicit $vtype
-    ; CHECK-NEXT: dead $x0 = PseudoSF_VSETTNTX0 killed $x0, 1032, implicit-def $vl, implicit-def $vtype, implicit $vl
+    ; CHECK-NEXT: dead $x0 = PseudoSF_VSETTNTX0X0 killed $x0, 1032, implicit-def $vl, implicit-def $vtype, implicit $vl
     ; CHECK-NEXT: dead $x0 = PseudoSF_VSETTM [[COPY2]], 4, 2, implicit-def $vtype, implicit $vtype
     ; CHECK-NEXT: dead $x0 = PseudoSF_VSETTK [[COPY]], 4, 2, implicit-def $vtype, implicit $vtype
     ; CHECK-NEXT: PseudoSF_MM_F_F $t2, [[COPY4]], [[COPY4]], 7, $noreg, $noreg, $noreg, 4, 2, implicit $frm, implicit $vl, implicit $vtype

@@ -98,8 +98,8 @@ static bool isMammothVectorConfigInstr(const MachineInstr &MI) {
 /// Return true if this is 'vsetvli x0, x0, vtype' which preserves
 /// VL and only sets VTYPE.
 static bool isCustomVLPreservingConfig(const MachineInstr &MI) {
-  if (MI.getOpcode() == RISCV::PseudoSF_VSETTNTX0)
-    return RISCV::X0 == MI.getOperand(0).getReg();
+  if (MI.getOpcode() == RISCV::PseudoSF_VSETTNTX0X0)
+    return true;
   return RISCVInstrInfo::isVLPreservingConfig(MI);
 }
 #endif // SIFIVE_CUSTOMIZATION
@@ -1251,7 +1251,7 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
     if (Info.hasSameAVL(PrevInfo) && Info.hasSameVLMAX(PrevInfo)) {
 #ifdef SIFIVE_CUSTOMIZATION
       auto MI = BuildMI(MBB, InsertPt, DL,
-                        TII->get(Info.getTWiden() ? RISCV::PseudoSF_VSETTNTX0
+                        TII->get(Info.getTWiden() ? RISCV::PseudoSF_VSETTNTX0X0
                                                   : RISCV::PseudoVSETVLIX0X0))
 #else
       auto MI = BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoVSETVLIX0X0))
@@ -1276,7 +1276,7 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
 #ifdef SIFIVE_CUSTOMIZATION
           auto MI =
               BuildMI(MBB, InsertPt, DL,
-                      TII->get(Info.getTWiden() ? RISCV::PseudoSF_VSETTNTX0
+                      TII->get(Info.getTWiden() ? RISCV::PseudoSF_VSETTNTX0X0
                                                 : RISCV::PseudoVSETVLIX0X0))
                   .addReg(RISCV::X0, RegState::Define | RegState::Dead)
                   .addReg(RISCV::X0, RegState::Kill)

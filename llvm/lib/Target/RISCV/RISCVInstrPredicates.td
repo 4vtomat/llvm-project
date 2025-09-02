@@ -75,6 +75,7 @@ def isVectorConfigInstr
 #ifdef SIFIVE_CUSTOMIZATION
                        PseudoSF_VSETTNT,
                        PseudoSF_VSETTNTX0,
+                       PseudoSF_VSETTNTX0X0,
 #endif
                        PseudoVSETVLI,
                        PseudoVSETVLIX0,
