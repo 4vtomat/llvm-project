@@ -3045,15 +3045,17 @@ void LoopAccessInfo::print(raw_ostream &OS, unsigned Depth) const {
 const LoopAccessInfo &LoopAccessInfoManager::getInfo(Loop &L,
                                                      bool AllowPartial) {
 #if SIFIVE_CUSTOMIZATION
-  auto [It, Inserted] = LoopAccessInfoMap.insert({&L, nullptr});
+  auto [It, Inserted] = LoopAccessInfoMap.try_emplace(&L);
 #else
   const auto &[It, Inserted] = LoopAccessInfoMap.try_emplace(&L);
 #endif
 
 #if SIFIVE_CUSTOMIZATION
   if (isRevectorizeWithoutStrideChecks(L) || isVectorizeWithoutStrideChecks(L))
-    std::tie(It, Inserted) = LoopAccessInfoNoStridesMap.insert({&L, nullptr});
+    std::tie(It, Inserted) = LoopAccessInfoNoStridesMap.try_emplace(&L);
 #endif // SIFIVE_CUSTOMIZATION
+  // We need to create the LoopAccessInfo if either we don't already have one,
+  // or if it was created with a different value of AllowPartial.
   if (Inserted || It->second->hasAllowPartial() != AllowPartial)
     It->second = std::make_unique<LoopAccessInfo>(&L, &SE, TTI, TLI, &AA, &DT,
                                                   &LI, AllowPartial);
