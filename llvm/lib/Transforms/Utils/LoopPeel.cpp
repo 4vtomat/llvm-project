@@ -1494,7 +1494,6 @@ bool llvm::peelLoop(Loop *L, unsigned PeelCount, bool PeelLast, LoopInfo *LI,
   if (PeelLast && !MatchingCaseFound)
     return false;
 #else
-  BasicBlock *Latch = L->getLoopLatch();
   assert((!PeelLast || (canPeelLastIteration(*L, *SE) && PeelCount == 1)) &&
          "when peeling the last iteration, the loop must be supported and can "
          "only peel a single iteration");
@@ -1505,6 +1504,9 @@ bool llvm::peelLoop(Loop *L, unsigned PeelCount, bool PeelLast, LoopInfo *LI,
 
   BasicBlock *Header = L->getHeader();
   BasicBlock *PreHeader = L->getLoopPreheader();
+#ifndef SIFIVE_CUSTOMIZATION
+  BasicBlock *Latch = L->getLoopLatch();
+#endif
   SmallVector<std::pair<BasicBlock *, BasicBlock *>, 4> ExitEdges;
   L->getExitEdges(ExitEdges);
 
@@ -1667,7 +1669,6 @@ bool llvm::peelLoop(Loop *L, unsigned PeelCount, bool PeelLast, LoopInfo *LI,
   for (unsigned Iter = 0; Iter < PeelCount; ++Iter) {
     SmallVector<BasicBlock *, 8> NewBlocks;
 
-    // Note: this may be the site of the break for prolog peeling in 502.gcc
     cloneLoopBlocks(L, Iter, PeelLast, InsertTop, InsertBot,
                     NewPreHeader ? PreHeader : nullptr, ExitEdges, NewBlocks,
                     LoopBlocks, VMap, LVMap, &DT, LI,
@@ -1693,7 +1694,7 @@ bool llvm::peelLoop(Loop *L, unsigned PeelCount, bool PeelLast, LoopInfo *LI,
         // For now we simply subtract one form the second operand of the
         // exit condition. This relies on the peel count computation to
         // check that this is actually legal. In particular, it ensures that
-        // the first operand of the compare is an AddRec with step and we
+        // the first operand of the compare is an AddRec with step 1 and we
         // execute more than one iteration.
         auto *Cmp =
             cast<ICmpInst>(L->getLoopLatch()->getTerminator()->getOperand(0));
