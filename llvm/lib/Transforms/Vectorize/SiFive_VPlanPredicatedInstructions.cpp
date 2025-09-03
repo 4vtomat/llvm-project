@@ -122,7 +122,6 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
   case VPInstruction::Not: {
     assert(!Op && "Expected with no-op only.");
     Value *A = State.get(User.getOperand(0));
-    auto *PredTy = cast<VectorType>(A->getType());
     Value *MaskArg = BuilderIR.getTrueVector(State.VF);
     Value *EVLArg = State.get(EVL, /*NeedsScalar=*/true);
     return BuilderIR.CreateIntrinsic(
