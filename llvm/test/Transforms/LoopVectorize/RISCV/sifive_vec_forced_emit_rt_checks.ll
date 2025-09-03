@@ -8,7 +8,7 @@
 ; VEC-FORCED: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m2, i32))
 ; VEC-FORCED:       vector.memcheck:
 ; VEC-FORCED-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; VEC-FORCED-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
+; VEC-FORCED-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
 ; VEC-FORCED-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 4
 ; VEC-FORCED-NEXT:    [[TMP3:%.*]] = sub i64 {{.*}}, {{.*}}
 ; VEC-FORCED-NEXT:    [[DIFF_CHECK:%.*]] = icmp ult i64 [[TMP3]], [[TMP2]]

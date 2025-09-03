@@ -35,7 +35,7 @@ define i64 @findlastiv(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-NEXT: Successor(s): middle.block
 ; CHECK-EMPTY:
 ; CHECK-NEXT: middle.block:
-; CHECK-NEXT:   EMIT vp<[[RESULT:%.+]]> = compute-find-last-iv-result ir<%rdx>, ir<%ii>, ir<%cond>
+; CHECK-NEXT:   EMIT vp<[[RESULT:%.+]]> = compute-find-last-iv-result ir<%rdx>, ir<%ii>, ir<-9223372036854775808>, ir<%cond>
 ; CHECK-NEXT:   EMIT vp<[[EXTRACT_RES:%.+]]> = extract-last-element vp<[[RESULT]]>
 ; CHECK-NEXT:   EMIT vp<[[EXIT_COND:%.+]]> = icmp eq ir<[[OTC]]>, vp<[[VTC]]>
 ; CHECK-NEXT:   EMIT branch-on-cond vp<[[EXIT_COND]]>
