@@ -2710,6 +2710,10 @@ static void transformRecipestoEVLRecipes(VPlan &Plan, VPValue &EVL) {
   for (VPUser *U : to_vector(Plan.getVF().users())) {
     if (auto *R = dyn_cast<VPVectorEndPointerRecipe>(U))
       R->setOperand(1, &EVL);
+#if SIFIVE_CUSTOMIZATION
+    if (auto *R = dyn_cast<VPWidenIntOrFpInductionRecipe>(U))
+      R->setOperand(2, &EVL);
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   SmallVector<VPRecipeBase *> ToErase;
@@ -3452,14 +3456,26 @@ expandVPWidenIntOrFpInduction(VPWidenIntOrFpInductionRecipe *WidenIVR,
     Inc = SplatVF;
     Prev = WidenIVR->getLastUnrolledPartOperand();
   } else {
+#if SIFIVE_CUSTOMIZATION
+    if (VPRecipeBase *R = VF->getDefiningRecipe())
+      Builder.setInsertPoint(R->getParent(), std::next(R->getIterator()));
+#endif // SIFIVE_CUSTOMIZATION
     // Multiply the vectorization factor by the step using integer or
     // floating-point arithmetic as appropriate.
     if (StepTy->isFloatingPointTy())
       VF = Builder.createScalarCast(Instruction::CastOps::UIToFP, VF, StepTy,
                                     DL);
+#if SIFIVE_CUSTOMIZATION
+    // cherry-pick commit 521adc9fa270c1524
+    // need to cherry-pick 53ea522d1b87c144a1faeffea62d50a4d9907a38 as well
+    else
+      VF = Builder.createScalarZExtOrTrunc(VF, StepTy,
+                                           TypeInfo.inferScalarType(VF), DL);
+#else
     else
       VF =
           Builder.createScalarCast(Instruction::CastOps::Trunc, VF, StepTy, DL);
+#endif // SIFIVE_CUSTOMIZATION
 
     Inc = Builder.createNaryOp(MulOp, {Step, VF}, Flags);
     Inc = Builder.createNaryOp(VPInstruction::Broadcast, Inc);

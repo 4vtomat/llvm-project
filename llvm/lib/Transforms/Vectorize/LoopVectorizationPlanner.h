@@ -297,6 +297,19 @@ public:
         new VPInstructionWithType(Opcode, Op, ResultTy, {}, DL));
   }
 
+#if SIFIVE_CUSTOMIZATION
+  VPValue *createScalarZExtOrTrunc(VPValue *Op, Type *ResultTy, Type *SrcTy,
+                                   DebugLoc DL) {
+    if (ResultTy == SrcTy)
+      return Op;
+    Instruction::CastOps CastOp =
+        ResultTy->getScalarSizeInBits() < SrcTy->getScalarSizeInBits()
+            ? Instruction::Trunc
+            : Instruction::ZExt;
+    return createScalarCast(CastOp, Op, ResultTy, DL);
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   VPWidenCastRecipe *createWidenCast(Instruction::CastOps Opcode, VPValue *Op,
                                      Type *ResultTy) {
     return tryInsertInstruction(new VPWidenCastRecipe(Opcode, Op, ResultTy));
