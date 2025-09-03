@@ -203,48 +203,45 @@ define i32 @dragon_escape(ptr %goal, ptr %board) #0 {
 ; P670-NEXT:    [[QUEUE:%.*]] = alloca [361 x i32], align 8
 ; P670-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; P670:       [[VECTOR_PH]]:
-; P670-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; P670-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 8
 ; P670-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 401, i32 8, i1 true)
 ; P670-NEXT:    [[TMP3:%.*]] = call <vscale x 8 x i32> @llvm.stepvector.nxv8i32()
 ; P670-NEXT:    [[TMP4:%.*]] = mul <vscale x 8 x i32> [[TMP3]], splat (i32 1)
 ; P670-NEXT:    [[INDUCTION:%.*]] = add <vscale x 8 x i32> zeroinitializer, [[TMP4]]
-; P670-NEXT:    [[TMP21:%.*]] = trunc i64 [[TMP1]] to i32
-; P670-NEXT:    [[TMP6:%.*]] = mul i32 1, [[TMP21]]
-; P670-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x i32> poison, i32 [[TMP6]], i64 0
-; P670-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 8 x i32> [[BROADCAST_SPLATINSERT]], <vscale x 8 x i32> poison, <vscale x 8 x i32> zeroinitializer
 ; P670-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; P670:       [[VECTOR_BODY]]:
 ; P670-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; P670-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
 ; P670-NEXT:    [[MONOTONIC_PHI:%.*]] = phi i32 [ 0, %[[VECTOR_PH]] ], [ [[MONOTONIC_UPDATE:%.*]], %[[VECTOR_BODY]] ]
-; P670-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 8 x i32> [ [[INDUCTION]], %[[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], %[[VECTOR_BODY]] ]
+; P670-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 8 x i32> [ [[INDUCTION]], %[[VECTOR_PH]] ], [ [[VP_OP:%.*]], %[[VECTOR_BODY]] ]
 ; P670-NEXT:    [[AVL:%.*]] = sub i64 401, [[INDVARS_IV]]
-; P670-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 8, i1 true)
+; P670-NEXT:    [[TMP21:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 8, i1 true)
+; P670-NEXT:    [[TMP6:%.*]] = mul i32 1, [[TMP21]]
+; P670-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x i32> poison, i32 [[TMP6]], i64 0
+; P670-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 8 x i32> [[BROADCAST_SPLATINSERT]], <vscale x 8 x i32> poison, <vscale x 8 x i32> zeroinitializer
 ; P670-NEXT:    [[ARRAYIDX:%.*]] = getelementptr [421 x i8], ptr [[BOARD]], i64 0, i64 [[INDVARS_IV]]
 ; P670-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[ARRAYIDX]], i32 0
-; P670-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP7]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP5]])
-; P670-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD]], <vscale x 8 x i8> zeroinitializer, metadata !"ne", <vscale x 8 x i1> splat (i1 true), i32 [[TMP5]])
+; P670-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP7]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP21]])
+; P670-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD]], <vscale x 8 x i8> zeroinitializer, metadata !"ne", <vscale x 8 x i1> splat (i1 true), i32 [[TMP21]])
 ; P670-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[GOAL]], i64 [[INDVARS_IV]]
 ; P670-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[TMP8]], i32 0
-; P670-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP9]], <vscale x 8 x i1> [[VP_OP_ICMP]], i32 [[TMP5]])
-; P670-NEXT:    [[VP_OP_ICMP2:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD1]], <vscale x 8 x i8> zeroinitializer, metadata !"ne", <vscale x 8 x i1> splat (i1 true), i32 [[TMP5]])
-; P670-NEXT:    [[TMP10:%.*]] = call <vscale x 8 x i1> @llvm.vp.select.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> [[VP_OP_ICMP2]], <vscale x 8 x i1> zeroinitializer, i32 [[TMP5]])
-; P670-NEXT:    [[TMP11:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> [[TMP10]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP5]])
+; P670-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP9]], <vscale x 8 x i1> [[VP_OP_ICMP]], i32 [[TMP21]])
+; P670-NEXT:    [[VP_OP_ICMP2:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD1]], <vscale x 8 x i8> zeroinitializer, metadata !"ne", <vscale x 8 x i1> splat (i1 true), i32 [[TMP21]])
+; P670-NEXT:    [[TMP10:%.*]] = call <vscale x 8 x i1> @llvm.vp.select.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> [[VP_OP_ICMP2]], <vscale x 8 x i1> zeroinitializer, i32 [[TMP21]])
+; P670-NEXT:    [[TMP11:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> [[TMP10]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP21]])
 ; P670-NEXT:    [[TMP12:%.*]] = mul i32 [[TMP11]], 1
 ; P670-NEXT:    [[MONOTONIC_UPDATE]] = add i32 [[MONOTONIC_PHI]], [[TMP12]]
 ; P670-NEXT:    [[TMP13:%.*]] = sext i32 [[MONOTONIC_PHI]] to i64
 ; P670-NEXT:    [[TMP14:%.*]] = getelementptr [361 x i32], ptr [[QUEUE]], i64 0, i64 [[TMP13]]
 ; P670-NEXT:    [[TMP15:%.*]] = getelementptr i32, ptr [[TMP14]], i32 0
-; P670-NEXT:    [[TMP16:%.*]] = call <vscale x 8 x i32> @llvm.experimental.vp.compress.nxv8i32(<vscale x 8 x i32> [[VEC_IND]], <vscale x 8 x i1> [[TMP10]], i32 [[TMP5]])
-; P670-NEXT:    [[TMP17:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> [[TMP10]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP5]])
+; P670-NEXT:    [[TMP16:%.*]] = call <vscale x 8 x i32> @llvm.experimental.vp.compress.nxv8i32(<vscale x 8 x i32> [[VEC_IND]], <vscale x 8 x i1> [[TMP10]], i32 [[TMP21]])
+; P670-NEXT:    [[TMP17:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> [[TMP10]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP21]])
 ; P670-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[TMP16]], ptr align 4 [[TMP15]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP17]])
 ; P670-NEXT:    [[TMP18:%.*]] = getelementptr [400 x i32], ptr null, i64 0, i64 [[INDVARS_IV]]
 ; P670-NEXT:    [[TMP19:%.*]] = getelementptr i32, ptr [[TMP18]], i32 0
-; P670-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> zeroinitializer, ptr align 4 [[TMP19]], <vscale x 8 x i1> [[TMP10]], i32 [[TMP5]])
-; P670-NEXT:    [[TMP20:%.*]] = zext i32 [[TMP5]] to i64
+; P670-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> zeroinitializer, ptr align 4 [[TMP19]], <vscale x 8 x i1> [[TMP10]], i32 [[TMP21]])
+; P670-NEXT:    [[TMP20:%.*]] = zext i32 [[TMP21]] to i64
 ; P670-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP20]], [[INDVARS_IV]]
-; P670-NEXT:    [[STEP_ADD]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VEC_IND]], <vscale x 8 x i32> [[DOTSPLAT]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP5]])
+; P670-NEXT:    [[VP_OP]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VEC_IND]], <vscale x 8 x i32> [[DOTSPLAT]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP21]])
 ; P670-NEXT:    [[TMP22:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 401
 ; P670-NEXT:    br i1 [[TMP22]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; P670:       [[MIDDLE_BLOCK]]:
@@ -292,60 +289,57 @@ define i32 @dragon_escape(ptr %goal, ptr %board) #0 {
 ; P470-NEXT:    [[QUEUE:%.*]] = alloca [361 x i32], align 8
 ; P470-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; P470:       [[VECTOR_PH]]:
-; P470-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; P470-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 8
 ; P470-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 401, i32 8, i1 true)
 ; P470-NEXT:    [[TMP3:%.*]] = call <vscale x 8 x i32> @llvm.stepvector.nxv8i32()
 ; P470-NEXT:    [[TMP4:%.*]] = mul <vscale x 8 x i32> [[TMP3]], splat (i32 1)
 ; P470-NEXT:    [[INDUCTION:%.*]] = add <vscale x 8 x i32> zeroinitializer, [[TMP4]]
-; P470-NEXT:    [[TMP25:%.*]] = trunc i64 [[TMP1]] to i32
-; P470-NEXT:    [[TMP6:%.*]] = mul i32 1, [[TMP25]]
-; P470-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x i32> poison, i32 [[TMP6]], i64 0
-; P470-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 8 x i32> [[BROADCAST_SPLATINSERT]], <vscale x 8 x i32> poison, <vscale x 8 x i32> zeroinitializer
 ; P470-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; P470:       [[VECTOR_BODY]]:
 ; P470-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY_SPLIT4:.*]] ]
 ; P470-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY_SPLIT4]] ]
 ; P470-NEXT:    [[MONOTONIC_PHI:%.*]] = phi i32 [ 0, %[[VECTOR_PH]] ], [ [[MONOTONIC_UPDATE:%.*]], %[[VECTOR_BODY_SPLIT4]] ]
-; P470-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 8 x i32> [ [[INDUCTION]], %[[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], %[[VECTOR_BODY_SPLIT4]] ]
+; P470-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 8 x i32> [ [[INDUCTION]], %[[VECTOR_PH]] ], [ [[VP_OP:%.*]], %[[VECTOR_BODY_SPLIT4]] ]
 ; P470-NEXT:    [[AVL:%.*]] = sub i64 401, [[INDVARS_IV]]
-; P470-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 8, i1 true)
+; P470-NEXT:    [[TMP25:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 8, i1 true)
+; P470-NEXT:    [[TMP6:%.*]] = mul i32 1, [[TMP25]]
+; P470-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x i32> poison, i32 [[TMP6]], i64 0
+; P470-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 8 x i32> [[BROADCAST_SPLATINSERT]], <vscale x 8 x i32> poison, <vscale x 8 x i32> zeroinitializer
 ; P470-NEXT:    [[ARRAYIDX:%.*]] = getelementptr [421 x i8], ptr [[BOARD]], i64 0, i64 [[INDVARS_IV]]
 ; P470-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[ARRAYIDX]], i32 0
-; P470-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP7]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP5]])
-; P470-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD]], <vscale x 8 x i8> zeroinitializer, metadata !"ne", <vscale x 8 x i1> splat (i1 true), i32 [[TMP5]])
+; P470-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP7]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP25]])
+; P470-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD]], <vscale x 8 x i8> zeroinitializer, metadata !"ne", <vscale x 8 x i1> splat (i1 true), i32 [[TMP25]])
 ; P470-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[GOAL]], i64 [[INDVARS_IV]]
 ; P470-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[TMP8]], i32 0
-; P470-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP9]], <vscale x 8 x i1> [[VP_OP_ICMP]], i32 [[TMP5]])
-; P470-NEXT:    [[VP_OP_ICMP2:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD1]], <vscale x 8 x i8> zeroinitializer, metadata !"ne", <vscale x 8 x i1> splat (i1 true), i32 [[TMP5]])
-; P470-NEXT:    [[TMP10:%.*]] = call <vscale x 8 x i1> @llvm.vp.select.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> [[VP_OP_ICMP2]], <vscale x 8 x i1> zeroinitializer, i32 [[TMP5]])
-; P470-NEXT:    [[TMP11:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> [[TMP10]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP5]])
+; P470-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP9]], <vscale x 8 x i1> [[VP_OP_ICMP]], i32 [[TMP25]])
+; P470-NEXT:    [[VP_OP_ICMP2:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD1]], <vscale x 8 x i8> zeroinitializer, metadata !"ne", <vscale x 8 x i1> splat (i1 true), i32 [[TMP25]])
+; P470-NEXT:    [[TMP10:%.*]] = call <vscale x 8 x i1> @llvm.vp.select.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> [[VP_OP_ICMP2]], <vscale x 8 x i1> zeroinitializer, i32 [[TMP25]])
+; P470-NEXT:    [[TMP11:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> [[TMP10]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP25]])
 ; P470-NEXT:    [[TMP12:%.*]] = mul i32 [[TMP11]], 1
 ; P470-NEXT:    [[MONOTONIC_UPDATE]] = add i32 [[MONOTONIC_PHI]], [[TMP12]]
-; P470-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[TMP10]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP5]])
+; P470-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[TMP10]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP25]])
 ; P470-NEXT:    [[TMP14:%.*]] = icmp ne i32 [[TMP13]], -1
 ; P470-NEXT:    br i1 [[TMP14]], label %[[VECTOR_IF_BB:.*]], label %[[VECTOR_BODY_SPLIT:.*]]
 ; P470:       [[VECTOR_IF_BB]]:
 ; P470-NEXT:    [[TMP15:%.*]] = sext i32 [[MONOTONIC_PHI]] to i64
 ; P470-NEXT:    [[TMP16:%.*]] = getelementptr [361 x i32], ptr [[QUEUE]], i64 0, i64 [[TMP15]]
 ; P470-NEXT:    [[TMP17:%.*]] = getelementptr i32, ptr [[TMP16]], i32 0
-; P470-NEXT:    [[TMP18:%.*]] = call <vscale x 8 x i32> @llvm.experimental.vp.compress.nxv8i32(<vscale x 8 x i32> [[VEC_IND]], <vscale x 8 x i1> [[TMP10]], i32 [[TMP5]])
-; P470-NEXT:    [[TMP19:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> [[TMP10]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP5]])
+; P470-NEXT:    [[TMP18:%.*]] = call <vscale x 8 x i32> @llvm.experimental.vp.compress.nxv8i32(<vscale x 8 x i32> [[VEC_IND]], <vscale x 8 x i1> [[TMP10]], i32 [[TMP25]])
+; P470-NEXT:    [[TMP19:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> [[TMP10]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP25]])
 ; P470-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[TMP18]], ptr align 4 [[TMP17]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP19]])
 ; P470-NEXT:    br label %[[VECTOR_BODY_SPLIT]]
 ; P470:       [[VECTOR_BODY_SPLIT]]:
-; P470-NEXT:    [[TMP20:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[TMP10]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP5]])
+; P470-NEXT:    [[TMP20:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[TMP10]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP25]])
 ; P470-NEXT:    [[TMP21:%.*]] = icmp ne i32 [[TMP20]], -1
 ; P470-NEXT:    br i1 [[TMP21]], label %[[VECTOR_IF_BB3:.*]], label %[[VECTOR_BODY_SPLIT4]]
 ; P470:       [[VECTOR_IF_BB3]]:
 ; P470-NEXT:    [[TMP22:%.*]] = getelementptr [400 x i32], ptr null, i64 0, i64 [[INDVARS_IV]]
 ; P470-NEXT:    [[TMP23:%.*]] = getelementptr i32, ptr [[TMP22]], i32 0
-; P470-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> zeroinitializer, ptr align 4 [[TMP23]], <vscale x 8 x i1> [[TMP10]], i32 [[TMP5]])
+; P470-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> zeroinitializer, ptr align 4 [[TMP23]], <vscale x 8 x i1> [[TMP10]], i32 [[TMP25]])
 ; P470-NEXT:    br label %[[VECTOR_BODY_SPLIT4]]
 ; P470:       [[VECTOR_BODY_SPLIT4]]:
-; P470-NEXT:    [[TMP24:%.*]] = zext i32 [[TMP5]] to i64
+; P470-NEXT:    [[TMP24:%.*]] = zext i32 [[TMP25]] to i64
 ; P470-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP24]], [[INDVARS_IV]]
-; P470-NEXT:    [[STEP_ADD]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VEC_IND]], <vscale x 8 x i32> [[DOTSPLAT]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP5]])
+; P470-NEXT:    [[VP_OP]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VEC_IND]], <vscale x 8 x i32> [[DOTSPLAT]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP25]])
 ; P470-NEXT:    [[TMP26:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 401
 ; P470-NEXT:    br i1 [[TMP26]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; P470:       [[MIDDLE_BLOCK]]:
@@ -393,48 +387,45 @@ define i32 @dragon_escape(ptr %goal, ptr %board) #0 {
 ; X280-NEXT:    [[QUEUE:%.*]] = alloca [361 x i32], align 8
 ; X280-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; X280:       [[VECTOR_PH]]:
-; X280-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; X280-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 8
 ; X280-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 401, i32 8, i1 true)
 ; X280-NEXT:    [[TMP3:%.*]] = call <vscale x 8 x i32> @llvm.stepvector.nxv8i32()
 ; X280-NEXT:    [[TMP4:%.*]] = mul <vscale x 8 x i32> [[TMP3]], splat (i32 1)
 ; X280-NEXT:    [[INDUCTION:%.*]] = add <vscale x 8 x i32> zeroinitializer, [[TMP4]]
-; X280-NEXT:    [[TMP21:%.*]] = trunc i64 [[TMP1]] to i32
-; X280-NEXT:    [[TMP6:%.*]] = mul i32 1, [[TMP21]]
-; X280-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x i32> poison, i32 [[TMP6]], i64 0
-; X280-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 8 x i32> [[BROADCAST_SPLATINSERT]], <vscale x 8 x i32> poison, <vscale x 8 x i32> zeroinitializer
 ; X280-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; X280:       [[VECTOR_BODY]]:
 ; X280-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; X280-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], %[[VECTOR_BODY]] ]
 ; X280-NEXT:    [[MONOTONIC_PHI:%.*]] = phi i32 [ 0, %[[VECTOR_PH]] ], [ [[MONOTONIC_UPDATE:%.*]], %[[VECTOR_BODY]] ]
-; X280-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 8 x i32> [ [[INDUCTION]], %[[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], %[[VECTOR_BODY]] ]
+; X280-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 8 x i32> [ [[INDUCTION]], %[[VECTOR_PH]] ], [ [[VP_OP:%.*]], %[[VECTOR_BODY]] ]
 ; X280-NEXT:    [[AVL:%.*]] = sub i64 401, [[INDVARS_IV]]
-; X280-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 8, i1 true)
+; X280-NEXT:    [[TMP21:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 8, i1 true)
+; X280-NEXT:    [[TMP6:%.*]] = mul i32 1, [[TMP21]]
+; X280-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 8 x i32> poison, i32 [[TMP6]], i64 0
+; X280-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 8 x i32> [[BROADCAST_SPLATINSERT]], <vscale x 8 x i32> poison, <vscale x 8 x i32> zeroinitializer
 ; X280-NEXT:    [[ARRAYIDX:%.*]] = getelementptr [421 x i8], ptr [[BOARD]], i64 0, i64 [[INDVARS_IV]]
 ; X280-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[ARRAYIDX]], i32 0
-; X280-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP7]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP5]])
-; X280-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD]], <vscale x 8 x i8> zeroinitializer, metadata !"ne", <vscale x 8 x i1> splat (i1 true), i32 [[TMP5]])
+; X280-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP7]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP21]])
+; X280-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD]], <vscale x 8 x i8> zeroinitializer, metadata !"ne", <vscale x 8 x i1> splat (i1 true), i32 [[TMP21]])
 ; X280-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[GOAL]], i64 [[INDVARS_IV]]
 ; X280-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[TMP8]], i32 0
-; X280-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP9]], <vscale x 8 x i1> [[VP_OP_ICMP]], i32 [[TMP5]])
-; X280-NEXT:    [[VP_OP_ICMP2:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD1]], <vscale x 8 x i8> zeroinitializer, metadata !"ne", <vscale x 8 x i1> splat (i1 true), i32 [[TMP5]])
-; X280-NEXT:    [[TMP10:%.*]] = call <vscale x 8 x i1> @llvm.vp.select.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> [[VP_OP_ICMP2]], <vscale x 8 x i1> zeroinitializer, i32 [[TMP5]])
-; X280-NEXT:    [[TMP11:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> [[TMP10]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP5]])
+; X280-NEXT:    [[VP_OP_LOAD1:%.*]] = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr align 1 [[TMP9]], <vscale x 8 x i1> [[VP_OP_ICMP]], i32 [[TMP21]])
+; X280-NEXT:    [[VP_OP_ICMP2:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP_LOAD1]], <vscale x 8 x i8> zeroinitializer, metadata !"ne", <vscale x 8 x i1> splat (i1 true), i32 [[TMP21]])
+; X280-NEXT:    [[TMP10:%.*]] = call <vscale x 8 x i1> @llvm.vp.select.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> [[VP_OP_ICMP2]], <vscale x 8 x i1> zeroinitializer, i32 [[TMP21]])
+; X280-NEXT:    [[TMP11:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> [[TMP10]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP21]])
 ; X280-NEXT:    [[TMP12:%.*]] = mul i32 [[TMP11]], 1
 ; X280-NEXT:    [[MONOTONIC_UPDATE]] = add i32 [[MONOTONIC_PHI]], [[TMP12]]
 ; X280-NEXT:    [[TMP13:%.*]] = sext i32 [[MONOTONIC_PHI]] to i64
 ; X280-NEXT:    [[TMP14:%.*]] = getelementptr [361 x i32], ptr [[QUEUE]], i64 0, i64 [[TMP13]]
 ; X280-NEXT:    [[TMP15:%.*]] = getelementptr i32, ptr [[TMP14]], i32 0
-; X280-NEXT:    [[TMP16:%.*]] = call <vscale x 8 x i32> @llvm.experimental.vp.compress.nxv8i32(<vscale x 8 x i32> [[VEC_IND]], <vscale x 8 x i1> [[TMP10]], i32 [[TMP5]])
-; X280-NEXT:    [[TMP17:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> [[TMP10]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP5]])
+; X280-NEXT:    [[TMP16:%.*]] = call <vscale x 8 x i32> @llvm.experimental.vp.compress.nxv8i32(<vscale x 8 x i32> [[VEC_IND]], <vscale x 8 x i1> [[TMP10]], i32 [[TMP21]])
+; X280-NEXT:    [[TMP17:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> [[TMP10]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP21]])
 ; X280-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[TMP16]], ptr align 4 [[TMP15]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP17]])
 ; X280-NEXT:    [[TMP18:%.*]] = getelementptr [400 x i32], ptr null, i64 0, i64 [[INDVARS_IV]]
 ; X280-NEXT:    [[TMP19:%.*]] = getelementptr i32, ptr [[TMP18]], i32 0
-; X280-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> zeroinitializer, ptr align 4 [[TMP19]], <vscale x 8 x i1> [[TMP10]], i32 [[TMP5]])
-; X280-NEXT:    [[TMP20:%.*]] = zext i32 [[TMP5]] to i64
+; X280-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> zeroinitializer, ptr align 4 [[TMP19]], <vscale x 8 x i1> [[TMP10]], i32 [[TMP21]])
+; X280-NEXT:    [[TMP20:%.*]] = zext i32 [[TMP21]] to i64
 ; X280-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP20]], [[INDVARS_IV]]
-; X280-NEXT:    [[STEP_ADD]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VEC_IND]], <vscale x 8 x i32> [[DOTSPLAT]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP5]])
+; X280-NEXT:    [[VP_OP]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VEC_IND]], <vscale x 8 x i32> [[DOTSPLAT]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP21]])
 ; X280-NEXT:    [[TMP22:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 401
 ; X280-NEXT:    br i1 [[TMP22]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; X280:       [[MIDDLE_BLOCK]]:

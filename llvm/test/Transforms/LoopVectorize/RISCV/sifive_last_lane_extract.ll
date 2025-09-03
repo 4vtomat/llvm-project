@@ -9,14 +9,10 @@ define ptr @Perl_newSV(ptr %call.i) {
 ; CHECK-NEXT:    [[CALL_I1:%.*]] = call ptr @Perl_safesysmalloc()
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 24, i32 1, i1 true)
 ; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 1 x i64> @llvm.stepvector.nxv1i64()
 ; CHECK-NEXT:    [[TMP3:%.*]] = mul <vscale x 1 x i64> [[TMP1]], splat (i64 11)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 1 x i64> splat (i64 1), [[TMP3]]
-; CHECK-NEXT:    [[TMP4:%.*]] = mul i64 11, [[TMP0]]
-; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[TMP4]], i64 0
-; CHECK-NEXT:    [[DOTSPLAT2:%.*]] = shufflevector <vscale x 1 x i64> [[BROADCAST_SPLATINSERT]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -24,6 +20,10 @@ define ptr @Perl_newSV(ptr %call.i) {
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 1 x i64> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP5:%.*]] = sub i64 24, [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP5]], i32 1, i1 true)
+; CHECK-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP6]] to i64
+; CHECK-NEXT:    [[TMP8:%.*]] = mul i64 11, [[TMP4]]
+; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[TMP8]], i64 0
+; CHECK-NEXT:    [[DOTSPLAT2:%.*]] = shufflevector <vscale x 1 x i64> [[BROADCAST_SPLATINSERT]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[EVL_BASED_IV]], 11
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = add i64 1, [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = add nuw nsw i64 [[OFFSET_IDX]], 1

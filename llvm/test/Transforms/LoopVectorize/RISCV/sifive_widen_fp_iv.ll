@@ -11,17 +11,11 @@ define void @test(i32 %input, ptr %0) {
 ; CHECK-NEXT:    [[TMP1:%.*]] = add i32 [[INPUT]], 1
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-; CHECK-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vscale.i32()
-; CHECK-NEXT:    [[TMP3:%.*]] = mul nuw i32 [[TMP6]], 4
 ; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 [[TMP1]], i32 4, i1 true)
 ; CHECK-NEXT:    [[TMP5:%.*]] = call <vscale x 4 x i64> @llvm.stepvector.nxv4i64()
 ; CHECK-NEXT:    [[TMP14:%.*]] = uitofp <vscale x 4 x i64> [[TMP5]] to <vscale x 4 x double>
 ; CHECK-NEXT:    [[TMP7:%.*]] = fmul reassoc <vscale x 4 x double> [[TMP14]], splat (double 1.000000e+00)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = fadd reassoc <vscale x 4 x double> zeroinitializer, [[TMP7]]
-; CHECK-NEXT:    [[TMP11:%.*]] = uitofp i32 [[TMP3]] to double
-; CHECK-NEXT:    [[TMP12:%.*]] = fmul reassoc double 1.000000e+00, [[TMP11]]
-; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 4 x double> poison, double [[TMP12]], i64 0
-; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 4 x double> [[BROADCAST_SPLATINSERT]], <vscale x 4 x double> poison, <vscale x 4 x i32> zeroinitializer
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT1:%.*]], [[VECTOR_BODY]] ]
@@ -29,6 +23,10 @@ define void @test(i32 %input, ptr %0) {
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 4 x double> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i32 [[TMP1]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 [[AVL]], i32 4, i1 true)
+; CHECK-NEXT:    [[TMP11:%.*]] = uitofp i32 [[TMP8]] to double
+; CHECK-NEXT:    [[TMP12:%.*]] = fmul reassoc double 1.000000e+00, [[TMP11]]
+; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 4 x double> poison, double [[TMP12]], i64 0
+; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 4 x double> [[BROADCAST_SPLATINSERT]], <vscale x 4 x double> poison, <vscale x 4 x i32> zeroinitializer
 ; CHECK-NEXT:    [[TMP9:%.*]] = zext i32 [[EVL_BASED_IV]] to i64
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr [[POINT:%.*]], ptr [[TMP0]], i64 [[TMP9]], i32 0, i32 0, i64 2
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VEC_IND]], ptr align 8 [[TMP10]], i64 24, <vscale x 4 x i1> splat (i1 true), i32 [[TMP8]])

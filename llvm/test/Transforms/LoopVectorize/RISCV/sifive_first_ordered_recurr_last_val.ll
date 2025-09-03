@@ -34,10 +34,10 @@ define void @test_first_ordered_recurr(ptr %_src, ptr %_dx, i32 %W)  {
 ; CHECK-NEXT:    [[BROADCAST_SPLAT]] = shufflevector <vscale x 8 x i8> [[BROADCAST_SPLATINSERT]], <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer
 ; CHECK-NEXT:    [[TMP6:%.*]] = call <vscale x 8 x i8> @llvm.experimental.vp.splice.nxv8i8(<vscale x 8 x i8> [[VECTOR_RECUR]], <vscale x 8 x i8> [[BROADCAST_SPLAT]], i32 -1, <vscale x 8 x i1> splat (i1 true), i32 [[PREV_EVL]], i32 [[TMP2]])
 ; CHECK-NEXT:    [[VP_CAST:%.*]] = call <vscale x 8 x i16> @llvm.vp.zext.nxv8i16.nxv8i8(<vscale x 8 x i8> [[TMP6]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP2]])
-; CHECK-NEXT:    call void @llvm.vp.scatter.nxv8i16.nxv8p0(<vscale x 8 x i16> [[VP_CAST]], <vscale x 8 x ptr> align 2 [[BROADCAST_SPLAT1]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP2]])
+; CHECK-NEXT:    call void @llvm.vp.scatter.nxv8i16.nxv8p0(<vscale x 8 x i16> [[VP_CAST]], <vscale x 8 x ptr> align 2 [[BROADCAST_SPLAT1]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP2]]), !alias.scope [[META3:![0-9]+]], !noalias [[META0]]
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i32 [[TMP2]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp eq i32 [[INDEX_EVL_NEXT]], [[W]]
-; CHECK-NEXT:    br i1 [[TMP5]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP5]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[FOR_END_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
@@ -52,7 +52,7 @@ define void @test_first_ordered_recurr(ptr %_src, ptr %_dx, i32 %W)  {
 ; CHECK-NEXT:    [[CONV9:%.*]] = zext i8 [[V0_03]] to i16
 ; CHECK-NEXT:    store i16 [[CONV9]], ptr [[_DX]], align 2
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp slt i32 [[ADD]], [[W]]
-; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END_LOOPEXIT]], !llvm.loop [[LOOP7:![0-9]+]]
+; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END_LOOPEXIT]], !llvm.loop [[LOOP9:![0-9]+]]
 ; CHECK:       for.end.loopexit:
 ; CHECK-NEXT:    br label [[FOR_END]]
 ; CHECK:       for.end:

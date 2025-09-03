@@ -10,17 +10,12 @@ define void @test(i64 %0, i32 %1, i32 %2) {
 ; CHECK-NEXT:    [[TMP4:%.*]] = add i64 [[TMP0]], 1
 ; CHECK-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
-; CHECK-NEXT:    [[TMP7:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP6:%.*]] = mul nuw i64 [[TMP7]], 16
 ; CHECK-NEXT:    [[TMP13:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP4]], i32 16, i1 true)
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[DIV_I1313_US1933]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[BROADCAST_SPLATINSERT]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
 ; CHECK-NEXT:    [[TMP8:%.*]] = call <vscale x 16 x i64> @llvm.stepvector.nxv16i64()
 ; CHECK-NEXT:    [[TMP9:%.*]] = mul <vscale x 16 x i64> [[TMP8]], splat (i64 1)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 16 x i64> zeroinitializer, [[TMP9]]
-; CHECK-NEXT:    [[TMP14:%.*]] = mul i64 1, [[TMP6]]
-; CHECK-NEXT:    [[BROADCAST_SPLATINSERT1:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP14]], i64 0
-; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[BROADCAST_SPLATINSERT1]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
@@ -28,6 +23,10 @@ define void @test(i64 %0, i32 %1, i32 %2) {
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 16 x i64> [ [[INDUCTION]], %[[VECTOR_PH]] ], [ [[STEP_ADD:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[AVL:%.*]] = sub i64 [[TMP4]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[AVL]], i32 16, i1 true)
+; CHECK-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP10]] to i64
+; CHECK-NEXT:    [[TMP14:%.*]] = mul i64 1, [[TMP6]]
+; CHECK-NEXT:    [[BROADCAST_SPLATINSERT1:%.*]] = insertelement <vscale x 16 x i64> poison, i64 [[TMP14]], i64 0
+; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 16 x i64> [[BROADCAST_SPLATINSERT1]], <vscale x 16 x i64> poison, <vscale x 16 x i32> zeroinitializer
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 16 x i64> @llvm.vp.mul.nxv16i64(<vscale x 16 x i64> [[VEC_IND]], <vscale x 16 x i64> [[BROADCAST_SPLAT]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP10]])
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr float, ptr null, <vscale x 16 x i64> [[VP_OP]]
 ; CHECK-NEXT:    call void @llvm.vp.scatter.nxv16f32.nxv16p0(<vscale x 16 x float> zeroinitializer, <vscale x 16 x ptr> align 4 [[TMP11]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP10]])
