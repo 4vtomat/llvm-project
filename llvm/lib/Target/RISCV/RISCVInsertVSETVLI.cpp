@@ -94,14 +94,6 @@ static bool isMammothVectorConfigTMTKInstr(const MachineInstr &MI) {
 static bool isMammothVectorConfigInstr(const MachineInstr &MI) {
   return isMammothVectorTNConfigInstr(MI) || isMammothVectorConfigTMTKInstr(MI);
 }
-
-/// Return true if this is 'vsetvli x0, x0, vtype' which preserves
-/// VL and only sets VTYPE.
-static bool isCustomVLPreservingConfig(const MachineInstr &MI) {
-  if (MI.getOpcode() == RISCV::PseudoSF_VSETTNTX0X0)
-    return true;
-  return RISCVInstrInfo::isVLPreservingConfig(MI);
-}
 #endif // SIFIVE_CUSTOMIZATION
 
 /// Get the EEW for a load or store instruction.  Return std::nullopt if MI is
@@ -1859,20 +1851,12 @@ bool RISCVInsertVSETVLI::canMutatePriorConfig(
   // If the VL values aren't equal, return false if either a) the former is
   // demanded, or b) we can't rewrite the former to be the later for
   // implementation reasons.
-#ifdef SIFIVE_CUSTOMIZATION
-  if (!isCustomVLPreservingConfig(MI)) {
-#else
   if (!RISCVInstrInfo::isVLPreservingConfig(MI)) {
-#endif // SIFIVE_CUSTOMIZATION
     if (Used.VLAny)
       return false;
 
     if (Used.VLZeroness) {
-#ifdef SIFIVE_CUSTOMIZATION
-      if (isCustomVLPreservingConfig(PrevMI))
-#else
       if (RISCVInstrInfo::isVLPreservingConfig(PrevMI))
-#endif // SIFIVE_CUSTOMIZATION
         return false;
       if (!getInfoForVSETVLI(PrevMI).hasEquallyZeroAVL(getInfoForVSETVLI(MI),
                                                        LIS))
@@ -2041,11 +2025,7 @@ void RISCVInsertVSETVLI::coalesceVSETVLIs(MachineBasicBlock &MBB) const {
       }
 
       if (canMutatePriorConfig(MI, *NextMI, Used)) {
-#ifdef SIFIVE_CUSTOMIZATION
-        if (!isCustomVLPreservingConfig(*NextMI)) {
-#else
         if (!RISCVInstrInfo::isVLPreservingConfig(*NextMI)) {
-#endif // SIFIVE_CUSTOMIZATION
           Register DefReg = NextMI->getOperand(0).getReg();
 
           MI.getOperand(0).setReg(DefReg);
