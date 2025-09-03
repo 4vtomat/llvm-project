@@ -9167,7 +9167,7 @@ if (!BestVPlan.isUncountable() &&
     (!BestVPlan.useVLAVectorizer() || !Legal->getLAI() ||
     Legal->isSafeForAnyVectorWidth()))
 #endif // SIFIVE_CUSTOMIZATION                           
-  VPlanTransforms::optimizeForVFAndUF(BestVPlan, BestVF, BestUF, PSE);
+    VPlanTransforms::optimizeForVFAndUF(BestVPlan, BestVF, BestUF, PSE);
   VPlanTransforms::simplifyRecipes(BestVPlan, *Legal->getWidestInductionType());
   VPlanTransforms::narrowInterleaveGroups(
       BestVPlan, BestVF,
