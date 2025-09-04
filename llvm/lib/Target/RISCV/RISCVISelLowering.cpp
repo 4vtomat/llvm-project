@@ -18257,23 +18257,12 @@ namespace {
 // apply a combine.
 struct CombineResult;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-// SIFIVE cherry-pick from 04e2e581ac000934782398e05853338040bf7c46
-=======
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 enum ExtKind : uint8_t {
   ZExt = 1 << 0,
   SExt = 1 << 1,
   FPExt = 1 << 2,
   BF16Ext = 1 << 3
 };
-<<<<<<< HEAD
-#else
-enum ExtKind : uint8_t { ZExt = 1 << 0, SExt = 1 << 1, FPExt = 1 << 2 };
-#endif
-=======
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 /// Helper class for folding sign/zero extensions.
 /// In particular, this class is used for the following combines:
 /// add | add_vl | or disjoint -> vwadd(u) | vwadd(u)_w
@@ -18310,15 +18299,8 @@ struct NodeExtensionHelper {
   bool SupportsSExt;
   /// Records if this operand is like being floating point extended.
   bool SupportsFPExt;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   /// Records if this operand is extended from bf16.
   bool SupportsBF16Ext;
-#endif
-=======
-  /// Records if this operand is extended from bf16.
-  bool SupportsBF16Ext;
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
   /// This boolean captures whether we care if this operand would still be
   /// around after the folding happens.
   bool EnforceOneUse;
@@ -18354,11 +18336,7 @@ struct NodeExtensionHelper {
     case ExtKind::ZExt:
       return RISCVISD::VZEXT_VL;
     case ExtKind::FPExt:
-<<<<<<< HEAD
-    case ExtKind::BF16Ext: // SIFIVE
-=======
     case ExtKind::BF16Ext:
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
       return RISCVISD::FP_EXTEND_VL;
     }
     llvm_unreachable("Unknown ExtKind enum");
@@ -18380,19 +18358,6 @@ struct NodeExtensionHelper {
     if (Source.getValueType() == NarrowVT)
       return Source;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-#else
-    // vfmadd_vl -> vfwmadd_vl can take bf16 operands
-    if (Source.getValueType().getVectorElementType() == MVT::bf16) {
-      assert(Root->getSimpleValueType(0).getVectorElementType() == MVT::f32 &&
-             Root->getOpcode() == RISCVISD::VFMADD_VL);
-      return Source;
-    }
-#endif
-
-=======
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
     unsigned ExtOpc = getExtOpc(*SupportsExt);
 
     // If we need an extension, we should be changing the type.
@@ -18435,17 +18400,8 @@ struct NodeExtensionHelper {
     // Determine the narrow size.
     unsigned NarrowSize = VT.getScalarSizeInBits() / 2;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
     MVT EltVT = SupportsExt == ExtKind::BF16Ext ? MVT::bf16
                 : SupportsExt == ExtKind::FPExt
-#else
-    MVT EltVT = SupportsExt == ExtKind::FPExt
-#endif
-=======
-    MVT EltVT = SupportsExt == ExtKind::BF16Ext ? MVT::bf16
-                : SupportsExt == ExtKind::FPExt
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
                     ? MVT::getFloatingPointVT(NarrowSize)
                     : MVT::getIntegerVT(NarrowSize);
 
@@ -18622,11 +18578,6 @@ struct NodeExtensionHelper {
     EnforceOneUse = false;
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // SIFIVE cherry-pick from 04e2e581ac000934782398e05853338040bf7c46
-=======
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
   bool isSupportedFPExtend(MVT NarrowEltVT, const RISCVSubtarget &Subtarget) {
     return (NarrowEltVT == MVT::f32 ||
             (NarrowEltVT == MVT::f16 && Subtarget.hasVInstructionsF16()));
@@ -18634,24 +18585,7 @@ struct NodeExtensionHelper {
 
   bool isSupportedBF16Extend(MVT NarrowEltVT, const RISCVSubtarget &Subtarget) {
     return NarrowEltVT == MVT::bf16 && Subtarget.hasStdExtZvfbfwma();
-<<<<<<< HEAD
   }
-#else
-  bool isSupportedFPExtend(SDNode *Root, MVT NarrowEltVT,
-                           const RISCVSubtarget &Subtarget) {
-    // Any f16 extension will need zvfh
-    if (NarrowEltVT == MVT::f16 && !Subtarget.hasVInstructionsF16())
-      return false;
-    // The only bf16 extension we can do is vfmadd_vl -> vfwmadd_vl with
-    // zvfbfwma
-    if (NarrowEltVT == MVT::bf16 && (!Subtarget.hasStdExtZvfbfwma() ||
-                                     Root->getOpcode() != RISCVISD::VFMADD_VL))
-      return false;
-    return true;
-=======
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
-  }
-#endif
 
   /// Helper method to set the various fields of this struct based on the
   /// type of \p Root.
@@ -18660,11 +18594,7 @@ struct NodeExtensionHelper {
     SupportsZExt = false;
     SupportsSExt = false;
     SupportsFPExt = false;
-<<<<<<< HEAD
-    SupportsBF16Ext = false; // SIFIVE
-=======
     SupportsBF16Ext = false;
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
     EnforceOneUse = true;
     unsigned Opc = OrigOperand.getOpcode();
     // For the nodes we handle below, we end up using their inputs directly: see
@@ -18696,23 +18626,10 @@ struct NodeExtensionHelper {
     case RISCVISD::FP_EXTEND_VL: {
       MVT NarrowEltVT =
           OrigOperand.getOperand(0).getSimpleValueType().getVectorElementType();
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-      // SIFIVE cherry-pick from 04e2e581ac000934782398e05853338040bf7c46
-=======
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
       if (isSupportedFPExtend(NarrowEltVT, Subtarget))
         SupportsFPExt = true;
       if (isSupportedBF16Extend(NarrowEltVT, Subtarget))
         SupportsBF16Ext = true;
-<<<<<<< HEAD
-#else
-      if (!isSupportedFPExtend(Root, NarrowEltVT, Subtarget))
-        break;
-      SupportsFPExt = true;
-#endif
-=======
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 
       break;
     }
@@ -18730,37 +18647,16 @@ struct NodeExtensionHelper {
       if (Op.getOpcode() != ISD::FP_EXTEND)
         break;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-#else
-      if (!isSupportedFPExtend(Root, Op.getOperand(0).getSimpleValueType(),
-                               Subtarget))
-        break;
-#endif
-
-=======
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
       unsigned NarrowSize = VT.getScalarSizeInBits() / 2;
       unsigned ScalarBits = Op.getOperand(0).getValueSizeInBits();
       if (NarrowSize != ScalarBits)
         break;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-      // SIFIVE cherry-pick from 04e2e581ac000934782398e05853338040bf7c46
-=======
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
       if (isSupportedFPExtend(Op.getOperand(0).getSimpleValueType(), Subtarget))
         SupportsFPExt = true;
       if (isSupportedBF16Extend(Op.getOperand(0).getSimpleValueType(),
                                 Subtarget))
         SupportsBF16Ext = true;
-<<<<<<< HEAD
-#else
-      SupportsFPExt = true;
-#endif
-=======
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
       break;
     }
     default:
@@ -18993,20 +18889,11 @@ canFoldToVWWithSameExtensionImpl(SDNode *Root, const NodeExtensionHelper &LHS,
     return CombineResult(NodeExtensionHelper::getFPExtOpcode(Root->getOpcode()),
                          Root, LHS, /*LHSExt=*/{ExtKind::FPExt}, RHS,
                          /*RHSExt=*/{ExtKind::FPExt});
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // SIFIVE cherry-pick from 04e2e581ac000934782398e05853338040bf7c46
-=======
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
   if ((AllowExtMask & ExtKind::BF16Ext) && LHS.SupportsBF16Ext &&
       RHS.SupportsBF16Ext)
     return CombineResult(NodeExtensionHelper::getFPExtOpcode(Root->getOpcode()),
                          Root, LHS, /*LHSExt=*/{ExtKind::BF16Ext}, RHS,
                          /*RHSExt=*/{ExtKind::BF16Ext});
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
   return std::nullopt;
 }
 
@@ -19089,11 +18976,6 @@ canFoldToVWWithFPEXT(SDNode *Root, const NodeExtensionHelper &LHS,
                                           Subtarget);
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-// SIFIVE cherry-pick from 04e2e581ac000934782398e05853338040bf7c46
-=======
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 /// Check if \p Root follows a pattern Root(bf16ext(LHS), bf16ext(RHS))
 ///
 /// \returns std::nullopt if the pattern doesn't match or a CombineResult that
@@ -19105,10 +18987,6 @@ canFoldToVWWithBF16EXT(SDNode *Root, const NodeExtensionHelper &LHS,
   return canFoldToVWWithSameExtensionImpl(Root, LHS, RHS, ExtKind::BF16Ext, DAG,
                                           Subtarget);
 }
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 
 /// Check if \p Root follows a pattern Root(sext(LHS), zext(RHS))
 ///
@@ -19149,16 +19027,8 @@ NodeExtensionHelper::getSupportedFoldings(const SDNode *Root) {
   case RISCVISD::VFNMADD_VL:
   case RISCVISD::VFNMSUB_VL:
     Strategies.push_back(canFoldToVWWithSameExtension);
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    // SIFIVE cherry-pick from 04e2e581ac000934782398e05853338040bf7c46
     if (Root->getOpcode() == RISCVISD::VFMADD_VL)
       Strategies.push_back(canFoldToVWWithBF16EXT);
-#endif
-=======
-    if (Root->getOpcode() == RISCVISD::VFMADD_VL)
-      Strategies.push_back(canFoldToVWWithBF16EXT);
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
     break;
   case ISD::MUL:
   case RISCVISD::MUL_VL:
