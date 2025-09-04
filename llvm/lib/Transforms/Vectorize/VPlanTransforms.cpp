@@ -2730,18 +2730,6 @@ static void transformRecipestoEVLRecipes(VPlan &Plan, VPValue &EVL) {
     PrevEVL = Builder.createScalarPhi({MaxEVL, &EVL}, DebugLoc(), "prev.evl");
   }
 
-<<<<<<< HEAD
-  for (VPUser *U : to_vector(Plan.getVF().users())) {
-    if (auto *R = dyn_cast<VPVectorEndPointerRecipe>(U))
-      R->setOperand(1, &EVL);
-#if SIFIVE_CUSTOMIZATION
-    if (auto *R = dyn_cast<VPWidenIntOrFpInductionRecipe>(U))
-      R->setOperand(2, &EVL);
-#endif // SIFIVE_CUSTOMIZATION
-  }
-
-=======
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
   SmallVector<VPRecipeBase *> ToErase;
 
 #if SIFIVE_CUSTOMIZATION
@@ -3491,22 +3479,8 @@ expandVPWidenIntOrFpInduction(VPWidenIntOrFpInductionRecipe *WidenIVR,
     if (StepTy->isFloatingPointTy())
       VF = Builder.createScalarCast(Instruction::CastOps::UIToFP, VF, StepTy,
                                     DL);
-#if SIFIVE_CUSTOMIZATION
-    // cherry-pick commit 521adc9fa270c1524
-    // need to cherry-pick 53ea522d1b87c144a1faeffea62d50a4d9907a38 as well
-    else
-      VF = Builder.createScalarZExtOrTrunc(VF, StepTy,
-                                           TypeInfo.inferScalarType(VF), DL);
-#else
-    else
-<<<<<<< HEAD
-      VF =
-          Builder.createScalarCast(Instruction::CastOps::Trunc, VF, StepTy, DL);
-#endif // SIFIVE_CUSTOMIZATION
-=======
-      VF = Builder.createScalarZExtOrTrunc(VF, StepTy,
-                                           TypeInfo.inferScalarType(VF), DL);
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
+    VF = Builder.createScalarZExtOrTrunc(VF, StepTy,
+                                         TypeInfo.inferScalarType(VF), DL);
 
     Inc = Builder.createNaryOp(MulOp, {Step, VF}, Flags);
     Inc = Builder.createNaryOp(VPInstruction::Broadcast, Inc);
