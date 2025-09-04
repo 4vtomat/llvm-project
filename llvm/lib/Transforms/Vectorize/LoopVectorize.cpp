@@ -9085,12 +9085,8 @@ static void fixReductionScalarResumeWhenVectorizingEpilog(
   if (!EpiRedResult ||
       (EpiRedResult->getOpcode() != VPInstruction::ComputeAnyOfResult &&
        EpiRedResult->getOpcode() != VPInstruction::ComputeReductionResult &&
-<<<<<<< HEAD
-       EpiRedResult->getOpcode() != VPInstruction::ComputeFindLastIVResult))
-#endif // SIFIVE_CUSTOMIZATION
-=======
        EpiRedResult->getOpcode() != VPInstruction::ComputeFindIVResult))
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
+#endif // SIFIVE_CUSTOMIZATION
     return;
 
   auto *EpiRedHeaderPhi =
@@ -11583,24 +11579,20 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
       NewExitingVPV =
           Builder.createSelect(Cond, OrigExitingVPV, PhiR, {}, "", FMFs);
       OrigExitingVPV->replaceUsesWithIf(NewExitingVPV, [](VPUser &U, unsigned) {
-        return isa<VPInstruction>(&U) &&
+            return isa<VPInstruction>(&U) &&
 #if SIFIVE_CUSTOMIZATION
                (cast<VPInstruction>(&U)->getOpcode() ==
                     VPInstruction::ComputeReductionResult ||
                 cast<VPInstruction>(&U)->getOpcode() ==
                     VPInstruction::ComputeReductionResultWithMask);
 #else
-               (cast<VPInstruction>(&U)->getOpcode() ==
-                    VPInstruction::ComputeAnyOfResult ||
-                cast<VPInstruction>(&U)->getOpcode() ==
-                    VPInstruction::ComputeReductionResult ||
-                cast<VPInstruction>(&U)->getOpcode() ==
-<<<<<<< HEAD
-                    VPInstruction::ComputeFindLastIVResult);
+                   (cast<VPInstruction>(&U)->getOpcode() ==
+                        VPInstruction::ComputeAnyOfResult ||
+                    cast<VPInstruction>(&U)->getOpcode() ==
+                        VPInstruction::ComputeReductionResult ||
+                    cast<VPInstruction>(&U)->getOpcode() ==
+                        VPInstruction::ComputeFindIVResult);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-                    VPInstruction::ComputeFindIVResult);
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
       });
       if (CM.usePredicatedReductionSelect())
         PhiR->setOperand(1, NewExitingVPV);
