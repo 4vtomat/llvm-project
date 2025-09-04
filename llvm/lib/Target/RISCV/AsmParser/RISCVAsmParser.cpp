@@ -2314,12 +2314,7 @@ bool RISCVAsmParser::parseVTypeToken(const AsmToken &Tok, VTypeState &State,
     return true;
 
   StringRef Identifier = Tok.getIdentifier();
-<<<<<<< HEAD
-
-  switch (State) {
-  case VTypeState_SEW:
-    if (!Identifier.consume_front("e"))
-      break;
+  if (State < VTypeState::SeenSew && Identifier.consume_front("e")) {
 #if SIFIVE_CUSTOMIZATION
     if (Identifier == "16alt") {
       Sew = 16;
@@ -2329,11 +2324,8 @@ bool RISCVAsmParser::parseVTypeToken(const AsmToken &Tok, VTypeState &State,
       AltFmt = true;
     } else
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  if (State < VTypeState::SeenSew && Identifier.consume_front("e")) {
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
-    if (Identifier.getAsInteger(10, Sew))
-      return true;
+      if (Identifier.getAsInteger(10, Sew))
+        return true;
     if (!RISCVVType::isValidSEW(Sew))
       return true;
 
@@ -2409,55 +2401,14 @@ ParseStatus RISCVAsmParser::parseVTypeI(OperandVector &Operands) {
   bool AltFmt = false;
 #endif // SIFIVE_CUSTOMIZATION
 
-<<<<<<< HEAD
-  VTypeState State = VTypeState_SEW;
-  SMLoc SEWLoc = S;
-
-  if (parseVTypeToken(getTok(), State, Sew, Lmul, Fractional, TailAgnostic,
-#if SIFIVE_CUSTOMIZATION
-                      MaskAgnostic, AltFmt))
-#endif // SIFIVE_CUSTOMIZATION
-    return ParseStatus::NoMatch;
-
-  getLexer().Lex();
-
-  while (parseOptionalToken(AsmToken::Comma)) {
-    if (parseVTypeToken(getTok(), State, Sew, Lmul, Fractional, TailAgnostic,
-#if SIFIVE_CUSTOMIZATION
-                        MaskAgnostic, AltFmt))
-#endif // SIFIVE_CUSTOMIZATION
-      break;
-
-    getLexer().Lex();
-  }
-
-#if SIFIVE_CUSTOMIZATION
-  if (getLexer().is(AsmToken::EndOfStatement) &&
-      (State == VTypeState_TailPolicy || State == VTypeState_Done)) {
-#endif // SIFIVE_CUSTOMIZATION
-    RISCVVType::VLMUL VLMUL = RISCVVType::encodeLMUL(Lmul, Fractional);
-    if (Fractional) {
-      unsigned ELEN = STI->hasFeature(RISCV::FeatureStdExtZve64x) ? 64 : 32;
-      unsigned MaxSEW = ELEN / Lmul;
-      // If MaxSEW < 8, we should have printed warning about reserved LMUL.
-      if (MaxSEW >= 8 && Sew > MaxSEW)
-        Warning(SEWLoc,
-                "use of vtype encodings with SEW > " + Twine(MaxSEW) +
-                    " and LMUL == mf" + Twine(Lmul) +
-                    " may not be compatible with all RVV implementations");
-    }
-
-    unsigned VTypeI =
-#if SIFIVE_CUSTOMIZATION
-        RISCVVType::encodeVTYPE(VLMUL, Sew, TailAgnostic, MaskAgnostic, AltFmt);
-#endif // SIFIVE_CUSTOMIZATION
-    Operands.push_back(RISCVOperand::createVType(VTypeI, S));
-    return ParseStatus::Success;
-=======
   VTypeState State = VTypeState::SeenNothingYet;
   do {
     if (parseVTypeToken(getTok(), State, Sew, Lmul, Fractional, TailAgnostic,
+#if SIFIVE_CUSTOMIZATION
+                        MaskAgnostic, AltFmt)) {
+#else
                         MaskAgnostic)) {
+#endif // SIFIVE_CUSTOMIZATION
       // The first time, errors return NoMatch rather than Failure
       if (State == VTypeState::SeenNothingYet)
         return ParseStatus::NoMatch;
@@ -2471,6 +2422,11 @@ ParseStatus RISCVAsmParser::parseVTypeI(OperandVector &Operands) {
       State == VTypeState::SeenNothingYet)
     return generateVTypeError(S);
 
+#ifdef SIFIVE_CUSTOMIZATION
+  if (!(State == VTypeState::SeenTailPolicy))
+    return generateVTypeError(S);
+#endif // SIFIVE_CUSTOMIZATION
+
   RISCVVType::VLMUL VLMUL = RISCVVType::encodeLMUL(Lmul, Fractional);
   if (Fractional) {
     unsigned ELEN = STI->hasFeature(RISCV::FeatureStdExtZve64x) ? 64 : 32;
@@ -2480,11 +2436,14 @@ ParseStatus RISCVAsmParser::parseVTypeI(OperandVector &Operands) {
       Warning(S, "use of vtype encodings with SEW > " + Twine(MaxSEW) +
                      " and LMUL == mf" + Twine(Lmul) +
                      " may not be compatible with all RVV implementations");
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
   }
 
   unsigned VTypeI =
+#ifdef SIFIVE_CUSTOMIZATION
+      RISCVVType::encodeVTYPE(VLMUL, Sew, TailAgnostic, MaskAgnostic, false);
+#else
       RISCVVType::encodeVTYPE(VLMUL, Sew, TailAgnostic, MaskAgnostic);
+#endif // SIFIVE_CUSTOMIZATION
   Operands.push_back(RISCVOperand::createVType(VTypeI, S));
   return ParseStatus::Success;
 }
