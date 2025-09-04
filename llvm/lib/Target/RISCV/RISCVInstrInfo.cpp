@@ -1817,7 +1817,7 @@ unsigned RISCVInstrInfo::getInstSizeInBytes(const MachineInstr &MI) const {
   // Calculate the size taking that into account.
   // FIXME: Can we expand this before the BranchRelaxation pass so that we don't
   // have to do this manually.
-  if (Opcode == RISCV::PseudoMovImm && STI.hasStdExtCOrZca()) {
+  if (Opcode == RISCV::PseudoMovImm && STI.hasStdExtZca()) {
     int64_t Val = MI.getOperand(1).getImm();
     RISCVMatInt::InstSeq Seq = RISCVMatInt::generateInstSeq(Val, STI);
     unsigned Size = 0;
