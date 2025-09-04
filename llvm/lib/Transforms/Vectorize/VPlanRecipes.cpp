@@ -1043,19 +1043,15 @@ Value *VPInstruction::generate(VPTransformState &State) {
     return InitEVL ? createFindLastIVReduction(Builder, ReducedPartRdx,
                                                State.get(getOperand(1), true),
                                                Sentinel, InitEVL)
-                   : createFindLastIVReduction(Builder, ReducedPartRdx,
+                   : createFindLastIVReduction(Builder, ReducedPartRdx, RK,
                                                State.get(getOperand(1), true),
                                                Sentinel);
 #else
     Value *Start = State.get(getOperand(1), true);
     Value *Sentinel = getOperand(2)->getLiveInIRValue();
-<<<<<<< HEAD
-    return createFindLastIVReduction(Builder, ReducedPartRdx, Start, Sentinel);
-#endif // SIFIVE_CUSTOMIZATION
-=======
     return createFindLastIVReduction(Builder, ReducedPartRdx, RK, Start,
                                      Sentinel);
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
+#endif // SIFIVE_CUSTOMIZATION
   }
   case VPInstruction::ComputeReductionResult: {
     // FIXME: The cross-recipe dependency on VPReductionPHIRecipe is temporary
@@ -3591,9 +3587,11 @@ InstructionCost VPCSAHeaderPHIRecipe::overhead(ElementCount VF,
                                   CmpInst::ICMP_EQ, CostKind);
 
   // CSAInitMask
-  C += Ctx.TTI.getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);
+  C += Ctx.TTI.getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy,
+                              VectorTy);
   // CSAInitData
-  C += Ctx.TTI.getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);
+  C += Ctx.TTI.getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy,
+                              VectorTy);
 
   // CSAExtractScalar
   // StepVector
@@ -3602,7 +3600,8 @@ InstructionCost VPCSAHeaderPHIRecipe::overhead(ElementCount VF,
                                     Int32VecTy, Args);
   C += Ctx.TTI.getIntrinsicInstrCost(CostAttrs, CostKind);
   // NegOneSplat
-  C += Ctx.TTI.getShuffleCost(TargetTransformInfo::SK_Broadcast, Int32VecTy);
+  C += Ctx.TTI.getShuffleCost(TargetTransformInfo::SK_Broadcast, Int32VecTy,
+                              Int32VecTy);
   // LastIdx
   C += Ctx.TTI.getMinMaxReductionCost(Intrinsic::smax, Int32VecTy,
                                       FastMathFlags(), CostKind);
@@ -4981,21 +4980,16 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
   if (CurrentPart == 0) {
     // The recipe represents the first part of the pointer induction. Create the
     // GEP to increment the phi across all unrolled parts.
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     Value *NumUnrolledElems =
         State.Plan->useVLAVectorizer()
             ? State.Builder.CreateMul(
                   RuntimeVF,
                   ConstantInt::get(PhiType, getParent()->getPlan()->getUF()))
-            : State.get(&getParent()->getPlan()->getVFxUF(), true);
+            : State.get(getOperand(2), true);
 #else
-    Value *NumUnrolledElems =
-        State.get(&getParent()->getPlan()->getVFxUF(), true);
-#endif // SIFIVE_CUSTOMIZATION
-=======
     Value *NumUnrolledElems = State.get(getOperand(2), true);
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
+#endif // SIFIVE_CUSTOMIZATION
 
     Value *InductionGEP = GetElementPtrInst::Create(
         State.Builder.getInt8Ty(), NewPointerPhi,
@@ -5241,8 +5235,8 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
     // The cost references the instructions created in
     // llvm::createAnyOfReduction
     auto *VecCondTy = cast<VectorType>(CmpInst::makeCmpResultType(VectorTy));
-    InstructionCost O =
-        Ctx.TTI.getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);
+    InstructionCost O = Ctx.TTI.getShuffleCost(
+        TargetTransformInfo::SK_Broadcast, VecCondTy, VectorTy);
     O += Ctx.TTI.getCmpSelInstrCost(Instruction::ICmp, VectorTy, VecCondTy,
                                     CmpInst::ICMP_NE, CostKind);
     O += Ctx.TTI.getArithmeticReductionCost(
@@ -5252,7 +5246,9 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
                                     CmpInst::BAD_ICMP_PREDICATE, CostKind);
     return O;
   }
-  case RecurKind::FindLastIV: {
+  case RecurKind::FindFirstIVSMin:
+  case RecurKind::FindLastIVSMax:
+  case RecurKind::FindLastIVUMax: {
     // Emit reduce.smax to get the last induction value
     InstructionCost O = Ctx.TTI.getMinMaxReductionCost(
         Intrinsic::smax, VectorTy, FastMathFlags(), CostKind);
