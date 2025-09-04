@@ -14,18 +14,7 @@ define void @foo(ptr noalias %a, ptr noalias %b, ptr noalias %c, i64 %N) {
 ; IF-EVL-NEXT:  entry:
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
-<<<<<<< HEAD
 ; IF-EVL-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N:%.*]], i32 2, i1 true)
-=======
-; IF-EVL-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; IF-EVL-NEXT:    [[TMP5:%.*]] = mul nuw i64 [[TMP4]], 4
-; IF-EVL-NEXT:    [[TMP8:%.*]] = sub i64 [[TMP5]], 1
-; IF-EVL-NEXT:    [[N_RND_UP:%.*]] = add i64 [[N:%.*]], [[TMP8]]
-; IF-EVL-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N_RND_UP]], [[TMP5]]
-; IF-EVL-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
-; IF-EVL-NEXT:    [[TMP9:%.*]] = call i64 @llvm.vscale.i64()
-; IF-EVL-NEXT:    [[TMP10:%.*]] = mul nuw i64 [[TMP9]], 4
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 ; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]

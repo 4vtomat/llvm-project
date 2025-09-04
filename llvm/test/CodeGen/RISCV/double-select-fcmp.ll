@@ -642,10 +642,10 @@ define signext i32 @select_fcmp_uge_1_2(double %a, double %b) nounwind {
 define double @CascadedSelect(double noundef %a) {
 ; CHECKRV32ZDINX-LABEL: CascadedSelect:
 ; CHECKRV32ZDINX:       # %bb.0: # %entry
-; CHECKRV32ZDINX-NEXT:    lui a3, %hi(.LCPI20_0)
-; CHECKRV32ZDINX-NEXT:    lw a2, %lo(.LCPI20_0)(a3)
-; CHECKRV32ZDINX-NEXT:    addi a3, a3, %lo(.LCPI20_0)
-; CHECKRV32ZDINX-NEXT:    lw a3, 4(a3)
+; CHECKRV32ZDINX-NEXT:    lui a2, %hi(.LCPI20_0+4)
+; CHECKRV32ZDINX-NEXT:    lw a3, %lo(.LCPI20_0+4)(a2)
+; CHECKRV32ZDINX-NEXT:    lui a2, %hi(.LCPI20_0)
+; CHECKRV32ZDINX-NEXT:    lw a2, %lo(.LCPI20_0)(a2)
 ; CHECKRV32ZDINX-NEXT:    flt.d a4, a2, a0
 ; CHECKRV32ZDINX-NEXT:    bnez a4, .LBB20_3
 ; CHECKRV32ZDINX-NEXT:  # %bb.1: # %entry

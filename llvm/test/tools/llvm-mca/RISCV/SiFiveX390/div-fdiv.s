@@ -6,17 +6,17 @@ div a0, a1, a2
 fdiv.s f1, f2, f3
 
 # CHECK:      Resources:
-# CHECK-NEXT: [0]   - VLEN1024X300SiFive7FDiv:1
-# CHECK-NEXT: [1]   - VLEN1024X300SiFive7IDiv:1
-# CHECK-NEXT: [2]   - VLEN1024X300SiFive7PipeA:1
-# CHECK-NEXT: [3]   - VLEN1024X300SiFive7PipeAB:2 VLEN1024X300SiFive7PipeA, VLEN1024X300SiFive7PipeB
-# CHECK-NEXT: [4]   - VLEN1024X300SiFive7PipeB:1
-# CHECK-NEXT: [5]   - VLEN1024X300SiFive7VA1:1
-# CHECK-NEXT: [6]   - VLEN1024X300SiFive7VA1OrVA2:2 VLEN1024X300SiFive7VA1, VLEN1024X300SiFive7VA2
-# CHECK-NEXT: [7]   - VLEN1024X300SiFive7VA2:1
-# CHECK-NEXT: [8]   - VLEN1024X300SiFive7VCQ:1
-# CHECK-NEXT: [9]   - VLEN1024X300SiFive7VL:1
-# CHECK-NEXT: [10]  - VLEN1024X300SiFive7VS:1
+# CHECK-NEXT: [0]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NFDiv:1
+# CHECK-NEXT: [1]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NIDiv:1
+# CHECK-NEXT: [2]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA:1
+# CHECK-NEXT: [3]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB:2 VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA, VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeB
+# CHECK-NEXT: [4]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeB:1
+# CHECK-NEXT: [5]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1:1
+# CHECK-NEXT: [6]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2:2 VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1, VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA2
+# CHECK-NEXT: [7]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA2:1
+# CHECK-NEXT: [8]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ:1
+# CHECK-NEXT: [9]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVL:1
+# CHECK-NEXT: [10]  - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVS:1
 
 # CHECK:      Instruction Info:
 # CHECK-NEXT: [1]: #uOps
@@ -30,19 +30,19 @@ fdiv.s f1, f2, f3
 # CHECK-NEXT: [9]: LLVM Opcode Name
 
 # CHECK:      [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]                                        [9]                        Instructions:
-# CHECK-NEXT:  1      66    65.00                        66    VLEN1024X300SiFive7IDiv[65],VLEN1024X300SiFive7PipeAB,VLEN1024X300SiFive7PipeB DIV div	a0, a1, a2
-# CHECK-NEXT:  1      27    26.00                        27    VLEN1024X300SiFive7FDiv[26],VLEN1024X300SiFive7PipeAB,VLEN1024X300SiFive7PipeB FDIV_S fdiv.s	ft1, ft2, ft3
+# CHECK-NEXT:  1      66    65.00                        66    VLEN1024DualVALUSlowFP64FastGatherSiFive7NIDiv[65],VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeB DIV div	a0, a1, a2
+# CHECK-NEXT:  1      27    26.00                        27    VLEN1024DualVALUSlowFP64FastGatherSiFive7NFDiv[26],VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeB FDIV_S fdiv.s	ft1, ft2, ft3
 
 # CHECK:      Resources:
-# CHECK-NEXT: [0]   - VLEN1024X300SiFive7FDiv
-# CHECK-NEXT: [1]   - VLEN1024X300SiFive7IDiv
-# CHECK-NEXT: [2]   - VLEN1024X300SiFive7PipeA
-# CHECK-NEXT: [3]   - VLEN1024X300SiFive7PipeB
-# CHECK-NEXT: [4]   - VLEN1024X300SiFive7VA1
-# CHECK-NEXT: [5]   - VLEN1024X300SiFive7VA2
-# CHECK-NEXT: [6]   - VLEN1024X300SiFive7VCQ
-# CHECK-NEXT: [7]   - VLEN1024X300SiFive7VL
-# CHECK-NEXT: [8]   - VLEN1024X300SiFive7VS
+# CHECK-NEXT: [0]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NFDiv
+# CHECK-NEXT: [1]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NIDiv
+# CHECK-NEXT: [2]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA
+# CHECK-NEXT: [3]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeB
+# CHECK-NEXT: [4]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1
+# CHECK-NEXT: [5]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA2
+# CHECK-NEXT: [6]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ
+# CHECK-NEXT: [7]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVL
+# CHECK-NEXT: [8]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVS
 
 # CHECK:      Resource pressure per iteration:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]

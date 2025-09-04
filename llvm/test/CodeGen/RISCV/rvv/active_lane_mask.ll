@@ -109,18 +109,10 @@ define <32 x i1> @fv32(ptr %p, i64 %index, i64 %tc) {
 ; CHECK-NEXT:    vadd.vx v16, v8, a0
 ; CHECK-NEXT:    vsaddu.vx v8, v8, a1
 ; CHECK-NEXT:    vsaddu.vx v16, v16, a1
-; CHECK-NEXT:    vmsltu.vx v24, v16, a2
+; CHECK-NEXT:    vmsltu.vx v16, v16, a2
 ; CHECK-NEXT:    vmsltu.vx v0, v8, a2
-<<<<<<< HEAD
-; CHECK-NEXT:    vsext.vf8 v8, v16
-; CHECK-NEXT:    vsaddu.vx v8, v8, a1
-; CHECK-NEXT:    vmsltu.vx v8, v8, a2
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
-; CHECK-NEXT:    vslideup.vi v0, v8, 2
-=======
-; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
-; CHECK-NEXT:    vslideup.vi v0, v24, 2
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
+; CHECK-NEXT:    vslideup.vi v0, v16, 2
 ; CHECK-NEXT:    ret
   %mask = call <32 x i1> @llvm.get.active.lane.mask.v32i1.i64(i64 %index, i64 %tc)
   ret <32 x i1> %mask
@@ -140,35 +132,16 @@ define <64 x i1> @fv64(ptr %p, i64 %index, i64 %tc) {
 ; CHECK-NEXT:    vmsltu.vx v24, v16, a2
 ; CHECK-NEXT:    vadd.vx v16, v8, a0
 ; CHECK-NEXT:    vsaddu.vx v16, v16, a1
-; CHECK-NEXT:    vmsltu.vx v25, v16, a2
+; CHECK-NEXT:    vmsltu.vx v16, v16, a2
 ; CHECK-NEXT:    li a0, 48
 ; CHECK-NEXT:    vadd.vx v8, v8, a0
 ; CHECK-NEXT:    vsaddu.vx v8, v8, a1
-<<<<<<< HEAD
-; CHECK-NEXT:    vle8.v v18, (a0)
-; CHECK-NEXT:    vmsltu.vx v0, v8, a2
-; CHECK-NEXT:    vsext.vf8 v8, v16
-; CHECK-NEXT:    vsaddu.vx v8, v8, a1
-; CHECK-NEXT:    vmsltu.vx v16, v8, a2
-; CHECK-NEXT:    vsext.vf8 v8, v17
-; CHECK-NEXT:    vsaddu.vx v8, v8, a1
-; CHECK-NEXT:    vmsltu.vx v8, v8, a2
-=======
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, tu, ma
 ; CHECK-NEXT:    vslideup.vi v0, v24, 2
 ; CHECK-NEXT:    vsetivli zero, 6, e8, mf2, tu, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vslideup.vi v0, v8, 4
+; CHECK-NEXT:    vslideup.vi v0, v16, 4
 ; CHECK-NEXT:    vsetivli zero, 16, e64, m8, ta, ma
-; CHECK-NEXT:    vsext.vf8 v8, v18
-; CHECK-NEXT:    vsaddu.vx v8, v8, a1
 ; CHECK-NEXT:    vmsltu.vx v8, v8, a2
-=======
-; CHECK-NEXT:    vslideup.vi v0, v25, 4
-; CHECK-NEXT:    vsetivli zero, 16, e64, m8, ta, ma
-; CHECK-NEXT:    vmsltu.vx v16, v8, a2
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v0, v8, 6
 ; CHECK-NEXT:    ret
@@ -206,46 +179,20 @@ define <128 x i1> @fv128(ptr %p, i64 %index, i64 %tc) {
 ; CHECK-NEXT:    vmsltu.vx v28, v16, a2
 ; CHECK-NEXT:    vadd.vx v16, v8, a0
 ; CHECK-NEXT:    vsaddu.vx v16, v16, a1
-; CHECK-NEXT:    vmsltu.vx v29, v16, a2
+; CHECK-NEXT:    vmsltu.vx v16, v16, a2
 ; CHECK-NEXT:    li a0, 48
 ; CHECK-NEXT:    vadd.vx v8, v8, a0
 ; CHECK-NEXT:    vsaddu.vx v8, v8, a1
-; CHECK-NEXT:    vmsltu.vx v16, v8, a2
-<<<<<<< HEAD
-; CHECK-NEXT:    vsext.vf8 v8, v17
-; CHECK-NEXT:    vsaddu.vx v8, v8, a1
-; CHECK-NEXT:    vmsltu.vx v17, v8, a2
-; CHECK-NEXT:    vsext.vf8 v8, v18
-; CHECK-NEXT:    vsaddu.vx v8, v8, a1
-; CHECK-NEXT:    vmsltu.vx v18, v8, a2
-; CHECK-NEXT:    vsext.vf8 v8, v19
-; CHECK-NEXT:    vsaddu.vx v8, v8, a1
-; CHECK-NEXT:    vmsltu.vx v19, v8, a2
-; CHECK-NEXT:    vsext.vf8 v8, v20
-; CHECK-NEXT:    vsaddu.vx v8, v8, a1
-; CHECK-NEXT:    vmsltu.vx v20, v8, a2
-; CHECK-NEXT:    vsext.vf8 v8, v21
-; CHECK-NEXT:    vsaddu.vx v8, v8, a1
-; CHECK-NEXT:    vmsltu.vx v21, v8, a2
-; CHECK-NEXT:    vsext.vf8 v8, v22
-; CHECK-NEXT:    vsaddu.vx v8, v8, a1
 ; CHECK-NEXT:    vmsltu.vx v8, v8, a2
-=======
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 ; CHECK-NEXT:    vsetivli zero, 4, e8, mf2, tu, ma
 ; CHECK-NEXT:    vslideup.vi v25, v24, 2
 ; CHECK-NEXT:    vslideup.vi v0, v28, 2
 ; CHECK-NEXT:    vsetivli zero, 6, e8, mf2, tu, ma
 ; CHECK-NEXT:    vslideup.vi v25, v26, 4
-; CHECK-NEXT:    vslideup.vi v0, v29, 4
+; CHECK-NEXT:    vslideup.vi v0, v16, 4
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vslideup.vi v17, v19, 6
-; CHECK-NEXT:    vslideup.vi v0, v8, 6
-=======
 ; CHECK-NEXT:    vslideup.vi v25, v27, 6
-; CHECK-NEXT:    vslideup.vi v0, v16, 6
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
+; CHECK-NEXT:    vslideup.vi v0, v8, 6
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vslideup.vi v0, v25, 8
 ; CHECK-NEXT:    ret

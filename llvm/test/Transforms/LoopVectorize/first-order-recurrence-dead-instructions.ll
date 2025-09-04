@@ -49,13 +49,8 @@ define i8 @recurrence_phi_with_same_incoming_values_after_simplifications(i8 %fo
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br i1 false, label %[[EXIT:.*]], label %[[SCALAR_PH]]
 ; CHECK:       [[SCALAR_PH]]:
-<<<<<<< HEAD
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ -7, %[[MIDDLE_BLOCK]] ], [ 1, %[[ENTRY]] ]
-; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i8 [ [[VECTOR_RECUR_EXTRACT]], %[[MIDDLE_BLOCK]] ], [ [[FOR_START]], %[[ENTRY]] ]
-=======
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ -7, %[[MIDDLE_BLOCK]] ], [ 1, %[[ENTRY]] ], [ 1, %[[VECTOR_SCEVCHECK]] ]
-; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i8 [ [[FOR_START]], %[[MIDDLE_BLOCK]] ], [ [[FOR_START]], %[[ENTRY]] ], [ [[FOR_START]], %[[VECTOR_SCEVCHECK]] ]
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
+; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i8 [ [[FOR_START]], %[[MIDDLE_BLOCK]] ], [ [[FOR_START]], %[[ENTRY]] ]
 ; CHECK-NEXT:    br label %[[LOOP:.*]]
 ; CHECK:       [[LOOP]]:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i32 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[LOOP]] ]

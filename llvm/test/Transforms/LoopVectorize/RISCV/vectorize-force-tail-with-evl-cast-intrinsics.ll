@@ -12,13 +12,8 @@
 define void @vp_sext(ptr %a, ptr %b, i64 %N) {
 ; IF-EVL-LABEL: define void @vp_sext(
 ; IF-EVL-SAME: ptr [[A:%.*]], ptr [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
-<<<<<<< HEAD
-; IF-EVL-NEXT:  [[ENTRY:.*:]]
-; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
-=======
 ; IF-EVL-NEXT:  [[ENTRY:.*]]:
 ; IF-EVL-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_MEMCHECK:.*]]
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 ; IF-EVL:       [[VECTOR_MEMCHECK]]:
 ; IF-EVL-NEXT:    [[TMP5:%.*]] = shl i64 [[N]], 3
 ; IF-EVL-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP5]]
@@ -103,13 +98,8 @@ exit:
 define void @vp_zext(ptr %a, ptr %b, i64 %N) {
 ; IF-EVL-LABEL: define void @vp_zext(
 ; IF-EVL-SAME: ptr [[A:%.*]], ptr [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
-<<<<<<< HEAD
-; IF-EVL-NEXT:  [[ENTRY:.*:]]
-; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
-=======
 ; IF-EVL-NEXT:  [[ENTRY:.*]]:
 ; IF-EVL-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_MEMCHECK:.*]]
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 ; IF-EVL:       [[VECTOR_MEMCHECK]]:
 ; IF-EVL-NEXT:    [[TMP5:%.*]] = shl i64 [[N]], 3
 ; IF-EVL-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP5]]
@@ -194,13 +184,8 @@ exit:
 define void @vp_trunc(ptr %a, ptr %b, i64 %N) {
 ; IF-EVL-LABEL: define void @vp_trunc(
 ; IF-EVL-SAME: ptr [[A:%.*]], ptr [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
-<<<<<<< HEAD
-; IF-EVL-NEXT:  [[ENTRY:.*:]]
-; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
-=======
 ; IF-EVL-NEXT:  [[ENTRY:.*]]:
 ; IF-EVL-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_MEMCHECK:.*]]
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 ; IF-EVL:       [[VECTOR_MEMCHECK]]:
 ; IF-EVL-NEXT:    [[TMP5:%.*]] = shl i64 [[N]], 2
 ; IF-EVL-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP5]]
@@ -285,13 +270,8 @@ exit:
 define void @vp_fpext(ptr %a, ptr %b, i64 %N) {
 ; IF-EVL-LABEL: define void @vp_fpext(
 ; IF-EVL-SAME: ptr [[A:%.*]], ptr [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
-<<<<<<< HEAD
-; IF-EVL-NEXT:  [[ENTRY:.*:]]
-; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
-=======
 ; IF-EVL-NEXT:  [[ENTRY:.*]]:
 ; IF-EVL-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_MEMCHECK:.*]]
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 ; IF-EVL:       [[VECTOR_MEMCHECK]]:
 ; IF-EVL-NEXT:    [[TMP5:%.*]] = shl i64 [[N]], 3
 ; IF-EVL-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP5]]
@@ -376,13 +356,8 @@ exit:
 define void @vp_fptrunc(ptr %a, ptr %b, i64 %N) {
 ; IF-EVL-LABEL: define void @vp_fptrunc(
 ; IF-EVL-SAME: ptr [[A:%.*]], ptr [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
-<<<<<<< HEAD
-; IF-EVL-NEXT:  [[ENTRY:.*:]]
-; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
-=======
 ; IF-EVL-NEXT:  [[ENTRY:.*]]:
 ; IF-EVL-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_MEMCHECK:.*]]
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 ; IF-EVL:       [[VECTOR_MEMCHECK]]:
 ; IF-EVL-NEXT:    [[TMP5:%.*]] = shl i64 [[N]], 2
 ; IF-EVL-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP5]]
@@ -470,11 +445,7 @@ define void @vp_sitofp(ptr %a, ptr %b, i64 %N) {
 ; IF-EVL-NEXT:  [[ENTRY:.*:]]
 ; IF-EVL-NEXT:    [[B2:%.*]] = ptrtoint ptr [[B]] to i64
 ; IF-EVL-NEXT:    [[A1:%.*]] = ptrtoint ptr [[A]] to i64
-<<<<<<< HEAD
-; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
-=======
 ; IF-EVL-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_MEMCHECK:.*]]
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 ; IF-EVL:       [[VECTOR_MEMCHECK]]:
 ; IF-EVL-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-NEXT:    [[TMP6:%.*]] = mul nuw i64 [[TMP5]], 2
@@ -560,11 +531,7 @@ define void @vp_uitofp(ptr %a, ptr %b, i64 %N) {
 ; IF-EVL-NEXT:  [[ENTRY:.*:]]
 ; IF-EVL-NEXT:    [[B2:%.*]] = ptrtoint ptr [[B]] to i64
 ; IF-EVL-NEXT:    [[A1:%.*]] = ptrtoint ptr [[A]] to i64
-<<<<<<< HEAD
-; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
-=======
 ; IF-EVL-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_MEMCHECK:.*]]
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 ; IF-EVL:       [[VECTOR_MEMCHECK]]:
 ; IF-EVL-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-NEXT:    [[TMP6:%.*]] = mul nuw i64 [[TMP5]], 2
@@ -650,11 +617,7 @@ define void @vp_fptosi(ptr %a, ptr %b, i64 %N) {
 ; IF-EVL-NEXT:  [[ENTRY:.*:]]
 ; IF-EVL-NEXT:    [[B2:%.*]] = ptrtoint ptr [[B]] to i64
 ; IF-EVL-NEXT:    [[A1:%.*]] = ptrtoint ptr [[A]] to i64
-<<<<<<< HEAD
-; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
-=======
 ; IF-EVL-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_MEMCHECK:.*]]
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 ; IF-EVL:       [[VECTOR_MEMCHECK]]:
 ; IF-EVL-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-NEXT:    [[TMP6:%.*]] = mul nuw i64 [[TMP5]], 2
@@ -740,11 +703,7 @@ define void @vp_fptoui(ptr %a, ptr %b, i64 %N) {
 ; IF-EVL-NEXT:  [[ENTRY:.*:]]
 ; IF-EVL-NEXT:    [[B2:%.*]] = ptrtoint ptr [[B]] to i64
 ; IF-EVL-NEXT:    [[A1:%.*]] = ptrtoint ptr [[A]] to i64
-<<<<<<< HEAD
-; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
-=======
 ; IF-EVL-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_MEMCHECK:.*]]
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 ; IF-EVL:       [[VECTOR_MEMCHECK]]:
 ; IF-EVL-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-NEXT:    [[TMP6:%.*]] = mul nuw i64 [[TMP5]], 2
@@ -830,11 +789,7 @@ define void @vp_inttoptr(ptr %a, ptr %b, i64 %N) {
 ; IF-EVL-NEXT:  [[ENTRY:.*:]]
 ; IF-EVL-NEXT:    [[B2:%.*]] = ptrtoint ptr [[B]] to i64
 ; IF-EVL-NEXT:    [[A1:%.*]] = ptrtoint ptr [[A]] to i64
-<<<<<<< HEAD
-; IF-EVL-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
-=======
 ; IF-EVL-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_MEMCHECK:.*]]
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 ; IF-EVL:       [[VECTOR_MEMCHECK]]:
 ; IF-EVL-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
 ; IF-EVL-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP5]], 8

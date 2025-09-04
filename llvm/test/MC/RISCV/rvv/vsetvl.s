@@ -255,28 +255,6 @@ vsetivli a2, 31, e32, m1, ta, ma
 # CHECK-ERROR: instruction requires the following: 'V' (Vector Extension for Application Processors), 'Zve32x' (Vector Extensions for Embedded Processors){{$}}
 # CHECK-UNKNOWN: cd0ff657 <unknown>
 
-<<<<<<< HEAD
-# SIFIVE checking parsing without policy operands.
-vsetvli a2, a0, e32, m1
-# CHECK-INST: vsetvli a2, a0, e32, m1
-# CHECK-ENCODING: [0x57,0x76,0x05,0x01]
-# CHECK-ERROR: instruction requires the following: 'V' (Vector Extension for Application Processors), 'Zve32x' (Vector Extensions for Embedded Processors)
-# CHECK-UNKNOWN: 01057657 <unknown>
-
-#if SIFIVE_CUSTOMIZATION
-vsetvli a2, a0, e16alt, m1
-# CHECK-INST: vsetvli a2, a0, e16alt, m1, tu, mu
-# CHECK-ENCODING: [0x57,0x76,0x85,0x10]
-# CHECK-ERROR: instruction requires the following: 'V' (Vector Extension for Application Processors), 'Zve32x' (Vector Extensions for Embedded Processors)
-# CHECK-UNKNOWN: 10857657 <unknown>
-
-vsetvli a2, a0, e8alt, m1
-# CHECK-INST: vsetvli a2, a0, e8alt, m1, tu, mu
-# CHECK-ENCODING: [0x57,0x76,0x05,0x10]
-# CHECK-ERROR: instruction requires the following: 'V' (Vector Extension for Application Processors), 'Zve32x' (Vector Extensions for Embedded Processors)
-# CHECK-UNKNOWN: 10057657 <unknown>
-#endif // SIFIVE_CUSTOMIZATION
-=======
 vsetivli a2, 1, 0
 # CHECK-INST: vsetivli a2, 1, e8, m1, tu, mu
 # CHECK-ENCODING: [0x57,0xf6,0x00,0xc0]
@@ -366,4 +344,3 @@ vsetivli a2, 1, e32, m2
 # CHECK-ENCODING: [0x57,0xf6,0x10,0xc1]
 # CHECK-ERROR: instruction requires the following: 'V' (Vector Extension for Application Processors), 'Zve32x' (Vector Extensions for Embedded Processors){{$}}
 # CHECK-UNKNOWN: c110f657 <unknown>
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326

@@ -1253,17 +1253,9 @@ define i32 @iv_ext_used_outside( ptr %dst) {
 ; VEC-NEXT:    [[TMP1:%.*]] = getelementptr inbounds nuw i32, ptr [[DST]], i16 [[OFFSET_IDX]]
 ; VEC-NEXT:    [[TMP2:%.*]] = getelementptr inbounds nuw i32, ptr [[TMP1]], i32 0
 ; VEC-NEXT:    store <2 x i32> zeroinitializer, ptr [[TMP2]], align 4
-<<<<<<< HEAD
-; VEC-NEXT:    [[TMP7:%.*]] = add nuw nsw <2 x i16> [[VEC_IND]], splat (i16 1)
-; VEC-NEXT:    [[TMP3:%.*]] = extractelement <2 x i16> [[TMP7]], i32 0
-; VEC-NEXT:    [[TMP4:%.*]] = zext nneg i16 [[TMP3]] to i32
-; VEC-NEXT:    [[TMP5:%.*]] = extractelement <2 x i16> [[TMP7]], i32 1
-; VEC-NEXT:    [[TMP8:%.*]] = zext nneg i16 [[TMP5]] to i32
-=======
 ; VEC-NEXT:    [[TMP5:%.*]] = add nuw nsw <2 x i16> [[VEC_IND]], splat (i16 1)
 ; VEC-NEXT:    [[TMP8:%.*]] = extractelement <2 x i16> [[TMP5]], i32 1
 ; VEC-NEXT:    [[TMP7:%.*]] = zext nneg i16 [[TMP8]] to i32
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 ; VEC-NEXT:    [[INDEX_NEXT]] = add nuw i32 [[INDEX]], 2
 ; VEC-NEXT:    [[VEC_IND_NEXT]] = add <2 x i16> [[VEC_IND]], splat (i16 2)
 ; VEC-NEXT:    [[TMP6:%.*]] = icmp eq i32 [[INDEX_NEXT]], 128
@@ -1284,7 +1276,7 @@ define i32 @iv_ext_used_outside( ptr %dst) {
 ; VEC-NEXT:    [[EC:%.*]] = icmp samesign ult i16 [[IV_1]], 128
 ; VEC-NEXT:    br i1 [[EC]], label %[[LOOP]], label %[[EXIT]], {{!llvm.loop ![0-9]+}}
 ; VEC:       [[EXIT]]:
-; VEC-NEXT:    [[IV_1_EXT_LCSSA:%.*]] = phi i32 [ [[IV_1_EXT]], %[[LOOP]] ], [ [[TMP8]], %[[MIDDLE_BLOCK]] ]
+; VEC-NEXT:    [[IV_1_EXT_LCSSA:%.*]] = phi i32 [ [[IV_1_EXT]], %[[LOOP]] ], [ [[TMP7]], %[[MIDDLE_BLOCK]] ]
 ; VEC-NEXT:    ret i32 [[IV_1_EXT_LCSSA]]
 ;
 ; INTERLEAVE-LABEL: define i32 @iv_ext_used_outside(
@@ -1356,15 +1348,8 @@ define i64 @test_iv_increment_incremented(ptr %dst) {
 ; VEC-NEXT:    [[TMP1:%.*]] = getelementptr i16, ptr [[TMP0]], i32 0
 ; VEC-NEXT:    [[TMP2:%.*]] = getelementptr i16, ptr [[TMP1]], i32 -1
 ; VEC-NEXT:    store <2 x i16> splat (i16 1), ptr [[TMP2]], align 2
-<<<<<<< HEAD
-; VEC-NEXT:    [[TMP3:%.*]] = add i64 2, -1
-; VEC-NEXT:    [[TMP4:%.*]] = add i64 1, -1
-; VEC-NEXT:    [[TMP5:%.*]] = add i64 [[TMP3]], 1
-; VEC-NEXT:    [[TMP6:%.*]] = add i64 [[TMP4]], 1
-=======
 ; VEC-NEXT:    [[TMP5:%.*]] = add i64 1, -1
 ; VEC-NEXT:    [[TMP6:%.*]] = add i64 [[TMP5]], 1
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 ; VEC-NEXT:    br label %[[MIDDLE_BLOCK:.*]]
 ; VEC:       [[MIDDLE_BLOCK]]:
 ; VEC-NEXT:    br i1 true, label %[[EXIT:.*]], label %[[SCALAR_PH]]
