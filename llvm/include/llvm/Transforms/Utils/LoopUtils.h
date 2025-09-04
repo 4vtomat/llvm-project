@@ -468,8 +468,8 @@ Value *createAnyOfReduction(IRBuilderBase &B, Value *Src, Value *InitVal,
 /// Create a reduction of the given vector \p Src for a reduction of the
 /// kind RecurKind::FindLastIV.
 LLVM_ABI Value *createFindLastIVReduction(IRBuilderBase &B, Value *Src,
-<<<<<<< HEAD
-                                          Value *Start, Value *Sentinel);
+                                          RecurKind RdxKind, Value *Start,
+                                          Value *Sentinel);
 #if SIFIVE_CUSTOMIZATION
 /// Allow \p Mask when folding by \p EVL. The mask is all-true if \p Mask is
 /// nullptr.
@@ -477,10 +477,6 @@ Value *createFindLastIVReduction(IRBuilderBase &B, Value *Src, Value *Start,
                                  Value *Sentinel, Value *EVL,
                                  Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-                                          RecurKind RdxKind, Value *Start,
-                                          Value *Sentinel);
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 
 /// Create an ordered reduction intrinsic using the given recurrence
 /// kind \p RdxKind.
