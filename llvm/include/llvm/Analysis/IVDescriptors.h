@@ -57,17 +57,6 @@ enum class RecurKind {
   FMulAdd,  ///< Sum of float products with llvm.fmuladd(a * b + sum).
   AnyOf,    ///< AnyOf reduction with select(cmp(),x,y) where one of (x,y) is
             ///< loop invariant, and both x and y are integer type.
-<<<<<<< HEAD
-  FindLastIV, ///< FindLast reduction with select(cmp(),x,y) where one of
-              ///< (x,y) is increasing loop induction, and both x and y are
-              ///< integer type.
-#if SIFIVE_CUSTOMIZATION
-  MinMaxFirstIdx, ///< Integer Min/Max with first index
-  MinMaxLastIdx,   ///< Integer Min/Max with last index
-  // TODO: Support floating-point Min/Max with index by merging IFindLastIV and
-  // FFindLastIV.
-#endif // SIFIVE_CUSTOMIZATION
-=======
   FindFirstIVSMin, /// FindFirst reduction with select(icmp(),x,y) where one of
                    ///< (x,y) is a decreasing loop induction, and both x and y
                    ///< are integer type, producing a SMin reduction.
@@ -77,7 +66,12 @@ enum class RecurKind {
   FindLastIVUMax, ///< FindLast reduction with select(cmp(),x,y) where one of
                   ///< (x,y) is increasing loop induction, and both x and y
                   ///< are integer type, producing a UMax reduction.
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
+#if SIFIVE_CUSTOMIZATION
+  MinMaxFirstIdx, ///< Integer Min/Max with first index
+  MinMaxLastIdx,   ///< Integer Min/Max with last index
+  // TODO: Support floating-point Min/Max with index by merging IFindLastIV and
+  // FFindLastIV.
+#endif // SIFIVE_CUSTOMIZATION
   // clang-format on
   // TODO: Any_of and FindLast reduction need not be restricted to integer type
   // only.
@@ -382,16 +376,10 @@ public:
   /// Returns the sentinel value for FindFirstIV & FindLastIV recurrences to
   /// replace the start value.
   Value *getSentinelValue() const {
-<<<<<<< HEAD
     assert(isFindLastIVRecurrenceKind(Kind) && "Unexpected recurrence kind");
 #if SIFIVE_CUSTOMIZATION
     return SentinelValue;
 #else
-    Type *Ty = StartValue->getType();
-    return ConstantInt::get(Ty,
-                            APInt::getSignedMinValue(Ty->getIntegerBitWidth()));
-#endif // SIFIVE_CUSTOMIZATION
-=======
     Type *Ty = StartValue->getType();
     unsigned BW = Ty->getIntegerBitWidth();
     if (isFindLastIVRecurrenceKind(Kind)) {
@@ -402,7 +390,7 @@ public:
     return ConstantInt::get(Ty, isSignedRecurrenceKind(Kind)
                                     ? APInt::getSignedMaxValue(BW)
                                     : APInt::getMaxValue(BW));
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   /// Returns a reference to the instructions used for type-promoting the
