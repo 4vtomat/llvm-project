@@ -5246,7 +5246,6 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
                                     CmpInst::BAD_ICMP_PREDICATE, CostKind);
     return O;
   }
-  case RecurKind::FindFirstIVSMin:
   case RecurKind::FindLastIVSMax:
   case RecurKind::FindLastIVUMax: {
     // Emit reduce.smax to get the last induction value

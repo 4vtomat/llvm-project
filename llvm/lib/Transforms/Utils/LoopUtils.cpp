@@ -956,7 +956,6 @@ constexpr Intrinsic::ID llvm::getReductionIntrinsicID(RecurKind RK) {
   case RecurKind::FMul:
     return Intrinsic::vector_reduce_fmul;
 #if SIFIVE_CUSTOMIZATION
-  case RecurKind::FindFirstIVSMin:
   case RecurKind::FindLastIVSMax:
   case RecurKind::FindLastIVUMax:
 #endif // SIFIVE_CUSTOMIZATION
