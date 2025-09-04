@@ -93,30 +93,15 @@ void Function::validateBlockNumbers() const {
 }
 
 void Function::convertToNewDbgValues() {
-  IsNewDbgInfoFormat = true;
   for (auto &BB : *this) {
     BB.convertToNewDbgValues();
   }
 }
 
 void Function::convertFromNewDbgValues() {
-  IsNewDbgInfoFormat = false;
   for (auto &BB : *this) {
     BB.convertFromNewDbgValues();
   }
-}
-
-void Function::setIsNewDbgInfoFormat(bool NewFlag) {
-  if (NewFlag && !IsNewDbgInfoFormat)
-    convertToNewDbgValues();
-  else if (!NewFlag && IsNewDbgInfoFormat)
-    convertFromNewDbgValues();
-}
-void Function::setNewDbgInfoFormatFlag(bool NewFlag) {
-  for (auto &BB : *this) {
-    BB.setNewDbgInfoFormatFlag(NewFlag);
-  }
-  IsNewDbgInfoFormat = NewFlag;
 }
 
 //===----------------------------------------------------------------------===//
@@ -496,7 +481,7 @@ Function::Function(FunctionType *Ty, LinkageTypes Linkage, unsigned AddrSpace,
                    const Twine &name, Module *ParentModule)
     : GlobalObject(Ty, Value::FunctionVal, AllocMarker, Linkage, name,
                    computeAddrSpace(AddrSpace, ParentModule)),
-      NumArgs(Ty->getNumParams()), IsNewDbgInfoFormat(true) {
+      NumArgs(Ty->getNumParams()) {
   assert(FunctionType::isValidReturnType(getReturnType()) &&
          "invalid return type");
   setGlobalObjectSubClassData(0);
@@ -511,7 +496,6 @@ Function::Function(FunctionType *Ty, LinkageTypes Linkage, unsigned AddrSpace,
 
   if (ParentModule) {
     ParentModule->getFunctionList().push_back(this);
-    IsNewDbgInfoFormat = ParentModule->IsNewDbgInfoFormat;
   }
 
   HasLLVMReservedName = getName().starts_with("llvm.");
@@ -1175,6 +1159,18 @@ DenseSet<GlobalValue::GUID> Function::getImportGUIDs() const {
 
 bool Function::nullPointerIsDefined() const {
   return hasFnAttribute(Attribute::NullPointerIsValid);
+}
+
+unsigned Function::getVScaleValue() const {
+  Attribute Attr = getFnAttribute(Attribute::VScaleRange);
+  if (!Attr.isValid())
+    return 0;
+
+  unsigned VScale = Attr.getVScaleRangeMin();
+  if (VScale && VScale == Attr.getVScaleRangeMax())
+    return VScale;
+
+  return 0;
 }
 
 bool llvm::NullPointerIsDefined(const Function *F, unsigned AS) {

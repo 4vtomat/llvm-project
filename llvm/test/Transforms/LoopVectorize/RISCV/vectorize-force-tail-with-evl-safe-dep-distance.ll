@@ -17,7 +17,18 @@ define void @test(ptr %p) {
 ; IF-EVL-NEXT:  entry:
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
+<<<<<<< HEAD
 ; IF-EVL-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 200, i32 1, i1 true)
+=======
+; IF-EVL-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; IF-EVL-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 2
+; IF-EVL-NEXT:    [[TMP2:%.*]] = sub i64 [[TMP1]], 1
+; IF-EVL-NEXT:    [[N_RND_UP:%.*]] = add i64 200, [[TMP2]]
+; IF-EVL-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N_RND_UP]], [[TMP1]]
+; IF-EVL-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
+; IF-EVL-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
+; IF-EVL-NEXT:    [[TMP4:%.*]] = mul nuw i64 [[TMP3]], 2
+>>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -323,7 +334,18 @@ define void @trivial_due_max_vscale(ptr %p) {
 ; IF-EVL-NEXT:  entry:
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
+<<<<<<< HEAD
 ; IF-EVL-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 200, i32 1, i1 true)
+=======
+; IF-EVL-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
+; IF-EVL-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 2
+; IF-EVL-NEXT:    [[TMP2:%.*]] = sub i64 [[TMP1]], 1
+; IF-EVL-NEXT:    [[N_RND_UP:%.*]] = add i64 200, [[TMP2]]
+; IF-EVL-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N_RND_UP]], [[TMP1]]
+; IF-EVL-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
+; IF-EVL-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
+; IF-EVL-NEXT:    [[TMP4:%.*]] = mul nuw i64 [[TMP3]], 2
+>>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]

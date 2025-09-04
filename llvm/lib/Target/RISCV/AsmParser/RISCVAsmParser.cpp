@@ -9,7 +9,7 @@
 #include "MCTargetDesc/RISCVAsmBackend.h"
 #include "MCTargetDesc/RISCVBaseInfo.h"
 #include "MCTargetDesc/RISCVInstPrinter.h"
-#include "MCTargetDesc/RISCVMCExpr.h"
+#include "MCTargetDesc/RISCVMCAsmInfo.h"
 #include "MCTargetDesc/RISCVMCTargetDesc.h"
 #include "MCTargetDesc/RISCVMatInt.h"
 #include "MCTargetDesc/RISCVTargetStreamer.h"
@@ -36,6 +36,7 @@
 #include "llvm/MC/TargetRegistry.h"
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/CommandLine.h"
+#include "llvm/Support/Compiler.h"
 #include "llvm/Support/MathExtras.h"
 #include "llvm/Support/RISCVAttributes.h"
 #include "llvm/TargetParser/RISCVISAInfo.h"
@@ -152,7 +153,7 @@ class RISCVAsmParser : public MCTargetAsmParser {
   // Helper to emit a combination of AUIPC and SecondOpcode. Used to implement
   // helpers such as emitLoadLocalAddress and emitLoadAddress.
   void emitAuipcInstPair(MCRegister DestReg, MCRegister TmpReg,
-                         const MCExpr *Symbol, RISCVMCExpr::Specifier VKHi,
+                         const MCExpr *Symbol, RISCV::Specifier VKHi,
                          unsigned SecondOpcode, SMLoc IDLoc, MCStreamer &Out);
 
   // Helper to emit pseudo instruction "lla" used in PC-rel addressing.
@@ -326,8 +327,7 @@ public:
 #undef GET_OPERAND_DIAGNOSTIC_TYPES
   };
 
-  static bool classifySymbolRef(const MCExpr *Expr,
-                                RISCVMCExpr::Specifier &Kind);
+  static bool classifySymbolRef(const MCExpr *Expr, RISCV::Specifier &Kind);
   static bool isSymbolDiff(const MCExpr *Expr);
 
   RISCVAsmParser(const MCSubtargetInfo &STI, MCAsmParser &Parser,
@@ -575,9 +575,9 @@ public:
     if (evaluateConstantImm(getImm(), Imm))
       return isShiftedInt<N - 1, 1>(fixImmediateForRV32(Imm, isRV64Imm()));
 
-    RISCVMCExpr::Specifier VK = RISCVMCExpr::VK_None;
+    RISCV::Specifier VK = RISCV::S_None;
     return RISCVAsmParser::classifySymbolRef(getImm(), VK) &&
-           VK == RISCVMCExpr::VK_None;
+           VK == RISCV::S_None;
   }
 
   // True if operand is a symbol with no modifiers, or a constant with no
@@ -590,9 +590,9 @@ public:
     if (evaluateConstantImm(getImm(), Imm))
       return isInt<N>(fixImmediateForRV32(Imm, isRV64Imm()));
 
-    RISCVMCExpr::Specifier VK = RISCVMCExpr::VK_None;
+    RISCV::Specifier VK = RISCV::S_None;
     return RISCVAsmParser::classifySymbolRef(getImm(), VK) &&
-           VK == RISCVMCExpr::VK_None;
+           VK == RISCV::S_None;
   }
 
   // Predicate methods for AsmOperands defined in RISCVInstrInfo.td
@@ -603,9 +603,9 @@ public:
     if (!isImm() || evaluateConstantImm(getImm(), Imm))
       return false;
 
-    RISCVMCExpr::Specifier VK = RISCVMCExpr::VK_None;
+    RISCV::Specifier VK = RISCV::S_None;
     return RISCVAsmParser::classifySymbolRef(getImm(), VK) &&
-           VK == RISCVMCExpr::VK_None;
+           VK == RISCV::S_None;
   }
 
   bool isCallSymbol() const {
@@ -614,7 +614,7 @@ public:
     if (!isImm() || evaluateConstantImm(getImm(), Imm))
       return false;
 
-    RISCVMCExpr::Specifier VK = RISCVMCExpr::VK_None;
+    RISCV::Specifier VK = RISCV::S_None;
     return RISCVAsmParser::classifySymbolRef(getImm(), VK) &&
            VK == ELF::R_RISCV_CALL_PLT;
   }
@@ -625,7 +625,7 @@ public:
     if (!isImm() || evaluateConstantImm(getImm(), Imm))
       return false;
 
-    RISCVMCExpr::Specifier VK = RISCVMCExpr::VK_None;
+    RISCV::Specifier VK = RISCV::S_None;
     return RISCVAsmParser::classifySymbolRef(getImm(), VK) &&
            VK == ELF::R_RISCV_CALL_PLT;
   }
@@ -637,7 +637,7 @@ public:
     if (!isImm() || evaluateConstantImm(getImm(), Imm))
       return false;
 
-    RISCVMCExpr::Specifier VK = RISCVMCExpr::VK_None;
+    RISCV::Specifier VK = RISCV::S_None;
     return RISCVAsmParser::classifySymbolRef(getImm(), VK) &&
            (VK == ELF::R_RISCV_TPREL_ADD || VK == RISCVMCExpr::VK_GPREL_ADD ||
             VK == RISCVMCExpr::VK_GOT_GPREL_ADD ||
@@ -652,7 +652,7 @@ public:
     if (!isImm() || evaluateConstantImm(getImm(), Imm))
       return false;
 
-    RISCVMCExpr::Specifier VK = RISCVMCExpr::VK_None;
+    RISCV::Specifier VK = RISCV::S_None;
     return RISCVAsmParser::classifySymbolRef(getImm(), VK) &&
            VK == ELF::R_RISCV_TLSDESC_CALL;
   }
@@ -910,8 +910,9 @@ public:
     if (evaluateConstantImm(getImm(), Imm))
       return isInt<12>(fixImmediateForRV32(Imm, isRV64Imm()));
 
-    RISCVMCExpr::Specifier VK = RISCVMCExpr::VK_None;
+    RISCV::Specifier VK = RISCV::S_None;
     return RISCVAsmParser::classifySymbolRef(getImm(), VK) &&
+<<<<<<< HEAD
            (VK == RISCVMCExpr::VK_LO || VK == RISCVMCExpr::VK_PCREL_LO ||
             VK == RISCVMCExpr::VK_TPREL_LO ||
             VK == ELF::R_RISCV_TLSDESC_LOAD_LO12 ||
@@ -923,6 +924,10 @@ public:
             VK == RISCVMCExpr::VK_TLS_GD_GPREL_LO);
 #else
             VK == ELF::R_RISCV_TLSDESC_LOAD_LO12 ||
+=======
+           (VK == RISCV::S_LO || VK == RISCV::S_PCREL_LO ||
+            VK == RISCV::S_TPREL_LO || VK == ELF::R_RISCV_TLSDESC_LOAD_LO12 ||
+>>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
             VK == ELF::R_RISCV_TLSDESC_ADD_LO12);
 #endif // SIFIVE_CUSTOMIZATION
   }
@@ -952,9 +957,9 @@ public:
     if (evaluateConstantImm(getImm(), Imm))
       return isInt<20>(fixImmediateForRV32(Imm, isRV64Imm()));
 
-    RISCVMCExpr::Specifier VK = RISCVMCExpr::VK_None;
+    RISCV::Specifier VK = RISCV::S_None;
     return RISCVAsmParser::classifySymbolRef(getImm(), VK) &&
-           VK == RISCVMCExpr::VK_QC_ABS20;
+           VK == RISCV::S_QC_ABS20;
   }
 
   bool isUImm20LUI() const {
@@ -965,7 +970,7 @@ public:
     if (evaluateConstantImm(getImm(), Imm))
       return isUInt<20>(Imm);
 
-    RISCVMCExpr::Specifier VK = RISCVMCExpr::VK_None;
+    RISCV::Specifier VK = RISCV::S_None;
     return RISCVAsmParser::classifySymbolRef(getImm(), VK) &&
 #ifdef SIFIVE_CUSTOMIZATION
            (VK == ELF::R_RISCV_HI20 || VK == ELF::R_RISCV_TPREL_HI20 ||
@@ -986,7 +991,7 @@ public:
     if (evaluateConstantImm(getImm(), Imm))
       return isUInt<20>(Imm);
 
-    RISCVMCExpr::Specifier VK = RISCVMCExpr::VK_None;
+    RISCV::Specifier VK = RISCV::S_None;
     return RISCVAsmParser::classifySymbolRef(getImm(), VK) &&
            (VK == ELF::R_RISCV_PCREL_HI20 || VK == ELF::R_RISCV_GOT_HI20 ||
             VK == ELF::R_RISCV_TLS_GOT_HI20 || VK == ELF::R_RISCV_TLS_GD_HI20 ||
@@ -2155,7 +2160,7 @@ bool RISCVAsmParser::parseExprWithSpecifier(const MCExpr *&Res, SMLoc &E) {
   if (getLexer().getKind() != AsmToken::Identifier)
     return Error(getLoc(), "expected '%' relocation specifier");
   StringRef Identifier = getParser().getTok().getIdentifier();
-  auto Spec = RISCVMCExpr::getSpecifierForName(Identifier);
+  auto Spec = RISCV::parseSpecifierName(Identifier);
   if (!Spec)
     return Error(getLoc(), "invalid relocation specifier");
 
@@ -2188,7 +2193,7 @@ bool RISCVAsmParser::parseExprWithSpecifier(const MCExpr *&Res, SMLoc &E) {
   if (getParser().parseParenExpression(SubExpr, E))
     return true;
 
-  Res = RISCVMCExpr::create(SubExpr, *Spec, getContext());
+  Res = MCSpecifierExpr::create(SubExpr, Spec, getContext());
   return false;
 }
 
@@ -2272,11 +2277,11 @@ ParseStatus RISCVAsmParser::parseCallSymbol(OperandVector &Operands) {
   }
 
   SMLoc E = SMLoc::getFromPointer(S.getPointer() + Identifier.size());
-  RISCVMCExpr::Specifier Kind = ELF::R_RISCV_CALL_PLT;
+  RISCV::Specifier Kind = ELF::R_RISCV_CALL_PLT;
 
   MCSymbol *Sym = getContext().getOrCreateSymbol(Identifier);
   Res = MCSymbolRefExpr::create(Sym, getContext());
-  Res = RISCVMCExpr::create(Res, Kind, getContext());
+  Res = MCSpecifierExpr::create(Res, Kind, getContext());
   Operands.push_back(RISCVOperand::createImm(Res, S, E, isRV64()));
   return ParseStatus::Success;
 }
@@ -2292,7 +2297,7 @@ ParseStatus RISCVAsmParser::parsePseudoJumpSymbol(OperandVector &Operands) {
   if (Res->getKind() != MCExpr::ExprKind::SymbolRef)
     return Error(S, "operand must be a valid jump target");
 
-  Res = RISCVMCExpr::create(Res, ELF::R_RISCV_CALL_PLT, getContext());
+  Res = MCSpecifierExpr::create(Res, ELF::R_RISCV_CALL_PLT, getContext());
   Operands.push_back(RISCVOperand::createImm(Res, S, E, isRV64()));
   return ParseStatus::Success;
 }
@@ -3032,24 +3037,23 @@ bool RISCVAsmParser::parseInstruction(ParseInstructionInfo &Info,
 }
 
 bool RISCVAsmParser::classifySymbolRef(const MCExpr *Expr,
-                                       RISCVMCExpr::Specifier &Kind) {
-  Kind = RISCVMCExpr::VK_None;
-
-  if (const RISCVMCExpr *RE = dyn_cast<RISCVMCExpr>(Expr)) {
+                                       RISCV::Specifier &Kind) {
+  Kind = RISCV::S_None;
+  if (const auto *RE = dyn_cast<MCSpecifierExpr>(Expr)) {
     Kind = RE->getSpecifier();
     Expr = RE->getSubExpr();
   }
 
   MCValue Res;
   if (Expr->evaluateAsRelocatable(Res, nullptr))
-    return Res.getSpecifier() == RISCVMCExpr::VK_None;
+    return Res.getSpecifier() == RISCV::S_None;
   return false;
 }
 
 bool RISCVAsmParser::isSymbolDiff(const MCExpr *Expr) {
   MCValue Res;
   if (Expr->evaluateAsRelocatable(Res, nullptr)) {
-    return Res.getSpecifier() == RISCVMCExpr::VK_None && Res.getAddSym() &&
+    return Res.getSpecifier() == RISCV::S_None && Res.getAddSym() &&
            Res.getSubSym();
   }
   return false;
@@ -3548,7 +3552,7 @@ void RISCVAsmParser::emitLoadImm(MCRegister DestReg, int64_t Value,
 
 void RISCVAsmParser::emitAuipcInstPair(MCRegister DestReg, MCRegister TmpReg,
                                        const MCExpr *Symbol,
-                                       RISCVMCExpr::Specifier VKHi,
+                                       RISCV::Specifier VKHi,
                                        unsigned SecondOpcode, SMLoc IDLoc,
                                        MCStreamer &Out) {
   // A pair of instructions for PC-relative addressing; expands to
@@ -3559,12 +3563,12 @@ void RISCVAsmParser::emitAuipcInstPair(MCRegister DestReg, MCRegister TmpReg,
   MCSymbol *TmpLabel = Ctx.createNamedTempSymbol("pcrel_hi");
   Out.emitLabel(TmpLabel);
 
-  const RISCVMCExpr *SymbolHi = RISCVMCExpr::create(Symbol, VKHi, Ctx);
+  const auto *SymbolHi = MCSpecifierExpr::create(Symbol, VKHi, Ctx);
   emitToStreamer(Out,
                  MCInstBuilder(RISCV::AUIPC).addReg(TmpReg).addExpr(SymbolHi));
 
-  const MCExpr *RefToLinkTmpLabel = RISCVMCExpr::create(
-      MCSymbolRefExpr::create(TmpLabel, Ctx), RISCVMCExpr::VK_PCREL_LO, Ctx);
+  const MCExpr *RefToLinkTmpLabel = MCSpecifierExpr::create(
+      MCSymbolRefExpr::create(TmpLabel, Ctx), RISCV::S_PCREL_LO, Ctx);
 
   emitToStreamer(Out, MCInstBuilder(SecondOpcode)
                           .addReg(DestReg)
@@ -4403,7 +4407,8 @@ bool RISCVAsmParser::processInstruction(MCInst &Inst, SMLoc IDLoc,
   return false;
 }
 
-extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVAsmParser() {
+extern "C" LLVM_ABI LLVM_EXTERNAL_VISIBILITY void
+LLVMInitializeRISCVAsmParser() {
   RegisterMCAsmParser<RISCVAsmParser> X(getTheRISCV32Target());
   RegisterMCAsmParser<RISCVAsmParser> Y(getTheRISCV64Target());
 }

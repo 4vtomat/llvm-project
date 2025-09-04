@@ -58,6 +58,7 @@ bool hasFastVectorUnalignedAccess(StringRef CPU) {
   return Info && Info->FastVectorUnalignedAccess;
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 bool hasSlowVectorFP64(StringRef CPU) {
   const CPUInfo *Info = getCPUInfoByName(CPU);
@@ -69,12 +70,25 @@ bool hasValidCPUModel(StringRef CPU) {
   const CPUModel Model = getCPUModel(CPU);
   return Model.MVendorID != 0 && Model.MArchID != 0 && Model.MImpID != 0;
 }
+=======
+bool hasValidCPUModel(StringRef CPU) { return getCPUModel(CPU).isValid(); }
+>>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 
 CPUModel getCPUModel(StringRef CPU) {
   const CPUInfo *Info = getCPUInfoByName(CPU);
   if (!Info)
     return {0, 0, 0};
   return Info->Model;
+}
+
+StringRef getCPUNameFromCPUModel(const CPUModel &Model) {
+  if (!Model.isValid())
+    return "";
+
+  for (auto &C : RISCVCPUInfo)
+    if (C.Model == Model)
+      return C.Name;
+  return "";
 }
 
 bool parseCPU(StringRef CPU, bool IsRV64) {

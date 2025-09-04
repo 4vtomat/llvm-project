@@ -189,6 +189,12 @@ getVectorIntrinsicIDForCall(const CallInst *CI, const TargetLibraryInfo *TLI,
 getVectorIntrinsicIDForCall(const CallInst *CI, const TargetLibraryInfo *TLI);
 #endif // SIFIVE_CUSTOMIZATION
 
+/// Returns the corresponding llvm.vector.interleaveN intrinsic for factor N.
+LLVM_ABI Intrinsic::ID getInterleaveIntrinsicID(unsigned Factor);
+
+/// Returns the corresponding llvm.vector.deinterleaveN intrinsic for factor N.
+LLVM_ABI Intrinsic::ID getDeinterleaveIntrinsicID(unsigned Factor);
+
 /// Given a vector and an element number, see if the scalar value is
 /// already around as a register, for example if it were inserted then extracted
 /// from the vector.

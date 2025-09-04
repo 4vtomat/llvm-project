@@ -105,6 +105,7 @@ public:
 #endif // SIFIVE_CUSTOMIZATION
     VentanaVeyron,
     MIPSP8700,
+    Andes45,
   };
   enum RISCVVRGatherCostModelEnum : uint8_t {
     Quadratic,

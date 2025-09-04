@@ -37,6 +37,7 @@
 #include "llvm/InitializePasses.h"
 #include "llvm/MC/TargetRegistry.h"
 #include "llvm/Passes/PassBuilder.h"
+#include "llvm/Support/Compiler.h"
 #include "llvm/Target/TargetOptions.h"
 #include "llvm/Transforms/IPO.h"
 #if SIFIVE_CUSTOMIZATION
@@ -142,7 +143,7 @@ static cl::opt<bool>
                            cl::desc("Enable Machine Pipeliner for RISC-V"),
                            cl::init(false), cl::Hidden);
 
-extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
+extern "C" LLVM_ABI LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   RegisterTargetMachine<RISCVTargetMachine> X(getTheRISCV32Target());
   RegisterTargetMachine<RISCVTargetMachine> Y(getTheRISCV64Target());
   auto *PR = PassRegistry::getPassRegistry();
@@ -646,6 +647,10 @@ void RISCVPassConfig::addPreEmitPass() {
     addPass(createMachineCopyPropagationPass(true));
   if (TM->getOptLevel() >= CodeGenOptLevel::Default)
     addPass(createRISCVLateBranchOptPass());
+  // The IndirectBranchTrackingPass inserts lpad and could have changed the
+  // basic block alignment. It must be done before Branch Relaxation to
+  // prevent the adjusted offset exceeding the branch range.
+  addPass(createRISCVIndirectBranchTrackingPass());
   addPass(&BranchRelaxationPassID);
   addPass(createRISCVMakeCompressibleOptPass());
 }
@@ -657,7 +662,6 @@ void RISCVPassConfig::addPreEmitPass2() {
     // ensuring return instruction is detected correctly.
     addPass(createRISCVPushPopOptimizationPass());
   }
-  addPass(createRISCVIndirectBranchTrackingPass());
   addPass(createRISCVExpandPseudoPass());
 
   // Schedule the expansion of AMOs at the last possible moment, avoiding the

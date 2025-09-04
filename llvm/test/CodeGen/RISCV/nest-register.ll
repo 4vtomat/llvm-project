@@ -5,6 +5,8 @@
 ; RUN:   | FileCheck -check-prefix=RV64I %s
 ; RUN: llc -mtriple=riscv64 -mattr=+experimental-zicfilp -verify-machineinstrs < %s \
 ; RUN:   | FileCheck -check-prefix=RV64I-ZICFILP %s
+; RUN: not llc -mtriple=riscv64 -target-abi=lp64e -mattr=+experimental-zicfilp \
+; RUN:   -verify-machineinstrs < %s 2>&1 | FileCheck -check-prefix=LP64E-ZICFILP %s
 
 ; Tests that the 'nest' parameter attribute causes the relevant parameter to be
 ; passed in the right register.
@@ -63,7 +65,12 @@ define ptr @nest_caller(ptr %arg) nounwind {
   ret ptr %result
 }
 
+<<<<<<< HEAD
 !llvm.module.flags = !{!0, !1}
+=======
+; LP64E-ZICFILP: LLVM ERROR: Nested functions with control flow protection are not usable with ILP32E or LP64E ABI.
+!llvm.module.flags = !{!0}
+>>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 
 !0 = !{i32 8, !"cf-protection-branch", i32 1}
 !1 = !{i32 1, !"cf-branch-label-scheme", !"unlabeled"}

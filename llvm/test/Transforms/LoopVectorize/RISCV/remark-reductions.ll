@@ -6,11 +6,27 @@ define float @s311(float %a_0, float %s311_sum) {
 ; CHECK-LABEL: define float @s311(
 ; CHECK-SAME: float [[A_0:%.*]], float [[S311_SUM:%.*]]) #[[ATTR0:[0-9]+]] {
 ; CHECK-NEXT:  [[ENTRY:.*]]:
+<<<<<<< HEAD
 ; CHECK-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; CHECK:       [[VECTOR_PH]]:
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 1200, i32 2, i1 true)
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 2 x float> poison, float [[A_0]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 2 x float> [[BROADCAST_SPLATINSERT]], <vscale x 2 x float> poison, <vscale x 2 x i32> zeroinitializer
+=======
+; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.vscale.i32()
+; CHECK-NEXT:    [[TMP1:%.*]] = mul nuw i32 [[TMP0]], 4
+; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i32 1200, [[TMP1]]
+; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
+; CHECK:       [[VECTOR_PH]]:
+; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.vscale.i32()
+; CHECK-NEXT:    [[TMP3:%.*]] = mul nuw i32 [[TMP2]], 4
+; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i32 1200, [[TMP3]]
+; CHECK-NEXT:    [[N_VEC:%.*]] = sub i32 1200, [[N_MOD_VF]]
+; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.vscale.i32()
+; CHECK-NEXT:    [[TMP5:%.*]] = mul nuw i32 [[TMP4]], 4
+; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 4 x float> poison, float [[A_0]], i64 0
+; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 4 x float> [[BROADCAST_SPLATINSERT]], <vscale x 4 x float> poison, <vscale x 4 x i32> zeroinitializer
+>>>>>>> 836201f1177c38f3ca0457de019bb179a04afe3c
 ; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], %[[VECTOR_BODY]] ]
