@@ -218,7 +218,6 @@ public:
         new VPInstruction(VPInstruction::LogicalAnd, {LHS, RHS}, DL, Name));
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   VPValue *createSelect(VPValue *Cond, VPValue *TrueVal, VPValue *FalseVal,
                         std::optional<FastMathFlags> FMFs, DebugLoc DL,
@@ -238,16 +237,10 @@ public:
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-  VPValue *createSelect(VPValue *Cond, VPValue *TrueVal, VPValue *FalseVal,
-                        DebugLoc DL = DebugLoc::getUnknown(),
-                        const Twine &Name = "",
-                        std::optional<FastMathFlags> FMFs = std::nullopt) {
-=======
   VPInstruction *
   createSelect(VPValue *Cond, VPValue *TrueVal, VPValue *FalseVal,
                DebugLoc DL = DebugLoc::getUnknown(), const Twine &Name = "",
                std::optional<FastMathFlags> FMFs = std::nullopt) {
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
     auto *Select =
         FMFs ? new VPInstruction(Instruction::Select, {Cond, TrueVal, FalseVal},
                                  *FMFs, DL, Name)
@@ -305,10 +298,6 @@ public:
         new VPInstructionWithType(Opcode, Op, ResultTy, {}, DL));
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
   VPValue *createScalarZExtOrTrunc(VPValue *Op, Type *ResultTy, Type *SrcTy,
                                    DebugLoc DL) {
     if (ResultTy == SrcTy)
@@ -319,10 +308,6 @@ public:
             : Instruction::ZExt;
     return createScalarCast(CastOp, Op, ResultTy, DL);
   }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 
   VPWidenCastRecipe *createWidenCast(Instruction::CastOps Opcode, VPValue *Op,
                                      Type *ResultTy) {
