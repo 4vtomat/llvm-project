@@ -68,18 +68,14 @@ inline bool isSingleScalar(const VPValue *VPV) {
     return Rep->isSingleScalar() || (PreservesUniformity(Rep->getOpcode()) &&
                                      all_of(Rep->operands(), isSingleScalar));
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   const VPRecipeBase *Def = VPV->getDefiningRecipe();
   if (isa<VPMonotonicUpdateInstruction, VPMonotonicHeaderPHIRecipe,
           VPCSAExtractScalarRecipe>(Def))
     return true;
 #endif // SIFIVE_CUSTOMIZATION
-  if (isa<VPWidenGEPRecipe, VPDerivedIVRecipe, VPBlendRecipe>(VPV))
-=======
   if (isa<VPWidenGEPRecipe, VPDerivedIVRecipe, VPBlendRecipe,
           VPWidenSelectRecipe>(VPV))
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
     return all_of(VPV->getDefiningRecipe()->operands(), isSingleScalar);
   if (auto *WidenR = dyn_cast<VPWidenRecipe>(VPV)) {
     return PreservesUniformity(WidenR->getOpcode()) &&
