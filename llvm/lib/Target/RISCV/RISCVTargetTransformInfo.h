@@ -526,7 +526,9 @@ public:
       return true;
     case RecurKind::AnyOf:
 #if SIFIVE_CUSTOMIZATION
-    case RecurKind::FindLastIV:
+    case RecurKind::FindFirstIVSMin:
+    case RecurKind::FindLastIVSMax:
+    case RecurKind::FindLastIVUMax:
     case RecurKind::Mul:
       return true;
 #endif // SIFIVE_CUSTOMIZATION
