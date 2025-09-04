@@ -23272,17 +23272,13 @@ private:
         case RecurKind::FMul:
         case RecurKind::FMulAdd:
         case RecurKind::AnyOf:
-<<<<<<< HEAD
-        case RecurKind::FindLastIV:
+        case RecurKind::FindFirstIVSMin:
+        case RecurKind::FindLastIVSMax:
+        case RecurKind::FindLastIVUMax:
 #if SIFIVE_CUSTOMIZATION
         case RecurKind::MinMaxFirstIdx:
         case RecurKind::MinMaxLastIdx:
 #endif // SIFIVE_CUSTOMIZATION
-=======
-        case RecurKind::FindFirstIVSMin:
-        case RecurKind::FindLastIVSMax:
-        case RecurKind::FindLastIVUMax:
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
         case RecurKind::FMaximumNum:
         case RecurKind::FMinimumNum:
         case RecurKind::None:
@@ -23416,17 +23412,13 @@ private:
     case RecurKind::FMul:
     case RecurKind::FMulAdd:
     case RecurKind::AnyOf:
-<<<<<<< HEAD
-    case RecurKind::FindLastIV:
+    case RecurKind::FindFirstIVSMin:
+    case RecurKind::FindLastIVSMax:
+    case RecurKind::FindLastIVUMax:
 #if SIFIVE_CUSTOMIZATION
     case RecurKind::MinMaxFirstIdx:
     case RecurKind::MinMaxLastIdx:
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    case RecurKind::FindFirstIVSMin:
-    case RecurKind::FindLastIVSMax:
-    case RecurKind::FindLastIVUMax:
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
     case RecurKind::FMaximumNum:
     case RecurKind::FMinimumNum:
     case RecurKind::None:
@@ -23525,17 +23517,13 @@ private:
     case RecurKind::FMul:
     case RecurKind::FMulAdd:
     case RecurKind::AnyOf:
-<<<<<<< HEAD
-    case RecurKind::FindLastIV:
+    case RecurKind::FindFirstIVSMin:
+    case RecurKind::FindLastIVSMax:
+    case RecurKind::FindLastIVUMax:
 #if SIFIVE_CUSTOMIZATION
     case RecurKind::MinMaxFirstIdx:
     case RecurKind::MinMaxLastIdx:
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    case RecurKind::FindFirstIVSMin:
-    case RecurKind::FindLastIVSMax:
-    case RecurKind::FindLastIVUMax:
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
     case RecurKind::FMaximumNum:
     case RecurKind::FMinimumNum:
     case RecurKind::None:
