@@ -13148,8 +13148,7 @@ LoopVectorizeResult LoopVectorizePass::runImpl(Function &F) {
         MDNode *LoopID = L->getLoopID();
         MDNode *NewLoopID = makePostTransformationMetadata(
             Context, LoopID,
-            {LoopMetaData::NoScevChecks, LoopMetaData::NoScevStrideChecks},
-            std::nullopt);
+            {LoopMetaData::NoScevChecks, LoopMetaData::NoScevStrideChecks}, {});
         L->setLoopID(NewLoopID);
       }
     }

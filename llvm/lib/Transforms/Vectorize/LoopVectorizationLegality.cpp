@@ -362,8 +362,8 @@ void LoopVectorizeHints::setRevectorizeWithoutStrideChecks() {
       {MDString::get(Context, LoopMetaData::NoScevChecks),
        ConstantAsMetadata::get(ConstantInt::get(Context, APInt(32, 1)))});
   MDNode *LoopID = TheLoop->getLoopID();
-  MDNode *NewLoopID = makePostTransformationMetadata(
-      Context, LoopID, std::nullopt, {RevectorizeMD});
+  MDNode *NewLoopID =
+      makePostTransformationMetadata(Context, LoopID, {}, {RevectorizeMD});
   TheLoop->setLoopID(NewLoopID);
 }
 
@@ -375,8 +375,8 @@ void LoopVectorizeHints::setVectorizeWithoutStrideChecks() {
       {MDString::get(Context, LoopMetaData::NoScevStrideChecks),
        ConstantAsMetadata::get(ConstantInt::get(Context, APInt(32, 1)))});
   MDNode *LoopID = TheLoop->getLoopID();
-  MDNode *NewLoopID = makePostTransformationMetadata(
-      Context, LoopID, std::nullopt, {RevectorizeMD});
+  MDNode *NewLoopID =
+      makePostTransformationMetadata(Context, LoopID, {}, {RevectorizeMD});
   TheLoop->setLoopID(NewLoopID);
 }
 #endif // SIFIVE_CUSTOMIZATION
