@@ -398,16 +398,6 @@ def HasStdExtC : Predicate<"Subtarget->hasStdExtC()">,
                  AssemblerPredicate<(all_of FeatureStdExtC),
                                     "'C' (Compressed Instructions)">;
 
-<<<<<<< HEAD
-def HasStdExtCOrZca
-    : Predicate<"Subtarget->hasStdExtCOrZca()">,
-      AssemblerPredicate<(any_of FeatureStdExtC, FeatureStdExtZca),
-                         "'C' (Compressed Instructions) or "
-                         "'Zca' (part of the C extension, excluding "
-                         "compressed floating point loads/stores)">;
-
-=======
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 def FeatureStdExtZcb
     : RISCVExtension<1, 0, "Compressed basic bit manipulation instructions",
                      [FeatureStdExtZca]>,
