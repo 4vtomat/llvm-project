@@ -93,12 +93,10 @@ function(tablegen project ofn)
     list(APPEND LLVM_TABLEGEN_FLAGS "-no-warn-on-unused-template-args")
   endif()
 
-<<<<<<< HEAD
   if (NOT project STREQUAL MLIR_PDLL AND NOT project STREQUAL MLIR_SRC_SHARDER)
     list(APPEND LLVM_TABLEGEN_FLAGS "-DSIFIVE_CUSTOMIZATION") # SIFIVE
   endif()
 
-=======
   # Build the absolute path for the current input file.
   if (IS_ABSOLUTE ${LLVM_TARGET_DEFINITIONS})
     set(LLVM_TARGET_DEFINITIONS_ABSOLUTE ${LLVM_TARGET_DEFINITIONS})
@@ -118,7 +116,6 @@ function(tablegen project ofn)
   # Prepend each include entry with -I for arguments.
   list(TRANSFORM tblgen_includes PREPEND -I)
 
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
   # We need both _TABLEGEN_TARGET and _TABLEGEN_EXE in the  DEPENDS list
   # (both the target and the file) to have .inc files rebuilt on
   # a tablegen change, as cmake does not propagate file-level dependencies
