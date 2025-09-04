@@ -697,6 +697,9 @@ InstructionCost VPlanCostModel::getVectorCallCost(const CallInst *CI,
           TargetTransformInfo::SK_Broadcast,
           VectorType::get(
               IntegerType::getInt1Ty(VecFunc->getFunctionType()->getContext()),
+              VF),
+          VectorType::get(
+              IntegerType::getInt1Ty(VecFunc->getFunctionType()->getContext()),
               VF));
   }
 
@@ -771,9 +774,9 @@ InstructionCost VPlanCostModel::getMemoryOpCost(const Instruction *I, Type *Ty,
     bool IsLoopInvariantStoreValue =
         SI && Legal.isInvariant(const_cast<StoreInst *>(SI)->getValueOperand());
     if (IsReverse && !IsLoopInvariantStoreValue)
-      Cost +=
-          TTI.getShuffleCost(TargetTransformInfo::SK_Reverse,
-                             cast<VectorType>(Ty), std::nullopt, CostKind, 0);
+      Cost += TTI.getShuffleCost(TargetTransformInfo::SK_Reverse,
+                                 cast<VectorType>(Ty), cast<VectorType>(Ty), {},
+                                 CostKind, 0);
     return Cost;
   }
   // FIXME: There should be a special code for strided memory access
@@ -868,9 +871,9 @@ InstructionCost VPlanCostModel::getInstructionCost(const VPInstruction *VPI,
     if (!RVVPair::isValidType(V->getType(), RVL))
       return InstructionCost::getInvalid();
     auto *VectorTy = getVectorType(V->getType(), RVL);
-    return TTI.getShuffleCost(TargetTransformInfo::SK_Splice,
-                              cast<VectorType>(VectorTy), std::nullopt,
-                              CostKind, /*Index*/ -1);
+    return TTI.getShuffleCost(
+        TargetTransformInfo::SK_Splice, cast<VectorType>(VectorTy),
+        cast<VectorType>(VectorTy), {}, CostKind, /*Index*/ -1);
   }
   case VPInstruction::Not: {
     Type *ResultTy = TypeInfo.inferScalarType(VPI);
@@ -953,7 +956,7 @@ VPlanCostModel::getInterleavedMemoryOpCost(const VPInterleaveRecipe *VPI,
   if (Group->isReverse()) {
     Cost += Group->getNumMembers() *
             TTI.getShuffleCost(TargetTransformInfo::SK_Reverse, VectorTy,
-                               std::nullopt, CostKind, 0);
+                               VectorTy, {}, CostKind, 0);
   }
   return Cost;
 }
