@@ -60,15 +60,14 @@ class SiFiveP800SVSM3CCycles<string mx> {
 // SiFiveP800S machine model for scheduling and other instruction cost heuristics.
 def SiFiveP800SModel : SchedMachineModel {
   let IssueWidth = 6;         // 6 micro-ops are dispatched per cycle.
-  let MicroOpBufferSize = 160; // Max micro-ops that can be buffered.
+  let MicroOpBufferSize = 288; // Max micro-ops that can be buffered.
   let LoadLatency = 4;        // Cycles for loads to access the cache.
   let MispredictPenalty = 9;  // Extra cycles for a mispredicted branch.
   let PostRAScheduler = true;
   let UnsupportedFeatures = [HasStdExtZbkb, HasStdExtZbkc, HasStdExtZbkx,
                              HasStdExtZknd, HasStdExtZkne, HasStdExtZknh,
                              HasStdExtZksed, HasStdExtZksh, HasStdExtZkr,
-                             HasVendorXSfvqmaccqoq, HasVendorXSfvqmaccdod, // SIFIVE
-                             HasVendorXSfvfhbfmin]; // SIFIVE
+                             HasVendorXSfvqmaccqoq, HasVendorXSfvqmaccdod];
   let CompleteModel = false;
 }
 
@@ -84,7 +83,7 @@ def SiFiveP800SFEXQ0       : ProcResource<1>;
 def SiFiveP800SFEXQ1       : ProcResource<1>;
 
 // Two Load/Store ports that can issue either two loads, two stores, or one load
-// and one store (P550 has one load and one separate store pipe).
+// and one store.
 def SiFiveP800SLDST       : ProcResource<2>;
 // One additional port that can only handle loads.
 def SiFiveP800SLD         : ProcResource<1>;
@@ -111,13 +110,11 @@ def SiFiveP800SVEXQ0        : ProcResource<1>;
 def SiFiveP800SVEXQ1        : ProcResource<1>;
 def SiFiveP800SVectorArith  : ProcResGroup<[SiFiveP800SVEXQ0, SiFiveP800SVEXQ1]>;
 
-// In Baler has 2 pipeline for Load and Store.
 def SiFiveP800SVLD          : ProcResource<1>;
 def SiFiveP800SVST          : ProcResource<1>;
 def SiFiveP800SVDiv         : ProcResource<1>;
 def SiFiveP800SVFloatDiv    : ProcResource<1>;
 
-let Latency = 1 in {
 // Integer arithmetic and logic
 def : WriteRes<WriteIALU, [SiFiveP800SIntArith]>;
 def : WriteRes<WriteIALU32, [SiFiveP800SIntArith]>;
@@ -129,7 +126,6 @@ def : WriteRes<WriteShiftReg32, [SiFiveP800SIntArith]>;
 def : WriteRes<WriteJmp, [SiFiveP800SBranch]>;
 def : WriteRes<WriteJal, [SiFiveP800SBranch]>;
 def : WriteRes<WriteJalr, [SiFiveP800SBranch]>;
-}
 
 // CMOV
 def P800SWriteCMOV : SchedWriteRes<[SiFiveP800SBranch, SiFiveP800SCMOV]> {
@@ -167,7 +163,6 @@ def : WriteRes<WriteIRem32,  [SiFiveP800SIEXQ2, SiFiveP800SDiv]> {
   let ReleaseAtCycles = [1, 19];
 }
 
-let Latency = 1 in {
 // Bitmanip
 def : WriteRes<WriteRotateImm, [SiFiveP800SIntArith]>;
 def : WriteRes<WriteRotateImm32, [SiFiveP800SIntArith]>;
@@ -191,10 +186,8 @@ def : WriteRes<WriteSingleBit, [SiFiveP800SIntArith]>;
 def : WriteRes<WriteSingleBitImm, [SiFiveP800SIntArith]>;
 def : WriteRes<WriteBEXT, [SiFiveP800SIntArith]>;
 def : WriteRes<WriteBEXTI, [SiFiveP800SIntArith]>;
-}
 
 // Memory
-let Latency = 1 in {
 def : WriteRes<WriteSTB, [SiFiveP800SLDST]>;
 def : WriteRes<WriteSTH, [SiFiveP800SLDST]>;
 def : WriteRes<WriteSTW, [SiFiveP800SLDST]>;
@@ -202,12 +195,10 @@ def : WriteRes<WriteSTD, [SiFiveP800SLDST]>;
 def : WriteRes<WriteFST16, [SiFiveP800SLDST]>;
 def : WriteRes<WriteFST32, [SiFiveP800SLDST]>;
 def : WriteRes<WriteFST64, [SiFiveP800SLDST]>;
-}
+
 let Latency = 4 in {
 def : WriteRes<WriteLDB, [SiFiveP800SLoad]>;
 def : WriteRes<WriteLDH, [SiFiveP800SLoad]>;
-}
-let Latency = 4 in {
 def : WriteRes<WriteLDW, [SiFiveP800SLoad]>;
 def : WriteRes<WriteLDD, [SiFiveP800SLoad]>;
 }
@@ -219,11 +210,15 @@ def : WriteRes<WriteFLD64, [SiFiveP800SLoad]>;
 }
 
 // Atomic memory
-let Latency = 3 in {
 def : WriteRes<WriteAtomicSTW, [SiFiveP800SLDST]>;
 def : WriteRes<WriteAtomicSTD, [SiFiveP800SLDST]>;
+
+let Latency = 7 in {
 def : WriteRes<WriteAtomicW, [SiFiveP800SLDST]>;
 def : WriteRes<WriteAtomicD, [SiFiveP800SLDST]>;
+}
+
+let Latency = 10 in {
 def : WriteRes<WriteAtomicLDW, [SiFiveP800SLoad]>;
 def : WriteRes<WriteAtomicLDD, [SiFiveP800SLoad]>;
 }
@@ -261,8 +256,8 @@ def : WriteRes<WriteFDiv16, [SiFiveP800SFEXQ1, SiFiveP800SFloatDiv]> {
   let ReleaseAtCycles = [1, 4];
 }
 def : WriteRes<WriteFSqrt16, [SiFiveP800SFEXQ1, SiFiveP800SFloatDiv]> {
-  let Latency = 18;
-  let ReleaseAtCycles = [1, 17];
+  let Latency = 8;
+  let ReleaseAtCycles = [1, 7];
 }
 
 // Single precision.
@@ -271,8 +266,8 @@ def : WriteRes<WriteFDiv32, [SiFiveP800SFEXQ1, SiFiveP800SFloatDiv]> {
   let ReleaseAtCycles = [1, 6];
 }
 def : WriteRes<WriteFSqrt32, [SiFiveP800SFEXQ1, SiFiveP800SFloatDiv]> {
-  let Latency = 18;
-  let ReleaseAtCycles = [1, 17];
+  let Latency = 14;
+  let ReleaseAtCycles = [1, 13];
 }
 
 // Double precision
@@ -281,8 +276,8 @@ def : WriteRes<WriteFDiv64, [SiFiveP800SFEXQ1, SiFiveP800SFloatDiv]> {
   let ReleaseAtCycles = [1, 11];
 }
 def : WriteRes<WriteFSqrt64, [SiFiveP800SFEXQ1, SiFiveP800SFloatDiv]> {
-  let Latency = 33;
-  let ReleaseAtCycles = [1, 32];
+  let Latency = 29;
+  let ReleaseAtCycles = [1, 28];
 }
 
 // Conversions
@@ -305,7 +300,6 @@ def : WriteRes<WriteFCvtF64ToI32, [SiFiveP800SF2I]>;
 def : WriteRes<WriteFCvtF64ToI64, [SiFiveP800SF2I]>;
 def : WriteRes<WriteFCvtF64ToF16, [SiFiveP800SFloatArith]>;
 def : WriteRes<WriteFCvtF64ToF32, [SiFiveP800SFloatArith]>;
-// FROUND/FROUNDNX are implemented by `FCVT.f.f`.
 def : WriteRes<WriteFRoundF16, [SiFiveP800SFloatArith]>;
 def : WriteRes<WriteFRoundF32, [SiFiveP800SFloatArith]>;
 def : WriteRes<WriteFRoundF64, [SiFiveP800SFloatArith]>;
@@ -322,7 +316,6 @@ def : WriteRes<WriteFMovI32ToF32, [SiFiveP800SI2F]>;
 def : WriteRes<WriteFMovF32ToI32, [SiFiveP800SF2I]>;
 def : WriteRes<WriteFMovI64ToF64, [SiFiveP800SI2F]>;
 def : WriteRes<WriteFMovF64ToI64, [SiFiveP800SF2I]>;
-// FLI is implemented by `FMV.f.x`.
 def : WriteRes<WriteFLI16, [SiFiveP800SI2F]>;
 def : WriteRes<WriteFLI32, [SiFiveP800SI2F]>;
 def : WriteRes<WriteFLI64, [SiFiveP800SI2F]>;
