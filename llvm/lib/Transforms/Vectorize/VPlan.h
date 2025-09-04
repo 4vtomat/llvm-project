@@ -1076,7 +1076,6 @@ public:
     // all unrolled iterations. Unrolling will add all copies of its original
     // operand as additional operands.
     AnyOf,
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     ComputeReductionResultWithMask,
     VPFirst,
@@ -1089,12 +1088,9 @@ public:
     CSAAnyActive,
     MonotonicUpdate,
 #endif // SIFIVE_CUSTOMIZATION
-    // Calculates the first active lane index of the vector predicate operand.
-=======
     // Calculates the first active lane index of the vector predicate operands.
     // It produces the lane index across all unrolled iterations. Unrolling will
     // add all copies of its original operand as additional operands.
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
     FirstActiveLane,
 
     // The opcodes below are used for VPInstructionWithType.
