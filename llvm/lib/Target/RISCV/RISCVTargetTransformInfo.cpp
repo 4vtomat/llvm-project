@@ -1248,20 +1248,6 @@ InstructionCost RISCVTTIImpl::getSlideCost(FixedVectorType *Tp,
   return FirstSlideCost + SecondSlideCost + MaskCost;
 }
 
-<<<<<<< HEAD
-InstructionCost RISCVTTIImpl::getShuffleCost(TTI::ShuffleKind Kind,
-                                             VectorType *Tp, ArrayRef<int> Mask,
-                                             TTI::TargetCostKind CostKind,
-                                             int Index, VectorType *SubTp,
-                                             ArrayRef<const Value *> Args,
-                                             const Instruction *CxtI) const {
-  Kind = improveShuffleKindFromMask(Kind, Mask, Tp, Index, SubTp);
-  std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Tp);
-#if SIFIVE_CUSTOMIZATION
-  if (!LT.first.isValid())
-    return InstructionCost::getInvalid();
-#endif // SIFIVE_CUSTOMIZATION
-=======
 InstructionCost
 RISCVTTIImpl::getShuffleCost(TTI::ShuffleKind Kind, VectorType *DstTy,
                              VectorType *SrcTy, ArrayRef<int> Mask,
@@ -1276,7 +1262,10 @@ RISCVTTIImpl::getShuffleCost(TTI::ShuffleKind Kind, VectorType *DstTy,
 
   Kind = improveShuffleKindFromMask(Kind, Mask, SrcTy, Index, SubTp);
   std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(SrcTy);
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
+#if SIFIVE_CUSTOMIZATION
+  if (!LT.first.isValid())
+    return InstructionCost::getInvalid();
+#endif // SIFIVE_CUSTOMIZATION
 
   // First, handle cases where having a fixed length vector enables us to
   // give a more accurate cost than falling back to generic scalable codegen.
