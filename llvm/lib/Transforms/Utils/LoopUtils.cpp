@@ -21,6 +21,7 @@
 #include "llvm/Analysis/BasicAliasAnalysis.h"
 #include "llvm/Analysis/DomTreeUpdater.h"
 #include "llvm/Analysis/GlobalsModRef.h"
+#include "llvm/Analysis/IVDescriptors.h"
 #include "llvm/Analysis/InstSimplifyFolder.h"
 #include "llvm/Analysis/LoopAccessAnalysis.h"
 #include "llvm/Analysis/LoopInfo.h"
@@ -955,7 +956,9 @@ constexpr Intrinsic::ID llvm::getReductionIntrinsicID(RecurKind RK) {
   case RecurKind::FMul:
     return Intrinsic::vector_reduce_fmul;
 #if SIFIVE_CUSTOMIZATION
-  case RecurKind::FindLastIV:
+  case RecurKind::FindFirstIVSMin:
+  case RecurKind::FindLastIVSMax:
+  case RecurKind::FindLastIVUMax:
 #endif // SIFIVE_CUSTOMIZATION
   case RecurKind::SMax:
     return Intrinsic::vector_reduce_smax;
@@ -1397,9 +1400,8 @@ Value *llvm::createSimpleReduction(IRBuilderBase &Builder, Value *Src,
 Value *llvm::createSimpleReduction(IRBuilderBase &Builder, Value *Src,
                                    RecurKind Kind, Value *Mask, Value *EVL) {
   assert(!RecurrenceDescriptor::isAnyOfRecurrenceKind(Kind) &&
-<<<<<<< HEAD
-         !RecurrenceDescriptor::isFindLastIVRecurrenceKind(Kind) &&
-         "AnyOf or FindLastIV reductions are not supported.");
+         !RecurrenceDescriptor::isFindIVRecurrenceKind(Kind) &&
+         "AnyOf and FindIV reductions are not supported.");
 #if SIFIVE_CUSTOMIZATION
   auto *SrcVecEltTy = cast<VectorType>(Src->getType())->getElementType();
   switch (Kind) {
@@ -1438,10 +1440,6 @@ Value *llvm::createSimpleReduction(IRBuilderBase &Builder, Value *Src,
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
-         !RecurrenceDescriptor::isFindIVRecurrenceKind(Kind) &&
-         "AnyOf and FindIV reductions are not supported.");
->>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
   Intrinsic::ID Id = getReductionIntrinsicID(Kind);
   auto VPID = VPIntrinsic::getForIntrinsic(Id);
   assert(VPReductionIntrinsic::isVPReduction(VPID) &&
