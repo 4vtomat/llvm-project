@@ -103,6 +103,12 @@ static cl::opt<unsigned>
                                    "(default value: 8 * vlen)."),
                           cl::init(0));
 
+static cl::opt<unsigned>
+    PreferMinMemCpySize("riscv-mem-to-rvv-min-memcpy-size", cl::Hidden,
+                        cl::desc("Configure min size for known size memcpy "
+                                 "(default value: 64)."),
+                        cl::init(0));
+
 namespace {
 
 class RISCVLateCodeGenPrepare
@@ -125,6 +131,7 @@ public:
 
   static constexpr unsigned MinCopySize = 64;
 
+  unsigned MinMemCpySize;
   unsigned UnrollThreshold;
   unsigned MemCpyLMUL;
   unsigned MemSetLMUL;
@@ -1260,8 +1267,8 @@ bool RISCVLateCodeGenPrepare::expandMemIntrinsic(MemIntrinsic *MI) {
   switch (MI->getIntrinsicID()) {
   case Intrinsic::memcpy: {
     if (auto *CI = dyn_cast<ConstantInt>(MI->getLength())) {
-      // If Copy length within MinCopySize, then use scalar load and store.
-      if (CI->getZExtValue() < MinCopySize)
+      // If Copy length within MinMemCpySize, then use scalar load and store.
+      if (CI->getZExtValue() < MinMemCpySize)
         return false;
       if (CI->getZExtValue() <= UnrollThreshold) {
         expandMemCpyKnownSize(cast<MemCpyInst>(MI));
@@ -1538,6 +1545,10 @@ void RISCVLateCodeGenPrepare::getMemToRVVConfig() {
   // TODO: Maybe need specific options for memset/memcpy/memmove?
   if (PreferUnrollThreshold.getNumOccurrences())
     UnrollThreshold = PreferUnrollThreshold;
+
+  MinMemCpySize = MinCopySize;
+  if (PreferMinMemCpySize.getNumOccurrences())
+    MinMemCpySize = PreferMinMemCpySize;
 }
 
 bool RISCVLateCodeGenPrepare::runOnFunction(Function &F) {
