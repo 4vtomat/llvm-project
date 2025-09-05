@@ -2309,6 +2309,8 @@ bool RISCVAsmParser::parseVTypeToken(const AsmToken &Tok, VTypeState &State,
                                      bool &Fractional, bool &TailAgnostic,
 #if SIFIVE_CUSTOMIZATION
                                      bool &MaskAgnostic, bool &AltFmt) {
+#else
+                                     bool &MaskAgnostic) {
 #endif // SIFIVE_CUSTOMIZATION
   if (Tok.isNot(AsmToken::Identifier))
     return true;
@@ -2322,12 +2324,15 @@ bool RISCVAsmParser::parseVTypeToken(const AsmToken &Tok, VTypeState &State,
     } else if (Identifier == "8alt") {
       Sew = 8;
       AltFmt = true;
-    } else
+    } else {
 #endif // SIFIVE_CUSTOMIZATION
       if (Identifier.getAsInteger(10, Sew))
         return true;
-    if (!RISCVVType::isValidSEW(Sew))
-      return true;
+      if (!RISCVVType::isValidSEW(Sew))
+        return true;
+#if SIFIVE_CUSTOMIZATION
+    }
+#endif // SIFIVE_CUSTOMIZATION
 
     State = VTypeState::SeenSew;
     return false;
@@ -2387,7 +2392,6 @@ bool RISCVAsmParser::parseVTypeToken(const AsmToken &Tok, VTypeState &State,
 
   return true;
 }
-
 ParseStatus RISCVAsmParser::parseVTypeI(OperandVector &Operands) {
   SMLoc S = getLoc();
 
@@ -2422,11 +2426,6 @@ ParseStatus RISCVAsmParser::parseVTypeI(OperandVector &Operands) {
       State == VTypeState::SeenNothingYet)
     return generateVTypeError(S);
 
-#ifdef SIFIVE_CUSTOMIZATION
-  if (!(State == VTypeState::SeenTailPolicy))
-    return generateVTypeError(S);
-#endif // SIFIVE_CUSTOMIZATION
-
   RISCVVType::VLMUL VLMUL = RISCVVType::encodeLMUL(Lmul, Fractional);
   if (Fractional) {
     unsigned ELEN = STI->hasFeature(RISCV::FeatureStdExtZve64x) ? 64 : 32;
@@ -2439,8 +2438,8 @@ ParseStatus RISCVAsmParser::parseVTypeI(OperandVector &Operands) {
   }
 
   unsigned VTypeI =
-#ifdef SIFIVE_CUSTOMIZATION
-      RISCVVType::encodeVTYPE(VLMUL, Sew, TailAgnostic, MaskAgnostic, false);
+#if SIFIVE_CUSTOMIZATION
+      RISCVVType::encodeVTYPE(VLMUL, Sew, TailAgnostic, MaskAgnostic, AltFmt);
 #else
       RISCVVType::encodeVTYPE(VLMUL, Sew, TailAgnostic, MaskAgnostic);
 #endif // SIFIVE_CUSTOMIZATION
