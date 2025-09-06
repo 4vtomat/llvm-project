@@ -181,10 +181,15 @@ bool VPlanVerifier::verifyEVLRecipe(const VPInstruction &EVL) const {
         .Case<VPWidenIntrinsicRecipe>([&](const VPWidenIntrinsicRecipe *S) {
           return VerifyEVLUse(*S, S->getNumOperands() - 1);
         })
+#if SIFIVE_CUSTOMIZATION
+        .Case<VPWidenStoreEVLRecipe, VPReductionEVLRecipe,
+              VPWidenIntOrFpInductionRecipe, VPWidenPointerInductionRecipe>(
+#else
         .Case<VPWidenIntOrFpInductionRecipe>([&](const VPWidenIntOrFpInductionRecipe *R) {
           return VerifyEVLUse(*R, 2);
         })
         .Case<VPWidenStoreEVLRecipe, VPReductionEVLRecipe>(
+#endif
             [&](const VPRecipeBase *S) { return VerifyEVLUse(*S, 2); })
         .Case<VPScalarIVStepsRecipe>([&](auto *R) {
           if (R->getNumOperands() != 3) {

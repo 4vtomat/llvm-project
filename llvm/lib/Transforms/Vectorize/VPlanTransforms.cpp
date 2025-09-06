@@ -2700,7 +2700,8 @@ static void transformRecipestoEVLRecipes(VPlan &Plan, VPValue &EVL) {
   VPBasicBlock *Header = LoopRegion->getEntryBasicBlock();
 
   assert(all_of(Plan.getVF().users(),
-                IsaPred<VPVectorEndPointerRecipe, VPScalarIVStepsRecipe>) &&
+                IsaPred<VPVectorEndPointerRecipe, VPScalarIVStepsRecipe,
+                        VPWidenIntOrFpInductionRecipe>) &&
          "User of VF that we can't transform to EVL.");
   Plan.getVF().replaceAllUsesWith(&EVL);
 
