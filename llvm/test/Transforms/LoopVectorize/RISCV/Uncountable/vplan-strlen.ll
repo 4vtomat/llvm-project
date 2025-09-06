@@ -16,7 +16,7 @@ define i64 @strlen_i8(ptr %start) {
 ; VPLANS-NEXT:   vector.body:
 ; VPLANS-NEXT:     EMIT vp<[[IV:%.+]]> = CANONICAL-INDUCTION ir<0>, vp<[[IV_NEXT:%.+]]>
 ; VPLANS-NEXT:     EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<[[EVLPHI:%.+]]> = phi ir<0>, vp<%index.evl.next>
-; VPLANS-NEXT:     EMIT vp<[[VL:%.+]]> = EXPLICIT-VECTOR-LENGTH
+; VPLANS-NEXT:     EMIT-SCALAR vp<[[VL:%.+]]> = EXPLICIT-VECTOR-LENGTH
 ; VPLANS-NEXT:     vp<[[DERIV:%.+]]> = DERIVED-IV ir<0> + vp<[[EVLPHI]]> * ir<1>
 ; VPLANS-NEXT:     vp<[[SC:%.+]]> = SCALAR-STEPS vp<[[DERIV]]>, ir<1>
 ; VPLANS-NEXT:     EMIT vp<%next.gep> = ptradd ir<%start>, vp<[[SC]]>
@@ -25,7 +25,7 @@ define i64 @strlen_i8(ptr %start) {
 ; VPLANS-NEXT:     WIDEN ir<%cmp.not> = icmp eq ir<%0>, ir<0>
 ; VPLANS-NEXT:     EMIT vp<[[VPFIRST:%.+]]> = vp-first ir<%cmp.not>, vp<[[NEWEVL]]>
 ; VPLANS-NEXT:     EMIT vp<[[EXITCOND:%.+]]> = icmp sge vp<[[VPFIRST]]>, ir<0>
-; VPLANS-NEXT:     EMIT vp<[[CAST:%.+]]> = zext vp<[[NEWEVL]]> to i64
+; VPLANS-NEXT:     EMIT-SCALAR vp<[[CAST:%.+]]> = zext vp<[[NEWEVL]]> to i64
 ; VPLANS-NEXT:     EMIT vp<[[IV_NEXT]]> = add nuw vp<[[CAST]]>, vp<[[EVLPHI]]>
 ; VPLANS-NEXT:     EMIT branch-on-cond vp<[[EXITCOND]]>
 ; VPLANS-NEXT:   No successors
@@ -33,7 +33,7 @@ define i64 @strlen_i8(ptr %start) {
 ; VPLANS-NEXT: Successor(s): middle.block
 ; VPLANS-EMPTY:
 ; VPLANS-NEXT: middle.block:
-; VPLANS-NEXT:   EMIT vp<[[VPFIRST64:%.+]]> = zext vp<[[VPFIRST]]> to i64
+; VPLANS-NEXT:   EMIT-SCALAR vp<[[VPFIRST64:%.+]]> = zext vp<[[VPFIRST]]> to i64
 ; VPLANS-NEXT:   EMIT vp<[[TC:%.+]]> = add vp<[[EVLPHI]]>, vp<[[VPFIRST64]]>
 ; VPLANS-NEXT:   vp<[[DERIV2:%.+]]> = DERIVED-IV ir<%start> + vp<[[TC]]> * ir<1>
 ; VPLANS-NEXT:   EMIT branch-on-cond ir<true>

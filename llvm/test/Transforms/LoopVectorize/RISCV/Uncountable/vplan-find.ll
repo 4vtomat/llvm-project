@@ -20,7 +20,7 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; VPLANS-NEXT:     EMIT vp<[[CAN_IV:%.+]]> = CANONICAL-INDUCTION ir<0>
 ; VPLANS-NEXT:     EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<[[EVL_IV:%.+]]> = phi ir<0>
 ; VPLANS-NEXT:     EMIT vp<[[AVL:%.+]]> = sub vp<[[TC]]>, vp<[[EVL_IV]]>
-; VPLANS-NEXT:     EMIT vp<[[EVL:%.+]]> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; VPLANS-NEXT:     EMIT-SCALAR vp<[[EVL:%.+]]> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; VPLANS-NEXT:     vp<[[DERIVED_IV:%.+]]> = DERIVED-IV ir<0> + vp<[[EVL_IV]]> * ir<4>
 ; VPLANS-NEXT:     EMIT vp<[[NEXT_GEP:%.+]]> = ptradd ir<%first>, vp<[[DERIVED_IV]]>
 ; VPLANS-NEXT:     vp<[[VEC_PTR:%.+]]> = vector-pointer vp<[[NEXT_GEP]]>
@@ -28,7 +28,7 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; VPLANS-NEXT:     WIDEN ir<%cmp1> = icmp eq ir<[[DATA]]>, ir<%0>
 ; VPLANS-NEXT:     EMIT vp<[[VPFIRST:%.+]]> = vp-first ir<%cmp1>, vp<[[EVL2]]>
 ; VPLANS-NEXT:     EMIT vp<[[COND1:%.+]]> = icmp sge vp<[[VPFIRST]]>, ir<0>
-; VPLANS-NEXT:     EMIT vp<[[EVL2_I64:%.+]]> = zext vp<[[EVL2]]> to i64
+; VPLANS-NEXT:     EMIT-SCALAR vp<[[EVL2_I64:%.+]]> = zext vp<[[EVL2]]> to i64
 ; VPLANS-NEXT:     EMIT vp<[[EVL_IV_NEXT:%.+]]> = add nuw vp<[[EVL2_I64]]>, vp<[[EVL_IV]]>
 ; VPLANS-NEXT:     EMIT vp<[[COND2:%.+]]> = icmp eq vp<[[EVL_IV_NEXT]]>, vp<[[VTC]]>
 ; VPLANS-NEXT:     EMIT vp<[[ALLCOND:%.+]]> = or vp<[[COND1]]>, vp<[[COND2]]>
@@ -45,7 +45,7 @@ define ptr @find(ptr %first, ptr %last, ptr %value) {
 ; VPLANS-NEXT: Successor(s): ir-bb<return.loopexit>
 ; VPLANS-EMPTY:
 ; VPLANS-NEXT: vector.early.exit:
-; VPLANS-NEXT:   EMIT vp<[[VPFIRST_I64:%.+]]> = zext vp<[[VPFIRST]]> to i64
+; VPLANS-NEXT:   EMIT-SCALAR vp<[[VPFIRST_I64:%.+]]> = zext vp<[[VPFIRST]]> to i64
 ; VPLANS-NEXT:   EMIT vp<[[TC:%.+]]> = add vp<[[EVL_IV]]>, vp<[[VPFIRST_I64]]>
 ; VPLANS-NEXT:   vp<[[ENDV1:%.+]]> = DERIVED-IV ir<%first> + vp<[[TC]]> * ir<4>
 ; VPLANS-NEXT: Successor(s): ir-bb<return.loopexit>

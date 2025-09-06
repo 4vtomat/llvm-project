@@ -216,7 +216,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:      EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:      EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:      EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:      EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:      EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:      vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:      CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:      CLONE ir<%idxprom> = zext ir<%i.0>
@@ -274,7 +274,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:      EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:      EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:      EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:      EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:      EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:      vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:      CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:      CLONE ir<%idxprom> = zext ir<%i.0>
@@ -334,7 +334,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:      EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:      EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:      EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:      EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:      EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:      vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:      CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:      CLONE ir<%idxprom> = zext ir<%i.0>
@@ -410,7 +410,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
@@ -442,7 +442,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
@@ -474,7 +474,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
@@ -506,7 +506,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
@@ -538,7 +538,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
@@ -570,7 +570,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
@@ -616,7 +616,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
@@ -630,7 +630,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT-SCALAR vp<%9> = zext vp<%5> to i64
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
-; CHECK-NEXT:  Cost of 1 for VF 2: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  Cost of 1 for VF 2: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Vector loop of width 2 costs: 3.
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %0 = zext i32 %n to i64
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
@@ -650,7 +650,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
@@ -664,7 +664,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT-SCALAR vp<%9> = zext vp<%5> to i64
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
-; CHECK-NEXT:  Cost of 1 for VF 4: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  Cost of 1 for VF 4: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Vector loop of width 4 costs: 2.
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %0 = zext i32 %n to i64
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
@@ -684,7 +684,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
@@ -698,7 +698,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT-SCALAR vp<%9> = zext vp<%5> to i64
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
-; CHECK-NEXT:  Cost of 1 for VF 8: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  Cost of 1 for VF 8: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Vector loop of width 8 costs: 2.
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %0 = zext i32 %n to i64
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
@@ -718,7 +718,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
@@ -732,7 +732,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT-SCALAR vp<%9> = zext vp<%5> to i64
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
-; CHECK-NEXT:  Cost of 1 for VF vscale x 1: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  Cost of 1 for VF vscale x 1: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Vector loop of width vscale x 1 costs: 3 (assuming a minimum vscale of 2).
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %0 = zext i32 %n to i64
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
@@ -752,7 +752,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
@@ -766,7 +766,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT-SCALAR vp<%9> = zext vp<%5> to i64
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
-; CHECK-NEXT:  Cost of 1 for VF vscale x 2: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  Cost of 1 for VF vscale x 2: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Vector loop of width vscale x 2 costs: 1 (assuming a minimum vscale of 2).
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %0 = zext i32 %n to i64
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
@@ -786,7 +786,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
@@ -800,7 +800,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT-SCALAR vp<%9> = zext vp<%5> to i64
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
-; CHECK-NEXT:  Cost of 1 for VF vscale x 4: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  Cost of 1 for VF vscale x 4: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Vector loop of width vscale x 4 costs: 1 (assuming a minimum vscale of 2).
 ; CHECK-NEXT:  Cost of 1 for VF vscale x 4: induction instruction %indvars.iv.next = add nsw i64 %indvars.iv, -1
 ; CHECK-NEXT:  Cost of 0 for VF vscale x 4: induction instruction %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
@@ -853,7 +853,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:    EMIT-SCALAR vp<%index> = phi [ ir<0>, ir-bb<vector.ph> ], [ vp<%index.evl.next>, vector.body ]
 ; CHECK-NEXT:    EMIT-SCALAR vp<%evl.based.iv> = phi [ ir<0>, ir-bb<vector.ph> ], [ vp<%index.evl.next>, vector.body ]
 ; CHECK-NEXT:    EMIT vp<%avl> = sub ir<%0>, vp<%evl.based.iv>
-; CHECK-NEXT:    EMIT vp<%1> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:    EMIT-SCALAR vp<%1> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:    vp<%2> = DERIVED-IV ir<%n> + vp<%evl.based.iv> * ir<-1>
 ; CHECK-NEXT:    CLONE ir<%i.0> = add nsw vp<%2>, ir<-1>
 ; CHECK-NEXT:    CLONE ir<%idxprom> = zext ir<%i.0>
@@ -1234,7 +1234,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:      EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:      EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:      EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:      EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:      EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:      vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:      CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:      CLONE ir<%idxprom> = zext ir<%i.0>
@@ -1292,7 +1292,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:      EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:      EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:      EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:      EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:      EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:      vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:      CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:      CLONE ir<%idxprom> = zext ir<%i.0>
@@ -1352,7 +1352,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:      EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:      EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:      EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:      EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:      EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:      vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:      CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:      CLONE ir<%idxprom> = zext ir<%i.0>
@@ -1428,7 +1428,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
@@ -1460,7 +1460,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
@@ -1492,7 +1492,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
@@ -1524,7 +1524,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
@@ -1556,7 +1556,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
@@ -1588,7 +1588,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
@@ -1634,7 +1634,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
@@ -1648,7 +1648,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT-SCALAR vp<%9> = zext vp<%5> to i64
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 2 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
-; CHECK-NEXT:  Cost of 1 for VF 2: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  Cost of 1 for VF 2: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Vector loop of width 2 costs: 3.
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: IR %0 = zext i32 %n to i64
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
@@ -1668,7 +1668,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
@@ -1682,7 +1682,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT-SCALAR vp<%9> = zext vp<%5> to i64
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 4 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
-; CHECK-NEXT:  Cost of 1 for VF 4: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  Cost of 1 for VF 4: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Vector loop of width 4 costs: 2.
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: IR %0 = zext i32 %n to i64
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
@@ -1702,7 +1702,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
@@ -1716,7 +1716,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT-SCALAR vp<%9> = zext vp<%5> to i64
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF 8 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
-; CHECK-NEXT:  Cost of 1 for VF 8: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  Cost of 1 for VF 8: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Vector loop of width 8 costs: 2.
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: IR %0 = zext i32 %n to i64
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
@@ -1736,7 +1736,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
@@ -1750,7 +1750,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT-SCALAR vp<%9> = zext vp<%5> to i64
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
-; CHECK-NEXT:  Cost of 1 for VF vscale x 1: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  Cost of 1 for VF vscale x 1: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Vector loop of width vscale x 1 costs: 3 (assuming a minimum vscale of 2).
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: IR %0 = zext i32 %n to i64
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
@@ -1770,7 +1770,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
@@ -1784,7 +1784,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT-SCALAR vp<%9> = zext vp<%5> to i64
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
-; CHECK-NEXT:  Cost of 1 for VF vscale x 2: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  Cost of 1 for VF vscale x 2: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Vector loop of width vscale x 2 costs: 1 (assuming a minimum vscale of 2).
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: IR %0 = zext i32 %n to i64
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%2> = EXPAND SCEV (zext i32 %n to i64)
@@ -1804,7 +1804,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%3> = CANONICAL-INDUCTION ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%4> = phi ir<0>, vp<%index.evl.next>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%avl> = sub vp<%0>, vp<%4>
-; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: vp<%6> = DERIVED-IV ir<%n> + vp<%4> * ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: CLONE ir<%i.0> = add nsw vp<%6>, ir<-1>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: CLONE ir<%idxprom> = zext ir<%i.0>
@@ -1818,7 +1818,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT-SCALAR vp<%9> = zext vp<%5> to i64
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT vp<%index.evl.next> = add nuw vp<%9>, vp<%4>
 ; CHECK-NEXT:  LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: EMIT branch-on-count vp<%index.evl.next>, vp<%0>
-; CHECK-NEXT:  Cost of 1 for VF vscale x 4: EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:  Cost of 1 for VF vscale x 4: EMIT-SCALAR vp<%5> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:  LV: Vector loop of width vscale x 4 costs: 1 (assuming a minimum vscale of 2).
 ; CHECK-NEXT:  Cost of 1 for VF vscale x 4: induction instruction %indvars.iv.next = add nsw i64 %indvars.iv, -1
 ; CHECK-NEXT:  Cost of 0 for VF vscale x 4: induction instruction %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
@@ -1871,7 +1871,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:    EMIT-SCALAR vp<%index> = phi [ ir<0>, ir-bb<vector.ph> ], [ vp<%index.evl.next>, vector.body ]
 ; CHECK-NEXT:    EMIT-SCALAR vp<%evl.based.iv> = phi [ ir<0>, ir-bb<vector.ph> ], [ vp<%index.evl.next>, vector.body ]
 ; CHECK-NEXT:    EMIT vp<%avl> = sub ir<%0>, vp<%evl.based.iv>
-; CHECK-NEXT:    EMIT vp<%1> = EXPLICIT-VECTOR-LENGTH vp<%avl>
+; CHECK-NEXT:    EMIT-SCALAR vp<%1> = EXPLICIT-VECTOR-LENGTH vp<%avl>
 ; CHECK-NEXT:    vp<%2> = DERIVED-IV ir<%n> + vp<%evl.based.iv> * ir<-1>
 ; CHECK-NEXT:    CLONE ir<%i.0> = add nsw vp<%2>, ir<-1>
 ; CHECK-NEXT:    CLONE ir<%idxprom> = zext ir<%i.0>
