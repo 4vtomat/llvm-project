@@ -1454,7 +1454,12 @@ bool VPInstruction::isVectorToScalar() const {
 }
 
 bool VPInstruction::isSingleScalar() const {
+#if SIFIVE_CUSTOMIZATION
+  return getOpcode() == ExplicitVectorLength ||
+         getOpcode() == Instruction::PHI || isScalarCast();
+#else
   return getOpcode() == Instruction::PHI || isScalarCast();
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 void VPInstruction::execute(VPTransformState &State) {
