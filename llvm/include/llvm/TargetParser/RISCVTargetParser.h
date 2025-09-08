@@ -67,7 +67,7 @@ LLVM_ABI void fillValidTuneCPUArchList(SmallVectorImpl<StringRef> &Values,
 LLVM_ABI bool hasFastScalarUnalignedAccess(StringRef CPU);
 LLVM_ABI bool hasFastVectorUnalignedAccess(StringRef CPU);
 #if SIFIVE_CUSTOMIZATION
-bool hasSlowVectorFP64(StringRef CPU);
+LLVM_ABI bool hasSlowVectorFP64(StringRef CPU);
 #endif
 LLVM_ABI bool hasValidCPUModel(StringRef CPU);
 LLVM_ABI CPUModel getCPUModel(StringRef CPU);

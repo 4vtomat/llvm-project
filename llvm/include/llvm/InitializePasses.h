@@ -114,8 +114,8 @@ LLVM_ABI void initializeExpandFpLegacyPassPass(PassRegistry &);
 LLVM_ABI void initializeExpandLargeDivRemLegacyPassPass(PassRegistry &);
 LLVM_ABI void initializeExpandMemCmpLegacyPassPass(PassRegistry &);
 #if SIFIVE_CUSTOMIZATION
-void initializeExpandPowiLegacyPassPass(PassRegistry &);
-void initializeExpandVPReductionLegacyPassPass(PassRegistry &);
+LLVM_ABI void initializeExpandPowiLegacyPassPass(PassRegistry &);
+LLVM_ABI void initializeExpandVPReductionLegacyPassPass(PassRegistry &);
 #endif // SIFIVE_CUSTOMIZATION
 LLVM_ABI void initializeExpandPostRALegacyPass(PassRegistry &);
 LLVM_ABI void initializeExpandReductionsPass(PassRegistry &);
@@ -177,7 +177,7 @@ LLVM_ABI void initializeLocalStackSlotPassPass(PassRegistry &);
 LLVM_ABI void initializeLocalizerPass(PassRegistry &);
 LLVM_ABI void initializeLoopDataPrefetchLegacyPassPass(PassRegistry &);
 #if SIFIVE_CUSTOMIZATION
-void initializeLoopDataLayoutLegacyPassPass(PassRegistry &);
+LLVM_ABI void initializeLoopDataLayoutLegacyPassPass(PassRegistry &);
 #endif // SIFIVE_CUSTOMIZATION
 LLVM_ABI void initializeLoopExtractorLegacyPassPass(PassRegistry &);
 LLVM_ABI void initializeLoopInfoWrapperPassPass(PassRegistry &);
