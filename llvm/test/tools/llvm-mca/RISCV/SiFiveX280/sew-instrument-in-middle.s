@@ -30,7 +30,7 @@ vdiv.vv v8, v8, v12
 # CHECK-NEXT: [6]: HasSideEffects (U)
 
 # CHECK:      [1]    [2]    [3]    [4]    [5]    [6]    Instructions:
-# CHECK-NEXT:  1      1920  1920.00                     vdiv.vv	v8, v8, v12
+# CHECK-NEXT:  1      1024  1024.00                     vdiv.vv	v8, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, a0, e8, m8, tu, mu
 # CHECK-NEXT:  1      1024  1024.00                     vdiv.vv	v8, v8, v12
 

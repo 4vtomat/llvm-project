@@ -10,17 +10,17 @@ vsetvli zero, zero, e8, mf8, tu, mu
 vdiv.vv v12, v12, v12
 
 # CHECK:      Resources:
-# CHECK-NEXT: [0]   - VLEN1024X300SiFive7FDiv:1
-# CHECK-NEXT: [1]   - VLEN1024X300SiFive7IDiv:1
-# CHECK-NEXT: [2]   - VLEN1024X300SiFive7PipeA:1
-# CHECK-NEXT: [3]   - VLEN1024X300SiFive7PipeAB:2 VLEN1024X300SiFive7PipeA, VLEN1024X300SiFive7PipeB
-# CHECK-NEXT: [4]   - VLEN1024X300SiFive7PipeB:1
-# CHECK-NEXT: [5]   - VLEN1024X300SiFive7VA1:1
-# CHECK-NEXT: [6]   - VLEN1024X300SiFive7VA1OrVA2:2 VLEN1024X300SiFive7VA1, VLEN1024X300SiFive7VA2
-# CHECK-NEXT: [7]   - VLEN1024X300SiFive7VA2:1
-# CHECK-NEXT: [8]   - VLEN1024X300SiFive7VCQ:1
-# CHECK-NEXT: [9]   - VLEN1024X300SiFive7VL:1
-# CHECK-NEXT: [10]  - VLEN1024X300SiFive7VS:1
+# CHECK-NEXT: [0]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NFDiv:1
+# CHECK-NEXT: [1]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NIDiv:1
+# CHECK-NEXT: [2]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA:1
+# CHECK-NEXT: [3]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB:2 VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA, VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeB
+# CHECK-NEXT: [4]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeB:1
+# CHECK-NEXT: [5]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1:1
+# CHECK-NEXT: [6]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2:2 VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1, VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA2
+# CHECK-NEXT: [7]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA2:1
+# CHECK-NEXT: [8]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ:1
+# CHECK-NEXT: [9]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVL:1
+# CHECK-NEXT: [10]  - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVS:1
 
 # CHECK:      Instruction Info:
 # CHECK-NEXT: [1]: #uOps
@@ -34,29 +34,29 @@ vdiv.vv v12, v12, v12
 # CHECK-NEXT: [9]: LLVM Opcode Name
 
 # CHECK:      [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]                                        [9]                        Instructions:
-# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024X300SiFive7PipeA,VLEN1024X300SiFive7PipeAB VSETVLI            vsetvli	zero, zero, e32, mf2, tu, mu
-# CHECK-NEXT:  1      112   112.00                       112   VLEN1024X300SiFive7VA1[1,113],VLEN1024X300SiFive7VA1OrVA2[1,113],VLEN1024X300SiFive7VCQ VDIV_VV vdiv.vv	v12, v12, v12
-# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024X300SiFive7PipeA,VLEN1024X300SiFive7PipeAB VSETVLI            vsetvli	zero, zero, e8, mf8, tu, mu
-# CHECK-NEXT:  1      60    60.00                        60    VLEN1024X300SiFive7VA1[1,61],VLEN1024X300SiFive7VA1OrVA2[1,61],VLEN1024X300SiFive7VCQ VDIV_VV vdiv.vv	v12, v12, v12
+# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e32, mf2, tu, mu
+# CHECK-NEXT:  1      128   128.00                       128   VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,129],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,129],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VDIV_VV vdiv.vv	v12, v12, v12
+# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e8, mf8, tu, mu
+# CHECK-NEXT:  1      32    32.00                        32    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,33],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,33],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VDIV_VV vdiv.vv	v12, v12, v12
 
 # CHECK:      Resources:
-# CHECK-NEXT: [0]   - VLEN1024X300SiFive7FDiv
-# CHECK-NEXT: [1]   - VLEN1024X300SiFive7IDiv
-# CHECK-NEXT: [2]   - VLEN1024X300SiFive7PipeA
-# CHECK-NEXT: [3]   - VLEN1024X300SiFive7PipeB
-# CHECK-NEXT: [4]   - VLEN1024X300SiFive7VA1
-# CHECK-NEXT: [5]   - VLEN1024X300SiFive7VA2
-# CHECK-NEXT: [6]   - VLEN1024X300SiFive7VCQ
-# CHECK-NEXT: [7]   - VLEN1024X300SiFive7VL
-# CHECK-NEXT: [8]   - VLEN1024X300SiFive7VS
+# CHECK-NEXT: [0]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NFDiv
+# CHECK-NEXT: [1]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NIDiv
+# CHECK-NEXT: [2]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA
+# CHECK-NEXT: [3]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeB
+# CHECK-NEXT: [4]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1
+# CHECK-NEXT: [5]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA2
+# CHECK-NEXT: [6]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ
+# CHECK-NEXT: [7]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVL
+# CHECK-NEXT: [8]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVS
 
 # CHECK:      Resource pressure per iteration:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]
-# CHECK-NEXT:  -      -     2.00    -     174.00  -     2.00    -      -
+# CHECK-NEXT:  -      -     2.00    -     162.00  -     2.00    -      -
 
 # CHECK:      Resource pressure by instruction:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e32, mf2, tu, mu
-# CHECK-NEXT:  -      -      -      -     113.00  -     1.00    -      -     vdiv.vv	v12, v12, v12
+# CHECK-NEXT:  -      -      -      -     129.00  -     1.00    -      -     vdiv.vv	v12, v12, v12
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e8, mf8, tu, mu
-# CHECK-NEXT:  -      -      -      -     61.00   -     1.00    -      -     vdiv.vv	v12, v12, v12
+# CHECK-NEXT:  -      -      -      -     33.00   -     1.00    -      -     vdiv.vv	v12, v12, v12

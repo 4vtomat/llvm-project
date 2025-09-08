@@ -97,17 +97,17 @@ vrgatherei16.vv v8, v16, v24
 vcompress.vm v8, v16, v24
 
 # CHECK:      Resources:
-# CHECK-NEXT: [0]   - VLEN1024X300SiFive7FDiv:1
-# CHECK-NEXT: [1]   - VLEN1024X300SiFive7IDiv:1
-# CHECK-NEXT: [2]   - VLEN1024X300SiFive7PipeA:1
-# CHECK-NEXT: [3]   - VLEN1024X300SiFive7PipeAB:2 VLEN1024X300SiFive7PipeA, VLEN1024X300SiFive7PipeB
-# CHECK-NEXT: [4]   - VLEN1024X300SiFive7PipeB:1
-# CHECK-NEXT: [5]   - VLEN1024X300SiFive7VA1:1
-# CHECK-NEXT: [6]   - VLEN1024X300SiFive7VA1OrVA2:2 VLEN1024X300SiFive7VA1, VLEN1024X300SiFive7VA2
-# CHECK-NEXT: [7]   - VLEN1024X300SiFive7VA2:1
-# CHECK-NEXT: [8]   - VLEN1024X300SiFive7VCQ:1
-# CHECK-NEXT: [9]   - VLEN1024X300SiFive7VL:1
-# CHECK-NEXT: [10]  - VLEN1024X300SiFive7VS:1
+# CHECK-NEXT: [0]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NFDiv:1
+# CHECK-NEXT: [1]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NIDiv:1
+# CHECK-NEXT: [2]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA:1
+# CHECK-NEXT: [3]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB:2 VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA, VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeB
+# CHECK-NEXT: [4]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeB:1
+# CHECK-NEXT: [5]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1:1
+# CHECK-NEXT: [6]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2:2 VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1, VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA2
+# CHECK-NEXT: [7]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA2:1
+# CHECK-NEXT: [8]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ:1
+# CHECK-NEXT: [9]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVL:1
+# CHECK-NEXT: [10]  - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVS:1
 
 # CHECK:      Instruction Info:
 # CHECK-NEXT: [1]: #uOps
@@ -121,197 +121,197 @@ vcompress.vm v8, v16, v24
 # CHECK-NEXT: [9]: LLVM Opcode Name
 
 # CHECK:      [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]                                        [9]                        Instructions:
-# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024X300SiFive7PipeA,VLEN1024X300SiFive7PipeAB VSETVLI            vsetvli	zero, zero, e8, mf8, tu, mu
-# CHECK-NEXT:  1      19    16.00                        19    VLEN1024X300SiFive7VA1[1,17],VLEN1024X300SiFive7VA1OrVA2[1,17],VLEN1024X300SiFive7VCQ VRGATHER_VV vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      19    16.00                        19    VLEN1024X300SiFive7VA1[1,17],VLEN1024X300SiFive7VA1OrVA2[1,17],VLEN1024X300SiFive7VCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  1      19    16.00                        19    VLEN1024X300SiFive7VA1[1,17],VLEN1024X300SiFive7VA1OrVA2[1,17],VLEN1024X300SiFive7VCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
-# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024X300SiFive7PipeA,VLEN1024X300SiFive7PipeAB VSETVLI            vsetvli	zero, zero, e8, mf4, tu, mu
-# CHECK-NEXT:  1      35    32.00                        35    VLEN1024X300SiFive7VA1[1,33],VLEN1024X300SiFive7VA1OrVA2[1,33],VLEN1024X300SiFive7VCQ VRGATHER_VV vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      35    32.00                        35    VLEN1024X300SiFive7VA1[1,33],VLEN1024X300SiFive7VA1OrVA2[1,33],VLEN1024X300SiFive7VCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  1      35    32.00                        35    VLEN1024X300SiFive7VA1[1,33],VLEN1024X300SiFive7VA1OrVA2[1,33],VLEN1024X300SiFive7VCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
-# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024X300SiFive7PipeA,VLEN1024X300SiFive7PipeAB VSETVLI            vsetvli	zero, zero, e8, mf2, tu, mu
-# CHECK-NEXT:  1      67    64.00                        67    VLEN1024X300SiFive7VA1[1,65],VLEN1024X300SiFive7VA1OrVA2[1,65],VLEN1024X300SiFive7VCQ VRGATHER_VV vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      67    64.00                        67    VLEN1024X300SiFive7VA1[1,65],VLEN1024X300SiFive7VA1OrVA2[1,65],VLEN1024X300SiFive7VCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  1      67    64.00                        67    VLEN1024X300SiFive7VA1[1,65],VLEN1024X300SiFive7VA1OrVA2[1,65],VLEN1024X300SiFive7VCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
-# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024X300SiFive7PipeA,VLEN1024X300SiFive7PipeAB VSETVLI            vsetvli	zero, zero, e8, m1, tu, mu
-# CHECK-NEXT:  1      131   128.00                       131   VLEN1024X300SiFive7VA1[1,129],VLEN1024X300SiFive7VA1OrVA2[1,129],VLEN1024X300SiFive7VCQ VRGATHER_VV vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      131   128.00                       131   VLEN1024X300SiFive7VA1[1,129],VLEN1024X300SiFive7VA1OrVA2[1,129],VLEN1024X300SiFive7VCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  1      131   128.00                       131   VLEN1024X300SiFive7VA1[1,129],VLEN1024X300SiFive7VA1OrVA2[1,129],VLEN1024X300SiFive7VCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
-# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024X300SiFive7PipeA,VLEN1024X300SiFive7PipeAB VSETVLI            vsetvli	zero, zero, e8, m2, tu, mu
-# CHECK-NEXT:  1      259   256.00                       259   VLEN1024X300SiFive7VA1[1,257],VLEN1024X300SiFive7VA1OrVA2[1,257],VLEN1024X300SiFive7VCQ VRGATHER_VV vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      259   256.00                       259   VLEN1024X300SiFive7VA1[1,257],VLEN1024X300SiFive7VA1OrVA2[1,257],VLEN1024X300SiFive7VCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  1      259   256.00                       259   VLEN1024X300SiFive7VA1[1,257],VLEN1024X300SiFive7VA1OrVA2[1,257],VLEN1024X300SiFive7VCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
-# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024X300SiFive7PipeA,VLEN1024X300SiFive7PipeAB VSETVLI            vsetvli	zero, zero, e8, m4, tu, mu
-# CHECK-NEXT:  1      515   512.00                       515   VLEN1024X300SiFive7VA1[1,513],VLEN1024X300SiFive7VA1OrVA2[1,513],VLEN1024X300SiFive7VCQ VRGATHER_VV vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      515   512.00                       515   VLEN1024X300SiFive7VA1[1,513],VLEN1024X300SiFive7VA1OrVA2[1,513],VLEN1024X300SiFive7VCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  1      515   512.00                       515   VLEN1024X300SiFive7VA1[1,513],VLEN1024X300SiFive7VA1OrVA2[1,513],VLEN1024X300SiFive7VCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
-# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024X300SiFive7PipeA,VLEN1024X300SiFive7PipeAB VSETVLI            vsetvli	zero, zero, e8, m8, tu, mu
-# CHECK-NEXT:  1      1027  1024.00                      1027  VLEN1024X300SiFive7VA1[1,1025],VLEN1024X300SiFive7VA1OrVA2[1,1025],VLEN1024X300SiFive7VCQ VRGATHER_VV vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      1027  1024.00                      1027  VLEN1024X300SiFive7VA1[1,1025],VLEN1024X300SiFive7VA1OrVA2[1,1025],VLEN1024X300SiFive7VCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  1      1027  1024.00                      1027  VLEN1024X300SiFive7VA1[1,1025],VLEN1024X300SiFive7VA1OrVA2[1,1025],VLEN1024X300SiFive7VCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
-# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024X300SiFive7PipeA,VLEN1024X300SiFive7PipeAB VSETVLI            vsetvli	zero, zero, e16, mf4, tu, mu
-# CHECK-NEXT:  1      19    16.00                        19    VLEN1024X300SiFive7VA1[1,17],VLEN1024X300SiFive7VA1OrVA2[1,17],VLEN1024X300SiFive7VCQ VRGATHER_VV vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      19    16.00                        19    VLEN1024X300SiFive7VA1[1,17],VLEN1024X300SiFive7VA1OrVA2[1,17],VLEN1024X300SiFive7VCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  1      19    16.00                        19    VLEN1024X300SiFive7VA1[1,17],VLEN1024X300SiFive7VA1OrVA2[1,17],VLEN1024X300SiFive7VCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
-# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024X300SiFive7PipeA,VLEN1024X300SiFive7PipeAB VSETVLI            vsetvli	zero, zero, e16, mf2, tu, mu
-# CHECK-NEXT:  1      35    32.00                        35    VLEN1024X300SiFive7VA1[1,33],VLEN1024X300SiFive7VA1OrVA2[1,33],VLEN1024X300SiFive7VCQ VRGATHER_VV vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      35    32.00                        35    VLEN1024X300SiFive7VA1[1,33],VLEN1024X300SiFive7VA1OrVA2[1,33],VLEN1024X300SiFive7VCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  1      35    32.00                        35    VLEN1024X300SiFive7VA1[1,33],VLEN1024X300SiFive7VA1OrVA2[1,33],VLEN1024X300SiFive7VCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
-# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024X300SiFive7PipeA,VLEN1024X300SiFive7PipeAB VSETVLI            vsetvli	zero, zero, e16, m1, tu, mu
-# CHECK-NEXT:  1      67    64.00                        67    VLEN1024X300SiFive7VA1[1,65],VLEN1024X300SiFive7VA1OrVA2[1,65],VLEN1024X300SiFive7VCQ VRGATHER_VV vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      67    64.00                        67    VLEN1024X300SiFive7VA1[1,65],VLEN1024X300SiFive7VA1OrVA2[1,65],VLEN1024X300SiFive7VCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  1      67    64.00                        67    VLEN1024X300SiFive7VA1[1,65],VLEN1024X300SiFive7VA1OrVA2[1,65],VLEN1024X300SiFive7VCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
-# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024X300SiFive7PipeA,VLEN1024X300SiFive7PipeAB VSETVLI            vsetvli	zero, zero, e16, m2, tu, mu
-# CHECK-NEXT:  1      131   128.00                       131   VLEN1024X300SiFive7VA1[1,129],VLEN1024X300SiFive7VA1OrVA2[1,129],VLEN1024X300SiFive7VCQ VRGATHER_VV vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      131   128.00                       131   VLEN1024X300SiFive7VA1[1,129],VLEN1024X300SiFive7VA1OrVA2[1,129],VLEN1024X300SiFive7VCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  1      131   128.00                       131   VLEN1024X300SiFive7VA1[1,129],VLEN1024X300SiFive7VA1OrVA2[1,129],VLEN1024X300SiFive7VCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
-# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024X300SiFive7PipeA,VLEN1024X300SiFive7PipeAB VSETVLI            vsetvli	zero, zero, e16, m4, tu, mu
-# CHECK-NEXT:  1      259   256.00                       259   VLEN1024X300SiFive7VA1[1,257],VLEN1024X300SiFive7VA1OrVA2[1,257],VLEN1024X300SiFive7VCQ VRGATHER_VV vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      259   256.00                       259   VLEN1024X300SiFive7VA1[1,257],VLEN1024X300SiFive7VA1OrVA2[1,257],VLEN1024X300SiFive7VCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  1      259   256.00                       259   VLEN1024X300SiFive7VA1[1,257],VLEN1024X300SiFive7VA1OrVA2[1,257],VLEN1024X300SiFive7VCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
-# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024X300SiFive7PipeA,VLEN1024X300SiFive7PipeAB VSETVLI            vsetvli	zero, zero, e16, m8, tu, mu
-# CHECK-NEXT:  1      515   512.00                       515   VLEN1024X300SiFive7VA1[1,513],VLEN1024X300SiFive7VA1OrVA2[1,513],VLEN1024X300SiFive7VCQ VRGATHER_VV vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      515   512.00                       515   VLEN1024X300SiFive7VA1[1,513],VLEN1024X300SiFive7VA1OrVA2[1,513],VLEN1024X300SiFive7VCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  1      515   512.00                       515   VLEN1024X300SiFive7VA1[1,513],VLEN1024X300SiFive7VA1OrVA2[1,513],VLEN1024X300SiFive7VCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
-# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024X300SiFive7PipeA,VLEN1024X300SiFive7PipeAB VSETVLI            vsetvli	zero, zero, e32, mf2, tu, mu
-# CHECK-NEXT:  1      19    16.00                        19    VLEN1024X300SiFive7VA1[1,17],VLEN1024X300SiFive7VA1OrVA2[1,17],VLEN1024X300SiFive7VCQ VRGATHER_VV vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      19    16.00                        19    VLEN1024X300SiFive7VA1[1,17],VLEN1024X300SiFive7VA1OrVA2[1,17],VLEN1024X300SiFive7VCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  1      19    16.00                        19    VLEN1024X300SiFive7VA1[1,17],VLEN1024X300SiFive7VA1OrVA2[1,17],VLEN1024X300SiFive7VCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
-# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024X300SiFive7PipeA,VLEN1024X300SiFive7PipeAB VSETVLI            vsetvli	zero, zero, e32, m1, tu, mu
-# CHECK-NEXT:  1      35    32.00                        35    VLEN1024X300SiFive7VA1[1,33],VLEN1024X300SiFive7VA1OrVA2[1,33],VLEN1024X300SiFive7VCQ VRGATHER_VV vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      35    32.00                        35    VLEN1024X300SiFive7VA1[1,33],VLEN1024X300SiFive7VA1OrVA2[1,33],VLEN1024X300SiFive7VCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  1      35    32.00                        35    VLEN1024X300SiFive7VA1[1,33],VLEN1024X300SiFive7VA1OrVA2[1,33],VLEN1024X300SiFive7VCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
-# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024X300SiFive7PipeA,VLEN1024X300SiFive7PipeAB VSETVLI            vsetvli	zero, zero, e32, m2, tu, mu
-# CHECK-NEXT:  1      67    64.00                        67    VLEN1024X300SiFive7VA1[1,65],VLEN1024X300SiFive7VA1OrVA2[1,65],VLEN1024X300SiFive7VCQ VRGATHER_VV vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      67    64.00                        67    VLEN1024X300SiFive7VA1[1,65],VLEN1024X300SiFive7VA1OrVA2[1,65],VLEN1024X300SiFive7VCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  1      67    64.00                        67    VLEN1024X300SiFive7VA1[1,65],VLEN1024X300SiFive7VA1OrVA2[1,65],VLEN1024X300SiFive7VCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
-# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024X300SiFive7PipeA,VLEN1024X300SiFive7PipeAB VSETVLI            vsetvli	zero, zero, e32, m4, tu, mu
-# CHECK-NEXT:  1      131   128.00                       131   VLEN1024X300SiFive7VA1[1,129],VLEN1024X300SiFive7VA1OrVA2[1,129],VLEN1024X300SiFive7VCQ VRGATHER_VV vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      131   128.00                       131   VLEN1024X300SiFive7VA1[1,129],VLEN1024X300SiFive7VA1OrVA2[1,129],VLEN1024X300SiFive7VCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  1      131   128.00                       131   VLEN1024X300SiFive7VA1[1,129],VLEN1024X300SiFive7VA1OrVA2[1,129],VLEN1024X300SiFive7VCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
-# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024X300SiFive7PipeA,VLEN1024X300SiFive7PipeAB VSETVLI            vsetvli	zero, zero, e32, m8, tu, mu
-# CHECK-NEXT:  1      259   256.00                       259   VLEN1024X300SiFive7VA1[1,257],VLEN1024X300SiFive7VA1OrVA2[1,257],VLEN1024X300SiFive7VCQ VRGATHER_VV vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      259   256.00                       259   VLEN1024X300SiFive7VA1[1,257],VLEN1024X300SiFive7VA1OrVA2[1,257],VLEN1024X300SiFive7VCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  1      259   256.00                       259   VLEN1024X300SiFive7VA1[1,257],VLEN1024X300SiFive7VA1OrVA2[1,257],VLEN1024X300SiFive7VCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
-# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024X300SiFive7PipeA,VLEN1024X300SiFive7PipeAB VSETVLI            vsetvli	zero, zero, e64, m1, tu, mu
-# CHECK-NEXT:  1      19    16.00                        19    VLEN1024X300SiFive7VA1[1,17],VLEN1024X300SiFive7VA1OrVA2[1,17],VLEN1024X300SiFive7VCQ VRGATHER_VV vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      19    16.00                        19    VLEN1024X300SiFive7VA1[1,17],VLEN1024X300SiFive7VA1OrVA2[1,17],VLEN1024X300SiFive7VCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  1      19    16.00                        19    VLEN1024X300SiFive7VA1[1,17],VLEN1024X300SiFive7VA1OrVA2[1,17],VLEN1024X300SiFive7VCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
-# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024X300SiFive7PipeA,VLEN1024X300SiFive7PipeAB VSETVLI            vsetvli	zero, zero, e64, m2, tu, mu
-# CHECK-NEXT:  1      35    32.00                        35    VLEN1024X300SiFive7VA1[1,33],VLEN1024X300SiFive7VA1OrVA2[1,33],VLEN1024X300SiFive7VCQ VRGATHER_VV vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      35    32.00                        35    VLEN1024X300SiFive7VA1[1,33],VLEN1024X300SiFive7VA1OrVA2[1,33],VLEN1024X300SiFive7VCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  1      35    32.00                        35    VLEN1024X300SiFive7VA1[1,33],VLEN1024X300SiFive7VA1OrVA2[1,33],VLEN1024X300SiFive7VCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
-# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024X300SiFive7PipeA,VLEN1024X300SiFive7PipeAB VSETVLI            vsetvli	zero, zero, e64, m4, tu, mu
-# CHECK-NEXT:  1      67    64.00                        67    VLEN1024X300SiFive7VA1[1,65],VLEN1024X300SiFive7VA1OrVA2[1,65],VLEN1024X300SiFive7VCQ VRGATHER_VV vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      67    64.00                        67    VLEN1024X300SiFive7VA1[1,65],VLEN1024X300SiFive7VA1OrVA2[1,65],VLEN1024X300SiFive7VCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  1      67    64.00                        67    VLEN1024X300SiFive7VA1[1,65],VLEN1024X300SiFive7VA1OrVA2[1,65],VLEN1024X300SiFive7VCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
-# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024X300SiFive7PipeA,VLEN1024X300SiFive7PipeAB VSETVLI            vsetvli	zero, zero, e64, m8, tu, mu
-# CHECK-NEXT:  1      131   128.00                       131   VLEN1024X300SiFive7VA1[1,129],VLEN1024X300SiFive7VA1OrVA2[1,129],VLEN1024X300SiFive7VCQ VRGATHER_VV vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      131   128.00                       131   VLEN1024X300SiFive7VA1[1,129],VLEN1024X300SiFive7VA1OrVA2[1,129],VLEN1024X300SiFive7VCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  1      131   128.00                       131   VLEN1024X300SiFive7VA1[1,129],VLEN1024X300SiFive7VA1OrVA2[1,129],VLEN1024X300SiFive7VCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e8, mf8, tu, mu
+# CHECK-NEXT:  1      4     5.00                         4     VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,6],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,6],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHER_VV vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  1      71    20.00                        71    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,21],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,21],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      4     8.00                         4     VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,9],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,9],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e8, mf4, tu, mu
+# CHECK-NEXT:  1      4     5.00                         4     VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,6],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,6],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHER_VV vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  1      71    36.00                        71    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,37],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,37],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      4     8.00                         4     VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,9],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,9],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e8, mf2, tu, mu
+# CHECK-NEXT:  1      4     5.00                         4     VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,6],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,6],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHER_VV vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  1      71    68.00                        71    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,69],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,69],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      4     8.00                         4     VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,9],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,9],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e8, m1, tu, mu
+# CHECK-NEXT:  1      7     8.00                         7     VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,9],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,9],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHER_VV vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  1      71    132.00                       71    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,133],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,133],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      135   135.00                       135   VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,136],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,136],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e8, m2, tu, mu
+# CHECK-NEXT:  1      19    20.00                        19    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,21],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,21],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHER_VV vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  1      71    260.00                       71    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,261],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,261],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      263   263.00                       263   VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,264],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,264],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e8, m4, tu, mu
+# CHECK-NEXT:  1      67    68.00                        67    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,69],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,69],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHER_VV vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  1      71    516.00                       71    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,517],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,517],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      519   519.00                       519   VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,520],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,520],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e8, m8, tu, mu
+# CHECK-NEXT:  1      259   260.00                       259   VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,261],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,261],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHER_VV vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  1      71    1028.00                      71    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,1029],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,1029],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      1031  1031.00                      1031  VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,1032],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,1032],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e16, mf4, tu, mu
+# CHECK-NEXT:  1      4     5.00                         4     VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,6],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,6],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHER_VV vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  1      39    20.00                        39    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,21],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,21],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      4     8.00                         4     VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,9],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,9],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e16, mf2, tu, mu
+# CHECK-NEXT:  1      4     5.00                         4     VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,6],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,6],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHER_VV vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  1      39    36.00                        39    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,37],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,37],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      4     8.00                         4     VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,9],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,9],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e16, m1, tu, mu
+# CHECK-NEXT:  1      7     8.00                         7     VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,9],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,9],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHER_VV vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  1      39    68.00                        39    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,69],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,69],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      71    71.00                        71    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,72],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,72],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e16, m2, tu, mu
+# CHECK-NEXT:  1      19    20.00                        19    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,21],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,21],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHER_VV vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  1      39    132.00                       39    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,133],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,133],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      135   135.00                       135   VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,136],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,136],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e16, m4, tu, mu
+# CHECK-NEXT:  1      67    68.00                        67    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,69],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,69],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHER_VV vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  1      39    260.00                       39    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,261],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,261],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      263   263.00                       263   VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,264],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,264],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e16, m8, tu, mu
+# CHECK-NEXT:  1      259   260.00                       259   VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,261],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,261],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHER_VV vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  1      39    516.00                       39    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,517],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,517],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      519   519.00                       519   VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,520],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,520],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e32, mf2, tu, mu
+# CHECK-NEXT:  1      4     5.00                         4     VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,6],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,6],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHER_VV vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  1      23    20.00                        23    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,21],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,21],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      4     8.00                         4     VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,9],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,9],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e32, m1, tu, mu
+# CHECK-NEXT:  1      7     8.00                         7     VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,9],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,9],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHER_VV vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  1      23    36.00                        23    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,37],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,37],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      39    39.00                        39    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,40],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,40],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e32, m2, tu, mu
+# CHECK-NEXT:  1      19    20.00                        19    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,21],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,21],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHER_VV vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  1      23    68.00                        23    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,69],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,69],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      71    71.00                        71    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,72],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,72],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e32, m4, tu, mu
+# CHECK-NEXT:  1      67    68.00                        67    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,69],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,69],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHER_VV vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  1      23    132.00                       23    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,133],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,133],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      135   135.00                       135   VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,136],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,136],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e32, m8, tu, mu
+# CHECK-NEXT:  1      259   260.00                       259   VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,261],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,261],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHER_VV vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  1      23    260.00                       23    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,261],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,261],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      263   263.00                       263   VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,264],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,264],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e64, m1, tu, mu
+# CHECK-NEXT:  1      7     8.00                         7     VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,9],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,9],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHER_VV vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  1      15    20.00                        15    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,21],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,21],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      23    23.00                        23    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,24],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,24],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e64, m2, tu, mu
+# CHECK-NEXT:  1      19    20.00                        19    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,21],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,21],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHER_VV vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  1      15    36.00                        15    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,37],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,37],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      39    39.00                        39    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,40],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,40],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e64, m4, tu, mu
+# CHECK-NEXT:  1      67    68.00                        67    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,69],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,69],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHER_VV vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  1      15    68.00                        15    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,69],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,69],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      71    71.00                        71    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,72],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,72],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  1      3     1.00                  U      1     VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA,VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e64, m8, tu, mu
+# CHECK-NEXT:  1      131   132.00                       131   VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,133],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,133],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHER_VV vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  1      15    132.00                       15    VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,133],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,133],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VRGATHEREI16_VV vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      135   135.00                       135   VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1[1,136],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1OrVA2[1,136],VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ VCOMPRESS_VM vcompress.vm	v8, v16, v24
 
 # CHECK:      Resources:
-# CHECK-NEXT: [0]   - VLEN1024X300SiFive7FDiv
-# CHECK-NEXT: [1]   - VLEN1024X300SiFive7IDiv
-# CHECK-NEXT: [2]   - VLEN1024X300SiFive7PipeA
-# CHECK-NEXT: [3]   - VLEN1024X300SiFive7PipeB
-# CHECK-NEXT: [4]   - VLEN1024X300SiFive7VA1
-# CHECK-NEXT: [5]   - VLEN1024X300SiFive7VA2
-# CHECK-NEXT: [6]   - VLEN1024X300SiFive7VCQ
-# CHECK-NEXT: [7]   - VLEN1024X300SiFive7VL
-# CHECK-NEXT: [8]   - VLEN1024X300SiFive7VS
+# CHECK-NEXT: [0]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NFDiv
+# CHECK-NEXT: [1]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NIDiv
+# CHECK-NEXT: [2]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA
+# CHECK-NEXT: [3]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeB
+# CHECK-NEXT: [4]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1
+# CHECK-NEXT: [5]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA2
+# CHECK-NEXT: [6]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ
+# CHECK-NEXT: [7]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVL
+# CHECK-NEXT: [8]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVS
 
 # CHECK:      Resource pressure per iteration:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]
-# CHECK-NEXT:  -      -     22.00   -     11394.00  -   66.00   -      -
+# CHECK-NEXT:  -      -     22.00   -     9016.00  -    66.00   -      -
 
 # CHECK:      Resource pressure by instruction:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e8, mf8, tu, mu
-# CHECK-NEXT:  -      -      -      -     17.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     17.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     17.00   -     1.00    -      -     vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     6.00    -     1.00    -      -     vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     21.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     9.00    -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e8, mf4, tu, mu
-# CHECK-NEXT:  -      -      -      -     33.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     33.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     33.00   -     1.00    -      -     vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     6.00    -     1.00    -      -     vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     37.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     9.00    -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e8, mf2, tu, mu
-# CHECK-NEXT:  -      -      -      -     65.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     65.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     65.00   -     1.00    -      -     vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     6.00    -     1.00    -      -     vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     69.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     9.00    -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e8, m1, tu, mu
-# CHECK-NEXT:  -      -      -      -     129.00  -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     129.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     129.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     9.00    -     1.00    -      -     vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     133.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     136.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e8, m2, tu, mu
-# CHECK-NEXT:  -      -      -      -     257.00  -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     257.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     257.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     21.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     261.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     264.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e8, m4, tu, mu
-# CHECK-NEXT:  -      -      -      -     513.00  -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     513.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     513.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     69.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     517.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     520.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e8, m8, tu, mu
-# CHECK-NEXT:  -      -      -      -     1025.00  -    1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     1025.00  -    1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     1025.00  -    1.00    -      -     vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     261.00  -     1.00    -      -     vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     1029.00  -    1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     1032.00  -    1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e16, mf4, tu, mu
-# CHECK-NEXT:  -      -      -      -     17.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     17.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     17.00   -     1.00    -      -     vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     6.00    -     1.00    -      -     vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     21.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     9.00    -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e16, mf2, tu, mu
-# CHECK-NEXT:  -      -      -      -     33.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     33.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     33.00   -     1.00    -      -     vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     6.00    -     1.00    -      -     vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     37.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     9.00    -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e16, m1, tu, mu
-# CHECK-NEXT:  -      -      -      -     65.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     65.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     65.00   -     1.00    -      -     vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     9.00    -     1.00    -      -     vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     69.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     72.00   -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e16, m2, tu, mu
-# CHECK-NEXT:  -      -      -      -     129.00  -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     129.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     129.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     21.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     133.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     136.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e16, m4, tu, mu
-# CHECK-NEXT:  -      -      -      -     257.00  -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     257.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     257.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     69.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     261.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     264.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e16, m8, tu, mu
-# CHECK-NEXT:  -      -      -      -     513.00  -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     513.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     513.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     261.00  -     1.00    -      -     vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     517.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     520.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e32, mf2, tu, mu
-# CHECK-NEXT:  -      -      -      -     17.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     17.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     17.00   -     1.00    -      -     vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     6.00    -     1.00    -      -     vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     21.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     9.00    -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e32, m1, tu, mu
-# CHECK-NEXT:  -      -      -      -     33.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     33.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     33.00   -     1.00    -      -     vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     9.00    -     1.00    -      -     vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     37.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     40.00   -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e32, m2, tu, mu
-# CHECK-NEXT:  -      -      -      -     65.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     65.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     65.00   -     1.00    -      -     vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     21.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     69.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     72.00   -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e32, m4, tu, mu
-# CHECK-NEXT:  -      -      -      -     129.00  -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     129.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     129.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     69.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     133.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     136.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e32, m8, tu, mu
-# CHECK-NEXT:  -      -      -      -     257.00  -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     257.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     257.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     261.00  -     1.00    -      -     vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     261.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     264.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e64, m1, tu, mu
-# CHECK-NEXT:  -      -      -      -     17.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     17.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     17.00   -     1.00    -      -     vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     9.00    -     1.00    -      -     vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     21.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     24.00   -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e64, m2, tu, mu
-# CHECK-NEXT:  -      -      -      -     33.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     33.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     33.00   -     1.00    -      -     vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     21.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     37.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     40.00   -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e64, m4, tu, mu
-# CHECK-NEXT:  -      -      -      -     65.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     65.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     65.00   -     1.00    -      -     vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     69.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     69.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     72.00   -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e64, m8, tu, mu
-# CHECK-NEXT:  -      -      -      -     129.00  -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     129.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -     129.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     133.00  -     1.00    -      -     vrgather.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     133.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -     136.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
