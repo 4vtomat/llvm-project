@@ -376,7 +376,6 @@ public:
   /// Returns the sentinel value for FindFirstIV & FindLastIV recurrences to
   /// replace the start value.
   Value *getSentinelValue() const {
-    assert(isFindLastIVRecurrenceKind(Kind) && "Unexpected recurrence kind");
 #if SIFIVE_CUSTOMIZATION
     return SentinelValue;
 #else

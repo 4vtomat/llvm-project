@@ -461,8 +461,9 @@ LLVM_ABI Value *createAnyOfReduction(IRBuilderBase &B, Value *Src,
                                      Value *InitVal, PHINode *OrigPhi);
 
 #if SIFIVE_CUSTOMIZATION
-Value *createAnyOfReduction(IRBuilderBase &B, Value *Src, Value *InitVal,
-                            PHINode *OrigPhi, Value *EVL);
+LLVM_ABI Value *createAnyOfReduction(IRBuilderBase &B, Value *Src,
+                                     Value *InitVal, PHINode *OrigPhi,
+                                     Value *EVL);
 #endif // SIFIVE_CUSTOMIZATION
 
 /// Create a reduction of the given vector \p Src for a reduction of the
@@ -473,9 +474,10 @@ LLVM_ABI Value *createFindLastIVReduction(IRBuilderBase &B, Value *Src,
 #if SIFIVE_CUSTOMIZATION
 /// Allow \p Mask when folding by \p EVL. The mask is all-true if \p Mask is
 /// nullptr.
-Value *createFindLastIVReduction(IRBuilderBase &B, Value *Src, Value *Start,
-                                 Value *Sentinel, Value *EVL,
-                                 Value *Mask = nullptr);
+LLVM_ABI Value *createFindLastIVReduction(IRBuilderBase &B, Value *Src,
+                                          RecurKind RdxKind, Value *Start,
+                                          Value *Sentinel, Value *EVL,
+                                          Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
 
 /// Create an ordered reduction intrinsic using the given recurrence

@@ -726,19 +726,36 @@ RecurrenceDescriptor::isFindIVPattern(RecurKind Kind, Loop *TheLoop,
 
   // Returns a non-nullopt boolean indicating the signedness of the recurrence
   // when a valid FindLastIV pattern is found.
+#if SIFIVE_CUSTOMIZATION
+  auto GetRecurKindAndSentinel =
+      [&](Value *V) -> std::pair<std::optional<RecurKind>, Value *> {
+#else
   auto GetRecurKind = [&](Value *V) -> std::optional<RecurKind> {
+#endif // SIFIVE_CUSTOMIZATION
     Type *Ty = V->getType();
     if (!SE.isSCEVable(Ty))
+#if SIFIVE_CUSTOMIZATION
+      return {std::nullopt, nullptr};
+#else
       return std::nullopt;
+#endif // SIFIVE_CUSTOMIZATION
 
     auto *AR = dyn_cast<SCEVAddRecExpr>(SE.getSCEV(V));
     if (!AR || AR->getLoop() != TheLoop)
+#if SIFIVE_CUSTOMIZATION
+      return {std::nullopt, nullptr};
+#else
       return std::nullopt;
+#endif // SIFIVE_CUSTOMIZATION
 
     const SCEV *Step = AR->getStepRecurrence(SE);
     if ((isFindFirstIVRecurrenceKind(Kind) && !SE.isKnownNegative(Step)) ||
         (isFindLastIVRecurrenceKind(Kind) && !SE.isKnownPositive(Step)))
+#if SIFIVE_CUSTOMIZATION
+      return {std::nullopt, nullptr};
+#else
       return std::nullopt;
+#endif // SIFIVE_CUSTOMIZATION
 
     // Keep the minimum value of the recurrence type as the sentinel value.
     // The maximum acceptable range for the increasing induction variable,
@@ -752,10 +769,28 @@ RecurrenceDescriptor::isFindIVPattern(RecurKind Kind, Loop *TheLoop,
     // FindLastIV or [Signed|Unsigned]Max(<recurrence type>) for FindFirstIV.
     // TODO: This range restriction can be lifted by adding an additional
     // virtual OR reduction.
+#if SIFIVE_CUSTOMIZATION
+    unsigned NumBits = Ty->getIntegerBitWidth();
+    auto GetValidSentinel = [&](const APInt Sentinel) -> Value * {
+      assert(isFindLastIVRecurrenceKind(Kind) &&
+             "Only FindLastIV support multiple sentinel");
+      const ConstantRange IVRange = SE.getSignedRange(AR);
+      ConstantRange ValidRange =
+          ConstantRange::getFull(NumBits).difference(ConstantRange(Sentinel));
+      LLVM_DEBUG(dbgs() << "LV: FindLastIV valid range is " << ValidRange
+                        << ", and the signed range of " << *AR << " is "
+                        << IVRange << "\n");
+      if (ValidRange.contains(IVRange))
+        return ConstantInt::get(Ty, Sentinel);
+      return nullptr;
+    };
+#endif // SIFIVE_CUSTOMIZATION
     auto CheckRange = [&](bool IsSigned) {
       const ConstantRange IVRange =
           IsSigned ? SE.getSignedRange(AR) : SE.getUnsignedRange(AR);
+#if !SIFIVE_CUSTOMIZATION
       unsigned NumBits = Ty->getIntegerBitWidth();
+#endif // SIFIVE_CUSTOMIZATION
       ConstantRange ValidRange = ConstantRange::getEmpty(NumBits);
       if (isFindLastIVRecurrenceKind(Kind)) {
         APInt Sentinel = IsSigned ? APInt::getSignedMinValue(NumBits)
@@ -780,28 +815,58 @@ RecurrenceDescriptor::isFindIVPattern(RecurKind Kind, Loop *TheLoop,
       return ValidRange.contains(IVRange);
     };
     if (isFindLastIVRecurrenceKind(Kind)) {
+#if SIFIVE_CUSTOMIZATION
+      if (CheckRange(true))
+        return {RecurKind::FindLastIVSMax,
+                ConstantInt::get(Ty, APInt::getSignedMinValue(NumBits))};
+      if (CheckRange(false))
+        return {RecurKind::FindLastIVUMax,
+                ConstantInt::get(Ty, APInt::getMinValue(NumBits))};
+      // Try the maximum value as a sentinel value if the minimum value can't.
+      // The maximum acceptable range is
+      //   [SignedMin(<recurrence type>), <sentinel value>)
+      if (auto Sentinel = GetValidSentinel(APInt::getSignedMaxValue(NumBits)))
+        return {RecurKind::FindLastIVSMax, Sentinel};
+      return {std::nullopt, nullptr};
+#else
       if (CheckRange(true))
         return RecurKind::FindLastIVSMax;
       if (CheckRange(false))
         return RecurKind::FindLastIVUMax;
       return std::nullopt;
+#endif // SIFIVE_CUSTOMIZATION
     }
     assert(isFindFirstIVRecurrenceKind(Kind) &&
            "Kind must either be a FindLastIV or FindFirstIV");
 
+#if SIFIVE_CUSTOMIZATION
+    if (CheckRange(true))
+      return {RecurKind::FindFirstIVSMin,
+              ConstantInt::get(Ty, APInt::getSignedMaxValue(NumBits))};
+    return {std::nullopt, nullptr};
+#else
     if (CheckRange(true))
       return RecurKind::FindFirstIVSMin;
     return std::nullopt;
+#endif // SIFIVE_CUSTOMIZATION
   };
 
   // We are looking for selects of the form:
   //   select(cmp(), phi, increasing_loop_induction) or
   //   select(cmp(), increasing_loop_induction, phi)
   // TODO: Support for monotonically decreasing induction variable
+#if SIFIVE_CUSTOMIZATION
+  auto [RK, ValidSentinel] = GetRecurKindAndSentinel(NonRdxPhi);
+  if (!RK)
+    return InstDesc(false, I);
+
+  return InstDesc(I, *RK, ValidSentinel);
+#else
   if (auto RK = GetRecurKind(NonRdxPhi))
     return InstDesc(I, *RK);
 
   return InstDesc(false, I);
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 RecurrenceDescriptor::InstDesc

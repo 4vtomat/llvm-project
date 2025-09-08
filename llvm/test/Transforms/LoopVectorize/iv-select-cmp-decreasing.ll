@@ -493,28 +493,56 @@ define i16 @select_decreasing_induction_icmp_table_i16(i16 noundef %val) {
 ; IC4VF1:       [[VECTOR_PH]]:
 ; IC4VF1-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; IC4VF1:       [[VECTOR_BODY]]:
-; IC4VF1-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
-; IC4VF1-NEXT:    [[VEC_PHI:%.*]] = phi i16 [ 32767, %[[VECTOR_PH]] ], [ [[TMP19:%.*]], %[[VECTOR_BODY]] ]
-; IC4VF1-NEXT:    [[VEC_PHI1:%.*]] = phi i16 [ 32767, %[[VECTOR_PH]] ], [ [[TMP20:%.*]], %[[VECTOR_BODY]] ]
-; IC4VF1-NEXT:    [[VEC_PHI2:%.*]] = phi i16 [ 32767, %[[VECTOR_PH]] ], [ [[TMP21:%.*]], %[[VECTOR_BODY]] ]
-; IC4VF1-NEXT:    [[VEC_PHI3:%.*]] = phi i16 [ 32767, %[[VECTOR_PH]] ], [ [[TMP22:%.*]], %[[VECTOR_BODY]] ]
+; IC4VF1-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[PRED_LOAD_CONTINUE12:.*]] ]
+; IC4VF1-NEXT:    [[VEC_PHI:%.*]] = phi i16 [ 32767, %[[VECTOR_PH]] ], [ [[TMP19:%.*]], %[[PRED_LOAD_CONTINUE12]] ]
+; IC4VF1-NEXT:    [[VEC_PHI1:%.*]] = phi i16 [ 32767, %[[VECTOR_PH]] ], [ [[TMP20:%.*]], %[[PRED_LOAD_CONTINUE12]] ]
+; IC4VF1-NEXT:    [[VEC_PHI2:%.*]] = phi i16 [ 32767, %[[VECTOR_PH]] ], [ [[TMP21:%.*]], %[[PRED_LOAD_CONTINUE12]] ]
+; IC4VF1-NEXT:    [[VEC_PHI3:%.*]] = phi i16 [ 32767, %[[VECTOR_PH]] ], [ [[TMP22:%.*]], %[[PRED_LOAD_CONTINUE12]] ]
 ; IC4VF1-NEXT:    [[DOTCAST:%.*]] = trunc i32 [[INDEX]] to i16
 ; IC4VF1-NEXT:    [[OFFSET_IDX:%.*]] = sub i16 12, [[DOTCAST]]
 ; IC4VF1-NEXT:    [[TMP0:%.*]] = add i16 [[OFFSET_IDX]], -1
 ; IC4VF1-NEXT:    [[TMP1:%.*]] = add i16 [[OFFSET_IDX]], -2
 ; IC4VF1-NEXT:    [[TMP2:%.*]] = add i16 [[OFFSET_IDX]], -3
+; IC4VF1-NEXT:    [[VEC_IV:%.*]] = add i32 [[INDEX]], 0
+; IC4VF1-NEXT:    [[VEC_IV4:%.*]] = add i32 [[INDEX]], 1
+; IC4VF1-NEXT:    [[VEC_IV5:%.*]] = add i32 [[INDEX]], 2
+; IC4VF1-NEXT:    [[VEC_IV6:%.*]] = add i32 [[INDEX]], 3
+; IC4VF1-NEXT:    [[TMP24:%.*]] = icmp ule i32 [[VEC_IV]], 11
+; IC4VF1-NEXT:    [[TMP25:%.*]] = icmp ule i32 [[VEC_IV4]], 11
+; IC4VF1-NEXT:    [[TMP26:%.*]] = icmp ule i32 [[VEC_IV5]], 11
+; IC4VF1-NEXT:    [[TMP27:%.*]] = icmp ule i32 [[VEC_IV6]], 11
+; IC4VF1-NEXT:    br i1 [[TMP24]], label %[[PRED_LOAD_IF:.*]], label %[[PRED_LOAD_CONTINUE:.*]]
+; IC4VF1:       [[PRED_LOAD_IF]]:
 ; IC4VF1-NEXT:    [[TMP3:%.*]] = getelementptr inbounds [13 x i16], ptr @table, i16 0, i16 [[OFFSET_IDX]]
-; IC4VF1-NEXT:    [[TMP4:%.*]] = getelementptr inbounds [13 x i16], ptr @table, i16 0, i16 [[TMP0]]
-; IC4VF1-NEXT:    [[TMP5:%.*]] = getelementptr inbounds [13 x i16], ptr @table, i16 0, i16 [[TMP1]]
-; IC4VF1-NEXT:    [[TMP6:%.*]] = getelementptr inbounds [13 x i16], ptr @table, i16 0, i16 [[TMP2]]
 ; IC4VF1-NEXT:    [[TMP7:%.*]] = load i16, ptr [[TMP3]], align 1
+; IC4VF1-NEXT:    br label %[[PRED_LOAD_CONTINUE]]
+; IC4VF1:       [[PRED_LOAD_CONTINUE]]:
+; IC4VF1-NEXT:    [[TMP28:%.*]] = phi i16 [ poison, %[[VECTOR_BODY]] ], [ [[TMP7]], %[[PRED_LOAD_IF]] ]
+; IC4VF1-NEXT:    br i1 [[TMP25]], label %[[PRED_LOAD_IF7:.*]], label %[[PRED_LOAD_CONTINUE8:.*]]
+; IC4VF1:       [[PRED_LOAD_IF7]]:
+; IC4VF1-NEXT:    [[TMP4:%.*]] = getelementptr inbounds [13 x i16], ptr @table, i16 0, i16 [[TMP0]]
 ; IC4VF1-NEXT:    [[TMP8:%.*]] = load i16, ptr [[TMP4]], align 1
+; IC4VF1-NEXT:    br label %[[PRED_LOAD_CONTINUE8]]
+; IC4VF1:       [[PRED_LOAD_CONTINUE8]]:
+; IC4VF1-NEXT:    [[TMP29:%.*]] = phi i16 [ poison, %[[PRED_LOAD_CONTINUE]] ], [ [[TMP8]], %[[PRED_LOAD_IF7]] ]
+; IC4VF1-NEXT:    br i1 [[TMP26]], label %[[PRED_LOAD_IF9:.*]], label %[[PRED_LOAD_CONTINUE10:.*]]
+; IC4VF1:       [[PRED_LOAD_IF9]]:
+; IC4VF1-NEXT:    [[TMP5:%.*]] = getelementptr inbounds [13 x i16], ptr @table, i16 0, i16 [[TMP1]]
 ; IC4VF1-NEXT:    [[TMP9:%.*]] = load i16, ptr [[TMP5]], align 1
+; IC4VF1-NEXT:    br label %[[PRED_LOAD_CONTINUE10]]
+; IC4VF1:       [[PRED_LOAD_CONTINUE10]]:
+; IC4VF1-NEXT:    [[TMP30:%.*]] = phi i16 [ poison, %[[PRED_LOAD_CONTINUE8]] ], [ [[TMP9]], %[[PRED_LOAD_IF9]] ]
+; IC4VF1-NEXT:    br i1 [[TMP27]], label %[[PRED_LOAD_IF11:.*]], label %[[PRED_LOAD_CONTINUE12]]
+; IC4VF1:       [[PRED_LOAD_IF11]]:
+; IC4VF1-NEXT:    [[TMP6:%.*]] = getelementptr inbounds [13 x i16], ptr @table, i16 0, i16 [[TMP2]]
 ; IC4VF1-NEXT:    [[TMP10:%.*]] = load i16, ptr [[TMP6]], align 1
-; IC4VF1-NEXT:    [[TMP11:%.*]] = icmp ugt i16 [[TMP7]], [[VAL]]
-; IC4VF1-NEXT:    [[TMP12:%.*]] = icmp ugt i16 [[TMP8]], [[VAL]]
-; IC4VF1-NEXT:    [[TMP13:%.*]] = icmp ugt i16 [[TMP9]], [[VAL]]
-; IC4VF1-NEXT:    [[TMP14:%.*]] = icmp ugt i16 [[TMP10]], [[VAL]]
+; IC4VF1-NEXT:    br label %[[PRED_LOAD_CONTINUE12]]
+; IC4VF1:       [[PRED_LOAD_CONTINUE12]]:
+; IC4VF1-NEXT:    [[TMP35:%.*]] = phi i16 [ poison, %[[PRED_LOAD_CONTINUE10]] ], [ [[TMP10]], %[[PRED_LOAD_IF11]] ]
+; IC4VF1-NEXT:    [[TMP11:%.*]] = icmp ugt i16 [[TMP28]], [[VAL]]
+; IC4VF1-NEXT:    [[TMP12:%.*]] = icmp ugt i16 [[TMP29]], [[VAL]]
+; IC4VF1-NEXT:    [[TMP13:%.*]] = icmp ugt i16 [[TMP30]], [[VAL]]
+; IC4VF1-NEXT:    [[TMP14:%.*]] = icmp ugt i16 [[TMP35]], [[VAL]]
 ; IC4VF1-NEXT:    [[TMP15:%.*]] = add nsw i16 [[OFFSET_IDX]], -1
 ; IC4VF1-NEXT:    [[TMP16:%.*]] = add nsw i16 [[TMP0]], -1
 ; IC4VF1-NEXT:    [[TMP17:%.*]] = add nsw i16 [[TMP1]], -1
@@ -523,19 +551,23 @@ define i16 @select_decreasing_induction_icmp_table_i16(i16 noundef %val) {
 ; IC4VF1-NEXT:    [[TMP20]] = select i1 [[TMP12]], i16 [[TMP16]], i16 [[VEC_PHI1]]
 ; IC4VF1-NEXT:    [[TMP21]] = select i1 [[TMP13]], i16 [[TMP17]], i16 [[VEC_PHI2]]
 ; IC4VF1-NEXT:    [[TMP22]] = select i1 [[TMP14]], i16 [[TMP18]], i16 [[VEC_PHI3]]
+; IC4VF1-NEXT:    [[TMP31:%.*]] = select i1 [[TMP24]], i16 [[TMP19]], i16 [[VEC_PHI]]
+; IC4VF1-NEXT:    [[TMP32:%.*]] = select i1 [[TMP25]], i16 [[TMP20]], i16 [[VEC_PHI1]]
+; IC4VF1-NEXT:    [[TMP33:%.*]] = select i1 [[TMP26]], i16 [[TMP21]], i16 [[VEC_PHI2]]
+; IC4VF1-NEXT:    [[TMP34:%.*]] = select i1 [[TMP27]], i16 [[TMP22]], i16 [[VEC_PHI3]]
 ; IC4VF1-NEXT:    [[INDEX_NEXT]] = add nuw i32 [[INDEX]], 4
 ; IC4VF1-NEXT:    [[TMP23:%.*]] = icmp eq i32 [[INDEX_NEXT]], 12
 ; IC4VF1-NEXT:    br i1 [[TMP23]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; IC4VF1:       [[MIDDLE_BLOCK]]:
-; IC4VF1-NEXT:    [[RDX_MINMAX:%.*]] = call i16 @llvm.smin.i16(i16 [[TMP19]], i16 [[TMP20]])
-; IC4VF1-NEXT:    [[RDX_MINMAX4:%.*]] = call i16 @llvm.smin.i16(i16 [[RDX_MINMAX]], i16 [[TMP21]])
-; IC4VF1-NEXT:    [[RDX_MINMAX5:%.*]] = call i16 @llvm.smin.i16(i16 [[RDX_MINMAX4]], i16 [[TMP22]])
+; IC4VF1-NEXT:    [[RDX_MINMAX:%.*]] = call i16 @llvm.smin.i16(i16 [[TMP31]], i16 [[TMP32]])
+; IC4VF1-NEXT:    [[RDX_MINMAX13:%.*]] = call i16 @llvm.smin.i16(i16 [[RDX_MINMAX]], i16 [[TMP33]])
+; IC4VF1-NEXT:    [[RDX_MINMAX5:%.*]] = call i16 @llvm.smin.i16(i16 [[RDX_MINMAX13]], i16 [[TMP34]])
 ; IC4VF1-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i16 [[RDX_MINMAX5]], 32767
 ; IC4VF1-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i16 [[RDX_MINMAX5]], i16 0
-; IC4VF1-NEXT:    br i1 true, label %[[EXIT:.*]], label %[[SCALAR_PH]]
+; IC4VF1-NEXT:    br label %[[EXIT:.*]]
 ; IC4VF1:       [[SCALAR_PH]]:
-; IC4VF1-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i16 [ 0, %[[MIDDLE_BLOCK]] ], [ 12, %[[ENTRY]] ]
-; IC4VF1-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i16 [ [[RDX_SELECT]], %[[MIDDLE_BLOCK]] ], [ 0, %[[ENTRY]] ]
+; IC4VF1-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i16 [ 12, %[[ENTRY]] ]
+; IC4VF1-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i16 [ 0, %[[ENTRY]] ]
 ; IC4VF1-NEXT:    br label %[[LOOP:.*]]
 ; IC4VF1:       [[LOOP]]:
 ; IC4VF1-NEXT:    [[IV:%.*]] = phi i16 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[LOOP]] ]
@@ -864,28 +896,56 @@ define i16 @select_decreasing_induction_icmp_table_half(half noundef %val) {
 ; IC4VF1:       [[VECTOR_PH]]:
 ; IC4VF1-NEXT:    br label %[[VECTOR_BODY:.*]]
 ; IC4VF1:       [[VECTOR_BODY]]:
-; IC4VF1-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
-; IC4VF1-NEXT:    [[VEC_PHI:%.*]] = phi i16 [ 32767, %[[VECTOR_PH]] ], [ [[TMP19:%.*]], %[[VECTOR_BODY]] ]
-; IC4VF1-NEXT:    [[VEC_PHI1:%.*]] = phi i16 [ 32767, %[[VECTOR_PH]] ], [ [[TMP20:%.*]], %[[VECTOR_BODY]] ]
-; IC4VF1-NEXT:    [[VEC_PHI2:%.*]] = phi i16 [ 32767, %[[VECTOR_PH]] ], [ [[TMP21:%.*]], %[[VECTOR_BODY]] ]
-; IC4VF1-NEXT:    [[VEC_PHI3:%.*]] = phi i16 [ 32767, %[[VECTOR_PH]] ], [ [[TMP22:%.*]], %[[VECTOR_BODY]] ]
+; IC4VF1-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[PRED_LOAD_CONTINUE12:.*]] ]
+; IC4VF1-NEXT:    [[VEC_PHI:%.*]] = phi i16 [ 32767, %[[VECTOR_PH]] ], [ [[TMP19:%.*]], %[[PRED_LOAD_CONTINUE12]] ]
+; IC4VF1-NEXT:    [[VEC_PHI1:%.*]] = phi i16 [ 32767, %[[VECTOR_PH]] ], [ [[TMP20:%.*]], %[[PRED_LOAD_CONTINUE12]] ]
+; IC4VF1-NEXT:    [[VEC_PHI2:%.*]] = phi i16 [ 32767, %[[VECTOR_PH]] ], [ [[TMP21:%.*]], %[[PRED_LOAD_CONTINUE12]] ]
+; IC4VF1-NEXT:    [[VEC_PHI3:%.*]] = phi i16 [ 32767, %[[VECTOR_PH]] ], [ [[TMP22:%.*]], %[[PRED_LOAD_CONTINUE12]] ]
 ; IC4VF1-NEXT:    [[DOTCAST:%.*]] = trunc i32 [[INDEX]] to i16
 ; IC4VF1-NEXT:    [[OFFSET_IDX:%.*]] = sub i16 12, [[DOTCAST]]
 ; IC4VF1-NEXT:    [[TMP0:%.*]] = add i16 [[OFFSET_IDX]], -1
 ; IC4VF1-NEXT:    [[TMP1:%.*]] = add i16 [[OFFSET_IDX]], -2
 ; IC4VF1-NEXT:    [[TMP2:%.*]] = add i16 [[OFFSET_IDX]], -3
+; IC4VF1-NEXT:    [[VEC_IV:%.*]] = add i32 [[INDEX]], 0
+; IC4VF1-NEXT:    [[VEC_IV4:%.*]] = add i32 [[INDEX]], 1
+; IC4VF1-NEXT:    [[VEC_IV5:%.*]] = add i32 [[INDEX]], 2
+; IC4VF1-NEXT:    [[VEC_IV6:%.*]] = add i32 [[INDEX]], 3
+; IC4VF1-NEXT:    [[TMP24:%.*]] = icmp ule i32 [[VEC_IV]], 11
+; IC4VF1-NEXT:    [[TMP25:%.*]] = icmp ule i32 [[VEC_IV4]], 11
+; IC4VF1-NEXT:    [[TMP26:%.*]] = icmp ule i32 [[VEC_IV5]], 11
+; IC4VF1-NEXT:    [[TMP27:%.*]] = icmp ule i32 [[VEC_IV6]], 11
+; IC4VF1-NEXT:    br i1 [[TMP24]], label %[[PRED_LOAD_IF:.*]], label %[[PRED_LOAD_CONTINUE:.*]]
+; IC4VF1:       [[PRED_LOAD_IF]]:
 ; IC4VF1-NEXT:    [[TMP3:%.*]] = getelementptr inbounds [13 x i16], ptr @table, i16 0, i16 [[OFFSET_IDX]]
-; IC4VF1-NEXT:    [[TMP4:%.*]] = getelementptr inbounds [13 x i16], ptr @table, i16 0, i16 [[TMP0]]
-; IC4VF1-NEXT:    [[TMP5:%.*]] = getelementptr inbounds [13 x i16], ptr @table, i16 0, i16 [[TMP1]]
-; IC4VF1-NEXT:    [[TMP6:%.*]] = getelementptr inbounds [13 x i16], ptr @table, i16 0, i16 [[TMP2]]
 ; IC4VF1-NEXT:    [[TMP7:%.*]] = load half, ptr [[TMP3]], align 1
+; IC4VF1-NEXT:    br label %[[PRED_LOAD_CONTINUE]]
+; IC4VF1:       [[PRED_LOAD_CONTINUE]]:
+; IC4VF1-NEXT:    [[TMP28:%.*]] = phi half [ poison, %[[VECTOR_BODY]] ], [ [[TMP7]], %[[PRED_LOAD_IF]] ]
+; IC4VF1-NEXT:    br i1 [[TMP25]], label %[[PRED_LOAD_IF7:.*]], label %[[PRED_LOAD_CONTINUE8:.*]]
+; IC4VF1:       [[PRED_LOAD_IF7]]:
+; IC4VF1-NEXT:    [[TMP4:%.*]] = getelementptr inbounds [13 x i16], ptr @table, i16 0, i16 [[TMP0]]
 ; IC4VF1-NEXT:    [[TMP8:%.*]] = load half, ptr [[TMP4]], align 1
+; IC4VF1-NEXT:    br label %[[PRED_LOAD_CONTINUE8]]
+; IC4VF1:       [[PRED_LOAD_CONTINUE8]]:
+; IC4VF1-NEXT:    [[TMP29:%.*]] = phi half [ poison, %[[PRED_LOAD_CONTINUE]] ], [ [[TMP8]], %[[PRED_LOAD_IF7]] ]
+; IC4VF1-NEXT:    br i1 [[TMP26]], label %[[PRED_LOAD_IF9:.*]], label %[[PRED_LOAD_CONTINUE10:.*]]
+; IC4VF1:       [[PRED_LOAD_IF9]]:
+; IC4VF1-NEXT:    [[TMP5:%.*]] = getelementptr inbounds [13 x i16], ptr @table, i16 0, i16 [[TMP1]]
 ; IC4VF1-NEXT:    [[TMP9:%.*]] = load half, ptr [[TMP5]], align 1
+; IC4VF1-NEXT:    br label %[[PRED_LOAD_CONTINUE10]]
+; IC4VF1:       [[PRED_LOAD_CONTINUE10]]:
+; IC4VF1-NEXT:    [[TMP30:%.*]] = phi half [ poison, %[[PRED_LOAD_CONTINUE8]] ], [ [[TMP9]], %[[PRED_LOAD_IF9]] ]
+; IC4VF1-NEXT:    br i1 [[TMP27]], label %[[PRED_LOAD_IF11:.*]], label %[[PRED_LOAD_CONTINUE12]]
+; IC4VF1:       [[PRED_LOAD_IF11]]:
+; IC4VF1-NEXT:    [[TMP6:%.*]] = getelementptr inbounds [13 x i16], ptr @table, i16 0, i16 [[TMP2]]
 ; IC4VF1-NEXT:    [[TMP10:%.*]] = load half, ptr [[TMP6]], align 1
-; IC4VF1-NEXT:    [[TMP11:%.*]] = fcmp ugt half [[TMP7]], [[VAL]]
-; IC4VF1-NEXT:    [[TMP12:%.*]] = fcmp ugt half [[TMP8]], [[VAL]]
-; IC4VF1-NEXT:    [[TMP13:%.*]] = fcmp ugt half [[TMP9]], [[VAL]]
-; IC4VF1-NEXT:    [[TMP14:%.*]] = fcmp ugt half [[TMP10]], [[VAL]]
+; IC4VF1-NEXT:    br label %[[PRED_LOAD_CONTINUE12]]
+; IC4VF1:       [[PRED_LOAD_CONTINUE12]]:
+; IC4VF1-NEXT:    [[TMP35:%.*]] = phi half [ poison, %[[PRED_LOAD_CONTINUE10]] ], [ [[TMP10]], %[[PRED_LOAD_IF11]] ]
+; IC4VF1-NEXT:    [[TMP11:%.*]] = fcmp ugt half [[TMP28]], [[VAL]]
+; IC4VF1-NEXT:    [[TMP12:%.*]] = fcmp ugt half [[TMP29]], [[VAL]]
+; IC4VF1-NEXT:    [[TMP13:%.*]] = fcmp ugt half [[TMP30]], [[VAL]]
+; IC4VF1-NEXT:    [[TMP14:%.*]] = fcmp ugt half [[TMP35]], [[VAL]]
 ; IC4VF1-NEXT:    [[TMP15:%.*]] = add nsw i16 [[OFFSET_IDX]], -1
 ; IC4VF1-NEXT:    [[TMP16:%.*]] = add nsw i16 [[TMP0]], -1
 ; IC4VF1-NEXT:    [[TMP17:%.*]] = add nsw i16 [[TMP1]], -1
@@ -894,19 +954,23 @@ define i16 @select_decreasing_induction_icmp_table_half(half noundef %val) {
 ; IC4VF1-NEXT:    [[TMP20]] = select i1 [[TMP12]], i16 [[TMP16]], i16 [[VEC_PHI1]]
 ; IC4VF1-NEXT:    [[TMP21]] = select i1 [[TMP13]], i16 [[TMP17]], i16 [[VEC_PHI2]]
 ; IC4VF1-NEXT:    [[TMP22]] = select i1 [[TMP14]], i16 [[TMP18]], i16 [[VEC_PHI3]]
+; IC4VF1-NEXT:    [[TMP31:%.*]] = select i1 [[TMP24]], i16 [[TMP19]], i16 [[VEC_PHI]]
+; IC4VF1-NEXT:    [[TMP32:%.*]] = select i1 [[TMP25]], i16 [[TMP20]], i16 [[VEC_PHI1]]
+; IC4VF1-NEXT:    [[TMP33:%.*]] = select i1 [[TMP26]], i16 [[TMP21]], i16 [[VEC_PHI2]]
+; IC4VF1-NEXT:    [[TMP34:%.*]] = select i1 [[TMP27]], i16 [[TMP22]], i16 [[VEC_PHI3]]
 ; IC4VF1-NEXT:    [[INDEX_NEXT]] = add nuw i32 [[INDEX]], 4
 ; IC4VF1-NEXT:    [[TMP23:%.*]] = icmp eq i32 [[INDEX_NEXT]], 12
 ; IC4VF1-NEXT:    br i1 [[TMP23]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; IC4VF1:       [[MIDDLE_BLOCK]]:
-; IC4VF1-NEXT:    [[RDX_MINMAX:%.*]] = call i16 @llvm.smin.i16(i16 [[TMP19]], i16 [[TMP20]])
-; IC4VF1-NEXT:    [[RDX_MINMAX4:%.*]] = call i16 @llvm.smin.i16(i16 [[RDX_MINMAX]], i16 [[TMP21]])
-; IC4VF1-NEXT:    [[RDX_MINMAX5:%.*]] = call i16 @llvm.smin.i16(i16 [[RDX_MINMAX4]], i16 [[TMP22]])
+; IC4VF1-NEXT:    [[RDX_MINMAX:%.*]] = call i16 @llvm.smin.i16(i16 [[TMP31]], i16 [[TMP32]])
+; IC4VF1-NEXT:    [[RDX_MINMAX13:%.*]] = call i16 @llvm.smin.i16(i16 [[RDX_MINMAX]], i16 [[TMP33]])
+; IC4VF1-NEXT:    [[RDX_MINMAX5:%.*]] = call i16 @llvm.smin.i16(i16 [[RDX_MINMAX13]], i16 [[TMP34]])
 ; IC4VF1-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i16 [[RDX_MINMAX5]], 32767
 ; IC4VF1-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i16 [[RDX_MINMAX5]], i16 0
-; IC4VF1-NEXT:    br i1 true, label %[[EXIT:.*]], label %[[SCALAR_PH]]
+; IC4VF1-NEXT:    br label %[[EXIT:.*]]
 ; IC4VF1:       [[SCALAR_PH]]:
-; IC4VF1-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i16 [ 0, %[[MIDDLE_BLOCK]] ], [ 12, %[[ENTRY]] ]
-; IC4VF1-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i16 [ [[RDX_SELECT]], %[[MIDDLE_BLOCK]] ], [ 0, %[[ENTRY]] ]
+; IC4VF1-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i16 [ 12, %[[ENTRY]] ]
+; IC4VF1-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i16 [ 0, %[[ENTRY]] ]
 ; IC4VF1-NEXT:    br label %[[LOOP:.*]]
 ; IC4VF1:       [[LOOP]]:
 ; IC4VF1-NEXT:    [[IV:%.*]] = phi i16 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], %[[LOOP]] ]

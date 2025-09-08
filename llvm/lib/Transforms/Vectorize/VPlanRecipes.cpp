@@ -1033,22 +1033,19 @@ Value *VPInstruction::generate(VPTransformState &State) {
       ReducedPartRdx = createMinMaxOp(Builder, MinMaxKind, ReducedPartRdx,
                                       State.get(getOperand(3 + Part)));
 
+    Value *Start = State.get(getOperand(1), true);
+    Value *Sentinel = getOperand(2)->getLiveInIRValue();
 #if SIFIVE_CUSTOMIZATION
     Value *InitEVL = nullptr;
     if (State.Plan->useVLAVectorizer()) {
       InitEVL = State.get(State.Plan->getInitEVL(), /*NeedsScalar=*/true);
       assert(InitEVL && "InitEVL must be generated when tail folding by EVL");
     }
-    Value *Sentinel = getOperand(2)->getLiveInIRValue();
-    return InitEVL ? createFindLastIVReduction(Builder, ReducedPartRdx,
-                                               State.get(getOperand(1), true),
-                                               Sentinel, InitEVL)
+    return InitEVL ? createFindLastIVReduction(Builder, ReducedPartRdx, RK,
+                                               Start, Sentinel, InitEVL)
                    : createFindLastIVReduction(Builder, ReducedPartRdx, RK,
-                                               State.get(getOperand(1), true),
-                                               Sentinel);
+                                               Start, Sentinel);
 #else
-    Value *Start = State.get(getOperand(1), true);
-    Value *Sentinel = getOperand(2)->getLiveInIRValue();
     return createFindLastIVReduction(Builder, ReducedPartRdx, RK, Start,
                                      Sentinel);
 #endif // SIFIVE_CUSTOMIZATION
@@ -5252,10 +5249,24 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
     return O;
   }
   case RecurKind::FindLastIVSMax:
-  case RecurKind::FindLastIVUMax: {
-    // Emit reduce.smax to get the last induction value
+  case RecurKind::FindLastIVUMax:
+  case RecurKind::FindFirstIVSMin: {
+    auto GetMinMaxIntrinsic = [](RecurKind RK) {
+      switch (RK) {
+      case RecurKind::FindLastIVSMax:
+        return Intrinsic::smax;
+      case RecurKind::FindLastIVUMax:
+        return Intrinsic::umax;
+      case RecurKind::FindFirstIVSMin:
+        return Intrinsic::smin;
+      default:
+        llvm_unreachable("Unexpected FindIV kind");
+      }
+    };
+
+    // Emit reduce.smax|umax|smin to get the last induction value
     InstructionCost O = Ctx.TTI.getMinMaxReductionCost(
-        Intrinsic::smax, VectorTy, FastMathFlags(), CostKind);
+        GetMinMaxIntrinsic(RdxKind), VectorTy, FastMathFlags(), CostKind);
     // Sentinel value handling
     O += Ctx.TTI.getCmpSelInstrCost(Instruction::ICmp, ElementTy, nullptr,
                                     CmpInst::ICMP_NE, CostKind);

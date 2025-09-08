@@ -2,7 +2,7 @@
 ; RUN: opt -passes=loop-vectorize -debug-only=loop-vectorize,iv-descriptors -disable-output %s 2>&1 | FileCheck %s
 
 ; CHECK-LABEL: LV: Checking a loop in 'select_icmp_const_1'
-; CHECK: LV: FindLastIV valid range is [-9223372036854775807,-9223372036854775808), and the signed range of {0,+,1}<nuw><nsw><%for.body> is [0,-9223372036854775808)
+; CHECK: LV: FindLastIV valid range is [-9223372036854775807,-9223372036854775808), and the range of {0,+,1}<nuw><nsw><%for.body> is [0,-9223372036854775808)
 ;
 define i64 @select_icmp_const_1(ptr %a, i64 %n) {
 entry:
@@ -24,7 +24,7 @@ exit:                                             ; preds = %for.body
 }
 
 ; CHECK-LABEL: LV: Checking a loop in 'select_icmp_const_2'
-; CHECK: LV: FindLastIV valid range is [-9223372036854775807,-9223372036854775808), and the signed range of {0,+,1}<nuw><nsw><%for.body> is [0,-9223372036854775808)
+; CHECK: LV: FindLastIV valid range is [-9223372036854775807,-9223372036854775808), and the range of {0,+,1}<nuw><nsw><%for.body> is [0,-9223372036854775808)
 ;
 define i64 @select_icmp_const_2(ptr %a, i64 %n) {
 entry:
@@ -46,7 +46,7 @@ exit:                                             ; preds = %for.body
 }
 
 ; CHECK-LABEL: LV: Checking a loop in 'select_icmp_const_3_variable_rdx_start'
-; CHECK: LV: FindLastIV valid range is [-9223372036854775807,-9223372036854775808), and the signed range of {0,+,1}<nuw><nsw><%for.body> is [0,-9223372036854775808)
+; CHECK: LV: FindLastIV valid range is [-9223372036854775807,-9223372036854775808), and the range of {0,+,1}<nuw><nsw><%for.body> is [0,-9223372036854775808)
 ;
 define i64 @select_icmp_const_3_variable_rdx_start(ptr %a, i64 %rdx.start, i64 %n) {
 entry:
@@ -68,7 +68,7 @@ exit:                                             ; preds = %for.body
 }
 
 ; CHECK-LABEL: LV: Checking a loop in 'select_fcmp_const_fast'
-; CHECK: LV: FindLastIV valid range is [-9223372036854775807,-9223372036854775808), and the signed range of {0,+,1}<nuw><nsw><%for.body> is [0,-9223372036854775808)
+; CHECK: LV: FindLastIV valid range is [-9223372036854775807,-9223372036854775808), and the range of {0,+,1}<nuw><nsw><%for.body> is [0,-9223372036854775808)
 ;
 define i64 @select_fcmp_const_fast(ptr %a, i64 %n) {
 entry:
@@ -90,7 +90,7 @@ exit:                                             ; preds = %for.body
 }
 
 ; CHECK-LABEL: LV: Checking a loop in 'select_fcmp_const'
-; CHECK: LV: FindLastIV valid range is [-9223372036854775807,-9223372036854775808), and the signed range of {0,+,1}<nuw><nsw><%for.body> is [0,-9223372036854775808)
+; CHECK: LV: FindLastIV valid range is [-9223372036854775807,-9223372036854775808), and the range of {0,+,1}<nuw><nsw><%for.body> is [0,-9223372036854775808)
 ;
 define i64 @select_fcmp_const(ptr %a, i64 %n) {
 entry:
@@ -112,7 +112,7 @@ exit:                                             ; preds = %for.body
 }
 
 ; CHECK-LABEL: LV: Checking a loop in 'select_icmp'
-; CHECK: LV: FindLastIV valid range is [-9223372036854775807,-9223372036854775808), and the signed range of {0,+,1}<nuw><nsw><%for.body> is [0,-9223372036854775808)
+; CHECK: LV: FindLastIV valid range is [-9223372036854775807,-9223372036854775808), and the range of {0,+,1}<nuw><nsw><%for.body> is [0,-9223372036854775808)
 ;
 define i64 @select_icmp(ptr %a, ptr %b, i64 %rdx.start, i64 %n) {
 entry:
@@ -136,7 +136,7 @@ exit:                                             ; preds = %for.body
 }
 
 ; CHECK-LABEL: LV: Checking a loop in 'select_fcmp'
-; CHECK: LV: FindLastIV valid range is [-9223372036854775807,-9223372036854775808), and the signed range of {0,+,1}<nuw><nsw><%for.body> is [0,-9223372036854775808)
+; CHECK: LV: FindLastIV valid range is [-9223372036854775807,-9223372036854775808), and the range of {0,+,1}<nuw><nsw><%for.body> is [0,-9223372036854775808)
 ;
 define i64 @select_fcmp(ptr %a, ptr %b, i64 %rdx.start, i64 %n) {
 entry:
@@ -160,7 +160,7 @@ exit:                                             ; preds = %for.body
 }
 
 ; CHECK-LABEL: LV: Checking a loop in 'select_icmp_const_rdx_start_lt_const_iv_start'
-; CHECK: LV: FindLastIV valid range is [-9223372036854775807,-9223372036854775808), and the signed range of {0,+,1}<nuw><nsw><%for.body> is [0,-9223372036854775808)
+; CHECK: LV: FindLastIV valid range is [-9223372036854775807,-9223372036854775808), and the range of {0,+,1}<nuw><nsw><%for.body> is [0,-9223372036854775808)
 ;
 define i64 @select_icmp_const_rdx_start_lt_const_iv_start(ptr %a, ptr %b, i64 %n) {
 entry:
@@ -184,7 +184,7 @@ exit:                                             ; preds = %for.body
 }
 
 ; CHECK-LABEL: LV: Checking a loop in 'select_icmp_const_rdx_start_eq_const_iv_start'
-; CHECK: LV: FindLastIV valid range is [-9223372036854775807,-9223372036854775808), and the signed range of {0,+,1}<nuw><nsw><%for.body> is [0,-9223372036854775808)
+; CHECK: LV: FindLastIV valid range is [-9223372036854775807,-9223372036854775808), and the range of {0,+,1}<nuw><nsw><%for.body> is [0,-9223372036854775808)
 ;
 define i64 @select_icmp_const_rdx_start_eq_const_iv_start(ptr %a, ptr %b, i64 %n) {
 entry:
@@ -208,7 +208,7 @@ exit:                                             ; preds = %for.body
 }
 
 ; CHECK-LABEL: LV: Checking a loop in 'select_icmp_const_rdx_start_gt_const_iv_start'
-; CHECK: LV: FindLastIV valid range is [-9223372036854775807,-9223372036854775808), and the signed range of {0,+,1}<nuw><nsw><%for.body> is [0,-9223372036854775808)
+; CHECK: LV: FindLastIV valid range is [-9223372036854775807,-9223372036854775808), and the range of {0,+,1}<nuw><nsw><%for.body> is [0,-9223372036854775808)
 ;
 define i64 @select_icmp_const_rdx_start_gt_const_iv_start(ptr %a, ptr %b, i64 %n) {
 entry:
@@ -232,7 +232,7 @@ exit:                                             ; preds = %for.body
 }
 
 ; CHECK-LABEL: LV: Checking a loop in 'select_icmp_min_valid_iv_start'
-; CHECK: LV: FindLastIV valid range is [-9223372036854775807,-9223372036854775808), and the signed range of {-9223372036854775807,+,1}<nsw><%for.body> is [-9223372036854775807,-9223372036854775808)
+; CHECK: LV: FindLastIV valid range is [-9223372036854775807,-9223372036854775808), and the range of {-9223372036854775807,+,1}<nsw><%for.body> is [-9223372036854775807,-9223372036854775808)
 ;
 define i64 @select_icmp_min_valid_iv_start(ptr %a, ptr %b, i64 %rdx.start, i64 %n) {
 entry:
@@ -260,7 +260,6 @@ exit:                                             ; preds = %for.body
 ; Negative tests
 
 ; CHECK-LABEL: LV: Checking a loop in 'not_vectorized_select_icmp_iv_out_of_bound'
-; CHECK: LV: FindLastIV valid range is [-9223372036854775807,-9223372036854775808), and the signed range of {-9223372036854775808,+,1}<nsw><%for.body> is full-set
 ; CHECK: LV: Not vectorizing: Found an unidentified PHI   %rdx = phi i64 [ %cond, %for.body ], [ %rdx.start, %entry ]
 ;
 define i64 @not_vectorized_select_icmp_iv_out_of_bound(ptr %a, ptr %b, i64 %rdx.start, i64 %n) {

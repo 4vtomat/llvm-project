@@ -957,12 +957,17 @@ constexpr Intrinsic::ID llvm::getReductionIntrinsicID(RecurKind RK) {
     return Intrinsic::vector_reduce_fmul;
 #if SIFIVE_CUSTOMIZATION
   case RecurKind::FindLastIVSMax:
-  case RecurKind::FindLastIVUMax:
 #endif // SIFIVE_CUSTOMIZATION
   case RecurKind::SMax:
     return Intrinsic::vector_reduce_smax;
+#if SIFIVE_CUSTOMIZATION
+  case RecurKind::FindFirstIVSMin:
+#endif // SIFIVE_CUSTOMIZATION
   case RecurKind::SMin:
     return Intrinsic::vector_reduce_smin;
+#if SIFIVE_CUSTOMIZATION
+  case RecurKind::FindLastIVUMax:
+#endif // SIFIVE_CUSTOMIZATION
   case RecurKind::UMax:
     return Intrinsic::vector_reduce_umax;
   case RecurKind::UMin:
@@ -1299,16 +1304,20 @@ Value *llvm::createFindLastIVReduction(IRBuilderBase &Builder, Value *Src,
 
 #if SIFIVE_CUSTOMIZATION
 Value *llvm::createFindLastIVReduction(IRBuilderBase &Builder, Value *Src,
-                                       Value *Start, Value *Sentinel,
-                                       Value *EVL, Value *Mask) {
+                                       RecurKind RdxKind, Value *Start,
+                                       Value *Sentinel, Value *EVL,
+                                       Value *Mask) {
   assert(Src->getType()->isVectorTy() &&
          "Must be vector type for tail folding with EVL");
-  Value *MaxRdx = Builder.CreateIntMaxReduce(Src, EVL, true, Mask);
+  bool IsSigned = RecurrenceDescriptor::isSignedRecurrenceKind(RdxKind);
+  bool IsMaxRdx = RecurrenceDescriptor::isFindLastIVRecurrenceKind(RdxKind);
+  Value *Rdx = IsMaxRdx ? Builder.CreateIntMaxReduce(Src, EVL, IsSigned, Mask)
+                        : Builder.CreateIntMinReduce(Src, EVL, IsSigned, Mask);
   // Correct the final reduction result back to the start value if the maximum
   // reduction is sentinel value.
   Value *Cmp =
-      Builder.CreateCmp(CmpInst::ICMP_NE, MaxRdx, Sentinel, "rdx.select.cmp");
-  return Builder.CreateSelect(Cmp, MaxRdx, Start, "rdx.select");
+      Builder.CreateCmp(CmpInst::ICMP_NE, Rdx, Sentinel, "rdx.select.cmp");
+  return Builder.CreateSelect(Cmp, Rdx, Start, "rdx.select");
 }
 #endif // SIFIVE_CUSTOMIZATION
 

@@ -2,7 +2,7 @@
 ; RUN: opt -passes=loop-vectorize -debug-only=loop-vectorize,iv-descriptors -disable-output %s 2>&1 | FileCheck %s
 
 ; CHECK-LABEL: LV: Checking a loop in 'select_trunc_iv_icmp_signed_guard'
-; CHECK: LV: FindLastIV valid range is [-2147483647,-2147483648), and the signed range of {0,+,1}<%for.body> is [0,2147483647)
+; CHECK: LV: FindLastIV valid range is [-2147483647,-2147483648), and the range of {0,+,1}<%for.body> is [0,2147483647)
 ;
 define i32 @select_trunc_iv_icmp_signed_guard(ptr %a, ptr %b, i32 %ii, i32 %n) {
 entry:
@@ -33,7 +33,7 @@ for.cond.cleanup:                                 ; preds = %for.body, %entry
 }
 
 ; CHECK-LABEL: LV: Checking a loop in 'select_trunc_iv_icmp_const_rdx_start_lt_const_iv_start_signed_guard'
-; CHECK: LV: FindLastIV valid range is [-2147483647,-2147483648), and the signed range of {0,+,1}<%for.body> is [0,2147483647)
+; CHECK: LV: FindLastIV valid range is [-2147483647,-2147483648), and the range of {0,+,1}<%for.body> is [0,2147483647)
 ;
 define i32 @select_trunc_iv_icmp_const_rdx_start_lt_const_iv_start_signed_guard(ptr %a, ptr %b, i32 %n) {
 entry:
@@ -64,7 +64,7 @@ for.cond.cleanup:                                 ; preds = %for.body, %entry
 }
 
 ; CHECK-LABEL: LV: Checking a loop in 'select_trunc_iv_icmp_const_rdx_start_eq_const_iv_start_signed_guard'
-; CHECK: LV: FindLastIV valid range is [-2147483647,-2147483648), and the signed range of {0,+,1}<%for.body> is [0,2147483647)
+; CHECK: LV: FindLastIV valid range is [-2147483647,-2147483648), and the range of {0,+,1}<%for.body> is [0,2147483647)
 ;
 define i32 @select_trunc_iv_icmp_const_rdx_start_eq_const_iv_start_signed_guard(ptr %a, ptr %b, i32 %n) {
 entry:
@@ -95,7 +95,7 @@ for.cond.cleanup:                                 ; preds = %for.body, %entry
 }
 
 ; CHECK-LABEL: LV: Checking a loop in 'select_trunc_iv_icmp_const_rdx_start_gt_const_iv_start_signed_guard'
-; CHECK: LV: FindLastIV valid range is [-2147483647,-2147483648), and the signed range of {0,+,1}<%for.body> is [0,2147483647)
+; CHECK: LV: FindLastIV valid range is [-2147483647,-2147483648), and the range of {0,+,1}<%for.body> is [0,2147483647)
 ;
 define i32 @select_trunc_iv_icmp_const_rdx_start_gt_const_iv_start_signed_guard(ptr %a, ptr %b, i32 %n) {
 entry:
@@ -129,7 +129,7 @@ for.cond.cleanup:                                 ; preds = %for.body, %entry
 ; From TSVC/s331
 ;
 ; CHECK-LABEL: LV: Checking a loop in 'select_trunc_fcmp_const_tripcount'
-; CHECK: LV: FindLastIV valid range is [-2147483647,-2147483648), and the signed range of {0,+,1}<%for.body> is [0,32000)
+; CHECK: LV: FindLastIV valid range is [-2147483647,-2147483648), and the range of {0,+,1}<%for.body> is [0,32000)
 ;
 define i32 @select_trunc_fcmp_const_tripcount(ptr %a) {
 entry:
@@ -152,7 +152,7 @@ exit:                                            ; preds = %for.body
 }
 
 ; CHECK-LABEL: LV: Checking a loop in 'select_trunc_fcmp_max_valid_const_ub'
-; CHECK: LV: FindLastIV valid range is [-2147483647,-2147483648), and the signed range of {0,+,1}<%for.body> is [0,2147483647)
+; CHECK: LV: FindLastIV valid range is [-2147483647,-2147483648), and the range of {0,+,1}<%for.body> is [0,2147483647)
 ;
 define i32 @select_trunc_fcmp_max_valid_const_ub(ptr %a) {
 entry:
