@@ -465,8 +465,7 @@ Constant *llvm::ConstantFoldShuffleVectorInstruction(Constant *V1, Constant *V2,
 
     // For scalable vectors, make sure this doesn't fold back into a
     // shufflevector.
-    if (!MaskEltCount.isScalable() || Elt->isNullValue() ||
-        isa<UndefValue>(Elt))
+    if (!MaskEltCount.isScalable() || Elt->isNullValue() || isa<UndefValue>(Elt))
       return ConstantVector::getSplat(MaskEltCount, Elt);
   }
 
