@@ -639,10 +639,10 @@ public:
 
     RISCV::Specifier VK = RISCV::S_None;
     return RISCVAsmParser::classifySymbolRef(getImm(), VK) &&
-           (VK == ELF::R_RISCV_TPREL_ADD || VK == RISCV::VK_GPREL_ADD ||
-            VK == RISCV::VK_GOT_GPREL_ADD ||
-            VK == RISCV::VK_TLS_GOT_GPREL_ADD ||
-            VK == RISCV::VK_TLS_GD_GPREL_ADD);
+           (VK == ELF::R_RISCV_TPREL_ADD || VK == RISCV::S_GPREL_ADD ||
+            VK == RISCV::S_GOT_GPREL_ADD ||
+            VK == RISCV::S_TLS_GOT_GPREL_ADD ||
+            VK == RISCV::S_TLS_GD_GPREL_ADD);
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -915,9 +915,9 @@ public:
            (VK == RISCV::S_LO || VK == RISCV::S_PCREL_LO ||
             VK == RISCV::S_TPREL_LO || VK == ELF::R_RISCV_TLSDESC_LOAD_LO12 ||
 #if SIFIVE_CUSTOMIZATION
-            VK == ELF::R_RISCV_TLSDESC_ADD_LO12 || VK == RISCV::VK_GPREL_LO ||
-            VK == RISCV::VK_GOT_GPREL_LO || VK == RISCV::VK_TLS_GOT_GPREL_LO ||
-            VK == RISCV::VK_TLS_GD_GPREL_LO);
+            VK == ELF::R_RISCV_TLSDESC_ADD_LO12 || VK == RISCV::S_GPREL_LO ||
+            VK == RISCV::S_GOT_GPREL_LO || VK == RISCV::S_TLS_GOT_GPREL_LO ||
+            VK == RISCV::S_TLS_GD_GPREL_LO);
 #else
             VK == ELF::R_RISCV_TLSDESC_ADD_LO12);
 #endif // SIFIVE_CUSTOMIZATION
@@ -965,9 +965,9 @@ public:
     return RISCVAsmParser::classifySymbolRef(getImm(), VK) &&
 #ifdef SIFIVE_CUSTOMIZATION
            (VK == ELF::R_RISCV_HI20 || VK == ELF::R_RISCV_TPREL_HI20 ||
-            VK == RISCV::VK_GPREL_HI || VK == RISCV::VK_GOT_GPREL_HI ||
-            VK == RISCV::VK_TLS_GOT_GPREL_HI ||
-            VK == RISCV::VK_TLS_GD_GPREL_HI);
+            VK == RISCV::S_GPREL_HI || VK == RISCV::S_GOT_GPREL_HI ||
+            VK == RISCV::S_TLS_GOT_GPREL_HI ||
+            VK == RISCV::S_TLS_GD_GPREL_HI);
 #else
            (VK == ELF::R_RISCV_HI20 || VK == ELF::R_RISCV_TPREL_HI20);
 #endif // SIFIVE_CUSTOMIZATION
@@ -2158,18 +2158,18 @@ bool RISCVAsmParser::parseExprWithSpecifier(const MCExpr *&Res, SMLoc &E) {
   switch (Spec) {
   default:
     break;
-  case RISCV::VK_GPREL_LO:
-  case RISCV::VK_GPREL_HI:
-  case RISCV::VK_GPREL_ADD:
-  case RISCV::VK_GOT_GPREL_LO:
-  case RISCV::VK_GOT_GPREL_HI:
-  case RISCV::VK_GOT_GPREL_ADD:
-  case RISCV::VK_TLS_GOT_GPREL_LO:
-  case RISCV::VK_TLS_GOT_GPREL_HI:
-  case RISCV::VK_TLS_GOT_GPREL_ADD:
-  case RISCV::VK_TLS_GD_GPREL_LO:
-  case RISCV::VK_TLS_GD_GPREL_HI:
-  case RISCV::VK_TLS_GD_GPREL_ADD:
+  case RISCV::S_GPREL_LO:
+  case RISCV::S_GPREL_HI:
+  case RISCV::S_GPREL_ADD:
+  case RISCV::S_GOT_GPREL_LO:
+  case RISCV::S_GOT_GPREL_HI:
+  case RISCV::S_GOT_GPREL_ADD:
+  case RISCV::S_TLS_GOT_GPREL_LO:
+  case RISCV::S_TLS_GOT_GPREL_HI:
+  case RISCV::S_TLS_GOT_GPREL_ADD:
+  case RISCV::S_TLS_GD_GPREL_LO:
+  case RISCV::S_TLS_GD_GPREL_HI:
+  case RISCV::S_TLS_GD_GPREL_ADD:
     Warning(getLoc(), "compact code model operand specifiers are deprecated");
     break;
   }
@@ -3687,9 +3687,9 @@ bool RISCVAsmParser::emitCompactLoadAddress(MCInst &Inst, unsigned Opcode,
     //   LUI  rdest, %gprel_hi(symbol)
     //   ADD  rdest, rpseudogp, rdest, %gprel(symbol)
     //   ADDI rdest, %gprel_lo(symbol)(rdest)
-    VKHi = RISCV::VK_GPREL_HI;
-    VKLow = RISCV::VK_GPREL_LO;
-    VKAdd = RISCV::VK_GPREL_ADD;
+    VKHi = RISCV::S_GPREL_HI;
+    VKLow = RISCV::S_GPREL_LO;
+    VKAdd = RISCV::S_GPREL_ADD;
     LowOpcode = RISCV::ADDI;
     break;
   case RISCV::PseudoLA_GOT_GPREL:
@@ -3700,9 +3700,9 @@ bool RISCVAsmParser::emitCompactLoadAddress(MCInst &Inst, unsigned Opcode,
     //   LUI  rdest, %got_gprel_hi(symbol)
     //   ADD  rdest, rpseudogp, rdest, %got_gprel(symbol)
     //   LX   rdest, %got_gprel_lo(symbol)(rdest)
-    VKHi = RISCV::VK_GOT_GPREL_HI;
-    VKLow = RISCV::VK_GOT_GPREL_LO;
-    VKAdd = RISCV::VK_GOT_GPREL_ADD;
+    VKHi = RISCV::S_GOT_GPREL_HI;
+    VKLow = RISCV::S_GOT_GPREL_LO;
+    VKAdd = RISCV::S_GOT_GPREL_ADD;
     LowOpcode = isRV64() ? RISCV::LD : RISCV::LW;
     break;
   case RISCV::PseudoLA_TLS_IE_GPREL:
@@ -3714,9 +3714,9 @@ bool RISCVAsmParser::emitCompactLoadAddress(MCInst &Inst, unsigned Opcode,
     //   LUI  rdest, %tls_ie_gprel_hi(symbol)
     //   ADD  rdest, rpseudogp, rdest, %tls_ie_gprel_add(symbol)
     //   LX   rdest, %tls_ie_gprel_lo(symbol)(rdest)
-    VKHi = RISCV::VK_TLS_GOT_GPREL_HI;
-    VKLow = RISCV::VK_TLS_GOT_GPREL_LO;
-    VKAdd = RISCV::VK_TLS_GOT_GPREL_ADD;
+    VKHi = RISCV::S_TLS_GOT_GPREL_HI;
+    VKLow = RISCV::S_TLS_GOT_GPREL_LO;
+    VKAdd = RISCV::S_TLS_GOT_GPREL_ADD;
     LowOpcode = isRV64() ? RISCV::LD : RISCV::LW;
     break;
   case RISCV::PseudoLA_TLS_GD_GPREL:
@@ -3728,9 +3728,9 @@ bool RISCVAsmParser::emitCompactLoadAddress(MCInst &Inst, unsigned Opcode,
     //   LUI  rdest, %tls_gd_gprel_hi(symbol)
     //   ADD  rdest, rpseudogp, rdest, %tls_gd_gprel_add(symbol)
     //   ADDI rdest, %tls_gd_gprel_lo(symbol)(rdest)
-    VKHi = RISCV::VK_TLS_GD_GPREL_HI;
-    VKLow = RISCV::VK_TLS_GD_GPREL_LO;
-    VKAdd = RISCV::VK_TLS_GD_GPREL_ADD;
+    VKHi = RISCV::S_TLS_GD_GPREL_HI;
+    VKLow = RISCV::S_TLS_GD_GPREL_LO;
+    VKAdd = RISCV::S_TLS_GD_GPREL_ADD;
     LowOpcode = RISCV::ADDI;
     break;
   }
@@ -3772,11 +3772,11 @@ void RISCVAsmParser::emitCompactLoadStoreSymbol(MCInst &Inst, unsigned Opcode,
   MCOperand TmpReg = Inst.getOperand(TmpRegOpIdx);
   const MCExpr *Symbol = Inst.getOperand(SymbolOpIdx).getExpr();
   const MCExpr *SymbolHi =
-      MCSpecifierExpr::create(Symbol, RISCV::VK_GPREL_HI, Ctx);
+      MCSpecifierExpr::create(Symbol, RISCV::S_GPREL_HI, Ctx);
   const MCExpr *SymbolAdd =
-      MCSpecifierExpr::create(Symbol, RISCV::VK_GPREL_ADD, Ctx);
+      MCSpecifierExpr::create(Symbol, RISCV::S_GPREL_ADD, Ctx);
   const MCExpr *SymbolLow =
-      MCSpecifierExpr::create(Symbol, RISCV::VK_GPREL_LO, Ctx);
+      MCSpecifierExpr::create(Symbol, RISCV::S_GPREL_LO, Ctx);
   emitToStreamer(Out, MCInstBuilder(RISCV::LUI)
                           .addOperand(TmpReg)
                           .addExpr(SymbolHi));
@@ -3934,10 +3934,10 @@ bool RISCVAsmParser::checkPseudoAddRegRel(MCInst &Inst,
                              "%tprel_add specifier");
     }
   break;
-  case llvm::RISCV::VK_GPREL_ADD:
-  case llvm::RISCV::VK_GOT_GPREL_ADD:
-  case llvm::RISCV::VK_TLS_GOT_GPREL_ADD:
-  case llvm::RISCV::VK_TLS_GD_GPREL_ADD:
+  case llvm::RISCV::S_GPREL_ADD:
+  case llvm::RISCV::S_GOT_GPREL_ADD:
+  case llvm::RISCV::S_TLS_GOT_GPREL_ADD:
+  case llvm::RISCV::S_TLS_GD_GPREL_ADD:
     break;
   }
 

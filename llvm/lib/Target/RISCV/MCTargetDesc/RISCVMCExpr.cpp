@@ -43,18 +43,18 @@ RISCV::Specifier RISCV::parseSpecifierName(StringRef name) {
       .Case("tlsdesc_add_lo", ELF::R_RISCV_TLSDESC_ADD_LO12)
       .Case("tlsdesc_call", ELF::R_RISCV_TLSDESC_CALL)
 #if SIFIVE_CUSTOMIZATION
-      .Case("gprel_lo", VK_GPREL_LO)
-      .Case("gprel_hi", VK_GPREL_HI)
-      .Case("gprel", VK_GPREL_ADD)
-      .Case("got_gprel_lo", VK_GOT_GPREL_LO)
-      .Case("got_gprel_hi", VK_GOT_GPREL_HI)
-      .Case("got_gprel", VK_GOT_GPREL_ADD)
-      .Case("tls_ie_gprel_lo", VK_TLS_GOT_GPREL_LO)
-      .Case("tls_ie_gprel_hi", VK_TLS_GOT_GPREL_HI)
-      .Case("tls_ie_gprel", VK_TLS_GOT_GPREL_ADD)
-      .Case("tls_gd_gprel_lo", VK_TLS_GD_GPREL_LO)
-      .Case("tls_gd_gprel_hi", VK_TLS_GD_GPREL_HI)
-      .Case("tls_gd_gprel", VK_TLS_GD_GPREL_ADD)
+      .Case("gprel_lo", RISCV::S_GPREL_LO)
+      .Case("gprel_hi", RISCV::S_GPREL_HI)
+      .Case("gprel", RISCV::S_GPREL_ADD)
+      .Case("got_gprel_lo", RISCV::S_GOT_GPREL_LO)
+      .Case("got_gprel_hi", RISCV::S_GOT_GPREL_HI)
+      .Case("got_gprel", RISCV::S_GOT_GPREL_ADD)
+      .Case("tls_ie_gprel_lo", RISCV::S_TLS_GOT_GPREL_LO)
+      .Case("tls_ie_gprel_hi", RISCV::S_TLS_GOT_GPREL_HI)
+      .Case("tls_ie_gprel", RISCV::S_TLS_GOT_GPREL_ADD)
+      .Case("tls_gd_gprel_lo", RISCV::S_TLS_GD_GPREL_LO)
+      .Case("tls_gd_gprel_hi", RISCV::S_TLS_GD_GPREL_HI)
+      .Case("tls_gd_gprel", RISCV::S_TLS_GD_GPREL_ADD)
 #endif // SIFIVE_CUSTOMIZATION
       .Case("qc.abs20", RISCV::S_QC_ABS20)
       // Used in data directives
@@ -100,29 +100,29 @@ StringRef RISCV::getSpecifierName(Specifier S) {
   case ELF::R_RISCV_32_PCREL:
     return "32_pcrel";
 #if SIFIVE_CUSTOMIZATION
-  case VK_GPREL_LO:
+  case RISCV::S_GPREL_LO:
     return "gprel_lo";
-  case VK_GPREL_HI:
+  case RISCV::S_GPREL_HI:
     return "gprel_hi";
-  case VK_GPREL_ADD:
+  case RISCV::S_GPREL_ADD:
     return "gprel";
-  case VK_GOT_GPREL_LO:
+  case RISCV::S_GOT_GPREL_LO:
     return "got_gprel_lo";
-  case VK_GOT_GPREL_HI:
+  case RISCV::S_GOT_GPREL_HI:
     return "got_gprel_hi";
-  case VK_GOT_GPREL_ADD:
+  case RISCV::S_GOT_GPREL_ADD:
     return "got_gprel";
-  case VK_TLS_GOT_GPREL_LO:
+  case RISCV::S_TLS_GOT_GPREL_LO:
     return "tls_ie_gprel_lo";
-  case VK_TLS_GOT_GPREL_HI:
+  case RISCV::S_TLS_GOT_GPREL_HI:
     return "tls_ie_gprel_hi";
-  case VK_TLS_GOT_GPREL_ADD:
+  case RISCV::S_TLS_GOT_GPREL_ADD:
     return "tls_ie_gprel";
-  case VK_TLS_GD_GPREL_LO:
+  case RISCV::S_TLS_GD_GPREL_LO:
     return "tls_gd_gprel_lo";
-  case VK_TLS_GD_GPREL_HI:
+  case RISCV::S_TLS_GD_GPREL_HI:
     return "tls_gd_gprel_hi";
-  case VK_TLS_GD_GPREL_ADD:
+  case RISCV::S_TLS_GD_GPREL_ADD:
     return "tls_gd_gprel";
 #endif // SIFIVE_CUSTOMIZATION
   case ELF::R_RISCV_GOT32_PCREL:
