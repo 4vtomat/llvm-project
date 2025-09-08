@@ -11408,20 +11408,20 @@ SDValue DAGCombiner::foldABSToABD(SDNode *N, const SDLoc &DL) {
   if (N->getOpcode() == ISD::TRUNCATE)
     N = N->getOperand(0).getNode();
 
-#if SIFIVE_CUSTOMIZATION
-  if (!matcher.match(SDValue(N, 0), ISD::ABS))
-    return SDValue();
-#endif // SIFIVE_CUSTOMIZATION
   EVT VT = N->getValueType(0);
   SDValue Op0, Op1;
 
 #if SIFIVE_CUSTOMIZATION
-  SDValue AbsOp1 = N->getOperand(0);
-  if (!matcher.match(AbsOp1, ISD::SUB))
+  if (!matcher.match(SDValue(N, 0), ISD::ABS))
     return SDValue();
-#endif // SIFIVE_CUSTOMIZATION
+  if (!matcher.match(N->getOperand(0), ISD::SUB))
+    return SDValue();
+  Op0 = N->getOperand(0).getOperand(0);
+  Op1 = N->getOperand(0).getOperand(1);
+#else
   if (!sd_match(N, m_Abs(m_Sub(m_Value(Op0), m_Value(Op1)))))
     return SDValue();
+#endif // SIFIVE_CUSTOMIZATION
 
   SDValue AbsOp0 = N->getOperand(0);
   unsigned Opc0 = Op0.getOpcode();
@@ -11432,23 +11432,26 @@ SDValue DAGCombiner::foldABSToABD(SDNode *N, const SDLoc &DL) {
 #if SIFIVE_CUSTOMIZATION
       (!matcher.match(Op0, ISD::ZERO_EXTEND) &&
        !matcher.match(Op0, ISD::SIGN_EXTEND) &&
+#else
+      (Opc0 != ISD::ZERO_EXTEND && Opc0 != ISD::SIGN_EXTEND &&
 #endif // SIFIVE_CUSTOMIZATION
        Opc0 != ISD::SIGN_EXTEND_INREG)) {
     // fold (abs (sub nsw x, y)) -> abds(x, y)
     // Don't fold this for unsupported types as we lose the NSW handling.
 #if SIFIVE_CUSTOMIZATION
-    if (AbsOp1->getFlags().hasNoSignedWrap() &&
+    if (AbsOp0->getFlags().hasNoSignedWrap() &&
         matcher.isOperationLegalOrCustom(ISD::ABDS, VT, LegalOperations) &&
         TLI.preferABDSToABSWithNSW(VT)) {
       SDValue ABD = matcher.getNode(ISD::ABDS, DL, VT, Op0, Op1);
       return matcher.getZExtOrTrunc(ABD, DL, SrcVT);
     }
-#endif // SIFIVE_CUSTOMIZATION
+#else
     if (AbsOp0->getFlags().hasNoSignedWrap() && hasOperation(ISD::ABDS, VT) &&
         TLI.preferABDSToABSWithNSW(VT)) {
       SDValue ABD = DAG.getNode(ISD::ABDS, DL, VT, Op0, Op1);
       return DAG.getZExtOrTrunc(ABD, DL, SrcVT);
     }
+#endif // SIFIVE_CUSTOMIZATION
     return SDValue();
   }
 
@@ -11463,6 +11466,8 @@ SDValue DAGCombiner::foldABSToABD(SDNode *N, const SDLoc &DL) {
 #if SIFIVE_CUSTOMIZATION
   unsigned ABDOpcode =
       matcher.match(Op0, ISD::ZERO_EXTEND) ? ISD::ABDU : ISD::ABDS;
+#else
+  unsigned ABDOpcode = (Opc0 == ISD::ZERO_EXTEND) ? ISD::ABDU : ISD::ABDS;
 #endif // SIFIVE_CUSTOMIZATION
 
   // fold abs(sext(x) - sext(y)) -> zext(abds(x, y))
@@ -11478,6 +11483,13 @@ SDValue DAGCombiner::foldABSToABD(SDNode *N, const SDLoc &DL) {
         matcher.getNode(ISD::TRUNCATE, DL, MaxVT, Op1));
     ABD = matcher.getNode(ISD::ZERO_EXTEND, DL, VT, ABD);
     return matcher.getZExtOrTrunc(ABD, DL, SrcVT);
+#else
+      (!LegalTypes || hasOperation(ABDOpcode, MaxVT))) {
+    SDValue ABD = DAG.getNode(ABDOpcode, DL, MaxVT,
+                              DAG.getNode(ISD::TRUNCATE, DL, MaxVT, Op0),
+                              DAG.getNode(ISD::TRUNCATE, DL, MaxVT, Op1));
+    ABD = DAG.getNode(ISD::ZERO_EXTEND, DL, VT, ABD);
+    return DAG.getZExtOrTrunc(ABD, DL, SrcVT);
 #endif // SIFIVE_CUSTOMIZATION
   }
 
@@ -11488,6 +11500,10 @@ SDValue DAGCombiner::foldABSToABD(SDNode *N, const SDLoc &DL) {
       matcher.isOperationLegalOrCustom(ABDOpcode, VT, LegalOperations)) {
     SDValue ABD = matcher.getNode(ABDOpcode, DL, VT, Op0, Op1);
     return matcher.getZExtOrTrunc(ABD, DL, SrcVT);
+#else
+  if (!LegalOperations || hasOperation(ABDOpcode, VT)) {
+    SDValue ABD = DAG.getNode(ABDOpcode, DL, VT, Op0, Op1);
+    return DAG.getZExtOrTrunc(ABD, DL, SrcVT);
 #endif // SIFIVE_CUSTOMIZATION
   }
 
