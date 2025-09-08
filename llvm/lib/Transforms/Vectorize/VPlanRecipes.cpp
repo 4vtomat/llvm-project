@@ -5237,11 +5237,7 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
     // The cost references the instructions created in
     // llvm::createAnyOfReduction
     auto *VecCondTy = cast<VectorType>(CmpInst::makeCmpResultType(VectorTy));
-    InstructionCost O = Ctx.TTI.getShuffleCost(
-        TargetTransformInfo::SK_Broadcast, VecCondTy, VectorTy);
-    O += Ctx.TTI.getCmpSelInstrCost(Instruction::ICmp, VectorTy, VecCondTy,
-                                    CmpInst::ICMP_NE, CostKind);
-    O += Ctx.TTI.getArithmeticReductionCost(
+    InstructionCost O = Ctx.TTI.getArithmeticReductionCost(
         Instruction::Or, VecCondTy, RdxDesc.getFastMathFlags(), CostKind);
     O += Ctx.TTI.getCmpSelInstrCost(Instruction::Select, ElementTy,
                                     CmpInst::makeCmpResultType(ElementTy),
