@@ -14,7 +14,7 @@
 ; VPLAN-NEXT:    EMIT-SCALAR vp<[[IV:.+]]> = phi [ ir<0>, ir-bb<[[VEC_PH]]> ], [ vp<[[IV_NEXT:.+]]>, vector.body.split ]
 ; VPLAN-NEXT:    EMIT-SCALAR vp<[[EVL_IV:.+]]> = phi [ ir<0>, ir-bb<[[VEC_PH]]> ], [ vp<[[EVL_IV_NEXT:.+]]>, vector.body.split ]
 ; VPLAN-NEXT:    EMIT vp<[[AVL:.+]]> = sub ir<[[TC:.+]]>, vp<[[EVL_IV]]>
-; VPLAN-NEXT:    EMIT vp<[[EVL:.+]]> = EXPLICIT-VECTOR-LENGTH vp<[[AVL]]>
+; VPLAN-NEXT:    EMIT-SCALAR vp<[[EVL:.+]]> = EXPLICIT-VECTOR-LENGTH vp<[[AVL]]>
 ; VPLAN-NEXT:    CLONE ir<[[ARRIDX:.+]]> = getelementptr ir<{{.*}}>, vp<[[EVL_IV]]>
 ; VPLAN-NEXT:    vp<[[VECTOR_POINTER:.+]]> = vector-pointer ir<[[ARRIDX]]>
 ; VPLAN-NEXT:    WIDEN ir<[[LOAD:.+]]> = vp.load vp<[[VECTOR_POINTER]]>, vp<[[EVL]]> unit-strided
@@ -32,7 +32,7 @@
 ; VPLAN-NEXT:  Successor(s): vector.body.split
 ; VPLAN-EMPTY:
 ; VPLAN-NEXT:  vector.body.split:
-; VPLAN-NEXT:    EMIT vp<[[EXT:.*]]> = zext vp<[[EVL]]> to i64
+; VPLAN-NEXT:    EMIT-SCALAR vp<[[EXT:.*]]> = zext vp<[[EVL]]> to i64
 ; VPLAN-NEXT:    EMIT vp<[[EVL_NEXT:.+]]> = add nuw vp<[[EXT]]>, vp<[[EVL_IV]]>
 ; VPLAN-NEXT:    EMIT branch-on-count vp<[[EVL_NEXT]]>, ir<{{.*}}>
 ; VPLAN-NEXT:  Successor(s): middle.block, vector.body
