@@ -252,56 +252,6 @@ static bool isReInterleaveMask(ShuffleVectorInst *SVI, unsigned &Factor,
   return false;
 }
 
-#if SIFIVE_CUSTOMIZATION
-static unsigned getFactorFromVectorInterleaveIntrinsic(IntrinsicInst *II) {
-    switch (II->getIntrinsicID()) {
-    case Intrinsic::vector_interleave2:
-      return 2;
-    case Intrinsic::vector_interleave3:
-      return 3;
-    case Intrinsic::vector_interleave4:
-    case Intrinsic::experimental_vector_interleave4:
-      return 4;
-    case Intrinsic::vector_interleave5:
-      return 5;
-    case Intrinsic::vector_interleave6:
-    case Intrinsic::experimental_vector_interleave6:
-      return 6;
-    case Intrinsic::vector_interleave7:
-      return 7;
-    case Intrinsic::vector_interleave8:
-    case Intrinsic::experimental_vector_interleave8:
-      return 8;
-    default:
-      return 0;
-    }
-}
-
-static unsigned getFactorFromVectorDeInterleaveIntrinsic(IntrinsicInst *DI) {
-    switch (DI->getIntrinsicID()) {
-    case Intrinsic::vector_deinterleave2:
-      return 2;
-    case Intrinsic::vector_deinterleave3:
-      return 3;
-    case Intrinsic::vector_deinterleave4:
-    case Intrinsic::experimental_vector_deinterleave4:
-      return 4;
-    case Intrinsic::vector_deinterleave5:
-      return 5;
-    case Intrinsic::vector_deinterleave6:
-    case Intrinsic::experimental_vector_deinterleave6:
-      return 6;
-    case Intrinsic::vector_deinterleave7:
-      return 7;
-    case Intrinsic::vector_deinterleave8:
-    case Intrinsic::experimental_vector_deinterleave8:
-      return 8;
-    default:
-      return 0;
-    }
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 // Return the corresponded deinterleaved mask, or nullptr if there is no valid
 // mask.
 static Value *getMask(Value *WideMask, unsigned Factor,
@@ -733,18 +683,6 @@ bool InterleavedAccessImpl::lowerDeinterleaveIntrinsic(
 #endif
     return false;
 
-#if SIFIVE_CUSTOMIZATION
-  if (unsigned Factor = getFactorFromVectorDeInterleaveIntrinsic(DI);
-      Factor > 2) {
-    if (!DI->hasNUses(Factor))
-      return false;
-
-    // The intrinsic will be deleted from the bottom-up.
-    DeadInsts.insert(DI);
-    return true;
-  }
-#endif
-
   const unsigned Factor = getIntrinsicFactor(DI);
   if (!DI->hasNUses(Factor))
     return false;
@@ -852,14 +790,6 @@ bool InterleavedAccessImpl::lowerInterleaveIntrinsic(
   Value *StoredBy = II->user_back();
   if (!isa<StoreInst, VPIntrinsic>(StoredBy))
     return false;
-
-#if SIFIVE_CUSTOMIZATION
-  if (unsigned Factor = getFactorFromVectorInterleaveIntrinsic(II);
-      Factor > 2) {
-    DeadInsts.insert(II);
-    return true;
-  }
-#endif
 
   SmallVector<Value *, 8> InterleaveValues(II->args());
   const unsigned Factor = getIntrinsicFactor(II);
