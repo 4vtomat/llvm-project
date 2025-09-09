@@ -139,7 +139,7 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; X280-NEXT:    [[VP_OP57:%.*]] = call <vscale x 2 x i32> @llvm.vp.sub.nxv2i32(<vscale x 2 x i32> [[VP_OP52]], <vscale x 2 x i32> [[VP_OP54]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP4]])
 ; X280-NEXT:    [[VP_OP58:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[VP_OP55]], <vscale x 2 x i32> [[VP_OP53]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP4]])
 ; X280-NEXT:    [[VP_OP59:%.*]] = call <vscale x 2 x i32> @llvm.vp.sub.nxv2i32(<vscale x 2 x i32> [[VP_OP53]], <vscale x 2 x i32> [[VP_OP55]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP4]])
-; X280-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 8 x i32> @llvm.experimental.vector.interleave4.nxv8i32(<vscale x 2 x i32> [[VP_OP56]], <vscale x 2 x i32> [[VP_OP58]], <vscale x 2 x i32> [[VP_OP57]], <vscale x 2 x i32> [[VP_OP59]])
+; X280-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 8 x i32> @llvm.vector.interleave4.nxv8i32(<vscale x 2 x i32> [[VP_OP56]], <vscale x 2 x i32> [[VP_OP58]], <vscale x 2 x i32> [[VP_OP57]], <vscale x 2 x i32> [[VP_OP59]])
 ; X280-NEXT:    [[TMP43:%.*]] = mul nuw nsw i32 [[TMP4]], 4
 ; X280-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[INTERLEAVED_VEC]], ptr align 4 [[TMP40]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP43]])
 ; X280-NEXT:    [[TMP45:%.*]] = zext i32 [[TMP4]] to i64
@@ -169,7 +169,7 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; X280-NEXT:    [[NEXT_GEP76:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL58]], i64 [[OFFSET_IDX75]]
 ; X280-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 2 x i64> @llvm.experimental.vp.strided.load.nxv2i64.p0.i64(ptr align 1 [[NEXT_GEP74]], i64 [[IDX_EXT]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP50]])
 ; X280-NEXT:    [[WIDE_STRIDED_LOAD_CAST:%.*]] = bitcast <vscale x 2 x i64> [[WIDE_STRIDED_LOAD]] to <vscale x 16 x i8>
-; X280-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } @llvm.experimental.vector.deinterleave8.nxv16i8(<vscale x 16 x i8> [[WIDE_STRIDED_LOAD_CAST]])
+; X280-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } @llvm.vector.deinterleave8.nxv16i8(<vscale x 16 x i8> [[WIDE_STRIDED_LOAD_CAST]])
 ; X280-NEXT:    [[TMP57:%.*]] = extractvalue { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } [[DEINTERLEAVED_RESULTS]], 0
 ; X280-NEXT:    [[TMP58:%.*]] = extractvalue { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } [[DEINTERLEAVED_RESULTS]], 1
 ; X280-NEXT:    [[TMP59:%.*]] = extractvalue { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } [[DEINTERLEAVED_RESULTS]], 2
@@ -181,7 +181,7 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; X280-NEXT:    [[VP_CAST78:%.*]] = call <vscale x 2 x i32> @llvm.vp.zext.nxv2i32.nxv2i8(<vscale x 2 x i8> [[TMP57]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP50]])
 ; X280-NEXT:    [[WIDE_STRIDED_LOAD78:%.*]] = call <vscale x 2 x i64> @llvm.experimental.vp.strided.load.nxv2i64.p0.i64(ptr align 1 [[NEXT_GEP76]], i64 [[IDX_EXT63]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP50]])
 ; X280-NEXT:    [[WIDE_STRIDED_LOAD78_CAST:%.*]] = bitcast <vscale x 2 x i64> [[WIDE_STRIDED_LOAD78]] to <vscale x 16 x i8>
-; X280-NEXT:    [[DEINTERLEAVED_RESULTS79:%.*]] = call { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } @llvm.experimental.vector.deinterleave8.nxv16i8(<vscale x 16 x i8> [[WIDE_STRIDED_LOAD78_CAST]])
+; X280-NEXT:    [[DEINTERLEAVED_RESULTS79:%.*]] = call { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } @llvm.vector.deinterleave8.nxv16i8(<vscale x 16 x i8> [[WIDE_STRIDED_LOAD78_CAST]])
 ; X280-NEXT:    [[TMP66:%.*]] = extractvalue { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } [[DEINTERLEAVED_RESULTS79]], 0
 ; X280-NEXT:    [[TMP67:%.*]] = extractvalue { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } [[DEINTERLEAVED_RESULTS79]], 1
 ; X280-NEXT:    [[TMP68:%.*]] = extractvalue { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } [[DEINTERLEAVED_RESULTS79]], 2
@@ -230,7 +230,7 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; X280-NEXT:    [[VP_OP116:%.*]] = call <vscale x 2 x i32> @llvm.vp.sub.nxv2i32(<vscale x 2 x i32> [[VP_OP112]], <vscale x 2 x i32> [[VP_OP114]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP50]])
 ; X280-NEXT:    [[VP_OP117:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[VP_OP119]], <vscale x 2 x i32> [[VP_OP113]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP50]])
 ; X280-NEXT:    [[VP_OP118:%.*]] = call <vscale x 2 x i32> @llvm.vp.sub.nxv2i32(<vscale x 2 x i32> [[VP_OP113]], <vscale x 2 x i32> [[VP_OP119]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP50]])
-; X280-NEXT:    [[INTERLEAVED_VEC119:%.*]] = call <vscale x 8 x i32> @llvm.experimental.vector.interleave4.nxv8i32(<vscale x 2 x i32> [[VP_OP115]], <vscale x 2 x i32> [[VP_OP117]], <vscale x 2 x i32> [[VP_OP116]], <vscale x 2 x i32> [[VP_OP118]])
+; X280-NEXT:    [[INTERLEAVED_VEC119:%.*]] = call <vscale x 8 x i32> @llvm.vector.interleave4.nxv8i32(<vscale x 2 x i32> [[VP_OP115]], <vscale x 2 x i32> [[VP_OP117]], <vscale x 2 x i32> [[VP_OP116]], <vscale x 2 x i32> [[VP_OP118]])
 ; X280-NEXT:    [[TMP77:%.*]] = mul nuw nsw i32 [[TMP50]], 4
 ; X280-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[INTERLEAVED_VEC119]], ptr align 4 [[TMP74]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP77]])
 ; X280-NEXT:    [[TMP79:%.*]] = zext i32 [[TMP50]] to i64
@@ -457,7 +457,7 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; X280-NEXT:    [[VP_OP193:%.*]] = call <vscale x 2 x i32> @llvm.vp.sub.nxv2i32(<vscale x 2 x i32> [[VP_OP189]], <vscale x 2 x i32> [[VP_OP191]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP101]])
 ; X280-NEXT:    [[VP_OP194:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[VP_OP196]], <vscale x 2 x i32> [[VP_OP190]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP101]])
 ; X280-NEXT:    [[VP_OP195:%.*]] = call <vscale x 2 x i32> @llvm.vp.sub.nxv2i32(<vscale x 2 x i32> [[VP_OP190]], <vscale x 2 x i32> [[VP_OP196]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP101]])
-; X280-NEXT:    [[INTERLEAVED_VEC196:%.*]] = call <vscale x 8 x i32> @llvm.experimental.vector.interleave4.nxv8i32(<vscale x 2 x i32> [[VP_OP192]], <vscale x 2 x i32> [[VP_OP194]], <vscale x 2 x i32> [[VP_OP193]], <vscale x 2 x i32> [[VP_OP195]])
+; X280-NEXT:    [[INTERLEAVED_VEC196:%.*]] = call <vscale x 8 x i32> @llvm.vector.interleave4.nxv8i32(<vscale x 2 x i32> [[VP_OP192]], <vscale x 2 x i32> [[VP_OP194]], <vscale x 2 x i32> [[VP_OP193]], <vscale x 2 x i32> [[VP_OP195]])
 ; X280-NEXT:    [[TMP140:%.*]] = mul nuw nsw i32 [[TMP101]], 4
 ; X280-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[INTERLEAVED_VEC196]], ptr align 4 [[TMP137]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP140]])
 ; X280-NEXT:    [[TMP142:%.*]] = zext i32 [[TMP101]] to i64
@@ -487,7 +487,7 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; X280-NEXT:    [[NEXT_GEP216:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL192]], i64 [[OFFSET_IDX215]]
 ; X280-NEXT:    [[WIDE_STRIDED_LOAD217:%.*]] = call <vscale x 2 x i64> @llvm.experimental.vp.strided.load.nxv2i64.p0.i64(ptr align 1 [[NEXT_GEP214]], i64 [[IDX_EXT]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP147]])
 ; X280-NEXT:    [[WIDE_STRIDED_LOAD217_CAST:%.*]] = bitcast <vscale x 2 x i64> [[WIDE_STRIDED_LOAD217]] to <vscale x 16 x i8>
-; X280-NEXT:    [[DEINTERLEAVED_RESULTS218:%.*]] = call { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } @llvm.experimental.vector.deinterleave8.nxv16i8(<vscale x 16 x i8> [[WIDE_STRIDED_LOAD217_CAST]])
+; X280-NEXT:    [[DEINTERLEAVED_RESULTS218:%.*]] = call { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } @llvm.vector.deinterleave8.nxv16i8(<vscale x 16 x i8> [[WIDE_STRIDED_LOAD217_CAST]])
 ; X280-NEXT:    [[TMP154:%.*]] = extractvalue { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } [[DEINTERLEAVED_RESULTS218]], 0
 ; X280-NEXT:    [[TMP155:%.*]] = extractvalue { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } [[DEINTERLEAVED_RESULTS218]], 1
 ; X280-NEXT:    [[TMP156:%.*]] = extractvalue { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } [[DEINTERLEAVED_RESULTS218]], 2
@@ -499,7 +499,7 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; X280-NEXT:    [[VP_CAST220:%.*]] = call <vscale x 2 x i32> @llvm.vp.zext.nxv2i32.nxv2i8(<vscale x 2 x i8> [[TMP154]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP147]])
 ; X280-NEXT:    [[WIDE_STRIDED_LOAD220:%.*]] = call <vscale x 2 x i64> @llvm.experimental.vp.strided.load.nxv2i64.p0.i64(ptr align 1 [[NEXT_GEP216]], i64 [[IDX_EXT63]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP147]])
 ; X280-NEXT:    [[WIDE_STRIDED_LOAD220_CAST:%.*]] = bitcast <vscale x 2 x i64> [[WIDE_STRIDED_LOAD220]] to <vscale x 16 x i8>
-; X280-NEXT:    [[DEINTERLEAVED_RESULTS221:%.*]] = call { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } @llvm.experimental.vector.deinterleave8.nxv16i8(<vscale x 16 x i8> [[WIDE_STRIDED_LOAD220_CAST]])
+; X280-NEXT:    [[DEINTERLEAVED_RESULTS221:%.*]] = call { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } @llvm.vector.deinterleave8.nxv16i8(<vscale x 16 x i8> [[WIDE_STRIDED_LOAD220_CAST]])
 ; X280-NEXT:    [[TMP163:%.*]] = extractvalue { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } [[DEINTERLEAVED_RESULTS221]], 0
 ; X280-NEXT:    [[TMP164:%.*]] = extractvalue { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } [[DEINTERLEAVED_RESULTS221]], 1
 ; X280-NEXT:    [[TMP165:%.*]] = extractvalue { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } [[DEINTERLEAVED_RESULTS221]], 2
@@ -548,7 +548,7 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; X280-NEXT:    [[VP_OP258:%.*]] = call <vscale x 2 x i32> @llvm.vp.sub.nxv2i32(<vscale x 2 x i32> [[VP_OP254]], <vscale x 2 x i32> [[VP_OP256]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP147]])
 ; X280-NEXT:    [[VP_OP259:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[VP_OP261]], <vscale x 2 x i32> [[VP_OP255]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP147]])
 ; X280-NEXT:    [[VP_OP260:%.*]] = call <vscale x 2 x i32> @llvm.vp.sub.nxv2i32(<vscale x 2 x i32> [[VP_OP255]], <vscale x 2 x i32> [[VP_OP261]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP147]])
-; X280-NEXT:    [[INTERLEAVED_VEC261:%.*]] = call <vscale x 8 x i32> @llvm.experimental.vector.interleave4.nxv8i32(<vscale x 2 x i32> [[VP_OP257]], <vscale x 2 x i32> [[VP_OP259]], <vscale x 2 x i32> [[VP_OP258]], <vscale x 2 x i32> [[VP_OP260]])
+; X280-NEXT:    [[INTERLEAVED_VEC261:%.*]] = call <vscale x 8 x i32> @llvm.vector.interleave4.nxv8i32(<vscale x 2 x i32> [[VP_OP257]], <vscale x 2 x i32> [[VP_OP259]], <vscale x 2 x i32> [[VP_OP258]], <vscale x 2 x i32> [[VP_OP260]])
 ; X280-NEXT:    [[TMP174:%.*]] = mul nuw nsw i32 [[TMP147]], 4
 ; X280-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[INTERLEAVED_VEC261]], ptr align 4 [[TMP171]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP174]])
 ; X280-NEXT:    [[TMP176:%.*]] = zext i32 [[TMP147]] to i64
@@ -1104,7 +1104,7 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; P670-NEXT:    [[VP_OP57:%.*]] = call <vscale x 4 x i32> @llvm.vp.sub.nxv4i32(<vscale x 4 x i32> [[VP_OP52]], <vscale x 4 x i32> [[VP_OP54]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP4]])
 ; P670-NEXT:    [[VP_OP58:%.*]] = call <vscale x 4 x i32> @llvm.vp.add.nxv4i32(<vscale x 4 x i32> [[VP_OP55]], <vscale x 4 x i32> [[VP_OP53]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP4]])
 ; P670-NEXT:    [[VP_OP59:%.*]] = call <vscale x 4 x i32> @llvm.vp.sub.nxv4i32(<vscale x 4 x i32> [[VP_OP53]], <vscale x 4 x i32> [[VP_OP55]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP4]])
-; P670-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 16 x i32> @llvm.experimental.vector.interleave4.nxv16i32(<vscale x 4 x i32> [[VP_OP56]], <vscale x 4 x i32> [[VP_OP58]], <vscale x 4 x i32> [[VP_OP57]], <vscale x 4 x i32> [[VP_OP59]])
+; P670-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 16 x i32> @llvm.vector.interleave4.nxv16i32(<vscale x 4 x i32> [[VP_OP56]], <vscale x 4 x i32> [[VP_OP58]], <vscale x 4 x i32> [[VP_OP57]], <vscale x 4 x i32> [[VP_OP59]])
 ; P670-NEXT:    [[TMP43:%.*]] = mul nuw nsw i32 [[TMP4]], 4
 ; P670-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[INTERLEAVED_VEC]], ptr align 4 [[TMP40]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP43]])
 ; P670-NEXT:    [[TMP45:%.*]] = zext i32 [[TMP4]] to i64
@@ -1331,7 +1331,7 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; P670-NEXT:    [[VP_OP131:%.*]] = call <vscale x 4 x i32> @llvm.vp.sub.nxv4i32(<vscale x 4 x i32> [[VP_OP127]], <vscale x 4 x i32> [[VP_OP129]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP67]])
 ; P670-NEXT:    [[VP_OP132:%.*]] = call <vscale x 4 x i32> @llvm.vp.add.nxv4i32(<vscale x 4 x i32> [[VP_OP134]], <vscale x 4 x i32> [[VP_OP128]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP67]])
 ; P670-NEXT:    [[VP_OP133:%.*]] = call <vscale x 4 x i32> @llvm.vp.sub.nxv4i32(<vscale x 4 x i32> [[VP_OP128]], <vscale x 4 x i32> [[VP_OP134]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP67]])
-; P670-NEXT:    [[INTERLEAVED_VEC134:%.*]] = call <vscale x 16 x i32> @llvm.experimental.vector.interleave4.nxv16i32(<vscale x 4 x i32> [[VP_OP130]], <vscale x 4 x i32> [[VP_OP132]], <vscale x 4 x i32> [[VP_OP131]], <vscale x 4 x i32> [[VP_OP133]])
+; P670-NEXT:    [[INTERLEAVED_VEC134:%.*]] = call <vscale x 16 x i32> @llvm.vector.interleave4.nxv16i32(<vscale x 4 x i32> [[VP_OP130]], <vscale x 4 x i32> [[VP_OP132]], <vscale x 4 x i32> [[VP_OP131]], <vscale x 4 x i32> [[VP_OP133]])
 ; P670-NEXT:    [[TMP106:%.*]] = mul nuw nsw i32 [[TMP67]], 4
 ; P670-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[INTERLEAVED_VEC134]], ptr align 4 [[TMP103]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP106]])
 ; P670-NEXT:    [[TMP108:%.*]] = zext i32 [[TMP67]] to i64
@@ -1887,7 +1887,7 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; LION-NEXT:    [[VP_OP57:%.*]] = call <vscale x 4 x i32> @llvm.vp.sub.nxv4i32(<vscale x 4 x i32> [[VP_OP52]], <vscale x 4 x i32> [[VP_OP54]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP4]])
 ; LION-NEXT:    [[VP_OP58:%.*]] = call <vscale x 4 x i32> @llvm.vp.add.nxv4i32(<vscale x 4 x i32> [[VP_OP55]], <vscale x 4 x i32> [[VP_OP53]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP4]])
 ; LION-NEXT:    [[VP_OP59:%.*]] = call <vscale x 4 x i32> @llvm.vp.sub.nxv4i32(<vscale x 4 x i32> [[VP_OP53]], <vscale x 4 x i32> [[VP_OP55]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP4]])
-; LION-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 16 x i32> @llvm.experimental.vector.interleave4.nxv16i32(<vscale x 4 x i32> [[VP_OP56]], <vscale x 4 x i32> [[VP_OP58]], <vscale x 4 x i32> [[VP_OP57]], <vscale x 4 x i32> [[VP_OP59]])
+; LION-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 16 x i32> @llvm.vector.interleave4.nxv16i32(<vscale x 4 x i32> [[VP_OP56]], <vscale x 4 x i32> [[VP_OP58]], <vscale x 4 x i32> [[VP_OP57]], <vscale x 4 x i32> [[VP_OP59]])
 ; LION-NEXT:    [[TMP43:%.*]] = mul nuw nsw i32 [[TMP4]], 4
 ; LION-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[INTERLEAVED_VEC]], ptr align 4 [[TMP40]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP43]])
 ; LION-NEXT:    [[TMP45:%.*]] = zext i32 [[TMP4]] to i64
@@ -1917,7 +1917,7 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; LION-NEXT:    [[NEXT_GEP76:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL58]], i64 [[OFFSET_IDX75]]
 ; LION-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 4 x i64> @llvm.experimental.vp.strided.load.nxv4i64.p0.i64(ptr align 1 [[NEXT_GEP74]], i64 [[IDX_EXT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP50]])
 ; LION-NEXT:    [[WIDE_STRIDED_LOAD_CAST:%.*]] = bitcast <vscale x 4 x i64> [[WIDE_STRIDED_LOAD]] to <vscale x 32 x i8>
-; LION-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @llvm.experimental.vector.deinterleave8.nxv32i8(<vscale x 32 x i8> [[WIDE_STRIDED_LOAD_CAST]])
+; LION-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @llvm.vector.deinterleave8.nxv32i8(<vscale x 32 x i8> [[WIDE_STRIDED_LOAD_CAST]])
 ; LION-NEXT:    [[TMP57:%.*]] = extractvalue { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } [[DEINTERLEAVED_RESULTS]], 0
 ; LION-NEXT:    [[TMP58:%.*]] = extractvalue { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } [[DEINTERLEAVED_RESULTS]], 1
 ; LION-NEXT:    [[TMP59:%.*]] = extractvalue { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } [[DEINTERLEAVED_RESULTS]], 2
@@ -1929,7 +1929,7 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; LION-NEXT:    [[VP_CAST78:%.*]] = call <vscale x 4 x i32> @llvm.vp.zext.nxv4i32.nxv4i8(<vscale x 4 x i8> [[TMP57]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP50]])
 ; LION-NEXT:    [[WIDE_STRIDED_LOAD78:%.*]] = call <vscale x 4 x i64> @llvm.experimental.vp.strided.load.nxv4i64.p0.i64(ptr align 1 [[NEXT_GEP76]], i64 [[IDX_EXT63]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP50]])
 ; LION-NEXT:    [[WIDE_STRIDED_LOAD78_CAST:%.*]] = bitcast <vscale x 4 x i64> [[WIDE_STRIDED_LOAD78]] to <vscale x 32 x i8>
-; LION-NEXT:    [[DEINTERLEAVED_RESULTS79:%.*]] = call { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @llvm.experimental.vector.deinterleave8.nxv32i8(<vscale x 32 x i8> [[WIDE_STRIDED_LOAD78_CAST]])
+; LION-NEXT:    [[DEINTERLEAVED_RESULTS79:%.*]] = call { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @llvm.vector.deinterleave8.nxv32i8(<vscale x 32 x i8> [[WIDE_STRIDED_LOAD78_CAST]])
 ; LION-NEXT:    [[TMP66:%.*]] = extractvalue { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } [[DEINTERLEAVED_RESULTS79]], 0
 ; LION-NEXT:    [[TMP67:%.*]] = extractvalue { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } [[DEINTERLEAVED_RESULTS79]], 1
 ; LION-NEXT:    [[TMP68:%.*]] = extractvalue { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } [[DEINTERLEAVED_RESULTS79]], 2
@@ -1978,7 +1978,7 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; LION-NEXT:    [[VP_OP116:%.*]] = call <vscale x 4 x i32> @llvm.vp.sub.nxv4i32(<vscale x 4 x i32> [[VP_OP112]], <vscale x 4 x i32> [[VP_OP114]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP50]])
 ; LION-NEXT:    [[VP_OP117:%.*]] = call <vscale x 4 x i32> @llvm.vp.add.nxv4i32(<vscale x 4 x i32> [[VP_OP119]], <vscale x 4 x i32> [[VP_OP113]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP50]])
 ; LION-NEXT:    [[VP_OP118:%.*]] = call <vscale x 4 x i32> @llvm.vp.sub.nxv4i32(<vscale x 4 x i32> [[VP_OP113]], <vscale x 4 x i32> [[VP_OP119]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP50]])
-; LION-NEXT:    [[INTERLEAVED_VEC119:%.*]] = call <vscale x 16 x i32> @llvm.experimental.vector.interleave4.nxv16i32(<vscale x 4 x i32> [[VP_OP115]], <vscale x 4 x i32> [[VP_OP117]], <vscale x 4 x i32> [[VP_OP116]], <vscale x 4 x i32> [[VP_OP118]])
+; LION-NEXT:    [[INTERLEAVED_VEC119:%.*]] = call <vscale x 16 x i32> @llvm.vector.interleave4.nxv16i32(<vscale x 4 x i32> [[VP_OP115]], <vscale x 4 x i32> [[VP_OP117]], <vscale x 4 x i32> [[VP_OP116]], <vscale x 4 x i32> [[VP_OP118]])
 ; LION-NEXT:    [[TMP77:%.*]] = mul nuw nsw i32 [[TMP50]], 4
 ; LION-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[INTERLEAVED_VEC119]], ptr align 4 [[TMP74]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP77]])
 ; LION-NEXT:    [[TMP79:%.*]] = zext i32 [[TMP50]] to i64
@@ -2205,7 +2205,7 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; LION-NEXT:    [[VP_OP193:%.*]] = call <vscale x 4 x i32> @llvm.vp.sub.nxv4i32(<vscale x 4 x i32> [[VP_OP189]], <vscale x 4 x i32> [[VP_OP191]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP101]])
 ; LION-NEXT:    [[VP_OP194:%.*]] = call <vscale x 4 x i32> @llvm.vp.add.nxv4i32(<vscale x 4 x i32> [[VP_OP196]], <vscale x 4 x i32> [[VP_OP190]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP101]])
 ; LION-NEXT:    [[VP_OP195:%.*]] = call <vscale x 4 x i32> @llvm.vp.sub.nxv4i32(<vscale x 4 x i32> [[VP_OP190]], <vscale x 4 x i32> [[VP_OP196]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP101]])
-; LION-NEXT:    [[INTERLEAVED_VEC196:%.*]] = call <vscale x 16 x i32> @llvm.experimental.vector.interleave4.nxv16i32(<vscale x 4 x i32> [[VP_OP192]], <vscale x 4 x i32> [[VP_OP194]], <vscale x 4 x i32> [[VP_OP193]], <vscale x 4 x i32> [[VP_OP195]])
+; LION-NEXT:    [[INTERLEAVED_VEC196:%.*]] = call <vscale x 16 x i32> @llvm.vector.interleave4.nxv16i32(<vscale x 4 x i32> [[VP_OP192]], <vscale x 4 x i32> [[VP_OP194]], <vscale x 4 x i32> [[VP_OP193]], <vscale x 4 x i32> [[VP_OP195]])
 ; LION-NEXT:    [[TMP140:%.*]] = mul nuw nsw i32 [[TMP101]], 4
 ; LION-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[INTERLEAVED_VEC196]], ptr align 4 [[TMP137]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP140]])
 ; LION-NEXT:    [[TMP142:%.*]] = zext i32 [[TMP101]] to i64
@@ -2235,7 +2235,7 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; LION-NEXT:    [[NEXT_GEP216:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL192]], i64 [[OFFSET_IDX215]]
 ; LION-NEXT:    [[WIDE_STRIDED_LOAD217:%.*]] = call <vscale x 4 x i64> @llvm.experimental.vp.strided.load.nxv4i64.p0.i64(ptr align 1 [[NEXT_GEP214]], i64 [[IDX_EXT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP147]])
 ; LION-NEXT:    [[WIDE_STRIDED_LOAD217_CAST:%.*]] = bitcast <vscale x 4 x i64> [[WIDE_STRIDED_LOAD217]] to <vscale x 32 x i8>
-; LION-NEXT:    [[DEINTERLEAVED_RESULTS218:%.*]] = call { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @llvm.experimental.vector.deinterleave8.nxv32i8(<vscale x 32 x i8> [[WIDE_STRIDED_LOAD217_CAST]])
+; LION-NEXT:    [[DEINTERLEAVED_RESULTS218:%.*]] = call { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @llvm.vector.deinterleave8.nxv32i8(<vscale x 32 x i8> [[WIDE_STRIDED_LOAD217_CAST]])
 ; LION-NEXT:    [[TMP154:%.*]] = extractvalue { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } [[DEINTERLEAVED_RESULTS218]], 0
 ; LION-NEXT:    [[TMP155:%.*]] = extractvalue { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } [[DEINTERLEAVED_RESULTS218]], 1
 ; LION-NEXT:    [[TMP156:%.*]] = extractvalue { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } [[DEINTERLEAVED_RESULTS218]], 2
@@ -2247,7 +2247,7 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; LION-NEXT:    [[VP_CAST220:%.*]] = call <vscale x 4 x i32> @llvm.vp.zext.nxv4i32.nxv4i8(<vscale x 4 x i8> [[TMP154]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP147]])
 ; LION-NEXT:    [[WIDE_STRIDED_LOAD220:%.*]] = call <vscale x 4 x i64> @llvm.experimental.vp.strided.load.nxv4i64.p0.i64(ptr align 1 [[NEXT_GEP216]], i64 [[IDX_EXT63]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP147]])
 ; LION-NEXT:    [[WIDE_STRIDED_LOAD220_CAST:%.*]] = bitcast <vscale x 4 x i64> [[WIDE_STRIDED_LOAD220]] to <vscale x 32 x i8>
-; LION-NEXT:    [[DEINTERLEAVED_RESULTS221:%.*]] = call { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @llvm.experimental.vector.deinterleave8.nxv32i8(<vscale x 32 x i8> [[WIDE_STRIDED_LOAD220_CAST]])
+; LION-NEXT:    [[DEINTERLEAVED_RESULTS221:%.*]] = call { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @llvm.vector.deinterleave8.nxv32i8(<vscale x 32 x i8> [[WIDE_STRIDED_LOAD220_CAST]])
 ; LION-NEXT:    [[TMP163:%.*]] = extractvalue { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } [[DEINTERLEAVED_RESULTS221]], 0
 ; LION-NEXT:    [[TMP164:%.*]] = extractvalue { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } [[DEINTERLEAVED_RESULTS221]], 1
 ; LION-NEXT:    [[TMP165:%.*]] = extractvalue { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } [[DEINTERLEAVED_RESULTS221]], 2
@@ -2296,7 +2296,7 @@ define i32 @_Z13satd_16x16_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_bas
 ; LION-NEXT:    [[VP_OP258:%.*]] = call <vscale x 4 x i32> @llvm.vp.sub.nxv4i32(<vscale x 4 x i32> [[VP_OP254]], <vscale x 4 x i32> [[VP_OP256]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP147]])
 ; LION-NEXT:    [[VP_OP259:%.*]] = call <vscale x 4 x i32> @llvm.vp.add.nxv4i32(<vscale x 4 x i32> [[VP_OP261]], <vscale x 4 x i32> [[VP_OP255]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP147]])
 ; LION-NEXT:    [[VP_OP260:%.*]] = call <vscale x 4 x i32> @llvm.vp.sub.nxv4i32(<vscale x 4 x i32> [[VP_OP255]], <vscale x 4 x i32> [[VP_OP261]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP147]])
-; LION-NEXT:    [[INTERLEAVED_VEC261:%.*]] = call <vscale x 16 x i32> @llvm.experimental.vector.interleave4.nxv16i32(<vscale x 4 x i32> [[VP_OP257]], <vscale x 4 x i32> [[VP_OP259]], <vscale x 4 x i32> [[VP_OP258]], <vscale x 4 x i32> [[VP_OP260]])
+; LION-NEXT:    [[INTERLEAVED_VEC261:%.*]] = call <vscale x 16 x i32> @llvm.vector.interleave4.nxv16i32(<vscale x 4 x i32> [[VP_OP257]], <vscale x 4 x i32> [[VP_OP259]], <vscale x 4 x i32> [[VP_OP258]], <vscale x 4 x i32> [[VP_OP260]])
 ; LION-NEXT:    [[TMP174:%.*]] = mul nuw nsw i32 [[TMP147]], 4
 ; LION-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[INTERLEAVED_VEC261]], ptr align 4 [[TMP171]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP174]])
 ; LION-NEXT:    [[TMP176:%.*]] = zext i32 [[TMP147]] to i64
@@ -3425,7 +3425,7 @@ define  i32 @_Z11satd_8x8_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_base
 ; X280-NEXT:    [[VP_OP57:%.*]] = call <vscale x 1 x i32> @llvm.vp.sub.nxv1i32(<vscale x 1 x i32> [[VP_OP52]], <vscale x 1 x i32> [[VP_OP54]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP4]])
 ; X280-NEXT:    [[VP_OP58:%.*]] = call <vscale x 1 x i32> @llvm.vp.add.nxv1i32(<vscale x 1 x i32> [[VP_OP55]], <vscale x 1 x i32> [[VP_OP53]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP4]])
 ; X280-NEXT:    [[VP_OP59:%.*]] = call <vscale x 1 x i32> @llvm.vp.sub.nxv1i32(<vscale x 1 x i32> [[VP_OP53]], <vscale x 1 x i32> [[VP_OP55]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP4]])
-; X280-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 4 x i32> @llvm.experimental.vector.interleave4.nxv4i32(<vscale x 1 x i32> [[VP_OP56]], <vscale x 1 x i32> [[VP_OP58]], <vscale x 1 x i32> [[VP_OP57]], <vscale x 1 x i32> [[VP_OP59]])
+; X280-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 4 x i32> @llvm.vector.interleave4.nxv4i32(<vscale x 1 x i32> [[VP_OP56]], <vscale x 1 x i32> [[VP_OP58]], <vscale x 1 x i32> [[VP_OP57]], <vscale x 1 x i32> [[VP_OP59]])
 ; X280-NEXT:    [[TMP43:%.*]] = mul nuw nsw i32 [[TMP4]], 4
 ; X280-NEXT:    call void @llvm.vp.store.nxv4i32.p0(<vscale x 4 x i32> [[INTERLEAVED_VEC]], ptr align 4 [[TMP40]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP43]])
 ; X280-NEXT:    [[TMP45:%.*]] = zext i32 [[TMP4]] to i64
@@ -3455,7 +3455,7 @@ define  i32 @_Z11satd_8x8_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_base
 ; X280-NEXT:    [[NEXT_GEP76:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL58]], i64 [[OFFSET_IDX75]]
 ; X280-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 1 x i64> @llvm.experimental.vp.strided.load.nxv1i64.p0.i64(ptr align 1 [[NEXT_GEP74]], i64 [[IDX_EXT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP50]])
 ; X280-NEXT:    [[WIDE_STRIDED_LOAD_CAST:%.*]] = bitcast <vscale x 1 x i64> [[WIDE_STRIDED_LOAD]] to <vscale x 8 x i8>
-; X280-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } @llvm.experimental.vector.deinterleave8.nxv8i8(<vscale x 8 x i8> [[WIDE_STRIDED_LOAD_CAST]])
+; X280-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } @llvm.vector.deinterleave8.nxv8i8(<vscale x 8 x i8> [[WIDE_STRIDED_LOAD_CAST]])
 ; X280-NEXT:    [[TMP57:%.*]] = extractvalue { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } [[DEINTERLEAVED_RESULTS]], 0
 ; X280-NEXT:    [[TMP58:%.*]] = extractvalue { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } [[DEINTERLEAVED_RESULTS]], 1
 ; X280-NEXT:    [[TMP59:%.*]] = extractvalue { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } [[DEINTERLEAVED_RESULTS]], 2
@@ -3467,7 +3467,7 @@ define  i32 @_Z11satd_8x8_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_base
 ; X280-NEXT:    [[VP_CAST78:%.*]] = call <vscale x 1 x i32> @llvm.vp.zext.nxv1i32.nxv1i8(<vscale x 1 x i8> [[TMP57]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP50]])
 ; X280-NEXT:    [[WIDE_STRIDED_LOAD78:%.*]] = call <vscale x 1 x i64> @llvm.experimental.vp.strided.load.nxv1i64.p0.i64(ptr align 1 [[NEXT_GEP76]], i64 [[IDX_EXT63]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP50]])
 ; X280-NEXT:    [[WIDE_STRIDED_LOAD78_CAST:%.*]] = bitcast <vscale x 1 x i64> [[WIDE_STRIDED_LOAD78]] to <vscale x 8 x i8>
-; X280-NEXT:    [[DEINTERLEAVED_RESULTS79:%.*]] = call { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } @llvm.experimental.vector.deinterleave8.nxv8i8(<vscale x 8 x i8> [[WIDE_STRIDED_LOAD78_CAST]])
+; X280-NEXT:    [[DEINTERLEAVED_RESULTS79:%.*]] = call { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } @llvm.vector.deinterleave8.nxv8i8(<vscale x 8 x i8> [[WIDE_STRIDED_LOAD78_CAST]])
 ; X280-NEXT:    [[TMP66:%.*]] = extractvalue { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } [[DEINTERLEAVED_RESULTS79]], 0
 ; X280-NEXT:    [[TMP67:%.*]] = extractvalue { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } [[DEINTERLEAVED_RESULTS79]], 1
 ; X280-NEXT:    [[TMP68:%.*]] = extractvalue { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } [[DEINTERLEAVED_RESULTS79]], 2
@@ -3516,7 +3516,7 @@ define  i32 @_Z11satd_8x8_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_base
 ; X280-NEXT:    [[VP_OP116:%.*]] = call <vscale x 1 x i32> @llvm.vp.sub.nxv1i32(<vscale x 1 x i32> [[VP_OP112]], <vscale x 1 x i32> [[VP_OP114]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP50]])
 ; X280-NEXT:    [[VP_OP117:%.*]] = call <vscale x 1 x i32> @llvm.vp.add.nxv1i32(<vscale x 1 x i32> [[VP_OP119]], <vscale x 1 x i32> [[VP_OP113]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP50]])
 ; X280-NEXT:    [[VP_OP118:%.*]] = call <vscale x 1 x i32> @llvm.vp.sub.nxv1i32(<vscale x 1 x i32> [[VP_OP113]], <vscale x 1 x i32> [[VP_OP119]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP50]])
-; X280-NEXT:    [[INTERLEAVED_VEC119:%.*]] = call <vscale x 4 x i32> @llvm.experimental.vector.interleave4.nxv4i32(<vscale x 1 x i32> [[VP_OP115]], <vscale x 1 x i32> [[VP_OP117]], <vscale x 1 x i32> [[VP_OP116]], <vscale x 1 x i32> [[VP_OP118]])
+; X280-NEXT:    [[INTERLEAVED_VEC119:%.*]] = call <vscale x 4 x i32> @llvm.vector.interleave4.nxv4i32(<vscale x 1 x i32> [[VP_OP115]], <vscale x 1 x i32> [[VP_OP117]], <vscale x 1 x i32> [[VP_OP116]], <vscale x 1 x i32> [[VP_OP118]])
 ; X280-NEXT:    [[TMP77:%.*]] = mul nuw nsw i32 [[TMP50]], 4
 ; X280-NEXT:    call void @llvm.vp.store.nxv4i32.p0(<vscale x 4 x i32> [[INTERLEAVED_VEC119]], ptr align 4 [[TMP74]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP77]])
 ; X280-NEXT:    [[TMP79:%.*]] = zext i32 [[TMP50]] to i64
@@ -3833,7 +3833,7 @@ define  i32 @_Z11satd_8x8_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_base
 ; P670-NEXT:    [[VP_OP57:%.*]] = call <vscale x 4 x i32> @llvm.vp.sub.nxv4i32(<vscale x 4 x i32> [[VP_OP52]], <vscale x 4 x i32> [[VP_OP54]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP4]])
 ; P670-NEXT:    [[VP_OP58:%.*]] = call <vscale x 4 x i32> @llvm.vp.add.nxv4i32(<vscale x 4 x i32> [[VP_OP55]], <vscale x 4 x i32> [[VP_OP53]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP4]])
 ; P670-NEXT:    [[VP_OP59:%.*]] = call <vscale x 4 x i32> @llvm.vp.sub.nxv4i32(<vscale x 4 x i32> [[VP_OP53]], <vscale x 4 x i32> [[VP_OP55]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP4]])
-; P670-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 16 x i32> @llvm.experimental.vector.interleave4.nxv16i32(<vscale x 4 x i32> [[VP_OP56]], <vscale x 4 x i32> [[VP_OP58]], <vscale x 4 x i32> [[VP_OP57]], <vscale x 4 x i32> [[VP_OP59]])
+; P670-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 16 x i32> @llvm.vector.interleave4.nxv16i32(<vscale x 4 x i32> [[VP_OP56]], <vscale x 4 x i32> [[VP_OP58]], <vscale x 4 x i32> [[VP_OP57]], <vscale x 4 x i32> [[VP_OP59]])
 ; P670-NEXT:    [[TMP43:%.*]] = mul nuw nsw i32 [[TMP4]], 4
 ; P670-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[INTERLEAVED_VEC]], ptr align 4 [[TMP40]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP43]])
 ; P670-NEXT:    [[TMP45:%.*]] = zext i32 [[TMP4]] to i64
@@ -4150,7 +4150,7 @@ define  i32 @_Z11satd_8x8_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_base
 ; LION-NEXT:    [[VP_OP57:%.*]] = call <vscale x 4 x i32> @llvm.vp.sub.nxv4i32(<vscale x 4 x i32> [[VP_OP52]], <vscale x 4 x i32> [[VP_OP54]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP4]])
 ; LION-NEXT:    [[VP_OP58:%.*]] = call <vscale x 4 x i32> @llvm.vp.add.nxv4i32(<vscale x 4 x i32> [[VP_OP55]], <vscale x 4 x i32> [[VP_OP53]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP4]])
 ; LION-NEXT:    [[VP_OP59:%.*]] = call <vscale x 4 x i32> @llvm.vp.sub.nxv4i32(<vscale x 4 x i32> [[VP_OP53]], <vscale x 4 x i32> [[VP_OP55]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP4]])
-; LION-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 16 x i32> @llvm.experimental.vector.interleave4.nxv16i32(<vscale x 4 x i32> [[VP_OP56]], <vscale x 4 x i32> [[VP_OP58]], <vscale x 4 x i32> [[VP_OP57]], <vscale x 4 x i32> [[VP_OP59]])
+; LION-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 16 x i32> @llvm.vector.interleave4.nxv16i32(<vscale x 4 x i32> [[VP_OP56]], <vscale x 4 x i32> [[VP_OP58]], <vscale x 4 x i32> [[VP_OP57]], <vscale x 4 x i32> [[VP_OP59]])
 ; LION-NEXT:    [[TMP43:%.*]] = mul nuw nsw i32 [[TMP4]], 4
 ; LION-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[INTERLEAVED_VEC]], ptr align 4 [[TMP40]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP43]])
 ; LION-NEXT:    [[TMP45:%.*]] = zext i32 [[TMP4]] to i64
@@ -4180,7 +4180,7 @@ define  i32 @_Z11satd_8x8_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_base
 ; LION-NEXT:    [[NEXT_GEP76:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL58]], i64 [[OFFSET_IDX75]]
 ; LION-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 4 x i64> @llvm.experimental.vp.strided.load.nxv4i64.p0.i64(ptr align 1 [[NEXT_GEP74]], i64 [[IDX_EXT]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP50]])
 ; LION-NEXT:    [[WIDE_STRIDED_LOAD_CAST:%.*]] = bitcast <vscale x 4 x i64> [[WIDE_STRIDED_LOAD]] to <vscale x 32 x i8>
-; LION-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @llvm.experimental.vector.deinterleave8.nxv32i8(<vscale x 32 x i8> [[WIDE_STRIDED_LOAD_CAST]])
+; LION-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @llvm.vector.deinterleave8.nxv32i8(<vscale x 32 x i8> [[WIDE_STRIDED_LOAD_CAST]])
 ; LION-NEXT:    [[TMP57:%.*]] = extractvalue { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } [[DEINTERLEAVED_RESULTS]], 0
 ; LION-NEXT:    [[TMP58:%.*]] = extractvalue { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } [[DEINTERLEAVED_RESULTS]], 1
 ; LION-NEXT:    [[TMP59:%.*]] = extractvalue { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } [[DEINTERLEAVED_RESULTS]], 2
@@ -4192,7 +4192,7 @@ define  i32 @_Z11satd_8x8_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_base
 ; LION-NEXT:    [[VP_CAST78:%.*]] = call <vscale x 4 x i32> @llvm.vp.zext.nxv4i32.nxv4i8(<vscale x 4 x i8> [[TMP57]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP50]])
 ; LION-NEXT:    [[WIDE_STRIDED_LOAD78:%.*]] = call <vscale x 4 x i64> @llvm.experimental.vp.strided.load.nxv4i64.p0.i64(ptr align 1 [[NEXT_GEP76]], i64 [[IDX_EXT63]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP50]])
 ; LION-NEXT:    [[WIDE_STRIDED_LOAD78_CAST:%.*]] = bitcast <vscale x 4 x i64> [[WIDE_STRIDED_LOAD78]] to <vscale x 32 x i8>
-; LION-NEXT:    [[DEINTERLEAVED_RESULTS79:%.*]] = call { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @llvm.experimental.vector.deinterleave8.nxv32i8(<vscale x 32 x i8> [[WIDE_STRIDED_LOAD78_CAST]])
+; LION-NEXT:    [[DEINTERLEAVED_RESULTS79:%.*]] = call { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @llvm.vector.deinterleave8.nxv32i8(<vscale x 32 x i8> [[WIDE_STRIDED_LOAD78_CAST]])
 ; LION-NEXT:    [[TMP66:%.*]] = extractvalue { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } [[DEINTERLEAVED_RESULTS79]], 0
 ; LION-NEXT:    [[TMP67:%.*]] = extractvalue { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } [[DEINTERLEAVED_RESULTS79]], 1
 ; LION-NEXT:    [[TMP68:%.*]] = extractvalue { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } [[DEINTERLEAVED_RESULTS79]], 2
@@ -4241,7 +4241,7 @@ define  i32 @_Z11satd_8x8_lcPhiS_i(ptr %pix1_base, i32  %i_pix1, ptr  %pix2_base
 ; LION-NEXT:    [[VP_OP116:%.*]] = call <vscale x 4 x i32> @llvm.vp.sub.nxv4i32(<vscale x 4 x i32> [[VP_OP112]], <vscale x 4 x i32> [[VP_OP114]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP50]])
 ; LION-NEXT:    [[VP_OP117:%.*]] = call <vscale x 4 x i32> @llvm.vp.add.nxv4i32(<vscale x 4 x i32> [[VP_OP119]], <vscale x 4 x i32> [[VP_OP113]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP50]])
 ; LION-NEXT:    [[VP_OP118:%.*]] = call <vscale x 4 x i32> @llvm.vp.sub.nxv4i32(<vscale x 4 x i32> [[VP_OP113]], <vscale x 4 x i32> [[VP_OP119]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP50]])
-; LION-NEXT:    [[INTERLEAVED_VEC119:%.*]] = call <vscale x 16 x i32> @llvm.experimental.vector.interleave4.nxv16i32(<vscale x 4 x i32> [[VP_OP115]], <vscale x 4 x i32> [[VP_OP117]], <vscale x 4 x i32> [[VP_OP116]], <vscale x 4 x i32> [[VP_OP118]])
+; LION-NEXT:    [[INTERLEAVED_VEC119:%.*]] = call <vscale x 16 x i32> @llvm.vector.interleave4.nxv16i32(<vscale x 4 x i32> [[VP_OP115]], <vscale x 4 x i32> [[VP_OP117]], <vscale x 4 x i32> [[VP_OP116]], <vscale x 4 x i32> [[VP_OP118]])
 ; LION-NEXT:    [[TMP77:%.*]] = mul nuw nsw i32 [[TMP50]], 4
 ; LION-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[INTERLEAVED_VEC119]], ptr align 4 [[TMP74]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP77]])
 ; LION-NEXT:    [[TMP79:%.*]] = zext i32 [[TMP50]] to i64
@@ -4778,7 +4778,7 @@ define  i32 @_Z8satd_8x4PhiS_i(ptr %pix1, i32  %i_pix1, ptr  %pix2, i32  %i_pix2
 ; X280-NEXT:    [[VP_OP57:%.*]] = call <vscale x 1 x i32> @llvm.vp.sub.nxv1i32(<vscale x 1 x i32> [[VP_OP52]], <vscale x 1 x i32> [[VP_OP54]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP4]])
 ; X280-NEXT:    [[VP_OP58:%.*]] = call <vscale x 1 x i32> @llvm.vp.add.nxv1i32(<vscale x 1 x i32> [[VP_OP55]], <vscale x 1 x i32> [[VP_OP53]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP4]])
 ; X280-NEXT:    [[VP_OP59:%.*]] = call <vscale x 1 x i32> @llvm.vp.sub.nxv1i32(<vscale x 1 x i32> [[VP_OP53]], <vscale x 1 x i32> [[VP_OP55]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP4]])
-; X280-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 4 x i32> @llvm.experimental.vector.interleave4.nxv4i32(<vscale x 1 x i32> [[VP_OP56]], <vscale x 1 x i32> [[VP_OP58]], <vscale x 1 x i32> [[VP_OP57]], <vscale x 1 x i32> [[VP_OP59]])
+; X280-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 4 x i32> @llvm.vector.interleave4.nxv4i32(<vscale x 1 x i32> [[VP_OP56]], <vscale x 1 x i32> [[VP_OP58]], <vscale x 1 x i32> [[VP_OP57]], <vscale x 1 x i32> [[VP_OP59]])
 ; X280-NEXT:    [[TMP43:%.*]] = mul nuw nsw i32 [[TMP4]], 4
 ; X280-NEXT:    call void @llvm.vp.store.nxv4i32.p0(<vscale x 4 x i32> [[INTERLEAVED_VEC]], ptr align 4 [[TMP40]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP43]])
 ; X280-NEXT:    [[TMP45:%.*]] = zext i32 [[TMP4]] to i64
@@ -4808,7 +4808,7 @@ define  i32 @_Z8satd_8x4PhiS_i(ptr %pix1, i32  %i_pix1, ptr  %pix2, i32  %i_pix2
 ; X280-NEXT:    [[NEXT_GEP76:%.*]] = getelementptr i8, ptr [[BC_RESUME_VAL58]], i64 [[OFFSET_IDX75]]
 ; X280-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 1 x i64> @llvm.experimental.vp.strided.load.nxv1i64.p0.i64(ptr align 1 [[NEXT_GEP74]], i64 [[IDX_EXT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP50]])
 ; X280-NEXT:    [[WIDE_STRIDED_LOAD_CAST:%.*]] = bitcast <vscale x 1 x i64> [[WIDE_STRIDED_LOAD]] to <vscale x 8 x i8>
-; X280-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } @llvm.experimental.vector.deinterleave8.nxv8i8(<vscale x 8 x i8> [[WIDE_STRIDED_LOAD_CAST]])
+; X280-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } @llvm.vector.deinterleave8.nxv8i8(<vscale x 8 x i8> [[WIDE_STRIDED_LOAD_CAST]])
 ; X280-NEXT:    [[TMP57:%.*]] = extractvalue { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } [[DEINTERLEAVED_RESULTS]], 0
 ; X280-NEXT:    [[TMP58:%.*]] = extractvalue { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } [[DEINTERLEAVED_RESULTS]], 1
 ; X280-NEXT:    [[TMP59:%.*]] = extractvalue { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } [[DEINTERLEAVED_RESULTS]], 2
@@ -4820,7 +4820,7 @@ define  i32 @_Z8satd_8x4PhiS_i(ptr %pix1, i32  %i_pix1, ptr  %pix2, i32  %i_pix2
 ; X280-NEXT:    [[VP_CAST78:%.*]] = call <vscale x 1 x i32> @llvm.vp.zext.nxv1i32.nxv1i8(<vscale x 1 x i8> [[TMP57]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP50]])
 ; X280-NEXT:    [[WIDE_STRIDED_LOAD78:%.*]] = call <vscale x 1 x i64> @llvm.experimental.vp.strided.load.nxv1i64.p0.i64(ptr align 1 [[NEXT_GEP76]], i64 [[IDX_EXT63]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP50]])
 ; X280-NEXT:    [[WIDE_STRIDED_LOAD78_CAST:%.*]] = bitcast <vscale x 1 x i64> [[WIDE_STRIDED_LOAD78]] to <vscale x 8 x i8>
-; X280-NEXT:    [[DEINTERLEAVED_RESULTS79:%.*]] = call { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } @llvm.experimental.vector.deinterleave8.nxv8i8(<vscale x 8 x i8> [[WIDE_STRIDED_LOAD78_CAST]])
+; X280-NEXT:    [[DEINTERLEAVED_RESULTS79:%.*]] = call { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } @llvm.vector.deinterleave8.nxv8i8(<vscale x 8 x i8> [[WIDE_STRIDED_LOAD78_CAST]])
 ; X280-NEXT:    [[TMP100:%.*]] = extractvalue { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } [[DEINTERLEAVED_RESULTS79]], 0
 ; X280-NEXT:    [[TMP67:%.*]] = extractvalue { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } [[DEINTERLEAVED_RESULTS79]], 1
 ; X280-NEXT:    [[TMP68:%.*]] = extractvalue { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } [[DEINTERLEAVED_RESULTS79]], 2
@@ -4869,7 +4869,7 @@ define  i32 @_Z8satd_8x4PhiS_i(ptr %pix1, i32  %i_pix1, ptr  %pix2, i32  %i_pix2
 ; X280-NEXT:    [[VP_OP116:%.*]] = call <vscale x 1 x i32> @llvm.vp.sub.nxv1i32(<vscale x 1 x i32> [[VP_OP112]], <vscale x 1 x i32> [[VP_OP114]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP50]])
 ; X280-NEXT:    [[VP_OP117:%.*]] = call <vscale x 1 x i32> @llvm.vp.add.nxv1i32(<vscale x 1 x i32> [[VP_OP119]], <vscale x 1 x i32> [[VP_OP113]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP50]])
 ; X280-NEXT:    [[VP_OP118:%.*]] = call <vscale x 1 x i32> @llvm.vp.sub.nxv1i32(<vscale x 1 x i32> [[VP_OP113]], <vscale x 1 x i32> [[VP_OP119]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP50]])
-; X280-NEXT:    [[INTERLEAVED_VEC119:%.*]] = call <vscale x 4 x i32> @llvm.experimental.vector.interleave4.nxv4i32(<vscale x 1 x i32> [[VP_OP115]], <vscale x 1 x i32> [[VP_OP117]], <vscale x 1 x i32> [[VP_OP116]], <vscale x 1 x i32> [[VP_OP118]])
+; X280-NEXT:    [[INTERLEAVED_VEC119:%.*]] = call <vscale x 4 x i32> @llvm.vector.interleave4.nxv4i32(<vscale x 1 x i32> [[VP_OP115]], <vscale x 1 x i32> [[VP_OP117]], <vscale x 1 x i32> [[VP_OP116]], <vscale x 1 x i32> [[VP_OP118]])
 ; X280-NEXT:    [[TMP77:%.*]] = mul nuw nsw i32 [[TMP50]], 4
 ; X280-NEXT:    call void @llvm.vp.store.nxv4i32.p0(<vscale x 4 x i32> [[INTERLEAVED_VEC119]], ptr align 4 [[TMP74]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP77]])
 ; X280-NEXT:    [[TMP79:%.*]] = zext i32 [[TMP50]] to i64

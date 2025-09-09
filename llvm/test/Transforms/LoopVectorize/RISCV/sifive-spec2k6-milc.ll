@@ -144,7 +144,7 @@ define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; VEC-M1-NEXT:    [[TMP64:%.*]] = getelementptr [[STRUCT_SU3_VECTOR]], ptr [[B]], i64 [[EVL_BASED_IV]]
 ; VEC-M1-NEXT:    [[TMP65:%.*]] = mul nuw nsw i32 [[TMP62]], 6
 ; VEC-M1-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 6 x double> @llvm.vp.load.nxv6f64.p0(ptr align 8 [[TMP63]], <vscale x 6 x i1> splat (i1 true), i32 [[TMP65]])
-; VEC-M1-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } @llvm.experimental.vector.deinterleave6.nxv6f64(<vscale x 6 x double> [[WIDE_MASKED_LOAD]])
+; VEC-M1-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } @llvm.vector.deinterleave6.nxv6f64(<vscale x 6 x double> [[WIDE_MASKED_LOAD]])
 ; VEC-M1-NEXT:    [[TMP66:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 0
 ; VEC-M1-NEXT:    [[TMP67:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 1
 ; VEC-M1-NEXT:    [[TMP68:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 2
@@ -153,7 +153,7 @@ define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; VEC-M1-NEXT:    [[TMP71:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 5
 ; VEC-M1-NEXT:    [[TMP72:%.*]] = mul nuw nsw i32 [[TMP62]], 6
 ; VEC-M1-NEXT:    [[WIDE_MASKED_LOAD45:%.*]] = call <vscale x 6 x double> @llvm.vp.load.nxv6f64.p0(ptr align 8 [[TMP64]], <vscale x 6 x i1> splat (i1 true), i32 [[TMP72]])
-; VEC-M1-NEXT:    [[DEINTERLEAVED_RESULTS46:%.*]] = call { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } @llvm.experimental.vector.deinterleave6.nxv6f64(<vscale x 6 x double> [[WIDE_MASKED_LOAD45]])
+; VEC-M1-NEXT:    [[DEINTERLEAVED_RESULTS46:%.*]] = call { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } @llvm.vector.deinterleave6.nxv6f64(<vscale x 6 x double> [[WIDE_MASKED_LOAD45]])
 ; VEC-M1-NEXT:    [[TMP73:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS46]], 0
 ; VEC-M1-NEXT:    [[TMP74:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS46]], 1
 ; VEC-M1-NEXT:    [[TMP75:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS46]], 2
@@ -172,7 +172,7 @@ define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; VEC-M1-NEXT:    [[VP_OP55:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP54]], <vscale x 1 x double> [[TMP70]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
 ; VEC-M1-NEXT:    [[VP_OP56:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP78]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
 ; VEC-M1-NEXT:    [[VP_OP57:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP56]], <vscale x 1 x double> [[TMP71]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP62]])
-; VEC-M1-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 6 x double> @llvm.experimental.vector.interleave6.nxv6f64(<vscale x 1 x double> [[VP_OP47]], <vscale x 1 x double> [[VP_OP49]], <vscale x 1 x double> [[VP_OP51]], <vscale x 1 x double> [[VP_OP53]], <vscale x 1 x double> [[VP_OP55]], <vscale x 1 x double> [[VP_OP57]])
+; VEC-M1-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 6 x double> @llvm.vector.interleave6.nxv6f64(<vscale x 1 x double> [[VP_OP47]], <vscale x 1 x double> [[VP_OP49]], <vscale x 1 x double> [[VP_OP51]], <vscale x 1 x double> [[VP_OP53]], <vscale x 1 x double> [[VP_OP55]], <vscale x 1 x double> [[VP_OP57]])
 ; VEC-M1-NEXT:    [[TMP79:%.*]] = mul nuw nsw i32 [[TMP62]], 6
 ; VEC-M1-NEXT:    call void @llvm.vp.store.nxv6f64.p0(<vscale x 6 x double> [[INTERLEAVED_VEC]], ptr align 8 [[TMP63]], <vscale x 6 x i1> splat (i1 true), i32 [[TMP79]])
 ; VEC-M1-NEXT:    [[TMP80:%.*]] = zext i32 [[TMP62]] to i64

@@ -2841,65 +2841,6 @@ foreach n = 2...8 in {
                                                        [IntrNoMem]>;
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
-// Interleave/Deinterleave 4 vectors
-def int_experimental_vector_interleave4   : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
-                                                                  [LLVMOneFourthElementsVectorType<0>,
-                                                                   LLVMOneFourthElementsVectorType<0>,
-                                                                   LLVMOneFourthElementsVectorType<0>,
-                                                                   LLVMOneFourthElementsVectorType<0>],
-                                                                  [IntrNoMem]>;
-
-def int_experimental_vector_deinterleave4 : DefaultAttrsIntrinsic<[LLVMOneFourthElementsVectorType<0>,
-                                                                   LLVMOneFourthElementsVectorType<0>,
-                                                                   LLVMOneFourthElementsVectorType<0>,
-                                                                   LLVMOneFourthElementsVectorType<0>],
-                                                                  [llvm_anyvector_ty],
-                                                                  [IntrNoMem]>;
-
-// Interleave/Deinterleave 6 vectors
-def int_experimental_vector_interleave6   : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
-                                                                  [LLVMOneSixthElementsVectorType<0>,
-                                                                   LLVMOneSixthElementsVectorType<0>,
-                                                                   LLVMOneSixthElementsVectorType<0>,
-                                                                   LLVMOneSixthElementsVectorType<0>,
-                                                                   LLVMOneSixthElementsVectorType<0>,
-                                                                   LLVMOneSixthElementsVectorType<0>],
-                                                                  [IntrNoMem]>;
-
-def int_experimental_vector_deinterleave6 : DefaultAttrsIntrinsic<[LLVMOneSixthElementsVectorType<0>,
-                                                                   LLVMOneSixthElementsVectorType<0>,
-                                                                   LLVMOneSixthElementsVectorType<0>,
-                                                                   LLVMOneSixthElementsVectorType<0>,
-                                                                   LLVMOneSixthElementsVectorType<0>,
-                                                                   LLVMOneSixthElementsVectorType<0>],
-                                                                  [llvm_anyvector_ty],
-                                                                  [IntrNoMem]>;
-
-// Interleave/Deinterleave 8 vectors
-def int_experimental_vector_interleave8   : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
-                                                                  [LLVMOneEighthElementsVectorType<0>,
-                                                                   LLVMOneEighthElementsVectorType<0>,
-                                                                   LLVMOneEighthElementsVectorType<0>,
-                                                                   LLVMOneEighthElementsVectorType<0>,
-                                                                   LLVMOneEighthElementsVectorType<0>,
-                                                                   LLVMOneEighthElementsVectorType<0>,
-                                                                   LLVMOneEighthElementsVectorType<0>,
-                                                                   LLVMOneEighthElementsVectorType<0>],
-                                                                  [IntrNoMem]>;
-
-def int_experimental_vector_deinterleave8 : DefaultAttrsIntrinsic<[LLVMOneEighthElementsVectorType<0>,
-                                                                   LLVMOneEighthElementsVectorType<0>,
-                                                                   LLVMOneEighthElementsVectorType<0>,
-                                                                   LLVMOneEighthElementsVectorType<0>,
-                                                                   LLVMOneEighthElementsVectorType<0>,
-                                                                   LLVMOneEighthElementsVectorType<0>,
-                                                                   LLVMOneEighthElementsVectorType<0>,
-                                                                   LLVMOneEighthElementsVectorType<0>],
-                                                                  [llvm_anyvector_ty],
-                                                                  [IntrNoMem]>;
-#endif // SIFIVE_CUSTOMIZATION
-
 //===-------------- Intrinsics to perform partial reduction ---------------===//
 
 def int_experimental_vector_partial_reduce_add : DefaultAttrsIntrinsic<[LLVMMatchType<0>],

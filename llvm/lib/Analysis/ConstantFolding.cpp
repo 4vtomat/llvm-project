@@ -73,12 +73,12 @@ namespace {
 
 #if SIFIVE_CUSTOMIZATION
 #define ALL_VECTOR_INTERLEAVE_CASES                                            \
-  Intrinsic::vector_interleave3:                                               \
-  case Intrinsic::experimental_vector_interleave4:                             \
+  Intrinsic::vector_interleave3 :                                              \
+  case Intrinsic::vector_interleave4:                                          \
   case Intrinsic::vector_interleave5:                                          \
-  case Intrinsic::experimental_vector_interleave6:                             \
+  case Intrinsic::vector_interleave6:                                          \
   case Intrinsic::vector_interleave7:                                          \
-  case Intrinsic::experimental_vector_interleave8
+  case Intrinsic::vector_interleave8
 #endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//

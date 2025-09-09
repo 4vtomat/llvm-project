@@ -2338,23 +2338,17 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
   case Intrinsic::vector_interleave2:
   case Intrinsic::vector_interleave3:
   case Intrinsic::vector_interleave4:
-  case Intrinsic::experimental_vector_interleave4:
   case Intrinsic::vector_interleave5:
   case Intrinsic::vector_interleave6:
-  case Intrinsic::experimental_vector_interleave6:
   case Intrinsic::vector_interleave7:
   case Intrinsic::vector_interleave8:
-  case Intrinsic::experimental_vector_interleave8:
   case Intrinsic::vector_deinterleave2:
   case Intrinsic::vector_deinterleave3:
   case Intrinsic::vector_deinterleave4:
-  case Intrinsic::experimental_vector_deinterleave4:
   case Intrinsic::vector_deinterleave5:
   case Intrinsic::vector_deinterleave6:
-  case Intrinsic::experimental_vector_deinterleave6:
   case Intrinsic::vector_deinterleave7:
   case Intrinsic::vector_deinterleave8:
-  case Intrinsic::experimental_vector_deinterleave8:
     return 0;
   case Intrinsic::aarch64_neon_fmax:
   case Intrinsic::aarch64_neon_fmin: {

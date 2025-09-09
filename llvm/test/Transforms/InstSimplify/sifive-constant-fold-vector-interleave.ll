@@ -5,7 +5,7 @@ define <vscale x 16 x i32> @interleave8() {
 ; CHECK-LABEL: define <vscale x 16 x i32> @interleave8() {
 ; CHECK-NEXT:    ret <vscale x 16 x i32> splat (i32 -939524096)
 ;
-  %r = call <vscale x 16 x i32> @llvm.experimental.vector.interleave8.nxv16i32(
+  %r = call <vscale x 16 x i32> @llvm.vector.interleave8.nxv16i32(
   <vscale x 2 x i32> shufflevector (<vscale x 2 x i32> insertelement (<vscale x 2 x i32> poison, i32 -939524096, i64 0), <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer),
   <vscale x 2 x i32> shufflevector (<vscale x 2 x i32> insertelement (<vscale x 2 x i32> poison, i32 -939524096, i64 0), <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer),
   <vscale x 2 x i32> shufflevector (<vscale x 2 x i32> insertelement (<vscale x 2 x i32> poison, i32 -939524096, i64 0), <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer),
@@ -37,7 +37,7 @@ define <vscale x 4 x i32> @interleave2() {
 ; CHECK-NEXT:    [[R:%.*]] = call <vscale x 4 x i32> @llvm.vector.interleave2.nxv4i32(<vscale x 2 x i32> splat (i32 3), <vscale x 2 x i32> splat (i32 3))
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[R]]
 ;
-  %r = call <vscale x 4 x i32> @llvm.experimental.vector.interleave2.nxv4i32(
+  %r = call <vscale x 4 x i32> @llvm.vector.interleave2.nxv4i32(
   <vscale x 2 x i32> shufflevector (<vscale x 2 x i32> insertelement (<vscale x 2 x i32> poison, i32 3, i64 0), <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer),
   <vscale x 2 x i32> shufflevector (<vscale x 2 x i32> insertelement (<vscale x 2 x i32> poison, i32 3, i64 0), <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer)
   )
@@ -48,14 +48,14 @@ define <4 x i32> @interleave2_fixed() {
 ; CHECK-LABEL: define <4 x i32> @interleave2_fixed() {
 ; CHECK-NEXT:    ret <4 x i32> splat (i32 6)
 ;
-  %r = call <4 x i32> @llvm.experimental.vector.interleave2.v4i32(
+  %r = call <4 x i32> @llvm.vector.interleave2.v4i32(
   <2 x i32> shufflevector (<2 x i32> insertelement (<2 x i32> poison, i32 6, i64 0), <2 x i32> poison, <2 x i32> zeroinitializer),
   <2 x i32> shufflevector (<2 x i32> insertelement (<2 x i32> poison, i32 6, i64 0), <2 x i32> poison, <2 x i32> zeroinitializer)
   )
   ret <4 x i32> %r
 }
 
-declare <vscale x 16 x i32> @llvm.experimental.vector.interleave8.nxv16i32(<vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>)
+declare <vscale x 16 x i32> @llvm.vector.interleave8.nxv16i32(<vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>)
 declare <vscale x 10 x i32> @llvm.vector.interleave5.nxv10i32(<vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>)
-declare <vscale x 4 x i32> @llvm.experimental.vector.interleave2.nxv4i32(<vscale x 2 x i32>, <vscale x 2 x i32>)
-declare <4 x i32> @llvm.experimental.vector.interleave2.v4i32(<2 x i32>, <2 x i32>)
+declare <vscale x 4 x i32> @llvm.vector.interleave2.nxv4i32(<vscale x 2 x i32>, <vscale x 2 x i32>)
+declare <4 x i32> @llvm.vector.interleave2.v4i32(<2 x i32>, <2 x i32>)

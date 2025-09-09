@@ -116,7 +116,7 @@ define  i32 @test_16x16(ptr %pix1_base, i32 %i_pix1, ptr %pix2_base, i32 %i_pix2
 ; CHECK-NEXT:    [[VP_OP116:%.*]] = call <vscale x 4 x i32> @llvm.vp.sub.nxv4i32(<vscale x 4 x i32> [[VP_OP52]], <vscale x 4 x i32> [[VP_OP54]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP45]])
 ; CHECK-NEXT:    [[VP_OP117:%.*]] = call <vscale x 4 x i32> @llvm.vp.add.nxv4i32(<vscale x 4 x i32> [[VP_OP55]], <vscale x 4 x i32> [[VP_OP53]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP45]])
 ; CHECK-NEXT:    [[VP_OP118:%.*]] = call <vscale x 4 x i32> @llvm.vp.sub.nxv4i32(<vscale x 4 x i32> [[VP_OP53]], <vscale x 4 x i32> [[VP_OP55]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP45]])
-; CHECK-NEXT:    [[INTERLEAVED_VEC119:%.*]] = call <vscale x 16 x i32> @llvm.experimental.vector.interleave4.nxv16i32(<vscale x 4 x i32> [[VP_OP115]], <vscale x 4 x i32> [[VP_OP117]], <vscale x 4 x i32> [[VP_OP116]], <vscale x 4 x i32> [[VP_OP118]])
+; CHECK-NEXT:    [[INTERLEAVED_VEC119:%.*]] = call <vscale x 16 x i32> @llvm.vector.interleave4.nxv16i32(<vscale x 4 x i32> [[VP_OP115]], <vscale x 4 x i32> [[VP_OP117]], <vscale x 4 x i32> [[VP_OP116]], <vscale x 4 x i32> [[VP_OP118]])
 ; CHECK-NEXT:    [[TMP77:%.*]] = mul nuw nsw i32 [[TMP45]], 4
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[INTERLEAVED_VEC119]], ptr align 4 [[TMP74]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP77]])
 ; CHECK-NEXT:    [[TMP57:%.*]] = zext i32 [[TMP45]] to i64
@@ -858,7 +858,7 @@ define i32 @test_8x8(ptr %pix1_base, i32 %i_pix1, ptr %pix2_base, i32 %i_pix2){
 ; CHECK-NEXT:    [[VP_OP116:%.*]] = call <vscale x 4 x i32> @llvm.vp.sub.nxv4i32(<vscale x 4 x i32> [[VP_OP52]], <vscale x 4 x i32> [[VP_OP54]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP85]])
 ; CHECK-NEXT:    [[VP_OP117:%.*]] = call <vscale x 4 x i32> @llvm.vp.add.nxv4i32(<vscale x 4 x i32> [[VP_OP55]], <vscale x 4 x i32> [[VP_OP53]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP85]])
 ; CHECK-NEXT:    [[VP_OP118:%.*]] = call <vscale x 4 x i32> @llvm.vp.sub.nxv4i32(<vscale x 4 x i32> [[VP_OP53]], <vscale x 4 x i32> [[VP_OP55]], <vscale x 4 x i1> splat (i1 true), i32 [[TMP85]])
-; CHECK-NEXT:    [[INTERLEAVED_VEC119:%.*]] = call <vscale x 16 x i32> @llvm.experimental.vector.interleave4.nxv16i32(<vscale x 4 x i32> [[VP_OP115]], <vscale x 4 x i32> [[VP_OP117]], <vscale x 4 x i32> [[VP_OP116]], <vscale x 4 x i32> [[VP_OP118]])
+; CHECK-NEXT:    [[INTERLEAVED_VEC119:%.*]] = call <vscale x 16 x i32> @llvm.vector.interleave4.nxv16i32(<vscale x 4 x i32> [[VP_OP115]], <vscale x 4 x i32> [[VP_OP117]], <vscale x 4 x i32> [[VP_OP116]], <vscale x 4 x i32> [[VP_OP118]])
 ; CHECK-NEXT:    [[TMP77:%.*]] = mul nuw nsw i32 [[TMP85]], 4
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[INTERLEAVED_VEC119]], ptr align 4 [[TMP74]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP77]])
 ; CHECK-NEXT:    [[TMP49:%.*]] = zext i32 [[TMP85]] to i64

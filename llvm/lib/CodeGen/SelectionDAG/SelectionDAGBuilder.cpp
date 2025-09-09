@@ -8243,33 +8243,15 @@ void SelectionDAGBuilder::visitIntrinsicCall(const CallInst &I,
   case Intrinsic::vector_deinterleave7:
     visitVectorDeinterleave(I, 7);
     return;
-#if SIFIVE_CUSTOMIZATION
-  case Intrinsic::experimental_vector_interleave4:
-    visitVectorInterleave(I, 4);
-    return;
-  case Intrinsic::experimental_vector_interleave6:
-    visitVectorInterleave(I, 6);
-    return;
-  case Intrinsic::experimental_vector_interleave8:
-    visitVectorInterleave(I, 8);
-    return;
-  case Intrinsic::experimental_vector_deinterleave4:
-    visitVectorDeinterleave(I, 4);
-    return;
-  case Intrinsic::experimental_vector_deinterleave6:
-    visitVectorDeinterleave(I, 6);
-    return;
-  case Intrinsic::experimental_vector_deinterleave8:
+  case Intrinsic::vector_deinterleave8:
     visitVectorDeinterleave(I, 8);
     return;
+#if SIFIVE_CUSTOMIZATION
   case Intrinsic::experimental_vp_compress:
   case Intrinsic::experimental_vp_expand:
     visitTargetIntrinsic(I, Intrinsic);
     return;
 #endif // SIFIVE_CUSTOMIZATION
-  case Intrinsic::vector_deinterleave8:
-    visitVectorDeinterleave(I, 8);
-    return;
   case Intrinsic::experimental_vector_compress:
     setValue(&I, DAG.getNode(ISD::VECTOR_COMPRESS, sdl,
                              getValue(I.getArgOperand(0)).getValueType(),

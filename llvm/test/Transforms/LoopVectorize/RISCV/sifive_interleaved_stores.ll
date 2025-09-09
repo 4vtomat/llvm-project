@@ -145,7 +145,7 @@ define void @interleaved_store_factor_4(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32> } [[DEINTERLEAVED_RESULTS]], 0
 ; CHECK-NEXT:    [[TMP10:%.*]] = shl nsw i64 [[EVL_BASED_IV]], 2
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP10]]
-; CHECK-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 8 x i32> @llvm.experimental.vector.interleave4.nxv8i32(<vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]])
+; CHECK-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 8 x i32> @llvm.vector.interleave4.nxv8i32(<vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]])
 ; CHECK-NEXT:    [[TMP12:%.*]] = mul nuw nsw i32 [[TMP5]], 4
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[INTERLEAVED_VEC]], ptr align 4 [[TMP11]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP12]])
 ; CHECK-NEXT:    [[TMP13:%.*]] = zext i32 [[TMP5]] to i64
@@ -375,7 +375,7 @@ define void @interleaved_store_factor_6(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32> } [[DEINTERLEAVED_RESULTS]], 0
 ; CHECK-NEXT:    [[TMP10:%.*]] = mul nuw nsw i64 [[EVL_BASED_IV]], 6
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP10]]
-; CHECK-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 12 x i32> @llvm.experimental.vector.interleave6.nxv12i32(<vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]])
+; CHECK-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 12 x i32> @llvm.vector.interleave6.nxv12i32(<vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]])
 ; CHECK-NEXT:    [[TMP12:%.*]] = mul nuw nsw i32 [[TMP5]], 6
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv12i32.p0(<vscale x 12 x i32> [[INTERLEAVED_VEC]], ptr align 4 [[TMP11]], <vscale x 12 x i1> splat (i1 true), i32 [[TMP12]])
 ; CHECK-NEXT:    [[TMP13:%.*]] = zext i32 [[TMP5]] to i64
@@ -629,7 +629,7 @@ define void @interleaved_store_factor_8(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32> } [[DEINTERLEAVED_RESULTS]], 0
 ; CHECK-NEXT:    [[TMP10:%.*]] = shl nsw i64 [[EVL_BASED_IV]], 3
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP10]]
-; CHECK-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 16 x i32> @llvm.experimental.vector.interleave8.nxv16i32(<vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]])
+; CHECK-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 16 x i32> @llvm.vector.interleave8.nxv16i32(<vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]], <vscale x 2 x i32> [[TMP9]])
 ; CHECK-NEXT:    [[TMP12:%.*]] = mul nuw nsw i32 [[TMP5]], 8
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[INTERLEAVED_VEC]], ptr align 4 [[TMP11]], <vscale x 16 x i1> splat (i1 true), i32 [[TMP12]])
 ; CHECK-NEXT:    [[TMP13:%.*]] = zext i32 [[TMP5]] to i64
@@ -912,8 +912,8 @@ define void @interleaved_masked_store_factor_4(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP13:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32> } [[DEINTERLEAVED_RESULTS]], 0
 ; CHECK-NEXT:    [[TMP14:%.*]] = shl i64 [[EVL_BASED_IV]], 2
 ; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr i32, ptr [[B]], i64 [[TMP14]]
-; CHECK-NEXT:    [[INTERLEAVED_MASK2:%.*]] = call <vscale x 8 x i1> @llvm.experimental.vector.interleave4.nxv8i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]])
-; CHECK-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 8 x i32> @llvm.experimental.vector.interleave4.nxv8i32(<vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]])
+; CHECK-NEXT:    [[INTERLEAVED_MASK2:%.*]] = call <vscale x 8 x i1> @llvm.vector.interleave4.nxv8i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]])
+; CHECK-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 8 x i32> @llvm.vector.interleave4.nxv8i32(<vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]])
 ; CHECK-NEXT:    [[TMP16:%.*]] = mul nuw nsw i32 [[TMP7]], 4
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[INTERLEAVED_VEC]], ptr align 4 [[TMP15]], <vscale x 8 x i1> [[INTERLEAVED_MASK2]], i32 [[TMP16]])
 ; CHECK-NEXT:    [[TMP17:%.*]] = zext i32 [[TMP7]] to i64
@@ -1196,8 +1196,8 @@ define void @interleaved_masked_store_factor_6(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP13:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32> } [[DEINTERLEAVED_RESULTS]], 0
 ; CHECK-NEXT:    [[TMP14:%.*]] = mul i64 [[EVL_BASED_IV]], 6
 ; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr i32, ptr [[B]], i64 [[TMP14]]
-; CHECK-NEXT:    [[INTERLEAVED_MASK2:%.*]] = call <vscale x 12 x i1> @llvm.experimental.vector.interleave6.nxv12i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]])
-; CHECK-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 12 x i32> @llvm.experimental.vector.interleave6.nxv12i32(<vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]])
+; CHECK-NEXT:    [[INTERLEAVED_MASK2:%.*]] = call <vscale x 12 x i1> @llvm.vector.interleave6.nxv12i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]])
+; CHECK-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 12 x i32> @llvm.vector.interleave6.nxv12i32(<vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]])
 ; CHECK-NEXT:    [[TMP16:%.*]] = mul nuw nsw i32 [[TMP7]], 6
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv12i32.p0(<vscale x 12 x i32> [[INTERLEAVED_VEC]], ptr align 4 [[TMP15]], <vscale x 12 x i1> [[INTERLEAVED_MASK2]], i32 [[TMP16]])
 ; CHECK-NEXT:    [[TMP17:%.*]] = zext i32 [[TMP7]] to i64
@@ -1504,8 +1504,8 @@ define void @interleaved_masked_store_factor_8(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP13:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32> } [[DEINTERLEAVED_RESULTS]], 0
 ; CHECK-NEXT:    [[TMP14:%.*]] = shl i64 [[EVL_BASED_IV]], 3
 ; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr i32, ptr [[B]], i64 [[TMP14]]
-; CHECK-NEXT:    [[INTERLEAVED_MASK2:%.*]] = call <vscale x 16 x i1> @llvm.experimental.vector.interleave8.nxv16i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]])
-; CHECK-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 16 x i32> @llvm.experimental.vector.interleave8.nxv16i32(<vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]])
+; CHECK-NEXT:    [[INTERLEAVED_MASK2:%.*]] = call <vscale x 16 x i1> @llvm.vector.interleave8.nxv16i1(<vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]], <vscale x 2 x i1> [[VP_OP_ICMP]])
+; CHECK-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 16 x i32> @llvm.vector.interleave8.nxv16i32(<vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]], <vscale x 2 x i32> [[TMP13]])
 ; CHECK-NEXT:    [[TMP16:%.*]] = mul nuw nsw i32 [[TMP7]], 8
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv16i32.p0(<vscale x 16 x i32> [[INTERLEAVED_VEC]], ptr align 4 [[TMP15]], <vscale x 16 x i1> [[INTERLEAVED_MASK2]], i32 [[TMP16]])
 ; CHECK-NEXT:    [[TMP17:%.*]] = zext i32 [[TMP7]] to i64

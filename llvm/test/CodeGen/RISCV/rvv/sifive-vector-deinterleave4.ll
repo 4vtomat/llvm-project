@@ -44,11 +44,11 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16
 ; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
-  %retval = call {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>} @llvm.experimental.vector.deinterleave4.nxv64i1(<vscale x 64 x i1> %vec)
+  %retval = call {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>} @llvm.vector.deinterleave4.nxv64i1(<vscale x 64 x i1> %vec)
   ret {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>} %retval
 }
 
-declare {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>} @llvm.experimental.vector.deinterleave4.nxv64i1(<vscale x 64 x i1>)
+declare {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>} @llvm.vector.deinterleave4.nxv64i1(<vscale x 64 x i1>)
 
 define {<vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>} @vector_deinterleave_nxv16i8_nxv64i8(<vscale x 64 x i8> %vec) nounwind {
 ; CHECK-LABEL: vector_deinterleave_nxv16i8_nxv64i8:
@@ -66,11 +66,11 @@ define {<vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16
 ; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
-  %retval = call {<vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>} @llvm.experimental.vector.deinterleave4.nxv64i8(<vscale x 64 x i8> %vec)
+  %retval = call {<vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>} @llvm.vector.deinterleave4.nxv64i8(<vscale x 64 x i8> %vec)
   ret {<vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>} %retval
 }
 
-declare {<vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>} @llvm.experimental.vector.deinterleave4.nxv64i8(<vscale x 64 x i8>)
+declare {<vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>} @llvm.vector.deinterleave4.nxv64i8(<vscale x 64 x i8>)
 
 define {<vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>} @vector_deinterleave_nxv8i16_nxv32i16(<vscale x 32 x i16> %vec) nounwind {
 ; CHECK-LABEL: vector_deinterleave_nxv8i16_nxv32i16:
@@ -88,11 +88,11 @@ define {<vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 
 ; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
-  %retval = call {<vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>} @llvm.experimental.vector.deinterleave4.nxv32i16(<vscale x 32 x i16> %vec)
+  %retval = call {<vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>} @llvm.vector.deinterleave4.nxv32i16(<vscale x 32 x i16> %vec)
   ret {<vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>} %retval
 }
 
-declare {<vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>} @llvm.experimental.vector.deinterleave4.nxv32i16(<vscale x 32 x i16>)
+declare {<vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>} @llvm.vector.deinterleave4.nxv32i16(<vscale x 32 x i16>)
 
 define {<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>} @vector_deinterleave_nxv4i32_nxv16i32(<vscale x 16 x i32> %vec) nounwind {
 ; CHECK-LABEL: vector_deinterleave_nxv4i32_nxv16i32:
@@ -110,11 +110,11 @@ define {<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 
 ; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
-  %retval = call {<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>} @llvm.experimental.vector.deinterleave4.nxv16i32(<vscale x 16 x i32> %vec)
+  %retval = call {<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>} @llvm.vector.deinterleave4.nxv16i32(<vscale x 16 x i32> %vec)
   ret {<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>} %retval
 }
 
-declare {<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>} @llvm.experimental.vector.deinterleave4.nxv16i32(<vscale x 16 x i32>)
+declare {<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>} @llvm.vector.deinterleave4.nxv16i32(<vscale x 16 x i32>)
 
 define {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>} @vector_deinterleave_nxv2i64_nxv8i64(<vscale x 8 x i64> %vec) nounwind {
 ; CHECK-LABEL: vector_deinterleave_nxv2i64_nxv8i64:
@@ -132,11 +132,11 @@ define {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 
 ; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
-  %retval = call {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>} @llvm.experimental.vector.deinterleave4.nxv8i64(<vscale x 8 x i64> %vec)
+  %retval = call {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>} @llvm.vector.deinterleave4.nxv8i64(<vscale x 8 x i64> %vec)
   ret {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>} %retval
 }
 
-declare {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>} @llvm.experimental.vector.deinterleave4.nxv8i64(<vscale x 8 x i64>)
+declare {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>} @llvm.vector.deinterleave4.nxv8i64(<vscale x 8 x i64>)
 ;; NOTE: These prefixes are unused and the list is autogenerated. Do not add tests below this line:
 ; RV32: {{.*}}
 ; RV64: {{.*}}

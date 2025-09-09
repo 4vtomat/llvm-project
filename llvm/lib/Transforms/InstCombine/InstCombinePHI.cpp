@@ -418,13 +418,10 @@ InstCombinerImpl::foldPHIArgExtractValueInstructionIntoPHI(PHINode &PN) {
       case Intrinsic::vector_deinterleave2:
       case Intrinsic::vector_deinterleave3:
       case Intrinsic::vector_deinterleave4:
-      case Intrinsic::experimental_vector_deinterleave4:
       case Intrinsic::vector_deinterleave5:
       case Intrinsic::vector_deinterleave6:
-      case Intrinsic::experimental_vector_deinterleave6:
       case Intrinsic::vector_deinterleave7:
       case Intrinsic::vector_deinterleave8:
-      case Intrinsic::experimental_vector_deinterleave8:
         return nullptr;
       }
     }

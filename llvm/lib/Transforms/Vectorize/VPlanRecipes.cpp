@@ -4375,21 +4375,17 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
   auto GetVectorInterleaveIntrinsic = [](const unsigned Factor) {
 #define INTERLEAVE_FACTOR_VECTOR_INTERLEAVE(N)                                 \
   case N:                                                                      \
-    return Intrinsic::experimental_vector_interleave##N;
+    return Intrinsic::vector_interleave##N;
 
     switch (Factor) {
     default:
       llvm_unreachable("Unsupported interleave factor");
-    case 2:
-      return Intrinsic::vector_interleave2;
-    case 3:
-      return Intrinsic::vector_interleave3;
-    case 5:
-      return Intrinsic::vector_interleave5;
-    case 7:
-      return Intrinsic::vector_interleave7;
+      INTERLEAVE_FACTOR_VECTOR_INTERLEAVE(2);
+      INTERLEAVE_FACTOR_VECTOR_INTERLEAVE(3);
       INTERLEAVE_FACTOR_VECTOR_INTERLEAVE(4);
+      INTERLEAVE_FACTOR_VECTOR_INTERLEAVE(5);
       INTERLEAVE_FACTOR_VECTOR_INTERLEAVE(6);
+      INTERLEAVE_FACTOR_VECTOR_INTERLEAVE(7);
       INTERLEAVE_FACTOR_VECTOR_INTERLEAVE(8);
     }
 #undef INTERLEAVE_FACTOR_VECTOR_INTERLEAVE
@@ -4398,21 +4394,17 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
   auto GetVectorDeinterleaveIntrinsic = [](const unsigned Factor) {
 #define DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE(N)                               \
   case N:                                                                      \
-    return Intrinsic::experimental_vector_deinterleave##N;
+    return Intrinsic::vector_deinterleave##N;
 
     switch (Factor) {
     default:
       llvm_unreachable("Unsupported interleave factor");
-    case 2:
-      return Intrinsic::vector_deinterleave2;
-    case 3:
-      return Intrinsic::vector_deinterleave3;
-    case 5:
-      return Intrinsic::vector_deinterleave5;
-    case 7:
-      return Intrinsic::vector_deinterleave7;
+      DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE(2);
+      DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE(3);
       DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE(4);
+      DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE(5);
       DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE(6);
+      DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE(7);
       DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE(8);
     }
 #undef DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE
