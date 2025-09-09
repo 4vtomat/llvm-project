@@ -2187,11 +2187,6 @@ static void licm(VPlan &Plan) {
           }))
         continue;
       R.moveBefore(*Preheader, Preheader->end());
-#if SIFIVE_CUSTOMIZATION
-    // SYNC-UPSTREAM: Investigate why LICM requires InitEVL.
-    if (Plan.useVLAVectorizer() && !Plan.getInitEVL())
-      Plan.createInitEVL();
-#endif // SIFIVE_CUSTOMIZATION
     }
   }
 }

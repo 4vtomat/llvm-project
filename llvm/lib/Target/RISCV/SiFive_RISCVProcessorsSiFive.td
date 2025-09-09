@@ -946,7 +946,7 @@ def SIFIVE_LION : RISCVProcessorModel<"sifive-lion", SiFiveP600Model,
                                                   SiFiveMallardTuneFeatures,
                                                   [TuneNoSinkSplatOperands])>;
 
-def SIFIVE_CHEETAH : RISCVProcessorModel<"sifive-cheetah", SiFiveP800SModel,
+def SIFIVE_CHEETAH : RISCVProcessorModel<"sifive-cheetah", SiFiveP800Model,
                                          [Feature64Bit,
                                           FeatureStdExtI,
                                           FeatureStdExtZifencei,
