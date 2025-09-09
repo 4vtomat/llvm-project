@@ -618,18 +618,24 @@ static unsigned getIntrinsicFactor(const IntrinsicInst *II) {
   case Intrinsic::vector_deinterleave3:
   case Intrinsic::vector_interleave3:
     return 3;
+  case Intrinsic::experimental_vector_deinterleave4:
+  case Intrinsic::experimental_vector_interleave4:
   case Intrinsic::vector_deinterleave4:
   case Intrinsic::vector_interleave4:
     return 4;
   case Intrinsic::vector_deinterleave5:
   case Intrinsic::vector_interleave5:
     return 5;
+  case Intrinsic::experimental_vector_deinterleave6:
+  case Intrinsic::experimental_vector_interleave6:
   case Intrinsic::vector_deinterleave6:
   case Intrinsic::vector_interleave6:
     return 6;
   case Intrinsic::vector_deinterleave7:
   case Intrinsic::vector_interleave7:
     return 7;
+  case Intrinsic::experimental_vector_deinterleave8:
+  case Intrinsic::experimental_vector_interleave8:
   case Intrinsic::vector_deinterleave8:
   case Intrinsic::vector_interleave8:
     return 8;
