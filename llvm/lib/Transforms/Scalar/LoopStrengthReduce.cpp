@@ -5506,7 +5506,11 @@ void LSRInstance::Solve(SmallVectorImpl<const Formula *> &Solution) const {
     llvm_unreachable("Unhandled cl::boolOrDefault enum");
   }();
 
+#if SIFIVE_CUSTOMIZATION
+  if (!SolutionCost.isLess(BaselineCost)) {
+#else
   if (BaselineCost.isLess(SolutionCost)) {
+#endif
     if (!EnableDropUnprofitableSolution)
       LLVM_DEBUG(
           dbgs() << "Baseline is more profitable than chosen solution, "

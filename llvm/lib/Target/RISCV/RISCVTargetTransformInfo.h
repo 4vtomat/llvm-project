@@ -643,6 +643,7 @@ public:
 
   /// Enabled dropping solutions by default
   bool shouldDropLSRSolutionIfLessProfitable() const override;
+  bool canMacroFuseCmp() const override;
 #endif // SIFIVE_CUSTOMIZATION
 
   bool isLSRCostLess(const TargetTransformInfo::LSRCost &C1,

@@ -4270,6 +4270,12 @@ RISCVTTIImpl::getPreferredAddressingMode(const Loop *L,
   return BasicTTIImplBase::getPreferredAddressingMode(L, SE);
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+bool RISCVTTIImpl::canMacroFuseCmp() const {
+  return true;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 bool RISCVTTIImpl::isLSRCostLess(const TargetTransformInfo::LSRCost &C1,
                                  const TargetTransformInfo::LSRCost &C2) const {
   // RISC-V specific here are "instruction number 1st priority".
