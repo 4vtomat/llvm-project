@@ -36,13 +36,12 @@ define float @print_reduction(i64 %n, ptr noalias %y) {
 ; CHECK-EMPTY:
 ; CHECK-NEXT: middle.block:
 ; CHECK-NEXT:   EMIT vp<[[RED_RES:%.+]]> = compute-reduction-result fast ir<%red>, ir<%red.next>
-; CHECK-NEXT:   EMIT vp<[[RED_EX:%.+]]> = extract-last-element vp<[[RED_RES]]>
 ; CHECK-NEXT:   EMIT vp<[[CMP:%.+]]> = icmp eq ir<%n>, vp<[[VTC]]>
 ; CHECK-NEXT:   EMIT branch-on-cond vp<[[CMP]]>
 ; CHECK-NEXT: Successor(s): ir-bb<exit>, scalar.ph
 ; CHECK-EMPTY:
 ; CHECK-NEXT: ir-bb<exit>
-; CHECK-NEXT:  IR %red.next.lcssa = phi float [ %red.next, %loop ] (extra operand: vp<[[RED_EX]]> from middle.block)
+; CHECK-NEXT:  IR %red.next.lcssa = phi float [ %red.next, %loop ] (extra operand: vp<[[RED_RES]]> from middle.block)
 ; CHECK-NEXT: No successors
 ; CHECK-EMPTY:
 ; CHECK-NEXT: scalar.ph
@@ -145,8 +144,65 @@ exit:                                          ; preds = %loop, %entry
 
 define float @print_fmuladd_strict(ptr %a, ptr %b, i64 %n) {
 ; CHECK-LABEL: Checking a loop in 'print_fmuladd_strict'
+<<<<<<< HEAD
 ; CHECK: loop not vectorized: cannot prove it is safe to reorder floating-point operations
 ;
+=======
+; CHECK:      VPlan 'Initial VPlan for VF={4},UF>=1' {
+; CHECK-NEXT: Live-in vp<[[VF:%.]]> = VF
+; CHECK-NEXT: Live-in vp<[[VFxUF:%.]]> = VF * UF
+; CHECK-NEXT: Live-in vp<[[VTC:%.+]]> = vector-trip-count
+; CHECK-NEXT: Live-in ir<%n> = original trip-count
+; CHECK-EMPTY:
+; CHECK-NEXT: ir-bb<entry>:
+; CHECK-NEXT: Successor(s): scalar.ph, vector.ph
+; CHECK-EMPTY:
+; CHECK-NEXT: vector.ph:
+; CHECK-NEXT:   EMIT vp<[[RDX_START:%.+]]> = reduction-start-vector nnan ninf nsz ir<0.000000e+00>, ir<0.000000e+00>, ir<1>
+; CHECK-NEXT: Successor(s): vector loop
+; CHECK-EMPTY:
+; CHECK-NEXT: <x1> vector loop: {
+; CHECK-NEXT: vector.body:
+; CHECK-NEXT:   EMIT vp<[[CAN_IV:%.+]]> = CANONICAL-INDUCTION ir<0>, vp<[[CAN_IV_NEXT:%.+]]>
+; CHECK-NEXT:   WIDEN-REDUCTION-PHI ir<%sum.07> = phi vp<[[RDX_START]]>, ir<%muladd>
+; CHECK-NEXT:   vp<[[STEPS:%.+]]> = SCALAR-STEPS vp<[[CAN_IV]]>, ir<1>, vp<[[VF]]>
+; CHECK-NEXT:   CLONE ir<%arrayidx> = getelementptr inbounds ir<%a>, vp<[[STEPS]]>
+; CHECK-NEXT:   vp<[[VEC_PTR:%.+]]> = vector-pointer ir<%arrayidx>
+; CHECK-NEXT:   WIDEN ir<%l.a> = load vp<[[VEC_PTR]]>
+; CHECK-NEXT:   CLONE ir<%arrayidx2> = getelementptr inbounds ir<%b>, vp<[[STEPS]]>
+; CHECK-NEXT:   vp<[[VEC_PTR2:%.+]]> = vector-pointer ir<%arrayidx2>
+; CHECK-NEXT:   WIDEN ir<%l.b> = load vp<[[VEC_PTR2]]>
+; CHECK-NEXT:   EMIT vp<[[FMUL:%.+]]> = fmul nnan ninf nsz ir<%l.a>, ir<%l.b>
+; CHECK-NEXT:   REDUCE ir<[[MULADD:%.+]]> = ir<%sum.07> + nnan ninf nsz reduce.fadd (vp<[[FMUL]]>)
+; CHECK-NEXT:   EMIT vp<[[CAN_IV_NEXT]]> = add nuw vp<[[CAN_IV]]>, vp<[[VFxUF]]>
+; CHECK-NEXT:   EMIT branch-on-count vp<[[CAN_IV_NEXT]]>, vp<[[VTC]]>
+; CHECK-NEXT:   No successors
+; CHECK-NEXT: }
+; CHECK-NEXT: Successor(s): middle.block
+; CHECK-EMPTY:
+; CHECK-NEXT: middle.block:
+; CHECK-NEXT:   EMIT vp<[[RED_RES:%.+]]> = compute-reduction-result nnan ninf nsz ir<%sum.07>, ir<[[MULADD]]>
+; CHECK-NEXT:   EMIT vp<[[CMP:%.+]]> = icmp eq ir<%n>, vp<[[VTC]]>
+; CHECK-NEXT:   EMIT branch-on-cond vp<[[CMP]]>
+; CHECK-NEXT: Successor(s): ir-bb<exit>, scalar.ph
+; CHECK-EMPTY:
+; CHECK-NEXT: ir-bb<exit>
+; CHECK-NEXT:   IR %muladd.lcssa = phi float [ %muladd, %loop ] (extra operand: vp<[[RED_RES]]> from middle.block)
+; CHECK-NEXT: No successors
+; CHECK-EMPTY:
+; CHECK-NEXT: scalar.ph
+; CHECK-NEXT:   EMIT-SCALAR vp<[[RESUME_IV:%.+]]> = phi [ vp<[[VTC]]>, middle.block ], [ ir<0>, ir-bb<entry> ]
+; CHECK-NEXT:   EMIT-SCALAR vp<[[RED_RESUME:%.+]]> = phi [ vp<[[RED_RES]]>, middle.block ], [ ir<0.000000e+00>, ir-bb<entry> ]
+; CHECK-NEXT:  Successor(s): ir-bb<loop>
+; CHECK-EMPTY:
+; CHECK-NEXT:  ir-bb<loop>:
+; CHECK-NEXT:    IR   %iv = phi i64 [ 0, %entry ], [ %iv.next, %loop ] (extra operand: vp<[[RESUME_IV]]> from scalar.ph)
+; CHECK-NEXT:    IR   %sum.07 = phi float [ 0.000000e+00, %entry ], [ %muladd, %loop ] (extra operand: vp<[[RED_RESUME]]> from scalar.ph)
+; CHECK:         IR   %exitcond.not = icmp eq i64 %iv.next, %n
+; CHECK-NEXT: No successors
+; CHECK-NEXT:}
+
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 entry:
   br label %loop
 
@@ -187,14 +243,13 @@ define i64 @find_last_iv(ptr %a, i64 %n, i64 %start) {
 ; CHECK-NEXT: Successor(s): middle.block
 ; CHECK-EMPTY:
 ; CHECK-NEXT: middle.block:
-; CHECK-NEXT:   EMIT vp<[[RDX_RES:%.+]]> = compute-find-last-iv-result ir<%rdx>, ir<%start>, ir<-9223372036854775808>, ir<%cond>
-; CHECK-NEXT:   EMIT vp<[[EXT:%.+]]> = extract-last-element vp<[[RDX_RES]]>
+; CHECK-NEXT:   EMIT vp<[[RDX_RES:%.+]]> = compute-find-iv-result ir<%rdx>, ir<%start>, ir<-9223372036854775808>, ir<%cond>
 ; CHECK-NEXT:   EMIT vp<%cmp.n> = icmp eq ir<%n>, vp<{{.+}}>
 ; CHECK-NEXT:   EMIT branch-on-cond vp<%cmp.n>
 ; CHECK-NEXT: Successor(s): ir-bb<exit>, scalar.ph
 ; CHECK-EMPTY:
 ; CHECK:      ir-bb<exit>:
-; CHECK-NEXT:   IR   %cond.lcssa = phi i64 [ %cond, %loop ] (extra operand: vp<[[EXT]]> from middle.block)
+; CHECK-NEXT:   IR   %cond.lcssa = phi i64 [ %cond, %loop ] (extra operand: vp<[[RDX_RES]]> from middle.block)
 ; CHECK-NEXT: No successors
 ; CHECK-EMPTY:
 ; CHECK-NEXT: scalar.ph:

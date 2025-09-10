@@ -10,7 +10,11 @@ define void @type_info_cache_clobber(ptr %dstv, ptr %src, i64 %wide.trip.count) 
 ; CHECK-SAME: ptr [[DSTV:%.*]], ptr [[SRC:%.*]], i64 [[WIDE_TRIP_COUNT:%.*]]) #[[ATTR0:[0-9]+]] {
 ; CHECK-NEXT:  [[ENTRY:.*:]]
 ; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[WIDE_TRIP_COUNT]], 1
+<<<<<<< HEAD
 ; CHECK-NEXT:    br label %[[VECTOR_MEMCHECK:.*]]
+=======
+; CHECK-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_MEMCHECK:.*]]
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 ; CHECK:       [[VECTOR_MEMCHECK]]:
 ; CHECK-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[DSTV]], i64 1
 ; CHECK-NEXT:    [[TMP5:%.*]] = add i64 [[WIDE_TRIP_COUNT]], 1

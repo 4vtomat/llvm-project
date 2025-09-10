@@ -1399,6 +1399,7 @@ void DAGTypeLegalizer::SplitVectorResult(SDNode *N, unsigned ResNo) {
   case ISD::UDIVFIXSAT:
     SplitVecRes_FIX(N, Lo, Hi);
     break;
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case ISD::EXPERIMENTAL_VP_SPLICE:
     SplitVecRes_VP_SPLICE(N, Lo, Hi);
@@ -1407,6 +1408,11 @@ void DAGTypeLegalizer::SplitVectorResult(SDNode *N, unsigned ResNo) {
     SplitVecRes_VP_SET_BEFORE_FIRST(N, Lo, Hi);
     break;
 #endif
+=======
+  case ISD::EXPERIMENTAL_VP_SPLICE:
+    SplitVecRes_VP_SPLICE(N, Lo, Hi);
+    break;
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
   case ISD::EXPERIMENTAL_VP_REVERSE:
     SplitVecRes_VP_REVERSE(N, Lo, Hi);
     break;
@@ -3234,7 +3240,10 @@ void DAGTypeLegalizer::SplitVecRes_VP_REVERSE(SDNode *N, SDValue &Lo,
   std::tie(Lo, Hi) = DAG.SplitVector(Load, DL);
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 void DAGTypeLegalizer::SplitVecRes_VP_SPLICE(SDNode *N, SDValue &Lo,
                                              SDValue &Hi) {
   EVT VT = N->getValueType(0);
@@ -3262,6 +3271,7 @@ void DAGTypeLegalizer::SplitVecRes_VP_SPLICE(SDNode *N, SDValue &Lo,
   auto PtrInfo = MachinePointerInfo::getFixedStack(MF, FrameIndex);
 
   MachineMemOperand *StoreMMO = DAG.getMachineFunction().getMachineMemOperand(
+<<<<<<< HEAD
       PtrInfo, MachineMemOperand::MOStore, MemoryLocation::UnknownSize,
       Alignment);
   MachineMemOperand *LoadMMO = DAG.getMachineFunction().getMachineMemOperand(
@@ -3273,6 +3283,15 @@ void DAGTypeLegalizer::SplitVecRes_VP_SPLICE(SDNode *N, SDValue &Lo,
       DAG.getNode(ISD::MUL, DL, PtrVT, DAG.getZExtOrTrunc(EVL1, DL, PtrVT),
                   DAG.getConstant(EltWidth, DL, PtrVT));
   SDValue StackPtr2 = DAG.getNode(ISD::ADD, DL, PtrVT, StackPtr, OffsetToV2);
+=======
+      PtrInfo, MachineMemOperand::MOStore, LocationSize::beforeOrAfterPointer(),
+      Alignment);
+  MachineMemOperand *LoadMMO = DAG.getMachineFunction().getMachineMemOperand(
+      PtrInfo, MachineMemOperand::MOLoad, LocationSize::beforeOrAfterPointer(),
+      Alignment);
+
+  SDValue StackPtr2 = TLI.getVectorElementPointer(DAG, StackPtr, VT, EVL1);
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 
   SDValue TrueMask = DAG.getBoolConstant(true, DL, Mask.getValueType(), VT);
   SDValue StoreV1 = DAG.getStoreVP(DAG.getEntryNode(), DL, V1, StackPtr,
@@ -3285,12 +3304,27 @@ void DAGTypeLegalizer::SplitVecRes_VP_SPLICE(SDNode *N, SDValue &Lo,
 
   SDValue Load;
   if (Imm >= 0) {
+<<<<<<< HEAD
     SDValue ByteOff = DAG.getConstant(Imm * EltWidth, DL, PtrVT);
     StackPtr = DAG.getNode(ISD::ADD, DL, PtrVT, StackPtr, ByteOff);
     Load = DAG.getLoadVP(VT, DL, StoreV2, StackPtr, Mask, EVL2, LoadMMO);
   } else {
     uint64_t TrailingElts = -Imm;
     SDValue TrailingBytes = DAG.getConstant(TrailingElts * EltWidth, DL, PtrVT);
+=======
+    StackPtr = TLI.getVectorElementPointer(DAG, StackPtr, VT, N->getOperand(2));
+    Load = DAG.getLoadVP(VT, DL, StoreV2, StackPtr, Mask, EVL2, LoadMMO);
+  } else {
+    uint64_t TrailingElts = -Imm;
+    unsigned EltWidth = VT.getScalarSizeInBits() / 8;
+    SDValue TrailingBytes = DAG.getConstant(TrailingElts * EltWidth, DL, PtrVT);
+
+    // Make sure TrailingBytes doesn't exceed the size of vec1.
+    SDValue OffsetToV2 = DAG.getNode(ISD::SUB, DL, PtrVT, StackPtr2, StackPtr);
+    TrailingBytes =
+        DAG.getNode(ISD::UMIN, DL, PtrVT, TrailingBytes, OffsetToV2);
+
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
     // Calculate the start address of the spliced result.
     StackPtr2 = DAG.getNode(ISD::SUB, DL, PtrVT, StackPtr2, TrailingBytes);
     Load = DAG.getLoadVP(VT, DL, StoreV2, StackPtr2, Mask, EVL2, LoadMMO);
@@ -3305,6 +3339,7 @@ void DAGTypeLegalizer::SplitVecRes_VP_SPLICE(SDNode *N, SDValue &Lo,
                   DAG.getVectorIdxConstant(LoVT.getVectorMinNumElements(), DL));
 }
 
+<<<<<<< HEAD
 void DAGTypeLegalizer::SplitVecRes_VP_SET_BEFORE_FIRST(SDNode *N, SDValue &Lo,
                                                        SDValue &Hi) {
   SDLoc DL(N);
@@ -3334,6 +3369,8 @@ void DAGTypeLegalizer::SplitVecRes_VP_SET_BEFORE_FIRST(SDNode *N, SDValue &Lo,
 }
 #endif
 
+=======
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 void DAGTypeLegalizer::SplitVecRes_PARTIAL_REDUCE_MLA(SDNode *N, SDValue &Lo,
                                                       SDValue &Hi) {
   SDLoc DL(N);

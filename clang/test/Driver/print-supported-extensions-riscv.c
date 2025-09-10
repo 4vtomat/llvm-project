@@ -205,10 +205,14 @@
 // CHECK-NEXT:     xsfvfexpa64e         0.2       'XSfvfexpa64e' (SiFive Vector Floating-Point Exponential Approximation Instruction with Double-Precision)
 // CHECK-NEXT:     xsfvfhbfmin          0.1       'XSfvfhbfmin' (SiFive custom minimal BF16 vector support)
 // CHECK-NEXT:     xsfvfnrclipxfqf      1.0       'XSfvfnrclipxfqf' (SiFive FP32-to-int8 Ranged Clip Instructions)
+<<<<<<< HEAD
 // CHECK-NEXT:     xsfvfnrclipxfqf      0.1       'XSfvfnrclipxfqf' (SiFive FP32-to-int8 Ranged Clip Instructions)
 // CHECK-NEXT:     xsfvfwmaccqqq        1.0       'XSfvfwmaccqqq' (SiFive Matrix Multiply Accumulate Instruction (4-by-4))
 // CHECK-NEXT:     xsfvfwmaccqqq        0.1       'XSfvfwmaccqqq' (SiFive Matrix Multiply Accumulate Instruction (4-by-4))
 // CHECK-NEXT:     xsfvqdotq            0.1       'XSfvqdotq' (SiFive Vector Quad-Widening 4D Dot Product Instructions)
+=======
+// CHECK-NEXT:     xsfvfwmaccqqq        1.0       'XSfvfwmaccqqq' (SiFive Matrix Multiply Accumulate Instruction (4-by-4))
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 // CHECK-NEXT:     xsfvqmaccdod         1.0       'XSfvqmaccdod' (SiFive Int8 Matrix Multiplication Instructions (2-by-8 and 8-by-2))
 // CHECK-NEXT:     xsfvqmaccdod         0.1       'XSfvqmaccdod' (SiFive Int8 Matrix Multiplication Instructions (2-by-8 and 8-by-2))
 // CHECK-NEXT:     xsfvqmaccqoq         1.0       'XSfvqmaccqoq' (SiFive Int8 Matrix Multiplication Instructions (4-by-8 and 8-by-4))

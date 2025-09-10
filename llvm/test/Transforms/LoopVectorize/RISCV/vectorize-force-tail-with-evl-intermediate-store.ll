@@ -25,7 +25,11 @@ define void @reduction_intermediate_store(ptr %a, i64 %n, i32 %start, ptr %addr)
 ; IF-EVL-OUTLOOP-LABEL: define void @reduction_intermediate_store(
 ; IF-EVL-OUTLOOP-SAME: ptr [[A:%.*]], i64 [[N:%.*]], i32 [[START:%.*]], ptr [[ADDR:%.*]]) #[[ATTR0:[0-9]+]] {
 ; IF-EVL-OUTLOOP-NEXT:  entry:
+<<<<<<< HEAD
 ; IF-EVL-OUTLOOP-NEXT:    br label [[VECTOR_MEMCHECK:%.*]]
+=======
+; IF-EVL-OUTLOOP-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_MEMCHECK:%.*]]
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 ; IF-EVL-OUTLOOP:       vector.memcheck:
 ; IF-EVL-OUTLOOP-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[ADDR]], i64 4
 ; IF-EVL-OUTLOOP-NEXT:    [[TMP4:%.*]] = shl i64 [[N]], 2
@@ -77,7 +81,11 @@ define void @reduction_intermediate_store(ptr %a, i64 %n, i32 %start, ptr %addr)
 ; IF-EVL-INLOOP-LABEL: define void @reduction_intermediate_store(
 ; IF-EVL-INLOOP-SAME: ptr [[A:%.*]], i64 [[N:%.*]], i32 [[START:%.*]], ptr [[ADDR:%.*]]) #[[ATTR0:[0-9]+]] {
 ; IF-EVL-INLOOP-NEXT:  entry:
+<<<<<<< HEAD
 ; IF-EVL-INLOOP-NEXT:    br label [[VECTOR_MEMCHECK:%.*]]
+=======
+; IF-EVL-INLOOP-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_MEMCHECK:%.*]]
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 ; IF-EVL-INLOOP:       vector.memcheck:
 ; IF-EVL-INLOOP-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[ADDR]], i64 4
 ; IF-EVL-INLOOP-NEXT:    [[TMP0:%.*]] = shl i64 [[N]], 2

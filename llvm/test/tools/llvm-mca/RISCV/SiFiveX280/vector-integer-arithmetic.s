@@ -1284,7 +1284,11 @@ vmv.v.v v4, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m4, tu, mu
 # CHECK-NEXT:  1      512   512.00                      vremu.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m8, tu, mu
+<<<<<<< HEAD
 # CHECK-NEXT:  1      1024  1024.00                     vrem.vv	v4, v8, v12
+=======
+# CHECK-NEXT:  1      1920  1920.00                     vrem.vv	v4, v8, v12
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf4, tu, mu
 # CHECK-NEXT:  1      32    32.00                       vrem.vx	v4, v8, a0
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf2, tu, mu

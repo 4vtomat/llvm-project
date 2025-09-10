@@ -988,10 +988,14 @@ private:
   void SplitVecRes_VECTOR_INTERLEAVE(SDNode *N);
   void SplitVecRes_VAARG(SDNode *N, SDValue &Lo, SDValue &Hi);
   void SplitVecRes_FP_TO_XINT_SAT(SDNode *N, SDValue &Lo, SDValue &Hi);
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   void SplitVecRes_VP_SPLICE(SDNode *N, SDValue &Lo, SDValue &Hi);
   void SplitVecRes_VP_SET_BEFORE_FIRST(SDNode *N, SDValue &Lo, SDValue &Hi);
 #endif
+=======
+  void SplitVecRes_VP_SPLICE(SDNode *N, SDValue &Lo, SDValue &Hi);
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
   void SplitVecRes_VP_REVERSE(SDNode *N, SDValue &Lo, SDValue &Hi);
   void SplitVecRes_PARTIAL_REDUCE_MLA(SDNode *N, SDValue &Lo, SDValue &Hi);
   void SplitVecRes_GET_ACTIVE_LANE_MASK(SDNode *N, SDValue &Lo, SDValue &Hi);

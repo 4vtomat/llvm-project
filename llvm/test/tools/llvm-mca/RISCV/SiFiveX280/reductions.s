@@ -383,7 +383,7 @@ vfredmin.vs  v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m4, tu, mu
 # CHECK-NEXT:  1      768   768.00                      vfwredosum.vs	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m8, tu, mu
-# CHECK-NEXT:  1      1536   1536.00                      vfwredosum.vs	v4, v8, v12
+# CHECK-NEXT:  1      1536  1536.00                     vfwredosum.vs	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, mf2, tu, mu
 # CHECK-NEXT:  1      48    48.00                       vfwredosum.vs	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu

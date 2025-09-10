@@ -66,16 +66,14 @@ struct ParserOptionsSet {
 };
 
 class RISCVAsmParser : public MCTargetAsmParser {
-  // This tracks the parsing of the 4 operands that make up the vtype portion
-  // of vset(i)vli instructions which are separated by commas. The state names
-  // represent the next expected operand with Done meaning no other operands are
-  // expected.
-  enum VTypeState {
-    VTypeState_SEW,
-    VTypeState_LMUL,
-    VTypeState_TailPolicy,
-    VTypeState_MaskPolicy,
-    VTypeState_Done,
+  // This tracks the parsing of the 4 optional operands that make up the vtype
+  // portion of vset(i)vli instructions which are separated by commas.
+  enum class VTypeState {
+    SeenNothingYet,
+    SeenSew,
+    SeenLmul,
+    SeenTailPolicy,
+    SeenMaskPolicy,
   };
 
 #if SIFIVE_CUSTOMIZATION
@@ -898,10 +896,6 @@ public:
     return SignExtend64<32>(Imm);
   }
 
-  bool isSImm11Lsb0() const {
-    return isSImmPred([](int64_t Imm) { return isShiftedInt<10, 1>(Imm); });
-  }
-
   bool isSImm12() const {
     if (!isImm())
       return false;
@@ -1075,7 +1069,7 @@ public:
     return Fence.Val;
   }
 
-  void print(raw_ostream &OS) const override {
+  void print(raw_ostream &OS, const MCAsmInfo &MAI) const override {
     auto RegName = [](MCRegister Reg) {
       if (Reg)
         return RISCVInstPrinter::getRegisterName(Reg);
@@ -1085,8 +1079,9 @@ public:
 
     switch (Kind) {
     case KindTy::Immediate:
-      OS << "<imm: " << *Imm.Val << " " << (Imm.IsRV64 ? "rv64" : "rv32")
-         << ">";
+      OS << "<imm: ";
+      MAI.printExpr(OS, *Imm.Val);
+      OS << ' ' << (Imm.IsRV64 ? "rv64" : "rv32") << '>';
       break;
     case KindTy::FPImmediate:
       OS << "<fpimm: " << FPImm.Val << ">";
@@ -1605,7 +1600,7 @@ bool RISCVAsmParser::matchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
   case Match_InvalidSImm11:
     return generateImmOutOfRangeError(Operands, ErrorInfo, -(1 << 10),
                                       (1 << 10) - 1);
-  case Match_InvalidSImm11Lsb0:
+  case Match_InvalidBareSImm11Lsb0:
     return generateImmOutOfRangeError(
         Operands, ErrorInfo, -(1 << 10), (1 << 10) - 2,
         "immediate must be a multiple of 2 bytes in the range");
@@ -2319,6 +2314,7 @@ bool RISCVAsmParser::parseVTypeToken(const AsmToken &Tok, VTypeState &State,
     return true;
 
   StringRef Identifier = Tok.getIdentifier();
+<<<<<<< HEAD
 
   switch (State) {
   case VTypeState_SEW:
@@ -2333,20 +2329,32 @@ bool RISCVAsmParser::parseVTypeToken(const AsmToken &Tok, VTypeState &State,
       AltFmt = true;
     } else
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  if (State < VTypeState::SeenSew && Identifier.consume_front("e")) {
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
     if (Identifier.getAsInteger(10, Sew))
-      break;
+      return true;
     if (!RISCVVType::isValidSEW(Sew))
-      break;
-    State = VTypeState_LMUL;
+      return true;
+
+    State = VTypeState::SeenSew;
     return false;
-  case VTypeState_LMUL: {
-    if (!Identifier.consume_front("m"))
-      break;
+  }
+
+  if (State < VTypeState::SeenLmul && Identifier.consume_front("m")) {
+    // Might arrive here if lmul and tail policy unspecified, if so we're
+    // parsing a MaskPolicy not an LMUL.
+    if (Identifier == "a" || Identifier == "u") {
+      MaskAgnostic = (Identifier == "a");
+      State = VTypeState::SeenMaskPolicy;
+      return false;
+    }
+
     Fractional = Identifier.consume_front("f");
     if (Identifier.getAsInteger(10, Lmul))
-      break;
+      return true;
     if (!RISCVVType::isValidLMUL(Lmul, Fractional))
-      break;
+      return true;
 
     if (Fractional) {
       unsigned ELEN = STI->hasFeature(RISCV::FeatureStdExtZve64x) ? 64 : 32;
@@ -2357,30 +2365,32 @@ bool RISCVAsmParser::parseVTypeToken(const AsmToken &Tok, VTypeState &State,
                     Twine(MinLMUL) + " is reserved");
     }
 
-    State = VTypeState_TailPolicy;
+    State = VTypeState::SeenLmul;
     return false;
   }
-  case VTypeState_TailPolicy:
+
+  if (State < VTypeState::SeenTailPolicy && Identifier.starts_with("t")) {
     if (Identifier == "ta")
       TailAgnostic = true;
     else if (Identifier == "tu")
       TailAgnostic = false;
     else
-      break;
-    State = VTypeState_MaskPolicy;
+      return true;
+
+    State = VTypeState::SeenTailPolicy;
     return false;
-  case VTypeState_MaskPolicy:
+  }
+
+  if (State < VTypeState::SeenMaskPolicy && Identifier.starts_with("m")) {
     if (Identifier == "ma")
       MaskAgnostic = true;
     else if (Identifier == "mu")
       MaskAgnostic = false;
     else
-      break;
-    State = VTypeState_Done;
+      return true;
+
+    State = VTypeState::SeenMaskPolicy;
     return false;
-  case VTypeState_Done:
-    // Extra token?
-    break;
   }
 
   return true;
@@ -2389,8 +2399,9 @@ bool RISCVAsmParser::parseVTypeToken(const AsmToken &Tok, VTypeState &State,
 ParseStatus RISCVAsmParser::parseVTypeI(OperandVector &Operands) {
   SMLoc S = getLoc();
 
-  unsigned Sew = 0;
-  unsigned Lmul = 0;
+  // Default values
+  unsigned Sew = 8;
+  unsigned Lmul = 1;
   bool Fractional = false;
   bool TailAgnostic = false;
   bool MaskAgnostic = false;
@@ -2398,6 +2409,7 @@ ParseStatus RISCVAsmParser::parseVTypeI(OperandVector &Operands) {
   bool AltFmt = false;
 #endif // SIFIVE_CUSTOMIZATION
 
+<<<<<<< HEAD
   VTypeState State = VTypeState_SEW;
   SMLoc SEWLoc = S;
 
@@ -2441,9 +2453,40 @@ ParseStatus RISCVAsmParser::parseVTypeI(OperandVector &Operands) {
 #endif // SIFIVE_CUSTOMIZATION
     Operands.push_back(RISCVOperand::createVType(VTypeI, S));
     return ParseStatus::Success;
+=======
+  VTypeState State = VTypeState::SeenNothingYet;
+  do {
+    if (parseVTypeToken(getTok(), State, Sew, Lmul, Fractional, TailAgnostic,
+                        MaskAgnostic)) {
+      // The first time, errors return NoMatch rather than Failure
+      if (State == VTypeState::SeenNothingYet)
+        return ParseStatus::NoMatch;
+      break;
+    }
+
+    getLexer().Lex();
+  } while (parseOptionalToken(AsmToken::Comma));
+
+  if (!getLexer().is(AsmToken::EndOfStatement) ||
+      State == VTypeState::SeenNothingYet)
+    return generateVTypeError(S);
+
+  RISCVVType::VLMUL VLMUL = RISCVVType::encodeLMUL(Lmul, Fractional);
+  if (Fractional) {
+    unsigned ELEN = STI->hasFeature(RISCV::FeatureStdExtZve64x) ? 64 : 32;
+    unsigned MaxSEW = ELEN / Lmul;
+    // If MaxSEW < 8, we should have printed warning about reserved LMUL.
+    if (MaxSEW >= 8 && Sew > MaxSEW)
+      Warning(S, "use of vtype encodings with SEW > " + Twine(MaxSEW) +
+                     " and LMUL == mf" + Twine(Lmul) +
+                     " may not be compatible with all RVV implementations");
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
   }
 
-  return generateVTypeError(S);
+  unsigned VTypeI =
+      RISCVVType::encodeVTYPE(VLMUL, Sew, TailAgnostic, MaskAgnostic);
+  Operands.push_back(RISCVOperand::createVType(VTypeI, S));
+  return ParseStatus::Success;
 }
 
 bool RISCVAsmParser::generateVTypeError(SMLoc ErrorLoc) {
@@ -3409,9 +3452,6 @@ bool isValidInsnFormat(StringRef Format, const MCSubtargetInfo &STI) {
 bool RISCVAsmParser::parseDirectiveInsn(SMLoc L) {
   MCAsmParser &Parser = getParser();
 
-  bool AllowC = getSTI().hasFeature(RISCV::FeatureStdExtC) ||
-                getSTI().hasFeature(RISCV::FeatureStdExtZca);
-
   // Expect instruction format as identifier.
   StringRef Format;
   SMLoc ErrorLoc = Parser.getTok().getLoc();
@@ -3455,7 +3495,8 @@ bool RISCVAsmParser::parseDirectiveInsn(SMLoc L) {
         return Error(ErrorLoc, "encoding value does not fit into instruction");
     }
 
-    if (!AllowC && (EncodingDerivedLength == 2))
+    if (!getSTI().hasFeature(RISCV::FeatureStdExtZca) &&
+        (EncodingDerivedLength == 2))
       return Error(ErrorLoc, "compressed instructions are not allowed");
 
     if (getParser().parseEOL("invalid operand for instruction")) {

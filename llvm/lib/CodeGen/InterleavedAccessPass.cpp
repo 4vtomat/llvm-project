@@ -688,6 +688,7 @@ static unsigned getIntrinsicFactor(const IntrinsicInst *II) {
   }
 }
 
+<<<<<<< HEAD
 // For an (de)interleave tree like this:
 //
 //   A   C B   D
@@ -884,15 +885,14 @@ getVectorDeinterleaveFactor(IntrinsicInst *II,
   return true;
 }
 
+=======
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 static Value *getMask(Value *WideMask, unsigned Factor,
                       ElementCount LeafValueEC) {
   if (auto *IMI = dyn_cast<IntrinsicInst>(WideMask)) {
-    SmallVector<Value *, 8> Operands;
-    SmallVector<Instruction *, 8> DeadInsts;
-    if (getVectorInterleaveFactor(IMI, Operands, DeadInsts)) {
-      assert(!Operands.empty());
-      if (Operands.size() == Factor && llvm::all_equal(Operands))
-        return Operands[0];
+    if (isInterleaveIntrinsic(IMI->getIntrinsicID()) &&
+        getIntrinsicFactor(IMI) == Factor && llvm::all_equal(IMI->args())) {
+      return IMI->getArgOperand(0);
     }
   }
 
@@ -932,13 +932,19 @@ bool InterleavedAccessImpl::lowerDeinterleaveIntrinsic(
 #endif
     return false;
 
-  SmallVector<Value *, 8> DeinterleaveValues;
-  SmallVector<Instruction *, 8> DeinterleaveDeadInsts;
-  if (!getVectorDeinterleaveFactor(DI, DeinterleaveValues,
-                                   DeinterleaveDeadInsts))
+  const unsigned Factor = getIntrinsicFactor(DI);
+  if (!DI->hasNUses(Factor))
     return false;
-
-  const unsigned Factor = DeinterleaveValues.size();
+  SmallVector<Value *, 8> DeinterleaveValues(Factor);
+  for (auto *User : DI->users()) {
+    auto *Extract = dyn_cast<ExtractValueInst>(User);
+    if (!Extract || Extract->getNumIndices() != 1)
+      return false;
+    unsigned Idx = Extract->getIndices()[0];
+    if (DeinterleaveValues[Idx])
+      return false;
+    DeinterleaveValues[Idx] = Extract;
+  }
 
 #if SIFIVE_CUSTOMIZATION
   // Match
@@ -1018,7 +1024,9 @@ bool InterleavedAccessImpl::lowerDeinterleaveIntrinsic(
       return false;
   }
 
-  DeadInsts.insert_range(DeinterleaveDeadInsts);
+  for (Value *V : DeinterleaveValues)
+    DeadInsts.insert(cast<Instruction>(V));
+  DeadInsts.insert(DI);
   // We now have a target-specific load, so delete the old one.
   DeadInsts.insert(cast<Instruction>(LoadedVal));
   return true;
@@ -1032,12 +1040,8 @@ bool InterleavedAccessImpl::lowerInterleaveIntrinsic(
   if (!isa<StoreInst, VPIntrinsic>(StoredBy))
     return false;
 
-  SmallVector<Value *, 8> InterleaveValues;
-  SmallVector<Instruction *, 8> InterleaveDeadInsts;
-  if (!getVectorInterleaveFactor(II, InterleaveValues, InterleaveDeadInsts))
-    return false;
-
-  const unsigned Factor = InterleaveValues.size();
+  SmallVector<Value *, 8> InterleaveValues(II->args());
+  const unsigned Factor = getIntrinsicFactor(II);
 
   if (auto *VPStore = dyn_cast<VPIntrinsic>(StoredBy)) {
     if (VPStore->getIntrinsicID() != Intrinsic::vp_store)
@@ -1071,7 +1075,7 @@ bool InterleavedAccessImpl::lowerInterleaveIntrinsic(
 
   // We now have a target-specific store, so delete the old one.
   DeadInsts.insert(cast<Instruction>(StoredBy));
-  DeadInsts.insert_range(InterleaveDeadInsts);
+  DeadInsts.insert(II);
   return true;
 }
 

@@ -57,6 +57,7 @@ enum class RecurKind {
   FMulAdd,  ///< Sum of float products with llvm.fmuladd(a * b + sum).
   AnyOf,    ///< AnyOf reduction with select(cmp(),x,y) where one of (x,y) is
             ///< loop invariant, and both x and y are integer type.
+<<<<<<< HEAD
   FindLastIV, ///< FindLast reduction with select(cmp(),x,y) where one of
               ///< (x,y) is increasing loop induction, and both x and y are
               ///< integer type.
@@ -66,6 +67,17 @@ enum class RecurKind {
   // TODO: Support floating-point Min/Max with index by merging IFindLastIV and
   // FFindLastIV.
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  FindFirstIVSMin, /// FindFirst reduction with select(icmp(),x,y) where one of
+                   ///< (x,y) is a decreasing loop induction, and both x and y
+                   ///< are integer type, producing a SMin reduction.
+  FindLastIVSMax, ///< FindLast reduction with select(cmp(),x,y) where one of
+                  ///< (x,y) is increasing loop induction, and both x and y
+                  ///< are integer type, producing a SMax reduction.
+  FindLastIVUMax, ///< FindLast reduction with select(cmp(),x,y) where one of
+                  ///< (x,y) is increasing loop induction, and both x and y
+                  ///< are integer type, producing a UMax reduction.
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
   // clang-format on
   // TODO: Any_of and FindLast reduction need not be restricted to integer type
   // only.
@@ -203,13 +215,13 @@ public:
   /// Returns a struct describing whether the instruction is either a
   ///   Select(ICmp(A, B), X, Y), or
   ///   Select(FCmp(A, B), X, Y)
-  /// where one of (X, Y) is an increasing loop induction variable, and the
-  /// other is a PHI value.
+  /// where one of (X, Y) is an increasing (FindLast) or decreasing (FindFirst)
+  /// loop induction variable, and the other is a PHI value.
   // TODO: Support non-monotonic variable. FindLast does not need be restricted
   // to increasing loop induction variables.
-  LLVM_ABI static InstDesc isFindLastIVPattern(Loop *TheLoop, PHINode *OrigPhi,
-                                               Instruction *I,
-                                               ScalarEvolution &SE);
+  LLVM_ABI static InstDesc isFindIVPattern(RecurKind Kind, Loop *TheLoop,
+                                           PHINode *OrigPhi, Instruction *I,
+                                           ScalarEvolution &SE);
 
   /// Returns a struct describing if the instruction is a
   /// Select(FCmp(X, Y), (Z = X op PHINode), PHINode) instruction pattern.
@@ -320,9 +332,31 @@ public:
   }
 
   /// Returns true if the recurrence kind is of the form
+  ///   select(cmp(),x,y) where one of (x,y) is decreasing loop induction.
+  static bool isFindFirstIVRecurrenceKind(RecurKind Kind) {
+    return Kind == RecurKind::FindFirstIVSMin;
+  }
+
+  /// Returns true if the recurrence kind is of the form
   ///   select(cmp(),x,y) where one of (x,y) is increasing loop induction.
   static bool isFindLastIVRecurrenceKind(RecurKind Kind) {
-    return Kind == RecurKind::FindLastIV;
+    return Kind == RecurKind::FindLastIVSMax ||
+           Kind == RecurKind::FindLastIVUMax;
+  }
+
+  /// Returns true if recurrece kind is a signed redux kind.
+  static bool isSignedRecurrenceKind(RecurKind Kind) {
+    return Kind == RecurKind::SMax || Kind == RecurKind::SMin ||
+           Kind == RecurKind::FindFirstIVSMin ||
+           Kind == RecurKind::FindLastIVSMax;
+  }
+
+  /// Returns true if the recurrence kind is of the form
+  ///   select(cmp(),x,y) where one of (x,y) is an increasing or decreasing loop
+  ///   induction.
+  static bool isFindIVRecurrenceKind(RecurKind Kind) {
+    return isFindFirstIVRecurrenceKind(Kind) ||
+           isFindLastIVRecurrenceKind(Kind);
   }
 
 #if SIFIVE_CUSTOMIZATION
@@ -345,9 +379,10 @@ public:
   /// actual type of the Phi if the recurrence has been type-promoted.
   Type *getRecurrenceType() const { return RecurrenceType; }
 
-  /// Returns the sentinel value for FindLastIV recurrences to replace the start
-  /// value.
+  /// Returns the sentinel value for FindFirstIV & FindLastIV recurrences to
+  /// replace the start value.
   Value *getSentinelValue() const {
+<<<<<<< HEAD
     assert(isFindLastIVRecurrenceKind(Kind) && "Unexpected recurrence kind");
 #if SIFIVE_CUSTOMIZATION
     return SentinelValue;
@@ -356,6 +391,18 @@ public:
     return ConstantInt::get(Ty,
                             APInt::getSignedMinValue(Ty->getIntegerBitWidth()));
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    Type *Ty = StartValue->getType();
+    unsigned BW = Ty->getIntegerBitWidth();
+    if (isFindLastIVRecurrenceKind(Kind)) {
+      return ConstantInt::get(Ty, isSignedRecurrenceKind(Kind)
+                                      ? APInt::getSignedMinValue(BW)
+                                      : APInt::getMinValue(BW));
+    }
+    return ConstantInt::get(Ty, isSignedRecurrenceKind(Kind)
+                                    ? APInt::getSignedMaxValue(BW)
+                                    : APInt::getMaxValue(BW));
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
   }
 
   /// Returns a reference to the instructions used for type-promoting the

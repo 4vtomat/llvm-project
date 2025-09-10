@@ -1,6 +1,7 @@
 # RUN: not llvm-mc -triple=riscv64 --mattr=+v --mattr=+f %s 2>&1 \
 # RUN:        | FileCheck %s --check-prefix=CHECK-ERROR
 
+<<<<<<< HEAD
 # begin SIFIVE_CUSTOMIZATION
 vsetivli a2, 32, e8,m1
 # CHECK-ERROR: immediate must be an integer in the range [0, 31]
@@ -9,6 +10,8 @@ vsetivli a2, zero, e8,m1
 # CHECK-ERROR: immediate must be an integer in the range [0, 31]
 # end SIFIVE_CUSTOMIZATION
 
+=======
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 vsetivli a2, 5, (1 << 10)
 # CHECK-ERROR: operand must be e[8|8alt|16|16alt|32|64],m[1|2|4|8|f2|f4|f8],[ta|tu],[ma|mu]
 
@@ -24,10 +27,13 @@ vsetvli a2, a0, (1 << 11)
 vsetvli a2, a0, 0x800
 # CHECK-ERROR: operand must be e[8|8alt|16|16alt|32|64],m[1|2|4|8|f2|f4|f8],[ta|tu],[ma|mu]
 
+<<<<<<< HEAD
 
 vsetvli a2, a0, e31
 # CHECK-ERROR: operand must be e[8|8alt|16|16alt|32|64],m[1|2|4|8|f2|f4|f8],[ta|tu],[ma|mu]
 
+=======
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 vsetvli a2, a0, e32,m3
 # CHECK-ERROR: operand must be e[8|8alt|16|16alt|32|64],m[1|2|4|8|f2|f4|f8],[ta|tu],[ma|mu]
 
@@ -61,12 +67,15 @@ vsetvli a2, a0, e8,m1,tx
 vsetvli a2, a0, e8,m1,ta,mx
 # CHECK-ERROR: operand must be e[8|8alt|16|16alt|32|64],m[1|2|4|8|f2|f4|f8],[ta|tu],[ma|mu]
 
+<<<<<<< HEAD
 vsetvli a2, a0, e8,m1,ma
 # CHECK-ERROR: operand must be e[8|8alt|16|16alt|32|64],m[1|2|4|8|f2|f4|f8],[ta|tu],[ma|mu]
 
 vsetvli a2, a0, e8,m1,mu
 # CHECK-ERROR: operand must be e[8|8alt|16|16alt|32|64],m[1|2|4|8|f2|f4|f8],[ta|tu],[ma|mu]
 
+=======
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 vsetvli a2, a0, e8x,m1,tu,mu
 # CHECK-ERROR: operand must be e[8|8alt|16|16alt|32|64],m[1|2|4|8|f2|f4|f8],[ta|tu],[ma|mu]
 
@@ -82,6 +91,7 @@ vsetvli a2, a0, e8,m1,tu,mut
 vsetvli a2, a0, e8,m1,tut,mu
 # CHECK-ERROR: operand must be e[8|8alt|16|16alt|32|64],m[1|2|4|8|f2|f4|f8],[ta|tu],[ma|mu]
 
+<<<<<<< HEAD
 vsetvli a2, a0, e8
 # CHECK-ERROR: operand must be e[8|8alt|16|16alt|32|64],m[1|2|4|8|f2|f4|f8],[ta|tu],[ma|mu]
 
@@ -91,8 +101,16 @@ vsetvli a2, a0, e8,m1
 vsetvli a2, a0, e8,m1,ta
 # CHECK-ERROR: operand must be e[8|8alt|16|16alt|32|64],m[1|2|4|8|f2|f4|f8],[ta|tu],[ma|mu]
 
+=======
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 vsetvli a2, a0, e8,1,ta,ma
 # CHECK-ERROR: operand must be e[8|8alt|16|16alt|32|64],m[1|2|4|8|f2|f4|f8],[ta|tu],[ma|mu]
+
+vsetvli a2, a0, ma,tu,m1,e8
+# CHECK-ERROR: operand must be e[8|16|32|64],m[1|2|4|8|f2|f4|f8],[ta|tu],[ma|mu]
+
+vsetvli a2, a0,
+# CHECK-ERROR: unknown operand
 
 vadd.vv v1, v3, v2, v4.t
 # CHECK-ERROR: operand must be v0.t

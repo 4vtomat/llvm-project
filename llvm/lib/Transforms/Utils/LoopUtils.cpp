@@ -1280,9 +1280,13 @@ Value *llvm::createAnyOfReduction(IRBuilderBase &Builder, Value *Src,
 #endif // SIFIVE_CUSTOMIZATION
 
 Value *llvm::createFindLastIVReduction(IRBuilderBase &Builder, Value *Src,
-                                       Value *Start, Value *Sentinel) {
+                                       RecurKind RdxKind, Value *Start,
+                                       Value *Sentinel) {
+  bool IsSigned = RecurrenceDescriptor::isSignedRecurrenceKind(RdxKind);
+  bool IsMaxRdx = RecurrenceDescriptor::isFindLastIVRecurrenceKind(RdxKind);
   Value *MaxRdx = Src->getType()->isVectorTy()
-                      ? Builder.CreateIntMaxReduce(Src, true)
+                      ? (IsMaxRdx ? Builder.CreateIntMaxReduce(Src, IsSigned)
+                                  : Builder.CreateIntMinReduce(Src, IsSigned))
                       : Src;
   // Correct the final reduction result back to the start value if the maximum
   // reduction is sentinel value.
@@ -1393,6 +1397,7 @@ Value *llvm::createSimpleReduction(IRBuilderBase &Builder, Value *Src,
 Value *llvm::createSimpleReduction(IRBuilderBase &Builder, Value *Src,
                                    RecurKind Kind, Value *Mask, Value *EVL) {
   assert(!RecurrenceDescriptor::isAnyOfRecurrenceKind(Kind) &&
+<<<<<<< HEAD
          !RecurrenceDescriptor::isFindLastIVRecurrenceKind(Kind) &&
          "AnyOf or FindLastIV reductions are not supported.");
 #if SIFIVE_CUSTOMIZATION
@@ -1433,6 +1438,10 @@ Value *llvm::createSimpleReduction(IRBuilderBase &Builder, Value *Src,
   }
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+         !RecurrenceDescriptor::isFindIVRecurrenceKind(Kind) &&
+         "AnyOf and FindIV reductions are not supported.");
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
   Intrinsic::ID Id = getReductionIntrinsicID(Kind);
   auto VPID = VPIntrinsic::getForIntrinsic(Id);
   assert(VPReductionIntrinsic::isVPReduction(VPID) &&

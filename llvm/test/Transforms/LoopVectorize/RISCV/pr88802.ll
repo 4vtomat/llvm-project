@@ -23,6 +23,7 @@ define void @test(ptr %p, i64 %a, i8 %b) {
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = add <vscale x 8 x i32> zeroinitializer, [[TMP8]]
 ; CHECK-NEXT:    br label [[FOR_COND:%.*]]
 ; CHECK:       vector.body:
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_COND]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[FOR_COND]] ]
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 8 x i32> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VP_OP7:%.*]], [[FOR_COND]] ]
@@ -40,6 +41,21 @@ define void @test(ptr %p, i64 %a, i8 %b) {
 ; CHECK-NEXT:    [[VP_OP7]] = call <vscale x 8 x i32> @llvm.vp.add.nxv8i32(<vscale x 8 x i32> [[VEC_IND]], <vscale x 8 x i32> [[BROADCAST_SPLAT6]], <vscale x 8 x i1> splat (i1 true), i32 [[TMP10]])
 ; CHECK-NEXT:    [[TMP11:%.*]] = icmp eq i32 [[INDEX_EVL_NEXT]], 9
 ; CHECK-NEXT:    br i1 [[TMP11]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP0:![0-9]+]]
+=======
+; CHECK-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[FOR_COND]] ]
+; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <16 x i32> [ <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7, i32 8, i32 9, i32 10, i32 11, i32 12, i32 13, i32 14, i32 15>, [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[FOR_COND]] ]
+; CHECK-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = call <16 x i1> @llvm.get.active.lane.mask.v16i1.i32(i32 [[INDEX]], i32 9)
+; CHECK-NEXT:    [[TMP4:%.*]] = icmp sge <16 x i32> [[VEC_IND]], splat (i32 2)
+; CHECK-NEXT:    [[TMP5:%.*]] = select <16 x i1> [[ACTIVE_LANE_MASK]], <16 x i1> [[TMP4]], <16 x i1> zeroinitializer
+; CHECK-NEXT:    [[PREDPHI:%.*]] = select <16 x i1> [[TMP5]], <16 x i32> [[TMP2]], <16 x i32> [[TMP3]]
+; CHECK-NEXT:    [[TMP6:%.*]] = shl <16 x i32> [[PREDPHI]], splat (i32 8)
+; CHECK-NEXT:    [[TMP8:%.*]] = trunc <16 x i32> [[TMP6]] to <16 x i8>
+; CHECK-NEXT:    [[TMP40:%.*]] = extractelement <16 x i8> [[TMP8]], i32 15
+; CHECK-NEXT:    store i8 [[TMP40]], ptr [[P]], align 1
+; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i32 [[INDEX]], 16
+; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <16 x i32> [[VEC_IND]], splat (i32 16)
+; CHECK-NEXT:    br i1 true, label [[MIDDLE_BLOCK:%.*]], label [[FOR_COND]], !llvm.loop [[LOOP0:![0-9]+]]
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[EXIT1:%.*]]
 ; CHECK:       scalar.ph:

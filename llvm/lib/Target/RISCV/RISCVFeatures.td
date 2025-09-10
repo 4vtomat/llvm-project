@@ -378,18 +378,18 @@ def HasStdExtZhinx : Predicate<"Subtarget->hasStdExtZhinx()">,
 def NoStdExtZhinx : Predicate<"!Subtarget->hasStdExtZhinx()">;
 
 // Compressed Extensions
-def FeatureNoRVCHints
-    : SubtargetFeature<"no-rvc-hints", "EnableRVCHintInstrs", "false",
-                       "Disable RVC Hint Instructions.">;
-def HasRVCHints : Predicate<"Subtarget->enableRVCHintInstrs()">,
-                  AssemblerPredicate<(all_of(not FeatureNoRVCHints)),
-                                     "RVC Hint Instructions">;
-
 def FeatureStdExtZca
     : RISCVExtension<1, 0,
                      "part of the C extension, excluding compressed "
                      "floating point loads/stores">,
       RISCVExtensionBitmask<1, 2>;
+// FIXME: Update this message - Zca always implies C.
+def HasStdExtZca
+    : Predicate<"Subtarget->hasStdExtZca()">,
+      AssemblerPredicate<(any_of FeatureStdExtZca),
+                         "'C' (Compressed Instructions) or "
+                         "'Zca' (part of the C extension, excluding "
+                         "compressed floating point loads/stores)">;
 
 def FeatureStdExtC
     : RISCVExtension<2, 0, "Compressed Instructions", [FeatureStdExtZca]>,
@@ -398,6 +398,7 @@ def HasStdExtC : Predicate<"Subtarget->hasStdExtC()">,
                  AssemblerPredicate<(all_of FeatureStdExtC),
                                     "'C' (Compressed Instructions)">;
 
+<<<<<<< HEAD
 def HasStdExtCOrZca
     : Predicate<"Subtarget->hasStdExtCOrZca()">,
       AssemblerPredicate<(any_of FeatureStdExtC, FeatureStdExtZca),
@@ -405,6 +406,8 @@ def HasStdExtCOrZca
                          "'Zca' (part of the C extension, excluding "
                          "compressed floating point loads/stores)">;
 
+=======
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 def FeatureStdExtZcb
     : RISCVExtension<1, 0, "Compressed basic bit manipulation instructions",
                      [FeatureStdExtZca]>,
@@ -460,10 +463,11 @@ def HasStdExtZcmt : Predicate<"Subtarget->hasStdExtZcmt()">,
 def FeatureStdExtZce
     : RISCVExtension<1, 0,
                      "Compressed extensions for microcontrollers",
-                     [FeatureStdExtZcb, FeatureStdExtZcmp, FeatureStdExtZcmt]>;
+                     [FeatureStdExtZca, FeatureStdExtZcb, FeatureStdExtZcmp,
+                      FeatureStdExtZcmt]>;
 
 def HasStdExtCOrZcfOrZce
-    : Predicate<"Subtarget->hasStdExtC() || Subtarget->hasStdExtZcf() "
+    : Predicate<"Subtarget->hasStdExtC() || Subtarget->hasStdExtZcf() ||"
                 "Subtarget->hasStdExtZce()">,
       AssemblerPredicate<(any_of FeatureStdExtC, FeatureStdExtZcf,
                                  FeatureStdExtZce),

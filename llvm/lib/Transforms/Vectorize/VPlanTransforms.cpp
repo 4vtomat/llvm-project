@@ -1217,15 +1217,8 @@ static VPValue *optimizeEarlyExitInductionUser(VPlan &Plan,
   VPValue *FirstActiveLane =
       B.createNaryOp(VPInstruction::FirstActiveLane, Mask, DL);
   Type *FirstActiveLaneType = TypeInfo.inferScalarType(FirstActiveLane);
-  if (CanonicalIVType != FirstActiveLaneType) {
-    Instruction::CastOps CastOp =
-        CanonicalIVType->getScalarSizeInBits() <
-                FirstActiveLaneType->getScalarSizeInBits()
-            ? Instruction::Trunc
-            : Instruction::ZExt;
-    FirstActiveLane =
-        B.createScalarCast(CastOp, FirstActiveLane, CanonicalIVType, DL);
-  }
+  FirstActiveLane = B.createScalarZExtOrTrunc(FirstActiveLane, CanonicalIVType,
+                                              FirstActiveLaneType, DL);
   EndValue = B.createNaryOp(Instruction::Add, {EndValue, FirstActiveLane}, DL);
 
   // `getOptimizableIVOf()` always returns the pre-incremented IV, so if it
@@ -1583,6 +1576,24 @@ static void simplifyRecipe(VPRecipeBase &R, VPTypeAnalysis &TypeInfo) {
     return;
   }
 
+  // Look through ExtractLastElement (BuildVector ....).
+  if (match(&R, m_VPInstruction<VPInstruction::ExtractLastElement>(
+                    m_BuildVector()))) {
+    auto *BuildVector = cast<VPInstruction>(R.getOperand(0));
+    Def->replaceAllUsesWith(
+        BuildVector->getOperand(BuildVector->getNumOperands() - 1));
+    return;
+  }
+
+  // Look through ExtractPenultimateElement (BuildVector ....).
+  if (match(&R, m_VPInstruction<VPInstruction::ExtractPenultimateElement>(
+                    m_BuildVector()))) {
+    auto *BuildVector = cast<VPInstruction>(R.getOperand(0));
+    Def->replaceAllUsesWith(
+        BuildVector->getOperand(BuildVector->getNumOperands() - 2));
+    return;
+  }
+
   // Some simplifications can only be applied after unrolling. Perform them
   // below.
   if (!Plan->isUnrolled())
@@ -1604,6 +1615,21 @@ static void simplifyRecipe(VPRecipeBase &R, VPTypeAnalysis &TypeInfo) {
       auto *PhiR = dyn_cast<VPReductionPHIRecipe>(&U);
       return PhiR && PhiR->isInLoop();
     });
+    return;
+  }
+
+  if (match(Def,
+            m_VPInstruction<VPInstruction::ExtractLastElement>(
+                m_VPInstruction<VPInstruction::Broadcast>(m_VPValue(A))))) {
+    Def->replaceAllUsesWith(A);
+    return;
+  }
+
+  VPInstruction *OpVPI;
+  if (match(Def, m_VPInstruction<VPInstruction::ExtractLastElement>(
+                     m_VPInstruction(OpVPI))) &&
+      OpVPI->isVectorToScalar()) {
+    Def->replaceAllUsesWith(OpVPI);
     return;
   }
 }
@@ -1630,9 +1656,9 @@ static void narrowToSingleScalarRecipes(VPlan &Plan) {
   for (VPBasicBlock *VPBB : VPBlockUtils::blocksOnly<VPBasicBlock>(
            vp_depth_first_shallow(Plan.getVectorLoopRegion()->getEntry()))) {
     for (VPRecipeBase &R : make_early_inc_range(reverse(*VPBB))) {
-      auto *RepR = dyn_cast<VPReplicateRecipe>(&R);
-      if (!RepR && !isa<VPWidenRecipe>(&R))
+      if (!isa<VPWidenRecipe, VPWidenSelectRecipe, VPReplicateRecipe>(&R))
         continue;
+      auto *RepR = dyn_cast<VPReplicateRecipe>(&R);
       if (RepR && (RepR->isSingleScalar() || RepR->isPredicated()))
         continue;
 
@@ -2673,6 +2699,11 @@ static void transformRecipestoEVLRecipes(VPlan &Plan, VPValue &EVL) {
   VPRegionBlock *LoopRegion = Plan.getVectorLoopRegion();
   VPBasicBlock *Header = LoopRegion->getEntryBasicBlock();
 
+  assert(all_of(Plan.getVF().users(),
+                IsaPred<VPVectorEndPointerRecipe, VPScalarIVStepsRecipe>) &&
+         "User of VF that we can't transform to EVL.");
+  Plan.getVF().replaceAllUsesWith(&EVL);
+
   // Create a scalar phi to track the previous EVL if fixed-order recurrence is
   // contained.
   VPInstruction *PrevEVL = nullptr;
@@ -2691,17 +2722,15 @@ static void transformRecipestoEVLRecipes(VPlan &Plan, VPValue &EVL) {
 #endif // SIFIVE_CUSTOMIZATION
     // Emit VPScalarCastRecipe in preheader if VF is not a 32 bits integer.
     VPBuilder Builder(LoopRegion->getPreheaderVPBB());
-    if (unsigned VFSize =
-            TypeInfo.inferScalarType(MaxEVL)->getScalarSizeInBits();
-        VFSize != 32) {
-      MaxEVL = Builder.createScalarCast(
-          VFSize > 32 ? Instruction::Trunc : Instruction::ZExt, MaxEVL,
-          Type::getInt32Ty(Ctx), DebugLoc());
-    }
+    MaxEVL = Builder.createScalarZExtOrTrunc(MaxEVL, Type::getInt32Ty(Ctx),
+                                             TypeInfo.inferScalarType(MaxEVL),
+                                             DebugLoc());
+
     Builder.setInsertPoint(Header, Header->getFirstNonPhi());
     PrevEVL = Builder.createScalarPhi({MaxEVL, &EVL}, DebugLoc(), "prev.evl");
   }
 
+<<<<<<< HEAD
   for (VPUser *U : to_vector(Plan.getVF().users())) {
     if (auto *R = dyn_cast<VPVectorEndPointerRecipe>(U))
       R->setOperand(1, &EVL);
@@ -2711,6 +2740,8 @@ static void transformRecipestoEVLRecipes(VPlan &Plan, VPValue &EVL) {
 #endif // SIFIVE_CUSTOMIZATION
   }
 
+=======
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
   SmallVector<VPRecipeBase *> ToErase;
 
 #if SIFIVE_CUSTOMIZATION
@@ -2842,6 +2873,7 @@ bool VPlanTransforms::tryAddExplicitVectorLength(
 #endif // SIFIVE_CUSTOMIZATION
 
   auto *CanonicalIVPHI = Plan.getCanonicalIV();
+  auto *CanIVTy = CanonicalIVPHI->getScalarType();
   VPValue *StartV = CanonicalIVPHI->getStartValue();
 
   // Create the ExplicitVectorLengthPhi recipe in the main loop.
@@ -2863,8 +2895,8 @@ bool VPlanTransforms::tryAddExplicitVectorLength(
 
   if (MaxSafeElements) {
     // Support for MaxSafeDist for correct loop emission.
-    VPValue *AVLSafe = Plan.getOrAddLiveIn(
-        ConstantInt::get(CanonicalIVPHI->getScalarType(), *MaxSafeElements));
+    VPValue *AVLSafe =
+        Plan.getOrAddLiveIn(ConstantInt::get(CanIVTy, *MaxSafeElements));
     VPValue *Cmp = Builder.createICmp(ICmpInst::ICMP_ULT, AVL, AVLSafe);
     AVL = Builder.createSelect(Cmp, AVL, AVLSafe, DebugLoc(), "safe_avl");
   }
@@ -2874,13 +2906,12 @@ bool VPlanTransforms::tryAddExplicitVectorLength(
   auto *CanonicalIVIncrement =
       cast<VPInstruction>(CanonicalIVPHI->getBackedgeValue());
   Builder.setInsertPoint(CanonicalIVIncrement);
-  VPSingleDefRecipe *OpVPEVL = VPEVL;
-  if (unsigned IVSize = CanonicalIVPHI->getScalarType()->getScalarSizeInBits();
-      IVSize != 32) {
-    OpVPEVL = Builder.createScalarCast(
-        IVSize < 32 ? Instruction::Trunc : Instruction::ZExt, OpVPEVL,
-        CanonicalIVPHI->getScalarType(), CanonicalIVIncrement->getDebugLoc());
-  }
+  VPValue *OpVPEVL = VPEVL;
+
+  auto *I32Ty = Type::getInt32Ty(CanIVTy->getContext());
+  OpVPEVL = Builder.createScalarZExtOrTrunc(
+      OpVPEVL, CanIVTy, I32Ty, CanonicalIVIncrement->getDebugLoc());
+
   auto *NextEVLIV = Builder.createOverflowingOp(
       Instruction::Add, {OpVPEVL, EVLPhi},
       {CanonicalIVIncrement->hasNoUnsignedWrap(),
@@ -3468,9 +3499,14 @@ expandVPWidenIntOrFpInduction(VPWidenIntOrFpInductionRecipe *WidenIVR,
                                            TypeInfo.inferScalarType(VF), DL);
 #else
     else
+<<<<<<< HEAD
       VF =
           Builder.createScalarCast(Instruction::CastOps::Trunc, VF, StepTy, DL);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+      VF = Builder.createScalarZExtOrTrunc(VF, StepTy,
+                                           TypeInfo.inferScalarType(VF), DL);
+>>>>>>> a99fee6989a66ca7cb73fc2fcbac0f693d122326
 
     Inc = Builder.createNaryOp(MulOp, {Step, VF}, Flags);
     Inc = Builder.createNaryOp(VPInstruction::Broadcast, Inc);
@@ -3964,28 +4000,22 @@ void VPlanTransforms::materializeBroadcasts(VPlan &Plan) {
 /// that feeds a store interleave group at index \p Idx, \p WideMember0 is the
 /// recipe feeding the same interleave group at index 0. A VPWidenLoadRecipe can
 /// be narrowed to an index-independent load if it feeds all wide ops at all
-/// indices (checked by via the operands of the wide recipe at lane0, \p
-/// WideMember0). A VPInterleaveRecipe can be narrowed to a wide load, if \p V
-/// is defined at \p Idx of a load interleave group.
+/// indices (\p OpV must be the operand at index \p OpIdx for both the recipe at
+/// lane 0, \p WideMember0, and \p WideMember). A VPInterleaveRecipe can be
+/// narrowed to a wide load, if \p V is defined at \p Idx of a load interleave
+/// group.
 static bool canNarrowLoad(VPWidenRecipe *WideMember0, VPWidenRecipe *WideMember,
-                          VPValue *V, unsigned Idx) {
-  auto *DefR = V->getDefiningRecipe();
+                          unsigned OpIdx, VPValue *OpV, unsigned Idx) {
+  auto *DefR = OpV->getDefiningRecipe();
   if (!DefR)
-    return false;
+    return WideMember0->getOperand(OpIdx) == OpV;
   if (auto *W = dyn_cast<VPWidenLoadRecipe>(DefR))
-    return !W->getMask() &&
-           all_of(zip(WideMember0->operands(), WideMember->operands()),
-                  [V](const auto P) {
-                    // V must be as at the same places in both WideMember0 and
-                    // WideMember.
-                    const auto &[WideMember0Op, WideMemberOp] = P;
-                    return (WideMember0Op == V) == (WideMemberOp == V);
-                  });
+    return !W->getMask() && WideMember0->getOperand(OpIdx) == OpV;
 
   if (auto *IR = dyn_cast<VPInterleaveRecipe>(DefR))
     return IR->getInterleaveGroup()->getFactor() ==
                IR->getInterleaveGroup()->getNumMembers() &&
-           IR->getVPValue(Idx) == V;
+           IR->getVPValue(Idx) == OpV;
   return false;
 }
 
@@ -4096,13 +4126,15 @@ void VPlanTransforms::narrowInterleaveGroups(VPlan &Plan, ElementCount VF,
     if (!WideMember0)
       return;
     for (const auto &[I, V] : enumerate(InterleaveR->getStoredValues())) {
-      auto *R = dyn_cast<VPWidenRecipe>(V->getDefiningRecipe());
+      auto *R = dyn_cast_or_null<VPWidenRecipe>(V->getDefiningRecipe());
       if (!R || R->getOpcode() != WideMember0->getOpcode() ||
           R->getNumOperands() > 2)
         return;
-      if (any_of(R->operands(), [WideMember0, Idx = I, R](VPValue *V) {
-            return !canNarrowLoad(WideMember0, R, V, Idx);
-          }))
+      if (any_of(enumerate(R->operands()),
+                 [WideMember0, Idx = I, R](const auto &P) {
+                   const auto &[OpIdx, OpV] = P;
+                   return !canNarrowLoad(WideMember0, R, OpIdx, OpV, Idx);
+                 }))
         return;
     }
     StoreGroups.push_back(InterleaveR);
@@ -4112,7 +4144,10 @@ void VPlanTransforms::narrowInterleaveGroups(VPlan &Plan, ElementCount VF,
     return;
 
   // Convert InterleaveGroup \p R to a single VPWidenLoadRecipe.
-  auto NarrowOp = [](VPRecipeBase *R) -> VPValue * {
+  auto NarrowOp = [](VPValue *V) -> VPValue * {
+    auto *R = V->getDefiningRecipe();
+    if (!R)
+      return V;
     if (auto *LoadGroup = dyn_cast<VPInterleaveRecipe>(R)) {
       // Narrow interleave group to wide load, as transformed VPlan will only
       // process one original iteration.
@@ -4141,11 +4176,10 @@ void VPlanTransforms::narrowInterleaveGroups(VPlan &Plan, ElementCount VF,
     if (auto *WideMember0 = dyn_cast<VPWidenRecipe>(
             StoreGroup->getStoredValues()[0]->getDefiningRecipe())) {
       for (unsigned Idx = 0, E = WideMember0->getNumOperands(); Idx != E; ++Idx)
-        WideMember0->setOperand(
-            Idx, NarrowOp(WideMember0->getOperand(Idx)->getDefiningRecipe()));
+        WideMember0->setOperand(Idx, NarrowOp(WideMember0->getOperand(Idx)));
       Res = WideMember0;
     } else {
-      Res = NarrowOp(StoreGroup->getStoredValues()[0]->getDefiningRecipe());
+      Res = NarrowOp(StoreGroup->getStoredValues()[0]);
     }
 
     auto *S = new VPWidenStoreRecipe(
