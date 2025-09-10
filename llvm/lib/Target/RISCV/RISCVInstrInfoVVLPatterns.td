@@ -2821,7 +2821,9 @@ foreach vti = AllFloatVectors in {
   }
 }
 
-foreach fvti = AllFloatVectors in {
+#ifdef SIFIVE_CUSTOMIZATION
+foreach fvti = !listconcat(AllFloatVectors, AllBFloatVectors) in {
+#endif // SIFIVE_CUSTOMIZATION
   // Floating-point vselects:
   // 11.15. Vector Integer Merge Instructions
   // 13.15. Vector Floating-Point Merge Instruction
@@ -2871,7 +2873,9 @@ foreach fvti = AllFloatVectors in {
   }
 }
 
-foreach fvti = AllFloatVectors in {
+#ifdef SIFIVE_CUSTOMIZATION
+foreach fvti = !listconcat(AllFloatVectors, AllBFloatVectors) in {
+#endif // SIFIVE_CUSTOMIZATION
   defvar ivti = GetIntVTypeInfo<fvti>.Vti;
   let Predicates = GetVTypePredicates<ivti>.Predicates in {
     // 13.16. Vector Floating-Point Move Instruction
@@ -3207,7 +3211,9 @@ foreach vti = NoGroupFloatVectors in {
   }
 }
 
-foreach vti = AllFloatVectors in {
+#ifdef SIFIVE_CUSTOMIZATION
+foreach vti = !listconcat(AllFloatVectors, AllBFloatVectors) in {
+#endif // SIFIVE_CUSTOMIZATION
   defvar ivti = GetIntVTypeInfo<vti>.Vti;
   let Predicates = GetVTypePredicates<ivti>.Predicates in {
     def : Pat<(vti.Vector
