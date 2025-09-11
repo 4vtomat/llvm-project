@@ -579,11 +579,7 @@ multiclass RVVPseudoVWCVTBuiltin<string IR, string MName, string type_range,
           if (PolicyAttrs & RVV_VTA)
             Ops.insert(Ops.begin(), llvm::PoisonValue::get(ResultType));
         }
-<<<<<<< HEAD
-        auto ElemTy = cast<llvm::VectorType>(Ops[1]->getType())->getElementType(); // SIFIVE
-=======
         auto ElemTy = cast<llvm::VectorType>(Ops[1]->getType())->getElementType();
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
         Ops.insert(Ops.begin() + 2, llvm::Constant::getNullValue(ElemTy));
         if (IsMasked) {
           Ops.push_back(ConstantInt::get(Ops.back()->getType(), PolicyAttrs));
