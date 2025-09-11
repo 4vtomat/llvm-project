@@ -342,7 +342,6 @@ bool LoopIdiomRecognize::runOnLoop(Loop *L) {
   HasMemsetPattern = TLI->has(LibFunc_memset_pattern16);
   HasMemcpy = TLI->has(LibFunc_memcpy);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (SE->hasLoopInvariantBackedgeTakenCount(L)) {
     if (optimizeBitExtractLoop())
@@ -352,10 +351,7 @@ bool LoopIdiomRecognize::runOnLoop(Loop *L) {
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-  if (HasMemset || HasMemsetPattern || HasMemcpy)
-=======
   if (HasMemset || HasMemsetPattern || ForceMemsetPatternIntrinsic || HasMemcpy)
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
     if (SE->hasLoopInvariantBackedgeTakenCount(L))
       return runOnCountableLoop();
 
