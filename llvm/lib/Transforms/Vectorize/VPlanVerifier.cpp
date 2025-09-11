@@ -181,20 +181,13 @@ bool VPlanVerifier::verifyEVLRecipe(const VPInstruction &EVL) const {
         .Case<VPWidenIntrinsicRecipe>([&](const VPWidenIntrinsicRecipe *S) {
           return VerifyEVLUse(*S, S->getNumOperands() - 1);
         })
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
         .Case<VPWidenStoreEVLRecipe, VPReductionEVLRecipe,
               VPWidenIntOrFpInductionRecipe, VPWidenPointerInductionRecipe>(
 #else
-        .Case<VPWidenIntOrFpInductionRecipe>([&](const VPWidenIntOrFpInductionRecipe *R) {
-          return VerifyEVLUse(*R, 2);
-        })
-        .Case<VPWidenStoreEVLRecipe, VPReductionEVLRecipe>(
-#endif
-=======
         .Case<VPWidenStoreEVLRecipe, VPReductionEVLRecipe,
               VPWidenIntOrFpInductionRecipe>(
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
+#endif
             [&](const VPRecipeBase *S) { return VerifyEVLUse(*S, 2); })
         .Case<VPScalarIVStepsRecipe>([&](auto *R) {
           if (R->getNumOperands() != 3) {
@@ -210,17 +203,12 @@ bool VPlanVerifier::verifyEVLRecipe(const VPInstruction &EVL) const {
         .Case<VPInstruction>([&](const VPInstruction *I) {
           if (I->getOpcode() == Instruction::PHI)
             return VerifyEVLUse(*I, 1);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
           // TODO: Add attribute in VPInstruction indicate this function is
           // vp-intrinsics.
           if (I->getOpcode() == VPInstruction::VPFirst)
             return VerifyEVLUse(*I, 1);
 #endif // SIFIVE_CUSTOMIZATION
-
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
           switch (I->getOpcode()) {
           case Instruction::Add:
             break;
@@ -238,9 +226,13 @@ bool VPlanVerifier::verifyEVLRecipe(const VPInstruction &EVL) const {
             break;
           default:
             errs() << "EVL used by unexpected VPInstruction\n";
-<<<<<<< HEAD
             return false;
           }
+          if (I->getNumUsers() != 1) {
+            errs() << "EVL is used in VPInstruction with multiple users\n";
+            return false;
+          }
+#ifdef SIFIVE_CUSTOMIZATION
           if (I->getOpcode() == Instruction::Add &&
               any_of(I->users(), [](VPUser *U) {
                 return !isa<VPCanonicalIVPHIRecipe, VPEVLBasedIVPHIRecipe,
@@ -255,17 +247,6 @@ bool VPlanVerifier::verifyEVLRecipe(const VPInstruction &EVL) const {
                       "not used by VPEVLBasedIVPHIRecipe, "
                       "VPCanonicalIVPHIRecipe, or "
                       "VPInstruction::BranchOnCount\n";
-            return false;
-          }
-#else
-          if (I->getOpcode() != Instruction::Add) {
-            errs() << "EVL is used as an operand in non-VPInstruction::Add\n";
-=======
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
-            return false;
-          }
-          if (I->getNumUsers() != 1) {
-            errs() << "EVL is used in VPInstruction with multiple users\n";
             return false;
           }
 #endif // SIFIVE_CUSTOMIZATION
