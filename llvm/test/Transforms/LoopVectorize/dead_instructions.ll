@@ -23,14 +23,14 @@ define i64 @dead_instructions_01(ptr %a, i64 %n) {
 ; CHECK:       [[VECTOR_BODY]]:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <2 x i64> [ zeroinitializer, %[[VECTOR_PH]] ], [ [[TMP6:%.*]], %[[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[VEC_PHI1:%.*]] = phi <2 x i64> [ zeroinitializer, %[[VECTOR_PH]] ], [ [[TMP7:%.*]], %[[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[VEC_PHI1:%.*]] = phi <2 x i64> [ zeroinitializer, %[[VECTOR_PH]] ], [ splat (i64 1), %[[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i64, ptr [[A]], i64 [[INDEX]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i64, ptr [[TMP2]], i32 0
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i64, ptr [[TMP2]], i32 2
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <2 x i64>, ptr [[TMP4]], align 8
 ; CHECK-NEXT:    [[WIDE_LOAD2:%.*]] = load <2 x i64>, ptr [[TMP5]], align 8
 ; CHECK-NEXT:    [[TMP6]] = add <2 x i64> [[WIDE_LOAD]], [[VEC_PHI]]
-; CHECK-NEXT:    [[TMP7]] = add <2 x i64> [[WIDE_LOAD2]], [[VEC_PHI1]]
+; CHECK-NEXT:    [[TMP7:%.*]] = add <2 x i64> [[WIDE_LOAD2]], [[VEC_PHI1]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[TMP8]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
@@ -151,15 +151,15 @@ define void @dead_load_and_vector_pointer(ptr %a, ptr %b) {
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[A]], i32 [[INDEX]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i32, ptr [[TMP2]], i32 0
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[TMP2]], i32 2
-; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <2 x i32>, ptr [[TMP4]], align 8
-; CHECK-NEXT:    [[WIDE_LOAD2:%.*]] = load <2 x i32>, ptr [[TMP5]], align 8
+; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <2 x i32>, ptr [[TMP4]], align 8, !alias.scope [[META6:![0-9]+]], !noalias [[META9:![0-9]+]]
+; CHECK-NEXT:    [[WIDE_LOAD2:%.*]] = load <2 x i32>, ptr [[TMP5]], align 8, !alias.scope [[META6]], !noalias [[META9]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = add <2 x i32> [[WIDE_LOAD]], splat (i32 1)
 ; CHECK-NEXT:    [[TMP7:%.*]] = add <2 x i32> [[WIDE_LOAD2]], splat (i32 1)
-; CHECK-NEXT:    store <2 x i32> [[TMP6]], ptr [[TMP4]], align 4
-; CHECK-NEXT:    store <2 x i32> [[TMP7]], ptr [[TMP5]], align 4
+; CHECK-NEXT:    store <2 x i32> [[TMP6]], ptr [[TMP4]], align 4, !alias.scope [[META6]], !noalias [[META9]]
+; CHECK-NEXT:    store <2 x i32> [[TMP7]], ptr [[TMP5]], align 4, !alias.scope [[META6]], !noalias [[META9]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i32 [[INDEX]], 4
 ; CHECK-NEXT:    [[TMP12:%.*]] = icmp eq i32 [[INDEX_NEXT]], 128
-; CHECK-NEXT:    br i1 [[TMP12]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP12]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP11:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    br i1 false, label %[[EXIT:.*]], label %[[SCALAR_PH]]
 ; CHECK:       [[SCALAR_PH]]:
@@ -177,7 +177,7 @@ define void @dead_load_and_vector_pointer(ptr %a, ptr %b) {
 ; CHECK-NEXT:    [[GEP_B:%.*]] = getelementptr inbounds i32, ptr [[B]], i32 [[PRIMARY]]
 ; CHECK-NEXT:    [[LOAD2:%.*]] = load i32, ptr [[GEP_B]], align 4
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp eq i32 [[PRIMARY]], 128
-; CHECK-NEXT:    br i1 [[CMP]], label %[[EXIT]], label %[[LOOP]], !llvm.loop [[LOOP7:![0-9]+]]
+; CHECK-NEXT:    br i1 [[CMP]], label %[[EXIT]], label %[[LOOP]], !llvm.loop [[LOOP12:![0-9]+]]
 ;
 entry:
   br label %loop
@@ -204,6 +204,11 @@ loop:
 ; CHECK: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
 ; CHECK: [[LOOP4]] = distinct !{[[LOOP4]], [[META1]], [[META2]]}
 ; CHECK: [[LOOP5]] = distinct !{[[LOOP5]], [[META2]], [[META1]]}
-; CHECK: [[LOOP6]] = distinct !{[[LOOP6]], [[META1]], [[META2]]}
-; CHECK: [[LOOP7]] = distinct !{[[LOOP7]], [[META1]]}
+; CHECK: [[META6]] = !{[[META7:![0-9]+]]}
+; CHECK: [[META7]] = distinct !{[[META7]], [[META8:![0-9]+]]}
+; CHECK: [[META8]] = distinct !{[[META8]], !"LVerDomain"}
+; CHECK: [[META9]] = !{[[META10:![0-9]+]]}
+; CHECK: [[META10]] = distinct !{[[META10]], [[META8]]}
+; CHECK: [[LOOP11]] = distinct !{[[LOOP11]], [[META1]], [[META2]]}
+; CHECK: [[LOOP12]] = distinct !{[[LOOP12]], [[META1]]}
 ;.

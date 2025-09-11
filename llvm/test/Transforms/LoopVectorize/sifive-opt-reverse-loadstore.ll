@@ -18,13 +18,15 @@ define void @reverse_reverse(i64 %arg) {
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i32, ptr null, i64 [[OFFSET_IDX]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[TMP8:%.*]] = mul i64 0, [[TMP7]]
-; CHECK-NEXT:    [[TMP9:%.*]] = sub i64 1, [[TMP7]]
+; CHECK-NEXT:    [[TMP19:%.*]] = sub i64 [[TMP7]], 1
+; CHECK-NEXT:    [[TMP9:%.*]] = mul i64 -1, [[TMP19]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr i32, ptr [[TMP6]], i64 [[TMP8]]
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr i32, ptr [[TMP10]], i64 [[TMP9]]
 ; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0(ptr align 4 [[TMP11]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[TMP13:%.*]] = mul i64 0, [[TMP12]]
-; CHECK-NEXT:    [[TMP14:%.*]] = sub i64 1, [[TMP12]]
+; CHECK-NEXT:    [[TMP20:%.*]] = sub i64 [[TMP12]], 1
+; CHECK-NEXT:    [[TMP14:%.*]] = mul i64 -1, [[TMP20]]
 ; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr i32, ptr [[TMP6]], i64 [[TMP13]]
 ; CHECK-NEXT:    [[TMP16:%.*]] = getelementptr i32, ptr [[TMP15]], i64 [[TMP14]]
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv2i32.p0(<vscale x 2 x i32> [[VP_OP_LOAD]], ptr align 4 [[TMP16]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
@@ -44,7 +46,7 @@ define void @reverse_reverse(i64 %arg) {
 ; CHECK-NEXT:    [[DATA:%.*]] = load i32, ptr [[GEP]], align 4
 ; CHECK-NEXT:    store i32 [[DATA]], ptr [[GEP]], align 4
 ; CHECK-NEXT:    [[COND:%.*]] = icmp ne i64 [[IV]], 0
-; CHECK-NEXT:    br i1 [[COND]], label [[LOOP]], label [[EXIT]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NEXT:    br i1 [[COND]], label [[LOOP]], label [[EXIT]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    ret void
 ;
@@ -81,21 +83,23 @@ define void @reverse_binop_reverse(i64 %arg, i32 %alpha) {
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i32, ptr null, i64 [[OFFSET_IDX]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[TMP8:%.*]] = mul i64 0, [[TMP7]]
-; CHECK-NEXT:    [[TMP9:%.*]] = sub i64 1, [[TMP7]]
+; CHECK-NEXT:    [[TMP19:%.*]] = sub i64 [[TMP7]], 1
+; CHECK-NEXT:    [[TMP9:%.*]] = mul i64 -1, [[TMP19]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr i32, ptr [[TMP6]], i64 [[TMP8]]
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr i32, ptr [[TMP10]], i64 [[TMP9]]
 ; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0(ptr align 4 [[TMP11]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i32> [[BROADCAST_SPLAT]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[TMP13:%.*]] = mul i64 0, [[TMP12]]
-; CHECK-NEXT:    [[TMP14:%.*]] = sub i64 1, [[TMP12]]
+; CHECK-NEXT:    [[TMP20:%.*]] = sub i64 [[TMP12]], 1
+; CHECK-NEXT:    [[TMP14:%.*]] = mul i64 -1, [[TMP20]]
 ; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr i32, ptr [[TMP6]], i64 [[TMP13]]
 ; CHECK-NEXT:    [[TMP16:%.*]] = getelementptr i32, ptr [[TMP15]], i64 [[TMP14]]
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv2i32.p0(<vscale x 2 x i32> [[VP_OP]], ptr align 4 [[TMP16]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP17:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP17]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP18:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP0]]
-; CHECK-NEXT:    br i1 [[TMP18]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP18]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
@@ -109,7 +113,7 @@ define void @reverse_binop_reverse(i64 %arg, i32 %alpha) {
 ; CHECK-NEXT:    [[C:%.*]] = add i32 [[DATA]], [[ALPHA]]
 ; CHECK-NEXT:    store i32 [[C]], ptr [[GEP]], align 4
 ; CHECK-NEXT:    [[COND:%.*]] = icmp ne i64 [[IV]], 0
-; CHECK-NEXT:    br i1 [[COND]], label [[LOOP]], label [[EXIT]], !llvm.loop [[LOOP5:![0-9]+]]
+; CHECK-NEXT:    br i1 [[COND]], label [[LOOP]], label [[EXIT]], !llvm.loop [[LOOP6:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    ret void
 ;

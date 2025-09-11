@@ -39,8 +39,8 @@ define void @reverse_load_store(i64 %startval, ptr noalias %ptr, ptr noalias %pt
 ; IF-EVL-NEXT:    [[TMP22:%.*]] = getelementptr i32, ptr [[TMP13]], i64 [[TMP14]]
 ; IF-EVL-NEXT:    [[TMP21:%.*]] = getelementptr i32, ptr [[TMP22]], i64 [[TMP15]]
 ; IF-EVL-NEXT:    call void @llvm.vp.store.nxv2i32.p0(<vscale x 2 x i32> [[VP_OP_LOAD]], ptr align 4 [[TMP21]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP1]])
-; IF-EVL-NEXT:    [[TMP23:%.*]] = zext i32 [[TMP1]] to i64
-; IF-EVL-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[TMP23]], [[EVL_BASED_IV]]
+; IF-EVL-NEXT:    [[TMP20:%.*]] = zext i32 [[TMP1]] to i64
+; IF-EVL-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[TMP20]], [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
 ; IF-EVL-NEXT:    br i1 [[TMP17]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; IF-EVL:       middle.block:
@@ -129,17 +129,13 @@ define void @reverse_load_store_masked(i64 %startval, ptr noalias %ptr, ptr noal
 ; IF-EVL-NEXT:    [[TMP21:%.*]] = getelementptr i32, ptr [[PTR2:%.*]], i64 [[TMP11]]
 ; IF-EVL-NEXT:    [[TMP27:%.*]] = zext i32 [[TMP1]] to i64
 ; IF-EVL-NEXT:    [[TMP22:%.*]] = mul i64 0, [[TMP27]]
-<<<<<<< HEAD
-; IF-EVL-NEXT:    [[TMP25:%.*]] = sub i64 1, [[TMP27]]
-=======
 ; IF-EVL-NEXT:    [[TMP30:%.*]] = sub i64 [[TMP27]], 1
 ; IF-EVL-NEXT:    [[TMP23:%.*]] = mul i64 -1, [[TMP30]]
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 ; IF-EVL-NEXT:    [[TMP24:%.*]] = getelementptr i32, ptr [[TMP21]], i64 [[TMP22]]
-; IF-EVL-NEXT:    [[TMP20:%.*]] = getelementptr i32, ptr [[TMP24]], i64 [[TMP25]]
+; IF-EVL-NEXT:    [[TMP20:%.*]] = getelementptr i32, ptr [[TMP24]], i64 [[TMP23]]
 ; IF-EVL-NEXT:    call void @llvm.vp.store.nxv2i32.p0(<vscale x 2 x i32> [[VP_OP_LOAD2]], ptr align 4 [[TMP20]], <vscale x 2 x i1> [[VP_OP_ICMP]], i32 [[TMP1]])
-; IF-EVL-NEXT:    [[TMP23:%.*]] = zext i32 [[TMP1]] to i64
-; IF-EVL-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[TMP23]], [[EVL_BASED_IV]]
+; IF-EVL-NEXT:    [[TMP25:%.*]] = zext i32 [[TMP1]] to i64
+; IF-EVL-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[TMP25]], [[EVL_BASED_IV]]
 ; IF-EVL-NEXT:    [[TMP28:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
 ; IF-EVL-NEXT:    br i1 [[TMP28]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; IF-EVL:       middle.block:

@@ -28,7 +28,8 @@ define void @reverse(ptr %y, i64 %alpha, i32 %N) {
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i64, ptr [[Y]], i64 [[IV_NEXT]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[TMP6:%.*]] = mul i64 0, [[TMP5]]
-; CHECK-NEXT:    [[TMP7:%.*]] = sub i64 1, [[TMP5]]
+; CHECK-NEXT:    [[TMP12:%.*]] = sub i64 [[TMP5]], 1
+; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 -1, [[TMP12]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i64, ptr [[ARRAYIDX]], i64 [[TMP6]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr i64, ptr [[TMP8]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[VP_REVERSE:%.*]] = call <vscale x 1 x i64> @llvm.experimental.vp.reverse.nxv1i64(<vscale x 1 x i64> [[BROADCAST_SPLAT]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP2]])

@@ -33,12 +33,11 @@ define i32 @select_cc_example_eq_s2(i32 %a, i32 %b, i32 %x, i32 %y) {
 ; RV32I-LABEL: select_cc_example_eq_s2:
 ; RV32I:       # %bb.0: # %entry
 ; RV32I-NEXT:    andi a1, a0, 1
+; RV32I-NEXT:    li a0, 12
 ; RV32I-NEXT:    bnez a1, .LBB1_2
 ; RV32I-NEXT:  # %bb.1: # %entry
 ; RV32I-NEXT:    mv a0, a2
-; RV32I-NEXT:    ret
-; RV32I-NEXT:  .LBB1_2:
-; RV32I-NEXT:    li a0, 12
+; RV32I-NEXT:  .LBB1_2: # %entry
 ; RV32I-NEXT:    ret
 ;
 ; RV32IXQCICS-LABEL: select_cc_example_eq_s2:
@@ -55,13 +54,12 @@ entry:
 define i32 @select_cc_example_eq_s3(i32 %a, i32 %b, i32 %x, i32 %y) {
 ; RV32I-LABEL: select_cc_example_eq_s3:
 ; RV32I:       # %bb.0: # %entry
-; RV32I-NEXT:    andi a0, a0, 1
-; RV32I-NEXT:    bnez a0, .LBB2_2
+; RV32I-NEXT:    andi a1, a0, 1
+; RV32I-NEXT:    li a0, 12
+; RV32I-NEXT:    bnez a1, .LBB2_2
 ; RV32I-NEXT:  # %bb.1: # %entry
 ; RV32I-NEXT:    li a0, 25
-; RV32I-NEXT:    ret
-; RV32I-NEXT:  .LBB2_2:
-; RV32I-NEXT:    li a0, 12
+; RV32I-NEXT:  .LBB2_2: # %entry
 ; RV32I-NEXT:    ret
 ;
 ; RV32IXQCICS-LABEL: select_cc_example_eq_s3:
@@ -411,12 +409,12 @@ entry:
 define i32 @select_cc_example_eqii(i32 %a, i32 %b, i32 %x, i32 %y) {
 ; RV32I-LABEL: select_cc_example_eqii:
 ; RV32I:       # %bb.0: # %entry
-; RV32I-NEXT:    beq a0, a1, .LBB19_2
+; RV32I-NEXT:    mv a2, a0
+; RV32I-NEXT:    li a0, 13
+; RV32I-NEXT:    beq a2, a1, .LBB19_2
 ; RV32I-NEXT:  # %bb.1: # %entry
 ; RV32I-NEXT:    li a0, 11
-; RV32I-NEXT:    ret
-; RV32I-NEXT:  .LBB19_2:
-; RV32I-NEXT:    li a0, 13
+; RV32I-NEXT:  .LBB19_2: # %entry
 ; RV32I-NEXT:    ret
 ;
 ; RV32IXQCICS-LABEL: select_cc_example_eqii:
@@ -432,12 +430,12 @@ entry:
 define i32 @select_cc_example_neii(i32 %a, i32 %b, i32 %x, i32 %y) {
 ; RV32I-LABEL: select_cc_example_neii:
 ; RV32I:       # %bb.0: # %entry
-; RV32I-NEXT:    bne a0, a1, .LBB20_2
+; RV32I-NEXT:    mv a2, a0
+; RV32I-NEXT:    li a0, 13
+; RV32I-NEXT:    bne a2, a1, .LBB20_2
 ; RV32I-NEXT:  # %bb.1: # %entry
 ; RV32I-NEXT:    li a0, 11
-; RV32I-NEXT:    ret
-; RV32I-NEXT:  .LBB20_2:
-; RV32I-NEXT:    li a0, 13
+; RV32I-NEXT:  .LBB20_2: # %entry
 ; RV32I-NEXT:    ret
 ;
 ; RV32IXQCICS-LABEL: select_cc_example_neii:

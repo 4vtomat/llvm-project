@@ -118,29 +118,15 @@ define signext i32 @test3(i32 signext %v, i32 signext %w, i32 signext %x, i32 si
 ; NOSFB-NEXT:    addw a0, a1, a2
 ; NOSFB-NEXT:    ret
 ;
-<<<<<<< HEAD
-; RV64SFB-LABEL: test3:
-; RV64SFB:       # %bb.0:
-; RV64SFB-NEXT:    bnez a4, .LBB2_2
-; RV64SFB-NEXT:  # %bb.1:
-; RV64SFB-NEXT:    mv a0, a1
-; RV64SFB-NEXT:  .LBB2_2:
-; RV64SFB-NEXT:    beqz a4, .LBB2_4
-; RV64SFB-NEXT:  # %bb.3:
-; RV64SFB-NEXT:    mv a2, a3
-; RV64SFB-NEXT:  .LBB2_4:
-; RV64SFB-NEXT:    addw a0, a0, a2
-; RV64SFB-NEXT:    ret
-=======
 ; RV64SFBSIFIVEU74-LABEL: test3:
 ; RV64SFBSIFIVEU74:       # %bb.0:
-; RV64SFBSIFIVEU74-NEXT:    beqz a4, .LBB2_2
+; RV64SFBSIFIVEU74-NEXT:    bnez a4, .LBB2_2
 ; RV64SFBSIFIVEU74-NEXT:  # %bb.1:
-; RV64SFBSIFIVEU74-NEXT:    mv a2, a3
-; RV64SFBSIFIVEU74-NEXT:  .LBB2_2:
-; RV64SFBSIFIVEU74-NEXT:    bnez a4, .LBB2_4
-; RV64SFBSIFIVEU74-NEXT:  # %bb.3:
 ; RV64SFBSIFIVEU74-NEXT:    mv a0, a1
+; RV64SFBSIFIVEU74-NEXT:  .LBB2_2:
+; RV64SFBSIFIVEU74-NEXT:    beqz a4, .LBB2_4
+; RV64SFBSIFIVEU74-NEXT:  # %bb.3:
+; RV64SFBSIFIVEU74-NEXT:    mv a2, a3
 ; RV64SFBSIFIVEU74-NEXT:  .LBB2_4:
 ; RV64SFBSIFIVEU74-NEXT:    addw a0, a0, a2
 ; RV64SFBSIFIVEU74-NEXT:    ret
@@ -159,7 +145,6 @@ define signext i32 @test3(i32 signext %v, i32 signext %w, i32 signext %x, i32 si
 ; RV64SFBANDESAX45-NEXT:  .LBB2_4:
 ; RV64SFBANDESAX45-NEXT:    addw a0, a1, a3
 ; RV64SFBANDESAX45-NEXT:    ret
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 ;
 ; ZICOND-LABEL: test3:
 ; ZICOND:       # %bb.0:

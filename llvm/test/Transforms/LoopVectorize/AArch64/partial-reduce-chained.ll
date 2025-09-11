@@ -1233,36 +1233,30 @@ define i32 @chained_partial_reduce_extadd_extadd(ptr %a, ptr %b, i32 %N) #0 {
 ; CHECK-SVE-NEXT:    [[CMP28_NOT:%.*]] = icmp ult i32 [[N]], 2
 ; CHECK-SVE-NEXT:    [[DIV27:%.*]] = lshr i32 [[N]], 1
 ; CHECK-SVE-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext nneg i32 [[DIV27]] to i64
-; CHECK-SVE-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-SVE-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
-; CHECK-SVE-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[WIDE_TRIP_COUNT]], [[TMP1]]
+; CHECK-SVE-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[WIDE_TRIP_COUNT]], 16
 ; CHECK-SVE-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-SVE:       vector.ph:
-; CHECK-SVE-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-SVE-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP2]], 4
-; CHECK-SVE-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[WIDE_TRIP_COUNT]], [[TMP3]]
+; CHECK-SVE-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[WIDE_TRIP_COUNT]], 16
 ; CHECK-SVE-NEXT:    [[N_VEC:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[N_MOD_VF]]
-; CHECK-SVE-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-SVE-NEXT:    [[TMP5:%.*]] = mul nuw i64 [[TMP4]], 4
 ; CHECK-SVE-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-SVE:       vector.body:
 ; CHECK-SVE-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-SVE-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 4 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP14:%.*]], [[VECTOR_BODY]] ]
+; CHECK-SVE-NEXT:    [[VEC_PHI:%.*]] = phi <16 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP11:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-SVE-NEXT:    [[TMP7:%.*]] = getelementptr inbounds nuw i8, ptr [[A]], i64 [[INDEX]]
 ; CHECK-SVE-NEXT:    [[TMP8:%.*]] = getelementptr inbounds nuw i8, ptr [[B]], i64 [[INDEX]]
 ; CHECK-SVE-NEXT:    [[TMP9:%.*]] = getelementptr inbounds nuw i8, ptr [[TMP7]], i32 0
-; CHECK-SVE-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 4 x i8>, ptr [[TMP9]], align 1
+; CHECK-SVE-NEXT:    [[WIDE_LOAD:%.*]] = load <16 x i8>, ptr [[TMP9]], align 1
 ; CHECK-SVE-NEXT:    [[TMP10:%.*]] = getelementptr inbounds nuw i8, ptr [[TMP8]], i32 0
-; CHECK-SVE-NEXT:    [[WIDE_LOAD1:%.*]] = load <vscale x 4 x i8>, ptr [[TMP10]], align 1
-; CHECK-SVE-NEXT:    [[TMP11:%.*]] = sext <vscale x 4 x i8> [[WIDE_LOAD]] to <vscale x 4 x i32>
-; CHECK-SVE-NEXT:    [[TMP12:%.*]] = sext <vscale x 4 x i8> [[WIDE_LOAD1]] to <vscale x 4 x i32>
-; CHECK-SVE-NEXT:    [[TMP13:%.*]] = add <vscale x 4 x i32> [[VEC_PHI]], [[TMP11]]
-; CHECK-SVE-NEXT:    [[TMP14]] = add <vscale x 4 x i32> [[TMP13]], [[TMP12]]
-; CHECK-SVE-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
+; CHECK-SVE-NEXT:    [[WIDE_LOAD1:%.*]] = load <16 x i8>, ptr [[TMP10]], align 1
+; CHECK-SVE-NEXT:    [[TMP4:%.*]] = sext <16 x i8> [[WIDE_LOAD]] to <16 x i32>
+; CHECK-SVE-NEXT:    [[TMP5:%.*]] = sext <16 x i8> [[WIDE_LOAD1]] to <16 x i32>
+; CHECK-SVE-NEXT:    [[TMP6:%.*]] = add <16 x i32> [[VEC_PHI]], [[TMP4]]
+; CHECK-SVE-NEXT:    [[TMP11]] = add <16 x i32> [[TMP6]], [[TMP5]]
+; CHECK-SVE-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
 ; CHECK-SVE-NEXT:    [[TMP15:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-SVE-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
 ; CHECK-SVE:       middle.block:
-; CHECK-SVE-NEXT:    [[TMP16:%.*]] = call i32 @llvm.vector.reduce.add.nxv4i32(<vscale x 4 x i32> [[TMP14]])
+; CHECK-SVE-NEXT:    [[TMP12:%.*]] = call i32 @llvm.vector.reduce.add.v16i32(<16 x i32> [[TMP11]])
 ; CHECK-SVE-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[WIDE_TRIP_COUNT]], [[N_VEC]]
 ; CHECK-SVE-NEXT:    br i1 [[CMP_N]], label [[FOR_COND_CLEANUP:%.*]], label [[SCALAR_PH]]
 ; CHECK-SVE:       scalar.ph:

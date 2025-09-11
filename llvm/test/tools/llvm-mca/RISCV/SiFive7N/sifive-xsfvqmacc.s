@@ -44,21 +44,21 @@ sf.vqmacc.4x8x4 v16, v0, v8
 
 # CHECK:      [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]                                        [9]                        Instructions:
 # CHECK-NEXT:  1      3     1.00                  U      1     VLEN512FastFP64FastGatherSiFive7NPipeA,VLEN512FastFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e8, m1, ta, ma
-# CHECK-NEXT:  1      8     2.00                         8     VLEN512FastFP64FastGatherSiFive7NVA[1,3],VLEN512FastFP64FastGatherSiFive7NVCQ VQMACC_2x8x2 sf.vqmacc.2x8x2	v16, v0, v8
+# CHECK-NEXT:  1      8     2.00                         8     VLEN512FastFP64FastGatherSiFive7NVA[1,3],VLEN512FastFP64FastGatherSiFive7NVCQ SF_VQMACC_2x8x2 sf.vqmacc.2x8x2	v16, v0, v8
 # CHECK-NEXT:  1      3     1.00                  U      1     VLEN512FastFP64FastGatherSiFive7NPipeA,VLEN512FastFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e8, m2, ta, ma
-# CHECK-NEXT:  1      8     4.00                         8     VLEN512FastFP64FastGatherSiFive7NVA[1,5],VLEN512FastFP64FastGatherSiFive7NVCQ VQMACC_2x8x2 sf.vqmacc.2x8x2	v16, v0, v8
+# CHECK-NEXT:  1      8     4.00                         8     VLEN512FastFP64FastGatherSiFive7NVA[1,5],VLEN512FastFP64FastGatherSiFive7NVCQ SF_VQMACC_2x8x2 sf.vqmacc.2x8x2	v16, v0, v8
 # CHECK-NEXT:  1      3     1.00                  U      1     VLEN512FastFP64FastGatherSiFive7NPipeA,VLEN512FastFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e8, m4, ta, ma
-# CHECK-NEXT:  1      8     8.00                         8     VLEN512FastFP64FastGatherSiFive7NVA[1,9],VLEN512FastFP64FastGatherSiFive7NVCQ VQMACC_2x8x2 sf.vqmacc.2x8x2	v16, v0, v8
+# CHECK-NEXT:  1      8     8.00                         8     VLEN512FastFP64FastGatherSiFive7NVA[1,9],VLEN512FastFP64FastGatherSiFive7NVCQ SF_VQMACC_2x8x2 sf.vqmacc.2x8x2	v16, v0, v8
 # CHECK-NEXT:  1      3     1.00                  U      1     VLEN512FastFP64FastGatherSiFive7NPipeA,VLEN512FastFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e8, m8, ta, ma
-# CHECK-NEXT:  1      8     16.00                        8     VLEN512FastFP64FastGatherSiFive7NVA[1,17],VLEN512FastFP64FastGatherSiFive7NVCQ VQMACC_2x8x2 sf.vqmacc.2x8x2	v16, v0, v8
+# CHECK-NEXT:  1      8     16.00                        8     VLEN512FastFP64FastGatherSiFive7NVA[1,17],VLEN512FastFP64FastGatherSiFive7NVCQ SF_VQMACC_2x8x2 sf.vqmacc.2x8x2	v16, v0, v8
 # CHECK-NEXT:  1      3     1.00                  U      1     VLEN512FastFP64FastGatherSiFive7NPipeA,VLEN512FastFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e8, mf2, ta, ma
-# CHECK-NEXT:  1      8     1.00                         8     VLEN512FastFP64FastGatherSiFive7NVA[1,2],VLEN512FastFP64FastGatherSiFive7NVCQ VQMACC_4x8x4 sf.vqmacc.4x8x4	v16, v0, v8
+# CHECK-NEXT:  1      8     1.00                         8     VLEN512FastFP64FastGatherSiFive7NVA[1,2],VLEN512FastFP64FastGatherSiFive7NVCQ SF_VQMACC_4x8x4 sf.vqmacc.4x8x4	v16, v0, v8
 # CHECK-NEXT:  1      3     1.00                  U      1     VLEN512FastFP64FastGatherSiFive7NPipeA,VLEN512FastFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e8, m1, ta, ma
-# CHECK-NEXT:  1      8     2.00                         8     VLEN512FastFP64FastGatherSiFive7NVA[1,3],VLEN512FastFP64FastGatherSiFive7NVCQ VQMACC_4x8x4 sf.vqmacc.4x8x4	v16, v0, v8
+# CHECK-NEXT:  1      8     2.00                         8     VLEN512FastFP64FastGatherSiFive7NVA[1,3],VLEN512FastFP64FastGatherSiFive7NVCQ SF_VQMACC_4x8x4 sf.vqmacc.4x8x4	v16, v0, v8
 # CHECK-NEXT:  1      3     1.00                  U      1     VLEN512FastFP64FastGatherSiFive7NPipeA,VLEN512FastFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e8, m2, ta, ma
-# CHECK-NEXT:  1      8     4.00                         8     VLEN512FastFP64FastGatherSiFive7NVA[1,5],VLEN512FastFP64FastGatherSiFive7NVCQ VQMACC_4x8x4 sf.vqmacc.4x8x4	v16, v0, v8
+# CHECK-NEXT:  1      8     4.00                         8     VLEN512FastFP64FastGatherSiFive7NVA[1,5],VLEN512FastFP64FastGatherSiFive7NVCQ SF_VQMACC_4x8x4 sf.vqmacc.4x8x4	v16, v0, v8
 # CHECK-NEXT:  1      3     1.00                  U      1     VLEN512FastFP64FastGatherSiFive7NPipeA,VLEN512FastFP64FastGatherSiFive7NPipeAB VSETVLI vsetvli	zero, zero, e8, m4, ta, ma
-# CHECK-NEXT:  1      8     8.00                         8     VLEN512FastFP64FastGatherSiFive7NVA[1,9],VLEN512FastFP64FastGatherSiFive7NVCQ VQMACC_4x8x4 sf.vqmacc.4x8x4	v16, v0, v8
+# CHECK-NEXT:  1      8     8.00                         8     VLEN512FastFP64FastGatherSiFive7NVA[1,9],VLEN512FastFP64FastGatherSiFive7NVCQ SF_VQMACC_4x8x4 sf.vqmacc.4x8x4	v16, v0, v8
 
 # CHECK:      Resources:
 # CHECK-NEXT: [0]   - VLEN512FastFP64FastGatherSiFive7NFDiv

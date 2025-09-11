@@ -3681,8 +3681,7 @@ define <vscale x 16 x i8> @vector_deinterleave_nxv16i8_nxv32i8_oneactive(<vscale
 ; V-LABEL: vector_deinterleave_nxv16i8_nxv32i8_oneactive:
 ; V:       # %bb.0:
 ; V-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
-; V-NEXT:    vnsrl.wi v12, v8, 0
-; V-NEXT:    vmv.v.v v8, v12
+; V-NEXT:    vnsrl.wi v8, v8, 0
 ; V-NEXT:    ret
 ;
 ; ZIP-LABEL: vector_deinterleave_nxv16i8_nxv32i8_oneactive:

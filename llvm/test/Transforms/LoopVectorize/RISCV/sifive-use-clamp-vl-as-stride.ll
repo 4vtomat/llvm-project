@@ -28,10 +28,12 @@ define void @widget(ptr %a, i64 %n) {
 ; CHECK-NEXT:    [[OFFSET_IDX5:%.*]] = mul i64 [[TMP4]], -16
 ; CHECK-NEXT:    [[NEXT_GEP6:%.*]] = getelementptr i8, ptr [[B]], i64 [[OFFSET_IDX5]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr [[STRUCT:%.*]], ptr [[NEXT_GEP6]], i64 -1, i32 0
-; CHECK-NEXT:    [[TMP6:%.*]] = sub nuw nsw i32 [[TMP25]], 1
-; CHECK-NEXT:    [[TMP7:%.*]] = mul nuw nsw i32 [[TMP6]], 2
-; CHECK-NEXT:    [[TMP8:%.*]] = sub i32 0, [[TMP7]]
-; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr ptr, ptr [[TMP5]], i32 [[TMP8]]
+; CHECK-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP25]] to i64
+; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 0, [[TMP6]]
+; CHECK-NEXT:    [[TMP8:%.*]] = sub i64 [[TMP6]], 1
+; CHECK-NEXT:    [[TMP16:%.*]] = mul i64 -2, [[TMP8]]
+; CHECK-NEXT:    [[TMP17:%.*]] = getelementptr ptr, ptr [[TMP5]], i64 [[TMP7]]
+; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr ptr, ptr [[TMP17]], i64 [[TMP16]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = mul nuw nsw i32 [[TMP25]], 2
 ; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 2 x ptr> @llvm.vp.load.nxv2p0.p0(ptr align 8 [[TMP9]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP10]])
 ; CHECK-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 1 x ptr>, <vscale x 1 x ptr> } @llvm.vector.deinterleave2.nxv2p0(<vscale x 2 x ptr> [[WIDE_MASKED_LOAD]])
@@ -42,10 +44,12 @@ define void @widget(ptr %a, i64 %n) {
 ; CHECK-NEXT:    [[TMP13:%.*]] = ptrtoint <vscale x 1 x ptr> [[DEINTERLEAVED_RESULT_REVERSE3]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP14:%.*]] = bitcast <vscale x 1 x i64> [[TMP13]] to <vscale x 1 x double>
 ; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr [[STRUCT]], ptr [[NEXT_GEP]], i64 -2, i32 0
-; CHECK-NEXT:    [[TMP16:%.*]] = sub nuw nsw i32 [[TMP25]], 1
-; CHECK-NEXT:    [[TMP17:%.*]] = mul nuw nsw i32 [[TMP16]], 2
-; CHECK-NEXT:    [[TMP18:%.*]] = sub i32 0, [[TMP17]]
-; CHECK-NEXT:    [[TMP19:%.*]] = getelementptr double, ptr [[TMP15]], i32 [[TMP18]]
+; CHECK-NEXT:    [[TMP18:%.*]] = zext i32 [[TMP25]] to i64
+; CHECK-NEXT:    [[TMP26:%.*]] = mul i64 0, [[TMP18]]
+; CHECK-NEXT:    [[TMP27:%.*]] = sub i64 [[TMP18]], 1
+; CHECK-NEXT:    [[TMP28:%.*]] = mul i64 -2, [[TMP27]]
+; CHECK-NEXT:    [[TMP29:%.*]] = getelementptr double, ptr [[TMP15]], i64 [[TMP26]]
+; CHECK-NEXT:    [[TMP19:%.*]] = getelementptr double, ptr [[TMP29]], i64 [[TMP28]]
 ; CHECK-NEXT:    [[RESULT_REVERSE:%.*]] = call <vscale x 1 x ptr> @llvm.experimental.vp.reverse.nxv1p0(<vscale x 1 x ptr> [[DEINTERLEAVED_RESULT_REVERSE]], <vscale x 1 x i1> splat (i1 true), i32 [[TMP25]])
 ; CHECK-NEXT:    [[TMP20:%.*]] = ptrtoint <vscale x 1 x ptr> [[RESULT_REVERSE]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP21:%.*]] = bitcast <vscale x 1 x i64> [[TMP20]] to <vscale x 1 x double>
@@ -80,7 +84,7 @@ define void @widget(ptr %a, i64 %n) {
 ; CHECK-NEXT:    store double [[TMP40]], ptr [[TMP41]], align 8
 ; CHECK-NEXT:    [[IV]] = add nsw i64 [[TMP31]], -1
 ; CHECK-NEXT:    [[COND:%.*]] = icmp ugt i64 [[TMP31]], 1
-; CHECK-NEXT:    br i1 [[COND]], label [[LOOP]], label [[EXIT]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NEXT:    br i1 [[COND]], label [[LOOP]], label [[EXIT]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    ret void
 ;

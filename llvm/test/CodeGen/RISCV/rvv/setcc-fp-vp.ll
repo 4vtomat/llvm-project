@@ -2883,16 +2883,10 @@ define <vscale x 8 x i1> @fcmp_ord_vf_nxv8f16(<vscale x 8 x half> %va, half %b, 
 ; ZVFH-LABEL: fcmp_ord_vf_nxv8f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
-<<<<<<< HEAD
+; ZVFH-NEXT:    vfmv.v.f v10, fa0
 ; ZVFH-NEXT:    vmfeq.vf v10, v10, fa0, v0.t
 ; ZVFH-NEXT:    vmfeq.vv v8, v8, v8, v0.t
 ; ZVFH-NEXT:    vmand.mm v0, v8, v10
-=======
-; ZVFH-NEXT:    vfmv.v.f v10, fa0
-; ZVFH-NEXT:    vmfeq.vf v12, v10, fa0, v0.t
-; ZVFH-NEXT:    vmfeq.vv v10, v8, v8, v0.t
-; ZVFH-NEXT:    vmand.mm v0, v10, v12
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 ; ZVFH-NEXT:    ret
 ;
 ; ZVFHMIN-LABEL: fcmp_ord_vf_nxv8f16:
@@ -2917,16 +2911,10 @@ define <vscale x 8 x i1> @fcmp_ord_vf_swap_nxv8f16(<vscale x 8 x half> %va, half
 ; ZVFH-LABEL: fcmp_ord_vf_swap_nxv8f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
-<<<<<<< HEAD
+; ZVFH-NEXT:    vfmv.v.f v10, fa0
 ; ZVFH-NEXT:    vmfeq.vf v10, v10, fa0, v0.t
 ; ZVFH-NEXT:    vmfeq.vv v8, v8, v8, v0.t
 ; ZVFH-NEXT:    vmand.mm v0, v10, v8
-=======
-; ZVFH-NEXT:    vfmv.v.f v10, fa0
-; ZVFH-NEXT:    vmfeq.vf v12, v10, fa0, v0.t
-; ZVFH-NEXT:    vmfeq.vv v10, v8, v8, v0.t
-; ZVFH-NEXT:    vmand.mm v0, v12, v10
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 ; ZVFH-NEXT:    ret
 ;
 ; ZVFHMIN-LABEL: fcmp_ord_vf_swap_nxv8f16:
@@ -3378,16 +3366,10 @@ define <vscale x 8 x i1> @fcmp_uno_vf_nxv8f16(<vscale x 8 x half> %va, half %b, 
 ; ZVFH-LABEL: fcmp_uno_vf_nxv8f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
-<<<<<<< HEAD
+; ZVFH-NEXT:    vfmv.v.f v10, fa0
 ; ZVFH-NEXT:    vmfne.vf v10, v10, fa0, v0.t
 ; ZVFH-NEXT:    vmfne.vv v8, v8, v8, v0.t
 ; ZVFH-NEXT:    vmor.mm v0, v8, v10
-=======
-; ZVFH-NEXT:    vfmv.v.f v10, fa0
-; ZVFH-NEXT:    vmfne.vf v12, v10, fa0, v0.t
-; ZVFH-NEXT:    vmfne.vv v10, v8, v8, v0.t
-; ZVFH-NEXT:    vmor.mm v0, v10, v12
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 ; ZVFH-NEXT:    ret
 ;
 ; ZVFHMIN-LABEL: fcmp_uno_vf_nxv8f16:
@@ -3412,16 +3394,10 @@ define <vscale x 8 x i1> @fcmp_uno_vf_swap_nxv8f16(<vscale x 8 x half> %va, half
 ; ZVFH-LABEL: fcmp_uno_vf_swap_nxv8f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
-<<<<<<< HEAD
+; ZVFH-NEXT:    vfmv.v.f v10, fa0
 ; ZVFH-NEXT:    vmfne.vf v10, v10, fa0, v0.t
 ; ZVFH-NEXT:    vmfne.vv v8, v8, v8, v0.t
 ; ZVFH-NEXT:    vmor.mm v0, v10, v8
-=======
-; ZVFH-NEXT:    vfmv.v.f v10, fa0
-; ZVFH-NEXT:    vmfne.vf v12, v10, fa0, v0.t
-; ZVFH-NEXT:    vmfne.vv v10, v8, v8, v0.t
-; ZVFH-NEXT:    vmor.mm v0, v12, v10
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 ; ZVFH-NEXT:    ret
 ;
 ; ZVFHMIN-LABEL: fcmp_uno_vf_swap_nxv8f16:
@@ -4439,16 +4415,10 @@ define <vscale x 8 x i1> @fcmp_ord_vf_nxv8f64(<vscale x 8 x double> %va, double 
 ; CHECK-LABEL: fcmp_ord_vf_nxv8f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-<<<<<<< HEAD
+; CHECK-NEXT:    vfmv.v.f v16, fa0
 ; CHECK-NEXT:    vmfeq.vf v16, v16, fa0, v0.t
 ; CHECK-NEXT:    vmfeq.vv v8, v8, v8, v0.t
 ; CHECK-NEXT:    vmand.mm v0, v8, v16
-=======
-; CHECK-NEXT:    vfmv.v.f v16, fa0
-; CHECK-NEXT:    vmfeq.vf v24, v16, fa0, v0.t
-; CHECK-NEXT:    vmfeq.vv v16, v8, v8, v0.t
-; CHECK-NEXT:    vmand.mm v0, v16, v24
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 8 x double> poison, double %b, i32 0
   %vb = shufflevector <vscale x 8 x double> %elt.head, <vscale x 8 x double> poison, <vscale x 8 x i32> zeroinitializer
@@ -4460,16 +4430,10 @@ define <vscale x 8 x i1> @fcmp_ord_vf_swap_nxv8f64(<vscale x 8 x double> %va, do
 ; CHECK-LABEL: fcmp_ord_vf_swap_nxv8f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-<<<<<<< HEAD
+; CHECK-NEXT:    vfmv.v.f v16, fa0
 ; CHECK-NEXT:    vmfeq.vf v16, v16, fa0, v0.t
 ; CHECK-NEXT:    vmfeq.vv v8, v8, v8, v0.t
 ; CHECK-NEXT:    vmand.mm v0, v16, v8
-=======
-; CHECK-NEXT:    vfmv.v.f v16, fa0
-; CHECK-NEXT:    vmfeq.vf v24, v16, fa0, v0.t
-; CHECK-NEXT:    vmfeq.vv v16, v8, v8, v0.t
-; CHECK-NEXT:    vmand.mm v0, v24, v16
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 8 x double> poison, double %b, i32 0
   %vb = shufflevector <vscale x 8 x double> %elt.head, <vscale x 8 x double> poison, <vscale x 8 x i32> zeroinitializer
@@ -4715,16 +4679,10 @@ define <vscale x 8 x i1> @fcmp_uno_vf_nxv8f64(<vscale x 8 x double> %va, double 
 ; CHECK-LABEL: fcmp_uno_vf_nxv8f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-<<<<<<< HEAD
+; CHECK-NEXT:    vfmv.v.f v16, fa0
 ; CHECK-NEXT:    vmfne.vf v16, v16, fa0, v0.t
 ; CHECK-NEXT:    vmfne.vv v8, v8, v8, v0.t
 ; CHECK-NEXT:    vmor.mm v0, v8, v16
-=======
-; CHECK-NEXT:    vfmv.v.f v16, fa0
-; CHECK-NEXT:    vmfne.vf v24, v16, fa0, v0.t
-; CHECK-NEXT:    vmfne.vv v16, v8, v8, v0.t
-; CHECK-NEXT:    vmor.mm v0, v16, v24
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 8 x double> poison, double %b, i32 0
   %vb = shufflevector <vscale x 8 x double> %elt.head, <vscale x 8 x double> poison, <vscale x 8 x i32> zeroinitializer
@@ -4736,16 +4694,10 @@ define <vscale x 8 x i1> @fcmp_uno_vf_swap_nxv8f64(<vscale x 8 x double> %va, do
 ; CHECK-LABEL: fcmp_uno_vf_swap_nxv8f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-<<<<<<< HEAD
+; CHECK-NEXT:    vfmv.v.f v16, fa0
 ; CHECK-NEXT:    vmfne.vf v16, v16, fa0, v0.t
 ; CHECK-NEXT:    vmfne.vv v8, v8, v8, v0.t
 ; CHECK-NEXT:    vmor.mm v0, v16, v8
-=======
-; CHECK-NEXT:    vfmv.v.f v16, fa0
-; CHECK-NEXT:    vmfne.vf v24, v16, fa0, v0.t
-; CHECK-NEXT:    vmfne.vv v16, v8, v8, v0.t
-; CHECK-NEXT:    vmor.mm v0, v24, v16
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 ; CHECK-NEXT:    ret
   %elt.head = insertelement <vscale x 8 x double> poison, double %b, i32 0
   %vb = shufflevector <vscale x 8 x double> %elt.head, <vscale x 8 x double> poison, <vscale x 8 x i32> zeroinitializer

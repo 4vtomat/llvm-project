@@ -4,7 +4,7 @@
 define void @vrsqrts_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vrsqrts_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vle16.v v9, (a1)
 ; CHECK-NEXT:    li a0, 144
@@ -18,9 +18,7 @@ define void @vrsqrts_f16(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vfclass.v v11, v11
 ; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    vmsne.vx v0, v10, a0
-; CHECK-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v10, fa5
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
 ; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
 ; CHECK-NEXT:    vfmul.vf v8, v10, fa4
 ; CHECK-NEXT:    vse16.v v8, (a2)
@@ -65,7 +63,7 @@ entry:
 define void @vrsqrts_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vrsqrts_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    vle64.v v9, (a1)
 ; CHECK-NEXT:    li a0, 144
@@ -79,9 +77,7 @@ define void @vrsqrts_f64(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vfclass.v v11, v11
 ; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    vmsne.vx v0, v10, a0
-; CHECK-NEXT:    vsetvli a0, zero, e64, m1, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v10, fa5
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
 ; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
 ; CHECK-NEXT:    vfmul.vf v8, v10, fa4
 ; CHECK-NEXT:    vse64.v v8, (a2)
@@ -97,7 +93,7 @@ entry:
 define void @vrsqrtsq_f16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vrsqrtsq_f16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vle16.v v9, (a1)
 ; CHECK-NEXT:    li a0, 144
@@ -111,9 +107,7 @@ define void @vrsqrtsq_f16(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK-NEXT:    vfclass.v v11, v11
 ; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    vmsne.vx v0, v10, a0
-; CHECK-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v10, fa5
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
 ; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
 ; CHECK-NEXT:    vfmul.vf v8, v10, fa4
 ; CHECK-NEXT:    vse16.v v8, (a2)
@@ -158,7 +152,7 @@ entry:
 define void @vrsqrtsq_f64(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vrsqrtsq_f64:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    vle64.v v9, (a1)
 ; CHECK-NEXT:    li a0, 144
@@ -172,9 +166,7 @@ define void @vrsqrtsq_f64(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK-NEXT:    vfclass.v v11, v11
 ; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    vmsne.vx v0, v10, a0
-; CHECK-NEXT:    vsetvli a0, zero, e64, m1, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v10, fa5
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
 ; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
 ; CHECK-NEXT:    vfmul.vf v8, v10, fa4
 ; CHECK-NEXT:    vse64.v v8, (a2)

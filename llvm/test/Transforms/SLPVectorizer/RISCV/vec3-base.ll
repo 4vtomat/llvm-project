@@ -753,15 +753,13 @@ define double @dot_product_fp64(ptr %a, ptr %b) {
 define double @no_root_reshuffle(ptr  %ptr) {
 ; CHECK-LABEL: @no_root_reshuffle(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load double, ptr [[PTR:%.*]], align 8
-; CHECK-NEXT:    [[MUL:%.*]] = fmul fast double [[TMP0]], [[TMP0]]
-; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds i8, ptr [[PTR]], i64 8
-; CHECK-NEXT:    [[TMP1:%.*]] = load double, ptr [[ARRAYIDX2]], align 8
-; CHECK-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds i8, ptr [[PTR]], i64 16
+; CHECK-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds i8, ptr [[PTR:%.*]], i64 16
 ; CHECK-NEXT:    [[TMP2:%.*]] = load double, ptr [[ARRAYIDX3]], align 8
 ; CHECK-NEXT:    [[TMP3:%.*]] = fmul fast double [[TMP2]], [[TMP2]]
-; CHECK-NEXT:    [[MUL6:%.*]] = fmul fast double [[TMP3]], [[TMP1]]
-; CHECK-NEXT:    [[ADD:%.*]] = fadd fast double [[MUL6]], [[MUL]]
+; CHECK-NEXT:    [[TMP5:%.*]] = load <2 x double>, ptr [[PTR]], align 8
+; CHECK-NEXT:    [[TMP6:%.*]] = insertelement <2 x double> [[TMP5]], double [[TMP3]], i32 1
+; CHECK-NEXT:    [[TMP4:%.*]] = fmul fast <2 x double> [[TMP6]], [[TMP5]]
+; CHECK-NEXT:    [[ADD:%.*]] = call fast double @llvm.vector.reduce.fadd.v2f64(double 0.000000e+00, <2 x double> [[TMP4]])
 ; CHECK-NEXT:    ret double [[ADD]]
 ;
 entry:

@@ -89,7 +89,7 @@ define i32 @pred_select_const_i32_from_icmp(ptr noalias nocapture readonly %src1
 ; CHECK-VF1IC2:       [[VECTOR_BODY]]:
 ; CHECK-VF1IC2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[PRED_LOAD_CONTINUE3:.*]] ]
 ; CHECK-VF1IC2-NEXT:    [[VEC_PHI:%.*]] = phi i1 [ false, %[[VECTOR_PH]] ], [ [[PREDPHI:%.*]], %[[PRED_LOAD_CONTINUE3]] ]
-; CHECK-VF1IC2-NEXT:    [[VEC_PHI2:%.*]] = phi i1 [ false, %[[VECTOR_PH]] ], [ [[PREDPHI5:%.*]], %[[PRED_LOAD_CONTINUE3]] ]
+; CHECK-VF1IC2-NEXT:    [[VEC_PHI2:%.*]] = phi i1 [ false, %[[VECTOR_PH]] ], [ true, %[[PRED_LOAD_CONTINUE3]] ]
 ; CHECK-VF1IC2-NEXT:    [[TMP17:%.*]] = add i64 [[INDEX]], 1
 ; CHECK-VF1IC2-NEXT:    [[TMP0:%.*]] = getelementptr inbounds i32, ptr [[SRC1]], i64 [[INDEX]]
 ; CHECK-VF1IC2-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[SRC1]], i64 [[TMP17]]
@@ -116,7 +116,7 @@ define i32 @pred_select_const_i32_from_icmp(ptr noalias nocapture readonly %src1
 ; CHECK-VF1IC2-NEXT:    [[TMP14:%.*]] = or i1 [[VEC_PHI]], [[TMP12]]
 ; CHECK-VF1IC2-NEXT:    [[TMP15:%.*]] = or i1 [[VEC_PHI2]], [[TMP13]]
 ; CHECK-VF1IC2-NEXT:    [[PREDPHI]] = select i1 [[TMP4]], i1 [[TMP14]], i1 [[VEC_PHI]]
-; CHECK-VF1IC2-NEXT:    [[PREDPHI5]] = select i1 [[TMP5]], i1 [[TMP15]], i1 [[VEC_PHI2]]
+; CHECK-VF1IC2-NEXT:    [[PREDPHI5:%.*]] = select i1 [[TMP5]], i1 [[TMP15]], i1 [[VEC_PHI2]]
 ; CHECK-VF1IC2-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 2
 ; CHECK-VF1IC2-NEXT:    [[TMP18:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-VF1IC2-NEXT:    br i1 [[TMP18]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]

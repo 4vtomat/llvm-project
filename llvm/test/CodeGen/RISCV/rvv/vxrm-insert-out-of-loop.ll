@@ -71,7 +71,6 @@ define void @test1(ptr nocapture noundef writeonly %dst, i32 noundef signext %i_
 ; RV32-NEXT:    or t1, t1, t3
 ; RV32-NEXT:    andi t1, t1, 1
 ; RV32-NEXT:    slli t2, t2, 1
-; RV32-NEXT:    csrwi vxrm, 0
 ; RV32-NEXT:    j .LBB0_10
 ; RV32-NEXT:  .LBB0_9: # %for.cond1.for.cond.cleanup3_crit_edge.us
 ; RV32-NEXT:    # in Loop: Header=BB0_10 Depth=1
@@ -94,6 +93,7 @@ define void @test1(ptr nocapture noundef writeonly %dst, i32 noundef signext %i_
 ; RV32-NEXT:    li t3, 0
 ; RV32-NEXT:    neg t4, t2
 ; RV32-NEXT:    and t4, t4, a6
+; RV32-NEXT:    csrwi vxrm, 0
 ; RV32-NEXT:    li t6, 0
 ; RV32-NEXT:    li t5, 0
 ; RV32-NEXT:    vsetvli s0, zero, e8, m2, ta, ma
@@ -374,7 +374,6 @@ define void @test1(ptr nocapture noundef writeonly %dst, i32 noundef signext %i_
 ; RV64-NEXT:    or t5, a1, a3
 ; RV64-NEXT:    slti t5, t5, 0
 ; RV64-NEXT:    or t5, t6, t5
-<<<<<<< HEAD
 ; RV64-NEXT:    or t6, a1, a5
 ; RV64-NEXT:    sltu t3, a6, t3
 ; RV64-NEXT:    slli t2, t2, 28
@@ -385,13 +384,12 @@ define void @test1(ptr nocapture noundef writeonly %dst, i32 noundef signext %i_
 ; RV64-NEXT:    or t2, t3, t2
 ; RV64-NEXT:    andi t2, t2, 1
 ; RV64-NEXT:    and t3, s0, a6
-=======
 ; RV64-NEXT:    sltu t4, a6, t4
 ; RV64-NEXT:    or t4, t4, t5
 ; RV64-NEXT:    andi t4, t4, 1
 ; RV64-NEXT:    mv t5, a0
 ; RV64-NEXT:    csrwi vxrm, 0
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
+; RV64-NEXT:    mv t4, a0
 ; RV64-NEXT:    j .LBB0_6
 ; RV64-NEXT:  .LBB0_5: # %for.cond1.for.cond.cleanup3_crit_edge.us
 ; RV64-NEXT:    # in Loop: Header=BB0_6 Depth=1
@@ -408,21 +406,10 @@ define void @test1(ptr nocapture noundef writeonly %dst, i32 noundef signext %i_
 ; RV64-NEXT:    bnez t2, .LBB0_10
 ; RV64-NEXT:  # %bb.7: # %vector.ph
 ; RV64-NEXT:    # in Loop: Header=BB0_6 Depth=1
-<<<<<<< HEAD
 ; RV64-NEXT:    csrwi vxrm, 0
 ; RV64-NEXT:    vsetvli t5, zero, e8, m2, ta, ma
 ; RV64-NEXT:  .LBB0_8: # %vector.body
-=======
-; RV64-NEXT:    slli t6, t0, 28
-; RV64-NEXT:    sub t6, t6, t1
-; RV64-NEXT:    and t6, t6, a6
-; RV64-NEXT:    mv s0, a2
-; RV64-NEXT:    mv s1, a4
-; RV64-NEXT:    mv s2, t5
-; RV64-NEXT:    mv s3, t6
-; RV64-NEXT:    vsetvli s4, zero, e8, m2, ta, ma
 ; RV64-NEXT:  .LBB0_9: # %vector.body
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 ; RV64-NEXT:    # Parent Loop BB0_6 Depth=1
 ; RV64-NEXT:    # => This Inner Loop Header: Depth=2
 ; RV64-NEXT:    add t5, a2, t4

@@ -67,36 +67,37 @@ define <6 x i8> @load_v6i8(ptr %p) {
 define <12 x i8> @load_v12i8(ptr %p) {
 ; CHECK-LABEL: load_v12i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lbu a1, 8(a0)
-; CHECK-NEXT:    lbu a2, 9(a0)
-; CHECK-NEXT:    lbu a3, 10(a0)
-; CHECK-NEXT:    lbu a4, 11(a0)
-; CHECK-NEXT:    lbu a5, 4(a0)
-; CHECK-NEXT:    lbu a6, 5(a0)
-; CHECK-NEXT:    lbu a7, 6(a0)
-; CHECK-NEXT:    lbu t0, 7(a0)
-; CHECK-NEXT:    li t1, 255
-; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
-; CHECK-NEXT:    vmv.s.x v0, t1
-; CHECK-NEXT:    lbu t1, 0(a0)
-; CHECK-NEXT:    lbu t2, 1(a0)
-; CHECK-NEXT:    lbu t3, 2(a0)
-; CHECK-NEXT:    lbu a0, 3(a0)
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
+; CHECK-NEXT:    lbu a1, 4(a0)
+; CHECK-NEXT:    lbu a2, 5(a0)
+; CHECK-NEXT:    lbu a3, 6(a0)
+; CHECK-NEXT:    lbu a4, 7(a0)
+; CHECK-NEXT:    lbu a5, 0(a0)
+; CHECK-NEXT:    lbu a6, 1(a0)
+; CHECK-NEXT:    lbu a7, 2(a0)
+; CHECK-NEXT:    lbu t0, 3(a0)
+; CHECK-NEXT:    lbu t1, 8(a0)
+; CHECK-NEXT:    lbu t2, 9(a0)
+; CHECK-NEXT:    lbu t3, 10(a0)
+; CHECK-NEXT:    lbu a0, 11(a0)
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.x v8, t1
-; CHECK-NEXT:    vmv.v.x v9, a1
+; CHECK-NEXT:    li t1, 255
+; CHECK-NEXT:    vmv.v.x v9, a5
 ; CHECK-NEXT:    vslide1down.vx v8, v8, t2
-; CHECK-NEXT:    vslide1down.vx v9, v9, a2
+; CHECK-NEXT:    vslide1down.vx v9, v9, a6
 ; CHECK-NEXT:    vslide1down.vx v8, v8, t3
-; CHECK-NEXT:    vslide1down.vx v9, v9, a3
+; CHECK-NEXT:    vslide1down.vx v9, v9, a7
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a0
+; CHECK-NEXT:    vslide1down.vx v9, v9, t0
+; CHECK-NEXT:    vslidedown.vi v8, v8, 4
+; CHECK-NEXT:    vslide1down.vx v9, v9, a1
+; CHECK-NEXT:    vslide1down.vx v9, v9, a2
+; CHECK-NEXT:    vslide1down.vx v9, v9, a3
+; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
+; CHECK-NEXT:    vmv.s.x v0, t1
+; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
 ; CHECK-NEXT:    vslide1down.vx v9, v9, a4
-; CHECK-NEXT:    vslide1down.vx v8, v8, a5
-; CHECK-NEXT:    vslide1down.vx v8, v8, a6
-; CHECK-NEXT:    vslide1down.vx v8, v8, a7
-; CHECK-NEXT:    vslide1down.vx v10, v8, t0
-; CHECK-NEXT:    vslidedown.vi v8, v9, 4
-; CHECK-NEXT:    vslidedown.vi v8, v10, 8, v0.t
+; CHECK-NEXT:    vslidedown.vi v8, v9, 8, v0.t
 ; CHECK-NEXT:    ret
   %x = load <12 x i8>, ptr %p
   ret <12 x i8> %x

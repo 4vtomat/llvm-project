@@ -22,9 +22,9 @@ define <vscale x 2 x i64> @llround_nxv2i64_nxv2f32(<vscale x 2 x float> %x) {
 ; CHECK-LABEL: llround_nxv2i64_nxv2f32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vmv1r.v v10, v8
+; CHECK-NEXT:    vmv1r.v v9, v8
 ; CHECK-NEXT:    fsrmi a0, 4
-; CHECK-NEXT:    vfwcvt.x.f.v v8, v10
+; CHECK-NEXT:    vfwcvt.x.f.v v8, v9
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    ret
   %a = call <vscale x 2 x i64> @llvm.llround.nxv2i64.nxv2f32(<vscale x 2 x float> %x)
@@ -36,9 +36,9 @@ define <vscale x 4 x i64> @llround_nxv4i64_nxv4f32(<vscale x 4 x float> %x) {
 ; CHECK-LABEL: llround_nxv4i64_nxv4f32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vmv2r.v v12, v8
+; CHECK-NEXT:    vmv2r.v v10, v8
 ; CHECK-NEXT:    fsrmi a0, 4
-; CHECK-NEXT:    vfwcvt.x.f.v v8, v12
+; CHECK-NEXT:    vfwcvt.x.f.v v8, v10
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    ret
   %a = call <vscale x 4 x i64> @llvm.llround.nxv4i64.nxv4f32(<vscale x 4 x float> %x)
@@ -50,9 +50,9 @@ define <vscale x 8 x i64> @llround_nxv8i64_nxv8f32(<vscale x 8 x float> %x) {
 ; CHECK-LABEL: llround_nxv8i64_nxv8f32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e32, m4, ta, ma
-; CHECK-NEXT:    vmv4r.v v16, v8
+; CHECK-NEXT:    vmv4r.v v12, v8
 ; CHECK-NEXT:    fsrmi a0, 4
-; CHECK-NEXT:    vfwcvt.x.f.v v8, v16
+; CHECK-NEXT:    vfwcvt.x.f.v v8, v12
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    ret
   %a = call <vscale x 8 x i64> @llvm.llround.nxv8i64.nxv8f32(<vscale x 8 x float> %x)
@@ -146,10 +146,10 @@ define <vscale x 2 x i64> @llround_nxv2f16(<vscale x 2 x half> %x) {
 ; CHECK-LABEL: llround_nxv2f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vfwcvt.f.f.v v10, v8
+; CHECK-NEXT:    vfwcvt.f.f.v v9, v8
 ; CHECK-NEXT:    fsrmi a0, 4
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vfwcvt.x.f.v v8, v10
+; CHECK-NEXT:    vfwcvt.x.f.v v8, v9
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    ret
   %a = call <vscale x 2 x i64> @llvm.llround.nxv2i64.nxv2f16(<vscale x 2 x half> %x)
@@ -161,10 +161,10 @@ define <vscale x 4 x i64> @llround_nxv4f16(<vscale x 4 x half> %x) {
 ; CHECK-LABEL: llround_nxv4f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vfwcvt.f.f.v v12, v8
+; CHECK-NEXT:    vfwcvt.f.f.v v10, v8
 ; CHECK-NEXT:    fsrmi a0, 4
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vfwcvt.x.f.v v8, v12
+; CHECK-NEXT:    vfwcvt.x.f.v v8, v10
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    ret
   %a = call <vscale x 4 x i64> @llvm.llround.nxv4i64.nxv4f16(<vscale x 4 x half> %x)
@@ -176,10 +176,10 @@ define <vscale x 8 x i64> @llround_nxv8f16(<vscale x 8 x half> %x) {
 ; CHECK-LABEL: llround_nxv8f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e16, m2, ta, ma
-; CHECK-NEXT:    vfwcvt.f.f.v v16, v8
+; CHECK-NEXT:    vfwcvt.f.f.v v12, v8
 ; CHECK-NEXT:    fsrmi a0, 4
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
-; CHECK-NEXT:    vfwcvt.x.f.v v8, v16
+; CHECK-NEXT:    vfwcvt.x.f.v v8, v12
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    ret
   %a = call <vscale x 8 x i64> @llvm.llround.nxv8i64.nxv8f16(<vscale x 8 x half> %x)
@@ -191,12 +191,12 @@ define <vscale x 16 x i64> @llround_nxv16f16(<vscale x 16 x half> %x) {
 ; CHECK-LABEL: llround_nxv16f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e16, m2, ta, ma
-; CHECK-NEXT:    vfwcvt.f.f.v v16, v8
+; CHECK-NEXT:    vfwcvt.f.f.v v12, v8
 ; CHECK-NEXT:    fsrmi a0, 4
-; CHECK-NEXT:    vfwcvt.f.f.v v24, v10
+; CHECK-NEXT:    vfwcvt.f.f.v v20, v10
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
-; CHECK-NEXT:    vfwcvt.x.f.v v8, v16
-; CHECK-NEXT:    vfwcvt.x.f.v v16, v24
+; CHECK-NEXT:    vfwcvt.x.f.v v8, v12
+; CHECK-NEXT:    vfwcvt.x.f.v v16, v20
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    ret
   %a = call <vscale x 16 x i64> @llvm.llround.nxv16i64.nxv16f16(<vscale x 16 x half> %x)
@@ -223,10 +223,10 @@ define <vscale x 2 x i64> @llround_nxv2bf16(<vscale x 2 x bfloat> %x) {
 ; CHECK-LABEL: llround_nxv2bf16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v10, v8
+; CHECK-NEXT:    vfwcvtbf16.f.f.v v9, v8
 ; CHECK-NEXT:    fsrmi a0, 4
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vfwcvt.x.f.v v8, v10
+; CHECK-NEXT:    vfwcvt.x.f.v v8, v9
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    ret
   %a = call <vscale x 2 x i64> @llvm.llround.nxv2i64.nxv2bf16(<vscale x 2 x bfloat> %x)
@@ -238,10 +238,10 @@ define <vscale x 4 x i64> @llround_nxv4bf16(<vscale x 4 x bfloat> %x) {
 ; CHECK-LABEL: llround_nxv4bf16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v12, v8
+; CHECK-NEXT:    vfwcvtbf16.f.f.v v10, v8
 ; CHECK-NEXT:    fsrmi a0, 4
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vfwcvt.x.f.v v8, v12
+; CHECK-NEXT:    vfwcvt.x.f.v v8, v10
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    ret
   %a = call <vscale x 4 x i64> @llvm.llround.nxv4i64.nxv4bf16(<vscale x 4 x bfloat> %x)
@@ -253,10 +253,10 @@ define <vscale x 8 x i64> @llround_nxv8bf16(<vscale x 8 x bfloat> %x) {
 ; CHECK-LABEL: llround_nxv8bf16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e16, m2, ta, ma
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v16, v8
+; CHECK-NEXT:    vfwcvtbf16.f.f.v v12, v8
 ; CHECK-NEXT:    fsrmi a0, 4
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
-; CHECK-NEXT:    vfwcvt.x.f.v v8, v16
+; CHECK-NEXT:    vfwcvt.x.f.v v8, v12
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    ret
   %a = call <vscale x 8 x i64> @llvm.llround.nxv8i64.nxv8bf16(<vscale x 8 x bfloat> %x)
@@ -268,12 +268,12 @@ define <vscale x 16 x i64> @llround_nxv16bf16(<vscale x 16 x bfloat> %x) {
 ; CHECK-LABEL: llround_nxv16bf16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e16, m2, ta, ma
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v16, v8
+; CHECK-NEXT:    vfwcvtbf16.f.f.v v12, v8
 ; CHECK-NEXT:    fsrmi a0, 4
-; CHECK-NEXT:    vfwcvtbf16.f.f.v v24, v10
+; CHECK-NEXT:    vfwcvtbf16.f.f.v v20, v10
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
-; CHECK-NEXT:    vfwcvt.x.f.v v8, v16
-; CHECK-NEXT:    vfwcvt.x.f.v v16, v24
+; CHECK-NEXT:    vfwcvt.x.f.v v8, v12
+; CHECK-NEXT:    vfwcvt.x.f.v v16, v20
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    ret
   %a = call <vscale x 16 x i64> @llvm.llround.nxv16i64.nxv16bf16(<vscale x 16 x bfloat> %x)

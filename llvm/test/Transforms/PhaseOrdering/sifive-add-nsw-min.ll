@@ -15,7 +15,8 @@ define signext i32 @foo(i32 signext %px, i32 signext %y) {
 ; CHECK-LABEL: @foo(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[ADD:%.*]] = add nsw i32 [[PX:%.*]], 1
-; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.smin.i32(i32 [[ADD]], i32 [[Y:%.*]])
+; CHECK-NEXT:    [[CMP_NOT:%.*]] = icmp slt i32 [[PX]], [[Y:%.*]]
+; CHECK-NEXT:    [[TMP0:%.*]] = select i1 [[CMP_NOT]], i32 [[ADD]], i32 [[Y]]
 ; CHECK-NEXT:    ret i32 [[TMP0]]
 ;
 entry:
