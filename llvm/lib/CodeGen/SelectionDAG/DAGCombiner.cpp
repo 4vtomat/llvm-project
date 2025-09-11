@@ -11569,7 +11569,6 @@ SDValue DAGCombiner::foldABSToABD(SDNode *N, const SDLoc &DL) {
        Opc0 != ISD::SIGN_EXTEND_INREG)) {
     // fold (abs (sub nsw x, y)) -> abds(x, y)
     // Don't fold this for unsupported types as we lose the NSW handling.
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (AbsOp0->getFlags().hasNoSignedWrap() &&
         matcher.isOperationLegalOrCustom(ISD::ABDS, VT, LegalOperations) &&
@@ -11578,26 +11577,19 @@ SDValue DAGCombiner::foldABSToABD(SDNode *N, const SDLoc &DL) {
       return matcher.getZExtOrTrunc(ABD, DL, SrcVT);
     }
 #else
-    if (AbsOp0->getFlags().hasNoSignedWrap() && hasOperation(ISD::ABDS, VT) &&
-        TLI.preferABDSToABSWithNSW(VT)) {
-      SDValue ABD = DAG.getNode(ISD::ABDS, DL, VT, Op0, Op1);
-      return DAG.getZExtOrTrunc(ABD, DL, SrcVT);
-    }
-#endif // SIFIVE_CUSTOMIZATION
-=======
     if (hasOperation(ISD::ABDS, VT) && TLI.preferABDSToABSWithNSW(VT) &&
         (AbsOp0->getFlags().hasNoSignedWrap() ||
          DAG.willNotOverflowSub(/*IsSigned=*/true, Op0, Op1))) {
       SDValue ABD = DAG.getNode(ISD::ABDS, DL, VT, Op0, Op1);
       return DAG.getZExtOrTrunc(ABD, DL, SrcVT);
     }
+#endif // SIFIVE_CUSTOMIZATION
     // fold (abs (sub x, y)) -> abdu(x, y)
     if (hasOperation(ISD::ABDU, VT) && DAG.SignBitIsZero(Op0) &&
         DAG.SignBitIsZero(Op1)) {
       SDValue ABD = DAG.getNode(ISD::ABDU, DL, VT, Op0, Op1);
       return DAG.getZExtOrTrunc(ABD, DL, SrcVT);
     }
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
     return SDValue();
   }
 
