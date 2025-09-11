@@ -880,7 +880,6 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
 
     addCost(SwitchCost);
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   void onMissedSimplification(Instruction *I) override {
     int64_t Cost = InstrCost;
@@ -899,7 +898,8 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
     addCost(Cost);
   }
 #else
-=======
+  void onMissedSimplification() override { addCost(InstrCost); }
+#endif // SIFIVE_CUSTOMIZATION
 
   // Parses the inline assembly argument to account for its cost. Inline
   // assembly instructions incur higher costs for inlining since they cannot be
@@ -941,10 +941,6 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
     NumInlineAsmInstructions += InlineAsmInstrCount;
     addCost(InlineAsmInstrCount * InlineAsmInstrCost);
   }
-
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
-  void onMissedSimplification() override { addCost(InstrCost); }
-#endif // SIFIVE_CUSTOMIZATION
 
   void onInitializeSROAArg(AllocaInst *Arg) override {
     assert(Arg != nullptr &&
