@@ -2054,14 +2054,11 @@ void TypePrinter::printAttributedAfter(const AttributedType *T,
   case attr::Blocking:
   case attr::Allocating:
   case attr::SwiftAttr:
-<<<<<<< HEAD
   case attr::RISCVLandingPad: // SIFIVE
   case attr::RISCVNoLandingPad: // SIFIVE
-=======
   case attr::PreserveAll:
   case attr::PreserveMost:
   case attr::PreserveNone:
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
     llvm_unreachable("This attribute should have been handled already");
 
   case attr::NSReturnsRetained:
