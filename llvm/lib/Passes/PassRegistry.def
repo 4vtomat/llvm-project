@@ -726,18 +726,14 @@ FUNCTION_PASS_WITH_PARAMS(
     [](BoundsCheckingPass::Options Options) {
       return BoundsCheckingPass(Options);
     },
-<<<<<<< HEAD
-    parseBoundsCheckingOptions, "trap")
+    parseBoundsCheckingOptions,
+    "trap;rt;rt-abort;min-rt;min-rt-abort;merge;guard=N")
 #if SIFIVE_CUSTOMIZATION
 FUNCTION_PASS_WITH_PARAMS(
     "reassociate", "ReassociatePass",
     [](bool EnableTwoPhase) { return ReassociatePass(EnableTwoPhase); },
     parseReassociatePassOptions, "two-phase-reassoc")
 #endif
-=======
-    parseBoundsCheckingOptions,
-    "trap;rt;rt-abort;min-rt;min-rt-abort;merge;guard=N")
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 #undef FUNCTION_PASS_WITH_PARAMS
 
 #ifndef LOOPNEST_PASS
