@@ -240,10 +240,6 @@ multiclass CustomSiFiveVCIX<string suffix, VCIXType type,
                                              InTyRs1, 1>;
 }
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 // For XSfvqmaccdod/qoq and XSfvfwmaccqqq
 class SiFiveVMACCScheds<string name> {
   defvar n = !tolower(name);
@@ -254,27 +250,15 @@ class SiFiveVMACCScheds<string name> {
   string read = "ReadSF_V" # prefix # "MACC_" # suffix;
   string write = "WriteSF_V" # prefix # "MACC_" # suffix;
 }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
 class CustomSiFiveVMACC<bits<6> funct6, RISCVVFormat opv, string opcodestr>
     : RVInstVCCustom2<funct6{5-2}, opv.Value, (outs VR:$rd), (ins VR:$rs1, VR:$rs2),
                       opcodestr, "$rd, $rs1, $rs2">,
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
       SchedTernaryMC<SiFiveVMACCScheds<NAME>.write,
                      SiFiveVMACCScheds<NAME>.read,
                      SiFiveVMACCScheds<NAME>.read,
                      SiFiveVMACCScheds<NAME>.read> {
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
   let vm = 1;
   let funct6_lo2 = funct6{1-0};
 }
@@ -488,19 +472,6 @@ multiclass VPseudoVC_XVW<LMULInfo m, DAGOperand RS1Class,
 }
 
 multiclass VPseudoSiFiveVMACC<string mx, VReg vd_type, VReg vs2_type> {
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-  defvar SchedWriteName = SiFiveVMACCScheds<NAME>.write;
-  defvar SchedReadName = SiFiveVMACCScheds<NAME>.read;
-#endif // SIFIVE_CUSTOMIZATION
-  def "Pseudo" # NAME # "_" # mx
-      : VPseudoTernaryNoMaskWithPolicy<vd_type, V_M1.vrclass, vs2_type,
-                                       "@earlyclobber $rd">,
-#ifdef SIFIVE_CUSTOMIZATION
-        SchedTernary<SchedWriteName, SchedReadName, SchedReadName,
-                     SchedReadName, mx>;
-#endif // SIFIVE_CUSTOMIZATION
-=======
   defvar SchedWriteName = SiFiveVMACCScheds<NAME>.write;
   defvar SchedReadName = SiFiveVMACCScheds<NAME>.read;
   def "Pseudo" # NAME # "_" # mx
@@ -508,7 +479,6 @@ multiclass VPseudoSiFiveVMACC<string mx, VReg vd_type, VReg vs2_type> {
                                        "@earlyclobber $rd">,
         SchedTernary<SchedWriteName, SchedReadName, SchedReadName,
                      SchedReadName, mx>;
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 }
 
 multiclass VPseudoSiFiveVQMACCDOD {
