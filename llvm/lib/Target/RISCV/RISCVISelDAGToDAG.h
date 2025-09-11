@@ -208,11 +208,7 @@ public:
 private:
   bool doPeepholeSExtW(SDNode *Node);
   bool doPeepholeMaskedRVV(MachineSDNode *Node);
-<<<<<<< HEAD
   bool doPeepholeLUIADDI(SDNode *Node); // SIFIVE
-  bool doPeepholeMergeVVMFold();
-=======
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
   bool doPeepholeNoRegPassThru();
   bool performCombineVMergeAndVOps(SDNode *N);
 
