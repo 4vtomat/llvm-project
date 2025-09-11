@@ -27205,15 +27205,11 @@ bool RISCVTargetLowering::lowerInterleavedLoad(
   // and there's only one element used, use a strided load instead.  This
   // will be equally fast, and create less vector register pressure.
   if (Indices.size() == 1 && !Subtarget.hasOptimizedSegmentLoadStore(Factor)) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     // SIFIVE changed to use datalayout
     const DataLayout &DL = LI->getDataLayout();
-    unsigned ScalarSizeInBytes = DL.getTypeStoreSize(VTy->getElementType());
 #endif
-=======
     unsigned ScalarSizeInBytes = DL.getTypeStoreSize(VTy->getElementType());
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
     Value *Stride = ConstantInt::get(XLenTy, Factor * ScalarSizeInBytes);
     Value *Offset = ConstantInt::get(XLenTy, Indices[0] * ScalarSizeInBytes);
     Value *BasePtr = Builder.CreatePtrAdd(LI->getPointerOperand(), Offset);
@@ -27295,17 +27291,12 @@ bool RISCVTargetLowering::lowerInterleavedStore(StoreInst *SI,
   // be equally fast, and create less vector register pressure.
   if (!Subtarget.hasOptimizedSegmentLoadStore(Factor) &&
       isSpreadMask(Mask, Factor, Index)) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     // SIFIVE changed to use datalayout
     const DataLayout &DL = SI->getDataLayout();
-    unsigned ScalarSizeInBytes =
-        DL.getTypeStoreSize(ShuffleVTy->getElementType());
 #endif
-=======
     unsigned ScalarSizeInBytes =
         DL.getTypeStoreSize(ShuffleVTy->getElementType());
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
     Value *Data = SVI->getOperand(0);
     auto *DataVTy = cast<FixedVectorType>(Data->getType());
     Value *Stride = ConstantInt::get(XLenTy, Factor * ScalarSizeInBytes);
