@@ -260,8 +260,7 @@ void RISCVMCCodeEmitter::expandAddRegRel(const MCInst &MI,
   }
 
   // Emit the correct tprel_add relocation for the symbol.
-  Fixups.push_back(MCFixup::create(
-      0, Expr, MCFixupKind(FixupKind), MI.getLoc()));
+  Fixups.push_back(MCFixup::create(0, Expr, MCFixupKind(FixupKind)));
 
   if (RelaxCandidate && STI.hasFeature(RISCV::FeatureRelax))
     Fixups.back().setLinkerRelaxable();
