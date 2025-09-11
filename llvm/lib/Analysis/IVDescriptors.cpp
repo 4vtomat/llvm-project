@@ -731,17 +731,12 @@ RecurrenceDescriptor::isFindIVPattern(RecurKind Kind, Loop *TheLoop,
                                      m_Value(NonRdxPhi)))))
     return InstDesc(false, I);
 
-<<<<<<< HEAD
-  // Returns a non-nullopt boolean indicating the signedness of the recurrence
-  // when a valid FindLastIV pattern is found.
+  // Returns either FindFirstIV/FindLastIV, if such a pattern is found, or
+  // std::nullopt.
 #if SIFIVE_CUSTOMIZATION
   auto GetRecurKindAndSentinel =
       [&](Value *V) -> std::pair<std::optional<RecurKind>, Value *> {
 #else
-=======
-  // Returns either FindFirstIV/FindLastIV, if such a pattern is found, or
-  // std::nullopt.
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
   auto GetRecurKind = [&](Value *V) -> std::optional<RecurKind> {
 #endif // SIFIVE_CUSTOMIZATION
     Type *Ty = V->getType();
@@ -864,11 +859,6 @@ RecurrenceDescriptor::isFindIVPattern(RecurKind Kind, Loop *TheLoop,
 #endif // SIFIVE_CUSTOMIZATION
   };
 
-<<<<<<< HEAD
-  // We are looking for selects of the form:
-  //   select(cmp(), phi, increasing_loop_induction) or
-  //   select(cmp(), increasing_loop_induction, phi)
-  // TODO: Support for monotonically decreasing induction variable
 #if SIFIVE_CUSTOMIZATION
   auto [RK, ValidSentinel] = GetRecurKindAndSentinel(NonRdxPhi);
   if (!RK)
@@ -876,8 +866,6 @@ RecurrenceDescriptor::isFindIVPattern(RecurKind Kind, Loop *TheLoop,
 
   return InstDesc(I, *RK, ValidSentinel);
 #else
-=======
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
   if (auto RK = GetRecurKind(NonRdxPhi))
     return InstDesc(I, *RK);
 
