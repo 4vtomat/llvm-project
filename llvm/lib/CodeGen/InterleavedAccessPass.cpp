@@ -694,7 +694,6 @@ bool InterleavedAccessImpl::lowerDeinterleaveIntrinsic(
     LastFactor = Extract;
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Match
   //   %x = vp.strided.load  ;; VPStridedLoad
@@ -741,10 +740,8 @@ bool InterleavedAccessImpl::lowerDeinterleaveIntrinsic(
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   if (!LastFactor)
     return false;
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 
   if (auto *VPLoad = dyn_cast<VPIntrinsic>(LoadedVal)) {
     if (VPLoad->getIntrinsicID() != Intrinsic::vp_load)
