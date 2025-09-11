@@ -2233,37 +2233,6 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
 
     return Cost;
   }
-<<<<<<< HEAD
-  case Intrinsic::vp_rint: {
-    // RISC-V target uses at least 5 instructions to lower rounding intrinsics.
-    unsigned Cost = 5;
-    auto LT = getTypeLegalizationCost(RetTy);
-    if (TLI->isOperationCustom(ISD::VP_FRINT, LT.second))
-      return Cost * LT.first;
-    break;
-  }
-  case Intrinsic::vp_nearbyint: {
-    // More one read and one write for fflags than vp_rint.
-    unsigned Cost = 7;
-    auto LT = getTypeLegalizationCost(RetTy);
-    if (TLI->isOperationCustom(ISD::VP_FRINT, LT.second))
-      return Cost * LT.first;
-    break;
-  }
-  case Intrinsic::vp_ceil:
-  case Intrinsic::vp_floor:
-  case Intrinsic::vp_round:
-  case Intrinsic::vp_roundeven:
-  case Intrinsic::vp_roundtozero: {
-    // Rounding with static rounding mode needs two more instructions to
-    // swap/write FRM than vp_rint.
-    unsigned Cost = 7;
-    auto LT = getTypeLegalizationCost(RetTy);
-    unsigned VPISD = getISDForVPIntrinsicID(ICA.getID());
-    if (TLI->isOperationCustom(VPISD, LT.second))
-      return Cost * LT.first;
-    break;
-  }
 #if SIFIVE_CUSTOMIZATION
   case Intrinsic::vp_first: {
     Type *MaskTy = ICA.getArgTypes()[0];
@@ -2639,19 +2608,6 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
            getRISCVInstructionCost(RISCV::VNCLIP_WI, LT.second, CostKind);
   }
 #endif // SIFIVE_CUSTOMIZATION
-  case Intrinsic::vp_select: {
-    Intrinsic::ID IID = ICA.getID();
-    std::optional<unsigned> FOp = VPIntrinsic::getFunctionalOpcodeForVP(IID);
-    assert(FOp.has_value());
-    return getCmpSelInstrCost(*FOp, ICA.getReturnType(), ICA.getArgTypes()[0],
-                              CmpInst::BAD_ICMP_PREDICATE, CostKind);
-  }
-  case Intrinsic::vp_merge:
-    return getCmpSelInstrCost(Instruction::Select, ICA.getReturnType(),
-                              ICA.getArgTypes()[0], CmpInst::BAD_ICMP_PREDICATE,
-                              CostKind);
-=======
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
   case Intrinsic::experimental_vp_splat: {
     auto LT = getTypeLegalizationCost(RetTy);
     // TODO: Lower i1 experimental_vp_splat
