@@ -376,5 +376,6 @@ defm : UnsupportedSchedXSfsci;
 defm : UnsupportedSchedXSfvqmaccdod;
 defm : UnsupportedSchedXSfvqmaccqoq;
 defm : UnsupportedSchedXSfvfwmaccqqq;
+defm : UnsupportedSchedXSfvfnrclipxfqf;
 defm : UnsupportedSchedZvk;
 }

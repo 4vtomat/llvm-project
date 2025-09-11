@@ -58,7 +58,6 @@ foreach f = ["FPR16", "FPR32", "FPR64"] in {
 }
 }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def WriteSCI : SchedWrite;
 def ReadSCI  : SchedRead;
@@ -67,7 +66,10 @@ multiclass UnsupportedSchedXSfsci {
 let Unsupported = true in {
 def : WriteRes<WriteSCI, []>;
 def : ReadAdvance<ReadSCI, 0>;
-=======
+} // Unsupported = true
+}
+#endif
+
 defm "" : LMULSchedWritesImpl<"WriteSF_VFNRClipV", !listremove(SchedMxListW, ["M4"])>;
 defm "" : LMULSchedReadsImpl<"ReadSF_VFNRClipV",   !listremove(SchedMxListW, ["M4"])>;
 defm "" : LMULSchedReadsImpl<"ReadSF_VFNRClipF",   !listremove(SchedMxListW, ["M4"])>;
@@ -77,7 +79,6 @@ let Unsupported = true in {
 defm : LMULWriteRes<"WriteSF_VFNRClipV", []>;
 defm : LMULReadAdvance<"ReadSF_VFNRClipV", 0>;
 defm : LMULReadAdvance<"ReadSF_VFNRClipF", 0>;
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 } // Unsupported = true
 }
 
@@ -110,7 +111,3 @@ defm : LMULWriteRes<"WriteSF_VFWMACC_QQQ", []>;
 defm : LMULReadAdvance<"ReadSF_VFWMACC_QQQ", 0>;
 } // Unsupported = true
 }
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
