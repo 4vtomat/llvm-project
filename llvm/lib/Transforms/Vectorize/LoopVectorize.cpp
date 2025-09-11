@@ -190,7 +190,6 @@ STATISTIC(UncountableLoopsVectorized, "Number of uncountable loops vectorized");
 #endif
 STATISTIC(LoopsAnalyzed, "Number of loops analyzed for vectorization");
 STATISTIC(LoopsEpilogueVectorized, "Number of epilogues vectorized");
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 STATISTIC(CSAsVectorized,
           "Number of conditional scalar assignments vectorized");
@@ -214,9 +213,7 @@ static cl::opt<uint64_t> VectorizerProfitableScalarTripCount(
     cl::desc("Number of scalar iterations for which executing vector code is "
              "profitable."));
 #endif // SIFIVE_CUSTOMIZATION
-=======
 STATISTIC(LoopsEarlyExitVectorized, "Number of early exit loops vectorized");
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 
 static cl::opt<bool> EnableEpilogueVectorization(
     "enable-epilogue-vectorization", cl::init(true), cl::Hidden,
@@ -2933,24 +2930,17 @@ BasicBlock *InnerLoopVectorizer::createVectorizedLoopSkeleton() {
     PrevTCCheckBlock = EntryVPBB->getIRBasicBlock();
 #endif // SIFIVE_CUSTOMIZATION
 
-<<<<<<< HEAD
+#if SIFIVE_CUSTOMIZATION
   // Generate the code to check any assumptions that we've made for SCEV
   // expressions.
-#if SIFIVE_CUSTOMIZATION
-  PrevSCEVCheckBlock =
-#endif // SIFIVE_CUSTOMIZATION
-  emitSCEVChecks(LoopScalarPreHeader);
+  PrevSCEVCheckBlock = RTChecks.getSCEVChecks().second;
 
   // Generate the code that checks in runtime if arrays overlap. We put the
   // checks into a separate block to make the more common case of few elements
   // faster.
-#if SIFIVE_CUSTOMIZATION
-  BasicBlock *PrevMemCheckBlock =
+  BasicBlock *PrevMemCheckBlock = RTChecks.getMemRuntimeChecks().second;
 #endif // SIFIVE_CUSTOMIZATION
-  emitMemRuntimeChecks(LoopScalarPreHeader);
 
-=======
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
   replaceVPBBWithIRVPBB(Plan.getScalarPreheader(), LoopScalarPreHeader);
 #if SIFIVE_CUSTOMIZATION
   if (useVLAVectorizer() && (PrevSCEVCheckBlock || PrevMemCheckBlock)) {
@@ -8978,20 +8968,16 @@ static void fixReductionScalarResumeWhenVectorizingEpilog(
   // Get the VPInstruction computing the reduction result in the middle block.
   // The first operand may not be from the middle block if it is not connected
   // to the scalar preheader. In that case, there's nothing to fix.
-<<<<<<< HEAD
-  auto *EpiRedResult = dyn_cast<VPInstruction>(EpiResumePhiR->getOperand(0));
+  VPValue *Incoming = EpiResumePhiR->getOperand(0);
+  match(Incoming, VPlanPatternMatch::m_ZExtOrSExt(
+                      VPlanPatternMatch::m_VPValue(Incoming)));
+  auto *EpiRedResult = dyn_cast<VPInstruction>(Incoming);
 #if SIFIVE_CUSTOMIZATION
   if (!EpiRedResult ||
       (EpiRedResult->getOpcode() != VPInstruction::ComputeReductionResult &&
        EpiRedResult->getOpcode() !=
            VPInstruction::ComputeReductionResultWithMask))
 #else
-=======
-  VPValue *Incoming = EpiResumePhiR->getOperand(0);
-  match(Incoming, VPlanPatternMatch::m_ZExtOrSExt(
-                      VPlanPatternMatch::m_VPValue(Incoming)));
-  auto *EpiRedResult = dyn_cast<VPInstruction>(Incoming);
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
   if (!EpiRedResult ||
       (EpiRedResult->getOpcode() != VPInstruction::ComputeAnyOfResult &&
        EpiRedResult->getOpcode() != VPInstruction::ComputeReductionResult &&
@@ -9060,18 +9046,6 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
                            OrigLoop->getHeader()->getContext());
   VPlanTransforms::runPass(VPlanTransforms::replicateByVF, BestVPlan, BestVF);
   VPlanTransforms::runPass(VPlanTransforms::materializeBroadcasts, BestVPlan);
-<<<<<<< HEAD
-  if (hasBranchWeightMD(*OrigLoop->getLoopLatch()->getTerminator()))
-    VPlanTransforms::runPass(
-        VPlanTransforms::addBranchWeightToMiddleTerminator, BestVPlan,
-        BestVF);
-#if SIFIVE_CUSTOMIZATION
-if (!BestVPlan.isUncountable() &&
-    (!BestVPlan.useVLAVectorizer() || !Legal->getLAI() ||
-    Legal->isSafeForAnyVectorWidth()))
-#endif // SIFIVE_CUSTOMIZATION                           
-    VPlanTransforms::optimizeForVFAndUF(BestVPlan, BestVF, BestUF, PSE);
-=======
   bool HasBranchWeights =
       hasBranchWeightMD(*OrigLoop->getLoopLatch()->getTerminator());
   if (HasBranchWeights) {
@@ -9088,8 +9062,12 @@ if (!BestVPlan.isUncountable() &&
 
   // Retrieving VectorPH now when it's easier while VPlan still has Regions.
   VPBasicBlock *VectorPH = cast<VPBasicBlock>(BestVPlan.getVectorPreheader());
-  VPlanTransforms::optimizeForVFAndUF(BestVPlan, BestVF, BestUF, PSE);
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
+#if SIFIVE_CUSTOMIZATION
+  if (!BestVPlan.isUncountable() &&
+      (!BestVPlan.useVLAVectorizer() || !Legal->getLAI() ||
+       Legal->isSafeForAnyVectorWidth()))
+#endif // SIFIVE_CUSTOMIZATION
+    VPlanTransforms::optimizeForVFAndUF(BestVPlan, BestVF, BestUF, PSE);
   VPlanTransforms::simplifyRecipes(BestVPlan, *Legal->getWidestInductionType());
   VPlanTransforms::narrowInterleaveGroups(
       BestVPlan, BestVF,
@@ -10171,8 +10149,14 @@ VPRecipeBase *VPRecipeBuilder::tryToCreateWidenRecipe(VPSingleDefRecipe *R,
       unsigned ScaleFactor =
           getScalingForReduction(RdxDesc.getLoopExitInstr()).value_or(1);
       PhiRecipe = new VPReductionPHIRecipe(
+#ifdef SIFIVE_CUSTOMIZATION
+          Phi, RdxDesc, RdxDesc.getRecurrenceKind(), *StartV,
+          CM.isInLoopReduction(Phi), CM.useOrderedReductions(RdxDesc),
+          ScaleFactor);
+#else
           Phi, RdxDesc.getRecurrenceKind(), *StartV, CM.isInLoopReduction(Phi),
           CM.useOrderedReductions(RdxDesc), ScaleFactor);
+#endif // SIFIVE_CUSTOMIZATION
 #if SIFIVE_CUSTOMIZATION
     } else if (Legal->isFixedOrderRecurrence(Phi)) {
 #else
