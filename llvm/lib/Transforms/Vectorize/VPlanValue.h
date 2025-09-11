@@ -54,14 +54,11 @@ class LLVM_ABI_FOR_TEST VPValue {
   friend struct VPDoubleValueDef;
   friend class VPInterleaveRecipe;
   friend class VPlan;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   friend struct VPWidenLoadRecipe;
   friend struct VPWidenLoadEVLRecipe;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   friend class VPExpressionRecipe;
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 
   const unsigned char SubclassID; ///< Subclass identifier (for isa/dyn_cast).
 
