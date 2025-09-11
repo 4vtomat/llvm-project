@@ -2627,29 +2627,7 @@ static VPRecipeBase *optimizeMaskToEVL(VPValue *HeaderMask,
         VPValue *NewMask = GetNewMask(Red->getCondOp());
         return new VPReductionEVLRecipe(*Red, EVL, NewMask);
       })
-<<<<<<< HEAD
-#if !SIFIVE_CUSTOMIZATION // cherry-pick #146695
-      .Case<VPWidenSelectRecipe>([&](VPWidenSelectRecipe *Sel) {
-        SmallVector<VPValue *> Ops(Sel->operands());
-        Ops.push_back(&EVL);
-        return new VPWidenIntrinsicRecipe(Intrinsic::vp_select, Ops,
-                                          TypeInfo.inferScalarType(Sel),
-                                          Sel->getDebugLoc());
-      })
-#endif // SIFIVE_CUSTOMIZATION
       .Case<VPInstruction>([&](VPInstruction *VPI) -> VPRecipeBase * {
-        if (VPI->getOpcode() == VPInstruction::FirstOrderRecurrenceSplice) {
-          assert(PrevEVL && "Fixed-order recurrences require previous EVL");
-          VPValue *MinusOneVPV = VPI->getParent()->getPlan()->getOrAddLiveIn(
-              ConstantInt::getSigned(Type::getInt32Ty(TypeInfo.getContext()),
-                                     -1));
-          SmallVector<VPValue *> Ops(VPI->operands());
-          Ops.append({MinusOneVPV, &AllOneMask, PrevEVL, &EVL});
-          return new VPWidenIntrinsicRecipe(Intrinsic::experimental_vp_splice,
-                                            Ops, TypeInfo.inferScalarType(VPI),
-                                            VPI->getDebugLoc());
-        }
-
 #if SIFIVE_CUSTOMIZATION
         // Optimize `any-of(%mask)` to `icmp ne (vp_first(%mask), -1)`.
         VPValue *M;
@@ -2680,9 +2658,6 @@ static VPRecipeBase *optimizeMaskToEVL(VPValue *HeaderMask,
         if (!HeaderMask)
           return nullptr;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      .Case<VPInstruction>([&](VPInstruction *VPI) -> VPRecipeBase * {
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
         VPValue *LHS, *RHS;
         // Transform select with a header mask condition
         //   select(header_mask, LHS, RHS)
@@ -2766,9 +2741,6 @@ static void transformRecipestoEVLRecipes(VPlan &Plan, VPValue &EVL) {
     }
   }
 
-<<<<<<< HEAD
-  SmallVector<VPRecipeBase *> ToErase;
-
 #if SIFIVE_CUSTOMIZATION
   // SYNC-UPSTREAM: As described in createEVLRecipe. This should be removed once
   // we fully migrate to the new (upstream) tail folding by EVL approach.
@@ -2795,32 +2767,23 @@ static void transformRecipestoEVLRecipes(VPlan &Plan, VPValue &EVL) {
     for (VPUser *U : collectUsersRecursively(HeaderMask)) {
       auto *CurRecipe = cast<VPRecipeBase>(U);
 #endif // SIFIVE_CUSTOMIZATION
-      VPRecipeBase *EVLRecipe = createEVLRecipe(
-          HeaderMask, *CurRecipe, TypeInfo, *AllOneMask, EVL, PrevEVL);
-=======
-  // Try to optimize header mask recipes away to their EVL variants.
-  for (VPValue *HeaderMask : collectAllHeaderMasks(Plan)) {
-    for (VPUser *U : collectUsersRecursively(HeaderMask)) {
-      auto *CurRecipe = cast<VPRecipeBase>(U);
-      VPRecipeBase *EVLRecipe =
-          optimizeMaskToEVL(HeaderMask, *CurRecipe, TypeInfo, *AllOneMask, EVL);
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
-      if (!EVLRecipe)
-        continue;
+    VPRecipeBase *EVLRecipe =
+        optimizeMaskToEVL(HeaderMask, *CurRecipe, TypeInfo, *AllOneMask, EVL);
+    if (!EVLRecipe)
+      continue;
 
-      [[maybe_unused]] unsigned NumDefVal = EVLRecipe->getNumDefinedValues();
-      assert(NumDefVal == CurRecipe->getNumDefinedValues() &&
-             "New recipe must define the same number of values as the "
-             "original.");
-      assert(
-          NumDefVal <= 1 &&
-          "Only supports recipes with a single definition or without users.");
-      EVLRecipe->insertBefore(CurRecipe);
-      if (isa<VPSingleDefRecipe, VPWidenLoadEVLRecipe>(EVLRecipe)) {
-        VPValue *CurVPV = CurRecipe->getVPSingleValue();
-        CurVPV->replaceAllUsesWith(EVLRecipe->getVPSingleValue());
-      }
-      ToErase.push_back(CurRecipe);
+    [[maybe_unused]] unsigned NumDefVal = EVLRecipe->getNumDefinedValues();
+    assert(NumDefVal == CurRecipe->getNumDefinedValues() &&
+           "New recipe must define the same number of values as the "
+           "original.");
+    assert(NumDefVal <= 1 &&
+           "Only supports recipes with a single definition or without users.");
+    EVLRecipe->insertBefore(CurRecipe);
+    if (isa<VPSingleDefRecipe, VPWidenLoadEVLRecipe>(EVLRecipe)) {
+      VPValue *CurVPV = CurRecipe->getVPSingleValue();
+      CurVPV->replaceAllUsesWith(EVLRecipe->getVPSingleValue());
+    }
+    ToErase.push_back(CurRecipe);
 #if !SIFIVE_CUSTOMIZATION
     }
 #endif // SIFIVE_CUSTOMIZATION
@@ -2887,24 +2850,15 @@ bool VPlanTransforms::tryAddExplicitVectorLength(
 #endif // SIFIVE_CUSTOMIZATION
   VPBasicBlock *Header = Plan.getVectorLoopRegion()->getEntryBasicBlock();
   // The transform updates all users of inductions to work based on EVL, instead
-<<<<<<< HEAD
   // of the VF directly. At the moment, widened inductions cannot be updated, so
   // bail out if the plan contains any.
-  bool ContainsWidenInductions = any_of(
-      Header->phis(),
-      IsaPred<VPWidenIntOrFpInductionRecipe, VPWidenPointerInductionRecipe>);
+  bool ContainsWidenPointerInductions =
+      any_of(Header->phis(), IsaPred<VPWidenPointerInductionRecipe>);
 #if SIFIVE_CUSTOMIZATION
   if (!EnableEVLFuzzing)
 #endif // SIFIVE_CUSTOMIZATION
-  if (ContainsWidenInductions)
-=======
-  // of the VF directly. At the moment, widened pointer inductions cannot be
-  // updated, so bail out if the plan contains any.
-  bool ContainsWidenPointerInductions =
-      any_of(Header->phis(), IsaPred<VPWidenPointerInductionRecipe>);
-  if (ContainsWidenPointerInductions)
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
-    return false;
+    if (ContainsWidenPointerInductions)
+      return false;
 
 #if SIFIVE_CUSTOMIZATION
   if (EnableEVLFuzzing)
@@ -3388,7 +3342,21 @@ void VPlanTransforms::createInterleaveGroups(
       Addr = InBounds ? B.createInBoundsPtrAdd(InsertPos->getAddr(), OffsetVPV)
                       : B.createPtrAdd(InsertPos->getAddr(), OffsetVPV);
     }
-<<<<<<< HEAD
+
+    // If the group is reverse, adjust the index to refer to the last vector
+    // lane instead of the first. We adjust the index from the first vector
+    // lane, rather than directly getting the pointer for lane VF - 1, because
+    // the pointer operand of the interleaved access is supposed to be uniform.
+    if (IG->isReverse()) {
+      auto *ReversePtr = new VPVectorEndPointerRecipe(
+          Addr, &Plan.getVF(), getLoadStoreType(IRInsertPos),
+          -(int64_t)IG->getFactor(),
+          InBounds ? GEPNoWrapFlags::inBounds() : GEPNoWrapFlags::none(),
+          InsertPos->getDebugLoc());
+      ReversePtr->insertBefore(InsertPos);
+      Addr = ReversePtr;
+    }
+
 #if SIFIVE_CUSTOMIZATION
     VPValue *Stride = nullptr;
     auto &DL = IRInsertPos->getDataLayout();
@@ -3406,21 +3374,6 @@ void VPlanTransforms::createInterleaveGroups(
     }
     auto *VPIG = new VPInterleaveRecipe(IG, Addr, StoredValues, Stride,
 #else
-=======
-    // If the group is reverse, adjust the index to refer to the last vector
-    // lane instead of the first. We adjust the index from the first vector
-    // lane, rather than directly getting the pointer for lane VF - 1, because
-    // the pointer operand of the interleaved access is supposed to be uniform.
-    if (IG->isReverse()) {
-      auto *ReversePtr = new VPVectorEndPointerRecipe(
-          Addr, &Plan.getVF(), getLoadStoreType(IRInsertPos),
-          -(int64_t)IG->getFactor(),
-          InBounds ? GEPNoWrapFlags::inBounds() : GEPNoWrapFlags::none(),
-          InsertPos->getDebugLoc());
-      ReversePtr->insertBefore(InsertPos);
-      Addr = ReversePtr;
-    }
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
     auto *VPIG = new VPInterleaveRecipe(IG, Addr, StoredValues,
 #endif // SIFIVE_CUSTOMIZTAION
                                         InsertPos->getMask(), NeedsMaskForGaps, InsertPos->getDebugLoc());
@@ -3537,15 +3490,8 @@ expandVPWidenIntOrFpInduction(VPWidenIntOrFpInductionRecipe *WidenIVR,
     Inc = SplatVF;
     Prev = WidenIVR->getLastUnrolledPartOperand();
   } else {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
     if (VPRecipeBase *R = VF->getDefiningRecipe())
       Builder.setInsertPoint(R->getParent(), std::next(R->getIterator()));
-#endif // SIFIVE_CUSTOMIZATION
-=======
-    if (VPRecipeBase *R = VF->getDefiningRecipe())
-      Builder.setInsertPoint(R->getParent(), std::next(R->getIterator()));
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
     // Multiply the vectorization factor by the step using integer or
     // floating-point arithmetic as appropriate.
     if (StepTy->isFloatingPointTy())
