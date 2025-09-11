@@ -1125,17 +1125,7 @@ Value *VPInstruction::generate(VPTransformState &State) {
                            : createSimpleReduction(Builder, ReducedPartRdx, RK);
 #else
       ReducedPartRdx = createSimpleReduction(Builder, ReducedPartRdx, RK);
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-
-      // If the reduction can be performed in a smaller type, we need to extend
-      // the reduction to the wider type before we branch to the original loop.
-      if (ResultTy != RdxDesc.getRecurrenceType())
-        ReducedPartRdx = RdxDesc.isSigned()
-                             ? Builder.CreateSExt(ReducedPartRdx, ResultTy)
-                             : Builder.CreateZExt(ReducedPartRdx, ResultTy);
-=======
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
     }
 
     return ReducedPartRdx;
@@ -4415,54 +4405,6 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
   VPValue *BlockInMask = getMask();
   VPValue *Addr = getAddr();
   Value *ResAddr = State.get(Addr, VPLane(0));
-<<<<<<< HEAD
-  if (auto *I = dyn_cast<Instruction>(ResAddr))
-    State.setDebugLocFrom(I->getDebugLoc());
-
-  // If the group is reverse, adjust the index to refer to the last vector lane
-  // instead of the first. We adjust the index from the first vector lane,
-  // rather than directly getting the pointer for lane VF - 1, because the
-  // pointer operand of the interleaved access is supposed to be uniform.
-  if (Group->isReverse()) {
-#if SIFIVE_CUSTOMIZATION
-    Value *Index;
-    if (State.Plan->useVLAVectorizer() && State.EVL) {
-      assert(State.EVL && "RuntimeVL must be initialized at this point");
-      Value *EVL = State.Builder.CreateZExtOrTrunc(
-          State.get(State.EVL, /*NeedsScalar=*/true),
-          State.Builder.getInt32Ty());
-      // ?? Should we upstream the nuw and nsw flags?
-      Index = State.Builder.CreateSub(EVL, State.Builder.getInt32(1), "",
-                                      /*NUW=*/true, /*NSW=*/true);
-      Index = State.Builder.CreateMul(
-          Index, State.Builder.getInt32(Group->getFactor()), "",
-          /*NUW=*/true, /*NSW=*/true);
-    } else {
-#endif // SIFIVE_CUSTOMIZATION
-    Value *RuntimeVF =
-        getRuntimeVF(State.Builder, State.Builder.getInt32Ty(), State.VF);
-#if SIFIVE_CUSTOMIZATION
-    Index =
-#else
-    Value *Index =
-#endif // SIFIVE_CUSTOMIZATION
-        State.Builder.CreateSub(RuntimeVF, State.Builder.getInt32(1));
-    Index = State.Builder.CreateMul(Index,
-                                    State.Builder.getInt32(Group->getFactor()));
-#if SIFIVE_CUSTOMIZATION
-    }
-#endif // SIFIVE_CUSTOMIZATION
-    Index = State.Builder.CreateNeg(Index);
-
-    bool InBounds = false;
-    if (auto *Gep = dyn_cast<GetElementPtrInst>(ResAddr->stripPointerCasts()))
-      InBounds = Gep->isInBounds();
-    ResAddr = State.Builder.CreateGEP(ScalarTy, ResAddr, Index, "", InBounds);
-  }
-
-  State.setDebugLocFrom(getDebugLoc());
-=======
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
   Value *PoisonVec = PoisonValue::get(VecTy);
 
   auto CreateGroupMask = [&BlockInMask, &State,
