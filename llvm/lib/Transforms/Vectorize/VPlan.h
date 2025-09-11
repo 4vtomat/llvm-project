@@ -2465,6 +2465,11 @@ struct VPFirstOrderRecurrencePHIRecipe : public VPHeaderPHIRecipe {
 /// operand.
 class VPReductionPHIRecipe : public VPHeaderPHIRecipe,
                              public VPUnrollPartAccessor<2> {
+
+#ifdef SIFIVE_CUSTOMIZATION
+  const RecurrenceDescriptor &RdxDesc;
+#endif // SIFIVE_CUSTOMIZATION
+
   /// The recurrence kind of the reduction.
   const RecurKind Kind;
 
@@ -2480,21 +2485,35 @@ class VPReductionPHIRecipe : public VPHeaderPHIRecipe,
 
 public:
   /// Create a new VPReductionPHIRecipe for the reduction \p Phi.
+#ifdef SIFIVE_CUSTOMIZATION
+  VPReductionPHIRecipe(PHINode *Phi, const RecurrenceDescriptor &RdxDesc,
+                       RecurKind Kind, VPValue &Start, bool IsInLoop = false,
+                       bool IsOrdered = false, unsigned VFScaleFactor = 1)
+      : VPHeaderPHIRecipe(VPDef::VPReductionPHISC, Phi, &Start),
+        RdxDesc(RdxDesc), Kind(Kind), IsInLoop(IsInLoop), IsOrdered(IsOrdered),
+        VFScaleFactor(VFScaleFactor) {
+#else
   VPReductionPHIRecipe(PHINode *Phi, RecurKind Kind, VPValue &Start,
                        bool IsInLoop = false, bool IsOrdered = false,
                        unsigned VFScaleFactor = 1)
       : VPHeaderPHIRecipe(VPDef::VPReductionPHISC, Phi, &Start), Kind(Kind),
         IsInLoop(IsInLoop), IsOrdered(IsOrdered), VFScaleFactor(VFScaleFactor) {
-    assert((!IsOrdered || IsInLoop) && "IsOrdered requires IsInLoop");
+#endif // SIFIVE_CUSTOMIZATION    assert((!IsOrdered || IsInLoop) && "IsOrdered
+       // requires IsInLoop");
   }
 
   ~VPReductionPHIRecipe() override = default;
 
   VPReductionPHIRecipe *clone() override {
     auto *R = new VPReductionPHIRecipe(
+#ifdef SIFIVE_CUSTOMIZATION
+        dyn_cast_or_null<PHINode>(getUnderlyingValue()),
+        getRecurrenceDescriptor(), getRecurrenceKind(), *getOperand(0),
+        IsInLoop, IsOrdered, VFScaleFactor);
+#else
         dyn_cast_or_null<PHINode>(getUnderlyingValue()), getRecurrenceKind(),
         *getOperand(0), IsInLoop, IsOrdered, VFScaleFactor);
-    R->addOperand(getBackedgeValue());
+#endif // SIFIVE_CUSTOMIZATION    R->addOperand(getBackedgeValue());
     return R;
   }
 
@@ -2517,6 +2536,12 @@ public:
 
   /// Returns the recurrence kind of the reduction.
   RecurKind getRecurrenceKind() const { return Kind; }
+
+#ifdef SIFIVE_CUSTOMIZATION
+  const RecurrenceDescriptor &getRecurrenceDescriptor() const {
+    return RdxDesc;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Returns true, if the phi is part of an ordered reduction.
   bool isOrdered() const { return IsOrdered; }
@@ -3017,15 +3042,11 @@ public:
 };
 
 /// A recipe for generating conditional branches on the bits of a mask.
-<<<<<<< HEAD
-class VPBranchOnMaskRecipe : public VPRecipeBase {
+class LLVM_ABI_FOR_TEST VPBranchOnMaskRecipe : public VPRecipeBase {
 #if SIFIVE_CUSTOMIZATION
   VPBlockBase *TrueBB = nullptr;
   VPBlockBase *FalseBB = nullptr;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-class LLVM_ABI_FOR_TEST VPBranchOnMaskRecipe : public VPRecipeBase {
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 public:
   VPBranchOnMaskRecipe(VPValue *BlockInMask, DebugLoc DL)
       : VPRecipeBase(VPDef::VPBranchOnMaskSC, {BlockInMask}, DL) {}
@@ -3073,7 +3094,6 @@ public:
   }
 };
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 class VPCSAHeaderPHIRecipe final : public VPHeaderPHIRecipe {
 public:
@@ -3217,7 +3237,32 @@ public:
   VPMonotonicHeaderPHIRecipe *clone() override {
     return new VPMonotonicHeaderPHIRecipe(cast<PHINode>(getUnderlyingInstr()),
                                           getOperand(0));
-=======
+  }
+
+  InstructionCost computeCost(ElementCount VF,
+                              VPCostContext &Ctx) const override;
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+  /// Print the recipe.
+  void print(raw_ostream &O, const Twine &Indent,
+             VPSlotTracker &SlotTracker) const override;
+#endif
+
+  VP_CLASSOF_IMPL(VPDef::VPMonotonicHeaderPHISC)
+
+  static inline bool classof(const VPHeaderPHIRecipe *R) {
+    return R->getVPDefID() == VPDef::VPMonotonicHeaderPHISC;
+  }
+
+  /// Returns true if the recipe only uses the first lane of operand \p Op.
+  bool onlyFirstLaneUsed(const VPValue *Op) const override {
+    assert(is_contained(operands(), Op) &&
+           "Op must be an operand of the recipe");
+    return true;
+  }
+};
+#endif // SIFIVE_CUSTOMIZATION
+
 /// A recipe to combine multiple recipes into a single 'expression' recipe,
 /// which should be considered a single entity for cost-modeling and transforms.
 /// The recipe needs to be 'decomposed', i.e. replaced by its individual
@@ -3314,7 +3359,6 @@ public:
   /// Method for generating code, must not be called as this recipe is abstract.
   void execute(VPTransformState &State) override {
     llvm_unreachable("recipe must be removed before execute");
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
   }
 
   InstructionCost computeCost(ElementCount VF,
@@ -3326,22 +3370,6 @@ public:
              VPSlotTracker &SlotTracker) const override;
 #endif
 
-<<<<<<< HEAD
-  VP_CLASSOF_IMPL(VPDef::VPMonotonicHeaderPHISC)
-
-  static inline bool classof(const VPHeaderPHIRecipe *R) {
-    return R->getVPDefID() == VPDef::VPMonotonicHeaderPHISC;
-  }
-
-  /// Returns true if the recipe only uses the first lane of operand \p Op.
-  bool onlyFirstLaneUsed(const VPValue *Op) const override {
-    assert(is_contained(operands(), Op) &&
-           "Op must be an operand of the recipe");
-    return true;
-  }
-};
-#endif // SIFIVE_CUSTOMIZATION
-=======
   /// Returns true if this expression contains recipes that may read from or
   /// write to memory.
   bool mayReadOrWriteMemory() const;
@@ -3350,7 +3378,6 @@ public:
   /// effects.
   bool mayHaveSideEffects() const;
 };
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 
 /// VPPredInstPHIRecipe is a recipe for generating the phi nodes needed when
 /// control converges back from a Branch-on-Mask. The phi nodes are needed in
@@ -3531,8 +3558,8 @@ public:
 
 /// A recipe for widening load operations, using the address to load from and an
 /// optional mask.
-<<<<<<< HEAD
-struct VPWidenLoadRecipe final : public VPWidenMemoryRecipe, public VPValue {
+struct LLVM_ABI_FOR_TEST VPWidenLoadRecipe final : public VPWidenMemoryRecipe,
+                                                   public VPValue {
 #if SIFIVE_CUSTOMIZATION
   VPWidenLoadRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
                     bool Consecutive, bool Reverse,
@@ -3543,10 +3570,6 @@ struct VPWidenLoadRecipe final : public VPWidenMemoryRecipe, public VPValue {
                             Reverse, Metadata, DL, StrideInBytes, Speculative,
                             IsMonotonic),
 #else
-=======
-struct LLVM_ABI_FOR_TEST VPWidenLoadRecipe final : public VPWidenMemoryRecipe,
-                                                   public VPValue {
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
   VPWidenLoadRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
                     bool Consecutive, bool Reverse,
                     const VPIRMetadata &Metadata, DebugLoc DL)
@@ -3663,8 +3686,7 @@ struct VPWidenLoadEVLRecipe final : public VPWidenMemoryRecipe, public VPValue {
 
 /// A recipe for widening store operations, using the stored value, the address
 /// to store to and an optional mask.
-<<<<<<< HEAD
-struct VPWidenStoreRecipe final : public VPWidenMemoryRecipe {
+struct LLVM_ABI_FOR_TEST VPWidenStoreRecipe final : public VPWidenMemoryRecipe {
 #if SIFIVE_CUSTOMIZATION
   VPWidenStoreRecipe(StoreInst &Store, VPValue *Addr, VPValue *StoredVal,
                      VPValue *Mask, bool Consecutive, bool Reverse,
@@ -3674,9 +3696,6 @@ struct VPWidenStoreRecipe final : public VPWidenMemoryRecipe {
                             Consecutive, Reverse, Metadata, DL, StrideInBytes,
                             false, IsMonotonic) {
 #else
-=======
-struct LLVM_ABI_FOR_TEST VPWidenStoreRecipe final : public VPWidenMemoryRecipe {
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
   VPWidenStoreRecipe(StoreInst &Store, VPValue *Addr, VPValue *StoredVal,
                      VPValue *Mask, bool Consecutive, bool Reverse,
                      const VPIRMetadata &Metadata, DebugLoc DL)
