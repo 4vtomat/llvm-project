@@ -5368,19 +5368,8 @@ Instruction *InstCombinerImpl::foldICmpBinOp(ICmpInst &I,
       if (!C.isStrictlyPositive())
         return false;
 
-<<<<<<< HEAD
-  // icmp sgt (A + 1), Op1 -> icmp sge A, Op1
-#if SIFIVE_CUSTOMIZATION
-  if (A && NoOp0WrapProblem && Pred == CmpInst::ICMP_SGT && match(B, m_One()) &&
-      !isPHIMin(I))
-#else
-  if (A && NoOp0WrapProblem && Pred == CmpInst::ICMP_SGT && match(B, m_One()))
-#endif // SIFIVE_CUSTOMIZATION
-    return new ICmpInst(CmpInst::ICMP_SGE, A, Op1);
-=======
       return isMultipleOf(X, C, Q) && isMultipleOf(Y, C, Q);
     };
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 
     // TODO: The subtraction-related identities shown below also hold, but
     // canonicalization from (X -nuw 1) to (X + -1) means that the combinations
