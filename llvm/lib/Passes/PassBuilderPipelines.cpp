@@ -1695,16 +1695,13 @@ PassBuilder::buildModuleOptimizationPipeline(OptimizationLevel Level,
   //        this may need to be revisited once we run GVN before loop deletion
   //        in the simplification pipeline.
   LPM.addPass(LoopDeletionPass());
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   LPM.addPass(LoopReversePass());
 #endif // SIFIVE_CUSTOMIZATION
-=======
 
   if (PTO.LoopInterchange)
     LPM.addPass(LoopInterchangePass());
 
->>>>>>> 77914c96dfc55562404d18c1ab777137055679db
   OptimizePM.addPass(createFunctionToLoopPassAdaptor(
       std::move(LPM), /*UseMemorySSA=*/false, /*UseBlockFrequencyInfo=*/false));
 
