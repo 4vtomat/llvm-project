@@ -135,18 +135,18 @@ def FeatureVendorXSfpmpmt
                      "SiFive PMP-based Memory Types Extension">;
 
 def FeatureVendorXSfvfbfexp16e
-    : RISCVExtension<0, 1,
+    : RISCVExtension<0, 5,
                      "SiFive Vector Floating-Point Exponential Function Instruction, BFloat16">;
 def HasVendorXSfvfbfexp16e : Predicate<"Subtarget->hasVendorXSfvfbfexp16e()">;
 
 def FeatureVendorXSfvfexp16e
-    : RISCVExtension<0, 1,
+    : RISCVExtension<0, 5,
                      "SiFive Vector Floating-Point Exponential Function Instruction, Half Precision",
                      [FeatureStdExtZvfh]>;
 def HasVendorXSfvfexp16e : Predicate<"Subtarget->hasVendorXSfvfexp16e()">;
 
 def FeatureVendorXSfvfexp32e
-    : RISCVExtension<0, 1,
+    : RISCVExtension<0, 5,
                      "SiFive Vector Floating-Point Exponential Function Instruction, Single Precision",
                      [FeatureStdExtZve32f]>;
 def HasVendorXSfvfexp32e : Predicate<"Subtarget->hasVendorXSfvfexp32e()">;
