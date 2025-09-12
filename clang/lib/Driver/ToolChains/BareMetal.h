@@ -15,6 +15,10 @@
 
 #include <string>
 
+#if SIFIVE_CUSTOMIZATION
+enum class LibcType { None, NewlibNano, SeggerGloss, SeggerMetal };
+#endif
+
 namespace clang {
 namespace driver {
 
@@ -81,6 +85,10 @@ public:
   SmallVector<std::string>
   getMultilibMacroDefinesStr(llvm::opt::ArgList &Args) const override;
 
+#if SIFIVE_CUSTOMIZATION
+  LibcType SpecialLibc;
+#endif
+
 private:
   using OrderedMultilibs =
       llvm::iterator_range<llvm::SmallVector<Multilib>::const_reverse_iterator>;
@@ -113,7 +121,16 @@ public:
 };
 
 class LLVM_LIBRARY_VISIBILITY Linker final : public Tool {
+
+#if SIFIVE_CUSTOMIZATION
+  LibcType SpecialLibc;
+#endif
+
 public:
+#if SIFIVE_CUSTOMIZATION
+  Linker(const ToolChain &TC, LibcType Libc)
+      : Tool("baremetal::Linker", "linker", TC), SpecialLibc(Libc) {}
+#endif // SIFIVE_CUSTOMIZATION
   Linker(const ToolChain &TC) : Tool("baremetal::Linker", "linker", TC) {}
   bool isLinkJob() const override { return true; }
   bool hasIntegratedCPP() const override { return false; }

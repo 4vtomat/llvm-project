@@ -260,6 +260,20 @@ BareMetal::BareMetal(const Driver &D, const llvm::Triple &Triple,
       }
     }
   }
+#if SIFIVE_CUSTOMIZATION
+  // Check if we are using special libc base on --specs option.
+  // The 'SpecialLibc' variable is used to hack flags at different stages.
+  SpecialLibc = LibcType::None;
+  for (auto Specs :
+       Args.getAllArgValues(clang::driver::options::OPT_specs_EQ)) {
+    if (Specs == "nano.specs")
+      SpecialLibc = LibcType::NewlibNano;
+    else if (Specs == "gloss-segger.specs")
+      SpecialLibc = LibcType::SeggerGloss;
+    else if (Specs == "metal-segger.specs")
+      SpecialLibc = LibcType::SeggerMetal;
+  }
+#endif
 }
 
 static void
@@ -358,6 +372,11 @@ bool BareMetal::handlesTarget(const llvm::Triple &Triple) {
 }
 
 Tool *BareMetal::buildLinker() const {
+#if SIFIVE_CUSTOMIZATION
+  if (getTriple().isRISCV())
+    return new tools::baremetal::Linker(*this, SpecialLibc);
+#endif // SIFIVE_CUSTOMIZATION
+
   return new tools::baremetal::Linker(*this);
 }
 
@@ -402,6 +421,20 @@ void BareMetal::AddClangSystemIncludeArgs(const ArgList &DriverArgs,
   if (DriverArgs.hasArg(options::OPT_nostdinc))
     return;
 
+#if SIFIVE_CUSTOMIZATION
+  // Segger includ path should be searched firstly.
+  SmallString<128> SeggerDir(computeSysRoot());
+  switch (SpecialLibc) {
+  case LibcType::SeggerGloss:
+  case LibcType::SeggerMetal:
+    llvm::sys::path::append(SeggerDir, "include/segger");
+    addSystemInclude(DriverArgs, CC1Args, SeggerDir.str());
+    break;
+  default:
+    break;
+  }
+#endif
+
   if (!DriverArgs.hasArg(options::OPT_nobuiltininc)) {
     SmallString<128> Dir(getDriver().ResourceDir);
     llvm::sys::path::append(Dir, "include");
@@ -429,6 +462,13 @@ void BareMetal::addClangTargetOptions(const ArgList &DriverArgs,
                                       ArgStringList &CC1Args,
                                       Action::OffloadKind) const {
   CC1Args.push_back("-nostdsysteminc");
+
+#if SIFIVE_CUSTOMIZATION
+  if (SpecialLibc == LibcType::SeggerGloss ||
+      SpecialLibc == LibcType::SeggerMetal) {
+    CC1Args.push_back("-D__SEGGER_LIBC__");
+  }
+#endif
 }
 
 void BareMetal::addLibStdCxxIncludePaths(
@@ -609,6 +649,26 @@ void baremetal::Linker::ConstructJob(Compilation &C, const JobAction &JA,
       CmdArgs.push_back("--no-relax");
   }
 
+#if SIFIVE_CUSTOMIZATION
+  if (D.isUsingLTO()) {
+    assert(!Inputs.empty() && "Must have at least one input.");
+    addLTOOptions(TC, Args, CmdArgs, Output, Inputs,
+                  D.getLTOMode() == LTOK_Thin);
+  }
+
+  if (!Args.getLastArgValue(options::OPT_fuse_ld_EQ)
+           .equals_insensitive("lld")) {
+    if (Arg *A = Args.getLastArg(options::OPT_O_Group)) {
+      if (A->getOption().matches(options::OPT_O)) {
+        StringRef OOpt = A->getValue();
+        if (OOpt == "s" || OOpt == "z") {
+          CmdArgs.push_back("--relax-zcmt");
+        }
+      }
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   if (Triple.isARM() || Triple.isThumb()) {
     bool IsBigEndian = arm::isARMBigEndian(Triple, Args);
     if (IsBigEndian)
@@ -680,6 +740,59 @@ void baremetal::Linker::ConstructJob(Compilation &C, const JobAction &JA,
     CmdArgs.push_back("--end-group");
   }
 
+#if SIFIVE_CUSTOMIZATION
+  auto *GlossIdx = CmdArgs.begin();
+
+  switch (SpecialLibc) {
+  case LibcType::NewlibNano:
+    for (size_t i = 0; i < CmdArgs.size(); ++i) {
+      StringRef Arg = CmdArgs[i];
+      if (Arg == "-lc")
+        CmdArgs[i] = "-lc_nano";
+      if (Arg == "-lgloss")
+        CmdArgs[i] = "-lgloss_nano";
+      if (Arg == "-lm")
+        CmdArgs[i] = "-lm_nano";
+      if (Arg == "-lg")
+        CmdArgs[i] = "-lg_nano";
+    }
+    break;
+  case LibcType::SeggerGloss:
+    for (size_t i = 0; i < CmdArgs.size(); ++i) {
+      StringRef Arg = CmdArgs[i];
+      if (Arg == "-lc")
+        CmdArgs[i] = "-lc_segger";
+      if (Arg == "-lgloss")
+        CmdArgs[i] = "-lgloss-segger";
+      // libg.a is the same as libc.a.
+      // See https://www.cygwin.com/bugzilla/show_bug.cgi?id=26102#c1
+      if (Arg == "-lg")
+        CmdArgs[i] = "lc_segger";
+    }
+    break;
+  case LibcType::SeggerMetal:
+    for (size_t i = 0; i < CmdArgs.size(); ++i) {
+      StringRef Arg = CmdArgs[i];
+      if (Arg == "-lc")
+        CmdArgs[i] = "-lc_segger";
+      if (Arg == "-lgloss") {
+        CmdArgs[i] = "-lmetal";
+        GlossIdx += i;
+      }
+      // libg.a is the same as libc.a.
+      // See https://www.cygwin.com/bugzilla/show_bug.cgi?id=26102#c1
+      if (Arg == "-lg")
+        CmdArgs[i] = "lc_segger";
+    }
+    // Insert metal-segger in group
+    if (GlossIdx != CmdArgs.begin())
+      CmdArgs.insert(GlossIdx, "-lmetal-segger");
+    break;
+  default:
+    break;
+  }
+#endif
+
   if ((TC.hasValidGCCInstallation() || detectGCCToolchainAdjacent(D)) &&
       NeedCRTs)
     CmdArgs.push_back(Args.MakeArgString(TC.GetFilePath(CRTEnd)));
@@ -695,14 +808,6 @@ void baremetal::Linker::ConstructJob(Compilation &C, const JobAction &JA,
 
   CmdArgs.push_back("-o");
   CmdArgs.push_back(Output.getFilename());
-
-#ifdef SIFIVE_CUSTOMIZATION
-  if (D.isUsingLTO()) {
-    assert(!Inputs.empty() && "Must have at least one input.");
-    addLTOOptions(TC, Args, CmdArgs, Output, Inputs,
-                  D.getLTOMode() == LTOK_Thin);
-  }
-#endif // SIFIVE_CUSTOMIZATION
 
   C.addCommand(std::make_unique<Command>(
       JA, *this, ResponseFileSupport::AtFileCurCP(),
