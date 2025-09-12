@@ -27036,7 +27036,6 @@ Value *RISCVTargetLowering::getIRStackGuard(IRBuilderBase &IRB) const {
   return TargetLowering::getIRStackGuard(IRB);
 }
 
-#if SIFIVE_CUSTOMIZATION
 bool RISCVTargetLowering::isLegalInterleavedAccessType(
     VectorType *VTy, unsigned Factor, Align Alignment, unsigned AddrSpace,
     const DataLayout &DL) const {
@@ -27069,7 +27068,6 @@ bool RISCVTargetLowering::isLegalInterleavedAccessType(
     return true;
   return Factor * LMUL <= 8;
 }
-#endif // SIFIVE_CUSTOMIZATION
 
 bool RISCVTargetLowering::isLegalStridedLoadStore(EVT DataType,
                                                   Align Alignment) const {
