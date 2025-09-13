@@ -25583,7 +25583,7 @@ SDValue RISCVTargetLowering::LowerCall(CallLoweringInfo &CLI,
     }
 #if SIFIVE_CUSTOMIZATION
   } else if (getTargetMachine().getCodeModel() == CodeModel::Compact) {
-    if (auto *S = dyn_cast<GlobalAddressSDNode>(Callee))
+    if (isa<GlobalAddressSDNode>(Callee))
       Callee = lowerGlobalAddress(Callee, DAG);
     else if (auto *S = dyn_cast<ExternalSymbolSDNode>(Callee))
       Callee = getAddr(S, DAG);
