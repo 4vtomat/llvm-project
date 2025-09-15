@@ -148,11 +148,18 @@ static std::string computeClangRuntimesSysRoot(const Driver &D,
 // whether the GCC toolchain was initialized successfully.
 bool BareMetal::initGCCInstallation(const llvm::Triple &Triple,
                                     const llvm::opt::ArgList &Args) {
+#if SIFIVE_CUSTOMIZATION
+  // Prefer libgcc and libstdc++ from a valid GCC installation for SiFive
+  // toolchain.
+  GCCInstallation.init(Triple, Args);
+  return GCCInstallation.isValid();
+#else
   if (Args.getLastArg(options::OPT_gcc_toolchain) ||
       Args.getLastArg(clang::driver::options::OPT_gcc_install_dir_EQ)) {
     GCCInstallation.init(Triple, Args);
     return GCCInstallation.isValid();
   }
+#endif
   return false;
 }
 
