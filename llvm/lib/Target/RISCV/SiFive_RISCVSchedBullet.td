@@ -213,6 +213,20 @@ class BulletGetCyclesVCompress<string mx, int sew, int VLEN,
               VLUpperBound);
 }
 
+class BulletGetSiFiveVFNRClipCycles<string mx, int VLEN> {
+  int latency = !cond(
+    !eq(mx, "MF8"): 7,
+    !eq(mx, "MF4"): 8,
+    !eq(mx, "MF2"): 10,
+    !eq(mx, "M1"): 13,
+    !eq(mx, "M2"): 19,
+  );
+
+  defvar DLEN = !div(VLEN, 2);
+  int occupancy = BulletGetCyclesOnePerElement<mx, sew=!div(DLEN, 4),
+                                               VLEN=VLEN>.c;
+}
+
 // ALU, ALU_B, IMUL, LOAD, F2I, SFB bypass to ALU, ALU_B, Branch
 class BulletAnyToGPRBypass<SchedRead read, int cycles = 2>
   : ReadAdvance<read, cycles, [WriteIALU, WriteIALU32,
@@ -1111,6 +1125,15 @@ multiclass BulletWriteResBase<
     }
   }
 
+  foreach mx = !listremove(SchedMxListW, ["M4"]) in {
+    defvar Cycles = BulletGetSiFiveVFNRClipCycles<mx, VLEN>;
+    let Latency = Cycles.latency,
+        AcquireAtCycles = [0, 1],
+        ReleaseAtCycles = [1, !add(1, Cycles.occupancy)] in
+    defm : LMULWriteResMX<"WriteSF_VFNRClipV", [VCQ, VA1], mx,
+                          IsWorstCase=!eq(mx, "M2")>;
+  }
+
   // XSfvqmaccdod
   foreach mx = ["M1", "M2", "M4", "M8"] in {
     defvar Cycles = BulletGetCyclesDefault<mx>.c;
@@ -1407,6 +1430,10 @@ multiclass BulletReadAdvance {
   def : ReadAdvance<ReadVMov2V, 0>;
   def : ReadAdvance<ReadVMov4V, 0>;
   def : ReadAdvance<ReadVMov8V, 0>;
+
+  // XSfvfnrclipxfqf
+  defm : LMULReadAdvance<"ReadSF_VFNRClipV", 0>;
+  defm : LMULReadAdvance<"ReadSF_VFNRClipF", 0>;
 
   // SiFive VMACC
   defm : LMULReadAdvance<"ReadSF_VQMACC_DOD",  0>;

@@ -70,7 +70,6 @@ multiclass SiFive7SchedResources<int VLEN> {
   defm : UnsupportedSchedZbkx;
   defm : UnsupportedSchedZfa;
   defm : UnsupportedSchedZvk;
-  defm : UnsupportedSchedXSfvfnrclipxfqf;
 }
 
 // SiFive7 machine model for scheduling and other instruction cost heuristics.
