@@ -60,11 +60,13 @@ public:
     return UnwindTableLevel::None;
   }
 
-  CXXStdlibType GetDefaultCXXStdlibType() const override;
+  RuntimeLibType GetDefaultRuntimeLibType() const override {
+    return ToolChain::RLT_CompilerRT;
+  }
 
-  RuntimeLibType GetDefaultRuntimeLibType() const override;
-
-  UnwindLibType GetUnwindLibType(const llvm::opt::ArgList &Args) const override;
+  CXXStdlibType GetDefaultCXXStdlibType() const override {
+    return ToolChain::CST_Libcxx;
+  }
 
   void
   AddClangSystemIncludeArgs(const llvm::opt::ArgList &DriverArgs,
