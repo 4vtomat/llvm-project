@@ -371,11 +371,6 @@ defm : UnsupportedSchedZbc;
 defm : UnsupportedSchedZbkb;
 defm : UnsupportedSchedZbkx;
 defm : UnsupportedSchedZfa;
-defm : UnsupportedSchedXsfvcp;
-defm : UnsupportedSchedXSfsci;
-defm : UnsupportedSchedXSfvqmaccdod;
-defm : UnsupportedSchedXSfvqmaccqoq;
-defm : UnsupportedSchedXSfvfwmaccqqq;
-defm : UnsupportedSchedXSfvfnrclipxfqf;
+defm : UnsupportedSchedXsf;
 defm : UnsupportedSchedZvk;
 }

@@ -265,9 +265,6 @@ defm : UnsupportedSchedZbkx;
 defm : UnsupportedSchedZfa;
 defm : UnsupportedSchedZfhmin;
 defm : UnsupportedSchedSFB;
-#ifdef SIFIVE_CUSTOMIZATION
-defm : UnsupportedSchedXSfsci;
-#endif // SIFIVE_CUSTOMIZATION
 defm : UnsupportedSchedZvk;
 defm : UnsupportedSchedXsf;
 }

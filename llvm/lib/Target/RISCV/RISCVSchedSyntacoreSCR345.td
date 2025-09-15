@@ -182,9 +182,6 @@ multiclass SCR_Other {
 multiclass SCR_Unsupported :
   UnsupportedSchedSFB,
   UnsupportedSchedV,
-#ifdef SIFIVE_CUSTOMIZATION
-  UnsupportedSchedXSfsci,
-#endif
   UnsupportedSchedZabha,
   UnsupportedSchedZba,
   UnsupportedSchedZbb,

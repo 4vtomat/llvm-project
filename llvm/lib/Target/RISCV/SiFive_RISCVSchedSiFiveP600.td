@@ -800,10 +800,5 @@ defm : UnsupportedSchedZbkb;
 defm : UnsupportedSchedZbkx;
 defm : UnsupportedSchedZfaWithQ;
 defm : UnsupportedSchedSFB;
-defm : UnsupportedSchedXsfvcp;
-defm : UnsupportedSchedXSfsci;
-defm : UnsupportedSchedXSfvqmaccdod;
-defm : UnsupportedSchedXSfvqmaccqoq;
-defm : UnsupportedSchedXSfvfwmaccqqq;
-defm : UnsupportedSchedXSfvfnrclipxfqf;
+defm : UnsupportedSchedXsf;
 } // let SchedModel = SiFiveP600Model

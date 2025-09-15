@@ -97,10 +97,5 @@ defm : UnsupportedSchedZbkx;
 defm : UnsupportedSchedZfaWithQ;
 defm : UnsupportedSchedSFB;
 defm : UnsupportedSchedZvk;
-defm : UnsupportedSchedXsfvcp;
-defm : UnsupportedSchedXSfsci;
-defm : UnsupportedSchedXSfvqmaccdod;
-defm : UnsupportedSchedXSfvqmaccqoq;
-defm : UnsupportedSchedXSfvfwmaccqqq;
-defm : UnsupportedSchedXSfvfnrclipxfqf;
+defm : UnsupportedSchedXsf;
 }

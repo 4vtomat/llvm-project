@@ -529,6 +529,9 @@ include "RISCVScheduleZvk.td"
 // Vendor Extensions
 multiclass UnsupportedSchedXsf {
   defm : UnsupportedSchedXsfvcp;
+#ifdef SIFIVE_CUSTOMIZATION
+  defm : UnsupportedSchedXSfsci;
+#endif // SIFIVE_CUSTOMIZATION
   defm : UnsupportedSchedXSfvfnrclipxfqf;
   defm : UnsupportedSchedXSfvfwmaccqqq;
   defm : UnsupportedSchedXSfvqmaccdod;

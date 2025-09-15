@@ -330,9 +330,6 @@ def : ReadAdvance<ReadCSR, 0>;
 defm : UnsupportedSchedQ;
 defm : UnsupportedSchedSFB;
 defm : UnsupportedSchedV;
-#ifdef SIFIVE_CUSTOMIZATION
-defm : UnsupportedSchedXSfsci;
-#endif // SIFIVE_CUSTOMIZATION
 defm : UnsupportedSchedZabha;
 defm : UnsupportedSchedZbkb;
 defm : UnsupportedSchedZbkx;

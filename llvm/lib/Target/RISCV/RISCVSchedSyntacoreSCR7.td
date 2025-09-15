@@ -244,9 +244,6 @@ multiclass SCR7_Unsupported {
   defm : UnsupportedSchedQ;
   defm : UnsupportedSchedSFB;
   defm : UnsupportedSchedV;
-#ifdef SIFIVE_CUSTOMIZATION
-  defm : UnsupportedSchedXSfsci;
-#endif // SIFIVE_CUSTOMIZATION
   defm : UnsupportedSchedZabha;
   defm : UnsupportedSchedZfa;
   defm : UnsupportedSchedZfhmin;
