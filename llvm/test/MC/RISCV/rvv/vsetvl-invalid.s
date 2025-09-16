@@ -15,9 +15,7 @@
 # CHECK: vsetvli a1, a0, 0x29
 .word 0x029575d7
 
-#if SIFIVE_CUSTOMIZATION
 # CHECK: vsetvli a1, a0, 0x110
-#endif // SIFIVE_CUSTOMIZATION
 .word 0x110575d7
 
 # CHECK: vsetvli a1, a0, e64, mf8, tu, mu
