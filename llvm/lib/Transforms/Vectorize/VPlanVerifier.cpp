@@ -228,10 +228,13 @@ bool VPlanVerifier::verifyEVLRecipe(const VPInstruction &EVL) const {
             errs() << "EVL used by unexpected VPInstruction\n";
             return false;
           }
+#if !SIFIVE_CUSTOMIZATION
+          // In downstrem, `evl.next` will also used in the branch-on-count.
           if (I->getNumUsers() != 1) {
             errs() << "EVL is used in VPInstruction with multiple users\n";
             return false;
           }
+#endif // !SIFIVE_CUSTOMIZATION
 #ifdef SIFIVE_CUSTOMIZATION
           if (I->getOpcode() == Instruction::Add &&
               any_of(I->users(), [](VPUser *U) {
