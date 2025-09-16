@@ -174,7 +174,7 @@ define void @bug18724(i1 %cond, ptr %ptr, i1 %cond.2, i64 %v.1, i32 %v.2) {
 ; UNROLL:       vector.body:
 ; UNROLL-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[PRED_STORE_CONTINUE3:%.*]] ]
 ; UNROLL-NEXT:    [[VEC_PHI:%.*]] = phi i32 [ [[V_2:%.*]], [[VECTOR_PH]] ], [ [[PREDPHI:%.*]], [[PRED_STORE_CONTINUE3]] ]
-; UNROLL-NEXT:    [[VEC_PHI1:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ 1, [[PRED_STORE_CONTINUE3]] ]
+; UNROLL-NEXT:    [[VEC_PHI1:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[PREDPHI4:%.*]], [[PRED_STORE_CONTINUE3]] ]
 ; UNROLL-NEXT:    [[OFFSET_IDX:%.*]] = add i64 [[V_1]], [[INDEX]]
 ; UNROLL-NEXT:    [[TMP6:%.*]] = add i64 [[OFFSET_IDX]], 1
 ; UNROLL-NEXT:    [[TMP7:%.*]] = getelementptr inbounds [768 x i32], ptr [[PTR:%.*]], i64 0, i64 [[OFFSET_IDX]]
@@ -190,7 +190,7 @@ define void @bug18724(i1 %cond, ptr %ptr, i1 %cond.2, i64 %v.1, i32 %v.2) {
 ; UNROLL-NEXT:    [[TMP11:%.*]] = add i32 [[VEC_PHI]], 1
 ; UNROLL-NEXT:    [[TMP12:%.*]] = add i32 [[VEC_PHI1]], 1
 ; UNROLL-NEXT:    [[PREDPHI]] = select i1 [[COND_2]], i32 [[TMP11]], i32 [[VEC_PHI]]
-; UNROLL-NEXT:    [[PREDPHI4:%.*]] = select i1 [[COND_2]], i32 [[TMP12]], i32 [[VEC_PHI1]]
+; UNROLL-NEXT:    [[PREDPHI4]] = select i1 [[COND_2]], i32 [[TMP12]], i32 [[VEC_PHI1]]
 ; UNROLL-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 2
 ; UNROLL-NEXT:    [[TMP15:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; UNROLL-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
@@ -243,7 +243,7 @@ define void @bug18724(i1 %cond, ptr %ptr, i1 %cond.2, i64 %v.1, i32 %v.2) {
 ; UNROLL-NOSIMPLIFY:       vector.body:
 ; UNROLL-NOSIMPLIFY-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[PRED_STORE_CONTINUE3:%.*]] ]
 ; UNROLL-NOSIMPLIFY-NEXT:    [[VEC_PHI:%.*]] = phi i32 [ [[V_2:%.*]], [[VECTOR_PH]] ], [ [[PREDPHI:%.*]], [[PRED_STORE_CONTINUE3]] ]
-; UNROLL-NOSIMPLIFY-NEXT:    [[VEC_PHI1:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ 1, [[PRED_STORE_CONTINUE3]] ]
+; UNROLL-NOSIMPLIFY-NEXT:    [[VEC_PHI1:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[PREDPHI4:%.*]], [[PRED_STORE_CONTINUE3]] ]
 ; UNROLL-NOSIMPLIFY-NEXT:    [[OFFSET_IDX:%.*]] = add i64 [[V_1]], [[INDEX]]
 ; UNROLL-NOSIMPLIFY-NEXT:    [[TMP5:%.*]] = add i64 [[OFFSET_IDX]], 1
 ; UNROLL-NOSIMPLIFY-NEXT:    [[TMP6:%.*]] = getelementptr inbounds [768 x i32], ptr [[PTR:%.*]], i64 0, i64 [[OFFSET_IDX]]
@@ -263,7 +263,7 @@ define void @bug18724(i1 %cond, ptr %ptr, i1 %cond.2, i64 %v.1, i32 %v.2) {
 ; UNROLL-NOSIMPLIFY-NEXT:    [[TMP10:%.*]] = add i32 [[VEC_PHI]], 1
 ; UNROLL-NOSIMPLIFY-NEXT:    [[TMP11:%.*]] = add i32 [[VEC_PHI1]], 1
 ; UNROLL-NOSIMPLIFY-NEXT:    [[PREDPHI]] = select i1 [[COND_2]], i32 [[TMP10]], i32 [[VEC_PHI]]
-; UNROLL-NOSIMPLIFY-NEXT:    [[PREDPHI4:%.*]] = select i1 [[COND_2]], i32 [[TMP11]], i32 [[VEC_PHI1]]
+; UNROLL-NOSIMPLIFY-NEXT:    [[PREDPHI4]] = select i1 [[COND_2]], i32 [[TMP11]], i32 [[VEC_PHI1]]
 ; UNROLL-NOSIMPLIFY-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 2
 ; UNROLL-NOSIMPLIFY-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; UNROLL-NOSIMPLIFY-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]

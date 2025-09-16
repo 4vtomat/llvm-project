@@ -2441,29 +2441,29 @@ define i32 @zext_add_reduc_i8_i32(ptr %a) #0 {
 ; CHECK-MAXBW-SAME: ptr [[A:%.*]]) #[[ATTR0]] {
 ; CHECK-MAXBW-NEXT:  entry:
 ; CHECK-MAXBW-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-MAXBW-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 8
+; CHECK-MAXBW-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 16
 ; CHECK-MAXBW-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-MAXBW:       vector.ph:
 ; CHECK-MAXBW-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-MAXBW-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP2]], 8
+; CHECK-MAXBW-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP2]], 16
 ; CHECK-MAXBW-NEXT:    [[N_MOD_VF:%.*]] = urem i64 1025, [[TMP3]]
 ; CHECK-MAXBW-NEXT:    [[N_VEC:%.*]] = sub i64 1025, [[N_MOD_VF]]
 ; CHECK-MAXBW-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-MAXBW-NEXT:    [[TMP5:%.*]] = mul nuw i64 [[TMP4]], 8
+; CHECK-MAXBW-NEXT:    [[TMP5:%.*]] = mul nuw i64 [[TMP4]], 16
 ; CHECK-MAXBW-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-MAXBW:       vector.body:
 ; CHECK-MAXBW-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-MAXBW-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 8 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP12:%.*]], [[VECTOR_BODY]] ]
+; CHECK-MAXBW-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 4 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[PARTIAL_REDUCE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-MAXBW-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[A]], i64 [[INDEX]]
 ; CHECK-MAXBW-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[TMP7]], i32 0
-; CHECK-MAXBW-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 8 x i8>, ptr [[TMP8]], align 1
-; CHECK-MAXBW-NEXT:    [[TMP9:%.*]] = zext <vscale x 8 x i8> [[WIDE_LOAD]] to <vscale x 8 x i32>
-; CHECK-MAXBW-NEXT:    [[TMP12]] = add <vscale x 8 x i32> [[TMP9]], [[VEC_PHI]]
+; CHECK-MAXBW-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 16 x i8>, ptr [[TMP8]], align 1
+; CHECK-MAXBW-NEXT:    [[TMP9:%.*]] = zext <vscale x 16 x i8> [[WIDE_LOAD]] to <vscale x 16 x i32>
+; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE]] = call <vscale x 4 x i32> @llvm.experimental.vector.partial.reduce.add.nxv4i32.nxv16i32(<vscale x 4 x i32> [[VEC_PHI]], <vscale x 16 x i32> [[TMP9]])
 ; CHECK-MAXBW-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; CHECK-MAXBW-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-MAXBW-NEXT:    br i1 [[TMP10]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP25:![0-9]+]]
 ; CHECK-MAXBW:       middle.block:
-; CHECK-MAXBW-NEXT:    [[TMP11:%.*]] = call i32 @llvm.vector.reduce.add.nxv8i32(<vscale x 8 x i32> [[TMP12]])
+; CHECK-MAXBW-NEXT:    [[TMP11:%.*]] = call i32 @llvm.vector.reduce.add.nxv4i32(<vscale x 4 x i32> [[PARTIAL_REDUCE]])
 ; CHECK-MAXBW-NEXT:    [[CMP_N:%.*]] = icmp eq i64 1025, [[N_VEC]]
 ; CHECK-MAXBW-NEXT:    br i1 [[CMP_N]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-MAXBW:       scalar.ph:
@@ -2542,29 +2542,29 @@ define i64 @zext_add_reduc_i8_i64(ptr %a) #0 {
 ; CHECK-MAXBW-SAME: ptr [[A:%.*]]) #[[ATTR0]] {
 ; CHECK-MAXBW-NEXT:  entry:
 ; CHECK-MAXBW-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-MAXBW-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 8
+; CHECK-MAXBW-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 16
 ; CHECK-MAXBW-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-MAXBW:       vector.ph:
 ; CHECK-MAXBW-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-MAXBW-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP2]], 8
+; CHECK-MAXBW-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP2]], 16
 ; CHECK-MAXBW-NEXT:    [[N_MOD_VF:%.*]] = urem i64 1025, [[TMP3]]
 ; CHECK-MAXBW-NEXT:    [[N_VEC:%.*]] = sub i64 1025, [[N_MOD_VF]]
 ; CHECK-MAXBW-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-MAXBW-NEXT:    [[TMP5:%.*]] = mul nuw i64 [[TMP4]], 8
+; CHECK-MAXBW-NEXT:    [[TMP5:%.*]] = mul nuw i64 [[TMP4]], 16
 ; CHECK-MAXBW-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-MAXBW:       vector.body:
 ; CHECK-MAXBW-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-MAXBW-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 8 x i64> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP12:%.*]], [[VECTOR_BODY]] ]
+; CHECK-MAXBW-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i64> [ zeroinitializer, [[VECTOR_PH]] ], [ [[PARTIAL_REDUCE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-MAXBW-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[A]], i64 [[INDEX]]
 ; CHECK-MAXBW-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[TMP7]], i32 0
-; CHECK-MAXBW-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 8 x i8>, ptr [[TMP8]], align 1
-; CHECK-MAXBW-NEXT:    [[TMP9:%.*]] = zext <vscale x 8 x i8> [[WIDE_LOAD]] to <vscale x 8 x i64>
-; CHECK-MAXBW-NEXT:    [[TMP12]] = add <vscale x 8 x i64> [[TMP9]], [[VEC_PHI]]
+; CHECK-MAXBW-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 16 x i8>, ptr [[TMP8]], align 1
+; CHECK-MAXBW-NEXT:    [[TMP9:%.*]] = zext <vscale x 16 x i8> [[WIDE_LOAD]] to <vscale x 16 x i64>
+; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE]] = call <vscale x 2 x i64> @llvm.experimental.vector.partial.reduce.add.nxv2i64.nxv16i64(<vscale x 2 x i64> [[VEC_PHI]], <vscale x 16 x i64> [[TMP9]])
 ; CHECK-MAXBW-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; CHECK-MAXBW-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-MAXBW-NEXT:    br i1 [[TMP10]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP27:![0-9]+]]
 ; CHECK-MAXBW:       middle.block:
-; CHECK-MAXBW-NEXT:    [[TMP11:%.*]] = call i64 @llvm.vector.reduce.add.nxv8i64(<vscale x 8 x i64> [[TMP12]])
+; CHECK-MAXBW-NEXT:    [[TMP11:%.*]] = call i64 @llvm.vector.reduce.add.nxv2i64(<vscale x 2 x i64> [[PARTIAL_REDUCE]])
 ; CHECK-MAXBW-NEXT:    [[CMP_N:%.*]] = icmp eq i64 1025, [[N_VEC]]
 ; CHECK-MAXBW-NEXT:    br i1 [[CMP_N]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-MAXBW:       scalar.ph:
@@ -2643,29 +2643,29 @@ define i64 @zext_add_reduc_i16_i64(ptr %a) #0 {
 ; CHECK-MAXBW-SAME: ptr [[A:%.*]]) #[[ATTR0]] {
 ; CHECK-MAXBW-NEXT:  entry:
 ; CHECK-MAXBW-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-MAXBW-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 4
+; CHECK-MAXBW-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 8
 ; CHECK-MAXBW-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-MAXBW:       vector.ph:
 ; CHECK-MAXBW-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-MAXBW-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP2]], 4
+; CHECK-MAXBW-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP2]], 8
 ; CHECK-MAXBW-NEXT:    [[N_MOD_VF:%.*]] = urem i64 1025, [[TMP3]]
 ; CHECK-MAXBW-NEXT:    [[N_VEC:%.*]] = sub i64 1025, [[N_MOD_VF]]
 ; CHECK-MAXBW-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-MAXBW-NEXT:    [[TMP5:%.*]] = mul nuw i64 [[TMP4]], 4
+; CHECK-MAXBW-NEXT:    [[TMP5:%.*]] = mul nuw i64 [[TMP4]], 8
 ; CHECK-MAXBW-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-MAXBW:       vector.body:
 ; CHECK-MAXBW-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-MAXBW-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 4 x i64> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP12:%.*]], [[VECTOR_BODY]] ]
+; CHECK-MAXBW-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i64> [ zeroinitializer, [[VECTOR_PH]] ], [ [[PARTIAL_REDUCE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-MAXBW-NEXT:    [[TMP7:%.*]] = getelementptr i16, ptr [[A]], i64 [[INDEX]]
 ; CHECK-MAXBW-NEXT:    [[TMP8:%.*]] = getelementptr i16, ptr [[TMP7]], i32 0
-; CHECK-MAXBW-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 4 x i16>, ptr [[TMP8]], align 2
-; CHECK-MAXBW-NEXT:    [[TMP9:%.*]] = zext <vscale x 4 x i16> [[WIDE_LOAD]] to <vscale x 4 x i64>
-; CHECK-MAXBW-NEXT:    [[TMP12]] = add <vscale x 4 x i64> [[TMP9]], [[VEC_PHI]]
+; CHECK-MAXBW-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 8 x i16>, ptr [[TMP8]], align 2
+; CHECK-MAXBW-NEXT:    [[TMP9:%.*]] = zext <vscale x 8 x i16> [[WIDE_LOAD]] to <vscale x 8 x i64>
+; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE]] = call <vscale x 2 x i64> @llvm.experimental.vector.partial.reduce.add.nxv2i64.nxv8i64(<vscale x 2 x i64> [[VEC_PHI]], <vscale x 8 x i64> [[TMP9]])
 ; CHECK-MAXBW-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; CHECK-MAXBW-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-MAXBW-NEXT:    br i1 [[TMP10]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP29:![0-9]+]]
 ; CHECK-MAXBW:       middle.block:
-; CHECK-MAXBW-NEXT:    [[TMP11:%.*]] = call i64 @llvm.vector.reduce.add.nxv4i64(<vscale x 4 x i64> [[TMP12]])
+; CHECK-MAXBW-NEXT:    [[TMP11:%.*]] = call i64 @llvm.vector.reduce.add.nxv2i64(<vscale x 2 x i64> [[PARTIAL_REDUCE]])
 ; CHECK-MAXBW-NEXT:    [[CMP_N:%.*]] = icmp eq i64 1025, [[N_VEC]]
 ; CHECK-MAXBW-NEXT:    br i1 [[CMP_N]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-MAXBW:       scalar.ph:
@@ -2836,29 +2836,29 @@ define i32 @sext_add_reduc_i8_i32(ptr %a) #0 {
 ; CHECK-MAXBW-SAME: ptr [[A:%.*]]) #[[ATTR0]] {
 ; CHECK-MAXBW-NEXT:  entry:
 ; CHECK-MAXBW-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-MAXBW-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 8
+; CHECK-MAXBW-NEXT:    [[TMP1:%.*]] = mul nuw i64 [[TMP0]], 16
 ; CHECK-MAXBW-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-MAXBW:       vector.ph:
 ; CHECK-MAXBW-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-MAXBW-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP2]], 8
+; CHECK-MAXBW-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP2]], 16
 ; CHECK-MAXBW-NEXT:    [[N_MOD_VF:%.*]] = urem i64 1025, [[TMP3]]
 ; CHECK-MAXBW-NEXT:    [[N_VEC:%.*]] = sub i64 1025, [[N_MOD_VF]]
 ; CHECK-MAXBW-NEXT:    [[TMP4:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-MAXBW-NEXT:    [[TMP5:%.*]] = mul nuw i64 [[TMP4]], 8
+; CHECK-MAXBW-NEXT:    [[TMP5:%.*]] = mul nuw i64 [[TMP4]], 16
 ; CHECK-MAXBW-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-MAXBW:       vector.body:
 ; CHECK-MAXBW-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-MAXBW-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 8 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP12:%.*]], [[VECTOR_BODY]] ]
+; CHECK-MAXBW-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 4 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[PARTIAL_REDUCE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-MAXBW-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[A]], i64 [[INDEX]]
 ; CHECK-MAXBW-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[TMP7]], i32 0
-; CHECK-MAXBW-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 8 x i8>, ptr [[TMP8]], align 1
-; CHECK-MAXBW-NEXT:    [[TMP9:%.*]] = sext <vscale x 8 x i8> [[WIDE_LOAD]] to <vscale x 8 x i32>
-; CHECK-MAXBW-NEXT:    [[TMP12]] = add <vscale x 8 x i32> [[TMP9]], [[VEC_PHI]]
+; CHECK-MAXBW-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 16 x i8>, ptr [[TMP8]], align 1
+; CHECK-MAXBW-NEXT:    [[TMP9:%.*]] = sext <vscale x 16 x i8> [[WIDE_LOAD]] to <vscale x 16 x i32>
+; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE]] = call <vscale x 4 x i32> @llvm.experimental.vector.partial.reduce.add.nxv4i32.nxv16i32(<vscale x 4 x i32> [[VEC_PHI]], <vscale x 16 x i32> [[TMP9]])
 ; CHECK-MAXBW-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; CHECK-MAXBW-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-MAXBW-NEXT:    br i1 [[TMP10]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP33:![0-9]+]]
 ; CHECK-MAXBW:       middle.block:
-; CHECK-MAXBW-NEXT:    [[TMP11:%.*]] = call i32 @llvm.vector.reduce.add.nxv8i32(<vscale x 8 x i32> [[TMP12]])
+; CHECK-MAXBW-NEXT:    [[TMP11:%.*]] = call i32 @llvm.vector.reduce.add.nxv4i32(<vscale x 4 x i32> [[PARTIAL_REDUCE]])
 ; CHECK-MAXBW-NEXT:    [[CMP_N:%.*]] = icmp eq i64 1025, [[N_VEC]]
 ; CHECK-MAXBW-NEXT:    br i1 [[CMP_N]], label [[FOR_EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-MAXBW:       scalar.ph:
@@ -2883,7 +2883,7 @@ for.exit:                        ; preds = %for.body
 
 define dso_local void @not_dotp_high_register_pressure(ptr %a, ptr %b, ptr %sum, i32 %n) #1 {
 ; CHECK-INTERLEAVE1-LABEL: define dso_local void @not_dotp_high_register_pressure(
-; CHECK-INTERLEAVE1-SAME: ptr [[A:%.*]], ptr [[B:%.*]], ptr [[SUM:%.*]], i32 [[N:%.*]]) #[[ATTR1]] {
+; CHECK-INTERLEAVE1-SAME: ptr [[A:%.*]], ptr [[B:%.*]], ptr [[SUM:%.*]], i32 [[N:%.*]]) {
 ; CHECK-INTERLEAVE1-NEXT:  entry:
 ; CHECK-INTERLEAVE1-NEXT:    [[CMP100:%.*]] = icmp sgt i32 [[N]], 0
 ; CHECK-INTERLEAVE1-NEXT:    br i1 [[CMP100]], label [[FOR_BODY_LR_PH:%.*]], label [[FOR_COND_CLEANUP:%.*]]
@@ -2969,7 +2969,7 @@ define dso_local void @not_dotp_high_register_pressure(ptr %a, ptr %b, ptr %sum,
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP36]] = add <4 x i32> [[TMP35]], [[VEC_PHI]]
 ; CHECK-INTERLEAVE1-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP37:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-INTERLEAVE1-NEXT:    br i1 [[TMP37]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP29:![0-9]+]]
+; CHECK-INTERLEAVE1-NEXT:    br i1 [[TMP37]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP35:![0-9]+]]
 ; CHECK-INTERLEAVE1:       middle.block:
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP38:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[TMP36]])
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP39:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[TMP33]])
@@ -2984,7 +2984,7 @@ define dso_local void @not_dotp_high_register_pressure(ptr %a, ptr %b, ptr %sum,
 ; CHECK-INTERLEAVE1:       scalar.ph:
 ;
 ; CHECK-INTERLEAVED-LABEL: define dso_local void @not_dotp_high_register_pressure(
-; CHECK-INTERLEAVED-SAME: ptr [[A:%.*]], ptr [[B:%.*]], ptr [[SUM:%.*]], i32 [[N:%.*]]) #[[ATTR1]] {
+; CHECK-INTERLEAVED-SAME: ptr [[A:%.*]], ptr [[B:%.*]], ptr [[SUM:%.*]], i32 [[N:%.*]]) {
 ; CHECK-INTERLEAVED-NEXT:  entry:
 ; CHECK-INTERLEAVED-NEXT:    [[CMP100:%.*]] = icmp sgt i32 [[N]], 0
 ; CHECK-INTERLEAVED-NEXT:    br i1 [[CMP100]], label [[FOR_BODY_LR_PH:%.*]], label [[FOR_COND_CLEANUP:%.*]]
@@ -3070,7 +3070,7 @@ define dso_local void @not_dotp_high_register_pressure(ptr %a, ptr %b, ptr %sum,
 ; CHECK-INTERLEAVED-NEXT:    [[PARTIAL_REDUCE21]] = add <4 x i32> [[TMP42]], [[VEC_PHI]]
 ; CHECK-INTERLEAVED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-INTERLEAVED-NEXT:    [[TMP29:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-INTERLEAVED-NEXT:    br i1 [[TMP29]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP31:![0-9]+]]
+; CHECK-INTERLEAVED-NEXT:    br i1 [[TMP29]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP41:![0-9]+]]
 ; CHECK-INTERLEAVED:       middle.block:
 ; CHECK-INTERLEAVED-NEXT:    [[TMP30:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[PARTIAL_REDUCE21]])
 ; CHECK-INTERLEAVED-NEXT:    [[TMP31:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[PARTIAL_REDUCE20]])
@@ -3085,7 +3085,7 @@ define dso_local void @not_dotp_high_register_pressure(ptr %a, ptr %b, ptr %sum,
 ; CHECK-INTERLEAVED:       scalar.ph:
 ;
 ; CHECK-MAXBW-LABEL: define dso_local void @not_dotp_high_register_pressure(
-; CHECK-MAXBW-SAME: ptr [[A:%.*]], ptr [[B:%.*]], ptr [[SUM:%.*]], i32 [[N:%.*]]) #[[ATTR1]] {
+; CHECK-MAXBW-SAME: ptr [[A:%.*]], ptr [[B:%.*]], ptr [[SUM:%.*]], i32 [[N:%.*]]) {
 ; CHECK-MAXBW-NEXT:  entry:
 ; CHECK-MAXBW-NEXT:    [[CMP100:%.*]] = icmp sgt i32 [[N]], 0
 ; CHECK-MAXBW-NEXT:    br i1 [[CMP100]], label [[FOR_BODY_LR_PH:%.*]], label [[FOR_COND_CLEANUP:%.*]]
@@ -3136,42 +3136,42 @@ define dso_local void @not_dotp_high_register_pressure(ptr %a, ptr %b, ptr %sum,
 ; CHECK-MAXBW-NEXT:    [[TMP10:%.*]] = sext <4 x i8> [[WIDE_LOAD]] to <4 x i32>
 ; CHECK-MAXBW-NEXT:    [[TMP11:%.*]] = shl nsw i64 [[INDEX]], 3
 ; CHECK-MAXBW-NEXT:    [[TMP12:%.*]] = getelementptr inbounds nuw i8, ptr [[B]], i64 [[TMP11]]
-; CHECK-MAXBW-NEXT:    [[WIDE_VEC:%.*]] = load <128 x i8>, ptr [[TMP12]], align 1
-; CHECK-MAXBW-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <128 x i8> [[WIDE_VEC]], <128 x i8> poison, <16 x i32> <i32 0, i32 8, i32 16, i32 24, i32 32, i32 40, i32 48, i32 56, i32 64, i32 72, i32 80, i32 88, i32 96, i32 104, i32 112, i32 120>
-; CHECK-MAXBW-NEXT:    [[STRIDED_VEC8:%.*]] = shufflevector <128 x i8> [[WIDE_VEC]], <128 x i8> poison, <16 x i32> <i32 1, i32 9, i32 17, i32 25, i32 33, i32 41, i32 49, i32 57, i32 65, i32 73, i32 81, i32 89, i32 97, i32 105, i32 113, i32 121>
-; CHECK-MAXBW-NEXT:    [[STRIDED_VEC9:%.*]] = shufflevector <128 x i8> [[WIDE_VEC]], <128 x i8> poison, <16 x i32> <i32 2, i32 10, i32 18, i32 26, i32 34, i32 42, i32 50, i32 58, i32 66, i32 74, i32 82, i32 90, i32 98, i32 106, i32 114, i32 122>
-; CHECK-MAXBW-NEXT:    [[STRIDED_VEC10:%.*]] = shufflevector <128 x i8> [[WIDE_VEC]], <128 x i8> poison, <16 x i32> <i32 3, i32 11, i32 19, i32 27, i32 35, i32 43, i32 51, i32 59, i32 67, i32 75, i32 83, i32 91, i32 99, i32 107, i32 115, i32 123>
-; CHECK-MAXBW-NEXT:    [[STRIDED_VEC11:%.*]] = shufflevector <128 x i8> [[WIDE_VEC]], <128 x i8> poison, <16 x i32> <i32 4, i32 12, i32 20, i32 28, i32 36, i32 44, i32 52, i32 60, i32 68, i32 76, i32 84, i32 92, i32 100, i32 108, i32 116, i32 124>
-; CHECK-MAXBW-NEXT:    [[STRIDED_VEC12:%.*]] = shufflevector <128 x i8> [[WIDE_VEC]], <128 x i8> poison, <16 x i32> <i32 5, i32 13, i32 21, i32 29, i32 37, i32 45, i32 53, i32 61, i32 69, i32 77, i32 85, i32 93, i32 101, i32 109, i32 117, i32 125>
-; CHECK-MAXBW-NEXT:    [[STRIDED_VEC13:%.*]] = shufflevector <128 x i8> [[WIDE_VEC]], <128 x i8> poison, <16 x i32> <i32 6, i32 14, i32 22, i32 30, i32 38, i32 46, i32 54, i32 62, i32 70, i32 78, i32 86, i32 94, i32 102, i32 110, i32 118, i32 126>
-; CHECK-MAXBW-NEXT:    [[STRIDED_VEC14:%.*]] = shufflevector <128 x i8> [[WIDE_VEC]], <128 x i8> poison, <16 x i32> <i32 7, i32 15, i32 23, i32 31, i32 39, i32 47, i32 55, i32 63, i32 71, i32 79, i32 87, i32 95, i32 103, i32 111, i32 119, i32 127>
-; CHECK-MAXBW-NEXT:    [[TMP13:%.*]] = sext <16 x i8> [[STRIDED_VEC]] to <16 x i32>
-; CHECK-MAXBW-NEXT:    [[TMP14:%.*]] = mul nsw <16 x i32> [[TMP13]], [[TMP10]]
-; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE]] = call <4 x i32> @llvm.experimental.vector.partial.reduce.add.v4i32.v16i32(<4 x i32> [[VEC_PHI7]], <16 x i32> [[TMP14]])
-; CHECK-MAXBW-NEXT:    [[TMP15:%.*]] = sext <16 x i8> [[STRIDED_VEC8]] to <16 x i32>
-; CHECK-MAXBW-NEXT:    [[TMP16:%.*]] = mul nsw <16 x i32> [[TMP15]], [[TMP10]]
-; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE15]] = call <4 x i32> @llvm.experimental.vector.partial.reduce.add.v4i32.v16i32(<4 x i32> [[VEC_PHI6]], <16 x i32> [[TMP16]])
-; CHECK-MAXBW-NEXT:    [[TMP17:%.*]] = sext <16 x i8> [[STRIDED_VEC9]] to <16 x i32>
-; CHECK-MAXBW-NEXT:    [[TMP18:%.*]] = mul nsw <16 x i32> [[TMP17]], [[TMP10]]
-; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE16]] = call <4 x i32> @llvm.experimental.vector.partial.reduce.add.v4i32.v16i32(<4 x i32> [[VEC_PHI5]], <16 x i32> [[TMP18]])
-; CHECK-MAXBW-NEXT:    [[TMP19:%.*]] = sext <16 x i8> [[STRIDED_VEC10]] to <16 x i32>
-; CHECK-MAXBW-NEXT:    [[TMP20:%.*]] = mul nsw <16 x i32> [[TMP19]], [[TMP10]]
-; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE17]] = call <4 x i32> @llvm.experimental.vector.partial.reduce.add.v4i32.v16i32(<4 x i32> [[VEC_PHI4]], <16 x i32> [[TMP20]])
-; CHECK-MAXBW-NEXT:    [[TMP21:%.*]] = sext <16 x i8> [[STRIDED_VEC11]] to <16 x i32>
-; CHECK-MAXBW-NEXT:    [[TMP22:%.*]] = mul nsw <16 x i32> [[TMP21]], [[TMP10]]
-; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE18]] = call <4 x i32> @llvm.experimental.vector.partial.reduce.add.v4i32.v16i32(<4 x i32> [[VEC_PHI3]], <16 x i32> [[TMP22]])
-; CHECK-MAXBW-NEXT:    [[TMP23:%.*]] = sext <16 x i8> [[STRIDED_VEC12]] to <16 x i32>
-; CHECK-MAXBW-NEXT:    [[TMP24:%.*]] = mul nsw <16 x i32> [[TMP23]], [[TMP10]]
-; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE19]] = call <4 x i32> @llvm.experimental.vector.partial.reduce.add.v4i32.v16i32(<4 x i32> [[VEC_PHI2]], <16 x i32> [[TMP24]])
-; CHECK-MAXBW-NEXT:    [[TMP25:%.*]] = sext <16 x i8> [[STRIDED_VEC13]] to <16 x i32>
-; CHECK-MAXBW-NEXT:    [[TMP26:%.*]] = mul nsw <16 x i32> [[TMP25]], [[TMP10]]
-; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE20]] = call <4 x i32> @llvm.experimental.vector.partial.reduce.add.v4i32.v16i32(<4 x i32> [[VEC_PHI1]], <16 x i32> [[TMP26]])
-; CHECK-MAXBW-NEXT:    [[TMP27:%.*]] = sext <16 x i8> [[STRIDED_VEC14]] to <16 x i32>
-; CHECK-MAXBW-NEXT:    [[TMP28:%.*]] = mul nsw <16 x i32> [[TMP27]], [[TMP10]]
-; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE21]] = call <4 x i32> @llvm.experimental.vector.partial.reduce.add.v4i32.v16i32(<4 x i32> [[VEC_PHI]], <16 x i32> [[TMP28]])
-; CHECK-MAXBW-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
+; CHECK-MAXBW-NEXT:    [[WIDE_VEC:%.*]] = load <32 x i8>, ptr [[TMP12]], align 1
+; CHECK-MAXBW-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <32 x i8> [[WIDE_VEC]], <32 x i8> poison, <4 x i32> <i32 0, i32 8, i32 16, i32 24>
+; CHECK-MAXBW-NEXT:    [[STRIDED_VEC8:%.*]] = shufflevector <32 x i8> [[WIDE_VEC]], <32 x i8> poison, <4 x i32> <i32 1, i32 9, i32 17, i32 25>
+; CHECK-MAXBW-NEXT:    [[STRIDED_VEC9:%.*]] = shufflevector <32 x i8> [[WIDE_VEC]], <32 x i8> poison, <4 x i32> <i32 2, i32 10, i32 18, i32 26>
+; CHECK-MAXBW-NEXT:    [[STRIDED_VEC10:%.*]] = shufflevector <32 x i8> [[WIDE_VEC]], <32 x i8> poison, <4 x i32> <i32 3, i32 11, i32 19, i32 27>
+; CHECK-MAXBW-NEXT:    [[STRIDED_VEC11:%.*]] = shufflevector <32 x i8> [[WIDE_VEC]], <32 x i8> poison, <4 x i32> <i32 4, i32 12, i32 20, i32 28>
+; CHECK-MAXBW-NEXT:    [[STRIDED_VEC12:%.*]] = shufflevector <32 x i8> [[WIDE_VEC]], <32 x i8> poison, <4 x i32> <i32 5, i32 13, i32 21, i32 29>
+; CHECK-MAXBW-NEXT:    [[STRIDED_VEC13:%.*]] = shufflevector <32 x i8> [[WIDE_VEC]], <32 x i8> poison, <4 x i32> <i32 6, i32 14, i32 22, i32 30>
+; CHECK-MAXBW-NEXT:    [[STRIDED_VEC14:%.*]] = shufflevector <32 x i8> [[WIDE_VEC]], <32 x i8> poison, <4 x i32> <i32 7, i32 15, i32 23, i32 31>
+; CHECK-MAXBW-NEXT:    [[TMP13:%.*]] = sext <4 x i8> [[STRIDED_VEC]] to <4 x i32>
+; CHECK-MAXBW-NEXT:    [[TMP14:%.*]] = mul nsw <4 x i32> [[TMP13]], [[TMP10]]
+; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE]] = add <4 x i32> [[TMP14]], [[VEC_PHI7]]
+; CHECK-MAXBW-NEXT:    [[TMP16:%.*]] = sext <4 x i8> [[STRIDED_VEC8]] to <4 x i32>
+; CHECK-MAXBW-NEXT:    [[TMP17:%.*]] = mul nsw <4 x i32> [[TMP16]], [[TMP10]]
+; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE15]] = add <4 x i32> [[TMP17]], [[VEC_PHI6]]
+; CHECK-MAXBW-NEXT:    [[TMP19:%.*]] = sext <4 x i8> [[STRIDED_VEC9]] to <4 x i32>
+; CHECK-MAXBW-NEXT:    [[TMP20:%.*]] = mul nsw <4 x i32> [[TMP19]], [[TMP10]]
+; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE16]] = add <4 x i32> [[TMP20]], [[VEC_PHI5]]
+; CHECK-MAXBW-NEXT:    [[TMP22:%.*]] = sext <4 x i8> [[STRIDED_VEC10]] to <4 x i32>
+; CHECK-MAXBW-NEXT:    [[TMP23:%.*]] = mul nsw <4 x i32> [[TMP22]], [[TMP10]]
+; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE17]] = add <4 x i32> [[TMP23]], [[VEC_PHI4]]
+; CHECK-MAXBW-NEXT:    [[TMP25:%.*]] = sext <4 x i8> [[STRIDED_VEC11]] to <4 x i32>
+; CHECK-MAXBW-NEXT:    [[TMP26:%.*]] = mul nsw <4 x i32> [[TMP25]], [[TMP10]]
+; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE18]] = add <4 x i32> [[TMP26]], [[VEC_PHI3]]
+; CHECK-MAXBW-NEXT:    [[TMP28:%.*]] = sext <4 x i8> [[STRIDED_VEC12]] to <4 x i32>
+; CHECK-MAXBW-NEXT:    [[TMP38:%.*]] = mul nsw <4 x i32> [[TMP28]], [[TMP10]]
+; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE19]] = add <4 x i32> [[TMP38]], [[VEC_PHI2]]
+; CHECK-MAXBW-NEXT:    [[TMP39:%.*]] = sext <4 x i8> [[STRIDED_VEC13]] to <4 x i32>
+; CHECK-MAXBW-NEXT:    [[TMP40:%.*]] = mul nsw <4 x i32> [[TMP39]], [[TMP10]]
+; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE20]] = add <4 x i32> [[TMP40]], [[VEC_PHI1]]
+; CHECK-MAXBW-NEXT:    [[TMP41:%.*]] = sext <4 x i8> [[STRIDED_VEC14]] to <4 x i32>
+; CHECK-MAXBW-NEXT:    [[TMP42:%.*]] = mul nsw <4 x i32> [[TMP41]], [[TMP10]]
+; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE21]] = add <4 x i32> [[TMP42]], [[VEC_PHI]]
+; CHECK-MAXBW-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-MAXBW-NEXT:    [[TMP29:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-MAXBW-NEXT:    br i1 [[TMP29]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP29:![0-9]+]]
+; CHECK-MAXBW-NEXT:    br i1 [[TMP29]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP35:![0-9]+]]
 ; CHECK-MAXBW:       middle.block:
 ; CHECK-MAXBW-NEXT:    [[TMP30:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[PARTIAL_REDUCE21]])
 ; CHECK-MAXBW-NEXT:    [[TMP31:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[PARTIAL_REDUCE20]])

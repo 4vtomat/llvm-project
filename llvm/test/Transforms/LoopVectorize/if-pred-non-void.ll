@@ -813,7 +813,7 @@ define i32 @predicated_udiv_scalarized_operand(ptr %a, i1 %c, i32 %x, i64 %n) {
 ; UNROLL-NO-VF:       vector.body:
 ; UNROLL-NO-VF-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[PRED_UDIV_CONTINUE3:%.*]] ]
 ; UNROLL-NO-VF-NEXT:    [[VEC_PHI1:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[TMP15:%.*]], [[PRED_UDIV_CONTINUE3]] ]
-; UNROLL-NO-VF-NEXT:    [[VEC_PHI2:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ 1, [[PRED_UDIV_CONTINUE3]] ]
+; UNROLL-NO-VF-NEXT:    [[VEC_PHI2:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[TMP12:%.*]], [[PRED_UDIV_CONTINUE3]] ]
 ; UNROLL-NO-VF-NEXT:    [[TMP1:%.*]] = add i64 [[INDEX]], 1
 ; UNROLL-NO-VF-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[INDEX]]
 ; UNROLL-NO-VF-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP1]]
@@ -836,7 +836,7 @@ define i32 @predicated_udiv_scalarized_operand(ptr %a, i1 %c, i32 %x, i64 %n) {
 ; UNROLL-NO-VF-NEXT:    [[PREDPHI:%.*]] = select i1 [[C]], i32 [[TMP8]], i32 [[TMP4]]
 ; UNROLL-NO-VF-NEXT:    [[PREDPHI4:%.*]] = select i1 [[C]], i32 [[TMP11]], i32 [[TMP5]]
 ; UNROLL-NO-VF-NEXT:    [[TMP15]] = add i32 [[VEC_PHI1]], [[PREDPHI]]
-; UNROLL-NO-VF-NEXT:    [[TMP12:%.*]] = add i32 [[VEC_PHI2]], [[PREDPHI4]]
+; UNROLL-NO-VF-NEXT:    [[TMP12]] = add i32 [[VEC_PHI2]], [[PREDPHI4]]
 ; UNROLL-NO-VF-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 2
 ; UNROLL-NO-VF-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; UNROLL-NO-VF-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP38:![0-9]+]]

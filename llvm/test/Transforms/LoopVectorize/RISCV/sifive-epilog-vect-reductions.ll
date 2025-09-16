@@ -206,8 +206,7 @@ define i16 @reduction_or_trunc(i16* noalias nocapture %ptr, i32 %start) {
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp eq i32 [[INDEX_NEXT]], 256
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP10:%.*]] = trunc <4 x i32> [[TMP8]] to <4 x i16>
-; CHECK-NEXT:    [[TMP11:%.*]] = call i16 @llvm.vector.reduce.or.v4i16(<4 x i16> [[TMP10]])
+; CHECK-NEXT:    [[TMP11:%.*]] = call i16 @llvm.vector.reduce.or.v4i16(<4 x i16> [[TMP7]])
 ; CHECK-NEXT:    [[TMP12:%.*]] = zext i16 [[TMP11]] to i32
 ; CHECK-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_EPILOG_ITER_CHECK:%.*]]
 ; CHECK:       vec.epilog.iter.check:
@@ -232,8 +231,7 @@ define i16 @reduction_or_trunc(i16* noalias nocapture %ptr, i32 %start) {
 ; CHECK-NEXT:    [[TMP21:%.*]] = icmp eq i32 [[INDEX_NEXT4]], 256
 ; CHECK-NEXT:    br i1 [[TMP21]], label [[VEC_EPILOG_MIDDLE_BLOCK:%.*]], label [[VEC_EPILOG_VECTOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
 ; CHECK:       vec.epilog.middle.block:
-; CHECK-NEXT:    [[TMP22:%.*]] = trunc <4 x i32> [[TMP20]] to <4 x i16>
-; CHECK-NEXT:    [[TMP23:%.*]] = call i16 @llvm.vector.reduce.or.v4i16(<4 x i16> [[TMP22]])
+; CHECK-NEXT:    [[TMP23:%.*]] = call i16 @llvm.vector.reduce.or.v4i16(<4 x i16> [[TMP19]])
 ; CHECK-NEXT:    [[TMP26:%.*]] = zext i16 [[TMP23]] to i32
 ; CHECK-NEXT:    br i1 true, label [[FOR_END]], label [[VEC_EPILOG_SCALAR_PH]]
 ; CHECK:       vec.epilog.scalar.ph:
