@@ -970,6 +970,9 @@ constexpr Intrinsic::ID llvm::getReductionIntrinsicID(RecurKind RK) {
 #endif // SIFIVE_CUSTOMIZATION
   case RecurKind::UMax:
     return Intrinsic::vector_reduce_umax;
+#if SIFIVE_CUSTOMIZATION
+  case RecurKind::FindFirstIVUMin:
+#endif // SIFIVE_CUSTOMIZATION
   case RecurKind::UMin:
     return Intrinsic::vector_reduce_umin;
   case RecurKind::FMax:

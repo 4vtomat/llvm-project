@@ -849,6 +849,9 @@ RecurrenceDescriptor::isFindIVPattern(RecurKind Kind, Loop *TheLoop,
     if (CheckRange(true))
       return {RecurKind::FindFirstIVSMin,
               ConstantInt::get(Ty, APInt::getSignedMaxValue(NumBits))};
+    if (CheckRange(false))
+      return {RecurKind::FindFirstIVUMin,
+              ConstantInt::get(Ty, APInt::getMaxValue(NumBits))};
     return {std::nullopt, nullptr};
 #else
     if (CheckRange(true))

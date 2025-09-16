@@ -5297,7 +5297,8 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
   }
   case RecurKind::FindLastIVSMax:
   case RecurKind::FindLastIVUMax:
-  case RecurKind::FindFirstIVSMin: {
+  case RecurKind::FindFirstIVSMin:
+  case RecurKind::FindFirstIVUMin: {
     auto GetMinMaxIntrinsic = [](RecurKind RK) {
       switch (RK) {
       case RecurKind::FindLastIVSMax:
@@ -5306,6 +5307,8 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
         return Intrinsic::umax;
       case RecurKind::FindFirstIVSMin:
         return Intrinsic::smin;
+      case RecurKind::FindFirstIVUMin:
+        return Intrinsic::umin;
       default:
         llvm_unreachable("Unexpected FindIV kind");
       }
