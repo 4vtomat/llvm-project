@@ -517,8 +517,8 @@ exit:
 }
 
 define void @vp_ptrtoint(ptr %a, ptr %b, i64 %N) {
-; IF-EVL: VPlan 'Initial VPlan for VF={1},UF>=1'
-; IF-EVL-NOT: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI
+; IF-EVL: VPlan 'Initial VPlan for VF={1},UF={1}'
+; IF-EVL: EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI
 
 ; IF-EVL: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2},UF={1}' {
 ; IF-EVL-NEXT: Live-in vp<[[VFUF:%.+]]> = VF * UF
@@ -534,7 +534,7 @@ define void @vp_ptrtoint(ptr %a, ptr %b, i64 %N) {
 ; IF-EVL-NEXT:     EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<[[INDEX_EVL:%.+]]> = phi ir<0>, vp<[[INDEX_EVL_NEXT:%.+]]>
 ; IF-EVL-NEXT:     ir<[[IV:%.+]]> = WIDEN-INDUCTION  ir<0>, ir<1>, vp<[[EVL]]>
 ; IF-EVL-NEXT:     EMIT vp<[[AVL:%.+]]> = sub ir<[[N]]>, vp<[[INDEX_EVL]]>
-; IF-EVL-NEXT:     EMIT vp<[[EVL:%.+]]> = EXPLICIT-VECTOR-LENGTH vp<[[AVL]]>
+; IF-EVL-NEXT:     EMIT-SCALAR vp<[[EVL:%.+]]> = EXPLICIT-VECTOR-LENGTH vp<[[AVL]]>
 ; IF-EVL-NEXT:     vp<[[SCALAR_STEPS:%.+]]> = SCALAR-STEPS vp<[[INDEX_EVL]]>, ir<1>, vp<[[EVL]]>
 ; IF-EVL-NEXT:     WIDEN-GEP Inv[Var] ir<[[GEP:%.+]]> = getelementptr inbounds ir<%b>, ir<[[IV]]>
 ; IF-EVL-NEXT:     WIDEN-CAST ir<[[PTRTOINT:%.+]]> = ptrtoint ir<[[GEP]]> to i64

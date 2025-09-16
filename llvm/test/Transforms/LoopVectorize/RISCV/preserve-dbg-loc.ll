@@ -9,7 +9,7 @@
 define void @vp_select(ptr %a, ptr %b, ptr %c, i64 %N) {
 ; DEBUGLOC-LABEL: define void @vp_select(
 ; DEBUGLOC: vector.body:
-; DEBUGLOC:   = select <vscale x 4 x i1> %{{.+}}, <vscale x 4 x i32> %{{.+}}, <vscale x 4 x i32> %{{.+}}, !dbg ![[SELLOC:[0-9]+]]
+; DEBUGLOC:   = call <vscale x 2 x i32> @llvm.vp.select.nxv2i32(<vscale x 2 x i1> %{{.*}}, <vscale x 2 x i32> %{{.*}}, <vscale x 2 x i32> %{{.*}}, i32 %{{.*}}), !dbg ![[SELLOC:[0-9]+]]
 ; DEBUGLOC: loop:
 ; DEBUGLOC:   = select i1 %{{.+}}, i32 %{{.+}}, i32 %{{.+}}, !dbg ![[SELLOC]]
 ;
@@ -36,4 +36,4 @@ loop:
    ret void
  }
 
- ; DEBUGLOC: [[SELLOC]] = !DILocation(line: 9
+; DEBUGLOC: [[SELLOC]] = !DILocation(line: 9
