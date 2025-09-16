@@ -121,7 +121,7 @@ define i64 @findlastiv_need_mask(ptr %a, ptr %b, i64 %ii, i64 %iv_start, i64 %n)
 ; CHECK-EMPTY:
 ; CHECK-NEXT: middle.block:
 ; CHECK-NEXT:   EMIT vp<[[RDX_MASK:%.+]]> = icmp ne ir<[[SELECT]]>, ir<9223372036854775807>
-; CHECK-NEXT:   EMIT vp<[[RDX:%.+]]> = compute-reduction-result-with-mask ir<[[RDX_PHI]]>, ir<[[SELECT]]>, vp<[[RDX_MASK]]>
+; CHECK-NEXT:   EMIT vp<[[RDX:%.+]]> = compute-reduction-result-with-mask ir<[[RDX_PHI]]>, ir<%ii>, ir<[[SELECT]]>, vp<[[RDX_MASK]]>
 ; CHECK-NEXT:   EMIT vp<[[EXIT_COND:%.+]]> = icmp eq vp<[[OTC]]>, vp<[[VTC]]>
 ; CHECK-NEXT:   EMIT branch-on-cond vp<[[EXIT_COND]]>
 ; CHECK-NEXT: Successor(s): ir-bb<exit.loopexit>, scalar.ph
@@ -209,7 +209,7 @@ define i64 @findlastiv_need_mask_with_intermediate_store(ptr %a, ptr %b, i64 %ii
 ; CHECK-EMPTY:
 ; CHECK-NEXT: middle.block:
 ; CHECK-NEXT:   EMIT vp<[[RDX_MASK:%.+]]> = icmp ne ir<[[SELECT]]>, ir<9223372036854775807>
-; CHECK-NEXT:   EMIT vp<[[RDX:%.+]]> = compute-reduction-result-with-mask ir<[[RDX_PHI]]>, ir<[[SELECT]]>, vp<[[RDX_MASK]]>
+; CHECK-NEXT:   EMIT vp<[[RDX:%.+]]> = compute-reduction-result-with-mask ir<[[RDX_PHI]]>, ir<%ii>, ir<[[SELECT]]>, vp<[[RDX_MASK]]>
 ; CHECK-NEXT:   CLONE store vp<[[RDX]]>, ir<%dst>
 ; CHECK-NEXT:   EMIT vp<[[EXIT_COND:%.+]]> = icmp eq vp<[[OTC]]>, vp<[[VTC]]>
 ; CHECK-NEXT:   EMIT branch-on-cond vp<[[EXIT_COND]]>
