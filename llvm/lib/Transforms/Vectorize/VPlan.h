@@ -2465,7 +2465,6 @@ struct VPFirstOrderRecurrencePHIRecipe : public VPHeaderPHIRecipe {
 /// operand.
 class VPReductionPHIRecipe : public VPHeaderPHIRecipe,
                              public VPUnrollPartAccessor<2> {
-
 #ifdef SIFIVE_CUSTOMIZATION
   const RecurrenceDescriptor &RdxDesc;
 #endif // SIFIVE_CUSTOMIZATION
@@ -2498,9 +2497,9 @@ public:
                        unsigned VFScaleFactor = 1)
       : VPHeaderPHIRecipe(VPDef::VPReductionPHISC, Phi, &Start), Kind(Kind),
         IsInLoop(IsInLoop), IsOrdered(IsOrdered), VFScaleFactor(VFScaleFactor) {
-#endif // SIFIVE_CUSTOMIZATION    assert((!IsOrdered || IsInLoop) && "IsOrdered
-       // requires IsInLoop");
-  }
+#endif // SIFIVE_CUSTOMIZATION
+    assert((!IsOrdered || IsInLoop) && "IsOrdered requires IsInLoop");
+   }
 
   ~VPReductionPHIRecipe() override = default;
 
@@ -2513,7 +2512,8 @@ public:
 #else
         dyn_cast_or_null<PHINode>(getUnderlyingValue()), getRecurrenceKind(),
         *getOperand(0), IsInLoop, IsOrdered, VFScaleFactor);
-#endif // SIFIVE_CUSTOMIZATION    R->addOperand(getBackedgeValue());
+#endif // SIFIVE_CUSTOMIZATION
+    R->addOperand(getBackedgeValue());
     return R;
   }
 
