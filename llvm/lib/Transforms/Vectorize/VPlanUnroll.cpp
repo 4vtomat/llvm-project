@@ -363,12 +363,11 @@ void UnrollState::unrollBlock(VPBlockBase *VPB) {
       continue;
     }
 #if SIFIVE_CUSTOMIZATION
-    // FIXME: Use TernaryRecipe_match which has not been merged into downstream.
-    if (auto *VPI = dyn_cast<VPInstruction>(&R);
-        VPI &&
-        VPI->getOpcode() == VPInstruction::ComputeReductionResultWithMask) {
-      Op1 = R.getOperand(1);
-      VPValue *MaskOp = R.getOperand(2);
+    VPValue *MaskOp;
+    if (match(
+            &R,
+            m_VPInstruction<VPInstruction::ComputeReductionResultWithMask>(
+                m_VPValue(), m_VPValue(), m_VPValue(Op1), m_VPValue(MaskOp)))) {
       addUniformForAllParts(cast<VPInstruction>(&R));
       for (unsigned Part = 1; Part != UF; ++Part) {
         R.addOperand(getValueForPart(Op1, Part));

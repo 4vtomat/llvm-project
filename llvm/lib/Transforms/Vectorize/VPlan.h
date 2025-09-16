@@ -2506,9 +2506,9 @@ public:
   VPReductionPHIRecipe *clone() override {
     auto *R = new VPReductionPHIRecipe(
 #ifdef SIFIVE_CUSTOMIZATION
-        dyn_cast_or_null<PHINode>(getUnderlyingValue()),
-        getRecurrenceDescriptor(), getRecurrenceKind(), *getOperand(0),
-        IsInLoop, IsOrdered, VFScaleFactor);
+        dyn_cast_or_null<PHINode>(getUnderlyingValue()), RdxDesc,
+        getRecurrenceKind(), *getOperand(0), IsInLoop, IsOrdered,
+        VFScaleFactor);
 #else
         dyn_cast_or_null<PHINode>(getUnderlyingValue()), getRecurrenceKind(),
         *getOperand(0), IsInLoop, IsOrdered, VFScaleFactor);
@@ -2536,12 +2536,6 @@ public:
 
   /// Returns the recurrence kind of the reduction.
   RecurKind getRecurrenceKind() const { return Kind; }
-
-#ifdef SIFIVE_CUSTOMIZATION
-  const RecurrenceDescriptor &getRecurrenceDescriptor() const {
-    return RdxDesc;
-  }
-#endif // SIFIVE_CUSTOMIZATION
 
   /// Returns true, if the phi is part of an ordered reduction.
   bool isOrdered() const { return IsOrdered; }

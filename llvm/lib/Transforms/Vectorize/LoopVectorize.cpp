@@ -11627,6 +11627,7 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
       // Only need the masked reduction if the sentinel value is not identity,
       // which is minimun value.
       if (Sentinel != Iden) {
+        VPValue *StartVPV = PhiR->getStartValue();
         VPValue *SentinelVPV =
             Plan->getOrAddLiveIn(cast<ConstantInt>(Sentinel));
         auto *FinalReductionMask =
@@ -11634,7 +11635,7 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
                               VPIRFlags(CmpInst::ICMP_NE), ExitDL);
         auto *FinalReductionMaskedResult = new VPInstruction(
             VPInstruction::ComputeReductionResultWithMask,
-            {PhiR, NewExitingVPV, FinalReductionMask}, ExitDL);
+            {PhiR, StartVPV, NewExitingVPV, FinalReductionMask}, ExitDL);
         FinalReductionMaskedResult->insertBefore(FinalReductionResult);
         FinalReductionMask->insertBefore(FinalReductionMaskedResult);
         FinalReductionResult->replaceAllUsesWith(FinalReductionMaskedResult);

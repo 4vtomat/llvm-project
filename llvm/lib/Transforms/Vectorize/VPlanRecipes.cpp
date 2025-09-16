@@ -557,6 +557,9 @@ unsigned VPInstruction::getNumOperandsForOpcode(unsigned Opcode) {
   case VPInstruction::ComputeAnyOfResult:
   case VPInstruction::ReductionStartVector:
     return 3;
+#if SIFIVE_CUSTOMIZATION
+  case VPInstruction::ComputeReductionResultWithMask:
+#endif // SIFIVE_CUSTOMIZATION
   case VPInstruction::ComputeFindIVResult:
     return 4;
   case Instruction::Call:
@@ -1136,50 +1139,38 @@ Value *VPInstruction::generate(VPTransformState &State) {
     // Remove the operand from VPReductionPHIRecipe after breaking up the recipe
     // further.
     auto *PhiR = cast<VPReductionPHIRecipe>(getOperand(0));
-    auto *OrigPhi = cast<PHINode>(PhiR->getUnderlyingValue());
     assert(!PhiR->isInLoop() && "Unsupport in-loop reduction for FindLastIV");
 
     // Get its reduction variable descriptor.
-    const RecurrenceDescriptor &RdxDesc = PhiR->getRecurrenceDescriptor();
-    RecurKind RK = RdxDesc.getRecurrenceKind();
+    RecurKind RK = PhiR->getRecurrenceKind();
     assert(RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK) &&
            "Unspported recurrence kind");
 
     bool IsUseVLAVectorizer = State.Plan->useVLAVectorizer();
     // The recipe's operands are the reduction phi, followed by one operand for
     // each part of the reduction.
-    unsigned UF = (getNumOperands() - 1) / 2;
+    unsigned UF = (getNumOperands() - 2) / 2;
 
     assert((!IsUseVLAVectorizer || UF == 1) &&
            "Expected only UF == 1 when VLA vectorizing");
 
     VectorParts RdxParts(UF);
-    // The operand 1, 3, 5, ... 1 + 2n are the operands to be computed reduction
+    // The operand 2, 4, 6, ... 2 + 2n are the operands to be computed reduction
     // result.
     for (unsigned Part = 0; Part < UF; ++Part)
-      RdxParts[Part] = State.get(getOperand(1 + Part * 2), false);
+      RdxParts[Part] = State.get(getOperand(2 + Part * 2), false);
 
     VectorParts MaskParts(UF);
-    // The operand 2, 4, 6, ... 2 + 2n are the mask operands.
+    // The operand 3, 5, 7, ... 3 + 2n are the mask operands.
     for (unsigned Part = 0; Part < UF; ++Part)
-      MaskParts[Part] = State.get(getOperand(2 + Part * 2), false);
-
-    // If the vector reduction can be performed in a smaller type, we truncate
-    // then extend the loop exit value to enable InstCombine to evaluate the
-    // entire expression in the smaller type.
-    // TODO: Handle this in truncateToMinBW.
-    Type *PhiTy = OrigPhi->getType();
-    if (State.VF.isVector() && PhiTy != RdxDesc.getRecurrenceType()) {
-      Type *RdxVecTy = VectorType::get(RdxDesc.getRecurrenceType(), State.VF);
-      for (unsigned Part = 0; Part < UF; ++Part)
-        RdxParts[Part] = Builder.CreateTrunc(RdxParts[Part], RdxVecTy);
-    }
+      MaskParts[Part] = State.get(getOperand(3 + Part * 2), false);
 
     if (!IsUseVLAVectorizer) {
       // Mask each part by select instruction.
       // ?? Create a recipe for that?
-      Value *RdxOpIden = llvm::getRecurrenceIdentity(
-          RK, RdxDesc.getRecurrenceType(), RdxDesc.getFastMathFlags());
+      Type *IdenTy = State.TypeAnalysis.inferScalarType(getOperand(2));
+      Value *RdxOpIden =
+          llvm::getRecurrenceIdentity(RK, IdenTy, FastMathFlags());
       if (State.VF.isVector())
         RdxOpIden = Builder.CreateVectorSplat(State.VF, RdxOpIden);
       for (unsigned Part = 0; Part < UF; ++Part)
@@ -1209,27 +1200,18 @@ Value *VPInstruction::generate(VPTransformState &State) {
         ReducedPartRdx = createSimpleReduction(
             Builder, ReducedPartRdx, RecurKind::SMax, MaskPartRdx, InitEVL);
         assert(InitEVL && "EVL must has value");
-        Value *AllTrueMask =
-            Builder.CreateVectorSplat(State.VF, Builder.getTrue());
         MaskPartRdx = createSimpleReduction(Builder, MaskPartRdx, RecurKind::Or,
-                                            AllTrueMask, InitEVL);
+                                            nullptr, InitEVL);
       } else {
         ReducedPartRdx =
             createSimpleReduction(Builder, ReducedPartRdx, RecurKind::SMax);
         MaskPartRdx =
             createSimpleReduction(Builder, MaskPartRdx, RecurKind::Or);
       }
-      // If the reduction can be performed in a smaller type, we need to
-      // extend the reduction to the wider type before we branch to the
-      // original loop.
-      if (PhiTy != RdxDesc.getRecurrenceType())
-        ReducedPartRdx = RdxDesc.isSigned()
-                             ? Builder.CreateSExt(ReducedPartRdx, PhiTy)
-                             : Builder.CreateZExt(ReducedPartRdx, PhiTy);
     }
 
     // Mask the reduction result
-    Value *StartV = RdxDesc.getRecurrenceStartValue();
+    Value *StartV = State.get(getOperand(1), true);
     ReducedPartRdx = Builder.CreateSelect(MaskPartRdx, ReducedPartRdx, StartV);
 
     return ReducedPartRdx;
@@ -1569,6 +1551,9 @@ bool VPInstruction::onlyFirstLaneUsed(const VPValue *Op) const {
     return true;
   case VPInstruction::PtrAdd:
     return Op == getOperand(0) || vputils::onlyFirstLaneUsed(this);
+#if SIFIVE_CUSTOMIZATION
+  case VPInstruction::ComputeReductionResultWithMask:
+#endif // SIFIVE_CUSTOMIZATION
   case VPInstruction::ComputeAnyOfResult:
   case VPInstruction::ComputeFindIVResult:
     return Op == getOperand(1);
@@ -5257,7 +5242,7 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
     return 0;
 
   TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput;
-  RecurKind RdxKind = RdxDesc.getRecurrenceKind();
+  RecurKind RdxKind = getRecurrenceKind();
   Type *ElementTy = RdxDesc.getRecurrenceType();
   auto *VectorTy = cast<VectorType>(toVectorTy(ElementTy, VF));
   // TODO: Add broadcast cost for all recurrence kinds
