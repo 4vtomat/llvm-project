@@ -65,9 +65,9 @@
 // CHECK-NEXT:     xsfpgflushdlone      0.1       'XSfpgflushdlone' (Cache Flush/Power Down Instructions)
 // CHECK-NEXT:     xsfvcp               1.0       'XSfvcp' (SiFive Custom Vector Coprocessor Interface Instructions)
 // CHECK-NEXT:     xsfvfbfa             0.1       'XSfvfbfa' (SiFive custom additional BF16 vector compute support)
-// CHECK-NEXT:     xsfvfbfexp16e        0.1       'XSfvfbfexp16e' (SiFive Vector Floating-Point Exponential Function Instruction, BFloat16)
-// CHECK-NEXT:     xsfvfexp16e          0.1       'XSfvfexp16e' (SiFive Vector Floating-Point Exponential Function Instruction, Half Precision)
-// CHECK-NEXT:     xsfvfexp32e          0.1       'XSfvfexp32e' (SiFive Vector Floating-Point Exponential Function Instruction, Single Precision)
+// CHECK-NEXT:     xsfvfbfexp16e        0.5       'XSfvfbfexp16e' (SiFive Vector Floating-Point Exponential Function Instruction, BFloat16)
+// CHECK-NEXT:     xsfvfexp16e          0.5       'XSfvfexp16e' (SiFive Vector Floating-Point Exponential Function Instruction, Half Precision)
+// CHECK-NEXT:     xsfvfexp32e          0.5       'XSfvfexp32e' (SiFive Vector Floating-Point Exponential Function Instruction, Single Precision)
 // CHECK-NEXT:     xsfvfexpa            0.2       'XSfvfexpa' (SiFive Vector Floating-Point Exponential Approximation Instruction)
 // CHECK-NEXT:     xsfvfnrclipxfqf      0.1       'XSfvfnrclipxfqf' (SiFive FP32-to-int8 Ranged Clip Instructions)
 // CHECK-NEXT:     xsfvqdotq            0.1       'XSfvqdotq' (SiFive Vector Quad-Widening 4D Dot Product Instructions)
@@ -78,4 +78,4 @@
 // CHECK-NEXT:     zicfilp              1.0       'Zicfilp' (Landing pad)
 // CHECK-NEXT:     zicfiss              1.0       'Zicfiss' (Shadow stack)
 // CHECK-EMPTY:
-// CHECK-NEXT: ISA String: rv64i2p1_m2p0_a2p1_f2p2_d2p2_c2p0_b1p0_v1p0_zic64b1p0_zicbom1p0_zicbop1p0_zicboz1p0_ziccamoa1p0_ziccif1p0_ziccrse1p0_zicfilp1p0_zicfiss1p0_zicntr2p0_zicond1p0_zicsr2p0_zifencei2p0_zihintntl1p0_zihintpause2p0_zihpm2p0_zimop1p0_zmmul1p0_za64rs1p0_zaamo1p0_zalrsc1p0_zawrs1p0_zfa1p0_zfbfmin1p0_zfh1p0_zfhmin1p0_zca1p0_zcb1p0_zcd1p0_zcmop1p0_zba1p0_zbb1p0_zbs1p0_zkr1p0_zkt1p0_zvbb1p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvfbfmin1p0_zvfbfwma1p0_zvfh1p0_zvfhmin1p0_zvkb0p1_zvkt1p0_zvl1024b1p0_zvl128b1p0_zvl256b1p0_zvl32b1p0_zvl512b1p0_zvl64b1p0_xsfcease1p0_xsfpgflushdlone0p1_xsfvcp1p0_xsfvfbfa0p1_xsfvfbfexp16e0p1_xsfvfexp16e0p1_xsfvfexp32e0p1_xsfvfexpa0p2_xsfvfnrclipxfqf0p1_xsfvqdotq0p1_xsifivecdiscarddlone1p0_xsifivecflushdlone1p0
+// CHECK-NEXT: ISA String: rv64i2p1_m2p0_a2p1_f2p2_d2p2_c2p0_b1p0_v1p0_zic64b1p0_zicbom1p0_zicbop1p0_zicboz1p0_ziccamoa1p0_ziccif1p0_ziccrse1p0_zicfilp1p0_zicfiss1p0_zicntr2p0_zicond1p0_zicsr2p0_zifencei2p0_zihintntl1p0_zihintpause2p0_zihpm2p0_zimop1p0_zmmul1p0_za64rs1p0_zaamo1p0_zalrsc1p0_zawrs1p0_zfa1p0_zfbfmin1p0_zfh1p0_zfhmin1p0_zca1p0_zcb1p0_zcd1p0_zcmop1p0_zba1p0_zbb1p0_zbs1p0_zkr1p0_zkt1p0_zvbb1p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvfbfmin1p0_zvfbfwma1p0_zvfh1p0_zvfhmin1p0_zvkb0p1_zvkt1p0_zvl1024b1p0_zvl128b1p0_zvl256b1p0_zvl32b1p0_zvl512b1p0_zvl64b1p0_xsfcease1p0_xsfpgflushdlone0p1_xsfvcp1p0_xsfvfbfa0p1_xsfvfbfexp16e0p5_xsfvfexp16e0p5_xsfvfexp32e0p5_xsfvfexpa0p2_xsfvfnrclipxfqf0p1_xsfvqdotq0p1_xsifivecdiscarddlone1p0_xsifivecflushdlone1p0

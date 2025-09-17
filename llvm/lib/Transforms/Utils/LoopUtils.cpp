@@ -1262,6 +1262,8 @@ Value *llvm::createAnyOfReduction(IRBuilderBase &Builder, Value *Src,
 Value *llvm::createAnyOfReduction(IRBuilderBase &Builder, Value *Src,
                                   Value *InitVal, PHINode *OrigPhi,
                                   Value *EVL) {
+  assert(Src->getType()->isVectorTy() &&
+         "Must be vector type for tail folding with EVL");
   Value *NewVal = nullptr;
 
   // First use the original phi to determine the new value we're trying to
@@ -1277,8 +1279,11 @@ Value *llvm::createAnyOfReduction(IRBuilderBase &Builder, Value *Src,
          "input to the select should be the original phi");
 
   // If any predicate is true it means that we want to select the new value.
+  auto *SrcTy = cast<VectorType>(Src->getType());
+  Value *AllTrueMask =
+      Builder.CreateVectorSplat(SrcTy->getElementCount(), Builder.getTrue());
   Value *AnyOf =
-      Src->getType()->isVectorTy() ? Builder.CreateOrReduce(Src, EVL) : Src;
+      createSimpleReduction(Builder, Src, RecurKind::Or, AllTrueMask, EVL);
   // The compares in the loop may yield poison, which propagates through the
   // bitwise ORs. Freeze it here before the condition is used.
   AnyOf = Builder.CreateFreeze(AnyOf);
@@ -1311,8 +1316,14 @@ Value *llvm::createFindLastIVReduction(IRBuilderBase &Builder, Value *Src,
          "Must be vector type for tail folding with EVL");
   bool IsSigned = RecurrenceDescriptor::isSignedRecurrenceKind(RdxKind);
   bool IsMaxRdx = RecurrenceDescriptor::isFindLastIVRecurrenceKind(RdxKind);
-  Value *Rdx = IsMaxRdx ? Builder.CreateIntMaxReduce(Src, EVL, IsSigned, Mask)
-                        : Builder.CreateIntMinReduce(Src, EVL, IsSigned, Mask);
+  RecurKind MinMaxKind = IsMaxRdx
+                             ? (IsSigned ? RecurKind::SMax : RecurKind::UMax)
+                             : (IsSigned ? RecurKind::SMin : RecurKind::UMin);
+  auto *SrcTy = cast<VectorType>(Src->getType());
+  Value *AllTrueMask =
+      Builder.CreateVectorSplat(SrcTy->getElementCount(), Builder.getTrue());
+  Value *Rdx =
+      createSimpleReduction(Builder, Src, MinMaxKind, AllTrueMask, EVL);
   // Correct the final reduction result back to the start value if the maximum
   // reduction is sentinel value.
   Value *Cmp =
@@ -1407,47 +1418,12 @@ Value *llvm::createSimpleReduction(IRBuilderBase &Builder, Value *Src,
 
 Value *llvm::createSimpleReduction(IRBuilderBase &Builder, Value *Src,
                                    RecurKind Kind, Value *Mask, Value *EVL) {
+#if SIFIVE_CUSTOMIZATION
   assert(!RecurrenceDescriptor::isAnyOfRecurrenceKind(Kind) &&
          !RecurrenceDescriptor::isFindIVRecurrenceKind(Kind) &&
-         "AnyOf and FindIV reductions are not supported.");
-#if SIFIVE_CUSTOMIZATION
-  auto *SrcVecEltTy = cast<VectorType>(Src->getType())->getElementType();
-  switch (Kind) {
-  case RecurKind::Add:
-    return Builder.CreateAddReduce(Src, EVL, Mask);
-  case RecurKind::Mul:
-    return Builder.CreateMulReduce(Src, EVL, Mask);
-  case RecurKind::And:
-    return Builder.CreateAndReduce(Src, EVL, Mask);
-  case RecurKind::Or:
-    return Builder.CreateOrReduce(Src, EVL, Mask);
-  case RecurKind::Xor:
-    return Builder.CreateXorReduce(Src, EVL, Mask);
-  case RecurKind::FMulAdd:
-  case RecurKind::FAdd:
-    return Builder.CreateFAddReduce(ConstantFP::getNegativeZero(SrcVecEltTy),
-                                    Src, EVL, Mask);
-  case RecurKind::FMul:
-    return Builder.CreateFMulReduce(ConstantFP::get(SrcVecEltTy, 1.0), Src, EVL,
-                                    Mask);
-  case RecurKind::SMax:
-    return Builder.CreateIntMaxReduce(Src, EVL, true, Mask);
-  case RecurKind::SMin:
-    return Builder.CreateIntMinReduce(Src, EVL, true, Mask);
-  case RecurKind::UMax:
-    return Builder.CreateIntMaxReduce(Src, EVL, false, Mask);
-  case RecurKind::UMin:
-    return Builder.CreateIntMinReduce(Src, EVL, false, Mask);
-  case RecurKind::FMax:
-    return Builder.CreateFPMaxReduce(Src, EVL, Mask);
-  case RecurKind::FMin:
-    return Builder.CreateFPMinReduce(Src, EVL, Mask);
-  default:
-    // back to the upstream approach.
-    break;
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
+         !RecurrenceDescriptor::isFindLastIVRecurrenceKind(Kind) &&
+         "AnyOf, FindIV, and FindLastIV reductions are not supported.");
+#endif
   Intrinsic::ID Id = getReductionIntrinsicID(Kind);
   auto VPID = VPIntrinsic::getForIntrinsic(Id);
   assert(VPReductionIntrinsic::isVPReduction(VPID) &&

@@ -70,7 +70,7 @@ define float @fadd_fmf_reduction(float* noalias nocapture readonly %a, i64 %n, f
 ; CHECK-SCALABLE-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; CHECK-SCALABLE-NEXT:    br i1 [[TMP5]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-SCALABLE:       middle.block:
-; CHECK-SCALABLE-NEXT:    [[TMP6:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP8]])
+; CHECK-SCALABLE-NEXT:    [[TMP6:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float 0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE]], <vscale x 2 x i1> splat (i1 true), i32 [[TMP8]])
 ; CHECK-SCALABLE-NEXT:    br label [[FOR_END:%.*]]
 ; CHECK-SCALABLE:       scalar.ph:
 ; CHECK-SCALABLE-NEXT:    br label [[FOR_BODY:%.*]]

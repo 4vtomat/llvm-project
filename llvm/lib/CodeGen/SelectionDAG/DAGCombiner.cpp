@@ -595,6 +595,7 @@ namespace {
     SDValue buildVPSqrtNRTwoConst(SDValue Arg, SDValue Est, SDValue Mask,
                                   SDValue EVL, unsigned Iterations,
                                   SDNodeFlags Flags, bool Reciprocal);
+    SDValue foldBinOpIntoVPSelect(SDNode *N);
 #endif // SIFIVE_CUSTOMIZATION
 
     SDValue XformToShuffleWithZero(SDNode *N);
@@ -8522,6 +8523,10 @@ SDValue DAGCombiner::visitOR(SDNode *N) {
 
   if (SDValue NewSel = foldBinOpIntoSelect(N))
     return NewSel;
+#if SIFIVE_CUSTOMIZATION
+  if (SDValue NewSel = foldBinOpIntoVPSelect(N))
+    return NewSel;
+#endif
 
   // fold (or x, c) -> c iff (x & ~c) == 0
   ConstantSDNode *N1C = dyn_cast<ConstantSDNode>(N1);
@@ -28118,23 +28123,27 @@ SDValue DAGCombiner::visitVPXOR(SDNode *N) {
 /// The optimization works when target supports merge operand for those binary
 /// operations.
 static SDValue foldVPSelectWithIdentityConstant(SDNode *N, SelectionDAG &DAG,
-                                                unsigned SelectIndex) {
+                                                bool ShouldCommuteOperands) {
   // Match a select as operand 1.
+  unsigned Opcode = N->getOpcode();
   SDValue N0 = N->getOperand(0);
   SDValue N1 = N->getOperand(1);
-  SDValue VL = N->getOperand(3);
-  if (SelectIndex == 0)
+  if (ShouldCommuteOperands)
     std::swap(N0, N1);
 
-  if ((N1.getOpcode() != ISD::VP_SELECT && N1.getOpcode() != ISD::VP_MERGE) ||
-      N1.getOperand(3) != VL || !N1.hasOneUse())
+  if (((!ISD::isVPOpcode(Opcode) || N1.getOpcode() != ISD::VP_SELECT) &&
+       N1.getOpcode() != ISD::VP_MERGE) ||
+      (ISD::isVPOpcode(Opcode) && N1.getOperand(3) != N->getOperand(3)) ||
+      !N1.hasOneUse())
     return SDValue();
 
-  unsigned Opcode = N->getOpcode();
   EVT VT = N->getValueType(0);
   SDValue Mask = N1.getOperand(0);
   SDValue TVal = N1.getOperand(1);
   SDValue FVal = N1.getOperand(2);
+
+  if (Opcode == ISD::OR && VT.getVectorElementType() == MVT::i1)
+    return SDValue();
 
   auto GetNormalOp = [](unsigned VPOp) {
     // Skip div/rem because of immediate UB (not speculatable).
@@ -28179,25 +28188,32 @@ static SDValue foldVPSelectWithIdentityConstant(SDNode *N, SelectionDAG &DAG,
     return ISD::DELETED_NODE;
   };
 
-  unsigned NormalOp = GetNormalOp(Opcode);
+  unsigned NormalOp = ISD::isVPOpcode(Opcode) ? GetNormalOp(Opcode) : Opcode;
+  unsigned OpNo = ShouldCommuteOperands ? 0 : 1;
   if (NormalOp != ISD::DELETED_NODE &&
-      isNeutralConstant(NormalOp, N->getFlags(), FVal, SelectIndex)) {
+      isNeutralConstant(NormalOp, N->getFlags(), FVal, OpNo)) {
     // This transform increases uses of N0, so freeze it to be safe.
     SDValue F0 = DAG.getFreeze(N0);
-    // Use all ones mask for easier optimization, since RISC-V could fold
-    // unmasked intrinsics and vmerge.vvm. It may make more sense to use same
-    // mask as the vp.select node.
-    SDValue Ops1[] = {
-        F0, TVal, DAG.getAllOnesConstant(SDLoc(N), Mask.getValueType()), VL};
-    SDValue NewBO = DAG.getNode(Opcode, SDLoc(N), VT, Ops1, N->getFlags());
-    SDValue Ops2[] = {Mask, NewBO, F0, VL};
+    SDValue NewBO;
+    if (ISD::isVPOpcode(Opcode)) {
+      // Use all ones mask for easier optimization, since RISC-V could fold
+      // unmasked intrinsics and vmerge.vvm. It may make more sense to use same
+      // mask as the vp.select node.
+      SDValue Ops1[] = {F0, TVal,
+                        DAG.getAllOnesConstant(SDLoc(N), Mask.getValueType()),
+                        N->getOperand(3)};
+      NewBO = DAG.getNode(Opcode, SDLoc(N), VT, Ops1, N->getFlags());
+    } else {
+      NewBO = DAG.getNode(Opcode, SDLoc(N), VT, F0, TVal, N->getFlags());
+    }
+    SDValue Ops2[] = {Mask, NewBO, F0, N1.getOperand(3)};
     return DAG.getNode(N1->getOpcode(), SDLoc(N), VT, Ops2);
   }
   return SDValue();
 }
 
-static SDValue foldVPBinOpIntoVPSelect(SDNode *N, SelectionDAG &DAG) {
-  if (SDValue Res = foldVPSelectWithIdentityConstant(N, DAG, 1))
+SDValue DAGCombiner::foldBinOpIntoVPSelect(SDNode *N) {
+  if (SDValue Res = foldVPSelectWithIdentityConstant(N, DAG, false))
     return Res;
 
   // Test opcodes that are commutable.
@@ -28215,7 +28231,8 @@ static SDValue foldVPBinOpIntoVPSelect(SDNode *N, SelectionDAG &DAG) {
   case ISD::VP_FMUL:
   case ISD::VP_FMINNUM:
   case ISD::VP_FMAXNUM:
-    return foldVPSelectWithIdentityConstant(N, DAG, 0);
+  case ISD::OR:
+    return foldVPSelectWithIdentityConstant(N, DAG, true);
   }
   return SDValue();
 }
@@ -28788,7 +28805,7 @@ SDValue DAGCombiner::visitVPOp(SDNode *N) {
   if (!AreAllEltsDisabled) {
 #if SIFIVE_CUSTOMIZATION
     if (ISD::isVPBinaryOp(N->getOpcode()))
-      if (SDValue Res = foldVPBinOpIntoVPSelect(N, DAG))
+      if (SDValue Res = foldBinOpIntoVPSelect(N))
         return Res;
 #endif // SIFIVE_CUSTOMIZATION
 

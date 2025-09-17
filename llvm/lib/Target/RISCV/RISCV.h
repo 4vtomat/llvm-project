@@ -41,6 +41,9 @@ void initializeRISCVWidenReductionPHIPass(PassRegistry &);
 
 FunctionPass *createRISCVIndirectBranchTrackingPass();
 void initializeRISCVIndirectBranchTrackingPass(PassRegistry &);
+
+FunctionPass *createRISCVMacroFusionStatsPass();
+void initializeRISCVMacroFusionStatsPass(PassRegistry &);
 #endif // SIFIVE_CUSTOMIZATION
 
 FunctionPass *createRISCVCodeGenPreparePass();

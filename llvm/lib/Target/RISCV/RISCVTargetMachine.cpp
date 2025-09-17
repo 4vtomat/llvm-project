@@ -127,6 +127,10 @@ static cl::opt<bool>
     EnableRISCVSpillRewrite("enable-riscv-spill-rewrite", cl::Hidden,
                             cl::init(false),
                             cl::desc("Enable RISC-V Spill Rewrite pass"));
+
+static cl::opt<bool> CollectMacroFusionStats("riscv-collect-macro-fusion-stats",
+                                             cl::Hidden, cl::init(false));
+
 #endif // SIFIVE_CUSTOMIZATION
 static cl::opt<bool>
     EnableVLOptimizer("riscv-enable-vl-optimizer",
@@ -183,6 +187,7 @@ extern "C" LLVM_ABI LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
 #if SIFIVE_CUSTOMIZATION
   initializeRISCVPeepholePass(*PR);
   initializeRISCVMachineConstPropagationPass(*PR);
+  initializeRISCVMacroFusionStatsPass(*PR);
 #endif // SIFIVE_CUSTOMIZATION
   initializeRISCVMoveMergePass(*PR);
   initializeRISCVPushPopOptPass(*PR);
@@ -673,6 +678,11 @@ void RISCVPassConfig::addPreEmitPass2() {
   addPass(createUnpackMachineBundles([&](const MachineFunction &MF) {
     return MF.getFunction().getParent()->getModuleFlag("kcfi");
   }));
+
+#if SIFIVE_CUSTOMIZATION
+  if (CollectMacroFusionStats)
+    addPass(createRISCVMacroFusionStatsPass());
+#endif
 }
 
 void RISCVPassConfig::addMachineSSAOptimization() {

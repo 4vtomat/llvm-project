@@ -125,6 +125,7 @@ let TargetPrefix = "riscv" in {
     }
   }
 
+#ifdef SIFIVE_CUSTOMIZATION
   // We use llvm_anyvector_ty and llvm_anyint_ty for future extensibility purpose
   // but only EEW=32 is defined for now
   // Input: (vector_in, vector_in, vector_in/scalar_in, vl, policy)
@@ -153,6 +154,7 @@ let TargetPrefix = "riscv" in {
     def "int_riscv_" # NAME : RISCVSFCustomVQDOTUnMasked<HasVV=HasVV>;
     def "int_riscv_" # NAME # "_mask" : RISCVSFCustomVQDOTMasked<HasVV=HasVV>;
   }
+#endif
 
   class RISCVSFCustomVMACC
       : DefaultAttrsIntrinsic< [llvm_anyvector_ty],
@@ -191,6 +193,7 @@ let TargetPrefix = "riscv" in {
   defm "" : RISCVSFCustomVC_XVV<["x", "i", "v", "f"]>;
   defm "" : RISCVSFCustomVC_XVW<["x", "i", "v", "f"]>;
 
+#ifdef SIFIVE_CUSTOMIZATION
   defm sf_vfexp : RISCVUnaryAA;
   defm sf_vfexpa : RISCVUnaryAA;
 
@@ -199,6 +202,7 @@ let TargetPrefix = "riscv" in {
   defm sf_vqdotu  : RISCVSFCustomVQDOT;
   defm sf_vqdotsu : RISCVSFCustomVQDOT;
   defm sf_vqdotus : RISCVSFCustomVQDOT<HasVV=0>;
+#endif
 
   // XSfvqmaccdod
   def int_riscv_sf_vqmaccu_2x8x2  : RISCVSFCustomVMACC;
@@ -219,6 +223,7 @@ let TargetPrefix = "riscv" in {
   defm int_riscv_sf_vfnrclip_x_f_qf : RISCVSFCustomVFNRCLIP;
   defm int_riscv_sf_vfnrclip_xu_f_qf : RISCVSFCustomVFNRCLIP;
 
+#ifdef SIFIVE_CUSTOMIZATION
   // Mammoth
   // Output: (output_len)
   // Input: (input_len, vsew, twiden)
@@ -312,7 +317,6 @@ let TargetPrefix = "riscv" in {
       : DefaultAttrsIntrinsic<[], [], [IntrNoMem, IntrHasSideEffects]>,
         RISCVVIntrinsic;
 
-#ifdef SIFIVE_CUSTOMIZATION
 //===--------------------------------------------------------------------===//
 // SSCI
 //===--------------------------------------------------------------------===//

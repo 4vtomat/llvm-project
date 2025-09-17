@@ -768,89 +768,43 @@ public:
   /// can be created by adding the reassoc fast-math flag to the resulting
   /// sequential reduction.
   LLVM_ABI CallInst *CreateFAddReduce(Value *Acc, Value *Src);
-#if SIFIVE_CUSTOMIZATION
-  LLVM_ABI CallInst *CreateFAddReduce(Value *Acc, Value *Src, Value *EVL,
-                                      Value *Mask = nullptr);
-#endif // SIFIVE_CUSTOMIZATION
 
   /// Create a sequential vector fmul reduction intrinsic of the source vector.
   /// The first parameter is a scalar accumulator value. An unordered reduction
   /// can be created by adding the reassoc fast-math flag to the resulting
   /// sequential reduction.
   LLVM_ABI CallInst *CreateFMulReduce(Value *Acc, Value *Src);
-#if SIFIVE_CUSTOMIZATION
-  LLVM_ABI CallInst *CreateFMulReduce(Value *Acc, Value *Src, Value *EVL,
-                                      Value *Mask = nullptr);
-#endif // SIFIVE_CUSTOMIZATION
 
   /// Create a vector int add reduction intrinsic of the source vector.
   LLVM_ABI CallInst *CreateAddReduce(Value *Src);
-#if SIFIVE_CUSTOMIZATION
-  LLVM_ABI CallInst *CreateAddReduce(Value *Src, Value *EVL,
-                                     Value *Mask = nullptr);
-#endif // SIFIVE_CUSTOMIZATION
 
   /// Create a vector int mul reduction intrinsic of the source vector.
   LLVM_ABI CallInst *CreateMulReduce(Value *Src);
-#if SIFIVE_CUSTOMIZATION
-  LLVM_ABI CallInst *CreateMulReduce(Value *Src, Value *EVL,
-                                     Value *Mask = nullptr);
-#endif // SIFIVE_CUSTOMIZATION
 
   /// Create a vector int AND reduction intrinsic of the source vector.
   LLVM_ABI CallInst *CreateAndReduce(Value *Src);
-#if SIFIVE_CUSTOMIZATION
-  LLVM_ABI CallInst *CreateAndReduce(Value *Src, Value *EVL,
-                                     Value *Mask = nullptr);
-#endif // SIFIVE_CUSTOMIZATION
 
   /// Create a vector int OR reduction intrinsic of the source vector.
   LLVM_ABI CallInst *CreateOrReduce(Value *Src);
-#if SIFIVE_CUSTOMIZATION
-  LLVM_ABI CallInst *CreateOrReduce(Value *Src, Value *EVL,
-                                    Value *Mask = nullptr);
-#endif // SIFIVE_CUSTOMIZATION
 
   /// Create a vector int XOR reduction intrinsic of the source vector.
   LLVM_ABI CallInst *CreateXorReduce(Value *Src);
-#if SIFIVE_CUSTOMIZATION
-  LLVM_ABI CallInst *CreateXorReduce(Value *Src, Value *EVL,
-                                     Value *Mask = nullptr);
-#endif // SIFIVE_CUSTOMIZATION
 
   /// Create a vector integer max reduction intrinsic of the source
   /// vector.
   LLVM_ABI CallInst *CreateIntMaxReduce(Value *Src, bool IsSigned = false);
-#if SIFIVE_CUSTOMIZATION
-  LLVM_ABI CallInst *CreateIntMaxReduce(Value *Src, Value *EVL,
-                                        bool IsSigned = false,
-                                        Value *Mask = nullptr);
-#endif // SIFIVE_CUSTOMIZATION
 
   /// Create a vector integer min reduction intrinsic of the source
   /// vector.
   LLVM_ABI CallInst *CreateIntMinReduce(Value *Src, bool IsSigned = false);
-#if SIFIVE_CUSTOMIZATION
-  LLVM_ABI CallInst *CreateIntMinReduce(Value *Src, Value *EVL,
-                                        bool IsSigned = false,
-                                        Value *Mask = nullptr);
-#endif // SIFIVE_CUSTOMIZATION
 
   /// Create a vector float max reduction intrinsic of the source
   /// vector.
   LLVM_ABI CallInst *CreateFPMaxReduce(Value *Src);
-#if SIFIVE_CUSTOMIZATION
-  LLVM_ABI CallInst *CreateFPMaxReduce(Value *Src, Value *EVL,
-                                       Value *Mask = nullptr);
-#endif // SIFIVE_CUSTOMIZATION
 
   /// Create a vector float min reduction intrinsic of the source
   /// vector.
   LLVM_ABI CallInst *CreateFPMinReduce(Value *Src);
-#if SIFIVE_CUSTOMIZATION
-  LLVM_ABI CallInst *CreateFPMinReduce(Value *Src, Value *EVL,
-                                       Value *Mask = nullptr);
-#endif // SIFIVE_CUSTOMIZATION
 
   /// Create a vector float maximum reduction intrinsic of the source
   /// vector. This variant follows the NaN and signed zero semantic of

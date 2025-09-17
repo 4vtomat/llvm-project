@@ -1,0 +1,38 @@
+# RUN: llc -mtriple=riscv64 -run-pass=riscv-macro-fusion-stats -pass-remarks-output=%t.yaml %s -o %t.mir
+# RUN: FileCheck --input-file=%t.yaml %s --check-prefixes=CHECK,WINDOW1
+# RUN: llc -mtriple=riscv64 -run-pass=riscv-macro-fusion-stats -riscv-macro-fusion-stats-window-size=2 -pass-remarks-output=%t.2.yaml %s -o %t.mir
+# RUN: FileCheck --input-file=%t.2.yaml %s --check-prefixes=CHECK,WINDOW2
+
+# CHECK: --- !Analysis
+# CHECK-NEXT: Pass:            riscv-macro-fusion-stats
+# CHECK-NEXT: Name:            TuneLUIADDIFusion
+# CHECK-NEXT: Function:        luiaddi_fusion
+# CHECK-NEXT: Args:
+# CHECK-NEXT:  - NumOccurrences:  '1'
+
+# WINDOW2: --- !Analysis
+# WINDOW2-NEXT: Pass:            riscv-macro-fusion-stats
+# WINDOW2-NEXT: Name:            TuneLUIADDIFusion
+# WINDOW2-NEXT: Function:        luiaddi_fusion_apart
+# WINDOW1-NOT: Function:        luiaddi_fusion_apart
+# WINDOW2-NEXT: Args:
+# WINDOW2-NEXT:  - NumOccurrences:  '1'
+
+---
+name: luiaddi_fusion
+body: |
+  bb.0:
+    $x11 = LUI 74565
+    $x11 = ADDI killed renamable $x11, 1656
+    $x10 = ADDI $x0, 0
+    PseudoRET implicit killed $x10, implicit killed $x11
+...
+---
+name: luiaddi_fusion_apart
+body: |
+  bb.0:
+    $x11 = LUI 74565
+    $x10 = ADDI $x0, 0
+    $x11 = ADDI killed renamable $x11, 1656
+    PseudoRET implicit killed $x10, implicit killed $x11
+...

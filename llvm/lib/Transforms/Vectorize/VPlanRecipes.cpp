@@ -1106,14 +1106,18 @@ Value *VPInstruction::generate(VPTransformState &State) {
       // All ops in the reduction inherit fast-math-flags from the recurrence
       // descriptor.
 #if SIFIVE_CUSTOMIZATION
-      Value *InitEVL = nullptr;
+      Value *InitEVL = nullptr, *AllTrueMask = nullptr;
       if (State.Plan->useVLAVectorizer()) {
         InitEVL = State.get(State.Plan->getInitEVL(), /*NeedsScalar=*/true);
         assert(InitEVL && "InitEVL must be generated when tail folding by EVL");
+        auto *RdxVecTy = cast<VectorType>(ReducedPartRdx->getType());
+        AllTrueMask = Builder.CreateVectorSplat(RdxVecTy->getElementCount(),
+                                                Builder.getTrue());
       }
-      ReducedPartRdx =
-          InitEVL ? createSimpleReduction(Builder, ReducedPartRdx, RK, nullptr, InitEVL)
-                  : createSimpleReduction(Builder, ReducedPartRdx, RK);
+      ReducedPartRdx = InitEVL
+                           ? createSimpleReduction(Builder, ReducedPartRdx, RK,
+                                                   AllTrueMask, InitEVL)
+                           : createSimpleReduction(Builder, ReducedPartRdx, RK);
 #else
       ReducedPartRdx = createSimpleReduction(Builder, ReducedPartRdx, RK);
 #endif // SIFIVE_CUSTOMIZATION
@@ -1207,8 +1211,10 @@ Value *VPInstruction::generate(VPTransformState &State) {
         ReducedPartRdx = createSimpleReduction(
             Builder, ReducedPartRdx, RecurKind::SMax, MaskPartRdx, InitEVL);
         assert(InitEVL && "EVL must has value");
-        MaskPartRdx =
-            createSimpleReduction(Builder, MaskPartRdx, RecurKind::Or, nullptr, InitEVL);
+        Value *AllTrueMask =
+            Builder.CreateVectorSplat(State.VF, Builder.getTrue());
+        MaskPartRdx = createSimpleReduction(Builder, MaskPartRdx, RecurKind::Or,
+                                            AllTrueMask, InitEVL);
       } else {
         ReducedPartRdx =
             createSimpleReduction(Builder, ReducedPartRdx, RecurKind::SMax);
