@@ -34,6 +34,7 @@ add_llvm_target(RISCVCodeGen
   SiFive_RISCVBulletNopInserter.cpp
   RISCVCallingConv.cpp
   RISCVCodeGenPrepare.cpp
+  SiFive_RISCVCollectMacroFusionStats.cpp
   RISCVConstantPoolValue.cpp
   RISCVDeadRegisterDefinitions.cpp
   RISCVExpandAtomicPseudoInsts.cpp

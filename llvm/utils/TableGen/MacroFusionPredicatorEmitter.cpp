@@ -89,6 +89,18 @@ void MacroFusionPredicatorEmitter::emitMacroFusionDecl(
        << "const MachineInstr &);\n";
   }
 
+#if SIFIVE_CUSTOMIZATION
+  OS << "} // end namespace llvm\n";
+  OS << "\n#endif\n\n";
+
+  OS << "#ifdef GET_" << Target.getName() << "_ALL_MACRO_FUSION_PRED_DECL\n";
+  OS << "#undef GET_" << Target.getName() << "_ALL_MACRO_FUSION_PRED_DECL\n\n";
+  OS << "namespace llvm {\n";
+
+  OS << "ArrayRef<std::pair<const char *, MacroFusionPredTy>> getAll"
+     << Target.getName() << "MacroFusions();\n";
+#endif // SIFIVE_CUSTOMIZATION
+
   OS << "} // end namespace llvm\n";
   OS << "\n#endif\n";
 }
@@ -117,7 +129,28 @@ void MacroFusionPredicatorEmitter::emitMacroFusionImpl(
     OS.indent(2) << "return true;\n";
     OS << "}\n";
   }
+#if SIFIVE_CUSTOMIZATION
+  OS << "} // end namespace llvm\n";
+  OS << "\n#endif\n\n";
 
+  OS << "#ifdef GET_" << Target.getName() << "_ALL_MACRO_FUSION_PRED_IMPL\n";
+  OS << "#undef GET_" << Target.getName() << "_ALL_MACRO_FUSION_PRED_IMPL\n\n";
+  OS << "namespace llvm {\n";
+
+  OS << "ArrayRef<std::pair<const char *, MacroFusionPredTy>> getAll"
+     << Target.getName() << "MacroFusions() {\n";
+  OS.indent(2)
+      << "static const std::pair<const char *, MacroFusionPredTy> Fusions["
+      << Fusions.size() << "] = {\n";
+
+  for (const Record *Fusion : Fusions)
+    OS.indent(4) << "{" << "\"" << Fusion->getName() << "\", "
+                 << "llvm::is" << Fusion->getName() << "},\n";
+  OS.indent(2) << "};\n";
+
+  OS.indent(2) << "return Fusions;\n";
+  OS << "}\n";
+#endif // SIFIVE_CUSTOMIZATION
   OS << "} // end namespace llvm\n";
   OS << "\n#endif\n";
 }
