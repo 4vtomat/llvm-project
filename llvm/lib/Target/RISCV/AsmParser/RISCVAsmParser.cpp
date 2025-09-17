@@ -2325,13 +2325,16 @@ bool RISCVAsmParser::parseVTypeToken(const AsmToken &Tok, VTypeState &State,
       Sew = 8;
       AltFmt = true;
     } else {
-#endif // SIFIVE_CUSTOMIZATION
       if (Identifier.getAsInteger(10, Sew))
         return true;
       if (!RISCVVType::isValidSEW(Sew))
         return true;
-#if SIFIVE_CUSTOMIZATION
     }
+#else
+    if (Identifier.getAsInteger(10, Sew))
+      return true;
+    if (!RISCVVType::isValidSEW(Sew))
+      return true;
 #endif // SIFIVE_CUSTOMIZATION
 
     State = VTypeState::SeenSew;
@@ -2392,6 +2395,7 @@ bool RISCVAsmParser::parseVTypeToken(const AsmToken &Tok, VTypeState &State,
 
   return true;
 }
+
 ParseStatus RISCVAsmParser::parseVTypeI(OperandVector &Operands) {
   SMLoc S = getLoc();
 
