@@ -1972,17 +1972,6 @@ static const CostTblEntry VectorIntrinsicCostTable[]{
     {Intrinsic::vp_cttz, MVT::i64, 25},
 };
 
-static unsigned getISDForVPIntrinsicID(Intrinsic::ID ID) {
-  switch (ID) {
-#define HELPER_MAP_VPID_TO_VPSD(VPID, VPSD)                                    \
-  case Intrinsic::VPID:                                                        \
-    return ISD::VPSD;
-#include "llvm/IR/VPIntrinsics.def"
-#undef HELPER_MAP_VPID_TO_VPSD
-  }
-  return ISD::DELETED_NODE;
-}
-
 InstructionCost
 RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
                                     TTI::TargetCostKind CostKind) const {
@@ -2244,6 +2233,7 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
 
     return Cost;
   }
+<<<<<<< HEAD
   case Intrinsic::vp_rint: {
     // RISC-V target uses at least 5 instructions to lower rounding intrinsics.
     unsigned Cost = 5;
@@ -2660,6 +2650,8 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
     return getCmpSelInstrCost(Instruction::Select, ICA.getReturnType(),
                               ICA.getArgTypes()[0], CmpInst::BAD_ICMP_PREDICATE,
                               CostKind);
+=======
+>>>>>>> 77914c96dfc55562404d18c1ab777137055679db
   case Intrinsic::experimental_vp_splat: {
     auto LT = getTypeLegalizationCost(RetTy);
     // TODO: Lower i1 experimental_vp_splat

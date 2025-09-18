@@ -40,6 +40,7 @@
 #include "llvm/IR/Dominators.h"
 #include "llvm/IR/GetElementPtrTypeIterator.h"
 #include "llvm/IR/GlobalAlias.h"
+#include "llvm/IR/InlineAsm.h"
 #include "llvm/IR/InstVisitor.h"
 #include "llvm/IR/IntrinsicInst.h"
 #include "llvm/IR/Operator.h"
@@ -168,6 +169,10 @@ static cl::opt<uint64_t> HotCallSiteRelFreq(
 static cl::opt<int>
     InstrCost("inline-instr-cost", cl::Hidden, cl::init(5),
               cl::desc("Cost of a single instruction when inlining"));
+
+static cl::opt<int> InlineAsmInstrCost(
+    "inline-asm-instr-cost", cl::Hidden, cl::init(0),
+    cl::desc("Cost of a single inline asm instruction when inlining"));
 
 static cl::opt<int>
     MemAccessCost("inline-memaccess-cost", cl::Hidden, cl::init(0),
@@ -419,6 +424,9 @@ protected:
   virtual void onMissedSimplification() {}
 #endif
 
+  /// Account for inline assembly instructions.
+  virtual void onInlineAsm(const InlineAsm &Arg) {}
+
   /// Start accounting potential benefits due to SROA for the given alloca.
   virtual void onInitializeSROAArg(AllocaInst *Arg) {}
 
@@ -450,6 +458,7 @@ protected:
   /// Number of bytes allocated statically by the callee.
   uint64_t AllocatedSize = 0;
   unsigned NumInstructions = 0;
+  unsigned NumInlineAsmInstructions = 0;
   unsigned NumVectorInstructions = 0;
 
   /// While we walk the potentially-inlined instructions, we build up and
@@ -871,6 +880,7 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
 
     addCost(SwitchCost);
   }
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   void onMissedSimplification(Instruction *I) override {
     int64_t Cost = InstrCost;
@@ -889,6 +899,50 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
     addCost(Cost);
   }
 #else
+=======
+
+  // Parses the inline assembly argument to account for its cost. Inline
+  // assembly instructions incur higher costs for inlining since they cannot be
+  // analyzed and optimized.
+  void onInlineAsm(const InlineAsm &Arg) override {
+    if (!InlineAsmInstrCost)
+      return;
+    SmallVector<StringRef, 4> AsmStrs;
+    Arg.collectAsmStrs(AsmStrs);
+    int SectionLevel = 0;
+    int InlineAsmInstrCount = 0;
+    for (StringRef AsmStr : AsmStrs) {
+      // Trim whitespaces and comments.
+      StringRef Trimmed = AsmStr.trim();
+      size_t hashPos = Trimmed.find('#');
+      if (hashPos != StringRef::npos)
+        Trimmed = Trimmed.substr(0, hashPos);
+      // Ignore comments.
+      if (Trimmed.empty())
+        continue;
+      // Filter out the outlined assembly instructions from the cost by keeping
+      // track of the section level and only accounting for instrutions at
+      // section level of zero. Note there will be duplication in outlined
+      // sections too, but is not accounted in the inlining cost model.
+      if (Trimmed.starts_with(".pushsection")) {
+        ++SectionLevel;
+        continue;
+      }
+      if (Trimmed.starts_with(".popsection")) {
+        --SectionLevel;
+        continue;
+      }
+      // Ignore directives and labels.
+      if (Trimmed.starts_with(".") || Trimmed.contains(":"))
+        continue;
+      if (SectionLevel == 0)
+        ++InlineAsmInstrCount;
+    }
+    NumInlineAsmInstructions += InlineAsmInstrCount;
+    addCost(InlineAsmInstrCount * InlineAsmInstrCost);
+  }
+
+>>>>>>> 77914c96dfc55562404d18c1ab777137055679db
   void onMissedSimplification() override { addCost(InstrCost); }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -2782,6 +2836,9 @@ bool CallAnalyzer::visitCallBase(CallBase &Call) {
   if (isa<CallInst>(Call) && cast<CallInst>(Call).cannotDuplicate())
     ContainsNoDuplicateCall = true;
 
+  if (InlineAsm *InlineAsmOp = dyn_cast<InlineAsm>(Call.getCalledOperand()))
+    onInlineAsm(*InlineAsmOp);
+
   Function *F = Call.getCalledFunction();
   bool IsIndirectCall = !F;
   if (IsIndirectCall) {
@@ -3371,6 +3428,7 @@ void InlineCostCallAnalyzer::print(raw_ostream &OS) {
   DEBUG_PRINT_STAT(NumConstantPtrDiffs);
   DEBUG_PRINT_STAT(NumInstructionsSimplified);
   DEBUG_PRINT_STAT(NumInstructions);
+  DEBUG_PRINT_STAT(NumInlineAsmInstructions);
   DEBUG_PRINT_STAT(SROACostSavings);
   DEBUG_PRINT_STAT(SROACostSavingsLost);
   DEBUG_PRINT_STAT(LoadEliminationCost);

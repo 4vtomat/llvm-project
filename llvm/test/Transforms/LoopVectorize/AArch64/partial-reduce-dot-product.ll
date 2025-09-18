@@ -2384,6 +2384,7 @@ exit:                                 ; preds = %for.cond.cleanup.loopexit, %ent
 }
 
 
+<<<<<<< HEAD
 ; == Partial reductions with add of an extend
 
 define i32 @zext_add_reduc_i8_i32(ptr %a) #0 {
@@ -2884,6 +2885,11 @@ for.exit:                        ; preds = %for.body
 define dso_local void @dotp_high_register_pressure(ptr %a, ptr %b, ptr %sum, i32 %n) #1 {
 ; CHECK-INTERLEAVE1-LABEL: define dso_local void @dotp_high_register_pressure(
 ; CHECK-INTERLEAVE1-SAME: ptr [[A:%.*]], ptr [[B:%.*]], ptr [[SUM:%.*]], i32 [[N:%.*]]) {
+=======
+define dso_local void @not_dotp_high_register_pressure(ptr %a, ptr %b, ptr %sum, i32 %n) #1 {
+; CHECK-INTERLEAVE1-LABEL: define dso_local void @not_dotp_high_register_pressure(
+; CHECK-INTERLEAVE1-SAME: ptr [[A:%.*]], ptr [[B:%.*]], ptr [[SUM:%.*]], i32 [[N:%.*]]) #[[ATTR1]] {
+>>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 ; CHECK-INTERLEAVE1-NEXT:  entry:
 ; CHECK-INTERLEAVE1-NEXT:    [[CMP100:%.*]] = icmp sgt i32 [[N]], 0
 ; CHECK-INTERLEAVE1-NEXT:    br i1 [[CMP100]], label [[FOR_BODY_LR_PH:%.*]], label [[FOR_COND_CLEANUP:%.*]]
@@ -2969,7 +2975,11 @@ define dso_local void @dotp_high_register_pressure(ptr %a, ptr %b, ptr %sum, i32
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP36]] = add <4 x i32> [[TMP35]], [[VEC_PHI]]
 ; CHECK-INTERLEAVE1-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP37:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
+<<<<<<< HEAD
 ; CHECK-INTERLEAVE1-NEXT:    br i1 [[TMP37]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP35:![0-9]+]]
+=======
+; CHECK-INTERLEAVE1-NEXT:    br i1 [[TMP37]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP29:![0-9]+]]
+>>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 ; CHECK-INTERLEAVE1:       middle.block:
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP38:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[TMP36]])
 ; CHECK-INTERLEAVE1-NEXT:    [[TMP39:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[TMP33]])
@@ -2983,8 +2993,13 @@ define dso_local void @dotp_high_register_pressure(ptr %a, ptr %b, ptr %sum, i32
 ; CHECK-INTERLEAVE1-NEXT:    br i1 [[CMP_N]], label [[FOR_COND_FOR_COND_CLEANUP_CRIT_EDGE:%.*]], label [[SCALAR_PH]]
 ; CHECK-INTERLEAVE1:       scalar.ph:
 ;
+<<<<<<< HEAD
 ; CHECK-INTERLEAVED-LABEL: define dso_local void @dotp_high_register_pressure(
 ; CHECK-INTERLEAVED-SAME: ptr [[A:%.*]], ptr [[B:%.*]], ptr [[SUM:%.*]], i32 [[N:%.*]]) {
+=======
+; CHECK-INTERLEAVED-LABEL: define dso_local void @not_dotp_high_register_pressure(
+; CHECK-INTERLEAVED-SAME: ptr [[A:%.*]], ptr [[B:%.*]], ptr [[SUM:%.*]], i32 [[N:%.*]]) #[[ATTR1]] {
+>>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 ; CHECK-INTERLEAVED-NEXT:  entry:
 ; CHECK-INTERLEAVED-NEXT:    [[CMP100:%.*]] = icmp sgt i32 [[N]], 0
 ; CHECK-INTERLEAVED-NEXT:    br i1 [[CMP100]], label [[FOR_BODY_LR_PH:%.*]], label [[FOR_COND_CLEANUP:%.*]]
@@ -3070,7 +3085,7 @@ define dso_local void @dotp_high_register_pressure(ptr %a, ptr %b, ptr %sum, i32
 ; CHECK-INTERLEAVED-NEXT:    [[PARTIAL_REDUCE21]] = add <4 x i32> [[TMP42]], [[VEC_PHI]]
 ; CHECK-INTERLEAVED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-INTERLEAVED-NEXT:    [[TMP29:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; CHECK-INTERLEAVED-NEXT:    br i1 [[TMP29]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP41:![0-9]+]]
+; CHECK-INTERLEAVED-NEXT:    br i1 [[TMP29]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP31:![0-9]+]]
 ; CHECK-INTERLEAVED:       middle.block:
 ; CHECK-INTERLEAVED-NEXT:    [[TMP30:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[PARTIAL_REDUCE21]])
 ; CHECK-INTERLEAVED-NEXT:    [[TMP31:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[PARTIAL_REDUCE20]])
@@ -3084,8 +3099,13 @@ define dso_local void @dotp_high_register_pressure(ptr %a, ptr %b, ptr %sum, i32
 ; CHECK-INTERLEAVED-NEXT:    br i1 [[CMP_N]], label [[FOR_COND_FOR_COND_CLEANUP_CRIT_EDGE:%.*]], label [[SCALAR_PH]]
 ; CHECK-INTERLEAVED:       scalar.ph:
 ;
+<<<<<<< HEAD
 ; CHECK-MAXBW-LABEL: define dso_local void @dotp_high_register_pressure(
 ; CHECK-MAXBW-SAME: ptr [[A:%.*]], ptr [[B:%.*]], ptr [[SUM:%.*]], i32 [[N:%.*]]) {
+=======
+; CHECK-MAXBW-LABEL: define dso_local void @not_dotp_high_register_pressure(
+; CHECK-MAXBW-SAME: ptr [[A:%.*]], ptr [[B:%.*]], ptr [[SUM:%.*]], i32 [[N:%.*]]) #[[ATTR1]] {
+>>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 ; CHECK-MAXBW-NEXT:  entry:
 ; CHECK-MAXBW-NEXT:    [[CMP100:%.*]] = icmp sgt i32 [[N]], 0
 ; CHECK-MAXBW-NEXT:    br i1 [[CMP100]], label [[FOR_BODY_LR_PH:%.*]], label [[FOR_COND_CLEANUP:%.*]]
@@ -3122,20 +3142,21 @@ define dso_local void @dotp_high_register_pressure(ptr %a, ptr %b, ptr %sum, i32
 ; CHECK-MAXBW-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-MAXBW:       vector.body:
 ; CHECK-MAXBW-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-MAXBW-NEXT:    [[VEC_PHI:%.*]] = phi <4 x i32> [ [[TMP0]], [[VECTOR_PH]] ], [ [[TMP36:%.*]], [[VECTOR_BODY]] ]
-; CHECK-MAXBW-NEXT:    [[VEC_PHI1:%.*]] = phi <4 x i32> [ [[TMP1]], [[VECTOR_PH]] ], [ [[TMP33:%.*]], [[VECTOR_BODY]] ]
-; CHECK-MAXBW-NEXT:    [[VEC_PHI2:%.*]] = phi <4 x i32> [ [[TMP2]], [[VECTOR_PH]] ], [ [[TMP30:%.*]], [[VECTOR_BODY]] ]
-; CHECK-MAXBW-NEXT:    [[VEC_PHI3:%.*]] = phi <4 x i32> [ [[TMP3]], [[VECTOR_PH]] ], [ [[TMP27:%.*]], [[VECTOR_BODY]] ]
-; CHECK-MAXBW-NEXT:    [[VEC_PHI4:%.*]] = phi <4 x i32> [ [[TMP4]], [[VECTOR_PH]] ], [ [[TMP24:%.*]], [[VECTOR_BODY]] ]
-; CHECK-MAXBW-NEXT:    [[VEC_PHI5:%.*]] = phi <4 x i32> [ [[TMP5]], [[VECTOR_PH]] ], [ [[TMP21:%.*]], [[VECTOR_BODY]] ]
-; CHECK-MAXBW-NEXT:    [[VEC_PHI6:%.*]] = phi <4 x i32> [ [[TMP6]], [[VECTOR_PH]] ], [ [[TMP18:%.*]], [[VECTOR_BODY]] ]
-; CHECK-MAXBW-NEXT:    [[VEC_PHI7:%.*]] = phi <4 x i32> [ [[TMP7]], [[VECTOR_PH]] ], [ [[TMP15:%.*]], [[VECTOR_BODY]] ]
+; CHECK-MAXBW-NEXT:    [[VEC_PHI:%.*]] = phi <4 x i32> [ [[TMP0]], [[VECTOR_PH]] ], [ [[PARTIAL_REDUCE21:%.*]], [[VECTOR_BODY]] ]
+; CHECK-MAXBW-NEXT:    [[VEC_PHI1:%.*]] = phi <4 x i32> [ [[TMP1]], [[VECTOR_PH]] ], [ [[PARTIAL_REDUCE20:%.*]], [[VECTOR_BODY]] ]
+; CHECK-MAXBW-NEXT:    [[VEC_PHI2:%.*]] = phi <4 x i32> [ [[TMP2]], [[VECTOR_PH]] ], [ [[PARTIAL_REDUCE19:%.*]], [[VECTOR_BODY]] ]
+; CHECK-MAXBW-NEXT:    [[VEC_PHI3:%.*]] = phi <4 x i32> [ [[TMP3]], [[VECTOR_PH]] ], [ [[PARTIAL_REDUCE18:%.*]], [[VECTOR_BODY]] ]
+; CHECK-MAXBW-NEXT:    [[VEC_PHI4:%.*]] = phi <4 x i32> [ [[TMP4]], [[VECTOR_PH]] ], [ [[PARTIAL_REDUCE17:%.*]], [[VECTOR_BODY]] ]
+; CHECK-MAXBW-NEXT:    [[VEC_PHI5:%.*]] = phi <4 x i32> [ [[TMP5]], [[VECTOR_PH]] ], [ [[PARTIAL_REDUCE16:%.*]], [[VECTOR_BODY]] ]
+; CHECK-MAXBW-NEXT:    [[VEC_PHI6:%.*]] = phi <4 x i32> [ [[TMP6]], [[VECTOR_PH]] ], [ [[PARTIAL_REDUCE15:%.*]], [[VECTOR_BODY]] ]
+; CHECK-MAXBW-NEXT:    [[VEC_PHI7:%.*]] = phi <4 x i32> [ [[TMP7]], [[VECTOR_PH]] ], [ [[PARTIAL_REDUCE:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-MAXBW-NEXT:    [[TMP8:%.*]] = getelementptr inbounds nuw i8, ptr [[A]], i64 [[INDEX]]
 ; CHECK-MAXBW-NEXT:    [[TMP9:%.*]] = getelementptr inbounds nuw i8, ptr [[TMP8]], i32 0
 ; CHECK-MAXBW-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i8>, ptr [[TMP9]], align 1
 ; CHECK-MAXBW-NEXT:    [[TMP10:%.*]] = sext <4 x i8> [[WIDE_LOAD]] to <4 x i32>
 ; CHECK-MAXBW-NEXT:    [[TMP11:%.*]] = shl nsw i64 [[INDEX]], 3
 ; CHECK-MAXBW-NEXT:    [[TMP12:%.*]] = getelementptr inbounds nuw i8, ptr [[B]], i64 [[TMP11]]
+<<<<<<< HEAD
 ; CHECK-MAXBW-NEXT:    [[WIDE_VEC:%.*]] = load <32 x i8>, ptr [[TMP12]], align 1
 ; CHECK-MAXBW-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <32 x i8> [[WIDE_VEC]], <32 x i8> poison, <4 x i32> <i32 0, i32 8, i32 16, i32 24>
 ; CHECK-MAXBW-NEXT:    [[STRIDED_VEC8:%.*]] = shufflevector <32 x i8> [[WIDE_VEC]], <32 x i8> poison, <4 x i32> <i32 1, i32 9, i32 17, i32 25>
@@ -3172,15 +3193,53 @@ define dso_local void @dotp_high_register_pressure(ptr %a, ptr %b, ptr %sum, i32
 ; CHECK-MAXBW-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-MAXBW-NEXT:    [[TMP37:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-MAXBW-NEXT:    br i1 [[TMP37]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP35:![0-9]+]]
+=======
+; CHECK-MAXBW-NEXT:    [[WIDE_VEC:%.*]] = load <128 x i8>, ptr [[TMP12]], align 1
+; CHECK-MAXBW-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <128 x i8> [[WIDE_VEC]], <128 x i8> poison, <16 x i32> <i32 0, i32 8, i32 16, i32 24, i32 32, i32 40, i32 48, i32 56, i32 64, i32 72, i32 80, i32 88, i32 96, i32 104, i32 112, i32 120>
+; CHECK-MAXBW-NEXT:    [[STRIDED_VEC8:%.*]] = shufflevector <128 x i8> [[WIDE_VEC]], <128 x i8> poison, <16 x i32> <i32 1, i32 9, i32 17, i32 25, i32 33, i32 41, i32 49, i32 57, i32 65, i32 73, i32 81, i32 89, i32 97, i32 105, i32 113, i32 121>
+; CHECK-MAXBW-NEXT:    [[STRIDED_VEC9:%.*]] = shufflevector <128 x i8> [[WIDE_VEC]], <128 x i8> poison, <16 x i32> <i32 2, i32 10, i32 18, i32 26, i32 34, i32 42, i32 50, i32 58, i32 66, i32 74, i32 82, i32 90, i32 98, i32 106, i32 114, i32 122>
+; CHECK-MAXBW-NEXT:    [[STRIDED_VEC10:%.*]] = shufflevector <128 x i8> [[WIDE_VEC]], <128 x i8> poison, <16 x i32> <i32 3, i32 11, i32 19, i32 27, i32 35, i32 43, i32 51, i32 59, i32 67, i32 75, i32 83, i32 91, i32 99, i32 107, i32 115, i32 123>
+; CHECK-MAXBW-NEXT:    [[STRIDED_VEC11:%.*]] = shufflevector <128 x i8> [[WIDE_VEC]], <128 x i8> poison, <16 x i32> <i32 4, i32 12, i32 20, i32 28, i32 36, i32 44, i32 52, i32 60, i32 68, i32 76, i32 84, i32 92, i32 100, i32 108, i32 116, i32 124>
+; CHECK-MAXBW-NEXT:    [[STRIDED_VEC12:%.*]] = shufflevector <128 x i8> [[WIDE_VEC]], <128 x i8> poison, <16 x i32> <i32 5, i32 13, i32 21, i32 29, i32 37, i32 45, i32 53, i32 61, i32 69, i32 77, i32 85, i32 93, i32 101, i32 109, i32 117, i32 125>
+; CHECK-MAXBW-NEXT:    [[STRIDED_VEC13:%.*]] = shufflevector <128 x i8> [[WIDE_VEC]], <128 x i8> poison, <16 x i32> <i32 6, i32 14, i32 22, i32 30, i32 38, i32 46, i32 54, i32 62, i32 70, i32 78, i32 86, i32 94, i32 102, i32 110, i32 118, i32 126>
+; CHECK-MAXBW-NEXT:    [[STRIDED_VEC14:%.*]] = shufflevector <128 x i8> [[WIDE_VEC]], <128 x i8> poison, <16 x i32> <i32 7, i32 15, i32 23, i32 31, i32 39, i32 47, i32 55, i32 63, i32 71, i32 79, i32 87, i32 95, i32 103, i32 111, i32 119, i32 127>
+; CHECK-MAXBW-NEXT:    [[TMP13:%.*]] = sext <16 x i8> [[STRIDED_VEC]] to <16 x i32>
+; CHECK-MAXBW-NEXT:    [[TMP14:%.*]] = mul nsw <16 x i32> [[TMP13]], [[TMP10]]
+; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE]] = call <4 x i32> @llvm.experimental.vector.partial.reduce.add.v4i32.v16i32(<4 x i32> [[VEC_PHI7]], <16 x i32> [[TMP14]])
+; CHECK-MAXBW-NEXT:    [[TMP15:%.*]] = sext <16 x i8> [[STRIDED_VEC8]] to <16 x i32>
+; CHECK-MAXBW-NEXT:    [[TMP16:%.*]] = mul nsw <16 x i32> [[TMP15]], [[TMP10]]
+; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE15]] = call <4 x i32> @llvm.experimental.vector.partial.reduce.add.v4i32.v16i32(<4 x i32> [[VEC_PHI6]], <16 x i32> [[TMP16]])
+; CHECK-MAXBW-NEXT:    [[TMP17:%.*]] = sext <16 x i8> [[STRIDED_VEC9]] to <16 x i32>
+; CHECK-MAXBW-NEXT:    [[TMP18:%.*]] = mul nsw <16 x i32> [[TMP17]], [[TMP10]]
+; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE16]] = call <4 x i32> @llvm.experimental.vector.partial.reduce.add.v4i32.v16i32(<4 x i32> [[VEC_PHI5]], <16 x i32> [[TMP18]])
+; CHECK-MAXBW-NEXT:    [[TMP19:%.*]] = sext <16 x i8> [[STRIDED_VEC10]] to <16 x i32>
+; CHECK-MAXBW-NEXT:    [[TMP20:%.*]] = mul nsw <16 x i32> [[TMP19]], [[TMP10]]
+; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE17]] = call <4 x i32> @llvm.experimental.vector.partial.reduce.add.v4i32.v16i32(<4 x i32> [[VEC_PHI4]], <16 x i32> [[TMP20]])
+; CHECK-MAXBW-NEXT:    [[TMP21:%.*]] = sext <16 x i8> [[STRIDED_VEC11]] to <16 x i32>
+; CHECK-MAXBW-NEXT:    [[TMP22:%.*]] = mul nsw <16 x i32> [[TMP21]], [[TMP10]]
+; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE18]] = call <4 x i32> @llvm.experimental.vector.partial.reduce.add.v4i32.v16i32(<4 x i32> [[VEC_PHI3]], <16 x i32> [[TMP22]])
+; CHECK-MAXBW-NEXT:    [[TMP23:%.*]] = sext <16 x i8> [[STRIDED_VEC12]] to <16 x i32>
+; CHECK-MAXBW-NEXT:    [[TMP24:%.*]] = mul nsw <16 x i32> [[TMP23]], [[TMP10]]
+; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE19]] = call <4 x i32> @llvm.experimental.vector.partial.reduce.add.v4i32.v16i32(<4 x i32> [[VEC_PHI2]], <16 x i32> [[TMP24]])
+; CHECK-MAXBW-NEXT:    [[TMP25:%.*]] = sext <16 x i8> [[STRIDED_VEC13]] to <16 x i32>
+; CHECK-MAXBW-NEXT:    [[TMP26:%.*]] = mul nsw <16 x i32> [[TMP25]], [[TMP10]]
+; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE20]] = call <4 x i32> @llvm.experimental.vector.partial.reduce.add.v4i32.v16i32(<4 x i32> [[VEC_PHI1]], <16 x i32> [[TMP26]])
+; CHECK-MAXBW-NEXT:    [[TMP27:%.*]] = sext <16 x i8> [[STRIDED_VEC14]] to <16 x i32>
+; CHECK-MAXBW-NEXT:    [[TMP28:%.*]] = mul nsw <16 x i32> [[TMP27]], [[TMP10]]
+; CHECK-MAXBW-NEXT:    [[PARTIAL_REDUCE21]] = call <4 x i32> @llvm.experimental.vector.partial.reduce.add.v4i32.v16i32(<4 x i32> [[VEC_PHI]], <16 x i32> [[TMP28]])
+; CHECK-MAXBW-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
+; CHECK-MAXBW-NEXT:    [[TMP29:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
+; CHECK-MAXBW-NEXT:    br i1 [[TMP29]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP29:![0-9]+]]
+>>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 ; CHECK-MAXBW:       middle.block:
-; CHECK-MAXBW-NEXT:    [[TMP38:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[TMP36]])
-; CHECK-MAXBW-NEXT:    [[TMP39:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[TMP33]])
-; CHECK-MAXBW-NEXT:    [[TMP40:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[TMP30]])
-; CHECK-MAXBW-NEXT:    [[TMP41:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[TMP27]])
-; CHECK-MAXBW-NEXT:    [[TMP42:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[TMP24]])
-; CHECK-MAXBW-NEXT:    [[TMP43:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[TMP21]])
-; CHECK-MAXBW-NEXT:    [[TMP44:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[TMP18]])
-; CHECK-MAXBW-NEXT:    [[TMP45:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[TMP15]])
+; CHECK-MAXBW-NEXT:    [[TMP30:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[PARTIAL_REDUCE21]])
+; CHECK-MAXBW-NEXT:    [[TMP31:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[PARTIAL_REDUCE20]])
+; CHECK-MAXBW-NEXT:    [[TMP32:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[PARTIAL_REDUCE19]])
+; CHECK-MAXBW-NEXT:    [[TMP33:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[PARTIAL_REDUCE18]])
+; CHECK-MAXBW-NEXT:    [[TMP34:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[PARTIAL_REDUCE17]])
+; CHECK-MAXBW-NEXT:    [[TMP35:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[PARTIAL_REDUCE16]])
+; CHECK-MAXBW-NEXT:    [[TMP36:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[PARTIAL_REDUCE15]])
+; CHECK-MAXBW-NEXT:    [[TMP37:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[PARTIAL_REDUCE]])
 ; CHECK-MAXBW-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[WIDE_TRIP_COUNT]], [[N_VEC]]
 ; CHECK-MAXBW-NEXT:    br i1 [[CMP_N]], label [[FOR_COND_FOR_COND_CLEANUP_CRIT_EDGE:%.*]], label [[SCALAR_PH]]
 ; CHECK-MAXBW:       scalar.ph:

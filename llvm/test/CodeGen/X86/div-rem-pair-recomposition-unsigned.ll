@@ -172,11 +172,12 @@ define i128 @scalar_i128(i128 %x, i128 %y, ptr %divdst) nounwind {
 ; X86-NEXT:    xorl $31, %edx
 ; X86-NEXT:    bsrl 36(%ebp), %ecx
 ; X86-NEXT:    xorl $31, %ecx
-; X86-NEXT:    orl $32, %ecx
+; X86-NEXT:    addl $32, %ecx
 ; X86-NEXT:    testl %esi, %esi
 ; X86-NEXT:    cmovnel %edx, %ecx
 ; X86-NEXT:    bsrl %edi, %edx
 ; X86-NEXT:    xorl $31, %edx
+<<<<<<< HEAD
 ; X86-NEXT:    bsrl 28(%ebp), %ebx
 ; X86-NEXT:    xorl $31, %ebx
 ; X86-NEXT:    orl $32, %ebx
@@ -184,6 +185,14 @@ define i128 @scalar_i128(i128 %x, i128 %y, ptr %divdst) nounwind {
 ; X86-NEXT:    movl 24(%ebp), %eax
 ; X86-NEXT:    cmovnel %edx, %ebx
 ; X86-NEXT:    orl $64, %ebx
+=======
+; X86-NEXT:    bsrl %ebx, %eax
+; X86-NEXT:    xorl $31, %eax
+; X86-NEXT:    addl $32, %eax
+; X86-NEXT:    testl %edi, %edi
+; X86-NEXT:    cmovnel %edx, %eax
+; X86-NEXT:    addl $64, %eax
+>>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 ; X86-NEXT:    movl 36(%ebp), %edx
 ; X86-NEXT:    orl %esi, %edx
 ; X86-NEXT:    cmovnel %ecx, %ebx
@@ -192,18 +201,31 @@ define i128 @scalar_i128(i128 %x, i128 %y, ptr %divdst) nounwind {
 ; X86-NEXT:    movl 20(%ebp), %edi
 ; X86-NEXT:    bsrl %edi, %ecx
 ; X86-NEXT:    xorl $31, %ecx
+<<<<<<< HEAD
 ; X86-NEXT:    orl $32, %ecx
 ; X86-NEXT:    testl %eax, %eax
+=======
+; X86-NEXT:    addl $32, %ecx
+; X86-NEXT:    testl %ebx, %ebx
+>>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 ; X86-NEXT:    cmovnel %edx, %ecx
 ; X86-NEXT:    movl 16(%ebp), %eax
 ; X86-NEXT:    bsrl %eax, %esi
 ; X86-NEXT:    xorl $31, %esi
 ; X86-NEXT:    bsrl 12(%ebp), %edx
 ; X86-NEXT:    xorl $31, %edx
+<<<<<<< HEAD
 ; X86-NEXT:    orl $32, %edx
 ; X86-NEXT:    testl %eax, %eax
 ; X86-NEXT:    cmovnel %esi, %edx
 ; X86-NEXT:    orl $64, %edx
+=======
+; X86-NEXT:    addl $32, %edx
+; X86-NEXT:    testl %edi, %edi
+; X86-NEXT:    cmovnel %esi, %edx
+; X86-NEXT:    addl $64, %edx
+; X86-NEXT:    movl 20(%ebp), %edi
+>>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 ; X86-NEXT:    movl %edi, %esi
 ; X86-NEXT:    orl 24(%ebp), %esi
 ; X86-NEXT:    movl %edi, %esi

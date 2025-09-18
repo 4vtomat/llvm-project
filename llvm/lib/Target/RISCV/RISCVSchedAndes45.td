@@ -330,6 +330,7 @@ def : ReadAdvance<ReadCSR, 0>;
 defm : UnsupportedSchedQ;
 defm : UnsupportedSchedSFB;
 defm : UnsupportedSchedV;
+<<<<<<< HEAD
 defm : UnsupportedSchedXsfvcp;
 #ifdef SIFIVE_CUSTOMIZATION
 defm : UnsupportedSchedXSfsci;
@@ -337,9 +338,12 @@ defm : UnsupportedSchedXSfvqmaccdod;
 defm : UnsupportedSchedXSfvqmaccqoq;
 defm : UnsupportedSchedXSfvfwmaccqqq;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 defm : UnsupportedSchedZabha;
 defm : UnsupportedSchedZbkb;
 defm : UnsupportedSchedZbkx;
 defm : UnsupportedSchedZfa;
 defm : UnsupportedSchedZvk;
+defm : UnsupportedSchedXsf;
 }

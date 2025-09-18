@@ -177,6 +177,9 @@ PreservedAnalyses InterleavedAccessPass::run(Function &F,
 char InterleavedAccess::ID = 0;
 
 bool InterleavedAccess::runOnFunction(Function &F) {
+  if (skipFunction(F))
+    return false;
+
   auto *TPC = getAnalysisIfAvailable<TargetPassConfig>();
   if (!TPC || !LowerInterleavedAccesses)
     return false;
@@ -678,9 +681,8 @@ bool InterleavedAccessImpl::lowerDeinterleaveIntrinsic(
     return false;
 
   const unsigned Factor = getIntrinsicFactor(DI);
-  if (!DI->hasNUses(Factor))
-    return false;
-  SmallVector<Value *, 8> DeinterleaveValues(Factor);
+  SmallVector<Value *, 8> DeinterleaveValues(Factor, nullptr);
+  Value *LastFactor = nullptr;
   for (auto *User : DI->users()) {
     auto *Extract = dyn_cast<ExtractValueInst>(User);
     if (!Extract || Extract->getNumIndices() != 1)
@@ -689,8 +691,10 @@ bool InterleavedAccessImpl::lowerDeinterleaveIntrinsic(
     if (DeinterleaveValues[Idx])
       return false;
     DeinterleaveValues[Idx] = Extract;
+    LastFactor = Extract;
   }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Match
   //   %x = vp.strided.load  ;; VPStridedLoad
@@ -737,14 +741,18 @@ bool InterleavedAccessImpl::lowerDeinterleaveIntrinsic(
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  if (!LastFactor)
+    return false;
+>>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 
   if (auto *VPLoad = dyn_cast<VPIntrinsic>(LoadedVal)) {
     if (VPLoad->getIntrinsicID() != Intrinsic::vp_load)
       return false;
     // Check mask operand. Handle both all-true/false and interleaved mask.
     Value *WideMask = VPLoad->getOperand(1);
-    Value *Mask = getMask(WideMask, Factor,
-                          cast<VectorType>(DeinterleaveValues[0]->getType()));
+    Value *Mask =
+        getMask(WideMask, Factor, cast<VectorType>(LastFactor->getType()));
     if (!Mask)
       return false;
 
@@ -770,7 +778,8 @@ bool InterleavedAccessImpl::lowerDeinterleaveIntrinsic(
   }
 
   for (Value *V : DeinterleaveValues)
-    DeadInsts.insert(cast<Instruction>(V));
+    if (V)
+      DeadInsts.insert(cast<Instruction>(V));
   DeadInsts.insert(DI);
   // We now have a target-specific load, so delete the old one.
   DeadInsts.insert(cast<Instruction>(LoadedVal));

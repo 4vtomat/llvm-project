@@ -501,6 +501,7 @@ static VPReplicateRecipe *cloneForLane(VPlan &Plan, VPBuilder &Builder,
   auto *New =
       new VPReplicateRecipe(RepR->getUnderlyingInstr(), NewOps,
                             /*IsSingleScalar=*/true, /*Mask=*/nullptr, *RepR);
+  New->transferFlags(*RepR);
   New->insertBefore(RepR);
   return New;
 }

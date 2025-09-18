@@ -182,6 +182,7 @@ multiclass SCR_Other {
 multiclass SCR_Unsupported :
   UnsupportedSchedSFB,
   UnsupportedSchedV,
+<<<<<<< HEAD
   UnsupportedSchedXsfvcp,
 #ifdef SIFIVE_CUSTOMIZATION
   UnsupportedSchedXSfsci,
@@ -189,6 +190,8 @@ multiclass SCR_Unsupported :
   UnsupportedSchedXSfvqmaccqoq,
   UnsupportedSchedXSfvfwmaccqqq,
 #endif
+=======
+>>>>>>> 77914c96dfc55562404d18c1ab777137055679db
   UnsupportedSchedZabha,
   UnsupportedSchedZba,
   UnsupportedSchedZbb,
@@ -197,7 +200,8 @@ multiclass SCR_Unsupported :
   UnsupportedSchedZbkb,
   UnsupportedSchedZbkx,
   UnsupportedSchedZfa,
-  UnsupportedSchedZvk;
+  UnsupportedSchedZvk,
+  UnsupportedSchedXsf;
 
 multiclass SCR3_Unsupported :
   SCR_Unsupported,

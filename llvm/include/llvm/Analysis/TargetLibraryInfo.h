@@ -139,7 +139,7 @@ public:
     AMDLIBM      // AMD Math Vector library.
   };
 
-  LLVM_ABI TargetLibraryInfoImpl() = delete;
+  TargetLibraryInfoImpl() = delete;
   LLVM_ABI explicit TargetLibraryInfoImpl(const Triple &T);
 
   // Provide value semantics.

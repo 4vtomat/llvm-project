@@ -6472,10 +6472,6 @@ struct SCEVDbgValueBuilder {
   /// Chain (non-affine) SCEVs are not supported.
   bool SCEVToValueExpr(const llvm::SCEVAddRecExpr &SAR, ScalarEvolution &SE) {
     assert(SAR.isAffine() && "Expected affine SCEV");
-    // TODO: Is this check needed?
-    if (isa<SCEVAddRecExpr>(SAR.getStart()))
-      return false;
-
     const SCEV *Start = SAR.getStart();
     const SCEV *Stride = SAR.getStepRecurrence(SE);
 
@@ -6543,11 +6539,6 @@ struct SCEVDbgValueBuilder {
   bool SCEVToIterCountExpr(const llvm::SCEVAddRecExpr &SAR,
                            ScalarEvolution &SE) {
     assert(SAR.isAffine() && "Expected affine SCEV");
-    if (isa<SCEVAddRecExpr>(SAR.getStart())) {
-      LLVM_DEBUG(dbgs() << "scev-salvage: IV SCEV. Unsupported nested AddRec: "
-                        << SAR << '\n');
-      return false;
-    }
     const SCEV *Start = SAR.getStart();
     const SCEV *Stride = SAR.getStepRecurrence(SE);
 

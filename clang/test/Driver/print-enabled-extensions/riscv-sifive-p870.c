@@ -1,6 +1,9 @@
-// RUN: %clang --target=riscv64 -mcpu=sifive-p870 --print-enabled-extensions | FileCheck %s
 // REQUIRES: riscv-registered-target
+<<<<<<< HEAD
 // XFAIL: *
+=======
+// RUN: %clang --target=riscv64 -mcpu=sifive-p870 --print-enabled-extensions | FileCheck %s
+>>>>>>> 77914c96dfc55562404d18c1ab777137055679db
 
 // CHECK: Extensions enabled for the given RISC-V target
 // CHECK-EMPTY:
