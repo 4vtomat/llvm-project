@@ -433,38 +433,6 @@ static bool isCanonicalForm(Loop &L, Value *Condition,
 }
 #endif
 
-#if SIFIVE_CUSTOMIZATION
-bool llvm::canPeelLastIteration(const Loop &L, ScalarEvolution &SE) {
-  const SCEV *BTC = SE.getBackedgeTakenCount(&L);
-
-  Value *Inc;
-  Value *Bound;
-  CmpPredicate Pred;
-  BasicBlock *Succ1;
-  BasicBlock *Succ2;
-  // The loop must execute at least 2 iterations to guarantee that peeled
-  // iteration executes.
-  // TODO: Add checks during codegen.
-  if (isa<SCEVCouldNotCompute>(BTC))
-    return false;
-
-  // Check if the exit condition of the loop can be adjusted by the peeling
-  // codegen. For now, it must
-  // * exit via the latch,
-  // * the exit condition must be a NE/EQ compare of an induction with step
-  // of 1.
-  BasicBlock *Latch = L.getLoopLatch();
-  return Latch && Latch == L.getExitingBlock() &&
-         match(Latch->getTerminator(),
-               m_Br(m_OneUse(m_ICmp(Pred, m_Value(Inc), m_Value(Bound))),
-                    m_BasicBlock(Succ1), m_BasicBlock(Succ2))) &&
-         ((Pred == CmpInst::ICMP_EQ && Succ2 == L.getHeader()) ||
-          (Pred == CmpInst::ICMP_NE && Succ1 == L.getHeader())) &&
-         Bound->getType()->isIntegerTy() &&
-         SE.isLoopInvariant(SE.getSCEV(Bound), &L) &&
-         isa<SCEVAddRecExpr>(SE.getSCEV(Inc));
-}
-#else
 bool llvm::canPeelLastIteration(const Loop &L, ScalarEvolution &SE) {
   const SCEV *BTC = SE.getBackedgeTakenCount(&L);
   if (isa<SCEVCouldNotCompute>(BTC))
@@ -489,57 +457,22 @@ bool llvm::canPeelLastIteration(const Loop &L, ScalarEvolution &SE) {
           (Pred == CmpInst::ICMP_NE && Succ1 == L.getHeader())) &&
          Bound->getType()->isIntegerTy() && 
          SE.isLoopInvariant(SE.getSCEV(Bound), &L) &&
+#if SIFIVE_CUSTOMIZATION
+         isa<SCEVAddRecExpr>(SE.getSCEV(Inc));
+#else
          match(SE.getSCEV(Inc),
                m_scev_AffineAddRec(m_SCEV(), m_scev_One(), m_SpecificLoop(&L)));
-}
 #endif
-
-#if SIFIVE_CUSTOMIZATION
-/// Returns true if the last iteration can be peeled off and the condition (Pred
-/// LeftAR, RightSCEV) is known at the last iteration and the inverse condition
-/// is known at the second-to-last.
-static bool shouldPeelLastIteration(Loop &L, CmpPredicate Pred,
-                                    const SCEVAddRecExpr *LeftAR,
-                                    const SCEV *RightSCEV, const SCEV *Step,
-                                    ScalarEvolution &SE,
-                                    const TargetTransformInfo &TTI) {
-  if (!canPeelLastIteration(L, SE))
-    return false;
-
-  const SCEV *BTC = SE.getBackedgeTakenCount(&L);
-  const SCEV *ValAtLastIter = LeftAR->evaluateAtIteration(BTC, SE);
-  const SCEV *NewBECount = BTC;
-  SCEVExpander Expander(SE, L.getHeader()->getDataLayout(), "loop-peel");
-  if (!SE.isKnownNonZero(BTC) &&
-      Expander.isHighCostExpansion(BTC, &L, SCEVCheapExpansionBudget, &TTI,
-                                   L.getLoopPredecessor()->getTerminator()))
-    return false;
-
-  if (SE.getTypeSizeInBits(Step->getType()) >
-      SE.getTypeSizeInBits(BTC->getType()))
-    NewBECount = SE.getCastExpr(
-        (ICmpInst::isSigned(Pred)) ? scSignExtend : scZeroExtend,
-        BTC, Step->getType());
-  else if (SE.getTypeSizeInBits(Step->getType()) <
-           SE.getTypeSizeInBits(BTC->getType()))
-    NewBECount = SE.getTruncateExpr(BTC, Step->getType());
-
-  // RightSCEV and Step must have the same type as they are IV chained
-  const SCEV *ValAtSecondToLastIter = LeftAR->evaluateAtIteration(
-      SE.getMinusSCEV(NewBECount, Step), SE);
-
-  auto InversedPred = ICmpInst::getInversePredicate(Pred);
-  bool KnownLast = SE.isKnownPredicate(Pred, ValAtLastIter, RightSCEV);
-  bool KnownSecondToLast =
-      SE.isKnownPredicate(InversedPred, ValAtSecondToLastIter, RightSCEV);
-  return (KnownLast && KnownSecondToLast);
 }
-#else
+
 /// Returns true if the last iteration can be peeled off and the condition (Pred
 /// LeftAR, RightSCEV) is known at the last iteration and the inverse condition
 /// is known at the second-to-last.
 static bool shouldPeelLastIteration(Loop &L, CmpPredicate Pred,
                                     const SCEVAddRecExpr *LeftAR,
+#if SIFIVE_CUSTOMIZATION
+                                    const SCEV *Step,
+#endif
                                     const SCEV *RightSCEV, ScalarEvolution &SE,
                                     const TargetTransformInfo &TTI) {
   if (!canPeelLastIteration(L, SE))
@@ -555,15 +488,42 @@ static bool shouldPeelLastIteration(Loop &L, CmpPredicate Pred,
   auto Guards = ScalarEvolution::LoopGuards::collect(&L, SE);
   BTC = SE.applyLoopGuards(BTC, Guards);
   RightSCEV = SE.applyLoopGuards(RightSCEV, Guards);
+
+#if SIFIVE_CUSTOMIZATION
+  if (SE.getTypeSizeInBits(Step->getType()) >
+      SE.getTypeSizeInBits(BTC->getType()))
+    BTC = SE.getCastExpr(
+        (ICmpInst::isSigned(Pred)) ? scSignExtend : scZeroExtend,
+        BTC, Step->getType());
+  else if (SE.getTypeSizeInBits(Step->getType()) <
+           SE.getTypeSizeInBits(BTC->getType()))
+    BTC = SE.getTruncateExpr(BTC, Step->getType());
+#endif
+
   const SCEV *ValAtLastIter = LeftAR->evaluateAtIteration(BTC, SE);
+#if SIFIVE_CUSTOMIZATION
+  const SCEV *ValAtSecondToLastIter = LeftAR->evaluateAtIteration(
+      SE.getMinusSCEV(BTC, Step), SE);
+
+  if (SE.isKnownPredicate(ICmpInst::getInversePredicate(Pred), ValAtLastIter,
+                          RightSCEV) &&
+      SE.isKnownPredicate(Pred, ValAtSecondToLastIter, RightSCEV))
+    return true;
+  else if (SE.isKnownPredicate(Pred, ValAtLastIter, RightSCEV) &&
+           SE.isKnownPredicate(CmpInst::getInversePredicate(Pred),
+                               ValAtSecondToLastIter, RightSCEV))
+    return true;
+
+  return false;
+#else
   const SCEV *ValAtSecondToLastIter = LeftAR->evaluateAtIteration(
       SE.getMinusSCEV(BTC, SE.getOne(BTC->getType())), SE);
 
   return SE.isKnownPredicate(ICmpInst::getInversePredicate(Pred), ValAtLastIter,
                              RightSCEV) &&
          SE.isKnownPredicate(Pred, ValAtSecondToLastIter, RightSCEV);
-}
 #endif
+}
 
 // Return the number of iterations to peel off from the beginning and end of the
 // loop respectively, that make conditions in the body true/false. For example,
@@ -604,12 +564,7 @@ countToEliminateCompares(Loop &L, unsigned MaxPeelCount, ScalarEvolution &SE,
           const SCEV *Step, ICmpInst::Predicate Pred) {
         while (PeelCount < MaxPeelCount &&
                SE.isKnownPredicate(Pred, IterVal, BoundSCEV)) {
-#if SIFIVE_CUSTOMIZATION
-          IterVal = PeelProlog ? SE.getAddExpr(IterVal, Step)
-                               : SE.getMinusSCEV(IterVal, Step);
-#else
           IterVal = SE.getAddExpr(IterVal, Step);
-#endif
           ++PeelCount;
         }
         return SE.isKnownPredicate(ICmpInst::getInversePredicate(Pred), IterVal,
@@ -662,7 +617,7 @@ countToEliminateCompares(Loop &L, unsigned MaxPeelCount, ScalarEvolution &SE,
       if (auto *ZExt = dyn_cast<SCEVZeroExtendExpr>(RightSCEV)) {
         const SCEV *Op = ZExt->getOperand();
         // Relationship is not close in comparison
-        if (isa<SCEVUDivExpr>(Op) || isa<SCEVMulExpr>(Op) || isa<SCEVUnknown>(Op))
+        if (isa<SCEVUDivExpr>(Op) || isa<SCEVMulExpr>(Op))
           return;
       }
 
@@ -685,19 +640,8 @@ countToEliminateCompares(Loop &L, unsigned MaxPeelCount, ScalarEvolution &SE,
     // Check if extending the current DesiredPeelCount lets us evaluate Pred
     // or !Pred in the loop body statically.
     unsigned NewPeelCount = DesiredPeelCount;
-#if SIFIVE_CUSTOMIZATION
-    unsigned RawIterToEval = (PeelProlog) ? DesiredPeelCount : TripCount - 1;
-
-    const SCEV *BTC = SE.getBackedgeTakenCount(&L);
-    const SCEV *RawIterSCEV = SE.getConstant(LeftSCEV->getType(), RawIterToEval);
-    bool TripCountKnown = !(isa<SCEVCouldNotCompute>(BTC));
-    const SCEV *IterVal = (!PeelProlog && TripCount == 0 && TripCountKnown) ?
-        LeftAR->evaluateAtIteration(BTC, SE) :
-        LeftAR->evaluateAtIteration(RawIterSCEV, SE);
-#else
     const SCEV *IterVal = LeftAR->evaluateAtIteration(
         SE.getConstant(LeftSCEV->getType(), NewPeelCount), SE);
-#endif
 
     // If the original condition is not known, get the negated predicate
     // (which holds on the else branch) and check if it is known. This allows
@@ -709,13 +653,9 @@ countToEliminateCompares(Loop &L, unsigned MaxPeelCount, ScalarEvolution &SE,
     if (!PeelWhilePredicateIsKnown(NewPeelCount, IterVal, RightSCEV, Step,
                                    Pred)) {
 #if SIFIVE_CUSTOMIZATION
-      if (!PeelProlog) {
-        if (NewPeelCount < MaxPeelCount)
-          // FIXME: for now upstream has more than one epilog peel incorrect
-          DesiredPeelCountLast = (NewPeelCount) ? 1 : 0;
-        else if (shouldPeelLastIteration(L, Pred, LeftAR, RightSCEV, Step, SE, TTI))
+      if (!PeelProlog)
+        if (shouldPeelLastIteration(L, Pred, LeftAR, Step, RightSCEV, SE, TTI))
           DesiredPeelCountLast = 1;
-      }
 #else
       if (shouldPeelLastIteration(L, Pred, LeftAR, RightSCEV, SE, TTI))
         DesiredPeelCountLast = 1;
@@ -726,12 +666,7 @@ countToEliminateCompares(Loop &L, unsigned MaxPeelCount, ScalarEvolution &SE,
     // However, for equality comparisons, that isn't always sufficient to
     // eliminate the comparsion in loop body, we may need to peel one more
     // iteration. See if that makes !Pred become unknown again.
-#if SIFIVE_CUSTOMIZATION
-    const SCEV *NextIterVal = PeelProlog ? SE.getAddExpr(IterVal, Step)
-                                         : SE.getMinusSCEV(IterVal, Step);
-#else
     const SCEV *NextIterVal = SE.getAddExpr(IterVal, Step);
-#endif
     if (ICmpInst::isEquality(Pred) &&
         !SE.isKnownPredicate(ICmpInst::getInversePredicate(Pred), NextIterVal,
                              RightSCEV) &&
@@ -743,14 +678,15 @@ countToEliminateCompares(Loop &L, unsigned MaxPeelCount, ScalarEvolution &SE,
     }
 
     DesiredPeelCount = std::max(DesiredPeelCount, NewPeelCount);
-    DesiredPeelCountLast = std::max(DesiredPeelCountLast, NewPeelCount);
 #if SIFIVE_CUSTOMIZATION
-    if (!PeelProlog)
-      if (NewPeelCount < MaxPeelCount) {
-        // FIXME: for now upstream has more than one epilog peel incorrect
-        if (shouldPeelLastIteration(L, Pred, LeftAR, RightSCEV, Step, SE, TTI))
+    if (!PeelProlog) {
+      DesiredPeelCountLast = std::max(DesiredPeelCountLast, NewPeelCount);
+      if (NewPeelCount < MaxPeelCount)
+        if (shouldPeelLastIteration(L, Pred, LeftAR, Step, RightSCEV, SE, TTI))
           DesiredPeelCountLast = 1;
-      }
+    }
+#else
+    DesiredPeelCountLast = std::max(DesiredPeelCountLast, NewPeelCount);
 #endif
   };
 
@@ -794,8 +730,13 @@ countToEliminateCompares(Loop &L, unsigned MaxPeelCount, ScalarEvolution &SE,
         SE.getConstant(AddRec->getType(), NewPeelCount), SE);
     if (!PeelWhilePredicateIsKnown(NewPeelCount, IterVal, BoundSCEV, Step,
                                    Pred)) {
-      if (shouldPeelLastIteration(L, Pred, AddRec, BoundSCEV, Step, SE, TTI))
+#ifdef SIFIVE_CUSTOMIZATION
+      if (shouldPeelLastIteration(L, Pred, AddRec, Step, BoundSCEV, SE, TTI))
         DesiredPeelCountLast = 1;
+#else
+      if (shouldPeelLastIteration(L, Pred, AddRec, BoundSCEV, SE, TTI))
+        DesiredPeelCountLast = 1;
+#endif
       return;
     }
     DesiredPeelCount = NewPeelCount;
@@ -980,6 +921,7 @@ void llvm::computePeelCount(Loop *L, unsigned LoopSize,
       PP.PeelProfiledIterations = false;
       PP.PeelLast = false;
       return;
+#endif
     }
   }
 
@@ -996,29 +938,8 @@ void llvm::computePeelCount(Loop *L, unsigned LoopSize,
       PP.PeelProfiledIterations = false;
       PP.PeelLast = true;
       return;
-#endif
     }
   }
-
-#if SIFIVE_CUSTOMIZATION
-  if (CountToEliminateCmpsLast > 0) {
-    unsigned DesiredPeelCountLast =
-        std::min(CountToEliminateCmpsLast, MaxPeelCount);
-    // Consider max peel count limitation.
-    assert(DesiredPeelCountLast > 0 && "Wrong loop size estimation?");
-    if (DesiredPeelCountLast + AlreadyPeeled <= UnrollPeelMaxCount) {
-      LLVM_DEBUG(dbgs() << "Peel " << DesiredPeelCount
-                        << " iteration(s) to turn"
-                        << " some Phis into invariants.\n");
-      if (PP.PeelEpilog) {
-        PP.PeelCount = DesiredPeelCountLast;
-        PP.PeelProfiledIterations = false;
-        PP.PeelLast = true;
-        return;
-      }
-    }
-  }
-#endif
 
   // Bail if we know the statically calculated trip count.
   // In this case we rather prefer partial unrolling.
@@ -1319,7 +1240,6 @@ llvm::gatherPeelingPreferences(Loop *L, ScalarEvolution &SE,
   PP.AllowEpilogPeeling = false;
   PP.PeelProlog = true;
   PP.PeelEpilog = false;
-  PP.PeelLast = false;
 #endif // SIFIVE_CUSTOMIZATION
 
   // Get the target specifc values.
@@ -1470,7 +1390,7 @@ bool llvm::peelLoop(Loop *L, unsigned PeelCount, bool PeelLast, LoopInfo *LI,
   Value *StepVal = nullptr;
   unsigned IncDecOpc = 0;
   bool MatchingCaseFound = false;
-  if (PeelLast && BI) {
+  if (PeelLast) {
     Value *Condition = BI->getCondition();
     CmpPredicate Pred;
     if (match(Condition, m_ICmp(Pred, m_Instruction(LeftInst),
@@ -1491,11 +1411,9 @@ bool llvm::peelLoop(Loop *L, unsigned PeelCount, bool PeelLast, LoopInfo *LI,
         return false;
       }
     }
-  } else if (PeelLast)
-    return false;
-
-  if (PeelLast && !MatchingCaseFound)
-    return false;
+    if (!MatchingCaseFound)
+      return false;
+  }
 #else
   assert((!PeelLast || (canPeelLastIteration(*L, *SE) && PeelCount == 1)) &&
          "when peeling the last iteration, the loop must be supported and can "
