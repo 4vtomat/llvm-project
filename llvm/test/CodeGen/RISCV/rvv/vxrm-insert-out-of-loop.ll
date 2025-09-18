@@ -384,12 +384,6 @@ define void @test1(ptr nocapture noundef writeonly %dst, i32 noundef signext %i_
 ; RV64-NEXT:    or t2, t3, t2
 ; RV64-NEXT:    andi t2, t2, 1
 ; RV64-NEXT:    and t3, s0, a6
-; RV64-NEXT:    sltu t4, a6, t4
-; RV64-NEXT:    or t4, t4, t5
-; RV64-NEXT:    andi t4, t4, 1
-; RV64-NEXT:    mv t5, a0
-; RV64-NEXT:    csrwi vxrm, 0
-; RV64-NEXT:    mv t4, a0
 ; RV64-NEXT:    j .LBB0_6
 ; RV64-NEXT:  .LBB0_5: # %for.cond1.for.cond.cleanup3_crit_edge.us
 ; RV64-NEXT:    # in Loop: Header=BB0_6 Depth=1
@@ -409,7 +403,6 @@ define void @test1(ptr nocapture noundef writeonly %dst, i32 noundef signext %i_
 ; RV64-NEXT:    csrwi vxrm, 0
 ; RV64-NEXT:    vsetvli t5, zero, e8, m2, ta, ma
 ; RV64-NEXT:  .LBB0_8: # %vector.body
-; RV64-NEXT:  .LBB0_9: # %vector.body
 ; RV64-NEXT:    # Parent Loop BB0_6 Depth=1
 ; RV64-NEXT:    # => This Inner Loop Header: Depth=2
 ; RV64-NEXT:    add t5, a2, t4
