@@ -1200,8 +1200,10 @@ Value *VPInstruction::generate(VPTransformState &State) {
         ReducedPartRdx = createSimpleReduction(
             Builder, ReducedPartRdx, RecurKind::SMax, MaskPartRdx, InitEVL);
         assert(InitEVL && "EVL must has value");
+        Value *AllTrueMask =
+            Builder.CreateVectorSplat(State.VF, Builder.getTrue());
         MaskPartRdx = createSimpleReduction(Builder, MaskPartRdx, RecurKind::Or,
-                                            nullptr, InitEVL);
+                                            AllTrueMask, InitEVL);
       } else {
         ReducedPartRdx =
             createSimpleReduction(Builder, ReducedPartRdx, RecurKind::SMax);
