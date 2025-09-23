@@ -395,6 +395,20 @@ let TargetPrefix = "riscv" in {
   defm int_riscv_sf_sci_1 : sci_x;
   defm int_riscv_sf_sci_2 : sci_x;
   defm int_riscv_sf_sci_3 : sci_x;
+
+
+  // Zvfofp8min
+  // OFP8 to BF16 conversion instructions
+  defm vfwcvt_f_f_v_alt : RISCVConversion;
+  // BF16 to OFP8 conversion instructions
+  defm vfncvt_sat_f_f_w : RISCVConversionRoundingMode;
+  defm vfncvt_f_f_w_alt : RISCVConversionRoundingMode;
+  defm vfncvt_sat_f_f_w_alt : RISCVConversionRoundingMode;
+  // FP32 to OFP8 conversion instructions
+  defm vfncvt_f_f_q : RISCVConversionRoundingMode;
+  defm vfncvt_f_f_q_alt : RISCVConversionRoundingMode;
+  defm vfncvt_sat_f_f_q : RISCVConversionRoundingMode;
+  defm vfncvt_sat_f_f_q_alt : RISCVConversionRoundingMode;
 #endif // SIFIVE_CUSTOMIZATION
 
 } // TargetPrefix = "riscv"
