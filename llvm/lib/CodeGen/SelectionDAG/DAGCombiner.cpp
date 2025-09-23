@@ -11570,9 +11570,10 @@ SDValue DAGCombiner::foldABSToABD(SDNode *N, const SDLoc &DL) {
     // fold (abs (sub nsw x, y)) -> abds(x, y)
     // Don't fold this for unsupported types as we lose the NSW handling.
 #if SIFIVE_CUSTOMIZATION
-    if (AbsOp0->getFlags().hasNoSignedWrap() &&
-        matcher.isOperationLegalOrCustom(ISD::ABDS, VT, LegalOperations) &&
-        TLI.preferABDSToABSWithNSW(VT)) {
+    if (matcher.isOperationLegalOrCustom(ISD::ABDS, VT, LegalOperations) &&
+        TLI.preferABDSToABSWithNSW(VT) &&
+        (AbsOp0->getFlags().hasNoSignedWrap() ||
+         DAG.willNotOverflowSub(/*IsSigned=*/true, Op0, Op1))) {
       SDValue ABD = matcher.getNode(ISD::ABDS, DL, VT, Op0, Op1);
       return matcher.getZExtOrTrunc(ABD, DL, SrcVT);
     }
