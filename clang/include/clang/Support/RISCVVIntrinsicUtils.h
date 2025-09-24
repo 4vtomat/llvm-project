@@ -537,9 +537,9 @@ public:
   static void updateNamesAndPolicy(bool IsMasked, bool HasPolicy,
                                    std::string &Name, std::string &BuiltinName,
                                    std::string &OverloadedName,
-                                   Policy &PolicyAttrs, bool HasFRMRoundModeOp
 #if SIFIVE_CUSTOMIZATION
-                                   , bool AltFmt);
+                                   Policy &PolicyAttrs, bool HasFRMRoundModeOp,
+                                   bool AltFmt);
 #endif // SIFIVE_CUSTOMIZATION
 };
 

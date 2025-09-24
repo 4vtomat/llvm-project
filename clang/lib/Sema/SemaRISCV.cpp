@@ -445,9 +445,9 @@ void RISCVIntrinsicManagerImpl::InitRVVIntrinsic(
 
   RVVIntrinsic::updateNamesAndPolicy(IsMasked, HasPolicy, Name, BuiltinName,
                                      OverloadedName, PolicyAttrs,
-                                     Record.HasFRMRoundModeOp
 #if SIFIVE_CUSTOMIZATION
-                                     , Record.AltFmt);
+                                     Record.HasFRMRoundModeOp,
+                                     Record.AltFmt);
 #endif // SIFIVE_CUSTOMIZATION
 
   // Put into IntrinsicList.

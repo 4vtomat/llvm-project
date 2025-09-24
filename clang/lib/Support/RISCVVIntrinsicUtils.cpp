@@ -1107,9 +1107,9 @@ RVVIntrinsic::RVVIntrinsic(
     OverloadedName += "_" + OverloadedSuffix.str();
 
   updateNamesAndPolicy(IsMasked, hasPolicy(), Name, BuiltinName, OverloadedName,
-                       PolicyAttrs, HasFRMRoundModeOp
 #if SIFIVE_CUSTOMIZATION
-                       , AltFmt);
+                       PolicyAttrs, HasFRMRoundModeOp,
+                       AltFmt);
 #endif // SIFIVE_CUSTOMIZATION
 
   // Init OutputType and InputTypes
