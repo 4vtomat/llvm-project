@@ -6086,9 +6086,8 @@ multiclass VPatConversionWF_VF<string intrinsic, string instruction,
 }
 
 multiclass VPatConversionWF_VF_BF<string intrinsic, string instruction,
-                                  bit isSEWAware = 0
 #ifdef SIFIVE_CUSTOMIZATION
-                                  , bit isFP8 = 0> {
+                                  bit isSEWAware = 0, bit isFP8 = 0> {
   foreach fvtiToFWti = !if(isFP8, AllWidenableIntToBFloatVectors,
                                   AllWidenableBFloatToFloatVectors) in
 #endif // SIFIVE_CUSTOMIZATION
@@ -6208,9 +6207,8 @@ multiclass VPatConversionVF_WF_RTZ<string intrinsic, string instruction,
 }
 
 multiclass VPatConversionVF_WF_BF_RM<string intrinsic, string instruction,
-                                     bit isSEWAware = 0
 #ifdef SIFIVE_CUSTOMIZATION
-                                  , bit isFP8 = 0> {
+                                     bit isSEWAware = 0, bit isFP8 = 0> {
   foreach fvtiToFWti = !if(isFP8, AllWidenableIntToBFloatVectors,
                                   AllWidenableBFloatToFloatVectors) in {
 #endif // SIFIVE_CUSTOMIZATION
