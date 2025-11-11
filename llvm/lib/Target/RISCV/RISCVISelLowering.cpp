@@ -89,8 +89,8 @@ static cl::opt<bool>
 
 // TODO: Support more ops
 static const unsigned ZvfbfaVPOps[] = {ISD::VP_FNEG, ISD::VP_FABS,
-                                       ISD::VP_FCOPYSIGN};
-static const unsigned ZvfbfaOps[] = {ISD::FNEG, ISD::FABS, ISD::FCOPYSIGN};
+                                       ISD::VP_FCOPYSIGN, ISD::VP_FADD, ISD::VP_FSUB, ISD::VP_FMUL, ISD::EXPERIMENTAL_VP_SPLAT};
+static const unsigned ZvfbfaOps[] = {ISD::FNEG, ISD::FABS, ISD::FCOPYSIGN, ISD::FADD, ISD::FSUB, ISD::FMUL, ISD::SPLAT_VECTOR };
 
 RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
                                          const RISCVSubtarget &STI)
@@ -1049,11 +1049,64 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         ISD::VECREDUCE_FMINIMUM,
         ISD::VECREDUCE_FMAXIMUM};
 
+    // TODO: support more ops.
+    static const unsigned ZvfbfaPromoteOps[] = {
+        ISD::FMINNUM,
+        ISD::FMAXNUM,
+        ISD::FMINIMUMNUM,
+        ISD::FMAXIMUMNUM,
+        ISD::FDIV,
+        ISD::FMA,
+        ISD::FSQRT,
+        ISD::FCEIL,
+        ISD::FTRUNC,
+        ISD::FFLOOR,
+        ISD::FROUND,
+        ISD::FROUNDEVEN,
+        ISD::FRINT,
+        ISD::FNEARBYINT,
+        ISD::IS_FPCLASS,
+        ISD::SETCC,
+        ISD::FMAXIMUM,
+        ISD::FMINIMUM,
+        ISD::STRICT_FADD,
+        ISD::STRICT_FSUB,
+        ISD::STRICT_FMUL,
+        ISD::STRICT_FDIV,
+        ISD::STRICT_FSQRT,
+        ISD::STRICT_FMA,
+        ISD::VECREDUCE_FMIN,
+        ISD::VECREDUCE_FMAX,
+        ISD::VECREDUCE_FMINIMUM,
+        ISD::VECREDUCE_FMAXIMUM};
+
     // TODO: support more vp ops.
     static const unsigned ZvfhminZvfbfminPromoteVPOps[] = {
         ISD::VP_FADD,
         ISD::VP_FSUB,
         ISD::VP_FMUL,
+        ISD::VP_FDIV,
+        ISD::VP_FMA,
+        ISD::VP_REDUCE_FMIN,
+        ISD::VP_REDUCE_FMAX,
+        ISD::VP_SQRT,
+        ISD::VP_FMINNUM,
+        ISD::VP_FMAXNUM,
+        ISD::VP_FCEIL,
+        ISD::VP_FFLOOR,
+        ISD::VP_FROUND,
+        ISD::VP_FROUNDEVEN,
+        ISD::VP_FROUNDTOZERO,
+        ISD::VP_FRINT,
+        ISD::VP_FNEARBYINT,
+        ISD::VP_SETCC,
+        ISD::VP_FMINIMUM,
+        ISD::VP_FMAXIMUM,
+        ISD::VP_REDUCE_FMINIMUM,
+        ISD::VP_REDUCE_FMAXIMUM};
+
+    // TODO: support more vp ops.
+    static const unsigned ZvfbfaPromoteVPOps[] = {
         ISD::VP_FDIV,
         ISD::VP_FMA,
         ISD::VP_REDUCE_FMIN,
@@ -1226,7 +1279,8 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
                          Custom);
       setOperationAction(ISD::SELECT_CC, VT, Expand);
       setOperationAction({ISD::VP_SINT_TO_FP, ISD::VP_UINT_TO_FP}, VT, Custom);
-      setOperationAction({ISD::INSERT_VECTOR_ELT, ISD::CONCAT_VECTORS,
+      setOperationAction({ISD::INSERT_VECTOR_ELT, ISD::INSERT_VECTOR_ELT,
+                          ISD::CONCAT_VECTORS,
                           ISD::INSERT_SUBVECTOR, ISD::EXTRACT_SUBVECTOR,
                           ISD::VECTOR_DEINTERLEAVE, ISD::VECTOR_INTERLEAVE,
                           ISD::VECTOR_REVERSE, ISD::VECTOR_SPLICE,
@@ -1236,16 +1290,9 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       setOperationAction(ISD::EXPERIMENTAL_VP_REVERSE, VT, Custom);
 
       setOperationAction(ISD::FCOPYSIGN, VT, Legal);
+      setOperationAction(ISD::SPLAT_VECTOR, VT, Legal);
       setOperationAction(ZvfbfaVPOps, VT, Custom);
 
-      MVT EltVT = VT.getVectorElementType();
-      if (isTypeLegal(EltVT))
-        setOperationAction({ISD::SPLAT_VECTOR, ISD::EXPERIMENTAL_VP_SPLAT,
-                            ISD::EXTRACT_VECTOR_ELT},
-                           VT, Custom);
-      else
-        setOperationAction({ISD::SPLAT_VECTOR, ISD::EXPERIMENTAL_VP_SPLAT},
-                           EltVT, Custom);
       setOperationAction({ISD::LOAD, ISD::STORE, ISD::MLOAD, ISD::MSTORE,
                           ISD::MGATHER, ISD::MSCATTER, ISD::VP_LOAD,
                           ISD::VP_STORE, ISD::EXPERIMENTAL_VP_STRIDED_LOAD,
@@ -1259,12 +1306,12 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
 
       // Custom split nxv32[b]f16 since nxv32[b]f32 is not legal.
       if (getLMUL(VT) == RISCVVType::LMUL_8) {
-        setOperationAction(ZvfhminZvfbfminPromoteOps, VT, Custom);
-        setOperationAction(ZvfhminZvfbfminPromoteVPOps, VT, Custom);
+        setOperationAction(ZvfbfaPromoteOps, VT, Custom);
+        setOperationAction(ZvfbfaPromoteVPOps, VT, Custom);
       } else {
         MVT F32VecVT = MVT::getVectorVT(MVT::f32, VT.getVectorElementCount());
-        setOperationPromotedToType(ZvfhminZvfbfminPromoteOps, VT, F32VecVT);
-        setOperationPromotedToType(ZvfhminZvfbfminPromoteVPOps, VT, F32VecVT);
+        setOperationPromotedToType(ZvfbfaPromoteOps, VT, F32VecVT);
+        setOperationPromotedToType(ZvfbfaPromoteVPOps, VT, F32VecVT);
       }
     };
 
