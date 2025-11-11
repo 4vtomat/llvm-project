@@ -1628,6 +1628,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
           if (!isTypeLegal(F32VecVT))
             continue;
           setOperationPromotedToType(ZvfhminZvfbfminPromoteOps, VT, F32VecVT);
+          setOperationPromotedToType(ZvfbfaPromoteOps, VT, F32VecVT);
           // TODO: Promote VP ops to fp32.
           continue;
         }
