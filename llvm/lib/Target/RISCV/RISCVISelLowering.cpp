@@ -88,8 +88,7 @@ static cl::opt<bool>
                       cl::init(true));
 
 // TODO: Support more ops
-static const unsigned ZvfbfaVPOps[] = {ISD::VP_FNEG, ISD::VP_FABS,
-                                       ISD::VP_FCOPYSIGN, ISD::VP_FADD, ISD::VP_FSUB, ISD::VP_FMUL, ISD::EXPERIMENTAL_VP_SPLAT};
+static const unsigned ZvfbfaVPOps[] = {ISD::VP_FNEG, ISD::VP_FABS, ISD::VP_FCOPYSIGN};
 static const unsigned ZvfbfaOps[] = {ISD::FNEG, ISD::FABS, ISD::FCOPYSIGN, ISD::FADD, ISD::FSUB, ISD::FMUL, ISD::SPLAT_VECTOR };
 
 RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
@@ -1105,28 +1104,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         ISD::VP_REDUCE_FMINIMUM,
         ISD::VP_REDUCE_FMAXIMUM};
 
-    // TODO: support more vp ops.
-    static const unsigned ZvfbfaPromoteVPOps[] = {
-        ISD::VP_FDIV,
-        ISD::VP_FMA,
-        ISD::VP_REDUCE_FMIN,
-        ISD::VP_REDUCE_FMAX,
-        ISD::VP_SQRT,
-        ISD::VP_FMINNUM,
-        ISD::VP_FMAXNUM,
-        ISD::VP_FCEIL,
-        ISD::VP_FFLOOR,
-        ISD::VP_FROUND,
-        ISD::VP_FROUNDEVEN,
-        ISD::VP_FROUNDTOZERO,
-        ISD::VP_FRINT,
-        ISD::VP_FNEARBYINT,
-        ISD::VP_SETCC,
-        ISD::VP_FMINIMUM,
-        ISD::VP_FMAXIMUM,
-        ISD::VP_REDUCE_FMINIMUM,
-        ISD::VP_REDUCE_FMAXIMUM};
-
     // Sets common operation actions on RVV floating-point vector types.
     const auto SetCommonVFPActions = [&](MVT VT) {
       setOperationAction(ISD::SPLAT_VECTOR, VT, Legal);
@@ -1279,7 +1256,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
                          Custom);
       setOperationAction(ISD::SELECT_CC, VT, Expand);
       setOperationAction({ISD::VP_SINT_TO_FP, ISD::VP_UINT_TO_FP}, VT, Custom);
-      setOperationAction({ISD::INSERT_VECTOR_ELT, ISD::INSERT_VECTOR_ELT,
+      setOperationAction({ISD::INSERT_VECTOR_ELT, ISD::EXTRACT_VECTOR_ELT,
                           ISD::CONCAT_VECTORS,
                           ISD::INSERT_SUBVECTOR, ISD::EXTRACT_SUBVECTOR,
                           ISD::VECTOR_DEINTERLEAVE, ISD::VECTOR_INTERLEAVE,
@@ -1292,6 +1269,12 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       setOperationAction(ISD::FCOPYSIGN, VT, Legal);
       setOperationAction(ISD::SPLAT_VECTOR, VT, Legal);
       setOperationAction(ZvfbfaVPOps, VT, Custom);
+
+      MVT EltVT = VT.getVectorElementType();
+      if (isTypeLegal(EltVT))
+        setOperationAction(ISD::EXPERIMENTAL_VP_SPLAT, VT, Custom);
+      else
+        setOperationAction(ISD::EXPERIMENTAL_VP_SPLAT, EltVT, Custom);
 
       setOperationAction({ISD::LOAD, ISD::STORE, ISD::MLOAD, ISD::MSTORE,
                           ISD::MGATHER, ISD::MSCATTER, ISD::VP_LOAD,
@@ -1307,11 +1290,11 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       // Custom split nxv32[b]f16 since nxv32[b]f32 is not legal.
       if (getLMUL(VT) == RISCVVType::LMUL_8) {
         setOperationAction(ZvfbfaPromoteOps, VT, Custom);
-        setOperationAction(ZvfbfaPromoteVPOps, VT, Custom);
+        setOperationAction(ZvfhminZvfbfminPromoteVPOps, VT, Custom);
       } else {
         MVT F32VecVT = MVT::getVectorVT(MVT::f32, VT.getVectorElementCount());
         setOperationPromotedToType(ZvfbfaPromoteOps, VT, F32VecVT);
-        setOperationPromotedToType(ZvfbfaPromoteVPOps, VT, F32VecVT);
+        setOperationPromotedToType(ZvfhminZvfbfminPromoteVPOps, VT, F32VecVT);
       }
     };
 
@@ -10539,7 +10522,7 @@ SDValue RISCVTargetLowering::lowerEXTRACT_VECTOR_ELT(SDValue Op,
   }
 
   if ((EltVT == MVT::f16 && !Subtarget.hasVInstructionsF16()) ||
-      EltVT == MVT::bf16) {
+      (EltVT == MVT::bf16 && !Subtarget.hasVInstructionsBF16())) {
     // If we don't have vfmv.f.s for f16/bf16, extract to a gpr then use fmv.h.x
     MVT IntVT = VecVT.changeTypeToInteger();
     SDValue IntVec = DAG.getBitcast(IntVT, Vec);
