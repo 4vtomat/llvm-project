@@ -536,6 +536,9 @@ void RISCVInsertVSETVLI::emitVSETVLIs(MachineBasicBlock &MBB) {
   // Track whether the prefix of the block we've scanned is transparent
   // (meaning has not yet changed the abstract state).
   bool PrefixTransparent = true;
+
+  DenseSet<Register> PendingShrink;
+
   for (MachineInstr &MI : MBB) {
     const VSETVLIInfo PrevInfo = CurInfo;
     transferBefore(CurInfo, MI);
@@ -580,33 +583,13 @@ void RISCVInsertVSETVLI::emitVSETVLIs(MachineBasicBlock &MBB) {
         MachineOperand &VLOp = getVLOp(MI);
         if (VLOp.isReg()) {
           Register Reg = VLOp.getReg();
-
           // Erase the AVL operand from the instruction.
           VLOp.setReg(Register());
           VLOp.setIsKill(false);
-          if (LIS) {
-            LiveInterval &LI = LIS->getInterval(Reg);
-            SmallVector<MachineInstr *> DeadMIs;
-            LIS->shrinkToUses(&LI, &DeadMIs);
-            // We might have separate components that need split due to
-            // needVSETVLIPHI causing us to skip inserting a new VL def.
-            SmallVector<LiveInterval *> SplitLIs;
-            LIS->splitSeparateComponents(LI, SplitLIs);
-
-            // If the AVL was an immediate > 31, then it would have been emitted
-            // as an ADDI. However, the ADDI might not have been used in the
-            // vsetvli, or a vsetvli might not have been emitted, so it may be
-            // dead now.
-            for (MachineInstr *DeadMI : DeadMIs) {
-              if (!TII->isAddImmediate(*DeadMI, Reg))
-                continue;
-              LIS->RemoveMachineInstrFromMaps(*DeadMI);
-              Register AddReg = DeadMI->getOperand(1).getReg();
-              DeadMI->eraseFromParent();
-              if (AddReg.isVirtual())
-                LIS->shrinkToUses(&LIS->getInterval(AddReg));
-            }
-          }
+          // Defer LIS maintenance for this register to the end of the
+          // block.
+          if (LIS)
+            PendingShrink.insert(Reg);
         }
         MI.addOperand(MachineOperand::CreateReg(RISCV::VL, /*isDef*/ false,
                                                 /*isImp*/ true));
@@ -628,6 +611,32 @@ void RISCVInsertVSETVLI::emitVSETVLIs(MachineBasicBlock &MBB) {
       PrefixTransparent = false;
 
     transferAfter(CurInfo, MI);
+  }
+
+  if (LIS) {
+    for (Register Reg : PendingShrink) {
+      LiveInterval &LI = LIS->getInterval(Reg);
+      SmallVector<MachineInstr *> DeadMIs;
+      LIS->shrinkToUses(&LI, &DeadMIs);
+      // We might have separate components that need split due to
+      // needVSETVLIPHI causing us to skip inserting a new VL def.
+      SmallVector<LiveInterval *> SplitLIs;
+      LIS->splitSeparateComponents(LI, SplitLIs);
+
+      // If the AVL was an immediate > 31, then it would have been emitted
+      // as an ADDI. However, the ADDI might not have been used in the
+      // vsetvli, or a vsetvli might not have been emitted, so it may be
+      // dead now.
+      for (MachineInstr *DeadMI : DeadMIs) {
+        if (!TII->isAddImmediate(*DeadMI, Reg))
+          continue;
+        LIS->RemoveMachineInstrFromMaps(*DeadMI);
+        Register AddReg = DeadMI->getOperand(1).getReg();
+        DeadMI->eraseFromParent();
+        if (AddReg.isVirtual())
+          LIS->shrinkToUses(&LIS->getInterval(AddReg));
+      }
+    }
   }
 
   const auto &Info = BlockInfo[MBB.getNumber()];
