@@ -4859,21 +4859,23 @@ void Sema::checkCall(NamedDecl *FDecl, const FunctionProtoType *Proto,
 
     // Check for conflicting RISC-V architecture state attributes between the
     // caller and callee.
-    auto CalleeRISCVState =
-        FunctionType::getRISCVXsfmmState(ExtInfo.RISCVAttributes);
-    auto CallerRISCVState = FunctionType::RISCVNone;
-    if (CallerFD) {
-      QualType CallerType = CallerFD->getType();
-      if (!CallerType.isNull()) {
-        if (const auto *CallerFPT =
-                CallerType->getAs<FunctionProtoType>())
-          CallerRISCVState = FunctionType::getRISCVXsfmmState(
-              CallerFPT->getRISCVAttributes());
+    if (Context.getTargetInfo().getTriple().isRISCV()) {
+      auto CalleeRISCVState =
+          FunctionType::getRISCVXsfmmState(ExtInfo.RISCVAttributes);
+      auto CallerRISCVState = FunctionType::RISCVNone;
+      if (CallerFD) {
+        QualType CallerType = CallerFD->getType();
+        if (!CallerType.isNull()) {
+          if (const auto *CallerFPT =
+                  CallerType->getAs<FunctionProtoType>())
+            CallerRISCVState = FunctionType::getRISCVXsfmmState(
+                CallerFPT->getRISCVAttributes());
 
-        if (CallerRISCVState != FunctionType::RISCVNone ||
-            CalleeRISCVState != FunctionType::RISCVNone)
-          RISCV().checkConflictingStateAttributes(
-              CallerFD, FD, CallerRISCVState, CalleeRISCVState, Loc);
+          if (CallerRISCVState != FunctionType::RISCVNone ||
+              CalleeRISCVState != FunctionType::RISCVNone)
+            RISCV().checkConflictingStateAttributes(
+                CallerFD, FD, CallerRISCVState, CalleeRISCVState, Loc);
+        }
       }
     }
   }
